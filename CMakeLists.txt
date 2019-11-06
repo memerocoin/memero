@@ -996,6 +996,9 @@ find_library(GSSAPI_LIBRARY gssapi_krb5)
 find_library(PROTOLIB_LIBRARY protolib)
 find_library(SODIUM_LIBRARY sodium)
 
+set(ZMQ_INCLUDE_PATH zmq_dummy_include_path)
+set(ZMQ_LIB zmq_dummy_lib_2)
+
 if(NOT ZMQ_INCLUDE_PATH)
   message(FATAL_ERROR "Could not find required header zmq.h")
 endif()

@@ -45,12 +45,8 @@ set(daemon_messages_sources
   message.cpp
   daemon_messages.cpp)
 
-set(rpc_pub_sources zmq_pub.cpp)
-
 set(daemon_rpc_server_sources
-  daemon_handler.cpp
-  zmq_pub.cpp
-  zmq_server.cpp)
+  daemon_handler.cpp)
 
 
 set(rpc_base_headers
@@ -61,8 +57,6 @@ set(rpc_base_headers
 set(rpc_headers
   rpc_version_str.h
   rpc_handler.h)
-
-set(rpc_pub_headers zmq_pub.h)
 
 set(daemon_rpc_server_headers)
 
@@ -80,14 +74,11 @@ set(daemon_messages_private_headers
 set(daemon_rpc_server_private_headers
   message.h
   daemon_messages.h
-  daemon_handler.h
-  zmq_server.h)
+  daemon_handler.h)
 
 
 monero_private_headers(rpc
   ${rpc_private_headers})
-
-set(rpc_pub_private_headers)
 
 monero_private_headers(daemon_rpc_server
   ${daemon_rpc_server_private_headers})
@@ -102,11 +93,6 @@ monero_add_library(rpc
   ${rpc_sources}
   ${rpc_headers}
   ${rpc_private_headers})
-
-monero_add_library(rpc_pub
-  ${rpc_pub_sources}
-  ${rpc_pub_headers}
-  ${rpc_pub_private_headers})
 
 monero_add_library(daemon_messages
   ${daemon_messages_sources}
@@ -142,14 +128,6 @@ target_link_libraries(rpc
   PRIVATE
     ${EXTRA_LIBRARIES})
 
-target_link_libraries(rpc_pub
-  PUBLIC
-    epee
-    net
-    cryptonote_basic
-    serialization
-    ${Boost_THREAD_LIBRARY})
-
 target_link_libraries(daemon_messages
   LINK_PRIVATE
     cryptonote_core
@@ -161,7 +139,6 @@ target_link_libraries(daemon_messages
 target_link_libraries(daemon_rpc_server
   LINK_PRIVATE
     rpc
-    rpc_pub
     cryptonote_core
     cryptonote_protocol
     version
@@ -171,7 +148,6 @@ target_link_libraries(daemon_rpc_server
     ${Boost_REGEX_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${Boost_THREAD_LIBRARY}
-    ${ZMQ_LIB}
     ${EXTRA_LIBRARIES})
 target_include_directories(daemon_rpc_server PUBLIC ${ZMQ_INCLUDE_PATH})
 target_include_directories(obj_daemon_rpc_server PUBLIC ${ZMQ_INCLUDE_PATH})
