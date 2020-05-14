@@ -75,7 +75,7 @@ bool wallet2::daemon_requires_payment()
   return get_rpc_payment_info(false, payment_required, credits, diff, credits_per_hash_found, blob, height, seed_height, seed_hash, next_seed_hash, cookie) && payment_required;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::make_rpc_payment(uint32_t nonce, uint32_t cookie, uint64_t &credits, uint64_t &balance)
+bool wallet2::make_rpc_payment(uint64_t nonce, uint32_t cookie, uint64_t &credits, uint64_t &balance)
 {
   cryptonote::COMMAND_RPC_ACCESS_SUBMIT_NONCE::request req = AUTO_VAL_INIT(req);
   cryptonote::COMMAND_RPC_ACCESS_SUBMIT_NONCE::response res = AUTO_VAL_INIT(res);

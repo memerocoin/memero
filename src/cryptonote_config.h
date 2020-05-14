@@ -175,6 +175,7 @@
 #define HF_VERSION_EXACT_COINBASE               16
 #define HF_VERSION_CLSAG                        16
 #define HF_VERSION_DETERMINISTIC_UNLOCK_TIME    16
+#define HF_VERSION_SHA3_POW                     16
 
 #define PER_KB_FEE_QUANTIZATION_DECIMALS        8
 
