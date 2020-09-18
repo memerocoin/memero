@@ -49,7 +49,7 @@ bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& 
 {
   if (args.size() > 3)
   {
-    std::cout << "use: print_pl [white] [gray] [<limit>] [pruned] [publicrpc]" << std::endl;
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
     return true;
   }
 
@@ -78,7 +78,7 @@ bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& 
     }
     else if (!epee::string_tools::get_xtype_from_string(limit, args[i]))
     {
-      std::cout << "unexpected argument: " << args[i] << std::endl;
+      std::cout << "Invalid syntax: Unexpected parameter: " << args[i] << ". For more details, use the help command." << std::endl;
       return true;
     }
   }
@@ -89,56 +89,79 @@ bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& 
 
 bool t_command_parser_executor::print_peer_list_stats(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.print_peer_list_stats();
 }
 
 bool t_command_parser_executor::save_blockchain(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
-
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
   return m_executor.save_blockchain();
 }
 
 bool t_command_parser_executor::show_hash_rate(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.show_hash_rate();
 }
 
 bool t_command_parser_executor::hide_hash_rate(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.hide_hash_rate();
 }
 
 bool t_command_parser_executor::show_difficulty(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.show_difficulty();
 }
 
 bool t_command_parser_executor::show_status(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.show_status();
 }
 
 bool t_command_parser_executor::print_connections(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.print_connections();
 }
 
 bool t_command_parser_executor::print_net_stats(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.print_net_stats();
 }
@@ -147,8 +170,8 @@ bool t_command_parser_executor::print_blockchain_info(const std::vector<std::str
 {
   if(!args.size())
   {
-    std::cout << "need block index parameter" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: At least one parameter expected. For more details, use the help command." << std::endl;
+    return true;
   }
   uint64_t start_index = 0;
   uint64_t end_index = 0;
@@ -157,20 +180,20 @@ bool t_command_parser_executor::print_blockchain_info(const std::vector<std::str
     int64_t nblocks;
     if(!epee::string_tools::get_xtype_from_string(nblocks, args[0]))
     {
-      std::cout << "wrong number of blocks" << std::endl;
-      return false;
+      std::cout << "Invalid syntax: Wrong number of blocks. For more details, use the help command." << std::endl;
+      return true;
     }
     return m_executor.print_blockchain_info(nblocks, (uint64_t)-nblocks);
   }
   if(!epee::string_tools::get_xtype_from_string(start_index, args[0]))
   {
-    std::cout << "wrong starter block index parameter" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: Wrong starter block index parameter. For more details, use the help command." << std::endl;
+    return true;
   }
   if(args.size() >1 && !epee::string_tools::get_xtype_from_string(end_index, args[1]))
   {
-    std::cout << "wrong end block index parameter" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: Wrong end block index parameter. For more details, use the help command." << std::endl;
+    return true;
   }
 
   return m_executor.print_blockchain_info(start_index, end_index);
@@ -180,7 +203,7 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
 {
   if(args.size() > 1)
   {
-    std::cout << "use: set_log [<log_level_number_0-4> | <categories>]" << std::endl;
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
     return true;
   }
 
@@ -194,7 +217,7 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
   {
     if(4 < l)
     {
-      std::cout << "wrong number range, use: set_log <log_level_number_0-4>" << std::endl;
+      std::cout << "Invalid syntax: Wrong number range, use: set_log <log_level_number_0-4>. For more details, use the help command." << std::endl;
       return true;
     }
     return m_executor.set_log_level(l);
@@ -207,7 +230,10 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
 
 bool t_command_parser_executor::print_height(const std::vector<std::string>& args) 
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.print_height();
 }
@@ -222,14 +248,14 @@ bool t_command_parser_executor::print_block(const std::vector<std::string>& args
       include_hex = true;
     else
     {
-      std::cout << "unexpected argument: " << args[i] << std::endl;
+      std::cout << "Invalid syntax: Unexpected parameter: " << args[i] << ". For more details, use the help command." << std::endl;
       return true;
     }
   }
   if (args.empty())
   {
-    std::cout << "expected: print_block (<block_hash> | <block_height>) [+hex]" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: At least one parameter expected. For more details, use the help command." << std::endl;
+    return true;
   }
 
   const std::string& arg = args.front();
@@ -247,7 +273,7 @@ bool t_command_parser_executor::print_block(const std::vector<std::string>& args
     }
   }
 
-  return false;
+  return true;
 }
 
 bool t_command_parser_executor::print_transaction(const std::vector<std::string>& args)
@@ -266,13 +292,13 @@ bool t_command_parser_executor::print_transaction(const std::vector<std::string>
       include_json = true;
     else
     {
-      std::cout << "unexpected argument: " << args[i] << std::endl;
+      std::cout << "Invalid syntax: Unexpected parameter: " << args[i] << ". For more details, use the help command." << std::endl;
       return true;
     }
   }
   if (args.empty())
   {
-    std::cout << "expected: print_tx <transaction_hash> [+meta] [+hex] [+json]" << std::endl;
+    std::cout << "Invalid syntax: At least one parameter expected. For more details, use the help command." << std::endl;
     return true;
   }
 
@@ -290,7 +316,7 @@ bool t_command_parser_executor::is_key_image_spent(const std::vector<std::string
 {
   if (args.empty())
   {
-    std::cout << "expected: is_key_image_spent <key_image>" << std::endl;
+    std::cout << "Invalid syntax: At least one parameter expected. For more details, use the help command." << std::endl;
     return true;
   }
 
@@ -308,21 +334,30 @@ bool t_command_parser_executor::is_key_image_spent(const std::vector<std::string
 
 bool t_command_parser_executor::print_transaction_pool_long(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.print_transaction_pool_long();
 }
 
 bool t_command_parser_executor::print_transaction_pool_short(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.print_transaction_pool_short();
 }
 
 bool t_command_parser_executor::print_transaction_pool_stats(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.print_transaction_pool_stats();
 }
@@ -331,7 +366,7 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
 {
   if(!args.size())
   {
-    std::cout << "Please specify a wallet address to mine for: start_mining <addr> [<threads>|auto]" << std::endl;
+    std::cout << "Invalid syntax: At least one parameter expected. For more details, use the help command." << std::endl;
     return true;
   }
 
@@ -350,7 +385,7 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
           {
             if(!cryptonote::get_account_address_from_str(info, cryptonote::STAGENET, address_str))
             {
-              std::cout << "target account address has wrong format" << std::endl;
+              std::cout << "Invalid syntax: Target account address has wrong format. For more details, use the help command." << std::endl;
               return true;
             }
             else
@@ -386,9 +421,10 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
   bool ignore_battery = false;  
   if(args.size() > 4)
   {
-    return false;
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
+    return true;
   }
-  
+
   if(args.size() == 4)
   {
     if(args[3] == "true" || command_line::is_yes(args[3]) || args[3] == "1")
@@ -397,10 +433,11 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
     }
     else if(args[3] != "false" && !command_line::is_no(args[3]) && args[3] != "0")
     {
-      return false;
+      std::cout << "Invalid syntax: Invalid combination of parameters. For more details, use the help command." << std::endl;
+      return true;
     }
-  }  
-  
+  }
+
   if(args.size() >= 3)
   {
     if(args[2] == "true" || command_line::is_yes(args[2]) || args[2] == "1")
@@ -409,10 +446,11 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
     }
     else if(args[2] != "false" && !command_line::is_no(args[2]) && args[2] != "0")
     {
-      return false;
+      std::cout << "Invalid syntax: Invalid combination of parameters. For more details, use the help command." << std::endl;
+      return true;
     }
   }
-  
+
   if(args.size() >= 2)
   {
     if (args[1] == "auto" || args[1] == "autodetect")
@@ -433,7 +471,10 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
 
 bool t_command_parser_executor::stop_mining(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.stop_mining();
 }
@@ -445,21 +486,31 @@ bool t_command_parser_executor::mining_status(const std::vector<std::string>& ar
 
 bool t_command_parser_executor::stop_daemon(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.stop_daemon();
 }
 
 bool t_command_parser_executor::print_status(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.print_status();
 }
 
 bool t_command_parser_executor::set_limit(const std::vector<std::string>& args)
 {
-  if(args.size()>1) return false;
+  if(args.size()>1) {
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
+    return true;
+  }
+
   if(args.size()==0) {
     return m_executor.get_limit();
   }
@@ -468,8 +519,8 @@ bool t_command_parser_executor::set_limit(const std::vector<std::string>& args)
       limit = std::stoll(args[0]);
   }
   catch(const std::exception& ex) {
-      std::cout << "failed to parse argument" << std::endl;
-      return false;
+      std::cout << "Invalid syntax: Failed to parse limit. For more details, use the help command." << std::endl;
+      return true;
   }
 
   return m_executor.set_limit(limit, limit);
@@ -477,7 +528,11 @@ bool t_command_parser_executor::set_limit(const std::vector<std::string>& args)
 
 bool t_command_parser_executor::set_limit_up(const std::vector<std::string>& args)
 {
-  if(args.size()>1) return false;
+  if(args.size()>1) {
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
+    return true;
+  }
+
   if(args.size()==0) {
     return m_executor.get_limit_up();
   }
@@ -486,8 +541,8 @@ bool t_command_parser_executor::set_limit_up(const std::vector<std::string>& arg
       limit = std::stoll(args[0]);
   }
   catch(const std::exception& ex) {
-      std::cout << "failed to parse argument" << std::endl;
-      return false;
+      std::cout << "Invalid syntax: Failed to parse limit. For more details, use the help command." << std::endl;
+      return true;
   }
 
   return m_executor.set_limit(0, limit);
@@ -495,7 +550,11 @@ bool t_command_parser_executor::set_limit_up(const std::vector<std::string>& arg
 
 bool t_command_parser_executor::set_limit_down(const std::vector<std::string>& args)
 {
-  if(args.size()>1) return false;
+  if(args.size()>1) {
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
+    return true;
+  }
+
   if(args.size()==0) {
     return m_executor.get_limit_down();
   }
@@ -504,8 +563,8 @@ bool t_command_parser_executor::set_limit_down(const std::vector<std::string>& a
       limit = std::stoll(args[0]);
   }
   catch(const std::exception& ex) {
-      std::cout << "failed to parse argument" << std::endl;
-      return false;
+      std::cout << "Invalid syntax: Failed to parse limit. For more details, use the help command." << std::endl;
+      return true;
   }
 
   return m_executor.set_limit(limit, 0);
@@ -522,12 +581,13 @@ bool t_command_parser_executor::out_peers(const std::vector<std::string>& args)
 			set = true;
 		}
 	}
-	  
+
 	catch(const std::exception& ex) {
 		_erro("stoi exception");
-		return false;
+		std::cout << "Invalid syntax: Failed to parse number. For more details, use the help command." << std::endl;
+		return true;
 	}
-	
+
 	return m_executor.out_peers(set, limit);
 }
 
@@ -545,7 +605,8 @@ bool t_command_parser_executor::in_peers(const std::vector<std::string>& args)
 
 	catch(const std::exception& ex) {
 		_erro("stoi exception");
-		return false;
+		std::cout << "Invalid syntax: Failed to parse number." << std::endl;
+		return true;
 	}
 
 	return m_executor.in_peers(set, limit);
@@ -562,26 +623,37 @@ bool t_command_parser_executor::hard_fork_info(const std::vector<std::string>& a
       version = std::stoi(args[0]);
     }
     catch(const std::exception& ex) {
-        return false;
+        std::cout << "Invalid syntax: Failed to parse version number. For more details, use the help command." << std::endl;
+        return true;
     }
-    if (version <= 0 || version > 255)
-      return false;
+    if (version <= 0 || version > 255) {
+      std::cout << "Invalid syntax: Unknown version number. Must be between 0 and 255. For more details, use the help command." << std::endl;
+      return true;
+    }
   }
   else {
-    return false;
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
+    return true;
   }
   return m_executor.hard_fork_info(version);
 }
 
 bool t_command_parser_executor::show_bans(const std::vector<std::string>& args)
 {
-  if (!args.empty()) return false;
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
+
   return m_executor.print_bans();
 }
 
 bool t_command_parser_executor::ban(const std::vector<std::string>& args)
 {
-  if (args.size() != 1 && args.size() != 2) return false;
+  if (args.size() != 1 && args.size() != 2) {
+    std::cout << "Invalid syntax: Expects one or two parameters. For more details, use the help command." << std::endl;
+    return true;
+  }
   std::string ip = args[0];
   time_t seconds = P2P_IP_BLOCKTIME;
   if (args.size() > 1)
@@ -592,11 +664,13 @@ bool t_command_parser_executor::ban(const std::vector<std::string>& args)
     }
     catch (const std::exception &e)
     {
-      return false;
+      std::cout << "Invalid syntax: Failed to parse seconds. For more details, use the help command." << std::endl;
+      return true;
     }
     if (seconds == 0)
     {
-      return false;
+      std::cout << "Seconds must be greater than 0." << std::endl;
+      return true;
     }
   }
   return m_executor.ban(ip, seconds);
@@ -604,21 +678,31 @@ bool t_command_parser_executor::ban(const std::vector<std::string>& args)
 
 bool t_command_parser_executor::unban(const std::vector<std::string>& args)
 {
-  if (args.size() != 1) return false;
+  if (args.size() != 1) {
+    std::cout << "Invalid syntax: One parameter expected. For more details, use the help command." << std::endl;
+    return true;
+  }
+
   std::string ip = args[0];
   return m_executor.unban(ip);
 }
 
 bool t_command_parser_executor::banned(const std::vector<std::string>& args)
 {
-  if (args.size() != 1) return false;
+  if (args.size() != 1) {
+    std::cout << "Invalid syntax: One parameter expected. For more details, use the help command." << std::endl;
+    return true;
+  }
   std::string address = args[0];
   return m_executor.banned(address);
 }
 
 bool t_command_parser_executor::flush_txpool(const std::vector<std::string>& args)
 {
-  if (args.size() > 1) return false;
+  if (args.size() > 1) {
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   std::string txid;
   if (args.size() == 1)
@@ -626,7 +710,7 @@ bool t_command_parser_executor::flush_txpool(const std::vector<std::string>& arg
     crypto::hash hash;
     if (!parse_hash256(args[0], hash))
     {
-      std::cout << "failed to parse tx id" << std::endl;
+      std::cout << "Invalid syntax: Failed to parse tx id. For more details, use the help command." << std::endl;
       return true;
     }
     txid = args[0];
@@ -659,7 +743,7 @@ bool t_command_parser_executor::output_histogram(const std::vector<std::string>&
     }
     else
     {
-      std::cout << "Invalid syntax: more than two non-amount parameters" << std::endl;
+      std::cout << "Invalid syntax: More than two non-amount parameters. For more details, use the help command." << std::endl;
       return true;
     }
   }
@@ -670,20 +754,21 @@ bool t_command_parser_executor::print_coinbase_tx_sum(const std::vector<std::str
 {
   if(!args.size())
   {
-    std::cout << "need block height parameter" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: At least one parameter expected. For more details, use the help command." << std::endl;
+    return true;
   }
+
   uint64_t height = 0;
   uint64_t count = 0;
   if(!epee::string_tools::get_xtype_from_string(height, args[0]))
   {
-    std::cout << "wrong starter block height parameter" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: Wrong starter block height parameter. For more details, use the help command." << std::endl;
+    return true;
   }
   if(args.size() >1 && !epee::string_tools::get_xtype_from_string(count, args[1]))
   {
     std::cout << "wrong count parameter" << std::endl;
-    return false;
+    return true;
   }
 
   return m_executor.print_coinbase_tx_sum(height, count);
@@ -693,8 +778,8 @@ bool t_command_parser_executor::alt_chain_info(const std::vector<std::string>& a
 {
   if(args.size() > 1)
   {
-    std::cout << "usage: alt_chain_info [block_hash|>N|-N]" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
+    return true;
   }
 
   std::string tip;
@@ -706,16 +791,16 @@ bool t_command_parser_executor::alt_chain_info(const std::vector<std::string>& a
     {
       if (!epee::string_tools::get_xtype_from_string(above, args[0].c_str() + 1))
       {
-        std::cout << "invalid above parameter" << std::endl;
-        return false;
+        std::cout << "Invalid syntax: Invalid above parameter. For more details, use the help command." << std::endl;
+        return true;
       }
     }
     else if (args[0].size() > 0 && args[0][0] == '-')
     {
       if (!epee::string_tools::get_xtype_from_string(last_blocks, args[0].c_str() + 1))
       {
-        std::cout << "invalid last_blocks parameter" << std::endl;
-        return false;
+        std::cout << "Invalid syntax: Invalid last_blocks parameter. For more details, use the help command." << std::endl;
+        return true;
       }
     }
     else
@@ -731,15 +816,15 @@ bool t_command_parser_executor::print_blockchain_dynamic_stats(const std::vector
 {
   if(args.size() != 1)
   {
-    std::cout << "Exactly one parameter is needed" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: One parameter expected. For more details, use the help command." << std::endl;
+    return true;
   }
 
   uint64_t nblocks = 0;
   if(!epee::string_tools::get_xtype_from_string(nblocks, args[0]) || nblocks == 0)
   {
-    std::cout << "wrong number of blocks" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: Wrong number of blocks. For more details, use the help command." << std::endl;
+    return true;
   }
 
   return m_executor.print_blockchain_dynamic_stats(nblocks);
@@ -747,13 +832,17 @@ bool t_command_parser_executor::print_blockchain_dynamic_stats(const std::vector
 
 bool t_command_parser_executor::relay_tx(const std::vector<std::string>& args)
 {
-  if (args.size() != 1) return false;
+  if (args.size() != 1)
+  {
+    std::cout << "Invalid syntax: One parameter expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   std::string txid;
   crypto::hash hash;
   if (!parse_hash256(args[0], hash))
   {
-    std::cout << "failed to parse tx id" << std::endl;
+    std::cout << "Invalid syntax: Failed to parse tx id. For more details, use the help command." << std::endl;
     return true;
   }
   txid = args[0];
@@ -762,7 +851,10 @@ bool t_command_parser_executor::relay_tx(const std::vector<std::string>& args)
 
 bool t_command_parser_executor::sync_info(const std::vector<std::string>& args)
 {
-  if (args.size() != 0) return false;
+  if (args.size() != 0) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   return m_executor.sync_info();
 }
@@ -771,8 +863,8 @@ bool t_command_parser_executor::pop_blocks(const std::vector<std::string>& args)
 {
   if (args.size() != 1)
   {
-    std::cout << "Exactly one parameter is needed" << std::endl;
-    return false;
+    std::cout << "Invalid syntax: One parameter expected. For more details, use the help command." << std::endl;
+    return true;
   }
 
   try
@@ -780,16 +872,16 @@ bool t_command_parser_executor::pop_blocks(const std::vector<std::string>& args)
     uint64_t nblocks = boost::lexical_cast<uint64_t>(args[0]);
     if (nblocks < 1)
     {
-      std::cout << "number of blocks must be greater than 0" << std::endl;
-      return false;
+      std::cout << "Invalid syntax: Number of blocks must be greater than 0. For more details, use the help command." << std::endl;
+      return true;
     }
     return m_executor.pop_blocks(nblocks);
   }
   catch (const boost::bad_lexical_cast&)
   {
-    std::cout << "number of blocks must be a number greater than 0" << std::endl;
+    std::cout << "Invalid syntax: Number of blocks must be a number greater than 0. For more details, use the help command." << std::endl;
   }
-  return false;
+  return true;
 }
 
 bool t_command_parser_executor::version(const std::vector<std::string>& args)
@@ -799,7 +891,11 @@ bool t_command_parser_executor::version(const std::vector<std::string>& args)
 
 bool t_command_parser_executor::prune_blockchain(const std::vector<std::string>& args)
 {
-  if (args.size() > 1) return false;
+  if (args.size() > 1)
+  {
+    std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
+    return true;
+  }
 
   if (args.empty() || args[0] != "confirm")
   {
