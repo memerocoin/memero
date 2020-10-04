@@ -60,7 +60,7 @@ namespace Monero {
 
 namespace {
     // copy-pasted from simplewallet
-    static const size_t DEFAULT_MIXIN = 21;
+    static const size_t DEFAULT_MIXIN = CRYPTONOTE_DEFAULT_MIXIN;
     static const int    DEFAULT_REFRESH_INTERVAL_MILLIS = 1000 * 10;
     // limit maximum refresh interval as one minute
     static const int    MAX_REFRESH_INTERVAL_MILLIS = 1000 * 60 * 1;

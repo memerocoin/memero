@@ -3115,7 +3115,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     size_t n_unmixable = 0, n_mixable = 0;
     size_t min_actual_mixin = std::numeric_limits<size_t>::max();
     size_t max_actual_mixin = 0;
-    const size_t min_mixin = hf_version >= HF_VERSION_MIN_MIXIN_21 ? 21 : hf_version >= HF_VERSION_MIN_MIXIN_7 ? 7 : hf_version >= HF_VERSION_MIN_MIXIN_4 ? 4 : 2;
+    const size_t min_mixin = CRYPTONOTE_DEFAULT_MIXIN;
     for (const auto& txin : tx.vin)
     {
       // non txin_to_key inputs will be rejected below
@@ -3158,9 +3158,9 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       }
     }
 
-    if (((hf_version == HF_VERSION_MIN_MIXIN_21 || hf_version == HF_VERSION_MIN_MIXIN_21+1) && min_actual_mixin != 21) || (hf_version >= HF_VERSION_MIN_MIXIN_21+2 && min_actual_mixin > 21))
+    if ((hf_version >= HF_VERSION_MIN_MIXIN_31) && (min_actual_mixin != 31))
     {
-      MERROR_VER("Tx " << get_transaction_hash(tx) << " has invalid ring size (" << (min_actual_mixin + 1) << "), it should be 22");
+      MERROR_VER("Tx " << get_transaction_hash(tx) << " has invalid ring size (" << (min_actual_mixin + 1) << "), it should be 32");
       tvc.m_low_mixin = true;
       return false;
     }

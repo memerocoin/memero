@@ -7495,16 +7495,12 @@ int wallet2::get_fee_algorithm()
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_min_ring_size()
 {
-  if (use_fork_rules(8, 10))
-    return 22;
-  return 0;
+  return CRYPTONOTE_DEFAULT_MIXIN + 1;
 }
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_max_ring_size()
 {
-  if (use_fork_rules(8, 10))
-    return 22;
-  return 0;
+  return CRYPTONOTE_DEFAULT_MIXIN + 1;
 }
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::adjust_mixin(uint64_t mixin)
