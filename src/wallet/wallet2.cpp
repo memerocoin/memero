@@ -3584,9 +3584,9 @@ bool wallet2::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t>
     const boost::lock_guard<boost::recursive_mutex> lock{m_daemon_rpc_mutex};
     uint64_t pre_call_credits = m_rpc_payment_state.credits;
     req.client = get_client_signature();
-    r = net_utils::invoke_http_bin("/get_output_distribution.bin", req, res, *m_http_client, rpc_timeout);
-    THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution.bin");
-    check_rpc_cost("/get_output_distribution.bin", res.credits, pre_call_credits, COST_PER_OUTPUT_DISTRIBUTION_0);
+    r = net_utils::invoke_http_json("/get_output_distribution", req, res, *m_http_client, rpc_timeout);
+    THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
+    check_rpc_cost("/get_output_distribution", res.credits, pre_call_credits, COST_PER_OUTPUT_DISTRIBUTION_0);
   }
   catch(...)
   {
