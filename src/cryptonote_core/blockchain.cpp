@@ -1363,6 +1363,7 @@ uint64_t Blockchain::get_long_term_block_weight_median(uint64_t start_height, si
 
   PERF_TIMER(get_long_term_block_weights);
 
+  if (count == 0) return 0;
   CHECK_AND_ASSERT_THROW_MES(count > 0, "count == 0");
 
   bool cached = false;
