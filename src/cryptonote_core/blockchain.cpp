@@ -4505,7 +4505,6 @@ void Blockchain::set_enforce_dns_checkpoints(bool enforce_checkpoints)
 void Blockchain::block_longhash_worker(uint64_t height, const epee::span<const block> &blocks, std::unordered_map<crypto::hash, crypto::hash> &map) const
 {
   TIME_MEASURE_START(t);
-  slow_hash_allocate_state();
 
   for (const auto & block : blocks)
   {
@@ -4516,7 +4515,6 @@ void Blockchain::block_longhash_worker(uint64_t height, const epee::span<const b
     map.emplace(id, pow);
   }
 
-  slow_hash_free_state();
   TIME_MEASURE_FINISH(t);
 }
 
