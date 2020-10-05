@@ -1489,18 +1489,11 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       CHECK_AND_ASSERT_MES(get_block_by_hash(*from_block, prev_block), false, "From block not found"); // TODO
       uint64_t from_block_height = cryptonote::get_block_height(prev_block);
       height = from_block_height + 1;
-      if (m_hardfork->get_current_version() >= RX_BLOCK_VERSION)
-      {
-        uint64_t next_height;
-        crypto::rx_seedheights(height, &seed_height, &next_height);
-        seed_hash = get_block_id_by_height(seed_height);
-      }
     }
     else
     {
       height = alt_chain.back().height + 1;
       uint64_t next_height;
-      crypto::rx_seedheights(height, &seed_height, &next_height);
 
       if (alt_chain.size() && alt_chain.front().height <= seed_height)
       {
@@ -1551,12 +1544,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     median_weight = m_current_block_cumul_weight_limit / 2;
     diffic = get_difficulty_for_next_block();
     already_generated_coins = m_db->get_block_already_generated_coins(height - 1);
-    if (m_hardfork->get_current_version() >= RX_BLOCK_VERSION)
-    {
-      uint64_t next_height;
-      crypto::rx_seedheights(height, &seed_height, &next_height);
-      seed_hash = get_block_id_by_height(seed_height);
-    }
   }
   b.timestamp = time(NULL);
 
@@ -1862,27 +1849,6 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     CHECK_AND_ASSERT_MES(current_diff, false, "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!");
     crypto::hash proof_of_work;
     memset(proof_of_work.data, 0xff, sizeof(proof_of_work.data));
-    if (b.major_version >= RX_BLOCK_VERSION)
-    {
-      crypto::hash seedhash = null_hash;
-      uint64_t seedheight = rx_seedheight(bei.height);
-      // seedblock is on the alt chain somewhere
-      if (alt_chain.size() && alt_chain.front().height <= seedheight)
-      {
-        for (auto it=alt_chain.begin(); it != alt_chain.end(); it++)
-        {
-          if (it->height == seedheight+1)
-          {
-            seedhash = it->bl.prev_id;
-            break;
-          }
-        }
-      } else
-      {
-        seedhash = get_block_id_by_height(seedheight);
-      }
-      get_altblock_longhash(bei.bl, proof_of_work, get_current_blockchain_height(), bei.height, seedheight, seedhash);
-    } else
     {
       get_block_longhash(this, bei.bl, proof_of_work, bei.height, 0);
     }

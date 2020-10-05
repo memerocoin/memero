@@ -1765,12 +1765,6 @@ namespace cryptonote
     crypto::hash seed_hash, next_seed_hash;
     if (!get_block_template(info.address, req.prev_block.empty() ? NULL : &prev_block, blob_reserve, reserved_offset, wdiff, res.height, res.expected_reward, b, res.seed_height, seed_hash, next_seed_hash, error_resp))
       return false;
-    if (b.major_version >= RX_BLOCK_VERSION)
-    {
-      res.seed_hash = string_tools::pod_to_hex(seed_hash);
-      if (seed_hash != next_seed_hash)
-        res.next_seed_hash = string_tools::pod_to_hex(next_seed_hash);
-    }
 
     res.reserved_offset = reserved_offset;
     res.unlock_height = b.miner_tx.unlock_time;
@@ -1890,12 +1884,6 @@ namespace cryptonote
       }
       b.nonce = req.starting_nonce;
       crypto::hash seed_hash = crypto::null_hash;
-      if (b.major_version >= RX_BLOCK_VERSION && !epee::string_tools::hex_to_pod(template_res.seed_hash, seed_hash))
-      {
-        error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-        error_resp.message = "Error converting seed hash";
-        return false;
-      }
       miner::find_nonce_for_given_block([this](const cryptonote::block &b, uint64_t height, const crypto::hash *seed_hash, unsigned int threads, crypto::hash &hash) {
         return cryptonote::get_block_longhash(&(m_core.get_blockchain_storage()), b, hash, height, seed_hash, threads);
       }, b, template_res.difficulty, template_res.height, &seed_hash);
@@ -3066,12 +3054,6 @@ namespace cryptonote
     }
     res.hashing_blob = epee::string_tools::buff_to_hex_nodelimer(hashing_blob);
     res.top_hash = epee::string_tools::pod_to_hex(top_hash);
-    if (hashing_blob[0] >= RX_BLOCK_VERSION)
-    {
-      res.seed_hash = string_tools::pod_to_hex(seed_hash);
-      if (seed_hash != next_seed_hash)
-        res.next_seed_hash = string_tools::pod_to_hex(next_seed_hash);
-    }
 
     res.status = CORE_RPC_STATUS_OK;
     return true;

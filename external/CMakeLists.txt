@@ -31,4 +31,3 @@
 add_subdirectory(db_drivers)
 add_subdirectory(easylogging++)
 add_subdirectory(qrcodegen)
-add_subdirectory(RandomWOW EXCLUDE_FROM_ALL)

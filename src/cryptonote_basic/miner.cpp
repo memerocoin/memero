@@ -436,7 +436,6 @@ namespace cryptonote
   {
     boost::interprocess::ipcdetail::atomic_write32(&m_stop, 1);
   }
-  extern "C" void rx_stop_mining(void);
   //-----------------------------------------------------------------------------------------------------
   bool miner::stop()
   {
@@ -469,7 +468,6 @@ namespace cryptonote
     MINFO("Mining has been stopped, " << m_threads.size() << " finished" );
     m_threads.clear();
     m_threads_autodetect.clear();
-    rx_stop_mining();
     return true;
   }
   //-----------------------------------------------------------------------------------------------------
