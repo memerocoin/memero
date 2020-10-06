@@ -28,7 +28,6 @@
 
 set(crypto_sources
   aesb.c
-  blake256.c
   chacha.c
   crypto-ops-data.c
   crypto-ops.c
@@ -39,7 +38,6 @@ set(crypto_sources
   hash-extra-jh.c
   hash-extra-skein.c
   hash.c
-  hmac-keccak.c
   jh.c
   keccak.c
   oaes_lib.c
@@ -54,7 +52,6 @@ endif()
 set(crypto_headers)
 
 set(crypto_private_headers
-  blake256.h
   chacha.h
   crypto-ops.h
   crypto.h
@@ -63,7 +60,6 @@ set(crypto_private_headers
   groestl_tables.h
   hash-ops.h
   hash.h
-  hmac-keccak.h
   initializer.h
   jh.h
   keccak.h
