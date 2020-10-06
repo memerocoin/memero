@@ -41,7 +41,7 @@
 
 extern "C" {
 #include "crypto/random.h"
-#include "crypto/keccak.h"
+#include "crypto/sha3.h"
 #include "rctCryptoOps.h"
 }
 #include "crypto/crypto.h"

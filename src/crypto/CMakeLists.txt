@@ -64,6 +64,7 @@ set(crypto_private_headers
   initializer.h
   jh.h
   keccak.h
+  sha3.h
   oaes_config.h
   oaes_lib.h
   random.h

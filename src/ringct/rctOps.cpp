@@ -559,7 +559,7 @@ namespace rct {
     //be careful these are also in crypto namespace
     //cn_fast_hash for arbitrary multiples of 32 bytes
     void cn_fast_hash(key &hash, const void * data, const std::size_t l) {
-        keccak((const uint8_t *)data, l, hash.bytes, 32);
+        sha3_as_keccak_256((const uint8_t *)data, l, hash.bytes);
     }
     
     void hash_to_scalar(key &hash, const void * data, const std::size_t l) {
@@ -569,7 +569,7 @@ namespace rct {
 
     //cn_fast_hash for a 32 byte key
     void cn_fast_hash(key & hash, const key & in) {
-        keccak((const uint8_t *)in.bytes, 32, hash.bytes, 32);
+        sha3_as_keccak_256((const uint8_t *)in.bytes, 32, hash.bytes);
     }
     
     void hash_to_scalar(key & hash, const key & in) {
@@ -580,7 +580,7 @@ namespace rct {
     //cn_fast_hash for a 32 byte key
     key cn_fast_hash(const key & in) {
         key hash;
-        keccak((const uint8_t *)in.bytes, 32, hash.bytes, 32);
+        sha3_as_keccak_256((const uint8_t *)in.bytes, 32, hash.bytes);
         return hash;
     }
     
@@ -593,7 +593,7 @@ namespace rct {
     //cn_fast_hash for a 128 byte unsigned char
     key cn_fast_hash128(const void * in) {
         key hash;
-        keccak((const uint8_t *)in, 128, hash.bytes, 32);
+        sha3_as_keccak_256((const uint8_t *)in, 128, hash.bytes);
         return hash;
     }
     

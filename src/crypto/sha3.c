@@ -1,5 +1,4 @@
-#include <stddef.h>
-#include <openssl/evp.h>
+#include "sha3.h"
 
 void handleErrors(void) {
   printf("sha3 error, wow is ded\n");
@@ -28,4 +27,12 @@ void sha3(const void *data, size_t length, char *hash)
   }
 
   EVP_MD_CTX_free(mdctx);
+}
+
+void sha3_as_keccak1600(const uint8_t *in, size_t inlen, uint8_t *md) {
+  sha3((const void*) in, inlen, (char *)md);
+}
+
+void sha3_as_keccak_256(const uint8_t *in, size_t inlen, uint8_t *md) {
+  sha3((const void*) in, inlen, (char *)md);
 }

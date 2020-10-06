@@ -62,6 +62,7 @@ using namespace epee;
 #include "int-util.h"
 #include "profile_tools.h"
 #include "crypto/crypto.h"
+#include "crypto/sha3.h"
 #include "serialization/binary_utils.h"
 #include "serialization/string.h"
 #include "cryptonote_basic/blobdatatype.h"
@@ -86,7 +87,6 @@ using namespace epee;
 
 extern "C"
 {
-#include "crypto/keccak.h"
 #include "crypto/crypto-ops.h"
 }
 using namespace std;
@@ -1354,7 +1354,7 @@ bool wallet2::init(std::string daemon_address, boost::optional<epee::net_utils::
 bool wallet2::is_deterministic() const
 {
   crypto::secret_key second;
-  keccak((uint8_t *)&get_account().get_keys().m_spend_secret_key, sizeof(crypto::secret_key), (uint8_t *)&second, sizeof(crypto::secret_key));
+  sha3_as_keccak_256((uint8_t *)&get_account().get_keys().m_spend_secret_key, sizeof(crypto::secret_key), (uint8_t *)&second);
   sc_reduce32((uint8_t *)&second);
   return memcmp(second.data,get_account().get_keys().m_view_secret_key.data, sizeof(crypto::secret_key)) == 0;
 }
@@ -12206,20 +12206,21 @@ void wallet2::set_account_tag_description(const std::string& tag, const std::str
 // Hash data: domain separator, spend public key, view public key, mode identifier, payload data
 static crypto::hash get_message_hash(const std::string &data, const crypto::public_key &spend_key, const crypto::public_key &view_key, const uint8_t mode)
 {
-  KECCAK_CTX ctx;
-  keccak_init(&ctx);
-  keccak_update(&ctx, (const uint8_t*)config::HASH_KEY_MESSAGE_SIGNING, sizeof(config::HASH_KEY_MESSAGE_SIGNING)); // includes NUL
-  keccak_update(&ctx, (const uint8_t*)&spend_key, sizeof(crypto::public_key));
-  keccak_update(&ctx, (const uint8_t*)&view_key, sizeof(crypto::public_key));
-  keccak_update(&ctx, (const uint8_t*)&mode, sizeof(uint8_t));
+  EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+  EVP_DigestInit_ex(ctx, EVP_sha3_256(), NULL);
+  EVP_DigestUpdate(ctx, (const uint8_t*)config::HASH_KEY_MESSAGE_SIGNING, sizeof(config::HASH_KEY_MESSAGE_SIGNING)); // includes NUL
+  EVP_DigestUpdate(ctx, (const uint8_t*)&spend_key, sizeof(crypto::public_key));
+  EVP_DigestUpdate(ctx, (const uint8_t*)&view_key, sizeof(crypto::public_key));
+  EVP_DigestUpdate(ctx, (const uint8_t*)&mode, sizeof(uint8_t));
   char len_buf[(sizeof(size_t) * 8 + 6) / 7];
   char *ptr = len_buf;
   tools::write_varint(ptr, data.size());
   CHECK_AND_ASSERT_THROW_MES(ptr > len_buf && ptr <= len_buf + sizeof(len_buf), "Length overflow");
-  keccak_update(&ctx, (const uint8_t*)len_buf, ptr - len_buf);
-  keccak_update(&ctx, (const uint8_t*)data.data(), data.size());
+  EVP_DigestUpdate(ctx, (const uint8_t*)len_buf, ptr - len_buf);
+  EVP_DigestUpdate(ctx, (const uint8_t*)data.data(), data.size());
   crypto::hash hash;
-  keccak_finish(&ctx, (uint8_t*)&hash);
+  EVP_DigestFinal(ctx, (uint8_t*)&hash, NULL);
+  EVP_MD_CTX_free(ctx);
   return hash;
 }
 
@@ -14043,36 +14044,38 @@ bool wallet2::load_from_file(const std::string& path_to_file, std::string& targe
 //----------------------------------------------------------------------------------------------------
 void wallet2::hash_m_transfer(const transfer_details & transfer, crypto::hash &hash) const
 {
-  KECCAK_CTX state;
-  keccak_init(&state);
-  keccak_update(&state, (const uint8_t *) transfer.m_txid.data, sizeof(transfer.m_txid.data));
-  keccak_update(&state, (const uint8_t *) transfer.m_internal_output_index, sizeof(transfer.m_internal_output_index));
-  keccak_update(&state, (const uint8_t *) transfer.m_global_output_index, sizeof(transfer.m_global_output_index));
-  keccak_update(&state, (const uint8_t *) transfer.m_amount, sizeof(transfer.m_amount));
-  keccak_finish(&state, (uint8_t *) hash.data);
+  EVP_MD_CTX *state= EVP_MD_CTX_new();
+  EVP_DigestInit_ex(state, EVP_sha3_256(), NULL);
+  EVP_DigestUpdate(state, (const uint8_t *) transfer.m_txid.data, sizeof(transfer.m_txid.data));
+  EVP_DigestUpdate(state, (const uint8_t *) transfer.m_internal_output_index, sizeof(transfer.m_internal_output_index));
+  EVP_DigestUpdate(state, (const uint8_t *) transfer.m_global_output_index, sizeof(transfer.m_global_output_index));
+  EVP_DigestUpdate(state, (const uint8_t *) transfer.m_amount, sizeof(transfer.m_amount));
+  EVP_DigestFinal(state, (uint8_t *) hash.data, NULL);
+  EVP_MD_CTX_free(state);
 }
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::hash_m_transfers(int64_t transfer_height, crypto::hash &hash) const
 {
   CHECK_AND_ASSERT_THROW_MES(transfer_height > (int64_t)m_transfers.size(), "Hash height is greater than number of transfers");
 
-  KECCAK_CTX state;
+  EVP_MD_CTX *state= EVP_MD_CTX_new();
   crypto::hash tmp_hash{};
   uint64_t current_height = 0;
 
-  keccak_init(&state);
+  EVP_DigestInit_ex(state, EVP_sha3_256(), NULL);
   for(const transfer_details & transfer : m_transfers){
     if (transfer_height >= 0 && current_height >= (uint64_t)transfer_height){
       break;
     }
 
     hash_m_transfer(transfer, tmp_hash);
-    keccak_update(&state, (const uint8_t *) transfer.m_block_height, sizeof(transfer.m_block_height));
-    keccak_update(&state, (const uint8_t *) tmp_hash.data, sizeof(tmp_hash.data));
+    EVP_DigestUpdate(state, (const uint8_t *) transfer.m_block_height, sizeof(transfer.m_block_height));
+    EVP_DigestUpdate(state, (const uint8_t *) tmp_hash.data, sizeof(tmp_hash.data));
     current_height += 1;
   }
 
-  keccak_finish(&state, (uint8_t *) hash.data);
+  EVP_DigestFinal(state, (uint8_t *) hash.data, NULL);
+  EVP_MD_CTX_free(state);
   return current_height;
 }
 //----------------------------------------------------------------------------------------------------
