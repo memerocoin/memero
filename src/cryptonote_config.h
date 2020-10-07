@@ -201,12 +201,12 @@ namespace config
   uint64_t const DEFAULT_DUST_THRESHOLD = ((uint64_t)2000000000); // 2 * pow(10, 9)
   uint64_t const BASE_REWARD_CLAMP_THRESHOLD = ((uint64_t)100000000); // pow(10, 8)
 
-  uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 4146;
-  uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 6810;
-  uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 12208;
-  uint16_t const P2P_DEFAULT_PORT = 34567;
-  uint16_t const RPC_DEFAULT_PORT = 34568;
-  uint16_t const ZMQ_RPC_DEFAULT_PORT = 34569;
+  uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0xf0f72; // haha
+  uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0xf3; // he;
+  uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x18faf3; // hoho
+  uint16_t const P2P_DEFAULT_PORT = 45678;
+  uint16_t const RPC_DEFAULT_PORT = 45679;
+  uint16_t const ZMQ_RPC_DEFAULT_PORT = 45680;
   boost::uuids::uuid const NETWORK_ID = { {
     } }; // Bender's nightmare
   std::string const GENESIS_TX = "";
@@ -230,12 +230,12 @@ namespace config
 
   namespace testnet
   {
-    uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 53;
-    uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 54;
-    uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 63;
-    uint16_t const P2P_DEFAULT_PORT = 11180;
-    uint16_t const RPC_DEFAULT_PORT = 11181;
-    uint16_t const ZMQ_RPC_DEFAULT_PORT = 11182;
+    uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0xf4; // hp
+    uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x2ff3; // hi;
+    uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x26f4; // hs
+    uint16_t const P2P_DEFAULT_PORT = 44444;
+    uint16_t const RPC_DEFAULT_PORT = 44445;
+    uint16_t const ZMQ_RPC_DEFAULT_PORT = 44446;
     boost::uuids::uuid const NETWORK_ID = { {
         0x10, 0x42, 0xEE, 0x66, 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x11
       } }; // Bender's daydream
