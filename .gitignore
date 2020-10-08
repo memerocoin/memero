@@ -111,3 +111,4 @@ nbproject
 __pycache__/
 
 etc/task/testnet
+etc/task/mainnet

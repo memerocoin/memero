@@ -39,3 +39,39 @@ clear-test:
 	@rm -rf testnet/node_01
 	@rm -rf testnet/node_02
 	@rm testnet/test1*
+
+
+main-1:
+	../../build/bin/wownerod \
+--no-igd \
+--hide-my-port \
+--data-dir ./mainnet/node_01 \
+--p2p-bind-port 41000 \
+--rpc-bind-port 45000 \
+--add-exclusive-node 127.0.0.1:41001 \
+
+main-2:
+	../../build/bin/wownerod \
+--no-igd \
+--hide-my-port \
+--data-dir ./mainnet/node_02 \
+--p2p-bind-port 41001 \
+--rpc-bind-port 45001 \
+--log-level 1 \
+--add-exclusive-node 127.0.0.1:41000 \
+
+make-main-wallet:
+	../../build/bin/wownero-wallet-cli --generate-new-wallet mainnet/test1  \
+--daemon-address 127.0.0.1:45000 \
+--password ''
+
+
+main-wallet:
+	../../build/bin/wownero-wallet-cli --wallet-file mainnet/test1 \
+--daemon-address 127.0.0.1:45000 --log-level 4 \
+--password ''
+
+clear-main:
+	@rm -rf mainnet/node_01
+	@rm -rf mainnet/node_02
+	@rm mainnet/test1*
