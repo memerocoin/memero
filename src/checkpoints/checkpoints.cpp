@@ -72,7 +72,7 @@ namespace cryptonote
   {
   }
   //---------------------------------------------------------------------------
-  bool checkpoints::add_checkpoint(uint64_t height, const std::string& hash_str, const std::string& difficulty_str)
+  bool checkpoints::add_checkpoint(uint64_t height, const std::string& hash_str)
   {
     crypto::hash h = crypto::null_hash;
     bool r = epee::string_tools::hex_to_pod(hash_str, h);
@@ -84,23 +84,6 @@ namespace cryptonote
       CHECK_AND_ASSERT_MES(h == m_points[height], false, "Checkpoint at given height already exists, and hash for new checkpoint was different!");
     }
     m_points[height] = h;
-    if (!difficulty_str.empty())
-    {
-      try
-      {
-        difficulty_type difficulty(difficulty_str);
-        if (m_difficulty_points.count(height))
-        {
-          CHECK_AND_ASSERT_MES(difficulty == m_difficulty_points[height], false, "Difficulty checkpoint at given height already exists, and difficulty for new checkpoint was different!");
-        }
-        m_difficulty_points[height] = difficulty;
-      }
-      catch (...)
-      {
-        LOG_ERROR("Failed to parse difficulty checkpoint: " << difficulty_str);
-        return false;
-      }
-    }
     return true;
   }
   //---------------------------------------------------------------------------
@@ -160,11 +143,6 @@ namespace cryptonote
   {
     return m_points;
   }
-  //---------------------------------------------------------------------------
-  const std::map<uint64_t, difficulty_type>& checkpoints::get_difficulty_points() const
-  {
-    return m_difficulty_points;
-  }
 
   bool checkpoints::check_for_conflicts(const checkpoints& other) const
   {
@@ -199,21 +177,6 @@ namespace cryptonote
     {
       return true;
     }
-    // make RPC call to daemon
-    // curl http://127.0.0.1:34568/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":247600}}' -H 'Content-Type: application/json'
-    // "wide_cumulative_difficulty": "0x14eb4d0131fe8",
-    ADD_CHECKPOINT2(1,       "97f4ce4d7879b3bea54dcec738cd2ebb7952b4e9bb9743262310cd5fec749340", "0x2");
-    ADD_CHECKPOINT2(6969,    "aa7b66e8c461065139b55c29538a39c33ceda93e587f84d490ed573d80511c87", "0x118eef693fd");  //Hard fork to v8
-    ADD_CHECKPOINT2(53666,   "3f43f56f66ef0c43cf2fd14d0d28fa2aae0ef8f40716773511345750770f1255", "0xb677d6405ae");  //Hard fork to v9
-    ADD_CHECKPOINT2(63469,   "4e33a9343fc5b86661ec0affaeb5b5a065290602c02d817337e4a979fe5747d8", "0xe7cd9819062");  //Hard fork to v10
-    ADD_CHECKPOINT2(81769,   "41db9fef8d0ccfa78b570ee9525d4f55de77b510c3ae4b08a1d51b9aec9ade1d", "0x150066455b88"); //Hard fork to v11
-    ADD_CHECKPOINT2(82069,   "fdea800d23d0b2eea19dec8af31e453e883e8315c97e25c8bb3e88ca164f8369", "0x15079b5fdaa8"); //Hard fork to v12
-    ADD_CHECKPOINT2(114969,  "b48245956b87f243048fd61021f4b3e5443e57eee7ff8ba4762d18926e80b80c", "0x1ca552b3ec68"); //Hard fork to v13
-    ADD_CHECKPOINT2(115257,  "338e056551087fe23d6c4b4280244bc5362b004716d85ec799a775f190f9fea9", "0x1cb25f5d4628"); //Hard fork to v14
-    ADD_CHECKPOINT2(160777,  "9496690579af21f38f00e67e11c2e85a15912fe4f412aad33d1162be1579e755", "0x5376eaa196a8"); //Hard fork to v15
-    ADD_CHECKPOINT2(247600,  "f5ecf7b9d2376d7b1d4ca7843c7d39c5854b8f94c968bf9bc2072fa2e0c92ef7", "0x14eb4d0131fe8");
-    ADD_CHECKPOINT2(251200,  "e2df45d2d9a176417a0731215420e775b4f445d888c8ec4d6bbeaabead751f52", "0x163e0e5f70068");
-
     return true;
   }
 
