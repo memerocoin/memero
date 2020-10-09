@@ -217,7 +217,7 @@ EXPOSE 34568
 # Wownero
 RUN echo "\e[32mbuilding: Wownero\e[39m" \
     && set -ex \
-    && git clone https://git.wownero.com/wownero/wownero \
-    && cd wownero \
+    && git clone https://git.lolnero.com/lolnero/lolnero \
+    && cd lolnero \
     && make -j2 release-static-linux-x86_64 \
-    && echo "\e[32mdone building Wownero, binaries located in: /home/wownero/build/release/bin\e[39m"
+    && echo "\e[32mdone building Wownero, binaries located in: /home/lolnero/build/release/bin\e[39m"

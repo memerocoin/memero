@@ -999,7 +999,7 @@ namespace cryptonote
     switch (decimal_point)
     {
       case 11:
-        return "wownero";
+        return "lolnero";
       case 9:
         return "millinero";
       case 6:

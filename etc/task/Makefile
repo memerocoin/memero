@@ -1,5 +1,5 @@
 test-1:
-	../../build/bin/wownerod \
+	../../build/bin/lolnerod \
 --testnet \
 --no-igd \
 --hide-my-port \
@@ -13,7 +13,7 @@ test-1:
 # --add-exclusive-node 127.0.0.1:40002 \
 
 test-2:
-	../../build/bin/wownerod \
+	../../build/bin/lolnerod \
 --testnet \
 --no-igd \
 --hide-my-port \
@@ -26,12 +26,12 @@ test-2:
 # --fixed-difficulty 1000 \
 
 make-test-wallet:
-	../../build/bin/wownero-wallet-cli --generate-new-wallet testnet/test1 --testnet \
+	../../build/bin/lolnero-wallet-cli --generate-new-wallet testnet/test1 --testnet \
 --daemon-address 127.0.0.1:44000 \
 --password ''
 
 test-wallet:
-	../../build/bin/wownero-wallet-cli --testnet --wallet-file testnet/test1 \
+	../../build/bin/lolnero-wallet-cli --testnet --wallet-file testnet/test1 \
 --daemon-address 127.0.0.1:44000 --log-level 4 \
 --password ''
 
@@ -42,7 +42,7 @@ clear-test:
 
 
 main-1:
-	../../build/bin/wownerod \
+	../../build/bin/lolnerod \
 --no-igd \
 --hide-my-port \
 --data-dir ./mainnet/node_01 \
@@ -51,7 +51,7 @@ main-1:
 --add-exclusive-node 127.0.0.1:41001 \
 
 main-2:
-	../../build/bin/wownerod \
+	../../build/bin/lolnerod \
 --no-igd \
 --hide-my-port \
 --data-dir ./mainnet/node_02 \
@@ -70,13 +70,13 @@ main-sync:
 --add-exclusive-node 10.0.0.1 \
 
 make-main-wallet:
-	../../build/bin/wownero-wallet-cli --generate-new-wallet mainnet/test1  \
+	../../build/bin/lolnero-wallet-cli --generate-new-wallet mainnet/test1  \
 --daemon-address 127.0.0.1:45000 \
 --password ''
 
 
 main-wallet:
-	../../build/bin/wownero-wallet-cli --wallet-file mainnet/test1 \
+	../../build/bin/lolnero-wallet-cli --wallet-file mainnet/test1 \
 --daemon-address 127.0.0.1:45000 --log-level 4 \
 --password ''
 

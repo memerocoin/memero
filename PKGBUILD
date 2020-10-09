@@ -1,23 +1,23 @@
 # Maintainer: wowario <wowario[at]protonmail[dot]com>
 
-pkgname=wownero-git
+pkgname=lolnero-git
 pkgver=0.8.0.0
 pkgrel=1
 pkgdesc="Wownero: a fairly launched privacy-centric meme coin with no premine and a finite supply"
 license=('BSD')
 arch=('x86_64')
-url="https://wownero.org/"
+url="https://lolnero.org/"
 depends=('boost-libs' 'libunwind' 'openssl' 'readline' 'zeromq' 'pcsclite' 'hidapi' 'protobuf')
 makedepends=('git' 'cmake' 'boost')
 source=(
-    "${pkgname}"::"git+https://github.com/wownero/wownero#tag=v${pkgver}"
+    "${pkgname}"::"git+https://github.com/lolnero/lolnero#tag=v${pkgver}"
     "git+https://github.com/monero-project/unbound.git"
     "git+https://github.com/monero-project/miniupnp.git"
     "git+https://github.com/Tencent/rapidjson.git"
     "git+https://github.com/trezor/trezor-common.git"
-    "git+https://github.com/wownero/RandomWOW.git"
-    "wownero.sysusers"
-    "wownero.tmpfiles")
+    "git+https://github.com/lolnero/RandomWOW.git"
+    "lolnero.sysusers"
+    "lolnero.tmpfiles")
 sha512sums=('SKIP'
             'SKIP'
             'SKIP'
@@ -45,19 +45,19 @@ build() {
 }
 
 package() {
-  backup=('etc/wownerod.conf')
+  backup=('etc/lolnerod.conf')
 
   cd "${pkgname}"
   install -Dm644 "LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}"
 
-  install -Dm644 "utils/conf/wownerod.conf" "${pkgdir}/etc/wownerod.conf"
-  install -Dm644 "utils/systemd/wownerod.service" "${pkgdir}/usr/lib/systemd/system/wownerod.service"
-  install -Dm644 "../wownero.sysusers" "${pkgdir}/usr/lib/sysusers.d/wownero.conf"
-  install -Dm644 "../wownero.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/wownero.conf"
+  install -Dm644 "utils/conf/lolnerod.conf" "${pkgdir}/etc/lolnerod.conf"
+  install -Dm644 "utils/systemd/lolnerod.service" "${pkgdir}/usr/lib/systemd/system/lolnerod.service"
+  install -Dm644 "../lolnero.sysusers" "${pkgdir}/usr/lib/sysusers.d/lolnero.conf"
+  install -Dm644 "../lolnero.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/lolnero.conf"
 
-  install -Dm755 "build/bin/wownero-wallet-cli" \
-                 "build/bin/wownero-wallet-rpc" \
-                 "build/bin/wownerod" \
+  install -Dm755 "build/bin/lolnero-wallet-cli" \
+                 "build/bin/lolnero-wallet-rpc" \
+                 "build/bin/lolnerod" \
                  -t "${pkgdir}/usr/bin"
 }
 

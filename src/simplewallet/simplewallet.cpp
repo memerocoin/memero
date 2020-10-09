@@ -172,7 +172,7 @@ namespace
   const command_line::arg_descriptor<bool> arg_allow_mismatched_daemon_version = {"allow-mismatched-daemon-version", sw::tr("Allow communicating with a daemon that uses a different RPC version"), false};
   const command_line::arg_descriptor<uint64_t> arg_restore_height = {"restore-height", sw::tr("Restore from specific blockchain height"), 0};
   const command_line::arg_descriptor<std::string> arg_restore_date = {"restore-date", sw::tr("Restore from estimated blockchain height on specified date"), ""};
-  const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the wownero network"), false};
+  const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the lolnero network"), false};
   const command_line::arg_descriptor<bool> arg_create_address_file = {"create-address-file", sw::tr("Create an address file for new wallets"), false};
   const command_line::arg_descriptor<std::string> arg_subaddress_lookahead = {"subaddress-lookahead", tools::wallet2::tr("Set subaddress lookahead sizes to <major>:<minor>"), ""};
   const command_line::arg_descriptor<bool> arg_use_english_language_names = {"use-english-language-names", sw::tr("Display English language names"), false};
@@ -242,7 +242,7 @@ namespace
   const char* USAGE_MMS("mms [<subcommand> [<subcommand_parameters>]]");
   const char* USAGE_MMS_INIT("mms init <required_signers>/<authorized_signers> <own_label> <own_transport_address>");
   const char* USAGE_MMS_INFO("mms info");
-  const char* USAGE_MMS_SIGNER("mms signer [<number> <label> [<transport_address> [<wownero_address>]]]");
+  const char* USAGE_MMS_SIGNER("mms signer [<number> <label> [<transport_address> [<lolnero_address>]]]");
   const char* USAGE_MMS_LIST("mms list");
   const char* USAGE_MMS_NEXT("mms next [sync]");
   const char* USAGE_MMS_SYNC("mms sync");
@@ -1645,7 +1645,7 @@ bool simple_wallet::export_raw_multisig(const std::vector<std::string> &args)
     for (auto &ptx: txs.m_ptx)
     {
       const crypto::hash txid = cryptonote::get_transaction_hash(ptx.tx);
-      const std::string filename = std::string("raw_multisig_wownero_tx_") + epee::string_tools::pod_to_hex(txid);
+      const std::string filename = std::string("raw_multisig_lolnero_tx_") + epee::string_tools::pod_to_hex(txid);
       if (!filenames.empty())
         filenames += ", ";
       filenames += filename;
@@ -2302,7 +2302,7 @@ bool simple_wallet::welcome(const std::vector<std::string> &args)
   message_writer() << tr("Flaws in Wownero are likely, and script kiddies are dumb enough to attack the network.");
   message_writer() << tr("Be safe and practice defense in depth.");
   message_writer() << "";
-  message_writer() << tr("Welcome to Wownero and enterprise level trolling. For more information, see http://wownero.org");
+  message_writer() << tr("Welcome to Wownero and enterprise level trolling. For more information, see http://lolnero.org");
   return true;
 }
 
@@ -2679,7 +2679,7 @@ bool simple_wallet::set_unit(const std::vector<std::string> &args/* = std::vecto
   const std::string &unit = args[1];
   unsigned int decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT;
 
-  if (unit == "wownero")
+  if (unit == "lolnero")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT;
   else if (unit == "millinero")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT - 3;
@@ -3352,8 +3352,8 @@ simple_wallet::simple_wallet()
                                   "ask-password <0|1|2   (or never|action|decrypt)>\n "
                                   "  action: ask the password before many actions such as transfer, etc\n "
                                   "  decrypt: same as action, but keeps the spend key encrypted in memory when not needed\n "
-                                  "unit <wownero|millinero|micronero|nanonero|piconero>\n "
-                                  "  Set the default wownero (sub-)unit.\n "
+                                  "unit <lolnero|millinero|micronero|nanonero|piconero>\n "
+                                  "  Set the default lolnero (sub-)unit.\n "
                                   "min-outputs-count [n]\n "
                                   "  Try to keep at least that many outputs of value at least min-outputs-value.\n "
                                   "min-outputs-value [n]\n "
@@ -3387,7 +3387,7 @@ simple_wallet::simple_wallet()
                                   "track-uses <1|0>\n "
                                   "  Whether to keep track of owned outputs uses.\n "
                                   "setup-background-mining <1|0>\n "
-                                  "  Whether to enable background mining. Set this to support the network and to get a chance to receive new wownero.\n "
+                                  "  Whether to enable background mining. Set this to support the network and to get a chance to receive new lolnero.\n "
                                   "device-name <device_name[:device_spec]>\n "
                                   "  Device name for hardware wallet.\n "
                                   "export-format <\"binary\"|\"ascii\">\n "
@@ -3851,7 +3851,7 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("refresh-type", set_refresh_type, tr("full (slowest, no assumptions); optimize-coinbase (fast, assumes the whole coinbase is paid to a single address); no-coinbase (fastest, assumes we receive no coinbase transaction), default (same as optimize-coinbase)"));
     CHECK_SIMPLE_VARIABLE("priority", set_default_priority, tr("0, 1, 2, 3, or 4, or one of ") << join_priority_strings(", "));
     CHECK_SIMPLE_VARIABLE("ask-password", set_ask_password, tr("0|1|2 (or never|action|decrypt)"));
-    CHECK_SIMPLE_VARIABLE("unit", set_unit, tr("wownero, millinero, micronero, nanonero, piconero"));
+    CHECK_SIMPLE_VARIABLE("unit", set_unit, tr("lolnero, millinero, micronero, nanonero, piconero"));
     CHECK_SIMPLE_VARIABLE("min-outputs-count", set_min_output_count, tr("unsigned integer"));
     CHECK_SIMPLE_VARIABLE("min-outputs-value", set_min_output_value, tr("amount"));
     CHECK_SIMPLE_VARIABLE("merge-destinations", set_merge_destinations, tr("0 or 1"));
@@ -4898,7 +4898,7 @@ boost::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::pr
     "Use the \"help\" command to see a simplified list of available commands.\n"
     "Use \"help all\" command to see the list of all available commands.\n"
     "Use \"help <command>\" to see a command's documentation.\n"
-    "Always use the \"exit\" command when closing wownero-wallet-cli to save \n"
+    "Always use the \"exit\" command when closing lolnero-wallet-cli to save \n"
     "your current session's state. Otherwise, you might need to synchronize \n"
     "your wallet again (your wallet keys are NOT at risk in any case).\n")
   ;
@@ -5344,7 +5344,7 @@ void simple_wallet::check_background_mining(const epee::wipeable_string &passwor
   {
     message_writer() << tr("The daemon is not set up to background mine.");
     message_writer() << tr("With background mining enabled, the daemon will mine when idle and not on battery.");
-    message_writer() << tr("Enabling this supports the network you are using, and makes you eligible for receiving new wownero");
+    message_writer() << tr("Enabling this supports the network you are using, and makes you eligible for receiving new lolnero");
     std::string accepted = input_line(tr("Do you want to do it now? (Y/Yes/N/No): "));
     if (std::cin.eof() || !command_line::is_yes(accepted)) {
       m_wallet->setup_background_mining(tools::wallet2::BackgroundMiningNo);
@@ -6566,7 +6566,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     }
     else
     {
-      if (boost::starts_with(local_args[i], "wownero:"))
+      if (boost::starts_with(local_args[i], "lolnero:"))
         fail_msg_writer() << tr("Invalid last argument: ") << local_args.back() << ": " << error;
       else
         fail_msg_writer() << tr("Invalid last argument: ") << local_args.back();
@@ -6803,7 +6803,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     }
     else if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_wownero_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_lolnero_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
@@ -6811,7 +6811,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_wownero_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_lolnero_tx";
       }
     }
     else if (m_wallet->get_account().get_device().has_tx_cold_sign())
@@ -6840,7 +6840,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_wownero_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
@@ -6848,7 +6848,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_wownero_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_lolnero_tx";
       }
     }
     else
@@ -6942,26 +6942,26 @@ bool simple_wallet::sweep_unmixable(const std::vector<std::string> &args_)
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_wownero_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_lolnero_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_wownero_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_lolnero_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_wownero_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_wownero_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_lolnero_tx";
       }
     }
     else
@@ -7246,14 +7246,14 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_wownero_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_lolnero_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_wownero_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_lolnero_tx";
       }
     }
     else if (m_wallet->get_account().get_device().has_tx_cold_sign())
@@ -7283,14 +7283,14 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_wownero_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_wownero_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_lolnero_tx";
       }
     }
     else
@@ -7481,14 +7481,14 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_wownero_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_lolnero_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_wownero_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_lolnero_tx";
       }
     }
     else if (m_wallet->get_account().get_device().has_tx_cold_sign())
@@ -7519,14 +7519,14 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_wownero_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_wownero_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_lolnero_tx";
       }
     }
     else
@@ -7646,7 +7646,7 @@ bool simple_wallet::donate(const std::vector<std::string> &args_)
   if (!payment_id_str.empty())
     local_args.push_back(payment_id_str);
   if (m_wallet->nettype() == cryptonote::MAINNET)
-    message_writer() << (boost::format(tr("Donating %s %s to The Wownero Project (donate.wownero.org or %s).")) % amount_str % cryptonote::get_unit(cryptonote::get_default_decimal_point()) % MONERO_DONATION_ADDR).str();
+    message_writer() << (boost::format(tr("Donating %s %s to The Wownero Project (donate.lolnero.org or %s).")) % amount_str % cryptonote::get_unit(cryptonote::get_default_decimal_point()) % MONERO_DONATION_ADDR).str();
   else
     message_writer() << (boost::format(tr("Donating %s %s to %s.")) % amount_str % cryptonote::get_unit(cryptonote::get_default_decimal_point()) % address_str).str();
   transfer(local_args);
@@ -7845,7 +7845,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
   std::vector<tools::wallet2::pending_tx> ptx;
   try
   {
-    bool r = m_wallet->sign_tx("unsigned_wownero_tx", "signed_wownero_tx", ptx, [&](const tools::wallet2::unsigned_tx_set &tx){ return accept_loaded_tx(tx); }, export_raw);
+    bool r = m_wallet->sign_tx("unsigned_lolnero_tx", "signed_lolnero_tx", ptx, [&](const tools::wallet2::unsigned_tx_set &tx){ return accept_loaded_tx(tx); }, export_raw);
     if (!r)
     {
       fail_msg_writer() << tr("Failed to sign transaction");
@@ -7865,7 +7865,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
       txids_as_text += (", ");
     txids_as_text += epee::string_tools::pod_to_hex(get_transaction_hash(t.tx));
   }
-  success_msg_writer(true) << tr("Transaction successfully signed to file ") << "signed_wownero_tx" << ", txid " << txids_as_text;
+  success_msg_writer(true) << tr("Transaction successfully signed to file ") << "signed_lolnero_tx" << ", txid " << txids_as_text;
   if (export_raw)
   {
     std::string rawfiles_as_text;
@@ -7873,7 +7873,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
     {
       if (i > 0)
         rawfiles_as_text += ", ";
-      rawfiles_as_text += "signed_wownero_tx_raw" + (ptx.size() == 1 ? "" : ("_" + std::to_string(i)));
+      rawfiles_as_text += "signed_lolnero_tx_raw" + (ptx.size() == 1 ? "" : ("_" + std::to_string(i)));
     }
     success_msg_writer(true) << tr("Transaction raw hex data exported to ") << rawfiles_as_text;
   }
@@ -7893,7 +7893,7 @@ bool simple_wallet::submit_transfer(const std::vector<std::string> &args_)
   try
   {
     std::vector<tools::wallet2::pending_tx> ptx_vector;
-    bool r = m_wallet->load_tx("signed_wownero_tx", ptx_vector, [&](const tools::wallet2::signed_tx_set &tx){ return accept_loaded_tx(tx); });
+    bool r = m_wallet->load_tx("signed_lolnero_tx", ptx_vector, [&](const tools::wallet2::signed_tx_set &tx){ return accept_loaded_tx(tx); });
     if (!r)
     {
       fail_msg_writer() << tr("Failed to load transaction from file");
@@ -8061,7 +8061,7 @@ bool simple_wallet::get_tx_proof(const std::vector<std::string> &args)
   try
   {
     std::string sig_str = m_wallet->get_tx_proof(txid, info.address, info.is_subaddress, args.size() == 3 ? args[2] : "");
-    const std::string filename = "wownero_tx_proof";
+    const std::string filename = "lolnero_tx_proof";
     if (m_wallet->save_to_file(filename, sig_str, true))
       success_msg_writer() << tr("signature file saved to: ") << filename;
     else
@@ -8273,7 +8273,7 @@ bool simple_wallet::get_spend_proof(const std::vector<std::string> &args)
   try
   {
     const std::string sig_str = m_wallet->get_spend_proof(txid, args.size() == 2 ? args[1] : "");
-    const std::string filename = "wownero_spend_proof";
+    const std::string filename = "lolnero_spend_proof";
     if (m_wallet->save_to_file(filename, sig_str, true))
       success_msg_writer() << tr("signature file saved to: ") << filename;
     else
@@ -8362,7 +8362,7 @@ bool simple_wallet::get_reserve_proof(const std::vector<std::string> &args)
   try
   {
     const std::string sig_str = m_wallet->get_reserve_proof(account_minreserve, args.size() == 2 ? args[1] : "");
-    const std::string filename = "wownero_reserve_proof";
+    const std::string filename = "lolnero_reserve_proof";
     if (m_wallet->save_to_file(filename, sig_str, true))
       success_msg_writer() << tr("signature file saved to: ") << filename;
     else
@@ -10400,7 +10400,7 @@ void simple_wallet::commit_or_save(std::vector<tools::wallet2::pending_tx>& ptx_
       cryptonote::blobdata blob;
       tx_to_blob(ptx.tx, blob);
       const std::string blob_hex = epee::string_tools::buff_to_hex_nodelimer(blob);
-      const std::string filename = "raw_wownero_tx" + (ptx_vector.size() == 1 ? "" : ("_" + std::to_string(i++)));
+      const std::string filename = "raw_lolnero_tx" + (ptx_vector.size() == 1 ? "" : ("_" + std::to_string(i++)));
       if (m_wallet->save_to_file(filename, blob_hex, true))
         success_msg_writer(true) << tr("Transaction successfully saved to ") << filename << tr(", txid ") << txid;
       else
@@ -10462,12 +10462,12 @@ int main(int argc, char* argv[])
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main(
    argc, argv,
-   "wownero-wallet-cli [--wallet-file=<filename>|--generate-new-wallet=<filename>] [<COMMAND>]",
-    sw::tr("This is the command line wownero wallet. It needs to connect to a wownero\ndaemon to work correctly."),
+   "lolnero-wallet-cli [--wallet-file=<filename>|--generate-new-wallet=<filename>] [<COMMAND>]",
+    sw::tr("This is the command line lolnero wallet. It needs to connect to a lolnero\ndaemon to work correctly."),
     desc_params,
     positional_options,
     [](const std::string &s, bool emphasis){ tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s; },
-    "wownero-wallet-cli.log"
+    "lolnero-wallet-cli.log"
   );
 
   if (!vm)
@@ -10860,7 +10860,7 @@ void simple_wallet::mms_signer(const std::vector<std::string> &args)
   }
   if ((args.size() < 2) || (args.size() > 4))
   {
-    fail_msg_writer() << tr("mms signer [<number> <label> [<transport_address> [<wownero_address>]]]");
+    fail_msg_writer() << tr("mms signer [<number> <label> [<transport_address> [<lolnero_address>]]]");
     return;
   }
 

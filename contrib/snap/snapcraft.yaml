@@ -1,29 +1,29 @@
-name: wownero
+name: lolnero
 version: 0.5.0.0
-summary: "Wownero: the secure, private, untraceable cryptocurrency http://wownero.org"
+summary: "Wownero: the secure, private, untraceable cryptocurrency http://lolnero.org"
 description: |
     Wownero: a fairly launched privacy-centric meme coin with no premine and a finite supply.
 grade: devel
 confinement: strict
 
 apps:
-    wownerod:
+    lolnerod:
         daemon: forking
         command: |
-          wownerod-wrapper --detach --data-dir ${SNAP_COMMON} --config-file ${SNAP_USER_DATA}/etc/wownerod.conf
+          lolnerod-wrapper --detach --data-dir ${SNAP_COMMON} --config-file ${SNAP_USER_DATA}/etc/lolnerod.conf
         plugs:
             - network
             - network-bind
-    wownero-wallet-rpc:
+    lolnero-wallet-rpc:
         command: |
-          wownero-wallet-rpc --log-file ${SNAP_USER_DATA}
+          lolnero-wallet-rpc --log-file ${SNAP_USER_DATA}
         plugs:
             - home
             - network
             - network-bind
-    wownero-wallet-cli:
+    lolnero-wallet-cli:
         command: |
-          wownero-wallet-cli --log-file ${SNAP_USER_DATA}
+          lolnero-wallet-cli --log-file ${SNAP_USER_DATA}
         plugs:
             - home
             - network
@@ -69,8 +69,8 @@ parts:
         plugin: dump
         source: .
         organize:
-            contrib/snap/wownerod.conf: etc/wownerod.conf
-            contrib/snap/wownerod-wrapper: bin/wownerod-wrapper
+            contrib/snap/lolnerod.conf: etc/lolnerod.conf
+            contrib/snap/lolnerod-wrapper: bin/lolnerod-wrapper
         prime:
             - etc
             - bin

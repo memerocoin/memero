@@ -5,6 +5,6 @@ name: linux-build
 
 steps:
 - name: linux-build
-  image: wownero/wow-dependencies:v1.0
+  image: lolnero/wow-dependencies:v1.0
   commands:
   - make -j2 release-static-linux-x86_64

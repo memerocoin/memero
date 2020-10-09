@@ -2,7 +2,7 @@
 
 if [ ! -d "$SNAP_USER_DATA/etc" ]; then
   mkdir $SNAP_USER_DATA/etc/
-  cp -R $SNAP/etc/wownerod.conf $SNAP_USER_DATA/etc/wownerod.conf
+  cp -R $SNAP/etc/lolnerod.conf $SNAP_USER_DATA/etc/lolnerod.conf
 fi
 
-exec "$SNAP/bin/wownerod" "$@"
+exec "$SNAP/bin/lolnerod" "$@"

@@ -28,7 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Returns timestamps and difficulty data for wownero (monero RPC)
+# Returns timestamps and difficulty data for lolnero (monero RPC)
 # Run: perl export_data.pl 50 300
 
 $IP='explorer.wowne.ro:11181';
@@ -41,7 +41,7 @@ else {
    print "$end\n";
 }
 print "also printed to file\n\n";
-open (F,">wownero-data.txt");
+open (F,">lolnero-data.txt");
 for ($i=$begin; $i<$end; $i++) { 
    $k=qq(-d '{"params":{"height":$i},"jsonrpc":"2.0","id":"test","method":"getblockheaderbyheight"}' -H 'Content-Type: application/json');
     $k=`curl -s -X POST http://$IP/json_rpc $k`;  
