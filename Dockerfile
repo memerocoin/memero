@@ -214,10 +214,10 @@ ENV USE_SINGLE_BUILDDIR=1
 EXPOSE 34567
 EXPOSE 34568
 
-# Wownero
-RUN echo "\e[32mbuilding: Wownero\e[39m" \
+# Lolnero
+RUN echo "\e[32mbuilding: Lolnero\e[39m" \
     && set -ex \
     && git clone https://git.lolnero.com/lolnero/lolnero \
     && cd lolnero \
     && make -j2 release-static-linux-x86_64 \
-    && echo "\e[32mdone building Wownero, binaries located in: /home/lolnero/build/release/bin\e[39m"
+    && echo "\e[32mdone building Lolnero, binaries located in: /home/lolnero/build/release/bin\e[39m"

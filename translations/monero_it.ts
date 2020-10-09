@@ -1030,8 +1030,8 @@
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="7388"/>
-        <source>Donating %s %s to The Wownero Project (wownero.org or %s).</source>
-        <translation>Donare %s %s a The Wownero Project (wownero.org o %s).</translation>
+        <source>Donating %s %s to The Lolnero Project (wownero.org or %s).</source>
+        <translation>Donare %s %s a The Lolnero Project (wownero.org o %s).</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="7390"/>
@@ -1491,37 +1491,37 @@
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2282"/>
-        <source>Welcome to Wownero, the private cryptocurrency.</source>
-        <translation>Benvenuto/a in Wownero, la cryptovaluta privata.</translation>
+        <source>Welcome to Lolnero, the private cryptocurrency.</source>
+        <translation>Benvenuto/a in Lolnero, la cryptovaluta privata.</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2284"/>
-        <source>Wownero, like Bitcoin, is a cryptocurrency. That is, it is digital money.</source>
-        <translation>Wownero, come Bitcoin, è una criptovaluta. Cioè, è denaro digitale.</translation>
+        <source>Lolnero, like Bitcoin, is a cryptocurrency. That is, it is digital money.</source>
+        <translation>Lolnero, come Bitcoin, è una criptovaluta. Cioè, è denaro digitale.</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2288"/>
-        <source>Wownero protects your privacy on the blockchain, and while Wownero strives to improve all the time,</source>
+        <source>Lolnero protects your privacy on the blockchain, and while Lolnero strives to improve all the time,</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2289"/>
-        <source>no privacy technology can be 100% perfect, Wownero included.</source>
-        <translation>nessuna tecnologia per la privacy può essere perfetta al 100%, incluso Wownero.</translation>
+        <source>no privacy technology can be 100% perfect, Lolnero included.</source>
+        <translation>nessuna tecnologia per la privacy può essere perfetta al 100%, incluso Lolnero.</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2290"/>
-        <source>Wownero cannot protect you from malware, and it may not be as effective as we hope against powerful adversaries.</source>
+        <source>Lolnero cannot protect you from malware, and it may not be as effective as we hope against powerful adversaries.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2291"/>
-        <source>Flaws in Wownero may be discovered in the future, and attacks may be developed to peek under some</source>
+        <source>Flaws in Lolnero may be discovered in the future, and attacks may be developed to peek under some</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2292"/>
-        <source>of the layers of privacy Wownero provides. Be safe and practice defense in depth.</source>
+        <source>of the layers of privacy Lolnero provides. Be safe and practice defense in depth.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1882,7 +1882,7 @@ Otherwise, you prove the reserve of the smallest possible amount above &lt;amoun
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="3565"/>
-        <source>Prints basic info about Wownero for first time users</source>
+        <source>Prints basic info about Lolnero for first time users</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1978,8 +1978,8 @@ Otherwise, you prove the reserve of the smallest possible amount above &lt;amoun
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="4521"/>
-        <source>If you are new to Wownero, type &quot;welcome&quot; for a brief overview.</source>
-        <translation>Se non conosci Wownero, digita &quot;welcome&quot; per una breve panoramica.</translation>
+        <source>If you are new to Lolnero, type &quot;welcome&quot; for a brief overview.</source>
+        <translation>Se non conosci Lolnero, digita &quot;welcome&quot; per una breve panoramica.</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="4585"/>
@@ -2059,7 +2059,7 @@ di nuovo il tuo portafoglio (le chiavi del tuo portafoglio NON sono in nessun ca
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="5112"/>
-        <source>Background mining enabled. Thank you for supporting the Wownero network.</source>
+        <source>Background mining enabled. Thank you for supporting the Lolnero network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2830,7 +2830,7 @@ This transaction (including %s change) will unlock on block %llu, in approximate
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2285"/>
-        <source>Unlike Bitcoin, your Wownero transactions and balance stay private and are not visible to the world by default.</source>
+        <source>Unlike Bitcoin, your Lolnero transactions and balance stay private and are not visible to the world by default.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2840,7 +2840,7 @@ This transaction (including %s change) will unlock on block %llu, in approximate
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="2294"/>
-        <source>Welcome to Wownero and financial privacy. For more information see https://GetWownero.org</source>
+        <source>Welcome to Lolnero and financial privacy. For more information see https://GetLolnero.org</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3131,9 +3131,9 @@ This transaction (including %s change) will unlock on block %llu, in approximate
  auto-low-priority &lt;1|0&gt;
    Whether to automatically use the low priority fee level when it&apos;s safe to do so.
  segregate-pre-fork-outputs &lt;1|0&gt;
-   Set this if you intend to spend outputs on both Wownero AND a key reusing fork.
+   Set this if you intend to spend outputs on both Lolnero AND a key reusing fork.
  key-reuse-mitigation2 &lt;1|0&gt;
-   Set this if you are not sure whether you will spend on a key reusing Wownero fork later.
+   Set this if you are not sure whether you will spend on a key reusing Lolnero fork later.
  subaddress-lookahead &lt;major&gt;:&lt;minor&gt;
    Set the lookahead sizes for the subaddress hash table.
  segregation-height &lt;n&gt;
@@ -3235,8 +3235,8 @@ Get help about a subcommand with: help mms &lt;subcommand&gt;, or mms help &lt;s
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="3444"/>
-        <source>Set or modify authorized signer info (single-word label, transport address, Wownero address), or list all signers</source>
-        <translation>Imposta o modifica le informazioni del firmatario autorizzato (etichetta con una sola parola, indirizzo di trasporto, indirizzo Wownero) oppure elenca tutti i firmatari</translation>
+        <source>Set or modify authorized signer info (single-word label, transport address, Lolnero address), or list all signers</source>
+        <translation>Imposta o modifica le informazioni del firmatario autorizzato (etichetta con una sola parola, indirizzo di trasporto, indirizzo Lolnero) oppure elenca tutti i firmatari</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="3448"/>
@@ -3642,7 +3642,7 @@ Key Image, &quot;absolute&quot;, list of rings</source>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="4500"/>
-        <source>You are strongly encouraged to connect to the Wownero network using your own daemon</source>
+        <source>You are strongly encouraged to connect to the Lolnero network using your own daemon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3949,7 +3949,7 @@ Input %llu/%llu (%s): amount=%s</source>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="6168"/>
-        <source>I locked your Wownero wallet to protect you while you were away</source>
+        <source>I locked your Lolnero wallet to protect you while you were away</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4114,8 +4114,8 @@ Input %llu/%llu (%s): amount=%s</source>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="10320"/>
-        <source>Wownero Address</source>
-        <translation>Indirizzo Wownero</translation>
+        <source>Lolnero Address</source>
+        <translation>Indirizzo Lolnero</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="10324"/>
@@ -4226,13 +4226,13 @@ Input %llu/%llu (%s): amount=%s</source>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="10545"/>
-        <source>Invalid Wownero address</source>
-        <translation>Indirizzo Wownero non valido</translation>
+        <source>Invalid Lolnero address</source>
+        <translation>Indirizzo Lolnero non valido</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="10552"/>
-        <source>Wallet state does not allow changing Wownero addresses anymore</source>
-        <translation>Lo stato del portafoglio non consente più di modificare gli indirizzi Wownero</translation>
+        <source>Wallet state does not allow changing Lolnero addresses anymore</source>
+        <translation>Lo stato del portafoglio non consente più di modificare gli indirizzi Lolnero</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="10564"/>
@@ -5533,7 +5533,7 @@ Use &quot;mms note&quot; to display the waiting notes</source>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="463"/>
-        <source> Wownero Address = </source>
+        <source> Lolnero Address = </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5681,7 +5681,7 @@ Use &quot;mms note&quot; to display the waiting notes</source>
         <location filename="../src/simplewallet/simplewallet.cpp" line="10137"/>
         <source>This is the command line wownero wallet. It needs to connect to a wownero
 daemon to work correctly.
-WARNING: Do not reuse your Wownero keys on another fork, UNLESS this fork has key reuse mitigations built in. Doing so will harm your privacy.</source>
+WARNING: Do not reuse your Lolnero keys on another fork, UNLESS this fork has key reuse mitigations built in. Doing so will harm your privacy.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -3,7 +3,7 @@
 pkgname=lolnero-git
 pkgver=0.8.0.0
 pkgrel=1
-pkgdesc="Wownero: a fairly launched privacy-centric meme coin with no premine and a finite supply"
+pkgdesc="Lolnero: a fairly launched privacy-centric meme coin with no premine and a finite supply"
 license=('BSD')
 arch=('x86_64')
 url="https://lolnero.org/"

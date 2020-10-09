@@ -102,9 +102,9 @@ using namespace cryptonote;
 // used to target a given block weight (additional outputs may be added on top to build fee)
 #define TX_WEIGHT_TARGET(bytes) (bytes*2/3)
 
-#define UNSIGNED_TX_PREFIX "Wownero unsigned tx set\005"
-#define SIGNED_TX_PREFIX "Wownero signed tx set\005"
-#define MULTISIG_UNSIGNED_TX_PREFIX "Wownero multisig unsigned tx set\001"
+#define UNSIGNED_TX_PREFIX "Lolnero unsigned tx set\005"
+#define SIGNED_TX_PREFIX "Lolnero signed tx set\005"
+#define MULTISIG_UNSIGNED_TX_PREFIX "Lolnero multisig unsigned tx set\001"
 
 #define RECENT_OUTPUT_RATIO (0.5) // 50% of outputs are from the recent zone
 #define RECENT_OUTPUT_DAYS (1.8) // last 1.8 day makes up the recent zone (taken from monerolink.pdf, Miller et al)
@@ -118,11 +118,11 @@ using namespace cryptonote;
 #define SUBADDRESS_LOOKAHEAD_MAJOR 50
 #define SUBADDRESS_LOOKAHEAD_MINOR 200
 
-#define KEY_IMAGE_EXPORT_FILE_MAGIC "Wownero key image export\003"
+#define KEY_IMAGE_EXPORT_FILE_MAGIC "Lolnero key image export\003"
 
-#define MULTISIG_EXPORT_FILE_MAGIC "Wownero multisig export\001"
+#define MULTISIG_EXPORT_FILE_MAGIC "Lolnero multisig export\001"
 
-#define OUTPUT_EXPORT_FILE_MAGIC "Wownero output export\004"
+#define OUTPUT_EXPORT_FILE_MAGIC "Lolnero output export\004"
 
 #define SEGREGATION_FORK_HEIGHT 99999999
 #define TESTNET_SEGREGATION_FORK_HEIGHT 99999999
@@ -144,7 +144,7 @@ using namespace cryptonote;
 static const std::string MULTISIG_SIGNATURE_MAGIC = "SigMultisigPkV1";
 static const std::string MULTISIG_EXTRA_INFO_MAGIC = "MultisigxV1";
 
-static const std::string ASCII_OUTPUT_MAGIC = "WowneroAsciiDataV1";
+static const std::string ASCII_OUTPUT_MAGIC = "LolneroAsciiDataV1";
 
 boost::mutex tools::wallet2::default_daemon_address_lock;
 std::string tools::wallet2::default_daemon_address = "";

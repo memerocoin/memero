@@ -1,6 +1,6 @@
 ## [ANN] Lolnero - much privacy! many ASICs!
 
-Lolnero is a fork of Wownero with a linear emission and a SHA-3 PoW.
+Lolnero is a fork of Lolnero with a linear emission and a SHA-3 PoW.
 
 There is no premine and no dev tax.
 

@@ -494,7 +494,7 @@ namespace cryptonote
       if (boost::filesystem::exists(old_files / "blockchain.bin"))
       {
         MWARNING("Found old-style blockchain.bin in " << old_files.string());
-        MWARNING("Wownero now uses a new format. You can either remove blockchain.bin to start syncing");
+        MWARNING("Lolnero now uses a new format. You can either remove blockchain.bin to start syncing");
         MWARNING("the blockchain anew, or use lolnero-blockchain-export and lolnero-blockchain-import to");
         MWARNING("convert your existing blockchain.bin to the new format. See README.md for instructions.");
         return false;
@@ -1708,7 +1708,7 @@ namespace cryptonote
       MGINFO_YELLOW(ENDL << "**********************************************************************" << ENDL
         << main_message << ENDL
         << ENDL
-        << "Caution: Wownero is highly experimental software compiled by a ragtag team of stoners with as much" << ENDL
+        << "Caution: Lolnero is highly experimental software compiled by a ragtag team of stoners with as much" << ENDL
         << "skill as Verge developers. Storing your life savings in WOW is probably not a good idea." << ENDL
         << ENDL
         << "You can set the level of process detailization through \"set_log <level|categories>\" command," << ENDL
@@ -1947,7 +1947,7 @@ namespace cryptonote
       MDEBUG("blocks in the last " << seconds[n] / 60 << " minutes: " << b << " (probability " << p << ")");
       if (p < threshold)
       {
-        MDEBUG("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Wownero network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
+        MDEBUG("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Lolnero network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
 
         std::shared_ptr<tools::Notify> block_rate_notify = m_block_rate_notify;
         if (block_rate_notify)

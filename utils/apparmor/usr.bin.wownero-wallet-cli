@@ -1,7 +1,7 @@
 #include <tunables/global>
 
 # Change to wherever you store your wallet files and start wallet from.
-@{WALLET_DIR} = /home/*/Documents/Wownero
+@{WALLET_DIR} = /home/*/Documents/Lolnero
 
 profile lolnero-wallet-cli /usr/{,local/}bin/lolnero-wallet-cli {
   #include <abstractions/base>
