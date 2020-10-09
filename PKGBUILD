@@ -15,7 +15,7 @@ source=(
     "git+https://github.com/monero-project/miniupnp.git"
     "git+https://github.com/Tencent/rapidjson.git"
     "git+https://github.com/trezor/trezor-common.git"
-    "git+https://github.com/lolnero/RandomWOW.git"
+    "git+https://github.com/lolnero/RandomLOL.git"
     "lolnero.sysusers"
     "lolnero.tmpfiles")
 sha512sums=('SKIP'
@@ -33,7 +33,7 @@ prepare() {
   git config submodule.external/unbound.url "$srcdir/unbound"
   git config submodule.external/miniupnp.url "$srcdir/miniupnp"
   git config submodule.external/rapidjson.url "$srcdir/rapidjson"
-  git config submodule.external/RandomWOW.url "$srcdir/RandomWOW"
+  git config submodule.external/RandomLOL.url "$srcdir/RandomLOL"
   git submodule update
 }
 
