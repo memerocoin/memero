@@ -403,12 +403,6 @@ namespace cryptonote {
     }
     else {    next_D = (avg_D*N*(N+1)*T*99)/(200*L);    }
 
-    // Make all insignificant digits zero for easy reading.
-    i = 1000000000;
-    while (i > 1) {
-      if ( next_D > i*100 ) { next_D = ((next_D+i/2)/i)*i; break; }
-      else { i /= 10; }
-    }
     return  next_D;
   }
 }
