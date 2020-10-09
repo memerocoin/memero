@@ -370,10 +370,19 @@ namespace cryptonote {
   // https://github.com/zawy12/difficulty-algorithms/issues/3
   difficulty_type next_difficulty_v5(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, uint64_t T, uint64_t N, uint64_t HEIGHT) {
     assert(timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1 );
-
-    if (HEIGHT >= 81769 && HEIGHT < 81769 + N && m_nettype == MAINNET) { return 10000000; }
-    if (HEIGHT < 200 && m_nettype == TESTNET) { return 500; }
     assert(timestamps.size() == N+1);
+
+    if (HEIGHT == 0) { return 1; }
+
+    // 1 CPU can do 4e6 h/s ~= 2 ^ 22
+    // diff for that is 2 ^ 22 * 300 (5 mins) ~= 2 ^ (22 + 8)
+    // make it for 256 CPUs in case no one will be mining
+    // 2 ^ (22 + 8 + 8) = 2 ^ 38 = 1 << 38
+    const difficulty_type _b = 1;
+    if (m_nettype == TESTNET) {
+      if (HEIGHT < N + 3) { return _b << 22; }
+    }
+    if (HEIGHT < N + 3) { return _b << 38; }
 
     uint64_t  L(0), next_D, i, this_timestamp(0), previous_timestamp(0), avg_D;
 
