@@ -208,20 +208,16 @@ namespace config
   uint16_t const RPC_DEFAULT_PORT = 45679;
   uint16_t const ZMQ_RPC_DEFAULT_PORT = 45680;
   boost::uuids::uuid const NETWORK_ID = { {
-      0x69, 0x42, 0xEE, 0x66 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x10
+      0x69, 0x42, 0xEF, 0x66 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x10
     } }; // Bender's nightmare
-  std::string const GENESIS_TX = "";
-  // std::string const GENESIS_TX = "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121012a1a936be5d91c01ee876e38c13fab0ee11cbe86011a2bf7740fb5ebd39d267d";
+  std::string const GENESIS_TX = "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121012a1a936be5d91c01ee876e38c13fab0ee11cbe86011a2bf7740fb5ebd39d267d";
 
-  // twitter trending Oct 10th, 2020 20:08 (UTC)
+  // twitter trending Oct 11th, 2020 14:58 (UTC)
 
   /*
-  echo -n "Texas The No. 22-ranked Texas Longhorns take on the 1-2 Oklahoma Sooners in the Red River Showdown" | sha256sum
-
-  b818dfa125b74ae5a09e1d4c56477b27989a08d17a6dafaa55b8c26e67111aa0  -
+    echo -n "#NationalComingOutDay Oct 11th, 2020 14:58 (UTC)" | sha256sum
   */
-
-  uint32_t const GENESIS_NONCE = 0xb818dfa1;
+  uint32_t const GENESIS_NONCE = 0x2fab0975;
 
   // Hash domain separators
   const char HASH_KEY_BULLETPROOF_EXPONENT[] = "bulletproof";
