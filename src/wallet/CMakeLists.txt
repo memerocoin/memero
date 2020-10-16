@@ -65,7 +65,6 @@ target_link_libraries(wallet
     common
     cryptonote_core
     mnemonics
-    device_trezor
     net
     ${LMDB_LIBRARY}
     ${Boost_CHRONO_LIBRARY}
