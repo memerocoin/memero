@@ -27,7 +27,6 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(crypto_sources
-  aesb.c
   chacha.c
   crypto-ops-data.c
   crypto-ops.c
