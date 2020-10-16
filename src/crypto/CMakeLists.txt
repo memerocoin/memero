@@ -32,18 +32,11 @@ set(crypto_sources
   crypto-ops-data.c
   crypto-ops.c
   crypto.cpp
-  groestl.c
-  hash-extra-blake.c
-  hash-extra-groestl.c
-  hash-extra-jh.c
-  hash-extra-skein.c
   hash.c
-  jh.c
   keccak.c
   sha3.c
   oaes_lib.c
   random.c
-  skein.c
   tree-hash.c)
 
 set(crypto_headers)
@@ -53,19 +46,15 @@ set(crypto_private_headers
   crypto-ops.h
   crypto.h
   generic-ops.h
-  groestl.h
-  groestl_tables.h
   hash-ops.h
   hash.h
   initializer.h
-  jh.h
   keccak.h
   sha3.h
   oaes_config.h
   oaes_lib.h
   random.h
-  skein.h
-  skein_port.h)
+  )
 
 monero_private_headers(cncrypto
   ${crypto_private_headers})
