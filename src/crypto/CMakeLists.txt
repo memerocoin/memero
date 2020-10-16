@@ -35,7 +35,6 @@ set(crypto_sources
   hash.c
   keccak.c
   sha3.c
-  oaes_lib.c
   random.c
   tree-hash.c)
 
@@ -51,8 +50,6 @@ set(crypto_private_headers
   initializer.h
   keccak.h
   sha3.h
-  oaes_config.h
-  oaes_lib.h
   random.h
   )
 
