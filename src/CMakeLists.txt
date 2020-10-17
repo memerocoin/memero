@@ -28,12 +28,6 @@
 #
 # Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-if (WIN32 OR STATIC)
-  add_definitions(-DSTATICLIB)
-  # miniupnp changed their static define
-  add_definitions(-DMINIUPNP_STATICLIB)
-endif ()
-
 function (monero_private_headers group)
   source_group("${group}\\Private"
     FILES
