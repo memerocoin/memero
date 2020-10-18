@@ -49,7 +49,6 @@ target_link_libraries(simplewallet
     common
     mnemonics
     ${EPEE_READLINE}
-    qrcodegen
     version
     ${Boost_CHRONO_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
