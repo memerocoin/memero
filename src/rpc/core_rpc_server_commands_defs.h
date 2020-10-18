@@ -677,7 +677,6 @@ namespace cryptonote
       uint64_t free_space;
       bool offline;
       uint64_t database_size;
-      bool update_available;
       std::string version;
 
       BEGIN_KV_SERIALIZE_MAP()
@@ -713,7 +712,6 @@ namespace cryptonote
         KV_SERIALIZE(free_space)
         KV_SERIALIZE(offline)
         KV_SERIALIZE(database_size)
-        KV_SERIALIZE(update_available)
         KV_SERIALIZE(version)
       END_KV_SERIALIZE_MAP()
     };
