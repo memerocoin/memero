@@ -1297,6 +1297,7 @@ std::string get_nix_version_display_string()
   // calculating sync time estimates
   uint64_t cumulative_block_sync_weight(cryptonote::network_type nettype, uint64_t start_block, uint64_t num_blocks)
   {
+    return num_blocks;
     if (nettype != cryptonote::MAINNET)
     {
       // No detailed data available except for Mainnet: Give back the number of blocks
