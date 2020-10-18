@@ -679,9 +679,6 @@ namespace cryptonote
       uint64_t start_time;
       uint64_t free_space;
       bool offline;
-      std::string bootstrap_daemon_address;
-      uint64_t height_without_bootstrap;
-      bool was_bootstrap_ever_used;
       uint64_t database_size;
       bool update_available;
       std::string version;
@@ -718,9 +715,6 @@ namespace cryptonote
         KV_SERIALIZE(start_time)
         KV_SERIALIZE(free_space)
         KV_SERIALIZE(offline)
-        KV_SERIALIZE(bootstrap_daemon_address)
-        KV_SERIALIZE(height_without_bootstrap)
-        KV_SERIALIZE(was_bootstrap_ever_used)
         KV_SERIALIZE(database_size)
         KV_SERIALIZE(update_available)
         KV_SERIALIZE(version)
@@ -1227,56 +1221,6 @@ namespace cryptonote
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct public_node
-  {
-    std::string host;
-    uint64_t last_seen;
-    uint16_t rpc_port;
-    uint32_t rpc_credits_per_hash;
-
-    public_node(): last_seen(0), rpc_port(0), rpc_credits_per_hash(0) {}
-
-    public_node(const peer &peer)
-      : host(peer.host), last_seen(peer.last_seen), rpc_port(peer.rpc_port), rpc_credits_per_hash(peer.rpc_credits_per_hash)
-    {}
-
-    BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(host)
-      KV_SERIALIZE(last_seen)
-      KV_SERIALIZE(rpc_port)
-      KV_SERIALIZE(rpc_credits_per_hash)
-    END_KV_SERIALIZE_MAP()
-  };
-
-  struct COMMAND_RPC_GET_PUBLIC_NODES
-  {
-    struct request_t: public rpc_request_base
-    {
-      bool gray;
-      bool white;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_request_base)
-        KV_SERIALIZE_OPT(gray, false)
-        KV_SERIALIZE_OPT(white, true)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t: public rpc_response_base
-    {
-      std::vector<public_node> gray;
-      std::vector<public_node> white;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_response_base)
-        KV_SERIALIZE(gray)
-        KV_SERIALIZE(white)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_SET_LOG_HASH_RATE
   {
     struct request_t: public rpc_request_base
@@ -1607,33 +1551,6 @@ namespace cryptonote
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
         KV_SERIALIZE(headers)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_SET_BOOTSTRAP_DAEMON
-  {
-    struct request_t
-    {
-      std::string address;
-      std::string username;
-      std::string password;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(address)
-        KV_SERIALIZE(username)
-        KV_SERIALIZE(password)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::string status;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(status)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;

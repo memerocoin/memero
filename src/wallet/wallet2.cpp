@@ -14111,27 +14111,6 @@ uint64_t wallet2::get_bytes_received() const
   return m_http_client->get_bytes_received();
 }
 //----------------------------------------------------------------------------------------------------
-std::vector<cryptonote::public_node> wallet2::get_public_nodes(bool white_only)
-{
-  cryptonote::COMMAND_RPC_GET_PUBLIC_NODES::request req = AUTO_VAL_INIT(req);
-  cryptonote::COMMAND_RPC_GET_PUBLIC_NODES::response res = AUTO_VAL_INIT(res);
-
-  req.white = true;
-  req.gray = !white_only;
-
-  {
-    const boost::lock_guard<boost::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = epee::net_utils::invoke_http_json("/get_public_nodes", req, res, *m_http_client, rpc_timeout);
-    THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_public_nodes");
-  }
-
-  std::vector<cryptonote::public_node> nodes;
-  nodes = res.white;
-  nodes.reserve(nodes.size() + res.gray.size());
-  std::copy(res.gray.begin(), res.gray.end(), std::back_inserter(nodes));
-  return nodes;
-}
-//----------------------------------------------------------------------------------------------------
 std::pair<size_t, uint64_t> wallet2::estimate_tx_size_and_weight(bool use_rct, int n_inputs, int ring_size, int n_outputs, size_t extra_size)
 {
   THROW_WALLET_EXCEPTION_IF(n_inputs <= 0, tools::error::wallet_internal_error, "Invalid n_inputs");

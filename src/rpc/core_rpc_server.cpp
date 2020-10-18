@@ -152,8 +152,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_rpc_bind_port);
     command_line::add_arg(desc, arg_rpc_restricted_bind_port);
     command_line::add_arg(desc, arg_restricted_rpc);
-    command_line::add_arg(desc, arg_bootstrap_daemon_address);
-    command_line::add_arg(desc, arg_bootstrap_daemon_login);
     cryptonote::rpc_args::init_options(desc, true);
     command_line::add_arg(desc, arg_rpc_payment_address);
     command_line::add_arg(desc, arg_rpc_payment_difficulty);
@@ -167,82 +165,10 @@ namespace cryptonote
     )
     : m_core(cr)
     , m_p2p(p2p)
-    , m_was_bootstrap_ever_used(false)
     , disable_rpc_ban(false)
     , m_rpc_payment_allow_free_loopback(false)
   {}
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::set_bootstrap_daemon(const std::string &address, const std::string &username_password)
-  {
-    boost::optional<epee::net_utils::http::login> credentials;
-    const auto loc = username_password.find(':');
-    if (loc != std::string::npos)
-    {
-      credentials = epee::net_utils::http::login(username_password.substr(0, loc), username_password.substr(loc + 1));
-    }
-    return set_bootstrap_daemon(address, credentials);
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  std::map<std::string, bool> core_rpc_server::get_public_nodes(uint32_t credits_per_hash_threshold/* = 0*/)
-  {
-    COMMAND_RPC_GET_PUBLIC_NODES::request request;
-    COMMAND_RPC_GET_PUBLIC_NODES::response response;
-
-    request.gray = true;
-    request.white = true;
-    if (!on_get_public_nodes(request, response) || response.status != CORE_RPC_STATUS_OK)
-    {
-      return {};
-    }
-
-    std::map<std::string, bool> result;
-
-    const auto append = [&result, &credits_per_hash_threshold](const std::vector<public_node> &nodes, bool white) {
-      for (const auto &node : nodes)
-      {
-        const bool rpc_payment_enabled = credits_per_hash_threshold > 0;
-        const bool node_rpc_payment_enabled = node.rpc_credits_per_hash > 0;
-        if (!node_rpc_payment_enabled ||
-            (rpc_payment_enabled && node.rpc_credits_per_hash >= credits_per_hash_threshold))
-        {
-          result.insert(std::make_pair(node.host + ":" + std::to_string(node.rpc_port), white));
-        }
-      }
-    };
-
-    append(response.white, true);
-    append(response.gray, false);
-
-    return result;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::set_bootstrap_daemon(const std::string &address, const boost::optional<epee::net_utils::http::login> &credentials)
-  {
-    boost::unique_lock<boost::shared_mutex> lock(m_bootstrap_daemon_mutex);
-
-    constexpr const uint32_t credits_per_hash_threshold = 0;
-    constexpr const bool rpc_payment_enabled = credits_per_hash_threshold != 0;
-
-    if (address.empty())
-    {
-      m_bootstrap_daemon.reset(nullptr);
-    }
-    else if (address == "auto")
-    {
-      auto get_nodes = [this]() {
-        return get_public_nodes(credits_per_hash_threshold);
-      };
-      m_bootstrap_daemon.reset(new bootstrap_daemon(std::move(get_nodes), rpc_payment_enabled));
-    }
-    else
-    {
-      m_bootstrap_daemon.reset(new bootstrap_daemon(address, credentials, rpc_payment_enabled));
-    }
-
-    m_should_use_bootstrap_daemon = m_bootstrap_daemon.get() != nullptr;
-
-    return true;
-  }
   core_rpc_server::~core_rpc_server()
   {
     if (m_rpc_payment)
@@ -303,13 +229,6 @@ namespace cryptonote
       bool ok = epee::string_tools::get_ip_int32_from_string(bind_ip, rpc_config->bind_ip);
       if (ok & !epee::net_utils::is_ip_loopback(bind_ip))
         MWARNING("The RPC server is accessible from the outside, but no RPC payment was setup. RPC access will be free for all.");
-    }
-
-    if (!set_bootstrap_daemon(command_line::get_arg(vm, arg_bootstrap_daemon_address),
-      command_line::get_arg(vm, arg_bootstrap_daemon_login)))
-    {
-      MFATAL("Failed to parse bootstrap daemon address");
-      return false;
     }
 
     boost::optional<epee::net_utils::http::login> http_login{};
@@ -417,17 +336,6 @@ namespace cryptonote
     bool r;
     if (use_bootstrap_daemon_if_necessary<COMMAND_RPC_GET_INFO>(invoke_http_mode::JON, "/getinfo", req, res, r))
     {
-      {
-        boost::shared_lock<boost::shared_mutex> lock(m_bootstrap_daemon_mutex);
-        if (m_bootstrap_daemon.get() != nullptr)
-        {
-          res.bootstrap_daemon_address = m_bootstrap_daemon->address();
-        }
-      }
-      crypto::hash top_hash;
-      m_core.get_blockchain_top(res.height_without_bootstrap, top_hash);
-      ++res.height_without_bootstrap; // turn top block height into blockchain height
-      res.was_bootstrap_ever_used = true;
       return r;
     }
 
@@ -466,21 +374,6 @@ namespace cryptonote
     res.start_time = restricted ? 0 : (uint64_t)m_core.get_start_time();
     res.free_space = restricted ? std::numeric_limits<uint64_t>::max() : m_core.get_free_space();
     res.offline = m_core.offline();
-    res.height_without_bootstrap = restricted ? 0 : res.height;
-    if (restricted)
-    {
-      res.bootstrap_daemon_address = "";
-      res.was_bootstrap_ever_used = false;
-    }
-    else
-    {
-      boost::shared_lock<boost::shared_mutex> lock(m_bootstrap_daemon_mutex);
-      if (m_bootstrap_daemon.get() != nullptr)
-      {
-        res.bootstrap_daemon_address = m_bootstrap_daemon->address();
-      }
-      res.was_bootstrap_ever_used = m_was_bootstrap_ever_used;
-    }
     res.database_size = m_core.get_blockchain_storage().get_db().get_database_size();
     if (restricted)
       res.database_size = round_up(res.database_size, 5ull* 1024 * 1024 * 1024);
@@ -1128,15 +1021,7 @@ namespace cryptonote
     bool skip_validation = false;
     if (!restricted)
     {
-      boost::shared_lock<boost::shared_mutex> lock(m_bootstrap_daemon_mutex);
-      if (m_bootstrap_daemon.get() != nullptr)
-      {
-        skip_validation = !check_core_ready();
-      }
-      else
-      {
-        CHECK_CORE_READY();
-      }
+      CHECK_CORE_READY();
     }
 
     CHECK_PAYMENT_MIN1(req, res, COST_PER_TX_RELAY, false);
@@ -1374,45 +1259,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_public_nodes(const COMMAND_RPC_GET_PUBLIC_NODES::request& req, COMMAND_RPC_GET_PUBLIC_NODES::response& res, const connection_context *ctx)
-  {
-    RPC_TRACKER(get_public_nodes);
-
-    COMMAND_RPC_GET_PEER_LIST::response peer_list_res;
-    const bool success = on_get_peer_list(COMMAND_RPC_GET_PEER_LIST::request(), peer_list_res, ctx);
-    res.status = peer_list_res.status;
-    if (!success)
-    {      
-      return false;
-    }
-    if (res.status != CORE_RPC_STATUS_OK)
-    {
-      return true;
-    }
-
-    const auto collect = [](const std::vector<peer> &peer_list, std::vector<public_node> &public_nodes)
-    {
-      for (const auto &entry : peer_list)
-      {
-        if (entry.rpc_port != 0)
-        {
-          public_nodes.emplace_back(entry);
-        }
-      }
-    };
-
-    if (req.white)
-    {
-      collect(peer_list_res.white_list, res.white);
-    }
-    if (req.gray)
-    {
-      collect(peer_list_res.gray_list, res.gray);
-    }
-
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_set_log_hash_rate(const COMMAND_RPC_SET_LOG_HASH_RATE::request& req, COMMAND_RPC_SET_LOG_HASH_RATE::response& res, const connection_context *ctx)
   {
     RPC_TRACKER(set_log_hash_rate);
@@ -1545,28 +1391,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_set_bootstrap_daemon(const COMMAND_RPC_SET_BOOTSTRAP_DAEMON::request& req, COMMAND_RPC_SET_BOOTSTRAP_DAEMON::response& res, const connection_context *ctx)
-  {
-    PERF_TIMER(on_set_bootstrap_daemon);
-
-    boost::optional<epee::net_utils::http::login> credentials;
-    if (!req.username.empty() || !req.password.empty())
-    {
-      credentials = epee::net_utils::http::login(req.username, req.password);
-    }
-    
-    if (set_bootstrap_daemon(req.address, credentials))
-    {
-      res.status = CORE_RPC_STATUS_OK;
-    }
-    else
-    {
-      res.status = "Failed to set bootstrap daemon";
-    }    
-
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_stop_daemon(const COMMAND_RPC_STOP_DAEMON::request& req, COMMAND_RPC_STOP_DAEMON::response& res, const connection_context *ctx)
   {
     RPC_TRACKER(stop_daemon);
@@ -1580,14 +1404,6 @@ namespace cryptonote
   bool core_rpc_server::on_getblockcount(const COMMAND_RPC_GETBLOCKCOUNT::request& req, COMMAND_RPC_GETBLOCKCOUNT::response& res, const connection_context *ctx)
   {
     RPC_TRACKER(getblockcount);
-    {
-      boost::shared_lock<boost::shared_mutex> lock(m_bootstrap_daemon_mutex);
-      if (m_should_use_bootstrap_daemon)
-      {
-        res.status = "This command is unsupported for bootstrap daemon";
-        return false;
-      }
-    }
     res.count = m_core.get_current_blockchain_height();
     res.status = CORE_RPC_STATUS_OK;
     return true;
@@ -1596,14 +1412,6 @@ namespace cryptonote
   bool core_rpc_server::on_getblockhash(const COMMAND_RPC_GETBLOCKHASH::request& req, COMMAND_RPC_GETBLOCKHASH::response& res, epee::json_rpc::error& error_resp, const connection_context *ctx)
   {
     RPC_TRACKER(getblockhash);
-    {
-      boost::shared_lock<boost::shared_mutex> lock(m_bootstrap_daemon_mutex);
-      if (m_should_use_bootstrap_daemon)
-      {
-        res = "This command is unsupported for bootstrap daemon";
-        return false;
-      }
-    }
     if(req.size() != 1)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
@@ -1777,14 +1585,6 @@ namespace cryptonote
   bool core_rpc_server::on_submitblock(const COMMAND_RPC_SUBMITBLOCK::request& req, COMMAND_RPC_SUBMITBLOCK::response& res, epee::json_rpc::error& error_resp, const connection_context *ctx)
   {
     RPC_TRACKER(submitblock);
-    {
-      boost::shared_lock<boost::shared_mutex> lock(m_bootstrap_daemon_mutex);
-      if (m_should_use_bootstrap_daemon)
-      {
-        res.status = "This command is unsupported for bootstrap daemon";
-        return false;
-      }
-    }
     CHECK_CORE_READY();
     if(req.size()!=1)
     {
@@ -1937,81 +1737,7 @@ namespace cryptonote
   bool core_rpc_server::use_bootstrap_daemon_if_necessary(const invoke_http_mode &mode, const std::string &command_name, const typename COMMAND_TYPE::request& req, typename COMMAND_TYPE::response& res, bool &r)
   {
     res.untrusted = false;
-
-    boost::upgrade_lock<boost::shared_mutex> upgrade_lock(m_bootstrap_daemon_mutex);
-
-    if (m_bootstrap_daemon.get() == nullptr)
-    {
-      return false;
-    }
-
-    if (!m_should_use_bootstrap_daemon)
-    {
-      MINFO("The local daemon is fully synced. Not switching back to the bootstrap daemon");
-      return false;
-    }
-
-    auto current_time = std::chrono::system_clock::now();
-    if (!m_p2p.get_payload_object().no_sync() &&
-        current_time - m_bootstrap_height_check_time > std::chrono::seconds(30))  // update every 30s
-    {
-      {
-        boost::upgrade_to_unique_lock<boost::shared_mutex> lock(upgrade_lock);
-        m_bootstrap_height_check_time = current_time;
-      }
-
-      boost::optional<uint64_t> bootstrap_daemon_height = m_bootstrap_daemon->get_height();
-      if (!bootstrap_daemon_height)
-      {
-        MERROR("Failed to fetch bootstrap daemon height");
-        return false;
-      }
-
-      uint64_t target_height = m_core.get_target_blockchain_height();
-      if (*bootstrap_daemon_height < target_height)
-      {
-        MINFO("Bootstrap daemon is out of sync");
-        return m_bootstrap_daemon->handle_result(false, {});
-      }
-
-      uint64_t top_height = m_core.get_current_blockchain_height();
-      m_should_use_bootstrap_daemon = top_height + 10 < *bootstrap_daemon_height;
-      MINFO((m_should_use_bootstrap_daemon ? "Using" : "Not using") << " the bootstrap daemon (our height: " << top_height << ", bootstrap daemon's height: " << *bootstrap_daemon_height << ")");
-
-      if (!m_should_use_bootstrap_daemon)
-        return false;
-    }
-
-    if (mode == invoke_http_mode::JON)
-    {
-      r = m_bootstrap_daemon->invoke_http_json(command_name, req, res);
-    }
-    else if (mode == invoke_http_mode::BIN)
-    {
-      r = m_bootstrap_daemon->invoke_http_bin(command_name, req, res);
-    }
-    else if (mode == invoke_http_mode::JON_RPC)
-    {
-      r = m_bootstrap_daemon->invoke_http_json_rpc(command_name, req, res);
-    }
-    else
-    {
-      MERROR("Unknown invoke_http_mode: " << mode);
-      return false;
-    }
-
-    {
-      boost::upgrade_to_unique_lock<boost::shared_mutex> lock(upgrade_lock);
-      m_was_bootstrap_ever_used = true;
-    }
-
-    if (r && res.status != CORE_RPC_STATUS_PAYMENT_REQUIRED && res.status != CORE_RPC_STATUS_OK)
-    {
-      MINFO("Failing RPC " << command_name << " due to peer return status " << res.status);
-      r = false;
-    }
-    res.untrusted = true;
-    return r;
+    return false;
   }
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_last_block_header(const COMMAND_RPC_GET_LAST_BLOCK_HEADER::request& req, COMMAND_RPC_GET_LAST_BLOCK_HEADER::response& res, epee::json_rpc::error& error_resp, const connection_context *ctx)
@@ -3263,19 +2989,6 @@ namespace cryptonote
       "restricted-rpc"
     , "Restrict RPC to view only commands and do not return privacy sensitive data in RPC calls"
     , false
-    };
-
-  const command_line::arg_descriptor<std::string> core_rpc_server::arg_bootstrap_daemon_address = {
-      "bootstrap-daemon-address"
-    , "URL of a 'bootstrap' remote daemon that the connected wallets can use while this daemon is still not fully synced.\n"
-      "Use 'auto' to enable automatic public nodes discovering and bootstrap daemon switching"
-    , ""
-    };
-
-  const command_line::arg_descriptor<std::string> core_rpc_server::arg_bootstrap_daemon_login = {
-      "bootstrap-daemon-login"
-    , "Specify username:password for the bootstrap daemon login"
-    , ""
     };
 
   const command_line::arg_descriptor<std::string> core_rpc_server::arg_rpc_payment_address = {

@@ -30,12 +30,9 @@
 
 #pragma  once 
 
-#include <memory>
-
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include "bootstrap_daemon.h"
 #include "net/http_server_impl_base.h"
 #include "net/http_client.h"
 #include "core_rpc_server_commands_defs.h"
@@ -60,7 +57,6 @@ namespace cryptonote
   {
   public:
 
-    static const command_line::arg_descriptor<bool> arg_public_node;
     static const command_line::arg_descriptor<std::string, false, true, 2> arg_rpc_bind_port;
     static const command_line::arg_descriptor<std::string> arg_rpc_restricted_bind_port;
     static const command_line::arg_descriptor<bool> arg_restricted_rpc;
@@ -70,8 +66,6 @@ namespace cryptonote
     static const command_line::arg_descriptor<std::string> arg_rpc_ssl_ca_certificates;
     static const command_line::arg_descriptor<std::vector<std::string>> arg_rpc_ssl_allowed_fingerprints;
     static const command_line::arg_descriptor<bool> arg_rpc_ssl_allow_any_cert;
-    static const command_line::arg_descriptor<std::string> arg_bootstrap_daemon_address;
-    static const command_line::arg_descriptor<std::string> arg_bootstrap_daemon_login;
     static const command_line::arg_descriptor<std::string> arg_rpc_payment_address;
     static const command_line::arg_descriptor<uint64_t> arg_rpc_payment_difficulty;
     static const command_line::arg_descriptor<uint64_t> arg_rpc_payment_credits;
@@ -118,7 +112,6 @@ namespace cryptonote
       MAP_URI_AUTO_JON2_IF("/mining_status", on_mining_status, COMMAND_RPC_MINING_STATUS, !m_restricted)
       MAP_URI_AUTO_JON2_IF("/save_bc", on_save_bc, COMMAND_RPC_SAVE_BC, !m_restricted)
       MAP_URI_AUTO_JON2_IF("/get_peer_list", on_get_peer_list, COMMAND_RPC_GET_PEER_LIST, !m_restricted)
-      MAP_URI_AUTO_JON2("/get_public_nodes", on_get_public_nodes, COMMAND_RPC_GET_PUBLIC_NODES)
       MAP_URI_AUTO_JON2_IF("/set_log_hash_rate", on_set_log_hash_rate, COMMAND_RPC_SET_LOG_HASH_RATE, !m_restricted)
       MAP_URI_AUTO_JON2_IF("/set_log_level", on_set_log_level, COMMAND_RPC_SET_LOG_LEVEL, !m_restricted)
       MAP_URI_AUTO_JON2_IF("/set_log_categories", on_set_log_categories, COMMAND_RPC_SET_LOG_CATEGORIES, !m_restricted)
@@ -126,7 +119,6 @@ namespace cryptonote
       MAP_URI_AUTO_JON2("/get_transaction_pool_hashes.bin", on_get_transaction_pool_hashes_bin, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN)
       MAP_URI_AUTO_JON2("/get_transaction_pool_hashes", on_get_transaction_pool_hashes, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES)
       MAP_URI_AUTO_JON2("/get_transaction_pool_stats", on_get_transaction_pool_stats, COMMAND_RPC_GET_TRANSACTION_POOL_STATS)
-      MAP_URI_AUTO_JON2_IF("/set_bootstrap_daemon", on_set_bootstrap_daemon, COMMAND_RPC_SET_BOOTSTRAP_DAEMON, !m_restricted)
       MAP_URI_AUTO_JON2_IF("/stop_daemon", on_stop_daemon, COMMAND_RPC_STOP_DAEMON, !m_restricted)
       MAP_URI_AUTO_JON2("/get_info", on_get_info, COMMAND_RPC_GET_INFO)
       MAP_URI_AUTO_JON2("/getinfo", on_get_info, COMMAND_RPC_GET_INFO)
@@ -204,7 +196,6 @@ namespace cryptonote
     bool on_get_net_stats(const COMMAND_RPC_GET_NET_STATS::request& req, COMMAND_RPC_GET_NET_STATS::response& res, const connection_context *ctx = NULL);
     bool on_save_bc(const COMMAND_RPC_SAVE_BC::request& req, COMMAND_RPC_SAVE_BC::response& res, const connection_context *ctx = NULL);
     bool on_get_peer_list(const COMMAND_RPC_GET_PEER_LIST::request& req, COMMAND_RPC_GET_PEER_LIST::response& res, const connection_context *ctx = NULL);
-    bool on_get_public_nodes(const COMMAND_RPC_GET_PUBLIC_NODES::request& req, COMMAND_RPC_GET_PUBLIC_NODES::response& res, const connection_context *ctx = NULL);
     bool on_set_log_hash_rate(const COMMAND_RPC_SET_LOG_HASH_RATE::request& req, COMMAND_RPC_SET_LOG_HASH_RATE::response& res, const connection_context *ctx = NULL);
     bool on_set_log_level(const COMMAND_RPC_SET_LOG_LEVEL::request& req, COMMAND_RPC_SET_LOG_LEVEL::response& res, const connection_context *ctx = NULL);
     bool on_set_log_categories(const COMMAND_RPC_SET_LOG_CATEGORIES::request& req, COMMAND_RPC_SET_LOG_CATEGORIES::response& res, const connection_context *ctx = NULL);
@@ -212,7 +203,6 @@ namespace cryptonote
     bool on_get_transaction_pool_hashes_bin(const COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN::request& req, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN::response& res, const connection_context *ctx = NULL);
     bool on_get_transaction_pool_hashes(const COMMAND_RPC_GET_TRANSACTION_POOL_HASHES::request& req, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES::response& res, const connection_context *ctx = NULL);
     bool on_get_transaction_pool_stats(const COMMAND_RPC_GET_TRANSACTION_POOL_STATS::request& req, COMMAND_RPC_GET_TRANSACTION_POOL_STATS::response& res, const connection_context *ctx = NULL);
-    bool on_set_bootstrap_daemon(const COMMAND_RPC_SET_BOOTSTRAP_DAEMON::request& req, COMMAND_RPC_SET_BOOTSTRAP_DAEMON::response& res, const connection_context *ctx = NULL);
     bool on_stop_daemon(const COMMAND_RPC_STOP_DAEMON::request& req, COMMAND_RPC_STOP_DAEMON::response& res, const connection_context *ctx = NULL);
     bool on_get_limit(const COMMAND_RPC_GET_LIMIT::request& req, COMMAND_RPC_GET_LIMIT::response& res, const connection_context *ctx = NULL);
     bool on_set_limit(const COMMAND_RPC_SET_LIMIT::request& req, COMMAND_RPC_SET_LIMIT::response& res, const connection_context *ctx = NULL);
@@ -267,9 +257,6 @@ private:
     //utils
     uint64_t get_block_reward(const block& blk);
     bool fill_block_header_response(const block& blk, bool orphan_status, uint64_t height, const crypto::hash& hash, block_header_response& response, bool fill_pow_hash);
-    std::map<std::string, bool> get_public_nodes(uint32_t credits_per_hash_threshold = 0);
-    bool set_bootstrap_daemon(const std::string &address, const std::string &username_password);
-    bool set_bootstrap_daemon(const std::string &address, const boost::optional<epee::net_utils::http::login> &credentials);
     enum invoke_http_mode { JON, BIN, JON_RPC };
     template <typename COMMAND_TYPE>
     bool use_bootstrap_daemon_if_necessary(const invoke_http_mode &mode, const std::string &command_name, const typename COMMAND_TYPE::request& req, typename COMMAND_TYPE::response& res, bool &r);
@@ -278,11 +265,6 @@ private:
     
     core& m_core;
     nodetool::node_server<cryptonote::t_cryptonote_protocol_handler<cryptonote::core> >& m_p2p;
-    boost::shared_mutex m_bootstrap_daemon_mutex;
-    std::unique_ptr<bootstrap_daemon> m_bootstrap_daemon;
-    bool m_should_use_bootstrap_daemon;
-    std::chrono::system_clock::time_point m_bootstrap_height_check_time;
-    bool m_was_bootstrap_ever_used;
     bool m_restricted;
     epee::critical_section m_host_fails_score_lock;
     std::map<std::string, uint64_t> m_host_fails_score;
