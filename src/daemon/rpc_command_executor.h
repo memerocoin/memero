@@ -165,8 +165,6 @@ public:
 
   bool version();
 
-  bool rpc_payments();
-
   bool flush_cache(bool bad_txs, bool invalid_blocks);
 };
 

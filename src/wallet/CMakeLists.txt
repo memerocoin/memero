@@ -37,7 +37,6 @@ set(wallet_sources
   node_rpc_proxy.cpp
   message_store.cpp
   message_transporter.cpp
-  wallet_rpc_payments.cpp
 )
 
 set(wallet_private_headers
@@ -50,8 +49,7 @@ set(wallet_private_headers
   ringdb.h
   node_rpc_proxy.h
   message_store.h
-  message_transporter.h
-  wallet_rpc_helpers.h)
+  message_transporter.h)
 
 monero_private_headers(wallet
   ${wallet_private_headers})
