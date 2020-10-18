@@ -1,7 +1,6 @@
 test-1:
 	../../build/bin/lolnerod \
 --testnet \
---no-igd \
 --hide-my-port \
 --data-dir ./testnet/node_01 \
 --p2p-bind-ip 127.0.0.1 \
@@ -15,7 +14,6 @@ test-1:
 test-2:
 	../../build/bin/lolnerod \
 --testnet \
---no-igd \
 --hide-my-port \
 --data-dir ./testnet/node_02 \
 --p2p-bind-ip 127.0.0.1 \
@@ -43,7 +41,6 @@ clear-test:
 
 main-1:
 	../../build/bin/lolnerod \
---no-igd \
 --hide-my-port \
 --data-dir ./mainnet/node_01 \
 --p2p-bind-port 41000 \
@@ -52,7 +49,6 @@ main-1:
 
 main-2:
 	../../build/bin/lolnerod \
---no-igd \
 --hide-my-port \
 --data-dir ./mainnet/node_02 \
 --p2p-bind-port 41001 \
