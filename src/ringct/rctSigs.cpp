@@ -107,65 +107,6 @@ namespace rct {
       catch (...) { return false; }
     }
 
-    //Borromean (c.f. gmax/andytoshi's paper)
-    boroSig genBorromean(const key64 x, const key64 P1, const key64 P2, const bits indices) {
-        key64 L[2], alpha;
-        auto wiper = epee::misc_utils::create_scope_leave_handler([&](){memwipe(alpha, sizeof(alpha));});
-        key c;
-        int naught = 0, prime = 0, ii = 0, jj=0;
-        boroSig bb;
-        for (ii = 0 ; ii < 64 ; ii++) {
-            naught = indices[ii]; prime = (indices[ii] + 1) % 2;
-            skGen(alpha[ii]);
-            scalarmultBase(L[naught][ii], alpha[ii]);
-            if (naught == 0) {
-                skGen(bb.s1[ii]);
-                c = hash_to_scalar(L[naught][ii]);
-                addKeys2(L[prime][ii], bb.s1[ii], c, P2[ii]);
-            }
-        }
-        bb.ee = hash_to_scalar(L[1]); //or L[1]..
-        key LL, cc;
-        for (jj = 0 ; jj < 64 ; jj++) {
-            if (!indices[jj]) {
-                sc_mulsub(bb.s0[jj].bytes, x[jj].bytes, bb.ee.bytes, alpha[jj].bytes);
-            } else {
-                skGen(bb.s0[jj]);
-                addKeys2(LL, bb.s0[jj], bb.ee, P1[jj]); //different L0
-                cc = hash_to_scalar(LL);
-                sc_mulsub(bb.s1[jj].bytes, x[jj].bytes, cc.bytes, alpha[jj].bytes);
-            }
-        }
-        return bb;
-    }
-    
-    //see above.
-    bool verifyBorromean(const boroSig &bb, const ge_p3 P1[64], const ge_p3 P2[64]) {
-        key64 Lv1; key chash, LL;
-        int ii = 0;
-        ge_p2 p2;
-        for (ii = 0 ; ii < 64 ; ii++) {
-            // equivalent of: addKeys2(LL, bb.s0[ii], bb.ee, P1[ii]);
-            ge_double_scalarmult_base_vartime(&p2, bb.ee.bytes, &P1[ii], bb.s0[ii].bytes);
-            ge_tobytes(LL.bytes, &p2);
-            chash = hash_to_scalar(LL);
-            // equivalent of: addKeys2(Lv1[ii], bb.s1[ii], chash, P2[ii]);
-            ge_double_scalarmult_base_vartime(&p2, chash.bytes, &P2[ii], bb.s1[ii].bytes);
-            ge_tobytes(Lv1[ii].bytes, &p2);
-        }
-        key eeComputed = hash_to_scalar(Lv1); //hash function fine
-        return equalKeys(eeComputed, bb.ee);
-    }
-
-    bool verifyBorromean(const boroSig &bb, const key64 P1, const key64 P2) {
-      ge_p3 P1_p3[64], P2_p3[64];
-      for (size_t i = 0 ; i < 64 ; ++i) {
-        CHECK_AND_ASSERT_MES_L1(ge_frombytes_vartime(&P1_p3[i], P1[i].bytes) == 0, false, "point conv failed");
-        CHECK_AND_ASSERT_MES_L1(ge_frombytes_vartime(&P2_p3[i], P2[i].bytes) == 0, false, "point conv failed");
-      }
-      return verifyBorromean(bb, P1_p3, P2_p3);
-    }
-
     // Generate a CLSAG signature
     // See paper by Goodell et al. (https://eprint.iacr.org/2019/654)
     //
@@ -495,80 +436,6 @@ namespace rct {
     }
     
 
-
-    //proveRange and verRange
-    //proveRange gives C, and mask such that \sumCi = C
-    //   c.f. https://eprint.iacr.org/2015/1098 section 5.1
-    //   and Ci is a commitment to either 0 or 2^i, i=0,...,63
-    //   thus this proves that "amount" is in [0, 2^64]
-    //   mask is a such that C = aG + bH, and b = amount
-    //verRange verifies that \sum Ci = C and that each Ci is a commitment to 0 or 2^i
-    rangeSig proveRange(key & C, key & mask, const xmr_amount & amount) {
-        sc_0(mask.bytes);
-        identity(C);
-        bits b;
-        d2b(b, amount);
-        rangeSig sig;
-        key64 ai;
-        key64 CiH;
-        int i = 0;
-        for (i = 0; i < ATOMS; i++) {
-            skGen(ai[i]);
-            if (b[i] == 0) {
-                scalarmultBase(sig.Ci[i], ai[i]);
-            }
-            if (b[i] == 1) {
-                addKeys1(sig.Ci[i], ai[i], H2[i]);
-            }
-            subKeys(CiH[i], sig.Ci[i], H2[i]);
-            sc_add(mask.bytes, mask.bytes, ai[i].bytes);
-            addKeys(C, C, sig.Ci[i]);
-        }
-        sig.asig = genBorromean(ai, sig.Ci, CiH, b);
-        return sig;
-    }
-
-    //proveRange and verRange
-    //proveRange gives C, and mask such that \sumCi = C
-    //   c.f. https://eprint.iacr.org/2015/1098 section 5.1
-    //   and Ci is a commitment to either 0 or 2^i, i=0,...,63
-    //   thus this proves that "amount" is in [0, 2^64]
-    //   mask is a such that C = aG + bH, and b = amount
-    //verRange verifies that \sum Ci = C and that each Ci is a commitment to 0 or 2^i
-    bool verRange(const key & C, const rangeSig & as) {
-      try
-      {
-        PERF_TIMER(verRange);
-        ge_p3 CiH[64], asCi[64];
-        int i = 0;
-        ge_p3 Ctmp_p3 = ge_p3_identity;
-        for (i = 0; i < 64; i++) {
-            // faster equivalent of:
-            // subKeys(CiH[i], as.Ci[i], H2[i]);
-            // addKeys(Ctmp, Ctmp, as.Ci[i]);
-            ge_cached cached;
-            ge_p3 p3;
-            ge_p1p1 p1;
-            CHECK_AND_ASSERT_MES_L1(ge_frombytes_vartime(&p3, H2[i].bytes) == 0, false, "point conv failed");
-            ge_p3_to_cached(&cached, &p3);
-            CHECK_AND_ASSERT_MES_L1(ge_frombytes_vartime(&asCi[i], as.Ci[i].bytes) == 0, false, "point conv failed");
-            ge_sub(&p1, &asCi[i], &cached);
-            ge_p3_to_cached(&cached, &asCi[i]);
-            ge_p1p1_to_p3(&CiH[i], &p1);
-            ge_add(&p1, &Ctmp_p3, &cached);
-            ge_p1p1_to_p3(&Ctmp_p3, &p1);
-        }
-        key Ctmp;
-        ge_p3_tobytes(Ctmp.bytes, &Ctmp_p3);
-        if (!equalKeys(C, Ctmp))
-          return false;
-        if (!verifyBorromean(as.asig, asCi, CiH))
-          return false;
-        return true;
-      }
-      // we can get deep throws from ge_frombytes_vartime if input isn't valid
-      catch (...) { return false; }
-    }
 
     key get_pre_mlsag_hash(const rctSig &rv, hw::device &hwdev)
     {
@@ -1206,16 +1073,9 @@ namespace rct {
             return false;
           }
 
-          if (bulletproof)
           {
             for (size_t i = 0; i < rv.p.bulletproofs.size(); i++)
               proofs.push_back(&rv.p.bulletproofs[i]);
-          }
-          else
-          {
-            for (size_t i = 0; i < rv.p.rangeSigs.size(); i++)
-              tpool.submit(&waiter, [&, i, offset] { results[i+offset] = verRange(rv.outPk[i].mask, rv.p.rangeSigs[i]); });
-            offset += rv.p.rangeSigs.size();
           }
         }
         if (!proofs.empty() && !verBulletproof(proofs))

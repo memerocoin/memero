@@ -214,15 +214,6 @@ namespace rct {
         }
     }
 
-    bool is_rct_borromean(int type)
-    {
-        switch (type)
-        {
-            default:
-                return false;
-        }
-    }
-
     size_t n_bulletproof_amounts(const Bulletproof &proof)
     {
         CHECK_AND_ASSERT_MES(proof.L.size() >= 6, 0, "Invalid bulletproof L size");
