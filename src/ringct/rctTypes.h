@@ -268,6 +268,12 @@ namespace rct {
         VARINT_FIELD(bp_version)
       END_SERIALIZE()
     };
+
+    const RCTConfig lol_rct_config {
+      RangeProofPaddedBulletproof,
+      3
+    };
+
     struct rctSigBase {
         uint8_t type;
         key message;
