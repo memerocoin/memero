@@ -195,7 +195,6 @@ namespace
                             "  account tag_description <tag_name> <description>");
   const char* USAGE_ADDRESS("address [ new <label text with white spaces allowed> | all | <index_min> [<index_max>] | label <index> <label text with white spaces allowed> | device [<index>] | one-off <account> <subaddress>]");
   const char* USAGE_INTEGRATED_ADDRESS("integrated_address [device] [<payment_id> | <address>]");
-  const char* USAGE_ADDRESS_BOOK("address_book [(add (<address>|<integrated address>) [<description possibly with whitespaces>])|(delete <index>)]");
   const char* USAGE_SET_VARIABLE("set <option> [<value>]");
   const char* USAGE_GET_TX_KEY("get_tx_key <txid>");
   const char* USAGE_SET_TX_KEY("set_tx_key <txid> <tx_key> [<subaddress>]");
@@ -2870,10 +2869,6 @@ simple_wallet::simple_wallet()
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::print_integrated_address, _1),
                            tr(USAGE_INTEGRATED_ADDRESS),
                            tr("Encode a payment ID into an integrated address for the current wallet public address (no argument uses a random payment ID), or decode an integrated address to standard address and payment ID"));
-  m_cmd_binder.set_handler("address_book",
-                           boost::bind(&simple_wallet::on_command, this, &simple_wallet::address_book,_1),
-                           tr(USAGE_ADDRESS_BOOK),
-                           tr("Print all entries in the address book, optionally adding/deleting an entry to/from it."));
   m_cmd_binder.set_handler("save",
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::save, _1),
                            tr("Save the wallet data."));
@@ -8860,66 +8855,6 @@ bool simple_wallet::print_integrated_address(const std::vector<std::string> &arg
     }
   }
   fail_msg_writer() << tr("failed to parse payment ID or address");
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::address_book(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  if (args.size() == 0)
-  {
-  }
-  else if (args.size() == 1 || (args[0] != "add" && args[0] != "delete"))
-  {
-    PRINT_USAGE(USAGE_ADDRESS_BOOK);
-    return true;
-  }
-  else if (args[0] == "add")
-  {
-    cryptonote::address_parse_info info;
-    if(!cryptonote::get_account_address_from_str_or_url(info, m_wallet->nettype(), args[1], oa_prompter))
-    {
-      fail_msg_writer() << tr("failed to parse address");
-      return true;
-    }
-    size_t description_start = 2;
-    std::string description;
-    for (size_t i = description_start; i < args.size(); ++i)
-    {
-      if (i > description_start)
-        description += " ";
-      description += args[i];
-    }
-    m_wallet->add_address_book_row(info.address, info.has_payment_id ? &info.payment_id : NULL, description, info.is_subaddress);
-  }
-  else
-  {
-    size_t row_id;
-    if(!epee::string_tools::get_xtype_from_string(row_id, args[1]))
-    {
-      fail_msg_writer() << tr("failed to parse index");
-      return true;
-    }
-    m_wallet->delete_address_book_row(row_id);
-  }
-  auto address_book = m_wallet->get_address_book();
-  if (address_book.empty())
-  {
-    success_msg_writer() << tr("Address book is empty.");
-  }
-  else
-  {
-    for (size_t i = 0; i < address_book.size(); ++i) {
-      auto& row = address_book[i];
-      success_msg_writer() << tr("Index: ") << i;
-      std::string address;
-      if (row.m_has_payment_id)
-        address = cryptonote::get_account_integrated_address_as_str(m_wallet->nettype(), row.m_address, row.m_payment_id);
-      else
-        address = get_account_address_as_str(m_wallet->nettype(), row.m_is_subaddress, row.m_address);
-      success_msg_writer() << tr("Address: ") << address;
-      success_msg_writer() << tr("Description: ") << row.m_description << "\n";
-    }
-  }
   return true;
 }
 //----------------------------------------------------------------------------------------------------

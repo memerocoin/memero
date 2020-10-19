@@ -621,25 +621,6 @@ private:
       END_SERIALIZE()
     };
 
-    // GUI Address book
-    struct address_book_row
-    {
-      cryptonote::account_public_address m_address;
-      crypto::hash8 m_payment_id;
-      std::string m_description;   
-      bool m_is_subaddress;
-      bool m_has_payment_id;
-
-      BEGIN_SERIALIZE_OBJECT()
-        VERSION_FIELD(0)
-        FIELD(m_address)
-        FIELD(m_payment_id)
-        FIELD(m_description)
-        FIELD(m_is_subaddress)
-        FIELD(m_has_payment_id)
-      END_SERIALIZE()
-    };
-
     struct reserve_proof_entry
     {
       crypto::hash txid;
@@ -1064,7 +1045,6 @@ private:
       a & m_pub_keys.parent();
       if(ver < 16)
         return;
-      a & m_address_book;
       if(ver < 17)
         return;
       if (ver < 22)
@@ -1129,7 +1109,6 @@ private:
       FIELD(m_tx_notes)
       FIELD(m_unconfirmed_payments)
       FIELD(m_pub_keys)
-      FIELD(m_address_book)
       FIELD(m_scanned_pool_txs[0])
       FIELD(m_scanned_pool_txs[1])
       FIELD(m_subaddresses)
@@ -1251,14 +1230,6 @@ private:
      */
     bool check_reserve_proof(const cryptonote::account_public_address &address, const std::string &message, const std::string &sig_str, uint64_t &total, uint64_t &spent);
 
-   /*!
-    * \brief GUI Address book get/store
-    */
-    std::vector<address_book_row> get_address_book() const { return m_address_book; }
-    bool add_address_book_row(const cryptonote::account_public_address &address, const crypto::hash8 *payment_id, const std::string &description, bool is_subaddress);
-    bool set_address_book_row(size_t row_id, const cryptonote::account_public_address &address, const crypto::hash8 *payment_id, const std::string &description, bool is_subaddress);
-    bool delete_address_book_row(std::size_t row_id);
-        
     uint64_t get_num_rct_outputs();
     size_t get_num_transfer_details() const { return m_transfers.size(); }
     const transfer_details &get_transfer_details(size_t idx) const;
@@ -1615,7 +1586,6 @@ private:
     std::vector<std::vector<std::string>> m_subaddress_labels;
     serializable_unordered_map<crypto::hash, std::string> m_tx_notes;
     serializable_unordered_map<std::string, std::string> m_attributes;
-    std::vector<tools::wallet2::address_book_row> m_address_book;
     std::pair<serializable_map<std::string, std::string>, std::vector<std::string>> m_account_tags;
     uint64_t m_upper_transaction_weight_limit; //TODO: auto-calc this value or request from daemon, now use some fixed value
     const std::vector<std::vector<tools::wallet2::multisig_info>> *m_multisig_rescan_info;
@@ -1722,7 +1692,6 @@ BOOST_CLASS_VERSION(tools::wallet2::payment_details, 5)
 BOOST_CLASS_VERSION(tools::wallet2::pool_payment_details, 1)
 BOOST_CLASS_VERSION(tools::wallet2::unconfirmed_transfer_details, 8)
 BOOST_CLASS_VERSION(tools::wallet2::confirmed_transfer_details, 6)
-BOOST_CLASS_VERSION(tools::wallet2::address_book_row, 18)
 BOOST_CLASS_VERSION(tools::wallet2::reserve_proof_entry, 0)
 BOOST_CLASS_VERSION(tools::wallet2::unsigned_tx_set, 0)
 BOOST_CLASS_VERSION(tools::wallet2::signed_tx_set, 1)
@@ -2039,44 +2008,6 @@ namespace boost
     {
       a & x.m_pd;
       a & x.m_double_spend_seen;
-    }
-
-    template <class Archive>
-    inline void serialize(Archive& a, tools::wallet2::address_book_row& x, const boost::serialization::version_type ver)
-    {
-      a & x.m_address;
-      if (ver < 18)
-      {
-        crypto::hash payment_id;
-        a & payment_id;
-        x.m_has_payment_id = !(payment_id == crypto::null_hash);
-        if (x.m_has_payment_id)
-        {
-          bool is_long = false;
-          for (int i = 8; i < 32; ++i)
-            is_long |= payment_id.data[i];
-          if (is_long)
-          {
-            MWARNING("Long payment ID ignored on address book load");
-            x.m_payment_id = crypto::null_hash8;
-            x.m_has_payment_id = false;
-          }
-          else
-            memcpy(x.m_payment_id.data, payment_id.data, 8);
-        }
-      }
-      a & x.m_description;
-      if (ver < 17)
-      {
-        x.m_is_subaddress = false;
-        return;
-      }
-      a & x.m_is_subaddress;
-      if (ver < 18)
-        return;
-      a & x.m_has_payment_id;
-      if (x.m_has_payment_id)
-        a & x.m_payment_id;
     }
 
     template <class Archive>

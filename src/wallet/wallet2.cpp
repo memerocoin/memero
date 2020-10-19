@@ -3181,47 +3181,6 @@ void wallet2::fast_refresh(uint64_t stop_height, uint64_t &blocks_start_height, 
 }
 
 
-bool wallet2::add_address_book_row(const cryptonote::account_public_address &address, const crypto::hash8 *payment_id, const std::string &description, bool is_subaddress)
-{
-  wallet2::address_book_row a;
-  a.m_address = address;
-  a.m_has_payment_id = !!payment_id;
-  a.m_payment_id = payment_id ? *payment_id : crypto::null_hash8;
-  a.m_description = description;
-  a.m_is_subaddress = is_subaddress;
-  
-  auto old_size = m_address_book.size();
-  m_address_book.push_back(a);
-  if(m_address_book.size() == old_size+1)
-    return true;
-  return false;
-}
-
-bool wallet2::set_address_book_row(size_t row_id, const cryptonote::account_public_address &address, const crypto::hash8 *payment_id, const std::string &description, bool is_subaddress)
-{
-  wallet2::address_book_row a;
-  a.m_address = address;
-  a.m_has_payment_id = !!payment_id;
-  a.m_payment_id = payment_id ? *payment_id : crypto::null_hash8;
-  a.m_description = description;
-  a.m_is_subaddress = is_subaddress;
-
-  const auto size = m_address_book.size();
-  if (row_id >= size)
-    return false;
-  m_address_book[row_id] = a;
-  return true;
-}
-
-bool wallet2::delete_address_book_row(std::size_t row_id) {
-  if(m_address_book.size() <= row_id)
-    return false;
-  
-  m_address_book.erase(m_address_book.begin()+row_id);
-
-  return true;
-}
-
 //----------------------------------------------------------------------------------------------------
 std::shared_ptr<std::map<std::pair<uint64_t, uint64_t>, size_t>> wallet2::create_output_tracker_cache() const
 {
@@ -3605,7 +3564,6 @@ bool wallet2::clear()
   m_unconfirmed_payments.clear();
   m_scanned_pool_txs[0].clear();
   m_scanned_pool_txs[1].clear();
-  m_address_book.clear();
   m_subaddresses.clear();
   m_subaddress_labels.clear();
   m_multisig_rounds_passed = 0;
