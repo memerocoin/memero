@@ -192,7 +192,6 @@ namespace rct {
     {
         switch (type)
         {
-            case RCTTypeSimple:
             case RCTTypeBulletproof:
             case RCTTypeBulletproof2:
             case RCTTypeCLSAG:
@@ -219,8 +218,6 @@ namespace rct {
     {
         switch (type)
         {
-            case RCTTypeSimple:
-                return true;
             default:
                 return false;
         }
