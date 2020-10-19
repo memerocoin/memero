@@ -251,7 +251,6 @@ namespace rct {
     //  P = address, C = commitment to amount
     enum {
       RCTTypeNull = 0,
-      RCTTypeFull = 1,
       RCTTypeSimple = 2,
       RCTTypeBulletproof = 3,
       RCTTypeBulletproof2 = 4,
@@ -291,7 +290,7 @@ namespace rct {
           FIELD(type)
           if (type == RCTTypeNull)
             return ar.stream().good();
-          if (type != RCTTypeFull && type != RCTTypeSimple && type != RCTTypeBulletproof && type != RCTTypeBulletproof2 && type != RCTTypeCLSAG)
+          if (type != RCTTypeSimple && type != RCTTypeBulletproof && type != RCTTypeBulletproof2 && type != RCTTypeCLSAG)
             return false;
           VARINT_FIELD(txnFee)
           // inputs/outputs not saved, only here for serialization help
@@ -382,7 +381,7 @@ namespace rct {
             return false;
           if (type == RCTTypeNull)
             return ar.stream().good();
-          if (type != RCTTypeFull && type != RCTTypeSimple && type != RCTTypeBulletproof && type != RCTTypeBulletproof2 && type != RCTTypeCLSAG)
+          if (type != RCTTypeSimple && type != RCTTypeBulletproof && type != RCTTypeBulletproof2 && type != RCTTypeCLSAG)
             return false;
           if (type == RCTTypeBulletproof || type == RCTTypeBulletproof2 || type == RCTTypeCLSAG)
           {

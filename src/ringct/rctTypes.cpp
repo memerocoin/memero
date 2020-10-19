@@ -220,7 +220,6 @@ namespace rct {
         switch (type)
         {
             case RCTTypeSimple:
-            case RCTTypeFull:
                 return true;
             default:
                 return false;
