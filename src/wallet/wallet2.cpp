@@ -10955,19 +10955,6 @@ uint64_t wallet2::get_approximate_blockchain_height() const
   return approx_blockchain_height;
 }
 
-void wallet2::set_tx_note(const crypto::hash &txid, const std::string &note)
-{
-  m_tx_notes[txid] = note;
-}
-
-std::string wallet2::get_tx_note(const crypto::hash &txid) const
-{
-  std::unordered_map<crypto::hash, std::string>::const_iterator i = m_tx_notes.find(txid);
-  if (i == m_tx_notes.end())
-    return std::string();
-  return i->second;
-}
-
 void wallet2::set_tx_device_aux(const crypto::hash &txid, const std::string &aux)
 {
   m_tx_device[txid] = aux;

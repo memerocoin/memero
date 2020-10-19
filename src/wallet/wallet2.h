@@ -1015,7 +1015,6 @@ private:
       a & dummy_refresh_height;
       if(ver < 12)
         return;
-      a & m_tx_notes.parent();
       if(ver < 13)
         return;
       if (ver < 17)
@@ -1106,7 +1105,6 @@ private:
       FIELD(m_payments)
       FIELD(m_tx_keys)
       FIELD(m_confirmed_txs)
-      FIELD(m_tx_notes)
       FIELD(m_unconfirmed_payments)
       FIELD(m_pub_keys)
       FIELD(m_scanned_pool_txs[0])
@@ -1259,9 +1257,6 @@ private:
 
     size_t pop_best_value_from(const transfer_container &transfers, std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
     size_t pop_best_value(std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
-
-    void set_tx_note(const crypto::hash &txid, const std::string &note);
-    std::string get_tx_note(const crypto::hash &txid) const;
 
     void set_tx_device_aux(const crypto::hash &txid, const std::string &aux);
     std::string get_tx_device_aux(const crypto::hash &txid) const;
@@ -1584,7 +1579,6 @@ private:
     cryptonote::account_public_address m_account_public_address;
     serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index> m_subaddresses;
     std::vector<std::vector<std::string>> m_subaddress_labels;
-    serializable_unordered_map<crypto::hash, std::string> m_tx_notes;
     serializable_unordered_map<std::string, std::string> m_attributes;
     std::pair<serializable_map<std::string, std::string>, std::vector<std::string>> m_account_tags;
     uint64_t m_upper_transaction_weight_limit; //TODO: auto-calc this value or request from daemon, now use some fixed value

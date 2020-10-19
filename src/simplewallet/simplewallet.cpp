@@ -208,8 +208,6 @@ namespace
   const char* USAGE_SHOW_TRANSFERS("show_transfers [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
   const char* USAGE_UNSPENT_OUTPUTS("unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]");
   const char* USAGE_RESCAN_BC("rescan_bc [hard|soft|keep_ki] [start_height=0]");
-  const char* USAGE_SET_TX_NOTE("set_tx_note <txid> [free text note]");
-  const char* USAGE_GET_TX_NOTE("get_tx_note <txid>");
   const char* USAGE_GET_DESCRIPTION("get_description");
   const char* USAGE_SET_DESCRIPTION("set_description [free text note]");
   const char* USAGE_SIGN("sign [<account_index>,<address_index>] [--spend|--view] <filename>");
@@ -3021,14 +3019,6 @@ simple_wallet::simple_wallet()
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_blockchain, _1),
                            tr(USAGE_RESCAN_BC),
                            tr("Rescan the blockchain from scratch. If \"hard\" is specified, you will lose any information which can not be recovered from the blockchain itself."));
-  m_cmd_binder.set_handler("set_tx_note",
-                           boost::bind(&simple_wallet::on_command, this, &simple_wallet::set_tx_note, _1),
-                           tr(USAGE_SET_TX_NOTE),
-                           tr("Set an arbitrary string note for a <txid>."));
-  m_cmd_binder.set_handler("get_tx_note",
-                           boost::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_note, _1),
-                           tr(USAGE_GET_TX_NOTE),
-                           tr("Get a string note for a txid."));
   m_cmd_binder.set_handler("set_description",
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::set_description, _1),
                            tr(USAGE_SET_DESCRIPTION),
@@ -7825,7 +7815,7 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
       std::string payment_id = string_tools::pod_to_hex(i->first);
       if (payment_id.substr(16).find_first_not_of('0') == std::string::npos)
         payment_id = payment_id.substr(0,16);
-      std::string note = m_wallet->get_tx_note(pd.m_tx_hash);
+      std::string note;
       std::string destination = m_wallet->get_subaddress_as_str({m_current_subaddress_account, pd.m_subaddr_index.minor});
       const std::string type = pd.m_coinbase ? tr("block") : tr("in");
       const bool unlocked = m_wallet->is_transfer_unlocked(pd.m_unlock_time, pd.m_block_height);
@@ -7880,7 +7870,7 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
       std::string payment_id = string_tools::pod_to_hex(i->second.m_payment_id);
       if (payment_id.substr(16).find_first_not_of('0') == std::string::npos)
         payment_id = payment_id.substr(0,16);
-      std::string note = m_wallet->get_tx_note(i->first);
+      std::string note;
       transfers.push_back({
         "out",
         pd.m_block_height,
@@ -7917,7 +7907,7 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
         std::string payment_id = string_tools::pod_to_hex(i->first);
         if (payment_id.substr(16).find_first_not_of('0') == std::string::npos)
           payment_id = payment_id.substr(0,16);
-        std::string note = m_wallet->get_tx_note(pd.m_tx_hash);
+        std::string note;
         std::string destination = m_wallet->get_subaddress_as_str({m_current_subaddress_account, pd.m_subaddr_index.minor});
         std::string double_spend_note;
         if (i->second.m_double_spend_seen)
@@ -7960,7 +7950,7 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
       std::string payment_id = string_tools::pod_to_hex(i->second.m_payment_id);
       if (payment_id.substr(16).find_first_not_of('0') == std::string::npos)
         payment_id = payment_id.substr(0,16);
-      std::string note = m_wallet->get_tx_note(i->first);
+      std::string note;
       bool is_failed = pd.m_state == tools::wallet2::unconfirmed_transfer_details::failed;
       if ((failed && is_failed) || (!is_failed && pending)) {
         transfers.push_back({
@@ -8858,59 +8848,6 @@ bool simple_wallet::print_integrated_address(const std::vector<std::string> &arg
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::set_tx_note(const std::vector<std::string> &args)
-{
-  if (args.size() == 0)
-  {
-    PRINT_USAGE(USAGE_SET_TX_NOTE);
-    return true;
-  }
-
-  cryptonote::blobdata txid_data;
-  if(!epee::string_tools::parse_hexstr_to_binbuff(args.front(), txid_data) || txid_data.size() != sizeof(crypto::hash))
-  {
-    fail_msg_writer() << tr("failed to parse txid");
-    return true;
-  }
-  crypto::hash txid = *reinterpret_cast<const crypto::hash*>(txid_data.data());
-
-  std::string note = "";
-  for (size_t n = 1; n < args.size(); ++n)
-  {
-    if (n > 1)
-      note += " ";
-    note += args[n];
-  }
-  m_wallet->set_tx_note(txid, note);
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_tx_note(const std::vector<std::string> &args)
-{
-  if (args.size() != 1)
-  {
-    PRINT_USAGE(USAGE_GET_TX_NOTE);
-    return true;
-  }
-
-  cryptonote::blobdata txid_data;
-  if(!epee::string_tools::parse_hexstr_to_binbuff(args.front(), txid_data) || txid_data.size() != sizeof(crypto::hash))
-  {
-    fail_msg_writer() << tr("failed to parse txid");
-    return true;
-  }
-  crypto::hash txid = *reinterpret_cast<const crypto::hash*>(txid_data.data());
-
-  std::string note = m_wallet->get_tx_note(txid);
-  if (note.empty())
-    success_msg_writer() << "no note found";
-  else
-    success_msg_writer() << "note found: " << note;
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
 bool simple_wallet::set_description(const std::vector<std::string> &args)
 {
   // 0 arguments allowed, for setting the description to empty string
@@ -9399,7 +9336,6 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
           success_msg_writer() << "locked for " << get_human_readable_timespan(std::chrono::seconds(pd.m_unlock_time - threshold));
       }
       success_msg_writer() << "Address index: " << pd.m_subaddr_index.minor;
-      success_msg_writer() << "Note: " << m_wallet->get_tx_note(txid);
       return true;
     }
   }
@@ -9430,7 +9366,6 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
       success_msg_writer() << "Change: " << print_money(change);
       success_msg_writer() << "Fee: " << print_money(fee);
       success_msg_writer() << "Destinations: " << dests;
-      success_msg_writer() << "Note: " << m_wallet->get_tx_note(txid);
       return true;
     }
   }
@@ -9457,7 +9392,6 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
         success_msg_writer() << "Amount: " << print_money(pd.m_amount);
         success_msg_writer() << "Payment ID: " << payment_id;
         success_msg_writer() << "Address index: " << pd.m_subaddr_index.minor;
-        success_msg_writer() << "Note: " << m_wallet->get_tx_note(txid);
         if (i->second.m_double_spend_seen)
           success_msg_writer() << tr("Double spend seen on the network: this transaction may or may not end up being mined");
         return true;
@@ -9489,7 +9423,6 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
       success_msg_writer() << "Payment ID: " << payment_id;
       success_msg_writer() << "Change: " << print_money(pd.m_change);
       success_msg_writer() << "Fee: " << print_money(fee);
-      success_msg_writer() << "Note: " << m_wallet->get_tx_note(txid);
       return true;
     }
   }

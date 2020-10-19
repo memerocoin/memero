@@ -342,7 +342,6 @@ namespace tools
     entry.unlock_time = pd.m_unlock_time;
     entry.locked = !m_wallet->is_transfer_unlocked(pd.m_unlock_time, pd.m_block_height);
     entry.fee = pd.m_fee;
-    entry.note = m_wallet->get_tx_note(pd.m_tx_hash);
     entry.type = pd.m_coinbase ? "block" : "in";
     entry.subaddr_index = pd.m_subaddr_index;
     entry.subaddr_indices.push_back(pd.m_subaddr_index);
@@ -363,7 +362,6 @@ namespace tools
     entry.fee = pd.m_amount_in - pd.m_amount_out;
     uint64_t change = pd.m_change == (uint64_t)-1 ? 0 : pd.m_change; // change may not be known
     entry.amount = pd.m_amount_in - change - entry.fee;
-    entry.note = m_wallet->get_tx_note(txid);
 
     for (const auto &d: pd.m_dests) {
       entry.destinations.push_back(wallet_rpc::transfer_destination());
@@ -394,7 +392,6 @@ namespace tools
     entry.amount = pd.m_amount_in - pd.m_change - entry.fee;
     entry.unlock_time = pd.m_tx.unlock_time;
     entry.locked = true;
-    entry.note = m_wallet->get_tx_note(txid);
 
     for (const auto &d: pd.m_dests) {
       entry.destinations.push_back(wallet_rpc::transfer_destination());
@@ -425,7 +422,6 @@ namespace tools
     entry.unlock_time = pd.m_unlock_time;
     entry.locked = true;
     entry.fee = pd.m_fee;
-    entry.note = m_wallet->get_tx_note(pd.m_tx_hash);
     entry.double_spend_seen = ppd.m_double_spend_seen;
     entry.type = "pool";
     entry.subaddr_index = pd.m_subaddr_index;
@@ -2085,78 +2081,6 @@ namespace tools
     {
       handle_rpc_exception(std::current_exception(), er, WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR);
       return false;
-    }
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_set_tx_notes(const wallet_rpc::COMMAND_RPC_SET_TX_NOTES::request& req, wallet_rpc::COMMAND_RPC_SET_TX_NOTES::response& res, epee::json_rpc::error& er, const connection_context *ctx)
-  {
-    if (!m_wallet) return not_open(er);
-    if (m_restricted)
-    {
-      er.code = WALLET_RPC_ERROR_CODE_DENIED;
-      er.message = "Command unavailable in restricted mode.";
-      return false;
-    }
-
-    if (req.txids.size() != req.notes.size())
-    {
-      er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
-      er.message = "Different amount of txids and notes";
-      return false;
-    }
-
-    std::list<crypto::hash> txids;
-    std::list<std::string>::const_iterator i = req.txids.begin();
-    while (i != req.txids.end())
-    {
-      cryptonote::blobdata txid_blob;
-      if(!epee::string_tools::parse_hexstr_to_binbuff(*i++, txid_blob) || txid_blob.size() != sizeof(crypto::hash))
-      {
-        er.code = WALLET_RPC_ERROR_CODE_WRONG_TXID;
-        er.message = "TX ID has invalid format";
-        return false;
-      }
-
-      crypto::hash txid = *reinterpret_cast<const crypto::hash*>(txid_blob.data());
-      txids.push_back(txid);
-    }
-
-    std::list<crypto::hash>::const_iterator il = txids.begin();
-    std::list<std::string>::const_iterator in = req.notes.begin();
-    while (il != txids.end())
-    {
-      m_wallet->set_tx_note(*il++, *in++);
-    }
-
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_get_tx_notes(const wallet_rpc::COMMAND_RPC_GET_TX_NOTES::request& req, wallet_rpc::COMMAND_RPC_GET_TX_NOTES::response& res, epee::json_rpc::error& er, const connection_context *ctx)
-  {
-    res.notes.clear();
-    if (!m_wallet) return not_open(er);
-
-    std::list<crypto::hash> txids;
-    std::list<std::string>::const_iterator i = req.txids.begin();
-    while (i != req.txids.end())
-    {
-      cryptonote::blobdata txid_blob;
-      if(!epee::string_tools::parse_hexstr_to_binbuff(*i++, txid_blob) || txid_blob.size() != sizeof(crypto::hash))
-      {
-        er.code = WALLET_RPC_ERROR_CODE_WRONG_TXID;
-        er.message = "TX ID has invalid format";
-        return false;
-      }
-
-      crypto::hash txid = *reinterpret_cast<const crypto::hash*>(txid_blob.data());
-      txids.push_back(txid);
-    }
-
-    std::list<crypto::hash>::const_iterator il = txids.begin();
-    while (il != txids.end())
-    {
-      res.notes.push_back(m_wallet->get_tx_note(*il++));
     }
     return true;
   }
