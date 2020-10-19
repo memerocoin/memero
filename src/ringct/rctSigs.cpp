@@ -1081,31 +1081,9 @@ namespace rct {
         }
 
         rctSig rv;
-        if (bulletproof)
-        {
-          switch (rct_config.bp_version)
-          {
-            case 0:
-            case 3:
-              rv.type = RCTTypeCLSAG;
-              break;
-            case 2:
-              rv.type = RCTTypeBulletproof2;
-              break;
-            case 1:
-              rv.type = RCTTypeBulletproof;
-              break;
-            default:
-              ASSERT_MES_AND_THROW("Unsupported BP version: " << rct_config.bp_version);
-          }
-        }
-        else
-          rv.type = RCTTypeSimple;
-
+        rv.type = RCTTypeCLSAG;
         rv.message = message;
         rv.outPk.resize(destinations.size());
-        if (!bulletproof)
-          rv.p.rangeSigs.resize(destinations.size());
         rv.ecdhInfo.resize(destinations.size());
 
         size_t i;
@@ -1116,20 +1094,12 @@ namespace rct {
             //add destination to sig
             rv.outPk[i].dest = copy(destinations[i]);
             //compute range proof
-            if (!bulletproof)
-              rv.p.rangeSigs[i] = proveRange(rv.outPk[i].mask, outSk[i].mask, outamounts[i]);
-            #ifdef DBG
-            if (!bulletproof)
-                CHECK_AND_ASSERT_THROW_MES(verRange(rv.outPk[i].mask, rv.p.rangeSigs[i]), "verRange failed on newly created proof");
-            #endif
         }
 
         rv.p.bulletproofs.clear();
-        if (bulletproof)
         {
             size_t n_amounts = outamounts.size();
             size_t amounts_proved = 0;
-            if (rct_config.range_proof_type == RangeProofPaddedBulletproof)
             {
                 rct::keyV C, masks;
                 if (hwdev.get_mode() == hw::device::TRANSACTION_CREATE_FAKE)
@@ -1151,36 +1121,6 @@ namespace rct {
                     outSk[i].mask = masks[i];
                 }
             }
-            else while (amounts_proved < n_amounts)
-            {
-                size_t batch_size = 1;
-                if (rct_config.range_proof_type == RangeProofMultiOutputBulletproof)
-                  while (batch_size * 2 + amounts_proved <= n_amounts && batch_size * 2 <= BULLETPROOF_MAX_OUTPUTS)
-                    batch_size *= 2;
-                rct::keyV C, masks;
-                std::vector<uint64_t> batch_amounts(batch_size);
-                for (i = 0; i < batch_size; ++i)
-                  batch_amounts[i] = outamounts[i + amounts_proved];
-                if (hwdev.get_mode() == hw::device::TRANSACTION_CREATE_FAKE)
-                {
-                    // use a fake bulletproof for speed
-                    rv.p.bulletproofs.push_back(make_dummy_bulletproof(batch_amounts, C, masks));
-                }
-                else
-                {
-                    const epee::span<const key> keys{&amount_keys[amounts_proved], batch_size};
-                    rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, batch_amounts, keys, hwdev));
-                #ifdef DBG
-                    CHECK_AND_ASSERT_THROW_MES(verBulletproof(rv.p.bulletproofs.back()), "verBulletproof failed on newly created proof");
-                #endif
-                }
-                for (i = 0; i < batch_size; ++i)
-                {
-                  rv.outPk[i + amounts_proved].mask = rct::scalarmult8(C[i]);
-                  outSk[i + amounts_proved].mask = masks[i];
-                }
-                amounts_proved += batch_size;
-            }
         }
 
         key sumout = zero();
@@ -1191,7 +1131,7 @@ namespace rct {
             //mask amount and mask
             rv.ecdhInfo[i].mask = copy(outSk[i].mask);
             rv.ecdhInfo[i].amount = d2h(outamounts[i]);
-            hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i], rv.type == RCTTypeBulletproof2 || rv.type == RCTTypeCLSAG);
+            hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i], true);
         }
             
         //set txn fee
@@ -1199,12 +1139,9 @@ namespace rct {
 //        TODO: unused ??
 //        key txnFeeKey = scalarmultH(d2h(rv.txnFee));
         rv.mixRing = mixRing;
-        keyV &pseudoOuts = bulletproof ? rv.p.pseudoOuts : rv.pseudoOuts;
+        keyV &pseudoOuts = rv.p.pseudoOuts;
         pseudoOuts.resize(inamounts.size());
-        if (rv.type == RCTTypeCLSAG)
-            rv.p.CLSAGs.resize(inamounts.size());
-        else
-            rv.p.MGs.resize(inamounts.size());
+        rv.p.CLSAGs.resize(inamounts.size());
         key sumpouts = zero(); //sum pseudoOut masks
         keyV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
@@ -1220,17 +1157,12 @@ namespace rct {
         if (msout)
         {
             msout->c.resize(inamounts.size());
-            msout->mu_p.resize(rv.type == RCTTypeCLSAG ? inamounts.size() : 0);
+            msout->mu_p.resize(inamounts.size());
         }
         for (i = 0 ; i < inamounts.size(); i++)
         {
-            if (rv.type == RCTTypeCLSAG)
             {
                 rv.p.CLSAGs[i] = proveRctCLSAGSimple(full_message, rv.mixRing[i], inSk[i], a[i], pseudoOuts[i], kLRki ? &(*kLRki)[i]: NULL, msout ? &msout->c[i] : NULL, msout ? &msout->mu_p[i] : NULL, index[i], hwdev);
-            }
-            else
-            {
-                rv.p.MGs[i] = proveRctMGSimple(full_message, rv.mixRing[i], inSk[i], a[i], pseudoOuts[i], kLRki ? &(*kLRki)[i]: NULL, msout ? &msout->c[i] : NULL, index[i], hwdev);
             }
         }
         return rv;
