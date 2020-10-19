@@ -36,6 +36,8 @@ set(ringct_basic_sources
 set(ringct_basic_private_headers
   rctOps.h
   rctTypes.h
+  curveConstants.h
+  zeroCommitment.h
   multiexp.h
   bulletproofs.h)
 

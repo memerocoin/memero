@@ -41,6 +41,7 @@ extern "C"
 #include "crypto/crypto-ops.h"
 }
 #include "rctOps.h"
+#include "curveConstants.h"
 #include "multiexp.h"
 #include "bulletproofs.h"
 

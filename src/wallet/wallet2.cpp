@@ -77,6 +77,7 @@ using namespace epee;
 #include "common/notify.h"
 #include "common/perf_timer.h"
 #include "ringct/rctSigs.h"
+#include "ringct/curveConstants.h"
 #include "ringdb.h"
 #include "device/device_cold.hpp"
 #include "net/socks_connect.h"
