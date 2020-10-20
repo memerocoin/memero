@@ -716,13 +716,6 @@ namespace cryptonote
     void check_against_checkpoints(const checkpoints& points, bool enforce);
 
     /**
-     * @brief configure whether or not to enforce DNS-based checkpoints
-     *
-     * @param enforce the new enforcement setting
-     */
-    void set_enforce_dns_checkpoints(bool enforce);
-
-    /**
      * @brief loads new checkpoints from a file and optionally from DNS
      *
      * @param file_path the path of the file to look for and load checkpoints from
@@ -1105,7 +1098,6 @@ namespace cryptonote
 
 
     checkpoints m_checkpoints;
-    bool m_enforce_dns_checkpoints;
 
     HardFork *m_hardfork;
 
