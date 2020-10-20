@@ -53,14 +53,8 @@ namespace cryptonote
      * @return true if valid, else false
      */
     bool check_hash_64(const crypto::hash &hash, uint64_t difficulty);
-    uint64_t next_difficulty_64(std::vector<std::uint64_t> timestamps, std::vector<uint64_t> cumulative_difficulties, size_t target_seconds);
-
     bool check_hash_128(const crypto::hash &hash, difficulty_type difficulty);
     bool check_hash(const crypto::hash &hash, difficulty_type difficulty);
-    difficulty_type next_difficulty(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, size_t target_seconds, uint64_t HEIGHT);
-    difficulty_type next_difficulty_v2(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, size_t target_seconds, uint64_t HEIGHT);
-    difficulty_type next_difficulty_v3(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, uint64_t HEIGHT);
-    difficulty_type next_difficulty_v4(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, uint64_t HEIGHT);
     difficulty_type next_difficulty_v5(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, uint64_t T, uint64_t N, uint64_t HEIGHT);
 
     std::string hex(difficulty_type v);

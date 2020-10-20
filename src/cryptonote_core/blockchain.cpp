@@ -936,19 +936,7 @@ start:
   uint64_t N = DIFFICULTY_WINDOW_V3;
   uint64_t HEIGHT = m_db->height();
 
-  difficulty_type diff = next_difficulty(timestamps, m_nettype, difficulties, target, HEIGHT);
-
-  if (version >= 11) {
-    diff = next_difficulty_v5(timestamps, m_nettype, difficulties, T, N, HEIGHT);
-  } else if (version == 10) {
-    diff = next_difficulty_v4(timestamps, m_nettype, difficulties, HEIGHT);
-  } else if (version == 9) {
-    diff = next_difficulty_v3(timestamps, m_nettype, difficulties, HEIGHT);
-  } else if (version == 8) {
-    diff = next_difficulty_v2(timestamps, m_nettype, difficulties, target, HEIGHT);
-  } else {
-    diff = next_difficulty(timestamps, m_nettype, difficulties, target, HEIGHT);
-  }
+  difficulty_type diff = next_difficulty_v5(timestamps, m_nettype, difficulties, T, N, HEIGHT);
 
   CRITICAL_REGION_LOCAL1(m_difficulty_lock);
   m_difficulty_for_next_block_top_hash = top_hash;
@@ -1225,18 +1213,7 @@ difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std:
   uint64_t HEIGHT = m_db->height();
 
   // calculate the difficulty target for the block and return it
-  if (version >= 11) {
-    return next_difficulty_v5(timestamps, m_nettype, cumulative_difficulties, T, N, HEIGHT);
-  } else if (version == 10) {
-    return next_difficulty_v4(timestamps, m_nettype, cumulative_difficulties, HEIGHT);
-  } else if (version == 9) {
-    return next_difficulty_v3(timestamps, m_nettype, cumulative_difficulties, HEIGHT);
-  } else if (version == 8) {
-    return next_difficulty_v2(timestamps, m_nettype, cumulative_difficulties, target, HEIGHT);
-  } else {
-    return next_difficulty(timestamps, m_nettype, cumulative_difficulties, target, HEIGHT);
-  }
-  return next_difficulty(timestamps, m_nettype, cumulative_difficulties, target, HEIGHT);
+  return next_difficulty_v5(timestamps, m_nettype, cumulative_difficulties, T, N, HEIGHT);
 }
 //------------------------------------------------------------------
 // This function does a sanity check on basic things that all miner
