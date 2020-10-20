@@ -55,6 +55,8 @@
 // Hardcode Monero's donation address (see #1447)
 constexpr const char MONERO_DONATION_ADDR[] = "haha00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
+using namespace constant;
+
 /*!
  * \namespace cryptonote
  * \brief Holds cryptonote related classes and helpers.
@@ -346,7 +348,7 @@ namespace cryptonote
       void update(uint64_t height, bool force = false)
       {
         auto current_time = std::chrono::system_clock::now();
-        const auto node_update_threshold = std::chrono::seconds(DIFFICULTY_TARGET_V1 / 2); // use min of V1/V2
+        const auto node_update_threshold = std::chrono::seconds(DIFFICULTY_TARGET_V2 / 2); // use min of V1/V2
         if (node_update_threshold < current_time - m_blockchain_height_update_time || m_blockchain_height <= height)
         {
           update_blockchain_height();

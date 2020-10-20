@@ -89,6 +89,7 @@ extern "C"
 using namespace std;
 using namespace crypto;
 using namespace cryptonote;
+using namespace constant;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
@@ -7151,27 +7152,19 @@ uint64_t wallet2::get_dynamic_base_fee_estimate()
   boost::optional<std::string> result = m_node_rpc_proxy.get_dynamic_base_fee_estimate(FEE_ESTIMATE_GRACE_BLOCKS, fee);
   if (!result)
     return fee;
-  const uint64_t base_fee = use_fork_rules(HF_VERSION_PER_BYTE_FEE) ? FEE_PER_BYTE : FEE_PER_KB;
+  const uint64_t base_fee = FEE_PER_BYTE;
   LOG_PRINT_L1("Failed to query base fee, using " << print_money(base_fee));
   return base_fee;
 }
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_base_fee()
 {
-  if (use_fork_rules(HF_VERSION_PER_BYTE_FEE))
-  {
-    return FEE_PER_BYTE;
-  }
-  bool use_dyn_fee = use_fork_rules(HF_VERSION_DYNAMIC_FEE, -30 * 1);
-  if (!use_dyn_fee)
-    return FEE_PER_KB;
-
-  return get_dynamic_base_fee_estimate();
+  return FEE_PER_BYTE;
 }
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_fee_quantization_mask()
 {
-  bool use_per_byte_fee = use_fork_rules(HF_VERSION_PER_BYTE_FEE, 0);
+  bool use_per_byte_fee = true;
   if (!use_per_byte_fee)
     return 1;
 
@@ -7184,14 +7177,7 @@ uint64_t wallet2::get_fee_quantization_mask()
 //----------------------------------------------------------------------------------------------------
 int wallet2::get_fee_algorithm()
 {
-  // changes at v3, v5, v8
-  if (use_fork_rules(HF_VERSION_PER_BYTE_FEE, 0))
-    return 3;
-  if (use_fork_rules(5, 0))
-    return 2;
-  if (use_fork_rules(3, -30 * 14))
-   return 1;
-  return 0;
+  return 3;
 }
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_min_ring_size()
@@ -7228,7 +7214,7 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
     try
     {
       // check if there's a backlog in the tx pool
-      const bool use_per_byte_fee = use_fork_rules(HF_VERSION_PER_BYTE_FEE, 0);
+      const bool use_per_byte_fee = true;
       const uint64_t base_fee = get_base_fee();
       const uint64_t fee_multiplier = get_fee_multiplier(1);
       const double fee_level = fee_multiplier * base_fee * (use_per_byte_fee ? 1 : (12/(double)13 / (double)1024));
@@ -8708,7 +8694,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryp
   bool adding_fee; // true if new outputs go towards fee, rather than destinations
   uint64_t needed_fee, available_for_fee = 0;
   uint64_t upper_transaction_weight_limit = get_upper_transaction_weight_limit();
-  const bool use_per_byte_fee = use_fork_rules(HF_VERSION_PER_BYTE_FEE, 0);
+  const bool use_per_byte_fee = true;
   const bool use_rct = true;
   const bool bulletproof = true;
   const bool clsag = true;
@@ -9246,7 +9232,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_all(uint64_t below
   const bool use_rct = true;
 
   // determine threshold for fractional amount
-  const bool use_per_byte_fee = use_fork_rules(HF_VERSION_PER_BYTE_FEE, 0);
+  const bool use_per_byte_fee = true;
   const bool bulletproof = true;
   const bool clsag = true;
   const uint64_t base_fee  = get_base_fee();
@@ -9355,7 +9341,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
   uint64_t upper_transaction_weight_limit = get_upper_transaction_weight_limit();
   std::vector<std::vector<get_outs_entry>> outs;
 
-  const bool use_per_byte_fee = use_fork_rules(HF_VERSION_PER_BYTE_FEE);
+  const bool use_per_byte_fee = true;
   const bool use_rct = true;
   const bool bulletproof = true;
   const bool clsag = true;
@@ -9385,14 +9371,9 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
     // dust and non dust to ensure we never get with only dust, from which we might
     // get a tx that can't pay for itself
     uint64_t fee_dust_threshold;
-    if (use_fork_rules(HF_VERSION_PER_BYTE_FEE))
     {
       const uint64_t estimated_tx_weight_with_one_extra_output = estimate_tx_weight(use_rct, tx.selected_transfers.size() + 1, fake_outs_count, tx.dsts.size()+1, extra.size(), bulletproof, clsag);
       fee_dust_threshold = calculate_fee_from_weight(base_fee, estimated_tx_weight_with_one_extra_output, fee_multiplier, fee_quantization_mask);
-    }
-    else
-    {
-      fee_dust_threshold = base_fee * fee_multiplier * (upper_transaction_weight_limit + 1023) / 1024;
     }
 
     size_t idx =
@@ -9655,11 +9636,8 @@ uint64_t wallet2::get_upper_transaction_weight_limit()
 {
   if (m_upper_transaction_weight_limit > 0)
     return m_upper_transaction_weight_limit;
-  uint64_t full_reward_zone = use_fork_rules(5, 10) ? CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5 : use_fork_rules(2, 10) ? CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2 : CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1;
-  if (use_fork_rules(8, 10))
-    return full_reward_zone / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
-  else
-    return full_reward_zone - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+  uint64_t full_reward_zone = CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5;
+  return full_reward_zone / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
 }
 //----------------------------------------------------------------------------------------------------
 std::vector<size_t> wallet2::select_available_outputs(const std::function<bool(const transfer_details &td)> &f)

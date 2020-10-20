@@ -30,9 +30,10 @@
 
 #pragma once
 
-#include <stdexcept>
-#include <string>
-#include <boost/uuid/uuid.hpp>
+#include "config/constant.h"
+#include "config/config.h"
+#include "config/network.h"
+#include "config/lol.h"
 
 #define CRYPTONOTE_DNS_TIMEOUT_MS                       20000
 
@@ -44,57 +45,14 @@
 #define CURRENT_TRANSACTION_VERSION                     2
 #define CURRENT_BLOCK_MAJOR_VERSION                     17
 #define CURRENT_BLOCK_MINOR_VERSION                     17
-#define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2           300*2
-#define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT              60*60*2
 #define CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE             4
 
-#define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2            11
-#define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               60
 
-// MONEY_SUPPLY - total number coins to be generated
-#define MONEY_SUPPLY                                    ((uint64_t)(-1))
-#define EMISSION_SPEED_FACTOR_PER_MINUTE                (24)
-#define FINAL_SUBSIDY_PER_MINUTE                        ((uint64_t)(0))
-
-#define CRYPTONOTE_REWARD_BLOCKS_WINDOW                 100
-#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2    60000 //size of block (bytes) after which reward for block calculated using block size
-#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1    20000 //size of block (bytes) after which reward for block calculated using block size - before first fork
-#define CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5    300000 //size of block (bytes) after which reward for block calculated using block size - second change, from v5
 #define CRYPTONOTE_LONG_TERM_BLOCK_WEIGHT_WINDOW_SIZE   100000 // size in blocks of the long term block weight median window
 #define CRYPTONOTE_SHORT_TERM_BLOCK_WEIGHT_SURGE_FACTOR 50
 #define CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE          600
 #define CRYPTONOTE_DISPLAY_DECIMAL_POINT                11
-// COIN - number of smallest units in one coin
-#define COIN                                            ((uint64_t)100000000000) // pow(10, 11)
-
-#define FEE_PER_KB_OLD                                  ((uint64_t)10000000000) // pow(10, 10)
-#define FEE_PER_KB                                      ((uint64_t)2000000000) // 2 * pow(10, 9)
-#define FEE_PER_BYTE                                    ((uint64_t)300000)
-#define DYNAMIC_FEE_PER_KB_BASE_FEE                     ((uint64_t)2000000000) // 2 * pow(10,9)
-#define DYNAMIC_FEE_PER_KB_BASE_BLOCK_REWARD            ((uint64_t)10000000000000) // 10 * pow(10,12)
-#define DYNAMIC_FEE_PER_KB_BASE_FEE_V5                  ((uint64_t)2000000000 * (uint64_t)CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2 / CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5)
-#define DYNAMIC_FEE_REFERENCE_TRANSACTION_WEIGHT         ((uint64_t)3000)
-
 #define ORPHANED_BLOCKS_MAX_COUNT                       100
-
-
-#define DIFFICULTY_TARGET_V2                            300
-#define DIFFICULTY_TARGET_V1                            300
-#define DIFFICULTY_WINDOW_V3                            144
-#define DIFFICULTY_WINDOW_V2                            60
-#define DIFFICULTY_WINDOW                               720 // blocks
-#define DIFFICULTY_LAG                                  15  // !!!
-#define DIFFICULTY_CUT                                  60  // timestamps to cut after sorting
-#define DIFFICULTY_BLOCKS_COUNT_V3                      DIFFICULTY_WINDOW_V3 + 1 // added +1 to make N=N
-#define DIFFICULTY_BLOCKS_COUNT_V2                      DIFFICULTY_WINDOW_V2 + 1 // added +1 to make N=N
-#define DIFFICULTY_BLOCKS_COUNT                         DIFFICULTY_WINDOW + DIFFICULTY_LAG
-
-#define CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V1   DIFFICULTY_TARGET_V1 * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS
-#define CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2   DIFFICULTY_TARGET_V2 * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS
-#define CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS       1
-
-
-#define DIFFICULTY_BLOCKS_ESTIMATE_TIMESPAN             DIFFICULTY_TARGET_V1 //just alias; used by tests
 
 
 #define BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT          10000  //by default, blocks ids count in synchronizing
@@ -157,12 +115,10 @@
 
 #define THREAD_STACK_SIZE                       5 * 1024 * 1024
 
-#define HF_VERSION_DYNAMIC_FEE                  4
-#define HF_VERSION_MIN_MIXIN_4                  6
-#define HF_VERSION_MIN_MIXIN_7                  7
-#define HF_VERSION_MIN_MIXIN_21                 9
-#define HF_VERSION_MIN_MIXIN_31                 16
-#define HF_VERSION_ENFORCE_RCT                  6
+namespace constant
+{
+}
+
 #define HF_VERSION_PER_BYTE_FEE                 12
 #define HF_VERSION_SMALLER_BP                   13
 #define HF_VERSION_LONG_TERM_BLOCK_WEIGHT       13
@@ -189,107 +145,3 @@
 #define CRYPTONOTE_PRUNING_LOG_STRIPES          3 // the higher, the more space saved
 #define CRYPTONOTE_PRUNING_TIP_BLOCKS           5500 // the smaller, the more space saved
 //#define CRYPTONOTE_PRUNING_DEBUG_SPOOF_SEED
-
-// New constants are intended to go here
-namespace config
-{
-  uint64_t const DEFAULT_FEE_ATOMIC_XMR_PER_KB = 500; // Just a placeholder!  Change me!
-  uint8_t const FEE_CALCULATION_MAX_RETRIES = 10;
-  uint64_t const DEFAULT_DUST_THRESHOLD = ((uint64_t)2000000000); // 2 * pow(10, 9)
-  uint64_t const BASE_REWARD_CLAMP_THRESHOLD = ((uint64_t)100000000); // pow(10, 8)
-
-
-  // Hash domain separators
-  const char HASH_KEY_BULLETPROOF_EXPONENT[] = "bulletproof";
-  const char HASH_KEY_RINGDB[] = "ringdsb";
-  const char HASH_KEY_SUBADDRESS[] = "SubAddr";
-  const unsigned char HASH_KEY_ENCRYPTED_PAYMENT_ID = 0x8d;
-  const unsigned char HASH_KEY_WALLET = 0x8c;
-  const unsigned char HASH_KEY_WALLET_CACHE = 0x8d;
-  const unsigned char HASH_KEY_RPC_PAYMENT_NONCE = 0x58;
-  const unsigned char HASH_KEY_MEMORY = 'k';
-  const unsigned char HASH_KEY_MULTISIG[] = {'M', 'u', 'l', 't' , 'i', 's', 'i', 'g', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  const unsigned char HASH_KEY_TXPROOF_V2[] = "TXPROOF_V2";
-  const unsigned char HASH_KEY_CLSAG_ROUND[] = "CLSAG_round";
-  const unsigned char HASH_KEY_CLSAG_AGG_0[] = "CLSAG_agg_0";
-  const unsigned char HASH_KEY_CLSAG_AGG_1[] = "CLSAG_agg_1";
-  const char HASH_KEY_MESSAGE_SIGNING[] = "MoneroMessageSignature";
-
-  namespace lol
-  {
-    const size_t mixin = 31;
-    const size_t ring_size = 32;
-  }
-}
-
-namespace cryptonote
-{
-  enum network_type : uint8_t
-  {
-    MAINNET = 0,
-    TESTNET,
-    STAGENET,
-    FAKECHAIN,
-    UNDEFINED = 255
-  };
-
-  struct config_t
-  {
-    uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
-    uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX;
-    uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX;
-    uint16_t const P2P_DEFAULT_PORT;
-    uint16_t const RPC_DEFAULT_PORT;
-    uint16_t const ZMQ_RPC_DEFAULT_PORT;
-    boost::uuids::uuid const NETWORK_ID;
-    std::string const GENESIS_TX;
-    uint32_t const GENESIS_NONCE;
-  };
-
-  static const config_t mainnet = {
-    0xf0f72, // haha
-    0xf3, // he;
-    0x18faf3, // hoho
-    45678,
-    45679,
-    45680,
-    { {
-      0x69, 0x42, 0xEF, 0x66 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x10
-    } },
-    "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121012a1a936be5d91c01ee876e38c13fab0ee11cbe86011a2bf7740fb5ebd39d267d",
-    // twitter trending Oct 11th, 2020 14:58 (UTC)
-    /*
-      echo -n "#NationalComingOutDay Oct 11th, 2020 14:58 (UTC)" | sha256sum
-    */
-    0x2fab0975
-  };
-
-  static const config_t testnet = {
-    0xf4, // hp
-    0x2ff3, // hi;
-    0x26f4, // hs
-    44444,
-    44445,
-    44446,
-    { {
-      0x10, 0x42, 0xEE, 0x66, 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x11
-    } },
-    "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd088071210160eb755f618a2336055dee60f307fe0ded81c5b37b53d310175ca9ee69b0c8ad",
-    42
-  };
-
-  static const config_t stagenet = testnet;
-
-  inline const config_t& get_config(network_type nettype)
-  {
-    switch (nettype)
-    {
-      case MAINNET: return mainnet;
-      case TESTNET: return testnet;
-      case STAGENET: return stagenet;
-      case FAKECHAIN: return testnet;
-      default: throw std::runtime_error("Invalid network type");
-    }
-  };
-}
-

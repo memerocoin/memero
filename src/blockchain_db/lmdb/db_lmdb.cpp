@@ -59,6 +59,7 @@
 
 using epee::string_tools::pod_to_hex;
 using namespace crypto;
+using namespace constant;
 
 // Increase when the DB structure changes
 #define VERSION 5

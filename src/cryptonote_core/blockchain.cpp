@@ -73,6 +73,7 @@ using namespace crypto;
  */
 
 using namespace cryptonote;
+using namespace constant;
 using epee::string_tools::pod_to_hex;
 extern "C" void slow_hash_allocate_state();
 extern "C" void slow_hash_free_state();
@@ -855,7 +856,7 @@ start:
   ss << "Re-locked, height " << height << ", tail id " << new_top_hash << (new_top_hash == top_hash ? "" : " (different)") << std::endl;
   top_hash = new_top_hash;
   uint8_t version = get_current_hard_fork_version();
-  uint64_t difficulty_blocks_count = version >= 11 ? DIFFICULTY_BLOCKS_COUNT_V3 : version <= 10 && version >= 8 ? DIFFICULTY_BLOCKS_COUNT_V2 : DIFFICULTY_BLOCKS_COUNT;
+  uint64_t difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT_V3;
 
   // ND: Speedup
   // 1. Keep a list of the last 735 (or less) blocks that is used to compute difficulty,
@@ -1154,7 +1155,7 @@ difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std:
 
   uint8_t version = get_current_hard_fork_version();
   size_t height = m_db->height();
-  size_t difficulty_blocks_count = version >= 11 ? DIFFICULTY_BLOCKS_COUNT_V3 : version <= 10 && version >= 8 ? DIFFICULTY_BLOCKS_COUNT_V2 : DIFFICULTY_BLOCKS_COUNT;
+  size_t difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT_V3;
 
   // if the alt chain isn't long enough to calculate the difficulty target
   // based on its blocks alone, need to get more blocks from the main chain
@@ -1207,7 +1208,6 @@ difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std:
   }
 
   // FIXME: This will fail if fork activation heights are subject to voting
-  size_t target = get_ideal_hard_fork_version(bei.height) < 2 ? DIFFICULTY_TARGET_V1 : DIFFICULTY_TARGET_V2;
   uint64_t T = DIFFICULTY_TARGET_V2;
   uint64_t N = DIFFICULTY_WINDOW_V3;
   uint64_t HEIGHT = m_db->height();
@@ -1677,7 +1677,7 @@ bool Blockchain::complete_timestamps_vector(uint64_t start_top_height, std::vect
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   uint8_t version = get_current_hard_fork_version();
-  size_t blockchain_timestamp_check_window = version >= 10 ? BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 : BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW;
+  size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
   if(timestamps.size() >= blockchain_timestamp_check_window)
     return true;
 
@@ -3102,7 +3102,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       }
     }
 
-    if ((hf_version >= HF_VERSION_MIN_MIXIN_31) && (min_actual_mixin != 31))
+    if (min_actual_mixin != 31)
     {
       MERROR_VER("Tx " << get_transaction_hash(tx) << " has invalid ring size (" << (min_actual_mixin + 1) << "), it should be 32");
       tvc.m_low_mixin = true;
@@ -3133,7 +3133,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       tvc.m_verifivation_failed = true;
       return false;
     }
-    const size_t min_tx_version = (n_unmixable > 0 ? 1 : (hf_version >= HF_VERSION_ENFORCE_RCT) ? 2 : 1);
+    const size_t min_tx_version = (n_unmixable > 0 ? 1 : 2);
     if (tx.version < min_tx_version)
     {
       MERROR_VER("transaction version " << (unsigned)tx.version << " is lower than min accepted version " << min_tx_version);
@@ -3410,7 +3410,6 @@ uint64_t Blockchain::get_dynamic_base_fee(uint64_t block_reward, size_t median_b
     median_block_weight = min_block_weight;
   uint64_t hi, lo;
 
-  if (version >= HF_VERSION_PER_BYTE_FEE)
   {
     lo = mul128(block_reward, DYNAMIC_FEE_REFERENCE_TRANSACTION_WEIGHT, &hi);
     div128_64(hi, lo, min_block_weight, &hi, &lo, NULL, NULL);
@@ -3419,20 +3418,6 @@ uint64_t Blockchain::get_dynamic_base_fee(uint64_t block_reward, size_t median_b
     lo /= 5;
     return lo;
   }
-
-  const uint64_t fee_base = version >= 5 ? DYNAMIC_FEE_PER_KB_BASE_FEE_V5 : DYNAMIC_FEE_PER_KB_BASE_FEE;
-
-  uint64_t unscaled_fee_base = (fee_base * min_block_weight / median_block_weight);
-  lo = mul128(unscaled_fee_base, block_reward, &hi);
-  div128_64(hi, lo, DYNAMIC_FEE_PER_KB_BASE_BLOCK_REWARD, &hi, &lo, NULL, NULL);
-  assert(hi == 0);
-
-  // quantize fee up to 8 decimals
-  uint64_t mask = get_fee_quantization_mask();
-  uint64_t qlo = (lo + mask - 1) / mask * mask;
-  MDEBUG("lo " << print_money(lo) << ", qlo " << print_money(qlo) << ", mask " << mask);
-
-  return qlo;
 }
 
 //------------------------------------------------------------------
@@ -3443,7 +3428,6 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
   uint64_t median = 0;
   uint64_t already_generated_coins = 0;
   uint64_t base_reward = 0;
-  if (version >= HF_VERSION_DYNAMIC_FEE)
   {
     median = m_current_block_cumul_weight_limit / 2;
     const uint64_t blockchain_height = m_db->height();
@@ -3453,7 +3437,6 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
   }
 
   uint64_t needed_fee;
-  if (version >= HF_VERSION_PER_BYTE_FEE)
   {
     const bool use_long_term_median_in_fee = version >= HF_VERSION_LONG_TERM_BLOCK_WEIGHT;
     uint64_t fee_per_byte = get_dynamic_base_fee(base_reward, use_long_term_median_in_fee ? std::min<uint64_t>(median, m_long_term_effective_median_block_weight) : median, version);
@@ -3462,23 +3445,6 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
     // quantize fee up to 8 decimals
     const uint64_t mask = get_fee_quantization_mask();
     needed_fee = (needed_fee + mask - 1) / mask * mask;
-  }
-  else
-  {
-    uint64_t fee_per_kb;
-    if (version < HF_VERSION_DYNAMIC_FEE)
-    {
-      fee_per_kb = FEE_PER_KB;
-    }
-    else
-    {
-      fee_per_kb = get_dynamic_base_fee(base_reward, median, version);
-    }
-    MDEBUG("Using " << print_money(fee_per_kb) << "/kB fee");
-
-    needed_fee = tx_weight / 1024;
-    needed_fee += (tx_weight % 1024) ? 1 : 0;
-    needed_fee *= fee_per_kb;
   }
 
   if (fee < needed_fee - needed_fee / 50) // keep a little 2% buffer on acceptance - no integer overflow
@@ -3494,9 +3460,6 @@ uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
 {
   const uint8_t version = get_current_hard_fork_version();
   const uint64_t db_height = m_db->height();
-
-  if (version < HF_VERSION_DYNAMIC_FEE)
-    return FEE_PER_KB;
 
   if (grace_blocks >= CRYPTONOTE_REWARD_BLOCKS_WINDOW)
     grace_blocks = CRYPTONOTE_REWARD_BLOCKS_WINDOW - 1;
@@ -3523,7 +3486,7 @@ uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
   const bool use_long_term_median_in_fee = version >= HF_VERSION_LONG_TERM_BLOCK_WEIGHT;
   const uint64_t use_median_value = use_long_term_median_in_fee ? std::min<uint64_t>(median, m_long_term_effective_median_block_weight) : median;
   const uint64_t fee = get_dynamic_base_fee(base_reward, use_median_value, version);
-  const bool per_byte = version < HF_VERSION_PER_BYTE_FEE;
+  const bool per_byte = true;
   MDEBUG("Estimating " << grace_blocks << "-block fee at " << print_money(fee) << "/" << (per_byte ? "byte" : "kB"));
   return fee;
 }
@@ -3547,7 +3510,7 @@ bool Blockchain::is_tx_spendtime_unlocked(uint64_t unlock_time, uint8_t hf_versi
   {
     //interpret as time
     const uint64_t current_time = hf_version >= HF_VERSION_DETERMINISTIC_UNLOCK_TIME ? get_adjusted_time(m_db->height()) : static_cast<uint64_t>(time(NULL));
-    if(current_time + (get_current_hard_fork_version() < 2 ? CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V1 : CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2) >= unlock_time)
+    if(current_time + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2 >= unlock_time)
       return true;
     else
       return false;
@@ -3622,7 +3585,7 @@ uint64_t Blockchain::get_adjusted_time(uint64_t height) const
   LOG_PRINT_L3("Blockchain::" << __func__);
 
   uint8_t version = get_current_hard_fork_version();
-  size_t blockchain_timestamp_check_window = version >= 10 ? BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 : BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW;
+  size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
   
   // if not enough blocks, no proper median yet, return current time
   if(height < blockchain_timestamp_check_window)
@@ -3659,7 +3622,7 @@ bool Blockchain::check_block_timestamp(std::vector<uint64_t>& timestamps, const 
   LOG_PRINT_L3("Blockchain::" << __func__);
   median_ts = epee::misc_utils::median(timestamps);
   uint8_t version = get_current_hard_fork_version();
-  size_t blockchain_timestamp_check_window = version >= 10 ? BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 : BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW;
+  size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
   if(b.timestamp < median_ts)
   {
     MERROR_VER("Timestamp of block with id: " << get_block_hash(b) << ", " << b.timestamp << ", less than median of last " << blockchain_timestamp_check_window << " blocks, " << median_ts);
@@ -3681,8 +3644,8 @@ bool Blockchain::check_block_timestamp(const block& b, uint64_t& median_ts) cons
   LOG_PRINT_L3("Blockchain::" << __func__);
   
   uint8_t version = get_current_hard_fork_version();
-  uint64_t cryptonote_block_future_time_limit = version >= 8 ? CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2 : CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT;
-  size_t blockchain_timestamp_check_window = version >= 10 ? BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 : BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW;
+  uint64_t cryptonote_block_future_time_limit = CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2;
+  size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
   
   if(b.timestamp > (uint64_t)time(NULL) + cryptonote_block_future_time_limit)
   {
@@ -5045,7 +5008,7 @@ bool Blockchain::get_hard_fork_voting_info(uint8_t version, uint32_t &window, ui
 
 uint64_t Blockchain::get_difficulty_target() const
 {
-  return get_current_hard_fork_version() < 2 ? DIFFICULTY_TARGET_V1 : DIFFICULTY_TARGET_V2;
+  return DIFFICULTY_TARGET_V2;
 }
 
 std::map<uint64_t, std::tuple<uint64_t, uint64_t, uint64_t>> Blockchain:: get_output_histogram(const std::vector<uint64_t> &amounts, bool unlocked, uint64_t recent_cutoff, uint64_t min_count) const

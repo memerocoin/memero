@@ -44,6 +44,8 @@ using namespace epee;
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
 
+using namespace constant;
+
 namespace cryptonote {
 
   struct integrated_address {
@@ -67,10 +69,6 @@ namespace cryptonote {
   //-----------------------------------------------------------------------------------------------
   size_t get_min_block_weight(uint8_t version)
   {
-    if (version < 2)
-      return CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1;
-    if (version < 5)
-      return CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2;
     return CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5;
   }
   //-----------------------------------------------------------------------------------------------

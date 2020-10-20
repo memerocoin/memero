@@ -84,6 +84,7 @@
 using namespace std;
 using namespace epee;
 using namespace cryptonote;
+using namespace constant;
 using boost::lexical_cast;
 namespace po = boost::program_options;
 typedef cryptonote::simple_wallet sw;
@@ -883,7 +884,7 @@ bool simple_wallet::print_fee_info(const std::vector<std::string> &args/* = std:
 {
   if (!try_connect_to_daemon())
     return true;
-  const bool per_byte = m_wallet->use_fork_rules(HF_VERSION_PER_BYTE_FEE);
+  const bool per_byte = true;
   const uint64_t base_fee = m_wallet->get_base_fee();
   const char *base = per_byte ? "byte" : "kB";
   const uint64_t typical_size = per_byte ? 2500 : 13;
@@ -7829,7 +7830,7 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
         else
         {
           const uint64_t adjusted_time = m_wallet->get_daemon_adjusted_time();
-          uint64_t threshold = adjusted_time + (m_wallet->use_fork_rules(2, 0) ? CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2 : CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V1);
+          uint64_t threshold = adjusted_time + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2;
           if (threshold < pd.m_unlock_time)
             locked_msg = get_human_readable_timespan(std::chrono::seconds(pd.m_unlock_time - threshold));
         }
@@ -9325,7 +9326,7 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
       else
       {
         const uint64_t adjusted_time = m_wallet->get_daemon_adjusted_time();
-        uint64_t threshold = adjusted_time + (m_wallet->use_fork_rules(2, 0) ? CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2 : CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V1);
+        uint64_t threshold = adjusted_time + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2;
         if (threshold >= pd.m_unlock_time)
           success_msg_writer() << "unlocked for " << get_human_readable_timespan(std::chrono::seconds(threshold - pd.m_unlock_time));
         else

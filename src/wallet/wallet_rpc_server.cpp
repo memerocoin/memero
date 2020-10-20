@@ -60,6 +60,8 @@ using namespace epee;
 
 #define DEFAULT_AUTO_REFRESH_PERIOD 20 // seconds
 
+using namespace constant;
+
 namespace
 {
   const command_line::arg_descriptor<std::string, true> arg_rpc_bind_port = {"rpc-bind-port", "Sets bind port for server"};

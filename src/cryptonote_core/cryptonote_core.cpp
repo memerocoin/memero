@@ -67,6 +67,8 @@ DISABLE_VS_WARNINGS(4355)
 // basically at least how many bytes the block itself serializes to without the miner tx
 #define BLOCK_SIZE_SANITY_LEEWAY 100
 
+using namespace constant;
+
 namespace cryptonote
 {
   const command_line::arg_descriptor<bool, false> arg_testnet_on  = {
