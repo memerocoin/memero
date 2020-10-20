@@ -3059,7 +3059,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     size_t n_unmixable = 0, n_mixable = 0;
     size_t min_actual_mixin = std::numeric_limits<size_t>::max();
     size_t max_actual_mixin = 0;
-    const size_t min_mixin = CRYPTONOTE_DEFAULT_MIXIN;
+    const size_t min_mixin = config::lol::mixin;
     for (const auto& txin : tx.vin)
     {
       // non txin_to_key inputs will be rejected below

@@ -198,23 +198,6 @@ namespace config
   uint64_t const DEFAULT_DUST_THRESHOLD = ((uint64_t)2000000000); // 2 * pow(10, 9)
   uint64_t const BASE_REWARD_CLAMP_THRESHOLD = ((uint64_t)100000000); // pow(10, 8)
 
-  uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0xf0f72; // haha
-  uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0xf3; // he;
-  uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x18faf3; // hoho
-  uint16_t const P2P_DEFAULT_PORT = 45678;
-  uint16_t const RPC_DEFAULT_PORT = 45679;
-  uint16_t const ZMQ_RPC_DEFAULT_PORT = 45680;
-  boost::uuids::uuid const NETWORK_ID = { {
-      0x69, 0x42, 0xEF, 0x66 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x10
-    } }; // Bender's nightmare
-  std::string const GENESIS_TX = "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121012a1a936be5d91c01ee876e38c13fab0ee11cbe86011a2bf7740fb5ebd39d267d";
-
-  // twitter trending Oct 11th, 2020 14:58 (UTC)
-
-  /*
-    echo -n "#NationalComingOutDay Oct 11th, 2020 14:58 (UTC)" | sha256sum
-  */
-  uint32_t const GENESIS_NONCE = 0x2fab0975;
 
   // Hash domain separators
   const char HASH_KEY_BULLETPROOF_EXPONENT[] = "bulletproof";
@@ -232,34 +215,10 @@ namespace config
   const unsigned char HASH_KEY_CLSAG_AGG_1[] = "CLSAG_agg_1";
   const char HASH_KEY_MESSAGE_SIGNING[] = "MoneroMessageSignature";
 
-  namespace testnet
+  namespace lol
   {
-    uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0xf4; // hp
-    uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x2ff3; // hi;
-    uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x26f4; // hs
-    uint16_t const P2P_DEFAULT_PORT = 44444;
-    uint16_t const RPC_DEFAULT_PORT = 44445;
-    uint16_t const ZMQ_RPC_DEFAULT_PORT = 44446;
-    boost::uuids::uuid const NETWORK_ID = { {
-        0x10, 0x42, 0xEE, 0x66, 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x11
-      } }; // Bender's daydream
-    std::string const GENESIS_TX = "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd088071210160eb755f618a2336055dee60f307fe0ded81c5b37b53d310175ca9ee69b0c8ad";
-    uint32_t const GENESIS_NONCE = 42;
-  }
-
-  namespace stagenet
-  {
-    uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 24;
-    uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 25;
-    uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 36;
-    uint16_t const P2P_DEFAULT_PORT = 38080;
-    uint16_t const RPC_DEFAULT_PORT = 38081;
-    uint16_t const ZMQ_RPC_DEFAULT_PORT = 38082;
-    boost::uuids::uuid const NETWORK_ID = { {
-        0x12 ,0x30, 0xF1, 0x71 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x12
-      } }; // Bender's daydream
-    std::string const GENESIS_TX = "013c01ff0001ffffffffffff0302df5d56da0c7d643ddd1ce61901c7bdc5fb1738bfe39fbe69c28a3a7032729c0f2101168d0c4ca86fb55a4cf6a36d31431be1c53a3bd7411bb24e8832410289fa6f3b";
-    uint32_t const GENESIS_NONCE = 10002;
+    const size_t mixin = 31;
+    const size_t ring_size = 32;
   }
 }
 
@@ -273,6 +232,7 @@ namespace cryptonote
     FAKECHAIN,
     UNDEFINED = 255
   };
+
   struct config_t
   {
     uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
@@ -285,51 +245,51 @@ namespace cryptonote
     std::string const GENESIS_TX;
     uint32_t const GENESIS_NONCE;
   };
+
+  static const config_t mainnet = {
+    0xf0f72, // haha
+    0xf3, // he;
+    0x18faf3, // hoho
+    45678,
+    45679,
+    45680,
+    { {
+      0x69, 0x42, 0xEF, 0x66 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x10
+    } },
+    "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121012a1a936be5d91c01ee876e38c13fab0ee11cbe86011a2bf7740fb5ebd39d267d",
+    // twitter trending Oct 11th, 2020 14:58 (UTC)
+    /*
+      echo -n "#NationalComingOutDay Oct 11th, 2020 14:58 (UTC)" | sha256sum
+    */
+    0x2fab0975
+  };
+
+  static const config_t testnet = {
+    0xf4, // hp
+    0x2ff3, // hi;
+    0x26f4, // hs
+    44444,
+    44445,
+    44446,
+    { {
+      0x10, 0x42, 0xEE, 0x66, 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x11
+    } },
+    "013c01ff0001ffffffffff1f029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd088071210160eb755f618a2336055dee60f307fe0ded81c5b37b53d310175ca9ee69b0c8ad",
+    42
+  };
+
+  static const config_t stagenet = testnet;
+
   inline const config_t& get_config(network_type nettype)
   {
-    static const config_t mainnet = {
-      ::config::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-      ::config::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
-      ::config::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
-      ::config::P2P_DEFAULT_PORT,
-      ::config::RPC_DEFAULT_PORT,
-      ::config::ZMQ_RPC_DEFAULT_PORT,
-      ::config::NETWORK_ID,
-      ::config::GENESIS_TX,
-      ::config::GENESIS_NONCE
-    };
-    static const config_t testnet = {
-      ::config::testnet::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-      ::config::testnet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
-      ::config::testnet::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
-      ::config::testnet::P2P_DEFAULT_PORT,
-      ::config::testnet::RPC_DEFAULT_PORT,
-      ::config::testnet::ZMQ_RPC_DEFAULT_PORT,
-
-      ::config::testnet::NETWORK_ID,
-      ::config::testnet::GENESIS_TX,
-      ::config::testnet::GENESIS_NONCE
-    };
-    static const config_t stagenet = {
-      ::config::stagenet::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-      ::config::stagenet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
-      ::config::stagenet::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
-      ::config::stagenet::P2P_DEFAULT_PORT,
-      ::config::stagenet::RPC_DEFAULT_PORT,
-      ::config::stagenet::ZMQ_RPC_DEFAULT_PORT,
-      ::config::stagenet::NETWORK_ID,
-      ::config::stagenet::GENESIS_TX,
-      ::config::stagenet::GENESIS_NONCE
-    };
     switch (nettype)
     {
       case MAINNET: return mainnet;
       case TESTNET: return testnet;
       case STAGENET: return stagenet;
-      case FAKECHAIN: return mainnet;
+      case FAKECHAIN: return testnet;
       default: throw std::runtime_error("Invalid network type");
     }
   };
 }
 
-#define CRYPTONOTE_DEFAULT_MIXIN 31

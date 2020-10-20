@@ -7196,12 +7196,12 @@ int wallet2::get_fee_algorithm()
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_min_ring_size()
 {
-  return CRYPTONOTE_DEFAULT_MIXIN + 1;
+  return config::lol::ring_size;
 }
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_max_ring_size()
 {
-  return CRYPTONOTE_DEFAULT_MIXIN + 1;
+  return config::lol::ring_size;
 }
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::adjust_mixin(uint64_t mixin)

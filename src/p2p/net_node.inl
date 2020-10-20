@@ -751,23 +751,23 @@ namespace nodetool
 
     if (m_nettype == cryptonote::TESTNET)
     {
-      memcpy(&m_network_id, &::config::testnet::NETWORK_ID, 16);
+      memcpy(&m_network_id, &::cryptonote::testnet.NETWORK_ID, 16);
     }
     else if (m_nettype == cryptonote::STAGENET)
     {
-      memcpy(&m_network_id, &::config::stagenet::NETWORK_ID, 16);
+      memcpy(&m_network_id, &::cryptonote::stagenet.NETWORK_ID, 16);
     }
     else
     {
-      memcpy(&m_network_id, &::config::NETWORK_ID, 16);
+      memcpy(&m_network_id, &::cryptonote::mainnet.NETWORK_ID, 16);
     }
 
     m_config_folder = command_line::get_arg(vm, cryptonote::arg_data_dir);
     network_zone& public_zone = m_network_zones.at(epee::net_utils::zone::public_);
 
-    if ((m_nettype == cryptonote::MAINNET && public_zone.m_port != std::to_string(::config::P2P_DEFAULT_PORT))
-        || (m_nettype == cryptonote::TESTNET && public_zone.m_port != std::to_string(::config::testnet::P2P_DEFAULT_PORT))
-        || (m_nettype == cryptonote::STAGENET && public_zone.m_port != std::to_string(::config::stagenet::P2P_DEFAULT_PORT))) {
+    if ((m_nettype == cryptonote::MAINNET && public_zone.m_port != std::to_string(::cryptonote::mainnet.P2P_DEFAULT_PORT))
+        || (m_nettype == cryptonote::TESTNET && public_zone.m_port != std::to_string(::cryptonote::testnet.P2P_DEFAULT_PORT))
+        || (m_nettype == cryptonote::STAGENET && public_zone.m_port != std::to_string(::cryptonote::stagenet.P2P_DEFAULT_PORT))) {
       m_config_folder = m_config_folder + "/" + public_zone.m_port;
     }
 
