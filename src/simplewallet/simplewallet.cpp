@@ -2249,19 +2249,7 @@ bool simple_wallet::net_stats(const std::vector<std::string> &args)
 
 bool simple_wallet::welcome(const std::vector<std::string> &args)
 {
-  message_writer() << tr("Welcome to Lolnero, a private meme cryptocurrency.");
-  message_writer() << "";
-  message_writer() << tr("Lolnero, like Monero, is a bad ass cryptocurrency. That is, it is magic internet money.");
-  message_writer() << tr("Unlike Bitcoin, your Lolnero transactions and balance stay private and are not visible to the world by default.");
-  message_writer() << tr("However, you have the option of making those available to select parties if you choose to.");
-  message_writer() << "";
-  message_writer() << tr("Lolnero protects your questionable purchasing habits on the blockchain, and while Lolnero strives to copy Monero as much as we can,");
-  message_writer() << tr("no privacy technology can be 100% perfect, Monero included.");
-  message_writer() << tr("No one can protect you from anything!!!");
-  message_writer() << tr("Flaws in Lolnero are likely, and script kiddies are dumb enough to attack the network.");
-  message_writer() << tr("Be safe and practice defense in depth.");
-  message_writer() << "";
-  message_writer() << tr("Welcome to Lolnero and enterprise level trolling. For more information, see http://lolnero.org");
+  message_writer() << tr("Welcome to Lolnero, a private ASIC friendly cryptocurrency.");
   return true;
 }
 
