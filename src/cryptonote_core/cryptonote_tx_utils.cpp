@@ -609,18 +609,7 @@ namespace cryptonote
       return true;
     }
     blobdata bd = get_block_hashing_blob(b);
-    if (b.major_version >= HF_VERSION_SHA3_POW)
-    {
-      crypto::sha3(bd.data(), bd.size(), res);
-    }
-    else if (b.major_version >= RX_BLOCK_VERSION && b.major_version < HF_VERSION_SHA3_POW)
-    {
-      crypto::sha3(bd.data(), bd.size(), res);
-    }
-    else {
-      const int pow_variant = b.major_version >= 11 ? 4 : b.major_version >= 9 ? 2 : 1;
-      crypto::cn_slow_hash(bd.data(), bd.size(), res, pow_variant, height);
-    }
+    crypto::sha3(bd.data(), bd.size(), res);
     return true;
   }
 

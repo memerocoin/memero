@@ -1016,13 +1016,8 @@ namespace cryptonote
     const account_public_address& lMiningAdr = lMiner.get_mining_address();
     if (lMiner.is_mining() || lMiner.get_is_background_mining_enabled())
       res.address = get_account_address_as_str(nettype(), false, lMiningAdr);
-    const uint8_t major_version = m_core.get_blockchain_storage().get_current_hard_fork_version();
-    const unsigned variant = major_version >= HF_VERSION_SHA3_POW ? 7 : major_version >= 13 && major_version < HF_VERSION_SHA3_POW ? 6 : major_version >= 11 && major_version <= 12 ? 4 : 2;
-    switch (variant)
-    {
-      case 7: res.pow_algorithm = "SHA-3"; break;
-      default: res.pow_algorithm = "SHA-3"; break;
-    }
+
+    res.pow_algorithm = "SHA-3";
     if (res.is_background_mining_enabled)
     {
       res.bg_idle_threshold = lMiner.get_idle_threshold();

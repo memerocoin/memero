@@ -117,19 +117,7 @@
 
 namespace constant
 {
-  const uint8_t HF_VERSION_PER_BYTE_FEE = 12;
-  const uint8_t HF_VERSION_SMALLER_BP = 13;
-  const uint8_t HF_VERSION_LONG_TERM_BLOCK_WEIGHT = 13;
 }
-
-#define HF_VERSION_SAME_MIXIN                   15
-#define HF_VERSION_REJECT_SIGS_IN_COINBASE      15
-#define HF_VERSION_ENFORCE_MIN_AGE              15
-#define HF_VERSION_EFFECTIVE_SHORT_TERM_MEDIAN_IN_PENALTY 15
-#define HF_VERSION_EXACT_COINBASE               16
-#define HF_VERSION_CLSAG                        16
-#define HF_VERSION_DETERMINISTIC_UNLOCK_TIME    16
-#define HF_VERSION_SHA3_POW                     16
 
 #define PER_KB_FEE_QUANTIZATION_DECIMALS        8
 
