@@ -117,13 +117,11 @@
 
 namespace constant
 {
+  const uint8_t HF_VERSION_PER_BYTE_FEE = 12;
+  const uint8_t HF_VERSION_SMALLER_BP = 13;
+  const uint8_t HF_VERSION_LONG_TERM_BLOCK_WEIGHT = 13;
 }
 
-#define HF_VERSION_PER_BYTE_FEE                 12
-#define HF_VERSION_SMALLER_BP                   13
-#define HF_VERSION_LONG_TERM_BLOCK_WEIGHT       13
-#define HF_VERSION_MIN_2_OUTPUTS                15
-#define HF_VERSION_MIN_V2_COINBASE_TX           15
 #define HF_VERSION_SAME_MIXIN                   15
 #define HF_VERSION_REJECT_SIGS_IN_COINBASE      15
 #define HF_VERSION_ENFORCE_MIN_AGE              15

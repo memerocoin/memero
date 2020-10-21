@@ -2143,13 +2143,8 @@ bool simple_wallet::set_default_ring_size(const std::vector<std::string> &args/*
  
     if (ring_size != 0 && ring_size != config::lol::ring_size)
     {
-      if (m_wallet->use_fork_rules(8, 0))
       {
         message_writer() << tr("WARNING: from v8, ring size will be fixed and this setting will be ignored.");
-      }
-      else
-      {
-        message_writer() << tr("WARNING: this is a non default ring size, which may harm your privacy. Default is recommended.");
       }
     }
 

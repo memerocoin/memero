@@ -1228,7 +1228,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height, 
   CHECK_AND_ASSERT_MES(b.miner_tx.vin[0].type() == typeid(txin_gen), false, "coinbase transaction in the block has the wrong type");
 
   if (height == 0) return true;
-  CHECK_AND_ASSERT_MES(b.miner_tx.version > 1 || hf_version < HF_VERSION_MIN_V2_COINBASE_TX, false, "Invalid coinbase transaction version");
+  CHECK_AND_ASSERT_MES(b.miner_tx.version > 1, false, "Invalid coinbase transaction version");
 
   // for v2 txes (ringct), we only accept empty rct signatures for miner transactions,
   if (hf_version >= HF_VERSION_REJECT_SIGS_IN_COINBASE && b.miner_tx.version >= 2)
@@ -2872,59 +2872,10 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
     }
   }
 
-  // from v11, allow bulletproofs
-  if (hf_version < 11) {
-    if (tx.version >= 2) {
-      const bool bulletproof = rct::is_rct_bulletproof(tx.rct_signatures.type);
-      if (bulletproof || !tx.rct_signatures.p.bulletproofs.empty())
-      {
-        MERROR_VER("New Bulletproofs are not allowed before v11");
-        tvc.m_invalid_output = true;
-        return false;
-      }
-    }
-  }
-
-  // from v10, allow bulletproofs v2
-  if (hf_version < HF_VERSION_SMALLER_BP) {
-    if (tx.version >= 2) {
-      if (tx.rct_signatures.type == rct::RCTTypeBulletproof2)
-      {
-        MERROR_VER("Ringct type " << (unsigned)rct::RCTTypeBulletproof2 << " is not allowed before v" << HF_VERSION_SMALLER_BP);
-        tvc.m_invalid_output = true;
-        return false;
-      }
-    }
-  }
-
-  // from v11, allow only bulletproofs v2
-  if (hf_version > HF_VERSION_SMALLER_BP) {
-    if (tx.version >= 2) {
-      if (tx.rct_signatures.type == rct::RCTTypeBulletproof)
-      {
-        MERROR_VER("Ringct type " << (unsigned)rct::RCTTypeBulletproof << " is not allowed from v" << (HF_VERSION_SMALLER_BP + 1));
-        tvc.m_invalid_output = true;
-        return false;
-      }
-    }
-  }
-
-  // from v13, allow CLSAGs
-  if (hf_version < HF_VERSION_CLSAG) {
-    if (tx.version >= 2) {
-      if (tx.rct_signatures.type == rct::RCTTypeCLSAG)
-      {
-        MERROR_VER("Ringct type " << (unsigned)rct::RCTTypeCLSAG << " is not allowed before v" << HF_VERSION_CLSAG);
-        tvc.m_invalid_output = true;
-        return false;
-      }
-    }
-  }
-
   // from v14, allow only CLSAGs
   if (hf_version > HF_VERSION_CLSAG) {
     if (tx.version >= 2) {
-      if (tx.rct_signatures.type <= rct::RCTTypeBulletproof2)
+      if (tx.rct_signatures.type != rct::RCTTypeCLSAG)
       {
         MERROR_VER("Ringct type " << (unsigned)tx.rct_signatures.type << " is not allowed from v" << (HF_VERSION_CLSAG + 1));
         tvc.m_invalid_output = true;
@@ -3039,17 +2990,11 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   const uint8_t hf_version = m_hardfork->get_current_version();
 
-  if (hf_version >= HF_VERSION_MIN_2_OUTPUTS)
+  if (tx.vout.size() < 2)
   {
-    if (tx.version >= 2)
-    {
-      if (tx.vout.size() < 2)
-      {
-        MERROR_VER("Tx " << get_transaction_hash(tx) << " has fewer than two outputs");
-        tvc.m_too_few_outputs = true;
-        return false;
-      }
-    }
+    MERROR_VER("Tx " << get_transaction_hash(tx) << " has fewer than two outputs");
+    tvc.m_too_few_outputs = true;
+    return false;
   }
 
   // from hard fork 2, we require mixin at least 2 unless one output cannot mix with 2 others

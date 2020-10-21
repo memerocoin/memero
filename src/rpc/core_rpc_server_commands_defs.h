@@ -40,6 +40,8 @@
 #include "common/varint.h"
 #include "common/perf_timer.h"
 
+using namespace constant;
+
 namespace
 {
   template<typename T>
