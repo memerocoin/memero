@@ -8,7 +8,7 @@ test-1:
 --rpc-bind-port 44000 \
 --log-level 4 \
 --add-exclusive-node 127.0.0.1:40001 \
-# --fixed-difficulty 1000 \
+--fixed-difficulty 1000 \
 # --add-exclusive-node 127.0.0.1:40002 \
 
 test-2:
@@ -21,7 +21,7 @@ test-2:
 --rpc-bind-port 44001 \
 --log-level 1 \
 --add-exclusive-node 127.0.0.1:40000 \
-# --fixed-difficulty 1000 \
+--fixed-difficulty 1000 \
 
 make-test-wallet:
 	../../build/bin/lolnero-wallet-cli --generate-new-wallet testnet/test1 --testnet \
