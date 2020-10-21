@@ -60,6 +60,15 @@ main-2:
 --log-level 1 \
 --add-exclusive-node 127.0.0.1:41000 \
 
+main-sync:
+	@rm -rf mainnet/node_sync
+	../../build/bin/lolnerod \
+--hide-my-port \
+--data-dir ./mainnet/node_sync \
+--p2p-bind-port 41000 \
+--rpc-bind-port 45000 \
+--add-exclusive-node 10.0.0.1 \
+
 make-main-wallet:
 	../../build/bin/wownero-wallet-cli --generate-new-wallet mainnet/test1  \
 --daemon-address 127.0.0.1:45000 \
