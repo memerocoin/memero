@@ -34,6 +34,7 @@
 #include "int-util.h"
 using namespace crypto;
 using namespace std;
+using namespace constant;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"

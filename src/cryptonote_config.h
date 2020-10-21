@@ -47,7 +47,6 @@
 #define CURRENT_BLOCK_MINOR_VERSION                     17
 #define CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE             4
 
-
 #define CRYPTONOTE_LONG_TERM_BLOCK_WEIGHT_WINDOW_SIZE   100000 // size in blocks of the long term block weight median window
 #define CRYPTONOTE_SHORT_TERM_BLOCK_WEIGHT_SURGE_FACTOR 50
 #define CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE          600
@@ -104,7 +103,6 @@
 #define P2P_SUPPORT_FLAG_FLUFFY_BLOCKS                  0x01
 #define P2P_SUPPORT_FLAGS                               P2P_SUPPORT_FLAG_FLUFFY_BLOCKS
 
-#define RPC_IP_FAILS_BEFORE_BLOCK                       3
 
 #define CRYPTONOTE_NAME                         "lolnero"
 #define CRYPTONOTE_POOLDATA_FILENAME            "poolstate.bin"
@@ -115,17 +113,7 @@
 
 #define THREAD_STACK_SIZE                       5 * 1024 * 1024
 
-namespace constant
-{
-}
-
-#define PER_KB_FEE_QUANTIZATION_DECIMALS        8
-
 #define HASH_OF_HASHES_STEP                     512
-
-#define DEFAULT_TXPOOL_MAX_WEIGHT               648000000ull // 3 days at 300000, in bytes
-
-#define BULLETPROOF_MAX_OUTPUTS                 16
 
 #define CRYPTONOTE_PRUNING_STRIPE_SIZE          4096 // the smaller, the smoother the increase
 #define CRYPTONOTE_PRUNING_LOG_STRIPES          3 // the higher, the more space saved

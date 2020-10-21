@@ -61,6 +61,8 @@ extern "C"
 #define STRAUS_SIZE_LIMIT 232
 #define PIPPENGER_SIZE_LIMIT 0
 
+using namespace constant;
+
 namespace rct
 {
 

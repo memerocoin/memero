@@ -66,4 +66,9 @@ namespace constant
   const uint8_t HF_VERSION_SMALLER_BP = 13;
   const uint8_t HF_VERSION_LONG_TERM_BLOCK_WEIGHT = 13;
   const uint8_t HF_VERSION_DETERMINISTIC_UNLOCK_TIME = 16;
+
+  const uint64_t RPC_IP_FAILS_BEFORE_BLOCK = 3;
+  const size_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
+  const size_t DEFAULT_TXPOOL_MAX_WEIGHT = 648000000; // 3 days at 300000, in bytes
+  const size_t BULLETPROOF_MAX_OUTPUTS = 16;
 }
