@@ -1486,7 +1486,9 @@ namespace nodetool
           if (actual_ip.is_v4_mapped())
           {
             boost::asio::ip::address_v4 v4ip = make_address_v4_from_v6(actual_ip);
-            return epee::net_utils::ipv4_network_address(v4ip.to_uint(), 0).host_str();
+            uint32_t actual_ipv4;
+            memcpy(&actual_ipv4, v4ip.to_bytes().data(), sizeof(actual_ipv4));
+            return epee::net_utils::ipv4_network_address(actual_ipv4, 0).host_str();
           }
         }
         return address.host_str();
