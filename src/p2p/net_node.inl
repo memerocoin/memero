@@ -757,8 +757,18 @@ namespace nodetool
     case epee::net_utils::zone::public_:
       return get_dns_seed_nodes();
     case epee::net_utils::zone::tor:
+      if (m_nettype == cryptonote::MAINNET)
+      {
+        return {
+        };
+      }
       return {};
     case epee::net_utils::zone::i2p:
+      if (m_nettype == cryptonote::MAINNET)
+      {
+        return {
+        };
+      }
       return {};
     default:
       break;
@@ -1262,7 +1272,10 @@ namespace nodetool
   {
     const auto i = m_network_zones.find(na.get_zone());
     if (i == m_network_zones.end())
+    {
+      MERROR("Tried connecting to address for disabled network");
       return false;
+    }
     network_zone& zone = i->second;
     if (zone.m_connect == nullptr) // outgoing connections in zone not possible
       return false;
