@@ -726,13 +726,7 @@ int main(int argc, char* argv[])
 
   try
   {
-
-#if defined(PER_BLOCK_CHECKPOINT)
-  const GetCheckpointsCallback& get_checkpoints = blocks::GetCheckpointsData;
-#else
-  const GetCheckpointsCallback& get_checkpoints = nullptr;
-#endif
-  if (!core.init(vm, nullptr, get_checkpoints))
+  if (!core.init(vm, nullptr)
   {
     std::cerr << "Failed to initialize core" << ENDL;
     return 1;

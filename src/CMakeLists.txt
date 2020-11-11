@@ -100,7 +100,6 @@ monero_add_library(version SOURCES ${CMAKE_BINARY_DIR}/version.cpp DEPENDS genve
 add_subdirectory(common)
 add_subdirectory(crypto)
 add_subdirectory(ringct)
-add_subdirectory(checkpoints)
 add_subdirectory(cryptonote_basic)
 add_subdirectory(cryptonote_core)
 add_subdirectory(lmdb)
@@ -129,10 +128,6 @@ if(BUILD_DEBUG_UTILITIES)
   add_subdirectory(blockchain_utilities)
   add_subdirectory(gen_multisig)
   add_subdirectory(gen_ssl_cert)
-endif()
-
-if(PER_BLOCK_CHECKPOINT)
-  add_subdirectory(blocks)
 endif()
 
 add_subdirectory(device)

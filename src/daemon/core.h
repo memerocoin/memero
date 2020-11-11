@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "blocks/blocks.h"
 #include "cryptonote_core/cryptonote_core.h"
 #include "cryptonote_protocol/cryptonote_protocol_handler.h"
 #include "misc_log_ex.h"
@@ -61,12 +60,7 @@ public:
   {
     //initialize core here
     MGINFO("Initializing core...");
-#if defined(PER_BLOCK_CHECKPOINT)
-    const cryptonote::GetCheckpointsCallback& get_checkpoints = blocks::GetCheckpointsData;
-#else
-    const cryptonote::GetCheckpointsCallback& get_checkpoints = nullptr;
-#endif
-    if (!m_core.init(m_vm_HACK, nullptr, get_checkpoints))
+    if (!m_core.init(m_vm_HACK, nullptr))
     {
       throw std::runtime_error("Failed to initialize core");
     }

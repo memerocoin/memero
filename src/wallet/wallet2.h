@@ -59,7 +59,6 @@
 #include "crypto/hash.h"
 #include "ringct/rctTypes.h"
 #include "ringct/rctOps.h"
-#include "checkpoints/checkpoints.h"
 #include "serialization/crypto.h"
 #include "serialization/string.h"
 #include "serialization/pair.h"
@@ -1555,7 +1554,6 @@ private:
     serializable_unordered_map<crypto::hash, confirmed_transfer_details> m_confirmed_txs;
     serializable_unordered_multimap<crypto::hash, pool_payment_details> m_unconfirmed_payments;
     serializable_unordered_map<crypto::hash, crypto::secret_key> m_tx_keys;
-    cryptonote::checkpoints m_checkpoints;
     serializable_unordered_map<crypto::hash, std::vector<crypto::secret_key>> m_additional_tx_keys;
 
     transfer_container m_transfers;

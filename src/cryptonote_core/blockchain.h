@@ -58,7 +58,6 @@
 #include "cryptonote_tx_utils.h"
 #include "cryptonote_basic/verification_context.h"
 #include "crypto/hash.h"
-#include "checkpoints/checkpoints.h"
 #include "cryptonote_basic/hardfork.h"
 #include "blockchain_db/blockchain_db.h"
 
@@ -79,15 +78,6 @@ namespace cryptonote
     db_async, //!< handle syncing calls instead of the backing db, asynchronously
     db_nosync //!< Leave syncing up to the backing db (safest, but slowest because of disk I/O)
   };
-
-  /** 
-   * @brief Callback routine that returns checkpoints data for specific network type
-   * 
-   * @param network network type
-   * 
-   * @return checkpoints data, empty span if there ain't any checkpoints for specific network type
-   */
-  typedef std::function<const epee::span<const unsigned char>(cryptonote::network_type network)> GetCheckpointsCallback;
 
   /************************************************************************/
   /*                                                                      */
@@ -127,11 +117,10 @@ namespace cryptonote
      * @param offline true if running offline, else false
      * @param test_options test parameters
      * @param fixed_difficulty fixed difficulty for testing purposes; 0 means disabled
-     * @param get_checkpoints if set, will be called to get checkpoints data
      *
      * @return true on success, false if any initialization steps fail
      */
-    bool init(BlockchainDB* db, const network_type nettype = MAINNET, bool offline = false, const cryptonote::test_options *test_options = NULL, difficulty_type fixed_difficulty = 0, const GetCheckpointsCallback& get_checkpoints = nullptr);
+    bool init(BlockchainDB* db, const network_type nettype = MAINNET, bool offline = false, const cryptonote::test_options *test_options = NULL, difficulty_type fixed_difficulty = 0);
 
     /**
      * @brief Initialize the Blockchain state
@@ -153,13 +142,6 @@ namespace cryptonote
      * @return true on success, false if any uninitialization steps fail
      */
     bool deinit();
-
-    /**
-     * @brief assign a set of blockchain checkpoint hashes
-     *
-     * @param chk_pts the set of checkpoints to assign
-     */
-    void set_checkpoints(checkpoints&& chk_pts) { m_checkpoints = chk_pts; }
 
     /**
      * @brief get blocks and transactions from blocks based on start height and count
@@ -702,30 +684,6 @@ namespace cryptonote
 
     //debug functions
 
-    /**
-     * @brief check the blockchain against a set of checkpoints
-     *
-     * If a block fails a checkpoint and enforce is enabled, the blockchain
-     * will be rolled back to two blocks prior to that block.  If enforce
-     * is disabled, as is currently the default case with DNS-based checkpoints,
-     * an error will be printed to the user but no other action will be taken.
-     *
-     * @param points the checkpoints to check against
-     * @param enforce whether or not to take action on failure
-     */
-    void check_against_checkpoints(const checkpoints& points, bool enforce);
-
-    /**
-     * @brief loads new checkpoints from a file and optionally from DNS
-     *
-     * @param file_path the path of the file to look for and load checkpoints from
-     * @param check_dns whether or not to check for new DNS-based checkpoints
-     *
-     * @return false if any enforced checkpoint type fails to load, otherwise true
-     */
-    bool update_checkpoints(const std::string& file_path, bool check_dns);
-
-
     // user options, must be called before calling init()
 
     /**
@@ -1096,8 +1054,6 @@ namespace cryptonote
     // some invalid blocks
     blocks_ext_by_hash m_invalid_blocks;     // crypto::hash -> block_extended_info
 
-
-    checkpoints m_checkpoints;
 
     HardFork *m_hardfork;
 
@@ -1474,17 +1430,6 @@ namespace cryptonote
      */
     void check_ring_signature(const crypto::hash &tx_prefix_hash, const crypto::key_image &key_image,
         const std::vector<rct::ctkey> &pubkeys, const std::vector<crypto::signature> &sig, uint64_t &result) const;
-
-    /**
-     * @brief loads block hashes from compiled-in data set
-     *
-     * A (possibly empty) set of block hashes can be compiled into the
-     * monero daemon binary.  This function loads those hashes into
-     * a useful state.
-     * 
-     * @param get_checkpoints if set, will be called to get checkpoints data
-     */
-    void load_compiled_in_block_hashes(const GetCheckpointsCallback& get_checkpoints);
 
     /**
      * @brief expands v2 transaction data from blockchain
