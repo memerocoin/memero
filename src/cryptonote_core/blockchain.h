@@ -693,10 +693,9 @@ namespace cryptonote
      * @param sync_on_blocks whether to sync based on blocks or bytes
      * @param sync_threshold number of blocks/bytes to cache before syncing to database
      * @param sync_mode the ::blockchain_db_sync_mode to use
-     * @param fast_sync sync using built-in block hashes as trusted
      */
     void set_user_options(uint64_t maxthreads, bool sync_on_blocks, uint64_t sync_threshold,
-        blockchain_db_sync_mode sync_mode, bool fast_sync);
+        blockchain_db_sync_mode sync_mode);
 
     /**
      * @brief sets a block notify object to call for every new block
@@ -1024,7 +1023,6 @@ namespace cryptonote
     std::vector<crypto::hash> m_blocks_txs_check;
 
     blockchain_db_sync_mode m_db_sync_mode;
-    bool m_fast_sync;
     bool m_show_time_stats;
     bool m_db_default_sync;
     bool m_db_sync_on_blocks;
