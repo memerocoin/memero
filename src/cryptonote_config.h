@@ -35,8 +35,6 @@
 #include "config/network.h"
 #include "config/lol.h"
 
-#define CRYPTONOTE_DNS_TIMEOUT_MS                       20000
-
 #define CRYPTONOTE_MAX_BLOCK_NUMBER                     500000000
 #define CRYPTONOTE_MAX_TX_SIZE                          1000000
 #define CRYPTONOTE_MAX_TX_PER_BLOCK                     0x10000000

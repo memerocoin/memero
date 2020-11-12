@@ -1428,7 +1428,6 @@ private:
     void hash_m_transfer(const transfer_details & transfer, crypto::hash &hash) const;
     uint64_t hash_m_transfers(int64_t transfer_height, crypto::hash &hash) const;
     void finish_rescan_bc_keep_key_images(uint64_t transfer_height, const crypto::hash &hash);
-    void enable_dns(bool enable) { m_use_dns = enable; }
     void set_offline(bool offline = true);
 
     static std::string get_default_daemon_address() { CRITICAL_REGION_LOCAL(default_daemon_address_lock); return default_daemon_address; }
@@ -1625,7 +1624,6 @@ private:
     std::string m_device_name;
     std::string m_device_derivation_path;
     uint64_t m_device_last_key_image_sync;
-    bool m_use_dns;
     bool m_offline;
     uint32_t m_rpc_version;
 

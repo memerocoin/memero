@@ -248,12 +248,10 @@ namespace cryptonote {
       address_parse_info& info
     , network_type nettype
     , const std::string& str_or_url
-    , std::function<std::string(const std::string&, const std::vector<std::string>&, bool)> dns_confirm
     )
   {
     if (get_account_address_from_str(info, nettype, str_or_url))
       return true;
-    bool dnssec_valid;
     std::string address_str;
     return !address_str.empty() &&
       get_account_address_from_str(info, nettype, address_str);

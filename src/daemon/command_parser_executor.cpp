@@ -343,7 +343,6 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
     {
       if(!cryptonote::get_account_address_from_str(info, cryptonote::STAGENET, args.front()))
       {
-        bool dnssec_valid;
         std::string address_str;
         if(!cryptonote::get_account_address_from_str(info, cryptonote::MAINNET, address_str))
         {
