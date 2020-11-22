@@ -87,8 +87,7 @@ namespace cryptonote
                                                                                                               m_syncronized_connections_count(0),
                                                                                                               m_synchronized(offline),
                                                                                                               m_ask_for_txpool_complement(true),
-                                                                                                              m_stopping(false),
-                                                                                                              m_no_sync(false)
+                                                                                                              m_stopping(false)
 
   {
     if(!m_p2p)
@@ -387,12 +386,6 @@ namespace cryptonote
     }
     MINFO(context << "Remote blockchain height: " << hshd.current_height << ", id: " << hshd.top_id);
 
-    if (m_no_sync)
-    {
-      context.m_state = cryptonote_connection_context::state_normal;
-      return true;
-    }
-
     context.m_state = cryptonote_connection_context::state_synchronizing;
     //let the socket to send response to handshake, but request callback, to let send request data after response
     LOG_PRINT_CCONTEXT_L2("requesting callback");
@@ -430,7 +423,7 @@ namespace cryptonote
     MLOGIF_P2P_MESSAGE(crypto::hash hash; cryptonote::block b; bool ret = cryptonote::parse_and_validate_block_from_blob(arg.b.block, b, &hash);, ret, "Received NOTIFY_NEW_BLOCK " << hash << " (height " << arg.current_blockchain_height << ", " << arg.b.txs.size() << " txes)");
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
-    if(!is_synchronized() || m_no_sync) // can happen if a peer connection goes to normal but another thread still hasn't finished adding queued blocks
+    if(!is_synchronized()) // can happen if a peer connection goes to normal but another thread still hasn't finished adding queued blocks
     {
       LOG_DEBUG_CC(context, "Received new block while syncing, ignored");
       return 1;
@@ -501,7 +494,7 @@ namespace cryptonote
     MLOGIF_P2P_MESSAGE(crypto::hash hash; cryptonote::block b; bool ret = cryptonote::parse_and_validate_block_from_blob(arg.b.block, b, &hash);, ret, "Received NOTIFY_NEW_FLUFFY_BLOCK " << hash << " (height " << arg.current_blockchain_height << ", " << arg.b.txs.size() << " txes)");
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
-    if(!is_synchronized() || m_no_sync) // can happen if a peer connection goes to normal but another thread still hasn't finished adding queued blocks
+    if(!is_synchronized()) // can happen if a peer connection goes to normal but another thread still hasn't finished adding queued blocks
     {
       LOG_DEBUG_CC(context, "Received new block while syncing, ignored");
       return 1;
@@ -929,7 +922,7 @@ namespace cryptonote
     // while syncing, core will lock for a long time, so we ignore
     // those txes as they aren't really needed anyway, and avoid a
     // long block before replying
-    if(!is_synchronized() || m_no_sync)
+    if(!is_synchronized())
     {
       LOG_DEBUG_CC(context, "Received new tx while syncing, ignored");
       return 1;

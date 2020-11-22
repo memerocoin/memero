@@ -111,8 +111,6 @@ namespace cryptonote
     void stop();
     void on_connection_close(cryptonote_connection_context &context);
     void set_max_out_peers(unsigned int max) { m_max_out_peers = max; }
-    bool no_sync() const { return m_no_sync; }
-    void set_no_sync(bool value) { m_no_sync = value; }
     std::string get_peers_overview() const;
     std::pair<uint32_t, uint32_t> get_next_needed_pruning_stripe() const;
     bool needs_new_sync_connections() const;
@@ -156,7 +154,6 @@ namespace cryptonote
     std::atomic<uint32_t> m_syncronized_connections_count;
     std::atomic<bool> m_synchronized;
     std::atomic<bool> m_stopping;
-    std::atomic<bool> m_no_sync;
     std::atomic<bool> m_ask_for_txpool_complement;
     boost::mutex m_sync_lock;
     block_queue m_block_queue;
