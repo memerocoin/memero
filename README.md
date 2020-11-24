@@ -8,6 +8,19 @@ Why
 
 The goal of Lolnero is to replace `C/C++` with a safer language, and to not hardfork.
 
+
+Specifications
+==============
+
+* Proof of Work: SHA-3
+* Max supply: ∞
+* Block reward: 300
+* Block time: 5 minutes
+* Confidential transaction type: Bulletproofs
+* Ring signature type: CLSAG
+* Ring size: 32
+
+
 How to build
 ============
 
