@@ -45,8 +45,7 @@ libreadline6-dev \
 rapidjson-dev \
 -y
 
-cmake .. -DMANUAL_SUBMODULES=1
-make
+cmake .. && make
 ```
 
 Generated binaries will be in `bin/`.
