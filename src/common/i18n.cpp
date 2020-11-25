@@ -33,7 +33,7 @@
 #include <map>
 #include "file_io_utils.h"
 #include "common/i18n.h"
-#include "translation_files.h"
+// #include "translation_files.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "i18n"
@@ -159,6 +159,7 @@ int i18n_set_language(const char *directory, const char *base, std::string langu
   } else {
     i18n_log("Translations file not found: " << filename);
     filename = std::string(base) + "_" + language + ".qm";
+    /*
     if (!find_embedded_file(filename, contents)) {
       i18n_log("Embedded translations file not found: " << filename);
       const char *underscore = strchr(language.c_str(), '_');
@@ -183,6 +184,7 @@ int i18n_set_language(const char *directory, const char *base, std::string langu
         return -1;
       }
     }
+    */
   }
 
   data = (const unsigned char*)contents.c_str();
