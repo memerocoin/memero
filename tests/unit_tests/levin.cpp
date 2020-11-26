@@ -276,8 +276,7 @@ namespace
             epee::byte_slice noise = nullptr;
             if (noise_size)
                 noise = epee::levin::make_noise_notify(noise_size);
-            epee::net_utils::zone zone = is_public ? epee::net_utils::zone::public_ : epee::net_utils::zone::i2p;
-            return cryptonote::levin::notify{io_service_, connections_, std::move(noise), zone, pad_txs};
+            return cryptonote::levin::notify{io_service_, connections_, std::move(noise), is_public, pad_txs};
         }
 
         boost::uuids::random_generator random_generator_;

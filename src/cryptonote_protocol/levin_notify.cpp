@@ -240,7 +240,7 @@ namespace levin
   {
     struct zone
     {
-      explicit zone(boost::asio::io_service& io_service, std::shared_ptr<connections> p2p, epee::byte_slice noise_in, epee::net_utils::zone zone, bool pad_txs)
+      explicit zone(boost::asio::io_service& io_service, std::shared_ptr<connections> p2p, epee::byte_slice noise_in, bool is_public, bool pad_txs)
         : p2p(std::move(p2p)),
           noise(std::move(noise_in)),
           next_epoch(io_service),
@@ -250,7 +250,7 @@ namespace levin
           channels(),
           flush_time(std::chrono::steady_clock::time_point::max()),
           connection_count(0),
-          nzone(zone),
+          is_public(is_public),
           pad_txs(pad_txs)
       {
         for (std::size_t count = 0; !noise.empty() && count < CRYPTONOTE_NOISE_CHANNELS; ++count)
@@ -266,7 +266,7 @@ namespace levin
       std::deque<noise_channel> channels;  //!< Never touch after init; only update elements on `noise_channel.strand`
       std::chrono::steady_clock::time_point flush_time; //!< Next expected Dandelion++ fluff flush
       std::atomic<std::size_t> connection_count; //!< Only update in strand, can be read at any time
-      const epee::net_utils::zone nzone;         //!< Zone is public ipv4/ipv6 connections, or i2p or tor
+      const bool is_public;                      //!< Zone is public ipv4/ipv6 connections
       const bool pad_txs;                        //!< Pad txs to the next boundary for privacy
     };
   } // detail
@@ -302,8 +302,7 @@ namespace levin
         if (!channel.connection.is_nil())
           channel.queue.push_back(std::move(message_));
         else if (destination_ == 0 && zone_->connection_count == 0)
-          MWARNING("Unable to send transaction(s) to " << epee::net_utils::zone_to_string(zone_->nzone) <<
-			" - no available outbound connections");
+          MWARNING("Unable to send transaction(s) over anonymity network - no available outbound connections");
       }
     };
 
@@ -402,7 +401,7 @@ namespace levin
         bool available = false;
         zone_->p2p->foreach_connection([this, now, &in_duration, &out_duration, &next_flush, &available] (detail::p2p_context& context)
         {
-          if (this->source_ != context.m_connection_id && (zone_->nzone == epee::net_utils::zone::public_ || !context.m_is_income))
+          if (this->source_ != context.m_connection_id && (this->zone_->is_public || !context.m_is_income))
           {
             available = true;
             if (context.fluff_txs.empty())
@@ -581,8 +580,7 @@ namespace levin
 
             auto connections = get_out_connections(*zone_->p2p);
             if (connections.empty())
-              MWARNING("Unable to send transaction(s) to " << epee::net_utils::zone_to_string(zone_->nzone) <<
-			" - no suitable outbound connections");
+              MWARNING("Lost all outbound connections to anonymity network - currently unable to send transaction(s)");
 
             zone_->strand.post(update_channels{zone_, std::move(connections)});
           }
@@ -622,14 +620,13 @@ namespace levin
     };
   } // anonymous
 
-  notify::notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, epee::byte_slice noise, epee::net_utils::zone zone, const bool pad_txs)
-    : zone_(std::make_shared<detail::zone>(service, std::move(p2p), std::move(noise), zone, pad_txs))
+  notify::notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, epee::byte_slice noise, const bool is_public, const bool pad_txs)
+    : zone_(std::make_shared<detail::zone>(service, std::move(p2p), std::move(noise), is_public, pad_txs))
   {
     if (!zone_->p2p)
       throw std::logic_error{"cryptonote::levin::notify cannot have nullptr p2p argument"};
 
-    const bool noise_enabled = !zone_->noise.empty();
-    if (noise_enabled || zone == epee::net_utils::zone::public_)
+    if (!zone_->noise.empty())
     {
       const auto now = std::chrono::steady_clock::now();
       start_epoch{zone_, noise_min_epoch, noise_epoch_range, CRYPTONOTE_NOISE_CHANNELS}();
