@@ -200,7 +200,6 @@ list(INSERT CMAKE_MODULE_PATH 0
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 enable_testing()
 
-option(BUILD_DOCUMENTATION "Build the Doxygen documentation." OFF)
 option(BUILD_TESTS "Build tests." OFF)
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(DEFAULT_BUILD_DEBUG_UTILITIES ON)
@@ -771,28 +770,6 @@ if(BUILD_DEBUG_UTILITIES)
   message(STATUS "Building debug utilities")
 else()
   message(STATUS "Not building debug utilities")
-endif()
-
-if(BUILD_DOCUMENTATION)
-  set(DOC_GRAPHS "YES" CACHE STRING "Create dependency graphs (needs graphviz)")
-  set(DOC_FULLGRAPHS "NO" CACHE STRING "Create call/callee graphs (large)")
-
-  find_program(DOT_PATH dot)
-
-  if (DOT_PATH STREQUAL "DOT_PATH-NOTFOUND")
-    message("Doxygen: graphviz not found - graphs disabled")
-    set(DOC_GRAPHS "NO")
-  endif()
-
-  find_package(Doxygen)
-  if(DOXYGEN_FOUND)
-    configure_file("cmake/Doxyfile.in" "Doxyfile" @ONLY)
-    configure_file("cmake/Doxygen.extra.css.in" "Doxygen.extra.css" @ONLY)
-    add_custom_target(doc
-      ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating API documentation with Doxygen.." VERBATIM)
-  endif()
 endif()
 
 # when ON - will install libwallet_merged into "lib"
