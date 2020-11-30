@@ -4,7 +4,7 @@ with import <nixpkgs> {};
 let
   CMakeFlags_Lolnero = ''
     -DReadline_ROOT_DIR=${readline.dev}
-    -DMANUAL_SUBMODULES=ON
+    -DUSE_CCACHE=ON
   '';
 in
 {
