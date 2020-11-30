@@ -39,10 +39,6 @@ include(CheckLibraryExists)
 include(CheckFunctionExists)
 include(FindPythonInterp)
 
-if (IOS)
-    INCLUDE(CmakeLists_IOS.txt)
-endif()
-
 cmake_minimum_required(VERSION 2.8.7)
 message(STATUS "CMake version ${CMAKE_VERSION}")
 
@@ -246,13 +242,6 @@ endif()
 
 include_directories(external/rapidjson/include external/easylogging++ src contrib/epee/include external)
 
-if(APPLE)
-  include_directories(SYSTEM /usr/include/malloc)
-  if(POLICY CMP0042)
-    cmake_policy(SET CMP0042 NEW)
-  endif()
-endif()
-
 if(MSVC OR MINGW)
   set(DEFAULT_STATIC true)
 else()
@@ -316,9 +305,7 @@ add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 # Can't install hook in static build on OSX, because OSX linker does not support --wrap
 # On ARM, having libunwind package (with .so's only) installed breaks static link.
 # When possible, avoid stack tracing using libunwind in favor of using easylogging++.
-if (APPLE)
-  set(DEFAULT_STACK_TRACE OFF)
-elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
   set(DEFAULT_STACK_TRACE ON)
   set(STACK_TRACE_LIB "easylogging++") # for diag output only
 else()
@@ -345,10 +332,6 @@ endif()
 if (CMAKE_SYSTEM_NAME MATCHES "(SunOS|Solaris)")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthreads")
 endif ()
-
-if (APPLE AND NOT IOS)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=x86-64 -fvisibility=default -std=c++11")
-endif()
 
 find_package(OpenSSL REQUIRED)
 message(STATUS "Using OpenSSL include dir at ${OPENSSL_INCLUDE_DIR}")
@@ -635,10 +618,6 @@ else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIE")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_CXX_FLAGS} -fPIE -pie")
-  endif()
-
-  if(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=default -DGTEST_HAS_TR1_TUPLE=0")
   endif()
 
   set(DEBUG_FLAGS "-g3")
