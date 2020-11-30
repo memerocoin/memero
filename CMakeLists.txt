@@ -511,7 +511,7 @@ if(ARM)
 endif(ARM)
 
 # random crash on startup when asan is on if pie is enabled
-if(NOT SANITIZE AND ANDROID AND NOT BUILD_GUI_DEPS STREQUAL "ON" OR IOS)
+if(NOT SANITIZE AND ANDROID STREQUAL "ON" OR IOS)
   #From Android 5: "only position independent executables (PIE) are supported" 
   message(STATUS "Enabling PIE executable")
   set(PIC_FLAG "")
@@ -639,10 +639,6 @@ find_library(SODIUM_LIBRARY sodium)
 set(ZMQ_INCLUDE_PATH zmq_dummy_include_path)
 set(ZMQ_LIB zmq_dummy_lib_2)
 
-if(SODIUM_LIBRARY)
-  set(ZMQ_LIB "${ZMQ_LIB};${SODIUM_LIBRARY}")
-endif()
-
 add_subdirectory(contrib)
 add_subdirectory(src)
 
@@ -661,7 +657,6 @@ else()
 endif()
 
 # when ON - will install libwallet_merged into "lib"
-option(BUILD_GUI_DEPS "Build GUI dependencies." OFF)
 
 CHECK_C_COMPILER_FLAG(-std=c11 HAVE_C11)
 
