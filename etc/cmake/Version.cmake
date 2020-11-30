@@ -32,19 +32,9 @@ function (write_version tag)
 endfunction ()
 
 find_package(Git QUIET)
-if ("$Format:$" STREQUAL "")
-  # We're in a tarball; use hard-coded variables.
-  set(VERSION_IS_RELEASE "true")
-  write_version("release")
-elseif (GIT_FOUND OR Git_FOUND)
-  message(STATUS "Found Git: ${GIT_EXECUTABLE}")
-  include(GitVersion)
-  get_version_tag_from_git("${GIT_EXECUTABLE}")
-  write_version("${VERSIONTAG}")
-else()
-  message(STATUS "WARNING: Git was not found!")
-  set(VERSION_IS_RELEASE "false")
-  write_version("unknown")
-endif ()
+
+set(VERSION_IS_RELEASE "true")
+write_version("release")
+
 add_custom_target(genversion ALL
   DEPENDS "${CMAKE_BINARY_DIR}/version.cpp")
