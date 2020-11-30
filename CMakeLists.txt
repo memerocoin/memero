@@ -70,8 +70,6 @@ if (${CMAKE_VERSION} VERSION_GREATER "3.0.0")
   endif ()
 endif()
 
-enable_language(C ASM)
-
 function (die msg)
   if (NOT WIN32)
     string(ASCII 27 Esc)
@@ -197,55 +195,11 @@ else()
   set(OPT_FLAGS_RELEASE "-Ofast")
 endif()
 
-# BUILD_TAG is used to select the build type to check for a new version
-if(BUILD_TAG)
-  message(STATUS "Building build tag ${BUILD_TAG}")
-  add_definitions("-DBUILD_TAG=${BUILD_TAG}")
-else()
-  message(STATUS "Building without build tag")
-endif()
-
 set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 
-# set this to 0 if per-block checkpoint needs to be disabled
-set(PER_BLOCK_CHECKPOINT 0)
-
-if(PER_BLOCK_CHECKPOINT)
-  add_definitions("-DPER_BLOCK_CHECKPOINT")
-  set(Blocks "blocks")
-else()
-  set(Blocks "")
-endif()
-
 list(INSERT CMAKE_MODULE_PATH 0
   "${CMAKE_SOURCE_DIR}/cmake")
-
-if (NOT DEFINED ENV{DEVELOPER_LOCAL_TOOLS})
-  message(STATUS "Could not find DEVELOPER_LOCAL_TOOLS in env (not required)")
-  set(BOOST_IGNORE_SYSTEM_PATHS_DEFAULT OFF)
-elseif ("$ENV{DEVELOPER_LOCAL_TOOLS}" EQUAL 1)
-  message(STATUS "Found: env DEVELOPER_LOCAL_TOOLS = 1")
-  set(BOOST_IGNORE_SYSTEM_PATHS_DEFAULT ON)
-else()
-  message(STATUS "Found: env DEVELOPER_LOCAL_TOOLS = 0")
-  set(BOOST_IGNORE_SYSTEM_PATHS_DEFAULT OFF)
-endif()
-
-message(STATUS "BOOST_IGNORE_SYSTEM_PATHS defaults to ${BOOST_IGNORE_SYSTEM_PATHS_DEFAULT}")
-option(BOOST_IGNORE_SYSTEM_PATHS "Ignore boost system paths for local boost installation" ${BOOST_IGNORE_SYSTEM_PATHS_DEFAULT})
-
-
-if (NOT DEFINED ENV{DEVELOPER_LIBUNBOUND_OLD})
-  message(STATUS "Could not find DEVELOPER_LIBUNBOUND_OLD in env (not required)")
-elseif ("$ENV{DEVELOPER_LIBUNBOUND_OLD}" EQUAL 1)
-  message(STATUS "Found: env DEVELOPER_LIBUNBOUND_OLD = 1, will use the work around")
-  add_definitions(-DDEVELOPER_LIBUNBOUND_OLD)
-elseif ("$ENV{DEVELOPER_LIBUNBOUND_OLD}" EQUAL 0)
-  message(STATUS "Found: env DEVELOPER_LIBUNBOUND_OLD = 0")
-else()
-  message(STATUS "Found: env DEVELOPER_LIBUNBOUND_OLD with bad value. Will NOT use the work around")
-endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 enable_testing()
@@ -259,19 +213,7 @@ else()
 endif()
 option(BUILD_DEBUG_UTILITIES "Build debug utilities." DEFAULT_BUILD_DEBUG_UTILITIES)
 
-if(OSSFUZZ)
-  message(STATUS "Using OSS-Fuzz fuzzing system")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOSSFUZZ")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOSSFUZZ")
-endif()
-
-# Check whether we're on a 32-bit or 64-bit system
-if(CMAKE_SIZEOF_VOID_P EQUAL "8")
-  set(DEFAULT_BUILD_64 ON)
-else()
-  set(DEFAULT_BUILD_64 OFF)
-endif()
-option(BUILD_64 "Build for 64-bit? 'OFF' builds for 32-bit." ${DEFAULT_BUILD_64})
+option(BUILD_64 "Build for 64-bit? 'OFF' builds for 32-bit." ON)
 
 if(BUILD_64)
   set(ARCH_WIDTH "64")
@@ -350,7 +292,6 @@ if(STATIC)
   else()
     set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
   endif()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DZMQ_STATIC")
 endif()
 
 if(SANITIZE)
@@ -377,26 +318,11 @@ add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 # When possible, avoid stack tracing using libunwind in favor of using easylogging++.
 if (APPLE)
   set(DEFAULT_STACK_TRACE OFF)
-  set(LIBUNWIND_LIBRARIES "")
-elseif (DEPENDS AND NOT LINUX)
-  set(DEFAULT_STACK_TRACE OFF)
-  set(LIBUNWIND_LIBRARIES "")
 elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
   set(DEFAULT_STACK_TRACE ON)
   set(STACK_TRACE_LIB "easylogging++") # for diag output only
-  set(LIBUNWIND_LIBRARIES "")
-elseif (ARM AND STATIC)
-  set(DEFAULT_STACK_TRACE OFF)
-  set(LIBUNWIND_LIBRARIES "")
 else()
-  find_package(Libunwind)
-  if(LIBUNWIND_FOUND)
-    set(DEFAULT_STACK_TRACE ON)
-    set(STACK_TRACE_LIB "libunwind") # for diag output only
-  else()
-    set(DEFAULT_STACK_TRACE OFF)
-    set(LIBUNWIND_LIBRARIES "")
-  endif()
+  set(DEFAULT_STACK_TRACE OFF)
 endif()
 
 option(STACK_TRACE "Install a hook that dumps stack on exception" ${DEFAULT_STACK_TRACE})
@@ -422,12 +348,6 @@ endif ()
 
 if (APPLE AND NOT IOS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=x86-64 -fvisibility=default -std=c++11")
-  if (NOT OPENSSL_ROOT_DIR)
-      EXECUTE_PROCESS(COMMAND brew --prefix openssl
-        OUTPUT_VARIABLE OPENSSL_ROOT_DIR
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "Using OpenSSL found at ${OPENSSL_ROOT_DIR}")
-  endif()
 endif()
 
 find_package(OpenSSL REQUIRED)
@@ -439,28 +359,13 @@ if(STATIC AND NOT IOS)
   endif()
 endif()
 
-find_package(HIDAPI)
-
 add_definition_if_library_exists(c memset_s "string.h" HAVE_MEMSET_S)
 add_definition_if_library_exists(c explicit_bzero "strings.h" HAVE_EXPLICIT_BZERO)
 add_definition_if_function_found(strptime HAVE_STRPTIME)
 
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
 
-# Generate header for embedded translations
-# Generate header for embedded translations, use target toolchain if depends, otherwise use the
-# lrelease and lupdate binaries from the host
-# include(ExternalProject)
-# ExternalProject_Add(generate_translations_header
-#   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/translations"
-#   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/translations"
-#   STAMP_DIR ${LRELEASE_PATH}
-#   CMAKE_ARGS -DLRELEASE_PATH=${LRELEASE_PATH}
-#   INSTALL_COMMAND cmake -E echo "")
-# include_directories("${CMAKE_CURRENT_BINARY_DIR}/translations")
 add_subdirectory(external)
-
-# Final setup for libunbound
 
 # Final setup for easylogging++
 include_directories(${EASYLOGGING_INCLUDE})
@@ -468,23 +373,6 @@ link_directories(${EASYLOGGING_LIBRARY_DIRS})
 
 # Final setup for liblmdb
 include_directories(${LMDB_INCLUDE})
-
-# Final setup for libunwind
-include_directories(${LIBUNWIND_INCLUDE})
-link_directories(${LIBUNWIND_LIBRARY_DIRS})
-
-# Final setup for hid
-if (HIDAPI_FOUND) 
-  message(STATUS "Using HIDAPI include dir at ${HIDAPI_INCLUDE_DIR}")
-  add_definitions(-DHAVE_HIDAPI)
-  include_directories(${HIDAPI_INCLUDE_DIR})
-  link_directories(${LIBHIDAPI_LIBRARY_DIRS})
-else (HIDAPI_FOUND)
-  message(STATUS "Could not find HIDAPI")
-endif()
-
-# Trezor support check
-include(CheckTrezor)
 
 if(MSVC)
   add_definitions("/bigobj /MP /W3 /GS- /D_CRT_SECURE_NO_WARNINGS /wd4996 /wd4345 /D_WIN32_WINNT=0x0600 /DWIN32_LEAN_AND_MEAN /DGTEST_HAS_TR1_TUPLE=0 /FIinline_c.h /D__SSE4_1__")
@@ -526,36 +414,6 @@ else()
         endif()
       endif()
     endif()
-  endif()
-
-  option(NO_AES "Explicitly disable AES support" ${NO_AES})
-
-  if(NO_AES)
-    message(STATUS "AES support explicitly disabled")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DNO_AES")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNO_AES")
-  elseif(NOT ARM AND NOT PPC64LE AND NOT PPC64 AND NOT PPC AND NOT S390X)
-    message(STATUS "AES support enabled")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -maes")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -maes")
-  elseif(PPC64LE OR PPC64 OR PPC)
-    message(STATUS "AES support not available on POWER")
-  elseif(S390X)
-    message(STATUS "AES support not available on s390x")
-  elseif(ARM6)
-    message(STATUS "AES support not available on ARMv6")
-  elseif(ARM7)
-    message(STATUS "AES support not available on ARMv7")
-  elseif(ARM8)
-    CHECK_CXX_ACCEPTS_FLAG("-march=${ARCH}+crypto" ARCH_PLUS_CRYPTO)
-    if(ARCH_PLUS_CRYPTO)
-      message(STATUS "Crypto extensions enabled for ARMv8")
-      set(ARCH_FLAG "-march=${ARCH}+crypto")
-    else()
-      message(STATUS "Crypto extensions unavailable on your ARMv8 device")
-    endif()
-  else()
-    message(STATUS "AES support disabled")
   endif()
 
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARCH_FLAG}")
@@ -803,26 +661,6 @@ else()
     set(USE_LTO false)
   endif()
 
-
-  if(USE_LTO)
-    set(RELEASE_FLAGS "${RELEASE_FLAGS} -flto")
-    if(STATIC)
-      set(RELEASE_FLAGS "${RELEASE_FLAGS} -ffat-lto-objects")
-    endif()
-    # Since gcc 4.9 the LTO format is non-standard (slim), so we need the gcc-specific ar and ranlib binaries
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9.0) AND NOT OPENBSD AND NOT DRAGONFLY)
-      # When invoking cmake on distributions on which gcc's binaries are prefixed
-      # with an arch-specific triplet, the user must specify -DCHOST=<prefix>
-      if (DEFINED CHOST)
-        set(CMAKE_AR "${CHOST}-gcc-ar")
-        set(CMAKE_RANLIB "${CHOST}-gcc-ranlib")
-      else()
-        set(CMAKE_AR "gcc-ar")
-        set(CMAKE_RANLIB "gcc-ranlib")
-      endif()
-    endif()
-  endif()
-
   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_FLAGS}")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_FLAGS}")
   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${RELEASE_FLAGS}")
@@ -841,10 +679,6 @@ else()
     endif()
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${STATIC_FLAGS} ")
   endif()
-endif()
-
-if (${BOOST_IGNORE_SYSTEM_PATHS} STREQUAL "ON")
-  set(Boost_NO_SYSTEM_PATHS TRUE)
 endif()
 
 set(OLD_LIB_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
@@ -902,22 +736,6 @@ endif()
 
 list(APPEND EXTRA_LIBRARIES ${CMAKE_DL_LIBS})
 
-if (HIDAPI_FOUND OR LibUSB_COMPILE_TEST_PASSED)
-  if (APPLE)
-    if(DEPENDS)
-      list(APPEND EXTRA_LIBRARIES "-framework Foundation -framework IOKit")
-    else()
-      find_library(COREFOUNDATION CoreFoundation)
-      find_library(IOKIT IOKit)
-      list(APPEND EXTRA_LIBRARIES ${IOKIT})
-      list(APPEND EXTRA_LIBRARIES ${COREFOUNDATION})
-    endif()
-  endif()
-  if (WIN32)
-    list(APPEND EXTRA_LIBRARIES setupapi)
-  endif()
-endif()
-
 option(USE_READLINE "Build with GNU readline support." ON)
 if(USE_READLINE AND NOT DEPENDS)
   find_package(Readline)
@@ -950,35 +768,11 @@ if(CMAKE_C_COMPILER_ID STREQUAL "Clang" AND ARCH_WIDTH EQUAL "32" AND NOT IOS AN
   endif()
 endif()
 
-find_path(ZMQ_INCLUDE_PATH zmq.h)
-find_library(ZMQ_LIB zmq)
-find_library(PGM_LIBRARY pgm)
-find_library(NORM_LIBRARY norm)
-find_library(GSSAPI_LIBRARY gssapi_krb5)
-find_library(PROTOLIB_LIBRARY protolib)
 find_library(SODIUM_LIBRARY sodium)
 
 set(ZMQ_INCLUDE_PATH zmq_dummy_include_path)
 set(ZMQ_LIB zmq_dummy_lib_2)
 
-if(NOT ZMQ_INCLUDE_PATH)
-  message(FATAL_ERROR "Could not find required header zmq.h")
-endif()
-if(NOT ZMQ_LIB)
-  message(FATAL_ERROR "Could not find required libzmq")
-endif()
-if(PGM_LIBRARY)
-  set(ZMQ_LIB "${ZMQ_LIB};${PGM_LIBRARY}")
-endif()
-if(NORM_LIBRARY)
-  set(ZMQ_LIB "${ZMQ_LIB};${NORM_LIBRARY}")
-endif()
-if(GSSAPI_LIBRARY)
-  set(ZMQ_LIB "${ZMQ_LIB};${GSSAPI_LIBRARY}")
-endif()
-if(PROTOLIB_LIBRARY)
-  set(ZMQ_LIB "${ZMQ_LIB};${PROTOLIB_LIBRARY}")
-endif()
 if(SODIUM_LIBRARY)
   set(ZMQ_LIB "${ZMQ_LIB};${SODIUM_LIBRARY}")
 endif()
@@ -1024,11 +818,6 @@ endif()
 
 # when ON - will install libwallet_merged into "lib"
 option(BUILD_GUI_DEPS "Build GUI dependencies." OFF)
-
-# This is not nice, distribution packagers should not enable this, but depend
-# on libunbound shipped with their distribution instead
-option(INSTALL_VENDORED_LIBUNBOUND "Install libunbound binary built from source vendored with this repo." OFF)
-
 
 CHECK_C_COMPILER_FLAG(-std=c11 HAVE_C11)
 
