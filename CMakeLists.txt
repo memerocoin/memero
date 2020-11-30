@@ -636,9 +636,6 @@ endif()
 
 find_library(SODIUM_LIBRARY sodium)
 
-set(ZMQ_INCLUDE_PATH zmq_dummy_include_path)
-set(ZMQ_LIB zmq_dummy_lib_2)
-
 add_subdirectory(contrib)
 add_subdirectory(src)
 
