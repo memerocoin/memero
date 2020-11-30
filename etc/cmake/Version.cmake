@@ -26,15 +26,16 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-function (write_version tag)
-  set(VERSIONTAG "${tag}" CACHE STRING "The tag portion of the Monero software version" FORCE)
-  configure_file("${CMAKE_SOURCE_DIR}/src/version.cpp.in" "${CMAKE_BINARY_DIR}/version.cpp")
-endfunction ()
 
 find_package(Git QUIET)
 
 set(VERSION_IS_RELEASE "true")
-write_version("release")
+
+if(NOT DEFINED VERSIONTAG)
+  set(VERSIONTAG "unknown")
+endif()
+
+configure_file("${CMAKE_SOURCE_DIR}/src/version.cpp.in" "${CMAKE_BINARY_DIR}/version.cpp")
 
 add_custom_target(genversion ALL
   DEPENDS "${CMAKE_BINARY_DIR}/version.cpp")
