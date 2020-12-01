@@ -178,7 +178,7 @@ namespace cryptonote {
   // https://github.com/zawy12/difficulty-algorithms/issues/3
   difficulty_type next_difficulty_v5(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, uint64_t T, uint64_t N, uint64_t HEIGHT) {
     assert(timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1 );
-    assert(timestamps.size() == N+1);
+    // assert(timestamps.size() == N+1);
 
     if (HEIGHT == 0) { return 1; }
 
