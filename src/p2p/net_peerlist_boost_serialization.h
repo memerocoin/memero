@@ -240,6 +240,7 @@ namespace boost
           pl.rpc_port = 0;
         return;
       }
+      pl.rpc_port = 0;
       a & pl.rpc_port;
     }
 

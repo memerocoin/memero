@@ -56,11 +56,6 @@
 namespace po = boost::program_options;
 namespace bf = boost::filesystem;
 
-uint16_t parse_public_rpc_port(const po::variables_map &vm)
-{
-  return 0;
-}
-
 #ifdef WIN32
 bool isFat32(const wchar_t* root_path)
 {
@@ -303,7 +298,7 @@ int main(int argc, char const * argv[])
 
     MINFO("Moving from main() into the daemonize now.");
 
-    return daemonizer::daemonize(argc, argv, daemonize::t_executor{parse_public_rpc_port(vm)}, vm) ? 0 : 1;
+    return daemonizer::daemonize(argc, argv, daemonize::t_executor{}, vm) ? 0 : 1;
   }
   catch (std::exception const & ex)
   {
