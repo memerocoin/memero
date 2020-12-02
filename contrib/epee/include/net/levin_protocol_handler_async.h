@@ -99,6 +99,10 @@ public:
   template<class callback_t>
   bool foreach_connection(const callback_t &cb);
   template<class callback_t>
+  bool all_connections(const callback_t &cb);
+  template<class callback_t>
+  bool none_connections(const callback_t &cb);
+  template<class callback_t>
   bool for_connection(const boost::uuids::uuid &connection_id, const callback_t &cb);
   size_t get_connections_count();
   size_t get_out_connections_count();
@@ -875,6 +879,32 @@ bool async_protocol_handler_config<t_connection_context>::foreach_connection(con
     if(!cb(aph->get_context_ref()))
       return false;
   }
+  return true;
+}
+//------------------------------------------------------------------------------------------
+template<class t_connection_context> template<class callback_t>
+bool async_protocol_handler_config<t_connection_context>::all_connections(const callback_t &cb)
+{
+  CRITICAL_REGION_LOCAL(m_connects_lock);
+  for(auto& c: m_connects)
+    {
+      async_protocol_handler<t_connection_context>* aph = c.second;
+      if(!cb(aph->get_context_ref()))
+        return false;
+    }
+  return true;
+}
+//------------------------------------------------------------------------------------------
+template<class t_connection_context> template<class callback_t>
+bool async_protocol_handler_config<t_connection_context>::none_connections(const callback_t &cb)
+{
+  CRITICAL_REGION_LOCAL(m_connects_lock);
+  for(auto& c: m_connects)
+    {
+      async_protocol_handler<t_connection_context>* aph = c.second;
+      if(cb(aph->get_context_ref()))
+        return false;
+    }
   return true;
 }
 //------------------------------------------------------------------------------------------
