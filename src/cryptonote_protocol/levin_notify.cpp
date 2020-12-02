@@ -123,7 +123,7 @@ namespace levin
          the reserve call so a strand is not used. Investigate if there is lots
          of waiting in here. */
 
-      p2p.foreach_connection([&outs] (detail::p2p_context& context) {
+      p2p.foreach_connection_until_false([&outs] (detail::p2p_context& context) {
         if (!context.m_is_income)
           outs.emplace_back(context.m_connection_id);
         return true;
@@ -201,7 +201,7 @@ namespace levin
        thread is preferred.
 
        The strand per "zone" is useful because the levin
-       `foreach_connection` is blocked with a mutex anyway. So this primarily
+       `foreach_connection_until_false` is blocked with a mutex anyway. So this primarily
        helps with reducing blocking of a thread attempting a "flood"
        notification. Updating/merging the outgoing connections in the
        Dandelion++ map is also somewhat expensive.
@@ -344,7 +344,7 @@ namespace levin
         const auto now = std::chrono::steady_clock::now();
         auto next_flush = std::chrono::steady_clock::time_point::max();
         std::vector<std::pair<std::vector<blobdata>, boost::uuids::uuid>> connections{};
-        zone_->p2p->foreach_connection([timer_error, now, &next_flush, &connections] (detail::p2p_context& context)
+        zone_->p2p->foreach_connection_until_false([timer_error, now, &next_flush, &connections] (detail::p2p_context& context)
         {
           if (!context.fluff_txs.empty())
           {
@@ -399,7 +399,7 @@ namespace levin
         random_poisson out_duration(fluff_average_out);
 
         bool available = false;
-        zone_->p2p->foreach_connection([this, now, &in_duration, &out_duration, &next_flush, &available] (detail::p2p_context& context)
+        zone_->p2p->foreach_connection_until_false([this, now, &in_duration, &out_duration, &next_flush, &available] (detail::p2p_context& context)
         {
           if (this->source_ != context.m_connection_id && (this->zone_->is_public || !context.m_is_income))
           {

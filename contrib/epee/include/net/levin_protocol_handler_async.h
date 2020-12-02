@@ -97,7 +97,7 @@ public:
   bool update_connection_context(const t_connection_context& contxt);
   bool request_callback(boost::uuids::uuid connection_id);
   template<class callback_t>
-  bool foreach_connection(const callback_t &cb);
+  bool foreach_connection_until_false(const callback_t &cb);
   template<class callback_t>
   bool all_connections(const callback_t &cb);
   template<class callback_t>
@@ -870,7 +870,7 @@ int async_protocol_handler_config<t_connection_context>::invoke_async(int comman
 }
 //------------------------------------------------------------------------------------------
 template<class t_connection_context> template<class callback_t>
-bool async_protocol_handler_config<t_connection_context>::foreach_connection(const callback_t &cb)
+bool async_protocol_handler_config<t_connection_context>::foreach_connection_until_false(const callback_t &cb)
 {
   CRITICAL_REGION_LOCAL(m_connects_lock);
   for(auto& c: m_connects)
