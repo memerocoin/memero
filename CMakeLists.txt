@@ -106,7 +106,7 @@ function (add_definition_if_library_exists library function header var)
 endfunction()
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+  set(CMAKE_BUILD_TYPE Release)
   message(STATUS "Setting default build type: ${CMAKE_BUILD_TYPE}")
 endif()
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
