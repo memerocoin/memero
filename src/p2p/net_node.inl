@@ -142,7 +142,7 @@ namespace nodetool
   {
     for(auto& zone : m_network_zones)
     {
-      zone.second.m_net_server.get_config_object().foreach_connection_until_false([&](p2p_connection_context& cntx){
+      zone.second.m_net_server.get_config_object().foreach_connection([&](p2p_connection_context& cntx){
         return f(cntx, cntx.peer_id, cntx.support_flags);
       });
     }
@@ -236,7 +236,7 @@ namespace nodetool
     std::vector<boost::uuids::uuid> conns;
     for(auto& zone : m_network_zones)
     {
-      zone.second.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+      zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
       {
         if (cntxt.m_remote_address.is_same_host(addr))
         {
@@ -289,7 +289,7 @@ namespace nodetool
     std::vector<boost::uuids::uuid> conns;
     for(auto& zone : m_network_zones)
     {
-      zone.second.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+      zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
       {
         if (cntxt.m_remote_address.get_type_id() != epee::net_utils::ipv4_network_address::get_type_id())
           return true;
@@ -766,7 +766,7 @@ namespace nodetool
         {
           unsigned int number_of_in_peers = 0;
           unsigned int number_of_out_peers = 0;
-          zone.second.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+          zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
           {
             if (cntxt.m_is_income)
             {
@@ -863,7 +863,7 @@ namespace nodetool
     for (auto& zone : m_network_zones)
     {
       std::list<boost::uuids::uuid> connection_ids;
-      zone.second.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt) {
+      zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt) {
         connection_ids.push_back(cntxt.m_connection_id);
         return true;
       });
@@ -1052,7 +1052,7 @@ namespace nodetool
       return false;
 
     bool connected = false;
-    zone->second.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+    zone->second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
     {
       if(!cntxt.m_is_income && peer == cntxt.m_remote_address)
       {
@@ -1275,7 +1275,7 @@ namespace nodetool
       std::set<uint32_t> classB;
       if (&zone == &m_network_zones.at(epee::net_utils::zone::public_)) // at returns reference, not copy
       {
-        zone.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+        zone.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
         {
           if (cntxt.m_remote_address.get_type_id() == epee::net_utils::ipv4_network_address::get_type_id())
           {
@@ -1640,7 +1640,7 @@ namespace nodetool
   size_t node_server<t_payload_net_handler>::get_incoming_connections_count(network_zone& zone)
   {
     size_t count = 0;
-    zone.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+    zone.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
     {
       if(cntxt.m_is_income)
         ++count;
@@ -1653,7 +1653,7 @@ namespace nodetool
   size_t node_server<t_payload_net_handler>::get_outgoing_connections_count(network_zone& zone)
   {
     size_t count = 0;
-    zone.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+    zone.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
     {
       if(!cntxt.m_is_income)
         ++count;
@@ -1677,7 +1677,7 @@ namespace nodetool
     size_t count = 0;
     for (auto& zone : m_network_zones)
     {
-      zone.second.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+      zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
       {
         if(cntxt.m_is_income)
           ++count;
@@ -1765,7 +1765,7 @@ namespace nodetool
     local_connects_type cncts;
     for(auto& zone : m_network_zones)
     {
-      zone.second.m_net_server.get_config_object().foreach_connection_until_false([&](p2p_connection_context& cntxt)
+      zone.second.m_net_server.get_config_object().foreach_connection([&](p2p_connection_context& cntxt)
       {
         if(cntxt.peer_id && !cntxt.m_in_timedsync)
         {
@@ -2291,7 +2291,7 @@ namespace nodetool
     std::stringstream ss;
     for (auto& zone : m_network_zones)
     {
-      zone.second.m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+      zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
       {
         ss << cntxt.m_remote_address.str()
           << " \t\tpeer_id " << peerid_to_string(cntxt.peer_id)
@@ -2514,7 +2514,7 @@ namespace nodetool
     const size_t max_connections = 1;
     size_t count = 0;
 
-    m_network_zones.at(epee::net_utils::zone::public_).m_net_server.get_config_object().foreach_connection_until_false([&](const p2p_connection_context& cntxt)
+    m_network_zones.at(epee::net_utils::zone::public_).m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
     {
       if (cntxt.m_is_income && cntxt.m_remote_address.is_same_host(address)) {
         count++;
