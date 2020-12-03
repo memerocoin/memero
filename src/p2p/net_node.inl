@@ -928,6 +928,12 @@ namespace nodetool
         zone.m_peerlist.set_peer_just_seen(rsp.node_data.peer_id, context.m_remote_address, context.m_pruning_seed);
 
         // move
+        if(rsp.node_data.peer_id == zone.m_config.m_peer_id)
+        {
+          LOG_DEBUG_CC(context, "Connection to self detected, dropping connection");
+          hsh_result = false;
+          return;
+        }
         LOG_INFO_CC(context, "New connection handshaked, pruning seed " << epee::string_tools::to_string_hex(context.m_pruning_seed));
         LOG_DEBUG_CC(context, " COMMAND_HANDSHAKE INVOKED OK");
       }else
@@ -1014,12 +1020,21 @@ namespace nodetool
   template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::is_peer_used(const peerlist_entry& peer)
   {
+    for(const auto& zone : m_network_zones)
+      if(zone.second.m_config.m_peer_id == peer.id)
+        return true;//dont make connections to ourself
+
+    bool used = false;
     for(auto& zone : m_network_zones)
     {
-      const bool used = !
-      zone.second.m_net_server.get_config_object().none_connections([&](const p2p_connection_context& cntxt)
+      zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
       {
-        return !cntxt.m_is_income && peer.adr == cntxt.m_remote_address;
+        if(cntxt.peer_id == peer.id || (!cntxt.m_is_income && peer.adr == cntxt.m_remote_address))
+        {
+          used = true;
+          return false;//stop enumerating
+        }
+        return true;
       });
 
       if(used)
@@ -1032,12 +1047,19 @@ namespace nodetool
   bool node_server<t_payload_net_handler>::is_peer_used(const anchor_peerlist_entry& peer)
   {
     for(auto& zone : m_network_zones) {
-      const bool used = !
-      zone.second.m_net_server.get_config_object().none_connections([&](const p2p_connection_context& cntxt)
+      if(zone.second.m_config.m_peer_id == peer.id) {
+          return true;//dont make connections to ourself
+      }
+      bool used = false;
+      zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
       {
-        return !cntxt.m_is_income && peer.adr == cntxt.m_remote_address;
+        if(cntxt.peer_id == peer.id || (!cntxt.m_is_income && peer.adr == cntxt.m_remote_address))
+        {
+          used = true;
+          return false;//stop enumerating
+        }
+        return true;
       });
-
       if (used)
         return true;
     }
@@ -1085,9 +1107,6 @@ namespace nodetool
     }
     network_zone& zone = i->second;
     if (zone.m_connect == nullptr) // outgoing connections in zone not possible
-      return false;
-
-    if (zone.m_our_address == na)
       return false;
 
     if (zone.m_current_number_of_out_peers == zone.m_config.m_net_config.max_out_connection_count) // out peers limit
@@ -1419,9 +1438,6 @@ namespace nodetool
         _note("Peer is used");
         continue;
       }
-
-      if(zone.m_our_address == pe.adr)
-        continue;
 
       if(!is_remote_host_allowed(pe.adr))
         continue;
@@ -2186,6 +2202,15 @@ namespace nodetool
     }
 
     network_zone& zone = m_network_zones.at(context.m_remote_address.get_zone());
+
+    // test only the remote end's zone, otherwise an attacker could connect to you on clearnet
+    // and pass in a tor connection's peer id, and deduce the two are the same if you reject it
+    if(arg.node_data.peer_id == zone.m_config.m_peer_id)
+    {
+      LOG_DEBUG_CC(context, "Connection to self detected, dropping connection");
+      drop_connection(context);
+      return 1;
+    }
 
     if (zone.m_current_number_of_in_peers >= zone.m_config.m_net_config.max_in_connection_count) // in peers limit
     {
