@@ -82,7 +82,7 @@ namespace levin
     {}
 
     //! Construct an instance with available notification `zones`.
-    explicit notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, epee::byte_slice noise, bool is_public, bool pad_txs);
+    explicit notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, bool is_public, bool pad_txs);
 
     notify(const notify&) = delete;
     notify(notify&&) = default;
@@ -95,14 +95,8 @@ namespace levin
     //! \return Status information for zone selection.
     status get_status() const noexcept;
 
-    //! Probe for new outbound connection - skips if not needed.
-    void new_out_connection();
-
     //! Run the logic for the next epoch immediately. Only use in testing.
     void run_epoch();
-
-    //! Run the logic for the next stem timeout imemdiately. Only use in  testing.
-    void run_stems();
 
     //! Run the logic for flushing all Dandelion++ fluff queued txs. Only use in testing.
     void run_fluff();

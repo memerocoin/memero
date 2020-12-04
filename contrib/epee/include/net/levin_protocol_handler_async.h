@@ -92,7 +92,6 @@ public:
   int invoke_async(int command, const epee::span<const uint8_t> in_buff, boost::uuids::uuid connection_id, const callback_t &cb, size_t timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED);
 
   int notify(int command, const epee::span<const uint8_t> in_buff, boost::uuids::uuid connection_id);
-  int send(epee::byte_slice message, const boost::uuids::uuid& connection_id);
   bool close(boost::uuids::uuid connection_id);
   bool update_connection_context(const t_connection_context& contxt);
   bool request_callback(boost::uuids::uuid connection_id);
@@ -444,17 +443,7 @@ public:
           // abstract_tcp_server2.h manages max bandwidth for a p2p link
           if (!(m_current_head.m_flags & (LEVIN_PACKET_REQUEST | LEVIN_PACKET_RESPONSE)))
           {
-            // special noise/fragment command
-            static constexpr const uint32_t both_flags = (LEVIN_PACKET_BEGIN | LEVIN_PACKET_END);
-            if ((m_current_head.m_flags & both_flags) == both_flags)
-              break; // noise message, skip to next message
-
-            if (m_current_head.m_flags & LEVIN_PACKET_BEGIN)
-              m_fragment_buffer.clear();
-
             m_fragment_buffer.append(reinterpret_cast<const char*>(buff_to_invoke.data()), buff_to_invoke.size());
-            if (!(m_current_head.m_flags & LEVIN_PACKET_END))
-              break; // skip to next message
 
             if (m_fragment_buffer.size() < sizeof(bucket_head2))
             {
@@ -734,31 +723,6 @@ public:
     return 1;
   }
 
-  /*! Sends `message` without adding a levin header. The message must have
-      been created with `make_notify`, `make_noise_notify` or
-      `make_fragmented_notify`. See additional instructions for
-      `make_fragmented_notify`.
-
-      \return 1 on success */
-  int send(byte_slice message)
-  {
-    const misc_utils::auto_scope_leave_caller scope_exit_handler = misc_utils::create_scope_leave_handler(
-      boost::bind(&async_protocol_handler::finish_outer_call, this)
-    );
-
-    if(m_deletion_initiated)
-      return LEVIN_ERROR_CONNECTION_DESTROYED;
-
-    const std::size_t length = message.size();
-    if (!m_pservice_endpoint->do_send(std::move(message)))
-    {
-      LOG_ERROR_CC(m_connection_context, "Failed to send message, dropping it");
-      return -1;
-    }
-
-    MDEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << (length - sizeof(bucket_head2)) << ", r?=0]");
-    return 1;
-  }
   //------------------------------------------------------------------------------------------
   boost::uuids::uuid get_connection_id() {return m_connection_context.m_connection_id;}
   //------------------------------------------------------------------------------------------
@@ -934,14 +898,6 @@ int async_protocol_handler_config<t_connection_context>::notify(int command, con
   async_protocol_handler<t_connection_context>* aph;
   int r = find_and_lock_connection(connection_id, aph);
   return LEVIN_OK == r ? aph->notify(command, in_buff) : r;
-}
-//------------------------------------------------------------------------------------------
-template<class t_connection_context>
-int async_protocol_handler_config<t_connection_context>::send(byte_slice message, const boost::uuids::uuid& connection_id)
-{
-  async_protocol_handler<t_connection_context>* aph;
-  int r = find_and_lock_connection(connection_id, aph);
-  return LEVIN_OK == r ? aph->send(std::move(message)) : 0;
 }
 //------------------------------------------------------------------------------------------
 template<class t_connection_context>

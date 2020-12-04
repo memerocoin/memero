@@ -364,7 +364,7 @@ namespace nodetool
     m_use_ipv6 = command_line::get_arg(vm, arg_p2p_use_ipv6);
     m_require_ipv4 = !command_line::get_arg(vm, arg_p2p_ignore_ipv4);
     public_zone.m_notifier = cryptonote::levin::notify{
-      public_zone.m_net_server.get_io_service(), public_zone.m_net_server.get_config_shared(), nullptr, true, pad_txs
+      public_zone.m_net_server.get_io_service(), public_zone.m_net_server.get_config_shared(), true, pad_txs
     };
 
     if (command_line::has_arg(vm, arg_p2p_add_peer))
@@ -444,7 +444,6 @@ namespace nodetool
       return false;
 
 
-    epee::byte_slice noise = nullptr;
     auto proxies = get_proxies(vm);
     if (!proxies)
       return false;
@@ -463,18 +462,8 @@ namespace nodetool
       if (!set_max_out_peers(zone, proxy.max_connections))
         return false;
 
-      epee::byte_slice this_noise = nullptr;
-      if (proxy.noise)
-      {
-        static_assert(sizeof(epee::levin::bucket_head2) < CRYPTONOTE_NOISE_BYTES, "noise bytes too small");
-        if (noise.empty())
-          noise = epee::levin::make_noise_notify(CRYPTONOTE_NOISE_BYTES);
-
-        this_noise = noise.clone();
-      }
-
       zone.m_notifier = cryptonote::levin::notify{
-        zone.m_net_server.get_io_service(), zone.m_net_server.get_config_shared(), std::move(this_noise), false, pad_txs
+        zone.m_net_server.get_io_service(), zone.m_net_server.get_config_shared(), false, pad_txs
       };
     }
 
@@ -1172,7 +1161,6 @@ namespace nodetool
     ape.first_seen = first_seen_stamp ? first_seen_stamp : time(nullptr);
 
     zone.m_peerlist.append_with_peer_anchor(ape);
-    zone.m_notifier.new_out_connection();
 
     LOG_DEBUG_CC(*con, "CONNECTION HANDSHAKED OK.");
     return true;
@@ -1941,17 +1929,6 @@ namespace nodetool
     static_assert(unsigned(enet::zone::public_) == 1, "public_ expected to be 1");
     static_assert(unsigned(enet::zone::i2p) == 2, "i2p expected to be 2");
     static_assert(unsigned(enet::zone::tor) == 3, "tor expected to be 3");
-
-    // check for anonymity networks with noise and connections
-    for (auto network = ++m_network_zones.begin(); network != m_network_zones.end(); ++network)
-    {
-      if (enet::zone::tor < network->first)
-        break; // unknown network
-
-      const auto status = network->second.m_notifier.get_status();
-      if (status.has_noise && status.connections_filled)
-        return send(*network);
-    }
 
     // use the anonymity network with outbound support
     for (auto network = ++m_network_zones.begin(); network != m_network_zones.end(); ++network)

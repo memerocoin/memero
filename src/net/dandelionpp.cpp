@@ -42,8 +42,6 @@ namespace dandelionpp
 {
     namespace
     {
-        constexpr const std::size_t expected_max_channels = CRYPTONOTE_NOISE_CHANNELS;
-
         // could be in util somewhere
         struct key_less
         {
@@ -60,44 +58,6 @@ namespace dandelionpp
             }
         };
 
-        std::size_t select_stem(epee::span<const std::size_t> usage, epee::span<const boost::uuids::uuid> out_map)
-        {
-            assert(usage.size() < std::numeric_limits<std::size_t>::max()); // prevented in constructor
-            if (usage.size() < out_map.size())
-                return std::numeric_limits<std::size_t>::max();
-
-            // small_vector uses stack space if `expected_max_channels < capacity()`
-            std::size_t lowest = std::numeric_limits<std::size_t>::max();
-            boost::container::small_vector<std::size_t, expected_max_channels> choices;
-            static_assert(sizeof(choices) < 256, "choices is too large based on current configuration");
-
-            for (const boost::uuids::uuid& out : out_map)
-            {
-                if (!out.is_nil())
-                {
-                    const std::size_t location = std::addressof(out) - out_map.begin();
-                    if (usage[location] < lowest)
-                    {
-                        lowest = usage[location];
-                        choices = {location};
-                    }
-                    else if (usage[location] == lowest)
-                        choices.push_back(location);
-                }
-            }
-
-            switch (choices.size())
-            {
-            case 0:
-                return std::numeric_limits<std::size_t>::max();
-            case 1:
-                return choices[0];
-            default:
-                break;
-            }
-
-            return choices[crypto::rand_idx(choices.size())];
-        }
     } // anonymous
 
     connection_map::connection_map(std::vector<boost::uuids::uuid> out_connections, const std::size_t stems)
@@ -178,35 +138,6 @@ namespace dandelionpp
                 ++count;
         }
         return count;
-    }
-
-    boost::uuids::uuid connection_map::get_stem(const boost::uuids::uuid& source)
-    {
-        auto elem = std::lower_bound(in_mapping_.begin(), in_mapping_.end(), source, key_less{});
-        if (elem == in_mapping_.end() || elem->first != source)
-        {
-            const std::size_t index = select_stem(epee::to_span(usage_count_), epee::to_span(out_mapping_));
-            if (out_mapping_.size() < index)
-                return boost::uuids::nil_uuid();
-
-            elem = in_mapping_.emplace(elem, source, index);
-            usage_count_[index]++;
-        }
-        else if (out_mapping_.at(elem->second).is_nil()) // stem connection disconnected after mapping
-        {
-            usage_count_.at(elem->second)--;
-            const std::size_t index = select_stem(epee::to_span(usage_count_), epee::to_span(out_mapping_));
-            if (out_mapping_.size() < index)
-            {
-                in_mapping_.erase(elem);
-                return boost::uuids::nil_uuid();
-            }
-
-            elem->second = index;
-            usage_count_[index]++;
-        }
-
-        return out_mapping_[elem->second];
     }
 } // dandelionpp
 } // net
