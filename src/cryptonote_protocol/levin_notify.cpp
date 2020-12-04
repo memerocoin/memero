@@ -216,36 +216,6 @@ namespace levin
 
   namespace
   {
-    //! Adds a message to the sending queue of the channel.
-    class queue_covert_notify
-    {
-      std::shared_ptr<detail::zone> zone_;
-      epee::byte_slice message_; // Requires manual copy constructor
-      const std::size_t destination_;
-
-    public:
-      queue_covert_notify(std::shared_ptr<detail::zone> zone, epee::byte_slice message, std::size_t destination)
-        : zone_(std::move(zone)), message_(std::move(message)), destination_(destination)
-      {}
-
-      queue_covert_notify(queue_covert_notify&&) = default;
-      queue_covert_notify(const queue_covert_notify& source)
-        : zone_(source.zone_), message_(source.message_.clone()), destination_(source.destination_)
-      {}
-
-      //! \pre Called within `zone_->channels[destionation_].strand`.
-      void operator()()
-      {
-        if (!zone_)
-          return;
-
-        assert(channel.strand.running_in_this_thread());
-
-        if (destination_ == 0 && zone_->connection_count == 0)
-          MWARNING("Unable to send transaction(s) over anonymity network - no available outbound connections");
-      }
-    };
-
     //! Sends txs on connections with expired timers, and queues callback for next timer expiration (if any).
     struct fluff_flush
     {
