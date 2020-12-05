@@ -58,12 +58,24 @@ main-2:
 
 main-sync:
 	@rm -rf mainnet/node_sync
+
 	../../build/bin/lolnerod \
 --hide-my-port \
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
 --add-exclusive-node 10.0.0.1 \
+
+tor-sync:
+	@rm -rf mainnet/tor_sync
+
+	../../build/bin/lolnerod \
+--hide-my-port \
+--data-dir ./mainnet/tor_sync \
+--p2p-bind-port 41002 \
+--rpc-bind-port 45002 \
+--tx-proxy tor,127.0.0.1:9063,10 \
+--add-exclusive-node lolp6rojwgruel42i22au4as6wy7pctgrpjtdcm4cmnen6r7x5swfhid.onion \
 
 make-main-wallet:
 	../../build/bin/lolnero-wallet-cli --generate-new-wallet mainnet/test1  \
