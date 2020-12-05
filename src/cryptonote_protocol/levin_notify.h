@@ -72,8 +72,6 @@ namespace levin
   public:
     struct status
     {
-      bool has_noise;
-      bool connections_filled;
     };
 
     //! Construct an instance that cannot notify.

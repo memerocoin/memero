@@ -46,11 +46,5 @@ namespace levin
     head.m_flags = SWAP32LE(flags);
     return head;
   }
-
-  byte_slice make_notify(int command, epee::span<const std::uint8_t> payload)
-  {
-    const bucket_head2 head = make_header(command, payload.size(), LEVIN_PACKET_REQUEST, false);
-    return byte_slice{epee::as_byte_span(head), payload};
-  }
 } // levin
 } // epee
