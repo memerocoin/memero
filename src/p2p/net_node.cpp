@@ -314,6 +314,9 @@ namespace nodetool
         if (address.get_zone() == epee::net_utils::zone::public_)
             return false;
 
+        if (address.get_zone() == epee::net_utils::zone::tor)
+            return false;
+
         MWARNING("Filtered command (#" << command << ") to/from " << address.str());
         return true;
     }

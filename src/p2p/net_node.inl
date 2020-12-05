@@ -133,6 +133,10 @@ namespace nodetool
     network_zone& public_zone = m_network_zones[epee::net_utils::zone::public_];
     public_zone.m_config.m_support_flags = P2P_SUPPORT_FLAGS;
     public_zone.m_config.m_peer_id = crypto::rand<uint64_t>();
+
+    network_zone& tor_zone = m_network_zones[epee::net_utils::zone::tor];
+    tor_zone.m_config.m_support_flags = P2P_SUPPORT_FLAGS;
+
     m_first_connection_maker_call = true;
 
     CATCH_ENTRY_L0("node_server::init_config", false);
@@ -1912,9 +1916,7 @@ namespace nodetool
 
     const auto send = [&txs, &source, &core] (std::pair<const enet::zone, network_zone>& network)
     {
-      const bool is_public = (network.first == enet::zone::public_);
-      const cryptonote::relay_method tx_relay = is_public ?
-        cryptonote::relay_method::fluff : cryptonote::relay_method::local;
+      const cryptonote::relay_method tx_relay = cryptonote::relay_method::fluff;
 
       core.on_transactions_relayed(epee::to_span(txs), tx_relay);
       if (network.second.m_notifier.send_txs(std::move(txs), source))

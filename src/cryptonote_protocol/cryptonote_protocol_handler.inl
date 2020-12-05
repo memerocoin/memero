@@ -344,13 +344,6 @@ namespace cryptonote
       return true;
     }
 
-    // No chain synchronization over hidden networks (tor, i2p, etc.)
-    if(context.m_remote_address.get_zone() != epee::net_utils::zone::public_)
-    {
-      context.m_state = cryptonote_connection_context::state_normal;
-      return true;
-    }
-
     if (hshd.current_height > target)
     {
     /* As I don't know if accessing hshd from core could be a good practice,
