@@ -75,7 +75,7 @@ tor-sync:
 --p2p-bind-port 41002 \
 --rpc-bind-port 45002 \
 --tx-proxy tor,127.0.0.1:9063,10 \
---add-exclusive-node lolp6rojwgruel42i22au4as6wy7pctgrpjtdcm4cmnen6r7x5swfhid.onion \
+--add-exclusive-node lolpjcqr2woffv6h4mvw4ftq5yea4faiot4gfkzky63zuzvbwmglvuyd.onion \
 
 make-main-wallet:
 	../../build/bin/lolnero-wallet-cli --generate-new-wallet mainnet/test1  \
