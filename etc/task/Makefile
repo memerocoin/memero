@@ -78,7 +78,7 @@ tor-sync:
 --add-exclusive-node lolpjcqr2woffv6h4mvw4ftq5yea4faiot4gfkzky63zuzvbwmglvuyd.onion \
 
 clearnet-proxy-sync:
-	# @rm -rf mainnet/clearnet_proxy_sync
+	rm -rf mainnet/clearnet_proxy_sync
 
 	../../build/bin/lolnerod \
 --hide-my-port \
@@ -86,7 +86,6 @@ clearnet-proxy-sync:
 --p2p-bind-port 41002 \
 --rpc-bind-port 45002 \
 --tx-proxy public,127.0.0.1:9063,10 \
---add-exclusive-node 128.199.161.251 \
 
 make-main-wallet:
 	../../build/bin/lolnero-wallet-cli --generate-new-wallet mainnet/test1  \
