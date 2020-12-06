@@ -94,6 +94,9 @@ namespace
         case net::i2p_address::get_type_id():
             set = client->set_connect_command(remote.as<net::i2p_address>());
             break;
+        case epee::net_utils::ipv4_network_address::get_type_id():
+            set = client->set_connect_command(remote.as<epee::net_utils::ipv4_network_address>());
+            break;
         default:
             MERROR("Unsupported network address in socks_connect");
             return false;
@@ -206,18 +209,13 @@ namespace nodetool
                 }
             }
 
-            switch (epee::net_utils::zone_from_string(zone))
-            {
-            case epee::net_utils::zone::tor:
-                proxies.back().zone = epee::net_utils::zone::tor;
-                break;
-            case epee::net_utils::zone::i2p:
-                proxies.back().zone = epee::net_utils::zone::i2p;
-                break;
-            default:
-                MERROR("Invalid network for --" << arg_tx_proxy.name);
-                return boost::none;
+            const epee::net_utils::zone _zone = epee::net_utils::zone_from_string(zone);
+            if (_zone == epee::net_utils::zone::invalid) {
+              MERROR("Invalid network for --" << arg_tx_proxy.name);
+              return boost::none;
             }
+
+            proxies.back().zone = _zone;
 
             std::uint32_t ip = 0;
             std::uint16_t port = 0;

@@ -457,7 +457,7 @@ namespace nodetool
     for (auto& proxy : *proxies)
     {
       network_zone& zone = add_zone(proxy.zone);
-      if (zone.m_connect != nullptr)
+      if (zone.m_connect != nullptr && zone.m_connect != &public_connect)
       {
         MERROR("Listed --" << arg_tx_proxy.name << " twice with " << epee::net_utils::zone_to_string(proxy.zone));
         return false;
