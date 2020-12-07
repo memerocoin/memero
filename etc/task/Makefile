@@ -93,8 +93,8 @@ tor-proxy-full:
 	../../build/bin/lolnerod \
 --data-dir ./mainnet/tor_proxy_full \
 --rpc-bind-port 45002 \
---tx-proxy public,127.0.0.1:9063,10 \
---tx-proxy tor,127.0.0.1:9063,10 \
+--proxy public,127.0.0.1:9063 \
+--proxy tor,127.0.0.1:9063 \
 
 make-main-wallet:
 	../../build/bin/lolnero-wallet-cli --generate-new-wallet mainnet/test1  \
