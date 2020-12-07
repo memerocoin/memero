@@ -39,7 +39,7 @@ include(CheckLibraryExists)
 include(CheckFunctionExists)
 include(FindPythonInterp)
 
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.7.0)
 message(STATUS "CMake version ${CMAKE_VERSION}")
 
 project(monero)
