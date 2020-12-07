@@ -91,7 +91,7 @@ tor-proxy-full:
 	# rm -rf mainnet/tor_proxy_full
 
 	../../build/bin/lolnerod \
---data-dir ./mainnet/clearnet_proxy_sync \
+--data-dir ./mainnet/tor_proxy_full \
 --rpc-bind-port 45002 \
 --tx-proxy public,127.0.0.1:9063,10 \
 --tx-proxy tor,127.0.0.1:9063,10 \
