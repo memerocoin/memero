@@ -49,3 +49,15 @@ cmake .. && make
 ```
 
 Generated binaries will be in `bin/`.
+
+Tor
+===
+
+To use Tor for everything, start the daemon like this
+
+```
+lolnerod \
+--tx-proxy public,127.0.0.1:9063,10 \
+--tx-proxy tor,127.0.0.1:9063,10 \
+--p2p-bind-port 0
+```
