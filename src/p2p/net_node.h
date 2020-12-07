@@ -178,7 +178,8 @@ namespace nodetool
           m_current_number_of_in_peers(0),
           m_seed_nodes_lock(),
           m_can_pingback(false),
-          m_seed_nodes_initialized(false)
+          m_seed_nodes_initialized(false),
+          m_allow_inbound(true)
       {
         set_config_defaults();
       }
@@ -200,7 +201,8 @@ namespace nodetool
           m_current_number_of_in_peers(0),
           m_seed_nodes_lock(),
           m_can_pingback(false),
-          m_seed_nodes_initialized(false)
+          m_seed_nodes_initialized(false),
+          m_allow_inbound(true)
       {
         set_config_defaults();
       }
@@ -222,6 +224,7 @@ namespace nodetool
       boost::shared_mutex m_seed_nodes_lock;
       bool m_can_pingback;
       bool m_seed_nodes_initialized;
+      bool m_allow_inbound;
 
     private:
       void set_config_defaults() noexcept

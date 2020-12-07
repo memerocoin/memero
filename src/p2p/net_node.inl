@@ -468,6 +468,11 @@ namespace nodetool
       if (!set_max_out_peers(zone, proxy.max_connections))
         return false;
 
+      if (proxy.zone == epee::net_utils::zone::public_) {
+        m_hide_my_port = true;
+        zone.m_allow_inbound = false;
+      }
+
       zone.m_notifier = cryptonote::levin::notify{
         zone.m_net_server.get_io_service(), zone.m_net_server.get_config_shared(), false, pad_txs
       };
@@ -708,6 +713,11 @@ namespace nodetool
     m_ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
     for (auto& zone : m_network_zones)
     {
+      if (!zone.second.m_allow_inbound) {
+        MINFO("Inbound disabled (IPv4) on " << zone.second.m_bind_ip << ":" << zone.second.m_port);
+        continue;
+      }
+
       zone.second.m_net_server.get_config_object().set_handler(this);
       zone.second.m_net_server.get_config_object().m_invoke_timeout = P2P_DEFAULT_INVOKE_TIMEOUT;
 
@@ -728,6 +738,7 @@ namespace nodetool
       }
     }
 
+    if (public_zone.m_allow_inbound) {
     m_listening_port = public_zone.m_net_server.get_binded_port();
     MLOG_GREEN(el::Level::Info, "Net service bound (IPv4) to " << public_zone.m_bind_ip << ":" << m_listening_port);
     if (m_use_ipv6)
@@ -735,6 +746,8 @@ namespace nodetool
       m_listening_port_ipv6 = public_zone.m_net_server.get_binded_port_ipv6();
       MLOG_GREEN(el::Level::Info, "Net service bound (IPv6) to " << public_zone.m_bind_ipv6_address << ":" << m_listening_port_ipv6);
     }
+    }
+
     if(m_external_port)
       MDEBUG("External port defined as " << m_external_port);
 
@@ -1761,7 +1774,7 @@ namespace nodetool
     const auto public_zone = m_network_zones.find(epee::net_utils::zone::public_);
     if (public_zone != m_network_zones.end() && get_incoming_connections_count(public_zone->second) == 0)
     {
-      if (m_hide_my_port || public_zone->second.m_config.m_net_config.max_in_connection_count == 0)
+      if (!m_hide_my_port || public_zone->second.m_config.m_net_config.max_in_connection_count == 0)
       {
         MGINFO("Incoming connections disabled, enable them for full connectivity");
       }
