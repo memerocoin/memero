@@ -468,8 +468,13 @@ namespace nodetool
       if (!set_max_out_peers(zone, proxy.max_connections))
         return false;
 
+
       if (proxy.zone == epee::net_utils::zone::public_) {
-        m_hide_my_port = true;
+        if (m_hide_my_port == false) {
+          MINFO("PUBLIC SOCKS USED: hide my port set to true");
+          m_hide_my_port = true;
+        }
+        MINFO("PUBLIC SOCKS USED: m_allow_inbound set to false");
         zone.m_allow_inbound = false;
       }
 
@@ -713,13 +718,13 @@ namespace nodetool
     m_ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
     for (auto& zone : m_network_zones)
     {
+      zone.second.m_net_server.get_config_object().set_handler(this);
+      zone.second.m_net_server.get_config_object().m_invoke_timeout = P2P_DEFAULT_INVOKE_TIMEOUT;
+
       if (!zone.second.m_allow_inbound) {
         MINFO("Inbound disabled (IPv4) on " << zone.second.m_bind_ip << ":" << zone.second.m_port);
         continue;
       }
-
-      zone.second.m_net_server.get_config_object().set_handler(this);
-      zone.second.m_net_server.get_config_object().m_invoke_timeout = P2P_DEFAULT_INVOKE_TIMEOUT;
 
       if (!zone.second.m_bind_ip.empty())
       {
@@ -733,6 +738,8 @@ namespace nodetool
           ipv6_port = zone.second.m_port_ipv6;
           MINFO("Binding (IPv6) on " << zone.second.m_bind_ipv6_address << ":" << zone.second.m_port_ipv6);
         }
+
+
         res = zone.second.m_net_server.init_server(zone.second.m_port, zone.second.m_bind_ip, ipv6_port, ipv6_addr, m_use_ipv6, m_require_ipv4, epee::net_utils::ssl_support_t::e_ssl_support_disabled);
         CHECK_AND_ASSERT_MES(res, false, "Failed to bind server");
       }
