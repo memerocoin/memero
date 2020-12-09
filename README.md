@@ -57,6 +57,6 @@ To use Tor for everything, start the daemon like this
 
 ```
 lolnerod \
---proxy public,127.0.0.1:9063 \
---proxy tor,127.0.0.1:9063
+--proxy public,127.0.0.1:9050 \
+--proxy tor,127.0.0.1:9050
 ```
