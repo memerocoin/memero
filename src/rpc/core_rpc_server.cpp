@@ -238,6 +238,7 @@ namespace cryptonote
     if (restricted)
       res.database_size = round_up(res.database_size, 5ull* 1024 * 1024 * 1024);
     res.version = restricted ? "" : MONERO_VERSION_FULL;
+    res.busy_syncing = m_p2p.get_payload_object().is_busy_syncing();
 
     res.status = CORE_RPC_STATUS_OK;
     return true;

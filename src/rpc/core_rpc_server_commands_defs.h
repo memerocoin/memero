@@ -89,7 +89,7 @@ namespace cryptonote
 // advance which version they will stop working with
 // Don't go over 32767 for any of these
 #define CORE_RPC_VERSION_MAJOR 3
-#define CORE_RPC_VERSION_MINOR 2
+#define CORE_RPC_VERSION_MINOR 4
 #define MAKE_CORE_RPC_VERSION(major,minor) (((major)<<16)|(minor))
 #define CORE_RPC_VERSION MAKE_CORE_RPC_VERSION(CORE_RPC_VERSION_MAJOR, CORE_RPC_VERSION_MINOR)
 
@@ -679,6 +679,7 @@ namespace cryptonote
       uint64_t free_space;
       bool offline;
       uint64_t database_size;
+      bool busy_syncing;
       std::string version;
 
       BEGIN_KV_SERIALIZE_MAP()
@@ -714,6 +715,7 @@ namespace cryptonote
         KV_SERIALIZE(free_space)
         KV_SERIALIZE(offline)
         KV_SERIALIZE(database_size)
+        KV_SERIALIZE(busy_syncing)
         KV_SERIALIZE(version)
       END_KV_SERIALIZE_MAP()
     };
