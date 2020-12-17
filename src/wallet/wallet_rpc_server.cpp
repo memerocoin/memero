@@ -116,7 +116,7 @@ namespace tools
   }
 
   //------------------------------------------------------------------------------------------------------------------------------
-  wallet_rpc_server::wallet_rpc_server():m_wallet(NULL), rpc_login_file(), m_stop(false), m_restricted(false), m_vm(NULL)
+  wallet_rpc_server::wallet_rpc_server():m_wallet(NULL), m_stop(false), m_restricted(false), m_vm(NULL)
   {
   }
   //------------------------------------------------------------------------------------------------------------------------------
