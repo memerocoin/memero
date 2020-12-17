@@ -38,21 +38,6 @@ if(HAVE_C11)
 SET_PROPERTY(SOURCE memwipe.c PROPERTY COMPILE_FLAGS -std=c11)
 endif()
 
-# Build and install libepee if we're building for GUI
-if (BUILD_GUI_DEPS)
-    if(IOS)
-        set(lib_folder lib-${ARCH})
-    else()
-        set(lib_folder lib)
-    endif()
-    install(TARGETS epee
-        ARCHIVE DESTINATION ${lib_folder})
-    if (USE_READLINE AND GNU_READLINE_FOUND)
-      install(TARGETS epee_readline
-          ARCHIVE DESTINATION ${lib_folder})
-    endif()
-endif()
-
 target_link_libraries(epee
   PUBLIC
     easylogging

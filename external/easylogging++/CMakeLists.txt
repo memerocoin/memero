@@ -43,16 +43,5 @@ target_link_libraries(easylogging
     ${CMAKE_THREAD_LIBS_INIT}
     ${Backtrace_LIBRARIES})
 
-# GUI/libwallet install target
-if (BUILD_GUI_DEPS)
-    if(IOS)
-        set(lib_folder lib-${ARCH})
-    else()
-        set(lib_folder lib)
-    endif()
-    install(TARGETS easylogging
-        ARCHIVE DESTINATION ${lib_folder}
-        LIBRARY DESTINATION ${lib_folder})
-endif()
 set_property(TARGET easylogging APPEND PROPERTY COMPILE_FLAGS "-fPIC")
 
