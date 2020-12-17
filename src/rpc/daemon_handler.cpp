@@ -33,7 +33,6 @@
 #include <stdexcept>
 
 #include <boost/uuid/nil_generator.hpp>
-#include <boost/utility/string_ref.hpp>
 // likely included by daemon_handler.h's includes,
 // but including here for clarity
 #include "cryptonote_core/cryptonote_core.h"
@@ -49,7 +48,7 @@ namespace rpc
 {
   namespace
   {
-    using handler_function = epee::byte_slice(DaemonHandler& handler, const rapidjson::Value& id, const rapidjson::Value& msg);
+    using handler_function = std::string(DaemonHandler& handler, const rapidjson::Value& id, const rapidjson::Value& msg);
     struct handler_map
     {
       const char* method_name;
@@ -67,7 +66,7 @@ namespace rpc
     }
 
     template<typename Message>
-    epee::byte_slice handle_message(DaemonHandler& handler, const rapidjson::Value& id, const rapidjson::Value& parameters)
+    std::string handle_message(DaemonHandler& handler, const rapidjson::Value& id, const rapidjson::Value& parameters)
     {
       typename Message::Request request{};
       request.fromJson(parameters);
@@ -903,7 +902,7 @@ namespace rpc
     return true;
   }
 
-  epee::byte_slice DaemonHandler::handle(std::string&& request)
+  std::string DaemonHandler::handle(std::string& request)
   {
     MDEBUG("Handling RPC request: " << request);
 
@@ -916,11 +915,8 @@ namespace rpc
       if (matched_handler == std::end(handlers) || matched_handler->method_name != request_type)
         return BAD_REQUEST(request_type, req_full.getID());
 
-      epee::byte_slice response = matched_handler->call(*this, req_full.getID(), req_full.getMessage());
-
-      const boost::string_ref response_view{reinterpret_cast<const char*>(response.data()), response.size()};
-      MDEBUG("Returning RPC response: " << response_view);
-
+      std::string response = matched_handler->call(*this, req_full.getID(), req_full.getMessage());
+      MDEBUG("Returning RPC response: " << response);
       return response;
     }
     catch (const std::exception& e)

@@ -33,7 +33,6 @@
 #include <rapidjson/writer.h>
 #include <string>
 
-#include "byte_slice.h"
 #include "rpc/message_data_structs.h"
 
 namespace cryptonote
@@ -84,8 +83,8 @@ namespace rpc
 
       cryptonote::rpc::error getError();
 
-      static epee::byte_slice getRequest(const std::string& request, const Message& message, unsigned id);
-      static epee::byte_slice getResponse(const Message& message, const rapidjson::Value& id);
+      static std::string getRequest(const std::string& request, const Message& message, unsigned id);
+      static std::string getResponse(const Message& message, const rapidjson::Value& id);
     private:
 
       FullMessage() = default;
@@ -101,10 +100,10 @@ namespace rpc
 
 
   // convenience functions for bad input
-  epee::byte_slice BAD_REQUEST(const std::string& request);
-  epee::byte_slice BAD_REQUEST(const std::string& request, const rapidjson::Value& id);
+  std::string BAD_REQUEST(const std::string& request);
+  std::string BAD_REQUEST(const std::string& request, const rapidjson::Value& id);
 
-  epee::byte_slice BAD_JSON(const std::string& error_details);
+  std::string BAD_JSON(const std::string& error_details);
 
 
 }  // namespace rpc
