@@ -38,6 +38,8 @@
 
 namespace epee
 {
+  using bytes = std::vector<std::byte>;
+
   struct byte_slice_data;
 
   struct release_byte_slice

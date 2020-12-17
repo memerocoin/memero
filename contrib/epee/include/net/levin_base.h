@@ -31,7 +31,6 @@
 
 #include <cstdint>
 
-#include "byte_slice.h"
 #include "net_utils_base.h"
 #include "span.h"
 

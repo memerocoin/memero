@@ -33,7 +33,6 @@
 #include <memory>
 #include <vector>
 
-#include "byte_slice.h"
 #include "cryptonote_basic/blobdatatype.h"
 #include "cryptonote_protocol/fwd.h"
 #include "net/enums.h"

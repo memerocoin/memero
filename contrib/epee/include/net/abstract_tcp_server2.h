@@ -51,7 +51,6 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/interprocess/detail/atomic.hpp>
 #include <boost/thread/thread.hpp>
-#include "byte_slice.h"
 #include "net_utils_base.h"
 #include "syncobj.h"
 #include "connection_basic.hpp"
@@ -133,7 +132,7 @@ namespace net_utils
     
   private:
     //----------------- i_service_endpoint ---------------------
-    virtual bool do_send(byte_slice message); ///< (see do_send from i_service_endpoint)
+    virtual bool do_send(std::string message); ///< (see do_send from i_service_endpoint)
     virtual bool send_done();
     virtual bool close();
     virtual bool call_run_once_service_io();
@@ -142,7 +141,7 @@ namespace net_utils
     virtual bool add_ref();
     virtual bool release();
     //------------------------------------------------------
-    bool do_send_chunk(byte_slice chunk); ///< will send (or queue) a part of data. internal use only
+    bool do_send_chunk(std::string chunk); ///< will send (or queue) a part of data. internal use only
 
     boost::shared_ptr<connection<t_protocol_handler> > safe_shared_from_this();
     bool shutdown();

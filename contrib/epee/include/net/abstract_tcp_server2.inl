@@ -526,7 +526,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
   }
   //---------------------------------------------------------------------------------
     template<class t_protocol_handler>
-  bool connection<t_protocol_handler>::do_send(byte_slice message) {
+  bool connection<t_protocol_handler>::do_send(std::string message) {
     TRY_ENTRY();
 
     // Use safe_shared_from_this, because of this is public method and it can be called on the object being deleted
@@ -535,7 +535,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
     if (m_was_shutdown) return false;
 		// TODO avoid copy
 
-		std::uint8_t const* const message_data = message.data();
+		const char* message_data = message.c_str();
 		const std::size_t message_size = message.size();
 
 		const double factor = 32; // TODO config
@@ -562,10 +562,17 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 
 				bool all_ok = true;
 				while (!message.empty()) {
-					byte_slice chunk = message.take_slice(chunksize_good);
+          std::string chunk;
+          if (message.size() > chunksize_good) {
+            chunk = message.substr(0, chunksize_good);
+            message = message.substr(chunksize_good, std::string::npos);
+          } else {
+            chunk = message;
+            message = "";
+          }
 
-					MDEBUG("chunk_start="<<(void*)chunk.data()<<" ptr="<<message_data<<" pos="<<(chunk.data() - message_data));
-					MDEBUG("part of " << message.size() << ": pos="<<(chunk.data() - message_data) << " len="<<chunk.size());
+					MDEBUG("chunk_start="<<(void*)chunk.c_str()<<" ptr="<<message_data<<" pos="<<(chunk.c_str() - message_data));
+					MDEBUG("part of " << message.size() << ": pos="<<(chunk.c_str() - message_data) << " len="<<chunk.size());
 
 					bool ok = do_send_chunk(std::move(chunk)); // <====== ***
 
@@ -595,7 +602,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  bool connection<t_protocol_handler>::do_send_chunk(byte_slice chunk)
+  bool connection<t_protocol_handler>::do_send_chunk(std::string chunk)
   {
     TRY_ENTRY();
     // Use safe_shared_from_this, because of this is public method and it can be called on the object being deleted
@@ -659,7 +666,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
         }
     }
 
-    m_send_que.push_back(std::move(chunk));
+    m_send_que.push_back(chunk);
 
     if(m_send_que.size() > 1)
     { // active operation should be in progress, nothing to do, just wait last operation callback
