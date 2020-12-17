@@ -179,7 +179,6 @@ namespace tools
 
     m_vm = vm;
 
-    boost::optional<epee::net_utils::http::login> http_login{};
     std::string bind_port = command_line::get_arg(*m_vm, arg_rpc_bind_port);
     const bool disable_auth = command_line::get_arg(*m_vm, arg_disable_rpc_login);
     m_restricted = command_line::get_arg(*m_vm, arg_restricted);
@@ -207,54 +206,6 @@ namespace tools
       }
     }
 
-    if (disable_auth)
-    {
-      if (rpc_config->login)
-      {
-        const cryptonote::rpc_args::descriptors arg{};
-        LOG_ERROR(tr("Cannot specify --") << arg_disable_rpc_login.name << tr(" and --") << arg.rpc_login.name);
-        return false;
-      }
-    }
-    else // auth enabled
-    {
-      if (!rpc_config->login)
-      {
-        std::array<std::uint8_t, 16> rand_128bit{{}};
-        crypto::rand(rand_128bit.size(), rand_128bit.data());
-        http_login.emplace(
-          default_rpc_username,
-          string_encoding::base64_encode(rand_128bit.data(), rand_128bit.size())
-        );
-
-        std::string temp = "lolnero-wallet-rpc." + bind_port + ".login";
-        rpc_login_file = tools::private_file::create(temp);
-        if (!rpc_login_file.handle())
-        {
-          LOG_ERROR(tr("Failed to create file ") << temp << tr(". Check permissions or remove file"));
-          return false;
-        }
-        std::fputs(http_login->username.c_str(), rpc_login_file.handle());
-        std::fputc(':', rpc_login_file.handle());
-        const epee::wipeable_string password = http_login->password;
-        std::fwrite(password.data(), 1, password.size(), rpc_login_file.handle());
-        std::fflush(rpc_login_file.handle());
-        if (std::ferror(rpc_login_file.handle()))
-        {
-          LOG_ERROR(tr("Error writing to file ") << temp);
-          return false;
-        }
-        LOG_PRINT_L0(tr("RPC username/password is stored in file ") << temp);
-      }
-      else // chosen user/pass
-      {
-        http_login.emplace(
-          std::move(rpc_config->login->username), std::move(rpc_config->login->password).password()
-        );
-      }
-      assert(bool(http_login));
-    } // end auth enabled
-
     m_auto_refresh_period = DEFAULT_AUTO_REFRESH_PERIOD;
     m_last_auto_refresh_time = boost::posix_time::min_date_time;
 
@@ -265,7 +216,7 @@ namespace tools
     return epee::http_server_impl_base<wallet_rpc_server, connection_context>::init(
       rng, std::move(bind_port), std::move(rpc_config->bind_ip),
       std::move(rpc_config->bind_ipv6_address), std::move(rpc_config->use_ipv6), std::move(rpc_config->require_ipv4),
-      std::move(rpc_config->access_control_origins), std::move(http_login),
+      std::move(rpc_config->access_control_origins),
       std::move(rpc_config->ssl_options)
     );
   }
@@ -3989,7 +3940,7 @@ namespace tools
       return false;
     }
 
-    if (!m_wallet->set_daemon(req.address, boost::none, req.trusted, std::move(ssl_options)))
+    if (!m_wallet->set_daemon(req.address, req.trusted, std::move(ssl_options)))
     {
       er.code = WALLET_RPC_ERROR_CODE_NO_DAEMON_CONNECTION;
       er.message = std::string("Unable to set daemon");

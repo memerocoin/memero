@@ -49,7 +49,6 @@
 #include "reg_exp_definer.h"
 #include "abstract_http_client.h"
 #include "http_base.h" 
-#include "http_auth.h"
 #include "to_nonconst_iterator.h"
 #include "net_parse_helpers.h"
 #include "syncobj.h"
@@ -136,7 +135,6 @@ namespace net_utils
 			net_client_type m_net_client;
 			std::string m_host_buff;
 			std::string m_port;
-			http_client_auth m_auth;
 			std::string m_header_cache;
 			http_response_info m_response_info;
 			size_t m_len_in_summary;
@@ -155,7 +153,6 @@ namespace net_utils
 				, m_net_client()
 				, m_host_buff()
 				, m_port()
-				, m_auth()
 				, m_header_cache()
 				, m_response_info()
 				, m_len_in_summary(0)
@@ -173,13 +170,12 @@ namespace net_utils
 
 			using abstract_http_client::set_server;
 
-			void set_server(std::string host, std::string port, boost::optional<login> user, ssl_options_t ssl_options = ssl_support_t::e_ssl_support_autodetect) override
+			void set_server(std::string host, std::string port, ssl_options_t ssl_options = ssl_support_t::e_ssl_support_autodetect) override
 			{
 				CRITICAL_REGION_LOCAL(m_lock);
 				disconnect();
 				m_host_buff = std::move(host);
 				m_port = std::move(port);
-				m_auth = user ? http_client_auth{std::move(*user)} : http_client_auth{};
 				m_net_client.set_ssl(std::move(ssl_options));
 			}
 
@@ -264,9 +260,6 @@ namespace net_utils
 				for (unsigned sends = 0; sends < 2; ++sends)
 				{
 					const std::size_t initial_size = req_buff.size();
-					const auto auth = m_auth.get_auth_field(method, uri);
-					if (auth)
-						add_field(req_buff, *auth);
 
 					req_buff += "\r\n";
 					//--
@@ -288,18 +281,6 @@ namespace net_utils
 						return true;
 					}
 
-					switch (m_auth.handle_401(m_response_info))
-					{
-					case http_client_auth::kSuccess:
-						break;
-					case http_client_auth::kBadPassword:
-                                                sends = 2;
-						break;
-					default:
-					case http_client_auth::kParseFailure:
-						LOG_ERROR("Bad server response for authentication");
-						return false;
-					}
 					req_buff.resize(initial_size); // rollback for new auth generation
 				}
 				LOG_ERROR("Client has incorrect username/password for server requiring authentication");

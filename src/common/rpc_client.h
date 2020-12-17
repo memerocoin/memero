@@ -34,7 +34,6 @@
 #include "common/scoped_message_writer.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "storages/http_abstract_invoke.h"
-#include "net/http_auth.h"
 #include "net/http_client.h"
 #include "net/net_ssl.h"
 #include "string_tools.h"
@@ -49,13 +48,12 @@ namespace tools
     t_rpc_client(
         uint32_t ip
       , uint16_t port
-      , boost::optional<epee::net_utils::http::login> user
       , epee::net_utils::ssl_options_t ssl_options
       )
       : m_http_client{}
     {
       m_http_client.set_server(
-        epee::string_tools::get_ip_string_from_int32(ip), std::to_string(port), std::move(user), std::move(ssl_options)
+        epee::string_tools::get_ip_string_from_int32(ip), std::to_string(port), std::move(ssl_options)
       );
     }
 

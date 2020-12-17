@@ -270,7 +270,6 @@ struct options {
   const command_line::arg_descriptor<std::string> password = {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
   const command_line::arg_descriptor<std::string> password_file = {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
   const command_line::arg_descriptor<int> daemon_port = {"daemon-port", tools::wallet2::tr("Use daemon instance at port <arg> instead of 18081"), 0};
-  const command_line::arg_descriptor<std::string> daemon_login = {"daemon-login", tools::wallet2::tr("Specify username[:password] for daemon RPC client"), "", true};
   const command_line::arg_descriptor<std::string> daemon_ssl = {"daemon-ssl", tools::wallet2::tr("Enable SSL on daemon RPC connections: enabled|disabled|autodetect"), "autodetect"};
   const command_line::arg_descriptor<std::string> daemon_ssl_private_key = {"daemon-ssl-private-key", tools::wallet2::tr("Path to a PEM format private key"), ""};
   const command_line::arg_descriptor<std::string> daemon_ssl_certificate = {"daemon-ssl-certificate", tools::wallet2::tr("Path to a PEM format certificate"), ""};
@@ -395,25 +394,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   THROW_WALLET_EXCEPTION_IF(!daemon_address.empty() && !daemon_host.empty() && 0 != daemon_port,
       tools::error::wallet_internal_error, tools::wallet2::tr("can't specify daemon host or port more than once"));
 
-  boost::optional<epee::net_utils::http::login> login{};
-  if (command_line::has_arg(vm, opts.daemon_login))
-  {
-    auto parsed = tools::login::parse(
-      command_line::get_arg(vm, opts.daemon_login), false, [password_prompter](bool verify) {
-        if (!password_prompter)
-        {
-          MERROR("Password needed without prompt function");
-          return boost::optional<tools::password_container>();
-        }
-        return password_prompter("Daemon client password", verify);
-      }
-    );
-    if (!parsed)
-      return nullptr;
-
-    login.emplace(std::move(parsed->username), std::move(parsed->password).password());
-  }
-
   if (daemon_host.empty())
     daemon_host = "localhost";
 
@@ -484,7 +464,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   }
 
   std::unique_ptr<tools::wallet2> wallet(new tools::wallet2(nettype, kdf_rounds, unattended));
-  if (!wallet->init(std::move(daemon_address), std::move(login), std::move(proxy), 0, *trusted_daemon, std::move(ssl_options)))
+  if (!wallet->init(std::move(daemon_address), std::move(proxy), 0, *trusted_daemon, std::move(ssl_options)))
   {
     THROW_WALLET_EXCEPTION(tools::error::wallet_internal_error, tools::wallet2::tr("failed to initialize the wallet"));
   }
@@ -1210,7 +1190,6 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
   command_line::add_arg(desc_params, opts.password);
   command_line::add_arg(desc_params, opts.password_file);
   command_line::add_arg(desc_params, opts.daemon_port);
-  command_line::add_arg(desc_params, opts.daemon_login);
   command_line::add_arg(desc_params, opts.daemon_ssl);
   command_line::add_arg(desc_params, opts.daemon_ssl_private_key);
   command_line::add_arg(desc_params, opts.daemon_ssl_certificate);
@@ -1270,7 +1249,7 @@ std::unique_ptr<wallet2> wallet2::make_dummy(const boost::program_options::varia
 }
 
 //----------------------------------------------------------------------------------------------------
-bool wallet2::set_daemon(std::string daemon_address, boost::optional<epee::net_utils::http::login> daemon_login, bool trusted_daemon, epee::net_utils::ssl_options_t ssl_options)
+bool wallet2::set_daemon(std::string daemon_address, bool trusted_daemon, epee::net_utils::ssl_options_t ssl_options)
 {
   boost::lock_guard<boost::recursive_mutex> lock(m_daemon_rpc_mutex);
 
@@ -1278,12 +1257,11 @@ bool wallet2::set_daemon(std::string daemon_address, boost::optional<epee::net_u
     m_http_client->disconnect();
   const bool changed = m_daemon_address != daemon_address;
   m_daemon_address = std::move(daemon_address);
-  m_daemon_login = std::move(daemon_login);
   m_trusted_daemon = trusted_daemon;
 
   const std::string address = get_daemon_address();
   MINFO("setting daemon to " << address);
-  bool ret =  m_http_client->set_server(address, get_daemon_login(), std::move(ssl_options));
+  bool ret =  m_http_client->set_server(address, std::move(ssl_options));
   if (ret)
   {
     CRITICAL_REGION_LOCAL(default_daemon_address_lock);
@@ -1297,12 +1275,12 @@ bool wallet2::set_proxy(const std::string &address)
   return m_http_client->set_proxy(address);
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::init(std::string daemon_address, boost::optional<epee::net_utils::http::login> daemon_login, const std::string &proxy_address, uint64_t upper_transaction_weight_limit, bool trusted_daemon, epee::net_utils::ssl_options_t ssl_options)
+bool wallet2::init(std::string daemon_address, const std::string &proxy_address, uint64_t upper_transaction_weight_limit, bool trusted_daemon, epee::net_utils::ssl_options_t ssl_options)
 {
   CHECK_AND_ASSERT_MES(set_proxy(proxy_address), false, "failed to set proxy address");
   m_is_initialized = true;
   m_upper_transaction_weight_limit = upper_transaction_weight_limit;
-  return set_daemon(daemon_address, daemon_login, trusted_daemon, std::move(ssl_options));
+  return set_daemon(daemon_address, trusted_daemon, std::move(ssl_options));
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::is_deterministic() const

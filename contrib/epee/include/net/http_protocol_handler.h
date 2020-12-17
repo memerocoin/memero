@@ -34,7 +34,6 @@
 #include <string>
 #include "net_utils_base.h"
 #include "to_nonconst_iterator.h"
-#include "http_auth.h"
 #include "http_base.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -55,7 +54,6 @@ namespace net_utils
 		{
 			std::string m_folder;
 			std::vector<std::string> m_access_control_origins;
-			boost::optional<login> m_user;
 			critical_section m_lock;
 		};
 
@@ -177,19 +175,11 @@ namespace net_utils
 			
 			http_custom_handler(i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context)
 				: simple_http_connection_handler<t_connection_context>(psnd_hndlr, config, conn_context),
-					m_config(config),
-					m_auth(m_config.m_user ? http_server_auth{*m_config.m_user, config.rng} : http_server_auth{})
+					m_config(config)
 			{}
 			inline bool handle_request(const http_request_info& query_info, http_response_info& response)
 			{
 				CHECK_AND_ASSERT_MES(m_config.m_phandler, false, "m_config.m_phandler is NULL!!!!");
-
-				const auto auth_response = m_auth.get_response(query_info);
-				if (auth_response)
-				{
-					response = std::move(*auth_response);
-					return true;
-				}
 
 				//fill with default values
 				response.m_mime_tipe = "text/plain";
@@ -219,7 +209,6 @@ namespace net_utils
 		private:
 			//simple_http_connection_handler::config_type m_stub_config;
 			config_type& m_config;
-			http_server_auth m_auth;
 		};
 	}
 }

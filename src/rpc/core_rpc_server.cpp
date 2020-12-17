@@ -139,16 +139,12 @@ namespace cryptonote
       return false;
 
     disable_rpc_ban = rpc_config->disable_rpc_ban;
-    boost::optional<epee::net_utils::http::login> http_login{};
-
-    if (rpc_config->login)
-      http_login.emplace(std::move(rpc_config->login->username), std::move(rpc_config->login->password).password());
 
     auto rng = [](size_t len, uint8_t *ptr){ return crypto::rand(len, ptr); };
     return epee::http_server_impl_base<core_rpc_server, connection_context>::init(
       rng, std::move(port), std::move(rpc_config->bind_ip),
       std::move(rpc_config->bind_ipv6_address), std::move(rpc_config->use_ipv6), std::move(rpc_config->require_ipv4),
-      std::move(rpc_config->access_control_origins), std::move(http_login), std::move(rpc_config->ssl_options)
+      std::move(rpc_config->access_control_origins), std::move(rpc_config->ssl_options)
     );
   }
   //------------------------------------------------------------------------------------------------------------------------------
