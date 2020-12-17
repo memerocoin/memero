@@ -132,7 +132,7 @@ class DaemonHandler : public RpcHandler
 
     void handle(const GetOutputDistribution::Request& req, GetOutputDistribution::Response& res);
 
-    std::string handle(std::string& request);
+    std::string handle(const std::string& request) override final;
 
   private:
 

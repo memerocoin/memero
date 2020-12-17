@@ -79,8 +79,8 @@ void Message::fromJson(const rapidjson::Value& val)
   GET_FROM_JSON_OBJECT(val, rpc_version, rpc_version);
 }
 
-FullMessage::FullMessage(std::string&& json_string, bool request)
-  : contents(std::move(json_string)), doc()
+FullMessage::FullMessage(const std::string&& json_string, bool request)
+  : contents(json_string), doc()
 {
   /* Insitu parsing does not copy data from `contents` to DOM,
      accelerating string heavy content. */

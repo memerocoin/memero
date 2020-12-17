@@ -902,7 +902,7 @@ namespace rpc
     return true;
   }
 
-  std::string DaemonHandler::handle(std::string& request)
+  std::string DaemonHandler::handle(const std::string& request)
   {
     MDEBUG("Handling RPC request: " << request);
 

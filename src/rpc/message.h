@@ -71,7 +71,7 @@ namespace rpc
     public:
       ~FullMessage() { }
 
-      FullMessage(std::string&& json_string, bool request=false);
+      FullMessage(const std::string&& json_string, bool request=false);
 
       std::string getRequestType() const;
 
