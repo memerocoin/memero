@@ -41,10 +41,6 @@
 #include "net_helper.h"
 #include "http_client_base.h"
 
-#ifdef HTTP_ENABLE_GZIP
-#include "gzip_encoding.h"
-#endif 
-
 #include "string_tools.h"
 #include "reg_exp_definer.h"
 #include "abstract_http_client.h"
