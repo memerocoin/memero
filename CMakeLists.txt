@@ -138,28 +138,6 @@ if (ARM_ID STREQUAL "aarch64" OR ARM_ID STREQUAL "arm64" OR ARM_ID STREQUAL "arm
   set(ARCH "armv8-a")
 endif()
 
-if(ARCH_ID STREQUAL "ppc64le")
-  set(PPC64LE 1)
-  set(PPC64   0)
-  set(PPC     0)
-endif()
-
-if(ARCH_ID STREQUAL "powerpc64" OR ARCH_ID STREQUAL "ppc64")
-  set(PPC64LE 0)
-  set(PPC64   1)
-  set(PPC     0)
-endif()
-
-if(ARCH_ID STREQUAL "powerpc" OR ARCH_ID STREQUAL "ppc")
-  set(PPC64LE 0)
-  set(PPC64   0)
-  set(PPC     1)
-endif()
-
-if(ARCH_ID STREQUAL "s390x")
-  set(S390X 1)
-endif()
-
 if(WIN32 OR ARM OR PPC64LE OR PPC64 OR PPC)
   set(OPT_FLAGS_RELEASE "-O2")
 else()
@@ -324,12 +302,6 @@ endif()
 message(STATUS "Building on ${CMAKE_SYSTEM_PROCESSOR} for ${ARCH}")
 if(ARCH STREQUAL "default")
   set(ARCH_FLAG "")
-elseif(PPC64LE)
-  set(ARCH_FLAG "-mcpu=power8")
-elseif(PPC64)
-  set(ARCH_FLAG "-mcpu=970")
-elseif(PPC)
-  set(ARCH_FLAG "-mcpu=7400")
 elseif(IOS AND ARCH STREQUAL "arm64")
   message(STATUS "IOS: Changing arch from arm64 to armv8")
   set(ARCH_FLAG "-march=armv8")
@@ -525,11 +497,6 @@ if(NOT DEFINED USE_LTO_DEFAULT)
 endif()
 set(USE_LTO ${USE_LTO_DEFAULT} CACHE BOOL "Use Link-Time Optimization (Release mode only)")
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  # There is a clang bug that does not allow to compile code that uses AES-NI intrinsics if -flto is enabled, so explicitly disable
-  set(USE_LTO false)
-endif()
-
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_FLAGS}")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${RELEASE_FLAGS}")
@@ -559,6 +526,7 @@ if(STATIC)
   set(Boost_USE_STATIC_LIBS ON)
   set(Boost_USE_STATIC_RUNTIME ON)
 endif()
+
 find_package(Boost 1.67 QUIET REQUIRED COMPONENTS system filesystem thread date_time chrono regex serialization program_options locale)
 
 set(CMAKE_FIND_LIBRARY_SUFFIXES ${OLD_LIB_SUFFIXES})
@@ -612,7 +580,8 @@ find_library(SODIUM_LIBRARY sodium)
 add_subdirectory(contrib)
 add_subdirectory(src)
 
-find_package(PythonInterp)
+# find_package(PythonInterp)
+
 if(BUILD_TESTS)
   message(STATUS "Building tests")
   add_subdirectory(tests)
@@ -629,13 +598,3 @@ endif()
 # when ON - will install libwallet_merged into "lib"
 
 CHECK_C_COMPILER_FLAG(-std=c11 HAVE_C11)
-
-find_package(PythonInterp)
-find_program(iwyu_tool_path NAMES iwyu_tool.py iwyu_tool)
-if (iwyu_tool_path AND PYTHONINTERP_FOUND)
-  add_custom_target(iwyu
-    COMMAND "${PYTHON_EXECUTABLE}" "${iwyu_tool_path}" -p "${CMAKE_BINARY_DIR}" -- --no_fwd_decls
-    COMMENT "Running include-what-you-use tool"
-    VERBATIM
-  )
-endif()
