@@ -33,10 +33,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(INSERT CMAKE_MODULE_PATH 0
   "${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake")
 include(CheckCCompilerFlag)
-include(CheckCXXCompilerFlag)
-include(CheckLinkerFlag)
-include(CheckLibraryExists)
-include(CheckFunctionExists)
 
 cmake_minimum_required(VERSION 3.7.0)
 message(STATUS "CMake version ${CMAKE_VERSION}")
@@ -62,47 +58,6 @@ function (die msg)
 
   message(FATAL_ERROR "${BoldRed}${msg}${ColourReset}")
 endfunction ()
-
-function (add_c_flag_if_supported flag var)
-  string(REPLACE "-" "_" supported ${flag}_c)
-  check_c_compiler_flag(${flag} ${supported})
-  if(${${supported}})
-    set(${var} "${${var}} ${flag}" PARENT_SCOPE)
-  endif()
-endfunction()
-
-function (add_cxx_flag_if_supported flag var)
-  string(REPLACE "-" "_" supported ${flag}_cxx)
-  check_cxx_compiler_flag(${flag} ${supported})
-  if(${${supported}})
-    set(${var} "${${var}} ${flag}" PARENT_SCOPE)
-  endif()
-endfunction()
-
-function (add_linker_flag_if_supported flag var)
-  string(REPLACE "-" "_" supported ${flag}_ld)
-  string(REPLACE "," "_" supported ${flag}_ld)
-  check_linker_flag(${flag} ${supported})
-  if(${${supported}})
-    set(${var} "${${var}} ${flag}" PARENT_SCOPE)
-  endif()
-endfunction()
-
-function (add_definition_if_function_found function var)
-  string(REPLACE "-" "_" supported ${function}_function)
-  check_function_exists(${function} ${supported})
-  if(${${supported}})
-    add_definitions("-D${var}")
-  endif()
-endfunction()
-
-function (add_definition_if_library_exists library function header var)
-  string(REPLACE "-" "_" supported ${function}_library)
-  check_library_exists(${library} ${function} ${header} ${supported})
-  if(${${supported}})
-    add_definitions("-D${var}")
-  endif()
-endfunction()
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -201,8 +156,6 @@ set(BLOCKCHAIN_DB DB_LMDB)
 add_definitions("-DDEFAULT_DB_TYPE=\"lmdb\"")
 add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 
-# Can't install hook in static build on OSX, because OSX linker does not support --wrap
-# On ARM, having libunwind package (with .so's only) installed breaks static link.
 # When possible, avoid stack tracing using libunwind in favor of using easylogging++.
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
   set(DEFAULT_STACK_TRACE ON)
@@ -213,24 +166,9 @@ endif()
 
 option(STACK_TRACE "Install a hook that dumps stack on exception" ${DEFAULT_STACK_TRACE})
 
-if(STACK_TRACE)
-  message(STATUS "Stack trace on exception enabled (using ${STACK_TRACE_LIB})")
-else()
-  message(STATUS "Stack trace on exception disabled")
-endif()
-
-if (UNIX AND NOT APPLE)
-  # Note that at the time of this writing the -Wstrict-prototypes flag added below will make this fail
-  set(THREADS_PREFER_PTHREAD_FLAG ON)
-  find_package(Threads)
-  add_c_flag_if_supported(-pthread CMAKE_C_FLAGS)
-  add_cxx_flag_if_supported(-pthread CMAKE_CXX_FLAGS)
-endif()
-
-# Handle OpenSSL, used for sha256sum on binary updates and light wallet ssl http
-if (CMAKE_SYSTEM_NAME MATCHES "(SunOS|Solaris)")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthreads")
-endif ()
+find_package(Threads)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 find_package(OpenSSL REQUIRED)
 message(STATUS "Using OpenSSL include dir at ${OPENSSL_INCLUDE_DIR}")
@@ -240,8 +178,6 @@ if(STATIC AND NOT IOS)
     set(OPENSSL_LIBRARIES "${OPENSSL_LIBRARIES};${CMAKE_DL_LIBS};${CMAKE_THREAD_LIBS_INIT}")
   endif()
 endif()
-
-add_definition_if_function_found(strptime HAVE_STRPTIME)
 
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
 
@@ -255,9 +191,6 @@ link_directories(${EASYLOGGING_LIBRARY_DIRS})
 include_directories(${LMDB_INCLUDE})
 
 include(TestCXXAcceptsFlag)
-if (NOT ARCH)
-  set(ARCH native CACHE STRING "CPU to build for: -march value or 'default' to not pass -march at all")
-endif()
 message(STATUS "Building on ${CMAKE_SYSTEM_PROCESSOR} for ${ARCH}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARCH_FLAG}")
