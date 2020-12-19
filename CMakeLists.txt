@@ -137,7 +137,7 @@ if (ARM_ID STREQUAL "aarch64" OR ARM_ID STREQUAL "arm64" OR ARM_ID STREQUAL "arm
   set(ARCH "armv8-a")
 endif()
 
-if(WIN32 OR ARM OR PPC64LE OR PPC64 OR PPC)
+if(WIN32 OR ARM)
   set(OPT_FLAGS_RELEASE "-O2")
 else()
   set(OPT_FLAGS_RELEASE "-Ofast")
@@ -169,35 +169,9 @@ else()
 endif()
 message(STATUS "Building for a ${ARCH_WIDTH}-bit system")
 
-# CMAKE_SYSTEM_NAME checks are commonly known, but specifically taken from libsdl's CMakeLists
-if(CMAKE_SYSTEM_NAME MATCHES "kFreeBSD.*|FreeBSD")
-  set(FREEBSD TRUE)
-endif()
-
-# Check if we're on DragonFly BSD. See the README.md for build instructions.
-if(CMAKE_SYSTEM_NAME MATCHES "DragonFly.*")
-  set(DRAGONFLY TRUE)
-endif()
-
-# Check if we're on OpenBSD. See the README.md for build instructions.
-if(CMAKE_SYSTEM_NAME MATCHES "kOpenBSD.*|OpenBSD.*")
-  set(OPENBSD TRUE)
-endif()
-
-# TODO: check bsdi, NetBSD, to see if they need the same FreeBSD changes
-#
-# elseif(CMAKE_SYSTEM_NAME MATCHES "kNetBSD.*|NetBSD.*")
-#   set(NETBSD TRUE)
-# elseif(CMAKE_SYSTEM_NAME MATCHES ".*BSDI.*")
-#   set(BSDI TRUE)
-
 include_directories(external/rapidjson/include external/easylogging++ src contrib/epee/include external)
 
-if(MSVC OR MINGW)
-  set(DEFAULT_STATIC true)
-else()
-  set(DEFAULT_STATIC false)
-endif()
+set(DEFAULT_STATIC false)
 option(STATIC "Link libraries statically" ${DEFAULT_STATIC})
 
 # This is a CMake built-in switch that concerns internal libraries
@@ -211,20 +185,8 @@ if (BUILD_SHARED_LIBS)
 else()
   message(STATUS "Building internal libraries as static")
 endif()
-set(PIC_FLAG "-fPIC")
 
-if(MINGW)
-  string(REGEX MATCH "^[^/]:/[^/]*" msys2_install_path "${CMAKE_C_COMPILER}")
-  message(STATUS "MSYS location: ${msys2_install_path}")
-  set(CMAKE_INCLUDE_PATH "${msys2_install_path}/mingw${ARCH_WIDTH}/include")
-  # This is necessary because otherwise CMake will make Boost libraries -lfoo
-  # rather than a full path. Unfortunately, this makes the shared libraries get
-  # linked due to a bug in CMake which misses putting -static flags around the
-  # -lfoo arguments.
-  set(DEFLIB ${msys2_install_path}/mingw${ARCH_WIDTH}/lib)
-  list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_DIRECTORIES ${DEFLIB})
-  list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES ${DEFLIB})
-endif()
+set(PIC_FLAG "-fPIC")
 
 if(STATIC)
   set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
@@ -279,8 +241,6 @@ if(STATIC AND NOT IOS)
   endif()
 endif()
 
-add_definition_if_library_exists(c memset_s "string.h" HAVE_MEMSET_S)
-add_definition_if_library_exists(c explicit_bzero "strings.h" HAVE_EXPLICIT_BZERO)
 add_definition_if_function_found(strptime HAVE_STRPTIME)
 
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
@@ -299,141 +259,15 @@ if (NOT ARCH)
   set(ARCH native CACHE STRING "CPU to build for: -march value or 'default' to not pass -march at all")
 endif()
 message(STATUS "Building on ${CMAKE_SYSTEM_PROCESSOR} for ${ARCH}")
-if(ARCH STREQUAL "default")
-  set(ARCH_FLAG "")
-elseif(IOS AND ARCH STREQUAL "arm64")
-  message(STATUS "IOS: Changing arch from arm64 to armv8")
-  set(ARCH_FLAG "-march=armv8")
-else()
-  set(ARCH_FLAG "-march=${ARCH}")
-  if(ARCH STREQUAL "native")
-    check_c_compiler_flag(-march=native CC_SUPPORTS_MARCH_NATIVE)
-    if (NOT CC_SUPPORTS_MARCH_NATIVE)
-      check_c_compiler_flag(-mtune=native CC_SUPPORTS_MTUNE_NATIVE)
-      if (CC_SUPPORTS_MTUNE_NATIVE)
-        set(ARCH_FLAG "-mtune=${ARCH}")
-      else()
-        set(ARCH_FLAG "")
-      endif()
-    endif()
-  endif()
-endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARCH_FLAG}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARCH_FLAG}")
-
-set(WARNINGS "-Wall -Wextra -Wpointer-arith -Wundef -Wvla -Wwrite-strings -Wno-error=extra -Wno-error=deprecated-declarations -Wno-unused-parameter -Wno-unused-variable -Wno-error=unused-variable -Wno-error=undef -Wno-error=uninitialized")
-if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-  if(ARM)
-    set(WARNINGS "${WARNINGS} -Wno-error=inline-asm")
-  endif()
-else()
-  set(WARNINGS "${WARNINGS} -Wlogical-op -Wno-error=maybe-uninitialized -Wno-error=cpp")
-endif()
-if(MINGW)
-  set(WARNINGS "${WARNINGS} -Wno-error=unused-value -Wno-error=unused-but-set-variable")
-  set(MINGW_FLAG "${MINGW_FLAG} -DWIN32_LEAN_AND_MEAN")
-  set(Boost_THREADAPI win32)
-  include_directories(SYSTEM src/platform/mingw)
-  # mingw doesn't support LTO (multiple definition errors at link time)
-  set(USE_LTO_DEFAULT false)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--stack,10485760")
-  if(NOT BUILD_64)
-    add_definitions(-DWINVER=0x0501 -D_WIN32_WINNT=0x0501)
-  endif()
-endif()
-set(C_WARNINGS "-Waggregate-return -Wnested-externs -Wold-style-definition -Wstrict-prototypes")
-set(CXX_WARNINGS "-Wno-reorder -Wno-missing-field-initializers")
-try_compile(STATIC_ASSERT_RES "${CMAKE_CURRENT_BINARY_DIR}/static-assert" "${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake/test-static-assert.c" COMPILE_DEFINITIONS "-std=c11")
-if(STATIC_ASSERT_RES)
-  set(STATIC_ASSERT_FLAG "")
-else()
-  set(STATIC_ASSERT_FLAG "-Dstatic_assert=_Static_assert")
-endif()
-
-try_compile(STATIC_ASSERT_CPP_RES "${CMAKE_CURRENT_BINARY_DIR}/static-assert" "${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake/test-static-assert.cpp" COMPILE_DEFINITIONS "-std=c++11")
-if(STATIC_ASSERT_CPP_RES)
-  set(STATIC_ASSERT_CPP_FLAG "")
-else()
-  set(STATIC_ASSERT_CPP_FLAG "-Dstatic_assert=_Static_assert")
-endif()
 
 option(COVERAGE "Enable profiling for test coverage report" 0)
 
 if(COVERAGE)
   message(STATUS "Building with profiling for test coverage report")
   set(COVERAGE_FLAGS "-fprofile-arcs -ftest-coverage --coverage")
-endif()
-
-# With GCC 6.1.1 the compiled binary malfunctions due to aliasing. Until that
-# is fixed in the code (Issue #847), force compiler to be conservative.
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
-
-# if those don't work for your compiler, single it out where appropriate
-if(CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT OPENBSD)
-  set(C_SECURITY_FLAGS "${C_SECURITY_FLAGS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1")
-  set(CXX_SECURITY_FLAGS "${CXX_SECURITY_FLAGS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1")
-endif()
-
-# warnings
-add_c_flag_if_supported(-Wformat C_SECURITY_FLAGS)
-add_cxx_flag_if_supported(-Wformat CXX_SECURITY_FLAGS)
-add_c_flag_if_supported(-Wformat-security C_SECURITY_FLAGS)
-add_cxx_flag_if_supported(-Wformat-security CXX_SECURITY_FLAGS)
-
-# -fstack-protector
-if (NOT OPENBSD AND NOT (WIN32 AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_LESS 9.1)))
-  add_c_flag_if_supported(-fstack-protector C_SECURITY_FLAGS)
-  add_cxx_flag_if_supported(-fstack-protector CXX_SECURITY_FLAGS)
-  add_c_flag_if_supported(-fstack-protector-strong C_SECURITY_FLAGS)
-  add_cxx_flag_if_supported(-fstack-protector-strong CXX_SECURITY_FLAGS)
-endif()
-
-# New in GCC 8.2
-if (NOT OPENBSD AND NOT (WIN32 AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_LESS 9.1)))
-  add_c_flag_if_supported(-fcf-protection=full C_SECURITY_FLAGS)
-  add_cxx_flag_if_supported(-fcf-protection=full CXX_SECURITY_FLAGS)
-endif()
-if (NOT WIN32 AND NOT OPENBSD)
-  add_c_flag_if_supported(-fstack-clash-protection C_SECURITY_FLAGS)
-  add_cxx_flag_if_supported(-fstack-clash-protection CXX_SECURITY_FLAGS)
-endif()
-
-# Removed in GCC 9.1 (or before ?), but still accepted, so spams the output
-if (NOT (CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_C_COMPILER_VERSION VERSION_LESS 9.1))
-  add_c_flag_if_supported(-mmitigate-rop C_SECURITY_FLAGS)
-  add_cxx_flag_if_supported(-mmitigate-rop CXX_SECURITY_FLAGS)
-endif()
-
-# linker
-if (NOT SANITIZE AND NOT OSSFUZZ AND NOT (WIN32 AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_LESS 9.1)))
-  # PIE executables randomly crash at startup with ASAN
-  # Windows binaries die on startup with PIE when compiled with GCC <9.x
-  add_linker_flag_if_supported(-pie LD_SECURITY_FLAGS)
-endif()
-add_linker_flag_if_supported(-Wl,-z,relro LD_SECURITY_FLAGS)
-add_linker_flag_if_supported(-Wl,-z,now LD_SECURITY_FLAGS)
-add_linker_flag_if_supported(-Wl,-z,noexecstack noexecstack_SUPPORTED)
-if (noexecstack_SUPPORTED)
-  set(LD_SECURITY_FLAGS "${LD_SECURITY_FLAGS} -Wl,-z,noexecstack")
-endif()
-add_linker_flag_if_supported(-Wl,-z,noexecheap noexecheap_SUPPORTED)
-if (noexecheap_SUPPORTED)
-  set(LD_SECURITY_FLAGS "${LD_SECURITY_FLAGS} -Wl,-z,noexecheap")
-endif()
-
-if(BACKCOMPAT)
-    add_linker_flag_if_supported(-Wl,--wrap=__divmoddi4 LD_BACKCOMPAT_FLAGS)
-    add_linker_flag_if_supported(-Wl,--wrap=glob LD_BACKCOMPAT_FLAGS)
-    message(STATUS "Using Lib C back compat flags: ${LD_BACKCOMPAT_FLAGS}")
-endif()
-
-# some windows linker bits
-if (WIN32)
-  add_linker_flag_if_supported(-Wl,--dynamicbase LD_SECURITY_FLAGS)
-  add_linker_flag_if_supported(-Wl,--nxcompat LD_SECURITY_FLAGS)
-  add_linker_flag_if_supported(-Wl,--high-entropy-va LD_SECURITY_FLAGS)
 endif()
 
 message(STATUS "Using C security hardening flags: ${C_SECURITY_FLAGS}")
@@ -443,58 +277,6 @@ message(STATUS "Using linker security hardening flags: ${LD_SECURITY_FLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -D_GNU_SOURCE ${MINGW_FLAG} ${STATIC_ASSERT_FLAG} ${WARNINGS} ${C_WARNINGS} ${COVERAGE_FLAGS} ${PIC_FLAG} ${C_SECURITY_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -D_GNU_SOURCE ${MINGW_FLAG} ${STATIC_ASSERT_CPP_FLAG} ${WARNINGS} ${CXX_WARNINGS} ${COVERAGE_FLAGS} ${PIC_FLAG} ${CXX_SECURITY_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LD_SECURITY_FLAGS} ${LD_BACKCOMPAT_FLAGS}")
-
-# With GCC 6.1.1 the compiled binary malfunctions due to aliasing. Until that
-# is fixed in the code (Issue #847), force compiler to be conservative.
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
-
-if(ARM)
-  message(STATUS "Setting FPU Flags for ARM Processors")
-
-  if(ARM8)
-    CHECK_CXX_ACCEPTS_FLAG(-mfix-cortex-a53-835769 CXX_ACCEPTS_MFIX_CORTEX_A53_835769)
-    CHECK_CXX_ACCEPTS_FLAG(-mfix-cortex-a53-843419 CXX_ACCEPTS_MFIX_CORTEX_A53_843419)
-
-    if(CXX_ACCEPTS_MFIX_CORTEX_A53_835769)
-      message(STATUS "Enabling Cortex-A53 workaround 835769")
-      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfix-cortex-a53-835769")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfix-cortex-a53-835769")
-    endif()
-
-    if(CXX_ACCEPTS_MFIX_CORTEX_A53_843419)
-      message(STATUS "Enabling Cortex-A53 workaround 843419")
-      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfix-cortex-a53-843419")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfix-cortex-a53-843419")
-    endif()
-  endif(ARM8)
-
-endif(ARM)
-
-# random crash on startup when asan is on if pie is enabled
-if(NOT SANITIZE AND ANDROID STREQUAL "ON" OR IOS)
-  #From Android 5: "only position independent executables (PIE) are supported" 
-  message(STATUS "Enabling PIE executable")
-  set(PIC_FLAG "")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIE")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_CXX_FLAGS} -fPIE -pie")
-endif()
-
-set(DEBUG_FLAGS "-g3")
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT (CMAKE_C_COMPILER_VERSION VERSION_LESS 4.8))
-  set(DEBUG_FLAGS "${DEBUG_FLAGS} -Og ")
-else()
-  set(DEBUG_FLAGS "${DEBUG_FLAGS} -O0 ")
-endif()
-
-# At least some CLANGs default to not enough for monero
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth=900")
-
-if(NOT DEFINED USE_LTO_DEFAULT)
-  set(USE_LTO_DEFAULT false)
-endif()
-set(USE_LTO ${USE_LTO_DEFAULT} CACHE BOOL "Use Link-Time Optimization (Release mode only)")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_FLAGS}")
