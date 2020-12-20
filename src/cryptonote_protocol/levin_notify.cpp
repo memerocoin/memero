@@ -198,7 +198,6 @@ namespace levin
           strand(io_service),
           flush_time(std::chrono::steady_clock::time_point::max()),
           connection_count(0),
-          is_public(is_public),
           pad_txs(pad_txs)
       {
       }
@@ -209,7 +208,6 @@ namespace levin
       boost::asio::io_service::strand strand;
       std::chrono::steady_clock::time_point flush_time; //!< Next expected Dandelion++ fluff flush
       std::atomic<std::size_t> connection_count; //!< Only update in strand, can be read at any time
-      const bool is_public;                      //!< Zone is public ipv4/ipv6 connections
       const bool pad_txs;                        //!< Pad txs to the next boundary for privacy
     };
   } // detail
