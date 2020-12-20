@@ -61,6 +61,7 @@ endif()
 
 
 
+
 # helpers
 function (die msg)
   if (NOT WIN32)
@@ -77,8 +78,12 @@ endfunction ()
 
 
 
+
 # language
 CHECK_C_COMPILER_FLAG(-std=c11 HAVE_C11)
+
+
+
 
 
 
@@ -88,6 +93,8 @@ if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting default build type: ${CMAKE_BUILD_TYPE}")
 endif()
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
+
+
 
 
 
@@ -117,15 +124,13 @@ message(STATUS "Building for a ${ARCH_WIDTH}-bit system")
 
 if(ANDROID)
   set(ATOMIC libatomic.a)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=user-defined-warnings")
 endif()
 
 
 
 
 # library type
-set(DEFAULT_STATIC false)
-option(STATIC "Link libraries statically" ${DEFAULT_STATIC})
+option(STATIC "Link libraries statically" false)
 
 if(STATIC)
   set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
@@ -173,7 +178,7 @@ endif()
 # flags
 set(PIC_FLAG "-fPIC")
 
-find_package(Threads)
+find_package(Threads REQUIRED)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
@@ -196,30 +201,22 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${RELEASE_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RELEASE_FLAGS}")
 
 
+
+
 # trace
+option(STACK_TRACE "Install a hook that dumps stack on exception" OFF)
+
 # When possible, avoid stack tracing using libunwind in favor of using easylogging++.
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
-  set(DEFAULT_STACK_TRACE ON)
+if(STACK_TRACE)
   set(STACK_TRACE_LIB "easylogging++") # for diag output only
 else()
-  set(DEFAULT_STACK_TRACE OFF)
-endif()
 
-option(STACK_TRACE "Install a hook that dumps stack on exception" ${DEFAULT_STACK_TRACE})
+
 
 
 
 # test
 option(BUILD_TESTS "Build tests." OFF)
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(DEFAULT_BUILD_DEBUG_UTILITIES ON)
-else()
-  set(DEFAULT_BUILD_DEBUG_UTILITIES OFF)
-endif()
-option(BUILD_DEBUG_UTILITIES "Build debug utilities." DEFAULT_BUILD_DEBUG_UTILITIES)
-
-include_directories(external/rapidjson/include external/easylogging++ src contrib/epee/include external)
-
 if(BUILD_TESTS)
   message(STATUS "Building tests")
   include(FindPythonInterp)
@@ -230,12 +227,8 @@ else()
 endif()
 
 
-# utils
-if(BUILD_DEBUG_UTILITIES)
-  message(STATUS "Building debug utilities")
-else()
-  message(STATUS "Not building debug utilities")
-endif()
+
+
 
 
 # libs
@@ -244,23 +237,9 @@ endif()
 find_package(OpenSSL REQUIRED)
 message(STATUS "Using OpenSSL include dir at ${OPENSSL_INCLUDE_DIR}")
 include_directories(${OPENSSL_INCLUDE_DIR})
-if(STATIC AND NOT IOS)
-  if(UNIX)
-    set(OPENSSL_LIBRARIES "${OPENSSL_LIBRARIES};${CMAKE_DL_LIBS};${CMAKE_THREAD_LIBS_INIT}")
-  endif()
-endif()
 
 # boost
-set(OLD_LIB_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
-set(Boost_NO_BOOST_CMAKE ON)
-find_package(Boost 1.67 QUIET REQUIRED COMPONENTS system filesystem thread date_time chrono regex serialization program_options locale)
-
-set(CMAKE_FIND_LIBRARY_SUFFIXES ${OLD_LIB_SUFFIXES})
-if(NOT Boost_FOUND)
-  die("Could not find Boost libraries, please make sure you have installed Boost or libboost-all-dev (>=1.58) or the equivalent")
-elseif(Boost_FOUND)
-  message(STATUS "Found Boost Version: ${Boost_VERSION}")
-endif()
+find_package(Boost 1.67 REQUIRED COMPONENTS system filesystem thread date_time chrono regex serialization program_options locale)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
@@ -282,6 +261,8 @@ endif()
 find_library(SODIUM_LIBRARY sodium)
 
 
+
+
 # external
 
 # Set default blockchain storage location:
@@ -301,13 +282,20 @@ add_subdirectory(external)
 include_directories(${LMDB_INCLUDE})
 
 # easylogging
-include_directories(${EASYLOGGING_INCLUDE})
-link_directories(${EASYLOGGING_LIBRARY_DIRS})
+include_directories(external/easylogging++)
 
-list(APPEND EXTRA_LIBRARIES ${CMAKE_DL_LIBS})
+# rapidjson
+include_directories(external/rapidjson/include)
+
+
+
 
 
 # wrap up
+include_directories(contrib/epee/include external src)
+
+list(APPEND EXTRA_LIBRARIES ${CMAKE_DL_LIBS})
+
 add_subdirectory(contrib)
 add_subdirectory(src)
 
