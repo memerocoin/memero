@@ -209,7 +209,7 @@ option(STACK_TRACE "Install a hook that dumps stack on exception" OFF)
 # When possible, avoid stack tracing using libunwind in favor of using easylogging++.
 if(STACK_TRACE)
   set(STACK_TRACE_LIB "easylogging++") # for diag output only
-else()
+endif()
 
 
 
