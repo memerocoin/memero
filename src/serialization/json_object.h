@@ -288,9 +288,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::rangeSig& sig);
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof& p);
 void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof& p);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::boroSig& sig);
-void fromJsonValue(const rapidjson::Value& val, rct::boroSig& sig);
-
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::mgSig& sig);
 void fromJsonValue(const rapidjson::Value& val, rct::mgSig& sig);
 

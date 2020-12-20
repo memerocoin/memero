@@ -1153,7 +1153,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ra
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, asig, sig.asig);
   INSERT_INTO_JSON_OBJECT(dest, Ci, epee::span<const rct::key>{sig.Ci});
 
   dest.EndObject();
@@ -1171,8 +1170,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::rangeSig& sig)
   {
     throw MISSING_KEY("Ci");
   }
-
-  GET_FROM_JSON_OBJECT(val, sig.asig, asig);
 
   std::vector<rct::key> keyVector;
   cryptonote::json::fromJsonValue(ci->value, keyVector);
@@ -1225,51 +1222,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof& p)
   GET_FROM_JSON_OBJECT(val, p.a, a);
   GET_FROM_JSON_OBJECT(val, p.b, b);
   GET_FROM_JSON_OBJECT(val, p.t, t);
-}
-
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::boroSig& sig)
-{
-  dest.StartObject();
-
-  INSERT_INTO_JSON_OBJECT(dest, s0, epee::span<const rct::key>{sig.s0});
-  INSERT_INTO_JSON_OBJECT(dest, s1, epee::span<const rct::key>{sig.s1});
-  INSERT_INTO_JSON_OBJECT(dest, ee, sig.ee);
-
-  dest.EndObject();
-}
-
-void fromJsonValue(const rapidjson::Value& val, rct::boroSig& sig)
-{
-  if (!val.IsObject())
-  {
-    throw WRONG_TYPE("json object");
-  }
-
-  OBJECT_HAS_MEMBER_OR_THROW(val, "s0")
-  std::vector<rct::key> keyVector;
-  cryptonote::json::fromJsonValue(val["s0"], keyVector);
-  if (!(keyVector.size() == 64))
-  {
-    throw WRONG_TYPE("key64 (rct::key[64])");
-  }
-  for (size_t i=0; i < 64; i++)
-  {
-    sig.s0[i] = keyVector[i];
-  }
-
-  OBJECT_HAS_MEMBER_OR_THROW(val, "s1")
-  keyVector.clear();
-  cryptonote::json::fromJsonValue(val["s1"], keyVector);
-  if (!(keyVector.size() == 64))
-  {
-    throw WRONG_TYPE("key64 (rct::key[64])");
-  }
-  for (size_t i=0; i < 64; i++)
-  {
-    sig.s1[i] = keyVector[i];
-  }
-
-  GET_FROM_JSON_OBJECT(val, sig.ee, ee);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::mgSig& sig)

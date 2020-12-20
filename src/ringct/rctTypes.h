@@ -143,12 +143,6 @@ namespace rct {
     typedef unsigned int bits[ATOMS];
     typedef key key64[64];
 
-    struct boroSig {
-        key64 s0;
-        key64 s1;
-        key ee;
-    };
-  
     //Container for precomp
     struct geDsmp {
         ge_dsmp k;
@@ -191,11 +185,9 @@ namespace rct {
     // a Pedersen commitment to 0 or to 2^i
     //thus proving that C is in the range of [0, 2^64]
     struct rangeSig {
-        boroSig asig;
         key64 Ci;
 
         BEGIN_SERIALIZE_OBJECT()
-            FIELD(asig)
             FIELD(Ci)
         END_SERIALIZE()
     };
@@ -609,7 +601,6 @@ BLOB_SERIALIZER(rct::key);
 BLOB_SERIALIZER(rct::key64);
 BLOB_SERIALIZER(rct::ctkey);
 BLOB_SERIALIZER(rct::multisig_kLRki);
-BLOB_SERIALIZER(rct::boroSig);
 
 VARIANT_TAG(debug_archive, rct::key, "rct::key");
 VARIANT_TAG(debug_archive, rct::key64, "rct::key64");
@@ -621,7 +612,6 @@ VARIANT_TAG(debug_archive, rct::ctkeyM, "rct::ctkeyM");
 VARIANT_TAG(debug_archive, rct::ecdhTuple, "rct::ecdhTuple");
 VARIANT_TAG(debug_archive, rct::mgSig, "rct::mgSig");
 VARIANT_TAG(debug_archive, rct::rangeSig, "rct::rangeSig");
-VARIANT_TAG(debug_archive, rct::boroSig, "rct::boroSig");
 VARIANT_TAG(debug_archive, rct::rctSig, "rct::rctSig");
 VARIANT_TAG(debug_archive, rct::Bulletproof, "rct::bulletproof");
 VARIANT_TAG(debug_archive, rct::multisig_kLRki, "rct::multisig_kLRki");
@@ -638,7 +628,6 @@ VARIANT_TAG(binary_archive, rct::ctkeyM, 0x96);
 VARIANT_TAG(binary_archive, rct::ecdhTuple, 0x97);
 VARIANT_TAG(binary_archive, rct::mgSig, 0x98);
 VARIANT_TAG(binary_archive, rct::rangeSig, 0x99);
-VARIANT_TAG(binary_archive, rct::boroSig, 0x9a);
 VARIANT_TAG(binary_archive, rct::rctSig, 0x9b);
 VARIANT_TAG(binary_archive, rct::Bulletproof, 0x9c);
 VARIANT_TAG(binary_archive, rct::multisig_kLRki, 0x9d);
@@ -655,7 +644,6 @@ VARIANT_TAG(json_archive, rct::ctkeyM, "rct_ctkeyM");
 VARIANT_TAG(json_archive, rct::ecdhTuple, "rct_ecdhTuple");
 VARIANT_TAG(json_archive, rct::mgSig, "rct_mgSig");
 VARIANT_TAG(json_archive, rct::rangeSig, "rct_rangeSig");
-VARIANT_TAG(json_archive, rct::boroSig, "rct_boroSig");
 VARIANT_TAG(json_archive, rct::rctSig, "rct_rctSig");
 VARIANT_TAG(json_archive, rct::Bulletproof, "rct_bulletproof");
 VARIANT_TAG(json_archive, rct::multisig_kLRki, "rct_multisig_kLR");

@@ -206,7 +206,6 @@ namespace boost
   template <class Archive>
   inline void serialize(Archive &a, rct::rangeSig &x, const boost::serialization::version_type ver)
   {
-    a & x.asig;
     a & x.Ci;
   }
 
@@ -225,14 +224,6 @@ namespace boost
     a & x.a;
     a & x.b;
     a & x.t;
-  }
-
-  template <class Archive>
-  inline void serialize(Archive &a, rct::boroSig &x, const boost::serialization::version_type ver)
-  {
-    a & x.s0;
-    a & x.s1;
-    a & x.ee;
   }
 
   template <class Archive>

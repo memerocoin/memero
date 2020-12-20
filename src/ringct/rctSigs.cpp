@@ -289,7 +289,6 @@ namespace rct {
       hashes.push_back(hash2rct(h));
 
       keyV kv;
-      if (rv.type == RCTTypeBulletproof || rv.type == RCTTypeBulletproof2 || rv.type == RCTTypeCLSAG)
       {
         kv.reserve((6*2+9) * rv.p.bulletproofs.size());
         for (const auto &p: rv.p.bulletproofs)
@@ -309,20 +308,6 @@ namespace rct {
           kv.push_back(p.a);
           kv.push_back(p.b);
           kv.push_back(p.t);
-        }
-      }
-      else
-      {
-        kv.reserve((64*3+1) * rv.p.rangeSigs.size());
-        for (const auto &r: rv.p.rangeSigs)
-        {
-          for (size_t n = 0; n < 64; ++n)
-            kv.push_back(r.asig.s0[n]);
-          for (size_t n = 0; n < 64; ++n)
-            kv.push_back(r.asig.s1[n]);
-          kv.push_back(r.asig.ee);
-          for (size_t n = 0; n < 64; ++n)
-            kv.push_back(r.Ci[n]);
         }
       }
       hashes.push_back(cn_fast_hash(kv));
