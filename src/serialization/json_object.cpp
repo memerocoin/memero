@@ -279,7 +279,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
   }
 
   const auto& rsig = tx.rct_signatures;
-  if (!cryptonote::is_coinbase(tx) && rsig.p.bulletproofs.empty() && rsig.p.rangeSigs.empty() && rsig.p.MGs.empty() && rsig.get_pseudo_outs().empty() && sigs == val.MemberEnd())
+  if (!cryptonote::is_coinbase(tx) && rsig.p.bulletproofs.empty() && rsig.p.MGs.empty() && rsig.get_pseudo_outs().empty() && sigs == val.MemberEnd())
     tx.pruned = true;
 }
 
@@ -1072,12 +1072,11 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   INSERT_INTO_JSON_OBJECT(dest, fee, sig.txnFee);
 
   // prunable
-  if (!sig.p.bulletproofs.empty() || !sig.p.rangeSigs.empty() || !sig.p.MGs.empty() || !sig.get_pseudo_outs().empty())
+  if (!sig.p.bulletproofs.empty() || !sig.p.MGs.empty() || !sig.get_pseudo_outs().empty())
   {
     dest.Key("prunable");
     dest.StartObject();
 
-    INSERT_INTO_JSON_OBJECT(dest, range_proofs, sig.p.rangeSigs);
     INSERT_INTO_JSON_OBJECT(dest, bulletproofs, sig.p.bulletproofs);
     INSERT_INTO_JSON_OBJECT(dest, mlsags, sig.p.MGs);
     INSERT_INTO_JSON_OBJECT(dest, pseudo_outs, sig.get_pseudo_outs());
@@ -1108,7 +1107,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
   {
     rct::keyV pseudo_outs = std::move(sig.get_pseudo_outs());
 
-    GET_FROM_JSON_OBJECT(prunable->value, sig.p.rangeSigs, range_proofs);
     GET_FROM_JSON_OBJECT(prunable->value, sig.p.bulletproofs, bulletproofs);
     GET_FROM_JSON_OBJECT(prunable->value, sig.p.MGs, mlsags);
     GET_FROM_JSON_OBJECT(prunable->value, pseudo_outs, pseudo_outs);
@@ -1117,7 +1115,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
   }
   else
   {
-    sig.p.rangeSigs.clear();
     sig.p.bulletproofs.clear();
     sig.p.MGs.clear();
     sig.get_pseudo_outs().clear();
@@ -1147,40 +1144,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::ecdhTuple& tuple)
 
   GET_FROM_JSON_OBJECT(val, tuple.mask, mask);
   GET_FROM_JSON_OBJECT(val, tuple.amount, amount);
-}
-
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rangeSig& sig)
-{
-  dest.StartObject();
-
-  INSERT_INTO_JSON_OBJECT(dest, Ci, epee::span<const rct::key>{sig.Ci});
-
-  dest.EndObject();
-}
-
-void fromJsonValue(const rapidjson::Value& val, rct::rangeSig& sig)
-{
-  if (!val.IsObject())
-  {
-    throw WRONG_TYPE("json object");
-  }
-
-  const auto ci = val.FindMember("Ci");
-  if (ci == val.MemberEnd())
-  {
-    throw MISSING_KEY("Ci");
-  }
-
-  std::vector<rct::key> keyVector;
-  cryptonote::json::fromJsonValue(ci->value, keyVector);
-  if (!(keyVector.size() == 64))
-  {
-    throw WRONG_TYPE("key64 (rct::key[64])");
-  }
-  for (size_t i=0; i < 64; i++)
-  {
-    sig.Ci[i] = keyVector[i];
-  }
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof& p)

@@ -204,12 +204,6 @@ namespace boost
   }
 
   template <class Archive>
-  inline void serialize(Archive &a, rct::rangeSig &x, const boost::serialization::version_type ver)
-  {
-    a & x.Ci;
-  }
-
-  template <class Archive>
   inline void serialize(Archive &a, rct::Bulletproof &x, const boost::serialization::version_type ver)
   {
     a & x.V;
@@ -308,14 +302,10 @@ namespace boost
   template <class Archive>
   inline void serialize(Archive &a, rct::rctSigPrunable &x, const boost::serialization::version_type ver)
   {
-    a & x.rangeSigs;
-    if (x.rangeSigs.empty())
-      a & x.bulletproofs;
+    a & x.bulletproofs;
     a & x.MGs;
-    if (ver >= 1u)
-      a & x.CLSAGs;
-    if (x.rangeSigs.empty())
-      a & x.pseudoOuts;
+    a & x.CLSAGs;
+    a & x.pseudoOuts;
   }
 
   template <class Archive>
@@ -332,14 +322,10 @@ namespace boost
     serializeOutPk(a, x.outPk, ver);
     a & x.txnFee;
     //--------------
-    a & x.p.rangeSigs;
-    if (x.p.rangeSigs.empty())
-      a & x.p.bulletproofs;
+    a & x.p.bulletproofs;
     a & x.p.MGs;
-    if (ver >= 1u)
-      a & x.p.CLSAGs;
-    if (x.type == rct::RCTTypeBulletproof || x.type == rct::RCTTypeBulletproof2 || x.type == rct::RCTTypeCLSAG)
-      a & x.p.pseudoOuts;
+    a & x.p.CLSAGs;
+    a & x.p.pseudoOuts;
   }
 
   template <class Archive>

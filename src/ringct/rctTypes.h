@@ -178,20 +178,6 @@ namespace rct {
         END_SERIALIZE()
     };
 
-    //contains the data for an Borromean sig
-    // also contains the "Ci" values such that
-    // \sum Ci = C
-    // and the signature proves that each Ci is either
-    // a Pedersen commitment to 0 or to 2^i
-    //thus proving that C is in the range of [0, 2^64]
-    struct rangeSig {
-        key64 Ci;
-
-        BEGIN_SERIALIZE_OBJECT()
-            FIELD(Ci)
-        END_SERIALIZE()
-    };
-
     struct Bulletproof
     {
       rct::keyV V;
@@ -338,7 +324,6 @@ namespace rct {
         END_SERIALIZE()
     };
     struct rctSigPrunable {
-        std::vector<rangeSig> rangeSigs;
         std::vector<Bulletproof> bulletproofs;
         std::vector<mgSig> MGs; // simple rct has N, full has 1
         std::vector<clsag> CLSAGs;
@@ -358,7 +343,6 @@ namespace rct {
             return ar.stream().good();
           if (type != RCTTypeBulletproof && type != RCTTypeBulletproof2 && type != RCTTypeCLSAG)
             return false;
-          if (type == RCTTypeBulletproof || type == RCTTypeBulletproof2 || type == RCTTypeCLSAG)
           {
             uint32_t nbp = bulletproofs.size();
             if (type == RCTTypeBulletproof2 || type == RCTTypeCLSAG)
@@ -378,21 +362,6 @@ namespace rct {
             }
             if (n_bulletproof_max_amounts(bulletproofs) < outputs)
               return false;
-            ar.end_array();
-          }
-          else
-          {
-            ar.tag("rangeSigs");
-            ar.begin_array();
-            PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, rangeSigs);
-            if (rangeSigs.size() != outputs)
-              return false;
-            for (size_t i = 0; i < outputs; ++i)
-            {
-              FIELDS(rangeSigs[i])
-              if (outputs - i > 1)
-                ar.delimit_array();
-            }
             ar.end_array();
           }
 
@@ -506,7 +475,6 @@ namespace rct {
         }
 
         BEGIN_SERIALIZE_OBJECT()
-          FIELD(rangeSigs)
           FIELD(bulletproofs)
           FIELD(MGs)
           FIELD(CLSAGs)
@@ -611,7 +579,6 @@ VARIANT_TAG(debug_archive, rct::ctkeyV, "rct::ctkeyV");
 VARIANT_TAG(debug_archive, rct::ctkeyM, "rct::ctkeyM");
 VARIANT_TAG(debug_archive, rct::ecdhTuple, "rct::ecdhTuple");
 VARIANT_TAG(debug_archive, rct::mgSig, "rct::mgSig");
-VARIANT_TAG(debug_archive, rct::rangeSig, "rct::rangeSig");
 VARIANT_TAG(debug_archive, rct::rctSig, "rct::rctSig");
 VARIANT_TAG(debug_archive, rct::Bulletproof, "rct::bulletproof");
 VARIANT_TAG(debug_archive, rct::multisig_kLRki, "rct::multisig_kLRki");
@@ -627,7 +594,6 @@ VARIANT_TAG(binary_archive, rct::ctkeyV, 0x95);
 VARIANT_TAG(binary_archive, rct::ctkeyM, 0x96);
 VARIANT_TAG(binary_archive, rct::ecdhTuple, 0x97);
 VARIANT_TAG(binary_archive, rct::mgSig, 0x98);
-VARIANT_TAG(binary_archive, rct::rangeSig, 0x99);
 VARIANT_TAG(binary_archive, rct::rctSig, 0x9b);
 VARIANT_TAG(binary_archive, rct::Bulletproof, 0x9c);
 VARIANT_TAG(binary_archive, rct::multisig_kLRki, 0x9d);
@@ -643,7 +609,6 @@ VARIANT_TAG(json_archive, rct::ctkeyV, "rct_ctkeyV");
 VARIANT_TAG(json_archive, rct::ctkeyM, "rct_ctkeyM");
 VARIANT_TAG(json_archive, rct::ecdhTuple, "rct_ecdhTuple");
 VARIANT_TAG(json_archive, rct::mgSig, "rct_mgSig");
-VARIANT_TAG(json_archive, rct::rangeSig, "rct_rangeSig");
 VARIANT_TAG(json_archive, rct::rctSig, "rct_rctSig");
 VARIANT_TAG(json_archive, rct::Bulletproof, "rct_bulletproof");
 VARIANT_TAG(json_archive, rct::multisig_kLRki, "rct_multisig_kLR");

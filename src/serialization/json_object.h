@@ -282,9 +282,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::ctkey& key);
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhTuple& tuple);
 void fromJsonValue(const rapidjson::Value& val, rct::ecdhTuple& tuple);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rangeSig& sig);
-void fromJsonValue(const rapidjson::Value& val, rct::rangeSig& sig);
-
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof& p);
 void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof& p);
 
