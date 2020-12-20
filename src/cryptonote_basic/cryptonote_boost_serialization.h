@@ -221,14 +221,6 @@ namespace boost
   }
 
   template <class Archive>
-  inline void serialize(Archive &a, rct::mgSig &x, const boost::serialization::version_type ver)
-  {
-    a & x.ss;
-    a & x.cc;
-    // a & x.II; // not serialized, we can recover it from the tx vin
-  }
-
-  template <class Archive>
   inline void serialize(Archive &a, rct::clsag &x, const boost::serialization::version_type ver)
   {
     a & x.s;
@@ -303,7 +295,6 @@ namespace boost
   inline void serialize(Archive &a, rct::rctSigPrunable &x, const boost::serialization::version_type ver)
   {
     a & x.bulletproofs;
-    a & x.MGs;
     a & x.CLSAGs;
     a & x.pseudoOuts;
   }
@@ -323,7 +314,6 @@ namespace boost
     a & x.txnFee;
     //--------------
     a & x.p.bulletproofs;
-    a & x.p.MGs;
     a & x.p.CLSAGs;
     a & x.p.pseudoOuts;
   }

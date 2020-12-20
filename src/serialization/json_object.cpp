@@ -279,7 +279,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
   }
 
   const auto& rsig = tx.rct_signatures;
-  if (!cryptonote::is_coinbase(tx) && rsig.p.bulletproofs.empty() && rsig.p.MGs.empty() && rsig.get_pseudo_outs().empty() && sigs == val.MemberEnd())
+  if (!cryptonote::is_coinbase(tx) && rsig.p.bulletproofs.empty() && rsig.get_pseudo_outs().empty() && sigs == val.MemberEnd())
     tx.pruned = true;
 }
 
@@ -1072,13 +1072,12 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   INSERT_INTO_JSON_OBJECT(dest, fee, sig.txnFee);
 
   // prunable
-  if (!sig.p.bulletproofs.empty() || !sig.p.MGs.empty() || !sig.get_pseudo_outs().empty())
+  if (!sig.p.bulletproofs.empty() || !sig.get_pseudo_outs().empty())
   {
     dest.Key("prunable");
     dest.StartObject();
 
     INSERT_INTO_JSON_OBJECT(dest, bulletproofs, sig.p.bulletproofs);
-    INSERT_INTO_JSON_OBJECT(dest, mlsags, sig.p.MGs);
     INSERT_INTO_JSON_OBJECT(dest, pseudo_outs, sig.get_pseudo_outs());
 
     dest.EndObject();
@@ -1108,7 +1107,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
     rct::keyV pseudo_outs = std::move(sig.get_pseudo_outs());
 
     GET_FROM_JSON_OBJECT(prunable->value, sig.p.bulletproofs, bulletproofs);
-    GET_FROM_JSON_OBJECT(prunable->value, sig.p.MGs, mlsags);
     GET_FROM_JSON_OBJECT(prunable->value, pseudo_outs, pseudo_outs);
 
     sig.get_pseudo_outs() = std::move(pseudo_outs);
@@ -1116,7 +1114,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
   else
   {
     sig.p.bulletproofs.clear();
-    sig.p.MGs.clear();
     sig.get_pseudo_outs().clear();
   }
 }
@@ -1185,27 +1182,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof& p)
   GET_FROM_JSON_OBJECT(val, p.a, a);
   GET_FROM_JSON_OBJECT(val, p.b, b);
   GET_FROM_JSON_OBJECT(val, p.t, t);
-}
-
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::mgSig& sig)
-{
-  dest.StartObject();
-
-  INSERT_INTO_JSON_OBJECT(dest, ss, sig.ss);
-  INSERT_INTO_JSON_OBJECT(dest, cc, sig.cc);
-
-  dest.EndObject();
-}
-
-void fromJsonValue(const rapidjson::Value& val, rct::mgSig& sig)
-{
-  if (!val.IsObject())
-  {
-    throw WRONG_TYPE("key64 (rct::key[64])");
-  }
-
-  GET_FROM_JSON_OBJECT(val, sig.ss, ss);
-  GET_FROM_JSON_OBJECT(val, sig.cc, cc);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::DaemonInfo& info)

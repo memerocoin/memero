@@ -148,20 +148,6 @@ namespace rct {
         ge_dsmp k;
     };
     
-    //just contains the necessary keys to represent MLSAG sigs
-    //c.f. https://eprint.iacr.org/2015/1098
-    struct mgSig {
-        keyM ss;
-        key cc;
-        keyV II;
-
-        BEGIN_SERIALIZE_OBJECT()
-            FIELD(ss)
-            FIELD(cc)
-            // FIELD(II) - not serialized, it can be reconstructed
-        END_SERIALIZE()
-    };
-
     // CLSAG signature
     struct clsag {
         keyV s; // scalars
@@ -325,7 +311,6 @@ namespace rct {
     };
     struct rctSigPrunable {
         std::vector<Bulletproof> bulletproofs;
-        std::vector<mgSig> MGs; // simple rct has N, full has 1
         std::vector<clsag> CLSAGs;
         keyV pseudoOuts; //C - for simple rct
 
@@ -405,58 +390,7 @@ namespace rct {
 
             ar.end_array();
           }
-          else
-          {
-            ar.tag("MGs");
-            ar.begin_array();
-            // we keep a byte for size of MGs, because we don't know whether this is
-            // a simple or full rct signature, and it's starting to annoy the hell out of me
-            size_t mg_elements = (type == RCTTypeBulletproof || type == RCTTypeBulletproof2) ? inputs : 1;
-            PREPARE_CUSTOM_VECTOR_SERIALIZATION(mg_elements, MGs);
-            if (MGs.size() != mg_elements)
-              return false;
-            for (size_t i = 0; i < mg_elements; ++i)
-            {
-              // we save the MGs contents directly, because we want it to save its
-              // arrays and matrices without the size prefixes, and the load can't
-              // know what size to expect if it's not in the data
-              ar.begin_object();
-              ar.tag("ss");
-              ar.begin_array();
-              PREPARE_CUSTOM_VECTOR_SERIALIZATION(mixin + 1, MGs[i].ss);
-              if (MGs[i].ss.size() != mixin + 1)
-                return false;
-              for (size_t j = 0; j < mixin + 1; ++j)
-              {
-                ar.begin_array();
-                size_t mg_ss2_elements = ((type == RCTTypeBulletproof || type == RCTTypeBulletproof2) ? 1 : inputs) + 1;
-                PREPARE_CUSTOM_VECTOR_SERIALIZATION(mg_ss2_elements, MGs[i].ss[j]);
-                if (MGs[i].ss[j].size() != mg_ss2_elements)
-                  return false;
-                for (size_t k = 0; k < mg_ss2_elements; ++k)
-                {
-                  FIELDS(MGs[i].ss[j][k])
-                  if (mg_ss2_elements - k > 1)
-                    ar.delimit_array();
-                }
-                ar.end_array();
-  
-                if (mixin + 1 - j > 1)
-                  ar.delimit_array();
-              }
-              ar.end_array();
-
-              ar.tag("cc");
-              FIELDS(MGs[i].cc)
-              // MGs[i].II not saved, it can be reconstructed
-              ar.end_object();
-
-              if (mg_elements - i > 1)
-                 ar.delimit_array();
-            }
-            ar.end_array();
-          }
-          if (type == RCTTypeBulletproof || type == RCTTypeBulletproof2 || type == RCTTypeCLSAG)
+          if (type == RCTTypeCLSAG)
           {
             ar.tag("pseudoOuts");
             ar.begin_array();
@@ -476,7 +410,6 @@ namespace rct {
 
         BEGIN_SERIALIZE_OBJECT()
           FIELD(bulletproofs)
-          FIELD(MGs)
           FIELD(CLSAGs)
           FIELD(pseudoOuts)
         END_SERIALIZE()
@@ -578,7 +511,6 @@ VARIANT_TAG(debug_archive, rct::ctkey, "rct::ctkey");
 VARIANT_TAG(debug_archive, rct::ctkeyV, "rct::ctkeyV");
 VARIANT_TAG(debug_archive, rct::ctkeyM, "rct::ctkeyM");
 VARIANT_TAG(debug_archive, rct::ecdhTuple, "rct::ecdhTuple");
-VARIANT_TAG(debug_archive, rct::mgSig, "rct::mgSig");
 VARIANT_TAG(debug_archive, rct::rctSig, "rct::rctSig");
 VARIANT_TAG(debug_archive, rct::Bulletproof, "rct::bulletproof");
 VARIANT_TAG(debug_archive, rct::multisig_kLRki, "rct::multisig_kLRki");
@@ -593,7 +525,6 @@ VARIANT_TAG(binary_archive, rct::ctkey, 0x94);
 VARIANT_TAG(binary_archive, rct::ctkeyV, 0x95);
 VARIANT_TAG(binary_archive, rct::ctkeyM, 0x96);
 VARIANT_TAG(binary_archive, rct::ecdhTuple, 0x97);
-VARIANT_TAG(binary_archive, rct::mgSig, 0x98);
 VARIANT_TAG(binary_archive, rct::rctSig, 0x9b);
 VARIANT_TAG(binary_archive, rct::Bulletproof, 0x9c);
 VARIANT_TAG(binary_archive, rct::multisig_kLRki, 0x9d);
@@ -608,7 +539,6 @@ VARIANT_TAG(json_archive, rct::ctkey, "rct_ctkey");
 VARIANT_TAG(json_archive, rct::ctkeyV, "rct_ctkeyV");
 VARIANT_TAG(json_archive, rct::ctkeyM, "rct_ctkeyM");
 VARIANT_TAG(json_archive, rct::ecdhTuple, "rct_ecdhTuple");
-VARIANT_TAG(json_archive, rct::mgSig, "rct_mgSig");
 VARIANT_TAG(json_archive, rct::rctSig, "rct_rctSig");
 VARIANT_TAG(json_archive, rct::Bulletproof, "rct_bulletproof");
 VARIANT_TAG(json_archive, rct::multisig_kLRki, "rct_multisig_kLR");
