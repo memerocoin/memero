@@ -131,11 +131,7 @@ namespace nodetool
       m_peerlist_storage = std::move(*storage);
 
     network_zone& public_zone = m_network_zones[epee::net_utils::zone::public_];
-    public_zone.m_config.m_support_flags = P2P_SUPPORT_FLAGS;
     public_zone.m_config.m_peer_id = crypto::rand<uint64_t>();
-
-    network_zone& tor_zone = m_network_zones[epee::net_utils::zone::tor];
-    tor_zone.m_config.m_support_flags = P2P_SUPPORT_FLAGS;
 
     m_first_connection_maker_call = true;
 

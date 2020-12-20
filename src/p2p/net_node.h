@@ -150,7 +150,7 @@ namespace nodetool
       config_t()
         : m_net_config(),
           m_peer_id(1),
-          m_support_flags(0)
+          m_support_flags(P2P_SUPPORT_FLAGS)
       {}
 
       network_config m_net_config;
