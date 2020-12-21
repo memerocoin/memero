@@ -2214,7 +2214,7 @@ bool t_rpc_command_executor::sync_info()
           nblocks += s.nblocks, size += s.size;
       tools::success_msg_writer() << address << "  " << p.info.peer_id << "  " <<
           epee::string_tools::pad_string(p.info.state, 16) << "  " <<
-          epee::string_tools::pad_string(epee::string_tools::to_string_hex(p.info.pruning_seed), 8) << "  " << p.info.height << "  "  <<
+          p.info.height << "  "  <<
           p.info.current_download << " kB/s, " << nblocks << " blocks / " << size/1e6 << " MB queued";
     }
 

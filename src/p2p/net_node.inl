@@ -938,7 +938,7 @@ namespace nodetool
         pi = context.peer_id = rsp.node_data.peer_id;
         const auto azone = context.m_remote_address.get_zone();
         network_zone& zone = m_network_zones.at(azone);
-        zone.m_peerlist.set_peer_just_seen(rsp.node_data.peer_id, context.m_remote_address, context.m_pruning_seed);
+        zone.m_peerlist.set_peer_just_seen(rsp.node_data.peer_id, context.m_remote_address);
 
         // move
         if(azone == epee::net_utils::zone::public_ && rsp.node_data.peer_id == zone.m_config.m_peer_id)
@@ -1002,7 +1002,7 @@ namespace nodetool
         add_host_fail(context.m_remote_address);
       }
       if(!context.m_is_income)
-        m_network_zones.at(context.m_remote_address.get_zone()).m_peerlist.set_peer_just_seen(context.peer_id, context.m_remote_address, context.m_pruning_seed);
+        m_network_zones.at(context.m_remote_address.get_zone()).m_peerlist.set_peer_just_seen(context.peer_id, context.m_remote_address);
       if (!m_payload_handler.process_payload_sync_data(rsp.payload_data, context, false))
       {
         m_network_zones.at(context.m_remote_address.get_zone()).m_net_server.get_config_object().close(context.m_connection_id );
@@ -1441,8 +1441,7 @@ namespace nodetool
       if(is_addr_recently_failed(pe.adr))
         continue;
 
-      MDEBUG("Selected peer: " << peerid_to_string(pe.id) << " " << pe.adr.str()
-                    << ", pruning seed " << epee::string_tools::to_string_hex(pe.pruning_seed) << " "
+      MDEBUG("Selected peer: " << peerid_to_string(pe.id) << " " << pe.adr.str() << " "
                     << "[peer_list=" << (use_white_list ? white : gray)
                     << "] last_seen: " << (pe.last_seen ? epee::misc_utils::get_time_interval_string(time(NULL) - pe.last_seen) : "never"));
 
@@ -2572,7 +2571,7 @@ namespace nodetool
       }
       else
       {
-        zone.second.m_peerlist.set_peer_just_seen(pe.id, pe.adr, pe.pruning_seed);
+        zone.second.m_peerlist.set_peer_just_seen(pe.id, pe.adr);
         LOG_PRINT_L2("PEER PROMOTED TO WHITE PEER LIST IP address: " << pe.adr.host_str() << " Peer ID: " << peerid_to_string(pe.id));
       }
     }
