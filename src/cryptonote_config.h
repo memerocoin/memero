@@ -103,8 +103,3 @@
 #define THREAD_STACK_SIZE                       5 * 1024 * 1024
 
 #define HASH_OF_HASHES_STEP                     512
-
-#define CRYPTONOTE_PRUNING_STRIPE_SIZE          4096 // the smaller, the smoother the increase
-#define CRYPTONOTE_PRUNING_LOG_STRIPES          3 // the higher, the more space saved
-#define CRYPTONOTE_PRUNING_TIP_BLOCKS           5500 // the smaller, the more space saved
-//#define CRYPTONOTE_PRUNING_DEBUG_SPOOF_SEED

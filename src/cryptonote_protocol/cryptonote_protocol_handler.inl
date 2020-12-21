@@ -1511,8 +1511,8 @@ namespace cryptonote
               }
               progress_message += ")";
             }
-            const uint32_t previous_stripe = tools::get_pruning_stripe(previous_height, target_blockchain_height, CRYPTONOTE_PRUNING_LOG_STRIPES);
-            const uint32_t current_stripe = tools::get_pruning_stripe(current_blockchain_height, target_blockchain_height, CRYPTONOTE_PRUNING_LOG_STRIPES);
+            const uint32_t previous_stripe = 0;
+            const uint32_t current_stripe = 0;
             std::string timing_message = "";
             if (ELPP->vRegistry()->allowed(el::Level::Info, "sync-info"))
               timing_message = std::string(" (") + std::to_string(dt.total_microseconds()/1e6) + " sec, "
