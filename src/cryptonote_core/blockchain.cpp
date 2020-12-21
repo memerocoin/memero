@@ -55,7 +55,6 @@
 #include "common/perf_timer.h"
 #include "common/notify.h"
 #include "common/varint.h"
-#include "common/pruning.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "blockchain"
@@ -1839,7 +1838,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
           return false;
         }
       }
-      else if (m_db->get_pruned_tx_blob(txid, blob))
+      else if (m_db->get_tx_blob(txid, blob))
       {
         cryptonote::transaction tx;
         if (!cryptonote::parse_and_validate_tx_base_from_blob(blob, tx))
@@ -1848,7 +1847,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
           bvc.m_verifivation_failed = true;
           return false;
         }
-        bei.block_cumulative_weight += cryptonote::get_pruned_transaction_weight(tx);
+        bei.block_cumulative_weight += cryptonote::get_transaction_weight(tx);
       }
       else
       {
@@ -1970,18 +1969,9 @@ bool Blockchain::handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NO
     // FIXME: s/rsp.missed_ids/missed_tx_id/ ?  Seems like rsp.missed_ids
     //        is for missed blocks, not missed transactions as well.
     e.pruned = arg.prune;
-    get_transactions_blobs(bl.second.tx_hashes, e.txs, missed_tx_ids, arg.prune);
+    get_transactions_blobs(bl.second.tx_hashes, e.txs, missed_tx_ids);
     if (missed_tx_ids.size() != 0)
     {
-      // do not display an error if the peer asked for an unpruned block which we are not meant to have
-      if (tools::has_unpruned_block(get_block_height(bl.second), get_current_blockchain_height(), get_blockchain_pruning_seed()))
-      {
-        LOG_ERROR("Error retrieving blocks, missed " << missed_tx_ids.size()
-            << " transactions for block with hash: " << get_block_hash(bl.second)
-            << std::endl
-        );
-      }
-
       // append missed transaction hashes to response missed_ids field,
       // as done below if any standalone transactions were requested
       // and missed.
@@ -2274,17 +2264,8 @@ bool Blockchain::get_blocks(const t_ids_container& block_ids, t_blocks_container
   return true;
 }
 //------------------------------------------------------------------
-static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, cryptonote::blobdata &tx, bool pruned)
+static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, cryptonote::blobdata &tx)
 {
-  if (pruned)
-  {
-    if (!db->get_pruned_tx_blob(tx_hash, tx))
-    {
-      MDEBUG("Pruned transaction blob not found for " << tx_hash);
-      return false;
-    }
-  }
-  else
   {
     if (!db->get_tx_blob(tx_hash, tx))
     {
@@ -2295,39 +2276,16 @@ static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, cryptonote::blob
   return true;
 }
 //------------------------------------------------------------------
-static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, tx_blob_entry &tx, bool pruned)
+static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, tx_blob_entry &tx)
 {
-  if (!fill(db, tx_hash, tx.blob, pruned))
+  if (!fill(db, tx_hash, tx.blob))
     return false;
-  if (pruned)
-  {
-    if (is_v1_tx(tx.blob))
-    {
-      // v1 txes aren't pruned, so fetch the whole thing
-      cryptonote::blobdata prunable_blob;
-      if (!db->get_prunable_tx_blob(tx_hash, prunable_blob))
-      {
-        MDEBUG("Prunable transaction blob not found for " << tx_hash);
-        return false;
-      }
-      tx.blob.append(prunable_blob);
-      tx.prunable_hash = crypto::null_hash;
-    }
-    else
-    {
-      if (!db->get_prunable_tx_hash(tx_hash, tx.prunable_hash))
-      {
-        MDEBUG("Prunable transaction data hash not found for " << tx_hash);
-        return false;
-      }
-    }
-  }
   return true;
 }
 //------------------------------------------------------------------
 //TODO: return type should be void, throw on exception
 //       alternatively, return true only if no transactions missed
-bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs, bool pruned) const
+bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   CRITICAL_REGION_LOCAL(m_blockchain_lock);
@@ -2338,7 +2296,7 @@ bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids
     try
     {
       cryptonote::blobdata tx;
-      if (fill(m_db, tx_hash, tx, pruned))
+      if (fill(m_db, tx_hash, tx))
         txs.push_back(std::move(tx));
       else
         missed_txs.push_back(tx_hash);
@@ -2351,7 +2309,7 @@ bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids
   return true;
 }
 //------------------------------------------------------------------
-bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<tx_blob_entry>& txs, std::vector<crypto::hash>& missed_txs, bool pruned) const
+bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<tx_blob_entry>& txs, std::vector<crypto::hash>& missed_txs) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   CRITICAL_REGION_LOCAL(m_blockchain_lock);
@@ -2362,7 +2320,7 @@ bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids
     try
     {
       tx_blob_entry tx;
-      if (fill(m_db, tx_hash, tx, pruned))
+      if (fill(m_db, tx_hash, tx))
         txs.push_back(std::move(tx));
       else
         missed_txs.push_back(tx_hash);
@@ -2395,27 +2353,7 @@ bool Blockchain::get_split_transactions_blobs(const t_ids_container& txs_ids, t_
   reserve_container(txs, txs_ids.size());
   for (const auto& tx_hash : txs_ids)
   {
-    try
-    {
-      cryptonote::blobdata tx;
-      if (m_db->get_pruned_tx_blob(tx_hash, tx))
-      {
-        txs.push_back(std::make_tuple(tx_hash, std::move(tx), crypto::null_hash, cryptonote::blobdata()));
-        if (!is_v1_tx(std::get<1>(txs.back())) && !m_db->get_prunable_tx_hash(tx_hash, std::get<2>(txs.back())))
-        {
-          MERROR("Prunable data hash not found for " << tx_hash);
-          return false;
-        }
-        if (!m_db->get_prunable_tx_blob(tx_hash, std::get<3>(txs.back())))
-          std::get<3>(txs.back()).clear();
-      }
-      else
-        missed_txs.push_back(tx_hash);
-    }
-    catch (const std::exception& e)
-    {
-      return false;
-    }
+    missed_txs.push_back(tx_hash);
   }
   return true;
 }
@@ -2455,7 +2393,7 @@ bool Blockchain::get_transactions(const t_ids_container& txs_ids, t_tx_container
 // Find the split point between us and foreign blockchain and return
 // (by reference) the most recent common block hash along with up to
 // BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT additional (more recent) hashes.
-bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, std::vector<crypto::hash>& hashes, std::vector<uint64_t>* weights, uint64_t& start_height, uint64_t& current_height, bool clip_pruned) const
+bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, std::vector<crypto::hash>& hashes, std::vector<uint64_t>* weights, uint64_t& start_height, uint64_t& current_height) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   CRITICAL_REGION_LOCAL(m_blockchain_lock);
@@ -2469,16 +2407,6 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   db_rtxn_guard rtxn_guard(m_db);
   current_height = get_current_blockchain_height();
   uint64_t stop_height = current_height;
-  if (clip_pruned)
-  {
-    const uint32_t pruning_seed = get_blockchain_pruning_seed();
-    if (start_height < tools::get_next_unpruned_block_height(start_height, current_height, pruning_seed))
-    {
-      MDEBUG("We only have a pruned version of the common ancestor");
-      return false;
-    }
-    stop_height = tools::get_next_pruned_block_height(start_height, current_height, pruning_seed);
-  }
   size_t count = 0;
   const size_t reserve = std::min((size_t)(stop_height - start_height), (size_t)BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT);
   hashes.reserve(reserve);
@@ -2494,12 +2422,12 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   return true;
 }
 
-bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, bool clip_pruned, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const
+bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   CRITICAL_REGION_LOCAL(m_blockchain_lock);
 
-  bool result = find_blockchain_supplement(qblock_ids, resp.m_block_ids, &resp.m_block_weights, resp.start_height, resp.total_height, clip_pruned);
+  bool result = find_blockchain_supplement(qblock_ids, resp.m_block_ids, &resp.m_block_weights, resp.start_height, resp.total_height);
   if (result)
   {
     cryptonote::difficulty_type wide_cumulative_difficulty = m_db->get_block_cumulative_difficulty(resp.total_height - 1);
@@ -2514,7 +2442,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
 // find split point between ours and foreign blockchain (or start at
 // blockchain height <req_start_block>), and return up to max_count FULL
 // blocks by reference.
-bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool pruned, bool get_miner_tx_hash, size_t max_count) const
+bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   CRITICAL_REGION_LOCAL(m_blockchain_lock);
@@ -2540,7 +2468,7 @@ bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, cons
   db_rtxn_guard rtxn_guard(m_db);
   total_height = get_current_blockchain_height();
   blocks.reserve(std::min(std::min(max_count, (size_t)10000), (size_t)(total_height - start_height)));
-  CHECK_AND_ASSERT_MES(m_db->get_blocks_from(start_height, 3, max_count, FIND_BLOCKCHAIN_SUPPLEMENT_MAX_SIZE, blocks, pruned, true, get_miner_tx_hash),
+  CHECK_AND_ASSERT_MES(m_db->get_blocks_from(start_height, 3, max_count, FIND_BLOCKCHAIN_SUPPLEMENT_MAX_SIZE, blocks, true, get_miner_tx_hash),
       false, "Error getting blocks");
 
   return true;
@@ -3871,33 +3799,6 @@ leave:
   return true;
 }
 //------------------------------------------------------------------
-bool Blockchain::prune_blockchain(uint32_t pruning_seed)
-{
-  m_tx_pool.lock();
-  epee::misc_utils::auto_scope_leave_caller unlocker = epee::misc_utils::create_scope_leave_handler([&](){m_tx_pool.unlock();});
-  CRITICAL_REGION_LOCAL(m_blockchain_lock);
-
-  return m_db->prune_blockchain(pruning_seed);
-}
-//------------------------------------------------------------------
-bool Blockchain::update_blockchain_pruning()
-{
-  m_tx_pool.lock();
-  epee::misc_utils::auto_scope_leave_caller unlocker = epee::misc_utils::create_scope_leave_handler([&](){m_tx_pool.unlock();});
-  CRITICAL_REGION_LOCAL(m_blockchain_lock);
-
-  return m_db->update_pruning();
-}
-//------------------------------------------------------------------
-bool Blockchain::check_blockchain_pruning()
-{
-  m_tx_pool.lock();
-  epee::misc_utils::auto_scope_leave_caller unlocker = epee::misc_utils::create_scope_leave_handler([&](){m_tx_pool.unlock();});
-  CRITICAL_REGION_LOCAL(m_blockchain_lock);
-
-  return m_db->check_pruning();
-}
-//------------------------------------------------------------------
 uint64_t Blockchain::get_next_long_term_block_weight(uint64_t block_weight) const
 {
   PERF_TIMER(get_next_long_term_block_weight);
@@ -4123,8 +4024,6 @@ bool Blockchain::cleanup_handle_incoming_blocks(bool force_sync)
 
   CRITICAL_REGION_END();
   m_tx_pool.unlock();
-
-  update_blockchain_pruning();
 
   return success;
 }
@@ -4815,9 +4714,9 @@ bool Blockchain::for_blocks_range(const uint64_t& h1, const uint64_t& h2, std::f
   return m_db->for_blocks_range(h1, h2, f);
 }
 
-bool Blockchain::for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)> f, bool pruned) const
+bool Blockchain::for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)> f) const
 {
-  return m_db->for_all_transactions(f, pruned);
+  return m_db->for_all_transactions(f);
 }
 
 bool Blockchain::for_all_outputs(std::function<bool(uint64_t amount, const crypto::hash &tx_hash, uint64_t height, size_t tx_idx)> f) const

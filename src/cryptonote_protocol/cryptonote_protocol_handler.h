@@ -112,7 +112,6 @@ namespace cryptonote
     void on_connection_close(cryptonote_connection_context &context);
     void set_max_out_peers(unsigned int max) { m_max_out_peers = max; }
     std::string get_peers_overview() const;
-    std::pair<uint32_t, uint32_t> get_next_needed_pruning_stripe() const;
     bool needs_new_sync_connections() const;
     bool is_busy_syncing();
 
@@ -133,12 +132,10 @@ namespace cryptonote
     virtual bool relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg, const boost::uuids::uuid& source, epee::net_utils::zone zone);
     //----------------------------------------------------------------------------------
     //bool get_payload_sync_data(HANDSHAKE_DATA::request& hshd, cryptonote_connection_context& context);
-    bool should_drop_connection(cryptonote_connection_context& context, uint32_t next_stripe);
     bool request_missing_objects(cryptonote_connection_context& context, bool check_having_blocks, bool force_next_span = false);
     size_t get_synchronizing_connections_count();
     bool on_connection_synchronized();
     bool should_download_next_span(cryptonote_connection_context& context, bool standby);
-    bool should_ask_for_pruned_data(cryptonote_connection_context& context, uint64_t first_block_height, uint64_t nblocks, bool check_block_weights) const;
     void drop_connection(cryptonote_connection_context &context, bool add_fail, bool flush_all_spans);
     void drop_connection_with_score(cryptonote_connection_context &context, unsigned int score, bool flush_all_spans);
     void drop_connections(const epee::net_utils::network_address address);

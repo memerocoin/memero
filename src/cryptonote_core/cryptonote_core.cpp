@@ -117,11 +117,6 @@ namespace cryptonote
   , "Set maximum size of block download queue in bytes (0 for default)"
   , 0
   };
-  const command_line::arg_descriptor<bool> arg_sync_pruned_blocks  = {
-    "sync-pruned-blocks"
-  , "Allow syncing from nodes with only pruned blocks"
-  };
-
   static const command_line::arg_descriptor<bool> arg_test_drop_download = {
     "test-drop-download"
   , "For net tests: in download, discard ALL blocks instead checking/saving them (very fast)"
@@ -170,11 +165,6 @@ namespace cryptonote
     "block-notify"
   , "Run a program for each new block, '%s' will be replaced by the block hash"
   , ""
-  };
-  static const command_line::arg_descriptor<bool> arg_prune_blockchain  = {
-    "prune-blockchain"
-  , "Prune blockchain"
-  , false
   };
   static const command_line::arg_descriptor<std::string> arg_reorg_notify = {
     "reorg-notify"
@@ -256,10 +246,8 @@ namespace cryptonote
     command_line::add_arg(desc, arg_test_dbg_lock_sleep);
     command_line::add_arg(desc, arg_offline);
     command_line::add_arg(desc, arg_block_download_max_size);
-    command_line::add_arg(desc, arg_sync_pruned_blocks);
     command_line::add_arg(desc, arg_max_txpool_weight);
     command_line::add_arg(desc, arg_block_notify);
-    command_line::add_arg(desc, arg_prune_blockchain);
     command_line::add_arg(desc, arg_reorg_notify);
     command_line::add_arg(desc, arg_block_rate_notify);
     command_line::add_arg(desc, arg_keep_alt_blocks);
@@ -372,7 +360,6 @@ namespace cryptonote
     bool db_salvage = command_line::get_arg(vm, cryptonote::arg_db_salvage) != 0;
     uint64_t blocks_threads = command_line::get_arg(vm, arg_prep_blocks_threads);
     size_t max_txpool_weight = command_line::get_arg(vm, arg_max_txpool_weight);
-    bool prune_blockchain = command_line::get_arg(vm, arg_prune_blockchain);
     bool keep_alt_blocks = command_line::get_arg(vm, arg_keep_alt_blocks);
     bool keep_fakechain = command_line::get_arg(vm, arg_keep_fakechain);
 
@@ -589,20 +576,6 @@ namespace cryptonote
     if (!keep_alt_blocks && !m_blockchain_storage.get_db().is_read_only())
       m_blockchain_storage.get_db().drop_alt_blocks();
 
-    if (prune_blockchain)
-    {
-      // display a message if the blockchain is not pruned yet
-      if (!m_blockchain_storage.get_blockchain_pruning_seed())
-      {
-        MGINFO("Pruning blockchain...");
-        CHECK_AND_ASSERT_MES(m_blockchain_storage.prune_blockchain(), false, "Failed to prune blockchain");
-      }
-      else
-      {
-        CHECK_AND_ASSERT_MES(m_blockchain_storage.update_blockchain_pruning(), false, "Failed to update blockchain pruning");
-      }
-    }
-
     return load_state_data();
   }
   //-----------------------------------------------------------------------------------------------
@@ -669,16 +642,6 @@ namespace cryptonote
     if (tx_blob.prunable_hash == crypto::null_hash)
     {
       r = parse_tx_from_blob(tx, tx_hash, tx_blob.blob);
-    }
-    else
-    {
-      r = parse_and_validate_tx_base_from_blob(tx_blob.blob, tx);
-      if (r)
-      {
-        tx.set_prunable_hash(tx_blob.prunable_hash);
-        tx_hash = cryptonote::get_pruned_transaction_hash(tx, tx_blob.prunable_hash);
-        tx.set_hash(tx_hash);
-      }
     }
 
     if (!r)
@@ -916,7 +879,7 @@ namespace cryptonote
       if (already_have[i])
         continue;
 
-      const uint64_t weight = results[i].tx.pruned ? get_pruned_transaction_weight(results[i].tx) : get_transaction_weight(results[i].tx, it->blob.size());
+      const uint64_t weight = get_transaction_weight(results[i].tx, it->blob.size());
       ok &= add_new_tx(results[i].tx, results[i].hash, tx_blobs[i].blob, weight, tvc[i], tx_relay, relayed);
 
       if(tvc[i].m_verifivation_failed)
@@ -1249,14 +1212,14 @@ namespace cryptonote
     return m_blockchain_storage.create_block_template(b, prev_block, adr, diffic, height, expected_reward, ex_nonce, seed_height, seed_hash);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, bool clip_pruned, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const
+  bool core::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const
   {
-    return m_blockchain_storage.find_blockchain_supplement(qblock_ids, clip_pruned, resp);
+    return m_blockchain_storage.find_blockchain_supplement(qblock_ids, resp);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool pruned, bool get_miner_tx_hash, size_t max_count) const
+  bool core::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const
   {
-    return m_blockchain_storage.find_blockchain_supplement(req_start_block, qblock_ids, blocks, total_height, start_height, pruned, get_miner_tx_hash, max_count);
+    return m_blockchain_storage.find_blockchain_supplement(req_start_block, qblock_ids, blocks, total_height, start_height, get_miner_tx_hash, max_count);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::get_outs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res) const
@@ -1572,7 +1535,6 @@ namespace cryptonote
     m_txpool_auto_relayer.do_call(boost::bind(&core::relay_txpool_transactions, this));
     m_check_disk_space_interval.do_call(boost::bind(&core::check_disk_space, this));
     m_block_rate_interval.do_call(boost::bind(&core::check_block_rate, this));
-    m_blockchain_pruning_interval.do_call(boost::bind(&core::update_blockchain_pruning, this));
     m_miner.on_idle();
     m_mempool.on_idle();
     return true;
@@ -1699,16 +1661,6 @@ namespace cryptonote
     return m_mempool.get_complement(hashes, txes);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::update_blockchain_pruning()
-  {
-    return m_blockchain_storage.update_blockchain_pruning();
-  }
-  //-----------------------------------------------------------------------------------------------
-  bool core::check_blockchain_pruning()
-  {
-    return m_blockchain_storage.check_blockchain_pruning();
-  }
-  //-----------------------------------------------------------------------------------------------
   void core::set_target_blockchain_height(uint64_t target_blockchain_height)
   {
     m_target_blockchain_height = target_blockchain_height;
@@ -1729,16 +1681,6 @@ namespace cryptonote
     boost::filesystem::path path(m_config_folder);
     boost::filesystem::space_info si = boost::filesystem::space(path);
     return si.available;
-  }
-  //-----------------------------------------------------------------------------------------------
-  uint32_t core::get_blockchain_pruning_seed() const
-  {
-    return get_blockchain_storage().get_blockchain_pruning_seed();
-  }
-  //-----------------------------------------------------------------------------------------------
-  bool core::prune_blockchain(uint32_t pruning_seed)
-  {
-    return get_blockchain_storage().prune_blockchain(pruning_seed);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::is_within_compiled_block_hash_area(uint64_t height) const

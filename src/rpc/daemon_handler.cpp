@@ -127,7 +127,7 @@ namespace rpc
   {
     std::vector<std::pair<std::pair<blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, blobdata> > > > blocks;
 
-    if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, blocks, res.current_height, res.start_height, req.prune, true, COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT))
+    if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, blocks, res.current_height, res.start_height, true, COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT))
     {
       res.status = Message::STATUS_FAILED;
       res.error_details = "core::find_blockchain_supplement() returned false";
@@ -220,7 +220,7 @@ namespace rpc
 
     auto& chain = m_core.get_blockchain_storage();
 
-    if (!chain.find_blockchain_supplement(req.known_hashes, res.hashes, NULL, res.start_height, res.current_height, false))
+    if (!chain.find_blockchain_supplement(req.known_hashes, res.hashes, NULL, res.start_height, res.current_height))
     {
       res.status = Message::STATUS_FAILED;
       res.error_details = "Blockchain::find_blockchain_supplement() returned false";

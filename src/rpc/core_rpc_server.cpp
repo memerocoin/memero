@@ -296,7 +296,7 @@ namespace cryptonote
     size_t max_blocks = COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT;
 
     std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > > bs;
-    if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, bs, res.current_height, res.start_height, req.prune, !req.no_miner_tx, max_blocks))
+    if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, bs, res.current_height, res.start_height, !req.no_miner_tx, max_blocks))
     {
       res.status = "Failed";
       add_host_fail(ctx);
@@ -426,7 +426,7 @@ namespace cryptonote
       return r;
 
     res.start_height = req.start_height;
-    if(!m_core.get_blockchain_storage().find_blockchain_supplement(req.block_ids, res.m_block_ids, NULL, res.start_height, res.current_height, false))
+    if(!m_core.get_blockchain_storage().find_blockchain_supplement(req.block_ids, res.m_block_ids, NULL, res.start_height, res.current_height))
     {
       res.status = "Failed";
       add_host_fail(ctx);
@@ -2261,7 +2261,7 @@ namespace cryptonote
     m_core.get_blockchain_top(res.height, top_hash);
     ++res.height; // turn top block height into blockchain height
     res.target_height = m_core.get_target_blockchain_height();
-    res.next_needed_pruning_seed = m_p2p.get_payload_object().get_next_needed_pruning_stripe().second;
+    res.next_needed_pruning_seed = 0;
 
     for (const auto &c: m_p2p.get_payload_object().get_connections())
       res.peers.push_back({c});
@@ -2374,31 +2374,6 @@ namespace cryptonote
       return false;
     }
 
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_prune_blockchain(const COMMAND_RPC_PRUNE_BLOCKCHAIN::request& req, COMMAND_RPC_PRUNE_BLOCKCHAIN::response& res, epee::json_rpc::error& error_resp, const connection_context *ctx)
-  {
-    RPC_TRACKER(prune_blockchain);
-
-    try
-    {
-      if (!(req.check ? m_core.check_blockchain_pruning() : m_core.prune_blockchain()))
-      {
-        error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-        error_resp.message = req.check ? "Failed to check blockchain pruning" : "Failed to prune blockchain";
-        return false;
-      }
-      res.pruning_seed = m_core.get_blockchain_pruning_seed();
-      res.pruned = res.pruning_seed != 0;
-    }
-    catch (const std::exception &e)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-      error_resp.message = "Failed to prune blockchain";
-      return false;
-    }
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }

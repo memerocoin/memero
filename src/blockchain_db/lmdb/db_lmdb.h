@@ -253,11 +253,7 @@ public:
   virtual uint64_t get_tx_unlock_time(const crypto::hash& h) const;
 
   virtual bool get_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const;
-  virtual bool get_pruned_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const;
-  virtual bool get_pruned_tx_blobs_from(const crypto::hash& h, size_t count, std::vector<cryptonote::blobdata> &bd) const;
-  virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool pruned, bool skip_coinbase, bool get_miner_tx_hash) const;
-  virtual bool get_prunable_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const;
-  virtual bool get_prunable_tx_hash(const crypto::hash& tx_hash, crypto::hash &prunable_hash) const;
+  virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const;
 
   virtual uint64_t get_tx_count() const;
 
@@ -289,10 +285,6 @@ public:
   virtual bool get_txpool_tx_meta(const crypto::hash& txid, txpool_tx_meta_t &meta) const;
   virtual bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::blobdata& bd, relay_category tx_category) const;
   virtual cryptonote::blobdata get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const;
-  virtual uint32_t get_blockchain_pruning_seed() const;
-  virtual bool prune_blockchain(uint32_t pruning_seed = 0);
-  virtual bool update_pruning();
-  virtual bool check_pruning();
 
   virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref &blob);
   virtual bool get_alt_block(const crypto::hash &blkid, alt_block_data_t *data, cryptonote::blobdata *blob);
@@ -304,7 +296,7 @@ public:
 
   virtual bool for_all_key_images(std::function<bool(const crypto::key_image&)>) const;
   virtual bool for_blocks_range(const uint64_t& h1, const uint64_t& h2, std::function<bool(uint64_t, const crypto::hash&, const cryptonote::block&)>) const;
-  virtual bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>, bool pruned) const;
+  virtual bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>) const;
   virtual bool for_all_outputs(std::function<bool(uint64_t amount, const crypto::hash &tx_hash, uint64_t height, size_t tx_idx)> f) const;
   virtual bool for_all_outputs(uint64_t amount, const std::function<bool(uint64_t height)> &f) const;
   virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::blobdata_ref *blob)> f, bool include_blob = false) const;
@@ -374,7 +366,7 @@ private:
 
   virtual void remove_block();
 
-  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash& tx_hash, const crypto::hash& tx_prunable_hash);
+  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash& tx_hash);
 
   virtual void remove_transaction_data(const crypto::hash& tx_hash, const transaction& tx);
 
@@ -393,8 +385,6 @@ private:
 
   void remove_output(const uint64_t amount, const uint64_t& out_index);
 
-  virtual void prune_outputs(uint64_t amount);
-
   virtual void add_spent_key(const crypto::key_image& k_image);
 
   virtual void remove_spent_key(const crypto::key_image& k_image);
@@ -408,8 +398,6 @@ private:
   virtual void drop_hard_fork_info();
 
   inline void check_open() const;
-
-  bool prune_worker(int mode, uint32_t pruning_seed);
 
   virtual bool is_read_only() const;
 

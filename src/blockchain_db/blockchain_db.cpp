@@ -120,11 +120,6 @@ const command_line::arg_descriptor<bool> arg_db_salvage  = {
 , false
 };
 
-BlockchainDB *new_db()
-{
-  return new BlockchainLMDB();
-}
-
 void BlockchainDB::init_options(boost::program_options::options_description& desc)
 {
   command_line::add_arg(desc, arg_db_sync_mode);
@@ -138,12 +133,12 @@ void BlockchainDB::pop_block()
   pop_block(blk, txs);
 }
 
-void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& txp, const crypto::hash* tx_hash_ptr, const crypto::hash* tx_prunable_hash_ptr)
+void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& txp, const crypto::hash* tx_hash_ptr)
 {
   const transaction &tx = txp.first;
 
   bool miner_tx = false;
-  crypto::hash tx_hash, tx_prunable_hash;
+  crypto::hash tx_hash;
   if (!tx_hash_ptr)
   {
     // should only need to compute hash for miner transactions
@@ -154,14 +149,6 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
   {
     tx_hash = *tx_hash_ptr;
   }
-  if (tx.version >= 2)
-  {
-    if (!tx_prunable_hash_ptr)
-      tx_prunable_hash = get_transaction_prunable_hash(tx, &txp.second);
-    else
-      tx_prunable_hash = *tx_prunable_hash_ptr;
-  }
-
   for (const txin_v& tx_input : tx.vin)
   {
     if (tx_input.type() == typeid(txin_to_key))
@@ -187,7 +174,7 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
     }
   }
 
-  uint64_t tx_id = add_transaction_data(blk_hash, txp, tx_hash, tx_prunable_hash);
+  uint64_t tx_id = add_transaction_data(blk_hash, txp, tx_hash);
 
   std::vector<uint64_t> amount_output_indices(tx.vout.size());
 
@@ -287,7 +274,7 @@ void BlockchainDB::pop_block(block& blk, std::vector<transaction>& txs)
   for (const auto& h : boost::adaptors::reverse(blk.tx_hashes))
   {
     cryptonote::transaction tx;
-    if (!get_tx(h, tx) && !get_pruned_tx(h, tx))
+    if (!get_tx(h, tx))
       throw DB_ERROR("Failed to get pruned or unpruned transaction from the db");
     txs.push_back(std::move(tx));
     remove_transaction(h);
@@ -302,7 +289,7 @@ bool BlockchainDB::is_open() const
 
 void BlockchainDB::remove_transaction(const crypto::hash& tx_hash)
 {
-  transaction tx = get_pruned_tx(tx_hash);
+  transaction tx = get_tx(tx_hash);
 
   for (const txin_v& tx_input : tx.vin)
   {
@@ -347,30 +334,11 @@ bool BlockchainDB::get_tx(const crypto::hash& h, cryptonote::transaction &tx) co
   return true;
 }
 
-bool BlockchainDB::get_pruned_tx(const crypto::hash& h, cryptonote::transaction &tx) const
-{
-  blobdata bd;
-  if (!get_pruned_tx_blob(h, bd))
-    return false;
-  if (!parse_and_validate_tx_base_from_blob(bd, tx))
-    throw DB_ERROR("Failed to parse transaction base from blob retrieved from the db");
-
-  return true;
-}
-
 transaction BlockchainDB::get_tx(const crypto::hash& h) const
 {
   transaction tx;
   if (!get_tx(h, tx))
     throw TX_DNE(std::string("tx with hash ").append(epee::string_tools::pod_to_hex(h)).append(" not found in db").c_str());
-  return tx;
-}
-
-transaction BlockchainDB::get_pruned_tx(const crypto::hash& h) const
-{
-  transaction tx;
-  if (!get_pruned_tx(h, tx))
-    throw TX_DNE(std::string("pruned tx with hash ").append(epee::string_tools::pod_to_hex(h)).append(" not found in db").c_str());
   return tx;
 }
 
@@ -432,6 +400,11 @@ bool BlockchainDB::txpool_tx_matches_category(const crypto::hash& tx_hash, relay
     MERROR("Failed to get tx meta from txpool: " << e.what());
   }
   return false;
+}
+
+BlockchainDB *new_db()
+{
+  return new BlockchainLMDB();
 }
 
 }  // namespace cryptonote

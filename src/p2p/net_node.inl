@@ -1304,7 +1304,7 @@ namespace nodetool
     {
       ++rand_count;
       size_t random_index;
-      const uint32_t next_needed_pruning_stripe = m_payload_handler.get_next_needed_pruning_stripe().second;
+      const uint32_t next_needed_pruning_stripe = 0;
 
       // build a set of all the /16 we're connected to, and prefer a peer that's not in that set
       std::set<uint32_t> classB;
@@ -1391,8 +1391,6 @@ namespace nodetool
             ++skipped;
           else if (next_needed_pruning_stripe == 0 || pe.pruning_seed == 0)
             filtered.push_back(idx);
-          else if (next_needed_pruning_stripe == tools::get_pruning_stripe(pe.pruning_seed))
-            filtered.push_front(idx);
           ++idx;
           hosts_added.insert(get_host_string(pe.adr));
           return true;
@@ -1406,27 +1404,6 @@ namespace nodetool
       {
         MINFO("No available peer in " << (use_white_list ? "white" : "gray") << " list filtered by " << next_needed_pruning_stripe);
         return false;
-      }
-      if (use_white_list)
-      {
-        // if using the white list, we first pick in the set of peers we've already been using earlier
-        random_index = get_random_index_with_fixed_probability(std::min<uint64_t>(filtered.size() - 1, 20));
-        CRITICAL_REGION_LOCAL(m_used_stripe_peers_mutex);
-        if (next_needed_pruning_stripe > 0 && next_needed_pruning_stripe <= (1ul << CRYPTONOTE_PRUNING_LOG_STRIPES) && !m_used_stripe_peers[next_needed_pruning_stripe-1].empty())
-        {
-          const epee::net_utils::network_address na = m_used_stripe_peers[next_needed_pruning_stripe-1].front();
-          m_used_stripe_peers[next_needed_pruning_stripe-1].pop_front();
-          for (size_t i = 0; i < filtered.size(); ++i)
-          {
-            peerlist_entry pe;
-            if (zone.m_peerlist.get_white_peer_by_index(pe, filtered[i]) && pe.adr == na)
-            {
-              MDEBUG("Reusing stripe " << next_needed_pruning_stripe << " peer " << pe.adr.str());
-              random_index = i;
-              break;
-            }
-          }
-        }
       }
       else
         random_index = crypto::rand_idx(filtered.size());
@@ -1580,7 +1557,7 @@ namespace nodetool
       size_t conn_count = get_outgoing_connections_count(zone.second);
       while(conn_count < zone.second.m_config.m_net_config.max_out_connection_count)
       {
-        const size_t expected_white_connections = m_payload_handler.get_next_needed_pruning_stripe().second ? zone.second.m_config.m_net_config.max_out_connection_count : base_expected_white_connections;
+        const size_t expected_white_connections = base_expected_white_connections;
         if(conn_count < expected_white_connections)
         {
           //start from anchor list
@@ -2600,42 +2577,6 @@ namespace nodetool
       }
     }
     return true;
-  }
-
-  template<class t_payload_net_handler>
-  void node_server<t_payload_net_handler>::add_used_stripe_peer(const typename t_payload_net_handler::connection_context &context)
-  {
-    const uint32_t stripe = tools::get_pruning_stripe(context.m_pruning_seed);
-    if (stripe == 0 || stripe > (1ul << CRYPTONOTE_PRUNING_LOG_STRIPES))
-      return;
-    const uint32_t index = stripe - 1;
-    CRITICAL_REGION_LOCAL(m_used_stripe_peers_mutex);
-    MINFO("adding stripe " << stripe << " peer: " << context.m_remote_address.str());
-    std::remove_if(m_used_stripe_peers[index].begin(), m_used_stripe_peers[index].end(),
-        [&context](const epee::net_utils::network_address &na){ return context.m_remote_address == na; });
-    m_used_stripe_peers[index].push_back(context.m_remote_address);
-  }
-
-  template<class t_payload_net_handler>
-  void node_server<t_payload_net_handler>::remove_used_stripe_peer(const typename t_payload_net_handler::connection_context &context)
-  {
-    const uint32_t stripe = tools::get_pruning_stripe(context.m_pruning_seed);
-    if (stripe == 0 || stripe > (1ul << CRYPTONOTE_PRUNING_LOG_STRIPES))
-      return;
-    const uint32_t index = stripe - 1;
-    CRITICAL_REGION_LOCAL(m_used_stripe_peers_mutex);
-    MINFO("removing stripe " << stripe << " peer: " << context.m_remote_address.str());
-    std::remove_if(m_used_stripe_peers[index].begin(), m_used_stripe_peers[index].end(),
-        [&context](const epee::net_utils::network_address &na){ return context.m_remote_address == na; });
-  }
-
-  template<class t_payload_net_handler>
-  void node_server<t_payload_net_handler>::clear_used_stripe_peers()
-  {
-    CRITICAL_REGION_LOCAL(m_used_stripe_peers_mutex);
-    MINFO("clearing used stripe peers");
-    for (auto &e: m_used_stripe_peers)
-      e.clear();
   }
 
   template<typename t_payload_net_handler>

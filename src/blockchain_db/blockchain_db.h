@@ -435,7 +435,7 @@ private:
    * @param tx_prunable_hash the hash of the prunable part of the transaction
    * @return the transaction ID
    */
-  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash& tx_hash, const crypto::hash& tx_prunable_hash) = 0;
+  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash& tx_hash) = 0;
 
   /**
    * @brief remove data about a transaction
@@ -563,7 +563,7 @@ protected:
    * @param tx_hash_ptr the hash of the transaction, if already calculated
    * @param tx_prunable_hash_ptr the hash of the prunable part of the transaction, if already calculated
    */
-  void add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash* tx_hash_ptr = NULL, const crypto::hash* tx_prunable_hash_ptr = NULL);
+  void add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash* tx_hash_ptr = NULL);
 
   mutable uint64_t time_tx_exists = 0;  //!< a performance metric
   uint64_t time_commit1 = 0;  //!< a performance metric
@@ -1214,17 +1214,6 @@ public:
   virtual transaction get_tx(const crypto::hash& h) const;
 
   /**
-   * @brief fetches the transaction base with the given hash
-   *
-   * If the transaction does not exist, the subclass should throw TX_DNE.
-   *
-   * @param h the hash to look for
-   *
-   * @return the transaction with the given hash
-   */
-  virtual transaction get_pruned_tx(const crypto::hash& h) const;
-
-  /**
    * @brief fetches the transaction with the given hash
    *
    * If the transaction does not exist, the subclass should return false.
@@ -1234,17 +1223,6 @@ public:
    * @return true iff the transaction was found
    */
   virtual bool get_tx(const crypto::hash& h, transaction &tx) const;
-
-  /**
-   * @brief fetches the transaction base with the given hash
-   *
-   * If the transaction does not exist, the subclass should return false.
-   *
-   * @param h the hash to look for
-   *
-   * @return true iff the transaction was found
-   */
-  virtual bool get_pruned_tx(const crypto::hash& h, transaction &tx) const;
 
   /**
    * @brief fetches the transaction blob with the given hash
@@ -1259,36 +1237,6 @@ public:
    * @return true iff the transaction was found
    */
   virtual bool get_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const = 0;
-
-  /**
-   * @brief fetches the pruned transaction blob with the given hash
-   *
-   * The subclass should return the pruned transaction stored which has the given
-   * hash.
-   *
-   * If the transaction does not exist, the subclass should return false.
-   *
-   * @param h the hash to look for
-   *
-   * @return true iff the transaction was found
-   */
-  virtual bool get_pruned_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const = 0;
-
-  /**
-   * @brief fetches a number of pruned transaction blob from the given hash, in canonical blockchain order
-   *
-   * The subclass should return the pruned transactions stored from the one with the given
-   * hash.
-   *
-   * If the first transaction does not exist, the subclass should return false.
-   * If the first transaction exists, but there are fewer transactions starting with it
-   * than requested, the subclass should return false.
-   *
-   * @param h the hash to look for
-   *
-   * @return true iff the transactions were found
-   */
-  virtual bool get_pruned_tx_blobs_from(const crypto::hash& h, size_t count, std::vector<cryptonote::blobdata> &bd) const = 0;
 
   /**
    * @brief fetches a variable number of blocks and transactions from the given height, in canonical blockchain order
@@ -1307,35 +1255,7 @@ public:
    *
    * @return true iff the blocks and transactions were found
    */
-  virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool pruned, bool skip_coinbase, bool get_miner_tx_hash) const = 0;
-
-  /**
-   * @brief fetches the prunable transaction blob with the given hash
-   *
-   * The subclass should return the prunable transaction stored which has the given
-   * hash.
-   *
-   * If the transaction does not exist, or if we do not have that prunable data,
-   * the subclass should return false.
-   *
-   * @param h the hash to look for
-   *
-   * @return true iff the transaction was found and we have its prunable data
-   */
-  virtual bool get_prunable_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const = 0;
-
-  /**
-   * @brief fetches the prunable transaction hash
-   *
-   * The subclass should return the hash of the prunable transaction data.
-   *
-   * If the transaction hash does not exist, the subclass should return false.
-   *
-   * @param h the tx hash to look for
-   *
-   * @return true iff the transaction was found
-   */
-  virtual bool get_prunable_tx_hash(const crypto::hash& tx_hash, crypto::hash &prunable_hash) const = 0;
+  virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const = 0;
 
   /**
    * @brief fetches the total number of transactions ever
@@ -1577,38 +1497,6 @@ public:
   bool txpool_tx_matches_category(const crypto::hash& tx_hash, relay_category category);
 
   /**
-   * @brief prune output data for the given amount
-   *
-   * @param amount the amount for which to prune data
-   */
-  virtual void prune_outputs(uint64_t amount) = 0;
-
-  /**
-   * @brief get the blockchain pruning seed
-   * @return the blockchain pruning seed
-   */
-  virtual uint32_t get_blockchain_pruning_seed() const = 0;
-
-  /**
-   * @brief prunes the blockchain
-   * @param pruning_seed the seed to use, 0 for default (highly recommended)
-   * @return success iff true
-   */
-  virtual bool prune_blockchain(uint32_t pruning_seed = 0) = 0;
-
-  /**
-   * @brief prunes recent blockchain changes as needed, iff pruning is enabled
-   * @return success iff true
-   */
-  virtual bool update_pruning() = 0;
-
-  /**
-   * @brief checks pruning was done correctly, iff enabled
-   * @return success iff true
-   */
-  virtual bool check_pruning() = 0;
-
-  /**
    * @brief get the max block size
    */
   virtual uint64_t get_max_block_size() = 0;
@@ -1726,7 +1614,7 @@ public:
    *
    * @return false if the function returns false for any transaction, otherwise true
    */
-  virtual bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>, bool pruned) const = 0;
+  virtual bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>) const = 0;
 
   /**
    * @brief runs a function over all outputs stored

@@ -387,7 +387,7 @@ namespace cryptonote
      *
      * @return true if a block found in common, else false
      */
-    bool find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, std::vector<crypto::hash>& hashes, std::vector<uint64_t>* weights, uint64_t& start_height, uint64_t& current_height, bool clip_pruned) const;
+    bool find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, std::vector<crypto::hash>& hashes, std::vector<uint64_t>* weights, uint64_t& start_height, uint64_t& current_height) const;
 
     /**
      * @brief get recent block hashes for a foreign chain
@@ -402,7 +402,7 @@ namespace cryptonote
      *
      * @return true if a block found in common, else false
      */
-    bool find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, bool clip_pruned, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const;
+    bool find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const;
 
     /**
      * @brief find the most recent common point between ours and a foreign chain
@@ -435,7 +435,7 @@ namespace cryptonote
      *
      * @return true if a block found in common or req_start_block specified, else false
      */
-    bool find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool pruned, bool get_miner_tx_hash, size_t max_count) const;
+    bool find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const;
 
     /**
      * @brief retrieves a set of blocks and their transactions, and possibly other transactions
@@ -679,8 +679,8 @@ namespace cryptonote
      *
      * @return false if an unexpected exception occurs, else true
      */
-    bool get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs, bool pruned = false) const;
-    bool get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<tx_blob_entry>& txs, std::vector<crypto::hash>& missed_txs, bool pruned = false) const;
+    bool get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs) const;
+    bool get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<tx_blob_entry>& txs, std::vector<crypto::hash>& missed_txs) const;
     template<class t_ids_container, class t_tx_container, class t_missed_container>
     bool get_split_transactions_blobs(const t_ids_container& txs_ids, t_tx_container& txs, t_missed_container& missed_txs) const;
     template<class t_ids_container, class t_tx_container, class t_missed_container>
@@ -851,7 +851,7 @@ namespace cryptonote
      *
      * @return false if any transaction fails the check, otherwise true
      */
-    bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>, bool pruned) const;
+    bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>) const;
 
     /**
      * @brief perform a check on all outputs in the blockchain
@@ -931,10 +931,6 @@ namespace cryptonote
 
     bool is_within_compiled_block_hash_area() const { return is_within_compiled_block_hash_area(m_db->height()); }
     uint64_t prevalidate_block_hashes(uint64_t height, const std::vector<crypto::hash> &hashes, const std::vector<uint64_t> &weights);
-    uint32_t get_blockchain_pruning_seed() const { return m_db->get_blockchain_pruning_seed(); }
-    bool prune_blockchain(uint32_t pruning_seed = 0);
-    bool update_blockchain_pruning();
-    bool check_blockchain_pruning();
 
     void lock();
     void unlock();
