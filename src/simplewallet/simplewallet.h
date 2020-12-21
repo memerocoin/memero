@@ -102,8 +102,6 @@ namespace cryptonote
         bool recover, bool two_random, const std::string &old_language);
     boost::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm, const cryptonote::account_public_address& address,
         const boost::optional<crypto::secret_key>& spendkey, const crypto::secret_key& viewkey);
-    boost::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm,
-        const epee::wipeable_string &multisig_keys, const std::string &old_language);
     boost::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm);
     boost::optional<epee::wipeable_string> open_wallet(const boost::program_options::variables_map& vm);
     bool close_wallet();
@@ -222,16 +220,6 @@ namespace cryptonote
     bool change_password(const std::vector<std::string>& args);
     bool payment_id(const std::vector<std::string> &args);
     bool print_fee_info(const std::vector<std::string> &args);
-    bool prepare_multisig(const std::vector<std::string>& args);
-    bool make_multisig(const std::vector<std::string>& args);
-    bool finalize_multisig(const std::vector<std::string> &args);
-    bool exchange_multisig_keys(const std::vector<std::string> &args);
-    bool export_multisig(const std::vector<std::string>& args);
-    bool import_multisig(const std::vector<std::string>& args);
-    bool accept_loaded_tx(const tools::wallet2::multisig_tx_set &txs);
-    bool sign_multisig(const std::vector<std::string>& args);
-    bool submit_multisig(const std::vector<std::string>& args);
-    bool export_raw_multisig(const std::vector<std::string>& args);
     bool print_ring(const std::vector<std::string>& args);
     bool set_ring(const std::vector<std::string>& args);
     bool unset_ring(const std::vector<std::string>& args);
@@ -392,7 +380,6 @@ namespace cryptonote
     std::string m_generate_from_view_key;
     std::string m_generate_from_spend_key;
     std::string m_generate_from_keys;
-    std::string m_generate_from_multisig_keys;
     std::string m_generate_from_json;
     std::string m_mnemonic_language;
     std::string m_import_path;
@@ -403,7 +390,6 @@ namespace cryptonote
 
     crypto::secret_key m_recovery_key;  // recovery key (used as random for wallet gen)
     bool m_restore_deterministic_wallet;  // recover flag
-    bool m_restore_multisig_wallet;  // recover flag
     bool m_non_deterministic;  // old 2-random generation
     bool m_allow_mismatched_daemon_version;
     bool m_restoring;           // are we restoring, by whatever method?

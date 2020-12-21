@@ -137,13 +137,6 @@ namespace rct {
         key aG;
         key aH;
 
-        // Multisig
-        if (kLRki)
-        {
-            sig.I = kLRki->ki;
-            scalarmultKey(D,H,z);
-        }
-        else
         {
             hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
         }
@@ -194,14 +187,6 @@ namespace rct {
         c_to_hash[2*n+1] = C_offset;
         c_to_hash[2*n+2] = message;
 
-        // Multisig data is present
-        if (kLRki)
-        {
-            a = kLRki->k;
-            c_to_hash[2*n+3] = kLRki->L;
-            c_to_hash[2*n+4] = kLRki->R;
-        }
-        else
         {
             c_to_hash[2*n+3] = aG;
             c_to_hash[2*n+4] = aH;
@@ -846,30 +831,5 @@ namespace rct {
     xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, hw::device &hwdev) {
       key mask;
       return decodeRctSimple(rv, sk, i, mask, hwdev);
-    }
-
-    bool signMultisigCLSAG(rctSig &rv, const std::vector<unsigned int> &indices, const keyV &k, const multisig_out &msout, const key &secret_key) {
-        CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG, false, "unsupported rct type");
-        CHECK_AND_ASSERT_MES(indices.size() == k.size(), false, "Mismatched k/indices sizes");
-        CHECK_AND_ASSERT_MES(k.size() == rv.p.CLSAGs.size(), false, "Mismatched k/CLSAGs size");
-        CHECK_AND_ASSERT_MES(k.size() == msout.c.size(), false, "Mismatched k/msout.c size");
-        CHECK_AND_ASSERT_MES(msout.c.size() == msout.mu_p.size(), false, "Bad mu_p size");
-        for (size_t n = 0; n < indices.size(); ++n) {
-            CHECK_AND_ASSERT_MES(indices[n] < rv.p.CLSAGs[n].s.size(), false, "Index out of range");
-        }
-
-        // CLSAG: each player contributes a share to the secret-index ss: k - cc*mu_p*secret_key_share
-        // cc: msout.c[n], mu_p, msout.mu_p[n], secret_key_share: secret_key
-        for (size_t n = 0; n < indices.size(); ++n) {
-            rct::key diff, sk;
-            sc_mul(sk.bytes, msout.mu_p[n].bytes, secret_key.bytes);
-            sc_mulsub(diff.bytes, msout.c[n].bytes, sk.bytes, k[n].bytes);
-            sc_add(rv.p.CLSAGs[n].s[indices[n]].bytes, rv.p.CLSAGs[n].s[indices[n]].bytes, diff.bytes);
-        }
-        return true;
-    }
-
-    bool signMultisig(rctSig &rv, const std::vector<unsigned int> &indices, const keyV &k, const multisig_out &msout, const key &secret_key) {
-        return signMultisigCLSAG(rv, indices, k, msout, secret_key);
     }
 }
