@@ -1038,9 +1038,6 @@ private:
      * \return                Whether path is valid format
      */
     static bool wallet_valid_path_format(const std::string& file_path);
-    static bool parse_long_payment_id(const std::string& payment_id_str, crypto::hash& payment_id);
-    static bool parse_short_payment_id(const std::string& payment_id_str, crypto::hash8& payment_id);
-    static bool parse_payment_id(const std::string& payment_id_str, crypto::hash& payment_id);
 
     bool always_confirm_transfers() const { return m_always_confirm_transfers; }
     void always_confirm_transfers(bool always) { m_always_confirm_transfers = always; }
@@ -1218,8 +1215,8 @@ private:
     template<typename T=std::string> T decrypt(const std::string &ciphertext, const crypto::secret_key &skey, bool authenticated = true) const;
     std::string decrypt_with_view_secret_key(const std::string &ciphertext, bool authenticated = true) const;
 
-    std::string make_uri(const std::string &address, const std::string &payment_id, uint64_t amount, const std::string &tx_description, const std::string &recipient_name, std::string &error) const;
-    bool parse_uri(const std::string &uri, std::string &address, std::string &payment_id, uint64_t &amount, std::string &tx_description, std::string &recipient_name, std::vector<std::string> &unknown_parameters, std::string &error);
+    std::string make_uri(const std::string &address, uint64_t amount, const std::string &tx_description, const std::string &recipient_name, std::string &error) const;
+    bool parse_uri(const std::string &uri, std::string &address, uint64_t &amount, std::string &tx_description, std::string &recipient_name, std::vector<std::string> &unknown_parameters, std::string &error);
 
     uint64_t get_blockchain_height_by_date(uint16_t year, uint8_t month, uint8_t day);    // 1<=month<=12, 1<=day<=31
 
@@ -1365,12 +1362,11 @@ private:
     bool prepare_file_names(const std::string& file_path);
     void process_unconfirmed(const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t height);
     void process_outgoing(const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t height, uint64_t ts, uint64_t spent, uint64_t received, uint32_t subaddr_account, const std::set<uint32_t>& subaddr_indices);
-    void add_unconfirmed_tx(const cryptonote::transaction& tx, uint64_t amount_in, const std::vector<cryptonote::tx_destination_entry> &dests, const crypto::hash &payment_id, uint64_t change_amount, uint32_t subaddr_account, const std::set<uint32_t>& subaddr_indices);
+    void add_unconfirmed_tx(const cryptonote::transaction& tx, uint64_t amount_in, const std::vector<cryptonote::tx_destination_entry> &dests, uint64_t change_amount, uint32_t subaddr_account, const std::set<uint32_t>& subaddr_indices);
     void generate_genesis(cryptonote::block& b) const;
     void check_genesis(const crypto::hash& genesis_hash) const; //throws
     bool generate_chacha_key_from_secret_keys(crypto::chacha_key &key) const;
     void generate_chacha_key_from_password(const epee::wipeable_string &pass, crypto::chacha_key &key) const;
-    crypto::hash get_payment_id(const pending_tx &ptx) const;
     void check_acc_out_precomp(const cryptonote::tx_out &o, const crypto::key_derivation &derivation, const std::vector<crypto::key_derivation> &additional_derivations, size_t i, tx_scan_info_t &tx_scan_info) const;
     void check_acc_out_precomp(const cryptonote::tx_out &o, const crypto::key_derivation &derivation, const std::vector<crypto::key_derivation> &additional_derivations, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info) const;
     void check_acc_out_precomp_once(const cryptonote::tx_out &o, const crypto::key_derivation &derivation, const std::vector<crypto::key_derivation> &additional_derivations, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info, bool &already_seen) const;

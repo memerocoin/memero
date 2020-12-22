@@ -174,10 +174,10 @@ namespace
   const char* USAGE_TRANSFER("transfer [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] (<URI> | <address> <amount>) [<payment_id>]");
   const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] (<URI> | <addr> <amount>) <lockblocks> [<payment_id (obsolete)>]");
   const char* USAGE_LOCKED_SWEEP_ALL("locked_sweep_all [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] <address> <lockblocks> [<payment_id (obsolete)>]");
-  const char* USAGE_SWEEP_ALL("sweep_all [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] [outputs=<N>] <address> [<payment_id (obsolete)>]");
-  const char* USAGE_SWEEP_ACCOUNT("sweep_account <account> [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] [outputs=<N>] <address> [<payment_id (obsolete)>]");
-  const char* USAGE_SWEEP_BELOW("sweep_below <amount_threshold> [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] <address> [<payment_id (obsolete)>]");
-  const char* USAGE_SWEEP_SINGLE("sweep_single [<priority>] [<ring_size>] [outputs=<N>] <key_image> <address> [<payment_id (obsolete)>]");
+  const char* USAGE_SWEEP_ALL("sweep_all [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] [outputs=<N>] <address>");
+  const char* USAGE_SWEEP_ACCOUNT("sweep_account <account> [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] [outputs=<N>] <address>");
+  const char* USAGE_SWEEP_BELOW("sweep_below <amount_threshold> [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] <address>");
+  const char* USAGE_SWEEP_SINGLE("sweep_single [<priority>] [<ring_size>] [outputs=<N>] <key_image> <address>");
   const char* USAGE_SIGN_TRANSFER("sign_transfer [export_raw]");
   const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
   const char* USAGE_ACCOUNT("account\n"
@@ -2120,10 +2120,6 @@ simple_wallet::simple_wallet()
                            tr("Show the incoming transfers, all or filtered by availability and address index.\n\n"
                               "Output format:\n"
                               "Amount, Spent(\"T\"|\"F\"), \"frozen\"|\"locked\"|\"unlocked\", RingCT, Global Index, Transaction Hash, Address Index, [Public Key, Key Image] "));
-  m_cmd_binder.set_handler("payments",
-                           boost::bind(&simple_wallet::on_command, this, &simple_wallet::show_payments,_1),
-                           tr(USAGE_PAYMENTS),
-                           tr("Show the payments for the given payment IDs."));
   m_cmd_binder.set_handler("bc_height",
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::show_blockchain_height, _1),
                            tr("Show the blockchain height."));
@@ -4309,60 +4305,6 @@ bool simple_wallet::show_incoming_transfers(const std::vector<std::string>& args
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::show_payments(const std::vector<std::string> &args)
-{
-  if(args.empty())
-  {
-    PRINT_USAGE(USAGE_PAYMENTS);
-    return true;
-  }
-
-  LOCK_IDLE_SCOPE();
-
-  PAUSE_READLINE();
-
-  message_writer() << boost::format("%68s%68s%12s%21s%16s%16s") %
-    tr("payment") % tr("transaction") % tr("height") % tr("amount") % tr("unlock time") % tr("addr index");
-
-  bool payments_found = false;
-  for(std::string arg : args)
-  {
-    crypto::hash payment_id;
-    if(tools::wallet2::parse_payment_id(arg, payment_id))
-    {
-      std::list<tools::wallet2::payment_details> payments;
-      m_wallet->get_payments(payment_id, payments);
-      if(payments.empty())
-      {
-        success_msg_writer() << tr("No payments with id ") << payment_id;
-        continue;
-      }
-
-      for (const tools::wallet2::payment_details& pd : payments)
-      {
-        if(!payments_found)
-        {
-          payments_found = true;
-        }
-        success_msg_writer(true) <<
-          boost::format("%68s%68s%12s%21s%16s%16s") %
-          payment_id %
-          pd.m_tx_hash %
-          pd.m_block_height %
-          print_money(pd.m_amount) %
-          pd.m_unlock_time %
-          pd.m_subaddr_index.minor;
-      }
-    }
-    else
-    {
-      fail_msg_writer() << tr("payment ID has invalid format, expected 16 or 64 character hex string: ") << arg;
-    }
-  }
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t simple_wallet::get_daemon_blockchain_height(std::string& err)
 {
   if (!m_wallet)
@@ -4731,22 +4673,6 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
   }
 
   std::vector<uint8_t> extra;
-  bool payment_id_seen = false;
-  if (!local_args.empty())
-  {
-    std::string payment_id_str = local_args.back();
-    crypto::hash payment_id;
-    bool r = true;
-    if (tools::wallet2::parse_long_payment_id(payment_id_str, payment_id))
-    {
-      LONG_PAYMENT_ID_SUPPORT_CHECK();
-    }
-    if(!r)
-    {
-      fail_msg_writer() << tr("payment id failed to encode");
-      return true;
-    }
-  }
 
   uint64_t locked_blocks = 0;
   if (transfer_type == TransferLocked)
@@ -4782,18 +4708,14 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     std::string address_uri, payment_id_uri, tx_description, recipient_name, error;
     std::vector<std::string> unknown_parameters;
     uint64_t amount = 0;
-    bool has_uri = m_wallet->parse_uri(local_args[i], address_uri, payment_id_uri, amount, tx_description, recipient_name, unknown_parameters, error);
+    bool has_uri = m_wallet->parse_uri(local_args[i], address_uri, amount, tx_description, recipient_name, unknown_parameters, error);
     if (has_uri)
     {
       r = cryptonote::get_account_address_from_str_or_url(info, m_wallet->nettype(), address_uri);
       if (payment_id_uri.size() == 16)
       {
-        if (!tools::wallet2::parse_short_payment_id(payment_id_uri, info.payment_id))
-        {
-          fail_msg_writer() << tr("failed to parse short payment ID from URI");
-          return true;
-        }
-        info.has_payment_id = true;
+        fail_msg_writer() << tr("Payment id has been deprecated.");
+        return true;
       }
       de.amount = amount;
       de.original = local_args[i];
@@ -4833,7 +4755,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
 
     if (info.has_payment_id || !payment_id_uri.empty())
     {
-      fail_msg_writer() << tr("Payment ID has been deprecated");
+      fail_msg_writer() << tr("Payment id has been deprecated.");
       return true;
     }
 
@@ -5318,20 +5240,6 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
     std::string payment_id_str = local_args.back();
 
     crypto::hash payment_id;
-    bool r = tools::wallet2::parse_long_payment_id(payment_id_str, payment_id);
-    if(r)
-    {
-      LONG_PAYMENT_ID_SUPPORT_CHECK();
-    }
-
-    if(!r && local_args.size() == 3)
-    {
-      fail_msg_writer() << tr("payment id has invalid format, expected 16 or 64 character hex string: ") << payment_id_str;
-      print_usage();
-      return true;
-    }
-    if (payment_id_seen)
-      local_args.pop_back();
   }
 
   cryptonote::address_parse_info info;
@@ -5542,32 +5450,6 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
   }
 
   std::vector<uint8_t> extra;
-  bool payment_id_seen = false;
-  if (local_args.size() == 3)
-  {
-    crypto::hash payment_id;
-    crypto::hash8 payment_id8;
-    std::string extra_nonce;
-    if (tools::wallet2::parse_long_payment_id(local_args.back(), payment_id))
-    {
-      LONG_PAYMENT_ID_SUPPORT_CHECK();
-    }
-    else
-    {
-      fail_msg_writer() << tr("failed to parse Payment ID");
-      return true;
-    }
-
-    if (!add_extra_nonce_to_tx_extra(extra, extra_nonce))
-    {
-      fail_msg_writer() << tr("failed to set up payment id, though it was decoded correctly");
-      return true;
-    }
-
-    local_args.pop_back();
-    payment_id_seen = true;
-  }
-
   if (local_args.size() != 2)
   {
     PRINT_USAGE(USAGE_SWEEP_SINGLE);
@@ -5590,20 +5472,8 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
 
   if (info.has_payment_id)
   {
-    if (payment_id_seen)
-    {
-      fail_msg_writer() << tr("a single transaction cannot use more than one payment id: ") << local_args[0];
-      return true;
-    }
-
-    std::string extra_nonce;
-    set_encrypted_payment_id_to_tx_extra_nonce(extra_nonce, info.payment_id);
-    if (!add_extra_nonce_to_tx_extra(extra, extra_nonce))
-    {
-      fail_msg_writer() << tr("failed to set up payment id, though it was decoded correctly");
-      return true;
-    }
-    payment_id_seen = true;
+    fail_msg_writer() << tr("Payment id has been deprecated.");
+    return true;
   }
 
   SCOPED_WALLET_UNLOCK();
