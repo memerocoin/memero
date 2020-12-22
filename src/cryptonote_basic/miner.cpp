@@ -169,7 +169,7 @@ namespace cryptonote
 
     uint64_t seed_height;
     crypto::hash seed_hash;
-    if(!m_phandler->get_block_template(bl, m_mine_address, di, height, expected_reward, extra_nonce, seed_height, seed_hash))
+    if(!m_phandler->get_block_template(bl, m_mine_address, di, height, expected_reward, extra_nonce))
     {
       LOG_ERROR("Failed to get_block_template(), stopping mining");
       return false;
