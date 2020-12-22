@@ -91,7 +91,7 @@ namespace cryptonote
     uint64_t get_block_reward() const { return m_block_reward; }
 
     static constexpr uint8_t  BACKGROUND_MINING_DEFAULT_IDLE_THRESHOLD_PERCENTAGE       = 90;
-    static constexpr uint8_t  BACKGROUND_MINING_MIN_IDLE_THRESHOLD_PERCENTAGE           = 0;
+    static constexpr uint8_t  BACKGROUND_MINING_MIN_IDLE_THRESHOLD_PERCENTAGE           = 1;
     static constexpr uint8_t  BACKGROUND_MINING_MAX_IDLE_THRESHOLD_PERCENTAGE           = 99;
     static constexpr uint16_t BACKGROUND_MINING_DEFAULT_MIN_IDLE_INTERVAL_IN_SECONDS    = 10;
     static constexpr uint16_t BACKGROUND_MINING_MIN_MIN_IDLE_INTERVAL_IN_SECONDS        = 10;
