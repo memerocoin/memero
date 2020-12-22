@@ -188,7 +188,6 @@ namespace
                             "  account untag <account_index_1> [<account_index_2> ...]\n"
                             "  account tag_description <tag_name> <description>");
   const char* USAGE_ADDRESS("address [ new <label text with white spaces allowed> | all | <index_min> [<index_max>] | label <index> <label text with white spaces allowed> | device [<index>] | one-off <account> <subaddress>]");
-  const char* USAGE_INTEGRATED_ADDRESS("integrated_address [device] [<payment_id> | <address>]");
   const char* USAGE_SET_VARIABLE("set <option> [<value>]");
   const char* USAGE_GET_TX_KEY("get_tx_key <txid>");
   const char* USAGE_SET_TX_KEY("set_tx_key <txid> <tx_key> [<subaddress>]");
@@ -2181,10 +2180,6 @@ simple_wallet::simple_wallet()
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::print_address, _1),
                            tr(USAGE_ADDRESS),
                            tr("If no arguments are specified or <index> is specified, the wallet shows the default or specified address. If \"all\" is specified, the wallet shows all the existing addresses in the currently selected account. If \"new \" is specified, the wallet creates a new address with the provided label text (which can be empty). If \"label\" is specified, the wallet sets the label of the address specified by <index> to the provided label text. If \"one-off\" is specified, the address for the specified index is generated and displayed, and remembered by the wallet"));
-  m_cmd_binder.set_handler("integrated_address",
-                           boost::bind(&simple_wallet::on_command, this, &simple_wallet::print_integrated_address, _1),
-                           tr(USAGE_INTEGRATED_ADDRESS),
-                           tr("Encode a payment ID into an integrated address for the current wallet public address (no argument uses a random payment ID), or decode an integrated address to standard address and payment ID"));
   m_cmd_binder.set_handler("save",
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::save, _1),
                            tr("Save the wallet data."));
@@ -2390,10 +2385,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("password",
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::change_password, _1),
                            tr("Change the wallet's password."));
-  m_cmd_binder.set_handler("payment_id",
-                           boost::bind(&simple_wallet::on_command, this, &simple_wallet::payment_id, _1),
-                           tr(USAGE_PAYMENT_ID),
-                           tr("Generate a new random full size payment id (obsolete). These will be unencrypted on the blockchain, see integrated_address for encrypted short payment ids."));
   m_cmd_binder.set_handler("fee",
                            boost::bind(&simple_wallet::on_command, this, &simple_wallet::print_fee_info, _1),
                            tr("Print the information about the current fee and transaction backlog."));
@@ -4842,34 +4833,8 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
 
     if (info.has_payment_id || !payment_id_uri.empty())
     {
-      if (payment_id_seen)
-      {
-        fail_msg_writer() << tr("a single transaction cannot use more than one payment id");
-        return true;
-      }
-
-      crypto::hash payment_id;
-      std::string extra_nonce;
-      if (info.has_payment_id)
-      {
-        set_encrypted_payment_id_to_tx_extra_nonce(extra_nonce, info.payment_id);
-      }
-      else if (tools::wallet2::parse_payment_id(payment_id_uri, payment_id))
-      {
-        LONG_PAYMENT_ID_SUPPORT_CHECK();
-      }
-      else
-      {
-        fail_msg_writer() << tr("failed to parse payment id, though it was detected");
-        return true;
-      }
-      bool r = add_extra_nonce_to_tx_extra(extra, extra_nonce);
-      if(!r)
-      {
-        fail_msg_writer() << tr("failed to set up payment id, though it was decoded correctly");
-        return true;
-      }
-      payment_id_seen = true;
+      fail_msg_writer() << tr("Payment ID has been deprecated");
+      return true;
     }
 
     dsts.push_back(de);
@@ -7621,76 +7586,6 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
     PRINT_USAGE(USAGE_ADDRESS);
   }
 
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::print_integrated_address(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  crypto::hash8 payment_id;
-  bool display_on_device = false;
-  std::vector<std::string> local_args = args;
-
-  if (local_args.size() > 0 && local_args[0] == "device")
-  {
-    local_args.erase(local_args.begin());
-    display_on_device = true;
-  }
-
-  auto device_show_integrated = [this, display_on_device](crypto::hash8 payment_id)
-  {
-    if (display_on_device)
-    {
-      m_wallet->device_show_address(m_current_subaddress_account, 0, payment_id);
-    }
-  };
-
-  if (local_args.size() > 1)
-  {
-    PRINT_USAGE(USAGE_INTEGRATED_ADDRESS);
-    return true;
-  }
-  if (local_args.size() == 0)
-  {
-    if (m_current_subaddress_account != 0)
-    {
-      fail_msg_writer() << tr("Integrated addresses can only be created for account 0");
-      return true;
-    }
-    payment_id = crypto::rand<crypto::hash8>();
-    success_msg_writer() << tr("Random payment ID: ") << payment_id;
-    success_msg_writer() << tr("Matching integrated address: ") << m_wallet->get_account().get_public_integrated_address_str(payment_id, m_wallet->nettype());
-    device_show_integrated(payment_id);
-    return true;
-  }
-  if(tools::wallet2::parse_short_payment_id(local_args.back(), payment_id))
-  {
-    if (m_current_subaddress_account != 0)
-    {
-      fail_msg_writer() << tr("Integrated addresses can only be created for account 0");
-      return true;
-    }
-    success_msg_writer() << m_wallet->get_account().get_public_integrated_address_str(payment_id, m_wallet->nettype());
-    device_show_integrated(payment_id);
-    return true;
-  }
-  else {
-    address_parse_info info;
-    if(get_account_address_from_str(info, m_wallet->nettype(), local_args.back()))
-    {
-      if (info.has_payment_id)
-      {
-        success_msg_writer() << boost::format(tr("Integrated address: %s, payment ID: %s")) %
-          get_account_address_as_str(m_wallet->nettype(), false, info.address) % epee::string_tools::pod_to_hex(info.payment_id);
-        device_show_integrated(info.payment_id);
-      }
-      else
-      {
-        success_msg_writer() << (info.is_subaddress ? tr("Subaddress: ") : tr("Standard address: ")) << get_account_address_as_str(m_wallet->nettype(), info.is_subaddress, info.address);
-      }
-      return true;
-    }
-  }
-  fail_msg_writer() << tr("failed to parse payment ID or address");
   return true;
 }
 //----------------------------------------------------------------------------------------------------

@@ -679,21 +679,9 @@ namespace tools
 
       if (info.has_payment_id)
       {
-        if (!payment_id.empty() || integrated_payment_id != crypto::null_hash8)
-        {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID;
-          er.message = "A single payment id is allowed per transaction";
-          return false;
-        }
-        integrated_payment_id = info.payment_id;
-        cryptonote::set_encrypted_payment_id_to_tx_extra_nonce(extra_nonce, integrated_payment_id);
-
-        /* Append Payment ID data into extra */
-        if (!cryptonote::add_extra_nonce_to_tx_extra(extra, extra_nonce)) {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID;
-          er.message = "Something went wrong with integrated payment_id.";
-          return false;
-        }
+        er.code = WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID;
+        er.message = "Payment ID is deprecated";
+        return false;
       }
     }
 
@@ -1438,101 +1426,6 @@ namespace tools
 
     res.tx_hash = epee::string_tools::pod_to_hex(cryptonote::get_transaction_hash(ptx.tx));
 
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_make_integrated_address(const wallet_rpc::COMMAND_RPC_MAKE_INTEGRATED_ADDRESS::request& req, wallet_rpc::COMMAND_RPC_MAKE_INTEGRATED_ADDRESS::response& res, epee::json_rpc::error& er, const connection_context *ctx)
-  {
-    if (!m_wallet) return not_open(er);
-    try
-    {
-      crypto::hash8 payment_id;
-      if (req.payment_id.empty())
-      {
-        payment_id = crypto::rand<crypto::hash8>();
-      }
-      else
-      {
-        if (!tools::wallet2::parse_short_payment_id(req.payment_id,payment_id))
-        {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID;
-          er.message = "Invalid payment ID";
-          return false;
-        }
-      }
-
-      if (req.standard_address.empty())
-      {
-        res.integrated_address = m_wallet->get_integrated_address_as_str(payment_id);
-      }
-      else
-      {
-        cryptonote::address_parse_info info;
-        if(!get_account_address_from_str(info, m_wallet->nettype(), req.standard_address))
-        {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
-          er.message = "Invalid address";
-          return false;
-        }
-        if (info.is_subaddress)
-        {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
-          er.message = "Subaddress shouldn't be used";
-          return false;
-        }
-        if (info.has_payment_id)
-        {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
-          er.message = "Already integrated address";
-          return false;
-        }
-        if (req.payment_id.empty())
-        {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID;
-          er.message = "Payment ID shouldn't be left unspecified";
-          return false;
-        }
-        res.integrated_address = get_account_integrated_address_as_str(m_wallet->nettype(), info.address, payment_id);
-      }
-      res.payment_id = epee::string_tools::pod_to_hex(payment_id);
-      return true;
-    }
-    catch (const std::exception& e)
-    {
-      handle_rpc_exception(std::current_exception(), er, WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR);
-      return false;
-    }
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_split_integrated_address(const wallet_rpc::COMMAND_RPC_SPLIT_INTEGRATED_ADDRESS::request& req, wallet_rpc::COMMAND_RPC_SPLIT_INTEGRATED_ADDRESS::response& res, epee::json_rpc::error& er, const connection_context *ctx)
-  {
-    if (!m_wallet) return not_open(er);
-    try
-    {
-      cryptonote::address_parse_info info;
-
-      if(!get_account_address_from_str(info, m_wallet->nettype(), req.integrated_address))
-      {
-        er.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
-        er.message = "Invalid address";
-        return false;
-      }
-      if(!info.has_payment_id)
-      {
-        er.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
-        er.message = "Address is not an integrated address";
-        return false;
-      }
-      res.standard_address = get_account_address_as_str(m_wallet->nettype(), info.is_subaddress, info.address);
-      res.payment_id = epee::string_tools::pod_to_hex(info.payment_id);
-      return true;
-    }
-    catch (const std::exception& e)
-    {
-      handle_rpc_exception(std::current_exception(), er, WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR);
-      return false;
-    }
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------

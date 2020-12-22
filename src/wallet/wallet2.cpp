@@ -1348,11 +1348,6 @@ std::string wallet2::get_subaddress_as_str(const cryptonote::subaddress_index& i
   return cryptonote::get_account_address_as_str(m_nettype, !index.is_zero(), address);
 }
 //----------------------------------------------------------------------------------------------------
-std::string wallet2::get_integrated_address_as_str(const crypto::hash8& payment_id) const
-{
-  return cryptonote::get_account_integrated_address_as_str(m_nettype, get_address(), payment_id);
-}
-//----------------------------------------------------------------------------------------------------
 void wallet2::add_subaddress_account(const std::string& label)
 {
   uint32_t index_major = (uint32_t)get_num_subaddress_accounts();
@@ -10805,21 +10800,6 @@ bool wallet2::parse_uri(const std::string &uri, std::string &address, std::strin
         error = std::string("URI has invalid amount: ") + kv[1];
         return false;
       }
-    }
-    else if (kv[0] == "tx_payment_id")
-    {
-      if (info.has_payment_id)
-      {
-        error = "Separate payment id given with an integrated address";
-        return false;
-      }
-      crypto::hash hash;
-      if (!wallet2::parse_long_payment_id(kv[1], hash))
-      {
-        error = "Invalid payment id: " + kv[1];
-        return false;
-      }
-      payment_id = kv[1];
     }
     else if (kv[0] == "recipient_name")
     {
