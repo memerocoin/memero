@@ -1087,8 +1087,6 @@ private:
     void ignore_outputs_below(uint64_t value) { m_ignore_outputs_below = value; }
     bool track_uses() const { return m_track_uses; }
     void track_uses(bool value) { m_track_uses = value; }
-    BackgroundMiningSetupType setup_background_mining() const { return m_setup_background_mining; }
-    void setup_background_mining(BackgroundMiningSetupType value) { m_setup_background_mining = value; }
     uint32_t inactivity_lock_timeout() const { return m_inactivity_lock_timeout; }
     void inactivity_lock_timeout(uint32_t seconds) { m_inactivity_lock_timeout = seconds; }
     const std::string & device_name() const { return m_device_name; }
@@ -1501,7 +1499,6 @@ private:
     uint64_t m_ignore_outputs_below;
     bool m_track_uses;
     uint32_t m_inactivity_lock_timeout;
-    BackgroundMiningSetupType m_setup_background_mining;
     bool m_is_initialized;
     NodeRPCProxy m_node_rpc_proxy;
     std::unordered_set<crypto::hash> m_scanned_pool_txs[2];
