@@ -1409,8 +1409,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       diffic = m_btc_difficulty;
       height = m_btc_height;
       expected_reward = m_btc_expected_reward;
-      seed_height = m_btc_seed_height;
-      seed_hash = m_btc_seed_hash;
       return true;
     }
     MDEBUG("Not using cached template: address " << (!memcmp(&miner_address, &m_btc_address, sizeof(cryptonote::account_public_address))) << ", nonce " << (m_btc_nonce == ex_nonce) << ", cookie " << (m_btc_pool_cookie == m_tx_pool.cookie()) << ", from_block " << (!!from_block));
@@ -1449,22 +1447,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     {
       height = alt_chain.back().height + 1;
       uint64_t next_height;
-
-      if (alt_chain.size() && alt_chain.front().height <= seed_height)
-      {
-        for (auto it=alt_chain.begin(); it != alt_chain.end(); it++)
-        {
-          if (it->height == seed_height+1)
-          {
-            seed_hash = it->bl.prev_id;
-            break;
-          }
-        }
-      }
-      else
-      {
-        seed_hash = get_block_id_by_height(seed_height);
-      }
     }
     b.major_version = m_hardfork->get_ideal_version(height);
     b.minor_version = m_hardfork->get_ideal_version();
@@ -4744,8 +4726,6 @@ void Blockchain::cache_block_template(const block &b, const cryptonote::account_
   m_btc_difficulty = diff;
   m_btc_height = height;
   m_btc_expected_reward = expected_reward;
-  m_btc_seed_hash = seed_hash;
-  m_btc_seed_height = seed_height;
   m_btc_pool_cookie = pool_cookie;
   m_btc_valid = true;
 }

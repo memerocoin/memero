@@ -1069,8 +1069,6 @@ namespace cryptonote
     uint64_t m_btc_height;
     uint64_t m_btc_pool_cookie;
     uint64_t m_btc_expected_reward;
-    crypto::hash m_btc_seed_hash;
-    uint64_t m_btc_seed_height;
     bool m_btc_valid;
 
 
