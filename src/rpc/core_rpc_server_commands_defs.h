@@ -902,9 +902,6 @@ namespace cryptonote
       uint64_t reserved_offset;
       uint64_t expected_reward;
       std::string prev_hash;
-      uint64_t seed_height;
-      std::string seed_hash;
-      std::string next_seed_hash;
       blobdata blocktemplate_blob;
       blobdata blockhashing_blob;
       uint64_t unlock_height;
@@ -918,11 +915,8 @@ namespace cryptonote
         KV_SERIALIZE(reserved_offset)
         KV_SERIALIZE(expected_reward)
         KV_SERIALIZE(prev_hash)
-        KV_SERIALIZE(seed_height)
         KV_SERIALIZE(blocktemplate_blob)
         KV_SERIALIZE(blockhashing_blob)
-        KV_SERIALIZE(seed_hash)
-        KV_SERIALIZE(next_seed_hash)
         KV_SERIALIZE(unlock_height)
       END_KV_SERIALIZE_MAP()
     };

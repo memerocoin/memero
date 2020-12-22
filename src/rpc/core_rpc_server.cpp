@@ -1486,7 +1486,6 @@ namespace cryptonote
         return false;
       }
       b.nonce = req.starting_nonce;
-      crypto::hash seed_hash = crypto::null_hash;
       miner::find_nonce_for_given_block([this](const cryptonote::block &b, crypto::hash &hash) {
         return cryptonote::get_block_longhash(b, hash);
       }, b, template_res.difficulty);
