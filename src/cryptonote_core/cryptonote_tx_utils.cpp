@@ -592,8 +592,4 @@ namespace cryptonote
     get_block_longhash(b, p);
     return p;
   }
-
-  void get_block_longhash_reorg(const uint64_t split_height)
-  {
-  }
 }
