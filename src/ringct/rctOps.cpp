@@ -147,7 +147,7 @@ namespace rct {
     
     key zeroCommit(xmr_amount amount) {
         const zero_commitment *begin = zero_commitments;
-        const zero_commitment *end = zero_commitments + sizeof(zero_commitments) / sizeof(zero_commitments[0]);
+        const zero_commitment *end = zero_commitments + len_zero_commitments;
         const zero_commitment value{amount, rct::zero()};
         const auto it = std::lower_bound(begin, end, value, [](const zero_commitment &e0, const zero_commitment &e1){ return e0.amount < e1.amount; });
         if (it != end && it->amount == amount)

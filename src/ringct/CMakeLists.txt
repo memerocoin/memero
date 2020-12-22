@@ -31,6 +31,7 @@ set(ringct_basic_sources
   rctTypes.cpp
   rctCryptoOps.c
   multiexp.cc
+  zeroCommitment.cc
   bulletproofs.cc)
 
 set(ringct_basic_private_headers
