@@ -67,31 +67,6 @@ namespace tools
     }
   };
 
-  //! A file restricted to process owner AND process. Deletes file on destruction.
-  class private_file {
-    std::unique_ptr<std::FILE, close_file> m_handle;
-    std::string m_filename;
-
-    private_file(std::FILE* handle, std::string&& filename) noexcept;
-  public:
-
-    //! `handle() == nullptr && filename.empty()`.
-    private_file() noexcept;
-
-    /*! \return File only readable by owner and only used by this process
-      OR `private_file{}` on error. */
-    static private_file create(std::string filename);
-
-    private_file(private_file&&) = default;
-    private_file& operator=(private_file&&) = default;
-
-    //! Deletes `filename()` and closes `handle()`.
-    ~private_file() noexcept;
-
-    std::FILE* handle() const noexcept { return m_handle.get(); }
-    const std::string& filename() const noexcept { return m_filename; }
-  };
-
   class file_locker
   {
   public:
@@ -229,11 +204,6 @@ namespace tools
 
   bool is_local_address(const std::string &address);
   int vercmp(const char *v0, const char *v1); // returns < 0, 0, > 0, similar to strcmp, but more human friendly than lexical - does not attempt to validate
-
-  bool sha256sum(const uint8_t *data, size_t len, crypto::hash &hash);
-  bool sha256sum(const std::string &filename, crypto::hash &hash);
-
-  boost::optional<bool> is_hdd(const char *path);
 
   boost::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str);
 
