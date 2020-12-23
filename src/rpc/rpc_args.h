@@ -72,11 +72,11 @@ namespace cryptonote
     static const char* tr(const char* str);
     static void init_options(boost::program_options::options_description& desc, const bool any_cert_option = false);
 
-    //! \return Arguments specified by user, or `boost::none` if error
-    static boost::optional<rpc_args> process(const boost::program_options::variables_map& vm, const bool any_cert_option = false);
+    //! \return Arguments specified by user, or `std::nullopt` if error
+    static std::optional<rpc_args> process(const boost::program_options::variables_map& vm, const bool any_cert_option = false);
 
-    //! \return SSL arguments specified by user, or `boost::none` if error
-    static boost::optional<epee::net_utils::ssl_options_t> process_ssl(const boost::program_options::variables_map& vm, const bool any_cert_option = false);
+    //! \return SSL arguments specified by user, or `std::nullopt` if error
+    static std::optional<epee::net_utils::ssl_options_t> process_ssl(const boost::program_options::variables_map& vm, const bool any_cert_option = false);
 
     std::string bind_ip;
     std::string bind_ipv6_address;

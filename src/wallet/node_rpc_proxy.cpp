@@ -72,10 +72,10 @@ void NodeRPCProxy::invalidate()
   m_height_time = 0;
 }
 
-boost::optional<std::string> NodeRPCProxy::get_rpc_version(uint32_t &rpc_version)
+std::optional<std::string> NodeRPCProxy::get_rpc_version(uint32_t &rpc_version)
 {
   if (m_offline)
-    return boost::optional<std::string>("offline");
+    return std::optional<std::string>("offline");
   if (m_rpc_version == 0)
   {
     cryptonote::COMMAND_RPC_GET_VERSION::request req_t = AUTO_VAL_INIT(req_t);
@@ -88,7 +88,7 @@ boost::optional<std::string> NodeRPCProxy::get_rpc_version(uint32_t &rpc_version
     m_rpc_version = resp_t.version;
   }
   rpc_version = m_rpc_version;
-  return boost::optional<std::string>();
+  return std::optional<std::string>();
 }
 
 void NodeRPCProxy::set_height(uint64_t h)
@@ -97,10 +97,10 @@ void NodeRPCProxy::set_height(uint64_t h)
   m_height_time = time(NULL);
 }
 
-boost::optional<std::string> NodeRPCProxy::get_info()
+std::optional<std::string> NodeRPCProxy::get_info()
 {
   if (m_offline)
-    return boost::optional<std::string>("offline");
+    return std::optional<std::string>("offline");
   const time_t now = time(NULL);
   if (now >= m_get_info_time + 30) // re-cache every 30 seconds
   {
@@ -120,56 +120,56 @@ boost::optional<std::string> NodeRPCProxy::get_info()
     m_get_info_time = now;
     m_height_time = now;
   }
-  return boost::optional<std::string>();
+  return std::optional<std::string>();
 }
 
-boost::optional<std::string> NodeRPCProxy::get_height(uint64_t &height)
+std::optional<std::string> NodeRPCProxy::get_height(uint64_t &height)
 {
   const time_t now = time(NULL);
   if (now < m_height_time + 30) // re-cache every 30 seconds
   {
     height = m_height;
-    return boost::optional<std::string>();
+    return std::optional<std::string>();
   }
 
   auto res = get_info();
   if (res)
     return res;
   height = m_height;
-  return boost::optional<std::string>();
+  return std::optional<std::string>();
 }
 
-boost::optional<std::string> NodeRPCProxy::get_target_height(uint64_t &height)
+std::optional<std::string> NodeRPCProxy::get_target_height(uint64_t &height)
 {
   auto res = get_info();
   if (res)
     return res;
   height = m_target_height;
-  return boost::optional<std::string>();
+  return std::optional<std::string>();
 }
 
-boost::optional<std::string> NodeRPCProxy::get_block_weight_limit(uint64_t &block_weight_limit)
+std::optional<std::string> NodeRPCProxy::get_block_weight_limit(uint64_t &block_weight_limit)
 {
   auto res = get_info();
   if (res)
     return res;
   block_weight_limit = m_block_weight_limit;
-  return boost::optional<std::string>();
+  return std::optional<std::string>();
 }
 
-boost::optional<std::string> NodeRPCProxy::get_adjusted_time(uint64_t &adjusted_time)
+std::optional<std::string> NodeRPCProxy::get_adjusted_time(uint64_t &adjusted_time)
 {
     auto res = get_info();
     if (res)
         return res;
     adjusted_time = m_adjusted_time;
-    return boost::optional<std::string>();
+    return std::optional<std::string>();
 }
 
-boost::optional<std::string> NodeRPCProxy::get_earliest_height(uint8_t version, uint64_t &earliest_height)
+std::optional<std::string> NodeRPCProxy::get_earliest_height(uint8_t version, uint64_t &earliest_height)
 {
   if (m_offline)
-    return boost::optional<std::string>("offline");
+    return std::optional<std::string>("offline");
   if (m_earliest_height[version] == 0)
   {
     cryptonote::COMMAND_RPC_HARD_FORK_INFO::request req_t = AUTO_VAL_INIT(req_t);
@@ -186,19 +186,19 @@ boost::optional<std::string> NodeRPCProxy::get_earliest_height(uint8_t version, 
   }
 
   earliest_height = m_earliest_height[version];
-  return boost::optional<std::string>();
+  return std::optional<std::string>();
 }
 
-boost::optional<std::string> NodeRPCProxy::get_dynamic_base_fee_estimate(uint64_t grace_blocks, uint64_t &fee)
+std::optional<std::string> NodeRPCProxy::get_dynamic_base_fee_estimate(uint64_t grace_blocks, uint64_t &fee)
 {
   uint64_t height;
 
-  boost::optional<std::string> result = get_height(height);
+  std::optional<std::string> result = get_height(height);
   if (result)
     return result;
 
   if (m_offline)
-    return boost::optional<std::string>("offline");
+    return std::optional<std::string>("offline");
   if (m_dynamic_base_fee_estimate_cached_height != height || m_dynamic_base_fee_estimate_grace_blocks != grace_blocks)
   {
     cryptonote::COMMAND_RPC_GET_BASE_FEE_ESTIMATE::request req_t = AUTO_VAL_INIT(req_t);
@@ -218,19 +218,19 @@ boost::optional<std::string> NodeRPCProxy::get_dynamic_base_fee_estimate(uint64_
   }
 
   fee = m_dynamic_base_fee_estimate;
-  return boost::optional<std::string>();
+  return std::optional<std::string>();
 }
 
-boost::optional<std::string> NodeRPCProxy::get_fee_quantization_mask(uint64_t &fee_quantization_mask)
+std::optional<std::string> NodeRPCProxy::get_fee_quantization_mask(uint64_t &fee_quantization_mask)
 {
   uint64_t height;
 
-  boost::optional<std::string> result = get_height(height);
+  std::optional<std::string> result = get_height(height);
   if (result)
     return result;
 
   if (m_offline)
-    return boost::optional<std::string>("offline");
+    return std::optional<std::string>("offline");
   if (m_dynamic_base_fee_estimate_cached_height != height)
   {
     cryptonote::COMMAND_RPC_GET_BASE_FEE_ESTIMATE::request req_t = AUTO_VAL_INIT(req_t);
@@ -254,7 +254,7 @@ boost::optional<std::string> NodeRPCProxy::get_fee_quantization_mask(uint64_t &f
     MERROR("Fee quantization mask is 0, forcing to 1");
     fee_quantization_mask = 1;
   }
-  return boost::optional<std::string>();
+  return std::optional<std::string>();
 }
 
 

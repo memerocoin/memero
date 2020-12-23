@@ -71,7 +71,7 @@ namespace
 
   constexpr const char default_rpc_username[] = "lolnero";
 
-  boost::optional<tools::password_container> password_prompter(const char *prompt, bool verify)
+  std::optional<tools::password_container> password_prompter(const char *prompt, bool verify)
   {
     auto pwd_container = tools::password_container::prompt(verify, prompt);
     if (!pwd_container)
@@ -1852,7 +1852,7 @@ namespace tools
   {
     if (!m_wallet) return not_open(er);
 
-    boost::optional<std::pair<uint32_t, uint64_t>> account_minreserve;
+    std::optional<std::pair<uint32_t, uint64_t>> account_minreserve;
     if (!req.all)
     {
       if (req.account_index >= m_wallet->get_num_subaddress_accounts())
@@ -1925,11 +1925,11 @@ namespace tools
       max_height = req.max_height <= max_height ? req.max_height : max_height;
     }
 
-    boost::optional<uint32_t> account_index = req.account_index;
+    std::optional<uint32_t> account_index = req.account_index;
     std::set<uint32_t> subaddr_indices = req.subaddr_indices;
     if (req.all_accounts)
     {
-      account_index = boost::none;
+      account_index = std::nullopt;
       subaddr_indices.clear();
     }
 
@@ -3377,7 +3377,7 @@ int main(int argc, char** argv) {
   daemonizer::init_options(hidden_options, desc_params);
   desc_params.add(hidden_options);
 
-  boost::optional<po::variables_map> vm;
+  std::optional<po::variables_map> vm;
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main(
     argc, argv,

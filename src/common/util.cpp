@@ -529,7 +529,7 @@ std::string get_nix_version_display_string()
     return 0;
   }
 
-  boost::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str)
+  std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str)
   {
     auto pos = str.find(":");
     bool r = pos != std::string::npos;

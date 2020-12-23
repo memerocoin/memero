@@ -48,7 +48,7 @@ namespace wallet_args
     pair.first: The list of parsed options, iff there are no errors.
     pair.second: Should the execution terminate succesfully without actually launching the application
   */
-  std::pair<boost::optional<boost::program_options::variables_map>, bool> main(
+  std::pair<std::optional<boost::program_options::variables_map>, bool> main(
     int argc, char** argv,
     const char* const usage,
     const char* const notice,

@@ -45,18 +45,18 @@ public:
   void invalidate();
   void set_offline(bool offline) { m_offline = offline; }
 
-  boost::optional<std::string> get_rpc_version(uint32_t &version);
-  boost::optional<std::string> get_height(uint64_t &height);
+  std::optional<std::string> get_rpc_version(uint32_t &version);
+  std::optional<std::string> get_height(uint64_t &height);
   void set_height(uint64_t h);
-  boost::optional<std::string> get_target_height(uint64_t &height);
-  boost::optional<std::string> get_block_weight_limit(uint64_t &block_weight_limit);
-  boost::optional<std::string> get_adjusted_time(uint64_t &adjusted_time);
-  boost::optional<std::string> get_earliest_height(uint8_t version, uint64_t &earliest_height);
-  boost::optional<std::string> get_dynamic_base_fee_estimate(uint64_t grace_blocks, uint64_t &fee);
-  boost::optional<std::string> get_fee_quantization_mask(uint64_t &fee_quantization_mask);
+  std::optional<std::string> get_target_height(uint64_t &height);
+  std::optional<std::string> get_block_weight_limit(uint64_t &block_weight_limit);
+  std::optional<std::string> get_adjusted_time(uint64_t &adjusted_time);
+  std::optional<std::string> get_earliest_height(uint8_t version, uint64_t &earliest_height);
+  std::optional<std::string> get_dynamic_base_fee_estimate(uint64_t grace_blocks, uint64_t &fee);
+  std::optional<std::string> get_fee_quantization_mask(uint64_t &fee_quantization_mask);
 
 private:
-  boost::optional<std::string> get_info();
+  std::optional<std::string> get_info();
 
   epee::net_utils::http::abstract_http_client &m_http_client;
   boost::recursive_mutex &m_daemon_rpc_mutex;
