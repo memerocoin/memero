@@ -940,54 +940,6 @@ namespace wallet_rpc
     END_KV_SERIALIZE_MAP()
   };
 
-  struct COMMAND_RPC_GET_PAYMENTS
-  {
-    struct request_t
-    {
-      std::string payment_id;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(payment_id)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::list<payment_details> payments;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(payments)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_GET_BULK_PAYMENTS
-  {
-    struct request_t
-    {
-      std::vector<std::string> payment_ids;
-      uint64_t min_block_height;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(payment_ids)
-        KV_SERIALIZE(min_block_height)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::list<payment_details> payments;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(payments)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-  
   struct transfer_details
   {
     uint64_t amount;
