@@ -488,28 +488,6 @@ eof:
     return start_default_console_handler_no_srv_param(ptsrv, handlr, [prompt](){return prompt;}, usage);
   }
 
-  /*template<class a>
-  bool f(int i, a l)
-  {
-    return true;
-  }*/
-  /*
-  template<class chain_handler>
-  bool default_console_handler2(chain_handler ch_handler, const std::string usage)
-  */
-
-
-  /*template<class t_handler>
-  bool start_default_console2(t_handler handlr, const std::string& usage = "")
-  {
-    //std::string usage_local = usage;
-    std::thread( boost::bind(default_console_handler2<t_handler>, handlr, usage) );
-    //boost::function<bool ()> p__ = boost::bind(f<t_handler>, 1, handlr);
-    //boost::function<bool ()> p__ = boost::bind(default_console_handler2<t_handler>, handlr, usage);
-    //std::thread tr(p__);
-    return true;
-  }*/
-
   class command_handler {
   public:
     typedef boost::function<bool (const std::vector<std::string> &)> callback;
