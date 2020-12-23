@@ -35,7 +35,6 @@ libboost-dev \
 libboost-date-time-dev \
 libboost-filesystem-dev \
 libboost-program-options-dev \
-libboost-regex-dev \
 libboost-serialization-dev \
 libboost-system-dev \
 libboost-thread-dev \
