@@ -32,7 +32,6 @@
 #include <rpc.h>
 #include <string>
 #include <map>
-#include <boost/shared_ptr.hpp>
 
 #include "misc_log_ex.h"
 //#include "threads_helper.h"
@@ -216,7 +215,7 @@ PRAGMA_WARNING_POP
 		bool shutdown_connection(connection<TProtocol>* pconn);
 
 
-		typedef std::map<SOCKET, boost::shared_ptr<connection<TProtocol> > > connections_container;
+		typedef std::map<SOCKET, std::shared_ptr<connection<TProtocol> > > connections_container;
 		SOCKET m_listen_socket;
 		HANDLE m_completion_port;
 		connections_container m_connections;

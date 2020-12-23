@@ -41,6 +41,8 @@
 #include <functional>
 #include <utility>
 #include <vector>
+#include <shared_mutex>
+
 
 #include "cryptonote_config.h"
 #include "cryptonote_protocol/fwd.h"
@@ -220,7 +222,7 @@ namespace nodetool
       boost::asio::ip::tcp::endpoint m_proxy_address;
       std::atomic<unsigned int> m_current_number_of_out_peers;
       std::atomic<unsigned int> m_current_number_of_in_peers;
-      boost::shared_mutex m_seed_nodes_lock;
+      std::shared_mutex m_seed_nodes_lock;
       bool m_can_pingback;
       bool m_allow_inbound;
       bool m_seed_nodes_initialized;

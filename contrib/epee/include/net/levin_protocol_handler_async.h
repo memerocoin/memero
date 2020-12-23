@@ -268,7 +268,7 @@ public:
     }
   };
   critical_section m_invoke_response_handlers_lock;
-  std::list<boost::shared_ptr<invoke_response_handler_base> > m_invoke_response_handlers;
+  std::list<std::shared_ptr<invoke_response_handler_base> > m_invoke_response_handlers;
   
   template<class callback_t>
   bool add_invoke_response_handler(const callback_t &cb, uint64_t timeout,  async_protocol_handler& con, int command)
@@ -279,7 +279,7 @@ public:
       MERROR("Adding response handler to a released object");
       return false;
     }
-    boost::shared_ptr<invoke_response_handler_base> handler(boost::make_shared<anvoke_handler<callback_t>>(cb, timeout, con, command));
+    std::shared_ptr<invoke_response_handler_base> handler(std::make_shared<anvoke_handler<callback_t>>(cb, timeout, con, command));
     m_invoke_response_handlers.push_back(handler);
     return handler->is_timer_started();
   }
@@ -356,7 +356,7 @@ public:
 
     // Never call callback inside critical section, that can cause deadlock. Callback can be called when
     // invoke_response_handler_base is cancelled
-    std::for_each(local_invoke_response_handlers.begin(), local_invoke_response_handlers.end(), [](const boost::shared_ptr<invoke_response_handler_base>& pinv_resp_hndlr) {
+    std::for_each(local_invoke_response_handlers.begin(), local_invoke_response_handlers.end(), [](const std::shared_ptr<invoke_response_handler_base>& pinv_resp_hndlr) {
       pinv_resp_hndlr->cancel();
     });
 
@@ -430,7 +430,7 @@ public:
             if (!m_invoke_response_handlers.empty())
             {
               //async call scenario
-              boost::shared_ptr<invoke_response_handler_base> response_handler = m_invoke_response_handlers.front();
+              std::shared_ptr<invoke_response_handler_base> response_handler = m_invoke_response_handlers.front();
               response_handler->reset_timer();
               MDEBUG(m_connection_context << "LEVIN_PACKET partial msg received. len=" << cb);
             }
@@ -474,7 +474,7 @@ public:
             epee::critical_region_t<decltype(m_invoke_response_handlers_lock)> invoke_response_handlers_guard(m_invoke_response_handlers_lock);
             if(!m_invoke_response_handlers.empty())
             {//async call scenario
-              boost::shared_ptr<invoke_response_handler_base> response_handler = m_invoke_response_handlers.front();
+              std::shared_ptr<invoke_response_handler_base> response_handler = m_invoke_response_handlers.front();
               bool timer_cancelled = response_handler->cancel_timer();
                // Don't pop handler, to avoid destroying it
               if(timer_cancelled)

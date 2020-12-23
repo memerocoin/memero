@@ -418,7 +418,7 @@ namespace nodetool
 
     if (command_line::has_arg(vm, arg_p2p_seed_node))
     {
-      std::unique_lock<boost::shared_mutex> lock(public_zone.m_seed_nodes_lock);
+      std::unique_lock<std::shared_mutex> lock(public_zone.m_seed_nodes_lock);
 
       if (!parse_peers_and_add_to_container(vm, arg_p2p_seed_node, public_zone.m_seed_nodes))
         return false;
@@ -1460,12 +1460,10 @@ namespace nodetool
   bool node_server<t_payload_net_handler>::connect_to_seed(epee::net_utils::zone zone)
   {
       network_zone& server = m_network_zones.at(zone);
-      boost::upgrade_lock<boost::shared_mutex> seed_nodes_upgrade_lock(server.m_seed_nodes_lock);
 
       if (!server.m_seed_nodes_initialized)
       {
         const std::uint16_t default_port = cryptonote::get_config(m_nettype).P2P_DEFAULT_PORT;
-        boost::upgrade_to_unique_lock<boost::shared_mutex> seed_nodes_lock(seed_nodes_upgrade_lock);
         server.m_seed_nodes_initialized = true;
         for (const auto& full_addr : get_seed_nodes(zone))
         {
@@ -1501,8 +1499,6 @@ namespace nodetool
             MWARNING("Failed to connect to any of seed peers, trying fallback seeds");
             current_index = server.m_seed_nodes.size() - 1;
             {
-              boost::upgrade_to_unique_lock<boost::shared_mutex> seed_nodes_lock(seed_nodes_upgrade_lock);
-
               for (const auto &peer: get_ip_seed_nodes())
               {
                 MDEBUG("Fallback seed node: " << peer);
