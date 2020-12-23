@@ -92,7 +92,7 @@ public:
     std::deque<entry> queue;
     std::condition_variable has_work;
     std::mutex mutex;
-    std::vector<boost::thread> threads;
+    std::vector<std::thread> threads;
     unsigned int active;
     unsigned int max;
     bool running;

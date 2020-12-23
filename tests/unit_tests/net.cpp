@@ -945,7 +945,7 @@ namespace
         boost::asio::io_service::work work;
         stream_type::socket server;
         stream_type::acceptor acceptor;
-        boost::thread io;
+        std::thread io;
         std::atomic<bool> connected;
 
         io_thread()
@@ -1763,7 +1763,7 @@ TEST(zmq, read_write_termination)
     EXPECT_EQ(net::zmq::make_error_code(EAGAIN), received.error());
 
     thread = boost::scoped_thread<>{
-        boost::thread{
+        std::thread{
             [&context] () { context.reset(); }
         }
     };

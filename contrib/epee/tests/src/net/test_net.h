@@ -263,8 +263,8 @@ namespace tests
     srv1.set_thread_prefix("SRV_A");
     srv2.set_thread_prefix("SRV_B");
 
-    boost::thread th1( boost::bind(&test_levin_server::run, &srv1));
-    boost::thread th2( boost::bind(&test_levin_server::run, &srv2));
+    std::thread th1( boost::bind(&test_levin_server::run, &srv1));
+    std::thread th2( boost::bind(&test_levin_server::run, &srv2));
 
     LOG_PRINT_L0("Initialized servers, waiting for worker threads started...");
     misc_utils::sleep_no_w(1000);  
@@ -369,8 +369,8 @@ namespace tests
     srv1.set_thread_prefix("SRV_A");
     srv2.set_thread_prefix("SRV_B");
 
-    boost::thread thmain1( boost::bind(&test_levin_server::run, &srv1));
-    boost::thread thmain2( boost::bind(&test_levin_server::run, &srv2));
+    std::thread thmain1( boost::bind(&test_levin_server::run, &srv1));
+    std::thread thmain2( boost::bind(&test_levin_server::run, &srv2));
 
     LOG_PRINT_L0("Initalized servers, waiting for worker threads started...");
     misc_utils::sleep_no_w(1000);  
@@ -384,14 +384,14 @@ namespace tests
     COMMAND_EXAMPLE_1::request resp;
 
 
-    boost::thread work_1( boost::bind(do_test2_work_with_srv, boost::ref(srv1), port2));
-    boost::thread work_2( boost::bind(do_test2_work_with_srv, boost::ref(srv2), port1));
-    boost::thread work_3( boost::bind(do_test2_work_with_srv, boost::ref(srv1), port2));
-    boost::thread work_4( boost::bind(do_test2_work_with_srv, boost::ref(srv2), port1));
-    boost::thread work_5( boost::bind(do_test2_work_with_srv, boost::ref(srv1), port2));
-    boost::thread work_6( boost::bind(do_test2_work_with_srv, boost::ref(srv2), port1));
-    boost::thread work_7( boost::bind(do_test2_work_with_srv, boost::ref(srv1), port2));
-    boost::thread work_8( boost::bind(do_test2_work_with_srv, boost::ref(srv2), port1));
+    std::thread work_1( boost::bind(do_test2_work_with_srv, boost::ref(srv1), port2));
+    std::thread work_2( boost::bind(do_test2_work_with_srv, boost::ref(srv2), port1));
+    std::thread work_3( boost::bind(do_test2_work_with_srv, boost::ref(srv1), port2));
+    std::thread work_4( boost::bind(do_test2_work_with_srv, boost::ref(srv2), port1));
+    std::thread work_5( boost::bind(do_test2_work_with_srv, boost::ref(srv1), port2));
+    std::thread work_6( boost::bind(do_test2_work_with_srv, boost::ref(srv2), port1));
+    std::thread work_7( boost::bind(do_test2_work_with_srv, boost::ref(srv1), port2));
+    std::thread work_8( boost::bind(do_test2_work_with_srv, boost::ref(srv2), port1));
 
 
     work_1.join();

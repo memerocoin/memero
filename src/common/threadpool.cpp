@@ -72,13 +72,11 @@ void threadpool::recycle() {
 
 void threadpool::create(unsigned int max_threads) {
   const std::unique_lock<std::mutex> lock(mutex);
-  boost::thread::attributes attrs;
-  attrs.set_stack_size(THREAD_STACK_SIZE);
   max = max_threads ? max_threads : tools::get_max_concurrency();
   size_t i = max ? max - 1 : 0;
   running = true;
   while(i--) {
-    threads.push_back(boost::thread(attrs, boost::bind(&threadpool::run, this, false)));
+    threads.push_back(std::thread(boost::bind(&threadpool::run, this, false)));
   }
 }
 

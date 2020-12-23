@@ -113,7 +113,7 @@ namespace cryptonote
     std::atomic<int32_t> m_pausers_count;
     epee::critical_section m_miners_count_lock;
 
-    std::list<boost::thread> m_threads;
+    std::list<std::thread> m_threads;
     epee::critical_section m_threads_lock;
     i_miner_handler* m_phandler;
     get_block_hash_t m_gbh;
@@ -133,7 +133,6 @@ namespace cryptonote
     bool m_do_print_hashrate;
     bool m_do_mining;
     std::vector<std::pair<uint64_t, uint64_t>> m_threads_autodetect;
-    boost::thread::attributes m_attrs;
 
     // background mining stuffs ..
 

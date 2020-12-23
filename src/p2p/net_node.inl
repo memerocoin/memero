@@ -768,7 +768,7 @@ namespace nodetool
   bool node_server<t_payload_net_handler>::run()
   {
     // creating thread to log number of connections
-    mPeersLoggerThread.reset(new boost::thread([&]()
+    mPeersLoggerThread.reset(new std::thread([&]()
     {
       _note("Thread monitor number of peers - start");
       const network_zone& public_zone = m_network_zones.at(epee::net_utils::zone::public_);
@@ -805,11 +805,9 @@ namespace nodetool
 
     //here you can set worker threads count
     int thrds_count = 10;
-    boost::thread::attributes attrs;
-    attrs.set_stack_size(THREAD_STACK_SIZE);
     //go to loop
     MINFO("Run net_service loop( " << thrds_count << " threads)...");
-    if(!public_zone.m_net_server.run_server(thrds_count, true, attrs))
+    if(!public_zone.m_net_server.run_server(thrds_count, true))
     {
       LOG_ERROR("Failed to run net tcp server!");
     }

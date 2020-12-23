@@ -32,7 +32,6 @@
 
 
 
-#include <boost/foreach.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <chrono>
 #include <thread>
@@ -40,7 +39,6 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp> // TODO
 #include <boost/thread/condition_variable.hpp> // TODO
-#include <boost/make_shared.hpp>
 #include "warnings.h"
 #include "string_tools.h"
 #include "misc_language.h"
@@ -656,7 +654,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
         long int ms = 250 + (rng() % 50);
         MDEBUG("Sleeping because QUEUE is FULL, in " << __FUNCTION__ << " for " << ms << " ms before packet_size="<<chunk.size()); // XXX debug sleep
         m_send_que_lock.unlock();
-        boost::this_thread::sleep(boost::posix_time::milliseconds( ms ) );
+        std::this_thread::sleep_for(std::chrono::milliseconds( ms ) );
         m_send_que_lock.lock();
         _dbg1("sleep for queue: " << ms);
 
@@ -1116,7 +1114,7 @@ POP_WARNINGS
     TRY_ENTRY();
     uint32_t local_thr_index = boost::interprocess::ipcdetail::atomic_inc32(&m_thread_index); 
     std::string thread_name = std::string("[") + m_thread_name_prefix;
-    thread_name += boost::to_string(local_thr_index) + "]";
+    thread_name += std::to_string(local_thr_index) + "]";
     MLOG_SET_THREAD_NAME(thread_name);
     //   _fact("Thread name: " << m_thread_name_prefix);
     while(!m_stop_signal_sent)
@@ -1158,11 +1156,11 @@ POP_WARNINGS
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  bool boosted_tcp_server<t_protocol_handler>::run_server(size_t threads_count, bool wait, const boost::thread::attributes& attrs)
+  bool boosted_tcp_server<t_protocol_handler>::run_server(size_t threads_count, bool wait)
   {
     TRY_ENTRY();
     m_threads_count = threads_count;
-    m_main_thread_id = boost::this_thread::get_id();
+    m_main_thread_id = std::this_thread::get_id();
     MLOG_SET_THREAD_NAME("[SRV_MAIN]");
     while(!m_stop_signal_sent)
     {
@@ -1171,8 +1169,8 @@ POP_WARNINGS
       CRITICAL_REGION_BEGIN(m_threads_lock);
       for (std::size_t i = 0; i < threads_count; ++i)
       {
-        std::shared_ptr<boost::thread> thread(new boost::thread(
-          attrs, boost::bind(&boosted_tcp_server<t_protocol_handler>::worker_thread, this)));
+        std::shared_ptr<std::thread> thread(new std::thread(
+          boost::bind(&boosted_tcp_server<t_protocol_handler>::worker_thread, this)));
           _note("Run server thread name: " << m_thread_name_prefix);
         m_threads.push_back(thread);
       }
@@ -1217,12 +1215,12 @@ POP_WARNINGS
   {
     TRY_ENTRY();
     CRITICAL_REGION_LOCAL(m_threads_lock);
-    BOOST_FOREACH(std::shared_ptr<boost::thread>& thp,  m_threads)
+    BOOST_FOREACH(std::shared_ptr<std::thread>& thp,  m_threads)
     {
-      if(thp->get_id() == boost::this_thread::get_id())
+      if(thp->get_id() == std::this_thread::get_id())
         return true;
     }
-    if(m_threads_count == 1 && boost::this_thread::get_id() == m_main_thread_id)
+    if(m_threads_count == 1 && std::this_thread::get_id() == m_main_thread_id)
       return true;
     return false;
     CATCH_ENTRY_L0("boosted_tcp_server<t_protocol_handler>::is_thread_worker", false);
@@ -1232,17 +1230,9 @@ POP_WARNINGS
   bool boosted_tcp_server<t_protocol_handler>::timed_wait_server_stop(uint64_t wait_mseconds)
   {
     TRY_ENTRY();
-    std::chrono::milliseconds ms(wait_mseconds / 10);
+    std::chrono::milliseconds ms(wait_mseconds / 5);
     std::this_thread::sleep_for(ms);
 
-    for (std::size_t i = 0; i < m_threads.size(); ++i)
-    {
-      if(m_threads[i]->joinable())
-      {
-        _dbg1("Interrupting thread " << m_threads[i]->native_handle());
-        m_threads[i]->interrupt();
-      }
-    }
     return true;
     CATCH_ENTRY_L0("boosted_tcp_server<t_protocol_handler>::timed_wait_server_stop", false);
   }

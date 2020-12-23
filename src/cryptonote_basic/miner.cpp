@@ -43,7 +43,6 @@
 #include "string_coding.h"
 #include "string_tools.h"
 #include "storages/portable_storage_template_helper.h"
-#include "boost/logic/tribool.hpp"
 
 #ifdef __APPLE__
   #include <sys/times.h>
@@ -115,7 +114,6 @@ namespace cryptonote
     m_current_hash_rate(0),
     m_block_reward(0)
   {
-    m_attrs.set_stack_size(THREAD_STACK_SIZE);
   }
   //-----------------------------------------------------------------------------------------------------
   miner::~miner()
@@ -264,7 +262,7 @@ namespace cryptonote
     boost::interprocess::ipcdetail::atomic_write32(&m_stop, 0);
     boost::interprocess::ipcdetail::atomic_write32(&m_thread_index, 0);
     for(size_t i = 0; i != m_threads_total; i++)
-      m_threads.push_back(boost::thread(m_attrs, boost::bind(&miner::worker_thread, this)));
+      m_threads.push_back(std::thread(std::bind(&miner::worker_thread, this)));
   }
   //-----------------------------------------------------------------------------------------------------
   void miner::init_options(boost::program_options::options_description& desc)
@@ -365,7 +363,7 @@ namespace cryptonote
     
     for(size_t i = 0; i != m_threads_total; i++)
     {
-      m_threads.push_back(boost::thread(m_attrs, boost::bind(&miner::worker_thread, this)));
+      m_threads.push_back(std::thread(std::bind(&miner::worker_thread, this)));
     }
 
     if (threads_count == 0)

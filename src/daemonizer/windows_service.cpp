@@ -104,7 +104,7 @@ namespace {
   void pause_to_display_admin_window_messages()
   {
     std::chrono::milliseconds how_long{1500};
-    boost::this_thread::sleep_for(how_long);
+    std::this_thread::sleep_for(how_long);
   }
 }
 

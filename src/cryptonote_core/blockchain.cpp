@@ -373,7 +373,7 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
 
   m_async_work_idle = std::unique_ptr < boost::asio::io_service::work > (new boost::asio::io_service::work(m_async_service));
   // we only need 1
-  m_async_pool.create_thread(boost::bind(&boost::asio::io_service::run, &m_async_service));
+  m_async_pool.emplace_back(std::thread(boost::bind(&boost::asio::io_service::run, &m_async_service)));
 
   MINFO("Blockchain initialized. last block: " << m_db->height() - 1 << ", " << epee::misc_utils::get_time_interval_string(timestamp_diff) << " time ago, current difficulty: " << get_difficulty_for_next_block());
 
@@ -491,7 +491,11 @@ bool Blockchain::deinit()
 
  // stop async service
   m_async_work_idle.reset();
-  m_async_pool.join_all();
+
+  for (auto& thread : m_async_pool) {
+    thread.join();
+  }
+
   m_async_service.stop();
 
   // as this should be called if handling a SIGSEGV, need to check

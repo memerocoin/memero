@@ -252,7 +252,7 @@ void connection_basic::sleep_before_packet(size_t packet_size, int phase,  int q
 		if (delay > 0) {
             long int ms = (long int)(delay * 1000);
 			MTRACE("Sleeping in " << __FUNCTION__ << " for " << ms << " ms before packet_size="<<packet_size); // debug sleep
-			boost::this_thread::sleep(boost::posix_time::milliseconds( ms ) );
+			std::this_thread::sleep_for(std::chrono::milliseconds( ms ) );
 		}
 	} while(delay > 0);
 

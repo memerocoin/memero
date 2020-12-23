@@ -61,7 +61,7 @@ namespace epee
 #ifdef HAVE_READLINE
       m_readline_buffer.start();
 #endif
-      m_reader_thread = boost::thread(std::bind(&async_stdin_reader::reader_thread_func, this));
+      m_reader_thread = std::thread(std::bind(&async_stdin_reader::reader_thread_func, this));
     }
 
     ~async_stdin_reader()
@@ -281,7 +281,7 @@ eof:
     };
 
   private:
-    boost::thread m_reader_thread;
+    std::thread m_reader_thread;
     std::atomic<bool> m_run;
 #ifdef HAVE_READLINE
     rdln::readline_buffer m_readline_buffer;
@@ -439,7 +439,7 @@ eof:
   bool start_default_console(t_server* ptsrv, t_handler handlr, std::function<std::string(void)> prompt, const std::string& usage = "")
   {
     std::shared_ptr<async_console_handler> console_handler = std::make_shared<async_console_handler>();
-    boost::thread([=](){console_handler->run<t_server, t_handler>(ptsrv, handlr, prompt, usage);}).detach();
+    std::thread([=](){console_handler->run<t_server, t_handler>(ptsrv, handlr, prompt, usage);}).detach();
     return true;
   }
 
@@ -477,7 +477,7 @@ eof:
   template<class t_server, class t_handler>
   bool start_default_console_handler_no_srv_param(t_server* ptsrv, t_handler handlr, std::function<std::string(void)> prompt, const std::string& usage = "")
   {
-    boost::thread( boost::bind(run_default_console_handler_no_srv_param<t_server, t_handler>, ptsrv, handlr, prompt, usage) );
+    std::thread( boost::bind(run_default_console_handler_no_srv_param<t_server, t_handler>, ptsrv, handlr, prompt, usage) );
     return true;
   }
 
@@ -502,10 +502,10 @@ eof:
   bool start_default_console2(t_handler handlr, const std::string& usage = "")
   {
     //std::string usage_local = usage;
-    boost::thread( boost::bind(default_console_handler2<t_handler>, handlr, usage) );
+    std::thread( boost::bind(default_console_handler2<t_handler>, handlr, usage) );
     //boost::function<bool ()> p__ = boost::bind(f<t_handler>, 1, handlr);
     //boost::function<bool ()> p__ = boost::bind(default_console_handler2<t_handler>, handlr, usage);
-    //boost::thread tr(p__);
+    //std::thread tr(p__);
     return true;
   }*/
 
@@ -627,7 +627,7 @@ eof:
   {
     typedef command_handler::callback console_command_handler;
     typedef command_handler::lookup command_handlers_map;
-    std::unique_ptr<boost::thread> m_console_thread;
+    std::unique_ptr<std::thread> m_console_thread;
     async_console_handler m_console_handler;
   public:
     ~console_handlers_binder() {
@@ -644,7 +644,7 @@ eof:
 
     bool start_handling(std::function<std::string(void)> prompt, const std::string& usage_string = "", std::function<void(void)> exit_handler = NULL)
     {
-      m_console_thread.reset(new boost::thread(boost::bind(&console_handlers_binder::run_handling, this, prompt, usage_string, exit_handler)));
+      m_console_thread.reset(new std::thread(boost::bind(&console_handlers_binder::run_handling, this, prompt, usage_string, exit_handler)));
       return true;
     }
     bool start_handling(const std::string &prompt, const std::string& usage_string = "", std::function<void(void)> exit_handler = NULL)
@@ -681,7 +681,7 @@ eof:
   //public:
   //  bool start_handling(t_server* psrv, const std::string& prompt, const std::string& usage_string = "")
   //  {
-  //    boost::thread(boost::bind(&srv_console_handlers_binder<t_server>::run_handling, this, psrv, prompt, usage_string)).detach();
+  //    std::thread(boost::bind(&srv_console_handlers_binder<t_server>::run_handling, this, psrv, prompt, usage_string)).detach();
   //    return true;
   //  }
 

@@ -126,9 +126,9 @@ namespace levin
 			if(res && !boost::interprocess::ipcdetail::atomic_read32(&m_threads_count) )
 			{
 				//boost::interprocess::ipcdetail::atomic_write32(&m_is_stop, 0);//m_is_stop = false;
-				boost::thread( boost::bind(&levin_duplex_client::reciever_thread, this) );
-				boost::thread( boost::bind(&levin_duplex_client::handler_thread, this) );
-				boost::thread( boost::bind(&levin_duplex_client::handler_thread, this) );
+				std::thread( boost::bind(&levin_duplex_client::reciever_thread, this) );
+				std::thread( boost::bind(&levin_duplex_client::handler_thread, this) );
+				std::thread( boost::bind(&levin_duplex_client::handler_thread, this) );
 			}
 
 			return res;

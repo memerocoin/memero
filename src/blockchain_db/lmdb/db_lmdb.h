@@ -466,7 +466,7 @@ private:
   std::string m_folder;
   mdb_txn_safe* m_write_txn; // may point to either a short-lived txn or a batch txn
   mdb_txn_safe* m_write_batch_txn; // persist batch txn outside of BlockchainLMDB
-  boost::thread::id m_writer;
+  std::thread::id m_writer;
 
   bool m_batch_transactions; // support for batch transactions
   bool m_batch_active; // whether batch transaction is in progress

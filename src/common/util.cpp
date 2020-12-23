@@ -450,14 +450,14 @@ std::string get_nix_version_display_string()
   namespace
   {
     std::mutex max_concurrency_lock;
-    unsigned max_concurrency = boost::thread::hardware_concurrency();
+    unsigned max_concurrency = std::thread::hardware_concurrency();
   }
 
   void set_max_concurrency(unsigned n)
   {
     if (n < 1)
-      n = boost::thread::hardware_concurrency();
-    unsigned hwc = boost::thread::hardware_concurrency();
+      n = std::thread::hardware_concurrency();
+    unsigned hwc = std::thread::hardware_concurrency();
     if (n > hwc)
       n = hwc;
     std::lock_guard<std::mutex> lock(max_concurrency_lock);

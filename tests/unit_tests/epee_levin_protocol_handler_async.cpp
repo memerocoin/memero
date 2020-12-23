@@ -308,14 +308,14 @@ TEST_F(positive_test_connection_to_levin_protocol_handler_calls, concurent_handl
     }
   };
 
-  const size_t thread_count = boost::thread::hardware_concurrency();
-  std::vector<boost::thread> threads(thread_count);
-  for (boost::thread& th : threads)
+  const size_t thread_count = std::thread::hardware_concurrency();
+  std::vector<std::thread> threads(thread_count);
+  for (std::thread& th : threads)
   {
-    th = boost::thread(create_and_destroy_connections);
+    th = std::thread(create_and_destroy_connections);
   }
 
-  for (boost::thread& th : threads)
+  for (std::thread& th : threads)
   {
     th.join();
   }

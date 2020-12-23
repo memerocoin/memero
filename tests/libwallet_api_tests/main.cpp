@@ -260,11 +260,11 @@ void open_wallet_helper(Monero::WalletManager *wmgr, Monero::Wallet **wallet, co
 {
     if (mutex)
         mutex->lock();
-    LOG_PRINT_L3("opening wallet in thread: " << boost::this_thread::get_id());
+    LOG_PRINT_L3("opening wallet in thread: " << std::this_thread::get_id());
     *wallet = wmgr->openWallet(WALLET_NAME, pass, Monero::NetworkType::TESTNET);
     LOG_PRINT_L3("wallet address: " << (*wallet)->mainAddress());
     LOG_PRINT_L3("wallet status: " << (*wallet)->status());
-    LOG_PRINT_L3("closing wallet in thread: " << boost::this_thread::get_id());
+    LOG_PRINT_L3("closing wallet in thread: " << std::this_thread::get_id());
     if (mutex)
         mutex->unlock();
 }

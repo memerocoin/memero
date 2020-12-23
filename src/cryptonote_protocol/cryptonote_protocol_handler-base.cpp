@@ -128,7 +128,7 @@ void cryptonote_protocol_handler_base::handler_response_blocks_now(size_t packet
 			//delay += rand2*0.1;
             		long int ms = (long int)(delay * 1000);
 			MDEBUG("Sleeping for " << ms << " ms before packet_size="<<packet_size); // XXX debug sleep
-			boost::this_thread::sleep(boost::posix_time::milliseconds( ms ) ); // TODO randomize sleeps
+			std::this_thread::sleep_for(std::chrono::milliseconds( ms ) ); // TODO randomize sleeps
 		}
 	} while(delay > 0);
 
