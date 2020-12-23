@@ -32,10 +32,8 @@ sudo apt install git build-essential cmake -y
 
 sudo apt install \
 libboost-dev \
-libboost-chrono-dev \
 libboost-date-time-dev \
 libboost-filesystem-dev \
-libboost-locale-dev \
 libboost-program-options-dev \
 libboost-regex-dev \
 libboost-serialization-dev \
