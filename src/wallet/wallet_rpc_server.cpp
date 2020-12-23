@@ -225,12 +225,9 @@ namespace tools
       return false;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const crypto::hash &payment_id, const tools::wallet2::payment_details &pd)
+  void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const tools::wallet2::payment_details &pd)
   {
     entry.txid = string_tools::pod_to_hex(pd.m_tx_hash);
-    entry.payment_id = string_tools::pod_to_hex(payment_id);
-    if (entry.payment_id.substr(16).find_first_not_of('0') == std::string::npos)
-      entry.payment_id = entry.payment_id.substr(0,16);
     entry.height = pd.m_block_height;
     entry.timestamp = pd.m_timestamp;
     entry.amount = pd.m_amount;
@@ -248,9 +245,6 @@ namespace tools
   void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const tools::wallet2::confirmed_transfer_details &pd)
   {
     entry.txid = string_tools::pod_to_hex(txid);
-    entry.payment_id = string_tools::pod_to_hex(pd.m_payment_id);
-    if (entry.payment_id.substr(16).find_first_not_of('0') == std::string::npos)
-      entry.payment_id = entry.payment_id.substr(0,16);
     entry.height = pd.m_block_height;
     entry.timestamp = pd.m_timestamp;
     entry.unlock_time = pd.m_unlock_time;
@@ -263,7 +257,7 @@ namespace tools
       entry.destinations.push_back(wallet_rpc::transfer_destination());
       wallet_rpc::transfer_destination &td = entry.destinations.back();
       td.amount = d.amount;
-      td.address = d.address(m_wallet->nettype(), pd.m_payment_id);
+      td.address = d.address(m_wallet->nettype());
     }
 
     entry.type = "out";
@@ -278,10 +272,6 @@ namespace tools
   {
     bool is_failed = pd.m_state == tools::wallet2::unconfirmed_transfer_details::failed;
     entry.txid = string_tools::pod_to_hex(txid);
-    entry.payment_id = string_tools::pod_to_hex(pd.m_payment_id);
-    entry.payment_id = string_tools::pod_to_hex(pd.m_payment_id);
-    if (entry.payment_id.substr(16).find_first_not_of('0') == std::string::npos)
-      entry.payment_id = entry.payment_id.substr(0,16);
     entry.height = 0;
     entry.timestamp = pd.m_timestamp;
     entry.fee = pd.m_amount_in - pd.m_amount_out;
@@ -293,7 +283,7 @@ namespace tools
       entry.destinations.push_back(wallet_rpc::transfer_destination());
       wallet_rpc::transfer_destination &td = entry.destinations.back();
       td.amount = d.amount;
-      td.address = d.address(m_wallet->nettype(), pd.m_payment_id);
+      td.address = d.address(m_wallet->nettype());
     }
 
     entry.type = is_failed ? "failed" : "pending";
@@ -304,13 +294,10 @@ namespace tools
     set_confirmations(entry, m_wallet->get_blockchain_current_height(), m_wallet->get_last_block_reward(), pd.m_tx.unlock_time);
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &payment_id, const tools::wallet2::pool_payment_details &ppd)
+  void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const tools::wallet2::pool_payment_details &ppd)
   {
     const tools::wallet2::payment_details &pd = ppd.m_pd;
     entry.txid = string_tools::pod_to_hex(pd.m_tx_hash);
-    entry.payment_id = string_tools::pod_to_hex(payment_id);
-    if (entry.payment_id.substr(16).find_first_not_of('0') == std::string::npos)
-      entry.payment_id = entry.payment_id.substr(0,16);
     entry.height = 0;
     entry.timestamp = pd.m_timestamp;
     entry.amount = pd.m_amount;
@@ -653,9 +640,8 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::validate_transfer(const std::list<wallet_rpc::transfer_destination>& destinations, const std::string& payment_id, std::vector<cryptonote::tx_destination_entry>& dsts, std::vector<uint8_t>& extra, bool at_least_one_destination, epee::json_rpc::error& er)
+  bool wallet_rpc_server::validate_transfer(const std::list<wallet_rpc::transfer_destination>& destinations, std::vector<cryptonote::tx_destination_entry>& dsts, std::vector<uint8_t>& extra, bool at_least_one_destination, epee::json_rpc::error& er)
   {
-    crypto::hash8 integrated_payment_id = crypto::null_hash8;
     std::string extra_nonce;
     for (auto it = destinations.begin(); it != destinations.end(); it++)
     {
@@ -674,15 +660,7 @@ namespace tools
       de.addr = info.address;
       de.is_subaddress = info.is_subaddress;
       de.amount = it->amount;
-      de.is_integrated = info.has_payment_id;
       dsts.push_back(de);
-
-      if (info.has_payment_id)
-      {
-        er.code = WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID;
-        er.message = "Payment ID is deprecated";
-        return false;
-      }
     }
 
     if (at_least_one_destination && dsts.empty())
@@ -692,12 +670,6 @@ namespace tools
       return false;
     }
 
-    if (!payment_id.empty())
-    {
-      er.code = WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID;
-      er.message = "Standalone payment IDs are obsolete. Use subaddresses or integrated addresses instead";
-      return false;
-    }
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -809,7 +781,7 @@ namespace tools
     }
 
     // validate the transfer requested and populate dsts & extra
-    if (!validate_transfer(req.destinations, req.payment_id, dsts, extra, true, er))
+    if (!validate_transfer(req.destinations, dsts, extra, true, er))
     {
       return false;
     }
@@ -861,7 +833,7 @@ namespace tools
     }
 
     // validate the transfer requested and populate dsts & extra; RPC_TRANSFER::request and RPC_TRANSFER_SPLIT::request are identical types.
-    if (!validate_transfer(req.destinations, req.payment_id, dsts, extra, true, er))
+    if (!validate_transfer(req.destinations, dsts, extra, true, er))
     {
       return false;
     }
@@ -1033,32 +1005,8 @@ namespace tools
       for (size_t n = 0; n < tx_constructions.size(); ++n)
       {
         const tools::wallet2::tx_construction_data &cd = tx_constructions[n];
-        res.desc.push_back({0, 0, std::numeric_limits<uint32_t>::max(), 0, {}, "", 0, "", 0, 0, ""});
+        res.desc.push_back({0, 0, std::numeric_limits<uint32_t>::max(), 0, {}, 0, "", 0, 0, ""});
         wallet_rpc::COMMAND_RPC_DESCRIBE_TRANSFER::transfer_description &desc = res.desc.back();
-
-        std::vector<cryptonote::tx_extra_field> tx_extra_fields;
-        bool has_encrypted_payment_id = false;
-        crypto::hash8 payment_id8 = crypto::null_hash8;
-        if (cryptonote::parse_tx_extra(cd.extra, tx_extra_fields))
-        {
-          cryptonote::tx_extra_nonce extra_nonce;
-          if (find_tx_extra_field_by_type(tx_extra_fields, extra_nonce))
-          {
-            crypto::hash payment_id;
-            if(cryptonote::get_encrypted_payment_id_from_tx_extra_nonce(extra_nonce.nonce, payment_id8))
-            {
-              if (payment_id8 != crypto::null_hash8)
-              {
-                desc.payment_id = epee::string_tools::pod_to_hex(payment_id8);
-                has_encrypted_payment_id = true;
-              }
-            }
-            else if (cryptonote::get_payment_id_from_tx_extra_nonce(extra_nonce.nonce, payment_id))
-            {
-              desc.payment_id = epee::string_tools::pod_to_hex(payment_id);
-            }
-          }
-        }
 
         for (size_t s = 0; s < cd.sources.size(); ++s)
         {
@@ -1071,8 +1019,6 @@ namespace tools
         {
           const cryptonote::tx_destination_entry &entry = cd.splitted_dsts[d];
           std::string address = cryptonote::get_account_address_as_str(m_wallet->nettype(), entry.is_subaddress, entry.addr);
-          if (has_encrypted_payment_id && !entry.is_subaddress && address != entry.original)
-            address = cryptonote::get_account_integrated_address_as_str(m_wallet->nettype(), entry.addr, payment_id8);
           auto i = dests.find(entry.addr);
           if (i == dests.end())
             dests.insert(std::make_pair(entry.addr, std::make_pair(address, entry.amount)));
@@ -1249,7 +1195,7 @@ namespace tools
     destination.push_back(wallet_rpc::transfer_destination());
     destination.back().amount = 0;
     destination.back().address = req.address;
-    if (!validate_transfer(destination, req.payment_id, dsts, extra, true, er))
+    if (!validate_transfer(destination, dsts, extra, true, er))
     {
       return false;
     }
@@ -1314,7 +1260,7 @@ namespace tools
     destination.push_back(wallet_rpc::transfer_destination());
     destination.back().amount = 0;
     destination.back().address = req.address;
-    if (!validate_transfer(destination, req.payment_id, dsts, extra, true, er))
+    if (!validate_transfer(destination, dsts, extra, true, er))
     {
       return false;
     }
@@ -1993,7 +1939,7 @@ namespace tools
       m_wallet->get_payments(payments, min_height, max_height, account_index, subaddr_indices);
       for (std::list<std::pair<crypto::hash, tools::wallet2::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
         res.in.push_back(wallet_rpc::transfer_entry());
-        fill_transfer_entry(res.in.back(), i->second.m_tx_hash, i->first, i->second);
+        fill_transfer_entry(res.in.back(), i->second.m_tx_hash, i->second);
       }
     }
 
@@ -2032,7 +1978,7 @@ namespace tools
       m_wallet->get_unconfirmed_payments(payments, account_index, subaddr_indices);
       for (std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
         res.pool.push_back(wallet_rpc::transfer_entry());
-        fill_transfer_entry(res.pool.back(), i->first, i->second);
+        fill_transfer_entry(res.pool.back(), i->second);
       }
     }
 
@@ -2082,7 +2028,7 @@ namespace tools
       if (i->second.m_tx_hash == txid)
       {
         res.transfers.resize(res.transfers.size() + 1);
-        fill_transfer_entry(res.transfers.back(), i->second.m_tx_hash, i->first, i->second);
+        fill_transfer_entry(res.transfers.back(), i->second.m_tx_hash, i->second);
       }
     }
 
@@ -2117,7 +2063,7 @@ namespace tools
       if (i->second.m_pd.m_tx_hash == txid)
       {
         res.transfers.resize(res.transfers.size() + 1);
-        fill_transfer_entry(res.transfers.back(), i->first, i->second);
+        fill_transfer_entry(res.transfers.back(), i->second);
       }
     }
 
@@ -3111,7 +3057,6 @@ namespace tools
       }
       if (res.valid)
       {
-        res.integrated = info.has_payment_id;
         res.subaddress = info.is_subaddress;
         res.nettype = net_type.stype;
         return true;

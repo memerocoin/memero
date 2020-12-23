@@ -725,8 +725,9 @@ std::string strjoin(const std::vector<size_t> &V, const char *sep)
 }
 
 static bool emplace_or_replace(std::unordered_multimap<crypto::hash, tools::wallet2::pool_payment_details> &container,
-  const crypto::hash &key, const tools::wallet2::pool_payment_details &pd)
+                               const tools::wallet2::pool_payment_details &pd)
 {
+  crypto::hash key = crypto::null_hash;
   auto range = container.equal_range(key);
   for (auto i = range.first; i != range.second; ++i)
   {
@@ -840,7 +841,6 @@ uint64_t calculate_fee(bool use_per_byte_fee, const cryptonote::transaction &tx,
 tools::wallet2::tx_construction_data get_construction_data_with_decrypted_short_payment_id(const tools::wallet2::pending_tx &ptx, hw::device &hwdev)
 {
   tools::wallet2::tx_construction_data construction_data = ptx.construction_data;
-  crypto::hash8 payment_id = null_hash8;
   return construction_data;
 }
 
@@ -2154,7 +2154,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   if (tx_money_got_in_outs.size() > 0)
   {
     tx_extra_nonce extra_nonce;
-    crypto::hash payment_id = null_hash;
 
     uint64_t total_received_2 = sub_change;
     for (const auto& i : tx_money_got_in_outs)
@@ -2184,14 +2183,14 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       payment.m_coinbase     = miner_tx;
       payment.m_subaddr_index = i.first;
       if (pool) {
-        if (emplace_or_replace(m_unconfirmed_payments, payment_id, pool_payment_details{payment, double_spend_seen}))
+        if (emplace_or_replace(m_unconfirmed_payments, pool_payment_details{payment, double_spend_seen}))
           all_same = false;
         if (0 != m_callback)
           m_callback->on_unconfirmed_money_received(height, txid, tx, payment.m_amount, payment.m_subaddr_index);
       }
       else
-        m_payments.emplace(payment_id, payment);
-      LOG_PRINT_L2("Payment found in " << (pool ? "pool" : "block") << ": " << payment_id << " / " << payment.m_tx_hash << " / " << payment.m_amount);
+        m_payments.emplace(crypto::null_hash, payment);
+      LOG_PRINT_L2("Payment found in " << (pool ? "pool" : "block") << " / " << payment.m_tx_hash << " / " << payment.m_amount);
     }
 
     // if it's a pool tx and we already had it, don't notify again
@@ -5245,7 +5244,6 @@ void wallet2::commit_tx(pending_tx& ptx)
   crypto::hash txid;
 
   txid = get_transaction_hash(ptx.tx);
-  crypto::hash payment_id = crypto::null_hash;
   std::vector<cryptonote::tx_destination_entry> dests;
   uint64_t amount_in = 0;
   if (store_tx_info())

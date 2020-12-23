@@ -402,7 +402,7 @@ private:
       uint64_t m_change;
       time_t m_sent_time;
       std::vector<cryptonote::tx_destination_entry> m_dests;
-      crypto::hash m_payment_id;
+      crypto::hash d_payment_id;
       enum { pending, pending_not_in_pool, failed } m_state;
       uint64_t m_timestamp;
       uint32_t m_subaddr_account;   // subaddress account of your wallet to be used in this transfer
@@ -417,7 +417,7 @@ private:
         VARINT_FIELD(m_change)
         VARINT_FIELD(m_sent_time)
         FIELD(m_dests)
-        FIELD(m_payment_id)
+        FIELD(d_payment_id)
         if (version >= 1)
           VARINT_FIELD(m_state)
         VARINT_FIELD(m_timestamp)
@@ -434,16 +434,16 @@ private:
       uint64_t m_change;
       uint64_t m_block_height;
       std::vector<cryptonote::tx_destination_entry> m_dests;
-      crypto::hash m_payment_id;
+      crypto::hash d_payment_id;
       uint64_t m_timestamp;
       uint64_t m_unlock_time;
       uint32_t m_subaddr_account;   // subaddress account of your wallet to be used in this transfer
       std::set<uint32_t> m_subaddr_indices;  // set of address indices used as inputs in this transfer
       std::vector<std::pair<crypto::key_image, std::vector<uint64_t>>> m_rings; // relative
 
-      confirmed_transfer_details(): m_amount_in(0), m_amount_out(0), m_change((uint64_t)-1), m_block_height(0), m_payment_id(crypto::null_hash), m_timestamp(0), m_unlock_time(0), m_subaddr_account((uint32_t)-1) {}
+      confirmed_transfer_details(): m_amount_in(0), m_amount_out(0), m_change((uint64_t)-1), m_block_height(0), d_payment_id(crypto::null_hash), m_timestamp(0), m_unlock_time(0), m_subaddr_account((uint32_t)-1) {}
       confirmed_transfer_details(const unconfirmed_transfer_details &utd, uint64_t height):
-        m_amount_in(utd.m_amount_in), m_amount_out(utd.m_amount_out), m_change(utd.m_change), m_block_height(height), m_dests(utd.m_dests), m_payment_id(utd.m_payment_id), m_timestamp(utd.m_timestamp), m_unlock_time(utd.m_tx.unlock_time), m_subaddr_account(utd.m_subaddr_account), m_subaddr_indices(utd.m_subaddr_indices), m_rings(utd.m_rings) {}
+        m_amount_in(utd.m_amount_in), m_amount_out(utd.m_amount_out), m_change(utd.m_change), m_block_height(height), m_dests(utd.m_dests), d_payment_id(crypto::null_hash), m_timestamp(utd.m_timestamp), m_unlock_time(utd.m_tx.unlock_time), m_subaddr_account(utd.m_subaddr_account), m_subaddr_indices(utd.m_subaddr_indices), m_rings(utd.m_rings) {}
 
       BEGIN_SERIALIZE_OBJECT()
         VERSION_FIELD(0)
@@ -452,7 +452,7 @@ private:
         VARINT_FIELD(m_change)
         VARINT_FIELD(m_block_height)
         FIELD(m_dests)
-        FIELD(m_payment_id)
+        FIELD(d_payment_id)
         VARINT_FIELD(m_timestamp)
         VARINT_FIELD(m_unlock_time)
         VARINT_FIELD(m_subaddr_account)
@@ -1742,7 +1742,6 @@ namespace boost
       if (ver < 1)
         return;
       a & x.m_dests;
-      a & x.m_payment_id;
       if (ver < 2)
         return;
       a & x.m_state;
@@ -1783,7 +1782,6 @@ namespace boost
       if (ver < 1)
         return;
       a & x.m_dests;
-      a & x.m_payment_id;
       if (ver < 2)
         return;
       a & x.m_timestamp;

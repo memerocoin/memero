@@ -83,7 +83,6 @@ namespace cryptonote
     void create_from_viewkey(const cryptonote::account_public_address& address, const crypto::secret_key& viewkey);
     const account_keys& get_keys() const;
     std::string get_public_address_str(network_type nettype) const;
-    std::string get_public_integrated_address_str(const crypto::hash8 &payment_id, network_type nettype) const;
 
     hw::device& get_device() const  {return m_keys.get_device();}
     void set_device( hw::device &hwdev) {m_keys.set_device(hwdev);}

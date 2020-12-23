@@ -464,7 +464,6 @@ namespace wallet_rpc
       uint32_t priority;
       uint64_t ring_size;
       uint64_t unlock_time;
-      std::string payment_id;
       bool get_tx_key;
       bool do_not_relay;
       bool get_tx_hex;
@@ -477,7 +476,6 @@ namespace wallet_rpc
         KV_SERIALIZE(priority)
         KV_SERIALIZE_OPT(ring_size, (uint64_t)0)
         KV_SERIALIZE(unlock_time)
-        KV_SERIALIZE(payment_id)
         KV_SERIALIZE(get_tx_key)
         KV_SERIALIZE_OPT(do_not_relay, false)
         KV_SERIALIZE_OPT(get_tx_hex, false)
@@ -521,7 +519,6 @@ namespace wallet_rpc
       uint32_t priority;
       uint64_t ring_size;
       uint64_t unlock_time;
-      std::string payment_id;
       bool get_tx_keys;
       bool do_not_relay;
       bool get_tx_hex;
@@ -534,7 +531,6 @@ namespace wallet_rpc
         KV_SERIALIZE(priority)
         KV_SERIALIZE_OPT(ring_size, (uint64_t)0)
         KV_SERIALIZE(unlock_time)
-        KV_SERIALIZE(payment_id)
         KV_SERIALIZE(get_tx_keys)
         KV_SERIALIZE_OPT(do_not_relay, false)
         KV_SERIALIZE_OPT(get_tx_hex, false)
@@ -597,7 +593,6 @@ namespace wallet_rpc
       uint32_t ring_size;
       uint64_t unlock_time;
       std::list<recipient> recipients;
-      std::string payment_id;
       uint64_t change_amount;
       std::string change_address;
       uint64_t fee;
@@ -610,7 +605,6 @@ namespace wallet_rpc
         KV_SERIALIZE(ring_size)
         KV_SERIALIZE(unlock_time)
         KV_SERIALIZE(recipients)
-        KV_SERIALIZE(payment_id)
         KV_SERIALIZE(change_amount)
         KV_SERIALIZE(change_address)
         KV_SERIALIZE(fee)
@@ -760,7 +754,6 @@ namespace wallet_rpc
       uint64_t ring_size;
       uint64_t outputs;
       uint64_t unlock_time;
-      std::string payment_id;
       bool get_tx_keys;
       uint64_t below_amount;
       bool do_not_relay;
@@ -776,7 +769,6 @@ namespace wallet_rpc
         KV_SERIALIZE_OPT(ring_size, (uint64_t)0)
         KV_SERIALIZE_OPT(outputs, (uint64_t)1)
         KV_SERIALIZE(unlock_time)
-        KV_SERIALIZE(payment_id)
         KV_SERIALIZE(get_tx_keys)
         KV_SERIALIZE(below_amount)
         KV_SERIALIZE_OPT(do_not_relay, false)
@@ -829,7 +821,6 @@ namespace wallet_rpc
       uint64_t ring_size;
       uint64_t outputs;
       uint64_t unlock_time;
-      std::string payment_id;
       bool get_tx_key;
       std::string key_image;
       bool do_not_relay;
@@ -842,7 +833,6 @@ namespace wallet_rpc
         KV_SERIALIZE_OPT(ring_size, (uint64_t)0)
         KV_SERIALIZE_OPT(outputs, (uint64_t)1)
         KV_SERIALIZE(unlock_time)
-        KV_SERIALIZE(payment_id)
         KV_SERIALIZE(get_tx_key)
         KV_SERIALIZE(key_image)
         KV_SERIALIZE_OPT(do_not_relay, false)
@@ -919,7 +909,6 @@ namespace wallet_rpc
 
   struct payment_details
   {
-    std::string payment_id;
     std::string tx_hash;
     uint64_t amount;
     uint64_t block_height;
@@ -929,7 +918,6 @@ namespace wallet_rpc
     std::string address;
 
     BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(payment_id)
       KV_SERIALIZE(tx_hash)
       KV_SERIALIZE(amount)
       KV_SERIALIZE(block_height)
@@ -1011,60 +999,6 @@ namespace wallet_rpc
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(key)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_MAKE_INTEGRATED_ADDRESS
-  {
-    struct request_t
-    {
-      std::string standard_address;
-      std::string payment_id;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(standard_address)
-        KV_SERIALIZE(payment_id)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::string integrated_address;
-      std::string payment_id;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(integrated_address)
-        KV_SERIALIZE(payment_id)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_SPLIT_INTEGRATED_ADDRESS
-  {
-    struct request_t
-    {
-      std::string integrated_address;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(integrated_address)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::string standard_address;
-      std::string payment_id;
-      bool is_subaddress;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(standard_address)
-        KV_SERIALIZE(payment_id)
-        KV_SERIALIZE(is_subaddress)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;
@@ -1318,7 +1252,6 @@ namespace wallet_rpc
   struct transfer_entry
   {
     std::string txid;
-    std::string payment_id;
     uint64_t height;
     uint64_t timestamp;
     uint64_t amount;
@@ -1338,7 +1271,6 @@ namespace wallet_rpc
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(txid);
-      KV_SERIALIZE(payment_id);
       KV_SERIALIZE(height);
       KV_SERIALIZE(timestamp);
       KV_SERIALIZE(amount);
@@ -1736,14 +1668,12 @@ namespace wallet_rpc
   struct uri_spec
   {
     std::string address;
-    std::string payment_id;
     uint64_t amount;
     std::string tx_description;
     std::string recipient_name;
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(address);
-      KV_SERIALIZE(payment_id);
       KV_SERIALIZE(amount);
       KV_SERIALIZE(tx_description);
       KV_SERIALIZE(recipient_name);
