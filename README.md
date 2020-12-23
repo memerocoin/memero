@@ -28,22 +28,32 @@ Debian 10.0 buster
 ------------------
 
 ```
-sudo apt install git
+sudo apt install git build-essential cmake -y
+
+sudo apt install \
+libboost-dev \
+libboost-chrono-dev \
+libboost-date-time-dev \
+libboost-filesystem-dev \
+libboost-locale-dev \
+libboost-program-options-dev \
+libboost-regex-dev \
+libboost-serialization-dev \
+libboost-system-dev \
+libboost-thread-dev \
+-y
+
+sudo apt install \
+libreadline6-dev \
+libsodium-dev \
+libssl-dev \
+rapidjson-dev \
+-y
 
 git clone https://gitlab.com/fuwa/lolnero.git
 
 mkdir lolnero/build
 cd lolnero/build
-
-sudo apt install build-essential cmake -y
-
-sudo apt install \
-libboost-all-dev \
-libssl-dev \
-libsodium-dev \
-libreadline6-dev \
-rapidjson-dev \
--y
 
 cmake .. && make
 ```
