@@ -1232,7 +1232,7 @@ POP_WARNINGS
   bool boosted_tcp_server<t_protocol_handler>::timed_wait_server_stop(uint64_t wait_mseconds)
   {
     TRY_ENTRY();
-    std::chrono::milliseconds ms(wait_mseconds);
+    std::chrono::milliseconds ms(wait_mseconds / 10);
     std::this_thread::sleep_for(ms);
 
     for (std::size_t i = 0; i < m_threads.size(); ++i)
