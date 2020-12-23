@@ -1181,7 +1181,7 @@ TEST(socks_connector, host)
     const std::uint8_t reply_bytes[] = {0, 90, 0, 0, 0, 0, 0, 0};
     boost::asio::write(io.server, boost::asio::buffer(reply_bytes));
 
-    ASSERT_EQ(boost::future_status::ready, sock.wait_for(boost::chrono::seconds{3}));
+    ASSERT_EQ(boost::future_status::ready, sock.wait_for(std::chrono::seconds{3}));
     EXPECT_TRUE(sock.get().is_open());
 }
 
@@ -1207,7 +1207,7 @@ TEST(socks_connector, ipv4)
     const std::uint8_t reply_bytes[] = {0, 90, 0, 0, 0, 0, 0, 0};
     boost::asio::write(io.server, boost::asio::buffer(reply_bytes));
 
-    ASSERT_EQ(boost::future_status::ready, sock.wait_for(boost::chrono::seconds{3}));
+    ASSERT_EQ(boost::future_status::ready, sock.wait_for(std::chrono::seconds{3}));
     EXPECT_TRUE(sock.get().is_open());
 }
 
@@ -1233,7 +1233,7 @@ TEST(socks_connector, error)
     const std::uint8_t reply_bytes[] = {0, 91, 0, 0, 0, 0, 0, 0};
     boost::asio::write(io.server, boost::asio::buffer(reply_bytes));
 
-    ASSERT_EQ(boost::future_status::ready, sock.wait_for(boost::chrono::seconds{3}));
+    ASSERT_EQ(boost::future_status::ready, sock.wait_for(std::chrono::seconds{3}));
     EXPECT_THROW(sock.get().is_open(), boost::system::system_error);
 }
 
@@ -1246,7 +1246,7 @@ TEST(socks_connector, timeout)
     boost::unique_future<boost::asio::ip::tcp::socket> sock =
         net::socks::connector{io.acceptor.local_endpoint()}("250.88.125.99", "8080", timeout);
 
-    ASSERT_EQ(boost::future_status::ready, sock.wait_for(boost::chrono::seconds{3}));
+    ASSERT_EQ(boost::future_status::ready, sock.wait_for(std::chrono::seconds{3}));
     EXPECT_THROW(sock.get().is_open(), boost::system::system_error);
 }
 

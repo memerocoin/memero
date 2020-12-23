@@ -137,7 +137,7 @@ using namespace constant;
 
 static const std::string ASCII_OUTPUT_MAGIC = "LolneroAsciiDataV1";
 
-boost::mutex tools::wallet2::default_daemon_address_lock;
+std::mutex tools::wallet2::default_daemon_address_lock;
 std::string tools::wallet2::default_daemon_address = "";
 
 namespace
@@ -943,13 +943,13 @@ uint64_t gamma_picker::pick()
   return first_rct + crypto::rand_idx(n_rct);
 };
 
-boost::mutex wallet_keys_unlocker::lockers_lock;
+std::mutex wallet_keys_unlocker::lockers_lock;
 unsigned int wallet_keys_unlocker::lockers = 0;
 wallet_keys_unlocker::wallet_keys_unlocker(wallet2 &w, const boost::optional<tools::password_container> &password):
   w(w),
   locked(password != boost::none)
 {
-  boost::lock_guard<boost::mutex> lock(lockers_lock);
+  boost::lock_guard<std::mutex> lock(lockers_lock);
   if (lockers++ > 0)
     locked = false;
   if (!locked || w.is_unattended() || w.ask_password() != tools::wallet2::AskPasswordToDecrypt || w.watch_only())
@@ -966,7 +966,7 @@ wallet_keys_unlocker::wallet_keys_unlocker(wallet2 &w, bool locked, const epee::
   w(w),
   locked(locked)
 {
-  boost::lock_guard<boost::mutex> lock(lockers_lock);
+  boost::lock_guard<std::mutex> lock(lockers_lock);
   if (lockers++ > 0)
     locked = false;
   if (!locked)
@@ -979,7 +979,7 @@ wallet_keys_unlocker::~wallet_keys_unlocker()
 {
   try
   {
-    boost::lock_guard<boost::mutex> lock(lockers_lock);
+    boost::lock_guard<std::mutex> lock(lockers_lock);
     if (lockers == 0)
     {
       MERROR("There are no lockers in wallet_keys_unlocker dtor");
@@ -1515,7 +1515,7 @@ bool wallet2::frozen(const transfer_details &td) const
 void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::key_derivation &derivation, const std::vector<crypto::key_derivation> &additional_derivations, size_t i, tx_scan_info_t &tx_scan_info) const
 {
   hw::device &hwdev = m_account.get_device();
-  boost::unique_lock<hw::device> hwdev_lock (hwdev);
+  std::unique_lock<hw::device> hwdev_lock (hwdev);
   hwdev.set_mode(hw::device::TRANSACTION_PARSE);
   if (o.target.type() !=  typeid(txout_to_key))
   {
@@ -1746,7 +1746,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     if (tx_cache_data.primary.empty())
     {
       hw::device &hwdev = m_account.get_device();
-      boost::unique_lock<hw::device> hwdev_lock (hwdev);
+      std::unique_lock<hw::device> hwdev_lock (hwdev);
       hw::reset_mode rst(hwdev);
 
       hwdev.set_mode(hw::device::TRANSACTION_PARSE);
@@ -1812,7 +1812,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
         // then scan all outputs from 0
         hw::device &hwdev = m_account.get_device();
-        boost::unique_lock<hw::device> hwdev_lock (hwdev);
+        std::unique_lock<hw::device> hwdev_lock (hwdev);
         hwdev.set_mode(hw::device::NONE);
         for (size_t i = 0; i < tx.vout.size(); ++i)
         {
@@ -1839,7 +1839,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
 
       hw::device &hwdev = m_account.get_device();
-      boost::unique_lock<hw::device> hwdev_lock (hwdev);
+      std::unique_lock<hw::device> hwdev_lock (hwdev);
       hwdev.set_mode(hw::device::NONE);
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
@@ -1864,7 +1864,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         if (tx_scan_info[i].received)
         {
           hw::device &hwdev = m_account.get_device();
-          boost::unique_lock<hw::device> hwdev_lock (hwdev);
+          std::unique_lock<hw::device> hwdev_lock (hwdev);
           hwdev.set_mode(hw::device::NONE);
           hwdev.conceal_derivation(tx_scan_info[i].received->derivation, tx_pub_key, additional_tx_pub_keys.data, derivation, additional_derivations);
           scan_output(tx, miner_tx, tx_pub_key, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs, pool);
@@ -2455,7 +2455,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       continue;
     tpool.submit(&waiter, [&hwdev, &gender, &tx_cache_data, i]() {
       auto &slot = tx_cache_data[i];
-      boost::unique_lock<hw::device> hwdev_lock(hwdev);
+      std::unique_lock<hw::device> hwdev_lock(hwdev);
       for (auto &iod: slot.primary)
         gender(iod);
       for (auto &iod: slot.additional)
@@ -2600,7 +2600,7 @@ void wallet2::pull_and_parse_next_blocks(uint64_t start_height, uint64_t &blocks
       parsed_blocks[i].o_indices = std::move(o_indices[i]);
     }
 
-    boost::mutex error_lock;
+    std::mutex error_lock;
     for (size_t i = 0; i < blocks.size(); ++i)
     {
       parsed_blocks[i].txes.resize(blocks[i].txs.size());
@@ -2609,7 +2609,7 @@ void wallet2::pull_and_parse_next_blocks(uint64_t start_height, uint64_t &blocks
         tpool.submit(&waiter, [&, i, j](){
           if (!parse_and_validate_tx_base_from_blob(blocks[i].txs[j].blob, parsed_blocks[i].txes[j]))
           {
-            boost::unique_lock<boost::mutex> lock(error_lock);
+            std::unique_lock<std::mutex> lock(error_lock);
             error = true;
           }
         }, true);
@@ -3937,7 +3937,7 @@ bool wallet2::verify_password(const std::string& keys_file_name, const epee::wip
 
 void wallet2::encrypt_keys(const crypto::chacha_key &key)
 {
-  boost::lock_guard<boost::mutex> lock(m_decrypt_keys_lock);
+  boost::lock_guard<std::mutex> lock(m_decrypt_keys_lock);
   if (--m_decrypt_keys_lockers) // another lock left ?
     return;
   m_account.encrypt_keys(key);
@@ -3946,7 +3946,7 @@ void wallet2::encrypt_keys(const crypto::chacha_key &key)
 
 void wallet2::decrypt_keys(const crypto::chacha_key &key)
 {
-  boost::lock_guard<boost::mutex> lock(m_decrypt_keys_lock);
+  boost::lock_guard<std::mutex> lock(m_decrypt_keys_lock);
   if (m_decrypt_keys_lockers++) // already unlocked ?
     return;
   m_account.encrypt_viewkey(key);
@@ -7211,7 +7211,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryp
 {
   //ensure device is let in NONE mode in any case
   hw::device &hwdev = m_account.get_device();
-  boost::unique_lock<hw::device> hwdev_lock (hwdev);
+  std::unique_lock<hw::device> hwdev_lock (hwdev);
   hw::reset_mode rst(hwdev);  
 
   auto original_dsts = dsts;
@@ -7889,7 +7889,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
 {
   //ensure device is let in NONE mode in any case
   hw::device &hwdev = m_account.get_device();
-  boost::unique_lock<hw::device> hwdev_lock (hwdev);
+  std::unique_lock<hw::device> hwdev_lock (hwdev);
   hw::reset_mode rst(hwdev);  
 
   uint64_t accumulated_fee, accumulated_outputs, accumulated_change;

@@ -39,7 +39,7 @@
 
 #include "net/net_utils_base.h" 
 #include "misc_log_ex.h" 
-#include <boost/chrono.hpp>
+#include <chrono>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/thread.hpp> 
 #include "misc_language.h"

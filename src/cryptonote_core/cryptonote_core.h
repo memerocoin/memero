@@ -984,7 +984,7 @@ namespace cryptonote
      time_t start_time;
 
      std::unordered_set<crypto::hash> bad_semantics_txes[2];
-     boost::mutex bad_semantics_txes_lock;
+     std::mutex bad_semantics_txes_lock;
 
      size_t m_last_update_length;
 

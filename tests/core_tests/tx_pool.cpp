@@ -159,7 +159,7 @@ bool txpool_double_spend_base::mark_timestamp_change(cryptonote::core& /*c*/, si
 
 bool txpool_double_spend_base::timestamp_change_pause(cryptonote::core& /*c*/, size_t /*ev_index*/, const std::vector<test_event_entry>& /*events*/)
 {
-  boost::this_thread::sleep_for(boost::chrono::seconds{1} + boost::chrono::milliseconds{100});
+  boost::this_thread::sleep_for(std::chrono::seconds{1} + std::chrono::milliseconds{100});
   return true;
 }
 

@@ -33,7 +33,7 @@
 #include <iostream>
 #include <stdint.h>
 
-#include <boost/chrono.hpp>
+#include <chrono>
 #include <boost/regex.hpp>
 
 #include "misc_language.h"
@@ -44,7 +44,7 @@
 class performance_timer
 {
 public:
-  typedef boost::chrono::high_resolution_clock clock;
+  typedef std::chrono::high_resolution_clock clock;
 
   performance_timer()
   {
@@ -59,7 +59,7 @@ public:
   int elapsed_ms()
   {
     clock::duration elapsed = clock::now() - m_start;
-    return static_cast<int>(boost::chrono::duration_cast<boost::chrono::milliseconds>(elapsed).count());
+    return static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count());
   }
 
 private:

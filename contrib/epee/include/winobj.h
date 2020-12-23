@@ -36,7 +36,7 @@ class critical_region;
 
 class critical_section {
 
-	boost::mutex	m_section;
+	std::mutex	m_section;
 
 public:
 

@@ -39,6 +39,7 @@
 
 #include <boost/optional/optional.hpp>
 #include <boost/program_options/variables_map.hpp>
+#include <condition_variable>
 
 #include "cryptonote_basic/account.h"
 #include "cryptonote_basic/cryptonote_basic_impl.h"
@@ -49,6 +50,7 @@
 #include "common/i18n.h"
 #include "common/password.h"
 #include "crypto/crypto.h"  // for definition of crypto::secret_key
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.simplewallet"
@@ -391,8 +393,8 @@ namespace cryptonote
 
     std::atomic<bool> m_idle_run;
     boost::thread m_idle_thread;
-    boost::mutex m_idle_mutex;
-    boost::condition_variable m_idle_cond;
+    std::mutex m_idle_mutex;
+    std::condition_variable m_idle_cond;
 
     std::atomic<bool> m_auto_refresh_enabled;
     bool m_auto_refresh_refreshing;

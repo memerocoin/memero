@@ -64,8 +64,8 @@ namespace levin
 		volatile uint32_t m_invoke_data_ready;
 		volatile uint32_t m_invoke_is_active;
 
-		boost::mutex m_invoke_event;
-		boost::condition_variable m_invoke_cond;
+		std::mutex m_invoke_event;
+		std::condition_variable m_invoke_cond;
 		size_t m_timeout;
 
 		::critical_section m_recieved_packets_lock;
@@ -277,7 +277,7 @@ namespace levin
 			//hard coded timeout in 10 minutes for maximum invoke period. if it happens, it could mean only some real troubles.
 			boost::system_time timeout = boost::get_system_time()+ boost::posix_time::milliseconds(100);
 			size_t timeout_count = 0;
-			boost::unique_lock<boost::mutex> lock(m_invoke_event);
+			std::unique_lock<std::mutex> lock(m_invoke_event);
 
 			while(!boost::interprocess::ipcdetail::atomic_read32(&m_invoke_data_ready))    
 			{

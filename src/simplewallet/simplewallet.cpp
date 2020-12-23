@@ -100,7 +100,7 @@ typedef cryptonote::simple_wallet sw;
   m_auto_refresh_enabled.store(false, std::memory_order_relaxed); \
   /* stop any background refresh and other processes, and take over */ \
   m_wallet->stop(); \
-  boost::unique_lock<boost::mutex> lock(m_idle_mutex); \
+  std::unique_lock<std::mutex> lock(m_idle_mutex); \
   m_idle_cond.notify_all(); \
   epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ \
     /* m_idle_mutex is still locked here */ \
@@ -3604,7 +3604,7 @@ bool simple_wallet::close_wallet()
     m_idle_run.store(false, std::memory_order_relaxed);
     m_wallet->stop();
     {
-      boost::unique_lock<boost::mutex> lock(m_idle_mutex);
+      std::unique_lock<std::mutex> lock(m_idle_mutex);
       m_idle_cond.notify_one();
     }
     m_idle_thread.join();
@@ -6866,7 +6866,7 @@ void simple_wallet::wallet_idle_thread()
   const boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::universal_time();
   while (true)
   {
-    boost::unique_lock<boost::mutex> lock(m_idle_mutex);
+    std::unique_lock<std::mutex> lock(m_idle_mutex);
     if (!m_idle_run.load(std::memory_order_relaxed))
       break;
 
@@ -6894,7 +6894,7 @@ void simple_wallet::wallet_idle_thread()
     const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
     const auto dt = (now - start_time).total_microseconds();
     const auto wait = 1000000 - dt % 1000000;
-    m_idle_cond.wait_for(lock, boost::chrono::microseconds(wait));
+    m_idle_cond.wait_for(lock, std::chrono::microseconds(wait));
   }
 }
 //----------------------------------------------------------------------------------------------------

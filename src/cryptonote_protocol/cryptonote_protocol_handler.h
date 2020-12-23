@@ -156,7 +156,7 @@ namespace cryptonote
     std::atomic<bool> m_synchronized;
     std::atomic<bool> m_stopping;
     std::atomic<bool> m_ask_for_txpool_complement;
-    boost::mutex m_sync_lock;
+    std::mutex m_sync_lock;
     block_queue m_block_queue;
     epee::math_helper::once_a_time_seconds<8> m_idle_peer_kicker;
     epee::math_helper::once_a_time_milliseconds<100> m_standby_checker;
@@ -178,11 +178,11 @@ namespace cryptonote
     uint64_t get_estimated_remaining_sync_seconds(uint64_t current_blockchain_height, uint64_t target_blockchain_height);
     std::string get_periodic_sync_estimate(uint64_t current_blockchain_height, uint64_t target_blockchain_height);
 
-    boost::mutex m_buffer_mutex;
+    std::mutex m_buffer_mutex;
     double get_avg_block_size();
     boost::circular_buffer<size_t> m_avg_buffer = boost::circular_buffer<size_t>(10);
 
-    boost::mutex m_bad_peer_check_lock;
+    std::mutex m_bad_peer_check_lock;
 
     template<class t_parameter>
       bool post_notify(typename t_parameter::request& arg, cryptonote_connection_context& context)

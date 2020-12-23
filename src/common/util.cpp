@@ -449,7 +449,7 @@ std::string get_nix_version_display_string()
 
   namespace
   {
-    boost::mutex max_concurrency_lock;
+    std::mutex max_concurrency_lock;
     unsigned max_concurrency = boost::thread::hardware_concurrency();
   }
 
@@ -460,13 +460,13 @@ std::string get_nix_version_display_string()
     unsigned hwc = boost::thread::hardware_concurrency();
     if (n > hwc)
       n = hwc;
-    boost::lock_guard<boost::mutex> lock(max_concurrency_lock);
+    boost::lock_guard<std::mutex> lock(max_concurrency_lock);
     max_concurrency = n;
   }
 
   unsigned get_max_concurrency()
   {
-    boost::lock_guard<boost::mutex> lock(max_concurrency_lock);
+    boost::lock_guard<std::mutex> lock(max_concurrency_lock);
     return max_concurrency;
   }
 

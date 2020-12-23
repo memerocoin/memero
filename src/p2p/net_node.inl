@@ -43,6 +43,7 @@
 #include <memory>
 #include <tuple>
 #include <vector>
+#include <thread>
 
 #include "version.h"
 #include "string_tools.h"
@@ -417,7 +418,7 @@ namespace nodetool
 
     if (command_line::has_arg(vm, arg_p2p_seed_node))
     {
-      boost::unique_lock<boost::shared_mutex> lock(public_zone.m_seed_nodes_lock);
+      std::unique_lock<boost::shared_mutex> lock(public_zone.m_seed_nodes_lock);
 
       if (!parse_peers_and_add_to_container(vm, arg_p2p_seed_node, public_zone.m_seed_nodes))
         return false;
@@ -793,7 +794,7 @@ namespace nodetool
           zone.second.m_current_number_of_in_peers = number_of_in_peers;
           zone.second.m_current_number_of_out_peers = number_of_out_peers;
         }
-        boost::this_thread::sleep_for(boost::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
       } // main loop of thread
       _note("Thread monitor number of peers - done");
     })); // lambda
@@ -1584,7 +1585,7 @@ namespace nodetool
         {
           // we did not make any connection, sleep a bit to avoid a busy loop in case we don't have
           // any peers to try, then break so we will try seeds to get more peers
-          boost::this_thread::sleep_for(boost::chrono::seconds(1));
+          std::this_thread::sleep_for(std::chrono::seconds(1));
           break;
         }
         conn_count = new_conn_count;

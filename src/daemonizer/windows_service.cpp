@@ -103,7 +103,7 @@ namespace {
   // to allow the user to read any output.
   void pause_to_display_admin_window_messages()
   {
-    boost::chrono::milliseconds how_long{1500};
+    std::chrono::milliseconds how_long{1500};
     boost::this_thread::sleep_for(how_long);
   }
 }

@@ -86,7 +86,7 @@ namespace epee
       if (state_eos == m_read_status)
         return false;
 
-      boost::unique_lock<boost::mutex> lock(m_response_mutex);
+      std::unique_lock<std::mutex> lock(m_response_mutex);
       while (state_init == m_read_status)
       {
         m_response_cv.wait(lock);
@@ -127,7 +127,7 @@ namespace epee
 
     void cancel()
     {
-      boost::unique_lock<boost::mutex> lock(m_response_mutex);
+      std::unique_lock<std::mutex> lock(m_response_mutex);
       m_read_status = state_cancelled;
       m_has_read_request = false;
       m_response_cv.notify_one();
@@ -136,7 +136,7 @@ namespace epee
   private:
     bool start_read()
     {
-      boost::unique_lock<boost::mutex> lock(m_request_mutex);
+      std::unique_lock<std::mutex> lock(m_request_mutex);
       if (!m_run.load(std::memory_order_relaxed) || m_has_read_request)
         return false;
 
@@ -147,7 +147,7 @@ namespace epee
 
     bool wait_read()
     {
-      boost::unique_lock<boost::mutex> lock(m_request_mutex);
+      std::unique_lock<std::mutex> lock(m_request_mutex);
       while (m_run.load(std::memory_order_relaxed) && !m_has_read_request)
       {
         m_request_cv.wait(lock);
@@ -256,7 +256,7 @@ eof:
         }
         else
         {
-          boost::unique_lock<boost::mutex> lock(m_response_mutex);
+          std::unique_lock<std::mutex> lock(m_response_mutex);
           if (m_run.load(std::memory_order_relaxed))
           {
             m_line = std::move(line);
@@ -291,10 +291,10 @@ eof:
     bool m_has_read_request;
     t_state m_read_status;
 
-    boost::mutex m_request_mutex;
-    boost::mutex m_response_mutex;
-    boost::condition_variable m_request_cv;
-    boost::condition_variable m_response_cv;
+    std::mutex m_request_mutex;
+    std::mutex m_response_mutex;
+    std::condition_variable m_request_cv;
+    std::condition_variable m_response_cv;
   };
 
 

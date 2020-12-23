@@ -56,7 +56,7 @@
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/uuid/random_generator.hpp>
-#include <boost/chrono.hpp>
+#include <chrono>
 #include <boost/utility/value_init.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -75,7 +75,7 @@ namespace epee
 namespace net_utils
 {
 
-// just typedefs to in code define the units used. TODO later it will be enforced that casts to other numericals are only explicit to avoid mistakes? use boost::chrono?
+// just typedefs to in code define the units used. TODO later it will be enforced that casts to other numericals are only explicit to avoid mistakes? use std::chrono?
 typedef double network_speed_kbps;   // externally, for parameters and return values, all defined in kilobytes per second
 typedef double network_speed_bps;    // throttle-internally, bytes per second
 typedef double network_time_seconds;
@@ -107,9 +107,9 @@ class network_throttle_manager {
 	//protected:
 	public: // XXX
 
-    static boost::mutex m_lock_get_global_throttle_in;
-    static boost::mutex m_lock_get_global_throttle_inreq;
-    static boost::mutex m_lock_get_global_throttle_out;
+    static std::mutex m_lock_get_global_throttle_in;
+    static std::mutex m_lock_get_global_throttle_inreq;
+    static std::mutex m_lock_get_global_throttle_out;
 
 		friend class connection_basic; // FRIEND - to directly access global throttle-s. !! REMEMBER TO USE LOCKS!
 		friend class connection_basic_pimpl; // ditto

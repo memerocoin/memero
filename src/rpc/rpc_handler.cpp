@@ -30,7 +30,7 @@ namespace rpc
   {
       static struct D
       {
-        boost::mutex mutex;
+        std::mutex mutex;
         std::vector<std::uint64_t> cached_distribution;
         std::uint64_t cached_from, cached_to, cached_start_height, cached_base;
         crypto::hash cached_m10_hash;
@@ -38,7 +38,7 @@ namespace rpc
         bool cached;
         D(): cached_from(0), cached_to(0), cached_start_height(0), cached_base(0), cached_m10_hash(crypto::null_hash), cached_top_hash(crypto::null_hash), cached(false) {}
       } d;
-      const boost::unique_lock<boost::mutex> lock(d.mutex);
+      const std::unique_lock<std::mutex> lock(d.mutex);
 
       crypto::hash top_hash = crypto::null_hash;
       if (d.cached_to < blockchain_height)

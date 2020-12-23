@@ -30,7 +30,7 @@
 
 #include <boost/algorithm/string/find_iterator.hpp>
 #include <boost/algorithm/string/finder.hpp>
-#include <boost/chrono/duration.hpp>
+#include <chrono>
 #include <boost/endian/conversion.hpp>
 #include <boost/optional/optional.hpp>
 #include <boost/thread/future.hpp>
@@ -52,7 +52,7 @@
 
 namespace
 {
-    constexpr const boost::chrono::milliseconds future_poll_interval{500};
+    constexpr const std::chrono::milliseconds future_poll_interval{500};
     constexpr const std::chrono::seconds socks_connect_timeout{P2P_DEFAULT_SOCKS_CONNECT_TIMEOUT};
 
     std::int64_t get_max_connections(const boost::iterator_range<boost::string_ref::const_iterator> value) noexcept
@@ -327,7 +327,7 @@ namespace nodetool
 
         struct notify
         {
-            boost::promise<client_result> socks_promise;
+            std::promise<client_result> socks_promise;
 
             void operator()(boost::system::error_code error, socket_type&& sock)
             {
@@ -335,9 +335,9 @@ namespace nodetool
             }
         };
 
-        boost::unique_future<client_result> socks_result{};
+        std::future<client_result> socks_result{};
         {
-            boost::promise<client_result> socks_promise{};
+            std::promise<client_result> socks_promise{};
             socks_result = socks_promise.get_future();
 
             auto client = net::socks::make_connect_client(
@@ -348,7 +348,7 @@ namespace nodetool
         }
 
         const auto start = std::chrono::steady_clock::now();
-        while (socks_result.wait_for(future_poll_interval) == boost::future_status::timeout)
+        while (socks_result.wait_for(future_poll_interval) == std::future_status::timeout)
         {
             if (socks_connect_timeout < std::chrono::steady_clock::now() - start)
             {

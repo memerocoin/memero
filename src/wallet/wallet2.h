@@ -123,7 +123,7 @@ private:
     wallet2 &w;
     bool locked;
     crypto::chacha_key key;
-    static boost::mutex lockers_lock;
+    static std::mutex lockers_lock;
     static unsigned int lockers;
   };
 
@@ -1519,7 +1519,7 @@ private:
 
     crypto::chacha_key m_cache_key;
     boost::optional<epee::wipeable_string> m_encrypt_keys_after_refresh;
-    boost::mutex m_decrypt_keys_lock;
+    std::mutex m_decrypt_keys_lock;
     unsigned int m_decrypt_keys_lockers;
 
     bool m_unattended;
@@ -1531,7 +1531,7 @@ private:
     ExportFormat m_export_format;
     bool m_load_deprecated_formats;
 
-    static boost::mutex default_daemon_address_lock;
+    static std::mutex default_daemon_address_lock;
     static std::string default_daemon_address;
   };
 }

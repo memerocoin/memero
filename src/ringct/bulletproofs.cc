@@ -83,7 +83,7 @@ static const rct::key MINUS_INV_EIGHT = { { 0x74, 0xa4, 0x19, 0x7a, 0xf0, 0x7d, 
 static const rct::keyV oneN = vector_dup(rct::identity(), maxN);
 static const rct::keyV twoN = vector_powers(TWO, maxN);
 static const rct::key ip12 = inner_product(oneN, twoN);
-static boost::mutex init_mutex;
+static std::mutex init_mutex;
 
 static inline rct::key multiexp(const std::vector<MultiexpData> &data, size_t HiGi_size)
 {
@@ -115,7 +115,7 @@ static rct::key get_exponent(const rct::key &base, size_t idx)
 
 static void init_exponents()
 {
-  boost::lock_guard<boost::mutex> lock(init_mutex);
+  boost::lock_guard<std::mutex> lock(init_mutex);
 
   static bool init_done = false;
   if (init_done)

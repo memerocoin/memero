@@ -34,7 +34,8 @@
 
 #include <boost/foreach.hpp>
 #include <boost/uuid/random_generator.hpp>
-#include <boost/chrono.hpp>
+#include <chrono>
+#include <thread>
 #include <boost/utility/value_init.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp> // TODO
@@ -365,7 +366,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 				long int ms = (long int)(delay * 100);
 				if (ms > 0) {
 					reset_timer(boost::posix_time::milliseconds(ms + 1), true);
-					boost::this_thread::sleep_for(boost::chrono::milliseconds(ms));
+					std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 				}
 			} while(delay > 0);
 		} // any form of sleeping
@@ -738,7 +739,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
   template<class t_protocol_handler>
   unsigned int connection<t_protocol_handler>::host_count(const std::string &host, int delta)
   {
-    static boost::mutex hosts_mutex;
+    static std::mutex hosts_mutex;
     CRITICAL_REGION_LOCAL(hosts_mutex);
     static std::map<std::string, unsigned int> hosts;
     unsigned int &val = hosts[host];
@@ -1231,10 +1232,12 @@ POP_WARNINGS
   bool boosted_tcp_server<t_protocol_handler>::timed_wait_server_stop(uint64_t wait_mseconds)
   {
     TRY_ENTRY();
-    boost::chrono::milliseconds ms(wait_mseconds);
+    std::chrono::milliseconds ms(wait_mseconds);
+    std::this_thread::sleep_for(ms);
+
     for (std::size_t i = 0; i < m_threads.size(); ++i)
     {
-      if(m_threads[i]->joinable() && !m_threads[i]->try_join_for(ms))
+      if(m_threads[i]->joinable())
       {
         _dbg1("Interrupting thread " << m_threads[i]->native_handle());
         m_threads[i]->interrupt();
@@ -1396,13 +1399,13 @@ POP_WARNINGS
     struct local_async_context
     {
       boost::system::error_code ec;
-      boost::mutex connect_mut;
-      boost::condition_variable cond;
+      std::mutex connect_mut;
+      std::condition_variable cond;
     };
 
     boost::shared_ptr<local_async_context> local_shared_context(new local_async_context());
     local_shared_context->ec = boost::asio::error::would_block;
-    boost::unique_lock<boost::mutex> lock(local_shared_context->connect_mut);
+    std::unique_lock<std::mutex> lock(local_shared_context->connect_mut);
     auto connect_callback = [](boost::system::error_code ec_, boost::shared_ptr<local_async_context> shared_context)
     {
       shared_context->connect_mut.lock(); shared_context->ec = ec_; shared_context->cond.notify_one(); shared_context->connect_mut.unlock();
@@ -1411,7 +1414,8 @@ POP_WARNINGS
     sock_.async_connect(remote_endpoint, std::bind<void>(connect_callback, std::placeholders::_1, local_shared_context));
     while(local_shared_context->ec == boost::asio::error::would_block)
     {
-      bool r = local_shared_context->cond.timed_wait(lock, boost::get_system_time() + boost::posix_time::milliseconds(conn_timeout));
+      bool r = std::cv_status::no_timeout ==
+        local_shared_context->cond.wait_for(lock, std::chrono::milliseconds(conn_timeout));
       if (m_stop_signal_sent)
       {
         if (sock_.is_open())

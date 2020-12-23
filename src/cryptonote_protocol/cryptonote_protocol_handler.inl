@@ -1031,7 +1031,7 @@ namespace cryptonote
     m_sync_download_objects_size += size;
     MDEBUG(context << " downloaded " << size << " bytes worth of blocks");
 
-    /*using namespace boost::chrono;
+    /*using namespace std::chrono;
       auto point = steady_clock::now();
       auto time_from_epoh = point.time_since_epoch();
       auto sec = duration_cast< seconds >( time_from_epoh ).count();*/
@@ -1249,7 +1249,7 @@ namespace cryptonote
       // We try to lock the sync lock. If we can, it means no other thread is
       // currently adding blocks, so we do that for as long as we can from the
       // block queue. Then, we go back to download.
-      const boost::unique_lock<boost::mutex> sync{m_sync_lock, boost::try_to_lock};
+      const std::unique_lock<std::mutex> sync{m_sync_lock, std::try_to_lock};
       if (!sync.owns_lock())
       {
         MINFO(context << "Failed to lock m_sync_lock, going back to download");
@@ -1938,7 +1938,7 @@ skip:
     // actually already requested). In this case, if we can add blocks instead, do so
     if (m_core.get_current_blockchain_height() < m_core.get_target_blockchain_height())
     {
-      const boost::unique_lock<boost::mutex> sync{m_sync_lock, boost::try_to_lock};
+      const std::unique_lock<std::mutex> sync{m_sync_lock, std::try_to_lock};
       if (sync.owns_lock())
       {
         uint64_t start_height;
@@ -2337,7 +2337,7 @@ skip:
   template<class t_core>
   bool t_cryptonote_protocol_handler<t_core>::is_busy_syncing()
   {
-    const boost::unique_lock<boost::mutex> sync{m_sync_lock, boost::try_to_lock};
+    const std::unique_lock<std::mutex> sync{m_sync_lock, std::try_to_lock};
     return !sync.owns_lock();
   }
   //------------------------------------------------------------------------------------------------------------------------

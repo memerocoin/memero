@@ -239,7 +239,7 @@ message(STATUS "Using OpenSSL include dir at ${OPENSSL_INCLUDE_DIR}")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 # boost
-find_package(Boost 1.67 REQUIRED COMPONENTS system filesystem thread date_time chrono regex serialization program_options locale)
+find_package(Boost 1.67 REQUIRED COMPONENTS system filesystem thread date_time regex serialization program_options locale)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
