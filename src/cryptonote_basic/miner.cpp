@@ -411,6 +411,11 @@ namespace cryptonote
     }
 
     MINFO("Mining has been stopped, " << m_threads.size() << " finished" );
+
+    for (auto& thread : m_threads) {
+      thread.join();
+    }
+
     m_threads.clear();
     m_threads_autodetect.clear();
     return true;

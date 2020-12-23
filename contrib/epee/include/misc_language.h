@@ -100,8 +100,8 @@ namespace misc_utils
 	bool sleep_no_w(long ms )
 	{
 		std::this_thread::sleep_for
-      (std::chrono::milliseconds( std::max<long>(ms,0) ) );
-		
+      (std::chrono::milliseconds(ms));
+
 		return true;
 	}
 
