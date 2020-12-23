@@ -2,8 +2,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <iostream>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/lock_guard.hpp>
+#include <mutex>
+#include <mutex>
 #include <boost/algorithm/string.hpp>
 
 static void install_line_handler();

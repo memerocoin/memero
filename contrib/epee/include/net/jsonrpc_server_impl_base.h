@@ -1,7 +1,7 @@
 #ifndef JSONRPC_SERVER_IMPL_BASE_H
 #define	JSONRPC_SERVER_IMPL_BASE_H
 
-#include <boost/thread.hpp>
+#include <thread>
 #include <boost/bind.hpp> 
 
 #include "net/jsonrpc_protocol_handler.h"

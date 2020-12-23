@@ -33,9 +33,9 @@
 #include <chrono>
 #include <thread>
 #include <condition_variable>
-#include <boost/thread/locks.hpp>
 #include <mutex>
-#include <boost/thread/recursive_mutex.hpp>
+#include <mutex>
+#include <mutex>
 
 namespace epee
 {

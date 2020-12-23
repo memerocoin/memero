@@ -35,7 +35,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <optional>
-#include <boost/thread/thread.hpp>
+#include <thread>
 #include <boost/uuid/uuid_io.hpp>
 #include <atomic>
 #include <functional>

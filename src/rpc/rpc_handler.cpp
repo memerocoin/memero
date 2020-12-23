@@ -1,7 +1,7 @@
 
 #include <algorithm>
-#include <boost/thread/locks.hpp>
-#include <boost/thread/mutex.hpp>
+#include <mutex>
+#include <mutex>
 
 #include "cryptonote_core/cryptonote_core.h"
 

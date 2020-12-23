@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include <boost/thread.hpp>
+#include <thread>
 #include <boost/bind.hpp> 
 
 #include "net/abstract_tcp_server2.h"

@@ -29,7 +29,7 @@
 #include <string>
 #include <atomic>
 #include <boost/filesystem.hpp>
-#include <boost/thread/thread.hpp>
+#include <thread>
 #include "file_io_utils.h"
 #include "net/http_client.h"
 #include "download.h"

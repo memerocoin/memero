@@ -29,7 +29,7 @@
 #pragma once 
 
 #include <map>
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 namespace epee
 {

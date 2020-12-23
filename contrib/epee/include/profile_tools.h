@@ -29,6 +29,7 @@
 #define _PROFILE_TOOLS_H_
 
 #include "misc_os_dependent.h"
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 namespace epee
 {

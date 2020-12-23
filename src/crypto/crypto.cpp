@@ -34,7 +34,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <boost/thread/lock_guard.hpp>
+#include <mutex>
 
 #include "common/varint.h"
 #include "warnings.h"

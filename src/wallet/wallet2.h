@@ -40,7 +40,7 @@
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/deque.hpp>
-#include <boost/thread/lock_guard.hpp>
+#include <mutex>
 #include <atomic>
 #include <random>
 

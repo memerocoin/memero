@@ -32,6 +32,8 @@
 #include <unordered_map>
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+
 #include "string_tools.h"
 #include "cryptonote_protocol_defs.h"
 #include "common/pruning.h"

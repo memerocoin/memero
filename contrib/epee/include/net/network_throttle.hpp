@@ -45,7 +45,7 @@
 
 #include <boost/array.hpp>
 #include <boost/interprocess/detail/atomic.hpp>
-#include <boost/thread/thread.hpp>
+#include <thread>
 
 #include "syncobj.h"
 

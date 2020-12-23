@@ -48,7 +48,8 @@
 #include <boost/asio/ssl.hpp>
 #include <boost/array.hpp>
 #include <boost/interprocess/detail/atomic.hpp>
-#include <boost/thread/thread.hpp>
+#include <boost/bind.hpp>
+#include <thread>
 #include "net_utils_base.h"
 #include "syncobj.h"
 #include "connection_basic.hpp"

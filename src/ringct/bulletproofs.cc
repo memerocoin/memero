@@ -30,8 +30,8 @@
 // Paper references are to https://eprint.iacr.org/2017/1066 (revision 1 July 2018)
 
 #include <stdlib.h>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/lock_guard.hpp>
+#include <mutex>
+#include <mutex>
 #include "misc_log_ex.h"
 #include "span.h"
 #include "common/perf_timer.h"

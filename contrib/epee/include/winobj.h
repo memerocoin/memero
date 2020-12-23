@@ -28,7 +28,7 @@
 #ifndef __WINH_OBJ_H__
 #define __WINH_OBJ_H__
 
-#include <boost/thread/locks.hpp>
+#include <mutex>
 
 namespace epee
 {

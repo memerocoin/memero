@@ -34,10 +34,11 @@
 #include <mutex>
 #include <thread>
 #include <iostream>
+
 #ifdef __OpenBSD__
 #include <stdio.h>
 #endif
-#include <boost/thread.hpp>
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
@@ -61,7 +62,7 @@ namespace epee
 #ifdef HAVE_READLINE
       m_readline_buffer.start();
 #endif
-      m_reader_thread = std::thread(std::bind(&async_stdin_reader::reader_thread_func, this));
+      m_reader_thread = std::thread(&async_stdin_reader::reader_thread_func, this);
     }
 
     ~async_stdin_reader()
@@ -477,7 +478,7 @@ eof:
   template<class t_server, class t_handler>
   bool start_default_console_handler_no_srv_param(t_server* ptsrv, t_handler handlr, std::function<std::string(void)> prompt, const std::string& usage = "")
   {
-    std::thread( boost::bind(run_default_console_handler_no_srv_param<t_server, t_handler>, ptsrv, handlr, prompt, usage) );
+    std::thread(run_default_console_handler_no_srv_param<t_server, t_handler>, ptsrv, handlr, prompt, usage);
     return true;
   }
 
@@ -644,7 +645,7 @@ eof:
 
     bool start_handling(std::function<std::string(void)> prompt, const std::string& usage_string = "", std::function<void(void)> exit_handler = NULL)
     {
-      m_console_thread.reset(new std::thread(boost::bind(&console_handlers_binder::run_handling, this, prompt, usage_string, exit_handler)));
+      m_console_thread.reset(new std::thread(&console_handlers_binder::run_handling, this, prompt, usage_string, exit_handler));
       return true;
     }
     bool start_handling(const std::string &prompt, const std::string& usage_string = "", std::function<void(void)> exit_handler = NULL)
@@ -672,32 +673,4 @@ eof:
       m_console_handler.cancel();
     }
   };
-
-  ///* work around because of broken boost bind */
-  //template<class t_server>
-  //class srv_console_handlers_binder: public command_handler
-  //{
-  //  async_console_handler m_console_handler;
-  //public:
-  //  bool start_handling(t_server* psrv, const std::string& prompt, const std::string& usage_string = "")
-  //  {
-  //    std::thread(boost::bind(&srv_console_handlers_binder<t_server>::run_handling, this, psrv, prompt, usage_string)).detach();
-  //    return true;
-  //  }
-
-  //  bool run_handling(t_server* psrv, const std::string& prompt, const std::string& usage_string)
-  //  {
-  //    return m_console_handler.run(psrv, boost::bind(&srv_console_handlers_binder<t_server>::process_command_str, this, _1, _2), prompt, usage_string);
-  //  }
-
-  //  void stop_handling()
-  //  {
-  //    m_console_handler.stop();
-  //  }
-  //private:
-  //  bool process_command_str(t_server* /*psrv*/, const std::string& cmd)
-  //  {
-  //    return console_handlers_binder::process_command_str(cmd);
-  //  }
-  //};
 }

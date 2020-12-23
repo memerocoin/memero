@@ -41,7 +41,7 @@
 #include <boost/range/combine.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/thread/scoped_thread.hpp>
-#include <boost/thread/thread.hpp>
+#include <thread>
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>

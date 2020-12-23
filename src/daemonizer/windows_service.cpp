@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/chrono/chrono.hpp>
-#include <boost/thread/thread.hpp>
+#include <thread>
 
 #undef UNICODE
 #undef _UNICODE

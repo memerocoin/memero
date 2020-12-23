@@ -32,7 +32,7 @@
 #include <chrono>
 #include <functional>
 #include <numeric>
-#include <boost/thread/thread.hpp>
+#include <thread>
 #include <vector>
 
 #include "gtest/gtest.h"

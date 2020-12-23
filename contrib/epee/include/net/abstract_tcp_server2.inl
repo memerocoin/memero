@@ -38,7 +38,7 @@
 #include <boost/utility/value_init.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp> // TODO
-#include <boost/thread/condition_variable.hpp> // TODO
+#include <condition_variable> // TODO
 #include "warnings.h"
 #include "string_tools.h"
 #include "misc_language.h"

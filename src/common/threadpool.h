@@ -29,12 +29,14 @@
 
 #include <condition_variable>
 #include <mutex>
-#include <boost/thread/thread.hpp>
+#include <thread>
 #include <cstddef>
 #include <functional>
 #include <utility>
 #include <vector>
 #include <stdexcept>
+#include <deque>
+#include <boost/bind.hpp>
 
 namespace tools
 {
