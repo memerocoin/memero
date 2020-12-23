@@ -47,7 +47,7 @@ namespace tools
 
 static const std::chrono::seconds rpc_timeout = std::chrono::minutes(3) + std::chrono::seconds(30);
 
-NodeRPCProxy::NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_client, boost::recursive_mutex &mutex)
+NodeRPCProxy::NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex)
   : m_http_client(http_client)
   , m_daemon_rpc_mutex(mutex)
   , m_offline(false)
@@ -81,7 +81,7 @@ std::optional<std::string> NodeRPCProxy::get_rpc_version(uint32_t &rpc_version)
     cryptonote::COMMAND_RPC_GET_VERSION::request req_t = AUTO_VAL_INIT(req_t);
     cryptonote::COMMAND_RPC_GET_VERSION::response resp_t = AUTO_VAL_INIT(resp_t);
     {
-      const boost::lock_guard<boost::recursive_mutex> lock{m_daemon_rpc_mutex};
+      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
       bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_version", req_t, resp_t, m_http_client, rpc_timeout);
       RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_version");
     }
@@ -108,7 +108,7 @@ std::optional<std::string> NodeRPCProxy::get_info()
     cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
 
     {
-      const boost::lock_guard<boost::recursive_mutex> lock{m_daemon_rpc_mutex};
+      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
       bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t, m_http_client, rpc_timeout);
       RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
     }
@@ -177,7 +177,7 @@ std::optional<std::string> NodeRPCProxy::get_earliest_height(uint8_t version, ui
     req_t.version = version;
 
     {
-      const boost::lock_guard<boost::recursive_mutex> lock{m_daemon_rpc_mutex};
+      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
       bool r = net_utils::invoke_http_json_rpc("/json_rpc", "hard_fork_info", req_t, resp_t, m_http_client, rpc_timeout);
       RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "hard_fork_info");
     }
@@ -206,7 +206,7 @@ std::optional<std::string> NodeRPCProxy::get_dynamic_base_fee_estimate(uint64_t 
     req_t.grace_blocks = grace_blocks;
 
     {
-      const boost::lock_guard<boost::recursive_mutex> lock{m_daemon_rpc_mutex};
+      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
       bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_fee_estimate", req_t, resp_t, m_http_client, rpc_timeout);
       RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_fee_estimate");
     }
@@ -238,7 +238,7 @@ std::optional<std::string> NodeRPCProxy::get_fee_quantization_mask(uint64_t &fee
     req_t.grace_blocks = m_dynamic_base_fee_estimate_grace_blocks;
 
     {
-      const boost::lock_guard<boost::recursive_mutex> lock{m_daemon_rpc_mutex};
+      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
       bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_fee_estimate", req_t, resp_t, m_http_client, rpc_timeout);
       RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_fee_estimate");
     }

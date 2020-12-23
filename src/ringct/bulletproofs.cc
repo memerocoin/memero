@@ -115,7 +115,7 @@ static rct::key get_exponent(const rct::key &base, size_t idx)
 
 static void init_exponents()
 {
-  boost::lock_guard<std::mutex> lock(init_mutex);
+  std::lock_guard<std::mutex> lock(init_mutex);
 
   static bool init_done = false;
   if (init_done)

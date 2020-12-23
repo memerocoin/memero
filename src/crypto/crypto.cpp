@@ -96,13 +96,13 @@ namespace crypto {
 
   void generate_random_bytes_thread_safe(size_t N, uint8_t *bytes)
   {
-    boost::lock_guard<std::mutex> lock(get_random_lock());
+    std::lock_guard<std::mutex> lock(get_random_lock());
     generate_random_bytes_not_thread_safe(N, bytes);
   }
 
   void add_extra_entropy_thread_safe(const void *ptr, size_t bytes)
   {
-    boost::lock_guard<std::mutex> lock(get_random_lock());
+    std::lock_guard<std::mutex> lock(get_random_lock());
     add_extra_entropy_not_thread_safe(ptr, bytes);
   }
 

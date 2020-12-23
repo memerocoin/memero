@@ -80,7 +80,7 @@ namespace epee
 
   class critical_section
   {
-    boost::recursive_mutex m_section;
+    std::recursive_mutex m_section;
 
   public:
     //to make copy fake!

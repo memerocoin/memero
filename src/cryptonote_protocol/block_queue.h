@@ -34,7 +34,7 @@
 #include <vector>
 #include <set>
 #include <unordered_set>
-#include <boost/thread/recursive_mutex.hpp>
+#include <mutex>
 #include <boost/uuid/uuid.hpp>
 #include "net/net_utils_base.h"
 
@@ -105,7 +105,7 @@ namespace cryptonote
 
   private:
     block_map blocks;
-    mutable boost::recursive_mutex mutex;
+    mutable std::recursive_mutex mutex;
     std::unordered_set<crypto::hash> requested_hashes;
     std::unordered_set<crypto::hash> have_blocks;
   };

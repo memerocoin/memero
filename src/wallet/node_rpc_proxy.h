@@ -40,7 +40,7 @@ namespace tools
 class NodeRPCProxy
 {
 public:
-  NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_client, boost::recursive_mutex &mutex);
+  NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex);
 
   void invalidate();
   void set_offline(bool offline) { m_offline = offline; }
@@ -59,7 +59,7 @@ private:
   std::optional<std::string> get_info();
 
   epee::net_utils::http::abstract_http_client &m_http_client;
-  boost::recursive_mutex &m_daemon_rpc_mutex;
+  std::recursive_mutex &m_daemon_rpc_mutex;
   bool m_offline;
 
   uint64_t m_height;
