@@ -32,7 +32,7 @@
 #include <boost/algorithm/string/finder.hpp>
 #include <chrono>
 #include <boost/endian/conversion.hpp>
-#include <boost/optional/optional.hpp>
+#include <optional>
 #include <boost/thread/future.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <chrono>

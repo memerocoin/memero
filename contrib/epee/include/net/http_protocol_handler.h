@@ -30,7 +30,7 @@
 #ifndef _HTTP_SERVER_H_
 #define _HTTP_SERVER_H_
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 #include <string>
 #include "net_utils_base.h"
 #include "to_nonconst_iterator.h"

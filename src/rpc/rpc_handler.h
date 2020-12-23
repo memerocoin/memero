@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 #include <cstdint>
 #include <string>
 #include <vector>

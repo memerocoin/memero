@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 
 #include "common/http_connection.h"
 #include "common/scoped_message_writer.h"

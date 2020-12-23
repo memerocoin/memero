@@ -37,7 +37,7 @@
 
 #include <memory>
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 #include <boost/program_options/variables_map.hpp>
 #include <condition_variable>
 

@@ -38,8 +38,6 @@
 
 #pragma once
 
-#include <boost/optional/optional_fwd.hpp>
-
 #include "common/common_fwd.h"
 #include "common/rpc_client.h"
 #include "cryptonote_basic/cryptonote_basic.h"

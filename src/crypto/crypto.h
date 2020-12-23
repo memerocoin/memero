@@ -32,7 +32,6 @@
 
 #include <cstddef>
 #include <iostream>
-#include <boost/optional.hpp>
 #include <type_traits>
 #include <vector>
 #include <random>

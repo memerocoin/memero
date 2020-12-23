@@ -32,7 +32,6 @@
 
 #include <boost/thread/locks.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/optional.hpp>
 #include <system_error>
 #include <csignal>
 #include <cstdio>

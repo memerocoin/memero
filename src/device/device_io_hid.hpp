@@ -29,7 +29,7 @@
 
 #if defined(HAVE_HIDAPI) 
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 #include <hidapi/hidapi.h>
 #include "device_io.hpp"
 

@@ -26,7 +26,7 @@
 #pragma once
 
 #include <string>
-#include <boost/optional/optional.hpp>
+#include <optional>
 #include "net/http_base.h"
 #include "net/net_ssl.h"
 

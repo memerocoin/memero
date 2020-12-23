@@ -1,5 +1,5 @@
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 #include <boost/range/adaptor/indexed.hpp>
 #include <gtest/gtest.h>
 #include <rapidjson/document.h>

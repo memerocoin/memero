@@ -32,7 +32,8 @@
 
 #include <string>
 #include <atomic>
-#include <boost/optional/optional.hpp>
+#include <optional>
+#include <functional>
 #include "wipeable_string.h"
 
 namespace tools
