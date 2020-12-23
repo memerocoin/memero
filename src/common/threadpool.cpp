@@ -76,7 +76,7 @@ void threadpool::create(unsigned int max_threads) {
   size_t i = max ? max - 1 : 0;
   running = true;
   while(i--) {
-    threads.push_back(std::thread(boost::bind(&threadpool::run, this, false)));
+    threads.push_back(std::thread(std::bind(&threadpool::run, this, false)));
   }
 }
 

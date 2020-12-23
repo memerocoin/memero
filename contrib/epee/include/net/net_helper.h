@@ -40,7 +40,6 @@
 #include <boost/asio/ssl.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <boost/thread/future.hpp>
-#include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/interprocess/detail/atomic.hpp>
 #include <boost/system/error_code.hpp>
@@ -297,7 +296,7 @@ namespace net_utils
 				// Start the asynchronous operation itself. The boost::lambda function
 				// object is used as a callback and will update the ec variable when the
 				// operation completes. The blocking_udp_client.cpp example shows how you
-				// can use boost::bind rather than boost::lambda.
+				// can use std::bind rather than boost::lambda.
 				async_write(buff.c_str(), buff.size(), ec);
 
 				// Block until the asynchronous operation has completed.
@@ -351,7 +350,7 @@ namespace net_utils
 				// Start the asynchronous operation itself. The boost::lambda function
 				// object is used as a callback and will update the ec variable when the
 				// operation completes. The blocking_udp_client.cpp example shows how you
-				// can use boost::bind rather than boost::lambda.
+				// can use std::bind rather than boost::lambda.
 				boost::asio::async_write(m_socket, boost::asio::buffer(data, sz), boost::lambda::var(ec) = boost::lambda::_1);
 
 				// Block until the asynchronous operation has completed.
@@ -421,7 +420,7 @@ namespace net_utils
 				// Start the asynchronous operation itself. The boost::lambda function
 				// object is used as a callback and will update the ec variable when the
 				// operation completes. The blocking_udp_client.cpp example shows how you
-				// can use boost::bind rather than boost::lambda.
+				// can use std::bind rather than boost::lambda.
 
 				boost::system::error_code ec = boost::asio::error::would_block;
 				size_t bytes_transfered = 0;
@@ -507,7 +506,7 @@ namespace net_utils
 				// Start the asynchronous operation itself. The boost::lambda function
 				// object is used as a callback and will update the ec variable when the
 				// operation completes. The blocking_udp_client.cpp example shows how you
-				// can use boost::bind rather than boost::lambda.
+				// can use std::bind rather than boost::lambda.
 
 				buff.resize(static_cast<size_t>(sz));
 				boost::system::error_code ec = boost::asio::error::would_block;
@@ -622,7 +621,7 @@ namespace net_utils
 			}
 
 			// Put the actor back to sleep.
-			m_deadline.async_wait(boost::bind(&blocked_mode_client::check_deadline, this));
+			m_deadline.async_wait(std::bind(&blocked_mode_client::check_deadline, this));
 		}
 
 		void shutdown_ssl() {
@@ -737,7 +736,7 @@ namespace net_utils
 				// Start the asynchronous operation itself. The boost::lambda function
 				// object is used as a callback and will update the ec variable when the
 				// operation completes. The blocking_udp_client.cpp example shows how you
-				// can use boost::bind rather than boost::lambda.
+				// can use std::bind rather than boost::lambda.
 				boost::asio::async_write(m_socket, boost::asio::buffer(data, sz), boost::lambda::var(ec) = boost::lambda::_1);
 
 				// Block until the asynchronous operation has completed.
@@ -798,7 +797,7 @@ namespace net_utils
 			}
 
 			// Put the actor back to sleep.
-			m_send_deadline.async_wait(boost::bind(&async_blocked_mode_client::check_send_deadline, this));
+			m_send_deadline.async_wait(std::bind(&async_blocked_mode_client::check_send_deadline, this));
 		}
 	};
 }

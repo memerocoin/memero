@@ -31,7 +31,6 @@
 
 
 #include <thread>
-#include <boost/bind/bind.hpp>
 
 #include "net/abstract_tcp_server2.h"
 #include "http_protocol_handler.h"

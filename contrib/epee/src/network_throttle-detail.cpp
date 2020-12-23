@@ -32,33 +32,27 @@
 
 /* rfree: implementation for throttle details */
 
+#include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <iomanip>
+#include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <atomic>
 
 #include <boost/asio.hpp>
-
-#include <memory>
-
-#include "syncobj.h"
-
-#include "net/net_utils_base.h" 
-#include "misc_log_ex.h" 
-#include <chrono>
-#include "misc_language.h"
-#include "pragma_comp_defs.h"
-#include <sstream>
-#include <iomanip>
-#include <algorithm>
-
-
-
 #include <boost/asio/basic_socket.hpp>
 #include <boost/asio/ip/unicast.hpp>
-#include "net/abstract_tcp_server2.h"
 
-// TODO:
+#include "net/abstract_tcp_server2.h"
 #include "net/network_throttle-detail.hpp"
+#include "net/net_utils_base.h"
+
+#include "syncobj.h"
+#include "misc_log_ex.h"
+#include "misc_language.h"
+#include "pragma_comp_defs.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.throttle"

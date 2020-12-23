@@ -36,7 +36,6 @@
 #include <vector>
 #include <stdexcept>
 #include <deque>
-#include <boost/bind.hpp>
 
 namespace tools
 {

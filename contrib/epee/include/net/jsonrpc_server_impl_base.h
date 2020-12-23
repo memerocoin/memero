@@ -2,7 +2,6 @@
 #define	JSONRPC_SERVER_IMPL_BASE_H
 
 #include <thread>
-#include <boost/bind.hpp> 
 
 #include "net/jsonrpc_protocol_handler.h"
 #include "net/jsonrpc_server_handlers_map.h"
