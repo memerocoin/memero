@@ -1039,7 +1039,7 @@ inline bool do_replay_file(const std::string& filename)
 #define GENERATE_AND_PLAY(genclass) \
   if (list_tests)                                                                                          \
     std::cout << #genclass << std::endl;                                                                   \
-  else if (filter.empty() || boost::regex_match(std::string(#genclass), match, boost::regex(filter)))      \
+  else if (filter.empty() || std::regex_match(std::string(#genclass), match, std::regex(filter)))      \
   {                                                                                                        \
     std::vector<test_event_entry> events;                                                                  \
     ++tests_count;                                                                                         \
@@ -1053,7 +1053,7 @@ inline bool do_replay_file(const std::string& filename)
   }
 
 #define GENERATE_AND_PLAY_INSTANCE(genclass, ins, CORE)                                                    \
-  if (filter.empty() || boost::regex_match(std::string(#genclass), match, boost::regex(filter)))           \
+  if (filter.empty() || std::regex_match(std::string(#genclass), match, std::regex(filter)))           \
   {                                                                                                        \
     std::vector<test_event_entry> events;                                                                  \
     ++tests_count;                                                                                         \

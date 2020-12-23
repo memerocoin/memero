@@ -37,7 +37,7 @@
 
 using namespace cryptonote;
 
-#include <boost/regex.hpp>
+#include <regex>
 #include <common/apply_permutation.h>
 #include "common/util.h"
 #include "common/command_line.h"
@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
     }
 
     const std::string filter = tools::glob_to_regex(command_line::get_arg(vm, arg_filter));
-    boost::smatch match;
+    std::smatch match;
 
     size_t tests_count = 0;
     std::vector<std::string> failed_tests;

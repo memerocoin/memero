@@ -100,10 +100,10 @@ namespace net_utils
 
     ///iframe_test.html?api_url=http://api.vk.com/api.php&api_id=3289090&api_settings=1&viewer_id=562964060&viewer_type=0&sid=0aad8d1c5713130f9ca0076f2b7b47e532877424961367d81e7fa92455f069be7e21bc3193cbd0be11895&secret=368ebbc0ef&access_token=668bc03f43981d883f73876ffff4aa8564254b359cc745dfa1b3cde7bdab2e94105d8f6d8250717569c0a7&user_id=0&group_id=0&is_app_user=1&auth_key=d2f7a895ca5ff3fdb2a2a8ae23fe679a&language=0&parent_language=0&ad_info=ElsdCQBaQlxiAQRdFUVUXiN2AVBzBx5pU1BXIgZUJlIEAWcgAUoLQg==&referrer=unknown&lc_name=9834b6a3&hash=
     content.m_query_params.clear();
-    STATIC_REGEXP_EXPR_1(rexp_match_uri, "^([^?#]*)(\\?([^#]*))?(#(.*))?", boost::regex::icase | boost::regex::normal);
+    STATIC_REGEXP_EXPR_1(rexp_match_uri, "^([^?#]*)(\\?([^#]*))?(#(.*))?", std::regex::icase );
 
-    boost::smatch result;	
-    if(!(boost::regex_search(uri, result, rexp_match_uri, boost::match_default) && result[0].matched))
+    std::smatch result;	
+    if(!(std::regex_search(uri, result, rexp_match_uri) && result[0].matched))
     {
       LOG_PRINT_L1("[PARSE URI] regex not matched for uri: " << uri);
       content.m_path = uri;
@@ -131,14 +131,14 @@ namespace net_utils
   inline
     bool parse_url_ipv6(const std::string url_str, http::url_content& content)
   {
-    STATIC_REGEXP_EXPR_1(rexp_match_uri, "^(([^:]*?)://)?(\\[(.*)\\](:(\\d+))?)(.*)?", boost::regex::icase | boost::regex::normal);
+    STATIC_REGEXP_EXPR_1(rexp_match_uri, "^(([^:]*?)://)?(\\[(.*)\\](:(\\d+))?)(.*)?", std::regex::icase );
     //                                     12            3   4      5 6        7
 
     content.port = 0;
-    boost::smatch result;
-    if(!(boost::regex_search(url_str, result, rexp_match_uri, boost::match_default) && result[0].matched))
+    std::smatch result;
+    if(!(std::regex_search(url_str, result, rexp_match_uri) && result[0].matched))
     {
-      LOG_PRINT_L1("[PARSE URI] regex not matched for uri: " << rexp_match_uri);
+      /* LOG_PRINT_L1("[PARSE URI] regex not matched for uri: " << rexp_match_uri); */
       //content.m_path = uri;
       return false;
     }
@@ -174,14 +174,14 @@ namespace net_utils
     if (parse_url_ipv6(url_str, content)) return true;
 
     ///iframe_test.html?api_url=http://api.vk.com/api.php&api_id=3289090&api_settings=1&viewer_id=562964060&viewer_type=0&sid=0aad8d1c5713130f9ca0076f2b7b47e532877424961367d81e7fa92455f069be7e21bc3193cbd0be11895&secret=368ebbc0ef&access_token=668bc03f43981d883f73876ffff4aa8564254b359cc745dfa1b3cde7bdab2e94105d8f6d8250717569c0a7&user_id=0&group_id=0&is_app_user=1&auth_key=d2f7a895ca5ff3fdb2a2a8ae23fe679a&language=0&parent_language=0&ad_info=ElsdCQBaQlxiAQRdFUVUXiN2AVBzBx5pU1BXIgZUJlIEAWcgAUoLQg==&referrer=unknown&lc_name=9834b6a3&hash=
-    //STATIC_REGEXP_EXPR_1(rexp_match_uri, "^([^?#]*)(\\?([^#]*))?(#(.*))?", boost::regex::icase | boost::regex::normal);
-    STATIC_REGEXP_EXPR_1(rexp_match_uri, "^(([^:]*?)://)?(([^/:]*)(:(\\d+))?)(.*)?", boost::regex::icase | boost::regex::normal);
+    //STATIC_REGEXP_EXPR_1(rexp_match_uri, "^([^?#]*)(\\?([^#]*))?(#(.*))?", std::regex::icase );
+    STATIC_REGEXP_EXPR_1(rexp_match_uri, "^(([^:]*?)://)?(([^/:]*)(:(\\d+))?)(.*)?", std::regex::icase );
     //                                     12            34       5 6        7
     content.port = 0;
-    boost::smatch result;	
-    if(!(boost::regex_search(url_str, result, rexp_match_uri, boost::match_default) && result[0].matched))
+    std::smatch result;	
+    if(!(std::regex_search(url_str, result, rexp_match_uri) && result[0].matched))
     {
-      LOG_PRINT_L1("[PARSE URI] regex not matched for uri: " << rexp_match_uri);
+      /* LOG_PRINT_L1("[PARSE URI] regex not matched for uri: " << rexp_match_uri); */
       //content.m_path = uri;
       return true;
     }

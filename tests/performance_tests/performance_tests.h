@@ -34,7 +34,7 @@
 #include <stdint.h>
 
 #include <chrono>
-#include <boost/regex.hpp>
+#include <regex>
 
 #include "misc_language.h"
 #include "stats.h"
@@ -164,8 +164,8 @@ private:
 template <typename T>
 void run_test(const std::string &filter, Params &params, const char* test_name)
 {
-  boost::smatch match;
-  if (!filter.empty() && !boost::regex_match(std::string(test_name), match, boost::regex(filter)))
+  std::smatch match;
+  if (!filter.empty() && !std::regex_match(std::string(test_name), match, std::regex(filter)))
     return;
 
   test_runner<T> runner(params);

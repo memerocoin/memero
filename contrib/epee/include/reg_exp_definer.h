@@ -49,7 +49,7 @@ namespace epee
 	volatile uint32_t local_is_initialized_1 = regexp_initialized_1;\
 	if(!local_is_initialized_1)\
 	gregexplock.get_lock().lock();\
-	static const boost::regex	var_name(xpr_text , reg_exp_flags);\
+	static const std::regex	var_name(xpr_text , reg_exp_flags);\
 	if(!local_is_initialized_1)\
 {\
 	boost::interprocess::ipcdetail::atomic_write32(&regexp_initialized_1, 1);\
@@ -61,7 +61,7 @@ namespace epee
 	volatile uint32_t local_is_initialized_2 = regexp_initialized_2;\
 	if(!local_is_initialized_2)\
 	gregexplock.get_lock().lock().lock();\
-	static const boost::regex	var_name(xpr_text , reg_exp_flags);\
+	static const std::regex	var_name(xpr_text , reg_exp_flags);\
 	if(!local_is_initialized_2)\
 {\
 	boost::interprocess::ipcdetail::atomic_write32(&regexp_initialized_2, 1);\
@@ -73,7 +73,7 @@ namespace epee
 	volatile uint32_t local_is_initialized_3 = regexp_initialized_3;\
 	if(!local_is_initialized_3)\
 	gregexplock.get_lock().lock().lock();\
-	static const boost::regex	var_name(xpr_text , reg_exp_flags);\
+	static const std::regex	var_name(xpr_text , reg_exp_flags);\
 	if(!local_is_initialized_3)\
 {\
 	boost::interprocess::ipcdetail::atomic_write32(&regexp_initialized_3, 1);\
