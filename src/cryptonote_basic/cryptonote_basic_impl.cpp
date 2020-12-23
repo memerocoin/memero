@@ -48,21 +48,6 @@ using namespace constant;
 
 namespace cryptonote {
 
-  struct integrated_address {
-    account_public_address adr;
-    crypto::hash8 payment_id;
-
-    BEGIN_SERIALIZE_OBJECT()
-      FIELD(adr)
-      FIELD(payment_id)
-    END_SERIALIZE()
-
-    BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(adr)
-      KV_SERIALIZE(payment_id)
-    END_KV_SERIALIZE_MAP()
-  };
-
   /************************************************************************/
   /* Cryptonote helper functions                                          */
   /************************************************************************/
@@ -93,16 +78,6 @@ namespace cryptonote {
     return summ;
   }
   //------------------------------------------------------------------------------------
-  uint8_t get_account_integrated_address_checksum(const public_integrated_address_outer_blob& bl)
-  {
-    const unsigned char* pbuf = reinterpret_cast<const unsigned char*>(&bl);
-    uint8_t summ = 0;
-    for(size_t i = 0; i!= sizeof(public_integrated_address_outer_blob)-1; i++)
-      summ += pbuf[i];
-
-    return summ;
-  }
-  //-----------------------------------------------------------------------
   std::string get_account_address_as_str(
       network_type nettype
     , bool subaddress
@@ -112,20 +87,6 @@ namespace cryptonote {
     uint64_t address_prefix = subaddress ? get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX : get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
 
     return tools::base58::encode_addr(address_prefix, t_serializable_object_to_blob(adr));
-  }
-  //-----------------------------------------------------------------------
-  std::string get_account_integrated_address_as_str(
-      network_type nettype
-    , account_public_address const & adr
-    , crypto::hash8 const & payment_id
-    )
-  {
-    uint64_t integrated_address_prefix = get_config(nettype).CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX;
-
-    integrated_address iadr = {
-      adr, payment_id
-    };
-    return tools::base58::encode_addr(integrated_address_prefix, t_serializable_object_to_blob(iadr));
   }
   //-----------------------------------------------------------------------
   bool is_coinbase(const transaction& tx)
@@ -183,14 +144,8 @@ namespace cryptonote {
 
       if (info.has_payment_id)
       {
-        integrated_address iadr;
-        if (!::serialization::parse_binary(data, iadr))
-        {
-          LOG_PRINT_L1("Account public address keys can't be parsed");
-          return false;
-        }
-        info.address = iadr.adr;
-        info.payment_id = iadr.payment_id;
+        LOG_PRINT_L1("Account public address keys can't be parsed");
+        return false;
       }
       else
       {
