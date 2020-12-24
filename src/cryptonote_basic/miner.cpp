@@ -30,6 +30,7 @@
 
 #include <sstream>
 #include <numeric>
+#include <algorithm>
 #include <boost/interprocess/detail/atomic.hpp>
 #include <boost/algorithm/string.hpp>
 #include "misc_language.h"
@@ -176,11 +177,6 @@ namespace cryptonote
       return true;
     });
 
-    m_autodetect_interval.do_call([&](){
-      update_autodetection();
-      return true;
-    });
-
     return true;
   }
   //-----------------------------------------------------------------------------------------------------
@@ -209,60 +205,6 @@ namespace cryptonote
     }
     m_last_hr_merge_time = misc_utils::get_tick_count();
     m_hashes = 0;
-  }
-  //-----------------------------------------------------------------------------------------------------
-  void miner::update_autodetection()
-  {
-    if (m_threads_autodetect.empty())
-      return;
-
-    uint64_t now = epee::misc_utils::get_ns_count();
-    uint64_t dt = now - m_threads_autodetect.back().first;
-    if (dt < AUTODETECT_WINDOW * 1000000000ull)
-      return;
-
-    // work out how many more hashes we got
-    m_threads_autodetect.back().first = dt;
-    uint64_t dh = m_total_hashes - m_threads_autodetect.back().second;
-    m_threads_autodetect.back().second = dh;
-    float hs = dh / (dt / (float)1000000000);
-    MGINFO("Mining autodetection: " << m_threads_autodetect.size() << " threads: " << hs << " H/s");
-
-    // when we don't increase by at least 2%, stop, otherwise check next
-    // if N and N+1 have mostly the same hash rate, we want to "lighter" one
-    bool found = false;
-    if (m_threads_autodetect.size() > 1)
-    {
-      int previdx = m_threads_autodetect.size() - 2;
-      float previous_hs = m_threads_autodetect[previdx].second / (m_threads_autodetect[previdx].first / (float)1000000000);
-      if (previous_hs > 0 && hs / previous_hs < AUTODETECT_GAIN_THRESHOLD)
-      {
-        m_threads_total = m_threads_autodetect.size() - 1;
-        m_threads_autodetect.clear();
-        MGINFO("Optimal number of threads seems to be " << m_threads_total);
-        found = true;
-      }
-    }
-
-    if (!found)
-    {
-      // setup one more thread
-      m_threads_autodetect.push_back({now, m_total_hashes});
-      m_threads_total = m_threads_autodetect.size();
-    }
-
-    // restart all threads
-    {
-      CRITICAL_REGION_LOCAL(m_threads_lock);
-      boost::interprocess::ipcdetail::atomic_write32(&m_stop, 1);
-      while (m_threads_active > 0)
-        misc_utils::sleep_no_w(100);
-      m_threads.clear();
-    }
-    boost::interprocess::ipcdetail::atomic_write32(&m_stop, 0);
-    boost::interprocess::ipcdetail::atomic_write32(&m_thread_index, 0);
-    for(size_t i = 0; i != m_threads_total; i++)
-      m_threads.push_back(std::thread(std::bind(&miner::worker_thread, this)));
   }
   //-----------------------------------------------------------------------------------------------------
   void miner::init_options(boost::program_options::options_description& desc)
@@ -335,13 +277,8 @@ namespace cryptonote
   {
     m_block_reward = 0;
     m_mine_address = adr;
-    m_threads_total = static_cast<uint32_t>(threads_count);
-    if (threads_count == 0)
-    {
-      m_threads_autodetect.clear();
-      m_threads_autodetect.push_back({epee::misc_utils::get_ns_count(), m_total_hashes});
-      m_threads_total = 1;
-    }
+    m_threads_total = std::max(1u, static_cast<uint32_t>(threads_count));
+
     m_starter_nonce = crypto::rand<uint64_t>();
     CRITICAL_REGION_LOCAL(m_threads_lock);
     if(is_mining())
@@ -366,10 +303,7 @@ namespace cryptonote
       m_threads.push_back(std::thread(std::bind(&miner::worker_thread, this)));
     }
 
-    if (threads_count == 0)
-      MINFO("Mining has started, autodetecting optimal number of threads, good luck!" );
-    else
-      MINFO("Mining has started with " << threads_count << " threads, good luck!" );
+    MINFO("Mining has started with " << threads_count << " threads, good luck!" );
 
     return true;
   }
@@ -407,7 +341,7 @@ namespace cryptonote
     // on the background miner to signal start. 
     while (m_threads_active > 0)
     {
-      misc_utils::sleep_no_w(100);
+      misc_utils::sleep_no_w(32);
     }
 
     MINFO("Mining has been stopped, " << m_threads.size() << " finished" );
@@ -417,7 +351,6 @@ namespace cryptonote
     }
 
     m_threads.clear();
-    m_threads_autodetect.clear();
     return true;
   }
   //-----------------------------------------------------------------------------------------------------
