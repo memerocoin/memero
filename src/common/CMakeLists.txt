@@ -31,7 +31,6 @@ include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 set(common_sources
   base58.cpp
   command_line.cpp
-  download.cpp
   error.cpp
   expect.cpp
   util.cpp
@@ -58,7 +57,6 @@ set(common_private_headers
   boost_serialization_helper.h
   command_line.h
   common_fwd.h
-  download.h
   error.h
   expect.h
   http_connection.h

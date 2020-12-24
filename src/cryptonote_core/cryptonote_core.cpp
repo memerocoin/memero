@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2020, The Monero Project
+
 //
 // All rights reserved.
 //
@@ -37,7 +37,6 @@ using namespace epee;
 #include <unordered_set>
 #include "cryptonote_core.h"
 #include "common/util.h"
-#include "common/download.h"
 #include "common/threadpool.h"
 #include "common/command_line.h"
 #include "cryptonote_basic/events.h"
