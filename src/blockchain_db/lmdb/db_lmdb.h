@@ -31,7 +31,6 @@
 #include "blockchain_db/blockchain_db.h"
 #include "cryptonote_basic/blobdatatype.h" // for type blobdata
 #include "ringct/rctTypes.h"
-#include <boost/thread/tss.hpp>
 
 #include <lmdb.h>
 
@@ -472,7 +471,8 @@ private:
   bool m_batch_active; // whether batch transaction is in progress
 
   mdb_txn_cursors m_wcursors;
-  mutable boost::thread_specific_ptr<mdb_threadinfo> m_tinfo;
+  // mutable boost::thread_specific_ptr<mdb_threadinfo> m_tinfo;
+  static inline thread_local std::unique_ptr<mdb_threadinfo> m_tinfo;
 
 #if defined(__arm__)
   // force a value so it can compile with 32-bit ARM
