@@ -34,9 +34,7 @@
 
 #ifdef __GLIBC__
 #include <gnu/libc-version.h>
-#endif
-
-#ifdef __GLIBC__
+#include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/resource.h>
@@ -44,16 +42,12 @@
 #include <dirent.h>
 #include <string.h>
 #include <ctype.h>
-#include <string>
-#include <iomanip>
 #endif
 
-//tools::is_hdd
-#ifdef __GLIBC__
-  #include <sstream>
-  #include <sys/sysmacros.h>
-  #include <fstream>
-#endif
+#include <string>
+#include <iomanip>
+#include <sstream>
+#include <fstream>
 
 
 #include "include_base_utils.h"
