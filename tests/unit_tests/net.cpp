@@ -1164,7 +1164,7 @@ TEST(socks_connector, host)
     boost::asio::steady_timer timeout{io.io_service};
     timeout.expires_from_now(std::chrono::seconds{5});
 
-    boost::unique_future<boost::asio::ip::tcp::socket> sock =
+    std::future<boost::asio::ip::tcp::socket> sock =
         net::socks::connector{io.acceptor.local_endpoint()}("example.com", "8080", timeout);
 
     while (!io.connected)
@@ -1191,7 +1191,7 @@ TEST(socks_connector, ipv4)
     boost::asio::steady_timer timeout{io.io_service};
     timeout.expires_from_now(std::chrono::seconds{5});
 
-    boost::unique_future<boost::asio::ip::tcp::socket> sock =
+    std::future<boost::asio::ip::tcp::socket> sock =
         net::socks::connector{io.acceptor.local_endpoint()}("250.88.125.99", "8080", timeout);
 
     while (!io.connected)
@@ -1217,7 +1217,7 @@ TEST(socks_connector, error)
     boost::asio::steady_timer timeout{io.io_service};
     timeout.expires_from_now(std::chrono::seconds{5});
 
-    boost::unique_future<boost::asio::ip::tcp::socket> sock =
+    std::future<boost::asio::ip::tcp::socket> sock =
         net::socks::connector{io.acceptor.local_endpoint()}("250.88.125.99", "8080", timeout);
 
     while (!io.connected)
@@ -1243,7 +1243,7 @@ TEST(socks_connector, timeout)
     boost::asio::steady_timer timeout{io.io_service};
     timeout.expires_from_now(std::chrono::milliseconds{10});
 
-    boost::unique_future<boost::asio::ip::tcp::socket> sock =
+    std::future<boost::asio::ip::tcp::socket> sock =
         net::socks::connector{io.acceptor.local_endpoint()}("250.88.125.99", "8080", timeout);
 
     ASSERT_EQ(boost::future_status::ready, sock.wait_for(std::chrono::seconds{3}));

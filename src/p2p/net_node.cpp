@@ -33,7 +33,7 @@
 #include <chrono>
 #include <boost/endian/conversion.hpp>
 #include <optional>
-#include <boost/thread/future.hpp>
+#include <future>
 #include <string_view>
 #include <chrono>
 #include <utility>
@@ -368,7 +368,7 @@ namespace nodetool
 
             MERROR("Failed to make socks connection to " << remote.str() << " (via " << proxy << "): " << result.first.message());
         }
-        catch (boost::broken_promise const&)
+        catch (std::future_error const&)
         {}
 
         return std::nullopt;

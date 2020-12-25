@@ -45,6 +45,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <string>
+#include <iomanip>
 #endif
 
 //tools::is_hdd
