@@ -39,7 +39,6 @@ Passing RPC commands:
 
 #pragma once
 
-#include <boost/optional/optional_fwd.hpp>
 #include "common/common_fwd.h"
 #include "console_handler.h"
 #include "daemon/command_parser_executor.h"

@@ -31,7 +31,6 @@
 #pragma once 
 
 #include <boost/program_options.hpp>
-#include <boost/logic/tribool_fwd.hpp>
 #include <atomic>
 #include "cryptonote_basic.h"
 #include "verification_context.h"
