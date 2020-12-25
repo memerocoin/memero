@@ -57,8 +57,6 @@ bool operator !=(const key_derivation &a, const key_derivation &b) {
   return 0 != memcmp(&a, &b, sizeof(key_derivation));
 }
 
-DISABLE_GCC_WARNING(maybe-uninitialized)
-
 int main(int argc, char *argv[]) {
   TRY_ENTRY();
   fstream input;
