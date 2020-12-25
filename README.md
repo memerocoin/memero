@@ -37,7 +37,6 @@ libboost-filesystem-dev \
 libboost-program-options-dev \
 libboost-serialization-dev \
 libboost-system-dev \
-libboost-thread-dev \
 -y
 
 sudo apt install \
