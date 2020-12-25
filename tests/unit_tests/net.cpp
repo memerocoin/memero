@@ -95,8 +95,8 @@ TEST(tor_address, invalid)
     EXPECT_TRUE(net::tor_address::make(".onion:").has_error());
     EXPECT_TRUE(net::tor_address::make(v2_onion + 1).has_error());
     EXPECT_TRUE(net::tor_address::make(v3_onion + 1).has_error());
-    EXPECT_TRUE(net::tor_address::make(boost::string_ref{v2_onion, sizeof(v2_onion) - 2}).has_error());
-    EXPECT_TRUE(net::tor_address::make(boost::string_ref{v3_onion, sizeof(v3_onion) - 2}).has_error());
+    EXPECT_TRUE(net::tor_address::make(std::string_view{v2_onion, sizeof(v2_onion) - 2}).has_error());
+    EXPECT_TRUE(net::tor_address::make(std::string_view{v3_onion, sizeof(v3_onion) - 2}).has_error());
     EXPECT_TRUE(net::tor_address::make(std::string{v2_onion} + ":-").has_error());
     EXPECT_TRUE(net::tor_address::make(std::string{v2_onion} + ":900a").has_error());
     EXPECT_TRUE(net::tor_address::make(std::string{v3_onion} + ":65536").has_error());
@@ -553,7 +553,7 @@ TEST(i2p_address, invalid)
     EXPECT_TRUE(net::i2p_address::make(".b32.i2p").has_error());
     EXPECT_TRUE(net::i2p_address::make(".b32.i2p:").has_error());
     EXPECT_TRUE(net::i2p_address::make(b32_i2p + 1).has_error());
-    EXPECT_TRUE(net::i2p_address::make(boost::string_ref{b32_i2p, sizeof(b32_i2p) - 2}).has_error());
+    EXPECT_TRUE(net::i2p_address::make(std::string_view{b32_i2p, sizeof(b32_i2p) - 2}).has_error());
     EXPECT_TRUE(net::i2p_address::make(std::string{b32_i2p} + ":65536").has_error());
     EXPECT_TRUE(net::i2p_address::make(std::string{b32_i2p} + ":-1").has_error());
 

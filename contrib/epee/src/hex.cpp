@@ -87,20 +87,20 @@ namespace epee
   }
 
 
-  bool from_hex::to_string(std::string& out, const boost::string_ref src)
+  bool from_hex::to_string(std::string& out, const std::string_view src)
   {
     out.resize(src.size() / 2);
     return to_buffer_unchecked(reinterpret_cast<std::uint8_t*>(&out[0]), src);
   }
 
-  bool from_hex::to_buffer(span<std::uint8_t> out, const boost::string_ref src) noexcept
+  bool from_hex::to_buffer(span<std::uint8_t> out, const std::string_view src) noexcept
   {
     if (src.size() / 2 != out.size())
       return false;
     return to_buffer_unchecked(out.data(), src);
   }
 
-  bool from_hex::to_buffer_unchecked(std::uint8_t* dst, const boost::string_ref s) noexcept
+  bool from_hex::to_buffer_unchecked(std::uint8_t* dst, const std::string_view s) noexcept
   {
       if (s.size() % 2 != 0)
         return false;
@@ -121,7 +121,7 @@ namespace epee
   }
 
 
-  std::vector<uint8_t> from_hex_locale::to_vector(const boost::string_ref src)
+  std::vector<uint8_t> from_hex_locale::to_vector(const std::string_view src)
   {
     // should we include a specific character
     auto include = [](char input) {

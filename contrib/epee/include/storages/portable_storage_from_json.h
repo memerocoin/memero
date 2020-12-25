@@ -118,7 +118,7 @@ namespace epee
               state = match_state_wonder_after_value;
             }else if (epee::misc_utils::parse::isdigit(*it) || *it == '-')
             {//just a named number value started
-              boost::string_ref val;
+              std::string_view val;
               bool is_v_float = false;bool is_signed = false;
               match_number2(it, buf_end, val, is_v_float, is_signed);
               if(!is_v_float)
@@ -146,7 +146,7 @@ namespace epee
               state = match_state_wonder_after_value;
             }else if(isalpha(*it) )
             {// could be null, true or false
-              boost::string_ref word;
+              std::string_view word;
               match_word2(it, buf_end, word);
               if(boost::iequals(word, "null"))
               {
@@ -209,7 +209,7 @@ namespace epee
               array_md = array_mode_string;
             }else if (epee::misc_utils::parse::isdigit(*it) || *it == '-')
             {//array of numbers value started
-              boost::string_ref val;
+              std::string_view val;
               bool is_v_float = false;bool is_signed_val = false;
               match_number2(it, buf_end, val, is_v_float, is_signed_val);
               if(!is_v_float)
@@ -245,7 +245,7 @@ namespace epee
               state = match_state_wonder_after_value;
             }else if(isalpha(*it) )
             {// array of booleans
-              boost::string_ref word;
+              std::string_view word;
               match_word2(it, buf_end, word);
               if(boost::iequals(word, "true"))
               {
@@ -299,7 +299,7 @@ namespace epee
             case array_mode_numbers:
               if (epee::misc_utils::parse::isdigit(*it) || *it == '-')
               {//array of numbers value started
-                boost::string_ref val;
+                std::string_view val;
                 bool is_v_float = false;bool is_signed_val = false;
                 match_number2(it, buf_end, val, is_v_float, is_signed_val);
                 bool insert_res = false;
@@ -333,7 +333,7 @@ namespace epee
             case array_mode_booleans:
               if(isalpha(*it) )
               {// array of booleans
-                boost::string_ref word;
+                std::string_view word;
                 match_word2(it, buf_end, word);
                 if(boost::iequals(word, "true"))
                 {

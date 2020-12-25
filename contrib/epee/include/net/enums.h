@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <boost/utility/string_ref.hpp>
+#include <string_view>
 #include <cstdint>
 
 namespace epee
@@ -59,7 +59,7 @@ namespace net_utils
 	const char* zone_to_string(zone value) noexcept;
 
 	//! \return `zone` enum of `value` or `zone::invalid` on error.
-	zone zone_from_string(boost::string_ref value) noexcept;
+	zone zone_from_string(std::string_view value) noexcept;
 } // net_utils
 } // epee
 

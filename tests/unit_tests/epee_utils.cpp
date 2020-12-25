@@ -513,7 +513,7 @@ TEST(ByteSlice, AdaptString)
   EXPECT_FALSE(slice.empty());
   EXPECT_EQ(original.data(), slice.data());
   EXPECT_EQ(original.size(), slice.size());
-  EXPECT_TRUE(boost::range::equal(boost::string_ref{base_string}, slice));
+  EXPECT_TRUE(boost::range::equal(std::string_view{base_string}, slice));
 }
 
 TEST(ByteSlice, EmptyAdaptString)
@@ -866,7 +866,7 @@ TEST(HexLocale, String)
     EXPECT_EQ(source, epee::from_hex_locale::to_vector(hex));
 
     hex.append("f0");
-    EXPECT_EQ(source, epee::from_hex_locale::to_vector(boost::string_ref{hex.data(), hex.size() - 2}));
+    EXPECT_EQ(source, epee::from_hex_locale::to_vector(std::string_view{hex.data(), hex.size() - 2}));
 }
 
 TEST(ToHex, Array)
@@ -938,7 +938,7 @@ TEST(FromHex, ToString)
   std::string out{};
   EXPECT_FALSE(epee::from_hex::to_string(out, hex));
 
-  boost::string_ref portion{hex};
+  std::string_view portion{hex};
   portion.remove_suffix(1);
   EXPECT_FALSE(epee::from_hex::to_string(out, portion));
 
@@ -956,7 +956,7 @@ TEST(FromHex, ToBuffer)
   out.resize(sizeof(binary));
   EXPECT_FALSE(epee::from_hex::to_buffer(epee::to_mut_span(out), hex));
 
-  boost::string_ref portion{hex};
+  std::string_view portion{hex};
   portion.remove_suffix(1);
   EXPECT_FALSE(epee::from_hex::to_buffer(epee::to_mut_span(out), portion));
 
@@ -1395,7 +1395,7 @@ TEST(parsing, isdigit)
 
 TEST(parsing, number)
 {
-  boost::string_ref val;
+  std::string_view val;
   std::string s;
   std::string::const_iterator i;
 

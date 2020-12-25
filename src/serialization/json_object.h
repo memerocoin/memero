@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <boost/utility/string_ref.hpp>
+#include <string_view>
 #include <cstring>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
@@ -147,10 +147,10 @@ inline typename std::enable_if<is_to_hex<Type>()>::type fromJsonValue(const rapi
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rapidjson::Value& src);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, boost::string_ref i);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, std::string_view i);
 inline void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string& i)
 {
-  toJsonValue(dest, boost::string_ref{i});
+  toJsonValue(dest, std::string_view{i});
 }
 void fromJsonValue(const rapidjson::Value& val, std::string& str);
 

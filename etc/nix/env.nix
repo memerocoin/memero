@@ -13,7 +13,7 @@ in
     buildInputs = [
       gcc10
       cmake git ccache
-      boost172 openssl readline libsodium rapidjson
+      boost174 openssl readline libsodium rapidjson
     ];
 
     inherit CMakeFlags_Lolnero;

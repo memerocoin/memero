@@ -133,7 +133,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rapidjs
   src.Accept(dest);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const boost::string_ref i)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string_view i)
 {
   dest.String(i.data(), i.size());
 }

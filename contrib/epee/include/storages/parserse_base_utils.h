@@ -29,7 +29,7 @@
 #pragma once 
 
 #include <algorithm>
-#include <boost/utility/string_ref.hpp>
+#include <string_view>
 
 #include "misc_log_ex.h"
 
@@ -255,9 +255,8 @@ namespace misc_utils
           return false;
         }
       }
-      inline void match_number2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, boost::string_ref& val, bool& is_float_val, bool& is_signed_val)
+      inline void match_number2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val, bool& is_float_val, bool& is_signed_val)
       {
-        val.clear();
         uint8_t float_flag = 0;
         is_signed_val = false;
         size_t chars = 0;
@@ -278,7 +277,7 @@ namespace misc_utils
           }
           else
           {
-            val = boost::string_ref(&*star_end_string, chars);
+            val = std::string_view(&*star_end_string, chars);
             if(val.size())
             {
               star_end_string = --it;
@@ -291,7 +290,7 @@ namespace misc_utils
         }
         ASSERT_MES_AND_THROW("wrong number in json entry: " << std::string(star_end_string, buf_end));
       }
-      inline bool match_number(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, boost::string_ref& val)
+      inline bool match_number(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
       {
         try
         {
@@ -304,15 +303,13 @@ namespace misc_utils
           return false;
         }
       }
-      inline void match_word2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, boost::string_ref& val)
+      inline void match_word2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
       {
-        val.clear();
-
         for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
         {
           if (!(lut[(uint8_t)*it] & 4))
           {
-            val = boost::string_ref(&*star_end_string, std::distance(star_end_string, it));
+            val = std::string_view(&*star_end_string, std::distance(star_end_string, it));
             if(val.size())
             {
               star_end_string = --it;
@@ -323,7 +320,7 @@ namespace misc_utils
         }
         ASSERT_MES_AND_THROW("failed to match word number in json entry: " << std::string(star_end_string, buf_end));
       }
-      inline bool match_word(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, boost::string_ref& val)
+      inline bool match_word(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
       {
         try
         {

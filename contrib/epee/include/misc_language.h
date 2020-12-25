@@ -30,6 +30,7 @@
 
 #include <limits>
 #include <thread>
+#include <algorithm>
 #include <boost/utility/value_init.hpp>
 namespace epee
 {

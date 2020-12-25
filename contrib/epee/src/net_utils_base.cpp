@@ -148,7 +148,7 @@ namespace epee { namespace net_utils
     return "invalid";
   }
 
-  zone zone_from_string(const boost::string_ref value) noexcept
+  zone zone_from_string(const std::string_view value) noexcept
   {
     if (value == "public")
       return zone::public_;

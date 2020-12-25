@@ -30,6 +30,7 @@
 #include <thread>
 #include <boost/asio/ssl.hpp>
 #include <boost/lambda/lambda.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <openssl/ssl.h>
 #include <openssl/pem.h>
 #include "misc_log_ex.h"
@@ -413,11 +414,12 @@ bool is_ssl(const unsigned char *data, size_t len)
   return false;
 }
 
-bool ssl_options_t::has_strong_verification(boost::string_ref host) const noexcept
+bool ssl_options_t::has_strong_verification(std::string_view host) const noexcept
 {
   // onion and i2p addresses contain information about the server cert
   // which both authenticates and encrypts
-  if (host.ends_with(".onion") || host.ends_with(".i2p"))
+  if (boost::algorithm::ends_with(host, ".onion") ||
+      boost::algorithm::ends_with(host, ".i2p"))
     return true;
   switch (verification)
   {
@@ -553,7 +555,7 @@ bool ssl_options_t::handshake(
   return true;
 }
 
-bool ssl_support_from_string(ssl_support_t &ssl, boost::string_ref s)
+bool ssl_support_from_string(ssl_support_t &ssl, std::string_view s)
 {
   if (s == "enabled")
     ssl = epee::net_utils::ssl_support_t::e_ssl_support_enabled;

@@ -32,7 +32,7 @@
 #include <cstdint>
 #include <iosfwd>
 #include <string>
-#include <boost/utility/string_ref.hpp>
+#include <string_view>
 
 #include "wipeable_string.h"
 #include "span.h"
@@ -83,17 +83,17 @@ namespace epee
   //! Convert hex in UTF8 encoding to binary
   struct from_hex
   {
-    static bool to_string(std::string& out, boost::string_ref src);
+    static bool to_string(std::string& out, std::string_view src);
 
-    static bool to_buffer(span<std::uint8_t> out, boost::string_ref src) noexcept;
+    static bool to_buffer(span<std::uint8_t> out, std::string_view src) noexcept;
 
   private:
-    static bool to_buffer_unchecked(std::uint8_t* out, boost::string_ref src) noexcept;
+    static bool to_buffer_unchecked(std::uint8_t* out, std::string_view src) noexcept;
   };
 
   //! Convert hex in current C locale encoding to binary
   struct from_hex_locale
   {
-      static std::vector<uint8_t> to_vector(boost::string_ref src);
+      static std::vector<uint8_t> to_vector(std::string_view src);
   };
 }

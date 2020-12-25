@@ -29,7 +29,7 @@
 #include <gtest/gtest.h>
 
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/utility/string_ref.hpp>
+#include <string_view>
 #include <string>
 #include <system_error>
 #include <type_traits>
@@ -595,7 +595,7 @@ TEST(Expect, EqualWithStrings)
 {
     expect<std::string> val1{std::string{}};
     expect<std::string> val2{"barfoo"};
-    expect<boost::string_ref> val3{boost::string_ref{}};
+    expect<std::string_view> val3{std::string_view{}};
 
     EXPECT_TRUE(!val1.equal(val2));
     EXPECT_TRUE(val1.equal(val3));

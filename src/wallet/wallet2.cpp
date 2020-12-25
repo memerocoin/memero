@@ -386,7 +386,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
     daemon_address = std::string("http://") + daemon_host + ":" + std::to_string(daemon_port);
 
   {
-    const boost::string_ref real_daemon = boost::string_ref{daemon_address}.substr(0, daemon_address.rfind(':'));
+    const std::string_view real_daemon = std::string_view{daemon_address}.substr(0, daemon_address.rfind(':'));
 
     /* If SSL or proxy is enabled, then a specific cert, CA or fingerprint must
        be specified. This is specific to the wallet. */
@@ -9287,12 +9287,14 @@ bool wallet2::check_reserve_proof(const cryptonote::account_public_address &addr
 
   static constexpr char header_v1[] = "ReserveProofV1";
   static constexpr char header_v2[] = "ReserveProofV2"; // assumes same length as header_v1
-  THROW_WALLET_EXCEPTION_IF(!boost::string_ref{sig_str}.starts_with(header_v1) && !boost::string_ref{sig_str}.starts_with(header_v2), error::wallet_internal_error,
-    "Signature header check error");
+  THROW_WALLET_EXCEPTION_IF(!boost::algorithm::starts_with(std::string_view{sig_str}, header_v1)
+                            && !boost::algorithm::starts_with(std::string_view{sig_str}, header_v2),
+                            error::wallet_internal_error,
+                            "Signature header check error");
   int version = 2; // assume newest version
-  if (boost::string_ref{sig_str}.starts_with(header_v1))
+  if (boost::algorithm::starts_with(std::string_view{sig_str}, header_v1))
       version = 1;
-  else if (boost::string_ref{sig_str}.starts_with(header_v2))
+  else if (boost::algorithm::starts_with(std::string_view{sig_str}, header_v2))
       version = 2;
 
   std::string sig_decoded;

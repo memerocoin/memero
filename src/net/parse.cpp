@@ -56,7 +56,7 @@ namespace net
     }
 
     expect<epee::net_utils::network_address>
-    get_network_address(const boost::string_ref address, const std::uint16_t default_port)
+    get_network_address(const std::string_view address, const std::uint16_t default_port)
     {
         std::string host_str = "";
         std::string port_str = "";
@@ -65,14 +65,11 @@ namespace net
 
         get_network_address_host_and_port(std::string(address), host_str, port_str);
 
-        boost::string_ref host_str_ref(host_str);
-        boost::string_ref port_str_ref(port_str);
-
         if (host_str.empty())
             return make_error_code(net::error::invalid_host);
-        if (host_str_ref.ends_with(".onion"))
+        if (boost::algorithm::ends_with(host_str, ".onion"))
             return tor_address::make(address, default_port);
-        if (host_str_ref.ends_with(".i2p"))
+        if (boost::algorithm::ends_with(host_str, ".i2p"))
             return i2p_address::make(address, default_port);
 
         boost::system::error_code ec;
@@ -101,11 +98,11 @@ namespace net
     }
 
     expect<epee::net_utils::ipv4_network_subnet>
-    get_ipv4_subnet_address(const boost::string_ref address, bool allow_implicit_32)
+    get_ipv4_subnet_address(const std::string_view address, bool allow_implicit_32)
     {
         uint32_t mask = 32;
-        const boost::string_ref::size_type slash = address.find_first_of('/');
-        if (slash != boost::string_ref::npos)
+        const std::string_view::size_type slash = address.find_first_of('/');
+        if (slash != std::string_view::npos)
         {
             if (!epee::string_tools::get_xtype_from_string(mask, std::string{address.substr(slash + 1)}))
                 return make_error_code(net::error::invalid_mask);
@@ -116,14 +113,14 @@ namespace net
             return make_error_code(net::error::invalid_mask);
 
         std::uint32_t ip = 0;
-        boost::string_ref S(address.data(), slash != boost::string_ref::npos ? slash : address.size());
+        std::string_view S(address.data(), slash != std::string_view::npos ? slash : address.size());
         if (!epee::string_tools::get_ip_int32_from_string(ip, std::string(S)))
             return make_error_code(net::error::invalid_host);
 
         return {epee::net_utils::ipv4_network_subnet{ip, (uint8_t)mask}};
     }
 
-    expect<boost::asio::ip::tcp::endpoint> get_tcp_endpoint(const boost::string_ref address)
+    expect<boost::asio::ip::tcp::endpoint> get_tcp_endpoint(const std::string_view address)
     {
         uint16_t port = 0;
         expect<epee::net_utils::network_address> parsed = get_network_address(address, port);
