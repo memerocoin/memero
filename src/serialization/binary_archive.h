@@ -36,7 +36,7 @@
 #include <cassert>
 #include <iostream>
 #include <iterator>
-#include <boost/type_traits/make_unsigned.hpp>
+#include <type_traits>
 
 #include "common/varint.h"
 #include "warnings.h"
@@ -60,7 +60,7 @@ struct binary_archive_base
 {
   typedef Stream stream_type;
   typedef binary_archive_base<Stream, IsSaving> base_type;
-  typedef boost::mpl::bool_<IsSaving> is_saving;
+  typedef std::bool_constant<IsSaving> is_saving;
 
   typedef uint8_t variant_tag_type;
 
@@ -108,7 +108,7 @@ struct binary_archive<false> : public binary_archive_base<std::istream, false>
   template <class T>
   void serialize_int(T &v)
   {
-    serialize_uint(*(typename boost::make_unsigned<T>::type *)&v);
+    serialize_uint(*(typename std::make_unsigned<T>::type *)&v);
   }
 
   /*! \fn serialize_uint
@@ -139,7 +139,7 @@ struct binary_archive<false> : public binary_archive_base<std::istream, false>
   template <class T>
   void serialize_varint(T &v)
   {
-    serialize_uvarint(*(typename boost::make_unsigned<T>::type *)(&v));
+    serialize_uvarint(*(typename std::make_unsigned<T>::type *)(&v));
   }
 
   template <class T>
@@ -185,7 +185,7 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
   template <class T>
   void serialize_int(T v)
   {
-    serialize_uint(static_cast<typename boost::make_unsigned<T>::type>(v));
+    serialize_uint(static_cast<typename std::make_unsigned<T>::type>(v));
   }
   template <class T>
   void serialize_uint(T v)
@@ -204,7 +204,7 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
   template <class T>
   void serialize_varint(T &v)
   {
-    serialize_uvarint(*(typename boost::make_unsigned<T>::type *)(&v));
+    serialize_uvarint(*(typename std::make_unsigned<T>::type *)(&v));
   }
 
   template <class T>

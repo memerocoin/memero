@@ -39,6 +39,7 @@
 #include <cassert>
 #include <iostream>
 #include <iomanip>
+#include <type_traits>
 
 /*! \struct json_archive_base
  *
@@ -51,7 +52,7 @@ struct json_archive_base
 {
   typedef Stream stream_type;
   typedef json_archive_base<Stream, IsSaving> base_type;
-  typedef boost::mpl::bool_<IsSaving> is_saving;
+  typedef std::bool_constant<IsSaving> is_saving;
 
   typedef const char *variant_tag_type;
 
