@@ -27,8 +27,8 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "wallet/wallet_args.h"
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
+#include <filesystem>
 #include <boost/format.hpp>
 #include "common/i18n.h"
 #include "common/util.h"
@@ -93,7 +93,7 @@ namespace wallet_args
     bool log_to_console)
   
   {
-    namespace bf = boost::filesystem;
+    namespace bf = std::filesystem;
     namespace po = boost::program_options;
 #ifdef WIN32
     _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
@@ -161,10 +161,10 @@ namespace wallet_args
       {
         std::string config = command_line::get_arg(vm, arg_config_file);
         bf::path config_path(config);
-        boost::system::error_code ec;
+        std::error_code ec;
         if (bf::exists(config_path, ec))
         {
-          po::store(po::parse_config_file<char>(config_path.string<std::string>().c_str(), desc_params), vm);
+          po::store(po::parse_config_file<char>(config_path.c_str(), desc_params), vm);
         }
         else
         {

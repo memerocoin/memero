@@ -54,7 +54,7 @@
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace po = boost::program_options;
-namespace bf = boost::filesystem;
+namespace fs = std::filesystem;
 
 #ifdef WIN32
 bool isFat32(const wchar_t* root_path)
@@ -151,13 +151,13 @@ int main(int argc, char const * argv[])
     }
 
     std::string config = command_line::get_arg(vm, daemon_args::arg_config_file);
-    boost::filesystem::path config_path(config);
-    boost::system::error_code ec;
-    if (bf::exists(config_path, ec))
+    std::filesystem::path config_path(config);
+    std::error_code ec;
+    if (fs::exists(config_path, ec))
     {
       try
       {
-        po::store(po::parse_config_file<char>(config_path.string<std::string>().c_str(), core_settings), vm);
+        po::store(po::parse_config_file<char>(config_path.c_str(), core_settings), vm);
       }
       catch (const std::exception &e)
       {
@@ -188,7 +188,7 @@ int main(int argc, char const * argv[])
     //     relative path: relative to cwd
 
     // Create data dir if it doesn't exist
-    boost::filesystem::path data_dir = boost::filesystem::absolute(
+    std::filesystem::path data_dir = std::filesystem::absolute(
         command_line::get_arg(vm, cryptonote::arg_data_dir));
 
 #ifdef WIN32
@@ -200,15 +200,15 @@ int main(int argc, char const * argv[])
 
     // FIXME: not sure on windows implementation default, needs further review
     //bf::path relative_path_base = daemonizer::get_relative_path_base(vm);
-    bf::path relative_path_base = data_dir;
+    fs::path relative_path_base = data_dir;
 
     po::notify(vm);
 
-    bf::path log_file_path = tools::get_default_log_file();
+    fs::path log_file_path = tools::get_default_log_file();
     if (!command_line::is_arg_defaulted(vm, daemon_args::arg_log_file))
       log_file_path = command_line::get_arg(vm, daemon_args::arg_log_file);
     if (!log_file_path.has_parent_path())
-      log_file_path = bf::absolute(log_file_path, relative_path_base);
+      log_file_path = fs::absolute(log_file_path / relative_path_base);
     mlog_configure(log_file_path.string(), true, command_line::get_arg(vm, daemon_args::arg_max_log_file_size));
 
     // Set log level

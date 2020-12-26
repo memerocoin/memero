@@ -29,7 +29,7 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 #include <boost/format.hpp>
 #include <boost/asio/ip/address.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 #include <boost/algorithm/string.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <cstdint>
@@ -2721,8 +2721,8 @@ namespace tools
     {
       try
       {
-        boost::system::error_code ignored_ec;
-        THROW_WALLET_EXCEPTION_IF(boost::filesystem::exists(wallet_file, ignored_ec), error::file_exists, wallet_file);
+        std::error_code ignored_ec;
+        THROW_WALLET_EXCEPTION_IF(std::filesystem::exists(wallet_file, ignored_ec), error::file_exists, wallet_file);
       }
       catch (const std::exception &e)
       {
@@ -2880,8 +2880,8 @@ namespace tools
     {
       try
       {
-        boost::system::error_code ignored_ec;
-        THROW_WALLET_EXCEPTION_IF(boost::filesystem::exists(wallet_file, ignored_ec), error::file_exists, wallet_file);
+        std::error_code ignored_ec;
+        THROW_WALLET_EXCEPTION_IF(std::filesystem::exists(wallet_file, ignored_ec), error::file_exists, wallet_file);
       }
       catch (const std::exception &e)
       {

@@ -131,16 +131,16 @@ static bool parse_db_sync_mode(std::string db_sync_mode)
 
 static std::string get_default_db_path()
 {
-  boost::filesystem::path dir = tools::get_default_data_dir();
+  std::filesystem::path dir = tools::get_default_data_dir();
   // remove .bitmonero, replace with .shared-ringdb
   dir = dir.remove_filename();
   dir /= ".wow-shared-ringdb";
   return dir.string();
 }
 
-static std::string get_cache_filename(boost::filesystem::path filename)
+static std::string get_cache_filename(std::filesystem::path filename)
 {
-  if (!boost::filesystem::is_directory(filename))
+  if (!std::filesystem::is_directory(filename))
     filename.remove_filename();
   return filename.string();
 }
@@ -199,8 +199,8 @@ static int resize_env(const char *db_path)
   {
     try
     {
-      boost::filesystem::path path(db_path);
-      boost::filesystem::space_info si = boost::filesystem::space(path);
+      std::filesystem::path path(db_path);
+      std::filesystem::space_info si = std::filesystem::space(path);
       if(si.available < needed)
       {
         MERROR("!! WARNING: Insufficient free space to extend database !!: " << (si.available >> 20L) << " MB available");
@@ -1171,7 +1171,7 @@ int main(int argc, char* argv[])
 
   tools::on_startup();
 
-  boost::filesystem::path output_file_path;
+  std::filesystem::path output_file_path;
 
   po::options_description desc_cmd_only("Command line options");
   po::options_description desc_cmd_sett("Command line options and settings options");
@@ -1385,7 +1385,7 @@ int main(int argc, char* argv[])
 
   for (size_t n = 0; n < inputs.size(); ++n)
   {
-    const std::string canonical = boost::filesystem::canonical(inputs[n]).string();
+    const std::string canonical = std::filesystem::canonical(inputs[n]).string();
     uint64_t start_idx = get_processed_txidx(canonical);
     if (n > 0 && start_idx == 0)
     {

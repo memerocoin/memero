@@ -29,7 +29,7 @@
 #include <lmdb.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/range/adaptor/transformed.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "common/util.h"
 #include "misc_log_ex.h"
 #include "misc_language.h"
@@ -97,9 +97,9 @@ static std::vector<uint64_t> decompress_ring(const std::string &s, uint64_t tag)
   return ring;
 }
 
-std::string get_rings_filename(boost::filesystem::path filename)
+std::string get_rings_filename(std::filesystem::path filename)
 {
-  if (!boost::filesystem::is_directory(filename))
+  if (!std::filesystem::is_directory(filename))
     filename.remove_filename();
   return filename.string();
 }
@@ -179,8 +179,8 @@ static int resize_env(MDB_env *env, const char *db_path, size_t needed)
   {
     try
     {
-      boost::filesystem::path path(db_path);
-      boost::filesystem::space_info si = boost::filesystem::space(path);
+      std::filesystem::path path(db_path);
+      std::filesystem::space_info si = std::filesystem::space(path);
       if(si.available < needed)
       {
         MERROR("!! WARNING: Insufficient free space to extend database !!: " << (si.available >> 20L) << " MB available");

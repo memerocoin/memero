@@ -102,7 +102,7 @@ namespace epee
       
       
       LOG_PRINT_L0("Generating test struct...");
-      boost::filesystem::path storage_folder = tests_folder;
+      std::filesystem::path storage_folder = tests_folder;
       storage_folder /= "storages";
 
 
