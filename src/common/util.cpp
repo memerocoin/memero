@@ -255,6 +255,15 @@ std::string get_nix_version_display_string()
     return config_folder;
   }
 
+  std::string get_default_log_file()
+  {
+#ifdef WIN32
+    return (get_default_data_dir() / std::string(CRYPTONOTE_NAME ".log")).string()
+#else
+    return (boost::filesystem::path("/dev/null")).string();
+#endif
+  }
+
   bool create_directories_if_necessary(const std::string& path)
   {
     namespace fs = boost::filesystem;

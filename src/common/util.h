@@ -89,6 +89,7 @@ namespace tools
    * Unix: ~/.CRYPTONOTE_NAME
    */
   std::string get_default_data_dir();
+  std::string get_default_log_file();
 
 #ifdef WIN32
   /**

@@ -205,12 +205,7 @@ int main(int argc, char const * argv[])
 
     po::notify(vm);
 
-    // log_file_path
-    //   default: <data_dir>/<CRYPTONOTE_NAME>.log
-    //   if log-file argument given:
-    //     absolute path
-    //     relative path: relative to data_dir
-    bf::path log_file_path {data_dir / std::string(CRYPTONOTE_NAME ".log")};
+    bf::path log_file_path = tools::get_default_log_file();
     if (!command_line::is_arg_defaulted(vm, daemon_args::arg_log_file))
       log_file_path = command_line::get_arg(vm, daemon_args::arg_log_file);
     if (!log_file_path.has_parent_path())

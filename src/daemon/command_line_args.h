@@ -52,20 +52,10 @@ namespace daemon_args
       return val;
     }
   };
-  const command_line::arg_descriptor<std::string, false, true, 2> arg_log_file = {
+  const command_line::arg_descriptor<std::string> arg_log_file = {
     "log-file"
   , "Specify log file"
-  , (daemonizer::get_default_data_dir() / std::string(CRYPTONOTE_NAME ".log")).string()
-  , {{ &cryptonote::arg_testnet_on, &cryptonote::arg_stagenet_on }}
-  , [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
-      if (testnet_stagenet[0] && defaulted)
-        return (daemonizer::get_default_data_dir() / "testnet" /
-                std::string(CRYPTONOTE_NAME ".log")).string();
-      else if (testnet_stagenet[1] && defaulted)
-        return (daemonizer::get_default_data_dir() / "stagenet" /
-                std::string(CRYPTONOTE_NAME ".log")).string();
-      return val;
-    }
+  , tools::get_default_log_file()
   };
   const command_line::arg_descriptor<std::size_t> arg_max_log_file_size = {
     "max-log-file-size"
