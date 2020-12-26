@@ -40,27 +40,16 @@ namespace cryptonote
   {
   public:
     typedef enum {
-      LikelyForked,
-      UpdateNeeded,
       Ready,
     } State;
-
-    static const uint64_t DEFAULT_ORIGINAL_VERSION_TILL_HEIGHT = 0; // <= actual height
-    static const time_t DEFAULT_FORKED_TIME = 31557600; // a year in seconds
-    static const time_t DEFAULT_UPDATE_TIME = 31557600 / 2;
-    static const uint64_t DEFAULT_WINDOW_SIZE = 10080; // supermajority window check length - a week
-    static const uint8_t DEFAULT_THRESHOLD_PERCENT = 80;
 
     /**
      * @brief creates a new HardFork object
      *
      * @param original_version the block version for blocks 0 through to the first fork
-     * @param forked_time the time in seconds before thinking we're forked
-     * @param update_time the time in seconds before thinking we need to update
      * @param window_size the size of the window in blocks to consider for version voting
-     * @param default_threshold_percent the size of the majority in percents
      */
-    HardFork(cryptonote::BlockchainDB &db, uint8_t original_version = 1, uint64_t original_version_till_height = DEFAULT_ORIGINAL_VERSION_TILL_HEIGHT, time_t forked_time = DEFAULT_FORKED_TIME, time_t update_time = DEFAULT_UPDATE_TIME, uint64_t window_size = DEFAULT_WINDOW_SIZE, uint8_t default_threshold_percent = DEFAULT_THRESHOLD_PERCENT);
+    HardFork(cryptonote::BlockchainDB &db, uint8_t original_version = 17, uint64_t original_version_till_height = 0, uint64_t window_size = 10080);
 
     /**
      * @brief add a new hardfork height
@@ -226,17 +215,12 @@ namespace cryptonote
      */
     bool get_voting_info(uint8_t version, uint32_t &window, uint32_t &votes, uint32_t &threshold, uint64_t &earliest_height, uint8_t &voting) const;
 
-    /**
-     * @brief returns the size of the voting window in blocks
-     */
-    uint64_t get_window_size() const { return window_size; }
-
   private:
 
     uint8_t get_block_version(uint64_t height) const;
     bool do_check(uint8_t block_version, uint8_t voting_version) const;
     bool do_check_for_height(uint8_t block_version, uint8_t voting_version, uint64_t height) const;
-    int get_voted_fork_index(uint64_t height) const;
+    int get_next_fork_index(uint64_t height) const;
     uint8_t get_effective_version(uint8_t voting_version) const;
     bool add(uint8_t block_version, uint8_t voting_version, uint64_t height);
 
@@ -246,19 +230,13 @@ namespace cryptonote
   private:
 
     BlockchainDB &db;
-
-    time_t forked_time;
-    time_t update_time;
     uint64_t window_size;
-    uint8_t default_threshold_percent;
 
     uint8_t original_version;
     uint64_t original_version_till_height;
 
     std::vector<hardfork_t> heights;
 
-    std::deque<uint8_t> versions; /* rolling window of the last N blocks' versions */
-    unsigned int last_versions[256]; /* count of the block versions in the last N blocks */
     uint32_t current_fork_index;
 
     mutable epee::critical_section lock;
