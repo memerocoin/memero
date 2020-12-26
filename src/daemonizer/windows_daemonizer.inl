@@ -32,8 +32,8 @@
 #include "cryptonote_core/cryptonote_core.h"
 
 #include <shlobj.h>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
+#include <filesystem>
 
 namespace daemonizer
 {
@@ -63,7 +63,7 @@ namespace daemonizer
     command_line::add_arg(hidden_options, arg_non_interactive);
   }
 
-  inline boost::filesystem::path get_default_data_dir()
+  inline std::filesystem::path get_default_data_dir()
   {
     bool admin;
     if (!windows::check_admin(admin))
@@ -72,24 +72,24 @@ namespace daemonizer
     }
     if (admin)
     {
-      return boost::filesystem::absolute(
+      return std::filesystem::absolute(
           tools::get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + CRYPTONOTE_NAME
         );
     }
     else
     {
-      return boost::filesystem::absolute(
+      return std::filesystem::absolute(
           tools::get_special_folder_path(CSIDL_APPDATA, true) + "\\" + CRYPTONOTE_NAME
         );
     }
   }
 
-  inline boost::filesystem::path get_relative_path_base(
+  inline std::filesystem::path get_relative_path_base(
       boost::program_options::variables_map const & vm
     )
   {
     {
-      return boost::filesystem::current_path();
+      return std::filesystem::current_path();
     }
   }
 

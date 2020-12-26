@@ -31,8 +31,8 @@
 #include "common/scoped_message_writer.h"
 #include "common/util.h"
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
+#include <filesystem>
 
 namespace daemonizer
 {
@@ -57,16 +57,16 @@ namespace daemonizer
     command_line::add_arg(normal_options, arg_non_interactive);
   }
 
-  inline boost::filesystem::path get_default_data_dir()
+  inline std::filesystem::path get_default_data_dir()
   {
-    return boost::filesystem::absolute(tools::get_default_data_dir());
+    return std::filesystem::absolute(tools::get_default_data_dir());
   }
 
-  inline boost::filesystem::path get_relative_path_base(
+  inline std::filesystem::path get_relative_path_base(
       boost::program_options::variables_map const & vm
     )
   {
-    return boost::filesystem::current_path();
+    return std::filesystem::current_path();
   }
 
   template <typename T_executor>
