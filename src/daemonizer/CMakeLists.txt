@@ -44,13 +44,10 @@ set(daemonizer_headers
 if(MSVC OR MINGW)
   set(daemonizer_private_headers
     daemonizer.h
-    windows_service.h
-    windows_service_runner.h
   )
 else()
   set(daemonizer_private_headers
     daemonizer.h
-    posix_fork.h
   )
 endif()
 
