@@ -202,8 +202,6 @@ namespace
   const char* USAGE_VERIFY("verify <filename> <address> <signature>");
   const char* USAGE_EXPORT_KEY_IMAGES("export_key_images [all] <filename>");
   const char* USAGE_IMPORT_KEY_IMAGES("import_key_images <filename>");
-  const char* USAGE_HW_KEY_IMAGES_SYNC("hw_key_images_sync");
-  const char* USAGE_HW_RECONNECT("hw_reconnect");
   const char* USAGE_EXPORT_OUTPUTS("export_outputs [all] <filename>");
   const char* USAGE_IMPORT_OUTPUTS("import_outputs <filename>");
   const char* USAGE_SHOW_TRANSFER("show_transfer <txid>");
@@ -1886,33 +1884,6 @@ bool simple_wallet::set_inactivity_lock_timeout(const std::vector<std::string> &
   return true;
 }
 
-bool simple_wallet::set_device_name(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    if (args.size() == 0){
-      fail_msg_writer() << tr("Device name not specified");
-      return true;
-    }
-
-    m_wallet->device_name(args[1]);
-    bool r = false;
-    try {
-      r = m_wallet->reconnect_device();
-      if (!r){
-        fail_msg_writer() << tr("Device reconnect failed");
-      }
-
-    } catch(const std::exception & e){
-      MWARNING("Device reconnect failed: " << e.what());
-      fail_msg_writer() << tr("Device reconnect failed: ") << e.what();
-    }
-
-  }
-  return true;
-}
-
 bool simple_wallet::set_export_format(const std::vector<std::string> &args/* = std::vector<std::string()*/)
 {
   if (args.size() < 2)
@@ -2195,8 +2166,6 @@ simple_wallet::simple_wallet()
                                   "  Whether to keep track of owned outputs uses.\n "
                                   "setup-background-mining <1|0>\n "
                                   "  Whether to enable background mining. Set this to support the network and to get a chance to receive new lolnero.\n "
-                                  "device-name <device_name[:device_spec]>\n "
-                                  "  Device name for hardware wallet.\n "
                                   "export-format <\"binary\"|\"ascii\">\n "
                                   "  Save all exported files as binary (cannot be copied and pasted) or ascii (can be).\n "
                                   "inactivity-lock-timeout <unsigned int>\n "
@@ -2299,14 +2268,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::import_key_images, std::placeholders::_1),
                            tr(USAGE_IMPORT_KEY_IMAGES),
                            tr("Import a signed key images list and verify their spent status."));
-  m_cmd_binder.set_handler("hw_key_images_sync",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::hw_key_images_sync, std::placeholders::_1),
-                           tr(USAGE_HW_KEY_IMAGES_SYNC),
-                           tr("Synchronizes key images with the hw wallet."));
-  m_cmd_binder.set_handler("hw_reconnect",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::hw_reconnect, std::placeholders::_1),
-                           tr(USAGE_HW_RECONNECT),
-                           tr("Attempts to reconnect HW wallet."));
   m_cmd_binder.set_handler("export_outputs",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::export_outputs, std::placeholders::_1),
                            tr(USAGE_EXPORT_OUTPUTS),
@@ -2438,7 +2399,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "ignore-outputs-above = " << cryptonote::print_money(m_wallet->ignore_outputs_above());
     success_msg_writer() << "ignore-outputs-below = " << cryptonote::print_money(m_wallet->ignore_outputs_below());
     success_msg_writer() << "track-uses = " << m_wallet->track_uses();
-    success_msg_writer() << "device-name = " << m_wallet->device_name();
     success_msg_writer() << "export-format = " << (m_wallet->export_format() == tools::wallet2::ExportFormat::Ascii ? "ascii" : "binary");
     success_msg_writer() << "inactivity-lock-timeout = " << m_wallet->inactivity_lock_timeout()
 #ifdef _WIN32
@@ -2501,7 +2461,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("ignore-outputs-below", set_ignore_outputs_below, tr("amount"));
     CHECK_SIMPLE_VARIABLE("track-uses", set_track_uses, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("inactivity-lock-timeout", set_inactivity_lock_timeout, tr("unsigned integer (seconds, 0 to disable)"));
-    CHECK_SIMPLE_VARIABLE("device-name", set_device_name, tr("<device_name[:device_spec]>"));
     CHECK_SIMPLE_VARIABLE("export-format", set_export_format, tr("\"binary\" or \"ascii\""));
     CHECK_SIMPLE_VARIABLE("load-deprecated-formats", set_load_deprecated_formats, tr("0 or 1"));
   }
@@ -3418,22 +3377,6 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   if (m_restore_height)
     m_wallet->set_refresh_from_block_height(m_restore_height);
 
-  auto device_desc = tools::wallet2::device_name_option(vm);
-  auto device_derivation_path = tools::wallet2::device_derivation_path_option(vm);
-  try
-  {
-    bool create_address_file = command_line::get_arg(vm, arg_create_address_file);
-    m_wallet->device_derivation_path(device_derivation_path);
-    m_wallet->restore(m_wallet_file, std::move(rc.second).password(), device_desc.empty() ? "Ledger" : device_desc, create_address_file);
-    message_writer(console_color_white, true) << tr("Generated new wallet on hw device: ")
-      << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
-  }
-  catch (const std::exception& e)
-  {
-    fail_msg_writer() << tr("failed to generate new wallet: ") << e.what();
-    return {};
-  }
-
   return password;
 }
 //----------------------------------------------------------------------------------------------------
@@ -3853,39 +3796,6 @@ std::optional<epee::wipeable_string> simple_wallet::on_get_password(const char *
     return std::nullopt;
   }
 
-  return pwd_container->password();
-}
-//----------------------------------------------------------------------------------------------------
-void simple_wallet::on_device_button_request(uint64_t code)
-{
-  message_writer(console_color_white, false) << tr("Device requires attention");
-}
-//----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> simple_wallet::on_device_pin_request()
-{
-  PAUSE_READLINE();
-  std::string msg = tr("Enter device PIN");
-  auto pwd_container = tools::password_container::prompt(false, msg.c_str());
-  THROW_WALLET_EXCEPTION_IF(!pwd_container, tools::error::password_entry_failed, tr("Failed to read device PIN"));
-  return pwd_container->password();
-}
-//----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> simple_wallet::on_device_passphrase_request(bool & on_device)
-{
-  if (on_device) {
-    std::string accepted = input_line(tr(
-        "Device asks for passphrase. Do you want to enter the passphrase on device (Y) (or on the host (N))?"));
-    if (std::cin.eof() || command_line::is_yes(accepted)) {
-      message_writer(console_color_white, true) << tr("Please enter the device passphrase on the device");
-      return std::nullopt;
-    }
-  }
-
-  PAUSE_READLINE();
-  on_device = false;
-  std::string msg = tr("Enter device passphrase");
-  auto pwd_container = tools::password_container::prompt(false, msg.c_str());
-  THROW_WALLET_EXCEPTION_IF(!pwd_container, tools::error::password_entry_failed, tr("Failed to read device passphrase"));
   return pwd_container->password();
 }
 //----------------------------------------------------------------------------------------------------
@@ -7156,7 +7066,6 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
       label = tr("(Untitled address)");
     m_wallet->add_subaddress(m_current_subaddress_account, label);
     print_address_sub(m_wallet->get_num_subaddresses(m_current_subaddress_account) - 1);
-    m_wallet->device_show_address(m_current_subaddress_account, m_wallet->get_num_subaddresses(m_current_subaddress_account) - 1, std::nullopt);
   }
   else if (local_args[0] == "one-off")
   {
@@ -7242,7 +7151,6 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
     }
 
     print_address_sub(index);
-    m_wallet->device_show_address(m_current_subaddress_account, index, std::nullopt);
   }
   else
   {
@@ -7522,24 +7430,6 @@ bool simple_wallet::import_key_images(const std::vector<std::string> &args)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::hw_key_images_sync(const std::vector<std::string> &args)
-{
-  if (!m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command only supported by HW wallet");
-    return true;
-  }
-  if (!m_wallet->get_account().get_device().has_ki_cold_sync())
-  {
-    fail_msg_writer() << tr("hw wallet does not support cold KI sync");
-    return true;
-  }
-
-  LOCK_IDLE_SCOPE();
-  key_images_sync_intern();
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
 void simple_wallet::key_images_sync_intern(){
   try
   {
@@ -7566,31 +7456,6 @@ void simple_wallet::key_images_sync_intern(){
   {
     fail_msg_writer() << tr("Failed to import key images: ") << e.what();
   }
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::hw_reconnect(const std::vector<std::string> &args)
-{
-  if (!m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command only supported by HW wallet");
-    return true;
-  }
-
-  LOCK_IDLE_SCOPE();
-  try
-  {
-    bool r = m_wallet->reconnect_device();
-    if (!r){
-      fail_msg_writer() << tr("Failed to reconnect device");
-    }
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << tr("Failed to reconnect device: ") << tr(e.what());
-    return true;
-  }
-
-  return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::export_outputs(const std::vector<std::string> &args_)

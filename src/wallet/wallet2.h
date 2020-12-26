@@ -138,12 +138,6 @@ private:
     virtual void on_money_spent(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& in_tx, uint64_t amount, const cryptonote::transaction& spend_tx, const cryptonote::subaddress_index& subaddr_index) {}
     virtual void on_skip_transaction(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx) {}
     virtual std::optional<epee::wipeable_string> on_get_password(const char *reason) { return std::nullopt; }
-    // Device callbacks
-    virtual void on_device_button_request(uint64_t code) {}
-    virtual void on_device_button_pressed() {}
-    virtual std::optional<epee::wipeable_string> on_device_pin_request() { return std::nullopt; }
-    virtual std::optional<epee::wipeable_string> on_device_passphrase_request(bool & on_device) { on_device = true; return std::nullopt; }
-    virtual void on_device_progress(const hw::device_progress& event) {};
     // Common callbacks
     virtual void on_pool_tx_removed(const crypto::hash &txid) {}
     virtual ~i_wallet2_callback() {}
@@ -690,15 +684,6 @@ private:
     void generate(const std::string& wallet, const epee::wipeable_string& password,
       const cryptonote::account_public_address &account_public_address,
       const crypto::secret_key& viewkey = crypto::secret_key(), bool create_address_file = false);
-    /*!
-     * \brief Restore a wallet hold by an HW.
-     * \param  wallet_        Name of wallet file
-     * \param  password       Password of wallet file
-     * \param  device_name    name of HW to use
-     * \param  create_address_file     Whether to create an address file
-     */
-    void restore(const std::string& wallet_, const epee::wipeable_string& password, const std::string &device_name, bool create_address_file = false);
-
     /*!
      * \brief Rewrites to the wallet file for wallet upgrade (doesn't generate key, assumes it's already there)
      * \param wallet_name Name of wallet file (should exist)
@@ -1401,13 +1386,6 @@ private:
     void init_type(hw::device::device_type device_type);
     void setup_new_blockchain();
     void create_keys_file(const std::string &wallet_, bool watch_only, const epee::wipeable_string &password, bool create_address_file);
-
-    wallet_device_callback * get_device_callback();
-    void on_device_button_request(uint64_t code);
-    void on_device_button_pressed();
-    std::optional<epee::wipeable_string> on_device_pin_request();
-    std::optional<epee::wipeable_string> on_device_passphrase_request(bool & on_device);
-    void on_device_progress(const hw::device_progress& event);
 
     std::string get_rpc_status(const std::string &s) const;
     void throw_on_rpc_response_error(bool r, const epee::json_rpc::error &error, const std::string &status, const char *method) const;

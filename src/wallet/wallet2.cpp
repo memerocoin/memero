@@ -258,8 +258,6 @@ struct options {
     }
   };
   const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key derivation function"), 1};
-  const command_line::arg_descriptor<std::string> hw_device = {"hw-device", tools::wallet2::tr("HW device to use"), ""};
-  const command_line::arg_descriptor<std::string> hw_device_derivation_path = {"hw-device-deriv-path", tools::wallet2::tr("HW device wallet derivation path (e.g., SLIP-10)"), ""};
   const command_line::arg_descriptor<std::string> tx_notify = { "tx-notify" , "Run a program for each new incoming transaction, '%s' will be replaced by the transaction hash" , "" };
   const command_line::arg_descriptor<bool> offline = {"offline", tools::wallet2::tr("Do not connect to a daemon"), false};
   const command_line::arg_descriptor<std::string> extra_entropy = {"extra-entropy", tools::wallet2::tr("File containing extra entropy to initialize the PRNG (any data, aim for 256 bits of entropy to be useful, which typically means more than 256 bits of data)")};
@@ -316,8 +314,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   auto daemon_address = command_line::get_arg(vm, opts.daemon_address);
   auto daemon_host = command_line::get_arg(vm, opts.daemon_host);
   auto daemon_port = command_line::get_arg(vm, opts.daemon_port);
-  auto device_name = command_line::get_arg(vm, opts.hw_device);
-  auto device_derivation_path = command_line::get_arg(vm, opts.hw_device_derivation_path);
   auto daemon_ssl_private_key = command_line::get_arg(vm, opts.daemon_ssl_private_key);
   auto daemon_ssl_certificate = command_line::get_arg(vm, opts.daemon_ssl_certificate);
   auto daemon_ssl_ca_file = command_line::get_arg(vm, opts.daemon_ssl_ca_certificates);
@@ -436,8 +432,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   }
   boost::filesystem::path ringdb_path = command_line::get_arg(vm, opts.shared_ringdb_dir);
   wallet->set_ring_database(ringdb_path.string());
-  wallet->device_name(device_name);
-  wallet->device_derivation_path(device_derivation_path);
 
   if (command_line::get_arg(vm, opts.offline))
     wallet->set_offline();
@@ -992,40 +986,6 @@ wallet_keys_unlocker::~wallet_keys_unlocker()
   }
 }
 
-void wallet_device_callback::on_button_request(uint64_t code)
-{
-  if (wallet)
-    wallet->on_device_button_request(code);
-}
-
-void wallet_device_callback::on_button_pressed()
-{
-  if (wallet)
-    wallet->on_device_button_pressed();
-}
-
-std::optional<epee::wipeable_string> wallet_device_callback::on_pin_request()
-{
-  if (wallet)
-    return wallet->on_device_pin_request();
-  return std::nullopt;
-}
-
-std::optional<epee::wipeable_string> wallet_device_callback::on_passphrase_request(bool & on_device)
-{
-  if (wallet)
-    return wallet->on_device_passphrase_request(on_device);
-  else
-    on_device = true;
-  return std::nullopt;
-}
-
-void wallet_device_callback::on_progress(const hw::device_progress& event)
-{
-  if (wallet)
-    wallet->on_device_progress(event);
-}
-
 wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory):
   m_http_client(http_client_factory->create()),
   m_upper_transaction_weight_limit(0),
@@ -1095,16 +1055,6 @@ bool wallet2::has_stagenet_option(const boost::program_options::variables_map& v
   return command_line::get_arg(vm, options().stagenet);
 }
 
-std::string wallet2::device_name_option(const boost::program_options::variables_map& vm)
-{
-  return command_line::get_arg(vm, options().hw_device);
-}
-
-std::string wallet2::device_derivation_path_option(const boost::program_options::variables_map &vm)
-{
-  return command_line::get_arg(vm, options().hw_device_derivation_path);
-}
-
 void wallet2::init_options(boost::program_options::options_description& desc_params)
 {
   const options opts{};
@@ -1127,8 +1077,6 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
   command_line::add_arg(desc_params, opts.stagenet);
   command_line::add_arg(desc_params, opts.shared_ringdb_dir);
   command_line::add_arg(desc_params, opts.kdf_rounds);
-  command_line::add_arg(desc_params, opts.hw_device);
-  command_line::add_arg(desc_params, opts.hw_device_derivation_path);
   command_line::add_arg(desc_params, opts.tx_notify);
   command_line::add_arg(desc_params, opts.offline);
   command_line::add_arg(desc_params, opts.extra_entropy);
@@ -1240,30 +1188,6 @@ bool wallet2::get_seed(epee::wipeable_string& electrum_words, const epee::wipeab
     return false;
   }
 
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::reconnect_device()
-{
-  bool r = true;
-  hw::device &hwdev = lookup_device(m_device_name);
-  hwdev.set_name(m_device_name);
-  hwdev.set_network_type(m_nettype);
-  hwdev.set_derivation_path(m_device_derivation_path);
-  hwdev.set_callback(get_device_callback());
-  r = hwdev.init();
-  if (!r){
-    MERROR("Could not init device");
-    return false;
-  }
-
-  r = hwdev.connect();
-  if (!r){
-    MERROR("Could not connect to the device");
-    return false;
-  }
-
-  m_account.set_device(hwdev);
   return true;
 }
 //----------------------------------------------------------------------------------------------------
@@ -3785,24 +3709,7 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
 
   r = epee::serialization::load_t_from_binary(m_account, account_data);
   THROW_WALLET_EXCEPTION_IF(!r, error::invalid_password);
-  if (m_key_device_type == hw::device::device_type::LEDGER || m_key_device_type == hw::device::device_type::TREZOR) {
-    LOG_PRINT_L0("Account on device. Initing device...");
-    hw::device &hwdev = lookup_device(m_device_name);
-    THROW_WALLET_EXCEPTION_IF(!hwdev.set_name(m_device_name), error::wallet_internal_error, "Could not set device name " + m_device_name);
-    hwdev.set_network_type(m_nettype);
-    hwdev.set_derivation_path(m_device_derivation_path);
-    hwdev.set_callback(get_device_callback());
-    THROW_WALLET_EXCEPTION_IF(!hwdev.init(), error::wallet_internal_error, "Could not initialize the device " + m_device_name);
-    THROW_WALLET_EXCEPTION_IF(!hwdev.connect(), error::wallet_internal_error, "Could not connect to the device " + m_device_name);
-    m_account.set_device(hwdev);
-
-    account_public_address device_account_public_address;
-    THROW_WALLET_EXCEPTION_IF(!hwdev.get_public_address(device_account_public_address), error::wallet_internal_error, "Cannot get a device address");
-    THROW_WALLET_EXCEPTION_IF(device_account_public_address != m_account.get_keys().m_account_address, error::wallet_internal_error, "Device wallet does not match wallet address. "
-                                                                                                                                     "Device address: " + cryptonote::get_account_address_as_str(m_nettype, false, device_account_public_address) +
-                                                                                                                                     ", wallet address: " + m_account.get_public_address_str(m_nettype));
-    LOG_PRINT_L0("Device inited...");
-  } else if (key_on_device()) {
+  if (key_on_device()) {
     THROW_WALLET_EXCEPTION(error::wallet_internal_error, "hardware device not supported");
   }
 
@@ -4182,47 +4089,6 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
 
   if (!wallet_.empty())
     store();
-}
-
-/*!
-* \brief Creates a wallet from a device
-* \param  wallet_        Name of wallet file
-* \param  password       Password of wallet file
-* \param  device_name    device string address
-*/
-void wallet2::restore(const std::string& wallet_, const epee::wipeable_string& password, const std::string &device_name, bool create_address_file)
-{
-  clear();
-  prepare_file_names(wallet_);
-
-  boost::system::error_code ignored_ec;
-  if (!wallet_.empty()) {
-    THROW_WALLET_EXCEPTION_IF(boost::filesystem::exists(m_wallet_file, ignored_ec), error::file_exists, m_wallet_file);
-    THROW_WALLET_EXCEPTION_IF(boost::filesystem::exists(m_keys_file,   ignored_ec), error::file_exists, m_keys_file);
-  }
-
-  auto &hwdev = lookup_device(device_name);
-  hwdev.set_name(device_name);
-  hwdev.set_network_type(m_nettype);
-  hwdev.set_derivation_path(m_device_derivation_path);
-  hwdev.set_callback(get_device_callback());
-
-  m_account.create_from_device(hwdev);
-  init_type(m_account.get_device().get_type());
-  setup_keys(password);
-  m_device_name = device_name;
-
-  create_keys_file(wallet_, false, password, m_nettype != MAINNET || create_address_file);
-  if (m_subaddress_lookahead_major == SUBADDRESS_LOOKAHEAD_MAJOR && m_subaddress_lookahead_minor == SUBADDRESS_LOOKAHEAD_MINOR)
-  {
-    // the default lookahead setting (50:200) is clearly too much for hardware wallet
-    m_subaddress_lookahead_major = 5;
-    m_subaddress_lookahead_minor = 20;
-  }
-  setup_new_blockchain();
-  if (!wallet_.empty()) {
-    store();
-  }
 }
 
 bool wallet2::has_unknown_key_images() const
@@ -8043,17 +7909,6 @@ uint64_t wallet2::cold_key_image_sync(uint64_t &spent, uint64_t &unspent) {
   return import_res;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::device_show_address(uint32_t account_index, uint32_t address_index, const std::optional<crypto::hash8> &payment_id)
-{
-  if (!key_on_device())
-  {
-    return;
-  }
-
-  auto & hwdev = get_account().get_device();
-  hwdev.display_address(subaddress_index{account_index, address_index}, payment_id);
-}
-//----------------------------------------------------------------------------------------------------
 uint8_t wallet2::get_current_hard_fork()
 {
   if (m_offline)
@@ -10703,47 +10558,6 @@ std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(uint64_t mi
 //----------------------------------------------------------------------------------------------------
 void wallet2::generate_genesis(cryptonote::block& b) const {
   cryptonote::generate_genesis_block(b, get_config(m_nettype).GENESIS_TX, get_config(m_nettype).GENESIS_NONCE);
-}
-//----------------------------------------------------------------------------------------------------
-wallet_device_callback * wallet2::get_device_callback()
-{
-  if (!m_device_callback){
-    m_device_callback.reset(new wallet_device_callback(this));
-  }
-  return m_device_callback.get();
-}//----------------------------------------------------------------------------------------------------
-void wallet2::on_device_button_request(uint64_t code)
-{
-  if (nullptr != m_callback)
-    m_callback->on_device_button_request(code);
-}
-//----------------------------------------------------------------------------------------------------
-void wallet2::on_device_button_pressed()
-{
-  if (nullptr != m_callback)
-    m_callback->on_device_button_pressed();
-}
-//----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> wallet2::on_device_pin_request()
-{
-  if (nullptr != m_callback)
-    return m_callback->on_device_pin_request();
-  return std::nullopt;
-}
-//----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> wallet2::on_device_passphrase_request(bool & on_device)
-{
-  if (nullptr != m_callback)
-    return m_callback->on_device_passphrase_request(on_device);
-  else
-    on_device = true;
-  return std::nullopt;
-}
-//----------------------------------------------------------------------------------------------------
-void wallet2::on_device_progress(const hw::device_progress& event)
-{
-  if (nullptr != m_callback)
-    m_callback->on_device_progress(event);
 }
 //----------------------------------------------------------------------------------------------------
 std::string wallet2::get_rpc_status(const std::string &s) const
