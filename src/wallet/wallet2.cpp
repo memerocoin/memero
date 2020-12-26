@@ -118,11 +118,6 @@ using namespace constant;
 
 #define OUTPUT_EXPORT_FILE_MAGIC "Lolnero output export\004"
 
-#define SEGREGATION_FORK_HEIGHT 99999999
-#define TESTNET_SEGREGATION_FORK_HEIGHT 99999999
-#define STAGENET_SEGREGATION_FORK_HEIGHT 99999999
-#define SEGREGATION_FORK_VICINITY 1500 /* blocks */
-
 #define FIRST_REFRESH_GRANULARITY     1024
 
 #define GAMMA_SHAPE 19.28
@@ -1057,9 +1052,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_confirm_backlog_threshold(0),
   m_confirm_export_overwrite(true),
   m_auto_low_priority(true),
-  m_segregate_pre_fork_outputs(false),
-  m_key_reuse_mitigation2(false),
-  m_segregation_height(0),
   m_ignore_fractional_outputs(true),
   m_ignore_outputs_above(MONEY_SUPPLY),
   m_ignore_outputs_below(0),
@@ -3476,15 +3468,6 @@ std::optional<wallet2::keys_file_data> wallet2::get_keys_file_data(const epee::w
   value2.SetUint(m_nettype);
   json.AddMember("nettype", value2, json.GetAllocator());
 
-  value2.SetInt(m_segregate_pre_fork_outputs ? 1 : 0);
-  json.AddMember("segregate_pre_fork_outputs", value2, json.GetAllocator());
-
-  value2.SetInt(m_key_reuse_mitigation2 ? 1 : 0);
-  json.AddMember("key_reuse_mitigation2", value2, json.GetAllocator());
-
-  value2.SetUint(m_segregation_height);
-  json.AddMember("segregation_height", value2, json.GetAllocator());
-
   value2.SetInt(m_ignore_fractional_outputs ? 1 : 0);
   json.AddMember("ignore_fractional_outputs", value2, json.GetAllocator());
 
@@ -3642,9 +3625,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     m_confirm_backlog_threshold = 0;
     m_confirm_export_overwrite = true;
     m_auto_low_priority = true;
-    m_segregate_pre_fork_outputs = true;
-    m_key_reuse_mitigation2 = true;
-    m_segregation_height = 0;
     m_ignore_fractional_outputs = true;
     m_ignore_outputs_above = MONEY_SUPPLY;
     m_ignore_outputs_below = 0;
@@ -3757,12 +3737,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     (boost::format("%s wallet cannot be opened as %s wallet")
     % (field_nettype == 0 ? "Mainnet" : field_nettype == 1 ? "Testnet" : "Stagenet")
     % (m_nettype == MAINNET ? "mainnet" : m_nettype == TESTNET ? "testnet" : "stagenet")).str());
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, segregate_pre_fork_outputs, int, Int, false, true);
-    m_segregate_pre_fork_outputs = field_segregate_pre_fork_outputs;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, key_reuse_mitigation2, int, Int, false, true);
-    m_key_reuse_mitigation2 = field_key_reuse_mitigation2;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, segregation_height, int, Uint, false, 0);
-    m_segregation_height = field_segregation_height;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, ignore_fractional_outputs, int, Int, false, true);
     m_ignore_fractional_outputs = field_ignore_fractional_outputs;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, ignore_outputs_above, uint64_t, Uint64, false, MONEY_SUPPLY);
@@ -6321,13 +6295,10 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 
   if (fake_outputs_count > 0)
   {
-    uint64_t segregation_fork_height = get_segregation_fork_height();
     // check whether we're shortly after the fork
     uint64_t height;
     std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
     THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get height");
-    bool is_shortly_after_segregation_fork = height >= segregation_fork_height && height < segregation_fork_height + SEGREGATION_FORK_VICINITY;
-    bool is_after_segregation_fork = height >= segregation_fork_height;
 
     // if we have at least one rct out, get the distribution, or fall back to the previous system
     uint64_t rct_start_height;
@@ -6373,50 +6344,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 
     // if we want to segregate fake outs pre or post fork, get distribution
     std::unordered_map<uint64_t, std::pair<uint64_t, uint64_t>> segregation_limit;
-    if (is_after_segregation_fork && (m_segregate_pre_fork_outputs || m_key_reuse_mitigation2))
-    {
-      cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request req_t = AUTO_VAL_INIT(req_t);
-      cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response resp_t = AUTO_VAL_INIT(resp_t);
-      for(size_t idx: selected_transfers)
-        req_t.amounts.push_back(m_transfers[idx].is_rct() ? 0 : m_transfers[idx].amount());
-      std::sort(req_t.amounts.begin(), req_t.amounts.end());
-      auto end = std::unique(req_t.amounts.begin(), req_t.amounts.end());
-      req_t.amounts.resize(std::distance(req_t.amounts.begin(), end));
-      req_t.from_height = std::max<uint64_t>(segregation_fork_height, RECENT_OUTPUT_BLOCKS) - RECENT_OUTPUT_BLOCKS;
-      req_t.to_height = segregation_fork_height + 1;
-      req_t.cumulative = true;
-      req_t.binary = true;
-
-      {
-        const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-        bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_output_distribution", req_t, resp_t, *m_http_client, rpc_timeout * 1000);
-        THROW_ON_RPC_RESPONSE_ERROR(r, {}, resp_t, "get_output_distribution", error::get_output_distribution, get_rpc_status(resp_t.status));
-      }
-
-      // check we got all data
-      for(size_t idx: selected_transfers)
-      {
-        const uint64_t amount = m_transfers[idx].is_rct() ? 0 : m_transfers[idx].amount();
-        bool found = false;
-        for (const auto &d: resp_t.distributions)
-        {
-          if (d.amount == amount)
-          {
-            THROW_WALLET_EXCEPTION_IF(d.data.start_height > segregation_fork_height, error::get_output_distribution, "Distribution start_height too high");
-            THROW_WALLET_EXCEPTION_IF(segregation_fork_height - d.data.start_height >= d.data.distribution.size(), error::get_output_distribution, "Distribution size too small");
-            THROW_WALLET_EXCEPTION_IF(segregation_fork_height - RECENT_OUTPUT_BLOCKS - d.data.start_height >= d.data.distribution.size(), error::get_output_distribution, "Distribution size too small");
-            THROW_WALLET_EXCEPTION_IF(segregation_fork_height <= RECENT_OUTPUT_BLOCKS, error::wallet_internal_error, "Fork height too low");
-            THROW_WALLET_EXCEPTION_IF(segregation_fork_height - RECENT_OUTPUT_BLOCKS < d.data.start_height, error::get_output_distribution, "Bad start height");
-            uint64_t till_fork = d.data.distribution[segregation_fork_height - d.data.start_height];
-            uint64_t recent = till_fork - d.data.distribution[segregation_fork_height - RECENT_OUTPUT_BLOCKS - d.data.start_height];
-            segregation_limit[amount] = std::make_pair(till_fork, recent);
-            found = true;
-            break;
-          }
-        }
-        THROW_WALLET_EXCEPTION_IF(!found, error::get_output_distribution, "Requested amount not found in response");
-      }
-    }
 
     // we ask for more, to have spares if some outputs are still locked
     size_t base_requested_outputs_count = (size_t)((fake_outputs_count + 1) * 1.5 + 1);
@@ -6442,18 +6369,12 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       size_t start = req.outputs.size();
       bool use_histogram = amount != 0 || !has_rct_distribution;
 
-      const bool output_is_pre_fork = td.m_block_height < segregation_fork_height;
+      const bool output_is_pre_fork = false;
       uint64_t num_outs = 0, num_recent_outs = 0;
       uint64_t num_post_fork_outs = 0;
       float pre_fork_num_out_ratio = 0.0f;
       float post_fork_num_out_ratio = 0.0f;
 
-      if (is_after_segregation_fork && m_segregate_pre_fork_outputs && output_is_pre_fork)
-      {
-        num_outs = segregation_limit[amount].first;
-        num_recent_outs = segregation_limit[amount].second;
-      }
-      else
       {
         // if there are just enough outputs to mix with, use all of them.
         // Eventually this should become impossible.
@@ -6468,32 +6389,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
             break;
           }
         }
-        if (is_after_segregation_fork && m_key_reuse_mitigation2)
-        {
-          if (output_is_pre_fork)
-          {
-            if (is_shortly_after_segregation_fork)
-            {
-              pre_fork_num_out_ratio = 33.4/100.0f * (1.0f - RECENT_OUTPUT_RATIO);
-            }
-            else
-            {
-              pre_fork_num_out_ratio = 33.4/100.0f * (1.0f - RECENT_OUTPUT_RATIO);
-              post_fork_num_out_ratio = 33.4/100.0f * (1.0f - RECENT_OUTPUT_RATIO);
-            }
-          }
-          else
-          {
-            if (is_shortly_after_segregation_fork)
-            {
-            }
-            else
-            {
-              post_fork_num_out_ratio = 67.8/100.0f * (1.0f - RECENT_OUTPUT_RATIO);
-            }
-          }
-        }
-        num_post_fork_outs = num_outs - segregation_limit[amount].first;
+        num_post_fork_outs = num_outs;
       }
 
       if (use_histogram)
@@ -6758,10 +6654,8 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 
       uint64_t num_outs = 0;
       const uint64_t amount = td.is_rct() ? 0 : td.amount();
-      const bool output_is_pre_fork = td.m_block_height < segregation_fork_height;
-      if (is_after_segregation_fork && m_segregate_pre_fork_outputs && output_is_pre_fork)
-        num_outs = segregation_limit[amount].first;
-      else for (const auto &he: resp_t.histogram)
+      const bool output_is_pre_fork = false;
+      for (const auto &he: resp_t.histogram)
       {
         if (he.amount == amount)
         {
@@ -10805,20 +10699,6 @@ std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(uint64_t mi
     fee_levels.emplace_back(our_fee_byte_min, our_fee_byte_max);
   }
   return estimate_backlog(fee_levels);
-}
-//----------------------------------------------------------------------------------------------------
-uint64_t wallet2::get_segregation_fork_height() const
-{
-  if (m_nettype == TESTNET)
-    return TESTNET_SEGREGATION_FORK_HEIGHT;
-  if (m_nettype == STAGENET)
-    return STAGENET_SEGREGATION_FORK_HEIGHT;
-  THROW_WALLET_EXCEPTION_IF(m_nettype != MAINNET, tools::error::wallet_internal_error, "Invalid network type");
-
-  if (m_segregation_height > 0)
-    return m_segregation_height;
-
-  return SEGREGATION_FORK_HEIGHT;
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::generate_genesis(cryptonote::block& b) const {

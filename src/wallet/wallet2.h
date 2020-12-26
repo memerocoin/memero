@@ -1067,12 +1067,6 @@ private:
     void confirm_export_overwrite(bool always) { m_confirm_export_overwrite = always; }
     bool auto_low_priority() const { return m_auto_low_priority; }
     void auto_low_priority(bool value) { m_auto_low_priority = value; }
-    bool segregate_pre_fork_outputs() const { return m_segregate_pre_fork_outputs; }
-    void segregate_pre_fork_outputs(bool value) { m_segregate_pre_fork_outputs = value; }
-    bool key_reuse_mitigation2() const { return m_key_reuse_mitigation2; }
-    void key_reuse_mitigation2(bool value) { m_key_reuse_mitigation2 = value; }
-    uint64_t segregation_height() const { return m_segregation_height; }
-    void segregation_height(uint64_t height) { m_segregation_height = height; }
     bool ignore_fractional_outputs() const { return m_ignore_fractional_outputs; }
     void ignore_fractional_outputs(bool value) { m_ignore_fractional_outputs = value; }
     bool confirm_non_default_ring_size() const { return m_confirm_non_default_ring_size; }
@@ -1486,9 +1480,6 @@ private:
     uint32_t m_confirm_backlog_threshold;
     bool m_confirm_export_overwrite;
     bool m_auto_low_priority;
-    bool m_segregate_pre_fork_outputs;
-    bool m_key_reuse_mitigation2;
-    uint64_t m_segregation_height;
     bool m_ignore_fractional_outputs;
     uint64_t m_ignore_outputs_above;
     uint64_t m_ignore_outputs_below;
