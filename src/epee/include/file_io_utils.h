@@ -29,8 +29,8 @@
 #define _FILE_IO_UTILS_H_
 
 #include <fstream>
-#include <filesystem>
-#include <filesystem>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 #ifdef WIN32
 #include <windows.h>
 #include "string_tools.h"
@@ -65,8 +65,8 @@ namespace file_io_utils
 	inline 
 		bool is_file_exist(const std::string& path)
 	{
-		std::filesystem::path p(path);
-		return std::filesystem::exists(p);
+		boost::filesystem::path p(path);
+		return boost::filesystem::exists(p);
 	}
 
 	inline
@@ -102,6 +102,29 @@ namespace file_io_utils
 		}
 #endif
 	}
+
+	inline
+	bool get_file_time(const std::string& path_to_file, time_t& ft)
+	{
+		boost::system::error_code ec;
+		ft = boost::filesystem::last_write_time(boost::filesystem::path(path_to_file), ec);
+		if(!ec)
+			return true;
+		else
+			return false;
+	}
+
+	inline
+		bool set_file_time(const std::string& path_to_file, const time_t& ft)
+	{
+		boost::system::error_code ec;
+		boost::filesystem::last_write_time(boost::filesystem::path(path_to_file), ft, ec);
+		if(!ec)
+			return true;
+		else
+			return false;
+	}
+
 
 	inline
 		bool load_file_to_string(const std::string& path_to_file, std::string& target_str, size_t max_size = 1000000000)

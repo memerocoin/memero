@@ -101,9 +101,9 @@ namespace cryptonote
   , {{ &arg_testnet_on, &arg_stagenet_on }}
   , [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
       if (testnet_stagenet[0])
-        return (std::filesystem::path(val) / "testnet").string();
+        return (boost::filesystem::path(val) / "testnet").string();
       else if (testnet_stagenet[1])
-        return (std::filesystem::path(val) / "stagenet").string();
+        return (boost::filesystem::path(val) / "stagenet").string();
       return val;
     }
   };
@@ -262,7 +262,7 @@ namespace cryptonote
 
     m_config_folder = command_line::get_arg(vm, arg_data_dir);
 
-    auto data_dir = std::filesystem::path(m_config_folder);
+    auto data_dir = boost::filesystem::path(m_config_folder);
 
     test_drop_download_height(command_line::get_arg(vm, arg_test_drop_download_height));
     m_fluffy_blocks_enabled = !get_arg(vm, arg_no_fluffy_blocks);
@@ -358,19 +358,19 @@ namespace cryptonote
     bool keep_alt_blocks = command_line::get_arg(vm, arg_keep_alt_blocks);
     bool keep_fakechain = command_line::get_arg(vm, arg_keep_fakechain);
 
-    std::filesystem::path folder(m_config_folder);
+    boost::filesystem::path folder(m_config_folder);
     if (m_nettype == FAKECHAIN)
       folder /= "fake";
 
     // make sure the data directory exists, and try to lock it
-    CHECK_AND_ASSERT_MES (std::filesystem::exists(folder) || std::filesystem::create_directories(folder), false,
+    CHECK_AND_ASSERT_MES (boost::filesystem::exists(folder) || boost::filesystem::create_directories(folder), false,
       std::string("Failed to create directory ").append(folder.string()).c_str());
 
     // check for blockchain.bin
     try
     {
-      const std::filesystem::path old_files = folder;
-      if (std::filesystem::exists(old_files / "blockchain.bin"))
+      const boost::filesystem::path old_files = folder;
+      if (boost::filesystem::exists(old_files / "blockchain.bin"))
       {
         MWARNING("Found old-style blockchain.bin in " << old_files.string());
         MWARNING("Lolnero now uses a new format. You can either remove blockchain.bin to start syncing");
@@ -1673,8 +1673,8 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   uint64_t core::get_free_space() const
   {
-    std::filesystem::path path(m_config_folder);
-    std::filesystem::space_info si = std::filesystem::space(path);
+    boost::filesystem::path path(m_config_folder);
+    boost::filesystem::space_info si = boost::filesystem::space(path);
     return si.available;
   }
   //-----------------------------------------------------------------------------------------------

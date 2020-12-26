@@ -37,7 +37,7 @@
 
 #include <time.h>
 #include <atomic>
-#include <filesystem>
+#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include "string_tools.h"
 #include "misc_os_dependent.h"
@@ -71,7 +71,7 @@ static std::string generate_log_filename(const char *base)
 
 std::string mlog_get_default_log_path(const char *default_filename)
 {
-  return (std::filesystem::path("/dev/null")).string();
+  return (boost::filesystem::path("/dev/null")).string();
 }
 
 static void mlog_set_common_prefix()

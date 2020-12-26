@@ -36,7 +36,6 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <mutex>
 
 #ifdef _WIN32
 #include "windows.h"

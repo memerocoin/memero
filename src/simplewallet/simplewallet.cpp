@@ -70,7 +70,7 @@
 #include <stdexcept>
 
 #ifdef WIN32
-#include <filesystem>
+#include <boost/filesystem.hpp>
 #endif
 
 #ifdef HAVE_READLINE
@@ -538,8 +538,8 @@ namespace
 {
   bool check_file_overwrite(const std::string &filename)
   {
-    std::error_code errcode;
-    if (std::filesystem::exists(filename, errcode))
+    boost::system::error_code errcode;
+    if (boost::filesystem::exists(filename, errcode))
     {
       if (boost::ends_with(filename, ".keys"))
       {
@@ -7730,7 +7730,7 @@ int main(int argc, char* argv[])
 #ifdef WIN32
   // Activate UTF-8 support for Boost filesystem classes on Windows
   std::locale::global(boost::locale::generator().generate(""));
-  std::filesystem::path::imbue(std::locale());
+  boost::filesystem::path::imbue(std::locale());
 #endif
   setlocale(LC_CTYPE, "");
 

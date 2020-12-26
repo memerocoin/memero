@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 
   tools::on_startup();
 
-  std::filesystem::path output_file_path;
+  boost::filesystem::path output_file_path;
 
   po::options_description desc_cmd_only("Command line options");
   po::options_description desc_cmd_sett("Command line options and settings options");
@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
   }
   LOG_PRINT_L0("database: LMDB");
 
-  const std::string filename = (std::filesystem::path(opt_data_dir) / db->get_db_name()).string();
+  const std::string filename = (boost::filesystem::path(opt_data_dir) / db->get_db_name()).string();
   LOG_PRINT_L0("Loading blockchain from folder " << filename << " ...");
 
   try

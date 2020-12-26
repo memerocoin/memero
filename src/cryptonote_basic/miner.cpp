@@ -233,7 +233,7 @@ namespace cryptonote
         if(buff != "0")
           m_extra_messages[i] = buff;
       }
-      m_config_folder_path = std::filesystem::path(command_line::get_arg(vm, arg_extra_messages)).parent_path().string();
+      m_config_folder_path = boost::filesystem::path(command_line::get_arg(vm, arg_extra_messages)).parent_path().string();
       m_config = AUTO_VAL_INIT(m_config);
       const std::string filename = m_config_folder_path + "/" + MINER_CONFIG_FILE_NAME;
       CHECK_AND_ASSERT_MES(epee::serialization::load_t_from_json_file(m_config, filename), false, "Failed to load data from " << filename);

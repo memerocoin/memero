@@ -30,7 +30,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <string>
-#include <algorithm>
 #include <map>
 #include "file_io_utils.h"
 #include "common/i18n.h"
@@ -151,8 +150,8 @@ int i18n_set_language(const char *directory, const char *base, std::string langu
   filename = std::string(directory) + "/" + base + "_" + language + ".qm";
   i18n_log("Loading translations for language " << language);
 
-  std::error_code ignored_ec;
-  if (std::filesystem::exists(filename, ignored_ec)) {
+  boost::system::error_code ignored_ec;
+  if (boost::filesystem::exists(filename, ignored_ec)) {
     if (!epee::file_io_utils::load_file_to_string(filename, contents)) {
       i18n_log("Failed to load translations file: " << filename);
       return -1;
@@ -168,7 +167,7 @@ int i18n_set_language(const char *directory, const char *base, std::string langu
         std::string fallback_language = std::string(language, 0, underscore - language.c_str());
         filename = std::string(directory) + "/" + base + "_" + fallback_language + ".qm";
         i18n_log("Loading translations for language " << fallback_language);
-        if (std::filesystem::exists(filename, ignored_ec)) {
+        if (boost::filesystem::exists(filename, ignored_ec)) {
           if (!epee::file_io_utils::load_file_to_string(filename, contents)) {
             i18n_log("Failed to load translations file: " << filename);
             return -1;

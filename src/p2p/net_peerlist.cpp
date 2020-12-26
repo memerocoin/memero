@@ -36,7 +36,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/portable_binary_oarchive.hpp>
 #include <boost/archive/portable_binary_iarchive.hpp>
-#include <filesystem>
+#include <boost/filesystem/operations.hpp>
 #include <boost/range/join.hpp>
 #include <boost/serialization/version.hpp>
 
@@ -199,7 +199,7 @@ namespace nodetool
     if (!out)
     {
       // if failed, try reading in unportable mode
-      std::filesystem::copy_file(path, path + ".unportable", std::filesystem::copy_options::overwrite_existing);
+      boost::filesystem::copy_file(path, path + ".unportable", boost::filesystem::copy_option::overwrite_if_exists);
       src_file.close();
       src_file.open( path , std::ios_base::binary | std::ios_base::in);
       if(src_file.fail())
