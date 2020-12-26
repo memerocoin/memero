@@ -97,6 +97,8 @@ endfunction ()
 include(Version)
 monero_add_library(version SOURCES ${CMAKE_BINARY_DIR}/version.cpp DEPENDS genversion)
 
+add_subdirectory(epee)
+
 add_subdirectory(common)
 add_subdirectory(crypto)
 add_subdirectory(ringct)

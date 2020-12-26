@@ -292,11 +292,10 @@ include_directories(external/rapidjson/include)
 
 
 # wrap up
-include_directories(contrib/epee/include external src)
+include_directories(src/epee/include external src)
 
 list(APPEND EXTRA_LIBRARIES ${CMAKE_DL_LIBS})
 
-add_subdirectory(contrib)
 add_subdirectory(src)
 
 
