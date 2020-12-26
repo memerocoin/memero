@@ -42,22 +42,6 @@ const hardfork_t testnet_hard_forks[] = {
 const size_t num_testnet_hard_forks = sizeof(testnet_hard_forks) / sizeof(testnet_hard_forks[0]);
 
 const hardfork_t stagenet_hard_forks[] = {
-  // version 1 from the start of the blockchain
-  { 1, 1, 0, 1341378000 },
-
-  // versions 2-7 in rapid succession from March 13th, 2018
-  { 2, 32000, 0, 1521000000 },
-  { 3, 33000, 0, 1521120000 },
-  { 4, 34000, 0, 1521240000 },
-  { 5, 35000, 0, 1521360000 },
-  { 6, 36000, 0, 1521480000 },
-  { 7, 37000, 0, 1521600000 },
-  { 8, 176456, 0, 1537821770 },
-  { 9, 177176, 0, 1537821771 },
-  { 10, 269000, 0, 1550153694 },
-  { 11, 269720, 0, 1550225678 },
-  { 12, 454721, 0, 1571419280 },
-  { 13, 675405, 0, 1598180817 },
-  { 14, 676125, 0, 1598180818 },
+  { 17, 0, 0, 1600576524 },
 };
 const size_t num_stagenet_hard_forks = sizeof(stagenet_hard_forks) / sizeof(stagenet_hard_forks[0]);
