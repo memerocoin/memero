@@ -1863,8 +1863,14 @@ skip:
         }
         if (skip_unneeded_hashes(context, false) && context.m_needed_objects.empty() && context.m_num_requested == 0)
         {
-          MERROR(context << "Nothing we can request from this peer, and we did not request anything previously");
-          return false;
+          if (context.m_remote_blockchain_height > m_block_queue.get_next_needed_height(m_core.get_current_blockchain_height()))
+          {
+            MERROR(context << "Nothing we can request from this peer, and we did not request anything previously");
+            return false;
+          }
+          MDEBUG(context << "Nothing to get from this peer, and it's not ahead of us, all done");
+          context.m_state = cryptonote_connection_context::state_normal;
+          return true;
         }
 
         const uint64_t first_block_height = context.m_last_response_height - context.m_needed_objects.size() + 1;
@@ -1940,6 +1946,17 @@ skip:
         MLOG_PEER_STATE("requesting objects");
         return true;
       }
+
+      // we can do nothing, so drop this peer to make room for others unless we think we've downloaded all we need
+      const uint64_t blockchain_height = m_core.get_current_blockchain_height();
+      if (std::max(blockchain_height, m_block_queue.get_next_needed_height(blockchain_height)) >= m_core.get_target_blockchain_height())
+      {
+        context.m_state = cryptonote_connection_context::state_normal;
+        MLOG_PEER_STATE("Nothing to do for now, switching to normal state");
+        return true;
+      }
+      MLOG_PEER_STATE("We can download nothing from this peer, dropping");
+      return false;
     }
 
 skip:
