@@ -2010,43 +2010,6 @@ namespace cryptonote
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_UPDATE
-  {
-    struct request_t: public rpc_request_base
-    {
-      std::string command;
-      std::string path;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_request_base)
-        KV_SERIALIZE(command)
-        KV_SERIALIZE(path)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t: public rpc_response_base
-    {
-      bool update;
-      std::string version;
-      std::string user_uri;
-      std::string auto_uri;
-      std::string hash;
-      std::string path;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_response_base)
-        KV_SERIALIZE(update)
-        KV_SERIALIZE(version)
-        KV_SERIALIZE(user_uri)
-        KV_SERIALIZE(auto_uri)
-        KV_SERIALIZE(hash)
-        KV_SERIALIZE(path)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_RELAY_TX
   {
     struct request_t: public rpc_access_request_base
@@ -2228,33 +2191,6 @@ namespace cryptonote
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_response_base)
         KV_SERIALIZE(height)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_PRUNE_BLOCKCHAIN
-  {
-    struct request_t: public rpc_request_base
-    {
-      bool check;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_request_base)
-        KV_SERIALIZE_OPT(check, false)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t: public rpc_response_base
-    {
-      bool pruned;
-      uint32_t pruning_seed;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_response_base)
-        KV_SERIALIZE(pruned)
-        KV_SERIALIZE(pruning_seed)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;
