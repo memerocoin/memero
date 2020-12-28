@@ -27,7 +27,7 @@
 #pragma once
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/uuid/uuid_generators.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/interprocess/detail/atomic.hpp>
 
 #include <atomic>
@@ -64,7 +64,7 @@ class async_protocol_handler;
 template<class t_connection_context>
 class async_protocol_handler_config
 {
-  typedef boost::unordered_map<boost::uuids::uuid, async_protocol_handler<t_connection_context>* > connections_map;
+  typedef std::unordered_map<boost::uuids::uuid, async_protocol_handler<t_connection_context>*, boost::hash<boost::uuids::uuid>> connections_map;
   critical_section m_connects_lock;
   connections_map m_connects;
 
