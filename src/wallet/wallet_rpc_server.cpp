@@ -2948,8 +2948,7 @@ namespace tools
 
     epee::wipeable_string password = rc.second.password();
 
-    bool was_deprecated_wallet = ((old_language == crypto::ElectrumWords::old_language_name) ||
-                                  crypto::ElectrumWords::get_is_old_style_seed(req.seed));
+    bool was_deprecated_wallet = old_language == crypto::ElectrumWords::old_language_name;
 
     std::string mnemonic_language = old_language;
     if (was_deprecated_wallet)

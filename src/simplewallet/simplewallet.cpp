@@ -3227,8 +3227,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
     m_wallet->set_subaddress_lookahead(lookahead->first, lookahead->second);
   }
 
-  bool was_deprecated_wallet = m_restore_deterministic_wallet && ((old_language == crypto::ElectrumWords::old_language_name) ||
-    crypto::ElectrumWords::get_is_old_style_seed(m_electrum_seed));
+  bool was_deprecated_wallet = m_restore_deterministic_wallet && (old_language == crypto::ElectrumWords::old_language_name);
 
   std::string mnemonic_language = old_language;
 

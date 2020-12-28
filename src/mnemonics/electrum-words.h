@@ -112,13 +112,6 @@ namespace crypto
     void get_language_list(std::vector<std::string> &languages, bool english = false);
 
     /*!
-     * \brief Tells if the seed passed is an old style seed or not.
-     * \param  seed The seed to check (a space delimited concatenated word list)
-     * \return      true if the seed passed is a old style seed false if not.
-     */
-    bool get_is_old_style_seed(const epee::wipeable_string &seed);
-
-    /*!
      * \brief Returns the name of a language in English
      * \param  name the name of the language in its own language
      * \return      the name of the language in English
