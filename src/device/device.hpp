@@ -78,8 +78,8 @@ namespace hw {
     public:
         virtual void on_button_request(uint64_t code=0) {}
         virtual void on_button_pressed() {}
-        virtual std::optional<epee::wipeable_string> on_pin_request() { return std::nullopt; }
-        virtual std::optional<epee::wipeable_string> on_passphrase_request(bool & on_device) { on_device = true; return std::nullopt; }
+        virtual std::optional<std::string> on_pin_request() { return std::nullopt; }
+        virtual std::optional<std::string> on_passphrase_request(bool & on_device) { on_device = true; return std::nullopt; }
         virtual void on_progress(const device_progress& event) {}
         virtual ~i_device_callback() = default;
     };
@@ -136,8 +136,8 @@ namespace hw {
         virtual void set_callback(i_device_callback * callback) {};
         virtual void set_derivation_path(const std::string &derivation_path) {};
 
-        virtual void set_pin(const epee::wipeable_string & pin) {}
-        virtual void set_passphrase(const epee::wipeable_string & passphrase) {}
+        virtual void set_pin(const std::string & pin) {}
+        virtual void set_passphrase(const std::string & passphrase) {}
 
         /* ======================================================================= */
         /*  LOCKER                                                                 */

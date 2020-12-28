@@ -724,9 +724,9 @@ namespace tools
     {
       if (get_tx_key)
       {
-        epee::wipeable_string s = epee::to_hex::wipeable_string(ptx.tx_key);
+        std::string s = string_tools::pod_to_hex(ptx.tx_key);
         for (const crypto::secret_key& additional_tx_key : ptx.additional_tx_keys)
-          s += epee::to_hex::wipeable_string(additional_tx_key);
+          s += string_tools::pod_to_hex(additional_tx_key);
         fill(tx_key, std::string(s.data(), s.size()));
       }
       // Compute amount leaving wallet in tx. By convention dests does not include change outputs
@@ -1458,7 +1458,7 @@ namespace tools
 
       if (req.key_type.compare("mnemonic") == 0)
       {
-        epee::wipeable_string seed;
+        std::string seed;
         bool ready;
         {
           if (m_wallet->watch_only())
@@ -1484,7 +1484,7 @@ namespace tools
       }
       else if(req.key_type.compare("view_key") == 0)
       {
-          epee::wipeable_string key = epee::to_hex::wipeable_string(m_wallet->get_account().get_keys().m_view_secret_key);
+          std::string key = string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_view_secret_key);
           res.key = std::string(key.data(), key.size());
       }
       else if(req.key_type.compare("spend_key") == 0)
@@ -1495,7 +1495,7 @@ namespace tools
             er.message = "The wallet is watch-only. Cannot retrieve spend key.";
             return false;
           }
-          epee::wipeable_string key = epee::to_hex::wipeable_string(m_wallet->get_account().get_keys().m_spend_secret_key);
+          std::string key = string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_spend_secret_key);
           res.key = std::string(key.data(), key.size());
       }
       else
@@ -1662,10 +1662,10 @@ namespace tools
       return false;
     }
 
-    epee::wipeable_string s;
-    s += epee::to_hex::wipeable_string(tx_key);
+    std::string s;
+    s += string_tools::pod_to_hex(tx_key);
     for (size_t i = 0; i < additional_tx_keys.size(); ++i)
-      s += epee::to_hex::wipeable_string(additional_tx_keys[i]);
+      s += string_tools::pod_to_hex(additional_tx_keys[i]);
     res.tx_key = std::string(s.data(), s.size());
     return true;
   }
@@ -1682,7 +1682,7 @@ namespace tools
       return false;
     }
 
-    epee::wipeable_string tx_key_str = req.tx_key;
+    std::string tx_key_str = req.tx_key;
     if (tx_key_str.size() < 64 || tx_key_str.size() % 64)
     {
       er.code = WALLET_RPC_ERROR_CODE_WRONG_KEY;
@@ -1691,7 +1691,7 @@ namespace tools
     }
     const char *data = tx_key_str.data();
     crypto::secret_key tx_key;
-    if (!epee::wipeable_string(data, 64).hex_to_pod(unwrap(unwrap(tx_key))))
+    if (!epee::string_tools::hex_to_pod(std::string(data, 64), unwrap(unwrap(tx_key))))
     {
       er.code = WALLET_RPC_ERROR_CODE_WRONG_KEY;
       er.message = "Tx key has invalid format";
@@ -1702,7 +1702,8 @@ namespace tools
     while (offset < tx_key_str.size())
     {
       additional_tx_keys.resize(additional_tx_keys.size() + 1);
-      if (!epee::wipeable_string(data + offset, 64).hex_to_pod(unwrap(unwrap(additional_tx_keys.back()))))
+      if (!epee::string_tools::hex_to_pod(std::string(data + offset, 64)
+                                          , unwrap(unwrap(additional_tx_keys.back()))))
       {
         er.code = WALLET_RPC_ERROR_CODE_WRONG_KEY;
         er.message = "Tx key has invalid format";
@@ -2764,10 +2765,10 @@ namespace tools
       return false;
     }
 
-    epee::wipeable_string password = rc.second.password();
-    epee::wipeable_string viewkey_string = req.viewkey;
+    std::string password = rc.second.password();
+    std::string viewkey_string = req.viewkey;
     crypto::secret_key viewkey;
-    if (!viewkey_string.hex_to_pod(unwrap(unwrap(viewkey))))
+    if (!epee::string_tools::hex_to_pod(viewkey_string, unwrap(unwrap(viewkey))))
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
       er.message = "Failed to parse view key secret key";
@@ -2792,9 +2793,9 @@ namespace tools
     {
       if (!req.spendkey.empty())
       {
-        epee::wipeable_string spendkey_string = req.spendkey;
+        std::string spendkey_string = req.spendkey;
         crypto::secret_key spendkey;
-        if (!spendkey_string.hex_to_pod(unwrap(unwrap(spendkey))))
+        if (!epee::string_tools::hex_to_pod(spendkey_string, unwrap(unwrap(spendkey))))
         {
           er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
           er.message = "Failed to parse spend key secret key";
@@ -2946,7 +2947,7 @@ namespace tools
       return false;
     }
 
-    epee::wipeable_string password = rc.second.password();
+    std::string password = rc.second.password();
 
     bool was_deprecated_wallet = old_language == crypto::ElectrumWords::old_language_name;
 
@@ -2994,7 +2995,7 @@ namespace tools
     }
 
     // // Convert the secret key back to seed
-    epee::wipeable_string electrum_words;
+    std::string electrum_words;
     if (!crypto::ElectrumWords::bytes_to_words(recovery_val, electrum_words, mnemonic_language))
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;

@@ -71,15 +71,15 @@ DISABLE_VS_WARNINGS(4244 4345)
     crypto::generate_chacha_key(data.data(), sizeof(data), key, 1);
   }
   //-----------------------------------------------------------------
-  static epee::wipeable_string get_key_stream(const crypto::chacha_key &base_key, const crypto::chacha_iv &iv, size_t bytes)
+  static std::string get_key_stream(const crypto::chacha_key &base_key, const crypto::chacha_iv &iv, size_t bytes)
   {
     // derive a new key
     crypto::chacha_key key;
     derive_key(base_key, key);
 
     // chacha
-    epee::wipeable_string buffer0(std::string(bytes, '\0'));
-    epee::wipeable_string buffer1 = buffer0;
+    std::string buffer0(std::string(bytes, '\0'));
+    std::string buffer1 = buffer0;
     crypto::chacha20(buffer0.data(), buffer0.size(), key, iv, buffer1.data());
     return buffer1;
   }
@@ -87,7 +87,7 @@ DISABLE_VS_WARNINGS(4244 4345)
   void account_keys::xor_with_key_stream(const crypto::chacha_key &key)
   {
     // encrypt a large enough byte stream with chacha20
-    epee::wipeable_string key_stream = get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * (2 + m_multisig_keys.size()));
+    std::string key_stream = get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * (2 + m_multisig_keys.size()));
     const char *ptr = key_stream.data();
     for (size_t i = 0; i < sizeof(crypto::secret_key); ++i)
       m_spend_secret_key.data[i] ^= *ptr++;
@@ -114,7 +114,7 @@ DISABLE_VS_WARNINGS(4244 4345)
   void account_keys::encrypt_viewkey(const crypto::chacha_key &key)
   {
     // encrypt a large enough byte stream with chacha20
-    epee::wipeable_string key_stream = get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * 2);
+    std::string key_stream = get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * 2);
     const char *ptr = key_stream.data();
     ptr += sizeof(crypto::secret_key);
     for (size_t i = 0; i < sizeof(crypto::secret_key); ++i)

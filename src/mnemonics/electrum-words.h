@@ -43,8 +43,6 @@
 #include <cstdint>
 #include "crypto/crypto.h"  // for declaration of crypto::secret_key
 
-namespace epee {  class wipeable_string; }
-
 /*!
  * \namespace crypto
  * 
@@ -71,7 +69,7 @@ namespace crypto
      * \param  language_name   Language of the seed as found gets written here.
      * \return                 false if not a multiple of 3 words, or if word is not in the words list
      */
-    bool words_to_bytes(const epee::wipeable_string &words, epee::wipeable_string& dst, size_t len, bool duplicate,
+    bool words_to_bytes(const std::string &words, std::string& dst, size_t len, bool duplicate,
       std::string &language_name);
     /*!
      * \brief Converts seed words to bytes (secret key).
@@ -80,7 +78,7 @@ namespace crypto
      * \param  language_name   Language of the seed as found gets written here.
      * \return                 false if not a multiple of 3 words, or if word is not in the words list
      */
-    bool words_to_bytes(const epee::wipeable_string &words, crypto::secret_key& dst,
+    bool words_to_bytes(const std::string &words, crypto::secret_key& dst,
       std::string &language_name);
 
     /*!
@@ -91,7 +89,7 @@ namespace crypto
      * \param  language_name Seed language name
      * \return               true if successful false if not. Unsuccessful if wrong key size.
      */
-    bool bytes_to_words(const char *src, size_t len, epee::wipeable_string& words,
+    bool bytes_to_words(const char *src, size_t len, std::string& words,
       const std::string &language_name);
 
     /*!
@@ -101,7 +99,7 @@ namespace crypto
      * \param  language_name Seed language name
      * \return               true if successful false if not. Unsuccessful if wrong key size.
      */
-    bool bytes_to_words(const crypto::secret_key& src, epee::wipeable_string& words,
+    bool bytes_to_words(const crypto::secret_key& src, std::string& words,
       const std::string &language_name);
 
     /*!

@@ -34,7 +34,6 @@
 #include <atomic>
 #include <optional>
 #include <functional>
-#include "wipeable_string.h"
 
 namespace tools
 {
@@ -48,7 +47,7 @@ namespace tools
 
     //! `password` is used as password
     password_container(std::string&& password) noexcept;
-    password_container(const epee::wipeable_string& password) noexcept;
+    password_container(const std::string& password) noexcept;
 
     //! \return A password from stdin TTY prompt or `std::cin` pipe.
     static std::optional<password_container> prompt(bool verify, const char *mesage = "Password", bool hide_input = true);
@@ -63,10 +62,10 @@ namespace tools
     password_container& operator=(const password_container&) = delete;
     password_container& operator=(password_container&&) = default;
 
-    const epee::wipeable_string &password() const noexcept { return m_password; }
+    const std::string &password() const noexcept { return m_password; }
 
   private:
-    epee::wipeable_string m_password;
+    std::string m_password;
   };
 
   struct login

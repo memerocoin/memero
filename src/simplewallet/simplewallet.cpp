@@ -11,6 +11,7 @@
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
+
 // 
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
@@ -240,7 +241,7 @@ namespace
     return epee::string_tools::trim(buf);
   }
 
-  epee::wipeable_string input_secure_line(const char *prompt)
+  std::string input_secure_line(const char *prompt)
   {
     PAUSE_READLINE();
     auto pwd_container = tools::password_container::prompt(false, prompt, false);
@@ -250,9 +251,9 @@ namespace
       return "";
     }
 
-    epee::wipeable_string buf = pwd_container->password();
+    std::string buf = pwd_container->password();
 
-    buf.trim();
+    boost::trim(buf);
     return buf;
   }
 
@@ -663,7 +664,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
 bool simple_wallet::print_seed(bool encrypted)
 {
   bool success =  false;
-  epee::wipeable_string seed;
+  std::string seed;
   bool ready, multisig;
 
   if (m_wallet->key_on_device())
@@ -687,7 +688,7 @@ bool simple_wallet::print_seed(bool encrypted)
     return true;
   }
 
-  epee::wipeable_string seed_pass;
+  std::string seed_pass;
   if (encrypted)
   {
     auto pwd_container = password_prompter(tr("Enter optional seed offset passphrase, empty to see raw seed"), true);
@@ -739,7 +740,7 @@ bool simple_wallet::seed_set_language(const std::vector<std::string> &args/* = s
     return true;
   }
 
-  epee::wipeable_string password;
+  std::string password;
   {
     SCOPED_WALLET_UNLOCK();
 
@@ -2586,7 +2587,7 @@ bool simple_wallet::ask_wallet_create_if_needed()
  * \brief Prints the seed with a nice message
  * \param seed seed to print
  */
-void simple_wallet::print_seed(const epee::wipeable_string &seed)
+void simple_wallet::print_seed(const std::string &seed)
 {
   success_msg_writer(true) << "\n" << boost::format(tr("NOTE: the following %s can be used to recover access to your wallet. "
     "Write them down and store them somewhere safe and secure. Please do not store them in "
@@ -2611,11 +2612,10 @@ void simple_wallet::print_seed(const epee::wipeable_string &seed)
   fflush(stdout);
 }
 //----------------------------------------------------------------------------------------------------
-static bool might_be_partial_seed(const epee::wipeable_string &words)
+static bool might_be_partial_seed(const std::string &words)
 {
-  std::vector<epee::wipeable_string> seed;
-
-  words.split(seed);
+  std::vector<std::string> seed;
+  boost::split(seed, words, boost::is_any_of("\t "), boost::token_compress_on);
   return seed.size() < 24;
 }
 //----------------------------------------------------------------------------------------------------
@@ -2644,7 +2644,7 @@ static bool datestr_to_int(const std::string &heightstr, uint16_t &year, uint8_t
 bool simple_wallet::init(const boost::program_options::variables_map& vm)
 {
   epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){
-    m_electrum_seed.wipe();
+    m_electrum_seed.clear();
   });
 
   const bool testnet = tools::wallet2::has_testnet_option(vm);
@@ -2656,7 +2656,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
   }
   const network_type nettype = testnet ? TESTNET : stagenet ? STAGENET : MAINNET;
 
-  epee::wipeable_string password;
+  std::string password;
 
   if (!handle_command_line(vm))
     return false;
@@ -2700,7 +2700,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
           do
           {
             const char *prompt = m_electrum_seed.empty() ? "Specify Electrum seed" : "Electrum seed continued";
-            epee::wipeable_string electrum_seed = input_secure_line(prompt);
+            std::string electrum_seed = input_secure_line(prompt);
             if (std::cin.eof())
               return false;
             if (electrum_seed.empty())
@@ -2725,7 +2725,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       auto pwd_container = password_prompter(tr("Enter seed offset passphrase, empty if none"), false);
       if (std::cin.eof() || !pwd_container)
         return false;
-      epee::wipeable_string seed_pass = pwd_container->password();
+      std::string seed_pass = pwd_container->password();
       if (!seed_pass.empty())
       {
         m_recovery_key = cryptonote::decrypt_key(m_recovery_key, seed_pass);
@@ -2755,7 +2755,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       }
 
       // parse view secret key
-      epee::wipeable_string viewkey_string = input_secure_line("Secret view key");
+      std::string viewkey_string = input_secure_line("Secret view key");
       if (std::cin.eof())
         return false;
       if (viewkey_string.empty()) {
@@ -2763,7 +2763,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         return false;
       }
       crypto::secret_key viewkey;
-      if (!viewkey_string.hex_to_pod(unwrap(unwrap(viewkey))))
+      if (!string_tools::hex_to_pod(viewkey_string, unwrap(unwrap(viewkey))))
       {
         fail_msg_writer() << tr("failed to parse view key secret key");
         return false;
@@ -2791,14 +2791,14 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
     {
       m_wallet_file = m_generate_from_spend_key;
       // parse spend secret key
-      epee::wipeable_string spendkey_string = input_secure_line("Secret spend key");
+      std::string spendkey_string = input_secure_line("Secret spend key");
       if (std::cin.eof())
         return false;
       if (spendkey_string.empty()) {
         fail_msg_writer() << tr("No data supplied, cancelled");
         return false;
       }
-      if (!spendkey_string.hex_to_pod(unwrap(unwrap(m_recovery_key))))
+      if (!string_tools::hex_to_pod(spendkey_string, unwrap(unwrap(m_recovery_key))))
       {
         fail_msg_writer() << tr("failed to parse spend key secret key");
         return false;
@@ -2832,7 +2832,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       }
 
       // parse spend secret key
-      epee::wipeable_string spendkey_string = input_secure_line("Secret spend key");
+      std::string spendkey_string = input_secure_line("Secret spend key");
       if (std::cin.eof())
         return false;
       if (spendkey_string.empty()) {
@@ -2840,14 +2840,14 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         return false;
       }
       crypto::secret_key spendkey;
-      if (!spendkey_string.hex_to_pod(unwrap(unwrap(spendkey))))
+      if (!string_tools::hex_to_pod(spendkey_string, unwrap(unwrap(spendkey))))
       {
         fail_msg_writer() << tr("failed to parse spend key secret key");
         return false;
       }
 
       // parse view secret key
-      epee::wipeable_string viewkey_string = input_secure_line("Secret view key");
+      std::string viewkey_string = input_secure_line("Secret view key");
       if (std::cin.eof())
         return false;
       if (viewkey_string.empty()) {
@@ -2855,7 +2855,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         return false;
       }
       crypto::secret_key viewkey;
-      if(!viewkey_string.hex_to_pod(unwrap(unwrap(viewkey))))
+      if(!string_tools::hex_to_pod(viewkey_string, unwrap(unwrap(viewkey))))
       {
         fail_msg_writer() << tr("failed to parse view key secret key");
         return false;
@@ -2935,7 +2935,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         return false;
       }
       m_wallet_file = m_generate_new;
-      std::optional<epee::wipeable_string> r;
+      std::optional<std::string> r;
       r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet, m_non_deterministic, old_language);
       CHECK_AND_ASSERT_MES(r, false, tr("account creation failed"));
       password = *r;
@@ -3207,7 +3207,7 @@ std::optional<tools::password_container> simple_wallet::get_and_verify_password(
   return pwd_container;
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm,
+std::optional<std::string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm,
   const crypto::secret_key& recovery_key, bool recover, bool two_random, const std::string &old_language)
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
@@ -3218,7 +3218,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   {
     return {};
   }
-  epee::wipeable_string password = rc.second.password();
+  std::string password = rc.second.password();
 
   if (!m_subaddress_lookahead.empty())
   {
@@ -3278,7 +3278,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   }
 
   // convert rng value to electrum-style word list
-  epee::wipeable_string electrum_words;
+  std::string electrum_words;
 
   crypto::ElectrumWords::bytes_to_words(recovery_val, electrum_words, mnemonic_language);
 
@@ -3303,7 +3303,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   return password;
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm,
+std::optional<std::string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm,
   const cryptonote::account_public_address& address, const std::optional<crypto::secret_key>& spendkey,
   const crypto::secret_key& viewkey)
 {
@@ -3315,7 +3315,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   {
     return {};
   }
-  epee::wipeable_string password = rc.second.password();
+  std::string password = rc.second.password();
 
   if (!m_subaddress_lookahead.empty())
   {
@@ -3353,7 +3353,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
 }
 
 //----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm)
+std::optional<std::string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm)
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
   try { rc = tools::wallet2::make_new(vm, false, password_prompter); }
@@ -3364,7 +3364,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   {
     return {};
   }
-  epee::wipeable_string password = rc.second.password();
+  std::string password = rc.second.password();
 
   if (!m_subaddress_lookahead.empty())
   {
@@ -3379,7 +3379,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   return password;
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::program_options::variables_map& vm)
+std::optional<std::string> simple_wallet::open_wallet(const boost::program_options::variables_map& vm)
 {
   if (!tools::wallet2::wallet_valid_path_format(m_wallet_file))
   {
@@ -3397,7 +3397,7 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
     return {};
   }
   
-  epee::wipeable_string password;
+  std::string password;
   try
   {
     auto rc = tools::wallet2::make_from_file(vm, false, "", password_prompter);
@@ -3443,7 +3443,7 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
         m_wallet->rewrite(m_wallet_file, password);
 
         // Display the seed
-        epee::wipeable_string seed;
+        std::string seed;
         m_wallet->get_seed(seed);
         print_seed(seed);
       }
@@ -3772,7 +3772,7 @@ void simple_wallet::on_skip_transaction(uint64_t height, const crypto::hash &txi
     return;
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> simple_wallet::on_get_password(const char *reason)
+std::optional<std::string> simple_wallet::on_get_password(const char *reason)
 {
   if (m_locked)
     return std::nullopt;

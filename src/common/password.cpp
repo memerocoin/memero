@@ -51,7 +51,7 @@ namespace
     return 0 != _isatty(_fileno(stdin));
   }
 
-  bool read_from_tty(epee::wipeable_string& pass, bool hide_input)
+  bool read_from_tty(std::string& pass, bool hide_input)
   {
     HANDLE h_cin = ::GetStdHandle(STD_INPUT_HANDLE);
 
@@ -133,7 +133,7 @@ namespace
     return ch;
   }
 
-  bool read_from_tty(epee::wipeable_string& aPass, bool hide_input)
+  bool read_from_tty(std::string& aPass, bool hide_input)
   {
     static constexpr const char BACKSPACE = 127;
 
@@ -175,7 +175,7 @@ namespace
 
 #endif // end !WIN32
 
-  bool read_from_tty(const bool verify, const char *message, bool hide_input, epee::wipeable_string& pass1, epee::wipeable_string& pass2)
+  bool read_from_tty(const bool verify, const char *message, bool hide_input, std::string& pass1, std::string& pass2)
   {
     while (true)
     {
@@ -205,7 +205,7 @@ namespace
     return false;
   }
 
-  bool read_from_file(epee::wipeable_string& pass)
+  bool read_from_file(std::string& pass)
   {
     pass.reserve(tools::password_container::max_password_size);
     for (size_t i = 0; i < tools::password_container::max_password_size; ++i)
@@ -237,7 +237,7 @@ namespace tools
     : m_password(std::move(password)) 
   {
   }
-  password_container::password_container(const epee::wipeable_string& password) noexcept
+  password_container::password_container(const std::string& password) noexcept
     : m_password(password)
   {
   }
