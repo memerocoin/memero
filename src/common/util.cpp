@@ -52,6 +52,7 @@
 
 #include "include_base_utils.h"
 #include "file_io_utils.h"
+#include "wipeable_string.h"
 #include "misc_os_dependent.h"
 using namespace epee;
 

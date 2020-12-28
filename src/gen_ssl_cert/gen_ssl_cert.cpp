@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  std::string private_key_passphrase;
+  epee::wipeable_string private_key_passphrase;
   if (command_line::get_arg(vm, arg_prompt_for_passphrase))
   {
     auto pwd_container = tools::password_container::prompt(true, "Enter passphrase for the new SSL private key");

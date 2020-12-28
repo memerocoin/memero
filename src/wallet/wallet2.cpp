@@ -497,7 +497,7 @@ std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> generate_f
   false. Gcc will coerce this into unique_ptr(nullptr), but clang correctly
   fails. This large wrapper is for the use of that macro */
   std::unique_ptr<tools::wallet2> wallet;
-  std::string password;
+  epee::wipeable_string password;
   const auto do_generate = [&]() -> bool {
     std::string buf;
     if (!epee::file_io_utils::load_file_to_string(json_file, buf)) {
@@ -943,12 +943,12 @@ wallet_keys_unlocker::wallet_keys_unlocker(wallet2 &w, const std::optional<tools
     locked = false;
     return;
   }
-  const std::string pass = password->password();
+  const epee::wipeable_string pass = password->password();
   w.generate_chacha_key_from_password(pass, key);
   w.decrypt_keys(key);
 }
 
-wallet_keys_unlocker::wallet_keys_unlocker(wallet2 &w, bool locked, const std::string &password):
+wallet_keys_unlocker::wallet_keys_unlocker(wallet2 &w, bool locked, const epee::wipeable_string &password):
   w(w),
   locked(locked)
 {
@@ -1162,7 +1162,7 @@ bool wallet2::is_deterministic() const
   return memcmp(second.data,get_account().get_keys().m_view_secret_key.data, sizeof(crypto::secret_key)) == 0;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::get_seed(std::string& electrum_words, const std::string &passphrase) const
+bool wallet2::get_seed(epee::wipeable_string& electrum_words, const epee::wipeable_string &passphrase) const
 {
   bool keys_deterministic = is_deterministic();
   if (!keys_deterministic)
@@ -1510,7 +1510,7 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
     CRITICAL_REGION_LOCAL(password_lock);
     if (!m_encrypt_keys_after_refresh)
     {
-      std::optional<std::string> pwd = m_callback->on_get_password(pool ? "output found in pool" : "output received");
+      std::optional<epee::wipeable_string> pwd = m_callback->on_get_password(pool ? "output found in pool" : "output received");
       THROW_WALLET_EXCEPTION_IF(!pwd, error::password_needed, tr("Password is needed to compute key image for incoming lolnero"));
       THROW_WALLET_EXCEPTION_IF(!verify_password(*pwd), error::password_needed, tr("Invalid password: password is needed to compute key image for incoming lolnero"));
       decrypt_keys(*pwd);
@@ -3265,7 +3265,7 @@ void wallet2::clear_soft(bool keep_key_images)
  * \param  watch_only     true to save only view key, false to save both spend and view keys
  * \return                Whether it was successful.
  */
-bool wallet2::store_keys(const std::string& keys_file_name, const std::string& password, bool watch_only)
+bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable_string& password, bool watch_only)
 {
   std::optional<wallet2::keys_file_data> keys_file_data = get_keys_file_data(password, watch_only);
   CHECK_AND_ASSERT_MES(keys_file_data != std::nullopt, false, "failed to generate wallet keys data");
@@ -3289,7 +3289,7 @@ bool wallet2::store_keys(const std::string& keys_file_name, const std::string& p
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<wallet2::keys_file_data> wallet2::get_keys_file_data(const std::string& password, bool watch_only)
+std::optional<wallet2::keys_file_data> wallet2::get_keys_file_data(const epee::wipeable_string& password, bool watch_only)
 {
   std::string account_data;
   cryptonote::account_base account = m_account;
@@ -3440,7 +3440,7 @@ std::optional<wallet2::keys_file_data> wallet2::get_keys_file_data(const std::st
   return keys_file_data;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::setup_keys(const std::string &password)
+void wallet2::setup_keys(const epee::wipeable_string &password)
 {
   crypto::chacha_key key;
   crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
@@ -3460,7 +3460,7 @@ void wallet2::setup_keys(const std::string &password)
   get_ringdb_key();
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::change_password(const std::string &filename, const std::string &original_password, const std::string &new_password)
+void wallet2::change_password(const std::string &filename, const epee::wipeable_string &original_password, const epee::wipeable_string &new_password)
 {
   if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
     decrypt_keys(original_password);
@@ -3475,7 +3475,7 @@ void wallet2::change_password(const std::string &filename, const std::string &or
  * \param keys_file_name Name of wallet file
  * \param password       Password of wallet file
  */
-bool wallet2::load_keys(const std::string& keys_file_name, const std::string& password)
+bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_string& password)
 {
   std::string keys_file_buf;
   bool r = load_from_file(keys_file_name, keys_file_buf);
@@ -3503,12 +3503,12 @@ bool wallet2::load_keys(const std::string& keys_file_name, const std::string& pa
   return r;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::load_keys_buf(const std::string& keys_buf, const std::string& password) {
+bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_string& password) {
   std::optional<crypto::chacha_key> keys_to_encrypt;
   return wallet2::load_keys_buf(keys_buf, password, keys_to_encrypt);
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::load_keys_buf(const std::string& keys_buf, const std::string& password, std::optional<crypto::chacha_key>& keys_to_encrypt) {
+bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_string& password, std::optional<crypto::chacha_key>& keys_to_encrypt) {
 
   // Decrypt the contents
   rapidjson::Document json;
@@ -3744,7 +3744,7 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const std::string& pass
  * can be used prior to rewriting wallet keys file, to ensure user has entered the correct password
  *
  */
-bool wallet2::verify_password(const std::string& password)
+bool wallet2::verify_password(const epee::wipeable_string& password)
 {
   // this temporary unlocking is necessary for Windows (otherwise the file couldn't be loaded).
   unlock_keys_file();
@@ -3766,7 +3766,7 @@ bool wallet2::verify_password(const std::string& password)
  * can be used prior to rewriting wallet keys file, to ensure user has entered the correct password
  *
  */
-bool wallet2::verify_password(const std::string& keys_file_name, const std::string& password, bool no_spend_key, hw::device &hwdev, uint64_t kdf_rounds)
+bool wallet2::verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, hw::device &hwdev, uint64_t kdf_rounds)
 {
   rapidjson::Document json;
   wallet2::keys_file_data keys_file_data;
@@ -3831,14 +3831,14 @@ void wallet2::decrypt_keys(const crypto::chacha_key &key)
   m_account.decrypt_keys(key);
 }
 
-void wallet2::encrypt_keys(const std::string &password)
+void wallet2::encrypt_keys(const epee::wipeable_string &password)
 {
   crypto::chacha_key key;
   crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
   encrypt_keys(key);
 }
 
-void wallet2::decrypt_keys(const std::string &password)
+void wallet2::decrypt_keys(const epee::wipeable_string &password)
 {
   crypto::chacha_key key;
   crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
@@ -3854,7 +3854,7 @@ void wallet2::setup_new_blockchain()
   add_subaddress_account(tr("Primary account"));
 }
 
-void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, const std::string &password, bool create_address_file)
+void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, const epee::wipeable_string &password, bool create_address_file)
 {
   if (!wallet_.empty())
   {
@@ -3880,7 +3880,7 @@ void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, cons
  * for verification only - determines key storage hardware
  *
  */
-bool wallet2::query_device(hw::device::device_type& device_type, const std::string& keys_file_name, const std::string& password, uint64_t kdf_rounds)
+bool wallet2::query_device(hw::device::device_type& device_type, const std::string& keys_file_name, const epee::wipeable_string& password, uint64_t kdf_rounds)
 {
   rapidjson::Document json;
   wallet2::keys_file_data keys_file_data;
@@ -3941,7 +3941,7 @@ void wallet2::init_type(hw::device::device_type device_type)
  * \param  create_address_file     Whether to create an address file
  * \return                         The secret key of the generated wallet
  */
-crypto::secret_key wallet2::generate(const std::string& wallet_, const std::string& password,
+crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
   const crypto::secret_key& recovery_param, bool recover, bool two_random, bool create_address_file)
 {
   clear();
@@ -4024,7 +4024,7 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const std::stri
 * \param  viewkey                 view secret key
 * \param  create_address_file     Whether to create an address file
 */
-void wallet2::generate(const std::string& wallet_, const std::string& password,
+void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
   const cryptonote::account_public_address &account_public_address,
   const crypto::secret_key& viewkey, bool create_address_file)
 {
@@ -4061,7 +4061,7 @@ void wallet2::generate(const std::string& wallet_, const std::string& password,
 * \param  viewkey                 view secret key
 * \param  create_address_file     Whether to create an address file
 */
-void wallet2::generate(const std::string& wallet_, const std::string& password,
+void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
   const cryptonote::account_public_address &account_public_address,
   const crypto::secret_key& spendkey, const crypto::secret_key& viewkey, bool create_address_file)
 {
@@ -4101,7 +4101,7 @@ bool wallet2::has_unknown_key_images() const
  * \param wallet_name Name of wallet file (should exist)
  * \param password    Password for wallet file
  */
-void wallet2::rewrite(const std::string& wallet_name, const std::string& password)
+void wallet2::rewrite(const std::string& wallet_name, const epee::wipeable_string& password)
 {
   if (wallet_name.empty())
     return;
@@ -4117,7 +4117,7 @@ void wallet2::rewrite(const std::string& wallet_name, const std::string& passwor
  * \param password          Password for wallet file
  * \param new_keys_filename [OUT] Name of new keys file
  */
-void wallet2::write_watch_only_wallet(const std::string& wallet_name, const std::string& password, std::string &new_keys_filename)
+void wallet2::write_watch_only_wallet(const std::string& wallet_name, const epee::wipeable_string& password, std::string &new_keys_filename)
 {
   prepare_file_names(wallet_name);
   boost::system::error_code ignored_ec;
@@ -4214,12 +4214,12 @@ bool wallet2::generate_chacha_key_from_secret_keys(crypto::chacha_key &key) cons
   return hwdev.generate_chacha_key(m_account.get_keys(), key, m_kdf_rounds);
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::generate_chacha_key_from_password(const std::string &pass, crypto::chacha_key &key) const
+void wallet2::generate_chacha_key_from_password(const epee::wipeable_string &pass, crypto::chacha_key &key) const
 {
   crypto::generate_chacha_key(pass.data(), pass.size(), key, m_kdf_rounds);
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::load(const std::string& wallet_, const std::string& password, const std::string& keys_buf, const std::string& cache_buf)
+void wallet2::load(const std::string& wallet_, const epee::wipeable_string& password, const std::string& keys_buf, const std::string& cache_buf)
 {
   clear();
   prepare_file_names(wallet_);
@@ -4447,10 +4447,10 @@ std::string wallet2::path() const
 void wallet2::store()
 {
   if (!m_wallet_file.empty())
-    store_to("", std::string());
+    store_to("", epee::wipeable_string());
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::store_to(const std::string &path, const std::string &password)
+void wallet2::store_to(const std::string &path, const epee::wipeable_string &password)
 {
   trim_hashchain();
 
@@ -4549,7 +4549,7 @@ void wallet2::store_to(const std::string &path, const std::string &password)
   }
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<wallet2::cache_file_data> wallet2::get_cache_file_data(const std::string &passwords)
+std::optional<wallet2::cache_file_data> wallet2::get_cache_file_data(const epee::wipeable_string &passwords)
 {
   trim_hashchain();
   try
@@ -10238,6 +10238,11 @@ std::string wallet2::encrypt(const std::string &plaintext, const crypto::secret_
   return encrypt(plaintext.data(), plaintext.size(), skey, authenticated);
 }
 //----------------------------------------------------------------------------------------------------
+std::string wallet2::encrypt(const epee::wipeable_string &plaintext, const crypto::secret_key &skey, bool authenticated) const
+{
+  return encrypt(plaintext.data(), plaintext.size(), skey, authenticated);
+}
+//----------------------------------------------------------------------------------------------------
 std::string wallet2::encrypt_with_view_secret_key(const std::string &plaintext, bool authenticated) const
 {
   return encrypt(plaintext, get_account().get_keys().m_view_secret_key, authenticated);
@@ -10269,7 +10274,7 @@ T wallet2::decrypt(const std::string &ciphertext, const crypto::secret_key &skey
   return T(buffer.get(), ciphertext.size() - prefix_size);
 }
 //----------------------------------------------------------------------------------------------------
-template std::string wallet2::decrypt(const std::string &ciphertext, const crypto::secret_key &skey, bool authenticated) const;
+template epee::wipeable_string wallet2::decrypt(const std::string &ciphertext, const crypto::secret_key &skey, bool authenticated) const;
 //----------------------------------------------------------------------------------------------------
 std::string wallet2::decrypt_with_view_secret_key(const std::string &ciphertext, bool authenticated) const
 {

@@ -76,19 +76,19 @@ namespace Language
 
   struct WordHash
   {
-    std::size_t operator()(const std::string &s) const
+    std::size_t operator()(const epee::wipeable_string &s) const
     {
-      const std::string sc = tools::utf8canonical(s, [](wint_t c) -> wint_t { return std::towlower(c); });
+      const epee::wipeable_string sc = tools::utf8canonical(s, [](wint_t c) -> wint_t { return std::towlower(c); });
       return epee::fnv::FNV1a(sc.data(), sc.size());
     }
   };
 
   struct WordEqual
   {
-    bool operator()(const std::string &s0, const std::string &s1) const
+    bool operator()(const epee::wipeable_string &s0, const epee::wipeable_string &s1) const
     {
-      const std::string s0c = tools::utf8canonical(s0, [](wint_t c) -> wint_t { return std::towlower(c); });
-      const std::string s1c = tools::utf8canonical(s1, [](wint_t c) -> wint_t { return std::towlower(c); });
+      const epee::wipeable_string s0c = tools::utf8canonical(s0, [](wint_t c) -> wint_t { return std::towlower(c); });
+      const epee::wipeable_string s1c = tools::utf8canonical(s1, [](wint_t c) -> wint_t { return std::towlower(c); });
       return s0c == s1c;
     }
   };
@@ -109,8 +109,8 @@ namespace Language
       NWORDS = 1626
     };
     std::vector<std::string> word_list; /*!< A pointer to the array of words */
-    std::unordered_map<std::string, uint32_t, WordHash, WordEqual> word_map; /*!< hash table to find word's index */
-    std::unordered_map<std::string, uint32_t, WordHash, WordEqual> trimmed_word_map; /*!< hash table to find word's trimmed index */
+    std::unordered_map<epee::wipeable_string, uint32_t, WordHash, WordEqual> word_map; /*!< hash table to find word's index */
+    std::unordered_map<epee::wipeable_string, uint32_t, WordHash, WordEqual> trimmed_word_map; /*!< hash table to find word's trimmed index */
     std::string language_name; /*!< Name of language */
     std::string english_language_name; /*!< Name of language */
     uint32_t unique_prefix_length; /*!< Number of unique starting characters to trim the wordlist to when matching */
@@ -133,7 +133,7 @@ namespace Language
           else
             throw std::runtime_error("Too short word in " + language_name + " word list: " + *it);
         }
-        std::string trimmed;
+        epee::wipeable_string trimmed;
         if (it->length() > unique_prefix_length)
         {
           trimmed = utf8prefix(*it, unique_prefix_length);
@@ -181,7 +181,7 @@ namespace Language
      * \brief Returns a pointer to the word map.
      * \return A pointer to the word map.
      */
-    const std::unordered_map<std::string, uint32_t, WordHash, WordEqual>& get_word_map() const
+    const std::unordered_map<epee::wipeable_string, uint32_t, WordHash, WordEqual>& get_word_map() const
     {
       return word_map;
     }
@@ -189,7 +189,7 @@ namespace Language
      * \brief Returns a pointer to the trimmed word map.
      * \return A pointer to the trimmed word map.
      */
-    const std::unordered_map<std::string, uint32_t, WordHash, WordEqual>& get_trimmed_word_map() const
+    const std::unordered_map<epee::wipeable_string, uint32_t, WordHash, WordEqual>& get_trimmed_word_map() const
     {
       return trimmed_word_map;
     }
