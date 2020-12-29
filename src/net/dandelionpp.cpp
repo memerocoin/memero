@@ -28,7 +28,6 @@
 
 #include "dandelionpp.h"
 
-#include <boost/container/small_vector.hpp>
 #include <boost/uuid/nil_generator.hpp>
 #include <chrono>
 

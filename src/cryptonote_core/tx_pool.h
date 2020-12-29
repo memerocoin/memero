@@ -37,7 +37,6 @@
 #include <unordered_set>
 #include <queue>
 #include <boost/serialization/version.hpp>
-#include <boost/utility.hpp>
 
 #include "span.h"
 #include "string_tools.h"

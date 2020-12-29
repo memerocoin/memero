@@ -33,7 +33,6 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/strand.hpp>
 #include <boost/system/error_code.hpp>
-#include <boost/type_traits/integral_constant.hpp>
 #include <string_view>
 #include <memory>
 #include <utility>
