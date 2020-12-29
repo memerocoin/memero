@@ -46,7 +46,6 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/array.hpp>
 #include <boost/interprocess/detail/atomic.hpp>
 #include <thread>
 #include "net_utils_base.h"
@@ -163,7 +162,7 @@ namespace net_utils
     unsigned int host_count(const std::string &host, int delta = 0);
 
     /// Buffer for incoming data.
-    boost::array<char, 8192> buffer_;
+    std::array<char, 8192> buffer_;
     size_t buffer_ssl_init_fill;
 
     t_connection_context context;
