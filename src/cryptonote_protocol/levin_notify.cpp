@@ -309,7 +309,7 @@ namespace levin
         bool available = false;
         zone_->p2p->foreach_connection([this, now, &in_duration, &out_duration, &next_flush, &available] (detail::p2p_context& context)
         {
-          if (this->source_ != context.m_connection_id)
+          if (context.handshake_complete() && this->source_ != context.m_connection_id)
           {
             available = true;
             if (context.fluff_txs.empty())
