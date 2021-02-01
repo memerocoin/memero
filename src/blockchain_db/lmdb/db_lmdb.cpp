@@ -1235,22 +1235,6 @@ BlockchainLMDB::BlockchainLMDB(bool batch_transactions): BlockchainDB()
 
 void BlockchainLMDB::check_mmap_support()
 {
-#ifndef _WIN32
-  const std::filesystem::path mmap_test_file = std::filesystem::path(std::tmpnam(nullptr));
-  int mmap_test_fd = ::open(mmap_test_file.string().c_str(), O_RDWR | O_CREAT, 0600);
-  if (mmap_test_fd < 0)
-    throw0(DB_ERROR((std::string("Failed to check for mmap support: open failed: ") + strerror(errno)).c_str()));
-  epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([mmap_test_fd, &mmap_test_file]() {
-    ::close(mmap_test_fd);
-    std::filesystem::remove(mmap_test_file.string());
-  });
-  if (write(mmap_test_fd, "mmaptest", 8) != 8)
-    throw0(DB_ERROR((std::string("Failed to check for mmap support: write failed: ") + strerror(errno)).c_str()));
-  void *mmap_res = mmap(NULL, 8, PROT_READ, MAP_SHARED, mmap_test_fd, 0);
-  if (mmap_res == MAP_FAILED)
-    throw0(DB_ERROR("This filesystem does not support mmap: use --data-dir to place the blockchain on a filesystem which does"));
-  munmap(mmap_res, 8);
-#endif
 }
 
 void BlockchainLMDB::open(const std::string& filename, const int db_flags)
