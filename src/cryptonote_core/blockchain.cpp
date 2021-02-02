@@ -371,7 +371,6 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
 
   // create general purpose async service queue
 
-  m_async_work_idle = std::unique_ptr < boost::asio::io_service::work > (new boost::asio::io_service::work(m_async_service));
   // we only need 1
   m_async_pool.emplace_back(std::thread([this](){this->m_async_service.run();}));
 
@@ -490,7 +489,6 @@ bool Blockchain::deinit()
   MTRACE("Stopping blockchain read/write activity");
 
  // stop async service
-  m_async_work_idle.reset();
 
   for (auto& thread : m_async_pool) {
     thread.join();

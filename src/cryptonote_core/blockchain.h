@@ -1049,7 +1049,6 @@ namespace cryptonote
 
     boost::asio::io_service m_async_service;
     std::vector<std::thread> m_async_pool;
-    std::unique_ptr<boost::asio::io_service::work> m_async_work_idle;
 
     // some invalid blocks
     blocks_ext_by_hash m_invalid_blocks;     // crypto::hash -> block_extended_info
