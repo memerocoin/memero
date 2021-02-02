@@ -60,10 +60,16 @@
 #pragma comment (lib, "Rpcrt4.lib")
 #endif
 
+
 namespace epee
 {
 namespace string_tools
 {
+  //----------------------------------------------------------------------------
+  inline std::basic_string<uint8_t> string_to_uint8_t_string(const std::string& s) {
+    return std::basic_string((uint8_t*)s.data(), s.size());
+  };
+
   //----------------------------------------------------------------------------
   inline std::string buff_to_hex_nodelimer(const std::string& src)
   {

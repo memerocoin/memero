@@ -153,12 +153,12 @@ namespace levin
 
 					if(m_current_head.m_have_to_return_data)
 					{
-						std::string return_buff;
+						std::basic_string<uint8_t> return_buff;
 						m_current_head.m_return_code = m_config.m_pcommands_handler->invoke(m_current_head.m_command, buff_to_invoke, return_buff, m_conn_context);
 						m_current_head.m_cb = return_buff.size();
 						m_current_head.m_have_to_return_data = false;
 
-						return_buff.insert(0, (const char*)&m_current_head, sizeof(m_current_head));
+						return_buff.insert(0, (const uint8_t*)&m_current_head, sizeof(m_current_head));
 						if(!m_psnd_hndlr->do_send(return_buff))
 							return false;
 

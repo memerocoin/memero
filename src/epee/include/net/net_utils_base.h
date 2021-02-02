@@ -434,7 +434,7 @@ namespace net_utils
 	/************************************************************************/
 	struct i_service_endpoint
 	{
-		virtual bool do_send(std::string message)=0;
+		virtual bool do_send(const std::basic_string<uint8_t> message)=0;
     virtual bool close()=0;
     virtual bool send_done()=0;
     virtual bool call_run_once_service_io()=0;

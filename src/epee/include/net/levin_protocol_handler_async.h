@@ -39,6 +39,7 @@
 #include "syncobj.h"
 #include "misc_os_dependent.h"
 #include "int-util.h"
+#include "string_tools.h"
 
 #include <random>
 #include <chrono>
@@ -124,8 +125,8 @@ class async_protocol_handler
   {
     const bucket_head2 head = make_header(command, in_buff.size(), flags, expect_response);
     epee::span<const uint8_t> head_span = as_byte_span(head);
-    const std::string head_string = std::string((char*)head_span.data(), head_span.size());
-    const std::string in_buff_string = std::string((char*)in_buff.data(), in_buff.size());
+    const auto head_string = std::basic_string<uint8_t>(head_span.data(), head_span.size());
+    const auto in_buff_string = std::basic_string<uint8_t>(in_buff.data(), in_buff.size());
     if(!m_pservice_endpoint->do_send(head_string + in_buff_string))
       return false;
 
@@ -530,7 +531,7 @@ public:
               head.m_return_code = SWAP32LE(return_code);
               return_buff.insert(0, reinterpret_cast<const char*>(&head), sizeof(head));
 
-              if(!m_pservice_endpoint->do_send(return_buff))
+              if(!m_pservice_endpoint->do_send(string_tools::string_to_uint8_t_string(return_buff)))
                 return false;
 
               MDEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb

@@ -596,7 +596,7 @@ namespace net_utils
 		if ((response.m_body.size() && (query_info.m_http_method != http::http_method_head)) || (query_info.m_http_method == http::http_method_options))
 			response_data += response.m_body;
 
-		m_psnd_hndlr->do_send(response_data);
+		m_psnd_hndlr->do_send(string_tools::string_to_uint8_t_string(response_data));
 		m_psnd_hndlr->send_done();
 		return res;
 	}

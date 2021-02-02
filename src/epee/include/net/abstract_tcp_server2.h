@@ -129,7 +129,7 @@ namespace net_utils
     
   private:
     //----------------- i_service_endpoint ---------------------
-    virtual bool do_send(std::string message); ///< (see do_send from i_service_endpoint)
+    virtual bool do_send(const std::basic_string<uint8_t> message); ///< (see do_send from i_service_endpoint)
     virtual bool send_done();
     virtual bool close();
     virtual bool call_run_once_service_io();
@@ -138,7 +138,7 @@ namespace net_utils
     virtual bool add_ref();
     virtual bool release();
     //------------------------------------------------------
-    bool do_send_chunk(std::string chunk); ///< will send (or queue) a part of data. internal use only
+    bool do_send_chunk(const std::basic_string<uint8_t> chunk); ///< will send (or queue) a part of data. internal use only
 
     std::shared_ptr<connection<t_protocol_handler> > safe_shared_from_this();
     bool shutdown();
