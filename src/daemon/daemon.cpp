@@ -107,11 +107,6 @@ t_daemon::~t_daemon() = default;
 
 bool t_daemon::run(bool interactive)
 {
-  if (nullptr == mp_internals)
-  {
-    throw std::runtime_error{"Can't run stopped daemon"};
-  }
-
   std::atomic<bool> stop(false), shutdown(false);
   std::thread stop_thread = std::thread([&stop, &shutdown, this] {
     while (!stop)
@@ -137,7 +132,8 @@ bool t_daemon::run(bool interactive)
     if (interactive && mp_internals->rpcs.size())
     {
       // The first three variables are not used when the fourth is false
-      rpc_commands.reset(new daemonize::t_command_server(0, 0, epee::net_utils::ssl_support_t::e_ssl_support_disabled, false, mp_internals->rpcs.front()->get_server()));
+      rpc_commands = std::make_unique<daemonize::t_command_server>
+        (0, 0, epee::net_utils::ssl_support_t::e_ssl_support_disabled, false, mp_internals->rpcs.front()->get_server());
       rpc_commands->start_handling(std::bind(&daemonize::t_daemon::stop_p2p, this));
     }
 
@@ -166,24 +162,14 @@ bool t_daemon::run(bool interactive)
 
 void t_daemon::stop()
 {
-  if (nullptr == mp_internals)
-  {
-    throw std::runtime_error{"Can't stop stopped daemon"};
-  }
-  mp_internals->p2p.stop();
+  stop_p2p();
   for(auto& rpc : mp_internals->rpcs)
     rpc->stop();
-
-  mp_internals.reset(nullptr); // Ensure resources are cleaned up before we return
 }
 
 void t_daemon::stop_p2p()
 {
-  if (nullptr == mp_internals)
-  {
-    throw std::runtime_error{"Can't send stop signal to a stopped daemon"};
-  }
-  mp_internals->p2p.get().send_stop_signal();
+  mp_internals->p2p.stop();
 }
 
 } // namespace daemonize
