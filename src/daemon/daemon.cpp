@@ -79,12 +79,12 @@ public:
     const auto main_rpc_port = command_line::get_arg(vm, cryptonote::core_rpc_server::arg_rpc_bind_port);
     const auto restricted_rpc_port_arg = cryptonote::core_rpc_server::arg_rpc_restricted_bind_port;
     const bool has_restricted_rpc_port_arg = !command_line::is_arg_defaulted(vm, restricted_rpc_port_arg);
-    rpcs.emplace_back(new t_rpc{vm, core, p2p, restricted, main_rpc_port, "core"});
+    rpcs.emplace_back(std::make_unique<t_rpc>(vm, core, p2p, restricted, main_rpc_port, "core"));
 
     if(has_restricted_rpc_port_arg)
     {
       auto restricted_rpc_port = command_line::get_arg(vm, restricted_rpc_port_arg);
-      rpcs.emplace_back(new t_rpc{vm, core, p2p, true, restricted_rpc_port, "restricted"});
+      rpcs.emplace_back(std::make_unique<t_rpc>(vm, core, p2p, true, restricted_rpc_port, "restricted"));
     }
   }
 };
@@ -99,32 +99,11 @@ void t_daemon::init_options(boost::program_options::options_description & option
 t_daemon::t_daemon(
     boost::program_options::variables_map const & vm
   )
-  : mp_internals{new t_internals{vm}}
+  : mp_internals{std::make_unique<t_internals>(vm)}
 {
 }
 
 t_daemon::~t_daemon() = default;
-
-// MSVC is brain-dead and can't default this...
-t_daemon::t_daemon(t_daemon && other)
-{
-  if (this != &other)
-  {
-    mp_internals = std::move(other.mp_internals);
-    other.mp_internals.reset(nullptr);
-  }
-}
-
-// or this
-t_daemon & t_daemon::operator=(t_daemon && other)
-{
-  if (this != &other)
-  {
-    mp_internals = std::move(other.mp_internals);
-    other.mp_internals.reset(nullptr);
-  }
-  return *this;
-}
 
 bool t_daemon::run(bool interactive)
 {

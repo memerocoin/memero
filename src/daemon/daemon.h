@@ -47,8 +47,6 @@ public:
   t_daemon(
       boost::program_options::variables_map const & vm
     );
-  t_daemon(t_daemon && other);
-  t_daemon & operator=(t_daemon && other);
   ~t_daemon();
 
   bool run(bool interactive = false);
