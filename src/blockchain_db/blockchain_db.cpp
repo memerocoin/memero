@@ -402,9 +402,9 @@ bool BlockchainDB::txpool_tx_matches_category(const crypto::hash& tx_hash, relay
   return false;
 }
 
-BlockchainDB *new_db()
+std::unique_ptr<BlockchainDB> new_db()
 {
-  return new BlockchainLMDB();
+  return std::make_unique<BlockchainLMDB>();
 }
 
 }  // namespace cryptonote

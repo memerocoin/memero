@@ -1782,7 +1782,7 @@ private:
 class db_rtxn_guard: public db_txn_guard { public: db_rtxn_guard(BlockchainDB *db): db_txn_guard(db, true) {} };
 class db_wtxn_guard: public db_txn_guard { public: db_wtxn_guard(BlockchainDB *db): db_txn_guard(db, false) {} };
 
-BlockchainDB *new_db();
+std::unique_ptr<BlockchainDB> new_db();
 
 }  // namespace cryptonote
 

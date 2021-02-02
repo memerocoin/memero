@@ -382,7 +382,7 @@ namespace cryptonote
     // folder might not be a directory, etc, etc
     catch (...) { }
 
-    std::unique_ptr<BlockchainDB> db(new_db());
+    std::unique_ptr<BlockchainDB> db = new_db();
     if (db == NULL)
     {
       LOG_ERROR("Failed to initialize a database");
