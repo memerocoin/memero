@@ -383,7 +383,7 @@ namespace cryptonote
     catch (...) { }
 
     std::unique_ptr<BlockchainDB> db = new_db();
-    if (db == NULL)
+    if (!db)
     {
       LOG_ERROR("Failed to initialize a database");
       return false;
