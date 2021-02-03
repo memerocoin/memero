@@ -2064,11 +2064,6 @@ bool t_rpc_command_executor::print_blockchain_dynamic_stats(uint64_t nblocks)
       if (major_versions[n])
         s += (s.empty() ? "" : ", ") + boost::lexical_cast<std::string>(major_versions[n]) + std::string(" v") + boost::lexical_cast<std::string>(n);
     tools::msg_writer() << "Block versions: " << s;
-    s = "";
-    for (unsigned n = 0; n <= max_minor; ++n)
-      if (minor_versions[n])
-        s += (s.empty() ? "" : ", ") + boost::lexical_cast<std::string>(minor_versions[n]) + std::string(" v") + boost::lexical_cast<std::string>(n);
-    tools::msg_writer() << "Voting for: " << s;
   }
   return true;
 }
