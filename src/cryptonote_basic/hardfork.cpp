@@ -70,7 +70,7 @@ uint8_t HardFork::get_ideal_version() const
 
 uint8_t HardFork::get_ideal_version(uint64_t height) const
 {
-  return 1;
+  return constant_hf_version;
 }
 
 uint64_t HardFork::get_earliest_ideal_height_for_version(uint8_t version) const
