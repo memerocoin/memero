@@ -573,12 +573,11 @@ namespace cryptonote
      * per byte from v8.
      *
      * @param block_reward the current block reward
-     * @param median_block_weight the median block weight in the past window
      * @param version hard fork version for rules and constants to use
      *
      * @return the fee
      */
-    static uint64_t get_dynamic_base_fee(uint64_t block_reward, size_t median_block_weight);
+    static uint64_t get_dynamic_base_fee(uint64_t block_reward);
 
     /**
      * @brief get dynamic per kB or byte fee estimate for the next few blocks

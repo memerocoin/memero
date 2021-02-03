@@ -2971,11 +2971,10 @@ void Blockchain::check_ring_signature(const crypto::hash &tx_prefix_hash, const 
 }
 
 //------------------------------------------------------------------
-uint64_t Blockchain::get_dynamic_base_fee(uint64_t block_reward, size_t median_block_weight)
+uint64_t Blockchain::get_dynamic_base_fee(uint64_t block_reward)
 {
   const uint64_t min_block_weight = get_min_block_weight();
-  if (median_block_weight < min_block_weight)
-    median_block_weight = min_block_weight;
+  const uint64_t median_block_weight = min_block_weight;
   uint64_t hi, lo;
 
   {
@@ -3002,7 +3001,7 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 
   uint64_t needed_fee;
   {
-    uint64_t fee_per_byte = get_dynamic_base_fee(base_reward, std::min<uint64_t>(median, m_long_term_effective_median_block_weight));
+    uint64_t fee_per_byte = get_dynamic_base_fee(base_reward);
     MDEBUG("Using " << print_money(fee_per_byte) << "/byte fee");
     needed_fee = tx_weight * fee_per_byte;
     // quantize fee up to 8 decimals
@@ -3044,10 +3043,8 @@ uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
     base_reward = BLOCK_REWARD_OVERESTIMATE;
   }
 
-  const uint64_t use_median_value = std::min<uint64_t>(median, m_long_term_effective_median_block_weight);
-  const uint64_t fee = get_dynamic_base_fee(base_reward, use_median_value);
-  const bool per_byte = true;
-  MDEBUG("Estimating " << grace_blocks << "-block fee at " << print_money(fee) << "/" << (per_byte ? "byte" : "kB"));
+  const uint64_t fee = get_dynamic_base_fee(base_reward);
+  MDEBUG("Estimating " << grace_blocks << "-block fee at " << print_money(fee) << "/" << "byte");
   return fee;
 }
 
