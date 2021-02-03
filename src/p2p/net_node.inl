@@ -1751,9 +1751,9 @@ namespace nodetool
     const auto public_zone = m_network_zones.find(epee::net_utils::zone::public_);
     if (public_zone != m_network_zones.end() && get_incoming_connections_count(public_zone->second) == 0)
     {
-      if (!m_hide_my_port || public_zone->second.m_config.m_net_config.max_in_connection_count == 0)
+      if (m_hide_my_port || public_zone->second.m_config.m_net_config.max_in_connection_count == 0)
       {
-        MGINFO("Incoming connections disabled, enable them for full connectivity");
+        // MGINFO("Incoming connections disabled, enable them for full connectivity");
       }
       else
       {
