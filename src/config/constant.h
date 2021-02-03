@@ -49,6 +49,7 @@ namespace constant
   // size of block (bytes) after which reward for block calculated using
   // block size - second change, from v5
   const uint64_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5 = 300000;
+  constexpr uint64_t CRYPTONOTE_BLOCK_MAX_WEIGHT = 4 * 1024 * 1024; // 4 MB
 
   const uint64_t FEE_PER_BYTE = (uint64_t)300000;
   const uint64_t DYNAMIC_FEE_REFERENCE_TRANSACTION_WEIGHT = (uint64_t)3000;

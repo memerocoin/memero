@@ -80,6 +80,12 @@ namespace cryptonote {
       return false;
     }
 
+    uint64_t max_weight = constant::CRYPTONOTE_BLOCK_MAX_WEIGHT;
+    if(current_block_weight > max_weight) {
+      MERROR("Block weight is too big: " << current_block_weight << ", expected less than " << max_weight);
+      return false;
+    }
+
     return true;
   }
   //------------------------------------------------------------------------------------
