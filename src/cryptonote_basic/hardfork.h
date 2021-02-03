@@ -29,7 +29,6 @@
 #pragma once
 
 #include "syncobj.h"
-#include "hardforks/hardforks.h"
 #include "cryptonote_basic/cryptonote_basic.h"
 
 namespace cryptonote
@@ -43,16 +42,9 @@ namespace cryptonote
       Ready,
     } State;
 
-    HardFork(cryptonote::BlockchainDB &db, uint8_t original_version = 17, uint64_t original_version_till_height = 0, uint64_t window_size = 10080);
+    HardFork(){};
+    ~HardFork() = default;
 
-    bool add_fork(uint8_t version, uint64_t height, uint8_t threshold, time_t time);
-    bool add_fork(uint8_t version, uint64_t height, time_t time);
-    bool check(const cryptonote::block &block) const;
-    bool check_for_height(const cryptonote::block &block, uint64_t height) const;
-    bool add(const cryptonote::block &block, uint64_t height);
-    bool reorganize_from_block_height(uint64_t height);
-    bool reorganize_from_chain_height(uint64_t height);
-    void on_block_popped(uint64_t new_chain_height);
     State get_state(time_t t) const;
     State get_state() const;
     uint8_t get(uint64_t height) const;

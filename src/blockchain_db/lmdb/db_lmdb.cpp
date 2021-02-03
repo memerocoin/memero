@@ -1229,8 +1229,6 @@ BlockchainLMDB::BlockchainLMDB(bool batch_transactions): BlockchainDB()
   m_cum_count = 0;
 
   // reset may also need changing when initialize things here
-
-  m_hardfork = nullptr;
 }
 
 void BlockchainLMDB::check_mmap_support()

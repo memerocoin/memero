@@ -133,7 +133,7 @@ namespace cryptonote
      *
      * @return true on success, false if any initialization steps fail
      */
-    bool init(BlockchainDB* db, HardFork*& hf, const network_type nettype = MAINNET, bool offline = false);
+    bool init(BlockchainDB* db, const network_type nettype = MAINNET, bool offline = false);
 
     /**
      * @brief Uninitializes the blockchain state
@@ -1054,7 +1054,7 @@ namespace cryptonote
     blocks_ext_by_hash m_invalid_blocks;     // crypto::hash -> block_extended_info
 
 
-    HardFork *m_hardfork;
+    std::unique_ptr<HardFork> m_hardfork;
 
     network_type m_nettype;
     bool m_offline;

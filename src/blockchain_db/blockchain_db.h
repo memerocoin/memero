@@ -569,14 +569,12 @@ protected:
   uint64_t time_commit1 = 0;  //!< a performance metric
   bool m_auto_remove_logs = true;  //!< whether or not to automatically remove old logs
 
-  HardFork* m_hardfork;
-
 public:
 
   /**
    * @brief An empty constructor.
    */
-  BlockchainDB(): m_hardfork(NULL), m_open(false) { }
+  BlockchainDB(): m_open(false) { }
 
   /**
    * @brief An empty destructor.
@@ -822,8 +820,6 @@ public:
   virtual bool block_rtxn_start() const = 0;
   virtual void block_rtxn_stop() const = 0;
   virtual void block_rtxn_abort() const = 0;
-
-  virtual void set_hard_fork(HardFork* hf);
 
   // adds a block with the given metadata to the top of the blockchain, returns the new height
   /**

@@ -26,11 +26,9 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <algorithm>
 #include <cstdio>
 
 #include "cryptonote_basic/cryptonote_basic.h"
-#include "blockchain_db/blockchain_db.h"
 #include "hardfork.h"
 #include "config/lol.h"
 
@@ -43,49 +41,6 @@ using namespace config::lol;
 static uint8_t get_block_version(const cryptonote::block &b)
 {
   return constant_hf_version;
-}
-
-HardFork::HardFork(cryptonote::BlockchainDB &db, uint8_t original_version, uint64_t original_version_till_height, uint64_t window_size)
-{
-}
-
-bool HardFork::add_fork(uint8_t version, uint64_t height, uint8_t threshold, time_t time)
-{
-  return true;
-}
-
-bool HardFork::add_fork(uint8_t version, uint64_t height, time_t time)
-{
-  return true;
-}
-
-bool HardFork::check(const cryptonote::block &block) const
-{
-  return true;
-}
-
-bool HardFork::check_for_height(const cryptonote::block &block, uint64_t height) const
-{
-  return true;
-}
-
-bool HardFork::add(const cryptonote::block& block, uint64_t height)
-{
-  return true;
-}
-
-bool HardFork::reorganize_from_block_height(uint64_t height)
-{
-  return true;
-}
-
-bool HardFork::reorganize_from_chain_height(uint64_t height)
-{
-  return true;
-}
-
-void HardFork::on_block_popped(uint64_t nblocks)
-{
 }
 
 HardFork::State HardFork::get_state(time_t t) const
