@@ -62,23 +62,8 @@ namespace cryptonote {
     return CRYPTONOTE_MAX_TX_SIZE;
   }
   //-----------------------------------------------------------------------------------------------
-  bool get_block_reward(size_t median_weight, size_t current_block_weight, uint64_t already_generated_coins, uint64_t &reward) {
+  bool get_block_reward(size_t current_block_weight, uint64_t &reward) {
     reward = COIN * 300;
-
-    uint64_t full_reward_zone = get_min_block_weight();
-
-    if (median_weight < full_reward_zone) {
-      median_weight = full_reward_zone;
-    }
-
-    if (current_block_weight <= median_weight) {
-      return true;
-    }
-
-    if(current_block_weight > 2 * median_weight) {
-      MERROR("Block cumulative weight is too big: " << current_block_weight << ", expected less than " << 2 * median_weight);
-      return false;
-    }
 
     uint64_t max_weight = constant::CRYPTONOTE_BLOCK_MAX_WEIGHT;
     if(current_block_weight > max_weight) {
