@@ -309,27 +309,6 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
     else
       m_hardfork = new HardFork(*db, 1, 0);
   }
-  if (m_nettype == FAKECHAIN)
-  {
-    for (size_t n = 0; test_options->hard_forks[n].first; ++n)
-      m_hardfork->add_fork(test_options->hard_forks[n].first, test_options->hard_forks[n].second, 0, n + 1);
-  }
-  else if (m_nettype == TESTNET)
-  {
-    for (size_t n = 0; n < num_testnet_hard_forks; ++n)
-      m_hardfork->add_fork(testnet_hard_forks[n].version, testnet_hard_forks[n].height, testnet_hard_forks[n].threshold, testnet_hard_forks[n].time);
-  }
-  else if (m_nettype == STAGENET)
-  {
-    for (size_t n = 0; n < num_stagenet_hard_forks; ++n)
-      m_hardfork->add_fork(stagenet_hard_forks[n].version, stagenet_hard_forks[n].height, stagenet_hard_forks[n].threshold, stagenet_hard_forks[n].time);
-  }
-  else
-  {
-    for (size_t n = 0; n < num_mainnet_hard_forks; ++n)
-      m_hardfork->add_fork(mainnet_hard_forks[n].version, mainnet_hard_forks[n].height, mainnet_hard_forks[n].threshold, mainnet_hard_forks[n].time);
-  }
-  m_hardfork->init();
 
   m_db->set_hard_fork(m_hardfork);
 
@@ -422,7 +401,6 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
   {
     m_timestamps_and_difficulties_height = 0;
     m_reset_timestamps_and_difficulties_height = true;
-    m_hardfork->reorganize_from_chain_height(get_current_blockchain_height());
     uint64_t top_block_height;
     crypto::hash top_block_hash = get_tail_id(top_block_height);
     m_tx_pool.on_blockchain_dec(top_block_height, top_block_hash);
@@ -589,9 +567,6 @@ block Blockchain::pop_block_from_blockchain()
     throw;
   }
 
-  // make sure the hard fork object updates its current version
-  m_hardfork->on_block_popped(1);
-
   // return transactions from popped block to the tx_pool
   size_t pruned = 0;
   for (transaction& tx : popped_txs)
@@ -647,7 +622,6 @@ bool Blockchain::reset_and_set_genesis_block(const block& b)
   invalidate_block_template_cache();
   m_db->reset();
   m_db->drop_alt_blocks();
-  m_hardfork->init();
 
   db_wtxn_guard wtxn_guard(m_db);
   block_verification_context bvc = {};
@@ -998,9 +972,6 @@ bool Blockchain::rollback_blockchain_switching(std::list<block>& original_chain,
     pop_block_from_blockchain();
   }
 
-  // make sure the hard fork object updates its current version
-  m_hardfork->reorganize_from_chain_height(rollback_height);
-
   //return back original chain
   for (auto& bl : original_chain)
   {
@@ -1008,8 +979,6 @@ bool Blockchain::rollback_blockchain_switching(std::list<block>& original_chain,
     bool r = handle_block_to_main_chain(bl, bvc, false);
     CHECK_AND_ASSERT_MES(r && bvc.m_added_to_main_chain, false, "PANIC! failed to add (again) block while chain switching during the rollback!");
   }
-
-  m_hardfork->reorganize_from_chain_height(rollback_height);
 
   MINFO("Rollback to height " << rollback_height << " was successful.");
   if (!original_chain.empty())
@@ -1113,8 +1082,6 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
   {
     m_db->remove_alt_block(cryptonote::get_block_hash(bei.bl));
   }
-
-  m_hardfork->reorganize_from_chain_height(split_height);
 
   std::shared_ptr<tools::Notify> reorg_notify = m_reorg_notify;
   if (reorg_notify)
@@ -3493,12 +3460,6 @@ leave:
 
   // this is a cheap test
   const uint8_t hf_version = get_current_hard_fork_version();
-  if (!m_hardfork->check(bl))
-  {
-    MERROR_VER("Block with id: " << id << std::endl << "has old version: " << (unsigned)bl.major_version << std::endl << "current: " << (unsigned)hf_version);
-    bvc.m_verifivation_failed = true;
-    goto leave;
-  }
 
   TIME_MEASURE_FINISH(t1);
   TIME_MEASURE_START(t2);
