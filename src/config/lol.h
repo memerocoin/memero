@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <inttypes.h>
 
 namespace config
 {
@@ -14,5 +15,6 @@ namespace config
     const uint8_t constant_hf_version = 17;
     const uint64_t constant_hf_height = 0;
     const time_t constant_hf_time = 1600576524;
+    const size_t max_connections_per_address = 2;
   }
 }
