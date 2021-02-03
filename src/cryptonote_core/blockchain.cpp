@@ -1278,7 +1278,6 @@ uint64_t Blockchain::get_current_cumulative_block_weight_median() const
 bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const account_public_address& miner_address, difficulty_type& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-  size_t median_weight;
   uint64_t pool_cookie;
 
   m_tx_pool.lock();
@@ -1342,17 +1341,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     b.minor_version = config::lol::constant_hf_version;
     b.prev_id = *from_block;
 
-    // cheat and use the weight of the block we start from, virtually certain to be acceptable
-    // and use 1.9 times rather than 2 times so we're even more sure
-    if (parent_in_main)
-    {
-      median_weight = m_db->get_block_weight(height - 1);
-    }
-    else
-    {
-      median_weight = prev_data.cumulative_weight - prev_data.cumulative_weight / 20;
-    }
-
     // FIXME: consider moving away from block_extended_info at some point
     block_extended_info bei = {};
     bei.bl = b;
@@ -1366,7 +1354,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     b.major_version = config::lol::constant_hf_version;
     b.minor_version = config::lol::constant_hf_version;
     b.prev_id = get_tail_id();
-    median_weight = m_current_block_cumul_weight_limit / 2;
     diffic = get_difficulty_for_next_block();
   }
   b.timestamp = time(NULL);
