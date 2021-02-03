@@ -542,7 +542,6 @@ void GetFeeEstimate::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffe
   INSERT_INTO_JSON_OBJECT(dest, estimated_base_fee, estimated_base_fee);
   INSERT_INTO_JSON_OBJECT(dest, fee_mask, fee_mask);
   INSERT_INTO_JSON_OBJECT(dest, size_scale, size_scale);
-  INSERT_INTO_JSON_OBJECT(dest, hard_fork_version, hard_fork_version);
 }
 
 void GetFeeEstimate::Response::fromJson(const rapidjson::Value& val)
@@ -550,7 +549,6 @@ void GetFeeEstimate::Response::fromJson(const rapidjson::Value& val)
   GET_FROM_JSON_OBJECT(val, estimated_base_fee, estimated_base_fee);
   GET_FROM_JSON_OBJECT(val, fee_mask, fee_mask);
   GET_FROM_JSON_OBJECT(val, size_scale, size_scale);
-  GET_FROM_JSON_OBJECT(val, hard_fork_version, hard_fork_version);
 }
 
 void GetOutputDistribution::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const

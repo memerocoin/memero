@@ -414,7 +414,6 @@ BEGIN_RPC_MESSAGE_CLASS(GetFeeEstimate);
     RPC_MESSAGE_MEMBER(uint64_t, estimated_base_fee);
     RPC_MESSAGE_MEMBER(uint64_t, fee_mask);
     RPC_MESSAGE_MEMBER(uint32_t, size_scale);
-    RPC_MESSAGE_MEMBER(uint8_t, hard_fork_version);
   END_RPC_MESSAGE_RESPONSE;
 END_RPC_MESSAGE_CLASS;
 

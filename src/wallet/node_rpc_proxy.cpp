@@ -172,17 +172,7 @@ std::optional<std::string> NodeRPCProxy::get_earliest_height(uint8_t version, ui
     return std::optional<std::string>("offline");
   if (m_earliest_height[version] == 0)
   {
-    cryptonote::COMMAND_RPC_HARD_FORK_INFO::request req_t = AUTO_VAL_INIT(req_t);
-    cryptonote::COMMAND_RPC_HARD_FORK_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
-    req_t.version = version;
-
-    {
-      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = net_utils::invoke_http_json_rpc("/json_rpc", "hard_fork_info", req_t, resp_t, m_http_client, rpc_timeout);
-      RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "hard_fork_info");
-    }
-
-    m_earliest_height[version] = resp_t.earliest_height;
+    m_earliest_height[version] = config::lol::constant_hf_height;
   }
 
   earliest_height = m_earliest_height[version];

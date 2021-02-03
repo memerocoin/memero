@@ -818,7 +818,6 @@ namespace rpc
 
   void DaemonHandler::handle(const GetFeeEstimate::Request& req, GetFeeEstimate::Response& res)
   {
-    res.hard_fork_version = config::lol::constant_hf_version;
     res.estimated_base_fee = m_core.get_blockchain_storage().get_dynamic_base_fee_estimate(req.num_grace_blocks);
 
     res.size_scale = 1; // per byte fee
