@@ -114,8 +114,6 @@ class DaemonHandler : public RpcHandler
 
     void handle(const StopSaveGraph::Request& req, StopSaveGraph::Response& res);
 
-    void handle(const HardForkInfo::Request& req, HardForkInfo::Response& res);
-
     void handle(const GetBans::Request& req, GetBans::Response& res);
 
     void handle(const SetBans::Request& req, SetBans::Response& res);

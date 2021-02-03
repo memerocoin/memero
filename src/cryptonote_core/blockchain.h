@@ -784,20 +784,6 @@ namespace cryptonote
     uint64_t get_earliest_ideal_height_for_version(uint8_t version) const { return m_hardfork->get_earliest_ideal_height_for_version(version); }
 
     /**
-     * @brief get information about hardfork voting for a version
-     *
-     * @param version the version in question
-     * @param window the size of the voting window
-     * @param votes the number of votes to enable <version>
-     * @param threshold the number of votes required to enable <version>
-     * @param earliest_height the earliest height at which <version> is allowed
-     * @param voting which version this node is voting for/using
-     *
-     * @return whether the version queried is enabled 
-     */
-    bool get_hard_fork_voting_info(uint8_t version, uint32_t &window, uint32_t &votes, uint32_t &threshold, uint64_t &earliest_height, uint8_t &voting) const;
-
-    /**
      * @brief get difficulty target based on chain and hardfork version
      *
      * @return difficulty target

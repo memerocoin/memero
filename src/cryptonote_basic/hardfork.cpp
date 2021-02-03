@@ -83,8 +83,3 @@ uint8_t HardFork::get_next_version() const
   return constant_hf_version;
 }
 
-bool HardFork::get_voting_info(uint8_t version, uint32_t &window, uint32_t &votes, uint32_t &threshold, uint64_t &earliest_height, uint8_t &voting) const
-{
-  return false;
-}
-

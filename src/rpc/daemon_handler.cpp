@@ -96,7 +96,6 @@ namespace rpc
       {u8"get_transaction_pool", handle_message<GetTransactionPool>},
       {u8"get_transactions", handle_message<GetTransactions>},
       {u8"get_tx_global_output_indices", handle_message<GetTxGlobalOutputIndices>},
-      {u8"hard_fork_info", handle_message<HardForkInfo>},
       {u8"key_images_spent", handle_message<KeyImagesSpent>},
       {u8"mining_status", handle_message<MiningStatus>},
       {u8"save_bc", handle_message<SaveBC>},
@@ -742,16 +741,6 @@ namespace rpc
   {
     res.status = Message::STATUS_FAILED;
     res.error_details = "RPC method not yet implemented.";
-  }
-
-  void DaemonHandler::handle(const HardForkInfo::Request& req, HardForkInfo::Response& res)
-  {
-    const Blockchain &blockchain = m_core.get_blockchain_storage();
-    uint8_t version = req.version > 0 ? req.version : blockchain.get_ideal_hard_fork_version();
-    res.info.version = blockchain.get_current_hard_fork_version();
-    res.info.enabled = blockchain.get_hard_fork_voting_info(version, res.info.window, res.info.votes, res.info.threshold, res.info.earliest_height, res.info.voting);
-    res.info.state = blockchain.get_hard_fork_state();
-    res.status = Message::STATUS_OK;
   }
 
   void DaemonHandler::handle(const GetBans::Request& req, GetBans::Response& res)

@@ -53,7 +53,6 @@ namespace cryptonote
     uint8_t get_next_version() const;
     uint8_t get_current_version() const;
     uint64_t get_earliest_ideal_height_for_version(uint8_t version) const;
-    bool get_voting_info(uint8_t version, uint32_t &window, uint32_t &votes, uint32_t &threshold, uint64_t &earliest_height, uint8_t &voting) const;
   };
 
 }  // namespace cryptonote

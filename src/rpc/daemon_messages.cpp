@@ -460,28 +460,6 @@ void GetTransactionPool::Response::fromJson(const rapidjson::Value& val)
   GET_FROM_JSON_OBJECT(val, key_images, key_images);
 }
 
-
-void HardForkInfo::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  INSERT_INTO_JSON_OBJECT(dest, version, version);
-}
-
-void HardForkInfo::Request::fromJson(const rapidjson::Value& val)
-{
-  GET_FROM_JSON_OBJECT(val, version, version);
-}
-
-void HardForkInfo::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  INSERT_INTO_JSON_OBJECT(dest, info, info);
-}
-
-void HardForkInfo::Response::fromJson(const rapidjson::Value& val)
-{
-  GET_FROM_JSON_OBJECT(val, info, info);
-}
-
-
 void GetOutputHistogram::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   INSERT_INTO_JSON_OBJECT(dest, amounts, amounts);
