@@ -95,7 +95,6 @@ Blockchain::Blockchain(tx_memory_pool& tx_pool) :
   m_difficulty_for_next_block(1),
   m_btc_valid(false),
   m_batch_success(true),
-  m_hardfork(std::make_unique<HardFork>()),
   m_prepare_height(0)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
@@ -4418,11 +4417,6 @@ void Blockchain::safesyncmode(const bool onoff)
     m_db->safesyncmode(onoff);
     m_db_sync_mode = onoff ? db_nosync : db_async;
   }
-}
-
-HardFork::State Blockchain::get_hard_fork_state() const
-{
-  return m_hardfork->get_state();
 }
 
 uint64_t Blockchain::get_difficulty_target() const

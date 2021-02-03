@@ -36,7 +36,6 @@
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "cryptonote_core/cryptonote_core.h"
 #include "cryptonote_basic/difficulty.h"
-#include "cryptonote_basic/hardfork.h"
 #include "rpc/rpc_version_str.h"
 #include <boost/format.hpp>
 #include <ctime>
