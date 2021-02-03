@@ -368,7 +368,7 @@ namespace cryptonote
      *
      * @return the number of transactions removed
      */
-    size_t validate(uint8_t version);
+    size_t validate();
 
      /**
       * @brief return the cookie

@@ -730,53 +730,6 @@ namespace cryptonote
     void set_show_time_stats(bool stats) { m_show_time_stats = stats; }
 
     /**
-     * @brief gets the current hardfork version in use/voted for
-     *
-     * @return the version
-     */
-    uint8_t get_current_hard_fork_version() const { return config::lol::constant_hf_version; }
-
-    /**
-     * @brief returns the newest hardfork version known to the blockchain
-     *
-     * @return the version
-     */
-    uint8_t get_ideal_hard_fork_version() const { return config::lol::constant_hf_version; }
-
-    /**
-     * @brief returns the next hardfork version
-     *
-     * @return the version
-     */
-    uint8_t get_next_hard_fork_version() const { return config::lol::constant_hf_version; }
-
-    /**
-     * @brief returns the newest hardfork version voted to be enabled
-     * as of a certain height
-     *
-     * @param height the height for which to check version info
-     *
-     * @return the version
-     */
-    uint8_t get_ideal_hard_fork_version(uint64_t height) const { return config::lol::constant_hf_version; }
-
-    /**
-     * @brief returns the actual hardfork version for a given block height
-     *
-     * @param height the height for which to check version info
-     *
-     * @return the version
-     */
-    uint8_t get_hard_fork_version(uint64_t height) const { return config::lol::constant_hf_version; }
-
-    /**
-     * @brief returns the earliest block a given version may activate
-     *
-     * @return the height
-     */
-    uint64_t get_earliest_ideal_height_for_version(uint8_t version) const { return config::lol::constant_hf_height; }
-
-    /**
      * @brief get difficulty target based on chain and hardfork version
      *
      * @return difficulty target

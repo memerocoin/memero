@@ -638,34 +638,6 @@ namespace cryptonote
      uint64_t get_target_blockchain_height() const;
 
      /**
-      * @brief returns the newest hardfork version known to the blockchain
-      *
-      * @return the version
-      */
-     uint8_t get_ideal_hard_fork_version() const;
-
-     /**
-      * @brief return the ideal hard fork version for a given block height
-      *
-      * @return what it says above
-      */
-     uint8_t get_ideal_hard_fork_version(uint64_t height) const;
-
-     /**
-      * @brief return the hard fork version for a given block height
-      *
-      * @return what it says above
-      */
-     uint8_t get_hard_fork_version(uint64_t height) const;
-
-     /**
-      * @brief return the earliest block a given version may activate
-      *
-      * @return what it says above
-      */
-     uint64_t get_earliest_ideal_height_for_version(uint8_t version) const;
-
-     /**
       * @brief gets start_time
       *
       */
