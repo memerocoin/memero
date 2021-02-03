@@ -1132,8 +1132,7 @@ namespace cryptonote
       return true;
     }
 
-    uint8_t version = m_blockchain_storage.get_current_hard_fork_version();
-    return m_mempool.add_tx(tx, tx_hash, blob, tx_weight, tvc, tx_relay, relayed, version);
+    return m_mempool.add_tx(tx, tx_hash, blob, tx_weight, tvc, tx_relay, relayed);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::relay_txpool_transactions()

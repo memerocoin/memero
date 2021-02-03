@@ -81,13 +81,9 @@ namespace cryptonote
       return amount * ACCEPT_THRESHOLD;
     }
 
-    uint64_t get_transaction_weight_limit(uint8_t version)
+    uint64_t get_transaction_weight_limit()
     {
-      // from v8, limit a tx to 50% of the minimum block weight
-      if (version >= 8)
-        return get_min_block_weight(version) / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
-      else
-        return get_min_block_weight(version) - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+      return get_min_block_weight() / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     }
   }
   //---------------------------------------------------------------------------------
@@ -97,7 +93,7 @@ namespace cryptonote
 
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::add_tx(transaction &tx, /*const crypto::hash& tx_prefix_hash,*/ const crypto::hash &id, const cryptonote::blobdata &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed, uint8_t version)
+  bool tx_memory_pool::add_tx(transaction &tx, /*const crypto::hash& tx_prefix_hash,*/ const crypto::hash &id, const cryptonote::blobdata &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
     const bool kept_by_block = (tx_relay == relay_method::block);
 
@@ -172,7 +168,7 @@ namespace cryptonote
       return false;
     }
 
-    size_t tx_weight_limit = get_transaction_weight_limit(version);
+    size_t tx_weight_limit = get_transaction_weight_limit();
     if (tx_weight > tx_weight_limit)
     {
       LOG_PRINT_L1("transaction is too heavy: " << tx_weight << " bytes, maximum weight: " << tx_weight_limit);
@@ -315,7 +311,7 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::add_tx(transaction &tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed, uint8_t version)
+  bool tx_memory_pool::add_tx(transaction &tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
     crypto::hash h = null_hash;
     size_t blob_size = 0;
@@ -323,7 +319,7 @@ namespace cryptonote
     t_serializable_object_to_blob(tx, bl);
     if (bl.size() == 0 || !get_transaction_hash(tx, h))
       return false;
-    return add_tx(tx, h, bl, get_transaction_weight(tx, bl.size()), tvc, tx_relay, relayed, version);
+    return add_tx(tx, h, bl, get_transaction_weight(tx, bl.size()), tvc, tx_relay, relayed);
   }
   //---------------------------------------------------------------------------------
   size_t tx_memory_pool::get_txpool_weight() const
@@ -1395,7 +1391,7 @@ namespace cryptonote
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
     CRITICAL_REGION_LOCAL1(m_blockchain);
-    size_t tx_weight_limit = get_transaction_weight_limit(version);
+    size_t tx_weight_limit = get_transaction_weight_limit();
     std::unordered_set<crypto::hash> remove;
 
     m_txpool_weight = 0;

@@ -347,45 +347,6 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
   rtxn_guard.stop();
 
   uint64_t num_popped_blocks = 0;
-  while (!m_db->is_read_only())
-  {
-    uint64_t top_height;
-    const crypto::hash top_id = m_db->top_block_hash(&top_height);
-    const block top_block = m_db->get_top_block();
-    const uint8_t ideal_hf_version = get_ideal_hard_fork_version(top_height);
-    if (ideal_hf_version <= 1 || ideal_hf_version == top_block.major_version)
-    {
-      if (num_popped_blocks > 0)
-        MGINFO("Initial popping done, top block: " << top_id << ", top height: " << top_height << ", block version: " << (uint64_t)top_block.major_version);
-      break;
-    }
-    else
-    {
-      if (num_popped_blocks == 0)
-        MGINFO("Current top block " << top_id << " at height " << top_height << " has version " << (uint64_t)top_block.major_version << " which disagrees with the ideal version " << (uint64_t)ideal_hf_version);
-      if (num_popped_blocks % 100 == 0)
-        MGINFO("Popping blocks... " << top_height);
-      ++num_popped_blocks;
-      block popped_block;
-      std::vector<transaction> popped_txs;
-      try
-      {
-        m_db->pop_block(popped_block, popped_txs);
-      }
-      // anything that could cause this to throw is likely catastrophic,
-      // so we re-throw
-      catch (const std::exception& e)
-      {
-        MERROR("Error popping block from blockchain: " << e.what());
-        throw;
-      }
-      catch (...)
-      {
-        MERROR("Error popping block from blockchain, throwing!");
-        throw;
-      }
-    }
-  }
   if (num_popped_blocks > 0)
   {
     m_timestamps_and_difficulties_height = 0;
@@ -563,17 +524,12 @@ block Blockchain::pop_block_from_blockchain()
     {
       cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
 
-      // FIXME: HardFork
-      // Besides the below, popping a block should also remove the last entry
-      // in hf_versions.
-      uint8_t version = get_ideal_hard_fork_version(m_db->height());
-
       // We assume that if they were in a block, the transactions are already
       // known to the network as a whole. However, if we had mined that block,
       // that might not be always true. Unlikely though, and always relaying
       // these again might cause a spike of traffic as many nodes re-relay
       // all the transactions in a popped block when a reorg happens.
-      bool r = m_tx_pool.add_tx(tx, tvc, relay_method::block, true, version);
+      bool r = m_tx_pool.add_tx(tx, tvc, relay_method::block, true);
       if (!r)
       {
         LOG_ERROR("Error returning transaction to tx_pool");
@@ -3065,7 +3021,7 @@ void Blockchain::check_ring_signature(const crypto::hash &tx_prefix_hash, const 
 //------------------------------------------------------------------
 uint64_t Blockchain::get_dynamic_base_fee(uint64_t block_reward, size_t median_block_weight, uint8_t version)
 {
-  const uint64_t min_block_weight = get_min_block_weight(version);
+  const uint64_t min_block_weight = get_min_block_weight();
   if (median_block_weight < min_block_weight)
     median_block_weight = min_block_weight;
   uint64_t hi, lo;
@@ -3118,13 +3074,13 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 //------------------------------------------------------------------
 uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
 {
-  const uint8_t version = get_current_hard_fork_version();
+  const uint8_t version = config::lol::constant_hf_version;
   const uint64_t db_height = m_db->height();
 
   if (grace_blocks >= CRYPTONOTE_REWARD_BLOCKS_WINDOW)
     grace_blocks = CRYPTONOTE_REWARD_BLOCKS_WINDOW - 1;
 
-  const uint64_t min_block_weight = get_min_block_weight(version);
+  const uint64_t min_block_weight = get_min_block_weight();
   std::vector<uint64_t> weights;
   get_last_n_blocks_weights(weights, CRYPTONOTE_REWARD_BLOCKS_WINDOW - grace_blocks);
   weights.reserve(grace_blocks);
@@ -3143,8 +3099,7 @@ uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
     base_reward = BLOCK_REWARD_OVERESTIMATE;
   }
 
-  const bool use_long_term_median_in_fee = version >= HF_VERSION_LONG_TERM_BLOCK_WEIGHT;
-  const uint64_t use_median_value = use_long_term_median_in_fee ? std::min<uint64_t>(median, m_long_term_effective_median_block_weight) : median;
+  const uint64_t use_median_value = std::min<uint64_t>(median, m_long_term_effective_median_block_weight);
   const uint64_t fee = get_dynamic_base_fee(base_reward, use_median_value, version);
   const bool per_byte = true;
   MDEBUG("Estimating " << grace_blocks << "-block fee at " << print_money(fee) << "/" << (per_byte ? "byte" : "kB"));
@@ -3347,7 +3302,7 @@ void Blockchain::return_tx_to_pool(std::vector<std::pair<transaction, blobdata>>
     // all the transactions in a popped block when a reorg happens.
     const size_t weight = get_transaction_weight(tx.first, tx.second.size());
     const crypto::hash tx_hash = get_transaction_hash(tx.first);
-    if (!m_tx_pool.add_tx(tx.first, tx_hash, tx.second, weight, tvc, relay_method::block, true, version))
+    if (!m_tx_pool.add_tx(tx.first, tx_hash, tx.second, weight, tvc, relay_method::block, true))
     {
       MERROR("Failed to return taken transaction with hash: " << get_transaction_hash(tx.first) << " to tx_pool");
     }
@@ -3400,21 +3355,6 @@ bool Blockchain::handle_block_to_main_chain(const block& bl, const crypto::hash&
 leave:
     return false;
   }
-
-  // warn users if they're running an old version
-  if (!seen_future_version && bl.major_version > m_hardfork->get_ideal_version())
-  {
-    seen_future_version = true;
-    const el::Level level = el::Level::Warning;
-    MCLOG_RED(level, "global", "**********************************************************************");
-    MCLOG_RED(level, "global", "A block was seen on the network with a version higher than the last");
-    MCLOG_RED(level, "global", "known one. This may be an old version of the daemon, and a software");
-    MCLOG_RED(level, "global", "update may be required to sync further. Try running: update check");
-    MCLOG_RED(level, "global", "**********************************************************************");
-  }
-
-  // this is a cheap test
-  const uint8_t hf_version = get_current_hard_fork_version();
 
   TIME_MEASURE_FINISH(t1);
   TIME_MEASURE_START(t2);
@@ -3736,16 +3676,8 @@ bool Blockchain::update_next_cumulative_weight_limit(uint64_t *long_term_effecti
 
   // when we reach this, the last hf version is not yet written to the db
   const uint64_t db_height = m_db->height();
-  const uint8_t hf_version = get_current_hard_fork_version();
-  uint64_t full_reward_zone = get_min_block_weight(hf_version);
+  uint64_t full_reward_zone = get_min_block_weight();
 
-  if (hf_version < HF_VERSION_LONG_TERM_BLOCK_WEIGHT)
-  {
-    std::vector<uint64_t> weights;
-    get_last_n_blocks_weights(weights, CRYPTONOTE_REWARD_BLOCKS_WINDOW);
-    m_current_block_cumul_weight_median = epee::misc_utils::median(weights);
-  }
-  else
   {
     const uint64_t block_weight = m_db->get_block_weight(db_height - 1);
 
