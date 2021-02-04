@@ -944,10 +944,6 @@ namespace cryptonote
     std::vector<difficulty_type> m_difficulties;
     uint64_t m_timestamps_and_difficulties_height;
     bool m_reset_timestamps_and_difficulties_height;
-    uint64_t m_long_term_block_weights_window;
-    uint64_t m_long_term_effective_median_block_weight;
-    mutable crypto::hash m_long_term_block_weights_cache_tip_hash;
-    mutable epee::misc_utils::rolling_median_t<uint64_t> m_long_term_block_weights_cache_rolling_median;
 
     epee::critical_section m_difficulty_lock;
     crypto::hash m_difficulty_for_next_block_top_hash;
@@ -1200,18 +1196,6 @@ namespace cryptonote
      * @param count the number of blocks to get weights for
      */
     void get_last_n_blocks_weights(std::vector<uint64_t>& weights, size_t count) const;
-
-    /**
-     * @brief gets block long term weight median
-     *
-     * get the block long term weight median of <count> blocks starting at <start_height>
-     *
-     * @param start_height the block height of the first block to query
-     * @param count the number of blocks to get weights for
-     *
-     * @return the long term median block weight
-     */
-    uint64_t get_long_term_block_weight_median(uint64_t start_height, size_t count) const;
 
     /**
      * @brief checks if a transaction is unlocked (its outputs spendable)
