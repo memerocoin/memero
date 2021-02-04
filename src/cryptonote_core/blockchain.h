@@ -943,7 +943,6 @@ namespace cryptonote
     mutable epee::critical_section m_blockchain_lock; // TODO: add here reader/writer lock
 
     // main chain
-    size_t m_current_block_cumul_weight_limit;
     size_t m_current_block_cumul_weight_median;
 
     // metadata containers

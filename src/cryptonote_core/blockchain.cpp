@@ -54,6 +54,7 @@
 #include "common/perf_timer.h"
 #include "common/notify.h"
 #include "common/varint.h"
+#include "config/lol.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "blockchain"
@@ -85,7 +86,7 @@ DISABLE_VS_WARNINGS(4267)
 
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
-  m_db(), m_tx_pool(tx_pool), m_timestamps_and_difficulties_height(0), m_reset_timestamps_and_difficulties_height(true), m_current_block_cumul_weight_limit(0), m_current_block_cumul_weight_median(0),
+  m_db(), m_tx_pool(tx_pool), m_timestamps_and_difficulties_height(0), m_reset_timestamps_and_difficulties_height(true),
   m_max_prepare_blocks_threads(4), m_db_sync_on_blocks(true), m_db_sync_threshold(1), m_db_sync_mode(db_async), m_db_default_sync(false), m_show_time_stats(false), m_sync_counter(0), m_bytes_to_sync(0), m_cancel(false),
   m_long_term_block_weights_window(CRYPTONOTE_LONG_TERM_BLOCK_WEIGHT_WINDOW_SIZE),
   m_long_term_effective_median_block_weight(0),
@@ -1255,7 +1256,7 @@ uint64_t Blockchain::get_long_term_block_weight_median(uint64_t start_height, si
 uint64_t Blockchain::get_current_cumulative_block_weight_limit() const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-  return m_current_block_cumul_weight_limit;
+  return config::lol::max_block_weight;
 }
 //------------------------------------------------------------------
 uint64_t Blockchain::get_current_cumulative_block_weight_median() const
@@ -2993,8 +2994,6 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
   uint64_t median = 0;
   uint64_t base_reward = 0;
   {
-    median = m_current_block_cumul_weight_limit / 2;
-    const uint64_t blockchain_height = m_db->height();
     if (!get_block_reward(1, base_reward))
       return false;
   }
@@ -3656,13 +3655,11 @@ bool Blockchain::update_next_cumulative_weight_limit(uint64_t *long_term_effecti
   if (m_current_block_cumul_weight_median <= full_reward_zone)
     m_current_block_cumul_weight_median = full_reward_zone;
 
-  m_current_block_cumul_weight_limit = m_current_block_cumul_weight_median * 2;
-
   if (long_term_effective_median_block_weight)
     *long_term_effective_median_block_weight = m_long_term_effective_median_block_weight;
 
   if (!m_db->is_read_only())
-    m_db->add_max_block_size(m_current_block_cumul_weight_limit);
+    m_db->add_max_block_size(config::lol::max_block_weight);
 
   return true;
 }

@@ -16,5 +16,6 @@ namespace config
     const uint64_t constant_hf_height = 0;
     const time_t constant_hf_time = 1600576524;
     const size_t max_connections_per_address = 2;
+    constexpr uint64_t max_block_weight = 4 * 1024 * 1024; // 4 MB
   }
 }
