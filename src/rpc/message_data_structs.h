@@ -181,10 +181,7 @@ namespace rpc
     cryptonote::difficulty_type wide_cumulative_difficulty;
     uint64_t cumulative_difficulty;
     uint64_t block_size_limit;
-    uint64_t block_weight_limit;
-    uint64_t block_size_median;
     uint64_t adjusted_time;
-    uint64_t block_weight_median;
     uint64_t start_time;
     std::string version;
   };

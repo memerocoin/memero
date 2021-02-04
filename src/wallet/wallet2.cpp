@@ -80,6 +80,7 @@ using namespace epee;
 #include "ringdb.h"
 #include "device/device_cold.hpp"
 #include "net/socks_connect.h"
+#include "config/lol.h"
 
 extern "C"
 {
@@ -5738,10 +5739,7 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
       }
 
       // get the current full reward zone
-      uint64_t block_weight_limit = 0;
-      const auto result = m_node_rpc_proxy.get_block_weight_limit(block_weight_limit);
-      if (result)
-        return priority;
+      uint64_t block_weight_limit = config::lol::max_block_weight;
       const uint64_t full_reward_zone = block_weight_limit / 2;
 
       // get the last N block headers and sum the block sizes
@@ -10477,9 +10475,7 @@ std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(const std::
     THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_txpool_backlog", error::get_tx_pool_error);
   }
 
-  uint64_t block_weight_limit = 0;
-  const auto result = m_node_rpc_proxy.get_block_weight_limit(block_weight_limit);
-  THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Invalid block weight limit from daemon");
+  uint64_t block_weight_limit = config::lol::max_block_weight;
   uint64_t full_reward_zone = block_weight_limit / 2;
   THROW_WALLET_EXCEPTION_IF(full_reward_zone == 0, error::wallet_internal_error, "Invalid block weight limit from daemon");
 

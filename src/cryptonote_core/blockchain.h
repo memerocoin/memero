@@ -623,27 +623,6 @@ namespace cryptonote
     bool check_tx_outputs(const transaction& tx, tx_verification_context &tvc) const;
 
     /**
-     * @brief gets the block weight limit based on recent blocks
-     *
-     * @return the limit
-     */
-    uint64_t get_current_cumulative_block_weight_limit() const;
-
-    /**
-     * @brief gets the long term block weight for a new block
-     *
-     * @return the long term block weight
-     */
-    uint64_t get_next_long_term_block_weight(uint64_t block_weight) const;
-
-    /**
-     * @brief gets the block weight median based on recent blocks (same window as for the limit)
-     *
-     * @return the median
-     */
-    uint64_t get_current_cumulative_block_weight_median() const;
-
-    /**
      * @brief gets the difficulty of the block with a given height
      *
      * @param i the height
@@ -941,9 +920,6 @@ namespace cryptonote
     tx_memory_pool& m_tx_pool;
 
     mutable epee::critical_section m_blockchain_lock; // TODO: add here reader/writer lock
-
-    // main chain
-    size_t m_current_block_cumul_weight_median;
 
     // metadata containers
     std::unordered_map<crypto::hash, std::unordered_map<crypto::key_image, std::vector<output_data_t>>> m_scan_table;
@@ -1329,7 +1305,7 @@ namespace cryptonote
      *
      * @return true
      */
-    bool update_next_cumulative_weight_limit(uint64_t *long_term_effective_median_block_weight = NULL);
+    bool update_next_cumulative_weight_limit();
     void return_tx_to_pool(std::vector<std::pair<transaction, blobdata>> &txs);
 
     /**

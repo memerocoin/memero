@@ -49,7 +49,6 @@ public:
   std::optional<std::string> get_height(uint64_t &height);
   void set_height(uint64_t h);
   std::optional<std::string> get_target_height(uint64_t &height);
-  std::optional<std::string> get_block_weight_limit(uint64_t &block_weight_limit);
   std::optional<std::string> get_adjusted_time(uint64_t &adjusted_time);
   std::optional<std::string> get_earliest_height(uint8_t version, uint64_t &earliest_height);
   std::optional<std::string> get_dynamic_base_fee_estimate(uint64_t grace_blocks, uint64_t &fee);
@@ -71,7 +70,6 @@ private:
   uint64_t m_adjusted_time;
   uint32_t m_rpc_version;
   uint64_t m_target_height;
-  uint64_t m_block_weight_limit;
   time_t m_get_info_time;
   time_t m_height_time;
 };

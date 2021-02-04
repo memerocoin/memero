@@ -40,6 +40,7 @@
 #include <boost/format.hpp>
 #include <ctime>
 #include <string>
+#include "config/lol.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"
@@ -1259,7 +1260,7 @@ bool t_rpc_command_executor::print_transaction_pool_stats() {
   size_t avg_bytes = n_transactions ? res.pool_stats.bytes_total / n_transactions : 0;
 
   std::string backlog_message;
-  const uint64_t full_reward_zone = ires.block_weight_limit / 2;
+  const uint64_t full_reward_zone = config::lol::max_block_weight / 2;
   if (res.pool_stats.bytes_total <= full_reward_zone)
   {
     backlog_message = "no backlog";

@@ -666,10 +666,6 @@ namespace cryptonote
       uint64_t cumulative_difficulty;
       std::string wide_cumulative_difficulty;
       uint64_t cumulative_difficulty_top64;
-      uint64_t block_size_limit;
-      uint64_t block_weight_limit;
-      uint64_t block_size_median;
-      uint64_t block_weight_median;
       uint64_t adjusted_time;
       uint64_t start_time;
       uint64_t free_space;
@@ -702,10 +698,6 @@ namespace cryptonote
         KV_SERIALIZE(cumulative_difficulty)
         KV_SERIALIZE(wide_cumulative_difficulty)
         KV_SERIALIZE(cumulative_difficulty_top64)
-        KV_SERIALIZE(block_size_limit)
-        KV_SERIALIZE_OPT(block_weight_limit, (uint64_t)0)
-        KV_SERIALIZE(block_size_median)
-        KV_SERIALIZE_OPT(block_weight_median, (uint64_t)0)
         KV_SERIALIZE(adjusted_time)
         KV_SERIALIZE(start_time)
         KV_SERIALIZE(free_space)

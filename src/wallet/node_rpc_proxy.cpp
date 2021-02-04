@@ -66,7 +66,6 @@ void NodeRPCProxy::invalidate()
   m_fee_quantization_mask = 1;
   m_rpc_version = 0;
   m_target_height = 0;
-  m_block_weight_limit = 0;
   m_adjusted_time = 0;
   m_get_info_time = 0;
   m_height_time = 0;
@@ -115,7 +114,6 @@ std::optional<std::string> NodeRPCProxy::get_info()
 
     m_height = resp_t.height;
     m_target_height = resp_t.target_height;
-    m_block_weight_limit = resp_t.block_weight_limit ? resp_t.block_weight_limit : resp_t.block_size_limit;
     m_adjusted_time = resp_t.adjusted_time;
     m_get_info_time = now;
     m_height_time = now;
@@ -145,15 +143,6 @@ std::optional<std::string> NodeRPCProxy::get_target_height(uint64_t &height)
   if (res)
     return res;
   height = m_target_height;
-  return std::optional<std::string>();
-}
-
-std::optional<std::string> NodeRPCProxy::get_block_weight_limit(uint64_t &block_weight_limit)
-{
-  auto res = get_info();
-  if (res)
-    return res;
-  block_weight_limit = m_block_weight_limit;
   return std::optional<std::string>();
 }
 

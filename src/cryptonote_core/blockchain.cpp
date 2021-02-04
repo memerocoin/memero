@@ -1253,18 +1253,6 @@ uint64_t Blockchain::get_long_term_block_weight_median(uint64_t start_height, si
   return m_long_term_block_weights_cache_rolling_median.median();
 }
 //------------------------------------------------------------------
-uint64_t Blockchain::get_current_cumulative_block_weight_limit() const
-{
-  LOG_PRINT_L3("Blockchain::" << __func__);
-  return config::lol::max_block_weight;
-}
-//------------------------------------------------------------------
-uint64_t Blockchain::get_current_cumulative_block_weight_median() const
-{
-  LOG_PRINT_L3("Blockchain::" << __func__);
-  return m_current_block_cumul_weight_median;
-}
-//------------------------------------------------------------------
 //TODO: This function only needed minor modification to work with BlockchainDB,
 //      and *works*.  As such, to reduce the number of things that might break
 //      in moving to BlockchainDB, this function will remain otherwise
@@ -3522,7 +3510,7 @@ leave:
   {
     try
     {
-      uint64_t long_term_block_weight = get_next_long_term_block_weight(block_weight);
+      uint64_t long_term_block_weight = config::lol::max_block_weight;
       cryptonote::blobdata bd = cryptonote::block_to_blob(bl);
       new_height = m_db->add_block(std::make_pair(std::move(bl), std::move(bd)), block_weight, long_term_block_weight, cumulative_difficulty, already_generated_coins, txs);
     }
@@ -3584,79 +3572,11 @@ leave:
   return true;
 }
 //------------------------------------------------------------------
-uint64_t Blockchain::get_next_long_term_block_weight(uint64_t block_weight) const
-{
-  PERF_TIMER(get_next_long_term_block_weight);
-
-  const uint64_t db_height = m_db->height();
-  const uint64_t nblocks = std::min<uint64_t>(m_long_term_block_weights_window, db_height);
-
-  uint64_t long_term_median = get_long_term_block_weight_median(db_height - nblocks, nblocks);
-  uint64_t long_term_effective_median_block_weight = std::max<uint64_t>(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5, long_term_median);
-
-  uint64_t short_term_constraint = long_term_effective_median_block_weight + long_term_effective_median_block_weight * 2 / 5;
-  uint64_t long_term_block_weight = std::min<uint64_t>(block_weight, short_term_constraint);
-
-  return long_term_block_weight;
-}
-//------------------------------------------------------------------
-bool Blockchain::update_next_cumulative_weight_limit(uint64_t *long_term_effective_median_block_weight)
+bool Blockchain::update_next_cumulative_weight_limit()
 {
   PERF_TIMER(update_next_cumulative_weight_limit);
 
   LOG_PRINT_L3("Blockchain::" << __func__);
-
-  // when we reach this, the last hf version is not yet written to the db
-  const uint64_t db_height = m_db->height();
-  uint64_t full_reward_zone = get_min_block_weight();
-
-  {
-    const uint64_t block_weight = m_db->get_block_weight(db_height - 1);
-
-    uint64_t long_term_median;
-    if (db_height == 1)
-    {
-      long_term_median = CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5;
-    }
-    else
-    {
-      uint64_t nblocks = std::min<uint64_t>(m_long_term_block_weights_window, db_height);
-      if (nblocks == db_height)
-        --nblocks;
-      long_term_median = get_long_term_block_weight_median(db_height - nblocks - 1, nblocks);
-    }
-
-    m_long_term_effective_median_block_weight = std::max<uint64_t>(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5, long_term_median);
-
-    uint64_t short_term_constraint = m_long_term_effective_median_block_weight + m_long_term_effective_median_block_weight * 2 / 5;
-    uint64_t long_term_block_weight = std::min<uint64_t>(block_weight, short_term_constraint);
-
-    if (db_height == 1)
-    {
-      long_term_median = long_term_block_weight;
-    }
-    else
-    {
-      m_long_term_block_weights_cache_tip_hash = m_db->get_block_hash_from_height(db_height - 1);
-      m_long_term_block_weights_cache_rolling_median.insert(long_term_block_weight);
-      long_term_median = m_long_term_block_weights_cache_rolling_median.median();
-    }
-    m_long_term_effective_median_block_weight = std::max<uint64_t>(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5, long_term_median);
-
-    std::vector<uint64_t> weights;
-    get_last_n_blocks_weights(weights, CRYPTONOTE_REWARD_BLOCKS_WINDOW);
-
-    uint64_t short_term_median = epee::misc_utils::median(weights);
-    uint64_t effective_median_block_weight = std::min<uint64_t>(std::max<uint64_t>(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5, short_term_median), CRYPTONOTE_SHORT_TERM_BLOCK_WEIGHT_SURGE_FACTOR * m_long_term_effective_median_block_weight);
-
-    m_current_block_cumul_weight_median = effective_median_block_weight;
-  }
-
-  if (m_current_block_cumul_weight_median <= full_reward_zone)
-    m_current_block_cumul_weight_median = full_reward_zone;
-
-  if (long_term_effective_median_block_weight)
-    *long_term_effective_median_block_weight = m_long_term_effective_median_block_weight;
 
   if (!m_db->is_read_only())
     m_db->add_max_block_size(config::lol::max_block_weight);
