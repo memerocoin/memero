@@ -7904,21 +7904,6 @@ uint64_t wallet2::cold_key_image_sync(uint64_t &spent, uint64_t &unspent) {
   return import_res;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::use_fork_rules(uint8_t version, int64_t early_blocks)
-{
-  // TODO: How to get fork rule info from light wallet node?
-  uint64_t height, earliest_height;
-  std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
-  THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get height");
-
-  bool close_enough = (int64_t)height >= (int64_t)earliest_height - early_blocks && earliest_height != std::numeric_limits<uint64_t>::max(); // start using the rules that many blocks beforehand
-  if (close_enough)
-    LOG_PRINT_L2("Using v" << (unsigned)version << " rules");
-  else
-    LOG_PRINT_L2("Not using v" << (unsigned)version << " rules");
-  return close_enough;
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_upper_transaction_weight_limit()
 {
   if (m_upper_transaction_weight_limit > 0)

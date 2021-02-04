@@ -1110,7 +1110,6 @@ private:
     size_t get_num_transfer_details() const { return m_transfers.size(); }
     const transfer_details &get_transfer_details(size_t idx) const;
 
-    bool use_fork_rules(uint8_t version, int64_t early_blocks = 0);
     int get_fee_algorithm();
 
     std::string get_wallet_file() const;
