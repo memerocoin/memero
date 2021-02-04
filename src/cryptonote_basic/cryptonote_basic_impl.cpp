@@ -40,6 +40,7 @@ using namespace epee;
 #include "common/base58.h"
 #include "crypto/hash.h"
 #include "int-util.h"
+#include "config/lol.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
@@ -65,7 +66,7 @@ namespace cryptonote {
   bool get_block_reward(size_t current_block_weight, uint64_t &reward) {
     reward = COIN * 300;
 
-    uint64_t max_weight = constant::CRYPTONOTE_BLOCK_MAX_WEIGHT;
+    uint64_t max_weight = config::lol::max_block_weight;
     if(current_block_weight > max_weight) {
       MERROR("Block weight is too big: " << current_block_weight << ", expected less than " << max_weight);
       return false;

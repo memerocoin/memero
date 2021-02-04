@@ -46,6 +46,7 @@
 #include "warnings.h"
 #include "common/perf_timer.h"
 #include "crypto/hash.h"
+#include "config/lol.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "txpool"
@@ -1279,8 +1280,7 @@ namespace cryptonote
     }
 
 
-    size_t max_total_weight =
-      constant::CRYPTONOTE_BLOCK_MAX_WEIGHT - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+    size_t max_total_weight = config::lol::max_block_weight - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> k_images;
 
     LOG_PRINT_L2("Filling block template, max weight " << max_total_weight << ", " << m_txs_by_fee_and_receive_time.size() << " txes in the pool");
