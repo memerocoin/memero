@@ -7910,8 +7910,6 @@ bool wallet2::use_fork_rules(uint8_t version, int64_t early_blocks)
   uint64_t height, earliest_height;
   std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
   THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get height");
-  result = m_node_rpc_proxy.get_earliest_height(version, earliest_height);
-  THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get earliest fork height");
 
   bool close_enough = (int64_t)height >= (int64_t)earliest_height - early_blocks && earliest_height != std::numeric_limits<uint64_t>::max(); // start using the rules that many blocks beforehand
   if (close_enough)

@@ -155,19 +155,6 @@ std::optional<std::string> NodeRPCProxy::get_adjusted_time(uint64_t &adjusted_ti
     return std::optional<std::string>();
 }
 
-std::optional<std::string> NodeRPCProxy::get_earliest_height(uint8_t version, uint64_t &earliest_height)
-{
-  if (m_offline)
-    return std::optional<std::string>("offline");
-  if (m_earliest_height[version] == 0)
-  {
-    m_earliest_height[version] = config::lol::constant_hf_height;
-  }
-
-  earliest_height = m_earliest_height[version];
-  return std::optional<std::string>();
-}
-
 std::optional<std::string> NodeRPCProxy::get_dynamic_base_fee_estimate(uint64_t grace_blocks, uint64_t &fee)
 {
   uint64_t height;
