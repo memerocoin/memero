@@ -50,21 +50,5 @@ uint32_t get_pruning_seed(uint64_t block_height, uint64_t blockchain_height, uin
 {
   return 0;
 }
-
-uint64_t get_next_unpruned_block_height(uint64_t block_height, uint64_t blockchain_height, uint32_t pruning_seed)
-{
-  return block_height;
-}
-
-uint64_t get_next_pruned_block_height(uint64_t block_height, uint64_t blockchain_height, uint32_t pruning_seed)
-{
-  return block_height;
-}
-
-uint32_t get_random_stripe()
-{
-  return 0;
-}
-
 }
 
