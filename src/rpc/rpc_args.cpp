@@ -109,10 +109,13 @@ namespace cryptonote
     command_line::add_arg(desc, arg.rpc_ignore_ipv4);
     command_line::add_arg(desc, arg.confirm_external_bind);
     command_line::add_arg(desc, arg.rpc_access_control_origins);
-    command_line::add_arg(desc, arg.rpc_ssl);
-    command_line::add_arg(desc, arg.rpc_ssl_private_key);
-    command_line::add_arg(desc, arg.rpc_ssl_certificate);
-    command_line::add_arg(desc, arg.rpc_ssl_allowed_fingerprints);
+
+    if (!any_cert_option) {
+      command_line::add_arg(desc, arg.rpc_ssl);
+      command_line::add_arg(desc, arg.rpc_ssl_private_key);
+      command_line::add_arg(desc, arg.rpc_ssl_certificate);
+      command_line::add_arg(desc, arg.rpc_ssl_allowed_fingerprints);
+    }
   }
 
   std::optional<rpc_args> rpc_args::process(const boost::program_options::variables_map& vm, const bool any_cert_option)
