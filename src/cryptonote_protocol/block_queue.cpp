@@ -36,7 +36,6 @@
 
 #include "string_tools.h"
 #include "cryptonote_protocol_defs.h"
-#include "common/pruning.h"
 #include "block_queue.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

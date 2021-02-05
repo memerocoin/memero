@@ -42,7 +42,6 @@
 #include "cryptonote_basic/cryptonote_format_utils.h"
 #include "profile_tools.h"
 #include "net/network_throttle-detail.hpp"
-#include "common/pruning.h"
 #include "common/util.h"
 #include "config/lol.h"
 
