@@ -79,8 +79,6 @@ namespace cryptonote
     void pause();
     void resume();
     void do_print_hashrate(bool do_hr);
-    uint8_t get_mining_target() const;
-    bool set_mining_target(uint8_t mining_target);
     uint64_t get_block_reward() const { return m_block_reward; }
 
   private:
@@ -129,13 +127,6 @@ namespace cryptonote
     std::list<uint64_t> m_last_hash_rates;
     bool m_do_print_hashrate;
     bool m_do_mining;
-
-    // background mining stuffs ..
-
-    uint8_t m_mining_target;
-    static bool get_system_times(uint64_t& total_time, uint64_t& idle_time);
-    static bool get_process_time(uint64_t& total_time);
-    static uint8_t get_percent_of_total(uint64_t some_time, uint64_t total_time);
     std::atomic<uint64_t> m_block_reward;
   };
 }
