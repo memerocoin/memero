@@ -3133,7 +3133,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
     "Use the \"help\" command to see a simplified list of available commands.\n"
     "Use \"help all\" command to see the list of all available commands.\n"
     "Use \"help <command>\" to see a command's documentation.\n"
-    "Always use the \"exit\" command when closing lolnero-wallet-cli to save \n"
+    "Always use the \"exit\" command when closing lolnero to save \n"
     "your current session's state. Otherwise, you might need to synchronize \n"
     "your wallet again (your wallet keys are NOT at risk in any case).\n")
   ;
@@ -7550,12 +7550,12 @@ int main(int argc, char* argv[])
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main(
    argc, argv,
-   "lolnero-wallet-cli [--open=<filename>|--new=<filename>] [<COMMAND>]",
+   "lolnero [--open=<filename>|--new=<filename>] [<COMMAND>]",
     sw::tr("This is the command line lolnero wallet. It needs to connect to a lolnero\ndaemon to work correctly."),
     desc_params,
     positional_options,
     [](const std::string &s, bool emphasis){ tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s; },
-    "lolnero-wallet-cli.log"
+    "lolnero.log"
   );
 
   if (!vm)

@@ -61,5 +61,5 @@ target_link_libraries(simplewallet
     ${EXTRA_LIBRARIES})
 set_property(TARGET simplewallet
   PROPERTY
-    OUTPUT_NAME "lolnero-wallet-cli")
+    OUTPUT_NAME "lolnero")
 install(TARGETS simplewallet DESTINATION bin)
