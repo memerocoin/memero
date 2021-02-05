@@ -102,6 +102,6 @@ if(NOT IOS)
       ${EXTRA_LIBRARIES})
   set_property(TARGET wallet_rpc_server
     PROPERTY
-      OUTPUT_NAME "lolnero-wallet-rpc")
+      OUTPUT_NAME "lolnero-rpc")
   install(TARGETS wallet_rpc_server DESTINATION bin)
 endif()
