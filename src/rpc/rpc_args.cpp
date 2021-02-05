@@ -41,13 +41,13 @@ namespace cryptonote
   {
     std::optional<epee::net_utils::ssl_options_t> do_process_ssl(const boost::program_options::variables_map& vm, const rpc_args::descriptors& arg, const bool any_cert_option)
     {
+      if (any_cert_option) {
+        return epee::net_utils::ssl_support_t::e_ssl_support_disabled;
+      }
       bool ssl_required = false;
       epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_enabled;
-      if (any_cert_option && command_line::get_arg(vm, arg.rpc_ssl_allow_any_cert))
-        ssl_options.verification = epee::net_utils::ssl_verification_t::none;
-      else
       {
-        std::string ssl_ca_file = command_line::get_arg(vm, arg.rpc_ssl_ca_certificates);
+        std::string ssl_ca_file;
         const std::vector<std::string> ssl_allowed_fingerprints = command_line::get_arg(vm, arg.rpc_ssl_allowed_fingerprints);
 
         std::vector<std::vector<uint8_t>> allowed_fingerprints{ ssl_allowed_fingerprints.size() };
@@ -67,9 +67,6 @@ namespace cryptonote
           ssl_options = epee::net_utils::ssl_options_t{
             std::move(allowed_fingerprints), std::move(ssl_ca_file)
           };
-
-          if (command_line::get_arg(vm, arg.rpc_ssl_allow_chained))
-            ssl_options.verification = epee::net_utils::ssl_verification_t::user_ca;
         }
       }
 
@@ -98,10 +95,7 @@ namespace cryptonote
      , rpc_ssl({"rpc-ssl", rpc_args::tr("Enable SSL on RPC connections: enabled|disabled|autodetect"), "autodetect"})
      , rpc_ssl_private_key({"rpc-ssl-private-key", rpc_args::tr("Path to a PEM format private key"), ""})
      , rpc_ssl_certificate({"rpc-ssl-certificate", rpc_args::tr("Path to a PEM format certificate"), ""})
-     , rpc_ssl_ca_certificates({"rpc-ssl-ca-certificates", rpc_args::tr("Path to file containing concatenated PEM format certificate(s) to replace system CA(s)."), ""})
      , rpc_ssl_allowed_fingerprints({"rpc-ssl-allowed-fingerprints", rpc_args::tr("List of certificate fingerprints to allow")})
-     , rpc_ssl_allow_chained({"rpc-ssl-allow-chained", rpc_args::tr("Allow user (via --rpc-ssl-certificates) chain certificates"), false})
-     , rpc_ssl_allow_any_cert({"rpc-ssl-allow-any-cert", rpc_args::tr("Allow any peer certificate"), false})
      , disable_rpc_ban({"disable-rpc-ban", rpc_args::tr("Do not ban hosts on RPC errors"), false, false})
   {}
 
@@ -119,12 +113,8 @@ namespace cryptonote
     command_line::add_arg(desc, arg.rpc_ssl);
     command_line::add_arg(desc, arg.rpc_ssl_private_key);
     command_line::add_arg(desc, arg.rpc_ssl_certificate);
-    command_line::add_arg(desc, arg.rpc_ssl_ca_certificates);
     command_line::add_arg(desc, arg.rpc_ssl_allowed_fingerprints);
-    command_line::add_arg(desc, arg.rpc_ssl_allow_chained);
     command_line::add_arg(desc, arg.disable_rpc_ban);
-    if (any_cert_option)
-      command_line::add_arg(desc, arg.rpc_ssl_allow_any_cert);
   }
 
   std::optional<rpc_args> rpc_args::process(const boost::program_options::variables_map& vm, const bool any_cert_option)

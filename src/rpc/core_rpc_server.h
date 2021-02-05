@@ -57,12 +57,6 @@ namespace cryptonote
   public:
 
     static const command_line::arg_descriptor<std::string, false, true, 2> arg_rpc_bind_port;
-    static const command_line::arg_descriptor<std::string> arg_rpc_ssl;
-    static const command_line::arg_descriptor<std::string> arg_rpc_ssl_private_key;
-    static const command_line::arg_descriptor<std::string> arg_rpc_ssl_certificate;
-    static const command_line::arg_descriptor<std::string> arg_rpc_ssl_ca_certificates;
-    static const command_line::arg_descriptor<std::vector<std::string>> arg_rpc_ssl_allowed_fingerprints;
-    static const command_line::arg_descriptor<bool> arg_rpc_ssl_allow_any_cert;
 
     typedef epee::net_utils::connection_context_base connection_context;
 
