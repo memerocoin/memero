@@ -1664,25 +1664,6 @@ public:
   virtual void set_hard_fork_version(uint64_t height, uint8_t version) = 0;
 
   /**
-   * @brief checks which hardfork version a height is on
-   *
-   * @param height the height
-   *
-   * @return the version
-   */
-  virtual uint8_t get_hard_fork_version(uint64_t height) const = 0;
-
-  /**
-   * @brief verify hard fork info in database
-   */
-  virtual void check_hard_fork_info() = 0;
-
-  /**
-   * @brief delete hard fork info from database
-   */
-  virtual void drop_hard_fork_info() = 0;
-
-  /**
    * @brief return a histogram of outputs on the blockchain
    *
    * @param amounts optional set of amounts to lookup

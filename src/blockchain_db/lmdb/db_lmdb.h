@@ -392,9 +392,6 @@ private:
 
   // Hard fork
   virtual void set_hard_fork_version(uint64_t height, uint8_t version);
-  virtual uint8_t get_hard_fork_version(uint64_t height) const;
-  virtual void check_hard_fork_info();
-  virtual void drop_hard_fork_info();
 
   inline void check_open() const;
 
