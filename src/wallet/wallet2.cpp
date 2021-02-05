@@ -844,12 +844,12 @@ static void setup_shim(hw::wallet_shim * shim, tools::wallet2 * wallet)
   shim->get_tx_pub_key_from_received_outs = std::bind(&tools::wallet2::get_tx_pub_key_from_received_outs, wallet, std::placeholders::_1);
 }
 
-bool get_pruned_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, cryptonote::transaction &tx, crypto::hash &tx_hash)
+bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, cryptonote::transaction &tx, crypto::hash &tx_hash)
 {
   cryptonote::blobdata bd;
 
   // easy case if we have the whole tx
-  if (!entry.as_hex.empty() || (!entry.prunable_as_hex.empty() && !entry.pruned_as_hex.empty()))
+  if (!entry.as_hex.empty())
   {
     CHECK_AND_ASSERT_MES(epee::string_tools::parse_hexstr_to_binbuff(entry.as_hex.empty() ? entry.pruned_as_hex + entry.prunable_as_hex : entry.as_hex, bd), false, "Failed to parse tx data");
     CHECK_AND_ASSERT_MES(cryptonote::parse_and_validate_tx_from_blob(bd, tx), false, "Invalid tx data");
@@ -857,25 +857,6 @@ bool get_pruned_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry,
     // if the hash was given, check it matches
     CHECK_AND_ASSERT_MES(entry.tx_hash.empty() || epee::string_tools::pod_to_hex(tx_hash) == entry.tx_hash, false,
         "Response claims a different hash than the data yields");
-    return true;
-  }
-  // case of a pruned tx with its prunable data hash
-  if (!entry.pruned_as_hex.empty() && !entry.prunable_hash.empty())
-  {
-    crypto::hash ph;
-    CHECK_AND_ASSERT_MES(epee::string_tools::hex_to_pod(entry.prunable_hash, ph), false, "Failed to parse prunable hash");
-    CHECK_AND_ASSERT_MES(epee::string_tools::parse_hexstr_to_binbuff(entry.pruned_as_hex, bd), false, "Failed to parse pruned data");
-    CHECK_AND_ASSERT_MES(parse_and_validate_tx_base_from_blob(bd, tx), false, "Invalid base tx data");
-    // only v2 txes can calculate their txid after pruned
-    if (bd[0] > 1)
-    {
-      tx_hash = cryptonote::get_pruned_transaction_hash(tx, ph);
-    }
-    else
-    {
-      // for v1, we trust the dameon
-      CHECK_AND_ASSERT_MES(epee::string_tools::hex_to_pod(entry.tx_hash, tx_hash), false, "Failed to parse tx hash");
-    }
     return true;
   }
   return false;
@@ -2743,7 +2724,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
             cryptonote::blobdata bd;
             crypto::hash tx_hash;
 
-            if (get_pruned_tx(tx_entry, tx, tx_hash))
+            if (get_full_tx(tx_entry, tx, tx_hash))
             {
                 const std::vector<std::pair<crypto::hash, bool>>::const_iterator i = std::find_if(txids.begin(), txids.end(),
                     [tx_hash](const std::pair<crypto::hash, bool> &e) { return e.first == tx_hash; });
@@ -5932,7 +5913,7 @@ bool wallet2::unset_ring(const crypto::hash &txid)
 
   cryptonote::transaction tx;
   crypto::hash tx_hash;
-  if (!get_pruned_tx(res.txs.front(), tx, tx_hash))
+  if (!get_full_tx(res.txs.front(), tx, tx_hash))
     return false;
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
 
@@ -5992,7 +5973,7 @@ bool wallet2::find_and_save_rings(bool force)
     const auto &tx_info = res.txs[i];
       cryptonote::transaction tx;
       crypto::hash tx_hash;
-      THROW_WALLET_EXCEPTION_IF(!get_pruned_tx(tx_info, tx, tx_hash), error::wallet_internal_error,
+      THROW_WALLET_EXCEPTION_IF(!get_full_tx(tx_info, tx, tx_hash), error::wallet_internal_error,
           "Failed to get transaction from daemon");
       THROW_WALLET_EXCEPTION_IF(!(tx_hash == *it), error::wallet_internal_error, "Wrong txid received");
       THROW_WALLET_EXCEPTION_IF(!add_rings(get_ringdb_key(), tx), error::wallet_internal_error, "Failed to save ring");
@@ -8182,7 +8163,7 @@ void wallet2::set_tx_key(const crypto::hash &txid, const crypto::secret_key &tx_
 
   cryptonote::transaction tx;
   crypto::hash tx_hash;
-  THROW_WALLET_EXCEPTION_IF(!get_pruned_tx(res.txs[0], tx, tx_hash), error::wallet_internal_error,
+  THROW_WALLET_EXCEPTION_IF(!get_full_tx(res.txs[0], tx, tx_hash), error::wallet_internal_error,
       "Failed to get transaction from daemon");
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "txid mismatch");
   std::vector<tx_extra_field> tx_extra_fields;
@@ -8241,7 +8222,7 @@ std::string wallet2::get_spend_proof(const crypto::hash &txid, const std::string
 
   cryptonote::transaction tx;
   crypto::hash tx_hash;
-  THROW_WALLET_EXCEPTION_IF(!get_pruned_tx(res.txs[0], tx, tx_hash), error::wallet_internal_error, "Failed to get tx from daemon");
+  THROW_WALLET_EXCEPTION_IF(!get_full_tx(res.txs[0], tx, tx_hash), error::wallet_internal_error, "Failed to get tx from daemon");
 
   std::vector<std::vector<crypto::signature>> signatures;
 
@@ -8355,7 +8336,7 @@ bool wallet2::check_spend_proof(const crypto::hash &txid, const std::string &mes
 
   cryptonote::transaction tx;
   crypto::hash tx_hash;
-  THROW_WALLET_EXCEPTION_IF(!get_pruned_tx(res.txs[0], tx, tx_hash), error::wallet_internal_error, "failed to get tx from daemon");
+  THROW_WALLET_EXCEPTION_IF(!get_full_tx(res.txs[0], tx, tx_hash), error::wallet_internal_error, "failed to get tx from daemon");
 
   // check signature size
   size_t num_sigs = 0;
@@ -8524,7 +8505,7 @@ void wallet2::check_tx_key_helper(const crypto::hash &txid, const crypto::key_de
   crypto::hash tx_hash;
   if (res.txs.size() == 1)
   {
-    ok = get_pruned_tx(res.txs.front(), tx, tx_hash);
+    ok = get_full_tx(res.txs.front(), tx, tx_hash);
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
   }
   else
@@ -8576,7 +8557,7 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
     crypto::hash tx_hash;
     if (res.txs.size() == 1)
     {
-      ok = get_pruned_tx(res.txs.front(), tx, tx_hash);
+      ok = get_full_tx(res.txs.front(), tx, tx_hash);
       THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
     }
     else
@@ -8734,7 +8715,7 @@ bool wallet2::check_tx_proof(const crypto::hash &txid, const cryptonote::account
   crypto::hash tx_hash;
   if (res.txs.size() == 1)
   {
-    ok = get_pruned_tx(res.txs.front(), tx, tx_hash);
+    ok = get_full_tx(res.txs.front(), tx, tx_hash);
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
   }
   else
@@ -9075,7 +9056,7 @@ bool wallet2::check_reserve_proof(const cryptonote::account_public_address &addr
 
     cryptonote::transaction tx;
     crypto::hash tx_hash;
-    ok = get_pruned_tx(gettx_res.txs[i], tx, tx_hash);
+    ok = get_full_tx(gettx_res.txs[i], tx, tx_hash);
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
 
     THROW_WALLET_EXCEPTION_IF(tx_hash != proof.txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
@@ -9769,7 +9750,7 @@ uint64_t wallet2::import_key_images(const std::vector<std::pair<crypto::key_imag
 
       cryptonote::transaction spent_tx;
       crypto::hash spnet_txid_parsed;
-      THROW_WALLET_EXCEPTION_IF(!get_pruned_tx(e, spent_tx, spnet_txid_parsed), error::wallet_internal_error, "Failed to get tx from daemon");
+      THROW_WALLET_EXCEPTION_IF(!get_full_tx(e, spent_tx, spnet_txid_parsed), error::wallet_internal_error, "Failed to get tx from daemon");
       THROW_WALLET_EXCEPTION_IF(!(spnet_txid_parsed == *it), error::wallet_internal_error, "parsed txid mismatch");
       ++it;
 
