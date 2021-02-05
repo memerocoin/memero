@@ -37,8 +37,6 @@ namespace http
 
 class client : public epee::net_utils::http::http_simple_client
 {
-public:
-  bool set_proxy(const std::string &address) override;
 };
 
 class client_factory : public epee::net_utils::http::http_client_factory
