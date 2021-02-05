@@ -1695,8 +1695,6 @@ skip:
     if (context.m_remote_blockchain_height <= blockchain_height)
       return false;
     const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
-    const bool has_next_block = tools::has_unpruned_block(blockchain_height, context.m_remote_blockchain_height, context.m_pruning_seed);
-    if (has_next_block)
     {
       if (!m_block_queue.has_next_span(blockchain_height, filled, request_time, connection_id))
       {
@@ -1866,8 +1864,6 @@ skip:
         boost::uuids::uuid span_connection_id;
         boost::posix_time::ptime time;
         span = m_block_queue.get_next_span_if_scheduled(hashes, span_connection_id, time);
-        if (span.second > 0 && !tools::has_unpruned_block(span.first, context.m_remote_blockchain_height, context.m_pruning_seed))
-          span = std::make_pair(0, 0);
         if (span.second > 0)
         {
           is_next = true;

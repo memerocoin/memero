@@ -41,14 +41,5 @@ bool has_unpruned_block(uint64_t block_height, uint64_t blockchain_height, uint3
   return true;
 }
 
-uint32_t get_pruning_stripe(uint64_t block_height, uint64_t blockchain_height, uint32_t log_stripes)
-{
-  return 0;
-}
-
-uint32_t get_pruning_seed(uint64_t block_height, uint64_t blockchain_height, uint32_t log_stripes)
-{
-  return 0;
-}
 }
 

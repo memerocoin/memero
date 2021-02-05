@@ -1818,7 +1818,7 @@ namespace nodetool
       local_peerlist[i].last_seen = 0;
 
 #ifdef CRYPTONOTE_PRUNING_DEBUG_SPOOF_SEED
-      be.pruning_seed = tools::make_pruning_seed(1 + (be.adr.as<epee::net_utils::ipv4_network_address>().ip()) % (1ul << CRYPTONOTE_PRUNING_LOG_STRIPES), CRYPTONOTE_PRUNING_LOG_STRIPES);
+      be.pruning_seed = 0;
 #endif
     }
     return true;
