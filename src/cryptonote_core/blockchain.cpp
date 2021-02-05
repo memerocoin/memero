@@ -2452,17 +2452,6 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   LOG_PRINT_L3("Blockchain::" << __func__);
   CRITICAL_REGION_LOCAL(m_blockchain_lock);
 
-  // from hard fork 2, we forbid dust and compound outputs
-    for (auto &o: tx.vout) {
-      if (tx.version == 1)
-      {
-        if (!is_valid_decomposed_amount(o.amount)) {
-          tvc.m_invalid_output = true;
-          return false;
-        }
-      }
-    }
-
   // in a v2 tx, all outputs must have 0 amount
     if (tx.version >= 2) {
       for (auto &o: tx.vout) {
