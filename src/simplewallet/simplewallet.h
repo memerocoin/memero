@@ -112,7 +112,6 @@ namespace cryptonote
     bool spendkey(const std::vector<std::string> &args = std::vector<std::string>());
     bool seed(const std::vector<std::string> &args = std::vector<std::string>());
     bool encrypted_seed(const std::vector<std::string> &args = std::vector<std::string>());
-    bool restore_height(const std::vector<std::string> &args = std::vector<std::string>());
 
     /*!
      * \brief Sets seed language.
@@ -364,7 +363,6 @@ namespace cryptonote
     std::string m_mnemonic_language;
     std::string m_import_path;
     std::string m_subaddress_lookahead;
-    std::string m_restore_date;  // optional - converted to m_restore_height
 
     epee::wipeable_string m_electrum_seed;  // electrum-style seed parameter
 
@@ -372,7 +370,6 @@ namespace cryptonote
     bool m_restore_deterministic_wallet;  // recover flag
     bool m_non_deterministic;  // old 2-random generation
     bool m_restoring;           // are we restoring, by whatever method?
-    uint64_t m_restore_height;  // optional
     bool m_do_not_relay;
     bool m_use_english_language_names;
 

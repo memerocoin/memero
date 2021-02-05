@@ -1895,7 +1895,6 @@ namespace wallet_rpc
   {
     struct request
     {
-      uint64_t restore_height;
       std::string filename;
       std::string address;
       std::string spendkey;
@@ -1904,7 +1903,6 @@ namespace wallet_rpc
       bool autosave_current;
 
       BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE_OPT(restore_height, (uint64_t)0)
       KV_SERIALIZE(filename)
       KV_SERIALIZE(address)
       KV_SERIALIZE(spendkey)
@@ -1930,7 +1928,6 @@ namespace wallet_rpc
   {
     struct request_t
     {
-      uint64_t restore_height;
       std::string filename;
       std::string seed;
       std::string seed_offset;
@@ -1939,7 +1936,6 @@ namespace wallet_rpc
       bool autosave_current;
 
       BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE_OPT(restore_height, (uint64_t)0)
       KV_SERIALIZE(filename)
       KV_SERIALIZE(seed)
       KV_SERIALIZE(seed_offset)

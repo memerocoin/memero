@@ -152,8 +152,6 @@ namespace
   const command_line::arg_descriptor<bool> arg_restore_deterministic_wallet = {"restore-deterministic-wallet", sw::tr("Recover wallet using Electrum-style mnemonic seed"), false};
   const command_line::arg_descriptor<bool> arg_restore_from_seed = {"restore-from-seed", sw::tr("alias for --restore-deterministic-wallet"), false};
   const command_line::arg_descriptor<bool> arg_non_deterministic = {"non-deterministic", sw::tr("Generate non-deterministic view and spend keys"), false};
-  const command_line::arg_descriptor<uint64_t> arg_restore_height = {"restore-height", sw::tr("Restore from specific blockchain height"), 0};
-  const command_line::arg_descriptor<std::string> arg_restore_date = {"restore-date", sw::tr("Restore from estimated blockchain height on specified date"), ""};
   const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the lolnero network"), false};
   const command_line::arg_descriptor<bool> arg_create_address_file = {"create-address-file", sw::tr("Create an address file for new wallets"), false};
   const command_line::arg_descriptor<std::string> arg_subaddress_lookahead = {"subaddress-lookahead", tools::wallet2::tr("Set subaddress lookahead sizes to <major>:<minor>"), ""};
@@ -717,12 +715,6 @@ bool simple_wallet::seed(const std::vector<std::string> &args/* = std::vector<st
 bool simple_wallet::encrypted_seed(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   return print_seed(true);
-}
-
-bool simple_wallet::restore_height(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  success_msg_writer() << m_wallet->get_refresh_from_block_height();
-  return true;
 }
 
 bool simple_wallet::seed_set_language(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
@@ -2107,9 +2099,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("seed",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::seed, std::placeholders::_1),
                            tr("Display the Electrum-style mnemonic seed"));
-  m_cmd_binder.set_handler("restore_height",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::restore_height, std::placeholders::_1),
-                           tr("Display the restore height"));
   m_cmd_binder.set_handler("set",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_variable, std::placeholders::_1),
                            tr(USAGE_SET_VARIABLE),
@@ -2922,8 +2911,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
           CHECK_AND_ASSERT_MES(false, false, tr("account creation aborted"));
 
         m_wallet->set_refresh_from_block_height(m_wallet->estimate_blockchain_height() > 0 ? m_wallet->estimate_blockchain_height() - 1 : 0);
-        m_wallet->explicit_refresh_from_block_height(true);
-        m_restore_height = m_wallet->get_refresh_from_block_height();
+        m_wallet->set_explicit_refresh_from_block_height(true);
       }
     }
     else
@@ -2940,96 +2928,9 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       welcome = true;
     }
 
-    if (m_restoring && m_generate_from_json.empty() && m_generate_from_device.empty())
-    {
-      m_wallet->explicit_refresh_from_block_height(!(command_line::is_arg_defaulted(vm, arg_restore_height) &&
-        command_line::is_arg_defaulted(vm, arg_restore_date)));
-      if (command_line::is_arg_defaulted(vm, arg_restore_height) && !command_line::is_arg_defaulted(vm, arg_restore_date))
-      {
-        uint16_t year;
-        uint8_t month;
-        uint8_t day;
-        if (!datestr_to_int(m_restore_date, year, month, day))
-          return false;
-        try
-        {
-          m_restore_height = m_wallet->get_blockchain_height_by_date(year, month, day);
-          success_msg_writer() << tr("Restore height is: ") << m_restore_height;
-        }
-        catch (const std::runtime_error& e)
-        {
-          fail_msg_writer() << e.what();
-          return false;
-        }
-      }
-    }
-    if (!m_wallet->explicit_refresh_from_block_height() && m_restoring)
-    {
-      uint32_t version;
-      bool connected = try_connect_to_daemon(false, &version);
-      while (true)
-      {
-        std::string heightstr;
-        if (!connected || version < MAKE_CORE_RPC_VERSION(1, 6))
-          heightstr = input_line("Restore from specific blockchain height (optional, default 0)");
-        else
-          heightstr = input_line("Restore from specific blockchain height (optional, default 0),\nor alternatively from specific date (YYYY-MM-DD)");
-        if (std::cin.eof())
-          return false;
-        if (heightstr.empty())
-        {
-          m_restore_height = 0;
-          break;
-        }
-        try
-        {
-          m_restore_height = boost::lexical_cast<uint64_t>(heightstr);
-          break;
-        }
-        catch (const boost::bad_lexical_cast &)
-        {
-          if (!connected || version < MAKE_CORE_RPC_VERSION(1, 6))
-          {
-            fail_msg_writer() << tr("bad m_restore_height parameter: ") << heightstr;
-            continue;
-          }
-          uint16_t year;
-          uint8_t month;  // 1, 2, ..., 12
-          uint8_t day;    // 1, 2, ..., 31
-          try
-          {
-            if (!datestr_to_int(heightstr, year, month, day))
-              return false;
-            m_restore_height = m_wallet->get_blockchain_height_by_date(year, month, day);
-            success_msg_writer() << tr("Restore height is: ") << m_restore_height;
-            std::string confirm = input_line(tr("Is this okay?"), true);
-            if (std::cin.eof())
-              return false;
-            if(command_line::is_yes(confirm))
-              break;
-          }
-          catch (const boost::bad_lexical_cast &)
-          {
-            fail_msg_writer() << tr("bad m_restore_height parameter: ") << heightstr;
-          }
-          catch (const std::runtime_error& e)
-          {
-            fail_msg_writer() << e.what();
-          }
-        }
-      }
-    }
     if (m_restoring)
     {
-      uint64_t estimate_height = m_wallet->estimate_blockchain_height();
-      if (m_restore_height >= estimate_height)
-      {
-        success_msg_writer() << tr("Restore height ") << m_restore_height << (" is not yet reached. The current estimated height is ") << estimate_height;
-        std::string confirm = input_line(tr("Still apply restore height?"), true);
-        if (std::cin.eof() || command_line::is_no(confirm))
-          m_restore_height = 0;
-      }
-      m_wallet->set_refresh_from_block_height(m_restore_height);
+      m_wallet->set_refresh_from_block_height(0);
     }
     m_wallet->rewrite(m_wallet_file, password);
   }
@@ -3084,8 +2985,6 @@ bool simple_wallet::handle_command_line(const boost::program_options::variables_
   m_electrum_seed                 = command_line::get_arg(vm, arg_electrum_seed);
   m_restore_deterministic_wallet  = command_line::get_arg(vm, arg_restore_deterministic_wallet) || command_line::get_arg(vm, arg_restore_from_seed);
   m_non_deterministic             = command_line::get_arg(vm, arg_non_deterministic);
-  m_restore_height                = command_line::get_arg(vm, arg_restore_height);
-  m_restore_date                  = command_line::get_arg(vm, arg_restore_date);
   m_do_not_relay                  = command_line::get_arg(vm, arg_do_not_relay);
   m_subaddress_lookahead          = command_line::get_arg(vm, arg_subaddress_lookahead);
   m_use_english_language_names    = command_line::get_arg(vm, arg_use_english_language_names);
@@ -3095,14 +2994,6 @@ bool simple_wallet::handle_command_line(const boost::program_options::variables_
                                     !m_generate_from_json.empty() ||
                                     !m_generate_from_device.empty() ||
                                     m_restore_deterministic_wallet;
-
-  if (!command_line::is_arg_defaulted(vm, arg_restore_date))
-  {
-    uint16_t year;
-    uint8_t month, day;
-    if (!datestr_to_int(m_restore_date, year, month, day))
-      return false;
-  }
 
   return true;
 }
@@ -3305,9 +3196,6 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
     m_wallet->set_subaddress_lookahead(lookahead->first, lookahead->second);
   }
 
-  if (m_restore_height)
-    m_wallet->set_refresh_from_block_height(m_restore_height);
-
   bool create_address_file = command_line::get_arg(vm, arg_create_address_file);
 
   try
@@ -3353,9 +3241,6 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
     assert(lookahead);
     m_wallet->set_subaddress_lookahead(lookahead->first, lookahead->second);
   }
-
-  if (m_restore_height)
-    m_wallet->set_refresh_from_block_height(m_restore_height);
 
   return password;
 }
@@ -7683,8 +7568,6 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_params, arg_restore_from_seed );
   command_line::add_arg(desc_params, arg_non_deterministic );
   command_line::add_arg(desc_params, arg_electrum_seed );
-  command_line::add_arg(desc_params, arg_restore_height);
-  command_line::add_arg(desc_params, arg_restore_date);
   command_line::add_arg(desc_params, arg_do_not_relay);
   command_line::add_arg(desc_params, arg_create_address_file);
   command_line::add_arg(desc_params, arg_subaddress_lookahead);

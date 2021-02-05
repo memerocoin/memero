@@ -2814,7 +2814,6 @@ namespace tools
     // set blockheight if given
     try
     {
-      wal->set_refresh_from_block_height(req.restore_height);
       wal->rewrite(wallet_file, password);
     }
     catch (const std::exception &e)
@@ -3001,7 +3000,6 @@ namespace tools
     // set blockheight if given
     try
     {
-      wal->set_refresh_from_block_height(req.restore_height);
       wal->rewrite(wallet_file, password);
     }
     catch (const std::exception &e)

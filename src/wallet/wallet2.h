@@ -730,8 +730,8 @@ private:
     void set_refresh_from_block_height(uint64_t height) {m_refresh_from_block_height = height;}
     uint64_t get_refresh_from_block_height() const {return m_refresh_from_block_height;}
 
-    void explicit_refresh_from_block_height(bool expl) {m_explicit_refresh_from_block_height = expl;}
-    bool explicit_refresh_from_block_height() const {return m_explicit_refresh_from_block_height;}
+    void set_explicit_refresh_from_block_height(bool expl) {m_explicit_refresh_from_block_height = expl;}
+    bool get_explicit_refresh_from_block_height() const {return m_explicit_refresh_from_block_height;}
 
     bool deinit();
     bool init(std::string daemon_address = "http://localhost:8080",

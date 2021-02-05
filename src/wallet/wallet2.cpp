@@ -609,7 +609,7 @@ std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> generate_f
 
     wallet.reset(make_basic(vm, unattended, opts, password_prompter).release());
     wallet->set_refresh_from_block_height(field_scan_from_height);
-    wallet->explicit_refresh_from_block_height(field_scan_from_height_found);
+    wallet->set_explicit_refresh_from_block_height(field_scan_from_height_found);
 
     try
     {
