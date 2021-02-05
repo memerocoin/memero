@@ -232,8 +232,6 @@ struct options {
   const command_line::arg_descriptor<std::string> daemon_address = {"daemon-address", tools::wallet2::tr("Use daemon instance at <host>:<port>"), ""};
   const command_line::arg_descriptor<std::string> daemon_host = {"daemon-host", tools::wallet2::tr("Use daemon instance at host <arg> instead of localhost"), ""};
   const command_line::arg_descriptor<std::string> proxy = {"proxy", tools::wallet2::tr("[<ip>:]<port> socks proxy to use for daemon connections"), {}, true};
-  const command_line::arg_descriptor<bool> trusted_daemon = {"trusted-daemon", tools::wallet2::tr("Enable commands which rely on a trusted daemon"), false};
-  const command_line::arg_descriptor<bool> untrusted_daemon = {"untrusted-daemon", tools::wallet2::tr("Disable commands which rely on a trusted daemon"), false};
   const command_line::arg_descriptor<std::string> password = {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
   const command_line::arg_descriptor<std::string> password_file = {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
   const command_line::arg_descriptor<int> daemon_port = {"daemon-port", tools::wallet2::tr("Use daemon instance at port <arg> instead of 18081"), 0};
@@ -405,29 +403,8 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
       std::string{"Invalid address specified for --"} + opts.proxy.name);
   }
 
-  std::optional<bool> trusted_daemon;
-  if (!command_line::is_arg_defaulted(vm, opts.trusted_daemon) || !command_line::is_arg_defaulted(vm, opts.untrusted_daemon))
-    trusted_daemon = command_line::get_arg(vm, opts.trusted_daemon) && !command_line::get_arg(vm, opts.untrusted_daemon);
-  THROW_WALLET_EXCEPTION_IF(!command_line::is_arg_defaulted(vm, opts.trusted_daemon) && !command_line::is_arg_defaulted(vm, opts.untrusted_daemon),
-    tools::error::wallet_internal_error, tools::wallet2::tr("--trusted-daemon and --untrusted-daemon are both seen, assuming untrusted"));
-
-  // set --trusted-daemon if local and not overridden
-  if (!trusted_daemon)
-  {
-    try
-    {
-      trusted_daemon = false;
-      if (tools::is_local_address(daemon_address))
-      {
-        MINFO(tools::wallet2::tr("Daemon is local, assuming trusted"));
-        trusted_daemon = true;
-      }
-    }
-    catch (const std::exception &e) { }
-  }
-
   std::unique_ptr<tools::wallet2> wallet(new tools::wallet2(nettype, kdf_rounds, unattended));
-  if (!wallet->init(std::move(daemon_address), std::move(proxy), 0, *trusted_daemon, std::move(ssl_options)))
+  if (!wallet->init(std::move(daemon_address), std::move(proxy), 0, std::move(ssl_options)))
   {
     THROW_WALLET_EXCEPTION(tools::error::wallet_internal_error, tools::wallet2::tr("failed to initialize the wallet"));
   }
@@ -970,7 +947,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_upper_transaction_weight_limit(0),
   m_run(true),
   m_callback(0),
-  m_trusted_daemon(false),
   m_nettype(nettype),
   m_always_confirm_transfers(true),
   m_print_ring_members(false),
@@ -1040,8 +1016,6 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
   command_line::add_arg(desc_params, opts.daemon_address);
   command_line::add_arg(desc_params, opts.daemon_host);
   command_line::add_arg(desc_params, opts.proxy);
-  command_line::add_arg(desc_params, opts.trusted_daemon);
-  command_line::add_arg(desc_params, opts.untrusted_daemon);
   command_line::add_arg(desc_params, opts.password);
   command_line::add_arg(desc_params, opts.password_file);
   command_line::add_arg(desc_params, opts.daemon_port);
@@ -1102,7 +1076,7 @@ std::unique_ptr<wallet2> wallet2::make_dummy(const boost::program_options::varia
 }
 
 //----------------------------------------------------------------------------------------------------
-bool wallet2::set_daemon(std::string daemon_address, bool trusted_daemon, epee::net_utils::ssl_options_t ssl_options)
+bool wallet2::set_daemon(std::string daemon_address, epee::net_utils::ssl_options_t ssl_options)
 {
   std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
 
@@ -1110,7 +1084,6 @@ bool wallet2::set_daemon(std::string daemon_address, bool trusted_daemon, epee::
     m_http_client->disconnect();
   const bool changed = m_daemon_address != daemon_address;
   m_daemon_address = std::move(daemon_address);
-  m_trusted_daemon = trusted_daemon;
 
   const std::string address = get_daemon_address();
   MINFO("setting daemon to " << address);
@@ -1128,12 +1101,12 @@ bool wallet2::set_proxy(const std::string &address)
   return m_http_client->set_proxy(address);
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::init(std::string daemon_address, const std::string &proxy_address, uint64_t upper_transaction_weight_limit, bool trusted_daemon, epee::net_utils::ssl_options_t ssl_options)
+bool wallet2::init(std::string daemon_address, const std::string &proxy_address, uint64_t upper_transaction_weight_limit, epee::net_utils::ssl_options_t ssl_options)
 {
   CHECK_AND_ASSERT_MES(set_proxy(proxy_address), false, "failed to set proxy address");
   m_is_initialized = true;
   m_upper_transaction_weight_limit = upper_transaction_weight_limit;
-  return set_daemon(daemon_address, trusted_daemon, std::move(ssl_options));
+  return set_daemon(daemon_address, std::move(ssl_options));
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::is_deterministic() const
@@ -2436,16 +2409,16 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
   }
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::refresh(bool trusted_daemon)
+void wallet2::refresh()
 {
   uint64_t blocks_fetched = 0;
-  refresh(trusted_daemon, 0, blocks_fetched);
+  refresh(0, blocks_fetched);
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::refresh(bool trusted_daemon, uint64_t start_height, uint64_t & blocks_fetched)
+void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched)
 {
   bool received_money = false;
-  refresh(trusted_daemon, start_height, blocks_fetched, received_money);
+  refresh(start_height, blocks_fetched, received_money);
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::pull_and_parse_next_blocks(uint64_t start_height, uint64_t &blocks_start_height, std::list<crypto::hash> &short_chain_history, const std::vector<cryptonote::block_complete_entry> &prev_blocks, const std::vector<parsed_block> &prev_parsed_blocks, std::vector<cryptonote::block_complete_entry> &blocks, std::vector<parsed_block> &parsed_blocks, bool &last, bool &error, std::exception_ptr &exception)
@@ -2840,7 +2813,7 @@ std::shared_ptr<std::map<std::pair<uint64_t, uint64_t>, size_t>> wallet2::create
   return cache;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::refresh(bool trusted_daemon, uint64_t start_height, uint64_t & blocks_fetched, bool& received_money, bool check_pool)
+void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& received_money, bool check_pool)
 {
   if (m_offline)
   {
@@ -2864,7 +2837,7 @@ void wallet2::refresh(bool trusted_daemon, uint64_t start_height, uint64_t & blo
   hw::device &hwdev = m_account.get_device();
 
   // pull the first set of blocks
-  get_short_chain_history(short_chain_history, (m_first_refresh_done || trusted_daemon) ? 1 : FIRST_REFRESH_GRANULARITY);
+  get_short_chain_history(short_chain_history, 1);
   m_run.store(true, std::memory_order_relaxed);
   if (start_height > m_blockchain.size() || m_refresh_from_block_height > m_blockchain.size()) {
     if (!start_height)
@@ -2873,7 +2846,7 @@ void wallet2::refresh(bool trusted_daemon, uint64_t start_height, uint64_t & blo
     fast_refresh(start_height, blocks_start_height, short_chain_history);
     // regenerate the history now that we've got a full set of hashes
     short_chain_history.clear();
-    get_short_chain_history(short_chain_history, (m_first_refresh_done || trusted_daemon) ? 1 : FIRST_REFRESH_GRANULARITY);
+    get_short_chain_history(short_chain_history, 1);
     start_height = 0;
     // and then fall through to regular refresh processing
   }
@@ -3037,11 +3010,11 @@ void wallet2::refresh(bool trusted_daemon, uint64_t start_height, uint64_t & blo
   LOG_PRINT_L1("Refresh done, blocks received: " << blocks_fetched << ", balance (all accounts): " << print_money(balance_all(false)) << ", unlocked: " << print_money(unlocked_balance_all(false)));
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::refresh(bool trusted_daemon, uint64_t & blocks_fetched, bool& received_money, bool& ok)
+bool wallet2::refresh(uint64_t & blocks_fetched, bool& received_money, bool& ok)
 {
   try
   {
-    refresh(trusted_daemon, 0, blocks_fetched, received_money);
+    refresh(0, blocks_fetched, received_money);
     ok = true;
   }
   catch (...)
@@ -4802,7 +4775,7 @@ void wallet2::rescan_blockchain(bool hard, bool refresh, bool keep_key_images)
   }
 
   if (refresh)
-    this->refresh(false);
+    this->refresh();
 
   if (refresh && keep_key_images)
     finish_rescan_bc_keep_key_images(transfers_cnt, transfers_hash);
@@ -7876,7 +7849,7 @@ uint64_t wallet2::cold_key_image_sync(uint64_t &spent, uint64_t &unspent) {
   dev_cold->ki_sync(&wallet_shim, m_transfers, ski);
 
   // Call COMMAND_RPC_IS_KEY_IMAGE_SPENT only if daemon is trusted.
-  uint64_t import_res = import_key_images(ski, 0, spent, unspent, is_trusted_daemon());
+  uint64_t import_res = import_key_images(ski, 0, spent, unspent, true);
   m_device_last_key_image_sync = time(NULL);
 
   return import_res;
@@ -7931,8 +7904,7 @@ std::vector<size_t> wallet2::select_available_outputs_from_histogram(uint64_t co
 {
   cryptonote::COMMAND_RPC_GET_OUTPUT_HISTOGRAM::request req_t = AUTO_VAL_INIT(req_t);
   cryptonote::COMMAND_RPC_GET_OUTPUT_HISTOGRAM::response resp_t = AUTO_VAL_INIT(resp_t);
-  if (is_trusted_daemon())
-    req_t.amounts = get_unspent_amounts_vector(false);
+  req_t.amounts = get_unspent_amounts_vector(false);
   req_t.min_count = count;
   req_t.max_count = 0;
   req_t.unlocked = unlocked;
@@ -9136,10 +9108,7 @@ uint64_t wallet2::get_daemon_blockchain_height(string &err)
   std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
   if (result)
   {
-    if (m_trusted_daemon)
-      err = *result;
-    else
-      err = "daemon error";
+    err = *result;
     return 0;
   }
 
@@ -9163,10 +9132,7 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
   const auto result = m_node_rpc_proxy.get_target_height(target_height);
   if (result && *result != CORE_RPC_STATUS_OK)
   {
-    if (m_trusted_daemon)
-      err = *result;
-    else
-      err = "daemon error";
+    err = *result;
     return 0;
   }
   return target_height;
@@ -10493,13 +10459,7 @@ void wallet2::generate_genesis(cryptonote::block& b) const {
 //----------------------------------------------------------------------------------------------------
 std::string wallet2::get_rpc_status(const std::string &s) const
 {
-  if (m_trusted_daemon)
-    return s;
-  if (s == CORE_RPC_STATUS_OK)
-    return s;
-  if (s == CORE_RPC_STATUS_BUSY)
-    return s;
-  return "<error>";
+  return s;
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::throw_on_rpc_response_error(bool r, const epee::json_rpc::error &error, const std::string &status, const char *method) const

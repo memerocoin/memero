@@ -427,9 +427,9 @@ namespace
   }
 }
 
-void simple_wallet::handle_transfer_exception(const std::exception_ptr &e, bool trusted_daemon)
+void simple_wallet::handle_transfer_exception(const std::exception_ptr &e)
 {
-    bool warn_of_possible_attack = !trusted_daemon;
+    bool warn_of_possible_attack = false;
     try
     {
       std::rethrow_exception(e);
@@ -3053,22 +3053,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
     return false;
   }
 
-  if (!m_wallet->is_trusted_daemon())
-  {
-    message_writer(console_color_red, true) << (boost::format(tr("Warning: using an untrusted daemon at %s")) % m_wallet->get_daemon_address()).str();
-    message_writer(console_color_red, true) << boost::format(tr("Using a third party daemon can be detrimental to your security and privacy"));
-    bool ssl = false;
-    if (m_wallet->check_connection(NULL, &ssl) && !ssl)
-      message_writer(console_color_red, true) << boost::format(tr("Using your own without SSL exposes your RPC traffic to monitoring"));
-    message_writer(console_color_red, true) << boost::format(tr("You are strongly encouraged to connect to the Lolnero network using your own daemon"));
-    message_writer(console_color_red, true) << boost::format(tr("If you or someone you trust are operating this daemon, you can use --trusted-daemon"));
-
-    COMMAND_RPC_GET_INFO::request req;
-    COMMAND_RPC_GET_INFO::response res;
-    bool r = m_wallet->invoke_http_json("/get_info", req, res);
-    std::string err = interpret_rpc_response(r, res.status);
-  }
-
   if (m_wallet->get_ring_database().empty())
     fail_msg_writer() << tr("Failed to initialize ring database: privacy enhancing features will be inactive");
 
@@ -3556,12 +3540,6 @@ bool simple_wallet::save_watch_only(const std::vector<std::string> &args/* = std
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::start_mining(const std::vector<std::string>& args)
 {
-  if (!m_wallet->is_trusted_daemon())
-  {
-    fail_msg_writer() << tr("this command requires a trusted daemon. Enable with --trusted-daemon");
-    return true;
-  }
-
   if (!try_connect_to_daemon())
     return true;
 
@@ -3657,39 +3635,13 @@ bool simple_wallet::set_daemon(const std::vector<std::string>& args)
     LOCK_IDLE_SCOPE();
     m_wallet->init(daemon_url);
 
-    if (args.size() == 2)
-    {
-      if (args[1] == "trusted")
-        m_wallet->set_trusted_daemon(true);
-      else if (args[1] == "untrusted")
-        m_wallet->set_trusted_daemon(false);
-      else
-      {
-        fail_msg_writer() << tr("Expected trusted or untrusted, got ") << args[1] << ": assuming untrusted";
-        m_wallet->set_trusted_daemon(false);
-      }
-    }
-    else
-    {
-      m_wallet->set_trusted_daemon(false);
-      try
-      {
-        if (tools::is_local_address(m_wallet->get_daemon_address()))
-        {
-          MINFO(tr("Daemon is local, assuming trusted"));
-          m_wallet->set_trusted_daemon(true);
-        }
-      }
-      catch (const std::exception &e) { }
-    }
-
     if (!try_connect_to_daemon())
     {
       fail_msg_writer() << tr("Failed to connect to daemon");
       return true;
     }
 
-    success_msg_writer() << boost::format("Daemon set to %s, %s") % daemon_url % (m_wallet->is_trusted_daemon() ? tr("trusted") : tr("untrusted"));
+    success_msg_writer() << boost::format("Daemon set to %s") % daemon_url;
 
   } else {
     fail_msg_writer() << tr("This does not seem to be a valid daemon URL.");
@@ -3858,7 +3810,7 @@ bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bo
   {
     m_in_manual_refresh.store(true, std::memory_order_relaxed);
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){m_in_manual_refresh.store(false, std::memory_order_relaxed);});
-    m_wallet->refresh(m_wallet->is_trusted_daemon(), start_height, fetched_blocks, received_money);
+    m_wallet->refresh(start_height, fetched_blocks, received_money);
 
     if (reset == ResetSoftKeepKI)
     {
@@ -4146,12 +4098,6 @@ bool simple_wallet::show_blockchain_height(const std::vector<std::string>& args)
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::rescan_spent(const std::vector<std::string> &args)
 {
-  if (!m_wallet->is_trusted_daemon())
-  {
-    fail_msg_writer() << tr("this command requires a trusted daemon. Enable with --trusted-daemon");
-    return true;
-  }
-
   if (!try_connect_to_daemon())
     return true;
 
@@ -4753,7 +4699,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
       }
       catch (const std::exception& e)
       {
-        handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+        handle_transfer_exception(std::current_exception());
       }
       catch (...)
       {
@@ -4780,7 +4726,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
   }
   catch (const std::exception &e)
   {
-    handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+    handle_transfer_exception(std::current_exception());
   }
   catch (...)
   {
@@ -4891,7 +4837,7 @@ bool simple_wallet::sweep_unmixable(const std::vector<std::string> &args_)
   }
   catch (const std::exception &e)
   {
-    handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+    handle_transfer_exception(std::current_exception());
   }
   catch (...)
   {
@@ -5127,7 +5073,7 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
       }
       catch (const std::exception& e)
       {
-        handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+        handle_transfer_exception(std::current_exception());
       }
       catch (...)
       {
@@ -5154,7 +5100,7 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
   }
   catch (const std::exception& e)
   {
-    handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+    handle_transfer_exception(std::current_exception());
   }
   catch (...)
   {
@@ -5307,7 +5253,7 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
       }
       catch (const std::exception& e)
       {
-        handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+        handle_transfer_exception(std::current_exception());
       }
       catch (...)
       {
@@ -5336,7 +5282,7 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
   }
   catch (const std::exception& e)
   {
-    handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+    handle_transfer_exception(std::current_exception());
   }
   catch (...)
   {
@@ -5585,7 +5531,7 @@ bool simple_wallet::submit_transfer(const std::vector<std::string> &args_)
   }
   catch (const std::exception& e)
   {
-    handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+    handle_transfer_exception(std::current_exception());
   }
   catch (...)
   {
@@ -6776,7 +6722,7 @@ bool simple_wallet::check_refresh()
         uint64_t fetched_blocks;
         bool received_money;
         if (try_connect_to_daemon(true))
-          m_wallet->refresh(m_wallet->is_trusted_daemon(), 0, fetched_blocks, received_money, false); // don't check the pool in background mode
+          m_wallet->refresh(0, fetched_blocks, received_money, false); // don't check the pool in background mode
       }
       catch(...) {}
       m_auto_refresh_refreshing = false;
@@ -7399,11 +7345,6 @@ bool simple_wallet::import_key_images(const std::vector<std::string> &args)
     fail_msg_writer() << tr("command not supported by HW wallet");
     return true;
   }
-  if (!m_wallet->is_trusted_daemon())
-  {
-    fail_msg_writer() << tr("this command requires a trusted daemon. Enable with --trusted-daemon");
-    return true;
-  }
 
   if (args.size() != 1)
   {
@@ -7439,10 +7380,6 @@ void simple_wallet::key_images_sync_intern(){
     if (height > 0)
     {
       success_msg_writer() << tr("Key images synchronized to height ") << height;
-      if (!m_wallet->is_trusted_daemon())
-      {
-        message_writer() << tr("Running untrusted daemon, cannot determine which transaction output is spent. Use a trusted daemon with --trusted-daemon and run rescan_spent");
-      } else
       {
         success_msg_writer() << print_money(spent) << tr(" spent, ") << print_money(unspent) << tr(" unspent");
       }

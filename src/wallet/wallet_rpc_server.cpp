@@ -139,7 +139,7 @@ namespace tools
       if (boost::posix_time::microsec_clock::universal_time() < m_last_auto_refresh_time + boost::posix_time::seconds(m_auto_refresh_period))
         return true;
       try {
-        if (m_wallet) m_wallet->refresh(m_wallet->is_trusted_daemon());
+        if (m_wallet) m_wallet->refresh();
       } catch (const std::exception& ex) {
         LOG_ERROR("Exception at while refreshing, what=" << ex.what());
       }
@@ -2177,12 +2177,6 @@ namespace tools
       er.message = "Command unavailable in restricted mode.";
       return false;
     }
-    if (!m_wallet->is_trusted_daemon())
-    {
-      er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
-      er.message = "This command requires a trusted daemon.";
-      return false;
-    }
     try
     {
       std::vector<std::pair<crypto::key_image, crypto::signature>> ski;
@@ -2259,7 +2253,7 @@ namespace tools
     }
     try
     {
-      m_wallet->refresh(m_wallet->is_trusted_daemon(), req.start_height, res.blocks_fetched, res.received_money);
+      m_wallet->refresh(req.start_height, res.blocks_fetched, res.received_money);
       return true;
     }
     catch (const std::exception& e)
@@ -2317,12 +2311,6 @@ namespace tools
   bool wallet_rpc_server::on_start_mining(const wallet_rpc::COMMAND_RPC_START_MINING::request& req, wallet_rpc::COMMAND_RPC_START_MINING::response& res, epee::json_rpc::error& er, const connection_context *ctx)
   {
     if (!m_wallet) return not_open(er);
-    if (!m_wallet->is_trusted_daemon())
-    {
-      er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
-      er.message = "This command requires a trusted daemon.";
-      return false;
-    }
 
     size_t max_mining_threads_count = (std::max)(tools::get_max_concurrency(), static_cast<unsigned>(2));
     if (req.threads_count < 1 || max_mining_threads_count < req.threads_count)
@@ -3114,7 +3102,7 @@ namespace tools
       return false;
     }
 
-    if (!m_wallet->set_daemon(req.address, req.trusted, std::move(ssl_options)))
+    if (!m_wallet->set_daemon(req.address, std::move(ssl_options)))
     {
       er.code = WALLET_RPC_ERROR_CODE_NO_DAEMON_CONNECTION;
       er.message = std::string("Unable to set daemon");
@@ -3268,7 +3256,7 @@ public:
         wal->stop();
       });
 
-      wal->refresh(wal->is_trusted_daemon());
+      wal->refresh();
       // if we ^C during potentially length load/refresh, there's no server loop yet
       if (quit)
       {

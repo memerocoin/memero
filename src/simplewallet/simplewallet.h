@@ -289,7 +289,7 @@ namespace cryptonote
     bool check_inactivity();
     bool check_refresh();
 
-    void handle_transfer_exception(const std::exception_ptr &e, bool trusted_daemon);
+    void handle_transfer_exception(const std::exception_ptr &e);
 
     //----------------- i_wallet2_callback ---------------------
     virtual void on_new_block(uint64_t height, const cryptonote::block& block);

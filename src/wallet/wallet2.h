@@ -737,10 +737,8 @@ private:
     bool init(std::string daemon_address = "http://localhost:8080",
       const std::string &proxy = "",
       uint64_t upper_transaction_weight_limit = 0,
-      bool trusted_daemon = true,
       epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
     bool set_daemon(std::string daemon_address = "http://localhost:8080",
-      bool trusted_daemon = true,
       epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
     bool set_proxy(const std::string &address);
 
@@ -748,9 +746,6 @@ private:
 
     i_wallet2_callback* callback() const { return m_callback; }
     void callback(i_wallet2_callback* callback) { m_callback = callback; }
-
-    bool is_trusted_daemon() const { return m_trusted_daemon; }
-    void set_trusted_daemon(bool trusted) { m_trusted_daemon = trusted; }
 
     /*!
      * \brief Checks if deterministic wallet
@@ -793,10 +788,10 @@ private:
      * \brief Tells if the wallet file is deprecated.
      */
     bool is_deprecated() const;
-    void refresh(bool trusted_daemon);
-    void refresh(bool trusted_daemon, uint64_t start_height, uint64_t & blocks_fetched);
-    void refresh(bool trusted_daemon, uint64_t start_height, uint64_t & blocks_fetched, bool& received_money, bool check_pool = true);
-    bool refresh(bool trusted_daemon, uint64_t & blocks_fetched, bool& received_money, bool& ok);
+    void refresh();
+    void refresh(uint64_t start_height, uint64_t & blocks_fetched);
+    void refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& received_money, bool check_pool = true);
+    bool refresh(uint64_t & blocks_fetched, bool& received_money, bool& ok);
 
     void set_refresh_type(RefreshType refresh_type) { m_refresh_type = refresh_type; }
     RefreshType get_refresh_type() const { return m_refresh_type; }
@@ -1420,7 +1415,6 @@ private:
 
     std::recursive_mutex m_daemon_rpc_mutex;
 
-    bool m_trusted_daemon;
     i_wallet2_callback* m_callback;
     hw::device::device_type m_key_device_type;
     cryptonote::network_type m_nettype;
