@@ -231,7 +231,6 @@ namespace
 struct options {
   const command_line::arg_descriptor<std::string> daemon_address = {"daemon-address", tools::wallet2::tr("Use daemon instance at <host>:<port>"), ""};
   const command_line::arg_descriptor<std::string> daemon_host = {"daemon-host", tools::wallet2::tr("Use daemon instance at host <arg> instead of localhost"), ""};
-  const command_line::arg_descriptor<std::string> proxy = {"proxy", tools::wallet2::tr("[<ip>:]<port> socks proxy to use for daemon connections"), {}, true};
   const command_line::arg_descriptor<std::string> password = {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
   const command_line::arg_descriptor<std::string> password_file = {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
   const command_line::arg_descriptor<int> daemon_port = {"daemon-port", tools::wallet2::tr("Use daemon instance at port <arg> instead of 18081"), 0};
@@ -309,7 +308,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   const uint64_t kdf_rounds = command_line::get_arg(vm, opts.kdf_rounds);
   THROW_WALLET_EXCEPTION_IF(kdf_rounds == 0, tools::error::wallet_internal_error, "KDF rounds must not be 0");
 
-  const bool use_proxy = command_line::has_arg(vm, opts.proxy);
   auto daemon_address = command_line::get_arg(vm, opts.daemon_address);
   auto daemon_host = command_line::get_arg(vm, opts.daemon_host);
   auto daemon_port = command_line::get_arg(vm, opts.daemon_port);
@@ -377,34 +375,10 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
 
   {
     const std::string_view real_daemon = std::string_view{daemon_address}.substr(0, daemon_address.rfind(':'));
-
-    /* If SSL or proxy is enabled, then a specific cert, CA or fingerprint must
-       be specified. This is specific to the wallet. */
-    const bool verification_required =
-      ssl_options.verification != epee::net_utils::ssl_verification_t::none &&
-      (ssl_options.support == epee::net_utils::ssl_support_t::e_ssl_support_enabled || use_proxy);
-
-    THROW_WALLET_EXCEPTION_IF(
-      verification_required && !ssl_options.has_strong_verification(real_daemon),
-      tools::error::wallet_internal_error,
-      tools::wallet2::tr("Enabling --") + std::string{use_proxy ? opts.proxy.name : opts.daemon_ssl.name} + tools::wallet2::tr(" requires --") +
-        opts.daemon_ssl_allow_any_cert.name + tools::wallet2::tr(" or --") +
-        opts.daemon_ssl_ca_certificates.name + tools::wallet2::tr(" or --") + opts.daemon_ssl_allowed_fingerprints.name + tools::wallet2::tr(" or use of a .onion/.i2p domain")
-    );
-  }
-
-  std::string proxy;
-  if (use_proxy)
-  {
-    proxy = command_line::get_arg(vm, opts.proxy);
-    THROW_WALLET_EXCEPTION_IF(
-      !net::get_tcp_endpoint(proxy),
-      tools::error::wallet_internal_error,
-      std::string{"Invalid address specified for --"} + opts.proxy.name);
   }
 
   std::unique_ptr<tools::wallet2> wallet(new tools::wallet2(nettype, kdf_rounds, unattended));
-  if (!wallet->init(std::move(daemon_address), std::move(proxy), 0, std::move(ssl_options)))
+  if (!wallet->init(std::move(daemon_address), 0, std::move(ssl_options)))
   {
     THROW_WALLET_EXCEPTION(tools::error::wallet_internal_error, tools::wallet2::tr("failed to initialize the wallet"));
   }
@@ -1015,7 +989,6 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
   const options opts{};
   command_line::add_arg(desc_params, opts.daemon_address);
   command_line::add_arg(desc_params, opts.daemon_host);
-  command_line::add_arg(desc_params, opts.proxy);
   command_line::add_arg(desc_params, opts.password);
   command_line::add_arg(desc_params, opts.password_file);
   command_line::add_arg(desc_params, opts.daemon_port);
@@ -1096,14 +1069,8 @@ bool wallet2::set_daemon(std::string daemon_address, epee::net_utils::ssl_option
   return ret;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::set_proxy(const std::string &address)
+bool wallet2::init(std::string daemon_address, uint64_t upper_transaction_weight_limit, epee::net_utils::ssl_options_t ssl_options)
 {
-  return m_http_client->set_proxy(address);
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::init(std::string daemon_address, const std::string &proxy_address, uint64_t upper_transaction_weight_limit, epee::net_utils::ssl_options_t ssl_options)
-{
-  CHECK_AND_ASSERT_MES(set_proxy(proxy_address), false, "failed to set proxy address");
   m_is_initialized = true;
   m_upper_transaction_weight_limit = upper_transaction_weight_limit;
   return set_daemon(daemon_address, std::move(ssl_options));

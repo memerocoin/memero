@@ -735,13 +735,10 @@ private:
 
     bool deinit();
     bool init(std::string daemon_address = "http://localhost:8080",
-      const std::string &proxy = "",
       uint64_t upper_transaction_weight_limit = 0,
       epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
     bool set_daemon(std::string daemon_address = "http://localhost:8080",
       epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
-    bool set_proxy(const std::string &address);
-
     void stop() { m_run.store(false, std::memory_order_relaxed); }
 
     i_wallet2_callback* callback() const { return m_callback; }
