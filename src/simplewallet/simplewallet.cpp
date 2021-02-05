@@ -142,7 +142,6 @@ namespace
   const std::array<const char* const, 5> allowed_priority_strings = {{"default", "unimportant", "normal", "elevated", "priority"}};
   const auto arg_wallet_file = wallet_args::arg_wallet_file();
   const command_line::arg_descriptor<std::string> arg_generate_new_wallet = {"new", sw::tr("Generate new wallet and save it to <arg>"), ""};
-  const command_line::arg_descriptor<std::string> arg_generate_from_device = {"generate-from-device", sw::tr("Generate new wallet from device and save it to <arg>"), ""};
   const command_line::arg_descriptor<std::string> arg_generate_from_view_key = {"generate-from-view-key", sw::tr("Generate incoming-only wallet from view key"), ""};
   const command_line::arg_descriptor<std::string> arg_generate_from_spend_key = {"generate-from-spend-key", sw::tr("Generate deterministic wallet from spend key"), ""};
   const command_line::arg_descriptor<std::string> arg_generate_from_keys = {"generate-from-keys", sw::tr("Generate wallet from private keys"), ""};
@@ -2649,12 +2648,12 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
 
   bool welcome = false;
 
-  if((!m_generate_new.empty()) + (!m_wallet_file.empty()) + (!m_generate_from_device.empty()) + (!m_generate_from_view_key.empty()) + (!m_generate_from_spend_key.empty()) + (!m_generate_from_keys.empty()) + (!m_generate_from_json.empty()) > 1)
+  if((!m_generate_new.empty()) + (!m_wallet_file.empty()) + (!m_generate_from_view_key.empty()) + (!m_generate_from_spend_key.empty()) + (!m_generate_from_keys.empty()) + (!m_generate_from_json.empty()) > 1)
   {
-    fail_msg_writer() << tr("can't specify more than one of --new=\"wallet_name\", --open=\"wallet_name\", --generate-from-view-key=\"wallet_name\", --generate-from-spend-key=\"wallet_name\", --generate-from-keys=\"wallet_name\", --generate-from-json=\"jsonfilename\" and --generate-from-device=\"wallet_name\"");
+    fail_msg_writer() << tr("can't specify more than one of --new=\"wallet_name\", --open=\"wallet_name\", --generate-from-view-key=\"wallet_name\", --generate-from-spend-key=\"wallet_name\", --generate-from-keys=\"wallet_name\" and --generate-from-json=\"jsonfilename\"");
     return false;
   }
-  else if (m_generate_new.empty() && m_wallet_file.empty() && m_generate_from_device.empty() && m_generate_from_view_key.empty() && m_generate_from_spend_key.empty() && m_generate_from_keys.empty() && m_generate_from_json.empty())
+  else if (m_generate_new.empty() && m_wallet_file.empty() && m_generate_from_view_key.empty() && m_generate_from_spend_key.empty() && m_generate_from_keys.empty() && m_generate_from_json.empty())
   {
     if(!ask_wallet_create_if_needed()) return false;
   }
@@ -2889,29 +2888,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       if (!m_wallet)
         return false;
     }
-    else if (!m_generate_from_device.empty())
-    {
-      m_wallet_file = m_generate_from_device;
-      // create wallet
-      auto r = new_wallet(vm);
-      CHECK_AND_ASSERT_MES(r, false, tr("account creation failed"));
-      password = *r;
-      welcome = true;
-      // if no block_height is specified, assume its a new account and start it "now"
-      if(m_wallet->get_refresh_from_block_height() == 0) {
-        {
-          tools::scoped_message_writer wrt = tools::msg_writer();
-          wrt << tr("No restore height is specified.") << " ";
-          wrt << tr("Assumed you are creating a new account, restore will be done from current estimated blockchain height.") << " ";
-        }
-        std::string confirm = input_line(tr("Is this okay?"), true);
-        if (std::cin.eof() || !command_line::is_yes(confirm))
-          CHECK_AND_ASSERT_MES(false, false, tr("account creation aborted"));
-
-        m_wallet->set_refresh_from_block_height(m_wallet->estimate_blockchain_height() > 0 ? m_wallet->estimate_blockchain_height() - 1 : 0);
-        m_wallet->set_explicit_refresh_from_block_height(true);
-      }
-    }
     else
     {
       if (m_generate_new.empty()) {
@@ -2974,7 +2950,6 @@ bool simple_wallet::handle_command_line(const boost::program_options::variables_
 {
   m_wallet_file                   = command_line::get_arg(vm, arg_wallet_file);
   m_generate_new                  = command_line::get_arg(vm, arg_generate_new_wallet);
-  m_generate_from_device          = command_line::get_arg(vm, arg_generate_from_device);
   m_generate_from_view_key        = command_line::get_arg(vm, arg_generate_from_view_key);
   m_generate_from_spend_key       = command_line::get_arg(vm, arg_generate_from_spend_key);
   m_generate_from_keys            = command_line::get_arg(vm, arg_generate_from_keys);
@@ -2990,7 +2965,6 @@ bool simple_wallet::handle_command_line(const boost::program_options::variables_
                                     !m_generate_from_spend_key.empty() ||
                                     !m_generate_from_keys.empty() ||
                                     !m_generate_from_json.empty() ||
-                                    !m_generate_from_device.empty() ||
                                     m_restore_deterministic_wallet;
 
   return true;
@@ -7554,7 +7528,6 @@ int main(int argc, char* argv[])
   tools::wallet2::init_options(desc_params);
   command_line::add_arg(desc_params, arg_wallet_file);
   command_line::add_arg(desc_params, arg_generate_new_wallet);
-  command_line::add_arg(desc_params, arg_generate_from_device);
   command_line::add_arg(desc_params, arg_generate_from_view_key);
   command_line::add_arg(desc_params, arg_generate_from_spend_key);
   command_line::add_arg(desc_params, arg_generate_from_keys);
