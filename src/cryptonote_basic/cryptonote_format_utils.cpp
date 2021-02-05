@@ -348,22 +348,9 @@ namespace cryptonote
 
       in_ephemeral.sec = scalar_step2;
 
-      if (ack.m_multisig_keys.empty())
       {
         // when not in multisig, we know the full spend secret key, so the output pubkey can be obtained by scalarmultBase
         CHECK_AND_ASSERT_MES(hwdev.secret_key_to_public_key(in_ephemeral.sec, in_ephemeral.pub), false, "Failed to derive public key");
-      }
-      else
-      {
-        // when in multisig, we only know the partial spend secret key. but we do know the full spend public key, so the output pubkey can be obtained by using the standard CN key derivation
-        CHECK_AND_ASSERT_MES(hwdev.derive_public_key(recv_derivation, real_output_index, ack.m_account_address.m_spend_public_key, in_ephemeral.pub), false, "Failed to derive public key");
-        // and don't forget to add the contribution from the subaddress part
-        if (!received_index.is_zero())
-        {
-          crypto::public_key subaddr_pk;
-          CHECK_AND_ASSERT_MES(hwdev.secret_key_to_public_key(subaddr_sk, subaddr_pk), false, "Failed to derive public key");
-          add_public_key(in_ephemeral.pub, in_ephemeral.pub, subaddr_pk);
-        }
       }
 
       CHECK_AND_ASSERT_MES(in_ephemeral.pub == out_key,

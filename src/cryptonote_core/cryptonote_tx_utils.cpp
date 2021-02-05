@@ -348,8 +348,6 @@ namespace cryptonote
 
     // check for watch only wallet
     bool zero_secret_key = true;
-    for (size_t i = 0; i < sizeof(sender_account_keys.m_spend_secret_key); ++i)
-      zero_secret_key &= (sender_account_keys.m_spend_secret_key.data[i] == 0);
     if (zero_secret_key)
     {
       MDEBUG("Null secret key, skipping signatures");
