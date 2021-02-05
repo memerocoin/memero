@@ -3100,7 +3100,7 @@ namespace tools
       return false;
     }
 
-    if (!m_wallet->set_daemon(req.address, std::move(ssl_options)))
+    if (!m_wallet->set_daemon(req.address))
     {
       er.code = WALLET_RPC_ERROR_CODE_NO_DAEMON_CONNECTION;
       er.message = std::string("Unable to set daemon");

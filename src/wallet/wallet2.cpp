@@ -39,7 +39,6 @@
 #include <boost/asio/ip/address.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/preprocessor/stringize.hpp>
-#include <openssl/evp.h>
 #include "include_base_utils.h"
 using namespace epee;
 
@@ -234,13 +233,6 @@ struct options {
   const command_line::arg_descriptor<std::string> password = {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
   const command_line::arg_descriptor<std::string> password_file = {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
   const command_line::arg_descriptor<int> daemon_port = {"daemon-port", tools::wallet2::tr("Use daemon instance at port <arg> instead of 18081"), 0};
-  const command_line::arg_descriptor<std::string> daemon_ssl = {"daemon-ssl", tools::wallet2::tr("Enable SSL on daemon RPC connections: enabled|disabled|autodetect"), "autodetect"};
-  const command_line::arg_descriptor<std::string> daemon_ssl_private_key = {"daemon-ssl-private-key", tools::wallet2::tr("Path to a PEM format private key"), ""};
-  const command_line::arg_descriptor<std::string> daemon_ssl_certificate = {"daemon-ssl-certificate", tools::wallet2::tr("Path to a PEM format certificate"), ""};
-  const command_line::arg_descriptor<std::string> daemon_ssl_ca_certificates = {"daemon-ssl-ca-certificates", tools::wallet2::tr("Path to file containing concatenated PEM format certificate(s) to replace system CA(s).")};
-  const command_line::arg_descriptor<std::vector<std::string>> daemon_ssl_allowed_fingerprints = {"daemon-ssl-allowed-fingerprints", tools::wallet2::tr("List of valid fingerprints of allowed RPC servers")};
-  const command_line::arg_descriptor<bool> daemon_ssl_allow_any_cert = {"daemon-ssl-allow-any-cert", tools::wallet2::tr("Allow any SSL certificate from the daemon"), false};
-  const command_line::arg_descriptor<bool> daemon_ssl_allow_chained = {"daemon-ssl-allow-chained", tools::wallet2::tr("Allow user (via --daemon-ssl-ca-certificates) chain certificates"), false};
   const command_line::arg_descriptor<bool> testnet = {"testnet", tools::wallet2::tr("For testnet. Daemon must also be launched with --testnet flag"), false};
   const command_line::arg_descriptor<bool> stagenet = {"stagenet", tools::wallet2::tr("For stagenet. Daemon must also be launched with --stagenet flag"), false};
   const command_line::arg_descriptor<std::string, false, true, 2> shared_ringdb_dir = {
@@ -311,44 +303,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   auto daemon_address = command_line::get_arg(vm, opts.daemon_address);
   auto daemon_host = command_line::get_arg(vm, opts.daemon_host);
   auto daemon_port = command_line::get_arg(vm, opts.daemon_port);
-  auto daemon_ssl_private_key = command_line::get_arg(vm, opts.daemon_ssl_private_key);
-  auto daemon_ssl_certificate = command_line::get_arg(vm, opts.daemon_ssl_certificate);
-  auto daemon_ssl_ca_file = command_line::get_arg(vm, opts.daemon_ssl_ca_certificates);
-  auto daemon_ssl_allowed_fingerprints = command_line::get_arg(vm, opts.daemon_ssl_allowed_fingerprints);
-  auto daemon_ssl_allow_any_cert = command_line::get_arg(vm, opts.daemon_ssl_allow_any_cert);
-  auto daemon_ssl = command_line::get_arg(vm, opts.daemon_ssl);
-
-  // user specified CA file or fingeprints implies enabled SSL by default
-  epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_enabled;
-  if (command_line::get_arg(vm, opts.daemon_ssl_allow_any_cert))
-    ssl_options.verification = epee::net_utils::ssl_verification_t::none;
-  else if (!daemon_ssl_ca_file.empty() || !daemon_ssl_allowed_fingerprints.empty())
-  {
-    std::vector<std::vector<uint8_t>> ssl_allowed_fingerprints{ daemon_ssl_allowed_fingerprints.size() };
-    std::transform(daemon_ssl_allowed_fingerprints.begin(), daemon_ssl_allowed_fingerprints.end(), ssl_allowed_fingerprints.begin(), epee::from_hex_locale::to_vector);
-    for (const auto &fpr: ssl_allowed_fingerprints)
-    {
-      THROW_WALLET_EXCEPTION_IF(fpr.size() != SSL_FINGERPRINT_SIZE, tools::error::wallet_internal_error,
-          "SHA-256 fingerprint should be " BOOST_PP_STRINGIZE(SSL_FINGERPRINT_SIZE) " bytes long.");
-    }
-
-    ssl_options = epee::net_utils::ssl_options_t{
-      std::move(ssl_allowed_fingerprints), std::move(daemon_ssl_ca_file)
-    };
-
-    if (command_line::get_arg(vm, opts.daemon_ssl_allow_chained))
-      ssl_options.verification = epee::net_utils::ssl_verification_t::user_ca;
-  }
-
-  if (ssl_options.verification != epee::net_utils::ssl_verification_t::user_certificates || !command_line::is_arg_defaulted(vm, opts.daemon_ssl))
-  {
-    THROW_WALLET_EXCEPTION_IF(!epee::net_utils::ssl_support_from_string(ssl_options.support, daemon_ssl), tools::error::wallet_internal_error,
-       tools::wallet2::tr("Invalid argument for ") + std::string(opts.daemon_ssl.name));
-  }
-
-  ssl_options.auth = epee::net_utils::ssl_authentication_t{
-    std::move(daemon_ssl_private_key), std::move(daemon_ssl_certificate)
-  };
 
   THROW_WALLET_EXCEPTION_IF(!daemon_address.empty() && !daemon_host.empty() && 0 != daemon_port,
       tools::error::wallet_internal_error, tools::wallet2::tr("can't specify daemon host or port more than once"));
@@ -378,7 +332,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   }
 
   std::unique_ptr<tools::wallet2> wallet(new tools::wallet2(nettype, kdf_rounds, unattended));
-  if (!wallet->init(std::move(daemon_address), 0, std::move(ssl_options)))
+  if (!wallet->init(std::move(daemon_address), 0))
   {
     THROW_WALLET_EXCEPTION(tools::error::wallet_internal_error, tools::wallet2::tr("failed to initialize the wallet"));
   }
@@ -992,13 +946,6 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
   command_line::add_arg(desc_params, opts.password);
   command_line::add_arg(desc_params, opts.password_file);
   command_line::add_arg(desc_params, opts.daemon_port);
-  command_line::add_arg(desc_params, opts.daemon_ssl);
-  command_line::add_arg(desc_params, opts.daemon_ssl_private_key);
-  command_line::add_arg(desc_params, opts.daemon_ssl_certificate);
-  command_line::add_arg(desc_params, opts.daemon_ssl_ca_certificates);
-  command_line::add_arg(desc_params, opts.daemon_ssl_allowed_fingerprints);
-  command_line::add_arg(desc_params, opts.daemon_ssl_allow_any_cert);
-  command_line::add_arg(desc_params, opts.daemon_ssl_allow_chained);
   command_line::add_arg(desc_params, opts.testnet);
   command_line::add_arg(desc_params, opts.stagenet);
   command_line::add_arg(desc_params, opts.shared_ringdb_dir);
@@ -1049,7 +996,7 @@ std::unique_ptr<wallet2> wallet2::make_dummy(const boost::program_options::varia
 }
 
 //----------------------------------------------------------------------------------------------------
-bool wallet2::set_daemon(std::string daemon_address, epee::net_utils::ssl_options_t ssl_options)
+bool wallet2::set_daemon(std::string daemon_address)
 {
   std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
 
@@ -1060,7 +1007,7 @@ bool wallet2::set_daemon(std::string daemon_address, epee::net_utils::ssl_option
 
   const std::string address = get_daemon_address();
   MINFO("setting daemon to " << address);
-  bool ret =  m_http_client->set_server(address, std::move(ssl_options));
+  bool ret =  m_http_client->set_server(address);
   if (ret)
   {
     CRITICAL_REGION_LOCAL(default_daemon_address_lock);
@@ -1069,11 +1016,11 @@ bool wallet2::set_daemon(std::string daemon_address, epee::net_utils::ssl_option
   return ret;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::init(std::string daemon_address, uint64_t upper_transaction_weight_limit, epee::net_utils::ssl_options_t ssl_options)
+bool wallet2::init(std::string daemon_address, uint64_t upper_transaction_weight_limit)
 {
   m_is_initialized = true;
   m_upper_transaction_weight_limit = upper_transaction_weight_limit;
-  return set_daemon(daemon_address, std::move(ssl_options));
+  return set_daemon(daemon_address);
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::is_deterministic() const
@@ -4068,7 +4015,7 @@ bool wallet2::prepare_file_names(const std::string& file_path)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::check_connection(uint32_t *version, bool *ssl, uint32_t timeout)
+bool wallet2::check_connection(uint32_t *version, uint32_t timeout)
 {
   THROW_WALLET_EXCEPTION_IF(!m_is_initialized, error::wallet_not_initialized);
 
@@ -4077,21 +4024,19 @@ bool wallet2::check_connection(uint32_t *version, bool *ssl, uint32_t timeout)
     m_rpc_version = 0;
     if (version)
       *version = 0;
-    if (ssl)
-      *ssl = false;
     return false;
   }
 
   // TODO: Add light wallet version check.
   {
     std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-    if(!m_http_client->is_connected(ssl))
+    if(!m_http_client->is_connected())
     {
       m_rpc_version = 0;
       m_node_rpc_proxy.invalidate();
       if (!m_http_client->connect(std::chrono::milliseconds(timeout)))
         return false;
-      if(!m_http_client->is_connected(ssl))
+      if(!m_http_client->is_connected())
         return false;
     }
   }

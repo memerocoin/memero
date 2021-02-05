@@ -735,10 +735,8 @@ private:
 
     bool deinit();
     bool init(std::string daemon_address = "http://localhost:8080",
-      uint64_t upper_transaction_weight_limit = 0,
-      epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
-    bool set_daemon(std::string daemon_address = "http://localhost:8080",
-      epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
+              uint64_t upper_transaction_weight_limit = 0);
+    bool set_daemon(std::string daemon_address = "http://localhost:8080");
     void stop() { m_run.store(false, std::memory_order_relaxed); }
 
     i_wallet2_callback* callback() const { return m_callback; }
@@ -839,7 +837,7 @@ private:
     void device_show_address(uint32_t account_index, uint32_t address_index, const std::optional<crypto::hash8> &payment_id);
     std::vector<pending_tx> create_unmixable_sweep_transactions();
     void discard_unmixable_outputs();
-    bool check_connection(uint32_t *version = NULL, bool *ssl = NULL, uint32_t timeout = 200000);
+    bool check_connection(uint32_t *version = NULL, uint32_t timeout = 200000);
     void get_transfers(wallet2::transfer_container& incoming_transfers) const;
     void get_payments(std::list<std::pair<crypto::hash,wallet2::payment_details>>& payments, uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
     void get_payments_out(std::list<std::pair<crypto::hash,wallet2::confirmed_transfer_details>>& confirmed_payments,

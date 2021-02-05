@@ -28,7 +28,6 @@
 #include <string>
 #include <optional>
 #include "net/http_base.h"
-#include "net/net_ssl.h"
 
 namespace epee
 {
@@ -63,12 +62,12 @@ namespace http
   public:
     abstract_http_client() {}
     virtual ~abstract_http_client() {}
-    bool set_server(const std::string& address, ssl_options_t ssl_options = ssl_support_t::e_ssl_support_autodetect);
-    virtual void set_server(std::string host, std::string port, ssl_options_t ssl_options = ssl_support_t::e_ssl_support_autodetect) = 0;
+    bool set_server(const std::string& address);
+    virtual void set_server(std::string host, std::string port) = 0;
     virtual void set_auto_connect(bool auto_connect) = 0;
     virtual bool connect(std::chrono::milliseconds timeout) = 0;
     virtual bool disconnect() = 0;
-    virtual bool is_connected(bool *ssl = NULL) = 0;
+    virtual bool is_connected() = 0;
     virtual bool invoke(const std::string_view uri, const std::string_view method, const std::string& body, std::chrono::milliseconds timeout, const http_response_info** ppresponse_info = NULL, const fields_list& additional_params = fields_list()) = 0;
     virtual bool invoke_get(const std::string_view uri, std::chrono::milliseconds timeout, const std::string& body = std::string(), const http_response_info** ppresponse_info = NULL, const fields_list& additional_params = fields_list()) = 0;
     virtual bool invoke_post(const std::string_view uri, const std::string& body, std::chrono::milliseconds timeout, const http_response_info** ppresponse_info = NULL, const fields_list& additional_params = fields_list()) = 0;

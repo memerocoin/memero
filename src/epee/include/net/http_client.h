@@ -164,13 +164,12 @@ namespace net_utils
 
 			using abstract_http_client::set_server;
 
-			void set_server(std::string host, std::string port, ssl_options_t ssl_options = ssl_support_t::e_ssl_support_autodetect) override
+			void set_server(std::string host, std::string port) override
 			{
 				CRITICAL_REGION_LOCAL(m_lock);
 				disconnect();
 				m_host_buff = std::move(host);
 				m_port = std::move(port);
-				m_net_client.set_ssl(std::move(ssl_options));
 			}
 
 			void set_auto_connect(bool auto_connect) override
@@ -197,10 +196,10 @@ namespace net_utils
 				return m_net_client.disconnect();
 			}
 			//---------------------------------------------------------------------------
-			bool is_connected(bool *ssl = NULL) override
+			bool is_connected() override
 			{
 				CRITICAL_REGION_LOCAL(m_lock);
-				return m_net_client.is_connected(ssl);
+				return m_net_client.is_connected();
 			}
 			//---------------------------------------------------------------------------
 			virtual bool handle_target_data(std::string& piece_of_transfer) override

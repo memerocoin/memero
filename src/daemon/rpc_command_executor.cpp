@@ -154,7 +154,7 @@ t_rpc_command_executor::t_rpc_command_executor(
 {
   if (is_rpc)
   {
-    m_rpc_client = new tools::t_rpc_client(ip, port, ssl_options);
+    m_rpc_client = new tools::t_rpc_client(ip, port);
   }
   else
   {
