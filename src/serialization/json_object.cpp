@@ -248,10 +248,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
   INSERT_INTO_JSON_OBJECT(dest, inputs, tx.vin);
   INSERT_INTO_JSON_OBJECT(dest, outputs, tx.vout);
   INSERT_INTO_JSON_OBJECT(dest, extra, tx.extra);
-  if (!tx.pruned)
-  {
-    INSERT_INTO_JSON_OBJECT(dest, signatures, tx.signatures);
-  }
+  INSERT_INTO_JSON_OBJECT(dest, signatures, tx.signatures);
   INSERT_INTO_JSON_OBJECT(dest, ringct, tx.rct_signatures);
 
   dest.EndObject();
@@ -279,8 +276,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
   }
 
   const auto& rsig = tx.rct_signatures;
-  if (!cryptonote::is_coinbase(tx) && rsig.p.bulletproofs.empty() && rsig.get_pseudo_outs().empty() && sigs == val.MemberEnd())
-    tx.pruned = true;
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block& b)

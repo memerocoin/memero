@@ -54,8 +54,6 @@ bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& 
 
   bool white = false;
   bool gray = false;
-  bool pruned = false;
-  bool publicrpc = false;
   size_t limit = 0;
   for (size_t i = 0; i < args.size(); ++i)
   {
@@ -67,14 +65,6 @@ bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& 
     {
       gray = true;
     }
-    else if (args[i] == "pruned")
-    {
-      pruned = true;
-    }
-    else if (args[i] == "publicrpc")
-    {
-      publicrpc = true;
-    }
     else if (!epee::string_tools::get_xtype_from_string(limit, args[i]))
     {
       std::cout << "Invalid syntax: Unexpected parameter: " << args[i] << ". For more details, use the help command." << std::endl;
@@ -83,7 +73,7 @@ bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& 
   }
 
   const bool print_both = !white && !gray;
-  return m_executor.print_peer_list(white | print_both, gray | print_both, limit, pruned, publicrpc);
+  return m_executor.print_peer_list(white | print_both, gray | print_both, limit);
 }
 
 bool t_command_parser_executor::print_peer_list_stats(const std::vector<std::string>& args)
