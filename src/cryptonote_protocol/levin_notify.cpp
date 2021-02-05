@@ -99,38 +99,10 @@ namespace levin
       return std::chrono::steady_clock::duration{crypto::rand_range(rep(0), range.count())};
     }
 
-    std::string make_tx_payload(std::vector<blobdata>&& txs, const bool pad)
+    std::string make_tx_payload(std::vector<blobdata>&& txs)
     {
       NOTIFY_NEW_TRANSACTIONS::request request{};
       request.txs = std::move(txs);
-
-      if (pad)
-      {
-        size_t bytes = 9 /* header */ + 4 /* 1 + 'txs' */ + tools::get_varint_data(request.txs.size()).size();
-        for(auto tx_blob_it = request.txs.begin(); tx_blob_it!=request.txs.end(); ++tx_blob_it)
-          bytes += tools::get_varint_data(tx_blob_it->size()).size() + tx_blob_it->size();
-
-        // stuff some dummy bytes in to stay safe from traffic volume analysis
-        static constexpr const size_t granularity = 1024;
-        size_t padding = granularity - bytes % granularity;
-        const size_t overhead = 2 /* 1 + '_' */ + tools::get_varint_data(padding).size();
-        if (overhead > padding)
-          padding = 0;
-        else
-          padding -= overhead;
-        request._ = std::string(padding, ' ');
-
-        std::string arg_buff;
-        epee::serialization::store_t_to_binary(request, arg_buff);
-
-        // we probably lowballed the payload size a bit, so added a but too much. Fix this now.
-        size_t remove = arg_buff.size() % granularity;
-        if (remove > request._.size())
-          request._.clear();
-        else
-          request._.resize(request._.size() - remove);
-        // if the size of _ moved enough, we might lose byte in size encoding, we don't care
-      }
 
       std::string fullBlob;
       if (!epee::serialization::store_t_to_binary(request, fullBlob))
@@ -139,9 +111,9 @@ namespace levin
       return fullBlob;
     }
 
-    bool make_payload_send_txs(connections& p2p, std::vector<blobdata>&& txs, const boost::uuids::uuid& destination, const bool pad)
+    bool make_payload_send_txs(connections& p2p, std::vector<blobdata>&& txs, const boost::uuids::uuid& destination)
     {
-      const cryptonote::blobdata blob = make_tx_payload(std::move(txs), pad);
+      const cryptonote::blobdata blob = make_tx_payload(std::move(txs));
       p2p.for_connection(destination, [&blob](detail::p2p_context& context) {
         on_levin_traffic(context, true, true, false, blob.size(), NOTIFY_NEW_TRANSACTIONS::ID);
         return true;
@@ -183,14 +155,13 @@ namespace levin
   {
     struct zone
     {
-      explicit zone(boost::asio::io_service& io_service, std::shared_ptr<connections> p2p, bool is_public, bool pad_txs)
+      explicit zone(boost::asio::io_service& io_service, std::shared_ptr<connections> p2p, bool is_public)
         : p2p(std::move(p2p)),
           next_epoch(io_service),
           flush_txs(io_service),
           strand(io_service),
           flush_time(std::chrono::steady_clock::time_point::max()),
-          connection_count(0),
-          pad_txs(pad_txs)
+          connection_count(0)
       {
       }
 
@@ -200,7 +171,6 @@ namespace levin
       boost::asio::io_service::strand strand;
       std::chrono::steady_clock::time_point flush_time; //!< Next expected Dandelion++ fluff flush
       std::atomic<std::size_t> connection_count; //!< Only update in strand, can be read at any time
-      const bool pad_txs;                        //!< Pad txs to the next boundary for privacy
     };
   } // detail
 
@@ -265,7 +235,7 @@ namespace levin
         for (auto& connection : connections)
         {
           std::sort(connection.first.begin(), connection.first.end()); // don't leak receive order
-          make_payload_send_txs(*zone_->p2p, std::move(connection.first), connection.second, zone_->pad_txs);
+          make_payload_send_txs(*zone_->p2p, std::move(connection.first), connection.second);
         }
 
         if (next_flush != std::chrono::steady_clock::time_point::max())
@@ -350,8 +320,8 @@ namespace levin
     };
   } // anonymous
 
-  notify::notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, const bool is_public, const bool pad_txs)
-    : zone_(std::make_shared<detail::zone>(service, std::move(p2p), is_public, pad_txs))
+  notify::notify(boost::asio::io_service& service, std::shared_ptr<connections> p2p, const bool is_public)
+    : zone_(std::make_shared<detail::zone>(service, std::move(p2p), is_public))
   {
     if (!zone_->p2p)
       throw std::logic_error{"cryptonote::levin::notify cannot have nullptr p2p argument"};
