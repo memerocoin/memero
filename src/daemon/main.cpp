@@ -253,11 +253,9 @@ int main(int argc, char const * argv[])
           return 1;
         }
 
-        auto ssl_options = cryptonote::rpc_args::process_ssl(vm, true);
-        if (!ssl_options)
-          return 1;
+        epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
 
-        daemonize::t_command_server rpc_commands{rpc_ip, rpc_port, std::move(*ssl_options)};
+        daemonize::t_command_server rpc_commands{rpc_ip, rpc_port, std::move(ssl_options)};
         if (rpc_commands.process_command_vec(command))
         {
           return 0;
