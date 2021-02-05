@@ -106,8 +106,6 @@ namespace cryptonote
   void core_rpc_server::init_options(boost::program_options::options_description& desc)
   {
     command_line::add_arg(desc, arg_rpc_bind_port);
-    command_line::add_arg(desc, arg_rpc_restricted_bind_port);
-    command_line::add_arg(desc, arg_restricted_rpc);
     cryptonote::rpc_args::init_options(desc, true);
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -126,11 +124,10 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::init(
       const boost::program_options::variables_map& vm
-      , const bool restricted
       , const std::string& port
     )
   {
-    m_restricted = restricted;
+    m_restricted = false;
     m_net_server.set_threads_prefix("RPC");
     m_net_server.set_connection_filter(&m_p2p);
 
@@ -2372,17 +2369,4 @@ namespace cryptonote
         return val;
       }
     };
-
-  const command_line::arg_descriptor<std::string> core_rpc_server::arg_rpc_restricted_bind_port = {
-      "rpc-restricted-bind-port"
-    , "Port for restricted RPC server"
-    , ""
-    };
-
-  const command_line::arg_descriptor<bool> core_rpc_server::arg_restricted_rpc = {
-      "restricted-rpc"
-    , "Restrict RPC to view only commands and do not return privacy sensitive data in RPC calls"
-    , false
-    };
-
 }  // namespace cryptonote

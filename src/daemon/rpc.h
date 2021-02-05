@@ -53,15 +53,13 @@ public:
       boost::program_options::variables_map const & vm
     , t_core & core
     , t_p2p & p2p
-    , const bool restricted
     , const std::string & port
-    , const std::string & description
     )
-    : m_server{core.get(), p2p.get()}, m_description{description}
+    : m_server{core.get(), p2p.get()}, m_description{"core"}
   {
     MGINFO("Initializing " << m_description << " RPC server...");
 
-    if (!m_server.init(vm, restricted, port))
+    if (!m_server.init(vm, port))
     {
       throw std::runtime_error("Failed to initialize " + m_description + " RPC server.");
     }

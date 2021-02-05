@@ -62,7 +62,7 @@ private:
 public:
   t_core core;
   t_p2p p2p;
-  std::vector<std::unique_ptr<t_rpc>> rpcs;
+  t_rpc rpc;
 
   t_internals(
       boost::program_options::variables_map const & vm
@@ -70,22 +70,11 @@ public:
     : core{vm}
     , protocol{vm, core, command_line::get_arg(vm, cryptonote::arg_offline)}
     , p2p{vm, protocol}
-  {
-    // Handle circular dependencies
-    protocol.set_p2p_endpoint(p2p.get());
-    core.set_protocol(protocol.get());
-
-    const auto restricted = command_line::get_arg(vm, cryptonote::core_rpc_server::arg_restricted_rpc);
-    const auto main_rpc_port = command_line::get_arg(vm, cryptonote::core_rpc_server::arg_rpc_bind_port);
-    const auto restricted_rpc_port_arg = cryptonote::core_rpc_server::arg_rpc_restricted_bind_port;
-    const bool has_restricted_rpc_port_arg = !command_line::is_arg_defaulted(vm, restricted_rpc_port_arg);
-    rpcs.emplace_back(std::make_unique<t_rpc>(vm, core, p2p, restricted, main_rpc_port, "core"));
-
-    if(has_restricted_rpc_port_arg)
+    , rpc{vm, core, p2p, command_line::get_arg(vm, cryptonote::core_rpc_server::arg_rpc_bind_port)}
     {
-      auto restricted_rpc_port = command_line::get_arg(vm, restricted_rpc_port_arg);
-      rpcs.emplace_back(std::make_unique<t_rpc>(vm, core, p2p, true, restricted_rpc_port, "restricted"));
-    }
+      // Handle circular dependencies
+      protocol.set_p2p_endpoint(p2p.get());
+      core.set_protocol(protocol.get());
   }
 };
 
@@ -125,26 +114,22 @@ bool t_daemon::run(bool interactive)
     if (!mp_internals->core.run())
       return false;
 
-    for(auto& rpc: mp_internals->rpcs)
-      rpc->run();
+    mp_internals->rpc.run();
 
     std::unique_ptr<daemonize::t_command_server> rpc_commands;
-    if (interactive && mp_internals->rpcs.size())
+    if (interactive)
     {
-      // The first three variables are not used when the fourth is false
       rpc_commands = std::make_unique<daemonize::t_command_server>
-        (0, 0, epee::net_utils::ssl_support_t::e_ssl_support_disabled, false, mp_internals->rpcs.front()->get_server());
+        (0, 0, epee::net_utils::ssl_support_t::e_ssl_support_disabled, false, mp_internals->rpc.get_server());
       rpc_commands->start_handling(std::bind(&daemonize::t_daemon::stop_p2p, this));
     }
-
 
     mp_internals->p2p.run(); // blocks until p2p goes down
 
     if (rpc_commands)
       rpc_commands->stop_handling();
 
-    for(auto& rpc : mp_internals->rpcs)
-      rpc->stop();
+    mp_internals->rpc.stop();
     MGINFO("Node stopped.");
     return true;
   }
@@ -163,8 +148,7 @@ bool t_daemon::run(bool interactive)
 void t_daemon::stop()
 {
   stop_p2p();
-  for(auto& rpc : mp_internals->rpcs)
-    rpc->stop();
+  mp_internals->rpc.stop();
 }
 
 void t_daemon::stop_p2p()

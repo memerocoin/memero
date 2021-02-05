@@ -57,8 +57,6 @@ namespace cryptonote
   public:
 
     static const command_line::arg_descriptor<std::string, false, true, 2> arg_rpc_bind_port;
-    static const command_line::arg_descriptor<std::string> arg_rpc_restricted_bind_port;
-    static const command_line::arg_descriptor<bool> arg_restricted_rpc;
     static const command_line::arg_descriptor<std::string> arg_rpc_ssl;
     static const command_line::arg_descriptor<std::string> arg_rpc_ssl_private_key;
     static const command_line::arg_descriptor<std::string> arg_rpc_ssl_certificate;
@@ -77,7 +75,6 @@ namespace cryptonote
     static void init_options(boost::program_options::options_description& desc);
     bool init(
         const boost::program_options::variables_map& vm,
-        const bool restricted,
         const std::string& port
       );
     network_type nettype() const { return m_core.get_nettype(); }
