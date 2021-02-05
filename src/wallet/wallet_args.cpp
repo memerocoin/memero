@@ -74,7 +74,7 @@ namespace wallet_args
   }
   command_line::arg_descriptor<std::string> arg_wallet_file()
   {
-    return {"wallet-file", wallet_args::tr("Use wallet <arg>"), ""};
+    return {"open", wallet_args::tr("Use wallet <arg>"), ""};
   }
 
   const char* tr(const char* str)

@@ -2651,7 +2651,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
 
   if((!m_generate_new.empty()) + (!m_wallet_file.empty()) + (!m_generate_from_device.empty()) + (!m_generate_from_view_key.empty()) + (!m_generate_from_spend_key.empty()) + (!m_generate_from_keys.empty()) + (!m_generate_from_json.empty()) > 1)
   {
-    fail_msg_writer() << tr("can't specify more than one of --new=\"wallet_name\", --wallet-file=\"wallet_name\", --generate-from-view-key=\"wallet_name\", --generate-from-spend-key=\"wallet_name\", --generate-from-keys=\"wallet_name\", --generate-from-json=\"jsonfilename\" and --generate-from-device=\"wallet_name\"");
+    fail_msg_writer() << tr("can't specify more than one of --new=\"wallet_name\", --open=\"wallet_name\", --generate-from-view-key=\"wallet_name\", --generate-from-spend-key=\"wallet_name\", --generate-from-keys=\"wallet_name\", --generate-from-json=\"jsonfilename\" and --generate-from-device=\"wallet_name\"");
     return false;
   }
   else if (m_generate_new.empty() && m_wallet_file.empty() && m_generate_from_device.empty() && m_generate_from_view_key.empty() && m_generate_from_spend_key.empty() && m_generate_from_keys.empty() && m_generate_from_json.empty())
@@ -2675,7 +2675,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       }
       if (!m_wallet_file.empty())
       {
-        fail_msg_writer() << tr("--restore uses --new, not --wallet-file");
+        fail_msg_writer() << tr("--restore uses --new, not --open");
         return false;
       }
 
@@ -2915,7 +2915,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
     else
     {
       if (m_generate_new.empty()) {
-        fail_msg_writer() << tr("specify a wallet path with --new (not --wallet-file)");
+        fail_msg_writer() << tr("specify a wallet path with --new (not --open)");
         return false;
       }
       m_wallet_file = m_generate_new;
@@ -2937,7 +2937,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
     assert(!m_wallet_file.empty());
     if (!m_subaddress_lookahead.empty())
     {
-      fail_msg_writer() << tr("can't specify --subaddress-lookahead and --wallet-file at the same time");
+      fail_msg_writer() << tr("can't specify --subaddress-lookahead and --open at the same time");
       return false;
     }
     auto r = open_wallet(vm);
@@ -7577,7 +7577,7 @@ int main(int argc, char* argv[])
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main(
    argc, argv,
-   "lolnero-wallet-cli [--wallet-file=<filename>|--new=<filename>] [<COMMAND>]",
+   "lolnero-wallet-cli [--open=<filename>|--new=<filename>] [<COMMAND>]",
     sw::tr("This is the command line lolnero wallet. It needs to connect to a lolnero\ndaemon to work correctly."),
     desc_params,
     positional_options,
