@@ -96,7 +96,6 @@ namespace cryptonote
      , rpc_ssl_private_key({"rpc-ssl-private-key", rpc_args::tr("Path to a PEM format private key"), ""})
      , rpc_ssl_certificate({"rpc-ssl-certificate", rpc_args::tr("Path to a PEM format certificate"), ""})
      , rpc_ssl_allowed_fingerprints({"rpc-ssl-allowed-fingerprints", rpc_args::tr("List of certificate fingerprints to allow")})
-     , disable_rpc_ban({"disable-rpc-ban", rpc_args::tr("Do not ban hosts on RPC errors"), false, false})
   {}
 
   const char* rpc_args::tr(const char* str) { return i18n_translate(str, "cryptonote::rpc_args"); }
@@ -114,7 +113,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg.rpc_ssl_private_key);
     command_line::add_arg(desc, arg.rpc_ssl_certificate);
     command_line::add_arg(desc, arg.rpc_ssl_allowed_fingerprints);
-    command_line::add_arg(desc, arg.disable_rpc_ban);
   }
 
   std::optional<rpc_args> rpc_args::process(const boost::program_options::variables_map& vm, const bool any_cert_option)
@@ -126,7 +124,6 @@ namespace cryptonote
     config.bind_ipv6_address = command_line::get_arg(vm, arg.rpc_bind_ipv6_address);
     config.use_ipv6 = command_line::get_arg(vm, arg.rpc_use_ipv6);
     config.require_ipv4 = !command_line::get_arg(vm, arg.rpc_ignore_ipv4);
-    config.disable_rpc_ban = command_line::get_arg(vm, arg.disable_rpc_ban);
     if (!config.bind_ip.empty())
     {
       // always parse IP here for error consistency

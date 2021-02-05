@@ -61,7 +61,6 @@ namespace cryptonote
       const command_line::arg_descriptor<std::string> rpc_ssl_private_key;
       const command_line::arg_descriptor<std::string> rpc_ssl_certificate;
       const command_line::arg_descriptor<std::vector<std::string>> rpc_ssl_allowed_fingerprints;
-      const command_line::arg_descriptor<bool> disable_rpc_ban;
     };
 
     // `allow_any_cert` bool toggles `--rpc-ssl-allow-any-cert` configuration
@@ -81,6 +80,5 @@ namespace cryptonote
     bool require_ipv4;
     std::vector<std::string> access_control_origins;
     epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_enabled;
-    bool disable_rpc_ban = false;
   };
 }
