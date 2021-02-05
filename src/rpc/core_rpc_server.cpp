@@ -115,7 +115,6 @@ namespace cryptonote
     )
     : m_core(cr)
     , m_p2p(p2p)
-    , disable_rpc_ban(false)
   {}
   //------------------------------------------------------------------------------------------------------------------------------
   core_rpc_server::~core_rpc_server()
@@ -134,8 +133,6 @@ namespace cryptonote
     auto rpc_config = cryptonote::rpc_args::process(vm, true);
     if (!rpc_config)
       return false;
-
-    disable_rpc_ban = rpc_config->disable_rpc_ban;
 
     auto rng = [](size_t len, uint8_t *ptr){ return crypto::rand(len, ptr); };
     return epee::http_server_impl_base<core_rpc_server, connection_context>::init(
@@ -156,20 +153,7 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::add_host_fail(const connection_context *ctx, unsigned int score)
   {
-    if(!ctx || !ctx->m_remote_address.is_blockable() || disable_rpc_ban)
-      return false;
-
-    CRITICAL_REGION_LOCAL(m_host_fails_score_lock);
-    uint64_t fails = m_host_fails_score[ctx->m_remote_address.host_str()] += score;
-    MDEBUG("Host " << ctx->m_remote_address.host_str() << " fail score=" << fails);
-    if(fails > RPC_IP_FAILS_BEFORE_BLOCK)
-    {
-      auto it = m_host_fails_score.find(ctx->m_remote_address.host_str());
-      CHECK_AND_ASSERT_MES(it != m_host_fails_score.end(), false, "internal error");
-      it->second = RPC_IP_FAILS_BEFORE_BLOCK/2;
-      m_p2p.block_host(ctx->m_remote_address);
-    }
-    return true;
+    return false;
   }
 #define CHECK_CORE_READY() do { if(!check_core_ready()){res.status =  CORE_RPC_STATUS_BUSY;return true;} } while(0)
 
