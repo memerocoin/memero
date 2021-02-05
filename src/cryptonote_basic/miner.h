@@ -85,16 +85,6 @@ namespace cryptonote
     bool worker_thread();
     bool request_block_template();
     void  merge_hr();
-    
-    struct miner_config
-    {
-      uint64_t current_extra_message_index;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(current_extra_message_index)
-      END_KV_SERIALIZE_MAP()
-    };
-
 
     volatile uint32_t m_stop;
     epee::critical_section m_template_lock;
@@ -116,9 +106,6 @@ namespace cryptonote
     account_public_address m_mine_address;
     epee::math_helper::once_a_time_seconds<5> m_update_block_template_interval;
     epee::math_helper::once_a_time_seconds<2> m_update_merge_hr_interval;
-    std::vector<blobdata> m_extra_messages;
-    miner_config m_config;
-    std::string m_config_folder_path;    
     std::atomic<uint64_t> m_last_hr_merge_time;
     std::atomic<uint64_t> m_hashes;
     std::atomic<uint64_t> m_total_hashes;
