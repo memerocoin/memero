@@ -29,7 +29,6 @@
 set(device_sources
   device.cpp
   device_default.cpp
-  log.cpp
   )
 
 if(HIDAPI_FOUND)
@@ -41,7 +40,6 @@ endif()
 set(device_headers
   device.hpp
   device_default.hpp
-  log.hpp
  )
 
 if(HIDAPI_FOUND)
