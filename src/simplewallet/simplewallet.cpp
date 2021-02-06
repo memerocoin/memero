@@ -1575,9 +1575,6 @@ simple_wallet::simple_wallet()
                            tr("Show the incoming transfers, all or filtered by availability and address index.\n\n"
                               "Output format:\n"
                               "Amount, Spent(\"T\"|\"F\"), \"frozen\"|\"locked\"|\"unlocked\", RingCT, Global Index, Transaction Hash, Address Index, [Public Key, Key Image] "));
-  m_cmd_binder.set_handler("bc_height",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::show_blockchain_height, std::placeholders::_1),
-                           tr("Show the blockchain height."));
   m_cmd_binder.set_handler("transfer", std::bind(&simple_wallet::on_command, this, &simple_wallet::transfer, std::placeholders::_1),
                            tr(USAGE_TRANSFER),
                            tr("Transfer <amount> to <address>. If the parameter \"index=<N1>[,<N2>,...]\" is specified, the wallet uses outputs received by addresses of those indices. If omitted, the wallet randomly chooses address indices to be used. In any case, it tries its best not to combine outputs across multiple addresses. <priority> is the priority of the transaction. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding URI_2 or <address_2> <amount_2> etcetera (before the payment ID, if it's included)"));
@@ -3437,20 +3434,6 @@ uint64_t simple_wallet::get_daemon_blockchain_height(std::string& err)
     throw std::runtime_error("simple_wallet null wallet");
   }
   return m_wallet->get_daemon_blockchain_height(err);
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::show_blockchain_height(const std::vector<std::string>& args)
-{
-  if (!try_connect_to_daemon())
-    return true;
-
-  std::string err;
-  uint64_t bc_height = get_daemon_blockchain_height(err);
-  if (err.empty())
-    success_msg_writer() << bc_height;
-  else
-    fail_msg_writer() << tr("failed to get blockchain height: ") << err;
-  return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::rescan_spent(const std::vector<std::string> &args)
