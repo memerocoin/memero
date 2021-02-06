@@ -26,20 +26,9 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <errno.h>
-#include <unistd.h>
-#include <sys/types.h>
-#ifdef _WIN32
 #include <boost/algorithm/string/join.hpp>
-#include <boost/scope_exit.hpp>
-#include <windows.h>
-#else
-#include <sys/wait.h>
-#include <signal.h>
-#endif
 
 #include "misc_log_ex.h"
-#include "util.h"
 #include "spawn.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -48,104 +37,11 @@
 namespace tools
 {
 
-int spawn(const char *filename, const std::vector<std::string>& args, bool wait)
+int spawn(const std::string filename, const std::vector<std::string>& args, bool wait)
 {
-#ifdef _WIN32
-  std::string joined = boost::algorithm::join(args, " ");
-  char *commandLine = !joined.empty() ? &joined[0] : nullptr;
-  STARTUPINFOA si = {};
-  si.cb = sizeof(si);
-  PROCESS_INFORMATION pi;
-  if (!CreateProcessA(filename, commandLine, nullptr, nullptr, false, 0, nullptr, nullptr, &si, &pi))
-  {
-    MERROR("CreateProcess failed. Error code " << GetLastError());
-    return -1;
-  }
-  
-  BOOST_SCOPE_EXIT(&pi)
-  {
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
-  }
-  BOOST_SCOPE_EXIT_END
-
-  if (!wait)
-  {
-    return 0;
-  }
-
-  DWORD result = WaitForSingleObject(pi.hProcess, INFINITE);
-  if (result != WAIT_OBJECT_0)
-  {
-    MERROR("WaitForSingleObject failed. Result " << result << ", error code " << GetLastError());
-    return -1;
-  }
-
-  DWORD exitCode;
-  if (!GetExitCodeProcess(pi.hProcess, &exitCode))
-  {
-    MERROR("GetExitCodeProcess failed. Error code " << GetLastError());
-    return -1;
-  }
-
-  MINFO("Child exited with " << exitCode);
-  return static_cast<int>(exitCode);
-#else
-  std::vector<char*> argv(args.size() + 1);
-  for (size_t n = 0; n < args.size(); ++n)
-    argv[n] = (char*)args[n].c_str();
-  argv[args.size()] = NULL;
-
-  pid_t pid = fork();
-  if (pid < 0)
-  {
-    MERROR("Error forking: " << strerror(errno));
-    return -1;
-  }
-
-  // child
-  if (pid == 0)
-  {
-    tools::closefrom(3);
-    close(0);
-    char *envp[] = {NULL};
-    execve(filename, argv.data(), envp);
-    MERROR("Failed to execve: " << strerror(errno));
-    return -1;
-  }
-
-  // parent
-  if (pid > 0)
-  {
-    if (!wait)
-    {
-      signal(SIGCHLD, SIG_IGN);
-      return 0;
-    }
-
-    while (1)
-    {
-      int wstatus = 0;
-      pid_t w = waitpid(pid, &wstatus, WUNTRACED | WCONTINUED);
-      if (w  < 0) {
-        MERROR("Error waiting for child: " << strerror(errno));
-        return -1;
-      }
-      if (WIFEXITED(wstatus))
-      {
-        MINFO("Child exited with " << WEXITSTATUS(wstatus));
-        return WEXITSTATUS(wstatus);
-      }
-      if (WIFSIGNALED(wstatus))
-      {
-        MINFO("Child killed by " << WEXITSTATUS(wstatus));
-        return WEXITSTATUS(wstatus);
-      }
-    }
-  }
-  MERROR("Secret passage found");
-  return -1;
-#endif
+  const std::string bg = wait ? "" : " &";
+  const std::string cmd = filename + " " + boost::join(args, " ") + bg;
+  return std::system(cmd.c_str());
 }
 
 }

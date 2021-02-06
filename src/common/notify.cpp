@@ -77,7 +77,7 @@ int Notify::notify(const char *tag, const char *s, ...) const
   }
   va_end(ap);
 
-  return tools::spawn(filename.c_str(), margs, false);
+  return tools::spawn(filename, margs, false);
 }
 
 }

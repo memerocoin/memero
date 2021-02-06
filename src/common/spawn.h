@@ -31,6 +31,6 @@
 namespace tools
 {
 
-int spawn(const char *filename, const std::vector<std::string>& args, bool wait);
+  int spawn(const std::string filename, const std::vector<std::string>& args, bool wait);
 
 }
