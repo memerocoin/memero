@@ -967,6 +967,13 @@ namespace cryptonote
     return s;
   }
   //---------------------------------------------------------------
+  std::string print_money_compact(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point)
+  {
+    std::string str = print_money(amount, decimal_point);
+    str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
+    return str;
+  }
+  //---------------------------------------------------------------
   crypto::hash get_blob_hash(const blobdata& blob)
   {
     crypto::hash h = null_hash;
