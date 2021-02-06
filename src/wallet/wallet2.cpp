@@ -75,7 +75,6 @@ using namespace epee;
 #include "common/perf_timer.h"
 #include "ringct/rctSigs.h"
 #include "ringct/curveConstants.h"
-#include "device/device_cold.hpp"
 #include "net/socks_connect.h"
 #include "config/lol.h"
 
@@ -717,11 +716,6 @@ uint32_t get_subaddress_clamped_sum(uint32_t idx, uint32_t extra)
   if (idx > uint32_max - extra)
     return uint32_max;
   return idx + extra;
-}
-
-static void setup_shim(hw::wallet_shim * shim, tools::wallet2 * wallet)
-{
-  shim->get_tx_pub_key_from_received_outs = std::bind(&tools::wallet2::get_tx_pub_key_from_received_outs, wallet, std::placeholders::_1);
 }
 
 bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, cryptonote::transaction &tx, crypto::hash &tx_hash)
@@ -7432,79 +7426,7 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
     return true;
   }
 
-  auto & hwdev = get_account().get_device();
-
-  // So far only Cold protocol devices are supported.
-  if (hwdev.device_protocol() != hw::device::PROTOCOL_COLD)
-  {
-    return false;
-  }
-
-  const auto tx_data_it = m_tx_device.find(txid);
-  if (tx_data_it == m_tx_device.end())
-  {
-    MDEBUG("Aux data not found for txid: " << txid);
-    return false;
-  }
-
-  auto dev_cold = dynamic_cast<::hw::device_cold*>(&hwdev);
-  CHECK_AND_ASSERT_THROW_MES(dev_cold, "Device does not implement cold signing interface");
-  if (!dev_cold->is_get_tx_key_supported())
-  {
-    MDEBUG("get_tx_key not supported by the device");
-    return false;
-  }
-
-  hw::device_cold::tx_key_data_t tx_key_data;
-  dev_cold->load_tx_key_data(tx_key_data, tx_data_it->second);
-
-  // Load missing tx prefix hash
-  if (tx_key_data.tx_prefix_hash.empty())
-  {
-    COMMAND_RPC_GET_TRANSACTIONS::request req;
-    COMMAND_RPC_GET_TRANSACTIONS::response res;
-    req.txs_hashes.push_back(epee::string_tools::pod_to_hex(txid));
-    req.decode_as_json = false;
-    req.prune = true;
-
-    {
-      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool ok = epee::net_utils::invoke_http_json("/gettransactions", req, res, *m_http_client);
-      THROW_WALLET_EXCEPTION_IF(!ok || (res.txs.size() != 1 && res.txs_as_hex.size() != 1),
-                                error::wallet_internal_error, "Failed to get transaction from daemon");
-    }
-
-    cryptonote::transaction tx;
-    crypto::hash tx_hash{};
-    cryptonote::blobdata tx_data;
-    crypto::hash tx_prefix_hash{};
-    bool ok = string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
-    THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
-    THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx, tx_hash, tx_prefix_hash),
-                              error::wallet_internal_error, "Failed to validate transaction from daemon");
-    THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error,
-                              "Failed to get the right transaction from daemon");
-
-    tx_key_data.tx_prefix_hash = std::string(tx_prefix_hash.data, 32);
-  }
-
-  std::vector<crypto::secret_key> tx_keys;
-  dev_cold->get_tx_key(tx_keys, tx_key_data, m_account.get_keys().m_view_secret_key);
-  if (tx_keys.empty())
-  {
-    MDEBUG("Empty tx keys for txid: " << txid);
-    return false;
-  }
-
-  if (tx_keys[0] == crypto::null_skey)
-  {
-    return false;
-  }
-
-  tx_key = tx_keys[0];
-  tx_keys.erase(tx_keys.begin());
-  additional_tx_keys = tx_keys;
-  return true;
+  return false;
 }
 //----------------------------------------------------------------------------------------------------
 std::string wallet2::get_spend_proof(const crypto::hash &txid, const std::string &message)
