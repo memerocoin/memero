@@ -188,18 +188,10 @@ namespace tools
         return false;
       }
       m_wallet_dir = command_line::get_arg(*m_vm, arg_wallet_dir);
-#ifdef _WIN32
-#define MKDIR(path, mode)    mkdir(path)
-#else
 #define MKDIR(path, mode)    mkdir(path, mode)
-#endif
       if (!m_wallet_dir.empty() && MKDIR(m_wallet_dir.c_str(), 0700) < 0 && errno != EEXIST)
       {
-#ifdef _WIN32
-        LOG_ERROR(tr("Failed to create directory ") + m_wallet_dir);
-#else
         LOG_ERROR((boost::format(tr("Failed to create directory %s: %s")) % m_wallet_dir % strerror(errno)).str());
-#endif
         return false;
       }
     }
@@ -2208,12 +2200,6 @@ namespace tools
     namespace po = boost::program_options;
     po::variables_map vm2;
     const char *ptr = strchr(req.filename.c_str(), '/');
-#ifdef _WIN32
-    if (!ptr)
-      ptr = strchr(req.filename.c_str(), '\\');
-    if (!ptr)
-      ptr = strchr(req.filename.c_str(), ':');
-#endif
     if (ptr)
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
@@ -2311,12 +2297,6 @@ namespace tools
     namespace po = boost::program_options;
     po::variables_map vm2;
     const char *ptr = strchr(req.filename.c_str(), '/');
-#ifdef _WIN32
-    if (!ptr)
-      ptr = strchr(req.filename.c_str(), '\\');
-    if (!ptr)
-      ptr = strchr(req.filename.c_str(), ':');
-#endif
     if (ptr)
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
@@ -2530,12 +2510,6 @@ namespace tools
     namespace po = boost::program_options;
     po::variables_map vm2;
     const char *ptr = strchr(req.filename.c_str(), '/');
-  #ifdef _WIN32
-    if (!ptr)
-      ptr = strchr(req.filename.c_str(), '\\');
-    if (!ptr)
-      ptr = strchr(req.filename.c_str(), ':');
-  #endif
     if (ptr)
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
@@ -2688,12 +2662,6 @@ namespace tools
     namespace po = boost::program_options;
     po::variables_map vm2;
     const char *ptr = strchr(req.filename.c_str(), '/');
-  #ifdef _WIN32
-    if (!ptr)
-      ptr = strchr(req.filename.c_str(), '\\');
-    if (!ptr)
-      ptr = strchr(req.filename.c_str(), ':');
-  #endif
     if (ptr)
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;

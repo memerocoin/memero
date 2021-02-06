@@ -68,10 +68,6 @@
 #include "version.h"
 #include <stdexcept>
 
-#ifdef WIN32
-#include <filesystem>
-#endif
-
 #ifdef HAVE_READLINE
 #include "readline_buffer.h"
 #endif
@@ -215,11 +211,7 @@ namespace
     std::cout << ": " << std::flush;
 
     std::string buf;
-#ifdef _WIN32
-    buf = tools::input_line_win();
-#else
     std::getline(std::cin, buf);
-#endif
 
     return epee::string_tools::trim(buf);
   }
@@ -1377,10 +1369,6 @@ bool simple_wallet::set_track_uses(const std::vector<std::string> &args/* = std:
 
 bool simple_wallet::set_inactivity_lock_timeout(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
-#ifdef _WIN32
-  tools::fail_msg_writer() << tr("Inactivity lock timeout disabled on Windows");
-  return true;
-#endif
   const auto pwd_container = get_and_verify_password();
   if (pwd_container)
   {
@@ -1849,9 +1837,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "track-uses = " << m_wallet->track_uses();
     success_msg_writer() << "export-format = " << (m_wallet->export_format() == tools::wallet2::ExportFormat::Ascii ? "ascii" : "binary");
     success_msg_writer() << "inactivity-lock-timeout = " << m_wallet->inactivity_lock_timeout()
-#ifdef _WIN32
-        << " (disabled on Windows)"
-#endif
         ;
     success_msg_writer() << "load-deprecated-formats = " << m_wallet->load_deprecated_formats();
     return true;
@@ -5706,16 +5691,10 @@ void simple_wallet::wallet_idle_thread()
     // or we'll be leaking that fact through timing
     const boost::posix_time::ptime now0 = boost::posix_time::microsec_clock::universal_time();
     const uint64_t dt_actual = (now0 - start_time).total_microseconds() % 1000000;
-#ifdef _WIN32
-    static const uint64_t threshold = 10000;
-#else
     static const uint64_t threshold = 2000;
 #endif
     if (dt_actual < threshold) // if less than a threshold... would a very slow machine always miss it ?
     {
-#ifndef _WIN32
-      m_inactivity_checker.do_call(std::bind(&simple_wallet::check_inactivity, this));
-#endif
       m_refresh_checker.do_call(std::bind(&simple_wallet::check_refresh, this));
       if (!m_idle_run.load(std::memory_order_relaxed))
         break;
@@ -6501,11 +6480,6 @@ int main(int argc, char* argv[])
 {
   TRY_ENTRY();
 
-#ifdef WIN32
-  // Activate UTF-8 support for Boost filesystem classes on Windows
-  std::locale::global(boost::locale::generator().generate(""));
-  std::filesystem::path::imbue(std::locale());
-#endif
   setlocale(LC_CTYPE, "");
 
   po::options_description desc_params(wallet_args::tr("Wallet options"));
@@ -6572,11 +6546,7 @@ int main(int argc, char* argv[])
         // must be prompting for password so return and let the signal stop prompt
         return;
       }
-#ifdef WIN32
-      if (type == CTRL_C_EVENT)
-#else
       if (type == SIGINT)
-#endif
       {
         // if we're pressing ^C when refreshing, just stop refreshing
         w.interrupt();

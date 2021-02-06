@@ -28,19 +28,12 @@
 #include "lmdb/error.h"
 #include "lmdb/util.h"
 
-#ifdef _WIN32
-namespace
-{
-    constexpr const mdb_mode_t open_flags = 0;
-}
-#else
 #include <sys/stat.h>
 
 namespace
 {
     constexpr const mdb_mode_t open_flags = (S_IRUSR | S_IWUSR);
 }
-#endif
 
 namespace lmdb
 {

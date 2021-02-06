@@ -36,9 +36,6 @@
 #include "verification_context.h"
 #include "difficulty.h"
 #include "math_helper.h"
-#ifdef _WIN32
-#include <windows.h>
-#endif
 
 namespace cryptonote
 {

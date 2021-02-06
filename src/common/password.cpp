@@ -33,84 +33,13 @@
 #include <iostream>
 #include <stdio.h>
 
-#if defined(_WIN32)
-#include <io.h>
-#include <windows.h>
-#else
 #include <termios.h>
 #include <unistd.h>
-#endif
 
 #define EOT 0x4
 
 namespace
 {
-#if defined(_WIN32)
-  bool is_cin_tty() noexcept
-  {
-    return 0 != _isatty(_fileno(stdin));
-  }
-
-  bool read_from_tty(epee::wipeable_string& pass, bool hide_input)
-  {
-    HANDLE h_cin = ::GetStdHandle(STD_INPUT_HANDLE);
-
-    DWORD mode_old;
-    ::GetConsoleMode(h_cin, &mode_old);
-    DWORD mode_new = mode_old & ~((hide_input ? ENABLE_ECHO_INPUT : 0) | ENABLE_LINE_INPUT);
-    ::SetConsoleMode(h_cin, mode_new);
-
-    bool r = true;
-    pass.reserve(tools::password_container::max_password_size);
-    std::vector<int> chlen;
-    chlen.reserve(tools::password_container::max_password_size);
-    while (pass.size() < tools::password_container::max_password_size)
-    {
-      DWORD read;
-      wchar_t ucs2_ch;
-      r = (TRUE == ::ReadConsoleW(h_cin, &ucs2_ch, 1, &read, NULL));
-      r &= (1 == read);
-
-      if (!r)
-      {
-        break;
-      }
-      else if (ucs2_ch == L'\r')
-      {
-        std::cout << std::endl;
-        break;
-      }
-      else if (ucs2_ch == L'\b')
-      {
-        if (!pass.empty())
-        {
-          int len = chlen.back();
-          chlen.pop_back();
-          while(len-- > 0) 
-            pass.pop_back();
-        }
-        continue;
-      }
-      
-      char utf8_ch[8] = {0};
-      int len;
-      if((len = WideCharToMultiByte(CP_UTF8, 0, &ucs2_ch, 1, utf8_ch, sizeof(utf8_ch), NULL, NULL)) <= 0)
-        break;
-
-      if(pass.size() + len >= tools::password_container::max_password_size)
-        break;
-
-      chlen.push_back(len);
-      pass += utf8_ch;
-    }
-
-    ::SetConsoleMode(h_cin, mode_old);
-
-    return r;
-  }
-
-#else // end WIN32 
-
   bool is_cin_tty() noexcept
   {
     return 0 != isatty(fileno(stdin));
@@ -172,8 +101,6 @@ namespace
 
     return true;
   }
-
-#endif // end !WIN32
 
   bool read_from_tty(const bool verify, const char *message, bool hide_input, epee::wipeable_string& pass1, epee::wipeable_string& pass2)
   {

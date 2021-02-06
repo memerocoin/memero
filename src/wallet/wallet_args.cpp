@@ -35,10 +35,6 @@
 #include "string_tools.h"
 #include "version.h"
 
-#if defined(WIN32)
-#include <crtdbg.h>
-#endif
-
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
 
@@ -94,9 +90,6 @@ namespace wallet_args
   {
     namespace bf = std::filesystem;
     namespace po = boost::program_options;
-#ifdef WIN32
-    _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-#endif
 
     const command_line::arg_descriptor<std::string> arg_log_level = {"log-level", "0-4 or categories", ""};
     const command_line::arg_descriptor<std::size_t> arg_max_log_file_size = {"max-log-file-size", "Specify maximum log file size [B]", MAX_LOG_FILE_SIZE};
