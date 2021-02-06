@@ -71,7 +71,7 @@ set(common_private_headers
   threadpool.h
   aligned.h
   combinator.h
-  utf8.h)
+  )
 
 monero_private_headers(common
   ${common_private_headers})

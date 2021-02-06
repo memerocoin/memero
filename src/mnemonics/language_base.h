@@ -41,7 +41,6 @@
 #include <boost/algorithm/string.hpp>
 #include "misc_log_ex.h"
 #include "fnv1.h"
-#include "common/utf8.h"
 
 /*!
  * \namespace Language
@@ -78,8 +77,7 @@ namespace Language
   {
     std::size_t operator()(const epee::wipeable_string &s) const
     {
-      const epee::wipeable_string sc = tools::utf8canonical(s, [](wint_t c) -> wint_t { return std::towlower(c); });
-      return epee::fnv::FNV1a(sc.data(), sc.size());
+      return epee::fnv::FNV1a(s.data(), s.size());
     }
   };
 
@@ -87,9 +85,7 @@ namespace Language
   {
     bool operator()(const epee::wipeable_string &s0, const epee::wipeable_string &s1) const
     {
-      const epee::wipeable_string s0c = tools::utf8canonical(s0, [](wint_t c) -> wint_t { return std::towlower(c); });
-      const epee::wipeable_string s1c = tools::utf8canonical(s1, [](wint_t c) -> wint_t { return std::towlower(c); });
-      return s0c == s1c;
+      return s0 == s1;
     }
   };
 
