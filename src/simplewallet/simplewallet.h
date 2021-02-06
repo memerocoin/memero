@@ -216,9 +216,6 @@ namespace cryptonote
     bool blackball(const std::vector<std::string>& args);
     bool unblackball(const std::vector<std::string>& args);
     bool blackballed(const std::vector<std::string>& args);
-    bool freeze(const std::vector<std::string>& args);
-    bool thaw(const std::vector<std::string>& args);
-    bool frozen(const std::vector<std::string>& args);
     bool lock(const std::vector<std::string>& args);
     bool net_stats(const std::vector<std::string>& args);
     bool welcome(const std::vector<std::string>& args);
@@ -238,7 +235,6 @@ namespace cryptonote
     void key_images_sync_intern();
     void on_refresh_finished(uint64_t start_height, uint64_t fetched_blocks, bool is_init, bool received_money);
     std::pair<std::string, std::string> show_outputs_line(const std::vector<uint64_t> &heights, uint64_t blockchain_height, uint64_t highlight_idx = std::numeric_limits<uint64_t>::max()) const;
-    bool freeze_thaw(const std::vector<std::string>& args, bool freeze);
     bool prompt_if_old(const std::vector<tools::wallet2::pending_tx> &ptx_vector);
     bool on_command(bool (simple_wallet::*cmd)(const std::vector<std::string>&), const std::vector<std::string> &args);
     bool on_empty_command();

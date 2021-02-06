@@ -1242,42 +1242,6 @@ bool wallet2::is_spent(size_t idx, bool strict) const
   return is_spent(td, strict);
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::freeze(size_t idx)
-{
-  CHECK_AND_ASSERT_THROW_MES(idx < m_transfers.size(), "Invalid transfer_details index");
-  transfer_details &td = m_transfers[idx];
-  td.m_frozen = true;
-}
-//----------------------------------------------------------------------------------------------------
-void wallet2::thaw(size_t idx)
-{
-  CHECK_AND_ASSERT_THROW_MES(idx < m_transfers.size(), "Invalid transfer_details index");
-  transfer_details &td = m_transfers[idx];
-  td.m_frozen = false;
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::frozen(size_t idx) const
-{
-  CHECK_AND_ASSERT_THROW_MES(idx < m_transfers.size(), "Invalid transfer_details index");
-  const transfer_details &td = m_transfers[idx];
-  return td.m_frozen;
-}
-//----------------------------------------------------------------------------------------------------
-void wallet2::freeze(const crypto::key_image &ki)
-{
-  freeze(get_transfer_details(ki));
-}
-//----------------------------------------------------------------------------------------------------
-void wallet2::thaw(const crypto::key_image &ki)
-{
-  thaw(get_transfer_details(ki));
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::frozen(const crypto::key_image &ki) const
-{
-  return frozen(get_transfer_details(ki));
-}
-//----------------------------------------------------------------------------------------------------
 size_t wallet2::get_transfer_details(const crypto::key_image &ki) const
 {
   for (size_t idx = 0; idx < m_transfers.size(); ++idx)
@@ -1287,11 +1251,6 @@ size_t wallet2::get_transfer_details(const crypto::key_image &ki) const
       return idx;
   }
   CHECK_AND_ASSERT_THROW_MES(false, "Key image not found");
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::frozen(const transfer_details &td) const
-{
-  return td.m_frozen;
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::key_derivation &derivation, const std::vector<crypto::key_derivation> &additional_derivations, size_t i, tx_scan_info_t &tx_scan_info) const
@@ -3020,7 +2979,6 @@ void wallet2::detach_blockchain(uint64_t height, std::map<std::pair<uint64_t, ui
     {
       LOG_PRINT_L1("Resetting spent/frozen status for output " << i << ": " << td.m_key_image);
       set_unspent(i);
-      thaw(i);
     }
   }
 
@@ -7915,16 +7873,6 @@ std::vector<wallet2::pending_tx> wallet2::create_unmixable_sweep_transactions()
   return create_transactions_from(m_account_public_address, false, 1, unmixable_transfer_outputs, unmixable_dust_outputs, 0 /*fake_outs_count */, 0 /* unlock_time */, 1 /*priority */, std::vector<uint8_t>());
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::discard_unmixable_outputs()
-{
-  // may throw
-  std::vector<size_t> unmixable_outputs = select_available_unmixable_outputs();
-  for (size_t idx : unmixable_outputs)
-  {
-    freeze(idx);
-  }
-}
-
 bool wallet2::get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys) const
 {
   additional_tx_keys.clear();

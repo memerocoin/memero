@@ -207,9 +207,6 @@ namespace
   const char* USAGE_MARK_OUTPUT_SPENT("mark_output_spent <amount>/<offset> | <filename> [add]");
   const char* USAGE_MARK_OUTPUT_UNSPENT("mark_output_unspent <amount>/<offset>");
   const char* USAGE_IS_OUTPUT_SPENT("is_output_spent <amount>/<offset>");
-  const char* USAGE_FREEZE("freeze <key_image>");
-  const char* USAGE_THAW("thaw <key_image>");
-  const char* USAGE_FROZEN("frozen <key_image>");
   const char* USAGE_LOCK("lock");
   const char* USAGE_NET_STATS("net_stats");
   const char* USAGE_WELCOME("welcome");
@@ -1268,74 +1265,6 @@ bool simple_wallet::save_known_rings(const std::vector<std::string> &args)
   return true;
 }
 
-bool simple_wallet::freeze_thaw(const std::vector<std::string> &args, bool freeze)
-{
-  if (args.empty())
-  {
-    fail_msg_writer() << boost::format(tr("usage: %s <key_image>|<pubkey>")) % (freeze ? "freeze" : "thaw");
-    return true;
-  }
-  crypto::key_image ki;
-  if (!epee::string_tools::hex_to_pod(args[0], ki))
-  {
-    fail_msg_writer() << tr("failed to parse key image");
-    return true;
-  }
-  try
-  {
-    if (freeze)
-      m_wallet->freeze(ki);
-    else
-      m_wallet->thaw(ki);
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << e.what();
-    return true;
-  }
-
-  return true;
-}
-
-bool simple_wallet::freeze(const std::vector<std::string> &args)
-{
-  return freeze_thaw(args, true);
-}
-
-bool simple_wallet::thaw(const std::vector<std::string> &args)
-{
-  return freeze_thaw(args, false);
-}
-
-bool simple_wallet::frozen(const std::vector<std::string> &args)
-{
-  if (args.empty())
-  {
-    size_t ntd = m_wallet->get_num_transfer_details();
-    for (size_t i = 0; i < ntd; ++i)
-    {
-      if (!m_wallet->frozen(i))
-        continue;
-      const tools::wallet2::transfer_details &td = m_wallet->get_transfer_details(i);
-      message_writer() << tr("Frozen: ") << td.m_key_image << " " << cryptonote::print_money(td.amount());
-    }
-  }
-  else
-  {
-    crypto::key_image ki;
-    if (!epee::string_tools::hex_to_pod(args[0], ki))
-    {
-      fail_msg_writer() << tr("failed to parse key image");
-      return true;
-    }
-    if (m_wallet->frozen(ki))
-      message_writer() << tr("Frozen: ") << ki;
-    else
-      message_writer() << tr("Not frozen: ") << ki;
-  }
-  return true;
-}
-
 bool simple_wallet::lock(const std::vector<std::string> &args)
 {
   m_locked = true;
@@ -2298,18 +2227,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::blackballed, std::placeholders::_1),
                            tr(USAGE_IS_OUTPUT_SPENT),
                            tr("Checks whether an output is marked as spent"));
-  m_cmd_binder.set_handler("freeze",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::freeze, std::placeholders::_1),
-                           tr(USAGE_FREEZE),
-                           tr("Freeze a single output by key image so it will not be used"));
-  m_cmd_binder.set_handler("thaw",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::thaw, std::placeholders::_1),
-                           tr(USAGE_THAW),
-                           tr("Thaw a single output by key image so it may be used again"));
-  m_cmd_binder.set_handler("frozen",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::frozen, std::placeholders::_1),
-                           tr(USAGE_FROZEN),
-                           tr("Checks whether a given output is currently frozen by key image"));
   m_cmd_binder.set_handler("lock",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::lock, std::placeholders::_1),
                            tr(USAGE_LOCK),
@@ -3891,7 +3808,7 @@ bool simple_wallet::show_incoming_transfers(const std::vector<std::string>& args
         boost::format("%21s%8s%12s%8s%16u%68s%16u%s") %
         print_money(td.amount()) %
         (td.m_spent ? tr("T") : tr("F")) %
-        (m_wallet->frozen(td) ? tr("[frozen]") : m_wallet->is_transfer_unlocked(td) ? tr("unlocked") : tr("locked")) %
+        (m_wallet->is_transfer_unlocked(td) ? tr("unlocked") : tr("locked")) %
         (td.is_rct() ? tr("RingCT") : tr("-")) %
         td.m_global_output_index %
         td.m_txid %
