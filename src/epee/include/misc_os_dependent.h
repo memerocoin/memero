@@ -115,16 +115,6 @@ namespace misc_utils
 
 	}
 
-
-	inline std::string get_thread_string_id()
-	{
-#if defined(_WIN32)
-		return boost::lexical_cast<std::string>(GetCurrentThreadId());
-#elif defined(__GNUC__)  
-		return boost::lexical_cast<std::string>(pthread_self());
-#endif
-	}
-
 	inline bool get_gmt_time(time_t t, struct tm &tm)
 	{
 #ifdef _WIN32

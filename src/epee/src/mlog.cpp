@@ -28,13 +28,6 @@
 #ifndef _MLOG_H_
 #define _MLOG_H_
 
-#ifdef _WIN32
-#include <windows.h>
-#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
-#define ENABLE_VIRTUAL_TERMINAL_PROCESSING  0x0004
-#endif
-#endif
-
 #include <time.h>
 #include <atomic>
 #include <filesystem>
@@ -52,23 +45,6 @@
 
 using namespace epee;
 
-static std::string generate_log_filename(const char *base)
-{
-  std::string filename(base);
-  static unsigned int fallback_counter = 0;
-  char tmp[200];
-  struct tm tm;
-  time_t now = time(NULL);
-  if (!epee::misc_utils::get_gmt_time(now, tm))
-    snprintf(tmp, sizeof(tmp), "part-%u", ++fallback_counter);
-  else
-    strftime(tmp, sizeof(tmp), "%Y-%m-%d-%H-%M-%S", &tm);
-  tmp[sizeof(tmp) - 1] = 0;
-  filename += "-";
-  filename += tmp;
-  return filename;
-}
-
 std::string mlog_get_default_log_path(const char *default_filename)
 {
   return (std::filesystem::path("/dev/null")).string();
@@ -76,7 +52,7 @@ std::string mlog_get_default_log_path(const char *default_filename)
 
 static void mlog_set_common_prefix()
 {
-  static const char * const expected_filename = "contrib/epee/src/mlog.cpp";
+  static const char * const expected_filename = "src/epee/src/mlog.cpp";
   const char *path = __FILE__, *expected_ptr = strstr(path, expected_filename);
   if (!expected_ptr)
     return;
@@ -109,31 +85,6 @@ static const char *get_default_categories(int level)
   return categories;
 }
 
-#ifdef WIN32
-bool EnableVTMode()
-{
-  // Set output mode to handle virtual terminal sequences
-  HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-  if (hOut == INVALID_HANDLE_VALUE)
-  {
-    return false;
-  }
-
-  DWORD dwMode = 0;
-  if (!GetConsoleMode(hOut, &dwMode))
-  {
-    return false;
-  }
-
-  dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-  if (!SetConsoleMode(hOut, dwMode))
-  {
-    return false;
-  }
-  return true;
-}
-#endif
-
 void mlog_configure(const std::string &filename_base, bool console, const std::size_t max_log_file_size)
 {
   el::Configurations c;
@@ -159,9 +110,6 @@ void mlog_configure(const std::string &filename_base, bool console, const std::s
     monero_log = get_default_categories(0);
   }
   mlog_set_log(monero_log);
-#ifdef WIN32
-  EnableVTMode();
-#endif
 }
 
 void mlog_set_categories(const char *categories)
@@ -256,11 +204,7 @@ bool is_stdout_a_tty()
 
   if (!initialized.load(std::memory_order_acquire))
   {
-#if defined(WIN32)
-    is_a_tty.store(0 != _isatty(_fileno(stdout)), std::memory_order_relaxed);
-#else
     is_a_tty.store(0 != isatty(fileno(stdout)), std::memory_order_relaxed);
-#endif
     initialized.store(true, std::memory_order_release);
   }
 
@@ -276,110 +220,70 @@ void set_console_color(int color, bool bright)
   {
   case console_color_default:
     {
-#ifdef WIN32
-      HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-      SetConsoleTextAttribute(h_stdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE| (bright ? FOREGROUND_INTENSITY:0));
-#else
       if(bright)
         std::cout << "\033[1;37m";
       else
         std::cout << "\033[0m";
-#endif
     }
     break;
   case console_color_white:
     {
-#ifdef WIN32
-      HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-      SetConsoleTextAttribute(h_stdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | (bright ? FOREGROUND_INTENSITY:0));
-#else
       if(bright)
         std::cout << "\033[1;37m";
       else
         std::cout << "\033[0;37m";
-#endif
     }
     break;
   case console_color_red:
     {
-#ifdef WIN32
-      HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-      SetConsoleTextAttribute(h_stdout, FOREGROUND_RED | (bright ? FOREGROUND_INTENSITY:0));
-#else
       if(bright)
         std::cout << "\033[1;31m";
       else
         std::cout << "\033[0;31m";
-#endif
     }
     break;
   case console_color_green:
     {
-#ifdef WIN32
-      HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-      SetConsoleTextAttribute(h_stdout, FOREGROUND_GREEN | (bright ? FOREGROUND_INTENSITY:0));
-#else
       if(bright)
         std::cout << "\033[1;32m";
       else
         std::cout << "\033[0;32m";
-#endif
     }
     break;
 
   case console_color_blue:
     {
-#ifdef WIN32
-      HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-      SetConsoleTextAttribute(h_stdout, FOREGROUND_BLUE | FOREGROUND_INTENSITY);//(bright ? FOREGROUND_INTENSITY:0));
-#else
       if(bright)
         std::cout << "\033[1;34m";
       else
         std::cout << "\033[0;34m";
-#endif
     }
     break;
 
   case console_color_cyan:
     {
-#ifdef WIN32
-      HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-      SetConsoleTextAttribute(h_stdout, FOREGROUND_GREEN | FOREGROUND_BLUE | (bright ? FOREGROUND_INTENSITY:0));
-#else
       if(bright)
         std::cout << "\033[1;36m";
       else
         std::cout << "\033[0;36m";
-#endif
     }
     break;
 
   case console_color_magenta:
     {
-#ifdef WIN32
-      HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-      SetConsoleTextAttribute(h_stdout, FOREGROUND_BLUE | FOREGROUND_RED | (bright ? FOREGROUND_INTENSITY:0));
-#else
       if(bright)
         std::cout << "\033[1;35m";
       else
         std::cout << "\033[0;35m";
-#endif
     }
     break;
 
   case console_color_yellow:
     {
-#ifdef WIN32
-      HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-      SetConsoleTextAttribute(h_stdout, FOREGROUND_RED | FOREGROUND_GREEN | (bright ? FOREGROUND_INTENSITY:0));
-#else
       if(bright)
         std::cout << "\033[1;33m";
       else
         std::cout << "\033[0;33m";
-#endif
     }
     break;
 
@@ -390,13 +294,8 @@ void reset_console_color() {
   if (!is_stdout_a_tty())
     return;
 
-#ifdef WIN32
-  HANDLE h_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-  SetConsoleTextAttribute(h_stdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-#else
   std::cout << "\033[0m";
   std::cout.flush();
-#endif
 }
 
 }
