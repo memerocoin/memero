@@ -32,16 +32,11 @@
 #include "common/util.h"
 
 #include <filesystem>
-#include <filesystem>
 
 namespace daemonizer
 {
   namespace
   {
-    const command_line::arg_descriptor<std::string> arg_pidfile = {
-      "pidfile"
-    , "File path to write the daemon's PID to (optional, requires --detach)"
-    };
     const command_line::arg_descriptor<bool> arg_non_interactive = {
       "non-interactive"
     , "Run non-interactive"
@@ -53,7 +48,6 @@ namespace daemonizer
     , boost::program_options::options_description & normal_options
     )
   {
-    command_line::add_arg(normal_options, arg_pidfile);
     command_line::add_arg(normal_options, arg_non_interactive);
   }
 

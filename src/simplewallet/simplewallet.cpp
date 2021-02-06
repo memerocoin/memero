@@ -5692,7 +5692,6 @@ void simple_wallet::wallet_idle_thread()
     const boost::posix_time::ptime now0 = boost::posix_time::microsec_clock::universal_time();
     const uint64_t dt_actual = (now0 - start_time).total_microseconds() % 1000000;
     static const uint64_t threshold = 2000;
-#endif
     if (dt_actual < threshold) // if less than a threshold... would a very slow machine always miss it ?
     {
       m_refresh_checker.do_call(std::bind(&simple_wallet::check_refresh, this));
