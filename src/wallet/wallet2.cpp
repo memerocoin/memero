@@ -7306,36 +7306,6 @@ void wallet2::cold_tx_aux_import(const std::vector<pending_tx> & ptx, const std:
   }
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::cold_sign_tx(const std::vector<pending_tx>& ptx_vector, signed_tx_set &exported_txs, std::vector<cryptonote::address_parse_info> &dsts_info, std::vector<std::string> & tx_device_aux)
-{
-  auto & hwdev = get_account().get_device();
-  if (!hwdev.has_tx_cold_sign()){
-    throw std::invalid_argument("Device does not support cold sign protocol");
-  }
-
-  unsigned_tx_set txs;
-  for (auto &tx: ptx_vector)
-  {
-    txs.txes.push_back(get_construction_data_with_decrypted_short_payment_id(tx, m_account.get_device()));
-  }
-  txs.transfers = std::make_pair(0, m_transfers);
-
-  auto dev_cold = dynamic_cast<::hw::device_cold*>(&hwdev);
-  CHECK_AND_ASSERT_THROW_MES(dev_cold, "Device does not implement cold signing interface");
-
-  hw::tx_aux_data aux_data;
-  hw::wallet_shim wallet_shim;
-  setup_shim(&wallet_shim, this);
-  aux_data.tx_recipients = dsts_info;
-  aux_data.bp_version = rct::lol_rct_config.bp_version;
-  aux_data.hard_fork = config::lol::constant_hf_version;
-  dev_cold->tx_sign(&wallet_shim, txs, exported_txs, aux_data);
-  tx_device_aux = aux_data.tx_device_aux;
-
-  MDEBUG("Signed tx data from hw: " << exported_txs.ptx.size() << " transactions");
-  for (auto &c_ptx: exported_txs.ptx) LOG_PRINT_L0(cryptonote::obj_to_json_str(c_ptx.tx));
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t wallet2::cold_key_image_sync(uint64_t &spent, uint64_t &unspent) {
   auto & hwdev = get_account().get_device();
   CHECK_AND_ASSERT_THROW_MES(hwdev.has_ki_cold_sync(), "Device does not support cold ki sync protocol");

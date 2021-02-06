@@ -195,7 +195,6 @@ namespace
   const char* USAGE_SIGN("sign [<account_index>,<address_index>] [--spend|--view] <filename>");
   const char* USAGE_VERIFY("verify <filename> <address> <signature>");
   const char* USAGE_EXPORT_KEY_IMAGES("export_key_images [all] <filename>");
-  const char* USAGE_IMPORT_KEY_IMAGES("import_key_images <filename>");
   const char* USAGE_EXPORT_OUTPUTS("export_outputs [all] <filename>");
   const char* USAGE_IMPORT_OUTPUTS("import_outputs <filename>");
   const char* USAGE_SHOW_TRANSFER("show_transfer <txid>");
@@ -930,27 +929,6 @@ bool simple_wallet::on_cancelled_command()
 {
   check_for_inactivity_lock(false);
   return true;
-}
-
-bool simple_wallet::cold_sign_tx(const std::vector<tools::wallet2::pending_tx>& ptx_vector, tools::wallet2::signed_tx_set &exported_txs, std::vector<cryptonote::address_parse_info> &dsts_info, std::function<bool(const tools::wallet2::signed_tx_set &)> accept_func)
-{
-  std::vector<std::string> tx_aux;
-
-  message_writer(console_color_white, false) << tr("Please confirm the transaction on the device");
-
-  m_wallet->cold_sign_tx(ptx_vector, exported_txs, dsts_info, tx_aux);
-
-  if (accept_func && !accept_func(exported_txs))
-  {
-    MERROR("Transactions rejected by callback");
-    return false;
-  }
-
-  // aux info
-  m_wallet->cold_tx_aux_import(exported_txs.ptx, tx_aux);
-
-  // import key images
-  return m_wallet->import_key_images(exported_txs, 0, true);
 }
 
 bool simple_wallet::set_always_confirm_transfers(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
@@ -1790,10 +1768,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::export_key_images, std::placeholders::_1),
                            tr(USAGE_EXPORT_KEY_IMAGES),
                            tr("Export a signed set of key images to a <filename>."));
-  m_cmd_binder.set_handler("import_key_images",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::import_key_images, std::placeholders::_1),
-                           tr(USAGE_IMPORT_KEY_IMAGES),
-                           tr("Import a signed key images list and verify their spent status."));
   m_cmd_binder.set_handler("export_outputs",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::export_outputs, std::placeholders::_1),
                            tr(USAGE_EXPORT_OUTPUTS),
@@ -4026,30 +4000,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
         }
     }
 
-    // actually commit the transactions
-    if (m_wallet->get_account().get_device().has_tx_cold_sign())
-    {
-      try
-      {
-        tools::wallet2::signed_tx_set signed_tx;
-        if (!cold_sign_tx(ptx_vector, signed_tx, dsts_info, [&](const tools::wallet2::signed_tx_set &tx){ return accept_loaded_tx(tx); })){
-          fail_msg_writer() << tr("Failed to cold sign transaction with HW wallet");
-          return true;
-        }
-
-        commit_or_save(signed_tx.ptx, m_do_not_relay);
-      }
-      catch (const std::exception& e)
-      {
-        handle_transfer_exception(std::current_exception());
-      }
-      catch (...)
-      {
-        LOG_ERROR("Unknown error");
-        fail_msg_writer() << tr("unknown error");
-      }
-    }
-    else if (m_wallet->watch_only())
+    if (m_wallet->watch_only())
     {
       bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
       if (!r)
@@ -4302,33 +4253,7 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
       return true;
     }
 
-    // actually commit the transactions
-    if (m_wallet->get_account().get_device().has_tx_cold_sign())
-    {
-      try
-      {
-        tools::wallet2::signed_tx_set signed_tx;
-        std::vector<cryptonote::address_parse_info> dsts_info;
-        dsts_info.push_back(info);
-
-        if (!cold_sign_tx(ptx_vector, signed_tx, dsts_info, [&](const tools::wallet2::signed_tx_set &tx){ return accept_loaded_tx(tx); })){
-          fail_msg_writer() << tr("Failed to cold sign transaction with HW wallet");
-          return true;
-        }
-
-        commit_or_save(signed_tx.ptx, m_do_not_relay);
-      }
-      catch (const std::exception& e)
-      {
-        handle_transfer_exception(std::current_exception());
-      }
-      catch (...)
-      {
-        LOG_ERROR("Unknown error");
-        fail_msg_writer() << tr("unknown error");
-      }
-    }
-    else if (m_wallet->watch_only())
+    if (m_wallet->watch_only())
     {
       bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
       if (!r)
@@ -4481,34 +4406,7 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
       return true;
     }
 
-    // actually commit the transactions
-    if (m_wallet->get_account().get_device().has_tx_cold_sign())
-    {
-      try
-      {
-        tools::wallet2::signed_tx_set signed_tx;
-        std::vector<cryptonote::address_parse_info> dsts_info;
-        dsts_info.push_back(info);
-
-        if (!cold_sign_tx(ptx_vector, signed_tx, dsts_info, [&](const tools::wallet2::signed_tx_set &tx){ return accept_loaded_tx(tx); })){
-          fail_msg_writer() << tr("Failed to cold sign transaction with HW wallet");
-          return true;
-        }
-
-        commit_or_save(signed_tx.ptx, m_do_not_relay);
-        success_msg_writer(true) << tr("Money successfully sent, transaction: ") << get_transaction_hash(ptx_vector[0].tx);
-      }
-      catch (const std::exception& e)
-      {
-        handle_transfer_exception(std::current_exception());
-      }
-      catch (...)
-      {
-        LOG_ERROR("Unknown error");
-        fail_msg_writer() << tr("unknown error");
-      }
-    }
-    else if (m_wallet->watch_only())
+    if (m_wallet->watch_only())
     {
       bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
       if (!r)
@@ -6506,38 +6404,6 @@ bool simple_wallet::export_key_images(const std::vector<std::string> &args_)
   }
 
   success_msg_writer() << tr("Signed key images exported to ") << filename;
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::import_key_images(const std::vector<std::string> &args)
-{
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command not supported by HW wallet");
-    return true;
-  }
-
-  if (args.size() != 1)
-  {
-    PRINT_USAGE(USAGE_IMPORT_KEY_IMAGES);
-    return true;
-  }
-  std::string filename = args[0];
-
-  LOCK_IDLE_SCOPE();
-  try
-  {
-    uint64_t spent = 0, unspent = 0;
-    uint64_t height = m_wallet->import_key_images(filename, spent, unspent);
-    success_msg_writer() << "Signed key images imported to height " << height << ", "
-        << print_money(spent) << " spent, " << print_money(unspent) << " unspent"; 
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << "Failed to import key images: " << e.what();
-    return true;
-  }
-
   return true;
 }
 //----------------------------------------------------------------------------------------------------
