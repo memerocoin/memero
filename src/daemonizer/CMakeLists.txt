@@ -26,30 +26,17 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-if(MSVC OR MINGW)
-  set(daemonizer_sources
-    windows_service.cpp
-    windows_daemonizer.inl
-  )
-else()
-  set(daemonizer_sources
-    posix_fork.cpp
-    posix_daemonizer.inl
-  )
-endif()
+set(daemonizer_sources
+  posix_fork.cpp
+  posix_daemonizer.inl
+)
 
 set(daemonizer_headers
 )
 
-if(MSVC OR MINGW)
-  set(daemonizer_private_headers
-    daemonizer.h
-  )
-else()
-  set(daemonizer_private_headers
-    daemonizer.h
-  )
-endif()
+set(daemonizer_private_headers
+  daemonizer.h
+)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DDEBUG_TMPDIR_LOG=1)
