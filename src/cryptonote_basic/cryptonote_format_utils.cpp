@@ -951,14 +951,22 @@ namespace cryptonote
       s.insert(s.size() - decimal_point, ".");
   }
   //---------------------------------------------------------------
-  std::string print_money(uint64_t amount, unsigned int decimal_point)
+  std::string print_money_64(uint64_t amount, unsigned int decimal_point)
   {
     std::string s = std::to_string(amount);
     insert_money_decimal_point(s, decimal_point);
     return s;
   }
   //---------------------------------------------------------------
-  std::string print_money(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point)
+  std::string print_money(uint64_t amount, unsigned int decimal_point)
+  {
+    std::string str = print_money_64(amount, decimal_point);
+    str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
+    str.erase ( str.find_last_not_of('.') + 1, std::string::npos );
+    return str;
+  }
+  //---------------------------------------------------------------
+  std::string print_money_128(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point)
   {
     std::stringstream ss;
     ss << amount;
@@ -967,10 +975,11 @@ namespace cryptonote
     return s;
   }
   //---------------------------------------------------------------
-  std::string print_money_compact(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point)
+  std::string print_money(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point)
   {
-    std::string str = print_money(amount, decimal_point);
+    std::string str = print_money_128(amount, decimal_point);
     str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
+    str.erase ( str.find_last_not_of('.') + 1, std::string::npos );
     return str;
   }
   //---------------------------------------------------------------

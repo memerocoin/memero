@@ -787,7 +787,7 @@ bool simple_wallet::print_fee_info(const std::vector<std::string> &args/* = std:
   const uint64_t typical_size = 2500;
   const uint64_t size_granularity = 1;
   message_writer() << (boost::format(tr("Current fee is %s %s per %s"))
-                       % print_money_compact(base_fee * 1000)
+                       % print_money(base_fee * 1000)
                        % cryptonote::get_unit(cryptonote::get_default_decimal_point())
                        % base).str();
 
