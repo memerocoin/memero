@@ -1149,7 +1149,6 @@ private:
 
     // Import/Export wallet data
     std::pair<size_t, std::vector<tools::wallet2::transfer_details>> export_outputs(bool all = false) const;
-    std::string export_outputs_to_str(bool all = false) const;
     size_t import_outputs(const std::pair<size_t, std::vector<tools::wallet2::transfer_details>> &outputs);
     payment_container export_payments() const;
     void import_payments(const payment_container &payments);

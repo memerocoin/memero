@@ -200,7 +200,6 @@ namespace cryptonote
     bool set_default_priority(const std::vector<std::string> &args);
     bool sign(const std::vector<std::string> &args);
     bool verify(const std::vector<std::string> &args);
-    bool export_outputs(const std::vector<std::string> &args);
     bool show_transfer(const std::vector<std::string> &args);
     bool change_password(const std::vector<std::string>& args);
     bool print_fee_info(const std::vector<std::string> &args);

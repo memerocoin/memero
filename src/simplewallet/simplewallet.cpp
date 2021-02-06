@@ -194,7 +194,6 @@ namespace
   const char* USAGE_SET_DESCRIPTION("set_description [free text note]");
   const char* USAGE_SIGN("sign [<account_index>,<address_index>] [--spend|--view] <filename>");
   const char* USAGE_VERIFY("verify <filename> <address> <signature>");
-  const char* USAGE_EXPORT_OUTPUTS("export_outputs [all] <filename>");
   const char* USAGE_SHOW_TRANSFER("show_transfer <txid>");
   const char* USAGE_PRINT_RING("print_ring <key_image> | <txid>");
   const char* USAGE_SAVE_KNOWN_RINGS("save_known_rings");
@@ -1762,10 +1761,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::verify, std::placeholders::_1),
                            tr(USAGE_VERIFY),
                            tr("Verify a signature on the contents of a file."));
-  m_cmd_binder.set_handler("export_outputs",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::export_outputs, std::placeholders::_1),
-                           tr(USAGE_EXPORT_OUTPUTS),
-                           tr("Export a set of outputs owned by this wallet."));
   m_cmd_binder.set_handler("show_transfer",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_transfer, std::placeholders::_1),
                            tr(USAGE_SHOW_TRANSFER),
@@ -6321,55 +6316,6 @@ bool simple_wallet::verify(const std::vector<std::string> &args)
   {
     success_msg_writer() << tr("Good signature from ") << address_string << (result.old ? " (using old signature algorithm)" : "") << " with " << (result.type == tools::wallet2::sign_with_spend_key ? "spend key" : result.type == tools::wallet2::sign_with_view_key ? "view key" : "unknown key combination (suspicious)");
   }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::export_outputs(const std::vector<std::string> &args_)
-{
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command not supported by HW wallet");
-    return true;
-  }
-  auto args = args_;
-
-  bool all = false;
-  if (args.size() >= 2 && args[0] == "all")
-  {
-    all = true;
-    args.erase(args.begin());
-  }
-
-  if (args.size() != 1)
-  {
-    PRINT_USAGE(USAGE_EXPORT_OUTPUTS);
-    return true;
-  }
-
-  std::string filename = args[0];
-  if (m_wallet->confirm_export_overwrite() && !check_file_overwrite(filename))
-    return true;
-
-  SCOPED_WALLET_UNLOCK();
-
-  try
-  {
-    std::string data = m_wallet->export_outputs_to_str(all);
-    bool r = m_wallet->save_to_file(filename, data);
-    if (!r)
-    {
-      fail_msg_writer() << tr("failed to save file ") << filename;
-      return true;
-    }
-  }
-  catch (const std::exception &e)
-  {
-    LOG_ERROR("Error exporting outputs: " << e.what());
-    fail_msg_writer() << "Error exporting outputs: " << e.what();
-    return true;
-  }
-
-  success_msg_writer() << tr("Outputs exported to ") << filename;
   return true;
 }
 //----------------------------------------------------------------------------------------------------

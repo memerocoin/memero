@@ -8892,25 +8892,6 @@ std::pair<size_t, std::vector<tools::wallet2::transfer_details>> wallet2::export
   return std::make_pair(offset, outs);
 }
 //----------------------------------------------------------------------------------------------------
-std::string wallet2::export_outputs_to_str(bool all) const
-{
-  PERF_TIMER(export_outputs_to_str);
-
-  std::stringstream oss;
-  binary_archive<true> ar(oss);
-  auto outputs = export_outputs(all);
-  THROW_WALLET_EXCEPTION_IF(!::serialization::serialize(ar, outputs), error::wallet_internal_error, "Failed to serialize output data");
-
-  std::string magic(OUTPUT_EXPORT_FILE_MAGIC, strlen(OUTPUT_EXPORT_FILE_MAGIC));
-  const cryptonote::account_public_address &keys = get_account().get_keys().m_account_address;
-  std::string header;
-  header += std::string((const char *)&keys.m_spend_public_key, sizeof(crypto::public_key));
-  header += std::string((const char *)&keys.m_view_public_key, sizeof(crypto::public_key));
-  PERF_TIMER(export_outputs_encryption);
-  std::string ciphertext = encrypt_with_view_secret_key(header + oss.str());
-  return magic + ciphertext;
-}
-//----------------------------------------------------------------------------------------------------
 size_t wallet2::import_outputs(const std::pair<size_t, std::vector<tools::wallet2::transfer_details>> &outputs)
 {
   PERF_TIMER(import_outputs);
