@@ -863,9 +863,6 @@ bool simple_wallet::print_ring(const std::vector<std::string> &args)
   std::vector<std::pair<crypto::key_image, std::vector<uint64_t>>> rings;
   try
   {
-    if (m_wallet->get_ring(key_image, ring))
-      rings.push_back({key_image, ring});
-    else if (!m_wallet->get_rings(txid, rings))
     {
       fail_msg_writer() << tr("Key image either not spent, or spent with ring size 1");
       return true;
@@ -1031,20 +1028,6 @@ bool simple_wallet::blackballed(const std::vector<std::string> &args)
     fail_msg_writer() << tr("Failed to check whether output is spent: ") << e.what();
   }
 
-  return true;
-}
-
-bool simple_wallet::save_known_rings(const std::vector<std::string> &args)
-{
-  try
-  {
-    LOCK_IDLE_SCOPE();
-    m_wallet->find_and_save_rings();
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << tr("Failed to save known rings: ") << e.what();
-  }
   return true;
 }
 
@@ -1982,10 +1965,6 @@ simple_wallet::simple_wallet()
                            tr("Print the ring(s) used to spend a given key image or transaction (if the ring size is > 1)\n\n"
                               "Output format:\n"
                               "Key Image, \"absolute\", list of rings"));
-  m_cmd_binder.set_handler("save_known_rings",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::save_known_rings, std::placeholders::_1),
-                           tr(USAGE_SAVE_KNOWN_RINGS),
-                           tr("Save known rings to the shared rings database"));
   m_cmd_binder.set_handler("mark_output_spent",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::blackball, std::placeholders::_1),
                            tr(USAGE_MARK_OUTPUT_SPENT),
@@ -2610,9 +2589,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
     fail_msg_writer() << tr("wallet is null");
     return false;
   }
-
-  if (m_wallet->get_ring_database().empty())
-    fail_msg_writer() << tr("Failed to initialize ring database: privacy enhancing features will be inactive");
 
   m_wallet->callback(this);
 

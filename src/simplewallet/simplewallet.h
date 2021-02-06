@@ -209,7 +209,6 @@ namespace cryptonote
     bool change_password(const std::vector<std::string>& args);
     bool print_fee_info(const std::vector<std::string> &args);
     bool print_ring(const std::vector<std::string>& args);
-    bool save_known_rings(const std::vector<std::string>& args);
     bool blackball(const std::vector<std::string>& args);
     bool unblackball(const std::vector<std::string>& args);
     bool blackballed(const std::vector<std::string>& args);

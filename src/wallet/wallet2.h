@@ -1244,15 +1244,6 @@ private:
       return epee::net_utils::invoke_http_json_rpc(uri, method_name, req, res, *m_http_client, timeout, http_method, req_id);
     }
 
-    bool set_ring_database(const std::string &filename);
-    const std::string get_ring_database() const { return m_ring_database; }
-    bool get_ring(const crypto::key_image &key_image, std::vector<uint64_t> &outs);
-    bool get_rings(const crypto::hash &txid, std::vector<std::pair<crypto::key_image, std::vector<uint64_t>>> &outs);
-    bool set_ring(const crypto::key_image &key_image, const std::vector<uint64_t> &outs, bool relative);
-    bool unset_ring(const std::vector<crypto::key_image> &key_images);
-    bool unset_ring(const crypto::hash &txid);
-    bool find_and_save_rings(bool force = true);
-
     bool blackball_output(const std::pair<uint64_t, uint64_t> &output);
     bool set_blackballed_outputs(const std::vector<std::pair<uint64_t, uint64_t>> &outputs, bool add = false);
     bool unblackball_output(const std::pair<uint64_t, uint64_t> &output);
@@ -1343,11 +1334,6 @@ private:
     std::vector<size_t> get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const;
     void scan_output(const cryptonote::transaction &tx, bool miner_tx, const crypto::public_key &tx_pub_key, size_t i, tx_scan_info_t &tx_scan_info, int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs, std::vector<size_t> &outs, bool pool);
     void trim_hashchain();
-    bool add_rings(const crypto::chacha_key &key, const cryptonote::transaction_prefix &tx);
-    bool add_rings(const cryptonote::transaction_prefix &tx);
-    bool remove_rings(const cryptonote::transaction_prefix &tx);
-    bool get_ring(const crypto::chacha_key &key, const crypto::key_image &key_image, std::vector<uint64_t> &outs);
-    crypto::chacha_key get_ringdb_key();
     void setup_keys(const epee::wipeable_string &password);
     size_t get_transfer_details(const crypto::key_image &ki) const;
 
@@ -1455,7 +1441,6 @@ private:
     // store calculated key image for faster lookup
     serializable_unordered_map<crypto::public_key, serializable_map<uint64_t, crypto::key_image> > m_key_image_cache;
 
-    std::string m_ring_database;
     bool m_ring_history_saved;
     std::unique_ptr<ringdb> m_ringdb;
     std::optional<crypto::chacha_key> m_ringdb_key;
