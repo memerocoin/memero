@@ -76,7 +76,6 @@ using namespace epee;
 #include "common/perf_timer.h"
 #include "ringct/rctSigs.h"
 #include "ringct/curveConstants.h"
-#include "ringdb.h"
 #include "device/device_cold.hpp"
 #include "net/socks_connect.h"
 #include "config/lol.h"
@@ -137,15 +136,6 @@ std::string tools::wallet2::default_daemon_address = "";
 
 namespace
 {
-  std::string get_default_ringdb_path()
-  {
-    std::filesystem::path dir = tools::get_default_data_dir();
-    // remove .bitmonero, replace with .shared-ringdb
-    dir = dir.remove_filename();
-    dir /= ".lol-shared-ringdb";
-    return dir.string();
-  }
-
   std::vector<crypto::public_key> secret_keys_to_public_keys(const std::vector<crypto::secret_key>& keys)
   {
     std::vector<crypto::public_key> public_keys;
@@ -235,18 +225,6 @@ struct options {
   const command_line::arg_descriptor<int> daemon_port = {"daemon-port", tools::wallet2::tr("Use daemon instance at port <arg> instead of 18081"), 0};
   const command_line::arg_descriptor<bool> testnet = {"testnet", tools::wallet2::tr("For testnet. Daemon must also be launched with --testnet flag"), false};
   const command_line::arg_descriptor<bool> stagenet = {"stagenet", tools::wallet2::tr("For stagenet. Daemon must also be launched with --stagenet flag"), false};
-  const command_line::arg_descriptor<std::string, false, true, 2> shared_ringdb_dir = {
-    "shared-ringdb-dir", tools::wallet2::tr("Set shared ring database path"),
-    get_default_ringdb_path(),
-    {{ &testnet, &stagenet }},
-    [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
-      if (testnet_stagenet[0])
-        return (std::filesystem::path(val) / "testnet").string();
-      else if (testnet_stagenet[1])
-        return (std::filesystem::path(val) / "stagenet").string();
-      return val;
-    }
-  };
   const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key derivation function"), 1};
   const command_line::arg_descriptor<std::string> tx_notify = { "tx-notify" , "Run a program for each new incoming transaction, '%s' will be replaced by the transaction hash" , "" };
   const command_line::arg_descriptor<bool> offline = {"offline", tools::wallet2::tr("Do not connect to a daemon"), false};
@@ -908,7 +886,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_subaddress_lookahead_minor(SUBADDRESS_LOOKAHEAD_MINOR),
   m_key_device_type(hw::device::device_type::SOFTWARE),
   m_ring_history_saved(false),
-  m_ringdb(),
   m_last_block_reward(0),
   m_encrypt_keys_after_refresh(std::nullopt),
   m_decrypt_keys_lockers(0),
@@ -946,7 +923,6 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
   command_line::add_arg(desc_params, opts.daemon_port);
   command_line::add_arg(desc_params, opts.testnet);
   command_line::add_arg(desc_params, opts.stagenet);
-  command_line::add_arg(desc_params, opts.shared_ringdb_dir);
   command_line::add_arg(desc_params, opts.kdf_rounds);
   command_line::add_arg(desc_params, opts.tx_notify);
   command_line::add_arg(desc_params, opts.offline);
@@ -5611,41 +5587,22 @@ hw::device& wallet2::lookup_device(const std::string & device_descriptor){
 
 bool wallet2::blackball_output(const std::pair<uint64_t, uint64_t> &output)
 {
-  if (!m_ringdb)
-    return false;
-  try { return m_ringdb->blackball(output); }
-  catch (const std::exception &e) { return false; }
+  return false;
 }
 
 bool wallet2::set_blackballed_outputs(const std::vector<std::pair<uint64_t, uint64_t>> &outputs, bool add)
 {
-  if (!m_ringdb)
-    return false;
-  try
-  {
-    bool ret = true;
-    if (!add)
-      ret &= m_ringdb->clear_blackballs();
-    ret &= m_ringdb->blackball(outputs);
-    return ret;
-  }
-  catch (const std::exception &e) { return false; }
+  return false;
 }
 
 bool wallet2::unblackball_output(const std::pair<uint64_t, uint64_t> &output)
 {
-  if (!m_ringdb)
-    return false;
-  try { return m_ringdb->unblackball(output); }
-  catch (const std::exception &e) { return false; }
+  return false;
 }
 
 bool wallet2::is_output_blackballed(const std::pair<uint64_t, uint64_t> &output) const
 {
-  if (!m_ringdb)
-    return false;
-  try { return m_ringdb->blackballed(output); }
-  catch (const std::exception &e) { return false; }
+  return false;
 }
 
 bool wallet2::lock_keys_file()
@@ -6153,18 +6110,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       v.push_back(std::make_tuple(td.m_global_output_index, td.get_public_key(), mask));
       outs.push_back(v);
     }
-  }
-
-  // save those outs in the ringdb for reuse
-  for (size_t i = 0; i < selected_transfers.size(); ++i)
-  {
-    const size_t idx = selected_transfers[i];
-    THROW_WALLET_EXCEPTION_IF(idx >= m_transfers.size(), error::wallet_internal_error, "selected_transfers entry out of range");
-    const transfer_details &td = m_transfers[idx];
-    std::vector<uint64_t> ring;
-    ring.reserve(outs[i].size());
-    for (const auto &e: outs[i])
-      ring.push_back(std::get<0>(e));
   }
 }
 

@@ -1442,8 +1442,6 @@ private:
     serializable_unordered_map<crypto::public_key, serializable_map<uint64_t, crypto::key_image> > m_key_image_cache;
 
     bool m_ring_history_saved;
-    std::unique_ptr<ringdb> m_ringdb;
-    std::optional<crypto::chacha_key> m_ringdb_key;
 
     uint64_t m_last_block_reward;
     std::unique_ptr<tools::file_locker> m_keys_file_locker;
