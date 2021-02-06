@@ -31,10 +31,6 @@
 #include <fstream>
 #include <filesystem>
 #include <filesystem>
-#ifdef WIN32
-#include <windows.h>
-#include "string_tools.h"
-#endif
 
 // On Windows there is a problem with non-ASCII characters in path and file names
 // as far as support by the standard components used is concerned:
@@ -72,20 +68,6 @@ namespace file_io_utils
 	inline
 		bool save_string_to_file(const std::string& path_to_file, const std::string& str)
 	{
-#ifdef WIN32
-                std::wstring wide_path;
-                try { wide_path = string_tools::utf8_to_utf16(path_to_file); } catch (...) { return false; }
-                HANDLE file_handle = CreateFileW(wide_path.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-                if (file_handle == INVALID_HANDLE_VALUE)
-                    return false;
-                DWORD bytes_written;
-                DWORD bytes_to_write = (DWORD)str.size();
-                BOOL result = WriteFile(file_handle, str.data(), bytes_to_write, &bytes_written, NULL);
-                CloseHandle(file_handle);
-                if (bytes_written != bytes_to_write)
-                    result = FALSE;
-                return result;
-#else
 		try
 		{
 			std::ofstream fstream;
@@ -100,31 +82,11 @@ namespace file_io_utils
 		{
 			return false;
 		}
-#endif
 	}
 
 	inline
 		bool load_file_to_string(const std::string& path_to_file, std::string& target_str, size_t max_size = 1000000000)
 	{
-#ifdef WIN32
-                std::wstring wide_path;
-                try { wide_path = string_tools::utf8_to_utf16(path_to_file); } catch (...) { return false; }
-                HANDLE file_handle = CreateFileW(wide_path.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-                if (file_handle == INVALID_HANDLE_VALUE)
-                    return false;
-                DWORD file_size = GetFileSize(file_handle, NULL);
-                if ((file_size == INVALID_FILE_SIZE) || (uint64_t)file_size > (uint64_t)max_size) {
-                    CloseHandle(file_handle);
-                    return false;
-                }
-                target_str.resize(file_size);
-                DWORD bytes_read;
-                BOOL result = ReadFile(file_handle, &target_str[0], file_size, &bytes_read, NULL);
-                CloseHandle(file_handle);
-                if (bytes_read != file_size)
-                    result = FALSE;
-                return result;
-#else
 		try
 		{
 			std::ifstream fstream;
@@ -149,7 +111,6 @@ namespace file_io_utils
 		{
 			return false;
 		}
-#endif
 	}
 
 	inline
@@ -175,20 +136,6 @@ namespace file_io_utils
 	inline
 		bool get_file_size(const std::string& path_to_file, uint64_t &size)
 	{
-#ifdef WIN32
-                std::wstring wide_path;
-                try { wide_path = string_tools::utf8_to_utf16(path_to_file); } catch (...) { return false; }
-                HANDLE file_handle = CreateFileW(wide_path.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-                if (file_handle == INVALID_HANDLE_VALUE)
-                    return false;
-                LARGE_INTEGER file_size;
-                BOOL result = GetFileSizeEx(file_handle, &file_size);
-                CloseHandle(file_handle);
-                if (result) {
-                    size = file_size.QuadPart;
-                }
-                return size;
-#else
 		try
 		{
 			std::ifstream fstream;
@@ -203,7 +150,6 @@ namespace file_io_utils
 		{
 			return false;
 		}
-#endif
 	}
 
 }
