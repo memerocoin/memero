@@ -63,18 +63,10 @@ using namespace epee;
 #include "net/http_client.h"                        // epee::net_utils::...
 #include "readline_buffer.h"
 
-#ifdef WIN32
-#ifndef STRSAFE_NO_DEPRECATE
-#define STRSAFE_NO_DEPRECATE
-#endif
-  #include <windows.h>
-  #include <shlobj.h>
-  #include <strsafe.h>
-#else 
-  #include <sys/file.h>
-  #include <sys/utsname.h>
-  #include <sys/stat.h>
-#endif
+#include <sys/file.h>
+#include <sys/utsname.h>
+#include <sys/stat.h>
+
 #include <filesystem>
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
@@ -87,7 +79,6 @@ using namespace epee;
 namespace
 {
 
-#ifndef _WIN32
 static int flock_exnb(int fd)
 {
   struct flock fl;
@@ -103,7 +94,6 @@ static int flock_exnb(int fd)
     MERROR("Error locking fd " << fd << ": " << errno << " (" << strerror(errno) << ")");
   return ret;
 }
-#endif
 
 }
 
@@ -113,35 +103,6 @@ namespace tools
 
   file_locker::file_locker(const std::string &filename)
   {
-#ifdef WIN32
-    m_fd = INVALID_HANDLE_VALUE;
-    std::wstring filename_wide;
-    try
-    {
-      filename_wide = string_tools::utf8_to_utf16(filename);
-    }
-    catch (const std::exception &e)
-    {
-      MERROR("Failed to convert path \"" << filename << "\" to UTF-16: " << e.what());
-      return;
-    }
-    m_fd = CreateFileW(filename_wide.c_str(), GENERIC_READ, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (m_fd != INVALID_HANDLE_VALUE)
-    {
-      OVERLAPPED ov;
-      memset(&ov, 0, sizeof(ov));
-      if (!LockFileEx(m_fd, LOCKFILE_FAIL_IMMEDIATELY | LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &ov))
-      {
-        MERROR("Failed to lock " << filename << ": " << std::error_code(GetLastError(), std::system_category()));
-        CloseHandle(m_fd);
-        m_fd = INVALID_HANDLE_VALUE;
-      }
-    }
-    else
-    {
-      MERROR("Failed to open " << filename << ": " << std::error_code(GetLastError(), std::system_category()));
-    }
-#else
     m_fd = open(filename.c_str(), O_RDWR | O_CREAT | O_CLOEXEC, 0666);
     if (m_fd != -1)
     {
@@ -156,80 +117,35 @@ namespace tools
     {
       MERROR("Failed to open " << filename << ": " << std::strerror(errno));
     }
-#endif
   }
   file_locker::~file_locker()
   {
     if (locked())
     {
-#ifdef WIN32
-      CloseHandle(m_fd);
-#else
       close(m_fd);
-#endif
     }
   }
   bool file_locker::locked() const
   {
-#ifdef WIN32
-    return m_fd != INVALID_HANDLE_VALUE;
-#else
     return m_fd != -1;
-#endif
   }
 
-#ifdef WIN32
-  std::string get_windows_version_display_string()
+  std::string get_nix_version_display_string()
   {
-    return std::string("WinME ultimate :D");
+    struct utsname un;
+
+    if(uname(&un) < 0)
+      return std::string("*nix: failed to get os version");
+    return std::string() + un.sysname + " " + un.version + " " + un.release;
   }
-#else
-std::string get_nix_version_display_string()
-{
-  struct utsname un;
-
-  if(uname(&un) < 0)
-    return std::string("*nix: failed to get os version");
-  return std::string() + un.sysname + " " + un.version + " " + un.release;
-}
-#endif
-
-
 
   std::string get_os_version_string()
   {
-#ifdef WIN32
-    return get_windows_version_display_string();
-#else
     return get_nix_version_display_string();
-#endif
   }
 
 
 
-#ifdef WIN32
-  std::string get_special_folder_path(int nfolder, bool iscreate)
-  {
-    WCHAR psz_path[MAX_PATH] = L"";
-
-    if (SHGetSpecialFolderPathW(NULL, psz_path, nfolder, iscreate))
-    {
-      try
-      {
-        return string_tools::utf16_to_utf8(psz_path);
-      }
-      catch (const std::exception &e)
-      {
-        MERROR("utf16_to_utf8 failed: " << e.what());
-        return "";
-      }
-    }
-
-    LOG_ERROR("SHGetSpecialFolderPathW() failed, could not obtain requested path.");
-    return "";
-  }
-#endif
-  
   std::string get_default_data_dir()
   {
     /* Please for the love of god refactor  the ifdefs out of this */
@@ -240,9 +156,6 @@ std::string get_nix_version_display_string()
     // Unix & Mac: ~/.CRYPTONOTE_NAME
     std::string config_folder;
 
-#ifdef WIN32
-    config_folder = get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + CRYPTONOTE_NAME;
-#else
     std::string pathRet;
     char* pszHome = getenv("HOME");
     if (pszHome == NULL || strlen(pszHome) == 0)
@@ -250,18 +163,13 @@ std::string get_nix_version_display_string()
     else
       pathRet = pszHome;
     config_folder = (pathRet + "/." + CRYPTONOTE_NAME);
-#endif
 
     return config_folder;
   }
 
   std::string get_default_log_file()
   {
-#ifdef WIN32
-    return (get_default_data_dir() / std::string(CRYPTONOTE_NAME ".log")).string()
-#else
     return (std::filesystem::path("/dev/null")).string();
-#endif
   }
 
   bool create_directories_if_necessary(const std::string& path)
@@ -290,46 +198,10 @@ std::string get_nix_version_display_string()
   std::error_code replace_file(const std::string& old_name, const std::string& new_name)
   {
     int code;
-#if defined(WIN32)
-    // Maximizing chances for success
-    std::wstring wide_replacement_name;
-    try { wide_replacement_name = string_tools::utf8_to_utf16(old_name); }
-    catch (...) { return std::error_code(GetLastError(), std::system_category()); }
-    std::wstring wide_replaced_name;
-    try { wide_replaced_name = string_tools::utf8_to_utf16(new_name); }
-    catch (...) { return std::error_code(GetLastError(), std::system_category()); }
-
-    DWORD attributes = ::GetFileAttributesW(wide_replaced_name.c_str());
-    if (INVALID_FILE_ATTRIBUTES != attributes)
-    {
-      ::SetFileAttributesW(wide_replaced_name.c_str(), attributes & (~FILE_ATTRIBUTE_READONLY));
-    }
-
-    bool ok = 0 != ::MoveFileExW(wide_replacement_name.c_str(), wide_replaced_name.c_str(), MOVEFILE_REPLACE_EXISTING);
-    code = ok ? 0 : static_cast<int>(::GetLastError());
-#else
     bool ok = 0 == std::rename(old_name.c_str(), new_name.c_str());
     code = ok ? 0 : errno;
-#endif
     return std::error_code(code, std::system_category());
   }
-
-  /*
-  static bool unbound_built_with_threads()
-  {
-    ub_ctx *ctx = ub_ctx_create();
-    if (!ctx) return false; // cheat a bit, should not happen unless OOM
-    char *monero = strdup("monero"), *unbound = strdup("unbound");
-    ub_ctx_zone_add(ctx, monero, unbound); // this calls ub_ctx_finalize first, then errors out with UB_SYNTAX
-    free(unbound);
-    free(monero);
-    // if no threads, bails out early with UB_NOERROR, otherwise fails with UB_AFTERFINAL id already finalized
-    bool with_threads = ub_ctx_async(ctx, 1) != 0; // UB_AFTERFINAL is not defined in public headers, check any error
-    ub_ctx_delete(ctx);
-    MINFO("libunbound was built " << (with_threads ? "with" : "without") << " threads");
-    return with_threads;
-  }
-  */
 
   bool sanitize_locale()
   {
@@ -355,19 +227,6 @@ std::string get_nix_version_display_string()
   }
 
 #ifdef STACK_TRACE
-#ifdef _WIN32
-  // https://stackoverflow.com/questions/1992816/how-to-handle-seg-faults-under-windows
-  static LONG WINAPI windows_crash_handler(PEXCEPTION_POINTERS pExceptionInfo)
-  {
-    tools::log_stack_trace("crashing");
-    exit(1);
-    return EXCEPTION_CONTINUE_SEARCH;
-  }
-  static void setup_crash_dump()
-  {
-    SetUnhandledExceptionFilter(windows_crash_handler);
-  }
-#else
   static void posix_crash_handler(int signal)
   {
     tools::log_stack_trace(("crashing with fatal signal " + std::to_string(signal)).c_str());
@@ -384,7 +243,6 @@ std::string get_nix_version_display_string()
     signal(SIGILL, posix_crash_handler);
     signal(SIGFPE, posix_crash_handler);
   }
-#endif
 #else
   static void setup_crash_dump() {}
 #endif
@@ -569,33 +427,6 @@ std::string get_nix_version_display_string()
     }
     return newval;
   }
-  
-#ifdef _WIN32
-  std::string input_line_win()
-  {
-    HANDLE hConIn = CreateFileW(L"CONIN$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
-    DWORD oldMode;
-
-    FlushConsoleInputBuffer(hConIn);
-    GetConsoleMode(hConIn, &oldMode);
-    SetConsoleMode(hConIn, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT);
-
-    wchar_t buffer[1024];
-    DWORD read;
-
-    ReadConsoleW(hConIn, buffer, sizeof(buffer)/sizeof(wchar_t)-1, &read, nullptr);
-    buffer[read] = 0;
-
-    SetConsoleMode(hConIn, oldMode);
-    CloseHandle(hConIn);
-  
-    int size_needed = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, NULL, 0, NULL, NULL);
-    std::string buf(size_needed, '\0');
-    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, &buf[0], size_needed, NULL, NULL);
-    buf.pop_back(); //size_needed includes null that we needed to have space for
-    return buf;
-  }
-#endif
 
   void closefrom(int fd)
   {
@@ -704,19 +535,6 @@ std::string get_nix_version_display_string()
     std::cout << "\033[3J" << std::flush; // does nothing, should clear current screen and scrollback
     std::cout << "\033[1;1H" << std::flush; // move cursor top/left
     std::cout << "\r                                                \r" << std::flush; // erase odd chars if the ANSI codes were printed raw
-#ifdef _WIN32
-    COORD coord{0, 0};
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (GetConsoleScreenBufferInfo(h, &csbi))
-    {
-      DWORD cbConSize = csbi.dwSize.X * csbi.dwSize.Y, w;
-      FillConsoleOutputCharacter(h, (TCHAR)' ', cbConSize, coord, &w);
-      if (GetConsoleScreenBufferInfo(h, &csbi))
-        FillConsoleOutputAttribute(h, csbi.wAttributes, cbConSize, coord, &w);
-      SetConsoleCursorPosition(h, coord);
-    }
-#endif
   }
 
   std::pair<std::string, size_t> get_string_prefix_by_width(const std::string &s, size_t columns)
@@ -791,11 +609,7 @@ std::string get_nix_version_display_string()
       }
       *wptr = 0;
       sc += std::string(wbuf, bytes);
-#ifdef _WIN32
-      int cpw = 1; // Guess who does not implement wcwidth
-#else
       int cpw = wcwidth(cp);
-#endif
       if (cpw > 0)
       {
         if (cpw > (int)columns)

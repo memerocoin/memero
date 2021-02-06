@@ -38,11 +38,6 @@
 #include <string>
 #include <mutex>
 
-#ifdef _WIN32
-#include "windows.h"
-#include "misc_log_ex.h"
-#endif
-
 #include "crypto/hash.h"
 #include "cryptonote_config.h"
 
@@ -72,11 +67,7 @@ namespace tools
     ~file_locker();
     bool locked() const;
   private:
-#ifdef WIN32
-    HANDLE m_fd;
-#else
     int m_fd;
-#endif
   };
 
   /*! \brief Returns the default data directory.
@@ -91,18 +82,6 @@ namespace tools
    */
   std::string get_default_data_dir();
   std::string get_default_log_file();
-
-#ifdef WIN32
-  /**
-   * @brief 
-   *
-   * @param nfolder
-   * @param iscreate
-   *
-   * @return 
-   */
-  std::string get_special_folder_path(int nfolder, bool iscreate);
-#endif
 
   /*! \brief Returns the OS version string
    *
@@ -137,14 +116,6 @@ namespace tools
     template<typename T>
     static bool install(T t)
     {
-#if defined(WIN32)
-      bool r = TRUE == ::SetConsoleCtrlHandler(&win_handler, TRUE);
-      if (r)
-      {
-        m_handler = t;
-      }
-      return r;
-#else
       static struct sigaction sa;
       memset(&sa, 0, sizeof(struct sigaction));
       sa.sa_handler = posix_handler;
@@ -155,32 +126,14 @@ namespace tools
       signal(SIGPIPE, SIG_IGN);
       m_handler = t;
       return true;
-#endif
     }
 
   private:
-#if defined(WIN32)
-    /*! \brief Handler for win */
-    static BOOL WINAPI win_handler(DWORD type)
-    {
-      if (CTRL_C_EVENT == type || CTRL_BREAK_EVENT == type)
-      {
-        handle_signal(type);
-      }
-      else
-      {
-        MGINFO_RED("Got control signal " << type << ". Exiting without saving...");
-        return FALSE;
-      }
-      return TRUE;
-    }
-#else
     /*! \brief handler for NIX */
     static void posix_handler(int type)
     {
       handle_signal(type);
     }
-#endif
 
     /*! \brief calles m_handler */
     static void handle_signal(int type)
@@ -207,9 +160,6 @@ namespace tools
   std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str);
 
   std::string glob_to_regex(const std::string &val);
-#ifdef _WIN32
-  std::string input_line_win();
-#endif
 
   void closefrom(int fd);
   std::string get_human_readable_timestamp(uint64_t ts);

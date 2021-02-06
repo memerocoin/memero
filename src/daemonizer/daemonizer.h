@@ -32,6 +32,8 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
+#include "daemonizer/posix_daemonizer.inl"
+
 namespace daemonizer
 {
   void init_options(
@@ -58,9 +60,3 @@ namespace daemonizer
     , boost::program_options::variables_map const & vm
     );
 }
-
-#ifdef WIN32
-#  include "daemonizer/windows_daemonizer.inl"
-#else
-#  include "daemonizer/posix_daemonizer.inl"
-#endif
