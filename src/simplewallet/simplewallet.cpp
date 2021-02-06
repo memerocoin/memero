@@ -180,7 +180,6 @@ namespace
   const char* USAGE_ADDRESS("address [ new <label text with white spaces allowed> | all | <index_min> [<index_max>] | label <index> <label text with white spaces allowed> | device [<index>] | one-off <account> <subaddress>]");
   const char* USAGE_SET_VARIABLE("set <option> [<value>]");
   const char* USAGE_GET_TX_KEY("get_tx_key <txid>");
-  const char* USAGE_SET_TX_KEY("set_tx_key <txid> <tx_key> [<subaddress>]");
   const char* USAGE_CHECK_TX_KEY("check_tx_key <txid> <txkey> <address>");
   const char* USAGE_GET_TX_PROOF("get_tx_proof <txid> <address> [<message>]");
   const char* USAGE_CHECK_TX_PROOF("check_tx_proof <txid> <address> <signature_file> [<message>]");
@@ -2091,10 +2090,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_key, std::placeholders::_1),
                            tr(USAGE_GET_TX_KEY),
                            tr("Get the transaction key (r) for a given <txid>."));
-  m_cmd_binder.set_handler("set_tx_key",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::set_tx_key, std::placeholders::_1),
-                           tr(USAGE_SET_TX_KEY),
-                           tr("Set the transaction key (r) for a given <txid> in case the tx was made by some other device or 3rd party wallet."));
   m_cmd_binder.set_handler("check_tx_key",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::check_tx_key, std::placeholders::_1),
                            tr(USAGE_CHECK_TX_KEY),
@@ -5256,82 +5251,6 @@ bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
     fail_msg_writer() << tr("no tx keys found for this txid");
     return true;
   }
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::set_tx_key(const std::vector<std::string> &args_)
-{
-  std::vector<std::string> local_args = args_;
-
-  if(local_args.size() != 2 && local_args.size() != 3) {
-    PRINT_USAGE(USAGE_SET_TX_KEY);
-    return true;
-  }
-
-  std::optional<cryptonote::account_public_address> single_destination_subaddress;
-  if (local_args.size() > 1)
-  {
-    cryptonote::address_parse_info info;
-    if (cryptonote::get_account_address_from_str_or_url(info, m_wallet->nettype(), local_args.back()))
-    {
-      if (!info.is_subaddress)
-      {
-        fail_msg_writer() << tr("Last argument is an address, but not a subaddress");
-        return true;
-      }
-      single_destination_subaddress = info.address;
-      local_args.pop_back();
-    }
-  }
-
-  crypto::hash txid;
-  if (!epee::string_tools::hex_to_pod(local_args[0], txid))
-  {
-    fail_msg_writer() << tr("failed to parse txid");
-    return true;
-  }
-
-  crypto::secret_key tx_key;
-  std::vector<crypto::secret_key> additional_tx_keys;
-  try
-  {
-    if (!epee::string_tools::hex_to_pod(local_args[1].substr(0, 64), tx_key))
-    {
-      fail_msg_writer() << tr("failed to parse tx_key");
-      return true;
-    }
-    while(true)
-    {
-      local_args[1] = local_args[1].substr(64);
-      if (local_args[1].empty())
-        break;
-      additional_tx_keys.resize(additional_tx_keys.size() + 1);
-      if (!epee::string_tools::hex_to_pod(local_args[1].substr(0, 64), additional_tx_keys.back()))
-      {
-        fail_msg_writer() << tr("failed to parse tx_key");
-        return true;
-      }
-    }
-  }
-  catch (const std::out_of_range &e)
-  {
-    fail_msg_writer() << tr("failed to parse tx_key");
-    return true;
-  }
-
-  LOCK_IDLE_SCOPE();
-
-  try
-  {
-    m_wallet->set_tx_key(txid, tx_key, additional_tx_keys, single_destination_subaddress);
-    success_msg_writer() << tr("Tx key successfully stored.");
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << tr("Failed to store tx key: ") << e.what();
-    if (!single_destination_subaddress)
-      fail_msg_writer() << tr("It could be because the transfer was to a subaddress. If this is the case, pass the subaddress last");
-  }
-  return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::get_tx_proof(const std::vector<std::string> &args)
