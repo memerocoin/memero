@@ -40,7 +40,6 @@ set(common_sources
   spawn.cpp
   threadpool.cpp
   aligned.c
-  timings.cc
   combinator.cpp)
 
 if (STACK_TRACE)
@@ -71,7 +70,6 @@ set(common_private_headers
   stack_trace.h
   threadpool.h
   aligned.h
-  timings.h
   combinator.h
   utf8.h)
 
