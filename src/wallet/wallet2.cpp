@@ -5585,26 +5585,6 @@ hw::device& wallet2::lookup_device(const std::string & device_descriptor){
   return hw::get_device(device_descriptor);
 }
 
-bool wallet2::blackball_output(const std::pair<uint64_t, uint64_t> &output)
-{
-  return false;
-}
-
-bool wallet2::set_blackballed_outputs(const std::vector<std::pair<uint64_t, uint64_t>> &outputs, bool add)
-{
-  return false;
-}
-
-bool wallet2::unblackball_output(const std::pair<uint64_t, uint64_t> &output)
-{
-  return false;
-}
-
-bool wallet2::is_output_blackballed(const std::pair<uint64_t, uint64_t> &output) const
-{
-  return false;
-}
-
 bool wallet2::lock_keys_file()
 {
   if (m_wallet_file.empty())
@@ -5659,8 +5639,6 @@ bool wallet2::tx_add_fake_output(std::vector<std::vector<tools::wallet2::get_out
     MWARNING("Commitment " << mask << " at index " << global_index << " is not in the main subgroup");
     return false;
   }
-//  if (is_output_blackballed(output_public_key)) // don't add blackballed outputs
-//    return false;
   outs.back().push_back(item);
   return true;
 }
@@ -5972,11 +5950,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 
           if (seen_indices.count(i))
             continue;
-          if (!allow_blackballed && is_output_blackballed(std::make_pair(amount, i))) // don't add blackballed outputs
-          {
-            --num_usable_outs;
-            continue;
-          }
           seen_indices.emplace(i);
 
           picks[type].insert(i);
