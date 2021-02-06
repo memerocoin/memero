@@ -2119,51 +2119,6 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_import_key_images(const wallet_rpc::COMMAND_RPC_IMPORT_KEY_IMAGES::request& req, wallet_rpc::COMMAND_RPC_IMPORT_KEY_IMAGES::response& res, epee::json_rpc::error& er, const connection_context *ctx)
-  {
-    if (!m_wallet) return not_open(er);
-    if (m_restricted)
-    {
-      er.code = WALLET_RPC_ERROR_CODE_DENIED;
-      er.message = "Command unavailable in restricted mode.";
-      return false;
-    }
-    try
-    {
-      std::vector<std::pair<crypto::key_image, crypto::signature>> ski;
-      ski.resize(req.signed_key_images.size());
-      for (size_t n = 0; n < ski.size(); ++n)
-      {
-        if (!epee::string_tools::hex_to_pod(req.signed_key_images[n].key_image, ski[n].first))
-        {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_KEY_IMAGE;
-          er.message = "failed to parse key image";
-          return false;
-        }
-
-        if (!epee::string_tools::hex_to_pod(req.signed_key_images[n].signature, ski[n].second))
-        {
-          er.code = WALLET_RPC_ERROR_CODE_WRONG_SIGNATURE;
-          er.message = "failed to parse signature";
-          return false;
-        }
-      }
-      uint64_t spent = 0, unspent = 0;
-      uint64_t height = m_wallet->import_key_images(ski, req.offset, spent, unspent);
-      res.spent = spent;
-      res.unspent = unspent;
-      res.height = height;
-    }
-
-    catch (const std::exception& e)
-    {
-      handle_rpc_exception(std::current_exception(), er, WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR);
-      return false;
-    }
-
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_make_uri(const wallet_rpc::COMMAND_RPC_MAKE_URI::request& req, wallet_rpc::COMMAND_RPC_MAKE_URI::response& res, epee::json_rpc::error& er, const connection_context *ctx)
   {
     if (!m_wallet) return not_open(er);

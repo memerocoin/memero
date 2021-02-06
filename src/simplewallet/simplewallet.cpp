@@ -3084,26 +3084,6 @@ void simple_wallet::on_refresh_finished(uint64_t start_height, uint64_t fetched_
   {
     message_writer(console_color_yellow, false) << tr("The wallet's refresh-from-block-height setting is higher than the daemon's height: this may mean your wallet will skip over transactions");
   }
-
-  // Key image sync after the first refresh
-  if (!m_wallet->get_account().get_device().has_tx_cold_sign() || m_wallet->get_account().get_device().has_ki_live_refresh()) {
-    return;
-  }
-
-  if (!received_money || m_wallet->get_device_last_key_image_sync() != 0) {
-    return;
-  }
-
-  // Finished first refresh for HW device and money received -> KI sync
-  message_writer() << "\n" << tr("The first refresh has finished for the HW-based wallet with received money. hw_key_images_sync is needed. ");
-
-  std::string accepted = input_line(tr("Do you want to do it now? (Y/Yes/N/No): "));
-  if (std::cin.eof() || !command_line::is_yes(accepted)) {
-    message_writer(console_color_red, false) << tr("hw_key_images_sync skipped. Run command manually before a transfer.");
-    return;
-  }
-
-  key_images_sync_intern();
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bool is_init)
@@ -6347,30 +6327,6 @@ bool simple_wallet::verify(const std::vector<std::string> &args)
     success_msg_writer() << tr("Good signature from ") << address_string << (result.old ? " (using old signature algorithm)" : "") << " with " << (result.type == tools::wallet2::sign_with_spend_key ? "spend key" : result.type == tools::wallet2::sign_with_view_key ? "view key" : "unknown key combination (suspicious)");
   }
   return true;
-}
-//----------------------------------------------------------------------------------------------------
-void simple_wallet::key_images_sync_intern(){
-  try
-  {
-    message_writer(console_color_white, false) << tr("Please confirm the key image sync on the device");
-
-    uint64_t spent = 0, unspent = 0;
-    uint64_t height = m_wallet->cold_key_image_sync(spent, unspent);
-    if (height > 0)
-    {
-      success_msg_writer() << tr("Key images synchronized to height ") << height;
-      {
-        success_msg_writer() << print_money(spent) << tr(" spent, ") << print_money(unspent) << tr(" unspent");
-      }
-    }
-    else {
-      fail_msg_writer() << tr("Failed to import key images");
-    }
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << tr("Failed to import key images: ") << e.what();
-  }
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::export_outputs(const std::vector<std::string> &args_)
