@@ -2040,9 +2040,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::locked_sweep_all,std::placeholders::_1),
                            tr(USAGE_LOCKED_SWEEP_ALL),
                            tr("Send all unlocked balance to an address and lock it for <lockblocks> (max. 1000000). If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. <priority> is the priority of the sweep. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability."));
-  m_cmd_binder.set_handler("sweep_unmixable",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_unmixable, std::placeholders::_1),
-                           tr("Send all unmixable outputs to yourself with ring_size 1"));
   m_cmd_binder.set_handler("sweep_all", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_all, std::placeholders::_1),
                            tr(USAGE_SWEEP_ALL),
                            tr("Send all unlocked balance to an address. If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. If the parameter \"outputs=<N>\" is specified and  N > 0, wallet splits the transaction into N even outputs."));
@@ -4604,101 +4601,6 @@ bool simple_wallet::locked_transfer(const std::vector<std::string> &args_)
 bool simple_wallet::locked_sweep_all(const std::vector<std::string> &args_)
 {
   sweep_main(m_current_subaddress_account, 0, true, args_);
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-
-bool simple_wallet::sweep_unmixable(const std::vector<std::string> &args_)
-{
-  if (!try_connect_to_daemon())
-    return true;
-
-  SCOPED_WALLET_UNLOCK();
-
-  try
-  {
-    // figure out what tx will be necessary
-    auto ptx_vector = m_wallet->create_unmixable_sweep_transactions();
-
-    if (ptx_vector.empty())
-    {
-      fail_msg_writer() << tr("No unmixable outputs found");
-      return true;
-    }
-
-    // give user total and fee, and prompt to confirm
-    uint64_t total_fee = 0, total_unmixable = 0;
-    for (size_t n = 0; n < ptx_vector.size(); ++n)
-    {
-      total_fee += ptx_vector[n].fee;
-      for (auto i: ptx_vector[n].selected_transfers)
-        total_unmixable += m_wallet->get_transfer_details(i).amount();
-    }
-
-    std::string prompt_str = tr("Sweeping ") + print_money(total_unmixable);
-    if (ptx_vector.size() > 1) {
-      prompt_str = (boost::format(tr("Sweeping %s in %llu transactions for a total fee of %s.  Is this okay?")) %
-        print_money(total_unmixable) %
-        ((unsigned long long)ptx_vector.size()) %
-        print_money(total_fee)).str();
-    }
-    else {
-      prompt_str = (boost::format(tr("Sweeping %s for a total fee of %s.  Is this okay?")) %
-        print_money(total_unmixable) %
-        print_money(total_fee)).str();
-    }
-    std::string accepted = input_line(prompt_str, true);
-    if (std::cin.eof())
-      return true;
-    if (!command_line::is_yes(accepted))
-    {
-      fail_msg_writer() << tr("transaction cancelled.");
-
-      return true;
-    }
-
-    // actually commit the transactions
-    if (m_wallet->watch_only())
-    {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
-      if (!r)
-      {
-        fail_msg_writer() << tr("Failed to write transaction(s) to file");
-      }
-      else
-      {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_lolnero_tx";
-      }
-    }
-    else
-    {
-      commit_or_save(ptx_vector, m_do_not_relay);
-    }
-  }
-  catch (const tools::error::not_enough_unlocked_money& e)
-  {
-    fail_msg_writer() << tr("Not enough money in unlocked balance");
-    std::string accepted = input_line((boost::format(tr("Discarding %s of unmixable outputs that cannot be spent, which can be undone by \"rescan_spent\".  Is this okay?")) % print_money(e.available())).str(), true);
-    if (std::cin.eof())
-      return true;
-    if (command_line::is_yes(accepted))
-    {
-      try
-      {
-        m_wallet->discard_unmixable_outputs();
-      } catch (...) {}
-    }
-  }
-  catch (const std::exception &e)
-  {
-    handle_transfer_exception(std::current_exception());
-  }
-  catch (...)
-  {
-    LOG_ERROR("unknown error");
-    fail_msg_writer() << tr("unknown error");
-  }
-
   return true;
 }
 //----------------------------------------------------------------------------------------------------
