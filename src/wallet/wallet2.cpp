@@ -5702,15 +5702,13 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 
     // if we have at least one rct out, get the distribution, or fall back to the previous system
     uint64_t rct_start_height;
-    bool has_rct = false;
     uint64_t max_rct_index = 0;
     for (size_t idx: selected_transfers)
       if (m_transfers[idx].is_rct())
       {
-        has_rct = true;
         max_rct_index = std::max(max_rct_index, m_transfers[idx].m_global_output_index);
       }
-    const bool has_rct_distribution = has_rct && (!rct_offsets.empty() || get_rct_distribution(rct_start_height, rct_offsets));
+    const bool has_rct_distribution = !rct_offsets.empty() || get_rct_distribution(rct_start_height, rct_offsets);
     if (has_rct_distribution)
     {
       // check we're clear enough of rct start, to avoid corner cases below
@@ -5762,18 +5760,14 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
     {
       ++num_selected_transfers;
       const transfer_details &td = m_transfers[idx];
-      const uint64_t amount = td.is_rct() ? 0 : td.amount();
+      const uint64_t amount = 0;
       std::unordered_set<uint64_t> seen_indices;
       // request more for rct in base recent (locked) coinbases are picked, since they're locked for longer
       size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE : 0);
       size_t start = req.outputs.size();
-      bool use_histogram = amount != 0 || !has_rct_distribution;
+      bool use_histogram = !has_rct_distribution;
 
-      const bool output_is_pre_fork = false;
       uint64_t num_outs = 0, num_recent_outs = 0;
-      uint64_t num_post_fork_outs = 0;
-      float pre_fork_num_out_ratio = 0.0f;
-      float post_fork_num_out_ratio = 0.0f;
 
       {
         // if there are just enough outputs to mix with, use all of them.
@@ -5789,7 +5783,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
             break;
           }
         }
-        num_post_fork_outs = num_outs;
       }
 
       if (use_histogram)
@@ -5810,10 +5803,8 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       }
 
       // how many fake outs to draw on a pre-fork distribution
-      size_t pre_fork_outputs_count = requested_outputs_count * pre_fork_num_out_ratio;
-      size_t post_fork_outputs_count = requested_outputs_count * post_fork_num_out_ratio;
       // how many fake outs to draw otherwise
-      size_t normal_output_count = requested_outputs_count - pre_fork_outputs_count - post_fork_outputs_count;
+      size_t normal_output_count = requested_outputs_count;
 
       size_t recent_outputs_count = 0;
       if (use_histogram)
@@ -5828,8 +5819,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
           --recent_outputs_count; // if the real out is recent, pick one less recent fake out
       }
       LOG_PRINT_L1("Fake output makeup: " << requested_outputs_count << " requested: " << recent_outputs_count << " recent, " <<
-          pre_fork_outputs_count << " pre-fork, " << post_fork_outputs_count << " post-fork, " <<
-          (requested_outputs_count - recent_outputs_count - pre_fork_outputs_count - post_fork_outputs_count) << " full-chain");
+          (requested_outputs_count - recent_outputs_count) << " full-chain");
 
       uint64_t num_found = 0;
 
@@ -5886,18 +5876,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
           if (amount == 0 && has_rct_distribution)
           {
             THROW_WALLET_EXCEPTION_IF(!gamma, error::wallet_internal_error, "No gamma picker");
-            // gamma distribution
-            if (num_found -1 < recent_outputs_count + pre_fork_outputs_count)
-            {
-              do i = gamma->pick(); while (i >= segregation_limit[amount].first);
-              type = "pre-fork gamma";
-            }
-            else if (num_found -1 < recent_outputs_count + pre_fork_outputs_count + post_fork_outputs_count)
-            {
-              do i = gamma->pick(); while (i < segregation_limit[amount].first || i >= num_outs);
-              type = "post-fork gamma";
-            }
-            else
             {
               do i = gamma->pick(); while (i >= num_outs);
               type = "gamma";
@@ -5913,28 +5891,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
             if (i == num_outs)
               --i;
             type = "recent";
-          }
-          else if (num_found -1 < recent_outputs_count + pre_fork_outputs_count)
-          {
-            // triangular distribution over [a,b) with a=0, mode c=b=up_index_limit
-            uint64_t r = crypto::rand<uint64_t>() % ((uint64_t)1 << 53);
-            double frac = std::sqrt((double)r / ((uint64_t)1 << 53));
-            i = (uint64_t)(frac*segregation_limit[amount].first);
-            // just in case rounding up to 1 occurs after calc
-            if (i == num_outs)
-              --i;
-            type = " pre-fork";
-          }
-          else if (num_found -1 < recent_outputs_count + pre_fork_outputs_count + post_fork_outputs_count)
-          {
-            // triangular distribution over [a,b) with a=0, mode c=b=up_index_limit
-            uint64_t r = crypto::rand<uint64_t>() % ((uint64_t)1 << 53);
-            double frac = std::sqrt((double)r / ((uint64_t)1 << 53));
-            i = (uint64_t)(frac*num_post_fork_outs) + segregation_limit[amount].first;
-            // just in case rounding up to 1 occurs after calc
-            if (i == num_post_fork_outs+segregation_limit[amount].first)
-              --i;
-            type = "post-fork";
           }
           else
           {
@@ -6012,7 +5968,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 
       uint64_t num_outs = 0;
       const uint64_t amount = td.is_rct() ? 0 : td.amount();
-      const bool output_is_pre_fork = false;
       for (const auto &he: resp_t.histogram)
       {
         if (he.amount == amount)
