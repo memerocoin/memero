@@ -47,7 +47,6 @@
 #include "console_handler.h"
 #include "math_helper.h"
 #include "wipeable_string.h"
-#include "common/i18n.h"
 #include "common/password.h"
 #include "crypto/crypto.h"  // for definition of crypto::secret_key
 
@@ -65,13 +64,14 @@ using namespace constant;
  */
 namespace cryptonote
 {
+  const char* tr(const char* str);
   /*!
    * \brief Manages wallet operations. This is the most abstracted wallet class.
    */
   class simple_wallet : public tools::i_wallet2_callback
   {
   public:
-    static const char *tr(const char *str) { return i18n_translate(str, "cryptonote::simple_wallet"); }
+    static const char *tr(const char *str) { return str; }
 
   public:
     typedef std::vector<std::string> command_type;
@@ -305,7 +305,7 @@ namespace cryptonote
 
         if (std::chrono::milliseconds(20) < current_time - m_print_time || force)
         {
-          std::cout << QT_TRANSLATE_NOOP("cryptonote::simple_wallet", "Height ") << height << " / " << m_blockchain_height << '\r' << std::flush;
+          std::cout << "Height " << height << " / " << m_blockchain_height << '\r' << std::flush;
           m_print_time = current_time;
         }
       }

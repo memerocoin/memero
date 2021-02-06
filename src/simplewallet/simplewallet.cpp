@@ -50,7 +50,6 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include "include_base_utils.h"
 #include "console_handler.h"
-#include "common/i18n.h"
 #include "common/command_line.h"
 #include "common/util.h"
 #include "common/base58.h"

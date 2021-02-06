@@ -31,7 +31,6 @@
 #include "command_line.h"
 #include <boost/algorithm/string/compare.hpp>
 #include <boost/algorithm/string/predicate.hpp>
-#include "common/i18n.h"
 
 namespace command_line
 {
@@ -39,7 +38,7 @@ namespace command_line
   {
     const char* tr(const char* str)
     {
-      return i18n_translate(str, "command_line");
+      return str;
     }
   }
 

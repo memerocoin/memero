@@ -30,7 +30,6 @@
 #include <filesystem>
 #include <filesystem>
 #include <boost/format.hpp>
-#include "common/i18n.h"
 #include "common/util.h"
 #include "misc_log_ex.h"
 #include "string_tools.h"
@@ -79,7 +78,7 @@ namespace wallet_args
 
   const char* tr(const char* str)
   {
-    return i18n_translate(str, "wallet_args");
+    return str;
   }
 
   std::pair<std::optional<boost::program_options::variables_map>, bool> main(
@@ -110,7 +109,6 @@ namespace wallet_args
     const command_line::arg_descriptor<std::string> arg_config_file = {"config-file", wallet_args::tr("Config file"), "", true};
 
 
-    std::string lang = i18n_get_language();
     tools::on_startup();
 #ifdef NDEBUG
     tools::disable_core_dumps();
@@ -128,8 +126,6 @@ namespace wallet_args
     command_line::add_arg(desc_params, arg_max_log_file_size);
     command_line::add_arg(desc_params, arg_max_concurrency);
     command_line::add_arg(desc_params, arg_config_file);
-
-    i18n_set_language("translations", "monero", lang);
 
     po::options_description desc_all;
     desc_all.add(desc_general).add(desc_params);

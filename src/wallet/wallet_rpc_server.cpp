@@ -40,7 +40,6 @@ using namespace epee;
 #include "wallet_rpc_server.h"
 #include "wallet/wallet_args.h"
 #include "common/command_line.h"
-#include "common/i18n.h"
 #include "cryptonote_config.h"
 #include "cryptonote_basic/cryptonote_format_utils.h"
 #include "cryptonote_basic/account.h"
@@ -111,7 +110,7 @@ namespace tools
 {
   const char* wallet_rpc_server::tr(const char* str)
   {
-    return i18n_translate(str, "tools::wallet_rpc_server");
+    return str;
   }
 
   //------------------------------------------------------------------------------------------------------------------------------

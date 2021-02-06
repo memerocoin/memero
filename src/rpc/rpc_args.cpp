@@ -32,7 +32,6 @@
 #include <boost/asio/ip/address.hpp>
 #include <functional>
 #include "common/command_line.h"
-#include "common/i18n.h"
 #include "hex.h"
 
 namespace cryptonote
@@ -98,7 +97,7 @@ namespace cryptonote
      , rpc_ssl_allowed_fingerprints({"rpc-ssl-allowed-fingerprints", rpc_args::tr("List of certificate fingerprints to allow")})
   {}
 
-  const char* rpc_args::tr(const char* str) { return i18n_translate(str, "cryptonote::rpc_args"); }
+  const char* rpc_args::tr(const char* str) { return str; }
 
   void rpc_args::init_options(boost::program_options::options_description& desc, const bool any_cert_option)
   {

@@ -34,7 +34,6 @@ set(common_sources
   error.cpp
   expect.cpp
   util.cpp
-  i18n.cpp
   notify.cpp
   password.cpp
   perf_timer.cpp
@@ -66,7 +65,6 @@ set(common_private_headers
   unordered_containers_boost_serialization.h
   util.h
   varint.h
-  i18n.h
   password.h
   perf_timer.h
   spawn.h

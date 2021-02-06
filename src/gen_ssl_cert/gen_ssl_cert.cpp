@@ -36,7 +36,6 @@
 #include "net/net_ssl.h"
 #include "crypto/crypto.h"
 #include "common/util.h"
-#include "common/i18n.h"
 #include "common/command_line.h"
 #include "common/scoped_message_writer.h"
 #include "common/password.h"
@@ -51,7 +50,7 @@ namespace gencert
 {
   const char* tr(const char* str)
   {
-    return i18n_translate(str, "tools::gen_ssl_cert");
+    return str;
   }
 
 }
