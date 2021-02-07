@@ -300,6 +300,7 @@ include_directories(
   src
   src/tools
   src/math
+  src/network
 )
 
 list(APPEND EXTRA_LIBRARIES ${CMAKE_DL_LIBS})
