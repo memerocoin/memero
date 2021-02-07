@@ -100,6 +100,7 @@ monero_add_library(version SOURCES ${CMAKE_BINARY_DIR}/version.cpp DEPENDS genve
 add_subdirectory(tools/common)
 add_subdirectory(tools/daemonizer)
 add_subdirectory(tools/epee)
+add_subdirectory(tools/serialization)
 
 add_subdirectory(math/crypto)
 add_subdirectory(math/ringct)
@@ -117,7 +118,6 @@ add_subdirectory(wallet/simplewallet)
 
 add_subdirectory(net)
 add_subdirectory(rpc)
-add_subdirectory(serialization)
 add_subdirectory(p2p)
 add_subdirectory(cryptonote/protocol)
 add_subdirectory(daemon)
