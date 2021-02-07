@@ -28,7 +28,7 @@
 
 #include <atomic>
 
-#include "blockchain_db/blockchain_db.h"
+#include "database/blockchain/blockchain_db.h"
 #include "cryptonote/basic/blobdatatype.h" // for type blobdata
 #include "ringct/rctTypes.h"
 

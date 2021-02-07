@@ -37,7 +37,7 @@
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "tx_pool.h"
 #include "blockchain.h"
-#include "blockchain_db/blockchain_db.h"
+#include "database/blockchain/blockchain_db.h"
 #include "cryptonote/basic/cryptonote_boost_serialization.h"
 #include "config/cryptonote.hpp"
 #include "cryptonote/basic/miner.h"
@@ -3058,7 +3058,7 @@ uint64_t Blockchain::get_adjusted_time(uint64_t height) const
   LOG_PRINT_L3("Blockchain::" << __func__);
 
   size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
-  
+
   // if not enough blocks, no proper median yet, return current time
   if(height < blockchain_timestamp_check_window)
   {
@@ -3113,10 +3113,10 @@ bool Blockchain::check_block_timestamp(std::vector<uint64_t>& timestamps, const 
 bool Blockchain::check_block_timestamp(const block& b, uint64_t& median_ts) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-  
+
   uint64_t cryptonote_block_future_time_limit = CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2;
   size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
-  
+
   if(b.timestamp > (uint64_t)time(NULL) + cryptonote_block_future_time_limit)
   {
     MERROR_VER("Timestamp of block with id: " << get_block_hash(b) << ", " << b.timestamp << ", bigger than local time + 10 minutes");
