@@ -61,7 +61,7 @@ using namespace epee;
 #include "serialization/binary_utils.h"
 #include "serialization/string.h"
 #include "cryptonote/basic/blobdatatype.h"
-#include "mnemonics/electrum-words.h"
+#include "wallet/mnemonics/electrum-words.h"
 #include "common/util.h"
 #include "common/apply_permutation.h"
 #include "rapidjson/document.h"

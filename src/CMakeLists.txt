@@ -107,16 +107,19 @@ add_subdirectory(math/ringct)
 add_subdirectory(cryptonote/basic)
 add_subdirectory(cryptonote/core)
 
-add_subdirectory(net)
 add_subdirectory(database/interface)
 add_subdirectory(database/helper/lmdb)
-add_subdirectory(mnemonics)
+
+add_subdirectory(wallet/api)
+add_subdirectory(wallet/mnemonics)
+add_subdirectory(wallet/device)
+add_subdirectory(wallet/simplewallet)
+
+add_subdirectory(net)
 add_subdirectory(rpc)
 add_subdirectory(serialization)
-add_subdirectory(wallet/api)
 add_subdirectory(p2p)
 add_subdirectory(cryptonote/protocol)
-add_subdirectory(wallet/simplewallet)
 add_subdirectory(daemon)
 
 if(BUILD_DEBUG_UTILITIES)
@@ -125,4 +128,3 @@ if(BUILD_DEBUG_UTILITIES)
   add_subdirectory(gen_ssl_cert)
 endif()
 
-add_subdirectory(wallet/device)

@@ -48,7 +48,7 @@ using namespace epee;
 #include "string_coding.h"
 #include "string_tools.h"
 #include "crypto/hash.h"
-#include "mnemonics/electrum-words.h"
+#include "wallet/mnemonics/electrum-words.h"
 #include "rpc/rpc_args.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "tools/daemonizer/daemonizer.h"

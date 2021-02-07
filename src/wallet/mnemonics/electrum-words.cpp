@@ -43,7 +43,7 @@
 #include "wipeable_string.h"
 #include "misc_language.h"
 #include "int-util.h"
-#include "mnemonics/electrum-words.h"
+#include "electrum-words.h"
 #include <boost/crc.hpp>
 
 #include "english.h"
