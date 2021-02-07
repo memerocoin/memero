@@ -111,9 +111,9 @@ add_subdirectory(cryptonote/core)
 add_subdirectory(database/interface)
 add_subdirectory(database/helper/lmdb)
 
-add_subdirectory(wallet/api)
 add_subdirectory(wallet/mnemonics)
 add_subdirectory(wallet/device)
+add_subdirectory(wallet/rpc)
 add_subdirectory(wallet/simplewallet)
 
 add_subdirectory(network/type)

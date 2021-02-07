@@ -31,18 +31,20 @@
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 set(wallet_sources
-  wallet2.cpp
-  wallet_args.cpp
-  node_rpc_proxy.cpp)
+  ../api/wallet2.cpp
+  ../api/node_rpc_proxy.cpp
+  ../args/wallet_args.cpp
+  )
 
 set(wallet_private_headers
-  wallet2.h
-  wallet_args.h
-  wallet_errors.h
+  ../api/wallet_errors.h
+  ../api/wallet2.h
+  ../api/node_rpc_proxy.h
+  ../args/wallet_args.h
   wallet_rpc_server.h
   wallet_rpc_server_commands_defs.h
   wallet_rpc_server_error_codes.h
-  node_rpc_proxy.h)
+  )
 
 monero_private_headers(wallet
   ${wallet_private_headers})

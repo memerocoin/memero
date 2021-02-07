@@ -64,7 +64,7 @@
 #include "rapidjson/document.h"
 #include "common/json_util.h"
 #include "ringct/rctSigs.h"
-#include "wallet/api/wallet_args.h"
+#include "wallet/args/wallet_args.h"
 #include "version.h"
 #include <stdexcept>
 
