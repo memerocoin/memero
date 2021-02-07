@@ -34,9 +34,9 @@
 #include <memory>
 #include <system_error>
 
-#include "net/error.h"
+#include "network/type/error.h"
 #include "net/net_utils_base.h"
-#include "net/socks.h"
+#include "network/type/socks.h"
 #include "string_tools.h"
 
 namespace net

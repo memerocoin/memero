@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020, The Monero Project
+// Copyright (c) 2018, The Monero Project
 //
 // All rights reserved.
 //
@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "i2p_address.h"
+#include "tor_address.h"
 
 #include <algorithm>
 #include <boost/spirit/include/karma_generate.hpp>
@@ -35,7 +35,7 @@
 #include <cstring>
 #include <limits>
 
-#include "net/error.h"
+#include "network/type/error.h"
 #include "serialization/keyvalue_serialization.h"
 #include "storages/portable_storage.h"
 #include "string_tools.h"
@@ -44,31 +44,32 @@ namespace net
 {
     namespace
     {
-        // !TODO only b32 addresses right now
-        constexpr const char tld[] = u8".b32.i2p";
-        constexpr const char unknown_host[] = "<unknown i2p host>";
+        constexpr const char tld[] = u8".onion";
+        constexpr const char unknown_host[] = "<unknown tor host>";
 
-        constexpr const unsigned b32_length = 52;
+        constexpr const unsigned v2_length = 16;
+        constexpr const unsigned v3_length = 56;
 
         constexpr const char base32_alphabet[] =
             u8"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz234567";
 
         expect<void> host_check(std::string_view host) noexcept
         {
-          if (!boost::algorithm::ends_with(host, tld))
+            if (!boost::algorithm::ends_with(host, tld))
                 return {net::error::expected_tld};
 
             host.remove_suffix(sizeof(tld) - 1);
 
-            if (host.size() != b32_length)
-                return {net::error::invalid_i2p_address};
+            //! \TODO v3 has checksum, base32 decoding is required to verify it
+            if (host.size() != v2_length && host.size() != v3_length)
+                return {net::error::invalid_tor_address};
             if (host.find_first_not_of(base32_alphabet) != std::string_view::npos)
-                return {net::error::invalid_i2p_address};
+                return {net::error::invalid_tor_address};
 
             return success();
         }
 
-        struct i2p_serialized
+        struct tor_serialized
         {
             std::string host;
             std::uint16_t port;
@@ -80,7 +81,7 @@ namespace net
         };
     }
 
-    i2p_address::i2p_address(const std::string_view host, const std::uint16_t port) noexcept
+    tor_address::tor_address(const std::string_view host, const std::uint16_t port) noexcept
       : port_(port)
     {
         // this is a private constructor, throw if moved to public
@@ -91,12 +92,12 @@ namespace net
         std::memset(host_ + length, 0, sizeof(host_) - length);
     }
 
-    const char* i2p_address::unknown_str() noexcept
+    const char* tor_address::unknown_str() noexcept
     {
         return unknown_host;
     }
 
-    i2p_address::i2p_address() noexcept
+    tor_address::tor_address() noexcept
       : port_(0)
     {
         static_assert(sizeof(unknown_host) <= sizeof(host_), "bad buffer size");
@@ -104,7 +105,7 @@ namespace net
         std::memset(host_ + sizeof(unknown_host), 0, sizeof(host_) - sizeof(unknown_host));
     }
 
-    expect<i2p_address> i2p_address::make(const std::string_view address, const std::uint16_t default_port)
+    expect<tor_address> tor_address::make(const std::string_view address, const std::uint16_t default_port)
     {
         std::string_view host = address.substr(0, address.rfind(':'));
         const std::string_view port =
@@ -116,13 +117,14 @@ namespace net
         if (!port.empty() && !epee::string_tools::get_xtype_from_string(porti, std::string{port}))
             return {net::error::invalid_port};
 
-        static_assert(b32_length + sizeof(tld) == sizeof(i2p_address::host_), "bad internal host size");
-        return i2p_address{host, porti};
+        static_assert(v2_length <= v3_length, "bad internal host size");
+        static_assert(v3_length + sizeof(tld) == sizeof(tor_address::host_), "bad internal host size");
+        return tor_address{host, porti};
     }
 
-    bool i2p_address::_load(epee::serialization::portable_storage& src, epee::serialization::section* hparent)
+    bool tor_address::_load(epee::serialization::portable_storage& src, epee::serialization::section* hparent)
     {
-        i2p_serialized in{};
+        tor_serialized in{};
         if (in._load(src, hparent) && in.host.size() < sizeof(host_) && (in.host == unknown_host || !host_check(in.host).has_error()))
         {
             std::memcpy(host_, in.host.data(), in.host.size());
@@ -136,19 +138,19 @@ namespace net
         return false;
     }
 
-    bool i2p_address::store(epee::serialization::portable_storage& dest, epee::serialization::section* hparent) const
+    bool tor_address::store(epee::serialization::portable_storage& dest, epee::serialization::section* hparent) const
     {
-        const i2p_serialized out{std::string{host_}, port_};
+        const tor_serialized out{std::string{host_}, port_};
         return out.store(dest, hparent);
     }
 
-    i2p_address::i2p_address(const i2p_address& rhs) noexcept
+    tor_address::tor_address(const tor_address& rhs) noexcept
       : port_(rhs.port_)
     {
         std::memcpy(host_, rhs.host_, sizeof(host_));
     }
 
-    i2p_address& i2p_address::operator=(const i2p_address& rhs) noexcept
+    tor_address& tor_address::operator=(const tor_address& rhs) noexcept
     {
         if (this != std::addressof(rhs))
         {
@@ -158,29 +160,30 @@ namespace net
         return *this;
     }
 
-    bool i2p_address::is_unknown() const noexcept
+    bool tor_address::is_unknown() const noexcept
     {
         static_assert(1 <= sizeof(host_), "host size too small");
         return host_[0] == '<'; // character is not allowed otherwise
     }
 
-    bool i2p_address::equal(const i2p_address& rhs) const noexcept
+    bool tor_address::equal(const tor_address& rhs) const noexcept
     {
         return port_ == rhs.port_ && is_same_host(rhs);
     }
 
-    bool i2p_address::less(const i2p_address& rhs) const noexcept
+    bool tor_address::less(const tor_address& rhs) const noexcept
     {
         int res = std::strcmp(host_str(), rhs.host_str());
         return res < 0 || (res == 0 && port() < rhs.port());
     }
 
-    bool i2p_address::is_same_host(const i2p_address& rhs) const noexcept
+    bool tor_address::is_same_host(const tor_address& rhs) const noexcept
     {
+        //! \TODO v2 and v3 should be comparable - requires base32
         return std::strcmp(host_str(), rhs.host_str()) == 0;
     }
 
-    std::string i2p_address::str() const
+    std::string tor_address::str() const
     {
         const std::size_t host_length = std::strlen(host_str());
         const std::size_t port_length =

@@ -49,7 +49,7 @@
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/account_boost_serialization.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "net/http.h"
+#include "network/type/http.h"
 #include "storages/http_abstract_invoke.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"

@@ -28,8 +28,8 @@
 
 #include "parse.h"
 
-#include "net/tor_address.h"
-#include "net/i2p_address.h"
+#include "network/type/tor_address.h"
+#include "network/type/i2p_address.h"
 #include "string_tools.h"
 
 namespace net

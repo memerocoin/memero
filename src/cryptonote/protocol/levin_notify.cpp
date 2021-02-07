@@ -41,7 +41,7 @@
 #include "crypto/random.h"
 #include "cryptonote/basic/connection_context.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "net/dandelionpp.h"
+#include "network/type/dandelionpp.h"
 #include "p2p/net_node.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

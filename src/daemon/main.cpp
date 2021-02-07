@@ -39,7 +39,7 @@
 #include "daemon/executor.h"
 #include "tools/daemonizer/daemonizer.h"
 #include "misc_log_ex.h"
-#include "net/parse.h"
+#include "network/type/parse.h"
 #include "p2p/net_node.h"
 #include "rpc/core_rpc_server.h"
 #include "rpc/rpc_args.h"

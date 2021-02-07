@@ -57,7 +57,7 @@
 #include "math_helper.h"
 #include "net_node_common.h"
 #include "net/enums.h"
-#include "net/fwd.h"
+#include "network/type/fwd.h"
 #include "common/command_line.h"
 
 PUSH_WARNINGS

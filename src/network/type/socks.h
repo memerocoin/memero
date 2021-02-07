@@ -37,7 +37,7 @@
 #include <memory>
 #include <utility>
 
-#include "net/fwd.h"
+#include "network/type/fwd.h"
 #include "span.h"
 
 namespace epee

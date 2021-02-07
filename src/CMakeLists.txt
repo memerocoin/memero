@@ -116,7 +116,7 @@ add_subdirectory(wallet/mnemonics)
 add_subdirectory(wallet/device)
 add_subdirectory(wallet/simplewallet)
 
-add_subdirectory(net)
+add_subdirectory(network/type)
 add_subdirectory(rpc)
 add_subdirectory(p2p)
 add_subdirectory(cryptonote/protocol)

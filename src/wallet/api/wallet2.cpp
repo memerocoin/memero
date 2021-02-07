@@ -46,7 +46,7 @@ using namespace epee;
 #include "cryptonote/core/tx_sanity_check.h"
 #include "wallet2.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "net/parse.h"
+#include "network/type/parse.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "rpc/core_rpc_server_error_codes.h"
 #include "misc_language.h"
@@ -75,7 +75,7 @@ using namespace epee;
 #include "common/perf_timer.h"
 #include "ringct/rctSigs.h"
 #include "ringct/curveConstants.h"
-#include "net/socks_connect.h"
+#include "network/type/socks_connect.h"
 #include "config/lol.hpp"
 
 extern "C"

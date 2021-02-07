@@ -34,7 +34,7 @@
 
 #include "common/expect.h"
 #include "net/enums.h"
-#include "net/error.h"
+#include "network/type/error.h"
 
 namespace epee
 {
