@@ -118,7 +118,7 @@ add_subdirectory(wallet/simplewallet)
 
 add_subdirectory(network/type)
 add_subdirectory(network/rpc)
-add_subdirectory(p2p)
+add_subdirectory(network/p2p)
 add_subdirectory(cryptonote/protocol)
 add_subdirectory(daemon)
 

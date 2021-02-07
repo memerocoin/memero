@@ -55,12 +55,12 @@ set(daemon_private_headers
   ../cryptonote/protocol/cryptonote_protocol_handler_common.h
 
   # p2p
-  ../p2p/net_node.h
-  ../p2p/net_node_common.h
-  ../p2p/net_peerlist.h
-  ../p2p/net_peerlist_boost_serialization.h
-  ../p2p/p2p_protocol_defs.h
-  ../p2p/stdafx.h)
+  ../network/p2p/net_node.h
+  ../network/p2p/net_node_common.h
+  ../network/p2p/net_peerlist.h
+  ../network/p2p/net_peerlist_boost_serialization.h
+  ../network/p2p/p2p_protocol_defs.h
+  ../network/p2p/stdafx.h)
 
 monero_private_headers(daemon
   ${daemon_private_headers})
