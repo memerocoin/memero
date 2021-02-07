@@ -119,7 +119,7 @@ endif()
 add_subdirectory(cryptonote/protocol)
 if(NOT IOS)
   add_subdirectory(simplewallet)
-  add_subdirectory(daemonizer)
+  add_subdirectory(common/daemonizer)
   add_subdirectory(daemon)
 endif()
 

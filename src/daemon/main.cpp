@@ -37,7 +37,7 @@
 #include "daemon/command_server.h"
 #include "daemon/daemon.h"
 #include "daemon/executor.h"
-#include "daemonizer/daemonizer.h"
+#include "common/daemonizer/daemonizer.h"
 #include "misc_log_ex.h"
 #include "net/parse.h"
 #include "p2p/net_node.h"
