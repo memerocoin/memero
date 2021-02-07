@@ -114,7 +114,7 @@ add_subdirectory(database/helper/lmdb)
 add_subdirectory(wallet/mnemonics)
 add_subdirectory(wallet/device)
 add_subdirectory(wallet/rpc)
-add_subdirectory(wallet/simplewallet)
+add_subdirectory(wallet/cli)
 
 add_subdirectory(network/type)
 add_subdirectory(network/rpc)
