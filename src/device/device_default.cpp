@@ -36,7 +36,7 @@
 #include "cryptonote/basic/subaddress_index.h"
 #include "cryptonote/core/cryptonote_tx_utils.h"
 #include "ringct/rctOps.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 
 namespace hw {
 

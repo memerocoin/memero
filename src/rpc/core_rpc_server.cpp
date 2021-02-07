@@ -52,7 +52,7 @@ using namespace epee;
 #include "core_rpc_server_error_codes.h"
 #include "p2p/net_node.h"
 #include "version.h"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon.rpc"

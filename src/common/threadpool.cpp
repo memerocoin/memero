@@ -28,7 +28,7 @@
 #include "misc_log_ex.h"
 #include "common/threadpool.h"
 
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "common/util.h"
 
 static __thread int depth = 0;

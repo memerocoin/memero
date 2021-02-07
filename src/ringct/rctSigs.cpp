@@ -37,7 +37,7 @@
 #include "curveConstants.h"
 #include "bulletproofs.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 
 using namespace crypto;
 using namespace std;

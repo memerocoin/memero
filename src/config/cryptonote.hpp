@@ -30,10 +30,10 @@
 
 #pragma once
 
-#include "config/constant.h"
-#include "config/config.h"
-#include "config/network.h"
-#include "config/lol.h"
+#include "constant.hpp"
+#include "config.hpp"
+#include "network.hpp"
+#include "lol.hpp"
 
 #define CRYPTONOTE_MAX_BLOCK_NUMBER                     500000000
 #define CRYPTONOTE_MAX_TX_SIZE                          1000000

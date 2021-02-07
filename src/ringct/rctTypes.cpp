@@ -29,7 +29,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "misc_log_ex.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "rctTypes.h"
 #include "int-util.h"
 using namespace crypto;

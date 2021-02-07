@@ -44,7 +44,7 @@
 #include <shared_mutex>
 
 
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "cryptonote/protocol/fwd.h"
 #include "cryptonote/protocol/levin_notify.h"
 #include "warnings.h"

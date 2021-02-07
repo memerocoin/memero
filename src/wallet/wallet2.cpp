@@ -42,7 +42,7 @@
 #include "include_base_utils.h"
 using namespace epee;
 
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "cryptonote/core/tx_sanity_check.h"
 #include "wallet2.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
@@ -76,7 +76,7 @@ using namespace epee;
 #include "ringct/rctSigs.h"
 #include "ringct/curveConstants.h"
 #include "net/socks_connect.h"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 extern "C"
 {

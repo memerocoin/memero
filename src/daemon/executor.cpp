@@ -30,7 +30,7 @@
 
 #include "daemon/executor.h"
 
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "version.h"
 
 #include <string>

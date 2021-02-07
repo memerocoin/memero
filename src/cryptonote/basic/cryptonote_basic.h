@@ -43,13 +43,13 @@
 #include "serialization/debug_archive.h"
 #include "serialization/crypto.h"
 #include "serialization/keyvalue_serialization.h" // eepe named serialization
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "crypto/crypto.h"
 #include "crypto/hash.h"
 #include "misc_language.h"
 #include "ringct/rctTypes.h"
 #include "device/device.hpp"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 namespace cryptonote
 {

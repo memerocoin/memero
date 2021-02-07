@@ -40,7 +40,7 @@
 #include "cryptonote/basic/blobdatatype.h"
 #include "ringct/rctSigs.h"
 #include "version.h"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 namespace cryptonote
 {

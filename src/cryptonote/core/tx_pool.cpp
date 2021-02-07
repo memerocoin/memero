@@ -36,7 +36,7 @@
 #include "tx_pool.h"
 #include "cryptonote_tx_utils.h"
 #include "cryptonote/basic/cryptonote_boost_serialization.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "blockchain.h"
 #include "blockchain_db/locked_txn.h"
 #include "blockchain_db/blockchain_db.h"
@@ -46,7 +46,7 @@
 #include "warnings.h"
 #include "common/perf_timer.h"
 #include "crypto/hash.h"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "txpool"

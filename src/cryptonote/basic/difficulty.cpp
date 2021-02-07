@@ -37,7 +37,7 @@
 
 #include "int-util.h"
 #include "crypto/hash.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "difficulty.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

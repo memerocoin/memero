@@ -42,7 +42,7 @@ using namespace epee;
 #include "cryptonote/basic/events.h"
 #include "warnings.h"
 #include "crypto/crypto.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "misc_language.h"
 #include "file_io_utils.h"
 #include <csignal>
@@ -51,7 +51,7 @@ using namespace epee;
 #include "ringct/rctSigs.h"
 #include "common/notify.h"
 #include "version.h"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"

@@ -39,7 +39,7 @@
 #include "blockchain.h"
 #include "blockchain_db/blockchain_db.h"
 #include "cryptonote/basic/cryptonote_boost_serialization.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "cryptonote/basic/miner.h"
 #include "misc_language.h"
 #include "profile_tools.h"
@@ -54,7 +54,7 @@
 #include "common/perf_timer.h"
 #include "common/notify.h"
 #include "common/varint.h"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "blockchain"

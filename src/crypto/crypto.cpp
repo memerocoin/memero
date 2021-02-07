@@ -41,7 +41,7 @@
 #include "crypto.h"
 #include "hash.h"
 
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 
 namespace {
   static void local_abort(const char *msg)

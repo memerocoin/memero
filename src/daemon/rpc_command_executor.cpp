@@ -39,7 +39,7 @@
 #include <boost/format.hpp>
 #include <ctime>
 #include <string>
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"

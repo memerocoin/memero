@@ -39,7 +39,7 @@
 #include <mutex>
 
 #include "crypto/hash.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 
 /*! \brief Various Tools
  *

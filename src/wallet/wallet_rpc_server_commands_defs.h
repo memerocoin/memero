@@ -29,7 +29,7 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/subaddress_index.h"

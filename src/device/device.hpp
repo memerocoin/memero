@@ -32,7 +32,7 @@
 #include "crypto/crypto.h"
 #include "crypto/chacha.h"
 #include "ringct/rctTypes.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 
 
 #ifndef USE_DEVICE_LEDGER

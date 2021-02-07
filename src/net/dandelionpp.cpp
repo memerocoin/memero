@@ -32,7 +32,7 @@
 #include <chrono>
 
 #include "common/expect.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "crypto/crypto.h"
 
 namespace net

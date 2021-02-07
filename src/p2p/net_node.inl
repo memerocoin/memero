@@ -57,7 +57,7 @@
 #include "storages/levin_abstract_invoke2.h"
 #include "cryptonote/core/cryptonote_core.h"
 #include "net/parse.h"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.p2p"

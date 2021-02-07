@@ -35,12 +35,12 @@ using namespace epee;
 #include "string_tools.h"
 #include "serialization/binary_utils.h"
 #include "cryptonote_format_utils.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "misc_language.h"
 #include "common/base58.h"
 #include "crypto/hash.h"
 #include "int-util.h"
-#include "config/lol.h"
+#include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"

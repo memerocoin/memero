@@ -30,7 +30,7 @@
 #define DAEMON_COMMAND_LINE_ARGS_H
 
 #include "common/command_line.h"
-#include "cryptonote_config.h"
+#include "config/cryptonote.hpp"
 #include "daemonizer/daemonizer.h"
 
 namespace daemon_args
