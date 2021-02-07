@@ -27,7 +27,8 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(lmdb_sources database.cpp error.cpp table.cpp value_stream.cpp)
-set(lmdb_headers database.h error.h key_stream.h table.h transaction.h util.h value_stream.h)
+set(lmdb_headers database.hpp error.hpp key_stream.hpp
+table.hpp transaction.hpp util.hpp value_stream.hpp)
 
 monero_add_library(lmdb_lib ${lmdb_sources} ${lmdb_headers})
 target_link_libraries(lmdb_lib common ${LMDB_LIBRARY})

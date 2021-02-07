@@ -33,8 +33,8 @@
 #include <type_traits>
 
 #include "common/expect.h"
-#include "error.h"
-#include "transaction.h"
+#include "error.hpp"
+#include "transaction.hpp"
 
 namespace lmdb
 {
