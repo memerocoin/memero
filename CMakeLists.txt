@@ -294,7 +294,13 @@ include_directories(external/rapidjson/include)
 
 
 # wrap up
-include_directories(src/tools/epee/include external src src/tools)
+include_directories(
+  external
+  src/tools/epee/include
+  src
+  src/tools
+  src/math
+)
 
 list(APPEND EXTRA_LIBRARIES ${CMAKE_DL_LIBS})
 

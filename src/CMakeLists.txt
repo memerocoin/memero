@@ -101,10 +101,12 @@ add_subdirectory(tools/common)
 add_subdirectory(tools/daemonizer)
 add_subdirectory(tools/epee)
 
-add_subdirectory(crypto)
-add_subdirectory(ringct)
+add_subdirectory(math/crypto)
+add_subdirectory(math/ringct)
+
 add_subdirectory(cryptonote/basic)
 add_subdirectory(cryptonote/core)
+
 add_subdirectory(net)
 add_subdirectory(database/interface)
 add_subdirectory(database/helper/lmdb)
