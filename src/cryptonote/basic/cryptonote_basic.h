@@ -48,7 +48,7 @@
 #include "crypto/hash.h"
 #include "misc_language.h"
 #include "ringct/rctTypes.h"
-#include "device/device.hpp"
+#include "wallet/device/device.hpp"
 #include "config/lol.hpp"
 
 namespace cryptonote

@@ -123,4 +123,4 @@ if(BUILD_DEBUG_UTILITIES)
   add_subdirectory(gen_ssl_cert)
 endif()
 
-add_subdirectory(device)
+add_subdirectory(wallet/device)
