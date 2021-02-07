@@ -39,7 +39,7 @@
 #include <list>
 #include <ctime>
 
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "profile_tools.h"
 #include "net/network_throttle-detail.hpp"
 #include "common/util.h"

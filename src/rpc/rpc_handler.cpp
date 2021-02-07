@@ -3,7 +3,7 @@
 #include <mutex>
 #include <mutex>
 
-#include "cryptonote_core/cryptonote_core.h"
+#include "cryptonote/core/cryptonote_core.h"
 
 namespace cryptonote
 {

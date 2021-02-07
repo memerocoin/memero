@@ -49,10 +49,10 @@ set(daemon_private_headers
   rpc_command_executor.h
 
   # cryptonote_protocol
-  ../cryptonote_protocol/cryptonote_protocol_defs.h
-  ../cryptonote_protocol/cryptonote_protocol_handler.h
-  ../cryptonote_protocol/cryptonote_protocol_handler.inl
-  ../cryptonote_protocol/cryptonote_protocol_handler_common.h
+  ../cryptonote/protocol/cryptonote_protocol_defs.h
+  ../cryptonote/protocol/cryptonote_protocol_handler.h
+  ../cryptonote/protocol/cryptonote_protocol_handler.inl
+  ../cryptonote/protocol/cryptonote_protocol_handler_common.h
 
   # p2p
   ../p2p/net_node.h

@@ -41,8 +41,8 @@
 #include <boost/program_options/variables_map.hpp>
 #include <condition_variable>
 
-#include "cryptonote_basic/account.h"
-#include "cryptonote_basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "wallet/wallet2.h"
 #include "console_handler.h"
 #include "math_helper.h"

@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "cryptonote_protocol/cryptonote_protocol_handler.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "p2p/net_node.h"
 #include "daemon/protocol.h"
 

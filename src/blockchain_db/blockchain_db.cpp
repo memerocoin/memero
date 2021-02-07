@@ -30,7 +30,7 @@
 
 #include "string_tools.h"
 #include "blockchain_db.h"
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "profile_tools.h"
 #include "ringct/rctOps.h"
 

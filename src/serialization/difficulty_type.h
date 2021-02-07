@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "cryptonote_basic/difficulty.h"
+#include "cryptonote/basic/difficulty.h"
 #include "serialization.h"
 
 template<> struct is_basic_type<cryptonote::difficulty_type> { typedef std::true_type type; };

@@ -39,8 +39,8 @@
 #include "common/varint.h"
 #include "cryptonote_config.h"
 #include "crypto/random.h"
-#include "cryptonote_basic/connection_context.h"
-#include "cryptonote_protocol/cryptonote_protocol_defs.h"
+#include "cryptonote/basic/connection_context.h"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "net/dandelionpp.h"
 #include "p2p/net_node.h"
 

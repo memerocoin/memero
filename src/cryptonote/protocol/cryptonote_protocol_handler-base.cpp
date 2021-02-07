@@ -50,7 +50,7 @@
 #include "cryptonote_protocol_handler.h"
 #include "net/network_throttle.hpp"
 
-#include "cryptonote_core/cryptonote_core.h" // e.g. for the send_stop_signal()
+#include "cryptonote/core/cryptonote_core.h" // e.g. for the send_stop_signal()
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.cn"

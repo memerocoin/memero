@@ -36,9 +36,9 @@
 #include "net/http_server_impl_base.h"
 #include "net/http_client.h"
 #include "core_rpc_server_commands_defs.h"
-#include "cryptonote_core/cryptonote_core.h"
+#include "cryptonote/core/cryptonote_core.h"
 #include "p2p/net_node.h"
-#include "cryptonote_protocol/cryptonote_protocol_handler.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon.rpc"

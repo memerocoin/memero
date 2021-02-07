@@ -45,8 +45,8 @@
 
 
 #include "cryptonote_config.h"
-#include "cryptonote_protocol/fwd.h"
-#include "cryptonote_protocol/levin_notify.h"
+#include "cryptonote/protocol/fwd.h"
+#include "cryptonote/protocol/levin_notify.h"
 #include "warnings.h"
 #include "net/abstract_tcp_server2.h"
 #include "net/levin_protocol_handler.h"

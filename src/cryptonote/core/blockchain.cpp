@@ -34,13 +34,13 @@
 #include <boost/range/adaptor/reversed.hpp>
 
 #include "include_base_utils.h"
-#include "cryptonote_basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "tx_pool.h"
 #include "blockchain.h"
 #include "blockchain_db/blockchain_db.h"
-#include "cryptonote_basic/cryptonote_boost_serialization.h"
+#include "cryptonote/basic/cryptonote_boost_serialization.h"
 #include "cryptonote_config.h"
-#include "cryptonote_basic/miner.h"
+#include "cryptonote/basic/miner.h"
 #include "misc_language.h"
 #include "profile_tools.h"
 #include "file_io_utils.h"

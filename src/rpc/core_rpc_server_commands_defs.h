@@ -32,9 +32,9 @@
 
 #include "string_tools.h"
 
-#include "cryptonote_protocol/cryptonote_protocol_defs.h"
-#include "cryptonote_basic/cryptonote_basic.h"
-#include "cryptonote_basic/difficulty.h"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/difficulty.h"
 #include "crypto/hash.h"
 #include "rpc/rpc_handler.h"
 #include "common/varint.h"

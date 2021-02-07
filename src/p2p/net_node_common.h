@@ -33,9 +33,9 @@
 #include <boost/uuid/uuid.hpp>
 #include <utility>
 #include <vector>
-#include "cryptonote_basic/blobdatatype.h"
-#include "cryptonote_protocol/enums.h"
-#include "cryptonote_protocol/fwd.h"
+#include "cryptonote/basic/blobdatatype.h"
+#include "cryptonote/protocol/enums.h"
+#include "cryptonote/protocol/fwd.h"
 #include "net/enums.h"
 #include "net/net_utils_base.h"
 #include "p2p_protocol_defs.h"

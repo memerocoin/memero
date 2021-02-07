@@ -29,8 +29,8 @@
 #pragma once
 
 #include "crypto/hash.h"
-#include "cryptonote_basic/cryptonote_basic.h"
-#include "cryptonote_basic/difficulty.h"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/difficulty.h"
 #include "ringct/rctSigs.h"
 #include "rpc/rpc_handler.h"
 

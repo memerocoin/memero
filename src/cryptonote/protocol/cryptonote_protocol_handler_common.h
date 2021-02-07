@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020, The Monero Project
+// Copyright (c) 2014-2020, The Monero Project
 // 
 // All rights reserved.
 // 
@@ -25,12 +25,39 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// 
+// Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <set>
-#include "cryptonote_basic/blobdatatype.h"
+#pragma once
 
+#include "p2p/net_node_common.h"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
+#include "cryptonote/basic/connection_context.h"
 namespace cryptonote
 {
-  bool tx_sanity_check(const cryptonote::blobdata &tx_blob, uint64_t rct_outs_available);
-  bool tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices, uint64_t rct_outs_available);
+  /************************************************************************/
+  /*                                                                      */
+  /************************************************************************/
+  struct i_cryptonote_protocol
+  {
+    virtual bool relay_block(NOTIFY_NEW_BLOCK::request& arg, cryptonote_connection_context& exclude_context)=0;
+    virtual bool relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg, const boost::uuids::uuid& source, epee::net_utils::zone zone)=0;
+    //virtual bool request_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, cryptonote_connection_context& context)=0;
+  };
+
+  /************************************************************************/
+  /*                                                                      */
+  /************************************************************************/
+  struct cryptonote_protocol_stub: public i_cryptonote_protocol
+  {
+    virtual bool relay_block(NOTIFY_NEW_BLOCK::request& arg, cryptonote_connection_context& exclude_context)
+    {
+      return false;
+    }
+    virtual bool relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg, const boost::uuids::uuid& source, epee::net_utils::zone zone)
+    {
+      return false;
+    }
+
+  };
 }

@@ -36,7 +36,7 @@
 #include "rctSigs.h"
 #include "curveConstants.h"
 #include "bulletproofs.h"
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote_config.h"
 
 using namespace crypto;

@@ -30,9 +30,9 @@
 
 #pragma once
 #include "cryptonote_config.h"
-#include "cryptonote_protocol/cryptonote_protocol_defs.h"
-#include "cryptonote_basic/cryptonote_basic.h"
-#include "cryptonote_basic/subaddress_index.h"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/subaddress_index.h"
 #include "crypto/hash.h"
 #include "wallet_rpc_server_error_codes.h"
 

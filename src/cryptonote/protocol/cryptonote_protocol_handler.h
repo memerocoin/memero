@@ -44,7 +44,7 @@
 #include "cryptonote_protocol_handler_common.h"
 #include "block_queue.h"
 #include "common/perf_timer.h"
-#include "cryptonote_basic/connection_context.h"
+#include "cryptonote/basic/connection_context.h"
 #include <boost/circular_buffer.hpp>
 
 PUSH_WARNINGS

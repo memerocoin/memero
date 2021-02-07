@@ -28,8 +28,8 @@
 
 #include <stdint.h>
 #include <vector>
-#include "cryptonote_basic/cryptonote_basic.h"
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "blockchain.h"
 #include "tx_sanity_check.h"
 

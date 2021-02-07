@@ -33,8 +33,8 @@
 #include "common/scoped_message_writer.h"
 #include "daemon/rpc_command_executor.h"
 #include "rpc/core_rpc_server_commands_defs.h"
-#include "cryptonote_core/cryptonote_core.h"
-#include "cryptonote_basic/difficulty.h"
+#include "cryptonote/core/cryptonote_core.h"
+#include "cryptonote/basic/difficulty.h"
 #include "rpc/rpc_version_str.h"
 #include <boost/format.hpp>
 #include <ctime>

@@ -33,7 +33,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "cryptonote_basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
 
 // drop macro from windows.h
 #ifdef GetObject

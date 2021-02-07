@@ -37,7 +37,7 @@
 #include "string_tools.h"
 #include "file_io_utils.h"
 #include "common/util.h"
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "crypto/crypto.h"
 #include "profile_tools.h"
 #include "ringct/rctOps.h"

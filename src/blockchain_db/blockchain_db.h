@@ -35,10 +35,10 @@
 #include <boost/program_options.hpp>
 #include "common/command_line.h"
 #include "crypto/hash.h"
-#include "cryptonote_basic/blobdatatype.h"
-#include "cryptonote_basic/cryptonote_basic.h"
-#include "cryptonote_basic/difficulty.h"
-#include "cryptonote_protocol/enums.h"
+#include "cryptonote/basic/blobdatatype.h"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/difficulty.h"
+#include "cryptonote/protocol/enums.h"
 #include "syncobj.h"
 
 /** \file

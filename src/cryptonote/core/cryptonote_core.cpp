@@ -39,7 +39,7 @@ using namespace epee;
 #include "common/util.h"
 #include "common/threadpool.h"
 #include "common/command_line.h"
-#include "cryptonote_basic/events.h"
+#include "cryptonote/basic/events.h"
 #include "warnings.h"
 #include "crypto/crypto.h"
 #include "cryptonote_config.h"
@@ -1160,7 +1160,7 @@ namespace cryptonote
       }
 
       /* All txes are sent on randomized timers per connection in
-         `src/cryptonote_protocol/levin_notify.cpp.` They are either sent with
+         `src/cryptonote/protocol/levin_notify.cpp.` They are either sent with
          "white noise" delays or via  diffusion (Dandelion++ fluff). So
          re-relaying public and private _should_ be acceptable here. */
       const boost::uuids::uuid source = boost::uuids::nil_uuid();

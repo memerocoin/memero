@@ -36,16 +36,16 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include "cryptonote_basic/fwd.h"
-#include "cryptonote_core/i_core_events.h"
-#include "cryptonote_protocol/cryptonote_protocol_handler_common.h"
-#include "cryptonote_protocol/enums.h"
+#include "cryptonote/basic/fwd.h"
+#include "cryptonote/core/i_core_events.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
+#include "cryptonote/protocol/enums.h"
 #include "storages/portable_storage_template_helper.h"
 #include "common/command_line.h"
 #include "tx_pool.h"
 #include "blockchain.h"
-#include "cryptonote_basic/miner.h"
-#include "cryptonote_basic/connection_context.h"
+#include "cryptonote/basic/miner.h"
+#include "cryptonote/basic/connection_context.h"
 #include "warnings.h"
 #include "crypto/hash.h"
 #include "span.h"

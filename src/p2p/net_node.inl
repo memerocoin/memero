@@ -55,7 +55,7 @@
 #include "net/local_ip.h"
 #include "crypto/crypto.h"
 #include "storages/levin_abstract_invoke2.h"
-#include "cryptonote_core/cryptonote_core.h"
+#include "cryptonote/core/cryptonote_core.h"
 #include "net/parse.h"
 #include "config/lol.h"
 

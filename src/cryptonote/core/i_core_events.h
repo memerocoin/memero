@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include "cryptonote_basic/blobdatatype.h"
-#include "cryptonote_protocol/enums.h"
+#include "cryptonote/basic/blobdatatype.h"
+#include "cryptonote/protocol/enums.h"
 #include "span.h"
 
 namespace cryptonote
