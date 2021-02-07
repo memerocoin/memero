@@ -43,7 +43,7 @@
 
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "wallet/wallet2.h"
+#include "wallet/api/wallet2.h"
 #include "console_handler.h"
 #include "math_helper.h"
 #include "wipeable_string.h"
