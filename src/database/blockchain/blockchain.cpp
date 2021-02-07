@@ -34,7 +34,7 @@
 #include "profile_tools.h"
 #include "ringct/rctOps.h"
 
-#include "lmdb/db_lmdb.h"
+#include "lmdb/lmdb.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "blockchain.db"

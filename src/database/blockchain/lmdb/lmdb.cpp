@@ -26,7 +26,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#include "db_lmdb.h"
+#include "lmdb.hpp"
 
 #include <filesystem>
 #include <boost/format.hpp>
