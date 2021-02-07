@@ -2,11 +2,6 @@ Lolnero is a fork of Wownero with a linear emission and a SHA-3 PoW.
 
 There is no premine and no dev tax.
 
-Note
-====
-
-This network isn't really going anywhere, it's probably better to shut it down to prevent more wasted energy and save the hosting cost of the seed node. The seed node will be taken off line once hash rate disappears.
-
 
 Why
 ===
