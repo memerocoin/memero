@@ -29,7 +29,7 @@
 #include <boost/range/adaptor/reversed.hpp>
 
 #include "string_tools.h"
-#include "blockchain_db.h"
+#include "blockchain.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "profile_tools.h"
 #include "ringct/rctOps.h"

@@ -27,14 +27,14 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(blockchain_db_sources
-  blockchain_db.cpp
+  blockchain.cpp
   lmdb/db_lmdb.cpp
   )
 
 set(blockchain_db_headers)
 
 set(blockchain_db_private_headers
-  blockchain_db.h
+  blockchain.hpp
   lmdb/db_lmdb.h
   )
 

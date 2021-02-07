@@ -45,7 +45,7 @@
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/verification_context.h"
 #include "cryptonote/protocol/enums.h"
-#include "database/blockchain/blockchain_db.h"
+#include "database/blockchain/blockchain.hpp"
 #include "crypto/hash.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "rpc/message_data_structs.h"

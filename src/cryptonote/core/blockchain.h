@@ -59,7 +59,7 @@
 #include "cryptonote_tx_utils.h"
 #include "cryptonote/basic/verification_context.h"
 #include "crypto/hash.h"
-#include "database/blockchain/blockchain_db.h"
+#include "database/blockchain/blockchain.hpp"
 #include "config/lol.hpp"
 
 namespace tools { class Notify; }

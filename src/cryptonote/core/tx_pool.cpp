@@ -39,7 +39,7 @@
 #include "config/cryptonote.hpp"
 #include "blockchain.h"
 #include "database/blockchain/locked_txn.h"
-#include "database/blockchain/blockchain_db.h"
+#include "database/blockchain/blockchain.hpp"
 #include "common/boost_serialization_helper.h"
 #include "int-util.h"
 #include "misc_language.h"

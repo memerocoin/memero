@@ -47,7 +47,7 @@ using namespace epee;
 #include "file_io_utils.h"
 #include <csignal>
 #include "ringct/rctTypes.h"
-#include "database/blockchain/blockchain_db.h"
+#include "database/blockchain/blockchain.hpp"
 #include "ringct/rctSigs.h"
 #include "common/notify.h"
 #include "version.h"
