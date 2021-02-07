@@ -25,8 +25,8 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "database.h"
-#include "lmdb/error.h"
-#include "lmdb/util.h"
+#include "error.h"
+#include "util.h"
 
 #include <sys/stat.h>
 

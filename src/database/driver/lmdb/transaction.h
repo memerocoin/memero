@@ -29,7 +29,7 @@
 #include <lmdb.h>
 #include <memory>
 
-#include "lmdb/error.h"
+#include "error.h"
 
 //! Uses C++ type system to differentiate between cursors
 #define MONERO_CURSOR(name)                                    \

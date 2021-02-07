@@ -3,10 +3,10 @@
 #include <utility>
 
 #include "common/expect.h"
-#include "lmdb/error.h"
-#include "lmdb/key_stream.h"
-#include "lmdb/util.h"
-#include "lmdb/value_stream.h"
+#include "error.h"
+#include "key_stream.h"
+#include "util.h"
+#include "value_stream.h"
 
 namespace lmdb
 {

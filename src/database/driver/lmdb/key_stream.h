@@ -33,7 +33,7 @@
 #include <lmdb.h>
 #include <utility>
 
-#include "lmdb/value_stream.h"
+#include "value_stream.h"
 #include "span.h"
 
 namespace lmdb

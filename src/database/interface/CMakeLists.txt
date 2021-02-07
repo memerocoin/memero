@@ -28,14 +28,14 @@
 
 set(blockchain_db_sources
   blockchain.cpp
-  lmdb/lmdb.cpp
+  ../instance/lmdb/lmdb.cpp
   )
 
 set(blockchain_db_headers)
 
 set(blockchain_db_private_headers
   blockchain.hpp
-  lmdb/lmdb.hpp
+  ../instance/lmdb/lmdb.hpp
   )
 
 monero_private_headers(blockchain_db
