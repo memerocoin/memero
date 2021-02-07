@@ -66,7 +66,6 @@ target_link_libraries(wallet
   PRIVATE
     ${EXTRA_LIBRARIES})
 
-if(NOT IOS)
   set(wallet_rpc_sources
     wallet_rpc_server.cpp)
 
@@ -102,4 +101,3 @@ if(NOT IOS)
     PROPERTY
       OUTPUT_NAME "lolnero-rpc")
   install(TARGETS wallet_rpc_server DESTINATION bin)
-endif()
