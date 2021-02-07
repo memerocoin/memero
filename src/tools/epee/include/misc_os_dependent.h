@@ -23,23 +23,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
-#ifdef _WIN32
-#include <winsock2.h>
-#endif
-
-#ifdef WIN32
-  #ifndef WIN32_LEAN_AND_MEAN 
-  #define WIN32_LEAN_AND_MEAN
-  #endif
-
-  //#ifdef _WIN32_WINNT 
-  //  #undef _WIN32_WINNT
-  //  #define _WIN32_WINNT 0x0600
-  //#endif
-
-  
-#include <windows.h>
-#endif
 
 #ifdef __MACH__
 #include <mach/clock.h>
@@ -59,14 +42,6 @@ namespace misc_utils
         {
 #if defined(_MSC_VER)
                 return ::GetTickCount64() * 1000000;
-#elif defined(WIN32)
-                static LARGE_INTEGER pcfreq = {0};
-                LARGE_INTEGER ticks;
-                if (!pcfreq.QuadPart)
-                    QueryPerformanceFrequency(&pcfreq);
-                QueryPerformanceCounter(&ticks);
-                ticks.QuadPart *= 1000000000; /* we want nsec */
-                return ticks.QuadPart / pcfreq.QuadPart;
 #elif defined(__MACH__)
                 clock_serv_t cclock;
                 mach_timespec_t mts;
@@ -117,11 +92,7 @@ namespace misc_utils
 
 	inline bool get_gmt_time(time_t t, struct tm &tm)
 	{
-#ifdef _WIN32
-		return gmtime_s(&tm, &t);
-#else
 		return gmtime_r(&t, &tm);
-#endif
 	}
 }
 }
