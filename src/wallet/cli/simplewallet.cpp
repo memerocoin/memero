@@ -65,6 +65,7 @@
 #include "common/json_util.h"
 #include "ringct/rctSigs.h"
 #include "wallet/args/wallet_args.h"
+#include "wallet/logic/controller/uri.hpp"
 #include "version.h"
 #include <stdexcept>
 
@@ -3714,7 +3715,9 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     std::string address_uri, tx_description, recipient_name, error;
     std::vector<std::string> unknown_parameters;
     uint64_t amount = 0;
-    bool has_uri = m_wallet->parse_uri(local_args[i], address_uri, amount, tx_description, recipient_name, unknown_parameters, error);
+    bool has_uri = wallet::logic::controller::uri::parse_uri
+      (local_args[i], m_wallet->nettype(), address_uri, amount, tx_description,
+       recipient_name, unknown_parameters, error);
     if (has_uri)
     {
       r = cryptonote::get_account_address_from_str_or_url(info, m_wallet->nettype(), address_uri);

@@ -52,6 +52,7 @@ using namespace epee;
 #include "rpc/rpc_args.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "tools/daemonizer/daemonizer.h"
+#include "wallet/logic/controller/uri.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"
@@ -1846,7 +1847,8 @@ namespace tools
   {
     if (!m_wallet) return not_open(er);
     std::string error;
-    std::string uri = m_wallet->make_uri(req.address, req.amount, req.tx_description, req.recipient_name, error);
+    std::string uri = wallet::logic::controller::uri::make_uri
+      (req.address, req.amount, req.tx_description, req.recipient_name, m_wallet->nettype(), error);
     if (uri.empty())
     {
       er.code = WALLET_RPC_ERROR_CODE_WRONG_URI;
@@ -1862,7 +1864,9 @@ namespace tools
   {
     if (!m_wallet) return not_open(er);
     std::string error;
-    if (!m_wallet->parse_uri(req.uri, res.uri.address, res.uri.amount, res.uri.tx_description, res.uri.recipient_name, res.unknown_parameters, error))
+    if (wallet::logic::controller::uri::parse_uri
+        (req.uri, m_wallet->nettype(), res.uri.address, res.uri.amount,
+         res.uri.tx_description, res.uri.recipient_name, res.unknown_parameters, error))
     {
       er.code = WALLET_RPC_ERROR_CODE_WRONG_URI;
       er.message = "Error parsing URI: " + error;

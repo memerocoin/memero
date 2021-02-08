@@ -40,6 +40,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include "include_base_utils.h"
+
 using namespace epee;
 
 #include "config/cryptonote.hpp"
@@ -8157,105 +8158,6 @@ template epee::wipeable_string wallet2::decrypt(const std::string &ciphertext, c
 std::string wallet2::decrypt_with_view_secret_key(const std::string &ciphertext, bool authenticated) const
 {
   return decrypt(ciphertext, get_account().get_keys().m_view_secret_key, authenticated);
-}
-//----------------------------------------------------------------------------------------------------
-std::string wallet2::make_uri(const std::string &address, uint64_t amount, const std::string &tx_description, const std::string &recipient_name, std::string &error) const
-{
-  cryptonote::address_parse_info info;
-  if(!get_account_address_from_str(info, nettype(), address))
-  {
-    error = std::string("wrong address: ") + address;
-    return std::string();
-  }
-
-  std::string uri = "lolnero:" + address;
-  unsigned int n_fields = 0;
-
-  if (amount > 0)
-  {
-    // URI encoded amount is in decimal units, not atomic units
-    uri += (n_fields++ ? "&" : "?") + std::string("tx_amount=") + cryptonote::print_money(amount);
-  }
-
-  if (!recipient_name.empty())
-  {
-    uri += (n_fields++ ? "&" : "?") + std::string("recipient_name=") + epee::net_utils::conver_to_url_format(recipient_name);
-  }
-
-  if (!tx_description.empty())
-  {
-    uri += (n_fields++ ? "&" : "?") + std::string("tx_description=") + epee::net_utils::conver_to_url_format(tx_description);
-  }
-
-  return uri;
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::parse_uri(const std::string &uri, std::string &address, uint64_t &amount, std::string &tx_description, std::string &recipient_name, std::vector<std::string> &unknown_parameters, std::string &error)
-{
-  if (uri.substr(0, 8) != "lolnero:")
-  {
-    error = std::string("URI has wrong scheme (expected \"lolnero:\"): ") + uri;
-    return false;
-  }
-
-  std::string remainder = uri.substr(8);
-  const char *ptr = strchr(remainder.c_str(), '?');
-  address = ptr ? remainder.substr(0, ptr-remainder.c_str()) : remainder;
-
-  cryptonote::address_parse_info info;
-  if(!get_account_address_from_str(info, nettype(), address))
-  {
-    error = std::string("URI has wrong address: ") + address;
-    return false;
-  }
-  if (!strchr(remainder.c_str(), '?'))
-    return true;
-
-  std::vector<std::string> arguments;
-  std::string body = remainder.substr(address.size() + 1);
-  if (body.empty())
-    return true;
-  boost::split(arguments, body, boost::is_any_of("&"));
-  std::set<std::string> have_arg;
-  for (const auto &arg: arguments)
-  {
-    std::vector<std::string> kv;
-    boost::split(kv, arg, boost::is_any_of("="));
-    if (kv.size() != 2)
-    {
-      error = std::string("URI has wrong parameter: ") + arg;
-      return false;
-    }
-    if (have_arg.find(kv[0]) != have_arg.end())
-    {
-      error = std::string("URI has more than one instance of " + kv[0]);
-      return false;
-    }
-    have_arg.insert(kv[0]);
-
-    if (kv[0] == "tx_amount")
-    {
-      amount = 0;
-      if (!cryptonote::parse_amount(amount, kv[1]))
-      {
-        error = std::string("URI has invalid amount: ") + kv[1];
-        return false;
-      }
-    }
-    else if (kv[0] == "recipient_name")
-    {
-      recipient_name = epee::net_utils::convert_from_url_format(kv[1]);
-    }
-    else if (kv[0] == "tx_description")
-    {
-      tx_description = epee::net_utils::convert_from_url_format(kv[1]);
-    }
-    else
-    {
-      unknown_parameters.push_back(arg);
-    }
-  }
-  return true;
 }
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_blockchain_height_by_date(uint16_t year, uint8_t month, uint8_t day)
