@@ -1218,37 +1218,6 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_CHECK_RESERVE_PROOF
-  {
-    struct request_t
-    {
-      std::string address;
-      std::string message;
-      std::string signature;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(address)
-        KV_SERIALIZE(message)
-        KV_SERIALIZE(signature)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      bool good;
-      uint64_t total;
-      uint64_t spent;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(good)
-        KV_SERIALIZE(total)
-        KV_SERIALIZE(spent)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_GET_TRANSFERS
   {
     struct request_t

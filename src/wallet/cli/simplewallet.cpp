@@ -179,7 +179,6 @@ namespace
   const char* USAGE_CHECK_TX_PROOF("check_tx_proof <txid> <address> <signature_file> [<message>]");
   const char* USAGE_GET_SPEND_PROOF("get_spend_proof <txid> [<message>]");
   const char* USAGE_CHECK_SPEND_PROOF("check_spend_proof <txid> <signature_file> [<message>]");
-  const char* USAGE_CHECK_RESERVE_PROOF("check_reserve_proof <address> <signature_file> [<message>]");
   const char* USAGE_SHOW_TRANSFERS("show_transfers [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
   const char* USAGE_UNSPENT_OUTPUTS("unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]");
   const char* USAGE_RESCAN_BC("rescan_bc [hard|soft|keep_ki] [start_height=0]");
@@ -1683,10 +1682,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::check_spend_proof, std::placeholders::_1),
                            tr(USAGE_CHECK_SPEND_PROOF),
                            tr("Check a signature proving that the signer generated <txid>, optionally with a challenge string <message>."));
-  m_cmd_binder.set_handler("check_reserve_proof",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::check_reserve_proof, std::placeholders::_1),
-                           tr(USAGE_CHECK_RESERVE_PROOF),
-                           tr("Check a signature proving that the owner of <address> holds at least this much, optionally with a challenge string <message>."));
   m_cmd_binder.set_handler("show_transfers",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_transfers, std::placeholders::_1),
                            tr(USAGE_SHOW_TRANSFERS),
@@ -4834,56 +4829,6 @@ bool simple_wallet::check_spend_proof(const std::vector<std::string> &args)
       success_msg_writer() << tr("Good signature");
     else
       fail_msg_writer() << tr("Bad signature");
-  }
-  catch (const std::exception& e)
-  {
-    fail_msg_writer() << e.what();
-  }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::check_reserve_proof(const std::vector<std::string> &args)
-{
-  if(args.size() != 2 && args.size() != 3) {
-    PRINT_USAGE(USAGE_CHECK_RESERVE_PROOF);
-    return true;
-  }
-
-  if (!try_connect_to_daemon())
-    return true;
-
-  cryptonote::address_parse_info info;
-  if(!cryptonote::get_account_address_from_str_or_url(info, m_wallet->nettype(), args[0]))
-  {
-    fail_msg_writer() << tr("failed to parse address");
-    return true;
-  }
-  if (info.is_subaddress)
-  {
-    fail_msg_writer() << tr("Address must not be a subaddress");
-    return true;
-  }
-
-  std::string sig_str;
-  if (!m_wallet->load_from_file(args[1], sig_str))
-  {
-    fail_msg_writer() << tr("failed to load signature file");
-    return true;
-  }
-
-  LOCK_IDLE_SCOPE();
-
-  try
-  {
-    uint64_t total, spent;
-    if (m_wallet->check_reserve_proof(info.address, args.size() == 3 ? args[2] : "", sig_str, total, spent))
-    {
-      success_msg_writer() << boost::format(tr("Good signature -- total: %s, spent: %s, unspent: %s")) % print_money(total) % print_money(spent) % print_money(total - spent);
-    }
-    else
-    {
-      fail_msg_writer() << tr("Bad signature");
-    }
   }
   catch (const std::exception& e)
   {

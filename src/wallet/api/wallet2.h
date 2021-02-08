@@ -1062,17 +1062,6 @@ private:
     std::string get_spend_proof(const crypto::hash &txid, const std::string &message);
     bool check_spend_proof(const crypto::hash &txid, const std::string &message, const std::string &sig_str);
 
-    /*!
-     * \brief  Verifies a proof of reserve
-     * \param  address                  The signer's address
-     * \param  message                  Challenge message used for signing
-     * \param  sig_str                  Signature string
-     * \param  total                    [OUT] the sum of funds included in the signature
-     * \param  spent                    [OUT] the sum of spent funds included in the signature
-     * \return                          true if the signature verifies correctly
-     */
-    bool check_reserve_proof(const cryptonote::account_public_address &address, const std::string &message, const std::string &sig_str, uint64_t &total, uint64_t &spent);
-
     uint64_t get_num_rct_outputs();
     size_t get_num_transfer_details() const { return m_transfers.size(); }
     const transfer_details &get_transfer_details(size_t idx) const;
