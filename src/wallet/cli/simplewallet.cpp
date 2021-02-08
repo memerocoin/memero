@@ -179,7 +179,7 @@ namespace
   const char* USAGE_CHECK_TX_PROOF("check_tx_proof <txid> <address> <signature_file> [<message>]");
   const char* USAGE_GET_SPEND_PROOF("get_spend_proof <txid> [<message>]");
   const char* USAGE_CHECK_SPEND_PROOF("check_spend_proof <txid> <signature_file> [<message>]");
-  const char* USAGE_SHOW_TRANSFERS("show_transfers [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
+  const char* USAGE_SHOW("show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
   const char* USAGE_UNSPENT_OUTPUTS("unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]");
   const char* USAGE_RESCAN_BC("rescan_bc [hard|soft|keep_ki] [start_height=0]");
   const char* USAGE_GET_DESCRIPTION("get_description");
@@ -1451,7 +1451,7 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
     message_writer() << tr("\"address all\" - Show all addresses.");
     message_writer() << tr("\"address new\" - Create new subaddress.");
     message_writer() << tr("\"transfer <address> <amount>\" - Send LOL to an address.");
-    message_writer() << tr("\"show_transfers [in|out|pending|failed|pool]\" - Show transactions.");
+    message_writer() << tr("\"show [in|out|pending|failed|pool]\" - Show transactions.");
     message_writer() << tr("\"sweep <address>\" - Send whole balance to another wallet.");
     message_writer() << tr("\"seed\" - Show secret 25 words that can be used to recover this wallet.");
     message_writer() << tr("\"refresh\" - Synchronize wallet with the Lolnero network.");
@@ -1682,9 +1682,9 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::check_spend_proof, std::placeholders::_1),
                            tr(USAGE_CHECK_SPEND_PROOF),
                            tr("Check a signature proving that the signer generated <txid>, optionally with a challenge string <message>."));
-  m_cmd_binder.set_handler("show_transfers",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::show_transfers, std::placeholders::_1),
-                           tr(USAGE_SHOW_TRANSFERS),
+  m_cmd_binder.set_handler("show",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::show, std::placeholders::_1),
+                           tr(USAGE_SHOW),
                            // Seemingly broken formatting to compensate for the backslash before the quotes.
                            tr("Show the incoming/outgoing transfers within an optional height range.\n\n"
                               "Output format:\n"
@@ -5099,12 +5099,12 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::show_transfers(const std::vector<std::string> &args_)
+bool simple_wallet::show(const std::vector<std::string> &args_)
 {
   std::vector<std::string> local_args = args_;
 
   if(local_args.size() > 4) {
-    fail_msg_writer() << tr("usage: show_transfers [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
+    fail_msg_writer() << tr("usage: show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
     return true;
   }
 
@@ -6235,7 +6235,7 @@ void simple_wallet::commit_or_save(std::vector<tools::wallet2::pending_tx>& ptx_
     {
       m_wallet->commit_tx(ptx);
       success_msg_writer(true) << tr("Transaction successfully submitted, transaction ") << txid << ENDL
-      << tr("You can check its status by using the `show_transfers` command.");
+      << tr("You can check its status by using the `show` command.");
     }
     // if no exception, remove element from vector
     ptx_vector.pop_back();

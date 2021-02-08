@@ -2476,7 +2476,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
         {
           found = true;
           // if this is a payment to yourself at a different subaddress account, don't skip it
-          // so that you can see the incoming pool tx with 'show_transfers' on that receiving subaddress account
+          // so that you can see the incoming pool tx with 'show' on that receiving subaddress account
           const unconfirmed_transfer_details& utd = i.second;
           for (const auto& dst : utd.m_dests)
           {
