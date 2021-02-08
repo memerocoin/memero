@@ -4476,9 +4476,9 @@ uint64_t wallet2::unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock, 
   return r;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::get_transfers(wallet2::transfer_container& incoming_transfers) const
+void wallet2::get_transfers(wallet2::transfer_container& incoming) const
 {
-  incoming_transfers = m_transfers;
+  incoming = m_transfers;
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::get_payments(std::list<std::pair<crypto::hash,wallet2::payment_details>>& payments, uint64_t min_height, uint64_t max_height, const std::optional<uint32_t>& subaddr_account, const std::set<uint32_t>& subaddr_indices) const

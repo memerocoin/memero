@@ -156,7 +156,7 @@ namespace cryptonote
     bool refresh(const std::vector<std::string> &args);
     bool show_balance_unlocked(bool detailed = false);
     bool show_balance(const std::vector<std::string> &args = std::vector<std::string>());
-    bool show_incoming_transfers(const std::vector<std::string> &args);
+    bool show_incoming(const std::vector<std::string> &args);
     bool transfer_main(int transfer_type, const std::vector<std::string> &args);
     bool transfer(const std::vector<std::string> &args);
     bool locked_transfer(const std::vector<std::string> &args);

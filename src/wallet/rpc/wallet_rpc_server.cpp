@@ -1221,7 +1221,7 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_incoming_transfers(const wallet_rpc::COMMAND_RPC_INCOMING_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_INCOMING_TRANSFERS::response& res, epee::json_rpc::error& er, const connection_context *ctx)
+  bool wallet_rpc_server::on_incoming(const wallet_rpc::COMMAND_RPC_INCOMING::request& req, wallet_rpc::COMMAND_RPC_INCOMING::response& res, epee::json_rpc::error& er, const connection_context *ctx)
   {
     if (!m_wallet) return not_open(er);
     if(req.transfer_type.compare("all") != 0 && req.transfer_type.compare("available") != 0 && req.transfer_type.compare("unavailable") != 0)

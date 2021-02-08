@@ -155,7 +155,7 @@ namespace
   const char* USAGE_START_MINING("start_mining [<number_of_threads>]");
   const char* USAGE_SET_DAEMON("set_daemon <host>[:<port>] [trusted|untrusted]");
   const char* USAGE_SHOW_BALANCE("balance [detail]");
-  const char* USAGE_INCOMING_TRANSFERS("incoming_transfers [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]");
+  const char* USAGE_INCOMING("incoming [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]");
   const char* USAGE_TRANSFER("transfer [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] (<URI> | <address> <amount>)");
   const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] (<URI> | <addr> <amount>) <lockblocks>");
   const char* USAGE_LOCKED_SWEEP("locked_sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] <address> <lockblocks>");
@@ -1530,9 +1530,9 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_balance, std::placeholders::_1),
                            tr(USAGE_SHOW_BALANCE),
                            tr("Show the wallet's balance of the currently selected account."));
-  m_cmd_binder.set_handler("incoming_transfers",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::show_incoming_transfers,std::placeholders::_1),
-                           tr(USAGE_INCOMING_TRANSFERS),
+  m_cmd_binder.set_handler("incoming",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::show_incoming,std::placeholders::_1),
+                           tr(USAGE_INCOMING),
                            tr("Show the incoming transfers, all or filtered by availability and address index.\n\n"
                               "Output format:\n"
                               "Amount, Spent(\"T\"|\"F\"), \"frozen\"|\"locked\"|\"unlocked\", RingCT, Global Index, Transaction Hash, Address Index, [Public Key, Key Image] "));
@@ -3201,11 +3201,11 @@ bool simple_wallet::show_balance(const std::vector<std::string>& args/* = std::v
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::show_incoming_transfers(const std::vector<std::string>& args)
+bool simple_wallet::show_incoming(const std::vector<std::string>& args)
 {
   if (args.size() > 3)
   {
-    PRINT_USAGE(USAGE_INCOMING_TRANSFERS);
+    PRINT_USAGE(USAGE_INCOMING);
     return true;
   }
   auto local_args = args;
@@ -3258,7 +3258,7 @@ bool simple_wallet::show_incoming_transfers(const std::vector<std::string>& args
 
   if (local_args.size() > 0)
   {
-    PRINT_USAGE(USAGE_INCOMING_TRANSFERS);
+    PRINT_USAGE(USAGE_INCOMING);
     return true;
   }
 

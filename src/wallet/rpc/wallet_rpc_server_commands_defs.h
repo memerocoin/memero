@@ -845,7 +845,7 @@ namespace wallet_rpc
     END_KV_SERIALIZE_MAP()
   };
 
-  struct COMMAND_RPC_INCOMING_TRANSFERS
+  struct COMMAND_RPC_INCOMING
   {
     struct request_t
     {
