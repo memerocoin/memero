@@ -166,7 +166,6 @@ namespace cryptonote
     bool sweep_account(const std::vector<std::string> &args);
     bool sweep_below(const std::vector<std::string> &args);
     bool sweep_single(const std::vector<std::string> &args);
-    bool sign_transfer(const std::vector<std::string> &args);
     std::vector<std::vector<cryptonote::tx_destination_entry>> split_amounts(
         std::vector<cryptonote::tx_destination_entry> dsts, size_t num_splits
     );

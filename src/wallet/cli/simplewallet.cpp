@@ -163,7 +163,6 @@ namespace
   const char* USAGE_SWEEP_ACCOUNT("sweep_account <account> [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] [outputs=<N>] <address>");
   const char* USAGE_SWEEP_BELOW("sweep_below <amount_threshold> [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] <address>");
   const char* USAGE_SWEEP_SINGLE("sweep_single [<priority>] [<ring_size>] [outputs=<N>] <key_image> <address>");
-  const char* USAGE_SIGN_TRANSFER("sign_transfer [export_raw]");
   const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
   const char* USAGE_ACCOUNT("account\n"
                             "  account new <label text with white spaces allowed>\n"
@@ -1564,10 +1563,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_single, std::placeholders::_1),
                            tr(USAGE_SWEEP_SINGLE),
                            tr("Send a single output of the given key image to an address without change."));
-  m_cmd_binder.set_handler("sign_transfer",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::sign_transfer, std::placeholders::_1),
-                           tr(USAGE_SIGN_TRANSFER),
-                           tr("Sign a transaction from a file. If the parameter \"export_raw\" is specified, transaction raw hex data suitable for the daemon RPC /sendrawtransaction is exported."));
   m_cmd_binder.set_handler("set_log",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_log, std::placeholders::_1),
                            tr(USAGE_SET_LOG),
@@ -4537,65 +4532,6 @@ bool simple_wallet::accept_loaded_tx(const tools::wallet2::signed_tx_set &txs)
   if (!txs.key_images.empty())
     extra_message = (boost::format("%u key images to import. ") % (unsigned)txs.key_images.size()).str();
   return accept_loaded_tx([&txs](){return txs.ptx.size();}, [&txs](size_t n)->const tools::wallet2::tx_construction_data&{return txs.ptx[n].construction_data;}, extra_message);
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
-{
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command not supported by HW wallet");
-    return true;
-  }
-  if(m_wallet->watch_only())
-  {
-     fail_msg_writer() << tr("This is a watch only wallet");
-     return true;
-  }
-  if (args_.size() > 1 || (args_.size() == 1 && args_[0] != "export_raw"))
-  {
-    PRINT_USAGE(USAGE_SIGN_TRANSFER);
-    return true;
-  }
-
-  SCOPED_WALLET_UNLOCK();
-  const bool export_raw = args_.size() == 1;
-
-  std::vector<tools::wallet2::pending_tx> ptx;
-  try
-  {
-    bool r = m_wallet->sign_tx("unsigned_lolnero_tx", "signed_lolnero_tx", ptx, [&](const tools::wallet2::unsigned_tx_set &tx){ return accept_loaded_tx(tx); }, export_raw);
-    if (!r)
-    {
-      fail_msg_writer() << tr("Failed to sign transaction");
-      return true;
-    }
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << tr("Failed to sign transaction: ") << e.what();
-    return true;
-  }
-
-  std::string txids_as_text;
-  for (const auto &t: ptx)
-  {
-    if (!txids_as_text.empty())
-      txids_as_text += (", ");
-    txids_as_text += epee::string_tools::pod_to_hex(get_transaction_hash(t.tx));
-  }
-  success_msg_writer(true) << tr("Transaction successfully signed to file ") << "signed_lolnero_tx" << ", txid " << txids_as_text;
-  if (export_raw)
-  {
-    std::string rawfiles_as_text;
-    for (size_t i = 0; i < ptx.size(); ++i)
-    {
-      if (i > 0)
-        rawfiles_as_text += ", ";
-      rawfiles_as_text += "signed_lolnero_tx_raw" + (ptx.size() == 1 ? "" : ("_" + std::to_string(i)));
-    }
-    success_msg_writer(true) << tr("Transaction raw hex data exported to ") << rawfiles_as_text;
-  }
-  return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
