@@ -885,26 +885,9 @@ namespace tools
 
     std::vector <wallet2::tx_construction_data> tx_constructions;
     if (!req.unsigned_txset.empty()) {
-      try {
-        tools::wallet2::unsigned_tx_set exported_txs;
-        cryptonote::blobdata blob;
-        if (!epee::string_tools::parse_hexstr_to_binbuff(req.unsigned_txset, blob)) {
-          er.code = WALLET_RPC_ERROR_CODE_BAD_HEX;
-          er.message = "Failed to parse hex.";
-          return false;
-        }
-        if (!m_wallet->parse_unsigned_tx_from_str(blob, exported_txs)) {
-          er.code = WALLET_RPC_ERROR_CODE_BAD_UNSIGNED_TX_DATA;
-          er.message = "cannot load unsigned_txset";
-          return false;
-        }
-        tx_constructions = exported_txs.txes;
-      }
-      catch (const std::exception &e) {
         er.code = WALLET_RPC_ERROR_CODE_BAD_UNSIGNED_TX_DATA;
-        er.message = "failed to parse unsigned transfers: " + std::string(e.what());
+        er.message = "failed to parse unsigned transfers";
         return false;
-      }
     }
 
     try

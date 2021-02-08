@@ -4897,95 +4897,6 @@ void wallet2::commit_tx(std::vector<pending_tx>& ptx_vector)
   }
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::parse_unsigned_tx_from_str(const std::string &unsigned_tx_st, unsigned_tx_set &exported_txs) const
-{
-  std::string s = unsigned_tx_st;
-  const size_t magiclen = strlen(UNSIGNED_TX_PREFIX) - 1;
-  if (strncmp(s.c_str(), UNSIGNED_TX_PREFIX, magiclen))
-  {
-    LOG_PRINT_L0("Bad magic from unsigned tx");
-    return false;
-  }
-  s = s.substr(magiclen);
-  const char version = s[0];
-  s = s.substr(1);
-  if (version == '\003')
-  {
-    if (!m_load_deprecated_formats)
-    {
-      LOG_PRINT_L0("Not loading deprecated format");
-      return false;
-    }
-    try
-    {
-      std::istringstream iss(s);
-      boost::archive::portable_binary_iarchive ar(iss);
-      ar >> exported_txs;
-    }
-    catch (...)
-    {
-      LOG_PRINT_L0("Failed to parse data from unsigned tx");
-      return false;
-    }
-  }
-  else if (version == '\004')
-  {
-    if (!m_load_deprecated_formats)
-    {
-      LOG_PRINT_L0("Not loading deprecated format");
-      return false;
-    }
-    try
-    {
-      s = decrypt_with_view_secret_key(s);
-      try
-      {
-        std::istringstream iss(s);
-        boost::archive::portable_binary_iarchive ar(iss);
-        ar >> exported_txs;
-      }
-      catch (...)
-      {
-        LOG_PRINT_L0("Failed to parse data from unsigned tx");
-        return false;
-      }
-    }
-    catch (const std::exception &e)
-    {
-      LOG_PRINT_L0("Failed to decrypt unsigned tx: " << e.what());
-      return false;
-    }
-  }
-  else if (version == '\005')
-  {
-    try { s = decrypt_with_view_secret_key(s); }
-    catch(const std::exception &e) { LOG_PRINT_L0("Failed to decrypt unsigned tx: " << e.what()); return false; }
-    try
-    {
-      std::istringstream iss(s);
-      binary_archive<false> ar(iss);
-      if (!::serialization::serialize(ar, exported_txs))
-      {
-        LOG_PRINT_L0("Failed to parse data from unsigned tx");
-        return false;
-      }
-    }
-    catch (...)
-    {
-      LOG_PRINT_L0("Failed to parse data from unsigned tx");
-      return false;
-    }
-  }
-  else
-  {
-    LOG_PRINT_L0("Unsupported version in unsigned tx");
-    return false;
-  }
-  LOG_PRINT_L1("Loaded tx unsigned data from binary: " << exported_txs.txes.size() << " transactions");
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t wallet2::estimate_fee(bool use_per_byte_fee, bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask) const
 {
   if (use_per_byte_fee)
@@ -8084,39 +7995,6 @@ void wallet2::import_blockchain(const std::tuple<size_t, crypto::hash, std::vect
   crypto::hash genesis_hash = get_block_hash(genesis);
   check_genesis(genesis_hash);
   m_last_block_reward = cryptonote::get_outs_money_amount(genesis.miner_tx);
-}
-//----------------------------------------------------------------------------------------------------
-template<typename T>
-T wallet2::decrypt(const std::string &ciphertext, const crypto::secret_key &skey, bool authenticated) const
-{
-  const size_t prefix_size = sizeof(chacha_iv) + (authenticated ? sizeof(crypto::signature) : 0);
-  THROW_WALLET_EXCEPTION_IF(ciphertext.size() < prefix_size,
-    error::wallet_internal_error, "Unexpected ciphertext size");
-
-  crypto::chacha_key key;
-  crypto::generate_chacha_key(&skey, sizeof(skey), key, m_kdf_rounds);
-  const crypto::chacha_iv &iv = *(const crypto::chacha_iv*)&ciphertext[0];
-  if (authenticated)
-  {
-    crypto::hash hash;
-    crypto::cn_fast_hash(ciphertext.data(), ciphertext.size() - sizeof(signature), hash);
-    crypto::public_key pkey;
-    crypto::secret_key_to_public_key(skey, pkey);
-    const crypto::signature &signature = *(const crypto::signature*)&ciphertext[ciphertext.size() - sizeof(crypto::signature)];
-    THROW_WALLET_EXCEPTION_IF(!crypto::check_signature(hash, pkey, signature),
-      error::wallet_internal_error, "Failed to authenticate ciphertext");
-  }
-  std::unique_ptr<char[]> buffer{new char[ciphertext.size() - prefix_size]};
-  auto wiper = epee::misc_utils::create_scope_leave_handler([&]() { memwipe(buffer.get(), ciphertext.size() - prefix_size); });
-  crypto::chacha20(ciphertext.data() + sizeof(iv), ciphertext.size() - prefix_size, key, iv, buffer.get());
-  return T(buffer.get(), ciphertext.size() - prefix_size);
-}
-//----------------------------------------------------------------------------------------------------
-template epee::wipeable_string wallet2::decrypt(const std::string &ciphertext, const crypto::secret_key &skey, bool authenticated) const;
-//----------------------------------------------------------------------------------------------------
-std::string wallet2::decrypt_with_view_secret_key(const std::string &ciphertext, bool authenticated) const
-{
-  return decrypt(ciphertext, get_account().get_keys().m_view_secret_key, authenticated);
 }
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_blockchain_height_by_date(uint16_t year, uint8_t month, uint8_t day)
