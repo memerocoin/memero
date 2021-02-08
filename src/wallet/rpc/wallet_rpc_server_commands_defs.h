@@ -634,29 +634,6 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_SUBMIT_TRANSFER
-  {
-    struct request_t
-    {
-      std::string tx_data_hex;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(tx_data_hex)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::list<std::string> tx_hash_list;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(tx_hash_list)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_SWEEP_ALL
   {
     struct request_t
@@ -1408,52 +1385,6 @@ namespace wallet_rpc
         KV_SERIALIZE(version);
         KV_SERIALIZE(old);
         KV_SERIALIZE(signature_type);
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_EXPORT_OUTPUTS
-  {
-    struct request_t
-    {
-      bool all;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(all)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::string outputs_data_hex;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(outputs_data_hex);
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_IMPORT_OUTPUTS
-  {
-    struct request_t
-    {
-      std::string outputs_data_hex;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(outputs_data_hex);
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      uint64_t num_imported;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(num_imported);
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;
