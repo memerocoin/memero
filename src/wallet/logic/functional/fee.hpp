@@ -37,17 +37,15 @@ namespace logic {
 namespace functional {
 namespace fee {
 
-  size_t estimate_rct_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag);
+  size_t estimate_rct_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size);
 
-  size_t estimate_tx_size(bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag);
+  size_t estimate_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size);
 
-  uint64_t estimate_tx_weight(bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag);
-
-  uint64_t calculate_fee(uint64_t fee_per_kb, size_t bytes, uint64_t fee_multiplier);
+  uint64_t estimate_tx_weight(int n_inputs, int mixin, int n_outputs, size_t extra_size);
 
   uint64_t calculate_fee_from_weight(uint64_t base_fee, uint64_t weight, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
 
-  uint64_t estimate_fee(bool use_per_byte_fee, bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
+  uint64_t estimate_fee(int n_inputs, int mixin, int n_outputs, size_t extra_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
 
 } // fee
 } // functional

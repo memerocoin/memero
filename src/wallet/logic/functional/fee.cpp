@@ -40,7 +40,7 @@ namespace functional {
 namespace fee {
 
   //----------------------------------------------------------------------------------------------------
-  size_t estimate_rct_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag)
+  size_t estimate_rct_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size)
   {
     size_t size = 0;
 
@@ -72,10 +72,7 @@ namespace fee {
     }
 
     // MGs/CLSAGs
-    if (clsag)
-      size += n_inputs * (32 * (mixin+1) + 64);
-    else
-      size += n_inputs * (64 * (mixin+1) + 32);
+    size += n_inputs * (32 * (mixin+1) + 64);
 
     // mixRing - not serialized, can be reconstructed
     /* size += 2 * 32 * (mixin+1) * n_inputs; */
@@ -89,42 +86,21 @@ namespace fee {
     // txnFee
     size += 4;
 
-    LOG_PRINT_L2("estimated " << (bulletproof ? "bulletproof" : "borromean") << " rct tx size for " << n_inputs << " inputs with ring size " << (mixin+1) << " and " << n_outputs << " outputs: " << size << " (" << ((32 * n_inputs/*+1*/) + 2 * 32 * (mixin+1) * n_inputs + 32 * n_outputs) << " saved)");
+    LOG_PRINT_L2("estimated rct tx size for " << n_inputs << " inputs with ring size " << (mixin+1) << " and " << n_outputs << " outputs: " << size << " (" << ((32 * n_inputs/*+1*/) + 2 * 32 * (mixin+1) * n_inputs + 32 * n_outputs) << " saved)");
     return size;
   }
 
 
   //----------------------------------------------------------------------------------------------------
-  size_t estimate_tx_size(bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag)
+  size_t estimate_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size)
   {
-    return estimate_rct_tx_size
-      (n_inputs, mixin, n_outputs, extra_size, bulletproof, clsag);
+    return estimate_rct_tx_size(n_inputs, mixin, n_outputs, extra_size);
   }
 
   //----------------------------------------------------------------------------------------------------
-  uint64_t estimate_tx_weight(bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag)
+  uint64_t estimate_tx_weight(int n_inputs, int mixin, int n_outputs, size_t extra_size)
   {
-    size_t size = estimate_tx_size(use_rct, n_inputs, mixin, n_outputs, extra_size, bulletproof, clsag);
-    if (n_outputs > 2)
-      {
-        const uint64_t bp_base = 368;
-        size_t log_padded_outputs = 2;
-        while ((1<<log_padded_outputs) < n_outputs)
-          ++log_padded_outputs;
-        uint64_t nlr = 2 * (6 + log_padded_outputs);
-        const uint64_t bp_size = 32 * (9 + nlr);
-        const uint64_t bp_clawback = (bp_base * (1<<log_padded_outputs) - bp_size) * 4 / 5;
-        MDEBUG("clawback on size " << size << ": " << bp_clawback);
-        size += bp_clawback;
-      }
-    return size;
-  }
-
-  //----------------------------------------------------------------------------------------------------
-  uint64_t calculate_fee(uint64_t fee_per_kb, size_t bytes, uint64_t fee_multiplier)
-  {
-    uint64_t kB = (bytes + 1023) / 1024;
-    return kB * fee_per_kb * fee_multiplier;
+    return estimate_tx_size(n_inputs, mixin, n_outputs, extra_size);
   }
 
   //----------------------------------------------------------------------------------------------------
@@ -136,18 +112,10 @@ namespace fee {
   }
 
   //----------------------------------------------------------------------------------------------------
-  uint64_t estimate_fee(bool use_per_byte_fee, bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask)
+  uint64_t estimate_fee(int n_inputs, int mixin, int n_outputs, size_t extra_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask)
   {
-    if (use_per_byte_fee)
-      {
-        const size_t estimated_tx_weight = estimate_tx_weight(use_rct, n_inputs, mixin, n_outputs, extra_size, bulletproof, clsag);
-        return calculate_fee_from_weight(base_fee, estimated_tx_weight, fee_multiplier, fee_quantization_mask);
-      }
-    else
-      {
-        const size_t estimated_tx_size = estimate_tx_size(use_rct, n_inputs, mixin, n_outputs, extra_size, bulletproof, clsag);
-        return calculate_fee(base_fee, estimated_tx_size, fee_multiplier);
-      }
+    const size_t estimated_tx_weight = estimate_tx_weight(n_inputs, mixin, n_outputs, extra_size);
+    return calculate_fee_from_weight(base_fee, estimated_tx_weight, fee_multiplier, fee_quantization_mask);
   }
 
 } // fee
