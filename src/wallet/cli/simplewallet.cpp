@@ -1568,9 +1568,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::sign_transfer, std::placeholders::_1),
                            tr(USAGE_SIGN_TRANSFER),
                            tr("Sign a transaction from a file. If the parameter \"export_raw\" is specified, transaction raw hex data suitable for the daemon RPC /sendrawtransaction is exported."));
-  m_cmd_binder.set_handler("submit_transfer",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::submit_transfer, std::placeholders::_1),
-                           tr("Submit a signed transaction from a file."));
   m_cmd_binder.set_handler("set_log",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_log, std::placeholders::_1),
                            tr(USAGE_SET_LOG),
@@ -4598,41 +4595,6 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
     }
     success_msg_writer(true) << tr("Transaction raw hex data exported to ") << rawfiles_as_text;
   }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::submit_transfer(const std::vector<std::string> &args_)
-{
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command not supported by HW wallet");
-    return true;
-  }
-  if (!try_connect_to_daemon())
-    return true;
-
-  try
-  {
-    std::vector<tools::wallet2::pending_tx> ptx_vector;
-    bool r = m_wallet->load_tx("signed_lolnero_tx", ptx_vector, [&](const tools::wallet2::signed_tx_set &tx){ return accept_loaded_tx(tx); });
-    if (!r)
-    {
-      fail_msg_writer() << tr("Failed to load transaction from file");
-      return true;
-    }
-
-    commit_or_save(ptx_vector, false);
-  }
-  catch (const std::exception& e)
-  {
-    handle_transfer_exception(std::current_exception());
-  }
-  catch (...)
-  {
-    LOG_ERROR("Unknown error");
-    fail_msg_writer() << tr("unknown error");
-  }
-
   return true;
 }
 //----------------------------------------------------------------------------------------------------
