@@ -1063,14 +1063,6 @@ private:
     bool check_spend_proof(const crypto::hash &txid, const std::string &message, const std::string &sig_str);
 
     /*!
-     * \brief  Generates a proof that proves the reserve of unspent funds
-     * \param  account_minreserve       When specified, collect outputs only belonging to the given account and prove the smallest reserve above the given amount
-     *                                  When unspecified, proves for all unspent outputs across all accounts
-     * \param  message                  Arbitrary challenge message to be signed together
-     * \return                          Signature string
-     */
-    std::string get_reserve_proof(const std::optional<std::pair<uint32_t, uint64_t>> &account_minreserve, const std::string &message);
-    /*!
      * \brief  Verifies a proof of reserve
      * \param  address                  The signer's address
      * \param  message                  Challenge message used for signing

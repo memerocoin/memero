@@ -179,7 +179,6 @@ namespace
   const char* USAGE_CHECK_TX_PROOF("check_tx_proof <txid> <address> <signature_file> [<message>]");
   const char* USAGE_GET_SPEND_PROOF("get_spend_proof <txid> [<message>]");
   const char* USAGE_CHECK_SPEND_PROOF("check_spend_proof <txid> <signature_file> [<message>]");
-  const char* USAGE_GET_RESERVE_PROOF("get_reserve_proof (all|<amount>) [<message>]");
   const char* USAGE_CHECK_RESERVE_PROOF("check_reserve_proof <address> <signature_file> [<message>]");
   const char* USAGE_SHOW_TRANSFERS("show_transfers [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
   const char* USAGE_UNSPENT_OUTPUTS("unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]");
@@ -1684,12 +1683,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::check_spend_proof, std::placeholders::_1),
                            tr(USAGE_CHECK_SPEND_PROOF),
                            tr("Check a signature proving that the signer generated <txid>, optionally with a challenge string <message>."));
-  m_cmd_binder.set_handler("get_reserve_proof",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_reserve_proof, std::placeholders::_1),
-                           tr(USAGE_GET_RESERVE_PROOF),
-                           tr("Generate a signature proving that you own at least this much, optionally with a challenge string <message>.\n"
-                              "If 'all' is specified, you prove the entire sum of all of your existing accounts' balances.\n"
-                              "Otherwise, you prove the reserve of the smallest possible amount above <amount> available in your current account."));
   m_cmd_binder.set_handler("check_reserve_proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::check_reserve_proof, std::placeholders::_1),
                            tr(USAGE_CHECK_RESERVE_PROOF),
@@ -4843,57 +4836,6 @@ bool simple_wallet::check_spend_proof(const std::vector<std::string> &args)
       fail_msg_writer() << tr("Bad signature");
   }
   catch (const std::exception& e)
-  {
-    fail_msg_writer() << e.what();
-  }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_reserve_proof(const std::vector<std::string> &args)
-{
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command not supported by HW wallet");
-    return true;
-  }
-  if(args.size() != 1 && args.size() != 2) {
-    PRINT_USAGE(USAGE_GET_RESERVE_PROOF);
-    return true;
-  }
-
-  if (m_wallet->watch_only())
-  {
-    fail_msg_writer() << tr("The reserve proof can be generated only by a full wallet");
-    return true;
-  }
-
-  std::optional<std::pair<uint32_t, uint64_t>> account_minreserve;
-  if (args[0] != "all")
-  {
-    account_minreserve = std::pair<uint32_t, uint64_t>();
-    account_minreserve->first = m_current_subaddress_account;
-    if (!cryptonote::parse_amount(account_minreserve->second, args[0]))
-    {
-      fail_msg_writer() << tr("amount is wrong: ") << args[0];
-      return true;
-    }
-  }
-
-  if (!try_connect_to_daemon())
-    return true;
-
-  SCOPED_WALLET_UNLOCK();
-
-  try
-  {
-    const std::string sig_str = m_wallet->get_reserve_proof(account_minreserve, args.size() == 2 ? args[1] : "");
-    const std::string filename = "lolnero_reserve_proof";
-    if (m_wallet->save_to_file(filename, sig_str, true))
-      success_msg_writer() << tr("signature file saved to: ") << filename;
-    else
-      fail_msg_writer() << tr("failed to save signature file");
-  }
-  catch (const std::exception &e)
   {
     fail_msg_writer() << e.what();
   }
