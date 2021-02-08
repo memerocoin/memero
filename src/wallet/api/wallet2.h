@@ -1317,7 +1317,6 @@ private:
 
     bool get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution);
 
-    uint64_t get_segregation_fork_height() const;
     void cache_tx_data(const cryptonote::transaction& tx, const crypto::hash &txid, tx_cache_data &tx_cache_data) const;
     std::shared_ptr<std::map<std::pair<uint64_t, uint64_t>, size_t>> create_output_tracker_cache() const;
 
