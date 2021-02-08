@@ -634,7 +634,7 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_SWEEP_ALL
+  struct COMMAND_RPC_SWEEP
   {
     struct request_t
     {

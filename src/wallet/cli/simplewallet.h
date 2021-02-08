@@ -160,9 +160,9 @@ namespace cryptonote
     bool transfer_main(int transfer_type, const std::vector<std::string> &args);
     bool transfer(const std::vector<std::string> &args);
     bool locked_transfer(const std::vector<std::string> &args);
-    bool locked_sweep_all(const std::vector<std::string> &args);
+    bool locked_sweep(const std::vector<std::string> &args);
     bool sweep_main(uint32_t account, uint64_t below, bool locked, const std::vector<std::string> &args);
-    bool sweep_all(const std::vector<std::string> &args);
+    bool sweep(const std::vector<std::string> &args);
     bool sweep_account(const std::vector<std::string> &args);
     bool sweep_below(const std::vector<std::string> &args);
     bool sweep_single(const std::vector<std::string> &args);
@@ -257,7 +257,7 @@ namespace cryptonote
 
     /*!
      * \brief When --do-not-relay option is specified, save the raw tx hex blob to a file instead of calling m_wallet->commit_tx(ptx).
-     * \param ptx_vector Pending tx(es) created by transfer/sweep_all
+     * \param ptx_vector Pending tx(es) created by transfer/sweep
      */
     void commit_or_save(std::vector<tools::wallet2::pending_tx>& ptx_vector, bool do_not_relay);
 

@@ -1001,7 +1001,7 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_sweep_all(const wallet_rpc::COMMAND_RPC_SWEEP_ALL::request& req, wallet_rpc::COMMAND_RPC_SWEEP_ALL::response& res, epee::json_rpc::error& er, const connection_context *ctx)
+  bool wallet_rpc_server::on_sweep(const wallet_rpc::COMMAND_RPC_SWEEP::request& req, wallet_rpc::COMMAND_RPC_SWEEP::response& res, epee::json_rpc::error& er, const connection_context *ctx)
   {
     std::vector<cryptonote::tx_destination_entry> dsts;
     std::vector<uint8_t> extra;

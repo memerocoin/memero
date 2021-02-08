@@ -158,8 +158,8 @@ namespace
   const char* USAGE_INCOMING_TRANSFERS("incoming_transfers [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]");
   const char* USAGE_TRANSFER("transfer [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] (<URI> | <address> <amount>)");
   const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] (<URI> | <addr> <amount>) <lockblocks>");
-  const char* USAGE_LOCKED_SWEEP_ALL("locked_sweep_all [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] <address> <lockblocks>");
-  const char* USAGE_SWEEP_ALL("sweep_all [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] [outputs=<N>] <address>");
+  const char* USAGE_LOCKED_SWEEP("locked_sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] <address> <lockblocks>");
+  const char* USAGE_SWEEP("sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] [outputs=<N>] <address>");
   const char* USAGE_SWEEP_ACCOUNT("sweep_account <account> [index=<N1>[,<N2>,...] | index=all] [<priority>] [<ring_size>] [outputs=<N>] <address>");
   const char* USAGE_SWEEP_BELOW("sweep_below <amount_threshold> [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] <address>");
   const char* USAGE_SWEEP_SINGLE("sweep_single [<priority>] [<ring_size>] [outputs=<N>] <key_image> <address>");
@@ -1452,7 +1452,7 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
     message_writer() << tr("\"address new\" - Create new subaddress.");
     message_writer() << tr("\"transfer <address> <amount>\" - Send LOL to an address.");
     message_writer() << tr("\"show_transfers [in|out|pending|failed|pool]\" - Show transactions.");
-    message_writer() << tr("\"sweep_all <address>\" - Send whole balance to another wallet.");
+    message_writer() << tr("\"sweep <address>\" - Send whole balance to another wallet.");
     message_writer() << tr("\"seed\" - Show secret 25 words that can be used to recover this wallet.");
     message_writer() << tr("\"refresh\" - Synchronize wallet with the Lolnero network.");
     message_writer() << tr("\"status\" - Check current status of wallet.");
@@ -1543,12 +1543,12 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::locked_transfer,std::placeholders::_1),
                            tr(USAGE_LOCKED_TRANSFER),
                            tr("Transfer <amount> to <address> and lock it for <lockblocks> (max. 1000000). If the parameter \"index=<N1>[,<N2>,...]\" is specified, the wallet uses outputs received by addresses of those indices. If omitted, the wallet randomly chooses address indices to be used. In any case, it tries its best not to combine outputs across multiple addresses. <priority> is the priority of the transaction. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding URI_2 or <address_2> <amount_2> etcetera (before the payment ID, if it's included)"));
-  m_cmd_binder.set_handler("locked_sweep_all",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::locked_sweep_all,std::placeholders::_1),
-                           tr(USAGE_LOCKED_SWEEP_ALL),
+  m_cmd_binder.set_handler("locked_sweep",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::locked_sweep,std::placeholders::_1),
+                           tr(USAGE_LOCKED_SWEEP),
                            tr("Send all unlocked balance to an address and lock it for <lockblocks> (max. 1000000). If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. <priority> is the priority of the sweep. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability."));
-  m_cmd_binder.set_handler("sweep_all", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_all, std::placeholders::_1),
-                           tr(USAGE_SWEEP_ALL),
+  m_cmd_binder.set_handler("sweep", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep, std::placeholders::_1),
+                           tr(USAGE_SWEEP),
                            tr("Send all unlocked balance to an address. If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. If the parameter \"outputs=<N>\" is specified and  N > 0, wallet splits the transaction into N even outputs."));
   m_cmd_binder.set_handler("sweep_account", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_account, std::placeholders::_1),
                            tr(USAGE_SWEEP_ACCOUNT),
@@ -3963,7 +3963,7 @@ bool simple_wallet::locked_transfer(const std::vector<std::string> &args_)
   return transfer_main(TransferLocked, args_);
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::locked_sweep_all(const std::vector<std::string> &args_)
+bool simple_wallet::locked_sweep(const std::vector<std::string> &args_)
 {
   sweep_main(m_current_subaddress_account, 0, true, args_);
   return true;
@@ -3979,7 +3979,7 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
     }
     else if (account == m_current_subaddress_account)
     {
-      PRINT_USAGE(USAGE_SWEEP_ALL);
+      PRINT_USAGE(USAGE_SWEEP);
     }
     else
     {
@@ -4349,7 +4349,7 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::sweep_all(const std::vector<std::string> &args_)
+bool simple_wallet::sweep(const std::vector<std::string> &args_)
 {
   sweep_main(m_current_subaddress_account, 0, false, args_);
   return true;
