@@ -78,6 +78,7 @@ using namespace epee;
 #include "ringct/curveConstants.h"
 #include "network/type/socks_connect.h"
 #include "config/lol.hpp"
+#include "wallet/logic/functional/fee.hpp"
 
 extern "C"
 {
@@ -87,6 +88,7 @@ using namespace std;
 using namespace crypto;
 using namespace cryptonote;
 using namespace constant;
+using namespace wallet::logic::functional::fee;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
@@ -242,19 +244,6 @@ void do_prepare_file_names(const std::string& file_path, std::string& keys_file,
   {//provided wallet file name
     keys_file += ".keys";
   }
-}
-
-uint64_t calculate_fee(uint64_t fee_per_kb, size_t bytes, uint64_t fee_multiplier)
-{
-  uint64_t kB = (bytes + 1023) / 1024;
-  return kB * fee_per_kb * fee_multiplier;
-}
-
-uint64_t calculate_fee_from_weight(uint64_t base_fee, uint64_t weight, uint64_t fee_multiplier, uint64_t fee_quantization_mask)
-{
-  uint64_t fee = weight * base_fee * fee_multiplier;
-  fee = (fee + fee_quantization_mask - 1) / fee_quantization_mask * fee_quantization_mask;
-  return fee;
 }
 
 std::string get_weight_string(size_t weight)
@@ -621,88 +610,12 @@ void drop_from_short_history(std::list<crypto::hash> &short_chain_history, size_
   }
 }
 
-size_t estimate_rct_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag)
-{
-  size_t size = 0;
-
-  // tx prefix
-
-  // first few bytes
-  size += 1 + 6;
-
-  // vin
-  size += n_inputs * (1+6+(mixin+1)*2+32);
-
-  // vout
-  size += n_outputs * (6+32);
-
-  // extra
-  size += extra_size;
-
-  // rct signatures
-
-  // type
-  size += 1;
-
-  // rangeSigs
-  {
-    size_t log_padded_outputs = 0;
-    while ((1<<log_padded_outputs) < n_outputs)
-      ++log_padded_outputs;
-    size += (2 * (6 + log_padded_outputs) + 4 + 5) * 32 + 3;
-  }
-
-  // MGs/CLSAGs
-  if (clsag)
-    size += n_inputs * (32 * (mixin+1) + 64);
-  else
-    size += n_inputs * (64 * (mixin+1) + 32);
-
-  // mixRing - not serialized, can be reconstructed
-  /* size += 2 * 32 * (mixin+1) * n_inputs; */
-
-  // pseudoOuts
-  size += 32 * n_inputs;
-  // ecdhInfo
-  size += 8 * n_outputs;
-  // outPk - only commitment is saved
-  size += 32 * n_outputs;
-  // txnFee
-  size += 4;
-
-  LOG_PRINT_L2("estimated " << (bulletproof ? "bulletproof" : "borromean") << " rct tx size for " << n_inputs << " inputs with ring size " << (mixin+1) << " and " << n_outputs << " outputs: " << size << " (" << ((32 * n_inputs/*+1*/) + 2 * 32 * (mixin+1) * n_inputs + 32 * n_outputs) << " saved)");
-  return size;
-}
-
-size_t estimate_tx_size(bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag)
-{
-  return estimate_rct_tx_size(n_inputs, mixin, n_outputs, extra_size, bulletproof, clsag);
-}
-
-uint64_t estimate_tx_weight(bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag)
-{
-  size_t size = estimate_tx_size(use_rct, n_inputs, mixin, n_outputs, extra_size, bulletproof, clsag);
-  if (n_outputs > 2)
-  {
-    const uint64_t bp_base = 368;
-    size_t log_padded_outputs = 2;
-    while ((1<<log_padded_outputs) < n_outputs)
-      ++log_padded_outputs;
-    uint64_t nlr = 2 * (6 + log_padded_outputs);
-    const uint64_t bp_size = 32 * (9 + nlr);
-    const uint64_t bp_clawback = (bp_base * (1<<log_padded_outputs) - bp_size) * 4 / 5;
-    MDEBUG("clawback on size " << size << ": " << bp_clawback);
-    size += bp_clawback;
-  }
-  return size;
-}
-
 uint64_t calculate_fee(bool use_per_byte_fee, const cryptonote::transaction &tx, size_t blob_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask)
 {
   if (use_per_byte_fee)
     return calculate_fee_from_weight(base_fee, cryptonote::get_transaction_weight(tx, blob_size), fee_multiplier, fee_quantization_mask);
   else
-    return calculate_fee(base_fee, blob_size, fee_multiplier);
+    return ::wallet::logic::functional::fee::calculate_fee(base_fee, blob_size, fee_multiplier);
 }
 
 tools::wallet2::tx_construction_data get_construction_data_with_decrypted_short_payment_id(const tools::wallet2::pending_tx &ptx, hw::device &hwdev)
@@ -4897,19 +4810,6 @@ void wallet2::commit_tx(std::vector<pending_tx>& ptx_vector)
   }
 }
 //----------------------------------------------------------------------------------------------------
-uint64_t wallet2::estimate_fee(bool use_per_byte_fee, bool use_rct, int n_inputs, int mixin, int n_outputs, size_t extra_size, bool bulletproof, bool clsag, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask) const
-{
-  if (use_per_byte_fee)
-  {
-    const size_t estimated_tx_weight = estimate_tx_weight(use_rct, n_inputs, mixin, n_outputs, extra_size, bulletproof, clsag);
-    return calculate_fee_from_weight(base_fee, estimated_tx_weight, fee_multiplier, fee_quantization_mask);
-  }
-  else
-  {
-    const size_t estimated_tx_size = estimate_tx_size(use_rct, n_inputs, mixin, n_outputs, extra_size, bulletproof, clsag);
-    return calculate_fee(base_fee, estimated_tx_size, fee_multiplier);
-  }
-}
 
 uint64_t wallet2::get_fee_multiplier(uint32_t priority, int fee_algorithm)
 {
