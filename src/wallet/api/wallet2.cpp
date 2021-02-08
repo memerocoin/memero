@@ -4896,25 +4896,6 @@ void wallet2::commit_tx(std::vector<pending_tx>& ptx_vector)
   }
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::load_unsigned_tx(const std::string &unsigned_filename, unsigned_tx_set &exported_txs) const
-{
-  std::string s;
-  std::error_code errcode;
-
-  if (!std::filesystem::exists(unsigned_filename, errcode))
-  {
-    LOG_PRINT_L0("File " << unsigned_filename << " does not exist: " << errcode);
-    return false;
-  }
-  if (!load_from_file(unsigned_filename.c_str(), s))
-  {
-    LOG_PRINT_L0("Failed to load from " << unsigned_filename);
-    return false;
-  }
-
-  return parse_unsigned_tx_from_str(s, exported_txs);
-}
-//----------------------------------------------------------------------------------------------------
 bool wallet2::parse_unsigned_tx_from_str(const std::string &unsigned_tx_st, unsigned_tx_set &exported_txs) const
 {
   std::string s = unsigned_tx_st;
