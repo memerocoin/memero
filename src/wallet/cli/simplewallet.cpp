@@ -3943,14 +3943,8 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
 
     if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
-      if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
-      }
-      else
-      {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_lolnero_tx";
       }
     }
     else
@@ -4196,14 +4190,8 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
 
     if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
-      if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
-      }
-      else
-      {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_lolnero_tx";
       }
     }
     else
@@ -4349,14 +4337,8 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
 
     if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_lolnero_tx");
-      if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
-      }
-      else
-      {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_lolnero_tx";
       }
     }
     else

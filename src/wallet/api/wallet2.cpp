@@ -4896,15 +4896,6 @@ void wallet2::commit_tx(std::vector<pending_tx>& ptx_vector)
   }
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::save_tx(const std::vector<pending_tx>& ptx_vector, const std::string &filename) const
-{
-  LOG_PRINT_L0("saving " << ptx_vector.size() << " transactions");
-  std::string ciphertext = dump_tx_to_str(ptx_vector);
-  if (ciphertext.empty())
-    return false;
-  return save_to_file(filename, ciphertext);
-}
-//----------------------------------------------------------------------------------------------------
 std::string wallet2::dump_tx_to_str(const std::vector<pending_tx> &ptx_vector) const
 {
   LOG_PRINT_L0("saving " << ptx_vector.size() << " transactions");
