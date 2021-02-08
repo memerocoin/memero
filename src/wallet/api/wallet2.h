@@ -1353,8 +1353,6 @@ private:
     serializable_unordered_map<std::string, std::string> m_attributes;
     std::pair<serializable_map<std::string, std::string>, std::vector<std::string>> m_account_tags;
     uint64_t m_upper_transaction_weight_limit; //TODO: auto-calc this value or request from daemon, now use some fixed value
-    const std::vector<std::vector<tools::wallet2::multisig_info>> *m_multisig_rescan_info;
-    const std::vector<std::vector<rct::key>> *m_multisig_rescan_k;
     serializable_unordered_map<crypto::public_key, crypto::key_image> m_cold_key_images;
 
     std::atomic<bool> m_run;
