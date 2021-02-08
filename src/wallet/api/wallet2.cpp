@@ -8358,27 +8358,6 @@ void wallet2::import_blockchain(const std::tuple<size_t, crypto::hash, std::vect
   m_last_block_reward = cryptonote::get_outs_money_amount(genesis.miner_tx);
 }
 //----------------------------------------------------------------------------------------------------
-std::pair<size_t, std::vector<tools::wallet2::transfer_details>> wallet2::export_outputs(bool all) const
-{
-  PERF_TIMER(export_outputs);
-  std::vector<tools::wallet2::transfer_details> outs;
-
-  size_t offset = 0;
-  if (!all)
-    while (offset < m_transfers.size() && (m_transfers[offset].m_key_image_known && !m_transfers[offset].m_key_image_request))
-      ++offset;
-
-  outs.reserve(m_transfers.size() - offset);
-  for (size_t n = offset; n < m_transfers.size(); ++n)
-  {
-    const transfer_details &td = m_transfers[n];
-
-    outs.push_back(td);
-  }
-
-  return std::make_pair(offset, outs);
-}
-//----------------------------------------------------------------------------------------------------
 std::string wallet2::encrypt(const char *plaintext, size_t len, const crypto::secret_key &skey, bool authenticated) const
 {
   crypto::chacha_key key;
