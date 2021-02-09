@@ -34,10 +34,11 @@ set(wallet_sources
   ../api/wallet2.cpp
   ../api/node_rpc_proxy.cpp
   ../args/wallet_args.cpp
-  ../logic/controller/uri.cpp
-  ../logic/controller/proof.cpp
   ../logic/functional/fee.cpp
   ../logic/functional/proof.cpp
+  ../logic/pseudo_functional/proof.cpp
+  ../logic/controller/uri.cpp
+  ../logic/controller/proof.cpp
   )
 
 set(wallet_private_headers
@@ -45,10 +46,11 @@ set(wallet_private_headers
   ../api/wallet2.h
   ../api/node_rpc_proxy.h
   ../args/wallet_args.h
-  ../logic/controller/uri.hpp
-  ../logic/controller/proof.hpp
   ../logic/functional/fee.hpp
   ../logic/functional/proof.hpp
+  ../logic/pseudo_functional/proof.hpp
+  ../logic/controller/uri.hpp
+  ../logic/controller/proof.hpp
 
   wallet_rpc_server.h
   wallet_rpc_server_commands_defs.h
