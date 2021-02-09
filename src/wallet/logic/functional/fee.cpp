@@ -33,6 +33,8 @@
 #include "fee.hpp"
 
 #include "misc_log_ex.h"
+#include "wallet/api/wallet_errors.h"
+#include "config/lol.hpp"
 
 namespace wallet {
 namespace logic {
@@ -116,6 +118,23 @@ namespace fee {
   {
     const size_t estimated_tx_weight = estimate_tx_weight(n_inputs, mixin, n_outputs, extra_size);
     return calculate_fee_from_weight(base_fee, estimated_tx_weight, fee_multiplier, fee_quantization_mask);
+  }
+
+  //----------------------------------------------------------------------------------------------------
+  std::pair<size_t, uint64_t> estimate_tx_size_and_weight(int n_inputs, int n_outputs, size_t extra_size)
+  {
+    THROW_WALLET_EXCEPTION_IF(n_inputs <= 0, tools::error::wallet_internal_error, "Invalid n_inputs");
+    THROW_WALLET_EXCEPTION_IF(n_outputs < 0, tools::error::wallet_internal_error, "Invalid n_outputs");
+
+    const int ring_size = config::lol::ring_size;
+    if (n_outputs == 1)
+      n_outputs = 2; // extra dummy output
+
+    const bool bulletproof = true;
+    const bool clsag = true;
+    size_t size = estimate_tx_size(n_inputs, ring_size - 1, n_outputs, extra_size);
+    uint64_t weight = estimate_tx_weight(n_inputs, ring_size - 1, n_outputs, extra_size);
+    return std::make_pair(size, weight);
   }
 
 } // fee

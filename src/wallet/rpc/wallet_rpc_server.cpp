@@ -53,6 +53,7 @@ using namespace epee;
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "tools/daemonizer/daemonizer.h"
 #include "wallet/logic/controller/uri.hpp"
+#include "wallet/logic/functional/fee.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"
@@ -2740,7 +2741,8 @@ namespace tools
     try
     {
       size_t extra_size = 34 /* pubkey */ + 10 /* encrypted payment id */; // typical makeup
-      const std::pair<size_t, uint64_t> sw = m_wallet->estimate_tx_size_and_weight(req.n_inputs, req.ring_size, req.n_outputs, extra_size);
+      const std::pair<size_t, uint64_t> sw = wallet::logic::functional::fee::estimate_tx_size_and_weight
+        (req.n_inputs, req.n_outputs, extra_size);
       res.size = sw.first;
       res.weight = sw.second;
     }

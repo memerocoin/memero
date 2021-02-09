@@ -31,6 +31,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 
 namespace wallet {
 namespace logic {
@@ -46,6 +47,8 @@ namespace fee {
   uint64_t calculate_fee_from_weight(uint64_t base_fee, uint64_t weight, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
 
   uint64_t estimate_fee(int n_inputs, int mixin, int n_outputs, size_t extra_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
+
+  std::pair<size_t, uint64_t> estimate_tx_size_and_weight(int n_inputs, int n_outputs, size_t extra_size);
 
 } // fee
 } // functional

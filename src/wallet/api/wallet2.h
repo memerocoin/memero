@@ -1144,8 +1144,6 @@ private:
 
     bool is_unattended() const { return m_unattended; }
 
-    std::pair<size_t, uint64_t> estimate_tx_size_and_weight(int n_inputs, int ring_size, int n_outputs, size_t extra_size);
-
     /*
      * "attributes" are a mechanism to store an arbitrary number of string values
      * on the level of the wallet as a whole, identified by keys. Their introduction,
