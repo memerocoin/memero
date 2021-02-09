@@ -34,8 +34,6 @@
 #include "misc_log_ex.h"
 #include "wallet/api/wallet_errors.h"
 
-#include "config/cryptonote.hpp"
-
 namespace wallet {
 namespace logic {
 namespace state {
