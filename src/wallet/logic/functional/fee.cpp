@@ -136,6 +136,47 @@ namespace fee {
     return std::make_pair(size, weight);
   }
 
+  //----------------------------------------------------------------------------------------------------
+  const uint64_t get_fee_multiplier(const uint32_t _priority)
+  {
+    const int fee_algorithm = 3;
+
+    static const struct
+    {
+      size_t count;
+      uint64_t multipliers[4];
+    }
+    multipliers[] =
+    {
+      { 3, {1, 2, 3} },
+      { 3, {1, 20, 166} },
+      { 4, {1, 4, 20, 166} },
+      { 4, {1, 5, 25, 1000} },
+    };
+
+    // 0 -> default (here, x1 till fee algorithm 2, x4 from it)
+    uint32_t priority = _priority;
+    if (priority == 0)
+    {
+      if (fee_algorithm >= 2)
+        priority = 2;
+      else
+        priority = 1;
+    }
+
+    THROW_WALLET_EXCEPTION_IF(fee_algorithm < 0 || fee_algorithm > 3, tools::error::invalid_priority);
+
+    // 1 to 3/4 are allowed as priorities
+    const uint32_t max_priority = multipliers[fee_algorithm].count;
+    if (priority >= 1 && priority <= max_priority)
+    {
+      return multipliers[fee_algorithm].multipliers[priority-1];
+    }
+
+    THROW_WALLET_EXCEPTION_IF (false, tools::error::invalid_priority);
+    return 1;
+  }
+
 } // fee
 } // functional
 } // logic

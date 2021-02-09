@@ -50,6 +50,8 @@ namespace fee {
 
   std::pair<size_t, uint64_t> estimate_tx_size_and_weight(int n_inputs, int n_outputs, size_t extra_size);
 
+  const uint64_t get_fee_multiplier(const uint32_t priority);
+
 } // fee
 } // functional
 } // logic

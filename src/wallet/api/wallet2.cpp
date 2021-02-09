@@ -4771,49 +4771,6 @@ void wallet2::commit_tx(std::vector<pending_tx>& ptx_vector)
   }
 }
 //----------------------------------------------------------------------------------------------------
-
-uint64_t wallet2::get_fee_multiplier(uint32_t priority, int fee_algorithm)
-{
-  static const struct
-  {
-    size_t count;
-    uint64_t multipliers[4];
-  }
-  multipliers[] =
-  {
-    { 3, {1, 2, 3} },
-    { 3, {1, 20, 166} },
-    { 4, {1, 4, 20, 166} },
-    { 4, {1, 5, 25, 1000} },
-  };
-
-  if (fee_algorithm == -1)
-    fee_algorithm = get_fee_algorithm();
-
-  // 0 -> default (here, x1 till fee algorithm 2, x4 from it)
-  if (priority == 0)
-    priority = m_default_priority;
-  if (priority == 0)
-  {
-    if (fee_algorithm >= 2)
-      priority = 2;
-    else
-      priority = 1;
-  }
-
-  THROW_WALLET_EXCEPTION_IF(fee_algorithm < 0 || fee_algorithm > 3, error::invalid_priority);
-
-  // 1 to 3/4 are allowed as priorities
-  const uint32_t max_priority = multipliers[fee_algorithm].count;
-  if (priority >= 1 && priority <= max_priority)
-  {
-    return multipliers[fee_algorithm].multipliers[priority-1];
-  }
-
-  THROW_WALLET_EXCEPTION_IF (false, error::invalid_priority);
-  return 1;
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_dynamic_base_fee_estimate()
 {
   uint64_t fee;
@@ -4841,11 +4798,6 @@ uint64_t wallet2::get_fee_quantization_mask()
   if (result)
     return 1;
   return fee_quantization_mask;
-}
-//----------------------------------------------------------------------------------------------------
-int wallet2::get_fee_algorithm()
-{
-  return 3;
 }
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_min_ring_size()
@@ -5795,7 +5747,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryp
   const rct::RCTConfig rct_config = rct::lol_rct_config;
 
   const uint64_t base_fee  = get_base_fee();
-  const uint64_t fee_multiplier = get_fee_multiplier(priority, get_fee_algorithm());
+  const uint64_t fee_multiplier = get_fee_multiplier(priority);
   const uint64_t fee_quantization_mask = get_fee_quantization_mask();
 
   // throw if attempting a transaction with no destinations
@@ -6342,7 +6294,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_all(uint64_t below
   const bool bulletproof = true;
   const bool clsag = true;
   const uint64_t base_fee  = get_base_fee();
-  const uint64_t fee_multiplier = get_fee_multiplier(priority, get_fee_algorithm());
+  const uint64_t fee_multiplier = get_fee_multiplier(priority);
   const size_t tx_weight_one_ring = estimate_tx_weight(1, fake_outs_count, 2, 0);
   const size_t tx_weight_two_rings = estimate_tx_weight(2, fake_outs_count, 2, 0);
   THROW_WALLET_EXCEPTION_IF(tx_weight_one_ring > tx_weight_two_rings, error::wallet_internal_error, "Estimated tx weight with 1 input is larger than with 2 inputs!");
@@ -6453,7 +6405,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
   const bool clsag = true;
   const rct::RCTConfig rct_config = rct::lol_rct_config;
   const uint64_t base_fee  = get_base_fee();
-  const uint64_t fee_multiplier = get_fee_multiplier(priority, get_fee_algorithm());
+  const uint64_t fee_multiplier = get_fee_multiplier(priority);
   const uint64_t fee_quantization_mask = get_fee_quantization_mask();
 
   LOG_PRINT_L2("Starting with " << unused_transfers_indices.size() << " non-dust outputs and " << unused_dust_indices.size() << " dust outputs");

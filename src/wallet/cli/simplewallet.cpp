@@ -69,6 +69,7 @@
 #include <stdexcept>
 
 #include "wallet/logic/functional/signature.hpp"
+#include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
 
 #ifdef HAVE_READLINE
@@ -783,7 +784,7 @@ bool simple_wallet::print_fee_info(const std::vector<std::string> &args/* = std:
   std::vector<uint64_t> fees;
   for (uint32_t priority = 1; priority <= 4; ++priority)
   {
-    uint64_t mult = m_wallet->get_fee_multiplier(priority);
+    uint64_t mult = wallet::logic::functional::fee::get_fee_multiplier(priority);
     fees.push_back(base_fee * typical_size * mult);
   }
   std::vector<std::pair<uint64_t, uint64_t>> blocks;

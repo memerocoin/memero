@@ -1035,8 +1035,6 @@ namespace tools
     size_t get_num_transfer_details() const { return m_transfers.size(); }
     const transfer_details &get_transfer_details(size_t idx) const;
 
-    int get_fee_algorithm();
-
     std::string get_wallet_file() const;
     std::string get_keys_file() const;
     std::string get_daemon_address() const;
@@ -1096,7 +1094,6 @@ namespace tools
     std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog(const std::vector<std::pair<double, double>> &fee_levels);
     std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog(uint64_t min_tx_weight, uint64_t max_tx_weight, const std::vector<uint64_t> &fees);
 
-    uint64_t get_fee_multiplier(uint32_t priority, int fee_algorithm = -1);
     uint64_t get_base_fee();
     uint64_t get_fee_quantization_mask();
     uint64_t get_min_ring_size();
