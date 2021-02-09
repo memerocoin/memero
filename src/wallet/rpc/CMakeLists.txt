@@ -37,6 +37,7 @@ set(wallet_sources
   ../logic/controller/uri.cpp
   ../logic/controller/proof.cpp
   ../logic/functional/fee.cpp
+  ../logic/functional/proof.cpp
   )
 
 set(wallet_private_headers
@@ -47,6 +48,7 @@ set(wallet_private_headers
   ../logic/controller/uri.hpp
   ../logic/controller/proof.hpp
   ../logic/functional/fee.hpp
+  ../logic/functional/proof.hpp
 
   wallet_rpc_server.h
   wallet_rpc_server_commands_defs.h

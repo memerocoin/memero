@@ -36,7 +36,8 @@
 #include "misc_log_ex.h"
 #include "wallet/api/wallet_errors.h"
 #include "common/base58.h"
-#include "math/ringct/curveConstants.h"
+
+#include "wallet/logic/functional/proof.hpp"
 
 #include "config/lol.hpp"
 
@@ -46,64 +47,6 @@ namespace wallet {
 namespace logic {
 namespace controller {
 namespace proof {
-
-  const uint64_t get_tx_key_received_helper
-  (
-   const cryptonote::transaction &tx
-   , const crypto::key_derivation &derivation
-   , const std::vector<crypto::key_derivation> &additional_derivations
-   , const cryptonote::account_public_address &address
-   )
-  {
-    uint64_t received = 0;
-
-    for (size_t n = 0; n < tx.vout.size(); ++n)
-    {
-      const cryptonote::txout_to_key* const out_key = boost::get<cryptonote::txout_to_key>(std::addressof(tx.vout[n].target));
-      if (!out_key)
-        continue;
-
-      crypto::public_key derived_out_key;
-      bool r = crypto::derive_public_key(derivation, n, address.m_spend_public_key, derived_out_key);
-      THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "Failed to derive public key");
-      bool found = out_key->key == derived_out_key;
-      crypto::key_derivation found_derivation = derivation;
-      if (!found && !additional_derivations.empty())
-      {
-        r = crypto::derive_public_key(additional_derivations[n], n, address.m_spend_public_key, derived_out_key);
-        THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "Failed to derive public key");
-        found = out_key->key == derived_out_key;
-        found_derivation = additional_derivations[n];
-      }
-
-      if (found)
-      {
-        uint64_t amount;
-        if (tx.rct_signatures.type == rct::RCTTypeNull)
-        {
-          amount = tx.vout[n].amount;
-        }
-        else
-        {
-          crypto::secret_key scalar1;
-          crypto::derivation_to_scalar(found_derivation, n, scalar1);
-          rct::ecdhTuple ecdh_info = tx.rct_signatures.ecdhInfo[n];
-          rct::ecdhDecode(ecdh_info, rct::sk2rct(scalar1), tx.rct_signatures.type == rct::RCTTypeBulletproof2 || tx.rct_signatures.type == rct::RCTTypeCLSAG);
-          const rct::key C = tx.rct_signatures.outPk[n].mask;
-          rct::key Ctmp;
-          THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.mask.bytes) != 0, error::wallet_internal_error, "Bad ECDH input mask");
-          THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.amount.bytes) != 0, error::wallet_internal_error, "Bad ECDH input amount");
-          rct::addKeys2(Ctmp, ecdh_info.mask, ecdh_info.amount, rct::H);
-          if (rct::equalKeys(C, Ctmp))
-            amount = rct::h2d(ecdh_info.amount);
-          else
-            amount = 0;
-        }
-        received += amount;
-      }
-    }
-    return received;
-  }
 
   const std::string get_tx_proof
   (
@@ -215,7 +158,8 @@ namespace proof {
     std::vector<crypto::key_derivation> additional_derivations(num_sigs - 1);
     for (size_t i = 1; i < num_sigs; ++i)
       THROW_WALLET_EXCEPTION_IF(!crypto::generate_key_derivation(shared_secret[i], rct::rct2sk(rct::I), additional_derivations[i - 1]), tools::error::wallet_internal_error, "Failed to generate key derivation");
-    uint64_t received = get_tx_key_received_helper(tx, derivation, additional_derivations, address);
+    uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
+      (tx, derivation, additional_derivations, address);
     THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");
 
     // concatenate all signature strings

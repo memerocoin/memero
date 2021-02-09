@@ -40,22 +40,18 @@
 
 namespace wallet {
 namespace logic {
-namespace controller {
+namespace functional {
 namespace proof {
 
-  const std::string get_tx_proof
+  const uint64_t get_tx_key_received_helper
   (
    const cryptonote::transaction &tx
-   , const crypto::secret_key &tx_key
-   , const std::vector<crypto::secret_key> &additional_tx_keys
+   , const crypto::key_derivation &derivation
+   , const std::vector<crypto::key_derivation> &additional_derivations
    , const cryptonote::account_public_address &address
-   , const bool is_subaddress
-   , const std::string &message
-   , const std::optional<crypto::secret_key> view_secret_key
-   , hw::device &hwdev
    );
 
 } // proof
-} // controller
+} // functional
 } // logic
 } // wallet

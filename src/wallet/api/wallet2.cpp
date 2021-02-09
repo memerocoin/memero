@@ -80,6 +80,7 @@ using namespace epee;
 #include "config/lol.hpp"
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/controller/proof.hpp"
+#include "wallet/logic/functional/proof.hpp"
 
 extern "C"
 {
@@ -7133,7 +7134,7 @@ void wallet2::check_tx_key_helper(const crypto::hash &txid, const crypto::key_de
   THROW_WALLET_EXCEPTION_IF(!additional_derivations.empty() && additional_derivations.size() != tx.vout.size(), error::wallet_internal_error,
     "The size of additional derivations is wrong");
 
-  received += wallet::logic::controller::proof::get_tx_key_received_helper
+  received += wallet::logic::functional::proof::get_tx_key_received_helper
     (tx, derivation, additional_derivations, address);
 
   in_pool = res.txs.front().in_pool;
@@ -7343,7 +7344,7 @@ bool wallet2::check_tx_proof(const cryptonote::transaction &tx, const cryptonote
       if (good_signature[i])
         THROW_WALLET_EXCEPTION_IF(!crypto::generate_key_derivation(shared_secret[i], rct::rct2sk(rct::I), additional_derivations[i - 1]), error::wallet_internal_error, "Failed to generate key derivation");
 
-    received += wallet::logic::controller::proof::get_tx_key_received_helper
+    received += wallet::logic::functional::proof::get_tx_key_received_helper
       (tx, derivation, additional_derivations, address);
     return true;
   }
