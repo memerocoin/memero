@@ -7176,33 +7176,6 @@ std::string wallet2::sign(const std::string &data, message_signature_type_t sign
     (data, signature_type, index, keys, subaddress_secret_view_key);
 }
 
-bool wallet2::import_key_images(std::vector<crypto::key_image> key_images, size_t offset, std::optional<std::unordered_set<size_t>> selected_transfers)
-{
-  if (key_images.size() + offset > m_transfers.size())
-  {
-    LOG_PRINT_L1("More key images returned that we know outputs for");
-    return false;
-  }
-  for (size_t ki_idx = 0; ki_idx < key_images.size(); ++ki_idx)
-  {
-    const size_t transfer_idx = ki_idx + offset;
-    if (selected_transfers && selected_transfers.value().find(transfer_idx) == selected_transfers.value().end())
-      continue;
-
-    transfer_details &td = m_transfers[transfer_idx];
-    if (td.m_key_image_known && !td.m_key_image_partial && td.m_key_image != key_images[ki_idx])
-      LOG_PRINT_L0("WARNING: imported key image differs from previously known key image at index " << ki_idx << ": trusting imported one");
-    td.m_key_image = key_images[ki_idx];
-    m_key_images[td.m_key_image] = transfer_idx;
-    td.m_key_image_known = true;
-    td.m_key_image_request = false;
-    td.m_key_image_partial = false;
-    m_pub_keys[td.get_public_key()] = transfer_idx;
-  }
-
-  return true;
-}
-
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_blockchain_height_by_date(uint16_t year, uint8_t month, uint8_t day)
 {
