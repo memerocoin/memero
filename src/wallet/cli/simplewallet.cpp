@@ -180,8 +180,6 @@ namespace
   const char* USAGE_CHECK_TX_KEY("check_tx_key <txid> <txkey> <address>");
   const char* USAGE_GET_TX_PROOF("get_tx_proof <txid> <address> [<message>]");
   const char* USAGE_CHECK_TX_PROOF("check_tx_proof <txid> <address> <signature_file> [<message>]");
-  const char* USAGE_GET_SPEND_PROOF("get_spend_proof <txid> [<message>]");
-  const char* USAGE_CHECK_SPEND_PROOF("check_spend_proof <txid> <signature_file> [<message>]");
   const char* USAGE_SHOW("show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
   const char* USAGE_UNSPENT_OUTPUTS("unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]");
   const char* USAGE_RESCAN_BC("rescan_bc [hard|soft|keep_ki] [start_height=0]");
@@ -1677,14 +1675,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::check_tx_proof, std::placeholders::_1),
                            tr(USAGE_CHECK_TX_PROOF),
                            tr("Check the proof for funds going to <address> in <txid> with the challenge string <message> if any."));
-  m_cmd_binder.set_handler("get_spend_proof",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_spend_proof, std::placeholders::_1),
-                           tr(USAGE_GET_SPEND_PROOF),
-                           tr("Generate a signature proving that you generated <txid> using the spend secret key, optionally with a challenge string <message>."));
-  m_cmd_binder.set_handler("check_spend_proof",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::check_spend_proof, std::placeholders::_1),
-                           tr(USAGE_CHECK_SPEND_PROOF),
-                           tr("Check a signature proving that the signer generated <txid>, optionally with a challenge string <message>."));
   m_cmd_binder.set_handler("show",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show, std::placeholders::_1),
                            tr(USAGE_SHOW),
@@ -4754,90 +4744,6 @@ bool simple_wallet::check_tx_proof(const std::vector<std::string> &args)
   catch (const std::exception &e)
   {
     fail_msg_writer() << tr("error: ") << e.what();
-  }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_spend_proof(const std::vector<std::string> &args)
-{
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command not supported by HW wallet");
-    return true;
-  }
-  if(args.size() != 1 && args.size() != 2) {
-    PRINT_USAGE(USAGE_GET_SPEND_PROOF);
-    return true;
-  }
-
-  if (m_wallet->watch_only())
-  {
-    fail_msg_writer() << tr("wallet is watch-only and cannot generate the proof");
-    return true;
-  }
-
-  crypto::hash txid;
-  if (!epee::string_tools::hex_to_pod(args[0], txid))
-  {
-    fail_msg_writer() << tr("failed to parse txid");
-    return true;
-  }
-
-  if (!try_connect_to_daemon())
-    return true;
-
-  SCOPED_WALLET_UNLOCK();
-
-  try
-  {
-    const std::string sig_str = m_wallet->get_spend_proof(txid, args.size() == 2 ? args[1] : "");
-    const std::string filename = "lolnero_spend_proof";
-    if (m_wallet->save_to_file(filename, sig_str, true))
-      success_msg_writer() << tr("signature file saved to: ") << filename;
-    else
-      fail_msg_writer() << tr("failed to save signature file");
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << e.what();
-  }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::check_spend_proof(const std::vector<std::string> &args)
-{
-  if(args.size() != 2 && args.size() != 3) {
-    PRINT_USAGE(USAGE_CHECK_SPEND_PROOF);
-    return true;
-  }
-
-  crypto::hash txid;
-  if (!epee::string_tools::hex_to_pod(args[0], txid))
-  {
-    fail_msg_writer() << tr("failed to parse txid");
-    return true;
-  }
-
-  if (!try_connect_to_daemon())
-    return true;
-
-  std::string sig_str;
-  if (!m_wallet->load_from_file(args[1], sig_str))
-  {
-    fail_msg_writer() << tr("failed to load signature file");
-    return true;
-  }
-
-  try
-  {
-    if (m_wallet->check_spend_proof(txid, args.size() == 3 ? args[2] : "", sig_str))
-      success_msg_writer() << tr("Good signature");
-    else
-      fail_msg_writer() << tr("Bad signature");
-  }
-  catch (const std::exception& e)
-  {
-    fail_msg_writer() << e.what();
   }
   return true;
 }
