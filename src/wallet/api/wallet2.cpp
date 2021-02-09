@@ -77,10 +77,13 @@ using namespace epee;
 #include "ringct/rctSigs.h"
 #include "ringct/curveConstants.h"
 #include "network/type/socks_connect.h"
+
 #include "config/lol.hpp"
+
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/proof.hpp"
 #include "wallet/logic/functional/signature.hpp"
+#include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/pseudo_functional/proof.hpp"
 #include "wallet/logic/controller/proof.hpp"
 #include "wallet/logic/state/gamma_picker.hpp"
@@ -3569,7 +3572,23 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
 
   // calculate a starting refresh height
   if(m_refresh_from_block_height == 0 && !recover){
-    m_refresh_from_block_height = estimate_blockchain_height();
+    std::string err;
+    const uint64_t _target_height = get_daemon_blockchain_target_height(err);
+    std::optional<uint64_t> target_height =
+      err.empty()
+      ? target_height = make_optional(_target_height)
+      : std::nullopt;
+
+    const uint64_t _local_height = get_daemon_blockchain_height(err);
+    std::optional<uint64_t> local_height =
+      err.empty()
+      ? make_optional(_local_height)
+      : std::nullopt;
+
+    const uint64_t approximate_height = get_approximate_blockchain_height();
+
+    m_refresh_from_block_height = wallet::logic::functional::wallet::estimate_blockchain_height
+      (approximate_height, target_height, local_height);
   }
 
   create_keys_file(wallet_, false, password, m_nettype != MAINNET || create_address_file);
@@ -3581,48 +3600,6 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
 
   return retval;
 }
-
- uint64_t wallet2::estimate_blockchain_height()
- {
-   // -1 month for fluctuations in block time and machine date/time setup.
-   // avg seconds per block
-   const int seconds_per_block = DIFFICULTY_TARGET_V2;
-   // ~num blocks per month
-   const uint64_t blocks_per_month = 288*30;
-
-   // try asking the daemon first
-   std::string err;
-   uint64_t height = 0;
-
-   // we get the max of approximated height and local height.
-   // approximated height is the least of daemon target height
-   // (the max of what the other daemons are claiming is their
-   // height) and the theoretical height based on the local
-   // clock. This will be wrong only if both the local clock
-   // is bad *and* a peer daemon claims a highest height than
-   // the real chain.
-   // local height is the height the local daemon is currently
-   // synced to, it will be lower than the real chain height if
-   // the daemon is currently syncing.
-   // If we use the approximate height we subtract one month as
-   // a safety margin.
-   height = get_approximate_blockchain_height();
-   uint64_t target_height = get_daemon_blockchain_target_height(err);
-   if (err.empty()) {
-     if (target_height < height)
-       height = target_height;
-   } else {
-     // if we couldn't talk to the daemon, check safety margin.
-     if (height > blocks_per_month)
-       height -= blocks_per_month;
-     else
-       height = 0;
-   }
-   uint64_t local_height = get_daemon_blockchain_height(err);
-   if (err.empty() && local_height > height)
-     height = local_height;
-   return height;
- }
 
 /*!
 * \brief Creates a watch only wallet from a public address and a view secret key.
@@ -6936,7 +6913,7 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
 
 uint64_t wallet2::get_approximate_blockchain_height() const
 {
-  uint64_t approx_blockchain_height = m_nettype == TESTNET ? 0 : (time(NULL) - 1522624244)/315;
+  uint64_t approx_blockchain_height = m_nettype == TESTNET ? 0 : (time(NULL) - 1600576524)/315;
   LOG_PRINT_L2("Calculated blockchain height: " << approx_blockchain_height);
   return approx_blockchain_height;
 }
