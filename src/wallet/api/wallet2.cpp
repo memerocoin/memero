@@ -80,6 +80,7 @@ using namespace epee;
 #include "config/lol.hpp"
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/proof.hpp"
+#include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/pseudo_functional/proof.hpp"
 #include "wallet/logic/controller/proof.hpp"
 
@@ -7394,88 +7395,16 @@ void wallet2::set_account_tag_description(const std::string& tag, const std::str
   m_account_tags.first[tag] = description;
 }
 
-// Set up an address signature message hash
-// Hash data: domain separator, spend public key, view public key, mode identifier, payload data
-static crypto::hash get_message_hash(const std::string &data, const crypto::public_key &spend_key, const crypto::public_key &view_key, const uint8_t mode)
-{
-  EVP_MD_CTX *ctx = EVP_MD_CTX_new();
-  EVP_DigestInit_ex(ctx, EVP_sha3_256(), NULL);
-  EVP_DigestUpdate(ctx, (const uint8_t*)config::HASH_KEY_MESSAGE_SIGNING, sizeof(config::HASH_KEY_MESSAGE_SIGNING)); // includes NUL
-  EVP_DigestUpdate(ctx, (const uint8_t*)&spend_key, sizeof(crypto::public_key));
-  EVP_DigestUpdate(ctx, (const uint8_t*)&view_key, sizeof(crypto::public_key));
-  EVP_DigestUpdate(ctx, (const uint8_t*)&mode, sizeof(uint8_t));
-  char len_buf[(sizeof(size_t) * 8 + 6) / 7];
-  char *ptr = len_buf;
-  tools::write_varint(ptr, data.size());
-  CHECK_AND_ASSERT_THROW_MES(ptr > len_buf && ptr <= len_buf + sizeof(len_buf), "Length overflow");
-  EVP_DigestUpdate(ctx, (const uint8_t*)len_buf, ptr - len_buf);
-  EVP_DigestUpdate(ctx, (const uint8_t*)data.data(), data.size());
-  crypto::hash hash;
-  EVP_DigestFinal(ctx, (uint8_t*)&hash, NULL);
-  EVP_MD_CTX_free(ctx);
-  return hash;
-}
-
 // Sign a message with a private key from either the base address or a subaddress
 // The signature is also bound to both keys and the signature mode (spend, view) to prevent unintended reuse
 std::string wallet2::sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const
 {
   const cryptonote::account_keys &keys = m_account.get_keys();
-  crypto::signature signature;
-  crypto::secret_key skey, m;
-  crypto::secret_key skey_spend, skey_view;
-  crypto::public_key pkey;
-  crypto::public_key pkey_spend, pkey_view; // to include both in hash
-  crypto::hash hash;
-  uint8_t mode;
+  const crypto::secret_key subaddress_secret_view_key =
+    m_account.get_device().get_subaddress_secret_key(keys.m_view_secret_key, index);
 
-  // Use the base address
-  if (index.is_zero())
-  {
-    switch (signature_type)
-    {
-      case sign_with_spend_key:
-        skey = keys.m_spend_secret_key;
-        pkey = keys.m_account_address.m_spend_public_key;
-        mode = 0;
-        break;
-      case sign_with_view_key:
-        skey = keys.m_view_secret_key;
-        pkey = keys.m_account_address.m_view_public_key;
-        mode = 1;
-        break;
-      default: CHECK_AND_ASSERT_THROW_MES(false, "Invalid signature type requested");
-    }
-    hash = get_message_hash(data,keys.m_account_address.m_spend_public_key,keys.m_account_address.m_view_public_key,mode);
-  }
-  // Use a subaddress
-  else
-  {
-    skey_spend = keys.m_spend_secret_key;
-    m = m_account.get_device().get_subaddress_secret_key(keys.m_view_secret_key, index);
-    sc_add((unsigned char*)&skey_spend, (unsigned char*)&m, (unsigned char*)&skey_spend);
-    secret_key_to_public_key(skey_spend,pkey_spend);
-    sc_mul((unsigned char*)&skey_view, (unsigned char*)&keys.m_view_secret_key, (unsigned char*)&skey_spend);
-    secret_key_to_public_key(skey_view,pkey_view);
-    switch (signature_type)
-    {
-      case sign_with_spend_key:
-        skey = skey_spend;
-        pkey = pkey_spend;
-        mode = 0;
-        break;
-      case sign_with_view_key:
-        skey = skey_view;
-        pkey = pkey_view;
-        mode = 1;
-        break;
-      default: CHECK_AND_ASSERT_THROW_MES(false, "Invalid signature type requested");
-    }
-    secret_key_to_public_key(skey, pkey);
-    hash = get_message_hash(data,pkey_spend,pkey_view,mode);
-  }
-  crypto::generate_signature(hash, pkey, skey, signature);
-  return std::string("SigV2") + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
+  return wallet::logic::functional::signature::sign
+    (data, signature_type, index, keys, subaddress_secret_view_key);
 }
 
 bool wallet2::import_key_images(std::vector<crypto::key_image> key_images, size_t offset, std::optional<std::unordered_set<size_t>> selected_transfers)

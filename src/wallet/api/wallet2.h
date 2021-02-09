@@ -1109,7 +1109,7 @@ private:
     void set_account_tag_description(const std::string& tag, const std::string& description);
 
     enum message_signature_type_t { sign_with_spend_key, sign_with_view_key };
-    std::string sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index = {0, 0}) const;
+    std::string sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const;
     struct message_signature_result_t { bool valid; unsigned version; bool old; message_signature_type_t type; };
 
     payment_container export_payments() const;
