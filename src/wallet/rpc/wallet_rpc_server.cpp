@@ -54,6 +54,7 @@ using namespace epee;
 #include "tools/daemonizer/daemonizer.h"
 
 #include "wallet/logic/functional/fee.hpp"
+#include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -1382,7 +1383,8 @@ namespace tools
       return false;
     }
 
-    const auto result = m_wallet->verify(req.data, info.address, req.signature);
+    const auto result = wallet::logic::functional::signature::verify
+      (req.data, info.address, req.signature);
     res.good = result.valid;
     res.version = result.version;
     res.old = result.old;

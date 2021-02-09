@@ -68,6 +68,7 @@
 #include "version.h"
 #include <stdexcept>
 
+#include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
 
 #ifdef HAVE_READLINE
@@ -6055,7 +6056,8 @@ bool simple_wallet::verify(const std::vector<std::string> &args)
     return true;
   }
 
-  tools::wallet2::message_signature_result_t result = m_wallet->verify(data, info.address, signature);
+  tools::wallet2::message_signature_result_t result = wallet::logic::functional::signature::verify
+    (data, info.address, signature);
   if (!result.valid)
   {
     fail_msg_writer() << tr("Bad signature from ") << address_string;

@@ -36,6 +36,7 @@ set(wallet_sources
   ../args/wallet_args.cpp
   ../logic/functional/fee.cpp
   ../logic/functional/proof.cpp
+  ../logic/functional/signature.cpp
   ../logic/pseudo_functional/proof.cpp
   ../logic/pseudo_functional/uri.cpp
   ../logic/controller/proof.cpp
@@ -48,6 +49,7 @@ set(wallet_private_headers
   ../args/wallet_args.h
   ../logic/functional/fee.hpp
   ../logic/functional/proof.hpp
+  ../logic/functional/signature.cpp
   ../logic/pseudo_functional/proof.hpp
   ../logic/pseudo_functional/uri.hpp
   ../logic/controller/proof.hpp

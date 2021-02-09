@@ -7478,49 +7478,6 @@ std::string wallet2::sign(const std::string &data, message_signature_type_t sign
   return std::string("SigV2") + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
 }
 
-tools::wallet2::message_signature_result_t wallet2::verify(const std::string &data, const cryptonote::account_public_address &address, const std::string &signature) const
-{
-  static const size_t v1_header_len = strlen("SigV1");
-  static const size_t v2_header_len = strlen("SigV2");
-  const bool v1 = signature.size() >= v1_header_len && signature.substr(0, v1_header_len) == "SigV1";
-  const bool v2 = signature.size() >= v2_header_len && signature.substr(0, v2_header_len) == "SigV2";
-  if (!v1 && !v2)
-  {
-    LOG_PRINT_L0("Signature header check error");
-    return {};
-  }
-  crypto::hash hash;
-  if (v1)
-  {
-    crypto::cn_fast_hash(data.data(), data.size(), hash);
-  }
-  std::string decoded;
-  if (!tools::base58::decode(signature.substr(v1 ? v1_header_len : v2_header_len), decoded)) {
-    LOG_PRINT_L0("Signature decoding error");
-    return {};
-  }
-  crypto::signature s;
-  if (sizeof(s) != decoded.size()) {
-    LOG_PRINT_L0("Signature decoding error");
-    return {};
-  }
-  memcpy(&s, decoded.data(), sizeof(s));
-
-  // Test each mode and return which mode, if either, succeeded
-  if (v2)
-      hash = get_message_hash(data,address.m_spend_public_key,address.m_view_public_key,(uint8_t) 0);
-  if (crypto::check_signature(hash, address.m_spend_public_key, s))
-    return {true, v1 ? 1u : 2u, !v2, sign_with_spend_key };
-
-  if (v2)
-      hash = get_message_hash(data,address.m_spend_public_key,address.m_view_public_key,(uint8_t) 1);
-  if (crypto::check_signature(hash, address.m_view_public_key, s))
-    return {true, v1 ? 1u : 2u, !v2, sign_with_view_key };
-
-  // Both modes failed
-  return {};
-}
-
 bool wallet2::import_key_images(std::vector<crypto::key_image> key_images, size_t offset, std::optional<std::unordered_set<size_t>> selected_transfers)
 {
   if (key_images.size() + offset > m_transfers.size())
