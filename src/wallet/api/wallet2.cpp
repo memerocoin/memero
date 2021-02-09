@@ -7521,55 +7521,6 @@ tools::wallet2::message_signature_result_t wallet2::verify(const std::string &da
   return {};
 }
 
-//----------------------------------------------------------------------------------------------------
-crypto::public_key wallet2::get_tx_pub_key_from_received_outs(const tools::wallet2::transfer_details &td) const
-{
-  std::vector<tx_extra_field> tx_extra_fields;
-  if(!parse_tx_extra(td.m_tx.extra, tx_extra_fields))
-  {
-    // Extra may only be partially parsed, it's OK if tx_extra_fields contains public key
-  }
-
-  // Due to a previous bug, there might be more than one tx pubkey in extra, one being
-  // the result of a previously discarded signature.
-  // For speed, since scanning for outputs is a slow process, we check whether extra
-  // contains more than one pubkey. If not, the first one is returned. If yes, they're
-  // checked for whether they yield at least one output
-  tx_extra_pub_key pub_key_field;
-  THROW_WALLET_EXCEPTION_IF(!find_tx_extra_field_by_type(tx_extra_fields, pub_key_field, 0), error::wallet_internal_error,
-      "Public key wasn't found in the transaction extra");
-  const crypto::public_key tx_pub_key = pub_key_field.pub_key;
-  bool two_found = find_tx_extra_field_by_type(tx_extra_fields, pub_key_field, 1);
-  if (!two_found) {
-    // easy case, just one found
-    return tx_pub_key;
-  }
-
-  // more than one, loop and search
-  const cryptonote::account_keys& keys = m_account.get_keys();
-  size_t pk_index = 0;
-  hw::device &hwdev = m_account.get_device();
-
-  while (find_tx_extra_field_by_type(tx_extra_fields, pub_key_field, pk_index++)) {
-    const crypto::public_key tx_pub_key = pub_key_field.pub_key;
-    crypto::key_derivation derivation;
-    bool r = hwdev.generate_key_derivation(tx_pub_key, keys.m_view_secret_key, derivation);
-    THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "Failed to generate key derivation");
-
-    for (size_t i = 0; i < td.m_tx.vout.size(); ++i)
-    {
-      tx_scan_info_t tx_scan_info;
-      check_acc_out_precomp(td.m_tx.vout[i], derivation, {}, i, tx_scan_info);
-      if (!tx_scan_info.error && tx_scan_info.received)
-        return tx_pub_key;
-    }
-  }
-
-  // we found no key yielding an output, but it might be in the additional
-  // tx pub keys only, which we do not need to check, so return the first one
-  return tx_pub_key;
-}
-
 bool wallet2::import_key_images(std::vector<crypto::key_image> key_images, size_t offset, std::optional<std::unordered_set<size_t>> selected_transfers)
 {
   if (key_images.size() + offset > m_transfers.size())
