@@ -85,6 +85,7 @@ using namespace epee;
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/pseudo_functional/proof.hpp"
+#include "wallet/logic/pseudo_functional/hash.hpp"
 #include "wallet/logic/controller/proof.hpp"
 #include "wallet/logic/state/gamma_picker.hpp"
 
@@ -7284,18 +7285,6 @@ bool wallet2::load_from_file(const std::string& path_to_file, std::string& targe
   }
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::hash_m_transfer(const transfer_details & transfer, crypto::hash &hash) const
-{
-  EVP_MD_CTX *state= EVP_MD_CTX_new();
-  EVP_DigestInit_ex(state, EVP_sha3_256(), NULL);
-  EVP_DigestUpdate(state, (const uint8_t *) transfer.m_txid.data, sizeof(transfer.m_txid.data));
-  EVP_DigestUpdate(state, (const uint8_t *) transfer.m_internal_output_index, sizeof(transfer.m_internal_output_index));
-  EVP_DigestUpdate(state, (const uint8_t *) transfer.m_global_output_index, sizeof(transfer.m_global_output_index));
-  EVP_DigestUpdate(state, (const uint8_t *) transfer.m_amount, sizeof(transfer.m_amount));
-  EVP_DigestFinal(state, (uint8_t *) hash.data, NULL);
-  EVP_MD_CTX_free(state);
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t wallet2::hash_m_transfers(int64_t transfer_height, crypto::hash &hash) const
 {
   CHECK_AND_ASSERT_THROW_MES(transfer_height > (int64_t)m_transfers.size(), "Hash height is greater than number of transfers");
@@ -7310,7 +7299,7 @@ uint64_t wallet2::hash_m_transfers(int64_t transfer_height, crypto::hash &hash) 
       break;
     }
 
-    hash_m_transfer(transfer, tmp_hash);
+    wallet::logic::pseudo_functional::hash::hash_m_transfer(transfer, tmp_hash);
     EVP_DigestUpdate(state, (const uint8_t *) transfer.m_block_height, sizeof(transfer.m_block_height));
     EVP_DigestUpdate(state, (const uint8_t *) tmp_hash.data, sizeof(tmp_hash.data));
     current_height += 1;
