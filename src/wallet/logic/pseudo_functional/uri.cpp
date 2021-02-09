@@ -39,7 +39,7 @@
 
 namespace wallet {
 namespace logic {
-namespace controller {
+namespace pseudo_functional {
 namespace uri {
 
   //----------------------------------------------------------------------------------------------------
@@ -162,6 +162,6 @@ namespace uri {
   }
 
 } // uri
-} // controller
+} // pseudo_functional
 } // logic
 } // wallet

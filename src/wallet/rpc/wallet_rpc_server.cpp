@@ -52,8 +52,9 @@ using namespace epee;
 #include "rpc/rpc_args.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "tools/daemonizer/daemonizer.h"
-#include "wallet/logic/controller/uri.hpp"
+
 #include "wallet/logic/functional/fee.hpp"
+#include "wallet/logic/pseudo_functional/uri.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"
@@ -1831,7 +1832,7 @@ namespace tools
   {
     if (!m_wallet) return not_open(er);
     std::string error;
-    std::string uri = wallet::logic::controller::uri::make_uri
+    std::string uri = wallet::logic::pseudo_functional::uri::make_uri
       (req.address, req.amount, req.tx_description, req.recipient_name, m_wallet->nettype(), error);
     if (uri.empty())
     {
@@ -1848,7 +1849,7 @@ namespace tools
   {
     if (!m_wallet) return not_open(er);
     std::string error;
-    if (wallet::logic::controller::uri::parse_uri
+    if (wallet::logic::pseudo_functional::uri::parse_uri
         (req.uri, m_wallet->nettype(), res.uri.address, res.uri.amount,
          res.uri.tx_description, res.uri.recipient_name, res.unknown_parameters, error))
     {
