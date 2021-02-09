@@ -1109,9 +1109,6 @@ private:
     std::string sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const;
     struct message_signature_result_t { bool valid; unsigned version; bool old; message_signature_type_t type; };
 
-    payment_container export_payments() const;
-    void import_payments(const payment_container &payments);
-    void import_payments_out(const std::list<std::pair<crypto::hash,wallet2::confirmed_transfer_details>> &confirmed_payments);
     bool import_key_images(std::vector<crypto::key_image> key_images, size_t offset=0, std::optional<std::unordered_set<size_t>> selected_transfers=std::nullopt);
 
     void update_pool_state(std::vector<std::tuple<cryptonote::transaction, crypto::hash, bool>> &process_txs, bool refreshed = false);

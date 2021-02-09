@@ -7203,32 +7203,6 @@ bool wallet2::import_key_images(std::vector<crypto::key_image> key_images, size_
   return true;
 }
 
-wallet2::payment_container wallet2::export_payments() const
-{
-  payment_container payments;
-  for (auto const &p : m_payments)
-  {
-    payments.emplace(p);
-  }
-  return payments;
-}
-void wallet2::import_payments(const payment_container &payments)
-{
-  m_payments.clear();
-  for (auto const &p : payments)
-  {
-    m_payments.emplace(p);
-  }
-}
-void wallet2::import_payments_out(const std::list<std::pair<crypto::hash,wallet2::confirmed_transfer_details>> &confirmed_payments)
-{
-  m_confirmed_txs.clear();
-  for (auto const &p : confirmed_payments)
-  {
-    m_confirmed_txs.emplace(p);
-  }
-}
-
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_blockchain_height_by_date(uint16_t year, uint8_t month, uint8_t day)
 {
