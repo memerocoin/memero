@@ -508,7 +508,7 @@ namespace cryptonote
       vh.push_back(*reinterpret_cast<const crypto::hash*>(b.data()));
     }
     std::vector<crypto::hash> missed_txs;
-    std::vector<std::tuple<crypto::hash, cryptonote::blobdata, crypto::hash, cryptonote::blobdata>> txs;
+    std::vector<std::pair<crypto::hash, cryptonote::blobdata>> txs;
     bool r = m_core.get_split_transactions_blobs(vh, txs, missed_txs);
     if(!r)
     {
@@ -529,7 +529,7 @@ namespace cryptonote
       if(r)
       {
         // sort to match original request
-        std::vector<std::tuple<crypto::hash, cryptonote::blobdata, crypto::hash, cryptonote::blobdata>> sorted_txs;
+        std::vector<std::pair<crypto::hash, cryptonote::blobdata>> sorted_txs;
         std::vector<tx_info>::const_iterator i;
         unsigned txs_processed = 0;
         for (const crypto::hash &h: vh)
@@ -566,9 +566,7 @@ namespace cryptonote
               res.status = "Failed to serialize transaction base";
               return true;
             }
-            const cryptonote::blobdata pruned = ss.str();
-            const crypto::hash prunable_hash = tx.version == 1 ? crypto::null_hash : get_transaction_prunable_hash(tx);
-            sorted_txs.push_back(std::make_tuple(h, pruned, prunable_hash, std::string(i->tx_blob, pruned.size())));
+            sorted_txs.push_back(std::make_pair(h, i->tx_blob));
             missed_txs.erase(std::find(missed_txs.begin(), missed_txs.end(), h));
             pool_tx_hashes.insert(h);
             const std::string hash_string = epee::string_tools::pod_to_hex(h);
@@ -597,10 +595,9 @@ namespace cryptonote
 
       crypto::hash tx_hash = *vhi++;
       e.tx_hash = *txhi++;
-      e.prunable_hash = epee::string_tools::pod_to_hex(std::get<2>(tx));
       {
         // use non-splitted form, leaving pruned_as_hex and prunable_as_hex as empty
-        cryptonote::blobdata tx_data = std::get<1>(tx) + std::get<3>(tx);
+        cryptonote::blobdata tx_data = std::get<1>(tx);
         e.as_hex = string_tools::buff_to_hex_nodelimer(tx_data);
         if (req.decode_as_json)
         {
@@ -643,11 +640,6 @@ namespace cryptonote
         e.double_spend_seen = false;
         e.relayed = false;
       }
-
-      // fill up old style responses too, in case an old wallet asks
-      res.txs_as_hex.push_back(e.as_hex);
-      if (req.decode_as_json)
-        res.txs_as_json.push_back(e.as_json);
 
       // output indices too if not in pool
       if (pool_tx_hashes.find(tx_hash) == pool_tx_hashes.end())

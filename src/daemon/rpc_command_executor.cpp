@@ -957,16 +957,13 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
       // only available for new style answers
       static const std::string empty_hash = epee::string_tools::pod_to_hex(crypto::cn_fast_hash("", 0));
       // prunable_hash will equal empty_hash when nothing is prunable (mostly when the transaction is coinbase)
-      bool pruned = res.txs.front().prunable_as_hex.empty() && res.txs.front().prunable_hash != epee::string_tools::pod_to_hex(crypto::null_hash) && res.txs.front().prunable_hash != empty_hash;
       if (res.txs.front().in_pool)
         tools::success_msg_writer() << "Found in pool";
       else
-        tools::success_msg_writer() << "Found in blockchain at height " << res.txs.front().block_height << (pruned ? " (pruned)" : "");
+        tools::success_msg_writer() << "Found in blockchain at height " << res.txs.front().block_height;
     }
 
     const std::string &as_hex = (1 == res.txs.size()) ? res.txs.front().as_hex : res.txs_as_hex.front();
-    const std::string &pruned_as_hex = (1 == res.txs.size()) ? res.txs.front().pruned_as_hex : "";
-    const std::string &prunable_as_hex = (1 == res.txs.size()) ? res.txs.front().prunable_as_hex : "";
     // Print metadata if requested
     if (include_metadata)
     {
@@ -975,7 +972,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
         tools::msg_writer() << "Block timestamp: " << res.txs.front().block_timestamp << " (" << tools::get_human_readable_timestamp(res.txs.front().block_timestamp) << ")";
       }
       cryptonote::blobdata blob;
-      if (epee::string_tools::parse_hexstr_to_binbuff(pruned_as_hex + prunable_as_hex, blob))
+      if (epee::string_tools::parse_hexstr_to_binbuff(as_hex, blob))
       {
         cryptonote::transaction tx;
         if (cryptonote::parse_and_validate_tx_from_blob(blob, tx))
@@ -993,14 +990,8 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
     // Print raw hex if requested
     if (include_hex)
     {
-      if (!as_hex.empty())
       {
         tools::success_msg_writer() << as_hex << std::endl;
-      }
-      else
-      {
-        std::string output = pruned_as_hex + prunable_as_hex;
-        tools::success_msg_writer() << output << std::endl;
       }
     }
 
@@ -1010,8 +1001,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
       crypto::hash tx_hash, tx_prefix_hash;
       cryptonote::transaction tx;
       cryptonote::blobdata blob;
-      std::string source = as_hex.empty() ? pruned_as_hex + prunable_as_hex : as_hex;
-      bool pruned = !pruned_as_hex.empty() && prunable_as_hex.empty();
+      std::string source = as_hex;
       if (!string_tools::parse_hexstr_to_binbuff(source, blob))
       {
         tools::fail_msg_writer() << "Failed to parse tx to get json format";
@@ -1019,10 +1009,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
       else
       {
         bool ret;
-        if (pruned)
-          ret = cryptonote::parse_and_validate_tx_base_from_blob(blob, tx);
-        else
-          ret = cryptonote::parse_and_validate_tx_from_blob(blob, tx);
+        ret = cryptonote::parse_and_validate_tx_from_blob(blob, tx);
         if (!ret)
         {
           tools::fail_msg_writer() << "Failed to parse tx blob to get json format";

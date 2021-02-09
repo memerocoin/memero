@@ -342,9 +342,6 @@ namespace cryptonote
     {
       std::string tx_hash;
       std::string as_hex;
-      std::string pruned_as_hex;
-      std::string prunable_as_hex;
-      std::string prunable_hash;
       std::string as_json;
       bool in_pool;
       bool double_spend_seen;
@@ -357,9 +354,6 @@ namespace cryptonote
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(tx_hash)
         KV_SERIALIZE(as_hex)
-        KV_SERIALIZE(pruned_as_hex)
-        KV_SERIALIZE(prunable_as_hex)
-        KV_SERIALIZE(prunable_hash)
         KV_SERIALIZE(as_json)
         KV_SERIALIZE(in_pool)
         KV_SERIALIZE(double_spend_seen)

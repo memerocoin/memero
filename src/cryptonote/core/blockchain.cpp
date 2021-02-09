@@ -2120,7 +2120,7 @@ bool Blockchain::get_split_transactions_blobs(const t_ids_container& txs_ids, t_
       cryptonote::blobdata tx;
       if (m_db->get_tx_blob(tx_hash, tx))
       {
-        txs.push_back(std::make_tuple(tx_hash, "", crypto::null_hash, tx));
+        txs.push_back(std::make_pair(tx_hash, tx));
       }
       else
         missed_txs.push_back(tx_hash);
@@ -4376,5 +4376,5 @@ void Blockchain::cache_block_template(const block &b, const cryptonote::account_
 
 namespace cryptonote {
 template bool Blockchain::get_transactions(const std::vector<crypto::hash>&, std::vector<transaction>&, std::vector<crypto::hash>&) const;
-template bool Blockchain::get_split_transactions_blobs(const std::vector<crypto::hash>&, std::vector<std::tuple<crypto::hash, cryptonote::blobdata, crypto::hash, cryptonote::blobdata>>&, std::vector<crypto::hash>&) const;
+template bool Blockchain::get_split_transactions_blobs(const std::vector<crypto::hash>&, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>&, std::vector<crypto::hash>&) const;
 }
