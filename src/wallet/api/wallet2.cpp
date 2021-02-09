@@ -3532,61 +3532,6 @@ void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, cons
   }
 }
 
-
-/*!
- * \brief determine the key storage for the specified wallet file
- * \param device_type     (OUT) wallet backend as enumerated in hw::device::device_type
- * \param keys_file_name  Keys file to verify password for
- * \param password        Password to verify
- * \return                true if password correct, else false
- *
- * for verification only - determines key storage hardware
- *
- */
-bool wallet2::query_device(hw::device::device_type& device_type, const std::string& keys_file_name, const epee::wipeable_string& password, uint64_t kdf_rounds)
-{
-  rapidjson::Document json;
-  wallet2::keys_file_data keys_file_data;
-  std::string buf;
-  bool r = load_from_file(keys_file_name, buf);
-  THROW_WALLET_EXCEPTION_IF(!r, error::file_read_error, keys_file_name);
-
-  // Decrypt the contents
-  r = ::serialization::parse_binary(buf, keys_file_data);
-  THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "internal error: failed to deserialize \"" + keys_file_name + '\"');
-  crypto::chacha_key key;
-  crypto::generate_chacha_key(password.data(), password.size(), key, kdf_rounds);
-  std::string account_data;
-  account_data.resize(keys_file_data.account_data.size());
-  crypto::chacha20(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
-  if (json.Parse(account_data.c_str()).HasParseError() || !json.IsObject())
-    crypto::chacha8(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
-
-  device_type = hw::device::device_type::SOFTWARE;
-  // The contents should be JSON if the wallet follows the new format.
-  if (json.Parse(account_data.c_str()).HasParseError())
-  {
-    // old format before JSON wallet key file format
-  }
-  else
-  {
-    account_data = std::string(json["key_data"].GetString(), json["key_data"].GetString() +
-      json["key_data"].GetStringLength());
-
-    if (json.HasMember("key_on_device"))
-    {
-      GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, key_on_device, int, Int, false, hw::device::device_type::SOFTWARE);
-      device_type = static_cast<hw::device::device_type>(field_key_on_device);
-    }
-  }
-
-  cryptonote::account_base account_data_check;
-
-  r = epee::serialization::load_t_from_binary(account_data_check, account_data);
-  if (!r) return false;
-  return true;
-}
-
 void wallet2::init_type(hw::device::device_type device_type)
 {
   m_account_public_address = m_account.get_keys().m_account_address;
