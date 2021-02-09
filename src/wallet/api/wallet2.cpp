@@ -83,6 +83,7 @@ using namespace epee;
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/pseudo_functional/proof.hpp"
 #include "wallet/logic/controller/proof.hpp"
+#include "wallet/logic/state/gamma_picker.hpp"
 
 extern "C"
 {
@@ -123,9 +124,6 @@ using namespace wallet::logic::functional::fee;
 #define OUTPUT_EXPORT_FILE_MAGIC "Lolnero output export\004"
 
 #define FIRST_REFRESH_GRANULARITY     1024
-
-#define GAMMA_SHAPE 19.28
-#define GAMMA_SCALE (1/1.61)
 
 #define DEFAULT_MIN_OUTPUT_COUNT 5
 #define DEFAULT_MIN_OUTPUT_VALUE (2*COIN)
@@ -661,44 +659,6 @@ const size_t MAX_SPLIT_ATTEMPTS = 30;
 
 constexpr const std::chrono::seconds wallet2::rpc_timeout;
 const char* wallet2::tr(const char* str) { return str; }
-
-gamma_picker::gamma_picker(const std::vector<uint64_t> &rct_offsets, double shape, double scale):
-    rct_offsets(rct_offsets)
-{
-  gamma = std::gamma_distribution<double>(shape, scale);
-  THROW_WALLET_EXCEPTION_IF(rct_offsets.size() <= CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE, error::wallet_internal_error, "Bad offset calculation");
-  const size_t blocks_in_a_year = 86400 * 365 / DIFFICULTY_TARGET_V2;
-  const size_t blocks_to_consider = std::min<size_t>(rct_offsets.size(), blocks_in_a_year);
-  const size_t outputs_to_consider = rct_offsets.back() - (blocks_to_consider < rct_offsets.size() ? rct_offsets[rct_offsets.size() - blocks_to_consider - 1] : 0);
-  begin = rct_offsets.data();
-  end = rct_offsets.data() + rct_offsets.size() - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE;
-  num_rct_outputs = *(end - 1);
-  THROW_WALLET_EXCEPTION_IF(num_rct_outputs == 0, error::wallet_internal_error, "No rct outputs");
-  average_output_time = DIFFICULTY_TARGET_V2 * blocks_to_consider / outputs_to_consider; // this assumes constant target over the whole rct range
-};
-
-gamma_picker::gamma_picker(const std::vector<uint64_t> &rct_offsets): gamma_picker(rct_offsets, GAMMA_SHAPE, GAMMA_SCALE) {}
-
-uint64_t gamma_picker::pick()
-{
-  double x = gamma(engine);
-  x = exp(x);
-  uint64_t output_index = x / average_output_time;
-  if (output_index >= num_rct_outputs)
-    return std::numeric_limits<uint64_t>::max(); // bad pick
-  output_index = num_rct_outputs - 1 - output_index;
-
-  const uint64_t *it = std::lower_bound(begin, end, output_index);
-  THROW_WALLET_EXCEPTION_IF(it == end, error::wallet_internal_error, "output_index not found");
-  uint64_t index = std::distance(begin, it);
-
-  const uint64_t first_rct = index == 0 ? 0 : rct_offsets[index - 1];
-  const uint64_t n_rct = rct_offsets[index] - first_rct;
-  if (n_rct == 0)
-    return std::numeric_limits<uint64_t>::max(); // bad pick
-  MTRACE("Picking 1/" << n_rct << " in block " << index);
-  return first_rct + crypto::rand_idx(n_rct);
-};
 
 std::mutex wallet_keys_unlocker::lockers_lock;
 unsigned int wallet_keys_unlocker::lockers = 0;
@@ -5156,9 +5116,9 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
     COMMAND_RPC_GET_OUTPUTS_BIN::request req = AUTO_VAL_INIT(req);
     COMMAND_RPC_GET_OUTPUTS_BIN::response daemon_resp = AUTO_VAL_INIT(daemon_resp);
 
-    std::unique_ptr<gamma_picker> gamma;
+    std::unique_ptr<wallet::logic::state::gamma_picker> gamma;
     if (has_rct_distribution)
-      gamma.reset(new gamma_picker(rct_offsets));
+      gamma = std::make_unique<wallet::logic::state::gamma_picker>(rct_offsets);
 
     size_t num_selected_transfers = 0;
     for(size_t idx: selected_transfers)
