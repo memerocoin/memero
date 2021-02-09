@@ -543,17 +543,6 @@ namespace tools
       END_SERIALIZE()
     };
 
-    struct multisig_tx_set
-    {
-      std::vector<pending_tx> m_ptx;
-      std::unordered_set<crypto::public_key> m_signers;
-
-      BEGIN_SERIALIZE_OBJECT()
-        FIELD(m_ptx)
-        FIELD(m_signers)
-      END_SERIALIZE()
-    };
-
     struct keys_file_data
     {
       crypto::chacha_iv iv;
@@ -1360,7 +1349,6 @@ BOOST_CLASS_VERSION(tools::wallet2, 29)
 BOOST_CLASS_VERSION(tools::wallet2::transfer_details, 12)
 BOOST_CLASS_VERSION(tools::wallet2::multisig_info, 1)
 BOOST_CLASS_VERSION(tools::wallet2::multisig_info::LR, 0)
-BOOST_CLASS_VERSION(tools::wallet2::multisig_tx_set, 1)
 BOOST_CLASS_VERSION(tools::wallet2::payment_details, 5)
 BOOST_CLASS_VERSION(tools::wallet2::pool_payment_details, 1)
 BOOST_CLASS_VERSION(tools::wallet2::unconfirmed_transfer_details, 8)
@@ -1536,13 +1524,6 @@ namespace boost
       a & x.m_signer;
       a & x.m_LR;
       a & x.m_partial_key_images;
-    }
-
-    template <class Archive>
-    inline void serialize(Archive &a, tools::wallet2::multisig_tx_set &x, const boost::serialization::version_type ver)
-    {
-      a & x.m_ptx;
-      a & x.m_signers;
     }
 
     template <class Archive>
