@@ -2115,7 +2115,20 @@ bool Blockchain::get_split_transactions_blobs(const t_ids_container& txs_ids, t_
   reserve_container(txs, txs_ids.size());
   for (const auto& tx_hash : txs_ids)
   {
-    missed_txs.push_back(tx_hash);
+    try
+    {
+      cryptonote::blobdata tx;
+      if (m_db->get_tx_blob(tx_hash, tx))
+      {
+        txs.push_back(std::make_tuple(tx_hash, "", crypto::null_hash, tx));
+      }
+      else
+        missed_txs.push_back(tx_hash);
+    }
+    catch (const std::exception& e)
+    {
+      return false;
+    }
   }
   return true;
 }
