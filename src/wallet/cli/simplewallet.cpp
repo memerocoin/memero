@@ -162,8 +162,6 @@ namespace
   const char* USAGE_INCOMING("incoming [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]");
   const char* USAGE_TRANSFER("transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)");
   const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <addr> <amount>) <lockblocks>");
-  const char* USAGE_LOCKED_SWEEP("locked_sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] <address> <lockblocks>");
-  const char* USAGE_SWEEP("sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] [outputs=<N>] <address>");
   const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
   const char* USAGE_ACCOUNT("account\n"
                             "  account new <label text with white spaces allowed>\n"
@@ -1451,7 +1449,6 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
     message_writer() << tr("\"address new\" - Create new subaddress.");
     message_writer() << tr("\"transfer <address> <amount>\" - Send LOL to an address.");
     message_writer() << tr("\"show [in|out|pending|failed|pool]\" - Show transactions.");
-    message_writer() << tr("\"sweep <address>\" - Send whole balance to another wallet.");
     message_writer() << tr("\"seed\" - Show secret 25 words that can be used to recover this wallet.");
     message_writer() << tr("\"refresh\" - Synchronize wallet with the Lolnero network.");
     message_writer() << tr("\"status\" - Check current status of wallet.");
@@ -1542,13 +1539,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::locked_transfer,std::placeholders::_1),
                            tr(USAGE_LOCKED_TRANSFER),
                            tr("Transfer <amount> to <address> and lock it for <lockblocks> (max. 1000000). If the parameter \"index=<N1>[,<N2>,...]\" is specified, the wallet uses outputs received by addresses of those indices. If omitted, the wallet randomly chooses address indices to be used. In any case, it tries its best not to combine outputs across multiple addresses. <priority> is the priority of the transaction. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding URI_2 or <address_2> <amount_2> etcetera (before the payment ID, if it's included)"));
-  m_cmd_binder.set_handler("locked_sweep",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::locked_sweep,std::placeholders::_1),
-                           tr(USAGE_LOCKED_SWEEP),
-                           tr("Send all unlocked balance to an address and lock it for <lockblocks> (max. 1000000). If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. <priority> is the priority of the sweep. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability."));
-  m_cmd_binder.set_handler("sweep", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep, std::placeholders::_1),
-                           tr(USAGE_SWEEP),
-                           tr("Send all unlocked balance to an address. If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. If the parameter \"outputs=<N>\" is specified and  N > 0, wallet splits the transaction into N even outputs."));
   m_cmd_binder.set_handler("set_log",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_log, std::placeholders::_1),
                            tr(USAGE_SET_LOG),
@@ -3943,238 +3933,6 @@ bool simple_wallet::transfer(const std::vector<std::string> &args_)
 bool simple_wallet::locked_transfer(const std::vector<std::string> &args_)
 {
   return transfer_main(TransferLocked, args_);
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::locked_sweep(const std::vector<std::string> &args_)
-{
-  sweep_main(m_current_subaddress_account, 0, true, args_);
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, const std::vector<std::string> &args_)
-{
-  auto print_usage = [this, account, below]()
-  {
-      PRINT_USAGE(USAGE_SWEEP);
-  };
-  if (args_.size() == 0)
-  {
-    fail_msg_writer() << tr("No address given");
-    print_usage();
-    return true;
-  }
-
-  if (!try_connect_to_daemon())
-    return true;
-
-  std::vector<std::string> local_args = args_;
-
-  std::set<uint32_t> subaddr_indices;
-  if (local_args.size() > 0 && local_args[0].substr(0, 6) == "index=")
-  {
-    if (local_args[0] == "index=all")
-    {
-      for (uint32_t i = 0; i < m_wallet->get_num_subaddresses(m_current_subaddress_account); ++i)
-        subaddr_indices.insert(i);
-    }
-    else if (!parse_subaddress_indices(local_args[0], subaddr_indices))
-    {
-      print_usage();
-      return true;
-    }
-    local_args.erase(local_args.begin());
-  }
-
-  uint32_t priority = 0;
-  if (local_args.size() > 0 && parse_priority(local_args[0], priority))
-    local_args.erase(local_args.begin());
-
-  priority = m_wallet->adjust_priority(priority);
-
-  size_t fake_outs_count = config::lol::mixin;
-  if(local_args.size() > 0) {
-    size_t ring_size;
-    if(!epee::string_tools::get_xtype_from_string(ring_size, local_args[0]))
-    {
-    }
-    else if (ring_size == 0)
-    {
-      fail_msg_writer() << tr("Ring size must not be 0");
-      return true;
-    }
-    else
-    {
-      fake_outs_count = ring_size - 1;
-      local_args.erase(local_args.begin());
-    }
-  }
-  uint64_t adjusted_fake_outs_count = m_wallet->adjust_mixin(fake_outs_count);
-  if (adjusted_fake_outs_count > fake_outs_count)
-  {
-    fail_msg_writer() << (boost::format(tr("ring size %u is too small, minimum is %u")) % (fake_outs_count+1) % (adjusted_fake_outs_count+1)).str();
-    return true;
-  }
-  if (adjusted_fake_outs_count < fake_outs_count)
-  {
-    fail_msg_writer() << (boost::format(tr("ring size %u is too large, maximum is %u")) % (fake_outs_count+1) % (adjusted_fake_outs_count+1)).str();
-    return true;
-  }
-
-  uint64_t unlock_block = 0;
-  if (locked) {
-    uint64_t locked_blocks = 0;
-
-    if (local_args.size() < 2) {
-      fail_msg_writer() << tr("missing lockedblocks parameter");
-      return true;
-    }
-
-    try
-    {
-      locked_blocks = boost::lexical_cast<uint64_t>(local_args[1]);
-    }
-    catch (const std::exception &e)
-    {
-      fail_msg_writer() << tr("bad locked_blocks parameter");
-      return true;
-    }
-    if (locked_blocks > 1000000)
-    {
-      fail_msg_writer() << tr("Locked blocks too high, max 1000000 (˜4 yrs)");
-      return true;
-    }
-    std::string err;
-    uint64_t bc_height = get_daemon_blockchain_height(err);
-    if (!err.empty())
-    {
-      fail_msg_writer() << tr("failed to get blockchain height: ") << err;
-      return true;
-    }
-    unlock_block = bc_height + locked_blocks;
-
-    local_args.erase(local_args.begin() + 1);
-  }
-
-  size_t outputs = 1;
-  if (local_args.size() > 0 && local_args[0].substr(0, 8) == "outputs=")
-  {
-    if (!epee::string_tools::get_xtype_from_string(outputs, local_args[0].substr(8)))
-    {
-      fail_msg_writer() << tr("Failed to parse number of outputs");
-      return true;
-    }
-    else if (outputs < 1)
-    {
-      fail_msg_writer() << tr("Amount of outputs should be greater than 0");
-      return true;
-    }
-    else
-    {
-      local_args.erase(local_args.begin());
-    }
-  }
-
-  std::vector<uint8_t> extra;
-
-  cryptonote::address_parse_info info;
-  if (!cryptonote::get_account_address_from_str_or_url(info, m_wallet->nettype(), local_args[0]))
-  {
-    fail_msg_writer() << tr("failed to parse address");
-    print_usage();
-    return true;
-  }
-
-  SCOPED_WALLET_UNLOCK();
-
-  try
-  {
-    // figure out what tx will be necessary
-    auto ptx_vector = m_wallet->create_transactions_all(below, info.address, info.is_subaddress, outputs, fake_outs_count, unlock_block /* unlock_time */, priority, extra, account, subaddr_indices);
-
-    if (ptx_vector.empty())
-    {
-      fail_msg_writer() << tr("No outputs found, or daemon is not ready");
-      return true;
-    }
-
-    if (!prompt_if_old(ptx_vector))
-    {
-      fail_msg_writer() << tr("transaction cancelled.");
-      return false;
-    }
-
-    // give user total and fee, and prompt to confirm
-    uint64_t total_fee = 0, total_sent = 0;
-    for (size_t n = 0; n < ptx_vector.size(); ++n)
-    {
-      total_fee += ptx_vector[n].fee;
-      for (auto i: ptx_vector[n].selected_transfers)
-        total_sent += m_wallet->get_transfer_details(i).amount();
-    }
-
-    std::ostringstream prompt;
-    for (size_t n = 0; n < ptx_vector.size(); ++n)
-    {
-      prompt << tr("\nTransaction ") << (n + 1) << "/" << ptx_vector.size() << ":\n";
-      subaddr_indices.clear();
-      for (uint32_t i : ptx_vector[n].construction_data.subaddr_indices)
-        subaddr_indices.insert(i);
-      for (uint32_t i : subaddr_indices)
-        prompt << boost::format(tr("Spending from address index %d\n")) % i;
-      if (subaddr_indices.size() > 1)
-        prompt << tr("WARNING: Outputs of multiple addresses are being used together, which might potentially compromise your privacy.\n");
-    }
-    if (!process_ring_members(ptx_vector, prompt, m_wallet->print_ring_members()))
-      return true;
-    if (ptx_vector.size() > 1) {
-      prompt << boost::format(tr("Sweeping %s in %llu transactions for a total fee of %s.  Is this okay?")) %
-        print_money(total_sent) %
-        ((unsigned long long)ptx_vector.size()) %
-        print_money(total_fee);
-    }
-    else {
-      prompt << boost::format(tr("Sweeping %s for a total fee of %s.  Is this okay?")) %
-        print_money(total_sent) %
-        print_money(total_fee);
-    }
-    std::string accepted = input_line(prompt.str(), true);
-    if (std::cin.eof())
-      return true;
-    if (!command_line::is_yes(accepted))
-    {
-      fail_msg_writer() << tr("transaction cancelled.");
-
-      return true;
-    }
-
-    if (m_wallet->watch_only())
-    {
-      {
-        fail_msg_writer() << tr("Failed to write transaction(s) to file");
-      }
-    }
-    else
-    {
-      commit_or_save(ptx_vector, m_do_not_relay);
-    }
-  }
-  catch (const std::exception& e)
-  {
-    handle_transfer_exception(std::current_exception());
-  }
-  catch (...)
-  {
-    LOG_ERROR("unknown error");
-    fail_msg_writer() << tr("unknown error");
-  }
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::sweep(const std::vector<std::string> &args_)
-{
-  sweep_main(m_current_subaddress_account, 0, false, args_);
-  return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
