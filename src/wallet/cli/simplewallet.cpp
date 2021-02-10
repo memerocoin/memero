@@ -4334,10 +4334,10 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
   }
 
   if (out) {
-    std::list<std::pair<crypto::hash, tools::wallet2::confirmed_transfer_details>> payments;
+    std::list<std::pair<crypto::hash, wallet::logic::type::transfer::confirmed_transfer_details>> payments;
     m_wallet->get_payments_out(payments, min_height, max_height, m_current_subaddress_account, subaddr_indices);
-    for (std::list<std::pair<crypto::hash, tools::wallet2::confirmed_transfer_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
-      const tools::wallet2::confirmed_transfer_details &pd = i->second;
+    for (std::list<std::pair<crypto::hash, wallet::logic::type::transfer::confirmed_transfer_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+      const wallet::logic::type::transfer::confirmed_transfer_details &pd = i->second;
       uint64_t change = pd.m_change == (uint64_t)-1 ? 0 : pd.m_change; // change may not be known
       uint64_t fee = pd.m_amount_in - pd.m_amount_out;
       std::vector<std::pair<std::string, uint64_t>> destinations;
@@ -4406,10 +4406,10 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
 
   // print unconfirmed last
   if (pending || failed) {
-    std::list<std::pair<crypto::hash, tools::wallet2::unconfirmed_transfer_details>> upayments;
+    std::list<std::pair<crypto::hash, wallet::logic::type::transfer::unconfirmed_transfer_details>> upayments;
     m_wallet->get_unconfirmed_payments_out(upayments, m_current_subaddress_account, subaddr_indices);
-    for (std::list<std::pair<crypto::hash, tools::wallet2::unconfirmed_transfer_details>>::const_iterator i = upayments.begin(); i != upayments.end(); ++i) {
-      const tools::wallet2::unconfirmed_transfer_details &pd = i->second;
+    for (std::list<std::pair<crypto::hash, wallet::logic::type::transfer::unconfirmed_transfer_details>>::const_iterator i = upayments.begin(); i != upayments.end(); ++i) {
+      const wallet::logic::type::transfer::unconfirmed_transfer_details &pd = i->second;
       uint64_t amount = pd.m_amount_in;
       uint64_t fee = amount - pd.m_amount_out;
       std::vector<std::pair<std::string, uint64_t>> destinations;
@@ -4417,7 +4417,7 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
         destinations.push_back({d.address(m_wallet->nettype()), d.amount});
       }
       std::string note;
-      bool is_failed = pd.m_state == tools::wallet2::unconfirmed_transfer_details::failed;
+      bool is_failed = pd.m_state == wallet::logic::type::transfer::unconfirmed_transfer_details::failed;
       if ((failed && is_failed) || (!is_failed && pending)) {
         transfers.push_back({
           (is_failed ? "failed" : "pending"),
@@ -5467,12 +5467,12 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
     }
   }
 
-  std::list<std::pair<crypto::hash, tools::wallet2::confirmed_transfer_details>> payments_out;
+  std::list<std::pair<crypto::hash, wallet::logic::type::transfer::confirmed_transfer_details>> payments_out;
   m_wallet->get_payments_out(payments_out, 0, (uint64_t)-1, m_current_subaddress_account);
-  for (std::list<std::pair<crypto::hash, tools::wallet2::confirmed_transfer_details>>::const_iterator i = payments_out.begin(); i != payments_out.end(); ++i) {
+  for (std::list<std::pair<crypto::hash, wallet::logic::type::transfer::confirmed_transfer_details>>::const_iterator i = payments_out.begin(); i != payments_out.end(); ++i) {
     if (i->first == txid)
     {
-      const tools::wallet2::confirmed_transfer_details &pd = i->second;
+      const wallet::logic::type::transfer::confirmed_transfer_details &pd = i->second;
       uint64_t change = pd.m_change == (uint64_t)-1 ? 0 : pd.m_change; // change may not be known
       uint64_t fee = pd.m_amount_in - pd.m_amount_out;
       std::string dests;
@@ -5522,15 +5522,15 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
     fail_msg_writer() << "Failed to get pool state";
   }
 
-  std::list<std::pair<crypto::hash, tools::wallet2::unconfirmed_transfer_details>> upayments;
+  std::list<std::pair<crypto::hash, wallet::logic::type::transfer::unconfirmed_transfer_details>> upayments;
   m_wallet->get_unconfirmed_payments_out(upayments, m_current_subaddress_account);
-  for (std::list<std::pair<crypto::hash, tools::wallet2::unconfirmed_transfer_details>>::const_iterator i = upayments.begin(); i != upayments.end(); ++i) {
+  for (std::list<std::pair<crypto::hash, wallet::logic::type::transfer::unconfirmed_transfer_details>>::const_iterator i = upayments.begin(); i != upayments.end(); ++i) {
     if (i->first == txid)
     {
-      const tools::wallet2::unconfirmed_transfer_details &pd = i->second;
+      const wallet::logic::type::transfer::unconfirmed_transfer_details &pd = i->second;
       uint64_t amount = pd.m_amount_in;
       uint64_t fee = amount - pd.m_amount_out;
-      bool is_failed = pd.m_state == tools::wallet2::unconfirmed_transfer_details::failed;
+      bool is_failed = pd.m_state == wallet::logic::type::transfer::unconfirmed_transfer_details::failed;
 
       success_msg_writer() << (is_failed ? "Failed" : "Pending") << " outgoing transaction found";
       success_msg_writer() << "txid: " << txid;

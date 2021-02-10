@@ -241,73 +241,6 @@ namespace tools
       END_SERIALIZE()
     };
 
-    struct unconfirmed_transfer_details
-    {
-      cryptonote::transaction_prefix m_tx;
-      uint64_t m_amount_in;
-      uint64_t m_amount_out;
-      uint64_t m_change;
-      time_t m_sent_time;
-      std::vector<cryptonote::tx_destination_entry> m_dests;
-      crypto::hash d_payment_id;
-      enum { pending, pending_not_in_pool, failed } m_state;
-      uint64_t m_timestamp;
-      uint32_t m_subaddr_account;   // subaddress account of your wallet to be used in this transfer
-      std::set<uint32_t> m_subaddr_indices;  // set of address indices used as inputs in this transfer
-      std::vector<std::pair<crypto::key_image, std::vector<uint64_t>>> m_rings; // relative
-
-      BEGIN_SERIALIZE_OBJECT()
-        VERSION_FIELD(1)
-        FIELD(m_tx)
-        VARINT_FIELD(m_amount_in)
-        VARINT_FIELD(m_amount_out)
-        VARINT_FIELD(m_change)
-        VARINT_FIELD(m_sent_time)
-        FIELD(m_dests)
-        FIELD(d_payment_id)
-        if (version >= 1)
-          VARINT_FIELD(m_state)
-        VARINT_FIELD(m_timestamp)
-        VARINT_FIELD(m_subaddr_account)
-        FIELD(m_subaddr_indices)
-        FIELD(m_rings)
-      END_SERIALIZE()
-    };
-
-    struct confirmed_transfer_details
-    {
-      uint64_t m_amount_in;
-      uint64_t m_amount_out;
-      uint64_t m_change;
-      uint64_t m_block_height;
-      std::vector<cryptonote::tx_destination_entry> m_dests;
-      crypto::hash d_payment_id;
-      uint64_t m_timestamp;
-      uint64_t m_unlock_time;
-      uint32_t m_subaddr_account;   // subaddress account of your wallet to be used in this transfer
-      std::set<uint32_t> m_subaddr_indices;  // set of address indices used as inputs in this transfer
-      std::vector<std::pair<crypto::key_image, std::vector<uint64_t>>> m_rings; // relative
-
-      confirmed_transfer_details(): m_amount_in(0), m_amount_out(0), m_change((uint64_t)-1), m_block_height(0), d_payment_id(crypto::null_hash), m_timestamp(0), m_unlock_time(0), m_subaddr_account((uint32_t)-1) {}
-      confirmed_transfer_details(const unconfirmed_transfer_details &utd, uint64_t height):
-        m_amount_in(utd.m_amount_in), m_amount_out(utd.m_amount_out), m_change(utd.m_change), m_block_height(height), m_dests(utd.m_dests), d_payment_id(crypto::null_hash), m_timestamp(utd.m_timestamp), m_unlock_time(utd.m_tx.unlock_time), m_subaddr_account(utd.m_subaddr_account), m_subaddr_indices(utd.m_subaddr_indices), m_rings(utd.m_rings) {}
-
-      BEGIN_SERIALIZE_OBJECT()
-        VERSION_FIELD(0)
-        VARINT_FIELD(m_amount_in)
-        VARINT_FIELD(m_amount_out)
-        VARINT_FIELD(m_change)
-        VARINT_FIELD(m_block_height)
-        FIELD(m_dests)
-        FIELD(d_payment_id)
-        VARINT_FIELD(m_timestamp)
-        VARINT_FIELD(m_unlock_time)
-        VARINT_FIELD(m_subaddr_account)
-        FIELD(m_subaddr_indices)
-        FIELD(m_rings)
-      END_SERIALIZE()
-    };
-
     struct tx_construction_data
     {
       std::vector<cryptonote::tx_source_entry> sources;
@@ -644,9 +577,9 @@ namespace tools
     bool check_connection(uint32_t *version = NULL, uint32_t timeout = 200000);
     void get_transfers(wallet2::transfer_container& incoming) const;
     void get_payments(std::list<std::pair<crypto::hash,wallet2::payment_details>>& payments, uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
-    void get_payments_out(std::list<std::pair<crypto::hash,wallet2::confirmed_transfer_details>>& confirmed_payments,
+    void get_payments_out(std::list<std::pair<crypto::hash,wallet::logic::type::transfer::confirmed_transfer_details>>& confirmed_payments,
       uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
-    void get_unconfirmed_payments_out(std::list<std::pair<crypto::hash,wallet2::unconfirmed_transfer_details>>& unconfirmed_payments, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
+    void get_unconfirmed_payments_out(std::list<std::pair<crypto::hash,wallet::logic::type::transfer::unconfirmed_transfer_details>>& unconfirmed_payments, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
     void get_unconfirmed_payments(std::list<std::pair<crypto::hash,wallet2::pool_payment_details>>& unconfirmed_payments, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
 
     uint64_t get_blockchain_current_height() const { return m_blockchain.size(); }
@@ -1109,8 +1042,6 @@ namespace tools
 BOOST_CLASS_VERSION(tools::wallet2, 29)
 BOOST_CLASS_VERSION(tools::wallet2::payment_details, 5)
 BOOST_CLASS_VERSION(tools::wallet2::pool_payment_details, 1)
-BOOST_CLASS_VERSION(tools::wallet2::unconfirmed_transfer_details, 8)
-BOOST_CLASS_VERSION(tools::wallet2::confirmed_transfer_details, 6)
 BOOST_CLASS_VERSION(tools::wallet2::reserve_proof_entry, 0)
 BOOST_CLASS_VERSION(tools::wallet2::unsigned_tx_set, 0)
 BOOST_CLASS_VERSION(tools::wallet2::signed_tx_set, 1)
@@ -1121,100 +1052,6 @@ namespace boost
 {
   namespace serialization
   {
-    template <class Archive>
-    inline void serialize(Archive &a, tools::wallet2::unconfirmed_transfer_details &x, const boost::serialization::version_type ver)
-    {
-      a & x.m_change;
-      a & x.m_sent_time;
-      if (ver < 5)
-      {
-        cryptonote::transaction tx;
-        a & tx;
-        x.m_tx = (const cryptonote::transaction_prefix&)tx;
-      }
-      else
-      {
-        a & x.m_tx;
-      }
-      if (ver < 1)
-        return;
-      a & x.m_dests;
-      if (ver < 2)
-        return;
-      a & x.m_state;
-      if (ver < 3)
-        return;
-      a & x.m_timestamp;
-      if (ver < 4)
-        return;
-      a & x.m_amount_in;
-      a & x.m_amount_out;
-      if (ver < 6)
-      {
-        // v<6 may not have change accumulated in m_amount_out, which is a pain,
-        // as it's readily understood to be sum of outputs.
-        // We convert it to include change from v6
-        if (!typename Archive::is_saving() && x.m_change != (uint64_t)-1)
-          x.m_amount_out += x.m_change;
-      }
-      if (ver < 7)
-      {
-        x.m_subaddr_account = 0;
-        return;
-      }
-      a & x.m_subaddr_account;
-      a & x.m_subaddr_indices;
-      if (ver < 8)
-        return;
-      a & x.m_rings;
-    }
-
-    template <class Archive>
-    inline void serialize(Archive &a, tools::wallet2::confirmed_transfer_details &x, const boost::serialization::version_type ver)
-    {
-      a & x.m_amount_in;
-      a & x.m_amount_out;
-      a & x.m_change;
-      a & x.m_block_height;
-      if (ver < 1)
-        return;
-      a & x.m_dests;
-      if (ver < 2)
-        return;
-      a & x.m_timestamp;
-      if (ver < 3)
-      {
-        // v<3 may not have change accumulated in m_amount_out, which is a pain,
-        // as it's readily understood to be sum of outputs. Whether it got added
-        // or not depends on whether it came from a unconfirmed_transfer_details
-        // (not included) or not (included). We can't reliably tell here, so we
-        // check whether either yields a "negative" fee, or use the other if so.
-        // We convert it to include change from v3
-        if (!typename Archive::is_saving() && x.m_change != (uint64_t)-1)
-        {
-          if (x.m_amount_in > (x.m_amount_out + x.m_change))
-            x.m_amount_out += x.m_change;
-        }
-      }
-      if (ver < 4)
-      {
-        if (!typename Archive::is_saving())
-          x.m_unlock_time = 0;
-        return;
-      }
-      a & x.m_unlock_time;
-      if (ver < 5)
-      {
-        x.m_subaddr_account = 0;
-        return;
-      }
-      a & x.m_subaddr_account;
-      a & x.m_subaddr_indices;
-      if (ver < 6)
-        return;
-      a & x.m_rings;
-    }
-
     template <class Archive>
     inline void serialize(Archive& a, tools::wallet2::payment_details& x, const boost::serialization::version_type ver)
     {

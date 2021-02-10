@@ -2080,7 +2080,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
   MTRACE("update_pool_state got pool");
 
   // remove any pending tx that's not in the pool
-  std::unordered_map<crypto::hash, wallet2::unconfirmed_transfer_details>::iterator it = m_unconfirmed_txs.begin();
+  std::unordered_map<crypto::hash, wallet::logic::type::transfer::unconfirmed_transfer_details>::iterator it = m_unconfirmed_txs.begin();
   while (it != m_unconfirmed_txs.end())
   {
     const crypto::hash &txid = it->first;
@@ -2102,15 +2102,15 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
       // that the first time we don't see the tx, we set that boolean, and only
       // delete it the second time it is checked (but only when refreshed, so
       // we're sure we've seen the blockchain state first)
-      if (pit->second.m_state == wallet2::unconfirmed_transfer_details::pending)
+      if (pit->second.m_state == wallet::logic::type::transfer::unconfirmed_transfer_details::pending)
       {
         LOG_PRINT_L1("Pending txid " << txid << " not in pool, marking as not in pool");
-        pit->second.m_state = wallet2::unconfirmed_transfer_details::pending_not_in_pool;
+        pit->second.m_state = wallet::logic::type::transfer::unconfirmed_transfer_details::pending_not_in_pool;
       }
-      else if (pit->second.m_state == wallet2::unconfirmed_transfer_details::pending_not_in_pool && refreshed)
+      else if (pit->second.m_state == wallet::logic::type::transfer::unconfirmed_transfer_details::pending_not_in_pool && refreshed)
       {
         LOG_PRINT_L1("Pending txid " << txid << " not in pool, marking as failed");
-        pit->second.m_state = wallet2::unconfirmed_transfer_details::failed;
+        pit->second.m_state = wallet::logic::type::transfer::unconfirmed_transfer_details::failed;
 
         // the inputs aren't spent anymore, since the tx failed
         for (size_t vini = 0; vini < pit->second.m_tx.vin.size(); ++vini)
@@ -4020,7 +4020,7 @@ std::map<uint32_t, uint64_t> wallet2::balance_per_subaddress(uint32_t index_majo
   {
    for (const auto& utx: m_unconfirmed_txs)
    {
-    if (utx.second.m_subaddr_account == index_major && utx.second.m_state != wallet2::unconfirmed_transfer_details::failed)
+    if (utx.second.m_subaddr_account == index_major && utx.second.m_state != wallet::logic::type::transfer::unconfirmed_transfer_details::failed)
     {
       // all changes go to 0-th subaddress (in the current subaddress account)
       auto found = amount_per_subaddr.find(0);
@@ -4119,7 +4119,7 @@ void wallet2::get_payments(std::list<std::pair<crypto::hash,wallet2::payment_det
   });
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::get_payments_out(std::list<std::pair<crypto::hash,wallet2::confirmed_transfer_details>>& confirmed_payments,
+void wallet2::get_payments_out(std::list<std::pair<crypto::hash,wallet::logic::type::transfer::confirmed_transfer_details>>& confirmed_payments,
     uint64_t min_height, uint64_t max_height, const std::optional<uint32_t>& subaddr_account, const std::set<uint32_t>& subaddr_indices) const
 {
   for (auto i = m_confirmed_txs.begin(); i != m_confirmed_txs.end(); ++i) {
@@ -4133,7 +4133,7 @@ void wallet2::get_payments_out(std::list<std::pair<crypto::hash,wallet2::confirm
   }
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::get_unconfirmed_payments_out(std::list<std::pair<crypto::hash,wallet2::unconfirmed_transfer_details>>& unconfirmed_payments, const std::optional<uint32_t>& subaddr_account, const std::set<uint32_t>& subaddr_indices) const
+void wallet2::get_unconfirmed_payments_out(std::list<std::pair<crypto::hash,wallet::logic::type::transfer::unconfirmed_transfer_details>>& unconfirmed_payments, const std::optional<uint32_t>& subaddr_account, const std::set<uint32_t>& subaddr_indices) const
 {
   for (auto i = m_unconfirmed_txs.begin(); i != m_unconfirmed_txs.end(); ++i) {
     if (subaddr_account && *subaddr_account != i->second.m_subaddr_account)
@@ -4441,7 +4441,7 @@ void wallet2::add_unconfirmed_tx(const cryptonote::transaction& tx, uint64_t amo
   utd.m_sent_time = time(NULL);
   utd.m_tx = (const cryptonote::transaction_prefix&)tx;
   utd.m_dests = dests;
-  utd.m_state = wallet2::unconfirmed_transfer_details::pending;
+  utd.m_state = wallet::logic::type::transfer::unconfirmed_transfer_details::pending;
   utd.m_timestamp = time(NULL);
   utd.m_subaddr_account = subaddr_account;
   utd.m_subaddr_indices = subaddr_indices;
