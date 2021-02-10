@@ -148,7 +148,7 @@ namespace proof {
         if (good_signature[i])
           THROW_WALLET_EXCEPTION_IF(!crypto::generate_key_derivation(shared_secret[i], rct::rct2sk(rct::I), additional_derivations[i - 1]), error::wallet_internal_error, "Failed to generate key derivation");
 
-      received += wallet::logic::functional::proof::get_tx_key_received_helper
+      received = wallet::logic::functional::proof::get_tx_key_received_helper
         (tx, derivation, additional_derivations, address);
       return true;
     }

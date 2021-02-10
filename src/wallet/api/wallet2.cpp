@@ -6061,7 +6061,7 @@ bool wallet2::sanity_check(const std::vector<wallet2::pending_tx> &ptx_vector, s
           (ptx.tx, ptx.tx_key, ptx.additional_tx_keys, address, r.second.second,
            "automatic-sanity-check", view_secret_key, hwdev);
 
-        received = wallet::logic::pseudo_functional::proof::check_tx_proof
+        wallet::logic::pseudo_functional::proof::check_tx_proof
           (ptx.tx, address, r.second.second, "automatic-sanity-check", proof, received);
       }
       catch (const std::exception &e) { received = 0; }
@@ -6614,7 +6614,7 @@ void wallet2::check_tx_key_helper(const crypto::hash &txid, const crypto::key_de
   THROW_WALLET_EXCEPTION_IF(!additional_derivations.empty() && additional_derivations.size() != tx.vout.size(), error::wallet_internal_error,
     "The size of additional derivations is wrong");
 
-  received += wallet::logic::functional::proof::get_tx_key_received_helper
+  received = wallet::logic::functional::proof::get_tx_key_received_helper
     (tx, derivation, additional_derivations, address);
 
   in_pool = res.txs.front().in_pool;
