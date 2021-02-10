@@ -103,6 +103,39 @@ namespace wallet {
     return outputs;
   }
 
+  std::string add_reason(std::string &reasons, std::string reason)
+  {
+    if (!reasons.empty())
+      return reasons + ", ";
+    return reasons + reason;
+  }
+
+  std::string get_text_reason(const cryptonote::COMMAND_RPC_SEND_RAW_TX::response &res)
+  {
+      std::string reason;
+      if (res.low_mixin)
+        reason = add_reason(reason, "bad ring size");
+      if (res.double_spend)
+        reason = add_reason(reason, "double spend");
+      if (res.invalid_input)
+        reason = add_reason(reason, "invalid input");
+      if (res.invalid_output)
+        reason = add_reason(reason, "invalid output");
+      if (res.too_few_outputs)
+        reason = add_reason(reason, "too few outputs");
+      if (res.too_big)
+        reason = add_reason(reason, "too big");
+      if (res.overspend)
+        reason = add_reason(reason, "overspend");
+      if (res.fee_too_low)
+        reason = add_reason(reason, "fee too low");
+      if (res.sanity_check_failed)
+        reason = add_reason(reason, "tx sanity check failed");
+      if (res.not_relayed)
+        reason = add_reason(reason, "tx was not relayed");
+      return reason;
+  }
+
 } // wallet
 } // functional
 } // logic

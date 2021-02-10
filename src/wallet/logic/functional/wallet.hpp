@@ -35,6 +35,7 @@
 
 #include "wallet/api/wallet2.h" // tranfser_details
 #include "cryptonote/core/cryptonote_tx_utils.h" // tx_destination_entry
+#include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX
 
 namespace wallet {
 namespace logic {
@@ -54,6 +55,8 @@ namespace wallet {
    , const std::vector<tools::wallet2::transfer_details> &transfers
    , const std::vector<size_t> &selected_transfers
    );
+
+  std::string get_text_reason(const cryptonote::COMMAND_RPC_SEND_RAW_TX::response &res);
 
 } // wallet
 } // functional
