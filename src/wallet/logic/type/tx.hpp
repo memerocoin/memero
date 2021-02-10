@@ -145,48 +145,13 @@ namespace boost
       a & x.sources;
       a & x.change_dts;
       a & x.splitted_dsts;
-      if (ver < 2)
-      {
-        // load list to vector
-        std::list<size_t> selected_transfers;
-        a & selected_transfers;
-        x.selected_transfers.clear();
-        x.selected_transfers.reserve(selected_transfers.size());
-        for (size_t t: selected_transfers)
-          x.selected_transfers.push_back(t);
-      }
       a & x.extra;
       a & x.unlock_time;
       a & x.use_rct;
       a & x.dests;
-      if (ver < 1)
-      {
-        x.subaddr_account = 0;
-        return;
-      }
       a & x.subaddr_account;
       a & x.subaddr_indices;
-      if (ver < 2)
-      {
-        if (!typename Archive::is_saving())
-          x.rct_config = { rct::RangeProofBorromean, 0 };
-        return;
-      }
       a & x.selected_transfers;
-      if (ver < 3)
-      {
-        if (!typename Archive::is_saving())
-          x.rct_config = { rct::RangeProofBorromean, 0 };
-        return;
-      }
-      if (ver < 4)
-      {
-        bool use_bulletproofs = x.rct_config.range_proof_type != rct::RangeProofBorromean;
-        a & use_bulletproofs;
-        if (!typename Archive::is_saving())
-          x.rct_config = { use_bulletproofs ? rct::RangeProofBulletproof : rct::RangeProofBorromean, 0 };
-        return;
-      }
       a & x.rct_config;
     }
 
@@ -198,28 +163,12 @@ namespace boost
       a & x.fee;
       a & x.dust_added_to_fee;
       a & x.change_dts;
-      if (ver < 2)
-        {
-          // load list to vector
-          std::list<size_t> selected_transfers;
-          a & selected_transfers;
-          x.selected_transfers.clear();
-          x.selected_transfers.reserve(selected_transfers.size());
-          for (size_t t: selected_transfers)
-            x.selected_transfers.push_back(t);
-        }
       a & x.key_images;
       a & x.tx_key;
       a & x.dests;
       a & x.construction_data;
-      if (ver < 1)
-        return;
       a & x.additional_tx_keys;
-      if (ver < 2)
-        return;
       a & x.selected_transfers;
-      if (ver < 3)
-        return;
       a & x.multisig_sigs;
     }
   }
