@@ -41,6 +41,7 @@
 
 #include "wallet/logic/type/multisig_info.hpp"
 #include "wallet/logic/type/hashchain.hpp"
+#include "wallet/logic/type/tx.hpp"
 
 #include <boost/exception/to_string.hpp>
 
@@ -73,6 +74,7 @@
 #include "common/password.h"
 #include "node_rpc_proxy.h"
 
+using namespace wallet::logic::type::tx;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
@@ -191,19 +193,6 @@ namespace tools
 
     wallet2(cryptonote::network_type nettype = cryptonote::MAINNET, uint64_t kdf_rounds = 1, bool unattended = false, std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory = std::unique_ptr<epee::net_utils::http::http_client_factory>(new net::http::client_factory()));
     ~wallet2();
-
-    struct tx_scan_info_t
-    {
-      cryptonote::keypair in_ephemeral;
-      crypto::key_image ki;
-      rct::key mask;
-      uint64_t amount;
-      uint64_t money_transfered;
-      bool error;
-      std::optional<cryptonote::subaddress_receive_info> received;
-
-      tx_scan_info_t(): amount(0), money_transfered(0), error(true) {}
-    };
 
     struct transfer_details
     {
