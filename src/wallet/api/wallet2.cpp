@@ -176,22 +176,6 @@ namespace
         add_reason(reason, "tx was not relayed");
       return reason;
   }
-
-  size_t get_num_outputs(const std::vector<cryptonote::tx_destination_entry> &dsts, const std::vector<tools::wallet2::transfer_details> &transfers, const std::vector<size_t> &selected_transfers)
-  {
-    size_t outputs = dsts.size();
-    uint64_t needed_money = 0;
-    for (const auto& dt: dsts)
-      needed_money += dt.amount;
-    uint64_t found_money = 0;
-    for(size_t idx: selected_transfers)
-      found_money += transfers[idx].amount();
-    if (found_money != needed_money)
-      ++outputs; // change
-    if (outputs < 2)
-      ++outputs; // extra 0 dummy output
-    return outputs;
-  }
 }
 
 namespace
@@ -5929,7 +5913,8 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryp
       cryptonote::transaction test_tx;
       pending_tx test_ptx;
 
-      const size_t num_outputs = get_num_outputs(tx.dsts, m_transfers, tx.selected_transfers);
+      const size_t num_outputs = wallet::logic::functional::wallet::get_num_outputs
+        (tx.dsts, m_transfers, tx.selected_transfers);
       needed_fee = estimate_fee(tx.selected_transfers.size(), fake_outs_count, num_outputs, extra.size(), base_fee, fee_multiplier, fee_quantization_mask);
 
       uint64_t inputs = 0, outputs = needed_fee;
@@ -6341,7 +6326,8 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
       cryptonote::transaction test_tx;
       pending_tx test_ptx;
 
-      const size_t num_outputs = get_num_outputs(tx.dsts, m_transfers, tx.selected_transfers);
+      const size_t num_outputs = wallet::logic::functional::wallet::get_num_outputs
+        (tx.dsts, m_transfers, tx.selected_transfers);
       needed_fee = estimate_fee(tx.selected_transfers.size(), fake_outs_count, num_outputs, extra.size(), base_fee, fee_multiplier, fee_quantization_mask);
 
       // add N - 1 outputs for correct initial fee estimation

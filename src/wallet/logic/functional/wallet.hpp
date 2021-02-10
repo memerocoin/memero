@@ -31,6 +31,10 @@
 
 #include <cstdint>
 #include <optional>
+#include <vector>
+
+#include "wallet/api/wallet2.h" // tranfser_details
+#include "cryptonote/core/cryptonote_tx_utils.h" // tx_destination_entry
 
 namespace wallet {
 namespace logic {
@@ -42,6 +46,13 @@ namespace wallet {
    const uint64_t approximate_height
    , const std::optional<uint64_t> target_height
    , const std::optional<uint64_t> local_height
+   );
+
+  size_t get_num_outputs
+  (
+   const std::vector<cryptonote::tx_destination_entry> &dsts
+   , const std::vector<tools::wallet2::transfer_details> &transfers
+   , const std::vector<size_t> &selected_transfers
    );
 
 } // wallet

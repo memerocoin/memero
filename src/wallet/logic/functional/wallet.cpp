@@ -82,6 +82,27 @@ namespace wallet {
     return height;
   }
 
+  size_t get_num_outputs
+  (
+   const std::vector<cryptonote::tx_destination_entry> &dsts
+   , const std::vector<tools::wallet2::transfer_details> &transfers
+   , const std::vector<size_t> &selected_transfers
+   )
+  {
+    size_t outputs = dsts.size();
+    uint64_t needed_money = 0;
+    for (const auto& dt: dsts)
+      needed_money += dt.amount;
+    uint64_t found_money = 0;
+    for(size_t idx: selected_transfers)
+      found_money += transfers[idx].amount();
+    if (found_money != needed_money)
+      ++outputs; // change
+    if (outputs < 2)
+      ++outputs; // extra 0 dummy output
+    return outputs;
+  }
+
 } // wallet
 } // functional
 } // logic
