@@ -53,7 +53,7 @@ set(wallet_private_headers
   ../api/wallet2.h
   ../api/node_rpc_proxy.h
   ../args/wallet_args.h
-  ../logic/type/multisig_info.hpp
+  ../logic/type/multisig.hpp
   ../logic/type/hashchain.hpp
   ../logic/type/tx.hpp
   ../logic/functional/fee.hpp

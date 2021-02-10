@@ -39,6 +39,7 @@
 namespace wallet {
 namespace logic {
 namespace type {
+namespace multisig {
 
   struct multisig_info
   {
@@ -64,28 +65,33 @@ namespace type {
     END_SERIALIZE()
   };
 
+}
 } // type
 } // logic
 } // wallet
 
 
-BOOST_CLASS_VERSION(wallet::logic::type::multisig_info, 1)
-BOOST_CLASS_VERSION(wallet::logic::type::multisig_info::LR, 0)
+using namespace wallet::logic::type::multisig;
+
+BOOST_CLASS_VERSION(multisig_info, 1)
+BOOST_CLASS_VERSION(multisig_info::LR, 0)
 
 
 namespace boost
 {
   namespace serialization
   {
+    using namespace wallet::logic::type::multisig;
+
     template <class Archive>
-    inline void serialize(Archive &a, wallet::logic::type::multisig_info::LR &x, const boost::serialization::version_type ver)
+    inline void serialize(Archive &a, multisig_info::LR &x, const boost::serialization::version_type ver)
     {
       a & x.m_L;
       a & x.m_R;
     }
 
     template <class Archive>
-    inline void serialize(Archive &a, wallet::logic::type::multisig_info &x, const boost::serialization::version_type ver)
+    inline void serialize(Archive &a, multisig_info &x, const boost::serialization::version_type ver)
     {
       a & x.m_signer;
       a & x.m_LR;

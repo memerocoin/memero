@@ -39,7 +39,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/deque.hpp>
 
-#include "wallet/logic/type/multisig_info.hpp"
+#include "wallet/logic/type/multisig.hpp"
 #include "wallet/logic/type/hashchain.hpp"
 #include "wallet/logic/type/tx.hpp"
 
@@ -214,7 +214,7 @@ namespace tools
       cryptonote::subaddress_index m_subaddr_index;
       bool m_key_image_partial;
       std::vector<rct::key> m_multisig_k;
-      std::vector<wallet::logic::type::multisig_info> m_multisig_info; // one per other participant
+      std::vector<wallet::logic::type::multisig::multisig_info> m_multisig_info; // one per other participant
       std::vector<std::pair<uint64_t, crypto::hash>> m_uses;
 
       bool is_rct() const { return m_rct; }
