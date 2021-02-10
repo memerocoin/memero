@@ -89,6 +89,7 @@ using namespace epee;
 #include "wallet/logic/pseudo_functional/hash.hpp"
 #include "wallet/logic/controller/proof.hpp"
 #include "wallet/logic/controller/wallet.hpp"
+#include "wallet/logic/controller/keys_unlocker.hpp"
 #include "wallet/logic/state/gamma_picker.hpp"
 
 extern "C"
@@ -537,60 +538,6 @@ const size_t MAX_SPLIT_ATTEMPTS = 30;
 
 constexpr const std::chrono::seconds wallet2::rpc_timeout;
 const char* wallet2::tr(const char* str) { return str; }
-
-std::mutex wallet_keys_unlocker::lockers_lock;
-unsigned int wallet_keys_unlocker::lockers = 0;
-wallet_keys_unlocker::wallet_keys_unlocker(wallet2 &w, const std::optional<tools::password_container> &password):
-  w(w),
-  locked(password != std::nullopt)
-{
-  std::lock_guard<std::mutex> lock(lockers_lock);
-  if (lockers++ > 0)
-    locked = false;
-  if (!locked || w.is_unattended() || w.ask_password() != tools::wallet2::AskPasswordToDecrypt || w.watch_only())
-  {
-    locked = false;
-    return;
-  }
-  const epee::wipeable_string pass = password->password();
-  w.generate_chacha_key_from_password(pass, key);
-  w.decrypt_keys(key);
-}
-
-wallet_keys_unlocker::wallet_keys_unlocker(wallet2 &w, bool locked, const epee::wipeable_string &password):
-  w(w),
-  locked(locked)
-{
-  std::lock_guard<std::mutex> lock(lockers_lock);
-  if (lockers++ > 0)
-    locked = false;
-  if (!locked)
-    return;
-  w.generate_chacha_key_from_password(password, key);
-  w.decrypt_keys(key);
-}
-
-wallet_keys_unlocker::~wallet_keys_unlocker()
-{
-  try
-  {
-    std::lock_guard<std::mutex> lock(lockers_lock);
-    if (lockers == 0)
-    {
-      MERROR("There are no lockers in wallet_keys_unlocker dtor");
-      return;
-    }
-    --lockers;
-    if (!locked)
-      return;
-    w.encrypt_keys(key);
-  }
-  catch (...)
-  {
-    MERROR("Failed to re-encrypt wallet keys");
-    // do not propagate through dtor, we'd crash
-  }
-}
 
 wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory):
   m_http_client(http_client_factory->create()),
@@ -3710,7 +3657,8 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
     THROW_WALLET_EXCEPTION_IF(true, error::file_read_error, "failed to load keys from buffer");
   }
 
-  wallet_keys_unlocker unlocker(*this, m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only, password);
+  wallet::logic::controller::keys_unlocker::wallet_keys_unlocker unlocker
+    (*this, m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only, password);
 
   //keys loaded ok!
   //try to load wallet file. but even if we failed, it is not big problem

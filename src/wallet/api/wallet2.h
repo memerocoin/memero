@@ -84,25 +84,21 @@
 class Serialization_portability_wallet_Test;
 class wallet_accessor_test;
 
+namespace wallet {
+  namespace logic {
+    namespace controller {
+      namespace keys_unlocker {
+        class wallet_keys_unlocker;
+      }
+    }
+  }
+}
+
 namespace tools
 {
   class ringdb;
   class wallet2;
   class Notify;
-
-  class wallet_keys_unlocker
-  {
-  public:
-    wallet_keys_unlocker(wallet2 &w, const std::optional<tools::password_container> &password);
-    wallet_keys_unlocker(wallet2 &w, bool locked, const epee::wipeable_string &password);
-    ~wallet_keys_unlocker();
-  private:
-    wallet2 &w;
-    bool locked;
-    crypto::chacha_key key;
-    static std::mutex lockers_lock;
-    static unsigned int lockers;
-  };
 
   class i_wallet2_callback
   {
@@ -171,12 +167,12 @@ namespace tools
     std::deque<crypto::hash> m_blockchain;
   };
 
-  class wallet_keys_unlocker;
+
   class wallet2
   {
     friend class ::Serialization_portability_wallet_Test;
     friend class ::wallet_accessor_test;
-    friend class wallet_keys_unlocker;
+    friend class wallet::logic::controller::keys_unlocker::wallet_keys_unlocker;
     friend class wallet_device_callback;
   public:
     static constexpr const std::chrono::seconds rpc_timeout = std::chrono::minutes(3) + std::chrono::seconds(30);
