@@ -5192,7 +5192,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
     src.real_output = it_to_replace - src.outputs.begin();
     src.real_output_in_tx_index = td.m_internal_output_index;
     src.mask = td.m_mask;
-    detail::print_source_entry(src);
+    wallet::logic::controller::wallet::print_source_entry(src);
     ++out_index;
   }
   LOG_PRINT_L2("outputs prepared");

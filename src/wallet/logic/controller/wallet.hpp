@@ -33,6 +33,8 @@
 
 #include <string>
 
+#include "cryptonote/core/cryptonote_tx_utils.h"
+
 namespace wallet {
 namespace logic {
 namespace controller {
@@ -58,6 +60,8 @@ namespace wallet {
    , std::string& target_str
    , const size_t max_size = 1000000000
    );
+
+  void print_source_entry(const cryptonote::tx_source_entry& src);
 
 } // wallet
 } // controller
