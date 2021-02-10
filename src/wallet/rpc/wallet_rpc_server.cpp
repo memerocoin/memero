@@ -988,64 +988,6 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_sweep(const wallet_rpc::COMMAND_RPC_SWEEP::request& req, wallet_rpc::COMMAND_RPC_SWEEP::response& res, epee::json_rpc::error& er, const connection_context *ctx)
-  {
-    std::vector<cryptonote::tx_destination_entry> dsts;
-    std::vector<uint8_t> extra;
-
-    if (!m_wallet) return not_open(er);
-    if (m_restricted)
-    {
-      er.code = WALLET_RPC_ERROR_CODE_DENIED;
-      er.message = "Command unavailable in restricted mode.";
-      return false;
-    }
-
-    // validate the transfer requested and populate dsts & extra
-    std::list<wallet_rpc::transfer_destination> destination;
-    destination.push_back(wallet_rpc::transfer_destination());
-    destination.back().amount = 0;
-    destination.back().address = req.address;
-    if (!validate_transfer(destination, dsts, extra, true, er))
-    {
-      return false;
-    }
-
-    if (req.outputs < 1)
-    {
-      er.code = WALLET_RPC_ERROR_CODE_TX_NOT_POSSIBLE;
-      er.message = "Amount of outputs should be greater than 0.";
-      return  false;
-    }
-
-    std::set<uint32_t> subaddr_indices;
-    if (req.subaddr_indices_all)
-    {
-      for (uint32_t i = 0; i < m_wallet->get_num_subaddresses(req.account_index); ++i)
-        subaddr_indices.insert(i);
-    }
-    else
-    {
-      subaddr_indices= req.subaddr_indices;
-    }
-
-    try
-    {
-      uint64_t mixin = m_wallet->adjust_mixin(req.ring_size ? req.ring_size - 1 : 0);
-      uint32_t priority = m_wallet->adjust_priority(req.priority);
-      std::vector<wallet2::pending_tx> ptx_vector = m_wallet->create_transactions_all(req.below_amount, dsts[0].addr, dsts[0].is_subaddress, req.outputs, mixin, req.unlock_time, priority, extra, req.account_index, subaddr_indices);
-
-      return fill_response(ptx_vector, req.get_tx_keys, res.tx_key_list, res.amount_list, res.fee_list, res.weight_list, res.unsigned_txset, req.do_not_relay,
-          res.tx_hash_list, req.get_tx_hex, res.tx_blob_list, req.get_tx_metadata, res.tx_metadata_list, er);
-    }
-    catch (const std::exception& e)
-    {
-      handle_rpc_exception(std::current_exception(), er, WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR);
-      return false;
-    }
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_relay_tx(const wallet_rpc::COMMAND_RPC_RELAY_TX::request& req, wallet_rpc::COMMAND_RPC_RELAY_TX::response& res, epee::json_rpc::error& er, const connection_context *ctx)
   {
     if (!m_wallet) return not_open(er);
