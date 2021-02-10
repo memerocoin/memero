@@ -144,34 +144,6 @@ std::string tools::wallet2::default_daemon_address = "";
 
 namespace
 {
-  std::vector<crypto::public_key> secret_keys_to_public_keys(const std::vector<crypto::secret_key>& keys)
-  {
-    std::vector<crypto::public_key> public_keys;
-    public_keys.reserve(keys.size());
-
-    std::transform(keys.begin(), keys.end(), std::back_inserter(public_keys), [] (const crypto::secret_key& k) -> crypto::public_key {
-      crypto::public_key p;
-      CHECK_AND_ASSERT_THROW_MES(crypto::secret_key_to_public_key(k, p), "Failed to derive public spend key");
-      return p;
-    });
-
-    return public_keys;
-  }
-
-  bool keys_intersect(const std::unordered_set<crypto::public_key>& s1, const std::unordered_set<crypto::public_key>& s2)
-  {
-    if (s1.empty() || s2.empty())
-      return false;
-
-    for (const auto& e: s1)
-    {
-      if (s2.find(e) != s2.end())
-        return true;
-    }
-
-    return false;
-  }
-
   void add_reason(std::string &reasons, const char *reason)
   {
     if (!reasons.empty())
