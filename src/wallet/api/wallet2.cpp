@@ -6415,32 +6415,6 @@ std::vector<size_t> wallet2::select_available_mixable_outputs()
   return select_available_outputs_from_histogram(get_min_ring_size(), true, true, true);
 }
 //----------------------------------------------------------------------------------------------------
-std::vector<wallet2::pending_tx> wallet2::create_unmixable_sweep_transactions()
-{
-  const uint64_t base_fee  = get_base_fee();
-
-  // may throw
-  std::vector<size_t> unmixable_outputs = select_available_unmixable_outputs();
-  size_t num_dust_outputs = unmixable_outputs.size();
-
-  if (num_dust_outputs == 0)
-  {
-    return std::vector<wallet2::pending_tx>();
-  }
-
-  // split in "dust" and "non dust" to make it easier to select outputs
-  std::vector<size_t> unmixable_transfer_outputs, unmixable_dust_outputs;
-  for (auto n: unmixable_outputs)
-  {
-    if (m_transfers[n].amount() < base_fee)
-      unmixable_dust_outputs.push_back(n);
-    else
-      unmixable_transfer_outputs.push_back(n);
-  }
-
-  return create_transactions_from(m_account_public_address, false, 1, unmixable_transfer_outputs, unmixable_dust_outputs, 0 /*fake_outs_count */, 0 /* unlock_time */, 1 /*priority */, std::vector<uint8_t>());
-}
-//----------------------------------------------------------------------------------------------------
 bool wallet2::get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys) const
 {
   additional_tx_keys.clear();
