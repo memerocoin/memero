@@ -4287,10 +4287,10 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
   const uint64_t last_block_height = m_wallet->get_blockchain_current_height();
 
   if (in || coinbase) {
-    std::list<std::pair<crypto::hash, tools::wallet2::payment_details>> payments;
+    std::list<std::pair<crypto::hash, wallet::logic::type::payment::payment_details>> payments;
     m_wallet->get_payments(payments, min_height, max_height, m_current_subaddress_account, subaddr_indices);
-    for (std::list<std::pair<crypto::hash, tools::wallet2::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
-      const tools::wallet2::payment_details &pd = i->second;
+    for (std::list<std::pair<crypto::hash, wallet::logic::type::payment::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+      const wallet::logic::type::payment::payment_details &pd = i->second;
       if (!pd.m_coinbase && !in)
         continue;
       std::string note;
@@ -4373,10 +4373,10 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
       if (!process_txs.empty())
         m_wallet->process_pool_state(process_txs);
 
-      std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>> payments;
+      std::list<std::pair<crypto::hash, wallet::logic::type::payment::pool_payment_details>> payments;
       m_wallet->get_unconfirmed_payments(payments, m_current_subaddress_account, subaddr_indices);
-      for (std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
-        const tools::wallet2::payment_details &pd = i->second.m_pd;
+      for (std::list<std::pair<crypto::hash, wallet::logic::type::payment::pool_payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+        const wallet::logic::type::payment::payment_details &pd = i->second.m_pd;
         std::string note;
         std::string destination = m_wallet->get_subaddress_as_str({m_current_subaddress_account, pd.m_subaddr_index.minor});
         std::string double_spend_note;
@@ -5431,10 +5431,10 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
 
   const uint64_t last_block_height = m_wallet->get_blockchain_current_height();
 
-  std::list<std::pair<crypto::hash, tools::wallet2::payment_details>> payments;
+  std::list<std::pair<crypto::hash, wallet::logic::type::payment::payment_details>> payments;
   m_wallet->get_payments(payments, 0, (uint64_t)-1, m_current_subaddress_account);
-  for (std::list<std::pair<crypto::hash, tools::wallet2::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
-    const tools::wallet2::payment_details &pd = i->second;
+  for (std::list<std::pair<crypto::hash, wallet::logic::type::payment::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+    const wallet::logic::type::payment::payment_details &pd = i->second;
     if (pd.m_tx_hash == txid) {
       success_msg_writer() << "Incoming transaction found";
       success_msg_writer() << "txid: " << txid;
@@ -5500,10 +5500,10 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
     if (!process_txs.empty())
       m_wallet->process_pool_state(process_txs);
 
-    std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>> pool_payments;
+    std::list<std::pair<crypto::hash, wallet::logic::type::payment::pool_payment_details>> pool_payments;
     m_wallet->get_unconfirmed_payments(pool_payments, m_current_subaddress_account);
-    for (std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>>::const_iterator i = pool_payments.begin(); i != pool_payments.end(); ++i) {
-      const tools::wallet2::payment_details &pd = i->second.m_pd;
+    for (std::list<std::pair<crypto::hash, wallet::logic::type::payment::pool_payment_details>>::const_iterator i = pool_payments.begin(); i != pool_payments.end(); ++i) {
+      const wallet::logic::type::payment::payment_details &pd = i->second.m_pd;
       if (pd.m_tx_hash == txid)
       {
         success_msg_writer() << "Unconfirmed incoming transaction found in the txpool";

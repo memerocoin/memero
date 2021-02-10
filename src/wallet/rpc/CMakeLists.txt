@@ -57,6 +57,7 @@ set(wallet_private_headers
   ../logic/type/hashchain.hpp
   ../logic/type/tx.hpp
   ../logic/type/transfer.hpp
+  ../logic/type/payment.hpp
   ../logic/functional/fee.hpp
   ../logic/functional/proof.hpp
   ../logic/functional/signature.cpp

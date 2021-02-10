@@ -220,7 +220,7 @@ namespace tools
       return false;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const tools::wallet2::payment_details &pd)
+  void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const wallet::logic::type::payment::payment_details &pd)
   {
     entry.txid = string_tools::pod_to_hex(pd.m_tx_hash);
     entry.height = pd.m_block_height;
@@ -289,9 +289,9 @@ namespace tools
     set_confirmations(entry, m_wallet->get_blockchain_current_height(), m_wallet->get_last_block_reward(), pd.m_tx.unlock_time);
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const tools::wallet2::pool_payment_details &ppd)
+  void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const wallet::logic::type::payment::pool_payment_details &ppd)
   {
-    const tools::wallet2::payment_details &pd = ppd.m_pd;
+    const wallet::logic::type::payment::payment_details &pd = ppd.m_pd;
     entry.txid = string_tools::pod_to_hex(pd.m_tx_hash);
     entry.height = 0;
     entry.timestamp = pd.m_timestamp;
@@ -1498,9 +1498,9 @@ namespace tools
 
     if (req.in)
     {
-      std::list<std::pair<crypto::hash, tools::wallet2::payment_details>> payments;
+      std::list<std::pair<crypto::hash, wallet::logic::type::payment::payment_details>> payments;
       m_wallet->get_payments(payments, min_height, max_height, account_index, subaddr_indices);
-      for (std::list<std::pair<crypto::hash, tools::wallet2::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+      for (std::list<std::pair<crypto::hash, wallet::logic::type::payment::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
         res.in.push_back(wallet_rpc::transfer_entry());
         fill_transfer_entry(res.in.back(), i->second.m_tx_hash, i->second);
       }
@@ -1537,9 +1537,9 @@ namespace tools
       if (!process_txs.empty())
         m_wallet->process_pool_state(process_txs);
 
-      std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>> payments;
+      std::list<std::pair<crypto::hash, wallet::logic::type::payment::pool_payment_details>> payments;
       m_wallet->get_unconfirmed_payments(payments, account_index, subaddr_indices);
-      for (std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+      for (std::list<std::pair<crypto::hash, wallet::logic::type::payment::pool_payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
         res.pool.push_back(wallet_rpc::transfer_entry());
         fill_transfer_entry(res.pool.back(), i->second);
       }
@@ -1585,9 +1585,9 @@ namespace tools
       return false;
     }
 
-    std::list<std::pair<crypto::hash, tools::wallet2::payment_details>> payments;
+    std::list<std::pair<crypto::hash, wallet::logic::type::payment::payment_details>> payments;
     m_wallet->get_payments(payments, 0, (uint64_t)-1, req.account_index);
-    for (std::list<std::pair<crypto::hash, tools::wallet2::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+    for (std::list<std::pair<crypto::hash, wallet::logic::type::payment::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
       if (i->second.m_tx_hash == txid)
       {
         res.transfers.resize(res.transfers.size() + 1);
@@ -1620,9 +1620,9 @@ namespace tools
     if (!process_txs.empty())
       m_wallet->process_pool_state(process_txs);
 
-    std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>> pool_payments;
+    std::list<std::pair<crypto::hash, wallet::logic::type::payment::pool_payment_details>> pool_payments;
     m_wallet->get_unconfirmed_payments(pool_payments, req.account_index);
-    for (std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>>::const_iterator i = pool_payments.begin(); i != pool_payments.end(); ++i) {
+    for (std::list<std::pair<crypto::hash, wallet::logic::type::payment::pool_payment_details>>::const_iterator i = pool_payments.begin(); i != pool_payments.end(); ++i) {
       if (i->second.m_pd.m_tx_hash == txid)
       {
         res.transfers.resize(res.transfers.size() + 1);
