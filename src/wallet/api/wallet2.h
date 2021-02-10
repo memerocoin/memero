@@ -662,116 +662,30 @@ namespace tools
     inline void serialize(t_archive &a, const unsigned int ver)
     {
       uint64_t dummy_refresh_height = 0; // moved to keys file
-      if(ver < 5)
-        return;
-      if (ver < 19)
-      {
-        std::vector<crypto::hash> blockchain;
-        a & blockchain;
-        m_blockchain.clear();
-        for (const auto &b: blockchain)
-        {
-          m_blockchain.push_back(b);
-        }
-      }
-      else
-      {
-        a & m_blockchain;
-      }
+      a & m_blockchain;
       a & m_transfers;
       a & m_account_public_address;
       a & m_key_images.parent();
-      if(ver < 6)
-        return;
       a & m_unconfirmed_txs.parent();
-      if(ver < 7)
-        return;
       a & m_payments.parent();
-      if(ver < 8)
-        return;
       a & m_tx_keys.parent();
-      if(ver < 9)
-        return;
       a & m_confirmed_txs.parent();
-      if(ver < 11)
-        return;
       a & dummy_refresh_height;
-      if(ver < 12)
-        return;
-      if(ver < 13)
-        return;
-      if (ver < 17)
-      {
-        // we're loading an old version, where m_unconfirmed_payments was a std::map
-        std::unordered_map<crypto::hash, payment_details> m;
-        a & m;
-        m_unconfirmed_payments.clear();
-        for (std::unordered_map<crypto::hash, payment_details>::const_iterator i = m.begin(); i != m.end(); ++i)
-          m_unconfirmed_payments.insert(std::make_pair(i->first, pool_payment_details{i->second, false}));
-      }
-      if(ver < 14)
-        return;
-      if(ver < 15)
-      {
-        // we're loading an older wallet without a pubkey map, rebuild it
-        m_pub_keys.clear();
-        for (size_t i = 0; i < m_transfers.size(); ++i)
-        {
-          const transfer_details &td = m_transfers[i];
-          const cryptonote::tx_out &out = td.m_tx.vout[td.m_internal_output_index];
-          const cryptonote::txout_to_key &o = boost::get<const cryptonote::txout_to_key>(out.target);
-          m_pub_keys.emplace(o.key, i);
-        }
-        return;
-      }
       a & m_pub_keys.parent();
-      if(ver < 16)
-        return;
-      if(ver < 17)
-        return;
-      if (ver < 22)
-      {
-        // we're loading an old version, where m_unconfirmed_payments payload was payment_details
-        std::unordered_multimap<crypto::hash, payment_details> m;
-        a & m;
-        m_unconfirmed_payments.clear();
-        for (const auto &i: m)
-          m_unconfirmed_payments.insert(std::make_pair(i.first, pool_payment_details{i.second, false}));
-      }
-      if(ver < 18)
-        return;
       a & m_scanned_pool_txs[0];
       a & m_scanned_pool_txs[1];
-      if (ver < 20)
-        return;
       a & m_subaddresses.parent();
       std::unordered_map<cryptonote::subaddress_index, crypto::public_key> dummy_subaddresses_inv;
       a & dummy_subaddresses_inv;
       a & m_subaddress_labels;
       a & m_additional_tx_keys.parent();
-      if(ver < 21)
-        return;
       a & m_attributes.parent();
-      if(ver < 22)
-        return;
       a & m_unconfirmed_payments.parent();
-      if(ver < 23)
-        return;
       a & (std::pair<std::map<std::string, std::string>, std::vector<std::string>>&)m_account_tags;
-      if(ver < 24)
-        return;
       a & m_ring_history_saved;
-      if(ver < 25)
-        return;
       a & m_last_block_reward;
-      if(ver < 26)
-        return;
       a & m_tx_device.parent();
-      if(ver < 27)
-        return;
       a & m_device_last_key_image_sync;
-      if(ver < 28)
-        return;
       a & m_cold_key_images.parent();
       if(ver < 29)
         return;
