@@ -356,26 +356,6 @@ namespace tools
       END_SERIALIZE()
     };
 
-    struct reserve_proof_entry
-    {
-      crypto::hash txid;
-      uint64_t index_in_tx;
-      crypto::public_key shared_secret;
-      crypto::key_image key_image;
-      crypto::signature shared_secret_sig;
-      crypto::signature key_image_sig;
-
-      BEGIN_SERIALIZE_OBJECT()
-        VERSION_FIELD(0)
-        FIELD(txid)
-        VARINT_FIELD(index_in_tx)
-        FIELD(shared_secret)
-        FIELD(key_image)
-        FIELD(shared_secret_sig)
-        FIELD(key_image_sig)
-      END_SERIALIZE()
-    };
-
     typedef std::tuple<uint64_t, crypto::public_key, rct::key> get_outs_entry;
 
     struct parsed_block
@@ -1041,7 +1021,6 @@ namespace tools
 BOOST_CLASS_VERSION(tools::wallet2, 29)
 BOOST_CLASS_VERSION(tools::wallet2::payment_details, 5)
 BOOST_CLASS_VERSION(tools::wallet2::pool_payment_details, 1)
-BOOST_CLASS_VERSION(tools::wallet2::reserve_proof_entry, 0)
 BOOST_CLASS_VERSION(tools::wallet2::unsigned_tx_set, 0)
 BOOST_CLASS_VERSION(tools::wallet2::signed_tx_set, 1)
 BOOST_CLASS_VERSION(tools::wallet2::tx_construction_data, 4)
@@ -1091,17 +1070,6 @@ namespace boost
     {
       a & x.m_pd;
       a & x.m_double_spend_seen;
-    }
-
-    template <class Archive>
-    inline void serialize(Archive& a, tools::wallet2::reserve_proof_entry& x, const boost::serialization::version_type ver)
-    {
-      a & x.txid;
-      a & x.index_in_tx;
-      a & x.shared_secret;
-      a & x.key_image;
-      a & x.shared_secret_sig;
-      a & x.key_image_sig;
     }
 
     template <class Archive>
