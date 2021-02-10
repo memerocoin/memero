@@ -36,6 +36,7 @@
 #include "wallet/api/wallet2.h" // tranfser_details
 #include "cryptonote/core/cryptonote_tx_utils.h" // tx_destination_entry
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX
+#include "cryptonote/basic/fwd.h" // transaction
 
 namespace wallet {
 namespace logic {
@@ -57,6 +58,10 @@ namespace wallet {
    );
 
   std::string get_text_reason(const cryptonote::COMMAND_RPC_SEND_RAW_TX::response &res);
+
+  std::string get_weight_string(const size_t weight);
+
+  std::string get_weight_string(const cryptonote::transaction &tx, const size_t blob_size);
 
 } // wallet
 } // functional
