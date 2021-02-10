@@ -164,7 +164,6 @@ namespace
   const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <addr> <amount>) <lockblocks>");
   const char* USAGE_LOCKED_SWEEP("locked_sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] <address> <lockblocks>");
   const char* USAGE_SWEEP("sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] [outputs=<N>] <address>");
-  const char* USAGE_SWEEP_ACCOUNT("sweep_account <account> [index=<N1>[,<N2>,...] | index=all] [<priority>] [outputs=<N>] <address>");
   const char* USAGE_SWEEP_BELOW("sweep_below <amount_threshold> [index=<N1>[,<N2>,...]] [<priority>] <address>");
   const char* USAGE_SWEEP_SINGLE("sweep_single [<priority>] [outputs=<N>] <key_image> <address>");
   const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
@@ -1552,9 +1551,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("sweep", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep, std::placeholders::_1),
                            tr(USAGE_SWEEP),
                            tr("Send all unlocked balance to an address. If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. If the parameter \"outputs=<N>\" is specified and  N > 0, wallet splits the transaction into N even outputs."));
-  m_cmd_binder.set_handler("sweep_account", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_account, std::placeholders::_1),
-                           tr(USAGE_SWEEP_ACCOUNT),
-                           tr("Send all unlocked balance from a given account to an address. If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. If the parameter \"outputs=<N>\" is specified and  N > 0, wallet splits the transaction into N even outputs."));
   m_cmd_binder.set_handler("sweep_below",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_below, std::placeholders::_1),
                            tr(USAGE_SWEEP_BELOW),
@@ -3977,10 +3973,6 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
     {
       PRINT_USAGE(USAGE_SWEEP);
     }
-    else
-    {
-      PRINT_USAGE(USAGE_SWEEP_ACCOUNT);
-    }
   };
   if (args_.size() == 0)
   {
@@ -4348,26 +4340,6 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
 bool simple_wallet::sweep(const std::vector<std::string> &args_)
 {
   sweep_main(m_current_subaddress_account, 0, false, args_);
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::sweep_account(const std::vector<std::string> &args_)
-{
-  auto local_args = args_;
-  if (local_args.empty())
-  {
-    PRINT_USAGE(USAGE_SWEEP_ACCOUNT);
-    return true;
-  }
-  uint32_t account = 0;
-  if (!epee::string_tools::get_xtype_from_string(account, local_args[0]))
-  {
-    fail_msg_writer() << tr("Invalid account");
-    return true;
-  }
-  local_args.erase(local_args.begin());
-
-  sweep_main(account, 0, false, local_args);
   return true;
 }
 //----------------------------------------------------------------------------------------------------
