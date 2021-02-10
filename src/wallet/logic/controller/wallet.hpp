@@ -50,6 +50,13 @@ namespace wallet {
    , const bool is_printable
    );
 
+  bool load_from_file
+  (
+   const std::string& path_to_file
+   , std::string& target_str
+   , const size_t max_size = 1000000000
+   );
+
 } // wallet
 } // controller
 } // logic

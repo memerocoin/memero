@@ -4135,7 +4135,7 @@ bool simple_wallet::check_tx_proof(const std::vector<std::string> &args)
 
   // read signature file
   std::string sig_str;
-  if (!m_wallet->load_from_file(args[2], sig_str))
+  if (!wallet::logic::controller::wallet::load_from_file(args[2], sig_str))
   {
     fail_msg_writer() << tr("failed to load signature file");
     return true;
@@ -5359,7 +5359,7 @@ bool simple_wallet::sign(const std::vector<std::string> &args)
 
   const std::string &filename = args.back();
   std::string data;
-  bool r = m_wallet->load_from_file(filename, data);
+  bool r = wallet::logic::controller::wallet::load_from_file(filename, data);
   if (!r)
   {
     fail_msg_writer() << tr("failed to read file ") << filename;
@@ -5385,7 +5385,7 @@ bool simple_wallet::verify(const std::vector<std::string> &args)
   std::string signature= args[2];
 
   std::string data;
-  bool r = m_wallet->load_from_file(filename, data);
+  bool r = wallet::logic::controller::wallet::load_from_file(filename, data);
   if (!r)
   {
     fail_msg_writer() << tr("failed to read file ") << filename;

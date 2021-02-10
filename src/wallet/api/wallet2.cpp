@@ -3020,7 +3020,7 @@ void wallet2::change_password(const std::string &filename, const epee::wipeable_
 bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_string& password)
 {
   std::string keys_file_buf;
-  bool r = load_from_file(keys_file_name, keys_file_buf);
+  bool r = wallet::logic::controller::wallet::load_from_file(keys_file_name, keys_file_buf);
   THROW_WALLET_EXCEPTION_IF(!r, error::file_read_error, keys_file_name);
 
   // Load keys from buffer
@@ -3314,7 +3314,7 @@ bool wallet2::verify_password(const std::string& keys_file_name, const epee::wip
   wallet2::keys_file_data keys_file_data;
   std::string buf;
   bool encrypted_secret_keys = false;
-  bool r = load_from_file(keys_file_name, buf);
+  bool r = wallet::logic::controller::wallet::load_from_file(keys_file_name, buf);
   THROW_WALLET_EXCEPTION_IF(!r, error::file_read_error, keys_file_name);
 
   // Decrypt the contents
@@ -3726,7 +3726,8 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
     bool r = true;
     if (use_fs)
     {
-      load_from_file(m_wallet_file, cache_file_buf, std::numeric_limits<size_t>::max());
+      wallet::logic::controller::wallet::load_from_file
+        (m_wallet_file, cache_file_buf, std::numeric_limits<size_t>::max());
       THROW_WALLET_EXCEPTION_IF(!r, error::file_read_error, m_wallet_file);
     }
 
@@ -6659,60 +6660,6 @@ void wallet2::throw_on_rpc_response_error(bool r, const epee::json_rpc::error &e
   THROW_WALLET_EXCEPTION_IF(status.empty(), tools::error::no_connection_to_daemon, method);
 
   THROW_WALLET_EXCEPTION_IF(status == CORE_RPC_STATUS_BUSY, tools::error::daemon_busy, method);
-}
-//----------------------------------------------------------------------------------------------------
-
-bool wallet2::load_from_file(const std::string& path_to_file, std::string& target_str,
-                             size_t max_size)
-{
-  std::string data;
-  bool r = epee::file_io_utils::load_file_to_string(path_to_file, data, max_size);
-  if (!r)
-  {
-    return false;
-  }
-
-  if (!boost::algorithm::contains(boost::make_iterator_range(data.begin(), data.end()), config::lol::ASCII_OUTPUT_MAGIC))
-  {
-    // It's NOT our ascii dump.
-    target_str = std::move(data);
-    return true;
-  }
-
-  // Creating a BIO and calling PEM_read_bio instead of simpler PEM_read
-  // to avoid reading the file from disk twice.
-  BIO* b = BIO_new_mem_buf((const void*) data.data(), data.length());
-
-  char *name = NULL;
-  char *header = NULL;
-  unsigned char *openssl_data = NULL;
-  long len = 0;
-
-  // Save the result b/c we need to free the data before returning success/failure.
-  int success = PEM_read_bio(b, &name, &header, &openssl_data, &len);
-
-  try
-  {
-    target_str = std::string((const char*) openssl_data, len);
-  }
-  catch (...)
-  {
-    success = 0;
-  }
-
-  OPENSSL_free((void *) name);
-  OPENSSL_free((void *) header);
-  OPENSSL_free((void *) openssl_data);
-  BIO_free(b);
-
-  if (success == 0)
-  {
-    return false;
-  }
-  else
-  {
-    return true;
-  }
 }
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::hash_m_transfers(int64_t transfer_height, crypto::hash &hash) const

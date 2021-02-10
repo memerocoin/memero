@@ -98,6 +98,63 @@ namespace wallet {
     }
   }
 
+  bool load_from_file
+  (
+   const std::string& path_to_file
+   , std::string& target_str
+   , const size_t max_size
+   )
+  {
+    std::string data;
+    bool r = epee::file_io_utils::load_file_to_string(path_to_file, data, max_size);
+    if (!r)
+    {
+      return false;
+    }
+
+    if (!boost::algorithm::contains(boost::make_iterator_range(data.begin(), data.end()), config::lol::ASCII_OUTPUT_MAGIC))
+    {
+      // It's NOT our ascii dump.
+      target_str = std::move(data);
+      return true;
+    }
+
+    // Creating a BIO and calling PEM_read_bio instead of simpler PEM_read
+    // to avoid reading the file from disk twice.
+    BIO* b = BIO_new_mem_buf((const void*) data.data(), data.length());
+
+    char *name = NULL;
+    char *header = NULL;
+    unsigned char *openssl_data = NULL;
+    long len = 0;
+
+    // Save the result b/c we need to free the data before returning success/failure.
+    int success = PEM_read_bio(b, &name, &header, &openssl_data, &len);
+
+    try
+    {
+      target_str = std::string((const char*) openssl_data, len);
+    }
+    catch (...)
+    {
+      success = 0;
+    }
+
+    OPENSSL_free((void *) name);
+    OPENSSL_free((void *) header);
+    OPENSSL_free((void *) openssl_data);
+    BIO_free(b);
+
+    if (success == 0)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+
 } // wallet
 } // controller
 } // logic
