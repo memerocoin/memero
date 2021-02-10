@@ -223,46 +223,14 @@ namespace boost
     {
       a & x.m_change;
       a & x.m_sent_time;
-      if (ver < 5)
-      {
-        cryptonote::transaction tx;
-        a & tx;
-        x.m_tx = (const cryptonote::transaction_prefix&)tx;
-      }
-      else
-      {
-        a & x.m_tx;
-      }
-      if (ver < 1)
-        return;
+      a & x.m_tx;
       a & x.m_dests;
-      if (ver < 2)
-        return;
       a & x.m_state;
-      if (ver < 3)
-        return;
       a & x.m_timestamp;
-      if (ver < 4)
-        return;
       a & x.m_amount_in;
       a & x.m_amount_out;
-      if (ver < 6)
-      {
-        // v<6 may not have change accumulated in m_amount_out, which is a pain,
-        // as it's readily understood to be sum of outputs.
-        // We convert it to include change from v6
-        if (!typename Archive::is_saving() && x.m_change != (uint64_t)-1)
-          x.m_amount_out += x.m_change;
-      }
-      if (ver < 7)
-      {
-        x.m_subaddr_account = 0;
-        return;
-      }
       a & x.m_subaddr_account;
       a & x.m_subaddr_indices;
-      if (ver < 8)
-        return;
       a & x.m_rings;
     }
 
@@ -273,42 +241,11 @@ namespace boost
       a & x.m_amount_out;
       a & x.m_change;
       a & x.m_block_height;
-      if (ver < 1)
-        return;
       a & x.m_dests;
-      if (ver < 2)
-        return;
       a & x.m_timestamp;
-      if (ver < 3)
-      {
-        // v<3 may not have change accumulated in m_amount_out, which is a pain,
-        // as it's readily understood to be sum of outputs. Whether it got added
-        // or not depends on whether it came from a unconfirmed_transfer_details
-        // (not included) or not (included). We can't reliably tell here, so we
-        // check whether either yields a "negative" fee, or use the other if so.
-        // We convert it to include change from v3
-        if (!typename Archive::is_saving() && x.m_change != (uint64_t)-1)
-        {
-          if (x.m_amount_in > (x.m_amount_out + x.m_change))
-            x.m_amount_out += x.m_change;
-        }
-      }
-      if (ver < 4)
-      {
-        if (!typename Archive::is_saving())
-          x.m_unlock_time = 0;
-        return;
-      }
       a & x.m_unlock_time;
-      if (ver < 5)
-      {
-        x.m_subaddr_account = 0;
-        return;
-      }
       a & x.m_subaddr_account;
       a & x.m_subaddr_indices;
-      if (ver < 6)
-        return;
       a & x.m_rings;
     }
 
