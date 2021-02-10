@@ -65,6 +65,24 @@ namespace multisig {
     END_SERIALIZE()
   };
 
+  struct multisig_sig
+  {
+    rct::rctSig sigs;
+    std::unordered_set<crypto::public_key> ignore;
+    std::unordered_set<rct::key> used_L;
+    std::unordered_set<crypto::public_key> signing_keys;
+    rct::multisig_out msout;
+
+    BEGIN_SERIALIZE_OBJECT()
+    VERSION_FIELD(0)
+    FIELD(sigs)
+    FIELD(ignore)
+    FIELD(used_L)
+    FIELD(signing_keys)
+    FIELD(msout)
+    END_SERIALIZE()
+  };
+
 }
 } // type
 } // logic
@@ -75,6 +93,7 @@ using namespace wallet::logic::type::multisig;
 
 BOOST_CLASS_VERSION(multisig_info, 1)
 BOOST_CLASS_VERSION(multisig_info::LR, 0)
+BOOST_CLASS_VERSION(multisig_sig, 0)
 
 
 namespace boost
@@ -97,5 +116,16 @@ namespace boost
       a & x.m_LR;
       a & x.m_partial_key_images;
     }
+
+    template <class Archive>
+    inline void serialize(Archive &a, multisig_sig &x, const boost::serialization::version_type ver)
+    {
+      a & x.sigs;
+      a & x.ignore;
+      a & x.used_L;
+      a & x.signing_keys;
+      a & x.msout;
+    }
+
   }
 }

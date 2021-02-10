@@ -389,24 +389,6 @@ namespace tools
     typedef std::vector<transfer_details> transfer_container;
     typedef serializable_unordered_multimap<crypto::hash, payment_details> payment_container;
 
-    struct multisig_sig
-    {
-      rct::rctSig sigs;
-      std::unordered_set<crypto::public_key> ignore;
-      std::unordered_set<rct::key> used_L;
-      std::unordered_set<crypto::public_key> signing_keys;
-      rct::multisig_out msout;
-
-      BEGIN_SERIALIZE_OBJECT()
-        VERSION_FIELD(0)
-        FIELD(sigs)
-        FIELD(ignore)
-        FIELD(used_L)
-        FIELD(signing_keys)
-        FIELD(msout)
-      END_SERIALIZE()
-    };
-
     // The convention for destinations is:
     // dests does not include change
     // splitted_dsts (in construction_data) does
@@ -421,7 +403,7 @@ namespace tools
       crypto::secret_key tx_key;
       std::vector<crypto::secret_key> additional_tx_keys;
       std::vector<cryptonote::tx_destination_entry> dests;
-      std::vector<multisig_sig> multisig_sigs;
+      std::vector<wallet::logic::type::multisig::multisig_sig> multisig_sigs;
 
       tx_construction_data construction_data;
 
@@ -1270,7 +1252,6 @@ BOOST_CLASS_VERSION(tools::wallet2::unsigned_tx_set, 0)
 BOOST_CLASS_VERSION(tools::wallet2::signed_tx_set, 1)
 BOOST_CLASS_VERSION(tools::wallet2::tx_construction_data, 4)
 BOOST_CLASS_VERSION(tools::wallet2::pending_tx, 3)
-BOOST_CLASS_VERSION(tools::wallet2::multisig_sig, 0)
 
 namespace boost
 {
@@ -1636,16 +1617,6 @@ namespace boost
         return;
       }
       a & x.rct_config;
-    }
-
-    template <class Archive>
-    inline void serialize(Archive &a, tools::wallet2::multisig_sig &x, const boost::serialization::version_type ver)
-    {
-      a & x.sigs;
-      a & x.ignore;
-      a & x.used_L;
-      a & x.signing_keys;
-      a & x.msout;
     }
 
     template <class Archive>
