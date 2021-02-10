@@ -44,7 +44,7 @@ namespace pseudo_functional {
 namespace hash {
 
   //----------------------------------------------------------------------------------------------------
-  void hash_m_transfer(const tools::wallet2::transfer_details & transfer, crypto::hash &hash);
+  void hash_m_transfer(const wallet::logic::type::transfer::transfer_details & transfer, crypto::hash &hash);
 
   //----------------------------------------------------------------------------------------------------
   uint64_t hash_m_transfers

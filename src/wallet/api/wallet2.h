@@ -42,6 +42,7 @@
 #include "wallet/logic/type/multisig.hpp"
 #include "wallet/logic/type/hashchain.hpp"
 #include "wallet/logic/type/tx.hpp"
+#include "wallet/logic/type/transfer.hpp"
 
 #include <boost/exception/to_string.hpp>
 
@@ -75,6 +76,7 @@
 #include "node_rpc_proxy.h"
 
 using namespace wallet::logic::type::tx;
+using namespace wallet::logic::type::transfer;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
@@ -193,57 +195,6 @@ namespace tools
 
     wallet2(cryptonote::network_type nettype = cryptonote::MAINNET, uint64_t kdf_rounds = 1, bool unattended = false, std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory = std::unique_ptr<epee::net_utils::http::http_client_factory>(new net::http::client_factory()));
     ~wallet2();
-
-    struct transfer_details
-    {
-      uint64_t m_block_height;
-      cryptonote::transaction_prefix m_tx;
-      crypto::hash m_txid;
-      size_t m_internal_output_index;
-      uint64_t m_global_output_index;
-      bool m_spent;
-      bool m_frozen;
-      uint64_t m_spent_height;
-      crypto::key_image m_key_image; //TODO: key_image stored twice :(
-      rct::key m_mask;
-      uint64_t m_amount;
-      bool m_rct;
-      bool m_key_image_known;
-      bool m_key_image_request; // view wallets: we want to request it; cold wallets: it was requested
-      size_t m_pk_index;
-      cryptonote::subaddress_index m_subaddr_index;
-      bool m_key_image_partial;
-      std::vector<rct::key> m_multisig_k;
-      std::vector<wallet::logic::type::multisig::multisig_info> m_multisig_info; // one per other participant
-      std::vector<std::pair<uint64_t, crypto::hash>> m_uses;
-
-      bool is_rct() const { return m_rct; }
-      uint64_t amount() const { return m_amount; }
-      const crypto::public_key &get_public_key() const { return boost::get<const cryptonote::txout_to_key>(m_tx.vout[m_internal_output_index].target).key; }
-
-      BEGIN_SERIALIZE_OBJECT()
-        FIELD(m_block_height)
-        FIELD(m_tx)
-        FIELD(m_txid)
-        FIELD(m_internal_output_index)
-        FIELD(m_global_output_index)
-        FIELD(m_spent)
-        FIELD(m_frozen)
-        FIELD(m_spent_height)
-        FIELD(m_key_image)
-        FIELD(m_mask)
-        FIELD(m_amount)
-        FIELD(m_rct)
-        FIELD(m_key_image_known)
-        FIELD(m_key_image_request)
-        FIELD(m_pk_index)
-        FIELD(m_subaddr_index)
-        FIELD(m_key_image_partial)
-        FIELD(m_multisig_k)
-        FIELD(m_multisig_info)
-        FIELD(m_uses)
-      END_SERIALIZE()
-    };
 
     typedef std::vector<uint64_t> amounts_container;
     struct payment_details
@@ -1242,7 +1193,6 @@ namespace tools
   };
 }
 BOOST_CLASS_VERSION(tools::wallet2, 29)
-BOOST_CLASS_VERSION(tools::wallet2::transfer_details, 12)
 BOOST_CLASS_VERSION(tools::wallet2::payment_details, 5)
 BOOST_CLASS_VERSION(tools::wallet2::pool_payment_details, 1)
 BOOST_CLASS_VERSION(tools::wallet2::unconfirmed_transfer_details, 8)
@@ -1257,153 +1207,6 @@ namespace boost
 {
   namespace serialization
   {
-    template <class Archive>
-    inline typename std::enable_if<!Archive::is_loading::value, void>::type initialize_transfer_details(Archive &a, tools::wallet2::transfer_details &x, const boost::serialization::version_type ver)
-    {
-    }
-    template <class Archive>
-    inline typename std::enable_if<Archive::is_loading::value, void>::type initialize_transfer_details(Archive &a, tools::wallet2::transfer_details &x, const boost::serialization::version_type ver)
-    {
-        if (ver < 1)
-        {
-          x.m_mask = rct::identity();
-          x.m_amount = x.m_tx.vout[x.m_internal_output_index].amount;
-        }
-        if (ver < 2)
-        {
-          x.m_spent_height = 0;
-        }
-        if (ver < 4)
-        {
-          x.m_rct = x.m_tx.vout[x.m_internal_output_index].amount == 0;
-        }
-        if (ver < 6)
-        {
-          x.m_key_image_known = true;
-        }
-        if (ver < 7)
-        {
-          x.m_pk_index = 0;
-        }
-        if (ver < 8)
-        {
-          x.m_subaddr_index = {};
-        }
-        if (ver < 9)
-        {
-          x.m_key_image_partial = false;
-          x.m_multisig_k.clear();
-          x.m_multisig_info.clear();
-        }
-        if (ver < 10)
-        {
-          x.m_key_image_request = false;
-        }
-        if (ver < 12)
-        {
-          x.m_frozen = false;
-        }
-    }
-
-    template <class Archive>
-    inline void serialize(Archive &a, tools::wallet2::transfer_details &x, const boost::serialization::version_type ver)
-    {
-      a & x.m_block_height;
-      a & x.m_global_output_index;
-      a & x.m_internal_output_index;
-      if (ver < 3)
-      {
-        cryptonote::transaction tx;
-        a & tx;
-        x.m_tx = (const cryptonote::transaction_prefix&)tx;
-        x.m_txid = cryptonote::get_transaction_hash(tx);
-      }
-      else
-      {
-        a & x.m_tx;
-      }
-      a & x.m_spent;
-      a & x.m_key_image;
-      if (ver < 1)
-      {
-        // ensure mask and amount are set
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_mask;
-      a & x.m_amount;
-      if (ver < 2)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_spent_height;
-      if (ver < 3)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_txid;
-      if (ver < 4)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_rct;
-      if (ver < 5)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      if (ver < 6)
-      {
-        // v5 did not properly initialize
-        uint8_t u;
-        a & u;
-        x.m_key_image_known = true;
-        return;
-      }
-      a & x.m_key_image_known;
-      if (ver < 7)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_pk_index;
-      if (ver < 8)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_subaddr_index;
-      if (ver < 9)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_multisig_info;
-      a & x.m_multisig_k;
-      a & x.m_key_image_partial;
-      if (ver < 10)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_key_image_request;
-      if (ver < 11)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_uses;
-      if (ver < 12)
-      {
-        initialize_transfer_details(a, x, ver);
-        return;
-      }
-      a & x.m_frozen;
-    }
-
     template <class Archive>
     inline void serialize(Archive &a, tools::wallet2::unconfirmed_transfer_details &x, const boost::serialization::version_type ver)
     {

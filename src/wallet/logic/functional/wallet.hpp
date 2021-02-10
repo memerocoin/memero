@@ -35,7 +35,7 @@
 #include <optional>
 #include <vector>
 
-#include "wallet/api/wallet2.h" // tranfser_details
+#include "wallet/logic/type/transfer.hpp" // tranfser_details
 #include "cryptonote/core/cryptonote_tx_utils.h" // tx_destination_entry
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX
 #include "cryptonote/basic/fwd.h" // transaction
@@ -55,7 +55,7 @@ namespace wallet {
   size_t get_num_outputs
   (
    const std::vector<cryptonote::tx_destination_entry> &dsts
-   , const std::vector<tools::wallet2::transfer_details> &transfers
+   , const std::vector<::wallet::logic::type::transfer::transfer_details> &transfers
    , const std::vector<size_t> &selected_transfers
    );
 

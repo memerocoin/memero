@@ -2639,7 +2639,7 @@ void wallet2::detach_blockchain(uint64_t height, std::map<std::pair<uint64_t, ui
 
   for (size_t i = 0; i < m_transfers.size(); ++i)
   {
-    wallet2::transfer_details &td = m_transfers[i];
+    wallet::logic::type::transfer::transfer_details &td = m_transfers[i];
     if (td.m_spent && td.m_spent_height >= height)
     {
       LOG_PRINT_L1("Resetting spent/frozen status for output " << i << ": " << td.m_key_image);
@@ -5406,7 +5406,7 @@ std::vector<size_t> wallet2::get_only_rct(const std::vector<size_t> &unused_dust
   return indices;
 }
 
-static uint32_t get_count_above(const std::vector<wallet2::transfer_details> &transfers, const std::vector<size_t> &indices, uint64_t threshold)
+static uint32_t get_count_above(const std::vector<wallet::logic::type::transfer::transfer_details> &transfers, const std::vector<size_t> &indices, uint64_t threshold)
 {
   uint32_t count = 0;
   for (size_t idx: indices)
@@ -6143,7 +6143,7 @@ uint64_t wallet2::get_num_rct_outputs()
   return resp_t.histogram[0].total_instances;
 }
 //----------------------------------------------------------------------------------------------------
-const wallet2::transfer_details &wallet2::get_transfer_details(size_t idx) const
+const wallet::logic::type::transfer::transfer_details &wallet2::get_transfer_details(size_t idx) const
 {
   THROW_WALLET_EXCEPTION_IF(idx >= m_transfers.size(), error::wallet_internal_error, "Bad transfer index");
   return m_transfers[idx];

@@ -40,7 +40,7 @@ namespace pseudo_functional {
 namespace hash {
 
   //----------------------------------------------------------------------------------------------------
-  void hash_m_transfer(const tools::wallet2::transfer_details & transfer, crypto::hash &hash)
+  void hash_m_transfer(const wallet::logic::type::transfer::transfer_details & transfer, crypto::hash &hash)
   {
     EVP_MD_CTX *state= EVP_MD_CTX_new();
     EVP_DigestInit_ex(state, EVP_sha3_256(), NULL);

@@ -85,7 +85,7 @@ namespace wallet {
   size_t get_num_outputs
   (
    const std::vector<cryptonote::tx_destination_entry> &dsts
-   , const std::vector<tools::wallet2::transfer_details> &transfers
+   , const std::vector<::wallet::logic::type::transfer::transfer_details> &transfers
    , const std::vector<size_t> &selected_transfers
    )
   {

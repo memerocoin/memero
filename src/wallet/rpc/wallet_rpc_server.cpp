@@ -330,7 +330,7 @@ namespace tools
         balance_per_subaddress_per_account[req.account_index] = m_wallet->balance_per_subaddress(req.account_index, req.strict);
         unlocked_balance_per_subaddress_per_account[req.account_index] = m_wallet->unlocked_balance_per_subaddress(req.account_index, req.strict);
       }
-      std::vector<tools::wallet2::transfer_details> transfers;
+      std::vector<wallet::logic::type::transfer::transfer_details> transfers;
       m_wallet->get_transfers(transfers);
       for (const auto& p : balance_per_subaddress_per_account)
       {
@@ -359,7 +359,7 @@ namespace tools
           info.blocks_to_unlock = unlocked_balance_per_subaddress[i].second.first;
           info.time_to_unlock = unlocked_balance_per_subaddress[i].second.second;
           info.label = m_wallet->get_subaddress_label(index);
-          info.num_unspent_outputs = std::count_if(transfers.begin(), transfers.end(), [&](const tools::wallet2::transfer_details& td) { return !td.m_spent && td.m_subaddr_index == index; });
+          info.num_unspent_outputs = std::count_if(transfers.begin(), transfers.end(), [&](const wallet::logic::type::transfer::transfer_details& td) { return !td.m_spent && td.m_subaddr_index == index; });
           res.per_subaddress.emplace_back(std::move(info));
         }
       }
@@ -400,7 +400,7 @@ namespace tools
         info.address = m_wallet->get_subaddress_as_str(index);
         info.label = m_wallet->get_subaddress_label(index);
         info.address_index = index.minor;
-        info.used = std::find_if(transfers.begin(), transfers.end(), [&](const tools::wallet2::transfer_details& td) { return td.m_subaddr_index == index; }) != transfers.end();
+        info.used = std::find_if(transfers.begin(), transfers.end(), [&](const wallet::logic::type::transfer::transfer_details& td) { return td.m_subaddr_index == index; }) != transfers.end();
       }
       res.address = m_wallet->get_subaddress_as_str({req.account_index, 0});
     }
