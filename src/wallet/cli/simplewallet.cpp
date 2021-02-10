@@ -164,7 +164,6 @@ namespace
   const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <addr> <amount>) <lockblocks>");
   const char* USAGE_LOCKED_SWEEP("locked_sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] <address> <lockblocks>");
   const char* USAGE_SWEEP("sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] [outputs=<N>] <address>");
-  const char* USAGE_SWEEP_BELOW("sweep_below <amount_threshold> [index=<N1>[,<N2>,...]] [<priority>] <address>");
   const char* USAGE_SWEEP_SINGLE("sweep_single [<priority>] [outputs=<N>] <key_image> <address>");
   const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
   const char* USAGE_ACCOUNT("account\n"
@@ -1551,10 +1550,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("sweep", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep, std::placeholders::_1),
                            tr(USAGE_SWEEP),
                            tr("Send all unlocked balance to an address. If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. If the parameter \"outputs=<N>\" is specified and  N > 0, wallet splits the transaction into N even outputs."));
-  m_cmd_binder.set_handler("sweep_below",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_below, std::placeholders::_1),
-                           tr(USAGE_SWEEP_BELOW),
-                           tr("Send all unlocked outputs below the threshold to an address."));
   m_cmd_binder.set_handler("sweep_single",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_single, std::placeholders::_1),
                            tr(USAGE_SWEEP_SINGLE),
@@ -3965,14 +3960,7 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
 {
   auto print_usage = [this, account, below]()
   {
-    if (below)
-    {
-      PRINT_USAGE(USAGE_SWEEP_BELOW);
-    }
-    else if (account == m_current_subaddress_account)
-    {
       PRINT_USAGE(USAGE_SWEEP);
-    }
   };
   if (args_.size() == 0)
   {
@@ -4340,23 +4328,6 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
 bool simple_wallet::sweep(const std::vector<std::string> &args_)
 {
   sweep_main(m_current_subaddress_account, 0, false, args_);
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::sweep_below(const std::vector<std::string> &args_)
-{
-  uint64_t below = 0;
-  if (args_.size() < 1)
-  {
-    fail_msg_writer() << tr("missing threshold amount");
-    return true;
-  }
-  if (!cryptonote::parse_amount(below, args_[0]))
-  {
-    fail_msg_writer() << tr("invalid amount threshold");
-    return true;
-  }
-  sweep_main(m_current_subaddress_account, below, false, std::vector<std::string>(++args_.begin(), args_.end()));
   return true;
 }
 //----------------------------------------------------------------------------------------------------
