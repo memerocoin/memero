@@ -146,6 +146,13 @@ namespace wallet {
     return get_weight_string(get_transaction_weight(tx, blob_size));
   }
 
+  uint32_t get_subaddress_clamped_sum(const uint32_t idx, const uint32_t extra)
+  {
+    static constexpr uint32_t uint32_max = std::numeric_limits<uint32_t>::max();
+    if (idx > uint32_max - extra)
+      return uint32_max;
+    return idx + extra;
+  }
 
 } // wallet
 } // functional

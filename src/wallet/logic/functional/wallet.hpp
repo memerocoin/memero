@@ -63,6 +63,8 @@ namespace wallet {
 
   std::string get_weight_string(const cryptonote::transaction &tx, const size_t blob_size);
 
+  uint32_t get_subaddress_clamped_sum(const uint32_t idx, const uint32_t extra);
+
 } // wallet
 } // functional
 } // logic
