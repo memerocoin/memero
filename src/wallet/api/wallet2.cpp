@@ -88,6 +88,7 @@ using namespace epee;
 #include "wallet/logic/pseudo_functional/proof.hpp"
 #include "wallet/logic/pseudo_functional/hash.hpp"
 #include "wallet/logic/controller/proof.hpp"
+#include "wallet/logic/controller/wallet.hpp"
 #include "wallet/logic/state/gamma_picker.hpp"
 
 extern "C"
@@ -194,20 +195,6 @@ struct options {
   const command_line::arg_descriptor<bool> offline = {"offline", tools::wallet2::tr("Do not connect to a daemon"), false};
   const command_line::arg_descriptor<std::string> extra_entropy = {"extra-entropy", tools::wallet2::tr("File containing extra entropy to initialize the PRNG (any data, aim for 256 bits of entropy to be useful, which typically means more than 256 bits of data)")};
 };
-
-void do_prepare_file_names(const std::string& file_path, std::string& keys_file, std::string& wallet_file)
-{
-  keys_file = file_path;
-  wallet_file = file_path;
-  std::error_code e;
-  if(string_tools::get_extension(keys_file) == "keys")
-  {//provided keys file name
-    wallet_file = string_tools::cut_off_extension(wallet_file);
-  }else
-  {//provided wallet file name
-    keys_file += ".keys";
-  }
-}
 
 std::string get_weight_string(size_t weight)
 {
@@ -3660,7 +3647,7 @@ void wallet2::write_watch_only_wallet(const std::string& wallet_name, const epee
 void wallet2::wallet_exists(const std::string& file_path, bool& keys_file_exists, bool& wallet_file_exists)
 {
   std::string keys_file, wallet_file;
-  do_prepare_file_names(file_path, keys_file, wallet_file);
+  wallet::logic::controller::wallet::do_prepare_file_names(file_path, keys_file, wallet_file);
 
   std::error_code ignore;
   keys_file_exists = std::filesystem::exists(keys_file, ignore);
@@ -3674,7 +3661,7 @@ bool wallet2::wallet_valid_path_format(const std::string& file_path)
 //----------------------------------------------------------------------------------------------------
 bool wallet2::prepare_file_names(const std::string& file_path)
 {
-  do_prepare_file_names(file_path, m_keys_file, m_wallet_file);
+  wallet::logic::controller::wallet::do_prepare_file_names(file_path, m_keys_file, m_wallet_file);
   return true;
 }
 //----------------------------------------------------------------------------------------------------

@@ -43,6 +43,7 @@ set(wallet_sources
   ../logic/pseudo_functional/uri.cpp
   ../logic/pseudo_functional/hash.cpp
   ../logic/controller/proof.cpp
+  ../logic/controller/wallet.cpp
   ../logic/state/gamma_picker.cpp
   )
 
@@ -60,6 +61,7 @@ set(wallet_private_headers
   ../logic/pseudo_functional/uri.hpp
   ../logic/pseudo_functional/hash.hpp
   ../logic/controller/proof.hpp
+  ../logic/controller/wallet.hpp
   ../logic/state/gamma_picker.hpp
 
   wallet_rpc_server.h
