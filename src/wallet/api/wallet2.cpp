@@ -4705,11 +4705,6 @@ uint64_t wallet2::get_dynamic_base_fee_estimate()
   return base_fee;
 }
 //----------------------------------------------------------------------------------------------------
-uint64_t wallet2::get_base_fee()
-{
-  return FEE_PER_BYTE;
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_fee_quantization_mask()
 {
   bool use_per_byte_fee = true;

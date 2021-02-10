@@ -772,7 +772,7 @@ bool simple_wallet::print_fee_info(const std::vector<std::string> &args/* = std:
 {
   if (!try_connect_to_daemon())
     return true;
-  const uint64_t base_fee = m_wallet->get_base_fee();
+  const uint64_t base_fee = wallet::logic::functional::fee::get_base_fee();
   const std::string base = "kB";
   const uint64_t typical_size = 2500;
   const uint64_t size_granularity = 1;

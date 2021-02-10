@@ -35,6 +35,8 @@
 #include "misc_log_ex.h"
 #include "wallet/api/wallet_errors.h"
 
+#include "config/constant.hpp"
+
 namespace wallet {
 namespace logic {
 namespace functional {
@@ -175,6 +177,11 @@ namespace fee {
 
     THROW_WALLET_EXCEPTION_IF (false, tools::error::invalid_priority);
     return 1;
+  }
+
+  uint64_t get_base_fee()
+  {
+    return constant::FEE_PER_BYTE;
   }
 
 } // fee
