@@ -30,8 +30,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #if BOOST_VERSION >= 107400
@@ -40,12 +38,16 @@
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/deque.hpp>
+
+#include "wallet/logic/type.hpp"
+#include "wallet/logic/type/hashchain.hpp"
+
 #include <boost/exception/to_string.hpp>
+
+#include <memory>
 #include <mutex>
 #include <atomic>
 #include <random>
-
-#include "wallet/logic/type.hpp"
 
 #include "include_base_utils.h"
 #include "cryptonote/basic/account.h"
@@ -130,46 +132,6 @@ namespace tools
   private:
     wallet2 * wallet;
   };
-
-  class hashchain
-  {
-  public:
-    hashchain(): m_genesis(crypto::null_hash), m_offset(0) {}
-
-    size_t size() const { return m_blockchain.size() + m_offset; }
-    size_t offset() const { return m_offset; }
-    const crypto::hash &genesis() const { return m_genesis; }
-    void push_back(const crypto::hash &hash) { if (m_offset == 0 && m_blockchain.empty()) m_genesis = hash; m_blockchain.push_back(hash); }
-    bool is_in_bounds(size_t idx) const { return idx >= m_offset && idx < size(); }
-    const crypto::hash &operator[](size_t idx) const { return m_blockchain[idx - m_offset]; }
-    crypto::hash &operator[](size_t idx) { return m_blockchain[idx - m_offset]; }
-    void crop(size_t height) { m_blockchain.resize(height - m_offset); }
-    void clear() { m_offset = 0; m_blockchain.clear(); }
-    bool empty() const { return m_blockchain.empty() && m_offset == 0; }
-    void trim(size_t height) { while (height > m_offset && m_blockchain.size() > 1) { m_blockchain.pop_front(); ++m_offset; } m_blockchain.shrink_to_fit(); }
-    void refill(const crypto::hash &hash) { m_blockchain.push_back(hash); --m_offset; }
-
-    template <class t_archive>
-    inline void serialize(t_archive &a, const unsigned int ver)
-    {
-      a & m_offset;
-      a & m_genesis;
-      a & m_blockchain;
-    }
-
-    BEGIN_SERIALIZE_OBJECT()
-      VERSION_FIELD(0)
-      VARINT_FIELD(m_offset)
-      FIELD(m_genesis)
-      FIELD(m_blockchain)
-    END_SERIALIZE()
-
-  private:
-    size_t m_offset;
-    crypto::hash m_genesis;
-    std::deque<crypto::hash> m_blockchain;
-  };
-
 
   class wallet2
   {
@@ -1207,7 +1169,7 @@ namespace tools
     std::string m_wallet_file;
     std::string m_keys_file;
     const std::unique_ptr<epee::net_utils::http::abstract_http_client> m_http_client;
-    hashchain m_blockchain;
+    wallet::logic::type::hashchain m_blockchain;
     serializable_unordered_map<crypto::hash, unconfirmed_transfer_details> m_unconfirmed_txs;
     serializable_unordered_map<crypto::hash, confirmed_transfer_details> m_confirmed_txs;
     serializable_unordered_multimap<crypto::hash, pool_payment_details> m_unconfirmed_payments;
