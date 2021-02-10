@@ -164,7 +164,6 @@ namespace
   const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <addr> <amount>) <lockblocks>");
   const char* USAGE_LOCKED_SWEEP("locked_sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] <address> <lockblocks>");
   const char* USAGE_SWEEP("sweep [index=<N1>[,<N2>,...] | index=all] [<priority>] [outputs=<N>] <address>");
-  const char* USAGE_SWEEP_SINGLE("sweep_single [<priority>] [outputs=<N>] <key_image> <address>");
   const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
   const char* USAGE_ACCOUNT("account\n"
                             "  account new <label text with white spaces allowed>\n"
@@ -1550,10 +1549,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("sweep", std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep, std::placeholders::_1),
                            tr(USAGE_SWEEP),
                            tr("Send all unlocked balance to an address. If the parameter \"index=<N1>[,<N2>,...]\" or \"index=all\" is specified, the wallet sweeps outputs received by those or all address indices, respectively. If omitted, the wallet randomly chooses an address index to be used. If the parameter \"outputs=<N>\" is specified and  N > 0, wallet splits the transaction into N even outputs."));
-  m_cmd_binder.set_handler("sweep_single",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::sweep_single, std::placeholders::_1),
-                           tr(USAGE_SWEEP_SINGLE),
-                           tr("Send a single output of the given key image to an address without change."));
   m_cmd_binder.set_handler("set_log",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_log, std::placeholders::_1),
                            tr(USAGE_SET_LOG),
@@ -4162,155 +4157,6 @@ bool simple_wallet::sweep_main(uint32_t account, uint64_t below, bool locked, co
     {
       commit_or_save(ptx_vector, m_do_not_relay);
     }
-  }
-  catch (const std::exception& e)
-  {
-    handle_transfer_exception(std::current_exception());
-  }
-  catch (...)
-  {
-    LOG_ERROR("unknown error");
-    fail_msg_writer() << tr("unknown error");
-  }
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
-{
-  if (!try_connect_to_daemon())
-    return true;
-
-  std::vector<std::string> local_args = args_;
-
-  uint32_t priority = 0;
-  if (local_args.size() > 0 && parse_priority(local_args[0], priority))
-    local_args.erase(local_args.begin());
-
-  priority = m_wallet->adjust_priority(priority);
-
-  size_t fake_outs_count = config::lol::mixin;
-  if(local_args.size() > 0) {
-    size_t ring_size;
-    if(!epee::string_tools::get_xtype_from_string(ring_size, local_args[0]))
-    {
-    }
-    else if (ring_size == 0)
-    {
-      fail_msg_writer() << tr("Ring size must not be 0");
-      return true;
-    }
-    else
-    {
-      fake_outs_count = ring_size - 1;
-      local_args.erase(local_args.begin());
-    }
-  }
-  uint64_t adjusted_fake_outs_count = m_wallet->adjust_mixin(fake_outs_count);
-  if (adjusted_fake_outs_count > fake_outs_count)
-  {
-    fail_msg_writer() << (boost::format(tr("ring size %u is too small, minimum is %u")) % (fake_outs_count+1) % (adjusted_fake_outs_count+1)).str();
-    return true;
-  }
-  if (adjusted_fake_outs_count < fake_outs_count)
-  {
-    fail_msg_writer() << (boost::format(tr("ring size %u is too large, maximum is %u")) % (fake_outs_count+1) % (adjusted_fake_outs_count+1)).str();
-    return true;
-  }
-
-  size_t outputs = 1;
-  if (local_args.size() > 0 && local_args[0].substr(0, 8) == "outputs=")
-  {
-    if (!epee::string_tools::get_xtype_from_string(outputs, local_args[0].substr(8)))
-    {
-      fail_msg_writer() << tr("Failed to parse number of outputs");
-      return true;
-    }
-    else if (outputs < 1)
-    {
-      fail_msg_writer() << tr("Amount of outputs should be greater than 0");
-      return true;
-    }
-    else
-    {
-      local_args.erase(local_args.begin());
-    }
-  }
-
-  std::vector<uint8_t> extra;
-  if (local_args.size() != 2)
-  {
-    PRINT_USAGE(USAGE_SWEEP_SINGLE);
-    return true;
-  }
-
-  crypto::key_image ki;
-  if (!epee::string_tools::hex_to_pod(local_args[0], ki))
-  {
-    fail_msg_writer() << tr("failed to parse key image");
-    return true;
-  }
-
-  cryptonote::address_parse_info info;
-  if (!cryptonote::get_account_address_from_str_or_url(info, m_wallet->nettype(), local_args[1]))
-  {
-    fail_msg_writer() << tr("failed to parse address");
-    return true;
-  }
-
-  SCOPED_WALLET_UNLOCK();
-
-  try
-  {
-    // figure out what tx will be necessary
-    auto ptx_vector = m_wallet->create_transactions_single(ki, info.address, info.is_subaddress, outputs, fake_outs_count, 0 /* unlock_time */, priority, extra);
-
-    if (ptx_vector.empty())
-    {
-      fail_msg_writer() << tr("No outputs found");
-      return true;
-    }
-    if (ptx_vector.size() > 1)
-    {
-      fail_msg_writer() << tr("Multiple transactions are created, which is not supposed to happen");
-      return true;
-    }
-    if (ptx_vector[0].selected_transfers.size() != 1)
-    {
-      fail_msg_writer() << tr("The transaction uses multiple or no inputs, which is not supposed to happen");
-      return true;
-    }
-
-    // give user total and fee, and prompt to confirm
-    uint64_t total_fee = ptx_vector[0].fee;
-    uint64_t total_sent = m_wallet->get_transfer_details(ptx_vector[0].selected_transfers.front()).amount();
-    std::ostringstream prompt;
-    if (!process_ring_members(ptx_vector, prompt, m_wallet->print_ring_members()))
-      return true;
-    prompt << boost::format(tr("Sweeping %s for a total fee of %s.  Is this okay?")) %
-      print_money(total_sent) %
-      print_money(total_fee);
-    std::string accepted = input_line(prompt.str(), true);
-    if (std::cin.eof())
-      return true;
-    if (!command_line::is_yes(accepted))
-    {
-      fail_msg_writer() << tr("transaction cancelled.");
-      return true;
-    }
-
-    if (m_wallet->watch_only())
-    {
-      {
-        fail_msg_writer() << tr("Failed to write transaction(s) to file");
-      }
-    }
-    else
-    {
-      m_wallet->commit_tx(ptx_vector[0]);
-      success_msg_writer(true) << tr("Money successfully sent, transaction: ") << get_transaction_hash(ptx_vector[0].tx);
-    }
-
   }
   catch (const std::exception& e)
   {

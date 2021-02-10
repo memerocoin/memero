@@ -704,61 +704,6 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_SWEEP_SINGLE
-  {
-    struct request_t
-    {
-      std::string address;
-      uint32_t priority;
-      uint64_t ring_size;
-      uint64_t outputs;
-      uint64_t unlock_time;
-      bool get_tx_key;
-      std::string key_image;
-      bool do_not_relay;
-      bool get_tx_hex;
-      bool get_tx_metadata;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(address)
-        KV_SERIALIZE(priority)
-        KV_SERIALIZE_OPT(ring_size, (uint64_t)0)
-        KV_SERIALIZE_OPT(outputs, (uint64_t)1)
-        KV_SERIALIZE(unlock_time)
-        KV_SERIALIZE(get_tx_key)
-        KV_SERIALIZE(key_image)
-        KV_SERIALIZE_OPT(do_not_relay, false)
-        KV_SERIALIZE_OPT(get_tx_hex, false)
-        KV_SERIALIZE_OPT(get_tx_metadata, false)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::string tx_hash;
-      std::string tx_key;
-      uint64_t amount;
-      uint64_t fee;
-      uint64_t weight;
-      std::string tx_blob;
-      std::string tx_metadata;
-      std::string unsigned_txset;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(tx_hash)
-        KV_SERIALIZE(tx_key)
-        KV_SERIALIZE(amount)
-        KV_SERIALIZE(fee)
-        KV_SERIALIZE(weight)
-        KV_SERIALIZE(tx_blob)
-        KV_SERIALIZE(tx_metadata)
-        KV_SERIALIZE(unsigned_txset)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_RELAY_TX
   {
     struct request_t
