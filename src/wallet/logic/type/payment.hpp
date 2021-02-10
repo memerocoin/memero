@@ -112,31 +112,10 @@ namespace boost
       a & x.m_amount;
       a & x.m_block_height;
       a & x.m_unlock_time;
-      if (ver < 1)
-        return;
       a & x.m_timestamp;
-      if (ver < 2)
-        {
-          x.m_coinbase = false;
-          x.m_subaddr_index = {};
-          return;
-        }
       a & x.m_subaddr_index;
-      if (ver < 3)
-        {
-          x.m_coinbase = false;
-          x.m_fee = 0;
-          return;
-        }
       a & x.m_fee;
-      if (ver < 4)
-        {
-          x.m_coinbase = false;
-          return;
-        }
       a & x.m_coinbase;
-      if (ver < 5)
-        return;
       a & x.m_amounts;
     }
 
