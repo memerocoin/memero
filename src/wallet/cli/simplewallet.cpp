@@ -71,6 +71,7 @@
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
+#include "wallet/logic/controller/wallet.hpp"
 
 #ifdef HAVE_READLINE
 #include "readline_buffer.h"
@@ -4006,7 +4007,7 @@ bool simple_wallet::get_tx_proof(const std::vector<std::string> &args)
   {
     std::string sig_str = m_wallet->get_tx_proof(txid, info.address, info.is_subaddress, args.size() == 3 ? args[2] : "");
     const std::string filename = "lolnero_tx_proof";
-    if (m_wallet->save_to_file(filename, sig_str, true))
+    if (wallet::logic::controller::wallet::save_to_file(filename, sig_str, true))
       success_msg_writer() << tr("signature file saved to: ") << filename;
     else
       fail_msg_writer() << tr("failed to save signature file");
@@ -5574,7 +5575,7 @@ void simple_wallet::commit_or_save(std::vector<tools::wallet2::pending_tx>& ptx_
       tx_to_blob(ptx.tx, blob);
       const std::string blob_hex = epee::string_tools::buff_to_hex_nodelimer(blob);
       const std::string filename = "raw_lolnero_tx" + (ptx_vector.size() == 1 ? "" : ("_" + std::to_string(i++)));
-      if (m_wallet->save_to_file(filename, blob_hex, true))
+      if (wallet::logic::controller::wallet::save_to_file(filename, blob_hex, true))
         success_msg_writer(true) << tr("Transaction successfully saved to ") << filename << tr(", txid ") << txid;
       else
         fail_msg_writer() << tr("Failed to save transaction to ") << filename << tr(", txid ") << txid;

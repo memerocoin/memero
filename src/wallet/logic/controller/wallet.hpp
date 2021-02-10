@@ -43,6 +43,13 @@ namespace wallet {
    , std::string& wallet_file
    );
 
+  bool save_to_file
+  (
+   const std::string& path_to_file
+   , const std::string& raw
+   , const bool is_printable
+   );
+
 } // wallet
 } // controller
 } // logic

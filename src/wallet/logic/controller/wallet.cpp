@@ -32,7 +32,12 @@
 
 #include "wallet.hpp"
 
+#include <openssl/pem.h> // pem_write
+
 #include "string_tools.h"
+#include "file_io_utils.h"
+
+#include "config/lol.hpp"
 
 namespace wallet {
 namespace logic {
@@ -50,12 +55,47 @@ namespace wallet {
     wallet_file = file_path;
     std::error_code e;
     if(epee::string_tools::get_extension(keys_file) == "keys")
-      {//provided keys file name
-        wallet_file = epee::string_tools::cut_off_extension(wallet_file);
-      }else
-      {//provided wallet file name
-        keys_file += ".keys";
-      }
+    {//provided keys file name
+      wallet_file = epee::string_tools::cut_off_extension(wallet_file);
+    } else
+    {//provided wallet file name
+      keys_file += ".keys";
+    }
+  }
+
+
+  bool save_to_file
+  (
+   const std::string& path_to_file
+   , const std::string& raw
+   , const bool is_printable
+   )
+  {
+    if (is_printable)
+    {
+      return epee::file_io_utils::save_string_to_file(path_to_file, raw);
+    }
+
+    FILE *fp = fopen(path_to_file.c_str(), "w+");
+    if (!fp)
+    {
+      MERROR("Failed to open wallet file for writing: " << path_to_file << ": " << strerror(errno));
+      return false;
+    }
+
+    // Save the result b/c we need to close the fp before returning success/failure.
+    int write_result = PEM_write(fp, config::lol::ASCII_OUTPUT_MAGIC.c_str(),
+                                 "", (const unsigned char *) raw.c_str(), raw.length());
+    fclose(fp);
+
+    if (write_result == 0)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
   }
 
 } // wallet

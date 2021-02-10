@@ -138,8 +138,6 @@ using namespace wallet::logic::functional::fee;
 
 #define IGNORE_LONG_PAYMENT_ID_FROM_BLOCK_VERSION 12
 
-static const std::string ASCII_OUTPUT_MAGIC = "LolneroAsciiDataV1";
-
 std::mutex tools::wallet2::default_daemon_address_lock;
 std::string tools::wallet2::default_daemon_address = "";
 
@@ -2817,7 +2815,8 @@ bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable
   std::string tmp_file_name = keys_file_name + ".new";
   std::string buf;
   bool r = ::serialization::dump_binary(keys_file_data.value(), buf);
-  r = r && save_to_file(tmp_file_name, buf);
+  r = r && wallet::logic::controller::wallet::save_to_file
+    (tmp_file_name, buf, m_export_format == ExportFormat::Binary);
   CHECK_AND_ASSERT_MES(r, false, "failed to generate wallet keys file " << tmp_file_name);
 
   unlock_keys_file();
@@ -3406,7 +3405,8 @@ void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, cons
 
     if (create_address_file)
     {
-      r = save_to_file(m_wallet_file + ".address.txt", m_account.get_public_address_str(m_nettype), true);
+      r = wallet::logic::controller::wallet::save_to_file
+        (m_wallet_file + ".address.txt", m_account.get_public_address_str(m_nettype), true);
       if(!r) MERROR("String with address text not saved");
     }
   }
@@ -3955,7 +3955,8 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
     {
       // save address to the new file
       const std::string address_file = m_wallet_file + ".address.txt";
-      r = save_to_file(address_file, m_account.get_public_address_str(m_nettype), true);
+      r = wallet::logic::controller::wallet::save_to_file
+        (address_file, m_account.get_public_address_str(m_nettype), true);
       THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, m_wallet_file);
       // remove old address file
       r = std::filesystem::remove(old_address_file);
@@ -3982,7 +3983,8 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
     binary_archive<true> oar(oss);
     bool success = ::serialization::serialize(oar, cache_file_data.value());
     if (success) {
-        success = save_to_file(new_file, oss.str());
+      success = wallet::logic::controller::wallet::save_to_file
+        (new_file, oss.str(), m_export_format == ExportFormat::Binary);
     }
     THROW_WALLET_EXCEPTION_IF(!success, error::file_save_error, new_file);
 #else
@@ -6660,35 +6662,6 @@ void wallet2::throw_on_rpc_response_error(bool r, const epee::json_rpc::error &e
 }
 //----------------------------------------------------------------------------------------------------
 
-bool wallet2::save_to_file(const std::string& path_to_file, const std::string& raw, bool is_printable) const
-{
-  if (is_printable || m_export_format == ExportFormat::Binary)
-  {
-    return epee::file_io_utils::save_string_to_file(path_to_file, raw);
-  }
-
-  FILE *fp = fopen(path_to_file.c_str(), "w+");
-  if (!fp)
-  {
-    MERROR("Failed to open wallet file for writing: " << path_to_file << ": " << strerror(errno));
-    return false;
-  }
-
-  // Save the result b/c we need to close the fp before returning success/failure.
-  int write_result = PEM_write(fp, ASCII_OUTPUT_MAGIC.c_str(), "", (const unsigned char *) raw.c_str(), raw.length());
-  fclose(fp);
-
-  if (write_result == 0)
-  {
-    return false;
-  }
-  else
-  {
-    return true;
-  }
-}
-//----------------------------------------------------------------------------------------------------
-
 bool wallet2::load_from_file(const std::string& path_to_file, std::string& target_str,
                              size_t max_size)
 {
@@ -6699,7 +6672,7 @@ bool wallet2::load_from_file(const std::string& path_to_file, std::string& targe
     return false;
   }
 
-  if (!boost::algorithm::contains(boost::make_iterator_range(data.begin(), data.end()), ASCII_OUTPUT_MAGIC))
+  if (!boost::algorithm::contains(boost::make_iterator_range(data.begin(), data.end()), config::lol::ASCII_OUTPUT_MAGIC))
   {
     // It's NOT our ascii dump.
     target_str = std::move(data);
