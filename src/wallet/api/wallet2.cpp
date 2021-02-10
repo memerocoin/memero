@@ -504,9 +504,9 @@ uint64_t calculate_fee(const cryptonote::transaction &tx, size_t blob_size, uint
   return calculate_fee_from_weight(base_fee, cryptonote::get_transaction_weight(tx, blob_size), fee_multiplier, fee_quantization_mask);
 }
 
-tools::wallet2::tx_construction_data get_construction_data_with_decrypted_short_payment_id(const tools::wallet2::pending_tx &ptx, hw::device &hwdev)
+wallet::logic::type::tx::tx_construction_data get_construction_data_with_decrypted_short_payment_id(const wallet::logic::type::tx::pending_tx &ptx, hw::device &hwdev)
 {
-  tools::wallet2::tx_construction_data construction_data = ptx.construction_data;
+  wallet::logic::type::tx::tx_construction_data construction_data = ptx.construction_data;
   return construction_data;
 }
 
@@ -5431,7 +5431,7 @@ static uint32_t get_count_above(const std::vector<wallet::logic::type::transfer:
 // This system allows for sending (almost) the entire balance, since it does
 // not generate spurious change in all txes, thus decreasing the instantaneous
 // usable balance.
-std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryptonote::tx_destination_entry> dsts, const size_t fake_outs_count, const uint64_t unlock_time, uint32_t priority, const std::vector<uint8_t>& extra, uint32_t subaddr_account, std::set<uint32_t> subaddr_indices)
+std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(std::vector<cryptonote::tx_destination_entry> dsts, const size_t fake_outs_count, const uint64_t unlock_time, uint32_t priority, const std::vector<uint8_t>& extra, uint32_t subaddr_account, std::set<uint32_t> subaddr_indices)
 {
   //ensure device is let in NONE mode in any case
   hw::device &hwdev = m_account.get_device();
@@ -5610,7 +5610,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryp
   LOG_PRINT_L2("Starting with " << num_nondust_outputs << " non-dust outputs and " << num_dust_outputs << " dust outputs");
 
   if (unused_dust_indices_per_subaddr.empty() && unused_transfers_indices_per_subaddr.empty())
-    return std::vector<wallet2::pending_tx>();
+    return std::vector<wallet::logic::type::tx::pending_tx>();
 
   // if empty, put dummy entry so that the front can be referenced later in the loop
   if (unused_dust_indices_per_subaddr.empty())
@@ -5930,7 +5930,7 @@ skip_tx:
     tx.weight = get_transaction_weight(test_tx, txBlob.size());
   }
 
-  std::vector<wallet2::pending_tx> ptx_vector;
+  std::vector<wallet::logic::type::tx::pending_tx> ptx_vector;
   for (std::vector<TX>::iterator i = txes.begin(); i != txes.end(); ++i)
   {
     TX &tx = *i;
@@ -5950,7 +5950,7 @@ skip_tx:
   return ptx_vector;
 }
 
-bool wallet2::sanity_check(const std::vector<wallet2::pending_tx> &ptx_vector, std::vector<cryptonote::tx_destination_entry> dsts) const
+bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector, std::vector<cryptonote::tx_destination_entry> dsts) const
 {
   MDEBUG("sanity_check: " << ptx_vector.size() << " txes, " << dsts.size() << " destinations");
 

@@ -240,71 +240,8 @@ namespace tools
       END_SERIALIZE()
     };
 
-    struct tx_construction_data
-    {
-      std::vector<cryptonote::tx_source_entry> sources;
-      cryptonote::tx_destination_entry change_dts;
-      std::vector<cryptonote::tx_destination_entry> splitted_dsts; // split, includes change
-      std::vector<size_t> selected_transfers;
-      std::vector<uint8_t> extra;
-      uint64_t unlock_time;
-      bool use_rct;
-      rct::RCTConfig rct_config;
-      std::vector<cryptonote::tx_destination_entry> dests; // original setup, does not include change
-      uint32_t subaddr_account;   // subaddress account of your wallet to be used in this transfer
-      std::set<uint32_t> subaddr_indices;  // set of address indices used as inputs in this transfer
-
-      BEGIN_SERIALIZE_OBJECT()
-        FIELD(sources)
-        FIELD(change_dts)
-        FIELD(splitted_dsts)
-        FIELD(selected_transfers)
-        FIELD(extra)
-        FIELD(unlock_time)
-        FIELD(use_rct)
-        FIELD(rct_config)
-        FIELD(dests)
-        FIELD(subaddr_account)
-        FIELD(subaddr_indices)
-      END_SERIALIZE()
-    };
-
     typedef std::vector<transfer_details> transfer_container;
     typedef serializable_unordered_multimap<crypto::hash, payment_details> payment_container;
-
-    // The convention for destinations is:
-    // dests does not include change
-    // splitted_dsts (in construction_data) does
-    struct pending_tx
-    {
-      cryptonote::transaction tx;
-      uint64_t dust, fee;
-      bool dust_added_to_fee;
-      cryptonote::tx_destination_entry change_dts;
-      std::vector<size_t> selected_transfers;
-      std::string key_images;
-      crypto::secret_key tx_key;
-      std::vector<crypto::secret_key> additional_tx_keys;
-      std::vector<cryptonote::tx_destination_entry> dests;
-      std::vector<wallet::logic::type::multisig::multisig_sig> multisig_sigs;
-
-      tx_construction_data construction_data;
-
-      BEGIN_SERIALIZE_OBJECT()
-        FIELD(tx)
-        FIELD(dust)
-        FIELD(fee)
-        FIELD(dust_added_to_fee)
-        FIELD(change_dts)
-        FIELD(selected_transfers)
-        FIELD(key_images)
-        FIELD(tx_key)
-        FIELD(additional_tx_keys)
-        FIELD(dests)
-        FIELD(construction_data)
-        FIELD(multisig_sigs)
-      END_SERIALIZE()
-    };
 
     // The term "Unsigned tx" is not really a tx since it's not signed yet.
     // It doesnt have tx hash, key and the integrated address is not separated into addr + payment id.
@@ -549,8 +486,8 @@ namespace tools
     void commit_tx(pending_tx& ptx_vector);
     void commit_tx(std::vector<pending_tx>& ptx_vector);
     // load unsigned_tx_set from file. 
-    std::vector<wallet2::pending_tx> create_transactions_2(std::vector<cryptonote::tx_destination_entry> dsts, const size_t fake_outs_count, const uint64_t unlock_time, uint32_t priority, const std::vector<uint8_t>& extra, uint32_t subaddr_account, std::set<uint32_t> subaddr_indices);     // pass subaddr_indices by value on purpose
-    bool sanity_check(const std::vector<wallet2::pending_tx> &ptx_vector, std::vector<cryptonote::tx_destination_entry> dsts) const;
+    std::vector<wallet::logic::type::tx::pending_tx> create_transactions_2(std::vector<cryptonote::tx_destination_entry> dsts, const size_t fake_outs_count, const uint64_t unlock_time, uint32_t priority, const std::vector<uint8_t>& extra, uint32_t subaddr_account, std::set<uint32_t> subaddr_indices);     // pass subaddr_indices by value on purpose
+    bool sanity_check(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector, std::vector<cryptonote::tx_destination_entry> dsts) const;
     void cold_tx_aux_import(const std::vector<pending_tx>& ptx, const std::vector<std::string>& tx_device_aux);
     void device_show_address(uint32_t account_index, uint32_t address_index, const std::optional<crypto::hash8> &payment_id);
     bool check_connection(uint32_t *version = NULL, uint32_t timeout = 200000);
@@ -1023,8 +960,6 @@ BOOST_CLASS_VERSION(tools::wallet2::payment_details, 5)
 BOOST_CLASS_VERSION(tools::wallet2::pool_payment_details, 1)
 BOOST_CLASS_VERSION(tools::wallet2::unsigned_tx_set, 0)
 BOOST_CLASS_VERSION(tools::wallet2::signed_tx_set, 1)
-BOOST_CLASS_VERSION(tools::wallet2::tx_construction_data, 4)
-BOOST_CLASS_VERSION(tools::wallet2::pending_tx, 3)
 
 namespace boost
 {
@@ -1089,89 +1024,6 @@ namespace boost
       a & x.tx_key_images.parent();
     }
 
-    template <class Archive>
-    inline void serialize(Archive &a, tools::wallet2::tx_construction_data &x, const boost::serialization::version_type ver)
-    {
-      a & x.sources;
-      a & x.change_dts;
-      a & x.splitted_dsts;
-      if (ver < 2)
-      {
-        // load list to vector
-        std::list<size_t> selected_transfers;
-        a & selected_transfers;
-        x.selected_transfers.clear();
-        x.selected_transfers.reserve(selected_transfers.size());
-        for (size_t t: selected_transfers)
-          x.selected_transfers.push_back(t);
-      }
-      a & x.extra;
-      a & x.unlock_time;
-      a & x.use_rct;
-      a & x.dests;
-      if (ver < 1)
-      {
-        x.subaddr_account = 0;
-        return;
-      }
-      a & x.subaddr_account;
-      a & x.subaddr_indices;
-      if (ver < 2)
-      {
-        if (!typename Archive::is_saving())
-          x.rct_config = { rct::RangeProofBorromean, 0 };
-        return;
-      }
-      a & x.selected_transfers;
-      if (ver < 3)
-      {
-        if (!typename Archive::is_saving())
-          x.rct_config = { rct::RangeProofBorromean, 0 };
-        return;
-      }
-      if (ver < 4)
-      {
-        bool use_bulletproofs = x.rct_config.range_proof_type != rct::RangeProofBorromean;
-        a & use_bulletproofs;
-        if (!typename Archive::is_saving())
-          x.rct_config = { use_bulletproofs ? rct::RangeProofBulletproof : rct::RangeProofBorromean, 0 };
-        return;
-      }
-      a & x.rct_config;
-    }
-
-    template <class Archive>
-    inline void serialize(Archive &a, tools::wallet2::pending_tx &x, const boost::serialization::version_type ver)
-    {
-      a & x.tx;
-      a & x.dust;
-      a & x.fee;
-      a & x.dust_added_to_fee;
-      a & x.change_dts;
-      if (ver < 2)
-      {
-        // load list to vector
-        std::list<size_t> selected_transfers;
-        a & selected_transfers;
-        x.selected_transfers.clear();
-        x.selected_transfers.reserve(selected_transfers.size());
-        for (size_t t: selected_transfers)
-          x.selected_transfers.push_back(t);
-      }
-      a & x.key_images;
-      a & x.tx_key;
-      a & x.dests;
-      a & x.construction_data;
-      if (ver < 1)
-        return;
-      a & x.additional_tx_keys;
-      if (ver < 2)
-        return;
-      a & x.selected_transfers;
-      if (ver < 3)
-        return;
-      a & x.multisig_sigs;
-    }
   }
 }
 

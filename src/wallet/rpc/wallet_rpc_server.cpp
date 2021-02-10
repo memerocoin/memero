@@ -668,13 +668,13 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  static std::string ptx_to_string(const tools::wallet2::pending_tx &ptx)
+  static std::string ptx_to_string(const wallet::logic::type::tx::pending_tx &ptx)
   {
     std::ostringstream oss;
     binary_archive<true> ar(oss);
     try
     {
-      if (!::serialization::serialize(ar, const_cast<tools::wallet2::pending_tx&>(ptx)))
+      if (!::serialization::serialize(ar, const_cast<wallet::logic::type::tx::pending_tx&>(ptx)))
         return "";
     }
     catch (...)
@@ -703,7 +703,7 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  static uint64_t total_amount(const tools::wallet2::pending_tx &ptx)
+  static uint64_t total_amount(const wallet::logic::type::tx::pending_tx &ptx)
   {
     uint64_t amount = 0;
     for (const auto &dest: ptx.dests) amount += dest.amount;
@@ -711,7 +711,7 @@ namespace tools
   }
   //------------------------------------------------------------------------------------------------------------------------------
   template<typename Ts, typename Tu>
-  bool wallet_rpc_server::fill_response(std::vector<tools::wallet2::pending_tx> &ptx_vector,
+  bool wallet_rpc_server::fill_response(std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector,
       bool get_tx_key, Ts& tx_key, Tu &amount, Tu &fee, Tu &weight, std::string &unsigned_txset, bool do_not_relay,
       Ts &tx_hash, bool get_tx_hex, Ts &tx_blob, bool get_tx_metadata, Ts &tx_metadata, epee::json_rpc::error &er)
   {
@@ -784,7 +784,7 @@ namespace tools
     {
       uint64_t mixin = m_wallet->adjust_mixin(req.ring_size ? req.ring_size - 1 : 0);
       uint32_t priority = m_wallet->adjust_priority(req.priority);
-      std::vector<wallet2::pending_tx> ptx_vector = m_wallet->create_transactions_2(dsts, mixin, req.unlock_time, priority, extra, req.account_index, req.subaddr_indices);
+      std::vector<wallet::logic::type::tx::pending_tx> ptx_vector = m_wallet->create_transactions_2(dsts, mixin, req.unlock_time, priority, extra, req.account_index, req.subaddr_indices);
 
       if (ptx_vector.empty())
       {
@@ -837,7 +837,7 @@ namespace tools
       uint64_t mixin = m_wallet->adjust_mixin(req.ring_size ? req.ring_size - 1 : 0);
       uint32_t priority = m_wallet->adjust_priority(req.priority);
       LOG_PRINT_L2("on_transfer_split calling create_transactions_2");
-      std::vector<wallet2::pending_tx> ptx_vector = m_wallet->create_transactions_2(dsts, mixin, req.unlock_time, priority, extra, req.account_index, req.subaddr_indices);
+      std::vector<wallet::logic::type::tx::pending_tx> ptx_vector = m_wallet->create_transactions_2(dsts, mixin, req.unlock_time, priority, extra, req.account_index, req.subaddr_indices);
       LOG_PRINT_L2("on_transfer_split called create_transactions_2");
 
       if (ptx_vector.empty())
@@ -886,7 +886,7 @@ namespace tools
       return false;
     }
 
-    std::vector <wallet2::tx_construction_data> tx_constructions;
+    std::vector <wallet::logic::type::tx::tx_construction_data> tx_constructions;
     if (!req.unsigned_txset.empty()) {
         er.code = WALLET_RPC_ERROR_CODE_BAD_UNSIGNED_TX_DATA;
         er.message = "failed to parse unsigned transfers";
@@ -900,7 +900,7 @@ namespace tools
       int first_known_non_zero_change_index = -1;
       for (size_t n = 0; n < tx_constructions.size(); ++n)
       {
-        const tools::wallet2::tx_construction_data &cd = tx_constructions[n];
+        const wallet::logic::type::tx::tx_construction_data &cd = tx_constructions[n];
         res.desc.push_back({0, 0, std::numeric_limits<uint32_t>::max(), 0, {}, 0, "", 0, 0, ""});
         wallet_rpc::COMMAND_RPC_DESCRIBE_TRANSFER::transfer_description &desc = res.desc.back();
 
@@ -941,7 +941,7 @@ namespace tools
           {
             if (first_known_non_zero_change_index == -1)
               first_known_non_zero_change_index = n;
-            const tools::wallet2::tx_construction_data &cdn = tx_constructions[first_known_non_zero_change_index];
+            const wallet::logic::type::tx::tx_construction_data &cdn = tx_constructions[first_known_non_zero_change_index];
             if (memcmp(&cd.change_dts.addr, &cdn.change_dts.addr, sizeof(cd.change_dts.addr)))
             {
               er.code = WALLET_RPC_ERROR_CODE_BAD_UNSIGNED_TX_DATA;
@@ -969,7 +969,7 @@ namespace tools
 
         if (desc.change_amount > 0)
         {
-          const tools::wallet2::tx_construction_data &cd0 = tx_constructions[0];
+          const wallet::logic::type::tx::tx_construction_data &cd0 = tx_constructions[0];
           desc.change_address = get_account_address_as_str(m_wallet->nettype(), cd0.subaddr_account > 0, cd0.change_dts.addr);
         }
 
@@ -1001,7 +1001,7 @@ namespace tools
     }
 
     bool loaded = false;
-    tools::wallet2::pending_tx ptx;
+    wallet::logic::type::tx::pending_tx ptx;
 
     try
     {

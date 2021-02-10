@@ -3381,7 +3381,7 @@ std::pair<std::string, std::string> simple_wallet::show_outputs_line(const std::
   return std::make_pair(ostr.str(), ring_str);
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::process_ring_members(const std::vector<tools::wallet2::pending_tx>& ptx_vector, std::ostream& ostr, bool verbose)
+bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, std::ostream& ostr, bool verbose)
 {
   uint32_t version;
   if (!try_connect_to_daemon(false, &version))
@@ -3403,7 +3403,7 @@ bool simple_wallet::process_ring_members(const std::vector<tools::wallet2::pendi
   for (size_t n = 0; n < ptx_vector.size(); ++n)
   {
     const cryptonote::transaction& tx = ptx_vector[n].tx;
-    const tools::wallet2::tx_construction_data& construction_data = ptx_vector[n].construction_data;
+    const wallet::logic::type::tx::tx_construction_data& construction_data = ptx_vector[n].construction_data;
     if (verbose)
       ostr << boost::format(tr("\nTransaction %llu/%llu: txid=%s")) % (n + 1) % ptx_vector.size() % cryptonote::get_transaction_hash(tx);
     // for each input
@@ -3493,7 +3493,7 @@ bool simple_wallet::process_ring_members(const std::vector<tools::wallet2::pendi
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::prompt_if_old(const std::vector<tools::wallet2::pending_tx> &ptx_vector)
+bool simple_wallet::prompt_if_old(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector)
 {
   // count the number of old outputs
   std::string err;
@@ -3735,7 +3735,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
   try
   {
     // figure out what tx will be necessary
-    std::vector<tools::wallet2::pending_tx> ptx_vector;
+    std::vector<wallet::logic::type::tx::pending_tx> ptx_vector;
     uint64_t bc_height, unlock_block = 0;
     std::string err;
     switch (transfer_type)
@@ -5563,7 +5563,7 @@ void simple_wallet::interrupt()
   }
 }
 //----------------------------------------------------------------------------------------------------
-void simple_wallet::commit_or_save(std::vector<tools::wallet2::pending_tx>& ptx_vector, bool do_not_relay)
+void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, bool do_not_relay)
 {
   size_t i = 0;
   while (!ptx_vector.empty())

@@ -201,12 +201,12 @@ namespace cryptonote
     uint64_t get_daemon_blockchain_height(std::string& err);
     bool try_connect_to_daemon(bool silent = false, uint32_t* version = nullptr);
     bool ask_wallet_create_if_needed();
-    bool process_ring_members(const std::vector<tools::wallet2::pending_tx>& ptx_vector, std::ostream& ostr, bool verbose);
+    bool process_ring_members(const std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, std::ostream& ostr, bool verbose);
     std::string get_prompt() const;
     bool print_seed(bool encrypted);
     void on_refresh_finished(uint64_t start_height, uint64_t fetched_blocks, bool is_init, bool received_money);
     std::pair<std::string, std::string> show_outputs_line(const std::vector<uint64_t> &heights, uint64_t blockchain_height, uint64_t highlight_idx = std::numeric_limits<uint64_t>::max()) const;
-    bool prompt_if_old(const std::vector<tools::wallet2::pending_tx> &ptx_vector);
+    bool prompt_if_old(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector);
     bool on_command(bool (simple_wallet::*cmd)(const std::vector<std::string>&), const std::vector<std::string> &args);
     bool on_empty_command();
     bool on_cancelled_command();
@@ -248,7 +248,7 @@ namespace cryptonote
      * \brief When --do-not-relay option is specified, save the raw tx hex blob to a file instead of calling m_wallet->commit_tx(ptx).
      * \param ptx_vector Pending tx(es) created by transfer/sweep
      */
-    void commit_or_save(std::vector<tools::wallet2::pending_tx>& ptx_vector, bool do_not_relay);
+    void commit_or_save(std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, bool do_not_relay);
 
     // idle thread workers
     bool check_inactivity();
