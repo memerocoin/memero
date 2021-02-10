@@ -84,6 +84,7 @@ using namespace epee;
 #include "wallet/logic/functional/proof.hpp"
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/wallet.hpp"
+#include "wallet/logic/functional/helper.hpp"
 #include "wallet/logic/pseudo_functional/proof.hpp"
 #include "wallet/logic/pseudo_functional/hash.hpp"
 #include "wallet/logic/controller/proof.hpp"
@@ -570,20 +571,6 @@ std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> generate_f
     return {std::move(wallet), tools::password_container(password)};
   }
   return {nullptr, tools::password_container{}};
-}
-
-std::string strjoin(const std::vector<size_t> &V, const char *sep)
-{
-  std::stringstream ss;
-  bool first = true;
-  for (const auto &v: V)
-  {
-    if (!first)
-      ss << sep;
-    ss << std::to_string(v);
-    first = false;
-  }
-  return ss.str();
 }
 
 static bool emplace_or_replace(std::unordered_multimap<crypto::hash, tools::wallet2::pool_payment_details> &container,
@@ -5287,7 +5274,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   uint64_t upper_transaction_weight_limit = get_upper_transaction_weight_limit();
   uint64_t needed_money = fee;
   LOG_PRINT_L2("transfer_selected_rct: starting with fee " << print_money (needed_money));
-  LOG_PRINT_L2("selected transfers: " << strjoin(selected_transfers, " "));
+  LOG_PRINT_L2("selected transfers: " << wallet::logic::functional::helper::strjoin(selected_transfers, " "));
 
   // calculate total amount being sent to all destinations
   // throw if total amount overflows uint64_t
@@ -5855,8 +5842,8 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryp
     TX &tx = txes.back();
 
     LOG_PRINT_L2("Start of loop with " << unused_transfers_indices->size() << " " << unused_dust_indices->size() << ", tx.dsts.size() " << tx.dsts.size());
-    LOG_PRINT_L2("unused_transfers_indices: " << strjoin(*unused_transfers_indices, " "));
-    LOG_PRINT_L2("unused_dust_indices: " << strjoin(*unused_dust_indices, " "));
+    LOG_PRINT_L2("unused_transfers_indices: " << wallet::logic::functional::helper::strjoin(*unused_transfers_indices, " "));
+    LOG_PRINT_L2("unused_dust_indices: " << wallet::logic::functional::helper::strjoin(*unused_dust_indices, " "));
     LOG_PRINT_L2("dsts size " << dsts.size() << ", first " << (dsts.empty() ? "-" : cryptonote::print_money(dsts[0].amount)));
     LOG_PRINT_L2("adding_fee " << adding_fee << ", use_rct " << use_rct);
 
