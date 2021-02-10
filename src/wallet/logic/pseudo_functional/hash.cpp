@@ -52,6 +52,37 @@ namespace hash {
     EVP_MD_CTX_free(state);
   }
 
+  //----------------------------------------------------------------------------------------------------
+  uint64_t hash_m_transfers
+  (
+    const int64_t transfer_height
+    , const tools::wallet2::transfer_container m_transfers
+    , crypto::hash &hash
+    )
+  {
+    CHECK_AND_ASSERT_THROW_MES(transfer_height > (int64_t)m_transfers.size(), "Hash height is greater than number of transfers");
+
+    EVP_MD_CTX *state= EVP_MD_CTX_new();
+    crypto::hash tmp_hash{};
+    uint64_t current_height = 0;
+
+    EVP_DigestInit_ex(state, EVP_sha3_256(), NULL);
+    for(const auto & transfer : m_transfers){
+      if (transfer_height >= 0 && current_height >= (uint64_t)transfer_height){
+        break;
+      }
+
+      hash_m_transfer(transfer, tmp_hash);
+      EVP_DigestUpdate(state, (const uint8_t *) transfer.m_block_height, sizeof(transfer.m_block_height));
+      EVP_DigestUpdate(state, (const uint8_t *) tmp_hash.data, sizeof(tmp_hash.data));
+      current_height += 1;
+    }
+
+    EVP_DigestFinal(state, (uint8_t *) hash.data, NULL);
+    EVP_MD_CTX_free(state);
+    return current_height;
+  }
+
 } // hash
 } // pseudo_functional
 } // logic

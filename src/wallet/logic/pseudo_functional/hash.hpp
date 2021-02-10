@@ -46,6 +46,14 @@ namespace hash {
   //----------------------------------------------------------------------------------------------------
   void hash_m_transfer(const tools::wallet2::transfer_details & transfer, crypto::hash &hash);
 
+  //----------------------------------------------------------------------------------------------------
+  uint64_t hash_m_transfers
+  (
+   const int64_t transfer_height
+   , const tools::wallet2::transfer_container m_transfers
+   , crypto::hash &hash
+   );
+
 } // hash
 } // pseudo_functional
 } // logic
