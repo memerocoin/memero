@@ -1143,28 +1143,7 @@ namespace cryptonote
       return false;
     }
 
-    if (extra_nonce.empty())
-    {
-      reserved_offset = 0;
-      return true;
-    }
-
-    reserved_offset = slow_memmem((void*)block_blob.data(), block_blob.size(), &tx_pub_key, sizeof(tx_pub_key));
-    if(!reserved_offset)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-      error_resp.message = "Internal error: failed to create block template";
-      LOG_ERROR("Failed to find tx pub key in blockblob");
-      return false;
-    }
-    reserved_offset += sizeof(tx_pub_key) + 2; //2 bytes: tag for TX_EXTRA_NONCE(1 byte), counter in TX_EXTRA_NONCE(1 byte)
-    if(reserved_offset + extra_nonce.size() > block_blob.size())
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-      error_resp.message = "Internal error: failed to create block template";
-      LOG_ERROR("Failed to calculate offset for ");
-      return false;
-    }
+    reserved_offset = 0;
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
