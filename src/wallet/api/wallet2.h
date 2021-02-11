@@ -79,6 +79,7 @@
 #include "node_rpc_proxy.h"
 
 using namespace wallet::logic::type::tx;
+using namespace wallet::logic::type::wallet;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
@@ -201,31 +202,6 @@ namespace tools
     typedef serializable_unordered_multimap<crypto::hash, payment_details> payment_container;
 
     typedef std::tuple<uint64_t, crypto::public_key, rct::key> get_outs_entry;
-
-    struct parsed_block
-    {
-      crypto::hash hash;
-      cryptonote::block block;
-      std::vector<cryptonote::transaction> txes;
-      cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::block_output_indices o_indices;
-      bool error;
-    };
-
-    struct is_out_data
-    {
-      crypto::public_key pkey;
-      crypto::key_derivation derivation;
-      std::vector<std::optional<cryptonote::subaddress_receive_info>> received;
-    };
-
-    struct tx_cache_data
-    {
-      std::vector<cryptonote::tx_extra_field> tx_extra_fields;
-      std::vector<is_out_data> primary;
-      std::vector<is_out_data> additional;
-
-      bool empty() const { return tx_extra_fields.empty() && primary.empty() && additional.empty(); }
-    };
 
     /*!
      * \brief Generates a wallet or restores one.

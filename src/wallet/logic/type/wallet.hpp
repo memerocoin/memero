@@ -36,6 +36,9 @@
 
 #include "crypto/hash.h"
 #include "ringct/rctTypes.h"
+#include "cryptonote/basic/cryptonote_format_utils.h" //subaddress_receive_info
+#include "network/rpc/core_rpc_server_commands_defs.h" //block_outptu_indices
+
 #include "serialization/serialization.h"
 
 #include "wallet/logic/type/transfer.hpp"
@@ -96,6 +99,33 @@ namespace wallet {
     FIELD(iv)
     FIELD(cache_data)
     END_SERIALIZE()
+  };
+
+  struct parsed_block
+  {
+    crypto::hash hash;
+    cryptonote::block block;
+    std::vector<cryptonote::transaction> txes;
+    cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::block_output_indices o_indices;
+    bool error;
+  };
+
+  struct is_out_data
+  {
+    crypto::public_key pkey;
+    crypto::key_derivation derivation;
+    std::vector<std::optional<cryptonote::subaddress_receive_info>> received;
+  };
+
+  struct tx_cache_data
+  {
+    std::vector<cryptonote::tx_extra_field> tx_extra_fields;
+    std::vector<is_out_data> primary;
+    std::vector<is_out_data> additional;
+
+    bool empty() const {
+      return tx_extra_fields.empty() && primary.empty() && additional.empty();
+    }
   };
 
 } // wallet

@@ -144,6 +144,8 @@ std::string tools::wallet2::default_daemon_address = "";
 
 namespace
 {
+  using namespace wallet::logic::type::wallet;
+
 // Create on-demand to prevent static initialization order fiasco issues.
 struct options {
   const command_line::arg_descriptor<std::string> daemon_address = {"daemon-address", tools::wallet2::tr("Use daemon instance at <host>:<port>"), ""};
@@ -1150,7 +1152,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
     std::vector<crypto::key_derivation> additional_derivations;
     tx_extra_additional_pub_keys additional_tx_pub_keys;
-    const wallet2::is_out_data *is_out_data_ptr = NULL;
+    const wallet::logic::type::wallet::is_out_data *is_out_data_ptr = NULL;
     if (tx_cache_data.primary.empty())
     {
       hw::device &hwdev = m_account.get_device();
@@ -1843,7 +1845,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
   hwdev.set_mode(hw::device::TRANSACTION_PARSE);
   const cryptonote::account_keys &keys = m_account.get_keys();
 
-  auto gender = [&](wallet2::is_out_data &iod) {
+  auto gender = [&](wallet::logic::type::wallet::is_out_data &iod) {
     if (!hwdev.generate_key_derivation(iod.pkey, keys.m_view_secret_key, iod.derivation))
     {
       MWARNING("Failed to generate key derivation from tx pubkey, skipping");
