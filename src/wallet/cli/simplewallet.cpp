@@ -1443,18 +1443,14 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
     message_writer() << tr("\"welcome\" - Show welcome message.");
     message_writer() << tr("\"help all\" - Show the list of all available commands.");
     message_writer() << tr("\"help <command>\" - Show a command's documentation.");
-    message_writer() << tr("\"apropos <keyword>\" - Show commands related to a keyword.");
     message_writer() << "";
-    message_writer() << tr("\"wallet_info\" - Show wallet main address and other info.");
     message_writer() << tr("\"balance\" - Show balance.");
-    message_writer() << tr("\"address all\" - Show all addresses.");
-    message_writer() << tr("\"address new\" - Create new subaddress.");
+    message_writer() << tr("\"address\" - Show address.");
     message_writer() << tr("\"transfer <address> <amount>\" - Send LOL to an address.");
     message_writer() << tr("\"show [in|out|pending|failed|pool]\" - Show transactions.");
     message_writer() << tr("\"seed\" - Show secret 25 words that can be used to recover this wallet.");
     message_writer() << tr("\"refresh\" - Synchronize wallet with the Lolnero network.");
     message_writer() << tr("\"status\" - Check current status of wallet.");
-    message_writer() << tr("\"version\" - Check software version.");
     message_writer() << tr("\"exit\" - Exit wallet.");
     message_writer() << "";
   }
