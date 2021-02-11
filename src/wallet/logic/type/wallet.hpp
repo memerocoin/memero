@@ -39,6 +39,7 @@
 #include "serialization/serialization.h"
 
 #include "wallet/logic/type/transfer.hpp"
+#include "wallet/logic/type/tx.hpp"
 
 namespace wallet {
 namespace logic {
@@ -47,7 +48,65 @@ namespace wallet {
 
   typedef std::vector<::wallet::logic::type::transfer::transfer_details> transfer_container;
 
+  // The term "Unsigned tx" is not really a tx since it's not signed yet.
+  // It doesnt have tx hash, key and the integrated address is not separated into addr + payment id.
+  struct unsigned_tx_set
+  {
+    std::vector<tx_construction_data> txes;
+    std::pair<size_t, transfer_container> transfers;
+
+    BEGIN_SERIALIZE_OBJECT()
+    VERSION_FIELD(0)
+    FIELD(txes)
+    FIELD(transfers)
+    END_SERIALIZE()
+  };
+
+  struct signed_tx_set
+  {
+    std::vector<::wallet::logic::type::tx::pending_tx> ptx;
+    std::vector<crypto::key_image> key_images;
+    serializable_unordered_map<crypto::public_key, crypto::key_image> tx_key_images;
+
+    BEGIN_SERIALIZE_OBJECT()
+    VERSION_FIELD(0)
+    FIELD(ptx)
+    FIELD(key_images)
+    FIELD(tx_key_images)
+    END_SERIALIZE()
+  };
+
 } // wallet
 } // type
 } // logic
 } // wallet
+
+
+using namespace wallet::logic::type::wallet;
+
+BOOST_CLASS_VERSION(unsigned_tx_set, 0)
+BOOST_CLASS_VERSION(signed_tx_set, 1)
+
+namespace boost
+{
+  namespace serialization
+  {
+    using namespace wallet::logic::type::wallet;
+
+    template <class Archive>
+    inline void serialize(Archive &a, unsigned_tx_set &x, const boost::serialization::version_type ver)
+    {
+      a & x.txes;
+      a & x.transfers;
+    }
+
+    template <class Archive>
+    inline void serialize(Archive &a, signed_tx_set &x, const boost::serialization::version_type ver)
+    {
+      a & x.ptx;
+      a & x.key_images;
+      a & x.tx_key_images.parent();
+    }
+
+  }
+}
