@@ -55,7 +55,7 @@ namespace wallet {
   // It doesnt have tx hash, key and the integrated address is not separated into addr + payment id.
   struct unsigned_tx_set
   {
-    std::vector<tx_construction_data> txes;
+    std::vector<::wallet::logic::type::tx::tx_construction_data> txes;
     std::pair<size_t, transfer_container> transfers;
 
     BEGIN_SERIALIZE_OBJECT()

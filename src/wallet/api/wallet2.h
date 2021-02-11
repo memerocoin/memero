@@ -78,9 +78,6 @@
 #include "common/password.h"
 #include "node_rpc_proxy.h"
 
-using namespace wallet::logic::type::tx;
-using namespace wallet::logic::type::wallet;
-
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
 

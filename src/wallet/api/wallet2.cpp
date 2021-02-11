@@ -144,8 +144,6 @@ std::string tools::wallet2::default_daemon_address = "";
 
 namespace
 {
-  using namespace wallet::logic::type::wallet;
-
 // Create on-demand to prevent static initialization order fiasco issues.
 struct options {
   const command_line::arg_descriptor<std::string> daemon_address = {"daemon-address", tools::wallet2::tr("Use daemon instance at <host>:<port>"), ""};
