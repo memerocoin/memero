@@ -2756,7 +2756,7 @@ void wallet2::clear_soft(bool keep_key_images)
  */
 bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable_string& password, bool watch_only)
 {
-  std::optional<wallet2::keys_file_data> keys_file_data = get_keys_file_data(password, watch_only);
+  std::optional<wallet::logic::type::wallet::keys_file_data> keys_file_data = get_keys_file_data(password, watch_only);
   CHECK_AND_ASSERT_MES(keys_file_data != std::nullopt, false, "failed to generate wallet keys data");
 
   std::string tmp_file_name = keys_file_name + ".new";
@@ -2779,7 +2779,7 @@ bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<wallet2::keys_file_data> wallet2::get_keys_file_data(const epee::wipeable_string& password, bool watch_only)
+std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_file_data(const epee::wipeable_string& password, bool watch_only)
 {
   std::string account_data;
   cryptonote::account_base account = m_account;
@@ -2800,7 +2800,7 @@ std::optional<wallet2::keys_file_data> wallet2::get_keys_file_data(const epee::w
 
   bool r = epee::serialization::store_t_to_binary(account, account_data);
   CHECK_AND_ASSERT_MES(r, std::nullopt, "failed to serialize wallet keys");
-  std::optional<wallet2::keys_file_data> keys_file_data = (wallet2::keys_file_data) {};
+  std::optional<wallet::logic::type::wallet::keys_file_data> keys_file_data = (wallet::logic::type::wallet::keys_file_data) {};
 
   // Create a JSON object with "key_data" and "seed_language" as keys.
   rapidjson::Document json;
@@ -3001,7 +3001,7 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
 
   // Decrypt the contents
   rapidjson::Document json;
-  wallet2::keys_file_data keys_file_data;
+  wallet::logic::type::wallet::keys_file_data keys_file_data;
   bool encrypted_secret_keys = false;
   bool r = ::serialization::parse_binary(keys_buf, keys_file_data);
   THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "internal error: failed to deserialize keys buffer");
@@ -3258,7 +3258,7 @@ bool wallet2::verify_password(const epee::wipeable_string& password)
 bool wallet2::verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, hw::device &hwdev, uint64_t kdf_rounds)
 {
   rapidjson::Document json;
-  wallet2::keys_file_data keys_file_data;
+  wallet::logic::type::wallet::keys_file_data keys_file_data;
   std::string buf;
   bool encrypted_secret_keys = false;
   bool r = wallet::logic::controller::wallet::load_from_file(keys_file_name, buf);
@@ -3669,7 +3669,7 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
   }
   else if (use_fs || !cache_buf.empty())
   {
-    wallet2::cache_file_data cache_file_data;
+    wallet::logic::type::wallet::cache_file_data cache_file_data;
     std::string cache_file_buf;
     bool r = true;
     if (use_fs)
@@ -3886,7 +3886,7 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
   }
 
   // get wallet cache data
-  std::optional<wallet2::cache_file_data> cache_file_data = get_cache_file_data(password);
+  std::optional<wallet::logic::type::wallet::cache_file_data> cache_file_data = get_cache_file_data(password);
   THROW_WALLET_EXCEPTION_IF(cache_file_data == std::nullopt, error::wallet_internal_error, "failed to generate wallet cache data");
 
   const std::string new_file = same_file ? m_wallet_file + ".new" : path;
@@ -3951,7 +3951,7 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
   }
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<wallet2::cache_file_data> wallet2::get_cache_file_data(const epee::wipeable_string &passwords)
+std::optional<wallet::logic::type::wallet::cache_file_data> wallet2::get_cache_file_data(const epee::wipeable_string &passwords)
 {
   trim_hashchain();
   try
@@ -3961,7 +3961,7 @@ std::optional<wallet2::cache_file_data> wallet2::get_cache_file_data(const epee:
     if (!::serialization::serialize(ar, *this))
       return std::nullopt;
 
-    std::optional<wallet2::cache_file_data> cache_file_data = (wallet2::cache_file_data) {};
+    std::optional<wallet::logic::type::wallet::cache_file_data> cache_file_data = (wallet::logic::type::wallet::cache_file_data) {};
     cache_file_data.value().cache_data = oss.str();
     std::string cipher;
     cipher.resize(cache_file_data.value().cache_data.size());

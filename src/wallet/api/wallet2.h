@@ -200,28 +200,6 @@ namespace tools
 
     typedef serializable_unordered_multimap<crypto::hash, payment_details> payment_container;
 
-    struct keys_file_data
-    {
-      crypto::chacha_iv iv;
-      std::string account_data;
-
-      BEGIN_SERIALIZE_OBJECT()
-        FIELD(iv)
-        FIELD(account_data)
-      END_SERIALIZE()
-    };
-
-    struct cache_file_data
-    {
-      crypto::chacha_iv iv;
-      std::string cache_data;
-
-      BEGIN_SERIALIZE_OBJECT()
-        FIELD(iv)
-        FIELD(cache_data)
-      END_SERIALIZE()
-    };
-
     typedef std::tuple<uint64_t, crypto::public_key, rct::key> get_outs_entry;
 
     struct parsed_block
@@ -306,13 +284,13 @@ namespace tools
      * \param watch_only          true to include only view key, false to include both spend and view keys
      * \return                    Encrypted wallet keys data which can be stored to a wallet file
      */
-    std::optional<wallet2::keys_file_data> get_keys_file_data(const epee::wipeable_string& password, bool watch_only);
+    std::optional<wallet::logic::type::wallet::keys_file_data> get_keys_file_data(const epee::wipeable_string& password, bool watch_only);
     /*!
      * \brief get_cache_file_data   Get wallet cache data which can be stored to a wallet file.
      * \param password              Password to protect the wallet cache data (TODO: probably better save the password in the wallet object?)
      * \return                      Encrypted wallet cache data which can be stored to a wallet file
      */
-    std::optional<wallet2::cache_file_data> get_cache_file_data(const epee::wipeable_string& password);
+    std::optional<wallet::logic::type::wallet::cache_file_data> get_cache_file_data(const epee::wipeable_string& password);
 
     std::string path() const;
 

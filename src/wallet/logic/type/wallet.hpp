@@ -76,6 +76,28 @@ namespace wallet {
     END_SERIALIZE()
   };
 
+  struct keys_file_data
+  {
+    crypto::chacha_iv iv;
+    std::string account_data;
+
+    BEGIN_SERIALIZE_OBJECT()
+    FIELD(iv)
+    FIELD(account_data)
+    END_SERIALIZE()
+  };
+
+  struct cache_file_data
+  {
+    crypto::chacha_iv iv;
+    std::string cache_data;
+
+    BEGIN_SERIALIZE_OBJECT()
+    FIELD(iv)
+    FIELD(cache_data)
+    END_SERIALIZE()
+  };
+
 } // wallet
 } // type
 } // logic
