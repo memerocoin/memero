@@ -853,14 +853,12 @@ namespace cryptonote
       uint64_t reserve_size;       //max 255 bytes
       std::string wallet_address;
       std::string prev_block;
-      std::string extra_nonce;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_request_base)
         KV_SERIALIZE(reserve_size)
         KV_SERIALIZE(wallet_address)
         KV_SERIALIZE(prev_block)
-        KV_SERIALIZE(extra_nonce)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<request_t> request;
@@ -871,7 +869,6 @@ namespace cryptonote
       std::string wide_difficulty;
       uint64_t difficulty_top64;
       uint64_t height;
-      uint64_t reserved_offset;
       uint64_t expected_reward;
       std::string prev_hash;
       blobdata blocktemplate_blob;
@@ -884,7 +881,6 @@ namespace cryptonote
         KV_SERIALIZE(wide_difficulty)
         KV_SERIALIZE(difficulty_top64)
         KV_SERIALIZE(height)
-        KV_SERIALIZE(reserved_offset)
         KV_SERIALIZE(expected_reward)
         KV_SERIALIZE(prev_hash)
         KV_SERIALIZE(blocktemplate_blob)

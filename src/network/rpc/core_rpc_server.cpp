@@ -1123,9 +1123,10 @@ namespace cryptonote
     return 0;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::get_block_template(const account_public_address &address, const crypto::hash *prev_block, const cryptonote::blobdata &extra_nonce, size_t &reserved_offset, cryptonote::difficulty_type  &difficulty, uint64_t &height, uint64_t &expected_reward, block &b, epee::json_rpc::error &error_resp)
+  bool core_rpc_server::get_block_template(const account_public_address &address, const crypto::hash *prev_block, cryptonote::difficulty_type  &difficulty, uint64_t &height, uint64_t &expected_reward, block &b, epee::json_rpc::error &error_resp)
   {
     b = boost::value_initialized<cryptonote::block>();
+    cryptonote::blobdata extra_nonce;
     if(!m_core.get_block_template(b, prev_block, address, difficulty, height, expected_reward, extra_nonce))
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
@@ -1143,7 +1144,6 @@ namespace cryptonote
       return false;
     }
 
-    reserved_offset = 0;
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -1165,20 +1165,6 @@ namespace cryptonote
       return false;
     }
 
-    if(req.reserve_size && !req.extra_nonce.empty())
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
-      error_resp.message = "Cannot specify both a reserve_size and an extra_nonce";
-      return false;
-    }
-
-    if(req.extra_nonce.size() > 510)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_TOO_BIG_RESERVE_SIZE;
-      error_resp.message = "Too big extra_nonce size, maximum 510 hex chars";
-      return false;
-    }
-
     cryptonote::address_parse_info info;
 
     if(!req.wallet_address.size() || !cryptonote::get_account_address_from_str(info, nettype(), req.wallet_address))
@@ -1195,19 +1181,6 @@ namespace cryptonote
     }
 
     block b;
-    cryptonote::blobdata blob_reserve;
-    size_t reserved_offset;
-    if(!req.extra_nonce.empty())
-    {
-      if(!string_tools::parse_hexstr_to_binbuff(req.extra_nonce, blob_reserve))
-      {
-        error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
-        error_resp.message = "Parameter extra_nonce should be a hex string";
-        return false;
-      }
-    }
-    else
-      blob_reserve.resize(req.reserve_size, 0);
     cryptonote::difficulty_type wdiff;
     crypto::hash prev_block;
     if (!req.prev_block.empty())
@@ -1219,10 +1192,9 @@ namespace cryptonote
         return false;
       }
     }
-    if (!get_block_template(info.address, req.prev_block.empty() ? NULL : &prev_block, blob_reserve, reserved_offset, wdiff, res.height, res.expected_reward, b, error_resp))
+    if (!get_block_template(info.address, req.prev_block.empty() ? NULL : &prev_block, wdiff, res.height, res.expected_reward, b, error_resp))
       return false;
 
-    res.reserved_offset = reserved_offset;
     res.unlock_height = b.miner_tx.unlock_time;
     store_difficulty(wdiff, res.difficulty, res.wide_difficulty, res.difficulty_top64);
     blobdata block_blob = t_serializable_object_to_blob(b);
