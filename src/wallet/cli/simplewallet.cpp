@@ -3234,7 +3234,7 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
     return true;
   }
 
-  tools::wallet2::transfer_container transfers;
+  wallet::logic::type::wallet::transfer_container transfers;
   m_wallet->get_transfers(transfers);
 
   size_t transfers_found = 0;
@@ -4630,9 +4630,9 @@ bool simple_wallet::unspent_outputs(const std::vector<std::string> &args_)
       return true;
     }
   }
-  tools::wallet2::transfer_container transfers;
+  wallet::logic::type::wallet::transfer_container transfers;
   m_wallet->get_transfers(transfers);
-  std::map<uint64_t, tools::wallet2::transfer_container> amount_to_tds;
+  std::map<uint64_t, wallet::logic::type::wallet::transfer_container> amount_to_tds;
   uint64_t min_height = std::numeric_limits<uint64_t>::max();
   uint64_t max_height = 0;
   uint64_t found_min_amount = std::numeric_limits<uint64_t>::max();
@@ -5104,7 +5104,7 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
   //  address device [<index>]
 
   std::vector<std::string> local_args = args;
-  tools::wallet2::transfer_container transfers;
+  wallet::logic::type::wallet::transfer_container transfers;
   m_wallet->get_transfers(transfers);
 
   auto print_address_sub = [this, &transfers](uint32_t index)

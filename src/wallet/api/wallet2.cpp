@@ -4101,7 +4101,7 @@ uint64_t wallet2::unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock, 
   return r;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::get_transfers(wallet2::transfer_container& incoming) const
+void wallet2::get_transfers(wallet::logic::type::wallet::transfer_container& incoming) const
 {
   incoming = m_transfers;
 }
@@ -4355,7 +4355,7 @@ float wallet2::get_output_relatedness(const transfer_details &td0, const transfe
   return 0.0f;
 }
 //----------------------------------------------------------------------------------------------------
-size_t wallet2::pop_best_value_from(const transfer_container &transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest) const
+size_t wallet2::pop_best_value_from(const wallet::logic::type::wallet::transfer_container &transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest) const
 {
   std::vector<size_t> candidates;
   float best_relatedness = 1.0f;
@@ -4421,7 +4421,7 @@ uint64_t wallet2::select_transfers(uint64_t needed_money, std::vector<size_t> un
   {
     size_t idx = pop_best_value(unused_transfers_indices, selected_transfers);
 
-    const transfer_container::const_iterator it = m_transfers.begin() + idx;
+    const wallet::logic::type::wallet::transfer_container::const_iterator it = m_transfers.begin() + idx;
     selected_transfers.push_back(idx);
     found_money += it->amount();
   }
@@ -6051,7 +6051,8 @@ std::vector<size_t> wallet2::select_available_outputs(const std::function<bool(c
 {
   std::vector<size_t> outputs;
   size_t n = 0;
-  for (transfer_container::const_iterator i = m_transfers.begin(); i != m_transfers.end(); ++i, ++n)
+  for (wallet::logic::type::wallet::transfer_container::const_iterator i = m_transfers.begin();
+       i != m_transfers.end(); ++i, ++n)
   {
     if (is_spent(*i, false))
       continue;

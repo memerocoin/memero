@@ -56,7 +56,7 @@ namespace hash {
   uint64_t hash_m_transfers
   (
     const int64_t transfer_height
-    , const tools::wallet2::transfer_container m_transfers
+    , const wallet::logic::type::wallet::transfer_container m_transfers
     , crypto::hash &hash
     )
   {

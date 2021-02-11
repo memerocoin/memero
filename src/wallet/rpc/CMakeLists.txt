@@ -58,6 +58,8 @@ set(wallet_private_headers
   ../logic/type/tx.hpp
   ../logic/type/transfer.hpp
   ../logic/type/payment.hpp
+  ../logic/type/typedef.hpp
+  ../logic/type/wallet.hpp
   ../logic/functional/fee.hpp
   ../logic/functional/proof.hpp
   ../logic/functional/signature.cpp

@@ -389,7 +389,7 @@ namespace tools
       {
         req_address_index = req.address_index;
       }
-      tools::wallet2::transfer_container transfers;
+      wallet::logic::type::wallet::transfer_container transfers;
       m_wallet->get_transfers(transfers);
       for (uint32_t i : req_address_index)
       {
@@ -1092,7 +1092,7 @@ namespace tools
       available = false;
     }
 
-    wallet2::transfer_container transfers;
+    wallet::logic::type::wallet::transfer_container transfers;
     m_wallet->get_transfers(transfers);
 
     for (const auto& td : transfers)

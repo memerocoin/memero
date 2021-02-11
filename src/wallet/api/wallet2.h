@@ -44,6 +44,8 @@
 #include "wallet/logic/type/tx.hpp"
 #include "wallet/logic/type/transfer.hpp"
 #include "wallet/logic/type/payment.hpp"
+#include "wallet/logic/type/typedef.hpp"
+#include "wallet/logic/type/wallet.hpp"
 
 #include <boost/exception/to_string.hpp>
 
@@ -196,7 +198,6 @@ namespace tools
     wallet2(cryptonote::network_type nettype = cryptonote::MAINNET, uint64_t kdf_rounds = 1, bool unattended = false, std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory = std::unique_ptr<epee::net_utils::http::http_client_factory>(new net::http::client_factory()));
     ~wallet2();
 
-    typedef std::vector<transfer_details> transfer_container;
     typedef serializable_unordered_multimap<crypto::hash, payment_details> payment_container;
 
     // The term "Unsigned tx" is not really a tx since it's not signed yet.
@@ -204,7 +205,7 @@ namespace tools
     struct unsigned_tx_set
     {
       std::vector<tx_construction_data> txes;
-      std::pair<size_t, wallet2::transfer_container> transfers;
+      std::pair<size_t, wallet::logic::type::wallet::transfer_container> transfers;
 
       BEGIN_SERIALIZE_OBJECT()
         VERSION_FIELD(0)
@@ -447,7 +448,7 @@ namespace tools
     void cold_tx_aux_import(const std::vector<pending_tx>& ptx, const std::vector<std::string>& tx_device_aux);
     void device_show_address(uint32_t account_index, uint32_t address_index, const std::optional<crypto::hash8> &payment_id);
     bool check_connection(uint32_t *version = NULL, uint32_t timeout = 200000);
-    void get_transfers(wallet2::transfer_container& incoming) const;
+    void get_transfers(wallet::logic::type::wallet::transfer_container& incoming) const;
     void get_payments(std::list<std::pair<crypto::hash,wallet::logic::type::payment::payment_details>>& payments, uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
     void get_payments_out(std::list<std::pair<crypto::hash,wallet::logic::type::transfer::confirmed_transfer_details>>& confirmed_payments,
       uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
@@ -613,7 +614,7 @@ namespace tools
     std::vector<size_t> select_available_unmixable_outputs();
     std::vector<size_t> select_available_mixable_outputs();
 
-    size_t pop_best_value_from(const transfer_container &transfers, std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
+    size_t pop_best_value_from(const wallet::logic::type::wallet::transfer_container &transfers, std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
     size_t pop_best_value(std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
 
     void set_tx_device_aux(const crypto::hash &txid, const std::string &aux);
@@ -817,7 +818,7 @@ namespace tools
     serializable_unordered_map<crypto::hash, crypto::secret_key> m_tx_keys;
     serializable_unordered_map<crypto::hash, std::vector<crypto::secret_key>> m_additional_tx_keys;
 
-    transfer_container m_transfers;
+    wallet::logic::type::wallet::transfer_container m_transfers;
     payment_container m_payments;
     serializable_unordered_map<crypto::key_image, size_t> m_key_images;
     serializable_unordered_map<crypto::public_key, size_t> m_pub_keys;

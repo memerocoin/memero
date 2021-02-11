@@ -31,30 +31,23 @@
 
 #pragma once
 
+#include <cstddef>
 #include <vector>
-#include <string>
-#include <cstdint>
 
-#include "wallet/logic/type/wallet.hpp" //transfer_details
-#include "crypto/crypto.h"
+#include "crypto/hash.h"
+#include "ringct/rctTypes.h"
+#include "serialization/serialization.h"
+
+#include "wallet/logic/type/transfer.hpp"
 
 namespace wallet {
 namespace logic {
-namespace pseudo_functional {
-namespace hash {
+namespace type {
+namespace wallet {
 
-  //----------------------------------------------------------------------------------------------------
-  void hash_m_transfer(const wallet::logic::type::transfer::transfer_details & transfer, crypto::hash &hash);
+  typedef std::vector<::wallet::logic::type::transfer::transfer_details> transfer_container;
 
-  //----------------------------------------------------------------------------------------------------
-  uint64_t hash_m_transfers
-  (
-   const int64_t transfer_height
-   , const wallet::logic::type::wallet::transfer_container m_transfers
-   , crypto::hash &hash
-   );
-
-} // hash
-} // pseudo_functional
+} // wallet
+} // type
 } // logic
 } // wallet
