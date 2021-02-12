@@ -68,106 +68,11 @@ endif()
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 
 
-
-
-
 # arch
-string(TOLOWER "${ARCH}" ARM_ID)
-string(SUBSTRING "${ARM_ID}" 0 3 ARM_TEST)
 
-if (ARM_ID STREQUAL "aarch64" OR ARM_ID STREQUAL "arm64" OR ARM_ID STREQUAL "armv8-a")
-  set(ARM 1)
-  set(ARM8 1)
-  set(ARCH "armv8-a")
-endif()
-
-set(OPT_FLAGS_RELEASE "-O2")
-
-set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
-
-if(ANDROID)
-  set(ATOMIC libatomic.a)
-endif()
-
-
-if(STATIC)
-  # STATIC already configures most deps to be linked in statically,
-  # here we make more deps static if the platform permits it
-  if (MINGW)
-    # On Windows, this is as close to fully-static as we get:
-    # this leaves only deps on /c/Windows/system32/*.dll
-    set(STATIC_FLAGS "-static")
-  elseif (NOT (APPLE OR FREEBSD OR OPENBSD OR DRAGONFLY))
-    # On Linux, we don't support fully static build, but these can be static
-    set(STATIC_FLAGS "-static-libgcc -static-libstdc++")
-  endif()
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${STATIC_FLAGS} ")
-endif()
-
-if(STATIC)
-  if(MINGW)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
-  endif()
-
-  set(Boost_USE_STATIC_LIBS ON)
-  set(Boost_USE_STATIC_RUNTIME ON)
-endif()
-
-
-# This is a CMake built-in switch that concerns internal libraries
-if (NOT DEFINED BUILD_SHARED_LIBS AND NOT STATIC AND CMAKE_BUILD_TYPE_LOWER STREQUAL "debug")
-    set(BUILD_SHARED_LIBS ON)
-endif()
-
-if (BUILD_SHARED_LIBS)
-  message(STATUS "Building internal libraries with position independent code")
-  add_definitions("-DBUILD_SHARED_LIBS")
-else()
-  message(STATUS "Building internal libraries as static")
-endif()
-
-
-
-
-# flags
-set(PIC_FLAG "-fPIC")
+# set(OPT_FLAGS_RELEASE "-O2")
 
 find_package(Threads REQUIRED)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-
-message(STATUS "Building on ${CMAKE_SYSTEM_PROCESSOR} for ${ARCH}")
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARCH_FLAG}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARCH_FLAG}")
-
-message(STATUS "Using C security hardening flags: ${C_SECURITY_FLAGS}")
-message(STATUS "Using C++ security hardening flags: ${CXX_SECURITY_FLAGS}")
-message(STATUS "Using linker security hardening flags: ${LD_SECURITY_FLAGS}")
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -D_GNU_SOURCE ${MINGW_FLAG} ${STATIC_ASSERT_FLAG} ${WARNINGS} ${C_WARNINGS} ${COVERAGE_FLAGS} ${PIC_FLAG} ${C_SECURITY_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GNU_SOURCE ${MINGW_FLAG} ${STATIC_ASSERT_CPP_FLAG} ${WARNINGS} ${CXX_WARNINGS} ${COVERAGE_FLAGS} ${PIC_FLAG} ${CXX_SECURITY_FLAGS}")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LD_SECURITY_FLAGS} ${LD_BACKCOMPAT_FLAGS}")
-
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_FLAGS}")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${RELEASE_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RELEASE_FLAGS}")
-
-
-
-
-# trace
-option(STACK_TRACE "Install a hook that dumps stack on exception" OFF)
-
-# When possible, avoid stack tracing using libunwind in favor of using easylogging++.
-if(STACK_TRACE)
-  set(STACK_TRACE_LIB "easylogging++") # for diag output only
-endif()
-
-
-
 
 
 # test
@@ -180,7 +85,6 @@ if(BUILD_TESTS)
 else()
   message(STATUS "Not building tests")
 endif()
-
 
 
 
@@ -200,7 +104,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # readline
 option(USE_READLINE "Build with GNU readline support." ON)
-if(USE_READLINE AND NOT DEPENDS)
+if(USE_READLINE)
   find_package(Readline)
   if(READLINE_FOUND AND GNU_READLINE_FOUND)
     add_definitions(-DHAVE_READLINE)
