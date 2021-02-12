@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,50 +27,17 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(daemon_sources
+add_executable("daemon"
   command_parser_executor.cpp
   command_server.cpp
   daemon.cpp
   executor.cpp
   main.cpp
   rpc_command_executor.cpp
-)
+  )
 
-set(daemon_headers)
-
-set(daemon_private_headers
-  command_parser_executor.h
-  command_server.h
-  core.h
-  daemon.h
-  executor.h
-  p2p.h
-  protocol.h
-  rpc.h
-  rpc_command_executor.h
-
-  # cryptonote_protocol
-  ../cryptonote/protocol/cryptonote_protocol_defs.h
-  ../cryptonote/protocol/cryptonote_protocol_handler.h
-  ../cryptonote/protocol/cryptonote_protocol_handler.inl
-  ../cryptonote/protocol/cryptonote_protocol_handler_common.h
-
-  # p2p
-  ../network/p2p/net_node.h
-  ../network/p2p/net_node_common.h
-  ../network/p2p/net_peerlist.h
-  ../network/p2p/net_peerlist_boost_serialization.h
-  ../network/p2p/p2p_protocol_defs.h
-  ../network/p2p/stdafx.h)
-
-monero_private_headers(daemon
-  ${daemon_private_headers})
-monero_add_executable(daemon
-  ${daemon_sources}
-  ${daemon_headers}
-  ${daemon_private_headers})
 target_link_libraries(daemon
-  PRIVATE
+    LINK_PUBLIC
     rpc
     blockchain_db
     cryptonote_core
@@ -82,16 +50,16 @@ target_link_libraries(daemon
     daemon_rpc_server
     ${EPEE_READLINE}
     version
-    ${Boost_CHRONO_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${Boost_REGEX_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
-    ${CMAKE_THREAD_LIBS_INIT}
     ${GNU_READLINE_LIBRARY}
-    ${EXTRA_LIBRARIES}
-    ${Blocks})
+    )
+
+set_property(TARGET "daemon"
+  PROPERTY
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+  
 set_property(TARGET daemon
   PROPERTY
     OUTPUT_NAME "lolnerod")
+
+
 install(TARGETS daemon DESTINATION bin)
