@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2018, The Monero Project
 # 
 # All rights reserved.
@@ -26,9 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(lmdb_sources database.cpp error.cpp table.cpp value_stream.cpp)
-set(lmdb_headers database.hpp error.hpp key_stream.hpp
-table.hpp transaction.hpp util.hpp value_stream.hpp)
 
-monero_add_library(lmdb_lib ${lmdb_sources} ${lmdb_headers})
-target_link_libraries(lmdb_lib common ${LMDB_LIBRARY})
+add_library(lmdb_lib
+  database.cpp error.cpp table.cpp value_stream.cpp
+)
