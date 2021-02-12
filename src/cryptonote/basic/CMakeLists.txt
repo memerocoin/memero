@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,16 +27,6 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-if(APPLE)
-  if(DEPENDS)
-    list(APPEND EXTRA_LIBRARIES "-framework Foundation -framework ApplicationServices -framework AppKit -framework IOKit")
-  else()
-    find_library(IOKIT_LIBRARY IOKit)
-    mark_as_advanced(IOKIT_LIBRARY)
-    list(APPEND EXTRA_LIBRARIES ${IOKIT_LIBRARY})
-  endif()
-endif()
-
 set(cryptonote_basic_sources
   account.cpp
   cryptonote_basic_impl.cpp
@@ -43,37 +34,13 @@ set(cryptonote_basic_sources
   difficulty.cpp
   miner.cpp)
 
-set(cryptonote_basic_headers)
-
-set(cryptonote_basic_private_headers
-  account.h
-  account_boost_serialization.h
-  connection_context.h
-  cryptonote_basic.h
-  cryptonote_basic_impl.h
-  cryptonote_boost_serialization.h
-  cryptonote_format_utils.h
-  difficulty.h
-  miner.h
-  tx_extra.h
-  verification_context.h)
-
-monero_private_headers(cryptonote_basic
-  ${cryptonote_basic_private_headers})
-monero_add_library(cryptonote_basic
+add_library(cryptonote_basic
   ${cryptonote_basic_sources}
-  ${cryptonote_basic_headers}
-  ${cryptonote_basic_private_headers})
+  )
+
 target_link_libraries(cryptonote_basic
   PUBLIC
     common
     cncrypto
     device
-    ${Boost_DATE_TIME_LIBRARY}
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${Boost_SERIALIZATION_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
-  PRIVATE
-    ${EXTRA_LIBRARIES})
+ )

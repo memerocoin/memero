@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,15 +27,9 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-project (monero CXX)
+add_library(cryptonote_protocol
+  block_queue.cpp
+  cryptonote_protocol_handler-base.cpp
+  levin_notify.cpp
+)
 
-file(GLOB CRYPTONOTE_PROTOCOL *)
-source_group(cryptonote_protocol FILES ${CRYPTONOTE_PROTOCOL})
-
-#monero_private_headers(cryptonote_protocol ${CRYPTONOTE_PROTOCOL})
-monero_add_library(cryptonote_protocol ${CRYPTONOTE_PROTOCOL})
-target_link_libraries(cryptonote_protocol
-  PUBLIC
-    p2p
-  PRIVATE
-    ${EXTRA_LIBRARIES})

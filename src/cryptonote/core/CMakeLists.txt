@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -33,35 +34,11 @@ set(cryptonote_core_sources
   tx_sanity_check.cpp
   cryptonote_tx_utils.cpp)
 
-set(cryptonote_core_headers)
-
-set(cryptonote_core_private_headers
-  blockchain_storage_boost_serialization.h
-  blockchain.h
-  cryptonote_core.h
-  tx_pool.h
-  tx_sanity_check.h
-  cryptonote_tx_utils.h)
-
-monero_private_headers(cryptonote_core
-  ${cryptonote_core_private_headers})
-monero_add_library(cryptonote_core
+add_library(cryptonote_core
   ${cryptonote_core_sources}
-  ${cryptonote_core_headers}
-  ${cryptonote_core_private_headers})
+  )
+
 target_link_libraries(cryptonote_core
   PUBLIC
-    version
-    common
-    cncrypto
     blockchain_db
-    ringct
-    device
-    ${Boost_DATE_TIME_LIBRARY}
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${Boost_SERIALIZATION_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
-  PRIVATE
-    ${EXTRA_LIBRARIES})
+ )
