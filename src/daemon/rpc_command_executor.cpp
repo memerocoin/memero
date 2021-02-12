@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2020, The Monero Project
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -340,7 +340,7 @@ bool t_rpc_command_executor::show_difficulty() {
 
   if (m_is_rpc)
   {
-    if (!m_rpc_client->rpc_request(req, res, "/getinfo", fail_message.c_str()))
+    if (!m_rpc_client->rpc_request(req, res, "/get_info", fail_message.c_str()))
     {
       return true;
     }
@@ -440,7 +440,7 @@ bool t_rpc_command_executor::show_status() {
   bool mining_busy = false;
   if (m_is_rpc)
   {
-    if (!m_rpc_client->rpc_request(ireq, ires, "/getinfo", fail_message.c_str()))
+    if (!m_rpc_client->rpc_request(ireq, ires, "/get_info", fail_message.c_str()))
     {
       return true;
     }
@@ -596,13 +596,13 @@ bool t_rpc_command_executor::print_connections() {
       << std::setw(8) << "Type"
       << std::setw(6) << "SSL"
       << std::setw(20) << "Peer id"
-      << std::setw(20) << "Support Flags"      
+      << std::setw(20) << "Support Flags"
       << std::setw(30) << "Recv/Sent (inactive,sec)"
       << std::setw(25) << "State"
       << std::setw(20) << "Livetime(sec)"
       << std::setw(12) << "Down (kB/s)"
       << std::setw(14) << "Down(now)"
-      << std::setw(10) << "Up (kB/s)" 
+      << std::setw(10) << "Up (kB/s)"
       << std::setw(13) << "Up(now)"
       << std::endl;
 
@@ -611,7 +611,7 @@ bool t_rpc_command_executor::print_connections() {
     std::string address = info.incoming ? "INC " : "OUT ";
     address += info.ip + ":" + info.port;
     //std::string in_out = info.incoming ? "INC " : "OUT ";
-    tools::msg_writer() 
+    tools::msg_writer()
      //<< std::setw(30) << std::left << in_out
      << std::setw(30) << std::left << address
      << std::setw(8) << (get_address_type_name((epee::net_utils::address_type)info.address_type))
@@ -625,11 +625,11 @@ bool t_rpc_command_executor::print_connections() {
      << std::setw(14) << info.current_download
      << std::setw(10) << info.avg_upload
      << std::setw(13) << info.current_upload
-     
+
      << std::left << (info.localhost ? "[LOCALHOST]" : "")
      << std::left << (info.local_ip ? "[LAN]" : "");
     //tools::msg_writer() << boost::format("%-25s peer_id: %-25s %s") % address % info.peer_id % in_out;
-    
+
   }
 
   return true;
@@ -710,7 +710,7 @@ bool t_rpc_command_executor::print_blockchain_info(int64_t start_block_index, ui
     cryptonote::COMMAND_RPC_GET_INFO::response ires;
     if (m_is_rpc)
     {
-      if (!m_rpc_client->rpc_request(ireq, ires, "/getinfo", fail_message.c_str()))
+      if (!m_rpc_client->rpc_request(ireq, ires, "/get_info", fail_message.c_str()))
       {
         return true;
       }
@@ -736,10 +736,10 @@ bool t_rpc_command_executor::print_blockchain_info(int64_t start_block_index, ui
   req.end_height = end_block_index;
   req.fill_pow_hash = false;
 
-  fail_message = "Failed calling getblockheadersrange";
+  fail_message = "Failed calling get_block_headers_range";
   if (m_is_rpc)
   {
-    if (!m_rpc_client->json_rpc_request(req, res, "getblockheadersrange", fail_message.c_str()))
+    if (!m_rpc_client->json_rpc_request(req, res, "get_block_headers_range", fail_message.c_str()))
     {
       return true;
     }
@@ -834,7 +834,7 @@ bool t_rpc_command_executor::print_height() {
 
   if (m_is_rpc)
   {
-    if (!m_rpc_client->rpc_request(req, res, "/getheight", fail_message.c_str()))
+    if (!m_rpc_client->rpc_request(req, res, "/get_height", fail_message.c_str()))
     {
       return true;
     }
@@ -865,7 +865,7 @@ bool t_rpc_command_executor::print_block_by_hash(crypto::hash block_hash, bool i
 
   if (m_is_rpc)
   {
-    if (!m_rpc_client->json_rpc_request(req, res, "getblock", fail_message.c_str()))
+    if (!m_rpc_client->json_rpc_request(req, res, "get_block", fail_message.c_str()))
     {
       return true;
     }
@@ -899,7 +899,7 @@ bool t_rpc_command_executor::print_block_by_height(uint64_t height, bool include
 
   if (m_is_rpc)
   {
-    if (!m_rpc_client->json_rpc_request(req, res, "getblock", fail_message.c_str()))
+    if (!m_rpc_client->json_rpc_request(req, res, "get_block", fail_message.c_str()))
     {
       return true;
     }
@@ -936,7 +936,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
   req.prune = false;
   if (m_is_rpc)
   {
-    if (!m_rpc_client->rpc_request(req, res, "/gettransactions", fail_message.c_str()))
+    if (!m_rpc_client->rpc_request(req, res, "/get_transactions", fail_message.c_str()))
     {
       return true;
     }
@@ -1216,7 +1216,7 @@ bool t_rpc_command_executor::print_transaction_pool_stats() {
     {
       return true;
     }
-    if (!m_rpc_client->rpc_request(ireq, ires, "/getinfo", fail_message.c_str()))
+    if (!m_rpc_client->rpc_request(ireq, ires, "/get_info", fail_message.c_str()))
     {
       return true;
     }
@@ -1292,7 +1292,7 @@ bool t_rpc_command_executor::start_mining(cryptonote::account_public_address add
   cryptonote::COMMAND_RPC_START_MINING::response res;
   req.miner_address = cryptonote::get_account_address_as_str(nettype, false, address);
   req.threads_count = num_threads;
-  
+
   std::string fail_message = "Mining did not start";
 
   if (m_is_rpc)
@@ -1506,12 +1506,12 @@ bool t_rpc_command_executor::out_peers(bool set, uint32_t limit)
 {
 	cryptonote::COMMAND_RPC_OUT_PEERS::request req;
 	cryptonote::COMMAND_RPC_OUT_PEERS::response res;
-	
+
 	epee::json_rpc::error error_resp;
 
 	req.set = set;
 	req.out_peers = limit;
-	
+
 	std::string fail_message = "Unsuccessful";
 
 	if (m_is_rpc)
@@ -1600,7 +1600,7 @@ bool t_rpc_command_executor::print_bans()
             tools::msg_writer() << i->host << " banned for " << i->seconds << " seconds";
         }
     }
-    else 
+    else
         tools::msg_writer() << "No IPs are banned";
 
     return true;
@@ -1821,7 +1821,7 @@ bool t_rpc_command_executor::alt_chain_info(const std::string &tip, size_t above
 
   if (m_is_rpc)
   {
-    if (!m_rpc_client->rpc_request(ireq, ires, "/getinfo", fail_message.c_str()))
+    if (!m_rpc_client->rpc_request(ireq, ires, "/get_info", fail_message.c_str()))
     {
       return true;
     }
@@ -1889,7 +1889,7 @@ bool t_rpc_command_executor::alt_chain_info(const std::string &tip, size_t above
       bhreq.fill_pow_hash = false;
       if (m_is_rpc)
       {
-        if (!m_rpc_client->json_rpc_request(bhreq, bhres, "getblockheaderbyhash", fail_message.c_str()))
+        if (!m_rpc_client->json_rpc_request(bhreq, bhres, "get_block_header_by_hash", fail_message.c_str()))
         {
           return true;
         }
@@ -1947,7 +1947,7 @@ bool t_rpc_command_executor::print_blockchain_dynamic_stats(uint64_t nblocks)
   fereq.grace_blocks = 0;
   if (m_is_rpc)
   {
-    if (!m_rpc_client->rpc_request(ireq, ires, "/getinfo", fail_message.c_str()))
+    if (!m_rpc_client->rpc_request(ireq, ires, "/get_info", fail_message.c_str()))
     {
       return true;
     }
@@ -1983,7 +1983,7 @@ bool t_rpc_command_executor::print_blockchain_dynamic_stats(uint64_t nblocks)
     bhreq.fill_pow_hash = false;
     if (m_is_rpc)
     {
-      if (!m_rpc_client->json_rpc_request(bhreq, bhres, "getblockheadersrange", fail_message.c_str()))
+      if (!m_rpc_client->json_rpc_request(bhreq, bhres, "get_block_headers_range", fail_message.c_str()))
       {
         return true;
       }
@@ -2198,7 +2198,7 @@ bool t_rpc_command_executor::version()
 
     if (m_is_rpc)
     {
-        if (!m_rpc_client->rpc_request(req, res, "/getinfo", fail_message))
+        if (!m_rpc_client->rpc_request(req, res, "/get_info", fail_message))
         {
             return true;
         }
