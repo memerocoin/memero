@@ -32,13 +32,13 @@ include(Version)
 add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
 add_dependencies(version genversion)
 
+add_subdirectory(math/crypto)
+add_subdirectory(math/ringct)
+
 add_subdirectory(tools/common)
 add_subdirectory(tools/daemonizer)
 add_subdirectory(tools/epee)
 add_subdirectory(tools/serialization)
-
-add_subdirectory(math/crypto)
-add_subdirectory(math/ringct)
 
 add_subdirectory(cryptonote/basic)
 add_subdirectory(cryptonote/core)
@@ -47,12 +47,14 @@ add_subdirectory(cryptonote/protocol)
 add_subdirectory(database/interface)
 add_subdirectory(database/helper/lmdb)
 
-add_subdirectory(wallet/mnemonics)
-add_subdirectory(wallet/device)
-add_subdirectory(wallet/rpc)
-add_subdirectory(wallet/cli)
-
 add_subdirectory(network/type)
 add_subdirectory(network/rpc)
 add_subdirectory(network/p2p)
+
 add_subdirectory(daemon)
+
+add_subdirectory(wallet/mnemonics)
+add_subdirectory(wallet/device)
+add_subdirectory(wallet/logic)
+add_subdirectory(wallet/rpc)
+add_subdirectory(wallet/cli)

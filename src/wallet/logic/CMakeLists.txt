@@ -27,48 +27,18 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-
-add_library(wallet
-  ../api/wallet2.cpp
-  ../api/node_rpc_proxy.cpp
-  ../args/wallet_args.cpp
+add_library(wallet_logic
+  ../logic/functional/fee.cpp
+  ../logic/functional/proof.cpp
+  ../logic/functional/signature.cpp
+  ../logic/functional/wallet.cpp
+  ../logic/functional/helper.cpp
+  ../logic/pseudo_functional/proof.cpp
+  ../logic/pseudo_functional/uri.cpp
+  ../logic/pseudo_functional/hash.cpp
+  ../logic/controller/proof.cpp
+  ../logic/controller/wallet.cpp
+  ../logic/controller/keys_unlocker.cpp
+  ../logic/state/gamma_picker.cpp
   )
 
-target_link_libraries(wallet
-  PUBLIC
-    rpc_base
-    common
-    cryptonote_core
-    mnemonics
-    net
-    wallet_logic
-  )
-
-set(wallet_rpc_sources
-  wallet_rpc_server.cpp)
-
-add_executable(wallet_rpc_server
-  ${wallet_rpc_sources}
-)
-
-target_link_libraries(wallet_rpc_server
-  PRIVATE
-    wallet
-    rpc_base
-    common
-    version
-    daemonizer
-    wallet_logic
-    )
-
-set_property(TARGET "wallet_rpc_server"
-  PROPERTY
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-
-set_property(TARGET wallet_rpc_server
-  PROPERTY
-    OUTPUT_NAME "lolnero-rpc")
-
-
-install(TARGETS wallet_rpc_server DESTINATION bin)
