@@ -76,7 +76,8 @@ function (monero_add_library_with_deps)
 endfunction ()
 
 include(Version)
-monero_add_library(version SOURCES ${CMAKE_BINARY_DIR}/version.cpp DEPENDS genversion)
+add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
+add_dependencies(version genversion)
 
 add_subdirectory(tools/common)
 add_subdirectory(tools/daemonizer)
@@ -88,6 +89,7 @@ add_subdirectory(math/ringct)
 
 add_subdirectory(cryptonote/basic)
 add_subdirectory(cryptonote/core)
+add_subdirectory(cryptonote/protocol)
 
 add_subdirectory(database/interface)
 add_subdirectory(database/helper/lmdb)
@@ -100,12 +102,4 @@ add_subdirectory(wallet/cli)
 add_subdirectory(network/type)
 add_subdirectory(network/rpc)
 add_subdirectory(network/p2p)
-add_subdirectory(cryptonote/protocol)
 add_subdirectory(daemon)
-
-if(BUILD_DEBUG_UTILITIES)
-  add_subdirectory(debug_utilities)
-  add_subdirectory(blockchain_utilities)
-  add_subdirectory(gen_ssl_cert)
-endif()
-
