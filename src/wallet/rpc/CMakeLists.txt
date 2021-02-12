@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,11 +27,9 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# include (${PROJECT_SOURCE_DIR}/cmake/libutils.cmake)
-
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-set(wallet_sources
+add_library(wallet
   ../api/wallet2.cpp
   ../api/node_rpc_proxy.cpp
   ../args/wallet_args.cpp
@@ -48,41 +47,6 @@ set(wallet_sources
   ../logic/state/gamma_picker.cpp
   )
 
-set(wallet_private_headers
-  ../api/wallet_errors.h
-  ../api/wallet2.h
-  ../api/node_rpc_proxy.h
-  ../args/wallet_args.h
-  ../logic/type/multisig.hpp
-  ../logic/type/hashchain.hpp
-  ../logic/type/tx.hpp
-  ../logic/type/transfer.hpp
-  ../logic/type/payment.hpp
-  ../logic/type/typedef.hpp
-  ../logic/type/wallet.hpp
-  ../logic/functional/fee.hpp
-  ../logic/functional/proof.hpp
-  ../logic/functional/signature.cpp
-  ../logic/functional/wallet.cpp
-  ../logic/functional/helper.cpp
-  ../logic/pseudo_functional/proof.hpp
-  ../logic/pseudo_functional/uri.hpp
-  ../logic/pseudo_functional/hash.hpp
-  ../logic/controller/proof.hpp
-  ../logic/controller/wallet.hpp
-  ../logic/controller/keys_unlocker.hpp
-  ../logic/state/gamma_picker.hpp
-
-  wallet_rpc_server.h
-  wallet_rpc_server_commands_defs.h
-  wallet_rpc_server_error_codes.h
-  )
-
-monero_private_headers(wallet
-  ${wallet_private_headers})
-monero_add_library(wallet
-  ${wallet_sources}
-  ${wallet_private_headers})
 target_link_libraries(wallet
   PUBLIC
     rpc_base
@@ -90,48 +54,31 @@ target_link_libraries(wallet
     cryptonote_core
     mnemonics
     net
-    ${LMDB_LIBRARY}
-    ${Boost_CHRONO_LIBRARY}
-    ${Boost_SERIALIZATION_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
-    ${Boost_REGEX_LIBRARY}
+  )
+
+set(wallet_rpc_sources
+  wallet_rpc_server.cpp)
+
+add_executable(wallet_rpc_server
+  ${wallet_rpc_sources}
+)
+
+target_link_libraries(wallet_rpc_server
   PRIVATE
-    ${EXTRA_LIBRARIES})
+    wallet
+    rpc_base
+    common
+    version
+    daemonizer
+    )
 
-  set(wallet_rpc_sources
-    wallet_rpc_server.cpp)
+set_property(TARGET "wallet_rpc_server"
+  PROPERTY
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-  set(wallet_rpc_headers)
+set_property(TARGET wallet_rpc_server
+  PROPERTY
+    OUTPUT_NAME "lolnero-rpc")
 
-  set(wallet_rpc_private_headers
-    wallet_rpc_server.h)
 
-  monero_private_headers(wallet_rpc_server
-    ${wallet_rpc_private_headers})
-  monero_add_executable(wallet_rpc_server
-    ${wallet_rpc_sources}
-    ${wallet_rpc_headers}
-    ${wallet_rpc_private_headers})
-
-  target_link_libraries(wallet_rpc_server
-    PRIVATE
-      wallet
-      rpc_base
-      cryptonote_core
-      cncrypto
-      common
-      version
-      daemonizer
-      ${EPEE_READLINE}
-      ${Boost_CHRONO_LIBRARY}
-      ${Boost_PROGRAM_OPTIONS_LIBRARY}
-      ${Boost_FILESYSTEM_LIBRARY}
-      ${Boost_THREAD_LIBRARY}
-      ${CMAKE_THREAD_LIBS_INIT}
-      ${EXTRA_LIBRARIES})
-  set_property(TARGET wallet_rpc_server
-    PROPERTY
-      OUTPUT_NAME "lolnero-rpc")
-  install(TARGETS wallet_rpc_server DESTINATION bin)
+install(TARGETS wallet_rpc_server DESTINATION bin)

@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,27 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(mnemonics_sources
-  electrum-words.cpp)
-
-set(mnemonics_headers)
-
-set(mnemonics_private_headers
-  electrum-words.h
-  english.h
-  singleton.h
+add_library(mnemonics
+  electrum-words.cpp
   )
 
-monero_private_headers(mnemonics
-  ${mnemonics_private_headers})
-monero_add_library(mnemonics
-  ${mnemonics_sources}
-  ${mnemonics_headers}
-  ${mnemonics_private_headers})
-target_link_libraries(mnemonics
-  PUBLIC
-    epee
-    easylogging
-    ${Boost_SYSTEM_LIBRARY}
-  PRIVATE
-    ${EXTRA_LIBRARIES})

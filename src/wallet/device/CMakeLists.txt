@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,47 +27,15 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(device_sources
+add_library(device
   device.cpp
   device_default.cpp
   )
 
-if(HIDAPI_FOUND)
-  set(device_sources 
-    ${device_sources} 
-    )
-endif()
-
-set(device_headers
-  device.hpp
-  device_default.hpp
- )
-
-if(HIDAPI_FOUND)
-  set(device_headers 
-    ${device_headers} 
-    )
-endif()
-
-set(device_private_headers)
-
-
-monero_private_headers(device
-  ${device_private_headers})
-
-monero_add_library(device
-  ${device_sources}
-  ${device_headers}
-  ${device_private_headers})
-
 target_link_libraries(device
   PUBLIC
-    ${HIDAPI_LIBRARIES}
     cncrypto
     ringct_basic
-    ${OPENSSL_CRYPTO_LIBRARIES}
     ${Boost_SERIALIZATION_LIBRARY}
-  PRIVATE
     version
-    ${Blocks}
-    ${EXTRA_LIBRARIES})
+  )
