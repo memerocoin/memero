@@ -39,12 +39,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(INSERT CMAKE_MODULE_PATH 0
   "${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake")
-include(CheckCCompilerFlag)
-
-list(INSERT CMAKE_MODULE_PATH 0
-  "${CMAKE_SOURCE_DIR}/cmake")
-
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 project(lolnero)
 
@@ -59,35 +53,12 @@ else()
 	message(STATUS "ccache deselected")
 endif()
 
-
-
-
-# helpers
-function (die msg)
-  if (NOT WIN32)
-    string(ASCII 27 Esc)
-    set(ColourReset "${Esc}[m")
-    set(BoldRed     "${Esc}[1;31m")
-  else ()
-    set(ColourReset "")
-    set(BoldRed     "")
-  endif ()
-
-  message(FATAL_ERROR "${BoldRed}${msg}${ColourReset}")
-endfunction ()
-
-
+include(CheckCCompilerFlag)
 
 
 # language
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
-CHECK_C_COMPILER_FLAG(-std=c11 HAVE_C11)
-
-
-
-
-
 
 # build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -115,28 +86,10 @@ set(OPT_FLAGS_RELEASE "-O2")
 set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 
-option(BUILD_64 "Build for 64-bit? 'OFF' builds for 32-bit." ON)
-
-if(BUILD_64)
-  set(ARCH_WIDTH "64")
-else()
-  set(ARCH_WIDTH "32")
-endif()
-message(STATUS "Building for a ${ARCH_WIDTH}-bit system")
-
 if(ANDROID)
   set(ATOMIC libatomic.a)
 endif()
 
-
-
-
-# library type
-option(STATIC "Link libraries statically" false)
-
-if(STATIC)
-  set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
-endif()
 
 if(STATIC)
   # STATIC already configures most deps to be linked in statically,
