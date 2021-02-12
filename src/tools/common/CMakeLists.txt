@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,9 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
-
-set(common_sources
+add_library(common
   base58.cpp
   command_line.cpp
   error.cpp
@@ -40,55 +39,6 @@ set(common_sources
   spawn.cpp
   threadpool.cpp
   aligned.c
-  combinator.cpp)
-
-if (STACK_TRACE)
-  list(APPEND common_sources stack_trace.cpp)
-endif()
-
-set(common_headers)
-
-set(common_private_headers
-  apply_permutation.h
-  base58.h
-  boost_serialization_helper.h
-  command_line.h
-  common_fwd.h
-  error.h
-  expect.h
-  http_connection.h
-  notify.h
-  pod-class.h
-  rpc_client.h
-  scoped_message_writer.h
-  unordered_containers_boost_serialization.h
-  util.h
-  varint.h
-  password.h
-  perf_timer.h
-  spawn.h
-  stack_trace.h
-  threadpool.h
-  aligned.h
-  combinator.h
+  combinator.cpp
   )
 
-monero_private_headers(common
-  ${common_private_headers})
-monero_add_library(common
-  ${common_sources}
-  ${common_headers}
-  ${common_private_headers})
-target_link_libraries(common
-  PUBLIC
-    cncrypto
-    ${LIBUNWIND_LIBRARIES}
-    ${Boost_DATE_TIME_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
-    ${Boost_REGEX_LIBRARY}
-    ${Boost_CHRONO_LIBRARY}
-  PRIVATE
-    ${OPENSSL_LIBRARIES}
-    ${EXTRA_LIBRARIES})

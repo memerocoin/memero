@@ -26,33 +26,16 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(daemonizer_sources
+
+add_library(daemonizer
   posix_fork.cpp
   posix_daemonizer.inl
-)
+  )
 
-set(daemonizer_headers
-)
-
-set(daemonizer_private_headers
-  daemonizer.h
-)
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  add_definitions(-DDEBUG_TMPDIR_LOG=1)
-endif()
-
-monero_private_headers(daemonizer
-  ${daemonizer_private_headers})
-monero_add_library(daemonizer
-  ${daemonizer_sources}
-  ${daemonizer_headers}
-  ${daemonizer_private_headers})
 target_link_libraries(daemonizer
   PUBLIC
     common
     ${Boost_CHRONO_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  PRIVATE
-    ${EXTRA_LIBRARIES})
+  )
