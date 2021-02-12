@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2016-2020, The Monero Project
 #
 # All rights reserved.
@@ -32,51 +33,31 @@ set(ringct_basic_sources
   rctCryptoOps.c
   multiexp.cc
   zeroCommitment.cc
-  bulletproofs.cc)
+  bulletproofs.cc
+  )
 
-set(ringct_basic_private_headers
-  rctOps.h
-  rctTypes.h
-  curveConstants.h
-  zeroCommitment.h
-  multiexp.h
-  bulletproofs.h)
-
-monero_private_headers(ringct_basic
-  ${crypto_private_headers})
-monero_add_library(ringct_basic
+add_library(ringct_basic
   ${ringct_basic_sources}
-  ${ringct_basic_private_headers})
+  )
+
 target_link_libraries(ringct_basic
   PUBLIC
     common
     cncrypto
-  PRIVATE
-    ${OPENSSL_LIBRARIES}
-    ${EXTRA_LIBRARIES})
+  )
 
 set(ringct_sources
   rctSigs.cpp
 )
 
-set(ringct_headers)
-
-set(ringct_private_headers
-  rctSigs.h
-)
-
-monero_private_headers(ringct
-  ${crypto_private_headers})
-monero_add_library(ringct
+add_library(ringct
   ${ringct_sources}
-  ${ringct_headers}
-  ${ringct_private_headers})
+  )
+
 target_link_libraries(ringct
   PUBLIC
     common
     cncrypto
     cryptonote_basic
     device
-  PRIVATE
-    ${OPENSSL_LIBRARIES}
-    ${EXTRA_LIBRARIES})
+  )

@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -37,39 +38,12 @@ set(crypto_sources
   random.c
   tree-hash.c)
 
-set(crypto_headers)
-
-set(crypto_private_headers
-  chacha.h
-  crypto-ops.h
-  crypto.h
-  generic-ops.h
-  hash-ops.h
-  hash.h
-  initializer.h
-  keccak.h
-  sha3.h
-  random.h
+add_library(cncrypto
+  ${crypto_sources}
   )
 
-monero_private_headers(cncrypto
-  ${crypto_private_headers})
-monero_add_library(cncrypto
-  ${crypto_sources}
-  ${crypto_headers}
-  ${crypto_private_headers})
 target_link_libraries(cncrypto
   PUBLIC
     epee
-    ${Boost_SYSTEM_LIBRARY}
     ${SODIUM_LIBRARY}
-  PRIVATE
-    ${EXTRA_LIBRARIES})
-
-if (ARM)
-  option(NO_OPTIMIZED_MULTIPLY_ON_ARM
-	   "Compute multiply using generic C implementation instead of ARM ASM" OFF)
-  if(NO_OPTIMIZED_MULTIPLY_ON_ARM)
-    message(STATUS "Using generic C implementation for multiply")
-  endif()
-endif()
+  )

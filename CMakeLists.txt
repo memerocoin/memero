@@ -46,7 +46,7 @@ list(INSERT CMAKE_MODULE_PATH 0
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-project(monero)
+project(lolnero)
 
 
 
@@ -302,8 +302,6 @@ include_directories(
   src/math
   src/network
 )
-
-list(APPEND EXTRA_LIBRARIES ${CMAKE_DL_LIBS})
 
 add_subdirectory(src)
 
