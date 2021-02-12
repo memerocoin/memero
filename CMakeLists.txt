@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -35,25 +36,23 @@
 cmake_minimum_required(VERSION 3.7.0)
 message(STATUS "CMake version ${CMAKE_VERSION}")
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-list(INSERT CMAKE_MODULE_PATH 0
-  "${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake")
-
 project(lolnero)
 
 
 
 
 # tools
+list(INSERT CMAKE_MODULE_PATH 0
+  "${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake")
+
 option (USE_CCACHE "Use ccache if a usable instance is found" ON)
 if (USE_CCACHE)
-	include(FindCcache) # Has to be included after the project() macro, to be able to read the CXX variable.
+	include(FindCcache) 
 else()
 	message(STATUS "ccache deselected")
 endif()
 
-include(CheckCCompilerFlag)
+
 
 
 # language
@@ -67,12 +66,9 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 
-
-# arch
-
 # set(OPT_FLAGS_RELEASE "-O2")
 
-find_package(Threads REQUIRED)
+
 
 
 # test
@@ -83,14 +79,16 @@ if(BUILD_TESTS)
   find_package(PythonInterp)
   add_subdirectory(tests)
 else()
-  message(STATUS "Not building tests")
+#  message(STATUS "Not building tests")
 endif()
 
 
 
 
-
 # libs
+
+# threads
+find_package(Threads REQUIRED)
 
 # openssl
 find_package(OpenSSL REQUIRED)
@@ -128,7 +126,7 @@ find_library(SODIUM_LIBRARY sodium)
 # memory was the default in Cryptonote before Monero implemented LMDB, it still works but is unnecessary.
 # set(DATABASE memory)
 set(DATABASE lmdb)
-message(STATUS "Using LMDB as default DB type")
+# message(STATUS "Using LMDB as default DB type")
 set(BLOCKCHAIN_DB DB_LMDB)
 add_definitions("-DDEFAULT_DB_TYPE=\"lmdb\"")
 add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
