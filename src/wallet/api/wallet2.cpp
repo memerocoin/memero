@@ -3393,7 +3393,7 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
     const uint64_t _target_height = get_daemon_blockchain_target_height(err);
     std::optional<uint64_t> target_height =
       err.empty()
-      ? target_height = make_optional(_target_height)
+      ? make_optional(_target_height)
       : std::nullopt;
 
     const uint64_t _local_height = get_daemon_blockchain_height(err);
