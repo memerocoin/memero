@@ -25,8 +25,8 @@ Specifications
 How to build
 ============
 
-Debian 10.0 buster
-------------------
+Debian testing (for gcc9)
+-------------------------
 
 ```
 sudo apt install git build-essential cmake -y
