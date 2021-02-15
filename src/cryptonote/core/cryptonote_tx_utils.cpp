@@ -361,10 +361,10 @@ namespace cryptonote
       rct::ctkeyV inSk;
       inSk.reserve(sources.size());
       // mixRing indexing is done the other way round for simple
-      rct::ctkeyM mixRing(use_simple_rct ? sources.size() : n_total_outs);
+      rct::ctkeyM mixRing(sources.size());
       rct::keyV destinations;
       std::vector<uint64_t> inamounts, outamounts;
-      std::vector<unsigned int> index;
+      std::vector<size_t> index;
       for (size_t i = 0; i < sources.size(); ++i)
       {
         rct::ctkey ctkey;

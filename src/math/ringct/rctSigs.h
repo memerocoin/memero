@@ -102,13 +102,8 @@ namespace rct {
 
     bool verRctCLSAGSimple(const key &, const clsag &, const ctkeyV &, const key &);
 
-    //These functions get keys from blockchain
-    //replace these when connecting blockchain
-    //getKeyFromBlockchain grabs a key from the blockchain at "reference_index" to mix with
-    //populateFromBlockchain creates a keymatrix with "mixin" columns and one of the columns is inPk
-    //   the return value are the key matrix, and the index where inPk was put (random).
-    void getKeyFromBlockchain(ctkey & a, size_t reference_index);
-    std::tuple<ctkeyM, xmr_amount> populateFromBlockchain(ctkeyV inPk, int mixin);
+    // void getKeyFromBlockchain(ctkey & a, size_t reference_index);
+    // std::tuple<ctkeyM, xmr_amount> populateFromBlockchain(ctkeyV inPk, int mixin);
 
     //RingCT protocol
     //genRct:
@@ -120,8 +115,37 @@ namespace rct {
     //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
     //   uses the attached ecdh info to find the amounts represented by each output commitment
     //   must know the destination private key to find the correct amount, else will return a random number
-    rctSig genRctSimple(const key & message, const ctkeyV & inSk, const ctkeyV & inPk, const keyV & destinations, const std::vector<xmr_amount> & inamounts, const std::vector<xmr_amount> & outamounts, const keyV &amount_keys, xmr_amount txnFee, unsigned int mixin, const RCTConfig &rct_config, hw::device &hwdev);
-    rctSig genRctSimple(const key & message, const ctkeyV & inSk, const keyV & destinations, const std::vector<xmr_amount> & inamounts, const std::vector<xmr_amount> & outamounts, xmr_amount txnFee, const ctkeyM & mixRing, const keyV &amount_keys, const std::vector<unsigned int> & index, ctkeyV &outSk, const RCTConfig &rct_config, hw::device &hwdev);
+    rctSig genRctSimple
+    (
+     const key & message
+     , const ctkeyV & inSk
+     , const ctkeyV & inPk
+     , const keyV & destinations
+     , const std::vector<xmr_amount> & inamounts
+     , const std::vector<xmr_amount> & outamounts
+     , const keyV &amount_keys
+     , xmr_amount txnFee
+     , size_t mixin
+     , const RCTConfig &rct_config
+     , hw::device &hwdev
+     );
+
+    rctSig genRctSimple
+    (
+     const key & message
+     , const ctkeyV & inSk
+     , const keyV & destinations
+     , const std::vector<xmr_amount> & inamounts
+     , const std::vector<xmr_amount> & outamounts
+     , xmr_amount txnFee
+     , const ctkeyM & mixRing
+     , const keyV &amount_keys
+     , const std::vector<size_t> & index
+     , ctkeyV &outSk
+     , const RCTConfig &rct_config
+     , hw::device &hwdev
+     );
+
     bool verRctSemanticsSimple(const rctSig & rv);
     bool verRctSemanticsSimple(const std::vector<const rctSig*> & rv);
     bool verRctNonSemanticsSimple(const rctSig & rv);

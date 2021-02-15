@@ -315,7 +315,16 @@ namespace rct {
     }
 
 
-    clsag proveRctCLSAGSimple(const key &message, const ctkeyV &pubs, const ctkey &inSk, const key &a, const key &Cout, unsigned int index, hw::device &hwdev) {
+    clsag proveRctCLSAGSimple
+    (
+     const key &message
+     , const ctkeyV &pubs
+     , const ctkey &inSk
+     , const key &a
+     , const key &Cout
+     , unsigned int index
+     , hw::device &hwdev
+     ) {
         //setup vars
         size_t rows = 1;
         size_t cols = pubs.size();
@@ -461,47 +470,30 @@ namespace rct {
     }
 
 
-    //These functions get keys from blockchain
-    //replace these when connecting blockchain
-    //getKeyFromBlockchain grabs a key from the blockchain at "reference_index" to mix with
-    //populateFromBlockchain creates a keymatrix with "mixin" columns and one of the columns is inPk
-    //   the return value are the key matrix, and the index where inPk was put (random).    
-    void getKeyFromBlockchain(ctkey & a, size_t reference_index) {
+    void rand_assign_ctkey(ctkey & a) {
         a.mask = pkGen();
         a.dest = pkGen();
     }
 
-    //These functions get keys from blockchain
-    //replace these when connecting blockchain
-    //getKeyFromBlockchain grabs a key from the blockchain at "reference_index" to mix with
-    //populateFromBlockchain creates a keymatrix with "mixin" + 1 columns and one of the columns is inPk
-    //   the return value are the key matrix, and the index where inPk was put (random).     
-    tuple<ctkeyM, xmr_amount> populateFromBlockchain(ctkeyV inPk, int mixin) {
-        int rows = inPk.size();
+    tuple<ctkeyM, size_t> populateRings(ctkeyV inPk, size_t mixin) {
+        size_t rows = inPk.size();
         ctkeyM rv(mixin + 1, inPk);
-        int index = randXmrAmount(mixin);
-        int i = 0, j = 0;
-        for (i = 0; i <= mixin; i++) {
+        size_t index = ((size_t)std::rand()) % (mixin + 1);
+        for (size_t i = 0; i <= mixin; i++) {
             if (i != index) {
-                for (j = 0; j < rows; j++) {
-                    getKeyFromBlockchain(rv[i][j], (size_t)randXmrAmount);
+                for (size_t j = 0; j < rows; j++) {
+                  rand_assign_ctkey(rv[i][j]);
                 }
             }
         }
         return make_tuple(rv, index);
     }
 
-    //These functions get keys from blockchain
-    //replace these when connecting blockchain
-    //getKeyFromBlockchain grabs a key from the blockchain at "reference_index" to mix with
-    //populateFromBlockchain creates a keymatrix with "mixin" columns and one of the columns is inPk
-    //   the return value are the key matrix, and the index where inPk was put (random).     
-    xmr_amount populateFromBlockchainSimple(ctkeyV & mixRing, const ctkey & inPk, int mixin) {
-        int index = randXmrAmount(mixin);
-        int i = 0;
-        for (i = 0; i <= mixin; i++) {
+    size_t populateRingsSimple(ctkeyV & mixRing, const ctkey & inPk, size_t mixin) {
+        size_t index = ((size_t)std::rand()) % (mixin + 1);
+        for (size_t i = 0; i <= mixin; i++) {
             if (i != index) {
-                getKeyFromBlockchain(mixRing[i], (size_t)randXmrAmount(1000));
+                rand_assign_ctkey(mixRing[i]);
             } else {
                 mixRing[i] = inPk;
             }
@@ -524,7 +516,21 @@ namespace rct {
 
     //RCT simple    
     //for post-rct only
-    rctSig genRctSimple(const key &message, const ctkeyV & inSk, const keyV & destinations, const vector<xmr_amount> &inamounts, const vector<xmr_amount> &outamounts, xmr_amount txnFee, const ctkeyM & mixRing, const keyV &amount_keys, const std::vector<unsigned int> & index, ctkeyV &outSk, const RCTConfig &rct_config, hw::device &hwdev) {
+    rctSig genRctSimple
+    (
+     const key &message
+     , const ctkeyV & inSk
+     , const keyV & destinations
+     , const vector<xmr_amount> &inamounts
+     , const vector<xmr_amount> &outamounts
+     , xmr_amount txnFee
+     , const ctkeyM & mixRing
+     , const keyV &amount_keys
+     , const std::vector<size_t> & index
+     , ctkeyV &outSk
+     , const RCTConfig &rct_config
+     , hw::device &hwdev
+     ) {
         const bool bulletproof = rct_config.range_proof_type != RangeProofBorromean;
         CHECK_AND_ASSERT_THROW_MES(inamounts.size() > 0, "Empty inamounts");
         CHECK_AND_ASSERT_THROW_MES(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
@@ -627,15 +633,28 @@ namespace rct {
         return rv;
     }
 
-    rctSig genRctSimple(const key &message, const ctkeyV & inSk, const ctkeyV & inPk, const keyV & destinations, const vector<xmr_amount> &inamounts, const vector<xmr_amount> &outamounts, const keyV &amount_keys, xmr_amount txnFee, unsigned int mixin, const RCTConfig &rct_config, hw::device &hwdev) {
-        std::vector<unsigned int> index;
+    rctSig genRctSimple
+    (
+     const key &message
+     , const ctkeyV & inSk
+     , const ctkeyV & inPk
+     , const keyV & destinations
+     , const vector<xmr_amount> &inamounts
+     , const vector<xmr_amount> &outamounts
+     , const keyV &amount_keys
+     , xmr_amount txnFee
+     , unsigned int mixin
+     , const RCTConfig &rct_config
+     , hw::device &hwdev
+     ) {
+        std::vector<size_t> index;
         index.resize(inPk.size());
         ctkeyM mixRing;
         ctkeyV outSk;
         mixRing.resize(inPk.size());
         for (size_t i = 0; i < inPk.size(); ++i) {
           mixRing[i].resize(mixin+1);
-          index[i] = populateFromBlockchainSimple(mixRing[i], inPk[i], mixin);
+          index[i] = populateRingsSimple(mixRing[i], inPk[i], mixin);
         }
         return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk, rct_config, hwdev);
     }
