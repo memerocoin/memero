@@ -45,7 +45,6 @@ using namespace epee;
 #include "cryptonote/basic/account.h"
 #include "wallet_rpc_server_commands_defs.h"
 #include "misc_language.h"
-#include "string_coding.h"
 #include "string_tools.h"
 #include "crypto/hash.h"
 #include "wallet/mnemonics/electrum-words.h"

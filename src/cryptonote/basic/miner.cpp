@@ -41,7 +41,6 @@
 #include "file_io_utils.h"
 #include "common/command_line.h"
 #include "common/util.h"
-#include "string_coding.h"
 #include "string_tools.h"
 #include "storages/portable_storage_template_helper.h"
 
