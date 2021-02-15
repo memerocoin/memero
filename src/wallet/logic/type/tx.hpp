@@ -38,8 +38,6 @@
 #include "serialization/serialization.h"
 #include "cryptonote/core/cryptonote_tx_utils.h" // keypair
 
-// #include "wallet/logic/type/multisig.hpp" // multisig_info
-
 namespace wallet {
 namespace logic {
 namespace type {
