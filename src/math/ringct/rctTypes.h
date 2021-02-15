@@ -434,9 +434,6 @@ namespace rct {
     //int[64] to uint long long
     xmr_amount b2d(bits amountb);
 
-    bool is_rct_simple(int type);
-    bool is_rct_bulletproof(int type);
-
     static inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
     static inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }
     static inline const rct::key &ki2rct(const crypto::key_image &ki) { return (const rct::key&)ki; }
