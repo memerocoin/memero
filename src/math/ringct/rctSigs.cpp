@@ -82,8 +82,9 @@ namespace
 }
 
 namespace rct {
-    Bulletproof proveRangeBulletproof(keyV &C, keyV &masks, const std::vector<uint64_t> &amounts, epee::span<const key> sk, hw::device &hwdev)
+    Bulletproof proveRangeBulletproof(keyV &C, keyV &masks, const std::vector<uint64_t> &amounts, epee::span<const key> sk)
     {
+        hw::device& hwdev = hw::get_device("default");
         CHECK_AND_ASSERT_THROW_MES(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
@@ -125,8 +126,8 @@ namespace rct {
      , const keyV & C_nonzero
      , const key & C_offset
      , const unsigned int l
-     , hw::device &hwdev
      ) {
+        hw::device& hwdev = hw::get_device("default");
         clsag sig;
         size_t n = P.size(); // ring size
         CHECK_AND_ASSERT_THROW_MES(n == C.size(), "Signing and commitment key vector sizes must match!");
@@ -254,23 +255,9 @@ namespace rct {
         return sig;
     }
 
-    clsag CLSAG_Gen
-    (
-     const key &message
-     , const keyV & P
-     , const key & p
-     , const keyV & C
-     , const key & z
-     , const keyV & C_nonzero
-     , const key & C_offset
-     , const unsigned int l
-     ) {
-        return CLSAG_Gen(message, P, p, C, z, C_nonzero, C_offset, l, hw::get_device("default"));
-    }
-
-
-    key get_pre_mlsag_hash(const rctSig &rv, hw::device &hwdev)
+    key get_pre_mlsag_hash(const rctSig &rv)
     {
+      hw::device& hwdev = hw::get_device("default");
       keyV hashes;
       hashes.reserve(3);
       hashes.push_back(rv.message);
@@ -323,9 +310,9 @@ namespace rct {
      , const key &a
      , const key &Cout
      , const unsigned int index
-     , hw::device &hwdev
      ) {
         //setup vars
+        hw::device& hwdev = hw::get_device("default");
         size_t rows = 1;
         size_t cols = pubs.size();
         CHECK_AND_ASSERT_THROW_MES(cols >= 1, "Empty pubs");
@@ -349,7 +336,7 @@ namespace rct {
 
         sk[0] = copy(inSk.dest);
         sc_sub(sk[1].bytes, inSk.mask.bytes, a.bytes);
-        clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index, hwdev);
+        clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
         memwipe(sk.data(), sk.size() * sizeof(key));
         return result;
     }
@@ -528,8 +515,8 @@ namespace rct {
      , const keyV &amount_keys
      , const std::vector<size_t> & index
      , ctkeyV &outSk
-     , hw::device &hwdev
      ) {
+        hw::device& hwdev = hw::get_device("default");
         CHECK_AND_ASSERT_THROW_MES(inamounts.size() > 0, "Empty inamounts");
         CHECK_AND_ASSERT_THROW_MES(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
         CHECK_AND_ASSERT_THROW_MES(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
@@ -570,7 +557,7 @@ namespace rct {
                 else
                 {
                     const epee::span<const key> keys{&amount_keys[0], amount_keys.size()};
-                    rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys, hwdev));
+                    rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));
                     #ifdef DBG
                     CHECK_AND_ASSERT_THROW_MES(verBulletproof(rv.p.bulletproofs.back()), "verBulletproof failed on newly created proof");
                     #endif
@@ -613,7 +600,7 @@ namespace rct {
         genC(pseudoOuts[i], a[i], inamounts[i]);
         DP(pseudoOuts[i]);
 
-        key full_message = get_pre_mlsag_hash(rv,hwdev);
+        key full_message = get_pre_mlsag_hash(rv);
         for (i = 0 ; i < inamounts.size(); i++)
         {
             {
@@ -625,7 +612,7 @@ namespace rct {
                    , a[i]
                    , pseudoOuts[i]
                    , index[i]
-                   , hwdev);
+                   );
             }
         }
         return rv;
@@ -642,7 +629,6 @@ namespace rct {
      , const keyV &amount_keys
      , xmr_amount txnFee
      , unsigned int mixin
-     , hw::device &hwdev
      ) {
         std::vector<size_t> index;
         index.resize(inPk.size());
@@ -653,7 +639,7 @@ namespace rct {
           mixRing[i].resize(mixin+1);
           index[i] = populateRingsSimple(mixRing[i], inPk[i], mixin);
         }
-        return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk, hwdev);
+        return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
     }
 
     //RingCT protocol
@@ -759,7 +745,7 @@ namespace rct {
 
         const keyV &pseudoOuts = rv.p.pseudoOuts;
 
-        const key message = get_pre_mlsag_hash(rv, hw::get_device("default"));
+        const key message = get_pre_mlsag_hash(rv);
 
         for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
           if (!verRctCLSAGSimple(message, rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i])) {
@@ -793,7 +779,8 @@ namespace rct {
     //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
     //   uses the attached ecdh info to find the amounts represented by each output commitment 
     //   must know the destination private key to find the correct amount, else will return a random number    
-    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key &mask, hw::device &hwdev) {
+    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key &mask) {
+        hw::device& hwdev = hw::get_device("default");
         CHECK_AND_ASSERT_MES(rv.type == RCTTypeBulletproof || rv.type == RCTTypeBulletproof2 || rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
         CHECK_AND_ASSERT_THROW_MES(i < rv.ecdhInfo.size(), "Bad index");
         CHECK_AND_ASSERT_THROW_MES(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
@@ -816,10 +803,5 @@ namespace rct {
             CHECK_AND_ASSERT_THROW_MES(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
         return h2d(amount);
-    }
-
-    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, hw::device &hwdev) {
-      key mask;
-      return decodeRctSimple(rv, sk, i, mask, hwdev);
     }
 }

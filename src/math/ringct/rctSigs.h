@@ -74,7 +74,6 @@ namespace rct {
      , const keyV & C_nonzero
      , const key & C_offset
      , const unsigned int l
-     , hw::device &hwdev
      );
 
     clsag CLSAG_Gen
@@ -97,7 +96,6 @@ namespace rct {
      , const key &
      , const key &
      , const unsigned int
-     , hw::device &
      );
 
     bool verRctCLSAGSimple(const key &, const clsag &, const ctkeyV &, const key &);
@@ -126,7 +124,6 @@ namespace rct {
      , const keyV &amount_keys
      , xmr_amount txnFee
      , size_t mixin
-     , hw::device &hwdev
      );
 
     rctSig genRctSimple
@@ -141,16 +138,15 @@ namespace rct {
      , const keyV &amount_keys
      , const std::vector<size_t> & index
      , ctkeyV &outSk
-     , hw::device &hwdev
      );
 
     bool verRctSemanticsSimple(const rctSig & rv);
     bool verRctSemanticsSimple(const std::vector<const rctSig*> & rv);
     bool verRctNonSemanticsSimple(const rctSig & rv);
     static inline bool verRctSimple(const rctSig & rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
-    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key & mask, hw::device &hwdev);
-    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, hw::device &hwdev);
-    key get_pre_mlsag_hash(const rctSig &rv, hw::device &hwdev);
+    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key & mask);
+    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i);
+    key get_pre_mlsag_hash(const rctSig &rv);
 }
 #endif  /* RCTSIGS_H */
 
