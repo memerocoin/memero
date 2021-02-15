@@ -48,7 +48,6 @@ namespace cryptonote
   struct config_t
   {
     uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
-    uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX;
     uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX;
     uint16_t const P2P_DEFAULT_PORT;
     uint16_t const RPC_DEFAULT_PORT;
@@ -59,7 +58,6 @@ namespace cryptonote
 
   static const config_t mainnet = {
     0xf0f72, // haha
-    0xf3, // he;
     0x18faf3, // hoho
     45678,
     45679,
@@ -76,7 +74,6 @@ namespace cryptonote
 
   static const config_t testnet = {
     0xf4, // hp
-    0x2ff3, // hi;
     0x26f4, // hs
     44444,
     44445,

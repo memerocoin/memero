@@ -137,8 +137,6 @@ using namespace wallet::logic::functional::fee;
 
 #define DEFAULT_INACTIVITY_LOCK_TIMEOUT 0 // 300 = 5 minutes
 
-#define IGNORE_LONG_PAYMENT_ID_FROM_BLOCK_VERSION 12
-
 std::mutex tools::wallet2::default_daemon_address_lock;
 std::string tools::wallet2::default_daemon_address = "";
 
@@ -502,12 +500,6 @@ void drop_from_short_history(std::list<crypto::hash> &short_chain_history, size_
 uint64_t calculate_fee(const cryptonote::transaction &tx, size_t blob_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask)
 {
   return calculate_fee_from_weight(base_fee, cryptonote::get_transaction_weight(tx, blob_size), fee_multiplier, fee_quantization_mask);
-}
-
-wallet::logic::type::tx::tx_construction_data get_construction_data_with_decrypted_short_payment_id(const wallet::logic::type::tx::pending_tx &ptx, hw::device &hwdev)
-{
-  wallet::logic::type::tx::tx_construction_data construction_data = ptx.construction_data;
-  return construction_data;
 }
 
 bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, cryptonote::transaction &tx, crypto::hash &tx_hash)

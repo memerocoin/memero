@@ -116,14 +116,6 @@ typedef cryptonote::simple_wallet sw;
 
 #define PRINT_USAGE(usage_help) fail_msg_writer() << boost::format(tr("usage: %s")) % usage_help;
 
-#define LONG_PAYMENT_ID_SUPPORT_CHECK() \
-  do { \
-    fail_msg_writer() << tr("Error: Long payment IDs are obsolete."); \
-    fail_msg_writer() << tr("Long payment IDs were not encrypted on the blockchain and would harm your privacy."); \
-    fail_msg_writer() << tr("If the party you're sending to still requires a long payment ID, please notify them."); \
-    return true; \
-  } while(0)
-
 #define REFRESH_PERIOD 90 // seconds
 
 #define CREDITS_TARGET 50000

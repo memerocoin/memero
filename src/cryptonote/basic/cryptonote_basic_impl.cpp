@@ -114,7 +114,6 @@ namespace cryptonote {
     )
   {
     uint64_t address_prefix = get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
-    uint64_t integrated_address_prefix = get_config(nettype).CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX;
     uint64_t subaddress_prefix = get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX;
 
     if (2 * sizeof(public_address_outer_blob) != str.size())
@@ -126,35 +125,20 @@ namespace cryptonote {
         LOG_PRINT_L2("Invalid address format");
         return false;
       }
-
-      if (integrated_address_prefix == prefix)
-      {
-        info.is_subaddress = false;
-        info.has_payment_id = true;
-      }
       else if (address_prefix == prefix)
       {
         info.is_subaddress = false;
-        info.has_payment_id = false;
       }
       else if (subaddress_prefix == prefix)
       {
         info.is_subaddress = true;
-        info.has_payment_id = false;
       }
       else {
         LOG_PRINT_L1("Wrong address prefix: " << prefix << ", expected " << address_prefix 
-          << " or " << integrated_address_prefix
           << " or " << subaddress_prefix);
         return false;
       }
 
-      if (info.has_payment_id)
-      {
-        LOG_PRINT_L1("Account public address keys can't be parsed");
-        return false;
-      }
-      else
       {
         if (!::serialization::parse_binary(data, info.address))
         {
@@ -200,7 +184,6 @@ namespace cryptonote {
       //we success
       info.address = blob.m_address;
       info.is_subaddress = false;
-      info.has_payment_id = false;
     }
 
     return true;

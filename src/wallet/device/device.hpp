@@ -206,13 +206,6 @@ namespace hw {
 
         virtual void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) = 0;
         
-        virtual bool  encrypt_payment_id(crypto::hash8 &payment_id, const crypto::public_key &public_key, const crypto::secret_key &secret_key) = 0;
-        bool  decrypt_payment_id(crypto::hash8 &payment_id, const crypto::public_key &public_key, const crypto::secret_key &secret_key)
-        {
-            // Encryption and decryption are the same operation (xor with a key)
-            return encrypt_payment_id(payment_id, public_key, secret_key);
-        }
-
         virtual rct::key genCommitmentMask(const rct::key &amount_key) = 0;
 
         virtual bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::key & sharedSec, bool short_amount) = 0;
@@ -243,7 +236,7 @@ namespace hw {
         virtual bool  compute_key_image(const cryptonote::account_keys& ack, const crypto::public_key& out_key, const crypto::key_derivation& recv_derivation, size_t real_output_index, const cryptonote::subaddress_index& received_index, cryptonote::keypair& in_ephemeral, crypto::key_image& ki) { return false; }
         virtual void  computing_key_images(bool started) {};
         virtual void  set_network_type(cryptonote::network_type network_type) { }
-        virtual void  display_address(const cryptonote::subaddress_index& index, const std::optional<crypto::hash8> &payment_id) {}
+        virtual void  display_address(const cryptonote::subaddress_index& index) {}
 
     protected:
         device_mode mode;
