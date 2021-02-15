@@ -66,6 +66,7 @@ namespace crypto {
 
   extern "C" {
 #include "crypto-ops.h"
+#include "random.h"
   }
 
   const crypto::public_key null_pkey = crypto::public_key{};

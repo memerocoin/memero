@@ -46,6 +46,10 @@
 
 namespace crypto {
 
+  extern "C" {
+#include "random.h"
+  }
+
 #pragma pack(push, 1)
   POD_CLASS ec_point {
     char data[32];
