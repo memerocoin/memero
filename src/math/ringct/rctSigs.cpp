@@ -115,7 +115,18 @@ namespace rct {
     //   P[l] == p*G
     //   C[l] == z*G
     //   C[i] == C_nonzero[i] - C_offset (for hashing purposes) for all i
-    clsag CLSAG_Gen(const key &message, const keyV & P, const key & p, const keyV & C, const key & z, const keyV & C_nonzero, const key & C_offset, const unsigned int l, hw::device &hwdev) {
+    clsag CLSAG_Gen
+    (
+     const key &message
+     , const keyV & P
+     , const key & p
+     , const keyV & C
+     , const key & z
+     , const keyV & C_nonzero
+     , const key & C_offset
+     , const unsigned int l
+     , hw::device &hwdev
+     ) {
         clsag sig;
         size_t n = P.size(); // ring size
         CHECK_AND_ASSERT_THROW_MES(n == C.size(), "Signing and commitment key vector sizes must match!");
@@ -243,7 +254,17 @@ namespace rct {
         return sig;
     }
 
-    clsag CLSAG_Gen(const key &message, const keyV & P, const key & p, const keyV & C, const key & z, const keyV & C_nonzero, const key & C_offset, const unsigned int l) {
+    clsag CLSAG_Gen
+    (
+     const key &message
+     , const keyV & P
+     , const key & p
+     , const keyV & C
+     , const key & z
+     , const keyV & C_nonzero
+     , const key & C_offset
+     , const unsigned int l
+     ) {
         return CLSAG_Gen(message, P, p, C, z, C_nonzero, C_offset, l, hw::get_device("default"));
     }
 

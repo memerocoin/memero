@@ -64,8 +64,31 @@ namespace hw {
 
 namespace rct {
 
-    clsag CLSAG_Gen(const key &message, const keyV & P, const key & p, const keyV & C, const key & z, const keyV & C_nonzero, const key & C_offset, const unsigned int l, hw::device &hwdev);
-    clsag CLSAG_Gen(const key &message, const keyV & P, const key & p, const keyV & C, const key & z, const keyV & C_nonzero, const key & C_offset, const unsigned int l);
+    clsag CLSAG_Gen
+    (
+     const key &message
+     , const keyV & P
+     , const key & p
+     , const keyV & C
+     , const key & z
+     , const keyV & C_nonzero
+     , const key & C_offset
+     , const unsigned int l
+     , hw::device &hwdev
+     );
+
+    clsag CLSAG_Gen
+    (
+     const key &message
+     , const keyV & P
+     , const key & p
+     , const keyV & C
+     , const key & z
+     , const keyV & C_nonzero
+     , const key & C_offset
+     , const unsigned int l
+     );
+
     clsag proveRctCLSAGSimple
     (
      const key &
@@ -76,6 +99,7 @@ namespace rct {
      , unsigned int
      , hw::device &
      );
+
     bool verRctCLSAGSimple(const key &, const clsag &, const ctkeyV &, const key &);
 
     //These functions get keys from blockchain
