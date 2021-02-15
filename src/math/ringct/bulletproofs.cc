@@ -483,7 +483,7 @@ Bulletproof bulletproof_PROVE(const rct::key &sv, const rct::key &gamma)
   return bulletproof_PROVE(rct::keyV(1, sv), rct::keyV(1, gamma));
 }
 
-Bulletproof bulletproof_PROVE(uint64_t v, const rct::key &gamma)
+Bulletproof bulletproof_PROVE(const uint64_t v, const rct::key &gamma)
 {
   return bulletproof_PROVE(std::vector<uint64_t>(1, v), rct::keyV(1, gamma));
 }
