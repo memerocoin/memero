@@ -32,6 +32,10 @@
 
 #include "rctOps.h"
 
+namespace rct {
+
 struct zero_commitment { uint64_t amount; rct::key commitment; };
 extern const zero_commitment zero_commitments[];
 extern const size_t len_zero_commitments;
+
+}

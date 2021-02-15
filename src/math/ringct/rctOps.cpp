@@ -33,7 +33,7 @@
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "rctOps.h"
 #include "curveConstants.hpp"
-#include "zeroCommitment.h"
+#include "zeroCommitment.hpp"
 
 using namespace crypto;
 using namespace std;

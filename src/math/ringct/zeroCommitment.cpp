@@ -28,7 +28,9 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "zeroCommitment.h"
+#include "zeroCommitment.hpp"
+
+namespace rct {
 
 const zero_commitment zero_commitments[] = {
   { (uint64_t)0ull, {{0x58, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66}} },
@@ -207,3 +209,5 @@ const zero_commitment zero_commitments[] = {
 };
 
 const size_t len_zero_commitments = sizeof(zero_commitments) / sizeof(zero_commitments[0]);
+
+}

@@ -32,7 +32,7 @@ set(ringct_basic_sources
   rctTypes.cpp
   rctCryptoOps.c
   multiexp.cc
-  zeroCommitment.cc
+  zeroCommitment.cpp
   bulletproofs.cc
   curveConstants.cpp
   )
