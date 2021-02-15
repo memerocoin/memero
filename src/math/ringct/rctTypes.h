@@ -100,16 +100,6 @@ namespace rct {
     typedef std::vector<ctkey> ctkeyV;
     typedef std::vector<ctkeyV> ctkeyM;
 
-    //used for multisig data
-    struct multisig_kLRki {
-        key k;
-        key L;
-        key R;
-        key ki;
-
-        ~multisig_kLRki() { memwipe(&k, sizeof(k)); }
-    };
-
     //data for passing the amount to the receiver secretly
     // If the pedersen commitment to an amount is C = aG + bH,
     // "mask" contains a 32 byte key a
@@ -488,7 +478,6 @@ namespace std
 BLOB_SERIALIZER(rct::key);
 BLOB_SERIALIZER(rct::key64);
 BLOB_SERIALIZER(rct::ctkey);
-BLOB_SERIALIZER(rct::multisig_kLRki);
 
 VARIANT_TAG(debug_archive, rct::key, "rct::key");
 VARIANT_TAG(debug_archive, rct::key64, "rct::key64");
@@ -500,7 +489,6 @@ VARIANT_TAG(debug_archive, rct::ctkeyM, "rct::ctkeyM");
 VARIANT_TAG(debug_archive, rct::ecdhTuple, "rct::ecdhTuple");
 VARIANT_TAG(debug_archive, rct::rctSig, "rct::rctSig");
 VARIANT_TAG(debug_archive, rct::Bulletproof, "rct::bulletproof");
-VARIANT_TAG(debug_archive, rct::multisig_kLRki, "rct::multisig_kLRki");
 VARIANT_TAG(debug_archive, rct::clsag, "rct::clsag");
 
 VARIANT_TAG(binary_archive, rct::key, 0x90);
@@ -513,7 +501,6 @@ VARIANT_TAG(binary_archive, rct::ctkeyM, 0x96);
 VARIANT_TAG(binary_archive, rct::ecdhTuple, 0x97);
 VARIANT_TAG(binary_archive, rct::rctSig, 0x9b);
 VARIANT_TAG(binary_archive, rct::Bulletproof, 0x9c);
-VARIANT_TAG(binary_archive, rct::multisig_kLRki, 0x9d);
 VARIANT_TAG(binary_archive, rct::clsag, 0x9f);
 
 VARIANT_TAG(json_archive, rct::key, "rct_key");
@@ -526,7 +513,6 @@ VARIANT_TAG(json_archive, rct::ctkeyM, "rct_ctkeyM");
 VARIANT_TAG(json_archive, rct::ecdhTuple, "rct_ecdhTuple");
 VARIANT_TAG(json_archive, rct::rctSig, "rct_rctSig");
 VARIANT_TAG(json_archive, rct::Bulletproof, "rct_bulletproof");
-VARIANT_TAG(json_archive, rct::multisig_kLRki, "rct_multisig_kLR");
 VARIANT_TAG(json_archive, rct::clsag, "rct_clsag");
 
 #endif  /* RCTTYPES_H */
