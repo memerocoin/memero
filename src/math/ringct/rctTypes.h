@@ -208,12 +208,6 @@ namespace rct {
       END_SERIALIZE()
     };
 
-    const int lol_bp_version = 3;
-    const RCTConfig lol_rct_config {
-      RangeProofPaddedBulletproof,
-      lol_bp_version,
-    };
-
     struct rctSigBase {
         uint8_t type;
         key message;

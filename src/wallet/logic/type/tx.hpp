@@ -65,7 +65,6 @@ namespace tx {
     std::vector<uint8_t> extra;
     uint64_t unlock_time;
     bool use_rct;
-    rct::RCTConfig rct_config;
     std::vector<cryptonote::tx_destination_entry> dests; // original setup, does not include change
     uint32_t subaddr_account;   // subaddress account of your wallet to be used in this transfer
     std::set<uint32_t> subaddr_indices;  // set of address indices used as inputs in this transfer
@@ -78,7 +77,6 @@ namespace tx {
       FIELD(extra)
       FIELD(unlock_time)
       FIELD(use_rct)
-      FIELD(rct_config)
       FIELD(dests)
       FIELD(subaddr_account)
       FIELD(subaddr_indices)
@@ -150,7 +148,6 @@ namespace boost
       a & x.subaddr_account;
       a & x.subaddr_indices;
       a & x.selected_transfers;
-      a & x.rct_config;
     }
 
     template <class Archive>

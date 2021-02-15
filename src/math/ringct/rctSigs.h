@@ -126,7 +126,6 @@ namespace rct {
      , const keyV &amount_keys
      , xmr_amount txnFee
      , size_t mixin
-     , const RCTConfig &rct_config
      , hw::device &hwdev
      );
 
@@ -142,7 +141,6 @@ namespace rct {
      , const keyV &amount_keys
      , const std::vector<size_t> & index
      , ctkeyV &outSk
-     , const RCTConfig &rct_config
      , hw::device &hwdev
      );
 

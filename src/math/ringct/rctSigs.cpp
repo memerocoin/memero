@@ -528,10 +528,8 @@ namespace rct {
      , const keyV &amount_keys
      , const std::vector<size_t> & index
      , ctkeyV &outSk
-     , const RCTConfig &rct_config
      , hw::device &hwdev
      ) {
-        const bool bulletproof = rct_config.range_proof_type != RangeProofBorromean;
         CHECK_AND_ASSERT_THROW_MES(inamounts.size() > 0, "Empty inamounts");
         CHECK_AND_ASSERT_THROW_MES(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
         CHECK_AND_ASSERT_THROW_MES(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
@@ -644,7 +642,6 @@ namespace rct {
      , const keyV &amount_keys
      , xmr_amount txnFee
      , unsigned int mixin
-     , const RCTConfig &rct_config
      , hw::device &hwdev
      ) {
         std::vector<size_t> index;
@@ -656,7 +653,7 @@ namespace rct {
           mixRing[i].resize(mixin+1);
           index[i] = populateRingsSimple(mixRing[i], inPk[i], mixin);
         }
-        return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk, rct_config, hwdev);
+        return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk, hwdev);
     }
 
     //RingCT protocol
