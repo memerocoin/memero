@@ -300,10 +300,10 @@ namespace rct {
           kv.push_back(p.T2);
           kv.push_back(p.taux);
           kv.push_back(p.mu);
-          for (size_t n = 0; n < p.L.size(); ++n)
-            kv.push_back(p.L[n]);
-          for (size_t n = 0; n < p.R.size(); ++n)
-            kv.push_back(p.R[n]);
+          for (const auto &l: p.L)
+            kv.push_back(l);
+          for (const auto &r: p.R)
+            kv.push_back(r);
           kv.push_back(p.a);
           kv.push_back(p.b);
           kv.push_back(p.t);
@@ -322,7 +322,7 @@ namespace rct {
      , const ctkey &inSk
      , const key &a
      , const key &Cout
-     , unsigned int index
+     , const unsigned int index
      , hw::device &hwdev
      ) {
         //setup vars
@@ -364,8 +364,8 @@ namespace rct {
             // Check data
             CHECK_AND_ASSERT_MES(n >= 1, false, "Empty pubs");
             CHECK_AND_ASSERT_MES(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
-            for (size_t i = 0; i < n; ++i)
-                CHECK_AND_ASSERT_MES(sc_check(sig.s[i].bytes) == 0, false, "Bad signature scalar!");
+            for (const auto &s: sig.s)
+              CHECK_AND_ASSERT_MES(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
             CHECK_AND_ASSERT_MES(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
             CHECK_AND_ASSERT_MES(!(sig.I == rct::identity()), false, "Bad key image!");
 

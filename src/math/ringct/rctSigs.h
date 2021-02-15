@@ -96,7 +96,7 @@ namespace rct {
      , const ctkey &
      , const key &
      , const key &
-     , unsigned int
+     , const unsigned int
      , hw::device &
      );
 
