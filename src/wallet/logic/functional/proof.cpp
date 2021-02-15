@@ -35,7 +35,7 @@
 
 #include "misc_log_ex.h"
 #include "wallet/api/wallet_errors.h"
-#include "math/ringct/curveConstants.h"
+#include "math/ringct/curveConstants.hpp"
 
 using namespace tools;
 

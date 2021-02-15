@@ -34,7 +34,7 @@
 #include "common/threadpool.h"
 #include "common/util.h"
 #include "rctSigs.h"
-#include "curveConstants.h"
+#include "curveConstants.hpp"
 #include "bulletproofs.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "config/cryptonote.hpp"

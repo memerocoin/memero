@@ -32,7 +32,7 @@
 #include "misc_log_ex.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "rctOps.h"
-#include "curveConstants.h"
+#include "curveConstants.hpp"
 #include "zeroCommitment.h"
 
 using namespace crypto;

@@ -34,6 +34,7 @@ set(ringct_basic_sources
   multiexp.cc
   zeroCommitment.cc
   bulletproofs.cc
+  curveConstants.cpp
   )
 
 add_library(ringct_basic
