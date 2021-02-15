@@ -85,7 +85,7 @@ namespace proof {
           crypto::secret_key scalar1;
           crypto::derivation_to_scalar(found_derivation, n, scalar1);
           rct::ecdhTuple ecdh_info = tx.rct_signatures.ecdhInfo[n];
-          rct::ecdhDecode(ecdh_info, rct::sk2rct(scalar1), tx.rct_signatures.type == rct::RCTTypeBulletproof2 || tx.rct_signatures.type == rct::RCTTypeCLSAG);
+          rct::ecdhDecode(ecdh_info, rct::sk2rct(scalar1));
           const rct::key C = tx.rct_signatures.outPk[n].mask;
           rct::key Ctmp;
           THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.mask.bytes) != 0, error::wallet_internal_error, "Bad ECDH input mask");

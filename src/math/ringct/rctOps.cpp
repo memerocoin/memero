@@ -521,34 +521,15 @@ namespace rct {
         return scalar;
     }
 
-    void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec, bool v2) {
+    void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec) {
         //encode
-        if (v2)
-        {
-          unmasked.mask = zero();
-          xor8(unmasked.amount, ecdhHash(sharedSec));
-        }
-        else
-        {
-          key sharedSec1 = hash_to_scalar(sharedSec);
-          key sharedSec2 = hash_to_scalar(sharedSec1);
-          sc_add(unmasked.mask.bytes, unmasked.mask.bytes, sharedSec1.bytes);
-          sc_add(unmasked.amount.bytes, unmasked.amount.bytes, sharedSec2.bytes);
-        }
+        unmasked.mask = zero();
+        xor8(unmasked.amount, ecdhHash(sharedSec));
     }
-    void ecdhDecode(ecdhTuple & masked, const key & sharedSec, bool v2) {
+
+    void ecdhDecode(ecdhTuple & masked, const key & sharedSec) {
         //decode
-        if (v2)
-        {
-          masked.mask = genCommitmentMask(sharedSec);
-          xor8(masked.amount, ecdhHash(sharedSec));
-        }
-        else
-        {
-          key sharedSec1 = hash_to_scalar(sharedSec);
-          key sharedSec2 = hash_to_scalar(sharedSec1);
-          sc_sub(masked.mask.bytes, masked.mask.bytes, sharedSec1.bytes);
-          sc_sub(masked.amount.bytes, masked.amount.bytes, sharedSec2.bytes);
-        }
+        masked.mask = genCommitmentMask(sharedSec);
+        xor8(masked.amount, ecdhHash(sharedSec));
     }
 }
