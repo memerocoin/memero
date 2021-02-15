@@ -674,36 +674,27 @@ namespace rct {
       {
         PERF_TIMER(verRctSemanticsSimple);
 
-        tools::threadpool& tpool = tools::threadpool::getInstance();
-        tools::threadpool::waiter waiter(tpool);
-        std::deque<bool> results;
         std::vector<const Bulletproof*> proofs;
-        size_t max_non_bp_proofs = 0, offset = 0;
 
         for (const rctSig *rvp: rvv)
         {
           CHECK_AND_ASSERT_MES(rvp, false, "rctSig pointer is NULL");
-          const rctSig &rv = *rvp;
-          CHECK_AND_ASSERT_MES(rv.type == RCTTypeBulletproof || rv.type == RCTTypeBulletproof2 || rv.type == RCTTypeCLSAG,
-              false, "verRctSemanticsSimple called on non simple rctSig");
-          {
-            CHECK_AND_ASSERT_MES(rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs), false, "Mismatched sizes of outPk and bulletproofs");
-            {
-              CHECK_AND_ASSERT_MES(rv.p.pseudoOuts.size() == rv.p.CLSAGs.size(), false, "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs");
-            }
-            CHECK_AND_ASSERT_MES(rv.pseudoOuts.empty(), false, "rv.pseudoOuts is not empty");
-          }
-          CHECK_AND_ASSERT_MES(rv.outPk.size() == rv.ecdhInfo.size(), false, "Mismatched sizes of outPk and rv.ecdhInfo");
 
+          const rctSig &rv = *rvp;
+
+          CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG,
+              false, "verRctSemanticsSimple called on non simple rctSig");
+
+          CHECK_AND_ASSERT_MES(rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs), false, "Mismatched sizes of outPk and bulletproofs");
+          CHECK_AND_ASSERT_MES(rv.p.pseudoOuts.size() == rv.p.CLSAGs.size(), false, "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs");
+          CHECK_AND_ASSERT_MES(rv.pseudoOuts.empty(), false, "rv.pseudoOuts is not empty");
+          CHECK_AND_ASSERT_MES(rv.outPk.size() == rv.ecdhInfo.size(), false, "Mismatched sizes of outPk and rv.ecdhInfo");
         }
 
-        results.resize(max_non_bp_proofs);
         for (const rctSig *rvp: rvv)
         {
           const rctSig &rv = *rvp;
-
-          const bool bulletproof = is_rct_bulletproof(rv.type);
-          const keyV &pseudoOuts = bulletproof ? rv.p.pseudoOuts : rv.pseudoOuts;
+          const keyV &pseudoOuts = rv.p.pseudoOuts;
 
           rct::keyV masks(rv.outPk.size());
           for (size_t i = 0; i < rv.outPk.size(); i++) {
@@ -723,24 +714,15 @@ namespace rct {
             return false;
           }
 
-          {
-            for (size_t i = 0; i < rv.p.bulletproofs.size(); i++)
-              proofs.push_back(&rv.p.bulletproofs[i]);
+          for (size_t i = 0; i < rv.p.bulletproofs.size(); i++) {
+            proofs.push_back(&rv.p.bulletproofs[i]);
           }
         }
+
         if (!proofs.empty() && !verBulletproof(proofs))
         {
           LOG_PRINT_L1("Aggregate range proof verified failed");
           return false;
-        }
-
-        if (!waiter.wait())
-          return false;
-        for (size_t i = 0; i < results.size(); ++i) {
-          if (!results[i]) {
-            LOG_PRINT_L1("Range proof verified failed for proof " << i);
-            return false;
-          }
         }
 
         return true;
@@ -770,37 +752,17 @@ namespace rct {
       {
         PERF_TIMER(verRctNonSemanticsSimple);
 
-        CHECK_AND_ASSERT_MES(rv.type == RCTTypeBulletproof || rv.type == RCTTypeBulletproof2 || rv.type == RCTTypeCLSAG,
+        CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG,
             false, "verRctNonSemanticsSimple called on non simple rctSig");
-        const bool bulletproof = is_rct_bulletproof(rv.type);
-        // semantics check is early, and mixRing/MGs aren't resolved yet
-        if (bulletproof)
-          CHECK_AND_ASSERT_MES(rv.p.pseudoOuts.size() == rv.mixRing.size(), false, "Mismatched sizes of rv.p.pseudoOuts and mixRing");
-        else
-          CHECK_AND_ASSERT_MES(rv.pseudoOuts.size() == rv.mixRing.size(), false, "Mismatched sizes of rv.pseudoOuts and mixRing");
 
-        const size_t threads = std::max(rv.outPk.size(), rv.mixRing.size());
+        CHECK_AND_ASSERT_MES(rv.p.pseudoOuts.size() == rv.mixRing.size(), false, "Mismatched sizes of rv.p.pseudoOuts and mixRing");
 
-        std::deque<bool> results(threads);
-        tools::threadpool& tpool = tools::threadpool::getInstance();
-        tools::threadpool::waiter waiter(tpool);
-
-        const keyV &pseudoOuts = bulletproof ? rv.p.pseudoOuts : rv.pseudoOuts;
+        const keyV &pseudoOuts = rv.p.pseudoOuts;
 
         const key message = get_pre_mlsag_hash(rv, hw::get_device("default"));
 
-        results.clear();
-        results.resize(rv.mixRing.size());
         for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
-          tpool.submit(&waiter, [&, i] {
-            results[i] = verRctCLSAGSimple(message, rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i]);
-          });
-        }
-        if (!waiter.wait())
-          return false;
-
-        for (size_t i = 0; i < results.size(); ++i) {
-          if (!results[i]) {
+          if (!verRctCLSAGSimple(message, rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i])) {
             LOG_PRINT_L1("verRctCLSAGSimple failed for input " << i);
             return false;
           }
