@@ -38,7 +38,7 @@
 #include "serialization/serialization.h"
 #include "cryptonote/core/cryptonote_tx_utils.h" // keypair
 
-#include "wallet/logic/type/multisig.hpp" // multisig_info
+// #include "wallet/logic/type/multisig.hpp" // multisig_info
 
 namespace wallet {
 namespace logic {
@@ -65,7 +65,7 @@ namespace transfer {
     cryptonote::subaddress_index m_subaddr_index;
     bool m_key_image_partial;
     std::vector<rct::key> m_multisig_k;
-    std::vector<wallet::logic::type::multisig::multisig_info> m_multisig_info; // one per other participant
+    std::vector<rct::key> m_fake_multisig_info; // one per other participant
     std::vector<std::pair<uint64_t, crypto::hash>> m_uses;
 
     bool is_rct() const { return m_rct; }
@@ -95,7 +95,7 @@ namespace transfer {
       FIELD(m_subaddr_index)
       FIELD(m_key_image_partial)
       FIELD(m_multisig_k)
-      FIELD(m_multisig_info)
+      FIELD(m_fake_multisig_info)
       FIELD(m_uses)
     END_SERIALIZE()
   };
@@ -210,7 +210,7 @@ namespace boost
       a & x.m_key_image_known;
       a & x.m_pk_index;
       a & x.m_subaddr_index;
-      a & x.m_multisig_info;
+      a & x.m_fake_multisig_info;
       a & x.m_multisig_k;
       a & x.m_key_image_partial;
       a & x.m_key_image_request;

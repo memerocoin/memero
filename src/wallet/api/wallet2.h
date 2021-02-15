@@ -39,7 +39,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/deque.hpp>
 
-#include "wallet/logic/type/multisig.hpp"
+// #include "wallet/logic/type/multisig.hpp"
 #include "wallet/logic/type/hashchain.hpp"
 #include "wallet/logic/type/tx.hpp"
 #include "wallet/logic/type/transfer.hpp"

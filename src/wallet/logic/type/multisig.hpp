@@ -71,7 +71,6 @@ namespace multisig {
     std::unordered_set<crypto::public_key> ignore;
     std::unordered_set<rct::key> used_L;
     std::unordered_set<crypto::public_key> signing_keys;
-    rct::multisig_out msout;
 
     BEGIN_SERIALIZE_OBJECT()
     VERSION_FIELD(0)
@@ -79,7 +78,6 @@ namespace multisig {
     FIELD(ignore)
     FIELD(used_L)
     FIELD(signing_keys)
-    FIELD(msout)
     END_SERIALIZE()
   };
 
@@ -124,7 +122,6 @@ namespace boost
       a & x.ignore;
       a & x.used_L;
       a & x.signing_keys;
-      a & x.msout;
     }
 
   }
