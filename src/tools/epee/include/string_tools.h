@@ -47,7 +47,6 @@
 #include "storages/parserse_base_utils.h"
 #include "hex.h"
 #include "memwipe.h"
-#include "mlocker.h"
 #include "span.h"
 #include "warnings.h"
 
@@ -292,12 +291,6 @@ POP_WARNINGS
   //----------------------------------------------------------------------------
   template<class t_pod_type>
   bool hex_to_pod(const std::string_view hex_str, tools::scrubbed<t_pod_type>& s)
-  {
-    return hex_to_pod(hex_str, unwrap(s));
-  }
-  //----------------------------------------------------------------------------
-  template<class t_pod_type>
-  bool hex_to_pod(const std::string_view hex_str, epee::mlocked<t_pod_type>& s)
   {
     return hex_to_pod(hex_str, unwrap(s));
   }
