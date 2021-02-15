@@ -38,7 +38,7 @@
 #include "serialization/serialization.h"
 #include "cryptonote/core/cryptonote_tx_utils.h" // keypair
 
-#include "wallet/logic/type/multisig.hpp" // multisig_info
+// #include "wallet/logic/type/multisig.hpp" // multisig_info
 
 namespace wallet {
 namespace logic {
@@ -101,7 +101,7 @@ namespace tx {
     crypto::secret_key tx_key;
     std::vector<crypto::secret_key> additional_tx_keys;
     std::vector<cryptonote::tx_destination_entry> dests;
-    std::vector<wallet::logic::type::multisig::multisig_sig> multisig_sigs;
+    std::vector<rct::key> fake_multisig_sigs;
 
     tx_construction_data construction_data;
 
@@ -117,7 +117,7 @@ namespace tx {
       FIELD(additional_tx_keys)
       FIELD(dests)
       FIELD(construction_data)
-      FIELD(multisig_sigs)
+      FIELD(fake_multisig_sigs)
     END_SERIALIZE()
   };
 
@@ -169,7 +169,7 @@ namespace boost
       a & x.construction_data;
       a & x.additional_tx_keys;
       a & x.selected_transfers;
-      a & x.multisig_sigs;
+      a & x.fake_multisig_sigs;
     }
   }
 }
