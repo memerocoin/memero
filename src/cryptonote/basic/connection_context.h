@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "net/net_utils_base.h"
-#include "copyable_atomic.h"
 #include "crypto/hash.h"
 
 namespace cryptonote
@@ -85,7 +84,7 @@ namespace cryptonote
     uint64_t m_remote_blockchain_height;
     uint64_t m_last_response_height;
     boost::posix_time::ptime m_last_request_time;
-    epee::copyable_atomic m_callback_request_count; //in debug purpose: problem with double callback rise
+    uint32_t m_callback_request_count; //in debug purpose: problem with double callback rise
     crypto::hash m_last_known_hash;
     uint32_t m_pruning_seed;
     bool m_anchor;
