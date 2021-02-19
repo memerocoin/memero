@@ -102,13 +102,9 @@ namespace cryptonote
   struct rpc_response_base
   {
     std::string status;
-    bool untrusted;
-
-    rpc_response_base(): untrusted(false) {}
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(status)
-      KV_SERIALIZE(untrusted)
     END_KV_SERIALIZE_MAP()
   };
 
