@@ -337,7 +337,6 @@ namespace cryptonote
     bool m_non_deterministic;  // old 2-random generation
     bool m_restoring;           // are we restoring, by whatever method?
     bool m_do_not_relay;
-    bool m_use_english_language_names;
 
     epee::console_handlers_binder m_cmd_binder;
 
