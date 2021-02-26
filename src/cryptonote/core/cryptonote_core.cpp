@@ -733,8 +733,6 @@ namespace cryptonote
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;
           break;
-        case rct::RCTTypeBulletproof:
-        case rct::RCTTypeBulletproof2:
         case rct::RCTTypeCLSAG:
           if (!is_canonical_bulletproof_layout(rv.p.bulletproofs))
           {
@@ -763,7 +761,7 @@ namespace cryptonote
       {
         if (!tx_info[n].result)
           continue;
-        if (tx_info[n].tx->rct_signatures.type != rct::RCTTypeBulletproof && tx_info[n].tx->rct_signatures.type != rct::RCTTypeBulletproof2 && tx_info[n].tx->rct_signatures.type != rct::RCTTypeCLSAG)
+        if (tx_info[n].tx->rct_signatures.type != rct::RCTTypeCLSAG)
           continue;
         if (assumed_bad || !rct::verRctSemanticsSimple(tx_info[n].tx->rct_signatures))
         {

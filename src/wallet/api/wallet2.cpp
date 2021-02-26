@@ -970,8 +970,6 @@ static uint64_t decodeRct(const rct::rctSig & rv, const crypto::key_derivation &
   {
     switch (rv.type)
     {
-    case rct::RCTTypeBulletproof:
-    case rct::RCTTypeBulletproof2:
     case rct::RCTTypeCLSAG:
       return rct::decodeRctSimple(rv, rct::sk2rct(scalar1), i, mask);
     default:

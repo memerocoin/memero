@@ -192,8 +192,6 @@ namespace rct {
     //  P = address, C = commitment to amount
     enum {
       RCTTypeNull = 0,
-      RCTTypeBulletproof = 3,
-      RCTTypeBulletproof2 = 4,
       RCTTypeCLSAG = 5,
     };
     enum RangeProofType { RangeProofBorromean, RangeProofBulletproof, RangeProofMultiOutputBulletproof, RangeProofPaddedBulletproof };
@@ -224,7 +222,7 @@ namespace rct {
           FIELD(type)
           if (type == RCTTypeNull)
             return ar.stream().good();
-          if (type != RCTTypeBulletproof && type != RCTTypeBulletproof2 && type != RCTTypeCLSAG)
+          if (type != RCTTypeCLSAG)
             return false;
           VARINT_FIELD(txnFee)
           // inputs/outputs not saved, only here for serialization help
@@ -237,7 +235,7 @@ namespace rct {
             return false;
           for (size_t i = 0; i < outputs; ++i)
           {
-            if (type == RCTTypeBulletproof2 || type == RCTTypeCLSAG)
+            if (type == RCTTypeCLSAG)
             {
               ar.begin_object();
               if (!typename Archive<W>::is_saving())
@@ -297,14 +295,11 @@ namespace rct {
             return false;
           if (type == RCTTypeNull)
             return ar.stream().good();
-          if (type != RCTTypeBulletproof && type != RCTTypeBulletproof2 && type != RCTTypeCLSAG)
+          if (type != RCTTypeCLSAG)
             return false;
           {
             uint32_t nbp = bulletproofs.size();
-            if (type == RCTTypeBulletproof2 || type == RCTTypeCLSAG)
-              VARINT_FIELD(nbp)
-            else
-              FIELD(nbp)
+            VARINT_FIELD(nbp)
             ar.tag("bp");
             ar.begin_array();
             if (nbp > outputs)
@@ -390,12 +385,12 @@ namespace rct {
 
         keyV& get_pseudo_outs()
         {
-          return type == RCTTypeBulletproof || type == RCTTypeBulletproof2 || type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
+          return type == type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
         }
 
         keyV const& get_pseudo_outs() const
         {
-          return type == RCTTypeBulletproof || type == RCTTypeBulletproof2 || type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
+          return type == type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
         }
 
         BEGIN_SERIALIZE_OBJECT()

@@ -2746,8 +2746,6 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       MERROR_VER("Null rct signature on non-coinbase tx");
       return false;
     }
-    case rct::RCTTypeBulletproof:
-    case rct::RCTTypeBulletproof2:
     case rct::RCTTypeCLSAG:
     {
       // check all this, either reconstructed (so should really pass), or not
