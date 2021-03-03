@@ -35,7 +35,7 @@
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "rpc/rpc_handler.h"
 #include "common/varint.h"
 #include "common/perf_timer.h"

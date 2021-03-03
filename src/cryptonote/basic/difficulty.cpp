@@ -36,7 +36,7 @@
 #include <boost/math/special_functions/round.hpp>
 
 #include "int-util.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "config/cryptonote.hpp"
 #include "difficulty.h"
 

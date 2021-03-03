@@ -36,7 +36,7 @@
 #include "debug_archive.h"
 #include "crypto/chacha.h"
 #include "crypto/crypto.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 
 // read
 template <template <bool> class Archive>

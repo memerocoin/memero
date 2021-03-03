@@ -45,7 +45,7 @@
 #include "misc_language.h"
 #include "warnings.h"
 #include "common/perf_timer.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

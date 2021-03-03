@@ -40,7 +40,7 @@
 #include "common/varint.h"
 #include "warnings.h"
 #include "crypto.h"
-#include "hash.h"
+#include "hash.hpp"
 
 #include "config/cryptonote.hpp"
 

@@ -46,7 +46,7 @@ using namespace epee;
 #include "misc_language.h"
 #include "network/type/parse.h"
 #include "storages/http_abstract_invoke.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "rpc/rpc_args.h"
 #include "rpc/rpc_handler.h"
 #include "core_rpc_server_error_codes.h"

@@ -28,13 +28,55 @@
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#pragma once
+
 #include <stddef.h>
-#include <stdint.h>
-#include <string.h>
+#include <iostream>
 
-#include "hash-ops.h"
-#include "sha3.h"
+#include "common/pod-class.h"
+#include "generic-ops.h"
+#include "hex.h"
+#include "span.h"
+#include "sha3.hpp"
+#include "tree-hash.hpp"
+#include "hash-ops.hpp"
 
-void cn_fast_hash(const void *data, size_t length, char *hash) {
-  sha3_as_keccak1600((const uint8_t*)data, length, (uint8_t*)hash);
+namespace crypto {
+
+#pragma pack(push, 1)
+  POD_CLASS hash {
+    char data[HASH_SIZE];
+  };
+  POD_CLASS hash8 {
+    char data[8];
+  };
+#pragma pack(pop)
+
+  static_assert(sizeof(hash) == HASH_SIZE, "Invalid structure size");
+  static_assert(sizeof(hash8) == 8, "Invalid structure size");
+
+  /*
+    Cryptonight hash functions
+  */
+
+  void cn_fast_hash(const void *data, size_t length, char *hash);
+  void cn_fast_hash(const void *data, std::size_t length, hash &hash);
+  hash cn_fast_hash(const void *data, std::size_t length);
+  void sha3(const void *data, std::size_t length, hash &hash);
+
+  void cn_slow_hash_prehashed(const void *data, std::size_t length, hash &hash);
+  void tree_hash(const hash *hashes, std::size_t count, hash &root_hash);
+
+  inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
+    epee::to_hex::formatted(o, epee::as_byte_span(v)); return o;
+  }
+  inline std::ostream &operator <<(std::ostream &o, const crypto::hash8 &v) {
+    epee::to_hex::formatted(o, epee::as_byte_span(v)); return o;
+  }
+
+  constexpr static crypto::hash null_hash = {};
+  constexpr static crypto::hash8 null_hash8 = {};
 }
+
+CRYPTO_MAKE_HASHABLE(hash)
+CRYPTO_MAKE_COMPARABLE(hash8)

@@ -57,7 +57,7 @@
 #include "cryptonote/basic/difficulty.h"
 #include "cryptonote_tx_utils.h"
 #include "cryptonote/basic/verification_context.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "database/interface/blockchain.hpp"
 #include "config/lol.hpp"
 

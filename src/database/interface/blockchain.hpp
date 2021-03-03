@@ -34,7 +34,7 @@
 #include <exception>
 #include <boost/program_options.hpp>
 #include "common/command_line.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"

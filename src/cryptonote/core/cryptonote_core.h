@@ -47,7 +47,7 @@
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/connection_context.h"
 #include "warnings.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "span.h"
 #include "rpc/fwd.h"
 

@@ -1,4 +1,5 @@
-#include "sha3.h"
+#include "sha3.hpp"
+#include <openssl/evp.h>
 
 void handleErrors(void) {
   printf("sha3 error, wow is ded\n");

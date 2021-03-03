@@ -66,7 +66,7 @@
 #include "common/unordered_containers_boost_serialization.h"
 #include "common/util.h"
 #include "crypto/chacha.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "ringct/rctTypes.h"
 #include "ringct/rctOps.h"
 #include "serialization/crypto.h"

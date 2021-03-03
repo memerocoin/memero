@@ -38,7 +38,7 @@ using namespace epee;
 #include "config/cryptonote.hpp"
 #include "misc_language.h"
 #include "common/base58.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "int-util.h"
 #include "config/lol.hpp"
 

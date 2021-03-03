@@ -41,7 +41,7 @@ using namespace epee;
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/tx_extra.h"
 #include "crypto/crypto.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "ringct/rctSigs.h"
 
 using namespace crypto;

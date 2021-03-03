@@ -33,7 +33,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "hash-ops.h"
+#include "tree-hash.hpp"
+#include "sha3.hpp"
 
 /*** 
 * Round to power of two, for count>=3 and for count being not too large (as reasonable for tree hash calculations)
@@ -77,7 +78,7 @@ void tree_hash(const char (*hashes)[HASH_SIZE], size_t count, char *root_hash) {
   if (count == 1) {
     memcpy(root_hash, hashes, HASH_SIZE);
   } else if (count == 2) {
-    cn_fast_hash(hashes, 2 * HASH_SIZE, root_hash);
+    sha3(hashes, 2 * HASH_SIZE, root_hash);
   } else {
     size_t i, j;
 
@@ -89,18 +90,18 @@ void tree_hash(const char (*hashes)[HASH_SIZE], size_t count, char *root_hash) {
     memcpy(ints, hashes, (2 * cnt - count) * HASH_SIZE);
 
     for (i = 2 * cnt - count, j = 2 * cnt - count; j < cnt; i += 2, ++j) {
-      cn_fast_hash(hashes[i], 64, ints + j * HASH_SIZE);
+      sha3(hashes[i], 64, ints + j * HASH_SIZE);
     }
     assert(i == count);
 
     while (cnt > 2) {
       cnt >>= 1;
       for (i = 0, j = 0; j < cnt; i += 2, ++j) {
-        cn_fast_hash(ints + i * HASH_SIZE, 64, ints + j * HASH_SIZE);
+        sha3(ints + i * HASH_SIZE, 64, ints + j * HASH_SIZE);
       }
     }
 
-    cn_fast_hash(ints, 64, root_hash);
+    sha3(ints, 64, root_hash);
     free(ints);
   }
 }

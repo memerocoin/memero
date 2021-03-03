@@ -34,7 +34,7 @@
 #include <cstddef>
 #include <vector>
 
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "ringct/rctTypes.h"
 #include "cryptonote/basic/cryptonote_format_utils.h" //subaddress_receive_info
 #include "network/rpc/core_rpc_server_commands_defs.h" //block_outptu_indices

@@ -58,7 +58,7 @@ using namespace epee;
 #include "int-util.h"
 #include "profile_tools.h"
 #include "crypto/crypto.h"
-#include "crypto/sha3.h"
+#include "crypto/sha3.hpp"
 #include "serialization/binary_utils.h"
 #include "serialization/string.h"
 #include "cryptonote/basic/blobdatatype.h"

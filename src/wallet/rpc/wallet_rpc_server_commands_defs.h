@@ -33,7 +33,7 @@
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/subaddress_index.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "wallet_rpc_server_error_codes.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

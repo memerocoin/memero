@@ -40,7 +40,7 @@
 #include <memory.h>
 
 #include "memwipe.h"
-#include "hash.h"
+#include "hash.hpp"
 
 namespace crypto {
   extern "C" {

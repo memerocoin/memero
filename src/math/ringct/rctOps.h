@@ -40,10 +40,10 @@
 #include "crypto/generic-ops.h"
 
 extern "C" {
-#include "crypto/sha3.h"
 #include "rctCryptoOps.h"
 }
 #include "crypto/crypto.h"
+#include "crypto/sha3.hpp"
 
 #include "rctTypes.h"
 

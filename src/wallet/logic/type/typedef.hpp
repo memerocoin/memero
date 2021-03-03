@@ -34,7 +34,7 @@
 #include <cstddef>
 #include <deque>
 
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "ringct/rctTypes.h"
 #include "serialization/serialization.h"
 

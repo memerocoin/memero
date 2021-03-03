@@ -34,10 +34,7 @@
 #include "account.h"
 #include "warnings.h"
 #include "crypto/crypto.h"
-extern "C"
-{
-#include "crypto/sha3.h"
-}
+#include "crypto/sha3.hpp"
 #include "cryptonote_basic_impl.h"
 #include "cryptonote_format_utils.h"
 #include "config/cryptonote.hpp"

@@ -32,7 +32,7 @@
 
 #include "cryptonote_basic.h"
 #include "crypto/crypto.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 
 
 namespace cryptonote {

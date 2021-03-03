@@ -32,9 +32,10 @@ set(crypto_sources
   crypto-ops-data.c
   crypto-ops.c
   crypto.cpp
-  hash.c
-  sha3.c
-  tree-hash.c)
+  sha3.cpp
+  tree-hash.cpp
+  hash.cpp
+  )
 
 add_library(cncrypto
   ${crypto_sources}

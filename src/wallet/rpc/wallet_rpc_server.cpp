@@ -46,7 +46,7 @@ using namespace epee;
 #include "wallet_rpc_server_commands_defs.h"
 #include "misc_language.h"
 #include "string_tools.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "wallet/mnemonics/electrum-words.h"
 #include "rpc/rpc_args.h"
 #include "rpc/core_rpc_server_commands_defs.h"

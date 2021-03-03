@@ -48,7 +48,7 @@
 #include "common/threadpool.h"
 #include "common/boost_serialization_helper.h"
 #include "warnings.h"
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include "cryptonote_core.h"
 #include "ringct/rctSigs.h"
 #include "common/perf_timer.h"
