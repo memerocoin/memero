@@ -153,7 +153,6 @@ add_subdirectory(src/cryptonote/basic)
 
 ## network
 include_directories(
-  external
   src/network
 )
 add_subdirectory(src/network/type)
