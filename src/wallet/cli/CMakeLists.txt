@@ -27,15 +27,11 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(simplewallet_sources
-  simplewallet.cpp)
-
 add_executable(simplewallet
-  ${simplewallet_sources}
+  simplewallet.cpp
   )
 
 target_link_libraries(simplewallet
-  PRIVATE
     wallet
     ${EPEE_READLINE}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}

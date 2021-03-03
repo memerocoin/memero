@@ -39,7 +39,7 @@ add_library(cryptonote_basic
   )
 
 target_link_libraries(cryptonote_basic
-  PUBLIC
+    common
     cncrypto
     device
  )

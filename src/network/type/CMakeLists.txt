@@ -26,9 +26,19 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(net_sources dandelionpp.cpp error.cpp http.cpp i2p_address.cpp parse.cpp socks.cpp
-    socks_connect.cpp tor_address.cpp)
+add_library(net
+  dandelionpp.cpp
+  error.cpp
+  http.cpp
+  i2p_address.cpp
+  parse.cpp
+  socks.cpp
+  socks_connect.cpp
+  tor_address.cpp
+  )
 
-add_library(net ${net_sources})
-target_link_libraries(net common epee)
+target_link_libraries(net
+  common
+  epee
+  )
 

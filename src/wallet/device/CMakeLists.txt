@@ -33,7 +33,6 @@ add_library(device
   )
 
 target_link_libraries(device
-  PUBLIC
     cncrypto
     ringct_basic
     ${Boost_SERIALIZATION_LIBRARY}

@@ -36,9 +36,7 @@ add_library(wallet
   )
 
 target_link_libraries(wallet
-  PUBLIC
     rpc_base
-    common
     cryptonote_core
     mnemonics
     net
@@ -53,13 +51,8 @@ add_executable(wallet_rpc_server
 )
 
 target_link_libraries(wallet_rpc_server
-  PRIVATE
     wallet
-    rpc_base
-    common
-    version
     daemonizer
-    wallet_logic
     )
 
 set_property(TARGET "wallet_rpc_server"

@@ -49,17 +49,13 @@ if (USE_READLINE AND (GNU_READLINE_FOUND))
 endif()
 
 target_link_libraries(epee
-  PUBLIC
     easylogging
-  PRIVATE
     ${OPENSSL_LIBRARIES}
     )
 
 if (USE_READLINE AND (GNU_READLINE_FOUND))
   target_link_libraries(epee_readline
-    PUBLIC
-      easylogging
-    PRIVATE
+    easylogging
     ${GNU_READLINE_LIBRARY}
     )
 endif()

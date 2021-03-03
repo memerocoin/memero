@@ -49,7 +49,6 @@ add_library(daemon_rpc_server
   )
 
 target_link_libraries(rpc
-  PUBLIC
     rpc_base
     net
     )

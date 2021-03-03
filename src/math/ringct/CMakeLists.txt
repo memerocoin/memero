@@ -38,7 +38,6 @@ add_library(ringct_basic
   )
 
 target_link_libraries(ringct_basic
-  PUBLIC
     cncrypto
     common_basic
   )
@@ -48,7 +47,6 @@ add_library(ringct
   )
 
 target_link_libraries(ringct
-  PUBLIC
     ringct_basic
     cryptonote_basic
     device

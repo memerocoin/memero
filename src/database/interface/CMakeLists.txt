@@ -33,8 +33,6 @@ add_library(blockchain_db
   )
 
 target_link_libraries(blockchain_db
-  PUBLIC
-    common
     ringct
     ${LMDB_LIBRARY}
   )

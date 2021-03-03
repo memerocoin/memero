@@ -28,17 +28,17 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(wallet_logic
-  ../logic/functional/fee.cpp
-  ../logic/functional/proof.cpp
-  ../logic/functional/signature.cpp
-  ../logic/functional/wallet.cpp
-  ../logic/functional/helper.cpp
-  ../logic/pseudo_functional/proof.cpp
-  ../logic/pseudo_functional/uri.cpp
-  ../logic/pseudo_functional/hash.cpp
-  ../logic/controller/proof.cpp
-  ../logic/controller/wallet.cpp
-  ../logic/controller/keys_unlocker.cpp
-  ../logic/state/gamma_picker.cpp
+  functional/fee.cpp
+  functional/proof.cpp
+  functional/signature.cpp
+  functional/wallet.cpp
+  functional/helper.cpp
+  pseudo_functional/proof.cpp
+  pseudo_functional/uri.cpp
+  pseudo_functional/hash.cpp
+  controller/proof.cpp
+  controller/wallet.cpp
+  controller/keys_unlocker.cpp
+  state/gamma_picker.cpp
   )
 

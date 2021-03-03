@@ -32,8 +32,4 @@ add_library(p2p
   net_peerlist.cpp
 )
 
-target_include_directories(p2p
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 
