@@ -27,7 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(ringct_basic_sources
+add_library(ringct_basic
   rctOps.cpp
   rctTypes.cpp
   rctCryptoOps.c
@@ -37,22 +37,14 @@ set(ringct_basic_sources
   curveConstants.cpp
   )
 
-add_library(ringct_basic
-  ${ringct_basic_sources}
-  )
-
 target_link_libraries(ringct_basic
   PUBLIC
     cncrypto
     common_basic
   )
 
-set(ringct_sources
-  rctSigs.cpp
-)
-
 add_library(ringct
-  ${ringct_sources}
+  rctSigs.cpp
   )
 
 target_link_libraries(ringct
