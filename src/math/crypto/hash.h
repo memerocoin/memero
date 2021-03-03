@@ -70,10 +70,6 @@ namespace crypto {
     return h;
   }
 
-  inline void cn_slow_hash(const void *data, std::size_t length, hash &hash, int variant = 0, uint64_t height = 0) {
-    cn_fast_hash(data, length, reinterpret_cast<char *>(&hash));
-  }
-  
   inline void sha3(const void *data, std::size_t length, hash &hash) {
     sha3(data, length, reinterpret_cast<char *>(&hash));
   }

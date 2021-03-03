@@ -79,7 +79,6 @@ enum {
 };
 
 void cn_fast_hash(const void *data, size_t length, char *hash);
-void cn_slow_hash(const void *data, size_t length, char *hash, int variant, int prehashed, uint64_t height);
 
 void hash_extra_jh(const void *data, size_t length, char *hash);
 void sha3(const void *data, size_t length, char *hash);
