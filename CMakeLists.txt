@@ -87,20 +87,20 @@ endif()
 
 # libs
 
-# threads
+## threads
 find_package(Threads REQUIRED)
 
-# openssl
+## openssl
 find_package(OpenSSL REQUIRED)
 message(STATUS "Using OpenSSL include dir at ${OPENSSL_INCLUDE_DIR}")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
-# boost
+## boost
 find_package(Boost 1.67 REQUIRED COMPONENTS system date_time serialization program_options)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-# readline
+## readline
 option(USE_READLINE "Build with GNU readline support." ON)
 if(USE_READLINE)
   find_package(Readline)
@@ -114,50 +114,79 @@ if(USE_READLINE)
   endif()
 endif()
 
-# sodium
+## sodium
 find_library(SODIUM_LIBRARY sodium)
 
 
+# let's go
 
+## version
+include(Version)
+add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
+add_dependencies(version genversion)
 
-# external
+## easylogging
+add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
+include_directories(external/easylogging++)
+add_subdirectory(external/easylogging++)
 
-# Set default blockchain storage location:
-# memory was the default in Cryptonote before Monero implemented LMDB, it still works but is unnecessary.
-# set(DATABASE memory)
+## epee
+include_directories(src/tools/epee/include)
+add_subdirectory(src/tools/epee)
+
+## common
+include_directories(
+  src/tools
+  src/math
+  src
+)
+add_subdirectory(src/tools/common)
+
+## math/crypto
+add_subdirectory(src/math/crypto)
+
+## math/ringct
+add_subdirectory(src/math/ringct)
+
+## cryptonote/basic
+add_subdirectory(src/cryptonote/basic)
+
+## network
+include_directories(
+  external
+  src/network
+)
+add_subdirectory(src/network/type)
+add_subdirectory(src/network/rpc)
+add_subdirectory(src/network/p2p)
+
+## cryptonote
+add_subdirectory(src/cryptonote/core)
+add_subdirectory(src/cryptonote/protocol)
+
+## tools
+add_subdirectory(src/tools/daemonizer)
+add_subdirectory(src/tools/serialization)
+
+## database
 set(DATABASE lmdb)
-# message(STATUS "Using LMDB as default DB type")
 set(BLOCKCHAIN_DB DB_LMDB)
 add_definitions("-DDEFAULT_DB_TYPE=\"lmdb\"")
 add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 
-add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
-
-add_subdirectory(external)
-
-# lmdb
 include_directories(${LMDB_INCLUDE})
+add_subdirectory(external/db_drivers)
+add_subdirectory(src/database/interface)
+add_subdirectory(src/database/helper/lmdb)
 
-# easylogging
-include_directories(external/easylogging++)
+## daemon
+add_subdirectory(src/daemon)
 
-# rapidjson
-include_directories(external/rapidjson/include)
-
-
-
-
-
-# wrap up
-include_directories(
-  external
-  src/tools/epee/include
-  src
-  src/tools
-  src/math
-  src/network
-)
-
-add_subdirectory(src)
+## wallet
+add_subdirectory(src/wallet/mnemonics)
+add_subdirectory(src/wallet/device)
+add_subdirectory(src/wallet/logic)
+add_subdirectory(src/wallet/rpc)
+add_subdirectory(src/wallet/cli)
 
 
