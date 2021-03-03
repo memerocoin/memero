@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 # 
 # All rights reserved.
@@ -26,5 +27,38 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_subdirectory(src)
+add_library( epee
+  src/hex.cpp
+  src/abstract_http_client.cpp
+  src/mlog.cpp
+  src/net_helper.cpp
+  src/net_utils_base.cpp
+  src/string_tools.cpp
+  src/wipeable_string.cpp
+  src/levin_base.cpp
+  src/memwipe.c
+  src/connection_basic.cpp
+  src/network_throttle.cpp
+  src/network_throttle-detail.cpp
+  src/int-util.cpp
+  src/buffer.cpp
+  src/net_ssl.cpp
+)
 
+if (USE_READLINE AND (GNU_READLINE_FOUND))
+  add_library( epee_readline
+    src/readline_buffer.cpp
+  )
+endif()
+
+target_link_libraries( epee
+  easylogging
+  ${OPENSSL_LIBRARIES}
+)
+
+if (USE_READLINE AND (GNU_READLINE_FOUND))
+  target_link_libraries( epee_readline
+    easylogging
+    ${GNU_READLINE_LIBRARY}
+  )
+endif()
