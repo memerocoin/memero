@@ -33,7 +33,6 @@ set(crypto_sources
   crypto-ops.c
   crypto.cpp
   hash.c
-  keccak.c
   sha3.c
   tree-hash.c)
 

@@ -35,10 +35,6 @@
 #include "hash-ops.h"
 #include "sha3.h"
 
-void hash_process(union hash_state *state, const uint8_t *buf, size_t count) {
-  sha3_as_keccak1600(buf, count, (uint8_t*)state);
-}
-
 void cn_fast_hash(const void *data, size_t length, char *hash) {
   sha3_as_keccak1600((const uint8_t*)data, length, (uint8_t*)hash);
 }
