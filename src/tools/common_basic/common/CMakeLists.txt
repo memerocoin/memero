@@ -27,17 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(common
-  base58.cpp
-  command_line.cpp
-  error.cpp
-  expect.cpp
-  util.cpp
-  notify.cpp
-  password.cpp
-  spawn.cpp
-  threadpool.cpp
-  combinator.cpp
+add_library(common_basic
+  perf_timer.cpp
+  aligned.c
   )
-
-

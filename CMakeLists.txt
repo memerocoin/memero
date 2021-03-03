@@ -122,6 +122,9 @@ find_library(SODIUM_LIBRARY sodium)
 
 ## version
 include(Version)
+include_directories(
+  src
+)
 add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
 add_dependencies(version genversion)
 
@@ -136,16 +139,23 @@ add_library( easylogging
 include_directories(src/tools/epee/include)
 add_subdirectory(src/tools/epee)
 
-## common
+## common_basic
 include_directories(
-  src/tools
-  src/math
-  src
+  src/tools/common_basic
 )
-add_subdirectory(src/tools/common)
+add_subdirectory(src/tools/common_basic/common)
 
 ## math/crypto
+include_directories(
+  src/tools
+)
 add_subdirectory(src/math/crypto)
+
+## common
+include_directories(
+  src/math
+)
+add_subdirectory(src/tools/common)
 
 ## math/ringct
 add_subdirectory(src/math/ringct)
