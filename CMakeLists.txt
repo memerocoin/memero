@@ -52,7 +52,7 @@ else()
 	message(STATUS "ccache deselected")
 endif()
 
-
+# set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
 
 
 # language
