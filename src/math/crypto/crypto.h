@@ -45,10 +45,6 @@
 
 namespace crypto {
 
-  extern "C" {
-#include "random.h"
-  }
-
 #pragma pack(push, 1)
   POD_CLASS ec_point {
     char data[32];
@@ -147,7 +143,6 @@ namespace crypto {
   };
 
   void generate_random_bytes_thread_safe(size_t N, uint8_t *bytes);
-  void add_extra_entropy_thread_safe(const void *ptr, size_t bytes);
 
   /* Generate N random bytes
    */

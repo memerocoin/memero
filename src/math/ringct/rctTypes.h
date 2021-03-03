@@ -40,7 +40,6 @@
 
 extern "C" {
 #include "crypto/crypto-ops.h"
-#include "crypto/random.h"
 }
 #include "crypto/generic-ops.h"
 #include "crypto/crypto.h"

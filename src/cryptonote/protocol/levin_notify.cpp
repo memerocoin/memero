@@ -38,7 +38,6 @@
 #include "common/expect.h"
 #include "common/varint.h"
 #include "config/cryptonote.hpp"
-#include "crypto/random.h"
 #include "cryptonote/basic/connection_context.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "network/type/dandelionpp.h"

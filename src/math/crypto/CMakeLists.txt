@@ -35,7 +35,6 @@ set(crypto_sources
   hash.c
   keccak.c
   sha3.c
-  random.c
   tree-hash.c)
 
 add_library(cncrypto

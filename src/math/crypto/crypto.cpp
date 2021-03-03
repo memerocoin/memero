@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <mutex>
+#include <sodium.h>
 
 #include "common/varint.h"
 #include "warnings.h"
@@ -66,7 +67,6 @@ namespace crypto {
 
   extern "C" {
 #include "crypto-ops.h"
-#include "random.h"
   }
 
   const crypto::public_key null_pkey = crypto::public_key{};
@@ -94,16 +94,14 @@ namespace crypto {
     return random_lock;
   }
 
+  // https://stackoverflow.com/questions/25298585/efficiently-generating-random-bytes-of-data-in-c11-14
+  using random_bytes_engine = std::independent_bits_engine<
+    std::default_random_engine, CHAR_BIT, uint8_t>;
+
   void generate_random_bytes_thread_safe(size_t N, uint8_t *bytes)
   {
     std::lock_guard<std::mutex> lock(get_random_lock());
-    generate_random_bytes_not_thread_safe(N, bytes);
-  }
-
-  void add_extra_entropy_thread_safe(const void *ptr, size_t bytes)
-  {
-    std::lock_guard<std::mutex> lock(get_random_lock());
-    add_extra_entropy_not_thread_safe(ptr, bytes);
+    randombytes_buf(bytes, N);
   }
 
   static inline bool less32(const unsigned char *k0, const unsigned char *k1)
