@@ -127,8 +127,8 @@ add_dependencies(version genversion)
 
 ## easylogging
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
-include_directories(external/easylogging++)
-add_subdirectory(external/easylogging++)
+include_directories(src/tools/easylogging++)
+add_subdirectory(src/tools/easylogging++)
 
 ## epee
 include_directories(src/tools/epee/include)

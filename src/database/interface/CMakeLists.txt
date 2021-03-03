@@ -34,5 +34,5 @@ add_library(blockchain_db
 
 target_link_libraries(blockchain_db
     ringct
-    ${LMDB_LIBRARY}
+    lmdb
   )
