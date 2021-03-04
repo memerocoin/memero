@@ -202,8 +202,7 @@ add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 
 include_directories(vendor/liblmdb)
 add_subdirectory(vendor/liblmdb)
-add_subdirectory(src/database/interface)
-add_subdirectory(src/database/helper/lmdb)
+add_subdirectory(src/database)
 
 ## daemon
 add_subdirectory(src/daemon)

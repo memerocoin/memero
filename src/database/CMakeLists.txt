@@ -29,5 +29,18 @@
 
 
 add_library(lmdb_lib
-  database.cpp error.cpp table.cpp value_stream.cpp
+  helper/lmdb/database.cpp
+  helper/lmdb/error.cpp
+  helper/lmdb/table.cpp
+  helper/lmdb/value_stream.cpp
 )
+
+add_library(blockchain_db
+  interface/blockchain.cpp
+  instance/lmdb/lmdb.cpp
+  )
+
+target_link_libraries(blockchain_db
+    lmdb
+    ringct
+  )
