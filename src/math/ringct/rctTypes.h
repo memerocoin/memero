@@ -123,7 +123,7 @@ namespace rct {
     struct geDsmp {
         ge_dsmp k;
     };
-    
+
     // CLSAG signature
     struct clsag {
         keyV s; // scalars
@@ -384,12 +384,12 @@ namespace rct {
 
         keyV& get_pseudo_outs()
         {
-          return type == type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
+          return type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
         }
 
         keyV const& get_pseudo_outs() const
         {
-          return type == type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
+          return type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
         }
 
         BEGIN_SERIALIZE_OBJECT()
