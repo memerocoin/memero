@@ -40,7 +40,6 @@
 #include "blockchain.h"
 #include "database/interface/locked_txn.h"
 #include "database/interface/blockchain.hpp"
-#include "common/boost_serialization_helper.h"
 #include "int-util.h"
 #include "misc_language.h"
 #include "warnings.h"

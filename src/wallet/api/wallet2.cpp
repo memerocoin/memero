@@ -52,7 +52,6 @@ using namespace epee;
 #include "rpc/core_rpc_server_error_codes.h"
 #include "misc_language.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "common/boost_serialization_helper.h"
 #include "common/command_line.h"
 #include "common/threadpool.h"
 #include "int-util.h"
@@ -3698,46 +3697,11 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
         }
         catch (...)
         {
-          crypto::chacha8(cache_file_data.cache_data.data(), cache_file_data.cache_data.size(), key, cache_file_data.iv, &cache_data[0]);
-          try
-          {
-            std::stringstream iss;
-            iss << cache_data;
-            boost::archive::portable_binary_iarchive ar(iss);
-            ar >> *this;
-          }
-          catch (...)
-          {
-            LOG_PRINT_L0("Failed to open portable binary, trying unportable");
-            if (use_fs) std::filesystem::copy_file(m_wallet_file, m_wallet_file + ".unportable", std::filesystem::copy_options::overwrite_existing);
-            std::stringstream iss;
-            iss.str("");
-            iss << cache_data;
-            boost::archive::binary_iarchive ar(iss);
-            ar >> *this;
-          }
         }
       }
     }
     catch (...)
     {
-      LOG_PRINT_L1("Failed to load encrypted cache, trying unencrypted");
-      try {
-        std::stringstream iss;
-        iss << cache_file_buf;
-        boost::archive::portable_binary_iarchive ar(iss);
-        ar >> *this;
-      }
-      catch (...)
-      {
-        LOG_PRINT_L0("Failed to open portable binary, trying unportable");
-        if (use_fs) std::filesystem::copy_file(m_wallet_file, m_wallet_file + ".unportable", std::filesystem::copy_options::overwrite_existing);
-        std::stringstream iss;
-        iss.str("");
-        iss << cache_file_buf;
-        boost::archive::binary_iarchive ar(iss);
-        ar >> *this;
-      }
     }
     THROW_WALLET_EXCEPTION_IF(
       m_account_public_address.m_spend_public_key != m_account.get_keys().m_account_address.m_spend_public_key ||
