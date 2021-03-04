@@ -28,23 +28,23 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-add_executable(wallet_rpc_server
+add_executable(lolnero-rpc
   wallet_rpc_server.cpp
 )
 
-target_link_libraries(wallet_rpc_server
+target_link_libraries(lolnero-rpc
     wallet_api
     wallet_common
     daemonizer
     )
 
-set_property(TARGET "wallet_rpc_server"
+set_property(TARGET lolnero-rpc
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-set_property(TARGET wallet_rpc_server
+set_property(TARGET lolnero-rpc
   PROPERTY
-    OUTPUT_NAME "lolnero-rpc")
+    OUTPUT_NAME lolnero-rpc)
 
 
-install(TARGETS wallet_rpc_server DESTINATION bin)
+install(TARGETS lolnero-rpc DESTINATION bin)

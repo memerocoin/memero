@@ -27,11 +27,11 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_executable(simplewallet
+add_executable(lolnero
   simplewallet.cpp
   )
 
-target_link_libraries(simplewallet
+target_link_libraries(lolnero
     wallet_api
     wallet_common
     ${EPEE_READLINE}
@@ -39,13 +39,13 @@ target_link_libraries(simplewallet
     ${GNU_READLINE_LIBRARY}
     )
 
-set_property(TARGET "simplewallet"
+set_property(TARGET lolnero
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-set_property(TARGET simplewallet
+set_property(TARGET lolnero
   PROPERTY
-    OUTPUT_NAME "lolnero")
+    OUTPUT_NAME lolnero)
 
-install(TARGETS simplewallet DESTINATION bin)
+install(TARGETS lolnero DESTINATION bin)
 

@@ -27,7 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_executable("daemon"
+add_executable(lolnerod
   command_parser_executor.cpp
   command_server.cpp
   daemon.cpp
@@ -36,7 +36,7 @@ add_executable("daemon"
   rpc_command_executor.cpp
   )
 
-target_link_libraries(daemon
+target_link_libraries(lolnerod
     LINK_PUBLIC
     rpc
     blockchain_db
@@ -53,13 +53,13 @@ target_link_libraries(daemon
     ${GNU_READLINE_LIBRARY}
     )
 
-set_property(TARGET "daemon"
+set_property(TARGET lolnerod
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
   
-set_property(TARGET daemon
+set_property(TARGET lolnerod
   PROPERTY
     OUTPUT_NAME "lolnerod")
 
 
-install(TARGETS daemon DESTINATION bin)
+install(TARGETS lolnerod DESTINATION bin)
