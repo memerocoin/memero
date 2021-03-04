@@ -191,8 +191,8 @@ set(BLOCKCHAIN_DB DB_LMDB)
 add_definitions("-DDEFAULT_DB_TYPE=\"lmdb\"")
 add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 
-include_directories(src/database/driver/liblmdb)
-add_subdirectory(src/database/driver/liblmdb)
+include_directories(vendor/liblmdb)
+add_subdirectory(vendor/liblmdb)
 add_subdirectory(src/database/interface)
 add_subdirectory(src/database/helper/lmdb)
 
