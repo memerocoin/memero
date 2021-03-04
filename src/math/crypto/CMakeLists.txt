@@ -28,7 +28,7 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(cncrypto
-  chacha.c
+  chacha.cpp
   crypto-ops-data.c
   crypto-ops.c
   crypto.cpp

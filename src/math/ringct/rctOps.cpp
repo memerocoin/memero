@@ -34,6 +34,7 @@
 #include "rctOps.h"
 #include "curveConstants.hpp"
 #include "zeroCommitment.hpp"
+#include "rctCryptoOps.hpp"
 
 using namespace crypto;
 using namespace std;

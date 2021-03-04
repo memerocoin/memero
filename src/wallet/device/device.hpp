@@ -30,7 +30,7 @@
 #pragma once
 
 #include "crypto/crypto.hpp"
-#include "crypto/chacha.h"
+#include "crypto/chacha.hpp"
 #include "ringct/rctTypes.hpp"
 #include "config/cryptonote.hpp"
 

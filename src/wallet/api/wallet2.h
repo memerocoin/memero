@@ -65,7 +65,7 @@
 #include "cryptonote/core/cryptonote_tx_utils.h"
 #include "common/unordered_containers_boost_serialization.h"
 #include "common/util.h"
-#include "crypto/chacha.h"
+#include "crypto/chacha.hpp"
 #include "crypto/hash.hpp"
 #include "ringct/rctTypes.hpp"
 #include "ringct/rctOps.h"

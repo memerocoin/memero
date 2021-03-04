@@ -34,7 +34,7 @@
 
 #include "serialization.h"
 #include "debug_archive.h"
-#include "crypto/chacha.h"
+#include "crypto/chacha.hpp"
 #include "crypto/crypto.hpp"
 #include "crypto/hash.hpp"
 

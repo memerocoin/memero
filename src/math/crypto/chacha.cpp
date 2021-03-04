@@ -10,7 +10,7 @@ Public domain.
 #include <sys/param.h>
 #endif
 
-#include "chacha.h"
+#include "chacha.hpp"
 #include "int-util.h"
 #include "warnings.h"
 
@@ -37,6 +37,8 @@ Public domain.
   c = PLUS(c,d); b = ROTATE(XOR(b,c),12); \
   a = PLUS(a,b); d = ROTATE(XOR(d,a), 8); \
   c = PLUS(c,d); b = ROTATE(XOR(b,c), 7);
+
+namespace crypto {
 
 static const char sigma[] = "expand 32-byte k";
 
@@ -179,4 +181,35 @@ void chacha8(const void* data, size_t length, const uint8_t* key, const uint8_t*
 void chacha20(const void* data, size_t length, const uint8_t* key, const uint8_t* iv, char* cipher)
 {
   chacha(20, data, length, key, iv, cipher);
+}
+
+void chacha8(const void* data, std::size_t length, const chacha_key& key, const chacha_iv& iv, char* cipher) {
+  chacha8(data, length, key.data(), reinterpret_cast<const uint8_t*>(&iv), cipher);
+}
+
+void chacha20(const void* data, std::size_t length, const chacha_key& key, const chacha_iv& iv, char* cipher) {
+  chacha20(data, length, key.data(), reinterpret_cast<const uint8_t*>(&iv), cipher);
+}
+
+void generate_chacha_key(const void *data, size_t size, chacha_key& key, uint64_t kdf_rounds) {
+  static_assert(sizeof(chacha_key) <= sizeof(hash), "Size of hash must be at least that of chacha_key");
+  tools::scrubbed_arr<char, HASH_SIZE> pwd_hash;
+  crypto::cn_fast_hash(data, size, pwd_hash.data());
+  for (uint64_t n = 1; n < kdf_rounds; ++n)
+    crypto::cn_fast_hash(pwd_hash.data(), pwd_hash.size(), pwd_hash.data());
+  memcpy(&unwrap(key), pwd_hash.data(), sizeof(key));
+}
+
+void generate_chacha_key_prehashed(const void *data, size_t size, chacha_key& key, uint64_t kdf_rounds) {
+  static_assert(sizeof(chacha_key) <= sizeof(hash), "Size of hash must be at least that of chacha_key");
+  tools::scrubbed_arr<char, HASH_SIZE> pwd_hash;
+  crypto::cn_fast_hash(data, size, pwd_hash.data());
+  for (uint64_t n = 1; n < kdf_rounds; ++n)
+    crypto::cn_fast_hash(pwd_hash.data(), pwd_hash.size(), pwd_hash.data());
+  memcpy(&unwrap(key), pwd_hash.data(), sizeof(key));
+}
+
+void generate_chacha_key(std::string password, chacha_key& key, uint64_t kdf_rounds) {
+  return generate_chacha_key(password.data(), password.size(), key, kdf_rounds);
+}
 }
