@@ -32,7 +32,7 @@
 #include "blockchain.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "profile_tools.h"
-#include "ringct/rctOps.h"
+#include "ringct/rctOps.hpp"
 
 #include "../instance/lmdb/lmdb.hpp"
 

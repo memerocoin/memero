@@ -41,7 +41,7 @@
 
 #include "crypto/generic-ops.h"
 #include "rctTypes.hpp"
-#include "rctOps.h"
+#include "rctOps.hpp"
 
 //Define this flag when debugging to get additional info on the console
 #ifdef DBG

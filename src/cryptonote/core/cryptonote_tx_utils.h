@@ -32,7 +32,7 @@
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/utility.hpp>
-#include "ringct/rctOps.h"
+#include "ringct/rctOps.hpp"
 
 namespace cryptonote
 {

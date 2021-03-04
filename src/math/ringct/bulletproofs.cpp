@@ -40,7 +40,7 @@ extern "C"
 {
 #include "crypto/crypto-ops.h"
 }
-#include "rctOps.h"
+#include "rctOps.hpp"
 #include "curveConstants.hpp"
 #include "multiexp.hpp"
 #include "bulletproofs.hpp"

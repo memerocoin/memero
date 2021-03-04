@@ -43,7 +43,7 @@
 #include "common/unordered_containers_boost_serialization.h"
 #include "crypto/crypto.hpp"
 #include "ringct/rctTypes.hpp"
-#include "ringct/rctOps.h"
+#include "ringct/rctOps.hpp"
 
 namespace boost
 {

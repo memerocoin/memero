@@ -36,7 +36,7 @@ extern "C"
 #include "misc_log_ex.h"
 #include "common/perf_timer.h"
 #include "common/aligned.h"
-#include "rctOps.h"
+#include "rctOps.hpp"
 #include "multiexp.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

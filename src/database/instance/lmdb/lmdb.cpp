@@ -40,7 +40,7 @@
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "crypto/crypto.hpp"
 #include "profile_tools.h"
-#include "ringct/rctOps.h"
+#include "ringct/rctOps.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "blockchain.db.lmdb"
