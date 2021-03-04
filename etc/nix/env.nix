@@ -5,6 +5,7 @@ let
   CMakeFlags_Lolnero = ''
     -DReadline_ROOT_DIR=${readline.dev}
     -DUSE_CCACHE=ON
+    -DBUILD_SHARED_LIBS=ON
   '';
 in
 {
