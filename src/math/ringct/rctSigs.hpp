@@ -40,10 +40,6 @@
 #include <tuple>
 
 #include "crypto/generic-ops.h"
-
-#include "crypto/crypto.h"
-
-
 #include "rctTypes.h"
 #include "rctOps.h"
 
@@ -96,9 +92,6 @@ namespace rct {
      );
 
     bool verRctCLSAGSimple(const key &, const clsag &, const ctkeyV &, const key &);
-
-    // void getKeyFromBlockchain(ctkey & a, size_t reference_index);
-    // std::tuple<ctkeyM, xmr_amount> populateFromBlockchain(ctkeyV inPk, int mixin);
 
     //RingCT protocol
     //genRct:

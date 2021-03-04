@@ -29,11 +29,8 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "misc_log_ex.h"
-#include "misc_language.h"
 #include "common/perf_timer.h"
-#include "common/threadpool.h"
-#include "common/util.h"
-#include "rctSigs.h"
+#include "rctSigs.hpp"
 #include "curveConstants.hpp"
 #include "bulletproofs.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
@@ -488,21 +485,6 @@ namespace rct {
         return index;
     }
 
-    //RingCT protocol
-    //genRct: 
-    //   creates an rctSig with all data necessary to verify the rangeProofs and that the signer owns one of the
-    //   columns that are claimed as inputs, and that the sum of inputs  = sum of outputs.
-    //   Also contains masked "amount" and "mask" so the receiver can see how much they received
-    //verRct:
-    //   verifies that all signatures (rangeProogs, MG sig, sum inputs = outputs) are correct
-    //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
-    //   uses the attached ecdh info to find the amounts represented by each output commitment 
-    //   must know the destination private key to find the correct amount, else will return a random number
-    //   Note: For txn fees, the last index in the amounts vector should contain that
-    //   Thus the amounts vector will be "one" longer than the destinations vectort
-
-    //RCT simple    
-    //for post-rct only
     rctSig genRctSimple
     (
      const key &message
@@ -580,7 +562,7 @@ namespace rct {
             rv.ecdhInfo[i].amount = d2h(outamounts[i]);
             hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i]);
         }
-            
+
         //set txn fee
         rv.txnFee = txnFee;
 //        TODO: unused ??
@@ -642,19 +624,6 @@ namespace rct {
         return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
     }
 
-    //RingCT protocol
-    //genRct: 
-    //   creates an rctSig with all data necessary to verify the rangeProofs and that the signer owns one of the
-    //   columns that are claimed as inputs, and that the sum of inputs  = sum of outputs.
-    //   Also contains masked "amount" and "mask" so the receiver can see how much they received
-    //verRct:
-    //   verifies that all signatures (rangeProogs, MG sig, sum inputs = outputs) are correct
-    //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
-    //   uses the attached ecdh info to find the amounts represented by each output commitment 
-    //   must know the destination private key to find the correct amount, else will return a random number    
-
-    //ver RingCT simple
-    //assumes only post-rct style inputs (at least for max anonymity)
     bool verRctSemanticsSimple(const std::vector<const rctSig*> & rvv) {
       try
       {
@@ -769,16 +738,6 @@ namespace rct {
       }
     }
 
-    //RingCT protocol
-    //genRct: 
-    //   creates an rctSig with all data necessary to verify the rangeProofs and that the signer owns one of the
-    //   columns that are claimed as inputs, and that the sum of inputs  = sum of outputs.
-    //   Also contains masked "amount" and "mask" so the receiver can see how much they received
-    //verRct:
-    //   verifies that all signatures (rangeProogs, MG sig, sum inputs = outputs) are correct
-    //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
-    //   uses the attached ecdh info to find the amounts represented by each output commitment 
-    //   must know the destination private key to find the correct amount, else will return a random number    
     xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key &mask) {
         hw::device& hwdev = hw::get_device("default");
         CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");

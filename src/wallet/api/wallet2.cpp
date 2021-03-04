@@ -74,7 +74,7 @@ using namespace epee;
 #include "common/combinator.h"
 #include "common/notify.h"
 #include "common/perf_timer.h"
-#include "ringct/rctSigs.h"
+#include "ringct/rctSigs.hpp"
 #include "ringct/curveConstants.hpp"
 #include "network/type/socks_connect.h"
 

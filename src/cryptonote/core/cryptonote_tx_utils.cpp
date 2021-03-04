@@ -42,7 +42,7 @@ using namespace epee;
 #include "cryptonote/basic/tx_extra.h"
 #include "crypto/crypto.h"
 #include "crypto/hash.hpp"
-#include "ringct/rctSigs.h"
+#include "ringct/rctSigs.hpp"
 
 using namespace crypto;
 

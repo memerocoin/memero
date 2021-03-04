@@ -50,7 +50,7 @@
 #include "warnings.h"
 #include "crypto/hash.hpp"
 #include "cryptonote_core.h"
-#include "ringct/rctSigs.h"
+#include "ringct/rctSigs.hpp"
 #include "common/perf_timer.h"
 #include "common/notify.h"
 #include "common/varint.h"
