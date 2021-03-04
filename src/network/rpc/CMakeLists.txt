@@ -36,7 +36,7 @@ add_library(rpc_base
 add_library(rpc
   core_rpc_server.cpp
   rpc_version_str.cpp
-  instanciations
+  instanciations.cpp
   )
 
 add_library(daemon_messages
