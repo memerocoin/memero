@@ -39,6 +39,11 @@ add_library(rpc
   instanciations.cpp
   )
 
+target_link_libraries(rpc
+    rpc_base
+    net
+    )
+
 add_library(daemon_messages
   message.cpp
   daemon_messages.cpp
@@ -48,9 +53,6 @@ add_library(daemon_rpc_server
   daemon_handler.cpp
   )
 
-target_link_libraries(rpc
-    rpc_base
-    net
+target_link_libraries(daemon_rpc_server
+    daemon_messages
     )
-
-
