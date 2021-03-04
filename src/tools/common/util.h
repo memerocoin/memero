@@ -48,28 +48,6 @@
  */
 namespace tools
 {
-  //! Functional class for closing C file handles.
-  struct close_file
-  {
-    void operator()(std::FILE* handle) const noexcept
-    {
-      if (handle)
-      {
-        std::fclose(handle);
-      }
-    }
-  };
-
-  class file_locker
-  {
-  public:
-    file_locker(const std::string &filename);
-    ~file_locker();
-    bool locked() const;
-  private:
-    int m_fd;
-  };
-
   /*! \brief Returns the default data directory.
    *
    * \details Windows < Vista: C:\\Documents and Settings\\Username\\Application Data\\CRYPTONOTE_NAME
@@ -159,9 +137,6 @@ namespace tools
 
   std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str);
 
-  std::string glob_to_regex(const std::string &val);
-
-  void closefrom(int fd);
   std::string get_human_readable_timestamp(uint64_t ts);
 
   std::string get_human_readable_timespan(uint64_t seconds);

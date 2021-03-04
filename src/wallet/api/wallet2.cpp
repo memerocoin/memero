@@ -2673,7 +2673,6 @@ void wallet2::detach_blockchain(uint64_t height, std::map<std::pair<uint64_t, ui
 bool wallet2::deinit()
 {
   m_is_initialized=false;
-  unlock_keys_file();
   m_account.deinit();
   return true;
 }
@@ -2737,9 +2736,7 @@ bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable
     (tmp_file_name, buf, m_export_format == ExportFormat::Binary);
   CHECK_AND_ASSERT_MES(r, false, "failed to generate wallet keys file " << tmp_file_name);
 
-  unlock_keys_file();
   std::error_code e = tools::replace_file(tmp_file_name, keys_file_name);
-  lock_keys_file();
 
   if (e) {
     std::filesystem::remove(tmp_file_name);
@@ -2958,7 +2955,6 @@ bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_
     }
     if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
       decrypt_keys(keys_to_encrypt.value());
-    m_keys_file_locker.reset();
   }
   return r;
 }
@@ -3207,9 +3203,7 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
 bool wallet2::verify_password(const epee::wipeable_string& password)
 {
   // this temporary unlocking is necessary for Windows (otherwise the file couldn't be loaded).
-  unlock_keys_file();
   bool r = verify_password(m_keys_file, password, m_account.get_device().device_protocol() == hw::device::PROTOCOL_COLD || m_watch_only , m_account.get_device(), m_kdf_rounds);
-  lock_keys_file();
   return r;
 }
 
@@ -3611,17 +3605,13 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
   {
     bool exists = std::filesystem::exists(m_keys_file, e);
     THROW_WALLET_EXCEPTION_IF(e || !exists, error::file_not_found, m_keys_file);
-    lock_keys_file();
-    THROW_WALLET_EXCEPTION_IF(!is_keys_file_locked(), error::wallet_internal_error, "internal error: \"" + m_keys_file + "\" is opened by another wallet program");
 
     // this temporary unlocking is necessary for Windows (otherwise the file couldn't be loaded).
-    unlock_keys_file();
     if (!load_keys(m_keys_file, password))
     {
       THROW_WALLET_EXCEPTION_IF(true, error::file_read_error, m_keys_file);
     }
     LOG_PRINT_L0("Loaded wallet keys file, with public address: " << m_account.get_public_address_str(m_nettype));
-    lock_keys_file();
   }
   else if (!load_keys_buf(keys_buf, password))
   {
@@ -4581,39 +4571,6 @@ hw::device& wallet2::lookup_device(const std::string & device_descriptor){
   }
 
   return hw::get_device(device_descriptor);
-}
-
-bool wallet2::lock_keys_file()
-{
-  if (m_wallet_file.empty())
-    return true;
-  if (m_keys_file_locker)
-  {
-    MDEBUG(m_keys_file << " is already locked.");
-    return false;
-  }
-  m_keys_file_locker.reset(new tools::file_locker(m_keys_file));
-  return true;
-}
-
-bool wallet2::unlock_keys_file()
-{
-  if (m_wallet_file.empty())
-    return true;
-  if (!m_keys_file_locker)
-  {
-    MDEBUG(m_keys_file << " is already unlocked.");
-    return false;
-  }
-  m_keys_file_locker.reset();
-  return true;
-}
-
-bool wallet2::is_keys_file_locked() const
-{
-  if (m_wallet_file.empty())
-    return false;
-  return m_keys_file_locker->locked();
 }
 
 bool wallet2::tx_add_fake_output(std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs, uint64_t global_index, const crypto::public_key& output_public_key, const rct::key& mask, uint64_t real_index, bool unlocked) const

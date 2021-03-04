@@ -815,7 +815,6 @@ namespace tools
     bool m_ring_history_saved;
 
     uint64_t m_last_block_reward;
-    std::unique_ptr<tools::file_locker> m_keys_file_locker;
 
     crypto::chacha_key m_cache_key;
     std::optional<epee::wipeable_string> m_encrypt_keys_after_refresh;

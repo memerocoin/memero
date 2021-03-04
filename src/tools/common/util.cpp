@@ -101,35 +101,6 @@ namespace tools
 {
   std::function<void(int)> signal_handler::m_handler;
 
-  file_locker::file_locker(const std::string &filename)
-  {
-    m_fd = open(filename.c_str(), O_RDWR | O_CREAT | O_CLOEXEC, 0666);
-    if (m_fd != -1)
-    {
-      if (flock_exnb(m_fd) == -1)
-      {
-        MERROR("Failed to lock " << filename << ": " << std::strerror(errno));
-        close(m_fd);
-        m_fd = -1;
-      }
-    }
-    else
-    {
-      MERROR("Failed to open " << filename << ": " << std::strerror(errno));
-    }
-  }
-  file_locker::~file_locker()
-  {
-    if (locked())
-    {
-      close(m_fd);
-    }
-  }
-  bool file_locker::locked() const
-  {
-    return m_fd != -1;
-  }
-
   std::string get_nix_version_display_string()
   {
     struct utsname un;
@@ -407,44 +378,6 @@ namespace tools
     {
       return {};
     }
-  }
-
-  std::string glob_to_regex(const std::string &val)
-  {
-    std::string newval;
-
-    bool escape = false;
-    for (char c: val)
-    {
-      if (c == '*')
-        newval += escape ? "*" : ".*", escape = false;
-      else if (c == '?')
-        newval += escape ? "?" : ".", escape = false;
-      else if (c == '\\')
-        newval += '\\', escape = !escape;
-      else
-        newval += c, escape = false;
-    }
-    return newval;
-  }
-
-  void closefrom(int fd)
-  {
-#if defined __FreeBSD__ || defined __OpenBSD__ || defined __NetBSD__ || defined __DragonFly__
-    ::closefrom(fd);
-#else
-#if defined __GLIBC__
-    const int sc_open_max =  sysconf(_SC_OPEN_MAX);
-    const int MAX_FDS = std::min(65536, sc_open_max);
-#else
-    const int MAX_FDS = 65536;
-#endif
-    while (fd < MAX_FDS)
-    {
-      close(fd);
-      ++fd;
-    }
-#endif
   }
 
   std::string get_human_readable_timestamp(uint64_t ts)
