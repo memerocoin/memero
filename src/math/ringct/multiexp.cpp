@@ -28,15 +28,16 @@
 //
 // Adapted from Python code by Sarang Noether
 
-#include "misc_log_ex.h"
-#include "common/perf_timer.h"
 extern "C"
 {
 #include "crypto/crypto-ops.h"
 }
+
+#include "misc_log_ex.h"
+#include "common/perf_timer.h"
 #include "common/aligned.h"
 #include "rctOps.h"
-#include "multiexp.h"
+#include "multiexp.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "multiexp"

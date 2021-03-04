@@ -30,13 +30,9 @@
 
 #pragma once
 
-#ifndef MULTIEXP_H
-#define MULTIEXP_H
-
 #include <vector>
-#include "crypto/crypto.hpp"
+
 #include "rctTypes.hpp"
-#include "misc_log_ex.h"
 
 namespace rct
 {
@@ -67,5 +63,3 @@ size_t get_pippenger_c(size_t N);
 rct::key pippenger(const std::vector<MultiexpData> &data, const std::shared_ptr<pippenger_cached_data> &cache = NULL, size_t cache_size = 0, size_t c = 0);
 
 }
-
-#endif

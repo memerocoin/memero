@@ -42,7 +42,7 @@ extern "C"
 }
 #include "rctOps.h"
 #include "curveConstants.hpp"
-#include "multiexp.h"
+#include "multiexp.hpp"
 #include "bulletproofs.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
