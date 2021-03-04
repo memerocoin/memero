@@ -32,7 +32,7 @@ add_executable(simplewallet
   )
 
 target_link_libraries(simplewallet
-    wallet
+    wallet_api
     ${EPEE_READLINE}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     ${GNU_READLINE_LIBRARY}

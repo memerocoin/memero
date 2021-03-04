@@ -27,31 +27,13 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-
-add_library(wallet
-  ../api/wallet2.cpp
-  ../api/node_rpc_proxy.cpp
-  ../args/wallet_args.cpp
-  )
-
-target_link_libraries(wallet
-    rpc_base
-    cryptonote_core
-    mnemonics
-    net
-    wallet_logic
-  )
-
-set(wallet_rpc_sources
-  wallet_rpc_server.cpp)
 
 add_executable(wallet_rpc_server
-  ${wallet_rpc_sources}
+  wallet_rpc_server.cpp
 )
 
 target_link_libraries(wallet_rpc_server
-    wallet
+    wallet_api
     daemonizer
     )
 
