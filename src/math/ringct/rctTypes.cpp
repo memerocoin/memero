@@ -30,7 +30,7 @@
 
 #include "misc_log_ex.h"
 #include "config/cryptonote.hpp"
-#include "rctTypes.h"
+#include "rctTypes.hpp"
 #include "int-util.h"
 using namespace crypto;
 using namespace std;

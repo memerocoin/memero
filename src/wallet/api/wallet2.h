@@ -67,7 +67,7 @@
 #include "common/util.h"
 #include "crypto/chacha.h"
 #include "crypto/hash.hpp"
-#include "ringct/rctTypes.h"
+#include "ringct/rctTypes.hpp"
 #include "ringct/rctOps.h"
 #include "serialization/crypto.h"
 #include "serialization/string.h"

@@ -35,7 +35,7 @@
 
 #include <vector>
 #include "crypto/crypto.h"
-#include "rctTypes.h"
+#include "rctTypes.hpp"
 #include "misc_log_ex.h"
 
 namespace rct

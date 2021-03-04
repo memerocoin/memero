@@ -29,24 +29,22 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#ifndef RCT_TYPES_H
-#define RCT_TYPES_H
 
 #include <cstddef>
 #include <vector>
 #include <iostream>
 #include <cinttypes>
-#include <sodium/crypto_verify_32.h>
 
 extern "C" {
 #include "crypto/crypto-ops.h"
 }
-#include "crypto/generic-ops.h"
+
 #include "crypto/crypto.h"
 
 #include "hex.h"
 #include "span.h"
 #include "memwipe.h"
+
 #include "serialization/containers.h"
 #include "serialization/debug_archive.h"
 #include "serialization/binary_archive.h"
@@ -499,5 +497,3 @@ VARIANT_TAG(json_archive, rct::ecdhTuple, "rct_ecdhTuple");
 VARIANT_TAG(json_archive, rct::rctSig, "rct_rctSig");
 VARIANT_TAG(json_archive, rct::Bulletproof, "rct_bulletproof");
 VARIANT_TAG(json_archive, rct::clsag, "rct_clsag");
-
-#endif  /* RCTTYPES_H */

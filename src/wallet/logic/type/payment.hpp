@@ -34,7 +34,7 @@
 #include <utility>
 #include <cstdint>
 
-#include "ringct/rctTypes.h"
+#include "ringct/rctTypes.hpp"
 #include "serialization/serialization.h"
 
 namespace wallet {

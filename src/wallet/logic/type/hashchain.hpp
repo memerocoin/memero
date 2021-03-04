@@ -35,7 +35,7 @@
 #include <deque>
 
 #include "crypto/hash.hpp"
-#include "ringct/rctTypes.h"
+#include "ringct/rctTypes.hpp"
 #include "serialization/serialization.h"
 
 namespace wallet {

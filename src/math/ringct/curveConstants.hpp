@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "rctTypes.h"
+#include "rctTypes.hpp"
 
 namespace rct {
   //other basepoint H = toPoint(cn_fast_hash(G)), G the basepoint

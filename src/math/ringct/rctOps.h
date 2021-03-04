@@ -45,7 +45,7 @@ extern "C" {
 #include "crypto/crypto.h"
 #include "crypto/sha3.hpp"
 
-#include "rctTypes.h"
+#include "rctTypes.hpp"
 
 //Define this flag when debugging to get additional info on the console
 #ifdef DBG

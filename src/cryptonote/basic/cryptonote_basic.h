@@ -47,7 +47,7 @@
 #include "crypto/crypto.h"
 #include "crypto/hash.hpp"
 #include "misc_language.h"
-#include "ringct/rctTypes.h"
+#include "ringct/rctTypes.hpp"
 #include "wallet/device/device.hpp"
 #include "config/lol.hpp"
 

@@ -33,7 +33,7 @@
 #ifndef BULLETPROOFS_H
 #define BULLETPROOFS_H
 
-#include "rctTypes.h"
+#include "rctTypes.hpp"
 
 namespace rct
 {

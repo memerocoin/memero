@@ -30,7 +30,7 @@
 
 #include "database/interface/blockchain.hpp"
 #include "cryptonote/basic/blobdatatype.h" // for type blobdata
-#include "ringct/rctTypes.h"
+#include "ringct/rctTypes.hpp"
 
 #include <lmdb.h>
 
