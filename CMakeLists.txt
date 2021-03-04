@@ -190,6 +190,7 @@ add_subdirectory(src/wallet/mnemonics)
 add_subdirectory(src/wallet/device)
 add_subdirectory(src/wallet/logic)
 add_subdirectory(src/wallet/api)
+add_subdirectory(src/wallet/common)
 add_subdirectory(src/wallet/rpc)
 add_subdirectory(src/wallet/cli)
 

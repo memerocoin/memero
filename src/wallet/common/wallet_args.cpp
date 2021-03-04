@@ -25,11 +25,12 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #include "wallet_args.h"
 
 #include <filesystem>
-#include <filesystem>
 #include <boost/format.hpp>
+
 #include "common/util.h"
 #include "misc_log_ex.h"
 #include "string_tools.h"

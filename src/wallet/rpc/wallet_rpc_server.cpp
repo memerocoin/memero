@@ -38,7 +38,7 @@ using namespace epee;
 
 #include "version.h"
 #include "wallet_rpc_server.h"
-#include "wallet/args/wallet_args.h"
+#include "wallet/common/wallet_args.h"
 #include "common/command_line.h"
 #include "config/cryptonote.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"

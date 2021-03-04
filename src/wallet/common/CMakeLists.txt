@@ -27,24 +27,9 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+add_library(wallet_common
+  wallet_args.cpp
+  )
 
-add_executable(wallet_rpc_server
-  wallet_rpc_server.cpp
-)
-
-target_link_libraries(wallet_rpc_server
-    wallet_api
-    wallet_common
-    daemonizer
-    )
-
-set_property(TARGET "wallet_rpc_server"
-  PROPERTY
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-
-set_property(TARGET wallet_rpc_server
-  PROPERTY
-    OUTPUT_NAME "lolnero-rpc")
-
-
-install(TARGETS wallet_rpc_server DESTINATION bin)
+target_link_libraries(wallet_common
+  )
