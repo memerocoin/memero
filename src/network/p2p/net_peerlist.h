@@ -43,7 +43,7 @@
 #include <boost/range/adaptor/reversed.hpp>
 
 
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "config/cryptonote.hpp"
 #include "net/enums.h"
 #include "net/local_ip.h"

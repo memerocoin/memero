@@ -40,7 +40,7 @@ using namespace epee;
 #include "blockchain.h"
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/tx_extra.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/hash.hpp"
 #include "ringct/rctSigs.hpp"
 

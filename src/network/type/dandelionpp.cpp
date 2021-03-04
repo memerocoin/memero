@@ -33,7 +33,7 @@
 
 #include "common/expect.h"
 #include "config/cryptonote.hpp"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 
 namespace net
 {

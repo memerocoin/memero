@@ -56,7 +56,7 @@
 #include "misc_os_dependent.h"
 using namespace epee;
 
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "util.h"
 #include "stack_trace.h"
 #include "memwipe.h"

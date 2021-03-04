@@ -36,7 +36,6 @@
 #include "common/pod-class.h"
 #include "generic-ops.h"
 #include "hex.h"
-#include "span.h"
 #include "sha3.hpp"
 #include "tree-hash.hpp"
 #include "hash-ops.hpp"

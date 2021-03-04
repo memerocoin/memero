@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/chacha.h"
 #include "ringct/rctTypes.hpp"
 #include "config/cryptonote.hpp"

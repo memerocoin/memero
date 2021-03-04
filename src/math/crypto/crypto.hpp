@@ -36,11 +36,6 @@
 #include <vector>
 #include <random>
 
-#include "common/pod-class.h"
-#include "memwipe.h"
-#include "generic-ops.h"
-#include "hex.h"
-#include "span.h"
 #include "hash.hpp"
 
 namespace crypto {

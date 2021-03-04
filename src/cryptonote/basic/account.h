@@ -31,7 +31,7 @@
 #pragma once
 
 #include "cryptonote_basic.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "serialization/keyvalue_serialization.h"
 
 namespace cryptonote

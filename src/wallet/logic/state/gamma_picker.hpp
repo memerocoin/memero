@@ -36,7 +36,7 @@
 #include <utility>
 #include <string>
 
-#include "crypto/crypto.h" // crypto::
+#include "crypto/crypto.hpp" // crypto::
 
 namespace wallet {
 namespace logic {

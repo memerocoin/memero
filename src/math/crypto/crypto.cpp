@@ -39,7 +39,7 @@
 
 #include "common/varint.h"
 #include "warnings.h"
-#include "crypto.h"
+#include "crypto.hpp"
 #include "hash.hpp"
 
 #include "config/cryptonote.hpp"

@@ -39,11 +39,7 @@ extern "C" {
 #include "crypto/crypto-ops.h"
 }
 
-#include "crypto/crypto.h"
-
-#include "hex.h"
-#include "span.h"
-#include "memwipe.h"
+#include "crypto/crypto.hpp"
 
 #include "serialization/containers.h"
 #include "serialization/debug_archive.h"

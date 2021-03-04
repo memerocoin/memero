@@ -34,7 +34,7 @@
 #include <string>
 
 #include "wallet/api/wallet2.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 
 namespace wallet {
 namespace logic {

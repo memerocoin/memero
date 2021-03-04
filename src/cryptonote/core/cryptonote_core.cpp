@@ -41,7 +41,7 @@ using namespace epee;
 #include "common/command_line.h"
 #include "cryptonote/basic/events.h"
 #include "warnings.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "config/cryptonote.hpp"
 #include "misc_language.h"
 #include "file_io_utils.h"

@@ -35,7 +35,7 @@
 #include "serialization/string.h"
 #include "cryptonote_format_utils.h"
 #include "config/cryptonote.hpp"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/hash.hpp"
 #include "ringct/rctSigs.hpp"
 

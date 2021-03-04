@@ -41,7 +41,7 @@
 #include "cryptonote_basic.h"
 #include "difficulty.h"
 #include "common/unordered_containers_boost_serialization.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "ringct/rctTypes.hpp"
 #include "ringct/rctOps.h"
 

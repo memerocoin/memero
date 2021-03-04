@@ -35,7 +35,7 @@
 #include "account.h"
 #include "subaddress_index.h"
 #include "include_base_utils.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/hash.hpp"
 #include <unordered_map>
 #include <boost/multiprecision/cpp_int.hpp>

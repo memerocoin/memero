@@ -53,7 +53,7 @@
 #include "misc_log_ex.h"
 #include "p2p_protocol_defs.h"
 #include "net/local_ip.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "storages/levin_abstract_invoke2.h"
 #include "cryptonote/core/cryptonote_core.h"
 #include "network/type/parse.h"

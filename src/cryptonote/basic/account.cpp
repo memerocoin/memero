@@ -33,7 +33,7 @@
 #include "include_base_utils.h"
 #include "account.h"
 #include "warnings.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/sha3.hpp"
 #include "cryptonote_basic_impl.h"
 #include "cryptonote_format_utils.h"

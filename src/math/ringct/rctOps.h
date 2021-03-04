@@ -42,7 +42,7 @@
 extern "C" {
 #include "rctCryptoOps.h"
 }
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/sha3.hpp"
 
 #include "rctTypes.hpp"

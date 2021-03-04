@@ -34,7 +34,7 @@
 #define MULTIEXP_H
 
 #include <vector>
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "rctTypes.hpp"
 #include "misc_log_ex.h"
 

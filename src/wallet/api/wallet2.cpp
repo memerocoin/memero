@@ -57,7 +57,7 @@ using namespace epee;
 #include "common/threadpool.h"
 #include "int-util.h"
 #include "profile_tools.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/sha3.hpp"
 #include "serialization/binary_utils.h"
 #include "serialization/string.h"
