@@ -32,7 +32,7 @@
 #include "common/perf_timer.h"
 #include "rctSigs.hpp"
 #include "curveConstants.hpp"
-#include "bulletproofs.h"
+#include "bulletproofs.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "config/cryptonote.hpp"
 

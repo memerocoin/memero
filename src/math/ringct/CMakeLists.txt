@@ -33,7 +33,7 @@ add_library(ringct_basic
   rctCryptoOps.c
   multiexp.cc
   zeroCommitment.cpp
-  bulletproofs.cc
+  bulletproofs.cpp
   curveConstants.cpp
   )
 
