@@ -117,6 +117,12 @@ endif()
 ## sodium
 find_library(SODIUM_LIBRARY sodium)
 
+## rapidjson, only for android
+include_directories(external/rapidjson/include)
+
+
+
+
 
 # let's go
 
@@ -127,9 +133,6 @@ include_directories(
 )
 add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
 add_dependencies(version genversion)
-
-# for android
-include_directories(external/rapidjson/include)
 
 ## easylogging
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
