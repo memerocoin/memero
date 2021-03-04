@@ -185,6 +185,13 @@ add_subdirectory(src/cryptonote/protocol)
 add_subdirectory(src/tools/daemonizer)
 add_subdirectory(src/tools/serialization)
 
+## wallet
+add_subdirectory(src/wallet/mnemonics)
+add_subdirectory(src/wallet/device)
+add_subdirectory(src/wallet/logic)
+add_subdirectory(src/wallet/rpc)
+add_subdirectory(src/wallet/cli)
+
 ## database
 set(DATABASE lmdb)
 set(BLOCKCHAIN_DB DB_LMDB)
@@ -198,12 +205,4 @@ add_subdirectory(src/database/helper/lmdb)
 
 ## daemon
 add_subdirectory(src/daemon)
-
-## wallet
-add_subdirectory(src/wallet/mnemonics)
-add_subdirectory(src/wallet/device)
-add_subdirectory(src/wallet/logic)
-add_subdirectory(src/wallet/rpc)
-add_subdirectory(src/wallet/cli)
-
 
