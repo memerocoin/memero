@@ -39,9 +39,6 @@
 
 #include "crypto/generic-ops.h"
 
-extern "C" {
-#include "rctCryptoOps.h"
-}
 #include "crypto/crypto.hpp"
 #include "crypto/sha3.hpp"
 

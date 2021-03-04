@@ -30,7 +30,7 @@
 add_library(ringct_basic
   rctOps.cpp
   rctTypes.cpp
-  rctCryptoOps.c
+  rctCryptoOps.cpp
   multiexp.cpp
   zeroCommitment.cpp
   bulletproofs.cpp

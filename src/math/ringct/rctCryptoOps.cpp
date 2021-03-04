@@ -31,9 +31,13 @@
 #include <assert.h>
 #include <stdint.h>
 
+extern "C" {
 #include "crypto/crypto-ops.h"
+}
 
-//DISABLE_VS_WARNINGS(4146 4244)
+#include "rctCryptoOps.hpp"
+
+namespace rct {
 
 void sc_reduce32copy(unsigned char * scopy, const unsigned char *s) {
     int64_t s0 = 2097151 & load_3(s);
@@ -218,4 +222,6 @@ void sc_reduce32copy(unsigned char * scopy, const unsigned char *s) {
     scopy[29] = s11 >> 1;
     scopy[30] = s11 >> 9;
     scopy[31] = s11 >> 17;
+}
+
 }
