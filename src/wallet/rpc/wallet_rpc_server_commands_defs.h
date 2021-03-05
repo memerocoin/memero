@@ -1495,39 +1495,6 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_GENERATE_FROM_KEYS
-  {
-    struct request
-    {
-      std::string filename;
-      std::string address;
-      std::string spendkey;
-      std::string viewkey;
-      std::string password;
-      bool autosave_current;
-
-      BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(filename)
-      KV_SERIALIZE(address)
-      KV_SERIALIZE(spendkey)
-      KV_SERIALIZE(viewkey)
-      KV_SERIALIZE(password)
-      KV_SERIALIZE_OPT(autosave_current, true)
-      END_KV_SERIALIZE_MAP()
-    };
-
-    struct response
-    {
-      std::string address;
-      std::string info;
-
-      BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(address)
-      KV_SERIALIZE(info)
-      END_KV_SERIALIZE_MAP()
-    };
-  };
-
   struct COMMAND_RPC_RESTORE_DETERMINISTIC_WALLET
   {
     struct request_t
