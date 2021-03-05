@@ -134,18 +134,18 @@ include_directories(
 add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
 add_dependencies(version genversion)
 
-## easylogging
+## tools/easylogging
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
 include_directories(src/tools/easylogging++)
 add_library( easylogging
   src/tools/easylogging++/easylogging++.cc
 )
 
-## epee
+## tools/epee
 include_directories(src/tools/epee/include)
 add_subdirectory(src/tools/epee)
 
-## common_basic
+## tools/common_basic
 include_directories(
   src/tools/common_basic
 )
@@ -157,7 +157,7 @@ include_directories(
 )
 add_subdirectory(src/math/crypto)
 
-## common
+## tools/common
 include_directories(
   src/math
 )
