@@ -142,7 +142,6 @@ namespace
   const command_line::arg_descriptor<std::string> arg_mnemonic_language = {"mnemonic-language", sw::tr("Language for mnemonic"), ""};
   const command_line::arg_descriptor<std::string> arg_electrum_seed = {"electrum-seed", sw::tr("Specify Electrum seed for wallet recovery/creation"), ""};
   const command_line::arg_descriptor<bool> arg_restore_deterministic_wallet = {"restore", sw::tr("Recover wallet using Electrum-style mnemonic seed"), false};
-  const command_line::arg_descriptor<bool> arg_non_deterministic = {"non-deterministic", sw::tr("Generate non-deterministic view and spend keys"), false};
   const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the lolnero network"), false};
   const command_line::arg_descriptor<bool> arg_create_address_file = {"create-address-file", sw::tr("Create an address file for new wallets"), false};
   const command_line::arg_descriptor<std::string> arg_subaddress_lookahead = {"subaddress-lookahead", tools::wallet2::tr("Set subaddress lookahead sizes to <major>:<minor>"), ""};
@@ -643,12 +642,6 @@ bool simple_wallet::print_seed(bool encrypted)
 
   SCOPED_WALLET_UNLOCK();
 
-  if (!multisig && !m_wallet->is_deterministic())
-  {
-    fail_msg_writer() << tr("wallet is non-deterministic and has no seed");
-    return true;
-  }
-
   epee::wipeable_string seed_pass;
   if (encrypted)
   {
@@ -658,10 +651,9 @@ bool simple_wallet::print_seed(bool encrypted)
     seed_pass = pwd_container->password();
   }
 
-  if (m_wallet->is_deterministic())
-    success = m_wallet->get_seed(seed, seed_pass);
+  success = m_wallet->get_seed(seed, seed_pass);
 
-  if (success) 
+  if (success)
   {
     print_seed(seed);
   }
@@ -1992,11 +1984,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
     // check for recover flag.  if present, require electrum word list (only recovery option for now).
     if (m_restore_deterministic_wallet)
     {
-      if (m_non_deterministic)
-      {
-        fail_msg_writer() << tr("can't specify both --restore and --non-deterministic");
-        return false;
-      }
       if (!m_wallet_file.empty())
       {
         fail_msg_writer() << tr("--restore uses --new, not --open");
@@ -2113,7 +2100,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         fail_msg_writer() << tr("failed to parse spend key secret key");
         return false;
       }
-      auto r = new_wallet(vm, m_recovery_key, true, false);
+      auto r = new_wallet(vm, m_recovery_key, true);
       CHECK_AND_ASSERT_MES(r, false, tr("account creation failed"));
       password = *r;
       welcome = true;
@@ -2221,7 +2208,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       }
       m_wallet_file = m_generate_new;
       std::optional<epee::wipeable_string> r;
-      r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet, m_non_deterministic);
+      r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet);
       CHECK_AND_ASSERT_MES(r, false, tr("account creation failed"));
       password = *r;
       welcome = true;
@@ -2279,7 +2266,6 @@ bool simple_wallet::handle_command_line(const boost::program_options::variables_
   m_mnemonic_language             = command_line::get_arg(vm, arg_mnemonic_language);
   m_electrum_seed                 = command_line::get_arg(vm, arg_electrum_seed);
   m_restore_deterministic_wallet  = command_line::get_arg(vm, arg_restore_deterministic_wallet);
-  m_non_deterministic             = command_line::get_arg(vm, arg_non_deterministic);
   m_do_not_relay                  = command_line::get_arg(vm, arg_do_not_relay);
   m_subaddress_lookahead          = command_line::get_arg(vm, arg_subaddress_lookahead);
   m_restoring                     = !m_generate_from_view_key.empty() ||
@@ -2342,7 +2328,7 @@ std::optional<tools::password_container> simple_wallet::get_and_verify_password(
 }
 //----------------------------------------------------------------------------------------------------
 std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm,
-  const crypto::secret_key& recovery_key, bool recover, bool two_random)
+  const crypto::secret_key& recovery_key, bool recover)
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
   try { rc = tools::wallet2::make_new(vm, false, password_prompter); }
@@ -2375,7 +2361,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   // a seed language is not already specified AND
   // (it is not a wallet restore OR if it was a deprecated wallet
   // that was earlier used before this restore)
-  if ((!two_random) && (mnemonic_language.empty()) && (!m_restore_deterministic_wallet))
+  if (mnemonic_language.empty() && (!m_restore_deterministic_wallet))
   {
     mnemonic_language = get_mnemonic_language();
     if (mnemonic_language.empty())
@@ -2389,7 +2375,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   crypto::secret_key recovery_val;
   try
   {
-    recovery_val = m_wallet->generate(m_wallet_file, std::move(rc.second).password(), recovery_key, recover, two_random, create_address_file);
+    recovery_val = m_wallet->generate(m_wallet_file, std::move(rc.second).password(), recovery_key, recover, create_address_file);
     message_writer(console_color_white, true) << tr("Generated new wallet: ")
       << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
     PAUSE_READLINE();
@@ -2420,10 +2406,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
     "your wallet again (your wallet keys are NOT at risk in any case).\n")
   ;
 
-  if (!two_random)
-  {
-    print_seed(electrum_words);
-  }
+  print_seed(electrum_words);
   success_msg_writer() << "**********************************************************************";
 
   return password;
@@ -5463,7 +5446,6 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_params, arg_command);
 
   command_line::add_arg(desc_params, arg_restore_deterministic_wallet );
-  command_line::add_arg(desc_params, arg_non_deterministic );
   command_line::add_arg(desc_params, arg_electrum_seed );
   command_line::add_arg(desc_params, arg_do_not_relay);
   command_line::add_arg(desc_params, arg_create_address_file);

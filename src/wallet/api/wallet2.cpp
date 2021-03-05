@@ -385,10 +385,6 @@ std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> generate_f
       }
     }
 
-    const bool deprecated_wallet = restore_deterministic_wallet && (old_language == crypto::ElectrumWords::old_language_name);
-    THROW_WALLET_EXCEPTION_IF(deprecated_wallet, tools::error::wallet_internal_error,
-      tools::wallet2::tr("Cannot generate deprecated wallets from JSON"));
-
     wallet.reset(make_basic(vm, unattended, opts, password_prompter).release());
     wallet->set_refresh_from_block_height(field_scan_from_height);
     wallet->set_explicit_refresh_from_block_height(field_scan_from_height_found);
@@ -397,12 +393,12 @@ std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> generate_f
     {
       if (!field_seed.empty())
       {
-        wallet->generate(field_filename, field_password, recovery_key, recover, false, create_address_file);
+        wallet->generate(field_filename, field_password, recovery_key, recover, create_address_file);
         password = field_password;
       }
       else if (field_viewkey.empty() && !field_spendkey.empty())
       {
-        wallet->generate(field_filename, field_password, spendkey, recover, false, create_address_file);
+        wallet->generate(field_filename, field_password, spendkey, recover, create_address_file);
         password = field_password;
       }
       else
@@ -669,22 +665,8 @@ bool wallet2::init(std::string daemon_address, uint64_t upper_transaction_weight
   return set_daemon(daemon_address);
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::is_deterministic() const
-{
-  crypto::secret_key second;
-  sha3_as_keccak_256((uint8_t *)&get_account().get_keys().m_spend_secret_key, sizeof(crypto::secret_key), (uint8_t *)&second);
-  sc_reduce32((uint8_t *)&second);
-  return memcmp(second.data,get_account().get_keys().m_view_secret_key.data, sizeof(crypto::secret_key)) == 0;
-}
-//----------------------------------------------------------------------------------------------------
 bool wallet2::get_seed(epee::wipeable_string& electrum_words, const epee::wipeable_string &passphrase) const
 {
-  bool keys_deterministic = is_deterministic();
-  if (!keys_deterministic)
-  {
-    std::cout << "This is not a deterministic wallet" << std::endl;
-    return false;
-  }
   if (seed_language.empty())
   {
     std::cout << "seed_language not set" << std::endl;
@@ -3264,12 +3246,11 @@ void wallet2::init_type(hw::device::device_type device_type)
  * \param  password                Password of wallet file
  * \param  recovery_param          If it is a restore, the recovery key
  * \param  recover                 Whether it is a restore
- * \param  two_random              Whether it is a non-deterministic wallet
  * \param  create_address_file     Whether to create an address file
  * \return                         The secret key of the generated wallet
  */
 crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
-  const crypto::secret_key& recovery_param, bool recover, bool two_random, bool create_address_file)
+  const crypto::secret_key& recovery_param, bool recover, bool create_address_file)
 {
   clear();
   prepare_file_names(wallet_);
@@ -3281,7 +3262,7 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
     THROW_WALLET_EXCEPTION_IF(std::filesystem::exists(m_keys_file,   ignored_ec), error::file_exists, m_keys_file);
   }
 
-  crypto::secret_key retval = m_account.generate(recovery_param, recover, two_random);
+  crypto::secret_key retval = m_account.generate(recovery_param, recover);
 
   init_type(hw::device::device_type::SOFTWARE);
   setup_keys(password);

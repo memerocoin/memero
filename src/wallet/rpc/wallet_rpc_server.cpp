@@ -1138,12 +1138,6 @@ namespace tools
             er.message = "The wallet is watch-only. Cannot retrieve seed.";
             return false;
           }
-          if (!m_wallet->is_deterministic())
-          {
-            er.code = WALLET_RPC_ERROR_CODE_NON_DETERMINISTIC;
-            er.message = "The wallet is non-deterministic. Cannot display seed.";
-            return false;
-          }
           if (!m_wallet->get_seed(seed))
           {
             er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
@@ -2377,7 +2371,7 @@ namespace tools
     crypto::secret_key recovery_val;
     try
     {
-      recovery_val = wal->generate(wallet_file, std::move(rc.second).password(), recovery_key, true, false, false);
+      recovery_val = wal->generate(wallet_file, std::move(rc.second).password(), recovery_key, true, false);
       MINFO("Wallet has been restored.\n");
     }
     catch (const std::exception &e)

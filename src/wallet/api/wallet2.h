@@ -206,13 +206,12 @@ namespace tools
      * \param  password             Password of wallet file
      * \param  recovery_param       If it is a restore, the recovery key
      * \param  recover              Whether it is a restore
-     * \param  two_random           Whether it is a non-deterministic wallet
      * \param  create_address_file  Whether to create an address file
      * \return                      The secret key of the generated wallet
      */
     crypto::secret_key generate(const std::string& wallet, const epee::wipeable_string& password,
       const crypto::secret_key& recovery_param = crypto::secret_key(), bool recover = false,
-      bool two_random = false, bool create_address_file = false);
+      bool create_address_file = false);
     /*!
      * \brief Creates a wallet from a public address and a spend/view secret key pair.
      * \param  wallet_                 Name of wallet file
@@ -294,10 +293,6 @@ namespace tools
     i_wallet2_callback* callback() const { return m_callback; }
     void callback(i_wallet2_callback* callback) { m_callback = callback; }
 
-    /*!
-     * \brief Checks if deterministic wallet
-     */
-    bool is_deterministic() const;
     bool get_seed(epee::wipeable_string& electrum_words, const epee::wipeable_string &passphrase = epee::wipeable_string()) const;
 
     /*!

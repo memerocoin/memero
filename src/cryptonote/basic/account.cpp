@@ -144,7 +144,7 @@ DISABLE_VS_WARNINGS(4244 4345)
     m_keys.m_spend_secret_key = crypto::secret_key();
   }
   //-----------------------------------------------------------------
-  crypto::secret_key account_base::generate(const crypto::secret_key& recovery_key, bool recover, bool two_random)
+  crypto::secret_key account_base::generate(const crypto::secret_key& recovery_key, bool recover)
   {
     crypto::secret_key first = generate_keys(m_keys.m_account_address.m_spend_public_key, m_keys.m_spend_secret_key, recovery_key, recover);
 
@@ -152,7 +152,7 @@ DISABLE_VS_WARNINGS(4244 4345)
     crypto::secret_key second;
     sha3_as_keccak_256((uint8_t *)&m_keys.m_spend_secret_key, sizeof(crypto::secret_key), (uint8_t *)&second);
 
-    generate_keys(m_keys.m_account_address.m_view_public_key, m_keys.m_view_secret_key, second, two_random ? false : true);
+    generate_keys(m_keys.m_account_address.m_view_public_key, m_keys.m_view_secret_key, second, true);
 
     struct tm timestamp = {0};
     timestamp.tm_year = 2014 - 1900;  // year 2014

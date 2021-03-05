@@ -100,10 +100,12 @@ namespace cryptonote
     //! \return Prompts user for password and verifies against local file. Logs on error and returns `none`
     std::optional<tools::password_container> get_and_verify_password() const;
 
-    std::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm, const crypto::secret_key& recovery_key,
-        bool recover, bool two_random);
-    std::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm, const cryptonote::account_public_address& address,
-        const std::optional<crypto::secret_key>& spendkey, const crypto::secret_key& viewkey);
+    std::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm,
+                                                    const crypto::secret_key& recovery_key, bool recover);
+    std::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm,
+                                                    const cryptonote::account_public_address& address,
+                                                    const std::optional<crypto::secret_key>& spendkey,
+                                                    const crypto::secret_key& viewkey);
     std::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm);
     std::optional<epee::wipeable_string> open_wallet(const boost::program_options::variables_map& vm);
     bool close_wallet();
@@ -321,10 +323,8 @@ namespace cryptonote
     std::string m_subaddress_lookahead;
 
     epee::wipeable_string m_electrum_seed;  // electrum-style seed parameter
-
-    crypto::secret_key m_recovery_key;  // recovery key (used as random for wallet gen)
     bool m_restore_deterministic_wallet;  // recover flag
-    bool m_non_deterministic;  // old 2-random generation
+    crypto::secret_key m_recovery_key;  // recovery key (used as random for wallet gen)
     bool m_restoring;           // are we restoring, by whatever method?
     bool m_do_not_relay;
 
