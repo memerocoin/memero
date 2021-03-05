@@ -118,7 +118,7 @@ endif()
 find_library(SODIUM_LIBRARY sodium)
 
 ## rapidjson, only for android
-include_directories(external/rapidjson/include)
+include_directories(vendor/rapidjson/include)
 
 
 
