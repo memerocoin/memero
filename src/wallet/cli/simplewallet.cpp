@@ -682,51 +682,6 @@ bool simple_wallet::encrypted_seed(const std::vector<std::string> &args/* = std:
   return print_seed(true);
 }
 
-bool simple_wallet::seed_set_language(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << tr("command not supported by HW wallet");
-    return true;
-  }
-  if (m_wallet->watch_only())
-  {
-    fail_msg_writer() << tr("wallet is watch-only and has no seed");
-    return true;
-  }
-
-  epee::wipeable_string password;
-  {
-    SCOPED_WALLET_UNLOCK();
-
-    if (!m_wallet->is_deterministic())
-    {
-      fail_msg_writer() << tr("wallet is non-deterministic and has no seed");
-      return true;
-    }
-
-    // we need the password, even if ask-password is unset
-    if (!pwd_container)
-    {
-      pwd_container = get_and_verify_password();
-      if (pwd_container == std::nullopt)
-      {
-        fail_msg_writer() << tr("Incorrect password");
-        return true;
-      }
-    }
-    password = pwd_container->password();
-  }
-
-  std::string mnemonic_language = get_mnemonic_language();
-  if (mnemonic_language.empty())
-    return true;
-
-  m_wallet->set_seed_language(std::move(mnemonic_language));
-  m_wallet->rewrite(m_wallet_file, password);
-  return true;
-}
-
 bool simple_wallet::change_password(const std::vector<std::string> &args)
 { 
   const auto orig_pwd_container = get_and_verify_password();
@@ -1747,7 +1702,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
       case tools::wallet2::AskPasswordOnAction: ask_password_string = "action"; break;
       case tools::wallet2::AskPasswordToDecrypt: ask_password_string = "decrypt"; break;
     }
-    success_msg_writer() << "seed = " << seed_language;
     success_msg_writer() << "always-confirm-transfers = " << m_wallet->always_confirm_transfers();
     success_msg_writer() << "print-ring-members = " << m_wallet->print_ring_members();
     success_msg_writer() << "store-tx-info = " << m_wallet->store_tx_info();
@@ -1794,19 +1748,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     } \
   } while(0)
 
-    if (args[0] == "seed")
-    {
-      if (args.size() == 1)
-      {
-        fail_msg_writer() << tr("set seed: needs an argument. available options: language");
-        return true;
-      }
-      else if (args[1] == "language")
-      {
-        seed_set_language(args);
-        return true;
-      }
-    }
     CHECK_SIMPLE_VARIABLE("always-confirm-transfers", set_always_confirm_transfers, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("print-ring-members", set_print_ring_members, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("store-tx-info", set_store_tx_info, tr("0 or 1"));

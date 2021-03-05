@@ -113,16 +113,6 @@ namespace cryptonote
     bool seed(const std::vector<std::string> &args = std::vector<std::string>());
     bool encrypted_seed(const std::vector<std::string> &args = std::vector<std::string>());
 
-    /*!
-     * \brief Sets seed language.
-     *
-     * interactive
-     *   - prompts for password so wallet can be rewritten
-     *   - calls get_mnemonic_language() which prompts for language
-     *
-     * \return success status
-     */
-    bool seed_set_language(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_always_confirm_transfers(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_print_ring_members(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_store_tx_info(const std::vector<std::string> &args = std::vector<std::string>());
