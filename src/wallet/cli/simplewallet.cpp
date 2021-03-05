@@ -136,7 +136,6 @@ namespace
   const auto arg_wallet_file = wallet_args::arg_wallet_file();
   const command_line::arg_descriptor<std::string> arg_generate_new_wallet = {"new", sw::tr("Generate new wallet and save it to <arg>"), ""};
   const command_line::arg_descriptor<std::string> arg_generate_from_spend_key = {"generate-from-spend-key", sw::tr("Generate deterministic wallet from spend key"), ""};
-  const auto arg_generate_from_json = wallet_args::arg_generate_from_json();
   const command_line::arg_descriptor<std::string> arg_mnemonic_language = {"mnemonic-language", sw::tr("Language for mnemonic"), ""};
   const command_line::arg_descriptor<std::string> arg_electrum_seed = {"electrum-seed", sw::tr("Specify Electrum seed for wallet recovery/creation"), ""};
   const command_line::arg_descriptor<bool> arg_restore_deterministic_wallet = {"restore", sw::tr("Recover wallet using Electrum-style mnemonic seed"), false};
@@ -1963,12 +1962,12 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
 
   bool welcome = false;
 
-  if((!m_generate_new.empty()) + (!m_wallet_file.empty()) + (!m_generate_from_spend_key.empty()) + (!m_generate_from_json.empty()) > 1)
+  if((!m_generate_new.empty()) + (!m_wallet_file.empty()) + (!m_generate_from_spend_key.empty()) > 1)
   {
-    fail_msg_writer() << tr("can't specify more than one of --new=\"wallet_name\", --open=\"wallet_name\", --generate-from-spend-key=\"wallet_name\" and --generate-from-json=\"jsonfilename\"");
+    fail_msg_writer() << tr("can't specify more than one of --new=\"wallet_name\", --open=\"wallet_name\" and --generate-from-spend-key=\"wallet_name\"");
     return false;
   }
-  else if (m_generate_new.empty() && m_wallet_file.empty() && m_generate_from_spend_key.empty() && m_generate_from_json.empty())
+  else if (m_generate_new.empty() && m_wallet_file.empty() && m_generate_from_spend_key.empty())
   {
     if(!ask_wallet_create_if_needed()) return false;
   }
@@ -2047,23 +2046,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       password = *r;
       welcome = true;
     }
-    else if (!m_generate_from_json.empty())
-    {
-      try
-      {
-        auto rc = tools::wallet2::make_from_json(vm, false, m_generate_from_json, password_prompter);
-        m_wallet = std::move(rc.first);
-        password = rc.second.password();
-        m_wallet_file = m_wallet->path();
-      }
-      catch (const std::exception &e)
-      {
-        fail_msg_writer() << e.what();
-        return false;
-      }
-      if (!m_wallet)
-        return false;
-    }
     else
     {
       if (m_generate_new.empty()) {
@@ -2124,16 +2106,12 @@ bool simple_wallet::handle_command_line(const boost::program_options::variables_
   m_wallet_file                   = command_line::get_arg(vm, arg_wallet_file);
   m_generate_new                  = command_line::get_arg(vm, arg_generate_new_wallet);
   m_generate_from_spend_key       = command_line::get_arg(vm, arg_generate_from_spend_key);
-  m_generate_from_json            = command_line::get_arg(vm, arg_generate_from_json);
   m_mnemonic_language             = command_line::get_arg(vm, arg_mnemonic_language);
   m_electrum_seed                 = command_line::get_arg(vm, arg_electrum_seed);
   m_restore_deterministic_wallet  = command_line::get_arg(vm, arg_restore_deterministic_wallet);
   m_do_not_relay                  = command_line::get_arg(vm, arg_do_not_relay);
   m_subaddress_lookahead          = command_line::get_arg(vm, arg_subaddress_lookahead);
-  m_restoring                     = !m_generate_from_view_key.empty() ||
-                                    !m_generate_from_spend_key.empty() ||
-                                    !m_generate_from_keys.empty() ||
-                                    !m_generate_from_json.empty() ||
+  m_restoring                     = !m_generate_from_spend_key.empty() ||
                                     m_restore_deterministic_wallet;
 
   return true;
@@ -5254,7 +5232,6 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_params, arg_wallet_file);
   command_line::add_arg(desc_params, arg_generate_new_wallet);
   command_line::add_arg(desc_params, arg_generate_from_spend_key);
-  command_line::add_arg(desc_params, arg_generate_from_json);
   command_line::add_arg(desc_params, arg_mnemonic_language);
   command_line::add_arg(desc_params, arg_command);
 

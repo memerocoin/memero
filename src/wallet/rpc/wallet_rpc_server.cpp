@@ -2599,15 +2599,13 @@ public:
       }
 
       const auto arg_wallet_file = wallet_args::arg_wallet_file();
-      const auto arg_from_json = wallet_args::arg_generate_from_json();
 
       const auto wallet_file = command_line::get_arg(vm, arg_wallet_file);
-      const auto from_json = command_line::get_arg(vm, arg_from_json);
       const auto wallet_dir = command_line::get_arg(vm, arg_wallet_dir);
       const auto prompt_for_password = command_line::get_arg(vm, arg_prompt_for_password);
       const auto password_prompt = prompt_for_password ? password_prompter : nullptr;
 
-      if(!wallet_file.empty() && !from_json.empty())
+      if(!wallet_file.empty())
       {
         LOG_ERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --open and --generate-from-json"));
         return false;
@@ -2619,7 +2617,7 @@ public:
         goto just_dir;
       }
 
-      if (wallet_file.empty() && from_json.empty())
+      if (wallet_file.empty())
       {
         LOG_ERROR(tools::wallet_rpc_server::tr("Must specify --open or --generate-from-json or --wallet-dir"));
         return false;
@@ -2629,19 +2627,6 @@ public:
       if(!wallet_file.empty())
       {
         wal = tools::wallet2::make_from_file(vm, true, wallet_file, password_prompt).first;
-      }
-      else
-      {
-        try
-        {
-          auto rc = tools::wallet2::make_from_json(vm, true, from_json, password_prompt);
-          wal = std::move(rc.first);
-        }
-        catch (const std::exception &e)
-        {
-          MERROR("Error creating wallet: " << e.what());
-          return false;
-        }
       }
       if (!wal)
       {
@@ -2745,7 +2730,6 @@ int main(int argc, char** argv) {
   namespace po = boost::program_options;
 
   const auto arg_wallet_file = wallet_args::arg_wallet_file();
-  const auto arg_from_json = wallet_args::arg_generate_from_json();
 
   po::options_description hidden_options("Hidden");
 
@@ -2756,7 +2740,6 @@ int main(int argc, char** argv) {
   command_line::add_arg(desc_params, arg_restricted);
   cryptonote::rpc_args::init_options(desc_params);
   command_line::add_arg(desc_params, arg_wallet_file);
-  command_line::add_arg(desc_params, arg_from_json);
   command_line::add_arg(desc_params, arg_wallet_dir);
   command_line::add_arg(desc_params, arg_prompt_for_password);
 

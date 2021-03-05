@@ -310,10 +310,7 @@ namespace cryptonote
     std::string m_wallet_file;
     std::string m_generate_new;
     std::string m_generate_from_device;
-    std::string m_generate_from_view_key;
     std::string m_generate_from_spend_key;
-    std::string m_generate_from_keys;
-    std::string m_generate_from_json;
     std::string m_mnemonic_language;
     std::string m_import_path;
     std::string m_subaddress_lookahead;

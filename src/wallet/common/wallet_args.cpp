@@ -64,10 +64,6 @@ namespace
 namespace wallet_args
 {
   // Create on-demand to prevent static initialization order fiasco issues.
-  command_line::arg_descriptor<std::string> arg_generate_from_json()
-  {
-    return {"generate-from-json", wallet_args::tr("Generate wallet from JSON format file"), ""};
-  }
   command_line::arg_descriptor<std::string> arg_wallet_file()
   {
     return {"open", wallet_args::tr("Use wallet <arg>"), ""};
