@@ -331,10 +331,6 @@ namespace tools
     void set_subaddress_label(const cryptonote::subaddress_index &index, const std::string &label);
     void set_subaddress_lookahead(size_t major, size_t minor);
     std::pair<size_t, size_t> get_subaddress_lookahead() const { return {m_subaddress_lookahead_major, m_subaddress_lookahead_minor}; }
-    /*!
-     * \brief Tells if the wallet file is deprecated.
-     */
-    bool is_deprecated() const;
     void refresh();
     void refresh(uint64_t start_height, uint64_t & blocks_fetched);
     void refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& received_money, bool check_pool = true);
@@ -762,7 +758,6 @@ namespace tools
     cryptonote::network_type m_nettype;
     uint64_t m_kdf_rounds;
     std::string seed_language; /*!< Language of the mnemonics (seed). */
-    bool is_old_file_format; /*!< Whether the wallet file is of an old file format */
     bool m_watch_only; /*!< no spend key */
     bool m_multisig; /*!< if > 1 spend secret key will not match spend public key */
     uint32_t m_multisig_threshold;

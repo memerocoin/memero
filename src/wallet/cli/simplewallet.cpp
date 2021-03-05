@@ -2609,38 +2609,6 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
     if (m_wallet->get_account().get_device()) {
        message_writer(console_color_white, true) << "Wallet is on device: " << m_wallet->get_account().get_device().get_name();
     }
-    // If the wallet file is deprecated, we should ask for mnemonic language again and store
-    // everything in the new format.
-    // NOTE: this is_deprecated() refers to the wallet file format before becoming JSON. It does not refer to the "old english" seed words form of "deprecated" used elsewhere.
-    if (m_wallet->is_deprecated())
-    {
-      bool is_deterministic;
-      {
-        SCOPED_WALLET_UNLOCK_ON_BAD_PASSWORD(return {};);
-        is_deterministic = m_wallet->is_deterministic();
-      }
-      if (is_deterministic)
-      {
-        message_writer(console_color_green, false) << "\n" << tr("You had been using "
-          "a deprecated version of the wallet. Please proceed to upgrade your wallet.\n");
-        std::string mnemonic_language = get_mnemonic_language();
-        if (mnemonic_language.empty())
-          return {};
-        m_wallet->set_seed_language(mnemonic_language);
-        m_wallet->rewrite(m_wallet_file, password);
-
-        // Display the seed
-        epee::wipeable_string seed;
-        m_wallet->get_seed(seed);
-        print_seed(seed);
-      }
-      else
-      {
-        message_writer(console_color_green, false) << "\n" << tr("You had been using "
-          "a deprecated version of the wallet. Your wallet file format is being upgraded now.\n");
-        m_wallet->rewrite(m_wallet_file, password);
-      }
-    }
   }
   catch (const std::exception& e)
   {

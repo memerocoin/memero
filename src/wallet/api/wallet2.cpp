@@ -552,7 +552,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_inactivity_lock_timeout(DEFAULT_INACTIVITY_LOCK_TIMEOUT),
   m_is_initialized(false),
   m_kdf_rounds(kdf_rounds),
-  is_old_file_format(false),
   m_watch_only(false),
   m_node_rpc_proxy(*m_http_client, m_daemon_rpc_mutex),
   m_account_public_address{crypto::null_pkey, crypto::null_pkey},
@@ -842,14 +841,6 @@ void wallet2::set_subaddress_lookahead(size_t major, size_t minor)
   THROW_WALLET_EXCEPTION_IF(minor > 0xffffffff, error::wallet_internal_error, "Subaddress minor lookahead is too large");
   m_subaddress_lookahead_major = major;
   m_subaddress_lookahead_minor = minor;
-}
-//----------------------------------------------------------------------------------------------------
-/*!
- * \brief Tells if the wallet file is deprecated.
- */
-bool wallet2::is_deprecated() const
-{
-  return is_old_file_format;
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::set_spent(size_t idx, uint64_t height)
@@ -2952,44 +2943,7 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
   crypto::chacha20(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
   if (json.Parse(account_data.c_str()).HasParseError() || !json.IsObject())
     crypto::chacha8(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
-  // The contents should be JSON if the wallet follows the new format.
-  if (json.Parse(account_data.c_str()).HasParseError())
-  {
-    is_old_file_format = true;
-    m_watch_only = false;
-    m_always_confirm_transfers = false;
-    m_print_ring_members = false;
-    m_store_tx_info = true;
-    m_default_mixin = 0;
-    m_default_priority = 0;
-    m_auto_refresh = true;
-    m_refresh_type = RefreshType::RefreshDefault;
-    m_refresh_from_block_height = 0;
-    m_confirm_non_default_ring_size = true;
-    m_ask_password = AskPasswordToDecrypt;
-    cryptonote::set_default_decimal_point(CRYPTONOTE_DISPLAY_DECIMAL_POINT);
-    m_min_output_count = 0;
-    m_min_output_value = 0;
-    m_merge_destinations = false;
-    m_confirm_backlog = true;
-    m_confirm_backlog_threshold = 0;
-    m_confirm_export_overwrite = true;
-    m_auto_low_priority = true;
-    m_ignore_fractional_outputs = true;
-    m_ignore_outputs_above = MONEY_SUPPLY;
-    m_ignore_outputs_below = 0;
-    m_track_uses = false;
-    m_inactivity_lock_timeout = DEFAULT_INACTIVITY_LOCK_TIMEOUT;
-    m_subaddress_lookahead_major = SUBADDRESS_LOOKAHEAD_MAJOR;
-    m_subaddress_lookahead_minor = SUBADDRESS_LOOKAHEAD_MINOR;
-    m_export_format = ExportFormat::Binary;
-    m_load_deprecated_formats = false;
-    m_device_name = "";
-    m_device_derivation_path = "";
-    m_key_device_type = hw::device::device_type::SOFTWARE;
-    encrypted_secret_keys = false;
-  }
-  else if(json.IsObject())
+  if(json.IsObject())
   {
     if (!json.HasMember("key_data"))
     {
