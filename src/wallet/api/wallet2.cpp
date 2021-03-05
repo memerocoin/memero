@@ -144,10 +144,8 @@ namespace
 // Create on-demand to prevent static initialization order fiasco issues.
 struct options {
   const command_line::arg_descriptor<std::string> daemon_address = {"daemon-address", tools::wallet2::tr("Use daemon instance at <host>:<port>"), ""};
-  const command_line::arg_descriptor<std::string> daemon_host = {"daemon-host", tools::wallet2::tr("Use daemon instance at host <arg> instead of localhost"), ""};
   const command_line::arg_descriptor<std::string> password = {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
   const command_line::arg_descriptor<std::string> password_file = {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
-  const command_line::arg_descriptor<int> daemon_port = {"daemon-port", tools::wallet2::tr("Use daemon instance at port <arg> instead of 18081"), 0};
   const command_line::arg_descriptor<bool> testnet = {"testnet", tools::wallet2::tr("For testnet. Daemon must also be launched with --testnet flag"), false};
   const command_line::arg_descriptor<bool> stagenet = {"stagenet", tools::wallet2::tr("For stagenet. Daemon must also be launched with --stagenet flag"), false};
   const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key derivation function"), 1};
@@ -166,22 +164,14 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   THROW_WALLET_EXCEPTION_IF(kdf_rounds == 0, tools::error::wallet_internal_error, "KDF rounds must not be 0");
 
   auto daemon_address = command_line::get_arg(vm, opts.daemon_address);
-  auto daemon_host = command_line::get_arg(vm, opts.daemon_host);
-  auto daemon_port = command_line::get_arg(vm, opts.daemon_port);
+  const std::string daemon_host = get_config(nettype).RPC_DEFAULT_HOST;
+  const auto daemon_port = get_config(nettype).RPC_DEFAULT_PORT;
 
   THROW_WALLET_EXCEPTION_IF(!daemon_address.empty() && !daemon_host.empty() && 0 != daemon_port,
-      tools::error::wallet_internal_error, tools::wallet2::tr("can't specify daemon host or port more than once"));
-
-  if (daemon_host.empty())
-    daemon_host = "localhost";
-
-  if (!daemon_port)
-  {
-    daemon_port = get_config(nettype).RPC_DEFAULT_PORT;
-  }
+                            tools::error::wallet_internal_error, tools::wallet2::tr("can't specify daemon host or port more than once"));
 
   // if no daemon settings are given and we have a previous one, reuse that one
-  if (command_line::is_arg_defaulted(vm, opts.daemon_host) && command_line::is_arg_defaulted(vm, opts.daemon_port) && command_line::is_arg_defaulted(vm, opts.daemon_address))
+  if (command_line::is_arg_defaulted(vm, opts.daemon_address))
   {
     // not a bug: taking a const ref to a temporary in this way is actually ok in a recent C++ standard
     const std::string &def = tools::wallet2::get_default_daemon_address();
@@ -381,10 +371,8 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
 {
   const options opts{};
   command_line::add_arg(desc_params, opts.daemon_address);
-  command_line::add_arg(desc_params, opts.daemon_host);
   command_line::add_arg(desc_params, opts.password);
   command_line::add_arg(desc_params, opts.password_file);
-  command_line::add_arg(desc_params, opts.daemon_port);
   command_line::add_arg(desc_params, opts.testnet);
   command_line::add_arg(desc_params, opts.stagenet);
   command_line::add_arg(desc_params, opts.kdf_rounds);
