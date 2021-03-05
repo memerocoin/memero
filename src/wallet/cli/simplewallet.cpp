@@ -2113,7 +2113,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         fail_msg_writer() << tr("failed to parse spend key secret key");
         return false;
       }
-      auto r = new_wallet(vm, m_recovery_key, true, false, "");
+      auto r = new_wallet(vm, m_recovery_key, true, false);
       CHECK_AND_ASSERT_MES(r, false, tr("account creation failed"));
       password = *r;
       welcome = true;
@@ -2221,7 +2221,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       }
       m_wallet_file = m_generate_new;
       std::optional<epee::wipeable_string> r;
-      r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet, m_non_deterministic, old_language);
+      r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet, m_non_deterministic);
       CHECK_AND_ASSERT_MES(r, false, tr("account creation failed"));
       password = *r;
       welcome = true;
@@ -2342,7 +2342,7 @@ std::optional<tools::password_container> simple_wallet::get_and_verify_password(
 }
 //----------------------------------------------------------------------------------------------------
 std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm,
-  const crypto::secret_key& recovery_key, bool recover, bool two_random, const std::string &old_language)
+  const crypto::secret_key& recovery_key, bool recover, bool two_random)
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
   try { rc = tools::wallet2::make_new(vm, false, password_prompter); }
@@ -2361,9 +2361,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
     m_wallet->set_subaddress_lookahead(lookahead->first, lookahead->second);
   }
 
-  bool was_deprecated_wallet = m_restore_deterministic_wallet && (old_language == crypto::ElectrumWords::old_language_name);
-
-  std::string mnemonic_language = old_language;
+  std::string mnemonic_language;
 
   std::vector<std::string> language_list;
   crypto::ElectrumWords::get_language_list(language_list);
@@ -2377,14 +2375,8 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   // a seed language is not already specified AND
   // (it is not a wallet restore OR if it was a deprecated wallet
   // that was earlier used before this restore)
-  if ((!two_random) && (mnemonic_language.empty() || mnemonic_language == crypto::ElectrumWords::old_language_name) && (!m_restore_deterministic_wallet || was_deprecated_wallet))
+  if ((!two_random) && (mnemonic_language.empty()) && (!m_restore_deterministic_wallet))
   {
-    if (was_deprecated_wallet)
-    {
-      // The user had used an older version of the wallet with old style mnemonics.
-      message_writer(console_color_green, false) << "\n" << tr("You had been using "
-        "a deprecated version of the wallet. Please use the new seed that we provide.\n");
-    }
     mnemonic_language = get_mnemonic_language();
     if (mnemonic_language.empty())
       return {};
