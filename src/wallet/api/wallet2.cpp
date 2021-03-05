@@ -173,8 +173,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   // if no daemon settings are given and we have a previous one, reuse that one
   if (command_line::is_arg_defaulted(vm, opts.daemon_address))
   {
-    // not a bug: taking a const ref to a temporary in this way is actually ok in a recent C++ standard
-    const std::string &def = tools::wallet2::get_default_daemon_address();
+    const std::string def = tools::wallet2::get_default_daemon_address();
     if (!def.empty())
       daemon_address = def;
   }
