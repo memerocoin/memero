@@ -93,7 +93,6 @@ namespace rpc
       {u8"get_output_histogram", handle_message<GetOutputHistogram>},
       {u8"get_output_keys", handle_message<GetOutputKeys>},
       {u8"get_peer_list", handle_message<GetPeerList>},
-      {u8"get_rpc_version", handle_message<GetRPCVersion>},
       {u8"get_transaction_pool", handle_message<GetTransactionPool>},
       {u8"get_transactions", handle_message<GetTransactions>},
       {u8"get_tx_global_output_indices", handle_message<GetTxGlobalOutputIndices>},
@@ -805,12 +804,6 @@ namespace rpc
       return;
     }
 
-    res.status = Message::STATUS_OK;
-  }
-
-  void DaemonHandler::handle(const GetRPCVersion::Request& req, GetRPCVersion::Response& res)
-  {
-    res.version = DAEMON_RPC_VERSION_ZMQ;
     res.status = Message::STATUS_OK;
   }
 

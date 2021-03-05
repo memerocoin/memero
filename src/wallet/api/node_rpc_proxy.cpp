@@ -71,25 +71,6 @@ void NodeRPCProxy::invalidate()
   m_height_time = 0;
 }
 
-std::optional<std::string> NodeRPCProxy::get_rpc_version(uint32_t &rpc_version)
-{
-  if (m_offline)
-    return std::optional<std::string>("offline");
-  if (m_rpc_version == 0)
-  {
-    cryptonote::COMMAND_RPC_GET_VERSION::request req_t = AUTO_VAL_INIT(req_t);
-    cryptonote::COMMAND_RPC_GET_VERSION::response resp_t = AUTO_VAL_INIT(resp_t);
-    {
-      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_version", req_t, resp_t, m_http_client, rpc_timeout);
-      RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_version");
-    }
-    m_rpc_version = resp_t.version;
-  }
-  rpc_version = m_rpc_version;
-  return std::optional<std::string>();
-}
-
 void NodeRPCProxy::set_height(uint64_t h)
 {
   m_height = h;

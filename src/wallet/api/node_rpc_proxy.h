@@ -45,7 +45,6 @@ public:
   void invalidate();
   void set_offline(bool offline) { m_offline = offline; }
 
-  std::optional<std::string> get_rpc_version(uint32_t &version);
   std::optional<std::string> get_height(uint64_t &height);
   void set_height(uint64_t h);
   std::optional<std::string> get_target_height(uint64_t &height);

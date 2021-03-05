@@ -36,7 +36,6 @@
 #include "message.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "rpc/message_data_structs.h"
-#include "rpc/daemon_rpc_version.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 
 #define BEGIN_RPC_MESSAGE_CLASS(classname) \
@@ -395,14 +394,6 @@ BEGIN_RPC_MESSAGE_CLASS(GetOutputKeys);
   END_RPC_MESSAGE_REQUEST;
   BEGIN_RPC_MESSAGE_RESPONSE;
     RPC_MESSAGE_MEMBER(std::vector<output_key_mask_unlocked>, keys);
-  END_RPC_MESSAGE_RESPONSE;
-END_RPC_MESSAGE_CLASS;
-
-BEGIN_RPC_MESSAGE_CLASS(GetRPCVersion);
-  BEGIN_RPC_MESSAGE_REQUEST;
-  END_RPC_MESSAGE_REQUEST;
-  BEGIN_RPC_MESSAGE_RESPONSE;
-    RPC_MESSAGE_MEMBER(uint32_t, version);
   END_RPC_MESSAGE_RESPONSE;
 END_RPC_MESSAGE_CLASS;
 

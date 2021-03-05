@@ -29,7 +29,6 @@
 #pragma once
 
 #include "daemon_messages.h"
-#include "daemon_rpc_version.h"
 #include "rpc_handler.h"
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
@@ -123,8 +122,6 @@ class DaemonHandler : public RpcHandler
     void handle(const GetOutputHistogram::Request& req, GetOutputHistogram::Response& res);
 
     void handle(const GetOutputKeys::Request& req, GetOutputKeys::Response& res);
-
-    void handle(const GetRPCVersion::Request& req, GetRPCVersion::Response& res);
 
     void handle(const GetFeeEstimate::Request& req, GetFeeEstimate::Response& res);
 

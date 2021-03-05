@@ -28,7 +28,6 @@
 
 #include "message.h"
 
-#include "daemon_rpc_version.h"
 #include "serialization/json_object.h"
 
 namespace cryptonote
@@ -45,21 +44,21 @@ const char* Message::STATUS_BAD_JSON = "Malformed json";
 
 namespace
 {
-constexpr const char error_field[] = "error";
-constexpr const char id_field[] = "id";
-constexpr const char method_field[] = "method";
-constexpr const char params_field[] = "params";
-constexpr const char result_field[] = "result";
+  constexpr const char error_field[] = "error";
+  constexpr const char id_field[] = "id";
+  constexpr const char method_field[] = "method";
+  constexpr const char params_field[] = "params";
+  constexpr const char result_field[] = "result";
 
-const rapidjson::Value& get_method_field(const rapidjson::Value& src)
-{
-  const auto member = src.FindMember(method_field);
-  if (member == src.MemberEnd())
-    throw cryptonote::json::MISSING_KEY{method_field};
-  if (!member->value.IsString())
-    throw cryptonote::json::WRONG_TYPE{"Expected string"};
-  return member->value;
-}
+  const rapidjson::Value& get_method_field(const rapidjson::Value& src)
+  {
+    const auto member = src.FindMember(method_field);
+    if (member == src.MemberEnd())
+      throw cryptonote::json::MISSING_KEY{method_field};
+    if (!member->value.IsString())
+      throw cryptonote::json::WRONG_TYPE{"Expected string"};
+    return member->value;
+  }
 }
 
 void Message::toJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
@@ -67,7 +66,6 @@ void Message::toJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
   dest.StartObject();
   INSERT_INTO_JSON_OBJECT(dest, status, status);
   INSERT_INTO_JSON_OBJECT(dest, error_details, error_details);
-  INSERT_INTO_JSON_OBJECT(dest, rpc_version, DAEMON_RPC_VERSION_ZMQ);
   doToJson(dest);
   dest.EndObject();
 }
