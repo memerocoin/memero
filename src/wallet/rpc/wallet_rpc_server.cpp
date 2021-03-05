@@ -2449,7 +2449,7 @@ public:
 
       if(!wallet_file.empty())
       {
-        LOG_ERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --open and --generate-from-json"));
+        LOG_ERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --open"));
         return false;
       }
 
@@ -2461,7 +2461,7 @@ public:
 
       if (wallet_file.empty())
       {
-        LOG_ERROR(tools::wallet_rpc_server::tr("Must specify --open or --generate-from-json or --wallet-dir"));
+        LOG_ERROR(tools::wallet_rpc_server::tr("Must specify --open or --wallet-dir"));
         return false;
       }
 
@@ -2592,7 +2592,7 @@ int main(int argc, char** argv) {
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main(
     argc, argv,
-    "lolnero-rpc [--open=<file>|--generate-from-json=<file>|--wallet-dir=<directory>] [--rpc-bind-port=<port>]",
+    "lolnero-rpc [--open=<file>|--wallet-dir=<directory>] [--rpc-bind-port=<port>]",
     tools::wallet_rpc_server::tr("This is the RPC lolnero wallet. It needs to connect to a lolnero\ndaemon to work correctly."),
     desc_params,
     po::positional_options_description(),
