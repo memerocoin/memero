@@ -66,7 +66,6 @@ using namespace constant;
 namespace
 {
   const command_line::arg_descriptor<std::string, true> arg_rpc_bind_port = {"rpc-bind-port", "Sets bind port for server"};
-  const command_line::arg_descriptor<bool> arg_disable_rpc_login = {"disable-rpc-login", "Disable HTTP authentication for RPC connections served by this process"};
   const command_line::arg_descriptor<bool> arg_restricted = {"restricted-rpc", "Restricts to view-only commands", false};
   const command_line::arg_descriptor<std::string> arg_wallet_dir = {"wallet-dir", "Directory for newly created wallets"};
   const command_line::arg_descriptor<bool> arg_prompt_for_password = {"prompt-for-password", "Prompts for password when not provided", false};
@@ -181,7 +180,6 @@ namespace tools
     m_vm = vm;
 
     std::string bind_port = command_line::get_arg(*m_vm, arg_rpc_bind_port);
-    const bool disable_auth = command_line::get_arg(*m_vm, arg_disable_rpc_login);
     m_restricted = command_line::get_arg(*m_vm, arg_restricted);
     if (!command_line::is_arg_defaulted(*m_vm, arg_wallet_dir))
     {
@@ -2548,7 +2546,6 @@ int main(int argc, char** argv) {
   po::options_description desc_params(wallet_args::tr("Wallet options"));
   tools::wallet2::init_options(desc_params);
   command_line::add_arg(desc_params, arg_rpc_bind_port);
-  command_line::add_arg(desc_params, arg_disable_rpc_login);
   command_line::add_arg(desc_params, arg_restricted);
   cryptonote::rpc_args::init_options(desc_params);
   command_line::add_arg(desc_params, arg_wallet_file);
