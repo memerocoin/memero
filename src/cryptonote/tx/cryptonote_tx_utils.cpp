@@ -37,7 +37,6 @@ using namespace epee;
 #include "common/apply_permutation.h"
 #include "cryptonote_tx_utils.h"
 #include "config/cryptonote.hpp"
-#include "blockchain.h"
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/tx_extra.h"
 #include "crypto/crypto.hpp"

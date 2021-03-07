@@ -34,7 +34,7 @@
 #include <vector>
 
 #include "tx_pool.h"
-#include "cryptonote_tx_utils.h"
+#include "cryptonote/tx/cryptonote_tx_utils.h"
 #include "cryptonote/basic/cryptonote_boost_serialization.h"
 #include "config/cryptonote.hpp"
 #include "blockchain.h"
@@ -1270,7 +1270,7 @@ namespace cryptonote
     uint64_t best_coinbase = 0, coinbase = 0;
     total_weight = 0;
     fee = 0;
-    
+
     //baseline empty block
     if (!get_block_reward(total_weight, best_coinbase))
     {

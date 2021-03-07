@@ -36,7 +36,7 @@
 #include <vector>
 
 #include "wallet/logic/type/transfer.hpp" // tranfser_details
-#include "cryptonote/core/cryptonote_tx_utils.h" // tx_destination_entry
+#include "cryptonote/tx/cryptonote_tx_utils.h" // tx_destination_entry
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX
 #include "cryptonote/basic/fwd.h" // transaction
 

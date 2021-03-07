@@ -55,7 +55,7 @@
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "cryptonote/basic/difficulty.h"
-#include "cryptonote_tx_utils.h"
+#include "cryptonote/tx/cryptonote_tx_utils.h"
 #include "cryptonote/basic/verification_context.h"
 #include "crypto/hash.hpp"
 #include "database/interface/blockchain.hpp"

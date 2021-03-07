@@ -34,7 +34,7 @@
 #include "int-util.h"
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/subaddress_index.h"
-#include "cryptonote/core/cryptonote_tx_utils.h"
+#include "cryptonote/tx/cryptonote_tx_utils.h"
 #include "ringct/rctOps.hpp"
 #include "config/cryptonote.hpp"
 

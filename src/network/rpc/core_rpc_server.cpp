@@ -42,7 +42,7 @@ using namespace epee;
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "cryptonote/core/tx_sanity_check.h"
+#include "cryptonote/tx/tx_sanity_check.h"
 #include "misc_language.h"
 #include "network/type/parse.h"
 #include "storages/http_abstract_invoke.h"

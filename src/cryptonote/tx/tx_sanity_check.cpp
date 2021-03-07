@@ -30,7 +30,6 @@
 #include <vector>
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "blockchain.h"
 #include "tx_sanity_check.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

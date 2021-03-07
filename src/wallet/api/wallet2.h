@@ -62,7 +62,7 @@
 #include "storages/http_abstract_invoke.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "cryptonote/core/cryptonote_tx_utils.h"
+#include "cryptonote/tx/cryptonote_tx_utils.h"
 #include "common/unordered_containers_boost_serialization.h"
 #include "common/util.h"
 #include "crypto/chacha.hpp"

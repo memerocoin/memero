@@ -36,7 +36,7 @@
 #include <vector>
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "cryptonote/core/cryptonote_tx_utils.h"
+#include "cryptonote/tx/cryptonote_tx_utils.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "include_base_utils.h"
 

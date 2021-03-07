@@ -36,7 +36,7 @@
 
 #include "ringct/rctTypes.hpp"
 #include "serialization/serialization.h"
-#include "cryptonote/core/cryptonote_tx_utils.h" // keypair
+#include "cryptonote/tx/cryptonote_tx_utils.h" // keypair
 
 namespace wallet {
 namespace logic {

@@ -178,6 +178,18 @@ add_subdirectory(src/network/type)
 add_subdirectory(src/network/rpc)
 add_subdirectory(src/network/p2p)
 
+## cryptonote/tx
+add_subdirectory(src/cryptonote/tx)
+
+## wallet
+add_subdirectory(src/wallet/mnemonics)
+add_subdirectory(src/wallet/device)
+add_subdirectory(src/wallet/logic)
+add_subdirectory(src/wallet/api)
+add_subdirectory(src/wallet/common)
+add_subdirectory(src/wallet/rpc)
+add_subdirectory(src/wallet/cli)
+
 ## cryptonote
 include_directories(
   src/tools
@@ -188,15 +200,6 @@ add_subdirectory(src/cryptonote/protocol)
 ## tools
 add_subdirectory(src/tools/daemonizer)
 add_subdirectory(src/tools/serialization)
-
-## wallet
-add_subdirectory(src/wallet/mnemonics)
-add_subdirectory(src/wallet/device)
-add_subdirectory(src/wallet/logic)
-add_subdirectory(src/wallet/api)
-add_subdirectory(src/wallet/common)
-add_subdirectory(src/wallet/rpc)
-add_subdirectory(src/wallet/cli)
 
 ## database
 set(DATABASE lmdb)

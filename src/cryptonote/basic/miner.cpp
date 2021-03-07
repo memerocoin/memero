@@ -37,7 +37,7 @@
 #include "syncobj.h"
 #include "cryptonote_basic_impl.h"
 #include "cryptonote_format_utils.h"
-#include "cryptonote/core/cryptonote_tx_utils.h"
+#include "cryptonote/tx/cryptonote_tx_utils.h"
 #include "file_io_utils.h"
 #include "common/command_line.h"
 #include "common/util.h"

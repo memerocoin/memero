@@ -33,7 +33,7 @@
 
 #include <string>
 
-#include "cryptonote/core/cryptonote_tx_utils.h"
+#include "cryptonote/tx/cryptonote_tx_utils.h"
 
 namespace wallet {
 namespace logic {
