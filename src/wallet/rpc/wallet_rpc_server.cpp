@@ -2415,12 +2415,6 @@ public:
       const auto prompt_for_password = command_line::get_arg(vm, arg_prompt_for_password);
       const auto password_prompt = prompt_for_password ? password_prompter : nullptr;
 
-      if(!wallet_file.empty())
-      {
-        LOG_ERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --open"));
-        return false;
-      }
-
       if (!wallet_dir.empty())
       {
         wal = NULL;
