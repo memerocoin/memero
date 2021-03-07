@@ -27,11 +27,11 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(cryptonote_core_tx
+add_library(cryptonote_tx
   cryptonote_tx_utils.cpp
   tx_sanity_check.cpp
   )
 
-target_link_libraries(cryptonote_core_tx
+target_link_libraries(cryptonote_tx
   cryptonote_basic
 )

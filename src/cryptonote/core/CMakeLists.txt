@@ -34,6 +34,6 @@ add_library(cryptonote_core
   )
 
 target_link_libraries(cryptonote_core
-  cryptonote_core_tx
+  cryptonote_tx
   blockchain_db
  )

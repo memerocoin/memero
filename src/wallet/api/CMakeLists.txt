@@ -38,5 +38,5 @@ target_link_libraries(wallet_api
     net
     wallet_logic
     ringct
-    cryptonote_core_tx
+    cryptonote_tx
   )
