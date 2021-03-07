@@ -167,19 +167,16 @@ add_subdirectory(src/tools/common)
 ## math/ringct
 add_subdirectory(src/math/ringct)
 
-## cryptonote/basic
+## cryptonote for wallet
 add_subdirectory(src/cryptonote/basic)
+add_subdirectory(src/cryptonote/tx)
 
-## network
+## network for wallet
 include_directories(
   src/network
 )
 add_subdirectory(src/network/type)
 add_subdirectory(src/network/rpc)
-add_subdirectory(src/network/p2p)
-
-## cryptonote/tx
-add_subdirectory(src/cryptonote/tx)
 
 ## wallet
 add_subdirectory(src/wallet/mnemonics)
@@ -189,6 +186,9 @@ add_subdirectory(src/wallet/api)
 add_subdirectory(src/wallet/common)
 add_subdirectory(src/wallet/rpc)
 add_subdirectory(src/wallet/cli)
+
+## network
+add_subdirectory(src/network/p2p)
 
 ## cryptonote
 include_directories(
