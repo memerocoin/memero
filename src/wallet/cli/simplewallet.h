@@ -109,7 +109,6 @@ namespace cryptonote
     bool viewkey(const std::vector<std::string> &args = std::vector<std::string>());
     bool spendkey(const std::vector<std::string> &args = std::vector<std::string>());
     bool seed(const std::vector<std::string> &args = std::vector<std::string>());
-    bool encrypted_seed(const std::vector<std::string> &args = std::vector<std::string>());
 
     bool set_always_confirm_transfers(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_print_ring_members(const std::vector<std::string> &args = std::vector<std::string>());
@@ -191,7 +190,7 @@ namespace cryptonote
     bool ask_wallet_create_if_needed();
     bool process_ring_members(const std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, std::ostream& ostr, bool verbose);
     std::string get_prompt() const;
-    bool print_seed(bool encrypted);
+    bool print_seed();
     void on_refresh_finished(uint64_t start_height, uint64_t fetched_blocks, bool is_init, bool received_money);
     std::pair<std::string, std::string> show_outputs_line(const std::vector<uint64_t> &heights, uint64_t blockchain_height, uint64_t highlight_idx = std::numeric_limits<uint64_t>::max()) const;
     bool prompt_if_old(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector);

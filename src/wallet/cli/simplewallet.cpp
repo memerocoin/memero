@@ -617,7 +617,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
   return true;
 }
 
-bool simple_wallet::print_seed(bool encrypted)
+bool simple_wallet::print_seed()
 {
   bool success =  false;
   epee::wipeable_string seed;
@@ -639,14 +639,6 @@ bool simple_wallet::print_seed(bool encrypted)
   SCOPED_WALLET_UNLOCK();
 
   epee::wipeable_string seed_pass;
-  if (encrypted)
-  {
-    auto pwd_container = password_prompter(tr("Enter optional seed offset passphrase, empty to see raw seed"), true);
-    if (std::cin.eof() || !pwd_container)
-      return true;
-    seed_pass = pwd_container->password();
-  }
-
   success = m_wallet->get_seed(seed, seed_pass);
 
   if (success)
@@ -662,12 +654,7 @@ bool simple_wallet::print_seed(bool encrypted)
 
 bool simple_wallet::seed(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
-  return print_seed(false);
-}
-
-bool simple_wallet::encrypted_seed(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  return print_seed(true);
+  return print_seed();
 }
 
 bool simple_wallet::change_password(const std::vector<std::string> &args)
@@ -1561,9 +1548,6 @@ simple_wallet::simple_wallet()
                                   "  Save all exported files as binary (cannot be copied and pasted) or ascii (can be).\n "
                                   "inactivity-lock-timeout <unsigned int>\n "
                                   "  How many seconds to wait before locking the wallet (0 to disable)."));
-  m_cmd_binder.set_handler("encrypted_seed",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::encrypted_seed, std::placeholders::_1),
-                           tr("Display the encrypted Electrum-style mnemonic seed."));
   m_cmd_binder.set_handler("rescan_spent",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_spent, std::placeholders::_1),
                            tr("Rescan the blockchain for spent outputs."));
@@ -2013,15 +1997,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
           fail_msg_writer() << tr("Electrum-style word list failed verification");
           return false;
         }
-      }
-
-      auto pwd_container = password_prompter(tr("Enter seed offset passphrase, empty if none"), false);
-      if (std::cin.eof() || !pwd_container)
-        return false;
-      epee::wipeable_string seed_pass = pwd_container->password();
-      if (!seed_pass.empty())
-      {
-        m_recovery_key = cryptonote::decrypt_key(m_recovery_key, seed_pass);
       }
     }
     if (!m_generate_from_spend_key.empty())
