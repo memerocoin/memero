@@ -167,9 +167,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   const std::string daemon_host = get_config(nettype).RPC_DEFAULT_HOST;
   const auto daemon_port = get_config(nettype).RPC_DEFAULT_PORT;
 
-  THROW_WALLET_EXCEPTION_IF(!daemon_address.empty() && !daemon_host.empty() && 0 != daemon_port,
-                            tools::error::wallet_internal_error, tools::wallet2::tr("can't specify daemon host or port more than once"));
-
   // if no daemon settings are given and we have a previous one, reuse that one
   if (command_line::is_arg_defaulted(vm, opts.daemon_address))
   {
