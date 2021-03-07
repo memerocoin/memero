@@ -34,8 +34,9 @@ add_library(wallet_api
 
 target_link_libraries(wallet_api
     rpc_base
-    cryptonote_core
     mnemonics
     net
     wallet_logic
+    ringct
+    cryptonote_core_tx
   )

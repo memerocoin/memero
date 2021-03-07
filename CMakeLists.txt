@@ -89,6 +89,7 @@ endif()
 
 ## threads
 find_package(Threads REQUIRED)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 ## openssl
 find_package(OpenSSL REQUIRED)

@@ -27,14 +27,18 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(cryptonote_core
-  blockchain.cpp
-  cryptonote_core.cpp
-  tx_pool.cpp
-  tx_sanity_check.cpp
+add_library(cryptonote_core_tx
   cryptonote_tx_utils.cpp
+  tx_sanity_check.cpp
+  )
+
+add_library(cryptonote_core
+  tx_pool.cpp
+  cryptonote_core.cpp
+  blockchain.cpp
   )
 
 target_link_libraries(cryptonote_core
-    blockchain_db
+  cryptonote_core_tx
+  blockchain_db
  )
