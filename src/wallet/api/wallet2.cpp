@@ -441,12 +441,14 @@ bool wallet2::init(std::string daemon_address, uint64_t upper_transaction_weight
   return set_daemon(daemon_address);
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::get_seed(epee::wipeable_string& electrum_words, const epee::wipeable_string &passphrase) const
+bool wallet2::get_seed(epee::wipeable_string& electrum_words, const epee::wipeable_string &passphrase)
 {
   if (seed_language.empty())
   {
-    std::cout << "seed_language not set" << std::endl;
-    return false;
+    std::vector<std::string> language_list_self;
+    crypto::ElectrumWords::get_language_list(language_list_self, false);
+    const std::string language = language_list_self[0];
+    set_seed_language(language);
   }
 
   crypto::secret_key key = get_account().get_keys().m_spend_secret_key;
