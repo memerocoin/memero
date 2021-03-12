@@ -76,7 +76,7 @@ Node
 
 Seed generator
 --------------
-<a href='https://play.google.com/store/apps/details?id=org.lolnero.seed_generator'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' height='80'/></a>
+<a href='https://play.google.com/store/apps/details?id=org.lolnero.lolnero_seed'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' height='80'/></a>
 
 Wallet
 ------
