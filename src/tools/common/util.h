@@ -71,8 +71,6 @@ namespace tools
    */
   std::error_code replace_file(const std::string& old_name, const std::string& new_name);
 
-  bool sanitize_locale();
-
   bool disable_core_dumps();
 
   bool on_startup();

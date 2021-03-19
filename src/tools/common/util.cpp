@@ -137,29 +137,6 @@ namespace tools
     return std::error_code(code, std::system_category());
   }
 
-  bool sanitize_locale()
-  {
-    // std::filesystem throws for "invalid" locales, such as en_US.UTF-8, or kjsdkfs,
-    // so reset it here before any calls to it
-    try
-    {
-      std::filesystem::path p {std::string("test")};
-      p /= std::string("test");
-    }
-    catch (...)
-    {
-#if defined(__MINGW32__) || defined(__MINGW__)
-      putenv("LC_ALL=C");
-      putenv("LANG=C");
-#else
-      setenv("LC_ALL", "C", 1);
-      setenv("LANG", "C", 1);
-#endif
-      return true;
-    }
-    return false;
-  }
-
 #ifdef STACK_TRACE
   static void posix_crash_handler(int signal)
   {
@@ -201,8 +178,6 @@ namespace tools
     mlog_configure("", true);
 
     setup_crash_dump();
-
-    sanitize_locale();
 
 #ifdef __GLIBC__
     const char *ver = gnu_get_libc_version();
