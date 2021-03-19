@@ -61,14 +61,6 @@ namespace tools
   std::string get_default_data_dir();
   std::string get_default_log_file();
 
-  /*! \brief Returns the OS version string
-   *
-   * \details This is a wrapper around the primitives
-   * get_windows_version_display_string() and
-   * get_nix_version_display_string()
-   */
-  std::string get_os_version_string();
-
   /*! \brief creates directories for a path
    *
    *  wrapper around boost::filesyste::create_directories.  

@@ -101,22 +101,6 @@ namespace tools
 {
   std::function<void(int)> signal_handler::m_handler;
 
-  std::string get_nix_version_display_string()
-  {
-    struct utsname un;
-
-    if(uname(&un) < 0)
-      return std::string("*nix: failed to get os version");
-    return std::string() + un.sysname + " " + un.version + " " + un.release;
-  }
-
-  std::string get_os_version_string()
-  {
-    return get_nix_version_display_string();
-  }
-
-
-
   std::string get_default_data_dir()
   {
     /* Please for the love of god refactor  the ifdefs out of this */
