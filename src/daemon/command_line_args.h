@@ -57,11 +57,6 @@ namespace daemon_args
   , "Specify log file"
   , tools::get_default_log_file()
   };
-  const command_line::arg_descriptor<std::size_t> arg_max_log_file_size = {
-    "max-log-file-size"
-  , "Specify maximum log file size [B]"
-  , MAX_LOG_FILE_SIZE
-  };
   const command_line::arg_descriptor<std::string> arg_log_level = {
     "log-level"
   , ""
