@@ -131,7 +131,6 @@ namespace cryptonote
     bool set_ignore_outputs_above(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_ignore_outputs_below(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_track_uses(const std::vector<std::string> &args = std::vector<std::string>());
-    bool set_inactivity_lock_timeout(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_export_format(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_load_deprecated_formats(const std::vector<std::string> &args = std::vector<std::string>());
     bool help(const std::vector<std::string> &args = std::vector<std::string>());
@@ -197,7 +196,6 @@ namespace cryptonote
     bool on_command(bool (simple_wallet::*cmd)(const std::vector<std::string>&), const std::vector<std::string> &args);
     bool on_empty_command();
     bool on_cancelled_command();
-    void check_for_inactivity_lock(bool user);
 
     struct transfer_view
     {

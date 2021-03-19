@@ -793,7 +793,6 @@ bool simple_wallet::print_ring(const std::vector<std::string> &args)
 bool simple_wallet::lock(const std::vector<std::string> &args)
 {
   m_locked = true;
-  check_for_inactivity_lock(true);
   return true;
 }
 
@@ -831,7 +830,6 @@ bool simple_wallet::on_empty_command()
 
 bool simple_wallet::on_cancelled_command()
 {
-  check_for_inactivity_lock(false);
   return true;
 }
 
@@ -1283,25 +1281,6 @@ bool simple_wallet::set_track_uses(const std::vector<std::string> &args/* = std:
   return true;
 }
 
-bool simple_wallet::set_inactivity_lock_timeout(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    uint32_t r;
-    if (epee::string_tools::get_xtype_from_string(r, args[1]))
-    {
-      m_wallet->inactivity_lock_timeout(r);
-      m_wallet->rewrite(m_wallet_file, pwd_container->password());
-    }
-    else
-    {
-      tools::fail_msg_writer() << tr("Invalid number of seconds");
-    }
-  }
-  return true;
-}
-
 bool simple_wallet::set_export_format(const std::vector<std::string> &args/* = std::vector<std::string()*/)
 {
   if (args.size() < 2)
@@ -1698,8 +1677,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "ignore-outputs-below = " << cryptonote::print_money(m_wallet->ignore_outputs_below());
     success_msg_writer() << "track-uses = " << m_wallet->track_uses();
     success_msg_writer() << "export-format = " << (m_wallet->export_format() == tools::wallet2::ExportFormat::Ascii ? "ascii" : "binary");
-    success_msg_writer() << "inactivity-lock-timeout = " << m_wallet->inactivity_lock_timeout()
-        ;
     success_msg_writer() << "load-deprecated-formats = " << m_wallet->load_deprecated_formats();
     return true;
   }
@@ -1742,7 +1719,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("ignore-outputs-above", set_ignore_outputs_above, tr("amount"));
     CHECK_SIMPLE_VARIABLE("ignore-outputs-below", set_ignore_outputs_below, tr("amount"));
     CHECK_SIMPLE_VARIABLE("track-uses", set_track_uses, tr("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("inactivity-lock-timeout", set_inactivity_lock_timeout, tr("unsigned integer (seconds, 0 to disable)"));
     CHECK_SIMPLE_VARIABLE("export-format", set_export_format, tr("\"binary\" or \"ascii\""));
     CHECK_SIMPLE_VARIABLE("load-deprecated-formats", set_load_deprecated_formats, tr("0 or 1"));
   }
@@ -3132,53 +3108,6 @@ bool simple_wallet::prompt_if_old(const std::vector<wallet::logic::type::tx::pen
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-void simple_wallet::check_for_inactivity_lock(bool user)
-{
-  if (m_locked)
-  {
-#ifdef HAVE_READLINE
-    PAUSE_READLINE();
-    rdln::clear_screen();
-#endif
-    tools::clear_screen();
-    m_in_command = true;
-    if (!user)
-    {
-      const std::string speech = tr("I locked your Lolnero wallet to protect you while you were away\nsee \"help set\" to configure/disable");
-      std::vector<std::pair<std::string, size_t>> lines = tools::split_string_by_width(speech, 45);
-
-      size_t max_len = 0;
-      for (const auto &i: lines)
-        max_len = std::max(max_len, i.second);
-      const size_t n_u = max_len + 2;
-      tools::msg_writer() << " " << std::string(n_u, '_');
-      for (size_t i = 0; i < lines.size(); ++i)
-        tools::msg_writer() << (i == 0 ? "/" : i == lines.size() - 1 ? "\\" : "|") << " " << lines[i].first << std::string(max_len - lines[i].second, ' ') << " " << (i == 0 ? "\\" : i == lines.size() - 1 ? "/" : "|");
-      tools::msg_writer() << " " << std::string(n_u, '-') << std::endl <<
-          "        \\   (__)" << std::endl <<
-          "         \\  (oo)\\_______" << std::endl <<
-          "            (__)\\       )\\/\\" << std::endl <<
-          "                ||----w |" << std::endl <<
-          "                ||     ||" << std::endl <<
-          "" << std::endl;
-    }
-    while (1)
-    {
-      const char *inactivity_msg = user ? "" : tr("Locked due to inactivity.");
-      tools::msg_writer() << inactivity_msg << (inactivity_msg[0] ? " " : "") << tr("The wallet password is required to unlock the console.");
-      try
-      {
-        if (get_and_verify_password())
-          break;
-      }
-      catch (...) { /* do nothing, just let the loop loop */ }
-    }
-    m_last_activity_time = time(NULL);
-    m_in_command = false;
-    m_locked = false;
-  }
-}
-//----------------------------------------------------------------------------------------------------
 bool simple_wallet::on_command(bool (simple_wallet::*cmd)(const std::vector<std::string>&), const std::vector<std::string> &args)
 {
   const time_t now = time(NULL);
@@ -3191,7 +3120,6 @@ bool simple_wallet::on_command(bool (simple_wallet::*cmd)(const std::vector<std:
     m_in_command = false;
   });
 
-  check_for_inactivity_lock(false);
   return (this->*cmd)(args);
 }
 //----------------------------------------------------------------------------------------------------
@@ -4423,21 +4351,6 @@ void simple_wallet::wallet_idle_thread()
     const auto wait = 1000000 - dt % 1000000;
     m_idle_cond.wait_for(lock, std::chrono::microseconds(wait));
   }
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::check_inactivity()
-{
-    // inactivity lock
-    if (!m_locked && !m_in_command)
-    {
-      const uint32_t seconds = m_wallet->inactivity_lock_timeout();
-      if (seconds > 0 && time(NULL) - m_last_activity_time > seconds)
-      {
-        m_locked = true;
-        m_cmd_binder.cancel_input();
-      }
-    }
-    return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::check_refresh()
