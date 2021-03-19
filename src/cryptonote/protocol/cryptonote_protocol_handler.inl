@@ -1202,12 +1202,10 @@ namespace cryptonote
     const boost::posix_time::time_duration sync_time = now - m_sync_start_time;
     cryptonote::network_type nettype = m_core.get_nettype();
 
-    // Don't simply use remaining number of blocks for the estimate but "sync weight" as provided by
-    // "cumulative_block_sync_weight" which knows about strongly varying Monero mainnet block sizes
-    uint64_t synced_weight = tools::cumulative_block_sync_weight(nettype, m_sync_start_height, current_blockchain_height - m_sync_start_height);
-    float us_per_weight = (float)sync_time.total_microseconds() / (float)synced_weight;
-    uint64_t remaining_weight = tools::cumulative_block_sync_weight(nettype, current_blockchain_height, target_blockchain_height - current_blockchain_height);
-    float remaining_us = us_per_weight * (float)remaining_weight;
+    uint64_t synced = current_blockchain_height - m_sync_start_height;
+    float us_per_block = (float)sync_time.total_microseconds() / (float)synced;
+    uint64_t remaining = target_blockchain_height - current_blockchain_height;
+    float remaining_us = us_per_block * (float)remaining;
     return (uint64_t)(remaining_us / 1e6);
   }
 

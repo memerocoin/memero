@@ -123,7 +123,6 @@ namespace tools
   unsigned get_max_concurrency();
 
   bool is_local_address(const std::string &address);
-  int vercmp(const char *v0, const char *v1); // returns < 0, 0, > 0, similar to strcmp, but more human friendly than lexical - does not attempt to validate
 
   std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str);
 
@@ -136,6 +135,4 @@ namespace tools
   void clear_screen();
 
   std::vector<std::pair<std::string, size_t>> split_string_by_width(const std::string &s, size_t columns);
-
-  uint64_t cumulative_block_sync_weight(cryptonote::network_type nettype, uint64_t start_block, uint64_t num_blocks);
 }

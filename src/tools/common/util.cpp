@@ -76,27 +76,6 @@ using namespace epee;
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "util"
 
-namespace
-{
-
-static int flock_exnb(int fd)
-{
-  struct flock fl;
-  int ret;
-
-  memset(&fl, 0, sizeof(fl));
-  fl.l_type = F_WRLCK;
-  fl.l_whence = SEEK_SET;
-  fl.l_start = 0;
-  fl.l_len = 0;
-  ret = fcntl(fd, F_SETLK, &fl);
-  if (ret < 0)
-    MERROR("Error locking fd " << fd << ": " << errno << " (" << strerror(errno) << ")");
-  return ret;
-}
-
-}
-
 namespace tools
 {
   std::function<void(int)> signal_handler::m_handler;
@@ -312,23 +291,6 @@ namespace tools
 
     MDEBUG("Address '" << address << "' is not local");
     return false;
-  }
-  int vercmp(const char *v0, const char *v1)
-  {
-    std::vector<std::string> f0, f1;
-    boost::split(f0, v0, boost::is_any_of(".-"));
-    boost::split(f1, v1, boost::is_any_of(".-"));
-    for (size_t i = 0; i < std::max(f0.size(), f1.size()); ++i) {
-      if (i >= f0.size())
-        return -1;
-      if (i >= f1.size())
-        return 1;
-      int f0i = atoi(f0[i].c_str()), f1i = atoi(f1[i].c_str());
-      int n = f0i - f1i;
-      if (n)
-        return n;
-    }
-    return 0;
   }
 
   std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str)
@@ -568,13 +530,6 @@ namespace tools
       words.erase(words.begin());
     }
     return lines;
-  }
-
-  // Calculate a "sync weight" over ranges of blocks in the blockchain, suitable for
-  // calculating sync time estimates
-  uint64_t cumulative_block_sync_weight(cryptonote::network_type nettype, uint64_t start_block, uint64_t num_blocks)
-  {
-    return num_blocks;
   }
 
   std::vector<std::pair<std::string, size_t>> split_string_by_width(const std::string &s, size_t columns)
