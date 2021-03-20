@@ -1272,14 +1272,16 @@ namespace cryptonote
     fee = 0;
 
     //baseline empty block
-    if (!get_block_reward(total_weight, best_coinbase))
+
+    const uint64_t height = cryptonote::get_block_height(bl);
+    if (!get_block_reward(height, total_weight, best_coinbase))
     {
       MERROR("Failed to get block reward for empty block");
       return false;
     }
 
 
-    size_t max_total_weight = config::lol::max_block_weight - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+    size_t max_total_weight = get_max_block_weight(height) - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> k_images;
 
     LOG_PRINT_L2("Filling block template, max weight " << max_total_weight << ", " << m_txs_by_fee_and_receive_time.size() << " txes in the pool");
@@ -1315,7 +1317,7 @@ namespace cryptonote
         // If we're getting lower coinbase tx,
         // stop including more tx
         uint64_t block_reward;
-        if(!get_block_reward(total_weight + meta.weight, block_reward))
+        if(!get_block_reward(height, total_weight + meta.weight, block_reward))
         {
           LOG_PRINT_L2("  would exceed maximum block weight");
           continue;

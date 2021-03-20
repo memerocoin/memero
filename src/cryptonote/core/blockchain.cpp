@@ -1158,7 +1158,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
     money_in_use += o.amount;
   partial_block_reward = false;
 
-  if (!get_block_reward(cumulative_block_weight, base_reward))
+  if (!get_block_reward(height, cumulative_block_weight, base_reward))
   {
     MERROR_VER("block weight " << cumulative_block_weight << " is bigger than allowed for this blockchain");
     return false;
@@ -2850,7 +2850,7 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
   uint64_t median = 0;
   uint64_t base_reward = 0;
   {
-    if (!get_block_reward(1, base_reward))
+    if (!get_block_reward(0, 1, base_reward))
       return false;
   }
 
@@ -2877,22 +2877,8 @@ uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
 {
   const uint64_t db_height = m_db->height();
 
-  if (grace_blocks >= CRYPTONOTE_REWARD_BLOCKS_WINDOW)
-    grace_blocks = CRYPTONOTE_REWARD_BLOCKS_WINDOW - 1;
-
-  const uint64_t min_block_weight = get_min_block_weight();
-  std::vector<uint64_t> weights;
-  get_last_n_blocks_weights(weights, CRYPTONOTE_REWARD_BLOCKS_WINDOW - grace_blocks);
-  weights.reserve(grace_blocks);
-  for (size_t i = 0; i < grace_blocks; ++i)
-    weights.push_back(min_block_weight);
-
-  uint64_t median = epee::misc_utils::median(weights);
-  if(median <= min_block_weight)
-    median = min_block_weight;
-
   uint64_t base_reward;
-  if (!get_block_reward(1, base_reward))
+  if (!get_block_reward(db_height, 1, base_reward))
   {
     MERROR("Failed to determine block reward, using placeholder " << print_money(BLOCK_REWARD_OVERESTIMATE) << " as a high bound");
     base_reward = BLOCK_REWARD_OVERESTIMATE;
@@ -3378,7 +3364,7 @@ leave:
   {
     try
     {
-      uint64_t long_term_block_weight = config::lol::max_block_weight;
+      uint64_t long_term_block_weight = get_max_block_weight(cryptonote::get_block_height(bl));
       cryptonote::blobdata bd = cryptonote::block_to_blob(bl);
       new_height = m_db->add_block(std::make_pair(std::move(bl), std::move(bd)), block_weight, long_term_block_weight, cumulative_difficulty, already_generated_coins, txs);
     }
@@ -3447,7 +3433,7 @@ bool Blockchain::update_next_cumulative_weight_limit()
   LOG_PRINT_L3("Blockchain::" << __func__);
 
   if (!m_db->is_read_only())
-    m_db->add_max_block_size(config::lol::max_block_weight);
+    m_db->add_max_block_size(get_max_block_weight(get_current_blockchain_height()));
 
   return true;
 }

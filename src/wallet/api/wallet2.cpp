@@ -4191,7 +4191,11 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
       }
 
       // get the current full reward zone
-      uint64_t block_weight_limit = config::lol::max_block_weight;
+      uint64_t height;
+      std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
+      THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get height");
+
+      uint64_t block_weight_limit = get_max_block_weight(height);
       const uint64_t full_reward_zone = block_weight_limit / 2;
 
       // get the last N block headers and sum the block sizes
@@ -5615,8 +5619,7 @@ uint64_t wallet2::get_upper_transaction_weight_limit()
 {
   if (m_upper_transaction_weight_limit > 0)
     return m_upper_transaction_weight_limit;
-  uint64_t full_reward_zone = CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5;
-  return full_reward_zone / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+  return get_max_tx_size() / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
 }
 //----------------------------------------------------------------------------------------------------
 std::vector<size_t> wallet2::select_available_outputs(const std::function<bool(const transfer_details &td)> &f)
@@ -6113,7 +6116,11 @@ std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(const std::
     THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_txpool_backlog", error::get_tx_pool_error);
   }
 
-  uint64_t block_weight_limit = config::lol::max_block_weight;
+  uint64_t height;
+  std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
+  THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get height");
+
+  uint64_t block_weight_limit = get_max_block_weight(height);
   uint64_t full_reward_zone = block_weight_limit / 2;
   THROW_WALLET_EXCEPTION_IF(full_reward_zone == 0, error::wallet_internal_error, "Invalid block weight limit from daemon");
 

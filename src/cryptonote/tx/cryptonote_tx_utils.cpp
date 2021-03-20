@@ -88,7 +88,7 @@ namespace cryptonote
     in.height = height;
 
     uint64_t block_reward;
-    if(!get_block_reward(current_block_weight, block_reward))
+    if(!get_block_reward(static_cast<uint64_t>(height), current_block_weight, block_reward))
     {
       LOG_PRINT_L0("Block is too big");
       return false;

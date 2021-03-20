@@ -53,20 +53,27 @@ namespace cryptonote {
   /* Cryptonote helper functions                                          */
   /************************************************************************/
   //-----------------------------------------------------------------------------------------------
-  size_t get_min_block_weight()
+  uint64_t get_min_block_weight()
   {
-    return CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5;
+    return config::lol::min_block_weight;
   }
   //-----------------------------------------------------------------------------------------------
   size_t get_max_tx_size()
   {
-    return CRYPTONOTE_MAX_TX_SIZE;
+    return config::lol::min_block_weight;
   }
   //-----------------------------------------------------------------------------------------------
-  bool get_block_reward(size_t current_block_weight, uint64_t &reward) {
+  uint64_t get_max_block_weight(uint64_t height)
+  {
+    const uint64_t max_weight = std::max(config::lol::min_block_weight, height);
+    // MGINFO("get max block weight: " << max_weight);
+    return max_weight;
+  }
+  //-----------------------------------------------------------------------------------------------
+  bool get_block_reward(uint64_t height, size_t current_block_weight, uint64_t &reward) {
     reward = COIN * 300;
 
-    uint64_t max_weight = config::lol::max_block_weight;
+    uint64_t max_weight = get_max_block_weight(height);
     if(current_block_weight > max_weight) {
       MERROR("Block weight is too big: " << current_block_weight << ", expected less than " << max_weight);
       return false;

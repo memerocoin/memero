@@ -16,7 +16,8 @@ namespace config
     const uint64_t constant_hf_height = 0;
     const time_t constant_hf_time = 1600576524;
     const size_t max_connections_per_address = 2;
-    constexpr uint64_t max_block_weight = 4 * 1024 * 1024; // 4 MB
+    constexpr uint64_t min_block_weight = 128 * 1024; // 128 kB
+    constexpr uint64_t max_tx_weight = 128 * 1024; // 128 kB
     const std::string ASCII_OUTPUT_MAGIC = "LolneroAsciiDataV1";
     const size_t genesis_tx_version = 1;
     const size_t tx_version = 2;

@@ -45,11 +45,6 @@ namespace constant
   const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2 = 300*2;
   const size_t BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 = 11;
 
-
-  // size of block (bytes) after which reward for block calculated using
-  // block size - second change, from v5
-  const uint64_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5 = 300000;
-
   const uint64_t FEE_PER_BYTE = (uint64_t)300000;
   const uint64_t DYNAMIC_FEE_REFERENCE_TRANSACTION_WEIGHT = (uint64_t)3000;
 

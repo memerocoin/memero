@@ -30,7 +30,6 @@
 
 #include <filesystem>
 #include <boost/format.hpp>
-#include <boost/circular_buffer.hpp>
 #include <memory>  // std::unique_ptr
 #include <cstring>  // memcpy
 
@@ -4767,8 +4766,6 @@ void BlockchainLMDB::migrate_3_4()
       throw0(DB_ERROR(lmdb_error("Failed to query m_blocks: ", result).c_str()));
     const uint64_t blockchain_height = db_stats.ms_entries;
 
-    boost::circular_buffer<uint64_t> long_term_block_weights(CRYPTONOTE_LONG_TERM_BLOCK_WEIGHT_WINDOW_SIZE);
-
     /* the block_info table name is the same but the old version and new version
      * have incompatible data. Create a new table. We want the name to be similar
      * to the old name so that it will occupy the same location in the DB.
@@ -4845,18 +4842,7 @@ void BlockchainLMDB::migrate_3_4()
           past_long_term_weight = true;
       }
 
-      uint64_t long_term_block_weight;
-      if (past_long_term_weight)
-      {
-        std::vector<uint64_t> weights(long_term_block_weights.begin(), long_term_block_weights.end());
-        uint64_t long_term_effective_block_median_weight = std::max<uint64_t>(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5, epee::misc_utils::median(weights));
-        long_term_block_weight = std::min<uint64_t>(bi.bi_weight, long_term_effective_block_median_weight + long_term_effective_block_median_weight * 2 / 5);
-      }
-      else
-      {
-        long_term_block_weight = bi.bi_weight;
-      }
-      long_term_block_weights.push_back(long_term_block_weight);
+      const uint64_t long_term_block_weight = bi.bi_weight;
       bi.bi_long_term_block_weight = long_term_block_weight;
 
       MDB_val_set(nv, bi);
