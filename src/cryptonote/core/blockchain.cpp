@@ -1297,7 +1297,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
 
   size_t txs_weight;
   uint64_t fee;
-  if (!m_tx_pool.fill_block_template(b, txs_weight, fee, expected_reward))
+  if (!m_tx_pool.fill_block_template(height, b, txs_weight, fee, expected_reward))
   {
     return false;
   }

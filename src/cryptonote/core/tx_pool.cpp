@@ -1262,7 +1262,7 @@ namespace cryptonote
   }
   //---------------------------------------------------------------------------------
   //TODO: investigate whether boolean return is appropriate
-  bool tx_memory_pool::fill_block_template(block &bl, size_t &total_weight, uint64_t &fee, uint64_t &expected_reward)
+  bool tx_memory_pool::fill_block_template(const uint64_t height, block &bl, size_t &total_weight, uint64_t &fee, uint64_t &expected_reward)
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
     CRITICAL_REGION_LOCAL1(m_blockchain);
@@ -1272,8 +1272,6 @@ namespace cryptonote
     fee = 0;
 
     //baseline empty block
-
-    const uint64_t height = cryptonote::get_block_height(bl);
     if (!get_block_reward(height, total_weight, best_coinbase))
     {
       MERROR("Failed to get block reward for empty block");

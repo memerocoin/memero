@@ -231,7 +231,7 @@ namespace cryptonote
      *
      * @return true
      */
-    bool fill_block_template(block &bl, size_t &total_weight, uint64_t &fee, uint64_t &expected_reward);
+    bool fill_block_template(const uint64_t height, block &bl, size_t &total_weight, uint64_t &fee, uint64_t &expected_reward);
 
     /**
      * @brief get a list of all transactions in the pool
