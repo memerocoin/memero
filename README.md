@@ -16,7 +16,7 @@ Specifications
 * Max supply: ∞
 * Block reward: 300
 * Block time: 5 minutes
-* Block size limit: 4 MB
+* Block size limit: max(128k, Block height) bytes
 * Confidential transaction: Bulletproofs
 * Ring signature: CLSAG
 * Ring size: 32
