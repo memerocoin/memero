@@ -576,7 +576,7 @@ namespace cryptonote
      *
      * @return the fee
      */
-    static uint64_t get_dynamic_base_fee(uint64_t block_reward);
+    static uint64_t get_base_fee();
 
     /**
      * @brief get dynamic per kB or byte fee estimate for the next few blocks

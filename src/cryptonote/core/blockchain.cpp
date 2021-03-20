@@ -2828,20 +2828,9 @@ void Blockchain::check_ring_signature(const crypto::hash &tx_prefix_hash, const 
 }
 
 //------------------------------------------------------------------
-uint64_t Blockchain::get_dynamic_base_fee(uint64_t block_reward)
+uint64_t Blockchain::get_base_fee()
 {
-  const uint64_t min_block_weight = get_min_block_weight();
-  const uint64_t median_block_weight = min_block_weight;
-  uint64_t hi, lo;
-
-  {
-    lo = mul128(block_reward, DYNAMIC_FEE_REFERENCE_TRANSACTION_WEIGHT, &hi);
-    div128_64(hi, lo, min_block_weight, &hi, &lo, NULL, NULL);
-    div128_64(hi, lo, median_block_weight, &hi, &lo, NULL, NULL);
-    assert(hi == 0);
-    lo /= 5;
-    return lo;
-  }
+  return constant::FEE_PER_BYTE;
 }
 
 //------------------------------------------------------------------
@@ -2856,7 +2845,7 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 
   uint64_t needed_fee;
   {
-    uint64_t fee_per_byte = get_dynamic_base_fee(base_reward);
+    uint64_t fee_per_byte = get_base_fee();
     MDEBUG("Using " << print_money(fee_per_byte) << "/byte fee");
     needed_fee = tx_weight * fee_per_byte;
     // quantize fee up to 8 decimals
@@ -2875,16 +2864,7 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 //------------------------------------------------------------------
 uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
 {
-  const uint64_t db_height = m_db->height();
-
-  uint64_t base_reward;
-  if (!get_block_reward(db_height, 1, base_reward))
-  {
-    MERROR("Failed to determine block reward, using placeholder " << print_money(BLOCK_REWARD_OVERESTIMATE) << " as a high bound");
-    base_reward = BLOCK_REWARD_OVERESTIMATE;
-  }
-
-  const uint64_t fee = get_dynamic_base_fee(base_reward);
+  const uint64_t fee = get_base_fee();
   MDEBUG("Estimating " << grace_blocks << "-block fee at " << print_money(fee) << "/" << "byte");
   return fee;
 }
