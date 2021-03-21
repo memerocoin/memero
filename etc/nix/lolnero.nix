@@ -1,33 +1,40 @@
 { gcc10Stdenv
 , cmake, git, fetchgit
-, boost172, openssl, readline, libsodium, rapidjson
+, boost175, openssl, readline, libsodium, rapidjson
+, lib
 }:
 
 let
-  stdenv = gcc10Stdenv;
-in
+
+  stdenv = gcc10Stdenv
+; lolnero-rev = "v0.9.0.1"
+; lolnero-sha256 = "1r58753zcacjlaq0h86xx837rsnq5g0mhyvkg2p6nkbmpiacy0dk"
+
+; in
+
 stdenv.mkDerivation rec {
   pname = "lolnero";
-  version = "0.5";
+  version = "0.9.0.1";
   src = fetchgit {
     url = "https://gitlab.com/fuwa/lolnero.git";
-    rev = "e9d9b9ff";
-    sha256 = "0i6dgrdrgbds3ivynr7wgvxqcby5v83056h1scgcxk6g5047ldz0";
+    rev = lolnero-rev;
+    sha256 = lolnero-sha256;
     fetchSubmodules = false;
   };
 
   nativeBuildInputs = [ cmake ];
 
   buildInputs = [
-    boost172 openssl readline libsodium rapidjson
+    boost175 openssl readline libsodium rapidjson
   ];
 
   cmakeFlags = [
+    "--no-warn-unused-cli"
     "-DReadline_ROOT_DIR=${readline.dev}"
-    "-DMANUAL_SUBMODULES=ON"
+    "-DVERSIONTAG=${lolnero-rev}"
   ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A fork of Wownero with a linear emission and a SHA-3 PoW";
     homepage    = https://lolnero.org/;
     license     = licenses.bsd3;
