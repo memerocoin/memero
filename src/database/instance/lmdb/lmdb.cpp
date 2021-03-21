@@ -4838,8 +4838,7 @@ void BlockchainLMDB::migrate_3_4()
         if (vb.mv_size == 0)
           throw0(DB_ERROR("Invalid data from m_blocks"));
         const uint8_t block_major_version = *((const uint8_t*)vb.mv_data);
-        if (block_major_version >= HF_VERSION_LONG_TERM_BLOCK_WEIGHT)
-          past_long_term_weight = true;
+        past_long_term_weight = true;
       }
 
       const uint64_t long_term_block_weight = bi.bi_weight;

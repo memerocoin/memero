@@ -41,12 +41,10 @@ namespace constant
   // COIN - number of smallest units in one coin
   const uint64_t COIN = (uint64_t)100000000000; // pow(10, 11)
 
-  const size_t CRYPTONOTE_REWARD_BLOCKS_WINDOW = 100;
   const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2 = 300*2;
   const size_t BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 = 11;
 
   const uint64_t FEE_PER_BYTE = (uint64_t)300000;
-  const uint64_t DYNAMIC_FEE_REFERENCE_TRANSACTION_WEIGHT = (uint64_t)3000;
 
   const uint64_t DIFFICULTY_TARGET_V2 = 300;
   const uint64_t DIFFICULTY_WINDOW_V3 = 144;
@@ -56,11 +54,6 @@ namespace constant
   const uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2 =
     DIFFICULTY_TARGET_V2 * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS;
 
-
-  const uint8_t HF_VERSION_PER_BYTE_FEE = 12;
-  const uint8_t HF_VERSION_SMALLER_BP = 13;
-  const uint8_t HF_VERSION_LONG_TERM_BLOCK_WEIGHT = 13;
-  const uint8_t HF_VERSION_DETERMINISTIC_UNLOCK_TIME = 16;
 
   const uint64_t RPC_IP_FAILS_BEFORE_BLOCK = 3;
   const size_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
