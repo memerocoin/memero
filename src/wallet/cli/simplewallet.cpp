@@ -72,7 +72,6 @@
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
 #include "wallet/logic/controller/wallet.hpp"
-#include "wallet/logic/controller/keys_unlocker.hpp"
 
 #ifdef HAVE_READLINE
 #include "readline_buffer.h"
@@ -106,13 +105,7 @@ typedef cryptonote::simple_wallet sw;
     m_idle_cond.notify_one(); \
   })
 
-#define SCOPED_WALLET_UNLOCK_ON_BAD_PASSWORD(code) \
-  LOCK_IDLE_SCOPE(); \
-  std::optional<tools::password_container> pwd_container = std::nullopt; \
-  if (m_wallet->ask_password() && !(pwd_container = get_and_verify_password())) { code; } \
-  wallet::logic::controller::keys_unlocker::wallet_keys_unlocker unlocker(*m_wallet, pwd_container);
-
-#define SCOPED_WALLET_UNLOCK() SCOPED_WALLET_UNLOCK_ON_BAD_PASSWORD(return true;)
+#define SCOPED_WALLET_UNLOCK()
 
 #define PRINT_USAGE(usage_help) fail_msg_writer() << boost::format(tr("usage: %s")) % usage_help;
 
@@ -3259,8 +3252,6 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
 
     dsts.push_back(de);
   }
-
-  SCOPED_WALLET_UNLOCK_ON_BAD_PASSWORD(return false;);
 
   try
   {

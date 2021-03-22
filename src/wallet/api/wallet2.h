@@ -93,16 +93,6 @@
 class Serialization_portability_wallet_Test;
 class wallet_accessor_test;
 
-namespace wallet {
-  namespace logic {
-    namespace controller {
-      namespace keys_unlocker {
-        class wallet_keys_unlocker;
-      }
-    }
-  }
-}
-
 namespace tools
 {
   class ringdb;
@@ -141,7 +131,6 @@ namespace tools
   {
     friend class ::Serialization_portability_wallet_Test;
     friend class ::wallet_accessor_test;
-    friend class wallet::logic::controller::keys_unlocker::wallet_keys_unlocker;
     friend class wallet_device_callback;
   public:
     static constexpr const std::chrono::seconds rpc_timeout = std::chrono::minutes(3) + std::chrono::seconds(30);

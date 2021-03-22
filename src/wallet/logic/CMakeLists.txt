@@ -38,7 +38,6 @@ add_library(wallet_logic
   pseudo_functional/hash.cpp
   controller/proof.cpp
   controller/wallet.cpp
-  controller/keys_unlocker.cpp
   state/gamma_picker.cpp
   )
 

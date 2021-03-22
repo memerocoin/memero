@@ -88,7 +88,6 @@ using namespace epee;
 #include "wallet/logic/pseudo_functional/hash.hpp"
 #include "wallet/logic/controller/proof.hpp"
 #include "wallet/logic/controller/wallet.hpp"
-#include "wallet/logic/controller/keys_unlocker.hpp"
 #include "wallet/logic/state/gamma_picker.hpp"
 
 extern "C"
@@ -3298,9 +3297,6 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
   {
     THROW_WALLET_EXCEPTION_IF(true, error::file_read_error, "failed to load keys from buffer");
   }
-
-  wallet::logic::controller::keys_unlocker::wallet_keys_unlocker unlocker
-    (*this, m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only, password);
 
   //keys loaded ok!
   //try to load wallet file. but even if we failed, it is not big problem
