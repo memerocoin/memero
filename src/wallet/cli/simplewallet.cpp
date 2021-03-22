@@ -1338,9 +1338,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("save",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::save, std::placeholders::_1),
                            tr("Save the wallet data."));
-  m_cmd_binder.set_handler("save_watch_only",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::save_watch_only, std::placeholders::_1),
-                           tr("Save a watch-only keys file."));
   m_cmd_binder.set_handler("viewkey",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::viewkey, std::placeholders::_1),
                            tr("Display the private view key."));
@@ -2190,30 +2187,6 @@ bool simple_wallet::save(const std::vector<std::string> &args)
     fail_msg_writer() << e.what();
   }
 
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::save_watch_only(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  const auto pwd_container = password_prompter(tr("Password for new watch-only wallet"), true);
-
-  if (!pwd_container)
-  {
-    fail_msg_writer() << tr("failed to read wallet password");
-    return true;
-  }
-
-  try
-  {
-    std::string new_keys_filename;
-    m_wallet->write_watch_only_wallet(m_wallet_file, pwd_container->password(), new_keys_filename);
-    success_msg_writer() << tr("Watch only wallet saved as: ") << new_keys_filename;
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << tr("Failed to save watch only wallet: ") << e.what();
-    return true;
-  }
   return true;
 }
 //----------------------------------------------------------------------------------------------------
