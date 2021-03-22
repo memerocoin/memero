@@ -160,7 +160,6 @@ namespace
   const char* USAGE_MARK_OUTPUT_SPENT("mark_output_spent <amount>/<offset> | <filename> [add]");
   const char* USAGE_MARK_OUTPUT_UNSPENT("mark_output_unspent <amount>/<offset>");
   const char* USAGE_IS_OUTPUT_SPENT("is_output_spent <amount>/<offset>");
-  const char* USAGE_LOCK("lock");
   const char* USAGE_NET_STATS("net_stats");
   const char* USAGE_WELCOME("welcome");
   const char* USAGE_VERSION("version");
@@ -771,12 +770,6 @@ bool simple_wallet::print_ring(const std::vector<std::string> &args)
     fail_msg_writer() << tr("Failed to get key image ring: ") << e.what();
   }
 
-  return true;
-}
-
-bool simple_wallet::lock(const std::vector<std::string> &args)
-{
-  m_locked = true;
   return true;
 }
 
@@ -1553,10 +1546,6 @@ simple_wallet::simple_wallet()
                            tr("Print the ring(s) used to spend a given key image or transaction (if the ring size is > 1)\n\n"
                               "Output format:\n"
                               "Key Image, \"absolute\", list of rings"));
-  m_cmd_binder.set_handler("lock",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::lock, std::placeholders::_1),
-                           tr(USAGE_LOCK),
-                           tr("Lock the wallet console, requiring the wallet password to continue"));
   m_cmd_binder.set_handler("welcome",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::welcome, std::placeholders::_1),
                            tr(USAGE_WELCOME),

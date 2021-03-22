@@ -168,7 +168,6 @@ namespace cryptonote
     bool change_password(const std::vector<std::string>& args);
     bool print_fee_info(const std::vector<std::string> &args);
     bool print_ring(const std::vector<std::string>& args);
-    bool lock(const std::vector<std::string>& args);
     bool welcome(const std::vector<std::string>& args);
     bool version(const std::vector<std::string>& args);
     bool on_unknown_command(const std::vector<std::string>& args);
