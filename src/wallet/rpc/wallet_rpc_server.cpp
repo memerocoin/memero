@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
 // 
 // All rights reserved.
@@ -27,40 +28,34 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
+
+#include "wallet_rpc_server.h"
+#include "version.h"
+
 #include <boost/format.hpp>
 #include <boost/asio/ip/address.hpp>
-#include <filesystem>
 #include <boost/algorithm/string.hpp>
-#include <boost/preprocessor/stringize.hpp>
-#include <cstdint>
-#include "include_base_utils.h"
-using namespace epee;
 
-#include "version.h"
-#include "wallet_rpc_server.h"
-#include "wallet/common/wallet_args.h"
-#include "tools/common/command_line.h"
 #include "config/cryptonote.hpp"
-#include "cryptonote/basic/cryptonote_format_utils.h"
-#include "cryptonote/basic/account.h"
-#include "wallet_rpc_server_commands_defs.h"
-#include "tools/epee/include/misc_language.h"
-#include "string_tools.h"
-#include "math/crypto/hash.hpp"
-#include "wallet/mnemonics/electrum-words.h"
-#include "rpc/rpc_args.h"
 #include "network/rpc/core_rpc_server_commands_defs.h"
+#include "rpc/rpc_args.h"
+#include "tools/common/command_line.h"
 #include "tools/daemonizer/daemonizer.h"
+#include "wallet/common/wallet_args.h"
+#include "wallet/mnemonics/electrum-words.h"
 
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
+
+#include "wallet_rpc_server_commands_defs.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"
 
 #define DEFAULT_AUTO_REFRESH_PERIOD 20 // seconds
 
+using namespace epee;
 using namespace constant;
 
 namespace

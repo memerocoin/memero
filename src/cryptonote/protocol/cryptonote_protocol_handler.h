@@ -37,7 +37,7 @@
 #include <boost/program_options/variables_map.hpp>
 #include <string>
 
-#include "math_helper.h"
+#include "tools/epee/include/math_helper.h"
 #include "storages/levin_abstract_invoke2.h"
 #include "warnings.h"
 #include "cryptonote_protocol_defs.h"

@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
 // 
 // All rights reserved.
@@ -36,42 +37,32 @@
 
 // use boost bind placeholders for now
 
-#include <locale.h>
-#include <thread>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <ctype.h>
-#include <boost/lexical_cast.hpp>
-#include <boost/program_options.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
-#include <regex>
-#include <boost/range/adaptor/transformed.hpp>
-#include "include_base_utils.h"
-#include "console_handler.h"
-#include "tools/common/command_line.h"
-#include "tools/common/util.h"
-#include "tools/common/base58.h"
-#include "tools/common/scoped_message_writer.h"
-#include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "simplewallet.h"
-#include "cryptonote/basic/cryptonote_format_utils.h"
-#include "storages/http_abstract_invoke.h"
-#include "network/rpc/core_rpc_server_commands_defs.h"
-#include "math/crypto/crypto.hpp"  // for crypto::secret_key definition
-#include "wallet/mnemonics/electrum-words.h"
-#include "rapidjson/document.h"
-#include "tools/common/json_util.h"
-#include "math/ringct/rctSigs.hpp"
-#include "wallet/common/wallet_args.h"
 #include "version.h"
-#include <stdexcept>
 
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
 #include "wallet/logic/controller/wallet.hpp"
+
+#include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/program_options.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <rapidjson/document.h>
+
+#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
+#include "math/ringct/rctSigs.hpp"
+#include "storages/http_abstract_invoke.h"
+#include "tools/common/base58.h"
+#include "tools/common/command_line.h"
+#include "tools/common/json_util.h"
+#include "tools/common/scoped_message_writer.h"
+#include "tools/common/util.h"
+#include "wallet/common/wallet_args.h"
+#include "wallet/mnemonics/electrum-words.h"
 
 #ifdef HAVE_READLINE
 #include "readline_buffer.h"

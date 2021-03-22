@@ -34,7 +34,7 @@
 
 #include <openssl/pem.h> // pem_write
 
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "file_io_utils.h"
 
 #include "config/lol.hpp"

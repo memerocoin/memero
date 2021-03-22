@@ -40,7 +40,7 @@
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
-#include "wipeable_string.h"
+#include "tools/epee/include/wipeable_string.h"
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/int-util.h"
 #include "electrum-words.h"

@@ -3,7 +3,7 @@
 
 #include <boost/uuid/uuid_io.hpp>
 
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "net/local_ip.h"
 
 static inline uint32_t make_address_v4_from_v6(const boost::asio::ip::address_v6& a)

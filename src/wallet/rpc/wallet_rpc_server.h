@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
 // 
 // All rights reserved.
@@ -30,14 +31,13 @@
 
 #pragma  once
 
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <string>
-#include "tools/common/util.h"
-#include "net/http_server_impl_base.h"
-#include "math_helper.h"
-#include "wallet_rpc_server_commands_defs.h"
 #include "wallet/api/wallet2.h"
+
+#include "net/http_server_impl_base.h"
+#include "tools/common/util.h"
+#include "tools/epee/include/math_helper.h"
+
+#include "wallet_rpc_server_commands_defs.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"

@@ -35,7 +35,7 @@
 #include "cryptonote_basic.h"
 #include "verification_context.h"
 #include "difficulty.h"
-#include "math_helper.h"
+#include "tools/epee/include/math_helper.h"
 
 namespace cryptonote
 {

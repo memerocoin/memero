@@ -29,11 +29,11 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
+
 #include "config/cryptonote.hpp"
-#include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/subaddress_index.h"
-#include "math/crypto/hash.hpp"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "wallet_rpc_server_error_codes.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

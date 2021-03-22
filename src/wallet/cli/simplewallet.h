@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
 // 
 // All rights reserved.
@@ -35,26 +36,16 @@
  */
 #pragma once
 
-#include <memory>
-
-#include <optional>
-#include <boost/program_options/variables_map.hpp>
-#include <condition_variable>
-
-#include "cryptonote/basic/account.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "wallet/api/wallet2.h"
-#include "console_handler.h"
-#include "math_helper.h"
-#include "wipeable_string.h"
+
+#include "tools/epee/include/console_handler.h"
+#include "tools/epee/include/math_helper.h"
+#include "tools/epee/include/wipeable_string.h"
 #include "tools/common/password.h"
-#include "math/crypto/crypto.hpp"  // for definition of crypto::secret_key
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.simplewallet"
-// Hardcode Monero's donation address (see #1447)
-constexpr const char MONERO_DONATION_ADDR[] = "haha00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
 using namespace constant;
 

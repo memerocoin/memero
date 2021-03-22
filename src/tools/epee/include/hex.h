@@ -34,7 +34,7 @@
 #include <string>
 #include <string_view>
 
-#include "wipeable_string.h"
+#include "tools/epee/include/wipeable_string.h"
 #include "span.h"
 
 namespace epee

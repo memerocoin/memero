@@ -30,8 +30,8 @@
 
 #include <atomic>
 #include <boost/algorithm/string.hpp>
-#include "wipeable_string.h"
-#include "string_tools.h"
+#include "tools/epee/include/wipeable_string.h"
+#include "tools/epee/include/string_tools.h"
 #include "tools/serialization/string.h"
 #include "cryptonote_format_utils.h"
 #include "config/cryptonote.hpp"

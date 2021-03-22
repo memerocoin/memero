@@ -33,7 +33,7 @@
 #include <memory>  // std::unique_ptr
 #include <cstring>  // memcpy
 
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "file_io_utils.h"
 #include "tools/common/util.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"

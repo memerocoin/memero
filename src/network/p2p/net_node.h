@@ -54,7 +54,7 @@
 #include "p2p_protocol_defs.h"
 #include "storages/levin_abstract_invoke2.h"
 #include "net_peerlist.h"
-#include "math_helper.h"
+#include "tools/epee/include/math_helper.h"
 #include "net_node_common.h"
 #include "net/enums.h"
 #include "network/type/fwd.h"

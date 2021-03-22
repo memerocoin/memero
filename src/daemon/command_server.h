@@ -40,7 +40,7 @@ Passing RPC commands:
 #pragma once
 
 #include "tools/common/common_fwd.h"
-#include "console_handler.h"
+#include "tools/epee/include/console_handler.h"
 #include "daemon/command_parser_executor.h"
 #include "net/net_fwd.h"
 

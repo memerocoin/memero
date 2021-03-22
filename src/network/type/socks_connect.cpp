@@ -37,7 +37,7 @@
 #include "network/type/error.h"
 #include "net/net_utils_base.h"
 #include "network/type/socks.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 namespace net
 {

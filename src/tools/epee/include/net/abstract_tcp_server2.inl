@@ -42,7 +42,7 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 
 #include "warnings.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/misc_language.h"
 #include "net/local_ip.h"
 #include "pragma_comp_defs.h"

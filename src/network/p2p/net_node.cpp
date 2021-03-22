@@ -48,7 +48,7 @@
 #include "network/type/tor_address.h"
 #include "network/type/i2p_address.h"
 #include "p2p/p2p_protocol_defs.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 namespace
 {

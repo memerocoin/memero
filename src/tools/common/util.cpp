@@ -50,9 +50,9 @@
 #include <fstream>
 
 
-#include "include_base_utils.h"
+#include "tools/epee/include/include_base_utils.h"
 #include "file_io_utils.h"
-#include "wipeable_string.h"
+#include "tools/epee/include/wipeable_string.h"
 #include "misc_os_dependent.h"
 using namespace epee;
 

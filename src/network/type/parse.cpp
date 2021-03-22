@@ -30,7 +30,7 @@
 
 #include "network/type/tor_address.h"
 #include "network/type/i2p_address.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 namespace net
 {

@@ -27,7 +27,7 @@
 #pragma once
 
 #include "misc_log_ex.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include <atomic>
 #include <condition_variable>
 #include <functional>

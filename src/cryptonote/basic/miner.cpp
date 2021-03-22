@@ -41,7 +41,7 @@
 #include "file_io_utils.h"
 #include "tools/common/command_line.h"
 #include "tools/common/util.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "storages/portable_storage_template_helper.h"
 
 #ifdef __APPLE__

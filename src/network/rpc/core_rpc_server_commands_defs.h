@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/basic/cryptonote_basic.h"

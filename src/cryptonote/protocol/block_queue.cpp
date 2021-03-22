@@ -34,7 +34,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "cryptonote_protocol_defs.h"
 #include "block_queue.h"
 

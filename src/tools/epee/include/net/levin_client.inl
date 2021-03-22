@@ -29,7 +29,7 @@
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"

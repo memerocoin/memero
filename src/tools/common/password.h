@@ -34,7 +34,7 @@
 #include <atomic>
 #include <optional>
 #include <functional>
-#include "wipeable_string.h"
+#include "tools/epee/include/wipeable_string.h"
 
 namespace tools
 {

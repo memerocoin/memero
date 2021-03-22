@@ -29,7 +29,7 @@
 #pragma once
 
 #include <chrono>
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "net/http_client.h"
 
 namespace tools {

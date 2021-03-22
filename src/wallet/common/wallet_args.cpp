@@ -33,7 +33,7 @@
 
 #include "tools/common/util.h"
 #include "misc_log_ex.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "version.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

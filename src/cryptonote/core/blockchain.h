@@ -48,7 +48,7 @@
 
 #include "span.h"
 #include "syncobj.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "tools/common/powerof.h"
 #include "tools/common/util.h"

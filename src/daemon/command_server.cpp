@@ -29,7 +29,7 @@
 #include <boost/algorithm/string.hpp>
 #include "config/cryptonote.hpp"
 #include "version.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "daemon/command_server.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

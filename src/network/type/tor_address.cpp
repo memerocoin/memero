@@ -38,7 +38,7 @@
 #include "network/type/error.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "storages/portable_storage.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 namespace net
 {

@@ -29,7 +29,7 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
-#include "include_base_utils.h"
+#include "tools/epee/include/include_base_utils.h"
 
 #include <set>
 #include <tuple>
@@ -39,9 +39,9 @@
 #include <boost/serialization/version.hpp>
 
 #include "span.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "syncobj.h"
-#include "math_helper.h"
+#include "tools/epee/include/math_helper.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/verification_context.h"
 #include "cryptonote/protocol/enums.h"

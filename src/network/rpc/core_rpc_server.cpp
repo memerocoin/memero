@@ -30,8 +30,8 @@
 
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/uuid/nil_generator.hpp>
-#include "include_base_utils.h"
-#include "string_tools.h"
+#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/string_tools.h"
 using namespace epee;
 
 #include "core_rpc_server.h"

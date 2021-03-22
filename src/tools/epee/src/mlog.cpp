@@ -32,7 +32,7 @@
 #include <atomic>
 #include <filesystem>
 #include <boost/algorithm/string.hpp>
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "misc_os_dependent.h"
 #include "misc_log_ex.h"
 

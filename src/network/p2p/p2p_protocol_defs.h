@@ -37,7 +37,7 @@
 #include "network/type/tor_address.h" // needed for serialization
 #include "network/type/i2p_address.h" // needed for serialization
 #include "tools/epee/include/misc_language.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "time_helper.h"
 #include "tools/serialization/serialization.h"
 #include "config/cryptonote.hpp"

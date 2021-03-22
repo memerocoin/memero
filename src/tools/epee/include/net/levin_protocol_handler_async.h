@@ -39,7 +39,7 @@
 #include "syncobj.h"
 #include "misc_os_dependent.h"
 #include "tools/epee/include/int-util.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 #include <random>
 #include <chrono>

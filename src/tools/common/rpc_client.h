@@ -35,7 +35,7 @@
 #include "network/rpc/core_rpc_server_commands_defs.h"
 #include "storages/http_abstract_invoke.h"
 #include "net/http_client.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 namespace tools
 {

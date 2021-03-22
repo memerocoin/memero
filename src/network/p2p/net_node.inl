@@ -45,11 +45,11 @@
 #include <thread>
 
 #include "version.h"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "tools/common/util.h"
 #include "network/type/error.h"
 #include "net/net_helper.h"
-#include "math_helper.h"
+#include "tools/epee/include/math_helper.h"
 #include "misc_log_ex.h"
 #include "p2p_protocol_defs.h"
 #include "net/local_ip.h"
