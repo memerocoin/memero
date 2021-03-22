@@ -45,6 +45,7 @@
 #include "wallet/logic/type/tx.hpp"
 #include "wallet/logic/type/typedef.hpp"
 #include "wallet/logic/type/wallet.hpp"
+#include "wallet/logic/type/message_signature.hpp"
 
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/account_boost_serialization.h"
@@ -519,9 +520,9 @@ namespace tools
      */
     void set_account_tag_description(const std::string& tag, const std::string& description);
 
-    enum message_signature_type_t { sign_with_spend_key, sign_with_view_key };
-    std::string sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const;
-    struct message_signature_result_t { bool valid; unsigned version; bool old; message_signature_type_t type; };
+    std::string sign(const std::string &data,
+                     wallet::logic::type::message_signature::message_signature_type_t signature_type,
+                     cryptonote::subaddress_index index) const;
 
     void update_pool_state(std::vector<std::tuple<cryptonote::transaction, crypto::hash, bool>> &process_txs, bool refreshed = false);
     void process_pool_state(const std::vector<std::tuple<cryptonote::transaction, crypto::hash, bool>> &txs);

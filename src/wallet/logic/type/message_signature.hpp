@@ -31,37 +31,27 @@
 
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
-#include <utility>
 #include <string>
-
-#include "wallet/logic/type/message_signature.hpp" // message_signature_ressult_t
-#include "math/crypto/crypto.hpp" // crypto::
-#include "cryptonote/basic/cryptonote_basic.h" // account_public_address
 
 namespace wallet {
 namespace logic {
-namespace functional {
-namespace signature {
+namespace type {
+namespace message_signature {
 
-  wallet::logic::type::message_signature::message_signature_result_t verify
-  (
-   const std::string &data
-   , const cryptonote::account_public_address &address
-   , const std::string &signature
-   );
+enum message_signature_type_t {
+  sign_with_spend_key,
+  sign_with_view_key
+};
 
-  const std::string sign
-  (
-   const std::string &data
-   , const wallet::logic::type::message_signature::message_signature_type_t signature_type
-   , const cryptonote::subaddress_index index
-   , const cryptonote::account_keys &keys
-   , const crypto::secret_key &subaddress_secret_view_key
-   );
+struct message_signature_result_t {
+  bool valid;
+  unsigned version;
+  bool old;
+  message_signature_type_t type;
+};
 
-} // signature
-} // functional
-} // logic
-} // wallet
+}
+}
+}
+}

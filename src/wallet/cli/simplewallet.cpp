@@ -4789,7 +4789,7 @@ bool simple_wallet::sign(const std::vector<std::string> &args)
     return true;
   }
 
-  tools::wallet2::message_signature_type_t message_signature_type = tools::wallet2::sign_with_spend_key;
+  wallet::logic::type::message_signature::message_signature_type_t message_signature_type = wallet::logic::type::message_signature::sign_with_spend_key;
   subaddress_index index{0, 0};
   for (unsigned int idx = 0; idx + 1 < args.size(); ++idx)
   {
@@ -4801,11 +4801,11 @@ bool simple_wallet::sign(const std::vector<std::string> &args)
     }
     else if (args[idx] == "--spend")
     {
-      message_signature_type = tools::wallet2::sign_with_spend_key;
+      message_signature_type = wallet::logic::type::message_signature::sign_with_spend_key;
     }
     else if (args[idx] == "--view")
     {
-      message_signature_type = tools::wallet2::sign_with_view_key;
+      message_signature_type = wallet::logic::type::message_signature::sign_with_view_key;
     }
     else
     {
@@ -4856,7 +4856,7 @@ bool simple_wallet::verify(const std::vector<std::string> &args)
     return true;
   }
 
-  tools::wallet2::message_signature_result_t result = wallet::logic::functional::signature::verify
+  wallet::logic::type::message_signature::message_signature_result_t result = wallet::logic::functional::signature::verify
     (data, info.address, signature);
   if (!result.valid)
   {
@@ -4864,7 +4864,7 @@ bool simple_wallet::verify(const std::vector<std::string> &args)
   }
   else
   {
-    success_msg_writer() << tr("Good signature from ") << address_string << (result.old ? " (using old signature algorithm)" : "") << " with " << (result.type == tools::wallet2::sign_with_spend_key ? "spend key" : result.type == tools::wallet2::sign_with_view_key ? "view key" : "unknown key combination (suspicious)");
+    success_msg_writer() << tr("Good signature from ") << address_string << (result.old ? " (using old signature algorithm)" : "") << " with " << (result.type == wallet::logic::type::message_signature::sign_with_spend_key ? "spend key" : result.type == wallet::logic::type::message_signature::sign_with_view_key ? "view key" : "unknown key combination (suspicious)");
   }
   return true;
 }

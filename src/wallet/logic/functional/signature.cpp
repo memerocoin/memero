@@ -32,9 +32,10 @@
 
 #include "signature.hpp"
 
+#include <openssl/evp.h>
+
 #include "misc_log_ex.h"
 #include "tools/common/base58.h"
-#include "wallet/api/wallet2.h"
 
 #include "wallet/api/wallet_errors.h"
 
@@ -71,7 +72,7 @@ namespace signature {
     return hash;
   }
 
-  tools::wallet2::message_signature_result_t verify
+  wallet::logic::type::message_signature::message_signature_result_t verify
   (
    const std::string &data
    , const cryptonote::account_public_address &address
@@ -108,12 +109,12 @@ namespace signature {
     if (v2)
         hash = get_message_hash(data,address.m_spend_public_key,address.m_view_public_key,(uint8_t) 0);
     if (crypto::check_signature(hash, address.m_spend_public_key, s))
-      return {true, v1 ? 1u : 2u, !v2, tools::wallet2::sign_with_spend_key };
+      return {true, v1 ? 1u : 2u, !v2, wallet::logic::type::message_signature::sign_with_spend_key };
 
     if (v2)
         hash = get_message_hash(data,address.m_spend_public_key,address.m_view_public_key,(uint8_t) 1);
     if (crypto::check_signature(hash, address.m_view_public_key, s))
-      return {true, v1 ? 1u : 2u, !v2, tools::wallet2::sign_with_view_key };
+      return {true, v1 ? 1u : 2u, !v2, wallet::logic::type::message_signature::sign_with_view_key };
 
     // Both modes failed
     return {};
@@ -125,7 +126,7 @@ namespace signature {
   const std::string sign
   (
    const std::string &data
-   , const tools::wallet2::message_signature_type_t signature_type
+   , const wallet::logic::type::message_signature::message_signature_type_t signature_type
    , const cryptonote::subaddress_index index
    , const cryptonote::account_keys &keys
    , const crypto::secret_key &subaddress_secret_view_key
@@ -145,12 +146,12 @@ namespace signature {
     {
       switch (signature_type)
       {
-        case tools::wallet2::sign_with_spend_key:
+        case wallet::logic::type::message_signature::sign_with_spend_key:
           skey = keys.m_spend_secret_key;
           pkey = keys.m_account_address.m_spend_public_key;
           mode = 0;
           break;
-        case tools::wallet2::sign_with_view_key:
+        case wallet::logic::type::message_signature::sign_with_view_key:
           skey = keys.m_view_secret_key;
           pkey = keys.m_account_address.m_view_public_key;
           mode = 1;
@@ -171,12 +172,12 @@ namespace signature {
       secret_key_to_public_key(skey_view,pkey_view);
       switch (signature_type)
       {
-        case tools::wallet2::sign_with_spend_key:
+        case wallet::logic::type::message_signature::sign_with_spend_key:
           skey = skey_spend;
           pkey = pkey_spend;
           mode = 0;
           break;
-        case tools::wallet2::sign_with_view_key:
+        case wallet::logic::type::message_signature::sign_with_view_key:
           skey = skey_view;
           pkey = pkey_view;
           mode = 1;

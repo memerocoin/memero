@@ -1197,11 +1197,11 @@ namespace tools
       return false;
     }
 
-    tools::wallet2::message_signature_type_t signature_type = tools::wallet2::sign_with_spend_key;
+    wallet::logic::type::message_signature::message_signature_type_t signature_type = wallet::logic::type::message_signature::sign_with_spend_key;
     if (req.signature_type == "spend" || req.signature_type == "")
-      signature_type = tools::wallet2::sign_with_spend_key;
+      signature_type = wallet::logic::type::message_signature::sign_with_spend_key;
     else if (req.signature_type == "view")
-      signature_type = tools::wallet2::sign_with_view_key;
+      signature_type = wallet::logic::type::message_signature::sign_with_view_key;
     else
     {
       er.code = WALLET_RPC_ERROR_CODE_INVALID_SIGNATURE_TYPE;
@@ -1237,8 +1237,8 @@ namespace tools
     res.old = result.old;
     switch (result.type)
     {
-      case tools::wallet2::sign_with_spend_key: res.signature_type = "spend"; break;
-      case tools::wallet2::sign_with_view_key: res.signature_type = "view"; break;
+      case wallet::logic::type::message_signature::sign_with_spend_key: res.signature_type = "spend"; break;
+      case wallet::logic::type::message_signature::sign_with_view_key: res.signature_type = "view"; break;
       default: res.signature_type = "invalid"; break;
     }
     return true;
