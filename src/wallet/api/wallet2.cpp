@@ -5991,13 +5991,6 @@ void wallet2::set_account_tag(const std::set<uint32_t> &account_indices, const s
   get_account_tags();
 }
 
-void wallet2::set_account_tag_description(const std::string& tag, const std::string& description)
-{
-  THROW_WALLET_EXCEPTION_IF(tag.empty(), error::wallet_internal_error, "Tag must not be empty");
-  THROW_WALLET_EXCEPTION_IF(m_account_tags.first.count(tag) == 0, error::wallet_internal_error, "Tag is unregistered");
-  m_account_tags.first[tag] = description;
-}
-
 // Sign a message with a private key from either the base address or a subaddress
 // The signature is also bound to both keys and the signature mode (spend, view) to prevent unintended reuse
 std::string wallet2::sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const

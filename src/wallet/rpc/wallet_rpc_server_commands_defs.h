@@ -403,28 +403,6 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_SET_ACCOUNT_TAG_DESCRIPTION
-  {
-    struct request_t
-    {
-      std::string tag;
-      std::string description;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(tag)
-        KV_SERIALIZE(description)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      BEGIN_KV_SERIALIZE_MAP()
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
     struct COMMAND_RPC_GET_HEIGHT
     {
       struct request_t

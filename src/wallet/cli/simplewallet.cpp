@@ -140,7 +140,7 @@ namespace
                             "  account label <index> <label text with white spaces allowed>\n"
                             "  account tag <tag_name> <account_index_1> [<account_index_2> ...]\n"
                             "  account untag <account_index_1> [<account_index_2> ...]\n"
-                            "  account tag_description <tag_name> <description>");
+                            );
   const char* USAGE_ADDRESS("address [ new <label text with white spaces allowed> | all | <index_min> [<index_max>] | label <index> <label text with white spaces allowed> | device [<index>] | one-off <account> <subaddress>]");
   const char* USAGE_SET_VARIABLE("set <option> [<value>]");
   const char* USAGE_GET_TX_KEY("get_tx_key <txid>");
@@ -1334,7 +1334,7 @@ simple_wallet::simple_wallet()
                               "If the \"label\" argument is specified, the wallet sets the label of the account specified by <index> to the provided label text.\n"
                               "If the \"tag\" argument is specified, a tag <tag_name> is assigned to the specified accounts <account_indexstd::placeholders::_1>, <account_index_2>, ....\n"
                               "If the \"untag\" argument is specified, the tags assigned to the specified accounts <account_indexstd::placeholders::_1>, <account_index_2> ..., are removed.\n"
-                              "If the \"tag_description\" argument is specified, the tag <tag_name> is assigned an arbitrary text <description>."));
+                              ));
   m_cmd_binder.set_handler("address",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::print_address, std::placeholders::_1),
                            tr(USAGE_ADDRESS),
@@ -4266,7 +4266,6 @@ bool simple_wallet::account(const std::vector<std::string> &args/* = std::vector
   //   account label <index> <label text with white spaces allowed>
   //   account tag <tag_name> <account_indexstd::placeholders::_1> [<account_index_2> ...]
   //   account untag <account_index_1> [<account_index_2> ...]
-  //   account tag_description <tag_name> <description>
 
   if (args.empty())
   {
@@ -4372,25 +4371,6 @@ bool simple_wallet::account(const std::vector<std::string> &args/* = std::vector
     {
       m_wallet->set_account_tag(account_indices, "");
       print_accounts();
-    }
-    catch (const std::exception& e)
-    {
-      fail_msg_writer() << e.what();
-    }
-  }
-  else if (command == "tag_description" && local_args.size() >= 1)
-  {
-    const std::string tag = local_args[0];
-    std::string description;
-    if (local_args.size() > 1)
-    {
-      local_args.erase(local_args.begin());
-      description = boost::join(local_args, " ");
-    }
-    try
-    {
-      m_wallet->set_account_tag_description(tag, description);
-      print_accounts(tag);
     }
     catch (const std::exception& e)
     {

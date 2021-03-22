@@ -511,12 +511,6 @@ namespace tools
      * \param  tag              Tag's name. If empty, the accounts become untagged.
      */
     void set_account_tag(const std::set<uint32_t> &account_indices, const std::string& tag);
-    /*!
-     * \brief  Set the label of the given tag.
-     * \param  tag            Tag's name (which must be non-empty).
-     * \param  description    Tag's description.
-     */
-    void set_account_tag_description(const std::string& tag, const std::string& description);
 
     std::string sign(const std::string &data,
                      wallet::logic::type::message_signature::message_signature_type_t signature_type,
