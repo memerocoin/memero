@@ -157,8 +157,6 @@ namespace cryptonote
     bool unspent_outputs(const std::vector<std::string> &args);
     bool rescan_blockchain(const std::vector<std::string> &args);
     bool refresh_main(uint64_t start_height, ResetType reset, bool is_init = false);
-    bool set_description(const std::vector<std::string> &args);
-    bool get_description(const std::vector<std::string> &args);
     bool status(const std::vector<std::string> &args);
     bool wallet_info(const std::vector<std::string> &args);
     bool set_default_priority(const std::vector<std::string> &args);

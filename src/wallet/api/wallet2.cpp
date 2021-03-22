@@ -5958,33 +5958,6 @@ std::string wallet2::get_tx_device_aux(const crypto::hash &txid) const
   return i->second;
 }
 
-void wallet2::set_attribute(const std::string &key, const std::string &value)
-{
-  m_attributes[key] = value;
-}
-
-bool wallet2::get_attribute(const std::string &key, std::string &value) const
-{
-  std::unordered_map<std::string, std::string>::const_iterator i = m_attributes.find(key);
-  if (i == m_attributes.end())
-    return false;
-  value = i->second;
-  return true;
-}
-
-void wallet2::set_description(const std::string &description)
-{
-  set_attribute(ATTRIBUTE_DESCRIPTION, description);
-}
-
-std::string wallet2::get_description() const
-{
-  std::string s;
-  if (get_attribute(ATTRIBUTE_DESCRIPTION, s))
-    return s;
-  return "";
-}
-
 const std::pair<serializable_map<std::string, std::string>, std::vector<std::string>>& wallet2::get_account_tags()
 {
   // ensure consistency

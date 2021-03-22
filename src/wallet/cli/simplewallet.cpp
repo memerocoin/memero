@@ -150,8 +150,6 @@ namespace
   const char* USAGE_SHOW("show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
   const char* USAGE_UNSPENT_OUTPUTS("unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]");
   const char* USAGE_RESCAN_BC("rescan_bc [hard|soft|keep_ki] [start_height=0]");
-  const char* USAGE_GET_DESCRIPTION("get_description");
-  const char* USAGE_SET_DESCRIPTION("set_description [free text note]");
   const char* USAGE_SIGN("sign [<account_index>,<address_index>] [--spend|--view] <filename>");
   const char* USAGE_VERIFY("verify <filename> <address> <signature>");
   const char* USAGE_SHOW_TRANSFER("show_transfer <txid>");
@@ -1457,14 +1455,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_blockchain, std::placeholders::_1),
                            tr(USAGE_RESCAN_BC),
                            tr("Rescan the blockchain from scratch. If \"hard\" is specified, you will lose any information which can not be recovered from the blockchain itself."));
-  m_cmd_binder.set_handler("set_description",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::set_description, std::placeholders::_1),
-                           tr(USAGE_SET_DESCRIPTION),
-                           tr("Set an arbitrary description for the wallet."));
-  m_cmd_binder.set_handler("get_description",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_description, std::placeholders::_1),
-                           tr(USAGE_GET_DESCRIPTION),
-                           tr("Get the description of the wallet."));
   m_cmd_binder.set_handler("status",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::status, std::placeholders::_1),
                            tr("Show the wallet's status."));
@@ -4609,39 +4599,6 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::set_description(const std::vector<std::string> &args)
-{
-  // 0 arguments allowed, for setting the description to empty string
-
-  std::string description = "";
-  for (size_t n = 0; n < args.size(); ++n)
-  {
-    if (n > 0)
-      description += " ";
-    description += args[n];
-  }
-  m_wallet->set_description(description);
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_description(const std::vector<std::string> &args)
-{
-  if (args.size() != 0)
-  {
-    PRINT_USAGE(USAGE_GET_DESCRIPTION);
-    return true;
-  }
-
-  std::string description = m_wallet->get_description();
-  if (description.empty())
-    success_msg_writer() << tr("no description found");
-  else
-    success_msg_writer() << tr("description found: ") << description;
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
 bool simple_wallet::status(const std::vector<std::string> &args)
 {
   uint64_t local_height = m_wallet->get_blockchain_current_height();
@@ -4672,13 +4629,7 @@ bool simple_wallet::wallet_info(const std::vector<std::string> &args)
 {
   bool ready;
   uint32_t threshold, total;
-  std::string description = m_wallet->get_description();
-  if (description.empty())
-  {
-    description = "<Not set>"; 
-  }
   message_writer() << tr("Filename: ") << m_wallet->get_wallet_file();
-  message_writer() << tr("Description: ") << description;
   message_writer() << tr("Address: ") << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
   std::string type;
   if (m_wallet->watch_only())

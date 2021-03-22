@@ -878,52 +878,6 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_SET_ATTRIBUTE
-  {
-    struct request_t
-    {
-      std::string key;
-      std::string value;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(key)
-        KV_SERIALIZE(value)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      BEGIN_KV_SERIALIZE_MAP()
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_GET_ATTRIBUTE
-  {
-    struct request_t
-    {
-
-      std::string key;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(key)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::string value;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(value)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_GET_TX_KEY
   {
     struct request_t

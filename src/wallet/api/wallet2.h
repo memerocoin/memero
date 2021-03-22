@@ -500,9 +500,6 @@ namespace tools
     void set_tx_device_aux(const crypto::hash &txid, const std::string &aux);
     std::string get_tx_device_aux(const crypto::hash &txid) const;
 
-    void set_description(const std::string &description);
-    std::string get_description() const;
-
     /*!
      * \brief  Get the list of registered account tags. 
      * \return first.Key=(tag's name), first.Value=(tag's label), second[i]=(i-th account's tag)
@@ -542,25 +539,6 @@ namespace tools
     uint32_t adjust_priority(uint32_t priority);
 
     bool is_unattended() const { return m_unattended; }
-
-    /*
-     * "attributes" are a mechanism to store an arbitrary number of string values
-     * on the level of the wallet as a whole, identified by keys. Their introduction,
-     * technically the unordered map m_attributes stored as part of a wallet file,
-     * led to a new wallet file version, but now new singular pieces of info may be added
-     * without the need for a new version.
-     *
-     * The first and so far only value stored as such an attribute is the description.
-     * It's stored under the standard key ATTRIBUTE_DESCRIPTION (see method set_description).
-     *
-     * The mechanism is open to all clients and allows them to use it for storing basically any
-     * single string values in a wallet. To avoid the problem that different clients possibly
-     * overwrite or misunderstand each other's attributes, a two-part key scheme is
-     * proposed: <client name>.<value name>
-     */
-    const char* const ATTRIBUTE_DESCRIPTION = "wallet2.description";
-    void set_attribute(const std::string &key, const std::string &value);
-    bool get_attribute(const std::string &key, std::string &value) const;
 
     template<class t_request, class t_response>
     inline bool invoke_http_json(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")

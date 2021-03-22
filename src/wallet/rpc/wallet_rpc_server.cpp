@@ -1266,40 +1266,6 @@ namespace tools
     }
     return true;
   }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_set_attribute(const wallet_rpc::COMMAND_RPC_SET_ATTRIBUTE::request& req, wallet_rpc::COMMAND_RPC_SET_ATTRIBUTE::response& res, epee::json_rpc::error& er, const connection_context *ctx)
-  {
-    if (!m_wallet) return not_open(er);
-    if (m_restricted)
-    {
-      er.code = WALLET_RPC_ERROR_CODE_DENIED;
-      er.message = "Command unavailable in restricted mode.";
-      return false;
-    }
-
-    m_wallet->set_attribute(req.key, req.value);
-
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_get_attribute(const wallet_rpc::COMMAND_RPC_GET_ATTRIBUTE::request& req, wallet_rpc::COMMAND_RPC_GET_ATTRIBUTE::response& res, epee::json_rpc::error& er, const connection_context *ctx)
-  {
-    if (!m_wallet) return not_open(er);
-    if (m_restricted)
-    {
-      er.code = WALLET_RPC_ERROR_CODE_DENIED;
-      er.message = "Command unavailable in restricted mode.";
-      return false;
-    }
-
-    if (!m_wallet->get_attribute(req.key, res.value))
-    {
-      er.code = WALLET_RPC_ERROR_CODE_ATTRIBUTE_NOT_FOUND;
-      er.message = "Attribute not found.";
-      return false;
-    }
-    return true;
-  }
   bool wallet_rpc_server::on_get_tx_key(const wallet_rpc::COMMAND_RPC_GET_TX_KEY::request& req, wallet_rpc::COMMAND_RPC_GET_TX_KEY::response& res, epee::json_rpc::error& er, const connection_context *ctx)
   {
     if (!m_wallet) return not_open(er);
