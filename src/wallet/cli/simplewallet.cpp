@@ -780,13 +780,6 @@ bool simple_wallet::lock(const std::vector<std::string> &args)
   return true;
 }
 
-bool simple_wallet::net_stats(const std::vector<std::string> &args)
-{
-  message_writer() << std::to_string(m_wallet->get_bytes_sent()) + tr(" bytes sent");
-  message_writer() << std::to_string(m_wallet->get_bytes_received()) + tr(" bytes received");
-  return true;
-}
-
 bool simple_wallet::welcome(const std::vector<std::string> &args)
 {
   message_writer() << tr("Welcome to Lolnero, a private ASIC friendly cryptocurrency.");
@@ -1564,10 +1557,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::lock, std::placeholders::_1),
                            tr(USAGE_LOCK),
                            tr("Lock the wallet console, requiring the wallet password to continue"));
-  m_cmd_binder.set_handler("net_stats",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::net_stats, std::placeholders::_1),
-                           tr(USAGE_NET_STATS),
-                           tr("Prints simple network stats"));
   m_cmd_binder.set_handler("welcome",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::welcome, std::placeholders::_1),
                            tr(USAGE_WELCOME),

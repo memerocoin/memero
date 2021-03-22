@@ -584,9 +584,6 @@ namespace tools
       return epee::net_utils::invoke_http_json_rpc(uri, method_name, req, res, *m_http_client, timeout, http_method, req_id);
     }
 
-    uint64_t get_bytes_sent() const;
-    uint64_t get_bytes_received() const;
-
     bool lock_keys_file();
     bool unlock_keys_file();
     bool is_keys_file_locked() const;
