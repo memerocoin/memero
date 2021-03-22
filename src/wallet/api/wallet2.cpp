@@ -533,7 +533,6 @@ void wallet2::expand_subaddresses(const cryptonote::subaddress_index& index)
     }
     m_subaddress_labels.resize(index.major + 1, {"Untitled account"});
     m_subaddress_labels[index.major].resize(index.minor + 1);
-    get_account_tags();
   }
   else if (m_subaddress_labels[index.major].size() <= index.minor)
   {
@@ -5956,39 +5955,6 @@ std::string wallet2::get_tx_device_aux(const crypto::hash &txid) const
   if (i == m_tx_device.end())
     return std::string();
   return i->second;
-}
-
-const std::pair<serializable_map<std::string, std::string>, std::vector<std::string>>& wallet2::get_account_tags()
-{
-  // ensure consistency
-  if (m_account_tags.second.size() != get_num_subaddress_accounts())
-    m_account_tags.second.resize(get_num_subaddress_accounts(), "");
-  for (const std::string& tag : m_account_tags.second)
-  {
-    if (!tag.empty() && m_account_tags.first.count(tag) == 0)
-      m_account_tags.first.insert({tag, ""});
-  }
-  for (auto i = m_account_tags.first.begin(); i != m_account_tags.first.end(); )
-  {
-    if (std::find(m_account_tags.second.begin(), m_account_tags.second.end(), i->first) == m_account_tags.second.end())
-      i = m_account_tags.first.erase(i);
-    else
-      ++i;
-  }
-  return m_account_tags;
-}
-
-void wallet2::set_account_tag(const std::set<uint32_t> &account_indices, const std::string& tag)
-{
-  for (uint32_t account_index : account_indices)
-  {
-    THROW_WALLET_EXCEPTION_IF(account_index >= get_num_subaddress_accounts(), error::wallet_internal_error, "Account index out of bound");
-    if (m_account_tags.second[account_index] == tag)
-      MDEBUG("This tag is already assigned to this account");
-    else
-      m_account_tags.second[account_index] = tag;
-  }
-  get_account_tags();
 }
 
 // Sign a message with a private key from either the base address or a subaddress

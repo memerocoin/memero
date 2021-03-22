@@ -500,18 +500,6 @@ namespace tools
     void set_tx_device_aux(const crypto::hash &txid, const std::string &aux);
     std::string get_tx_device_aux(const crypto::hash &txid) const;
 
-    /*!
-     * \brief  Get the list of registered account tags. 
-     * \return first.Key=(tag's name), first.Value=(tag's label), second[i]=(i-th account's tag)
-     */
-    const std::pair<serializable_map<std::string, std::string>, std::vector<std::string>>& get_account_tags();
-    /*!
-     * \brief  Set a tag to the given accounts.
-     * \param  account_indices  Indices of accounts.
-     * \param  tag              Tag's name. If empty, the accounts become untagged.
-     */
-    void set_account_tag(const std::set<uint32_t> &account_indices, const std::string& tag);
-
     std::string sign(const std::string &data,
                      wallet::logic::type::message_signature::message_signature_type_t signature_type,
                      cryptonote::subaddress_index index) const;

@@ -141,7 +141,6 @@ namespace cryptonote
     );
     bool account(const std::vector<std::string> &args = std::vector<std::string>());
     void print_accounts();
-    void print_accounts(const std::string& tag);
     bool print_address(const std::vector<std::string> &args = std::vector<std::string>());
     bool save(const std::vector<std::string> &args);
     bool save_watch_only(const std::vector<std::string> &args);

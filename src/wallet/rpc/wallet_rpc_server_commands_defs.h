@@ -239,11 +239,9 @@ namespace wallet_rpc
   {
     struct request_t
     {
-      std::string tag;      // all accounts if empty, otherwise those accounts with this tag
       bool strict_balances;
 
       BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(tag)
         KV_SERIALIZE_OPT(strict_balances, false)
       END_KV_SERIALIZE_MAP()
     };
@@ -256,7 +254,6 @@ namespace wallet_rpc
       uint64_t balance;
       uint64_t unlocked_balance;
       std::string label;
-      std::string tag;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(account_index)
@@ -264,7 +261,6 @@ namespace wallet_rpc
         KV_SERIALIZE(balance)
         KV_SERIALIZE(unlocked_balance)
         KV_SERIALIZE(label)
-        KV_SERIALIZE(tag)
       END_KV_SERIALIZE_MAP()
     };
 
@@ -328,7 +324,7 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_GET_ACCOUNT_TAGS
+  struct COMMAND_RPC_GET_HEIGHT
   {
     struct request_t
     {
@@ -337,90 +333,15 @@ namespace wallet_rpc
     };
     typedef epee::misc_utils::struct_init<request_t> request;
 
-    struct account_tag_info
-    {
-      std::string tag;
-      std::string label;
-      std::vector<uint32_t> accounts;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(tag);
-        KV_SERIALIZE(label);
-        KV_SERIALIZE(accounts);
-      END_KV_SERIALIZE_MAP()
-    };
-
     struct response_t
     {
-      std::vector<account_tag_info> account_tags;
-
+      uint64_t  height;
       BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(account_tags)
+        KV_SERIALIZE(height)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;
   };
-
-  struct COMMAND_RPC_TAG_ACCOUNTS
-  {
-    struct request_t
-    {
-      std::string tag;
-      std::set<uint32_t> accounts;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(tag)
-        KV_SERIALIZE(accounts)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      BEGIN_KV_SERIALIZE_MAP()
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_UNTAG_ACCOUNTS
-  {
-    struct request_t
-    {
-      std::set<uint32_t> accounts;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(accounts)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      BEGIN_KV_SERIALIZE_MAP()
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-    struct COMMAND_RPC_GET_HEIGHT
-    {
-      struct request_t
-      {
-        BEGIN_KV_SERIALIZE_MAP()
-        END_KV_SERIALIZE_MAP()
-      };
-      typedef epee::misc_utils::struct_init<request_t> request;
-
-      struct response_t
-      {
-        uint64_t  height;
-        BEGIN_KV_SERIALIZE_MAP()
-          KV_SERIALIZE(height)
-        END_KV_SERIALIZE_MAP()
-      };
-      typedef epee::misc_utils::struct_init<response_t> response;
-    };
 
   struct transfer_destination
   {
