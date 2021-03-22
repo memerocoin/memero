@@ -33,13 +33,13 @@ using namespace epee;
 
 #include "cryptonote_basic_impl.h"
 #include "string_tools.h"
-#include "serialization/binary_utils.h"
+#include "tools/serialization/binary_utils.h"
 #include "cryptonote_format_utils.h"
 #include "config/cryptonote.hpp"
-#include "misc_language.h"
-#include "common/base58.h"
-#include "crypto/hash.hpp"
-#include "int-util.h"
+#include "tools/epee/include/misc_language.h"
+#include "tools/common/base58.h"
+#include "math/crypto/hash.hpp"
+#include "tools/epee/include/int-util.h"
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

@@ -35,8 +35,8 @@
 #include <vector>
 #include <boost/math/special_functions/round.hpp>
 
-#include "int-util.h"
-#include "crypto/hash.hpp"
+#include "tools/epee/include/int-util.h"
+#include "math/crypto/hash.hpp"
 #include "config/cryptonote.hpp"
 #include "difficulty.h"
 

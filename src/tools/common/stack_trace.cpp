@@ -43,7 +43,7 @@
 #include <dlfcn.h>
 #endif
 #include <boost/algorithm/string.hpp>
-#include "common/stack_trace.h"
+#include "tools/common/stack_trace.h"
 #include "misc_log_ex.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

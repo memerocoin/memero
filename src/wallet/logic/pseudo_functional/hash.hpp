@@ -36,7 +36,7 @@
 #include <cstdint>
 
 #include "wallet/logic/type/wallet.hpp" //transfer_details
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 
 namespace wallet {
 namespace logic {

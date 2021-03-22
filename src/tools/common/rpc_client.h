@@ -30,9 +30,9 @@
 
 #include <optional>
 
-#include "common/http_connection.h"
-#include "common/scoped_message_writer.h"
-#include "rpc/core_rpc_server_commands_defs.h"
+#include "tools/common/http_connection.h"
+#include "tools/common/scoped_message_writer.h"
+#include "network/rpc/core_rpc_server_commands_defs.h"
 #include "storages/http_abstract_invoke.h"
 #include "net/http_client.h"
 #include "string_tools.h"

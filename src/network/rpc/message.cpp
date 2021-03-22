@@ -28,7 +28,7 @@
 
 #include "message.h"
 
-#include "serialization/json_object.h"
+#include "tools/serialization/json_object.h"
 
 namespace cryptonote
 {

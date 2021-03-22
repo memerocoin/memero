@@ -34,9 +34,9 @@
 #include <cstddef>
 #include <deque>
 
-#include "crypto/hash.hpp"
-#include "ringct/rctTypes.hpp"
-#include "serialization/serialization.h"
+#include "math/crypto/hash.hpp"
+#include "math/ringct/rctTypes.hpp"
+#include "tools/serialization/serialization.h"
 
 namespace wallet {
 namespace logic {

@@ -58,7 +58,7 @@
 #include "net_node_common.h"
 #include "net/enums.h"
 #include "network/type/fwd.h"
-#include "common/command_line.h"
+#include "tools/common/command_line.h"
 
 PUSH_WARNINGS
 DISABLE_VS_WARNINGS(4355)

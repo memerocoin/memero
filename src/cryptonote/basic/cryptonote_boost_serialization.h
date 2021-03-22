@@ -40,10 +40,10 @@
 #include <boost/archive/portable_binary_oarchive.hpp>
 #include "cryptonote_basic.h"
 #include "difficulty.h"
-#include "common/unordered_containers_boost_serialization.h"
-#include "crypto/crypto.hpp"
-#include "ringct/rctTypes.hpp"
-#include "ringct/rctOps.hpp"
+#include "tools/common/unordered_containers_boost_serialization.h"
+#include "math/crypto/crypto.hpp"
+#include "math/ringct/rctTypes.hpp"
+#include "math/ringct/rctOps.hpp"
 
 namespace boost
 {

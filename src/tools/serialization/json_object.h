@@ -38,7 +38,7 @@
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "rpc/message_data_structs.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "common/sfinae_helpers.h"
+#include "tools/common/sfinae_helpers.h"
 #include "hex.h"
 #include "span.h"
 

@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "daemon_messages.h"
-#include "serialization/json_object.h"
+#include "tools/serialization/json_object.h"
 
 namespace cryptonote
 {

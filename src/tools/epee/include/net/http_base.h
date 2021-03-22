@@ -34,7 +34,7 @@
 #include <string>
 #include <utility>
 
-#include "memwipe.h"
+#include "tools/epee/include/memwipe.h"
 #include "string_tools.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

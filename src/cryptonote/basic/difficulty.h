@@ -34,7 +34,7 @@
 #include <vector>
 #include <string>
 #include <boost/multiprecision/cpp_int.hpp>
-#include "crypto/hash.hpp"
+#include "math/crypto/hash.hpp"
 
 namespace cryptonote
 {

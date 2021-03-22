@@ -30,7 +30,7 @@
 
 #include "levin_base.h"
 #include "serializeble_struct_helper.h"
-#include "int-util.h"
+#include "tools/epee/include/int-util.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"

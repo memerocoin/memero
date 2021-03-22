@@ -43,7 +43,7 @@
 
 #include "warnings.h"
 #include "string_tools.h"
-#include "misc_language.h"
+#include "tools/epee/include/misc_language.h"
 #include "net/local_ip.h"
 #include "pragma_comp_defs.h"
 

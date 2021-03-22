@@ -40,9 +40,9 @@
 #include <ctime>
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "profile_tools.h"
+#include "tools/epee/include/profile_tools.h"
 #include "net/network_throttle-detail.hpp"
-#include "common/util.h"
+#include "tools/common/util.h"
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

@@ -36,18 +36,18 @@
 #include <cstring>  // memcmp
 #include <sstream>
 #include <atomic>
-#include "serialization/variant.h"
-#include "serialization/containers.h"
-#include "serialization/binary_archive.h"
-#include "serialization/json_archive.h"
-#include "serialization/debug_archive.h"
-#include "serialization/crypto.h"
-#include "serialization/keyvalue_serialization.h" // eepe named serialization
+#include "tools/serialization/variant.h"
+#include "tools/serialization/containers.h"
+#include "tools/serialization/binary_archive.h"
+#include "tools/serialization/json_archive.h"
+#include "tools/serialization/debug_archive.h"
+#include "tools/serialization/crypto.h"
+#include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
 #include "config/cryptonote.hpp"
-#include "crypto/crypto.hpp"
-#include "crypto/hash.hpp"
-#include "misc_language.h"
-#include "ringct/rctTypes.hpp"
+#include "math/crypto/crypto.hpp"
+#include "math/crypto/hash.hpp"
+#include "tools/epee/include/misc_language.h"
+#include "math/ringct/rctTypes.hpp"
 #include "wallet/device/device.hpp"
 #include "config/lol.hpp"
 

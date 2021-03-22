@@ -38,7 +38,7 @@
 
 #include <memory.h>
 
-#include "memwipe.h"
+#include "tools/epee/include/memwipe.h"
 #include "hash.hpp"
 
 namespace crypto {

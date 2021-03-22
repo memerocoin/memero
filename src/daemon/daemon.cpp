@@ -35,8 +35,8 @@
 #include "daemon/daemon.h"
 #include "rpc/daemon_handler.h"
 
-#include "common/password.h"
-#include "common/util.h"
+#include "tools/common/password.h"
+#include "tools/common/util.h"
 #include "cryptonote/basic/events.h"
 #include "daemon/core.h"
 #include "daemon/p2p.h"

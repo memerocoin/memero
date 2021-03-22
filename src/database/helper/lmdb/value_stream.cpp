@@ -29,7 +29,7 @@
 
 #include <stdexcept>
 
-#include "common/expect.h"
+#include "tools/common/expect.h"
 #include "error.hpp"
 #include "util.hpp"
 

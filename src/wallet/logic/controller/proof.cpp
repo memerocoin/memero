@@ -35,7 +35,7 @@
 
 #include "misc_log_ex.h"
 #include "wallet/api/wallet_errors.h"
-#include "common/base58.h"
+#include "tools/common/base58.h"
 
 #include "wallet/logic/functional/proof.hpp"
 

@@ -34,11 +34,11 @@
 #include <mutex>
 #include "misc_log_ex.h"
 #include "span.h"
-#include "common/perf_timer.h"
+#include "tools/common_basic/common/perf_timer.h"
 #include "config/cryptonote.hpp"
 extern "C"
 {
-#include "crypto/crypto-ops.h"
+#include "math/crypto/crypto-ops.h"
 }
 #include "rctOps.hpp"
 #include "curveConstants.hpp"

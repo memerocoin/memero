@@ -2,7 +2,7 @@
 #define	JSONRPC_SERVER_HANDLERS_MAP_H
 
 #include <string>
-#include "serialization/keyvalue_serialization.h"
+#include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "storages/portable_storage_template_helper.h"
 #include "storages/portable_storage_base.h"
 #include "jsonrpc_structs.h"

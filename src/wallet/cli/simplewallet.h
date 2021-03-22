@@ -47,8 +47,8 @@
 #include "console_handler.h"
 #include "math_helper.h"
 #include "wipeable_string.h"
-#include "common/password.h"
-#include "crypto/crypto.hpp"  // for definition of crypto::secret_key
+#include "tools/common/password.h"
+#include "math/crypto/crypto.hpp"  // for definition of crypto::secret_key
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

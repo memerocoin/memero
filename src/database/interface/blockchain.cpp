@@ -31,8 +31,8 @@
 #include "string_tools.h"
 #include "blockchain.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "profile_tools.h"
-#include "ringct/rctOps.hpp"
+#include "tools/epee/include/profile_tools.h"
+#include "math/ringct/rctOps.hpp"
 
 #include "../instance/lmdb/lmdb.hpp"
 

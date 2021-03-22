@@ -26,7 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "common/command_line.h"
+#include "tools/common/command_line.h"
 #include "daemon/command_parser_executor.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

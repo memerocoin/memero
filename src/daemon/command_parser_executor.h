@@ -39,9 +39,9 @@
 #include <optional>
 
 #include "daemon/rpc_command_executor.h"
-#include "common/common_fwd.h"
+#include "tools/common/common_fwd.h"
 #include "net/net_fwd.h"
-#include "rpc/core_rpc_server.h"
+#include "network/rpc/core_rpc_server.h"
 
 namespace daemonize {
 

@@ -32,7 +32,7 @@
 #include <stdint.h>
 
 extern "C" {
-#include "crypto/crypto-ops.h"
+#include "math/crypto/crypto-ops.h"
 }
 
 #include "rctCryptoOps.hpp"

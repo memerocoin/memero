@@ -31,9 +31,9 @@
 #include <boost/uuid/nil_generator.hpp>
 #include <chrono>
 
-#include "common/expect.h"
+#include "tools/common/expect.h"
 #include "config/cryptonote.hpp"
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 
 namespace net
 {

@@ -38,7 +38,7 @@
 #include <string>
 #include <mutex>
 
-#include "crypto/hash.hpp"
+#include "math/crypto/hash.hpp"
 #include "config/cryptonote.hpp"
 
 /*! \brief Various Tools

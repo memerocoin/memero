@@ -50,20 +50,20 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include "include_base_utils.h"
 #include "console_handler.h"
-#include "common/command_line.h"
-#include "common/util.h"
-#include "common/base58.h"
-#include "common/scoped_message_writer.h"
+#include "tools/common/command_line.h"
+#include "tools/common/util.h"
+#include "tools/common/base58.h"
+#include "tools/common/scoped_message_writer.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "simplewallet.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "storages/http_abstract_invoke.h"
-#include "rpc/core_rpc_server_commands_defs.h"
-#include "crypto/crypto.hpp"  // for crypto::secret_key definition
+#include "network/rpc/core_rpc_server_commands_defs.h"
+#include "math/crypto/crypto.hpp"  // for crypto::secret_key definition
 #include "wallet/mnemonics/electrum-words.h"
 #include "rapidjson/document.h"
-#include "common/json_util.h"
-#include "ringct/rctSigs.hpp"
+#include "tools/common/json_util.h"
+#include "math/ringct/rctSigs.hpp"
 #include "wallet/common/wallet_args.h"
 #include "version.h"
 #include <stdexcept>

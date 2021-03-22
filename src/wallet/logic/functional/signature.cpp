@@ -33,7 +33,7 @@
 #include "signature.hpp"
 
 #include "misc_log_ex.h"
-#include "common/base58.h"
+#include "tools/common/base58.h"
 #include "wallet/api/wallet2.h"
 
 #include "wallet/api/wallet_errors.h"

@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "common/expect.h"
+#include "tools/common/expect.h"
 #include "error.hpp"
 #include "key_stream.hpp"
 #include "util.hpp"

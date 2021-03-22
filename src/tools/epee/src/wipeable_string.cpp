@@ -28,7 +28,7 @@
 
 #include <optional>
 #include <string.h>
-#include "memwipe.h"
+#include "tools/epee/include/memwipe.h"
 #include "misc_log_ex.h"
 #include "wipeable_string.h"
 

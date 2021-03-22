@@ -33,8 +33,8 @@
 #include <boost/program_options/variables_map.hpp>
 #include <string>
 
-#include "common/command_line.h"
-#include "common/password.h"
+#include "tools/common/command_line.h"
+#include "tools/common/password.h"
 #include "net/net_ssl.h"
 
 namespace cryptonote

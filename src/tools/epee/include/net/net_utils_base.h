@@ -36,8 +36,8 @@
 #include <type_traits>
 #include "enums.h"
 #include "misc_log_ex.h"
-#include "serialization/keyvalue_serialization.h"
-#include "int-util.h"
+#include "tools/epee/include/serialization/keyvalue_serialization.h"
+#include "tools/epee/include/int-util.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"

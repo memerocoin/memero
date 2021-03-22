@@ -32,7 +32,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "crypto/hash.hpp"
+#include "math/crypto/hash.hpp"
 
 namespace cryptonote
 {

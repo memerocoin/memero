@@ -37,7 +37,7 @@
 #include <string>
 
 #include "cryptonote/basic/fwd.h" //transaction
-#include "crypto/crypto.hpp" // crypto::
+#include "math/crypto/crypto.hpp" // crypto::
 #include "cryptonote/basic/cryptonote_basic.h" // account_public_address
 
 namespace wallet {

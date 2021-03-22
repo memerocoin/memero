@@ -32,7 +32,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "common/expect.h"
+#include "tools/common/expect.h"
 #include "error.hpp"
 #include "transaction.hpp"
 

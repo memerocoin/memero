@@ -34,14 +34,14 @@
 #include "string_tools.h"
 using namespace epee;
 
-#include "common/apply_permutation.h"
+#include "tools/common/apply_permutation.h"
 #include "cryptonote_tx_utils.h"
 #include "config/cryptonote.hpp"
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/tx_extra.h"
-#include "crypto/crypto.hpp"
-#include "crypto/hash.hpp"
-#include "ringct/rctSigs.hpp"
+#include "math/crypto/crypto.hpp"
+#include "math/crypto/hash.hpp"
+#include "math/ringct/rctSigs.hpp"
 
 using namespace crypto;
 

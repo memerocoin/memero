@@ -32,7 +32,7 @@
 
 #include <cstring>
 
-#include "common/expect.h"
+#include "tools/common/expect.h"
 #include "net/net_utils_base.h"
 #include "network/type/tor_address.h"
 #include "network/type/i2p_address.h"

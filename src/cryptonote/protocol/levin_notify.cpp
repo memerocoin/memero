@@ -35,8 +35,8 @@
 #include <stdexcept>
 #include <utility>
 
-#include "common/expect.h"
-#include "common/varint.h"
+#include "tools/common/expect.h"
+#include "tools/common/varint.h"
 #include "config/cryptonote.hpp"
 #include "cryptonote/basic/connection_context.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"

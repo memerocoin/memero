@@ -37,7 +37,7 @@
 #include <string>
 
 #include "wallet/api/wallet2.h" // message_signature_ressult_t
-#include "crypto/crypto.hpp" // crypto::
+#include "math/crypto/crypto.hpp" // crypto::
 #include "cryptonote/basic/cryptonote_basic.h" // account_public_address
 
 namespace wallet {

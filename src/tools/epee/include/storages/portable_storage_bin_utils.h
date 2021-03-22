@@ -28,7 +28,7 @@
 
 #pragma once 
 
-#include "int-util.h"
+#include "tools/epee/include/int-util.h"
 
 template<typename T> T convert_swapper(T t) { return t; }
 template<> inline uint16_t convert_swapper(uint16_t t) { return SWAP16LE(t); }

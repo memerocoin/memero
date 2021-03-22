@@ -39,7 +39,7 @@
 #include <vector>
 #include <tuple>
 
-#include "crypto/generic-ops.h"
+#include "math/crypto/generic-ops.h"
 #include "rctTypes.hpp"
 #include "rctOps.hpp"
 

@@ -56,10 +56,10 @@
 #include "misc_os_dependent.h"
 using namespace epee;
 
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 #include "util.h"
 #include "stack_trace.h"
-#include "memwipe.h"
+#include "tools/epee/include/memwipe.h"
 #include "net/http_client.h"                        // epee::net_utils::...
 #include "readline_buffer.h"
 

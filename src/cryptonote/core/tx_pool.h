@@ -46,8 +46,8 @@
 #include "cryptonote/basic/verification_context.h"
 #include "cryptonote/protocol/enums.h"
 #include "database/interface/blockchain.hpp"
-#include "crypto/hash.hpp"
-#include "rpc/core_rpc_server_commands_defs.h"
+#include "math/crypto/hash.hpp"
+#include "network/rpc/core_rpc_server_commands_defs.h"
 #include "rpc/message_data_structs.h"
 
 namespace cryptonote

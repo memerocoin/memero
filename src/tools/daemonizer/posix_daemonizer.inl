@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include "common/scoped_message_writer.h"
-#include "common/util.h"
+#include "tools/common/scoped_message_writer.h"
+#include "tools/common/util.h"
 
 #include <filesystem>
 

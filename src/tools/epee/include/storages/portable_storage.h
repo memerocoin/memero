@@ -30,7 +30,7 @@
 
 #include <type_traits>
 
-#include "misc_language.h"
+#include "tools/epee/include/misc_language.h"
 #include "portable_storage_base.h"
 #include "portable_storage_to_bin.h"
 #include "portable_storage_from_bin.h"
@@ -38,7 +38,7 @@
 #include "portable_storage_from_json.h"
 #include "portable_storage_val_converters.h"
 #include "span.h"
-#include "int-util.h"
+#include "tools/epee/include/int-util.h"
 
 namespace epee
 {

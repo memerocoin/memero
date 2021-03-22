@@ -31,7 +31,7 @@
 
 #include <boost/uuid/uuid_generators.hpp>
 #include "levin_base.h"
-#include "int-util.h"
+#include "tools/epee/include/int-util.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"

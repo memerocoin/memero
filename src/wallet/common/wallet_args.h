@@ -31,7 +31,7 @@
 #include <boost/program_options/positional_options.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include "common/command_line.h"
+#include "tools/common/command_line.h"
 
 namespace wallet_args
 {

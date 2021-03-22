@@ -33,7 +33,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "common/error.h"
+#include "tools/common/error.h"
 
 //! If precondition fails, return `::error::kInvalidArgument` in current scope.
 #define MONERO_PRECOND(...)                            \

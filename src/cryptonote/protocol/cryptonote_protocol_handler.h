@@ -43,7 +43,7 @@
 #include "cryptonote_protocol_defs.h"
 #include "cryptonote_protocol_handler_common.h"
 #include "block_queue.h"
-#include "common/perf_timer.h"
+#include "tools/common_basic/common/perf_timer.h"
 #include "cryptonote/basic/connection_context.h"
 #include <boost/circular_buffer.hpp>
 

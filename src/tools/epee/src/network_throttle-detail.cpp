@@ -51,7 +51,7 @@
 
 #include "syncobj.h"
 #include "misc_log_ex.h"
-#include "misc_language.h"
+#include "tools/epee/include/misc_language.h"
 #include "pragma_comp_defs.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

@@ -38,7 +38,7 @@
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/basic/blobdatatype.h"
-#include "ringct/rctSigs.hpp"
+#include "math/ringct/rctSigs.hpp"
 #include "version.h"
 #include "config/lol.hpp"
 

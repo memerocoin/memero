@@ -35,10 +35,10 @@
 
 #include "levin_base.h"
 #include "buffer.h"
-#include "misc_language.h"
+#include "tools/epee/include/misc_language.h"
 #include "syncobj.h"
 #include "misc_os_dependent.h"
-#include "int-util.h"
+#include "tools/epee/include/int-util.h"
 #include "string_tools.h"
 
 #include <random>

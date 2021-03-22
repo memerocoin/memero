@@ -46,7 +46,7 @@
 #include "misc_log_ex.h"
 #include "storages/parserse_base_utils.h"
 #include "hex.h"
-#include "memwipe.h"
+#include "tools/epee/include/memwipe.h"
 #include "span.h"
 #include "warnings.h"
 

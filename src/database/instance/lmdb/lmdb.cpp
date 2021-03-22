@@ -35,11 +35,11 @@
 
 #include "string_tools.h"
 #include "file_io_utils.h"
-#include "common/util.h"
+#include "tools/common/util.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "crypto/crypto.hpp"
-#include "profile_tools.h"
-#include "ringct/rctOps.hpp"
+#include "math/crypto/crypto.hpp"
+#include "tools/epee/include/profile_tools.h"
+#include "math/ringct/rctOps.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "blockchain.db.lmdb"

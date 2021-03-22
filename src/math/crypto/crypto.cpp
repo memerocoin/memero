@@ -37,7 +37,7 @@
 #include <mutex>
 #include <sodium.h>
 
-#include "common/varint.h"
+#include "tools/common/varint.h"
 #include "warnings.h"
 #include "crypto.hpp"
 #include "hash.hpp"

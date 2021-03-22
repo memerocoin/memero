@@ -36,15 +36,15 @@
 #include <cinttypes>
 
 extern "C" {
-#include "crypto/crypto-ops.h"
+#include "math/crypto/crypto-ops.h"
 }
 
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 
-#include "serialization/containers.h"
-#include "serialization/debug_archive.h"
-#include "serialization/binary_archive.h"
-#include "serialization/json_archive.h"
+#include "tools/serialization/containers.h"
+#include "tools/serialization/debug_archive.h"
+#include "tools/serialization/binary_archive.h"
+#include "tools/serialization/json_archive.h"
 
 
 //Define this flag when debugging to get additional info on the console

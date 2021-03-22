@@ -36,20 +36,20 @@ using namespace epee;
 
 #include <unordered_set>
 #include "cryptonote_core.h"
-#include "common/util.h"
-#include "common/threadpool.h"
-#include "common/command_line.h"
+#include "tools/common/util.h"
+#include "tools/common/threadpool.h"
+#include "tools/common/command_line.h"
 #include "cryptonote/basic/events.h"
 #include "warnings.h"
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 #include "config/cryptonote.hpp"
-#include "misc_language.h"
+#include "tools/epee/include/misc_language.h"
 #include "file_io_utils.h"
 #include <csignal>
-#include "ringct/rctTypes.hpp"
+#include "math/ringct/rctTypes.hpp"
 #include "database/interface/blockchain.hpp"
-#include "ringct/rctSigs.hpp"
-#include "common/notify.h"
+#include "math/ringct/rctSigs.hpp"
+#include "tools/common/notify.h"
 #include "version.h"
 #include "config/lol.hpp"
 

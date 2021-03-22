@@ -30,12 +30,12 @@
 
 extern "C"
 {
-#include "crypto/crypto-ops.h"
+#include "math/crypto/crypto-ops.h"
 }
 
 #include "misc_log_ex.h"
-#include "common/perf_timer.h"
-#include "common/aligned.h"
+#include "tools/common_basic/common/perf_timer.h"
+#include "tools/common_basic/common/aligned.h"
 #include "rctOps.hpp"
 #include "multiexp.hpp"
 

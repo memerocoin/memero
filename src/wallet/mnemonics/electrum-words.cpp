@@ -41,8 +41,8 @@
 #include <vector>
 #include <unordered_map>
 #include "wipeable_string.h"
-#include "misc_language.h"
-#include "int-util.h"
+#include "tools/epee/include/misc_language.h"
+#include "tools/epee/include/int-util.h"
 #include "electrum-words.h"
 #include <boost/crc.hpp>
 

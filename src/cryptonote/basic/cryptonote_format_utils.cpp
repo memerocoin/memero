@@ -32,12 +32,12 @@
 #include <boost/algorithm/string.hpp>
 #include "wipeable_string.h"
 #include "string_tools.h"
-#include "serialization/string.h"
+#include "tools/serialization/string.h"
 #include "cryptonote_format_utils.h"
 #include "config/cryptonote.hpp"
-#include "crypto/crypto.hpp"
-#include "crypto/hash.hpp"
-#include "ringct/rctSigs.hpp"
+#include "math/crypto/crypto.hpp"
+#include "math/crypto/hash.hpp"
+#include "math/ringct/rctSigs.hpp"
 
 using namespace epee;
 

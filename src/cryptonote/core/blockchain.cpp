@@ -41,18 +41,18 @@
 #include "cryptonote/basic/cryptonote_boost_serialization.h"
 #include "config/cryptonote.hpp"
 #include "cryptonote/basic/miner.h"
-#include "misc_language.h"
-#include "profile_tools.h"
+#include "tools/epee/include/misc_language.h"
+#include "tools/epee/include/profile_tools.h"
 #include "file_io_utils.h"
-#include "int-util.h"
-#include "common/threadpool.h"
+#include "tools/epee/include/int-util.h"
+#include "tools/common/threadpool.h"
 #include "warnings.h"
-#include "crypto/hash.hpp"
+#include "math/crypto/hash.hpp"
 #include "cryptonote_core.h"
-#include "ringct/rctSigs.hpp"
-#include "common/perf_timer.h"
-#include "common/notify.h"
-#include "common/varint.h"
+#include "math/ringct/rctSigs.hpp"
+#include "tools/common_basic/common/perf_timer.h"
+#include "tools/common/notify.h"
+#include "tools/common/varint.h"
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -62,7 +62,7 @@
 
 using namespace crypto;
 
-//#include "serialization/json_archive.h"
+//#include "tools/serialization/json_archive.h"
 
 /* TODO:
  *  Clean up code:

@@ -31,7 +31,7 @@
 #include "misc_log_ex.h"
 #include "config/cryptonote.hpp"
 #include "rctTypes.hpp"
-#include "int-util.h"
+#include "tools/epee/include/int-util.h"
 using namespace crypto;
 using namespace std;
 using namespace constant;

@@ -28,7 +28,7 @@
 
 #include "net/levin_base.h"
 
-#include "int-util.h"
+#include "tools/epee/include/int-util.h"
 
 namespace epee
 {

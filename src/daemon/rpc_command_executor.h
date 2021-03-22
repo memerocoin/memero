@@ -38,11 +38,11 @@
 
 #pragma once
 
-#include "common/common_fwd.h"
-#include "common/rpc_client.h"
+#include "tools/common/common_fwd.h"
+#include "tools/common/rpc_client.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "net/net_fwd.h"
-#include "rpc/core_rpc_server.h"
+#include "network/rpc/core_rpc_server.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"

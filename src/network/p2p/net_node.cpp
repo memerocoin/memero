@@ -38,7 +38,7 @@
 #include <chrono>
 #include <utility>
 
-#include "common/command_line.h"
+#include "tools/common/command_line.h"
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "net_node.h"
