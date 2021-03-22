@@ -584,10 +584,6 @@ namespace tools
       return epee::net_utils::invoke_http_json_rpc(uri, method_name, req, res, *m_http_client, timeout, http_method, req_id);
     }
 
-    bool lock_keys_file();
-    bool unlock_keys_file();
-    bool is_keys_file_locked() const;
-
     void change_password(const std::string &filename, const epee::wipeable_string &original_password, const epee::wipeable_string &new_password);
 
     void set_tx_notify(const std::shared_ptr<tools::Notify> &notify) { m_tx_notify = notify; }
