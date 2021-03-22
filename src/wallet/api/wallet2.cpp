@@ -54,11 +54,9 @@
 #include <boost/asio/ip/address.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/preprocessor/stringize.hpp>
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-
-using namespace epee;
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
 
 #include "config/cryptonote.hpp"
 #include "config/lol.hpp"
@@ -66,38 +64,23 @@ using namespace epee;
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/tx/tx_sanity_check.h"
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/sha3.hpp"
-#include "math/ringct/curveConstants.hpp"
 #include "math/ringct/rctSigs.hpp"
 #include "network/rpc/core_rpc_server_commands_defs.h"
 #include "network/rpc/core_rpc_server_error_codes.h"
-#include "network/type/parse.h"
-#include "network/type/socks_connect.h"
 #include "tools/common/apply_permutation.h"
-#include "tools/common/base58.h"
-#include "tools/common/combinator.h"
 #include "tools/common/command_line.h"
 #include "tools/common/json_util.h"
 #include "tools/common/notify.h"
 #include "tools/common/threadpool.h"
 #include "tools/common/util.h"
 #include "tools/common_basic/common/perf_timer.h"
-#include "tools/epee/include/int-util.h"
-#include "tools/epee/include/memwipe.h"
-#include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/profile_tools.h"
 #include "tools/serialization/binary_utils.h"
-#include "tools/serialization/string.h"
 
 #include "wallet/mnemonics/electrum-words.h"
 
-extern "C"
-{
-#include "math/crypto/crypto-ops.h"
-}
-
 using namespace std;
+using namespace epee;
 using namespace crypto;
 using namespace cryptonote;
 using namespace constant;
