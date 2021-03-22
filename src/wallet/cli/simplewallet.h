@@ -116,7 +116,6 @@ namespace cryptonote
     bool set_default_ring_size(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_auto_refresh(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_refresh_type(const std::vector<std::string> &args = std::vector<std::string>());
-    bool set_ask_password(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_unit(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_min_output_count(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_min_output_value(const std::vector<std::string> &args = std::vector<std::string>());

@@ -721,21 +721,6 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
 {
   THROW_WALLET_EXCEPTION_IF(i >= tx.vout.size(), error::wallet_internal_error, "Invalid vout index");
 
-  // if keys are encrypted, ask for password
-  if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
-  {
-    static critical_section password_lock;
-    CRITICAL_REGION_LOCAL(password_lock);
-    if (!m_encrypt_keys_after_refresh)
-    {
-      std::optional<epee::wipeable_string> pwd = m_callback->on_get_password(pool ? "output found in pool" : "output received");
-      THROW_WALLET_EXCEPTION_IF(!pwd, error::password_needed, tr("Password is needed to compute key image for incoming lolnero"));
-      THROW_WALLET_EXCEPTION_IF(!verify_password(*pwd), error::password_needed, tr("Invalid password: password is needed to compute key image for incoming lolnero"));
-      decrypt_keys(*pwd);
-      m_encrypt_keys_after_refresh = *pwd;
-    }
-  }
-
   {
     bool r = cryptonote::generate_key_image_helper_precomp(m_account.get_keys(), boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key, tx_scan_info.received->derivation, i, tx_scan_info.received->index, tx_scan_info.in_ephemeral, tx_scan_info.ki, m_account.get_device());
     THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "Failed to generate key image");
@@ -2473,12 +2458,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   crypto::chacha_key key;
   crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
 
-  if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
-  {
-    account.encrypt_viewkey(key);
-    account.decrypt_keys(key);
-  }
-
   if (watch_only)
     account.forget_spend_key();
 
@@ -2621,13 +2600,6 @@ void wallet2::setup_keys(const epee::wipeable_string &password)
   crypto::chacha_key key;
   crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
 
-  // re-encrypt, but keep viewkey unencrypted
-  if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
-  {
-    m_account.encrypt_keys(key);
-    m_account.decrypt_viewkey(key);
-  }
-
   static_assert(HASH_SIZE == sizeof(crypto::chacha_key), "Mismatched sizes of hash and chacha key");
   tools::scrubbed_arr<char, HASH_SIZE+1> cache_key_data;
   memcpy(cache_key_data.data(), &key, HASH_SIZE);
@@ -2637,8 +2609,6 @@ void wallet2::setup_keys(const epee::wipeable_string &password)
 //----------------------------------------------------------------------------------------------------
 void wallet2::change_password(const std::string &filename, const epee::wipeable_string &original_password, const epee::wipeable_string &new_password)
 {
-  if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
-    decrypt_keys(original_password);
   setup_keys(new_password);
   rewrite(filename, new_password);
   if (!filename.empty())
@@ -2663,16 +2633,12 @@ bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_
   // Rewrite with encrypted keys if unencrypted, ignore errors
   if (r && keys_to_encrypt != std::nullopt)
   {
-    if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
-      encrypt_keys(keys_to_encrypt.value());
     bool saved_ret = store_keys(keys_file_name, password, m_watch_only);
     if (!saved_ret)
     {
       // just moan a bit, but not fatal
       MERROR("Error saving keys file with encrypted keys, not fatal");
     }
-    if (m_ask_password == AskPasswordToDecrypt && !m_unattended && !m_watch_only)
-      decrypt_keys(keys_to_encrypt.value());
   }
   return r;
 }

@@ -450,8 +450,6 @@ namespace tools
     void set_default_priority(uint32_t p) { m_default_priority = p; }
     bool auto_refresh() const { return m_auto_refresh; }
     void auto_refresh(bool r) { m_auto_refresh = r; }
-    AskPasswordType ask_password() const { return m_ask_password; }
-    void ask_password(AskPasswordType ask) { m_ask_password = ask; }
     void set_min_output_count(uint32_t count) { m_min_output_count = count; }
     uint32_t get_min_output_count() const { return m_min_output_count; }
     void set_min_output_value(uint64_t value) { m_min_output_value = value; }

@@ -1011,38 +1011,6 @@ bool simple_wallet::set_refresh_type(const std::vector<std::string> &args/* = st
   return true;
 }
 
-bool simple_wallet::set_ask_password(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    tools::wallet2::AskPasswordType ask = tools::wallet2::AskPasswordToDecrypt;
-    if (args[1] == "never" || args[1] == "0")
-      ask = tools::wallet2::AskPasswordNever;
-    else if (args[1] == "action" || args[1] == "1")
-      ask = tools::wallet2::AskPasswordOnAction;
-    else if (args[1] == "encrypt" || args[1] == "decrypt" || args[1] == "2")
-      ask = tools::wallet2::AskPasswordToDecrypt;
-    else
-    {
-      fail_msg_writer() << tr("invalid argument: must be either 0/never, 1/action, or 2/encrypt/decrypt");
-      return true;
-    }
-
-    const tools::wallet2::AskPasswordType cur_ask = m_wallet->ask_password();
-    if (!m_wallet->watch_only())
-    {
-      if (cur_ask == tools::wallet2::AskPasswordToDecrypt && ask != tools::wallet2::AskPasswordToDecrypt)
-        m_wallet->decrypt_keys(pwd_container->password());
-      else if (cur_ask != tools::wallet2::AskPasswordToDecrypt && ask == tools::wallet2::AskPasswordToDecrypt)
-        m_wallet->encrypt_keys(pwd_container->password());
-    }
-    m_wallet->ask_password(ask);
-    m_wallet->rewrite(m_wallet_file, pwd_container->password());
-  }
-  return true;
-}
-
 bool simple_wallet::set_unit(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   const std::string &unit = args[1];
@@ -1639,13 +1607,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     uint32_t priority = m_wallet->get_default_priority();
     if (priority < allowed_priority_strings.size())
       priority_string = allowed_priority_strings[priority];
-    std::string ask_password_string = "invalid";
-    switch (m_wallet->ask_password())
-    {
-      case tools::wallet2::AskPasswordNever: ask_password_string = "never"; break;
-      case tools::wallet2::AskPasswordOnAction: ask_password_string = "action"; break;
-      case tools::wallet2::AskPasswordToDecrypt: ask_password_string = "decrypt"; break;
-    }
     success_msg_writer() << "always-confirm-transfers = " << m_wallet->always_confirm_transfers();
     success_msg_writer() << "print-ring-members = " << m_wallet->print_ring_members();
     success_msg_writer() << "store-tx-info = " << m_wallet->store_tx_info();
@@ -1653,7 +1614,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "auto-refresh = " << m_wallet->auto_refresh();
     success_msg_writer() << "refresh-type = " << get_refresh_type_name(m_wallet->get_refresh_type());
     success_msg_writer() << "priority = " << priority<< " (" << priority_string << ")";
-    success_msg_writer() << "ask-password = " << m_wallet->ask_password() << " (" << ask_password_string << ")";
     success_msg_writer() << "unit = " << cryptonote::get_unit(cryptonote::get_default_decimal_point());
     success_msg_writer() << "min-outputs-count = " << m_wallet->get_min_output_count();
     success_msg_writer() << "min-outputs-value = " << cryptonote::print_money(m_wallet->get_min_output_value());
@@ -1697,7 +1657,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("auto-refresh", set_auto_refresh, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("refresh-type", set_refresh_type, tr("full (slowest, no assumptions); optimize-coinbase (fast, assumes the whole coinbase is paid to a single address); no-coinbase (fastest, assumes we receive no coinbase transaction), default (same as optimize-coinbase)"));
     CHECK_SIMPLE_VARIABLE("priority", set_default_priority, tr("0, 1, 2, 3, or 4, or one of ") << join_priority_strings(", "));
-    CHECK_SIMPLE_VARIABLE("ask-password", set_ask_password, tr("0|1|2 (or never|action|decrypt)"));
     CHECK_SIMPLE_VARIABLE("unit", set_unit, tr("lolnero, millinero, micronero, nanonero, piconero"));
     CHECK_SIMPLE_VARIABLE("min-outputs-count", set_min_output_count, tr("unsigned integer"));
     CHECK_SIMPLE_VARIABLE("min-outputs-value", set_min_output_value, tr("amount"));
