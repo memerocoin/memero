@@ -79,8 +79,6 @@ typedef cryptonote::simple_wallet sw;
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.simplewallet"
 
-#define EXTENDED_LOGS_FILE "wallet_details.log"
-
 #define OLD_AGE_WARN_THRESHOLD (30 * 86400 / DIFFICULTY_TARGET_V2) // 30 days
 
 #define LOCK_IDLE_SCOPE() \
@@ -101,10 +99,6 @@ typedef cryptonote::simple_wallet sw;
 #define PRINT_USAGE(usage_help) fail_msg_writer() << boost::format(tr("usage: %s")) % usage_help;
 
 #define REFRESH_PERIOD 90 // seconds
-
-#define CREDITS_TARGET 50000
-#define MAX_PAYMENT_DIFF 10000
-#define MIN_PAYMENT_RATE 0.01f // per hash
 
 enum TransferType {
   Transfer,
@@ -151,12 +145,6 @@ namespace
   const char* USAGE_SIGN("sign [<account_index>,<address_index>] [--spend|--view] <filename>");
   const char* USAGE_VERIFY("verify <filename> <address> <signature>");
   const char* USAGE_SHOW_TRANSFER("show_transfer <txid>");
-  const char* USAGE_PRINT_RING("print_ring <key_image> | <txid>");
-  const char* USAGE_SAVE_KNOWN_RINGS("save_known_rings");
-  const char* USAGE_MARK_OUTPUT_SPENT("mark_output_spent <amount>/<offset> | <filename> [add]");
-  const char* USAGE_MARK_OUTPUT_UNSPENT("mark_output_unspent <amount>/<offset>");
-  const char* USAGE_IS_OUTPUT_SPENT("is_output_spent <amount>/<offset>");
-  const char* USAGE_NET_STATS("net_stats");
   const char* USAGE_WELCOME("welcome");
   const char* USAGE_VERSION("version");
   const char* USAGE_HELP("help [<command> | all]");
