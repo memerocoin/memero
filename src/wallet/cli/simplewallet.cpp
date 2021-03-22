@@ -1227,20 +1227,17 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
   if(args.empty())
   {
     message_writer() << "";
-    message_writer() << tr("Important commands:");
+    message_writer() << "address                     - Show address.";
+    message_writer() << "balance                     - Show balance.";
+    message_writer() << "refresh                     - Synchronize wallet with the Lolnero network.";
+    message_writer() << "seed                        - Show secret 25 words that can be used to recover this wallet.";
+    message_writer() << "show [in|out|etc..]         - Show transactions.";
+    message_writer() << "status                      - Check current status of wallet.";
+    message_writer() << "transfer <address> <amount> - Send LOL to an address.";
+    message_writer() << "exit                        - Exit wallet.";
     message_writer() << "";
-    message_writer() << tr("\"welcome\" - Show welcome message.");
-    message_writer() << tr("\"help all\" - Show the list of all available commands.");
-    message_writer() << tr("\"help <command>\" - Show a command's documentation.");
-    message_writer() << "";
-    message_writer() << tr("\"balance\" - Show balance.");
-    message_writer() << tr("\"address\" - Show address.");
-    message_writer() << tr("\"transfer <address> <amount>\" - Send LOL to an address.");
-    message_writer() << tr("\"show [in|out|pending|failed|pool]\" - Show transactions.");
-    message_writer() << tr("\"seed\" - Show secret 25 words that can be used to recover this wallet.");
-    message_writer() << tr("\"refresh\" - Synchronize wallet with the Lolnero network.");
-    message_writer() << tr("\"status\" - Check current status of wallet.");
-    message_writer() << tr("\"exit\" - Exit wallet.");
+    message_writer() << "help <command>              - Show a command's documentation.";
+    message_writer() << "help all                    - Show the list of all available commands.";
     message_writer() << "";
   }
   else if ((args.size() == 1) && (args.front() == "all"))
