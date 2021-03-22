@@ -34,8 +34,9 @@
 #include <utility>
 #include <cstdint>
 
-#include "ringct/rctTypes.hpp"
-#include "serialization/serialization.h"
+#include "math/ringct/rctTypes.hpp"
+#include "tools/serialization/serialization.h"
+#include "cryptonote/basic/subaddress_index.h"
 
 namespace wallet {
 namespace logic {

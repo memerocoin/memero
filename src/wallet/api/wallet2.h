@@ -39,44 +39,26 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/deque.hpp>
 
-// #include "wallet/logic/type/multisig.hpp"
 #include "wallet/logic/type/hashchain.hpp"
-#include "wallet/logic/type/tx.hpp"
-#include "wallet/logic/type/transfer.hpp"
 #include "wallet/logic/type/payment.hpp"
+#include "wallet/logic/type/transfer.hpp"
+#include "wallet/logic/type/tx.hpp"
 #include "wallet/logic/type/typedef.hpp"
 #include "wallet/logic/type/wallet.hpp"
 
-#include <boost/exception/to_string.hpp>
-
-#include <memory>
-#include <mutex>
-#include <atomic>
-#include <random>
-
-#include "include_base_utils.h"
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/account_boost_serialization.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "network/type/http.h"
-#include "storages/http_abstract_invoke.h"
-#include "rpc/core_rpc_server_commands_defs.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "common/unordered_containers_boost_serialization.h"
-#include "common/util.h"
-#include "crypto/chacha.hpp"
-#include "crypto/hash.hpp"
-#include "ringct/rctTypes.hpp"
-#include "ringct/rctOps.hpp"
-#include "serialization/crypto.h"
+#include "network/type/http.h"
 #include "serialization/string.h"
 #include "serialization/pair.h"
 #include "serialization/containers.h"
+#include "tools/common/password.h"
+#include "tools/epee/include/storages/http_abstract_invoke.h"
 
-#include "wallet_errors.h"
-#include "common/password.h"
-#include "node_rpc_proxy.h"
+#include "wallet/api/node_rpc_proxy.h"
+#include "wallet/api/wallet_errors.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"

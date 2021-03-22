@@ -28,56 +28,7 @@
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <numeric>
-#include <tuple>
-#include <boost/format.hpp>
-#include <optional>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/asio/ip/address.hpp>
-#include <boost/range/adaptor/transformed.hpp>
-#include <boost/preprocessor/stringize.hpp>
-#include "include_base_utils.h"
-
-using namespace epee;
-
-#include "config/cryptonote.hpp"
-#include "cryptonote/tx/tx_sanity_check.h"
 #include "wallet2.h"
-#include "cryptonote/basic/cryptonote_format_utils.h"
-#include "network/type/parse.h"
-#include "rpc/core_rpc_server_commands_defs.h"
-#include "rpc/core_rpc_server_error_codes.h"
-#include "misc_language.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "common/command_line.h"
-#include "common/threadpool.h"
-#include "int-util.h"
-#include "profile_tools.h"
-#include "crypto/crypto.hpp"
-#include "crypto/sha3.hpp"
-#include "serialization/binary_utils.h"
-#include "serialization/string.h"
-#include "cryptonote/basic/blobdatatype.h"
-#include "wallet/mnemonics/electrum-words.h"
-#include "common/util.h"
-#include "common/apply_permutation.h"
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-#include "common/json_util.h"
-#include "memwipe.h"
-#include "common/base58.h"
-#include "common/combinator.h"
-#include "common/notify.h"
-#include "common/perf_timer.h"
-#include "ringct/rctSigs.hpp"
-#include "ringct/curveConstants.hpp"
-#include "network/type/socks_connect.h"
-
-#include "config/lol.hpp"
 
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/proof.hpp"
@@ -90,10 +41,61 @@ using namespace epee;
 #include "wallet/logic/controller/wallet.hpp"
 #include "wallet/logic/state/gamma_picker.hpp"
 
+#include <numeric>
+#include <tuple>
+#include <optional>
+
+#include <boost/format.hpp>
+#include <boost/exception/to_string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/asio/ip/address.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/preprocessor/stringize.hpp>
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+
+using namespace epee;
+
+#include "common/apply_permutation.h"
+#include "common/base58.h"
+#include "common/combinator.h"
+#include "common/command_line.h"
+#include "common/json_util.h"
+#include "common/notify.h"
+#include "common/perf_timer.h"
+#include "common/threadpool.h"
+#include "common/util.h"
+#include "config/cryptonote.hpp"
+#include "config/lol.hpp"
+#include "crypto/crypto.hpp"
+#include "crypto/sha3.hpp"
+#include "cryptonote/basic/blobdatatype.h"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/tx/tx_sanity_check.h"
+#include "int-util.h"
+#include "memwipe.h"
+#include "misc_language.h"
+#include "network/type/parse.h"
+#include "network/type/socks_connect.h"
+#include "profile_tools.h"
+#include "ringct/curveConstants.hpp"
+#include "ringct/rctSigs.hpp"
+#include "rpc/core_rpc_server_commands_defs.h"
+#include "rpc/core_rpc_server_error_codes.h"
+#include "serialization/binary_utils.h"
+#include "serialization/string.h"
+#include "wallet/mnemonics/electrum-words.h"
+
 extern "C"
 {
 #include "crypto/crypto-ops.h"
 }
+
 using namespace std;
 using namespace crypto;
 using namespace cryptonote;
