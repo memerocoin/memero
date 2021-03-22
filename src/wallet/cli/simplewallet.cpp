@@ -725,54 +725,6 @@ bool simple_wallet::print_fee_info(const std::vector<std::string> &args/* = std:
   return true;
 }
 
-bool simple_wallet::print_ring(const std::vector<std::string> &args)
-{
-  crypto::key_image key_image;
-  crypto::hash txid;
-  if (args.size() != 1)
-  {
-    PRINT_USAGE(USAGE_PRINT_RING);
-    return true;
-  }
-
-  if (!epee::string_tools::hex_to_pod(args[0], key_image))
-  {
-    fail_msg_writer() << tr("Invalid key image");
-    return true;
-  }
-  // this one will always work, they're all 32 byte hex
-  if (!epee::string_tools::hex_to_pod(args[0], txid))
-  {
-    fail_msg_writer() << tr("Invalid txid");
-    return true;
-  }
-
-  std::vector<uint64_t> ring;
-  std::vector<std::pair<crypto::key_image, std::vector<uint64_t>>> rings;
-  try
-  {
-    {
-      fail_msg_writer() << tr("Key image either not spent, or spent with ring size 1");
-      return true;
-    }
-
-    for (const auto &ring: rings)
-    {
-      std::stringstream str;
-      for (const auto &x: ring.second)
-        str << x<< " ";
-      // do NOT translate this "absolute" below, the lin can be used as input to set_ring
-      success_msg_writer() << epee::string_tools::pod_to_hex(ring.first) <<  " absolute " << str.str();
-    }
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << tr("Failed to get key image ring: ") << e.what();
-  }
-
-  return true;
-}
-
 bool simple_wallet::welcome(const std::vector<std::string> &args)
 {
   message_writer() << tr("Welcome to Lolnero, a private ASIC friendly cryptocurrency.");
@@ -1540,12 +1492,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("fee",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::print_fee_info, std::placeholders::_1),
                            tr("Print the information about the current fee and transaction backlog."));
-  m_cmd_binder.set_handler("print_ring",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::print_ring, std::placeholders::_1),
-                           tr(USAGE_PRINT_RING),
-                           tr("Print the ring(s) used to spend a given key image or transaction (if the ring size is > 1)\n\n"
-                              "Output format:\n"
-                              "Key Image, \"absolute\", list of rings"));
   m_cmd_binder.set_handler("welcome",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::welcome, std::placeholders::_1),
                            tr(USAGE_WELCOME),
