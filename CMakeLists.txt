@@ -210,5 +210,8 @@ add_subdirectory(src/daemon)
 # test
 include(CTest)
 if(BUILD_TESTING)
-  add_subdirectory(tests)
+
+add_subdirectory(tests/hash)
+add_subdirectory(tests/unit_tests)
+
 endif()

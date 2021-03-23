@@ -26,78 +26,80 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+find_package(GTest REQUIRED)
+
 set(unit_tests_sources
   account.cpp
-  apply_permutation.cpp
-  address_from_url.cpp
-  base58.cpp
-  blockchain_db.cpp
-  block_queue.cpp
-  block_reward.cpp
-  bootstrap_node_selector.cpp
-  bulletproofs.cpp
-  canonical_amounts.cpp
-  chacha.cpp
-  checkpoints.cpp
-  command_line.cpp
-  crypto.cpp
-  decompose_amount_into_digits.cpp
-  device.cpp
-  difficulty.cpp
-  dns_resolver.cpp
-  epee_boosted_tcp_server.cpp
-  epee_levin_protocol_handler_async.cpp
-  epee_serialization.cpp
-  epee_utils.cpp
-  expect.cpp
-  fee.cpp
-  json_serialization.cpp
-  get_xtype_from_string.cpp
-  hashchain.cpp
-  hmac_keccak.cpp
-  http.cpp
-  keccak.cpp
-  levin.cpp
-  logging.cpp
-  long_term_block_weight.cpp
-  lmdb.cpp
-  main.cpp
-  memwipe.cpp
-  mlocker.cpp
-  mnemonics.cpp
-  mul_div.cpp
-  multiexp.cpp
-  multisig.cpp
-  net.cpp
-  node_server.cpp
-  notify.cpp
-  output_distribution.cpp
-  parse_amount.cpp
-  pruning.cpp
-  random.cpp
-  rolling_median.cpp
-  serialization.cpp
-  sha256.cpp
-  slow_memmem.cpp
-  subaddress.cpp
-  test_tx_utils.cpp
-  test_peerlist.cpp
-  test_protocol_pack.cpp
-  threadpool.cpp
-  tx_proof.cpp
-  hardfork.cpp
-  unbound.cpp
-  uri.cpp
-  varint.cpp
-  ringct.cpp
-  output_selection.cpp
-  vercmp.cpp
-  ringdb.cpp
-  wipeable_string.cpp
-  is_hdd.cpp
-  aligned.cpp
-  rpc_version_str.cpp
-  zmq_rpc.cpp)
+#   apply_permutation.cpp
+#   address_from_url.cpp
+#   base58.cpp
+#   blockchain_db.cpp
+#   block_queue.cpp
+#   block_reward.cpp
+#   bootstrap_node_selector.cpp
+#   bulletproofs.cpp
+#   canonical_amounts.cpp
+#   chacha.cpp
+#   checkpoints.cpp
+#   command_line.cpp
+#   crypto.cpp
+#   decompose_amount_into_digits.cpp
+#   device.cpp
+#   difficulty.cpp
+#   dns_resolver.cpp
+#   epee_boosted_tcp_server.cpp
+#   epee_levin_protocol_handler_async.cpp
+#   epee_serialization.cpp
+#   epee_utils.cpp
+#   expect.cpp
+#   fee.cpp
+#   json_serialization.cpp
+#   get_xtype_from_string.cpp
+#   hashchain.cpp
+#   hmac_keccak.cpp
+#   http.cpp
+#   keccak.cpp
+#   levin.cpp
+#   logging.cpp
+#   long_term_block_weight.cpp
+#   lmdb.cpp
+#   main.cpp
+#   memwipe.cpp
+#   mlocker.cpp
+#   mnemonics.cpp
+#   mul_div.cpp
+#   multiexp.cpp
+#   multisig.cpp
+#   net.cpp
+#   node_server.cpp
+#   notify.cpp
+#   output_distribution.cpp
+#   parse_amount.cpp
+#   pruning.cpp
+#   random.cpp
+#   rolling_median.cpp
+#   serialization.cpp
+#   sha256.cpp
+#   slow_memmem.cpp
+#   subaddress.cpp
+#   test_tx_utils.cpp
+#   test_peerlist.cpp
+#   test_protocol_pack.cpp
+#   threadpool.cpp
+#   tx_proof.cpp
+#   hardfork.cpp
+#   unbound.cpp
+#   uri.cpp
+#   varint.cpp
+#   ringct.cpp
+#   output_selection.cpp
+#   vercmp.cpp
+#   ringdb.cpp
+#   wipeable_string.cpp
+#   is_hdd.cpp
+#   aligned.cpp
+#   rpc_version_str.cpp
+  )
 
 set(unit_tests_headers
   unit_tests_utils.h)
@@ -105,6 +107,7 @@ set(unit_tests_headers
 add_executable(unit_tests
   ${unit_tests_sources}
   ${unit_tests_headers})
+
 target_link_libraries(unit_tests
   PRIVATE
     ringct
@@ -117,29 +120,24 @@ target_link_libraries(unit_tests
     rpc
     net
     serialization
-    wallet
+    wallet_api
     p2p
     version
     ${Boost_CHRONO_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
-    ${GTEST_LIBRARIES}
-    ${CMAKE_THREAD_LIBS_INIT}
-    ${EXTRA_LIBRARIES}
-    ${ZMQ_LIB})
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    GTest::gtest
+    GTest::gtest_main
+    )
+
 set_property(TARGET unit_tests
   PROPERTY
-    FOLDER "tests")
+    FOLDER "tests"
+    )
 
-if (NOT MSVC)
-  set_property(TARGET unit_tests
-    APPEND_STRING
-    PROPERTY
-      COMPILE_FLAGS " -Wno-undef -Wno-sign-compare")
-endif ()
-
-SET_PROPERTY(SOURCE main.cpp PROPERTY COMPILE_FLAGS -DDEFAULT_DATA_DIR="\\"${CMAKE_SOURCE_DIR}/tests/data\\"")
-
-SET_PROPERTY(SOURCE memwipe.cpp PROPERTY COMPILE_FLAGS -Ofast)
+SET_PROPERTY(
+  SOURCE main.cpp
+  PROPERTY COMPILE_FLAGS -DDEFAULT_DATA_DIR="\\"${CMAKE_SOURCE_DIR}/tests/data\\""
+)
 
 add_test(
   NAME    unit_tests

@@ -6,6 +6,7 @@ let
     -DReadline_ROOT_DIR=${readline.dev}
     -DUSE_CCACHE=ON
     -DBUILD_SHARED_LIBS=ON
+    -DBUILD_TESTING=ON
   '';
 in
 {
@@ -15,6 +16,7 @@ in
       gcc10
       cmake git ccache
       boost175 openssl readline libsodium rapidjson
+      gmock
     ];
 
     inherit CMakeFlags_Lolnero;
