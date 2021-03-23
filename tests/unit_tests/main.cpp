@@ -36,8 +36,8 @@
 
 #include "p2p/net_node.h"
 #include "p2p/net_node.inl"
-#include "cryptonote_protocol/cryptonote_protocol_handler.h"
-#include "cryptonote_protocol/cryptonote_protocol_handler.inl"
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.inl"
 #include "include_base_utils.h"
 #include "string_tools.h"
 #include "common/command_line.h"

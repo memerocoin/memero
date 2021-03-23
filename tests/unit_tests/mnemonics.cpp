@@ -28,28 +28,15 @@
 
 #include "gtest/gtest.h"
 #include "wipeable_string.h"
-#include "mnemonics/language_base.h"
-#include "mnemonics/electrum-words.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include <stdlib.h>
 #include <vector>
 #include <time.h>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
-#include "mnemonics/chinese_simplified.h"
-#include "mnemonics/english.h"
-#include "mnemonics/spanish.h"
-#include "mnemonics/portuguese.h"
-#include "mnemonics/japanese.h"
-#include "mnemonics/german.h"
-#include "mnemonics/italian.h"
-#include "mnemonics/russian.h"
-#include "mnemonics/french.h"
-#include "mnemonics/dutch.h"
-#include "mnemonics/esperanto.h"
-#include "mnemonics/lojban.h"
-#include "mnemonics/english_old.h"
-#include "mnemonics/singleton.h"
+#include "wallet/mnemonics/language_base.h"
+#include "wallet/mnemonics/electrum-words.h"
+#include "wallet/mnemonics/english.h"
 
 namespace
 {
@@ -158,55 +145,6 @@ TEST(mnemonics, consistency)
   }
 }
 
-TEST(mnemonics, all_languages)
-{
-  srand(time(NULL));
-  std::vector<Language::Base*> languages({
-    Language::Singleton<Language::Chinese_Simplified>::instance(),
-    Language::Singleton<Language::English>::instance(),
-    Language::Singleton<Language::Spanish>::instance(),
-    Language::Singleton<Language::Portuguese>::instance(),
-    Language::Singleton<Language::Japanese>::instance(),
-    Language::Singleton<Language::German>::instance(),
-    Language::Singleton<Language::Italian>::instance(),
-    Language::Singleton<Language::Russian>::instance(),
-    Language::Singleton<Language::French>::instance(),
-    Language::Singleton<Language::Dutch>::instance(),
-    Language::Singleton<Language::Esperanto>::instance(),
-    Language::Singleton<Language::Lojban>::instance()
-  });
-
-  for (std::vector<Language::Base*>::iterator it = languages.begin(); it != languages.end(); it++)
-  {
-    try {
-      test_language(*(*it));
-    }
-    catch (const std::exception &e) {
-      std::cout << "Error testing " << (*it)->get_language_name() << " language: " << e.what() << std::endl;
-      ASSERT_TRUE(false);
-    }
-  }
-}
-
-TEST(mnemonics, language_detection_with_bad_checksum)
-{
-    crypto::secret_key key;
-    std::string language_name;
-    bool res;
-
-    // This Portuguese (4-prefix) seed has all its words with 3-prefix that's also present in English
-    const std::string base_seed = "cinzento luxuriante leonardo gnostico digressao cupula fifa broxar iniquo louvor ovario dorsal ideologo besuntar decurso rosto susto lemure unheiro pagodeiro nitroglicerina eclusa mazurca bigorna";
-    const std::string real_checksum = "gnostico";
-
-    res = crypto::ElectrumWords::words_to_bytes(base_seed, key, language_name);
-    ASSERT_EQ(true, res);
-    ASSERT_STREQ(language_name.c_str(), "Português");
-
-    res = crypto::ElectrumWords::words_to_bytes(base_seed + " " + real_checksum, key, language_name);
-    ASSERT_EQ(true, res);
-    ASSERT_STREQ(language_name.c_str(), "Português");
-}
-
 TEST(mnemonics, utf8prefix)
 {
   ASSERT_TRUE(Language::utf8prefix(epee::wipeable_string("foo"), 0) == "");
@@ -219,29 +157,6 @@ TEST(mnemonics, utf8prefix)
   ASSERT_TRUE(Language::utf8prefix(epee::wipeable_string("æon"), 2) == "æo");
   ASSERT_TRUE(Language::utf8prefix(epee::wipeable_string("æon"), 3) == "æon");
   ASSERT_TRUE(Language::utf8prefix(epee::wipeable_string("æon"), 4) == "æon");
-}
-
-TEST(mnemonics, case_tolerance)
-{
-    bool res;
-    //
-    crypto::secret_key key_1;
-    std::string language_name_1;
-    const std::string seed_1 = "Neubau umarmen Abart umarmen Turban feilen Brett Bargeld Episode Milchkuh Substanz Jahr Armband Maibaum Tand Grünalge Tabak erziehen Federboa Lobrede Tenor Leuchter Curry Diskurs Tenor";
-    res = crypto::ElectrumWords::words_to_bytes(seed_1, key_1, language_name_1);
-    ASSERT_EQ(true, res);
-    ASSERT_STREQ(language_name_1.c_str(), "Deutsch");
-    //
-    crypto::secret_key key_2;
-    std::string language_name_2;
-    // neubau is capitalized in the word list, but the language detection code should be able to detect it as Deutsch
-    std::string seed_2 = "neubau umarmen Abart umarmen Turban feilen Brett Bargeld Episode Milchkuh Substanz Jahr Armband Maibaum Tand Grünalge Tabak erziehen Federboa Lobrede Tenor Leuchter Curry Diskurs tenor";
-    boost::algorithm::to_lower(seed_2);
-    res = crypto::ElectrumWords::words_to_bytes(seed_2, key_2, language_name_2);
-    ASSERT_EQ(true, res);
-    ASSERT_STREQ(language_name_2.c_str(), "Deutsch");
-    //
-    ASSERT_TRUE(key_1 == key_2);
 }
 
 TEST(mnemonics, partial_word_tolerance)

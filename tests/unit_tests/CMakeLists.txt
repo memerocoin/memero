@@ -45,19 +45,14 @@ set(unit_tests_sources
   epee_utils.cpp
   expect.cpp
   json_serialization.cpp
-#   get_xtype_from_string.cpp
-#   hashchain.cpp
-#   hmac_keccak.cpp
-#   http.cpp
-#   keccak.cpp
-#   levin.cpp
-#   logging.cpp
-#   long_term_block_weight.cpp
-#   lmdb.cpp
-#   main.cpp
-#   memwipe.cpp
-#   mlocker.cpp
-#   mnemonics.cpp
+  get_xtype_from_string.cpp
+  hashchain.cpp
+  levin.cpp
+  logging.cpp
+  lmdb.cpp
+  main.cpp
+  memwipe.cpp
+  mnemonics.cpp
 #   mul_div.cpp
 #   multiexp.cpp
 #   multisig.cpp
@@ -78,8 +73,6 @@ set(unit_tests_sources
 #   test_protocol_pack.cpp
 #   threadpool.cpp
 #   tx_proof.cpp
-#   hardfork.cpp
-#   unbound.cpp
 #   uri.cpp
 #   varint.cpp
 #   ringct.cpp

@@ -28,7 +28,6 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <boost/filesystem.hpp>
 #include "gtest/gtest.h"
 #include "file_io_utils.h"
 #include "misc_log_ex.h"
@@ -37,17 +36,14 @@ static std::string log_filename;
 
 static void init()
 {
-  boost::filesystem::path p = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+  std::filesystem::path p = std::tmpnam(nullptr);
   log_filename = p.string();
-  mlog_configure(log_filename, false, 0);
+  mlog_configure(log_filename, false);
 }
 
 static void cleanup()
 {
   // windows does not let files be deleted if still in use, so leave droppings there
-#ifndef _WIN32
-  boost::filesystem::remove(log_filename);
-#endif
 }
 
 static size_t nlines(const std::string &str)

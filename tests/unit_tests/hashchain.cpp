@@ -30,7 +30,7 @@
 
 #include "gtest/gtest.h"
 
-#include "wallet/wallet2.h"
+#include "wallet/logic/type/hashchain.hpp"
 
 static crypto::hash make_hash(uint64_t n)
 {
@@ -46,14 +46,14 @@ static crypto::hash make_hash(uint64_t n)
 
 TEST(hashchain, empty)
 {
-  tools::hashchain hashchain;
+  wallet::logic::type::hashchain hashchain;
   ASSERT_EQ(hashchain.size(), 0);
   ASSERT_EQ(hashchain.offset(), 0);
 }
 
 TEST(hashchain, genesis)
 {
-  tools::hashchain hashchain;
+  wallet::logic::type::hashchain hashchain;
   hashchain.push_back(make_hash(1));
   ASSERT_EQ(hashchain.size(), 1);
   ASSERT_EQ(hashchain.genesis(), make_hash(1));
@@ -64,7 +64,7 @@ TEST(hashchain, genesis)
 
 TEST(hashchain, push_back)
 {
-  tools::hashchain hashchain;
+  wallet::logic::type::hashchain hashchain;
   hashchain.push_back(make_hash(1));
   hashchain.push_back(make_hash(2));
   hashchain.push_back(make_hash(3));
@@ -75,7 +75,7 @@ TEST(hashchain, push_back)
 
 TEST(hashchain, clear_empty)
 {
-  tools::hashchain hashchain;
+  wallet::logic::type::hashchain hashchain;
   ASSERT_TRUE(hashchain.empty());
   hashchain.push_back(make_hash(1));
   ASSERT_FALSE(hashchain.empty());
@@ -87,7 +87,7 @@ TEST(hashchain, clear_empty)
 
 TEST(hashchain, crop)
 {
-  tools::hashchain hashchain;
+  wallet::logic::type::hashchain hashchain;
   hashchain.push_back(make_hash(1));
   hashchain.push_back(make_hash(2));
   hashchain.push_back(make_hash(3));
@@ -112,7 +112,7 @@ TEST(hashchain, crop)
 
 TEST(hashchain, trim)
 {
-  tools::hashchain hashchain;
+  wallet::logic::type::hashchain hashchain;
   hashchain.push_back(make_hash(1));
   hashchain.push_back(make_hash(2));
   hashchain.push_back(make_hash(3));
