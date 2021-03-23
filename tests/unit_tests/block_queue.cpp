@@ -28,9 +28,9 @@
 
 #include <boost/uuid/uuid.hpp>
 #include "gtest/gtest.h"
-#include "crypto/crypto.h"
-#include "cryptonote_protocol/cryptonote_protocol_defs.h"
-#include "cryptonote_protocol/block_queue.h"
+#include "crypto/crypto.hpp"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
+#include "cryptonote/protocol/block_queue.h"
 
 static const boost::uuids::uuid &uuid1()
 {

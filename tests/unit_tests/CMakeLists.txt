@@ -31,10 +31,8 @@ set(unit_tests_sources
   apply_permutation.cpp
   base58.cpp
 #   blockchain_db.cpp
-#   block_queue.cpp
-#   block_reward.cpp
-#   bootstrap_node_selector.cpp
-#   bulletproofs.cpp
+#  block_queue.cpp
+  bulletproofs.cpp
 #   canonical_amounts.cpp
 #   chacha.cpp
 #   checkpoints.cpp

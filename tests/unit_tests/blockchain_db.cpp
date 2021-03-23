@@ -36,9 +36,9 @@
 #include "gtest/gtest.h"
 
 #include "string_tools.h"
-#include "blockchain_db/blockchain_db.h"
-#include "blockchain_db/lmdb/db_lmdb.h"
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "database/interface/blockchain.hpp"
+#include "database/instance/lmdb/lmdb.hpp"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 
 using namespace cryptonote;
 using epee::string_tools::pod_to_hex;
@@ -153,7 +153,7 @@ template <typename T>
 class BlockchainDBTest : public testing::Test
 {
 protected:
-  BlockchainDBTest() : m_db(new T()), m_hardfork(*m_db, 1, 0)
+  BlockchainDBTest() : m_db(new T())
   {
     for (auto& i : t_blocks)
     {
@@ -182,17 +182,10 @@ protected:
   }
 
   BlockchainDB* m_db;
-  HardFork m_hardfork;
   std::string m_prefix;
   std::vector<std::pair<block, blobdata>> m_blocks;
   std::vector<std::vector<std::pair<transaction, blobdata>>> m_txs;
   std::vector<std::string> m_filenames;
-
-  void init_hard_fork()
-  {
-    m_hardfork.init();
-    m_db->set_hard_fork(&m_hardfork);
-  }
 
   void get_filenames()
   {
@@ -262,7 +255,6 @@ TYPED_TEST(BlockchainDBTest, AddBlock)
   // make sure open does not throw
   ASSERT_NO_THROW(this->m_db->open(dirPath));
   this->get_filenames();
-  this->init_hard_fork();
 
   db_wtxn_guard guard(this->m_db);
 
@@ -310,7 +302,6 @@ TYPED_TEST(BlockchainDBTest, RetrieveBlockData)
   // make sure open does not throw
   ASSERT_NO_THROW(this->m_db->open(dirPath));
   this->get_filenames();
-  this->init_hard_fork();
 
   db_wtxn_guard guard(this->m_db);
 
