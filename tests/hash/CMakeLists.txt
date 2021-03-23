@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,29 +27,23 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(hash_sources
-  main.cpp)
-
-set(hash_headers)
-
 add_executable(hash-tests
-  ${hash_sources}
-  ${hash_headers})
+  main.cpp
+)
+
 target_link_libraries(hash-tests
   PRIVATE
     common
     cncrypto
+    epee
     ${EXTRA_LIBRARIES})
+
 set_property(TARGET hash-tests
   PROPERTY
     FOLDER "tests")
 
-foreach (hash IN ITEMS fast slow slow-1 slow-2 slow-4 tree extra-blake extra-groestl extra-jh extra-skein)
+foreach (hash IN ITEMS tree)
   add_test(
     NAME    "hash-${hash}"
     COMMAND hash-tests "${hash}" "${CMAKE_CURRENT_SOURCE_DIR}/tests-${hash}.txt")
 endforeach ()
-
-add_test(
-  NAME    "hash-variant2-int-sqrt"
-  COMMAND hash-tests "variant2_int_sqrt")

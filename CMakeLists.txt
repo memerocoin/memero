@@ -55,9 +55,14 @@ endif()
 # set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
 
 
+
+
 # language
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
+
+
+
 
 # build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -67,20 +72,6 @@ endif()
 string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 
 # set(OPT_FLAGS_RELEASE "-O2")
-
-
-
-
-# test
-option(BUILD_TESTS "Build tests." OFF)
-if(BUILD_TESTS)
-  message(STATUS "Building tests")
-  include(FindPythonInterp)
-  find_package(PythonInterp)
-  add_subdirectory(tests)
-else()
-#  message(STATUS "Not building tests")
-endif()
 
 
 
@@ -120,7 +111,6 @@ find_library(SODIUM_LIBRARY sodium)
 
 ## rapidjson, only for android
 include_directories(vendor/rapidjson/include)
-
 
 
 
@@ -214,3 +204,11 @@ add_subdirectory(src/database)
 ## daemon
 add_subdirectory(src/daemon)
 
+
+
+
+# test
+include(CTest)
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
