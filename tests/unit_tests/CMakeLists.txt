@@ -33,6 +33,37 @@ set(unit_tests_headers
 add_executable(unit_tests_basic
   ${unit_tests_sources}
 
+  apply_permutation.cpp
+  base58.cpp
+  chacha.cpp
+  command_line.cpp
+  random.cpp
+  epee_boosted_tcp_server.cpp
+  epee_serialization.cpp
+  expect.cpp
+  get_xtype_from_string.cpp
+  logging.cpp
+  mul_div.cpp
+  varint.cpp
+  wipeable_string.cpp
+  aligned.cpp
+  threadpool.cpp
+  memwipe.cpp
+  account.cpp
+  crypto.cpp
+  # notify.cpp
+  hashchain.cpp
+  device.cpp
+  mnemonics.cpp
+  decompose_amount_into_digits.cpp
+  levin.cpp
+  bulletproofs.cpp
+  multiexp.cpp
+)
+
+add_executable(unit_tests_core
+  ${unit_tests_sources}
+
   main.cpp
 
 #  blockchain_db.cpp
@@ -44,41 +75,15 @@ add_executable(unit_tests_basic
 #  parse_amount.cpp
 #  ringct.cpp
 
-  account.cpp
-  apply_permutation.cpp
-  base58.cpp
-  bulletproofs.cpp
-  chacha.cpp
-  command_line.cpp
-  crypto.cpp
-  decompose_amount_into_digits.cpp
-  device.cpp
-  epee_boosted_tcp_server.cpp
-  epee_serialization.cpp
   epee_utils.cpp
-  expect.cpp
   json_serialization.cpp
-  get_xtype_from_string.cpp
-  hashchain.cpp
-  levin.cpp
-  logging.cpp
   lmdb.cpp
-  memwipe.cpp
-  mnemonics.cpp
-  mul_div.cpp
-  multiexp.cpp
   net.cpp
-  notify.cpp
-  random.cpp
   slow_memmem.cpp
   test_tx_utils.cpp
   test_peerlist.cpp
   test_protocol_pack.cpp
-  threadpool.cpp
   tx_proof.cpp
-  varint.cpp
-  wipeable_string.cpp
-  aligned.cpp
   rpc_version_str.cpp
   )
 
@@ -86,12 +91,24 @@ add_executable(unit_tests_wallet
   ${unit_tests_headers}
 
   # uri.cpp
-  output_selection.cpp
+  # output_selection.cpp
   subaddress.cpp
   serialization.cpp
   )
 
 target_link_libraries(unit_tests_basic
+  PRIVATE
+    epee
+    common
+    common_basic
+    cryptonote_basic
+    mnemonics
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    GTest::gtest
+    GTest::gtest_main
+)
+
+target_link_libraries(unit_tests_core
   PRIVATE
     ringct
     cryptonote_protocol
@@ -102,7 +119,6 @@ target_link_libraries(unit_tests_basic
     net
     serialization
     p2p
-    mnemonics
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     GTest::gtest
     GTest::gtest_main
@@ -133,11 +149,18 @@ SET_PROPERTY(
 
 add_test(
   NAME    unit_tests_basic
-  COMMAND unit_tests_basic --data-dir "${TEST_DATA_DIR}")
+  COMMAND unit_tests_basic
+)
+
+add_test(
+  NAME    unit_tests_core
+  COMMAND unit_tests_core
+)
 
 add_test(
   NAME    unit_tests_wallet
-  COMMAND unit_tests_wallet --data-dir "${TEST_DATA_DIR}")
+  COMMAND unit_tests_wallet
+  )
 
 add_executable(test_notifier test_notifier.cpp)
 target_link_libraries(test_notifier ${EXTRA_LIBRARIES})
