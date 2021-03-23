@@ -26,13 +26,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(unit_tests_headers
-  unit_tests_utils.h
-  )
-
 add_executable(unit_tests_basic
-  ${unit_tests_sources}
-
   apply_permutation.cpp
   base58.cpp
   chacha.cpp
@@ -44,6 +38,7 @@ add_executable(unit_tests_basic
   get_xtype_from_string.cpp
   logging.cpp
   mul_div.cpp
+  notify.cpp
   varint.cpp
   wipeable_string.cpp
   aligned.cpp
@@ -51,7 +46,6 @@ add_executable(unit_tests_basic
   memwipe.cpp
   account.cpp
   crypto.cpp
-  # notify.cpp
   hashchain.cpp
   device.cpp
   mnemonics.cpp
@@ -62,8 +56,6 @@ add_executable(unit_tests_basic
 )
 
 add_executable(unit_tests_core
-  ${unit_tests_sources}
-
   main.cpp
 
 #  blockchain_db.cpp
@@ -88,8 +80,6 @@ add_executable(unit_tests_core
   )
 
 add_executable(unit_tests_wallet
-  ${unit_tests_headers}
-
   # uri.cpp
   # output_selection.cpp
   subaddress.cpp
@@ -147,6 +137,9 @@ SET_PROPERTY(
   PROPERTY COMPILE_FLAGS -DDEFAULT_DATA_DIR="\\"${CMAKE_SOURCE_DIR}/tests/data\\""
 )
 
+add_executable(test_notifier test_notifier.cpp)
+set_property(TARGET test_notifier PROPERTY FOLDER "tests")
+
 add_test(
   NAME    unit_tests_basic
   COMMAND unit_tests_basic
@@ -162,6 +155,3 @@ add_test(
   COMMAND unit_tests_wallet
   )
 
-add_executable(test_notifier test_notifier.cpp)
-target_link_libraries(test_notifier ${EXTRA_LIBRARIES})
-set_property(TARGET test_notifier PROPERTY FOLDER "tests")

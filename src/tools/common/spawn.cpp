@@ -41,7 +41,7 @@ int spawn(const std::string filename, const std::vector<std::string>& args, bool
 {
   const std::string bg = wait ? "" : " &";
   const std::string cmd = boost::join(args, " ") + bg;
-  std::cout << ">>>>>>>>>>> spawn: " << cmd << std::endl;
+  // std::cout << ">>>>>>>>>>> spawn: " << cmd << std::endl;
   return std::system(cmd.c_str());
 }
 

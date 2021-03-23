@@ -29,14 +29,30 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "gtest/gtest.h"
+
+#include <random>
+
 #include "file_io_utils.h"
 #include "misc_log_ex.h"
 
 static std::string log_filename;
 
+// https://stackoverflow.com/questions/47977829/generate-a-random-string-in-c11/47979867
+std::string random_string()
+{
+  std::string str("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+  std::random_device rd;
+  std::mt19937 generator(rd());
+
+  std::shuffle(str.begin(), str.end(), generator);
+
+  return str.substr(0, 32);    // assumes 32 < number of characters in str         
+}
+
 static void init()
 {
-  std::filesystem::path p = std::tmpnam(nullptr);
+  std::filesystem::path p = std::filesystem::temp_directory_path().string() + "/" + random_string();
   log_filename = p.string();
   mlog_configure(log_filename, false);
 }
