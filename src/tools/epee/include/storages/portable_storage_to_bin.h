@@ -28,6 +28,7 @@
 
 #pragma once 
 
+#include "tools/epee/include/misc_log_ex.h"
 #include "pragma_comp_defs.h"
 #include "tools/epee/include/misc_language.h"
 #include "portable_storage_base.h"

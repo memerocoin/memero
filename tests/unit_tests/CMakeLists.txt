@@ -39,10 +39,9 @@ set(unit_tests_sources
   decompose_amount_into_digits.cpp
   device.cpp
 #   difficulty.cpp
-#   dns_resolver.cpp
-#   epee_boosted_tcp_server.cpp
+  epee_boosted_tcp_server.cpp
 #   epee_levin_protocol_handler_async.cpp
-#   epee_serialization.cpp
+  epee_serialization.cpp
 #   epee_utils.cpp
 #   expect.cpp
 #   fee.cpp

@@ -110,7 +110,7 @@ TEST(boosted_tcp_server, worker_threads_are_exception_resistant)
 
   {
     std::unique_lock<std::mutex> lock(mtx);
-    ASSERT_NE(boost::cv_status::timeout, cond.wait_for(lock, std::chrono::seconds(5)));
+    ASSERT_NE(std::cv_status::timeout, cond.wait_for(lock, std::chrono::seconds(5)));
     ASSERT_EQ(4, counter);
   }
 
@@ -124,7 +124,7 @@ TEST(boosted_tcp_server, worker_threads_are_exception_resistant)
 
   {
     std::unique_lock<std::mutex> lock(mtx);
-    ASSERT_NE(boost::cv_status::timeout, cond.wait_for(lock, std::chrono::seconds(5)));
+    ASSERT_NE(std::cv_status::timeout, cond.wait_for(lock, std::chrono::seconds(5)));
     ASSERT_EQ(4, counter);
   }
 
