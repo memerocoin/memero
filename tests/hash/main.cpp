@@ -57,6 +57,7 @@ extern "C" {
 }
 POP_WARNINGS
 
+// TODO add more test data
 extern "C" typedef void hash_f(const void *, size_t, char *);
 struct hash_func {
   const string name;

@@ -173,6 +173,7 @@ TEST(bulletproofs, invalid_torsion)
   }
 }
 
+// TODO fix tests
 // we use sha3 for tx_hash, so the following should fail
 /*
 TEST(bulletproof, weight_equal)

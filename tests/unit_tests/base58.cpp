@@ -473,6 +473,7 @@ namespace
   std::string test_keys_addr_str = "4AzKEX4gXdJdNeM6dfiBFL7kqund3HYGvMBF3ttsNd9SfzgYB6L7ep1Yg1osYJzLdaKAYSLVh6e6jKnAuzj3bw1oGy9kXCb";
 }
 
+// TODO fix tests
 /*
 TEST(get_account_address_as_str, works_correctly)
 {

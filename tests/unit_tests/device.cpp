@@ -114,6 +114,7 @@ TEST(device, ops)
   ASSERT_EQ(ki0, ki1);
 }
 
+// TODO fix tests
 // ecdhEncode uses ecdhHash, which we replaced with sha3, so these will fail
 /*
 TEST(device, ecdh32)
