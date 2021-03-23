@@ -56,8 +56,8 @@ set(unit_tests_sources
   mul_div.cpp
   multiexp.cpp
   net.cpp
-#   node_server.cpp
-#   notify.cpp
+#  node_server.cpp
+  notify.cpp
 #   output_distribution.cpp
 #   parse_amount.cpp
 #   pruning.cpp

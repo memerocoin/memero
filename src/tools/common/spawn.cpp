@@ -40,7 +40,8 @@ namespace tools
 int spawn(const std::string filename, const std::vector<std::string>& args, bool wait)
 {
   const std::string bg = wait ? "" : " &";
-  const std::string cmd = filename + " " + boost::join(args, " ") + bg;
+  const std::string cmd = boost::join(args, " ") + bg;
+  std::cout << ">>>>>>>>>>> spawn: " << cmd << std::endl;
   return std::system(cmd.c_str());
 }
 

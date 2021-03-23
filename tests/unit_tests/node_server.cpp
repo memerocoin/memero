@@ -29,12 +29,12 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "gtest/gtest.h"
-#include "cryptonote_core/cryptonote_core.h"
+#include "cryptonote/core/cryptonote_core.h"
 #include "p2p/net_node.h"
 #include "p2p/net_node.inl"
-#include "cryptonote_core/i_core_events.h"
-#include "cryptonote_protocol/cryptonote_protocol_handler.h"
-#include "cryptonote_protocol/cryptonote_protocol_handler.inl"
+#include "cryptonote/core/i_core_events.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.inl"
 
 #define MAKE_IPV4_ADDRESS(a,b,c,d) epee::net_utils::ipv4_network_address{MAKE_IP(a,b,c,d),0}
 #define MAKE_IPV4_ADDRESS_PORT(a,b,c,d,e) epee::net_utils::ipv4_network_address{MAKE_IP(a,b,c,d),e}
