@@ -32,7 +32,7 @@
 extern "C" {
 #include "crypto/crypto-ops.h"
 }
-#include "crypto/hash.h"
+#include "crypto/hash.hpp"
 #include <boost/algorithm/string.hpp>
 
 static inline unsigned char *operator &(crypto::ec_point &point) {

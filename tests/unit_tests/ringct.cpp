@@ -34,109 +34,15 @@
 #include <algorithm>
 #include <sstream>
 
-#include "ringct/rctTypes.h"
-#include "ringct/rctSigs.h"
-#include "ringct/rctOps.h"
-#include "device/device.hpp"
+#include "ringct/rctTypes.hpp"
+#include "ringct/rctSigs.hpp"
+#include "ringct/rctOps.hpp"
+#include "wallet/device/device.hpp"
 #include "string_tools.h"
 
 using namespace std;
 using namespace crypto;
 using namespace rct;
-
-TEST(ringct, Borromean)
-{
-    int j = 0;
-
-        //Tests for Borromean signatures
-        //#boro true one, false one, C != sum Ci, and one out of the range..
-        int N = 64;
-        key64 xv;
-        key64 P1v;
-        key64 P2v;
-        bits indi;
-
-        for (j = 0 ; j < N ; j++) {
-            indi[j] = (int)randXmrAmount(2);
-
-            xv[j] = skGen();
-            if ( (int)indi[j] == 0 ) {
-                scalarmultBase(P1v[j], xv[j]);
-            } else {
-                addKeys1(P1v[j], xv[j], H2[j]);
-            }
-            subKeys(P2v[j], P1v[j], H2[j]);
-        }
-
-        //#true one
-        boroSig bb = genBorromean(xv, P1v, P2v, indi);
-        ASSERT_TRUE(verifyBorromean(bb, P1v, P2v));
-
-        //#false one
-        indi[3] = (indi[3] + 1) % 2;
-        bb = genBorromean(xv, P1v, P2v, indi);
-        ASSERT_FALSE(verifyBorromean(bb, P1v, P2v));
-
-        //#true one again
-        indi[3] = (indi[3] + 1) % 2;
-        bb = genBorromean(xv, P1v, P2v, indi);
-        ASSERT_TRUE(verifyBorromean(bb, P1v, P2v));
-
-        //#false one
-        bb = genBorromean(xv, P2v, P1v, indi);
-        ASSERT_FALSE(verifyBorromean(bb, P1v, P2v));
-}
-
-TEST(ringct, MG_sigs)
-{
-    int j = 0;
-    int N = 0;
-
-        //Tests for MG Sigs
-        //#MG sig: true one
-        N = 3;// #cols
-        int   R = 3;// #rows
-        keyV xtmp = skvGen(R);
-        keyM xm = keyMInit(R, N);// = [[None]*N] #just used to generate test public keys
-        keyV sk = skvGen(R);
-        keyM P  = keyMInit(R, N);// = keyM[[None]*N] #stores the public keys;
-        int ind = 2;
-        int i = 0;
-        for (j = 0 ; j < R ; j++) {
-            for (i = 0 ; i < N ; i++)
-            {
-                xm[i][j] = skGen();
-                P[i][j] = scalarmultBase(xm[i][j]);
-            }
-        }
-        for (j = 0 ; j < R ; j++) {
-            sk[j] = xm[ind][j];
-        }
-        key message = identity();
-        mgSig IIccss = MLSAG_Gen(message, P, sk, NULL, NULL, ind, R, hw::get_device("default"));
-        ASSERT_TRUE(MLSAG_Ver(message, P, IIccss, R));
-
-        //#MG sig: false one
-        N = 3;// #cols
-        R = 3;// #rows
-        xtmp = skvGen(R);
-        keyM xx(N, xtmp);// = [[None]*N] #just used to generate test public keys
-        sk = skvGen(R);
-        //P (N, xtmp);// = keyM[[None]*N] #stores the public keys;
-
-        ind = 2;
-        for (j = 0 ; j < R ; j++) {
-            for (i = 0 ; i < N ; i++)
-            {
-                xx[i][j] = skGen();
-                P[i][j] = scalarmultBase(xx[i][j]);
-            }
-            sk[j] = xx[ind][j];
-        }
-        sk[2] = skGen();//assume we don't know one of the private keys..
-        IIccss = MLSAG_Gen(message, P, sk, NULL, NULL, ind, R, hw::get_device("default"));
-        ASSERT_FALSE(MLSAG_Ver(message, P, IIccss, R));
-}
 
 TEST(ringct, CLSAG)
 {

@@ -27,15 +27,15 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
-#include <boost/filesystem.hpp>
+
 #include "gtest/gtest.h"
 
 #include "include_base_utils.h"
-#include "wallet/wallet2.h"
+#include "wallet/api/wallet2.h"
 #include "crypto/crypto.hpp"
-#include "cryptonote_basic/account.h"
-#include "cryptonote_basic/cryptonote_basic_impl.h"
-#include "wallet/api/subaddress.h"
+#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/subaddress_index.h"
 
 class WalletSubaddress : public ::testing::Test 
 {

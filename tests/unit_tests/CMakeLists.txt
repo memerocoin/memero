@@ -28,58 +28,56 @@
 
 set(unit_tests_sources
   main.cpp
-##//   account.cpp
-##//   apply_permutation.cpp
-##//   base58.cpp
-##// #   blockchain_db.cpp
-##// #  block_queue.cpp
-##//   bulletproofs.cpp
-##//   chacha.cpp
-##//   command_line.cpp
-##//   crypto.cpp
-##//   decompose_amount_into_digits.cpp
-##//   device.cpp
-##// #   difficulty.cpp
-##//   epee_boosted_tcp_server.cpp
-##// #   epee_levin_protocol_handler_async.cpp
-##//   epee_serialization.cpp
-##//   epee_utils.cpp
-##//   expect.cpp
-##//   json_serialization.cpp
-##//   get_xtype_from_string.cpp
-##//   hashchain.cpp
-##//   levin.cpp
-##//   logging.cpp
-##//   lmdb.cpp
-##//   memwipe.cpp
-##//   mnemonics.cpp
-##//   mul_div.cpp
-##//   multiexp.cpp
-##//   net.cpp
-##// #  node_server.cpp
-##//   notify.cpp
-##// #  output_distribution.cpp
-##// #  parse_amount.cpp
-##//   random.cpp
+
+#  blockchain_db.cpp
+#  block_queue.cpp
+#  difficulty.cpp
+#  epee_levin_protocol_handler_async.cpp
+#  node_server.cpp
+#  output_distribution.cpp
+#  parse_amount.cpp
+#  uri.cpp
+#  ringct.cpp
+
+  account.cpp
+  apply_permutation.cpp
+  base58.cpp
+  bulletproofs.cpp
+  chacha.cpp
+  command_line.cpp
+  crypto.cpp
+  decompose_amount_into_digits.cpp
+  device.cpp
+  epee_boosted_tcp_server.cpp
+  epee_serialization.cpp
+  epee_utils.cpp
+  expect.cpp
+  json_serialization.cpp
+  get_xtype_from_string.cpp
+  hashchain.cpp
+  levin.cpp
+  logging.cpp
+  lmdb.cpp
+  memwipe.cpp
+  mnemonics.cpp
+  mul_div.cpp
+  multiexp.cpp
+  net.cpp
+  notify.cpp
+  random.cpp
   serialization.cpp
-#   sha256.cpp
-#   slow_memmem.cpp
-#   subaddress.cpp
-#   test_tx_utils.cpp
-#   test_peerlist.cpp
-#   test_protocol_pack.cpp
-#   threadpool.cpp
-#   tx_proof.cpp
-#   uri.cpp
-#   varint.cpp
-#   ringct.cpp
-#   output_selection.cpp
-#   vercmp.cpp
-#   ringdb.cpp
-#   wipeable_string.cpp
-#   is_hdd.cpp
-#   aligned.cpp
-#   rpc_version_str.cpp
+  slow_memmem.cpp
+  subaddress.cpp
+  test_tx_utils.cpp
+  test_peerlist.cpp
+  test_protocol_pack.cpp
+  threadpool.cpp
+  tx_proof.cpp
+  varint.cpp
+  output_selection.cpp
+  wipeable_string.cpp
+  aligned.cpp
+  rpc_version_str.cpp
   )
 
 set(unit_tests_headers
