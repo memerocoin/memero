@@ -92,17 +92,13 @@ target_link_libraries(unit_tests
     ringct
     cryptonote_protocol
     cryptonote_core
-    daemon_messages
-    daemon_rpc_server
-    blockchain_db
+    # blockchain_db
     lmdb_lib
     rpc
     net
     serialization
     wallet_api
     p2p
-    version
-    ${Boost_CHRONO_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     GTest::gtest
     GTest::gtest_main
