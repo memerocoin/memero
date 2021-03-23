@@ -30,7 +30,7 @@
 
 #include "gtest/gtest.h"
 
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 
 using namespace cryptonote;
 

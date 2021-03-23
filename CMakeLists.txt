@@ -214,6 +214,9 @@ if(BUILD_TESTING)
 find_package(GTest REQUIRED)
 
 add_subdirectory(tests/hash)
+
+# set(TEST_DATA_DIR "${CMAKE_CURRENT_LIST_DIR}/tests/data")
+
 add_subdirectory(tests/unit_tests)
 
 endif()
