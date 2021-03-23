@@ -211,6 +211,8 @@ add_subdirectory(src/daemon)
 include(CTest)
 if(BUILD_TESTING)
 
+find_package(GTest REQUIRED)
+
 add_subdirectory(tests/hash)
 add_subdirectory(tests/unit_tests)
 
