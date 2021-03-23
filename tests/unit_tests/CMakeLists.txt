@@ -140,23 +140,19 @@ target_link_libraries(unit_tests_wallet
 
 add_executable(test_notifier test_notifier.cpp)
 
-add_test(
-  NAME    unit_tests_tools
-  COMMAND unit_tests_tools
+gtest_discover_tests(
+  unit_tests_tools
 )
 
-add_test(
-  NAME    unit_tests_basic
-  COMMAND unit_tests_basic
+gtest_discover_tests(
+  unit_tests_basic
 )
 
-add_test(
-  NAME    unit_tests_core
-  COMMAND unit_tests_core
+gtest_discover_tests(
+  unit_tests_core
 )
 
-add_test(
-  NAME    unit_tests_wallet
-  COMMAND unit_tests_wallet
+gtest_discover_tests(
+  unit_tests_wallet
 )
 
