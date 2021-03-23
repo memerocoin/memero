@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -58,6 +59,11 @@ add_executable(unit_tests_basic
   multiexp.cpp
 )
 
+set_property(
+  SOURCE main.cpp
+  PROPERTY COMPILE_FLAGS -DDEFAULT_DATA_DIR="\\"${CMAKE_SOURCE_DIR}/tests/data\\""
+)
+
 add_executable(unit_tests_core
   main.cpp
 
@@ -80,14 +86,14 @@ add_executable(unit_tests_core
   test_protocol_pack.cpp
   tx_proof.cpp
   rpc_version_str.cpp
-  )
+)
 
 add_executable(unit_tests_wallet
   # uri.cpp
   # output_selection.cpp
   subaddress.cpp
   serialization.cpp
-  )
+)
 
 target_link_libraries(unit_tests_tools
   PRIVATE
@@ -101,9 +107,6 @@ target_link_libraries(unit_tests_tools
 
 target_link_libraries(unit_tests_basic
   PRIVATE
-    epee
-    common
-    common_basic
     cryptonote_basic
     mnemonics
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
@@ -125,7 +128,7 @@ target_link_libraries(unit_tests_core
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     GTest::gtest
     GTest::gtest_main
-    )
+)
 
 target_link_libraries(unit_tests_wallet
   PRIVATE
@@ -133,25 +136,9 @@ target_link_libraries(unit_tests_wallet
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     GTest::gtest
     GTest::gtest_main
-    )
-
-set_property(TARGET unit_tests_basic
-  PROPERTY
-    FOLDER "tests"
-    )
-
-set_property(TARGET unit_tests_wallet
-  PROPERTY
-    FOLDER "tests"
-    )
-
-SET_PROPERTY(
-  SOURCE main.cpp
-  PROPERTY COMPILE_FLAGS -DDEFAULT_DATA_DIR="\\"${CMAKE_SOURCE_DIR}/tests/data\\""
 )
 
 add_executable(test_notifier test_notifier.cpp)
-set_property(TARGET test_notifier PROPERTY FOLDER "tests")
 
 add_test(
   NAME    unit_tests_tools
@@ -171,5 +158,5 @@ add_test(
 add_test(
   NAME    unit_tests_wallet
   COMMAND unit_tests_wallet
-  )
+)
 
