@@ -22,6 +22,7 @@ in
     inherit CMakeFlags_Lolnero;
 
     configure = "${cmake}/bin/cmake ${CMakeFlags_Lolnero}";
-    build = "make -j";
+    build = "make -j6";
+    test = "ctest -j6";
   };
 }
