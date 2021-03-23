@@ -40,4 +40,8 @@ add_library(common
   combinator.cpp
   )
 
+target_link_libraries(common
+  cncrypto
+)
+
 

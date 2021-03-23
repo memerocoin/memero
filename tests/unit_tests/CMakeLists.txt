@@ -26,14 +26,12 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_executable(unit_tests_basic
+add_executable(unit_tests_tools
   apply_permutation.cpp
   base58.cpp
   chacha.cpp
   command_line.cpp
   random.cpp
-  epee_boosted_tcp_server.cpp
-  epee_serialization.cpp
   expect.cpp
   get_xtype_from_string.cpp
   logging.cpp
@@ -44,13 +42,18 @@ add_executable(unit_tests_basic
   aligned.cpp
   threadpool.cpp
   memwipe.cpp
-  account.cpp
   crypto.cpp
   hashchain.cpp
-  device.cpp
-  mnemonics.cpp
   decompose_amount_into_digits.cpp
   levin.cpp
+  epee_boosted_tcp_server.cpp
+  epee_serialization.cpp
+)
+
+add_executable(unit_tests_basic
+  device.cpp
+  account.cpp
+  mnemonics.cpp
   bulletproofs.cpp
   multiexp.cpp
 )
@@ -85,6 +88,16 @@ add_executable(unit_tests_wallet
   subaddress.cpp
   serialization.cpp
   )
+
+target_link_libraries(unit_tests_tools
+  PRIVATE
+    epee
+    common
+    common_basic
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    GTest::gtest
+    GTest::gtest_main
+)
 
 target_link_libraries(unit_tests_basic
   PRIVATE
@@ -139,6 +152,11 @@ SET_PROPERTY(
 
 add_executable(test_notifier test_notifier.cpp)
 set_property(TARGET test_notifier PROPERTY FOLDER "tests")
+
+add_test(
+  NAME    unit_tests_tools
+  COMMAND unit_tests_tools
+)
 
 add_test(
   NAME    unit_tests_basic
