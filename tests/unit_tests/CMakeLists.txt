@@ -51,6 +51,22 @@ add_executable(unit_tests_tools
   epee_serialization.cpp
 )
 
+target_link_libraries(unit_tests_tools
+  PRIVATE
+    epee
+    common
+    common_basic
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    GTest::gtest
+    GTest::gtest_main
+)
+
+gtest_discover_tests(
+  unit_tests_tools
+)
+
+
+
 add_executable(unit_tests_basic
   device.cpp
   account.cpp
@@ -58,6 +74,21 @@ add_executable(unit_tests_basic
   bulletproofs.cpp
   multiexp.cpp
 )
+
+target_link_libraries(unit_tests_basic
+  PRIVATE
+    cryptonote_basic
+    mnemonics
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    GTest::gtest
+    GTest::gtest_main
+)
+
+gtest_discover_tests(
+  unit_tests_basic
+)
+
+
 
 set_property(
   SOURCE main.cpp
@@ -88,32 +119,6 @@ add_executable(unit_tests_core
   rpc_version_str.cpp
 )
 
-add_executable(unit_tests_wallet
-  # uri.cpp
-  # output_selection.cpp
-  subaddress.cpp
-  serialization.cpp
-)
-
-target_link_libraries(unit_tests_tools
-  PRIVATE
-    epee
-    common
-    common_basic
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    GTest::gtest
-    GTest::gtest_main
-)
-
-target_link_libraries(unit_tests_basic
-  PRIVATE
-    cryptonote_basic
-    mnemonics
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    GTest::gtest
-    GTest::gtest_main
-)
-
 target_link_libraries(unit_tests_core
   PRIVATE
     ringct
@@ -130,6 +135,19 @@ target_link_libraries(unit_tests_core
     GTest::gtest_main
 )
 
+gtest_discover_tests(
+  unit_tests_core
+)
+
+
+
+add_executable(unit_tests_wallet
+  # uri.cpp
+  # output_selection.cpp
+  subaddress.cpp
+  serialization.cpp
+)
+
 target_link_libraries(unit_tests_wallet
   PRIVATE
     wallet_api
@@ -138,21 +156,11 @@ target_link_libraries(unit_tests_wallet
     GTest::gtest_main
 )
 
-add_executable(test_notifier test_notifier.cpp)
-
-gtest_discover_tests(
-  unit_tests_tools
-)
-
-gtest_discover_tests(
-  unit_tests_basic
-)
-
-gtest_discover_tests(
-  unit_tests_core
-)
-
 gtest_discover_tests(
   unit_tests_wallet
 )
+
+
+
+add_executable(test_notifier test_notifier.cpp)
 
