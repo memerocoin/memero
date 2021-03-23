@@ -33,13 +33,11 @@ set(unit_tests_sources
 #   blockchain_db.cpp
 #  block_queue.cpp
   bulletproofs.cpp
-#   canonical_amounts.cpp
-#   chacha.cpp
-#   checkpoints.cpp
-#   command_line.cpp
-#   crypto.cpp
-#   decompose_amount_into_digits.cpp
-#   device.cpp
+  chacha.cpp
+  command_line.cpp
+  crypto.cpp
+  decompose_amount_into_digits.cpp
+  device.cpp
 #   difficulty.cpp
 #   dns_resolver.cpp
 #   epee_boosted_tcp_server.cpp
