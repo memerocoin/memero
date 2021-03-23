@@ -26,7 +26,13 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(unit_tests_sources
+set(unit_tests_headers
+  unit_tests_utils.h
+  )
+
+add_executable(unit_tests_basic
+  ${unit_tests_sources}
+
   main.cpp
 
 #  blockchain_db.cpp
@@ -36,7 +42,6 @@ set(unit_tests_sources
 #  node_server.cpp
 #  output_distribution.cpp
 #  parse_amount.cpp
-#  uri.cpp
 #  ringct.cpp
 
   account.cpp
@@ -65,29 +70,28 @@ set(unit_tests_sources
   net.cpp
   notify.cpp
   random.cpp
-  serialization.cpp
   slow_memmem.cpp
-  subaddress.cpp
   test_tx_utils.cpp
   test_peerlist.cpp
   test_protocol_pack.cpp
   threadpool.cpp
   tx_proof.cpp
   varint.cpp
-  output_selection.cpp
   wipeable_string.cpp
   aligned.cpp
   rpc_version_str.cpp
   )
 
-set(unit_tests_headers
-  unit_tests_utils.h)
+add_executable(unit_tests_wallet
+  ${unit_tests_headers}
 
-add_executable(unit_tests
-  ${unit_tests_sources}
-  ${unit_tests_headers})
+  # uri.cpp
+  output_selection.cpp
+  subaddress.cpp
+  serialization.cpp
+  )
 
-target_link_libraries(unit_tests
+target_link_libraries(unit_tests_basic
   PRIVATE
     ringct
     cryptonote_protocol
@@ -97,14 +101,27 @@ target_link_libraries(unit_tests
     rpc
     net
     serialization
-    wallet_api
     p2p
+    mnemonics
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     GTest::gtest
     GTest::gtest_main
     )
 
-set_property(TARGET unit_tests
+target_link_libraries(unit_tests_wallet
+  PRIVATE
+    wallet_api
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    GTest::gtest
+    GTest::gtest_main
+    )
+
+set_property(TARGET unit_tests_basic
+  PROPERTY
+    FOLDER "tests"
+    )
+
+set_property(TARGET unit_tests_wallet
   PROPERTY
     FOLDER "tests"
     )
@@ -115,8 +132,12 @@ SET_PROPERTY(
 )
 
 add_test(
-  NAME    unit_tests
-  COMMAND unit_tests --data-dir "${TEST_DATA_DIR}")
+  NAME    unit_tests_basic
+  COMMAND unit_tests_basic --data-dir "${TEST_DATA_DIR}")
+
+add_test(
+  NAME    unit_tests_wallet
+  COMMAND unit_tests_wallet --data-dir "${TEST_DATA_DIR}")
 
 add_executable(test_notifier test_notifier.cpp)
 target_link_libraries(test_notifier ${EXTRA_LIBRARIES})
