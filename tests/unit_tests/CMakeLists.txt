@@ -53,10 +53,9 @@ set(unit_tests_sources
   main.cpp
   memwipe.cpp
   mnemonics.cpp
-#   mul_div.cpp
-#   multiexp.cpp
-#   multisig.cpp
-#   net.cpp
+  mul_div.cpp
+  multiexp.cpp
+  net.cpp
 #   node_server.cpp
 #   notify.cpp
 #   output_distribution.cpp

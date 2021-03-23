@@ -30,7 +30,7 @@
 #include "gtest/gtest.h"
 #include "misc_language.h"
 #include "rolling_median.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 
 TEST(rolling_median, one)
 {

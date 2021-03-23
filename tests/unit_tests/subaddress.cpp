@@ -32,7 +32,7 @@
 
 #include "include_base_utils.h"
 #include "wallet/wallet2.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "cryptonote_basic/account.h"
 #include "cryptonote_basic/cryptonote_basic_impl.h"
 #include "wallet/api/subaddress.h"

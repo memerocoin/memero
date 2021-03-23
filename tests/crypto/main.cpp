@@ -36,7 +36,7 @@
 
 #include "warnings.h"
 #include "misc_log_ex.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/hash.h"
 #include "crypto-tests.h"
 #include "../io.h"

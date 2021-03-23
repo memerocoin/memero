@@ -98,9 +98,6 @@ namespace dandelionpp
 
         //! \return Number of outgoing connections in use.
         std::size_t size() const noexcept;
-
-        //! \return Current stem mapping for `source` or `nil_uuid()` if none is possible.
-        boost::uuids::uuid get_stem(const boost::uuids::uuid& source);
     };
 } // dandelionpp
 } // net

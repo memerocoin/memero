@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "cryptonote_basic/cryptonote_basic.h"
 
 #include "single_tx_test_base.h"

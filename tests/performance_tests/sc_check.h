@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 
 class test_sc_check
 {

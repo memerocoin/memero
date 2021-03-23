@@ -28,9 +28,9 @@
 
 #include "gtest/gtest.h"
 
-#include "crypto/crypto.h"
-#include "ringct/rctOps.h"
-#include "ringct/multiexp.h"
+#include "crypto/crypto.hpp"
+#include "ringct/rctOps.hpp"
+#include "ringct/multiexp.hpp"
 
 #define TESTSCALAR []{ static const rct::key TESTSCALAR = rct::skGen(); return TESTSCALAR; }()
 #define TESTPOW2SCALAR []{ static const rct::key TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()

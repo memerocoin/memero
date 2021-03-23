@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 extern "C" {
 #include "crypto/crypto-ops.h"
 }

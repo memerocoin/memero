@@ -36,7 +36,7 @@
 #include "gtest/gtest.h"
 
 #include "string_tools.h"
-#include "crypto/crypto.h"
+#include "crypto/crypto.hpp"
 #include "crypto/random.h"
 #include "crypto/chacha.h"
 #include "ringct/rctOps.h"

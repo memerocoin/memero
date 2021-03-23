@@ -32,6 +32,7 @@
 
 #include <vector>
 
+#include "tools/epee/include/misc_log_ex.h"
 #include "rctTypes.hpp"
 
 namespace rct
