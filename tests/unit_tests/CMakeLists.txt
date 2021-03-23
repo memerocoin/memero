@@ -61,7 +61,7 @@ add_executable(unit_tests_basic
 
 set_property(
   SOURCE main.cpp
-  PROPERTY COMPILE_FLAGS -DDEFAULT_DATA_DIR="\\"${CMAKE_SOURCE_DIR}/tests/data\\""
+  PROPERTY COMPILE_FLAGS -DDEFAULT_DATA_DIR='"${CMAKE_SOURCE_DIR}/tests/data"'
 )
 
 add_executable(unit_tests_core
