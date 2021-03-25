@@ -40,11 +40,11 @@ using namespace epee;
 #include "tools/common/threadpool.h"
 #include "tools/common/command_line.h"
 #include "cryptonote/basic/events.h"
-#include "warnings.h"
+#include "tools/epee/include/warnings.h"
 #include "math/crypto/crypto.hpp"
 #include "config/cryptonote.hpp"
 #include "tools/epee/include/misc_language.h"
-#include "file_io_utils.h"
+#include "tools/epee/include/file_io_utils.h"
 #include <csignal>
 #include "math/ringct/rctTypes.hpp"
 #include "database/interface/blockchain.hpp"

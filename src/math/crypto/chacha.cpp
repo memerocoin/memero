@@ -12,7 +12,7 @@ Public domain.
 
 #include "chacha.hpp"
 #include "tools/epee/include/int-util.h"
-#include "warnings.h"
+#include "tools/epee/include/warnings.h"
 
 /*
  * The following macros are used to obtain exact-width results.

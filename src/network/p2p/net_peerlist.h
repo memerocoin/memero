@@ -45,10 +45,10 @@
 
 #include "math/crypto/crypto.hpp"
 #include "config/cryptonote.hpp"
-#include "net/enums.h"
-#include "net/local_ip.h"
+#include "tools/epee/include/net/enums.h"
+#include "tools/epee/include/net/local_ip.h"
 #include "p2p_protocol_defs.h"
-#include "syncobj.h"
+#include "tools/epee/include/syncobj.h"
 
 namespace nodetool
 {

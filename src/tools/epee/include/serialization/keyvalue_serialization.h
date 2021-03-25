@@ -29,7 +29,7 @@
 #include <type_traits>
 #include <boost/utility/value_init.hpp>
 #include <boost/foreach.hpp>
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "enableable.h"
 #include "keyvalue_serialization_overloads.h"
 

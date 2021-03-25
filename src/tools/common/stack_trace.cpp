@@ -44,7 +44,7 @@
 #endif
 #include <boost/algorithm/string.hpp>
 #include "tools/common/stack_trace.h"
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "stacktrace"

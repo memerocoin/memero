@@ -37,7 +37,7 @@
 #include "portable_storage_to_json.h"
 #include "portable_storage_from_json.h"
 #include "portable_storage_val_converters.h"
-#include "span.h"
+#include "tools/epee/include/span.h"
 #include "tools/epee/include/int-util.h"
 
 namespace epee

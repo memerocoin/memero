@@ -30,14 +30,14 @@
 
 #include "gtest/gtest.h"
 
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "ringct/rctOps.hpp"
 #include "ringct/rctSigs.hpp"
 #include "ringct/bulletproofs.hpp"
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "wallet/device/device.hpp"
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 TEST(bulletproofs, valid_zero)
 {

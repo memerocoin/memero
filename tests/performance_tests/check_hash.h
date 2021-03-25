@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include "string_tools.h"
-#include "int-util.h"
+#include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/int-util.h"
 #include "cryptonote_basic/difficulty.h"
 
 template<uint64_t hash_target_high, uint64_t hash_target_low, uint64_t difficulty_high, uint64_t difficulty_low>

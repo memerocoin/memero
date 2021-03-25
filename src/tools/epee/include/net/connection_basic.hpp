@@ -49,9 +49,9 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 
-#include "net/net_utils_base.h"
-#include "net/net_ssl.h"
-#include "syncobj.h"
+#include "tools/epee/include/net/net_utils_base.h"
+#include "tools/epee/include/net/net_ssl.h"
+#include "tools/epee/include/syncobj.h"
 
 namespace epee
 {

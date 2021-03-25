@@ -3,8 +3,8 @@
 
 #include <string>
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
-#include "storages/portable_storage_template_helper.h"
-#include "storages/portable_storage_base.h"
+#include "tools/epee/include/storages/portable_storage_template_helper.h"
+#include "tools/epee/include/storages/portable_storage_base.h"
 #include "jsonrpc_structs.h"
 #include "jsonrpc_protocol_handler.h"
 

@@ -38,8 +38,8 @@
 #include <string>
 
 #include "tools/epee/include/math_helper.h"
-#include "storages/levin_abstract_invoke2.h"
-#include "warnings.h"
+#include "tools/epee/include/storages/levin_abstract_invoke2.h"
+#include "tools/epee/include/warnings.h"
 #include "cryptonote_protocol_defs.h"
 #include "cryptonote_protocol_handler_common.h"
 #include "block_queue.h"

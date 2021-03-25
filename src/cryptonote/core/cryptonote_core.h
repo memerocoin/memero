@@ -40,15 +40,15 @@
 #include "cryptonote/core/i_core_events.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
 #include "cryptonote/protocol/enums.h"
-#include "storages/portable_storage_template_helper.h"
+#include "tools/epee/include/storages/portable_storage_template_helper.h"
 #include "tools/common/command_line.h"
 #include "tx_pool.h"
 #include "blockchain.h"
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/connection_context.h"
-#include "warnings.h"
+#include "tools/epee/include/warnings.h"
 #include "math/crypto/hash.hpp"
-#include "span.h"
+#include "tools/epee/include/span.h"
 #include "rpc/fwd.h"
 
 PUSH_WARNINGS

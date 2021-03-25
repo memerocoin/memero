@@ -31,7 +31,7 @@
 #include "device_default.hpp"
 #ifdef WITH_DEVICE_LEDGER
 #endif
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 
 namespace hw {

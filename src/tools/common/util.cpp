@@ -51,17 +51,17 @@
 
 
 #include "tools/epee/include/include_base_utils.h"
-#include "file_io_utils.h"
+#include "tools/epee/include/file_io_utils.h"
 #include "tools/epee/include/wipeable_string.h"
-#include "misc_os_dependent.h"
+#include "tools/epee/include/misc_os_dependent.h"
 using namespace epee;
 
 #include "math/crypto/crypto.hpp"
 #include "util.h"
 #include "stack_trace.h"
 #include "tools/epee/include/memwipe.h"
-#include "net/http_client.h"                        // epee::net_utils::...
-#include "readline_buffer.h"
+#include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...
+#include "tools/epee/include/readline_buffer.h"
 
 #include <sys/file.h>
 #include <sys/utsname.h>

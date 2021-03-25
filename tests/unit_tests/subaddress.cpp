@@ -30,7 +30,7 @@
 
 #include "gtest/gtest.h"
 
-#include "include_base_utils.h"
+#include "tools/epee/include/include_base_utils.h"
 #include "wallet/api/wallet2.h"
 #include "crypto/crypto.hpp"
 #include "cryptonote/basic/account.h"

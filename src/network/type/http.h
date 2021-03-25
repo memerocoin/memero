@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "net/http_client.h"
+#include "tools/epee/include/net/http_client.h"
 
 namespace net
 {

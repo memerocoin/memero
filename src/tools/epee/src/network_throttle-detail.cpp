@@ -45,14 +45,14 @@
 #include <boost/asio/basic_socket.hpp>
 #include <boost/asio/ip/unicast.hpp>
 
-#include "net/abstract_tcp_server2.h"
-#include "net/network_throttle-detail.hpp"
-#include "net/net_utils_base.h"
+#include "tools/epee/include/net/abstract_tcp_server2.h"
+#include "tools/epee/include/net/network_throttle-detail.hpp"
+#include "tools/epee/include/net/net_utils_base.h"
 
-#include "syncobj.h"
-#include "misc_log_ex.h"
+#include "tools/epee/include/syncobj.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/misc_language.h"
-#include "pragma_comp_defs.h"
+#include "tools/epee/include/pragma_comp_defs.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.throttle"

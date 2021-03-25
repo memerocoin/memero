@@ -133,7 +133,6 @@ add_library( easylogging
 )
 
 ## tools/epee
-include_directories(src/tools/epee/include)
 add_subdirectory(src/tools/epee)
 
 ## tools/common_basic

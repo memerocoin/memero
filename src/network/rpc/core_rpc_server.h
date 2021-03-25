@@ -33,8 +33,8 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include "net/http_server_impl_base.h"
-#include "net/http_client.h"
+#include "tools/epee/include/net/http_server_impl_base.h"
+#include "tools/epee/include/net/http_client.h"
 #include "core_rpc_server_commands_defs.h"
 #include "cryptonote/core/cryptonote_core.h"
 #include "p2p/net_node.h"

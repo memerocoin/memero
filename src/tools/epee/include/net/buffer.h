@@ -29,8 +29,8 @@
 #pragma once
 
 #include <vector>
-#include "misc_log_ex.h"
-#include "span.h"
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/span.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.buffer"

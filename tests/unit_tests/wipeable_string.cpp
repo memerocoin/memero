@@ -30,9 +30,9 @@
 #include <string.h>
 #include "gtest/gtest.h"
 
-#include "misc_log_ex.h"
-#include "wipeable_string.h"
-#include "hex.h"
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/wipeable_string.h"
+#include "tools/epee/include/hex.h"
 
 TEST(wipeable_string, ctor)
 {

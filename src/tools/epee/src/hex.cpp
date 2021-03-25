@@ -26,14 +26,14 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "hex.h"
+#include "tools/epee/include/hex.h"
 
 #include <iterator>
 #include <limits>
 #include <ostream>
 #include <stdexcept>
 
-#include "storages/parserse_base_utils.h"
+#include "tools/epee/include/storages/parserse_base_utils.h"
 
 namespace epee
 {

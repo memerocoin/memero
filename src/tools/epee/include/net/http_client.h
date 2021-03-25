@@ -40,12 +40,12 @@
 #include "http_client_base.h"
 
 #include "tools/epee/include/string_tools.h"
-#include "reg_exp_definer.h"
+#include "tools/epee/include/reg_exp_definer.h"
 #include "abstract_http_client.h"
 #include "http_base.h" 
-#include "to_nonconst_iterator.h"
-#include "net_parse_helpers.h"
-#include "syncobj.h"
+#include "tools/epee/include/to_nonconst_iterator.h"
+#include "tools/epee/include/net/net_parse_helpers.h"
+#include "tools/epee/include/syncobj.h"
 
 //#include "shlwapi.h"
 

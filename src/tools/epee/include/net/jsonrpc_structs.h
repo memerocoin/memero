@@ -4,7 +4,7 @@
 #include <string>
 #include <cstdint>
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
-#include "storages/portable_storage_base.h"
+#include "tools/epee/include/storages/portable_storage_base.h"
 
 namespace epee 
 {

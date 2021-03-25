@@ -32,9 +32,9 @@
 
 #include "gtest/gtest.h"
 
-#include "misc_language.h"
-#include "string_tools.h"
-#include "file_io_utils.h"
+#include "tools/epee/include/misc_language.h"
+#include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/file_io_utils.h"
 #include "common/notify.h"
 
 TEST(notify, works)

@@ -28,7 +28,7 @@
 
 #include <boost/algorithm/string/join.hpp>
 
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "spawn.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

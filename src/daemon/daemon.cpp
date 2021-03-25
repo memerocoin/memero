@@ -31,7 +31,7 @@
 #include <memory>
 #include <stdexcept>
 #include <boost/algorithm/string/split.hpp>
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "daemon/daemon.h"
 #include "rpc/daemon_handler.h"
 
@@ -44,7 +44,7 @@
 #include "daemon/rpc.h"
 #include "daemon/command_server.h"
 #include "daemon/command_line_args.h"
-#include "net/net_ssl.h"
+#include "tools/epee/include/net/net_ssl.h"
 #include "version.h"
 
 using namespace epee;

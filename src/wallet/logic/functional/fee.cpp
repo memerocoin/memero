@@ -32,7 +32,7 @@
 
 #include "fee.hpp"
 
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "wallet/api/wallet_errors.h"
 
 #include "config/constant.hpp"

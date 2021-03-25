@@ -33,10 +33,10 @@
 
 #include "gtest/gtest.h"
 
-#include "include_base_utils.h"
-#include "string_tools.h"
-#include "net/levin_protocol_handler_async.h"
-#include "net/net_utils_base.h"
+#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/net/levin_protocol_handler_async.h"
+#include "tools/epee/include/net/net_utils_base.h"
 #include "unit_tests_utils.h"
 
 namespace

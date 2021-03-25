@@ -49,7 +49,7 @@
 #include <boost/interprocess/detail/atomic.hpp>
 #include <thread>
 #include "net_utils_base.h"
-#include "syncobj.h"
+#include "tools/epee/include/syncobj.h"
 #include "connection_basic.hpp"
 #include "network_throttle-detail.hpp"
 

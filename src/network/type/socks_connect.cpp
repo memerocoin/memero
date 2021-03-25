@@ -35,7 +35,7 @@
 #include <system_error>
 
 #include "network/type/error.h"
-#include "net/net_utils_base.h"
+#include "tools/epee/include/net/net_utils_base.h"
 #include "network/type/socks.h"
 #include "tools/epee/include/string_tools.h"
 

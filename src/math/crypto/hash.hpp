@@ -34,7 +34,7 @@
 #include <iostream>
 
 #include "generic-ops.h"
-#include "hex.h"
+#include "tools/epee/include/hex.h"
 #include "sha3.hpp"
 #include "tree-hash.hpp"
 #include "hash-ops.hpp"

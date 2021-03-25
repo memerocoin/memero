@@ -34,7 +34,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "net/abstract_http_client.h"
+#include "tools/epee/include/net/abstract_http_client.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 
 namespace wallet {

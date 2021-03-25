@@ -35,8 +35,8 @@
 #include <string>
 #include <cfenv>
 
-#include "misc_log_ex.h"
-#include "warnings.h"
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/warnings.h"
 #include "crypto/hash.hpp"
 #include "crypto/hash-ops.hpp"
 #include "../io.h"

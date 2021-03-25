@@ -33,7 +33,7 @@
 
 #include "wallet/api/wallet2.h"
 
-#include "net/http_server_impl_base.h"
+#include "tools/epee/include/net/http_server_impl_base.h"
 #include "tools/common/util.h"
 #include "tools/epee/include/math_helper.h"
 

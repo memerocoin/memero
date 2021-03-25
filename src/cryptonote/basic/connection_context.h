@@ -33,7 +33,7 @@
 #include <atomic>
 #include <algorithm>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "net/net_utils_base.h"
+#include "tools/epee/include/net/net_utils_base.h"
 #include "math/crypto/hash.hpp"
 
 namespace cryptonote

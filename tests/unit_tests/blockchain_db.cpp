@@ -34,7 +34,7 @@
 
 #include "gtest/gtest.h"
 
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 #include "database/interface/blockchain.hpp"
 #include "database/instance/lmdb/lmdb.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"

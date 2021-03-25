@@ -45,14 +45,14 @@
 #include "boost/archive/portable_binary_iarchive.hpp"
 #include "boost/archive/portable_binary_oarchive.hpp"
 #include "crypto/crypto.hpp"
-#include "hex.h"
-#include "net/net_utils_base.h"
-#include "net/local_ip.h"
-#include "net/buffer.h"
+#include "tools/epee/include/hex.h"
+#include "tools/epee/include/net/net_utils_base.h"
+#include "tools/epee/include/net/local_ip.h"
+#include "tools/epee/include/net/buffer.h"
 #include "p2p/net_peerlist_boost_serialization.h"
-#include "span.h"
-#include "string_tools.h"
-#include "storages/parserse_base_utils.h"
+#include "tools/epee/include/span.h"
+#include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/storages/parserse_base_utils.h"
 
 namespace
 {

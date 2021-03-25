@@ -46,8 +46,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "span.h"
-#include "syncobj.h"
+#include "tools/epee/include/span.h"
+#include "tools/epee/include/syncobj.h"
 #include "tools/epee/include/string_tools.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "tools/common/powerof.h"

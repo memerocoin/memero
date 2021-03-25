@@ -38,9 +38,9 @@
 #include <queue>
 #include <boost/serialization/version.hpp>
 
-#include "span.h"
+#include "tools/epee/include/span.h"
 #include "tools/epee/include/string_tools.h"
-#include "syncobj.h"
+#include "tools/epee/include/syncobj.h"
 #include "tools/epee/include/math_helper.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/verification_context.h"

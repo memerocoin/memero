@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "cryptonote_config.h"
 #include "cryptonote_basic/difficulty.h"
 

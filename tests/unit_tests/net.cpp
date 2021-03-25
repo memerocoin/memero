@@ -56,14 +56,14 @@
 #include "crypto/crypto.hpp"
 #include "network/type/error.h"
 #include "network/type/i2p_address.h"
-#include "net/net_utils_base.h"
+#include "tools/epee/include/net/net_utils_base.h"
 #include "network/type/socks.h"
 #include "network/type/socks_connect.h"
 #include "network/type/parse.h"
 #include "network/type/tor_address.h"
 #include "p2p/net_peerlist_boost_serialization.h"
-#include "serialization/keyvalue_serialization.h"
-#include "storages/portable_storage.h"
+#include "tools/epee/include/serialization/keyvalue_serialization.h"
+#include "tools/epee/include/storages/portable_storage.h"
 #include "network/type/dandelionpp.h"
 
 namespace

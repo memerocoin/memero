@@ -32,8 +32,8 @@
 
 #include <random>
 
-#include "file_io_utils.h"
-#include "misc_log_ex.h"
+#include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 static std::string log_filename;
 

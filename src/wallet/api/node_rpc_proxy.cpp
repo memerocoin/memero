@@ -28,7 +28,7 @@
 
 #include "node_rpc_proxy.h"
 #include "network/rpc/core_rpc_server_commands_defs.h"
-#include "storages/http_abstract_invoke.h"
+#include "tools/epee/include/storages/http_abstract_invoke.h"
 
 #define RETURN_ON_RPC_RESPONSE_ERROR(r, error, res, method) \
   do { \

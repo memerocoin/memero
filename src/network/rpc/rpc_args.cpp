@@ -32,7 +32,7 @@
 #include <boost/asio/ip/address.hpp>
 #include <functional>
 #include "tools/common/command_line.h"
-#include "hex.h"
+#include "tools/epee/include/hex.h"
 
 namespace cryptonote
 {

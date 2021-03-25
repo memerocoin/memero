@@ -30,7 +30,7 @@
 
 #include <chrono>
 #include "tools/epee/include/string_tools.h"
-#include "net/http_client.h"
+#include "tools/epee/include/net/http_client.h"
 
 namespace tools {
 

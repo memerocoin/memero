@@ -43,12 +43,12 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <string_view>
-#include "misc_log_ex.h"
-#include "storages/parserse_base_utils.h"
-#include "hex.h"
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/storages/parserse_base_utils.h"
+#include "tools/epee/include/hex.h"
 #include "tools/epee/include/memwipe.h"
-#include "span.h"
-#include "warnings.h"
+#include "tools/epee/include/span.h"
+#include "tools/epee/include/warnings.h"
 
 
 #ifndef OUT

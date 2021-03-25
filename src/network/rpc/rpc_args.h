@@ -35,7 +35,7 @@
 
 #include "tools/common/command_line.h"
 #include "tools/common/password.h"
-#include "net/net_ssl.h"
+#include "tools/epee/include/net/net_ssl.h"
 
 namespace cryptonote
 {

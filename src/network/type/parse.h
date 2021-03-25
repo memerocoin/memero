@@ -33,7 +33,7 @@
 #include <cstdint>
 
 #include "tools/common/expect.h"
-#include "net/net_utils_base.h"
+#include "tools/epee/include/net/net_utils_base.h"
 
 namespace net
 {

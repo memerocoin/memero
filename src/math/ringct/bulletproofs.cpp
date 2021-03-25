@@ -32,8 +32,8 @@
 #include <stdlib.h>
 #include <mutex>
 #include <mutex>
-#include "misc_log_ex.h"
-#include "span.h"
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/span.h"
 #include "tools/common_basic/common/perf_timer.h"
 #include "config/cryptonote.hpp"
 extern "C"

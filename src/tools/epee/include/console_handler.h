@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/string_tools.h"
 #include <atomic>
 #include <condition_variable>
@@ -43,7 +43,7 @@
 #include <boost/algorithm/string/split.hpp>
 
 #ifdef HAVE_READLINE
-  #include "readline_buffer.h"
+  #include "tools/epee/include/readline_buffer.h"
 #endif
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

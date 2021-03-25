@@ -33,7 +33,7 @@ extern "C"
 #include "math/crypto/crypto-ops.h"
 }
 
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/common_basic/common/perf_timer.h"
 #include "tools/common_basic/common/aligned.h"
 #include "rctOps.hpp"

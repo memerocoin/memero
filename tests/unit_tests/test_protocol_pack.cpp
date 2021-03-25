@@ -30,9 +30,9 @@
 
 #include "gtest/gtest.h"
 
-#include "include_base_utils.h"
+#include "tools/epee/include/include_base_utils.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "storages/portable_storage_template_helper.h"
+#include "tools/epee/include/storages/portable_storage_template_helper.h"
 
 TEST(protocol_pack, protocol_pack_command) 
 {

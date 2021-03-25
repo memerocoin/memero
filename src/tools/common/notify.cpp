@@ -28,8 +28,8 @@
 
 #include <boost/algorithm/string.hpp>
 #include <stdarg.h>
-#include "misc_log_ex.h"
-#include "file_io_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/file_io_utils.h"
 #include "spawn.h"
 #include "notify.h"
 

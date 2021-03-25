@@ -34,7 +34,7 @@
 #include <utility>
 #include <vector>
 
-#include "span.h"
+#include "tools/epee/include/span.h"
 
 namespace net
 {

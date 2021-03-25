@@ -30,8 +30,8 @@
 #include <chrono>
 #include <string>
 #include "portable_storage_template_helper.h"
-#include "net/http_base.h"
-#include "net/http_server_handlers_map2.h"
+#include "tools/epee/include/net/http_base.h"
+#include "tools/epee/include/net/http_server_handlers_map2.h"
 
 namespace epee
 {

@@ -39,7 +39,7 @@
 #include <type_traits>
 
 #include "tools/common/varint.h"
-#include "warnings.h"
+#include "tools/epee/include/warnings.h"
 
 /* I have no clue what these lines means */
 PUSH_WARNINGS

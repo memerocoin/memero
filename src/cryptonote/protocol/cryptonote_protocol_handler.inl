@@ -41,7 +41,7 @@
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "tools/epee/include/profile_tools.h"
-#include "net/network_throttle-detail.hpp"
+#include "tools/epee/include/net/network_throttle-detail.hpp"
 #include "tools/common/util.h"
 #include "config/lol.hpp"
 

@@ -36,8 +36,8 @@
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/protocol/enums.h"
 #include "cryptonote/protocol/fwd.h"
-#include "net/enums.h"
-#include "net/net_utils_base.h"
+#include "tools/epee/include/net/enums.h"
+#include "tools/epee/include/net/net_utils_base.h"
 #include "p2p_protocol_defs.h"
 
 namespace nodetool

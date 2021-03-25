@@ -32,7 +32,7 @@
 //#include <sqlext.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/local_time/local_time.hpp>
-#include "pragma_comp_defs.h"
+#include "tools/epee/include/pragma_comp_defs.h"
 
 namespace epee
 {

@@ -35,7 +35,7 @@
 #include <typeinfo>
 #include <type_traits>
 #include "enums.h"
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "tools/epee/include/int-util.h"
 

@@ -30,7 +30,7 @@
 
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/protocol/enums.h"
-#include "span.h"
+#include "tools/epee/include/span.h"
 
 namespace cryptonote
 {

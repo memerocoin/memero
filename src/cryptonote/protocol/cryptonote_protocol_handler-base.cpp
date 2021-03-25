@@ -35,20 +35,20 @@
 
 #include <memory>
 
-#include "syncobj.h"
+#include "tools/epee/include/syncobj.h"
 
-#include "net/net_utils_base.h" 
-#include "misc_log_ex.h" 
+#include "tools/epee/include/net/net_utils_base.h" 
+#include "tools/epee/include/misc_log_ex.h" 
 #include <chrono>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <thread> 
 #include "tools/epee/include/misc_language.h"
-#include "pragma_comp_defs.h"
+#include "tools/epee/include/pragma_comp_defs.h"
 #include <algorithm>
 
 
 #include "cryptonote_protocol_handler.h"
-#include "net/network_throttle.hpp"
+#include "tools/epee/include/net/network_throttle.hpp"
 
 #include "cryptonote/core/cryptonote_core.h" // e.g. for the send_stop_signal()
 

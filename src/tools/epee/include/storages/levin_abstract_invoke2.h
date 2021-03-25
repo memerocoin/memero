@@ -29,8 +29,8 @@
 #include "portable_storage_template_helper.h"
 #include <boost/utility/value_init.hpp>
 #include <functional>
-#include "span.h"
-#include "net/levin_base.h"
+#include "tools/epee/include/span.h"
+#include "tools/epee/include/net/levin_base.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"

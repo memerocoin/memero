@@ -29,7 +29,7 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
-#include "storages/portable_storage.h"
+#include "tools/epee/include/storages/portable_storage.h"
 
 TEST(epee_binary, two_keys)
 {

@@ -42,7 +42,7 @@
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "net_node.h"
-#include "net/net_utils_base.h"
+#include "tools/epee/include/net/net_utils_base.h"
 #include "network/type/socks.h"
 #include "network/type/parse.h"
 #include "network/type/tor_address.h"

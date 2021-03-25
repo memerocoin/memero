@@ -33,7 +33,7 @@
 #include <vector>
 #include <string>
 #include "tools/epee/include/memwipe.h"
-#include "fnv1.h"
+#include "tools/epee/include/fnv1.h"
 
 namespace epee
 {

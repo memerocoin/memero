@@ -33,7 +33,7 @@
 #include <lmdb.h>
 #include <utility>
 
-#include "span.h"
+#include "tools/epee/include/span.h"
 
 namespace lmdb
 {

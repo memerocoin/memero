@@ -35,8 +35,8 @@
 
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/protocol/fwd.h"
-#include "net/enums.h"
-#include "span.h"
+#include "tools/epee/include/net/enums.h"
+#include "tools/epee/include/span.h"
 
 namespace epee
 {

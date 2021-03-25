@@ -39,7 +39,7 @@
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"
 #include "cryptonote/protocol/enums.h"
-#include "syncobj.h"
+#include "tools/epee/include/syncobj.h"
 
 /** \file
  * Cryptonote Blockchain Database Interface

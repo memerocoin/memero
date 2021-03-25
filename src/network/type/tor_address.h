@@ -33,7 +33,7 @@
 #include <string>
 
 #include "tools/common/expect.h"
-#include "net/enums.h"
+#include "tools/epee/include/net/enums.h"
 #include "network/type/error.h"
 
 namespace epee

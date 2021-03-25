@@ -34,7 +34,7 @@
 #include <cstring>  // memcpy
 
 #include "tools/epee/include/string_tools.h"
-#include "file_io_utils.h"
+#include "tools/epee/include/file_io_utils.h"
 #include "tools/common/util.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "math/crypto/crypto.hpp"

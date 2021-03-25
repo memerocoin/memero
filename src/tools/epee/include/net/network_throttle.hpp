@@ -59,10 +59,10 @@
 #include <boost/uuid/random_generator.hpp>
 
 #include "tools/epee/include/misc_language.h"
-#include "misc_log_ex.h"
-#include "net/net_utils_base.h"
-#include "pragma_comp_defs.h"
-#include "syncobj.h"
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/net/net_utils_base.h"
+#include "tools/epee/include/pragma_comp_defs.h"
+#include "tools/epee/include/syncobj.h"
 
 namespace epee
 {

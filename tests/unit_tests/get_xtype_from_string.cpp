@@ -30,7 +30,7 @@
 
 #include "gtest/gtest.h"
 
-#include <string_tools.h>
+#include "tools/epee/include/string_tools.h"
 
 using namespace epee::string_tools;
 

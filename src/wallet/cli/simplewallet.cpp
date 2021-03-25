@@ -55,7 +55,7 @@
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "math/ringct/rctSigs.hpp"
-#include "storages/http_abstract_invoke.h"
+#include "tools/epee/include/storages/http_abstract_invoke.h"
 #include "tools/common/base58.h"
 #include "tools/common/command_line.h"
 #include "tools/common/json_util.h"
@@ -65,7 +65,7 @@
 #include "wallet/mnemonics/electrum-words.h"
 
 #ifdef HAVE_READLINE
-#include "readline_buffer.h"
+#include "tools/epee/include/readline_buffer.h"
 #endif
 
 using namespace std;

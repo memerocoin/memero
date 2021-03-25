@@ -30,8 +30,8 @@
 
 #include <boost/program_options.hpp>
 
-#include "include_base_utils.h"
-#include "string_tools.h"
+#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/string_tools.h"
 using namespace epee;
 
 #include "common/command_line.h"

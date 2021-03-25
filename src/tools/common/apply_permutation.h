@@ -34,7 +34,7 @@
 
 #include <vector>
 #include <functional>
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 namespace tools
 {

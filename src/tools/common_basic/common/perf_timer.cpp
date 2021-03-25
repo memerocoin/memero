@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <vector>
-#include "misc_os_dependent.h"
+#include "tools/epee/include/misc_os_dependent.h"
 #include "perf_timer.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

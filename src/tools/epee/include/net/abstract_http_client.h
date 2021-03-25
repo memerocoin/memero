@@ -27,7 +27,7 @@
 
 #include <string>
 #include <optional>
-#include "net/http_base.h"
+#include "tools/epee/include/net/http_base.h"
 
 namespace epee
 {

@@ -39,8 +39,8 @@
 #include "rpc/message_data_structs.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "tools/common/sfinae_helpers.h"
-#include "hex.h"
-#include "span.h"
+#include "tools/epee/include/hex.h"
+#include "tools/epee/include/span.h"
 
 #define OBJECT_HAS_MEMBER_OR_THROW(val, key) \
   do \

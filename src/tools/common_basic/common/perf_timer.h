@@ -31,7 +31,7 @@
 #include <string>
 #include <stdio.h>
 #include <memory>
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 namespace tools
 {

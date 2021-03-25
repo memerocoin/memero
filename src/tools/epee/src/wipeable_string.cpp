@@ -29,7 +29,7 @@
 #include <optional>
 #include <string.h>
 #include "tools/epee/include/memwipe.h"
-#include "misc_log_ex.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/wipeable_string.h"
 
 static constexpr const char hex[] = u8"0123456789abcdef";

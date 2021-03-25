@@ -30,7 +30,7 @@
 
 #include "parserse_base_utils.h"
 #include "portable_storage.h"
-#include "file_io_utils.h"
+#include "tools/epee/include/file_io_utils.h"
 
 namespace epee
 {

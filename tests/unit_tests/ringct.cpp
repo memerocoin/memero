@@ -39,7 +39,7 @@
 #include "ringct/rctOps.hpp"
 #include "ringct/curveConstants.hpp"
 #include "wallet/device/device.hpp"
-#include "string_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 using namespace std;
 using namespace crypto;
