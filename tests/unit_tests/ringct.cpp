@@ -34,10 +34,10 @@
 #include <algorithm>
 #include <sstream>
 
-#include "ringct/rctTypes.hpp"
-#include "ringct/rctSigs.hpp"
-#include "ringct/rctOps.hpp"
-#include "ringct/curveConstants.hpp"
+#include "math/ringct/rctTypes.hpp"
+#include "math/ringct/rctSigs.hpp"
+#include "math/ringct/rctOps.hpp"
+#include "math/ringct/curveConstants.hpp"
 #include "wallet/device/device.hpp"
 #include "tools/epee/include/string_tools.h"
 

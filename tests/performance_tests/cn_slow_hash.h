@@ -31,7 +31,7 @@
 #pragma once
 
 #include "tools/epee/include/string_tools.h"
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 #include "cryptonote_basic/cryptonote_basic.h"
 
 template<unsigned int variant>

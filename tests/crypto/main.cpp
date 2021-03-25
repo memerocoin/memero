@@ -36,8 +36,8 @@
 
 #include "tools/epee/include/warnings.h"
 #include "tools/epee/include/misc_log_ex.h"
-#include "crypto/crypto.hpp"
-#include "crypto/hash.h"
+#include "math/crypto/crypto.hpp"
+#include "math/crypto/hash.h"
 #include "crypto-tests.h"
 #include "../io.h"
 

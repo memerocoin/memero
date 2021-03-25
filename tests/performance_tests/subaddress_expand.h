@@ -31,7 +31,7 @@
 #pragma once
 
 #include "wallet/wallet2.h"
-#include "ringct/rctOps.h"
+#include "math/ringct/rctOps.h"
 
 #include "single_tx_test_base.h"
 

@@ -31,7 +31,7 @@
 #pragma once
 
 #if defined(__cplusplus)
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 
 extern "C" {
 #endif

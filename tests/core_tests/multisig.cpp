@@ -28,7 +28,7 @@
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "ringct/rctSigs.h"
+#include "math/ringct/rctSigs.h"
 #include "cryptonote_basic/cryptonote_basic.h"
 #include "multisig/multisig.h"
 #include "common/apply_permutation.h"

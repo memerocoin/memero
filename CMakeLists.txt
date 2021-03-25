@@ -141,9 +141,6 @@ add_subdirectory(src/tools/common_basic)
 add_subdirectory(src/math/crypto)
 
 ## tools/common
-include_directories(
-  src/math
-)
 add_subdirectory(src/tools/common)
 
 ## math/ringct

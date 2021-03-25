@@ -28,7 +28,7 @@
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "crypto/crypto.cpp"
+#include "math/crypto/crypto.cpp"
 
 #include "crypto-tests.h"
 

@@ -44,7 +44,7 @@
 
 #include "boost/archive/portable_binary_iarchive.hpp"
 #include "boost/archive/portable_binary_oarchive.hpp"
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 #include "tools/epee/include/hex.h"
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/local_ip.h"

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 
 class test_sc_reduce32
 {

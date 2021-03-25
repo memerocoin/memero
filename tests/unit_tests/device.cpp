@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "gtest/gtest.h"
-#include "ringct/rctOps.hpp"
+#include "math/ringct/rctOps.hpp"
 #include "wallet/device/device_default.hpp"
 
 TEST(device, name)

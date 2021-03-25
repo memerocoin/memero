@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 #include "tools/epee/include/wipeable_string.h"
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 #include <stdlib.h>
 #include <vector>
 #include <time.h>

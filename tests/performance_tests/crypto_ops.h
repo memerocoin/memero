@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "crypto/crypto.hpp"
-#include "ringct/rctOps.h"
+#include "math/crypto/crypto.hpp"
+#include "math/ringct/rctOps.h"
 
 enum test_op
 {

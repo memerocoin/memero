@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "ringct/rctSigs.h"
-#include "ringct/bulletproofs.h"
+#include "math/ringct/rctSigs.h"
+#include "math/ringct/bulletproofs.h"
 
 template<bool a_verify, size_t n_amounts>
 class test_bulletproof

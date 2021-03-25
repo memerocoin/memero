@@ -28,11 +28,11 @@
 
 #include "gtest/gtest.h"
 
-#include "crypto/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 extern "C" {
-#include "crypto/crypto-ops.h"
+#include "math/crypto/crypto-ops.h"
 }
-#include "crypto/hash.hpp"
+#include "math/crypto/hash.hpp"
 #include <boost/algorithm/string.hpp>
 
 static inline unsigned char *operator &(crypto::ec_point &point) {
