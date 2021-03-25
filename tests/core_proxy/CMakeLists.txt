@@ -1,3 +1,4 @@
+# Copyright (c) 2021, The Lolnero Project
 # Copyright (c) 2014-2020, The Monero Project
 #
 # All rights reserved.
@@ -26,15 +27,10 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(core_proxy_sources
-  core_proxy.cpp)
-
-set(core_proxy_headers
-  core_proxy.h)
-
 add_executable(core_proxy
-  ${core_proxy_sources}
-  ${core_proxy_headers})
+  core_proxy.cpp
+)
+
 target_link_libraries(core_proxy
   PRIVATE
     cryptonote_core
@@ -42,8 +38,12 @@ target_link_libraries(core_proxy
     p2p
     version
     epee
+    net
     ${CMAKE_THREAD_LIBS_INIT}
-    ${EXTRA_LIBRARIES})
+    ${EXTRA_LIBRARIES}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+)
+
 set_property(TARGET core_proxy
   PROPERTY
     FOLDER "tests")
