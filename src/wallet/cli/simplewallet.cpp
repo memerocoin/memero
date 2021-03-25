@@ -126,20 +126,28 @@ namespace
   const char* USAGE_SHOW_BALANCE("balance [detail]");
   const char* USAGE_INCOMING("incoming [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]");
   const char* USAGE_TRANSFER("transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)");
-  const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <addr> <amount>) <lockblocks>");
+  const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>]\n"
+                                    "                (<URI> | <addr> <amount>) <lockblocks>\n");
   const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
   const char* USAGE_ACCOUNT("account\n"
                             "  account new <label>\n"
                             "  account switch <index> \n"
                             "  account label <index> <label>\n"
                             );
-  const char* USAGE_ADDRESS("address [ new <label> | all | <index_min> [<index_max>] | label <index> <label> | device [<index>] | one-off <account> <subaddress>]");
+  const char* USAGE_ADDRESS("address\n"
+                            "  address new <label>\n"
+                            "  address all \n"
+                            "  address <index_min> [<index_max>]\n"
+                            "  address label <index> <label>\n"
+                            "  address one-off <account> <subaddress>\n"
+                            );
   const char* USAGE_SET_VARIABLE("set <option> [<value>]");
   const char* USAGE_GET_TX_KEY("get_tx_key <txid>");
   const char* USAGE_CHECK_TX_KEY("check_tx_key <txid> <txkey> <address>");
   const char* USAGE_GET_TX_PROOF("get_tx_proof <txid> <address> [<message>]");
   const char* USAGE_CHECK_TX_PROOF("check_tx_proof <txid> <address> <signature_file> [<message>]");
-  const char* USAGE_SHOW("show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
+  const char* USAGE_SHOW("show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
+                         "     [<min_height> [<max_height>]]\n");
   const char* USAGE_UNSPENT_OUTPUTS("unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]");
   const char* USAGE_RESCAN_BC("rescan_bc [hard|soft|keep_ki] [start_height=0]");
   const char* USAGE_SIGN("sign [<account_index>,<address_index>] [--spend|--view] <filename>");
@@ -149,6 +157,8 @@ namespace
   const char* USAGE_VERSION("version");
   const char* USAGE_HELP("help [<command> | all]");
   const char* USAGE_APROPOS("apropos <keyword> [<keyword> ...]");
+  const char* USAGE_EXPORT("export [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
+                           "       [<min_height> [<max_height>]] [output=<filepath>]\n");
 
   std::string input_line(const std::string& prompt, bool yesno = false)
   {
@@ -1366,9 +1376,9 @@ simple_wallet::simple_wallet()
                               "Pending or Failed:               \"failed\"|\"pending\", \"out\", Time, Amount*, Transaction Hash, Payment ID, Fee, Input addresses**,               \"-\", Note\n\n"
                               "* Excluding change and fee.\n"
                               "** Set of address indices used as inputs in this transfer."));
-  m_cmd_binder.set_handler("export_transfers",
+  m_cmd_binder.set_handler("export",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::export_transfers, std::placeholders::_1),
-                           tr("export_transfers [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]] [output=<filepath>]"),
+                           tr(USAGE_EXPORT),
                            tr("Export to CSV the incoming/outgoing transfers within an optional height range."));
   m_cmd_binder.set_handler("unspent_outputs",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::unspent_outputs, std::placeholders::_1),
@@ -3730,7 +3740,7 @@ bool simple_wallet::show(const std::vector<std::string> &args_)
   std::vector<std::string> local_args = args_;
 
   if(local_args.size() > 4) {
-    fail_msg_writer() << tr("usage: show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]]");
+    fail_msg_writer() << USAGE_SHOW;
     return true;
   }
 
@@ -3782,7 +3792,7 @@ bool simple_wallet::export_transfers(const std::vector<std::string>& args_)
   std::vector<std::string> local_args = args_;
 
   if(local_args.size() > 5) {
-    fail_msg_writer() << tr("usage: export_transfers [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]] [<min_height> [<max_height>]] [output=<path>]");
+    fail_msg_writer() << USAGE_EXPORT;
     return true;
   }
 
