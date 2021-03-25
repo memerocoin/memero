@@ -36,6 +36,7 @@
 #include <unordered_set>
 #include <mutex>
 #include <boost/uuid/uuid.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include "net/net_utils_base.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

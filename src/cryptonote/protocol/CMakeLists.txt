@@ -33,3 +33,7 @@ add_library(cryptonote_protocol
   levin_notify.cpp
 )
 
+target_link_libraries(cryptonote_protocol
+  ${Boost_DATE_TIME_LIBRARY}
+)
+

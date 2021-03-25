@@ -99,13 +99,13 @@ add_executable(unit_tests_core
   main.cpp
 
 #  blockchain_db.cpp
-#  block_queue.cpp
 #  difficulty.cpp
 #  epee_levin_protocol_handler_async.cpp
 #  node_server.cpp
 #  output_distribution.cpp
 #  parse_amount.cpp
 
+  block_queue.cpp
   ringct.cpp
   epee_utils.cpp
   json_serialization.cpp
