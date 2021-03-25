@@ -51,6 +51,9 @@ add_executable(unit_tests_tools
   epee_serialization.cpp
 )
 
+add_executable(test_notifier test_notifier.cpp)
+add_dependencies(unit_tests_tools test_notifier)
+
 target_link_libraries(unit_tests_tools
   PRIVATE
     epee
@@ -178,5 +181,4 @@ gtest_discover_tests(
 
 
 
-add_executable(test_notifier test_notifier.cpp)
 
