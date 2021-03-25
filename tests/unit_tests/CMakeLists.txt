@@ -98,7 +98,7 @@ set_property(
 add_executable(unit_tests_core
   main.cpp
 
-#  blockchain_db.cpp
+# blockchain_db.cpp
 #  difficulty.cpp
 #  epee_levin_protocol_handler_async.cpp
 #  node_server.cpp

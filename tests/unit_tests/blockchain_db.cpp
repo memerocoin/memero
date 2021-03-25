@@ -26,7 +26,6 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <cstdio>
 #include <iostream>
@@ -203,7 +202,7 @@ protected:
     {
       if (boost::starts_with(f, m_prefix))
       {
-        boost::filesystem::remove(f);
+        std::filesystem::remove(f);
       }
       else
       {
@@ -212,7 +211,7 @@ protected:
     }
 
     // remove directory if it still exists
-    boost::filesystem::remove_all(m_prefix);
+    std::filesystem::remove_all(m_prefix);
   }
 
   void set_prefix(const std::string& prefix)
@@ -229,7 +228,7 @@ TYPED_TEST_CASE(BlockchainDBTest, implementations);
 
 TYPED_TEST(BlockchainDBTest, OpenAndClose)
 {
-  boost::filesystem::path tempPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+  std::filesystem::path tempPath = std::filesystem::temp_directory_path() / std::filesystem::unique_path();
   std::string dirPath = tempPath.string();
 
   this->set_prefix(dirPath);
@@ -247,7 +246,7 @@ TYPED_TEST(BlockchainDBTest, OpenAndClose)
 TYPED_TEST(BlockchainDBTest, AddBlock)
 {
 
-  boost::filesystem::path tempPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+  std::filesystem::path tempPath = std::filesystem::temp_directory_path() / std::filesystem::unique_path();
   std::string dirPath = tempPath.string();
 
   this->set_prefix(dirPath);
@@ -294,7 +293,7 @@ TYPED_TEST(BlockchainDBTest, AddBlock)
 
 TYPED_TEST(BlockchainDBTest, RetrieveBlockData)
 {
-  boost::filesystem::path tempPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+  std::filesystem::path tempPath = std::filesystem::temp_directory_path() / std::filesystem::unique_path();
   std::string dirPath = tempPath.string();
 
   this->set_prefix(dirPath);
