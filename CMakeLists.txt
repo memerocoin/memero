@@ -167,9 +167,6 @@ add_subdirectory(src/wallet/cli)
 add_subdirectory(src/network/p2p)
 
 ## cryptonote
-include_directories(
-  src/tools
-)
 add_subdirectory(src/cryptonote/core)
 add_subdirectory(src/cryptonote/protocol)
 

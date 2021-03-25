@@ -29,7 +29,7 @@
 #include <atomic>
 #include "gtest/gtest.h"
 #include "tools/epee/include/misc_language.h"
-#include "common/threadpool.h"
+#include "tools/common/threadpool.h"
 
 TEST(threadpool, wait_nothing)
 {

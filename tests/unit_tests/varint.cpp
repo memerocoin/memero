@@ -36,12 +36,12 @@
 #include <boost/foreach.hpp>
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "serialization/binary_archive.h"
-#include "serialization/json_archive.h"
-#include "serialization/debug_archive.h"
-#include "serialization/variant.h"
+#include "tools/serialization/binary_archive.h"
+#include "tools/serialization/json_archive.h"
+#include "tools/serialization/debug_archive.h"
+#include "tools/serialization/variant.h"
 #include "tools/serialization/containers.h"
-#include "serialization/binary_utils.h"
+#include "tools/serialization/binary_utils.h"
 #include "gtest/gtest.h"
 
 using namespace std;

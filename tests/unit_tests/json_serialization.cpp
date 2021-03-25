@@ -12,7 +12,7 @@
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "serialization/json_object.h"
+#include "tools/serialization/json_object.h"
 
 
 namespace test

@@ -30,8 +30,8 @@
 
 #include "chaingen.h"
 #include "chaingen_tests_list.h"
-#include "common/util.h"
-#include "common/command_line.h"
+#include "tools/common/util.h"
+#include "tools/common/command_line.h"
 #include "tx_pool.h"
 #include "transaction_tests.h"
 

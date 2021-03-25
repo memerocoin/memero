@@ -38,8 +38,8 @@
 #include "cryptonote/protocol/cryptonote_protocol_handler.inl"
 #include "tools/epee/include/include_base_utils.h"
 #include "tools/epee/include/string_tools.h"
-#include "common/command_line.h"
-#include "common/util.h"
+#include "tools/common/command_line.h"
+#include "tools/common/util.h"
 #include "unit_tests_utils.h"
 
 namespace po = boost::program_options;

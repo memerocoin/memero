@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "gtest/gtest.h"
-#include "common/apply_permutation.h"
+#include "tools/common/apply_permutation.h"
 
 TEST(apply_permutation, empty)
 {

@@ -44,9 +44,9 @@
 #include <boost/functional/hash.hpp>
 
 #include "tools/epee/include/include_base_utils.h"
-#include "common/boost_serialization_helper.h"
-#include "common/command_line.h"
-#include "common/threadpool.h"
+#include "tools/common/boost_serialization_helper.h"
+#include "tools/common/command_line.h"
+#include "tools/common/threadpool.h"
 
 #include "cryptonote_basic/account_boost_serialization.h"
 #include "cryptonote_basic/cryptonote_basic.h"

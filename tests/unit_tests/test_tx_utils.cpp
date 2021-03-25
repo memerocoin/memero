@@ -32,7 +32,7 @@
 
 #include <vector>
 
-#include "common/util.h"
+#include "tools/common/util.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/tx_extra.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"

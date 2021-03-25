@@ -34,8 +34,8 @@
 #include "tools/epee/include/string_tools.h"
 using namespace epee;
 
-#include "common/command_line.h"
-#include "common/util.h"
+#include "tools/common/command_line.h"
+#include "tools/common/util.h"
 #include "transactions_flow_test.h"
 
 namespace po = boost::program_options;

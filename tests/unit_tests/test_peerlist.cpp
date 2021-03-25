@@ -30,7 +30,7 @@
 
 #include "gtest/gtest.h"
 
-#include "common/util.h"
+#include "tools/common/util.h"
 #include "network/p2p/net_peerlist.h"
 #include "tools/epee/include/net/net_utils_base.h"
 

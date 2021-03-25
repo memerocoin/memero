@@ -42,8 +42,8 @@
 # include <arpa/inet.h>
 #endif
 
-#include "boost/archive/portable_binary_iarchive.hpp"
-#include "boost/archive/portable_binary_oarchive.hpp"
+#include "tools/boost/archive/portable_binary_iarchive.hpp"
+#include "tools/boost/archive/portable_binary_oarchive.hpp"
 #include "math/crypto/crypto.hpp"
 #include "tools/epee/include/hex.h"
 #include "tools/epee/include/net/net_utils_base.h"
