@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 #include "int-util.h"
-#include "cryptonote_basic/difficulty.h"
+#include "cryptonote/basic/difficulty.h"
 
 static cryptonote::difficulty_type MKDIFF(uint64_t high, uint64_t low)
 {
