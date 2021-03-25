@@ -37,7 +37,7 @@
 #include "tools/epee/include/net/http_client.h"
 #include "core_rpc_server_commands_defs.h"
 #include "cryptonote/core/cryptonote_core.h"
-#include "p2p/net_node.h"
+#include "network/p2p/net_node.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

@@ -41,8 +41,8 @@
 
 #include "common/command_line.h"
 #include "console_handler.h"
-#include "p2p/net_node.h"
-#include "p2p/net_node.inl"
+#include "network/p2p/net_node.h"
+#include "network/p2p/net_node.inl"
 //#include "cryptonote_core/cryptonote_core.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.inl"

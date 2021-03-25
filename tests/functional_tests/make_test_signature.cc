@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/string_tools.h"
-#include "rpc/rpc_payment_signature.h"
+#include "network/rpc/rpc_payment_signature.h"
 
 int main(int argc, const char **argv)
 {

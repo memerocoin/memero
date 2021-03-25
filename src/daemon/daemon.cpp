@@ -33,7 +33,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include "tools/epee/include/misc_log_ex.h"
 #include "daemon/daemon.h"
-#include "rpc/daemon_handler.h"
+#include "network/rpc/daemon_handler.h"
 
 #include "tools/common/password.h"
 #include "tools/common/util.h"

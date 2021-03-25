@@ -31,7 +31,7 @@
 #include "gtest/gtest.h"
 
 #include "common/util.h"
-#include "p2p/net_peerlist.h"
+#include "network/p2p/net_peerlist.h"
 #include "tools/epee/include/net/net_utils_base.h"
 
 TEST(peer_list, peer_list_general)

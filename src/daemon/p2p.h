@@ -31,7 +31,7 @@
 #pragma once
 
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
-#include "p2p/net_node.h"
+#include "network/p2p/net_node.h"
 #include "daemon/protocol.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

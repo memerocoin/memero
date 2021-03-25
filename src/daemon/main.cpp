@@ -40,9 +40,9 @@
 #include "tools/daemonizer/daemonizer.h"
 #include "tools/epee/include/misc_log_ex.h"
 #include "network/type/parse.h"
-#include "p2p/net_node.h"
+#include "network/p2p/net_node.h"
 #include "network/rpc/core_rpc_server.h"
-#include "rpc/rpc_args.h"
+#include "network/rpc/rpc_args.h"
 #include "daemon/command_line_args.h"
 #include "version.h"
 

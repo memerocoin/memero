@@ -33,7 +33,7 @@
 #include <rapidjson/writer.h>
 #include <string>
 
-#include "rpc/message_data_structs.h"
+#include "network/rpc/message_data_structs.h"
 
 namespace cryptonote
 {

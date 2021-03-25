@@ -49,7 +49,7 @@
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/local_ip.h"
 #include "tools/epee/include/net/buffer.h"
-#include "p2p/net_peerlist_boost_serialization.h"
+#include "network/p2p/net_peerlist_boost_serialization.h"
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/storages/parserse_base_utils.h"

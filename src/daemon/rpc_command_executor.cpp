@@ -35,7 +35,7 @@
 #include "network/rpc/core_rpc_server_commands_defs.h"
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/basic/difficulty.h"
-#include "rpc/rpc_version_str.h"
+#include "network/rpc/rpc_version_str.h"
 #include <boost/format.hpp>
 #include <ctime>
 #include <string>

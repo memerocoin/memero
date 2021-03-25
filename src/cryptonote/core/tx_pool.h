@@ -48,7 +48,7 @@
 #include "database/interface/blockchain.hpp"
 #include "math/crypto/hash.hpp"
 #include "network/rpc/core_rpc_server_commands_defs.h"
-#include "rpc/message_data_structs.h"
+#include "network/rpc/message_data_structs.h"
 
 namespace cryptonote
 {

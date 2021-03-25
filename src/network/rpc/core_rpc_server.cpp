@@ -47,10 +47,10 @@ using namespace epee;
 #include "network/type/parse.h"
 #include "tools/epee/include/storages/http_abstract_invoke.h"
 #include "math/crypto/hash.hpp"
-#include "rpc/rpc_args.h"
-#include "rpc/rpc_handler.h"
+#include "network/rpc/rpc_args.h"
+#include "network/rpc/rpc_handler.h"
 #include "core_rpc_server_error_codes.h"
-#include "p2p/net_node.h"
+#include "network/p2p/net_node.h"
 #include "version.h"
 #include "config/lol.hpp"
 

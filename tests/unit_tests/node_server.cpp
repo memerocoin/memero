@@ -30,8 +30,8 @@
 
 #include "gtest/gtest.h"
 #include "cryptonote/core/cryptonote_core.h"
-#include "p2p/net_node.h"
-#include "p2p/net_node.inl"
+#include "network/p2p/net_node.h"
+#include "network/p2p/net_node.inl"
 #include "cryptonote/core/i_core_events.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.inl"

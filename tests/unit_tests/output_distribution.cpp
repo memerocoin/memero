@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 #include "tools/epee/include/misc_log_ex.h"
-#include "rpc/rpc_handler.h"
+#include "network/rpc/rpc_handler.h"
 #include "database/interface/blockchain.hpp"
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/core/tx_pool.h"

@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 
-#include "rpc/rpc_version_str.h"
+#include "network/rpc/rpc_version_str.h"
 #include "version.h"
 
 TEST(rpc, is_version_string_valid)

@@ -32,7 +32,7 @@
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"
 #include "math/ringct/rctSigs.hpp"
-#include "rpc/rpc_handler.h"
+#include "network/rpc/rpc_handler.h"
 
 #include <unordered_map>
 #include <vector>

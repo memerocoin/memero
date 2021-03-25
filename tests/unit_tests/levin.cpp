@@ -38,7 +38,7 @@
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/protocol/levin_notify.h"
 #include "tools/epee/include/int-util.h"
-#include "p2p/net_node.h"
+#include "network/p2p/net_node.h"
 #include "tools/epee/include/net/levin_base.h"
 #include "tools/epee/include/span.h"
 

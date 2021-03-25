@@ -35,7 +35,7 @@
 
 #include "message.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "rpc/message_data_structs.h"
+#include "network/rpc/message_data_structs.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 
 #define BEGIN_RPC_MESSAGE_CLASS(classname) \

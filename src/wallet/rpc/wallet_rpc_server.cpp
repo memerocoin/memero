@@ -38,7 +38,7 @@
 
 #include "config/cryptonote.hpp"
 #include "network/rpc/core_rpc_server_commands_defs.h"
-#include "rpc/rpc_args.h"
+#include "network/rpc/rpc_args.h"
 #include "tools/common/command_line.h"
 #include "tools/daemonizer/daemonizer.h"
 #include "wallet/common/wallet_args.h"

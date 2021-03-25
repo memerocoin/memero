@@ -36,7 +36,7 @@
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"
 #include "math/crypto/hash.hpp"
-#include "rpc/rpc_handler.h"
+#include "network/rpc/rpc_handler.h"
 #include "tools/common/varint.h"
 #include "tools/common_basic/perf_timer.h"
 

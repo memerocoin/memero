@@ -49,7 +49,7 @@
 #include "tools/epee/include/warnings.h"
 #include "math/crypto/hash.hpp"
 #include "tools/epee/include/span.h"
-#include "rpc/fwd.h"
+#include "network/rpc/fwd.h"
 
 PUSH_WARNINGS
 DISABLE_VS_WARNINGS(4355)

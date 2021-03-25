@@ -151,9 +151,6 @@ add_subdirectory(src/cryptonote/basic)
 add_subdirectory(src/cryptonote/tx)
 
 ## network for wallet
-include_directories(
-  src/network
-)
 add_subdirectory(src/network/type)
 add_subdirectory(src/network/rpc)
 

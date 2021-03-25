@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "p2p/net_node_common.h"
+#include "network/p2p/net_node_common.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/basic/connection_context.h"
 namespace cryptonote

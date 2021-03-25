@@ -36,7 +36,7 @@
 #include <vector>
 
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "rpc/message_data_structs.h"
+#include "network/rpc/message_data_structs.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "tools/common/sfinae_helpers.h"
 #include "tools/epee/include/hex.h"
