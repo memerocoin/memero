@@ -105,8 +105,8 @@ add_executable(unit_tests_core
 #  node_server.cpp
 #  output_distribution.cpp
 #  parse_amount.cpp
-#  ringct.cpp
 
+  ringct.cpp
   epee_utils.cpp
   json_serialization.cpp
   lmdb.cpp

@@ -602,15 +602,15 @@ namespace rct {
 
     rctSig genRctSimple
     (
-     const key &message
+     const key & message
      , const ctkeyV & inSk
      , const ctkeyV & inPk
      , const keyV & destinations
-     , const vector<xmr_amount> &inamounts
-     , const vector<xmr_amount> &outamounts
+     , const std::vector<xmr_amount> & inamounts
+     , const std::vector<xmr_amount> & outamounts
      , const keyV &amount_keys
      , xmr_amount txnFee
-     , unsigned int mixin
+     , size_t mixin
      ) {
         std::vector<size_t> index;
         index.resize(inPk.size());
