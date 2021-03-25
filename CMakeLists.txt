@@ -138,9 +138,6 @@ add_subdirectory(src/tools/epee)
 add_subdirectory(src/tools/common_basic)
 
 ## math/crypto
-include_directories(
-  src/tools
-)
 add_subdirectory(src/math/crypto)
 
 ## tools/common

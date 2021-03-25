@@ -34,14 +34,14 @@
 #include <iostream>
 #include <vector>
 #include <boost/foreach.hpp>
-#include <boost/archive/portable_binary_iarchive.hpp>
+#include "tools/boost/archive/portable_binary_iarchive.hpp"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "serialization/binary_archive.h"
 #include "serialization/json_archive.h"
 #include "serialization/debug_archive.h"
 #include "serialization/variant.h"
-#include "serialization/containers.h"
+#include "tools/serialization/containers.h"
 #include "serialization/binary_utils.h"
 #include "gtest/gtest.h"
 #include "unit_tests_utils.h"

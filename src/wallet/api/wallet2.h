@@ -53,9 +53,9 @@
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "network/type/http.h"
 // remove the following 3, the wallet might become unusable (won't start)
-#include "serialization/string.h"
-#include "serialization/pair.h"
-#include "serialization/containers.h"
+#include "tools/serialization/string.h"
+#include "tools/serialization/pair.h"
+#include "tools/serialization/containers.h"
 #include "tools/common/password.h"
 #include "tools/epee/include/storages/http_abstract_invoke.h"
 
