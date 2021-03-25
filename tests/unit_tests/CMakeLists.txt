@@ -142,6 +142,7 @@ gtest_discover_tests(
 
 add_executable(unit_tests_wallet_basic
   uri.cpp
+  serialization.cpp
 )
 
 target_link_libraries(unit_tests_wallet_basic
@@ -161,7 +162,6 @@ gtest_discover_tests(
 add_executable(unit_tests_wallet
   output_selection.cpp
   subaddress.cpp
-  serialization.cpp
 )
 
 target_link_libraries(unit_tests_wallet

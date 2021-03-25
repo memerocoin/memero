@@ -31,6 +31,7 @@
 #pragma once
 
 #include <atomic>
+#include <filesystem>
 
 namespace unit_test
 {

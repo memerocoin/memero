@@ -37,17 +37,17 @@
 #include <boost/archive/portable_binary_iarchive.hpp>
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "ringct/rctSigs.hpp"
 #include "serialization/binary_archive.h"
 #include "serialization/json_archive.h"
 #include "serialization/debug_archive.h"
 #include "serialization/variant.h"
 #include "serialization/containers.h"
 #include "serialization/binary_utils.h"
-#include "wallet/api/wallet2.h"
 #include "gtest/gtest.h"
 #include "unit_tests_utils.h"
 #include "wallet/device/device.hpp"
+#include "wallet/logic/type/wallet.hpp"
+#include "tools/boost/archive/portable_binary_oarchive.hpp"
 
 using namespace std;
 using namespace crypto;
