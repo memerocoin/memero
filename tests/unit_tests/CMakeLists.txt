@@ -101,7 +101,7 @@ add_executable(unit_tests_core
 # blockchain_db.cpp
 #  difficulty.cpp
 #  epee_levin_protocol_handler_async.cpp
-#  node_server.cpp
+  node_server.cpp
 #  output_distribution.cpp
 #  parse_amount.cpp
 
