@@ -115,13 +115,18 @@ include_directories(vendor/rapidjson/include)
 
 
 
+# set global include path
+include_directories(
+  src
+)
+
+
+
+
 # let's go
 
 ## version
 include(Version)
-include_directories(
-  src
-)
 add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
 add_dependencies(version genversion)
 
@@ -198,5 +203,4 @@ if(BUILD_TESTING)
 
   find_package(GTest REQUIRED)
   add_subdirectory(tests/unit_tests)
-
 endif()
