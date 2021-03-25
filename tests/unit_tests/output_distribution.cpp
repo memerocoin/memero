@@ -29,11 +29,11 @@
 #include "gtest/gtest.h"
 #include "misc_log_ex.h"
 #include "rpc/rpc_handler.h"
-#include "blockchain_db/blockchain_db.h"
+#include "database/interface/blockchain.hpp"
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/core/tx_pool.h"
 #include "cryptonote/core/blockchain.h"
-#include "blockchain_db/testdb.h"
+#include "testdb.h"
 
 static const uint64_t test_distribution[32] = {
   0, 0, 0, 0, 0, 1, 5, 1, 4, 0, 0, 1, 0, 1, 2, 3, 1, 0, 2, 0, 1, 3, 8, 1, 3, 5, 7, 1, 5, 0, 2, 3
@@ -87,7 +87,7 @@ bool get_output_distribution(uint64_t amount, uint64_t from, uint64_t to, uint64
     get_test_options():hard_forks{std::make_pair((uint8_t)1, (uint64_t)0), std::make_pair((uint8_t)0, (uint64_t)0)}{}
   } opts;
   cryptonote::Blockchain *blockchain = bc.get();
-  bool r = blockchain->init(new TestDB(test_distribution_size), cryptonote::FAKECHAIN, true, &opts.test_options, 0, NULL);
+  bool r = blockchain->init(new ::TestDB(test_distribution_size), cryptonote::FAKECHAIN, true, &opts.test_options, 0);
   return r && bc->get_output_distribution(amount, from, to, start_height, distribution, base);
 }
 

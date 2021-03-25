@@ -98,25 +98,25 @@ set_property(
 add_executable(unit_tests_core
   main.cpp
 
-# blockchain_db.cpp
+#  blockchain_db.cpp
 #  difficulty.cpp
 #  epee_levin_protocol_handler_async.cpp
-  node_server.cpp
 #  output_distribution.cpp
 #  parse_amount.cpp
 
   block_queue.cpp
-  ringct.cpp
   epee_utils.cpp
   json_serialization.cpp
   lmdb.cpp
   net.cpp
+  node_server.cpp
+  ringct.cpp
+  rpc_version_str.cpp
   slow_memmem.cpp
-  test_tx_utils.cpp
   test_peerlist.cpp
   test_protocol_pack.cpp
+  test_tx_utils.cpp
   tx_proof.cpp
-  rpc_version_str.cpp
 )
 
 target_link_libraries(unit_tests_core
