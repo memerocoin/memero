@@ -208,8 +208,8 @@ add_subdirectory(src/daemon)
 
 
 # test
-include(CTest)
 if(BUILD_TESTING)
+  include(CTest)
 
   add_subdirectory(tests/hash)
 
