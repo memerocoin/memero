@@ -127,7 +127,6 @@ add_dependencies(version genversion)
 
 ## tools/easylogging
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
-include_directories(src/tools/easylogging++)
 add_library( easylogging
   src/tools/easylogging++/easylogging++.cc
 )

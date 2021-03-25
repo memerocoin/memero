@@ -15,7 +15,7 @@
 //
 
 #define EASYLOGGING_CC
-#include "easylogging++.h"
+#include "tools/easylogging++/easylogging++.h"
 
 #include <unistd.h>
 

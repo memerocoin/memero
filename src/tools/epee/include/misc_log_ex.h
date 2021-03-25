@@ -32,7 +32,7 @@
 
 #include <string>
 
-#include "easylogging++.h"
+#include "tools/easylogging++/easylogging++.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "default"
