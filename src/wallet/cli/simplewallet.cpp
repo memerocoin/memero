@@ -129,11 +129,11 @@ namespace
   const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <addr> <amount>) <lockblocks>");
   const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
   const char* USAGE_ACCOUNT("account\n"
-                            "  account new <label text with white spaces allowed>\n"
+                            "  account new <label>\n"
                             "  account switch <index> \n"
-                            "  account label <index> <label text with white spaces allowed>\n"
+                            "  account label <index> <label>\n"
                             );
-  const char* USAGE_ADDRESS("address [ new <label text with white spaces allowed> | all | <index_min> [<index_max>] | label <index> <label text with white spaces allowed> | device [<index>] | one-off <account> <subaddress>]");
+  const char* USAGE_ADDRESS("address [ new <label> | all | <index_min> [<index_max>] | label <index> <label> | device [<index>] | one-off <account> <subaddress>]");
   const char* USAGE_SET_VARIABLE("set <option> [<value>]");
   const char* USAGE_GET_TX_KEY("get_tx_key <txid>");
   const char* USAGE_CHECK_TX_KEY("check_tx_key <txid> <txkey> <address>");
@@ -4156,9 +4156,9 @@ bool simple_wallet::account(const std::vector<std::string> &args/* = std::vector
 {
   // Usage:
   //   account
-  //   account new <label text with white spaces allowed>
+  //   account new <label>
   //   account switch <index>
-  //   account label <index> <label text with white spaces allowed>
+  //   account label <index> <label>
 
   if (args.empty())
   {
@@ -4254,10 +4254,10 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
 {
   // Usage:
   //  address
-  //  address new <label text with white spaces allowed>
+  //  address new <label>
   //  address all
   //  address <index_min> [<index_max>]
-  //  address label <index> <label text with white spaces allowed>
+  //  address label <index> <label>
   //  address device [<index>]
 
   std::vector<std::string> local_args = args;
