@@ -140,9 +140,25 @@ gtest_discover_tests(
 )
 
 
+add_executable(unit_tests_wallet_basic
+  uri.cpp
+)
+
+target_link_libraries(unit_tests_wallet_basic
+  PRIVATE
+    wallet_logic
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    GTest::gtest
+    GTest::gtest_main
+)
+
+gtest_discover_tests(
+  unit_tests_wallet_basic
+)
+
+
 
 add_executable(unit_tests_wallet
-  uri.cpp
   output_selection.cpp
   subaddress.cpp
   serialization.cpp

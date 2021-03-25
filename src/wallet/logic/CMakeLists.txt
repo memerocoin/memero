@@ -41,3 +41,7 @@ add_library(wallet_logic
   state/gamma_picker.cpp
   )
 
+target_link_libraries(wallet_logic
+  cncrypto
+  cryptonote_basic
+)
