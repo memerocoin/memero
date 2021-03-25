@@ -29,7 +29,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/common_basic/common/perf_timer.h"
+#include "tools/common_basic/perf_timer.h"
 #include "rctSigs.hpp"
 #include "curveConstants.hpp"
 #include "bulletproofs.hpp"

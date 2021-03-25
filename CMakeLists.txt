@@ -135,10 +135,7 @@ add_library( easylogging
 add_subdirectory(src/tools/epee)
 
 ## tools/common_basic
-include_directories(
-  src/tools/common_basic
-)
-add_subdirectory(src/tools/common_basic/common)
+add_subdirectory(src/tools/common_basic)
 
 ## math/crypto
 include_directories(
