@@ -47,7 +47,7 @@ add_executable(unit_tests_tools
   hashchain.cpp
   decompose_amount_into_digits.cpp
   levin.cpp
-  epee_boosted_tcp_server.cpp
+  # epee_boosted_tcp_server.cpp
   epee_serialization.cpp
 )
 
