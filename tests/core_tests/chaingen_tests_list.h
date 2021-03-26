@@ -31,19 +31,19 @@
 #pragma once
 
 #include "chaingen.h"
-#include "block_reward.h"
-#include "block_validation.h"
-#include "chain_split_1.h"
-#include "chain_switch_1.h"
-#include "double_spend.h"
-#include "integer_overflow.h"
-#include "ring_signature_1.h"
-#include "tx_validation.h"
-#include "v2_tests.h"
-#include "rct.h"
-#include "multisig.h"
-#include "bulletproofs.h"
-#include "rct2.h"
+// #include "rct.h"
+
+// #include "block_reward.h"
+// #include "block_validation.h"
+// #include "chain_split_1.h"
+// #include "chain_switch_1.h"
+// #include "double_spend.h"
+// #include "ring_signature_1.h"
+// #include "tx_validation.h"
+// #include "v2_tests.h"
+// #include "bulletproofs.h"
+// #include "rct2.h"
+
 /************************************************************************/
 /*                                                                      */
 /************************************************************************/

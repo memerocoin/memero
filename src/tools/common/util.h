@@ -124,6 +124,8 @@ namespace tools
 
   std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str);
 
+  std::string glob_to_regex(const std::string &val);
+
   std::string get_human_readable_timestamp(uint64_t ts);
 
   std::string get_human_readable_timespan(uint64_t seconds);

@@ -204,5 +204,5 @@ if(BUILD_TESTING)
 
   find_package(GTest REQUIRED)
   add_subdirectory(tests/unit_tests)
-  add_subdirectory(tests/core_tests)
+  # add_subdirectory(tests/core_tests)
 endif()

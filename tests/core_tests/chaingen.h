@@ -34,6 +34,7 @@
 #include <vector>
 #include <iostream>
 #include <stdint.h>
+#include <regex>
 
 #include <boost/program_options.hpp>
 #include <boost/optional.hpp>
@@ -494,9 +495,6 @@ void fill_tx_sources_and_destinations(const std::vector<test_event_entry>& event
 
 uint64_t get_balance(const cryptonote::account_base& addr, const std::vector<cryptonote::block>& blockchain, const map_hash2tx_t& mtx);
 
-bool extract_hard_forks(const std::vector<test_event_entry>& events, v_hardforks_t& hard_forks);
-bool extract_hard_forks_from_blocks(const std::vector<test_event_entry>& events, v_hardforks_t& hard_forks);
-
 /************************************************************************/
 /*                                                                      */
 /************************************************************************/
@@ -752,11 +750,6 @@ inline bool do_replay_events_get_core(std::vector<test_event_entry>& events, cry
   v_hardforks_t hardforks;
   cryptonote::test_options test_options_tmp{nullptr, 0};
   const cryptonote::test_options * test_options_ = &gto.test_options;
-  if (extract_hard_forks(events, hardforks)){
-    hardforks.push_back(std::make_pair((uint8_t)0, (uint64_t)0));  // terminator
-    test_options_tmp.hard_forks = hardforks.data();
-    test_options_ = &test_options_tmp;
-  }
 
   if (!c.init(vm, test_options_))
   {
@@ -1037,9 +1030,10 @@ inline bool do_replay_file(const std::string& filename)
     REPLAY_WITH_CORE(genclass, CORE);
 
 #define GENERATE_AND_PLAY(genclass) \
+  std::string search = std::string(#genclass); \
   if (list_tests)                                                                                          \
     std::cout << #genclass << std::endl;                                                                   \
-  else if (filter.empty() || std::regex_match(std::string(#genclass), match, std::regex(filter)))      \
+  else if (filter.empty() || std::regex_match(search, match, std::regex(filter)))      \
   {                                                                                                        \
     std::vector<test_event_entry> events;                                                                  \
     ++tests_count;                                                                                         \

@@ -31,9 +31,6 @@ set(core_tests_sources
   block_validation.cpp
   chain_split_1.cpp
   chain_switch_1.cpp
-  chaingen.cpp
-  chaingen001.cpp
-  chaingen_main.cpp
   double_spend.cpp
   ring_signature_1.cpp
   transaction_tests.cpp
@@ -45,7 +42,9 @@ set(core_tests_sources
   wallet_tools.cpp)
 
 add_executable(core_tests
+  chaingen_main.cpp
   chaingen.cpp
+  chaingen001.cpp
   rct.cpp
 )
 
@@ -59,10 +58,9 @@ target_link_libraries(core_tests
     ringct
     net
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    GTest::gtest
-    GTest::gtest_main
 )
 
-gtest_discover_tests(
-  core_tests
+add_test(
+  NAME core_tests
+  COMMAND core_tests --generate_and_play_test_data
 )

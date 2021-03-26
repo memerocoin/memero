@@ -371,13 +371,15 @@ void test_generator::fill_nonce(cryptonote::block& blk, const difficulty_type& d
   {
     if (m_events == nullptr)
     {
-      MDEBUG("events not set, RandomX PoW can fail due to zero seed hash");
+      // MDEBUG("events not set, RandomX PoW can fail due to zero seed hash");
     }
     else
     {
       bc = init_blockchain(*m_events, m_nettype);
       blockchain = bc.get();
     }
+
+    blk.nonce = 0;
   }
 }
 

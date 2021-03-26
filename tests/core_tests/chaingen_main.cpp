@@ -32,8 +32,9 @@
 #include "chaingen_tests_list.h"
 #include "tools/common/util.h"
 #include "tools/common/command_line.h"
-#include "tx_pool.h"
-#include "transaction_tests.h"
+
+// #include "tx_pool.h"
+// #include "transaction_tests.h"
 
 namespace po = boost::program_options;
 
@@ -102,13 +103,16 @@ int main(int argc, char* argv[])
   else if (command_line::get_arg(vm, arg_generate_and_play_test_data) || (list_tests = command_line::get_arg(vm, arg_list_tests)))
   {
     GENERATE_AND_PLAY(gen_simple_chain_001);
+    /*
     GENERATE_AND_PLAY(gen_simple_chain_split_1);
     GENERATE_AND_PLAY(one_block);
     GENERATE_AND_PLAY(gen_chain_switch_1);
     GENERATE_AND_PLAY(gen_ring_signature_1);
     GENERATE_AND_PLAY(gen_ring_signature_2);
     //GENERATE_AND_PLAY(gen_ring_signature_big); // Takes up to XXX hours (if CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW == 10)
+    */
 
+    /*
     // Block verification tests
     GENERATE_AND_PLAY(gen_block_big_major_version);
     GENERATE_AND_PLAY(gen_block_big_minor_version);
@@ -183,9 +187,6 @@ int main(int argc, char* argv[])
 
     GENERATE_AND_PLAY(gen_v2_tx_mixable_0_mixin);
     GENERATE_AND_PLAY(gen_v2_tx_mixable_low_mixin);
-//    GENERATE_AND_PLAY(gen_v2_tx_unmixable_only);
-//    GENERATE_AND_PLAY(gen_v2_tx_unmixable_one);
-//    GENERATE_AND_PLAY(gen_v2_tx_unmixable_two);
     GENERATE_AND_PLAY(gen_v2_tx_dust);
 
     GENERATE_AND_PLAY(gen_rct_tx_valid_from_pre_rct);
@@ -218,35 +219,6 @@ int main(int argc, char* argv[])
     GENERATE_AND_PLAY(gen_rct_tx_rct_altered_extra);
     GENERATE_AND_PLAY(gen_rct_tx_uses_output_too_early);
 
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_22_1_2);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_22_1_2_many_inputs);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_22_2_1);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_33_1_23);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_33_3_21);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_23_1_2);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_23_1_3);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_23_2_1);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_23_2_3);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_45_1_234);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_45_4_135_many_inputs);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_89_3_1245789);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_23_1__no_threshold);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_45_5_23_no_threshold);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_22_1__no_threshold);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_33_1__no_threshold);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_33_1_2_no_threshold);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_33_1_3_no_threshold);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_24_1_2);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_24_1_2_many_inputs);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_25_1_2);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_25_1_2_many_inputs);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_48_1_234);
-    GENERATE_AND_PLAY(gen_multisig_tx_valid_48_1_234_many_inputs);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_24_1_no_signers);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_25_1_no_signers);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_48_1_no_signers);
-    GENERATE_AND_PLAY(gen_multisig_tx_invalid_48_1_23_no_threshold);
-
     GENERATE_AND_PLAY(gen_bp_tx_valid_1_before_12);
     GENERATE_AND_PLAY(gen_bp_tx_invalid_1_from_12);
     GENERATE_AND_PLAY(gen_bp_tx_invalid_1_1);
@@ -268,6 +240,7 @@ int main(int argc, char* argv[])
     GENERATE_AND_PLAY(gen_rct2_tx_clsag_malleability);
 
     GENERATE_AND_PLAY(gen_block_low_coinbase);
+    */
 
     el::Level level = (failed_tests.empty() ? el::Level::Info : el::Level::Error);
     if (!list_tests)
@@ -287,7 +260,7 @@ int main(int argc, char* argv[])
   }
   else if (command_line::get_arg(vm, arg_test_transactions))
   {
-    CALL_TEST("TRANSACTIONS TESTS", test_transactions);
+    // CALL_TEST("TRANSACTIONS TESTS", test_transactions);
   }
   else
   {
