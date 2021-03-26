@@ -33,10 +33,10 @@
 
 #include "tools/epee/include/include_base_utils.h"
 
-#include "console_handler.h"
+#include "tools/epee/include/console_handler.h"
 
-#include "cryptonote_basic/cryptonote_basic.h"
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 
 #include "chaingen.h"
 #include "chaingen_tests_list.h"

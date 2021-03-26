@@ -38,7 +38,7 @@
 
 #include "tools/epee/include/misc_log_ex.h"
 #include "cryptonote_config.h"
-#include "cryptonote_basic/difficulty.h"
+#include "cryptonote/basic/difficulty.h"
 
 using namespace std;
 

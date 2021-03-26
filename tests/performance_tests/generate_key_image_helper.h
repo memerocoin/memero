@@ -30,12 +30,12 @@
 
 #pragma once
 
-#include "cryptonote_basic/account.h"
-#include "cryptonote_basic/cryptonote_basic.h"
-#include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 
 #include "single_tx_test_base.h"
-#include "device/device.hpp"
+#include "wallet/device/device.hpp"
 
 class test_generate_key_image_helper : public single_tx_test_base
 {

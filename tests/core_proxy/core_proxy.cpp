@@ -40,10 +40,10 @@
 #include <boost/program_options.hpp>
 
 #include "tools/common/command_line.h"
-#include "console_handler.h"
+#include "tools/epee/include/console_handler.h"
 #include "network/p2p/net_node.h"
 #include "network/p2p/net_node.inl"
-//#include "cryptonote_core/cryptonote_core.h"
+//#include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.inl"
 #include "core_proxy.h"

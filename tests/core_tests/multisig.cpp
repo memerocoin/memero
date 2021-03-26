@@ -29,12 +29,12 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "math/ringct/rctSigs.h"
-#include "cryptonote_basic/cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 #include "multisig/multisig.h"
 #include "tools/common/apply_permutation.h"
 #include "chaingen.h"
 #include "multisig.h"
-#include "device/device.hpp"
+#include "wallet/device/device.hpp"
 using namespace epee;
 using namespace crypto;
 using namespace cryptonote;

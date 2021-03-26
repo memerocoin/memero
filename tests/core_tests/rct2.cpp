@@ -32,7 +32,7 @@
 #include "math/ringct/bulletproofs.h"
 #include "chaingen.h"
 #include "rct2.h"
-#include "device/device.hpp"
+#include "wallet/device/device.hpp"
 
 using namespace epee;
 using namespace crypto;

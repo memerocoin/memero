@@ -48,14 +48,16 @@
 #include "tools/common/command_line.h"
 #include "tools/common/threadpool.h"
 
-#include "cryptonote_basic/account_boost_serialization.h"
-#include "cryptonote_basic/cryptonote_basic.h"
-#include "cryptonote_basic/cryptonote_basic_impl.h"
-#include "cryptonote_basic/cryptonote_format_utils.h"
-#include "cryptonote_core/cryptonote_core.h"
-#include "cryptonote_protocol/enums.h"
-#include "cryptonote_basic/cryptonote_boost_serialization.h"
+#include "cryptonote/basic/account_boost_serialization.h"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/core/cryptonote_core.h"
+#include "cryptonote/protocol/enums.h"
+#include "cryptonote/basic/cryptonote_boost_serialization.h"
 #include "tools/epee/include/misc_language.h"
+
+#include "config/constant.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "tests.core"
@@ -231,15 +233,13 @@ public:
   test_generator(): m_events(nullptr) {}
   test_generator(const test_generator &other): m_blocks_info(other.m_blocks_info), m_events(other.m_events), m_nettype(other.m_nettype) {}
   void get_block_chain(std::vector<block_info>& blockchain, const crypto::hash& head, size_t n) const;
-  void get_last_n_block_weights(std::vector<size_t>& block_weights, const crypto::hash& head, size_t n) const;
   uint64_t get_already_generated_coins(const crypto::hash& blk_id) const;
   uint64_t get_already_generated_coins(const cryptonote::block& blk) const;
 
-  void add_block(const cryptonote::block& blk, size_t tsx_size, std::vector<size_t>& block_weights, uint64_t already_generated_coins, uint64_t block_reward,
-    uint8_t hf_version = 1);
+  void add_block(const cryptonote::block& blk, size_t tsx_size, uint64_t already_generated_coins, uint64_t block_reward);
   bool construct_block(cryptonote::block& blk, uint64_t height, const crypto::hash& prev_id,
     const cryptonote::account_base& miner_acc, uint64_t timestamp, uint64_t already_generated_coins,
-    std::vector<size_t>& block_weights, const std::list<cryptonote::transaction>& tx_list,
+    const std::list<cryptonote::transaction>& tx_list,
     const std::optional<uint8_t>& hf_ver = std::nullopt);
   bool construct_block(cryptonote::block& blk, const cryptonote::account_base& miner_acc, uint64_t timestamp);
   bool construct_block(cryptonote::block& blk, const cryptonote::block& blk_prev, const cryptonote::account_base& miner_acc,
@@ -411,8 +411,8 @@ cryptonote::account_public_address get_address(const cryptonote::account_keys& i
 cryptonote::account_public_address get_address(const cryptonote::account_base& inp);
 cryptonote::account_public_address get_address(const cryptonote::tx_destination_entry& inp);
 
-inline cryptonote::difficulty_type get_test_difficulty(const std::optional<uint8_t>& hf_ver=std::nullopt) {return !hf_ver || hf_ver.get() <= 1 ? 1 : 2;}
-inline uint64_t current_difficulty_window(const std::optional<uint8_t>& hf_ver=std::nullopt){ return !hf_ver || hf_ver.get() <= 1 ? DIFFICULTY_TARGET_V1 : DIFFICULTY_TARGET_V2; }
+inline cryptonote::difficulty_type get_test_difficulty() {return 2;}
+inline uint64_t current_difficulty_window(){ return constant::DIFFICULTY_TARGET_V2; }
 
 cryptonote::tx_destination_entry build_dst(const var_addr_t& to, bool is_subaddr=false, uint64_t amount=0);
 std::vector<cryptonote::tx_destination_entry> build_dsts(const var_addr_t& to1, bool sub1=false, uint64_t am1=0);

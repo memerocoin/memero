@@ -31,7 +31,7 @@
 #pragma once
 
 #include "math/crypto/crypto.hpp"
-#include "cryptonote_basic/cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 
 class test_generate_keypair
 {

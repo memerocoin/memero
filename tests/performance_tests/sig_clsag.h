@@ -32,7 +32,7 @@
 
 #include "math/ringct/rctSigs.h"
 #include "math/ringct/rctTypes.h"
-#include "device/device.hpp"
+#include "wallet/device/device.hpp"
 
 using namespace rct;
 

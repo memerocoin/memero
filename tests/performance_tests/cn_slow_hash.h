@@ -32,7 +32,7 @@
 
 #include "tools/epee/include/string_tools.h"
 #include "math/crypto/crypto.hpp"
-#include "cryptonote_basic/cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 
 template<unsigned int variant>
 class test_cn_slow_hash

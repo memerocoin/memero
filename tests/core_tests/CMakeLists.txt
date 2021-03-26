@@ -47,46 +47,23 @@ set(core_tests_sources
   rct2.cpp
   wallet_tools.cpp)
 
-set(core_tests_headers
-  block_reward.h
-  block_validation.h
-  chain_split_1.h
-  chain_switch_1.h
-  chaingen.h
-  chaingen_tests_list.h
-  double_spend.h
-  double_spend.inl
-  integer_overflow.h
-  multisig.h
-  ring_signature_1.h
-  tx_pool.h
-  transaction_tests.h
-  tx_validation.h
-  v2_tests.h
-  rct.h
-  bulletproofs.h
-  rct2.h
-  wallet_tools.h)
-
 add_executable(core_tests
-  ${core_tests_sources}
-  ${core_tests_headers})
+  chaingen.cpp
+)
+
 target_link_libraries(core_tests
   PRIVATE
-    multisig
     cryptonote_core
     p2p
     version
     epee
     device
-    wallet
-    ${CMAKE_THREAD_LIBS_INIT}
-    ${EXTRA_LIBRARIES})
-enable_stack_trace(core_tests)
-set_property(TARGET core_tests
-  PROPERTY
-    FOLDER "tests")
+    wallet_api
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    GTest::gtest
+    GTest::gtest_main
+)
 
-add_test(
-  NAME    core_tests
-  COMMAND core_tests --generate_and_play_test_data)
+gtest_discover_tests(
+  core_tests
+)

@@ -31,7 +31,7 @@
 #pragma once
 
 #include "math/ringct/rctSigs.h"
-#include "cryptonote_basic/cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 
 #include "single_tx_test_base.h"
 

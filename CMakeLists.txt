@@ -199,8 +199,10 @@ add_subdirectory(src/daemon)
 if(BUILD_TESTING)
   include(CTest)
 
+  include_directories(tests)
   add_subdirectory(tests/hash)
 
   find_package(GTest REQUIRED)
   add_subdirectory(tests/unit_tests)
+  add_subdirectory(tests/core_tests)
 endif()
