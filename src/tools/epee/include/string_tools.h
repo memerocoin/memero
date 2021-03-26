@@ -24,25 +24,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+#pragma once
 
-
-#ifndef _STRING_TOOLS_H_
-#define _STRING_TOOLS_H_
-
-// Previously pulled in by ASIO, further cleanup still required ...
-#ifdef _WIN32
-# include <winsock2.h>
-# include <windows.h>
-#endif
-
-#include <string.h>
-#include <locale>
 #include <cstdlib>
+#include <filesystem>
+#include <locale>
+#include <string.h>
 #include <string>
-#include <type_traits>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/predicate.hpp>
 #include <string_view>
+#include <type_traits>
+
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/storages/parserse_base_utils.h"
 #include "tools/epee/include/hex.h"
@@ -179,10 +173,8 @@ POP_WARNINGS
 		return s;
 	}
 	//----------------------------------------------------------------------------
-	
 	inline bool compare_no_case(const std::string& str1, const std::string& str2)
 	{
-		
 		return !boost::iequals(str1, str2);
 	}
 	//----------------------------------------------------------------------------
@@ -193,20 +185,10 @@ POP_WARNINGS
 	}
 	//----------------------------------------------------------------------------
 	inline std::string& get_current_module_folder()
-	{	
+	{
 		static std::string module_folder;
 		return module_folder;
 	}
-  //----------------------------------------------------------------------------
-#ifdef _WIN32
-  inline std::string get_current_module_path()
-  {
-    char pname [5000] = {0};
-    GetModuleFileNameA( NULL, pname, sizeof(pname));
-    pname[sizeof(pname)-1] = 0; //be happy ;)
-    return pname;
-  }
-#endif
 	//----------------------------------------------------------------------------
 	inline bool set_module_name_and_folder(const std::string& path_to_process_)
 	{
@@ -220,7 +202,7 @@ POP_WARNINGS
 			a = path_to_process.rfind( '/' );
 		}
 		if ( a != std::string::npos )
-		{	
+		{
 			get_current_module_name() = path_to_process.substr(a+1, path_to_process.size());
 			get_current_module_folder() = path_to_process.substr(0, a);
 			return true;
@@ -234,7 +216,7 @@ POP_WARNINGS
 	{
 		for(std::string::iterator it = str.begin(); it!= str.end() && isspace(static_cast<unsigned char>(*it));)
 			str.erase(str.begin());
-			
+
 		return true;
 	}
 	//----------------------------------------------------------------------------
@@ -318,41 +300,9 @@ POP_WARNINGS
 		res = str.substr(0, pos);
 		return res;
 	}
-  //----------------------------------------------------------------------------
-#ifdef _WIN32
-  inline std::wstring utf8_to_utf16(const std::string& str)
-  {
-    if (str.empty())
-      return {};
-    int wstr_size = MultiByteToWideChar(CP_UTF8, 0, &str[0], str.size(), NULL, 0);
-    if (wstr_size == 0)
-    {
-      throw std::runtime_error(std::error_code(GetLastError(), std::system_category()).message());
-    }
-    std::wstring wstr(wstr_size, wchar_t{});
-    if (!MultiByteToWideChar(CP_UTF8, 0, &str[0], str.size(), &wstr[0], wstr_size))
-    {
-      throw std::runtime_error(std::error_code(GetLastError(), std::system_category()).message());
-    }
-    return wstr;
-  }
-  inline std::string utf16_to_utf8(const std::wstring& wstr)
-  {
-    if (wstr.empty())
-      return {};
-    int str_size = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], wstr.size(), NULL, 0, NULL, NULL);
-    if (str_size == 0)
-    {
-      throw std::runtime_error(std::error_code(GetLastError(), std::system_category()).message());
-    }
-    std::string str(str_size, char{});
-    if (!WideCharToMultiByte(CP_UTF8, 0, &wstr[0], wstr.size(), &str[0], str_size, NULL, NULL))
-    {
-      throw std::runtime_error(std::error_code(GetLastError(), std::system_category()).message());
-    }
-    return str;
-  }
-#endif
-}
-}
-#endif //_STRING_TOOLS_H_
+	//----------------------------------------------------------------------------
+  std::string random_string();
+	//----------------------------------------------------------------------------
+  std::filesystem::path random_temp_path();
+} // stringtools
+} // epee

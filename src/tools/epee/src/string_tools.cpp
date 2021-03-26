@@ -27,13 +27,10 @@
 #include "tools/epee/include/string_tools.h"
 
 #include <ctype.h>
+#include <random>
 
-#ifdef _WIN32
-# include <winsock2.h>
-#else
-# include <arpa/inet.h>
-# include <netinet/in.h>
-#endif
+#include <arpa/inet.h>
+#include <netinet/in.h>
 
 namespace epee
 {
@@ -68,6 +65,23 @@ namespace string_tools
         return false;
     return true;
   }
-}
-}
+  // https://stackoverflow.com/questions/47977829/generate-a-random-string-in-c11/47979867
+  std::string random_string()
+  {
+    std::string str("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+    std::random_device rd;
+    std::mt19937 generator(rd());
+
+    std::shuffle(str.begin(), str.end(), generator);
+
+    return str.substr(0, 32);    // assumes 32 < number of characters in str         
+  }
+
+  std::filesystem::path random_temp_path()
+  {
+    return std::filesystem::temp_directory_path() / std::filesystem::path(random_string());
+  }
+} // string_tools
+} // epee
 

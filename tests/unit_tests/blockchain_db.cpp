@@ -31,6 +31,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <filesystem>
 
 #include "gtest/gtest.h"
 
@@ -228,7 +229,7 @@ TYPED_TEST_CASE(BlockchainDBTest, implementations);
 
 TYPED_TEST(BlockchainDBTest, OpenAndClose)
 {
-  std::filesystem::path tempPath = std::filesystem::temp_directory_path() / std::filesystem::unique_path();
+  std::filesystem::path tempPath = epee::string_tools::random_temp_path();
   std::string dirPath = tempPath.string();
 
   this->set_prefix(dirPath);
@@ -246,7 +247,7 @@ TYPED_TEST(BlockchainDBTest, OpenAndClose)
 TYPED_TEST(BlockchainDBTest, AddBlock)
 {
 
-  std::filesystem::path tempPath = std::filesystem::temp_directory_path() / std::filesystem::unique_path();
+  std::filesystem::path tempPath = epee::string_tools::random_temp_path();
   std::string dirPath = tempPath.string();
 
   this->set_prefix(dirPath);
@@ -293,7 +294,7 @@ TYPED_TEST(BlockchainDBTest, AddBlock)
 
 TYPED_TEST(BlockchainDBTest, RetrieveBlockData)
 {
-  std::filesystem::path tempPath = std::filesystem::temp_directory_path() / std::filesystem::unique_path();
+  std::filesystem::path tempPath = epee::string_tools::random_temp_path();
   std::string dirPath = tempPath.string();
 
   this->set_prefix(dirPath);

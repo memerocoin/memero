@@ -101,7 +101,6 @@ set_property(
 add_executable(unit_tests_core
   main.cpp
 
-#  blockchain_db.cpp
 #  epee_levin_protocol_handler_async.cpp
 #  parse_amount.cpp
 
@@ -120,6 +119,9 @@ add_executable(unit_tests_core
   test_protocol_pack.cpp
   test_tx_utils.cpp
   tx_proof.cpp
+
+#  // disabled since we have different block format (different hash function)
+#  blockchain_db.cpp
 )
 
 target_link_libraries(unit_tests_core
