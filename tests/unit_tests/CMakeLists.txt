@@ -103,7 +103,6 @@ add_executable(unit_tests_core
 
 #  blockchain_db.cpp
 #  epee_levin_protocol_handler_async.cpp
-#  output_distribution.cpp
 #  parse_amount.cpp
 
   block_queue.cpp
@@ -113,6 +112,7 @@ add_executable(unit_tests_core
   lmdb.cpp
   net.cpp
   node_server.cpp
+  output_distribution.cpp
   ringct.cpp
   rpc_version_str.cpp
   slow_memmem.cpp

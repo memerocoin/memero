@@ -67,7 +67,7 @@ public:
   virtual cryptonote::blobdata get_block_blob_from_height(const uint64_t& height) const override { return cryptonote::t_serializable_object_to_blob(get_block_from_height(height)); }
   virtual cryptonote::blobdata get_block_blob(const crypto::hash& h) const override { return cryptonote::blobdata(); }
   virtual bool get_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const override { return false; }
-  virtual bool get_blocks_from(uint64_t start_height, size_t min_block_count, size_t max_block_count, size_t max_tx_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const override { return false; }
+  virtual bool get_blocks_from(uint64_t start_height, size_t min_block_count, size_t max_block_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const override { return false; }
   virtual uint64_t get_block_height(const crypto::hash& h) const override { return 0; }
   virtual cryptonote::block_header get_block_header(const crypto::hash& h) const override { return cryptonote::block_header(); }
   virtual uint64_t get_block_timestamp(const uint64_t& height) const override { return 0; }
@@ -75,6 +75,7 @@ public:
   virtual uint64_t get_top_block_timestamp() const override { return 0; }
   virtual size_t get_block_weight(const uint64_t& height) const override { return 128; }
   virtual std::vector<uint64_t> get_block_weights(uint64_t start_height, size_t count) const override { return {}; }
+  virtual cryptonote::difficulty_type get_block_cumulative_difficulty(const uint64_t& height) const override { return 10; }
   virtual cryptonote::difficulty_type get_block_difficulty(const uint64_t& height) const override { return 0; }
   virtual uint64_t get_block_already_generated_coins(const uint64_t& height) const override { return 10000000000; }
   virtual uint64_t get_block_long_term_weight(const uint64_t& height) const override { return 128; }
@@ -97,6 +98,7 @@ public:
   virtual uint64_t get_indexing_base() const override { return 0; }
   virtual cryptonote::output_data_t get_output_key(const uint64_t& amount, const uint64_t& index, bool include_commitmemt) const override { return cryptonote::output_data_t(); }
   virtual cryptonote::tx_out_index get_output_tx_and_index_from_global(const uint64_t& index) const override { return cryptonote::tx_out_index(); }
+  virtual void set_hard_fork_version(uint64_t height, uint8_t version) override {}
   virtual cryptonote::tx_out_index get_output_tx_and_index(const uint64_t& amount, const uint64_t& index) const override { return cryptonote::tx_out_index(); }
   virtual void get_output_tx_and_index(const uint64_t& amount, const std::vector<uint64_t> &offsets, std::vector<cryptonote::tx_out_index> &indices) const override {}
   virtual void get_output_key(const epee::span<const uint64_t> &amounts, const std::vector<uint64_t> &offsets, std::vector<cryptonote::output_data_t> &outputs, bool allow_partial = false) const override {}
@@ -104,6 +106,8 @@ public:
   virtual std::vector<std::vector<uint64_t>> get_tx_amount_output_indices(const uint64_t tx_index, size_t n_txes) const override { return std::vector<std::vector<uint64_t>>(); }
   virtual bool has_key_image(const crypto::key_image& img) const override { return false; }
   virtual void remove_block() override { }
+  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<cryptonote::transaction, cryptonote::blobdata_ref>& tx, const crypto::hash& tx_hash) override {return 0;}
+  virtual void remove_transaction_data(const crypto::hash& tx_hash, const cryptonote::transaction& tx) override {}
   virtual uint64_t add_output(const crypto::hash& tx_hash, const cryptonote::tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_time, const rct::key *commitment) override {return 0;}
   virtual void add_tx_amount_output_indices(const uint64_t tx_index, const std::vector<uint64_t>& amount_output_indices) override {}
   virtual void add_spent_key(const crypto::key_image& k_image) override {}
