@@ -28,10 +28,11 @@
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "math/ringct/rctSigs.h"
+#include "math/ringct/rctSigs.hpp"
 #include "chaingen.h"
 #include "rct.h"
 #include "wallet/device/device.hpp"
+#include "config/lol.hpp"
 
 using namespace epee;
 using namespace crypto;
@@ -41,7 +42,7 @@ using namespace cryptonote;
 // Tests
 
 bool gen_rct_tx_validation_base::generate_with_full(std::vector<test_event_entry>& events,
-    const int *out_idx, int mixin, uint64_t amount_paid, size_t second_rewind, uint8_t last_version, const rct::RCTConfig &rct_config, bool valid,
+    const int *out_idx, int mixin, uint64_t amount_paid, size_t second_rewind, uint8_t last_version, bool valid,
     const std::function<void(std::vector<tx_source_entry> &sources, std::vector<tx_destination_entry> &destinations)> &pre_tx,
     const std::function<void(transaction &tx)> &post_tx) const
 {
@@ -58,7 +59,7 @@ bool gen_rct_tx_validation_base::generate_with_full(std::vector<test_event_entry
     miner_accounts[n].generate();
     CHECK_AND_ASSERT_MES(generator.construct_block_manually(blocks[n], *prev_block, miner_accounts[n],
         test_generator::bf_major_ver | test_generator::bf_minor_ver | test_generator::bf_timestamp | test_generator::bf_hf_version,
-        2, 2, prev_block->timestamp + DIFFICULTY_BLOCKS_ESTIMATE_TIMESPAN * 2, // v2 has blocks twice as long
+        2, 2, prev_block->timestamp + DIFFICULTY_TARGET_V2 * 2, // v2 has blocks twice as long
           crypto::hash(), 0, transaction(), std::vector<crypto::hash>(), 0, 0, 2),
         false, "Failed to generate block");
     events.push_back(blocks[n]);
@@ -74,7 +75,7 @@ bool gen_rct_tx_validation_base::generate_with_full(std::vector<test_event_entry
       cryptonote::block blk;
       CHECK_AND_ASSERT_MES(generator.construct_block_manually(blk, blk_last, miner_account,
           test_generator::bf_major_ver | test_generator::bf_minor_ver | test_generator::bf_timestamp | test_generator::bf_hf_version,
-          2, 2, blk_last.timestamp + DIFFICULTY_BLOCKS_ESTIMATE_TIMESPAN * 2, // v2 has blocks twice as long
+          2, 2, blk_last.timestamp + DIFFICULTY_TARGET_V2 * 2, // v2 has blocks twice as long
           crypto::hash(), 0, transaction(), std::vector<crypto::hash>(), 0, 0, 2),
           false, "Failed to generate block");
       events.push_back(blk);
@@ -133,15 +134,12 @@ bool gen_rct_tx_validation_base::generate_with_full(std::vector<test_event_entry
       crypto::secret_key amount_key;
       crypto::derivation_to_scalar(derivation, o, amount_key);
       const uint8_t type = rct_txes[n].rct_signatures.type;
-      if (type == rct::RCTTypeSimple || type == rct::RCTTypeBulletproof || type == rct::RCTTypeBulletproof2 || type == rct::RCTTypeCLSAG)
-        rct::decodeRctSimple(rct_txes[n].rct_signatures, rct::sk2rct(amount_key), o, rct_tx_masks[o+n*4], hw::get_device("default"));
-      else
-        rct::decodeRct(rct_txes[n].rct_signatures, rct::sk2rct(amount_key), o, rct_tx_masks[o+n*4], hw::get_device("default"));
+      rct::decodeRctSimple(rct_txes[n].rct_signatures, rct::sk2rct(amount_key), o, rct_tx_masks[o+n*4]);
     }
 
     CHECK_AND_ASSERT_MES(generator.construct_block_manually(blk_txes[n], blk_last, miner_account,
         test_generator::bf_major_ver | test_generator::bf_minor_ver | test_generator::bf_timestamp | test_generator::bf_tx_hashes | test_generator::bf_hf_version | test_generator::bf_max_outs,
-        4, 4, blk_last.timestamp + DIFFICULTY_BLOCKS_ESTIMATE_TIMESPAN * 2, // v2 has blocks twice as long
+        4, 4, blk_last.timestamp + DIFFICULTY_TARGET_V2 * 2, // v2 has blocks twice as long
         crypto::hash(), 0, transaction(), starting_rct_tx_hashes, 0, 6, 4),
         false, "Failed to generate block");
     events.push_back(blk_txes[n]);
@@ -155,7 +153,7 @@ bool gen_rct_tx_validation_base::generate_with_full(std::vector<test_event_entry
       cryptonote::block blk;
       CHECK_AND_ASSERT_MES(generator.construct_block_manually(blk, blk_last, miner_account,
           test_generator::bf_major_ver | test_generator::bf_minor_ver | test_generator::bf_timestamp | test_generator::bf_hf_version | test_generator::bf_max_outs,
-          last_version, last_version, blk_last.timestamp + DIFFICULTY_BLOCKS_ESTIMATE_TIMESPAN * 2, // v2 has blocks twice as long
+          last_version, last_version, blk_last.timestamp + DIFFICULTY_TARGET_V2 * 2, // v2 has blocks twice as long
           crypto::hash(), 0, transaction(), std::vector<crypto::hash>(), 0, 6, last_version),
           false, "Failed to generate block");
       events.push_back(blk);
@@ -224,7 +222,7 @@ bool gen_rct_tx_validation_base::generate_with_full(std::vector<test_event_entry
   std::vector<crypto::secret_key> additional_tx_keys;
   std::unordered_map<crypto::public_key, cryptonote::subaddress_index> subaddresses;
   subaddresses[miner_accounts[0].get_keys().m_account_address.m_spend_public_key] = {0,0};
-  bool r = construct_tx_and_get_tx_key(miner_accounts[0].get_keys(), subaddresses, sources, destinations, cryptonote::account_public_address{}, std::vector<uint8_t>(), tx, 0, tx_key, additional_tx_keys, true, rct_config);
+  bool r = construct_tx_and_get_tx_key(miner_accounts[0].get_keys(), subaddresses, sources, destinations, cryptonote::account_public_address{}, std::vector<uint8_t>(), tx, 0, tx_key, additional_tx_keys, true);
   CHECK_AND_ASSERT_MES(r, false, "failed to construct transaction");
 
   if (post_tx)
@@ -243,8 +241,7 @@ bool gen_rct_tx_validation_base::generate_with(std::vector<test_event_entry>& ev
     const std::function<void(std::vector<tx_source_entry> &sources, std::vector<tx_destination_entry> &destinations)> &pre_tx,
     const std::function<void(transaction &tx)> &post_tx) const
 {
-  const rct::RCTConfig rct_config { rct::RangeProofBorromean, 0 };
-  return generate_with_full(events, out_idx, mixin, amount_paid, CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE, 4, rct_config, valid, pre_tx, post_tx);
+  return generate_with_full(events, out_idx, mixin, amount_paid, CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE, 4, valid, pre_tx, post_tx);
 }
 
 bool gen_rct_tx_valid_from_pre_rct::generate(std::vector<test_event_entry>& events) const
@@ -497,31 +494,10 @@ bool gen_rct_tx_rct_add_vout::generate(std::vector<test_event_entry>& events) co
     NULL, [](transaction &tx) {tx.vout.push_back(tx.vout.back());});
 }
 
-bool gen_rct_tx_pre_rct_altered_extra::generate(std::vector<test_event_entry>& events) const
-{
-  const int mixin = 2;
-  const int out_idx[] = {0, -1};
-  const uint64_t amount_paid = 10000;
-  bool failed = false;
-  return generate_with(events, out_idx, mixin, amount_paid, false,
-    NULL, [&failed](transaction &tx) {std::string extra_nonce; crypto::hash pid = crypto::null_hash; set_payment_id_to_tx_extra_nonce(extra_nonce, pid); if (!add_extra_nonce_to_tx_extra(tx.extra, extra_nonce)) failed = true; }) && !failed;
-}
-
-bool gen_rct_tx_rct_altered_extra::generate(std::vector<test_event_entry>& events) const
-{
-  const int mixin = 2;
-  const int out_idx[] = {1, -1};
-  const uint64_t amount_paid = 10000;
-  bool failed = false;
-  return generate_with(events, out_idx, mixin, amount_paid, false,
-    NULL, [&failed](transaction &tx) {std::string extra_nonce; crypto::hash pid = crypto::null_hash; set_payment_id_to_tx_extra_nonce(extra_nonce, pid); if (!add_extra_nonce_to_tx_extra(tx.extra, extra_nonce)) failed = true; }) && !failed;
-}
-
 bool gen_rct_tx_uses_output_too_early::generate(std::vector<test_event_entry>& events) const
 {
   const int mixin = 10;
   const int out_idx[] = {1, -1};
   const uint64_t amount_paid = 10000;
-  const rct::RCTConfig rct_config { rct::RangeProofPaddedBulletproof, 2 };
-  return generate_with_full(events, out_idx, mixin, amount_paid, CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE-3, HF_VERSION_ENFORCE_MIN_AGE, rct_config, false, NULL, NULL);
+  return generate_with_full(events, out_idx, mixin, amount_paid, CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE-3, config::lol::constant_hf_version, false, NULL, NULL);
 }

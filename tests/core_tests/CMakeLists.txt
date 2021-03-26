@@ -35,20 +35,18 @@ set(core_tests_sources
   chaingen001.cpp
   chaingen_main.cpp
   double_spend.cpp
-  integer_overflow.cpp
-  multisig.cpp
   ring_signature_1.cpp
   transaction_tests.cpp
   tx_validation.cpp
   tx_pool.cpp
   v2_tests.cpp
-  rct.cpp
   bulletproofs.cpp
   rct2.cpp
   wallet_tools.cpp)
 
 add_executable(core_tests
   chaingen.cpp
+  rct.cpp
 )
 
 target_link_libraries(core_tests
@@ -58,7 +56,8 @@ target_link_libraries(core_tests
     version
     epee
     device
-    wallet_api
+    ringct
+    net
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     GTest::gtest
     GTest::gtest_main
