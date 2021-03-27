@@ -3887,8 +3887,12 @@ uint64_t BlockchainLMDB::get_database_size() const
   uint64_t size = 0;
   std::filesystem::path datafile(m_folder);
   datafile /= CRYPTONOTE_BLOCKCHAINDATA_FILENAME;
-  if (!epee::file_io_utils::get_file_size(datafile.string(), size))
+  try {
+    size = std::filesystem::file_size(datafile);
+  }
+  catch(std::filesystem::filesystem_error& e) {
     size = 0;
+  }
   return size;
 }
 

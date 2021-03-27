@@ -58,13 +58,6 @@ namespace epee
 {
 namespace file_io_utils
 {
-	inline 
-		bool is_file_exist(const std::string& path)
-	{
-		std::filesystem::path p(path);
-		return std::filesystem::exists(p);
-	}
-
 	inline
 		bool save_string_to_file(const std::string& path_to_file, const std::string& str)
 	{
@@ -103,45 +96,6 @@ namespace file_io_utils
 
 			fstream.seekg (0, std::ios::beg);
 			fstream.read((char*)target_str.data(), target_str.size());
-			fstream.close();
-			return true;
-		}
-
-		catch(...)
-		{
-			return false;
-		}
-	}
-
-	inline
-		bool append_string_to_file(const std::string& path_to_file, const std::string& str)
-	{
-                // No special Windows implementation because so far not used in Monero code
-		try
-		{
-			std::ofstream fstream;
-			fstream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-			fstream.open(path_to_file.c_str(), std::ios_base::binary | std::ios_base::out | std::ios_base::app);
-			fstream << str;
-			fstream.close();
-			return true;
-		}
-
-		catch(...)
-		{
-			return false;
-		}
-	}
-
-	inline
-		bool get_file_size(const std::string& path_to_file, uint64_t &size)
-	{
-		try
-		{
-			std::ifstream fstream;
-			fstream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-			fstream.open(path_to_file, std::ios_base::binary | std::ios_base::in | std::ios::ate);
-			size = fstream.tellg();
 			fstream.close();
 			return true;
 		}

@@ -53,7 +53,8 @@ Notify::Notify(const char *spec)
   if (strchr(spec, '\'') || strchr(spec, '\"') || strchr(spec, '\\'))
     MWARNING("A notification spec contains a quote or backslash: note that these are handled verbatim, which may not be the intent");
   filename = args[0];
-  CHECK_AND_ASSERT_THROW_MES(epee::file_io_utils::is_file_exist(filename), "File not found: " << filename);
+  CHECK_AND_ASSERT_THROW_MES(std::filesystem::exists(std::filesystem::path(filename)),
+                             "File not found: " << filename);
 }
 
 static void replace(std::vector<std::string> &v, const char *tag, const char *s)
