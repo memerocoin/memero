@@ -275,7 +275,7 @@ public:
   template<class callback_t>
   bool add_invoke_response_handler(const callback_t &cb, uint64_t timeout,  async_protocol_handler& con, int command)
   {
-    CRITICAL_REGION_LOCAL(m_invoke_response_handlers_lock);
+    LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
     if (m_protocol_released)
     {
       MERROR("Adding response handler to a released object");
@@ -353,7 +353,7 @@ public:
   {
     decltype(m_invoke_response_handlers) local_invoke_response_handlers;
     {
-      CRITICAL_REGION_LOCAL(m_invoke_response_handlers_lock);
+      LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
       local_invoke_response_handlers.swap(m_invoke_response_handlers);
       m_protocol_released = true;
     }
@@ -431,7 +431,7 @@ public:
           is_continue = false;
           if(cb >= MIN_BYTES_WANTED)
           {
-            CRITICAL_REGION_LOCAL(m_invoke_response_handlers_lock);
+            LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
             if (!m_invoke_response_handlers.empty())
             {
               //async call scenario
@@ -507,7 +507,7 @@ public:
               }else
               {
                 {
-                  CRITICAL_REGION_LOCAL(m_local_inv_buff_lock);
+                  LOCK_RECURSIVE_MUTEX(m_local_inv_buff_lock);
                   m_local_inv_buff = std::string((const char*)buff_to_invoke.data(), buff_to_invoke.size());
                   buff_to_invoke = epee::span<const uint8_t>((const uint8_t*)NULL, 0);
                   m_invoke_result_code = m_current_head.m_return_code;
@@ -633,7 +633,7 @@ public:
         break;
       }
 
-      CRITICAL_REGION_LOCAL(m_call_lock);
+      LOCK_RECURSIVE_MUTEX(m_call_lock);
 
       if(m_deletion_initiated)
       {
@@ -643,7 +643,7 @@ public:
 
       boost::interprocess::ipcdetail::atomic_write32(&m_invoke_buf_ready, 0);
       {
-        CRITICAL_REGION_LOCAL(m_invoke_response_handlers_lock);
+        LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
 
         if (command == m_connection_context.handshake_command())
           m_max_packet_size = m_config.m_max_packet_size;
@@ -682,7 +682,7 @@ public:
     if(m_deletion_initiated)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
 
-    CRITICAL_REGION_LOCAL(m_call_lock);
+    LOCK_RECURSIVE_MUTEX(m_call_lock);
 
     if(m_deletion_initiated)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
@@ -722,7 +722,7 @@ public:
       return LEVIN_ERROR_CONNECTION_DESTROYED;
 
     {
-      CRITICAL_REGION_LOCAL(m_local_inv_buff_lock);
+      LOCK_RECURSIVE_MUTEX(m_local_inv_buff_lock);
       buff_out.swap(m_local_inv_buff);
       m_local_inv_buff.clear();
     }
@@ -738,7 +738,7 @@ public:
     if(m_deletion_initiated)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
 
-    CRITICAL_REGION_LOCAL(m_call_lock);
+    LOCK_RECURSIVE_MUTEX(m_call_lock);
 
     if(m_deletion_initiated)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
@@ -762,7 +762,7 @@ template<class t_connection_context>
 void async_protocol_handler_config<t_connection_context>::del_connection(async_protocol_handler<t_connection_context>* pconn)
 {
   {
-    CRITICAL_REGION_LOCAL(m_connects_lock);
+    LOCK_RECURSIVE_MUTEX(m_connects_lock);
     m_connects.erase(pconn->get_connection_id());
   }
   m_pcommands_handler->on_connection_close(pconn->m_connection_context);
@@ -773,7 +773,7 @@ void async_protocol_handler_config<t_connection_context>::delete_connections(siz
 {
   std::vector <boost::uuids::uuid> connections;
   {
-    CRITICAL_REGION_LOCAL(m_connects_lock);
+    LOCK_RECURSIVE_MUTEX(m_connects_lock);
     for (auto& c: m_connects)
     {
       if (c.second->m_connection_context.m_is_income == incoming)
@@ -819,7 +819,7 @@ template<class t_connection_context>
 void async_protocol_handler_config<t_connection_context>::add_connection(async_protocol_handler<t_connection_context>* pconn)
 {
   {
-    CRITICAL_REGION_LOCAL(m_connects_lock);
+    LOCK_RECURSIVE_MUTEX(m_connects_lock);
     m_connects[pconn->get_connection_id()] = pconn;
   }
   m_pcommands_handler->on_connection_new(pconn->m_connection_context);
@@ -835,7 +835,7 @@ async_protocol_handler<t_connection_context>* async_protocol_handler_config<t_co
 template<class t_connection_context>
 int async_protocol_handler_config<t_connection_context>::find_and_lock_connection(boost::uuids::uuid connection_id, async_protocol_handler<t_connection_context>*& aph)
 {
-  CRITICAL_REGION_LOCAL(m_connects_lock);
+  LOCK_RECURSIVE_MUTEX(m_connects_lock);
   aph = find_connection(connection_id);
   if(0 == aph)
     return LEVIN_ERROR_CONNECTION_NOT_FOUND;
@@ -863,7 +863,7 @@ int async_protocol_handler_config<t_connection_context>::invoke_async(int comman
 template<class t_connection_context> template<class callback_t>
 bool async_protocol_handler_config<t_connection_context>::foreach_connection(const callback_t &cb)
 {
-  CRITICAL_REGION_LOCAL(m_connects_lock);
+  LOCK_RECURSIVE_MUTEX(m_connects_lock);
   for(auto& c: m_connects)
   {
     async_protocol_handler<t_connection_context>* aph = c.second;
@@ -876,7 +876,7 @@ bool async_protocol_handler_config<t_connection_context>::foreach_connection(con
 template<class t_connection_context> template<class callback_t>
 bool async_protocol_handler_config<t_connection_context>::for_connection(const boost::uuids::uuid &connection_id, const callback_t &cb)
 {
-  CRITICAL_REGION_LOCAL(m_connects_lock);
+  LOCK_RECURSIVE_MUTEX(m_connects_lock);
   async_protocol_handler<t_connection_context>* aph = find_connection(connection_id);
   if (!aph)
     return false;
@@ -888,14 +888,14 @@ bool async_protocol_handler_config<t_connection_context>::for_connection(const b
 template<class t_connection_context>
 size_t async_protocol_handler_config<t_connection_context>::get_connections_count()
 {
-  CRITICAL_REGION_LOCAL(m_connects_lock);
+  LOCK_RECURSIVE_MUTEX(m_connects_lock);
   return m_connects.size();
 }
 //------------------------------------------------------------------------------------------
 template<class t_connection_context>
 size_t async_protocol_handler_config<t_connection_context>::get_out_connections_count()
 {
-  CRITICAL_REGION_LOCAL(m_connects_lock);
+  LOCK_RECURSIVE_MUTEX(m_connects_lock);
   size_t count = 0;
   for (const auto &c: m_connects)
     if (!c.second->m_connection_context.m_is_income)
@@ -906,7 +906,7 @@ size_t async_protocol_handler_config<t_connection_context>::get_out_connections_
 template<class t_connection_context>
 size_t async_protocol_handler_config<t_connection_context>::get_in_connections_count()
 {
-  CRITICAL_REGION_LOCAL(m_connects_lock);
+  LOCK_RECURSIVE_MUTEX(m_connects_lock);
   size_t count = 0;
   for (const auto &c: m_connects)
     if (c.second->m_connection_context.m_is_income)
@@ -934,7 +934,7 @@ int async_protocol_handler_config<t_connection_context>::notify(int command, con
 template<class t_connection_context>
 bool async_protocol_handler_config<t_connection_context>::close(boost::uuids::uuid connection_id)
 {
-  CRITICAL_REGION_LOCAL(m_connects_lock);
+  LOCK_RECURSIVE_MUTEX(m_connects_lock);
   async_protocol_handler<t_connection_context>* aph = find_connection(connection_id);
   if (!aph)
     return false;
@@ -947,7 +947,7 @@ bool async_protocol_handler_config<t_connection_context>::close(boost::uuids::uu
 template<class t_connection_context>
 bool async_protocol_handler_config<t_connection_context>::update_connection_context(const t_connection_context& contxt)
 {
-  CRITICAL_REGION_LOCAL(m_connects_lock);
+  LOCK_RECURSIVE_MUTEX(m_connects_lock);
   async_protocol_handler<t_connection_context>* aph = find_connection(contxt.m_connection_id);
   if(0 == aph)
     return false;

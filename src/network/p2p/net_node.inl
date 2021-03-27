@@ -166,7 +166,7 @@ namespace nodetool
   template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::is_remote_host_allowed(const epee::net_utils::network_address &address, time_t *t)
   {
-    CRITICAL_REGION_LOCAL(m_blocked_hosts_lock);
+    LOCK_RECURSIVE_MUTEX(m_blocked_hosts_lock);
 
     const time_t now = time(nullptr);
 
@@ -223,7 +223,7 @@ namespace nodetool
 
     const time_t now = time(nullptr);
 
-    CRITICAL_REGION_LOCAL(m_blocked_hosts_lock);
+    LOCK_RECURSIVE_MUTEX(m_blocked_hosts_lock);
     time_t limit;
     if (now > std::numeric_limits<time_t>::max() - seconds)
       limit = std::numeric_limits<time_t>::max();
@@ -266,7 +266,7 @@ namespace nodetool
   template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::unblock_host(const epee::net_utils::network_address &address)
   {
-    CRITICAL_REGION_LOCAL(m_blocked_hosts_lock);
+    LOCK_RECURSIVE_MUTEX(m_blocked_hosts_lock);
     auto i = m_blocked_hosts.find(address.host_str());
     if (i == m_blocked_hosts.end())
       return false;
@@ -280,7 +280,7 @@ namespace nodetool
   {
     const time_t now = time(nullptr);
 
-    CRITICAL_REGION_LOCAL(m_blocked_hosts_lock);
+    LOCK_RECURSIVE_MUTEX(m_blocked_hosts_lock);
     time_t limit;
     if (now > std::numeric_limits<time_t>::max() - seconds)
       limit = std::numeric_limits<time_t>::max();
@@ -318,7 +318,7 @@ namespace nodetool
   template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::unblock_subnet(const epee::net_utils::ipv4_network_subnet &subnet)
   {
-    CRITICAL_REGION_LOCAL(m_blocked_hosts_lock);
+    LOCK_RECURSIVE_MUTEX(m_blocked_hosts_lock);
     auto i = m_blocked_subnets.find(subnet);
     if (i == m_blocked_subnets.end())
       return false;
@@ -333,7 +333,7 @@ namespace nodetool
     if(!address.is_blockable())
       return false;
 
-    CRITICAL_REGION_LOCAL(m_host_fails_score_lock);
+    LOCK_RECURSIVE_MUTEX(m_host_fails_score_lock);
     uint64_t fails = m_host_fails_score[address.host_str()] += score;
     MDEBUG("Host " << address.host_str() << " fail score=" << fails);
     if(fails > P2P_IP_FAILS_BEFORE_BLOCK)
@@ -1238,14 +1238,14 @@ namespace nodetool
   template<class t_payload_net_handler>
   void node_server<t_payload_net_handler>::record_addr_failed(const epee::net_utils::network_address& addr)
   {
-    CRITICAL_REGION_LOCAL(m_conn_fails_cache_lock);
+    LOCK_RECURSIVE_MUTEX(m_conn_fails_cache_lock);
     m_conn_fails_cache[addr.host_str()] = time(NULL);
   }
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::is_addr_recently_failed(const epee::net_utils::network_address& addr)
   {
-    CRITICAL_REGION_LOCAL(m_conn_fails_cache_lock);
+    LOCK_RECURSIVE_MUTEX(m_conn_fails_cache_lock);
     auto it = m_conn_fails_cache.find(addr.host_str());
     if(it == m_conn_fails_cache.end())
       return false;
@@ -1847,7 +1847,7 @@ namespace nodetool
 
     LOG_DEBUG_CC(context, "REMOTE PEERLIST: remote peerlist size=" << peerlist_.size());
     LOG_TRACE_CC(context, "REMOTE PEERLIST: " << ENDL << print_peerlist_to_string(peerlist_));
-    CRITICAL_REGION_LOCAL(m_blocked_hosts_lock);
+    LOCK_RECURSIVE_MUTEX(m_blocked_hosts_lock);
     return m_network_zones.at(context.m_remote_address.get_zone()).m_peerlist.merge_peerlist(peerlist_, [this](const peerlist_entry &pe) {
       return !is_addr_recently_failed(pe.adr) && is_remote_host_allowed(pe.adr);
     });

@@ -131,7 +131,7 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_to_ke
   LOG_PRINT_L3("Blockchain::" << __func__);
 
   // ND: Disable locking and make method private.
-  //CRITICAL_REGION_LOCAL(m_blockchain_lock);
+  //LOCK_RECURSIVE_MUTEX(m_blockchain_lock);
 
   // verify that the input has key offsets (that it exists properly, really)
   if(!tx_in_to_key.key_offsets.size())
@@ -729,7 +729,7 @@ start:
 
   crypto::hash top_hash = get_tail_id();
   {
-    CRITICAL_REGION_LOCAL(m_difficulty_lock);
+    LOCK_RECURSIVE_MUTEX(m_difficulty_lock);
     // we can call this without the blockchain lock, it might just give us
     // something a bit out of date, but that's fine since anything which
     // requires the blockchain lock will have acquired it in the first place,
@@ -834,7 +834,7 @@ start:
 
   difficulty_type diff = next_difficulty_v5(timestamps, m_nettype, difficulties, T, N, HEIGHT);
 
-  CRITICAL_REGION_LOCAL(m_difficulty_lock);
+  LOCK_RECURSIVE_MUTEX(m_difficulty_lock);
   m_difficulty_for_next_block_top_hash = top_hash;
   m_difficulty_for_next_block = diff;
   if (D && D != diff && m_nettype == MAINNET)
@@ -2887,7 +2887,7 @@ bool Blockchain::check_tx_input(size_t tx_version, const txin_to_key& txin, cons
 
   // ND:
   // 1. Disable locking and make method private.
-  //CRITICAL_REGION_LOCAL(m_blockchain_lock);
+  //LOCK_RECURSIVE_MUTEX(m_blockchain_lock);
 
   struct outputs_visitor
   {

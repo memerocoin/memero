@@ -210,7 +210,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------
   void core::set_txpool_listener(boost::function<void(std::vector<txpool_event>)> zmq_pub)
   {
-    CRITICAL_REGION_LOCAL(m_incoming_tx_lock);
+    LOCK_RECURSIVE_MUTEX(m_incoming_tx_lock);
     m_zmq_pub = std::move(zmq_pub);
   }
 
@@ -787,7 +787,7 @@ namespace cryptonote
 
     std::vector<txpool_event> results(tx_blobs.size());
 
-    CRITICAL_REGION_LOCAL(m_incoming_tx_lock);
+    LOCK_RECURSIVE_MUTEX(m_incoming_tx_lock);
 
     tools::threadpool& tpool = tools::threadpool::getInstance();
     tools::threadpool::waiter waiter(tpool);

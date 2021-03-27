@@ -270,7 +270,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
     if(!self)
       return false;
     //_dbg3("[sock " << socket().native_handle() << "] add_ref, m_peer_number=" << mI->m_peer_number);
-    CRITICAL_REGION_LOCAL(self->m_self_refs_lock);
+    LOCK_RECURSIVE_MUTEX(self->m_self_refs_lock);
     //_dbg3("[sock " << socket().native_handle() << "] add_ref 2, m_peer_number=" << mI->m_peer_number);
     if(m_was_shutdown)
       return false;
@@ -287,7 +287,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
     std::shared_ptr<connection<t_protocol_handler> >  back_connection_copy;
     LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] release");
     {
-      CRITICAL_REGION_LOCAL(m_self_refs_lock);
+      LOCK_RECURSIVE_MUTEX(m_self_refs_lock);
       CHECK_AND_ASSERT_MES(m_reference_count, false, "[sock " << socket().native_handle() << "] m_reference_count already at 0 at connection<t_protocol_handler>::release() call");
       // is this the last reference?
       if (--m_reference_count == 0) {
@@ -392,7 +392,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
         boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
         bool do_shutdown = false;
         {
-          CRITICAL_REGION_LOCAL(m_send_que_lock);
+          LOCK_RECURSIVE_MUTEX(m_send_que_lock);
           if(!m_send_que.size())
             do_shutdown = true;
         }
@@ -423,7 +423,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
         _dbg3("[sock " << socket().native_handle() << "] peer closed connection");
         bool do_shutdown = false;
         {
-          CRITICAL_REGION_LOCAL(m_send_que_lock);
+          LOCK_RECURSIVE_MUTEX(m_send_que_lock);
           if(!m_send_que.size())
             do_shutdown = true;
         }
@@ -493,7 +493,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
         m_ready_to_close = true;
         bool do_shutdown = false;
         {
-          CRITICAL_REGION_LOCAL(m_send_que_lock);
+          LOCK_RECURSIVE_MUTEX(m_send_que_lock);
           if(!m_send_que.size())
             do_shutdown = true;
         }
@@ -819,7 +819,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
   bool connection<t_protocol_handler>::shutdown()
   {
     {
-      CRITICAL_REGION_LOCAL(m_shutdown_lock);
+      LOCK_RECURSIVE_MUTEX(m_shutdown_lock);
       if (m_was_shutdown)
         return true;
       m_was_shutdown = true;
@@ -854,7 +854,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
     m_timer.cancel();
     size_t send_que_size = 0;
     {
-      CRITICAL_REGION_LOCAL(m_send_que_lock);
+      LOCK_RECURSIVE_MUTEX(m_send_que_lock);
       send_que_size = m_send_que.size();
     }
     boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
@@ -903,7 +903,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 
     bool do_shutdown = false;
     {
-      CRITICAL_REGION_LOCAL(m_send_que_lock);
+      LOCK_RECURSIVE_MUTEX(m_send_que_lock);
       if(m_send_que.empty())
       {
         _erro("[sock " << socket().native_handle() << "] m_send_que.size() == 0 at handle_write!");
@@ -1202,7 +1202,7 @@ POP_WARNINGS
 
       // Create a pool of threads to run all of the io_services.
       {
-        CRITICAL_REGION_LOCAL(m_threads_lock);
+        LOCK_RECURSIVE_MUTEX(m_threads_lock);
         for (std::size_t i = 0; i < threads_count; ++i)
         {
           std::shared_ptr<std::thread> thread(new std::thread(
@@ -1250,7 +1250,7 @@ POP_WARNINGS
   bool boosted_tcp_server<t_protocol_handler>::is_thread_worker()
   {
     TRY_ENTRY();
-    CRITICAL_REGION_LOCAL(m_threads_lock);
+    LOCK_RECURSIVE_MUTEX(m_threads_lock);
     BOOST_FOREACH(std::shared_ptr<std::thread>& thp,  m_threads)
     {
       if(thp->get_id() == std::this_thread::get_id())

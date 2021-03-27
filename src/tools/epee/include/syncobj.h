@@ -105,7 +105,7 @@ namespace epee
 #define LOCK_MUTEX(x) \
   std::unique_lock<std::mutex> critical_region_mutex(x)
 
-#define  CRITICAL_REGION_LOCAL(x) \
+#define  LOCK_RECURSIVE_MUTEX(x) \
   std::lock_guard<std::recursive_mutex> critical_region_recursive_mutex(x)
 
 #define  CRITICAL_REGION_LOCAL_T(x) \

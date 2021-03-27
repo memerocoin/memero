@@ -100,8 +100,8 @@ namespace nodetool
   {
   public: 
     bool init(peerlist_types&& peers, bool allow_local_ip);
-    size_t get_white_peers_count(){CRITICAL_REGION_LOCAL(m_peerlist_lock); return m_peers_white.size();}
-    size_t get_gray_peers_count(){CRITICAL_REGION_LOCAL(m_peerlist_lock); return m_peers_gray.size();}
+    size_t get_white_peers_count(){LOCK_RECURSIVE_MUTEX(m_peerlist_lock); return m_peers_white.size();}
+    size_t get_gray_peers_count(){LOCK_RECURSIVE_MUTEX(m_peerlist_lock); return m_peers_gray.size();}
     bool merge_peerlist(const std::vector<peerlist_entry>& outer_bs, const std::function<bool(const peerlist_entry&)> &f = NULL);
     bool get_peerlist_head(std::vector<peerlist_entry>& bs_head, bool anonymize, uint32_t depth = P2P_DEFAULT_PEERS_IN_HANDSHAKE);
     void get_peerlist(std::vector<peerlist_entry>& pl_gray, std::vector<peerlist_entry>& pl_white);
@@ -216,7 +216,7 @@ namespace nodetool
   inline 
   bool peerlist_manager::merge_peerlist(const std::vector<peerlist_entry>& outer_bs, const std::function<bool(const peerlist_entry&)> &f)
   {
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
     for(const peerlist_entry& be:  outer_bs)
     {
       if (!f || f(be))
@@ -230,7 +230,7 @@ namespace nodetool
   inline
   bool peerlist_manager::get_white_peer_by_index(peerlist_entry& p, size_t i)
   {
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
     if(i >= m_peers_white.size())
       return false;
 
@@ -242,7 +242,7 @@ namespace nodetool
   inline
     bool peerlist_manager::get_gray_peer_by_index(peerlist_entry& p, size_t i)
   {
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
     if(i >= m_peers_gray.size())
       return false;
 
@@ -267,7 +267,7 @@ namespace nodetool
   inline 
   bool peerlist_manager::get_peerlist_head(std::vector<peerlist_entry>& bs_head, bool anonymize, uint32_t depth)
   {
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
     peers_indexed::index<by_time>::type& by_time_index=m_peers_white.get<by_time>();
     uint32_t cnt = 0;
 
@@ -308,7 +308,7 @@ namespace nodetool
   template<typename F> inline
   bool peerlist_manager::foreach(bool white, const F &f)
   {
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
     peers_indexed::index<by_time>::type& by_time_index = white ? m_peers_white.get<by_time>() : m_peers_gray.get<by_time>();
     for(const peers_indexed::value_type& vl: boost::adaptors::reverse(by_time_index))
       if (!f(vl))
@@ -320,7 +320,7 @@ namespace nodetool
   bool peerlist_manager::set_peer_just_seen(peerid_type peer, const epee::net_utils::network_address& addr)
   {
     TRY_ENTRY();
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
     //find in white list
     peerlist_entry ple;
     ple.adr = addr;
@@ -338,7 +338,7 @@ namespace nodetool
     if(!is_host_allowed(ple.adr))
       return true;
 
-     CRITICAL_REGION_LOCAL(m_peerlist_lock);
+     LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
     //find in white list
     auto by_addr_it_wt = m_peers_white.get<by_addr>().find(ple.adr);
     if(by_addr_it_wt == m_peers_white.get<by_addr>().end())
@@ -373,7 +373,7 @@ namespace nodetool
     if(!is_host_allowed(ple.adr))
       return true;
 
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
     //find in white list
     auto by_addr_it_wt = m_peers_white.get<by_addr>().find(ple.adr);
     if(by_addr_it_wt != m_peers_white.get<by_addr>().end())
@@ -404,7 +404,7 @@ namespace nodetool
   {
     TRY_ENTRY();
 
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
 
     auto by_addr_it_anchor = m_peers_anchor.get<by_addr>().find(ple.adr);
 
@@ -422,7 +422,7 @@ namespace nodetool
   {
     TRY_ENTRY();
 
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
 
     if (m_peers_gray.empty()) {
       return false;
@@ -443,7 +443,7 @@ namespace nodetool
   {
     TRY_ENTRY();
 
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
 
     peers_indexed::index_iterator<by_addr>::type iterator = m_peers_white.get<by_addr>().find(pe.adr);
 
@@ -461,7 +461,7 @@ namespace nodetool
   {
     TRY_ENTRY();
 
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
 
     peers_indexed::index_iterator<by_addr>::type iterator = m_peers_gray.get<by_addr>().find(pe.adr);
 
@@ -479,7 +479,7 @@ namespace nodetool
   {
     TRY_ENTRY();
 
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
 
     auto begin = m_peers_anchor.get<by_time>().begin();
     auto end = m_peers_anchor.get<by_time>().end();
@@ -500,7 +500,7 @@ namespace nodetool
   {
     TRY_ENTRY();
 
-    CRITICAL_REGION_LOCAL(m_peerlist_lock);
+    LOCK_RECURSIVE_MUTEX(m_peerlist_lock);
 
     anchor_peers_indexed::index_iterator<by_addr>::type iterator = m_peers_anchor.get<by_addr>().find(addr);
 
