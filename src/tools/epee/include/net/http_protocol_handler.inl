@@ -229,7 +229,6 @@ namespace net_utils
 	{
 		std::string buf((const char*)ptr, cb);
 		//LOG_PRINT_L0("HTTP_RECV: " << ptr << "\r\n" << buf);
-		//file_io_utils::save_string_to_file(string_tools::get_current_module_folder() + "/" + boost::lexical_cast<std::string>(ptr), std::string((const char*)ptr, cb));
 
 		bool res = handle_buff_in(buf);
 		if(m_want_close/*m_state == http_state_connection_close || m_state == http_state_error*/)

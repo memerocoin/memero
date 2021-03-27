@@ -178,40 +178,6 @@ POP_WARNINGS
 		return !boost::iequals(str1, str2);
 	}
 	//----------------------------------------------------------------------------
-	inline std::string& get_current_module_name()
-	{
-		static std::string module_name;
-		return module_name;
-	}
-	//----------------------------------------------------------------------------
-	inline std::string& get_current_module_folder()
-	{
-		static std::string module_folder;
-		return module_folder;
-	}
-	//----------------------------------------------------------------------------
-	inline bool set_module_name_and_folder(const std::string& path_to_process_)
-	{
-    std::string path_to_process = path_to_process_;
-#ifdef _WIN32
-    path_to_process = get_current_module_path();
-#endif 
-		std::string::size_type a = path_to_process.rfind( '\\' );
-		if(a == std::string::npos )
-		{
-			a = path_to_process.rfind( '/' );
-		}
-		if ( a != std::string::npos )
-		{
-			get_current_module_name() = path_to_process.substr(a+1, path_to_process.size());
-			get_current_module_folder() = path_to_process.substr(0, a);
-			return true;
-		}else
-			return false;
-
-	}
-
-	//----------------------------------------------------------------------------
 	inline bool trim_left(std::string& str)
 	{
 		for(std::string::iterator it = str.begin(); it!= str.end() && isspace(static_cast<unsigned char>(*it));)

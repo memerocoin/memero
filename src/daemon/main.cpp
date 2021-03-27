@@ -64,8 +64,6 @@ int main(int argc, char const * argv[])
 
     tools::on_startup();
 
-    epee::string_tools::set_module_name_and_folder(argv[0]);
-
     // Build argument description
     po::options_description all_options("All");
     po::options_description hidden_options("Hidden");

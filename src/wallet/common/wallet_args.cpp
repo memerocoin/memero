@@ -104,8 +104,6 @@ namespace wallet_args
 #endif
     tools::set_strict_default_file_permissions(true);
 
-    epee::string_tools::set_module_name_and_folder(argv[0]);
-
     po::options_description desc_general(wallet_args::tr("General options"));
     command_line::add_arg(desc_general, command_line::arg_help);
     command_line::add_arg(desc_general, command_line::arg_version);
