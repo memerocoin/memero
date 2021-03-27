@@ -431,7 +431,7 @@ namespace nodetool
     bool m_require_ipv4;
     std::atomic<bool> is_closing;
     std::unique_ptr<std::thread> mPeersLoggerThread;
-    //critical_section m_connections_lock;
+    //std::recursive_mutex m_connections_lock;
     //connections_indexed_container m_connections;
 
     t_payload_net_handler& m_payload_handler;
@@ -464,13 +464,13 @@ namespace nodetool
 
 
     std::map<std::string, time_t> m_conn_fails_cache;
-    epee::critical_section m_conn_fails_cache_lock;
+    std::recursive_mutex m_conn_fails_cache_lock;
 
-    epee::critical_section m_blocked_hosts_lock; // for both hosts and subnets
+    std::recursive_mutex m_blocked_hosts_lock; // for both hosts and subnets
     std::map<std::string, time_t> m_blocked_hosts;
     std::map<epee::net_utils::ipv4_network_subnet, time_t> m_blocked_subnets;
 
-    epee::critical_section m_host_fails_score_lock;
+    std::recursive_mutex m_host_fails_score_lock;
     std::map<std::string, uint64_t> m_host_fails_score;
 
     boost::uuids::uuid m_network_id;

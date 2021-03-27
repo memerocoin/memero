@@ -944,7 +944,7 @@ namespace cryptonote
     uint64_t m_timestamps_and_difficulties_height;
     bool m_reset_timestamps_and_difficulties_height;
 
-    epee::critical_section m_difficulty_lock;
+    std::recursive_mutex m_difficulty_lock;
     crypto::hash m_difficulty_for_next_block_top_hash;
     difficulty_type m_difficulty_for_next_block;
 

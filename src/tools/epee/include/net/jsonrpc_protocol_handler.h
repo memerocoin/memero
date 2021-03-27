@@ -48,7 +48,7 @@ namespace net_utils
     struct jsonrpc2_server_config
     {
       i_jsonrpc2_server_handler<t_connection_context>* m_phandler;
-      critical_section m_lock;
+      std::recursive_mutex m_lock;
     };
     
     template<class t_connection_context = net_utils::connection_context_base>

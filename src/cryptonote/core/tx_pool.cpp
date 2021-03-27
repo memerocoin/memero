@@ -233,7 +233,7 @@ namespace cryptonote
         {
           if (kept_by_block)
             m_parsed_tx_cache.insert(std::make_pair(id, tx));
-          CRITICAL_REGION_LOCAL1(m_blockchain);
+          CRITICAL_REGION_LOCAL_T(m_blockchain);
           LockedTXN lock(m_blockchain.get_db());
           if (!insert_key_images(tx, id, tx_relay))
             return false;
@@ -278,7 +278,7 @@ namespace cryptonote
       {
         if (kept_by_block)
           m_parsed_tx_cache.insert(std::make_pair(id, tx));
-        CRITICAL_REGION_LOCAL1(m_blockchain);
+        CRITICAL_REGION_LOCAL_T(m_blockchain);
         LockedTXN lock(m_blockchain.get_db());
         m_blockchain.remove_txpool_tx(id);
         if (!insert_key_images(tx, id, tx_relay))
@@ -339,7 +339,7 @@ namespace cryptonote
     CRITICAL_REGION_LOCAL(m_transactions_lock);
     if (bytes == 0)
       bytes = m_txpool_max_weight;
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     LockedTXN lock(m_blockchain.get_db());
     bool changed = false;
 
@@ -427,7 +427,7 @@ namespace cryptonote
   bool tx_memory_pool::remove_transaction_keyimages(const transaction_prefix& tx, const crypto::hash &actual_hash)
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     // ND: Speedup
     for(const txin_v& vi: tx.vin)
     {
@@ -457,7 +457,7 @@ namespace cryptonote
   bool tx_memory_pool::take_tx(const crypto::hash &id, transaction &tx, cryptonote::blobdata &txblob, size_t& tx_weight, uint64_t& fee, bool &relayed, bool &do_not_relay, bool &double_spend_seen, bool &pruned)
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
 
     auto sorted_it = find_tx_in_sorted_container(id);
 
@@ -514,7 +514,7 @@ namespace cryptonote
   {
     PERF_TIMER(get_transaction_info);
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
 
     try
     {
@@ -566,7 +566,7 @@ namespace cryptonote
   bool tx_memory_pool::get_complement(const std::vector<crypto::hash> &hashes, std::vector<cryptonote::blobdata> &txes) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
 
     m_blockchain.for_all_txpool_txes([this, &hashes, &txes](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref*) {
       const auto tx_relay_method = meta.get_relay_method();
@@ -614,7 +614,7 @@ namespace cryptonote
   bool tx_memory_pool::remove_stuck_transactions()
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     std::list<std::pair<crypto::hash, uint64_t>> remove;
     m_blockchain.for_all_txpool_txes([this, &remove](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref*) {
       uint64_t tx_age = time(nullptr) - meta.receive_time;
@@ -677,7 +677,7 @@ namespace cryptonote
   bool tx_memory_pool::get_relayable_transactions(std::vector<std::tuple<crypto::hash, cryptonote::blobdata, relay_method>> &txs) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     const uint64_t now = time(NULL);
     txs.reserve(m_blockchain.get_txpool_tx_count());
     m_blockchain.for_all_txpool_txes([this, now, &txs](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *){
@@ -709,7 +709,7 @@ namespace cryptonote
   void tx_memory_pool::set_relayed(const epee::span<const crypto::hash> hashes, const relay_method method)
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     const time_t now = time(NULL);
     LockedTXN lock(m_blockchain.get_db());
     for (const auto& hash : hashes)
@@ -737,14 +737,14 @@ namespace cryptonote
   size_t tx_memory_pool::get_transactions_count(bool include_sensitive) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     return m_blockchain.get_txpool_tx_count(include_sensitive);
   }
   //---------------------------------------------------------------------------------
   void tx_memory_pool::get_transactions(std::vector<transaction>& txs, bool include_sensitive) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     const relay_category category = include_sensitive ? relay_category::all : relay_category::broadcasted;
     txs.reserve(m_blockchain.get_txpool_tx_count(include_sensitive));
     m_blockchain.for_all_txpool_txes([&txs](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *bd){
@@ -764,7 +764,7 @@ namespace cryptonote
   void tx_memory_pool::get_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     const relay_category category = include_sensitive ? relay_category::all : relay_category::broadcasted;
     txs.reserve(m_blockchain.get_txpool_tx_count(include_sensitive));
     m_blockchain.for_all_txpool_txes([&txs](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *bd){
@@ -776,7 +776,7 @@ namespace cryptonote
   void tx_memory_pool::get_transaction_backlog(std::vector<tx_backlog_entry>& backlog, bool include_sensitive) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     const uint64_t now = time(NULL);
     const relay_category category = include_sensitive ? relay_category::all : relay_category::broadcasted;
     backlog.reserve(m_blockchain.get_txpool_tx_count(include_sensitive));
@@ -789,7 +789,7 @@ namespace cryptonote
   void tx_memory_pool::get_transaction_stats(struct txpool_stats& stats, bool include_sensitive) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     const uint64_t now = time(NULL);
     const relay_category category = include_sensitive ? relay_category::all : relay_category::broadcasted;
     std::map<uint64_t, txpool_histo> agebytes;
@@ -876,7 +876,7 @@ namespace cryptonote
   bool tx_memory_pool::get_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_key_image_info>& key_image_infos, bool include_sensitive_data) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     const relay_category category = include_sensitive_data ? relay_category::all : relay_category::broadcasted;
     const size_t count = m_blockchain.get_txpool_tx_count(include_sensitive_data);
     tx_infos.reserve(count);
@@ -935,7 +935,7 @@ namespace cryptonote
   bool tx_memory_pool::get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::key_images_with_tx_hashes& key_image_infos) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     tx_infos.reserve(m_blockchain.get_txpool_tx_count());
     key_image_infos.reserve(m_blockchain.get_txpool_tx_count());
     m_blockchain.for_all_txpool_txes([&tx_infos, key_image_infos](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *bd){
@@ -983,7 +983,7 @@ namespace cryptonote
   bool tx_memory_pool::check_for_key_images(const std::vector<crypto::key_image>& key_images, std::vector<bool>& spent) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
 
     spent.clear();
 
@@ -1005,7 +1005,7 @@ namespace cryptonote
   bool tx_memory_pool::get_transaction(const crypto::hash& id, cryptonote::blobdata& txblob, relay_category tx_category) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     try
     {
       return m_blockchain.get_txpool_tx_blob(id, txblob, tx_category);
@@ -1035,14 +1035,14 @@ namespace cryptonote
   bool tx_memory_pool::have_tx(const crypto::hash &id, relay_category tx_category) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     return m_blockchain.get_db().txpool_has_tx(id, tx_category);
   }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::have_tx_keyimges_as_spent(const transaction& tx, const crypto::hash& txid) const
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, true);//should never fail
@@ -1188,7 +1188,7 @@ namespace cryptonote
   void tx_memory_pool::mark_double_spend(const transaction &tx)
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     bool changed = false;
     LockedTXN lock(m_blockchain.get_db());
     for(size_t i = 0; i!= tx.vin.size(); i++)
@@ -1233,7 +1233,7 @@ namespace cryptonote
   {
     std::stringstream ss;
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     m_blockchain.for_all_txpool_txes([&ss, short_format](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *txblob) {
       ss << "id: " << txid << std::endl;
       if (!short_format) {
@@ -1265,7 +1265,7 @@ namespace cryptonote
   bool tx_memory_pool::fill_block_template(const uint64_t height, block &bl, size_t &total_weight, uint64_t &fee, uint64_t &expected_reward)
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
 
     uint64_t best_coinbase = 0, coinbase = 0;
     total_weight = 0;
@@ -1389,7 +1389,7 @@ namespace cryptonote
   size_t tx_memory_pool::validate()
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
     size_t tx_weight_limit = get_transaction_weight_limit();
     std::unordered_set<crypto::hash> remove;
 
@@ -1453,7 +1453,7 @@ namespace cryptonote
   bool tx_memory_pool::init(size_t max_txpool_weight)
   {
     CRITICAL_REGION_LOCAL(m_transactions_lock);
-    CRITICAL_REGION_LOCAL1(m_blockchain);
+    CRITICAL_REGION_LOCAL_T(m_blockchain);
 
     m_txpool_max_weight = max_txpool_weight ? max_txpool_weight : DEFAULT_TXPOOL_MAX_WEIGHT;
     m_txs_by_fee_and_receive_time.clear();

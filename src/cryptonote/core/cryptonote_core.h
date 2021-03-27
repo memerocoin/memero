@@ -932,7 +932,7 @@ namespace cryptonote
 
      i_cryptonote_protocol* m_pprotocol; //!< cryptonote protocol instance
 
-     epee::critical_section m_incoming_tx_lock; //!< incoming transaction lock
+     std::recursive_mutex m_incoming_tx_lock; //!< incoming transaction lock
 
      //m_miner and m_miner_addres are probably temporary here
      miner m_miner; //!< miner instance

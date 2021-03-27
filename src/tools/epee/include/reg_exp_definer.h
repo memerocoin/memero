@@ -33,16 +33,16 @@
 
 namespace epee
 {
-  class global_regexp_critical_section
+  class global_regexp_mutex
   {
   private:
-    mutable critical_section regexp_lock;
+    mutable std::recursive_mutex regexp_lock;
   public:
-    global_regexp_critical_section(){}
-    critical_section& get_lock()const {return regexp_lock;}
+    global_regexp_mutex(){}
+    std::recursive_mutex& get_lock()const {return regexp_lock;}
   };
 
-  const static global_regexp_critical_section gregexplock;
+  const static global_regexp_mutex gregexplock;
 
 #define STATIC_REGEXP_EXPR_1(var_name, xpr_text, reg_exp_flags) \
 	static volatile uint32_t regexp_initialized_1 = 0;\

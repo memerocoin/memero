@@ -567,7 +567,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 
         if (allow_split && (message_size > chunksize_max_unsigned)) {
 			{ // LOCK: chunking
-    		epee::critical_region_t<decltype(m_chunking_lock)> send_guard(m_chunking_lock); // *** critical *** 
+    		std::lock_guard<decltype(m_chunking_lock)> send_guard(m_chunking_lock); // *** critical *** 
 
 				MDEBUG("do_send() will SPLIT into small chunks, from packet="<<message_size<<" B for ptr="<<message_data);
 				// 01234567890 

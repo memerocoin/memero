@@ -54,7 +54,7 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.http"
 
-extern epee::critical_section gregexp_lock;
+extern std::recursive_mutex gregexp_lock;
 
 
 namespace epee
@@ -139,7 +139,7 @@ namespace net_utils
 			chunked_state m_chunked_state;
 			std::string m_chunked_cache;
 			bool m_auto_connect;
-			critical_section m_lock;
+			std::recursive_mutex m_lock;
 
 		public:
 			explicit http_simple_client_template()

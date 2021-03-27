@@ -977,7 +977,7 @@ class Mutex : base::NoCopy {
 #  if ELPP_OS_UNIX
   pthread_mutex_t m_underlyingMutex;
 #  elif ELPP_OS_WINDOWS
-  CRITICAL_SECTION m_underlyingMutex;
+  std::recursive_mutex m_underlyingMutex;
 #  endif  // ELPP_OS_UNIX
 };
 /// @brief Scoped lock for compiler that dont yet support std::lock_guard

@@ -211,7 +211,7 @@ private:
     core& m_core;
     nodetool::node_server<cryptonote::t_cryptonote_protocol_handler<cryptonote::core> >& m_p2p;
     bool m_restricted;
-    epee::critical_section m_host_fails_score_lock;
+    std::recursive_mutex m_host_fails_score_lock;
     std::map<std::string, uint64_t> m_host_fails_score;
   };
 }

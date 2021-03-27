@@ -185,7 +185,7 @@ namespace nodetool
     void trim_gray_peerlist();
 
     friend class boost::serialization::access;
-    epee::critical_section m_peerlist_lock;
+    std::recursive_mutex m_peerlist_lock;
     std::string m_config_folder;
     bool m_allow_local_ip;
 

@@ -173,9 +173,9 @@ namespace net_utils
     //typename t_protocol_handler::config_type m_dummy_config;
     size_t m_reference_count = 0; // reference count managed through add_ref/release support
     std::shared_ptr<connection<t_protocol_handler> > m_self_ref; // the reference to hold
-    critical_section m_self_refs_lock;
-    critical_section m_chunking_lock; // held while we add small chunks of the big do_send() to small do_send_chunk()
-    critical_section m_shutdown_lock; // held while shutting down
+    std::recursive_mutex m_self_refs_lock;
+    std::recursive_mutex m_chunking_lock; // held while we add small chunks of the big do_send() to small do_send_chunk()
+    std::recursive_mutex m_shutdown_lock; // held while shutting down
     
     t_connection_type m_connection_type;
     
@@ -382,7 +382,7 @@ namespace net_utils
     size_t m_threads_count;
     std::vector<std::shared_ptr<std::thread> > m_threads;
     std::thread::id m_main_thread_id;
-    critical_section m_threads_lock;
+    std::recursive_mutex m_threads_lock;
     volatile uint32_t m_thread_index; // TODO change to std::atomic
 
     t_connection_type m_connection_type;

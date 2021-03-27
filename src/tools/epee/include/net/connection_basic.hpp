@@ -107,7 +107,7 @@ class connection_basic { // not-templated base class for rapid developmet of som
 		// moved here from orginal connecton<> - common member variables that do not depend on template in connection<>
     volatile uint32_t m_want_close_connection;
     std::atomic<bool> m_was_shutdown;
-    critical_section m_send_que_lock;
+    std::recursive_mutex m_send_que_lock;
     std::deque<std::basic_string<uint8_t>> m_send_que;
     volatile bool m_is_multithreaded;
     /// Strand to ensure the connection's handlers are not called concurrently.

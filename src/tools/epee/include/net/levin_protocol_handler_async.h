@@ -66,7 +66,7 @@ template<class t_connection_context>
 class async_protocol_handler_config
 {
   typedef std::unordered_map<boost::uuids::uuid, async_protocol_handler<t_connection_context>*, boost::hash<boost::uuids::uuid>> connections_map;
-  critical_section m_connects_lock;
+  std::recursive_mutex m_connects_lock;
   connections_map m_connects;
 
   void add_connection(async_protocol_handler<t_connection_context>* pc);
@@ -154,10 +154,10 @@ public:
 
   volatile int m_invoke_result_code;
 
-  critical_section m_local_inv_buff_lock;
+  std::recursive_mutex m_local_inv_buff_lock;
   std::string m_local_inv_buff;
 
-  critical_section m_call_lock;
+  std::recursive_mutex m_call_lock;
 
   volatile uint32_t m_wait_count;
   volatile uint32_t m_close_called;
@@ -269,7 +269,7 @@ public:
       }
     }
   };
-  critical_section m_invoke_response_handlers_lock;
+  std::recursive_mutex m_invoke_response_handlers_lock;
   std::list<std::shared_ptr<invoke_response_handler_base> > m_invoke_response_handlers;
   
   template<class callback_t>
@@ -483,12 +483,12 @@ public:
           if(is_response)
           {//response to some invoke 
 
-            epee::critical_region_t<decltype(m_invoke_response_handlers_lock)> invoke_response_handlers_guard(m_invoke_response_handlers_lock);
             if(!m_invoke_response_handlers.empty())
             {//async call scenario
+              std::unique_lock<decltype(m_invoke_response_handlers_lock)> invoke_response_handlers_guard(m_invoke_response_handlers_lock);
               std::shared_ptr<invoke_response_handler_base> response_handler = m_invoke_response_handlers.front();
               bool timer_cancelled = response_handler->cancel_timer();
-               // Don't pop handler, to avoid destroying it
+              // Don't pop handler, to avoid destroying it
               if(timer_cancelled)
                 m_invoke_response_handlers.pop_front();
               invoke_response_handlers_guard.unlock();
@@ -498,7 +498,6 @@ public:
             }
             else
             {
-              invoke_response_handlers_guard.unlock();
               //use sync call scenario
               if(!boost::interprocess::ipcdetail::atomic_read32(&m_wait_count) && !boost::interprocess::ipcdetail::atomic_read32(&m_close_called))
               {
