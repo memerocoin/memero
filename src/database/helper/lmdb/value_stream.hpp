@@ -161,8 +161,10 @@ namespace lmdb
         G get_value() const noexcept
         {
             static_assert(std::is_same<U, T>(), "bad MONERO_FIELD usage?");
-            static_assert(std::is_pod<U>(), "value type must be pod");
-            static_assert(std::is_pod<G>(), "field type must be pod");
+            static_assert(std::is_standard_layout<U>(), "value type must be standard layout");
+            static_assert(std::is_trivial<U>(), "value type must be trivial");
+            static_assert(std::is_standard_layout<G>(), "field type must be standard layout");
+            static_assert(std::is_trivial<G>(), "field type must be trivial");
             static_assert(sizeof(G) + uoffset <= sizeof(U), "bad field and/or offset");
             assert(sizeof(G) + uoffset <= values.size());
             assert(!is_end());

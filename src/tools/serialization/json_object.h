@@ -117,7 +117,7 @@ struct PARSE_FAIL : public JSON_ERROR
 template<typename Type>
 inline constexpr bool is_to_hex()
 {
-  return std::is_pod<Type>() && !std::is_integral<Type>();
+  return std::is_standard_layout<Type>() && std::is_trivial<Type>() && !std::is_integral<Type>();
 }
 
 void read_hex(const rapidjson::Value& val, epee::span<std::uint8_t> dest);

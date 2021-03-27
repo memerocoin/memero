@@ -85,7 +85,8 @@ namespace epee
 
   template<typename T> inline bool wipeable_string::hex_to_pod(T &pod) const
   {
-    static_assert(std::is_pod<T>::value, "expected pod type");
+    static_assert(std::is_standard_layout<T>::value, "expected standard layout type");
+    static_assert(std::is_trivial<T>::value, "expected trivial type");
     if (size() != sizeof(T) * 2)
       return false;
     std::optional<epee::wipeable_string> blob = parse_hexstr();

@@ -148,7 +148,7 @@ namespace crypto {
   /* Generate a value filled with random bytes.
    */
   template<typename T>
-  typename std::enable_if<std::is_pod<T>::value, T>::type rand() {
+  typename std::enable_if<std::is_trivial<T>::value, T>::type rand() {
     typename std::remove_cv<T>::type res;
     generate_random_bytes_thread_safe(sizeof(T), (uint8_t*)&res);
     return res;

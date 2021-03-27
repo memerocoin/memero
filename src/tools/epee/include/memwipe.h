@@ -59,8 +59,10 @@ namespace tools {
 
     /// Destroy the contents of the contained type.
     void scrub() {
-      static_assert(std::is_pod<T>::value,
-                    "T cannot be auto-scrubbed. T must be POD.");
+      static_assert(std::is_standard_layout<T>::value,
+                    "T cannot be auto-scrubbed. T must be standard layout.");
+      static_assert(std::is_trivial<T>::value,
+                    "T cannot be auto-scrubbed. T must be trivial.");
       static_assert(std::is_trivially_destructible<T>::value,
                     "T cannot be auto-scrubbed. T must be trivially destructable.");
       memwipe(this, sizeof(T));

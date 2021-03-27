@@ -99,12 +99,14 @@ public: \
   epee::serialization::selector<is_store>::serialize_t_val_as_blob(this_ref.varialble, stg, hparent_section, val_name); 
 
 #define KV_SERIALIZE_VAL_POD_AS_BLOB_N(varialble, val_name) \
-  static_assert(std::is_pod<decltype(this_ref.varialble)>::value, "t_type must be a POD type."); \
+  static_assert(std::is_standard_layout<decltype(this_ref.varialble)>::value, "t_type must be a standard layout type."); \
+  static_assert(std::is_trivial<decltype(this_ref.varialble)>::value, "t_type must be a trivial type."); \
   KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE_N(varialble, val_name)
 
 #define KV_SERIALIZE_VAL_POD_AS_BLOB_OPT_N(varialble, val_name, default_value) \
   do { \
-    static_assert(std::is_pod<decltype(this_ref.varialble)>::value, "t_type must be a POD type."); \
+    static_assert(std::is_standard_layout<decltype(this_ref.varialble)>::value, "t_type must be a standard layout type."); \
+    static_assert(std::is_trivial<decltype(this_ref.varialble)>::value, "t_type must be a trivial type."); \
     bool ret = KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE_N(varialble, val_name); \
     if (!ret) \
       epee::serialize_default(this_ref.varialble, default_value); \

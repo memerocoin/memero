@@ -152,7 +152,8 @@ namespace epee
     void throwable_buffer_reader::read(t_pod_type& pod_val)
     {
       RECURSION_LIMITATION();
-      static_assert(std::is_pod<t_pod_type>::value, "POD type expected");
+      static_assert(std::is_standard_layout<t_pod_type>::value, "standard layout type expected");
+      static_assert(std::is_trivial<t_pod_type>::value, "trivial type expected");
       read(&pod_val, sizeof(pod_val));
       pod_val = CONVERT_POD(pod_val);
     }

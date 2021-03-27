@@ -55,7 +55,8 @@ namespace lmdb
         static expect<F> get_value(MDB_val value) noexcept
         {
             static_assert(std::is_same<U, V>(), "bad MONERO_FIELD?");
-            static_assert(std::is_pod<F>(), "F must be POD");
+            static_assert(std::is_standard_layout<F>(), "F must be standard layout");
+            static_assert(std::is_trivial<F>(), "F must be trivial");
             static_assert(sizeof(F) + offset <= sizeof(U), "bad field type and/or offset");
 
             if (value.mv_size != sizeof(U))
