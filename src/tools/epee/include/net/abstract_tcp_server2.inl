@@ -286,14 +286,15 @@ PRAGMA_WARNING_DISABLE_VS(4355)
     TRY_ENTRY();
     std::shared_ptr<connection<t_protocol_handler> >  back_connection_copy;
     LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] release");
-    CRITICAL_REGION_BEGIN(m_self_refs_lock);
-    CHECK_AND_ASSERT_MES(m_reference_count, false, "[sock " << socket().native_handle() << "] m_reference_count already at 0 at connection<t_protocol_handler>::release() call");
-    // is this the last reference?
-    if (--m_reference_count == 0) {
-        // move the held reference to a local variable, keeping the object alive until the function terminates
-        std::swap(back_connection_copy, m_self_ref);
+    {
+      CRITICAL_REGION_LOCAL(m_self_refs_lock);
+      CHECK_AND_ASSERT_MES(m_reference_count, false, "[sock " << socket().native_handle() << "] m_reference_count already at 0 at connection<t_protocol_handler>::release() call");
+      // is this the last reference?
+      if (--m_reference_count == 0) {
+          // move the held reference to a local variable, keeping the object alive until the function terminates
+          std::swap(back_connection_copy, m_self_ref);
+      }
     }
-    CRITICAL_REGION_END();
     return true;
     CATCH_ENTRY_L0("connection<t_protocol_handler>::release()", false);
   }
@@ -390,10 +391,11 @@ PRAGMA_WARNING_DISABLE_VS(4355)
         //some error in protocol, protocol handler ask to close connection
         boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
         bool do_shutdown = false;
-        CRITICAL_REGION_BEGIN(m_send_que_lock);
-        if(!m_send_que.size())
-          do_shutdown = true;
-        CRITICAL_REGION_END();
+        {
+          CRITICAL_REGION_LOCAL(m_send_que_lock);
+          if(!m_send_que.size())
+            do_shutdown = true;
+        }
         if(do_shutdown)
           shutdown();
       }else
@@ -420,10 +422,11 @@ PRAGMA_WARNING_DISABLE_VS(4355)
       {
         _dbg3("[sock " << socket().native_handle() << "] peer closed connection");
         bool do_shutdown = false;
-        CRITICAL_REGION_BEGIN(m_send_que_lock);
-        if(!m_send_que.size())
-          do_shutdown = true;
-        CRITICAL_REGION_END();
+        {
+          CRITICAL_REGION_LOCAL(m_send_que_lock);
+          if(!m_send_que.size())
+            do_shutdown = true;
+        }
         if (m_ready_to_close || do_shutdown)
           shutdown();
       }
@@ -489,10 +492,11 @@ PRAGMA_WARNING_DISABLE_VS(4355)
         boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
         m_ready_to_close = true;
         bool do_shutdown = false;
-        CRITICAL_REGION_BEGIN(m_send_que_lock);
-        if(!m_send_que.size())
-          do_shutdown = true;
-        CRITICAL_REGION_END();
+        {
+          CRITICAL_REGION_LOCAL(m_send_que_lock);
+          if(!m_send_que.size())
+            do_shutdown = true;
+        }
         if(do_shutdown)
           shutdown();
         return;
@@ -814,26 +818,27 @@ PRAGMA_WARNING_DISABLE_VS(4355)
   template<class t_protocol_handler>
   bool connection<t_protocol_handler>::shutdown()
   {
-    CRITICAL_REGION_BEGIN(m_shutdown_lock);
-    if (m_was_shutdown)
-      return true;
-    m_was_shutdown = true;
-    // Initiate graceful connection closure.
-    m_timer.cancel();
-    boost::system::error_code ignored_ec;
-    if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
     {
-      const shared_state &state = static_cast<const shared_state&>(get_state());
-      if (!state.stop_signal_sent)
-        socket_.shutdown(ignored_ec);
+      CRITICAL_REGION_LOCAL(m_shutdown_lock);
+      if (m_was_shutdown)
+        return true;
+      m_was_shutdown = true;
+      // Initiate graceful connection closure.
+      m_timer.cancel();
+      boost::system::error_code ignored_ec;
+      if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
+      {
+        const shared_state &state = static_cast<const shared_state&>(get_state());
+        if (!state.stop_signal_sent)
+          socket_.shutdown(ignored_ec);
+      }
+      socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+      if (!m_host.empty())
+      {
+        try { host_count(m_host, -1); } catch (...) { /* ignore */ }
+        m_host = "";
+      }
     }
-    socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-    if (!m_host.empty())
-    {
-      try { host_count(m_host, -1); } catch (...) { /* ignore */ }
-      m_host = "";
-    }
-    CRITICAL_REGION_END();
     m_protocol_handler.release_protocol();
     return true;
   }
@@ -848,9 +853,10 @@ PRAGMA_WARNING_DISABLE_VS(4355)
     //_info("[sock " << socket().native_handle() << "] Que Shutdown called.");
     m_timer.cancel();
     size_t send_que_size = 0;
-    CRITICAL_REGION_BEGIN(m_send_que_lock);
-    send_que_size = m_send_que.size();
-    CRITICAL_REGION_END();
+    {
+      CRITICAL_REGION_LOCAL(m_send_que_lock);
+      send_que_size = m_send_que.size();
+    }
     boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
     if(!send_que_size)
     {
@@ -896,38 +902,39 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 		}
 
     bool do_shutdown = false;
-    CRITICAL_REGION_BEGIN(m_send_que_lock);
-    if(m_send_que.empty())
     {
-      _erro("[sock " << socket().native_handle() << "] m_send_que.size() == 0 at handle_write!");
-      return;
-    }
-
-    m_send_que.pop_front();
-    if(m_send_que.empty())
-    {
-      if(boost::interprocess::ipcdetail::atomic_read32(&m_want_close_connection))
+      CRITICAL_REGION_LOCAL(m_send_que_lock);
+      if(m_send_que.empty())
       {
-        do_shutdown = true;
+        _erro("[sock " << socket().native_handle() << "] m_send_que.size() == 0 at handle_write!");
+        return;
       }
-    }else
-    {
-      //have more data to send
-		reset_timer(get_default_timeout(), false);
-		auto size_now = m_send_que.front().size();
-		MDEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
-		if (speed_limit_is_enabled())
-			do_send_handler_write_from_queue(e, m_send_que.front().size() , m_send_que.size()); // (((H)))
-    CHECK_AND_ASSERT_MES( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
-    async_write(boost::asio::buffer(m_send_que.front().data(), size_now) , 
-                strand_.wrap(
-                             std::bind(&connection<t_protocol_handler>::handle_write,
-                                       connection<t_protocol_handler>::shared_from_this(),
-                                       std::placeholders::_1,
-                                       std::placeholders::_2)));
-      //_dbg3("(normal)" << size_now);
+
+      m_send_que.pop_front();
+      if(m_send_que.empty())
+      {
+        if(boost::interprocess::ipcdetail::atomic_read32(&m_want_close_connection))
+        {
+          do_shutdown = true;
+        }
+      }else
+      {
+        //have more data to send
+      reset_timer(get_default_timeout(), false);
+      auto size_now = m_send_que.front().size();
+      MDEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
+      if (speed_limit_is_enabled())
+        do_send_handler_write_from_queue(e, m_send_que.front().size() , m_send_que.size()); // (((H)))
+      CHECK_AND_ASSERT_MES( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
+      async_write(boost::asio::buffer(m_send_que.front().data(), size_now) , 
+                  strand_.wrap(
+                              std::bind(&connection<t_protocol_handler>::handle_write,
+                                        connection<t_protocol_handler>::shared_from_this(),
+                                        std::placeholders::_1,
+                                        std::placeholders::_2)));
+        //_dbg3("(normal)" << size_now);
+      }
     }
-    CRITICAL_REGION_END();
 
     if(do_shutdown)
     {
@@ -1194,15 +1201,16 @@ POP_WARNINGS
     {
 
       // Create a pool of threads to run all of the io_services.
-      CRITICAL_REGION_BEGIN(m_threads_lock);
-      for (std::size_t i = 0; i < threads_count; ++i)
       {
-        std::shared_ptr<std::thread> thread(new std::thread(
-          std::bind(&boosted_tcp_server<t_protocol_handler>::worker_thread, this)));
-          _note("Run server thread name: " << m_thread_name_prefix);
-        m_threads.push_back(thread);
+        CRITICAL_REGION_LOCAL(m_threads_lock);
+        for (std::size_t i = 0; i < threads_count; ++i)
+        {
+          std::shared_ptr<std::thread> thread(new std::thread(
+            std::bind(&boosted_tcp_server<t_protocol_handler>::worker_thread, this)));
+            _note("Run server thread name: " << m_thread_name_prefix);
+          m_threads.push_back(thread);
+        }
       }
-      CRITICAL_REGION_END();
       // Wait for all threads in the pool to exit.
       if (wait)
       {

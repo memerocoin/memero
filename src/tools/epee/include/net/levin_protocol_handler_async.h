@@ -352,10 +352,11 @@ public:
   bool release_protocol()
   {
     decltype(m_invoke_response_handlers) local_invoke_response_handlers;
-    CRITICAL_REGION_BEGIN(m_invoke_response_handlers_lock);
-    local_invoke_response_handlers.swap(m_invoke_response_handlers);
-    m_protocol_released = true;
-    CRITICAL_REGION_END();
+    {
+      CRITICAL_REGION_LOCAL(m_invoke_response_handlers_lock);
+      local_invoke_response_handlers.swap(m_invoke_response_handlers);
+      m_protocol_released = true;
+    }
 
     // Never call callback inside critical section, that can cause deadlock. Callback can be called when
     // invoke_response_handler_base is cancelled
@@ -505,11 +506,12 @@ public:
                 return false;
               }else
               {
-                CRITICAL_REGION_BEGIN(m_local_inv_buff_lock);
-                m_local_inv_buff = std::string((const char*)buff_to_invoke.data(), buff_to_invoke.size());
-                buff_to_invoke = epee::span<const uint8_t>((const uint8_t*)NULL, 0);
-                m_invoke_result_code = m_current_head.m_return_code;
-                CRITICAL_REGION_END();
+                {
+                  CRITICAL_REGION_LOCAL(m_local_inv_buff_lock);
+                  m_local_inv_buff = std::string((const char*)buff_to_invoke.data(), buff_to_invoke.size());
+                  buff_to_invoke = epee::span<const uint8_t>((const uint8_t*)NULL, 0);
+                  m_invoke_result_code = m_current_head.m_return_code;
+                }
                 boost::interprocess::ipcdetail::atomic_write32(&m_invoke_buf_ready, 1);
               }
             }
@@ -640,24 +642,25 @@ public:
       }
 
       boost::interprocess::ipcdetail::atomic_write32(&m_invoke_buf_ready, 0);
-      CRITICAL_REGION_BEGIN(m_invoke_response_handlers_lock);
-
-      if (command == m_connection_context.handshake_command())
-        m_max_packet_size = m_config.m_max_packet_size;
-
-      if(!send_message(command, in_buff, LEVIN_PACKET_REQUEST, true))
       {
-        LOG_ERROR_CC(m_connection_context, "Failed to do_send");
-        err_code = LEVIN_ERROR_CONNECTION;
-        break;
-      }
+        CRITICAL_REGION_LOCAL(m_invoke_response_handlers_lock);
 
-      if(!add_invoke_response_handler(cb, timeout, *this, command))
-      {
-        err_code = LEVIN_ERROR_CONNECTION_DESTROYED;
-        break;
+        if (command == m_connection_context.handshake_command())
+          m_max_packet_size = m_config.m_max_packet_size;
+
+        if(!send_message(command, in_buff, LEVIN_PACKET_REQUEST, true))
+        {
+          LOG_ERROR_CC(m_connection_context, "Failed to do_send");
+          err_code = LEVIN_ERROR_CONNECTION;
+          break;
+        }
+
+        if(!add_invoke_response_handler(cb, timeout, *this, command))
+        {
+          err_code = LEVIN_ERROR_CONNECTION_DESTROYED;
+          break;
+        }
       }
-      CRITICAL_REGION_END();
     } while (false);
 
     if (LEVIN_OK != err_code)
@@ -718,10 +721,11 @@ public:
     if(m_deletion_initiated || m_protocol_released)
       return LEVIN_ERROR_CONNECTION_DESTROYED;
 
-    CRITICAL_REGION_BEGIN(m_local_inv_buff_lock);
-    buff_out.swap(m_local_inv_buff);
-    m_local_inv_buff.clear();
-    CRITICAL_REGION_END();
+    {
+      CRITICAL_REGION_LOCAL(m_local_inv_buff_lock);
+      buff_out.swap(m_local_inv_buff);
+      m_local_inv_buff.clear();
+    }
 
     return m_invoke_result_code;
   }
@@ -757,9 +761,10 @@ public:
 template<class t_connection_context>
 void async_protocol_handler_config<t_connection_context>::del_connection(async_protocol_handler<t_connection_context>* pconn)
 {
-  CRITICAL_REGION_BEGIN(m_connects_lock);
-  m_connects.erase(pconn->get_connection_id());
-  CRITICAL_REGION_END();
+  {
+    CRITICAL_REGION_LOCAL(m_connects_lock);
+    m_connects.erase(pconn->get_connection_id());
+  }
   m_pcommands_handler->on_connection_close(pconn->m_connection_context);
 }
 //------------------------------------------------------------------------------------------
@@ -767,35 +772,35 @@ template<class t_connection_context>
 void async_protocol_handler_config<t_connection_context>::delete_connections(size_t count, bool incoming)
 {
   std::vector <boost::uuids::uuid> connections;
-  CRITICAL_REGION_BEGIN(m_connects_lock);
-  for (auto& c: m_connects)
   {
-    if (c.second->m_connection_context.m_is_income == incoming)
-      connections.push_back(c.first);
-  }
-
-  // close random connections from  the provided set
-  // TODO or better just keep removing random elements (performance)
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  shuffle(connections.begin(), connections.end(), std::default_random_engine(seed));
-  while (count > 0 && connections.size() > 0)
-  {
-    try
+    CRITICAL_REGION_LOCAL(m_connects_lock);
+    for (auto& c: m_connects)
     {
-      auto i = connections.end() - 1;
-      async_protocol_handler<t_connection_context> *conn = m_connects.at(*i);
-      del_connection(conn);
-      conn->close();
-      connections.erase(i);
+      if (c.second->m_connection_context.m_is_income == incoming)
+        connections.push_back(c.first);
     }
-    catch (const std::out_of_range &e)
-    {
-      MWARNING("Connection not found in m_connects, continuing");
-    }
-    --count;
-  }
 
-  CRITICAL_REGION_END();
+    // close random connections from  the provided set
+    // TODO or better just keep removing random elements (performance)
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    shuffle(connections.begin(), connections.end(), std::default_random_engine(seed));
+    while (count > 0 && connections.size() > 0)
+    {
+      try
+      {
+        auto i = connections.end() - 1;
+        async_protocol_handler<t_connection_context> *conn = m_connects.at(*i);
+        del_connection(conn);
+        conn->close();
+        connections.erase(i);
+      }
+      catch (const std::out_of_range &e)
+      {
+        MWARNING("Connection not found in m_connects, continuing");
+      }
+      --count;
+    }
+  }
 }
 //------------------------------------------------------------------------------------------
 template<class t_connection_context>
@@ -813,9 +818,10 @@ void async_protocol_handler_config<t_connection_context>::del_in_connections(siz
 template<class t_connection_context>
 void async_protocol_handler_config<t_connection_context>::add_connection(async_protocol_handler<t_connection_context>* pconn)
 {
-  CRITICAL_REGION_BEGIN(m_connects_lock);
-  m_connects[pconn->get_connection_id()] = pconn;
-  CRITICAL_REGION_END();
+  {
+    CRITICAL_REGION_LOCAL(m_connects_lock);
+    m_connects[pconn->get_connection_id()] = pconn;
+  }
   m_pcommands_handler->on_connection_new(pconn->m_connection_context);
 }
 //------------------------------------------------------------------------------------------
