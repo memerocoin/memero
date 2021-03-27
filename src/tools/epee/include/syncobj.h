@@ -108,9 +108,6 @@ namespace epee
 #define  CRITICAL_REGION_LOCAL(x) \
   std::lock_guard<std::recursive_mutex> critical_region_recursive_mutex(x)
 
-#define  CRITICAL_REGION_LOCAL_1(x) \
-  std::lock_guard<std::recursive_mutex> critical_region_mutex_1(x)
-
 #define  CRITICAL_REGION_LOCAL_T(x) \
   epee::critical_region_t<decltype(x)> critical_region_object(x)
 
