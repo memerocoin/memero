@@ -316,7 +316,6 @@ namespace cryptonote
     uint32_t m_current_subaddress_account;
 
     std::atomic<time_t> m_last_activity_time;
-    std::atomic<bool> m_locked;
     std::atomic<bool> m_in_command;
 
     template<uint64_t mini, uint64_t maxi> struct get_random_interval { public: uint64_t operator()() const { return crypto::rand_range(mini, maxi); } };

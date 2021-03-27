@@ -1232,7 +1232,6 @@ simple_wallet::simple_wallet()
   , m_in_manual_refresh(false)
   , m_current_subaddress_account(0)
   , m_last_activity_time(time(NULL))
-  , m_locked(false)
   , m_in_command(false)
 {
   m_cmd_binder.set_handler("start_mining",
@@ -2262,16 +2261,12 @@ bool simple_wallet::save_bc(const std::vector<std::string>& args)
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_new_block(uint64_t height, const cryptonote::block& block)
 {
-  if (m_locked)
-    return;
   if (!m_auto_refresh_refreshing)
     m_refresh_progress_reporter.update(height, false);
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index, bool is_change, uint64_t unlock_time)
 {
-  if (m_locked)
-    return;
   message_writer(console_color_green, false) << "\r" <<
     tr("Height ") << height << ", " <<
     tr("txid ") << txid << ", " <<
@@ -2288,15 +2283,11 @@ void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid,
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_unconfirmed_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index)
 {
-  if (m_locked)
-    return;
   // Not implemented in CLI wallet
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_money_spent(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& in_tx, uint64_t amount, const cryptonote::transaction& spend_tx, const cryptonote::subaddress_index& subaddr_index)
 {
-  if (m_locked)
-    return;
   message_writer(console_color_magenta, false) << "\r" <<
     tr("Height ") << height << ", " <<
     tr("txid ") << txid << ", " <<
@@ -2310,14 +2301,10 @@ void simple_wallet::on_money_spent(uint64_t height, const crypto::hash &txid, co
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_skip_transaction(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx)
 {
-  if (m_locked)
-    return;
 }
 //----------------------------------------------------------------------------------------------------
 std::optional<epee::wipeable_string> simple_wallet::on_get_password(const char *reason)
 {
-  if (m_locked)
-    return std::nullopt;
   // can't ask for password from a background thread
   if (!m_in_manual_refresh.load(std::memory_order_relaxed))
   {
@@ -4131,8 +4118,6 @@ bool simple_wallet::check_refresh()
 //----------------------------------------------------------------------------------------------------
 std::string simple_wallet::get_prompt() const
 {
-  if (m_locked)
-    return std::string("[") + tr("locked due to inactivity") + "]";
   std::string addr_start = m_wallet->get_subaddress_as_str({m_current_subaddress_account, 0}).substr(0, 6);
   std::string prompt = std::string("[") + tr("wallet") + " " + addr_start;
   if (!m_wallet->check_connection(NULL))
