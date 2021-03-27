@@ -1072,28 +1072,6 @@ bool simple_wallet::set_export_format(const std::vector<std::string> &args/* = s
   return true;
 }
 
-bool simple_wallet::set_load_deprecated_formats(const std::vector<std::string> &args/* = std::vector<std::string()*/)
-{
-  if (args.size() < 2)
-  {
-    fail_msg_writer() << tr("Value not specified");
-    return true;
-  }
-
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    parse_bool_and_use(args[1], [&](bool r) {
-      m_wallet->load_deprecated_formats(r);
-      m_wallet->rewrite(m_wallet_file, pwd_container->password());
-
-      if (r)
-        message_writer() << tr("Warning: deprecated formats use boost serialization, which has buffer overflows and crashers. Only load deprecated formats from sources you trust.");
-    });
-  }
-  return true;
-}
-
 bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   if(args.empty())
@@ -1383,7 +1361,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "ignore-fractional-outputs = " << m_wallet->ignore_fractional_outputs();
     success_msg_writer() << "track-uses = " << m_wallet->track_uses();
     success_msg_writer() << "export-format = " << (m_wallet->export_format() == tools::wallet2::ExportFormat::Ascii ? "ascii" : "binary");
-    success_msg_writer() << "load-deprecated-formats = " << m_wallet->load_deprecated_formats();
     return true;
   }
   else
@@ -1421,7 +1398,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("ignore-fractional-outputs", set_ignore_fractional_outputs, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("track-uses", set_track_uses, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("export-format", set_export_format, tr("\"binary\" or \"ascii\""));
-    CHECK_SIMPLE_VARIABLE("load-deprecated-formats", set_load_deprecated_formats, tr("0 or 1"));
   }
   fail_msg_writer() << tr("set: unrecognized argument(s)");
   return true;
