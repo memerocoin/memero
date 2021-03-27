@@ -275,7 +275,7 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
 
   CHECK_AND_ASSERT_MES(nettype != FAKECHAIN || test_options, false, "fake chain network type used without options");
 
-  CRITICAL_REGION_LOCAL_T(m_tx_pool);
+  LOCK_LOCKABLE_OBJECT(m_tx_pool);
   std::lock_guard<std::recursive_mutex> lock1(m_blockchain_lock);
 
   if (db == nullptr)
@@ -439,7 +439,7 @@ bool Blockchain::deinit()
 void Blockchain::pop_blocks(uint64_t nblocks)
 {
   uint64_t i = 0;
-  CRITICAL_REGION_LOCAL_T(m_tx_pool);
+  LOCK_LOCKABLE_OBJECT(m_tx_pool);
   std::lock_guard<std::recursive_mutex> lock1(m_blockchain_lock);
 
   bool stop_batch = m_db->batch_start();
@@ -3051,7 +3051,7 @@ void Blockchain::return_tx_to_pool(std::vector<std::pair<transaction, blobdata>>
 //------------------------------------------------------------------
 bool Blockchain::flush_txes_from_pool(const std::vector<crypto::hash> &txids)
 {
-  CRITICAL_REGION_LOCAL_T(m_tx_pool);
+  LOCK_LOCKABLE_OBJECT(m_tx_pool);
 
   bool res = true;
   for (const auto &txid: txids)
@@ -3407,7 +3407,7 @@ bool Blockchain::add_new_block(const block& bl, block_verification_context& bvc)
 
   LOG_PRINT_L3("Blockchain::" << __func__);
   crypto::hash id = get_block_hash(bl);
-  CRITICAL_REGION_LOCAL_T(m_tx_pool);//to avoid deadlock lets lock tx_pool for whole add/reorganize process
+  LOCK_LOCKABLE_OBJECT(m_tx_pool);//to avoid deadlock lets lock tx_pool for whole add/reorganize process
   std::lock_guard<std::recursive_mutex> lock1(m_blockchain_lock);
   db_rtxn_guard rtxn_guard(m_db);
   if(have_block(id))
