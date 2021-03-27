@@ -918,7 +918,7 @@ namespace cryptonote
 
     tx_memory_pool& m_tx_pool;
 
-    mutable epee::critical_section m_blockchain_lock; // TODO: add here reader/writer lock
+    mutable std::recursive_mutex m_blockchain_lock; // TODO: add here reader/writer lock
 
     // metadata containers
     std::unordered_map<crypto::hash, std::unordered_map<crypto::key_image, std::vector<output_data_t>>> m_scan_table;
@@ -1185,16 +1185,6 @@ namespace cryptonote
      * @return false if something goes wrong with reverting (very bad), otherwise true
      */
     bool rollback_blockchain_switching(std::list<block>& original_chain, uint64_t rollback_height);
-
-    /**
-     * @brief gets recent block weights for median calculation
-     *
-     * get the block weights of the last <count> blocks, and return by reference <weights>.
-     *
-     * @param weights return-by-reference the list of weights
-     * @param count the number of blocks to get weights for
-     */
-    void get_last_n_blocks_weights(std::vector<uint64_t>& weights, size_t count) const;
 
     /**
      * @brief checks if a transaction is unlocked (its outputs spendable)
