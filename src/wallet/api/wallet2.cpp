@@ -409,7 +409,7 @@ bool wallet2::set_daemon(std::string daemon_address)
   bool ret =  m_http_client->set_server(address);
   if (ret)
   {
-    CRITICAL_REGION_LOCAL(default_daemon_address_lock);
+    std::unique_lock<std::mutex> lock(default_daemon_address_lock);
     default_daemon_address = address;
   }
   return ret;

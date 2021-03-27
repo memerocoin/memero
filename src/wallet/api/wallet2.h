@@ -553,7 +553,10 @@ namespace tools
     void finish_rescan_bc_keep_key_images(uint64_t transfer_height, const crypto::hash &hash);
     void set_offline(bool offline = true);
 
-    static std::string get_default_daemon_address() { CRITICAL_REGION_LOCAL(default_daemon_address_lock); return default_daemon_address; }
+    static std::string get_default_daemon_address() {
+      std::unique_lock<std::mutex> lock(default_daemon_address_lock);
+      return default_daemon_address;
+    };
 
   private:
     /*!
