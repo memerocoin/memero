@@ -25,16 +25,11 @@
 // 
 
 
-
-
-#ifndef __WINH_OBJ_H__
-#define __WINH_OBJ_H__
+#pragma once
 
 #include <chrono>
 #include <thread>
 #include <condition_variable>
-#include <mutex>
-#include <mutex>
 #include <mutex>
 
 namespace epee
@@ -159,4 +154,3 @@ namespace epee
 
 }
 
-#endif
