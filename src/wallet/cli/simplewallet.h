@@ -86,8 +86,6 @@ namespace cryptonote
 
     bool run_console_handler();
 
-    void wallet_idle_thread();
-
     //! \return Prompts user for password and verifies against local file. Logs on error and returns `none`
     std::optional<tools::password_container> get_and_verify_password() const;
 
@@ -104,7 +102,6 @@ namespace cryptonote
     bool set_always_confirm_transfers(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_print_ring_members(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_store_tx_info(const std::vector<std::string> &args = std::vector<std::string>());
-    bool set_auto_refresh(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_refresh_type(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_unit(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_min_output_count(const std::vector<std::string> &args = std::vector<std::string>());
@@ -217,10 +214,6 @@ namespace cryptonote
      */
     void commit_or_save(std::vector<wallet::logic::type::tx::pending_tx>& ptx_vector, bool do_not_relay);
 
-    // idle thread workers
-    bool check_inactivity();
-    bool check_refresh();
-
     void handle_transfer_exception(const std::exception_ptr &e);
 
     //----------------- i_wallet2_callback ---------------------
@@ -305,13 +298,6 @@ namespace cryptonote
     std::unique_ptr<tools::wallet2> m_wallet;
     refresh_progress_reporter_t m_refresh_progress_reporter;
 
-    std::atomic<bool> m_idle_run;
-    std::thread m_idle_thread;
-    std::mutex m_idle_mutex;
-    std::condition_variable m_idle_cond;
-
-    std::atomic<bool> m_auto_refresh_enabled;
-    bool m_auto_refresh_refreshing;
     std::atomic<bool> m_in_manual_refresh;
     uint32_t m_current_subaddress_account;
 
@@ -319,9 +305,6 @@ namespace cryptonote
     std::atomic<bool> m_in_command;
 
     template<uint64_t mini, uint64_t maxi> struct get_random_interval { public: uint64_t operator()() const { return crypto::rand_range(mini, maxi); } };
-
-    epee::math_helper::once_a_time_seconds<1> m_inactivity_checker;
-    epee::math_helper::once_a_time_seconds_range<get_random_interval<80 * 1000000, 100 * 1000000>> m_refresh_checker;
 
     std::unordered_map<std::string, uint32_t> m_claimed_cph;
   };

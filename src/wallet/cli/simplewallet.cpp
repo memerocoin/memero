@@ -81,21 +81,6 @@ typedef cryptonote::simple_wallet sw;
 
 #define OLD_AGE_WARN_THRESHOLD (30 * 86400 / DIFFICULTY_TARGET_V2) // 30 days
 
-#define LOCK_IDLE_SCOPE() \
-  bool auto_refresh_enabled = m_auto_refresh_enabled.load(std::memory_order_relaxed); \
-  m_auto_refresh_enabled.store(false, std::memory_order_relaxed); \
-  /* stop any background refresh and other processes, and take over */ \
-  m_wallet->stop(); \
-  std::unique_lock<std::mutex> lock(m_idle_mutex); \
-  m_idle_cond.notify_all(); \
-  epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ \
-    /* m_idle_mutex is still locked here */ \
-    m_auto_refresh_enabled.store(auto_refresh_enabled, std::memory_order_relaxed); \
-    m_idle_cond.notify_one(); \
-  })
-
-#define SCOPED_WALLET_UNLOCK()
-
 #define PRINT_USAGE(usage_help) fail_msg_writer() << boost::format(tr("usage: %s")) % usage_help;
 
 #define REFRESH_PERIOD 90 // seconds
@@ -562,7 +547,6 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
   if (m_wallet->key_on_device()) {
     std::cout << "secret: On device. Not available" << std::endl;
   } else {
-    SCOPED_WALLET_UNLOCK();
     printf("secret: ");
     print_secret_key(m_wallet->get_account().get_keys().m_view_secret_key);
     putchar('\n');
@@ -584,7 +568,6 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
   if (m_wallet->key_on_device()) {
     std::cout << "secret: On device. Not available" << std::endl;
   } else {
-    SCOPED_WALLET_UNLOCK();
     printf("secret: ");
     print_secret_key(m_wallet->get_account().get_keys().m_spend_secret_key);
     putchar('\n');
@@ -612,8 +595,6 @@ bool simple_wallet::print_seed()
   }
 
   multisig = false;
-
-  SCOPED_WALLET_UNLOCK();
 
   epee::wipeable_string seed_pass;
   success = m_wallet->get_seed(seed, seed_pass);
@@ -848,25 +829,6 @@ bool simple_wallet::set_default_priority(const std::vector<std::string> &args/* 
     fail_msg_writer() << tr("could not change default priority");
     return true;
   }
-}
-
-bool simple_wallet::set_auto_refresh(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    parse_bool_and_use(args[1], [&](bool auto_refresh) {
-      m_auto_refresh_enabled.store(false, std::memory_order_relaxed);
-      m_wallet->auto_refresh(auto_refresh);
-      m_idle_mutex.lock();
-      m_auto_refresh_enabled.store(auto_refresh, std::memory_order_relaxed);
-      m_idle_cond.notify_one();
-      m_idle_mutex.unlock();
-
-      m_wallet->rewrite(m_wallet_file, pwd_container->password());
-    });
-  }
-  return true;
 }
 
 bool simple_wallet::set_refresh_type(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
@@ -1226,9 +1188,6 @@ bool simple_wallet::apropos(const std::vector<std::string> &args)
 
 simple_wallet::simple_wallet()
   : m_refresh_progress_reporter(*this)
-  , m_idle_run(true)
-  , m_auto_refresh_enabled(false)
-  , m_auto_refresh_refreshing(false)
   , m_in_manual_refresh(false)
   , m_current_subaddress_account(0)
   , m_last_activity_time(time(NULL))
@@ -1444,7 +1403,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "always-confirm-transfers = " << m_wallet->always_confirm_transfers();
     success_msg_writer() << "print-ring-members = " << m_wallet->print_ring_members();
     success_msg_writer() << "store-tx-info = " << m_wallet->store_tx_info();
-    success_msg_writer() << "auto-refresh = " << m_wallet->auto_refresh();
     success_msg_writer() << "refresh-type = " << get_refresh_type_name(m_wallet->get_refresh_type());
     success_msg_writer() << "priority = " << priority<< " (" << priority_string << ")";
     success_msg_writer() << "unit = " << cryptonote::get_unit(cryptonote::get_default_decimal_point());
@@ -1486,7 +1444,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("always-confirm-transfers", set_always_confirm_transfers, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("print-ring-members", set_print_ring_members, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("store-tx-info", set_store_tx_info, tr("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("auto-refresh", set_auto_refresh, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("refresh-type", set_refresh_type, tr("full (slowest, no assumptions); optimize-coinbase (fast, assumes the whole coinbase is paid to a single address); no-coinbase (fastest, assumes we receive no coinbase transaction), default (same as optimize-coinbase)"));
     CHECK_SIMPLE_VARIABLE("priority", set_default_priority, tr("0, 1, 2, 3, or 4, or one of ") << join_priority_strings(", "));
     CHECK_SIMPLE_VARIABLE("unit", set_unit, tr("lolnero, millinero, micronero, nanonero, piconero"));
@@ -2080,17 +2037,6 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::close_wallet()
 {
-  if (m_idle_run.load(std::memory_order_relaxed))
-  {
-    m_idle_run.store(false, std::memory_order_relaxed);
-    m_wallet->stop();
-    {
-      std::unique_lock<std::mutex> lock(m_idle_mutex);
-      m_idle_cond.notify_one();
-    }
-    m_idle_thread.join();
-  }
-
   bool r = m_wallet->deinit();
   if (!r)
   {
@@ -2115,7 +2061,6 @@ bool simple_wallet::save(const std::vector<std::string> &args)
 {
   try
   {
-    LOCK_IDLE_SCOPE();
     m_wallet->store();
     success_msg_writer() << tr("Wallet data saved");
   }
@@ -2221,7 +2166,6 @@ bool simple_wallet::set_daemon(const std::vector<std::string>& args)
     } else {
       daemon_url = args[0];
     }
-    LOCK_IDLE_SCOPE();
     m_wallet->init(daemon_url);
 
     if (!try_connect_to_daemon())
@@ -2261,8 +2205,7 @@ bool simple_wallet::save_bc(const std::vector<std::string>& args)
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_new_block(uint64_t height, const cryptonote::block& block)
 {
-  if (!m_auto_refresh_refreshing)
-    m_refresh_progress_reporter.update(height, false);
+  m_refresh_progress_reporter.update(height, false);
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index, bool is_change, uint64_t unlock_time)
@@ -2275,10 +2218,7 @@ void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid,
 
   if (unlock_time && !cryptonote::is_coinbase(tx))
     message_writer() << tr("NOTE: This transaction is locked, see details with: show_transfer ") + epee::string_tools::pod_to_hex(txid);
-  if (m_auto_refresh_refreshing)
-    m_cmd_binder.print_prompt();
-  else
-    m_refresh_progress_reporter.update(height, true);
+  m_refresh_progress_reporter.update(height, true);
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_unconfirmed_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index)
@@ -2293,10 +2233,7 @@ void simple_wallet::on_money_spent(uint64_t height, const crypto::hash &txid, co
     tr("txid ") << txid << ", " <<
     tr("spent ") << print_money(amount) << ", " <<
     tr("idx ") << subaddr_index;
-  if (m_auto_refresh_refreshing)
-    m_cmd_binder.print_prompt();
-  else
-    m_refresh_progress_reporter.update(height, true);
+  m_refresh_progress_reporter.update(height, true);
 }
 //----------------------------------------------------------------------------------------------------
 void simple_wallet::on_skip_transaction(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx)
@@ -2342,8 +2279,6 @@ bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bo
 {
   if (!try_connect_to_daemon(is_init))
     return true;
-
-  LOCK_IDLE_SCOPE();
 
   crypto::hash transfer_hash_pre{};
   uint64_t height_pre = 0, height_post;
@@ -2492,7 +2427,6 @@ bool simple_wallet::show_balance(const std::vector<std::string>& args/* = std::v
     PRINT_USAGE(USAGE_SHOW_BALANCE);
     return true;
   }
-  LOCK_IDLE_SCOPE();
   show_balance_unlocked(args.size() == 1);
   return true;
 }
@@ -2505,7 +2439,6 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
     return true;
   }
   auto local_args = args;
-  LOCK_IDLE_SCOPE();
 
   bool filter = false;
   bool available = false;
@@ -2644,7 +2577,6 @@ bool simple_wallet::rescan_spent(const std::vector<std::string> &args)
 
   try
   {
-    LOCK_IDLE_SCOPE();
     m_wallet->rescan_spent();
   }
   catch (const tools::error::daemon_busy&)
@@ -3232,8 +3164,6 @@ bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
     return true;
   }
 
-  SCOPED_WALLET_UNLOCK();
-
   crypto::secret_key tx_key;
   std::vector<crypto::secret_key> additional_tx_keys;
 
@@ -3275,8 +3205,6 @@ bool simple_wallet::get_tx_proof(const std::vector<std::string> &args)
     fail_msg_writer() << tr("failed to parse address");
     return true;
   }
-
-  SCOPED_WALLET_UNLOCK();
 
   try
   {
@@ -3731,8 +3659,6 @@ bool simple_wallet::show(const std::vector<std::string> &args_)
     return true;
   }
 
-  LOCK_IDLE_SCOPE();
-
   std::vector<transfer_view> all_transfers;
 
   if (!get_transfers(local_args, all_transfers))
@@ -3782,8 +3708,6 @@ bool simple_wallet::export_transfers(const std::vector<std::string>& args_)
     fail_msg_writer() << USAGE_EXPORT;
     return true;
   }
-
-  LOCK_IDLE_SCOPE();
 
   std::vector<transfer_view> all_transfers;
 
@@ -4067,55 +3991,6 @@ bool simple_wallet::rescan_blockchain(const std::vector<std::string> &args_)
   return refresh_main(start_height, reset_type, true);
 }
 //----------------------------------------------------------------------------------------------------
-void simple_wallet::wallet_idle_thread()
-{
-  const boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::universal_time();
-  while (true)
-  {
-    std::unique_lock<std::mutex> lock(m_idle_mutex);
-    if (!m_idle_run.load(std::memory_order_relaxed))
-      break;
-
-    // if another thread was busy (ie, a foreground refresh thread), we'll end up here at
-    // some random time that's not what we slept for, so we should not call refresh now
-    // or we'll be leaking that fact through timing
-    const boost::posix_time::ptime now0 = boost::posix_time::microsec_clock::universal_time();
-    const uint64_t dt_actual = (now0 - start_time).total_microseconds() % 1000000;
-    static const uint64_t threshold = 2000;
-    if (dt_actual < threshold) // if less than a threshold... would a very slow machine always miss it ?
-    {
-      m_refresh_checker.do_call(std::bind(&simple_wallet::check_refresh, this));
-      if (!m_idle_run.load(std::memory_order_relaxed))
-        break;
-    }
-
-    // aim for the next multiple of 1 second
-    const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
-    const auto dt = (now - start_time).total_microseconds();
-    const auto wait = 1000000 - dt % 1000000;
-    m_idle_cond.wait_for(lock, std::chrono::microseconds(wait));
-  }
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::check_refresh()
-{
-    // auto refresh
-    if (m_auto_refresh_enabled)
-    {
-      m_auto_refresh_refreshing = true;
-      try
-      {
-        uint64_t fetched_blocks;
-        bool received_money;
-        if (try_connect_to_daemon(true))
-          m_wallet->refresh(0, fetched_blocks, received_money, false); // don't check the pool in background mode
-      }
-      catch(...) {}
-      m_auto_refresh_refreshing = false;
-    }
-    return true;
-}
-//----------------------------------------------------------------------------------------------------
 std::string simple_wallet::get_prompt()
 {
   std::string addr_start = m_wallet->get_subaddress_as_str({m_current_subaddress_account, 0}).substr(0, 6);
@@ -4141,10 +4016,6 @@ bool simple_wallet::run()
 
   refresh_main(0, ResetNone, true);
 
-  m_auto_refresh_enabled = m_wallet->auto_refresh();
-  m_idle_thread = std::thread([&]{wallet_idle_thread();});
-
-  message_writer(console_color_green, false) << "Background refresh thread started";
   return m_cmd_binder.run_handling([this](){return get_prompt();}, "");
 }
 //----------------------------------------------------------------------------------------------------
@@ -4164,7 +4035,6 @@ bool simple_wallet::account(const std::vector<std::string> &args/* = std::vector
   if (args.empty())
   {
     // print all the existing accounts
-    LOCK_IDLE_SCOPE();
     print_accounts();
     return true;
   }
@@ -4181,7 +4051,6 @@ bool simple_wallet::account(const std::vector<std::string> &args/* = std::vector
     m_wallet->add_subaddress_account(label);
     m_current_subaddress_account = m_wallet->get_num_subaddress_accounts() - 1;
     // update_prompt();
-    LOCK_IDLE_SCOPE();
     print_accounts();
   }
   else if (command == "switch" && local_args.size() == 1)
@@ -4216,7 +4085,6 @@ bool simple_wallet::account(const std::vector<std::string> &args/* = std::vector
     try
     {
       m_wallet->set_subaddress_label({index_major, 0}, label);
-      LOCK_IDLE_SCOPE();
       print_accounts();
     }
     catch (const std::exception& e)
@@ -4485,8 +4353,6 @@ bool simple_wallet::sign(const std::vector<std::string> &args)
     fail_msg_writer() << tr("failed to read file ") << filename;
     return true;
   }
-
-  SCOPED_WALLET_UNLOCK();
 
   std::string signature = m_wallet->sign(data, message_signature_type, index);
   success_msg_writer() << signature;
