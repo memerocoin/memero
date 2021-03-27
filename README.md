@@ -25,7 +25,7 @@ Specifications
 How to build
 ============
 
-Debian testing (for gcc9)
+Debian testing (for gcc10)
 -------------------------
 
 ```
