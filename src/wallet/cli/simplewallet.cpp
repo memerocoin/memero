@@ -4116,14 +4116,20 @@ bool simple_wallet::check_refresh()
     return true;
 }
 //----------------------------------------------------------------------------------------------------
-std::string simple_wallet::get_prompt() const
+std::string simple_wallet::get_prompt()
 {
   std::string addr_start = m_wallet->get_subaddress_as_str({m_current_subaddress_account, 0}).substr(0, 6);
   std::string prompt = std::string("[") + tr("wallet") + " " + addr_start;
   if (!m_wallet->check_connection(NULL))
     prompt += tr(" (no daemon)");
-  else if (!m_wallet->is_synced())
-    prompt += tr(" (out of sync)");
+  else if (!m_wallet->is_synced()) {
+    if (try_connect_to_daemon(true)) {
+      // don't check the pool in background mode
+      refresh({});
+    } else {
+      prompt += tr(" (out of sync)");
+    }
+  }
   prompt += "]: ";
   return prompt;
 }
