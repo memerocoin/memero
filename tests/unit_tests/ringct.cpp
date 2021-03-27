@@ -51,7 +51,7 @@ TEST(ringct, CLSAG)
   const size_t idx = 5;
   ctkeyV pubs;
   key p, t, t2, u;
-  const key message = identity();
+  const key message = rct::identity();
   ctkey backup;
   clsag clsag;
 

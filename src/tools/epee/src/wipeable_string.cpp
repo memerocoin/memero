@@ -32,7 +32,7 @@
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/wipeable_string.h"
 
-static constexpr const char hex[] = u8"0123456789abcdef";
+static constexpr const char hex[] = "0123456789abcdef";
 
 namespace
 {

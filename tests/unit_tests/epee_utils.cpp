@@ -474,7 +474,7 @@ TEST(ToHex, Formatted)
 
 TEST(FromHex, ToString)
 {
-  static constexpr const char hex[] = u8"deadbeeffY";
+  static constexpr const char hex[] = "deadbeeffY";
   static constexpr const char binary[] = {
     char(0xde), char(0xad), char(0xbe), char(0xef), 0x00
   };
@@ -493,7 +493,7 @@ TEST(FromHex, ToString)
 
 TEST(FromHex, ToBuffer)
 {
-  static constexpr const char hex[] = u8"deadbeeffY";
+  static constexpr const char hex[] = "deadbeeffY";
   static constexpr const std::uint8_t binary[] = {0xde, 0xad, 0xbe, 0xef};
 
   std::vector<std::uint8_t> out{};
