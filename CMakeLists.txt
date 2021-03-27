@@ -34,8 +34,6 @@
 
 # cmake
 cmake_minimum_required(VERSION 3.10.0)
-message(STATUS "CMake version ${CMAKE_VERSION}")
-
 project(lolnero)
 
 
@@ -48,11 +46,7 @@ list(INSERT CMAKE_MODULE_PATH 0
 option (USE_CCACHE "Use ccache if a usable instance is found" ON)
 if (USE_CCACHE)
 	include(FindCcache) 
-else()
-	message(STATUS "ccache deselected")
 endif()
-
-# set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
 
 
 
@@ -67,9 +61,7 @@ set(CMAKE_C_STANDARD 11)
 # build type
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
-  message(STATUS "Setting default build type: ${CMAKE_BUILD_TYPE}")
 endif()
-string(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_LOWER)
 
 # set(OPT_FLAGS_RELEASE "-O2")
 
@@ -84,7 +76,6 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 ## openssl
 find_package(OpenSSL REQUIRED)
-message(STATUS "Using OpenSSL include dir at ${OPENSSL_INCLUDE_DIR}")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 ## boost
