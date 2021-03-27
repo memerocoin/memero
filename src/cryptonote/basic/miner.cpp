@@ -123,7 +123,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------------
   bool miner::set_block_template(const block& bl, const difficulty_type& di, uint64_t height, uint64_t block_reward)
   {
-    CRITICAL_REGION_LOCAL(m_template_lock);
+    std::unique_lock<std::mutex> lock(m_template_lock);
     m_template = bl;
     m_diffic = di;
     m_height = height;
@@ -184,10 +184,12 @@ namespace cryptonote
     if(m_last_hr_merge_time && is_mining())
     {
       m_current_hash_rate = m_hashes * 1000 / ((misc_utils::get_tick_count() - m_last_hr_merge_time + 1));
-      CRITICAL_REGION_LOCAL(m_last_hash_rates_lock);
-      m_last_hash_rates.push_back(m_current_hash_rate);
-      if(m_last_hash_rates.size() > 19)
-        m_last_hash_rates.pop_front();
+      {
+        std::unique_lock<std::mutex> lock(m_last_hash_rates_lock);
+        m_last_hash_rates.push_back(m_current_hash_rate);
+        if(m_last_hash_rates.size() > 19)
+          m_last_hash_rates.pop_front();
+      }
       if(m_do_print_hashrate)
       {
         uint64_t total_hr = std::accumulate(m_last_hash_rates.begin(), m_last_hash_rates.end(), 0);
@@ -249,7 +251,7 @@ namespace cryptonote
     m_threads_total = std::max(1u, static_cast<uint32_t>(threads_count));
 
     m_starter_nonce = crypto::rand<uint64_t>();
-    CRITICAL_REGION_LOCAL(m_threads_lock);
+    std::unique_lock<std::mutex> lock(m_threads_lock);
     if(is_mining())
     {
       LOG_ERROR("Starting miner but it's already started");
@@ -296,7 +298,7 @@ namespace cryptonote
   {
     MTRACE("Miner has received stop signal");
 
-    CRITICAL_REGION_LOCAL(m_threads_lock);
+    std::unique_lock<std::mutex> lock(m_threads_lock);
     bool mining = !m_threads.empty();
     if (!mining)
     {
@@ -350,7 +352,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------------
   void miner::pause()
   {
-    CRITICAL_REGION_LOCAL(m_miners_count_lock);
+    std::unique_lock<std::mutex> lock(m_miners_count_lock);
     MDEBUG("miner::pause: " << m_pausers_count << " -> " << (m_pausers_count + 1));
     ++m_pausers_count;
     if(m_pausers_count == 1 && is_mining())
@@ -359,7 +361,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------------
   void miner::resume()
   {
-    CRITICAL_REGION_LOCAL(m_miners_count_lock);
+    std::unique_lock<std::mutex> lock(m_miners_count_lock);
     MDEBUG("miner::resume: " << m_pausers_count << " -> " << (m_pausers_count - 1));
     --m_pausers_count;
     if(m_pausers_count < 0)
@@ -392,11 +394,10 @@ namespace cryptonote
 
       if(local_template_ver != m_template_no)
       {
-        CRITICAL_REGION_BEGIN(m_template_lock);
+        std::unique_lock<std::mutex> lock(m_template_lock);
         b = m_template;
         local_diff = m_diffic;
         height = m_height;
-        CRITICAL_REGION_END();
         local_template_ver = m_template_no;
         nonce = m_starter_nonce + th_local_index;
       }
