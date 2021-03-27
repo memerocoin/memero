@@ -186,7 +186,7 @@ connection_basic::~connection_basic() noexcept(false) {
 
 void connection_basic::set_rate_up_limit(uint64_t limit) {
 	{
-		CRITICAL_REGION_LOCAL(	network_throttle_manager::m_lock_get_global_throttle_out );
+		LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_out );
 		network_throttle_manager::get_global_throttle_out().set_target_speed(limit);
 	}
 	save_limit_to_file(limit);
@@ -194,38 +194,38 @@ void connection_basic::set_rate_up_limit(uint64_t limit) {
 
 void connection_basic::set_rate_down_limit(uint64_t limit) {
 	{
-	  CRITICAL_REGION_LOCAL(	network_throttle_manager::m_lock_get_global_throttle_in );
+	  LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_in );
 		network_throttle_manager::get_global_throttle_in().set_target_speed(limit);
 	}
 
 	{
-	  CRITICAL_REGION_LOCAL(	network_throttle_manager::m_lock_get_global_throttle_inreq );
+	  LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_inreq );
 		network_throttle_manager::get_global_throttle_inreq().set_target_speed(limit);
 	}
-    save_limit_to_file(limit);
+  save_limit_to_file(limit);
 }
 
 uint64_t connection_basic::get_rate_up_limit() {
-    uint64_t limit;
-    {
-         CRITICAL_REGION_LOCAL( network_throttle_manager::m_lock_get_global_throttle_out );
-         limit = network_throttle_manager::get_global_throttle_out().get_target_speed();
-	}
-    return limit;
+  uint64_t limit;
+  {
+    LOCK_MUTEX( network_throttle_manager::m_lock_get_global_throttle_out );
+    limit = network_throttle_manager::get_global_throttle_out().get_target_speed();
+  }
+  return limit;
 }
 
 uint64_t connection_basic::get_rate_down_limit() {
-    uint64_t limit;
-    {
-         CRITICAL_REGION_LOCAL( network_throttle_manager::m_lock_get_global_throttle_in );
-         limit = network_throttle_manager::get_global_throttle_in().get_target_speed();
+  uint64_t limit;
+  {
+    LOCK_MUTEX( network_throttle_manager::m_lock_get_global_throttle_in );
+    limit = network_throttle_manager::get_global_throttle_in().get_target_speed();
 	}
-    return limit;
+  return limit;
 }
 
 void connection_basic::save_limit_to_file(int limit) {
 }
- 
+
 void connection_basic::set_tos_flag(int tos) {
 	connection_basic_pimpl::m_default_tos = tos;
 }
@@ -243,8 +243,8 @@ void connection_basic::sleep_before_packet(size_t packet_size, int phase,  int q
 			return;
 		}
 
-		{ 
-			CRITICAL_REGION_LOCAL(	network_throttle_manager::m_lock_get_global_throttle_out );
+		{
+			LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_out );
 			delay = network_throttle_manager::get_global_throttle_out().get_sleep_time_after_tick( packet_size );
 		}
 
@@ -258,7 +258,7 @@ void connection_basic::sleep_before_packet(size_t packet_size, int phase,  int q
 
 // XXX LATER XXX
 	{
-	  CRITICAL_REGION_LOCAL(	network_throttle_manager::m_lock_get_global_throttle_out );
+	  LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_out );
 		network_throttle_manager::get_global_throttle_out().handle_trafic_exact( packet_size ); // increase counter - global
 	}
 
@@ -281,9 +281,9 @@ void connection_basic::logger_handle_net_write(size_t size) {
 }
 
 double connection_basic::get_sleep_time(size_t cb) {
-	CRITICAL_REGION_LOCAL(epee::net_utils::network_throttle_manager::network_throttle_manager::m_lock_get_global_throttle_out);
-    auto t = network_throttle_manager::get_global_throttle_out().get_sleep_time(cb);
-    return t;
+	LOCK_MUTEX(epee::net_utils::network_throttle_manager::network_throttle_manager::m_lock_get_global_throttle_out);
+  auto t = network_throttle_manager::get_global_throttle_out().get_sleep_time(cb);
+  return t;
 }
 
 

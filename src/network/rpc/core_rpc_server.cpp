@@ -221,11 +221,11 @@ namespace cryptonote
     // No bootstrap daemon check: Only ever get stats about local server
     res.start_time = (uint64_t)m_core.get_start_time();
     {
-      CRITICAL_REGION_LOCAL(epee::net_utils::network_throttle_manager::m_lock_get_global_throttle_in);
+      LOCK_MUTEX(epee::net_utils::network_throttle_manager::m_lock_get_global_throttle_in);
       epee::net_utils::network_throttle_manager::get_global_throttle_in().get_stats(res.total_packets_in, res.total_bytes_in);
     }
     {
-      CRITICAL_REGION_LOCAL(epee::net_utils::network_throttle_manager::m_lock_get_global_throttle_out);
+      LOCK_MUTEX(epee::net_utils::network_throttle_manager::m_lock_get_global_throttle_out);
       epee::net_utils::network_throttle_manager::get_global_throttle_out().get_stats(res.total_packets_out, res.total_bytes_out);
     }
     res.status = CORE_RPC_STATUS_OK;

@@ -343,7 +343,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
     {
         double current_speed_down;
 		{
-			CRITICAL_REGION_LOCAL(m_throttle_speed_in_mutex);
+			LOCK_MUTEX(m_throttle_speed_in_mutex);
 			m_throttle_speed_in.handle_trafic_exact(bytes_transferred);
 			current_speed_down = m_throttle_speed_in.get_current_speed();
 		}
@@ -351,7 +351,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
         context.m_max_speed_down = std::max(context.m_max_speed_down, current_speed_down);
     
     {
-			CRITICAL_REGION_LOCAL(	epee::net_utils::network_throttle_manager::network_throttle_manager::m_lock_get_global_throttle_in );
+			LOCK_MUTEX(	epee::net_utils::network_throttle_manager::network_throttle_manager::m_lock_get_global_throttle_in );
 			epee::net_utils::network_throttle_manager::network_throttle_manager::get_global_throttle_in().handle_trafic_exact(bytes_transferred);
 		}
 
@@ -362,7 +362,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 			do // keep sleeping if we should sleep
 			{
 				{ //_scope_dbg1("CRITICAL_REGION_LOCAL");
-					CRITICAL_REGION_LOCAL(	epee::net_utils::network_throttle_manager::m_lock_get_global_throttle_in );
+					LOCK_MUTEX(	epee::net_utils::network_throttle_manager::m_lock_get_global_throttle_in );
 					delay = epee::net_utils::network_throttle_manager::get_global_throttle_in().get_sleep_time_after_tick( bytes_transferred );
 				}
 
@@ -632,7 +632,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
       return false;
     double current_speed_up;
     {
-		CRITICAL_REGION_LOCAL(m_throttle_speed_out_mutex);
+		LOCK_MUTEX(m_throttle_speed_out_mutex);
 		m_throttle_speed_out.handle_trafic_exact(chunk.size());
 		current_speed_up = m_throttle_speed_out.get_current_speed();
 	}
@@ -761,7 +761,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
   unsigned int connection<t_protocol_handler>::host_count(const std::string &host, int delta)
   {
     static std::mutex hosts_mutex;
-    CRITICAL_REGION_LOCAL(hosts_mutex);
+    LOCK_MUTEX(hosts_mutex);
     static std::map<std::string, unsigned int> hosts;
     unsigned int &val = hosts[host];
     if (delta > 0)
@@ -1500,7 +1500,7 @@ POP_WARNINGS
     connections_.insert(new_connection_l);
     MDEBUG("connections_ size now " << connections_.size());
     connections_mutex.unlock();
-    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ CRITICAL_REGION_LOCAL(connections_mutex); connections_.erase(new_connection_l); });
+    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ LOCK_MUTEX(connections_mutex); connections_.erase(new_connection_l); });
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
 
     bool try_ipv6 = false;
@@ -1625,7 +1625,7 @@ POP_WARNINGS
     connections_.insert(new_connection_l);
     MDEBUG("connections_ size now " << connections_.size());
     connections_mutex.unlock();
-    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ CRITICAL_REGION_LOCAL(connections_mutex); connections_.erase(new_connection_l); });
+    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ LOCK_MUTEX(connections_mutex); connections_.erase(new_connection_l); });
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
     
     bool try_ipv6 = false;

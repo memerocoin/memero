@@ -972,7 +972,7 @@ namespace cryptonote
   template<class t_core>
   double t_cryptonote_protocol_handler<t_core>::get_avg_block_size()
   {
-    CRITICAL_REGION_LOCAL(m_buffer_mutex);
+    LOCK_MUTEX(m_buffer_mutex);
     if (m_avg_buffer.empty()) {
       MWARNING("m_avg_buffer.size() == 0");
       return 500;
@@ -1014,7 +1014,7 @@ namespace cryptonote
 
     size += sizeof(arg.current_blockchain_height);
     {
-      CRITICAL_REGION_LOCAL(m_buffer_mutex);
+      LOCK_MUTEX(m_buffer_mutex);
       m_avg_buffer.push_back(size);
     }
     ++m_sync_spans_downloaded;
