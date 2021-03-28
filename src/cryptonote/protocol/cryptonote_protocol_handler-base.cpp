@@ -43,7 +43,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <thread> 
 #include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/pragma_comp_defs.h"
+
 #include <algorithm>
 
 

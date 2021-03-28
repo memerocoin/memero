@@ -29,7 +29,7 @@
 #pragma once 
 
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/pragma_comp_defs.h"
+
 #include "tools/epee/include/misc_language.h"
 #include "portable_storage_base.h"
 #include "portable_storage_bin_utils.h"
@@ -49,11 +49,6 @@ namespace epee
       return sizeof(pack_value);
     }
 
-    PRAGMA_WARNING_PUSH
-      PRAGMA_GCC("GCC diagnostic ignored \"-Wstrict-aliasing\"")
-#ifdef __clang__
-      PRAGMA_GCC("GCC diagnostic ignored \"-Wtautological-constant-out-of-range-compare\"")
-#endif
       template<class t_stream>
     size_t pack_varint(t_stream& strm, size_t val)
     {   //the first two bits always reserved for size information
@@ -74,7 +69,6 @@ namespace epee
         return pack_varint_t<uint64_t>(strm, PORTABLE_RAW_SIZE_MARK_INT64, val);
       }
     }
-    PRAGMA_WARNING_POP
 
       template<class t_stream>
     bool put_string(t_stream& strm, const std::string& v)

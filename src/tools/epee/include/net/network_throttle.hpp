@@ -61,7 +61,7 @@
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/net/net_utils_base.h"
-#include "tools/epee/include/pragma_comp_defs.h"
+
 #include "tools/epee/include/syncobj.h"
 
 namespace epee
