@@ -1732,7 +1732,7 @@ namespace tools
       wal->set_refresh_from_block_height(hres.height);
     crypto::secret_key dummy_key;
     try {
-      wal->generate(wallet_file, req.password, dummy_key, false, false);
+      wal->generate(wallet_file, req.password, dummy_key, false);
     }
     catch (const std::exception& e)
     {
@@ -2068,7 +2068,7 @@ namespace tools
     crypto::secret_key recovery_val;
     try
     {
-      recovery_val = wal->generate(wallet_file, std::move(rc.second).password(), recovery_key, true, false);
+      recovery_val = wal->generate(wallet_file, std::move(rc.second).password(), recovery_key, true);
       MINFO("Wallet has been restored.\n");
     }
     catch (const std::exception &e)

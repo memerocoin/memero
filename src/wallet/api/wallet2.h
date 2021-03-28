@@ -176,12 +176,10 @@ namespace tools
      * \param  password             Password of wallet file
      * \param  recovery_param       If it is a restore, the recovery key
      * \param  recover              Whether it is a restore
-     * \param  create_address_file  Whether to create an address file
      * \return                      The secret key of the generated wallet
      */
     crypto::secret_key generate(const std::string& wallet, const epee::wipeable_string& password,
-      const crypto::secret_key& recovery_param = crypto::secret_key(), bool recover = false,
-      bool create_address_file = false);
+      const crypto::secret_key& recovery_param = crypto::secret_key(), bool recover = false);
     /*!
      * \brief Creates a wallet from a public address and a spend/view secret key pair.
      * \param  wallet_                 Name of wallet file
@@ -189,22 +187,20 @@ namespace tools
      * \param  account_public_address  The account's public address
      * \param  spendkey                spend secret key
      * \param  viewkey                 view secret key
-     * \param  create_address_file     Whether to create an address file
      */
     void generate(const std::string& wallet, const epee::wipeable_string& password,
       const cryptonote::account_public_address &account_public_address,
-      const crypto::secret_key& spendkey, const crypto::secret_key& viewkey, bool create_address_file = false);
+      const crypto::secret_key& spendkey, const crypto::secret_key& viewkey);
     /*!
      * \brief Creates a watch only wallet from a public address and a view secret key.
      * \param  wallet_                 Name of wallet file
      * \param  password                Password of wallet file
      * \param  account_public_address  The account's public address
      * \param  viewkey                 view secret key
-     * \param  create_address_file     Whether to create an address file
      */
     void generate(const std::string& wallet, const epee::wipeable_string& password,
       const cryptonote::account_public_address &account_public_address,
-      const crypto::secret_key& viewkey = crypto::secret_key(), bool create_address_file = false);
+      const crypto::secret_key& viewkey = crypto::secret_key());
     /*!
      * \brief Rewrites to the wallet file for wallet upgrade (doesn't generate key, assumes it's already there)
      * \param wallet_name Name of wallet file (should exist)
@@ -630,7 +626,7 @@ namespace tools
 
     void init_type(hw::device::device_type device_type);
     void setup_new_blockchain();
-    void create_keys_file(const std::string &wallet_, bool watch_only, const epee::wipeable_string &password, bool create_address_file);
+    void create_keys_file(const std::string &wallet_, bool watch_only, const epee::wipeable_string &password);
 
     std::string get_rpc_status(const std::string &s) const;
     void throw_on_rpc_response_error(bool r, const epee::json_rpc::error &error, const std::string &status, const char *method) const;

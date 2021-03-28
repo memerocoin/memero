@@ -2941,19 +2941,12 @@ void wallet2::setup_new_blockchain()
   add_subaddress_account(tr("Primary account"));
 }
 
-void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, const epee::wipeable_string &password, bool create_address_file)
+void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, const epee::wipeable_string &password)
 {
   if (!wallet_.empty())
   {
     bool r = store_keys(m_keys_file, password, watch_only);
     THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, m_keys_file);
-
-    if (create_address_file)
-    {
-      r = wallet::logic::controller::wallet::save_to_file
-        (m_wallet_file + ".address.txt", m_account.get_public_address_str(m_nettype), true);
-      if(!r) MERROR("String with address text not saved");
-    }
   }
 }
 
@@ -2970,11 +2963,10 @@ void wallet2::init_type(hw::device::device_type device_type)
  * \param  password                Password of wallet file
  * \param  recovery_param          If it is a restore, the recovery key
  * \param  recover                 Whether it is a restore
- * \param  create_address_file     Whether to create an address file
  * \return                         The secret key of the generated wallet
  */
 crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
-  const crypto::secret_key& recovery_param, bool recover, bool create_address_file)
+  const crypto::secret_key& recovery_param, bool recover)
 {
   clear();
   prepare_file_names(wallet_);
@@ -3012,7 +3004,7 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
       (approximate_height, target_height, local_height);
   }
 
-  create_keys_file(wallet_, false, password, m_nettype != MAINNET || create_address_file);
+  create_keys_file(wallet_, false, password);
 
   setup_new_blockchain();
 
@@ -3028,11 +3020,10 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
 * \param  password                Password of wallet file
 * \param  account_public_address  The account's public address
 * \param  viewkey                 view secret key
-* \param  create_address_file     Whether to create an address file
 */
 void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
   const cryptonote::account_public_address &account_public_address,
-  const crypto::secret_key& viewkey, bool create_address_file)
+  const crypto::secret_key& viewkey)
 {
   clear();
   prepare_file_names(wallet_);
@@ -3050,7 +3041,7 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
   m_account_public_address = account_public_address;
   setup_keys(password);
 
-  create_keys_file(wallet_, true, password, m_nettype != MAINNET || create_address_file);
+  create_keys_file(wallet_, true, password);
 
   setup_new_blockchain();
 
@@ -3065,11 +3056,10 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
 * \param  account_public_address  The account's public address
 * \param  spendkey                spend secret key
 * \param  viewkey                 view secret key
-* \param  create_address_file     Whether to create an address file
 */
 void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
   const cryptonote::account_public_address &account_public_address,
-  const crypto::secret_key& spendkey, const crypto::secret_key& viewkey, bool create_address_file)
+  const crypto::secret_key& spendkey, const crypto::secret_key& viewkey)
 {
   clear();
   prepare_file_names(wallet_);
@@ -3086,7 +3076,7 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
   m_account_public_address = account_public_address;
   setup_keys(password);
 
-  create_keys_file(wallet_, false, password, create_address_file);
+  create_keys_file(wallet_, false, password);
 
   setup_new_blockchain();
 
