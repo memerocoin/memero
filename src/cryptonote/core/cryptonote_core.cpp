@@ -104,11 +104,6 @@ namespace cryptonote
     "offline"
   , "Do not listen for peers, nor connect to any"
   };
-  const command_line::arg_descriptor<size_t> arg_block_download_max_size  = {
-    "block-download-max-size"
-  , "Set maximum size of block download queue in bytes (0 for default)"
-  , 0
-  };
   static const command_line::arg_descriptor<uint64_t> arg_show_time_stats  = {
     "show-time-stats"
   , "Show time-stats when processing blocks/txs and disk synchronization."
@@ -202,7 +197,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_fluffy_blocks);
     command_line::add_arg(desc, arg_no_fluffy_blocks);
     command_line::add_arg(desc, arg_offline);
-    command_line::add_arg(desc, arg_block_download_max_size);
     command_line::add_arg(desc, arg_max_txpool_weight);
     command_line::add_arg(desc, arg_block_notify);
     command_line::add_arg(desc, arg_reorg_notify);

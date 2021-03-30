@@ -166,7 +166,6 @@ namespace cryptonote
     uint64_t m_last_add_end_time;
     uint64_t m_sync_spans_downloaded, m_sync_old_spans_downloaded, m_sync_bad_spans_downloaded;
     uint64_t m_sync_download_chain_size, m_sync_download_objects_size;
-    size_t m_block_download_max_size;
 
     // Values for sync time estimates
     boost::posix_time::ptime m_sync_start_time;

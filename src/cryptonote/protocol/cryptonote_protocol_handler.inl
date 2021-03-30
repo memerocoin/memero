@@ -110,8 +110,6 @@ namespace cryptonote
     m_sync_download_chain_size = 0;
     m_sync_download_objects_size = 0;
 
-    m_block_download_max_size = command_line::get_arg(vm, cryptonote::arg_block_download_max_size);
-
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------
