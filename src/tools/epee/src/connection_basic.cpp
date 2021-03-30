@@ -45,7 +45,7 @@
 #include <boost/asio/basic_socket.hpp>
 
 // TODO:
-#include "tools/epee/include/net/network_throttle-detail.hpp"
+
 
 #if BOOST_VERSION >= 107000
 #define GET_IO_SERVICE(s) ((boost::asio::io_context&)(s).get_executor().context())
@@ -95,9 +95,6 @@ class connection_basic_pimpl {
 
 		static int m_default_tos;
 
-		network_throttle_bw m_throttle; // per-perr
-    std::recursive_mutex m_throttle_lock;
-
 		int m_peer_number; // e.g. for debug/stats
 };
 
@@ -118,7 +115,7 @@ namespace net_utils
 // connection_basic_pimpl
 // ================================================================================================
 	
-connection_basic_pimpl::connection_basic_pimpl(const std::string &name) : m_throttle(name), m_peer_number(0) { }
+connection_basic_pimpl::connection_basic_pimpl(const std::string &name) : m_peer_number(0) { }
 
 // ================================================================================================
 // connection_basic
@@ -192,36 +189,6 @@ int connection_basic::get_tos_flag() {
 	return connection_basic_pimpl::m_default_tos;
 }
 
-void connection_basic::sleep_before_packet(size_t packet_size, int phase,  int q_len) {
-	double delay=0; // will be calculated
-	do
-	{ // rate limiting
-		if (m_was_shutdown) { 
-			_dbg2("m_was_shutdown - so abort sleep");
-			return;
-		}
-
-		{
-			LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_out );
-			delay = network_throttle_manager::get_global_throttle_out().get_sleep_time_after_tick( packet_size );
-		}
-
-		delay *= 0.50;
-		if (delay > 0) {
-            long int ms = (long int)(delay * 1000);
-			MTRACE("Sleeping in " << __FUNCTION__ << " for " << ms << " ms before packet_size="<<packet_size); // debug sleep
-			std::this_thread::sleep_for(std::chrono::milliseconds( ms ) );
-		}
-	} while(delay > 0);
-
-// XXX LATER XXX
-	{
-	  LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_out );
-		network_throttle_manager::get_global_throttle_out().handle_trafic_exact( packet_size ); // increase counter - global
-	}
-
-}
-
 void connection_basic::do_send_handler_write(const void* ptr , size_t cb ) {
         // No sleeping here; sleeping is done once and for all in connection<t_protocol_handler>::handle_write
 	MTRACE("handler_write (direct) - before ASIO write, for packet="<<cb<<" B (after sleep)");
@@ -236,12 +203,6 @@ void connection_basic::logger_handle_net_read(size_t size) { // network data rea
 }
 
 void connection_basic::logger_handle_net_write(size_t size) {
-}
-
-double connection_basic::get_sleep_time(size_t cb) {
-	LOCK_MUTEX(epee::net_utils::network_throttle_manager::network_throttle_manager::m_lock_get_global_throttle_out);
-  auto t = network_throttle_manager::get_global_throttle_out().get_sleep_time(cb);
-  return t;
 }
 
 

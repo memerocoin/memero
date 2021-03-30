@@ -99,8 +99,6 @@ namespace net_utils
 		m_protocol_handler(this, check_and_get(state), context),
 		buffer_ssl_init_fill(0),
 		m_connection_type( connection_type ),
-		m_throttle_speed_in("speed_in", "throttle_speed_in"),
-		m_throttle_speed_out("speed_out", "throttle_speed_out"),
 		m_timer(GET_IO_SERVICE(socket_)),
 		m_local(false),
 		m_ready_to_close(false)
@@ -339,41 +337,7 @@ namespace net_utils
     if (!e)
     {
         double current_speed_down;
-		{
-			LOCK_MUTEX(m_throttle_speed_in_mutex);
-			m_throttle_speed_in.handle_trafic_exact(bytes_transferred);
-			current_speed_down = m_throttle_speed_in.get_current_speed();
-		}
-        context.m_current_speed_down = current_speed_down;
-        context.m_max_speed_down = std::max(context.m_max_speed_down, current_speed_down);
-    
-    {
-			LOCK_MUTEX(	epee::net_utils::network_throttle_manager::network_throttle_manager::m_lock_get_global_throttle_in );
-			epee::net_utils::network_throttle_manager::network_throttle_manager::get_global_throttle_in().handle_trafic_exact(bytes_transferred);
-		}
 
-		double delay=0; // will be calculated - how much we should sleep to obey speed limit etc
-
-
-		if (speed_limit_is_enabled()) {
-			do // keep sleeping if we should sleep
-			{
-				{ //_scope_dbg1("CRITICAL_REGION_LOCAL");
-					LOCK_MUTEX(	epee::net_utils::network_throttle_manager::m_lock_get_global_throttle_in );
-					delay = epee::net_utils::network_throttle_manager::get_global_throttle_in().get_sleep_time_after_tick( bytes_transferred );
-				}
-
-				if (m_was_shutdown)
-					return;
-				
-				delay *= 0.5;
-				long int ms = (long int)(delay * 100);
-				if (ms > 0) {
-					reset_timer(boost::posix_time::milliseconds(ms + 1), true);
-					std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-				}
-			} while(delay > 0);
-		} // any form of sleeping
 		
       //_info("[sock " << socket().native_handle() << "] RECV " << bytes_transferred);
       logger_handle_net_read(bytes_transferred);
@@ -630,21 +594,12 @@ namespace net_utils
       return false;
     if(m_was_shutdown)
       return false;
-    double current_speed_up;
-    {
-		LOCK_MUTEX(m_throttle_speed_out_mutex);
-		m_throttle_speed_out.handle_trafic_exact(chunk.size());
-		current_speed_up = m_throttle_speed_out.get_current_speed();
-	}
-    context.m_current_speed_up = current_speed_up;
-    context.m_max_speed_up = std::max(context.m_max_speed_up, current_speed_up);
 
     //_info("[sock " << socket().native_handle() << "] SEND " << cb);
     context.m_last_send = time(NULL);
     context.m_send_cnt += chunk.size();
     //some data should be wrote to stream
     //request complete
-    
     // No sleeping here; sleeping is done once and for all in "handle_write"
 
     m_send_que_lock.lock(); // *** critical ***
@@ -893,9 +848,6 @@ namespace net_utils
     logger_handle_net_write(cb);
 
                 // The single sleeping that is needed for correctly handling "out" speed throttling
-		if (speed_limit_is_enabled()) {
-			sleep_before_packet(cb, 1, 1);
-		}
 
     bool do_shutdown = false;
     {

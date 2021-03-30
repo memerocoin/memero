@@ -51,7 +51,7 @@
 #include "net_utils_base.h"
 #include "tools/epee/include/syncobj.h"
 #include "connection_basic.hpp"
-#include "network_throttle-detail.hpp"
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
@@ -176,15 +176,7 @@ namespace net_utils
     std::recursive_mutex m_self_refs_lock;
     std::recursive_mutex m_chunking_lock; // held while we add small chunks of the big do_send() to small do_send_chunk()
     std::recursive_mutex m_shutdown_lock; // held while shutting down
-    
     t_connection_type m_connection_type;
-    
-    // for calculate speed (last 60 sec)
-    network_throttle m_throttle_speed_in;
-    network_throttle m_throttle_speed_out;
-    std::mutex m_throttle_speed_in_mutex;
-    std::mutex m_throttle_speed_out_mutex;
-
     boost::asio::deadline_timer m_timer;
     bool m_local;
     bool m_ready_to_close;

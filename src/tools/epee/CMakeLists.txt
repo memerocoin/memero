@@ -38,8 +38,6 @@ add_library( epee
   src/levin_base.cpp
   src/memwipe.c
   src/connection_basic.cpp
-  src/network_throttle.cpp
-  src/network_throttle-detail.cpp
   src/int-util.cpp
   src/buffer.cpp
   src/net_ssl.cpp

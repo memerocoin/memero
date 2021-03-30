@@ -657,26 +657,6 @@ bool t_rpc_command_executor::print_net_stats()
       return true;
     }
   }
-
-  uint64_t seconds = (uint64_t)time(NULL) - net_stats_res.start_time;
-  uint64_t average = seconds > 0 ? net_stats_res.total_bytes_in / seconds : 0;
-  tools::success_msg_writer() << boost::format("Received %u bytes (%s) in %u packets in %s, average %s/s")
-    % net_stats_res.total_bytes_in
-    % tools::get_human_readable_bytes(net_stats_res.total_bytes_in)
-    % net_stats_res.total_packets_in
-    % tools::get_human_readable_timespan(seconds)
-    % tools::get_human_readable_bytes(average)
-    ;
-
-  average = seconds > 0 ? net_stats_res.total_bytes_out / seconds : 0;
-  tools::success_msg_writer() << boost::format("Sent %u bytes (%s) in %u packets in %s, average %s/s")
-    % net_stats_res.total_bytes_out
-    % tools::get_human_readable_bytes(net_stats_res.total_bytes_out)
-    % net_stats_res.total_packets_out
-    % tools::get_human_readable_timespan(seconds)
-    % tools::get_human_readable_bytes(average)
-    ;
-
   return true;
 }
 
