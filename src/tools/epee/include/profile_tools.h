@@ -25,11 +25,12 @@
 // 
 
 
-#ifndef _PROFILE_TOOLS_H_
-#define _PROFILE_TOOLS_H_
+#pragma once
+
+#include <ctime>
+#include <chrono>
 
 #include "tools/epee/include/misc_os_dependent.h"
-#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 namespace epee
 {
@@ -91,31 +92,26 @@ namespace profile_tools
 		call_frame(local_call_account& cc):m_cc(cc)
 		{
 			cc.m_count_of_call++;
-			m_call_time = boost::posix_time::microsec_clock::local_time();
-			//::QueryPerformanceCounter((LARGE_INTEGER *)&m_call_time);
+			m_call_time = std::chrono::system_clock::now();
 		}
 		
 		~call_frame()
 		{
-			//__int64 ret_time = 0;
-			
-			boost::posix_time::ptime now_t(boost::posix_time::microsec_clock::local_time());
-			boost::posix_time::time_duration delta_microsec = now_t - m_call_time;
-			uint64_t miliseconds_used = delta_microsec.total_microseconds();
+      const std::chrono::time_point<std::chrono::system_clock> now_t =
+        std::chrono::system_clock::now();
 
-			//::QueryPerformanceCounter((LARGE_INTEGER *)&ret_time);
-			//m_call_time = (ret_time-m_call_time)/1000;
+			uint64_t miliseconds_used =
+        std::chrono::duration_cast<std::chrono::microseconds>(now_t - m_call_time).max().count();
+
 			m_cc.m_summary_time_used += miliseconds_used;
 		}
 		
 	private:
 		local_call_account& m_cc;
-		boost::posix_time::ptime m_call_time;
+    std::chrono::time_point<std::chrono::system_clock> m_call_time;
 	};
 	
 
 }
 }
 
-
-#endif //_PROFILE_TOOLS_H_

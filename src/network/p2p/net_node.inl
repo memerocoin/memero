@@ -31,11 +31,9 @@
 // IP blocking adapted from Boolberry
 
 #include <algorithm>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <filesystem>
 #include <optional>
 #include <thread>
-#include <boost/uuid/uuid_io.hpp>
 #include <atomic>
 #include <functional>
 #include <limits>
@@ -43,6 +41,8 @@
 #include <tuple>
 #include <vector>
 #include <thread>
+
+#include <boost/uuid/uuid_io.hpp>
 
 #include "version.h"
 #include "tools/epee/include/string_tools.h"
