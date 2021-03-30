@@ -646,6 +646,7 @@ namespace nodetool
         m_config_folder = m_config_folder + "/" + public_zone.m_port;
       }
 
+
     res = init_config();
     CHECK_AND_ASSERT_MES(res, false, "Failed to init config.");
 
@@ -657,32 +658,6 @@ namespace nodetool
 
     for(const auto& p: m_command_line_peers)
       m_network_zones.at(p.adr.get_zone()).m_peerlist.append_with_peer_white(p);
-
-// all peers are now setup
-#ifdef CRYPTONOTE_PRUNING_DEBUG_SPOOF_SEED
-    for (auto& zone : m_network_zones)
-    {
-      std::list<peerlist_entry> plw;
-      while (zone.second.m_peerlist.get_white_peers_count())
-      {
-        plw.push_back(peerlist_entry());
-        zone.second.m_peerlist.get_white_peer_by_index(plw.back(), 0);
-        zone.second.m_peerlist.remove_from_peer_white(plw.back());
-      }
-      for (auto &e:plw)
-        zone.second.m_peerlist.append_with_peer_white(e);
-
-      std::list<peerlist_entry> plg;
-      while (zone.second.m_peerlist.get_gray_peers_count())
-      {
-        plg.push_back(peerlist_entry());
-        zone.second.m_peerlist.get_gray_peer_by_index(plg.back(), 0);
-        zone.second.m_peerlist.remove_from_peer_gray(plg.back());
-      }
-      for (auto &e:plg)
-        zone.second.m_peerlist.append_with_peer_gray(e);
-    }
-#endif
 
     //only in case if we really sure that we have external visible ip
     m_have_address = true;
@@ -1798,10 +1773,6 @@ namespace nodetool
         continue;
       }
       local_peerlist[i].last_seen = 0;
-
-#ifdef CRYPTONOTE_PRUNING_DEBUG_SPOOF_SEED
-      be.pruning_seed = 0;
-#endif
     }
     return true;
   }
