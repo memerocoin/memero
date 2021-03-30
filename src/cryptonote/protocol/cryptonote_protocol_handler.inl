@@ -970,19 +970,6 @@ namespace cryptonote
 
 
   template<class t_core>
-  double t_cryptonote_protocol_handler<t_core>::get_avg_block_size()
-  {
-    LOCK_MUTEX(m_buffer_mutex);
-    if (m_avg_buffer.empty()) {
-      MWARNING("m_avg_buffer.size() == 0");
-      return 500;
-    }
-    double avg = 0;
-    for (const auto &element : m_avg_buffer) avg += element;
-    return avg / m_avg_buffer.size();
-  }
-
-  template<class t_core>
   int t_cryptonote_protocol_handler<t_core>::handle_response_get_objects(int command, NOTIFY_RESPONSE_GET_OBJECTS::request& arg, cryptonote_connection_context& context)
   {
     MLOG_P2P_MESSAGE("Received NOTIFY_RESPONSE_GET_OBJECTS (" << arg.blocks.size() << " blocks)");
@@ -1013,10 +1000,6 @@ namespace cryptonote
       size += sizeof(element.data);
 
     size += sizeof(arg.current_blockchain_height);
-    {
-      LOCK_MUTEX(m_buffer_mutex);
-      m_avg_buffer.push_back(size);
-    }
     ++m_sync_spans_downloaded;
     m_sync_download_objects_size += size;
     MDEBUG(context << " downloaded " << size << " bytes worth of blocks");
