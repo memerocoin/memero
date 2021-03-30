@@ -2119,7 +2119,6 @@ namespace tools
     static const struct { cryptonote::network_type type; const char *stype; } net_types[] = {
       { cryptonote::MAINNET, "mainnet" },
       { cryptonote::TESTNET, "testnet" },
-      { cryptonote::STAGENET, "stagenet" },
     };
     if (!req.any_net_type && !m_wallet) return not_open(er);
     for (const auto &net_type: net_types)
@@ -2288,10 +2287,9 @@ public:
     try
     {
       const bool testnet = tools::wallet2::has_testnet_option(vm);
-      const bool stagenet = tools::wallet2::has_stagenet_option(vm);
-      if (testnet && stagenet)
+      if (testnet)
       {
-        MERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --testnet and --stagenet"));
+        MERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --testnet"));
         return false;
       }
 

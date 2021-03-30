@@ -349,8 +349,7 @@ namespace nodetool
     )
   {
     bool testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
-    bool stagenet = command_line::get_arg(vm, cryptonote::arg_stagenet_on);
-    m_nettype = testnet ? cryptonote::TESTNET : stagenet ? cryptonote::STAGENET : cryptonote::MAINNET;
+    m_nettype = testnet ? cryptonote::TESTNET : cryptonote::MAINNET;
 
     network_zone& public_zone = m_network_zones[epee::net_utils::zone::public_];
     public_zone.m_connect = &public_connect;
@@ -571,9 +570,6 @@ namespace nodetool
     {
       // full_addrs.insert("207.254.29.107:11180");
     }
-    else if (m_nettype == cryptonote::STAGENET)
-    {
-    }
     else if (m_nettype == cryptonote::FAKECHAIN)
     {
     }
@@ -633,10 +629,6 @@ namespace nodetool
     {
       memcpy(&m_network_id, &::cryptonote::testnet.NETWORK_ID, 16);
     }
-    else if (m_nettype == cryptonote::STAGENET)
-    {
-      memcpy(&m_network_id, &::cryptonote::stagenet.NETWORK_ID, 16);
-    }
     else
     {
       memcpy(&m_network_id, &::cryptonote::mainnet.NETWORK_ID, 16);
@@ -645,11 +637,14 @@ namespace nodetool
     m_config_folder = command_line::get_arg(vm, cryptonote::arg_data_dir);
     network_zone& public_zone = m_network_zones.at(epee::net_utils::zone::public_);
 
-    if ((m_nettype == cryptonote::MAINNET && public_zone.m_port != std::to_string(::cryptonote::mainnet.P2P_DEFAULT_PORT))
-        || (m_nettype == cryptonote::TESTNET && public_zone.m_port != std::to_string(::cryptonote::testnet.P2P_DEFAULT_PORT))
-        || (m_nettype == cryptonote::STAGENET && public_zone.m_port != std::to_string(::cryptonote::stagenet.P2P_DEFAULT_PORT))) {
-      m_config_folder = m_config_folder + "/" + public_zone.m_port;
-    }
+    if (
+        (m_nettype == cryptonote::MAINNET && public_zone.m_port != std::to_string(::cryptonote::mainnet.P2P_DEFAULT_PORT))
+        ||
+        (m_nettype == cryptonote::TESTNET && public_zone.m_port != std::to_string(::cryptonote::testnet.P2P_DEFAULT_PORT))
+        )
+      {
+        m_config_folder = m_config_folder + "/" + public_zone.m_port;
+      }
 
     res = init_config();
     CHECK_AND_ASSERT_MES(res, false, "Failed to init config.");

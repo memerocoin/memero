@@ -37,17 +37,14 @@ namespace daemon_args
 {
   std::string const WINDOWS_SERVICE_NAME = "Monero Daemon";
 
-  const command_line::arg_descriptor<std::string, false, true, 2> arg_config_file = {
+  const command_line::arg_descriptor<std::string, false, true> arg_config_file = {
     "config-file"
   , "Specify configuration file"
   , (daemonizer::get_default_data_dir() / std::string(CRYPTONOTE_NAME ".conf")).string()
-  , {{ &cryptonote::arg_testnet_on, &cryptonote::arg_stagenet_on }}
-  , [](std::array<bool, 2> testnet_stagenet, bool defaulted, std::string val)->std::string {
-      if (testnet_stagenet[0] && defaulted)
+  , cryptonote::arg_testnet_on
+  , [](bool testnet, bool defaulted, std::string val)->std::string {
+      if (testnet && defaulted)
         return (daemonizer::get_default_data_dir() / "testnet" /
-                std::string(CRYPTONOTE_NAME ".conf")).string();
-      else if (testnet_stagenet[1] && defaulted)
-        return (daemonizer::get_default_data_dir() / "stagenet" /
                 std::string(CRYPTONOTE_NAME ".conf")).string();
       return val;
     }

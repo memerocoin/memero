@@ -355,33 +355,19 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
   {
     if(!cryptonote::get_account_address_from_str(info, cryptonote::TESTNET, args.front()))
     {
-      if(!cryptonote::get_account_address_from_str(info, cryptonote::STAGENET, args.front()))
-      {
         std::string address_str;
         if(!cryptonote::get_account_address_from_str(info, cryptonote::MAINNET, address_str))
         {
           if(!cryptonote::get_account_address_from_str(info, cryptonote::TESTNET, address_str))
           {
-            if(!cryptonote::get_account_address_from_str(info, cryptonote::STAGENET, address_str))
-            {
-              std::cout << "Invalid syntax: Target account address has wrong format. For more details, use the help command." << std::endl;
-              return true;
-            }
-            else
-            {
-              nettype = cryptonote::STAGENET;
-            }
+            std::cout << "Invalid syntax: Target account address has wrong format. For more details, use the help command." << std::endl;
+            return true;
           }
           else
           {
             nettype = cryptonote::TESTNET;
           }
         }
-      }
-      else
-      {
-        nettype = cryptonote::STAGENET;
-      }
     }
     else
     {
@@ -394,7 +380,7 @@ bool t_command_parser_executor::start_mining(const std::vector<std::string>& arg
     return true;
   }
   if(nettype != cryptonote::MAINNET)
-    std::cout << "Mining to a " << (nettype == cryptonote::TESTNET ? "testnet" : "stagenet") << " address, make sure this is intentional!" << std::endl;
+    std::cout << "Mining to a testnet address, make sure this is intentional!" << std::endl;
   uint64_t threads_count = 1;
   if(args.size() > 4)
   {

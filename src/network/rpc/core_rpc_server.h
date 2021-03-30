@@ -56,7 +56,7 @@ namespace cryptonote
   {
   public:
 
-    static const command_line::arg_descriptor<std::string, false, true, 2> arg_rpc_bind_port;
+    static const command_line::arg_descriptor<std::string, false, true> arg_rpc_bind_port;
 
     typedef epee::net_utils::connection_context_base connection_context;
 

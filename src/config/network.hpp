@@ -40,7 +40,6 @@ namespace cryptonote
   {
     MAINNET = 0,
     TESTNET,
-    STAGENET,
     FAKECHAIN,
     UNDEFINED = 255
   };
@@ -87,15 +86,12 @@ namespace cryptonote
     42
   };
 
-  static const config_t stagenet = testnet;
-
   inline const config_t& get_config(network_type nettype)
   {
     switch (nettype)
     {
       case MAINNET: return mainnet;
       case TESTNET: return testnet;
-      case STAGENET: return stagenet;
       case FAKECHAIN: return testnet;
       default: throw std::runtime_error("Invalid network type");
     }

@@ -1582,13 +1582,12 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
   });
 
   const bool testnet = tools::wallet2::has_testnet_option(vm);
-  const bool stagenet = tools::wallet2::has_stagenet_option(vm);
-  if (testnet && stagenet)
+  if (testnet)
   {
-    fail_msg_writer() << tr("Can't specify more than one of --testnet and --stagenet");
+    fail_msg_writer() << tr("Can't specify more than one of --testnet");
     return false;
   }
-  const network_type nettype = testnet ? TESTNET : stagenet ? STAGENET : MAINNET;
+  const network_type nettype = testnet ? TESTNET : MAINNET;
 
   epee::wipeable_string password;
 
@@ -4230,8 +4229,7 @@ bool simple_wallet::wallet_info(const std::vector<std::string> &args)
     type = tr("Normal");
   message_writer() << tr("Type: ") << type;
   message_writer() << tr("Network type: ") << (
-    m_wallet->nettype() == cryptonote::TESTNET ? tr("Testnet") :
-    m_wallet->nettype() == cryptonote::STAGENET ? tr("Stagenet") : tr("Mainnet"));
+    m_wallet->nettype() == cryptonote::TESTNET ? tr("Testnet") : tr("Mainnet"));
   return true;
 }
 //----------------------------------------------------------------------------------------------------
