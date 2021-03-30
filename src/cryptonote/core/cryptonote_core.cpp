@@ -328,7 +328,6 @@ namespace cryptonote
     bool r = handle_command_line(vm);
     CHECK_AND_ASSERT_MES(r, false, "Failed to handle command line");
 
-    std::string db_sync_mode = command_line::get_arg(vm, cryptonote::arg_db_sync_mode);
     size_t max_txpool_weight = command_line::get_arg(vm, arg_max_txpool_weight);
     bool keep_alt_blocks = command_line::get_arg(vm, arg_keep_alt_blocks);
     bool keep_fakechain = command_line::get_arg(vm, arg_keep_fakechain);
@@ -387,75 +386,8 @@ namespace cryptonote
     {
       uint64_t db_flags = 0;
 
-      std::vector<std::string> options;
-      boost::trim(db_sync_mode);
-      boost::split(options, db_sync_mode, boost::is_any_of(" :"));
-      const bool db_sync_mode_is_default = command_line::is_arg_defaulted(vm, cryptonote::arg_db_sync_mode);
-
-      for(const auto &option : options)
-        MDEBUG("option: " << option);
-
-      // default to fast:async:1
-      uint64_t DEFAULT_FLAGS = DBF_FAST;
-
-      if(options.size() == 0)
-      {
-        // default to fast:async:1
-        db_flags = DEFAULT_FLAGS;
-      }
-
-      bool safemode = false;
-      if(options.size() >= 1)
-      {
-        if(options[0] == "safe")
-        {
-          safemode = true;
-          db_flags = DBF_SAFE;
-          sync_mode = db_sync_mode_is_default ? db_defaultsync : db_nosync;
-        }
-        else if(options[0] == "fast")
-        {
-          db_flags = DBF_FAST;
-          sync_mode = db_sync_mode_is_default ? db_defaultsync : db_async;
-        }
-        else if(options[0] == "fastest")
-        {
-          db_flags = DBF_FASTEST;
-          sync_threshold = 1000; // default to fastest:async:1000
-          sync_mode = db_sync_mode_is_default ? db_defaultsync : db_async;
-        }
-        else
-          db_flags = DEFAULT_FLAGS;
-      }
-
-      if(options.size() >= 2 && !safemode)
-      {
-        if(options[1] == "sync")
-          sync_mode = db_sync_mode_is_default ? db_defaultsync : db_sync;
-        else if(options[1] == "async")
-          sync_mode = db_sync_mode_is_default ? db_defaultsync : db_async;
-      }
-
-      if(options.size() >= 3 && !safemode)
-      {
-        char *endptr;
-        uint64_t threshold = strtoull(options[2].c_str(), &endptr, 0);
-        if (*endptr == '\0' || !strcmp(endptr, "blocks"))
-        {
-          sync_on_blocks = true;
-          sync_threshold = threshold;
-        }
-        else if (!strcmp(endptr, "bytes"))
-        {
-          sync_on_blocks = false;
-          sync_threshold = threshold;
-        }
-        else
-        {
-          LOG_ERROR("Invalid db sync mode: " << options[2]);
-          return false;
-        }
-      }
+      db_flags = DBF_SAFE;
+      sync_mode = db_async;
 
       db->open(filename, db_flags);
       if(!db->m_open)

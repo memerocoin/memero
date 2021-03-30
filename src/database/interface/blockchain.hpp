@@ -103,8 +103,6 @@ namespace cryptonote
 /** a pair of <transaction hash, output index>, typedef for convenience */
 typedef std::pair<crypto::hash, uint64_t> tx_out_index;
 
-extern const command_line::arg_descriptor<std::string> arg_db_sync_mode;
-
 enum class relay_category : uint8_t
 {
   broadcasted = 0,//!< Public txes received via block/fluff
