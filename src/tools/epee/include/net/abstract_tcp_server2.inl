@@ -663,8 +663,6 @@ namespace net_utils
 
         auto size_now = m_send_que.front().size();
         MDEBUG("do_send_chunk() NOW SENSD: packet="<<size_now<<" B");
-        if (speed_limit_is_enabled())
-          do_send_handler_write( m_send_que.back().data(), m_send_que.back().size() ); // (((H)))
 
         CHECK_AND_ASSERT_MES( size_now == m_send_que.front().size(), false, "Unexpected queue size");
         reset_timer(get_default_timeout(), false);
@@ -871,8 +869,6 @@ namespace net_utils
       reset_timer(get_default_timeout(), false);
       auto size_now = m_send_que.front().size();
       MDEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
-      if (speed_limit_is_enabled())
-        do_send_handler_write_from_queue(e, m_send_que.front().size() , m_send_que.size()); // (((H)))
       CHECK_AND_ASSERT_MES( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
       async_write(boost::asio::buffer(m_send_que.front().data(), size_now) , 
                   strand_.wrap(
@@ -898,12 +894,6 @@ namespace net_utils
     m_connection_type = e_connection_type_RPC; 
     MDEBUG("set m_connection_type = RPC ");
   }
-
-
-  template<class t_protocol_handler>
-  bool connection<t_protocol_handler>::speed_limit_is_enabled() const {
-		return m_connection_type != e_connection_type_RPC ;
-	}
 
   /************************************************************************/
   /*                                                                      */

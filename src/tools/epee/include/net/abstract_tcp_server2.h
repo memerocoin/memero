@@ -122,9 +122,6 @@ namespace net_utils
     
     void save_dbg_log();
 
-
-		bool speed_limit_is_enabled() const; ///< tells us should we be sleeping here (e.g. do not sleep on RPC connections)
-
     bool cancel();
     
   private:
