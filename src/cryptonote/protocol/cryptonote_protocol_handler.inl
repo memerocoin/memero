@@ -135,14 +135,15 @@ namespace cryptonote
     CHECK_AND_ASSERT_MES_CC( context.m_callback_request_count > 0, false, "false callback fired, but context.m_callback_request_count=" << context.m_callback_request_count);
     --context.m_callback_request_count;
 
-    if(context.m_state == cryptonote_connection_context::state_synchronizing && context.m_last_request_time == boost::posix_time::not_a_date_time)
+    if(context.m_state == cryptonote_connection_context::state_synchronizing
+       && context.m_last_request_time == std::chrono::time_point<std::chrono::system_clock>::min())
     {
       NOTIFY_REQUEST_CHAIN::request r = {};
       context.m_needed_objects.clear();
       context.m_expect_height = m_core.get_current_blockchain_height();
       m_core.get_short_chain_history(r.block_ids);
       handler_request_blocks_history( r.block_ids ); // change the limit(?), sleep(?)
-      context.m_last_request_time = boost::posix_time::microsec_clock::universal_time();
+      context.m_last_request_time = std::chrono::system_clock::now();
       context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
       MLOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
       post_notify<NOTIFY_REQUEST_CHAIN>(r, context);
@@ -447,7 +448,7 @@ namespace cryptonote
       context.m_expect_height = m_core.get_current_blockchain_height();
       m_core.get_short_chain_history(r.block_ids);
       handler_request_blocks_history( r.block_ids ); // change the limit(?), sleep(?)
-      context.m_last_request_time = boost::posix_time::microsec_clock::universal_time();
+      context.m_last_request_time = std::chrono::system_clock::now();
       context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
       MLOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
       post_notify<NOTIFY_REQUEST_CHAIN>(r, context);
@@ -729,7 +730,7 @@ namespace cryptonote
           context.m_expect_height = m_core.get_current_blockchain_height();
           m_core.get_short_chain_history(r.block_ids);
           handler_request_blocks_history( r.block_ids ); // change the limit(?), sleep(?)
-          context.m_last_request_time = boost::posix_time::microsec_clock::universal_time();
+          context.m_last_request_time = std::chrono::system_clock::now();
           context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
           MLOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
           post_notify<NOTIFY_REQUEST_CHAIN>(r, context);
@@ -955,7 +956,7 @@ namespace cryptonote
       drop_connection(context, false, false);
       return 1;
     }
-    context.m_last_request_time = boost::posix_time::microsec_clock::universal_time();
+    context.m_last_request_time = std::chrono::system_clock::now();
     MLOG_P2P_MESSAGE("-->>NOTIFY_RESPONSE_GET_OBJECTS: blocks.size()="
                      << rsp.blocks.size() << ", rsp.m_current_blockchain_height=" << rsp.current_blockchain_height
                      << ", missed_ids.size()=" << rsp.missed_ids.size());
@@ -973,8 +974,8 @@ namespace cryptonote
     MLOG_P2P_MESSAGE("Received NOTIFY_RESPONSE_GET_OBJECTS (" << arg.blocks.size() << " blocks)");
     MLOG_PEER_STATE("received objects");
 
-    boost::posix_time::ptime request_time = context.m_last_request_time;
-    context.m_last_request_time = boost::date_time::not_a_date_time;
+    std::chrono::time_point<std::chrono::system_clock> request_time = context.m_last_request_time;
+    context.m_last_request_time = std::chrono::system_clock::time_point::min();
 
     if (context.m_expect_response != NOTIFY_RESPONSE_GET_OBJECTS::ID)
     {
@@ -1034,7 +1035,7 @@ namespace cryptonote
 
     std::vector<crypto::hash> block_hashes;
     block_hashes.reserve(arg.blocks.size());
-    const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
+    const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     uint64_t start_height = std::numeric_limits<uint64_t>::max();
     cryptonote::block b;
     for(const block_complete_entry& block_entry: arg.blocks)
@@ -1143,9 +1144,9 @@ namespace cryptonote
           " (pruning seed " << epee::string_tools::to_string_hex(context.m_pruning_seed) << ")");
 
       // add that new span to the block queue
-      const boost::posix_time::time_duration dt = now - request_time;
-      const float rate = size * 1e6 / (dt.total_microseconds() + 1);
-      MDEBUG(context << " adding span: " << arg.blocks.size() << " at height " << start_height << ", " << dt.total_microseconds()/1e6 << " seconds, " << (rate/1024) << " kB/s, size now " << (m_block_queue.get_data_size() + blocks_size) / 1048576.f << " MB");
+      const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(now - request_time);
+      const float rate = size * 1e6 / (dt.count() + 1);
+      MDEBUG(context << " adding span: " << arg.blocks.size() << " at height " << start_height << ", " << dt.count()/1e6 << " seconds, " << (rate/1024) << " kB/s, size now " << (m_block_queue.get_data_size() + blocks_size) / 1048576.f << " MB");
       m_block_queue.add_blocks(start_height, arg.blocks, context.m_connection_id, context.m_remote_address, rate, blocks_size);
 
       const crypto::hash last_block_hash = cryptonote::get_block_hash(b);
@@ -1173,12 +1174,12 @@ namespace cryptonote
       return 0;
     }
 
-    const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
-    const boost::posix_time::time_duration sync_time = now - m_sync_start_time;
+    const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    const auto sync_time = std::chrono::duration_cast<std::chrono::microseconds>(now - m_sync_start_time);
     cryptonote::network_type nettype = m_core.get_nettype();
 
     uint64_t synced = current_blockchain_height - m_sync_start_height;
-    float us_per_block = (float)sync_time.total_microseconds() / (float)synced;
+    float us_per_block = (float)sync_time.count() / (float)synced;
     uint64_t remaining = target_blockchain_height - current_blockchain_height;
     float remaining_us = us_per_block * (float)remaining;
     return (uint64_t)(remaining_us / 1e6);
@@ -1189,9 +1190,10 @@ namespace cryptonote
   std::string t_cryptonote_protocol_handler<t_core>::get_periodic_sync_estimate(uint64_t current_blockchain_height, uint64_t target_blockchain_height)
   {
     std::string text = "";
-    const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
-    boost::posix_time::time_duration period_sync_time = now - m_period_start_time;
-    if (period_sync_time > boost::posix_time::minutes(2))
+    const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    const auto period_sync_time =
+      std::chrono::duration_cast<std::chrono::minutes>(now - m_period_start_time);
+    if (period_sync_time.count() > 2)
     {
       // Period is over, time to report another estimate
       uint64_t remaining_seconds = get_estimated_remaining_sync_seconds(current_blockchain_height, target_blockchain_height);
@@ -1231,7 +1233,7 @@ namespace cryptonote
           if (!starting)
             m_last_add_end_time = tools::get_tick_count();
         });
-        m_sync_start_time = boost::posix_time::microsec_clock::universal_time();
+        m_sync_start_time = std::chrono::system_clock::now();
         m_sync_start_height = m_core.get_current_blockchain_height();
         m_period_start_time = m_sync_start_time;
 
@@ -1305,7 +1307,7 @@ namespace cryptonote
             break;
           }
 
-          const boost::posix_time::ptime start = boost::posix_time::microsec_clock::universal_time();
+          const std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
           if (starting)
           {
@@ -1455,7 +1457,8 @@ namespace cryptonote
           if (current_blockchain_height > previous_height)
           {
             const uint64_t target_blockchain_height = m_core.get_target_blockchain_height();
-            const boost::posix_time::time_duration dt = boost::posix_time::microsec_clock::universal_time() - start;
+            const auto dt = std::chrono::duration_cast<std::chrono::microseconds>
+              (std::chrono::system_clock::now() - start);
             std::string progress_message = "";
             if (current_blockchain_height < target_blockchain_height)
             {
@@ -1478,8 +1481,8 @@ namespace cryptonote
             const uint32_t current_stripe = 0;
             std::string timing_message = "";
             if (ELPP->vRegistry()->allowed(el::Level::Info, "sync-info"))
-              timing_message = std::string(" (") + std::to_string(dt.total_microseconds()/1e6) + " sec, "
-                + std::to_string((current_blockchain_height - previous_height) * 1e6 / dt.total_microseconds())
+              timing_message = std::string(" (") + std::to_string(dt.count()/1e6) + " sec, "
+                + std::to_string((current_blockchain_height - previous_height) * 1e6 / dt.count())
                 + " blocks/sec), " + std::to_string(m_block_queue.get_data_size() / 1048576.f) + " MB queued in "
                 + std::to_string(m_block_queue.get_num_filled_spans()) + " spans, stripe "
                 + std::to_string(previous_stripe) + " -> " + std::to_string(current_stripe);
@@ -1525,18 +1528,18 @@ skip:
     std::vector<std::pair<boost::uuids::uuid, unsigned>> idle_peers;
     m_p2p->for_each_connection([&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t support_flags)->bool
     {
-      if (context.m_state == cryptonote_connection_context::state_synchronizing && context.m_last_request_time != boost::date_time::not_a_date_time)
+      if (context.m_state == cryptonote_connection_context::state_synchronizing && context.m_last_request_time != std::chrono::system_clock::time_point::min())
       {
-        const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
-        const boost::posix_time::time_duration dt = now - context.m_last_request_time;
-        const auto ms = dt.total_microseconds();
+        const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+        const auto dt = std::chrono::duration_cast<std::chrono::microseconds>(now - context.m_last_request_time);
+        const auto ms = dt.count();
         if (ms > IDLE_PEER_KICK_TIME || (context.m_expect_response && ms > NON_RESPONSIVE_PEER_KICK_TIME))
         {
           if (context.m_score-- >= 0)
           {
-            MINFO(context << " kicking idle peer, last update " << (dt.total_microseconds() / 1.e6) << " seconds ago, expecting " << (int)context.m_expect_response);
+            MINFO(context << " kicking idle peer, last update " << (dt.count() / 1.e6) << " seconds ago, expecting " << (int)context.m_expect_response);
             LOG_PRINT_CCONTEXT_L2("requesting callback");
-            context.m_last_request_time = boost::date_time::not_a_date_time;
+            context.m_last_request_time = std::chrono::system_clock::time_point::min();
             context.m_expect_response = 0;
             context.m_expect_height = 0;
             context.m_state = cryptonote_connection_context::state_standby; // we'll go back to adding, then (if we can't), download
@@ -1658,7 +1661,7 @@ skip:
   {
     std::vector<crypto::hash> hashes;
     boost::uuids::uuid span_connection_id;
-    boost::posix_time::ptime request_time;
+    std::chrono::time_point<std::chrono::system_clock> request_time;
     boost::uuids::uuid connection_id;
     std::pair<uint64_t, uint64_t> span;
     bool filled;
@@ -1666,7 +1669,7 @@ skip:
     const uint64_t blockchain_height = m_core.get_current_blockchain_height();
     if (context.m_remote_blockchain_height <= blockchain_height)
       return false;
-    const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
+    const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     {
       if (!m_block_queue.has_next_span(blockchain_height, filled, request_time, connection_id))
       {
@@ -1675,7 +1678,9 @@ skip:
       }
       if (!filled)
       {
-        const long dt = (now - request_time).total_microseconds();
+        const std::chrono::microseconds dt_ =
+          std::chrono::duration_cast<std::chrono::microseconds>(now - request_time);
+        const long dt = dt_.count();
         if (dt >= REQUEST_NEXT_SCHEDULED_SPAN_THRESHOLD)
         {
           MDEBUG(context << " we should download it as it's not been received yet after " << dt/1e6);
@@ -1793,7 +1798,7 @@ skip:
         {
           std::vector<crypto::hash> hashes;
           boost::uuids::uuid span_connection_id;
-          boost::posix_time::ptime time;
+          std::chrono::time_point<std::chrono::system_clock> time;
           span = m_block_queue.get_next_span_if_scheduled(hashes, span_connection_id, time);
           if (span.second > 0)
           {
@@ -1834,7 +1839,7 @@ skip:
         MDEBUG(context << " still no span reserved, we may be in the corner case of next span scheduled and everything else scheduled/filled");
         std::vector<crypto::hash> hashes;
         boost::uuids::uuid span_connection_id;
-        boost::posix_time::ptime time;
+        std::chrono::time_point<std::chrono::system_clock> time;
         span = m_block_queue.get_next_span_if_scheduled(hashes, span_connection_id, time);
         if (span.second > 0)
         {
@@ -1883,7 +1888,7 @@ skip:
           context.m_needed_objects = std::vector<std::pair<crypto::hash, uint64_t>>(context.m_needed_objects.begin() + span.second, context.m_needed_objects.end());
         }
 
-        context.m_last_request_time = boost::posix_time::microsec_clock::universal_time();
+        context.m_last_request_time = std::chrono::system_clock::now();
         context.m_expect_height = span.first;
         context.m_expect_response = NOTIFY_RESPONSE_GET_OBJECTS::ID;
         MLOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_GET_OBJECTS: blocks.size()=" << req.blocks.size()
@@ -1946,7 +1951,7 @@ skip:
       //epee::serialization::store_t_to_binary(r, blob);
       //LOG_PRINT_CCONTEXT_L1("r = " << 200);
 
-      context.m_last_request_time = boost::posix_time::microsec_clock::universal_time();
+      context.m_last_request_time = std::chrono::system_clock::now();
       context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
       MLOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() << ", start_from_current_chain " << start_from_current_chain);
       post_notify<NOTIFY_REQUEST_CHAIN>(r, context);
@@ -1992,8 +1997,9 @@ skip:
         // Report only after syncing an "interesting" number of blocks:
         if (synced_blocks > 20)
         {
-          const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
-          uint64_t synced_seconds = (now - m_sync_start_time).total_seconds();
+          const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+          uint64_t synced_seconds = std::chrono::duration_cast<
+            std::chrono::seconds>(now - m_sync_start_time).count();
           if (synced_seconds == 0)
           {
             synced_seconds = 1;
@@ -2083,7 +2089,7 @@ skip:
       return 1;
     }
 
-    context.m_last_request_time = boost::date_time::not_a_date_time;
+    context.m_last_request_time = std::chrono::system_clock::time_point::min();
 
     m_sync_download_chain_size += arg.m_block_ids.size() * sizeof(crypto::hash);
 
@@ -2316,12 +2322,14 @@ skip:
   std::string t_cryptonote_protocol_handler<t_core>::get_peers_overview() const
   {
     std::stringstream ss;
-    const boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
+    const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     m_p2p->for_each_connection([&](const connection_context &ctx, nodetool::peerid_type peer_id, uint32_t support_flags) {
       char state_char = cryptonote::get_protocol_state_char(ctx.m_state);
       ss << state_char;
-      if (ctx.m_last_request_time != boost::date_time::not_a_date_time)
-        ss << (((now - ctx.m_last_request_time).total_microseconds() > IDLE_PEER_KICK_TIME) ? "!" : "?");
+      if (ctx.m_last_request_time != std::chrono::system_clock::time_point::min()) {
+        const auto dt = std::chrono::duration_cast<std::chrono::microseconds>(now - ctx.m_last_request_time);
+        ss << ((dt.count() > IDLE_PEER_KICK_TIME) ? "!" : "?");
+      }
       ss <<  + " ";
       return true;
     });

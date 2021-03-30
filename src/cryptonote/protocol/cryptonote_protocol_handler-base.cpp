@@ -40,7 +40,6 @@
 #include "tools/epee/include/net/net_utils_base.h" 
 #include "tools/epee/include/misc_log_ex.h" 
 #include <chrono>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <thread> 
 #include "tools/epee/include/misc_language.h"
 

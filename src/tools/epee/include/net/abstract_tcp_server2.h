@@ -151,9 +151,9 @@ namespace net_utils
     void handle_write(const boost::system::error_code& e, size_t cb);
 
     /// reset connection timeout timer and callback
-    void reset_timer(boost::posix_time::milliseconds ms, bool add);
-    boost::posix_time::milliseconds get_default_timeout();
-    boost::posix_time::milliseconds get_timeout_from_bytes_read(size_t bytes);
+    void reset_timer(std::chrono::milliseconds ms);
+    std::chrono::milliseconds get_default_timeout();
+    std::chrono::milliseconds get_timeout_from_bytes_read(size_t bytes);
 
     /// host connection count tracking
     unsigned int host_count(const std::string &host, int delta = 0);
@@ -174,7 +174,7 @@ namespace net_utils
     std::recursive_mutex m_chunking_lock; // held while we add small chunks of the big do_send() to small do_send_chunk()
     std::recursive_mutex m_shutdown_lock; // held while shutting down
     t_connection_type m_connection_type;
-    boost::asio::deadline_timer m_timer;
+    boost::asio::steady_timer m_timer;
     bool m_local;
     bool m_ready_to_close;
     std::string m_host;
@@ -283,7 +283,7 @@ namespace net_utils
       idle_callback_conext_base(boost::asio::io_service& io_serice):
                                                           m_timer(io_serice)
       {}
-      boost::asio::deadline_timer m_timer;
+      boost::asio::steady_timer m_timer;
     };
 
     template <class t_handler>
@@ -307,7 +307,7 @@ namespace net_utils
       {
         std::shared_ptr<idle_callback_conext<t_handler>> ptr(new idle_callback_conext<t_handler>(io_service_, t_callback, timeout_ms));
         //needed call handler here ?...
-        ptr->m_timer.expires_from_now(boost::posix_time::milliseconds(ptr->m_period));
+        ptr->m_timer.expires_after(std::chrono::milliseconds(ptr->m_period));
         ptr->m_timer.async_wait(std::bind(&boosted_tcp_server<t_protocol_handler>::global_timer_handler<t_handler>, this, ptr));
         return true;
       }
@@ -318,7 +318,7 @@ namespace net_utils
       //if handler return false - he don't want to be called anymore
       if(!ptr->call_handler())
         return true;
-      ptr->m_timer.expires_from_now(boost::posix_time::milliseconds(ptr->m_period));
+      ptr->m_timer.expires_after(std::chrono::milliseconds(ptr->m_period));
       ptr->m_timer.async_wait(std::bind(&boosted_tcp_server<t_protocol_handler>::global_timer_handler<t_handler>, this, ptr));
       return true;
     }

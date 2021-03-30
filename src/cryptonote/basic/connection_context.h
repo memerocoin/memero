@@ -32,7 +32,6 @@
 #include <unordered_set>
 #include <atomic>
 #include <algorithm>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include "tools/epee/include/net/net_utils_base.h"
 #include "math/crypto/hash.hpp"
 
@@ -42,7 +41,7 @@ namespace cryptonote
   struct cryptonote_connection_context: public epee::net_utils::connection_context_base
   {
     cryptonote_connection_context(): m_state(state_before_handshake), m_remote_blockchain_height(0), m_last_response_height(0),
-        m_last_request_time(boost::date_time::not_a_date_time), m_callback_request_count(0),
+        m_last_request_time(std::chrono::time_point<std::chrono::system_clock>::min()), m_callback_request_count(0),
         m_last_known_hash(crypto::null_hash), m_pruning_seed(0), m_anchor(false), m_score(0),
         m_expect_response(0), m_expect_height(0), m_num_requested(0) {}
 
@@ -83,7 +82,7 @@ namespace cryptonote
     std::unordered_set<crypto::hash> m_requested_objects;
     uint64_t m_remote_blockchain_height;
     uint64_t m_last_response_height;
-    boost::posix_time::ptime m_last_request_time;
+    std::chrono::time_point<std::chrono::system_clock> m_last_request_time;
     uint32_t m_callback_request_count; //in debug purpose: problem with double callback rise
     crypto::hash m_last_known_hash;
     uint32_t m_pruning_seed;

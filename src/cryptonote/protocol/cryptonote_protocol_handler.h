@@ -168,8 +168,8 @@ namespace cryptonote
     uint64_t m_sync_download_chain_size, m_sync_download_objects_size;
 
     // Values for sync time estimates
-    boost::posix_time::ptime m_sync_start_time;
-    boost::posix_time::ptime m_period_start_time;
+    std::chrono::time_point<std::chrono::system_clock> m_sync_start_time;
+    std::chrono::time_point<std::chrono::system_clock> m_period_start_time;
     uint64_t m_sync_start_height;
     uint64_t m_period_start_height;
     uint64_t get_estimated_remaining_sync_seconds(uint64_t current_blockchain_height, uint64_t target_blockchain_height);

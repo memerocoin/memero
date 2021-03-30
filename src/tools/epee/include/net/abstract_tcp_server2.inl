@@ -32,14 +32,17 @@
 
 
 
+#include <algorithm>
 #include <chrono>
-#include <thread>
 #include <condition_variable>
+#include <functional>
+#include <iomanip>
+#include <random>
+#include <sstream>
+#include <thread>
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/utility/value_init.hpp>
-#include <boost/asio/deadline_timer.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 #include "tools/epee/include/warnings.h"
 #include "tools/epee/include/string_tools.h"
@@ -47,11 +50,6 @@
 #include "tools/epee/include/net/local_ip.h"
 
 
-#include <sstream>
-#include <iomanip>
-#include <algorithm>
-#include <functional>
-#include <random>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
@@ -196,7 +194,7 @@ namespace net_utils
 
     m_protocol_handler.after_init_connection();
 
-    reset_timer(boost::posix_time::milliseconds(m_local ? NEW_CONNECTION_TIMEOUT_LOCAL : NEW_CONNECTION_TIMEOUT_REMOTE), false);
+    reset_timer(std::chrono::milliseconds(m_local ? NEW_CONNECTION_TIMEOUT_LOCAL : NEW_CONNECTION_TIMEOUT_REMOTE));
 
     // first read on the raw socket to detect SSL for the server
     buffer_ssl_init_fill = 0;
@@ -360,7 +358,7 @@ namespace net_utils
           shutdown();
       }else
       {
-        reset_timer(get_timeout_from_bytes_read(bytes_transferred), false);
+        reset_timer(get_timeout_from_bytes_read(bytes_transferred));
         async_read_some(boost::asio::buffer(buffer_),
                         strand_.wrap(
                                      std::bind(&connection<t_protocol_handler>::handle_read,
@@ -665,7 +663,7 @@ namespace net_utils
         MDEBUG("do_send_chunk() NOW SENSD: packet="<<size_now<<" B");
 
         CHECK_AND_ASSERT_MES( size_now == m_send_que.front().size(), false, "Unexpected queue size");
-        reset_timer(get_default_timeout(), false);
+        reset_timer(get_default_timeout());
         async_write(boost::asio::buffer(m_send_que.front().data(), size_now ) ,
                     strand_.wrap(
                                  std::bind(&connection<t_protocol_handler>::handle_write,
@@ -685,26 +683,29 @@ namespace net_utils
   } // do_send_chunk
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  boost::posix_time::milliseconds connection<t_protocol_handler>::get_default_timeout()
+  std::chrono::milliseconds connection<t_protocol_handler>::get_default_timeout()
   {
     unsigned count;
     try { count = host_count(m_host); } catch (...) { count = 0; }
     const unsigned shift = get_state().sock_count > AGGRESSIVE_TIMEOUT_THRESHOLD ? std::min(std::max(count, 1u) - 1, 8u) : 0;
-    boost::posix_time::milliseconds timeout(0);
+    std::chrono::milliseconds timeout;
     if (m_local)
-      timeout = boost::posix_time::milliseconds(DEFAULT_TIMEOUT_MS_LOCAL >> shift);
+      timeout = std::chrono::milliseconds(DEFAULT_TIMEOUT_MS_LOCAL >> shift);
     else
-      timeout = boost::posix_time::milliseconds(DEFAULT_TIMEOUT_MS_REMOTE >> shift);
+      timeout = std::chrono::milliseconds(DEFAULT_TIMEOUT_MS_REMOTE >> shift);
     return timeout;
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  boost::posix_time::milliseconds connection<t_protocol_handler>::get_timeout_from_bytes_read(size_t bytes)
+  std::chrono::milliseconds connection<t_protocol_handler>::get_timeout_from_bytes_read(size_t bytes)
   {
-    boost::posix_time::milliseconds ms = (boost::posix_time::milliseconds)(unsigned)(bytes * TIMEOUT_EXTRA_MS_PER_BYTE);
-    const auto cur = m_timer.expires_from_now().total_milliseconds();
-    if (cur > 0)
-      ms += (boost::posix_time::milliseconds)cur;
+    std::chrono::milliseconds ms = std::chrono::milliseconds((unsigned)(bytes * TIMEOUT_EXTRA_MS_PER_BYTE));
+    const std::chrono::milliseconds cur = std::chrono::duration_cast<
+      std::chrono::milliseconds>(m_timer.expiry() - std::chrono::steady_clock::now());
+
+    if (cur.count() > 0)
+      ms += cur;
+
     if (ms > get_default_timeout())
       ms = get_default_timeout();
     return ms;
@@ -728,15 +729,15 @@ namespace net_utils
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  void connection<t_protocol_handler>::reset_timer(boost::posix_time::milliseconds ms, bool add)
+  void connection<t_protocol_handler>::reset_timer(std::chrono::milliseconds ms)
   {
-    const auto tms = ms.total_milliseconds();
-    if (tms < 0 || (add && tms == 0))
+    const auto tms = ms.count();
+    if (tms < 0)
     {
-      MWARNING("Ignoring negative timeout " << ms);
+      MWARNING("Ignoring negative timeout " << tms);
       return;
     }
-    MTRACE((add ? "Adding" : "Setting") << " " << ms << " expiry");
+    MTRACE("Setting" << " " << tms << " expiry");
     auto self = safe_shared_from_this();
     if(!self)
     {
@@ -748,13 +749,7 @@ namespace net_utils
       MERROR("Setting timer on a shut down object");
       return;
     }
-    if (add)
-    {
-      const auto cur = m_timer.expires_from_now().total_milliseconds();
-      if (cur > 0)
-        ms += (boost::posix_time::milliseconds)cur;
-    }
-    m_timer.expires_from_now(ms);
+    m_timer.expires_after(ms);
     m_timer.async_wait([=, this](const boost::system::error_code& ec)
     {
       if(ec == boost::asio::error::operation_aborted)
@@ -866,7 +861,7 @@ namespace net_utils
       }else
       {
         //have more data to send
-      reset_timer(get_default_timeout(), false);
+      reset_timer(get_default_timeout());
       auto size_now = m_send_que.front().size();
       MDEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
       CHECK_AND_ASSERT_MES( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
@@ -1644,9 +1639,9 @@ POP_WARNINGS
       }
     }
     
-    std::shared_ptr<boost::asio::deadline_timer> sh_deadline(new boost::asio::deadline_timer(io_service_));
+    std::shared_ptr<boost::asio::steady_timer> sh_deadline(new boost::asio::steady_timer(io_service_));
     //start deadline
-    sh_deadline->expires_from_now(boost::posix_time::milliseconds(conn_timeout));
+    sh_deadline->expires_after(std::chrono::milliseconds(conn_timeout));
     sh_deadline->async_wait([=](const boost::system::error_code& error)
       {
           if(error != boost::asio::error::operation_aborted) 

@@ -32,17 +32,16 @@
 
 /* rfree: implementation for the non-template base, can be used by connection<> template class in abstract_tcp_server2 file  */
 
-#include "tools/epee/include/net/connection_basic.hpp"
-
-#include "tools/epee/include/net/net_utils_base.h" 
-#include "tools/epee/include/misc_log_ex.h" 
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <thread>
-#include "tools/epee/include/misc_language.h"
-
 #include <iomanip>
 
 #include <boost/asio/basic_socket.hpp>
+
+#include "tools/epee/include/net/connection_basic.hpp"
+#include "tools/epee/include/net/net_utils_base.h" 
+#include "tools/epee/include/misc_log_ex.h" 
+#include "tools/epee/include/misc_language.h"
+
 
 // TODO:
 
