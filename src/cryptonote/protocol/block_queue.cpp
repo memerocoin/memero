@@ -32,7 +32,6 @@
 #include <unordered_map>
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 #include "tools/epee/include/string_tools.h"
 #include "cryptonote_protocol_defs.h"
@@ -70,7 +69,7 @@ void block_queue::add_blocks(uint64_t height, std::vector<cryptonote::block_comp
   }
 }
 
-void block_queue::add_blocks(uint64_t height, uint64_t nblocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, boost::posix_time::ptime time)
+void block_queue::add_blocks(uint64_t height, uint64_t nblocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, std::chrono::time_point<std::chrono::system_clock> time)
 {
   CHECK_AND_ASSERT_THROW_MES(nblocks > 0, "Empty span");
   std::unique_lock<std::recursive_mutex> lock(mutex);
@@ -229,7 +228,7 @@ bool block_queue::have(const crypto::hash &hash) const
   return have_blocks.find(hash) != have_blocks.end();
 }
 
-std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_height, uint64_t last_block_height, uint64_t max_blocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, uint32_t local_pruning_seed, uint32_t pruning_seed, uint64_t blockchain_height, const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes, boost::posix_time::ptime time)
+std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_height, uint64_t last_block_height, uint64_t max_blocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, uint32_t local_pruning_seed, uint32_t pruning_seed, uint64_t blockchain_height, const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes, std::chrono::time_point<std::chrono::system_clock> time)
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
 
@@ -294,7 +293,7 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
   return std::make_pair(span_start_height, span_length);
 }
 
-std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled(std::vector<crypto::hash> &hashes, boost::uuids::uuid &connection_id, boost::posix_time::ptime &time) const
+std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled(std::vector<crypto::hash> &hashes, boost::uuids::uuid &connection_id, std::chrono::time_point<std::chrono::system_clock> &time) const
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
   if (blocks.empty())
@@ -310,14 +309,14 @@ std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled(std::vecto
   return std::make_pair(i->start_block_height, i->nblocks);
 }
 
-void block_queue::reset_next_span_time(boost::posix_time::ptime t)
+void block_queue::reset_next_span_time(std::chrono::time_point<std::chrono::system_clock> t)
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
   CHECK_AND_ASSERT_THROW_MES(!blocks.empty(), "No next span to reset time");
   block_map::iterator i = blocks.begin();
   CHECK_AND_ASSERT_THROW_MES(i != blocks.end(), "No next span to reset time");
   CHECK_AND_ASSERT_THROW_MES(i->blocks.empty(), "Next span is not empty");
-  (boost::posix_time::ptime&)i->time = t; // sod off, time doesn't influence sorting
+  (std::chrono::time_point<std::chrono::system_clock>&)i->time = t; // sod off, time doesn't influence sorting
 }
 
 void block_queue::set_span_hashes(uint64_t start_height, const boost::uuids::uuid &connection_id, std::vector<crypto::hash> hashes)
@@ -358,7 +357,7 @@ bool block_queue::get_next_span(uint64_t &height, std::vector<cryptonote::block_
   return false;
 }
 
-bool block_queue::has_next_span(const boost::uuids::uuid &connection_id, bool &filled, boost::posix_time::ptime &time) const
+bool block_queue::has_next_span(const boost::uuids::uuid &connection_id, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time) const
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
   if (blocks.empty())
@@ -373,7 +372,7 @@ bool block_queue::has_next_span(const boost::uuids::uuid &connection_id, bool &f
   return true;
 }
 
-bool block_queue::has_next_span(uint64_t height, bool &filled, boost::posix_time::ptime &time, boost::uuids::uuid &connection_id) const
+bool block_queue::has_next_span(uint64_t height, bool &filled, std::chrono::time_point<std::chrono::system_clock> &time, boost::uuids::uuid &connection_id) const
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
   if (blocks.empty())
