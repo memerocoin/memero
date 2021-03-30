@@ -672,12 +672,11 @@ namespace cryptonote
     /**
      * @brief sets various performance options
      *
-     * @param maxthreads max number of threads when preparing blocks for addition
      * @param sync_on_blocks whether to sync based on blocks or bytes
      * @param sync_threshold number of blocks/bytes to cache before syncing to database
      * @param sync_mode the ::blockchain_db_sync_mode to use
      */
-    void set_user_options(uint64_t maxthreads, bool sync_on_blocks, uint64_t sync_threshold,
+    void set_user_options(bool sync_on_blocks, uint64_t sync_threshold,
         blockchain_db_sync_mode sync_mode);
 
     /**
@@ -934,7 +933,6 @@ namespace cryptonote
     bool m_db_default_sync;
     bool m_db_sync_on_blocks;
     uint64_t m_db_sync_threshold;
-    uint64_t m_max_prepare_blocks_threads;
     uint64_t m_fake_pow_calc_time;
     uint64_t m_fake_scan_time;
     uint64_t m_sync_counter;

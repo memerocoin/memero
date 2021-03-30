@@ -86,7 +86,7 @@ DISABLE_VS_WARNINGS(4267)
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
   m_db(), m_tx_pool(tx_pool), m_timestamps_and_difficulties_height(0), m_reset_timestamps_and_difficulties_height(true),
-  m_max_prepare_blocks_threads(4), m_db_sync_on_blocks(true), m_db_sync_threshold(1), m_db_sync_mode(db_async), m_db_default_sync(false), m_show_time_stats(false), m_sync_counter(0), m_bytes_to_sync(0), m_cancel(false),
+  m_db_sync_on_blocks(true), m_db_sync_threshold(1), m_db_sync_mode(db_async), m_db_default_sync(false), m_show_time_stats(false), m_sync_counter(0), m_bytes_to_sync(0), m_cancel(false),
   m_difficulty_for_next_block_top_hash(crypto::null_hash),
   m_difficulty_for_next_block(1),
   m_btc_valid(false),
@@ -3685,7 +3685,7 @@ bool Blockchain::has_block_weights(uint64_t height, uint64_t nblocks) const
 
 //------------------------------------------------------------------
 // ND: Speedups:
-// 1. Thread long_hash computations if possible (m_max_prepare_blocks_threads = nthreads, default = 4)
+// 1. Thread long_hash computations if possible
 // 2. Group all amounts (from txs) and related absolute offsets and form a table of tx_prefix_hash
 //    vs [k_image, output_keys] (m_scan_table). This is faster because it takes advantage of bulk queries
 //    and is threaded if possible. The table (m_scan_table) will be used later when querying output
@@ -3749,10 +3749,6 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete
 
   if (1)
   {
-    // limit threads, default limit = 4
-    if(threads > m_max_prepare_blocks_threads)
-      threads = m_max_prepare_blocks_threads;
-
     unsigned int batches = blocks_entry.size() / threads;
     unsigned int extra = blocks_entry.size() % threads;
     MDEBUG("block_batches: " << batches);
@@ -4081,7 +4077,7 @@ bool Blockchain::txpool_tx_matches_category(const crypto::hash& tx_hash, relay_c
   return m_db->txpool_tx_matches_category(tx_hash, category);
 }
 
-void Blockchain::set_user_options(uint64_t maxthreads, bool sync_on_blocks, uint64_t sync_threshold, blockchain_db_sync_mode sync_mode)
+void Blockchain::set_user_options(bool sync_on_blocks, uint64_t sync_threshold, blockchain_db_sync_mode sync_mode)
 {
   if (sync_mode == db_defaultsync)
   {
@@ -4091,7 +4087,6 @@ void Blockchain::set_user_options(uint64_t maxthreads, bool sync_on_blocks, uint
   m_db_sync_mode = sync_mode;
   m_db_sync_on_blocks = sync_on_blocks;
   m_db_sync_threshold = sync_threshold;
-  m_max_prepare_blocks_threads = maxthreads;
 }
 
 void Blockchain::add_block_notify(boost::function<void(std::uint64_t, epee::span<const block>)>&& notify)

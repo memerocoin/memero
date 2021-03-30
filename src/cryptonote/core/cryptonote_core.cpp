@@ -118,11 +118,6 @@ namespace cryptonote
   , "Like test-drop-download but discards only after around certain height"
   , 0
   };
-  static const command_line::arg_descriptor<uint64_t> arg_prep_blocks_threads = {
-    "prep-blocks-threads"
-  , "Max number of threads to use when preparing block hashes in groups."
-  , 4
-  };
   static const command_line::arg_descriptor<uint64_t> arg_show_time_stats  = {
     "show-time-stats"
   , "Show time-stats when processing blocks/txs and disk synchronization."
@@ -220,7 +215,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_regtest_on);
     command_line::add_arg(desc, arg_keep_fakechain);
     command_line::add_arg(desc, arg_fixed_difficulty);
-    command_line::add_arg(desc, arg_prep_blocks_threads);
     command_line::add_arg(desc, arg_show_time_stats);
     command_line::add_arg(desc, arg_block_sync_size);
     command_line::add_arg(desc, arg_fluffy_blocks);
@@ -335,7 +329,6 @@ namespace cryptonote
     CHECK_AND_ASSERT_MES(r, false, "Failed to handle command line");
 
     std::string db_sync_mode = command_line::get_arg(vm, cryptonote::arg_db_sync_mode);
-    uint64_t blocks_threads = command_line::get_arg(vm, arg_prep_blocks_threads);
     size_t max_txpool_weight = command_line::get_arg(vm, arg_max_txpool_weight);
     bool keep_alt_blocks = command_line::get_arg(vm, arg_keep_alt_blocks);
     bool keep_fakechain = command_line::get_arg(vm, arg_keep_fakechain);
@@ -474,8 +467,7 @@ namespace cryptonote
       return false;
     }
 
-    m_blockchain_storage.set_user_options(blocks_threads,
-        sync_on_blocks, sync_threshold, sync_mode);
+    m_blockchain_storage.set_user_options(sync_on_blocks, sync_threshold, sync_mode);
 
     try
     {
