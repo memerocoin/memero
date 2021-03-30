@@ -294,35 +294,6 @@ namespace cryptonote
      bool deinit();
 
      /**
-      * @brief sets to drop blocks downloaded (for testing)
-      */
-     void test_drop_download();
-
-     /**
-      * @brief sets to drop blocks downloaded below a certain height
-      *
-      * @param height height below which to drop blocks
-      */
-     void test_drop_download_height(uint64_t height);
-
-     /**
-      * @brief gets whether or not to drop blocks (for testing)
-      *
-      * @return whether or not to drop blocks
-      */
-     bool get_test_drop_download() const;
-
-     /**
-      * @brief gets whether or not to drop blocks
-      *
-      * If the current blockchain height <= our block drop threshold
-      * and test drop blocks is set, return true
-      *
-      * @return see above
-      */
-     bool get_test_drop_download_height() const;
-
-     /**
       * @copydoc Blockchain::get_current_blockchain_height
       *
       * @note see Blockchain::get_current_blockchain_height()
@@ -921,10 +892,6 @@ namespace cryptonote
       * @return true on success, false otherwise
       */
      bool check_block_rate();
-
-     bool m_test_drop_download = true; //!< whether or not to drop incoming blocks (for testing)
-
-     uint64_t m_test_drop_download_height = 0; //!< height under which to drop incoming blocks, if doing so
 
      tx_memory_pool m_mempool; //!< transaction pool instance
      Blockchain m_blockchain_storage; //!< Blockchain instance
