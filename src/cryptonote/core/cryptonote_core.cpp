@@ -125,11 +125,6 @@ namespace cryptonote
   , "Like test-drop-download but discards only after around certain height"
   , 0
   };
-  static const command_line::arg_descriptor<int> arg_test_dbg_lock_sleep = {
-    "test-dbg-lock-sleep"
-  , "Sleep time in ms, defaults to 0 (off), used to debug before/after locking mutex. Values 100 to 1000 are good for tests."
-  , 0
-  };
   static const command_line::arg_descriptor<uint64_t> arg_prep_blocks_threads = {
     "prep-blocks-threads"
   , "Max number of threads to use when preparing block hashes in groups."
@@ -238,7 +233,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_block_sync_size);
     command_line::add_arg(desc, arg_fluffy_blocks);
     command_line::add_arg(desc, arg_no_fluffy_blocks);
-    command_line::add_arg(desc, arg_test_dbg_lock_sleep);
     command_line::add_arg(desc, arg_offline);
     command_line::add_arg(desc, arg_block_download_max_size);
     command_line::add_arg(desc, arg_max_txpool_weight);
@@ -272,8 +266,6 @@ namespace cryptonote
 
     if (command_line::get_arg(vm, arg_test_drop_download) == true)
       test_drop_download();
-
-    epee::debug::g_test_dbg_lock_sleep() = command_line::get_arg(vm, arg_test_dbg_lock_sleep);
 
     return true;
   }
