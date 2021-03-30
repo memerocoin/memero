@@ -29,17 +29,17 @@
 #include "net_peerlist.h"
 
 #include <algorithm>
-#include <functional>
+#include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iterator>
 
 #include <boost/archive/binary_iarchive.hpp>
-#include "tools/boost/archive/portable_binary_oarchive.hpp"
-#include "tools/boost/archive/portable_binary_iarchive.hpp"
-#include <filesystem>
 #include <boost/range/join.hpp>
 #include <boost/serialization/version.hpp>
 
+#include "tools/boost/archive/portable_binary_iarchive.hpp"
+#include "tools/boost/archive/portable_binary_oarchive.hpp"
 #include "net_peerlist_boost_serialization.h"
 
 

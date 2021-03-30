@@ -32,15 +32,15 @@
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/serialization/version.hpp>
-#include "tools/epee/include/serialization/keyvalue_serialization.h"
-#include "tools/epee/include/net/net_utils_base.h"
-#include "network/type/tor_address.h" // needed for serialization
+
 #include "network/type/i2p_address.h" // needed for serialization
+#include "network/type/tor_address.h" // needed for serialization
 #include "tools/epee/include/misc_language.h"
+#include "tools/epee/include/net/net_utils_base.h"
+#include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/time_helper.h"
 #include "tools/serialization/serialization.h"
-#include "config/cryptonote.hpp"
 
 namespace nodetool
 {
@@ -148,7 +148,6 @@ namespace nodetool
     for(const peerlist_entry& pe: pl)
     {
       ss << peerid_to_string(pe.id) << "\t" << pe.adr.str()
-        << " \tpruning seed " << pe.pruning_seed 
         << " \tlast_seen: " << (pe.last_seen == 0 ? std::string("never") : epee::misc_utils::get_time_interval_string(now_time - pe.last_seen))
         << std::endl;
     }

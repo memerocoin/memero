@@ -28,23 +28,23 @@
 
 #pragma once
 
-//#include <atltime.h>
-//#include <sqlext.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/local_time/local_time.hpp>
+#include <chrono>  // chrono::system_clock
+#include <ctime>   // localtime
+#include <sstream> // stringstream
+#include <iomanip> // put_time
+#include <string>  // string
 
 
 namespace epee
 {
 namespace misc_utils
 {
-	inline std::string get_internet_time_str(const time_t& time_)
+  // https://stackoverflow.com/questions/17223096/outputting-date-and-time-in-c-using-stdchrono
+	inline std::string get_internet_time_str(const time_t time_)
 	{
-		char tmpbuf[200] = {0};
-		tm* pt = NULL;
-		pt = gmtime(&time_);
-		strftime( tmpbuf, 199, "%a, %d %b %Y %H:%M:%S GMT", pt );
-		return tmpbuf;
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&time_), "%a, %d %b %Y %H:%M:%S GMT");
+    return ss.str();
 	}
 
 	inline std::string get_time_interval_string(const time_t& time_)
