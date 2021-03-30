@@ -215,15 +215,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_net_stats(const COMMAND_RPC_GET_NET_STATS::request& req, COMMAND_RPC_GET_NET_STATS::response& res, const connection_context *ctx)
-  {
-    RPC_TRACKER(get_net_stats);
-    // No bootstrap daemon check: Only ever get stats about local server
-    res.start_time = (uint64_t)m_core.get_start_time();
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   class pruned_transaction {
     transaction& tx;
   public:

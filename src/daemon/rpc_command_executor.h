@@ -144,8 +144,6 @@ public:
 
   bool pop_blocks(uint64_t num_blocks);
 
-  bool print_net_stats();
-
   bool version();
 
   bool flush_cache(bool bad_txs, bool invalid_blocks);

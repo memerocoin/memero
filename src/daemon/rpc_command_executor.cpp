@@ -635,31 +635,6 @@ bool t_rpc_command_executor::print_connections() {
   return true;
 }
 
-bool t_rpc_command_executor::print_net_stats()
-{
-  cryptonote::COMMAND_RPC_GET_NET_STATS::request net_stats_req;
-  cryptonote::COMMAND_RPC_GET_NET_STATS::response net_stats_res;
-
-  std::string fail_message = "Unsuccessful";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(net_stats_req, net_stats_res, "/get_net_stats", fail_message.c_str()))
-    {
-      return true;
-    }
-  }
-  else
-  {
-    if (!m_rpc_server->on_get_net_stats(net_stats_req, net_stats_res) || net_stats_res.status != CORE_RPC_STATUS_OK)
-    {
-      tools::fail_msg_writer() << make_error(fail_message, net_stats_res.status);
-      return true;
-    }
-  }
-  return true;
-}
-
 bool t_rpc_command_executor::print_blockchain_info(int64_t start_block_index, uint64_t end_block_index) {
   cryptonote::COMMAND_RPC_GET_BLOCK_HEADERS_RANGE::request req;
   cryptonote::COMMAND_RPC_GET_BLOCK_HEADERS_RANGE::response res;
