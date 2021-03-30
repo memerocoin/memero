@@ -114,14 +114,6 @@ public:
 
   bool print_status();
 
-  bool get_limit();
-
-  bool get_limit_up();
-
-  bool get_limit_down();
-
-  bool set_limit(int64_t limit_down, int64_t limit_up);
-
   bool out_peers(bool set, uint32_t limit);
 
   bool in_peers(bool set, uint32_t limit);

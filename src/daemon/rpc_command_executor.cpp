@@ -639,18 +639,12 @@ bool t_rpc_command_executor::print_net_stats()
 {
   cryptonote::COMMAND_RPC_GET_NET_STATS::request net_stats_req;
   cryptonote::COMMAND_RPC_GET_NET_STATS::response net_stats_res;
-  cryptonote::COMMAND_RPC_GET_LIMIT::request limit_req;
-  cryptonote::COMMAND_RPC_GET_LIMIT::response limit_res;
 
   std::string fail_message = "Unsuccessful";
 
   if (m_is_rpc)
   {
     if (!m_rpc_client->rpc_request(net_stats_req, net_stats_res, "/get_net_stats", fail_message.c_str()))
-    {
-      return true;
-    }
-    if (!m_rpc_client->rpc_request(limit_req, limit_res, "/get_limit", fail_message.c_str()))
     {
       return true;
     }
@@ -662,37 +656,26 @@ bool t_rpc_command_executor::print_net_stats()
       tools::fail_msg_writer() << make_error(fail_message, net_stats_res.status);
       return true;
     }
-    if (!m_rpc_server->on_get_limit(limit_req, limit_res) || limit_res.status != CORE_RPC_STATUS_OK)
-    {
-      tools::fail_msg_writer() << make_error(fail_message, limit_res.status);
-      return true;
-    }
   }
 
   uint64_t seconds = (uint64_t)time(NULL) - net_stats_res.start_time;
   uint64_t average = seconds > 0 ? net_stats_res.total_bytes_in / seconds : 0;
-  uint64_t limit = limit_res.limit_down * 1024;   // convert to bytes, as limits are always kB/s
-  double percent = (double)average / (double)limit * 100.0;
-  tools::success_msg_writer() << boost::format("Received %u bytes (%s) in %u packets in %s, average %s/s = %.2f%% of the limit of %s/s")
+  tools::success_msg_writer() << boost::format("Received %u bytes (%s) in %u packets in %s, average %s/s")
     % net_stats_res.total_bytes_in
     % tools::get_human_readable_bytes(net_stats_res.total_bytes_in)
     % net_stats_res.total_packets_in
     % tools::get_human_readable_timespan(seconds)
     % tools::get_human_readable_bytes(average)
-    % percent
-    % tools::get_human_readable_bytes(limit);
+    ;
 
   average = seconds > 0 ? net_stats_res.total_bytes_out / seconds : 0;
-  limit = limit_res.limit_up * 1024;
-  percent = (double)average / (double)limit * 100.0;
-  tools::success_msg_writer() << boost::format("Sent %u bytes (%s) in %u packets in %s, average %s/s = %.2f%% of the limit of %s/s")
+  tools::success_msg_writer() << boost::format("Sent %u bytes (%s) in %u packets in %s, average %s/s")
     % net_stats_res.total_bytes_out
     % tools::get_human_readable_bytes(net_stats_res.total_bytes_out)
     % net_stats_res.total_packets_out
     % tools::get_human_readable_timespan(seconds)
     % tools::get_human_readable_bytes(average)
-    % percent
-    % tools::get_human_readable_bytes(limit);
+    ;
 
   return true;
 }
@@ -1386,119 +1369,6 @@ bool t_rpc_command_executor::print_status()
     tools::fail_msg_writer() << "lolnerod is NOT running";
   }
 
-  return true;
-}
-
-bool t_rpc_command_executor::get_limit()
-{
-  cryptonote::COMMAND_RPC_GET_LIMIT::request req;
-  cryptonote::COMMAND_RPC_GET_LIMIT::response res;
-
-  std::string failure_message = "Couldn't get limit";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(req, res, "/get_limit", failure_message.c_str()))
-    {
-      return true;
-    }
-  }
-  else
-  {
-    if (!m_rpc_server->on_get_limit(req, res) || res.status != CORE_RPC_STATUS_OK)
-    {
-      tools::fail_msg_writer() << make_error(failure_message, res.status);
-      return true;
-    }
-  }
-
-  tools::msg_writer() << "limit-down is " << res.limit_down << " kB/s";
-  tools::msg_writer() << "limit-up is " << res.limit_up << " kB/s";
-  return true;
-}
-
-bool t_rpc_command_executor::set_limit(int64_t limit_down, int64_t limit_up)
-{
-  cryptonote::COMMAND_RPC_SET_LIMIT::request req;
-  cryptonote::COMMAND_RPC_SET_LIMIT::response res;
-
-  req.limit_down = limit_down;
-  req.limit_up = limit_up;
-
-  std::string failure_message = "Couldn't set limit";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(req, res, "/set_limit", failure_message.c_str()))
-    {
-      return true;
-    }
-  }
-  else
-  {
-    if (!m_rpc_server->on_set_limit(req, res) || res.status != CORE_RPC_STATUS_OK)
-    {
-      tools::fail_msg_writer() << make_error(failure_message, res.status);
-      return true;
-    }
-  }
-
-  tools::msg_writer() << "Set limit-down to " << res.limit_down << " kB/s";
-  tools::msg_writer() << "Set limit-up to " << res.limit_up << " kB/s";
-  return true;
-}
-
-bool t_rpc_command_executor::get_limit_up()
-{
-  cryptonote::COMMAND_RPC_GET_LIMIT::request req;
-  cryptonote::COMMAND_RPC_GET_LIMIT::response res;
-
-  std::string failure_message = "Couldn't get limit";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(req, res, "/get_limit", failure_message.c_str()))
-    {
-      return true;
-    }
-  }
-  else
-  {
-    if (!m_rpc_server->on_get_limit(req, res) || res.status != CORE_RPC_STATUS_OK)
-    {
-      tools::fail_msg_writer() << make_error(failure_message, res.status);
-      return true;
-    }
-  }
-
-  tools::msg_writer() << "limit-up is " << res.limit_up << " kB/s";
-  return true;
-}
-
-bool t_rpc_command_executor::get_limit_down()
-{
-  cryptonote::COMMAND_RPC_GET_LIMIT::request req;
-  cryptonote::COMMAND_RPC_GET_LIMIT::response res;
-
-  std::string failure_message = "Couldn't get limit";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(req, res, "/get_limit", failure_message.c_str()))
-    {
-      return true;
-    }
-  }
-  else
-  {
-    if (!m_rpc_server->on_get_limit(req, res) || res.status != CORE_RPC_STATUS_OK)
-    {
-      tools::fail_msg_writer() << make_error(failure_message, res.status);
-      return true;
-    }
-  }
-
-  tools::msg_writer() << "limit-down is " << res.limit_down << " kB/s";
   return true;
 }
 

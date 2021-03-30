@@ -184,48 +184,6 @@ connection_basic::~connection_basic() noexcept(false) {
 	_note("Destructing connection #"<<mI->m_peer_number << " to " << remote_addr_str);
 }
 
-void connection_basic::set_rate_up_limit(uint64_t limit) {
-	{
-		LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_out );
-		network_throttle_manager::get_global_throttle_out().set_target_speed(limit);
-	}
-	save_limit_to_file(limit);
-}
-
-void connection_basic::set_rate_down_limit(uint64_t limit) {
-	{
-	  LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_in );
-		network_throttle_manager::get_global_throttle_in().set_target_speed(limit);
-	}
-
-	{
-	  LOCK_MUTEX(	network_throttle_manager::m_lock_get_global_throttle_inreq );
-		network_throttle_manager::get_global_throttle_inreq().set_target_speed(limit);
-	}
-  save_limit_to_file(limit);
-}
-
-uint64_t connection_basic::get_rate_up_limit() {
-  uint64_t limit;
-  {
-    LOCK_MUTEX( network_throttle_manager::m_lock_get_global_throttle_out );
-    limit = network_throttle_manager::get_global_throttle_out().get_target_speed();
-  }
-  return limit;
-}
-
-uint64_t connection_basic::get_rate_down_limit() {
-  uint64_t limit;
-  {
-    LOCK_MUTEX( network_throttle_manager::m_lock_get_global_throttle_in );
-    limit = network_throttle_manager::get_global_throttle_in().get_target_speed();
-	}
-  return limit;
-}
-
-void connection_basic::save_limit_to_file(int limit) {
-}
-
 void connection_basic::set_tos_flag(int tos) {
 	connection_basic_pimpl::m_default_tos = tos;
 }

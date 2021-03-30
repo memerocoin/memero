@@ -189,24 +189,6 @@ t_command_server::t_command_server(
     , std::bind(&t_command_parser_executor::print_status, &m_parser, p::_1)
     , "Print the current daemon status."
     );
-  m_command_lookup.set_handler(
-      "limit"
-    , std::bind(&t_command_parser_executor::set_limit, &m_parser, p::_1)
-    , "limit [<kB/s>]"
-    , "Get or set the download and upload limit."
-    );
-  m_command_lookup.set_handler(
-      "limit_up"
-    , std::bind(&t_command_parser_executor::set_limit_up, &m_parser, p::_1)
-    , "limit_up [<kB/s>]"
-    , "Get or set the upload limit."
-    );
-  m_command_lookup.set_handler(
-      "limit_down"
-    , std::bind(&t_command_parser_executor::set_limit_down, &m_parser, p::_1)
-    , "limit_down [<kB/s>]"
-    , "Get or set the download limit."
-    );
     m_command_lookup.set_handler(
       "out_peers"
     , std::bind(&t_command_parser_executor::out_peers, &m_parser, p::_1)

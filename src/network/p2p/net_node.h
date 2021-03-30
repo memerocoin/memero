@@ -297,9 +297,6 @@ namespace nodetool
     { 
     };
 
-    bool islimitup=false;
-    bool islimitdown=false;
-
     CHAIN_LEVIN_INVOKE_MAP2(p2p_connection_context); //move levin_commands_handler interface invoke(...) callbacks into invoke map
     CHAIN_LEVIN_NOTIFY_MAP2(p2p_connection_context); //move levin_commands_handler interface notify(...) callbacks into nothing
 
@@ -387,10 +384,6 @@ namespace nodetool
     bool set_max_out_peers(network_zone& zone, int64_t max);
     bool set_max_in_peers(network_zone& zone, int64_t max);
     bool set_tos_flag(const boost::program_options::variables_map& vm, int limit);
-
-    bool set_rate_up_limit(const boost::program_options::variables_map& vm, int64_t limit);
-    bool set_rate_down_limit(const boost::program_options::variables_map& vm, int64_t limit);
-    bool set_rate_limit(const boost::program_options::variables_map& vm, int64_t limit);
 
     bool has_too_many_connections(const epee::net_utils::network_address &address);
     size_t get_incoming_connections_count();
@@ -502,10 +495,6 @@ namespace nodetool
     extern const command_line::arg_descriptor<int64_t>     arg_out_peers;
     extern const command_line::arg_descriptor<int64_t>     arg_in_peers;
     extern const command_line::arg_descriptor<int> arg_tos_flag;
-
-    extern const command_line::arg_descriptor<int64_t> arg_limit_rate_up;
-    extern const command_line::arg_descriptor<int64_t> arg_limit_rate_down;
-    extern const command_line::arg_descriptor<int64_t> arg_limit_rate;
 }
 
 POP_WARNINGS
