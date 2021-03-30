@@ -114,16 +114,10 @@ const command_line::arg_descriptor<std::string> arg_db_sync_mode = {
 , "Specify sync option, using format [safe|fast|fastest]:[sync|async]:[<nblocks_per_sync>[blocks]|<nbytes_per_sync>[bytes]]."
 , "fast:async:250000000bytes"
 };
-const command_line::arg_descriptor<bool> arg_db_salvage  = {
-  "db-salvage"
-, "Try to salvage a blockchain database if it seems corrupted"
-, false
-};
 
 void BlockchainDB::init_options(boost::program_options::options_description& desc)
 {
   command_line::add_arg(desc, arg_db_sync_mode);
-  command_line::add_arg(desc, arg_db_salvage);
 }
 
 void BlockchainDB::pop_block()

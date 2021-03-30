@@ -104,7 +104,6 @@ namespace cryptonote
 typedef std::pair<crypto::hash, uint64_t> tx_out_index;
 
 extern const command_line::arg_descriptor<std::string> arg_db_sync_mode;
-extern const command_line::arg_descriptor<bool, false> arg_db_salvage;
 
 enum class relay_category : uint8_t
 {

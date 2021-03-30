@@ -335,7 +335,6 @@ namespace cryptonote
     CHECK_AND_ASSERT_MES(r, false, "Failed to handle command line");
 
     std::string db_sync_mode = command_line::get_arg(vm, cryptonote::arg_db_sync_mode);
-    bool db_salvage = command_line::get_arg(vm, cryptonote::arg_db_salvage) != 0;
     uint64_t blocks_threads = command_line::get_arg(vm, arg_prep_blocks_threads);
     size_t max_txpool_weight = command_line::get_arg(vm, arg_max_txpool_weight);
     bool keep_alt_blocks = command_line::get_arg(vm, arg_keep_alt_blocks);
@@ -464,9 +463,6 @@ namespace cryptonote
           return false;
         }
       }
-
-      if (db_salvage)
-        db_flags |= DBF_SALVAGE;
 
       db->open(filename, db_flags);
       if(!db->m_open)
