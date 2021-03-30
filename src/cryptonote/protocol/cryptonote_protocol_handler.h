@@ -45,13 +45,15 @@
 #include "block_queue.h"
 #include "tools/common_basic/perf_timer.h"
 #include "cryptonote/basic/connection_context.h"
+#include "config/lol.hpp"
 
 PUSH_WARNINGS
 DISABLE_VS_WARNINGS(4355)
 
 #define LOCALHOST_INT 2130706433
 #define CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT 100
-static_assert(CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT >= BLOCKS_SYNCHRONIZING_DEFAULT_COUNT_PRE_V4, "Invalid CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT");
+  static_assert(CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT >= config::lol::BLOCKS_SYNCHRONIZING_SIZE,
+                "Invalid CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT");
 
 namespace cryptonote
 {

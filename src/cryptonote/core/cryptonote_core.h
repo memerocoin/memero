@@ -658,13 +658,6 @@ namespace cryptonote
      bool are_key_images_spent_in_pool(const std::vector<crypto::key_image>& key_im, std::vector<bool> &spent) const;
 
      /**
-      * @brief get the number of blocks to sync in one go
-      *
-      * @return the number of blocks to sync in one go
-      */
-     size_t get_block_sync_size(uint64_t height) const;
-
-     /**
       * @brief get the sum of coinbase tx amounts between blocks
       *
       * @return the number of blocks to sync in one go
@@ -918,8 +911,6 @@ namespace cryptonote
      uint64_t m_target_blockchain_height; //!< blockchain height target
 
      network_type m_nettype; //!< which network are we on?
-
-     size_t block_sync_size;
 
      time_t start_time;
 

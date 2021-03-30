@@ -114,11 +114,6 @@ namespace cryptonote
   , "Show time-stats when processing blocks/txs and disk synchronization."
   , 0
   };
-  static const command_line::arg_descriptor<size_t> arg_block_sync_size  = {
-    "block-sync-size"
-  , "How many blocks to sync at once during chain synchronization (0 = adaptive)."
-  , 0
-  };
   static const command_line::arg_descriptor<bool> arg_fluffy_blocks  = {
     "fluffy-blocks"
   , "Relay blocks as fluffy blocks (obsolete, now default)"
@@ -204,7 +199,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_keep_fakechain);
     command_line::add_arg(desc, arg_fixed_difficulty);
     command_line::add_arg(desc, arg_show_time_stats);
-    command_line::add_arg(desc, arg_block_sync_size);
     command_line::add_arg(desc, arg_fluffy_blocks);
     command_line::add_arg(desc, arg_no_fluffy_blocks);
     command_line::add_arg(desc, arg_offline);
@@ -442,10 +436,6 @@ namespace cryptonote
     bool show_time_stats = command_line::get_arg(vm, arg_show_time_stats) != 0;
     m_blockchain_storage.set_show_time_stats(show_time_stats);
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize blockchain storage");
-
-    block_sync_size = command_line::get_arg(vm, arg_block_sync_size);
-    if (block_sync_size > BLOCKS_SYNCHRONIZING_MAX_COUNT)
-      MERROR("Error --block-sync-size cannot be greater than " << BLOCKS_SYNCHRONIZING_MAX_COUNT);
 
     r = m_miner.init(vm, m_nettype);
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize miner instance");
@@ -846,47 +836,6 @@ namespace cryptonote
       spent.push_back(m_blockchain_storage.have_tx_keyimg_as_spent(ki));
     }
     return true;
-  }
-  //-----------------------------------------------------------------------------------------------
-  size_t core::get_block_sync_size(uint64_t height) const
-  {
-    static const uint64_t quick_height = m_nettype == TESTNET ? 801219 : m_nettype == MAINNET ? 53666 : 0;
-    size_t res = 0;
-    if (block_sync_size > 0)
-      res = block_sync_size;
-    else if (height >= quick_height)
-      res = BLOCKS_SYNCHRONIZING_DEFAULT_COUNT;
-    else
-      res = BLOCKS_SYNCHRONIZING_DEFAULT_COUNT_PRE_V4;
-
-    static size_t max_block_size = 0;
-    if (max_block_size == 0)
-    {
-      const char *env = getenv("SEEDHASH_EPOCH_BLOCKS");
-      if (env)
-      {
-        int n = atoi(env);
-        if (n <= 0)
-          n = BLOCKS_SYNCHRONIZING_MAX_COUNT;
-        size_t p = 1;
-        while (p < (size_t)n)
-          p <<= 1;
-        max_block_size = p;
-      }
-      else
-        max_block_size = BLOCKS_SYNCHRONIZING_MAX_COUNT;
-    }
-    if (res > max_block_size)
-    {
-      static bool warned = false;
-      if (!warned)
-      {
-        MWARNING("Clamping block sync size to " << max_block_size);
-        warned = true;
-      }
-      res = max_block_size;
-    }
-    return res;
   }
   //-----------------------------------------------------------------------------------------------
   bool core::are_key_images_spent_in_pool(const std::vector<crypto::key_image>& key_im, std::vector<bool> &spent) const

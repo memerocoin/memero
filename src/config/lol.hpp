@@ -21,5 +21,6 @@ namespace config
     const std::string ASCII_OUTPUT_MAGIC = "LolneroAsciiDataV1";
     const size_t genesis_tx_version = 1;
     const size_t tx_version = 2;
+    const size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
   }
 }
