@@ -95,7 +95,12 @@ namespace wallet_args
       , wallet_args::tr("Specify log file")
       , mlog_get_default_log_path(default_log_name)
     };
-    const command_line::arg_descriptor<std::string> arg_config_file = {"config-file", wallet_args::tr("Config file"), "", true};
+    const command_line::arg_descriptor<std::string> arg_config_file = {
+      "config-file"
+      , "Config file"
+      , ""
+      , true
+    };
 
 
     tools::on_startup();
