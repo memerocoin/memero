@@ -30,6 +30,8 @@
 
 // IP blocking adapted from Boolberry
 
+#pragma once
+
 #include <algorithm>
 #include <filesystem>
 #include <optional>
