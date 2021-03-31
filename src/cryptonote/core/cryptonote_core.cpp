@@ -28,29 +28,30 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include <csignal>
+#include <unordered_set>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/uuid/nil_generator.hpp>
 
-#include "tools/epee/include/string_tools.h"
-using namespace epee;
-
-#include <unordered_set>
-#include "cryptonote_core.h"
-#include "tools/common/util.h"
-#include "tools/common/threadpool.h"
-#include "tools/common/command_line.h"
-#include "cryptonote/basic/events.h"
-#include "tools/epee/include/warnings.h"
-#include "math/crypto/crypto.hpp"
 #include "config/cryptonote.hpp"
-#include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/file_io_utils.h"
-#include <csignal>
-#include "math/ringct/rctTypes.hpp"
+#include "cryptonote/basic/events.h"
+#include "cryptonote_core.h"
 #include "database/interface/blockchain.hpp"
+#include "math/crypto/crypto.hpp"
 #include "math/ringct/rctSigs.hpp"
+#include "math/ringct/rctTypes.hpp"
+#include "tools/common/command_line.h"
 #include "tools/common/notify.h"
+#include "tools/common/threadpool.h"
+#include "tools/common/util.h"
+#include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/misc_language.h"
+#include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/warnings.h"
+
 #include "version.h"
+
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -103,11 +104,6 @@ namespace cryptonote
   const command_line::arg_descriptor<bool> arg_offline = {
     "offline"
   , "Do not listen for peers, nor connect to any"
-  };
-  static const command_line::arg_descriptor<size_t> arg_max_txpool_weight  = {
-    "max-txpool-weight"
-  , "Set maximum txpool weight in bytes."
-  , DEFAULT_TXPOOL_MAX_WEIGHT
   };
   static const command_line::arg_descriptor<std::string> arg_block_notify = {
     "block-notify"
@@ -182,7 +178,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_keep_fakechain);
     command_line::add_arg(desc, arg_fixed_difficulty);
     command_line::add_arg(desc, arg_offline);
-    command_line::add_arg(desc, arg_max_txpool_weight);
     command_line::add_arg(desc, arg_block_notify);
     command_line::add_arg(desc, arg_reorg_notify);
     command_line::add_arg(desc, arg_block_rate_notify);
@@ -282,7 +277,6 @@ namespace cryptonote
     bool r = handle_command_line(vm);
     CHECK_AND_ASSERT_MES(r, false, "Failed to handle command line");
 
-    size_t max_txpool_weight = command_line::get_arg(vm, arg_max_txpool_weight);
     bool keep_alt_blocks = command_line::get_arg(vm, arg_keep_alt_blocks);
     bool keep_fakechain = command_line::get_arg(vm, arg_keep_fakechain);
 
@@ -402,7 +396,7 @@ namespace cryptonote
     r = m_blockchain_storage.init(db.release(), m_nettype, m_offline, test_options, fixed_difficulty);
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize blockchain storage");
 
-    r = m_mempool.init(max_txpool_weight);
+    r = m_mempool.init();
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize memory pool");
 
     // now that we have a valid m_blockchain_storage, we can clean out any
