@@ -109,11 +109,6 @@ namespace cryptonote
   , "Show time-stats when processing blocks/txs and disk synchronization."
   , 0
   };
-  static const command_line::arg_descriptor<bool> arg_no_fluffy_blocks  = {
-    "no-fluffy-blocks"
-  , "Relay blocks as normal blocks"
-  , false
-  };
   static const command_line::arg_descriptor<size_t> arg_max_txpool_weight  = {
     "max-txpool-weight"
   , "Set maximum txpool weight in bytes."
@@ -157,6 +152,7 @@ namespace cryptonote
               }),
               m_starter_message_showed(false),
               m_target_blockchain_height(0),
+              m_fluffy_blocks_enabled(true),
               m_nettype(UNDEFINED)
   {
     set_cryptonote_protocol(pprotocol);
@@ -191,7 +187,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_keep_fakechain);
     command_line::add_arg(desc, arg_fixed_difficulty);
     command_line::add_arg(desc, arg_show_time_stats);
-    command_line::add_arg(desc, arg_no_fluffy_blocks);
     command_line::add_arg(desc, arg_offline);
     command_line::add_arg(desc, arg_max_txpool_weight);
     command_line::add_arg(desc, arg_block_notify);
@@ -215,7 +210,6 @@ namespace cryptonote
 
     auto data_dir = std::filesystem::path(m_config_folder);
 
-    m_fluffy_blocks_enabled = !get_arg(vm, arg_no_fluffy_blocks);
     m_offline = get_arg(vm, arg_offline);
 
     return true;
