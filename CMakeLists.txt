@@ -64,8 +64,6 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# set(OPT_FLAGS_RELEASE "-O2")
-
 
 
 
@@ -81,7 +79,7 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 
 ## boost
 find_package(Boost 1.70 REQUIRED COMPONENTS system serialization program_options)
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
 
 ## readline
 option(USE_READLINE "Build with GNU readline support." ON)
@@ -167,7 +165,6 @@ add_subdirectory(src/cryptonote/core)
 add_subdirectory(src/cryptonote/protocol)
 
 ## tools
-# add_subdirectory(src/tools/daemonizer)
 add_subdirectory(src/tools/serialization)
 
 ## database
