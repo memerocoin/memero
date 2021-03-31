@@ -75,11 +75,6 @@ namespace cryptonote
   , "Run on testnet. The wallet must be launched with --testnet flag."
   , false
   };
-  const command_line::arg_descriptor<bool> arg_regtest_on  = {
-    "regtest"
-  , "Run in a regression testing mode."
-  , false
-  };
   const command_line::arg_descriptor<difficulty_type> arg_fixed_difficulty  = {
     "fixed-difficulty"
   , "Fixed difficulty used for testing."
@@ -163,7 +158,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_data_dir);
 
     command_line::add_arg(desc, arg_testnet_on);
-    command_line::add_arg(desc, arg_regtest_on);
     command_line::add_arg(desc, arg_fixed_difficulty);
     command_line::add_arg(desc, arg_offline);
     command_line::add_arg(desc, arg_block_notify);
@@ -256,7 +250,7 @@ namespace cryptonote
   {
     start_time = std::time(nullptr);
 
-    const bool regtest = command_line::get_arg(vm, arg_regtest_on);
+    const bool regtest = false;
     if (test_options != NULL || regtest)
     {
       m_nettype = FAKECHAIN;

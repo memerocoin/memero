@@ -147,12 +147,6 @@ int main(int argc, char const * argv[])
     }
 
     const bool testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
-    const bool regtest = command_line::get_arg(vm, cryptonote::arg_regtest_on);
-    if (testnet + regtest > 1)
-    {
-      std::cerr << "Can't specify more than one of --tesnet and --regtest" << ENDL;
-      return 1;
-    }
 
     // data_dir
     //   default: e.g. ~/.bitmonero/ or ~/.bitmonero/testnet
