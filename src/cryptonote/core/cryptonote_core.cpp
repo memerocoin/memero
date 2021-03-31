@@ -126,23 +126,25 @@ namespace cryptonote
   };
   static const command_line::arg_descriptor<std::string> arg_block_notify = {
     "block-notify"
-  , "Run a program for each new block, '%s' will be replaced by the block hash"
+  , "Run a program for each new block. "
+    "%s = block hash."
   , ""
   };
   static const command_line::arg_descriptor<std::string> arg_reorg_notify = {
     "reorg-notify"
-  , "Run a program for each reorg, '%s' will be replaced by the split height, "
-    "'%h' will be replaced by the new blockchain height, '%n' will be "
-    "replaced by the number of new blocks in the new chain, and '%d' will be "
-    "replaced by the number of blocks discarded from the old chain"
+  , "Run a program for each new reorg. "
+    "%s = split height, "
+    "%h = blockchain height, "
+    "%n = new blocks, "
+    "%d = blocks discarded."
   , ""
   };
   static const command_line::arg_descriptor<std::string> arg_block_rate_notify = {
     "block-rate-notify"
   , "Run a program when the block rate undergoes large fluctuations. "
-    "With %t number of minutes for the observation window, "
-    "%b blocks observed within that window, "
-    "and %e blocks that was expected in that window. "
+    "%t = minutes for the observation window, "
+    "%b = blocks observed, "
+    "%e = blocks expected."
   , ""
   };
   static const command_line::arg_descriptor<bool> arg_keep_alt_blocks  = {
