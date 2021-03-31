@@ -104,11 +104,6 @@ namespace cryptonote
     "offline"
   , "Do not listen for peers, nor connect to any"
   };
-  static const command_line::arg_descriptor<uint64_t> arg_show_time_stats  = {
-    "show-time-stats"
-  , "Show time-stats when processing blocks/txs and disk synchronization."
-  , 0
-  };
   static const command_line::arg_descriptor<size_t> arg_max_txpool_weight  = {
     "max-txpool-weight"
   , "Set maximum txpool weight in bytes."
@@ -186,7 +181,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_regtest_on);
     command_line::add_arg(desc, arg_keep_fakechain);
     command_line::add_arg(desc, arg_fixed_difficulty);
-    command_line::add_arg(desc, arg_show_time_stats);
     command_line::add_arg(desc, arg_offline);
     command_line::add_arg(desc, arg_max_txpool_weight);
     command_line::add_arg(desc, arg_block_notify);
@@ -415,7 +409,7 @@ namespace cryptonote
     // transactions in the pool that do not conform to the current fork
     m_mempool.validate();
 
-    bool show_time_stats = command_line::get_arg(vm, arg_show_time_stats) != 0;
+    bool show_time_stats = false;
     m_blockchain_storage.set_show_time_stats(show_time_stats);
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize blockchain storage");
 
