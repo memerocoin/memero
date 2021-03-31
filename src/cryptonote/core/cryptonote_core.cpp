@@ -123,12 +123,6 @@ namespace cryptonote
     "%e = blocks expected."
   , ""
   };
-  static const command_line::arg_descriptor<bool> arg_keep_alt_blocks  = {
-    "keep-alt-blocks"
-  , "Keep alternative blocks on restart"
-  , false
-  };
-
   //-----------------------------------------------------------------------------------------------
   core::core(i_cryptonote_protocol* pprotocol):
               m_mempool(m_blockchain_storage),
@@ -175,7 +169,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_block_notify);
     command_line::add_arg(desc, arg_reorg_notify);
     command_line::add_arg(desc, arg_block_rate_notify);
-    command_line::add_arg(desc, arg_keep_alt_blocks);
 
     miner::init_options(desc);
     BlockchainDB::init_options(desc);
@@ -271,7 +264,7 @@ namespace cryptonote
     bool r = handle_command_line(vm);
     CHECK_AND_ASSERT_MES(r, false, "Failed to handle command line");
 
-    bool keep_alt_blocks = command_line::get_arg(vm, arg_keep_alt_blocks);
+    bool keep_alt_blocks = false;
 
     std::filesystem::path folder(m_config_folder);
     if (m_nettype == FAKECHAIN)
