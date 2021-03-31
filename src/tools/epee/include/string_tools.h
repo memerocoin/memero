@@ -74,7 +74,6 @@ namespace string_tools
     return from_hex::to_string(res, s);
   }
   //----------------------------------------------------------------------------
-PUSH_WARNINGS
   template<class XType>
   inline bool get_xtype_from_string(OUT XType& val, const std::string& str_id)
   {
@@ -104,7 +103,6 @@ PUSH_WARNINGS
 
     return true;
   }
-POP_WARNINGS
 	//----------------------------------------------------------------------------
 	template<class XType>
 	inline bool xtype_to_string(const  XType& val, std::string& str)

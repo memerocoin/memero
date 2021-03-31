@@ -45,8 +45,6 @@ using namespace std;
 using namespace crypto;
 typedef crypto::hash chash;
 
-PUSH_WARNINGS
-DISABLE_VS_WARNINGS(4297)
 extern "C" {
   static void hash_tree(const void *data, size_t length, char *hash) {
     if ((length & 31) != 0) {
@@ -55,7 +53,6 @@ extern "C" {
     tree_hash((const char (*)[HASH_SIZE]) data, length >> 5, hash);
   }
 }
-POP_WARNINGS
 
 // TODO add more test data
 extern "C" typedef void hash_f(const void *, size_t, char *);

@@ -41,12 +41,6 @@
 #include "tools/common/varint.h"
 #include "tools/epee/include/warnings.h"
 
-/* I have no clue what these lines means */
-PUSH_WARNINGS
-DISABLE_VS_WARNINGS(4244)
-
-//TODO: fix size_t warning in x32 platform
-
 /*! \struct binary_archive_base
  *
  * \brief base for the binary archive type
@@ -228,5 +222,3 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
     serialize_int(t);
   }
 };
-
-POP_WARNINGS

@@ -60,9 +60,6 @@
 #include "network/type/fwd.h"
 #include "tools/common/command_line.h"
 
-PUSH_WARNINGS
-DISABLE_VS_WARNINGS(4355)
-
 namespace nodetool
 {
   struct proxy
@@ -496,6 +493,3 @@ namespace nodetool
     extern const command_line::arg_descriptor<int64_t>     arg_in_peers;
     extern const command_line::arg_descriptor<int> arg_tos_flag;
 }
-
-POP_WARNINGS
-

@@ -47,9 +47,6 @@
 #include "cryptonote/basic/connection_context.h"
 #include "config/lol.hpp"
 
-PUSH_WARNINGS
-DISABLE_VS_WARNINGS(4355)
-
 #define LOCALHOST_INT 2130706433
 #define CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT 100
   static_assert(CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT >= config::lol::BLOCKS_SYNCHRONIZING_SIZE,
@@ -191,5 +188,3 @@ namespace cryptonote
   };
 
 } // namespace
-
-POP_WARNINGS

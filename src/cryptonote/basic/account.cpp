@@ -45,9 +45,7 @@
 
 using namespace std;
 
-DISABLE_VS_WARNINGS(4244 4345)
-
-  namespace cryptonote
+namespace cryptonote
 {
 
   //-----------------------------------------------------------------

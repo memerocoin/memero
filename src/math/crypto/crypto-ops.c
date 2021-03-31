@@ -34,8 +34,6 @@
 #include "tools/epee/include/warnings.h"
 #include "crypto-ops.h"
 
-DISABLE_VS_WARNINGS(4146 4244)
-
 /* Predeclarations */
 
 static void fe_mul(fe, const fe, const fe);

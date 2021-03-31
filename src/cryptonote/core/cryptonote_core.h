@@ -51,9 +51,6 @@
 #include "tools/epee/include/span.h"
 #include "network/rpc/fwd.h"
 
-PUSH_WARNINGS
-DISABLE_VS_WARNINGS(4355)
-
 enum { HAVE_BLOCK_MAIN_CHAIN, HAVE_BLOCK_ALT_CHAIN, HAVE_BLOCK_INVALID };
 
 namespace cryptonote
@@ -928,5 +925,3 @@ namespace cryptonote
      boost::function<void(std::vector<txpool_event>)> m_zmq_pub;
    };
 }
-
-POP_WARNINGS

@@ -1054,7 +1054,6 @@ namespace net_utils
     }
   }
   //-----------------------------------------------------------------------------
-PUSH_WARNINGS
   template<class t_protocol_handler>
   bool boosted_tcp_server<t_protocol_handler>::init_server(const std::string port,  const std::string& address,
       const std::string port_ipv6, const std::string address_ipv6, bool use_ipv6, bool require_ipv4,
@@ -1074,7 +1073,6 @@ PUSH_WARNINGS
     }
     return this->init_server(p, address, p_ipv6, address_ipv6, use_ipv6, require_ipv4, std::move(ssl_options));
   }
-POP_WARNINGS
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
   bool boosted_tcp_server<t_protocol_handler>::worker_thread()

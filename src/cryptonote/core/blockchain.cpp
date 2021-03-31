@@ -76,8 +76,6 @@ using epee::string_tools::pod_to_hex;
 extern "C" void slow_hash_allocate_state();
 extern "C" void slow_hash_free_state();
 
-DISABLE_VS_WARNINGS(4267)
-
 #define MERROR_VER(x) MCERROR("verify", x)
 
 // used to overestimate the block reward when estimating a per kB to use
