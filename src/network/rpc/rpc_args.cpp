@@ -89,7 +89,6 @@ namespace cryptonote
      , rpc_bind_ipv6_address({"rpc-bind-ipv6-address", rpc_args::tr("Specify IPv6 address to bind RPC server"), "::1"})
      , rpc_use_ipv6({"rpc-use-ipv6", rpc_args::tr("Allow IPv6 for RPC"), false})
      , rpc_ignore_ipv4({"rpc-ignore-ipv4", rpc_args::tr("Ignore unsuccessful IPv4 bind for RPC"), false})
-     , confirm_external_bind({"confirm-external-bind", rpc_args::tr("Confirm rpc-bind-ip value is NOT a loopback (local) IP")})
      , rpc_access_control_origins({"rpc-access-control-origins", rpc_args::tr("Specify a comma separated list of origins to allow cross origin resource sharing"), ""})
      , rpc_ssl({"rpc-ssl", rpc_args::tr("Enable SSL on RPC connections: enabled|disabled|autodetect"), "autodetect"})
      , rpc_ssl_private_key({"rpc-ssl-private-key", rpc_args::tr("Path to a PEM format private key"), ""})
@@ -106,7 +105,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg.rpc_bind_ipv6_address);
     command_line::add_arg(desc, arg.rpc_use_ipv6);
     command_line::add_arg(desc, arg.rpc_ignore_ipv4);
-    command_line::add_arg(desc, arg.confirm_external_bind);
     command_line::add_arg(desc, arg.rpc_access_control_origins);
 
     if (!any_cert_option) {
@@ -136,16 +134,6 @@ namespace cryptonote
         LOG_ERROR(tr("Invalid IP address given for --") << arg.rpc_bind_ip.name);
         return std::nullopt;
       }
-
-      if (!parsed_ip.is_loopback() && !command_line::get_arg(vm, arg.confirm_external_bind))
-      {
-        LOG_ERROR(
-          "--" << arg.rpc_bind_ip.name <<
-          tr(" permits inbound unencrypted external connections. Consider SSH tunnel or SSL proxy instead. Override with --") <<
-          arg.confirm_external_bind.name
-        );
-        return std::nullopt;
-      }
     }
     if (!config.bind_ipv6_address.empty())
     {
@@ -162,16 +150,6 @@ namespace cryptonote
       if (ec)
       {
         LOG_ERROR(tr("Invalid IP address given for --") << arg.rpc_bind_ipv6_address.name);
-        return std::nullopt;
-      }
-
-      if (!parsed_ip.is_loopback() && !command_line::get_arg(vm, arg.confirm_external_bind))
-      {
-        LOG_ERROR(
-          "--" << arg.rpc_bind_ipv6_address.name <<
-          tr(" permits inbound unencrypted external connections. Consider SSH tunnel or SSL proxy instead. Override with --") <<
-          arg.confirm_external_bind.name
-        );
         return std::nullopt;
       }
     }
