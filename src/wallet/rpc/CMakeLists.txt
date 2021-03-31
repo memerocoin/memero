@@ -35,7 +35,7 @@ add_executable(lolnero-rpc
 target_link_libraries(lolnero-rpc
     wallet_api
     wallet_common
-    daemonizer
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
     )
 
 set_property(TARGET lolnero-rpc

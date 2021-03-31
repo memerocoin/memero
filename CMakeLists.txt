@@ -167,7 +167,7 @@ add_subdirectory(src/cryptonote/core)
 add_subdirectory(src/cryptonote/protocol)
 
 ## tools
-add_subdirectory(src/tools/daemonizer)
+# add_subdirectory(src/tools/daemonizer)
 add_subdirectory(src/tools/serialization)
 
 ## database

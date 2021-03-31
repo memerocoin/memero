@@ -37,7 +37,6 @@
 #include "daemon/command_server.h"
 #include "daemon/daemon.h"
 #include "daemon/executor.h"
-#include "tools/daemonizer/daemonizer.h"
 #include "tools/epee/include/misc_log_ex.h"
 #include "network/type/parse.h"
 #include "network/p2p/net_node.h"
@@ -81,8 +80,8 @@ int main(int argc, char const * argv[])
       command_line::add_arg(core_settings, daemon_args::arg_log_file);
       command_line::add_arg(core_settings, daemon_args::arg_log_level);
       command_line::add_arg(core_settings, daemon_args::arg_max_concurrency);
+      command_line::add_arg(core_settings, daemon_args::arg_non_interactive);
 
-      daemonizer::init_options(hidden_options, visible_options);
       daemonize::t_executor::init_options(core_settings);
 
       // Hidden options
@@ -238,7 +237,15 @@ int main(int argc, char const * argv[])
 
     MINFO("Moving from main() into the daemonize now.");
 
-    return daemonizer::daemonize(argc, argv, daemonize::t_executor{}, vm) ? 0 : 1;
+    if (command_line::has_arg(vm, daemon_args::arg_non_interactive))
+      {
+        return daemonize::t_executor{}.run_non_interactive(vm);
+      }
+    else
+      {
+        return daemonize::t_executor{}.run_interactive(vm);
+      }
+
   }
   catch (std::exception const & ex)
   {

@@ -30,25 +30,24 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "wallet_rpc_server.h"
-#include "version.h"
 
 #include <boost/format.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "config/cryptonote.hpp"
 #include "network/rpc/core_rpc_server_commands_defs.h"
 #include "network/rpc/rpc_args.h"
 #include "tools/common/command_line.h"
-#include "tools/daemonizer/daemonizer.h"
 #include "wallet/common/wallet_args.h"
-#include "wallet/mnemonics/electrum-words.h"
-
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
-
+#include "wallet/mnemonics/electrum-words.h"
 #include "wallet_rpc_server_commands_defs.h"
+
+#include "config/cryptonote.hpp"
+
+#include "version.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"
@@ -2450,6 +2449,6 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  return daemonizer::daemonize(argc, const_cast<const char**>(argv), t_executor{}, *vm) ? 0 : 1;
+  return t_executor{}.run_non_interactive(*vm);
   CATCH_ENTRY_L0("main", 1);
 }

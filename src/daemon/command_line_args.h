@@ -31,21 +31,13 @@
 
 #include "tools/common/command_line.h"
 #include "config/cryptonote.hpp"
-#include "tools/daemonizer/daemonizer.h"
 
 namespace daemon_args
 {
-  const command_line::arg_descriptor<std::string, false, true> arg_config_file = {
+  const command_line::arg_descriptor<std::string> arg_config_file = {
     "config-file"
-  , "Specify configuration file"
-  , (daemonizer::get_default_data_dir() / std::string(CRYPTONOTE_NAME ".conf")).string()
-  , cryptonote::arg_testnet_on
-  , [](bool testnet, bool defaulted, std::string val)->std::string {
-      if (testnet && defaulted)
-        return (daemonizer::get_default_data_dir() / "testnet" /
-                std::string(CRYPTONOTE_NAME ".conf")).string();
-      return val;
-    }
+    , "Config file"
+    , std::string(CRYPTONOTE_NAME ".conf")
   };
   const command_line::arg_descriptor<std::string> arg_log_file = {
     "log-file"
@@ -66,6 +58,11 @@ namespace daemon_args
   , "Max number of threads to use for a parallel job"
   , 0
   };
+  const command_line::arg_descriptor<bool> arg_non_interactive = {
+    "non-interactive"
+    , "Run non-interactive"
+  };
+
 }  // namespace daemon_args
 
 #endif // DAEMON_COMMAND_LINE_ARGS_H

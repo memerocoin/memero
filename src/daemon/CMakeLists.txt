@@ -45,12 +45,12 @@ target_link_libraries(lolnerod
     common
     p2p
     cryptonote_protocol
-    daemonizer
     serialization
     daemon_rpc_server
-    ${EPEE_READLINE}
     version
+    ${EPEE_READLINE}
     ${GNU_READLINE_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
     )
 
 set_property(TARGET lolnerod
