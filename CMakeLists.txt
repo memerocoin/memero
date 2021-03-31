@@ -119,34 +119,32 @@ include(Version)
 add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
 add_dependencies(version genversion)
 
-## tools/easylogging
+## logging
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
 add_library( easylogging
   src/tools/easylogging++/easylogging++.cc
 )
 
-## tools/epee
+## tools
 add_subdirectory(src/tools/epee)
-
-## tools/common_basic
 add_subdirectory(src/tools/common_basic)
-
-## math/crypto
-add_subdirectory(src/math/crypto)
-
-## tools/common
 add_subdirectory(src/tools/common)
+add_subdirectory(src/tools/serialization)
 
-## math/ringct
+## math
+add_subdirectory(src/math/crypto)
 add_subdirectory(src/math/ringct)
 
-## cryptonote for wallet
+## cryptonote
 add_subdirectory(src/cryptonote/basic)
 add_subdirectory(src/cryptonote/tx)
+add_subdirectory(src/cryptonote/core)
+add_subdirectory(src/cryptonote/protocol)
 
-## network for wallet
+## network
 add_subdirectory(src/network/type)
 add_subdirectory(src/network/rpc)
+add_subdirectory(src/network/p2p)
 
 ## wallet
 add_subdirectory(src/wallet/mnemonics)
@@ -156,16 +154,6 @@ add_subdirectory(src/wallet/api)
 add_subdirectory(src/wallet/common)
 add_subdirectory(src/wallet/rpc)
 add_subdirectory(src/wallet/cli)
-
-## network
-add_subdirectory(src/network/p2p)
-
-## cryptonote
-add_subdirectory(src/cryptonote/core)
-add_subdirectory(src/cryptonote/protocol)
-
-## tools
-add_subdirectory(src/tools/serialization)
 
 ## database
 set(DATABASE lmdb)
