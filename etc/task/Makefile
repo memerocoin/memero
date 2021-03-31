@@ -66,6 +66,10 @@ main-sync:
 --rpc-bind-port 45000 \
 --add-exclusive-node 10.0.0.1 \
 
+test-arg:
+	../../build/bin/lolnerod help \
+--rpc-bind-port 45000 \
+
 tor-sync:
 	@rm -rf mainnet/tor_sync
 

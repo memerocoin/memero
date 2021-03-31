@@ -2420,8 +2420,6 @@ int main(int argc, char** argv) {
 
   const auto arg_wallet_file = wallet_args::arg_wallet_file();
 
-  po::options_description hidden_options("Hidden");
-
   po::options_description desc_params(wallet_args::tr("Wallet options"));
   tools::wallet2::init_options(desc_params);
   command_line::add_arg(desc_params, arg_rpc_bind_port);
@@ -2430,9 +2428,6 @@ int main(int argc, char** argv) {
   command_line::add_arg(desc_params, arg_wallet_file);
   command_line::add_arg(desc_params, arg_wallet_dir);
   command_line::add_arg(desc_params, arg_prompt_for_password);
-
-  daemonizer::init_options(hidden_options, desc_params);
-  desc_params.add(hidden_options);
 
   std::optional<po::variables_map> vm;
   bool should_terminate = false;
