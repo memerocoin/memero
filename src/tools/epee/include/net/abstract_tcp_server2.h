@@ -31,10 +31,7 @@
 // 
 
 
-
-#ifndef _ABSTRACT_TCP_SERVER2_H_ 
-#define _ABSTRACT_TCP_SERVER2_H_ 
-
+#pragma once
 
 #include <string>
 #include <vector>
@@ -390,5 +387,3 @@ namespace net_utils
 } // namespace
 
 #include "abstract_tcp_server2.inl"
-
-#endif

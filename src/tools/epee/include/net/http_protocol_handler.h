@@ -25,15 +25,12 @@
 // 
 
 
-
-
-#ifndef _HTTP_SERVER_H_
-#define _HTTP_SERVER_H_
+#pragma once
 
 #include <optional>
 #include <string>
+
 #include "net_utils_base.h"
-#include "tools/epee/include/to_nonconst_iterator.h"
 #include "http_base.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -215,5 +212,3 @@ namespace net_utils
 }
 
 #include "http_protocol_handler.inl"
-
-#endif //_HTTP_SERVER_H_

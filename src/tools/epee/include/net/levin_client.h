@@ -25,11 +25,7 @@
 // 
 
 
-
-
-
-#ifndef _LEVIN_CLIENT_H_
-#define _LEVIN_CLIENT_H_
+#pragma once
 
 #include "net_helper.h"
 #include "levin_base.h"
@@ -85,5 +81,3 @@ namespace net_utils
 }
 
 #include "levin_client.inl"
-
-#endif //_LEVIN_CLIENT_H_

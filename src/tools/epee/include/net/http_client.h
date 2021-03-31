@@ -25,26 +25,24 @@
 // 
 
 
-
 #pragma once
+
 #include <ctype.h>
 #include <regex>
-#include <boost/lexical_cast.hpp>
 #include <string_view>
-//#include <mbstring.h>
 #include <algorithm>
 #include <cctype>
 #include <functional>
 
-#include "net_helper.h"
-#include "http_client_base.h"
+#include <boost/lexical_cast.hpp>
 
-#include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/reg_exp_definer.h"
 #include "abstract_http_client.h"
-#include "http_base.h" 
-#include "tools/epee/include/to_nonconst_iterator.h"
+#include "http_base.h"
+#include "http_client_base.h"
+#include "net_helper.h"
 #include "tools/epee/include/net/net_parse_helpers.h"
+#include "tools/epee/include/reg_exp_definer.h"
+#include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/syncobj.h"
 
 //#include "shlwapi.h"
