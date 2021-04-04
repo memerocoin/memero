@@ -56,8 +56,8 @@ namespace epee
 #endif
 
 #define START_WAY_POINTS() uint64_t _____way_point_time = epee::misc_utils::get_tick_count();
-#define WAY_POINT(name) {uint64_t delta = epee::misc_utils::get_tick_count()-_____way_point_time; MDEBUG("Way point " << name << ": " << delta);_____way_point_time = misc_utils::get_tick_count();}
-#define WAY_POINT2(name, avrg_obj) {uint64_t delta = epee::misc_utils::get_tick_count()-_____way_point_time; avrg_obj.push(delta); MDEBUG("Way point " << name << ": " << delta);_____way_point_time = misc_utils::get_tick_count();}
+#define WAY_POINT(name) {uint64_t delta = epee::misc_utils::get_tick_count()-_____way_point_time; MDEBUG("Way point " << name << ": " << delta);_____way_point_time = epee::misc_utils::get_tick_count();}
+#define WAY_POINT2(name, avrg_obj) {uint64_t delta = epee::misc_utils::get_tick_count()-_____way_point_time; avrg_obj.push(delta); MDEBUG("Way point " << name << ": " << delta);_____way_point_time = epee::misc_utils::get_tick_count();}
 
 
 #define TIME_MEASURE_START(var_name)    uint64_t var_name = epee::misc_utils::get_tick_count();

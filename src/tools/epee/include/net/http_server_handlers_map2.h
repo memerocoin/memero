@@ -71,7 +71,7 @@
     else if((query_info.m_URI == s_pattern) && (cond)) \
     { \
       handled = true; \
-      uint64_t ticks = misc_utils::get_tick_count(); \
+      uint64_t ticks = epee::misc_utils::get_tick_count(); \
       boost::value_initialized<command_type::request> req; \
       bool parse_res = epee::serialization::load_t_from_json(static_cast<command_type::request&>(req), query_info.m_body); \
       CHECK_AND_ASSERT_MES(parse_res, false, "Failed to parse json: \r\n" << query_info.m_body); \
@@ -101,11 +101,11 @@
     else if(query_info.m_URI == s_pattern) \
     { \
       handled = true; \
-      uint64_t ticks = misc_utils::get_tick_count(); \
+      uint64_t ticks = epee::misc_utils::get_tick_count(); \
       boost::value_initialized<command_type::request> req; \
       bool parse_res = epee::serialization::load_t_from_binary(static_cast<command_type::request&>(req), epee::strspan<uint8_t>(query_info.m_body)); \
       CHECK_AND_ASSERT_MES(parse_res, false, "Failed to parse bin body data, body size=" << query_info.m_body.size()); \
-      uint64_t ticks1 = misc_utils::get_tick_count(); \
+      uint64_t ticks1 = epee::misc_utils::get_tick_count(); \
       boost::value_initialized<command_type::response> resp;\
       MINFO(m_conn_context << "calling " << s_pattern); \
       bool res = false; \
@@ -117,7 +117,7 @@
         response_info.m_response_comment = "Internal Server Error"; \
         return true; \
       } \
-      uint64_t ticks2 = misc_utils::get_tick_count(); \
+      uint64_t ticks2 = epee::misc_utils::get_tick_count(); \
       epee::serialization::store_t_to_binary(static_cast<command_type::response&>(resp), response_info.m_body); \
       uint64_t ticks3 = epee::misc_utils::get_tick_count(); \
       response_info.m_mime_tipe = " application/octet-stream"; \

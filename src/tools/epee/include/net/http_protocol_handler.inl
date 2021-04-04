@@ -649,7 +649,7 @@ namespace net_utils
 		buf += "Last-Modified: ";
 		time_t tm;
 		time(&tm);
-		buf += misc_utils::get_internet_time_str(tm) + "\r\n";
+		buf += epee::misc_utils::get_internet_time_str(tm) + "\r\n";
 		buf += "Accept-Ranges: bytes\r\n";
 		//Wed, 01 Dec 2010 03:27:41 GMT"
 

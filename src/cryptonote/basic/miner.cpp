@@ -28,59 +28,31 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "miner.h"
+
 #include <sstream>
 #include <numeric>
 #include <algorithm>
+
 #include <boost/interprocess/detail/atomic.hpp>
 #include <boost/algorithm/string.hpp>
+
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/syncobj.h"
-#include "cryptonote_basic_impl.h"
-#include "cryptonote_format_utils.h"
-#include "cryptonote/tx/cryptonote_tx_utils.h"
 #include "tools/epee/include/file_io_utils.h"
 #include "tools/common/command_line.h"
 #include "tools/common/util.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/storages/portable_storage_template_helper.h"
+#include "tools/epee/include/misc_os_dependent.h"
 
-#ifdef __APPLE__
-  #include <sys/times.h>
-  #include <IOKit/IOKitLib.h>
-  #include <IOKit/ps/IOPSKeys.h>
-  #include <IOKit/ps/IOPowerSources.h>
-  #include <mach/mach_host.h>
-  #include <AvailabilityMacros.h>
-  #include <TargetConditionals.h>
-#elif defined(__linux__)
-  #include <unistd.h>
-  #include <sys/resource.h>
-  #include <sys/times.h>
-  #include <time.h>
-#elif defined(__FreeBSD__)
-  #include <devstat.h>
-  #include <errno.h>
-  #include <fcntl.h>
-#if defined(__amd64__) || defined(__i386__) || defined(__x86_64__)
-  #include <machine/apm_bios.h>
-#endif
-  #include <stdio.h>
-  #include <sys/resource.h>
-  #include <sys/sysctl.h>
-  #include <sys/times.h>
-  #include <sys/types.h>
-  #include <unistd.h>
-#endif
+#include "cryptonote_basic_impl.h"
+#include "cryptonote_format_utils.h"
+#include "cryptonote/tx/cryptonote_tx_utils.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "miner"
-
-#define AUTODETECT_WINDOW 10 // seconds
-#define AUTODETECT_GAIN_THRESHOLD 1.02f  // 2%
-
-using namespace epee;
-
-#include "miner.h"
 
 
 namespace cryptonote
@@ -183,7 +155,7 @@ namespace cryptonote
   {
     if(m_last_hr_merge_time && is_mining())
     {
-      m_current_hash_rate = m_hashes * 1000 / ((misc_utils::get_tick_count() - m_last_hr_merge_time + 1));
+      m_current_hash_rate = m_hashes * 1000 / ((epee::misc_utils::get_tick_count() - m_last_hr_merge_time + 1));
       {
         std::unique_lock<std::mutex> lock(m_last_hash_rates_lock);
         m_last_hash_rates.push_back(m_current_hash_rate);
@@ -199,7 +171,7 @@ namespace cryptonote
         std::cout << "hashrate: " << std::setprecision(4) << std::fixed << hr << std::setiosflags(flags) << std::setprecision(precision) << ENDL;
       }
     }
-    m_last_hr_merge_time = misc_utils::get_tick_count();
+    m_last_hr_merge_time = epee::misc_utils::get_tick_count();
     m_hashes = 0;
   }
   //-----------------------------------------------------------------------------------------------------
@@ -312,7 +284,7 @@ namespace cryptonote
     // on the background miner to signal start. 
     while (m_threads_active > 0)
     {
-      misc_utils::sleep_no_w(32);
+      epee::misc_utils::sleep_no_w(32);
     }
 
     MINFO("Mining has been stopped, " << m_threads.size() << " finished" );
@@ -383,12 +355,13 @@ namespace cryptonote
     difficulty_type local_diff = 0;
     uint32_t local_template_ver = 0;
     block b;
+    blobdata hashing_blob_tail;
     ++m_threads_active;
     while(!m_stop)
     {
       if(m_pausers_count)//anti split workaround
       {
-        misc_utils::sleep_no_w(100);
+        epee::misc_utils::sleep_no_w(100);
         continue;
       }
 
@@ -400,6 +373,7 @@ namespace cryptonote
         height = m_height;
         local_template_ver = m_template_no;
         nonce = m_starter_nonce + th_local_index;
+        hashing_blob_tail = cryptonote::get_block_hashing_blob_tail(b);
       }
 
       if(!local_template_ver)//no any set_block_template call
@@ -411,7 +385,17 @@ namespace cryptonote
 
       b.nonce = nonce;
       crypto::hash h;
-      m_gbh(b, h);
+
+      // //---------------------------------------------------------------
+      // bool get_block_longhash(const block& b, crypto::hash& res)
+      // {
+      //   blobdata bd = get_block_hashing_blob(b);
+      //   crypto::sha3(bd.data(), bd.size(), res);
+      //   return true;
+      // }
+
+      blobdata bd = get_block_hashing_blob_head(b).append(hashing_blob_tail);
+      crypto::sha3(bd.data(), bd.size(), h);
 
       if(check_hash(h, local_diff))
       {

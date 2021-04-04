@@ -28,14 +28,16 @@
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#pragma once 
+#pragma once
 
-#include <boost/program_options.hpp>
 #include <atomic>
+#include <boost/program_options.hpp>
+
 #include "cryptonote_basic.h"
 #include "verification_context.h"
 #include "difficulty.h"
 #include "tools/epee/include/math_helper.h"
+#include "cryptonote/basic/blobdatatype.h"
 
 namespace cryptonote
 {

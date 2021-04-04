@@ -24,15 +24,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-#ifdef __MACH__
-#include <mach/clock.h>
-#include <mach/mach.h>
-#endif
+#pragma once
 
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 
-#pragma once 
 namespace epee
 {
 namespace misc_utils
@@ -40,24 +36,11 @@ namespace misc_utils
 
         inline uint64_t get_ns_count()
         {
-#if defined(_MSC_VER)
-                return ::GetTickCount64() * 1000000;
-#elif defined(__MACH__)
-                clock_serv_t cclock;
-                mach_timespec_t mts;
-
-                host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
-                clock_get_time(cclock, &mts);
-                mach_port_deallocate(mach_task_self(), cclock);
-
-                return ((uint64_t)mts.tv_sec * 1000000000) + (mts.tv_nsec);
-#else
                 struct timespec ts;
                 if(clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
                         return 0;
                 }
                 return ((uint64_t)ts.tv_sec * 1000000000) + (ts.tv_nsec);
-#endif
         }
 
         inline uint64_t get_tick_count()

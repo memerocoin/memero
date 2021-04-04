@@ -320,7 +320,7 @@ public:
 
     for (size_t i = 0; i < 60 * 1000 / 100 && 0 != boost::interprocess::ipcdetail::atomic_read32(&m_wait_count); ++i)
     {
-      misc_utils::sleep_no_w(100);
+      epee::misc_utils::sleep_no_w(100);
     }
     CHECK_AND_ASSERT_MES_NO_RET(0 == boost::interprocess::ipcdetail::atomic_read32(&m_wait_count), "Failed to wait for operation completion. m_wait_count = " << m_wait_count);
 
@@ -382,7 +382,7 @@ public:
 
   void request_callback()
   {
-    misc_utils::auto_scope_leave_caller scope_exit_handler = misc_utils::create_scope_leave_handler(
+    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler(
       std::bind(&async_protocol_handler::finish_outer_call, this));
 
     m_pservice_endpoint->request_callback();
@@ -618,7 +618,7 @@ public:
   template<class callback_t>
   bool async_invoke(int command, const epee::span<const uint8_t> in_buff, const callback_t &cb, size_t timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
   {
-    misc_utils::auto_scope_leave_caller scope_exit_handler = misc_utils::create_scope_leave_handler(
+    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler(
       std::bind(&async_protocol_handler::finish_outer_call, this));
 
     if(timeout == LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
@@ -676,7 +676,7 @@ public:
 
   int invoke(int command, const epee::span<const uint8_t> in_buff, std::string& buff_out)
   {
-    misc_utils::auto_scope_leave_caller scope_exit_handler = misc_utils::create_scope_leave_handler
+    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler
       (std::bind(&async_protocol_handler::finish_outer_call, this));
 
     if(m_deletion_initiated)
@@ -698,7 +698,7 @@ public:
       return LEVIN_ERROR_CONNECTION;
     }
 
-    uint64_t ticks_start = misc_utils::get_tick_count();
+    uint64_t ticks_start = epee::misc_utils::get_tick_count();
     size_t prev_size = 0;
 
     while(!boost::interprocess::ipcdetail::atomic_read32(&m_invoke_buf_ready) && !m_deletion_initiated && !m_protocol_released)
@@ -706,7 +706,7 @@ public:
       if(m_cache_in_buffer.size() - prev_size >= MIN_BYTES_WANTED)
       {
         prev_size = m_cache_in_buffer.size();
-        ticks_start = misc_utils::get_tick_count();
+        ticks_start = epee::misc_utils::get_tick_count();
       }
       if(misc_utils::get_tick_count() - ticks_start > m_config.m_invoke_timeout)
       {
@@ -732,7 +732,7 @@ public:
 
   int notify(int command, const epee::span<const uint8_t> in_buff)
   {
-    misc_utils::auto_scope_leave_caller scope_exit_handler = misc_utils::create_scope_leave_handler(
+    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler(
                           std::bind(&async_protocol_handler::finish_outer_call, this));
 
     if(m_deletion_initiated)

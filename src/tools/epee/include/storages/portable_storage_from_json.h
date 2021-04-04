@@ -34,7 +34,8 @@
 
 namespace epee
 {
-  using namespace misc_utils::parse;
+  using namespace epee::misc_utils::parse;
+
   namespace serialization
   {
     namespace json

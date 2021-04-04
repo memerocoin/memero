@@ -1091,13 +1091,24 @@ namespace cryptonote
     return get_transaction_hash(t, res, &blob_size);
   }
   //---------------------------------------------------------------
-  blobdata get_block_hashing_blob(const block& b)
+  blobdata get_block_hashing_blob_tail(const block& b)
   {
-    blobdata blob = t_serializable_object_to_blob(static_cast<block_header>(b));
+    blobdata blob;
     crypto::hash tree_root_hash = get_tx_tree_hash(b);
     blob.append(reinterpret_cast<const char*>(&tree_root_hash), sizeof(tree_root_hash));
     blob.append(tools::get_varint_data(b.tx_hashes.size()+1));
     return blob;
+  }
+  //---------------------------------------------------------------
+  blobdata get_block_hashing_blob_head(const block& b)
+  {
+    blobdata blob = t_serializable_object_to_blob(static_cast<block_header>(b));
+    return blob;
+  }
+  //---------------------------------------------------------------
+  blobdata get_block_hashing_blob(const block& b)
+  {
+    return get_block_hashing_blob_head(b).append(get_block_hashing_blob_tail(b));
   }
   //---------------------------------------------------------------
   bool calculate_block_hash(const block& b, crypto::hash& res, const blobdata_ref *blob)

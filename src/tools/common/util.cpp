@@ -312,7 +312,7 @@ namespace tools
       return "<unknown>";
     time_t tt = ts;
     struct tm tm;
-    misc_utils::get_gmt_time(tt, tm);
+    epee::misc_utils::get_gmt_time(tt, tm);
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &tm);
     return std::string(buffer);
   }

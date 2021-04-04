@@ -499,7 +499,7 @@ namespace net_utils
       //ask it inside(!) critical region if we still able to go in event wait...
       size_t cnt = GET_IO_SERVICE(socket()).poll_one();
       if(!cnt)
-        misc_utils::sleep_no_w(1);
+        epee::misc_utils::sleep_no_w(1);
     }
     
     return true;
@@ -1305,7 +1305,7 @@ namespace net_utils
     // error path, if e or exception
     assert(m_state != nullptr); // always set in constructor
     _erro("Some problems at accept: " << e.message() << ", connections_count = " << m_state->sock_count);
-    misc_utils::sleep_no_w(100);
+    epee::misc_utils::sleep_no_w(100);
     (*current_new_connection).reset(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type, (*current_new_connection)->get_ssl_support()));
     current_acceptor->async_accept((*current_new_connection)->socket(),
                                    std::bind(accept_function_pointer, this, std::placeholders::_1));
