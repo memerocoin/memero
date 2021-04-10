@@ -34,7 +34,6 @@
 #include "rctOps.hpp"
 #include "curveConstants.hpp"
 #include "zeroCommitment.hpp"
-#include "rctCryptoOps.hpp"
 
 using namespace crypto;
 using namespace std;
@@ -176,18 +175,16 @@ namespace rct {
     //does a * G where a is a scalar and G is the curve basepoint
     void scalarmultBase(key &aG,const key &a) {
         ge_p3 point;
-        sc_reduce32copy(aG.bytes, a.bytes); //do this beforehand!
-        ge_scalarmult_base(&point, aG.bytes);
+        key k = a;
+        sc_reduce32(k.bytes);
+        ge_scalarmult_base(&point, k.bytes);
         ge_p3_tobytes(aG.bytes, &point);
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
     key scalarmultBase(const key & a) {
-        ge_p3 point;
         key aG;
-        sc_reduce32copy(aG.bytes, a.bytes); //do this beforehand
-        ge_scalarmult_base(&point, aG.bytes);
-        ge_p3_tobytes(aG.bytes, &point);
+        scalarmultBase(aG, a);
         return aG;
     }
 
