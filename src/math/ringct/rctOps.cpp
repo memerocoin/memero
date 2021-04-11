@@ -166,9 +166,9 @@ namespace rct {
 
     key normalizeKey(const key& a) {
       key k = a;
-      CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(k.bytes, 32), "key is zero");
+      // CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(k.bytes, 32), "key is zero");
       sc_reduce32(k.bytes);
-      CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(k.bytes, 32), "normalized key is zero");
+      // CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(k.bytes, 32), "normalized key is zero");
       return k;
     }
 
