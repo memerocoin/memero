@@ -134,10 +134,6 @@ namespace rct {
     //Does some precomputation to make addKeys3 more efficient
     // input B a curve point and output a ge_dsmp which has precomputation applied
     void precomp(ge_dsmp rv, const key &B);
-    //aAbB = a*A + b*B where a, b are scalars, A, B are curve points
-    //B must be input after applying "precomp"
-    void addKeys3(key &aAbB, const key &a, const key &A, const key &b, const ge_dsmp B);
-    void addKeys3(key &aAbB, const key &a, const ge_dsmp A, const key &b, const ge_dsmp B);
 
     void addKeys_aGbBcC(key &aGbBcC, const key &a, const key &b, const ge_dsmp B, const key &c, const ge_dsmp C);
     void addKeys_aAbBcC(key &aAbBcC, const key &a, const ge_dsmp A, const key &b, const ge_dsmp B, const key &c, const ge_dsmp C);
