@@ -331,20 +331,7 @@ namespace rct {
         sc_reduce32(hash.bytes);
         return hash;
      }
-    
-    //cn_fast_hash for a 128 byte unsigned char
-    key cn_fast_hash128(const void * in) {
-        key hash;
-        sha3_as_keccak_256((const uint8_t *)in, 128, hash.bytes);
-        return hash;
-    }
-    
-    key hash_to_scalar128(const void * in) {
-        key hash = cn_fast_hash128(in);
-        sc_reduce32(hash.bytes);
-        return hash;
-    }
-    
+
     //cn_fast_hash for multisig purpose
     //This takes the outputs and commitments
     //and hashes them into a 32 byte sized key
