@@ -114,7 +114,7 @@ namespace rct {
 
     //generates C =aG + bH from b, a is given..
     void genC(key & C, const key & a, xmr_amount amount) {
-        addKeys2(C, a, d2h(amount), rct::H);
+        addKeys2(C, a, d2h(amount));
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
@@ -167,16 +167,16 @@ namespace rct {
 
     key normalizeKey(const key& a) {
       key k = a;
-      // CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(k.bytes, 32), "key is zero");
       sc_reduce32(k.bytes);
-      // CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(k.bytes, 32), "normalized key is zero");
       return k;
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
     void scalarmultBase(key &aG,const key &a) {
       key k = normalizeKey(a);
-      crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
+
+      // no need to check since a can be 0
+      int _ = crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
@@ -189,6 +189,7 @@ namespace rct {
     //does a * P where a is a scalar and P is an arbitrary point
     void scalarmultKey(key & aP, const key &P, const key &a) {
       key s = normalizeKey(a);
+      CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(s.bytes, 32), "scalar key is zero");
       int r = crypto_scalarmult_ed25519_noclamp(aP.bytes, s.bytes, P.bytes);
       CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "scalar mult key not in subgroup");
     }
@@ -205,8 +206,10 @@ namespace rct {
     key scalarmultH(const key & a) {
       key s = normalizeKey(a);
       key k;
-      int r = crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, H.bytes);
-      CHECK_AND_MES_L1(r == 0, "scalar mult H returns -1");
+
+      // no need to check since a can be 0, and H is on main group
+      int _ = crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, H.bytes);
+
       return k;
     }
 
@@ -266,21 +269,10 @@ namespace rct {
       return k;
     }
 
-    //addKeys1
-    //aGB = aG + B where a is a scalar, G is the basepoint, and B is a point
-    void addKeys1(key &aGB, const key &a, const key & B) {
-        key aG = scalarmultBase(a);
-        addKeys(aGB, aG, B);
-    }
-
     //addKeys2
-    //aGbB = aG + bB where a, b are scalars, G is the basepoint and B is a point
-    void addKeys2(key &aGbB, const key &a, const key &b, const key & B) {
-        ge_p2 rv;
-        ge_p3 B2;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&B2, B.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-        ge_double_scalarmult_base_vartime(&rv, b.bytes, &B2, a.bytes);
-        ge_tobytes(aGbB.bytes, &rv);
+    //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
+    void addKeys2(key &aGbB, const key &a, const key &b) {
+      addKeys(aGbB, scalarmultBase(a), scalarmultH(b));
     }
 
     //Does some precomputation to make addKeys3 more efficient

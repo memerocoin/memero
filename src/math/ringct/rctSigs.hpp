@@ -32,9 +32,6 @@
 
 //#define DBG
 
-#ifndef RCTSIGS_H
-#define RCTSIGS_H
-
 #include <cstddef>
 #include <vector>
 #include <tuple>
@@ -138,5 +135,4 @@ namespace rct {
     xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i);
     key get_pre_mlsag_hash(const rctSig &rv);
 }
-#endif  /* RCTSIGS_H */
 

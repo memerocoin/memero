@@ -71,7 +71,7 @@ namespace
             sv.bytes[6] = (outamounts[i] >> 48) & 255;
             sv.bytes[7] = (outamounts[i] >> 56) & 255;
             sc_mul(sv8.bytes, sv.bytes, rct::INV_EIGHT.bytes);
-            rct::addKeys2(C[i], rct::INV_EIGHT, sv8, rct::H);
+            rct::addKeys2(C[i], rct::INV_EIGHT, sv8);
         }
 
         return rct::Bulletproof{rct::keyV(n_outs, I), I, I, I, I, I, I, rct::keyV(nrl, I), rct::keyV(nrl, I), I, I, I};
@@ -755,7 +755,7 @@ namespace rct {
         key Ctmp;
         CHECK_AND_ASSERT_THROW_MES(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
         CHECK_AND_ASSERT_THROW_MES(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
-        addKeys2(Ctmp, mask, amount, H);
+        addKeys2(Ctmp, mask, amount);
         DP("Ctmp");
         DP(Ctmp);
         if (equalKeys(C, Ctmp) == false) {

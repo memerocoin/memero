@@ -72,12 +72,12 @@ TEST(ringct, CLSAG)
   // Set C[idx]
   t = skGen();
   u = skGen();
-  addKeys2(pubs[idx].mask,t,u,H);
+  addKeys2(pubs[idx].mask,t,u);
 
   // Set commitment offset
   key Cout;
   t2 = skGen();
-  addKeys2(Cout,t2,u,H);
+  addKeys2(Cout,t2,u);
 
   // Prepare generation inputs
   ctkey insk;
@@ -446,6 +446,8 @@ TEST(ringct, range_proofs_reject_higher_list_simple)
   EXPECT_TRUE(range_proof_test(false, NELTS(inputs), inputs, NELTS(outputs), outputs, false, true));
 }
 
+
+// these require one of scalar of H to be 0, why?
 TEST(ringct, range_proofs_accept_1_to_1_simple)
 {
   const uint64_t inputs[] = {5000};
