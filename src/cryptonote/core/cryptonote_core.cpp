@@ -34,6 +34,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/uuid/nil_generator.hpp>
 
+#include <sodium.h>
+
 #include "config/cryptonote.hpp"
 #include "cryptonote/basic/events.h"
 #include "cryptonote_core.h"
@@ -853,7 +855,7 @@ namespace cryptonote
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if (!(rct::scalarmultKey(rct::ki2rct(tokey_in.k_image), rct::curveOrder()) == rct::identity()))
+      if( !crypto_core_ed25519_is_valid_point(rct::ki2rct(tokey_in.k_image).bytes))
         return false;
     }
     return true;

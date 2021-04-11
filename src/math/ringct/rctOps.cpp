@@ -177,7 +177,9 @@ namespace rct {
 
     key normalizeKey(const key& a) {
       key k = a;
+      CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(k.bytes, 32), "key is zero");
       sc_reduce32(k.bytes);
+      CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(k.bytes, 32), "normalized key is zero");
       return k;
     }
 
@@ -196,9 +198,9 @@ namespace rct {
 
     //does a * P where a is a scalar and P is an arbitrary point
     void scalarmultKey(key & aP, const key &P, const key &a) {
-        key s = normalizeKey(a);
-        int r = crypto_scalarmult_ed25519_noclamp(aP.bytes, s.bytes, P.bytes);
-        CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "scalar mult key not in subgroup");
+      key s = normalizeKey(a);
+      int r = crypto_scalarmult_ed25519_noclamp(aP.bytes, s.bytes, P.bytes);
+      CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "scalar mult key not in subgroup");
     }
 
     //does a * P where a is a scalar and P is an arbitrary point
