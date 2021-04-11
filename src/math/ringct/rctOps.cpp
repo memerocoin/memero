@@ -177,11 +177,9 @@ namespace rct {
 
     //does a * G where a is a scalar and G is the curve basepoint
     void scalarmultBase(key &aG,const key &a) {
-        ge_p3 point;
         key k = a;
         sc_reduce32(k.bytes);
-        ge_scalarmult_base(&point, k.bytes);
-        ge_p3_tobytes(aG.bytes, &point);
+        crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
