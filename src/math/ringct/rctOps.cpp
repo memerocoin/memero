@@ -332,15 +332,8 @@ namespace rct {
     //subtract Keys (subtracts curve points)
     //AB = A - B where A, B are curve points
     void subKeys(key & AB, const key &A, const key &B) {
-        ge_p3 B2, A2;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&B2, B.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&A2, A.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-        ge_cached tmp2;
-        ge_p3_to_cached(&tmp2, &B2);
-        ge_p1p1 tmp3;
-        ge_sub(&tmp3, &A2, &tmp2);
-        ge_p1p1_to_p3(&A2, &tmp3);
-        ge_p3_tobytes(AB.bytes, &A2);
+      int r = crypto_core_ed25519_sub(AB.bytes, A.bytes, B.bytes);
+      CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "sub keys not in main group");
     }
 
     //checks if A, B are equal in terms of bytes (may say no if one is a non-reduced scalar)
