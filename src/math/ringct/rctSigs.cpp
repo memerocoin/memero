@@ -228,12 +228,21 @@ namespace rct {
             precomp(C_precomp.k,C[i]);
 
             // Compute L
-            addKeys_aGbBcC(L,sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
+            addKeys_aGbBcC(L
+                           , sig.s[i]
+                           , c_p, P[i]
+                           , c_c, C[i]
+                           );
 
             // Compute R
+            key A = hash_to_key(P[i]);
             hash_to_p3(Hi_p3,P[i]);
             ge_dsm_precomp(H_precomp.k, &Hi_p3);
-            addKeys_aAbBcC(R,sig.s[i],H_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
+            addKeys_aAbBcC(R
+                           , sig.s[i], A
+                           , c_p, sig.I
+                           , c_c, D
+                           );
 
             c_to_hash[2*n+3] = L;
             c_to_hash[2*n+4] = R;
@@ -417,6 +426,7 @@ namespace rct {
             geDsmp hash_precomp;
             ge_p3 temp_p3;
             ge_p1p1 temp_p1;
+            key C;
 
             while (i < n) {
                 sc_0(c_new.bytes);
@@ -430,14 +440,24 @@ namespace rct {
                 ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
                 ge_p1p1_to_p3(&temp_p3,&temp_p1);
                 ge_dsm_precomp(C_precomp.k,&temp_p3);
+                ge_p3_tobytes(C.bytes, &temp_p3);
 
                 // Compute L
-                addKeys_aGbBcC(L,sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
+                addKeys_aGbBcC(L
+                               , sig.s[i]
+                               , c_p, pubs[i].dest
+                               , c_c, C
+                               );
 
                 // Compute R
                 hash_to_p3(hash8_p3,pubs[i].dest);
                 ge_dsm_precomp(hash_precomp.k, &hash8_p3);
-                addKeys_aAbBcC(R,sig.s[i],hash_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
+                key k = hash_to_key(pubs[i].dest);
+                addKeys_aAbBcC(R
+                               , sig.s[i], k
+                               , c_p, sig.I
+                               , c_c, D_8
+                               );
 
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;

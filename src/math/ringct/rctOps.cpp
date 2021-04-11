@@ -285,20 +285,17 @@ namespace rct {
 
     // addKeys_aGbBcC
     // computes aG + bB + cC
-    // G is the fixed basepoint and B,C require precomputation
-    void addKeys_aGbBcC(key &aGbBcC, const key &a, const key &b, const ge_dsmp B, const key &c, const ge_dsmp C) {
-        ge_p2 rv;
-        ge_triple_scalarmult_base_vartime(&rv, a.bytes, b.bytes, B, c.bytes, C);
-        ge_tobytes(aGbBcC.bytes, &rv);
+    // G is the fixed basepoint
+    void addKeys_aGbBcC(key &aGbBcC, const key &a, const key &b, const key &B, const key &c, const key &C) {
+      addKeys(aGbBcC, addKeys(scalarmultBase(a), scalarmultKey(B, b)), scalarmultKey(C, c));
     }
 
     // addKeys_aAbBcC
     // computes aA + bB + cC
-    // A,B,C require precomputation
-    void addKeys_aAbBcC(key &aAbBcC, const key &a, const ge_dsmp A, const key &b, const ge_dsmp B, const key &c, const ge_dsmp C) {
-        ge_p2 rv;
-        ge_triple_scalarmult_precomp_vartime(&rv, a.bytes, A, b.bytes, B, c.bytes, C);
-        ge_tobytes(aAbBcC.bytes, &rv);
+    void addKeys_aAbBcC(key &aAbBcC, const key &a, const key &A,
+                        const key &b, const key &B,
+                        const key &c, const key &C) {
+        addKeys(aAbBcC, addKeys(scalarmultKey(A, a), scalarmultKey(B, b)), scalarmultKey(C, c));
     }
 
     //subtract Keys (subtracts curve points)
@@ -424,6 +421,16 @@ namespace rct {
       ge_mul8(&hash8_p1p1, &hash_p2);
       ge_p1p1_to_p3(&hash8_p3, &hash8_p1p1);
     }
+
+    // Hash a key to a key representation
+    key hash_to_key(const key &k) {
+      ge_p3 hash_p3;
+      hash_to_p3(hash_p3, k);
+      key h;
+      ge_p3_tobytes(h.bytes, &hash_p3);
+      return h;
+    }
+
 
     //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
     // where C= aG + bH
