@@ -148,11 +148,6 @@ namespace rct {
             hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
         }
 
-        geDsmp I_precomp;
-        geDsmp D_precomp;
-        precomp(I_precomp.k,sig.I);
-        precomp(D_precomp.k,D);
-
         // Offset key image
         scalarmultKey(sig.D,D,INV_EIGHT);
 
@@ -212,9 +207,6 @@ namespace rct {
         key R;
         key c_p; // = c[i]*mu_P
         key c_c; // = c[i]*mu_C
-        geDsmp P_precomp;
-        geDsmp C_precomp;
-        geDsmp H_precomp;
         ge_p3 Hi_p3;
 
         while (i != l) {
@@ -222,10 +214,6 @@ namespace rct {
             sc_0(c_new.bytes);
             sc_mul(c_p.bytes,mu_P.bytes,c.bytes);
             sc_mul(c_c.bytes,mu_C.bytes,c.bytes);
-
-            // Precompute points
-            precomp(P_precomp.k,P[i]);
-            precomp(C_precomp.k,C[i]);
 
             // Compute L
             addKeys_aGbBcC(L
@@ -236,8 +224,6 @@ namespace rct {
 
             // Compute R
             key A = hash_to_key(P[i]);
-            hash_to_p3(Hi_p3,P[i]);
-            ge_dsm_precomp(H_precomp.k, &Hi_p3);
             addKeys_aAbBcC(R
                            , sig.s[i], A
                            , c_p, sig.I
@@ -372,10 +358,6 @@ namespace rct {
             key c = copy(sig.c1);
             key D_8 = scalarmult8(sig.D);
             CHECK_AND_ASSERT_MES(!(D_8 == rct::identity()), false, "Bad auxiliary key image!");
-            geDsmp I_precomp;
-            geDsmp D_precomp;
-            precomp(I_precomp.k,sig.I);
-            precomp(D_precomp.k,D_8);
 
             // Aggregation hashes
             keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
@@ -418,12 +400,8 @@ namespace rct {
             key c_new;
             key L;
             key R;
-            geDsmp P_precomp;
-            geDsmp C_precomp;
-            geDsmp H_precomp;
             size_t i = 0;
             ge_p3 hash8_p3;
-            geDsmp hash_precomp;
             ge_p3 temp_p3;
             ge_p1p1 temp_p1;
             key C;
@@ -433,13 +411,9 @@ namespace rct {
                 sc_mul(c_p.bytes,mu_P.bytes,c.bytes);
                 sc_mul(c_c.bytes,mu_C.bytes,c.bytes);
 
-                // Precompute points for L/R
-                precomp(P_precomp.k,pubs[i].dest);
-
                 CHECK_AND_ASSERT_MES(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
                 ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
                 ge_p1p1_to_p3(&temp_p3,&temp_p1);
-                ge_dsm_precomp(C_precomp.k,&temp_p3);
                 ge_p3_tobytes(C.bytes, &temp_p3);
 
                 // Compute L
@@ -450,8 +424,6 @@ namespace rct {
                                );
 
                 // Compute R
-                hash_to_p3(hash8_p3,pubs[i].dest);
-                ge_dsm_precomp(hash_precomp.k, &hash8_p3);
                 key k = hash_to_key(pubs[i].dest);
                 addKeys_aAbBcC(R
                                , sig.s[i], k

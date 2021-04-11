@@ -275,14 +275,6 @@ namespace rct {
       addKeys(aGbB, scalarmultBase(a), scalarmultH(b));
     }
 
-    //Does some precomputation to make addKeys3 more efficient
-    // input B a curve point and output a ge_dsmp which has precomputation applied
-    void precomp(ge_dsmp rv, const key & B) {
-        ge_p3 B2;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&B2, B.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-        ge_dsm_precomp(rv, &B2);
-    }
-
     // addKeys_aGbBcC
     // computes aG + bB + cC
     // G is the fixed basepoint
