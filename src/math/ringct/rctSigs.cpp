@@ -656,7 +656,7 @@ namespace rct {
           DP(sumPseudoOuts);
 
           //check pseudoOuts vs Outs..
-          if (!equalKeys(sumPseudoOuts, sumOutpks)) {
+          if (sumPseudoOuts != sumOutpks) {
             LOG_PRINT_L1("Sum check failed");
             return false;
           }
@@ -750,7 +750,7 @@ namespace rct {
         addKeys2(Ctmp, mask, amount);
         DP("Ctmp");
         DP(Ctmp);
-        if (equalKeys(C, Ctmp) == false) {
+        if (C != Ctmp) {
             CHECK_AND_ASSERT_THROW_MES(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
         return h2d(amount);

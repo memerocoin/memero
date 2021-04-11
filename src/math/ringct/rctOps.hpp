@@ -139,8 +139,6 @@ namespace rct {
 
     //AB = A - B where A, B are curve points
     void subKeys(key &AB, const key &A, const  key &B);
-    //checks if A, B are equal as curve points
-    bool equalKeys(const key & A, const key & B);
 
     //Hashing - cn_fast_hash
     //be careful these are also in crypto namespace

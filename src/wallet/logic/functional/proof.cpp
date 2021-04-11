@@ -91,7 +91,7 @@ namespace proof {
           THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.mask.bytes) != 0, error::wallet_internal_error, "Bad ECDH input mask");
           THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.amount.bytes) != 0, error::wallet_internal_error, "Bad ECDH input amount");
           rct::addKeys2(Ctmp, ecdh_info.mask, ecdh_info.amount);
-          if (rct::equalKeys(C, Ctmp))
+          if (C == Ctmp)
             amount = rct::h2d(ecdh_info.amount);
           else
             amount = 0;

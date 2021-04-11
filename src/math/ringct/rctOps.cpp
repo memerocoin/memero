@@ -297,18 +297,6 @@ namespace rct {
       CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "sub keys not in main group");
     }
 
-    //checks if A, B are equal in terms of bytes (may say no if one is a non-reduced scalar)
-    //without doing curve operations
-    bool equalKeys(const key & a, const key & b) {
-        bool rv = true;
-        for (int i = 0; i < 32; ++i) {
-          if (a.bytes[i] != b.bytes[i]) {
-            rv = false;
-          }
-        }
-        return rv;
-    }
-
     //Hashing - cn_fast_hash
     //be careful these are also in crypto namespace
     //cn_fast_hash for arbitrary multiples of 32 bytes
