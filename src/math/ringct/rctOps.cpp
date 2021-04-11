@@ -29,10 +29,13 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/lexical_cast.hpp>
-#include "tools/epee/include/misc_log_ex.h"
+
+#include <sodium.h>
+
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "rctOps.hpp"
 #include "curveConstants.hpp"
+#include "rctOps.hpp"
+#include "tools/epee/include/misc_log_ex.h"
 #include "zeroCommitment.hpp"
 
 using namespace crypto;
