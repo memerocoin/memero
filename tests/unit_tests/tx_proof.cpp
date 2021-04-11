@@ -85,27 +85,13 @@ TEST(tx_proof, prove_verify_v2)
     char data[] = "hash input";
     crypto::cn_fast_hash(data,sizeof(data)-1,prefix_hash);
 
-    // Generate/verify valid v1 proof with standard address
-    crypto::generate_tx_proof_v1(prefix_hash, R_G, A, std::nullopt, D, r, sig);
-    ASSERT_TRUE(crypto::check_tx_proof(prefix_hash, R_G, A, std::nullopt, D, sig, 1));
-
-    // Generate/verify valid v1 proof with subaddress
-    crypto::generate_tx_proof_v1(prefix_hash, R_B, A, B, D, r, sig);
-    ASSERT_TRUE(crypto::check_tx_proof(prefix_hash, R_B, A, B, D, sig, 1));
-
     // Generate/verify valid v2 proof with standard address
     crypto::generate_tx_proof(prefix_hash, R_G, A, std::nullopt, D, r, sig);
-    ASSERT_TRUE(crypto::check_tx_proof(prefix_hash, R_G, A, std::nullopt, D, sig, 2));
+    ASSERT_TRUE(crypto::check_tx_proof(prefix_hash, R_G, A, std::nullopt, D, sig));
 
     // Generate/verify valid v2 proof with subaddress
     crypto::generate_tx_proof(prefix_hash, R_B, A, B, D, r, sig);
-    ASSERT_TRUE(crypto::check_tx_proof(prefix_hash, R_B, A, B, D, sig, 2));
-
-    // Try to verify valid v2 proofs as v1 proof (bad)
-    crypto::generate_tx_proof(prefix_hash, R_G, A, std::nullopt, D, r, sig);
-    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_G, A, std::nullopt, D, sig, 1));
-    crypto::generate_tx_proof(prefix_hash, R_B, A, B, D, r, sig);
-    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, A, B, D, sig, 1));
+    ASSERT_TRUE(crypto::check_tx_proof(prefix_hash, R_B, A, B, D, sig));
 
     // Randomly-distributed test points
     crypto::secret_key evil_a, evil_b, evil_d, evil_r;
@@ -117,14 +103,8 @@ TEST(tx_proof, prove_verify_v2)
 
     // Selectively choose bad point in v2 proof (bad)
     crypto::generate_tx_proof(prefix_hash, R_B, A, B, D, r, sig);
-    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, evil_R, A, B, D, sig, 2));
-    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, evil_A, B, D, sig, 2));
-    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, A, evil_B, D, sig, 2));
-    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, A, B, evil_D, sig, 2));
-
-    // Try to verify valid v1 proofs as v2 proof (bad)
-    crypto::generate_tx_proof_v1(prefix_hash, R_G, A, std::nullopt, D, r, sig);
-    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_G, A, std::nullopt, D, sig, 2));
-    crypto::generate_tx_proof_v1(prefix_hash, R_B, A, B, D, r, sig);
-    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, A, B, D, sig, 2));
+    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, evil_R, A, B, D, sig));
+    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, evil_A, B, D, sig));
+    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, A, evil_B, D, sig));
+    ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, A, B, evil_D, sig));
 }

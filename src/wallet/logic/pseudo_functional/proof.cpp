@@ -61,10 +61,6 @@ namespace proof {
     // InProofV1, InProofV2, OutProofV1, OutProofV2
     const bool is_out = sig_str.substr(0, 3) == "Out";
     const std::string header = is_out ? sig_str.substr(0,10) : sig_str.substr(0,9);
-    int version = 2; // InProofV2
-    if (is_out && sig_str.substr(8,2) == "V1") version = 1; // OutProofV1
-    else if (is_out) version = 2; // OutProofV2
-    else if (sig_str.substr(7,2) == "V1") version = 1; // InProofV1
 
     const size_t header_len = header.size();
     THROW_WALLET_EXCEPTION_IF(sig_str.size() < header_len || sig_str.substr(0, header_len) != header, error::wallet_internal_error,
@@ -112,27 +108,27 @@ namespace proof {
     if (is_out)
     {
       good_signature[0] = is_subaddress ?
-        crypto::check_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0], version) :
-        crypto::check_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0], version);
+        crypto::check_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
+        crypto::check_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
 
       for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
       {
         good_signature[i + 1] = is_subaddress ?
-          crypto::check_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i + 1], sig[i + 1], version) :
-          crypto::check_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i + 1], sig[i + 1], version);
+          crypto::check_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i + 1], sig[i + 1]) :
+          crypto::check_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i + 1], sig[i + 1]);
       }
     }
     else
     {
       good_signature[0] = is_subaddress ?
-        crypto::check_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, address.m_spend_public_key, shared_secret[0], sig[0], version) :
-        crypto::check_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, std::nullopt, shared_secret[0], sig[0], version);
+        crypto::check_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
+        crypto::check_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, std::nullopt, shared_secret[0], sig[0]);
 
       for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
       {
         good_signature[i + 1] = is_subaddress ?
-          crypto::check_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], address.m_spend_public_key, shared_secret[i + 1], sig[i + 1], version) :
-          crypto::check_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], std::nullopt, shared_secret[i + 1], sig[i + 1], version);
+          crypto::check_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], address.m_spend_public_key, shared_secret[i + 1], sig[i + 1]) :
+          crypto::check_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], std::nullopt, shared_secret[i + 1], sig[i + 1]);
       }
     }
 
