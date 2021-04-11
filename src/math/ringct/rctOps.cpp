@@ -205,13 +205,9 @@ namespace rct {
 
     //does a * P where a is a scalar and P is an arbitrary point
     key scalarmultKey(const key & P, const key & a) {
-        ge_p3 A;
-        ge_p2 R;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&A, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-        ge_scalarmult(&R, a.bytes, &A);
-        key aP;
-        ge_tobytes(aP.bytes, &R);
-        return aP;
+      key k;
+      scalarmultKey(k, P, a);
+      return k;
     }
 
 
