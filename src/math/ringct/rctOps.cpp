@@ -175,7 +175,7 @@ namespace rct {
     void scalarmultBase(key &aG,const key &a) {
       key k = normalizeKey(a);
 
-      // no need to check since a can be 0
+      // no need to check since a can be 0 in tests
       int _ = crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
     }
 
@@ -207,7 +207,7 @@ namespace rct {
       key s = normalizeKey(a);
       key k;
 
-      // no need to check since a can be 0, and H is on main group
+      // no need to check since a can be 0 in tests, and H is on main group
       int _ = crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, H.bytes);
 
       return k;
