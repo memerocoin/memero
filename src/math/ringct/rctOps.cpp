@@ -45,6 +45,7 @@ using namespace std;
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
 #define CHECK_AND_ASSERT_THROW_MES_L1(expr, message) {if(!(expr)) {MWARNING(message); throw std::runtime_error(message);}}
+#define CHECK_AND_MES_L1(expr, message) {if(!(expr)) {MWARNING(message); }}
 
 namespace rct {
 
@@ -202,11 +203,11 @@ namespace rct {
 
     //Computes aH where H= toPoint(cn_fast_hash(G)), G the basepoint
     key scalarmultH(const key & a) {
-        ge_p2 R;
-        ge_scalarmult(&R, a.bytes, &ge_p3_H);
-        key aP;
-        ge_tobytes(aP.bytes, &R);
-        return aP;
+      key s = normalizeKey(a);
+      key k;
+      int r = crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, H.bytes);
+      CHECK_AND_MES_L1(r == 0, "scalar mult H returns -1");
+      return k;
     }
 
     //Computes 8P
