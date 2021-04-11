@@ -245,15 +245,8 @@ namespace rct {
 
     //for curve points: AB = A + B
     void addKeys(key &AB, const key &A, const key &B) {
-        ge_p3 B2, A2;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&B2, B.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&A2, A.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-        ge_cached tmp2;
-        ge_p3_to_cached(&tmp2, &B2);
-        ge_p1p1 tmp3;
-        ge_add(&tmp3, &A2, &tmp2);
-        ge_p1p1_to_p3(&A2, &tmp3);
-        ge_p3_tobytes(AB.bytes, &A2);
+      int r = crypto_core_ed25519_add(AB.bytes, A.bytes, B.bytes);
+      CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "add keys not in main group");
     }
 
     rct::key addKeys(const key &A, const key &B) {
