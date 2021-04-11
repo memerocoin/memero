@@ -35,9 +35,4 @@
 namespace rct {
   //other basepoint H = toPoint(cn_fast_hash(G)), G the basepoint
   extern const key H;
-
-  //H2 contains 2^i H in each index, i.e. H, 2H, 4H, 8H, ...
-  //This is used for the range proofG
-  //You can regenerate this by running python2 Test.py HPow2 in the MiniNero repo
-  extern const key64 H2;
 }
