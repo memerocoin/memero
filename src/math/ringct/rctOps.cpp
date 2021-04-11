@@ -67,17 +67,6 @@ namespace rct {
 
     //Various key generation functions
 
-    bool toPointCheckOrder(ge_p3 *P, const unsigned char *data)
-    {
-        if (ge_frombytes_vartime(P, data))
-            return false;
-        ge_p2 R;
-        ge_scalarmult(&R, curveOrder().bytes, P);
-        key tmp;
-        ge_tobytes(tmp.bytes, &R);
-        return tmp == identity();
-    }
-
     //generates a random scalar which can be used as a secret key or mask
     void skGen(key &sk) {
         random32_unbiased(sk.bytes);
@@ -248,8 +237,7 @@ namespace rct {
 
     //Computes lA where l is the curve order
     bool isInMainSubgroup(const key & A) {
-        ge_p3 p3;
-        return toPointCheckOrder(&p3, A.bytes);
+        return 1 == crypto_core_ed25519_is_valid_point(A.bytes);
     }
 
     //Curve addition / subtractions

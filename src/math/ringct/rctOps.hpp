@@ -81,7 +81,6 @@ namespace rct {
     keyM keyMInit(size_t rows, size_t cols);
 
     //Various key generation functions        
-    bool toPointCheckOrder(ge_p3 *P, const unsigned char *data);
 
     //generates a random scalar which can be used as a secret key or mask
     key skGen();
