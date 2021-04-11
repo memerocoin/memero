@@ -244,6 +244,12 @@ namespace rct {
         return 1 == crypto_core_ed25519_is_valid_point(A.bytes);
     }
 
+    key ge_p3_tokey(const ge_p3 & x) {
+      key k;
+      ge_p3_tobytes(k.bytes, &x);
+      return k;
+    }
+
     //Curve addition / subtractions
 
     //for curve points: AB = A + B

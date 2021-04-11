@@ -134,8 +134,7 @@ namespace rct {
         // Key images
         ge_p3 H_p3;
         hash_to_p3(H_p3,P[l]);
-        key H;
-        ge_p3_tobytes(H.bytes,&H_p3);
+        key H = ge_p3_tokey(H_p3);
 
         key D;
 
@@ -404,7 +403,6 @@ namespace rct {
             ge_p3 hash8_p3;
             ge_p3 temp_p3;
             ge_p1p1 temp_p1;
-            key C;
 
             while (i < n) {
                 sc_0(c_new.bytes);
@@ -414,7 +412,7 @@ namespace rct {
                 CHECK_AND_ASSERT_MES(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
                 ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
                 ge_p1p1_to_p3(&temp_p3,&temp_p1);
-                ge_p3_tobytes(C.bytes, &temp_p3);
+                key C = ge_p3_tokey(temp_p3);
 
                 // Compute L
                 addKeys_aGbBcC(L

@@ -123,6 +123,8 @@ namespace rct {
     // checks a is in the main subgroup (ie, not a small one)
     bool isInMainSubgroup(const key & a);
 
+    key ge_p3_tokey(const ge_p3& x);
+
     //Curve addition / subtractions
 
     //for curve points: AB = A + B
