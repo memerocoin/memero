@@ -175,27 +175,30 @@ namespace rct {
 
     //Scalar multiplications of curve points
 
+    key normalizeKey(const key& a) {
+      key k = a;
+      sc_reduce32(k.bytes);
+      return k;
+    }
+
     //does a * G where a is a scalar and G is the curve basepoint
     void scalarmultBase(key &aG,const key &a) {
-        key k = a;
-        sc_reduce32(k.bytes);
-        crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
+      key k = normalizeKey(a);
+      crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
     key scalarmultBase(const key & a) {
-        key aG;
-        scalarmultBase(aG, a);
-        return aG;
+      key aG;
+      scalarmultBase(aG, a);
+      return aG;
     }
 
     //does a * P where a is a scalar and P is an arbitrary point
     void scalarmultKey(key & aP, const key &P, const key &a) {
-        ge_p3 A;
-        ge_p2 R;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&A, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-        ge_scalarmult(&R, a.bytes, &A);
-        ge_tobytes(aP.bytes, &R);
+        key s = normalizeKey(a);
+        int r = crypto_scalarmult_ed25519_noclamp(aP.bytes, s.bytes, P.bytes);
+        CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "scalar mult key not in subgroup");
     }
 
     //does a * P where a is a scalar and P is an arbitrary point
