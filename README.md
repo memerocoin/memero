@@ -22,40 +22,4 @@ Specifications
 * Ring size: 32
 
 
-How to build
-============
-
-Debian testing (for gcc10)
--------------------------
-
-```
-sudo apt install git build-essential cmake -y
-
-sudo apt install \
-libboost-dev \
-libboost-program-options-dev \
-libboost-serialization-dev \
-libboost-system-dev \
--y
-
-sudo apt install \
-libreadline6-dev \
-libsodium-dev \
-libssl-dev \
-rapidjson-dev \
--y
-
-git clone https://gitlab.com/fuwa/lolnero.git
-
-mkdir lolnero/build
-cd lolnero/build
-
-cmake .. && make
-```
-
-Generated binaries will be in `bin/`.
-
-
-[Website](https://lolnero.org)
-=============================
-
+# [How to build](https://lolnero.org/build.html)
