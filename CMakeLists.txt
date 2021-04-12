@@ -78,7 +78,7 @@ find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 ## boost
-find_package(Boost 1.70 REQUIRED COMPONENTS system serialization program_options)
+find_package(Boost 1.74 REQUIRED COMPONENTS system serialization program_options)
 include_directories(${Boost_INCLUDE_DIRS})
 
 ## readline
