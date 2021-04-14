@@ -205,23 +205,16 @@ namespace cryptonote {
     if (L < N*N*T/20 ) { L =  N*N*T/20; }
     avg_D = static_cast<uint64_t>(( cumulative_difficulties[N] - cumulative_difficulties[0] )/ N);
 
-    // Prevent round off error for small D and overflow for large D.
-    if (HEIGHT < 45000) {
-      if (avg_D > 2000000*N*N*T) {
-        next_D = (avg_D/(200*L))*(N*(N+1)*T*99);
-      }
-      else {
-        next_D = (avg_D*N*(N+1)*T*99)/(200*L);
-      }
-    }
     // overflow bug fix
+    const uint64_t avg_breakpoint = HEIGHT < 300 ?
+      2000000*N*N*T : uint64_t(-1)/(N*(N+1)*T*99);
+
+    // Prevent round off error for small D and overflow for large D.
+    if (avg_D > avg_breakpoint) {
+      next_D = (avg_D/(200*L))*(N*(N+1)*T*99);
+    }
     else {
-      if (avg_D > uint64_t(-1)/(N*(N+1)*T*99)) {
-        next_D = (avg_D/(200*L))*(N*(N+1)*T*99);
-      }
-      else {
-        next_D = (avg_D*N*(N+1)*T*99)/(200*L);
-      }
+      next_D = (avg_D*N*(N+1)*T*99)/(200*L);
     }
 
     return  next_D;
