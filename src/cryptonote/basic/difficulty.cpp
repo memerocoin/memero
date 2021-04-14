@@ -97,16 +97,33 @@ namespace cryptonote {
       static_cast<uint64_t>(( cumulative_difficulties[N] - cumulative_difficulties[0] )/ N);
 
     // overflow bug fix
-    const uint64_t avg_too_height = HEIGHT < 300 ?
+    const uint64_t n_n_plus_1_t_99 = N*(N+1)*T*99;
+    const uint64_t l_200 = 200 * L;
+    const uint64_t avg_too_high = HEIGHT < 300 ?
       2000000*N*N*T
-      : std::numeric_limits<uint64_t>::max() / (N*(N+1)*T*99);
+      : std::numeric_limits<uint64_t>::max() / n_n_plus_1_t_99;
 
-    // Prevent round off error for small D and overflow for large D.
-    const uint64_t next_D = avg_D >= avg_too_height ?
-      avg_D/((200*L))*(N*(N+1)*T*99)
-      : (avg_D*N*(N+1)*T*99)/(200*L);
+    if (HEIGHT < 279) {
+      const uint64_t big_avg = 2000000*N*N*T;
 
-    return  next_D;
+      const uint64_t next_D =
+        avg_D >= big_avg ?
+        // use a wrong algorithm ...
+        avg_D / (l_200 * n_n_plus_1_t_99)
+        : (avg_D * n_n_plus_1_t_99) / l_200;
+
+      return next_D;
+    }
+    else {
+      // Prevent round off error for small D and overflow for large D.
+      const uint64_t big_avg = std::numeric_limits<uint64_t>::max() / n_n_plus_1_t_99;
+      const uint64_t next_D =
+        avg_D >= big_avg ?
+        (avg_D / l_200) * n_n_plus_1_t_99
+        : (avg_D * n_n_plus_1_t_99) / l_200;
+
+      return  next_D;
+    }
   }
 
   std::string hex(const difficulty_type _v)
