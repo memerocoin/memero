@@ -825,12 +825,12 @@ start:
     m_difficulties = difficulties;
   }
 
-  size_t target = get_difficulty_target();
-  uint64_t T = DIFFICULTY_TARGET_V2;
-  uint64_t N = DIFFICULTY_WINDOW_V3;
-  uint64_t HEIGHT = m_db->height();
+  const size_t target = get_difficulty_target();
+  const uint64_t T = DIFFICULTY_TARGET_V2;
+  const uint64_t N = DIFFICULTY_WINDOW_V3;
+  const uint64_t HEIGHT = m_db->height();
 
-  difficulty_type diff = next_difficulty_v5(timestamps, m_nettype, difficulties, T, N, HEIGHT);
+  const difficulty_type diff = next_difficulty(timestamps, m_nettype, difficulties, T, N, HEIGHT);
 
   LOCK_RECURSIVE_MUTEX(m_difficulty_lock);
   m_difficulty_for_next_block_top_hash = top_hash;
@@ -1092,12 +1092,12 @@ difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std:
   }
 
   // FIXME: This will fail if fork activation heights are subject to voting
-  uint64_t T = DIFFICULTY_TARGET_V2;
-  uint64_t N = DIFFICULTY_WINDOW_V3;
-  uint64_t HEIGHT = m_db->height();
+  const uint64_t T = DIFFICULTY_TARGET_V2;
+  const uint64_t N = DIFFICULTY_WINDOW_V3;
+  const uint64_t HEIGHT = m_db->height();
 
   // calculate the difficulty target for the block and return it
-  return next_difficulty_v5(timestamps, m_nettype, cumulative_difficulties, T, N, HEIGHT);
+  return next_difficulty(timestamps, m_nettype, cumulative_difficulties, T, N, HEIGHT);
 }
 //------------------------------------------------------------------
 // This function does a sanity check on basic things that all miner

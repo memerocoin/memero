@@ -56,10 +56,9 @@ namespace cryptonote
      *
      * @return true if valid, else false
      */
-    bool check_hash_64(const crypto::hash &hash, const uint64_t difficulty);
-    bool check_hash_128(const crypto::hash &hash, const difficulty_type difficulty);
     bool check_hash(const crypto::hash &hash, const difficulty_type difficulty);
-    const difficulty_type next_difficulty_v5
+
+    difficulty_type next_difficulty
     (
      const std::vector<std::uint64_t> timestamps
      , const network_type m_nettype
