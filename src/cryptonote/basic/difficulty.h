@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
 // 
 // All rights reserved.
@@ -33,7 +34,9 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+
 #include <boost/multiprecision/cpp_int.hpp>
+
 #include "math/crypto/hash.hpp"
 #include "config/network.hpp"
 
@@ -53,10 +56,18 @@ namespace cryptonote
      *
      * @return true if valid, else false
      */
-    bool check_hash_64(const crypto::hash &hash, uint64_t difficulty);
-    bool check_hash_128(const crypto::hash &hash, difficulty_type difficulty);
-    bool check_hash(const crypto::hash &hash, difficulty_type difficulty);
-    difficulty_type next_difficulty_v5(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, uint64_t T, uint64_t N, uint64_t HEIGHT);
+    bool check_hash_64(const crypto::hash &hash, const uint64_t difficulty);
+    bool check_hash_128(const crypto::hash &hash, const difficulty_type difficulty);
+    bool check_hash(const crypto::hash &hash, const difficulty_type difficulty);
+    const difficulty_type next_difficulty_v5
+    (
+     const std::vector<std::uint64_t> timestamps
+     , const network_type m_nettype
+     , const std::vector<difficulty_type> cumulative_difficulties
+     , const uint64_t T
+     , const uint64_t N
+     , const uint64_t HEIGHT
+     );
 
-    std::string hex(difficulty_type v);
+    std::string hex(const difficulty_type v);
 }

@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
 //
 // All rights reserved.
@@ -28,17 +29,17 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "difficulty.h"
+
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
-#include <boost/math/special_functions/round.hpp>
 
 #include "tools/epee/include/int-util.h"
 #include "math/crypto/hash.hpp"
 #include "config/cryptonote.hpp"
-#include "difficulty.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "difficulty"
@@ -49,51 +50,9 @@ namespace cryptonote {
   using std::uint64_t;
   using std::vector;
 
-#if defined(__x86_64__)
   static inline void mul(uint64_t a, uint64_t b, uint64_t &low, uint64_t &high) {
     low = mul128(a, b, &high);
   }
-
-#else
-
-  static inline void mul(uint64_t a, uint64_t b, uint64_t &low, uint64_t &high) {
-    // __int128 isn't part of the standard, so the previous function wasn't portable. mul128() in Windows is fine,
-    // but this portable function should be used elsewhere. Credit for this function goes to latexi95.
-
-    uint64_t aLow = a & 0xFFFFFFFF;
-    uint64_t aHigh = a >> 32;
-    uint64_t bLow = b & 0xFFFFFFFF;
-    uint64_t bHigh = b >> 32;
-
-    uint64_t res = aLow * bLow;
-    uint64_t lowRes1 = res & 0xFFFFFFFF;
-    uint64_t carry = res >> 32;
-
-    res = aHigh * bLow + carry;
-    uint64_t highResHigh1 = res >> 32;
-    uint64_t highResLow1 = res & 0xFFFFFFFF;
-
-    res = aLow * bHigh;
-    uint64_t lowRes2 = res & 0xFFFFFFFF;
-    carry = res >> 32;
-
-    res = aHigh * bHigh + carry;
-    uint64_t highResHigh2 = res >> 32;
-    uint64_t highResLow2 = res & 0xFFFFFFFF;
-
-    //Addition
-
-    uint64_t r = highResLow1 + lowRes2;
-    carry = r >> 32;
-    low = (r << 32) | lowRes1;
-    r = highResHigh1 + highResLow2 + carry;
-    uint64_t d3 = r & 0xFFFFFFFF;
-    carry = r >> 32;
-    r = highResHigh2 + carry;
-    high = d3 | (r << 32);
-  }
-
-#endif
 
   static inline bool cadd(uint64_t a, uint64_t b) {
     return a + b < a;
@@ -103,7 +62,7 @@ namespace cryptonote {
     return a + b < a || (c && a + b == (uint64_t) -1);
   }
 
-  bool check_hash_64(const crypto::hash &hash, uint64_t difficulty) {
+  bool check_hash_64(const crypto::hash &hash, const uint64_t difficulty) {
     uint64_t low, high, top, cur;
     // First check the highest word, this will most likely fail for a random hash.
     mul(swap64le(((const uint64_t *) &hash)[3]), difficulty, top, high);
@@ -120,19 +79,13 @@ namespace cryptonote {
     return !carry;
   }
 
-#if defined(_MSC_VER)
-#ifdef max
-#undef max
-#endif
-#endif
-
   const difficulty_type max64bit(std::numeric_limits<std::uint64_t>::max());
   const boost::multiprecision::uint256_t max128bit(std::numeric_limits<boost::multiprecision::uint128_t>::max());
   const boost::multiprecision::uint512_t max256bit(std::numeric_limits<boost::multiprecision::uint256_t>::max());
 
 #define FORCE_FULL_128_BITS
 
-  bool check_hash_128(const crypto::hash &hash, difficulty_type difficulty) {
+  bool check_hash_128(const crypto::hash &hash, const difficulty_type difficulty) {
 #ifndef FORCE_FULL_128_BITS
     // fast check
     if (difficulty >= max64bit && ((const uint64_t *) &hash)[3] > 0)
@@ -151,17 +104,18 @@ namespace cryptonote {
     return hashVal * difficulty <= max256bit;
   }
 
-  bool check_hash(const crypto::hash &hash, difficulty_type difficulty) {
+  bool check_hash(const crypto::hash &hash, const difficulty_type difficulty) {
     if (difficulty <= max64bit) // if can convert to small difficulty - do it
       return check_hash_64(hash, difficulty.convert_to<std::uint64_t>());
     else
       return check_hash_128(hash, difficulty);
   }
 
-  std::string hex(difficulty_type v)
+  std::string hex(const difficulty_type _v)
   {
     static const char chars[] = "0123456789abcdef";
     std::string s;
+    difficulty_type v = _v;
     while (v > 0)
       {
         s.push_back(chars[(v & 0xf).convert_to<unsigned>()]);
@@ -176,7 +130,16 @@ namespace cryptonote {
   // LWMA-1 difficulty algorithm 
   // Copyright (c) 2017-2019 Zawy, MIT License
   // https://github.com/zawy12/difficulty-algorithms/issues/3
-  difficulty_type next_difficulty_v5(std::vector<std::uint64_t> timestamps, network_type m_nettype, std::vector<difficulty_type> cumulative_difficulties, uint64_t T, uint64_t N, uint64_t HEIGHT) {
+  const difficulty_type next_difficulty_v5
+    (
+     const std::vector<std::uint64_t> timestamps
+     , const network_type m_nettype
+     , const std::vector<difficulty_type> cumulative_difficulties
+     , const uint64_t T
+     , const uint64_t N
+     , const uint64_t HEIGHT
+     )
+  {
     assert(timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1 );
     // assert(timestamps.size() == N+1);
 
@@ -187,12 +150,9 @@ namespace cryptonote {
     // make it for 256 CPUs in case no one will be mining
     // 2 ^ (22 + 8 + 8) = 2 ^ 38 = 1 << 38
     const difficulty_type _b = 1;
-    if (m_nettype == TESTNET) {
-      if (HEIGHT < N + 3) { return _b << 22; }
-    }
     if (HEIGHT < N + 3) { return _b << 38; }
 
-    uint64_t  L(0), next_D, i, this_timestamp(0), previous_timestamp(0), avg_D;
+    uint64_t  L(0), i, this_timestamp(0), previous_timestamp(0);
 
     previous_timestamp = timestamps[0]-T;
     for ( i = 1; i <= N; i++) {
@@ -203,19 +163,18 @@ namespace cryptonote {
       previous_timestamp = this_timestamp;
     }
     if (L < N*N*T/20 ) { L =  N*N*T/20; }
-    avg_D = static_cast<uint64_t>(( cumulative_difficulties[N] - cumulative_difficulties[0] )/ N);
+
+    const uint64_t avg_D =
+      static_cast<uint64_t>(( cumulative_difficulties[N] - cumulative_difficulties[0] )/ N);
 
     // overflow bug fix
     const uint64_t avg_breakpoint = HEIGHT < 300 ?
       2000000*N*N*T : uint64_t(-1)/(N*(N+1)*T*99);
 
     // Prevent round off error for small D and overflow for large D.
-    if (avg_D > avg_breakpoint) {
-      next_D = (avg_D/(200*L))*(N*(N+1)*T*99);
-    }
-    else {
-      next_D = (avg_D*N*(N+1)*T*99)/(200*L);
-    }
+    const uint64_t next_D = avg_D > avg_breakpoint ?
+      avg_D/((200*L))*(N*(N+1)*T*99)
+      : (avg_D*N*(N+1)*T*99)/(200*L);
 
     return  next_D;
   }
