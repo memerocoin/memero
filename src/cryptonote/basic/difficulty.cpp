@@ -93,17 +93,16 @@ namespace cryptonote {
     }
     if (L < N*N*T/20 ) { L =  N*N*T/20; }
 
-    const uint64_t avg_D =
-      static_cast<uint64_t>(( cumulative_difficulties[N] - cumulative_difficulties[0] )/ N);
+
+    using namespace boost::multiprecision;
 
     // overflow bug fix
-    const uint64_t n_n_plus_1_t_99 = N*(N+1)*T*99;
-    const uint64_t l_200 = 200 * L;
-    const uint64_t avg_too_high = HEIGHT < 300 ?
-      2000000*N*N*T
-      : std::numeric_limits<uint64_t>::max() / n_n_plus_1_t_99;
-
     if (HEIGHT < 279) {
+      // there's potential overflow in some of these blocks
+      const uint64_t avg_D =
+        static_cast<uint64_t>( cumulative_difficulties[N] - cumulative_difficulties[0] ) / N;
+      const uint64_t n_n_plus_1_t_99 = N*(N+1)*T*99;
+      const uint64_t l_200 = 200 * L;
       const uint64_t big_avg = 2000000*N*N*T;
 
       const uint64_t next_D =
@@ -112,17 +111,21 @@ namespace cryptonote {
         avg_D / (l_200 * n_n_plus_1_t_99)
         : (avg_D * n_n_plus_1_t_99) / l_200;
 
-      return next_D;
+      return uint128_t(next_D);
     }
     else {
-      // Prevent round off error for small D and overflow for large D.
-      const uint64_t big_avg = std::numeric_limits<uint64_t>::max() / n_n_plus_1_t_99;
-      const uint64_t next_D =
-        avg_D >= big_avg ?
-        (avg_D / l_200) * n_n_plus_1_t_99
-        : (avg_D * n_n_plus_1_t_99) / l_200;
+      const uint256_t avg_D =
+        uint256_t( cumulative_difficulties[N] - cumulative_difficulties[0] ) / uint256_t(N);
+      const uint256_t n_n_plus_1_t_99 = N*(N+1)*T*99;
+      const uint256_t l_200 = 200 * L;
+      const uint256_t max128bit(std::numeric_limits<uint128_t>::max());
 
-      return  next_D;
+      // Prevent round off error for small D and overflow for large D.
+      const uint256_t next_D = (avg_D * n_n_plus_1_t_99) / l_200;
+
+      assert(next_D <= max128bit);
+
+      return uint128_t(next_D);
     }
   }
 
