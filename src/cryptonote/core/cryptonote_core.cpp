@@ -73,7 +73,7 @@ namespace cryptonote
   , "Run on testnet. The wallet must be launched with --testnet flag."
   , false
   };
-  const command_line::arg_descriptor<difficulty_type> arg_fixed_difficulty  = {
+  const command_line::arg_descriptor<diff_t> arg_fixed_difficulty  = {
     "fixed-difficulty"
   , "Fixed difficulty used for testing."
   , 0
@@ -370,7 +370,7 @@ namespace cryptonote
       MERROR("Failed to parse block rate notify spec: " << e.what());
     }
 
-    const difficulty_type fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
+    const diff_t fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
     r = m_blockchain_storage.init(db.release(), m_nettype, m_offline, test_options, fixed_difficulty);
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize blockchain storage");
 
@@ -945,12 +945,12 @@ namespace cryptonote
     m_mempool.set_relayed(epee::to_span(tx_hashes), tx_relay);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_block_template(block& b, const account_public_address& adr, difficulty_type& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+  bool core::get_block_template(block& b, const account_public_address& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
   {
     return m_blockchain_storage.create_block_template(b, adr, diffic, height, expected_reward, ex_nonce);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_block_template(block& b, const crypto::hash *prev_block, const account_public_address& adr, difficulty_type& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+  bool core::get_block_template(block& b, const crypto::hash *prev_block, const account_public_address& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
   {
     return m_blockchain_storage.create_block_template(b, prev_block, adr, diffic, height, expected_reward, ex_nonce);
   }
@@ -1161,7 +1161,7 @@ namespace cryptonote
     return m_blockchain_storage.get_tail_id();
   }
   //-----------------------------------------------------------------------------------------------
-  difficulty_type core::get_block_cumulative_difficulty(uint64_t height) const
+  diff_t core::get_block_cumulative_difficulty(uint64_t height) const
   {
     return m_blockchain_storage.get_db().get_block_cumulative_difficulty(height);
   }

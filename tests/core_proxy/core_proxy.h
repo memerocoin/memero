@@ -98,7 +98,7 @@ namespace tests
     bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata, cryptonote::block>>& blocks, std::vector<cryptonote::blobdata>& txs) const { return false; }
     bool get_transactions(const std::vector<crypto::hash>& txs_ids, std::vector<cryptonote::transaction>& txs, std::vector<crypto::hash>& missed_txs) const { return false; }
     bool get_block_by_hash(const crypto::hash &h, cryptonote::block &blk, bool *orphan = NULL) const { return false; }
-    cryptonote::difficulty_type get_block_cumulative_difficulty(uint64_t height) const { return 0; }
+    cryptonote::diff_t get_block_cumulative_difficulty(uint64_t height) const { return 0; }
     bool fluffy_blocks_enabled() const { return false; }
     uint64_t prevalidate_block_hashes(uint64_t height, const std::vector<crypto::hash> &hashes, const std::vector<uint64_t> &weights) { return 0; }
     bool has_block_weights(uint64_t height, uint64_t nblocks) const { return false; }

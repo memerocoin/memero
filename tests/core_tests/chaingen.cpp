@@ -82,7 +82,7 @@ namespace
     virtual void add_block( const cryptonote::block& blk
         , size_t block_weight
         , uint64_t long_term_block_weight
-        , const cryptonote::difficulty_type& cumulative_difficulty
+        , const cryptonote::diff_t& cumulative_difficulty
         , const uint64_t& coins_generated
         , uint64_t num_rct_outs
         , const crypto::hash& blk_hash
@@ -316,7 +316,7 @@ bool test_generator::construct_block(cryptonote::block& blk, const cryptonote::b
 bool test_generator::construct_block_manually(block& blk, const block& prev_block, const account_base& miner_acc,
                                               int actual_params/* = bf_none*/, uint8_t major_ver/* = 0*/,
                                               uint8_t minor_ver/* = 0*/, uint64_t timestamp/* = 0*/,
-                                              const crypto::hash& prev_id/* = crypto::hash()*/, const difficulty_type& diffic/* = 1*/,
+                                              const crypto::hash& prev_id/* = crypto::hash()*/, const diff_t& diffic/* = 1*/,
                                               const transaction& miner_tx/* = transaction()*/,
                                               const std::vector<crypto::hash>& tx_hashes/* = std::vector<crypto::hash>()*/,
                                               size_t txs_weight/* = 0*/, size_t max_outs/* = 0*/, uint8_t hf_version/* = 1*/,
@@ -347,7 +347,7 @@ bool test_generator::construct_block_manually(block& blk, const block& prev_bloc
 
   //blk.tree_root_hash = get_tx_tree_hash(blk);
 
-  difficulty_type a_diffic = actual_params & bf_diffic ? diffic : get_test_difficulty();
+  diff_t a_diffic = actual_params & bf_diffic ? diffic : get_test_difficulty();
   fill_nonce(blk, a_diffic, height);
 
   const uint64_t block_reward = get_outs_money_amount(blk.miner_tx) - fees;
@@ -363,7 +363,7 @@ bool test_generator::construct_block_manually_tx(cryptonote::block& blk, const c
   return construct_block_manually(blk, prev_block, miner_acc, bf_tx_hashes, 0, 0, 0, crypto::hash(), 0, transaction(), tx_hashes, txs_weight);
 }
 
-void test_generator::fill_nonce(cryptonote::block& blk, const difficulty_type& diffic, uint64_t height)
+void test_generator::fill_nonce(cryptonote::block& blk, const diff_t& diffic, uint64_t height)
 {
   const cryptonote::Blockchain *blockchain = nullptr;
   std::unique_ptr<cryptonote::Blockchain> bc;

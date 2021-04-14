@@ -250,12 +250,12 @@ public:
   bool construct_block_manually(cryptonote::block& blk, const cryptonote::block& prev_block,
     const cryptonote::account_base& miner_acc, int actual_params = bf_none, uint8_t major_ver = 0,
     uint8_t minor_ver = 0, uint64_t timestamp = 0, const crypto::hash& prev_id = crypto::hash(),
-    const cryptonote::difficulty_type& diffic = 1, const cryptonote::transaction& miner_tx = cryptonote::transaction(),
+    const cryptonote::diff_t& diffic = 1, const cryptonote::transaction& miner_tx = cryptonote::transaction(),
     const std::vector<crypto::hash>& tx_hashes = std::vector<crypto::hash>(), size_t txs_sizes = 0, size_t max_outs = 999,
     uint8_t hf_version = 1, uint64_t fees = 0);
   bool construct_block_manually_tx(cryptonote::block& blk, const cryptonote::block& prev_block,
     const cryptonote::account_base& miner_acc, const std::vector<crypto::hash>& tx_hashes, size_t txs_size);
-  void fill_nonce(cryptonote::block& blk, const cryptonote::difficulty_type& diffic, uint64_t height);
+  void fill_nonce(cryptonote::block& blk, const cryptonote::diff_t& diffic, uint64_t height);
   void set_events(const std::vector<test_event_entry> * events) { m_events = events; }
   void set_network_type(const cryptonote::network_type nettype) { m_nettype = nettype; }
 
@@ -412,7 +412,7 @@ cryptonote::account_public_address get_address(const cryptonote::account_keys& i
 cryptonote::account_public_address get_address(const cryptonote::account_base& inp);
 cryptonote::account_public_address get_address(const cryptonote::tx_destination_entry& inp);
 
-inline cryptonote::difficulty_type get_test_difficulty() {return 2;}
+inline cryptonote::diff_t get_test_difficulty() {return 2;}
 inline uint64_t current_difficulty_window(){ return constant::DIFFICULTY_TARGET_V2; }
 
 cryptonote::tx_destination_entry build_dst(const var_addr_t& to, bool is_subaddr=false, uint64_t amount=0);

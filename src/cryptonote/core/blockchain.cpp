@@ -267,7 +267,7 @@ uint64_t Blockchain::get_current_blockchain_height() const
 //------------------------------------------------------------------
 //FIXME: possibly move this into the constructor, to avoid accidentally
 //       dereferencing a null BlockchainDB pointer
-bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline, const cryptonote::test_options *test_options, difficulty_type fixed_difficulty)
+bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline, const cryptonote::test_options *test_options, diff_t fixed_difficulty)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
 
@@ -708,7 +708,7 @@ bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orph
 // last DIFFICULTY_BLOCKS_COUNT blocks and passes them to next_difficulty,
 // returning the result of that call.  Ignores the genesis block, and can use
 // less blocks than desired if there aren't enough.
-difficulty_type Blockchain::get_difficulty_for_next_block()
+diff_t Blockchain::get_difficulty_for_next_block()
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
 
@@ -723,7 +723,7 @@ difficulty_type Blockchain::get_difficulty_for_next_block()
   }
 
 start:
-  difficulty_type D = 0;
+  diff_t D = 0;
 
   crypto::hash top_hash = get_tail_id();
   {
@@ -742,7 +742,7 @@ start:
 
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   std::vector<uint64_t> timestamps;
-  std::vector<difficulty_type> difficulties;
+  std::vector<diff_t> difficulties;
   uint64_t height;
   auto new_top_hash = get_tail_id(height); // get it again now that we have the lock
   ++height;
@@ -777,7 +777,7 @@ start:
   }
   //else
   std::vector<uint64_t> timestamps_from_cache = timestamps;
-  std::vector<difficulty_type> difficulties_from_cache = difficulties;
+  std::vector<diff_t> difficulties_from_cache = difficulties;
 
   {
     uint64_t offset = height - std::min <uint64_t> (height, static_cast<uint64_t>(difficulty_blocks_count));
@@ -815,7 +815,7 @@ start:
       for (uint64_t h = sh; h < dbh; ++h)
       {
         uint64_t ts = m_db->get_block_timestamp(h);
-        difficulty_type d = m_db->get_block_cumulative_difficulty(h);
+        diff_t d = m_db->get_block_cumulative_difficulty(h);
         ss << "  " << h << " " << ts << " " << d << std::endl;
       }
       print = true;
@@ -830,7 +830,7 @@ start:
   const uint64_t N = DIFFICULTY_WINDOW_V3;
   const uint64_t HEIGHT = m_db->height();
 
-  const difficulty_type diff = next_difficulty(timestamps, m_nettype, difficulties, T, N, HEIGHT);
+  const diff_t diff = next_difficulty(timestamps, m_nettype, difficulties, T, N, HEIGHT);
 
   LOCK_RECURSIVE_MUTEX(m_difficulty_lock);
   m_difficulty_for_next_block_top_hash = top_hash;
@@ -1027,7 +1027,7 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
 //------------------------------------------------------------------
 // This function calculates the difficulty target for the block being added to
 // an alternate chain.
-difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std::list<block_extended_info>& alt_chain, block_extended_info& bei) const
+diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<block_extended_info>& alt_chain, block_extended_info& bei) const
 {
   if (m_fixed_difficulty)
   {
@@ -1036,7 +1036,7 @@ difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std:
 
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::vector<uint64_t> timestamps;
-  std::vector<difficulty_type> cumulative_difficulties;
+  std::vector<diff_t> cumulative_difficulties;
 
   size_t height = m_db->height();
   size_t difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT_V3;
@@ -1184,7 +1184,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
 // in a lot of places.  That flag is not referenced in any of the code
 // nor any of the makefiles, howeve.  Need to look into whether or not it's
 // necessary at all.
-bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const account_public_address& miner_address, difficulty_type& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const account_public_address& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   uint64_t pool_cookie;
@@ -1404,7 +1404,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
   return false;
 }
 //------------------------------------------------------------------
-bool Blockchain::create_block_template(block& b, const account_public_address& miner_address, difficulty_type& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+bool Blockchain::create_block_template(block& b, const account_public_address& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
 {
   return create_block_template(b, NULL, miner_address, diffic, height, expected_reward, ex_nonce);
 }
@@ -1538,7 +1538,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     }
 
     // Check the block's hash against the difficulty target for its alt chain
-    difficulty_type current_diff = get_next_difficulty_for_alternative_chain(alt_chain, bei);
+    diff_t current_diff = get_next_difficulty_for_alternative_chain(alt_chain, bei);
     CHECK_AND_ASSERT_MES(current_diff, false, "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!");
     crypto::hash proof_of_work;
     memset(proof_of_work.data, 0xff, sizeof(proof_of_work.data));
@@ -1563,7 +1563,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     // FIXME:
     // this brings up an interesting point: consider allowing to get block
     // difficulty both by height OR by hash, not just height.
-    difficulty_type main_chain_cumulative_difficulty = m_db->get_block_cumulative_difficulty(m_db->height() - 1);
+    diff_t main_chain_cumulative_difficulty = m_db->get_block_cumulative_difficulty(m_db->height() - 1);
     if (alt_chain.size())
     {
       bei.cumulative_difficulty = prev_data.cumulative_difficulty_high;
@@ -1949,7 +1949,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   return true;
 }
 //------------------------------------------------------------------
-difficulty_type Blockchain::block_difficulty(uint64_t i) const
+diff_t Blockchain::block_difficulty(uint64_t i) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
@@ -2184,7 +2184,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   bool result = find_blockchain_supplement(qblock_ids, resp.m_block_ids, &resp.m_block_weights, resp.start_height, resp.total_height);
   if (result)
   {
-    cryptonote::difficulty_type wide_cumulative_difficulty = m_db->get_block_cumulative_difficulty(resp.total_height - 1);
+    cryptonote::diff_t wide_cumulative_difficulty = m_db->get_block_cumulative_difficulty(resp.total_height - 1);
     resp.cumulative_difficulty = (wide_cumulative_difficulty & 0xffffffffffffffff).convert_to<uint64_t>();
     resp.cumulative_difficulty_top64 = ((wide_cumulative_difficulty >> 64) & 0xffffffffffffffff).convert_to<uint64_t>();
   }
@@ -3115,7 +3115,7 @@ leave:
   // so we need to check the return type.
   // FIXME: get_difficulty_for_next_block can also assert, look into
   // changing this to throwing exceptions instead so we can clean up.
-  difficulty_type current_diffic = get_difficulty_for_next_block();
+  diff_t current_diffic = get_difficulty_for_next_block();
   CHECK_AND_ASSERT_MES(current_diffic, false, "!!!!!!!!! difficulty overhead !!!!!!!!!");
 
   TIME_MEASURE_FINISH(target_calculating_time);
@@ -3300,7 +3300,7 @@ leave:
 
   TIME_MEASURE_FINISH(vmt);
   size_t block_weight;
-  difficulty_type cumulative_difficulty;
+  diff_t cumulative_difficulty;
 
   // populate various metadata about the block to be stored alongside it.
   block_weight = cumulative_block_weight;
@@ -4226,7 +4226,7 @@ void Blockchain::invalidate_block_template_cache()
   m_btc_valid = false;
 }
 
-void Blockchain::cache_block_template(const block &b, const cryptonote::account_public_address &address, const blobdata &nonce, const difficulty_type &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie)
+void Blockchain::cache_block_template(const block &b, const cryptonote::account_public_address &address, const blobdata &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie)
 {
   MDEBUG("Setting block template cache");
   m_btc = b;

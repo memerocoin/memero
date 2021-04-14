@@ -371,7 +371,7 @@ namespace cryptonote
   {
     m_core.get_blockchain_top(hshd.current_height, hshd.top_id);
     hshd.top_version = config::lol::constant_hf_version;
-    difficulty_type wide_cumulative_difficulty = m_core.get_block_cumulative_difficulty(hshd.current_height);
+    diff_t wide_cumulative_difficulty = m_core.get_block_cumulative_difficulty(hshd.current_height);
     hshd.cumulative_difficulty = (wide_cumulative_difficulty & 0xffffffffffffffff).convert_to<uint64_t>();
     hshd.cumulative_difficulty_top64 = ((wide_cumulative_difficulty >> 64) & 0xffffffffffffffff).convert_to<uint64_t>();
     hshd.current_height +=1;

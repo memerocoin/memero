@@ -31,10 +31,10 @@
 #include "cryptonote/basic/difficulty.h"
 #include "serialization.h"
 
-template<> struct is_basic_type<cryptonote::difficulty_type> { typedef std::true_type type; };
+template<> struct is_basic_type<cryptonote::diff_t> { typedef std::true_type type; };
 
 template <template <bool> class Archive>
-inline bool do_serialize(Archive<false>& ar, cryptonote::difficulty_type &diff)
+inline bool do_serialize(Archive<false>& ar, cryptonote::diff_t &diff)
 {
   uint64_t hi, lo;
   ar.serialize_varint(hi);
@@ -50,7 +50,7 @@ inline bool do_serialize(Archive<false>& ar, cryptonote::difficulty_type &diff)
 }
 
 template <template <bool> class Archive>
-inline bool do_serialize(Archive<true>& ar, cryptonote::difficulty_type &diff)
+inline bool do_serialize(Archive<true>& ar, cryptonote::diff_t &diff)
 {
   if (!ar.stream().good())
     return false;

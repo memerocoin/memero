@@ -734,7 +734,7 @@ estim:
   return threshold_size;
 }
 
-void BlockchainLMDB::add_block(const block& blk, size_t block_weight, uint64_t long_term_block_weight, const difficulty_type& cumulative_difficulty, const uint64_t& coins_generated,
+void BlockchainLMDB::add_block(const block& blk, size_t block_weight, uint64_t long_term_block_weight, const diff_t& cumulative_difficulty, const uint64_t& coins_generated,
     uint64_t num_rct_outs, const crypto::hash& blk_hash)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
@@ -2320,7 +2320,7 @@ std::vector<uint64_t> BlockchainLMDB::get_long_term_block_weights(uint64_t start
   return get_block_info_64bit_fields(start_height, count, offsetof(mdb_block_info, bi_long_term_block_weight));
 }
 
-difficulty_type BlockchainLMDB::get_block_cumulative_difficulty(const uint64_t& height) const
+diff_t BlockchainLMDB::get_block_cumulative_difficulty(const uint64_t& height) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__ << "  height: " << height);
   check_open();
@@ -2338,20 +2338,20 @@ difficulty_type BlockchainLMDB::get_block_cumulative_difficulty(const uint64_t& 
     throw0(DB_ERROR("Error attempting to retrieve a cumulative difficulty from the db"));
 
   mdb_block_info *bi = (mdb_block_info *)result.mv_data;
-  difficulty_type ret = bi->bi_diff_hi;
+  diff_t ret = bi->bi_diff_hi;
   ret <<= 64;
   ret |= bi->bi_diff_lo;
   TXN_POSTFIX_RDONLY();
   return ret;
 }
 
-difficulty_type BlockchainLMDB::get_block_difficulty(const uint64_t& height) const
+diff_t BlockchainLMDB::get_block_difficulty(const uint64_t& height) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
 
-  difficulty_type diff1 = 0;
-  difficulty_type diff2 = 0;
+  diff_t diff1 = 0;
+  diff_t diff2 = 0;
 
   diff1 = get_block_cumulative_difficulty(height);
   if (height != 0)
@@ -3439,7 +3439,7 @@ void BlockchainLMDB::block_rtxn_abort() const
   memset(&m_tinfo->m_ti_rflags, 0, sizeof(m_tinfo->m_ti_rflags));
 }
 
-uint64_t BlockchainLMDB::add_block(const std::pair<block, blobdata>& blk, size_t block_weight, uint64_t long_term_block_weight, const difficulty_type& cumulative_difficulty, const uint64_t& coins_generated,
+uint64_t BlockchainLMDB::add_block(const std::pair<block, blobdata>& blk, size_t block_weight, uint64_t long_term_block_weight, const diff_t& cumulative_difficulty, const uint64_t& coins_generated,
     const std::vector<std::pair<transaction, blobdata>>& txs)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);

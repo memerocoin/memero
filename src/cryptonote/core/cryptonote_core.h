@@ -62,7 +62,7 @@ namespace cryptonote
 
   extern const command_line::arg_descriptor<std::string, false, true> arg_data_dir;
   extern const command_line::arg_descriptor<bool, false> arg_testnet_on;
-  extern const command_line::arg_descriptor<difficulty_type> arg_fixed_difficulty;
+  extern const command_line::arg_descriptor<diff_t> arg_fixed_difficulty;
   extern const command_line::arg_descriptor<bool> arg_offline;
 
   /************************************************************************/
@@ -225,8 +225,8 @@ namespace cryptonote
       *
       * @note see Blockchain::create_block_template
       */
-     virtual bool get_block_template(block& b, const account_public_address& adr, difficulty_type& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce) override;
-     virtual bool get_block_template(block& b, const crypto::hash *prev_block, const account_public_address& adr, difficulty_type& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
+     virtual bool get_block_template(block& b, const account_public_address& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce) override;
+     virtual bool get_block_template(block& b, const crypto::hash *prev_block, const account_public_address& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
 
      /**
       * @brief called when a transaction is relayed.
@@ -523,7 +523,7 @@ namespace cryptonote
       *
       * @note see Blockchain::get_block_cumulative_difficulty
       */
-     difficulty_type get_block_cumulative_difficulty(uint64_t height) const;
+     diff_t get_block_cumulative_difficulty(uint64_t height) const;
 
      /**
       * @copydoc Blockchain::get_outs

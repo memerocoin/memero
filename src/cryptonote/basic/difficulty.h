@@ -42,7 +42,7 @@
 
 namespace cryptonote
 {
-    typedef boost::multiprecision::uint128_t difficulty_type;
+    typedef boost::multiprecision::uint128_t diff_t;
 
     /**
      * @brief checks if a hash fits the given difficulty
@@ -56,17 +56,17 @@ namespace cryptonote
      *
      * @return true if valid, else false
      */
-    bool check_hash(const crypto::hash &hash, const difficulty_type difficulty);
+    bool check_hash(const crypto::hash &hash, const diff_t difficulty);
 
-    difficulty_type next_difficulty
+    diff_t next_difficulty
     (
      const std::vector<std::uint64_t> timestamps
      , const network_type m_nettype
-     , const std::vector<difficulty_type> cumulative_difficulties
+     , const std::vector<diff_t> cumulative_difficulties
      , const uint64_t T
      , const uint64_t N
      , const uint64_t HEIGHT
      );
 
-    std::string hex(const difficulty_type v);
+    std::string hex(const diff_t v);
 }

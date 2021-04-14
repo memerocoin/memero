@@ -308,7 +308,7 @@ namespace boost
   }
 
   template <class Archive>
-  inline void serialize(Archive &a, cryptonote::difficulty_type &x, const boost::serialization::version_type ver)
+  inline void serialize(Archive &a, cryptonote::diff_t &x, const boost::serialization::version_type ver)
   {
     if (Archive::is_loading::value)
     {
@@ -324,7 +324,7 @@ namespace boost
     else
     {
       // store high part
-      cryptonote::difficulty_type x_ = (x >> 64) & 0xffffffffffffffff;
+      cryptonote::diff_t x_ = (x >> 64) & 0xffffffffffffffff;
       uint64_t v = x_.convert_to<uint64_t>();
       a & v;
       // store low part

@@ -93,7 +93,7 @@ namespace cryptonote
     catch (...) { /* ignore */ }
   }
   //-----------------------------------------------------------------------------------------------------
-  bool miner::set_block_template(const block& bl, const difficulty_type& di, uint64_t height, uint64_t block_reward)
+  bool miner::set_block_template(const block& bl, const diff_t& di, uint64_t height, uint64_t block_reward)
   {
     std::unique_lock<std::mutex> lock(m_template_lock);
     m_template = bl;
@@ -116,7 +116,7 @@ namespace cryptonote
   bool miner::request_block_template()
   {
     block bl;
-    difficulty_type di = AUTO_VAL_INIT(di);
+    diff_t di = AUTO_VAL_INIT(di);
     uint64_t height = AUTO_VAL_INIT(height);
     uint64_t expected_reward; //only used for RPC calls - could possibly be useful here too?
 
@@ -297,7 +297,7 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------------
-  bool miner::find_nonce_for_given_block(const get_block_hash_t &gbh, block& bl, const difficulty_type& diffic)
+  bool miner::find_nonce_for_given_block(const get_block_hash_t &gbh, block& bl, const diff_t& diffic)
   {
     for(; bl.nonce != std::numeric_limits<uint64_t>::max(); bl.nonce++)
     {
@@ -352,7 +352,7 @@ namespace cryptonote
     MGINFO("Miner thread was started ["<< th_local_index << "]");
     uint64_t nonce = m_starter_nonce + th_local_index;
     uint64_t height = 0;
-    difficulty_type local_diff = 0;
+    diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
     block b;
     blobdata hashing_blob_tail;

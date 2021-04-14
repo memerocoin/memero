@@ -46,7 +46,7 @@ namespace cryptonote {
   const boost::multiprecision::uint512_t max256bit
   (std::numeric_limits<boost::multiprecision::uint256_t>::max());
 
-  bool check_hash(const crypto::hash &hash, const difficulty_type difficulty) {
+  bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
     // usual slow check
     boost::multiprecision::uint512_t hashVal = 0;
     for(int i = 0; i < 4; i++) { // highest word is zero
@@ -59,11 +59,11 @@ namespace cryptonote {
   // LWMA-1 difficulty algorithm 
   // Copyright (c) 2017-2019 Zawy, MIT License
   // https://github.com/zawy12/difficulty-algorithms/issues/3
-  difficulty_type next_difficulty
+  diff_t next_difficulty
     (
      const std::vector<std::uint64_t> timestamps
      , const network_type m_nettype
-     , const std::vector<difficulty_type> cumulative_difficulties
+     , const std::vector<diff_t> cumulative_difficulties
      , const uint64_t T
      , const uint64_t N
      , const uint64_t HEIGHT
@@ -78,7 +78,7 @@ namespace cryptonote {
     // diff for that is 2 ^ 22 * 300 (5 mins) ~= 2 ^ (22 + 8)
     // make it for 256 CPUs in case no one will be mining
     // 2 ^ (22 + 8 + 8) = 2 ^ 38 = 1 << 38
-    const difficulty_type _b = 1;
+    const diff_t _b = 1;
     if (HEIGHT < N + 3) { return _b << 38; }
 
     uint64_t  L(0), i, this_timestamp(0), previous_timestamp(0);
@@ -129,11 +129,11 @@ namespace cryptonote {
     }
   }
 
-  std::string hex(const difficulty_type _v)
+  std::string hex(const diff_t _v)
   {
     static const char chars[] = "0123456789abcdef";
     std::string s;
-    difficulty_type v = _v;
+    diff_t v = _v;
     while (v > 0)
       {
         s.push_back(chars[(v & 0xf).convert_to<unsigned>()]);

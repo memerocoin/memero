@@ -93,7 +93,7 @@ namespace
     stop64 = ((value >> 64) & 0xffffffffffffffff).convert_to<uint64_t>();
   }
 
-  void store_difficulty(cryptonote::difficulty_type difficulty, uint64_t &sdiff, std::string &swdiff, uint64_t &stop64)
+  void store_difficulty(cryptonote::diff_t difficulty, uint64_t &sdiff, std::string &swdiff, uint64_t &stop64)
   {
     store_128(difficulty, sdiff, swdiff, stop64);
   }
@@ -1105,7 +1105,7 @@ namespace cryptonote
     return 0;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::get_block_template(const account_public_address &address, const crypto::hash *prev_block, cryptonote::difficulty_type  &difficulty, uint64_t &height, uint64_t &expected_reward, block &b, epee::json_rpc::error &error_resp)
+  bool core_rpc_server::get_block_template(const account_public_address &address, const crypto::hash *prev_block, cryptonote::diff_t  &difficulty, uint64_t &height, uint64_t &expected_reward, block &b, epee::json_rpc::error &error_resp)
   {
     b = boost::value_initialized<cryptonote::block>();
     cryptonote::blobdata extra_nonce;
@@ -1163,7 +1163,7 @@ namespace cryptonote
     }
 
     block b;
-    cryptonote::difficulty_type wdiff;
+    cryptonote::diff_t wdiff;
     crypto::hash prev_block;
     if (!req.prev_block.empty())
     {
@@ -1783,7 +1783,7 @@ namespace cryptonote
       std::vector<std::pair<Blockchain::block_extended_info, std::vector<crypto::hash>>> chains = m_core.get_blockchain_storage().get_alternative_chains();
       for (const auto &i: chains)
       {
-        difficulty_type wdiff = i.first.cumulative_difficulty;
+        diff_t wdiff = i.first.cumulative_difficulty;
         res.chains.push_back(COMMAND_RPC_GET_ALTERNATE_CHAINS::chain_info{epee::string_tools::pod_to_hex(get_block_hash(i.first.bl)), i.first.height, i.second.size(), 0, "", 0, {}, std::string()});
         store_difficulty(wdiff, res.chains.back().difficulty, res.chains.back().wide_difficulty, res.chains.back().difficulty_top64);
         res.chains.back().block_hashes.reserve(i.second.size());

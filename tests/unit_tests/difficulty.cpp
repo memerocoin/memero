@@ -30,16 +30,16 @@
 #include "tools/epee/include/int-util.h"
 #include "cryptonote/basic/difficulty.h"
 
-static cryptonote::difficulty_type MKDIFF(uint64_t high, uint64_t low)
+static cryptonote::diff_t MKDIFF(uint64_t high, uint64_t low)
 {
-  cryptonote::difficulty_type d = high;
+  cryptonote::diff_t d = high;
   d = (d << 64) | low;
   return d;
 }
 
 static crypto::hash MKHASH(uint64_t high, uint64_t low)
 {
-  cryptonote::difficulty_type hash_target = high;
+  cryptonote::diff_t hash_target = high;
   hash_target = (hash_target << 64) | low;
   boost::multiprecision::uint256_t hash_value = std::numeric_limits<boost::multiprecision::uint256_t>::max() / hash_target;
   crypto::hash h;

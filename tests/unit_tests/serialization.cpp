@@ -603,13 +603,13 @@ inline void serialize(Archive &a, unsigned_tx_set &x, const boost::serialization
   a & x.transfers;
 }
 
-TEST(Serialization, difficulty_type)
+TEST(Serialization, diff_t)
 {
-  std::vector<cryptonote::difficulty_type> v_original;
+  std::vector<cryptonote::diff_t> v_original;
 
   for(int i = 0; i != 100; i++)
   {
-    v_original.push_back(cryptonote::difficulty_type("117868131154734361989189100"));
+    v_original.push_back(cryptonote::diff_t("117868131154734361989189100"));
     if(v_original.size() > 1)
       v_original.back() *= v_original[v_original.size()-2];
   }
@@ -618,7 +618,7 @@ TEST(Serialization, difficulty_type)
   boost::archive::portable_binary_oarchive a(ss);
   a << v_original;
 
-  std::vector<cryptonote::difficulty_type> v_unserialized;
+  std::vector<cryptonote::diff_t> v_unserialized;
 
   boost::archive::portable_binary_iarchive a2(ss);
   a2 >> v_unserialized;

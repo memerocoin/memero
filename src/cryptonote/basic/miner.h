@@ -45,7 +45,7 @@ namespace cryptonote
   struct i_miner_handler
   {
     virtual bool handle_block_found(block& b, block_verification_context &bvc) = 0;
-    virtual bool get_block_template(block& b, const account_public_address& adr, difficulty_type& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce) = 0;
+    virtual bool get_block_template(block& b, const account_public_address& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce) = 0;
   protected:
     ~i_miner_handler(){};
   };
@@ -62,7 +62,7 @@ namespace cryptonote
     ~miner();
     bool init(const boost::program_options::variables_map& vm, network_type nettype);
     static void init_options(boost::program_options::options_description& desc);
-    bool set_block_template(const block& bl, const difficulty_type& diffic, uint64_t height, uint64_t block_reward);
+    bool set_block_template(const block& bl, const diff_t& diffic, uint64_t height, uint64_t block_reward);
     bool on_block_chain_update();
     bool start(const account_public_address& adr, size_t threads_count);
     uint64_t get_speed() const;
@@ -74,7 +74,7 @@ namespace cryptonote
     bool on_idle();
     void on_synchronized();
     //synchronous analog (for fast calls)
-    static bool find_nonce_for_given_block(const get_block_hash_t &gbh, block& bl, const difficulty_type& diffic);
+    static bool find_nonce_for_given_block(const get_block_hash_t &gbh, block& bl, const diff_t& diffic);
     void pause();
     void resume();
     void do_print_hashrate(bool do_hr);
@@ -90,7 +90,7 @@ namespace cryptonote
     block m_template;
     std::atomic<uint32_t> m_template_no;
     std::atomic<uint64_t> m_starter_nonce;
-    difficulty_type m_diffic;
+    diff_t m_diffic;
     uint64_t m_height;
     volatile uint32_t m_thread_index; 
     volatile uint32_t m_threads_total;

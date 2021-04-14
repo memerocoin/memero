@@ -154,7 +154,7 @@ namespace rpc
     uint64_t height;
     uint64_t depth;
     crypto::hash hash;
-    cryptonote::difficulty_type wide_difficulty;
+    cryptonote::diff_t wide_difficulty;
     uint64_t difficulty;
     uint64_t reward;
   };
@@ -163,7 +163,7 @@ namespace rpc
   {
     uint64_t height;
     uint64_t target_height;
-    cryptonote::difficulty_type wide_difficulty;
+    cryptonote::diff_t wide_difficulty;
     uint64_t difficulty;
     uint64_t target;
     uint64_t tx_count;
@@ -177,7 +177,7 @@ namespace rpc
     bool testnet;
     std::string nettype;
     crypto::hash top_block_hash;
-    cryptonote::difficulty_type wide_cumulative_difficulty;
+    cryptonote::diff_t wide_cumulative_difficulty;
     uint64_t cumulative_difficulty;
     uint64_t block_size_limit;
     uint64_t adjusted_time;

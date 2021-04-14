@@ -40,7 +40,7 @@ public:
 
   bool init()
   {
-    cryptonote::difficulty_type hash_target = hash_target_high;
+    cryptonote::diff_t hash_target = hash_target_high;
     hash_target = (hash_target << 64) | hash_target_low;
     difficulty = difficulty_high;
     difficulty = (difficulty << 64) | difficulty_low;
@@ -68,5 +68,5 @@ public:
 
 private:
   crypto::hash hash;
-  cryptonote::difficulty_type difficulty;
+  cryptonote::diff_t difficulty;
 };
