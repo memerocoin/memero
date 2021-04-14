@@ -120,9 +120,7 @@ namespace cryptonote {
       const uint256_t l_200 = 200 * L;
       const uint256_t max128bit(std::numeric_limits<uint128_t>::max());
 
-      // Prevent round off error for small D and overflow for large D.
       const uint256_t next_D = (avg_D * n_n_plus_1_t_99) / l_200;
-
       assert(next_D <= max128bit);
 
       return uint128_t(next_D);
