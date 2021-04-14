@@ -97,11 +97,12 @@ namespace cryptonote {
       static_cast<uint64_t>(( cumulative_difficulties[N] - cumulative_difficulties[0] )/ N);
 
     // overflow bug fix
-    const uint64_t avg_breakpoint = HEIGHT < 300 ?
-      2000000*N*N*T : uint64_t(-1)/(N*(N+1)*T*99);
+    const uint64_t avg_too_height = HEIGHT < 300 ?
+      2000000*N*N*T
+      : std::numeric_limits<uint64_t>::max() / (N*(N+1)*T*99);
 
     // Prevent round off error for small D and overflow for large D.
-    const uint64_t next_D = avg_D > avg_breakpoint ?
+    const uint64_t next_D = avg_D >= avg_too_height ?
       avg_D/((200*L))*(N*(N+1)*T*99)
       : (avg_D*N*(N+1)*T*99)/(200*L);
 
