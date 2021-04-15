@@ -79,31 +79,30 @@ namespace cryptonote {
 
     if (HEIGHT == 0) { return 1; }
 
-    // 1 CPU can do 4e6 h/s ~= 2 ^ 22
-    // diff for that is 2 ^ 22 * 300 (5 mins) ~= 2 ^ (22 + 8)
-    // make it for 256 CPUs in case no one will be mining
-    // 2 ^ (22 + 8 + 8) = 2 ^ 38 = 1 << 38
+    // constant initial diff for CPU farms which never came
     const diff_t _b = 1;
     if (HEIGHT < N + 3) { return _b << 38; }
 
-    uint64_t  L(0), i, this_timestamp(0), previous_timestamp(0);
+    uint64_t L_accummulator = 0;
+    uint64_t previous_timestamp = timestamps[0] - T;
 
-    previous_timestamp = timestamps[0]-T;
-    for ( i = 1; i <= N; i++) {
-    // Safely prevent out-of-sequence timestamps
-      if ( timestamps[i]  > previous_timestamp ) {   this_timestamp = timestamps[i];  }
-      else {  this_timestamp = previous_timestamp+1;   }
-      L +=  i*std::min(6*T ,this_timestamp - previous_timestamp);
+    for (uint64_t i = 1; i <= N; i++) {
+      // wtf is this???
+      // Safely prevent out-of-sequence timestamps
+      const uint64_t this_timestamp = std::max<uint64_t>(timestamps[i], previous_timestamp + 1);
+
+      L_accummulator += i * std::min<uint64_t>( 6 * T, this_timestamp - previous_timestamp );
       previous_timestamp = this_timestamp;
     }
-    if (L < N*N*T/20 ) { L =  N*N*T/20; }
+
+    const uint64_t L = std::max<uint64_t>(L_accummulator, N * N * T / 20);
 
 
     using namespace boost::multiprecision;
 
     const uint256_t avg_D =
       uint256_t( cumulative_difficulties[N] - cumulative_difficulties[0] ) / uint256_t(N);
-    const uint256_t n_n_plus_1_t_99 = N*(N+1)*T*99;
+    const uint256_t n_n_plus_1_t_99 = N * (N + 1) * T * 99;
     const uint256_t l_200 = 200 * L;
     const uint256_t up = avg_D * n_n_plus_1_t_99;
     const uint256_t next_D =
