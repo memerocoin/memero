@@ -33,7 +33,6 @@ add_library(ringct_basic
   multiexp.cpp
   zeroCommitment.cpp
   bulletproofs.cpp
-  curveConstants.cpp
   )
 
 target_link_libraries(ringct_basic
