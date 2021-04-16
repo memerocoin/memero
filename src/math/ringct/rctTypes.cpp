@@ -94,7 +94,7 @@ namespace rct {
         printf("]");
         printf("\n");
     }
-    void dp(xmr_amount vali) {
+    void dp(amount_t vali) {
         printf("x: ");
         std::cout << vali;
         printf("\n\n");
@@ -119,20 +119,20 @@ namespace rct {
     //Various Conversions 
     
     //uint long long to 32 byte key
-    void d2h(key & amounth, const xmr_amount in) {
+    void d2h(key & amounth, const amount_t in) {
         sc_0(amounth.bytes);
         memcpy_swap64le(amounth.bytes, &in, 1);
     }
     
     //uint long long to 32 byte key
-    key d2h(const xmr_amount in) {
+    key d2h(const amount_t in) {
         key amounth;
         d2h(amounth, in);
         return amounth;
     }
 
     //uint long long to int[64]
-    void d2b(bits  amountb, xmr_amount val) {
+    void d2b(bits  amountb, amount_t val) {
         int i = 0;
         while (i < 64) {
             amountb[i++] = val & 1;
@@ -143,11 +143,11 @@ namespace rct {
     //32 byte key to uint long long
     // if the key holds a value > 2^64
     // then the value in the first 8 bytes is returned    
-    xmr_amount h2d(const key & test) {
-        xmr_amount vali = 0;
+    amount_t h2d(const key & test) {
+        amount_t vali = 0;
         int j = 0;
         for (j = 7; j >= 0; j--) {
-            vali = (xmr_amount)(vali * 256 + (unsigned char)test.bytes[j]);
+            vali = (amount_t)(vali * 256 + (unsigned char)test.bytes[j]);
         }
         return vali;
     }
@@ -181,11 +181,11 @@ namespace rct {
     }
     
     //int[64] to uint long long
-    xmr_amount b2d(bits amountb) {
-        xmr_amount vali = 0;
+    amount_t b2d(bits amountb) {
+        amount_t vali = 0;
         int j = 0;
         for (j = 63; j >= 0; j--) {
-            vali = (xmr_amount)(vali * 2 + amountb[j]);
+            vali = (amount_t)(vali * 2 + amountb[j]);
         }
         return vali;
     }

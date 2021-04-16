@@ -482,9 +482,9 @@ namespace rct {
      const key &message
      , const ctkeyV & inSk
      , const keyV & destinations
-     , const vector<xmr_amount> &inamounts
-     , const vector<xmr_amount> &outamounts
-     , xmr_amount txnFee
+     , const vector<amount_t> &inamounts
+     , const vector<amount_t> &outamounts
+     , amount_t txnFee
      , const ctkeyM & mixRing
      , const keyV &amount_keys
      , const std::vector<size_t> & index
@@ -598,10 +598,10 @@ namespace rct {
      , const ctkeyV & inSk
      , const ctkeyV & inPk
      , const keyV & destinations
-     , const std::vector<xmr_amount> & inamounts
-     , const std::vector<xmr_amount> & outamounts
+     , const std::vector<amount_t> & inamounts
+     , const std::vector<amount_t> & outamounts
      , const keyV &amount_keys
-     , xmr_amount txnFee
+     , amount_t txnFee
      , size_t mixin
      ) {
         std::vector<size_t> index;
@@ -730,7 +730,7 @@ namespace rct {
       }
     }
 
-    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key &mask) {
+    amount_t decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key &mask) {
         hw::device& hwdev = hw::get_device("default");
         CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
         CHECK_AND_ASSERT_THROW_MES(i < rv.ecdhInfo.size(), "Bad index");

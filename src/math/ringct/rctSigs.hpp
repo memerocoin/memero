@@ -106,10 +106,10 @@ namespace rct {
      , const ctkeyV & inSk
      , const ctkeyV & inPk
      , const keyV & destinations
-     , const std::vector<xmr_amount> & inamounts
-     , const std::vector<xmr_amount> & outamounts
+     , const std::vector<amount_t> & inamounts
+     , const std::vector<amount_t> & outamounts
      , const keyV &amount_keys
-     , xmr_amount txnFee
+     , amount_t txnFee
      , size_t mixin
      );
 
@@ -118,9 +118,9 @@ namespace rct {
      const key & message
      , const ctkeyV & inSk
      , const keyV & destinations
-     , const std::vector<xmr_amount> & inamounts
-     , const std::vector<xmr_amount> & outamounts
-     , xmr_amount txnFee
+     , const std::vector<amount_t> & inamounts
+     , const std::vector<amount_t> & outamounts
+     , amount_t txnFee
      , const ctkeyM & mixRing
      , const keyV &amount_keys
      , const std::vector<size_t> & index
@@ -131,8 +131,8 @@ namespace rct {
     bool verRctSemanticsSimple(const std::vector<const rctSig*> & rv);
     bool verRctNonSemanticsSimple(const rctSig & rv);
     static inline bool verRctSimple(const rctSig & rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
-    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key & mask);
-    xmr_amount decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i);
+    amount_t decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key & mask);
+    amount_t decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i);
     key get_pre_mlsag_hash(const rctSig &rv);
 }
 

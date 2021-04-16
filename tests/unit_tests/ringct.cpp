@@ -230,7 +230,7 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
 {
     ctkeyV sc, pc;
     ctkey sctmp, pctmp;
-    vector<xmr_amount> inamounts, outamounts;
+    vector<amount_t> inamounts, outamounts;
     keyV destinations;
     keyV amount_keys;
     key Sk, Pk;
@@ -517,7 +517,7 @@ TEST(ringct, HPow2)
   // }
 }
 
-static const xmr_amount test_amounts[]={0, 1, 2, 3, 4, 5, 10000, 10000000000000000000ull, 10203040506070809000ull, 123456789123456789};
+static const amount_t test_amounts[]={0, 1, 2, 3, 4, 5, 10000, 10000000000000000000ull, 10203040506070809000ull, 123456789123456789};
 
 TEST(ringct, d2h)
 {
