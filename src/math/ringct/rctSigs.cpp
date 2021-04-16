@@ -30,13 +30,15 @@
 
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/common_basic/perf_timer.h"
+
+#include "cryptonote/basic/cryptonote_format_utils.h"
+
 #include "rctSigs.hpp"
 #include "curveConstants.hpp"
 #include "bulletproofs.hpp"
-#include "cryptonote/basic/cryptonote_format_utils.h"
+
 #include "config/cryptonote.hpp"
 
-using namespace crypto;
 using namespace std;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
