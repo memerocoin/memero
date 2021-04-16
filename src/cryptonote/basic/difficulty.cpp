@@ -45,7 +45,7 @@
 
 namespace cryptonote {
 
-  const boost::multiprecision::uint512_t max256bit
+  constexpr boost::multiprecision::uint512_t max256bit
   (std::numeric_limits<boost::multiprecision::uint256_t>::max());
 
   bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
@@ -82,14 +82,13 @@ namespace cryptonote {
     if (HEIGHT == 0) { return 1; }
 
     // constant initial diff for CPU farms which never came
-    const diff_t _b = 1;
+    constexpr diff_t _b = 1;
     if (HEIGHT < N + 3) { return _b << 38; }
 
     uint64_t L_accummulator = 0;
     uint64_t previous_timestamp = timestamps[0] - T;
 
     for (uint64_t i = 1; i <= N; i++) {
-      // wtf is this???
       // Safely prevent out-of-sequence timestamps
       const uint64_t this_timestamp = std::max<uint64_t>(timestamps[i], previous_timestamp + 1);
 
@@ -104,16 +103,18 @@ namespace cryptonote {
 
     const uint256_t avg_D =
       uint256_t( cumulative_difficulties[N] - cumulative_difficulties[0] ) / uint256_t(N);
-    const uint256_t n_n_plus_1_t_99 = N * (N + 1) * T * 99;
+    constexpr uint256_t n_n_plus_1_t_99 = N * (N + 1) * T * 99;
     const uint256_t l_200 = 200 * L;
     const uint256_t up = avg_D * n_n_plus_1_t_99;
+    constexpr uint64_t overflow_until_height = 279;
+
     const uint256_t next_D =
-      HEIGHT < 279 ?
+      HEIGHT < overflow_until_height ?
       // overflow bug fix
       uint256_t(uint64_t(up)) / l_200
       : up / l_200;
 
-    const uint256_t max128bit(std::numeric_limits<uint128_t>::max());
+    constexpr uint256_t max128bit(std::numeric_limits<uint128_t>::max());
     CHECK_AND_ASSERT_THROW_MES(next_D <= max128bit, "next_D overflowed 128bit unsigned int");
 
     return uint128_t(next_D);
@@ -121,7 +122,7 @@ namespace cryptonote {
 
   std::string hex(const diff_t _v)
   {
-    static const char chars[] = "0123456789abcdef";
+    constexpr char chars[] = "0123456789abcdef";
     std::string s;
     diff_t v = _v;
     while (v > 0)
