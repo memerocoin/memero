@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "rctOps.hpp"
+#include "rctTypes.hpp"
 
 namespace rct {
 
