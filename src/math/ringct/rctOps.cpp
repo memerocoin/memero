@@ -32,14 +32,12 @@
 
 #include <sodium.h>
 
+#include "tools/epee/include/misc_log_ex.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
+
 #include "curveConstants.hpp"
 #include "rctOps.hpp"
-#include "tools/epee/include/misc_log_ex.h"
 #include "zeroCommitment.hpp"
-
-using namespace crypto;
-using namespace std;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
@@ -70,7 +68,7 @@ namespace rct {
 
     //generates a random scalar which can be used as a secret key or mask
     void skGen(key &sk) {
-        random32_unbiased(sk.bytes);
+      crypto::random32_unbiased(sk.bytes);
     }
 
     //generates a random scalar which can be used as a secret key or mask
@@ -106,10 +104,10 @@ namespace rct {
     }
 
     //generates a random secret and corresponding public key
-    tuple<key, key>  skpkGen() {
+    std::tuple<key, key>  skpkGen() {
         key sk = skGen();
         key pk = scalarmultBase(sk);
-        return make_tuple(sk, pk);
+        return std::make_tuple(sk, pk);
     }
 
     //generates C =aG + bH from b, a is given..
@@ -118,24 +116,24 @@ namespace rct {
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
-    tuple<ctkey, ctkey> ctskpkGen(xmr_amount amount) {
+    std::tuple<ctkey, ctkey> ctskpkGen(xmr_amount amount) {
         ctkey sk, pk;
         skpkGen(sk.dest, pk.dest);
         skpkGen(sk.mask, pk.mask);
         key am = d2h(amount);
         key bH = scalarmultH(am);
         addKeys(pk.mask, pk.mask, bH);
-        return make_tuple(sk, pk);
+        return std::make_tuple(sk, pk);
     }
     
     
     //generates a <secret , public> / Pedersen commitment but takes bH as input 
-    tuple<ctkey, ctkey> ctskpkGen(const key &bH) {
+    std::tuple<ctkey, ctkey> ctskpkGen(const key &bH) {
         ctkey sk, pk;
         skpkGen(sk.dest, pk.dest);
         skpkGen(sk.mask, pk.mask);
         addKeys(pk.mask, pk.mask, bH);
-        return make_tuple(sk, pk);
+        return std::make_tuple(sk, pk);
     }
     
     key zeroCommit(xmr_amount amount) {
@@ -166,7 +164,8 @@ namespace rct {
     //Scalar multiplications of curve points
 
     key normalizeKey(const key& a) {
-      key k = a;
+      key k = identity();
+      k = a;
       sc_reduce32(k.bytes);
       return k;
     }
