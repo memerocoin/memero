@@ -95,7 +95,7 @@ static std::string get_human_readable_timespan(uint64_t seconds);
 
 namespace
 {
-  const std::array<const char* const, 5> allowed_priority_strings = {{"default", "unimportant", "normal", "elevated", "priority"}};
+  constexpr std::array<const char* const, 5> allowed_priority_strings = {{"default", "unimportant", "normal", "elevated", "priority"}};
   const auto arg_wallet_file = wallet_args::arg_wallet_file();
   const command_line::arg_descriptor<std::string> arg_generate_new_wallet = {"new", sw::tr("Generate new wallet and save it to <arg>"), ""};
   const command_line::arg_descriptor<std::string> arg_generate_from_spend_key = {"generate-from-spend-key", sw::tr("Generate deterministic wallet from spend key"), ""};
@@ -105,44 +105,45 @@ namespace
   const command_line::arg_descriptor<std::string> arg_subaddress_lookahead = {"subaddress-lookahead", tools::wallet2::tr("Set subaddress lookahead sizes to <major>:<minor>"), ""};
   const command_line::arg_descriptor< std::vector<std::string> > arg_command = {"command", ""};
 
-  const char* USAGE_START_MINING("start_mining [<number_of_threads>]");
-  const char* USAGE_SET_DAEMON("set_daemon <host>[:<port>]");
-  const char* USAGE_SHOW_BALANCE("balance [detail]");
-  const char* USAGE_INCOMING("incoming [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]");
-  const char* USAGE_TRANSFER("transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)");
-  const char* USAGE_LOCKED_TRANSFER("locked_transfer [index=<N1>[,<N2>,...]] [<priority>]\n"
-                                    "                (<URI> | <addr> <amount>) <lockblocks>\n");
-  const char* USAGE_SET_LOG("set_log <level>|{+,-,}<categories>");
-  const char* USAGE_ACCOUNT("account\n"
+
+  constexpr char USAGE_START_MINING[] = "start_mining [<number_of_threads>]";
+  constexpr char USAGE_SET_DAEMON[] = "set_daemon <host>[:<port>]";
+  constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
+  constexpr char USAGE_INCOMING[] = "incoming [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]";
+  constexpr char USAGE_TRANSFER[] = "transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)";
+  constexpr char USAGE_LOCKED_TRANSFER[] = "locked_transfer [index=<N1>[,<N2>,...]] [<priority>]\n"
+                                    "                (<URI> | <addr> <amount>) <lockblocks>\n";
+  constexpr char USAGE_SET_LOG[] = "set_log <level>|{+,-,}<categories>";
+  constexpr char USAGE_ACCOUNT[] = "account\n"
                             "  account new <label>\n"
                             "  account switch <index> \n"
                             "  account label <index> <label>\n"
-                            );
-  const char* USAGE_ADDRESS("address\n"
+                            ;
+  constexpr char USAGE_ADDRESS[] = "address\n"
                             "  address new <label>\n"
                             "  address all \n"
                             "  address <index_min> [<index_max>]\n"
                             "  address label <index> <label>\n"
                             "  address one-off <account> <subaddress>\n"
-                            );
-  const char* USAGE_SET_VARIABLE("set <option> [<value>]");
-  const char* USAGE_GET_TX_KEY("get_tx_key <txid>");
-  const char* USAGE_CHECK_TX_KEY("check_tx_key <txid> <txkey> <address>");
-  const char* USAGE_GET_TX_PROOF("get_tx_proof <txid> <address> [<message>]");
-  const char* USAGE_CHECK_TX_PROOF("check_tx_proof <txid> <address> <signature_file> [<message>]");
-  const char* USAGE_SHOW("show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
-                         "     [<min_height> [<max_height>]]\n");
-  const char* USAGE_UNSPENT_OUTPUTS("unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]");
-  const char* USAGE_RESCAN_BC("rescan_bc [hard|soft|keep_ki] [start_height=0]");
-  const char* USAGE_SIGN("sign [<account_index>,<address_index>] [--spend|--view] <filename>");
-  const char* USAGE_VERIFY("verify <filename> <address> <signature>");
-  const char* USAGE_SHOW_TRANSFER("show_transfer <txid>");
-  const char* USAGE_WELCOME("welcome");
-  const char* USAGE_VERSION("version");
-  const char* USAGE_HELP("help [<command> | all]");
-  const char* USAGE_APROPOS("apropos <keyword> [<keyword> ...]");
-  const char* USAGE_EXPORT("export [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
-                           "       [<min_height> [<max_height>]] [output=<filepath>]\n");
+                            ;
+  constexpr char USAGE_SET_VARIABLE[] = "set <option> [<value>]";
+  constexpr char USAGE_GET_TX_KEY[] = "get_tx_key <txid>";
+  constexpr char USAGE_CHECK_TX_KEY[] = "check_tx_key <txid> <txkey> <address>";
+  constexpr char USAGE_GET_TX_PROOF[] = "get_tx_proof <txid> <address> [<message>]";
+  constexpr char USAGE_CHECK_TX_PROOF[] = "check_tx_proof <txid> <address> <signature_file> [<message>]";
+  constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
+                         "     [<min_height> [<max_height>]]\n";
+  constexpr char USAGE_UNSPENT_OUTPUTS[] = "unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]";
+  constexpr char USAGE_RESCAN_BC[] = "rescan_bc [hard|soft|keep_ki] [start_height=0]";
+  constexpr char USAGE_SIGN[] = "sign [<account_index>,<address_index>] [--spend|--view] <filename>";
+  constexpr char USAGE_VERIFY[] = "verify <filename> <address> <signature>";
+  constexpr char USAGE_SHOW_TRANSFER[] = "show_transfer <txid>";
+  constexpr char USAGE_WELCOME[] = "welcome";
+  constexpr char USAGE_VERSION[] = "version";
+  constexpr char USAGE_HELP[] = "help [<command> | all]";
+  constexpr char USAGE_APROPOS[] = "apropos <keyword> [<keyword> ...]";
+  constexpr char USAGE_EXPORT[] = "export [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
+                           "       [<min_height> [<max_height>]] [output=<filepath>]\n";
 
   std::string input_line(const std::string& prompt, bool yesno = false)
   {
