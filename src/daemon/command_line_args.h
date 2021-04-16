@@ -26,8 +26,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef DAEMON_COMMAND_LINE_ARGS_H
-#define DAEMON_COMMAND_LINE_ARGS_H
+#pragma once
 
 #include "tools/common/command_line.h"
 #include "config/cryptonote.hpp"
@@ -64,5 +63,3 @@ namespace daemon_args
   };
 
 }  // namespace daemon_args
-
-#endif // DAEMON_COMMAND_LINE_ARGS_H

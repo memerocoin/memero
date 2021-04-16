@@ -32,12 +32,12 @@
  * \brief Language Base class for Polymorphism.
  */
 
-#ifndef LANGUAGE_BASE_H
-#define LANGUAGE_BASE_H
+#pragma once
 
 #include <vector>
 #include <unordered_map>
 #include <string>
+
 #include <boost/algorithm/string.hpp>
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/fnv1.h"
@@ -215,5 +215,3 @@ namespace Language
     }
   };
 }
-
-#endif

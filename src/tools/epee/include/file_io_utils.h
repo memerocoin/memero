@@ -25,8 +25,7 @@
 // 
 
 
-#ifndef _FILE_IO_UTILS_H_
-#define _FILE_IO_UTILS_H_
+#pragma once
 
 #include <fstream>
 #include <filesystem>
@@ -108,5 +107,3 @@ namespace file_io_utils
 
 }
 }
-
-#endif //_FILE_IO_UTILS_H_

@@ -1,15 +1,9 @@
-#ifndef PORTABLE_BINARY_ARCHIVE_HPP
-#define PORTABLE_BINARY_ARCHIVE_HPP
-
 // (C) Copyright 2002 Robert Ramey - http://www.rrsd.com . 
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-// MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
 # pragma once
-#endif
 
 #include <boost/config.hpp>
 #include <boost/cstdint.hpp>
@@ -51,5 +45,3 @@ reverse_bytes(signed char size, char *address){
 }
 
 } }
-
-#endif // PORTABLE_BINARY_ARCHIVE_HPP

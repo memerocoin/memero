@@ -1,10 +1,4 @@
-#ifndef PORTABLE_BINARY_OARCHIVE_HPP
-#define PORTABLE_BINARY_OARCHIVE_HPP
-
-// MS compatible compilers support #pragma once
-#if defined(_MSC_VER)
 # pragma once
-#endif
 
 #if defined(_MSC_VER)
 #pragma warning( push )
@@ -316,5 +310,3 @@ namespace detail {
 #if defined(_MSC_VER)
 #pragma warning( pop )
 #endif
-
-#endif // PORTABLE_BINARY_OARCHIVE_HPP

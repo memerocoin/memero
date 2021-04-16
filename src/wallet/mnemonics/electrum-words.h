@@ -36,11 +36,11 @@
  * that method of "backing up" one's wallet keys.
  */
 
-#ifndef ELECTRUM_WORDS_H
-#define ELECTRUM_WORDS_H
+#pragma once
 
 #include <string>
 #include <cstdint>
+
 #include "math/crypto/crypto.hpp"  // for declaration of crypto::secret_key
 
 namespace epee {  class wipeable_string; }
@@ -119,5 +119,3 @@ namespace crypto
     std::string get_english_name_for(const std::string &name);
   }
 }
-
-#endif

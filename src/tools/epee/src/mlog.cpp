@@ -25,9 +25,6 @@
 //
 
 
-#ifndef _MLOG_H_
-#define _MLOG_H_
-
 #include <time.h>
 #include <atomic>
 #include <filesystem>
@@ -348,5 +345,3 @@ DEFLOG(debug, Debug)
 DEFLOG(trace, Trace)
 
 #undef DEFLOG
-
-#endif //_MLOG_H_

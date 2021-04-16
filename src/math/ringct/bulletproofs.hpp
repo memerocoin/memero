@@ -30,9 +30,6 @@
 
 #pragma once
 
-#ifndef BULLETPROOFS_H
-#define BULLETPROOFS_H
-
 #include "rctTypes.hpp"
 
 namespace rct
@@ -47,5 +44,3 @@ bool bulletproof_VERIFY(const std::vector<const Bulletproof*> &proofs);
 bool bulletproof_VERIFY(const std::vector<Bulletproof> &proofs);
 
 }
-
-#endif

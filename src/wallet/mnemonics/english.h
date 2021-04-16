@@ -32,13 +32,13 @@
  * \brief New English word list and map.
  */
 
-#ifndef ENGLISH_H
-#define ENGLISH_H
+#pragma once
 
 #include <vector>
 #include <unordered_map>
-#include "language_base.h"
 #include <string>
+
+#include "language_base.h"
 
 /*!
  * \namespace Language
@@ -1685,5 +1685,3 @@ namespace Language
     }
   };
 }
-
-#endif

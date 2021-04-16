@@ -31,9 +31,6 @@
 
 #pragma once
 
-#ifndef RCTOPS_H
-#define RCTOPS_H
-
 #include <cstddef>
 #include <tuple>
 
@@ -172,4 +169,3 @@ namespace rct {
     void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec);
     void ecdhDecode(ecdhTuple & masked, const key & sharedSec);
 }
-#endif  /* RCTOPS_H */

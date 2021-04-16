@@ -25,8 +25,6 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#ifndef BLOCKCHAIN_DB_H
-#define BLOCKCHAIN_DB_H
 
 #pragma once
 
@@ -1758,5 +1756,3 @@ class db_wtxn_guard: public db_txn_guard { public: db_wtxn_guard(BlockchainDB *d
 std::unique_ptr<BlockchainDB> new_db();
 
 }  // namespace cryptonote
-
-#endif  // BLOCKCHAIN_DB_H
