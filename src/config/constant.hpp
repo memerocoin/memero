@@ -36,27 +36,27 @@
 namespace constant
 {
   // MONEY_SUPPLY - total number coins to be generated
-  const uint64_t MONEY_SUPPLY = (uint64_t)(-1);
+  constexpr uint64_t MONEY_SUPPLY = (uint64_t)(-1);
 
   // COIN - number of smallest units in one coin
-  const uint64_t COIN = (uint64_t)100000000000; // pow(10, 11)
+  constexpr uint64_t COIN = 100000000000u; // pow(10, 11)
 
-  const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2 = 300*2;
-  const size_t BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 = 11;
+  constexpr uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2 = 300*2;
+  constexpr size_t BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 = 11;
 
-  const uint64_t FEE_PER_BYTE = (uint64_t)300000;
+  constexpr uint64_t FEE_PER_BYTE = 300000;
 
-  const uint64_t DIFFICULTY_TARGET_V2 = 300;
-  const uint64_t DIFFICULTY_WINDOW_V3 = 144;
-  const uint64_t DIFFICULTY_BLOCKS_COUNT_V3 = DIFFICULTY_WINDOW_V3 + 1;
+  constexpr uint64_t DIFFICULTY_TARGET_IN_SECONDS = 300;
+  constexpr uint64_t DIFFICULTY_WINDOW_IN_BLOCKS = 144;
+  constexpr uint64_t DIFFICULTY_BLOCKS_COUNT = DIFFICULTY_WINDOW_IN_BLOCKS + 1;
 
-  const uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS = 1;
-  const uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2 =
-    DIFFICULTY_TARGET_V2 * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS;
+  constexpr uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS = 1;
+  constexpr uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2 =
+    DIFFICULTY_TARGET_IN_SECONDS * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS;
 
 
-  const uint64_t RPC_IP_FAILS_BEFORE_BLOCK = 3;
-  const size_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
-  const size_t DEFAULT_TXPOOL_MAX_WEIGHT = 648000000; // 3 days at 300000, in bytes
-  const size_t BULLETPROOF_MAX_OUTPUTS = 16;
+  constexpr uint64_t RPC_IP_FAILS_BEFORE_BLOCK = 3;
+  constexpr size_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
+  constexpr size_t DEFAULT_TXPOOL_MAX_WEIGHT = 648000000; // 3 days at 300000, in bytes
+  constexpr size_t BULLETPROOF_MAX_OUTPUTS = 16;
 }

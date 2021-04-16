@@ -86,7 +86,7 @@ namespace cryptonote
     42
   };
 
-  inline const config_t& get_config(network_type nettype)
+  static const config_t& get_config(network_type nettype)
   {
     switch (nettype)
     {

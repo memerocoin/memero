@@ -36,14 +36,14 @@
 namespace config
 {
   // Hash domain separators
-  const char HASH_KEY_BULLETPROOF_EXPONENT[] = "bulletproof";
-  const char HASH_KEY_SUBADDRESS[] = "SubAddr";
-  const unsigned char HASH_KEY_WALLET = 0x8c;
-  const unsigned char HASH_KEY_WALLET_CACHE = 0x8d;
-  const unsigned char HASH_KEY_MEMORY = 'k';
-  const unsigned char HASH_KEY_TXPROOF_V2[] = "TXPROOF_V2";
-  const unsigned char HASH_KEY_CLSAG_ROUND[] = "CLSAG_round";
-  const unsigned char HASH_KEY_CLSAG_AGG_0[] = "CLSAG_agg_0";
-  const unsigned char HASH_KEY_CLSAG_AGG_1[] = "CLSAG_agg_1";
-  const char HASH_KEY_MESSAGE_SIGNING[] = "LolneroMessageSignature";
+  constexpr char HASH_KEY_BULLETPROOF_EXPONENT[] = "bulletproof";
+  constexpr char HASH_KEY_SUBADDRESS[] = "SubAddr";
+  constexpr unsigned char HASH_KEY_WALLET = 0x8c;
+  constexpr unsigned char HASH_KEY_WALLET_CACHE = 0x8d;
+  constexpr unsigned char HASH_KEY_MEMORY = 'k';
+  constexpr unsigned char HASH_KEY_TXPROOF_V2[] = "TXPROOF_V2";
+  constexpr unsigned char HASH_KEY_CLSAG_ROUND[] = "CLSAG_round";
+  constexpr unsigned char HASH_KEY_CLSAG_AGG_0[] = "CLSAG_agg_0";
+  constexpr unsigned char HASH_KEY_CLSAG_AGG_1[] = "CLSAG_agg_1";
+  constexpr char HASH_KEY_MESSAGE_SIGNING[] = "LolneroMessageSignature";
 }

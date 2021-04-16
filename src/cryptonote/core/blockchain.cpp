@@ -749,7 +749,7 @@ start:
   if (!(new_top_hash == top_hash)) D=0;
   ss << "Re-locked, height " << height << ", tail id " << new_top_hash << (new_top_hash == top_hash ? "" : " (different)") << std::endl;
   top_hash = new_top_hash;
-  uint64_t difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT_V3;
+  uint64_t difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT;
 
   // ND: Speedup
   // 1. Keep a list of the last 735 (or less) blocks that is used to compute difficulty,
@@ -826,8 +826,8 @@ start:
   }
 
   const size_t target = get_difficulty_target();
-  const uint64_t T = DIFFICULTY_TARGET_V2;
-  const uint64_t N = DIFFICULTY_WINDOW_V3;
+  const uint64_t T = DIFFICULTY_TARGET_IN_SECONDS;
+  const uint64_t N = DIFFICULTY_WINDOW_IN_BLOCKS;
   const uint64_t HEIGHT = m_db->height();
 
   const diff_t diff = next_difficulty(timestamps, m_nettype, difficulties, T, N, HEIGHT);
@@ -1039,7 +1039,7 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
   std::vector<diff_t> cumulative_difficulties;
 
   size_t height = m_db->height();
-  size_t difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT_V3;
+  size_t difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT;
 
   // if the alt chain isn't long enough to calculate the difficulty target
   // based on its blocks alone, need to get more blocks from the main chain
@@ -1092,8 +1092,8 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
   }
 
   // FIXME: This will fail if fork activation heights are subject to voting
-  const uint64_t T = DIFFICULTY_TARGET_V2;
-  const uint64_t N = DIFFICULTY_WINDOW_V3;
+  const uint64_t T = DIFFICULTY_TARGET_IN_SECONDS;
+  const uint64_t N = DIFFICULTY_WINDOW_IN_BLOCKS;
   const uint64_t HEIGHT = m_db->height();
 
   // calculate the difficulty target for the block and return it
@@ -2961,11 +2961,11 @@ uint64_t Blockchain::get_adjusted_time(uint64_t height) const
 
   // project the median to match approximately when the block being validated will appear
   // the median is calculated from a chunk of past blocks, so we use +1 to offset onto the current block
-  median_ts += (blockchain_timestamp_check_window + 1) * DIFFICULTY_TARGET_V2 / 2;
+  median_ts += (blockchain_timestamp_check_window + 1) * DIFFICULTY_TARGET_IN_SECONDS / 2;
 
   // project the current block's time based on the previous block's time
   // we don't use the current block's time directly to mitigate timestamp manipulation
-  uint64_t adjusted_current_block_ts = timestamps.back() + DIFFICULTY_TARGET_V2;
+  uint64_t adjusted_current_block_ts = timestamps.back() + DIFFICULTY_TARGET_IN_SECONDS;
 
   // return minimum of ~current block time and adjusted median time
   // we do this since it's better to report a time in the past than a time in the future
@@ -4110,7 +4110,7 @@ void Blockchain::safesyncmode(const bool onoff)
 
 uint64_t Blockchain::get_difficulty_target() const
 {
-  return DIFFICULTY_TARGET_V2;
+  return DIFFICULTY_TARGET_IN_SECONDS;
 }
 
 std::map<uint64_t, std::tuple<uint64_t, uint64_t, uint64_t>> Blockchain:: get_output_histogram(const std::vector<uint64_t> &amounts, bool unlocked, uint64_t recent_cutoff, uint64_t min_count) const

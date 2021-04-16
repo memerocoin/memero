@@ -872,7 +872,7 @@ namespace cryptonote
     res.active = lMiner.is_mining();
     store_difficulty(m_core.get_blockchain_storage().get_difficulty_for_next_block(), res.difficulty, res.wide_difficulty, res.difficulty_top64);
     
-    res.block_target = DIFFICULTY_TARGET_V2;
+    res.block_target = DIFFICULTY_TARGET_IN_SECONDS;
     if ( lMiner.is_mining() ) {
       res.speed = lMiner.get_speed();
       res.threads_count = lMiner.get_threads_count();

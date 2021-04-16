@@ -1187,7 +1187,7 @@ bool t_rpc_command_executor::print_transaction_pool_stats() {
   else
   {
     uint64_t backlog = (res.pool_stats.bytes_total + full_reward_zone - 1) / full_reward_zone;
-    backlog_message = (boost::format("estimated %u block (%u minutes) backlog") % backlog % (backlog * DIFFICULTY_TARGET_V2 / 60)).str();
+    backlog_message = (boost::format("estimated %u block (%u minutes) backlog") % backlog % (backlog * DIFFICULTY_TARGET_IN_SECONDS / 60)).str();
   }
 
   tools::msg_writer() << n_transactions << " tx(es), " << res.pool_stats.bytes_total << " bytes total (min " << res.pool_stats.bytes_min << ", max " << res.pool_stats.bytes_max << ", avg " << avg_bytes << ", median " << res.pool_stats.bytes_med << ")" << std::endl
@@ -1746,7 +1746,7 @@ bool t_rpc_command_executor::alt_chain_info(const std::string &tip, size_t above
         tools::msg_writer() << "Time span: " << tools::get_human_readable_timespan(dt);
         cryptonote::diff_t start_difficulty = bhres.block_headers.back().difficulty;
         if (start_difficulty > 0)
-          tools::msg_writer() << "Approximated " << 100.f * DIFFICULTY_TARGET_V2 * chain.length / dt << "% of network hash rate";
+          tools::msg_writer() << "Approximated " << 100.f * DIFFICULTY_TARGET_IN_SECONDS * chain.length / dt << "% of network hash rate";
         else
           tools::fail_msg_writer() << "Bad cmumulative difficulty reported by dameon";
       }

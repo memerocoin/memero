@@ -10,17 +10,17 @@ namespace config
 {
   namespace lol
   {
-    const size_t mixin = 31;
-    const size_t ring_size = 32;
-    const uint8_t constant_hf_version = 17;
-    const uint64_t constant_hf_height = 0;
-    const time_t constant_hf_time = 1600576524;
-    const size_t max_connections_per_address = 2;
+    constexpr size_t mixin = 31;
+    constexpr size_t ring_size = 32;
+    constexpr uint8_t constant_hf_version = 17;
+    constexpr uint64_t constant_hf_height = 0;
+    constexpr time_t constant_hf_time = 1600576524;
+    constexpr size_t max_connections_per_address = 2;
     constexpr uint64_t min_block_weight = 128 * 1024; // 128 kB
     constexpr uint64_t max_tx_weight = 128 * 1024; // 128 kB
-    const std::string ASCII_OUTPUT_MAGIC = "LolneroAsciiDataV1";
-    const size_t genesis_tx_version = 1;
-    const size_t tx_version = 2;
-    const size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
+    constexpr char ASCII_OUTPUT_MAGIC[] = "LolneroAsciiDataV1";
+    constexpr size_t genesis_tx_version = 1;
+    constexpr size_t tx_version = 2;
+    constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
   }
 }
