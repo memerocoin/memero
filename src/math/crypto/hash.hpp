@@ -41,14 +41,12 @@
 
 namespace crypto {
 
-#pragma pack(push, 1)
   struct hash {
     char data[HASH_SIZE];
   };
   struct hash8 {
     char data[8];
   };
-#pragma pack(pop)
 
   static_assert(sizeof(hash) == HASH_SIZE, "Invalid structure size");
   static_assert(sizeof(hash8) == 8, "Invalid structure size");
