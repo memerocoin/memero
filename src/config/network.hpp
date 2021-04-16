@@ -49,18 +49,16 @@ namespace cryptonote
     uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
     uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX;
     uint16_t const P2P_DEFAULT_PORT;
-    std::string const RPC_DEFAULT_HOST;
     uint16_t const RPC_DEFAULT_PORT;
     boost::uuids::uuid const NETWORK_ID;
-    std::string const GENESIS_TX;
+    std::string_view const GENESIS_TX;
     uint32_t const GENESIS_NONCE;
   };
 
-  static const config_t mainnet = {
+  constexpr config_t mainnet = {
     0xf0f72, // haha
     0x18faf3, // hoho
     45678,
-    "localhost",
     45679,
     { {
       0x69, 0x42, 0xEF, 0x66 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x10
@@ -73,11 +71,10 @@ namespace cryptonote
     0x2fab0975
   };
 
-  static const config_t testnet = {
+  constexpr config_t testnet = {
     0xf4, // hp
     0x26f4, // hs
     44444,
-    "localhost",
     44445,
     { {
       0x10, 0x42, 0xEE, 0x66, 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x11
@@ -86,7 +83,7 @@ namespace cryptonote
     42
   };
 
-  static const config_t& get_config(network_type nettype)
+  constexpr config_t get_config(network_type nettype)
   {
     switch (nettype)
     {

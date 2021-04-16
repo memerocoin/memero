@@ -84,7 +84,7 @@ namespace wallet {
     }
 
     // Save the result b/c we need to close the fp before returning success/failure.
-    int write_result = PEM_write(fp, config::lol::ASCII_OUTPUT_MAGIC,
+    int write_result = PEM_write(fp, config::lol::ASCII_OUTPUT_MAGIC.data(),
                                  "", (const unsigned char *) raw.c_str(), raw.length());
     fclose(fp);
 

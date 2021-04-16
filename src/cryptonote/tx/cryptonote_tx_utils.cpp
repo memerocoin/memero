@@ -456,7 +456,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool generate_genesis_block(
       block& bl
-    , std::string const & genesis_tx
+    , std::string_view const & genesis_tx
     , uint32_t nonce
     )
   {

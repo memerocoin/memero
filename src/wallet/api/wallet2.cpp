@@ -151,7 +151,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   THROW_WALLET_EXCEPTION_IF(kdf_rounds == 0, tools::error::wallet_internal_error, "KDF rounds must not be 0");
 
   auto daemon_address = command_line::get_arg(vm, opts.daemon_address);
-  const std::string daemon_host = get_config(nettype).RPC_DEFAULT_HOST;
+  const std::string daemon_host(config::lol::RPC_DEFAULT_HOST);
   const auto daemon_port = get_config(nettype).RPC_DEFAULT_PORT;
 
   // if no daemon settings are given and we have a previous one, reuse that one
