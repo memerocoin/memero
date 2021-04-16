@@ -54,7 +54,18 @@ namespace fee {
 
   std::pair<size_t, uint64_t> estimate_tx_size_and_weight(int n_inputs, int n_outputs, size_t extra_size);
 
-  const uint64_t get_fee_multiplier(const uint32_t priority);
+  constexpr uint64_t get_fee_multiplier(const uint32_t priority)
+  {
+    if (priority == 0) { return 1; };
+
+    constexpr uint64_t multipliers[] = {1, 5, 25, 1000};
+    constexpr size_t multiplier_length = sizeof(multipliers) / sizeof(multipliers[0]);
+
+    const size_t i = priority - 1;
+    if (i >= multiplier_length) { return 1; };
+
+    return multipliers[i];
+  }
 
   consteval uint64_t get_base_fee()
   {
