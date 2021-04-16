@@ -371,19 +371,6 @@ namespace rct {
        return rv;
    }
 
-   key cn_fast_hash(const key64 keys) {
-      key rv;
-      cn_fast_hash(rv, &keys[0], 64 * sizeof(keys[0]));
-      //dp(rv);
-      return rv;
-   }
-
-   key hash_to_scalar(const key64 keys) {
-       key rv = cn_fast_hash(keys);
-       sc_reduce32(rv.bytes);
-       return rv;
-   }
-    
     // Hash a key to p3 representation
     void hash_to_p3(ge_p3 &hash8_p3, const key &k) {
       key hash_key = cn_fast_hash(k);

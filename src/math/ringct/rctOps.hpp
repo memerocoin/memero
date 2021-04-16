@@ -154,8 +154,6 @@ namespace rct {
     key cn_fast_hash(const keyV &keys);
     key hash_to_scalar(const keyV &keys);
     //for ANSL
-    key cn_fast_hash(const key64 keys);
-    key hash_to_scalar(const key64 keys);
 
     void hash_to_p3(ge_p3 &hash8_p3, const key &k);
     key hash_to_key(const key &k);

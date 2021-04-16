@@ -111,7 +111,6 @@ namespace rct {
     //containers for representing amounts
     typedef uint64_t amount_t;
     typedef unsigned int bits[ATOMS];
-    typedef key key64[64];
 
     //Container for precomp
     struct geDsmp {
@@ -455,11 +454,9 @@ namespace std
 }
 
 BLOB_SERIALIZER(rct::key);
-BLOB_SERIALIZER(rct::key64);
 BLOB_SERIALIZER(rct::ctkey);
 
 VARIANT_TAG(debug_archive, rct::key, "rct::key");
-VARIANT_TAG(debug_archive, rct::key64, "rct::key64");
 VARIANT_TAG(debug_archive, rct::keyV, "rct::keyV");
 VARIANT_TAG(debug_archive, rct::keyM, "rct::keyM");
 VARIANT_TAG(debug_archive, rct::ctkey, "rct::ctkey");
@@ -471,7 +468,6 @@ VARIANT_TAG(debug_archive, rct::Bulletproof, "rct::bulletproof");
 VARIANT_TAG(debug_archive, rct::clsag, "rct::clsag");
 
 VARIANT_TAG(binary_archive, rct::key, 0x90);
-VARIANT_TAG(binary_archive, rct::key64, 0x91);
 VARIANT_TAG(binary_archive, rct::keyV, 0x92);
 VARIANT_TAG(binary_archive, rct::keyM, 0x93);
 VARIANT_TAG(binary_archive, rct::ctkey, 0x94);
@@ -483,7 +479,6 @@ VARIANT_TAG(binary_archive, rct::Bulletproof, 0x9c);
 VARIANT_TAG(binary_archive, rct::clsag, 0x9f);
 
 VARIANT_TAG(json_archive, rct::key, "rct_key");
-VARIANT_TAG(json_archive, rct::key64, "rct_key64");
 VARIANT_TAG(json_archive, rct::keyV, "rct_keyV");
 VARIANT_TAG(json_archive, rct::keyM, "rct_keyM");
 VARIANT_TAG(json_archive, rct::ctkey, "rct_ctkey");
