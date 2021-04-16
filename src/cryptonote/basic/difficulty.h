@@ -63,8 +63,6 @@ namespace cryptonote
      const std::vector<std::uint64_t> timestamps
      , const network_type m_nettype
      , const std::vector<diff_t> cumulative_difficulties
-     , const uint64_t T
-     , const uint64_t N
      , const uint64_t HEIGHT
      );
 

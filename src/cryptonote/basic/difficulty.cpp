@@ -38,6 +38,7 @@
 #include "tools/epee/include/misc_log_ex.h"
 #include "math/crypto/hash.hpp"
 #include "config/cryptonote.hpp"
+#include "config/constant.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "difficulty"
@@ -65,11 +66,12 @@ namespace cryptonote {
      const std::vector<std::uint64_t> timestamps
      , const network_type m_nettype
      , const std::vector<diff_t> cumulative_difficulties
-     , const uint64_t T
-     , const uint64_t N
      , const uint64_t HEIGHT
      )
   {
+    constexpr uint64_t T = constant::DIFFICULTY_TARGET_IN_SECONDS;
+    constexpr uint64_t N = constant::DIFFICULTY_WINDOW_IN_BLOCKS;
+
     CHECK_AND_ASSERT_THROW_MES
       (
        timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1

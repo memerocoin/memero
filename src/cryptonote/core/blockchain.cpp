@@ -825,12 +825,14 @@ start:
     m_difficulties = difficulties;
   }
 
-  const size_t target = get_difficulty_target();
-  const uint64_t T = DIFFICULTY_TARGET_IN_SECONDS;
-  const uint64_t N = DIFFICULTY_WINDOW_IN_BLOCKS;
-  const uint64_t HEIGHT = m_db->height();
-
-  const diff_t diff = next_difficulty(timestamps, m_nettype, difficulties, T, N, HEIGHT);
+  const diff_t diff =
+    next_difficulty
+    (
+     timestamps
+     , m_nettype
+     , difficulties
+     , m_db->height()
+     );
 
   LOCK_RECURSIVE_MUTEX(m_difficulty_lock);
   m_difficulty_for_next_block_top_hash = top_hash;
@@ -855,7 +857,6 @@ start:
     MGINFO("START DUMP");
     MGINFO(ss.str());
     MGINFO("END DUMP");
-    MGINFO("Please send wowario on Freenode #lolnero-dev the contents of this log, from a couple dozen lines before START DUMP to END DUMP");
   }
   return diff;
 }
@@ -1091,13 +1092,13 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
     }
   }
 
-  // FIXME: This will fail if fork activation heights are subject to voting
-  const uint64_t T = DIFFICULTY_TARGET_IN_SECONDS;
-  const uint64_t N = DIFFICULTY_WINDOW_IN_BLOCKS;
-  const uint64_t HEIGHT = m_db->height();
-
-  // calculate the difficulty target for the block and return it
-  return next_difficulty(timestamps, m_nettype, cumulative_difficulties, T, N, HEIGHT);
+  return next_difficulty
+    (
+     timestamps
+     , m_nettype
+     , cumulative_difficulties
+     , m_db->height()
+     );
 }
 //------------------------------------------------------------------
 // This function does a sanity check on basic things that all miner
