@@ -83,7 +83,7 @@ namespace cryptonote
     42
   };
 
-  constexpr config_t get_config(network_type nettype)
+  constexpr config_t get_config(const network_type nettype)
   {
     switch (nettype)
     {
