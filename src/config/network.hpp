@@ -52,7 +52,7 @@ namespace cryptonote
     uint16_t const RPC_DEFAULT_PORT;
     boost::uuids::uuid const NETWORK_ID;
     std::string_view const GENESIS_TX;
-    uint32_t const GENESIS_NONCE;
+    uint64_t const GENESIS_NONCE;
   };
 
   constexpr config_t mainnet = {
