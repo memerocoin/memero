@@ -35,6 +35,8 @@
 #include <cstdint>
 #include <utility>
 
+#include "config/constant.hpp"
+
 namespace wallet {
 namespace logic {
 namespace functional {
@@ -54,7 +56,10 @@ namespace fee {
 
   const uint64_t get_fee_multiplier(const uint32_t priority);
 
-  uint64_t get_base_fee();
+  consteval uint64_t get_base_fee()
+  {
+    return constant::FEE_PER_BYTE;
+  }
 
 } // fee
 } // functional

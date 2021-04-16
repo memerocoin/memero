@@ -179,11 +179,6 @@ namespace fee {
     return 1;
   }
 
-  uint64_t get_base_fee()
-  {
-    return constant::FEE_PER_BYTE;
-  }
-
 } // fee
 } // functional
 } // logic
