@@ -58,6 +58,8 @@ namespace config
     constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_LIVETIME = 86400 * 3; //seconds, three days
     constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME = 604800; //seconds, one week
 
+    constexpr size_t CONSTANT_TRANSACTION_VERSION = 2;
+
     constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
     constexpr std::string_view RPC_DEFAULT_HOST = "localhost";
     constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_FILENAME = "data.mdb";
