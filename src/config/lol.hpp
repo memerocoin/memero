@@ -23,7 +23,5 @@ namespace config
     constexpr size_t tx_version = 2;
     constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
     constexpr std::string_view RPC_DEFAULT_HOST = "localhost";
-
-    constexpr uint64_t scheduled_fork_height_critical_1 = 200000; // year 2024 or something
   }
 }

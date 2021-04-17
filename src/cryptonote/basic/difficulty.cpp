@@ -109,15 +109,9 @@ namespace cryptonote {
 
 
     // potential bug here, timestamps[0] should already be T seconds away from timestamps[1]
+    // but not worth fixing, since it's a surplus at the least significant weight index, should
+    // affect less than 1 second of target (28ms?), so not really observable.
     const L_collector l_init{ 1, 0, timestamps.front() - T };
-
-    /*
-    HF1:
-    const uint64_t init_offset = HEIGHT < config::lol::scheduled_fork_height_critical_1 ? T : 0;
-    const L_collector l_init{ 1, 0, timestamps.front() - init_offset };
-
-    Another option is to just switch to a simpler consensus, but we already said no hard forks :(
-    */
 
     const L_collector l_collector = std::accumulate
       (
