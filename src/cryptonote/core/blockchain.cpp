@@ -4059,11 +4059,6 @@ void Blockchain::cancel()
   m_cancel = true;
 }
 
-bool Blockchain::is_within_compiled_block_hash_area(uint64_t height) const
-{
-  return false;
-}
-
 void Blockchain::lock()
 {
   m_blockchain_lock.lock();

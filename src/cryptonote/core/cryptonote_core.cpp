@@ -504,12 +504,6 @@ namespace cryptonote
   bool core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool keeped_by_block)
   {
     bool ret = true;
-    if (keeped_by_block && get_blockchain_storage().is_within_compiled_block_hash_area())
-    {
-      MTRACE("Skipping semantics check for tx kept by block in embedded hash area");
-      return true;
-    }
-
     std::vector<const rct::rctSig*> rvv;
     for (size_t n = 0; n < tx_info.size(); ++n)
     {
@@ -1405,11 +1399,6 @@ namespace cryptonote
     std::filesystem::path path(m_config_folder);
     std::filesystem::space_info si = std::filesystem::space(path);
     return si.available;
-  }
-  //-----------------------------------------------------------------------------------------------
-  bool core::is_within_compiled_block_hash_area(uint64_t height) const
-  {
-    return get_blockchain_storage().is_within_compiled_block_hash_area(height);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::has_block_weights(uint64_t height, uint64_t nblocks) const
