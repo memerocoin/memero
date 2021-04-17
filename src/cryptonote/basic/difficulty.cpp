@@ -84,18 +84,39 @@ namespace cryptonote {
     constexpr diff_t _b = 1;
     if (HEIGHT < N + 3) { return _b << 38; }
 
-    uint64_t L_accummulator = 0;
-    uint64_t previous_timestamp = timestamps[0] - T;
+    typedef struct {
+      uint64_t linear_index;
+      uint64_t sum;
+      uint64_t last;
+    } L_collector;
 
-    for (uint64_t i = 1; i <= N; i++) {
-      // Safely prevent out-of-sequence timestamps
-      const uint64_t this_timestamp = std::max<uint64_t>(timestamps[i], previous_timestamp + 1);
+    auto accumulate_linearly_weighted_timestamp_diff =
+      [](const L_collector x, const uint64_t t) -> L_collector
+      {
+        const uint64_t minimum_timestamp_required = x.last + 1;
+        const uint64_t normalized_timestamp = std::max<uint64_t>(t, minimum_timestamp_required);
 
-      L_accummulator += i * std::min<uint64_t>( 6 * T, this_timestamp - previous_timestamp );
-      previous_timestamp = this_timestamp;
-    }
+        const uint64_t time_diff = normalized_timestamp - x.last;
+        constexpr uint64_t maximum_allowed_time_diff = 6 * T;
 
-    const uint64_t L = std::max<uint64_t>(L_accummulator, N * N * T / 20);
+        const uint64_t normalized_time_diff = std::min<uint64_t>( maximum_allowed_time_diff, time_diff );
+
+        const uint64_t weight = x.linear_index * normalized_time_diff;
+
+        return L_collector{ x.linear_index + 1, x.sum + weight, normalized_timestamp };
+      };
+
+    const L_collector l_init = { 1, 0, timestamps[0] - T };
+
+    const L_collector l_collector = std::accumulate
+      (
+       std::next(timestamps.begin())
+       , timestamps.end()
+       , l_init
+       , accumulate_linearly_weighted_timestamp_diff
+       );
+
+    const uint64_t L = std::max<uint64_t>(l_collector.sum, N * N * T / 20);
 
 
     using namespace boost::multiprecision;
