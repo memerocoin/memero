@@ -94,14 +94,15 @@ namespace cryptonote {
       [](const L_collector x, const uint64_t t) -> L_collector
       {
         constexpr uint64_t maximum_allowed_time_diff = 6 * T;
+        constexpr uint64_t dt = 1;
 
         const bool is_past_solve_time = t <= x.last;
         const uint64_t accepted_time_diff =
-          is_past_solve_time ? 1 : std::min<uint64_t>( t - x.last, maximum_allowed_time_diff );
+          is_past_solve_time ? dt : std::min<uint64_t>( t - x.last, maximum_allowed_time_diff );
 
         const uint64_t weight = x.linear_index * accepted_time_diff;
 
-        const uint64_t accepted_timestamp = is_past_solve_time ? x.last + 1 : t;
+        const uint64_t accepted_timestamp = is_past_solve_time ? x.last + dt : t;
 
         return L_collector{ x.linear_index + 1, x.sum + weight, accepted_timestamp };
       };
