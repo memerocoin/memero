@@ -13,6 +13,8 @@ namespace config
     constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
     constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
     constexpr std::string_view RPC_DEFAULT_HOST = "localhost";
+    constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_FILENAME = "data.mdb";
+    constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME = "lock.mdb";
 
     constexpr size_t mixin = 31;
     constexpr size_t ring_size = 32;
