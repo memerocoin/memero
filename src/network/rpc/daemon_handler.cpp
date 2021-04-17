@@ -126,7 +126,7 @@ namespace rpc
   {
     std::vector<std::pair<std::pair<blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, blobdata> > > > blocks;
 
-    constexpr size_t max_blocks = config::lol::COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT;
+    constexpr size_t max_blocks = constant::COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT;
 
     if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, blocks, res.current_height, res.start_height, true, max_blocks))
     {

@@ -175,7 +175,7 @@ namespace cryptonote
 
     BEGIN_SERIALIZE()
       VARINT_FIELD(version)
-      if(version == 0 || config::lol::CONSTANT_TRANSACTION_VERSION < version) return false;
+      if(version == 0 || config::lol::constant_transaction_version < version) return false;
       VARINT_FIELD(unlock_time)
       FIELD(vin)
       FIELD(vout)

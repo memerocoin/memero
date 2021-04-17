@@ -34,6 +34,14 @@ namespace constant
   constexpr size_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
   constexpr size_t DEFAULT_TXPOOL_MAX_WEIGHT = 648000000; // 3 days at 300000, in bytes
   constexpr size_t BULLETPROOF_MAX_OUTPUTS = 16;
+
+  constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
+  constexpr size_t COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT = 1000;
+
+  constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_LIVETIME = 86400 * 3; //seconds, three days
+  constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME = 604800; //seconds, one week
+  constexpr std::chrono::seconds CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE(1);
+
 }
 
 namespace config
@@ -52,26 +60,17 @@ namespace config
 
   namespace lol
   {
-    constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
-    constexpr size_t COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT = 1000;
-
-    constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_LIVETIME = 86400 * 3; //seconds, three days
-    constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME = 604800; //seconds, one week
-
-    constexpr size_t CONSTANT_TRANSACTION_VERSION = 2;
-
     constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
     constexpr std::string_view RPC_DEFAULT_HOST = "localhost";
     constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_FILENAME = "data.mdb";
     constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME = "lock.mdb";
     constexpr std::string_view P2P_NET_DATA_FILENAME = "p2pstate.bin";
 
-    constexpr std::chrono::seconds CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE(1);
-
     constexpr size_t mixin = 31;
     constexpr size_t ring_size = 32;
     constexpr uint8_t constant_hf_version = 17;
     constexpr uint64_t constant_hf_height = 0;
+    constexpr size_t constant_transaction_version = 2;
     constexpr time_t constant_hf_time = 1600576524;
     constexpr size_t max_connections_per_address = 2;
     constexpr uint64_t min_block_weight = 128 * 1024; // 128 kB
