@@ -30,25 +30,28 @@
 
 #pragma once
 
-#include <boost/variant.hpp>
-#include <boost/functional/hash/hash.hpp>
 #include <vector>
 #include <cstring>  // memcmp
 #include <sstream>
 #include <atomic>
-#include "tools/serialization/variant.h"
-#include "tools/serialization/containers.h"
-#include "tools/serialization/binary_archive.h"
-#include "tools/serialization/json_archive.h"
-#include "tools/serialization/debug_archive.h"
-#include "tools/serialization/crypto.h"
-#include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
-#include "config/cryptonote.hpp"
+
+#include <boost/variant.hpp>
+#include <boost/functional/hash/hash.hpp>
+
 #include "math/crypto/crypto.hpp"
 #include "math/crypto/hash.hpp"
-#include "tools/epee/include/misc_language.h"
 #include "math/ringct/rctTypes.hpp"
+#include "tools/epee/include/misc_language.h"
+#include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
+#include "tools/serialization/binary_archive.h"
+#include "tools/serialization/containers.h"
+#include "tools/serialization/crypto.h"
+#include "tools/serialization/debug_archive.h"
+#include "tools/serialization/json_archive.h"
+#include "tools/serialization/variant.h"
 #include "wallet/device/device.hpp"
+
+#include "config/cryptonote.hpp"
 #include "config/lol.hpp"
 
 namespace cryptonote
@@ -208,8 +211,6 @@ namespace cryptonote
     mutable crypto::hash prunable_hash;
     mutable size_t blob_size;
 
-    bool pruned;
-
     std::atomic<unsigned int> unprunable_size;
     std::atomic<unsigned int> prefix_size;
 
@@ -244,66 +245,71 @@ namespace cryptonote
       if (std::is_same<Archive<W>, binary_archive<W>>())
         prefix_size = getpos(ar) - start_pos;
 
-      if (version == 1)
-      {
-        if (std::is_same<Archive<W>, binary_archive<W>>())
-          unprunable_size = getpos(ar) - start_pos;
+    if (version == 1)
+    {
+      if (std::is_same<Archive<W>, binary_archive<W>>())
+        unprunable_size = getpos(ar) - start_pos;
 
-        ar.tag("signatures");
-        ar.begin_array();
-        PREPARE_CUSTOM_VECTOR_SERIALIZATION(vin.size(), signatures);
-        bool signatures_not_expected = signatures.empty();
-        if (!signatures_not_expected && vin.size() != signatures.size())
+      ar.tag("signatures");
+      ar.begin_array();
+      PREPARE_CUSTOM_VECTOR_SERIALIZATION(vin.size(), signatures);
+      bool signatures_not_expected = signatures.empty();
+      if (!signatures_not_expected && vin.size() != signatures.size())
+        return false;
+
+      for (size_t i = 0; i < vin.size(); ++i)
+      {
+        size_t signature_size = get_signature_size(vin[i]);
+        if (signatures_not_expected)
+        {
+          if (0 == signature_size)
+            continue;
+          else
+            return false;
+        }
+
+        PREPARE_CUSTOM_VECTOR_SERIALIZATION(signature_size, signatures[i]);
+        if (signature_size != signatures[i].size())
           return false;
 
-        if (!pruned) for (size_t i = 0; i < vin.size(); ++i)
-        {
-          size_t signature_size = get_signature_size(vin[i]);
-          if (signatures_not_expected)
-          {
-            if (0 == signature_size)
-              continue;
-            else
-              return false;
-          }
+        FIELDS(signatures[i]);
 
-          PREPARE_CUSTOM_VECTOR_SERIALIZATION(signature_size, signatures[i]);
-          if (signature_size != signatures[i].size())
-            return false;
-
-          FIELDS(signatures[i]);
-
-          if (vin.size() - i > 1)
-            ar.delimit_array();
-        }
-        ar.end_array();
+        if (vin.size() - i > 1)
+          ar.delimit_array();
       }
-      else
+      ar.end_array();
+    }
+    else
+    {
+      ar.tag("rct_signatures");
+      if (!vin.empty())
       {
-        ar.tag("rct_signatures");
-        if (!vin.empty())
+        ar.begin_object();
+        bool r = rct_signatures.serialize_rctsig_base(ar, vin.size(), vout.size());
+        if (!r || !ar.stream().good()) return false;
+        ar.end_object();
+        if (std::is_same<Archive<W>, binary_archive<W>>())
+          unprunable_size = getpos(ar) - start_pos;
+        if (rct_signatures.type != rct::RCTTypeNull)
         {
+          ar.tag("rctsig_prunable");
           ar.begin_object();
-          bool r = rct_signatures.serialize_rctsig_base(ar, vin.size(), vout.size());
+          r = rct_signatures.p.serialize_rctsig_prunable
+            (
+              ar
+              , rct_signatures.type
+              , vin.size()
+              , vout.size()
+              , vin.size() > 0 && vin[0].type() == typeid(txin_to_key) ?
+              boost::get<txin_to_key>(vin[0]).key_offsets.size() - 1
+              : 0
+             );
           if (!r || !ar.stream().good()) return false;
           ar.end_object();
-
-          if (std::is_same<Archive<W>, binary_archive<W>>())
-            unprunable_size = getpos(ar) - start_pos;
-
-          if (!pruned && rct_signatures.type != rct::RCTTypeNull)
-          {
-            ar.tag("rctsig_prunable");
-            ar.begin_object();
-            r = rct_signatures.p.serialize_rctsig_prunable(ar, rct_signatures.type, vin.size(), vout.size(),
-                vin.size() > 0 && vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(vin[0]).key_offsets.size() - 1 : 0);
-            if (!r || !ar.stream().good()) return false;
-            ar.end_object();
-          }
         }
       }
-      if (!typename Archive<W>::is_saving())
-        pruned = false;
+    }
+
     END_SERIALIZE()
 
     template<bool W, template <bool> class Archive>
@@ -311,10 +317,7 @@ namespace cryptonote
     {
       FIELDS(*static_cast<transaction_prefix *>(this))
 
-      if (version == 1)
-      {
-      }
-      else
+      if (version != 1)
       {
         ar.tag("rct_signatures");
         if (!vin.empty())
@@ -325,8 +328,6 @@ namespace cryptonote
           ar.end_object();
         }
       }
-      if (!typename Archive<W>::is_saving())
-        pruned = true;
       return ar.stream().good();
     }
 
@@ -341,7 +342,6 @@ namespace cryptonote
     blob_size_valid(false),
     signatures(t.signatures),
     rct_signatures(t.rct_signatures),
-    pruned(t.pruned),
     unprunable_size(t.unprunable_size.load()),
     prefix_size(t.prefix_size.load())
   {
@@ -386,7 +386,6 @@ namespace cryptonote
       blob_size = t.blob_size;
       set_blob_size_valid(true);
     }
-    pruned = t.pruned;
     unprunable_size = t.unprunable_size.load();
     prefix_size = t.prefix_size.load();
     return *this;
@@ -412,7 +411,6 @@ namespace cryptonote
     set_hash_valid(false);
     set_prunable_hash_valid(false);
     set_blob_size_valid(false);
-    pruned = false;
     unprunable_size = 0;
     prefix_size = 0;
   }

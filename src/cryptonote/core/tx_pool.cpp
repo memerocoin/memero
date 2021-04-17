@@ -224,7 +224,6 @@ namespace cryptonote
         meta.relayed = relayed;
         meta.set_relay_method(tx_relay);
         meta.double_spend_seen = have_tx_keyimges_as_spent(tx, id);
-        meta.pruned = tx.pruned;
         meta.bf_padding = 0;
         memset(meta.padding, 0, sizeof(meta.padding));
         try
@@ -268,7 +267,6 @@ namespace cryptonote
       meta.relayed = relayed;
       meta.set_relay_method(tx_relay);
       meta.double_spend_seen = false;
-      meta.pruned = tx.pruned;
       meta.bf_padding = 0;
       memset(meta.padding, 0, sizeof(meta.padding));
 

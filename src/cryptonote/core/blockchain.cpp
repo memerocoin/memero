@@ -499,14 +499,8 @@ block Blockchain::pop_block_from_blockchain()
   }
 
   // return transactions from popped block to the tx_pool
-  size_t pruned = 0;
   for (transaction& tx : popped_txs)
   {
-    if (tx.pruned)
-    {
-      ++pruned;
-      continue;
-    }
     if (!is_coinbase(tx))
     {
       cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
@@ -523,8 +517,6 @@ block Blockchain::pop_block_from_blockchain()
       }
     }
   }
-  if (pruned)
-    MWARNING(pruned << " pruned txes could not be added back to the txpool");
 
   m_blocks_longhash_table.clear();
   m_scan_table.clear();
@@ -2520,14 +2512,11 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
   // II
   if (rv.type == rct::RCTTypeCLSAG)
   {
-    if (!tx.pruned)
-    {
       CHECK_AND_ASSERT_MES(rv.p.CLSAGs.size() == tx.vin.size(), false, "Bad CLSAGs size");
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
         rv.p.CLSAGs[n].I = rct::ki2rct(boost::get<txin_to_key>(tx.vin[n]).k_image);
       }
-    }
   }
   else
   {
@@ -2551,10 +2540,6 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
   size_t sig_index = 0;
   if(pmax_used_block_height)
     *pmax_used_block_height = 0;
-
-  // pruned txes are skipped, as they're only allowed in sync-pruned-blocks mode, which is within the builtin hashes
-  if (tx.pruned)
-    return true;
 
   crypto::hash tx_prefix_hash = get_transaction_prefix_hash(tx);
 

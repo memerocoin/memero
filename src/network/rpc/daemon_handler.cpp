@@ -180,11 +180,8 @@ namespace rpc
       for (const auto& blob : it->second)
       {
         bwt.transactions.emplace_back();
-        bwt.transactions.back().pruned = req.prune;
 
-        const bool parsed = req.prune ?
-          parse_and_validate_tx_base_from_blob(blob.second, bwt.transactions.back()) :
-          parse_and_validate_tx_from_blob(blob.second, bwt.transactions.back());
+        const bool parsed = parse_and_validate_tx_from_blob(blob.second, bwt.transactions.back());
         if (!parsed)
         {
           res.blocks.clear();
