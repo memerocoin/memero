@@ -1400,11 +1400,6 @@ namespace cryptonote
     return m_target_blockchain_height;
   }
   //-----------------------------------------------------------------------------------------------
-  uint64_t core::prevalidate_block_hashes(uint64_t height, const std::vector<crypto::hash> &hashes, const std::vector<uint64_t> &weights)
-  {
-    return get_blockchain_storage().prevalidate_block_hashes(height, hashes, weights);
-  }
-  //-----------------------------------------------------------------------------------------------
   uint64_t core::get_free_space() const
   {
     std::filesystem::path path(m_config_folder);

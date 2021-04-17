@@ -2137,17 +2137,8 @@ skip:
       return 1;
     }
 
-    uint64_t n_use_blocks = m_core.prevalidate_block_hashes(arg.start_height, arg.m_block_ids, arg.m_block_weights);
-    if (n_use_blocks == 0 || n_use_blocks + HASH_OF_HASHES_STEP <= arg.m_block_ids.size())
-    {
-      LOG_ERROR_CCONTEXT("Most blocks are invalid, dropping connection");
-      drop_connection(context, true, false);
-      return 1;
-    }
-
     context.m_needed_objects.clear();
     context.m_needed_objects.reserve(arg.m_block_ids.size());
-    uint64_t added = 0;
     std::unordered_set<crypto::hash> blocks_found;
     bool first = true;
     bool expect_unknown = false;
@@ -2214,11 +2205,8 @@ skip:
       }
       const uint64_t block_weight = arg.m_block_weights.empty() ? 0 : arg.m_block_weights[i];
       context.m_needed_objects.push_back(std::make_pair(arg.m_block_ids[i], block_weight));
-      if (++added == n_use_blocks)
-        break;
       first = false;
     }
-    context.m_last_response_height -= arg.m_block_ids.size() - n_use_blocks;
 
     if (!request_missing_objects(context, false))
     {

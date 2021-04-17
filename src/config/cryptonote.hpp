@@ -41,8 +41,6 @@
 #define CRYPTONOTE_PUBLIC_ADDRESS_TEXTBLOB_VER          0
 #define CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW            60
 #define CURRENT_TRANSACTION_VERSION                     2
-#define CURRENT_BLOCK_MAJOR_VERSION                     17
-#define CURRENT_BLOCK_MINOR_VERSION                     17
 #define CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE             4
 
 #define CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE          600
@@ -96,5 +94,3 @@
 #define MINER_CONFIG_FILE_NAME                  "miner_conf.json"
 
 #define THREAD_STACK_SIZE                       5 * 1024 * 1024
-
-#define HASH_OF_HASHES_STEP                     512
