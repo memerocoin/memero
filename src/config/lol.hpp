@@ -55,6 +55,9 @@ namespace config
     constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
     constexpr size_t COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT = 1000;
 
+    constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_LIVETIME = 86400 * 3; //seconds, three days
+    constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME = 604800; //seconds, one week
+
     constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
     constexpr std::string_view RPC_DEFAULT_HOST = "localhost";
     constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_FILENAME = "data.mdb";
