@@ -84,11 +84,11 @@ namespace cryptonote {
     constexpr diff_t _b = 1;
     if (HEIGHT < N + 3) { return _b << 38; }
 
-    typedef struct {
+    struct L_collector {
       uint64_t linear_index;
       uint64_t sum;
       uint64_t last;
-    } L_collector;
+    };
 
     auto accumulate_linearly_weighted_timestamp_diff =
       [](const L_collector x, const uint64_t t) -> L_collector
@@ -98,7 +98,6 @@ namespace cryptonote {
 
         const uint64_t time_diff = normalized_timestamp - x.last;
         constexpr uint64_t maximum_allowed_time_diff = 6 * T;
-
         const uint64_t normalized_time_diff = std::min<uint64_t>( maximum_allowed_time_diff, time_diff );
 
         const uint64_t weight = x.linear_index * normalized_time_diff;
@@ -106,7 +105,7 @@ namespace cryptonote {
         return L_collector{ x.linear_index + 1, x.sum + weight, normalized_timestamp };
       };
 
-    const L_collector l_init = { 1, 0, timestamps[0] - T };
+    const L_collector l_init{ 1, 0, timestamps.front() - T };
 
     const L_collector l_collector = std::accumulate
       (
@@ -116,7 +115,8 @@ namespace cryptonote {
        , accumulate_linearly_weighted_timestamp_diff
        );
 
-    const uint64_t L = std::max<uint64_t>(l_collector.sum, N * N * T / 20);
+    constexpr uint64_t min_weight = N * N * T / 20;
+    const uint64_t L = std::max<uint64_t>(l_collector.sum, min_weight);
 
 
     using namespace boost::multiprecision;
