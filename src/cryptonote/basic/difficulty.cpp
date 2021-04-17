@@ -93,19 +93,30 @@ namespace cryptonote {
     auto accumulate_linearly_weighted_timestamp_diff =
       [](const L_collector x, const uint64_t t) -> L_collector
       {
-        const uint64_t minimum_timestamp_required = x.last + 1;
-        const uint64_t normalized_timestamp = std::max<uint64_t>(t, minimum_timestamp_required);
-
-        const uint64_t time_diff = normalized_timestamp - x.last;
         constexpr uint64_t maximum_allowed_time_diff = 6 * T;
-        const uint64_t normalized_time_diff = std::min<uint64_t>( maximum_allowed_time_diff, time_diff );
 
-        const uint64_t weight = x.linear_index * normalized_time_diff;
+        const bool is_past_solve_time = t <= x.last;
+        const uint64_t accepted_time_diff =
+          is_past_solve_time ? 1 : std::min<uint64_t>( t - x.last, maximum_allowed_time_diff );
 
-        return L_collector{ x.linear_index + 1, x.sum + weight, normalized_timestamp };
+        const uint64_t weight = x.linear_index * accepted_time_diff;
+
+        const uint64_t accepted_timestamp = is_past_solve_time ? x.last + 1 : t;
+
+        return L_collector{ x.linear_index + 1, x.sum + weight, accepted_timestamp };
       };
 
+
+    // potential bug here, timestamps[0] should already be T seconds away from timestamps[1]
     const L_collector l_init{ 1, 0, timestamps.front() - T };
+
+    /*
+    HF1:
+    const uint64_t init_offset = HEIGHT < config::lol::scheduled_fork_height_critical_1 ? T : 0;
+    const L_collector l_init{ 1, 0, timestamps.front() - init_offset };
+
+    Another option is to just switch to a simpler consensus, but we already said no hard forks :(
+    */
 
     const L_collector l_collector = std::accumulate
       (
