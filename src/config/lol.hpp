@@ -62,8 +62,8 @@ namespace config
   {
     constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
     constexpr std::string_view RPC_DEFAULT_HOST = "localhost";
-    constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_FILENAME = "data.mdb";
-    constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME = "lock.mdb";
+    constexpr std::string_view BLOCKCHAIN_DATABASE_FILENAME = "data.mdb";
+    constexpr std::string_view BLOCKCHAIN_DATABASE_LOCK_FILENAME = "lock.mdb";
     constexpr std::string_view P2P_NET_DATA_FILENAME = "p2pstate.bin";
 
     constexpr size_t mixin = 31;

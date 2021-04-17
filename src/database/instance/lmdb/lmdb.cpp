@@ -1251,12 +1251,12 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
 
   // check for existing LMDB files in base directory
   std::filesystem::path old_files = direc.parent_path();
-  if (std::filesystem::exists(old_files / std::string(config::lol::CRYPTONOTE_BLOCKCHAINDATA_FILENAME))
-      || std::filesystem::exists(old_files / std::string(config::lol::CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME)))
+  if (std::filesystem::exists(old_files / std::string(config::lol::BLOCKCHAIN_DATABASE_FILENAME))
+      || std::filesystem::exists(old_files / std::string(config::lol::BLOCKCHAIN_DATABASE_LOCK_FILENAME)))
   {
     LOG_PRINT_L0("Found existing LMDB files in " << old_files.string());
-    LOG_PRINT_L0("Move " << config::lol::CRYPTONOTE_BLOCKCHAINDATA_FILENAME
-                 << " and/or " << config::lol::CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME
+    LOG_PRINT_L0("Move " << config::lol::BLOCKCHAIN_DATABASE_FILENAME
+                 << " and/or " << config::lol::BLOCKCHAIN_DATABASE_LOCK_FILENAME
                  << " to " << filename << ", or delete them, and then restart");
     throw DB_ERROR("Database could not be opened");
   }
@@ -1565,9 +1565,9 @@ std::vector<std::string> BlockchainLMDB::get_filenames() const
   std::vector<std::string> filenames;
 
   std::filesystem::path datafile(m_folder);
-  datafile /= config::lol::CRYPTONOTE_BLOCKCHAINDATA_FILENAME;
+  datafile /= config::lol::BLOCKCHAIN_DATABASE_FILENAME;
   std::filesystem::path lockfile(m_folder);
-  lockfile /= config::lol::CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME;
+  lockfile /= config::lol::BLOCKCHAIN_DATABASE_LOCK_FILENAME;
 
   filenames.push_back(datafile.string());
   filenames.push_back(lockfile.string());
@@ -3888,7 +3888,7 @@ uint64_t BlockchainLMDB::get_database_size() const
 {
   uint64_t size = 0;
   std::filesystem::path datafile(m_folder);
-  datafile /= std::string(config::lol::CRYPTONOTE_BLOCKCHAINDATA_FILENAME);
+  datafile /= std::string(config::lol::BLOCKCHAIN_DATABASE_FILENAME);
   try {
     size = std::filesystem::file_size(datafile);
   }
