@@ -38,7 +38,6 @@
 #include "tools/epee/include/misc_log_ex.h"
 #include "math/crypto/hash.hpp"
 #include "config/cryptonote.hpp"
-#include "config/constant.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "difficulty"

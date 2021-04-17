@@ -30,8 +30,6 @@
 
 #pragma once
 
-#include "constant.hpp"
-#include "config.hpp"
 #include "network.hpp"
 #include "lol.hpp"
 

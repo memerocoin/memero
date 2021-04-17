@@ -35,7 +35,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "config/constant.hpp"
+#include "config/lol.hpp"
 
 namespace wallet {
 namespace logic {
