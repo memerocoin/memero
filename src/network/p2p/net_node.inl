@@ -33,32 +33,34 @@
 #pragma once
 
 #include <algorithm>
-#include <filesystem>
-#include <optional>
-#include <thread>
 #include <atomic>
+#include <filesystem>
 #include <functional>
 #include <limits>
 #include <memory>
+#include <optional>
+#include <thread>
+#include <thread>
 #include <tuple>
 #include <vector>
-#include <thread>
 
 #include <boost/uuid/uuid_io.hpp>
 
 #include "version.h"
-#include "tools/epee/include/string_tools.h"
-#include "tools/common/util.h"
+
+#include "cryptonote/core/cryptonote_core.h"
+#include "math/crypto/crypto.hpp"
 #include "network/type/error.h"
-#include "tools/epee/include/net/net_helper.h"
+#include "network/type/parse.h"
+#include "p2p_protocol_defs.h"
+#include "tools/common/util.h"
 #include "tools/epee/include/math_helper.h"
 #include "tools/epee/include/misc_log_ex.h"
-#include "p2p_protocol_defs.h"
 #include "tools/epee/include/net/local_ip.h"
-#include "math/crypto/crypto.hpp"
+#include "tools/epee/include/net/net_helper.h"
 #include "tools/epee/include/storages/levin_abstract_invoke2.h"
-#include "cryptonote/core/cryptonote_core.h"
-#include "network/type/parse.h"
+#include "tools/epee/include/string_tools.h"
+
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -124,7 +126,8 @@ namespace nodetool
   bool node_server<t_payload_net_handler>::init_config()
   {
     TRY_ENTRY();
-    auto storage = peerlist_storage::open(m_config_folder + "/" + P2P_NET_DATA_FILENAME);
+    auto storage = peerlist_storage::open
+      (m_config_folder + "/" + std::string(::config::lol::P2P_NET_DATA_FILENAME));
     if (storage)
       m_peerlist_storage = std::move(*storage);
 
@@ -812,7 +815,8 @@ namespace nodetool
     for (auto& zone : m_network_zones)
       zone.second.m_peerlist.get_peerlist(active);
 
-    const std::string state_file_path = m_config_folder + "/" + P2P_NET_DATA_FILENAME;
+    const std::string state_file_path =
+      m_config_folder + "/" + std::string(::config::lol::P2P_NET_DATA_FILENAME);
     if (!m_peerlist_storage.store(state_file_path, active))
     {
       MWARNING("Failed to save config to file " << state_file_path);

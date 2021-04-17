@@ -85,6 +85,3 @@
 #define P2P_SUPPORT_FLAG_FLUFFY_BLOCKS                  0x01
 #define P2P_SUPPORT_FLAGS                               P2P_SUPPORT_FLAG_FLUFFY_BLOCKS
 
-
-#define P2P_NET_DATA_FILENAME                   "p2pstate.bin"
-#define MINER_CONFIG_FILE_NAME                  "miner_conf.json"
