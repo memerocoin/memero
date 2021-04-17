@@ -49,7 +49,6 @@ namespace cryptonote {
   (std::numeric_limits<boost::multiprecision::uint256_t>::max());
 
   bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
-    // usual slow check
     boost::multiprecision::uint512_t hashVal = 0;
     for(int i = 0; i < 4; i++) { // highest word is zero
       hashVal <<= 64;
@@ -58,13 +57,13 @@ namespace cryptonote {
     return hashVal * difficulty <= max256bit;
   }
 
+
   // LWMA-1 difficulty algorithm 
   // Copyright (c) 2017-2019 Zawy, MIT License
   // https://github.com/zawy12/difficulty-algorithms/issues/3
   diff_t next_difficulty
     (
      const std::vector<std::uint64_t> timestamps
-     , const network_type m_nettype
      , const std::vector<diff_t> cumulative_difficulties
      , const uint64_t HEIGHT
      )

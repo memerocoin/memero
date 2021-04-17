@@ -61,7 +61,6 @@ namespace cryptonote
     diff_t next_difficulty
     (
      const std::vector<std::uint64_t> timestamps
-     , const network_type m_nettype
      , const std::vector<diff_t> cumulative_difficulties
      , const uint64_t HEIGHT
      );

@@ -829,7 +829,6 @@ start:
     next_difficulty
     (
      timestamps
-     , m_nettype
      , difficulties
      , m_db->height()
      );
@@ -1095,7 +1094,6 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
   return next_difficulty
     (
      timestamps
-     , m_nettype
      , cumulative_difficulties
      , m_db->height()
      );
