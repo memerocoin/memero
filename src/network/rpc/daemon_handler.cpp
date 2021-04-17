@@ -126,7 +126,9 @@ namespace rpc
   {
     std::vector<std::pair<std::pair<blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, blobdata> > > > blocks;
 
-    if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, blocks, res.current_height, res.start_height, true, COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT))
+    constexpr size_t max_blocks = config::lol::COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT;
+
+    if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, blocks, res.current_height, res.start_height, true, max_blocks))
     {
       res.status = Message::STATUS_FAILED;
       res.error_details = "core::find_blockchain_supplement() returned false";

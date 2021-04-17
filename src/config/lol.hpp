@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <inttypes.h>
 #include <string>
+#include <chrono>
 
 namespace constant
 {
@@ -51,12 +52,16 @@ namespace config
 
   namespace lol
   {
-    constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
     constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
+    constexpr size_t COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT = 1000;
+
+    constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
     constexpr std::string_view RPC_DEFAULT_HOST = "localhost";
     constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_FILENAME = "data.mdb";
     constexpr std::string_view CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME = "lock.mdb";
     constexpr std::string_view P2P_NET_DATA_FILENAME = "p2pstate.bin";
+
+    constexpr std::chrono::seconds CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE(1);
 
     constexpr size_t mixin = 31;
     constexpr size_t ring_size = 32;

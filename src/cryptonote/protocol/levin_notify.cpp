@@ -28,20 +28,22 @@
 
 #include "levin_notify.h"
 
-#include <boost/asio/steady_timer.hpp>
-#include <boost/system/system_error.hpp>
 #include <chrono>
 #include <deque>
 #include <stdexcept>
 #include <utility>
 
+#include <boost/asio/steady_timer.hpp>
+#include <boost/system/system_error.hpp>
+
 #include "tools/common/expect.h"
 #include "tools/common/varint.h"
-#include "config/cryptonote.hpp"
 #include "cryptonote/basic/connection_context.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "network/type/dandelionpp.h"
 #include "network/p2p/net_node.h"
+
+#include "config/cryptonote.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.p2p.tx"
@@ -60,8 +62,8 @@ namespace levin
        5000 milliseconds is given, 95% of the values fall between 4859ms-5141ms
        in 1ms increments (not enough time variance). Providing 20 quarter
        seconds yields 95% of the values between 3s-7.25s in 1/4s increments. */
-    using fluff_stepsize = std::chrono::duration<std::chrono::milliseconds::rep, std::ratio<1, 4>>;
-    constexpr const std::chrono::seconds fluff_average_in{CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE};
+    using fluff_stepsize = std::chrono::duration<std::chrono::milliseconds::rep, std::ratio<1, 20>>;
+    constexpr auto fluff_average_in = config::lol::CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE;
 
     /*! Bitcoin Core is using 1/2 average seconds for outgoing connections
         compared to incoming. The thinking is that the user controls outgoing

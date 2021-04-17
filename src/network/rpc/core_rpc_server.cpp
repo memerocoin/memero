@@ -30,28 +30,30 @@
 
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/uuid/nil_generator.hpp>
-#include "tools/epee/include/include_base_utils.h"
-#include "tools/epee/include/string_tools.h"
-using namespace epee;
 
-#include "core_rpc_server.h"
+#include "version.h"
+
+#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/tx/tx_sanity_check.h"
+#include "math/crypto/hash.hpp"
+#include "network/p2p/net_node.h"
+#include "network/rpc/rpc_args.h"
+#include "network/rpc/rpc_handler.h"
+#include "network/type/parse.h"
 #include "tools/common/command_line.h"
 #include "tools/common/util.h"
 #include "tools/common_basic/perf_timer.h"
+#include "tools/epee/include/include_base_utils.h"
 #include "tools/epee/include/int-util.h"
-#include "cryptonote/basic/cryptonote_format_utils.h"
-#include "cryptonote/basic/account.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "cryptonote/tx/tx_sanity_check.h"
 #include "tools/epee/include/misc_language.h"
-#include "network/type/parse.h"
 #include "tools/epee/include/storages/http_abstract_invoke.h"
-#include "math/crypto/hash.hpp"
-#include "network/rpc/rpc_args.h"
-#include "network/rpc/rpc_handler.h"
+#include "tools/epee/include/string_tools.h"
+
+#include "core_rpc_server.h"
 #include "core_rpc_server_error_codes.h"
-#include "network/p2p/net_node.h"
-#include "version.h"
+
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -243,7 +245,7 @@ namespace cryptonote
       }
     }
 
-    size_t max_blocks = COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT;
+    constexpr size_t max_blocks = config::lol::COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT;
 
     std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > > bs;
     if(!m_core.find_blockchain_supplement(req.start_height, req.block_ids, bs, res.current_height, res.start_height, !req.no_miner_tx, max_blocks))
