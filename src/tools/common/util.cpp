@@ -82,12 +82,6 @@ namespace tools
 
   std::string get_default_data_dir()
   {
-    /* Please for the love of god refactor  the ifdefs out of this */
-
-    // namespace fs = std::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\CRYPTONOTE_NAME
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\CRYPTONOTE_NAME
-    // Unix & Mac: ~/.CRYPTONOTE_NAME
     std::string config_folder;
 
     std::string pathRet;
@@ -96,7 +90,7 @@ namespace tools
       pathRet = "/";
     else
       pathRet = pszHome;
-    config_folder = (pathRet + "/." + CRYPTONOTE_NAME);
+    config_folder = (pathRet + "/." + std::string(config::lol::CRYPTONOTE_NAME));
 
     return config_folder;
   }

@@ -36,7 +36,7 @@ namespace daemon_args
   const command_line::arg_descriptor<std::string> arg_config_file = {
     "config-file"
     , "Config file"
-    , std::string(CRYPTONOTE_NAME ".conf")
+    , std::string(std::string(config::lol::CRYPTONOTE_NAME) + std::string(".conf"))
   };
   const command_line::arg_descriptor<std::string> arg_log_file = {
     "log-file"
