@@ -97,7 +97,7 @@ namespace config
     constexpr size_t genesis_tx_version = 1;
     constexpr size_t tx_version = 2;
 
-    constexpr size_t SUBADDRESS_LOOKAHEAD_MAJOR = 100;
-    constexpr size_t SUBADDRESS_LOOKAHEAD_MINOR = 2000;
+    constexpr size_t SUBADDRESS_LOOKAHEAD_MAJOR = 50;
+    constexpr size_t SUBADDRESS_LOOKAHEAD_MINOR = 400;
   }
 }
