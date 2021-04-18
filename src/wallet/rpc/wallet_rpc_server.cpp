@@ -648,15 +648,7 @@ namespace tools
     }
 
     {
-      if (m_wallet->watch_only()){
-        if (unsigned_txset.empty())
-        {
-          er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
-          er.message = "Failed to save unsigned tx set after creation";
-          return false;
-        }
-      }
-      else if (!do_not_relay)
+      if (!do_not_relay)
         m_wallet->commit_tx(ptx_vector);
 
       // populate response with tx hashes
@@ -788,12 +780,6 @@ namespace tools
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
       er.message = "command not supported by HW wallet";
-      return false;
-    }
-    if(m_wallet->watch_only())
-    {
-      er.code = WALLET_RPC_ERROR_CODE_WATCH_ONLY;
-      er.message = "command not supported by watch-only wallet";
       return false;
     }
     if(req.unsigned_txset.empty())
@@ -1050,12 +1036,6 @@ namespace tools
         epee::wipeable_string seed;
         bool ready;
         {
-          if (m_wallet->watch_only())
-          {
-            er.code = WALLET_RPC_ERROR_CODE_WATCH_ONLY;
-            er.message = "The wallet is watch-only. Cannot retrieve seed.";
-            return false;
-          }
           if (!m_wallet->get_seed(seed))
           {
             er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
@@ -1072,12 +1052,6 @@ namespace tools
       }
       else if(req.key_type.compare("spend_key") == 0)
       {
-          if (m_wallet->watch_only())
-          {
-            er.code = WALLET_RPC_ERROR_CODE_WATCH_ONLY;
-            er.message = "The wallet is watch-only. Cannot retrieve spend key.";
-            return false;
-          }
           epee::wipeable_string key = epee::to_hex::wipeable_string(m_wallet->get_account().get_keys().m_spend_secret_key);
           res.key = std::string(key.data(), key.size());
       }

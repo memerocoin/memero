@@ -191,22 +191,11 @@ namespace tools
       const cryptonote::account_public_address &account_public_address,
       const crypto::secret_key& spendkey, const crypto::secret_key& viewkey);
     /*!
-     * \brief Creates a watch only wallet from a public address and a view secret key.
-     * \param  wallet_                 Name of wallet file
-     * \param  password                Password of wallet file
-     * \param  account_public_address  The account's public address
-     * \param  viewkey                 view secret key
-     */
-    void generate(const std::string& wallet, const epee::wipeable_string& password,
-      const cryptonote::account_public_address &account_public_address,
-      const crypto::secret_key& viewkey = crypto::secret_key());
-    /*!
      * \brief Rewrites to the wallet file for wallet upgrade (doesn't generate key, assumes it's already there)
      * \param wallet_name Name of wallet file (should exist)
      * \param password    Password for wallet file
      */
     void rewrite(const std::string& wallet_name, const epee::wipeable_string& password);
-    void write_watch_only_wallet(const std::string& wallet_name, const epee::wipeable_string& password, std::string &new_keys_filename);
     void load(const std::string& wallet, const epee::wipeable_string& password, const std::string& keys_buf = "", const std::string& cache_buf = "");
     void store();
     /*!
@@ -218,10 +207,9 @@ namespace tools
     /*!
      * \brief get_keys_file_data  Get wallet keys data which can be stored to a wallet file.
      * \param password            Password of the encrypted wallet buffer (TODO: probably better save the password in the wallet object?)
-     * \param watch_only          true to include only view key, false to include both spend and view keys
      * \return                    Encrypted wallet keys data which can be stored to a wallet file
      */
-    std::optional<wallet::logic::type::wallet::keys_file_data> get_keys_file_data(const epee::wipeable_string& password, bool watch_only);
+    std::optional<wallet::logic::type::wallet::keys_file_data> get_keys_file_data(const epee::wipeable_string& password);
     /*!
      * \brief get_cache_file_data   Get wallet cache data which can be stored to a wallet file.
      * \param password              Password to protect the wallet cache data (TODO: probably better save the password in the wallet object?)
@@ -300,7 +288,6 @@ namespace tools
     RefreshType get_refresh_type() const { return m_refresh_type; }
 
     cryptonote::network_type nettype() const { return m_nettype; }
-    bool watch_only() const { return m_watch_only; }
     bool has_unknown_key_images() const;
     bool key_on_device() const { return get_device_type() != hw::device::device_type::SOFTWARE; }
     hw::device::device_type get_device_type() const { return m_key_device_type; }
@@ -554,10 +541,9 @@ namespace tools
      * \brief  Stores wallet information to wallet file.
      * \param  keys_file_name Name of wallet file
      * \param  password       Password of wallet file
-     * \param  watch_only     true to save only view key, false to save both spend and view keys
      * \return                Whether it was successful.
      */
-    bool store_keys(const std::string& keys_file_name, const epee::wipeable_string& password, bool watch_only = false);
+    bool store_keys(const std::string& keys_file_name, const epee::wipeable_string& password);
     /*!
      * \brief Load wallet keys information from wallet file.
      * \param keys_file_name Name of wallet file
@@ -625,7 +611,7 @@ namespace tools
 
     void init_type(hw::device::device_type device_type);
     void setup_new_blockchain();
-    void create_keys_file(const std::string &wallet_, bool watch_only, const epee::wipeable_string &password);
+    void create_keys_file(const std::string &wallet_, const epee::wipeable_string &password);
 
     std::string get_rpc_status(const std::string &s) const;
     void throw_on_rpc_response_error(bool r, const epee::json_rpc::error &error, const std::string &status, const char *method) const;
@@ -666,7 +652,6 @@ namespace tools
     cryptonote::network_type m_nettype;
     uint64_t m_kdf_rounds;
     std::string seed_language; /*!< Language of the mnemonics (seed). */
-    bool m_watch_only; /*!< no spend key */
     bool m_multisig; /*!< if > 1 spend secret key will not match spend public key */
     uint32_t m_multisig_threshold;
     std::vector<crypto::public_key> m_multisig_signers;

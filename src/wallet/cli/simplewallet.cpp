@@ -558,11 +558,6 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
 
 bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
-  if (m_wallet->watch_only())
-  {
-    fail_msg_writer() << tr("wallet is watch-only and has no spend key");
-    return true;
-  }
   // don't log
   PAUSE_READLINE();
   if (m_wallet->key_on_device()) {
@@ -586,11 +581,6 @@ bool simple_wallet::print_seed()
   if (m_wallet->key_on_device())
   {
     fail_msg_writer() << tr("command not supported by HW wallet");
-    return true;
-  }
-  if (m_wallet->watch_only())
-  {
-    fail_msg_writer() << tr("wallet is watch-only and has no seed");
     return true;
   }
 
@@ -758,12 +748,6 @@ bool simple_wallet::set_print_ring_members(const std::vector<std::string> &args/
 
 bool simple_wallet::set_store_tx_info(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
-  if (m_wallet->watch_only())
-  {
-    fail_msg_writer() << tr("wallet is watch-only and cannot transfer");
-    return true;
-  }
- 
   const auto pwd_container = get_and_verify_password();
   if (pwd_container)
   {
@@ -1925,10 +1909,7 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
     std::string prefix;
     bool ready;
     uint32_t threshold, total;
-    if (m_wallet->watch_only())
-      prefix = tr("Opened watch-only wallet");
-    else
-      prefix = tr("Opened wallet");
+    prefix = tr("Opened wallet");
     message_writer(console_color_white, true) <<
       prefix << ": " << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
     if (m_wallet->get_account().get_device()) {
@@ -3035,13 +3016,6 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
         }
     }
 
-    if (m_wallet->watch_only())
-    {
-      {
-        fail_msg_writer() << tr("Failed to write transaction(s) to file");
-      }
-    }
-    else
     {
       commit_or_save(ptx_vector, m_do_not_relay);
     }
@@ -4217,10 +4191,7 @@ bool simple_wallet::wallet_info(const std::vector<std::string> &args)
   message_writer() << tr("Filename: ") << m_wallet->get_wallet_file();
   message_writer() << tr("Address: ") << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
   std::string type;
-  if (m_wallet->watch_only())
-    type = tr("Watch only");
-  else
-    type = tr("Normal");
+  type = tr("Normal");
   message_writer() << tr("Type: ") << type;
   message_writer() << tr("Network type: ") << (
     m_wallet->nettype() == cryptonote::TESTNET ? tr("Testnet") : tr("Mainnet"));
@@ -4237,11 +4208,6 @@ bool simple_wallet::sign(const std::vector<std::string> &args)
   if (args.size() != 1 && args.size() != 2 && args.size() != 3)
   {
     PRINT_USAGE(USAGE_SIGN);
-    return true;
-  }
-  if (m_wallet->watch_only())
-  {
-    fail_msg_writer() << tr("wallet is watch-only and cannot sign");
     return true;
   }
 

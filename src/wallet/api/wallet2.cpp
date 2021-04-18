@@ -298,7 +298,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_inactivity_lock_timeout(0),
   m_is_initialized(false),
   m_kdf_rounds(kdf_rounds),
-  m_watch_only(false),
   m_node_rpc_proxy(*m_http_client, m_daemon_rpc_mutex),
   m_account_public_address{crypto::null_pkey, crypto::null_pkey},
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
@@ -991,7 +990,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	    td.m_tx = (const cryptonote::transaction_prefix&)tx;
 	    td.m_txid = txid;
             td.m_key_image = tx_scan_info[o].ki;
-            td.m_key_image_known = !m_watch_only;
+            td.m_key_image_known = true;
             if (!td.m_key_image_known)
             {
               // we might have cold signed, and have a mapping to key images
@@ -1002,12 +1001,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
                 td.m_key_image_known = true;
               }
             }
-            if (m_watch_only)
-            {
-              // for view wallets, that flag means "we want to request it"
-              td.m_key_image_request = true;
-            }
-            else
             {
               td.m_key_image_request = false;
             }
@@ -2389,12 +2382,11 @@ void wallet2::clear_soft(bool keep_key_images)
  * \brief Stores wallet information to wallet file.
  * \param  keys_file_name Name of wallet file
  * \param  password       Password of wallet file
- * \param  watch_only     true to save only view key, false to save both spend and view keys
  * \return                Whether it was successful.
  */
-bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable_string& password, bool watch_only)
+bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable_string& password)
 {
-  std::optional<wallet::logic::type::wallet::keys_file_data> keys_file_data = get_keys_file_data(password, watch_only);
+  std::optional<wallet::logic::type::wallet::keys_file_data> keys_file_data = get_keys_file_data(password);
   CHECK_AND_ASSERT_MES(keys_file_data != std::nullopt, false, "failed to generate wallet keys data");
 
   std::string tmp_file_name = keys_file_name + ".new";
@@ -2415,16 +2407,13 @@ bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_file_data(const epee::wipeable_string& password, bool watch_only)
+std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_file_data(const epee::wipeable_string& password)
 {
   std::string account_data;
   cryptonote::account_base account = m_account;
 
   crypto::chacha_key key;
   crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
-
-  if (watch_only)
-    account.forget_spend_key();
 
   account.encrypt_keys(key);
 
@@ -2448,9 +2437,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
 
   value2.SetInt(m_key_device_type);
   json.AddMember("key_on_device", value2, json.GetAllocator());
-
-  value2.SetInt(watch_only ? 1 :0); // WTF ? JSON has different true and false types, and not boolean ??
-  json.AddMember("watch_only", value2, json.GetAllocator());
 
   value2.SetInt(m_always_confirm_transfers ? 1 :0);
   json.AddMember("always_confirm_transfers", value2, json.GetAllocator());
@@ -2598,7 +2584,7 @@ bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_
   // Rewrite with encrypted keys if unencrypted, ignore errors
   if (r && keys_to_encrypt != std::nullopt)
   {
-    bool saved_ret = store_keys(keys_file_name, password, m_watch_only);
+    bool saved_ret = store_keys(keys_file_name, password);
     if (!saved_ret)
     {
       // just moan a bit, but not fatal
@@ -2654,8 +2640,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     {
       set_seed_language(field_seed_language);
     }
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, watch_only, int, Int, false, false);
-    m_watch_only = field_watch_only;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, always_confirm_transfers, int, Int, false, true);
     m_always_confirm_transfers = field_always_confirm_transfers;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, print_ring_members, int, Int, false, true);
@@ -2794,7 +2778,7 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
   const cryptonote::account_keys& keys = m_account.get_keys();
   hw::device &hwdev = m_account.get_device();
   r = r && hwdev.verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
-  if (!m_watch_only && hwdev.device_protocol() != hw::device::PROTOCOL_COLD)
+  if (hwdev.device_protocol() != hw::device::PROTOCOL_COLD)
     r = r && hwdev.verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
   THROW_WALLET_EXCEPTION_IF(!r, error::wallet_files_doesnt_correspond, m_keys_file, m_wallet_file);
 
@@ -2817,7 +2801,11 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
 bool wallet2::verify_password(const epee::wipeable_string& password)
 {
   // this temporary unlocking is necessary for Windows (otherwise the file couldn't be loaded).
-  bool r = verify_password(m_keys_file, password, m_account.get_device().device_protocol() == hw::device::PROTOCOL_COLD || m_watch_only , m_account.get_device(), m_kdf_rounds);
+  bool r = verify_password
+    (
+     m_keys_file, password
+     , m_account.get_device().device_protocol() == hw::device::PROTOCOL_COLD
+     , m_account.get_device(), m_kdf_rounds);
   return r;
 }
 
@@ -2922,11 +2910,11 @@ void wallet2::setup_new_blockchain()
   add_subaddress_account(tr("Primary account"));
 }
 
-void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, const epee::wipeable_string &password)
+void wallet2::create_keys_file(const std::string &wallet_, const epee::wipeable_string &password)
 {
   if (!wallet_.empty())
   {
-    bool r = store_keys(m_keys_file, password, watch_only);
+    bool r = store_keys(m_keys_file, password);
     THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, m_keys_file);
   }
 }
@@ -2934,7 +2922,6 @@ void wallet2::create_keys_file(const std::string &wallet_, bool watch_only, cons
 void wallet2::init_type(hw::device::device_type device_type)
 {
   m_account_public_address = m_account.get_keys().m_account_address;
-  m_watch_only = false;
   m_key_device_type = device_type;
 }
 
@@ -2985,7 +2972,7 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
       (approximate_height, target_height, local_height);
   }
 
-  create_keys_file(wallet_, false, password);
+  create_keys_file(wallet_, password);
 
   setup_new_blockchain();
 
@@ -2993,41 +2980,6 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
     store();
 
   return retval;
-}
-
-/*!
-* \brief Creates a watch only wallet from a public address and a view secret key.
-* \param  wallet_                 Name of wallet file
-* \param  password                Password of wallet file
-* \param  account_public_address  The account's public address
-* \param  viewkey                 view secret key
-*/
-void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
-  const cryptonote::account_public_address &account_public_address,
-  const crypto::secret_key& viewkey)
-{
-  clear();
-  prepare_file_names(wallet_);
-
-  if (!wallet_.empty())
-  {
-    std::error_code ignored_ec;
-    THROW_WALLET_EXCEPTION_IF(std::filesystem::exists(m_wallet_file, ignored_ec), error::file_exists, m_wallet_file);
-    THROW_WALLET_EXCEPTION_IF(std::filesystem::exists(m_keys_file,   ignored_ec), error::file_exists, m_keys_file);
-  }
-
-  m_account.create_from_viewkey(account_public_address, viewkey);
-  init_type(hw::device::device_type::SOFTWARE);
-  m_watch_only = true;
-  m_account_public_address = account_public_address;
-  setup_keys(password);
-
-  create_keys_file(wallet_, true, password);
-
-  setup_new_blockchain();
-
-  if (!wallet_.empty())
-    store();
 }
 
 /*!
@@ -3057,7 +3009,7 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
   m_account_public_address = account_public_address;
   setup_keys(password);
 
-  create_keys_file(wallet_, false, password);
+  create_keys_file(wallet_, password);
 
   setup_new_blockchain();
 
@@ -3085,24 +3037,8 @@ void wallet2::rewrite(const std::string& wallet_name, const epee::wipeable_strin
   prepare_file_names(wallet_name);
   std::error_code ignored_ec;
   THROW_WALLET_EXCEPTION_IF(!std::filesystem::exists(m_keys_file, ignored_ec), error::file_not_found, m_keys_file);
-  bool r = store_keys(m_keys_file, password, m_watch_only);
+  bool r = store_keys(m_keys_file, password);
   THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, m_keys_file);
-}
-/*!
- * \brief Writes to a file named based on the normal wallet (doesn't generate key, assumes it's already there)
- * \param wallet_name       Base name of wallet file
- * \param password          Password for wallet file
- * \param new_keys_filename [OUT] Name of new keys file
- */
-void wallet2::write_watch_only_wallet(const std::string& wallet_name, const epee::wipeable_string& password, std::string &new_keys_filename)
-{
-  prepare_file_names(wallet_name);
-  std::error_code ignored_ec;
-  new_keys_filename = m_wallet_file + "-watchonly.keys";
-  bool watch_only_keys_file_exists = std::filesystem::exists(new_keys_filename, ignored_ec);
-  THROW_WALLET_EXCEPTION_IF(watch_only_keys_file_exists, error::file_save_error, new_keys_filename);
-  bool r = store_keys(new_keys_filename, password, true);
-  THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, new_keys_filename);
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::wallet_exists(const std::string& file_path, bool& keys_file_exists, bool& wallet_file_exists)
@@ -3424,7 +3360,7 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
   // if we here, main wallet file is saved and we only need to save keys and address files
   if (!same_file) {
     prepare_file_names(path);
-    bool r = store_keys(m_keys_file, password, false);
+    bool r = store_keys(m_keys_file, password);
     THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, m_keys_file);
     if (std::filesystem::exists(old_address_file))
     {
