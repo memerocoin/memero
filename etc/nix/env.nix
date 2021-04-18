@@ -4,9 +4,11 @@ with import <nixpkgs> {};
 let
   CMakeFlags_Lolnero = ''
     -DReadline_ROOT_DIR=${readline.dev}
-    -DUSE_CCACHE=ON
     -DBUILD_SHARED_LIBS=ON
     -DBUILD_TESTING=ON
+    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache
+    -G Ninja
   '';
 in
 {
@@ -16,13 +18,13 @@ in
       gcc10
       cmake git ccache
       boost175 openssl readline libsodium rapidjson
-      gmock
+      gmock ninja
     ];
 
     inherit CMakeFlags_Lolnero;
 
     configure = "${cmake}/bin/cmake ${CMakeFlags_Lolnero}";
-    build = "make -j6";
+    build = "ninja -j6 -l5";
     test = "ctest -j6";
   };
 }
