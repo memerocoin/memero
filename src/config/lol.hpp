@@ -49,6 +49,9 @@ namespace constant
 
   //max blocks ids count in synchronizing
   constexpr size_t BLOCKS_IDS_SYNCHRONIZING_MAX_COUNT = 25000;
+
+  constexpr uint32_t DEFAULT_MIN_OUTPUT_COUNT = 5;
+  constexpr uint64_t DEFAULT_MIN_OUTPUT_VALUE = 2 * COIN;
 }
 
 namespace config
@@ -85,5 +88,8 @@ namespace config
     constexpr std::string_view ASCII_OUTPUT_MAGIC = "LolneroAsciiDataV1";
     constexpr size_t genesis_tx_version = 1;
     constexpr size_t tx_version = 2;
+
+    constexpr size_t SUBADDRESS_LOOKAHEAD_MAJOR = 100;
+    constexpr size_t SUBADDRESS_LOOKAHEAD_MINOR = 2000;
   }
 }

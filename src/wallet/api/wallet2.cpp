@@ -89,14 +89,8 @@ using namespace wallet::logic::type::message_signature;
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
 
-// used to choose when to stop adding outputs to a tx
-#define APPROXIMATE_INPUT_BYTES 80
-
 // used to target a given block weight (additional outputs may be added on top to build fee)
 #define TX_WEIGHT_TARGET(bytes) (bytes*2/3)
-
-#define UNSIGNED_TX_PREFIX "Lolnero unsigned tx set\005"
-#define SIGNED_TX_PREFIX "Lolnero signed tx set\005"
 
 #define RECENT_OUTPUT_RATIO (0.5) // 50% of outputs are from the recent zone
 #define RECENT_OUTPUT_DAYS (1.8) // last 1.8 day makes up the recent zone (taken from monerolink.pdf, Miller et al)
@@ -107,17 +101,6 @@ using namespace wallet::logic::type::message_signature;
 
 #define SECOND_OUTPUT_RELATEDNESS_THRESHOLD 0.0f
 
-#define SUBADDRESS_LOOKAHEAD_MAJOR 50
-#define SUBADDRESS_LOOKAHEAD_MINOR 200
-
-#define KEY_IMAGE_EXPORT_FILE_MAGIC "Lolnero key image export\003"
-
-#define OUTPUT_EXPORT_FILE_MAGIC "Lolnero output export\004"
-
-#define FIRST_REFRESH_GRANULARITY     1024
-
-#define DEFAULT_MIN_OUTPUT_COUNT 5
-#define DEFAULT_MIN_OUTPUT_VALUE (2*COIN)
 
 std::mutex tools::wallet2::default_daemon_address_lock;
 std::string tools::wallet2::default_daemon_address = "";
@@ -318,8 +301,8 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_watch_only(false),
   m_node_rpc_proxy(*m_http_client, m_daemon_rpc_mutex),
   m_account_public_address{crypto::null_pkey, crypto::null_pkey},
-  m_subaddress_lookahead_major(SUBADDRESS_LOOKAHEAD_MAJOR),
-  m_subaddress_lookahead_minor(SUBADDRESS_LOOKAHEAD_MINOR),
+  m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
+  m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
   m_key_device_type(hw::device::device_type::SOFTWARE),
   m_ring_history_saved(false),
   m_last_block_reward(0),
@@ -2753,9 +2736,11 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     m_track_uses = field_track_uses;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, inactivity_lock_timeout, uint32_t, Uint, false, 0);
     m_inactivity_lock_timeout = field_inactivity_lock_timeout;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, subaddress_lookahead_major, uint32_t, Uint, false, SUBADDRESS_LOOKAHEAD_MAJOR);
+    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, subaddress_lookahead_major, uint32_t, Uint, false
+                                        , config::lol::SUBADDRESS_LOOKAHEAD_MAJOR);
     m_subaddress_lookahead_major = field_subaddress_lookahead_major;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, subaddress_lookahead_minor, uint32_t, Uint, false, SUBADDRESS_LOOKAHEAD_MINOR);
+    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, subaddress_lookahead_minor, uint32_t, Uint, false
+                                        , config::lol::SUBADDRESS_LOOKAHEAD_MINOR);
     m_subaddress_lookahead_minor = field_subaddress_lookahead_minor;
 
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, encrypted_secret_keys, uint32_t, Uint, false, false);
