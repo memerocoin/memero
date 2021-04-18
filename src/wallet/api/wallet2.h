@@ -485,8 +485,6 @@ namespace tools
 
     uint32_t adjust_priority(uint32_t priority);
 
-    bool is_unattended() const { return m_unattended; }
-
     template<class t_request, class t_response>
     inline bool invoke_http_json(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")
     {
