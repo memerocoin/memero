@@ -42,6 +42,11 @@ namespace constant
   constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME = 604800; //seconds, one week
   constexpr std::chrono::seconds CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE(1);
 
+  //by default, blocks ids count in synchronizing
+  constexpr size_t BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT = 10000;
+
+  //max blocks ids count in synchronizing
+  constexpr size_t BLOCKS_IDS_SYNCHRONIZING_MAX_COUNT = 25000;
 }
 
 namespace config

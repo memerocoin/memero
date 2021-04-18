@@ -2153,7 +2153,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
   current_height = get_current_blockchain_height();
   uint64_t stop_height = current_height;
   size_t count = 0;
-  const size_t reserve = std::min((size_t)(stop_height - start_height), (size_t)BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT);
+  const size_t reserve = std::min((size_t)(stop_height - start_height), BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT);
   hashes.reserve(reserve);
   if (weights)
     weights->reserve(reserve);
