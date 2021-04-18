@@ -16,42 +16,50 @@ namespace constant
   // COIN - number of smallest units in one coin
   constexpr uint64_t COIN = 100000000000u; // pow(10, 11)
 
-  constexpr uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2 = 300*2;
-  constexpr size_t BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 = 11;
-
-  constexpr uint64_t FEE_PER_BYTE = 300000;
 
   constexpr uint64_t DIFFICULTY_TARGET_IN_SECONDS = 300;
   constexpr uint64_t DIFFICULTY_WINDOW_IN_BLOCKS = 144;
   constexpr uint64_t DIFFICULTY_BLOCKS_COUNT = DIFFICULTY_WINDOW_IN_BLOCKS + 1;
+
+
+  constexpr uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2 = 300*2;
+  constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_LIVETIME = 86400 * 3; //seconds, three days
+  constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME = 604800; //seconds, one week
+  constexpr std::chrono::seconds CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE(1);
+
+  constexpr uint64_t CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE = 600;
+  constexpr size_t CRYPTONOTE_MAX_TX_PER_BLOCK = 0x10000000;
 
   constexpr uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS = 1;
   constexpr uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2 =
     DIFFICULTY_TARGET_IN_SECONDS * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS;
 
 
-  constexpr uint64_t RPC_IP_FAILS_BEFORE_BLOCK = 3;
-  constexpr size_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
-  constexpr size_t DEFAULT_TXPOOL_MAX_WEIGHT = 648000000; // 3 days at 300000, in bytes
-  constexpr size_t BULLETPROOF_MAX_OUTPUTS = 16;
-
-  constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
-  constexpr size_t COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT = 1000;
-
-  constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_LIVETIME = 86400 * 3; //seconds, three days
-  constexpr uint64_t CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME = 604800; //seconds, one week
-  constexpr std::chrono::seconds CRYPTONOTE_DANDELIONPP_FLUSH_AVERAGE(1);
-
-  constexpr uint64_t CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE = 600;
-
-  //by default, blocks ids count in synchronizing
-  constexpr size_t BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT = 10000;
-
-  //max blocks ids count in synchronizing
-  constexpr size_t BLOCKS_IDS_SYNCHRONIZING_MAX_COUNT = 25000;
 
   constexpr uint32_t DEFAULT_MIN_OUTPUT_COUNT = 5;
   constexpr uint64_t DEFAULT_MIN_OUTPUT_VALUE = 2 * COIN;
+
+  constexpr uint64_t FEE_PER_BYTE = 300000;
+  constexpr size_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
+
+  constexpr size_t BULLETPROOF_MAX_OUTPUTS = 16;
+
+
+
+  //by default, blocks ids count in synchronizing
+  constexpr size_t BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT = 10000;
+  //max blocks ids count in synchronizing
+  constexpr size_t BLOCKS_IDS_SYNCHRONIZING_MAX_COUNT = 25000;
+
+
+
+  constexpr size_t DEFAULT_TXPOOL_MAX_WEIGHT = 648000000; // 3 days at 300000, in bytes
+  constexpr size_t BLOCKS_SYNCHRONIZING_SIZE = 100;
+  constexpr size_t BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2 = 11;
+
+
+  constexpr uint64_t RPC_IP_FAILS_BEFORE_BLOCK = 3;
+  constexpr size_t COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT = 1000;
 }
 
 namespace config
