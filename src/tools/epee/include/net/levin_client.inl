@@ -41,7 +41,7 @@ namespace levin
 inline
 bool levin_client_impl::connect(u_long ip, int port, unsigned int timeout, const std::string& bind_ip)
 {
-	return m_transport.connect(string_tools::get_ip_string_from_int32(ip), port, timeout, timeout, bind_ip);
+	return m_transport.connect(epee::string_tools::get_ip_string_from_int32(ip), port, timeout, timeout, bind_ip);
 }
 //------------------------------------------------------------------------------
 inline

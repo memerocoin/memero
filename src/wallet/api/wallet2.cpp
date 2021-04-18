@@ -41,6 +41,8 @@
 #include "wallet/logic/controller/wallet.hpp"
 #include "wallet/logic/state/gamma_picker.hpp"
 
+#include "wallet/mnemonics/electrum-words.h"
+
 #include <numeric>
 #include <tuple>
 #include <optional>
@@ -58,8 +60,6 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
-#include "config/cryptonote.hpp"
-#include "config/lol.hpp"
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
@@ -77,10 +77,10 @@
 #include "tools/epee/include/profile_tools.h"
 #include "tools/serialization/binary_utils.h"
 
-#include "wallet/mnemonics/electrum-words.h"
+#include "config/cryptonote.hpp"
+#include "config/lol.hpp"
 
 using namespace std;
-using namespace epee;
 using namespace crypto;
 using namespace cryptonote;
 using namespace wallet::logic::functional::fee;
@@ -1229,7 +1229,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     {
       auto i = m_confirmed_txs.find(txid);
       THROW_WALLET_EXCEPTION_IF(i == m_confirmed_txs.end(), error::wallet_internal_error,
-        "confirmed tx wasn't found: " + string_tools::pod_to_hex(txid));
+        "confirmed tx wasn't found: " + epee::string_tools::pod_to_hex(txid));
       i->second.m_change = self_received;
     }
   }
@@ -1450,7 +1450,7 @@ void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, 
 
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = net_utils::invoke_http_bin("/get_blocks.bin", req, res, *m_http_client, rpc_timeout);
+    bool r = epee::net_utils::invoke_http_bin("/get_blocks.bin", req, res, *m_http_client, rpc_timeout);
     THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_blocks.bin", error::get_blocks_error, get_rpc_status(res.status));
     THROW_WALLET_EXCEPTION_IF(res.blocks.size() != res.output_indices.size(), error::wallet_internal_error,
         "mismatched blocks (" + boost::lexical_cast<std::string>(res.blocks.size()) + ") and output_indices (" +
@@ -1475,7 +1475,7 @@ void wallet2::pull_hashes(uint64_t start_height, uint64_t &blocks_start_height, 
   req.start_height = start_height;
 
   {
-    bool r = net_utils::invoke_http_bin("/get_hashes.bin", req, res, *m_http_client, rpc_timeout);
+    bool r = epee::net_utils::invoke_http_bin("/get_hashes.bin", req, res, *m_http_client, rpc_timeout);
     THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "gethashes.bin", error::get_hashes_error, get_rpc_status(res.status));
   }
 
@@ -1614,16 +1614,16 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
     {
       //split detected here !!!
       THROW_WALLET_EXCEPTION_IF(current_index == start_height, error::wallet_internal_error,
-        "wrong daemon response: split starts from the first block in response " + string_tools::pod_to_hex(bl_id) +
+        "wrong daemon response: split starts from the first block in response " + epee::string_tools::pod_to_hex(bl_id) +
         " (height " + std::to_string(start_height) + "), local block id at this height: " +
-        string_tools::pod_to_hex(m_blockchain[current_index]));
+        epee::string_tools::pod_to_hex(m_blockchain[current_index]));
 
       detach_blockchain(current_index, output_tracker_cache);
       process_new_blockchain_entry(bl, blocks[i], parsed_blocks[i], bl_id, current_index, tx_cache_data, tx_cache_data_offset, output_tracker_cache);
     }
     else
     {
-      LOG_PRINT_L2("Block is already in blockchain: " << string_tools::pod_to_hex(bl_id));
+      LOG_PRINT_L2("Block is already in blockchain: " << epee::string_tools::pod_to_hex(bl_id));
     }
     ++current_index;
     tx_cache_data_offset += 1 + parsed_blocks[i].txes.size();
@@ -2259,7 +2259,7 @@ bool wallet2::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t>
   try
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    r = net_utils::invoke_http_json("/get_output_distribution", req, res, *m_http_client, rpc_timeout);
+    r = epee::net_utils::invoke_http_json("/get_output_distribution", req, res, *m_http_client, rpc_timeout);
     THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
   }
   catch(...)
@@ -3352,7 +3352,7 @@ void wallet2::trim_hashchain()
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
       req.height = m_blockchain.size() - 1;
-      r = net_utils::invoke_http_json_rpc("/json_rpc", "get_block_header_by_height", req, res, *m_http_client, rpc_timeout);
+      r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_block_header_by_height", req, res, *m_http_client, rpc_timeout);
     }
 
     if (r && res.status == CORE_RPC_STATUS_OK)
@@ -3708,7 +3708,7 @@ void wallet2::rescan_spent()
     COMMAND_RPC_IS_KEY_IMAGE_SPENT::request req = AUTO_VAL_INIT(req);
     COMMAND_RPC_IS_KEY_IMAGE_SPENT::response daemon_resp = AUTO_VAL_INIT(daemon_resp);
     for (size_t n = start_offset; n < start_offset + n_outputs; ++n)
-      req.key_images.push_back(string_tools::pod_to_hex(m_transfers[n].m_key_image));
+      req.key_images.push_back(epee::string_tools::pod_to_hex(m_transfers[n].m_key_image));
 
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
@@ -4146,7 +4146,7 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
 
       {
         const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-        bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_block_headers_range", getbh_req, getbh_res, *m_http_client, rpc_timeout);
+        bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_block_headers_range", getbh_req, getbh_res, *m_http_client, rpc_timeout);
         THROW_ON_RPC_RESPONSE_ERROR(r, {}, getbh_res, "get_block_headers_range", error::get_blocks_error, get_rpc_status(getbh_res.status));
       }
 
@@ -4309,7 +4309,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 
       {
         const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-        bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_output_histogram", req_t, resp_t, *m_http_client, rpc_timeout);
+        bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_output_histogram", req_t, resp_t, *m_http_client, rpc_timeout);
         THROW_ON_RPC_RESPONSE_ERROR(r, {}, resp_t, "get_output_histogram", error::get_histogram_error, get_rpc_status(resp_t.status));
       }
     }
@@ -5586,7 +5586,7 @@ std::vector<size_t> wallet2::select_available_outputs_from_histogram(uint64_t co
 
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_output_histogram", req_t, resp_t, *m_http_client, rpc_timeout);
+    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_output_histogram", req_t, resp_t, *m_http_client, rpc_timeout);
     THROW_ON_RPC_RESPONSE_ERROR(r, {}, resp_t, "get_output_histogram", error::get_histogram_error, resp_t.status);
   }
 
@@ -5624,7 +5624,7 @@ uint64_t wallet2::get_num_rct_outputs()
 
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_output_histogram", req_t, resp_t, *m_http_client, rpc_timeout);
+    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_output_histogram", req_t, resp_t, *m_http_client, rpc_timeout);
     THROW_ON_RPC_RESPONSE_ERROR(r, {}, resp_t, "get_output_histogram", error::get_histogram_error, resp_t.status);
     THROW_WALLET_EXCEPTION_IF(resp_t.histogram.size() != 1, error::get_histogram_error, "Expected exactly one response");
     THROW_WALLET_EXCEPTION_IF(resp_t.histogram[0].amount != 0, error::get_histogram_error, "Expected 0 amount");
@@ -5720,7 +5720,7 @@ void wallet2::check_tx_key_helper(const crypto::hash &txid, const crypto::key_de
   else
   {
     cryptonote::blobdata tx_data;
-    ok = string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
+    ok = epee::string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
     THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx),
         error::wallet_internal_error, "Failed to validate transaction from daemon");
@@ -5758,7 +5758,7 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
     bool ok;
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      ok = net_utils::invoke_http_json("/get_transactions", req, res, *m_http_client);
+      ok = epee::net_utils::invoke_http_json("/get_transactions", req, res, *m_http_client);
       THROW_WALLET_EXCEPTION_IF(!ok || (res.txs.size() != 1 && res.txs_as_hex.size() != 1),
         error::wallet_internal_error, "Failed to get transaction from daemon");
     }
@@ -5773,7 +5773,7 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
     else
     {
       cryptonote::blobdata tx_data;
-      ok = string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
+      ok = epee::string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
       THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
       THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx),
           error::wallet_internal_error, "Failed to validate transaction from daemon");
@@ -5810,7 +5810,7 @@ bool wallet2::check_tx_proof(const crypto::hash &txid, const cryptonote::account
   bool ok;
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    ok = net_utils::invoke_http_json("/get_transactions", req, res, *m_http_client);
+    ok = epee::net_utils::invoke_http_json("/get_transactions", req, res, *m_http_client);
     THROW_WALLET_EXCEPTION_IF(!ok || (res.txs.size() != 1 && res.txs_as_hex.size() != 1),
       error::wallet_internal_error, "Failed to get transaction from daemon");
   }
@@ -5825,7 +5825,7 @@ bool wallet2::check_tx_proof(const crypto::hash &txid, const cryptonote::account
   else
   {
     cryptonote::blobdata tx_data;
-    ok = string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
+    ok = epee::string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
     THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx),
         error::wallet_internal_error, "Failed to validate transaction from daemon");
@@ -5959,7 +5959,7 @@ std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(const std::
 
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_txpool_backlog", req, res, *m_http_client, rpc_timeout);
+    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_txpool_backlog", req, res, *m_http_client, rpc_timeout);
     THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_txpool_backlog", error::get_tx_pool_error);
   }
 

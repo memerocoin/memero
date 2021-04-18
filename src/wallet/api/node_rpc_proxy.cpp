@@ -89,7 +89,7 @@ std::optional<std::string> NodeRPCProxy::get_info()
 
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t, m_http_client, rpc_timeout);
+      bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t, m_http_client, rpc_timeout);
       RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
     }
 
@@ -154,7 +154,7 @@ std::optional<std::string> NodeRPCProxy::get_dynamic_base_fee_estimate(uint64_t 
 
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_fee_estimate", req_t, resp_t, m_http_client, rpc_timeout);
+      bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_fee_estimate", req_t, resp_t, m_http_client, rpc_timeout);
       RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_fee_estimate");
     }
 
@@ -186,7 +186,7 @@ std::optional<std::string> NodeRPCProxy::get_fee_quantization_mask(uint64_t &fee
 
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = net_utils::invoke_http_json_rpc("/json_rpc", "get_fee_estimate", req_t, resp_t, m_http_client, rpc_timeout);
+      bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_fee_estimate", req_t, resp_t, m_http_client, rpc_timeout);
       RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_fee_estimate");
     }
 

@@ -80,7 +80,7 @@ namespace levin
 #define LEVIN_PROTOCOL_VER_0         0
 #define LEVIN_PROTOCOL_VER_1         1
  
-  template<class t_connection_context = net_utils::connection_context_base>
+  template<class t_connection_context = epee::net_utils::connection_context_base>
   struct levin_commands_handler
   {
     virtual int invoke(int command, const epee::span<const uint8_t> in_buff, std::string& buff_out, t_connection_context& context)=0;

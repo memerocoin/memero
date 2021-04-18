@@ -106,7 +106,7 @@ namespace nodetool
 
 
   template<class base_type>
-  struct p2p_connection_context_t: base_type //t_payload_net_handler::connection_context //public net_utils::connection_context_base
+  struct p2p_connection_context_t: base_type //t_payload_net_handler::connection_context //public epee::net_utils::connection_context_base
   {
     p2p_connection_context_t()
       : fluff_txs(),

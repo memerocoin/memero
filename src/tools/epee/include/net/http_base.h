@@ -68,7 +68,7 @@ namespace net_utils
 		typedef std::list<std::pair<std::string, std::string> > fields_list;
 
 		inline
-		std::string get_value_from_fields_list(const std::string& param_name, const net_utils::http::fields_list& fields)
+		std::string get_value_from_fields_list(const std::string& param_name, const epee::net_utils::http::fields_list& fields)
 		{
 			fields_list::const_iterator it = fields.begin();
 			for(; it != fields.end(); it++)

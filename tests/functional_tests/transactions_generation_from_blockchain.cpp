@@ -37,7 +37,7 @@ using namespace cryptonote;
 /*
 bool transactions_generation_from_blockchain(std::string& blockchain_folder_path)
 {
-  string_tools::parse_hexstr_to_binbuff()
+  epee::string_tools::parse_hexstr_to_binbuff()
   tx_memory_pool pool;
   blockchain_storage bchs(pool);
   bool r = bchs.init(blockchain_folder_path);
@@ -138,7 +138,7 @@ bool make_tx(blockchain_storage& bch)
   COMMAND_RPC_SEND_RAW_TX::request req;
   req.tx_as_hex = epee::string_tools::buff_to_hex_nodelimer(tx_to_blob(tx));
   COMMAND_RPC_SEND_RAW_TX::response daemon_send_resp;
-  r = net_utils::http::invoke_http_json_remote_command(m_daemon_address + "/sendrawtransaction", req, daemon_send_resp, m_http_client);
+  r = epee::net_utils::http::invoke_http_json_remote_command(m_daemon_address + "/sendrawtransaction", req, daemon_send_resp, m_http_client);
   CHECK_AND_ASSERT_MES(r, false, "failed to send transaction");
   if(daemon_send_resp.status != CORE_RPC_STATUS_OK)
   {

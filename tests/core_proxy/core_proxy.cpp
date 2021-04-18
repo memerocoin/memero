@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
   TRY_ENTRY();
 
   tools::on_startup();
-  string_tools::set_module_name_and_folder(argv[0]);
+  epee::string_tools::set_module_name_and_folder(argv[0]);
 
   //set up logging options
   mlog_configure(mlog_get_default_log_path("core_proxy.log"), true);
@@ -184,7 +184,7 @@ bool tests::proxy_core::handle_incoming_tx(const cryptonote::tx_blob_entry& tx_b
     cout << tx_hash << endl;
     cout << tx_prefix_hash << endl;
     cout << tx_blob.blob.size() << endl;
-    //cout << string_tools::buff_to_hex_nodelimer(tx_blob) << endl << endl;
+    //cout << epee::string_tools::buff_to_hex_nodelimer(tx_blob) << endl << endl;
     cout << obj_to_json_str(tx) << endl;
     cout << endl << "ENDTX" << endl;
 
@@ -219,7 +219,7 @@ bool tests::proxy_core::handle_incoming_block(const cryptonote::blobdata& block_
     cout << (lh = get_block_longhash(b)) << endl;
     cout << get_transaction_hash(b.miner_tx) << endl;
     cout << ::get_object_blobsize(b.miner_tx) << endl;
-    //cout << string_tools::buff_to_hex_nodelimer(block_blob) << endl;
+    //cout << epee::string_tools::buff_to_hex_nodelimer(block_blob) << endl;
     cout << obj_to_json_str(b) << endl;
 
     cout << endl << "ENDBLOCK" << endl << endl;

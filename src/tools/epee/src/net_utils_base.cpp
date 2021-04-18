@@ -26,11 +26,11 @@ namespace epee { namespace net_utils
 	{ return is_same_host(other) ? port() < other.port() : ip() < other.ip(); }
 
 	std::string ipv4_network_address::str() const
-	{ return string_tools::get_ip_string_from_int32(ip()) + ":" + std::to_string(port()); }
+	{ return epee::string_tools::get_ip_string_from_int32(ip()) + ":" + std::to_string(port()); }
 
-	std::string ipv4_network_address::host_str() const { return string_tools::get_ip_string_from_int32(ip()); }
-	bool ipv4_network_address::is_loopback() const { return net_utils::is_ip_loopback(ip()); }
-	bool ipv4_network_address::is_local() const { return net_utils::is_ip_local(ip()); }
+	std::string ipv4_network_address::host_str() const { return epee::string_tools::get_ip_string_from_int32(ip()); }
+	bool ipv4_network_address::is_loopback() const { return epee::net_utils::is_ip_loopback(ip()); }
+	bool ipv4_network_address::is_local() const { return epee::net_utils::is_ip_local(ip()); }
 
 	bool ipv6_network_address::equal(const ipv6_network_address& other) const noexcept
 	{ return is_same_host(other) && port() == other.port(); }
@@ -53,11 +53,11 @@ namespace epee { namespace net_utils
 	{ return subnet() < other.subnet() ? true : (other.subnet() < subnet() ? false : (m_mask < other.m_mask)); }
 
 	std::string ipv4_network_subnet::str() const
-	{ return string_tools::get_ip_string_from_int32(subnet()) + "/" + std::to_string(m_mask); }
+	{ return epee::string_tools::get_ip_string_from_int32(subnet()) + "/" + std::to_string(m_mask); }
 
-	std::string ipv4_network_subnet::host_str() const { return string_tools::get_ip_string_from_int32(subnet()) + "/" + std::to_string(m_mask); }
-	bool ipv4_network_subnet::is_loopback() const { return net_utils::is_ip_loopback(subnet()); }
-	bool ipv4_network_subnet::is_local() const { return net_utils::is_ip_local(subnet()); }
+	std::string ipv4_network_subnet::host_str() const { return epee::string_tools::get_ip_string_from_int32(subnet()) + "/" + std::to_string(m_mask); }
+	bool ipv4_network_subnet::is_loopback() const { return epee::net_utils::is_ip_loopback(subnet()); }
+	bool ipv4_network_subnet::is_local() const { return epee::net_utils::is_ip_local(subnet()); }
 	bool ipv4_network_subnet::matches(const ipv4_network_address &address) const
 	{
 		return (address.ip() & ~(0xffffffffull << m_mask)) == subnet();

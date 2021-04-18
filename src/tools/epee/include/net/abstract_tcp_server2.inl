@@ -1280,7 +1280,7 @@ namespace net_utils
       conn->socket().set_option(opt);
 
       bool res;
-      if (default_remote.get_type_id() == net_utils::address_type::invalid)
+      if (default_remote.get_type_id() == epee::net_utils::address_type::invalid)
         res = conn->start(true, 1 < m_threads_count);
       else
         res = conn->start(true, 1 < m_threads_count, default_remote);

@@ -57,11 +57,11 @@ namespace net_utils
 		/************************************************************************/
 		/*                                                                      */
 		/************************************************************************/
-		template<class t_connection_context  = net_utils::connection_context_base>
+		template<class t_connection_context  = epee::net_utils::connection_context_base>
 		class simple_http_connection_handler
 		{
 		public:
-			typedef t_connection_context connection_context;//t_connection_context net_utils::connection_context_base connection_context;
+			typedef t_connection_context connection_context;//t_connection_context epee::net_utils::connection_context_base connection_context;
 			typedef http_server_config config_type;
 
 			simple_http_connection_handler(i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context);
@@ -164,7 +164,7 @@ namespace net_utils
 		/*                                                                      */
 		/************************************************************************/
 
-		template<class t_connection_context = net_utils::connection_context_base>
+		template<class t_connection_context = epee::net_utils::connection_context_base>
 		class http_custom_handler: public simple_http_connection_handler<t_connection_context>
 		{
 		public:

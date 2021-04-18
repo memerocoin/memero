@@ -40,7 +40,7 @@ namespace epee
 {
 namespace levin
 {
-  template<class t_connection_context = net_utils::connection_context_base>
+  template<class t_connection_context = epee::net_utils::connection_context_base>
 	struct protocl_handler_config
 	{
 		levin_commands_handler<t_connection_context>* m_pcommands_handler;
@@ -48,14 +48,14 @@ namespace levin
 		~protocl_handler_config() { if (m_pcommands_handler && m_pcommands_handler_destroy) (*m_pcommands_handler_destroy)(m_pcommands_handler); }
 	};
 
-  template<class t_connection_context = net_utils::connection_context_base>
+  template<class t_connection_context = epee::net_utils::connection_context_base>
 	class protocol_handler
 	{
 	public:
     typedef t_connection_context connection_context;
 		typedef protocl_handler_config<t_connection_context> config_type;
 
-		protocol_handler(net_utils::i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context);
+		protocol_handler(epee::net_utils::i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context);
 		virtual ~protocol_handler(){}
 
 		virtual bool handle_recv(const void* ptr, size_t cb);
@@ -78,7 +78,7 @@ namespace levin
 	};
 
   template<class t_connection_context>
-	protocol_handler<t_connection_context>::protocol_handler(net_utils::i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context):
+	protocol_handler<t_connection_context>::protocol_handler(epee::net_utils::i_service_endpoint* psnd_hndlr, config_type& config, t_connection_context& conn_context):
                   m_config(config), 
                   m_conn_context(conn_context),
                   m_psnd_hndlr(psnd_hndlr), 

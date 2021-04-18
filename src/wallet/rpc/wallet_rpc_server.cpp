@@ -213,7 +213,7 @@ namespace tools
   //------------------------------------------------------------------------------------------------------------------------------
   void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const wallet::logic::type::payment::payment_details &pd)
   {
-    entry.txid = string_tools::pod_to_hex(pd.m_tx_hash);
+    entry.txid = epee::string_tools::pod_to_hex(pd.m_tx_hash);
     entry.height = pd.m_block_height;
     entry.timestamp = pd.m_timestamp;
     entry.amount = pd.m_amount;
@@ -230,7 +230,7 @@ namespace tools
   //------------------------------------------------------------------------------------------------------------------------------
   void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const wallet::logic::type::transfer::confirmed_transfer_details &pd)
   {
-    entry.txid = string_tools::pod_to_hex(txid);
+    entry.txid = epee::string_tools::pod_to_hex(txid);
     entry.height = pd.m_block_height;
     entry.timestamp = pd.m_timestamp;
     entry.unlock_time = pd.m_unlock_time;
@@ -257,7 +257,7 @@ namespace tools
   void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const wallet::logic::type::transfer::unconfirmed_transfer_details &pd)
   {
     bool is_failed = pd.m_state == wallet::logic::type::transfer::unconfirmed_transfer_details::failed;
-    entry.txid = string_tools::pod_to_hex(txid);
+    entry.txid = epee::string_tools::pod_to_hex(txid);
     entry.height = 0;
     entry.timestamp = pd.m_timestamp;
     entry.fee = pd.m_amount_in - pd.m_amount_out;
@@ -283,7 +283,7 @@ namespace tools
   void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const wallet::logic::type::payment::pool_payment_details &ppd)
   {
     const wallet::logic::type::payment::payment_details &pd = ppd.m_pd;
-    entry.txid = string_tools::pod_to_hex(pd.m_tx_hash);
+    entry.txid = epee::string_tools::pod_to_hex(pd.m_tx_hash);
     entry.height = 0;
     entry.timestamp = pd.m_timestamp;
     entry.amount = pd.m_amount;

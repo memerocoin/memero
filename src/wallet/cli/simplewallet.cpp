@@ -551,7 +551,7 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
     print_secret_key(m_wallet->get_account().get_keys().m_view_secret_key);
     putchar('\n');
   }
-  std::cout << "public: " << string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_view_public_key) << std::endl;
+  std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_view_public_key) << std::endl;
 
   return true;
 }
@@ -572,7 +572,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
     print_secret_key(m_wallet->get_account().get_keys().m_spend_secret_key);
     putchar('\n');
   }
-  std::cout << "public: " << string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_spend_public_key) << std::endl;
+  std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_spend_public_key) << std::endl;
 
   return true;
 }
@@ -2016,7 +2016,7 @@ bool simple_wallet::start_mining(const std::vector<std::string>& args)
   if(arg_size >= 1)
   {
     uint16_t num = 1;
-    ok = string_tools::get_xtype_from_string(num, args[0]);
+    ok = epee::string_tools::get_xtype_from_string(num, args[0]);
     ok = ok && 1 <= num;
     req.threads_count = num;
   }
@@ -3616,7 +3616,7 @@ bool simple_wallet::show(const std::vector<std::string> &args_)
       % transfer.unlocked
       % tools::get_human_readable_timestamp(transfer.timestamp)
       % print_money(transfer.amount)
-      % string_tools::pod_to_hex(transfer.hash)
+      % epee::string_tools::pod_to_hex(transfer.hash)
       % print_money(transfer.fee)
       % destinations
       % boost::algorithm::join(transfer.index | boost::adaptors::transformed([](uint32_t i) { return std::to_string(i); }), ", ")
@@ -3678,7 +3678,7 @@ bool simple_wallet::export_transfers(const std::vector<std::string>& args_)
       % tools::get_human_readable_timestamp(transfer.timestamp)
       % print_money(transfer.amount)
       % print_money(running_balance)
-      % string_tools::pod_to_hex(transfer.hash)
+      % epee::string_tools::pod_to_hex(transfer.hash)
       % print_money(transfer.fee)
       % (transfer.outputs.size() ? transfer.outputs[0].first : "-")
       % (transfer.outputs.size() ? print_money(transfer.outputs[0].second) : "")

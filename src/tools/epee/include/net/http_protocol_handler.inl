@@ -596,7 +596,7 @@ namespace net_utils
 		if ((response.m_body.size() && (query_info.m_http_method != http::http_method_head)) || (query_info.m_http_method == http::http_method_options))
 			response_data += response.m_body;
 
-		m_psnd_hndlr->do_send(string_tools::string_to_uint8_t_string(response_data));
+		m_psnd_hndlr->do_send(epee::string_tools::string_to_uint8_t_string(response_data));
 		m_psnd_hndlr->send_done();
 		return res;
 	}
@@ -693,7 +693,7 @@ namespace net_utils
   std::string simple_http_connection_handler<t_connection_context>::get_file_mime_tipe(const std::string& path)
 	{
 		std::string result;
-		std::string ext = string_tools::get_extension(path);
+		std::string ext = epee::string_tools::get_extension(path);
 		if(!string_tools::compare_no_case(ext, "gif"))
 			result = "image/gif";
 		else if(!string_tools::compare_no_case(ext, "jpg"))

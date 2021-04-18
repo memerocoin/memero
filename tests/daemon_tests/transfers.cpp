@@ -49,7 +49,7 @@ TEST(Transfers, Transfers)
 
   cout << "TESTING: transfers" << endl;
 
-  net_utils::http::http_simple_client http_client;
+  epee::net_utils::http::http_simple_client http_client;
   wallet miner, accs[100], receiver;
   miner.generate();
   ASSERT_TRUE(miner.init());
@@ -72,7 +72,7 @@ TEST(Transfers, Transfers)
     req.miner_address = miner.get_account().get_public_address_str(false);
     req.threads_count = 1;
     COMMAND_RPC_START_MINE::response res;
-    bool r = net_utils::http::invoke_http_json_remote_command(daemon_address + "/start_mine", req, res, http_client);
+    bool r = epee::net_utils::http::invoke_http_json_remote_command(daemon_address + "/start_mine", req, res, http_client);
     ASSERT_TRUE(r);
   }
 

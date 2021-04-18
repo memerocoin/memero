@@ -167,7 +167,7 @@ namespace cryptonote
     crypto::hash hash;
     m_core.get_blockchain_top(res.height, hash);
     ++res.height; // block height to chain height
-    res.hash = string_tools::pod_to_hex(hash);
+    res.hash = epee::string_tools::pod_to_hex(hash);
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }
@@ -181,7 +181,7 @@ namespace cryptonote
     crypto::hash top_hash;
     m_core.get_blockchain_top(res.height, top_hash);
     ++res.height; // turn top block height into blockchain height
-    res.top_block_hash = string_tools::pod_to_hex(top_hash);
+    res.top_block_hash = epee::string_tools::pod_to_hex(top_hash);
     res.target_height = m_p2p.get_payload_object().is_synchronized() ? 0 : m_core.get_target_blockchain_height();
     store_difficulty(m_core.get_blockchain_storage().get_difficulty_for_next_block(), res.difficulty, res.wide_difficulty, res.difficulty_top64);
     res.target = m_core.get_blockchain_storage().get_difficulty_target();
@@ -582,7 +582,7 @@ namespace cryptonote
       {
         // use non-splitted form, leaving pruned_as_hex and prunable_as_hex as empty
         cryptonote::blobdata tx_data = std::get<1>(tx);
-        e.as_hex = string_tools::buff_to_hex_nodelimer(tx_data);
+        e.as_hex = epee::string_tools::buff_to_hex_nodelimer(tx_data);
         if (req.decode_as_json)
         {
           cryptonote::transaction t;
@@ -639,7 +639,7 @@ namespace cryptonote
 
     for(const auto& miss_tx: missed_txs)
     {
-      res.missed_tx.push_back(string_tools::pod_to_hex(miss_tx));
+      res.missed_tx.push_back(epee::string_tools::pod_to_hex(miss_tx));
     }
 
     LOG_PRINT_L2(res.txs.size() << " transactions found, " << res.missed_tx.size() << " not found");
@@ -1086,7 +1086,7 @@ namespace cryptonote
       error_resp.code = CORE_RPC_ERROR_CODE_TOO_BIG_HEIGHT;
       error_resp.message = std::string("Requested block height: ") + std::to_string(h) + " greater than current top block height: " +  std::to_string(m_core.get_current_blockchain_height() - 1);
     }
-    res = string_tools::pod_to_hex(m_core.get_block_id_by_height(h));
+    res = epee::string_tools::pod_to_hex(m_core.get_block_id_by_height(h));
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -1183,9 +1183,9 @@ namespace cryptonote
     store_difficulty(wdiff, res.difficulty, res.wide_difficulty, res.difficulty_top64);
     blobdata block_blob = t_serializable_object_to_blob(b);
     blobdata hashing_blob = get_block_hashing_blob(b);
-    res.prev_hash = string_tools::pod_to_hex(b.prev_id);
-    res.blocktemplate_blob = string_tools::buff_to_hex_nodelimer(block_blob);
-    res.blockhashing_blob =  string_tools::buff_to_hex_nodelimer(hashing_blob);
+    res.prev_hash = epee::string_tools::pod_to_hex(b.prev_id);
+    res.blocktemplate_blob = epee::string_tools::buff_to_hex_nodelimer(block_blob);
+    res.blockhashing_blob =  epee::string_tools::buff_to_hex_nodelimer(hashing_blob);
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }
@@ -1254,12 +1254,12 @@ namespace cryptonote
     response.major_version = blk.major_version;
     response.minor_version = blk.minor_version;
     response.timestamp = blk.timestamp;
-    response.prev_hash = string_tools::pod_to_hex(blk.prev_id);
+    response.prev_hash = epee::string_tools::pod_to_hex(blk.prev_id);
     response.nonce = blk.nonce;
     response.orphan_status = orphan_status;
     response.height = height;
     response.depth = m_core.get_current_blockchain_height() - height - 1;
-    response.hash = string_tools::pod_to_hex(hash);
+    response.hash = epee::string_tools::pod_to_hex(hash);
     store_difficulty(m_core.get_blockchain_storage().block_difficulty(height),
         response.difficulty, response.wide_difficulty, response.difficulty_top64);
     store_difficulty(m_core.get_blockchain_storage().get_db().get_block_cumulative_difficulty(height),
@@ -1267,9 +1267,9 @@ namespace cryptonote
     response.reward = get_block_reward(blk);
     response.block_size = response.block_weight = m_core.get_blockchain_storage().get_db().get_block_weight(height);
     response.num_txes = blk.tx_hashes.size();
-    response.pow_hash = fill_pow_hash ? string_tools::pod_to_hex(get_block_longhash(blk)) : "";
+    response.pow_hash = fill_pow_hash ? epee::string_tools::pod_to_hex(get_block_longhash(blk)) : "";
     response.long_term_weight = m_core.get_blockchain_storage().get_db().get_block_long_term_weight(height);
-    response.miner_tx_hash = string_tools::pod_to_hex(cryptonote::get_transaction_hash(blk.miner_tx));
+    response.miner_tx_hash = epee::string_tools::pod_to_hex(cryptonote::get_transaction_hash(blk.miner_tx));
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -1506,7 +1506,7 @@ namespace cryptonote
     {
       res.tx_hashes.push_back(epee::string_tools::pod_to_hex(blk.tx_hashes[n]));
     }
-    res.blob = string_tools::buff_to_hex_nodelimer(t_serializable_object_to_blob(blk));
+    res.blob = epee::string_tools::buff_to_hex_nodelimer(t_serializable_object_to_blob(blk));
     res.json = obj_to_json_str(blk);
     res.status = CORE_RPC_STATUS_OK;
     return true;

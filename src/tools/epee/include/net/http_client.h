@@ -760,7 +760,7 @@ namespace net_utils
 				m_len_in_summary = 0;
 				bool content_len_valid = false;
 				if(m_response_info.m_header_info.m_content_length.size())
-					content_len_valid = string_tools::get_xtype_from_string(m_len_in_summary, m_response_info.m_header_info.m_content_length);
+					content_len_valid = epee::string_tools::get_xtype_from_string(m_len_in_summary, m_response_info.m_header_info.m_content_length);
 
 
 
@@ -773,7 +773,7 @@ namespace net_utils
 				}else if(m_response_info.m_header_info.m_transfer_encoding.size())
 				{
 					string_tools::trim(m_response_info.m_header_info.m_transfer_encoding);
-					if(string_tools::compare_no_case(m_response_info.m_header_info.m_transfer_encoding, "chunked"))
+					if(epee::string_tools::compare_no_case(m_response_info.m_header_info.m_transfer_encoding, "chunked"))
 					{
 						LOG_ERROR("Wrong Transfer-Encoding:" << m_response_info.m_header_info.m_transfer_encoding);
 						m_state = reciev_machine_state_error;

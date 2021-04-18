@@ -51,7 +51,7 @@ namespace net_utils
       std::recursive_mutex m_lock;
     };
     
-    template<class t_connection_context = net_utils::connection_context_base>
+    template<class t_connection_context = epee::net_utils::connection_context_base>
     class jsonrpc2_connection_handler
     {
     public:

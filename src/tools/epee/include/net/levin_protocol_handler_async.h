@@ -116,7 +116,7 @@ public:
 /************************************************************************/
 /*                                                                      */
 /************************************************************************/
-template<class t_connection_context = net_utils::connection_context_base>
+template<class t_connection_context = epee::net_utils::connection_context_base>
 class async_protocol_handler
 {
   std::string m_fragment_buffer;
@@ -162,12 +162,12 @@ public:
   volatile uint32_t m_wait_count;
   volatile uint32_t m_close_called;
   bucket_head2 m_current_head;
-  net_utils::i_service_endpoint* m_pservice_endpoint; 
+  epee::net_utils::i_service_endpoint* m_pservice_endpoint; 
   config_type& m_config;
   t_connection_context& m_connection_context;
   std::atomic<uint64_t> m_max_packet_size;
 
-  net_utils::buffer m_cache_in_buffer;
+  epee::net_utils::buffer m_cache_in_buffer;
   stream_state m_state;
 
   int32_t m_oponent_protocol_ver;
@@ -287,7 +287,7 @@ public:
   }
   template<class callback_t> friend struct anvoke_handler;
 public:
-  async_protocol_handler(net_utils::i_service_endpoint* psnd_hndlr, 
+  async_protocol_handler(epee::net_utils::i_service_endpoint* psnd_hndlr, 
     config_type& config, 
     t_connection_context& conn_context):
             m_current_head(bucket_head2()),
@@ -532,7 +532,7 @@ public:
               head.m_return_code = SWAP32LE(return_code);
               return_buff.insert(0, reinterpret_cast<const char*>(&head), sizeof(head));
 
-              if(!m_pservice_endpoint->do_send(string_tools::string_to_uint8_t_string(return_buff)))
+              if(!m_pservice_endpoint->do_send(epee::string_tools::string_to_uint8_t_string(return_buff)))
                 return false;
 
               MDEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb

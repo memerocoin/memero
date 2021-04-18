@@ -398,7 +398,7 @@ eof:
             MERROR("Failed to read line.");
           }
 
-          string_tools::trim(command);
+          epee::string_tools::trim(command);
 
           LOG_PRINT_L2("Read command: " << command);
           if(cmd_handler(command))
