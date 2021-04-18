@@ -81,7 +81,7 @@ namespace cryptonote
 
     uint64_t get_transaction_weight_limit()
     {
-      return get_min_block_weight() / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+      return get_min_block_weight() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     }
   }
   //---------------------------------------------------------------------------------
@@ -1277,9 +1277,8 @@ namespace cryptonote
     }
 
 
-    size_t max_total_weight = get_max_block_weight(height) - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+    uint64_t max_total_weight = get_max_block_weight(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> k_images;
-
     LOG_PRINT_L2("Filling block template, max weight " << max_total_weight << ", " << m_txs_by_fee_and_receive_time.size() << " txes in the pool");
 
     LockedTXN lock(m_blockchain.get_db());

@@ -67,8 +67,8 @@ namespace cryptonote {
   /************************************************************************/
   /* Cryptonote helper functions                                          */
   /************************************************************************/
-  size_t get_min_block_weight();
-  size_t get_max_tx_size();
+  uint64_t get_min_block_weight();
+  uint64_t get_max_tx_size();
   uint64_t get_max_block_weight(uint64_t height);
   bool get_block_reward(uint64_t height, size_t current_block_weight, uint64_t &reward);
   uint8_t get_account_address_checksum(const public_address_outer_blob& bl);

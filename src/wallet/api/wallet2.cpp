@@ -83,7 +83,6 @@ using namespace std;
 using namespace epee;
 using namespace crypto;
 using namespace cryptonote;
-using namespace constant;
 using namespace wallet::logic::functional::fee;
 using namespace wallet::logic::type::message_signature;
 
@@ -5534,7 +5533,7 @@ uint64_t wallet2::get_upper_transaction_weight_limit()
 {
   if (m_upper_transaction_weight_limit > 0)
     return m_upper_transaction_weight_limit;
-  return get_max_tx_size() / 2 - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+  return get_max_tx_size() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
 }
 //----------------------------------------------------------------------------------------------------
 std::vector<size_t> wallet2::select_available_outputs(const std::function<bool(const transfer_details &td)> &f)

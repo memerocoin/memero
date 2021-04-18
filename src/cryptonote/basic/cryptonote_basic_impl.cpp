@@ -58,7 +58,7 @@ namespace cryptonote {
     return config::lol::min_block_weight;
   }
   //-----------------------------------------------------------------------------------------------
-  size_t get_max_tx_size()
+  uint64_t get_max_tx_size()
   {
     return config::lol::min_block_weight;
   }
