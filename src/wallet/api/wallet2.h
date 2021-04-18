@@ -436,8 +436,6 @@ namespace tools
     void device_derivation_path(const std::string &device_derivation_path) { m_device_derivation_path = device_derivation_path; }
     const ExportFormat & export_format() const { return m_export_format; }
     inline void set_export_format(const ExportFormat& export_format) { m_export_format = export_format; }
-    bool load_deprecated_formats() const { return m_load_deprecated_formats; }
-    void load_deprecated_formats(bool load) { m_load_deprecated_formats = load; }
 
     bool get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys) const;
     bool get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys);
@@ -668,7 +666,6 @@ namespace tools
     uint64_t m_ignore_outputs_above;
     uint64_t m_ignore_outputs_below;
     bool m_track_uses;
-    uint32_t m_inactivity_lock_timeout;
     bool m_is_initialized;
     NodeRPCProxy m_node_rpc_proxy;
     std::unordered_set<crypto::hash> m_scanned_pool_txs[2];
@@ -685,12 +682,11 @@ namespace tools
     // store calculated key image for faster lookup
     serializable_unordered_map<crypto::public_key, serializable_map<uint64_t, crypto::key_image> > m_key_image_cache;
 
-    bool m_ring_history_saved;
+    bool m_ring_history_saved = false;
 
     uint64_t m_last_block_reward;
 
     crypto::chacha_key m_cache_key;
-    std::optional<epee::wipeable_string> m_encrypt_keys_after_refresh;
     std::mutex m_decrypt_keys_lock;
     unsigned int m_decrypt_keys_lockers;
 
@@ -701,7 +697,6 @@ namespace tools
     std::unique_ptr<wallet_device_callback> m_device_callback;
 
     ExportFormat m_export_format;
-    bool m_load_deprecated_formats;
 
     static std::mutex default_daemon_address_lock;
     static std::string default_daemon_address;

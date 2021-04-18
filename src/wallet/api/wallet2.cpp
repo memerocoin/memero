@@ -291,7 +291,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_ignore_outputs_above(MONEY_SUPPLY),
   m_ignore_outputs_below(0),
   m_track_uses(false),
-  m_inactivity_lock_timeout(0),
   m_is_initialized(false),
   m_kdf_rounds(kdf_rounds),
   m_node_rpc_proxy(*m_http_client, m_daemon_rpc_mutex),
@@ -299,17 +298,14 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
   m_key_device_type(hw::device::device_type::SOFTWARE),
-  m_ring_history_saved(false),
   m_last_block_reward(0),
-  m_encrypt_keys_after_refresh(std::nullopt),
   m_decrypt_keys_lockers(0),
   m_unattended(unattended),
   m_devices_registered(false),
   m_device_last_key_image_sync(0),
   m_offline(false),
   m_rpc_version(0),
-  m_export_format(ExportFormat::Binary),
-  m_load_deprecated_formats(false)
+  m_export_format(ExportFormat::Binary)
 {
 }
 
@@ -1715,14 +1711,6 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
 {
   MTRACE("update_pool_state start");
 
-  auto keys_reencryptor = epee::misc_utils::create_scope_leave_handler([&, this]() {
-    if (m_encrypt_keys_after_refresh)
-    {
-      encrypt_keys(*m_encrypt_keys_after_refresh);
-      m_encrypt_keys_after_refresh = std::nullopt;
-    }
-  });
-
   // get the pool state
   cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN::request req;
   cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN::response res;
@@ -2050,14 +2038,6 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
   // always reset start_height to 0 to force short_chain_ history to be used on
   // subsequent pulls in this refresh.
   start_height = 0;
-
-  auto keys_reencryptor = epee::misc_utils::create_scope_leave_handler([&, this]() {
-    if (m_encrypt_keys_after_refresh)
-    {
-      encrypt_keys(*m_encrypt_keys_after_refresh);
-      m_encrypt_keys_after_refresh = std::nullopt;
-    }
-  });
 
   auto scope_exit_handler_hwdev = epee::misc_utils::create_scope_leave_handler([&](){hwdev.computing_key_images(false);});
 
@@ -2492,9 +2472,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   value2.SetInt(m_track_uses ? 1 : 0);
   json.AddMember("track_uses", value2, json.GetAllocator());
 
-  value2.SetInt(m_inactivity_lock_timeout);
-  json.AddMember("inactivity_lock_timeout", value2, json.GetAllocator());
-
   value2.SetUint(m_subaddress_lookahead_major);
   json.AddMember("subaddress_lookahead_major", value2, json.GetAllocator());
 
@@ -2503,9 +2480,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
 
   value2.SetInt(m_export_format);
   json.AddMember("export_format", value2, json.GetAllocator());
-
-  value2.SetInt(m_load_deprecated_formats);
-  json.AddMember("load_deprecated_formats", value2, json.GetAllocator());
 
   value2.SetUint(1);
   json.AddMember("encrypted_secret_keys", value2, json.GetAllocator());
@@ -2697,8 +2671,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     m_ignore_outputs_below = field_ignore_outputs_below;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, track_uses, int, Int, false, false);
     m_track_uses = field_track_uses;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, inactivity_lock_timeout, uint32_t, Uint, false, 0);
-    m_inactivity_lock_timeout = field_inactivity_lock_timeout;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, subaddress_lookahead_major, uint32_t, Uint, false
                                         , config::lol::SUBADDRESS_LOOKAHEAD_MAJOR);
     m_subaddress_lookahead_major = field_subaddress_lookahead_major;
@@ -2711,9 +2683,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
 
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, export_format, ExportFormat, Int, false, Binary);
     m_export_format = field_export_format;
-
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, load_deprecated_formats, int, Int, false, false);
-    m_load_deprecated_formats = field_load_deprecated_formats;
 
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, device_name, std::string, String, false, std::string());
     if (m_device_name.empty())
