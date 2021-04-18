@@ -226,11 +226,6 @@ namespace tools
     cryptonote::account_base& get_account(){return m_account;}
     const cryptonote::account_base& get_account()const{return m_account;}
 
-    void encrypt_keys(const crypto::chacha_key &key);
-    void encrypt_keys(const epee::wipeable_string &password);
-    void decrypt_keys(const crypto::chacha_key &key);
-    void decrypt_keys(const epee::wipeable_string &password);
-
     void set_refresh_from_block_height(uint64_t height) {m_refresh_from_block_height = height;}
     uint64_t get_refresh_from_block_height() const {return m_refresh_from_block_height;}
 
@@ -687,8 +682,6 @@ namespace tools
     uint64_t m_last_block_reward;
 
     crypto::chacha_key m_cache_key;
-    std::mutex m_decrypt_keys_lock;
-    unsigned int m_decrypt_keys_lockers;
 
     bool m_unattended;
     bool m_devices_registered;

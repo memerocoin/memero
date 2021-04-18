@@ -299,7 +299,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
   m_key_device_type(hw::device::device_type::SOFTWARE),
   m_last_block_reward(0),
-  m_decrypt_keys_lockers(0),
   m_unattended(unattended),
   m_devices_registered(false),
   m_device_last_key_image_sync(0),
@@ -2815,38 +2814,6 @@ bool wallet2::verify_password(const std::string& keys_file_name, const epee::wip
   if(!no_spend_key)
     r = r && hwdev.verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
   return r;
-}
-
-void wallet2::encrypt_keys(const crypto::chacha_key &key)
-{
-  std::lock_guard<std::mutex> lock(m_decrypt_keys_lock);
-  if (--m_decrypt_keys_lockers) // another lock left ?
-    return;
-  m_account.encrypt_keys(key);
-  m_account.decrypt_viewkey(key);
-}
-
-void wallet2::decrypt_keys(const crypto::chacha_key &key)
-{
-  std::lock_guard<std::mutex> lock(m_decrypt_keys_lock);
-  if (m_decrypt_keys_lockers++) // already unlocked ?
-    return;
-  m_account.encrypt_viewkey(key);
-  m_account.decrypt_keys(key);
-}
-
-void wallet2::encrypt_keys(const epee::wipeable_string &password)
-{
-  crypto::chacha_key key;
-  crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
-  encrypt_keys(key);
-}
-
-void wallet2::decrypt_keys(const epee::wipeable_string &password)
-{
-  crypto::chacha_key key;
-  crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
-  decrypt_keys(key);
 }
 
 void wallet2::setup_new_blockchain()
