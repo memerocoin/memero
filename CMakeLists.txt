@@ -43,11 +43,6 @@ project(lolnero)
 list(INSERT CMAKE_MODULE_PATH 0
   "${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake")
 
-option (USE_CCACHE "Use ccache if a usable instance is found" ON)
-if (USE_CCACHE)
-	include(FindCcache) 
-endif()
-
 
 
 
