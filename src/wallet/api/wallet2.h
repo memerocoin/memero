@@ -410,12 +410,8 @@ namespace tools
     void print_ring_members(bool value) { m_print_ring_members = value; }
     bool store_tx_info() const { return m_store_tx_info; }
     void store_tx_info(bool store) { m_store_tx_info = store; }
-    uint32_t default_mixin() const { return m_default_mixin; }
-    void default_mixin(uint32_t m) { m_default_mixin = m; }
     uint32_t get_default_priority() const { return m_default_priority; }
     void set_default_priority(uint32_t p) { m_default_priority = p; }
-    bool auto_refresh() const { return m_auto_refresh; }
-    void auto_refresh(bool r) { m_auto_refresh = r; }
     void set_min_output_count(uint32_t count) { m_min_output_count = count; }
     uint32_t get_min_output_count() const { return m_min_output_count; }
     void set_min_output_value(uint64_t value) { m_min_output_value = value; }
@@ -432,8 +428,6 @@ namespace tools
     void auto_low_priority(bool value) { m_auto_low_priority = value; }
     bool ignore_fractional_outputs() const { return m_ignore_fractional_outputs; }
     void ignore_fractional_outputs(bool value) { m_ignore_fractional_outputs = value; }
-    bool confirm_non_default_ring_size() const { return m_confirm_non_default_ring_size; }
-    void confirm_non_default_ring_size(bool always) { m_confirm_non_default_ring_size = always; }
     bool track_uses() const { return m_track_uses; }
     void track_uses(bool value) { m_track_uses = value; }
     const std::string & device_name() const { return m_device_name; }
@@ -652,25 +646,16 @@ namespace tools
     cryptonote::network_type m_nettype;
     uint64_t m_kdf_rounds;
     std::string seed_language; /*!< Language of the mnemonics (seed). */
-    bool m_multisig; /*!< if > 1 spend secret key will not match spend public key */
-    uint32_t m_multisig_threshold;
-    std::vector<crypto::public_key> m_multisig_signers;
     //in case of general M/N multisig wallet we should perform N - M + 1 key exchange rounds and remember how many rounds are passed.
-    uint32_t m_multisig_rounds_passed;
-    std::vector<crypto::public_key> m_multisig_derivations;
     bool m_always_confirm_transfers;
     bool m_print_ring_members;
     bool m_store_tx_info; /*!< request txkey to be returned in RPC, and store in the wallet cache file */
-    uint32_t m_default_mixin;
     uint32_t m_default_priority;
     RefreshType m_refresh_type;
-    bool m_auto_refresh;
-    bool m_first_refresh_done;
     uint64_t m_refresh_from_block_height;
     // If m_refresh_from_block_height is explicitly set to zero we need this to differentiate it from the case that
     // m_refresh_from_block_height was defaulted to zero.*/
     bool m_explicit_refresh_from_block_height;
-    bool m_confirm_non_default_ring_size;
     AskPasswordType m_ask_password;
     uint32_t m_min_output_count;
     uint64_t m_min_output_value;

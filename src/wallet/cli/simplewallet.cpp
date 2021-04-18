@@ -2999,12 +2999,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
             }
           }
         }
-        if (m_wallet->confirm_non_default_ring_size() && !default_ring_size)
-        {
-          prompt << tr("WARNING: this is a non default ring size, which may harm your privacy. Default is recommended.");
-        }
         prompt << ENDL << tr("Is this okay?");
-        
         std::string accepted = input_line(prompt.str(), true);
         if (std::cin.eof())
           return true;
