@@ -60,11 +60,11 @@ namespace rct {
     inline constexpr key INV_EIGHT = { { 0x79, 0x2f, 0xdc, 0xe2, 0x29, 0xe5, 0x06, 0x61, 0xd0, 0xda, 0x1c, 0x7d, 0xb3, 0x9d, 0xd3, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06 } };
 
     //Creates a zero scalar
-    consteval key zero() { return Z; }
+    inline key zero() { return Z; }
     //Creates a zero elliptic curve point
-    consteval key identity() { return I; }
+    inline key identity() { return I; }
     //Creates a key equal to the curve order
-    consteval key curveOrder() { return L; }
+    inline key curveOrder() { return L; }
     //copies a scalar or point
     inline void copy(key &AA, const key &A) { memcpy(&AA, &A, 32); }
     inline key copy(const key & A) { key AA; memcpy(&AA, &A, 32); return AA; }
