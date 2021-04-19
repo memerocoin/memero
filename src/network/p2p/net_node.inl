@@ -46,7 +46,7 @@
 
 #include <boost/uuid/uuid_io.hpp>
 
-#include "version.h"
+#include "config/version.hpp"
 
 #include "cryptonote/core/cryptonote_core.h"
 #include "math/crypto/crypto.hpp"

@@ -110,7 +110,7 @@ include_directories(
 # let's go
 
 ## version
-add_library(version ${CMAKE_BINARY_DIR}/version.cpp)
+add_library(version src/config/version.cpp)
 
 ## logging
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)

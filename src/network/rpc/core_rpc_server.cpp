@@ -31,7 +31,7 @@
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/uuid/nil_generator.hpp>
 
-#include "version.h"
+#include "config/version.hpp"
 
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"

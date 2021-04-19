@@ -47,7 +47,7 @@
 
 #include "config/cryptonote.hpp"
 
-#include "version.h"
+#include "config/version.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"

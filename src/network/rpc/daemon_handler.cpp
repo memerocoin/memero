@@ -39,7 +39,7 @@
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/basic/blobdatatype.h"
 #include "math/ringct/rctSigs.hpp"
-#include "version.h"
+#include "config/version.hpp"
 #include "config/lol.hpp"
 
 namespace cryptonote

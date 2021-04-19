@@ -34,7 +34,7 @@
 #include "tools/common/util.h"
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/string_tools.h"
-#include "version.h"
+#include "config/version.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"

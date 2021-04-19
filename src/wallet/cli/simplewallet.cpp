@@ -38,7 +38,7 @@
 // use boost bind placeholders for now
 
 #include "simplewallet.h"
-#include "version.h"
+#include "config/version.hpp"
 
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"

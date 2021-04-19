@@ -45,7 +45,7 @@
 #include "daemon/command_server.h"
 #include "daemon/command_line_args.h"
 #include "tools/epee/include/net/net_ssl.h"
-#include "version.h"
+#include "config/version.hpp"
 
 using namespace epee;
 

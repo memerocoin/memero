@@ -29,12 +29,12 @@
 #include "gtest/gtest.h"
 
 #include "network/rpc/rpc_version_str.h"
-#include "version.h"
+#include "config/version.hpp"
 
 TEST(rpc, is_version_string_valid)
 {
   using namespace cryptonote::rpc;
-  ASSERT_TRUE(is_version_string_valid(LOLNERO_VERSION));
+  ASSERT_TRUE(is_version_string_valid(LOLNERO_VERSION.data()));
   ASSERT_TRUE(is_version_string_valid("0.14.1.2"));
   ASSERT_TRUE(is_version_string_valid("0.15.0.0-release"));
   ASSERT_TRUE(is_version_string_valid("0.15.0.0-fe3f6a3e6"));

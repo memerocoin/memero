@@ -43,7 +43,7 @@
 #include "network/rpc/core_rpc_server.h"
 #include "network/rpc/rpc_args.h"
 #include "daemon/command_line_args.h"
-#include "version.h"
+#include "config/version.hpp"
 
 #ifdef STACK_TRACE
 #include "tools/common/stack_trace.h"

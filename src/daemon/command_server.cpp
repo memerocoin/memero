@@ -28,7 +28,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include "config/cryptonote.hpp"
-#include "version.h"
+#include "config/version.hpp"
 #include "tools/epee/include/string_tools.h"
 #include "daemon/command_server.h"
 

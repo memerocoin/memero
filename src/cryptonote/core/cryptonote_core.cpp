@@ -50,7 +50,7 @@
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/warnings.h"
 
-#include "version.h"
+#include "config/version.hpp"
 
 #include "config/lol.hpp"
 
