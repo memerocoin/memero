@@ -1329,11 +1329,9 @@ namespace wallet_rpc
     struct response_t
     {
       uint32_t version;
-      bool release;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(version)
-        KV_SERIALIZE(release)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;

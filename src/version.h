@@ -1,6 +1,8 @@
 #pragma once
 
-extern const char* const MONERO_VERSION;
-extern const char* const MONERO_RELEASE_NAME;
-extern const char* const MONERO_VERSION_FULL;
-extern const bool MONERO_VERSION_IS_RELEASE;
+#include <string>
+
+extern const std::string_view LOLNERO_VERSION;
+constexpr std::string_view LOLNERO_RELEASE_NAME = "Hello World";
+const std::string_view LOLNERO_VERSION_FULL = LOLNERO_VERSION;
+

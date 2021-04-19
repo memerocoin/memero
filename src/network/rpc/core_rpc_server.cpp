@@ -209,7 +209,7 @@ namespace cryptonote
     res.database_size = m_core.get_blockchain_storage().get_db().get_database_size();
     if (restricted)
       res.database_size = round_up(res.database_size, 5ull* 1024 * 1024 * 1024);
-    res.version = restricted ? "" : MONERO_VERSION_FULL;
+    res.version = restricted ? "" : LOLNERO_VERSION_FULL;
     res.busy_syncing = m_p2p.get_payload_object().is_busy_syncing();
 
     res.status = CORE_RPC_STATUS_OK;
@@ -1746,7 +1746,6 @@ namespace cryptonote
     RPC_TRACKER(get_version);
 
     res.version = CORE_RPC_VERSION;
-    res.release = MONERO_VERSION_IS_RELEASE;
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }

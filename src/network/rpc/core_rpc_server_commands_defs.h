@@ -1780,12 +1780,10 @@ namespace cryptonote
     struct response_t: public rpc_response_base
     {
       uint32_t version;
-      bool release;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_response_base)
         KV_SERIALIZE(version)
-        KV_SERIALIZE(release)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;
