@@ -110,7 +110,7 @@ include_directories(
 # let's go
 
 ## version
-add_library(version src/config/version.cpp)
+add_library(version src/version.cpp)
 
 ## logging
 add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
