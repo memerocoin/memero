@@ -33,6 +33,7 @@
 
 #include <limits>
 #include <vector>
+#include <numeric>
 
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/misc_log_ex.h"
