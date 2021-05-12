@@ -60,7 +60,7 @@ size_t tree_hash_cnt(size_t count) {
 	return pow >> 1;
 }
 
-void tree_hash(const char (*hashes)[HASH_SIZE], size_t count, char *root_hash) {
+void tree_hash(const uint8_t (*hashes)[HASH_SIZE], size_t count, uint8_t *root_hash) {
 // The blockchain block at height 202612 https://moneroblocks.info/block/202612
 // contained 514 transactions, that triggered bad calculation of variable "cnt" in the original version of this function
 // as from CryptoNote code.
@@ -84,7 +84,7 @@ void tree_hash(const char (*hashes)[HASH_SIZE], size_t count, char *root_hash) {
 
     size_t cnt = tree_hash_cnt( count );
 
-    char *ints = (char*)calloc(cnt, HASH_SIZE);  // zero out as extra protection for using uninitialized mem
+    uint8_t *ints = (uint8_t *)calloc(cnt, HASH_SIZE);  // zero out as extra protection for using uninitialized mem
     assert(ints);
 
     memcpy(ints, hashes, (2 * cnt - count) * HASH_SIZE);

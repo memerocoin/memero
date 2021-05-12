@@ -6,7 +6,7 @@ void handleErrors(void) {
   exit(1);
 }
 
-void sha3(const void *data, size_t length, char *hash)
+void sha3(const void *data, size_t length, uint8_t *hash)
 {
   EVP_MD_CTX *mdctx;
 
@@ -31,9 +31,9 @@ void sha3(const void *data, size_t length, char *hash)
 }
 
 void sha3_as_keccak1600(const uint8_t *in, size_t inlen, uint8_t *md) {
-  sha3((const void*) in, inlen, (char *)md);
+  sha3((const void*) in, inlen, md);
 }
 
 void sha3_as_keccak_256(const uint8_t *in, size_t inlen, uint8_t *md) {
-  sha3((const void*) in, inlen, (char *)md);
+  sha3((const void*) in, inlen, md);
 }

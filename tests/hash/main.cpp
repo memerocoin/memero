@@ -46,16 +46,16 @@ using namespace crypto;
 typedef crypto::hash chash;
 
 extern "C" {
-  static void hash_tree(const void *data, size_t length, char *hash) {
+  static void hash_tree(const void *data, size_t length, uint8_t *hash) {
     if ((length & 31) != 0) {
       throw ios_base::failure("Invalid input length for tree_hash");
     }
-    tree_hash((const char (*)[HASH_SIZE]) data, length >> 5, hash);
+    tree_hash((const uint8_t(*)[HASH_SIZE]) data, length >> 5, hash);
   }
 }
 
 // TODO add more test data
-extern "C" typedef void hash_f(const void *, size_t, char *);
+extern "C" typedef void hash_f(const void *, size_t, uint8_t *);
 struct hash_func {
   const string name;
   hash_f &f;
@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
     input.exceptions(ios_base::badbit | ios_base::failbit | ios_base::eofbit);
     input.clear(input.rdstate());
     get(input, data);
-    f(data.data(), data.size(), (char *) &actual);
+    f(data.data(), data.size(), (uint8_t *) &actual);
     if (expected != actual) {
       size_t i;
       cerr << "Hash mismatch on test " << test << endl << "Input: ";
@@ -111,11 +111,11 @@ int main(int argc, char *argv[]) {
       }
       cerr << endl << "Expected hash: ";
       for (i = 0; i < 32; i++) {
-          cerr << setbase(16) << setw(2) << setfill('0') << int(reinterpret_cast<unsigned char *>(&expected)[i]);
+          cerr << setbase(16) << setw(2) << setfill('0') << int(reinterpret_cast<unsigned char*>(&expected)[i]);
       }
       cerr << endl << "Actual hash: ";
       for (i = 0; i < 32; i++) {
-          cerr << setbase(16) << setw(2) << setfill('0') << int(reinterpret_cast<unsigned char *>(&actual)[i]);
+          cerr << setbase(16) << setw(2) << setfill('0') << int(reinterpret_cast<unsigned uint8_t*>(&actual)[i]);
       }
       cerr << endl;
       error = true;

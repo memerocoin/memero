@@ -42,10 +42,10 @@
 namespace crypto {
 
   struct hash {
-    char data[HASH_SIZE];
+    uint8_t data[HASH_SIZE];
   };
   struct hash8 {
-    char data[8];
+    uint8_t data[8];
   };
 
   static_assert(sizeof(hash) == HASH_SIZE, "Invalid structure size");
@@ -55,7 +55,7 @@ namespace crypto {
     Cryptonight hash functions
   */
 
-  void cn_fast_hash(const void *data, size_t length, char *hash);
+  void cn_fast_hash(const void *data, size_t length, uint8_t *hash);
   void cn_fast_hash(const void *data, std::size_t length, hash &hash);
   hash cn_fast_hash(const void *data, std::size_t length);
   void sha3(const void *data, std::size_t length, hash &hash);
