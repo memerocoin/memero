@@ -357,6 +357,9 @@ namespace cryptonote
     block b;
     blobdata hashing_blob_tail;
     ++m_threads_active;
+
+    boost::multiprecision::uint512_t max_int;
+
     while(!m_stop)
     {
       if(m_pausers_count)//anti split workaround
@@ -370,6 +373,7 @@ namespace cryptonote
         std::unique_lock<std::mutex> lock(m_template_lock);
         b = m_template;
         local_diff = m_diffic;
+        max_int = max_int_for_diff(local_diff);
         height = m_height;
         local_template_ver = m_template_no;
         nonce = m_starter_nonce + th_local_index;
@@ -386,18 +390,12 @@ namespace cryptonote
       b.nonce = nonce;
       crypto::hash h;
 
-      // //---------------------------------------------------------------
-      // bool get_block_longhash(const block& b, crypto::hash& res)
-      // {
-      //   blobdata bd = get_block_hashing_blob(b);
-      //   crypto::sha3(bd.data(), bd.size(), res);
-      //   return true;
-      // }
-
       blobdata bd = get_block_hashing_blob_head(b).append(hashing_blob_tail);
       crypto::sha3(bd.data(), bd.size(), h);
 
-      if(check_hash(h, local_diff))
+      const bool valid_hash = hash_to_int(h) <= max_int;
+
+      if(valid_hash && check_hash(h, local_diff))
       {
         //we lucky!
         MGINFO_GREEN("Found block " << get_block_hash(b) << " at height " << height << " for difficulty: " << local_diff);

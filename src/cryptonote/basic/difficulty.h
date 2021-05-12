@@ -44,6 +44,10 @@ namespace cryptonote
 {
     typedef boost::multiprecision::uint128_t diff_t;
 
+    boost::multiprecision::uint512_t max_int_for_diff(const diff_t difficulty);
+    boost::multiprecision::uint512_t hash_to_int(const crypto::hash &hash);
+
+
     /**
      * @brief checks if a hash fits the given difficulty
      *

@@ -48,23 +48,21 @@ namespace cryptonote {
   constexpr boost::multiprecision::uint512_t max256bit
   (std::numeric_limits<boost::multiprecision::uint256_t>::max());
 
-  bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
-    auto hash_fold = [](const boost::multiprecision::uint512_t v, const uint8_t b) -> boost::multiprecision::uint512_t
-    {
-      return (v << 8) |= b;
-    };
 
-    const boost::multiprecision::uint512_t hashInt = std::accumulate
-      (
-       std::rbegin(hash.data)
-       , std::rend(hash.data)
-       , boost::multiprecision::uint512_t(0)
-       , hash_fold
-       );
-
-    return hashInt * difficulty <= max256bit;
+  boost::multiprecision::uint512_t max_int_for_diff(const diff_t difficulty) {
+    return max256bit / difficulty;
   }
 
+  boost::multiprecision::uint512_t hash_to_int(const crypto::hash &hash) {
+    boost::multiprecision::uint512_t v;
+    boost::multiprecision::import_bits(v, std::begin(hash.data), std::end(hash.data), 0, false);
+    return v;
+  }
+
+  bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
+    const boost::multiprecision::uint512_t hashInt = hash_to_int(hash);
+    return hashInt * difficulty <= max256bit;
+  }
 
   // LWMA-1 difficulty algorithm 
   // Copyright (c) 2017-2019 Zawy, MIT License
