@@ -49,12 +49,20 @@ namespace cryptonote {
   (std::numeric_limits<boost::multiprecision::uint256_t>::max());
 
   bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
-    boost::multiprecision::uint512_t hashVal = 0;
-    for(size_t i = 0; i < 4; i++) { // highest word is zero
-      hashVal <<= 64;
-      hashVal |= swap64le(((const uint64_t *) &hash)[3 - i]);
-    }
-    return hashVal * difficulty <= max256bit;
+    auto hash_fold = [](const boost::multiprecision::uint512_t v, const uint8_t b) -> boost::multiprecision::uint512_t
+    {
+      return (v << 8) |= b;
+    };
+
+    const boost::multiprecision::uint512_t hashInt = std::accumulate
+      (
+       std::rbegin(hash.data)
+       , std::rend(hash.data)
+       , boost::multiprecision::uint512_t(0)
+       , hash_fold
+       );
+
+    return hashInt * difficulty <= max256bit;
   }
 
 
