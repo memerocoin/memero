@@ -50,7 +50,7 @@ namespace cryptonote {
 
   bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
     boost::multiprecision::uint512_t hashVal = 0;
-    for(int i = 0; i < 4; i++) { // highest word is zero
+    for(size_t i = 0; i < 4; i++) { // highest word is zero
       hashVal <<= 64;
       hashVal |= swap64le(((const uint64_t *) &hash)[3 - i]);
     }
