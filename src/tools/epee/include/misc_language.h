@@ -25,13 +25,13 @@
 // 
 
 
-
 #pragma once
 
-#include <limits>
 #include <thread>
 #include <algorithm>
+
 #include <boost/utility/value_init.hpp>
+
 namespace epee
 {
 
@@ -57,33 +57,19 @@ namespace misc_utils
 		return true;
 	}
 
-  template <typename T>
-  T get_mid(const T &a, const T &b)
-  {
-    //returns the average of two numbers; overflow safe and works with at least all integral and floating point types
-    //(a+b)/2 = (a/2) + (b/2) + ((a - 2*(a/2)) + (b - 2*(b/2)))/2
-    return (a/2) + (b/2) + ((a - 2*(a/2)) + (b - 2*(b/2)))/2;
-  }
-
-  template<class type_vec_type>
-  type_vec_type median(std::vector<type_vec_type> &v)
+  // need copy by value, since std::nth_element will modify the element in place
+  template<class t>
+  t median(std::vector<t> v)
   {
     if(v.empty())
-      return boost::value_initialized<type_vec_type>();
+      return boost::value_initialized<t>();
+
     if(v.size() == 1)
       return v[0];
 
-    size_t n = (v.size()) / 2;
-    std::sort(v.begin(), v.end());
-    //nth_element(v.begin(), v.begin()+n-1, v.end());
-    if(v.size()%2)
-    {//1, 3, 5...
-      return v[n];
-    }else 
-    {//2, 4, 6...
-      return get_mid<type_vec_type>(v[n-1],v[n]);
-    }
-
+    const size_t n = v.size() / 2;
+    std::nth_element(v.begin(), v.begin() + n, v.end());
+    return v[n];
   }
 
   /************************************************************************/
