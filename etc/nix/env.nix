@@ -15,7 +15,7 @@ in
   qpidEnv = stdenvNoCC.mkDerivation {
     name = "lolnero-build-environment";
     buildInputs = [
-      gcc10
+      gcc11
       cmake git ccache
       boost175 openssl readline libsodium rapidjson
       gmock ninja
