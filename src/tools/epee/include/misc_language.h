@@ -29,6 +29,7 @@
 
 #include <thread>
 #include <algorithm>
+#include <memory>
 
 #include <boost/utility/value_init.hpp>
 
