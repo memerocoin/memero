@@ -25,10 +25,10 @@
 // 
 
 
-#ifndef _REG_EXP_DEFINER_H_
-#define _REG_EXP_DEFINER_H_
+#pragma once
 
 #include <boost/interprocess/detail/atomic.hpp>
+
 #include "tools/epee/include/syncobj.h"
 
 namespace epee
@@ -80,5 +80,3 @@ namespace epee
 	gregexplock.get_lock().lock().unlock();\
 }
 }
-
-#endif //_REG_EXP_DEFINER_H_

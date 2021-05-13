@@ -26,13 +26,13 @@
 
 
 
-#ifndef _LEVIN_BASE_H_
-#define _LEVIN_BASE_H_
+#pragma once
 
 #include <cstdint>
 
-#include "net_utils_base.h"
 #include "tools/epee/include/span.h"
+
+#include "net_utils_base.h"
 
 #define LEVIN_SIGNATURE  0x0101010101012101LL  //Bender's nightmare
 
@@ -126,6 +126,4 @@ namespace levin
 }
 }
 
-
-#endif //_LEVIN_BASE_H_
 

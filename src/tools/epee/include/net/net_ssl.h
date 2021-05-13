@@ -25,15 +25,15 @@
 // 
 
 
+#pragma once
 
-#ifndef _NET_SSL_H
-#define _NET_SSL_H
+#include <stdint.h>
 
 #include <chrono>
-#include <stdint.h>
 #include <string>
 #include <vector>
 #include <string_view>
+
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/system/error_code.hpp>
@@ -146,5 +146,3 @@ namespace net_utils
 	bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert);
 }
 }
-
-#endif //_NET_SSL_H

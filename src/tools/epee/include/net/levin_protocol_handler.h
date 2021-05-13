@@ -26,12 +26,13 @@
 
 
 
-#ifndef _LEVIN_PROTOCOL_HANDLER_H_
-#define _LEVIN_PROTOCOL_HANDLER_H_
+#pragma once
 
 #include <boost/uuid/uuid_generators.hpp>
-#include "levin_base.h"
+
 #include "tools/epee/include/int-util.h"
+
+#include "levin_base.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
@@ -177,17 +178,6 @@ namespace levin
 		return true;
 	}
 
-
-
-
-
-
-
 }
 }
-
-
-
-
-#endif //_LEVIN_PROTOCOL_HANDLER_H_
 

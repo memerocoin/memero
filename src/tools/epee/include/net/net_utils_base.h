@@ -26,18 +26,21 @@
 
 
 
-#ifndef _NET_UTILS_BASE_H_
-#define _NET_UTILS_BASE_H_
+#pragma once
+
+#include <typeinfo>
+#include <type_traits>
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/address_v6.hpp>
-#include <typeinfo>
-#include <type_traits>
-#include "enums.h"
+
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "tools/epee/include/int-util.h"
+
+#include "enums.h"
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
@@ -483,5 +486,3 @@ inline MAKE_LOGGABLE(connection_context_base, ct, os)
 
 }
 }
-
-#endif //_NET_UTILS_BASE_H_
