@@ -509,70 +509,8 @@ namespace net_utils
     auto self = safe_shared_from_this();
     if (!self) return false;
     if (m_was_shutdown) return false;
-		// TODO avoid copy
 
-		const uint8_t* message_data = message.c_str();
-		const std::size_t message_size = message.size();
-
-		const double factor = 32; // TODO config
-		typedef long long signed int t_safe; // my t_size to avoid any overunderflow in arithmetic
-		const t_safe chunksize_good = (t_safe)( 1024 * std::max(1.0,factor) );
-        const t_safe chunksize_max = chunksize_good * 2 ;
-		const bool allow_split = (m_connection_type == e_connection_type_RPC) ? false : true; // do not split RPC data
-
-        CHECK_AND_ASSERT_MES(! (chunksize_max<0), false, "Negative chunksize_max" ); // make sure it is unsigned before removin sign with cast:
-        long long unsigned int chunksize_max_unsigned = static_cast<long long unsigned int>( chunksize_max ) ;
-
-        if (allow_split && (message_size > chunksize_max_unsigned)) {
-			{ // LOCK: chunking
-    		std::lock_guard<decltype(m_chunking_lock)> send_guard(m_chunking_lock); // *** critical *** 
-
-				MDEBUG("do_send() will SPLIT into small chunks, from packet="<<message_size<<" B for ptr="<<message_data);
-				// 01234567890 
-				// ^^^^        (pos=0, len=4)     ;   pos:=pos+len, pos=4
-				//     ^^^^    (pos=4, len=4)     ;   pos:=pos+len, pos=8
-				//         ^^^ (pos=8, len=4)    ;   
-
-				// const size_t bufsize = chunksize_good; // TODO safecast
-				// char* buf = new char[ bufsize ];
-
-				bool all_ok = true;
-        std::basic_string_view<uint8_t> message_view(message);
-				while (!message_view.empty()) {
-          std::basic_string_view<uint8_t> chunk;
-          if (message_view.size() > chunksize_good) {
-            chunk = message_view.substr(0, chunksize_good);
-            message_view = message_view.substr(chunksize_good, std::string::npos);
-          } else {
-            chunk = message_view;
-            message_view = std::basic_string_view<uint8_t>();
-          }
-
-					MDEBUG("chunk_start="<<(void*)chunk.data()<<" ptr="<<message_data<<" pos="<<(chunk.data() - message_data));
-					MDEBUG("part of " << message.size() << ": pos="<<(chunk.data() - message_data) << " len="<<chunk.size());
-
-					bool ok = do_send_chunk(std::basic_string<uint8_t>(chunk)); // <====== ***
-
-					all_ok = all_ok && ok;
-					if (!all_ok) {
-						MDEBUG("do_send() DONE ***FAILED*** from packet="<<message_size<<" B for ptr="<<message_data);
-						MDEBUG("do_send() SEND was aborted in middle of big package - this is mostly harmless "
-							<< " (e.g. peer closed connection) but if it causes trouble tell us at #monero-dev. " << message_size);
-						return false; // partial failure in sending
-					}
-					// (in catch block, or uniq pointer) delete buf;
-				} // each chunk
-
-				MDEBUG("do_send() DONE SPLIT from packet="<<message_size<<" B for ptr="<<message_data);
-
-                MDEBUG("do_send() m_connection_type = " << m_connection_type);
-
-				return all_ok; // done - e.g. queued - all the chunks of current do_send call
-			} // LOCK: chunking
-		} // a big block (to be chunked) - all chunks
-		else { // small block
-			return do_send_chunk(std::move(message)); // just send as 1 big chunk
-		}
+    return do_send_chunk(std::move(message)); // just send as 1 big chunk
 
     CATCH_ENTRY_L0("connection<t_protocol_handler>::do_send", false);
 	} // do_send()
