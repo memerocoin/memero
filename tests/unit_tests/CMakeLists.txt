@@ -36,7 +36,6 @@ add_executable(unit_tests_tools
   expect.cpp
   get_xtype_from_string.cpp
   logging.cpp
-  mul_div.cpp
   notify.cpp
   varint.cpp
   wipeable_string.cpp
