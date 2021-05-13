@@ -24,18 +24,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-
-
-
 #pragma once
-
-
-#include <list>
-#include <numeric>
-#include <random>
-#include <boost/timer/timer.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/random_generator.hpp>
 
 #include "tools/epee/include/misc_os_dependent.h"
 #include "tools/epee/include/syncobj.h"
