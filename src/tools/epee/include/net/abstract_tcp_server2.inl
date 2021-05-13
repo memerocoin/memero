@@ -500,22 +500,7 @@ namespace net_utils
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  bool connection<t_protocol_handler>::do_send(const std::basic_string<uint8_t> message) {
-    TRY_ENTRY();
-
-    // Use safe_shared_from_this, because of this is public method and it can be called on the object being deleted
-    auto self = safe_shared_from_this();
-    if (!self) return false;
-    if (m_was_shutdown) return false;
-
-    return do_send_chunk(std::move(message)); // just send as 1 big chunk
-
-    CATCH_ENTRY_L0("connection<t_protocol_handler>::do_send", false);
-	} // do_send()
-
-  //---------------------------------------------------------------------------------
-  template<class t_protocol_handler>
-  bool connection<t_protocol_handler>::do_send_chunk(const std::basic_string<uint8_t> chunk)
+  bool connection<t_protocol_handler>::do_send(const std::basic_string<uint8_t> chunk)
   {
     TRY_ENTRY();
     // Use safe_shared_from_this, because of this is public method and it can be called on the object being deleted
@@ -562,7 +547,7 @@ namespace net_utils
     if(m_send_que.size() > 1)
     { // active operation should be in progress, nothing to do, just wait last operation callback
         auto size_now = m_send_que.back().size();
-        MDEBUG("do_send_chunk() NOW just queues: packet="<<size_now<<" B, is added to queue-size="<<m_send_que.size());
+        MDEBUG("do_send() NOW just queues: packet="<<size_now<<" B, is added to queue-size="<<m_send_que.size());
         //do_send_handler_delayed( ptr , size_now ); // (((H))) // empty function
       
       LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] Async send requested " << m_send_que.front().size());
@@ -577,7 +562,7 @@ namespace net_utils
         }
 
         auto size_now = m_send_que.front().size();
-        MDEBUG("do_send_chunk() NOW SENSD: packet="<<size_now<<" B");
+        MDEBUG("do_send() NOW SENSD: packet="<<size_now<<" B");
 
         CHECK_AND_ASSERT_MES( size_now == m_send_que.front().size(), false, "Unexpected queue size");
         reset_timer(get_default_timeout());
@@ -596,8 +581,8 @@ namespace net_utils
 
     return true;
 
-    CATCH_ENTRY_L0("connection<t_protocol_handler>::do_send_chunk", false);
-  } // do_send_chunk
+    CATCH_ENTRY_L0("connection<t_protocol_handler>::do_send", false);
+  } // do_send
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
   std::chrono::milliseconds connection<t_protocol_handler>::get_default_timeout()

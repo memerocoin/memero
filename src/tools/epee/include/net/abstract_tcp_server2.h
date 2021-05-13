@@ -131,8 +131,6 @@ namespace net_utils
     virtual boost::asio::io_service& get_io_service();
     virtual bool add_ref();
     virtual bool release();
-    //------------------------------------------------------
-    bool do_send_chunk(const std::basic_string<uint8_t> chunk); ///< will send (or queue) a part of data. internal use only
 
     std::shared_ptr<connection<t_protocol_handler> > safe_shared_from_this();
     bool shutdown();
@@ -168,7 +166,6 @@ namespace net_utils
     size_t m_reference_count = 0; // reference count managed through add_ref/release support
     std::shared_ptr<connection<t_protocol_handler> > m_self_ref; // the reference to hold
     std::recursive_mutex m_self_refs_lock;
-    std::recursive_mutex m_chunking_lock; // held while we add small chunks of the big do_send() to small do_send_chunk()
     std::recursive_mutex m_shutdown_lock; // held while shutting down
     t_connection_type m_connection_type;
     boost::asio::steady_timer m_timer;
