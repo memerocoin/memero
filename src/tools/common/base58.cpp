@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/multiprecision/cpp_int.hpp>
+
 #include "math/crypto/hash.hpp"
 #include "tools/epee/include/int-util.h"
 #include "varint.h"
@@ -151,12 +153,16 @@ namespace tools
           if (digit < 0)
             return false; // Invalid symbol
 
-          uint64_t product_hi;
-          uint64_t tmp = res_num + mul128(order, digit, &product_hi);
-          if (tmp < res_num || 0 != product_hi)
-            return false; // Overflow
+          using namespace boost::multiprecision;
+          uint128_t p = uint128_t(order) * uint128_t(digit);
+          uint128_t tmp = res_num + p;
+          uint64_t max_uint64_t = std::numeric_limits<uint64_t>::max();
 
-          res_num = tmp;
+          if (tmp > max_uint64_t || p > max_uint64_t) {
+            return false; // Overflow
+          }
+
+          res_num = static_cast<uint64_t>(tmp);
           order *= alphabet_size; // Never overflows, 58^10 < 2^64
         }
 
