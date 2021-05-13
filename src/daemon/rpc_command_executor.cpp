@@ -1845,9 +1845,8 @@ bool t_rpc_command_executor::print_blockchain_dynamic_stats(uint64_t nblocks)
     avgdiff /= nblocks;
     avgnumtxes /= nblocks;
     avgreward /= nblocks;
-    uint64_t median_block_weight = epee::misc_utils::median(weights);
     tools::msg_writer() << "Last " << nblocks << ": avg. diff " << avgdiff << ", " << (latest - earliest) / nblocks << " avg sec/block, avg num txes " << avgnumtxes
-        << ", avg. reward " << cryptonote::print_money(avgreward) << ", median block weight " << median_block_weight;
+        << ", avg. reward " << cryptonote::print_money(avgreward);
 
     unsigned int max_major = 256, max_minor = 256;
     while (max_major > 0 && !major_versions[--max_major]);
