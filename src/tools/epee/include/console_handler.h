@@ -114,10 +114,6 @@ namespace epee
       {
         m_run.store(false, std::memory_order_relaxed);
 
-#if defined(WIN32)
-        ::CloseHandle(::GetStdHandle(STD_INPUT_HANDLE));
-#endif
-
         m_request_cv.notify_one();
         m_reader_thread.join();
 #ifdef HAVE_READLINE
@@ -165,7 +161,6 @@ namespace epee
 
     bool wait_stdin_data()
     {
-#if !defined(WIN32)
       #if defined(__OpenBSD__) || defined(__ANDROID__)
       int stdin_fileno = fileno(stdin);
       #else
@@ -191,25 +186,6 @@ namespace epee
         else if (0 < retval)
           return true;
       }
-#else
-      while (m_run.load(std::memory_order_relaxed))
-      {
-        if (m_read_status == state_cancelled)
-          return false;
-
-        int retval = ::WaitForSingleObject(::GetStdHandle(STD_INPUT_HANDLE), 100);
-        switch (retval)
-        {
-          case WAIT_FAILED:
-            return false;
-          case WAIT_OBJECT_0:
-            return true;
-          default:
-            break;
-        }
-      }
-#endif
-
       return true;
     }
 
