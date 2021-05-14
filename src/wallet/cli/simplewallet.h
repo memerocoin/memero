@@ -47,8 +47,6 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.simplewallet"
 
-using namespace constant;
-
 /*!
  * \namespace cryptonote
  * \brief Holds cryptonote related classes and helpers.
