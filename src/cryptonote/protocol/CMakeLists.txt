@@ -29,7 +29,6 @@
 
 add_library(cryptonote_protocol
   block_queue.cpp
-  cryptonote_protocol_handler-base.cpp
   levin_notify.cpp
 )
 

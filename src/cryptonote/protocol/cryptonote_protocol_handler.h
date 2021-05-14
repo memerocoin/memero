@@ -59,16 +59,16 @@ static_assert(CURRENCY_PROTOCOL_MAX_OBJECT_REQUEST_COUNT >= constant::BLOCKS_SYN
 namespace cryptonote
 {
 
-	class cryptonote_protocol_handler_base_pimpl;
+	class cryptonote_protocol_handler_base_pimpl {};
 	class cryptonote_protocol_handler_base {
 		private:
 			std::unique_ptr<cryptonote_protocol_handler_base_pimpl> mI;
 
 		public:
-			cryptonote_protocol_handler_base();
-			virtual ~cryptonote_protocol_handler_base();
-			void handler_request_blocks_history(std::list<crypto::hash>& ids); // before asking for list of objects, we can change the list still
-			void handler_response_blocks_now(size_t packet_size);
+      cryptonote_protocol_handler_base(){};
+      virtual ~cryptonote_protocol_handler_base(){};
+      void handler_request_blocks_history(std::list<crypto::hash>& ids){}; // before asking for list of objects, we can change the list still
+      void handler_response_blocks_now(size_t packet_size){};
 	};
 
   template<class t_core>
