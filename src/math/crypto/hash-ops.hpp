@@ -33,6 +33,4 @@
 #include <stddef.h>
 #include <stdint.h>
 
-enum {
-  HASH_SIZE = 32
-};
+constexpr size_t HASH_SIZE = 32;
