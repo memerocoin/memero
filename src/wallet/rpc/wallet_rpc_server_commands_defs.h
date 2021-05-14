@@ -30,11 +30,12 @@
 
 #pragma once
 
-#include "config/cryptonote.hpp"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/subaddress_index.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "wallet_rpc_server_error_codes.h"
+
+#include "config/cryptonote.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"
@@ -46,17 +47,15 @@
 // whether they can talk to a given wallet without having to know in
 // advance which version they will stop working with
 // Don't go over 32767 for any of these
-#define WALLET_RPC_VERSION_MAJOR 1
-#define WALLET_RPC_VERSION_MINOR 20
-#define MAKE_WALLET_RPC_VERSION(major,minor) (((major)<<16)|(minor))
-#define WALLET_RPC_VERSION MAKE_WALLET_RPC_VERSION(WALLET_RPC_VERSION_MAJOR, WALLET_RPC_VERSION_MINOR)
+
+constexpr uint32_t WALLET_RPC_VERSION_MAJOR = 1;
+constexpr uint32_t WALLET_RPC_VERSION_MINOR = 20;
+constexpr uint32_t WALLET_RPC_VERSION = WALLET_RPC_VERSION_MAJOR << 16 | WALLET_RPC_VERSION_MINOR;
+
 namespace tools
 {
 namespace wallet_rpc
 {
-#define WALLET_RPC_STATUS_OK      "OK"
-#define WALLET_RPC_STATUS_BUSY    "BUSY"
-
   struct COMMAND_RPC_GET_BALANCE
   {
     struct request_t
