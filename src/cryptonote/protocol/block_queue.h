@@ -80,8 +80,7 @@ namespace cryptonote
     uint64_t get_max_block_height() const;
     void print() const;
     std::string get_overview(uint64_t blockchain_height) const;
-    bool has_unpruned_height(uint64_t block_height, uint64_t blockchain_height, uint32_t pruning_seed) const;
-    std::pair<uint64_t, uint64_t> reserve_span(uint64_t first_block_height, uint64_t last_block_height, uint64_t max_blocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, uint32_t local_pruning_seed, uint32_t pruning_seed, uint64_t blockchain_height, const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes, std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now());
+    std::pair<uint64_t, uint64_t> reserve_span(uint64_t first_block_height, uint64_t last_block_height, uint64_t max_blocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, uint64_t blockchain_height, const std::vector<std::pair<crypto::hash, uint64_t>> &block_hashes, std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now());
     uint64_t get_next_needed_height(uint64_t blockchain_height) const;
     std::pair<uint64_t, uint64_t> get_next_span_if_scheduled(std::vector<crypto::hash> &hashes, boost::uuids::uuid &connection_id, std::chrono::time_point<std::chrono::system_clock> &time) const;
     void reset_next_span_time(std::chrono::time_point<std::chrono::system_clock> t = std::chrono::system_clock::now());
