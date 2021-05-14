@@ -127,7 +127,7 @@ int connection_basic_pimpl::m_default_tos;
 connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::shared_ptr<connection_basic_shared_state> state, ssl_support_t ssl_support)
 	:
 	m_state(std::move(state)),
-	mI( new connection_basic_pimpl("peer") ),
+	mI( std::make_unique<connection_basic_pimpl>("peer") ),
 	strand_(GET_IO_SERVICE(sock)),
 	socket_(GET_IO_SERVICE(sock), get_context(m_state.get())),
 	m_want_close_connection(false),
@@ -152,7 +152,7 @@ connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::sha
 connection_basic::connection_basic(boost::asio::io_service &io_service, std::shared_ptr<connection_basic_shared_state> state, ssl_support_t ssl_support)
 	:
 	m_state(std::move(state)),
-	mI( new connection_basic_pimpl("peer") ),
+	mI( std::make_unique<connection_basic_pimpl>("peer") ),
 	strand_(io_service),
 	socket_(io_service, get_context(m_state.get())),
 	m_want_close_connection(false),
