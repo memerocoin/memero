@@ -143,7 +143,6 @@ namespace cryptonote
       context.m_needed_objects.clear();
       context.m_expect_height = m_core.get_current_blockchain_height();
       m_core.get_short_chain_history(r.block_ids);
-      handler_request_blocks_history( r.block_ids ); // change the limit(?), sleep(?)
       context.m_last_request_time = std::chrono::system_clock::now();
       context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
       MLOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
@@ -448,7 +447,6 @@ namespace cryptonote
       NOTIFY_REQUEST_CHAIN::request r = {};
       context.m_expect_height = m_core.get_current_blockchain_height();
       m_core.get_short_chain_history(r.block_ids);
-      handler_request_blocks_history( r.block_ids ); // change the limit(?), sleep(?)
       context.m_last_request_time = std::chrono::system_clock::now();
       context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
       MLOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
@@ -730,7 +728,6 @@ namespace cryptonote
           NOTIFY_REQUEST_CHAIN::request r = {};
           context.m_expect_height = m_core.get_current_blockchain_height();
           m_core.get_short_chain_history(r.block_ids);
-          handler_request_blocks_history( r.block_ids ); // change the limit(?), sleep(?)
           context.m_last_request_time = std::chrono::system_clock::now();
           context.m_expect_response = NOTIFY_RESPONSE_CHAIN_ENTRY::ID;
           MLOG_P2P_MESSAGE("-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size() );
@@ -962,8 +959,6 @@ namespace cryptonote
                      << rsp.blocks.size() << ", rsp.m_current_blockchain_height=" << rsp.current_blockchain_height
                      << ", missed_ids.size()=" << rsp.missed_ids.size());
     post_notify<NOTIFY_RESPONSE_GET_OBJECTS>(rsp, context);
-    //handler_response_blocks_now(sizeof(rsp)); // XXX
-    //handler_response_blocks_now(200);
     return 1;
   }
   //------------------------------------------------------------------------------------------------------------------------
@@ -1943,8 +1938,6 @@ skip:
           r.block_ids.push_front(context.m_last_known_hash);
         }
       }
-
-      handler_request_blocks_history( r.block_ids ); // change the limit(?), sleep(?)
 
       //std::string blob; // for calculate size of request
       //epee::serialization::store_t_to_binary(r, blob);
