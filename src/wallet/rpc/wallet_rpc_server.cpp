@@ -46,16 +46,10 @@
 #include "wallet_rpc_server_commands_defs.h"
 
 #include "config/cryptonote.hpp"
-
 #include "config/version.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"
-
-#define DEFAULT_AUTO_REFRESH_PERIOD 20 // seconds
-
-using namespace epee;
-using namespace constant;
 
 namespace
 {
@@ -191,7 +185,7 @@ namespace tools
       }
     }
 
-    m_auto_refresh_period = DEFAULT_AUTO_REFRESH_PERIOD;
+    m_auto_refresh_period = constant::DEFAULT_RPC_AUTO_REFRESH_PERIOD_IN_SECONDS;
     m_last_auto_refresh_time = std::chrono::system_clock::time_point::min();
 
     m_net_server.set_threads_prefix("RPC");
@@ -1556,7 +1550,8 @@ namespace tools
     }
     try
     {
-      m_auto_refresh_period = req.enable ? req.period ? req.period : DEFAULT_AUTO_REFRESH_PERIOD : 0;
+      m_auto_refresh_period = req.enable ? req.period ? req.period :
+        constant::DEFAULT_RPC_AUTO_REFRESH_PERIOD_IN_SECONDS : 0;
       MINFO("Auto refresh now " << (m_auto_refresh_period ? std::to_string(m_auto_refresh_period) + " seconds" : std::string("disabled")));
       return true;
     }
