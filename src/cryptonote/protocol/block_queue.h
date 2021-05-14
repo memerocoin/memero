@@ -30,14 +30,17 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <set>
-#include <unordered_set>
-#include <mutex>
 #include <chrono>
+#include <mutex>
+#include <set>
+#include <string>
+#include <unordered_set>
+#include <vector>
+
 #include <boost/uuid/uuid.hpp>
+
 #include "tools/epee/include/net/net_utils_base.h"
+#include "math/crypto/hash.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn.block_queue"

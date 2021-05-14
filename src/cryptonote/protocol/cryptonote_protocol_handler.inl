@@ -37,14 +37,15 @@
 
 #pragma once
 
-#include <boost/interprocess/detail/atomic.hpp>
 #include <list>
 #include <ctime>
 
+#include <boost/interprocess/detail/atomic.hpp>
+
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "tools/epee/include/profile_tools.h"
-
 #include "tools/common/util.h"
+
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -76,8 +77,6 @@
 #define DROP_ON_SYNC_WEDGE_THRESHOLD (30 * 1000000000ull) // nanoseconds
 #define LAST_ACTIVITY_STALL_THRESHOLD (2.0f) // seconds
 #define DROP_PEERS_ON_SCORE -2
-
-using namespace constant;
 
 namespace cryptonote
 {
