@@ -73,64 +73,6 @@ levin_client_impl::~levin_client_impl()
 	disconnect();
 }
 //------------------------------------------------------------------------------
-inline
-int levin_client_impl::invoke(int command, const epee::span<const uint8_t> in_buff, std::string& buff_out)
-{
-	if(!is_connected())
-		return -1;
-
-	bucket_head head = {0};
-	head.m_signature = SWAP64LE(LEVIN_SIGNATURE);
-	head.m_cb = SWAP64LE(in_buff.size());
-	head.m_have_to_return_data = true;
-	head.m_command = SWAP32LE(command);
-	if(!m_transport.send(&head, sizeof(head)))
-		return -1;
-	
-	if(!m_transport.send(in_buff))
-		return -1;
-		
-	std::string local_buff;
-	if(!m_transport.recv_n(local_buff, sizeof(bucket_head)))
-		return -1;
-	
-	head = *(bucket_head*)local_buff.data();
-
-
-	if(head.m_signature!=SWAP64LE(LEVIN_SIGNATURE))
-	{
-		LOG_PRINT_L1("Signature mismatch in response");
-		return -1;
-	}
-	
-	if(!m_transport.recv_n(buff_out, head.m_cb))
-		return -1;
-	
-	return head.m_return_code;
-}
-//------------------------------------------------------------------------------
-inline
-int levin_client_impl::notify(int command, const std::string& in_buff)
-{
-	if(!is_connected())
-		return -1;
-
-	bucket_head head = {0};
-	head.m_signature = SWAP64LE(LEVIN_SIGNATURE);
-	head.m_cb = SWAP64LE(in_buff.size());
-	head.m_have_to_return_data = false;
-	head.m_command = SWAP32LE(command);
-	
-	if(!m_transport.send((const char*)&head, sizeof(head)))
-		return -1;
-
-	if(!m_transport.send(in_buff))
-		return -1;
-
-	return 1;
-}
-
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 inline
   int levin_client_impl2::invoke(int command, epee::span<const uint8_t>string& in_buff, std::string& buff_out)
