@@ -55,18 +55,6 @@ namespace nodetool
   }
 
 #pragma pack (push, 1)
-  
-  struct network_address_old
-  {
-    uint32_t ip;
-    uint32_t port;
-
-    BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(ip)
-      KV_SERIALIZE(port)
-    END_KV_SERIALIZE_MAP()
-  };
-
   template<typename AddressType>
   struct peerlist_entry_base
   {
