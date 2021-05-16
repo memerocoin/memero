@@ -870,7 +870,7 @@ namespace nodetool
       if(code < 0)
       {
         LOG_WARNING_CC(context, "COMMAND_HANDSHAKE invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
-        if (code == LEVIN_ERROR_CONNECTION_TIMEDOUT || code == LEVIN_ERROR_CONNECTION_DESTROYED)
+        if (code == epee::levin::LEVIN_ERROR_CONNECTION_TIMEDOUT || code == epee::levin::LEVIN_ERROR_CONNECTION_DESTROYED)
           timeout = true;
         return;
       }

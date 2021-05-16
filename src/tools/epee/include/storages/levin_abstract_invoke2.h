@@ -26,11 +26,15 @@
 
 #pragma once
 
-#include "portable_storage_template_helper.h"
-#include <boost/utility/value_init.hpp>
 #include <functional>
+#include <boost/utility/value_init.hpp>
+
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/net/levin_base.h"
+
+#include "portable_storage_template_helper.h"
+
+#include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
@@ -137,7 +141,7 @@ namespace epee
     }
 
     template<class t_result, class t_arg, class callback_t, class t_transport>
-    bool async_invoke_remote_command2(const epee::net_utils::connection_context_base &context, int command, const t_arg& out_struct, t_transport& transport, const callback_t &cb, size_t inv_timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
+    bool async_invoke_remote_command2(const epee::net_utils::connection_context_base &context, int command, const t_arg& out_struct, t_transport& transport, const callback_t &cb, size_t inv_timeout = constant::LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
     {
       const boost::uuids::uuid &conn_id = context.m_connection_id;
       typename serialization::portable_storage stg;
@@ -161,14 +165,14 @@ namespace epee
         {
           on_levin_traffic(context, true, false, true, buff.size(), command);
           LOG_ERROR("Failed to load_from_binary on command " << command);
-          cb(LEVIN_ERROR_FORMAT, result_struct, context);
+          cb(epee::levin::LEVIN_ERROR_FORMAT, result_struct, context);
           return false;
         }
         if (!result_struct.load(stg_ret))
         {
           on_levin_traffic(context, true, false, true, buff.size(), command);
           LOG_ERROR("Failed to load result struct on command " << command);
-          cb(LEVIN_ERROR_FORMAT, result_struct, context);
+          cb(epee::levin::LEVIN_ERROR_FORMAT, result_struct, context);
           return false;
         }
         on_levin_traffic(context, true, false, false, buff.size(), command);
@@ -341,11 +345,11 @@ namespace epee
 #define END_INVOKE_MAP2() \
   LOG_ERROR("Unknown command:" << command); \
   on_levin_traffic(context, false, false, true, in_buff.size(), "invalid-command"); \
-  return LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED; \
+  return epee::levin::LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED;       \
   } \
   catch (const std::exception &e) { \
     MERROR("Error in handle_invoke_map: " << e.what()); \
-    return LEVIN_ERROR_CONNECTION_TIMEDOUT; /* seems kinda appropriate */ \
+    return epee::levin::LEVIN_ERROR_CONNECTION_TIMEDOUT; /* seems kinda appropriate */ \
   } \
   }
 

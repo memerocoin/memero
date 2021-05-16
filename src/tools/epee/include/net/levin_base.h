@@ -34,8 +34,6 @@
 
 #include "net_utils_base.h"
 
-#define LEVIN_SIGNATURE  0x0101010101012101LL  //Bender's nightmare
-
 namespace epee
 {
 namespace levin
@@ -56,16 +54,10 @@ namespace levin
 #pragma pack(pop)
 
 
-#define LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED 0
-#define LEVIN_INITIAL_MAX_PACKET_SIZE  256*1024      // 256 KiB before handshake
-#define LEVIN_DEFAULT_MAX_PACKET_SIZE 100000000      //100MB by default after handshake
+  constexpr uint32_t LEVIN_PACKET_REQUEST	= 1;
+  constexpr uint32_t LEVIN_PACKET_RESPONSE = 2;
+  constexpr uint32_t LEVIN_PROTOCOL_VER_1 = 1;
 
-#define LEVIN_PACKET_REQUEST			0x00000001
-#define LEVIN_PACKET_RESPONSE		0x00000002
-
-#define LEVIN_PROTOCOL_VER_0         0
-#define LEVIN_PROTOCOL_VER_1         1
- 
   template<class t_connection_context = epee::net_utils::connection_context_base>
   struct levin_commands_handler
   {
@@ -79,14 +71,14 @@ namespace levin
     virtual ~levin_commands_handler(){}
   };
 
-#define LEVIN_OK                                        0
-#define LEVIN_ERROR_CONNECTION                         -1
-#define LEVIN_ERROR_CONNECTION_NOT_FOUND               -2
-#define LEVIN_ERROR_CONNECTION_DESTROYED               -3
-#define LEVIN_ERROR_CONNECTION_TIMEDOUT                -4
-#define LEVIN_ERROR_CONNECTION_NO_DUPLEX_PROTOCOL      -5
-#define LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED     -6
-#define LEVIN_ERROR_FORMAT                             -7
+  constexpr int LEVIN_OK = 0;
+  constexpr int LEVIN_ERROR_CONNECTION                     = -1;
+  constexpr int LEVIN_ERROR_CONNECTION_NOT_FOUND           = -2;
+  constexpr int LEVIN_ERROR_CONNECTION_DESTROYED           = -3;
+  constexpr int LEVIN_ERROR_CONNECTION_TIMEDOUT            = -4;
+  constexpr int LEVIN_ERROR_CONNECTION_NO_DUPLEX_PROTOCOL  = -5;
+  constexpr int LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED = -6;
+  constexpr int LEVIN_ERROR_FORMAT                         = -7;
 
 #define DESCRIBE_RET_CODE(code) case code: return #code;
   inline

@@ -27,8 +27,9 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tools/epee/include/net/levin_base.h"
-
 #include "tools/epee/include/int-util.h"
+
+#include "config/lol.hpp"
 
 namespace epee
 {
@@ -37,7 +38,7 @@ namespace levin
   bucket_head2 make_header(uint32_t command, uint64_t msg_size, uint32_t flags, bool expect_response) noexcept
   {
     bucket_head2 head = {0};
-    head.m_signature = SWAP64LE(LEVIN_SIGNATURE);
+    head.m_signature = SWAP64LE(constant::LEVIN_SIGNATURE);
     head.m_have_to_return_data = expect_response;
     head.m_cb = SWAP64LE(msg_size);
 

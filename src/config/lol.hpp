@@ -63,6 +63,12 @@ namespace constant
 
   constexpr uint64_t OLD_AGE_WALLET_IN_BLOCKS = 30 * 86400 / DIFFICULTY_TARGET_IN_SECONDS; // 30 days
   constexpr uint32_t DEFAULT_RPC_AUTO_REFRESH_PERIOD_IN_SECONDS = 20;
+
+  constexpr uint64_t LEVIN_SIGNATURE = 0x0101010101012101LL; //Bender's nightmare
+  constexpr size_t LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED = 0;
+  constexpr uint64_t LEVIN_INITIAL_MAX_PACKET_SIZE = 256*1024;     // 256 KiB before handshake
+  constexpr uint64_t LEVIN_DEFAULT_MAX_PACKET_SIZE = 100000000;      //100MB by default after handshake
+
 }
 
 namespace config

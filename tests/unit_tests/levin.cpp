@@ -42,6 +42,8 @@
 #include "tools/epee/include/net/levin_base.h"
 #include "tools/epee/include/span.h"
 
+using namespace epee::levin;
+
 TEST(make_header, no_expect_return)
 {
     static constexpr const std::size_t max_length = std::numeric_limits<std::size_t>::max();

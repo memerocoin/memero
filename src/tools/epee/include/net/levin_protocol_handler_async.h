@@ -26,23 +26,26 @@
 
 #pragma once
 
+#include <atomic>
+#include <deque>
+#include <random>
+#include <chrono>
+
 #include <boost/uuid/uuid_generators.hpp>
 #include <unordered_map>
 #include <boost/interprocess/detail/atomic.hpp>
 
-#include <atomic>
-#include <deque>
-
-#include "levin_base.h"
-#include "buffer.h"
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/syncobj.h"
 #include "tools/epee/include/misc_os_dependent.h"
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/string_tools.h"
 
-#include <random>
-#include <chrono>
+#include "levin_base.h"
+#include "buffer.h"
+
+#include "config/lol.hpp"
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
@@ -50,6 +53,8 @@
 #ifndef MIN_BYTES_WANTED
 #define MIN_BYTES_WANTED	512
 #endif
+
+using namespace constant;
 
 namespace epee
 {
@@ -556,7 +561,7 @@ public:
         {
           if(m_cache_in_buffer.size() < sizeof(bucket_head2))
           {
-            if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)m_cache_in_buffer.span(8).data()) != SWAP64LE(LEVIN_SIGNATURE))
+            if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)m_cache_in_buffer.span(8).data()) != SWAP64LE(constant::LEVIN_SIGNATURE))
             {
               MWARNING(m_connection_context << "Signature mismatch, connection will be closed");
               return false;
@@ -576,7 +581,7 @@ public:
           phead.m_flags = SWAP32LE(phead.m_flags);
           phead.m_protocol_version = SWAP32LE(phead.m_protocol_version);
 #endif
-          if(LEVIN_SIGNATURE != phead.m_signature)
+          if(constant::LEVIN_SIGNATURE != phead.m_signature)
           {
             LOG_ERROR_CC(m_connection_context, "Signature mismatch, connection will be closed");
             return false;
