@@ -5,10 +5,13 @@ let
   CMakeFlags_Lolnero = ''
     -DReadline_ROOT_DIR=${readline.dev}
     -DBUILD_SHARED_LIBS=ON
-    -DBUILD_TESTING=ON
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     -DCMAKE_C_COMPILER_LAUNCHER=ccache
     -DCMAKE_BUILD_TYPE=Debug
+  '';
+
+  CMakeFlags_Lolnero_Test = CMakeFlags_Lolnero + ''
+    -DBUILD_TESTING=ON
   '';
 in
 {
@@ -22,9 +25,12 @@ in
     ];
 
     inherit CMakeFlags_Lolnero;
+    inherit CMakeFlags_Lolnero_Test;
 
     configure = "${cmake}/bin/cmake ${CMakeFlags_Lolnero}";
+    configureTest = "${cmake}/bin/cmake ${CMakeFlags_Lolnero_Test}";
     build = "make";
-    test = "ctest -j6";
+    ci = "make Continuous";
+    testFilter = "ctest -R";
   };
 }
