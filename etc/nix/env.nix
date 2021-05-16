@@ -8,7 +8,6 @@ let
     -DBUILD_TESTING=ON
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     -DCMAKE_C_COMPILER_LAUNCHER=ccache
-    -G Ninja
     -DCMAKE_BUILD_TYPE=Debug
   '';
 in
@@ -19,13 +18,13 @@ in
       gcc11
       cmake git ccache
       boost175 openssl readline libsodium rapidjson
-      gmock ninja
+      gmock
     ];
 
     inherit CMakeFlags_Lolnero;
 
     configure = "${cmake}/bin/cmake ${CMakeFlags_Lolnero}";
-    build = "ninja -j6 -l5";
+    build = "make";
     test = "ctest -j6";
   };
 }
