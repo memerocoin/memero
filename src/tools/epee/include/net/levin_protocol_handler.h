@@ -75,7 +75,7 @@ namespace levin
 		net_utils::i_service_endpoint* m_psnd_hndlr; 
 		std::string m_cach_in_buffer;
 		connection_data_state m_state;
-		bucket_head m_current_head;
+		bucket_head2 m_current_head;
 	};
 
   template<class t_connection_context>
@@ -84,7 +84,7 @@ namespace levin
                   m_conn_context(conn_context),
                   m_psnd_hndlr(psnd_hndlr), 
                   m_state(conn_state_reading_head), 
-                  m_current_head(bucket_head()) 
+                  m_current_head(bucket_head2()) 
 	{}
 
   template<class t_connection_context>
@@ -103,7 +103,7 @@ namespace levin
 			switch(m_state)
 			{
 			case conn_state_reading_head:
-				if(m_cach_in_buffer.size() < sizeof(bucket_head))
+				if(m_cach_in_buffer.size() < sizeof(bucket_head2))
 				{
 					if(m_cach_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)m_cach_in_buffer.data()) != SWAP64LE(LEVIN_SIGNATURE))
 					{
@@ -115,15 +115,15 @@ namespace levin
 				}
 				{
 #if BYTE_ORDER == LITTLE_ENDIAN
-					bucket_head &phead = *(bucket_head*)m_cach_in_buffer.data();
+					bucket_head2 &phead = *(bucket_head2*)m_cach_in_buffer.data();
 #else
-					bucket_head phead = *(bucket_head*)m_cach_in_buffer.data();
+					bucket_head2 phead = *(bucket_head2*)m_cach_in_buffer.data();
 					phead.m_signature = SWAP64LE(phead.m_signature);
 					phead.m_cb = SWAP64LE(phead.m_cb);
 					phead.m_command = SWAP32LE(phead.m_command);
 					phead.m_return_code = SWAP32LE(phead.m_return_code);
-					phead.m_reservedA = SWAP32LE(phead.m_reservedA);
-					phead.m_reservedB = SWAP32LE(phead.m_reservedB);
+					phead.m_flags = SWAP32LE(phead.m_flags);
+					phead.m_protocol_version = SWAP32LE(phead.m_protocol_version);
 #endif
 					if(LEVIN_SIGNATURE != phead.m_signature)
 					{
@@ -132,7 +132,7 @@ namespace levin
 					}
 					m_current_head = phead;
 				}
-				m_cach_in_buffer.erase(0, sizeof(bucket_head));
+				m_cach_in_buffer.erase(0, sizeof(bucket_head2));
 				m_state = conn_state_reading_body;
 				break;
 			case conn_state_reading_body:

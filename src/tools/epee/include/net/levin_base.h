@@ -41,21 +41,7 @@ namespace epee
 namespace levin
 {
 #pragma pack(push)
-#pragma pack(1)
-	struct bucket_head
-	{
-		uint64_t m_signature;
-		uint64_t m_cb;
-		bool     m_have_to_return_data;
-		uint32_t m_command;
-		int32_t  m_return_code;
-		uint32_t m_reservedA; //probably some flags in future
-		uint32_t m_reservedB; //probably some check sum in future
-	};
-#pragma pack(pop)
-
-
-#pragma pack(push)
+  // no padding
 #pragma pack(1)
   struct bucket_head2
   {
