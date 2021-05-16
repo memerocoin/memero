@@ -47,5 +47,24 @@ namespace levin
     head.m_flags = SWAP32LE(flags);
     return head;
   }
+
+#define DESCRIBE_RET_CODE(code) case code: return std::string(#code);
+
+  const std::string get_err_descr(int err)
+  {
+    switch(err)
+      {
+        DESCRIBE_RET_CODE(LEVIN_OK);
+        DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION);
+        DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_NOT_FOUND);
+        DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_DESTROYED);
+        DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_TIMEDOUT);
+        DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_NO_DUPLEX_PROTOCOL);
+        DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED);
+        DESCRIBE_RET_CODE(LEVIN_ERROR_FORMAT);
+      default:
+        return std::string("unknown levin error code");
+      }
+  }
 } // levin
 } // epee

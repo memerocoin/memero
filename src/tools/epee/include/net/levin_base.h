@@ -80,24 +80,7 @@ namespace levin
   constexpr int LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED = -6;
   constexpr int LEVIN_ERROR_FORMAT                         = -7;
 
-#define DESCRIBE_RET_CODE(code) case code: return #code;
-  inline
-  const char* get_err_descr(int err)
-  {
-    switch(err)
-    {
-      DESCRIBE_RET_CODE(LEVIN_OK);
-      DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION);
-      DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_NOT_FOUND);
-      DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_DESTROYED);
-      DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_TIMEDOUT);
-      DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_NO_DUPLEX_PROTOCOL);
-      DESCRIBE_RET_CODE(LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED);
-      DESCRIBE_RET_CODE(LEVIN_ERROR_FORMAT);
-    default:
-      return "unknown code";
-    }
-  }
+  const std::string get_err_descr(int err);
 
   //! \return Intialized levin header.
   bucket_head2 make_header(uint32_t command, uint64_t msg_size, uint32_t flags, bool expect_response) noexcept;
