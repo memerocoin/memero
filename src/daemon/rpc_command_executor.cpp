@@ -150,11 +150,11 @@ t_rpc_command_executor::t_rpc_command_executor(
   , bool is_rpc
   , cryptonote::core_rpc_server* rpc_server
   )
-  : m_rpc_client(NULL), m_rpc_server(rpc_server)
+  : m_rpc_server(rpc_server)
 {
   if (is_rpc)
   {
-    m_rpc_client = new tools::t_rpc_client(ip, port);
+    m_rpc_client = std::make_unique<tools::t_rpc_client>(ip, port);
   }
   else
   {
@@ -169,9 +169,9 @@ t_rpc_command_executor::t_rpc_command_executor(
 
 t_rpc_command_executor::~t_rpc_command_executor()
 {
-  if (m_rpc_client != NULL)
+  if (m_rpc_client)
   {
-    delete m_rpc_client;
+    m_rpc_client.reset();
   }
 }
 

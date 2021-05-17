@@ -51,7 +51,7 @@ namespace daemonize {
 
 class t_rpc_command_executor final {
 private:
-  tools::t_rpc_client* m_rpc_client;
+  std::unique_ptr<tools::t_rpc_client> m_rpc_client;
   cryptonote::core_rpc_server* m_rpc_server;
   bool m_is_rpc;
 
