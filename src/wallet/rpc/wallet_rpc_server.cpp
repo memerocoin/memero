@@ -2244,7 +2244,7 @@ private:
 public:
   t_daemon(boost::program_options::variables_map const & _vm)
     : vm(_vm)
-    , wrpc(new tools::wallet_rpc_server)
+    , wrpc(std::make_unique<tools::wallet_rpc_server>())
   {
   }
 

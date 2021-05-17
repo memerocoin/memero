@@ -162,7 +162,14 @@ namespace tools
 
     static bool verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, hw::device &hwdev, uint64_t kdf_rounds);
 
-    wallet2(cryptonote::network_type nettype = cryptonote::MAINNET, uint64_t kdf_rounds = 1, bool unattended = false, std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory = std::unique_ptr<epee::net_utils::http::http_client_factory>(new net::http::client_factory()));
+    wallet2
+    (
+     cryptonote::network_type nettype = cryptonote::MAINNET
+     , uint64_t kdf_rounds = 1
+     , bool unattended = false
+     , std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory
+     = std::make_unique<net::http::client_factory>()
+     );
     ~wallet2();
 
     typedef serializable_unordered_multimap<crypto::hash, payment_details> payment_container;
