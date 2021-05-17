@@ -599,7 +599,7 @@ eof:
 
     bool start_handling(std::function<std::string(void)> prompt, const std::string& usage_string = "", std::function<void(void)> exit_handler = NULL)
     {
-      m_console_thread.reset(new std::thread(&console_handlers_binder::run_handling, this, prompt, usage_string, exit_handler));
+      m_console_thread = std::make_unique<std::thread>(&console_handlers_binder::run_handling, this, prompt, usage_string, exit_handler);
       return true;
     }
     bool start_handling(const std::string &prompt, const std::string& usage_string = "", std::function<void(void)> exit_handler = NULL)

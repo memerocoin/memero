@@ -82,7 +82,7 @@ namespace misc_utils
     virtual ~call_before_die_base(){}
   };
 
-  typedef std::shared_ptr<call_before_die_base> auto_scope_leave_caller;
+  typedef std::unique_ptr<call_before_die_base> auto_scope_leave_caller;
 
 
   template<class t_scope_leave_handler>
@@ -101,8 +101,7 @@ namespace misc_utils
   template<class t_scope_leave_handler>
   auto_scope_leave_caller create_scope_leave_handler(t_scope_leave_handler f)
   {
-    auto_scope_leave_caller slc(new call_before_die<t_scope_leave_handler>(f));
-    return slc;
+    return std::make_unique<call_before_die<t_scope_leave_handler>>(f);
   }
 
   template<typename T> struct struct_init: T

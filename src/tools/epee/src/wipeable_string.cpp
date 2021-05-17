@@ -114,7 +114,7 @@ void wipeable_string::grow(size_t sz, size_t reserved)
     return;
   }
   size_t old_sz = buffer.size();
-  std::unique_ptr<char[]> tmp{new char[old_sz]};
+  std::unique_ptr<char[]> tmp = std::make_unique<char[]>(old_sz);
   if (old_sz > 0)
   {
     memcpy(tmp.get(), buffer.data(), old_sz * sizeof(char));
