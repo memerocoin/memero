@@ -730,36 +730,43 @@ namespace nodetool
   bool node_server<t_payload_net_handler>::run()
   {
     // creating thread to log number of connections
-    mPeersLoggerThread.reset(new std::thread([&]()
-    {
-      _note("Thread monitor number of peers - start");
-      const network_zone& public_zone = m_network_zones.at(epee::net_utils::zone::public_);
-      while (!is_closing && !public_zone.m_net_server.is_stop_signal_sent())
-      { // main loop of thread
-        //number_of_peers = m_net_server.get_config_object().get_connections_count();
-        for (auto& zone : m_network_zones)
+    mPeersLoggerThread = std::make_unique<std::thread>
+    (
+      [&]()
+      {
+        _note("Thread monitor number of peers - start");
+        const network_zone& public_zone = m_network_zones.at(epee::net_utils::zone::public_);
+        while (!is_closing && !public_zone.m_net_server.is_stop_signal_sent())
         {
-          unsigned int number_of_in_peers = 0;
-          unsigned int number_of_out_peers = 0;
-          zone.second.m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
+          // main loop of thread
+          //number_of_peers = m_net_server.get_config_object().get_connections_count();
+          for (auto& zone : m_network_zones)
           {
-            if (cntxt.m_is_income)
-            {
-              ++number_of_in_peers;
-            }
-            else
-            {
-              ++number_of_out_peers;
-            }
-            return true;
-          }); // lambda
-          zone.second.m_current_number_of_in_peers = number_of_in_peers;
-          zone.second.m_current_number_of_out_peers = number_of_out_peers;
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-      } // main loop of thread
-      _note("Thread monitor number of peers - done");
-    })); // lambda
+            unsigned int number_of_in_peers = 0;
+            unsigned int number_of_out_peers = 0;
+            zone.second.m_net_server.get_config_object().foreach_connection
+              (
+              [&](const p2p_connection_context& cntxt)
+              {
+                if (cntxt.m_is_income)
+                  {
+                    ++number_of_in_peers;
+                  }
+                else
+                  {
+                    ++number_of_out_peers;
+                  }
+                return true;
+              }
+              ); // lambda
+            zone.second.m_current_number_of_in_peers = number_of_in_peers;
+            zone.second.m_current_number_of_out_peers = number_of_out_peers;
+          }
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+        } // main loop of thread
+       _note("Thread monitor number of peers - done");
+      }
+    );
 
     network_zone& public_zone = m_network_zones.at(epee::net_utils::zone::public_);
     public_zone.m_net_server.add_idle_handler(std::bind(&node_server<t_payload_net_handler>::idle_worker, this), 1000);

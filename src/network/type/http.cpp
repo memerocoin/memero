@@ -38,7 +38,7 @@ namespace http
 
 std::unique_ptr<epee::net_utils::http::abstract_http_client> client_factory::create()
 {
-  return std::unique_ptr<epee::net_utils::http::abstract_http_client>(new client());
+  return std::unique_ptr<epee::net_utils::http::abstract_http_client>(std::make_unique<client>());
 }
 
 } // namespace http

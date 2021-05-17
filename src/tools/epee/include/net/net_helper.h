@@ -103,7 +103,7 @@ namespace net_utils
 			blocked_mode_client() :
 				m_io_service(),
 				m_ctx(boost::asio::ssl::context::tlsv12),
-				m_ssl_socket(new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(m_io_service, m_ctx)),
+				m_ssl_socket(std::make_shared<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>(m_io_service, m_ctx)),
 				m_connector(direct_connect{}),
 				m_ssl_options(epee::net_utils::ssl_support_t::e_ssl_support_autodetect),
 				m_initialized(true),
@@ -215,7 +215,7 @@ namespace net_utils
 
 				// Set SSL options
 				// disable sslv2
-				m_ssl_socket.reset(new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(m_io_service, m_ctx));
+				m_ssl_socket = std::make_shared<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>(m_io_service, m_ctx);
 
 				// Get a list of endpoints corresponding to the server name.
 
