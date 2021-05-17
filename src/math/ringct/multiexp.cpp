@@ -377,7 +377,7 @@ std::shared_ptr<straus_cached_data> straus_init_cache(const std::vector<Multiexp
   ge_cached cached;
   ge_p1p1 p1;
   ge_p3 p3;
-  std::shared_ptr<straus_cached_data> cache(new straus_cached_data());
+  std::shared_ptr<straus_cached_data> cache(std::make_shared<straus_cached_data>());
 
 #ifdef RAW_MEMORY_BLOCK
   const size_t offset = cache->size;
@@ -468,9 +468,9 @@ rct::key straus(const std::vector<MultiexpData> &data, const std::shared_ptr<str
 
   MULTIEXP_PERF(PERF_TIMER_START_UNIT(digits, 1000000));
 #if STRAUS_C==4
-  std::unique_ptr<uint8_t[]> digits{new uint8_t[64 * data.size()]};
+  std::unique_ptr<uint8_t[]> digits{std::make_unique<uint8_t[]>(64 * data.size())};
 #else
-  std::unique_ptr<uint8_t[]> digits{new uint8_t[256 * data.size()]};
+  std::unique_ptr<uint8_t[]> digits{std::make_unique<uint8_t[]>(256 * data.size())};
 #endif
   for (size_t j = 0; j < data.size(); ++j)
   {
@@ -590,7 +590,7 @@ std::shared_ptr<pippenger_cached_data> pippenger_init_cache(const std::vector<Mu
     N = data.size() - start_offset;
   CHECK_AND_ASSERT_THROW_MES(N <= data.size() - start_offset, "Bad cache base data");
   ge_cached cached;
-  std::shared_ptr<pippenger_cached_data> cache(new pippenger_cached_data());
+  std::shared_ptr<pippenger_cached_data> cache(std::make_shared<pippenger_cached_data>());
 
   cache->size = N;
   cache->cached = (ge_cached*)aligned_realloc(cache->cached, N * sizeof(ge_cached), 4096);
@@ -618,7 +618,7 @@ rct::key pippenger(const std::vector<MultiexpData> &data, const std::shared_ptr<
 
   ge_p3 result = ge_p3_identity;
   bool result_init = false;
-  std::unique_ptr<ge_p3[]> buckets{new ge_p3[1<<c]};
+  std::unique_ptr<ge_p3[]> buckets{std::make_unique<ge_p3[]>(1<<c)};
   bool buckets_init[1<<9];
   std::shared_ptr<pippenger_cached_data> local_cache = cache == NULL ? pippenger_init_cache(data) : cache;
   std::shared_ptr<pippenger_cached_data> local_cache_2 = data.size() > cache_size ? pippenger_init_cache(data, cache_size) : NULL;
