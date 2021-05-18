@@ -63,23 +63,20 @@ namespace cryptonote {
     return config::lol::min_block_weight;
   }
   //-----------------------------------------------------------------------------------------------
-  uint64_t get_max_block_weight(uint64_t height)
+  uint64_t get_max_block_weight(const uint64_t height)
   {
     const uint64_t max_weight = std::max(config::lol::min_block_weight, height);
     // MGINFO("get max block weight: " << max_weight);
     return max_weight;
   }
   //-----------------------------------------------------------------------------------------------
-  bool get_block_reward(uint64_t height, size_t current_block_weight, uint64_t &reward) {
-    reward = COIN * 300;
-
+  bool check_block_weight(const uint64_t height, const size_t current_block_weight) {
     uint64_t max_weight = get_max_block_weight(height);
-    if(current_block_weight > max_weight) {
-      MERROR("Block weight is too big: " << current_block_weight << ", expected less than " << max_weight);
-      return false;
-    }
-
-    return true;
+    return current_block_weight <= max_weight;
+  }
+  //-----------------------------------------------------------------------------------------------
+  uint64_t get_block_reward() {
+    return COIN * 300;
   }
   //------------------------------------------------------------------------------------
   uint8_t get_account_address_checksum(const public_address_outer_blob& bl)

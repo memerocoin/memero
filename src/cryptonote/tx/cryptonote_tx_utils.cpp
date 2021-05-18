@@ -87,12 +87,12 @@ namespace cryptonote
     txin_gen in;
     in.height = height;
 
-    uint64_t block_reward;
-    if(!get_block_reward(static_cast<uint64_t>(height), current_block_weight, block_reward))
+    if(!check_block_weight(static_cast<uint64_t>(height), current_block_weight))
     {
       LOG_PRINT_L0("Block is too big");
       return false;
     }
+    uint64_t block_reward = get_block_reward();
 
 #if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
     LOG_PRINT_L1("Creating block template: reward " << block_reward <<

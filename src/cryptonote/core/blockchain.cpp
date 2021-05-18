@@ -1145,11 +1145,12 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
     money_in_use += o.amount;
   partial_block_reward = false;
 
-  if (!get_block_reward(height, cumulative_block_weight, base_reward))
+  if (!check_block_weight(height, cumulative_block_weight))
   {
     MERROR_VER("block weight " << cumulative_block_weight << " is bigger than allowed for this blockchain");
     return false;
   }
+  base_reward = get_block_reward();
   if(base_reward + fee < money_in_use)
   {
     MERROR_VER("coinbase transaction spend too much money (" << print_money(money_in_use) << "). Block reward is " << print_money(base_reward + fee) << "(" << print_money(base_reward) << "+" << print_money(fee) << "), cumulative_block_weight " << cumulative_block_weight);
@@ -2801,13 +2802,7 @@ uint64_t Blockchain::get_base_fee()
 bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 {
   uint64_t median = 0;
-  uint64_t base_reward = 0;
-  {
-    if (!get_block_reward(0, 1, base_reward))
-      return false;
-  }
-
-  uint64_t needed_fee;
+  uint64_t needed_fee = 0;
   {
     uint64_t fee_per_byte = get_base_fee();
     MDEBUG("Using " << print_money(fee_per_byte) << "/byte fee");

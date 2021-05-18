@@ -1265,17 +1265,18 @@ namespace cryptonote
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
     LOCK_LOCKABLE_OBJECT(m_blockchain);
 
-    uint64_t best_coinbase = 0, coinbase = 0;
+    uint64_t coinbase = 0;
     total_weight = 0;
     fee = 0;
 
     //baseline empty block
-    if (!get_block_reward(height, total_weight, best_coinbase))
+    if (!check_block_weight(height, total_weight))
     {
       MERROR("Failed to get block reward for empty block");
       return false;
     }
 
+    uint64_t best_coinbase = get_block_reward();
 
     uint64_t max_total_weight = get_max_block_weight(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> k_images;
@@ -1311,13 +1312,12 @@ namespace cryptonote
       {
         // If we're getting lower coinbase tx,
         // stop including more tx
-        uint64_t block_reward;
-        if(!get_block_reward(height, total_weight + meta.weight, block_reward))
+        if(!check_block_weight(height, total_weight + meta.weight))
         {
           LOG_PRINT_L2("  would exceed maximum block weight");
           continue;
         }
-        coinbase = block_reward + fee + meta.fee;
+        coinbase = get_block_reward() + fee + meta.fee;
         if (coinbase < template_accept_threshold(best_coinbase))
         {
           LOG_PRINT_L2("  would decrease coinbase to " << print_money(coinbase));

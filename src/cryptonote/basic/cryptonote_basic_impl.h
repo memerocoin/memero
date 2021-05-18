@@ -30,10 +30,10 @@
 
 #pragma once
 
-#include "cryptonote_basic.h"
 #include "math/crypto/crypto.hpp"
 #include "math/crypto/hash.hpp"
 
+#include "cryptonote_basic.h"
 
 namespace cryptonote {
   /************************************************************************/
@@ -69,8 +69,9 @@ namespace cryptonote {
   /************************************************************************/
   uint64_t get_min_block_weight();
   uint64_t get_max_tx_size();
-  uint64_t get_max_block_weight(uint64_t height);
-  bool get_block_reward(uint64_t height, size_t current_block_weight, uint64_t &reward);
+  uint64_t get_max_block_weight(const uint64_t height);
+  bool check_block_weight(const uint64_t height, const size_t current_block_weight);
+  uint64_t get_block_reward();
   uint8_t get_account_address_checksum(const public_address_outer_blob& bl);
 
   std::string get_account_address_as_str(
