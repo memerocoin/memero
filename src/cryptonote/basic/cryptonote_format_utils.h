@@ -29,16 +29,20 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
+
+#include <unordered_map>
+#include <boost/multiprecision/cpp_int.hpp>
+
+#include "tools/epee/include/include_base_utils.h"
+#include "math/crypto/crypto.hpp"
+#include "math/crypto/hash.hpp"
+
 #include "blobdatatype.h"
 #include "cryptonote_basic_impl.h"
 #include "tx_extra.h"
 #include "account.h"
 #include "subaddress_index.h"
-#include "tools/epee/include/include_base_utils.h"
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
-#include <unordered_map>
-#include <boost/multiprecision/cpp_int.hpp>
+
 
 namespace epee
 {

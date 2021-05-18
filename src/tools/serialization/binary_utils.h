@@ -31,7 +31,9 @@
 #pragma once
 
 #include <sstream>
+
 #include "binary_archive.h"
+#include "serialization.h"
 
 namespace serialization {
   /*! creates a new archive with the passed blob and serializes it into v
