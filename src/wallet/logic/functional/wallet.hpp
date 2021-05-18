@@ -35,10 +35,11 @@
 #include <optional>
 #include <vector>
 
-#include "wallet/logic/type/transfer.hpp" // tranfser_details
 #include "cryptonote/tx/cryptonote_tx_utils.h" // tx_destination_entry
-#include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX
 #include "cryptonote/basic/fwd.h" // transaction
+#include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX, backlog_entry
+
+#include "wallet/logic/type/transfer.hpp" // tranfser_details
 
 namespace wallet {
 namespace logic {
@@ -68,6 +69,13 @@ namespace wallet {
   uint32_t get_subaddress_clamped_sum(const uint32_t idx, const uint32_t extra);
 
   float get_output_relatedness(const transfer_details &td0, const transfer_details &td1);
+
+  std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog
+  (
+   const uint64_t height
+   , const std::vector<cryptonote::tx_backlog_entry>& backlog
+   , const std::vector<std::pair<double, double>>& fee_levels
+   );
 
 } // wallet
 } // functional
