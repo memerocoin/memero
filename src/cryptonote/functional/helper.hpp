@@ -37,12 +37,12 @@ namespace cryptonote {
   /* Cryptonote helper functions                                          */
   /************************************************************************/
   //-----------------------------------------------------------------------------------------------
-  constexpr uint64_t get_min_block_weight()
+  consteval uint64_t get_min_block_weight()
   {
     return config::lol::min_block_weight;
   }
   //-----------------------------------------------------------------------------------------------
-  constexpr uint64_t get_max_tx_size()
+  consteval uint64_t get_max_tx_size()
   {
     return config::lol::min_block_weight;
   }
@@ -59,7 +59,7 @@ namespace cryptonote {
     return current_block_weight <= max_weight;
   }
   //-----------------------------------------------------------------------------------------------
-  constexpr uint64_t get_block_reward() {
+  consteval uint64_t get_block_reward() {
     return constant::COIN * 300;
   }
 }
