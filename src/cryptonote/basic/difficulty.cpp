@@ -77,19 +77,17 @@ namespace cryptonote {
     if (HEIGHT < N + 3) { return _b << 38; }
 
 
-    constexpr size_t N_plus_1 = static_cast<size_t>(N + 1);
-
     CHECK_AND_ASSERT_THROW_MES
       (
-       timestamps.size() == cumulative_difficulties.size() && timestamps.size() == N_plus_1
+       timestamps.size() == constant::DIFFICULTY_BLOCKS_COUNT
        , "timestamp size is invalid"
        );
 
-    std::array<std::uint64_t, N_plus_1> timestamps_array;
-    std::copy_n(timestamps.begin(), N_plus_1, timestamps_array.begin());
+    std::array<std::uint64_t, constant::DIFFICULTY_BLOCKS_COUNT> timestamps_array;
+    std::copy_n(timestamps.begin(), constant::DIFFICULTY_BLOCKS_COUNT, timestamps_array.begin());
 
-    std::array<diff_t, N_plus_1> cumulative_difficulties_array;
-    std::copy_n(cumulative_difficulties.begin(), N_plus_1, cumulative_difficulties_array.begin());
+    std::array<diff_t, constant::DIFFICULTY_BLOCKS_COUNT> cumulative_difficulties_array;
+    std::copy_n(cumulative_difficulties.begin(), constant::DIFFICULTY_BLOCKS_COUNT, cumulative_difficulties_array.begin());
 
     return next_difficulty_pure(timestamps_array, cumulative_difficulties_array, HEIGHT);
   }

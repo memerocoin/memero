@@ -62,8 +62,8 @@ namespace cryptonote
   // https://github.com/zawy12/difficulty-algorithms/issues/3
   constexpr diff_t next_difficulty_pure
   (
-   const std::array<std::uint64_t, constant::DIFFICULTY_WINDOW_IN_BLOCKS + 1> timestamps
-   , const std::array<diff_t, constant::DIFFICULTY_WINDOW_IN_BLOCKS + 1> cumulative_difficulties
+   const std::array<std::uint64_t, constant::DIFFICULTY_BLOCKS_COUNT> timestamps
+   , const std::array<diff_t, constant::DIFFICULTY_BLOCKS_COUNT> cumulative_difficulties
    , const uint64_t HEIGHT
    )
   {

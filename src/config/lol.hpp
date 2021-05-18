@@ -19,7 +19,7 @@ namespace constant
 
   constexpr uint64_t DIFFICULTY_TARGET_IN_SECONDS = 300;
   constexpr uint64_t DIFFICULTY_WINDOW_IN_BLOCKS = 144;
-  constexpr uint64_t DIFFICULTY_BLOCKS_COUNT = DIFFICULTY_WINDOW_IN_BLOCKS + 1;
+  constexpr size_t DIFFICULTY_BLOCKS_COUNT = static_cast<size_t>(DIFFICULTY_WINDOW_IN_BLOCKS) + 1;
 
 
   constexpr uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V2 = 300*2;
