@@ -655,7 +655,6 @@ namespace cryptonote
       uint64_t cumulative_difficulty;
       std::string wide_cumulative_difficulty;
       uint64_t cumulative_difficulty_top64;
-      uint64_t adjusted_time;
       uint64_t start_time;
       uint64_t free_space;
       bool offline;
@@ -686,7 +685,6 @@ namespace cryptonote
         KV_SERIALIZE(cumulative_difficulty)
         KV_SERIALIZE(wide_cumulative_difficulty)
         KV_SERIALIZE(cumulative_difficulty_top64)
-        KV_SERIALIZE(adjusted_time)
         KV_SERIALIZE(start_time)
         KV_SERIALIZE(free_space)
         KV_SERIALIZE(offline)

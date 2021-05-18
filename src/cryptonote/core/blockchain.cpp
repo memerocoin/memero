@@ -2839,25 +2839,9 @@ uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
 bool Blockchain::is_tx_spendtime_unlocked(uint64_t unlock_time) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-  if(unlock_time < CRYPTONOTE_MAX_BLOCK_NUMBER)
-  {
-    // ND: Instead of calling get_current_blockchain_height(), call m_db->height()
-    //    directly as get_current_blockchain_height() locks the recursive mutex.
-    if(m_db->height()-1 + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS >= unlock_time)
-      return true;
-    else
-      return false;
-  }
-  else
-  {
-    //interpret as time
-    const uint64_t current_time = get_adjusted_time(m_db->height());
-    if(current_time + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2 >= unlock_time)
-      return true;
-    else
-      return false;
-  }
-  return false;
+  // ND: Instead of calling get_current_blockchain_height(), call m_db->height()
+  //    directly as get_current_blockchain_height() locks the recursive mutex.
+  return m_db->height() + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time;
 }
 //------------------------------------------------------------------
 // This function locates all outputs associated with a given input (mixins)
@@ -2918,42 +2902,6 @@ bool Blockchain::check_tx_input(size_t tx_version, const txin_to_key& txin, cons
   }
   // rct_signatures will be expanded after this
   return true;
-}
-//------------------------------------------------------------------
-// only works on the main chain
-uint64_t Blockchain::get_adjusted_time(uint64_t height) const
-{
-  LOG_PRINT_L3("Blockchain::" << __func__);
-
-  size_t blockchain_timestamp_check_window = BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V2;
-
-  // if not enough blocks, no proper median yet, return current time
-  if(height < blockchain_timestamp_check_window)
-  {
-      return static_cast<uint64_t>(time(NULL));
-  }
-  std::vector<uint64_t> timestamps;
-
-  // need most recent 60 blocks, get index of first of those
-  size_t offset = height - blockchain_timestamp_check_window;
-  timestamps.reserve(height - offset);
-  for(;offset < height; ++offset)
-  {
-    timestamps.push_back(m_db->get_block_timestamp(offset));
-  }
-  uint64_t median_ts = epee::misc_utils::median(timestamps);
-
-  // project the median to match approximately when the block being validated will appear
-  // the median is calculated from a chunk of past blocks, so we use +1 to offset onto the current block
-  median_ts += (blockchain_timestamp_check_window + 1) * DIFFICULTY_TARGET_IN_SECONDS / 2;
-
-  // project the current block's time based on the previous block's time
-  // we don't use the current block's time directly to mitigate timestamp manipulation
-  uint64_t adjusted_current_block_ts = timestamps.back() + DIFFICULTY_TARGET_IN_SECONDS;
-
-  // return minimum of ~current block time and adjusted median time
-  // we do this since it's better to report a time in the past than a time in the future
-  return (adjusted_current_block_ts < median_ts ? adjusted_current_block_ts : median_ts);
 }
 //------------------------------------------------------------------
 //TODO: revisit, has changed a bit on upstream

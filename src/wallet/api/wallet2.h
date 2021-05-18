@@ -455,7 +455,6 @@ namespace tools
     std::string get_daemon_address() const;
     uint64_t get_daemon_blockchain_height(std::string& err);
     uint64_t get_daemon_blockchain_target_height(std::string& err);
-    uint64_t get_daemon_adjusted_time();
 
    /*!
     * \brief Calculates the approximate blockchain height from current date/time.

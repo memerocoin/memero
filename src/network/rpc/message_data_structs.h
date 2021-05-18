@@ -180,7 +180,6 @@ namespace rpc
     cryptonote::diff_t wide_cumulative_difficulty;
     uint64_t cumulative_difficulty;
     uint64_t block_size_limit;
-    uint64_t adjusted_time;
     uint64_t start_time;
     std::string version;
   };

@@ -82,17 +82,8 @@ namespace
     else
       entry.suggested_confirmations_threshold = (entry.amount + block_reward - 1) / block_reward;
 
-    if (unlock_time < CRYPTONOTE_MAX_BLOCK_NUMBER)
-    {
-      if (unlock_time > blockchain_height)
-        entry.suggested_confirmations_threshold = std::max(entry.suggested_confirmations_threshold, unlock_time - blockchain_height);
-    }
-    else
-    {
-      const uint64_t now = time(NULL);
-      if (unlock_time > now)
-        entry.suggested_confirmations_threshold = std::max(entry.suggested_confirmations_threshold, (unlock_time - now + DIFFICULTY_TARGET_IN_SECONDS - 1) / DIFFICULTY_TARGET_IN_SECONDS);
-    }
+    if (unlock_time > blockchain_height)
+      entry.suggested_confirmations_threshold = std::max(entry.suggested_confirmations_threshold, unlock_time - blockchain_height);
   }
 }
 

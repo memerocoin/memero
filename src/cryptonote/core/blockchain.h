@@ -876,21 +876,6 @@ namespace cryptonote
      */
     void flush_invalid_blocks();
 
-    /**
-     * @brief get the "adjusted time"
-     *
-     * Computes the median timestamp of the previous 60 blocks, projects it
-     * onto the current block to get an 'adjusted median time' which approximates
-     * what the current block's timestamp should be. Also projects the previous
-     * block's timestamp to estimate the current block's timestamp.
-     * 
-     * Returns the minimum of the two projections, or the current local time on
-     * the machine if less than 60 blocks are available.
-     *
-     * @return current time approximated from chain data
-     */
-    uint64_t get_adjusted_time(uint64_t height) const;
-
 #ifndef IN_UNIT_TESTS
   private:
 #endif

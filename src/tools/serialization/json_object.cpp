@@ -1166,7 +1166,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
   INSERT_INTO_JSON_OBJECT(dest, nettype, info.nettype);
   INSERT_INTO_JSON_OBJECT(dest, top_block_hash, info.top_block_hash);
   INSERT_INTO_JSON_OBJECT(dest, cumulative_difficulty, info.cumulative_difficulty);
-  INSERT_INTO_JSON_OBJECT(dest, adjusted_time, info.adjusted_time);
   INSERT_INTO_JSON_OBJECT(dest, start_time, info.start_time);
 
   dest.EndObject();
@@ -1195,7 +1194,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::DaemonInfo& inf
   GET_FROM_JSON_OBJECT(val, info.nettype, nettype);
   GET_FROM_JSON_OBJECT(val, info.top_block_hash, top_block_hash);
   GET_FROM_JSON_OBJECT(val, info.cumulative_difficulty, cumulative_difficulty);
-  GET_FROM_JSON_OBJECT(val, info.adjusted_time, adjusted_time);
   GET_FROM_JSON_OBJECT(val, info.start_time, start_time);
 }
 

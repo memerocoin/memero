@@ -3416,11 +3416,11 @@ std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> wallet2::
       else
       {
         uint64_t unlock_height = td.m_block_height + std::max<uint64_t>(CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE, CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS);
-        if (td.m_tx.unlock_time < CRYPTONOTE_MAX_BLOCK_NUMBER && td.m_tx.unlock_time > unlock_height)
+        if (td.m_tx.unlock_time > unlock_height)
           unlock_height = td.m_tx.unlock_time;
-        uint64_t unlock_time = td.m_tx.unlock_time >= CRYPTONOTE_MAX_BLOCK_NUMBER ? td.m_tx.unlock_time : 0;
+        uint64_t unlock_time = 0;
         blocks_to_unlock = unlock_height > blockchain_height ? unlock_height - blockchain_height : 0;
-        time_to_unlock = unlock_time > now ? unlock_time - now : 0;
+        time_to_unlock = 0;
         amount = 0;
       }
       auto found = amount_per_subaddr.find(td.m_subaddr_index.minor);
@@ -3612,28 +3612,11 @@ bool wallet2::is_transfer_unlocked(uint64_t unlock_time, uint64_t block_height)
 //----------------------------------------------------------------------------------------------------
 bool wallet2::is_tx_spendtime_unlocked(uint64_t unlock_time, uint64_t block_height)
 {
-  if(unlock_time < CRYPTONOTE_MAX_BLOCK_NUMBER)
-  {
-    //interpret as block index
-    if(get_blockchain_current_height()-1 + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS >= unlock_time)
-      return true;
-    else
-      return false;
-  }else
-  {
-    //interpret as time
-    uint64_t adjusted_time;
-    try { adjusted_time = get_daemon_adjusted_time(); }
-    catch(...) { adjusted_time = time(NULL); } // use local time if no daemon to report blockchain time
-    // XXX: this needs to be fast, so we'd need to get the starting heights
-    // from the daemon to be correct once voting kicks in
-    uint64_t leeway = CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2;
-    if(adjusted_time + leeway >= unlock_time)
-      return true;
-    else
-      return false;
-  }
-  return false;
+  //interpret as block index
+  if(get_blockchain_current_height() + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time)
+    return true;
+  else
+    return false;
 }
 //----------------------------------------------------------------------------------------------------
 namespace
@@ -5701,15 +5684,6 @@ uint64_t wallet2::get_daemon_blockchain_height(string &err)
 
   err = "";
   return height;
-}
-
-uint64_t wallet2::get_daemon_adjusted_time()
-{
-    uint64_t adjusted_time;
-
-    std::optional<std::string> result = m_node_rpc_proxy.get_adjusted_time(adjusted_time);
-    THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Invalid adjusted time from daemon");
-    return adjusted_time;
 }
 
 uint64_t wallet2::get_daemon_blockchain_target_height(string &err)

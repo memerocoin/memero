@@ -48,7 +48,6 @@ public:
   std::optional<std::string> get_height(uint64_t &height);
   void set_height(uint64_t h);
   std::optional<std::string> get_target_height(uint64_t &height);
-  std::optional<std::string> get_adjusted_time(uint64_t &adjusted_time);
   std::optional<std::string> get_dynamic_base_fee_estimate(uint64_t grace_blocks, uint64_t &fee);
   std::optional<std::string> get_fee_quantization_mask(uint64_t &fee_quantization_mask);
 
@@ -65,7 +64,6 @@ private:
   uint64_t m_dynamic_base_fee_estimate_cached_height;
   uint64_t m_dynamic_base_fee_estimate_grace_blocks;
   uint64_t m_fee_quantization_mask;
-  uint64_t m_adjusted_time;
   uint32_t m_rpc_version;
   uint64_t m_target_height;
   time_t m_get_info_time;

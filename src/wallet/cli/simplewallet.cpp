@@ -104,8 +104,6 @@ namespace
   constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
   constexpr char USAGE_INCOMING[] = "incoming [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]";
   constexpr char USAGE_TRANSFER[] = "transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)";
-  constexpr char USAGE_LOCKED_TRANSFER[] = "locked_transfer [index=<N1>[,<N2>,...]] [<priority>]\n"
-                                    "                (<URI> | <addr> <amount>) <lockblocks>\n";
   constexpr char USAGE_SET_LOG[] = "set_log <level>|{+,-,}<categories>";
   constexpr char USAGE_ACCOUNT[] = "account\n"
                             "  account new <label>\n"
@@ -1142,10 +1140,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("transfer", std::bind(&simple_wallet::on_command, this, &simple_wallet::transfer, std::placeholders::_1),
                            sw::tr(USAGE_TRANSFER),
                            sw::tr("Transfer <amount> to <address>. If the parameter \"index=<N1>[,<N2>,...]\" is specified, the wallet uses outputs received by addresses of those indices. If omitted, the wallet randomly chooses address indices to be used. In any case, it tries its best not to combine outputs across multiple addresses. <priority> is the priority of the transaction. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding URI_2 or <address_2> <amount_2> etcetera (before the payment ID, if it's included)"));
-  m_cmd_binder.set_handler("locked_transfer",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::locked_transfer,std::placeholders::_1),
-                           sw::tr(USAGE_LOCKED_TRANSFER),
-                           sw::tr("Transfer <amount> to <address> and lock it for <lockblocks> (max. 1000000). If the parameter \"index=<N1>[,<N2>,...]\" is specified, the wallet uses outputs received by addresses of those indices. If omitted, the wallet randomly chooses address indices to be used. In any case, it tries its best not to combine outputs across multiple addresses. <priority> is the priority of the transaction. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding URI_2 or <address_2> <amount_2> etcetera (before the payment ID, if it's included)"));
   m_cmd_binder.set_handler("set_log",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_log, std::placeholders::_1),
                            sw::tr(USAGE_SET_LOG),
@@ -3026,11 +3020,6 @@ bool simple_wallet::transfer(const std::vector<std::string> &args_)
   return transfer_main(Transfer, args_);
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::locked_transfer(const std::vector<std::string> &args_)
-{
-  return transfer_main(TransferLocked, args_);
-}
-//----------------------------------------------------------------------------------------------------
 bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
 {
   std::vector<std::string> local_args = args_;
@@ -3392,19 +3381,9 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
       {
         locked_msg = "locked";
         const uint64_t unlock_time = pd.m_unlock_time;
-        if (pd.m_unlock_time < CRYPTONOTE_MAX_BLOCK_NUMBER)
-        {
-          uint64_t bh = std::max(pd.m_unlock_time, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
-          if (bh >= last_block_height)
-            locked_msg = std::to_string(bh - last_block_height) + " blks";
-        }
-        else
-        {
-          const uint64_t adjusted_time = m_wallet->get_daemon_adjusted_time();
-          uint64_t threshold = adjusted_time + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2;
-          if (threshold < pd.m_unlock_time)
-            locked_msg = get_human_readable_timespan(std::chrono::seconds(pd.m_unlock_time - threshold));
-        }
+        uint64_t bh = std::max(pd.m_unlock_time, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
+        if (bh >= last_block_height)
+          locked_msg = std::to_string(bh - last_block_height) + " blks";
       }
       transfers.push_back({
         type,
@@ -4305,27 +4284,15 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
       success_msg_writer() << "Height: " << pd.m_block_height;
       success_msg_writer() << "Timestamp: " << tools::get_human_readable_timestamp(pd.m_timestamp);
       success_msg_writer() << "Amount: " << print_money(pd.m_amount);
-      if (pd.m_unlock_time < CRYPTONOTE_MAX_BLOCK_NUMBER)
-      {
-        uint64_t bh = std::max(pd.m_unlock_time, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
-        uint64_t last_block_reward = m_wallet->get_last_block_reward();
-        uint64_t suggested_threshold = last_block_reward ? (pd.m_amount + last_block_reward - 1) / last_block_reward : 0;
-        if (bh >= last_block_height)
-          success_msg_writer() << "Locked: " << (bh - last_block_height) << " blocks to unlock";
-        else if (suggested_threshold > 0)
-          success_msg_writer() << std::to_string(last_block_height - bh) << " confirmations (" << suggested_threshold << " suggested threshold)";
-        else
-          success_msg_writer() << std::to_string(last_block_height - bh) << " confirmations";
-      }
+      uint64_t bh = std::max(pd.m_unlock_time, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
+      uint64_t last_block_reward = m_wallet->get_last_block_reward();
+      uint64_t suggested_threshold = last_block_reward ? (pd.m_amount + last_block_reward - 1) / last_block_reward : 0;
+      if (bh >= last_block_height)
+        success_msg_writer() << "Locked: " << (bh - last_block_height) << " blocks to unlock";
+      else if (suggested_threshold > 0)
+        success_msg_writer() << std::to_string(last_block_height - bh) << " confirmations (" << suggested_threshold << " suggested threshold)";
       else
-      {
-        const uint64_t adjusted_time = m_wallet->get_daemon_adjusted_time();
-        uint64_t threshold = adjusted_time + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V2;
-        if (threshold >= pd.m_unlock_time)
-          success_msg_writer() << "unlocked for " << get_human_readable_timespan(std::chrono::seconds(threshold - pd.m_unlock_time));
-        else
-          success_msg_writer() << "locked for " << get_human_readable_timespan(std::chrono::seconds(pd.m_unlock_time - threshold));
-      }
+        success_msg_writer() << std::to_string(last_block_height - bh) << " confirmations";
       success_msg_writer() << "Address index: " << pd.m_subaddr_index.minor;
       return true;
     }

@@ -201,7 +201,6 @@ namespace cryptonote
     res.nettype = net_type == MAINNET ? "mainnet" : net_type == TESTNET ? "testnet" : "fakechain";
     store_difficulty(m_core.get_blockchain_storage().get_db().get_block_cumulative_difficulty(res.height - 1),
         res.cumulative_difficulty, res.wide_cumulative_difficulty, res.cumulative_difficulty_top64);
-    res.adjusted_time = m_core.get_blockchain_storage().get_adjusted_time(res.height);
 
     res.start_time = restricted ? 0 : (uint64_t)m_core.get_start_time();
     res.free_space = restricted ? std::numeric_limits<uint64_t>::max() : m_core.get_free_space();
