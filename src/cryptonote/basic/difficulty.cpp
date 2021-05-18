@@ -89,7 +89,10 @@ namespace cryptonote {
     std::array<diff_t, constant::DIFFICULTY_BLOCKS_COUNT> cumulative_difficulties_array;
     std::copy_n(cumulative_difficulties.begin(), constant::DIFFICULTY_BLOCKS_COUNT, cumulative_difficulties_array.begin());
 
-    return next_difficulty_pure(timestamps_array, cumulative_difficulties_array, HEIGHT);
+    const diff_t next = next_difficulty_pure(timestamps_array, cumulative_difficulties_array, HEIGHT);
+
+    CHECK_AND_ASSERT_THROW_MES(next > 0, "next difficulty overflowed 128bit unsigned int");
+    return next;
   }
 
   std::string hex(const diff_t _v)

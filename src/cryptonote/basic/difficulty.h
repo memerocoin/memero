@@ -127,9 +127,8 @@ namespace cryptonote
       : up / l_200;
 
     constexpr uint256_t max128bit(std::numeric_limits<uint128_t>::max());
-    // CHECK_AND_ASSERT_THROW_MES(next_D <= max128bit, "next_D overflowed 128bit unsigned int");
 
-    return uint128_t(next_D);
+    return next_D <= max128bit ? uint128_t(next_D) : 0;
   }
 
 
