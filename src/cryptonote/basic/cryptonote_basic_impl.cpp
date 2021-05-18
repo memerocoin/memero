@@ -49,36 +49,6 @@ using namespace epee;
 using namespace constant;
 
 namespace cryptonote {
-
-  /************************************************************************/
-  /* Cryptonote helper functions                                          */
-  /************************************************************************/
-  //-----------------------------------------------------------------------------------------------
-  uint64_t get_min_block_weight()
-  {
-    return config::lol::min_block_weight;
-  }
-  //-----------------------------------------------------------------------------------------------
-  uint64_t get_max_tx_size()
-  {
-    return config::lol::min_block_weight;
-  }
-  //-----------------------------------------------------------------------------------------------
-  uint64_t get_max_block_weight(const uint64_t height)
-  {
-    const uint64_t max_weight = std::max(config::lol::min_block_weight, height);
-    // MGINFO("get max block weight: " << max_weight);
-    return max_weight;
-  }
-  //-----------------------------------------------------------------------------------------------
-  bool check_block_weight(const uint64_t height, const size_t current_block_weight) {
-    uint64_t max_weight = get_max_block_weight(height);
-    return current_block_weight <= max_weight;
-  }
-  //-----------------------------------------------------------------------------------------------
-  uint64_t get_block_reward() {
-    return COIN * 300;
-  }
   //------------------------------------------------------------------------------------
   uint8_t get_account_address_checksum(const public_address_outer_blob& bl)
   {
