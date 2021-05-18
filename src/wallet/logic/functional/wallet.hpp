@@ -67,6 +67,8 @@ namespace wallet {
 
   uint32_t get_subaddress_clamped_sum(const uint32_t idx, const uint32_t extra);
 
+  float get_output_relatedness(const transfer_details &td0, const transfer_details &td1);
+
 } // wallet
 } // functional
 } // logic

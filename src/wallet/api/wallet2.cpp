@@ -3667,37 +3667,6 @@ namespace
   }
 }
 //----------------------------------------------------------------------------------------------------
-// This returns a handwavy estimation of how much two outputs are related
-// If they're from the same tx, then they're fully related. From close block
-// heights, they're kinda related. The actual values don't matter, just
-// their ordering, but it could become more murky if we add scores later.
-float wallet2::get_output_relatedness(const transfer_details &td0, const transfer_details &td1) const
-{
-  int dh;
-
-  // expensive test, and same tx will fall onto the same block height below
-  if (td0.m_txid == td1.m_txid)
-    return 1.0f;
-
-  // same block height -> possibly tx burst, or same tx (since above is disabled)
-  dh = td0.m_block_height > td1.m_block_height ? td0.m_block_height - td1.m_block_height : td1.m_block_height - td0.m_block_height;
-  if (dh == 0)
-    return 0.9f;
-
-  // adjacent blocks -> possibly tx burst
-  if (dh == 1)
-    return 0.8f;
-
-  // could extract the payment id, and compare them, but this is a bit expensive too
-
-  // similar block heights
-  if (dh < 10)
-    return 0.2f;
-
-  // don't think these are particularly related
-  return 0.0f;
-}
-//----------------------------------------------------------------------------------------------------
 size_t wallet2::pop_best_value_from(const wallet::logic::type::wallet::transfer_container &transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest) const
 {
   std::vector<size_t> candidates;
@@ -3708,7 +3677,7 @@ size_t wallet2::pop_best_value_from(const wallet::logic::type::wallet::transfer_
     float relatedness = 0.0f;
     for (std::vector<size_t>::const_iterator i = selected_transfers.begin(); i != selected_transfers.end(); ++i)
     {
-      float r = get_output_relatedness(candidate, transfers[*i]);
+      float r = wallet::logic::functional::wallet::get_output_relatedness(candidate, transfers[*i]);
       if (r > relatedness)
       {
         relatedness = r;
@@ -4636,7 +4605,7 @@ std::vector<size_t> wallet2::pick_preferred_rct_inputs(uint64_t needed_money, ui
           // update our picks if those outputs are less related than any we
           // already found. If the same, don't update, and oldest suitable outputs
           // will be used in preference.
-          float relatedness = get_output_relatedness(td, td2);
+          float relatedness = wallet::logic::functional::wallet::get_output_relatedness(td, td2);
           LOG_PRINT_L2("  with input " << j << ", " << print_money(td2.amount()) << ", relatedness " << relatedness);
           if (relatedness < current_output_relatdness)
           {
@@ -5014,7 +4983,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
 
       // since we're trying to add a second output which is not strictly needed,
       // we only add it if it's unrelated enough to the first one
-      float relatedness = get_output_relatedness(m_transfers[idx], m_transfers[tx.selected_transfers.front()]);
+      float relatedness = wallet::logic::functional::wallet::get_output_relatedness(m_transfers[idx], m_transfers[tx.selected_transfers.front()]);
       if (relatedness > SECOND_OUTPUT_RELATEDNESS_THRESHOLD)
       {
         LOG_PRINT_L2("Second output was not strictly needed, and relatedness " << relatedness << ", not adding");
