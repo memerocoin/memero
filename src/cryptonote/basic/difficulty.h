@@ -100,7 +100,7 @@ namespace cryptonote
     const L_collector l_init{ 1, 0, timestamps.front() - T };
 
     const L_collector l_collector = std::accumulate
-      (
+     (
        std::next(timestamps.begin())
        , timestamps.end()
        , l_init
@@ -114,7 +114,7 @@ namespace cryptonote
     using namespace boost::multiprecision;
 
     const uint256_t avg_D =
-      uint256_t( cumulative_difficulties[N] - cumulative_difficulties[0] ) / uint256_t(N);
+      uint256_t( cumulative_difficulties.back() - cumulative_difficulties.front() ) / uint256_t(N);
     constexpr uint256_t n_n_plus_1_t_99 = N * (N + 1) * T * 99;
     const uint256_t l_200 = 200 * L;
     const uint256_t up = avg_D * n_n_plus_1_t_99;
