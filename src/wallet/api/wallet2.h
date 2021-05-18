@@ -327,7 +327,7 @@ namespace tools
     void rescan_spent();
     void rescan_blockchain(bool hard, bool refresh = true, bool keep_key_images = false);
     bool is_transfer_unlocked(const transfer_details& td);
-    bool is_transfer_unlocked(uint64_t unlock_time, uint64_t block_height);
+    bool is_transfer_unlocked(const uint64_t unlock_time, const uint64_t block_height);
 
     uint64_t get_last_block_reward() const { return m_last_block_reward; }
     uint64_t get_device_last_key_image_sync() const { return m_device_last_key_image_sync; }
@@ -517,7 +517,7 @@ namespace tools
 
     void set_tx_notify(const std::shared_ptr<tools::Notify> &notify) { m_tx_notify = notify; }
 
-    bool is_tx_spendtime_unlocked(uint64_t unlock_time, uint64_t block_height);
+    bool is_tx_spendtime_unlocked(const uint64_t unlock_time);
     uint64_t hash_m_transfers(int64_t transfer_height, crypto::hash &hash) const;
     void finish_rescan_bc_keep_key_images(uint64_t transfer_height, const crypto::hash &hash);
     void set_offline(bool offline = true);

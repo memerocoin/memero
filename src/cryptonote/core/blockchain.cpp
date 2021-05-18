@@ -2836,11 +2836,12 @@ uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
 //------------------------------------------------------------------
 // This function checks to see if a tx is unlocked.  unlock_time is either
 // a block index or a unix time.
-bool Blockchain::is_tx_spendtime_unlocked(uint64_t unlock_time) const
+bool Blockchain::is_tx_spendtime_unlocked(const uint64_t unlock_time) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   // ND: Instead of calling get_current_blockchain_height(), call m_db->height()
   //    directly as get_current_blockchain_height() locks the recursive mutex.
+  if (unlock_time == 0) return true;
   return m_db->height() + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time;
 }
 //------------------------------------------------------------------

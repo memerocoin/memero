@@ -3599,9 +3599,9 @@ bool wallet2::is_transfer_unlocked(const transfer_details& td)
   return is_transfer_unlocked(td.m_tx.unlock_time, td.m_block_height);
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::is_transfer_unlocked(uint64_t unlock_time, uint64_t block_height)
+bool wallet2::is_transfer_unlocked(const uint64_t unlock_time, const uint64_t block_height)
 {
-  if(!is_tx_spendtime_unlocked(unlock_time, block_height))
+  if(!is_tx_spendtime_unlocked(unlock_time))
     return false;
 
   if(block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE > get_blockchain_current_height())
@@ -3610,13 +3610,10 @@ bool wallet2::is_transfer_unlocked(uint64_t unlock_time, uint64_t block_height)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::is_tx_spendtime_unlocked(uint64_t unlock_time, uint64_t block_height)
+bool wallet2::is_tx_spendtime_unlocked(const uint64_t unlock_time)
 {
-  //interpret as block index
-  if(get_blockchain_current_height() + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time)
-    return true;
-  else
-    return false;
+  if (unlock_time == 0) return true;
+  return get_blockchain_current_height() + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time;
 }
 //----------------------------------------------------------------------------------------------------
 namespace
