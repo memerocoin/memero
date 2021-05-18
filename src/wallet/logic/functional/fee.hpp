@@ -35,6 +35,9 @@
 #include <cstdint>
 #include <utility>
 
+#include "tools/epee/include/misc_log_ex.h"
+#include "wallet/api/wallet_errors.h"
+
 #include "config/lol.hpp"
 
 namespace wallet {
@@ -42,17 +45,130 @@ namespace logic {
 namespace functional {
 namespace fee {
 
-  size_t estimate_rct_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size);
+  //----------------------------------------------------------------------------------------------------
+  constexpr size_t estimate_rct_tx_size
+  (
+   const int n_inputs
+   , const int mixin
+   , const int n_outputs
+   , const size_t extra_size
+   )
+  {
+    size_t size = 0;
+    // tx prefix
 
-  size_t estimate_tx_size(int n_inputs, int mixin, int n_outputs, size_t extra_size);
+    // first few bytes
+    size += 1 + 6;
 
-  uint64_t estimate_tx_weight(int n_inputs, int mixin, int n_outputs, size_t extra_size);
+    // vin
+    size += n_inputs * (1+6+(mixin+1)*2+32);
 
-  uint64_t calculate_fee_from_weight(uint64_t base_fee, uint64_t weight, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
+    // vout
+    size += n_outputs * (6+32);
 
-  uint64_t estimate_fee(int n_inputs, int mixin, int n_outputs, size_t extra_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
+    // extra
+    size += extra_size;
 
-  std::pair<size_t, uint64_t> estimate_tx_size_and_weight(int n_inputs, int n_outputs, size_t extra_size);
+    // rct signatures
+
+    // type
+    size += 1;
+
+    // rangeSigs
+    {
+      size_t log_padded_outputs = 0;
+      while ((1<<log_padded_outputs) < n_outputs)
+        ++log_padded_outputs;
+      size += (2 * (6 + log_padded_outputs) + 4 + 5) * 32 + 3;
+    }
+
+    // MGs/CLSAGs
+    size += n_inputs * (32 * (mixin+1) + 64);
+
+    // mixRing - not serialized, can be reconstructed
+    /* size += 2 * 32 * (mixin+1) * n_inputs; */
+
+    // pseudoOuts
+    size += 32 * n_inputs;
+    // ecdhInfo
+    size += 8 * n_outputs;
+    // outPk - only commitment is saved
+    size += 32 * n_outputs;
+    // txnFee
+    size += 4;
+
+    // LOG_PRINT_L2
+    //   (
+    //    "estimated rct tx size for " << n_inputs <<
+    //    " inputs with ring size " << (mixin+1) <<
+    //    " and " << n_outputs <<
+    //    " outputs: " << size <<
+    //    " (" << ((32 * n_inputs/*+1*/) + 2 * 32 * (mixin+1) * n_inputs + 32 * n_outputs) << " saved)"
+    //    );
+    return size;
+  }
+
+  //----------------------------------------------------------------------------------------------------
+  constexpr size_t estimate_tx_size(const int n_inputs, const int mixin, const int n_outputs, const size_t extra_size)
+  {
+    return estimate_rct_tx_size(n_inputs, mixin, n_outputs, extra_size);
+  }
+
+  //----------------------------------------------------------------------------------------------------
+  constexpr uint64_t estimate_tx_weight(const int n_inputs, const int mixin, const int n_outputs, const size_t extra_size)
+  {
+    return estimate_tx_size(n_inputs, mixin, n_outputs, extra_size);
+  }
+
+  //----------------------------------------------------------------------------------------------------
+  constexpr uint64_t calculate_fee_from_weight
+  (
+   const uint64_t base_fee
+   , const uint64_t weight
+   , const uint64_t fee_multiplier
+   , const uint64_t fee_quantization_mask
+   )
+  {
+    const uint64_t fee = weight * base_fee * fee_multiplier;
+    return (fee + fee_quantization_mask - 1) / fee_quantization_mask * fee_quantization_mask;
+  }
+
+  //----------------------------------------------------------------------------------------------------
+  constexpr uint64_t estimate_fee
+  (
+   const int n_inputs
+   , const int mixin
+   , const int n_outputs
+   , const size_t extra_size
+   , const uint64_t base_fee
+   , const uint64_t fee_multiplier
+   , const uint64_t fee_quantization_mask
+   )
+  {
+    const size_t estimated_tx_weight = estimate_tx_weight(n_inputs, mixin, n_outputs, extra_size);
+    return calculate_fee_from_weight(base_fee, estimated_tx_weight, fee_multiplier, fee_quantization_mask);
+  }
+
+  //----------------------------------------------------------------------------------------------------
+  constexpr std::pair<size_t, uint64_t> estimate_tx_size_and_weight
+  (
+   const int n_inputs
+   , const int n_outputs
+   , const size_t extra_size
+   )
+  {
+    THROW_WALLET_EXCEPTION_IF(n_inputs <= 0, tools::error::wallet_internal_error, "Invalid n_inputs");
+    THROW_WALLET_EXCEPTION_IF(n_outputs < 0, tools::error::wallet_internal_error, "Invalid n_outputs");
+
+    const int ring_size = config::lol::ring_size;
+    const int n_adjusted_outputs = n_outputs == 1 ? 2 : n_outputs;
+
+    const bool bulletproof = true;
+    const bool clsag = true;
+    const size_t size = estimate_tx_size(n_inputs, ring_size - 1, n_adjusted_outputs, extra_size);
+    const uint64_t weight = estimate_tx_weight(n_inputs, ring_size - 1, n_adjusted_outputs, extra_size);
+    return std::make_pair(size, weight);
+  }
 
   constexpr uint64_t get_fee_multiplier(const uint32_t priority)
   {
