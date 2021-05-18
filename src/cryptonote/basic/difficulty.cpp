@@ -45,14 +45,6 @@
 
 namespace cryptonote {
 
-  constexpr boost::multiprecision::uint512_t max256bit
-  (std::numeric_limits<boost::multiprecision::uint256_t>::max());
-
-
-  boost::multiprecision::uint512_t max_int_for_diff(const diff_t difficulty) {
-    return max256bit / difficulty;
-  }
-
   boost::multiprecision::uint512_t hash_to_int(const crypto::hash &hash) {
     boost::multiprecision::uint512_t v;
     boost::multiprecision::import_bits(v, std::begin(hash.data), std::end(hash.data), 0, false);
@@ -60,13 +52,9 @@ namespace cryptonote {
   }
 
   bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
-    const boost::multiprecision::uint512_t hashInt = hash_to_int(hash);
-    return hashInt * difficulty <= max256bit;
+    return check_hash_int(hash_to_int(hash), difficulty);
   }
 
-  // LWMA-1 difficulty algorithm 
-  // Copyright (c) 2017-2019 Zawy, MIT License
-  // https://github.com/zawy12/difficulty-algorithms/issues/3
   diff_t next_difficulty
     (
      const std::vector<std::uint64_t> timestamps
@@ -74,15 +62,13 @@ namespace cryptonote {
      , const uint64_t HEIGHT
      )
   {
-    constexpr uint64_t T = constant::DIFFICULTY_TARGET_IN_SECONDS;
     constexpr uint64_t N = constant::DIFFICULTY_WINDOW_IN_BLOCKS;
 
     CHECK_AND_ASSERT_THROW_MES
       (
-       timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1
+       timestamps.size() == cumulative_difficulties.size()
        , "timestamp size mismatch"
        );
-    // assert(timestamps.size() == N+1);
 
     if (HEIGHT == 0) { return 1; }
 
@@ -90,66 +76,22 @@ namespace cryptonote {
     constexpr diff_t _b = 1;
     if (HEIGHT < N + 3) { return _b << 38; }
 
-    struct L_collector {
-      uint64_t linear_index;
-      uint64_t sum;
-      uint64_t last;
-    };
 
-    auto accumulate_linearly_weighted_timestamp_diff =
-      [](const L_collector x, const uint64_t t) -> L_collector
-      {
-        constexpr uint64_t maximum_allowed_time_diff = 6 * T;
-        constexpr uint64_t dt = 1;
+    constexpr size_t N_plus_1 = static_cast<size_t>(N + 1);
 
-        const bool is_past_solve_time = t <= x.last;
-        const uint64_t accepted_time_diff =
-          is_past_solve_time ? dt : std::min<uint64_t>( t - x.last, maximum_allowed_time_diff );
-
-        const uint64_t weight = x.linear_index * accepted_time_diff;
-
-        const uint64_t accepted_timestamp = is_past_solve_time ? x.last + dt : t;
-
-        return L_collector{ x.linear_index + 1, x.sum + weight, accepted_timestamp };
-      };
-
-
-    // potential bug here, timestamps[0] should already be T seconds away from timestamps[1]
-    // but not worth fixing, since it's a surplus at the least significant weight index, should
-    // affect less than 1 second of target (28ms?), so not really observable.
-    const L_collector l_init{ 1, 0, timestamps.front() - T };
-
-    const L_collector l_collector = std::accumulate
+    CHECK_AND_ASSERT_THROW_MES
       (
-       std::next(timestamps.begin())
-       , timestamps.end()
-       , l_init
-       , accumulate_linearly_weighted_timestamp_diff
+       timestamps.size() == cumulative_difficulties.size() && timestamps.size() == N_plus_1
+       , "timestamp size is invalid"
        );
 
-    constexpr uint64_t min_weight = N * N * T / 20;
-    const uint64_t L = std::max<uint64_t>(l_collector.sum, min_weight);
+    std::array<std::uint64_t, N_plus_1> timestamps_array;
+    std::copy_n(timestamps.begin(), N_plus_1, timestamps_array.begin());
 
+    std::array<diff_t, N_plus_1> cumulative_difficulties_array;
+    std::copy_n(cumulative_difficulties.begin(), N_plus_1, cumulative_difficulties_array.begin());
 
-    using namespace boost::multiprecision;
-
-    const uint256_t avg_D =
-      uint256_t( cumulative_difficulties[N] - cumulative_difficulties[0] ) / uint256_t(N);
-    constexpr uint256_t n_n_plus_1_t_99 = N * (N + 1) * T * 99;
-    const uint256_t l_200 = 200 * L;
-    const uint256_t up = avg_D * n_n_plus_1_t_99;
-    constexpr uint64_t overflow_until_height = 279;
-
-    const uint256_t next_D =
-      HEIGHT < overflow_until_height ?
-      // overflow bug fix
-      uint256_t(uint64_t(up)) / l_200
-      : up / l_200;
-
-    constexpr uint256_t max128bit(std::numeric_limits<uint128_t>::max());
-    CHECK_AND_ASSERT_THROW_MES(next_D <= max128bit, "next_D overflowed 128bit unsigned int");
-
-    return uint128_t(next_D);
+    return next_difficulty_pure(timestamps_array, cumulative_difficulties_array, HEIGHT);
   }
 
   std::string hex(const diff_t _v)
