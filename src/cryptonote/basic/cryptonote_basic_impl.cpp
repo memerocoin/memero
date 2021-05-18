@@ -90,9 +90,9 @@ namespace cryptonote {
   }
   //------------------------------------------------------------------------------------
   std::string get_account_address_as_str(
-      network_type nettype
-    , bool subaddress
-    , account_public_address const & adr
+      const network_type nettype
+    , const bool subaddress
+    , const account_public_address & adr
     )
   {
     uint64_t address_prefix = subaddress ? get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX : get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;

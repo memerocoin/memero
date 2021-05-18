@@ -75,8 +75,8 @@ namespace cryptonote {
   uint8_t get_account_address_checksum(const public_address_outer_blob& bl);
 
   std::string get_account_address_as_str(
-      network_type nettype
-    , bool subaddress
+      const network_type nettype
+    , const bool subaddress
     , const account_public_address& adr
     );
 
