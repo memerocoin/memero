@@ -125,7 +125,7 @@ namespace
   constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
                          "     [<min_height> [<max_height>]]\n";
   constexpr char USAGE_UNSPENT_OUTPUTS[] = "unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]";
-  constexpr char USAGE_RESCAN_BC[] = "rescan_bc [hard|soft|keep_ki] [start_height=0]";
+  constexpr char USAGE_RESCAN_BC[] = "rescan_bc [hard]";
   constexpr char USAGE_SIGN[] = "sign [<account_index>,<address_index>] [--spend|--view] <filename>";
   constexpr char USAGE_VERIFY[] = "verify <filename> <address> <signature>";
   constexpr char USAGE_SHOW_TRANSFER[] = "show_transfer <txid>";
@@ -2174,14 +2174,9 @@ bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bo
   if (!try_connect_to_daemon(is_init))
     return true;
 
-  crypto::hash transfer_hash_pre{};
-  uint64_t height_pre = 0, height_post;
   if (reset != ResetNone)
   {
-    if (reset == ResetSoftKeepKI)
-      height_pre = m_wallet->hash_m_transfers(-1, transfer_hash_pre);
-
-    m_wallet->rescan_blockchain(reset == ResetHard, false, reset == ResetSoftKeepKI);
+    m_wallet->rescan_blockchain(reset == ResetHard, false);
   }
 
   PAUSE_READLINE();
@@ -2197,17 +2192,6 @@ bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bo
     m_in_manual_refresh.store(true, std::memory_order_relaxed);
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){m_in_manual_refresh.store(false, std::memory_order_relaxed);});
     m_wallet->refresh(start_height, fetched_blocks, received_money);
-
-    if (reset == ResetSoftKeepKI)
-    {
-      m_wallet->finish_rescan_bc_keep_key_images(height_pre, transfer_hash_pre);
-
-      height_post = m_wallet->get_num_transfer_details();
-      if (height_pre != height_post)
-      {
-        message_writer() << sw::tr("New transfer received since rescan was started. Key images are incomplete.");
-      }
-    }
 
     ok = true;
     // Clear line "Height xxx of xxx"
@@ -3793,39 +3777,16 @@ bool simple_wallet::unspent_outputs(const std::vector<std::string> &args_)
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::rescan_blockchain(const std::vector<std::string> &args_)
 {
-  uint64_t start_height = 0;
   ResetType reset_type = ResetSoft;
-
   if (!args_.empty())
   {
     if (args_[0] == "hard")
     {
       reset_type = ResetHard;
     }
-    else if (args_[0] == "soft")
-    {
-      reset_type = ResetSoft;
-    }
-    else if (args_[0] == "keep_ki")
-    {
-      reset_type = ResetSoftKeepKI;
-    }
-    else
-    {
+    else {
       PRINT_USAGE(USAGE_RESCAN_BC);
       return true;
-    }
-
-    if (args_.size() > 1)
-    {
-      try
-      {
-        start_height = boost::lexical_cast<uint64_t>( args_[1] );
-      }
-      catch(const boost::bad_lexical_cast &)
-      {
-        start_height = 0;
-      }
     }
   }
 
@@ -3841,21 +3802,9 @@ bool simple_wallet::rescan_blockchain(const std::vector<std::string> &args_)
     }
   }
 
-  const uint64_t wallet_from_height = m_wallet->get_refresh_from_block_height();
-  if (start_height > wallet_from_height)
-  {
-    message_writer() << sw::tr("Warning: your restore height is higher than wallet restore height: ") << wallet_from_height;
-    std::string confirm = input_line(tr("Rescan anyway ? (Y/Yes/N/No): "));
-    if(!std::cin.eof())
-    {
-      if (!command_line::is_yes(confirm))
-        return true;
-    }
-  }
-
   m_in_manual_refresh.store(true, std::memory_order_relaxed);
   epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){m_in_manual_refresh.store(false, std::memory_order_relaxed);});
-  return refresh_main(start_height, reset_type, true);
+  return refresh_main(0, reset_type, true);
 }
 //----------------------------------------------------------------------------------------------------
 std::string simple_wallet::get_prompt()

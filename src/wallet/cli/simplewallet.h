@@ -78,7 +78,7 @@ namespace cryptonote
     std::string get_command_usage(const std::vector<std::string> &args);
   private:
 
-    enum ResetType { ResetNone, ResetSoft, ResetHard, ResetSoftKeepKI };
+    enum ResetType { ResetNone, ResetSoft, ResetHard };
 
     bool handle_command_line(const boost::program_options::variables_map& vm);
 

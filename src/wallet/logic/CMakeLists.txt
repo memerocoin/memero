@@ -35,7 +35,6 @@ add_library(wallet_logic
   functional/helper.cpp
   pseudo_functional/proof.cpp
   pseudo_functional/uri.cpp
-  pseudo_functional/hash.cpp
   controller/proof.cpp
   controller/wallet.cpp
   state/gamma_picker.cpp

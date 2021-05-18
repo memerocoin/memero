@@ -325,7 +325,7 @@ namespace tools
 
     uint64_t get_blockchain_current_height() const { return m_blockchain.size(); }
     void rescan_spent();
-    void rescan_blockchain(bool hard, bool refresh = true, bool keep_key_images = false);
+    void rescan_blockchain(bool hard, bool refresh = true);
     bool is_transfer_unlocked(const transfer_details& td);
     bool is_transfer_unlocked(const uint64_t unlock_time, const uint64_t block_height);
 
@@ -518,8 +518,6 @@ namespace tools
     void set_tx_notify(const std::shared_ptr<tools::Notify> &notify) { m_tx_notify = notify; }
 
     bool is_tx_spendtime_unlocked(const uint64_t unlock_time);
-    uint64_t hash_m_transfers(int64_t transfer_height, crypto::hash &hash) const;
-    void finish_rescan_bc_keep_key_images(uint64_t transfer_height, const crypto::hash &hash);
     void set_offline(bool offline = true);
 
     static std::string get_default_daemon_address() {
@@ -554,7 +552,7 @@ namespace tools
     void detach_blockchain(uint64_t height, std::map<std::pair<uint64_t, uint64_t>, size_t> *output_tracker_cache = NULL);
     void get_short_chain_history(std::list<crypto::hash>& ids, uint64_t granularity = 1) const;
     bool clear();
-    void clear_soft(bool keep_key_images=false);
+    void clear_soft();
     void pull_blocks(uint64_t start_height, uint64_t& blocks_start_height, const std::list<crypto::hash> &short_chain_history, std::vector<cryptonote::block_complete_entry> &blocks, std::vector<cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::block_output_indices> &o_indices, uint64_t &current_height);
     void pull_hashes(uint64_t start_height, uint64_t& blocks_start_height, const std::list<crypto::hash> &short_chain_history, std::vector<crypto::hash> &hashes);
     void fast_refresh(uint64_t stop_height, uint64_t &blocks_start_height, std::list<crypto::hash> &short_chain_history, bool force = false);

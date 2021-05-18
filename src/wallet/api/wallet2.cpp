@@ -36,7 +36,6 @@
 #include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/functional/helper.hpp"
 #include "wallet/logic/pseudo_functional/proof.hpp"
-#include "wallet/logic/pseudo_functional/hash.hpp"
 #include "wallet/logic/controller/proof.hpp"
 #include "wallet/logic/controller/wallet.hpp"
 #include "wallet/logic/state/gamma_picker.hpp"
@@ -2330,12 +2329,11 @@ bool wallet2::clear()
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::clear_soft(bool keep_key_images)
+void wallet2::clear_soft()
 {
   m_blockchain.clear();
   m_transfers.clear();
-  if (!keep_key_images)
-    m_key_images.clear();
+  m_key_images.clear();
   m_pub_keys.clear();
   m_unconfirmed_txs.clear();
   m_payments.clear();
@@ -3569,12 +3567,8 @@ void wallet2::rescan_spent()
   }
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::rescan_blockchain(bool hard, bool refresh, bool keep_key_images)
+void wallet2::rescan_blockchain(bool hard, bool refresh)
 {
-  CHECK_AND_ASSERT_THROW_MES(!hard || !keep_key_images, "Cannot preserve key images on hard rescan");
-  const size_t transfers_cnt = m_transfers.size();
-  crypto::hash transfers_hash{};
-
   if(hard)
   {
     clear();
@@ -3582,16 +3576,11 @@ void wallet2::rescan_blockchain(bool hard, bool refresh, bool keep_key_images)
   }
   else
   {
-    if (keep_key_images && refresh)
-      hash_m_transfers((int64_t) transfers_cnt, transfers_hash);
-    clear_soft(keep_key_images);
+    clear_soft();
   }
 
   if (refresh)
     this->refresh();
-
-  if (refresh && keep_key_images)
-    finish_rescan_bc_keep_key_images(transfers_cnt, transfers_hash);
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::is_transfer_unlocked(const transfer_details& td)
@@ -5771,32 +5760,5 @@ void wallet2::throw_on_rpc_response_error(bool r, const epee::json_rpc::error &e
   THROW_WALLET_EXCEPTION_IF(status.empty(), tools::error::no_connection_to_daemon, method);
 
   THROW_WALLET_EXCEPTION_IF(status == CORE_RPC_STATUS_BUSY, tools::error::daemon_busy, method);
-}
-//----------------------------------------------------------------------------------------------------
-uint64_t wallet2::hash_m_transfers(int64_t transfer_height, crypto::hash &hash) const
-{
-  return wallet::logic::pseudo_functional::hash::hash_m_transfers(transfer_height, m_transfers, hash);
-}
-//----------------------------------------------------------------------------------------------------
-void wallet2::finish_rescan_bc_keep_key_images(uint64_t transfer_height, const crypto::hash &hash)
-{
-  // Compute hash of m_transfers, if differs there had to be BC reorg.
-  crypto::hash new_transfers_hash{};
-  hash_m_transfers((int64_t) transfer_height, new_transfers_hash);
-
-  if (new_transfers_hash != hash)
-  {
-    // Soft-Reset to avoid inconsistency in case of BC reorg.
-    clear_soft(false);  // keep_key_images works only with soft reset.
-    THROW_WALLET_EXCEPTION_IF(true, error::wallet_internal_error, "Transfers changed during rescan, soft or hard rescan is needed");
-  }
-
-  // Restore key images in m_transfers from m_key_images
-  for(auto it = m_key_images.begin(); it != m_key_images.end(); it++)
-  {
-    THROW_WALLET_EXCEPTION_IF(it->second >= m_transfers.size(), error::wallet_internal_error, "Key images cache contains illegal transfer offset");
-    m_transfers[it->second].m_key_image = it->first;
-    m_transfers[it->second].m_key_image_known = true;
-  }
 }
 }
