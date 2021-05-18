@@ -156,41 +156,10 @@ namespace cryptonote {
         LOG_PRINT_L1("Failed to validate address keys");
         return false;
       }
+
+      return true;
     }
-    else
-    {
-      // Old address format
-      std::string buff;
-      if(!string_tools::parse_hexstr_to_binbuff(str, buff))
-        return false;
-
-      if(buff.size()!=sizeof(public_address_outer_blob))
-      {
-        LOG_PRINT_L1("Wrong public address size: " << buff.size() << ", expected size: " << sizeof(public_address_outer_blob));
-        return false;
-      }
-
-      public_address_outer_blob blob = *reinterpret_cast<const public_address_outer_blob*>(buff.data());
-
-
-      if(blob.m_ver > CRYPTONOTE_PUBLIC_ADDRESS_TEXTBLOB_VER)
-      {
-        LOG_PRINT_L1("Unknown version of public address: " << blob.m_ver << ", expected " << CRYPTONOTE_PUBLIC_ADDRESS_TEXTBLOB_VER);
-        return false;
-      }
-
-      if(blob.check_sum != get_account_address_checksum(blob))
-      {
-        LOG_PRINT_L1("Wrong public address checksum");
-        return false;
-      }
-
-      //we success
-      info.address = blob.m_address;
-      info.is_subaddress = false;
-    }
-
-    return true;
+    return false;
   }
   //--------------------------------------------------------------------------------
   bool get_account_address_from_str_or_url(
