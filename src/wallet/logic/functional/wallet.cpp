@@ -35,7 +35,6 @@
 #include <string>
 
 #include "cryptonote/functional/helper.hpp"
-#include "wallet/api/wallet_errors.h"
 
 
 namespace wallet {
@@ -198,9 +197,8 @@ namespace wallet {
    , const std::vector<std::pair<double, double>>& fee_levels
    )
   {
-    uint64_t block_weight_limit = cryptonote::get_max_block_weight(height);
-    uint64_t full_reward_zone = block_weight_limit / 2;
-    THROW_WALLET_EXCEPTION_IF(full_reward_zone == 0, tools::error::wallet_internal_error, "Invalid block weight limit from daemon");
+    const uint64_t block_weight_limit = cryptonote::get_max_block_weight(height);
+    const uint64_t full_reward_zone = block_weight_limit / 2;
 
     std::vector<std::pair<uint64_t, uint64_t>> blocks;
     for (const auto &fee_level: fee_levels)
@@ -215,15 +213,15 @@ namespace wallet {
           MWARNING("Got 0 weight tx from txpool, ignored");
           continue;
         }
-        double this_fee_byte = i.fee / (double)i.weight;
+        const double this_fee_byte = i.fee / (double)i.weight;
         if (this_fee_byte >= our_fee_byte_min)
           priority_weight_min += i.weight;
         if (this_fee_byte >= our_fee_byte_max)
           priority_weight_max += i.weight;
       }
 
-      uint64_t nblocks_min = priority_weight_min / full_reward_zone;
-      uint64_t nblocks_max = priority_weight_max / full_reward_zone;
+      const uint64_t nblocks_min = priority_weight_min / full_reward_zone;
+      const uint64_t nblocks_max = priority_weight_max / full_reward_zone;
       MDEBUG("estimate_backlog: priority_weight " << priority_weight_min << " - " << priority_weight_max << " for "
           << our_fee_byte_min << " - " << our_fee_byte_max << " piconero byte fee, "
           << nblocks_min << " - " << nblocks_max << " blocks at block weight " << full_reward_zone);
