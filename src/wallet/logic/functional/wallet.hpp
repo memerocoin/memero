@@ -46,12 +46,48 @@ namespace logic {
 namespace functional {
 namespace wallet {
 
-  uint64_t estimate_blockchain_height
+  constexpr uint64_t estimate_blockchain_height
   (
    const uint64_t approximate_height
    , const std::optional<uint64_t> target_height
    , const std::optional<uint64_t> local_height
-   );
+   )
+  {
+    // ~num blocks per month
+    const uint64_t blocks_per_month = 288*30;
+
+    uint64_t height = height = approximate_height;
+
+    // we get the max of approximated height and local height.
+    // approximated height is the least of daemon target height
+    // (the max of what the other daemons are claiming is their
+    // height) and the theoretical height based on the local
+    // clock. This will be wrong only if both the local clock
+    // is bad *and* a peer daemon claims a highest height than
+    // the real chain.
+    // local height is the height the local daemon is currently
+    // synced to, it will be lower than the real chain height if
+    // the daemon is currently syncing.
+    // If we use the approximate height we subtract one month as
+    // a safety margin.
+
+    if (target_height) {
+      if (target_height.value() < height)
+        height = target_height.value();
+    } else {
+      // if we couldn't talk to the daemon, check safety margin.
+      if (height > blocks_per_month)
+        height -= blocks_per_month;
+      else
+        height = 0;
+    }
+    if (local_height) {
+      if (local_height.value() > height) {
+        height = local_height.value();
+      }
+    }
+    return height;
+  }
 
   size_t get_num_outputs
   (
@@ -66,9 +102,46 @@ namespace wallet {
 
   std::string get_weight_string(const cryptonote::transaction &tx, const size_t blob_size);
 
-  uint32_t get_subaddress_clamped_sum(const uint32_t idx, const uint32_t extra);
+  constexpr uint32_t get_subaddress_clamped_sum(const uint32_t idx, const uint32_t extra)
+  {
+    constexpr uint32_t uint32_max = std::numeric_limits<uint32_t>::max();
+    if (idx > uint32_max - extra)
+      return uint32_max;
+    return idx + extra;
+  }
 
-  float get_output_relatedness(const transfer_details &td0, const transfer_details &td1);
+  //----------------------------------------------------------------------------------------------------
+  // This returns a handwavy estimation of how much two outputs are related
+  // If they're from the same tx, then they're fully related. From close block
+  // heights, they're kinda related. The actual values don't matter, just
+  // their ordering, but it could become more murky if we add scores later.
+  constexpr float get_output_relatedness(const transfer_details& td0, const transfer_details& td1)
+  {
+    // expensive test, and same tx will fall onto the same block height below
+    if (td0.m_txid == td1.m_txid)
+      return 1.0f;
+
+    // same block height -> possibly tx burst, or same tx (since above is disabled)
+    const int dh = td0.m_block_height > td1.m_block_height ?
+      td0.m_block_height - td1.m_block_height :
+      td1.m_block_height - td0.m_block_height;
+
+    if (dh == 0)
+      return 0.9f;
+
+    // adjacent blocks -> possibly tx burst
+    if (dh == 1)
+      return 0.8f;
+
+    // could extract the payment id, and compare them, but this is a bit expensive too
+
+    // similar block heights
+    if (dh < 10)
+      return 0.2f;
+
+    // don't think these are particularly related
+    return 0.0f;
+  }
 
   std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog
   (
