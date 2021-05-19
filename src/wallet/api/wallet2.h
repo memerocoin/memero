@@ -77,10 +77,13 @@
 class Serialization_portability_wallet_Test;
 class wallet_accessor_test;
 
-using namespace wallet::logic::type::wallet;
-
 namespace tools
 {
+  using namespace wallet::logic::type::wallet;
+  using namespace wallet::logic::type::payment;
+  using namespace wallet::logic::type::transfer;
+  using namespace wallet::logic::type::tx;
+
   class ringdb;
   class wallet2;
   class Notify;

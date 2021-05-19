@@ -93,39 +93,3 @@ namespace payment {
 } // type
 } // logic
 } // wallet
-
-
-using namespace wallet::logic::type::payment;
-
-BOOST_CLASS_VERSION(payment_details, 5)
-BOOST_CLASS_VERSION(pool_payment_details, 1)
-
-namespace boost
-{
-  namespace serialization
-  {
-    using namespace wallet::logic::type::payment;
-
-    template <class Archive>
-    inline void serialize(Archive& a, payment_details& x, const boost::serialization::version_type ver)
-    {
-      a & x.m_tx_hash;
-      a & x.m_amount;
-      a & x.m_block_height;
-      a & x.m_unlock_time;
-      a & x.m_timestamp;
-      a & x.m_subaddr_index;
-      a & x.m_fee;
-      a & x.m_coinbase;
-      a & x.m_amounts;
-    }
-
-    template <class Archive>
-    inline void serialize(Archive& a, pool_payment_details& x, const boost::serialization::version_type ver)
-    {
-      a & x.m_pd;
-      a & x.m_double_spend_seen;
-    }
-
-  }
-}

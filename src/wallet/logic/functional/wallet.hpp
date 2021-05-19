@@ -41,6 +41,8 @@
 
 #include "wallet/logic/type/transfer.hpp" // tranfser_details
 
+using namespace wallet::logic::type::transfer;
+
 namespace wallet {
 namespace logic {
 namespace functional {
