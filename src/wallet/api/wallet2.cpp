@@ -3099,43 +3099,11 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
       cache_data.resize(cache_file_data.cache_data.size());
       crypto::chacha20(cache_file_data.cache_data.data(), cache_file_data.cache_data.size(), m_cache_key, cache_file_data.iv, &cache_data[0]);
 
-      try {
-        bool loaded = false;
-
-        try
-        {
-          std::stringstream iss;
-          iss << cache_data;
-          binary_archive<false> ar(iss);
-          if (::serialization::serialize(ar, *this))
-            if (::serialization::check_stream_state(ar))
-              loaded = true;
-        }
-        catch(...) { }
-
-        if (!loaded)
-        {
-          std::stringstream iss;
-          iss << cache_data;
-          boost::archive::portable_binary_iarchive ar(iss);
-          ar >> *this;
-        }
-      }
-      catch(...)
-      {
-        // try with previous scheme: direct from keys
-        crypto::chacha_key key;
-        generate_chacha_key_from_secret_keys(key);
-        crypto::chacha20(cache_file_data.cache_data.data(), cache_file_data.cache_data.size(), key, cache_file_data.iv, &cache_data[0]);
-        try {
-          std::stringstream iss;
-          iss << cache_data;
-          boost::archive::portable_binary_iarchive ar(iss);
-          ar >> *this;
-        }
-        catch (...)
-        {
-        }
+      std::stringstream iss;
+      iss << cache_data;
+      binary_archive<false> ar(iss);
+      if (::serialization::serialize(ar, *this)) {
+        ::serialization::check_stream_state(ar);
       }
     }
     catch (...)

@@ -132,33 +132,3 @@ namespace wallet {
 } // type
 } // logic
 } // wallet
-
-
-using namespace wallet::logic::type::wallet;
-
-BOOST_CLASS_VERSION(unsigned_tx_set, 0)
-BOOST_CLASS_VERSION(signed_tx_set, 1)
-
-namespace boost
-{
-  namespace serialization
-  {
-    using namespace wallet::logic::type::wallet;
-
-    template <class Archive>
-    inline void serialize(Archive &a, unsigned_tx_set &x, const boost::serialization::version_type ver)
-    {
-      a & x.txes;
-      a & x.transfers;
-    }
-
-    template <class Archive>
-    inline void serialize(Archive &a, signed_tx_set &x, const boost::serialization::version_type ver)
-    {
-      a & x.ptx;
-      a & x.key_images;
-      a & x.tx_key_images.parent();
-    }
-
-  }
-}

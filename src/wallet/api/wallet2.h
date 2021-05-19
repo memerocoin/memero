@@ -77,6 +77,8 @@
 class Serialization_portability_wallet_Test;
 class wallet_accessor_test;
 
+using namespace wallet::logic::type::wallet;
+
 namespace tools
 {
   class ringdb;
@@ -696,4 +698,3 @@ namespace tools
     static std::string default_daemon_address;
   };
 }
-BOOST_CLASS_VERSION(tools::wallet2, 29)
