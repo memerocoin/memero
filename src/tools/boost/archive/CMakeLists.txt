@@ -27,12 +27,14 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(p2p
-  net_node.cpp
-  net_peerlist.cpp
-  p2p_protocol_defs.cpp
+add_library(boost_archive
+  portable_binary_archive.cpp
+  portable_binary_iarchive.cpp
+  portable_binary_oarchive.cpp
+  )
+
+target_link_libraries(boost_archive
+  ${Boost_SERIALIZATION_LIBRARY}
 )
 
-target_link_libraries(p2p
-  boost_archive
-)
+

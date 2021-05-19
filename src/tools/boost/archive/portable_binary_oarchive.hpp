@@ -8,7 +8,7 @@
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
 // portable_binary_oarchive.hpp
 
-// (C) Copyright 2002 Robert Ramey - http://www.rrsd.com . 
+// (C) Copyright 2002 Robert Ramey - http://www.rrsd.com .
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -31,12 +31,12 @@ namespace boost { namespace archive {
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
 // exception to be thrown if integer read from archive doesn't fit
 // variable being loaded
-class portable_binary_oarchive_exception : 
+class portable_binary_oarchive_exception :
     public boost::archive::archive_exception
 {
 public:
     enum exception_code {
-        invalid_flags 
+        invalid_flags
     } m_exception_code ;
     portable_binary_oarchive_exception(exception_code c = invalid_flags ) :
         boost::archive::archive_exception(boost::archive::archive_exception::other_exception),
@@ -59,14 +59,14 @@ public:
 };
 
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
-// "Portable" output binary archive.  This is a variation of the native binary 
+// "Portable" output binary archive.  This is a variation of the native binary
 // archive. it addresses integer size and endienness so that binary archives can
 // be passed across systems. Note:floating point types not addressed here
 
 class portable_binary_oarchive :
     public boost::archive::basic_binary_oprimitive<
         portable_binary_oarchive,
-        std::ostream::char_type, 
+        std::ostream::char_type,
         std::ostream::traits_type
     >,
     public boost::archive::detail::common_oarchive<
@@ -75,7 +75,7 @@ class portable_binary_oarchive :
 {
     typedef boost::archive::basic_binary_oprimitive<
         portable_binary_oarchive,
-        std::ostream::char_type, 
+        std::ostream::char_type,
         std::ostream::traits_type
     > primitive_base_t;
     typedef boost::archive::detail::common_oarchive<
@@ -131,7 +131,7 @@ protected:
 
     // default processing - kick back to base class.  Note the
     // extra stuff to get it passed borland compilers
-    typedef boost::archive::detail::common_oarchive<portable_binary_oarchive> 
+    typedef boost::archive::detail::common_oarchive<portable_binary_oarchive>
         detail_common_oarchive;
 #if BOOST_VERSION > 105800
     template<class T>
@@ -143,7 +143,7 @@ protected:
         const std::string s(t);
         * this << s;
     }
-    // binary files don't include the optional information 
+    // binary files don't include the optional information
     void save_override(
         const boost::archive::class_id_optional_type & /* t */
     ){}
@@ -157,7 +157,7 @@ protected:
         const std::string s(t);
         * this << s;
     }
-    // binary files don't include the optional information 
+    // binary files don't include the optional information
     void save_override(
         const boost::archive::class_id_optional_type & /* t */, int
     ){}
@@ -178,13 +178,13 @@ public:
 
     portable_binary_oarchive(
         std::basic_streambuf<
-            std::ostream::char_type, 
+            std::ostream::char_type,
             std::ostream::traits_type
-        > & bsb, 
+        > & bsb,
         unsigned int flags
     ) :
         primitive_base_t(
-            bsb, 
+            bsb,
             0 != (flags & boost::archive::no_codecvt)
         ),
         archive_base_t(flags),
@@ -207,7 +207,7 @@ public:
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
 // portable_binary_oarchive.cpp
 
-// (C) Copyright 2002-7 Robert Ramey - http://www.rrsd.com . 
+// (C) Copyright 2002-7 Robert Ramey - http://www.rrsd.com .
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -216,80 +216,6 @@ public:
 
 #include <ostream>
 #include <boost/predef/other/endian.h>
-
-namespace boost { namespace archive {
-
-inline void 
-portable_binary_oarchive::save_impl(
-    const boost::intmax_t l,
-    const char maxsize
-){
-    signed char size = 0;
-
-    if(l == 0){
-        this->primitive_base_t::save(size);
-        return;
-    }
-
-    boost::intmax_t ll;
-    bool negative = (l < 0);
-    if(negative)
-        ll = -l;
-    else
-        ll = l;
-
-    do{
-        ll >>= CHAR_BIT;
-        ++size;
-    }while(ll != 0);
-
-    this->primitive_base_t::save(
-        static_cast<signed char>(negative ? -size : size)
-    );
-
-    if(negative)
-        ll = -l;
-    else
-        ll = l;
-    char * cptr = reinterpret_cast<char *>(& ll);
-    #if BOOST_ENDIAN_BIG_BYTE
-        cptr += (sizeof(boost::intmax_t) - size);
-        if(m_flags & endian_little)
-            reverse_bytes(size, cptr);
-    #else
-        if(m_flags & endian_big)
-            reverse_bytes(size, cptr);
-    #endif
-    this->primitive_base_t::save_binary(cptr, size);
-}
-
-inline void 
-portable_binary_oarchive::init(unsigned int flags) {
-    if(m_flags == (endian_big | endian_little)){
-        boost::serialization::throw_exception(
-            portable_binary_oarchive_exception()
-        );
-    }
-    if(0 == (flags & boost::archive::no_header)){
-        // write signature in an archive version independent manner
-        const std::string file_signature(
-            boost::archive::BOOST_ARCHIVE_SIGNATURE()
-        );
-        * this << file_signature;
-        // ignore archive version checking
-        const boost::archive::library_version_type v{};
-        /*
-        // write library version
-        const boost::archive::library_version_type v(
-            boost::archive::BOOST_ARCHIVE_VERSION()
-        );
-        */
-        * this << v;
-    }
-    save(static_cast<unsigned char>(m_flags >> CHAR_BIT));
-}
-
-} }
 
 namespace boost {
 namespace archive {
@@ -300,7 +226,7 @@ namespace detail {
 
 // template class basic_binary_oprimitive<
 //     portable_binary_oarchive,
-//     std::ostream::char_type, 
+//     std::ostream::char_type,
 //     std::ostream::traits_type
 // > ;
 
