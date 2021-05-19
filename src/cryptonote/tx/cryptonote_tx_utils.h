@@ -29,10 +29,12 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
-#include "cryptonote/basic/cryptonote_format_utils.h"
+
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/utility.hpp>
 #include "math/ringct/rctOps.hpp"
+
+#include "cryptonote/basic/cryptonote_format_utils.h"
 
 namespace cryptonote
 {

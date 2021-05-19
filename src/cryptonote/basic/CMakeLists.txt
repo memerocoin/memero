@@ -32,7 +32,9 @@ set(cryptonote_basic_sources
   cryptonote_basic_impl.cpp
   cryptonote_format_utils.cpp
   difficulty.cpp
-  miner.cpp)
+  miner.cpp
+  subaddress_index.cpp
+  )
 
 add_library(cryptonote_basic
   ${cryptonote_basic_sources}

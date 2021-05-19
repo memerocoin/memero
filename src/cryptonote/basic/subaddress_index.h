@@ -28,10 +28,14 @@
 
 #pragma once
 
-#include "tools/epee/include/serialization/keyvalue_serialization.h"
+#include <ostream>
+
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/version.hpp>
-#include <ostream>
+
+#include "tools/serialization/binary_archive.h"
+#include "tools/serialization/containers.h"
+#include "tools/epee/include/serialization/keyvalue_serialization.h"
 
 namespace cryptonote
 {
@@ -39,9 +43,9 @@ namespace cryptonote
   {
     uint32_t major;
     uint32_t minor;
-    bool operator==(const subaddress_index& rhs) const { return !memcmp(this, &rhs, sizeof(subaddress_index)); }
-    bool operator!=(const subaddress_index& rhs) const { return !(*this == rhs); }
-    bool is_zero() const { return major == 0 && minor == 0; }
+    constexpr bool operator==(const subaddress_index& rhs) const { return !memcmp(this, &rhs, sizeof(subaddress_index)); }
+    constexpr bool operator!=(const subaddress_index& rhs) const { return !(*this == rhs); }
+    constexpr bool is_zero() const { return major == 0 && minor == 0; }
 
     BEGIN_SERIALIZE_OBJECT()
       FIELD(major)
@@ -53,13 +57,8 @@ namespace cryptonote
       KV_SERIALIZE(minor)
     END_KV_SERIALIZE_MAP()
   };
-}
 
-namespace cryptonote {
-  inline std::ostream& operator<<(std::ostream& out, const cryptonote::subaddress_index& subaddr_index)
-  {
-    return out << subaddr_index.major << '/' << subaddr_index.minor;
-  }
+  std::ostream& operator<<(std::ostream& out, const subaddress_index& subaddr_index);
 }
 
 namespace std
