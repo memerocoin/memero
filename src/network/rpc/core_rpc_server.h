@@ -209,5 +209,3 @@ private:
     std::map<std::string, uint64_t> m_host_fails_score;
   };
 }
-
-BOOST_CLASS_VERSION(nodetool::node_server<cryptonote::t_cryptonote_protocol_handler<cryptonote::core> >, 1);

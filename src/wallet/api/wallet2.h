@@ -48,7 +48,6 @@
 #include "wallet/logic/type/message_signature.hpp"
 
 #include "cryptonote/basic/account.h"
-#include "cryptonote/basic/account_boost_serialization.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "network/type/http.h"

@@ -607,37 +607,3 @@ private:
   };
 }
 
-namespace boost
-{
-  namespace serialization
-  {
-    template<class archive_t>
-    void serialize(archive_t & ar, cryptonote::tx_memory_pool::tx_details& td, const unsigned int version)
-    {
-      ar & td.blob_size;
-      ar & td.fee;
-      ar & td.tx;
-      ar & td.max_used_block_height;
-      ar & td.max_used_block_id;
-      ar & td.last_failed_height;
-      ar & td.last_failed_id;
-      ar & td.receive_time;
-      ar & td.last_relayed_time;
-      ar & td.relayed;
-      if (version < 11)
-        return;
-      ar & td.kept_by_block;
-      if (version < 12)
-        return;
-      ar & td.do_not_relay;
-      if (version < 13)
-        return;
-      ar & td.weight;
-    }
-  }
-}
-BOOST_CLASS_VERSION(cryptonote::tx_memory_pool, CURRENT_MEMPOOL_ARCHIVE_VER)
-BOOST_CLASS_VERSION(cryptonote::tx_memory_pool::tx_details, CURRENT_MEMPOOL_TX_DETAILS_ARCHIVE_VER)
-
-
-
