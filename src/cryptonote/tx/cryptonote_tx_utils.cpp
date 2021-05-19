@@ -28,22 +28,21 @@
 // 
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "cryptonote_tx_utils.h"
+
 #include <unordered_set>
 #include <random>
-#include "tools/epee/include/include_base_utils.h"
-#include "tools/epee/include/string_tools.h"
-using namespace epee;
 
-#include "tools/common/apply_permutation.h"
-#include "cryptonote_tx_utils.h"
-#include "config/cryptonote.hpp"
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/tx_extra.h"
 #include "math/crypto/crypto.hpp"
 #include "math/crypto/hash.hpp"
 #include "math/ringct/rctSigs.hpp"
+#include "tools/common/apply_permutation.h"
+#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/string_tools.h"
 
-using namespace crypto;
+#include "config/cryptonote.hpp"
 
 namespace cryptonote
 {
@@ -156,7 +155,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::public_key get_destination_view_key_pub(const std::vector<tx_destination_entry> &destinations, const std::optional<cryptonote::account_public_address>& change_addr)
   {
-    account_public_address addr = {null_pkey, null_pkey};
+    account_public_address addr = {crypto::null_pkey, crypto::null_pkey};
     size_t count = 0;
     for (const auto &i : destinations)
     {
@@ -167,7 +166,7 @@ namespace cryptonote
       if (i.addr == addr)
         continue;
       if (count > 0)
-        return null_pkey;
+        return crypto::null_pkey;
       addr = i.addr;
       ++count;
     }
