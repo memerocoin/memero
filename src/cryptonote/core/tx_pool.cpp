@@ -35,7 +35,6 @@
 
 #include "tx_pool.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "cryptonote/basic/cryptonote_boost_serialization.h"
 #include "config/cryptonote.hpp"
 #include "blockchain.h"
 #include "database/interface/locked_txn.h"

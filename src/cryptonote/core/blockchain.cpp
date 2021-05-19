@@ -38,7 +38,6 @@
 #include "tx_pool.h"
 #include "blockchain.h"
 #include "database/interface/blockchain.hpp"
-#include "cryptonote/basic/cryptonote_boost_serialization.h"
 #include "config/cryptonote.hpp"
 #include "cryptonote/basic/miner.h"
 #include "tools/epee/include/misc_language.h"
