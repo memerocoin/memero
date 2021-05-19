@@ -35,6 +35,5 @@ add_library(device
 target_link_libraries(device
     cncrypto
     ringct_basic
-    ${Boost_SERIALIZATION_LIBRARY}
     version
   )
