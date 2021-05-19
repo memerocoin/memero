@@ -34,6 +34,7 @@ set(cryptonote_basic_sources
   difficulty.cpp
   miner.cpp
   subaddress_index.cpp
+  cryptonote_basic.cpp
   )
 
 add_library(cryptonote_basic

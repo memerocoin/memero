@@ -184,14 +184,7 @@ namespace cryptonote
 
   public:
     transaction_prefix(){ set_null(); }
-    void set_null()
-    {
-      version = 1;
-      unlock_time = 0;
-      vin.clear();
-      vout.clear();
-      extra.clear();
-    }
+    void set_null();
   };
 
   class transaction: public transaction_prefix
@@ -335,109 +328,6 @@ namespace cryptonote
     static size_t get_signature_size(const txin_v& tx_in);
   };
 
-  inline transaction::transaction(const transaction &t):
-    transaction_prefix(t),
-    hash_valid(false),
-    prunable_hash_valid(false),
-    blob_size_valid(false),
-    signatures(t.signatures),
-    rct_signatures(t.rct_signatures),
-    unprunable_size(t.unprunable_size.load()),
-    prefix_size(t.prefix_size.load())
-  {
-    if (t.is_hash_valid())
-    {
-      hash = t.hash;
-      set_hash_valid(true);
-    }
-    if (t.is_blob_size_valid())
-    {
-      blob_size = t.blob_size;
-      set_blob_size_valid(true);
-    }
-    if (t.is_prunable_hash_valid())
-    {
-      prunable_hash = t.prunable_hash;
-      set_prunable_hash_valid(true);
-    }
-  }
-
-  inline transaction &transaction::operator=(const transaction &t)
-  {
-    transaction_prefix::operator=(t);
-
-    set_hash_valid(false);
-    set_prunable_hash_valid(false);
-    set_blob_size_valid(false);
-    signatures = t.signatures;
-    rct_signatures = t.rct_signatures;
-    if (t.is_hash_valid())
-    {
-      hash = t.hash;
-      set_hash_valid(true);
-    }
-    if (t.is_prunable_hash_valid())
-    {
-      prunable_hash = t.prunable_hash;
-      set_prunable_hash_valid(true);
-    }
-    if (t.is_blob_size_valid())
-    {
-      blob_size = t.blob_size;
-      set_blob_size_valid(true);
-    }
-    unprunable_size = t.unprunable_size.load();
-    prefix_size = t.prefix_size.load();
-    return *this;
-  }
-
-  inline
-  transaction::transaction()
-  {
-    set_null();
-  }
-
-  inline
-  transaction::~transaction()
-  {
-  }
-
-  inline
-  void transaction::set_null()
-  {
-    transaction_prefix::set_null();
-    signatures.clear();
-    rct_signatures.type = rct::RCTTypeNull;
-    set_hash_valid(false);
-    set_prunable_hash_valid(false);
-    set_blob_size_valid(false);
-    unprunable_size = 0;
-    prefix_size = 0;
-  }
-
-  inline
-  void transaction::invalidate_hashes()
-  {
-    set_hash_valid(false);
-    set_prunable_hash_valid(false);
-    set_blob_size_valid(false);
-  }
-
-  inline
-  size_t transaction::get_signature_size(const txin_v& tx_in)
-  {
-    struct txin_signature_size_visitor : public boost::static_visitor<size_t>
-    {
-      size_t operator()(const txin_gen& txin) const{return 0;}
-      size_t operator()(const txin_to_script& txin) const{return 0;}
-      size_t operator()(const txin_to_scripthash& txin) const{return 0;}
-      size_t operator()(const txin_to_key& txin) const {return txin.key_offsets.size();}
-    };
-
-    return boost::apply_visitor(txin_signature_size_visitor(), tx_in);
-  }
-
-
 
   /************************************************************************/
   /*                                                                      */
@@ -515,13 +405,13 @@ namespace cryptonote
       KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
     END_KV_SERIALIZE_MAP()
 
-    bool operator==(const account_public_address& rhs) const
+    constexpr bool operator==(const account_public_address& rhs) const
     {
       return m_spend_public_key == rhs.m_spend_public_key &&
              m_view_public_key == rhs.m_view_public_key;
     }
 
-    bool operator!=(const account_public_address& rhs) const
+    constexpr bool operator!=(const account_public_address& rhs) const
     {
       return !(*this == rhs);
     }
