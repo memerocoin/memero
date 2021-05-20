@@ -53,7 +53,7 @@ size_t binary_archive<false>::remaining_bytes() {
 }
 
 
-void binary_archive<true>::serialize_blob(const void *buf, size_t len)
+void binary_archive<true>::serialize_blob(const void *buf, const size_t len)
 {
   stream_.write((const char *)buf, len);
 }

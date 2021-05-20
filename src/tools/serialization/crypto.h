@@ -42,8 +42,7 @@
 template <template <bool> class Archive>
 bool do_serialize(Archive<false> &ar, std::vector<crypto::signature> &v)
 {
-  size_t cnt = v.size();
-  v.clear();
+  const size_t cnt = v.size();
 
   // very basic sanity check
   if (ar.remaining_bytes() < cnt*sizeof(crypto::signature)) {
@@ -51,10 +50,8 @@ bool do_serialize(Archive<false> &ar, std::vector<crypto::signature> &v)
     return false;
   }
 
-  v.reserve(cnt);
-  for (size_t i = 0; i < cnt; i++) {
-    v.resize(i+1);
-    ar.serialize_blob(&(v[i]), sizeof(crypto::signature));
+  for (crypto::signature& x: v) {
+    ar.serialize_blob(&x, sizeof(crypto::signature));
     if (!ar.stream().good())
       return false;
   }
@@ -63,13 +60,12 @@ bool do_serialize(Archive<false> &ar, std::vector<crypto::signature> &v)
 
 // write
 template <template <bool> class Archive>
-bool do_serialize(Archive<true> &ar, std::vector<crypto::signature> &v)
+bool do_serialize(Archive<true> &ar, const std::vector<crypto::signature> v)
 {
-  if (0 == v.size()) return true;
+  if (v.empty()) return true;
   ar.begin_string();
-  size_t cnt = v.size();
-  for (size_t i = 0; i < cnt; i++) {
-    ar.serialize_blob(&(v[i]), sizeof(crypto::signature));
+  for (const crypto::signature& x: v) {
+    ar.serialize_blob(&x, sizeof(crypto::signature));
     if (!ar.stream().good())
       return false;
   }

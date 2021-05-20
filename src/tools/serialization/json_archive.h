@@ -130,7 +130,7 @@ struct json_archive<true> : public json_archive_base<std::ostream, true>
     stream_ << std::dec << promote_to_printable_integer_type(v);
   }
 
-  void serialize_blob(void *buf, size_t len);
+  void serialize_blob(const void *buf, const size_t len);
 
   template <class T>
   void serialize_varint(T &v)
