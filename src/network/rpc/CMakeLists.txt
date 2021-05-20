@@ -55,4 +55,5 @@ add_library(daemon_rpc_server
 
 target_link_libraries(daemon_rpc_server
     daemon_messages
+    cryptonote_basic
     )

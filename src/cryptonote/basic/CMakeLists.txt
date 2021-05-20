@@ -35,6 +35,7 @@ set(cryptonote_basic_sources
   miner.cpp
   subaddress_index.cpp
   cryptonote_basic.cpp
+  connection_context.cpp
   )
 
 add_library(cryptonote_basic
