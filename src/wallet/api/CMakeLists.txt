@@ -36,11 +36,11 @@ target_link_libraries(wallet_errors
   serialization
 )
 
-add_library(node_rpc
+add_library(node_rpc_proxy
   node_rpc_proxy.cpp
   )
 
-target_link_libraries(node_rpc
+target_link_libraries(node_rpc_proxy
   epee
   serialization
 )
@@ -58,5 +58,5 @@ target_link_libraries(wallet_api
   cryptonote_tx
   serialization
   wallet_errors
-  node_rpc
+  node_rpc_proxy
 )
