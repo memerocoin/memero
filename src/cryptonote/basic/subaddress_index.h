@@ -63,7 +63,7 @@ namespace std
   template <>
   struct hash<cryptonote::subaddress_index>
   {
-    size_t operator()(const cryptonote::subaddress_index& index ) const
+    constexpr size_t operator()(const cryptonote::subaddress_index& index ) const
     {
       size_t res;
       if (sizeof(size_t) == 8)
