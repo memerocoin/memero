@@ -131,10 +131,8 @@ namespace rct {
     // input B a curve point and output a ge_dsmp which has precomputation applied
     void precomp(ge_dsmp rv, const key &B);
 
-    void addKeys_aGbBcC(key &aGbBcC, const key &a, const key &b, const key &B, const key &c, const key &C);
-    void addKeys_aAbBcC(key &aAbBcC, const key &a, const key &A,
-                        const key &b, const key &B,
-                        const key &c, const key &C);
+    void addKeys_aGbBcC(key &aGbBcC, const key &a, const key &b, const ge_dsmp B, const key &c, const ge_dsmp C);
+    void addKeys_aAbBcC(key &aAbBcC, const key &a, const ge_dsmp A, const key &b, const ge_dsmp B, const key &c, const ge_dsmp C);
 
     //AB = A - B where A, B are curve points
     void subKeys(key &AB, const key &A, const  key &B);
@@ -159,7 +157,6 @@ namespace rct {
     //for ANSL
 
     void hash_to_p3(ge_p3 &hash8_p3, const key &k);
-    key hash_to_key(const key &k);
 
     //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
     // where C= aG + bH
