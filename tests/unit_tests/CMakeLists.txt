@@ -81,6 +81,7 @@ target_link_libraries(unit_tests_basic
   PRIVATE
     cryptonote_basic
     mnemonics
+    serialization
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     GTest::gtest
     GTest::gtest_main
@@ -153,6 +154,7 @@ target_link_libraries(unit_tests_wallet_basic
   PRIVATE
     wallet_logic
     boost_archive
+    serialization
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     GTest::gtest
     GTest::gtest_main
