@@ -2878,7 +2878,7 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
       ? make_optional(_local_height)
       : std::nullopt;
 
-    const uint64_t approximate_height = get_approximate_blockchain_height();
+    const uint64_t approximate_height = 0;
 
     m_refresh_from_block_height = wallet::logic::functional::wallet::estimate_blockchain_height
       (approximate_height, target_height, local_height);
@@ -3367,7 +3367,6 @@ std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> wallet2::
 {
   std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> amount_per_subaddr;
   const uint64_t blockchain_height = get_blockchain_current_height();
-  const uint64_t now = time(NULL);
   for(const transfer_details& td: m_transfers)
   {
     if(td.m_subaddr_index.major == index_major && !is_spent(td, strict) && !td.m_frozen)
@@ -5596,13 +5595,6 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
     return 0;
   }
   return target_height;
-}
-
-uint64_t wallet2::get_approximate_blockchain_height() const
-{
-  uint64_t approx_blockchain_height = m_nettype == TESTNET ? 0 : (time(NULL) - 1600576524)/315;
-  LOG_PRINT_L2("Calculated blockchain height: " << approx_blockchain_height);
-  return approx_blockchain_height;
 }
 
 void wallet2::set_tx_device_aux(const crypto::hash &txid, const std::string &aux)

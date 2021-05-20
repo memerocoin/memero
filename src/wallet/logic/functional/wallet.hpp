@@ -58,7 +58,7 @@ namespace wallet {
     // ~num blocks per month
     const uint64_t blocks_per_month = 288*30;
 
-    uint64_t height = height = approximate_height;
+    uint64_t height = approximate_height;
 
     // we get the max of approximated height and local height.
     // approximated height is the least of daemon target height
