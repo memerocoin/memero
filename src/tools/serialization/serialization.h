@@ -131,12 +131,12 @@ struct serializer{
  * \brief just calls the serialize function defined for ar and v...
  */
 template <class Archive, class T>
-inline bool do_serialize(Archive &ar, T &v)
+bool do_serialize(Archive &ar, T &v)
 {
   return ::serializer<Archive, T>::serialize(ar, v);
 }
 template <class Archive>
-inline bool do_serialize(Archive &ar, bool &v)
+bool do_serialize(Archive &ar, bool &v)
 {
   ar.serialize_blob(&v, sizeof(v));
   return true;
@@ -171,7 +171,7 @@ inline bool do_serialize(Archive &ar, bool &v)
 #define VARIANT_TAG(Archive, Type, Tag)					\
   template <bool W>							\
   struct variant_serialization_traits<Archive<W>, Type> {		\
-    static inline typename Archive<W>::variant_tag_type get_tag() {	\
+    static typename Archive<W>::variant_tag_type get_tag() {	\
       return Tag;							\
     }									\
   }
@@ -382,7 +382,7 @@ namespace serialization {
    * \brief serializes \a v into \a ar
    */
   template <class Archive, class T>
-  inline bool serialize(Archive &ar, T &v)
+  bool serialize(Archive &ar, T &v)
   {
     bool r = do_serialize(ar, v);
     return r && check_stream_state(ar, false);
@@ -393,7 +393,7 @@ namespace serialization {
    * \brief serializes \a v into \a ar
    */
   template <class Archive, class T>
-  inline bool serialize_noeof(Archive &ar, T &v)
+  bool serialize_noeof(Archive &ar, T &v)
   {
     bool r = do_serialize(ar, v);
     return r && check_stream_state(ar, true);

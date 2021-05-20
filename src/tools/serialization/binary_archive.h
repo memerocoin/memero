@@ -176,7 +176,7 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
     }
   }
 
-  void serialize_blob(void *buf, size_t len);
+  void serialize_blob(const void *buf, size_t len);
 
   template <class T>
   void serialize_varint(T &v)

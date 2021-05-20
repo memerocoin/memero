@@ -33,7 +33,7 @@
 #include "serialization.h"
 
 template <template <bool> class Archive>
-inline bool do_serialize(Archive<false>& ar, std::string& str)
+bool do_serialize(Archive<false>& ar, std::string& str)
 {
   size_t size = 0;
   ar.serialize_varint(size);
@@ -43,19 +43,18 @@ inline bool do_serialize(Archive<false>& ar, std::string& str)
     return false;
   }
 
-  std::unique_ptr<std::string::value_type[]> buf(new std::string::value_type[size]);
+  std::unique_ptr<std::string::value_type[]> buf = std::make_unique<std::string::value_type[]>(size);
   ar.serialize_blob(buf.get(), size);
-  str.erase();
-  str.append(buf.get(), size);
+  str.assign(buf.get(), size);
   return true;
 }
 
 
 template <template <bool> class Archive>
-inline bool do_serialize(Archive<true>& ar, std::string& str)
+bool do_serialize(Archive<true>& ar, const std::string str)
 {
-  size_t size = str.size();
+  const size_t size = str.size();
   ar.serialize_varint(size);
-  ar.serialize_blob(const_cast<std::string::value_type*>(str.c_str()), size);
+  ar.serialize_blob(str.c_str(), size);
   return true;
 }
