@@ -29,17 +29,18 @@
 #include "lmdb.hpp"
 
 #include <filesystem>
-#include <boost/format.hpp>
 #include <memory>  // std::unique_ptr
 #include <cstring>  // memcpy
 
-#include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/file_io_utils.h"
-#include "tools/common/util.h"
+#include <boost/format.hpp>
+
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "math/crypto/crypto.hpp"
-#include "tools/epee/include/profile_tools.h"
 #include "math/ringct/rctOps.hpp"
+#include "tools/common/util.h"
+#include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/profile_tools.h"
+#include "tools/epee/include/string_tools.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "blockchain.db.lmdb"

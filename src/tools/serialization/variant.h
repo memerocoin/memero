@@ -45,17 +45,6 @@
 #include <boost/mpl/pop_front.hpp>
 #include "serialization.h"
 
-/*! \struct variant_serialization_triats
- * 
- * \brief used internally to contain a variant's traits/possible types
- *
- * \detailed see the macro VARIANT_TAG in serialization.h:140
- */
-template <class Archive, class T>
-struct variant_serialization_traits
-{
-};
-
 /*! \struct variant_reader
  *
  * \brief reads a variant

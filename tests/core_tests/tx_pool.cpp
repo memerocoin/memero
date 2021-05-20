@@ -28,9 +28,11 @@
 
 #include "tx_pool.h"
 
+#include <limits>
+
 #include <boost/chrono/chrono.hpp>
 #include <boost/thread/thread_only.hpp>
-#include <limits>
+
 #include "tools/epee/include/string_tools.h"
 
 #define INIT_MEMPOOL_TEST()                                   \

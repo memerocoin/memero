@@ -31,7 +31,6 @@
 #pragma once
 
 #include "json_archive.h"
-#include "variant.h"
 
 template <bool W>
 struct debug_archive : public json_archive<W> {

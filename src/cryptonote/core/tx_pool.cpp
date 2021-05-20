@@ -28,22 +28,25 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "tx_pool.h"
+
 #include <algorithm>
 #include <filesystem>
 #include <unordered_set>
 #include <vector>
 
-#include "tx_pool.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "config/cryptonote.hpp"
-#include "blockchain.h"
-#include "database/interface/locked_txn.h"
 #include "database/interface/blockchain.hpp"
+#include "database/interface/locked_txn.h"
+#include "math/crypto/hash.hpp"
+#include "tools/common_basic/perf_timer.h"
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/warnings.h"
-#include "tools/common_basic/perf_timer.h"
-#include "math/crypto/hash.hpp"
+
+#include "blockchain.h"
+
+#include "config/cryptonote.hpp"
 #include "config/lol.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
