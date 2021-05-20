@@ -32,22 +32,31 @@ add_library(wallet_errors
   )
 
 target_link_libraries(wallet_errors
-    cryptonote_tx
-    serialization
-  )
+  cryptonote_tx
+  serialization
+)
 
-add_library(wallet_api
-  wallet2.cpp
+add_library(node_rpc
   node_rpc_proxy.cpp
   )
 
+target_link_libraries(node_rpc
+  epee
+  serialization
+)
+
+add_library(wallet_api
+  wallet2.cpp
+)
+
 target_link_libraries(wallet_api
-    rpc_base
-    mnemonics
-    net
-    wallet_logic
-    ringct
-    cryptonote_tx
-    serialization
-    wallet_errors
-  )
+  rpc_base
+  mnemonics
+  net
+  wallet_logic
+  ringct
+  cryptonote_tx
+  serialization
+  wallet_errors
+  node_rpc
+)
