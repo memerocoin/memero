@@ -49,7 +49,6 @@
 #include "tools/epee/include/warnings.h"
 #include "math/crypto/hash.hpp"
 #include "tools/epee/include/span.h"
-#include "network/rpc/fwd.h"
 
 enum { HAVE_BLOCK_MAIN_CHAIN, HAVE_BLOCK_ALT_CHAIN, HAVE_BLOCK_INVALID };
 
