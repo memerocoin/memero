@@ -1763,20 +1763,13 @@ bool t_rpc_command_executor::print_blockchain_dynamic_stats(uint64_t nblocks)
   cryptonote::COMMAND_RPC_GET_INFO::response ires;
   cryptonote::COMMAND_RPC_GET_BLOCK_HEADERS_RANGE::request bhreq;
   cryptonote::COMMAND_RPC_GET_BLOCK_HEADERS_RANGE::response bhres;
-  cryptonote::COMMAND_RPC_GET_BASE_FEE_ESTIMATE::request fereq;
-  cryptonote::COMMAND_RPC_GET_BASE_FEE_ESTIMATE::response feres;
   epee::json_rpc::error error_resp;
 
   std::string fail_message = "Problem fetching info";
 
-  fereq.grace_blocks = 0;
   if (m_is_rpc)
   {
     if (!m_rpc_client->rpc_request(ireq, ires, "/get_info", fail_message.c_str()))
-    {
-      return true;
-    }
-    if (!m_rpc_client->json_rpc_request(fereq, feres, "get_fee_estimate", fail_message.c_str()))
     {
       return true;
     }
@@ -1788,15 +1781,13 @@ bool t_rpc_command_executor::print_blockchain_dynamic_stats(uint64_t nblocks)
       tools::fail_msg_writer() << make_error(fail_message, ires.status);
       return true;
     }
-    if (!m_rpc_server->on_get_base_fee_estimate(fereq, feres, error_resp) || feres.status != CORE_RPC_STATUS_OK)
-    {
-      tools::fail_msg_writer() << make_error(fail_message, feres.status);
-      return true;
-    }
   }
 
-  tools::msg_writer() << "Height: " << ires.height << ", diff " << cryptonote::diff_t(ires.wide_difficulty) << ", cum. diff " << cryptonote::diff_t(ires.wide_cumulative_difficulty)
-      << ", target " << ires.target << " sec" << ", dyn fee " << cryptonote::print_money(feres.fee) << "/" << ("byte");
+  tools::msg_writer() << "Height: " << ires.height <<
+    ", diff " << cryptonote::diff_t(ires.wide_difficulty) <<
+    ", cum. diff " << cryptonote::diff_t(ires.wide_cumulative_difficulty) <<
+    ", target " << ires.target <<
+    " sec" << ", dyn fee " << cryptonote::print_money(constant::FEE_PER_BYTE) << "/" << ("byte");
 
   if (nblocks > 0)
   {

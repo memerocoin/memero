@@ -3789,30 +3789,6 @@ void wallet2::commit_tx(std::vector<pending_tx>& ptx_vector)
     commit_tx(ptx);
   }
 }
-//----------------------------------------------------------------------------------------------------
-uint64_t wallet2::get_dynamic_base_fee_estimate()
-{
-  uint64_t fee;
-  std::optional<std::string> result = m_node_rpc_proxy.get_dynamic_base_fee_estimate(FEE_ESTIMATE_GRACE_BLOCKS, fee);
-  if (!result)
-    return fee;
-  const uint64_t base_fee = FEE_PER_BYTE;
-  LOG_PRINT_L1("Failed to query base fee, using " << print_money(base_fee));
-  return base_fee;
-}
-//----------------------------------------------------------------------------------------------------
-uint64_t wallet2::get_fee_quantization_mask()
-{
-  bool use_per_byte_fee = true;
-  if (!use_per_byte_fee)
-    return 1;
-
-  uint64_t fee_quantization_mask;
-  std::optional<std::string> result = m_node_rpc_proxy.get_fee_quantization_mask(fee_quantization_mask);
-  if (result)
-    return 1;
-  return fee_quantization_mask;
-}
 //------------------------------------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_min_ring_size()
 {
@@ -4716,7 +4692,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
 
   const uint64_t base_fee  = get_base_fee();
   const uint64_t fee_multiplier = get_fee_multiplier(priority);
-  const uint64_t fee_quantization_mask = get_fee_quantization_mask();
+  const uint64_t fee_quantization_mask = constant::fee_quantization_mask;
 
   // throw if attempting a transaction with no destinations
   THROW_WALLET_EXCEPTION_IF(dsts.empty(), error::zero_destination);

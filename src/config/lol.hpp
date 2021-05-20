@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <string>
 #include <chrono>
+#include "tools/common/powerof.h"
 
 namespace constant
 {
@@ -40,7 +41,7 @@ namespace constant
   constexpr uint64_t DEFAULT_MIN_OUTPUT_VALUE = 2 * COIN;
 
   constexpr uint64_t FEE_PER_BYTE = 300000;
-  constexpr size_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
+  constexpr uint64_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
 
   constexpr size_t BULLETPROOF_MAX_OUTPUTS = 16;
 
@@ -68,6 +69,11 @@ namespace constant
   constexpr size_t LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED = 0;
   constexpr uint64_t LEVIN_INITIAL_MAX_PACKET_SIZE = 256*1024;     // 256 KiB before handshake
   constexpr uint64_t LEVIN_DEFAULT_MAX_PACKET_SIZE = 100000000;      //100MB by default after handshake
+
+  constexpr uint64_t CRYPTONOTE_DISPLAY_DECIMAL_POINT_COPY = 11;
+
+  constexpr uint64_t fee_quantization_mask =
+    tools::PowerOf<10, CRYPTONOTE_DISPLAY_DECIMAL_POINT_COPY - PER_KB_FEE_QUANTIZATION_DECIMALS>::Value;
 
 }
 

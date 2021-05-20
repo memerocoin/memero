@@ -509,30 +509,6 @@ void GetOutputKeys::Response::fromJson(const rapidjson::Value& val)
   GET_FROM_JSON_OBJECT(val, keys, keys);
 }
 
-void GetFeeEstimate::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  INSERT_INTO_JSON_OBJECT(dest, num_grace_blocks, num_grace_blocks);
-}
-
-void GetFeeEstimate::Request::fromJson(const rapidjson::Value& val)
-{
-  GET_FROM_JSON_OBJECT(val, num_grace_blocks, num_grace_blocks);
-}
-
-void GetFeeEstimate::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  INSERT_INTO_JSON_OBJECT(dest, estimated_base_fee, estimated_base_fee);
-  INSERT_INTO_JSON_OBJECT(dest, fee_mask, fee_mask);
-  INSERT_INTO_JSON_OBJECT(dest, size_scale, size_scale);
-}
-
-void GetFeeEstimate::Response::fromJson(const rapidjson::Value& val)
-{
-  GET_FROM_JSON_OBJECT(val, estimated_base_fee, estimated_base_fee);
-  GET_FROM_JSON_OBJECT(val, fee_mask, fee_mask);
-  GET_FROM_JSON_OBJECT(val, size_scale, size_scale);
-}
-
 void GetOutputDistribution::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   INSERT_INTO_JSON_OBJECT(dest, amounts, amounts);

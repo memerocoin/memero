@@ -60,10 +60,6 @@ void NodeRPCProxy::invalidate()
   m_height = 0;
   for (size_t n = 0; n < 256; ++n)
     m_earliest_height[n] = 0;
-  m_dynamic_base_fee_estimate = 0;
-  m_dynamic_base_fee_estimate_cached_height = 0;
-  m_dynamic_base_fee_estimate_grace_blocks = 0;
-  m_fee_quantization_mask = 1;
   m_rpc_version = 0;
   m_target_height = 0;
   m_get_info_time = 0;
@@ -124,74 +120,5 @@ std::optional<std::string> NodeRPCProxy::get_target_height(uint64_t &height)
   height = m_target_height;
   return std::optional<std::string>();
 }
-
-std::optional<std::string> NodeRPCProxy::get_dynamic_base_fee_estimate(uint64_t grace_blocks, uint64_t &fee)
-{
-  uint64_t height;
-
-  std::optional<std::string> result = get_height(height);
-  if (result)
-    return result;
-
-  if (m_offline)
-    return std::optional<std::string>("offline");
-  if (m_dynamic_base_fee_estimate_cached_height != height || m_dynamic_base_fee_estimate_grace_blocks != grace_blocks)
-  {
-    cryptonote::COMMAND_RPC_GET_BASE_FEE_ESTIMATE::request req_t = AUTO_VAL_INIT(req_t);
-    cryptonote::COMMAND_RPC_GET_BASE_FEE_ESTIMATE::response resp_t = AUTO_VAL_INIT(resp_t);
-    req_t.grace_blocks = grace_blocks;
-
-    {
-      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_fee_estimate", req_t, resp_t, m_http_client, rpc_timeout);
-      RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_fee_estimate");
-    }
-
-    m_dynamic_base_fee_estimate = resp_t.fee;
-    m_dynamic_base_fee_estimate_cached_height = height;
-    m_dynamic_base_fee_estimate_grace_blocks = grace_blocks;
-    m_fee_quantization_mask = resp_t.quantization_mask;
-  }
-
-  fee = m_dynamic_base_fee_estimate;
-  return std::optional<std::string>();
-}
-
-std::optional<std::string> NodeRPCProxy::get_fee_quantization_mask(uint64_t &fee_quantization_mask)
-{
-  uint64_t height;
-
-  std::optional<std::string> result = get_height(height);
-  if (result)
-    return result;
-
-  if (m_offline)
-    return std::optional<std::string>("offline");
-  if (m_dynamic_base_fee_estimate_cached_height != height)
-  {
-    cryptonote::COMMAND_RPC_GET_BASE_FEE_ESTIMATE::request req_t = AUTO_VAL_INIT(req_t);
-    cryptonote::COMMAND_RPC_GET_BASE_FEE_ESTIMATE::response resp_t = AUTO_VAL_INIT(resp_t);
-    req_t.grace_blocks = m_dynamic_base_fee_estimate_grace_blocks;
-
-    {
-      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_fee_estimate", req_t, resp_t, m_http_client, rpc_timeout);
-      RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_fee_estimate");
-    }
-
-    m_dynamic_base_fee_estimate = resp_t.fee;
-    m_dynamic_base_fee_estimate_cached_height = height;
-    m_fee_quantization_mask = resp_t.quantization_mask;
-  }
-
-  fee_quantization_mask = m_fee_quantization_mask;
-  if (fee_quantization_mask == 0)
-  {
-    MERROR("Fee quantization mask is 0, forcing to 1");
-    fee_quantization_mask = 1;
-  }
-  return std::optional<std::string>();
-}
-
 
 }

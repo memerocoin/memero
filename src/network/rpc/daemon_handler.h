@@ -123,8 +123,6 @@ class DaemonHandler : public RpcHandler
 
     void handle(const GetOutputKeys::Request& req, GetOutputKeys::Response& res);
 
-    void handle(const GetFeeEstimate::Request& req, GetFeeEstimate::Response& res);
-
     void handle(const GetOutputDistribution::Request& req, GetOutputDistribution::Response& res);
 
     std::string handle(const std::string& request) override final;

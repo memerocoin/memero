@@ -84,7 +84,6 @@ namespace rpc
       {"get_block_header_by_height", handle_message<GetBlockHeaderByHeight>},
       {"get_block_headers_by_height", handle_message<GetBlockHeadersByHeight>},
       {"get_blocks_fast", handle_message<GetBlocksFast>},
-      {"get_dynamic_fee_estimate", handle_message<GetFeeEstimate>},
       {"get_hashes_fast", handle_message<GetHashesFast>},
       {"get_height", handle_message<GetHeight>},
       {"get_info", handle_message<GetInfo>},
@@ -801,15 +800,6 @@ namespace rpc
       return;
     }
 
-    res.status = Message::STATUS_OK;
-  }
-
-  void DaemonHandler::handle(const GetFeeEstimate::Request& req, GetFeeEstimate::Response& res)
-  {
-    res.estimated_base_fee = m_core.get_blockchain_storage().get_dynamic_base_fee_estimate(req.num_grace_blocks);
-
-    res.size_scale = 1; // per byte fee
-    res.fee_mask = Blockchain::get_fee_quantization_mask();
     res.status = Message::STATUS_OK;
   }
 

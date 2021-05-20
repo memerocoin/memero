@@ -553,47 +553,6 @@ namespace cryptonote
     bool check_tx_inputs(transaction& tx, uint64_t& pmax_used_block_height, crypto::hash& max_used_block_id, tx_verification_context &tvc, bool kept_by_block = false) const;
 
     /**
-     * @brief get fee quantization mask
-     *
-     * The dynamic fee may be quantized, to mask out the last decimal places
-     *
-     * @return the fee quantized mask
-     */
-    static uint64_t get_fee_quantization_mask()
-    {
-      return tools::PowerOf<10, CRYPTONOTE_DISPLAY_DECIMAL_POINT - PER_KB_FEE_QUANTIZATION_DECIMALS>::Value;
-    }
-
-    /**
-     * @brief get dynamic per kB or byte fee for a given block weight
-     *
-     * The dynamic fee is based on the block weight in a past window, and
-     * the current block reward. It is expressed by kB before v8, and
-     * per byte from v8.
-     *
-     * @param block_reward the current block reward
-     * @param version hard fork version for rules and constants to use
-     *
-     * @return the fee
-     */
-    static uint64_t get_base_fee();
-
-    /**
-     * @brief get dynamic per kB or byte fee estimate for the next few blocks
-     *
-     * The dynamic fee is based on the block weight in a past window, and
-     * the current block reward. It is expressed by kB before v8, and
-     * per byte from v8.
-     * This function calculates an estimate for a dynamic fee which will be
-     * valid for the next grace_blocks
-     *
-     * @param grace_blocks number of blocks we want the fee to be valid for
-     *
-     * @return the fee estimate
-     */
-    uint64_t get_dynamic_base_fee_estimate(uint64_t grace_blocks) const;
-
-    /**
      * @brief validate a transaction's fee
      *
      * This function validates the fee is enough for the transaction.

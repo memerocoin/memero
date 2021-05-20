@@ -2792,22 +2792,16 @@ void Blockchain::check_ring_signature(const crypto::hash &tx_prefix_hash, const 
 }
 
 //------------------------------------------------------------------
-uint64_t Blockchain::get_base_fee()
-{
-  return constant::FEE_PER_BYTE;
-}
-
-//------------------------------------------------------------------
 bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 {
   uint64_t median = 0;
   uint64_t needed_fee = 0;
   {
-    uint64_t fee_per_byte = get_base_fee();
+    uint64_t fee_per_byte = constant::FEE_PER_BYTE;
     MDEBUG("Using " << print_money(fee_per_byte) << "/byte fee");
     needed_fee = tx_weight * fee_per_byte;
     // quantize fee up to 8 decimals
-    const uint64_t mask = get_fee_quantization_mask();
+    const uint64_t mask = constant::fee_quantization_mask;
     needed_fee = (needed_fee + mask - 1) / mask * mask;
   }
 
@@ -2817,14 +2811,6 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
     return false;
   }
   return true;
-}
-
-//------------------------------------------------------------------
-uint64_t Blockchain::get_dynamic_base_fee_estimate(uint64_t grace_blocks) const
-{
-  const uint64_t fee = get_base_fee();
-  MDEBUG("Estimating " << grace_blocks << "-block fee at " << print_money(fee) << "/" << "byte");
-  return fee;
 }
 
 //------------------------------------------------------------------

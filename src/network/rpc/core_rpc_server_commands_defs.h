@@ -1824,33 +1824,6 @@ namespace cryptonote
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_GET_BASE_FEE_ESTIMATE
-  {
-    struct request_t: public rpc_access_request_base
-    {
-      uint64_t grace_blocks;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_access_request_base)
-        KV_SERIALIZE(grace_blocks)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t: public rpc_access_response_base
-    {
-      uint64_t fee;
-      uint64_t quantization_mask;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_access_response_base)
-        KV_SERIALIZE(fee)
-        KV_SERIALIZE_OPT(quantization_mask, (uint64_t)1)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_GET_ALTERNATE_CHAINS
   {
     struct request_t: public rpc_request_base
