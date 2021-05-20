@@ -30,5 +30,6 @@
 add_library(serialization
   json_object.cpp
   binary_archive.cpp
+  json_archive.cpp
   )
 

@@ -130,14 +130,7 @@ struct json_archive<true> : public json_archive_base<std::ostream, true>
     stream_ << std::dec << promote_to_printable_integer_type(v);
   }
 
-  void serialize_blob(void *buf, size_t len, const char *delimiter="\"") {
-    begin_string(delimiter);
-    for (size_t i = 0; i < len; i++) {
-      unsigned char c = ((unsigned char *)buf)[i];
-      stream_ << std::hex << std::setw(2) << std::setfill('0') << (int)c;
-    }
-    end_string(delimiter);
-  }
+  void serialize_blob(void *buf, size_t len, const char *delimiter="\"");
 
   template <class T>
   void serialize_varint(T &v)
@@ -145,42 +138,17 @@ struct json_archive<true> : public json_archive_base<std::ostream, true>
     stream_ << std::dec << promote_to_printable_integer_type(v);
   }
 
-  void begin_string(const char *delimiter="\"")
-  {
-    stream_ << delimiter;
-  }
+  void begin_string(const char *delimiter="\"");
 
-  void end_string(const char *delimiter="\"")
-  {
-    stream_ << delimiter;
-  }
+  void end_string(const char *delimiter="\"");
 
-  void begin_array(size_t s=0)
-  {
-    inner_array_size_ = s;
-    ++depth_;
-    stream_ << "[ ";
-  }
+  void begin_array(size_t s=0);
 
-  void delimit_array()
-  {
-    stream_ << ", ";
-  }
+  void delimit_array();
 
-  void end_array()
-  {
-    --depth_;
-    if (0 < inner_array_size_)
-    {
-      make_indent();
-    }
-    stream_ << "]";
-  }
+  void end_array();
 
-  void write_variant_tag(const char *t)
-  {
-    tag(t);
-  }
+  void write_variant_tag(const char *t);
 
 private:
   size_t inner_array_size_;

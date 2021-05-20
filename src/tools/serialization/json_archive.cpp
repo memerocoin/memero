@@ -35,52 +35,50 @@
 
 #include "json_archive.h"
 
-json_archive<true>::
-
-  void serialize_blob(void *buf, size_t len, const char *delimiter="\"") {
-    begin_string(delimiter);
-    for (size_t i = 0; i < len; i++) {
-      unsigned char c = ((unsigned char *)buf)[i];
-      stream_ << std::hex << std::setw(2) << std::setfill('0') << (int)c;
-    }
-    end_string(delimiter);
+void json_archive<true>::serialize_blob(void *buf, size_t len, const char *delimiter) {
+  begin_string(delimiter);
+  for (size_t i = 0; i < len; i++) {
+    unsigned char c = ((unsigned char *)buf)[i];
+    stream_ << std::hex << std::setw(2) << std::setfill('0') << (int)c;
   }
+  end_string(delimiter);
+}
 
 
-  void begin_string(const char *delimiter="\"")
+void json_archive<true>::begin_string(const char *delimiter)
+{
+  stream_ << delimiter;
+}
+
+void json_archive<true>::end_string(const char *delimiter)
+{
+  stream_ << delimiter;
+}
+
+void json_archive<true>::begin_array(size_t s)
+{
+  inner_array_size_ = s;
+  ++depth_;
+  stream_ << "[ ";
+}
+
+void json_archive<true>::delimit_array()
+{
+  stream_ << ", ";
+}
+
+void json_archive<true>::end_array()
+{
+  --depth_;
+  if (0 < inner_array_size_)
   {
-    stream_ << delimiter;
+    make_indent();
   }
+  stream_ << "]";
+}
 
-  void end_string(const char *delimiter="\"")
-  {
-    stream_ << delimiter;
-  }
-
-  void begin_array(size_t s=0)
-  {
-    inner_array_size_ = s;
-    ++depth_;
-    stream_ << "[ ";
-  }
-
-  void delimit_array()
-  {
-    stream_ << ", ";
-  }
-
-  void end_array()
-  {
-    --depth_;
-    if (0 < inner_array_size_)
-    {
-      make_indent();
-    }
-    stream_ << "]";
-  }
-
-  void write_variant_tag(const char *t)
-  {
-    tag(t);
-  }
+void json_archive<true>::write_variant_tag(const char *t)
+{
+  tag(t);
+}
 
