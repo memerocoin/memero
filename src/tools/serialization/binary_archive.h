@@ -125,7 +125,7 @@ struct binary_archive<false> : public binary_archive_base<std::istream, false>
     v = ret;
   }
 
-  void serialize_blob(void *buf, size_t len, const char *delimiter="");
+  void serialize_blob(void *buf, size_t len);
 
   template <class T>
   void serialize_varint(T &v)
@@ -147,8 +147,8 @@ struct binary_archive<false> : public binary_archive_base<std::istream, false>
   void delimit_array() { }
   void end_array() { }
 
-  void begin_string(const char *delimiter /*="\""*/) { }
-  void end_string(const char *delimiter   /*="\""*/) { }
+  void begin_string() { }
+  void end_string() { }
 
   void read_variant_tag(variant_tag_type &t);
 
@@ -176,7 +176,7 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
     }
   }
 
-  void serialize_blob(void *buf, size_t len, const char *delimiter="");
+  void serialize_blob(void *buf, size_t len);
 
   template <class T>
   void serialize_varint(T &v)
@@ -195,8 +195,8 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
   void delimit_array() { }
   void end_array() { }
 
-  void begin_string(const char *delimiter="\"") { }
-  void end_string(const char *delimiter="\"") { }
+  void begin_string() { }
+  void end_string() { }
 
   void write_variant_tag(variant_tag_type t);
 };

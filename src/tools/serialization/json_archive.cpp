@@ -35,23 +35,25 @@
 
 #include "json_archive.h"
 
-void json_archive<true>::serialize_blob(void *buf, size_t len, const char *delimiter) {
-  begin_string(delimiter);
+void json_archive<true>::serialize_blob(void *buf, size_t len) {
+  begin_string();
   for (size_t i = 0; i < len; i++) {
     unsigned char c = ((unsigned char *)buf)[i];
     stream_ << std::hex << std::setw(2) << std::setfill('0') << (int)c;
   }
-  end_string(delimiter);
+  end_string();
 }
 
 
-void json_archive<true>::begin_string(const char *delimiter)
+void json_archive<true>::begin_string()
 {
+  const char* delimiter = "\"";
   stream_ << delimiter;
 }
 
-void json_archive<true>::end_string(const char *delimiter)
+void json_archive<true>::end_string()
 {
+  const char* delimiter = "\"";
   stream_ << delimiter;
 }
 

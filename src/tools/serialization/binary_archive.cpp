@@ -35,7 +35,7 @@ void binary_archive<false>::begin_array(size_t &s)
   serialize_varint(s);
 }
 
-void binary_archive<false>::serialize_blob(void *buf, size_t len, const char *delimiter)
+void binary_archive<false>::serialize_blob(void *buf, size_t len)
 {
   stream_.read((char *)buf, len);
 }
@@ -53,7 +53,7 @@ size_t binary_archive<false>::remaining_bytes() {
 }
 
 
-void binary_archive<true>::serialize_blob(void *buf, size_t len, const char *delimiter)
+void binary_archive<true>::serialize_blob(void *buf, size_t len)
 {
   stream_.write((char *)buf, len);
 }

@@ -54,7 +54,7 @@ bool do_serialize(Archive<false> &ar, std::vector<crypto::signature> &v)
   v.reserve(cnt);
   for (size_t i = 0; i < cnt; i++) {
     v.resize(i+1);
-    ar.serialize_blob(&(v[i]), sizeof(crypto::signature), "");
+    ar.serialize_blob(&(v[i]), sizeof(crypto::signature));
     if (!ar.stream().good())
       return false;
   }
@@ -69,7 +69,7 @@ bool do_serialize(Archive<true> &ar, std::vector<crypto::signature> &v)
   ar.begin_string();
   size_t cnt = v.size();
   for (size_t i = 0; i < cnt; i++) {
-    ar.serialize_blob(&(v[i]), sizeof(crypto::signature), "");
+    ar.serialize_blob(&(v[i]), sizeof(crypto::signature));
     if (!ar.stream().good())
       return false;
   }
