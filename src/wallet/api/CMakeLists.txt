@@ -27,10 +27,18 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+add_library(wallet_errors
+  wallet_errors.cpp
+  )
+
+target_link_libraries(wallet_errors
+    cryptonote_tx
+    serialization
+  )
+
 add_library(wallet_api
   wallet2.cpp
   node_rpc_proxy.cpp
-  wallet_errors.cpp
   )
 
 target_link_libraries(wallet_api
@@ -41,4 +49,5 @@ target_link_libraries(wallet_api
     ringct
     cryptonote_tx
     serialization
+    wallet_errors
   )

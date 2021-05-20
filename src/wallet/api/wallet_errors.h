@@ -37,7 +37,6 @@
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "network/rpc/core_rpc_server_commands_defs.h"
 #include "tools/epee/include/include_base_utils.h"
 
 
