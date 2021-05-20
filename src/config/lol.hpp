@@ -73,7 +73,7 @@ namespace constant
   constexpr uint64_t CRYPTONOTE_DISPLAY_DECIMAL_POINT_COPY = 11;
 
   constexpr uint64_t fee_quantization_mask =
-    tools::PowerOf<10, CRYPTONOTE_DISPLAY_DECIMAL_POINT_COPY - PER_KB_FEE_QUANTIZATION_DECIMALS>::Value;
+    tools::powerof(10, CRYPTONOTE_DISPLAY_DECIMAL_POINT_COPY - PER_KB_FEE_QUANTIZATION_DECIMALS);
 
 }
 

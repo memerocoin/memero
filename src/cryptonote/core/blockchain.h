@@ -50,7 +50,6 @@
 #include "tools/epee/include/syncobj.h"
 #include "tools/epee/include/string_tools.h"
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "tools/common/powerof.h"
 #include "tools/common/util.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "network/rpc/core_rpc_server_commands_defs.h"

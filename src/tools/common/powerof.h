@@ -4,23 +4,9 @@
 
 namespace tools
 {
-  template<uint64_t a, uint64_t b>
-  struct PowerOf
-  {
-    enum Data : uint64_t
-    {
-      // a^b = a * a^(b-1)
-      Value = a * PowerOf<a, b - 1>::Value,
-    };
-  };
-
-  template<uint64_t a>
-  struct PowerOf<a, 0>
-  {
-    enum Data : uint64_t
-    {
-      // a^0 = 1
-      Value = 1,
-    };
-  };
+  consteval uint64_t powerof(const uint64_t x, const uint64_t y) {
+    if (x == 0) return 0;
+    if (y == 0) return 1;
+    return x * powerof(x, y - 1);
+  }
 }
