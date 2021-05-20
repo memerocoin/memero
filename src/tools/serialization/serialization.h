@@ -130,13 +130,6 @@ inline bool do_serialize(Archive &ar, bool &v)
   return true;
 }
 
-// Never used in the code base
-// #ifndef __GNUC__
-// #ifndef constexpr
-// #define constexpr
-// #endif
-// #endif
-
 /* the following add a trait to a set and define the serialization DSL*/
 
 /*! \macro BLOB_SERIALIZER
@@ -354,7 +347,7 @@ namespace serialization {
       bool result = false;
       if (s.good())
 	{
-	  std::ios_base::iostate state = s.rdstate();
+	  auto state = s.rdstate();
 	  result = noeof || EOF == s.peek();
 	  s.clear(state);
 	}
