@@ -30,9 +30,6 @@
 
 #include <ostream>
 
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/version.hpp>
-
 #include "tools/serialization/binary_archive.h"
 #include "tools/serialization/containers.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h"

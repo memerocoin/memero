@@ -32,12 +32,6 @@
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#if BOOST_VERSION >= 107400
-#include <boost/serialization/library_version_type.hpp>
-#endif
-#include <boost/serialization/list.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/deque.hpp>
 
 #include "wallet/logic/type/hashchain.hpp"
 #include "wallet/logic/type/payment.hpp"
@@ -335,39 +329,6 @@ namespace tools
 
     uint64_t get_last_block_reward() const { return m_last_block_reward; }
     uint64_t get_device_last_key_image_sync() const { return m_device_last_key_image_sync; }
-
-    template <class t_archive>
-    inline void serialize(t_archive &a, const unsigned int ver)
-    {
-      uint64_t dummy_refresh_height = 0; // moved to keys file
-      a & m_blockchain;
-      a & m_transfers;
-      a & m_account_public_address;
-      a & m_key_images.parent();
-      a & m_unconfirmed_txs.parent();
-      a & m_payments.parent();
-      a & m_tx_keys.parent();
-      a & m_confirmed_txs.parent();
-      a & dummy_refresh_height;
-      a & m_pub_keys.parent();
-      a & m_scanned_pool_txs[0];
-      a & m_scanned_pool_txs[1];
-      a & m_subaddresses.parent();
-      std::unordered_map<cryptonote::subaddress_index, crypto::public_key> dummy_subaddresses_inv;
-      a & dummy_subaddresses_inv;
-      a & m_subaddress_labels;
-      a & m_additional_tx_keys.parent();
-      a & m_attributes.parent();
-      a & m_unconfirmed_payments.parent();
-      a & (std::pair<std::map<std::string, std::string>, std::vector<std::string>>&)m_account_tags;
-      a & m_ring_history_saved;
-      a & m_last_block_reward;
-      a & m_tx_device.parent();
-      a & m_device_last_key_image_sync;
-      a & m_cold_key_images.parent();
-      if(ver < 29)
-        return;
-    }
 
     BEGIN_SERIALIZE_OBJECT()
       MAGIC_FIELD("monero wallet cache")

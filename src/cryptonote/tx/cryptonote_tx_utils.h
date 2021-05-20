@@ -30,8 +30,6 @@
 
 #pragma once
 
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/utility.hpp>
 #include "math/ringct/rctOps.hpp"
 
 #include "cryptonote/basic/cryptonote_format_utils.h"

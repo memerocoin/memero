@@ -31,7 +31,6 @@
 #pragma once
 
 #include <boost/uuid/uuid.hpp>
-#include <boost/serialization/version.hpp>
 
 #include "network/type/i2p_address.h" // needed for serialization
 #include "network/type/tor_address.h" // needed for serialization

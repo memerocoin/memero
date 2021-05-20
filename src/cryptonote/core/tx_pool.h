@@ -36,7 +36,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <queue>
-#include <boost/serialization/version.hpp>
 
 #include "tools/epee/include/span.h"
 #include "tools/epee/include/string_tools.h"

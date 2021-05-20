@@ -31,12 +31,6 @@
 #pragma once
 #include <boost/asio/io_service.hpp>
 #include <boost/function/function_fwd.hpp>
-#if BOOST_VERSION >= 107400
-#include <boost/serialization/library_version_type.hpp>
-#endif
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/version.hpp>
-#include <boost/serialization/list.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/global_fun.hpp>
 #include <boost/multi_index/hashed_index.hpp>
