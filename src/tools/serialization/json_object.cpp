@@ -138,6 +138,11 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::st
   dest.String(i.data(), i.size());
 }
 
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string& i)
+{
+  toJsonValue(dest, std::string_view{i});
+}
+
 void fromJsonValue(const rapidjson::Value& val, std::string& str)
 {
   if (!val.IsString())
@@ -229,9 +234,18 @@ void fromJsonValue(const rapidjson::Value& val, long long& i)
   to_int64(val, i);
 }
 
+
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const unsigned long i) {
+  toJsonValue(dest, static_cast<const unsigned long long>(i));
+}
+
 void fromJsonValue(const rapidjson::Value& val, unsigned long& i)
 {
   to_uint64(val, i);
+}
+
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const long i) {
+  toJsonValue(dest, static_cast<const long long>(i));
 }
 
 void fromJsonValue(const rapidjson::Value& val, long& i)

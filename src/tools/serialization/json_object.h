@@ -115,7 +115,7 @@ struct PARSE_FAIL : public JSON_ERROR
 };
 
 template<typename Type>
-inline constexpr bool is_to_hex()
+constexpr bool is_to_hex()
 {
   return std::is_standard_layout<Type>() && std::is_trivial<Type>() && !std::is_integral<Type>();
 }
@@ -124,7 +124,7 @@ void read_hex(const rapidjson::Value& val, epee::span<std::uint8_t> dest);
 
 // POD to json key
 template <class Type>
-inline typename std::enable_if<is_to_hex<Type>()>::type toJsonKey(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type& pod)
+typename std::enable_if<is_to_hex<Type>()>::type toJsonKey(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type& pod)
 {
   const auto hex = epee::to_hex::array(pod);
   dest.Key(hex.data(), hex.size());
@@ -132,26 +132,22 @@ inline typename std::enable_if<is_to_hex<Type>()>::type toJsonKey(rapidjson::Wri
 
 // POD to json value
 template <class Type>
-inline typename std::enable_if<is_to_hex<Type>()>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type& pod)
+typename std::enable_if<is_to_hex<Type>()>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type& pod)
 {
   const auto hex = epee::to_hex::array(pod);
   dest.String(hex.data(), hex.size());
 }
 
 template <class Type>
-inline typename std::enable_if<is_to_hex<Type>()>::type fromJsonValue(const rapidjson::Value& val, Type& t)
+typename std::enable_if<is_to_hex<Type>()>::type fromJsonValue(const rapidjson::Value& val, Type& t)
 {
   static_assert(std::is_standard_layout<Type>(), "expected standard layout type");
   json::read_hex(val, epee::as_mut_byte_span(t));
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rapidjson::Value& src);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string& i);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, std::string_view i);
-inline void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string& i)
-{
-  toJsonValue(dest, std::string_view{i});
-}
 void fromJsonValue(const rapidjson::Value& val, std::string& str);
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, bool i);
@@ -182,14 +178,11 @@ void fromJsonValue(const rapidjson::Value& val, unsigned long long& i);
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const long long i);
 void fromJsonValue(const rapidjson::Value& val, long long& i);
 
-inline void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const unsigned long i) {
-    toJsonValue(dest, static_cast<unsigned long long>(i));
-}
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const unsigned long i);
+
 void fromJsonValue(const rapidjson::Value& val, unsigned long& i);
 
-inline void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const long i) {
-    toJsonValue(dest, static_cast<long long>(i));
-}
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const long i);
 void fromJsonValue(const rapidjson::Value& val, long& i);
 
 // end integers
@@ -305,7 +298,7 @@ typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type fromJson
 // unfortunately because of how templates work they have to be here.
 
 template <typename Map>
-inline typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Map& map)
+typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Map& map)
 {
   using key_type = typename Map::key_type;
   static_assert(std::is_same<std::string, key_type>() || is_to_hex<key_type>(), "invalid map key type");
@@ -320,7 +313,7 @@ inline typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type toJs
 }
 
 template <typename Map>
-inline typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type fromJsonValue(const rapidjson::Value& val, Map& map)
+typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type fromJsonValue(const rapidjson::Value& val, Map& map)
 {
   if (!val.IsObject())
   {
@@ -342,7 +335,7 @@ inline typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type from
 }
 
 template <typename Vec>
-inline typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Vec &vec)
+typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Vec &vec)
 {
   dest.StartArray();
   for (const auto& t : vec)
@@ -364,7 +357,7 @@ namespace traits
 }
 
 template <typename Vec>
-inline typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type fromJsonValue(const rapidjson::Value& val, Vec& vec)
+typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type fromJsonValue(const rapidjson::Value& val, Vec& vec)
 {
   if (!val.IsArray())
   {
