@@ -28,5 +28,7 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(serialization
-  json_object.cpp)
+  json_object.cpp
+  binary_archive.cpp
+  )
 

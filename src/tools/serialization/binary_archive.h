@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2020, The Monero Project
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -25,7 +25,7 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 /*! \file binary_archive.h
@@ -44,7 +44,7 @@
 /*! \struct binary_archive_base
  *
  * \brief base for the binary archive type
- * 
+ *
  * \detailed It isn't used outside of this file, which its only
  * purpse is to define the functions used for the binary_archive. Its
  * a header, basically. I think it was declared simply to save typing...
@@ -59,7 +59,7 @@ struct binary_archive_base
   typedef uint8_t variant_tag_type;
 
   explicit binary_archive_base(stream_type &s) : stream_(s) { }
-  
+
   /* definition of standard API functions */
   void tag(const char *) { }
   void begin_object() { }
@@ -68,7 +68,7 @@ struct binary_archive_base
   void end_variant() { }
   /* I just want to leave a comment saying how this line really shows
      flaws in the ownership model of many OOP languages, that is all. */
-  stream_type &stream() { return stream_; } 
+  stream_type &stream() { return stream_; }
 
 protected:
   stream_type &stream_;
@@ -124,12 +124,9 @@ struct binary_archive<false> : public binary_archive_base<std::istream, false>
     }
     v = ret;
   }
-  
-  void serialize_blob(void *buf, size_t len, const char *delimiter="")
-  {
-    stream_.read((char *)buf, len);
-  }
-  
+
+  void serialize_blob(void *buf, size_t len, const char *delimiter="");
+
   template <class T>
   void serialize_varint(T &v)
   {
@@ -144,10 +141,7 @@ struct binary_archive<false> : public binary_archive_base<std::istream, false>
       stream_.setstate(std::ios_base::failbit);
   }
 
-  void begin_array(size_t &s)
-  {
-    serialize_varint(s);
-  }
+  void begin_array(size_t &s);
 
   void begin_array() { }
   void delimit_array() { }
@@ -156,17 +150,9 @@ struct binary_archive<false> : public binary_archive_base<std::istream, false>
   void begin_string(const char *delimiter /*="\""*/) { }
   void end_string(const char *delimiter   /*="\""*/) { }
 
-  void read_variant_tag(variant_tag_type &t) {
-    serialize_int(t);
-  }
+  void read_variant_tag(variant_tag_type &t);
 
-  size_t remaining_bytes() {
-    if (!stream_.good())
-      return 0;
-    //std::cerr << "tell: " << stream_.tellg() << std::endl;
-    assert(stream_.tellg() <= eof_pos_);
-    return eof_pos_ - stream_.tellg();
-  }
+  size_t remaining_bytes();
 protected:
   std::streamoff eof_pos_;
 };
@@ -190,10 +176,7 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
     }
   }
 
-  void serialize_blob(void *buf, size_t len, const char *delimiter="")
-  {
-    stream_.write((char *)buf, len);
-  }
+  void serialize_blob(void *buf, size_t len, const char *delimiter="");
 
   template <class T>
   void serialize_varint(T &v)
@@ -207,10 +190,7 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
     typedef std::ostreambuf_iterator<char> it;
     tools::write_varint(it(stream_), v);
   }
-  void begin_array(size_t s)
-  {
-    serialize_varint(s);
-  }
+  void begin_array(size_t s);
   void begin_array() { }
   void delimit_array() { }
   void end_array() { }
@@ -218,7 +198,5 @@ struct binary_archive<true> : public binary_archive_base<std::ostream, true>
   void begin_string(const char *delimiter="\"") { }
   void end_string(const char *delimiter="\"") { }
 
-  void write_variant_tag(variant_tag_type t) {
-    serialize_int(t);
-  }
+  void write_variant_tag(variant_tag_type t);
 };

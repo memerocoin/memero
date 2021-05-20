@@ -39,4 +39,5 @@ target_link_libraries(wallet_api
     wallet_logic
     ringct
     cryptonote_tx
+    serialization
   )
