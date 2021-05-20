@@ -1,21 +1,21 @@
 // Copyright (c) 2014-2020, The Monero Project
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -25,7 +25,7 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
@@ -175,13 +175,7 @@ namespace tools
 
       const cryptonote::transaction& tx() const { return m_tx; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        cryptonote::transaction tx = m_tx;
-        ss << wallet_internal_error::to_string() << ", tx:\n" << cryptonote::obj_to_json_str(tx);
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       cryptonote::transaction m_tx;
@@ -355,13 +349,7 @@ namespace tools
       const crypto::public_key& tx_pub_key() const { return m_tx_pub_key; }
       const cryptonote::account_keys& acc_keys() const { return m_acc_keys; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        cryptonote::transaction tx = m_tx;
-        ss << refresh_error::to_string() << ", tx: " << cryptonote::obj_to_json_str(tx);
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       const cryptonote::transaction m_tx;
@@ -458,14 +446,7 @@ namespace tools
       uint64_t available() const { return m_available; }
       uint64_t tx_amount() const { return m_tx_amount; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string() <<
-          ", available = " << cryptonote::print_money(m_available) <<
-          ", tx_amount = " << cryptonote::print_money(m_tx_amount);
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       uint64_t m_available;
@@ -484,14 +465,7 @@ namespace tools
       uint64_t available() const { return m_available; }
       uint64_t tx_amount() const { return m_tx_amount; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string() <<
-          ", available = " << cryptonote::print_money(m_available) <<
-          ", tx_amount = " << cryptonote::print_money(m_tx_amount);
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       uint64_t m_available;
@@ -512,15 +486,7 @@ namespace tools
       uint64_t tx_amount() const { return m_tx_amount; }
       uint64_t fee() const { return m_fee; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string() <<
-          ", available = " << cryptonote::print_money(m_available) <<
-          ", tx_amount = " << cryptonote::print_money(m_tx_amount) <<
-          ", fee = " << cryptonote::print_money(m_fee);
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       uint64_t m_available;
@@ -542,16 +508,7 @@ namespace tools
       const scanty_outs_t& scanty_outs() const { return m_scanty_outs; }
       size_t mixin_count() const { return m_mixin_count; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string() << ", ring size = " << (m_mixin_count + 1) << ", scanty_outs:";
-        for (const auto& out: m_scanty_outs)
-        {
-          ss << '\n' << cryptonote::print_money(out.first) << " - " << out.second;
-        }
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       scanty_outs_t m_scanty_outs;
@@ -582,40 +539,7 @@ namespace tools
       const destinations_t& destinations() const { return m_destinations; }
       uint64_t unlock_time() const { return m_unlock_time; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string();
-        ss << "\nSources:";
-        for (size_t i = 0; i < m_sources.size(); ++i)
-        {
-          const cryptonote::tx_source_entry& src = m_sources[i];
-          ss << "\n  source " << i << ":";
-          ss << "\n    amount: " << cryptonote::print_money(src.amount);
-          // It's not good, if logs will contain such much data
-          //ss << "\n    real_output: " << src.real_output;
-          //ss << "\n    real_output_in_tx_index: " << src.real_output_in_tx_index;
-          //ss << "\n    real_out_tx_key: " << epee::string_tools::pod_to_hex(src.real_out_tx_key);
-          //ss << "\n    outputs:";
-          //for (size_t j = 0; j < src.outputs.size(); ++j)
-          //{
-          //  const cryptonote::tx_source_entry::output_entry& out = src.outputs[j];
-          //  ss << "\n      " << j << ": " << out.first << ", " << epee::string_tools::pod_to_hex(out.second);
-          //}
-        }
-
-        ss << "\nDestinations:";
-        for (size_t i = 0; i < m_destinations.size(); ++i)
-        {
-          const cryptonote::tx_destination_entry& dst = m_destinations[i];
-          ss << "\n  " << i << ": " << cryptonote::get_account_address_as_str(m_nettype, dst.is_subaddress, dst.addr) << " " <<
-            cryptonote::print_money(dst.amount);
-        }
-
-        ss << "\nunlock_time: " << m_unlock_time;
-
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       sources_t m_sources;
@@ -638,18 +562,7 @@ namespace tools
       const std::string& status() const { return m_status; }
       const std::string& reason() const { return m_reason; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string() << ", status = " << m_status << ", tx:\n";
-        cryptonote::transaction tx = m_tx;
-        ss << cryptonote::obj_to_json_str(tx);
-        if (!m_reason.empty())
-        {
-          ss << " (" << m_reason << ")";
-        }
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       cryptonote::transaction m_tx;
@@ -675,18 +588,7 @@ namespace tools
       const std::vector<cryptonote::tx_destination_entry>& destinations() const { return m_destinations; }
       uint64_t fee() const { return m_fee; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string() <<
-          ", fee = " << cryptonote::print_money(m_fee) <<
-          ", destinations:";
-        for (const auto& dst : m_destinations)
-        {
-          ss << '\n' << cryptonote::print_money(dst.amount) << " -> " << cryptonote::get_account_address_as_str(m_nettype, dst.is_subaddress, dst.addr);
-        }
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       std::vector<cryptonote::tx_destination_entry> m_destinations;
@@ -718,19 +620,7 @@ namespace tools
       uint64_t tx_weight() const { return m_tx_weight; }
       uint64_t tx_weight_limit() const { return m_tx_weight_limit; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << transfer_error::to_string() <<
-          ", tx_weight_limit = " << m_tx_weight_limit <<
-          ", tx weight = " << m_tx_weight;
-        if (m_tx_valid)
-        {
-          cryptonote::transaction tx = m_tx;
-          ss << ", tx:\n" << cryptonote::obj_to_json_str(tx);
-        }
-        return ss.str();
-      }
+      std::string to_string() const;
 
     private:
       cryptonote::transaction m_tx;
@@ -751,12 +641,7 @@ namespace tools
     {
       const std::string& request() const { return m_request; }
 
-      std::string to_string() const
-      {
-        std::ostringstream ss;
-        ss << wallet_logic_error::to_string() << ", request = " << m_request;
-        return ss.str();
-      }
+      std::string to_string() const;
 
     protected:
       explicit wallet_rpc_error(std::string&& loc, const std::string& message, const std::string& request)
@@ -853,8 +738,6 @@ namespace tools
     };
     //----------------------------------------------------------------------------------------------------
 
-#if !defined(_MSC_VER)
-
     template<typename TException, typename... TArgs>
     void throw_wallet_ex(std::string&& loc, const TArgs&... args)
     {
@@ -862,31 +745,6 @@ namespace tools
       LOG_PRINT_L0(e.to_string());
       throw e;
     }
-
-#else
-    #include <boost/preprocessor/repetition/enum_binary_params.hpp>
-    #include <boost/preprocessor/repetition/enum_params.hpp>
-    #include <boost/preprocessor/repetition/repeat_from_to.hpp>
-
-    template<typename TException>
-    void throw_wallet_ex(std::string&& loc)
-    {
-      TException e(std::move(loc));
-      LOG_PRINT_L0(e.to_string());
-      throw e;
-    }
-
-#define GEN_throw_wallet_ex(z, n, data)                                                       \
-    template<typename TException, BOOST_PP_ENUM_PARAMS(n, typename TArg)>                     \
-    void throw_wallet_ex(std::string&& loc, BOOST_PP_ENUM_BINARY_PARAMS(n, const TArg, &arg)) \
-    {                                                                                         \
-      TException e(std::move(loc), BOOST_PP_ENUM_PARAMS(n, arg));                             \
-      LOG_PRINT_L0(e.to_string());                                                            \
-      throw e;                                                                                \
-    }
-
-    BOOST_PP_REPEAT_FROM_TO(1, 6, GEN_throw_wallet_ex, ~)
-#endif
   }
 }
 

@@ -30,6 +30,7 @@
 add_library(wallet_api
   wallet2.cpp
   node_rpc_proxy.cpp
+  wallet_errors.cpp
   )
 
 target_link_libraries(wallet_api
