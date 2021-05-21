@@ -78,7 +78,7 @@ void tree_hash(const uint8_t (*hashes)[HASH_SIZE], size_t count, uint8_t *root_h
   if (count == 1) {
     memcpy(root_hash, hashes, HASH_SIZE);
   } else if (count == 2) {
-    sha3(hashes, 2 * HASH_SIZE, root_hash);
+    sha3((const uint8_t*)hashes, 2 * HASH_SIZE, root_hash);
   } else {
     size_t i, j;
 

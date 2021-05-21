@@ -6,7 +6,7 @@ void handleErrors(void) {
   exit(1);
 }
 
-void sha3(const void *data, size_t length, uint8_t *hash)
+void sha3(const uint8_t *data, size_t length, uint8_t *hash)
 {
   EVP_MD_CTX *mdctx;
 
@@ -23,7 +23,7 @@ void sha3(const void *data, size_t length, uint8_t *hash)
   }
 
   /* the digest context ctx is automatically cleaned up. */
-  if(1 != EVP_DigestFinal(mdctx, (unsigned char*)hash, NULL)) {
+  if(1 != EVP_DigestFinal(mdctx, hash, NULL)) {
     handleErrors();
   }
 
@@ -31,9 +31,9 @@ void sha3(const void *data, size_t length, uint8_t *hash)
 }
 
 void sha3_as_keccak1600(const uint8_t *in, size_t inlen, uint8_t *md) {
-  sha3((const void*) in, inlen, md);
+  sha3(in, inlen, md);
 }
 
 void sha3_as_keccak_256(const uint8_t *in, size_t inlen, uint8_t *md) {
-  sha3((const void*) in, inlen, md);
+  sha3(in, inlen, md);
 }
