@@ -40,8 +40,8 @@ namespace cryptonote
   {
     uint32_t major;
     uint32_t minor;
-    constexpr bool operator==(const subaddress_index& rhs) const { return !memcmp(this, &rhs, sizeof(subaddress_index)); }
-    constexpr bool operator!=(const subaddress_index& rhs) const { return !(*this == rhs); }
+    bool operator==(const subaddress_index& rhs) const { return !memcmp(this, &rhs, sizeof(subaddress_index)); }
+    bool operator!=(const subaddress_index& rhs) const { return !(*this == rhs); }
     constexpr bool is_zero() const { return major == 0 && minor == 0; }
 
     BEGIN_SERIALIZE_OBJECT()

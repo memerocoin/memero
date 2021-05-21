@@ -112,38 +112,7 @@ namespace wallet {
     return idx + extra;
   }
 
-  //----------------------------------------------------------------------------------------------------
-  // This returns a handwavy estimation of how much two outputs are related
-  // If they're from the same tx, then they're fully related. From close block
-  // heights, they're kinda related. The actual values don't matter, just
-  // their ordering, but it could become more murky if we add scores later.
-  constexpr float get_output_relatedness(const transfer_details& td0, const transfer_details& td1)
-  {
-    // expensive test, and same tx will fall onto the same block height below
-    if (td0.m_txid == td1.m_txid)
-      return 1.0f;
-
-    // same block height -> possibly tx burst, or same tx (since above is disabled)
-    const int dh = td0.m_block_height > td1.m_block_height ?
-      td0.m_block_height - td1.m_block_height :
-      td1.m_block_height - td0.m_block_height;
-
-    if (dh == 0)
-      return 0.9f;
-
-    // adjacent blocks -> possibly tx burst
-    if (dh == 1)
-      return 0.8f;
-
-    // could extract the payment id, and compare them, but this is a bit expensive too
-
-    // similar block heights
-    if (dh < 10)
-      return 0.2f;
-
-    // don't think these are particularly related
-    return 0.0f;
-  }
+  float get_output_relatedness(const transfer_details& td0, const transfer_details& td1);
 
   std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog
   (
