@@ -295,7 +295,7 @@ namespace crypto {
   const extern crypto::secret_key null_skey;
 }
 
-CRYPTO_MAKE_HASHABLE(public_key)
-CRYPTO_MAKE_HASHABLE(secret_key)
-CRYPTO_MAKE_HASHABLE(key_image)
-CRYPTO_MAKE_COMPARABLE(signature)
+CRYPTO_MAKE_HASHABLE_HEADER(public_key)
+CRYPTO_MAKE_HASHABLE_HEADER(secret_key)
+CRYPTO_MAKE_HASHABLE_HEADER(key_image)
+CRYPTO_MAKE_COMPARABLE_HEADER(signature)

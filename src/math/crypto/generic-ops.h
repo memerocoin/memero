@@ -35,32 +35,48 @@
 #include <functional>
 #include <sodium/crypto_verify_32.h>
 
-#define CRYPTO_MAKE_COMPARABLE(type) \
-namespace crypto { \
-  inline bool operator==(const type &_v1, const type &_v2) { \
-    return !memcmp(&_v1, &_v2, sizeof(_v1)); \
-  } \
-  inline bool operator!=(const type &_v1, const type &_v2) { \
-    return !operator==(_v1, _v2); \
-  } \
-}
+#define CRYPTO_MAKE_COMPARABLE_HEADER(type)             \
+  namespace crypto {                                    \
+    bool operator==(const type &_v1, const type &_v2);  \
+    bool operator!=(const type &_v1, const type &_v2);  \
+  }
 
-#define CRYPTO_DEFINE_HASH_FUNCTIONS(type) \
-namespace crypto { \
-  static_assert(sizeof(std::size_t) <= sizeof(type), "Size of " #type " must be at least that of size_t"); \
-  inline std::size_t hash_value(const type &_v) { \
-    return reinterpret_cast<const std::size_t &>(_v); \
-  } \
-} \
-namespace std { \
-  template<> \
-  struct hash<crypto::type> { \
-    std::size_t operator()(const crypto::type &_v) const { \
+#define CRYPTO_MAKE_COMPARABLE_CPP(type)                \
+  namespace crypto {                                    \
+    bool operator==(const type &_v1, const type &_v2) { \
+      return !memcmp(&_v1, &_v2, sizeof(_v1));          \
+    }                                                   \
+    bool operator!=(const type &_v1, const type &_v2) { \
+      return !operator==(_v1, _v2);                     \
+    }                                                   \
+  }
+
+#define CRYPTO_DEFINE_HASH_FUNCTIONS_HEADER(type)                       \
+  namespace crypto {                                                    \
+    static_assert(sizeof(std::size_t) <= sizeof(type),                  \
+                  "Size of " #type " must be at least that of size_t"); \
+    std::size_t hash_value(const type &_v);                             \
+  }                                                                     \
+  namespace std {                                                       \
+    template <>                                                         \
+    struct hash<crypto::type> {                                         \
+      std::size_t operator()(const crypto::type &_v) const {;           \
+        return crypto::hash_value(_v);                                  \
+      }                                                                 \
+    };                                                                  \
+  }
+
+#define CRYPTO_DEFINE_HASH_FUNCTIONS_CPP(type)          \
+  namespace crypto {                                    \
+    std::size_t hash_value(const type &_v) {            \
       return reinterpret_cast<const std::size_t &>(_v); \
-    } \
-  }; \
-}
+    }                                                   \
+  }
 
-#define CRYPTO_MAKE_HASHABLE(type) \
-CRYPTO_MAKE_COMPARABLE(type) \
-CRYPTO_DEFINE_HASH_FUNCTIONS(type)
+#define CRYPTO_MAKE_HASHABLE_HEADER(type)       \
+  CRYPTO_MAKE_COMPARABLE_HEADER(type)           \
+  CRYPTO_DEFINE_HASH_FUNCTIONS_HEADER(type)
+
+#define CRYPTO_MAKE_HASHABLE_CPP(type)          \
+  CRYPTO_MAKE_COMPARABLE_CPP(type)              \
+  CRYPTO_DEFINE_HASH_FUNCTIONS_CPP(type)

@@ -664,3 +664,8 @@ namespace crypto {
     return sc_isnonzero(&h) == 0;
   }
 }
+
+CRYPTO_MAKE_HASHABLE_CPP(public_key)
+CRYPTO_MAKE_HASHABLE_CPP(secret_key)
+CRYPTO_MAKE_HASHABLE_CPP(key_image)
+CRYPTO_MAKE_COMPARABLE_CPP(signature)

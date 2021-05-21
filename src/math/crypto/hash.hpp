@@ -74,5 +74,5 @@ namespace crypto {
   constexpr static crypto::hash8 null_hash8 = {};
 }
 
-CRYPTO_MAKE_HASHABLE(hash)
-CRYPTO_MAKE_COMPARABLE(hash8)
+CRYPTO_MAKE_HASHABLE_HEADER(hash)
+CRYPTO_MAKE_COMPARABLE_HEADER(hash8)
