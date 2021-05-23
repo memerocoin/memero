@@ -34,6 +34,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <numeric>
 
 #include <boost/multiprecision/cpp_int.hpp>
 
