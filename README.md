@@ -24,13 +24,13 @@ Specifications
 
 # [How to build](https://lolnero.org/build.html)
 
-# There's no built in seed nodes
+# Seed nodes
 
 Here are some nodes run by the community:
 
 * `128.199.161.251` by fuwa
 
-Pick one and start the daemon as:
+# How to connect to the network
 
 ```
 lolnerod --seed-node SOME_SEED_NODE_IP
