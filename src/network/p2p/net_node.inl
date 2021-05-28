@@ -580,7 +580,6 @@ namespace nodetool
     }
     else
     {
-      full_addrs.insert("128.199.161.251");
     }
     return full_addrs;
   }
