@@ -40,6 +40,7 @@ add_library( epee
   src/connection_basic.cpp
   src/buffer.cpp
   src/net_ssl.cpp
+  src/net/net_parse_helpers.cpp
 )
 
 if (USE_READLINE AND (GNU_READLINE_FOUND))
