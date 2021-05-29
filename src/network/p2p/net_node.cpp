@@ -67,20 +67,6 @@ namespace
         return 0;
     }
 
-    template<typename T>
-    epee::net_utils::network_address get_address(const std::string_view value)
-    {
-        expect<T> address = T::make(value);
-        if (!address)
-        {
-            MERROR(
-                "Failed to parse " << epee::net_utils::zone_to_string(T::get_zone()) << " address \"" << value << "\": " << address.error().message()
-            );
-            return {};
-        }
-        return {std::move(*address)};
-    }
-
     bool start_socks(std::shared_ptr<net::socks::client> client, const boost::asio::ip::tcp::endpoint& proxy, const epee::net_utils::network_address& remote)
     {
         CHECK_AND_ASSERT_MES(client != nullptr, false, "Unexpected null client");
@@ -111,6 +97,18 @@ namespace
 
 namespace nodetool
 {
+  boost::asio::ip::address_v4 make_address_v4_from_v6(const boost::asio::ip::address_v6& a)
+  {
+    const auto &bytes = a.to_bytes();
+    uint32_t v4 = 0;
+    v4 = (v4 << 8) | bytes[12];
+    v4 = (v4 << 8) | bytes[13];
+    v4 = (v4 << 8) | bytes[14];
+    v4 = (v4 << 8) | bytes[15];
+    return boost::asio::ip::address_v4(v4);
+  }
+
+
     const command_line::arg_descriptor<std::string> arg_p2p_bind_ip        = {"p2p-bind-ip", "Interface for p2p network protocol (IPv4)", "0.0.0.0"};
     const command_line::arg_descriptor<std::string> arg_p2p_bind_ipv6_address        = {"p2p-bind-ipv6-address", "Interface for p2p network protocol (IPv6)", "::"};
     const command_line::arg_descriptor<std::string, false, true> arg_p2p_bind_port = {
@@ -361,4 +359,57 @@ namespace nodetool
 
         return std::nullopt;
     }
+
+  //-----------------------------------------------------------------------------------
+  bool append_net_address(
+      std::vector<epee::net_utils::network_address> & seed_nodes
+    , std::string const & addr
+    , uint16_t default_port
+    )
+  {
+    using namespace boost::asio;
+
+    std::string host = addr;
+    std::string port = std::to_string(default_port);
+    size_t colon_pos = addr.find_last_of(':');
+    size_t dot_pos = addr.find_last_of('.');
+    size_t square_brace_pos = addr.find('[');
+
+    // IPv6 will have colons regardless.  IPv6 and IPv4 address:port will have a colon but also either a . or a [
+    // as IPv6 addresses specified as address:port are to be specified as "[addr:addr:...:addr]:port"
+    // One may also specify an IPv6 address as simply "[addr:addr:...:addr]" without the port; in that case
+    // the square braces will be stripped here.
+    if ((std::string::npos != colon_pos && std::string::npos != dot_pos) || std::string::npos != square_brace_pos)
+    {
+      net::get_network_address_host_and_port(addr, host, port);
+    }
+    MINFO("Resolving node address: host=" << host << ", port=" << port);
+
+    io_service io_srv;
+    ip::tcp::resolver resolver(io_srv);
+    ip::tcp::resolver::query query(host, port, boost::asio::ip::tcp::resolver::query::canonical_name);
+    boost::system::error_code ec;
+    ip::tcp::resolver::iterator i = resolver.resolve(query, ec);
+    CHECK_AND_ASSERT_MES(!ec, false, "Failed to resolve host name '" << host << "': " << ec.message() << ':' << ec.value());
+
+    ip::tcp::resolver::iterator iend;
+    for (; i != iend; ++i)
+    {
+      ip::tcp::endpoint endpoint = *i;
+      if (endpoint.address().is_v4())
+      {
+        epee::net_utils::network_address na{epee::net_utils::ipv4_network_address{boost::asio::detail::socket_ops::host_to_network_long(endpoint.address().to_v4().to_ulong()), endpoint.port()}};
+        seed_nodes.push_back(na);
+        MINFO("Added node: " << na.str());
+      }
+      else
+      {
+        epee::net_utils::network_address na{epee::net_utils::ipv6_network_address{endpoint.address().to_v6(), endpoint.port()}};
+        seed_nodes.push_back(na);
+        MINFO("Added node: " << na.str());
+      }
+    }
+    return true;
+  }
+
 }

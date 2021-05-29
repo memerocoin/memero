@@ -68,19 +68,6 @@
 
 #define NET_MAKE_IP(b1,b2,b3,b4)  ((LPARAM)(((DWORD)(b1)<<24)+((DWORD)(b2)<<16)+((DWORD)(b3)<<8)+((DWORD)(b4))))
 
-#define MIN_WANTED_SEED_NODES 12
-
-static inline boost::asio::ip::address_v4 make_address_v4_from_v6(const boost::asio::ip::address_v6& a)
-{
-  const auto &bytes = a.to_bytes();
-  uint32_t v4 = 0;
-  v4 = (v4 << 8) | bytes[12];
-  v4 = (v4 << 8) | bytes[13];
-  v4 = (v4 << 8) | bytes[14];
-  v4 = (v4 << 8) | bytes[15];
-  return boost::asio::ip::address_v4(v4);
-}
-
 namespace nodetool
 {
   template<class t_payload_net_handler>
@@ -97,7 +84,7 @@ namespace nodetool
     }
   }
   //-----------------------------------------------------------------------------------
-  inline bool append_net_address(std::vector<epee::net_utils::network_address> & seed_nodes, std::string const & addr, uint16_t default_port);
+  bool append_net_address(std::vector<epee::net_utils::network_address> & seed_nodes, std::string const & addr, uint16_t default_port);
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
   void node_server<t_payload_net_handler>::init_options(boost::program_options::options_description& desc)
@@ -515,73 +502,10 @@ namespace nodetool
     return true;
   }
   //-----------------------------------------------------------------------------------
-  inline bool append_net_address(
-      std::vector<epee::net_utils::network_address> & seed_nodes
-    , std::string const & addr
-    , uint16_t default_port
-    )
-  {
-    using namespace boost::asio;
-
-    std::string host = addr;
-    std::string port = std::to_string(default_port);
-    size_t colon_pos = addr.find_last_of(':');
-    size_t dot_pos = addr.find_last_of('.');
-    size_t square_brace_pos = addr.find('[');
-
-    // IPv6 will have colons regardless.  IPv6 and IPv4 address:port will have a colon but also either a . or a [
-    // as IPv6 addresses specified as address:port are to be specified as "[addr:addr:...:addr]:port"
-    // One may also specify an IPv6 address as simply "[addr:addr:...:addr]" without the port; in that case
-    // the square braces will be stripped here.
-    if ((std::string::npos != colon_pos && std::string::npos != dot_pos) || std::string::npos != square_brace_pos)
-    {
-      net::get_network_address_host_and_port(addr, host, port);
-    }
-    MINFO("Resolving node address: host=" << host << ", port=" << port);
-
-    io_service io_srv;
-    ip::tcp::resolver resolver(io_srv);
-    ip::tcp::resolver::query query(host, port, boost::asio::ip::tcp::resolver::query::canonical_name);
-    boost::system::error_code ec;
-    ip::tcp::resolver::iterator i = resolver.resolve(query, ec);
-    CHECK_AND_ASSERT_MES(!ec, false, "Failed to resolve host name '" << host << "': " << ec.message() << ':' << ec.value());
-
-    ip::tcp::resolver::iterator iend;
-    for (; i != iend; ++i)
-    {
-      ip::tcp::endpoint endpoint = *i;
-      if (endpoint.address().is_v4())
-      {
-        epee::net_utils::network_address na{epee::net_utils::ipv4_network_address{boost::asio::detail::socket_ops::host_to_network_long(endpoint.address().to_v4().to_ulong()), endpoint.port()}};
-        seed_nodes.push_back(na);
-        MINFO("Added node: " << na.str());
-      }
-      else
-      {
-        epee::net_utils::network_address na{epee::net_utils::ipv6_network_address{endpoint.address().to_v6(), endpoint.port()}};
-        seed_nodes.push_back(na);
-        MINFO("Added node: " << na.str());
-      }
-    }
-    return true;
-  }
-
-  //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
   std::set<std::string> node_server<t_payload_net_handler>::get_ip_seed_nodes() const
   {
-    std::set<std::string> full_addrs;
-    if (m_nettype == cryptonote::TESTNET)
-    {
-      // full_addrs.insert("207.254.29.107:11180");
-    }
-    else if (m_nettype == cryptonote::FAKECHAIN)
-    {
-    }
-    else
-    {
-    }
-    return full_addrs;
+    return {};
   }
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>

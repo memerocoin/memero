@@ -65,6 +65,8 @@ namespace epee
 {
 namespace net_utils
 {
+  uint32_t make_address_v4_from_v6(const boost::asio::ip::address_v6& a);
+
 	class ipv4_network_address
 	{
 		uint32_t m_ip;

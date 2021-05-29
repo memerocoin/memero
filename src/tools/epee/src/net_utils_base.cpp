@@ -6,19 +6,19 @@
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/net/local_ip.h"
 
-static inline uint32_t make_address_v4_from_v6(const boost::asio::ip::address_v6& a)
-{
-  const auto &bytes = a.to_bytes();
-  uint32_t v4 = 0;
-  v4 = (v4 << 8) | bytes[12];
-  v4 = (v4 << 8) | bytes[13];
-  v4 = (v4 << 8) | bytes[14];
-  v4 = (v4 << 8) | bytes[15];
-  return htonl(v4);
-}
 
 namespace epee { namespace net_utils
 {
+  uint32_t make_address_v4_from_v6(const boost::asio::ip::address_v6& a)
+  {
+    const auto &bytes = a.to_bytes();
+    uint32_t v4 = 0;
+    v4 = (v4 << 8) | bytes[12];
+    v4 = (v4 << 8) | bytes[13];
+    v4 = (v4 << 8) | bytes[14];
+    v4 = (v4 << 8) | bytes[15];
+    return htonl(v4);
+  }
 	bool ipv4_network_address::equal(const ipv4_network_address& other) const noexcept
 	{ return is_same_host(other) && port() == other.port(); }
 
