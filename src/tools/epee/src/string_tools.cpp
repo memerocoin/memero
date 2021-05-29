@@ -36,6 +36,130 @@ namespace epee
 {
 namespace string_tools
 {
+  //----------------------------------------------------------------------------
+  std::basic_string<uint8_t> string_to_uint8_t_string(const std::string& s) {
+    return std::basic_string((uint8_t*)s.data(), s.size());
+  };
+  //----------------------------------------------------------------------------
+  std::string buff_to_hex_nodelimer(const std::string& src)
+  {
+    return to_hex::string(to_byte_span(to_span(src)));
+  }
+  //----------------------------------------------------------------------------
+  bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)
+  {
+    return from_hex::to_string(res, s);
+  }
+  //----------------------------------------------------------------------------
+  bool parse_peer_from_string(uint32_t& ip, uint16_t& port, const std::string& addres)
+  {
+    //parse ip and address
+    std::string::size_type p = addres.find(':');
+    std::string ip_str, port_str;
+    if(p == std::string::npos)
+    {
+      port = 0;
+      ip_str = addres;
+    }
+    else
+    {
+      ip_str = addres.substr(0, p);
+      port_str = addres.substr(p+1, addres.size());
+    }
+
+    if(!get_ip_int32_from_string(ip, ip_str))
+    {
+      return false;
+    }
+
+    if(p != std::string::npos && !get_xtype_from_string(port, port_str))
+    {
+      return false;
+    }
+    return true;
+  }
+
+	std::string num_to_string_fast(int64_t val)
+	{
+		/*
+		char  buff[30] = {0};
+		i64toa_s(val, buff, sizeof(buff)-1, 10);
+		return buff;*/
+		return boost::lexical_cast<std::string>(val);
+	}
+	//----------------------------------------------------------------------------
+	bool compare_no_case(const std::string& str1, const std::string& str2)
+	{
+		return !boost::iequals(str1, str2);
+	}
+	//----------------------------------------------------------------------------
+	bool trim_left(std::string& str)
+	{
+		for(std::string::iterator it = str.begin(); it!= str.end() && isspace(static_cast<unsigned char>(*it));)
+			str.erase(str.begin());
+
+		return true;
+	}
+	//----------------------------------------------------------------------------
+	bool trim_right(std::string& str)
+	{
+
+		for(std::string::reverse_iterator it = str.rbegin(); it!= str.rend() && isspace(static_cast<unsigned char>(*it));)
+			str.erase( --((it++).base()));
+
+		return true;
+	}
+	//----------------------------------------------------------------------------
+	std::string& trim(std::string& str)
+	{
+
+		trim_left(str);
+		trim_right(str);
+		return str;
+	}
+  //----------------------------------------------------------------------------
+  std::string trim(const std::string& str_)
+  {
+    std::string str = str_;
+    trim_left(str);
+    trim_right(str);
+    return str;
+  }
+  //----------------------------------------------------------------------------
+  std::string pad_string(std::string s, size_t n, char c, bool prepend)
+  {
+    if (s.size() < n)
+    {
+      if (prepend)
+        s = std::string(n - s.size(), c) + s;
+      else
+        s.append(n - s.size(), c);
+    }
+    return s;
+  }
+  //----------------------------------------------------------------------------
+	std::string get_extension(const std::string& str)
+	{
+		std::string res;
+		std::string::size_type pos = str.rfind('.');
+		if(std::string::npos == pos)
+			return res;
+
+		res = str.substr(pos+1, str.size()-pos);
+		return res;
+	}
+	//----------------------------------------------------------------------------
+	std::string cut_off_extension(const std::string& str)
+	{
+		std::string res;
+		std::string::size_type pos = str.rfind('.');
+		if(std::string::npos == pos)
+			return str;
+
+		res = str.substr(0, pos);
+		return res;
+	}
+
   std::string get_ip_string_from_int32(uint32_t ip)
   {
     in_addr adr;
@@ -75,7 +199,7 @@ namespace string_tools
 
     std::shuffle(str.begin(), str.end(), generator);
 
-    return str.substr(0, 32);    // assumes 32 < number of characters in str         
+    return str.substr(0, 32);    // assumes 32 < number of characters in str
   }
 
   std::filesystem::path random_temp_path()
@@ -84,4 +208,3 @@ namespace string_tools
   }
 } // string_tools
 } // epee
-
