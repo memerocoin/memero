@@ -359,7 +359,6 @@ namespace nodetool
     bool make_new_connection_from_anchor_peerlist(const std::vector<anchor_peerlist_entry>& anchor_peerlist);
     bool make_new_connection_from_peerlist(network_zone& zone, bool use_white_list);
     bool try_to_connect_and_handshake_with_new_peer(const epee::net_utils::network_address& na, bool just_take_peerlist = false, uint64_t last_seen_stamp = 0, PeerType peer_type = white, uint64_t first_seen_stamp = 0);
-    size_t get_random_index_with_fixed_probability(size_t max_index);
     bool is_peer_used(const peerlist_entry& peer);
     bool is_peer_used(const anchor_peerlist_entry& peer);
     bool is_addr_connected(const epee::net_utils::network_address& peer);
