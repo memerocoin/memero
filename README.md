@@ -28,6 +28,7 @@ Specifications
 
 Here are some nodes run by the community:
 
+* `81.61.115.69` by Me Alone @telegram
 * `194.5.249.127` by BITNOX @telegram
 * `128.199.161.251` by fuwa
 
