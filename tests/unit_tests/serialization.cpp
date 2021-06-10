@@ -34,7 +34,6 @@
 #include <iostream>
 #include <vector>
 #include <boost/foreach.hpp>
-#include "tools/boost/archive/portable_binary_iarchive.hpp"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "tools/serialization/binary_archive.h"
@@ -47,7 +46,6 @@
 #include "unit_tests_utils.h"
 #include "wallet/device/device.hpp"
 #include "wallet/logic/type/wallet.hpp"
-#include "tools/boost/archive/portable_binary_oarchive.hpp"
 
 using namespace std;
 using namespace crypto;
@@ -592,36 +590,4 @@ TEST(Serialization, serializes_ringct_types)
   ASSERT_TRUE(clsag0.c1 == clsag1.c1);
   // I is not serialized, they are meant to be reconstructed
   ASSERT_TRUE(clsag0.D == clsag1.D);
-}
-
-// TODO requires external files
-#define OUTPUT_EXPORT_FILE_MAGIC "Lolnero output export\004"
-template <class Archive>
-inline void serialize(Archive &a, unsigned_tx_set &x, const boost::serialization::version_type ver)
-{
-  a & x.txes;
-  a & x.transfers;
-}
-
-TEST(Serialization, diff_t)
-{
-  std::vector<cryptonote::diff_t> v_original;
-
-  for(int i = 0; i != 100; i++)
-  {
-    v_original.push_back(cryptonote::diff_t("117868131154734361989189100"));
-    if(v_original.size() > 1)
-      v_original.back() *= v_original[v_original.size()-2];
-  }
-
-  std::stringstream ss;
-  boost::archive::portable_binary_oarchive a(ss);
-  a << v_original;
-
-  std::vector<cryptonote::diff_t> v_unserialized;
-
-  boost::archive::portable_binary_iarchive a2(ss);
-  a2 >> v_unserialized;
-
-  ASSERT_EQ(v_original, v_unserialized);
 }
