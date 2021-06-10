@@ -29,7 +29,7 @@
 
 add_executable(unit_tests_tools
   apply_permutation.cpp
-  base58.cpp
+  # base58.cpp
   chacha.cpp
   command_line.cpp
   random.cpp
