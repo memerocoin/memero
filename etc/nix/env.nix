@@ -40,7 +40,7 @@ in
 
     configure = "cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}";
     configureClang = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
-    configureTest = "cmake ${CMakeFlags_Lolnero_Test}";
+    configureTest = "cmake ${CMakeFlags_Lolnero_Test} ${CMakeCCacheFlags}";
     build = "make";
     ci = "make Continuous";
     testFilter = "ctest -R";
