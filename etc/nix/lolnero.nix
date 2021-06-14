@@ -1,4 +1,4 @@
-{ gcc10Stdenv
+{ gcc11Stdenv
 , cmake, git, fetchgit
 , boost175, openssl, readline, libsodium, rapidjson
 , lib, gmock
@@ -6,10 +6,10 @@
 
 let
 
-  stdenv = gcc10Stdenv
-; lolnero-rev = "v0.9.1.8"
-; lolnero-sha256 = "1ysb5v7mgfnq7rfdz2zc21xcmd2zjk1y3gjpp3asbdax3qzf5py3"
-; doCheck = true
+  stdenv = gcc11Stdenv
+; lolnero-rev = "v0.9.6.1"
+; lolnero-sha256 = "1ca6xnlpryafbkfxwpjgp8mmpj7hn6539cgawd8npaa987anmblw"
+; doCheck = false
 
 ; in
 
