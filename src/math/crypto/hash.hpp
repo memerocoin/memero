@@ -59,6 +59,7 @@ namespace crypto {
   void cn_fast_hash(const void *data, std::size_t length, hash &hash);
   hash cn_fast_hash(const void *data, std::size_t length);
   void sha3(const uint8_t *data, std::size_t length, hash &hash);
+  hash sha3(const uint8_t *data, std::size_t length);
 
   void tree_hash(const hash *hashes, std::size_t count, hash &root_hash);
 

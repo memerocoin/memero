@@ -373,10 +373,9 @@ namespace cryptonote
       }
 
       b.nonce = nonce;
-      crypto::hash h;
 
       blobdata bd = get_block_hashing_blob_head(b).append(hashing_blob_tail);
-      crypto::sha3((const uint8_t*)bd.data(), bd.size(), h);
+      const crypto::hash h = crypto::sha3((const uint8_t*)bd.data(), bd.size());
 
       const bool valid_hash = hash_to_int(h) <= max_int;
 
