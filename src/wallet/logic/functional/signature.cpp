@@ -48,25 +48,18 @@ namespace signature {
 
   // Set up an address signature message hash
   // Hash data: domain separator, spend public key, view public key, mode identifier, payload data
-  static crypto::hash get_message_hash
+  crypto::hash get_message_hash
   (
    const std::string &data
    , const crypto::public_key &spend_key
    , const crypto::public_key &view_key
-   , const uint8_t mode
    )
   {
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();
     EVP_DigestInit_ex(ctx, EVP_sha3_256(), NULL);
-    EVP_DigestUpdate(ctx, (const uint8_t*)config::HASH_KEY_MESSAGE_SIGNING.data(), config::HASH_KEY_MESSAGE_SIGNING.length()); // includes NUL
+    EVP_DigestUpdate(ctx, (const uint8_t*)config::MESSAGE_SIGNING_HEADER.data(), config::MESSAGE_SIGNING_HEADER.length()); // includes NUL
     EVP_DigestUpdate(ctx, (const uint8_t*)&spend_key, sizeof(crypto::public_key));
     EVP_DigestUpdate(ctx, (const uint8_t*)&view_key, sizeof(crypto::public_key));
-    EVP_DigestUpdate(ctx, (const uint8_t*)&mode, sizeof(uint8_t));
-    char len_buf[(sizeof(size_t) * 8 + 6) / 7];
-    char *ptr = len_buf;
-    tools::write_varint(ptr, data.size());
-    CHECK_AND_ASSERT_THROW_MES(ptr > len_buf && ptr <= len_buf + sizeof(len_buf), "Length overflow");
-    EVP_DigestUpdate(ctx, (const uint8_t*)len_buf, ptr - len_buf);
     EVP_DigestUpdate(ctx, (const uint8_t*)data.data(), data.size());
     crypto::hash hash;
     EVP_DigestFinal(ctx, (uint8_t*)&hash, NULL);
@@ -103,12 +96,12 @@ namespace signature {
 
     // Test each mode and return which mode, if either, succeeded
     const crypto::hash spend_key_hash =
-      get_message_hash(data,address.m_spend_public_key,address.m_view_public_key,(uint8_t) 0);
+      get_message_hash(data,address.m_spend_public_key,address.m_view_public_key);
     if (crypto::check_signature(spend_key_hash, address.m_spend_public_key, s))
       return {true, 2u, false, wallet::logic::type::message_signature::sign_with_spend_key };
 
     const crypto::hash view_key_hash =
-      get_message_hash(data,address.m_spend_public_key,address.m_view_public_key,(uint8_t) 1);
+      get_message_hash(data,address.m_spend_public_key,address.m_view_public_key);
     if (crypto::check_signature(view_key_hash, address.m_view_public_key, s))
       return {true, 2u, false, wallet::logic::type::message_signature::sign_with_view_key };
 
@@ -135,7 +128,6 @@ namespace signature {
     crypto::public_key pkey;
     crypto::public_key pkey_spend, pkey_view; // to include both in hash
     crypto::hash hash;
-    uint8_t mode;
 
     // Use the base address
     if (index.is_zero())
@@ -145,16 +137,14 @@ namespace signature {
         case wallet::logic::type::message_signature::sign_with_spend_key:
           skey = keys.m_spend_secret_key;
           pkey = keys.m_account_address.m_spend_public_key;
-          mode = 0;
           break;
         case wallet::logic::type::message_signature::sign_with_view_key:
           skey = keys.m_view_secret_key;
           pkey = keys.m_account_address.m_view_public_key;
-          mode = 1;
           break;
         default: CHECK_AND_ASSERT_THROW_MES(false, "Invalid signature type requested");
       }
-      hash = get_message_hash(data,keys.m_account_address.m_spend_public_key,keys.m_account_address.m_view_public_key,mode);
+      hash = get_message_hash(data,keys.m_account_address.m_spend_public_key,keys.m_account_address.m_view_public_key);
     }
     // Use a subaddress
     else
@@ -171,17 +161,15 @@ namespace signature {
         case wallet::logic::type::message_signature::sign_with_spend_key:
           skey = skey_spend;
           pkey = pkey_spend;
-          mode = 0;
           break;
         case wallet::logic::type::message_signature::sign_with_view_key:
           skey = skey_view;
           pkey = pkey_view;
-          mode = 1;
           break;
         default: CHECK_AND_ASSERT_THROW_MES(false, "Invalid signature type requested");
       }
       secret_key_to_public_key(skey, pkey);
-      hash = get_message_hash(data,pkey_spend,pkey_view,mode);
+      hash = get_message_hash(data,pkey_spend,pkey_view);
     }
     crypto::generate_signature(hash, pkey, skey, signature);
     return std::string(config::MESSAGE_SIGNING_HEADER) + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
