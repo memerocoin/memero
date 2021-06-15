@@ -58,7 +58,7 @@ namespace signature {
   {
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();
     EVP_DigestInit_ex(ctx, EVP_sha3_256(), NULL);
-    EVP_DigestUpdate(ctx, (const uint8_t*)config::HASH_KEY_MESSAGE_SIGNING, sizeof(config::HASH_KEY_MESSAGE_SIGNING)); // includes NUL
+    EVP_DigestUpdate(ctx, (const uint8_t*)config::HASH_KEY_MESSAGE_SIGNING.data(), config::HASH_KEY_MESSAGE_SIGNING.length()); // includes NUL
     EVP_DigestUpdate(ctx, (const uint8_t*)&spend_key, sizeof(crypto::public_key));
     EVP_DigestUpdate(ctx, (const uint8_t*)&view_key, sizeof(crypto::public_key));
     EVP_DigestUpdate(ctx, (const uint8_t*)&mode, sizeof(uint8_t));
