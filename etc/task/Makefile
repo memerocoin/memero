@@ -29,7 +29,7 @@ make-test-wallet:
 --password ''
 
 test-wallet:
-	../../build/bin/lolnero-wallet-cli --testnet --wallet-file testnet/test1 \
+	../../build/bin/lolnero --testnet --open testnet/test1 \
 --daemon-address 127.0.0.1:44000 --log-level 4 \
 --password ''
 

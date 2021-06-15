@@ -1514,11 +1514,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
   });
 
   const bool testnet = tools::wallet2::has_testnet_option(vm);
-  if (testnet)
-  {
-    fail_msg_writer() << sw::tr("Can't specify more than one of --testnet");
-    return false;
-  }
   const network_type nettype = testnet ? TESTNET : MAINNET;
 
   epee::wipeable_string password;
