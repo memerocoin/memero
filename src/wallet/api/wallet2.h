@@ -130,17 +130,6 @@ namespace tools
       AskPasswordToDecrypt = 2,
     };
 
-    enum BackgroundMiningSetupType {
-      BackgroundMiningMaybe = 0,
-      BackgroundMiningYes = 1,
-      BackgroundMiningNo = 2,
-    };
-
-    enum ExportFormat {
-      Binary = 0,
-      Ascii,
-    };
-
     static const char* tr(const char* str);
 
     static bool has_testnet_option(const boost::program_options::variables_map& vm);
