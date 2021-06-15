@@ -323,6 +323,7 @@ namespace cryptonote
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
     block b;
+    blobdata hashing_blob_head;
     blobdata hashing_blob_tail;
     crypto::hash h = crypto::null_hash;
     ++m_threads_active;
@@ -330,24 +331,26 @@ namespace cryptonote
     boost::multiprecision::uint512_t max_int;
 
     while(!m_stop)
-    {
-      if(m_pausers_count)//anti split workaround
       {
-        epee::misc_utils::sleep_no_w(100);
-        continue;
-      }
+        if(m_pausers_count)//anti split workaround
+        {
+          epee::misc_utils::sleep_no_w(100);
+          continue;
+        }
 
-      if(local_template_ver != m_template_no)
-      {
-        std::unique_lock<std::mutex> lock(m_template_lock);
-        b = m_template;
-        local_diff = m_diffic;
-        max_int = max_int_for_diff(local_diff);
-        height = m_height;
-        local_template_ver = m_template_no;
-        nonce = m_starter_nonce + th_local_index;
-        hashing_blob_tail = cryptonote::get_block_hashing_blob_tail(b);
-      }
+        if(local_template_ver != m_template_no)
+        {
+          std::unique_lock<std::mutex> lock(m_template_lock);
+          b = m_template;
+          local_diff = m_diffic;
+          max_int = max_int_for_diff(local_diff);
+          height = m_height;
+          local_template_ver = m_template_no;
+          nonce = m_starter_nonce + th_local_index;
+          const blobdata head_full = get_block_hashing_blob_head(b);
+          hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
+          hashing_blob_tail = cryptonote::get_block_hashing_blob_tail(b);
+        }
 
       if(!local_template_ver)//no any set_block_template call
       {
@@ -356,15 +359,15 @@ namespace cryptonote
         continue;
       }
 
-      b.nonce = nonce;
-
-      const blobdata bd = get_block_hashing_blob_head(b).append(hashing_blob_tail);
+      blobdata bd = hashing_blob_head;
+      bd.append((const char*)&nonce, sizeof(nonce)).append(hashing_blob_tail);
       crypto::sha3((const uint8_t*)bd.data(), bd.size(), h);
 
       const bool valid_hash = hash_to_int(h) <= max_int;
 
       if(valid_hash && check_hash(h, local_diff))
       {
+        b.nonce = nonce;
         //we lucky!
         MGINFO_GREEN("Found block " << get_block_hash(b) << " at height " << height << " for difficulty: " << local_diff);
         cryptonote::block_verification_context bvc;
