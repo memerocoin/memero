@@ -446,9 +446,6 @@ namespace cryptonote
     bl.minor_version = config::lol::constant_hf_version;
     bl.timestamp = 0;
     bl.nonce = nonce;
-    miner::find_nonce_for_given_block([](const cryptonote::block &b, crypto::hash &hash){
-      return cryptonote::get_block_longhash(b, hash);
-    }, bl, 1);
     bl.invalidate_hashes();
     return true;
   }
