@@ -51,20 +51,10 @@ namespace signature {
   crypto::hash get_message_hash
   (
    const std::string &data
-   , const crypto::public_key &spend_key
-   , const crypto::public_key &view_key
    )
   {
-    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
-    EVP_DigestInit_ex(ctx, EVP_sha3_256(), NULL);
-    EVP_DigestUpdate(ctx, (const uint8_t*)config::MESSAGE_SIGNING_HEADER.data(), config::MESSAGE_SIGNING_HEADER.length()); // includes NUL
-    EVP_DigestUpdate(ctx, (const uint8_t*)&spend_key, sizeof(crypto::public_key));
-    EVP_DigestUpdate(ctx, (const uint8_t*)&view_key, sizeof(crypto::public_key));
-    EVP_DigestUpdate(ctx, (const uint8_t*)data.data(), data.size());
-    crypto::hash hash;
-    EVP_DigestFinal(ctx, (uint8_t*)&hash, NULL);
-    EVP_MD_CTX_free(ctx);
-    return hash;
+    const std::string message = std::string(config::MESSAGE_SIGNING_HEADER) + data;
+    return crypto::cn_fast_hash(message.data(), message.size());
   }
 
   wallet::logic::type::message_signature::message_signature_result_t verify
@@ -95,14 +85,11 @@ namespace signature {
     memcpy(&s, decoded.data(), sizeof(s));
 
     // Test each mode and return which mode, if either, succeeded
-    const crypto::hash spend_key_hash =
-      get_message_hash(data,address.m_spend_public_key,address.m_view_public_key);
-    if (crypto::check_signature(spend_key_hash, address.m_spend_public_key, s))
+    const crypto::hash hash = get_message_hash(data);
+    if (crypto::check_signature(hash, address.m_spend_public_key, s))
       return {true, 2u, false, wallet::logic::type::message_signature::sign_with_spend_key };
 
-    const crypto::hash view_key_hash =
-      get_message_hash(data,address.m_spend_public_key,address.m_view_public_key);
-    if (crypto::check_signature(view_key_hash, address.m_view_public_key, s))
+    if (crypto::check_signature(hash, address.m_view_public_key, s))
       return {true, 2u, false, wallet::logic::type::message_signature::sign_with_view_key };
 
     // Both modes failed
@@ -121,13 +108,10 @@ namespace signature {
    , const crypto::secret_key &subaddress_secret_view_key
    )
   {
+    const crypto::hash hash = get_message_hash(data);
     // const cryptonote::account_keys &keys = m_account.get_keys();
-    crypto::signature signature;
-    crypto::secret_key skey, m;
-    crypto::secret_key skey_spend, skey_view;
+    crypto::secret_key skey;
     crypto::public_key pkey;
-    crypto::public_key pkey_spend, pkey_view; // to include both in hash
-    crypto::hash hash;
 
     // Use the base address
     if (index.is_zero())
@@ -144,14 +128,16 @@ namespace signature {
           break;
         default: CHECK_AND_ASSERT_THROW_MES(false, "Invalid signature type requested");
       }
-      hash = get_message_hash(data,keys.m_account_address.m_spend_public_key,keys.m_account_address.m_view_public_key);
     }
     // Use a subaddress
     else
     {
+      crypto::secret_key skey_spend, skey_view;
+      crypto::public_key pkey_spend, pkey_view; // to include both in hash
       skey_spend = keys.m_spend_secret_key;
       // m = m_account.get_device().get_subaddress_secret_key(keys.m_view_secret_key, index);
-      m = subaddress_secret_view_key;
+
+      const crypto::secret_key m = subaddress_secret_view_key;
       sc_add((unsigned char*)&skey_spend, (unsigned char*)&m, (unsigned char*)&skey_spend);
       secret_key_to_public_key(skey_spend,pkey_spend);
       sc_mul((unsigned char*)&skey_view, (unsigned char*)&keys.m_view_secret_key, (unsigned char*)&skey_spend);
@@ -169,8 +155,9 @@ namespace signature {
         default: CHECK_AND_ASSERT_THROW_MES(false, "Invalid signature type requested");
       }
       secret_key_to_public_key(skey, pkey);
-      hash = get_message_hash(data,pkey_spend,pkey_view);
     }
+
+    crypto::signature signature;
     crypto::generate_signature(hash, pkey, skey, signature);
     return std::string(config::MESSAGE_SIGNING_HEADER) + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
   }
