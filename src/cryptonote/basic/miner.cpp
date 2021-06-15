@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
 //
 // All rights reserved.
@@ -30,26 +31,10 @@
 
 #include "miner.h"
 
-#include <sstream>
-#include <numeric>
-#include <algorithm>
-
 #include <boost/interprocess/detail/atomic.hpp>
-#include <boost/algorithm/string.hpp>
 
-#include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/syncobj.h"
-#include "tools/epee/include/file_io_utils.h"
 #include "tools/common/command_line.h"
-#include "tools/common/util.h"
-#include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/storages/portable_storage_template_helper.h"
-#include "tools/epee/include/misc_os_dependent.h"
-
-#include "cryptonote_basic_impl.h"
-#include "cryptonote_format_utils.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "cryptonote/basic/cryptonote_format_utils.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "miner"
@@ -60,8 +45,8 @@ namespace cryptonote
 
   namespace
   {
-    const command_line::arg_descriptor<std::string> arg_start_mining =    {"start-mining", "Specify wallet address to mining for", "", true};
-    const command_line::arg_descriptor<uint32_t>      arg_mining_threads =  {"mining-threads", "Specify mining threads count", 0, true};
+    const command_line::arg_descriptor<std::string> arg_start_mining = {"start-mining", "Specify wallet address to mining for", "", true};
+    const command_line::arg_descriptor<uint32_t> arg_mining_threads =  {"mining-threads", "Specify mining threads count", 0, true};
   }
 
 
@@ -240,7 +225,7 @@ namespace cryptonote
 
     boost::interprocess::ipcdetail::atomic_write32(&m_stop, 0);
     boost::interprocess::ipcdetail::atomic_write32(&m_thread_index, 0);
-    
+
     for(size_t i = 0; i != m_threads_total; i++)
     {
       m_threads.push_back(std::thread(std::bind(&miner::worker_thread, this)));
@@ -281,7 +266,7 @@ namespace cryptonote
     send_stop_signal();
 
     // In case background mining was active and the miner threads are waiting
-    // on the background miner to signal start. 
+    // on the background miner to signal start.
     while (m_threads_active > 0)
     {
       epee::misc_utils::sleep_no_w(32);

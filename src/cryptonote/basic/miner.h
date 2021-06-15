@@ -1,21 +1,22 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -25,19 +26,19 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
 
-#include <atomic>
 #include <boost/program_options.hpp>
+
+#include "tools/epee/include/math_helper.h"
 
 #include "cryptonote_basic.h"
 #include "verification_context.h"
 #include "difficulty.h"
-#include "tools/epee/include/math_helper.h"
-#include "cryptonote/basic/blobdatatype.h"
+#include "blobdatatype.h"
 
 namespace cryptonote
 {
@@ -57,7 +58,7 @@ namespace cryptonote
   /************************************************************************/
   class miner
   {
-  public: 
+  public:
     miner(i_miner_handler* phandler, const get_block_hash_t& gbh);
     ~miner();
     bool init(const boost::program_options::variables_map& vm, network_type nettype);
@@ -92,7 +93,7 @@ namespace cryptonote
     std::atomic<uint64_t> m_starter_nonce;
     diff_t m_diffic;
     uint64_t m_height;
-    volatile uint32_t m_thread_index; 
+    volatile uint32_t m_thread_index;
     volatile uint32_t m_threads_total;
     std::atomic<uint32_t> m_threads_active;
     std::atomic<int32_t> m_pausers_count;
