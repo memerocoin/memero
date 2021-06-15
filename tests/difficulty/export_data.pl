@@ -42,13 +42,13 @@ else {
 }
 print "also printed to file\n\n";
 open (F,">lolnero-data.txt");
-for ($i=$begin; $i<$end; $i++) { 
+for ($i=$begin; $i<$end; $i++) {
    $k=qq(-d '{"params":{"height":$i},"jsonrpc":"2.0","id":"test","method":"getblockheaderbyheight"}' -H 'Content-Type: application/json');
-    $k=`curl -s -X POST http://$IP/json_rpc $k`;  
+    $k=`curl -s -X POST http://$IP/json_rpc $k`;
      $k=~/"difficulty"\D+(\d+).+"timestamp"\D+(\d+)/sg;
     ($d, $t)=($1,$2);
     print "$i\t$t\t$d\n";
     print F "$i\t$t\t$d\n";
-  
+
 }
 close F;

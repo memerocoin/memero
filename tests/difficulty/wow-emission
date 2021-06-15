@@ -32,7 +32,7 @@ import requests
 
 # CONFIGURATION:
 
-# Target time 
+# Target time
 DIFFICULTY_TARGET = 300
 
 # Range of blocks to analyze:

@@ -323,7 +323,7 @@ TEST(Expect, Trivial)
 }
 
 TEST(Expect, Assignment)
-{ 
+{
     expect<std::string> val1{std::string{}};
     expect<std::string> val2{"foobar"};
 
