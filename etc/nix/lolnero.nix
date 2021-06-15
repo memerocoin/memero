@@ -7,8 +7,8 @@
 let
 
   stdenv = gcc11Stdenv
-; lolnero-rev = "v0.9.6.1"
-; lolnero-sha256 = "1ca6xnlpryafbkfxwpjgp8mmpj7hn6539cgawd8npaa987anmblw"
+; lolnero-rev = "v0.9.6.3"
+; lolnero-sha256 = "09m3nbsdpk09pcv8kgl4n76i0q7zkd8cb06wmm8yx92yqw3nq24y"
 ; doCheck = false
 
 ; in
@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   pname = "lolnero";
   version = lolnero-rev;
   src = fetchgit {
-    url = "https://gitlab.com/fuwa/lolnero.git";
+    url = "https://gitlab.com/lolnero/lolnero.git";
     rev = lolnero-rev;
     sha256 = lolnero-sha256;
     fetchSubmodules = false;
