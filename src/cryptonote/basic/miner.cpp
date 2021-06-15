@@ -324,6 +324,7 @@ namespace cryptonote
     uint32_t local_template_ver = 0;
     block b;
     blobdata hashing_blob_tail;
+    crypto::hash h = crypto::null_hash;
     ++m_threads_active;
 
     boost::multiprecision::uint512_t max_int;
@@ -358,7 +359,7 @@ namespace cryptonote
       b.nonce = nonce;
 
       const blobdata bd = get_block_hashing_blob_head(b).append(hashing_blob_tail);
-      const crypto::hash h = crypto::sha3((const uint8_t*)bd.data(), bd.size());
+      crypto::sha3((const uint8_t*)bd.data(), bd.size(), h);
 
       const bool valid_hash = hash_to_int(h) <= max_int;
 
