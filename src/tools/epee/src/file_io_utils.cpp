@@ -25,17 +25,57 @@
 //
 
 
-#pragma once
-
-#include <fstream>
-#include <filesystem>
-#include <filesystem>
+#include "tools/epee/include/file_io_utils.h"
 
 namespace epee
 {
-namespace file_io_utils
-{
-  bool save_string_to_file(const std::string& path_to_file, const std::string& str);
-	bool load_file_to_string(const std::string& path_to_file, std::string& target_str, size_t max_size = 1000000000);
-}
+  namespace file_io_utils
+  {
+    bool save_string_to_file(const std::string& path_to_file, const std::string& str)
+    {
+      try
+      {
+        std::ofstream fstream;
+        fstream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        fstream.open(path_to_file, std::ios_base::binary | std::ios_base::out | std::ios_base::trunc);
+        fstream << str;
+        fstream.close();
+        return true;
+      }
+
+      catch(...)
+      {
+        return false;
+      }
+    }
+
+    bool load_file_to_string(const std::string& path_to_file, std::string& target_str, size_t max_size)
+    {
+      try
+      {
+        std::ifstream fstream;
+        fstream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        fstream.open(path_to_file, std::ios_base::binary | std::ios_base::in | std::ios::ate);
+
+        std::ifstream::pos_type file_size = fstream.tellg();
+
+        if((uint64_t)file_size > (uint64_t)max_size) // ensure a large domain for comparison, and negative -> too large
+          return false;//don't go crazy
+        size_t file_size_t = static_cast<size_t>(file_size);
+
+        target_str.resize(file_size_t);
+
+        fstream.seekg (0, std::ios::beg);
+        fstream.read((char*)target_str.data(), target_str.size());
+        fstream.close();
+        return true;
+      }
+
+      catch(...)
+      {
+        return false;
+      }
+    }
+
+  }
 }

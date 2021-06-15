@@ -401,8 +401,6 @@ namespace tools
     void device_name(const std::string & device_name) { m_device_name = device_name; }
     const std::string & device_derivation_path() const { return m_device_derivation_path; }
     void device_derivation_path(const std::string &device_derivation_path) { m_device_derivation_path = device_derivation_path; }
-    const ExportFormat & export_format() const { return m_export_format; }
-    inline void set_export_format(const ExportFormat& export_format) { m_export_format = export_format; }
 
     bool get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys) const;
     bool get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys);
@@ -648,8 +646,6 @@ namespace tools
 
     std::shared_ptr<tools::Notify> m_tx_notify;
     std::unique_ptr<wallet_device_callback> m_device_callback;
-
-    ExportFormat m_export_format;
 
     static std::mutex default_daemon_address_lock;
     static std::string default_daemon_address;

@@ -301,8 +301,7 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_devices_registered(false),
   m_device_last_key_image_sync(0),
   m_offline(false),
-  m_rpc_version(0),
-  m_export_format(ExportFormat::Binary)
+  m_rpc_version(0)
 {
 }
 
@@ -2363,7 +2362,7 @@ bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable
   std::string buf;
   bool r = ::serialization::dump_binary(keys_file_data.value(), buf);
   r = r && wallet::logic::controller::wallet::save_to_file
-    (tmp_file_name, buf, m_export_format == ExportFormat::Binary);
+    (tmp_file_name, buf);
   CHECK_AND_ASSERT_MES(r, false, "failed to generate wallet keys file " << tmp_file_name);
 
   std::error_code e = tools::replace_file(tmp_file_name, keys_file_name);
@@ -2473,9 +2472,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
 
   value2.SetUint(m_subaddress_lookahead_minor);
   json.AddMember("subaddress_lookahead_minor", value2, json.GetAllocator());
-
-  value2.SetInt(m_export_format);
-  json.AddMember("export_format", value2, json.GetAllocator());
 
   value2.SetUint(1);
   json.AddMember("encrypted_secret_keys", value2, json.GetAllocator());
@@ -2676,9 +2672,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
 
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, encrypted_secret_keys, uint32_t, Uint, false, false);
     encrypted_secret_keys = field_encrypted_secret_keys;
-
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, export_format, ExportFormat, Int, false, Binary);
-    m_export_format = field_export_format;
 
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, device_name, std::string, String, false, std::string());
     if (m_device_name.empty())
@@ -3247,7 +3240,7 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
       // save address to the new file
       const std::string address_file = m_wallet_file + ".address.txt";
       r = wallet::logic::controller::wallet::save_to_file
-        (address_file, m_account.get_public_address_str(m_nettype), true);
+        (address_file, m_account.get_public_address_str(m_nettype));
       THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, m_wallet_file);
       // remove old address file
       r = std::filesystem::remove(old_address_file);

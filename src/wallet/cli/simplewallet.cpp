@@ -1018,35 +1018,6 @@ bool simple_wallet::set_track_uses(const std::vector<std::string> &args/* = std:
   return true;
 }
 
-bool simple_wallet::set_export_format(const std::vector<std::string> &args/* = std::vector<std::string()*/)
-{
-  if (args.size() < 2)
-  {
-    fail_msg_writer() << sw::tr("Export format not specified");
-    return true;
-  }
-
-  if (boost::algorithm::iequals(args[1], "ascii"))
-  {
-    m_wallet->set_export_format(tools::wallet2::ExportFormat::Ascii);
-  }
-  else if (boost::algorithm::iequals(args[1], "binary"))
-  {
-    m_wallet->set_export_format(tools::wallet2::ExportFormat::Binary);
-  }
-  else
-  {
-    fail_msg_writer() << sw::tr("Export format not recognized.");
-    return true;
-  }
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    m_wallet->rewrite(m_wallet_file, pwd_container->password());
-  }
-  return true;
-}
-
 bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   if(args.empty())
@@ -1206,8 +1177,6 @@ simple_wallet::simple_wallet()
                                   "  Whether to ignore fractional outputs that result in net loss when spending due to fee.\n "
                                   "track-uses <1|0>\n "
                                   "  Whether to keep track of owned outputs uses.\n "
-                                  "export-format <\"binary\"|\"ascii\">\n "
-                                  "  Save all exported files as binary (cannot be copied and pasted) or ascii (can be).\n "
                               ));
   m_cmd_binder.set_handler("rescan_spent",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_spent, std::placeholders::_1),
@@ -1324,7 +1293,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "subaddress-lookahead = " << lookahead.first << ":" << lookahead.second;
     success_msg_writer() << "ignore-fractional-outputs = " << m_wallet->ignore_fractional_outputs();
     success_msg_writer() << "track-uses = " << m_wallet->track_uses();
-    success_msg_writer() << "export-format = " << (m_wallet->export_format() == tools::wallet2::ExportFormat::Ascii ? "ascii" : "binary");
     return true;
   }
   else
@@ -1361,7 +1329,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("subaddress-lookahead", set_subaddress_lookahead, sw::tr("<major>:<minor>"));
     CHECK_SIMPLE_VARIABLE("ignore-fractional-outputs", set_ignore_fractional_outputs, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("track-uses", set_track_uses, sw::tr("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("export-format", set_export_format, sw::tr("\"binary\" or \"ascii\""));
   }
   fail_msg_writer() << sw::tr("set: unrecognized argument(s)");
   return true;

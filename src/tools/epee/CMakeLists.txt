@@ -39,6 +39,7 @@ add_library( epee
   src/memwipe.c
   src/connection_basic.cpp
   src/buffer.cpp
+  src/file_io_utils.cpp
   src/net_ssl.cpp
   src/net/net_parse_helpers.cpp
 )
