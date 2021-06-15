@@ -24,7 +24,7 @@ test-2:
 --fixed-difficulty 1000 \
 
 make-test-wallet:
-	../../build/bin/lolnero-wallet-cli --generate-new-wallet testnet/test1 --testnet \
+	../../build/bin/lolnero --new testnet/test1 --testnet \
 --daemon-address 127.0.0.1:44000 \
 --password ''
 
