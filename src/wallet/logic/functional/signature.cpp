@@ -39,6 +39,8 @@
 
 #include "wallet/api/wallet_errors.h"
 
+#include "config/lol.hpp"
+
 namespace wallet {
 namespace logic {
 namespace functional {
@@ -79,8 +81,9 @@ namespace signature {
    , const std::string &signature
    )
   {
-    constexpr size_t v2_header_len = strlen("SigV2");
-    const bool v2 = signature.size() >= v2_header_len && signature.substr(0, v2_header_len) == "SigV2";
+    constexpr size_t v2_header_len = config::MESSAGE_SIGNING_HEADER.length();
+    const bool v2 = signature.size() >= v2_header_len
+      && signature.substr(0, v2_header_len) == std::string(config::MESSAGE_SIGNING_HEADER);
     if (!v2)
     {
       LOG_PRINT_L0("Signature header check error");
@@ -181,7 +184,7 @@ namespace signature {
       hash = get_message_hash(data,pkey_spend,pkey_view,mode);
     }
     crypto::generate_signature(hash, pkey, skey, signature);
-    return std::string("SigV2") + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
+    return std::string(config::MESSAGE_SIGNING_HEADER) + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
   }
 
 } // signature
