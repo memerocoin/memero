@@ -90,6 +90,7 @@ namespace config
   constexpr unsigned char HASH_KEY_CLSAG_AGG_0[] = "CLSAG_agg_0";
   constexpr unsigned char HASH_KEY_CLSAG_AGG_1[] = "CLSAG_agg_1";
   constexpr std::string_view MESSAGE_SIGNING_HEADER = "Lolnero_Message_Signature_";
+  constexpr unsigned MESSAGE_SIGNING_VERSION = 1u;
 
   namespace lol
   {
