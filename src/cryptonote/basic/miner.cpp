@@ -331,26 +331,26 @@ namespace cryptonote
     boost::multiprecision::uint512_t max_int;
 
     while(!m_stop)
+    {
+      if(m_pausers_count)//anti split workaround
       {
-        if(m_pausers_count)//anti split workaround
-        {
-          epee::misc_utils::sleep_no_w(100);
-          continue;
-        }
+        epee::misc_utils::sleep_no_w(100);
+        continue;
+      }
 
-        if(local_template_ver != m_template_no)
-        {
-          std::unique_lock<std::mutex> lock(m_template_lock);
-          b = m_template;
-          local_diff = m_diffic;
-          max_int = max_int_for_diff(local_diff);
-          height = m_height;
-          local_template_ver = m_template_no;
-          nonce = m_starter_nonce + th_local_index;
-          const blobdata head_full = get_block_hashing_blob_head(b);
-          hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
-          hashing_blob_tail = cryptonote::get_block_hashing_blob_tail(b);
-        }
+      if(local_template_ver != m_template_no)
+      {
+        std::unique_lock<std::mutex> lock(m_template_lock);
+        b = m_template;
+        local_diff = m_diffic;
+        max_int = max_int_for_diff(local_diff);
+        height = m_height;
+        local_template_ver = m_template_no;
+        nonce = m_starter_nonce + th_local_index;
+        const blobdata head_full = get_block_hashing_blob_head(b);
+        hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
+        hashing_blob_tail = cryptonote::get_block_hashing_blob_tail(b);
+      }
 
       if(!local_template_ver)//no any set_block_template call
       {
