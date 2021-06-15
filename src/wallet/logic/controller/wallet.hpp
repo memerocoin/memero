@@ -51,7 +51,6 @@ namespace wallet {
   (
    const std::string& path_to_file
    , const std::string& raw
-   , const bool is_printable
    );
 
   bool load_from_file

@@ -108,7 +108,6 @@ namespace config
     constexpr size_t max_connections_per_address = 2;
     constexpr uint64_t min_block_weight = 128 * 1024; // 128 kB
     constexpr uint64_t max_tx_weight = 128 * 1024; // 128 kB
-    constexpr std::string_view ASCII_OUTPUT_MAGIC = "LolneroAsciiDataV1";
     constexpr size_t genesis_tx_version = 1;
     constexpr size_t tx_version = 2;
 
