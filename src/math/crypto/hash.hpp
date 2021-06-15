@@ -55,13 +55,13 @@ namespace crypto {
     Cryptonight hash functions
   */
 
-  void cn_fast_hash(const void *data, size_t length, uint8_t *hash);
-  void cn_fast_hash(const void *data, std::size_t length, hash &hash);
-  hash cn_fast_hash(const void *data, std::size_t length);
-  void sha3(const uint8_t *data, std::size_t length, hash &hash);
-  hash sha3(const uint8_t *data, std::size_t length);
+  void cn_fast_hash(const void *data, const size_t length, uint8_t *hash);
+  void cn_fast_hash(const void *data, const std::size_t length, hash &hash);
+  hash cn_fast_hash(const void *data, const std::size_t length);
+  void sha3(const uint8_t *data, const std::size_t length, hash &hash);
+  hash sha3(const uint8_t *data, const std::size_t length);
 
-  void tree_hash(const hash *hashes, std::size_t count, hash &root_hash);
+  void tree_hash(const hash *hashes, const std::size_t count, hash &root_hash);
 
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
     epee::to_hex::formatted(o, epee::as_byte_span(v)); return o;
