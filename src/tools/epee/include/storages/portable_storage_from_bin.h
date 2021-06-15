@@ -1,6 +1,6 @@
 // Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // * Redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 // * Neither the name of the Andrey N. Sabelnikov nor the
 // names of its contributors may be used to endorse or promote products
 // derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -22,11 +22,11 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 
 
-#pragma once 
+#pragma once
 
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/misc_log_ex.h"
@@ -35,7 +35,7 @@
 
 #ifdef EPEE_PORTABLE_STORAGE_RECURSION_LIMIT
 #define EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL EPEE_PORTABLE_STORAGE_RECURSION_LIMIT
-#else 
+#else
 #define EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL 100
 #endif
 
@@ -114,7 +114,7 @@ namespace epee
 
     inline throwable_buffer_reader::throwable_buffer_reader(const void* ptr, size_t sz)
     {
-      if(!ptr) 
+      if(!ptr)
         throw std::runtime_error("throwable_buffer_reader: ptr==nullptr");
       if(!sz)
         throw std::runtime_error("throwable_buffer_reader: sz==0");
@@ -128,7 +128,7 @@ namespace epee
       max_fields = std::numeric_limits<size_t>::max();
       max_strings = std::numeric_limits<size_t>::max();
     }
-    inline 
+    inline
     void throwable_buffer_reader::read(void* target, size_t count)
     {
       RECURSION_LIMITATION();
@@ -137,7 +137,7 @@ namespace epee
       m_ptr += count;
       m_count -= count;
     }
-    inline 
+    inline
     void throwable_buffer_reader::read_sec_name(std::string& sce_name)
     {
       RECURSION_LIMITATION();
@@ -157,7 +157,7 @@ namespace epee
       read(&pod_val, sizeof(pod_val));
       pod_val = CONVERT_POD(pod_val);
     }
-    
+
     template<class t_type>
     t_type throwable_buffer_reader::read()
     {
@@ -194,7 +194,7 @@ namespace epee
       return storage_entry(array_entry(std::move(sa)));
     }
 
-    inline 
+    inline
     storage_entry throwable_buffer_reader::load_storage_array_entry(uint8_t type)
     {
       RECURSION_LIMITATION();
@@ -214,12 +214,12 @@ namespace epee
       case SERIALIZE_TYPE_STRING: return read_ae<std::string>();
       case SERIALIZE_TYPE_OBJECT: return read_ae<section>();
       case SERIALIZE_TYPE_ARRAY:  return read_ae<array_entry>();
-      default: 
+      default:
         CHECK_AND_ASSERT_THROW_MES(false, "unknown entry_type code = " << type);
       }
     }
 
-    inline 
+    inline
     size_t throwable_buffer_reader::read_varint()
     {
       RECURSION_LIMITATION();
@@ -281,7 +281,7 @@ namespace epee
       return load_storage_array_entry(ent_type);
     }
 
-    inline 
+    inline
     storage_entry throwable_buffer_reader::load_storage_entry()
     {
       RECURSION_LIMITATION();
@@ -305,11 +305,11 @@ namespace epee
       case SERIALIZE_TYPE_STRING: return read_se<std::string>();
       case SERIALIZE_TYPE_OBJECT: return read_se<section>();
       case SERIALIZE_TYPE_ARRAY:  return read_se<array_entry>();
-      default: 
+      default:
         CHECK_AND_ASSERT_THROW_MES(false, "unknown entry_type code = " << ent_type);
       }
     }
-    inline 
+    inline
     void throwable_buffer_reader::read(section& sec)
     {
       RECURSION_LIMITATION();
@@ -327,7 +327,7 @@ namespace epee
         sec.m_entries.emplace_hint(insert_loc, std::move(sec_name), load_storage_entry());
       }
     }
-    inline 
+    inline
     void throwable_buffer_reader::read(std::string& str)
     {
       RECURSION_LIMITATION();

@@ -6,7 +6,7 @@
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "tools/epee/include/storages/portable_storage_base.h"
 
-namespace epee 
+namespace epee
 {
   namespace json_rpc
   {
@@ -40,7 +40,7 @@ namespace epee
         KV_SERIALIZE(message)
       END_KV_SERIALIZE_MAP()
     };
-    
+
     struct dummy_error
     {
       BEGIN_KV_SERIALIZE_MAP()

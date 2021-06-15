@@ -6,7 +6,7 @@
 */
 // Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // * Redistributions of source code must retain the above copyright
@@ -17,7 +17,7 @@
 // * Neither the name of the Andrey N. Sabelnikov nor the
 // names of its contributors may be used to endorse or promote products
 // derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -28,7 +28,7 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 
 #pragma once
@@ -91,7 +91,7 @@ namespace net_utils
 		t_connection_type connection_type,
 		ssl_support_t ssl_support
 	)
-	: 
+	:
 		connection_basic(std::move(sock), state, ssl_support),
 		m_protocol_handler(this, check_and_get(state), context),
 		buffer_ssl_init_fill(0),
@@ -322,7 +322,7 @@ namespace net_utils
   {
     TRY_ENTRY();
     //_info("[sock " << socket().native_handle() << "] Async read calledback.");
-    
+
     if (m_was_shutdown)
         return;
 
@@ -330,7 +330,7 @@ namespace net_utils
     {
         double current_speed_down;
 
-		
+
       //_info("[sock " << socket().native_handle() << "] RECV " << bytes_transferred);
       logger_handle_net_read(bytes_transferred);
       context.m_last_recv = time(NULL);
@@ -338,7 +338,7 @@ namespace net_utils
       m_ready_to_close = false;
       bool recv_res = m_protocol_handler.handle_recv(buffer_.data(), bytes_transferred);
       if(!recv_res)
-      {  
+      {
         //_info("[sock " << socket().native_handle() << "] protocol_want_close");
         //some error in protocol, protocol handler ask to close connection
         boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
@@ -486,7 +486,7 @@ namespace net_utils
     }else
     {
       //multi thread model, we can't(!) wait in blocked call
-      //so we make non blocking call and releasing CPU by calling sleep(0); 
+      //so we make non blocking call and releasing CPU by calling sleep(0);
       //if no handlers were called
       //TODO: Maybe we need to have have critical section + event + callback to upper protocol to
       //ask it inside(!) critical region if we still able to go in event wait...
@@ -494,7 +494,7 @@ namespace net_utils
       if(!cnt)
         epee::misc_utils::sleep_no_w(1);
     }
-    
+
     return true;
     CATCH_ENTRY_L0("connection<t_protocol_handler>::call_run_once_service_io", false);
   }
@@ -549,7 +549,7 @@ namespace net_utils
         auto size_now = m_send_que.back().size();
         MDEBUG("do_send() NOW just queues: packet="<<size_now<<" B, is added to queue-size="<<m_send_que.size());
         //do_send_handler_delayed( ptr , size_now ); // (((H))) // empty function
-      
+
       LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] Async send requested " << m_send_que.front().size());
     }
     else
@@ -576,7 +576,7 @@ namespace net_utils
         //logger_handle_net_write(size_now);
         //_info("[sock " << socket().native_handle() << "] Async send requested " << m_send_que.front().size());
     }
-    
+
     //do_send_handler_stop( ptr , cb ); // empty function
 
     return true;
@@ -708,7 +708,7 @@ namespace net_utils
     {
       shutdown();
     }
-    
+
     return true;
     CATCH_ENTRY_L0("connection<t_protocol_handler>::close", false);
   }
@@ -767,7 +767,7 @@ namespace net_utils
       auto size_now = m_send_que.front().size();
       MDEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
       CHECK_AND_ASSERT_MES( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
-      async_write(boost::asio::buffer(m_send_que.front().data(), size_now) , 
+      async_write(boost::asio::buffer(m_send_que.front().data(), size_now) ,
                   strand_.wrap(
                               std::bind(&connection<t_protocol_handler>::handle_write,
                                         connection<t_protocol_handler>::shared_from_this(),
@@ -788,7 +788,7 @@ namespace net_utils
   template<class t_protocol_handler>
   void connection<t_protocol_handler>::setRpcStation()
   {
-    m_connection_type = e_connection_type_RPC; 
+    m_connection_type = e_connection_type_RPC;
     MDEBUG("set m_connection_type = RPC ");
   }
 
@@ -804,7 +804,7 @@ namespace net_utils
     acceptor_(io_service_),
     acceptor_ipv6(io_service_),
     default_remote(),
-    m_stop_signal_sent(false), m_port(0), 
+    m_stop_signal_sent(false), m_port(0),
     m_threads_count(0),
     m_thread_index(0),
 		m_connection_type( connection_type ),
@@ -841,7 +841,7 @@ namespace net_utils
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  void boosted_tcp_server<t_protocol_handler>::create_server_type_map() 
+  void boosted_tcp_server<t_protocol_handler>::create_server_type_map()
   {
 		server_type_map["NET"] = e_connection_type_NET;
 		server_type_map["RPC"] = e_connection_type_RPC;
@@ -976,7 +976,7 @@ namespace net_utils
   bool boosted_tcp_server<t_protocol_handler>::worker_thread()
   {
     TRY_ENTRY();
-    uint32_t local_thr_index = boost::interprocess::ipcdetail::atomic_inc32(&m_thread_index); 
+    uint32_t local_thr_index = boost::interprocess::ipcdetail::atomic_inc32(&m_thread_index);
     std::string thread_name = std::string("[") + m_thread_name_prefix;
     thread_name += std::to_string(local_thr_index) + "]";
     MLOG_SET_THREAD_NAME(thread_name);
@@ -1051,7 +1051,7 @@ namespace net_utils
         m_threads.clear();
         _fact("JOINING all threads - DONE");
 
-      } 
+      }
       else {
 		_dbg1("Reiniting OK.");
         return true;
@@ -1445,7 +1445,7 @@ namespace net_utils
       assert(m_state != nullptr); // always set in constructor
       _erro("[sock " << new_connection_l->socket().native_handle() << "] Failed to start connection, connections_count = " << m_state->sock_count);
     }
-    
+
 	new_connection_l->save_dbg_log();
 
     return r;
@@ -1456,7 +1456,7 @@ namespace net_utils
   template<class t_protocol_handler> template<class t_callback>
   bool boosted_tcp_server<t_protocol_handler>::connect_async(const std::string& adr, const std::string& port, uint32_t conn_timeout, const t_callback &cb, const std::string& bind_ip, epee::net_utils::ssl_support_t ssl_support)
   {
-    TRY_ENTRY();    
+    TRY_ENTRY();
     connection_ptr new_connection_l(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type, ssl_support) );
     connections_mutex.lock();
     connections_.insert(new_connection_l);
@@ -1464,7 +1464,7 @@ namespace net_utils
     connections_mutex.unlock();
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ LOCK_MUTEX(connections_mutex); connections_.erase(new_connection_l); });
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
-    
+
     bool try_ipv6 = false;
 
     boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -1519,7 +1519,7 @@ namespace net_utils
 
 
     boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
-     
+
     sock_.open(remote_endpoint.protocol());
     if(bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "" )
     {
@@ -1534,13 +1534,13 @@ namespace net_utils
         return false;
       }
     }
-    
+
     std::shared_ptr<boost::asio::steady_timer> sh_deadline(new boost::asio::steady_timer(io_service_));
     //start deadline
     sh_deadline->expires_after(std::chrono::milliseconds(conn_timeout));
     sh_deadline->async_wait([=](const boost::system::error_code& error)
       {
-          if(error != boost::asio::error::operation_aborted) 
+          if(error != boost::asio::error::operation_aborted)
           {
             _dbg3("Failed to connect to " << adr << ':' << port << ", because of timeout (" << conn_timeout << ")");
             new_connection_l->socket().close();
@@ -1588,6 +1588,6 @@ namespace net_utils
     return true;
     CATCH_ENTRY_L0("boosted_tcp_server<t_protocol_handler>::connect_async", false);
   }
-  
+
 } // namespace
 } // namespace

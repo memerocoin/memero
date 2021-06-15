@@ -125,9 +125,9 @@ namespace rct {
         addKeys(pk.mask, pk.mask, bH);
         return std::make_tuple(sk, pk);
     }
-    
-    
-    //generates a <secret , public> / Pedersen commitment but takes bH as input 
+
+
+    //generates a <secret , public> / Pedersen commitment but takes bH as input
     std::tuple<ctkey, ctkey> ctskpkGen(const key &bH) {
         ctkey sk, pk;
         skpkGen(sk.dest, pk.dest);
@@ -135,7 +135,7 @@ namespace rct {
         addKeys(pk.mask, pk.mask, bH);
         return std::make_tuple(sk, pk);
     }
-    
+
     key zeroCommit(amount_t amount) {
         const zero_commitment *begin = zero_commitments;
         const zero_commitment *end = zero_commitments + len_zero_commitments;
@@ -319,7 +319,7 @@ namespace rct {
     void cn_fast_hash(key &hash, const void * data, const std::size_t l) {
         sha3_as_keccak_256((const uint8_t *)data, l, hash.bytes);
     }
-    
+
     void hash_to_scalar(key &hash, const void * data, const std::size_t l) {
         cn_fast_hash(hash, data, l);
         sc_reduce32(hash.bytes);
@@ -329,7 +329,7 @@ namespace rct {
     void cn_fast_hash(key & hash, const key & in) {
         sha3_as_keccak_256((const uint8_t *)in.bytes, 32, hash.bytes);
     }
-    
+
     void hash_to_scalar(key & hash, const key & in) {
         cn_fast_hash(hash, in);
         sc_reduce32(hash.bytes);
@@ -341,7 +341,7 @@ namespace rct {
         sha3_as_keccak_256((const uint8_t *)in.bytes, 32, hash.bytes);
         return hash;
     }
-    
+
      key hash_to_scalar(const key & in) {
         key hash = cn_fast_hash(in);
         sc_reduce32(hash.bytes);
@@ -357,13 +357,13 @@ namespace rct {
         cn_fast_hash(rv, &PC[0], 64*PC.size());
         return rv;
     }
-    
+
     key hash_to_scalar(const ctkeyV &PC) {
         key rv = cn_fast_hash(PC);
         sc_reduce32(rv.bytes);
         return rv;
     }
-    
+
    //cn_fast_hash for a key-vector of arbitrary length
    //this is useful since you take a number of keys
    //put them in the key vector and it concatenates them
@@ -375,7 +375,7 @@ namespace rct {
        //dp(rv);
        return rv;
    }
-   
+
    key hash_to_scalar(const keyV &keys) {
        key rv = cn_fast_hash(keys);
        sc_reduce32(rv.bytes);

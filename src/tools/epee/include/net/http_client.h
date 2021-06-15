@@ -1,6 +1,6 @@
 // Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // * Redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 // * Neither the name of the Andrey N. Sabelnikov nor the
 // names of its contributors may be used to endorse or promote products
 // derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -22,7 +22,7 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 
 #pragma once
@@ -60,7 +60,7 @@ namespace epee
 namespace net_utils
 {
 
-	/*struct url 
+	/*struct url
 	{
 	public:
 		void parse(const std::string& url_s)
@@ -307,7 +307,7 @@ namespace net_utils
 				m_response_info.wipe();
 			}
 			//---------------------------------------------------------------------------
-		private: 
+		private:
 			//---------------------------------------------------------------------------
 			inline bool handle_reciev(std::chrono::milliseconds timeout)
 			{
@@ -375,7 +375,7 @@ namespace net_utils
 			inline
 				bool handle_header(std::string& recv_buff, bool& need_more_data)
 			{
- 
+
 				LOCK_RECURSIVE_MUTEX(m_lock);
         if(!recv_buff.size())
         {
@@ -486,7 +486,7 @@ namespace net_utils
 							continue;
 						}
 						else if(*it == '\n')
-						{	
+						{
 							std::string chunk_head = buff.substr(0, offset);
 							if(!get_len_from_chunk_head(chunk_head, chunk_size))
 								return false;
@@ -516,7 +516,7 @@ namespace net_utils
 
 							buff.erase(buff.begin(), ++it);
 
-							is_matched = true;				
+							is_matched = true;
 							return true;
 						}
 						else
@@ -738,14 +738,14 @@ namespace net_utils
           return false;
 #endif
 				}
-				else 
+				else
 				{
 					m_pcontent_encoding_handler.reset(new do_nothing_sub_handler(this));
 				}
 
 				return true;
 			}
-			inline	
+			inline
 				bool analize_cached_header_and_invoke_state()
 			{
 				m_response_info.clear();
@@ -764,8 +764,8 @@ namespace net_utils
 
 
 
-				if(!m_len_in_summary && ((m_response_info.m_response_code>=100&&m_response_info.m_response_code<200) 
-					|| 204 == m_response_info.m_response_code 
+				if(!m_len_in_summary && ((m_response_info.m_response_code>=100&&m_response_info.m_response_code<200)
+					|| 204 == m_response_info.m_response_code
 					|| 304 == m_response_info.m_response_code) )
 				{//There will be no response body, server will display the local page with error
 					m_state = reciev_machine_state_done;
@@ -784,7 +784,7 @@ namespace net_utils
 					return true;
 				}
 				else if(!m_response_info.m_header_info.m_content_length.empty())
-				{ 
+				{
 					//In the response header the length was specified
 					if(!content_len_valid)
 					{
@@ -816,10 +816,10 @@ namespace net_utils
 					m_state = reciev_machine_state_error;
 					MERROR("Undefined transfer type, consider http_body_transfer_connection_close method. header: " << m_header_cache);
 					return false;
-				} 
+				}
 				return false;
 			}
-			inline 
+			inline
 				bool is_connection_close_field(const std::string& str)
 			{
 				STATIC_REGEXP_EXPR_1(rexp_match_close, "^\\s*close", std::regex::icase );
@@ -843,7 +843,7 @@ namespace net_utils
 						boundary = result[6];
 					else if(result[7].matched)
 						boundary = result[7];
-					else 
+					else
 					{
 						LOG_ERROR("Failed to match boundary in content-type=" << head_info.m_content_type);
 						return false;

@@ -3,23 +3,23 @@
 /// @brief base for connection, contains e.g. the ratelimit hooks
 
 // Copyright (c) 2014-2020, The Monero Project
-// 
+//
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
-// 
+//
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list
 //    of conditions and the following disclaimer in the documentation and/or other
 //    materials provided with the distribution.
-// 
+//
 // 3. Neither the name of the copyright holder nor the names of its contributors may be
 //    used to endorse or promote products derived from this software without specific
 //    prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 // MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
@@ -38,8 +38,8 @@
 #include <boost/asio/basic_socket.hpp>
 
 #include "tools/epee/include/net/connection_basic.hpp"
-#include "tools/epee/include/net/net_utils_base.h" 
-#include "tools/epee/include/misc_log_ex.h" 
+#include "tools/epee/include/net/net_utils_base.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/misc_language.h"
 
 
@@ -81,7 +81,7 @@ namespace
 	    return std::string("RPC");
 	  else if (type == e_connection_type_P2P)
 	    return std::string("P2P");
-	  
+
 	  return std::string("UNKNOWN");
   }
 
@@ -113,7 +113,7 @@ namespace net_utils
 // ================================================================================================
 // connection_basic_pimpl
 // ================================================================================================
-	
+
 connection_basic_pimpl::connection_basic_pimpl(const std::string &name) : m_peer_number(0) { }
 
 // ================================================================================================

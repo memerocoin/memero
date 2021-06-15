@@ -6,7 +6,7 @@
 */
 // Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // * Redistributions of source code must retain the above copyright
@@ -17,7 +17,7 @@
 // * Neither the name of the Andrey N. Sabelnikov nor the
 // names of its contributors may be used to endorse or promote products
 // derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -28,7 +28,7 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 
 #pragma once
@@ -66,7 +66,7 @@ namespace net_utils
   protected:
     virtual ~i_connection_filter(){}
   };
-  
+
 
   /************************************************************************/
   /*                                                                      */
@@ -75,7 +75,7 @@ namespace net_utils
   template<class t_protocol_handler>
   class connection
     : public std::enable_shared_from_this<connection<t_protocol_handler> >,
-    private boost::noncopyable, 
+    private boost::noncopyable,
     public i_service_endpoint,
     public connection_basic
   {
@@ -116,11 +116,11 @@ namespace net_utils
     void get_context(t_connection_context& context_){context_ = context;}
 
     void call_back_starter();
-    
+
     void save_dbg_log();
 
     bool cancel();
-    
+
   private:
     //----------------- i_service_endpoint ---------------------
     virtual bool do_send(const std::basic_string<uint8_t> message); ///< (see do_send from i_service_endpoint)
@@ -201,7 +201,7 @@ namespace net_utils
     boosted_tcp_server(t_connection_type connection_type);
     explicit boosted_tcp_server(boost::asio::io_service& external_io_service, t_connection_type connection_type);
     ~boosted_tcp_server();
-    
+
     std::map<std::string, t_connection_type> server_type_map;
     void create_server_type_map();
 
@@ -347,7 +347,7 @@ namespace net_utils
       boost::asio::io_service::work work;
     };
     std::unique_ptr<worker> m_io_service_local_instance;
-    boost::asio::io_service& io_service_;    
+    boost::asio::io_service& io_service_;
 
     /// Acceptor used to listen for incoming connections.
     boost::asio::ip::tcp::acceptor acceptor_;

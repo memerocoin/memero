@@ -56,7 +56,7 @@ target_link_libraries(lolnerod
 set_property(TARGET lolnerod
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-  
+
 set_property(TARGET lolnerod
   PROPERTY
     OUTPUT_NAME "lolnerod")
