@@ -1520,45 +1520,6 @@ namespace cryptonote
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_HARD_FORK_INFO
-  {
-    struct request_t: public rpc_access_request_base
-    {
-      uint8_t version;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_access_request_base)
-        KV_SERIALIZE(version)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t: public rpc_access_response_base
-    {
-      uint8_t version;
-      bool enabled;
-      uint32_t window;
-      uint32_t votes;
-      uint32_t threshold;
-      uint8_t voting;
-      uint32_t state;
-      uint64_t earliest_height;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_access_response_base)
-        KV_SERIALIZE(version)
-        KV_SERIALIZE(enabled)
-        KV_SERIALIZE(window)
-        KV_SERIALIZE(votes)
-        KV_SERIALIZE(threshold)
-        KV_SERIALIZE(voting)
-        KV_SERIALIZE(state)
-        KV_SERIALIZE(earliest_height)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_GETBANS
   {
     struct ban
