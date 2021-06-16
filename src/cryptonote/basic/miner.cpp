@@ -33,6 +33,8 @@
 
 #include <boost/interprocess/detail/atomic.hpp>
 
+#include <openssl/evp.h>
+
 #include "tools/common/command_line.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 
@@ -359,9 +361,13 @@ namespace cryptonote
         continue;
       }
 
-      blobdata bd = hashing_blob_head;
-      bd.append((const char*)&nonce, sizeof(nonce)).append(hashing_blob_tail);
-      crypto::sha3((const uint8_t*)bd.data(), bd.size(), h);
+      EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+      EVP_DigestInit_ex(ctx, EVP_sha3_256(), NULL);
+      EVP_DigestUpdate(ctx, hashing_blob_head.data(), hashing_blob_head.length());
+      EVP_DigestUpdate(ctx, (const char*)&nonce, sizeof(nonce));
+      EVP_DigestUpdate(ctx, hashing_blob_tail.data(), hashing_blob_tail.length());
+      EVP_DigestFinal(ctx, (uint8_t*)&h, NULL);
+      EVP_MD_CTX_free(ctx);
 
       const bool valid_hash = hash_to_int(h) <= max_int;
 
