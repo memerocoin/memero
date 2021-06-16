@@ -36,7 +36,7 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include "cryptonote/basic/fwd.h"
+#include "cryptonote/basic/events.h"
 #include "cryptonote/core/i_core_events.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
 #include "cryptonote/protocol/enums.h"
