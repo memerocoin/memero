@@ -31,6 +31,7 @@
 add_library(rpc_base
   rpc_args.cpp
   rpc_handler.cpp
+  core_rpc_server_error_codes.cpp
   )
 
 add_library(rpc
