@@ -58,7 +58,6 @@ using namespace epee;
 
 #include "math/crypto/crypto.hpp"
 #include "util.h"
-#include "stack_trace.h"
 #include "tools/epee/include/memwipe.h"
 #include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...
 #include "tools/epee/include/readline_buffer.h"
@@ -131,26 +130,7 @@ namespace tools
     return std::error_code(code, std::system_category());
   }
 
-#ifdef STACK_TRACE
-  static void posix_crash_handler(int signal)
-  {
-    tools::log_stack_trace(("crashing with fatal signal " + std::to_string(signal)).c_str());
-#ifdef NDEBUG
-    _exit(1);
-#else
-    abort();
-#endif
-  }
-  static void setup_crash_dump()
-  {
-    signal(SIGSEGV, posix_crash_handler);
-    signal(SIGBUS, posix_crash_handler);
-    signal(SIGILL, posix_crash_handler);
-    signal(SIGFPE, posix_crash_handler);
-  }
-#else
   static void setup_crash_dump() {}
-#endif
 
   bool disable_core_dumps()
   {

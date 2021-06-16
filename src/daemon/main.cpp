@@ -45,10 +45,6 @@
 #include "daemon/command_line_args.h"
 #include "config/version.hpp"
 
-#ifdef STACK_TRACE
-#include "tools/common/stack_trace.h"
-#endif // STACK_TRACE
-
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"
 
@@ -179,10 +175,6 @@ int main(int argc, char const * argv[])
 
     // after logs initialized
     tools::create_directories_if_necessary(data_dir.string());
-
-#ifdef STACK_TRACE
-    tools::set_stack_trace_log(log_file_path.filename().string());
-#endif // STACK_TRACE
 
     if (!command_line::is_arg_defaulted(vm, daemon_args::arg_max_concurrency))
       tools::set_max_concurrency(command_line::get_arg(vm, daemon_args::arg_max_concurrency));
