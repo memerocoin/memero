@@ -820,7 +820,6 @@ bool t_rpc_command_executor::print_block_by_hash(crypto::hash block_hash, bool i
   if (include_hex)
     tools::success_msg_writer() << res.blob << std::endl;
   print_block_header(res.block_header);
-  tools::success_msg_writer() << res.json << ENDL;
 
   return true;
 }
@@ -854,7 +853,6 @@ bool t_rpc_command_executor::print_block_by_height(uint64_t height, bool include
   if (include_hex)
     tools::success_msg_writer() << res.blob << std::endl;
   print_block_header(res.block_header);
-  tools::success_msg_writer() << res.json << ENDL;
 
   return true;
 }
@@ -869,7 +867,6 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
   std::string fail_message = "Problem fetching transaction";
 
   req.txs_hashes.push_back(epee::string_tools::pod_to_hex(transaction_hash));
-  req.decode_as_json = false;
   req.split = true;
   req.prune = false;
   if (m_is_rpc)
@@ -936,27 +933,6 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
     // Print json if requested
     if (include_json)
     {
-      crypto::hash tx_hash, tx_prefix_hash;
-      cryptonote::transaction tx;
-      cryptonote::blobdata blob;
-      std::string source = as_hex;
-      if (!string_tools::parse_hexstr_to_binbuff(source, blob))
-      {
-        tools::fail_msg_writer() << "Failed to parse tx to get json format";
-      }
-      else
-      {
-        bool ret;
-        ret = cryptonote::parse_and_validate_tx_from_blob(blob, tx);
-        if (!ret)
-        {
-          tools::fail_msg_writer() << "Failed to parse tx blob to get json format";
-        }
-        else
-        {
-          tools::success_msg_writer() << cryptonote::obj_to_json_str(tx) << std::endl;
-        }
-      }
     }
   }
   else
@@ -1036,7 +1012,6 @@ bool t_rpc_command_executor::print_transaction_pool_long() {
     for (auto & tx_info : res.transactions)
     {
       tools::msg_writer() << "id: " << tx_info.id_hash << std::endl
-                          << tx_info.tx_json << std::endl
                           << "blob_size: " << tx_info.blob_size << std::endl
                           << "weight: " << tx_info.weight << std::endl
                           << "fee: " << cryptonote::print_money(tx_info.fee) << std::endl
