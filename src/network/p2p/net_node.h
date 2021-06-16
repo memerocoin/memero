@@ -57,7 +57,6 @@
 #include "tools/epee/include/math_helper.h"
 #include "net_node_common.h"
 #include "tools/epee/include/net/enums.h"
-#include "network/type/fwd.h"
 #include "tools/common/command_line.h"
 
 namespace nodetool

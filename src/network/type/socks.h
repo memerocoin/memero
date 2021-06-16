@@ -37,7 +37,8 @@
 #include <memory>
 #include <utility>
 
-#include "network/type/fwd.h"
+#include "network/type/i2p_address.h"
+#include "network/type/tor_address.h"
 #include "tools/epee/include/span.h"
 
 namespace epee

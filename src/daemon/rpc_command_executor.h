@@ -40,7 +40,6 @@
 
 #include "tools/common/rpc_client.h"
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "tools/epee/include/net/net_fwd.h"
 #include "network/rpc/core_rpc_server.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

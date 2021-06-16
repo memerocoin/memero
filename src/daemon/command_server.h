@@ -41,7 +41,6 @@ Passing RPC commands:
 
 #include "tools/epee/include/console_handler.h"
 #include "daemon/command_parser_executor.h"
-#include "tools/epee/include/net/net_fwd.h"
 
 namespace daemonize {
 
