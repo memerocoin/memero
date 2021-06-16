@@ -41,6 +41,7 @@ add_library( epee
   src/buffer.cpp
   src/file_io_utils.cpp
   src/net_ssl.cpp
+  src/net/http_protocol_handler.cpp
   src/net/net_parse_helpers.cpp
 )
 

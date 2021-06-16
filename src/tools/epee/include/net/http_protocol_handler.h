@@ -42,6 +42,18 @@ namespace net_utils
 {
 	namespace http
 	{
+		struct multipart_entry
+		{
+			std::list<std::pair<std::string, std::string> > m_etc_header_fields;
+			std::string m_content_disposition;
+			std::string m_content_type;
+			std::string m_body;
+		};
+
+		bool match_boundary(const std::string& content_type, std::string& boundary);
+	  bool parse_header(std::string::const_iterator it_begin, std::string::const_iterator it_end, multipart_entry& entry);
+		bool handle_part_of_multipart(std::string::const_iterator it_begin, std::string::const_iterator it_end, multipart_entry& entry);
+    bool analize_http_method(const std::smatch& result, http::http_method& method, int& http_ver_major, int& http_ver_minor);
 
 
 		/************************************************************************/
