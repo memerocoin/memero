@@ -30,7 +30,6 @@
 
 #include <ostream>
 
-#include "tools/serialization/binary_archive.h"
 #include "tools/serialization/containers.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 

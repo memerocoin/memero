@@ -449,8 +449,6 @@ VARIANT_TAG(binary_archive, cryptonote::txin_to_key, 0x2);
 VARIANT_TAG(binary_archive, cryptonote::txout_to_script, 0x0);
 VARIANT_TAG(binary_archive, cryptonote::txout_to_scripthash, 0x1);
 VARIANT_TAG(binary_archive, cryptonote::txout_to_key, 0x2);
-VARIANT_TAG(binary_archive, cryptonote::transaction, 0xcc);
-VARIANT_TAG(binary_archive, cryptonote::block, 0xbb);
 
 VARIANT_TAG(json_archive, cryptonote::txin_gen, "gen");
 VARIANT_TAG(json_archive, cryptonote::txin_to_script, "script");
@@ -460,14 +458,4 @@ VARIANT_TAG(json_archive, cryptonote::txout_to_script, "script");
 VARIANT_TAG(json_archive, cryptonote::txout_to_scripthash, "scripthash");
 VARIANT_TAG(json_archive, cryptonote::txout_to_key, "key");
 VARIANT_TAG(json_archive, cryptonote::transaction, "tx");
-VARIANT_TAG(json_archive, cryptonote::block, "block");
 
-VARIANT_TAG(debug_archive, cryptonote::txin_gen, "gen");
-VARIANT_TAG(debug_archive, cryptonote::txin_to_script, "script");
-VARIANT_TAG(debug_archive, cryptonote::txin_to_scripthash, "scripthash");
-VARIANT_TAG(debug_archive, cryptonote::txin_to_key, "key");
-VARIANT_TAG(debug_archive, cryptonote::txout_to_script, "script");
-VARIANT_TAG(debug_archive, cryptonote::txout_to_scripthash, "scripthash");
-VARIANT_TAG(debug_archive, cryptonote::txout_to_key, "key");
-VARIANT_TAG(debug_archive, cryptonote::transaction, "tx");
-VARIANT_TAG(debug_archive, cryptonote::block, "block");

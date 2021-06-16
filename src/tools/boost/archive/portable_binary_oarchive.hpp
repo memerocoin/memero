@@ -23,8 +23,9 @@
 #include <boost/archive/detail/common_oarchive.hpp>
 #include <boost/archive/detail/register_archive.hpp>
 
-#include "tools/boost/archive/portable_binary_archive.hpp"
 #include <boost/archive/impl/basic_binary_oprimitive.ipp>
+
+#include "tools/boost/archive/portable_binary_archive.hpp"
 
 namespace boost { namespace archive {
 

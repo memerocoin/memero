@@ -43,7 +43,6 @@ extern "C" {
 
 #include "tools/serialization/containers.h"
 #include "tools/serialization/debug_archive.h"
-#include "tools/serialization/binary_archive.h"
 #include "tools/serialization/json_archive.h"
 
 
@@ -456,35 +455,3 @@ namespace std
 BLOB_SERIALIZER(rct::key);
 BLOB_SERIALIZER(rct::ctkey);
 
-VARIANT_TAG(debug_archive, rct::key, "rct::key");
-VARIANT_TAG(debug_archive, rct::keyV, "rct::keyV");
-VARIANT_TAG(debug_archive, rct::keyM, "rct::keyM");
-VARIANT_TAG(debug_archive, rct::ctkey, "rct::ctkey");
-VARIANT_TAG(debug_archive, rct::ctkeyV, "rct::ctkeyV");
-VARIANT_TAG(debug_archive, rct::ctkeyM, "rct::ctkeyM");
-VARIANT_TAG(debug_archive, rct::ecdhTuple, "rct::ecdhTuple");
-VARIANT_TAG(debug_archive, rct::rctSig, "rct::rctSig");
-VARIANT_TAG(debug_archive, rct::Bulletproof, "rct::bulletproof");
-VARIANT_TAG(debug_archive, rct::clsag, "rct::clsag");
-
-VARIANT_TAG(binary_archive, rct::key, 0x90);
-VARIANT_TAG(binary_archive, rct::keyV, 0x92);
-VARIANT_TAG(binary_archive, rct::keyM, 0x93);
-VARIANT_TAG(binary_archive, rct::ctkey, 0x94);
-VARIANT_TAG(binary_archive, rct::ctkeyV, 0x95);
-VARIANT_TAG(binary_archive, rct::ctkeyM, 0x96);
-VARIANT_TAG(binary_archive, rct::ecdhTuple, 0x97);
-VARIANT_TAG(binary_archive, rct::rctSig, 0x9b);
-VARIANT_TAG(binary_archive, rct::Bulletproof, 0x9c);
-VARIANT_TAG(binary_archive, rct::clsag, 0x9f);
-
-VARIANT_TAG(json_archive, rct::key, "rct_key");
-VARIANT_TAG(json_archive, rct::keyV, "rct_keyV");
-VARIANT_TAG(json_archive, rct::keyM, "rct_keyM");
-VARIANT_TAG(json_archive, rct::ctkey, "rct_ctkey");
-VARIANT_TAG(json_archive, rct::ctkeyV, "rct_ctkeyV");
-VARIANT_TAG(json_archive, rct::ctkeyM, "rct_ctkeyM");
-VARIANT_TAG(json_archive, rct::ecdhTuple, "rct_ecdhTuple");
-VARIANT_TAG(json_archive, rct::rctSig, "rct_rctSig");
-VARIANT_TAG(json_archive, rct::Bulletproof, "rct_bulletproof");
-VARIANT_TAG(json_archive, rct::clsag, "rct_clsag");

@@ -39,6 +39,7 @@ extern "C"
 
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/span.h"
+#include "tools/common/varint.h"
 
 #include "rctOps.hpp"
 #include "curveConstants.hpp"

@@ -9,6 +9,7 @@
 //  See http://www.boost.org for updates, documentation, and revision history.
 
 #include "tools/boost/archive/portable_binary_iarchive.hpp"
+#include "tools/boost/archive/portable_binary_archive.hpp"
 
 namespace boost {
 namespace archive {
