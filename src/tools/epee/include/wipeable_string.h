@@ -66,8 +66,8 @@ namespace epee
     void trim();
     void split(std::vector<wipeable_string> &fields) const;
     std::optional<wipeable_string> parse_hexstr() const;
-    template<typename T> inline bool hex_to_pod(T &pod) const;
-    template<typename T> inline bool hex_to_pod(tools::scrubbed<T> &pod) const { return hex_to_pod(unwrap(pod)); }
+    template<typename T> bool hex_to_pod(T &pod) const;
+    template<typename T> bool hex_to_pod(tools::scrubbed<T> &pod) const { return hex_to_pod(unwrap(pod)); }
     void resize(size_t sz);
     void reserve(size_t sz);
     void clear();
@@ -83,7 +83,7 @@ namespace epee
     std::vector<char> buffer;
   };
 
-  template<typename T> inline bool wipeable_string::hex_to_pod(T &pod) const
+  template<typename T> bool wipeable_string::hex_to_pod(T &pod) const
   {
     static_assert(std::is_standard_layout<T>::value, "expected standard layout type");
     static_assert(std::is_trivial<T>::value, "expected trivial type");
