@@ -117,11 +117,7 @@ namespace epee
 
   bool async_stdin_reader::wait_stdin_data()
   {
-    #if defined(__OpenBSD__) || defined(__ANDROID__)
     int stdin_fileno = fileno(stdin);
-    #else
-    int stdin_fileno = ::fileno(stdin);
-    #endif
 
     while (m_run.load(std::memory_order_relaxed))
     {
