@@ -34,7 +34,7 @@
 #include <vector>
 
 #include "cryptonote/basic/blobdatatype.h"
-#include "cryptonote/protocol/fwd.h"
+#include "cryptonote/basic/connection_context.h"
 #include "tools/epee/include/net/enums.h"
 #include "tools/epee/include/span.h"
 

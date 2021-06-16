@@ -45,7 +45,6 @@
 
 
 #include "config/cryptonote.hpp"
-#include "cryptonote/protocol/fwd.h"
 #include "cryptonote/protocol/levin_notify.h"
 #include "tools/epee/include/warnings.h"
 #include "tools/epee/include/net/abstract_tcp_server2.h"
