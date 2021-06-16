@@ -54,7 +54,6 @@ endif()
 
 target_link_libraries( epee
   easylogging
-  epee_readline
   ${OPENSSL_LIBRARIES}
 )
 
@@ -62,5 +61,9 @@ if (USE_READLINE AND (GNU_READLINE_FOUND))
   target_link_libraries( epee_readline
     easylogging
     ${GNU_READLINE_LIBRARY}
+  )
+
+  target_link_libraries( epee
+    epee_readline
   )
 endif()
