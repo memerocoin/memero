@@ -60,8 +60,6 @@
 
 using namespace crypto;
 
-//#include "tools/serialization/json_archive.h"
-
 /* TODO:
  *  Clean up code:
  *    Possibly change how outputs are referred to/indexed in blockchain and wallets

@@ -42,7 +42,6 @@ extern "C" {
 #include "math/crypto/crypto.hpp"
 
 #include "tools/serialization/containers.h"
-#include "tools/serialization/json_archive.h"
 
 
 //Define this flag when debugging to get additional info on the console
