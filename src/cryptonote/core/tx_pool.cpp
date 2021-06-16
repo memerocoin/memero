@@ -39,7 +39,6 @@
 #include "database/interface/blockchain.hpp"
 #include "database/interface/locked_txn.h"
 #include "math/crypto/hash.hpp"
-#include "tools/common_basic/perf_timer.h"
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/warnings.h"
@@ -100,7 +99,6 @@ namespace cryptonote
     // this should already be called with that lock, but let's make it explicit for clarity
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
 
-    PERF_TIMER(add_tx);
     if (tx.version == 0)
     {
       // v0 never accepted
@@ -510,7 +508,6 @@ namespace cryptonote
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::get_transaction_info(const crypto::hash &txid, tx_details &td) const
   {
-    PERF_TIMER(get_transaction_info);
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
     LOCK_LOCKABLE_OBJECT(m_blockchain);
 

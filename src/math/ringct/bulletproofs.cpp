@@ -39,7 +39,6 @@ extern "C"
 
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/span.h"
-#include "tools/common_basic/perf_timer.h"
 
 #include "rctOps.hpp"
 #include "curveConstants.hpp"
@@ -504,8 +503,6 @@ Bulletproof bulletproof_PROVE(const rct::keyV &sv, const rct::keyV &gamma)
     CHECK_AND_ASSERT_THROW_MES(is_reduced(g), "Invalid gamma input");
 
   init_exponents();
-
-  PERF_TIMER_UNIT(PROVE, 1000000);
 
   constexpr size_t logN = 6; // log2(64)
   constexpr size_t N = 1<<logN;

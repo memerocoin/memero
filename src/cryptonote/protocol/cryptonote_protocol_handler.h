@@ -39,7 +39,6 @@
 #include <boost/program_options/variables_map.hpp>
 
 #include "cryptonote/basic/connection_context.h"
-#include "tools/common_basic/perf_timer.h"
 #include "tools/epee/include/math_helper.h"
 #include "tools/epee/include/storages/levin_abstract_invoke2.h"
 #include "tools/epee/include/warnings.h"
@@ -155,7 +154,6 @@ namespace cryptonote
     epee::math_helper::once_a_time_seconds<101> m_sync_search_checker;
     epee::math_helper::once_a_time_seconds<43> m_bad_peer_checker;
     std::atomic<unsigned int> m_max_out_peers;
-    tools::PerformanceTimer m_sync_timer, m_add_timer;
     uint64_t m_last_add_end_time;
     uint64_t m_sync_spans_downloaded, m_sync_old_spans_downloaded, m_sync_bad_spans_downloaded;
     uint64_t m_sync_download_chain_size, m_sync_download_objects_size;

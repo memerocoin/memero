@@ -42,9 +42,11 @@
 
 #include <boost/interprocess/detail/atomic.hpp>
 
-#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "tools/epee/include/profile_tools.h"
+#include "tools/epee/include/misc_os_dependent.h"
 #include "tools/common/util.h"
+
+#include "cryptonote/basic/cryptonote_format_utils.h"
 
 #include "config/lol.hpp"
 
@@ -100,10 +102,6 @@ namespace cryptonote
   template<class t_core>
   bool t_cryptonote_protocol_handler<t_core>::init(const boost::program_options::variables_map& vm)
   {
-    m_sync_timer.pause();
-    m_sync_timer.reset();
-    m_add_timer.pause();
-    m_add_timer.reset();
     m_last_add_end_time = 0;
     m_sync_spans_downloaded = 0;
     m_sync_old_spans_downloaded = 0;
@@ -339,10 +337,6 @@ namespace cryptonote
       }
       if (m_core.get_target_blockchain_height() == 0) // only when sync starts
       {
-        m_sync_timer.resume();
-        m_sync_timer.reset();
-        m_add_timer.pause();
-        m_add_timer.reset();
         m_last_add_end_time = 0;
         m_sync_spans_downloaded = 0;
         m_sync_old_spans_downloaded = 0;
@@ -1221,13 +1215,11 @@ namespace cryptonote
 
       {
         m_core.pause_mine();
-        m_add_timer.resume();
         bool starting = true;
         epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([this, &starting]() {
-          m_add_timer.pause();
           m_core.resume_mine();
           if (!starting)
-            m_last_add_end_time = tools::get_tick_count();
+            m_last_add_end_time = epee::misc_utils::get_ns_count();
         });
         m_sync_start_time = std::chrono::system_clock::now();
         m_sync_start_height = m_core.get_current_blockchain_height();
@@ -1310,8 +1302,8 @@ namespace cryptonote
             starting = false;
             if (m_last_add_end_time)
             {
-              const uint64_t tnow = tools::get_tick_count();
-              const uint64_t ns = tools::ticks_to_ns(tnow - m_last_add_end_time);
+              const uint64_t tnow = epee::misc_utils::get_ns_count();
+              const uint64_t ns = tnow - m_last_add_end_time;
               MINFO("Restarting adding block after idle for " << ns/1e9 << " seconds");
             }
           }
@@ -2006,21 +1998,6 @@ skip:
         << ENDL
         << "Use the \"help\" command to see the list of available commands." << ENDL
         << "**********************************************************************");
-      m_sync_timer.pause();
-      if (ELPP->vRegistry()->allowed(el::Level::Info, "sync-info"))
-      {
-        const uint64_t sync_time = m_sync_timer.value();
-        const uint64_t add_time = m_add_timer.value();
-        if (sync_time && add_time)
-        {
-          MCLOG_YELLOW(el::Level::Info, "sync-info", "Sync time: " << sync_time/1e9/60 << " min, idle time " <<
-              (100.f * (1.0f - add_time / (float)sync_time)) << "%" << ", " <<
-              (10 * m_sync_download_objects_size / 1024 / 1024) / 10.f << " + " <<
-              (10 * m_sync_download_chain_size / 1024 / 1024) / 10.f << " MB downloaded, " <<
-              100.0f * m_sync_old_spans_downloaded / m_sync_spans_downloaded << "% old spans, " <<
-              100.0f * m_sync_bad_spans_downloaded / m_sync_spans_downloaded << "% bad spans");
-        }
-      }
       m_core.on_synchronized();
     }
     m_core.safesyncmode(true);

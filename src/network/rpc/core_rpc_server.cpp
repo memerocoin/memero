@@ -44,7 +44,6 @@
 #include "network/type/parse.h"
 #include "tools/common/command_line.h"
 #include "tools/common/util.h"
-#include "tools/common_basic/perf_timer.h"
 #include "tools/epee/include/include_base_utils.h"
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/misc_language.h"
@@ -69,8 +68,7 @@
 #define RESTRICTED_SPENT_KEY_IMAGES_COUNT 5000
 #define RESTRICTED_BLOCK_COUNT 1000
 
-#define RPC_TRACKER(rpc) \
-  PERF_TIMER(rpc); \
+#define RPC_TRACKER(rpc)
 
 using namespace constant;
 
@@ -1249,7 +1247,6 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::fill_block_header_response(const block& blk, bool orphan_status, uint64_t height, const crypto::hash& hash, block_header_response& response, bool fill_pow_hash)
   {
-    PERF_TIMER(fill_block_header_response);
     response.major_version = blk.major_version;
     response.minor_version = blk.minor_version;
     response.timestamp = blk.timestamp;
@@ -1570,8 +1567,6 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_banned(const COMMAND_RPC_BANNED::request& req, COMMAND_RPC_BANNED::response& res, epee::json_rpc::error& error_resp, const connection_context *ctx)
   {
-    PERF_TIMER(on_banned);
-
     auto na_parsed = net::get_network_address(req.address, 0);
     if (!na_parsed)
     {

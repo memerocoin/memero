@@ -72,7 +72,6 @@
 #include "tools/common/notify.h"
 #include "tools/common/threadpool.h"
 #include "tools/common/util.h"
-#include "tools/common_basic/perf_timer.h"
 #include "tools/epee/include/profile_tools.h"
 #include "tools/serialization/binary_utils.h"
 
@@ -751,7 +750,6 @@ bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
 //----------------------------------------------------------------------------------------------------
 void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote::transaction& tx, const std::vector<uint64_t> &o_indices, uint64_t height, uint8_t block_version, uint64_t ts, bool miner_tx, bool pool, bool double_spend_seen, const tx_cache_data &tx_cache_data, std::map<std::pair<uint64_t, uint64_t>, size_t> *output_tracker_cache)
 {
-  PERF_TIMER(process_new_transaction);
   // In this function, tx (probably) only contains the base information
   // (that is, the prunable stuff may or may not be included)
   if (!miner_tx && !pool)
@@ -1151,7 +1149,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
     if (!pool && m_track_uses)
     {
-      PERF_TIMER(track_uses);
       const uint64_t amount = in_to_key.amount;
       std::vector<uint64_t> offsets = cryptonote::relative_output_offsets_to_absolute(in_to_key.key_offsets);
       if (output_tracker_cache)

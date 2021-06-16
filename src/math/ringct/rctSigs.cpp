@@ -29,7 +29,6 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/common_basic/perf_timer.h"
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
@@ -343,7 +342,6 @@ namespace rct {
     bool verRctCLSAGSimple(const key &message, const clsag &sig, const ctkeyV & pubs, const key & C_offset) {
         try
         {
-            PERF_TIMER(verRctCLSAGSimple);
             const size_t n = pubs.size();
 
             // Check data
@@ -628,8 +626,6 @@ namespace rct {
     bool verRctSemanticsSimple(const std::vector<const rctSig*> & rvv) {
       try
       {
-        PERF_TIMER(verRctSemanticsSimple);
-
         std::vector<const Bulletproof*> proofs;
 
         for (const rctSig *rvp: rvv)
@@ -706,8 +702,6 @@ namespace rct {
     bool verRctNonSemanticsSimple(const rctSig & rv) {
       try
       {
-        PERF_TIMER(verRctNonSemanticsSimple);
-
         CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG,
             false, "verRctNonSemanticsSimple called on non simple rctSig");
 

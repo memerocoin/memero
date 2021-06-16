@@ -34,7 +34,6 @@ extern "C"
 }
 
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/common_basic/perf_timer.h"
 #include "tools/common_basic/aligned.h"
 
 #include "rctOps.hpp"
