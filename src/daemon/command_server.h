@@ -39,7 +39,6 @@ Passing RPC commands:
 
 #pragma once
 
-#include "tools/common/common_fwd.h"
 #include "tools/epee/include/console_handler.h"
 #include "daemon/command_parser_executor.h"
 #include "tools/epee/include/net/net_fwd.h"

@@ -38,7 +38,6 @@
 
 #pragma once
 
-#include "tools/common/common_fwd.h"
 #include "tools/common/rpc_client.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "tools/epee/include/net/net_fwd.h"
