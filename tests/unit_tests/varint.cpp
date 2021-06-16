@@ -38,7 +38,6 @@
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "tools/serialization/binary_archive.h"
 #include "tools/serialization/json_archive.h"
-#include "tools/serialization/debug_archive.h"
 #include "tools/serialization/variant.h"
 #include "tools/serialization/containers.h"
 #include "tools/serialization/binary_utils.h"

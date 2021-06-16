@@ -38,7 +38,6 @@
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "tools/serialization/binary_archive.h"
 #include "tools/serialization/json_archive.h"
-#include "tools/serialization/debug_archive.h"
 #include "tools/serialization/variant.h"
 #include "tools/serialization/containers.h"
 #include "tools/serialization/binary_utils.h"
@@ -110,9 +109,6 @@ VARIANT_TAG(binary_archive, Struct, 0xe0);
 VARIANT_TAG(binary_archive, int, 0xe1);
 VARIANT_TAG(json_archive, Struct, "struct");
 VARIANT_TAG(json_archive, int, "int");
-VARIANT_TAG(debug_archive, Struct1, "struct1");
-VARIANT_TAG(debug_archive, Struct, "struct");
-VARIANT_TAG(debug_archive, int, "int");
 
 BLOB_SERIALIZER(Blob);
 

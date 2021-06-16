@@ -46,7 +46,6 @@
 #include "tools/serialization/binary_archive.h"
 #include "tools/serialization/containers.h"
 #include "tools/serialization/crypto.h"
-#include "tools/serialization/debug_archive.h"
 #include "tools/serialization/json_archive.h"
 #include "tools/serialization/variant.h"
 #include "wallet/device/device.hpp"

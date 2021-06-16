@@ -42,7 +42,6 @@ extern "C" {
 #include "math/crypto/crypto.hpp"
 
 #include "tools/serialization/containers.h"
-#include "tools/serialization/debug_archive.h"
 #include "tools/serialization/json_archive.h"
 
 

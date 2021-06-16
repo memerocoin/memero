@@ -33,7 +33,6 @@
 #include <vector>
 
 #include "serialization.h"
-#include "debug_archive.h"
 #include "math/crypto/chacha.hpp"
 #include "math/crypto/crypto.hpp"
 #include "math/crypto/hash.hpp"
