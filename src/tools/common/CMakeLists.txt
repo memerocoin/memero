@@ -37,7 +37,6 @@ add_library(common
   password.cpp
   spawn.cpp
   threadpool.cpp
-  combinator.cpp
   )
 
 target_link_libraries(common
