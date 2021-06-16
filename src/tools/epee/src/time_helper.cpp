@@ -25,16 +25,40 @@
 //
 
 
+#include "tools/epee/include/time_helper.h"
 
-#pragma once
+#include <chrono>  // chrono::system_clock
+#include <ctime>   // localtime
+#include <sstream> // stringstream
+#include <iomanip> // put_time
 
-#include <string>  // string
+#include <boost/lexical_cast.hpp>
 
 namespace epee
 {
 namespace misc_utils
 {
-	std::string get_internet_time_str(const time_t time_);
-	std::string get_time_interval_string(const time_t& time_);
+  // https://stackoverflow.com/questions/17223096/outputting-date-and-time-in-c-using-stdchrono
+	std::string get_internet_time_str(const time_t time_)
+	{
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&time_), "%a, %d %b %Y %H:%M:%S GMT");
+    return ss.str();
+	}
+
+	std::string get_time_interval_string(const time_t& time_)
+	{
+		std::string res;
+		time_t tail = time_;
+		int days = tail/(60*60*24);
+		tail = tail%(60*60*24);
+		int hours = tail/(60*60);
+		tail = tail%(60*60);
+		int minutes = tail/(60);
+		tail = tail%(60);
+		int seconds = tail;
+		res = std::string() + "d" + boost::lexical_cast<std::string>(days) + ".h" + boost::lexical_cast<std::string>(hours) + ".m" + boost::lexical_cast<std::string>(minutes) + ".s" + boost::lexical_cast<std::string>(seconds);
+		return res;
+	}
 }
 }
