@@ -40,8 +40,7 @@ project(lolnero)
 
 
 # tools
-list(INSERT CMAKE_MODULE_PATH 0
-  "${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake)
 
 
 
