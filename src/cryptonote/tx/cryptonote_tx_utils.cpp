@@ -393,7 +393,7 @@ namespace cryptonote
 
       CHECK_AND_ASSERT_MES(tx.vout.size() == outSk.size(), false, "outSk size does not match vout");
 
-      MCINFO("construct_tx", "transaction_created: " << get_transaction_hash(tx) << ENDL);
+      MCINFO("construct_tx", "transaction_created: " << get_transaction_hash(tx) << ENDL << obj_to_json_str(tx) << ENDL);
     }
 
     tx.invalidate_hashes();

@@ -319,12 +319,14 @@ namespace cryptonote
     struct request_t: public rpc_access_request_base
     {
       std::vector<std::string> txs_hashes;
+      bool decode_as_json;
       bool prune;
       bool split;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_request_base)
         KV_SERIALIZE(txs_hashes)
+        KV_SERIALIZE(decode_as_json)
         KV_SERIALIZE_OPT(prune, false)
         KV_SERIALIZE_OPT(split, false)
       END_KV_SERIALIZE_MAP()
@@ -335,6 +337,7 @@ namespace cryptonote
     {
       std::string tx_hash;
       std::string as_hex;
+      std::string as_json;
       bool in_pool;
       bool double_spend_seen;
       uint64_t block_height;
@@ -346,6 +349,7 @@ namespace cryptonote
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(tx_hash)
         KV_SERIALIZE(as_hex)
+        KV_SERIALIZE(as_json)
         KV_SERIALIZE(in_pool)
         KV_SERIALIZE(double_spend_seen)
         if (!this_ref.in_pool)
@@ -366,6 +370,7 @@ namespace cryptonote
     {
       // older compatibility stuff
       std::vector<std::string> txs_as_hex;  //transactions blobs as hex (old compat)
+      std::vector<std::string> txs_as_json; //transactions decoded as json (old compat)
 
       // in both old and new
       std::vector<std::string> missed_tx;   //not found transactions
@@ -376,6 +381,7 @@ namespace cryptonote
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
         KV_SERIALIZE(txs_as_hex)
+        KV_SERIALIZE(txs_as_json)
         KV_SERIALIZE(txs)
         KV_SERIALIZE(missed_tx)
       END_KV_SERIALIZE_MAP()
@@ -1014,6 +1020,7 @@ namespace cryptonote
       std::string miner_tx_hash;
       std::vector<std::string> tx_hashes;
       std::string blob;
+      std::string json;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
@@ -1021,6 +1028,7 @@ namespace cryptonote
         KV_SERIALIZE(miner_tx_hash)
         KV_SERIALIZE(tx_hashes)
         KV_SERIALIZE(blob)
+        KV_SERIALIZE(json)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;
@@ -1157,6 +1165,7 @@ namespace cryptonote
   struct tx_info
   {
     std::string id_hash;
+    std::string tx_json; // TODO - expose this data directly
     uint64_t blob_size;
     uint64_t weight;
     uint64_t fee;
@@ -1174,6 +1183,7 @@ namespace cryptonote
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(id_hash)
+      KV_SERIALIZE(tx_json)
       KV_SERIALIZE(blob_size)
       KV_SERIALIZE_OPT(weight, (uint64_t)0)
       KV_SERIALIZE(fee)

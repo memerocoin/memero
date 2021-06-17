@@ -456,4 +456,5 @@ VARIANT_TAG(json_archive, cryptonote::txin_to_key, "key");
 VARIANT_TAG(json_archive, cryptonote::txout_to_script, "script");
 VARIANT_TAG(json_archive, cryptonote::txout_to_scripthash, "scripthash");
 VARIANT_TAG(json_archive, cryptonote::txout_to_key, "key");
+VARIANT_TAG(json_archive, cryptonote::transaction, "tx");
 

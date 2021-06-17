@@ -1846,6 +1846,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
     for (const auto &p: txids)
       req.txs_hashes.push_back(epee::string_tools::pod_to_hex(p.first));
     MDEBUG("asking for " << txids.size() << " transactions");
+    req.decode_as_json = false;
     req.prune = true;
 
     bool r;
@@ -5391,6 +5392,7 @@ void wallet2::check_tx_key_helper(const crypto::hash &txid, const crypto::key_de
   COMMAND_RPC_GET_TRANSACTIONS::request req;
   COMMAND_RPC_GET_TRANSACTIONS::response res;
   req.txs_hashes.push_back(epee::string_tools::pod_to_hex(txid));
+  req.decode_as_json = false;
   req.prune = true;
 
   bool ok;
@@ -5443,6 +5445,7 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
     COMMAND_RPC_GET_TRANSACTIONS::request req;
     COMMAND_RPC_GET_TRANSACTIONS::response res;
     req.txs_hashes.push_back(epee::string_tools::pod_to_hex(txid));
+    req.decode_as_json = false;
     req.prune = true;
 
     bool ok;
@@ -5494,6 +5497,7 @@ bool wallet2::check_tx_proof(const crypto::hash &txid, const cryptonote::account
   COMMAND_RPC_GET_TRANSACTIONS::request req;
   COMMAND_RPC_GET_TRANSACTIONS::response res;
   req.txs_hashes.push_back(epee::string_tools::pod_to_hex(txid));
+  req.decode_as_json = false;
   req.prune = true;
 
   bool ok;
