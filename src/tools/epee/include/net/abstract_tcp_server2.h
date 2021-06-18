@@ -35,7 +35,7 @@
 
 #include <string>
 #include <vector>
-#include <boost/noncopyable.hpp>
+#include <thread>
 #include <atomic>
 #include <cassert>
 #include <map>
@@ -43,8 +43,8 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/interprocess/detail/atomic.hpp>
-#include <thread>
+#include <boost/noncopyable.hpp>
+
 #include "net_utils_base.h"
 #include "tools/epee/include/syncobj.h"
 #include "connection_basic.hpp"
@@ -366,7 +366,7 @@ namespace net_utils
     std::vector<std::shared_ptr<std::thread> > m_threads;
     std::thread::id m_main_thread_id;
     std::recursive_mutex m_threads_lock;
-    volatile uint32_t m_thread_index; // TODO change to std::atomic
+    std::atomic<uint32_t> m_thread_index; // TODO change to std::atomic
 
     t_connection_type m_connection_type;
 

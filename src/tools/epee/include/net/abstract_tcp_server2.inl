@@ -976,7 +976,7 @@ namespace net_utils
   bool boosted_tcp_server<t_protocol_handler>::worker_thread()
   {
     TRY_ENTRY();
-    uint32_t local_thr_index = boost::interprocess::ipcdetail::atomic_inc32(&m_thread_index);
+    uint32_t local_thr_index = m_thread_index.fetch_add(1);
     std::string thread_name = std::string("[") + m_thread_name_prefix;
     thread_name += std::to_string(local_thr_index) + "]";
     MLOG_SET_THREAD_NAME(thread_name);
