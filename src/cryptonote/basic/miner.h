@@ -84,7 +84,7 @@ namespace cryptonote
     bool request_block_template();
     void  merge_hr();
 
-    std::atomic<uint32_t> m_stop;
+    std::atomic<bool> m_stop;
     std::mutex m_template_lock;
     block m_template;
     std::atomic<uint32_t> m_template_no;

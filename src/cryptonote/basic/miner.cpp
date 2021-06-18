@@ -50,7 +50,7 @@ namespace cryptonote
   }
 
 
-  miner::miner(i_miner_handler* phandler, const get_block_hash_t &gbh):m_stop(1),
+  miner::miner(i_miner_handler* phandler, const get_block_hash_t &gbh):m_stop(true),
     m_template{},
     m_template_no(0),
     m_diffic(0),
@@ -222,7 +222,7 @@ namespace cryptonote
 
     request_block_template();//lets update block template
 
-    m_stop = 0;
+    m_stop = false;
     m_thread_index = 0;
 
     for(size_t i = 0; i != m_threads_total; i++)
@@ -247,7 +247,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------------
   void miner::send_stop_signal()
   {
-    m_stop = 1;
+    m_stop = true;
   }
   //-----------------------------------------------------------------------------------------------------
   bool miner::stop()
