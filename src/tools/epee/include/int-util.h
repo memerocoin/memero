@@ -35,10 +35,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#if defined(__ANDROID__)
-#include <byteswap.h>
-#endif
-
 static inline uint32_t rol32(uint32_t x, int r) {
   return (x << (r & 31)) | (x >> (-r & 31));
 }
@@ -92,11 +88,6 @@ static inline void memcpy_swap64(void *dst, const void *src, size_t n) {
   }
 }
 
-#if !defined(BYTE_ORDER) || !defined(LITTLE_ENDIAN) || !defined(BIG_ENDIAN)
-static_assert(false, "BYTE_ORDER is undefined. Perhaps, GNU extensions are not enabled");
-#endif
-
-#if BYTE_ORDER == LITTLE_ENDIAN
 #define SWAP16LE IDENT16
 #define SWAP16BE SWAP16
 #define swap16le ident16
@@ -110,4 +101,3 @@ static_assert(false, "BYTE_ORDER is undefined. Perhaps, GNU extensions are not e
 #define swap64le ident64
 #define swap64be swap64
 #define memcpy_swap64le memcpy_ident64
-#endif
