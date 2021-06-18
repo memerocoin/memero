@@ -106,7 +106,6 @@ namespace cryptonote
     epee::math_helper::once_a_time_seconds<2> m_update_merge_hr_interval;
     std::atomic<uint64_t> m_last_hr_merge_time;
     std::atomic<uint64_t> m_hashes;
-    std::atomic<uint64_t> m_total_hashes;
     std::atomic<uint64_t> m_current_hash_rate;
     std::mutex m_last_hash_rates_lock;
     std::list<uint64_t> m_last_hash_rates;

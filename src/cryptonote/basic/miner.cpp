@@ -66,7 +66,6 @@ namespace cryptonote
     m_starter_nonce(0),
     m_last_hr_merge_time(0),
     m_hashes(0),
-    m_total_hashes(0),
     m_do_print_hashrate(false),
     m_do_mining(false),
     m_current_hash_rate(0),
@@ -383,7 +382,6 @@ namespace cryptonote
       }
       nonce+=m_threads_total;
       ++m_hashes;
-      ++m_total_hashes;
     }
     MGINFO("Miner thread stopped ["<< th_local_index << "]");
     --m_threads_active;
