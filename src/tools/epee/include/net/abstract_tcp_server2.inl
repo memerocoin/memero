@@ -341,7 +341,7 @@ namespace net_utils
       {
         //_info("[sock " << socket().native_handle() << "] protocol_want_close");
         //some error in protocol, protocol handler ask to close connection
-        boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
+        m_want_close_connection = true;
         bool do_shutdown = false;
         {
           LOCK_RECURSIVE_MUTEX(m_send_que_lock);
@@ -441,7 +441,7 @@ namespace net_utils
       if (!handshake(boost::asio::ssl::stream_base::server, boost::asio::const_buffer(buffer_.data(), buffer_ssl_init_fill)))
       {
         MERROR("SSL handshake failed");
-        boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
+        m_want_close_connection = true;
         m_ready_to_close = true;
         bool do_shutdown = false;
         {
@@ -703,7 +703,7 @@ namespace net_utils
       LOCK_RECURSIVE_MUTEX(m_send_que_lock);
       send_que_size = m_send_que.size();
     }
-    boost::interprocess::ipcdetail::atomic_write32(&m_want_close_connection, 1);
+    m_want_close_connection = true;
     if(!send_que_size)
     {
       shutdown();
@@ -756,7 +756,7 @@ namespace net_utils
       m_send_que.pop_front();
       if(m_send_que.empty())
       {
-        if(boost::interprocess::ipcdetail::atomic_read32(&m_want_close_connection))
+        if(m_want_close_connection)
         {
           do_shutdown = true;
         }
