@@ -332,15 +332,15 @@ namespace cryptonote
     boost::multiprecision::uint512_t max_int;
     constexpr uint64_t hash_buffers = 1 << 18;
 
-    while(!m_stop)
+    while(!m_stop.load(std::memory_order_relaxed))
     {
-      if(m_pausers_count)//anti split workaround
+      if(m_pausers_count.load(std::memory_order_relaxed))//anti split workaround
       {
         epee::misc_utils::sleep_no_w(100);
         continue;
       }
 
-      if(local_template_ver != m_template_no)
+      if(local_template_ver != m_template_no.load(std::memory_order_relaxed))
       {
         std::unique_lock<std::mutex> lock(m_template_lock);
         b = m_template;
