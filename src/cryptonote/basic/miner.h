@@ -80,7 +80,7 @@ namespace cryptonote
     uint64_t get_block_reward() const { return m_block_reward; }
 
   private:
-    bool worker_thread();
+    bool worker_thread(const size_t index);
     bool request_block_template();
     void  merge_hr();
 
@@ -91,7 +91,6 @@ namespace cryptonote
     std::atomic<uint64_t> m_starter_nonce;
     diff_t m_diffic;
     uint64_t m_height;
-    std::atomic<uint32_t> m_thread_index;
     std::atomic<uint32_t> m_threads_total;
     std::atomic<uint32_t> m_threads_active;
     std::atomic<int32_t> m_pausers_count;

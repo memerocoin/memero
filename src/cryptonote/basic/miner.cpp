@@ -54,7 +54,6 @@ namespace cryptonote
     m_template{},
     m_template_no(0),
     m_diffic(0),
-    m_thread_index(0),
     m_phandler(phandler),
     m_gbh(gbh),
     m_height(0),
@@ -223,11 +222,10 @@ namespace cryptonote
     request_block_template();//lets update block template
 
     m_stop = false;
-    m_thread_index = 0;
 
     for(size_t i = 0; i != m_threads_total; i++)
     {
-      m_threads.push_back(std::thread(std::bind(&miner::worker_thread, this)));
+      m_threads.push_back(std::thread(std::bind(&miner::worker_thread, this, i)));
     }
 
     MINFO("Mining has started with " << threads_count << " threads, good luck!" );
@@ -312,9 +310,9 @@ namespace cryptonote
       MDEBUG("MINING RESUMED");
   }
   //-----------------------------------------------------------------------------------------------------
-  bool miner::worker_thread()
+  bool miner::worker_thread(const size_t index)
   {
-    uint32_t th_local_index = m_thread_index.fetch_add(1);
+    uint32_t th_local_index = index;
     MLOG_SET_THREAD_NAME(std::string("[miner ") + std::to_string(th_local_index) + "]");
     MGINFO("Miner thread was started ["<< th_local_index << "]");
     uint64_t nonce = m_starter_nonce + th_local_index;
