@@ -31,8 +31,6 @@
 
 #include "miner.h"
 
-#include <boost/interprocess/detail/atomic.hpp>
-
 #include <openssl/evp.h>
 
 #include "tools/common/command_line.h"
@@ -224,8 +222,8 @@ namespace cryptonote
 
     request_block_template();//lets update block template
 
-    boost::interprocess::ipcdetail::atomic_write32(&m_stop, 0);
-    boost::interprocess::ipcdetail::atomic_write32(&m_thread_index, 0);
+    m_stop = 0;
+    m_thread_index = 0;
 
     for(size_t i = 0; i != m_threads_total; i++)
     {
@@ -249,7 +247,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------------
   void miner::send_stop_signal()
   {
-    boost::interprocess::ipcdetail::atomic_write32(&m_stop, 1);
+    m_stop = 1;
   }
   //-----------------------------------------------------------------------------------------------------
   bool miner::stop()
@@ -316,7 +314,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------------
   bool miner::worker_thread()
   {
-    uint32_t th_local_index = boost::interprocess::ipcdetail::atomic_inc32(&m_thread_index);
+    uint32_t th_local_index = m_thread_index.fetch_add(1);
     MLOG_SET_THREAD_NAME(std::string("[miner ") + std::to_string(th_local_index) + "]");
     MGINFO("Miner thread was started ["<< th_local_index << "]");
     uint64_t nonce = m_starter_nonce + th_local_index;
