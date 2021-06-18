@@ -40,8 +40,6 @@
 #include <list>
 #include <ctime>
 
-#include <boost/interprocess/detail/atomic.hpp>
-
 #include "tools/epee/include/profile_tools.h"
 #include "tools/epee/include/misc_os_dependent.h"
 #include "tools/common/util.h"
