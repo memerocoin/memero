@@ -325,7 +325,7 @@ namespace cryptonote
     blobdata hashing_blob_tail;
     crypto::hash h = crypto::null_hash;
 
-    uint16_t hashes = 0;
+    uint16_t hashe_count_buffer = 0;
     constexpr uint16_t max16bit = (std::numeric_limits<uint16_t>::max());
 
     ++m_threads_active;
@@ -381,10 +381,10 @@ namespace cryptonote
         {
         }
       }
-      nonce+=threads_total;
-      hashes++;
+      nonce += threads_total;
+      hashe_count_buffer ++;
 
-      if (!hashes) {
+      if (!hashe_count_buffer) {
         m_hashes += max16bit;
       }
     }
