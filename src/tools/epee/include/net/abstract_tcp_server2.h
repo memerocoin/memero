@@ -326,7 +326,7 @@ namespace net_utils
 
   private:
     /// Run the server's io_service loop.
-    bool worker_thread();
+    bool worker_thread(const size_t index);
     /// Handle completion of an asynchronous accept operation.
     void handle_accept_ipv4(const boost::system::error_code& e);
     void handle_accept_ipv6(const boost::system::error_code& e);
@@ -366,7 +366,6 @@ namespace net_utils
     std::vector<std::shared_ptr<std::thread> > m_threads;
     std::thread::id m_main_thread_id;
     std::recursive_mutex m_threads_lock;
-    std::atomic<uint32_t> m_thread_index; // TODO change to std::atomic
 
     t_connection_type m_connection_type;
 

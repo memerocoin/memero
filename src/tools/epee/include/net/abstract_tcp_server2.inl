@@ -806,7 +806,6 @@ namespace net_utils
     default_remote(),
     m_stop_signal_sent(false), m_port(0),
     m_threads_count(0),
-    m_thread_index(0),
 		m_connection_type( connection_type ),
     new_connection_(),
     new_connection_ipv6()
@@ -824,7 +823,6 @@ namespace net_utils
     default_remote(),
     m_stop_signal_sent(false), m_port(0),
     m_threads_count(0),
-    m_thread_index(0),
 		m_connection_type(connection_type),
     new_connection_(),
     new_connection_ipv6()
@@ -973,10 +971,10 @@ namespace net_utils
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  bool boosted_tcp_server<t_protocol_handler>::worker_thread()
+  bool boosted_tcp_server<t_protocol_handler>::worker_thread(const size_t index)
   {
     TRY_ENTRY();
-    uint32_t local_thr_index = m_thread_index.fetch_add(1);
+    uint32_t local_thr_index = index;
     std::string thread_name = std::string("[") + m_thread_name_prefix;
     thread_name += std::to_string(local_thr_index) + "]";
     MLOG_SET_THREAD_NAME(thread_name);
@@ -1034,8 +1032,8 @@ namespace net_utils
         LOCK_RECURSIVE_MUTEX(m_threads_lock);
         for (std::size_t i = 0; i < threads_count; ++i)
         {
-          std::shared_ptr<std::thread> thread(new std::thread(
-            std::bind(&boosted_tcp_server<t_protocol_handler>::worker_thread, this)));
+          std::shared_ptr<std::thread> thread =
+            std::make_shared<std::thread>(std::bind(&boosted_tcp_server<t_protocol_handler>::worker_thread, this, i));
             _note("Run server thread name: " << m_thread_name_prefix);
           m_threads.push_back(thread);
         }
