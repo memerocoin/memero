@@ -320,6 +320,7 @@ namespace cryptonote
     uint64_t nonce = m_starter_nonce + th_local_index;
     uint64_t hashes = 0;
     uint64_t height = 0;
+    uint32_t threads_total = m_threads_total;
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
     block b;
@@ -380,7 +381,7 @@ namespace cryptonote
         {
         }
       }
-      nonce+=m_threads_total;
+      nonce+=threads_total;
       hashes++;
 
       if (hashes > hash_buffers) {
