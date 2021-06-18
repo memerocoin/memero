@@ -320,6 +320,7 @@ namespace cryptonote
     MLOG_SET_THREAD_NAME(std::string("[miner ") + std::to_string(th_local_index) + "]");
     MGINFO("Miner thread was started ["<< th_local_index << "]");
     uint64_t nonce = m_starter_nonce + th_local_index;
+    uint64_t hashes = 0;
     uint64_t height = 0;
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
@@ -330,6 +331,7 @@ namespace cryptonote
     ++m_threads_active;
 
     boost::multiprecision::uint512_t max_int;
+    constexpr uint64_t hash_buffers = 1 << 18;
 
     while(!m_stop)
     {
@@ -381,7 +383,12 @@ namespace cryptonote
         }
       }
       nonce+=m_threads_total;
-      ++m_hashes;
+      hashes++;
+
+      if (hashes > hash_buffers) {
+        m_hashes += hashes;
+        hashes = 0;
+      }
     }
     MGINFO("Miner thread stopped ["<< th_local_index << "]");
     --m_threads_active;
