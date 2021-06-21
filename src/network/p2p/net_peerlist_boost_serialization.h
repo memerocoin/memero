@@ -218,14 +218,6 @@ namespace boost
       a & pl.adr;
       a & pl.id;
       a & pl.last_seen;
-      if (ver < 2)
-      {
-        if (!typename Archive::is_saving())
-          pl.rpc_port = 0;
-        return;
-      }
-      pl.rpc_port = 0;
-      a & pl.rpc_port;
     }
 
     template <class Archive, class ver_type>
