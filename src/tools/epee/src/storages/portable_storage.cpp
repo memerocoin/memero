@@ -25,7 +25,13 @@
 //
 
 
+#include "tools/epee/include/misc_log_ex.h"
+
 #include "tools/epee/include/storages/portable_storage.h"
+#include "tools/epee/include/storages/portable_storage_to_bin.h"
+#include "tools/epee/include/storages/portable_storage_from_bin.h"
+#include "tools/epee/include/storages/portable_storage_to_json.h"
+#include "tools/epee/include/storages/portable_storage_from_json.h"
 
 namespace epee
 {
@@ -150,6 +156,7 @@ namespace epee
       return &boost::get<section>(*pse);
       CATCH_ENTRY("portable_storage::insert_new_section", nullptr);
     }
+
     harray portable_storage::get_first_section(const std::string& sec_name, hsection& h_child_section, hsection hparent_section)
     {
       TRY_ENTRY();

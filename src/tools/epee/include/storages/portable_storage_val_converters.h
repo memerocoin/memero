@@ -32,8 +32,10 @@
 #include <regex>
 
 #include "tools/epee/include/misc_language.h"
-#include "portable_storage_base.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/warnings.h"
+
+#include "portable_storage_base.h"
 
 namespace epee
 {
@@ -51,7 +53,7 @@ namespace epee
     template<typename from_type, typename to_type>
     void convert_int_to_int(const from_type& from, to_type& to)
     {
-      CHECK_AND_ASSERT_THROW_MES(from >= boost::numeric::bounds<to_type>::lowest(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with lowest possible value = " << boost::numeric::bounds<to_type>::lowest());
+      CHECK_AND_ASSERT_THROW_MES(from >= std::numeric_limits<to_type>::min(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with lowest possible value = " << std::numeric_limits<to_type>::min());
       CHECK_AND_ASSERT_THROW_MES(from <= std::numeric_limits<to_type>::max(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
       to = static_cast<to_type>(from);
     }
