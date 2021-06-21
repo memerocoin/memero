@@ -81,7 +81,6 @@ namespace rpc
     uint16_t port;
     uint16_t rpc_port;
     uint64_t last_seen;
-    uint32_t pruning_seed;
   };
 
   struct tx_in_pool

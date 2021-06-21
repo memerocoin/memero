@@ -80,8 +80,7 @@ namespace {
     std::string port_str;
     epee::string_tools::xtype_to_string(peer.port, port_str);
     std::string addr_str = peer.host + ":" + port_str;
-    std::string pruning_seed = epee::string_tools::to_string_hex(peer.pruning_seed);
-    tools::msg_writer() << boost::format("%-10s %-25s %-25s %-4s %s") % prefix % id_str % addr_str % pruning_seed % elapsed;
+    tools::msg_writer() << boost::format("%-10s %-25s %-25s %s") % prefix % id_str % addr_str % elapsed;
   }
 
   void print_block_header(cryptonote::block_header_response const & header)
@@ -1909,9 +1908,6 @@ bool t_rpc_command_executor::sync_info()
     for (const auto &p: res.peers)
       current_download += p.info.current_download;
     tools::success_msg_writer() << "Downloading at " << current_download << " kB/s";
-    if (res.next_needed_pruning_seed)
-      tools::success_msg_writer() << "Next needed pruning seed: " << res.next_needed_pruning_seed;
-
     tools::success_msg_writer() << std::to_string(res.peers.size()) << " peers";
     tools::success_msg_writer() << "Remote Host                        Peer_ID   State           Height  DL kB/s, Queued Blocks / MB";
     for (const auto &p: res.peers)

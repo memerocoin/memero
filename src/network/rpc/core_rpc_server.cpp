@@ -917,24 +917,24 @@ namespace cryptonote
     {
       if (entry.adr.get_type_id() == epee::net_utils::ipv4_network_address::get_type_id())
         res.white_list.emplace_back(entry.id, entry.adr.as<epee::net_utils::ipv4_network_address>().ip(),
-            entry.adr.as<epee::net_utils::ipv4_network_address>().port(), entry.last_seen, entry.pruning_seed);
+            entry.adr.as<epee::net_utils::ipv4_network_address>().port(), entry.last_seen);
       else if (entry.adr.get_type_id() == epee::net_utils::ipv6_network_address::get_type_id())
         res.white_list.emplace_back(entry.id, entry.adr.as<epee::net_utils::ipv6_network_address>().host_str(),
-            entry.adr.as<epee::net_utils::ipv6_network_address>().port(), entry.last_seen, entry.pruning_seed);
+            entry.adr.as<epee::net_utils::ipv6_network_address>().port(), entry.last_seen);
       else
-        res.white_list.emplace_back(entry.id, entry.adr.str(), entry.last_seen, entry.pruning_seed);
+        res.white_list.emplace_back(entry.id, entry.adr.str(), entry.last_seen);
     }
 
     for (auto & entry : gray_list)
     {
       if (entry.adr.get_type_id() == epee::net_utils::ipv4_network_address::get_type_id())
         res.gray_list.emplace_back(entry.id, entry.adr.as<epee::net_utils::ipv4_network_address>().ip(),
-            entry.adr.as<epee::net_utils::ipv4_network_address>().port(), entry.last_seen, entry.pruning_seed);
+            entry.adr.as<epee::net_utils::ipv4_network_address>().port(), entry.last_seen);
       else if (entry.adr.get_type_id() == epee::net_utils::ipv6_network_address::get_type_id())
         res.gray_list.emplace_back(entry.id, entry.adr.as<epee::net_utils::ipv6_network_address>().host_str(),
-            entry.adr.as<epee::net_utils::ipv6_network_address>().port(), entry.last_seen, entry.pruning_seed);
+            entry.adr.as<epee::net_utils::ipv6_network_address>().port(), entry.last_seen);
       else
-        res.gray_list.emplace_back(entry.id, entry.adr.str(), entry.last_seen, entry.pruning_seed);
+        res.gray_list.emplace_back(entry.id, entry.adr.str(), entry.last_seen);
     }
 
     res.status = CORE_RPC_STATUS_OK;
@@ -1874,7 +1874,6 @@ namespace cryptonote
     m_core.get_blockchain_top(res.height, top_hash);
     ++res.height; // turn top block height into blockchain height
     res.target_height = m_p2p.get_payload_object().is_synchronized() ? 0 : m_core.get_target_blockchain_height();
-    res.next_needed_pruning_seed = 0;
 
     for (const auto &c: m_p2p.get_payload_object().get_connections())
       res.peers.push_back({c});

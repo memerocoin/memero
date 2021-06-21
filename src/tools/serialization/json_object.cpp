@@ -831,7 +831,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
   INSERT_INTO_JSON_OBJECT(dest, port, peer.port);
   INSERT_INTO_JSON_OBJECT(dest, rpc_port, peer.rpc_port);
   INSERT_INTO_JSON_OBJECT(dest, last_seen, peer.last_seen);
-  INSERT_INTO_JSON_OBJECT(dest, pruning_seed, peer.pruning_seed);
 
   dest.EndObject();
 }
@@ -849,7 +848,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::peer& peer)
   GET_FROM_JSON_OBJECT(val, peer.port, port);
   GET_FROM_JSON_OBJECT(val, peer.rpc_port, rpc_port);
   GET_FROM_JSON_OBJECT(val, peer.last_seen, last_seen);
-  GET_FROM_JSON_OBJECT(val, peer.pruning_seed, pruning_seed);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::tx_in_pool& tx)

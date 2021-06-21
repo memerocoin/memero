@@ -55,14 +55,12 @@ namespace nodetool
     AddressType adr;
     peerid_type id;
     int64_t last_seen;
-    uint32_t pruning_seed;
     uint16_t rpc_port;
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(adr)
       KV_SERIALIZE(id)
       KV_SERIALIZE_OPT(last_seen, (int64_t)0)
-      KV_SERIALIZE_OPT(pruning_seed, (uint32_t)0)
       KV_SERIALIZE_OPT(rpc_port, (uint16_t)0)
     END_KV_SERIALIZE_MAP()
 
@@ -70,7 +68,6 @@ namespace nodetool
       FIELD(adr)
       FIELD(id)
       VARINT_FIELD(last_seen)
-      VARINT_FIELD(pruning_seed)
       VARINT_FIELD(rpc_port)
     END_SERIALIZE()
   };

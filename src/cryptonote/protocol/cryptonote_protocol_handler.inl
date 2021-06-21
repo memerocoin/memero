@@ -64,7 +64,7 @@
   } while(0)
 
 #define MLOG_PEER_STATE(x) \
-  MCINFO(MONERO_DEFAULT_LOG_CATEGORY, context << "[" << epee::string_tools::to_string_hex(context.m_pruning_seed) << "] state: " << x << " in state " << cryptonote::get_protocol_state_string(context.m_state))
+  MCINFO(MONERO_DEFAULT_LOG_CATEGORY, context << "state: " << x << " in state " << cryptonote::get_protocol_state_string(context.m_state))
 
 #define BLOCK_QUEUE_NSPANS_THRESHOLD 10 // chunks of N blocks
 #define BLOCK_QUEUE_SIZE_THRESHOLD (100*1024*1024) // MB
@@ -1127,8 +1127,7 @@ namespace cryptonote
 
     {
       MLOG_YELLOW(el::Level::Debug, context << " Got NEW BLOCKS inside of " << __FUNCTION__ << ": size: " << arg.blocks.size()
-          << ", blocks: " << start_height << " - " << (start_height + arg.blocks.size() - 1) <<
-          " (pruning seed " << epee::string_tools::to_string_hex(context.m_pruning_seed) << ")");
+                  << ", blocks: " << start_height << " - " << (start_height + arg.blocks.size() - 1));
 
       // add that new span to the block queue
       const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(now - request_time);
@@ -1766,7 +1765,7 @@ skip:
 
     MDEBUG(context << " request_missing_objects: check " << check_having_blocks << ", force_next_span " << force_next_span
         << ", m_needed_objects " << context.m_needed_objects.size() << " lrh " << context.m_last_response_height << ", chain "
-        << m_core.get_current_blockchain_height() << ", pruning seed " << epee::string_tools::to_string_hex(context.m_pruning_seed));
+           << m_core.get_current_blockchain_height());
     if(context.m_needed_objects.size() || force_next_span)
     {
       //we know objects that we need, request this objects
@@ -2318,9 +2317,8 @@ skip:
   template<class t_core>
   void t_cryptonote_protocol_handler<t_core>::drop_connection_with_score(cryptonote_connection_context &context, unsigned score, bool flush_all_spans)
   {
-    LOG_DEBUG_CC(context, "dropping connection id " << context.m_connection_id << " (pruning seed " <<
-        epee::string_tools::to_string_hex(context.m_pruning_seed) <<
-        "), score " << score << ", flush_all_spans " << flush_all_spans);
+    LOG_DEBUG_CC(context, "dropping connection id " << context.m_connection_id <<
+        ", score " << score << ", flush_all_spans " << flush_all_spans);
 
     m_block_queue.flush_spans(context.m_connection_id, flush_all_spans);
 

@@ -1041,18 +1041,17 @@ namespace cryptonote
     uint16_t port;
     uint16_t rpc_port;
     uint64_t last_seen;
-    uint32_t pruning_seed;
 
     peer() = default;
 
-    peer(uint64_t id, const std::string &host, uint64_t last_seen, uint32_t pruning_seed)
-      : id(id), host(host), ip(0), port(0), rpc_port(0), last_seen(last_seen), pruning_seed(pruning_seed)
+    peer(uint64_t id, const std::string &host, uint64_t last_seen)
+      : id(id), host(host), ip(0), port(0), rpc_port(0), last_seen(last_seen)
     {}
-    peer(uint64_t id, const std::string &host, uint16_t port, uint64_t last_seen, uint32_t pruning_seed)
-      : id(id), host(host), ip(0), port(port), rpc_port(0), last_seen(last_seen), pruning_seed(pruning_seed)
+    peer(uint64_t id, const std::string &host, uint16_t port, uint64_t last_seen)
+      : id(id), host(host), ip(0), port(port), rpc_port(0), last_seen(last_seen)
     {}
-    peer(uint64_t id, uint32_t ip, uint16_t port, uint64_t last_seen, uint32_t pruning_seed)
-      : id(id), host(epee::string_tools::get_ip_string_from_int32(ip)), ip(ip), port(port), rpc_port(0), last_seen(last_seen), pruning_seed(pruning_seed)
+    peer(uint64_t id, uint32_t ip, uint16_t port, uint64_t last_seen)
+      : id(id), host(epee::string_tools::get_ip_string_from_int32(ip)), ip(ip), port(port), rpc_port(0), last_seen(last_seen)
     {}
 
     BEGIN_KV_SERIALIZE_MAP()
@@ -1062,7 +1061,6 @@ namespace cryptonote
       KV_SERIALIZE(port)
       KV_SERIALIZE_OPT(rpc_port, (uint16_t)0)
       KV_SERIALIZE(last_seen)
-      KV_SERIALIZE_OPT(pruning_seed, (uint32_t)0)
     END_KV_SERIALIZE_MAP()
   };
 
@@ -1862,7 +1860,6 @@ namespace cryptonote
     {
       uint64_t height;
       uint64_t target_height;
-      uint32_t next_needed_pruning_seed;
       std::list<peer> peers;
       std::list<span> spans;
       std::string overview;
@@ -1871,7 +1868,6 @@ namespace cryptonote
         KV_SERIALIZE_PARENT(rpc_access_response_base)
         KV_SERIALIZE(height)
         KV_SERIALIZE(target_height)
-        KV_SERIALIZE(next_needed_pruning_seed)
         KV_SERIALIZE(peers)
         KV_SERIALIZE(spans)
         KV_SERIALIZE(overview)

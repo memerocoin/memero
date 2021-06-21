@@ -839,7 +839,7 @@ namespace nodetool
           hsh_result = false;
           return;
         }
-        LOG_INFO_CC(context, "New connection handshaked, pruning seed " << epee::string_tools::to_string_hex(context.m_pruning_seed));
+        LOG_INFO_CC(context, "New connection handshaked.");
         LOG_DEBUG_CC(context, " COMMAND_HANDSHAKE INVOKED OK");
       }else
       {
@@ -1059,7 +1059,6 @@ namespace nodetool
     time_t last_seen;
     time(&last_seen);
     pe_local.last_seen = static_cast<int64_t>(last_seen);
-    pe_local.pruning_seed = con->m_pruning_seed;
     zone.m_peerlist.append_with_peer_white(pe_local);
     //update last seen and push it to peerlist manager
 
@@ -1269,8 +1268,7 @@ namespace nodetool
 
           if (skip)
             ++skipped;
-          else if (next_needed_pruning_stripe == 0 || pe.pruning_seed == 0)
-            filtered.push_back(idx);
+          filtered.push_back(idx);
           ++idx;
           hosts_added.insert(get_host_string(pe.adr));
           return true;
@@ -1304,8 +1302,7 @@ namespace nodetool
       ++try_count;
 
       _note("Considering connecting (out) to " << (use_white_list ? "white" : "gray") << " list peer: " <<
-          peerid_to_string(pe.id) << " " << pe.adr.str() << ", pruning seed " << epee::string_tools::to_string_hex(pe.pruning_seed) <<
-          " (stripe " << next_needed_pruning_stripe << " needed)");
+          peerid_to_string(pe.id) << " " << pe.adr.str());
 
       if(zone.m_our_address == pe.adr)
         continue;
@@ -2124,7 +2121,6 @@ namespace nodetool
         time(&last_seen);
         pe.last_seen = static_cast<int64_t>(last_seen);
         pe.id = peer_id_l;
-        pe.pruning_seed = context.m_pruning_seed;
         this->m_network_zones.at(context.m_remote_address.get_zone()).m_peerlist.append_with_peer_white(pe);
         LOG_DEBUG_CC(context, "PING SUCCESS " << context.m_remote_address.host_str() << ":" << port_l);
       });
