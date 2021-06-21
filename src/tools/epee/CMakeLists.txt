@@ -48,6 +48,7 @@ add_library( epee
   src/storages/portable_storage.cpp
   src/storages/portable_storage_from_json.cpp
   src/storages/portable_storage_from_bin.cpp
+  src/storages/parserse_base_utils.cpp
 )
 
 if (USE_READLINE AND (GNU_READLINE_FOUND))
