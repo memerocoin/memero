@@ -45,6 +45,7 @@ add_library( epee
   src/time_helper.cpp
   src/net/http_protocol_handler.cpp
   src/net/net_parse_helpers.cpp
+  src/storages/portable_storage.cpp
 )
 
 if (USE_READLINE AND (GNU_READLINE_FOUND))
