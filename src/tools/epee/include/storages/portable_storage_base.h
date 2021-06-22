@@ -33,9 +33,9 @@
 #include <vector>
 #include <deque>
 
-#define PORTABLE_STORAGE_SIGNATUREA 0x01011101
-#define PORTABLE_STORAGE_SIGNATUREB 0x01020101 // bender's nightmare
-#define PORTABLE_STORAGE_FORMAT_VER 1
+constexpr uint32_t PORTABLE_STORAGE_SIGNATUREA = 0x01011101;
+constexpr uint32_t PORTABLE_STORAGE_SIGNATUREB = 0x01020101; // bender's nightmare
+constexpr uint8_t PORTABLE_STORAGE_FORMAT_VER = 1;
 
 #define PORTABLE_RAW_SIZE_MARK_MASK   0x03
 #define PORTABLE_RAW_SIZE_MARK_BYTE   0
