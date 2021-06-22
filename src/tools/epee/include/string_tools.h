@@ -29,9 +29,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <locale>
-#include <string.h>
 #include <string>
-#include <string_view>
 #include <type_traits>
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -45,15 +43,6 @@
 #include "tools/epee/include/warnings.h"
 
 
-#ifndef OUT
-	#define OUT
-#endif
-
-#ifdef WINDOWS_PLATFORM
-#pragma comment (lib, "Rpcrt4.lib")
-#endif
-
-
 namespace epee
 {
 namespace string_tools
@@ -63,7 +52,7 @@ namespace string_tools
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res);
   //----------------------------------------------------------------------------
   template<class XType>
-  inline bool get_xtype_from_string(OUT XType& val, const std::string& str_id)
+  inline bool get_xtype_from_string(XType& val, const std::string& str_id)
   {
     if (std::is_integral<XType>::value && !std::numeric_limits<XType>::is_signed && !std::is_same<XType, bool>::value)
     {
@@ -93,7 +82,7 @@ namespace string_tools
   }
 	//----------------------------------------------------------------------------
 	template<class XType>
-	inline bool xtype_to_string(const  XType& val, std::string& str)
+	inline bool xtype_to_string(const XType& val, std::string& str)
 	{
 		try
 		{
