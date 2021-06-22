@@ -45,8 +45,8 @@ add_library( epee
   src/misc_os_dependent.cpp
   src/net/http_protocol_handler.cpp
   src/net/net_parse_helpers.cpp
-  src/net/http_client.cpp
   src/net/net_helper.cpp
+  src/net/http_client.cpp
   src/storages/portable_storage.cpp
   src/storages/portable_storage_from_json.cpp
   src/storages/portable_storage_from_bin.cpp
