@@ -31,7 +31,6 @@ add_library( epee
   src/hex.cpp
   src/abstract_http_client.cpp
   src/mlog.cpp
-  src/net_helper.cpp
   src/net_utils_base.cpp
   src/string_tools.cpp
   src/wipeable_string.cpp
@@ -47,6 +46,7 @@ add_library( epee
   src/net/http_protocol_handler.cpp
   src/net/net_parse_helpers.cpp
   src/net/http_client.cpp
+  src/net/net_helper.cpp
   src/storages/portable_storage.cpp
   src/storages/portable_storage_from_json.cpp
   src/storages/portable_storage_from_bin.cpp
