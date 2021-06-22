@@ -37,32 +37,32 @@ constexpr uint32_t PORTABLE_STORAGE_SIGNATUREA = 0x01011101;
 constexpr uint32_t PORTABLE_STORAGE_SIGNATUREB = 0x01020101; // bender's nightmare
 constexpr uint8_t PORTABLE_STORAGE_FORMAT_VER = 1;
 
-#define PORTABLE_RAW_SIZE_MARK_MASK   0x03
-#define PORTABLE_RAW_SIZE_MARK_BYTE   0
-#define PORTABLE_RAW_SIZE_MARK_WORD   1
-#define PORTABLE_RAW_SIZE_MARK_DWORD  2
-#define PORTABLE_RAW_SIZE_MARK_INT64  3
+constexpr uint8_t PORTABLE_RAW_SIZE_MARK_MASK = 0x03;
+constexpr uint8_t PORTABLE_RAW_SIZE_MARK_BYTE = 0;
+constexpr uint8_t PORTABLE_RAW_SIZE_MARK_WORD = 1;
+constexpr uint8_t PORTABLE_RAW_SIZE_MARK_DWORD = 2;
+constexpr uint8_t PORTABLE_RAW_SIZE_MARK_INT64 = 3;
 
 #ifndef MAX_STRING_LEN_POSSIBLE
 #define MAX_STRING_LEN_POSSIBLE       2000000000 //do not let string be so big
 #endif
 
 //data types
-#define SERIALIZE_TYPE_INT64                1
-#define SERIALIZE_TYPE_INT32                2
-#define SERIALIZE_TYPE_INT16                3
-#define SERIALIZE_TYPE_INT8                 4
-#define SERIALIZE_TYPE_UINT64               5
-#define SERIALIZE_TYPE_UINT32               6
-#define SERIALIZE_TYPE_UINT16               7
-#define SERIALIZE_TYPE_UINT8                8
-#define SERIALIZE_TYPE_DUOBLE               9
-#define SERIALIZE_TYPE_STRING               10
-#define SERIALIZE_TYPE_BOOL                 11
-#define SERIALIZE_TYPE_OBJECT               12
-#define SERIALIZE_TYPE_ARRAY                13
+constexpr uint8_t SERIALIZE_TYPE_INT64               = 1;
+constexpr uint8_t SERIALIZE_TYPE_INT32               = 2;
+constexpr uint8_t SERIALIZE_TYPE_INT16               = 3;
+constexpr uint8_t SERIALIZE_TYPE_INT8                = 4;
+constexpr uint8_t SERIALIZE_TYPE_UINT64              = 5;
+constexpr uint8_t SERIALIZE_TYPE_UINT32              = 6;
+constexpr uint8_t SERIALIZE_TYPE_UINT16              = 7;
+constexpr uint8_t SERIALIZE_TYPE_UINT8               = 8;
+constexpr uint8_t SERIALIZE_TYPE_DUOBLE              = 9;
+constexpr uint8_t SERIALIZE_TYPE_STRING              = 10;
+constexpr uint8_t SERIALIZE_TYPE_BOOL                = 11;
+constexpr uint8_t SERIALIZE_TYPE_OBJECT              = 12;
+constexpr uint8_t SERIALIZE_TYPE_ARRAY               = 13;
 
-#define SERIALIZE_FLAG_ARRAY              0x80
+constexpr uint8_t SERIALIZE_FLAG_ARRAY               = 0x80;
 
 
 namespace epee
