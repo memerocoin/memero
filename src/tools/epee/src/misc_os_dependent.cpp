@@ -24,15 +24,32 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#pragma once
+#include <iostream>
+#include <boost/lexical_cast.hpp>
 
 namespace epee
 {
 namespace misc_utils
 {
 
-  uint64_t get_ns_count();
-  uint64_t get_tick_count();
-	bool get_gmt_time(time_t t, struct tm &tm);
+  uint64_t get_ns_count()
+  {
+    struct timespec ts;
+    if(clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
+      return 0;
+    }
+    return ((uint64_t)ts.tv_sec * 1000000000) + (ts.tv_nsec);
+  }
+
+  uint64_t get_tick_count()
+  {
+    return get_ns_count() / 1000000;
+  }
+
+
+	bool get_gmt_time(time_t t, struct tm &tm)
+	{
+		return gmtime_r(&t, &tm);
+	}
 }
 }

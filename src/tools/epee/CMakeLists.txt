@@ -43,6 +43,7 @@ add_library( epee
   src/net_ssl.cpp
   src/console_handler.cpp
   src/time_helper.cpp
+  src/misc_os_dependent.cpp
   src/net/http_protocol_handler.cpp
   src/net/net_parse_helpers.cpp
   src/storages/portable_storage.cpp
