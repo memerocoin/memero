@@ -34,298 +34,298 @@ namespace epee
 {
 namespace misc_utils
 {
-  namespace parse
+namespace parse
+{
+  bool isspace(char c)
   {
-    bool isspace(char c)
+    return lut[(uint8_t)c] & 8;
+  }
+
+  bool isdigit(char c)
+  {
+    return lut[(uint8_t)c] & 1;
+  }
+
+  std::string transform_to_escape_sequence(const std::string& src)
+  {
+    static const char escaped[] = "\b\f\n\r\t\v\"\\/";
+    std::string::const_iterator it = std::find_first_of(src.begin(), src.end(), escaped, escaped + sizeof(escaped));
+    if (it == src.end())
+      return src;
+
+    std::string res;
+    res.reserve(2 * src.size());
+    res.assign(src.begin(), it);
+    for(; it!=src.end(); ++it)
     {
-      return lut[(uint8_t)c] & 8;
+      switch(*it)
+      {
+      case '\b':  //Backspace (ascii code 08)
+        res+="\\b"; break;
+      case '\f':  //Form feed (ascii code 0C)
+        res+="\\f"; break;
+      case '\n':  //New line
+        res+="\\n"; break;
+      case '\r':  //Carriage return
+        res+="\\r"; break;
+      case '\t':  //Tab
+        res+="\\t"; break;
+      case '\v':  //Vertical tab
+        res+="\\v"; break;
+      //case '\'':  //Apostrophe or single quote
+      //  res+="\\'"; break;
+      case '"':  //Double quote
+        res+="\\\""; break;
+      case '\\':  //Backslash caracter
+        res+="\\\\"; break;
+      case '/':  //Backslash caracter
+        res+="\\/"; break;
+      default:
+        res.push_back(*it);
+      }
     }
+    return res;
+  }
+  /*
 
-    bool isdigit(char c)
+  \b  Backspace (ascii code 08)
+  \f  Form feed (ascii code 0C)
+  \n  New line
+  \r  Carriage return
+  \t  Tab
+  \v  Vertical tab
+  \'  Apostrophe or single quote
+  \"  Double quote
+  \\  Backslash character
+
+  */
+  void match_string2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val)
+  {
+    bool escape_mode = false;
+    std::string::const_iterator it = star_end_string;
+    ++it;
+    std::string::const_iterator fi = it;
+    while (fi != buf_end && ((lut[(uint8_t)*fi] & 32)) == 0)
+      ++fi;
+    val.assign(it, fi);
+    it = fi;
+    for(;it != buf_end;it++)
     {
-      return lut[(uint8_t)c] & 1;
-    }
-
-    std::string transform_to_escape_sequence(const std::string& src)
-    {
-      static const char escaped[] = "\b\f\n\r\t\v\"\\/";
-      std::string::const_iterator it = std::find_first_of(src.begin(), src.end(), escaped, escaped + sizeof(escaped));
-      if (it == src.end())
-        return src;
-
-      std::string res;
-      res.reserve(2 * src.size());
-      res.assign(src.begin(), it);
-      for(; it!=src.end(); ++it)
+      if(escape_mode/*prev_ch == '\\'*/)
       {
         switch(*it)
         {
-        case '\b':  //Backspace (ascii code 08)
-          res+="\\b"; break;
-        case '\f':  //Form feed (ascii code 0C)
-          res+="\\f"; break;
-        case '\n':  //New line
-          res+="\\n"; break;
-        case '\r':  //Carriage return
-          res+="\\r"; break;
-        case '\t':  //Tab
-          res+="\\t"; break;
-        case '\v':  //Vertical tab
-          res+="\\v"; break;
-        //case '\'':  //Apostrophe or single quote
-        //  res+="\\'"; break;
+        case 'b':  //Backspace (ascii code 08)
+          val.push_back(0x08);break;
+        case 'f':  //Form feed (ascii code 0C)
+          val.push_back(0x0C);break;
+        case 'n':  //New line
+          val.push_back('\n');break;
+        case 'r':  //Carriage return
+          val.push_back('\r');break;
+        case 't':  //Tab
+          val.push_back('\t');break;
+        case 'v':  //Vertical tab
+          val.push_back('\v');break;
+        case '\'':  //Apostrophe or single quote
+          val.push_back('\'');break;
         case '"':  //Double quote
-          res+="\\\""; break;
-        case '\\':  //Backslash caracter
-          res+="\\\\"; break;
-        case '/':  //Backslash caracter
-          res+="\\/"; break;
-        default:
-          res.push_back(*it);
-        }
-      }
-      return res;
-    }
-    /*
-
-      \b  Backspace (ascii code 08)
-      \f  Form feed (ascii code 0C)
-      \n  New line
-      \r  Carriage return
-      \t  Tab
-      \v  Vertical tab
-      \'  Apostrophe or single quote
-      \"  Double quote
-      \\  Backslash character
-
-      */
-      void match_string2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val)
-      {
-        bool escape_mode = false;
-        std::string::const_iterator it = star_end_string;
-        ++it;
-        std::string::const_iterator fi = it;
-        while (fi != buf_end && ((lut[(uint8_t)*fi] & 32)) == 0)
-          ++fi;
-        val.assign(it, fi);
-        it = fi;
-        for(;it != buf_end;it++)
-        {
-          if(escape_mode/*prev_ch == '\\'*/)
+          val.push_back('"');break;
+        case '\\':  //Backslash character
+          val.push_back('\\');break;
+        case '/':  //Slash character
+          val.push_back('/');break;
+        case 'u':  //Unicode code point
+          if (buf_end - it < 4)
           {
-            switch(*it)
+            ASSERT_MES_AND_THROW("Invalid Unicode escape sequence");
+          }
+          else
+          {
+            uint32_t dst = 0;
+            for (int i = 0; i < 4; ++i)
             {
-            case 'b':  //Backspace (ascii code 08)
-              val.push_back(0x08);break;
-            case 'f':  //Form feed (ascii code 0C)
-              val.push_back(0x0C);break;
-            case 'n':  //New line
-              val.push_back('\n');break;
-            case 'r':  //Carriage return
-              val.push_back('\r');break;
-            case 't':  //Tab
-              val.push_back('\t');break;
-            case 'v':  //Vertical tab
-              val.push_back('\v');break;
-            case '\'':  //Apostrophe or single quote
-              val.push_back('\'');break;
-            case '"':  //Double quote
-              val.push_back('"');break;
-            case '\\':  //Backslash character
-              val.push_back('\\');break;
-            case '/':  //Slash character
-              val.push_back('/');break;
-            case 'u':  //Unicode code point
-              if (buf_end - it < 4)
-              {
-                ASSERT_MES_AND_THROW("Invalid Unicode escape sequence");
-              }
-              else
-              {
-                uint32_t dst = 0;
-                for (int i = 0; i < 4; ++i)
-                {
-                  const unsigned char tmp = isx[(unsigned char)*++it];
-                  CHECK_AND_ASSERT_THROW_MES(tmp != 0xff, "Bad Unicode encoding");
-                  dst = dst << 4 | tmp;
-                }
-                // encode as UTF-8
-                if (dst <= 0x7f)
-                {
-                  val.push_back(dst);
-                }
-                else if (dst <= 0x7ff)
-                {
-                  val.push_back(0xc0 | (dst >> 6));
-                  val.push_back(0x80 | (dst & 0x3f));
-                }
-                else if (dst <= 0xffff)
-                {
-                  val.push_back(0xe0 | (dst >> 12));
-                  val.push_back(0x80 | ((dst >> 6) & 0x3f));
-                  val.push_back(0x80 | (dst & 0x3f));
-                }
-                else
-                {
-                  ASSERT_MES_AND_THROW("Unicode code point is out or range");
-                }
-              }
-              break;
-            default:
-              val.push_back(*it);
-              LOG_PRINT_L0("Unknown escape sequence :\"\\" << *it << "\"");
+              const unsigned char tmp = isx[(unsigned char)*++it];
+              CHECK_AND_ASSERT_THROW_MES(tmp != 0xff, "Bad Unicode encoding");
+              dst = dst << 4 | tmp;
             }
-            escape_mode = false;
-          }else if(*it == '"')
-          {
-            star_end_string = it;
-            return;
-          }else if(*it == '\\')
-          {
-            escape_mode = true;
-          }
-          else
-          {
-            val.push_back(*it);
-          }
-        }
-        ASSERT_MES_AND_THROW("Failed to match string in json entry: " << std::string(star_end_string, buf_end));
-      }
-
-      bool match_string(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val)
-      {
-        try
-        {
-
-          match_string2(star_end_string, buf_end, val);
-          return true;
-        }
-        catch(...)
-        {
-          return false;
-        }
-      }
-
-      void match_number2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val, bool& is_float_val, bool& is_signed_val)
-      {
-        uint8_t float_flag = 0;
-        is_signed_val = false;
-        size_t chars = 0;
-        std::string::const_iterator it = star_end_string;
-        if (it != buf_end && *it == '-')
-        {
-          is_signed_val = true;
-          ++chars;
-          ++it;
-        }
-        for(;it != buf_end;it++)
-        {
-          const uint8_t flags = lut[(uint8_t)*it];
-          if (flags & 16)
-          {
-            float_flag |= flags;
-            ++chars;
-          }
-          else
-          {
-            val = std::string_view(&*star_end_string, chars);
-            if(val.size())
+            // encode as UTF-8
+            if (dst <= 0x7f)
             {
-              star_end_string = --it;
-              is_float_val = !!(float_flag & 2);
-              return;
+              val.push_back(dst);
+            }
+            else if (dst <= 0x7ff)
+            {
+              val.push_back(0xc0 | (dst >> 6));
+              val.push_back(0x80 | (dst & 0x3f));
+            }
+            else if (dst <= 0xffff)
+            {
+              val.push_back(0xe0 | (dst >> 12));
+              val.push_back(0x80 | ((dst >> 6) & 0x3f));
+              val.push_back(0x80 | (dst & 0x3f));
             }
             else
-              ASSERT_MES_AND_THROW("wrong number in json entry: " << std::string(star_end_string, buf_end));
-          }
-        }
-        ASSERT_MES_AND_THROW("wrong number in json entry: " << std::string(star_end_string, buf_end));
-      }
-
-      bool match_number(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
-      {
-        try
-        {
-          bool is_v_float = false;bool is_signed_val = false;
-          match_number2(star_end_string, buf_end, val, is_v_float, is_signed_val);
-          return !is_v_float;
-        }
-        catch(...)
-        {
-          return false;
-        }
-      }
-
-      void match_word2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
-      {
-        for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
-        {
-          if (!(lut[(uint8_t)*it] & 4))
-          {
-            val = std::string_view(&*star_end_string, std::distance(star_end_string, it));
-            if(val.size())
             {
-              star_end_string = --it;
-              return;
-            }else
-              ASSERT_MES_AND_THROW("failed to match word number in json entry: " << std::string(star_end_string, buf_end));
+              ASSERT_MES_AND_THROW("Unicode code point is out or range");
+            }
           }
+          break;
+        default:
+          val.push_back(*it);
+          LOG_PRINT_L0("Unknown escape sequence :\"\\" << *it << "\"");
         }
-        ASSERT_MES_AND_THROW("failed to match word number in json entry: " << std::string(star_end_string, buf_end));
-      }
-
-      bool match_word(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
+        escape_mode = false;
+      }else if(*it == '"')
       {
-        try
-        {
-          match_word2(star_end_string, buf_end, val);
-          return true;
-        }
-        catch(...)
-        {
-          return false;
-        }
-      }
-
-      bool match_word_with_extrasymb(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val)
+        star_end_string = it;
+        return;
+      }else if(*it == '\\')
       {
-        val.clear();
-
-        for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
-        {
-          if(!isalnum(*it) && *it != '-' && *it != '_')
-          {
-            val.assign(star_end_string, it);
-            if(val.size())
-            {
-              star_end_string = --it;
-              return true;
-            }else
-              return false;
-          }
-        }
-        return false;
+        escape_mode = true;
       }
-
-      bool match_word_til_equal_mark(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string::const_iterator& word_end)
+      else
       {
-        word_end = star_end_string;
-
-        for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
-        {
-          if(isspace(*it))
-          {
-
-            continue;
-          }else if( *it == '=' )
-          {
-            star_end_string = it;
-            word_end = it;
-            return true;
-          }
-        }
-        return false;
+        val.push_back(*it);
       }
+    }
+    ASSERT_MES_AND_THROW("Failed to match string in json entry: " << std::string(star_end_string, buf_end));
   }
+
+  bool match_string(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val)
+  {
+    try
+    {
+
+      match_string2(star_end_string, buf_end, val);
+      return true;
+    }
+    catch(...)
+    {
+      return false;
+    }
+  }
+
+  void match_number2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val, bool& is_float_val, bool& is_signed_val)
+  {
+    uint8_t float_flag = 0;
+    is_signed_val = false;
+    size_t chars = 0;
+    std::string::const_iterator it = star_end_string;
+    if (it != buf_end && *it == '-')
+    {
+      is_signed_val = true;
+      ++chars;
+      ++it;
+    }
+    for(;it != buf_end;it++)
+    {
+      const uint8_t flags = lut[(uint8_t)*it];
+      if (flags & 16)
+      {
+        float_flag |= flags;
+        ++chars;
+      }
+      else
+      {
+        val = std::string_view(&*star_end_string, chars);
+        if(val.size())
+        {
+          star_end_string = --it;
+          is_float_val = !!(float_flag & 2);
+          return;
+        }
+        else
+          ASSERT_MES_AND_THROW("wrong number in json entry: " << std::string(star_end_string, buf_end));
+      }
+    }
+    ASSERT_MES_AND_THROW("wrong number in json entry: " << std::string(star_end_string, buf_end));
+  }
+
+  bool match_number(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
+  {
+    try
+    {
+      bool is_v_float = false;bool is_signed_val = false;
+      match_number2(star_end_string, buf_end, val, is_v_float, is_signed_val);
+      return !is_v_float;
+    }
+    catch(...)
+    {
+      return false;
+    }
+  }
+
+  void match_word2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
+  {
+    for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
+    {
+      if (!(lut[(uint8_t)*it] & 4))
+      {
+        val = std::string_view(&*star_end_string, std::distance(star_end_string, it));
+        if(val.size())
+        {
+          star_end_string = --it;
+          return;
+        }else
+          ASSERT_MES_AND_THROW("failed to match word number in json entry: " << std::string(star_end_string, buf_end));
+      }
+    }
+    ASSERT_MES_AND_THROW("failed to match word number in json entry: " << std::string(star_end_string, buf_end));
+  }
+
+  bool match_word(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val)
+  {
+    try
+    {
+      match_word2(star_end_string, buf_end, val);
+      return true;
+    }
+    catch(...)
+    {
+      return false;
+    }
+  }
+
+  bool match_word_with_extrasymb(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val)
+  {
+    val.clear();
+
+    for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
+    {
+      if(!isalnum(*it) && *it != '-' && *it != '_')
+      {
+        val.assign(star_end_string, it);
+        if(val.size())
+        {
+          star_end_string = --it;
+          return true;
+        }else
+          return false;
+      }
+    }
+    return false;
+  }
+
+  bool match_word_til_equal_mark(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string::const_iterator& word_end)
+  {
+    word_end = star_end_string;
+
+    for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
+    {
+      if(isspace(*it))
+      {
+
+        continue;
+      }else if( *it == '=' )
+      {
+        star_end_string = it;
+        word_end = it;
+        return true;
+      }
+    }
+    return false;
+  }
+}
 }
 }
