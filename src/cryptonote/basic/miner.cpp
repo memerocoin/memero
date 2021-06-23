@@ -225,7 +225,7 @@ namespace cryptonote
 
     for(size_t i = 0; i != m_threads_total; i++)
     {
-      m_threads.push_back(std::thread(std::bind(&miner::worker_thread, this, i)));
+      m_threads.push_back(std::thread(&miner::worker_thread, this, i));
     }
 
     MINFO("Mining has started with " << threads_count << " threads, good luck!" );
