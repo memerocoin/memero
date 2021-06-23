@@ -5,6 +5,8 @@
 
 #include "portable_binary_archive.hpp"
 
+#include <boost/archive/archive_exception.hpp>
+
 namespace boost {
 namespace archive {
 
