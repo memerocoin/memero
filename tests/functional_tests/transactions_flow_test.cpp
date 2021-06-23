@@ -33,7 +33,7 @@
 #include <boost/uuid/random_generator.hpp>
 #include <unordered_map>
 
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 using namespace epee;
 #include "wallet/wallet2.h"
 using namespace cryptonote;

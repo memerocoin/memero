@@ -44,7 +44,7 @@
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/functional/hash.hpp>
 
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/common/boost_serialization_helper.h"
 #include "tools/common/command_line.h"
 #include "tools/common/threadpool.h"

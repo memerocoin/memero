@@ -28,7 +28,7 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/account.h"
 #include "cryptonote/core/cryptonote_tx_utils.h"

@@ -31,7 +31,7 @@
 #include <vector>
 #include <iostream>
 
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/console_handler.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"

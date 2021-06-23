@@ -34,7 +34,7 @@
 
 #include "gtest/gtest.h"
 
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/net/abstract_tcp_server2.h"
 

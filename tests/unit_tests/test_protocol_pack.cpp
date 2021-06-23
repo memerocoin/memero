@@ -30,7 +30,7 @@
 
 #include "gtest/gtest.h"
 
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "tools/epee/include/storages/portable_storage_template_helper.h"
 

@@ -47,7 +47,7 @@
 #include "database/interface/blockchain.hpp"
 #include "network/p2p/net_node.h"
 #include "tools/epee/include/console_handler.h"
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "wallet/device/device.hpp"
 
 #include "testdb.h"
