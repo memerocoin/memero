@@ -50,7 +50,7 @@
 #include <fstream>
 
 
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/file_io_utils.h"
 #include "tools/epee/include/wipeable_string.h"
 #include "tools/epee/include/misc_os_dependent.h"

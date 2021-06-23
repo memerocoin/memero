@@ -39,7 +39,7 @@
 #include "math/crypto/hash.hpp"
 #include "math/ringct/rctSigs.hpp"
 #include "tools/common/apply_permutation.h"
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/string_tools.h"
 
 #include "config/cryptonote.hpp"

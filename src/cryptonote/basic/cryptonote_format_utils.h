@@ -33,7 +33,7 @@
 #include <unordered_map>
 #include <boost/multiprecision/cpp_int.hpp>
 
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "math/crypto/crypto.hpp"
 #include "math/crypto/hash.hpp"
 

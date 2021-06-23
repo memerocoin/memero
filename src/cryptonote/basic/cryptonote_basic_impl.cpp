@@ -31,7 +31,7 @@
 #include "math/crypto/hash.hpp"
 
 #include "tools/common/base58.h"
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/string_tools.h"

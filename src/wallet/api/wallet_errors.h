@@ -37,7 +37,7 @@
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "tools/epee/include/include_base_utils.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 
 namespace tools
