@@ -35,10 +35,14 @@
 
 #include "tools/epee/include/net/http_server_impl_base.h"
 #include "tools/epee/include/net/http_client.h"
-#include "core_rpc_server_commands_defs.h"
+#include "tools/epee/include/net/http_server_handlers_map2.h"
+
 #include "cryptonote/core/cryptonote_core.h"
-#include "network/p2p/net_node.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
+
+#include "network/p2p/net_node.h"
+
+#include "core_rpc_server_commands_defs.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon.rpc"

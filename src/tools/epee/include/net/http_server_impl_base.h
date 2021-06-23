@@ -29,12 +29,10 @@
 
 #pragma once
 
-
 #include <thread>
 
 #include "tools/epee/include/net/abstract_tcp_server2.h"
 #include "http_protocol_handler.h"
-#include "tools/epee/include/net/http_server_handlers_map2.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.http"
