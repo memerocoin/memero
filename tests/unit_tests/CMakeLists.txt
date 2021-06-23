@@ -53,13 +53,13 @@ add_executable(test_notifier test_notifier.cpp)
 add_dependencies(unit_tests_tools test_notifier)
 
 target_link_libraries(unit_tests_tools
-  PRIVATE
-    epee
-    common
-    common_basic
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    GTest::gtest
-    GTest::gtest_main
+  epee
+  common
+  common_basic
+  epee_storage
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  GTest::gtest
+  GTest::gtest_main
 )
 
 gtest_discover_tests(
@@ -77,13 +77,13 @@ add_executable(unit_tests_basic
 )
 
 target_link_libraries(unit_tests_basic
-  PRIVATE
-    cryptonote_basic
-    mnemonics
-    serialization
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    GTest::gtest
-    GTest::gtest_main
+  cryptonote_basic
+  mnemonics
+  serialization
+  epee_storage
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  GTest::gtest
+  GTest::gtest_main
 )
 
 gtest_discover_tests(
@@ -124,19 +124,19 @@ add_executable(unit_tests_core
 )
 
 target_link_libraries(unit_tests_core
-  PRIVATE
-    ringct
-    cryptonote_protocol
-    cryptonote_core
-    # blockchain_db
-    lmdb_lib
-    rpc
-    net
-    serialization
-    p2p
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    GTest::gtest
-    GTest::gtest_main
+  ringct
+  cryptonote_protocol
+  cryptonote_core
+  # blockchain_db
+  lmdb_lib
+  rpc
+  net
+  serialization
+  p2p
+  epee_storage
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  GTest::gtest
+  GTest::gtest_main
 )
 
 gtest_discover_tests(
@@ -150,13 +150,13 @@ add_executable(unit_tests_wallet_basic
 )
 
 target_link_libraries(unit_tests_wallet_basic
-  PRIVATE
-    wallet_logic
-    boost_archive
-    serialization
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    GTest::gtest
-    GTest::gtest_main
+  wallet_logic
+  boost_archive
+  serialization
+  epee_storage
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  GTest::gtest
+  GTest::gtest_main
 )
 
 gtest_discover_tests(
@@ -171,11 +171,10 @@ add_executable(unit_tests_wallet
 )
 
 target_link_libraries(unit_tests_wallet
-  PRIVATE
-    wallet_api
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    GTest::gtest
-    GTest::gtest_main
+  wallet_api
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  GTest::gtest
+  GTest::gtest_main
 )
 
 gtest_discover_tests(

@@ -59,4 +59,5 @@ target_link_libraries(wallet_api
   serialization
   wallet_errors
   node_rpc_proxy
+  epee_storage
 )

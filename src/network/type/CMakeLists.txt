@@ -40,5 +40,6 @@ add_library(net
 target_link_libraries(net
   common
   epee
+  epee_net
   )
 

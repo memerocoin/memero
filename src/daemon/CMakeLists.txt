@@ -48,6 +48,7 @@ target_link_libraries(lolnerod
     serialization
     daemon_rpc_server
     version
+    epee_storage
     ${EPEE_READLINE}
     ${GNU_READLINE_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}

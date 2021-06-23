@@ -43,28 +43,51 @@ add_library( epee
   src/console_handler.cpp
   src/time_helper.cpp
   src/misc_os_dependent.cpp
-  src/net/http_protocol_handler.cpp
-  src/net/net_parse_helpers.cpp
-  src/net/net_helper.cpp
-  src/net/http_client.cpp
-  src/storages/portable_storage.cpp
-  src/storages/portable_storage_from_json.cpp
-  src/storages/portable_storage_from_bin.cpp
-  src/storages/parserse_base_utils.cpp
 )
-
-if (USE_READLINE AND (GNU_READLINE_FOUND))
-  add_library( epee_readline
-    src/readline_buffer.cpp
-  )
-endif()
 
 target_link_libraries( epee
   easylogging
   ${OPENSSL_LIBRARIES}
 )
 
+add_library( epee_net_basic
+  src/net/net_parse_helpers.cpp
+)
+
+target_link_libraries( epee_net_basic
+  epee
+)
+
+add_library( epee_net
+  src/net/http_protocol_handler.cpp
+  src/net/net_helper.cpp
+  src/net/http_client.cpp
+)
+
+target_link_libraries( epee_net
+  epee_net_basic
+)
+
+add_library( epee_storage_basic
+  src/storages/parserse_base_utils.cpp
+)
+
+add_library( epee_storage
+  src/storages/portable_storage.cpp
+  src/storages/portable_storage_from_json.cpp
+  src/storages/portable_storage_from_bin.cpp
+)
+
+target_link_libraries( epee_storage
+  epee_storage_basic
+  epee
+)
+
 if (USE_READLINE AND (GNU_READLINE_FOUND))
+  add_library( epee_readline
+    src/readline_buffer.cpp
+  )
+
   target_link_libraries( epee_readline
     easylogging
     ${GNU_READLINE_LIBRARY}
@@ -74,3 +97,4 @@ if (USE_READLINE AND (GNU_READLINE_FOUND))
     epee_readline
   )
 endif()
+
