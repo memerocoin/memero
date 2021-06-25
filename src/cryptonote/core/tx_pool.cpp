@@ -41,7 +41,7 @@
 #include "math/crypto/hash.hpp"
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/warnings.h"
+
 
 #include "blockchain.h"
 

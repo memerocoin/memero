@@ -46,7 +46,7 @@
 #include "blockchain.h"
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/connection_context.h"
-#include "tools/epee/include/warnings.h"
+
 #include "math/crypto/hash.hpp"
 #include "tools/epee/include/span.h"
 

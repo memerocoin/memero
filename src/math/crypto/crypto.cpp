@@ -38,7 +38,7 @@
 #include <sodium.h>
 
 #include "tools/common/varint.h"
-#include "tools/epee/include/warnings.h"
+
 #include "crypto.hpp"
 #include "hash.hpp"
 

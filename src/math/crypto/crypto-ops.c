@@ -31,7 +31,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include "tools/epee/include/warnings.h"
+
 #include "crypto-ops.h"
 
 /* Predeclarations */

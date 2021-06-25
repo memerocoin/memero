@@ -45,7 +45,7 @@
 #include "tools/epee/include/file_io_utils.h"
 #include "tools/epee/include/int-util.h"
 #include "tools/common/threadpool.h"
-#include "tools/epee/include/warnings.h"
+
 #include "math/crypto/hash.hpp"
 #include "cryptonote_core.h"
 #include "math/ringct/rctSigs.hpp"

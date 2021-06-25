@@ -39,7 +39,7 @@
 #include <type_traits>
 
 #include "tools/common/varint.h"
-#include "tools/epee/include/warnings.h"
+
 
 /*! \struct binary_archive_base
  *
