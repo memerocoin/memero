@@ -1,10 +1,5 @@
 # pragma once
 
-#if defined(_MSC_VER)
-#pragma warning( push )
-#pragma warning( disable : 4244 )
-#endif
-
 /////////1/////////2/////////3/////////4/////////5/////////6/////////7/////////8
 // portable_binary_iarchive.hpp
 
