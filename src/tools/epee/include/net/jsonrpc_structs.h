@@ -1,6 +1,4 @@
-#ifndef JSONRPC_STRUCTS_H
-#define	JSONRPC_STRUCTS_H
-
+#pragma once
 
 namespace epee
 {
@@ -102,5 +100,3 @@ namespace epee
     typedef response<dummy_result, error> error_response;
   }
 }
-
-#endif	/* JSONRPC_STRUCTS_H */
