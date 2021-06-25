@@ -26,11 +26,11 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <optional>
-#include <string.h>
-#include "tools/epee/include/memwipe.h"
-#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/wipeable_string.h"
+
+#include "tools/epee/include/misc_log_ex.h"
+
+#include <string.h>
 
 static constexpr const char hex[] = "0123456789abcdef";
 

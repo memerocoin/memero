@@ -26,11 +26,9 @@
 
 #include "tools/epee/include/string_tools.h"
 
-#include <ctype.h>
 #include <random>
 
 #include <arpa/inet.h>
-#include <netinet/in.h>
 
 namespace epee
 {

@@ -29,8 +29,10 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
-#include <memory>
+
 #include "serialization.h"
+
+#include <memory>
 
 template <template <bool> class Archive>
 bool do_serialize(Archive<false>& ar, std::string& str)

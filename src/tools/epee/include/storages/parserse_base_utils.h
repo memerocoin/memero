@@ -28,8 +28,8 @@
 
 #pragma once
 
-
-#include "tools/epee/include/misc_log_ex.h"
+#include <cstdint>
+#include <string>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "serialization"

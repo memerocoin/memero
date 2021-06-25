@@ -31,10 +31,7 @@
 #pragma once
 
 #include <limits>
-#include <type_traits>
-#include <utility>
 #include <sstream>
-#include <string>
 /*! \file varint.h
  * \brief provides the implementation of varint's
  *

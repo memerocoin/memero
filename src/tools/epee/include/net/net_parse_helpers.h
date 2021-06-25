@@ -28,6 +28,7 @@
 #pragma once
 
 #include "http_base.h"
+
 #include "tools/epee/include/reg_exp_definer.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

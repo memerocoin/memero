@@ -30,14 +30,12 @@
 
 #pragma once
 
-#include <stddef.h>
-#include <iostream>
 
 #include "generic-ops.h"
-#include "tools/epee/include/hex.h"
 #include "sha3.hpp"
 #include "tree-hash.hpp"
-#include "hash-ops.hpp"
+
+#include "tools/epee/include/hex.h"
 
 namespace crypto {
 

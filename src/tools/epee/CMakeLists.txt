@@ -35,7 +35,7 @@ add_library( epee
   src/string_tools.cpp
   src/wipeable_string.cpp
   src/levin_base.cpp
-  src/memwipe.c
+  src/memwipe.cpp
   src/connection_basic.cpp
   src/buffer.cpp
   src/file_io_utils.cpp

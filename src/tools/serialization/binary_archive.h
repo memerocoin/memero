@@ -31,14 +31,15 @@
 /*! \file binary_archive.h
  *
  * Portable (low-endian) binary archive */
+
 #pragma once
+
+#include "tools/common/varint.h"
 
 #include <cassert>
 #include <iostream>
 #include <iterator>
 #include <type_traits>
-
-#include "tools/common/varint.h"
 
 
 /*! \struct binary_archive_base

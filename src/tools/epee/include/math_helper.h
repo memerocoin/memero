@@ -30,6 +30,8 @@
 #include "tools/epee/include/misc_os_dependent.h"
 #include "tools/epee/include/syncobj.h"
 
+#include "sys/time.h"
+
 namespace epee
 {
 namespace math_helper

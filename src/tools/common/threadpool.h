@@ -28,14 +28,11 @@
 #pragma once
 
 #include <condition_variable>
-#include <mutex>
-#include <thread>
-#include <cstddef>
-#include <functional>
-#include <utility>
-#include <vector>
-#include <stdexcept>
 #include <deque>
+#include <vector>
+#include <mutex>
+#include <functional>
+#include <thread>
 
 namespace tools
 {

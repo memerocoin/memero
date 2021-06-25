@@ -26,16 +26,20 @@
 
 #pragma once
 
+
+#include "tools/epee/include/string_tools.h"
+
+#ifdef HAVE_READLINE
+#include "tools/epee/include/readline_buffer.h"
+#endif
+
+#include "tools/epee/include/misc_log_ex.h"
+
 #include <condition_variable>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-#include "tools/epee/include/string_tools.h"
-
-#ifdef HAVE_READLINE
-  #include "tools/epee/include/readline_buffer.h"
-#endif
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "console_handler"

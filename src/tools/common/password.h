@@ -30,11 +30,10 @@
 
 #pragma once
 
-#include <string>
-#include <atomic>
-#include <optional>
-#include <functional>
 #include "tools/epee/include/wipeable_string.h"
+
+#include <atomic>
+#include <functional>
 
 namespace tools
 {

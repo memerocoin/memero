@@ -30,15 +30,13 @@
 
 #include "base58.h"
 
-#include <assert.h>
-#include <string>
-#include <vector>
-
-#include <boost/multiprecision/cpp_int.hpp>
+#include "varint.h"
 
 #include "math/crypto/hash.hpp"
 #include "tools/epee/include/int-util.h"
-#include "varint.h"
+
+#include <boost/multiprecision/cpp_int.hpp>
+
 
 namespace tools
 {

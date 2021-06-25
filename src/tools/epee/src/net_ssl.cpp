@@ -26,16 +26,10 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <string.h>
-#include <thread>
-#include <boost/asio/ssl.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <openssl/ssl.h>
-#include <openssl/pem.h>
-#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/net/net_helper.h"
-#include "tools/epee/include/net/net_ssl.h"
+
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/lambda/lambda.hpp>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.ssl"

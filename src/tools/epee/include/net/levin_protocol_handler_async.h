@@ -26,15 +26,13 @@
 
 #pragma once
 
-#include <random>
-
-#include <boost/uuid/uuid_generators.hpp>
+#include "buffer.h"
+#include "levin_base.h"
 
 #include "tools/epee/include/misc_os_dependent.h"
 
-#include "levin_base.h"
-#include "buffer.h"
-
+#include <random>
+#include <boost/uuid/uuid_generators.hpp>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

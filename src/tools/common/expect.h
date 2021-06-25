@@ -28,12 +28,9 @@
 
 #pragma once
 
-#include <cassert>
-#include <system_error>
-#include <type_traits>
-#include <utility>
-
 #include "tools/common/error.h"
+
+#include <cassert>
 
 //! If precondition fails, return `::error::kInvalidArgument` in current scope.
 #define MONERO_PRECOND(...)                            \

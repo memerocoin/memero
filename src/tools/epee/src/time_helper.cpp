@@ -24,12 +24,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-
 #include "tools/epee/include/time_helper.h"
 
-#include <chrono>  // chrono::system_clock
-#include <ctime>   // localtime
-#include <sstream> // stringstream
 #include <iomanip> // put_time
 
 #include <boost/lexical_cast.hpp>

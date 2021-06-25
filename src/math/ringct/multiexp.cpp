@@ -34,7 +34,7 @@ extern "C"
 }
 
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/common_basic/aligned.h"
+#include "tools/common_basic/aligned.hpp"
 
 #include "rctOps.hpp"
 #include "multiexp.hpp"

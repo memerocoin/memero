@@ -26,10 +26,10 @@
 
 #pragma once
 
+#include "portable_storage_template_helper.h"
 
 #include "tools/epee/include/net/levin_base.h"
 
-#include "portable_storage_template_helper.h"
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

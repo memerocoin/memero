@@ -27,7 +27,6 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tools/epee/include/net/levin_base.h"
-#include "tools/epee/include/int-util.h"
 
 #include "config/lol.hpp"
 

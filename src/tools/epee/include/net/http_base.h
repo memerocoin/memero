@@ -27,10 +27,12 @@
 
 
 #pragma once
-#include <regex>
-#include <list>
 
 #include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/memwipe.h"
+
+#include <regex>
+#include <list>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.http"

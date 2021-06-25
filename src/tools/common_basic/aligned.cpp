@@ -26,12 +26,12 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdint.h>
-#include <string.h>
-#include "aligned.h"
+#include "aligned.hpp"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cstdint>
 
 static inline int is_power_of_2(size_t n) { return n && (n & (n-1)) == 0; }
 
@@ -42,7 +42,7 @@ static void local_abort(const char *msg)
 {
   fprintf(stderr, "%s\n", msg);
 #ifdef NDEBUG
-  _exit(1);
+  _Exit(1);
 #else
   abort();
 #endif

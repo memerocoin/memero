@@ -30,12 +30,14 @@
 
 #pragma once
 
-#include <vector>
 
 #include "serialization.h"
+
 #include "math/crypto/chacha.hpp"
 #include "math/crypto/crypto.hpp"
 #include "math/crypto/hash.hpp"
+
+#include <vector>
 
 // read
 template <template <bool> class Archive>

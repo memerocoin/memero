@@ -38,16 +38,15 @@
 
 /* rfree: place for hanlers for the non-template base, can be used by connection<> template class in abstract_tcp_server2 file  */
 
-#ifndef INCLUDED_p2p_connection_basic_hpp
-#define INCLUDED_p2p_connection_basic_hpp
+#pragma once
 
-
-
-#include <boost/asio.hpp>
 
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/net_ssl.h"
+
 #include "tools/epee/include/syncobj.h"
+
+#include <boost/asio.hpp>
 
 namespace epee
 {
@@ -174,7 +173,5 @@ class connection_basic { // not-templated base class for rapid developmet of som
 
 } // nameserver
 } // nameserver
-
-#endif
 
 

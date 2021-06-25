@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "tools/epee/include/misc_log_ex.h"
-#include <iostream>
 
 #ifdef HAVE_READLINE
   #include "tools/epee/include/readline_buffer.h"
@@ -38,6 +36,8 @@
 #else
   #define PAUSE_READLINE()
 #endif
+
+#include "tools/epee/include/misc_log_ex.h"
 
 namespace tools
 {

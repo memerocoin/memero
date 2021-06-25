@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
 
 constexpr size_t HASH_SIZE = 32;

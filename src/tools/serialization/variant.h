@@ -36,6 +36,8 @@
  */
 #pragma once
 
+#include "serialization.h"
+
 #include <boost/variant/variant.hpp>
 #include <boost/variant/apply_visitor.hpp>
 #include <boost/variant/static_visitor.hpp>
@@ -43,7 +45,6 @@
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/front.hpp>
 #include <boost/mpl/pop_front.hpp>
-#include "serialization.h"
 
 /*! \struct variant_reader
  *

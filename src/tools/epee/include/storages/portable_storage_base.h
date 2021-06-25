@@ -28,8 +28,11 @@
 
 #pragma once
 
-#include <boost/variant.hpp>
 #include <deque>
+#include <map>
+#include <string>
+
+#include <boost/variant.hpp>
 
 constexpr uint32_t PORTABLE_STORAGE_SIGNATUREA = 0x01011101;
 constexpr uint32_t PORTABLE_STORAGE_SIGNATUREB = 0x01020101; // bender's nightmare

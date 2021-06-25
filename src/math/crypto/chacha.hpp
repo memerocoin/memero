@@ -30,15 +30,11 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <stddef.h>
 
 #define CHACHA_KEY_SIZE 32
 #define CHACHA_IV_SIZE 8
 
-#include <memory.h>
 
-#include "tools/epee/include/memwipe.h"
 #include "hash.hpp"
 
 namespace crypto {

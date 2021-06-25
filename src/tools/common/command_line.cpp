@@ -29,7 +29,7 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "command_line.h"
-#include <boost/algorithm/string/compare.hpp>
+
 #include <boost/algorithm/string/predicate.hpp>
 
 namespace command_line

@@ -30,16 +30,10 @@
 
 #pragma once
 
-#include <functional>
-#include <iostream>
-#include <sstream>
-#include <array>
-#include <type_traits>
+#include "tools/epee/include/misc_log_ex.h"
 
 #include <boost/program_options/parsers.hpp>
-#include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include "tools/epee/include/misc_log_ex.h"
 
 namespace command_line
 {

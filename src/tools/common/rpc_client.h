@@ -28,14 +28,13 @@
 
 #pragma once
 
-#include <optional>
 
 #include "tools/common/http_connection.h"
 #include "tools/common/scoped_message_writer.h"
+
 #include "network/rpc/core_rpc_server_commands_defs.h"
+
 #include "tools/epee/include/storages/http_abstract_invoke.h"
-#include "tools/epee/include/net/http_client.h"
-#include "tools/epee/include/string_tools.h"
 
 namespace tools
 {

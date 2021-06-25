@@ -28,23 +28,17 @@
 //
 // Parts of this file Copyright (c) 2009-2015 The Bitcoin Core developers
 
-#define __STDC_WANT_LIB_EXT1__ 1
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#ifdef HAVE_EXPLICIT_BZERO
-#include <strings.h>
-#endif
 #include "tools/epee/include/memwipe.h"
 
-#if defined(_MSC_VER)
-#define SCARECROW \
-    __asm;
-#else
+#include <cstring>
+
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <unistd.h>
+#ifdef HAVE_EXPLICIT_BZERO
+#endif
+
 #define SCARECROW \
     __asm__ __volatile__("" : : "r"(ptr) : "memory");
-#endif
 
 #ifdef HAVE_MEMSET_S
 
@@ -54,7 +48,7 @@ void *memwipe(void *ptr, size_t n)
   {
 #ifdef NDEBUG
     fprintf(stderr, "Error: memset_s failed\n");
-    _exit(1);
+    _Exit(1);
 #else
     abort();
 #endif

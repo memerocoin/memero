@@ -27,13 +27,9 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tools/epee/include/hex.h"
-
-#include <iterator>
-#include <limits>
-#include <ostream>
-#include <stdexcept>
-
 #include "tools/epee/include/storages/parserse_base_utils.h"
+
+#include <limits>
 
 namespace epee
 {

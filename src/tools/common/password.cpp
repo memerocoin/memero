@@ -31,7 +31,6 @@
 #include "password.h"
 
 #include <iostream>
-#include <stdio.h>
 
 #include <termios.h>
 #include <unistd.h>

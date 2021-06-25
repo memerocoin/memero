@@ -28,10 +28,11 @@
 
 #include "json_object.h"
 
-#include <boost/range/adaptor/transformed.hpp>
-#include <boost/variant/apply_visitor.hpp>
 #include <limits>
 #include <type_traits>
+
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/variant/apply_visitor.hpp>
 
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 

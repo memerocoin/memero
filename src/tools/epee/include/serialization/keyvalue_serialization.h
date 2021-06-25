@@ -26,12 +26,12 @@
 
 #pragma once
 
-#include <type_traits>
-#include <boost/utility/value_init.hpp>
-#include <boost/foreach.hpp>
-#include "tools/epee/include/misc_log_ex.h"
 #include "enableable.h"
 #include "keyvalue_serialization_overloads.h"
+
+#include <type_traits>
+#include <boost/utility/value_init.hpp>
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "serialization"

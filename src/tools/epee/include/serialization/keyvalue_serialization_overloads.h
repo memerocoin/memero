@@ -26,12 +26,17 @@
 
 #pragma once
 
+#include "tools/epee/include/misc_log_ex.h"
+
 #include <set>
 #include <list>
 #include <vector>
 #include <deque>
+
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/contains_fwd.hpp>
+#include <boost/foreach.hpp>
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "serialization"

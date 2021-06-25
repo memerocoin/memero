@@ -30,16 +30,14 @@
 
 #pragma once
 
-#include <system_error>
+#include "config/cryptonote.hpp"
+
+#include <cstring>
+#include <optional>
 #include <csignal>
-#include <cstdio>
 #include <functional>
-#include <memory>
 #include <string>
 #include <mutex>
-
-#include "math/crypto/hash.hpp"
-#include "config/cryptonote.hpp"
 
 namespace tools
 {

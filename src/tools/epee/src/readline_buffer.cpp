@@ -1,9 +1,11 @@
 #include "tools/epee/include/readline_buffer.h"
+
 #include <readline/readline.h>
 #include <readline/history.h>
+
 #include <iostream>
 #include <mutex>
-#include <mutex>
+
 #include <boost/algorithm/string.hpp>
 
 static bool same_as_last_line(const std::string&);

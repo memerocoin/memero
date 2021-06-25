@@ -30,19 +30,12 @@
 
 #pragma once
 
-#ifdef __cplusplus
 #include <array>
-
-extern "C" {
-#endif
+#include <cstddef>
+#include <cstddef>
 
 void *memwipe(void *src, size_t n);
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
 namespace tools {
 
   /// Scrubs data in the contained type upon destruction.
@@ -78,5 +71,3 @@ namespace tools {
   template <class T, size_t N>
   using scrubbed_arr = scrubbed<std::array<T, N>>;
 } // namespace tools
-
-#endif // __cplusplus

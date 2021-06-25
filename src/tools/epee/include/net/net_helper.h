@@ -30,11 +30,11 @@
 #pragma once
 
 
-#include <boost/asio.hpp>
-#include <boost/lambda/lambda.hpp>
-
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/net_ssl.h"
+
+#include <boost/asio.hpp>
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"

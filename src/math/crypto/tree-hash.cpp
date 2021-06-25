@@ -28,13 +28,13 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "tree-hash.hpp"
+
+#include "sha3.hpp"
+
 #include <assert.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "tree-hash.hpp"
-#include "sha3.hpp"
 
 /***
 * Round to power of two, for count>=3 and for count being not too large (as reasonable for tree hash calculations)

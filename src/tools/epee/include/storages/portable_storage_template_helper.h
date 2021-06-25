@@ -28,6 +28,7 @@
 
 
 #include "portable_storage.h"
+
 #include "tools/epee/include/file_io_utils.h"
 
 namespace epee

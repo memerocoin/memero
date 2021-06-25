@@ -29,14 +29,15 @@
 #pragma once
 
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/ip/address_v6.hpp>
+#include "enums.h"
 
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "tools/epee/include/int-util.h"
 
-#include "enums.h"
+#include <boost/uuid/uuid.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/address_v6.hpp>
+
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

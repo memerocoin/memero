@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 
 extern const std::string_view LOLNERO_VERSION;
 extern const std::string_view LOLNERO_RELEASE_NAME;

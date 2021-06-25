@@ -28,52 +28,26 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <unistd.h>
-#include <cstdio>
+#include "util.h"
+
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/misc_os_dependent.h"
+
+#include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...
+
 #include <wchar.h>
 
 #ifdef __GLIBC__
 #include <gnu/libc-version.h>
-#include <sys/sysmacros.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/resource.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <string.h>
-#include <ctype.h>
 #endif
 
-#include <string>
-#include <iomanip>
-#include <sstream>
-#include <fstream>
-
-
-#include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/file_io_utils.h"
-#include "tools/epee/include/wipeable_string.h"
-#include "tools/epee/include/misc_os_dependent.h"
-using namespace epee;
-
-#include "math/crypto/crypto.hpp"
-#include "util.h"
-#include "tools/epee/include/memwipe.h"
-#include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...
-#include "tools/epee/include/readline_buffer.h"
-
-#include <sys/file.h>
-#include <sys/utsname.h>
-#include <sys/stat.h>
-
-#include <filesystem>
-#include <boost/algorithm/string.hpp>
-#include <boost/asio.hpp>
 #include <boost/format.hpp>
-#include <openssl/sha.h>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "util"
+
+using namespace epee;
 
 namespace tools
 {

@@ -36,6 +36,7 @@
 #pragma once
 
 #include "serialization.h"
+
 #include <cassert>
 #include <iostream>
 #include <iomanip>

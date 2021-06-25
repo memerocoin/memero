@@ -25,11 +25,13 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#include "tools/epee/include/misc_log_ex.h"
+
 #include "tools/common/threadpool.h"
 
-#include "config/cryptonote.hpp"
 #include "tools/common/util.h"
+
+#include "tools/epee/include/misc_log_ex.h"
+
 
 static __thread int depth = 0;
 static __thread bool is_leaf = false;

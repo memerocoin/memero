@@ -30,10 +30,7 @@
 
 #pragma once
 
-#include <cstddef>
 #include <cstring>
-#include <functional>
-#include <sodium/crypto_verify_32.h>
 
 #define CRYPTO_MAKE_COMPARABLE_HEADER(type)             \
   namespace crypto {                                    \

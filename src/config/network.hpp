@@ -30,8 +30,9 @@
 
 #pragma once
 
+#include <string_view>
 #include <stdexcept>
-#include <string>
+
 #include <boost/uuid/uuid.hpp>
 
 namespace cryptonote

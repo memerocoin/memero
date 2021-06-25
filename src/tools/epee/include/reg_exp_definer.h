@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <mutex>
+#include <regex>
 #include <boost/interprocess/detail/atomic.hpp>
 
 

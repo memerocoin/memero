@@ -29,9 +29,9 @@
 #pragma once
 
 
-#include "tools/epee/include/span.h"
-
 #include "net_utils_base.h"
+
+#include "tools/epee/include/span.h"
 
 namespace epee
 {

@@ -28,21 +28,17 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <unistd.h>
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
-#include <mutex>
-#include <sodium.h>
+#include "crypto.hpp"
 
 #include "tools/common/varint.h"
 
-#include "crypto.hpp"
-#include "hash.hpp"
-
 #include "config/cryptonote.hpp"
+
+#include <sodium.h>
+
+#include <cassert>
+#include <mutex>
+
 
 namespace {
   static void local_abort(const char *msg)

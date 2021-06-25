@@ -1,5 +1,7 @@
 #include "tools/epee/include/net/net_helper.h"
 
+#include <boost/lambda/lambda.hpp>
+
 namespace epee
 {
 namespace net_utils

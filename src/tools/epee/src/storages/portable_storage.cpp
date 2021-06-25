@@ -25,7 +25,6 @@
 //
 
 
-#include "tools/epee/include/misc_log_ex.h"
 
 #include "tools/epee/include/storages/portable_storage.h"
 #include "tools/epee/include/storages/portable_storage_to_bin.h"

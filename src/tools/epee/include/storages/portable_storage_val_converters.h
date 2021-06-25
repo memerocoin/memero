@@ -28,10 +28,9 @@
 
 #pragma once
 
+#include "portable_storage_base.h"
 
 #include "tools/epee/include/misc_log_ex.h"
-
-#include "portable_storage_base.h"
 
 namespace epee
 {

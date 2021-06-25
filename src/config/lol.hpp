@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <inttypes.h>
-#include <string>
-#include <chrono>
 #include "tools/common/powerof.h"
+
+#include <cstdint>
+#include <string_view>
+#include <chrono>
 
 namespace constant
 {

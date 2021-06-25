@@ -26,7 +26,9 @@
 //
 
 #pragma once
+
 #include "portable_storage_template_helper.h"
+
 #include "tools/epee/include/net/http_server_handlers_map2.h"
 
 namespace epee

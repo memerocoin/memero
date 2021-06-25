@@ -28,12 +28,11 @@
 
 #pragma once
 
-
-#include <boost/mpl/contains.hpp>
+#include "portable_storage_val_converters.h"
 
 #include "tools/epee/include/span.h"
 
-#include "portable_storage_val_converters.h"
+#include <boost/mpl/contains.hpp>
 
 namespace epee
 {

@@ -28,6 +28,15 @@
 
 #pragma once
 
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
+
+#include "network/rpc/message_data_structs.h"
+
+#include "tools/common/sfinae_helpers.h"
+#include "tools/epee/include/hex.h"
+#include "tools/epee/include/span.h"
+
 #include <string_view>
 #include <cstring>
 #include <rapidjson/document.h>
@@ -35,12 +44,6 @@
 #include <rapidjson/writer.h>
 #include <vector>
 
-#include "cryptonote/basic/cryptonote_basic.h"
-#include "network/rpc/message_data_structs.h"
-#include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "tools/common/sfinae_helpers.h"
-#include "tools/epee/include/hex.h"
-#include "tools/epee/include/span.h"
 
 #define OBJECT_HAS_MEMBER_OR_THROW(val, key) \
   do \

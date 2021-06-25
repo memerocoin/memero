@@ -26,10 +26,8 @@
 
 #include "tools/epee/include/storages/portable_storage_from_json.h"
 
-#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
-#include "tools/epee/include/file_io_utils.h"
 
 #define EPEE_JSON_RECURSION_LIMIT_INTERNAL 100
 
