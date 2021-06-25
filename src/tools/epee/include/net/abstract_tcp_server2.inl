@@ -33,20 +33,11 @@
 
 #pragma once
 
-#include <algorithm>
-#include <chrono>
-#include <condition_variable>
-#include <iomanip>
-#include <sstream>
-#include <thread>
 
 #include <boost/uuid/random_generator.hpp>
-#include <boost/utility/value_init.hpp>
 
-#include "tools/epee/include/warnings.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/net/local_ip.h"
 
 
 

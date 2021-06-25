@@ -27,22 +27,12 @@
 
 #pragma once
 
-#include <ctype.h>
-#include <regex>
-#include <string_view>
-#include <algorithm>
-#include <cctype>
-#include <functional>
 
-#include <boost/lexical_cast.hpp>
 
 #include "abstract_http_client.h"
-#include "http_base.h"
 #include "http_client_base.h"
 #include "net_helper.h"
 #include "tools/epee/include/net/net_parse_helpers.h"
-#include "tools/epee/include/reg_exp_definer.h"
-#include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/syncobj.h"
 
 //#include "shlwapi.h"

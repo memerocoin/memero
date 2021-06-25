@@ -26,24 +26,15 @@
 
 #pragma once
 
-#include <atomic>
-#include <deque>
 #include <random>
-#include <chrono>
 
 #include <boost/uuid/uuid_generators.hpp>
-#include <unordered_map>
 
-#include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/syncobj.h"
 #include "tools/epee/include/misc_os_dependent.h"
-#include "tools/epee/include/int-util.h"
-#include "tools/epee/include/string_tools.h"
 
 #include "levin_base.h"
 #include "buffer.h"
 
-#include "config/lol.hpp"
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

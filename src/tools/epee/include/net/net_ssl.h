@@ -27,16 +27,10 @@
 
 #pragma once
 
-#include <stdint.h>
 
-#include <chrono>
-#include <string>
-#include <vector>
-#include <string_view>
 
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/system/error_code.hpp>
 
 #define SSL_FINGERPRINT_SIZE 32
 

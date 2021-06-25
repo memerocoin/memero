@@ -29,24 +29,12 @@
 
 #pragma once
 
-#include <atomic>
-#include <string>
-#include <future>
-#include <functional>
 
-#include <boost/version.hpp>
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/read.hpp>
-#include <boost/asio/ssl.hpp>
-#include <boost/asio/steady_timer.hpp>
 #include <boost/asio.hpp>
 #include <boost/lambda/lambda.hpp>
-#include <boost/system/error_code.hpp>
 
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/net_ssl.h"
-#include "tools/epee/include/misc_language.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"

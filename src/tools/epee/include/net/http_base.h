@@ -27,14 +27,9 @@
 
 
 #pragma once
-#include <boost/lexical_cast.hpp>
 #include <regex>
 #include <list>
-#include <string_view>
-#include <string>
-#include <utility>
 
-#include "tools/epee/include/memwipe.h"
 #include "tools/epee/include/string_tools.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

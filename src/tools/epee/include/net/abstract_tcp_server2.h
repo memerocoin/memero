@@ -33,20 +33,8 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <thread>
-#include <atomic>
-#include <cassert>
-#include <map>
-#include <memory>
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
-#include <boost/noncopyable.hpp>
 
-#include "net_utils_base.h"
-#include "tools/epee/include/syncobj.h"
 #include "connection_basic.hpp"
 
 

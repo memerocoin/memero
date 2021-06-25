@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include <string_view>
-#include <cstdint>
 
 namespace epee
 {

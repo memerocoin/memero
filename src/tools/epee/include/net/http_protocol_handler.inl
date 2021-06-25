@@ -26,11 +26,6 @@
 
 #pragma once
 
-#include <regex>
-#include <boost/lexical_cast.hpp>
-#include "http_protocol_handler.h"
-#include "tools/epee/include/reg_exp_definer.h"
-#include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/file_io_utils.h"
 #include "tools/epee/include/net/net_parse_helpers.h"
 #include "tools/epee/include/time_helper.h"

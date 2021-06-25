@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include <cstdint>
 
 #include "tools/epee/include/span.h"
 

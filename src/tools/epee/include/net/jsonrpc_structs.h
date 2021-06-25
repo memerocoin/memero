@@ -1,10 +1,6 @@
 #ifndef JSONRPC_STRUCTS_H
 #define	JSONRPC_STRUCTS_H
 
-#include <string>
-#include <cstdint>
-#include "tools/epee/include/serialization/keyvalue_serialization.h"
-#include "tools/epee/include/storages/portable_storage_base.h"
 
 namespace epee
 {

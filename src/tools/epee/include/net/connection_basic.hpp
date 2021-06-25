@@ -42,12 +42,8 @@
 #define INCLUDED_p2p_connection_basic_hpp
 
 
-#include <string>
-#include <atomic>
-#include <memory>
 
 #include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
 
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/net_ssl.h"

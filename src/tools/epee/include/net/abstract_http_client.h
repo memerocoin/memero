@@ -25,8 +25,6 @@
 
 #pragma once
 
-#include <string>
-#include <optional>
 #include "tools/epee/include/net/http_base.h"
 
 namespace epee
