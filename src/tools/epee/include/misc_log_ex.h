@@ -29,7 +29,6 @@
 
 #ifdef __cplusplus
 
-#include <string>
 
 #include "tools/easylogging++/easylogging++.h"
 
@@ -114,15 +113,7 @@
 
 #define MLOG_SET_THREAD_NAME(x) el::Helpers::setThreadName(x)
 
-#ifndef LOCAL_ASSERT
-#include <assert.h>
-#if (defined _MSC_VER)
-#define LOCAL_ASSERT(expr) {if(epee::debug::get_set_enable_assert()){_ASSERTE(expr);}}
-#else
 #define LOCAL_ASSERT(expr)
-#endif
-
-#endif
 
 std::string mlog_get_default_log_path(const char *default_filename);
 void mlog_configure(const std::string &filename_base, bool console);
