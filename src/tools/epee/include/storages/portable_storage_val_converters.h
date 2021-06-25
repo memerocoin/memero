@@ -28,12 +28,8 @@
 
 #pragma once
 
-#include <time.h>
-#include <regex>
 
-#include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/warnings.h"
 
 #include "portable_storage_base.h"
 

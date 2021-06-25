@@ -28,7 +28,6 @@
 
 
 #include "parserse_base_utils.h"
-#include "portable_storage_base.h"
 #include "portable_storage.h"
 
 namespace epee

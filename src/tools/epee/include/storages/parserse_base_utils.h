@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include <string_view>
 
 #include "tools/epee/include/misc_log_ex.h"
 

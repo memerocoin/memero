@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/misc_log_ex.h"
 #include "portable_storage_base.h"
 #include "portable_storage_bin_utils.h"

@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include <map>
 
 #include <boost/mpl/contains.hpp>
 
