@@ -26,21 +26,13 @@
 
 #pragma once
 
-#include <cstdlib>
 #include <filesystem>
-#include <locale>
-#include <string>
-#include <type_traits>
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/storages/parserse_base_utils.h"
 #include "tools/epee/include/hex.h"
-#include "tools/epee/include/memwipe.h"
-#include "tools/epee/include/span.h"
-#include "tools/epee/include/warnings.h"
 
 
 namespace epee

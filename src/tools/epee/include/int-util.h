@@ -30,10 +30,6 @@
 
 #pragma once
 
-#include <assert.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
 
 static inline uint32_t rol32(uint32_t x, int r) {
   return (x << (r & 31)) | (x >> (-r & 31));

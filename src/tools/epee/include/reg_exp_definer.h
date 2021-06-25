@@ -29,7 +29,6 @@
 
 #include <boost/interprocess/detail/atomic.hpp>
 
-#include "tools/epee/include/syncobj.h"
 
 namespace epee
 {

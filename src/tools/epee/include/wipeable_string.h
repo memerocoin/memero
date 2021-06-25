@@ -29,7 +29,6 @@
 #pragma once
 
 #include <optional>
-#include <stddef.h>
 #include <vector>
 #include <string>
 #include "tools/epee/include/memwipe.h"

@@ -26,17 +26,11 @@
 
 #pragma once
 
-#include <atomic>
 #include <condition_variable>
-#include <functional>
-#include <mutex>
-#include <thread>
-#include <iostream>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/string_tools.h"
 
 #ifdef HAVE_READLINE

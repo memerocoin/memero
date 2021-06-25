@@ -26,7 +26,6 @@
 
 #pragma once
 
-#include <sys/time.h>
 
 #include "tools/epee/include/misc_os_dependent.h"
 #include "tools/epee/include/syncobj.h"

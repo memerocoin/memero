@@ -28,11 +28,7 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cstdint>
 #include <memory>
-#include <string>
-#include <type_traits>
 
 namespace epee
 {

@@ -29,14 +29,11 @@
 #pragma once
 
 #include <map>
-#include <type_traits>
 
 #include <boost/mpl/contains.hpp>
 
-#include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/span.h"
 
-#include "portable_storage_base.h"
 #include "portable_storage_val_converters.h"
 
 namespace epee

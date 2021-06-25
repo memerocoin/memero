@@ -29,8 +29,6 @@
 #pragma once
 
 #include <boost/variant.hpp>
-#include <string>
-#include <vector>
 #include <deque>
 
 constexpr uint32_t PORTABLE_STORAGE_SIGNATUREA = 0x01011101;
