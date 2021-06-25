@@ -30,11 +30,12 @@
 
 #pragma once
 
+#include "tools/epee/include/net/net_utils_base.h"
+#include "math/crypto/hash.hpp"
+
 #include <unordered_set>
 #include <atomic>
 #include <algorithm>
-#include "tools/epee/include/net/net_utils_base.h"
-#include "math/crypto/hash.hpp"
 
 namespace cryptonote
 {

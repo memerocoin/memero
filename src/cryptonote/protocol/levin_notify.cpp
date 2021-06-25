@@ -28,6 +28,17 @@
 
 #include "levin_notify.h"
 
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
+#include "cryptonote/basic/connection_context.h"
+
+#include "network/type/dandelionpp.h"
+#include "network/p2p/net_node.h"
+
+#include "tools/common/expect.h"
+#include "tools/common/varint.h"
+
+#include "config/cryptonote.hpp"
+
 #include <chrono>
 #include <deque>
 #include <stdexcept>
@@ -36,14 +47,6 @@
 #include <boost/asio/steady_timer.hpp>
 #include <boost/system/system_error.hpp>
 
-#include "tools/common/expect.h"
-#include "tools/common/varint.h"
-#include "cryptonote/basic/connection_context.h"
-#include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "network/type/dandelionpp.h"
-#include "network/p2p/net_node.h"
-
-#include "config/cryptonote.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.p2p.tx"

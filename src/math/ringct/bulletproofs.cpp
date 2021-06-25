@@ -29,8 +29,11 @@
 // Adapted from Java code by Sarang Noether
 // Paper references are to https://eprint.iacr.org/2017/1066 (revision 1 July 2018)
 
-#include <stdlib.h>
-#include <mutex>
+#include "bulletproofs.hpp"
+
+#include "rctOps.hpp"
+#include "curveConstants.hpp"
+#include "multiexp.hpp"
 
 extern "C"
 {
@@ -41,12 +44,12 @@ extern "C"
 #include "tools/epee/include/span.h"
 #include "tools/common/varint.h"
 
-#include "rctOps.hpp"
-#include "curveConstants.hpp"
-#include "multiexp.hpp"
-#include "bulletproofs.hpp"
 
 #include "config/cryptonote.hpp"
+
+#include <stdlib.h>
+#include <mutex>
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "bulletproofs"

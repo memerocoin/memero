@@ -31,10 +31,11 @@
 
 #include "miner.h"
 
-#include <openssl/evp.h>
-
 #include "tools/common/command_line.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
+
+#include <openssl/evp.h>
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "miner"

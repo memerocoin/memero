@@ -31,15 +31,16 @@
 
 #pragma once
 
-#include <cstddef>
-#include <tuple>
+#include "rctTypes.hpp"
 
 #include "math/crypto/generic-ops.h"
-
 #include "math/crypto/crypto.hpp"
 #include "math/crypto/sha3.hpp"
 
-#include "rctTypes.hpp"
+#include <cstddef>
+#include <tuple>
+
+
 
 //Define this flag when debugging to get additional info on the console
 #ifdef DBG

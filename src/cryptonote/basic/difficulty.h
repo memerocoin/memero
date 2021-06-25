@@ -31,6 +31,11 @@
 
 #pragma once
 
+#include "math/crypto/hash.hpp"
+
+#include "config/network.hpp"
+#include "config/lol.hpp"
+
 #include <cstdint>
 #include <vector>
 #include <string>
@@ -38,10 +43,6 @@
 
 #include <boost/multiprecision/cpp_int.hpp>
 
-#include "math/crypto/hash.hpp"
-
-#include "config/network.hpp"
-#include "config/lol.hpp"
 
 namespace cryptonote
 {

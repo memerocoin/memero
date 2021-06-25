@@ -30,19 +30,23 @@
 
 #include "cryptonote_tx_utils.h"
 
-#include <unordered_set>
-#include <random>
-
 #include "cryptonote/basic/miner.h"
 #include "cryptonote/basic/tx_extra.h"
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
-#include "math/ringct/rctSigs.hpp"
+
 #include "tools/common/apply_permutation.h"
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/string_tools.h"
 
+#include "math/crypto/crypto.hpp"
+#include "math/crypto/hash.hpp"
+#include "math/ringct/rctSigs.hpp"
+
+
 #include "config/cryptonote.hpp"
+
+#include <unordered_set>
+#include <random>
+
 
 namespace cryptonote
 {

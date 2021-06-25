@@ -30,6 +30,14 @@
 
 #pragma once
 
+#include "math/crypto/crypto.hpp"
+
+extern "C" {
+#include "math/crypto/crypto-ops.h"
+}
+
+#include "tools/serialization/containers.h"
+
 #include <cstddef>
 #include <vector>
 #include <iostream>
@@ -37,13 +45,6 @@
 
 #include <sodium/crypto_verify_32.h>
 
-extern "C" {
-#include "math/crypto/crypto-ops.h"
-}
-
-#include "math/crypto/crypto.hpp"
-
-#include "tools/serialization/containers.h"
 
 
 //Define this flag when debugging to get additional info on the console

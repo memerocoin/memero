@@ -28,14 +28,16 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "block_queue.h"
+
+#include "cryptonote_protocol_defs.h"
+#include "tools/epee/include/string_tools.h"
+
 #include <vector>
 #include <unordered_map>
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "tools/epee/include/string_tools.h"
-#include "cryptonote_protocol_defs.h"
-#include "block_queue.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn.block_queue"

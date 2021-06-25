@@ -30,8 +30,9 @@
 
 #pragma once
 
-#include <string>
 #include "tools/epee/include/span.h"
+
+#include <string>
 
 namespace cryptonote
 {

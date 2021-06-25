@@ -30,6 +30,9 @@
 
 #pragma once
 
+#include "tools/epee/include/net/net_utils_base.h"
+#include "math/crypto/hash.hpp"
+
 #include <chrono>
 #include <mutex>
 #include <set>
@@ -38,9 +41,6 @@
 #include <vector>
 
 #include <boost/uuid/uuid.hpp>
-
-#include "tools/epee/include/net/net_utils_base.h"
-#include "math/crypto/hash.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn.block_queue"

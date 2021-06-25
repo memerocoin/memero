@@ -28,16 +28,19 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "curveConstants.hpp"
+#include "rctOps.hpp"
+#include "zeroCommitment.hpp"
+
+#include "cryptonote/basic/cryptonote_format_utils.h"
+
+#include "tools/epee/include/misc_log_ex.h"
+
 #include <boost/lexical_cast.hpp>
 
 #include <sodium.h>
 
-#include "tools/epee/include/misc_log_ex.h"
-#include "cryptonote/basic/cryptonote_format_utils.h"
 
-#include "curveConstants.hpp"
-#include "rctOps.hpp"
-#include "zeroCommitment.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"

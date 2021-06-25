@@ -30,12 +30,13 @@
 
 #pragma once
 
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
+#include "cryptonote_basic.h"
 
 #include "cryptonote/functional/helper.hpp"
 
-#include "cryptonote_basic.h"
+#include "math/crypto/crypto.hpp"
+#include "math/crypto/hash.hpp"
+
 
 namespace cryptonote {
   /************************************************************************/

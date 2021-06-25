@@ -30,9 +30,9 @@
 
 #pragma once
 
-#include "math/ringct/rctOps.hpp"
-
 #include "cryptonote/basic/cryptonote_format_utils.h"
+
+#include "math/ringct/rctOps.hpp"
 
 namespace cryptonote
 {

@@ -28,6 +28,8 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "cryptonote_format_utils.h"
+
 #include "math/crypto/hash.hpp"
 
 #include "tools/common/base58.h"
@@ -36,8 +38,6 @@
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/serialization/binary_utils.h"
-
-#include "cryptonote_format_utils.h"
 
 #include "config/lol.hpp"
 #include "config/cryptonote.hpp"

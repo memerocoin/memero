@@ -31,14 +31,16 @@
 
 #pragma once
 
-#include <boost/program_options.hpp>
-
-#include "tools/epee/include/math_helper.h"
-
 #include "cryptonote_basic.h"
 #include "verification_context.h"
 #include "difficulty.h"
 #include "blobdatatype.h"
+
+#include "tools/epee/include/math_helper.h"
+
+
+#include <boost/program_options.hpp>
+
 
 namespace cryptonote
 {

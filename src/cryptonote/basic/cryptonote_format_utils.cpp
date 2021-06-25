@@ -28,8 +28,7 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <atomic>
-#include <boost/algorithm/string.hpp>
+#include "cryptonote_format_utils.h"
 
 #include "tools/epee/include/wipeable_string.h"
 #include "tools/epee/include/string_tools.h"
@@ -38,9 +37,11 @@
 #include "math/crypto/hash.hpp"
 #include "math/ringct/rctSigs.hpp"
 
-#include "cryptonote_format_utils.h"
-
 #include "config/cryptonote.hpp"
+
+#include <atomic>
+#include <boost/algorithm/string.hpp>
+
 
 using namespace epee;
 

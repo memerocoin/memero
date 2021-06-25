@@ -28,6 +28,9 @@
 //
 // Adapted from Python code by Sarang Noether
 
+#include "rctOps.hpp"
+#include "multiexp.hpp"
+
 extern "C"
 {
 #include "math/crypto/crypto-ops.h"
@@ -35,9 +38,6 @@ extern "C"
 
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/common_basic/aligned.hpp"
-
-#include "rctOps.hpp"
-#include "multiexp.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "multiexp"

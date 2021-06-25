@@ -38,6 +38,7 @@
 #include <map>
 #include <unordered_set>
 #include <set>
+#include <ostream>
 
 template <template <bool> class Archive, class T> bool do_serialize(Archive<false> &ar, std::vector<T> &v);
 template <template <bool> class Archive, class T> bool do_serialize(Archive<true> &ar, std::vector<T> &v);

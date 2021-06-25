@@ -32,13 +32,15 @@
 
 //#define DBG
 
+#include "rctTypes.hpp"
+#include "rctOps.hpp"
+
+#include "math/crypto/generic-ops.h"
+
 #include <cstddef>
 #include <vector>
 #include <tuple>
 
-#include "math/crypto/generic-ops.h"
-#include "rctTypes.hpp"
-#include "rctOps.hpp"
 
 //Define this flag when debugging to get additional info on the console
 #ifdef DBG
