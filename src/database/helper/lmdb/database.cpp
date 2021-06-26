@@ -26,8 +26,6 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "database.hpp"
-#include "error.hpp"
-#include "util.hpp"
 
 #include <sys/stat.h>
 

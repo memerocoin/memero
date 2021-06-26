@@ -28,7 +28,6 @@
 #include "error.hpp"
 
 #include <lmdb.h>
-#include <string>
 
 namespace {
     struct category final : std::error_category

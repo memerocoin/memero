@@ -25,14 +25,11 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "value_stream.hpp"
 
 #include "error.hpp"
 #include "util.hpp"
 
-#include "tools/common/expect.h"
 
-#include <stdexcept>
 
 
 namespace lmdb
