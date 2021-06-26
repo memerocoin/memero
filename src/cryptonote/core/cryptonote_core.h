@@ -33,14 +33,13 @@
 
 #include "tx_pool.h"
 #include "blockchain.h"
+#include "core_type.h"
 
 #include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
 
 #include "cryptonote/basic/events.h"
 #include "cryptonote/basic/miner.h"
 
-
-enum { HAVE_BLOCK_MAIN_CHAIN, HAVE_BLOCK_ALT_CHAIN, HAVE_BLOCK_INVALID };
 
 namespace cryptonote
 {
