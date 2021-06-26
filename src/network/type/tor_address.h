@@ -30,6 +30,7 @@
 
 
 #include "tools/common/expect.h"
+
 #include "tools/epee/include/net/enums.h"
 #include "tools/epee/include/storages/portable_storage.h"
 

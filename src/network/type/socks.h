@@ -28,12 +28,13 @@
 
 #pragma once
 
+#include "network/type/i2p_address.h"
+#include "network/type/tor_address.h"
+
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/strand.hpp>
 
-#include "network/type/i2p_address.h"
-#include "network/type/tor_address.h"
 
 namespace epee
 {

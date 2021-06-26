@@ -28,9 +28,8 @@
 
 #pragma once
 
-#include <boost/uuid/uuid.hpp>
 #include <vector>
-
+#include <boost/uuid/uuid.hpp>
 
 namespace net
 {

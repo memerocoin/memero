@@ -28,19 +28,21 @@
 
 #include "socks.h"
 
+#include "network/type/tor_address.h"
+#include "network/type/i2p_address.h"
+
+#include "tools/epee/include/net/net_utils_base.h"
+
 #include <algorithm>
+#include <cstring>
+#include <limits>
+#include <string>
+
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
-#include <cstring>
-#include <limits>
-#include <string>
-
-#include "tools/epee/include/net/net_utils_base.h"
-#include "network/type/tor_address.h"
-#include "network/type/i2p_address.h"
 
 namespace net
 {

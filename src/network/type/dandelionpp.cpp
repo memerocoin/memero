@@ -28,12 +28,14 @@
 
 #include "dandelionpp.h"
 
-#include <boost/uuid/nil_generator.hpp>
-#include <chrono>
-
 #include "tools/common/expect.h"
-#include "config/cryptonote.hpp"
 #include "math/crypto/crypto.hpp"
+
+#include "config/cryptonote.hpp"
+
+#include <chrono>
+#include <boost/uuid/nil_generator.hpp>
+
 
 namespace net
 {

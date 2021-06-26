@@ -28,10 +28,10 @@
 
 #pragma once
 
-#include <boost/asio/ip/tcp.hpp>
-
 #include "tools/common/expect.h"
 #include "tools/epee/include/net/net_utils_base.h"
+
+#include <boost/asio/ip/tcp.hpp>
 
 namespace net
 {

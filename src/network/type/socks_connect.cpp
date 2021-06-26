@@ -28,16 +28,19 @@
 
 #include "socks_connect.h"
 
-#include <boost/system/error_code.hpp>
-#include <boost/system/system_error.hpp>
+#include "network/type/error.h"
+#include "network/type/socks.h"
+
+#include "tools/epee/include/net/net_utils_base.h"
+#include "tools/epee/include/string_tools.h"
+
 #include <cstdint>
 #include <memory>
 #include <system_error>
 
-#include "network/type/error.h"
-#include "tools/epee/include/net/net_utils_base.h"
-#include "network/type/socks.h"
-#include "tools/epee/include/string_tools.h"
+#include <boost/system/error_code.hpp>
+#include <boost/system/system_error.hpp>
+
 
 namespace net
 {
