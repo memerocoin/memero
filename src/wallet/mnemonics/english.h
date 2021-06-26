@@ -34,11 +34,12 @@
 
 #pragma once
 
+#include "language_base.h"
+
 #include <vector>
 #include <unordered_map>
 #include <string>
 
-#include "language_base.h"
 
 /*!
  * \namespace Language

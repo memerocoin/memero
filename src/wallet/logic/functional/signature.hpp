@@ -33,6 +33,7 @@
 
 
 #include "wallet/logic/type/message_signature.hpp" // message_signature_ressult_t
+
 #include "cryptonote/basic/cryptonote_basic.h" // account_public_address
 
 namespace wallet {

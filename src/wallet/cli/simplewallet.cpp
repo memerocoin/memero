@@ -38,12 +38,29 @@
 // use boost bind placeholders for now
 
 #include "simplewallet.h"
+
 #include "config/version.hpp"
 
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
 #include "wallet/logic/controller/wallet.hpp"
+
+#include "wallet/common/wallet_args.h"
+#include "wallet/mnemonics/electrum-words.h"
+
+#include "math/ringct/rctSigs.hpp"
+
+#include "tools/common/base58.h"
+#include "tools/common/command_line.h"
+#include "tools/common/json_util.h"
+#include "tools/common/scoped_message_writer.h"
+#include "tools/common/util.h"
+
+#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
+
+#include "tools/epee/include/storages/http_abstract_invoke.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
@@ -52,17 +69,6 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include <rapidjson/document.h>
 
-#include "cryptonote/basic/cryptonote_format_utils.h"
-#include "cryptonote/protocol/cryptonote_protocol_handler.h"
-#include "math/ringct/rctSigs.hpp"
-#include "tools/epee/include/storages/http_abstract_invoke.h"
-#include "tools/common/base58.h"
-#include "tools/common/command_line.h"
-#include "tools/common/json_util.h"
-#include "tools/common/scoped_message_writer.h"
-#include "tools/common/util.h"
-#include "wallet/common/wallet_args.h"
-#include "wallet/mnemonics/electrum-words.h"
 
 #ifdef HAVE_READLINE
 #include "tools/epee/include/readline_buffer.h"

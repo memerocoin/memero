@@ -28,9 +28,9 @@
 //
 
 #include "device.hpp"
+
 #include "device_default.hpp"
-#ifdef WITH_DEVICE_LEDGER
-#endif
+
 #include "tools/epee/include/misc_log_ex.h"
 
 

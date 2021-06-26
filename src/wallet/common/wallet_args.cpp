@@ -28,13 +28,16 @@
 
 #include "wallet_args.h"
 
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/string_tools.h"
+
+#include "tools/common/util.h"
+
+#include "config/version.hpp"
+
 #include <filesystem>
 #include <boost/format.hpp>
 
-#include "tools/common/util.h"
-#include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/string_tools.h"
-#include "config/version.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"

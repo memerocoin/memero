@@ -32,9 +32,10 @@
 
 #include "wallet.hpp"
 
+#include "cryptonote/functional/helper.hpp"
+
 #include <string>
 
-#include "cryptonote/functional/helper.hpp"
 
 
 namespace wallet {

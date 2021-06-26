@@ -42,6 +42,29 @@
 
 #include "wallet/mnemonics/electrum-words.h"
 
+#include "network/rpc/core_rpc_server_commands_defs.h"
+#include "network/rpc/core_rpc_server_error_codes.h"
+
+#include "math/ringct/rctSigs.hpp"
+
+#include "cryptonote/basic/blobdatatype.h"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/tx/tx_sanity_check.h"
+
+
+#include "tools/common/apply_permutation.h"
+#include "tools/common/command_line.h"
+#include "tools/common/json_util.h"
+#include "tools/common/notify.h"
+#include "tools/common/threadpool.h"
+#include "tools/common/util.h"
+#include "tools/epee/include/profile_tools.h"
+#include "tools/serialization/binary_utils.h"
+
+#include "config/cryptonote.hpp"
+#include "config/lol.hpp"
+
 #include <numeric>
 #include <tuple>
 #include <optional>
@@ -55,28 +78,11 @@
 #include <boost/asio/ip/address.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/preprocessor/stringize.hpp>
+
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
-#include "cryptonote/basic/blobdatatype.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "cryptonote/basic/cryptonote_format_utils.h"
-#include "cryptonote/tx/tx_sanity_check.h"
-#include "math/ringct/rctSigs.hpp"
-#include "network/rpc/core_rpc_server_commands_defs.h"
-#include "network/rpc/core_rpc_server_error_codes.h"
-#include "tools/common/apply_permutation.h"
-#include "tools/common/command_line.h"
-#include "tools/common/json_util.h"
-#include "tools/common/notify.h"
-#include "tools/common/threadpool.h"
-#include "tools/common/util.h"
-#include "tools/epee/include/profile_tools.h"
-#include "tools/serialization/binary_utils.h"
-
-#include "config/cryptonote.hpp"
-#include "config/lol.hpp"
 
 using namespace std;
 using namespace crypto;

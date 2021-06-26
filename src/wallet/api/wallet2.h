@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
+#include "wallet/api/node_rpc_proxy.h"
+#include "wallet/api/wallet_errors.h"
 
 #include "wallet/logic/type/hashchain.hpp"
 #include "wallet/logic/type/payment.hpp"
@@ -41,16 +41,18 @@
 #include "wallet/logic/type/message_signature.hpp"
 
 #include "network/type/http.h"
+
 // remove the following 3, the wallet might become unusable (won't start)
 #include "tools/serialization/string.h"
 #include "tools/serialization/pair.h"
 #include "tools/serialization/containers.h"
 
 #include "tools/common/password.h"
+
 #include "tools/epee/include/storages/http_abstract_invoke.h"
 
-#include "wallet/api/node_rpc_proxy.h"
-#include "wallet/api/wallet_errors.h"
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/variables_map.hpp>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"

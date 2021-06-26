@@ -32,12 +32,12 @@
 #pragma  once
 
 #include "wallet/api/wallet2.h"
+#include "wallet_rpc_server_commands_defs.h"
 
-#include "tools/epee/include/net/http_server_impl_base.h"
 #include "tools/common/util.h"
+#include "tools/epee/include/net/http_server_impl_base.h"
 #include "tools/epee/include/math_helper.h"
 
-#include "wallet_rpc_server_commands_defs.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"

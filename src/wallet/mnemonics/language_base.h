@@ -34,13 +34,14 @@
 
 #pragma once
 
+#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/fnv1.h"
+
 #include <vector>
 #include <unordered_map>
 #include <string>
 
 #include <boost/algorithm/string.hpp>
-#include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/fnv1.h"
 
 /*!
  * \namespace Language

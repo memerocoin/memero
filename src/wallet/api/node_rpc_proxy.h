@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include "tools/epee/include/net/abstract_http_client.h"
 #include "network/rpc/core_rpc_server_commands_defs.h"
+#include "tools/epee/include/net/abstract_http_client.h"
 
 namespace tools
 {

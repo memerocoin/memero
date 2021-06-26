@@ -36,19 +36,23 @@
  * that method of "backing up" one's wallet keys.
  */
 
-#include <string>
-#include <cstdint>
-#include <vector>
-#include <unordered_map>
-#include "tools/epee/include/wipeable_string.h"
-#include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/int-util.h"
 #include "electrum-words.h"
-#include <boost/crc.hpp>
 
 #include "english.h"
 #include "language_base.h"
 #include "singleton.h"
+
+#include "tools/epee/include/wipeable_string.h"
+#include "tools/epee/include/misc_language.h"
+#include "tools/epee/include/int-util.h"
+
+#include <string>
+#include <cstdint>
+#include <vector>
+#include <unordered_map>
+
+#include <boost/crc.hpp>
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "mnemonic"

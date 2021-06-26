@@ -31,11 +31,15 @@
 
 
 #include "device_default.hpp"
-#include "tools/epee/include/int-util.h"
+
+#include "math/ringct/rctOps.hpp"
+
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/subaddress_index.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "math/ringct/rctOps.hpp"
+
+#include "tools/epee/include/int-util.h"
+
 #include "config/cryptonote.hpp"
 
 namespace hw {

@@ -30,23 +30,26 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "wallet_rpc_server.h"
+#include "wallet_rpc_server_commands_defs.h"
+
+#include "network/rpc/rpc_args.h"
+#include "network/rpc/core_rpc_server_commands_defs.h"
+
+#include "tools/common/command_line.h"
+
+#include "wallet/logic/functional/fee.hpp"
+#include "wallet/logic/functional/signature.hpp"
+#include "wallet/logic/pseudo_functional/uri.hpp"
+#include "wallet/mnemonics/electrum-words.h"
+#include "wallet/common/wallet_args.h"
+
+#include "config/cryptonote.hpp"
+#include "config/version.hpp"
 
 #include <boost/format.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "network/rpc/core_rpc_server_commands_defs.h"
-#include "network/rpc/rpc_args.h"
-#include "tools/common/command_line.h"
-#include "wallet/common/wallet_args.h"
-#include "wallet/logic/functional/fee.hpp"
-#include "wallet/logic/functional/signature.hpp"
-#include "wallet/logic/pseudo_functional/uri.hpp"
-#include "wallet/mnemonics/electrum-words.h"
-#include "wallet_rpc_server_commands_defs.h"
-
-#include "config/cryptonote.hpp"
-#include "config/version.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"

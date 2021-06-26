@@ -29,8 +29,10 @@
 
 #pragma once
 
-#include "math/crypto/chacha.hpp"
 #include "math/ringct/rctTypes.hpp"
+
+#include "math/crypto/chacha.hpp"
+
 #include "config/cryptonote.hpp"
 
 

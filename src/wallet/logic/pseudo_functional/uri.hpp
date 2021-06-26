@@ -31,9 +31,10 @@
 
 #pragma once
 
+#include "config/network.hpp"
+
 #include <vector>
 
-#include "config/network.hpp"
 
 namespace wallet {
 namespace logic {

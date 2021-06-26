@@ -27,7 +27,9 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "node_rpc_proxy.h"
+
 #include "network/rpc/core_rpc_server_commands_defs.h"
+
 #include "tools/epee/include/storages/http_abstract_invoke.h"
 
 #define RETURN_ON_RPC_RESPONSE_ERROR(r, error, res, method) \

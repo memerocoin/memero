@@ -31,10 +31,9 @@
 
 #pragma once
 
-
+#include "wallet/logic/type/transfer.hpp" // tranfser_details
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX, backlog_entry
 
-#include "wallet/logic/type/transfer.hpp" // tranfser_details
 
 using namespace wallet::logic::type::transfer;
 
