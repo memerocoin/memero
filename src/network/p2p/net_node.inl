@@ -32,11 +32,7 @@
 
 #pragma once
 
-#include "net_node.h"
-#include "cryptonote/core/cryptonote_core.h"
 #include "network/type/parse.h"
-
-#include <boost/uuid/uuid_io.hpp>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.p2p"
