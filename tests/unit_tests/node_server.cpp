@@ -34,7 +34,6 @@
 #include "network/p2p/net_node.inl"
 #include "cryptonote/core/i_core_events.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
-#include "cryptonote/protocol/cryptonote_protocol_handler.inl"
 
 #define MAKE_IPV4_ADDRESS(a,b,c,d) epee::net_utils::ipv4_network_address{MAKE_IP(a,b,c,d),0}
 #define MAKE_IPV4_ADDRESS_PORT(a,b,c,d,e) epee::net_utils::ipv4_network_address{MAKE_IP(a,b,c,d),e}
@@ -92,7 +91,7 @@ public:
   void stop() {}
 };
 
-typedef nodetool::node_server<cryptonote::t_cryptonote_protocol_handler<test_core>> Server;
+typedef nodetool::node_server Server;
 
 static bool is_blocked(Server &server, const epee::net_utils::network_address &address, time_t *t = NULL)
 {
@@ -112,7 +111,7 @@ static bool is_blocked(Server &server, const epee::net_utils::network_address &a
 TEST(ban, add)
 {
   test_core pr_core;
-  cryptonote::t_cryptonote_protocol_handler<test_core> cprotocol(pr_core, NULL);
+  cryptonote::t_cryptonote_protocol_handler cprotocol(pr_core, NULL);
   Server server(cprotocol);
   cprotocol.set_p2p_endpoint(&server);
 
@@ -304,6 +303,3 @@ TEST(node_server, bind_same_p2p_port)
   EXPECT_FALSE(init(new_node(), port));
   EXPECT_TRUE(init(new_node(), port_another));
 }
-
-namespace nodetool { template class node_server<cryptonote::t_cryptonote_protocol_handler<test_core>>; }
-namespace cryptonote { template class t_cryptonote_protocol_handler<test_core>; }

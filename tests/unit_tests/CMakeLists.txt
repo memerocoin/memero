@@ -57,6 +57,7 @@ target_link_libraries(unit_tests_tools
   common
   common_basic
   epee_storage
+  net
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main
@@ -109,7 +110,7 @@ add_executable(unit_tests_core
   json_serialization.cpp
   lmdb.cpp
   net.cpp
-  node_server.cpp
+# node_server.cpp
   output_distribution.cpp
   ringct.cpp
   rpc_version_str.cpp

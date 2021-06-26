@@ -32,10 +32,6 @@
 
 #include <boost/program_options.hpp>
 
-#include "network/p2p/net_node.h"
-#include "network/p2p/net_node.inl"
-#include "cryptonote/protocol/cryptonote_protocol_handler.h"
-#include "cryptonote/protocol/cryptonote_protocol_handler.inl"
 #include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/common/command_line.h"
@@ -45,9 +41,6 @@
 namespace po = boost::program_options;
 
 std::filesystem::path unit_test::data_dir;
-
-namespace nodetool { template class node_server<cryptonote::t_cryptonote_protocol_handler<cryptonote::core>>; }
-namespace cryptonote { template class t_cryptonote_protocol_handler<cryptonote::core>; }
 
 int main(int argc, char** argv)
 {
