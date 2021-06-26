@@ -30,10 +30,8 @@
 
 #include "tools/epee/include/misc_log_ex.h"
 
-#include "config/cryptonote.hpp"
 #include "config/version.hpp"
 
-#include <string>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"

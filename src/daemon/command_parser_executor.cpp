@@ -28,7 +28,6 @@
 
 #include "command_parser_executor.h"
 
-#include "tools/common/command_line.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"

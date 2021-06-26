@@ -32,31 +32,18 @@
 
 #include "daemon/core.h"
 #include "daemon/p2p.h"
-#include "daemon/protocol.h"
 #include "daemon/rpc.h"
 #include "daemon/command_server.h"
-#include "daemon/command_line_args.h"
 
-#include "network/rpc/daemon_handler.h"
 
-#include "cryptonote/basic/events.h"
 
-#include "tools/common/password.h"
-#include "tools/common/util.h"
 
-#include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/net/net_ssl.h"
 
-#include "config/version.hpp"
 
-#include <memory>
-#include <stdexcept>
 
-#include <boost/algorithm/string/split.hpp>
 
 using namespace epee;
 
-#include <functional>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"

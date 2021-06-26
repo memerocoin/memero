@@ -29,25 +29,14 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "command_server.h"
-#include "daemon.h"
 #include "executor.h"
 #include "command_line_args.h"
 
-#include "cryptonote/core/cryptonote_core.h"
-#include "cryptonote/basic/miner.h"
 
-#include "network/type/parse.h"
-#include "network/p2p/net_node.h"
-#include "network/rpc/core_rpc_server.h"
 #include "network/rpc/rpc_args.h"
 
-#include "tools/common/command_line.h"
-#include "tools/common/scoped_message_writer.h"
-#include "tools/common/password.h"
-#include "tools/common/util.h"
 
 
-#include "tools/epee/include/misc_log_ex.h"
 
 #include "config/version.hpp"
 

@@ -29,9 +29,7 @@
 #include "command_server.h"
 
 
-#include "tools/epee/include/string_tools.h"
 
-#include "config/cryptonote.hpp"
 #include "config/version.hpp"
 
 #include <boost/algorithm/string.hpp>
