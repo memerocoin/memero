@@ -33,6 +33,7 @@
 #include "net_peerlist.h"
 #include "net_node_common.h"
 
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "cryptonote/protocol/levin_notify.h"
 
 #include "tools/common/command_line.h"
@@ -92,6 +93,8 @@ namespace nodetool
   std::optional<boost::asio::ip::tcp::socket>
   socks_connect_internal(const std::atomic<bool>& stop_signal, boost::asio::io_service& service, const boost::asio::ip::tcp::endpoint& proxy, const epee::net_utils::network_address& remote);
 
+  bool append_net_address(std::vector<epee::net_utils::network_address> & seed_nodes, std::string const & addr, uint16_t default_port);
+
 
   template<class base_type>
   struct p2p_connection_context_t: base_type //t_payload_net_handler::connection_context //public epee::net_utils::connection_context_base
@@ -114,7 +117,8 @@ namespace nodetool
     std::set<epee::net_utils::network_address> sent_addresses;
   };
 
-  template<class t_payload_net_handler>
+  typedef cryptonote::t_cryptonote_protocol_handler t_payload_net_handler;
+
   class node_server: public epee::levin::levin_commands_handler<p2p_connection_context_t<typename t_payload_net_handler::connection_context> >,
                      public i_p2p_endpoint<typename t_payload_net_handler::connection_context>,
                      public epee::net_utils::i_connection_filter
@@ -478,3 +482,5 @@ namespace nodetool
     extern const command_line::arg_descriptor<int64_t>     arg_in_peers;
     extern const command_line::arg_descriptor<int> arg_tos_flag;
 }
+
+#include "net_node.inl"

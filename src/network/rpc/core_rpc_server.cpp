@@ -99,7 +99,7 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   core_rpc_server::core_rpc_server(
       core& cr
-    , nodetool::node_server<cryptonote::t_cryptonote_protocol_handler >& p2p
+    , nodetool::node_server& p2p
     )
     : m_core(cr)
     , m_p2p(p2p)

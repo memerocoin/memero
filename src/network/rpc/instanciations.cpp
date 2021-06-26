@@ -28,10 +28,8 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "network/p2p/net_node.h"
-#include "network/p2p/net_node.inl"
+// #include "network/p2p/net_node.h"
+// #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
-#include "cryptonote/protocol/cryptonote_protocol_handler.h"
-
-namespace nodetool { template class node_server<cryptonote::t_cryptonote_protocol_handler>; }
+// namespace nodetool { template class node_server>; }
 // namespace cryptonote { template class t_cryptonote_protocol_handler; }

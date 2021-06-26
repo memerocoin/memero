@@ -42,7 +42,7 @@ class t_p2p final
 {
 private:
   typedef cryptonote::t_cryptonote_protocol_handler t_protocol_raw;
-  typedef nodetool::node_server<t_protocol_raw> t_node_server;
+  typedef nodetool::node_server t_node_server;
 public:
   static void init_options(boost::program_options::options_description & option_spec)
   {

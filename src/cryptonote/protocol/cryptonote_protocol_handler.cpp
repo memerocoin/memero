@@ -38,9 +38,11 @@
 #include "cryptonote_protocol_handler.h"
 
 #include "network/p2p/net_node.h"
-#include "network/p2p/net_node.inl"
+#include "network/type/parse.h"
 
 #include "tools/epee/include/profile_tools.h"
+
+#include <boost/uuid/uuid_io.hpp>
 
 
 

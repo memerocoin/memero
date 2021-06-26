@@ -37,7 +37,7 @@
 
 namespace
 {
-  typedef nodetool::node_server<cryptonote::t_cryptonote_protocol_handler > t_p2p;
+  typedef nodetool::node_server t_p2p;
 }  // anonymous namespace
 
 namespace cryptonote

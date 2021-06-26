@@ -29,6 +29,7 @@
 
 add_library(p2p
   net_node.cpp
+  net_node_extra.cpp
   net_peerlist.cpp
   p2p_protocol_defs.cpp
 )
