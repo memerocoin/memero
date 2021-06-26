@@ -37,7 +37,6 @@ add_library(rpc_base
 add_library(rpc
   core_rpc_server.cpp
   rpc_version_str.cpp
-  instanciations.cpp
   )
 
 target_link_libraries(rpc
