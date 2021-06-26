@@ -79,12 +79,8 @@ bool get_output_distribution(uint64_t amount, uint64_t from, uint64_t to, uint64
   std::unique_ptr<cryptonote::Blockchain> bc;
   cryptonote::tx_memory_pool txpool(*bc);
   bc.reset(new cryptonote::Blockchain(txpool));
-  struct get_test_options {
-    const cryptonote::test_options test_options = {
-    };
-  } opts;
   cryptonote::Blockchain *blockchain = bc.get();
-  bool r = blockchain->init(new ::TestDB(test_distribution_size), cryptonote::FAKECHAIN, true, &opts.test_options, 0);
+  bool r = blockchain->init(new ::TestDB(test_distribution_size), cryptonote::FAKECHAIN, true, 0);
   return r && bc->get_output_distribution(amount, from, to, start_height, distribution, base);
 }
 

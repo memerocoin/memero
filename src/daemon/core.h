@@ -61,7 +61,7 @@ public:
   {
     //initialize core here
     MGINFO("Initializing core...");
-    if (!m_core.init(m_vm_HACK, nullptr))
+    if (!m_core.init(m_vm_HACK))
     {
       throw std::runtime_error("Failed to initialize core");
     }

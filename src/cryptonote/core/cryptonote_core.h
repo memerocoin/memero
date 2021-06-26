@@ -44,11 +44,6 @@ enum { HAVE_BLOCK_MAIN_CHAIN, HAVE_BLOCK_ALT_CHAIN, HAVE_BLOCK_INVALID };
 
 namespace cryptonote
 {
-   struct test_options {
-     const std::pair<uint8_t, uint64_t> *hard_forks;
-     const size_t long_term_block_weight_window;
-   };
-
   extern const command_line::arg_descriptor<std::string, false, true> arg_data_dir;
   extern const command_line::arg_descriptor<bool, false> arg_testnet_on;
   extern const command_line::arg_descriptor<diff_t> arg_fixed_difficulty;
@@ -255,11 +250,10 @@ namespace cryptonote
       * a miner instance with parameters given on the command line (or defaults)
       *
       * @param vm command line parameters
-      * @param test_options configuration options for testing
       *
       * @return false if one of the init steps fails, otherwise true
       */
-     bool init(const boost::program_options::variables_map& vm, const test_options *test_options = NULL);
+     bool init(const boost::program_options::variables_map& vm);
 
      /**
       * @copydoc Blockchain::reset_and_set_genesis_block

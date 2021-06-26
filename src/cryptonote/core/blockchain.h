@@ -46,7 +46,6 @@ namespace tools { class Notify; }
 namespace cryptonote
 {
   class tx_memory_pool;
-  struct test_options;
 
   /** Declares ways in which the BlockchainDB backend should be told to sync
    *
@@ -95,12 +94,11 @@ namespace cryptonote
      * @param db a pointer to the backing store to use for the blockchain
      * @param nettype network type
      * @param offline true if running offline, else false
-     * @param test_options test parameters
      * @param fixed_difficulty fixed difficulty for testing purposes; 0 means disabled
      *
      * @return true on success, false if any initialization steps fail
      */
-    bool init(BlockchainDB* db, const network_type nettype = MAINNET, bool offline = false, const cryptonote::test_options *test_options = NULL, diff_t fixed_difficulty = 0);
+    bool init(BlockchainDB* db, const network_type nettype = MAINNET, bool offline = false, diff_t fixed_difficulty = 0);
 
     /**
      * @brief Initialize the Blockchain state

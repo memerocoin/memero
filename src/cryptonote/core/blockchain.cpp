@@ -248,11 +248,9 @@ uint64_t Blockchain::get_current_blockchain_height() const
 //------------------------------------------------------------------
 //FIXME: possibly move this into the constructor, to avoid accidentally
 //       dereferencing a null BlockchainDB pointer
-bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline, const cryptonote::test_options *test_options, diff_t fixed_difficulty)
+bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline, diff_t fixed_difficulty)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-
-  CHECK_AND_ASSERT_MES(nettype != FAKECHAIN || test_options, false, "fake chain network type used without options");
 
   LOCK_LOCKABLE_OBJECT(m_tx_pool);
   std::lock_guard<std::recursive_mutex> lock1(m_blockchain_lock);
@@ -271,7 +269,7 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
 
   m_db = db;
 
-  m_nettype = test_options != NULL ? FAKECHAIN : nettype;
+  m_nettype = nettype;
   m_offline = offline;
   m_fixed_difficulty = fixed_difficulty;
 

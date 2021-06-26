@@ -234,12 +234,12 @@ namespace cryptonote
     return m_blockchain_storage.get_alternative_blocks_count();
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::init(const boost::program_options::variables_map& vm, const cryptonote::test_options *test_options)
+  bool core::init(const boost::program_options::variables_map& vm)
   {
     start_time = std::time(nullptr);
 
     const bool regtest = false;
-    if (test_options != NULL || regtest)
+    if (regtest)
     {
       m_nettype = FAKECHAIN;
     }
@@ -361,7 +361,7 @@ namespace cryptonote
     }
 
     const diff_t fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
-    r = m_blockchain_storage.init(db.release(), m_nettype, m_offline, test_options, fixed_difficulty);
+    r = m_blockchain_storage.init(db.release(), m_nettype, m_offline, fixed_difficulty);
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize blockchain storage");
 
     r = m_mempool.init();
