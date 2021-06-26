@@ -35,10 +35,8 @@
 // (may contain code and/or modifications by other developers)
 // developer rfree: this code is caller of our new network code, and is modded; e.g. for rate limiting
 
-#include "cryptonote_protocol_handler.h"
 
 #include "network/p2p/net_node.h"
-#include "network/type/parse.h"
 
 #include "tools/epee/include/profile_tools.h"
 

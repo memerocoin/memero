@@ -30,8 +30,14 @@
 
 #pragma once
 
-#include "tools/common/util.h"
+#include "database/interface/blockchain.hpp"
+
+#include "cryptonote/basic/verification_context.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
+
+#include "network/rpc/core_rpc_server_commands_defs.h"
+
+#include "tools/common/util.h"
 
 #include <boost/asio/io_service.hpp>
 

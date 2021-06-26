@@ -28,20 +28,12 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "account.h"
 
-#include "cryptonote_basic_impl.h"
 #include "cryptonote_format_utils.h"
 
-#include "tools/epee/include/misc_log_ex.h"
 
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/chacha.hpp"
-#include "math/crypto/sha3.hpp"
 
-#include "config/cryptonote.hpp"
 
-#include <fstream>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

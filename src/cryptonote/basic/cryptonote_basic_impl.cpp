@@ -30,17 +30,11 @@
 
 #include "cryptonote_format_utils.h"
 
-#include "math/crypto/hash.hpp"
 
 #include "tools/common/base58.h"
-#include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/int-util.h"
-#include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/serialization/binary_utils.h"
 
-#include "config/lol.hpp"
-#include "config/cryptonote.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"

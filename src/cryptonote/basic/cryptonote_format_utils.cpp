@@ -30,16 +30,11 @@
 
 #include "cryptonote_format_utils.h"
 
-#include "tools/epee/include/wipeable_string.h"
 #include "tools/epee/include/string_tools.h"
-#include "tools/serialization/string.h"
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
+#include "tools/serialization/string.h" // don't remove, or face core dump
+
 #include "math/ringct/rctSigs.hpp"
 
-#include "config/cryptonote.hpp"
-
-#include <atomic>
 #include <boost/algorithm/string.hpp>
 
 

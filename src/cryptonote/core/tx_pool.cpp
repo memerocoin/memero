@@ -32,23 +32,12 @@
 
 #include "blockchain.h"
 
-#include "cryptonote/tx/cryptonote_tx_utils.h"
 
-#include "database/interface/blockchain.hpp"
 #include "database/interface/locked_txn.h"
 
-#include "math/crypto/hash.hpp"
 
-#include "tools/epee/include/int-util.h"
-#include "tools/epee/include/misc_language.h"
 
-#include "config/cryptonote.hpp"
-#include "config/lol.hpp"
 
-#include <algorithm>
-#include <filesystem>
-#include <unordered_set>
-#include <vector>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "txpool"

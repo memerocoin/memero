@@ -28,11 +28,8 @@
 
 #include "tx_sanity_check.h"
 
-#include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
-#include <stdint.h>
-#include <vector>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "verify"

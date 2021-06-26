@@ -26,27 +26,8 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "levin_notify.h"
 
-#include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "cryptonote/basic/connection_context.h"
-
-#include "network/type/dandelionpp.h"
-#include "network/p2p/net_node.h"
-
-#include "tools/common/expect.h"
-#include "tools/common/varint.h"
-
-#include "config/cryptonote.hpp"
-
-#include <chrono>
-#include <deque>
-#include <stdexcept>
-#include <utility>
-
-#include <boost/asio/steady_timer.hpp>
-#include <boost/system/system_error.hpp>
-
+#include "network/p2p/net_node.h" // circular dependency
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.p2p.tx"

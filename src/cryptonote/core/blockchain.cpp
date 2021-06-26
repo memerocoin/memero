@@ -28,35 +28,12 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "tx_pool.h"
-#include "blockchain.h"
-#include "cryptonote_core.h"
-
-#include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "cryptonote/basic/miner.h"
-
-#include "database/interface/blockchain.hpp"
+#include "cryptonote/core/cryptonote_core.h"
 
 #include "tools/common/threadpool.h"
 #include "tools/common/notify.h"
-#include "tools/common/varint.h"
-
 #include "math/ringct/rctSigs.hpp"
-#include "math/crypto/hash.hpp"
-
-#include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/profile_tools.h"
-#include "tools/epee/include/file_io_utils.h"
-#include "tools/epee/include/int-util.h"
-
-
-#include "config/lol.hpp"
-#include "config/cryptonote.hpp"
-
-#include <algorithm>
-#include <cstdio>
-#include <filesystem>
 
 #include <boost/range/adaptor/reversed.hpp>
 

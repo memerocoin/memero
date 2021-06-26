@@ -30,32 +30,17 @@
 
 #include "cryptonote_core.h"
 
-#include "database/interface/blockchain.hpp"
 
-#include "cryptonote/basic/events.h"
 
 #include "math/ringct/rctSigs.hpp"
-#include "math/ringct/rctTypes.hpp"
-#include "math/crypto/crypto.hpp"
 
-#include "tools/common/command_line.h"
 #include "tools/common/notify.h"
 #include "tools/common/threadpool.h"
-#include "tools/common/util.h"
-
-#include "tools/epee/include/file_io_utils.h"
-#include "tools/epee/include/misc_language.h"
-#include "tools/epee/include/string_tools.h"
 
 
-#include "config/version.hpp"
-#include "config/lol.hpp"
-#include "config/cryptonote.hpp"
 
-#include <csignal>
-#include <unordered_set>
 
-#include <boost/algorithm/string.hpp>
+
 #include <boost/uuid/nil_generator.hpp>
 
 

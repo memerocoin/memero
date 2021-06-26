@@ -31,11 +31,7 @@
 #include "block_queue.h"
 
 #include "cryptonote_protocol_defs.h"
-#include "tools/epee/include/string_tools.h"
 
-#include <vector>
-#include <unordered_map>
-#include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 
