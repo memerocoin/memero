@@ -47,7 +47,7 @@ public:
     cryptonote::core::init_options(option_spec);
   }
 private:
-  typedef cryptonote::t_cryptonote_protocol_handler<cryptonote::core> t_protocol_raw;
+  typedef cryptonote::t_cryptonote_protocol_handler t_protocol_raw;
   cryptonote::core m_core;
   // TEMPORARY HACK - Yes, this creates a copy, but otherwise the original
   // variable map could go out of scope before the run method is called

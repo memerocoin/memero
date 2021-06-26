@@ -41,7 +41,7 @@ namespace daemonize
 class t_protocol final
 {
 private:
-  typedef cryptonote::t_cryptonote_protocol_handler<cryptonote::core> t_protocol_raw;
+  typedef cryptonote::t_cryptonote_protocol_handler t_protocol_raw;
   typedef nodetool::node_server<t_protocol_raw> t_node_server;
 
   t_protocol_raw m_protocol;

@@ -63,7 +63,7 @@ namespace cryptonote
 
     core_rpc_server(
         core& cr
-      , nodetool::node_server<cryptonote::t_cryptonote_protocol_handler<cryptonote::core> >& p2p
+      , nodetool::node_server<cryptonote::t_cryptonote_protocol_handler >& p2p
       );
     ~core_rpc_server();
 
@@ -202,7 +202,7 @@ private:
     enum invoke_http_mode { JON, BIN, JON_RPC };
     bool get_block_template(const account_public_address &address, const crypto::hash *prev_block, cryptonote::diff_t &difficulty, uint64_t &height, uint64_t &expected_reward, block &b, epee::json_rpc::error &error_resp);
     core& m_core;
-    nodetool::node_server<cryptonote::t_cryptonote_protocol_handler<cryptonote::core> >& m_p2p;
+    nodetool::node_server<cryptonote::t_cryptonote_protocol_handler >& m_p2p;
     bool m_restricted;
     std::recursive_mutex m_host_fails_score_lock;
     std::map<std::string, uint64_t> m_host_fails_score;

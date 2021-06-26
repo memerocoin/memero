@@ -37,6 +37,8 @@
 #include "block_queue.h"
 #include "cryptonote_protocol_handler_common.h"
 
+#include "cryptonote/core/cryptonote_core.h"
+
 #include "tools/epee/include/storages/levin_abstract_invoke2.h"
 
 
@@ -56,12 +58,12 @@ namespace cryptonote
     virtual ~cryptonote_protocol_handler_base() = default;
 	};
 
-  template<class t_core>
   class t_cryptonote_protocol_handler:  public i_cryptonote_protocol, cryptonote_protocol_handler_base
   {
   public:
+    typedef core t_core;
     typedef cryptonote_connection_context connection_context;
-    typedef t_cryptonote_protocol_handler<t_core> cryptonote_protocol_handler;
+    typedef t_cryptonote_protocol_handler cryptonote_protocol_handler;
     typedef CORE_SYNC_DATA payload_type;
 
     t_cryptonote_protocol_handler(t_core& rcore, nodetool::i_p2p_endpoint<connection_context>* p_net_layout, bool offline = false);
