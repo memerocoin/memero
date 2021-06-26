@@ -31,9 +31,7 @@
 #include "tools/common/expect.h"
 #include "math/crypto/crypto.hpp"
 
-#include "config/cryptonote.hpp"
 
-#include <chrono>
 #include <boost/uuid/nil_generator.hpp>
 
 

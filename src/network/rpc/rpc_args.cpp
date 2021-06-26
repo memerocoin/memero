@@ -28,13 +28,10 @@
 //
 #include "rpc_args.h"
 
-#include "tools/common/command_line.h"
 #include "tools/epee/include/hex.h"
 
-#include <functional>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/asio/ip/address.hpp>
 
 namespace cryptonote
 {

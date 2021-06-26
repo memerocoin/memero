@@ -28,8 +28,6 @@
 
 #include "http.h"
 
-#include "parse.h"
-#include "socks_connect.h"
 
 namespace net
 {

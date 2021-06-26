@@ -28,7 +28,6 @@
 
 #include "error.h"
 
-#include <string>
 
 namespace
 {

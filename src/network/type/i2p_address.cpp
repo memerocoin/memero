@@ -28,16 +28,10 @@
 
 #include "i2p_address.h"
 
-#include "network/type/error.h"
 
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
-#include "tools/epee/include/storages/portable_storage.h"
 #include "tools/epee/include/string_tools.h"
 
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-#include <limits>
 
 #include <boost/spirit/include/karma_generate.hpp>
 #include <boost/spirit/include/karma_uint.hpp>

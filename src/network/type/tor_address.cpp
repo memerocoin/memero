@@ -31,15 +31,10 @@
 #include "network/type/error.h"
 
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
-#include "tools/epee/include/storages/portable_storage.h"
 #include "tools/epee/include/string_tools.h"
 
-#include <algorithm>
 #include <boost/spirit/include/karma_generate.hpp>
 #include <boost/spirit/include/karma_uint.hpp>
-#include <cassert>
-#include <cstring>
-#include <limits>
 
 
 namespace net
