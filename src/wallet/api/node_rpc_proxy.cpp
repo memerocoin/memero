@@ -28,7 +28,6 @@
 
 #include "node_rpc_proxy.h"
 
-#include "network/rpc/core_rpc_server_commands_defs.h"
 
 #include "tools/epee/include/storages/http_abstract_invoke.h"
 

@@ -32,9 +32,7 @@
 
 #include "wallet.hpp"
 
-#include "cryptonote/functional/helper.hpp"
 
-#include <string>
 
 
 

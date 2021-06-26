@@ -31,12 +31,9 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 
-#include "proof.hpp"
 
 #include "wallet/api/wallet_errors.h"
-#include "math/ringct/curveConstants.hpp"
 
-#include "tools/epee/include/misc_log_ex.h"
 
 using namespace tools;
 

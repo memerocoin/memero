@@ -42,14 +42,10 @@
 
 #include "wallet/mnemonics/electrum-words.h"
 
-#include "network/rpc/core_rpc_server_commands_defs.h"
 #include "network/rpc/core_rpc_server_error_codes.h"
 
 #include "math/ringct/rctSigs.hpp"
 
-#include "cryptonote/basic/blobdatatype.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/tx/tx_sanity_check.h"
 
 
@@ -62,26 +58,16 @@
 #include "tools/epee/include/profile_tools.h"
 #include "tools/serialization/binary_utils.h"
 
-#include "config/cryptonote.hpp"
-#include "config/lol.hpp"
 
-#include <numeric>
-#include <tuple>
-#include <optional>
 
 #include <boost/format.hpp>
 #include <boost/exception/to_string.hpp>
-#include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
-#include <boost/asio/ip/address.hpp>
 #include <boost/range/adaptor/transformed.hpp>
-#include <boost/preprocessor/stringize.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
 
 
 using namespace std;

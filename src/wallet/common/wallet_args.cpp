@@ -28,8 +28,6 @@
 
 #include "wallet_args.h"
 
-#include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/string_tools.h"
 
 #include "tools/common/util.h"
 

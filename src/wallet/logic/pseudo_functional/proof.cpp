@@ -31,15 +31,12 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 
-#include "proof.hpp"
 
 #include "wallet/api/wallet_errors.h"
 #include "wallet/logic/functional/proof.hpp"
 
-#include "tools/epee/include/misc_log_ex.h"
 #include "tools/common/base58.h"
 
-#include "config/lol.hpp"
 
 using namespace tools;
 

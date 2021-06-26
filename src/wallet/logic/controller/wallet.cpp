@@ -35,7 +35,6 @@
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/file_io_utils.h"
 
-#include "config/lol.hpp"
 
 namespace wallet {
 namespace logic {

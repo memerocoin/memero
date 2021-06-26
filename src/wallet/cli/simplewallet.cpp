@@ -35,11 +35,7 @@
  * \brief Source file that defines simple_wallet class.
  */
 
-// use boost bind placeholders for now
-
 #include "simplewallet.h"
-
-#include "config/version.hpp"
 
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
@@ -49,30 +45,16 @@
 #include "wallet/common/wallet_args.h"
 #include "wallet/mnemonics/electrum-words.h"
 
-#include "math/ringct/rctSigs.hpp"
-
-#include "tools/common/base58.h"
-#include "tools/common/command_line.h"
-#include "tools/common/json_util.h"
 #include "tools/common/scoped_message_writer.h"
-#include "tools/common/util.h"
 
-#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
-#include "tools/epee/include/storages/http_abstract_invoke.h"
+#include "config/version.hpp"
+
 
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/program_options.hpp>
 #include <boost/range/adaptor/transformed.hpp>
-#include <rapidjson/document.h>
-
-
-#ifdef HAVE_READLINE
-#include "tools/epee/include/readline_buffer.h"
-#endif
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.simplewallet"

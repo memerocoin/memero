@@ -39,17 +39,11 @@
 #include "electrum-words.h"
 
 #include "english.h"
-#include "language_base.h"
 #include "singleton.h"
 
-#include "tools/epee/include/wipeable_string.h"
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/int-util.h"
 
-#include <string>
-#include <cstdint>
-#include <vector>
-#include <unordered_map>
 
 #include <boost/crc.hpp>
 

@@ -34,12 +34,9 @@
 
 #include "wallet/api/wallet_errors.h"
 
-#include "tools/epee/include/misc_log_ex.h"
 #include "tools/common/base58.h"
 
-#include "config/lol.hpp"
 
-#include <openssl/evp.h>
 
 namespace wallet {
 namespace logic {

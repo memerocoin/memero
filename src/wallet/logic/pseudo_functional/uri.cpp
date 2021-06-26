@@ -30,7 +30,6 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 
-#include "uri.hpp"
 
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 #include "tools/epee/include/net/abstract_http_client.h"

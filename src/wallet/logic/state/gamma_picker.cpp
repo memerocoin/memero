@@ -32,9 +32,7 @@
 #include "gamma_picker.hpp"
 
 #include "wallet/api/wallet_errors.h"
-#include "tools/epee/include/misc_log_ex.h"
 
-#include "config/lol.hpp"
 
 namespace wallet {
 namespace logic {
