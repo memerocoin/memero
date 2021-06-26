@@ -30,25 +30,14 @@
 
 #pragma once
 
-#include <ctime>
 
-#include <boost/function.hpp>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
 
 #include "cryptonote/basic/events.h"
-#include "cryptonote/core/i_core_events.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
-#include "cryptonote/protocol/enums.h"
-#include "tools/epee/include/storages/portable_storage_template_helper.h"
-#include "tools/common/command_line.h"
 #include "tx_pool.h"
 #include "blockchain.h"
 #include "cryptonote/basic/miner.h"
-#include "cryptonote/basic/connection_context.h"
 
-#include "math/crypto/hash.hpp"
-#include "tools/epee/include/span.h"
 
 enum { HAVE_BLOCK_MAIN_CHAIN, HAVE_BLOCK_ALT_CHAIN, HAVE_BLOCK_INVALID };
 

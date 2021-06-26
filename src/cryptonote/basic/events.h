@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "math/crypto/hash.hpp"
 #include "cryptonote/basic/cryptonote_basic.h"
 
 namespace cryptonote

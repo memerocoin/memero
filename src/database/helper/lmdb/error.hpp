@@ -27,7 +27,6 @@
 #pragma once
 
 #include <system_error>
-#include <type_traits>
 
 //! Executes a LMDB command, and returns errors via `lmdb::error` enum.
 #define MONERO_LMDB_CHECK(...)         \

@@ -27,13 +27,8 @@
 #pragma once
 
 #include <atomic>
-#include <cstddef>
-#include <lmdb.h>
-#include <memory>
-#include <type_traits>
 
 #include "tools/common/expect.h"
-#include "error.hpp"
 #include "transaction.hpp"
 
 namespace lmdb

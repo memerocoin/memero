@@ -31,7 +31,6 @@
 
 #pragma once
 
-#include <string>
 
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 

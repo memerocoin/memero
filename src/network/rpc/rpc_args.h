@@ -28,14 +28,11 @@
 //
 #pragma once
 
-#include <optional>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <string>
 
 #include "tools/common/command_line.h"
-#include "tools/common/password.h"
 #include "tools/epee/include/net/net_ssl.h"
+
+#include <optional>
 
 namespace cryptonote
 {

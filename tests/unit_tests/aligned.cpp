@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 
-#include "tools/common_basic/aligned.h"
+#include "tools/common_basic/aligned.hpp"
 
 TEST(aligned, large_null) { ASSERT_TRUE(aligned_malloc((size_t)-1, 1) == NULL); }
 TEST(aligned, free_null) { aligned_free(NULL); }

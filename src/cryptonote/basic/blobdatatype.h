@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include "tools/epee/include/span.h"
 
 #include <string>
 

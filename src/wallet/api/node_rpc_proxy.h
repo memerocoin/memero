@@ -28,9 +28,6 @@
 
 #pragma once
 
-#include <string>
-#include <mutex>
-#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/net/abstract_http_client.h"
 #include "network/rpc/core_rpc_server_commands_defs.h"
 

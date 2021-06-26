@@ -5,8 +5,6 @@
 
 #include "tools/common/powerof.h"
 
-#include <cstdint>
-#include <string_view>
 #include <chrono>
 
 namespace constant

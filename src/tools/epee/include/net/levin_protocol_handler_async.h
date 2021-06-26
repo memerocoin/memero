@@ -32,7 +32,9 @@
 #include "tools/epee/include/misc_os_dependent.h"
 
 #include <random>
+
 #include <boost/uuid/uuid_generators.hpp>
+#include <boost/functional/hash.hpp>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

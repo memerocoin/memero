@@ -36,7 +36,6 @@
 #include <cfenv>
 
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/warnings.h"
 #include "math/crypto/hash.hpp"
 #include "math/crypto/hash-ops.hpp"
 #include "../io.h"

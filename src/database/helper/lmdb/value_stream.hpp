@@ -27,11 +27,8 @@
 #pragma once
 
 #include <boost/range/iterator_range.hpp>
-#include <cstdint>
 #include <cstring>
-#include <iterator>
 #include <lmdb.h>
-#include <utility>
 
 #include "tools/epee/include/span.h"
 

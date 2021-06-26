@@ -30,11 +30,9 @@
 
 #pragma once
 
-#include "rctTypes.hpp"
 
 #include "tools/epee/include/misc_log_ex.h"
 
-#include <vector>
 
 namespace rct
 {

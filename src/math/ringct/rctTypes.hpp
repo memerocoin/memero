@@ -38,10 +38,6 @@ extern "C" {
 
 #include "tools/serialization/containers.h"
 
-#include <cstddef>
-#include <vector>
-#include <iostream>
-#include <cinttypes>
 
 #include <sodium/crypto_verify_32.h>
 

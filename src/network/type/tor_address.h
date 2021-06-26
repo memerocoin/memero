@@ -28,15 +28,11 @@
 
 #pragma once
 
-#include <string_view>
-#include <cstdint>
-#include <string>
 
 #include "tools/common/expect.h"
 #include "tools/epee/include/net/enums.h"
 #include "tools/epee/include/storages/portable_storage.h"
 
-#include "network/type/error.h"
 
 
 namespace net

@@ -31,14 +31,8 @@
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/connection_context.h"
 
-#include "tools/epee/include/net/enums.h"
-#include "tools/epee/include/span.h"
 
-#include <memory>
-#include <vector>
 
-#include <boost/asio/io_service.hpp>
-#include <boost/uuid/uuid.hpp>
 
 
 namespace epee

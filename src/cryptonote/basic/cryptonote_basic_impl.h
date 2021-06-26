@@ -34,8 +34,6 @@
 
 #include "cryptonote/functional/helper.hpp"
 
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
 
 
 namespace cryptonote {

@@ -31,18 +31,12 @@
 
 #pragma once
 
-#include <cstddef>
-#include <vector>
+#include "transfer.hpp"
+#include "tx.hpp"
 
-#include "math/crypto/hash.hpp"
-#include "math/ringct/rctTypes.hpp"
-#include "cryptonote/basic/cryptonote_format_utils.h" //subaddress_receive_info
 #include "network/rpc/core_rpc_server_commands_defs.h" //block_outptu_indices
 
-#include "tools/serialization/serialization.h"
 
-#include "wallet/logic/type/transfer.hpp"
-#include "wallet/logic/type/tx.hpp"
 
 namespace wallet {
 namespace logic {

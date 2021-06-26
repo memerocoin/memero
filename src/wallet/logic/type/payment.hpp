@@ -31,11 +31,7 @@
 
 #pragma once
 
-#include <utility>
-#include <cstdint>
 
-#include "math/ringct/rctTypes.hpp"
-#include "tools/serialization/serialization.h"
 #include "cryptonote/basic/subaddress_index.h"
 
 namespace wallet {

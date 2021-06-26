@@ -27,15 +27,8 @@
 
 #pragma once
 
-#include <boost/range/iterator_range.hpp>
-#include <cstdint>
-#include <cstring>
-#include <iterator>
-#include <lmdb.h>
-#include <utility>
 
 #include "value_stream.hpp"
-#include "tools/epee/include/span.h"
 
 namespace lmdb
 {

@@ -35,18 +35,12 @@
 #pragma once
 
 #include "block_queue.h"
-#include "cryptonote_protocol_defs.h"
 #include "cryptonote_protocol_handler_common.h"
-#include "cryptonote/basic/connection_context.h"
 
-#include "tools/epee/include/math_helper.h"
 #include "tools/epee/include/storages/levin_abstract_invoke2.h"
 
-#include "config/lol.hpp"
 
-#include <string>
 
-#include <boost/program_options/variables_map.hpp>
 
 
 #define LOCALHOST_INT 2130706433

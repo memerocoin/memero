@@ -30,29 +30,9 @@
 
 #pragma once
 #include <boost/asio/io_service.hpp>
-#include <boost/function/function_fwd.hpp>
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/global_fun.hpp>
-#include <boost/multi_index/hashed_index.hpp>
-#include <boost/multi_index/member.hpp>
-#include <atomic>
-#include <functional>
-#include <unordered_map>
-#include <unordered_set>
 
-#include "tools/epee/include/span.h"
-#include "tools/epee/include/syncobj.h"
-#include "tools/epee/include/string_tools.h"
-#include "cryptonote/basic/cryptonote_basic.h"
 #include "tools/common/util.h"
-#include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "network/rpc/core_rpc_server_commands_defs.h"
-#include "cryptonote/basic/difficulty.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "cryptonote/basic/verification_context.h"
-#include "math/crypto/hash.hpp"
-#include "database/interface/blockchain.hpp"
-#include "config/lol.hpp"
 
 namespace tools { class Notify; }
 

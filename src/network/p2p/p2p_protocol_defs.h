@@ -30,13 +30,11 @@
 
 #pragma once
 
-#include <boost/uuid/uuid.hpp>
 
 #include "network/type/i2p_address.h" // needed for serialization
 #include "network/type/tor_address.h" // needed for serialization
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/net/net_utils_base.h"
-#include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/time_helper.h"
 #include "tools/serialization/serialization.h"

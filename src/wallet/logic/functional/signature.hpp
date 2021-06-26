@@ -31,13 +31,8 @@
 
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
-#include <utility>
-#include <string>
 
 #include "wallet/logic/type/message_signature.hpp" // message_signature_ressult_t
-#include "math/crypto/crypto.hpp" // crypto::
 #include "cryptonote/basic/cryptonote_basic.h" // account_public_address
 
 namespace wallet {

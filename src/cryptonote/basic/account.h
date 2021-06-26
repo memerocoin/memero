@@ -32,8 +32,6 @@
 
 #include "cryptonote_basic.h"
 
-#include "math/crypto/crypto.hpp"
-#include "tools/epee/include/serialization/keyvalue_serialization.h"
 
 namespace cryptonote
 {

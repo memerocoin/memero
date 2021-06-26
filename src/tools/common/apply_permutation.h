@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include "tools/epee/include/misc_log_ex.h"
 
 namespace tools
 {

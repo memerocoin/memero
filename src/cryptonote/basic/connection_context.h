@@ -34,8 +34,6 @@
 #include "math/crypto/hash.hpp"
 
 #include <unordered_set>
-#include <atomic>
-#include <algorithm>
 
 namespace cryptonote
 {

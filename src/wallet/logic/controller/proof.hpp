@@ -31,12 +31,7 @@
 
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
-#include <utility>
-#include <string>
 
-#include "math/crypto/crypto.hpp" // crypto::
 #include "cryptonote/basic/cryptonote_basic.h" // account_public_address
 
 namespace wallet {

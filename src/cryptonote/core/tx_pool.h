@@ -29,23 +29,11 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
-#include "tools/epee/include/misc_log_ex.h"
 
-#include <set>
-#include <tuple>
-#include <unordered_map>
-#include <unordered_set>
-#include <queue>
 
-#include "tools/epee/include/span.h"
-#include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/syncobj.h"
 #include "tools/epee/include/math_helper.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/verification_context.h"
-#include "cryptonote/protocol/enums.h"
 #include "database/interface/blockchain.hpp"
-#include "math/crypto/hash.hpp"
 #include "network/rpc/core_rpc_server_commands_defs.h"
 #include "network/rpc/message_data_structs.h"
 

@@ -26,11 +26,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
-#include <cstddef>
 #include <cstring>
-#include <lmdb.h>
-#include <type_traits>
-#include <utility>
 
 #include "tools/epee/include/span.h"
 

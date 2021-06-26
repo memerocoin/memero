@@ -30,31 +30,20 @@
 
 #pragma once
 
-#include "math/ringct/rctTypes.hpp"
 
 #include "wallet/device/device.hpp"
 
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
 
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
 #include "tools/serialization/binary_archive.h"
-#include "tools/serialization/containers.h"
 #include "tools/serialization/crypto.h"
 #include "tools/serialization/json_archive.h"
 #include "tools/serialization/variant.h"
 
-#include "config/cryptonote.hpp"
-#include "config/lol.hpp"
 
-#include <vector>
-#include <cstring>  // memcmp
-#include <sstream>
-#include <atomic>
 
 #include <boost/variant.hpp>
-#include <boost/functional/hash/hash.hpp>
 
 
 namespace cryptonote

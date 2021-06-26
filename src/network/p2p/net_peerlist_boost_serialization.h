@@ -30,14 +30,7 @@
 
 #pragma once
 
-#include <cstring>
-
-#include "network/p2p/p2p_protocol_defs.h"
-#include "network/type/i2p_address.h"
-#include "network/type/tor_address.h"
-#include "tools/common/expect.h"
-#include "tools/epee/include/net/net_utils_base.h"
-
+#include "p2p_protocol_defs.h"
 
 BOOST_CLASS_VERSION(nodetool::peerlist_entry, 3)
 

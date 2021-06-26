@@ -28,14 +28,10 @@
 
 #pragma once
 
-#include "math/crypto/hash.hpp"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"
-#include "math/ringct/rctSigs.hpp"
 #include "network/rpc/rpc_handler.h"
 
-#include <unordered_map>
-#include <vector>
 
 namespace cryptonote
 {

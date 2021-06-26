@@ -28,16 +28,11 @@
 
 #pragma once
 
-#include <string>
-#include <exception>
-#include <boost/program_options.hpp>
 #include "tools/common/command_line.h"
-#include "math/crypto/hash.hpp"
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"
 #include "cryptonote/protocol/enums.h"
-#include "tools/epee/include/syncobj.h"
 
 /** \file
  * Cryptonote Blockchain Database Interface

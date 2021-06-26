@@ -33,9 +33,7 @@
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/blobdatatype.h"
 
-#include "tools/epee/include/serialization/keyvalue_serialization.h"
 
-#include <list>
 
 namespace cryptonote
 {

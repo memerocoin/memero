@@ -30,14 +30,8 @@
 
 #pragma once
 
-#include <stdexcept>
-#include <system_error>
-#include <string>
-#include <vector>
 
-#include "cryptonote/basic/cryptonote_format_utils.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
-#include "tools/epee/include/misc_log_ex.h"
 
 
 namespace tools

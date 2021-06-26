@@ -29,12 +29,8 @@
 #pragma once
 
 #include <boost/uuid/uuid.hpp>
-#include <cstddef>
-#include <memory>
-#include <utility>
 #include <vector>
 
-#include "tools/epee/include/span.h"
 
 namespace net
 {

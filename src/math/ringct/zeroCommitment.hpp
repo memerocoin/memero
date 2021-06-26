@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include "rctTypes.hpp"
 
 namespace rct {
 

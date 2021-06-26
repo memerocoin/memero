@@ -31,12 +31,8 @@
 
 #pragma once
 
-#include <cstddef>
-#include <deque>
 
-#include "math/crypto/hash.hpp"
 #include "math/ringct/rctTypes.hpp"
-#include "tools/serialization/serialization.h"
 
 namespace wallet {
 namespace logic {

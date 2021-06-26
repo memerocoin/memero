@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "tools/common/command_line.h"
-#include "config/cryptonote.hpp"
 
 namespace daemon_args
 {

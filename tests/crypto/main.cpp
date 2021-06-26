@@ -34,7 +34,6 @@
 #include <string>
 #include <vector>
 
-#include "tools/epee/include/warnings.h"
 #include "tools/epee/include/misc_log_ex.h"
 #include "math/crypto/crypto.hpp"
 #include "math/crypto/hash.h"

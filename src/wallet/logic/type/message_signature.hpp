@@ -31,8 +31,6 @@
 
 #pragma once
 
-#include <cstdint>
-#include <string>
 
 namespace wallet {
 namespace logic {

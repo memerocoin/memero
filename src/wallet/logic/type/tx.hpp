@@ -31,12 +31,7 @@
 
 #pragma once
 
-#include <utility>
-#include <cstdint>
 
-#include "math/ringct/rctTypes.hpp"
-#include "tools/serialization/serialization.h"
-#include "cryptonote/tx/cryptonote_tx_utils.h" // keypair
 
 namespace wallet {
 namespace logic {

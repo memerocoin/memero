@@ -38,8 +38,6 @@
 
 #pragma once
 
-#include <string>
-#include <cstdint>
 
 #include "math/crypto/crypto.hpp"  // for declaration of crypto::secret_key
 

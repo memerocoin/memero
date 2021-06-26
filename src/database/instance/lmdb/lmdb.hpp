@@ -26,11 +26,8 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
-#include <atomic>
 
 #include "database/interface/blockchain.hpp"
-#include "cryptonote/basic/blobdatatype.h" // for type blobdata
-#include "math/ringct/rctTypes.hpp"
 
 #include <lmdb.h>
 

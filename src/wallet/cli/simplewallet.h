@@ -40,8 +40,6 @@
 
 #include "tools/epee/include/console_handler.h"
 #include "tools/epee/include/math_helper.h"
-#include "tools/epee/include/wipeable_string.h"
-#include "tools/common/password.h"
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

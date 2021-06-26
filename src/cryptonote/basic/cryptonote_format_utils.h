@@ -37,12 +37,8 @@
 #include "subaddress_index.h"
 
 
-#include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
 
-#include "tools/epee/include/misc_log_ex.h"
 
-#include <unordered_map>
 #include <boost/multiprecision/cpp_int.hpp>
 
 

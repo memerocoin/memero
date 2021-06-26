@@ -33,13 +33,8 @@
 
 #include "math/crypto/hash.hpp"
 
-#include "config/network.hpp"
 #include "config/lol.hpp"
 
-#include <cstdint>
-#include <vector>
-#include <string>
-#include <numeric>
 
 #include <boost/multiprecision/cpp_int.hpp>
 

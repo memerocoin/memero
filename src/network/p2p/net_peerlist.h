@@ -30,21 +30,13 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <list>
-#include <string>
-#include <vector>
-#include <optional>
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 
 #include "math/crypto/crypto.hpp"
-#include "tools/epee/include/net/enums.h"
-#include "tools/epee/include/net/local_ip.h"
 #include "tools/epee/include/syncobj.h"
 
 #include "config/cryptonote.hpp"

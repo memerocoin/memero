@@ -30,12 +30,8 @@
 
 #pragma once
 
-#include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/subaddress_index.h"
-#include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "wallet_rpc_server_error_codes.h"
 
-#include "config/cryptonote.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.rpc"

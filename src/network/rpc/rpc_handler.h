@@ -28,11 +28,9 @@
 
 #pragma once
 
-#include <optional>
-#include <cstdint>
-#include <string>
-#include <vector>
 #include "math/crypto/hash.hpp"
+
+#include <optional>
 
 namespace cryptonote
 {

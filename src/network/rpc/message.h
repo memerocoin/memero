@@ -29,9 +29,7 @@
 #pragma once
 
 #include <rapidjson/document.h>
-#include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
-#include <string>
 
 #include "network/rpc/message_data_structs.h"
 

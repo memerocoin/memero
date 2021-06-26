@@ -28,18 +28,12 @@
 
 #pragma once
 
-#include <cstdint>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/strand.hpp>
-#include <boost/system/error_code.hpp>
-#include <string_view>
-#include <memory>
-#include <utility>
 
 #include "network/type/i2p_address.h"
 #include "network/type/tor_address.h"
-#include "tools/epee/include/span.h"
 
 namespace epee
 {
