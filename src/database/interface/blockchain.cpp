@@ -26,15 +26,17 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <boost/range/adaptor/reversed.hpp>
-
-#include "tools/epee/include/string_tools.h"
 #include "blockchain.hpp"
+#include "../instance/lmdb/lmdb.hpp"
+
 #include "cryptonote/basic/cryptonote_format_utils.h"
-#include "tools/epee/include/profile_tools.h"
+
 #include "math/ringct/rctOps.hpp"
 
-#include "../instance/lmdb/lmdb.hpp"
+#include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/profile_tools.h"
+
+#include <boost/range/adaptor/reversed.hpp>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "blockchain.db"
