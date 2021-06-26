@@ -30,12 +30,14 @@
 
 #pragma once
 
-
-#include "tools/epee/include/math_helper.h"
-#include "cryptonote/basic/verification_context.h"
 #include "database/interface/blockchain.hpp"
+
 #include "network/rpc/core_rpc_server_commands_defs.h"
 #include "network/rpc/message_data_structs.h"
+
+#include "cryptonote/basic/verification_context.h"
+
+#include "tools/epee/include/math_helper.h"
 
 namespace cryptonote
 {

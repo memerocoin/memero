@@ -31,11 +31,12 @@
 #pragma once
 
 
-
-#include "cryptonote/basic/events.h"
-#include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
 #include "tx_pool.h"
 #include "blockchain.h"
+
+#include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
+
+#include "cryptonote/basic/events.h"
 #include "cryptonote/basic/miner.h"
 
 

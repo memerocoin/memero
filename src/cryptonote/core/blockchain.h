@@ -29,10 +29,11 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
-#include <boost/asio/io_service.hpp>
 
 #include "tools/common/util.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
+
+#include <boost/asio/io_service.hpp>
 
 namespace tools { class Notify; }
 
