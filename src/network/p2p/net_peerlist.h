@@ -30,18 +30,18 @@
 
 #pragma once
 
-
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/member.hpp>
-#include <boost/range/adaptor/reversed.hpp>
+#include "p2p_protocol_defs.h"
 
 #include "math/crypto/crypto.hpp"
 #include "tools/epee/include/syncobj.h"
 
 #include "config/cryptonote.hpp"
 
-#include "p2p_protocol_defs.h"
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/range/adaptor/reversed.hpp>
+
 
 
 namespace nodetool

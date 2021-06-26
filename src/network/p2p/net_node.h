@@ -29,19 +29,22 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
-#include <shared_mutex>
 
+#include "net_peerlist.h"
+#include "net_node_common.h"
 
-#include "config/cryptonote.hpp"
 #include "cryptonote/protocol/levin_notify.h"
 
+#include "tools/common/command_line.h"
 #include "tools/epee/include/net/abstract_tcp_server2.h"
 #include "tools/epee/include/net/levin_protocol_handler_async.h"
 #include "tools/epee/include/storages/levin_abstract_invoke2.h"
-#include "net_peerlist.h"
 #include "tools/epee/include/math_helper.h"
-#include "net_node_common.h"
-#include "tools/common/command_line.h"
+
+#include "config/cryptonote.hpp"
+
+#include <shared_mutex>
+
 
 namespace nodetool
 {

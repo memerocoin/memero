@@ -28,8 +28,22 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <boost/algorithm/string/find_iterator.hpp>
-#include <boost/algorithm/string/finder.hpp>
+#include "net_node.h"
+
+#include "network/type/socks.h"
+#include "network/type/parse.h"
+#include "network/type/tor_address.h"
+#include "network/type/i2p_address.h"
+#include "network/p2p/p2p_protocol_defs.h"
+
+#include "cryptonote/core/cryptonote_core.h"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
+
+#include "tools/common/command_line.h"
+#include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/net/net_utils_base.h"
+
+
 #include <chrono>
 #include <boost/endian/conversion.hpp>
 #include <optional>
@@ -38,17 +52,10 @@
 #include <chrono>
 #include <utility>
 
-#include "tools/common/command_line.h"
-#include "cryptonote/core/cryptonote_core.h"
-#include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "net_node.h"
-#include "tools/epee/include/net/net_utils_base.h"
-#include "network/type/socks.h"
-#include "network/type/parse.h"
-#include "network/type/tor_address.h"
-#include "network/type/i2p_address.h"
-#include "network/p2p/p2p_protocol_defs.h"
-#include "tools/epee/include/string_tools.h"
+#include <boost/algorithm/string/find_iterator.hpp>
+#include <boost/algorithm/string/finder.hpp>
+
+
 
 namespace
 {

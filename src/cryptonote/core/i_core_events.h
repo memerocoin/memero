@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "cryptonote/basic/blobdatatype.h"
 
 namespace cryptonote
 {
