@@ -27,7 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(cncrypto
+add_library(math_crypto
   chacha.cpp
   crypto-ops-data.c
   crypto-ops.c
@@ -37,7 +37,7 @@ add_library(cncrypto
   hash.cpp
   )
 
-target_link_libraries(cncrypto
+target_link_libraries(math_crypto
     epee
     ${SODIUM_LIBRARY}
   )

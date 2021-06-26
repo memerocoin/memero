@@ -34,7 +34,7 @@ add_executable(hash-tests
 target_link_libraries(hash-tests
   PRIVATE
     common
-    cncrypto
+    math_crypto
     epee
     ${EXTRA_LIBRARIES})
 

@@ -40,7 +40,7 @@ add_library(common
   )
 
 target_link_libraries(common
-  cncrypto
+  math_crypto
   epee_net_basic
   epee_storage_basic
 )

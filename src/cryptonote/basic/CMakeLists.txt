@@ -44,6 +44,6 @@ add_library(cryptonote_basic
 
 target_link_libraries(cryptonote_basic
     common
-    cncrypto
+    math_crypto
     device
  )

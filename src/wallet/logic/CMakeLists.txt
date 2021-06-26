@@ -40,6 +40,6 @@ add_library(wallet_logic
   )
 
 target_link_libraries(wallet_logic
-  cncrypto
+  math_crypto
   cryptonote_basic
 )

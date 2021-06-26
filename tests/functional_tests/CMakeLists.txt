@@ -43,7 +43,7 @@ target_link_libraries(functional_tests
     cryptonote_core
     wallet
     common
-    cncrypto
+    math_crypto
     epee
     ${Boost_REGEX_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
@@ -59,7 +59,7 @@ add_executable(make_test_signature
 target_link_libraries(make_test_signature
   PRIVATE
     rpc_base
-    cncrypto
+    math_crypto
     epee
     ${CMAKE_THREAD_LIBS_INIT}
     ${EXTRA_LIBRARIES})

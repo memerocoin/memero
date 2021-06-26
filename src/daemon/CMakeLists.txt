@@ -41,7 +41,7 @@ target_link_libraries(lolnerod
     rpc
     blockchain_db
     cryptonote_core
-    cncrypto
+    math_crypto
     common
     p2p
     cryptonote_protocol

@@ -37,21 +37,21 @@ set(crypto_sources
 set(crypto_headers
   crypto-tests.h)
 
-add_executable(cncrypto-tests
+add_executable(math_crypto-tests
   ${crypto_sources}
   ${crypto_headers})
-target_link_libraries(cncrypto-tests
+target_link_libraries(math_crypto-tests
   PRIVATE
     common
     ${Boost_SYSTEM_LIBRARY}
     ${EXTRA_LIBRARIES})
-set_property(TARGET cncrypto-tests
+set_property(TARGET math_crypto-tests
   PROPERTY
     FOLDER "tests")
 
 add_test(
-  NAME    cncrypto
-  COMMAND cncrypto-tests "${CMAKE_CURRENT_SOURCE_DIR}/tests.txt")
+  NAME    math_crypto
+  COMMAND math_crypto-tests "${CMAKE_CURRENT_SOURCE_DIR}/tests.txt")
 
 add_executable(cnv4-jit-tests cnv4-jit.c)
 target_link_libraries(cnv4-jit-tests
