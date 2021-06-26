@@ -35,8 +35,6 @@
 
 
 
-#include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/misc_language.h"
 
 #include <boost/uuid/random_generator.hpp>
 

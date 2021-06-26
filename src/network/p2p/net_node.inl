@@ -32,40 +32,17 @@
 
 #pragma once
 
-#include "p2p_protocol_defs.h"
 
 #include "cryptonote/core/cryptonote_core.h"
 
-#include "network/type/error.h"
 #include "network/type/parse.h"
 
-#include "tools/common/util.h"
-
-#include "math/crypto/crypto.hpp"
-
-#include "tools/epee/include/math_helper.h"
-#include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/net/local_ip.h"
-#include "tools/epee/include/net/net_helper.h"
-#include "tools/epee/include/storages/levin_abstract_invoke2.h"
-#include "tools/epee/include/string_tools.h"
 
 
-#include "config/lol.hpp"
-#include "config/version.hpp"
 
 
-#include <algorithm>
-#include <atomic>
-#include <filesystem>
-#include <functional>
-#include <limits>
-#include <memory>
-#include <optional>
-#include <thread>
-#include <thread>
-#include <tuple>
-#include <vector>
+
+
 
 #include <boost/uuid/uuid_io.hpp>
 

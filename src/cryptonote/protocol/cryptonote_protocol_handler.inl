@@ -37,16 +37,10 @@
 
 #pragma once
 
-#include "cryptonote/basic/cryptonote_format_utils.h"
 
 #include "tools/epee/include/profile_tools.h"
-#include "tools/epee/include/misc_os_dependent.h"
-#include "tools/common/util.h"
 
-#include "config/lol.hpp"
 
-#include <list>
-#include <ctime>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
