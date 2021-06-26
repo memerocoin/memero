@@ -26,10 +26,12 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
-#include <atomic>
+
+#include "transaction.hpp"
 
 #include "tools/common/expect.h"
-#include "transaction.hpp"
+
+#include <atomic>
 
 namespace lmdb
 {

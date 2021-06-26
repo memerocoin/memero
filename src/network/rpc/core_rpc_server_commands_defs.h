@@ -30,10 +30,11 @@
 
 #pragma once
 
-#include "tools/epee/include/string_tools.h"
 
-#include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "network/rpc/rpc_handler.h"
+#include "cryptonote/protocol/cryptonote_protocol_defs.h"
+
+#include "tools/epee/include/string_tools.h"
 
 using namespace constant;
 

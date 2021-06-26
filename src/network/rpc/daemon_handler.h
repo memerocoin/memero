@@ -29,8 +29,10 @@
 #pragma once
 
 #include "daemon_messages.h"
+
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
+
 #include "network/p2p/net_node.h"
 
 namespace

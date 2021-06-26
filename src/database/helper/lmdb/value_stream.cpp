@@ -27,11 +27,13 @@
 
 #include "value_stream.hpp"
 
-#include <stdexcept>
-
-#include "tools/common/expect.h"
 #include "error.hpp"
 #include "util.hpp"
+
+#include "tools/common/expect.h"
+
+#include <stdexcept>
+
 
 namespace lmdb
 {

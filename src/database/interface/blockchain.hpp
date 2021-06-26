@@ -28,11 +28,14 @@
 
 #pragma once
 
-#include "tools/common/command_line.h"
+
+#include "cryptonote/protocol/enums.h"
+
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"
-#include "cryptonote/protocol/enums.h"
+
+#include "tools/common/command_line.h"
 
 /** \file
  * Cryptonote Blockchain Database Interface

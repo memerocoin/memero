@@ -26,9 +26,12 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
+#include "tools/epee/include/span.h"
+#include "tools/common/expect.h"
+
 #include <cstring>
 
-#include "tools/epee/include/span.h"
+#include <lmdb.h>
 
 /*! Calculates types and offset of struct field. Use in template arguments for
     `table::get_value`, `value_iterator::get_value`,

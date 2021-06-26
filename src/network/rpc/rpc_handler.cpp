@@ -1,9 +1,10 @@
 
+#include "rpc_handler.h"
+#include "cryptonote/core/cryptonote_core.h"
+
 #include <algorithm>
 #include <mutex>
-#include <mutex>
 
-#include "cryptonote/core/cryptonote_core.h"
 
 namespace cryptonote
 {

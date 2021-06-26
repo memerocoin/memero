@@ -1,10 +1,11 @@
 #pragma once
 
 
-#include "tools/common/expect.h"
+#include "util.hpp"
 #include "error.hpp"
 #include "key_stream.hpp"
-#include "util.hpp"
+
+#include "tools/common/expect.h"
 
 namespace lmdb
 {

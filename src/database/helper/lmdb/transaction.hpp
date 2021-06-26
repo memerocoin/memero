@@ -26,10 +26,13 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
+#include "error.hpp"
+
+#include "tools/common/expect.h"
+
 #include <lmdb.h>
 #include <memory>
 
-#include "error.hpp"
 
 //! Uses C++ type system to differentiate between cursors
 #define MONERO_CURSOR(name)                                    \

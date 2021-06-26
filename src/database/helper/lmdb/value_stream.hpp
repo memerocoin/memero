@@ -26,11 +26,14 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
-#include <boost/range/iterator_range.hpp>
+#include "tools/epee/include/span.h"
+
 #include <cstring>
+#include <boost/range/iterator_range.hpp>
+
 #include <lmdb.h>
 
-#include "tools/epee/include/span.h"
+
 
 namespace lmdb
 {

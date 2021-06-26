@@ -30,6 +30,7 @@
 
 #include "network/p2p/net_node.h"
 #include "network/p2p/net_node.inl"
+
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 #include "cryptonote/protocol/cryptonote_protocol_handler.inl"
 

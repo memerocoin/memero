@@ -28,9 +28,10 @@
 
 #pragma once
 
+#include "network/rpc/rpc_handler.h"
+
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/difficulty.h"
-#include "network/rpc/rpc_handler.h"
 
 
 namespace cryptonote

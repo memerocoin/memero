@@ -31,6 +31,7 @@
 #include "math/crypto/hash.hpp"
 
 #include <optional>
+#include <functional>
 
 namespace cryptonote
 {

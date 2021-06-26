@@ -28,10 +28,11 @@
 
 #pragma once
 
+#include "network/rpc/message_data_structs.h"
+
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 
-#include "network/rpc/message_data_structs.h"
 
 namespace cryptonote
 {
