@@ -26,9 +26,9 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "executor.h"
 
-#include "daemon/executor.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 #include "config/cryptonote.hpp"
 #include "config/version.hpp"

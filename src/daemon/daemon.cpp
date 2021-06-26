@@ -28,24 +28,31 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <memory>
-#include <stdexcept>
-#include <boost/algorithm/string/split.hpp>
-#include "tools/epee/include/misc_log_ex.h"
-#include "daemon/daemon.h"
-#include "network/rpc/daemon_handler.h"
+#include "daemon.h"
 
-#include "tools/common/password.h"
-#include "tools/common/util.h"
-#include "cryptonote/basic/events.h"
 #include "daemon/core.h"
 #include "daemon/p2p.h"
 #include "daemon/protocol.h"
 #include "daemon/rpc.h"
 #include "daemon/command_server.h"
 #include "daemon/command_line_args.h"
+
+#include "network/rpc/daemon_handler.h"
+
+#include "cryptonote/basic/events.h"
+
+#include "tools/common/password.h"
+#include "tools/common/util.h"
+
+#include "tools/epee/include/misc_log_ex.h"
 #include "tools/epee/include/net/net_ssl.h"
+
 #include "config/version.hpp"
+
+#include <memory>
+#include <stdexcept>
+
+#include <boost/algorithm/string/split.hpp>
 
 using namespace epee;
 

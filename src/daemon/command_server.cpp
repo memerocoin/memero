@@ -26,11 +26,15 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <boost/algorithm/string.hpp>
+#include "command_server.h"
+
+
+#include "tools/epee/include/string_tools.h"
+
 #include "config/cryptonote.hpp"
 #include "config/version.hpp"
-#include "tools/epee/include/string_tools.h"
-#include "daemon/command_server.h"
+
+#include <boost/algorithm/string.hpp>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"

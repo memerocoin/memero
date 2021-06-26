@@ -38,8 +38,9 @@
 
 #pragma once
 
-#include "tools/common/rpc_client.h"
 #include "network/rpc/core_rpc_server.h"
+
+#include "tools/common/rpc_client.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"

@@ -28,18 +28,25 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "tools/epee/include/string_tools.h"
-#include "tools/common/password.h"
-#include "tools/common/scoped_message_writer.h"
-#include "daemon/rpc_command_executor.h"
-#include "network/rpc/core_rpc_server_commands_defs.h"
+#include "rpc_command_executor.h"
+
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/basic/difficulty.h"
+
+#include "network/rpc/core_rpc_server_commands_defs.h"
 #include "network/rpc/rpc_version_str.h"
-#include <boost/format.hpp>
+
+#include "tools/common/password.h"
+#include "tools/common/scoped_message_writer.h"
+
+#include "tools/epee/include/string_tools.h"
+
+#include "config/lol.hpp"
+
 #include <ctime>
 #include <string>
-#include "config/lol.hpp"
+
+#include <boost/format.hpp>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"

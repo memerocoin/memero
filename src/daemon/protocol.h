@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "network/p2p/net_node.h"
+
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"
 

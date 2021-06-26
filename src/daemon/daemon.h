@@ -27,6 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+
 #include <boost/program_options.hpp>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

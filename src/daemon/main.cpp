@@ -28,21 +28,27 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "tools/common/command_line.h"
-#include "tools/common/scoped_message_writer.h"
-#include "tools/common/password.h"
-#include "tools/common/util.h"
+#include "command_server.h"
+#include "daemon.h"
+#include "executor.h"
+#include "command_line_args.h"
+
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/basic/miner.h"
-#include "daemon/command_server.h"
-#include "daemon/daemon.h"
-#include "daemon/executor.h"
-#include "tools/epee/include/misc_log_ex.h"
+
 #include "network/type/parse.h"
 #include "network/p2p/net_node.h"
 #include "network/rpc/core_rpc_server.h"
 #include "network/rpc/rpc_args.h"
-#include "daemon/command_line_args.h"
+
+#include "tools/common/command_line.h"
+#include "tools/common/scoped_message_writer.h"
+#include "tools/common/password.h"
+#include "tools/common/util.h"
+
+
+#include "tools/epee/include/misc_log_ex.h"
+
 #include "config/version.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

@@ -39,8 +39,9 @@ Passing RPC commands:
 
 #pragma once
 
-#include "tools/epee/include/console_handler.h"
 #include "daemon/command_parser_executor.h"
+
+#include "tools/epee/include/console_handler.h"
 
 namespace daemonize {
 
