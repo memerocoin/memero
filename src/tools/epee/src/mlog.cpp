@@ -27,6 +27,8 @@
 
 #include "tools/epee/include/misc_log_ex.h"
 
+#include "config/lol.hpp"
+
 #include <filesystem>
 #include <boost/algorithm/string.hpp>
 
@@ -41,7 +43,7 @@ using namespace epee;
 
 std::string mlog_get_default_log_path(const char *default_filename)
 {
-  return (std::filesystem::path("/dev/null")).string();
+  return (std::filesystem::path(config::def::log_path)).string();
 }
 
 static void mlog_set_common_prefix()

@@ -112,5 +112,11 @@ namespace config
 
     constexpr size_t SUBADDRESS_LOOKAHEAD_MAJOR = 50;
     constexpr size_t SUBADDRESS_LOOKAHEAD_MINOR = 400;
+
+  }
+
+  namespace def
+  {
+    constexpr std::string_view log_path = "/dev/null";
   }
 }

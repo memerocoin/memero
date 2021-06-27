@@ -70,7 +70,7 @@ namespace tools
 
   std::string get_default_log_file()
   {
-    return (std::filesystem::path("/dev/null")).string();
+    return (std::filesystem::path(config::def::log_path)).string();
   }
 
   bool create_directories_if_necessary(const std::string& path)

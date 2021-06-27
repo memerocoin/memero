@@ -200,9 +200,11 @@ namespace wallet_args
       const char *logs = getenv("MONERO_LOGS");
       MINFO("Setting log levels = " << (logs ? logs : "<default>"));
     }
-    MINFO(wallet_args::tr("Logging to: ") << log_path);
 
-    Print(print) << boost::format(wallet_args::tr("Logging to %s")) % log_path;
+    MINFO(wallet_args::tr("Logging to: ") << log_path);
+    if (log_path != std::string(config::def::log_path)) {
+      Print(print) << boost::format(wallet_args::tr("Logging to %s")) % log_path;
+    }
 
     return {std::move(vm), should_terminate};
   }
