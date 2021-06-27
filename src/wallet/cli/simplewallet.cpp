@@ -1410,24 +1410,9 @@ bool simple_wallet::ask_wallet_create_if_needed()
         }
         else if(!wallet_file_exists && !keys_file_exists) //No wallet, no keys
         {
-          bool ok = true;
-          if (!m_restoring)
-          {
-            message_writer() << sw::tr("No wallet found with that name. Confirm creation of new wallet named: ") << wallet_path;
-            confirm_creation = input_line("", true);
-            if(std::cin.eof())
-            {
-              LOG_ERROR("Unexpected std::cin.eof() - Exited simple_wallet::ask_wallet_create_if_needed()");
-              return false;
-            }
-            ok = command_line::is_yes(confirm_creation);
-          }
-          if (ok)
-          {
-            success_msg_writer() << sw::tr("Generating new wallet...");
-            m_generate_new = wallet_path;
-            return true;
-          }
+          success_msg_writer() << sw::tr("Generating new wallet...");
+          m_generate_new = wallet_path;
+          return true;
         }
       }
     } while(!wallet_name_valid);
