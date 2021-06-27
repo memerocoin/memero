@@ -1442,9 +1442,11 @@ bool simple_wallet::ask_wallet_create_if_needed()
  */
 void simple_wallet::print_seed(const epee::wipeable_string &seed)
 {
-  success_msg_writer(true) << "\n" << boost::format(tr("NOTE: the following %s can be used to recover access to your wallet. "
-    "Write them down and store them somewhere safe and secure. Please do not store them in "
-    "your email or on file storage services outside of your immediate control.\n")) % sw::tr("25 words");
+  success_msg_writer() <<
+    "\n" <<
+    "**********************************************************************"
+    ;
+
   // don't log
   int space_index = 0;
   size_t len  = seed.size();
@@ -1461,8 +1463,13 @@ void simple_wallet::print_seed(const epee::wipeable_string &seed)
     else
       putchar(*ptr);
   }
-  putchar('\n');
+
   fflush(stdout);
+
+  success_msg_writer() <<
+    "\n" <<
+    "**********************************************************************\n"
+    ;
 }
 //----------------------------------------------------------------------------------------------------
 static bool might_be_partial_seed(const epee::wipeable_string &words)
@@ -1626,9 +1633,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
 
   m_wallet->callback(this);
 
-  if (welcome)
-    message_writer(epee::console_color_yellow, true) << sw::tr("If you are new to Lolnero, type \"welcome\" for a brief overview.");
-
   m_last_activity_time = time(NULL);
   return true;
 }
@@ -1755,10 +1759,6 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
     recovery_val = m_wallet->generate(m_wallet_file, std::move(rc.second).password(), recovery_key, recover);
     message_writer(epee::console_color_white, true) << sw::tr("Generated new wallet: ")
       << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
-    PAUSE_READLINE();
-    std::cout << sw::tr("View key: ");
-    print_secret_key(m_wallet->get_account().get_keys().m_view_secret_key);
-    putchar('\n');
   }
   catch (const std::exception& e)
   {
@@ -1771,20 +1771,17 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
 
   crypto::ElectrumWords::bytes_to_words(recovery_val, electrum_words, mnemonic_language);
 
-  success_msg_writer() <<
-    "**********************************************************************\n" <<
-    sw::tr("Your wallet has been generated!\n"
-    "To start synchronizing with the daemon, use the \"refresh\" command.\n"
-    "Use the \"help\" command to see a simplified list of available commands.\n"
-    "Use \"help all\" command to see the list of all available commands.\n"
-    "Use \"help <command>\" to see a command's documentation.\n"
-    "Always use the \"exit\" command when closing lolnero to save \n"
-    "your current session's state. Otherwise, you might need to synchronize \n"
-    "your wallet again (your wallet keys are NOT at risk in any case).\n")
-  ;
+  success_msg_writer(true) <<
+    "\n" <<
+    boost::format(tr("NOTE: the following %s can be used to recover access to your wallet. "
+                     "Write them down and store them somewhere safe and secure. Please do not store them in "
+                     "your email or on file storage services outside of your immediate control.")) % sw::tr("25 words");
 
   print_seed(electrum_words);
-  success_msg_writer() << "**********************************************************************";
+
+  success_msg_writer() <<
+    "Use the \"help\" command to see a list of available commands.\n"
+    ;
 
   return password;
 }
@@ -1870,12 +1867,6 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
     }
     return {};
   }
-  success_msg_writer() <<
-    "**********************************************************************\n" <<
-    sw::tr("Use the \"help\" command to see a simplified list of available commands.\n") <<
-    sw::tr("Use \"help all\" to see the list of all available commands.\n") <<
-    sw::tr("Use \"help <command>\" to see a command's documentation.\n") <<
-    "**********************************************************************";
   return password;
 }
 //----------------------------------------------------------------------------------------------------
