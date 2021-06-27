@@ -1756,13 +1756,17 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
 
   crypto::ElectrumWords::bytes_to_words(recovery_val, electrum_words, mnemonic_language);
 
-  success_msg_writer(true) <<
-    "\n" <<
-    boost::format(tr("NOTE: the following %s can be used to recover access to your wallet. "
-                     "Write them down and store them somewhere safe and secure. Please do not store them in "
-                     "your email or on file storage services outside of your immediate control.")) % sw::tr("25 words");
+  if (!recover) {
+    success_msg_writer(true) <<
+      "\n" <<
+      boost::format(tr("NOTE: the following %s can be used to recover access to your wallet. "
+                      "Write them down and store them somewhere safe and secure. Please do not store them in "
+                      "your email or on file storage services outside of your immediate control.")) % sw::tr("25 words");
 
-  print_seed(electrum_words);
+    print_seed(electrum_words);
+  } else {
+    success_msg_writer();
+  }
 
   success_msg_writer() <<
     "Use the \"help\" command to see a list of available commands.\n"
