@@ -35,7 +35,7 @@
 
 #include "config/lol.hpp"
 
-
+#include <numeric>
 #include <boost/multiprecision/cpp_int.hpp>
 
 
