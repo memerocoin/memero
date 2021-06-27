@@ -4328,7 +4328,7 @@ int main(int argc, char* argv[])
   std::tie(vm, should_terminate) = wallet_args::main(
    argc, argv,
    "lolnero [--open=<filename>|--new=<filename>] [<COMMAND>]",
-    sw::tr("This is the command line lolnero wallet. It needs to connect to a lolnero\ndaemon to work correctly."),
+   "",
     desc_params,
     positional_options,
     [](const std::string &s, bool emphasis){ tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s; },
