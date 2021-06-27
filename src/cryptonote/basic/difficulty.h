@@ -35,7 +35,8 @@
 
 #include "config/lol.hpp"
 
-#include <numeric>
+#include <numeric> // strangely needed by ubuntu 21.04 which has gcc 10.3.0
+
 #include <boost/multiprecision/cpp_int.hpp>
 
 
