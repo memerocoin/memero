@@ -110,5 +110,9 @@ nbproject
 
 __pycache__/
 
+### Lolnero tasks
 etc/task/testnet
 etc/task/mainnet
+
+### Emacs
+.#*
