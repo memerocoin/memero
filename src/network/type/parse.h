@@ -64,7 +64,5 @@ namespace net
     */
     expect<epee::net_utils::ipv4_network_subnet>
         get_ipv4_subnet_address(std::string_view address, bool allow_implicit_32 = false);
-
-    expect<boost::asio::ip::tcp::endpoint> get_tcp_endpoint(const std::string_view address);
 }
 
