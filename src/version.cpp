@@ -1,4 +1,4 @@
 #include "config/version.hpp"
 
-constexpr std::string_view LOLNERO_VERSION = "0.9.7.16";
+constexpr std::string_view LOLNERO_VERSION = "0.9.7.17";
 constexpr std::string_view LOLNERO_RELEASE_NAME = "Saber";
