@@ -41,7 +41,7 @@ target_link_libraries(lolnerod
   database
   cryptonote_core
   math_crypto
-  common
+  tools_common
   network_p2p
   cryptonote_protocol
   serialization

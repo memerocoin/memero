@@ -27,7 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(common
+add_library(tools_common
   base58.cpp
   command_line.cpp
   error.cpp
@@ -39,7 +39,7 @@ add_library(common
   threadpool.cpp
   )
 
-target_link_libraries(common
+target_link_libraries(tools_common
   math_crypto
   epee_net_basic
   epee_storage_basic
