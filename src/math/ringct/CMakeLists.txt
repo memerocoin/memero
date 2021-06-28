@@ -36,7 +36,7 @@ add_library(math_ringct_basic
 
 target_link_libraries(math_ringct_basic
     math_crypto
-    common_basic
+    tools_common_basic
   )
 
 add_library(math_ringct
