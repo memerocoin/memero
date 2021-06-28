@@ -54,10 +54,10 @@ add_dependencies(unit_tests_tools test_notifier)
 
 target_link_libraries(unit_tests_tools
   epee
-  common
-  common_basic
+  tools_common
+  tools_common_basic
   epee_storage
-  net
+  network_type 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main
@@ -79,8 +79,8 @@ add_executable(unit_tests_basic
 
 target_link_libraries(unit_tests_basic
   cryptonote_basic
-  mnemonics
-  serialization
+  wallet_mnemonics
+  tools_serialization
   epee_storage
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
@@ -108,7 +108,6 @@ add_executable(unit_tests_core
   difficulty.cpp
   epee_utils.cpp
   json_serialization.cpp
-  lmdb.cpp
   net.cpp
 # node_server.cpp
   output_distribution.cpp
@@ -125,15 +124,14 @@ add_executable(unit_tests_core
 )
 
 target_link_libraries(unit_tests_core
-  ringct
+  math_ringct
   cryptonote_protocol
   cryptonote_core
   # blockchain_db
-  lmdb_lib
-  rpc
-  net
-  serialization
-  p2p
+  network_rpc
+  network_type
+  tools_serialization
+  network_p2p
   epee_storage
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
@@ -152,8 +150,8 @@ add_executable(unit_tests_wallet_basic
 
 target_link_libraries(unit_tests_wallet_basic
   wallet_logic
-  boost_archive
-  serialization
+  tools_boost_archive
+  tools_serialization
   epee_storage
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest

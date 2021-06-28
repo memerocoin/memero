@@ -33,7 +33,7 @@ add_executable(hash-tests
 
 target_link_libraries(hash-tests
   PRIVATE
-    common
+    tools_common
     math_crypto
     epee
     ${EXTRA_LIBRARIES})
