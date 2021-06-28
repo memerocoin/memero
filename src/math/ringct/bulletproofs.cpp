@@ -64,7 +64,6 @@ extern "C"
 #define PERF_TIMER_STOP_BP(x) ((void)0)
 #endif
 
-constexpr size_t STRAUS_SIZE_LIMIT = 232;
 constexpr size_t PIPPENGER_SIZE_LIMIT = 0;
 
 namespace rct
@@ -80,7 +79,6 @@ constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 
 static rct::key Hi[maxN*maxM], Gi[maxN*maxM];
 static ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
-static std::shared_ptr<straus_cached_data> straus_HiGi_cache;
 static std::shared_ptr<pippenger_cached_data> pippenger_HiGi_cache;
 
 inline constexpr rct::key TWO = { {0x02, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00  } };
@@ -97,11 +95,10 @@ static inline rct::key multiexp(const std::vector<MultiexpData> &data, size_t Hi
 {
   if (HiGi_size > 0)
   {
-    static_assert(232 <= STRAUS_SIZE_LIMIT, "Straus in precalc mode can only be calculated till STRAUS_SIZE_LIMIT");
-    return HiGi_size <= 232 && data.size() == HiGi_size ? straus(data, straus_HiGi_cache, 0) : pippenger(data, pippenger_HiGi_cache, HiGi_size, get_pippenger_c(data.size()));
+    return pippenger(data, pippenger_HiGi_cache, HiGi_size, get_pippenger_c(data.size()));
   }
   else
-    return data.size() <= 95 ? straus(data, NULL, 0) : pippenger(data, NULL, 0, get_pippenger_c(data.size()));
+    return pippenger(data, NULL, 0, get_pippenger_c(data.size()));
 }
 
 static inline bool is_reduced(const rct::key &scalar)
@@ -141,14 +138,12 @@ static void init_exponents()
     data.push_back({rct::zero(), Hi_p3[i]});
   }
 
-  straus_HiGi_cache = straus_init_cache(data, STRAUS_SIZE_LIMIT);
   pippenger_HiGi_cache = pippenger_init_cache(data, 0, PIPPENGER_SIZE_LIMIT);
 
   MINFO("Hi/Gi cache size: " << (sizeof(Hi)+sizeof(Gi))/1024 << " kB");
   MINFO("Hi_p3/Gi_p3 cache size: " << (sizeof(Hi_p3)+sizeof(Gi_p3))/1024 << " kB");
-  MINFO("Straus cache size: " << straus_get_cache_size(straus_HiGi_cache)/1024 << " kB");
   MINFO("Pippenger cache size: " << pippenger_get_cache_size(pippenger_HiGi_cache)/1024 << " kB");
-  size_t cache_size = (sizeof(Hi)+sizeof(Hi_p3))*2 + straus_get_cache_size(straus_HiGi_cache) + pippenger_get_cache_size(pippenger_HiGi_cache);
+  size_t cache_size = (sizeof(Hi)+sizeof(Hi_p3))*2 + pippenger_get_cache_size(pippenger_HiGi_cache);
   MINFO("Total cache size: " << cache_size/1024 << "kB");
   init_done = true;
 }
