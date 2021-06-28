@@ -907,6 +907,7 @@ namespace cryptonote
       if (!public_req.txs.empty()) {
         get_protocol()->relay_transactions(public_req, source, epee::net_utils::zone::public_);
         get_protocol()->relay_transactions(public_req, source, epee::net_utils::zone::tor);
+        get_protocol()->relay_transactions(public_req, source, epee::net_utils::zone::i2p);
       }
     }
     return true;

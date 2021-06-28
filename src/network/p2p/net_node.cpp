@@ -288,14 +288,15 @@ namespace nodetool
             break;
         }
 
-        if (address.get_zone() == epee::net_utils::zone::public_)
+        switch(address.get_zone()) {
+          case epee::net_utils::zone::public_:
+          case epee::net_utils::zone::tor:
+          case epee::net_utils::zone::i2p:
             return false;
-
-        if (address.get_zone() == epee::net_utils::zone::tor)
-            return false;
-
-        MWARNING("Filtered command (#" << command << ") to/from " << address.str());
-        return true;
+          default:
+            MWARNING("Filtered command (#" << command << ") to/from " << address.str());
+            return true;
+        }
     }
 
     std::optional<boost::asio::ip::tcp::socket>
