@@ -41,7 +41,7 @@ add_library(rpc
 
 target_link_libraries(rpc
     rpc_base
-    net
+    network_type
     )
 
 add_library(daemon_messages

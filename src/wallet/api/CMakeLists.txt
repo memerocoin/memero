@@ -52,7 +52,7 @@ add_library(wallet_api
 target_link_libraries(wallet_api
   rpc_base
   mnemonics
-  net
+  network_type
   wallet_logic
   ringct
   cryptonote_tx

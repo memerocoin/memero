@@ -26,7 +26,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(net
+add_library(network_type
   dandelionpp.cpp
   error.cpp
   http.cpp
@@ -37,8 +37,7 @@ add_library(net
   tor_address.cpp
   )
 
-target_link_libraries(net
-  common
+target_link_libraries(network_type
   epee
   epee_net
   )
