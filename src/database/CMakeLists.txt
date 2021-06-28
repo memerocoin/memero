@@ -28,13 +28,6 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-add_library(lmdb_lib
-  helper/lmdb/database.cpp
-  helper/lmdb/error.cpp
-  helper/lmdb/table.cpp
-  helper/lmdb/value_stream.cpp
-)
-
 add_library(blockchain_db
   interface/blockchain.cpp
   instance/lmdb/lmdb.cpp
