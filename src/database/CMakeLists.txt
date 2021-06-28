@@ -28,12 +28,12 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-add_library(blockchain_db
+add_library(database
   interface/blockchain.cpp
   instance/lmdb/lmdb.cpp
   )
 
-target_link_libraries(blockchain_db
+target_link_libraries(database
     lmdb
     ringct
   )

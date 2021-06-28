@@ -39,7 +39,7 @@ add_executable(lolnerod
 target_link_libraries(lolnerod
     LINK_PUBLIC
     rpc
-    blockchain_db
+    database
     cryptonote_core
     math_crypto
     common
