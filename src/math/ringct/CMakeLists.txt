@@ -27,24 +27,24 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(ringct_basic
+add_library(math_ringct_basic
   rctOps.cpp
   rctTypes.cpp
   multiexp.cpp
   bulletproofs.cpp
   )
 
-target_link_libraries(ringct_basic
+target_link_libraries(math_ringct_basic
     math_crypto
     common_basic
   )
 
-add_library(ringct
+add_library(math_ringct
   rctSigs.cpp
   )
 
-target_link_libraries(ringct
-    ringct_basic
+target_link_libraries(math_ringct
+    math_ringct_basic
     cryptonote_basic
     device
   )

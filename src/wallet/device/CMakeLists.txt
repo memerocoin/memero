@@ -34,6 +34,6 @@ add_library(device
 
 target_link_libraries(device
     math_crypto
-    ringct_basic
+    math_ringct_basic
     version
   )

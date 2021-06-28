@@ -35,5 +35,5 @@ add_library(cryptonote_core
 
 target_link_libraries(cryptonote_core
   cryptonote_tx
-  ringct
+  math_ringct
  )

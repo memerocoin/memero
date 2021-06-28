@@ -54,7 +54,7 @@ target_link_libraries(wallet_api
   mnemonics
   network_type
   wallet_logic
-  ringct
+  math_ringct
   cryptonote_tx
   serialization
   wallet_errors
