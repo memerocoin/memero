@@ -27,13 +27,13 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(boost_archive
+add_library(tools_boost_archive
   portable_binary_archive.cpp
   portable_binary_iarchive.cpp
   portable_binary_oarchive.cpp
   )
 
-target_link_libraries(boost_archive
+target_link_libraries(tools_boost_archive
   ${Boost_SERIALIZATION_LIBRARY}
 )
 
