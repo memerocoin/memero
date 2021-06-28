@@ -45,5 +45,5 @@ add_library(cryptonote_basic
 target_link_libraries(cryptonote_basic
     tools_common
     math_crypto
-    device
+    wallet_device
  )
