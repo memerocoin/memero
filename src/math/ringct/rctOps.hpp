@@ -33,17 +33,6 @@
 
 #include "rctTypes.hpp"
 
-
-
-
-
-//Define this flag when debugging to get additional info on the console
-#ifdef DBG
-#define DP(x) dp(x)
-#else
-#define DP(x)
-#endif
-
 namespace rct {
 
     //Various key initialization functions

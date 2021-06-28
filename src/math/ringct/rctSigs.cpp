@@ -34,8 +34,8 @@
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
-#include "tools/epee/include/misc_log_ex.h"
 #include "tools/common/threadpool.h"
+#include "tools/epee/include/misc_log_ex.h"
 
 
 #include "config/cryptonote.hpp"
@@ -581,7 +581,6 @@ namespace rct {
         }
         sc_sub(a[i].bytes, sumout.bytes, sumpouts.bytes);
         genC(pseudoOuts[i], a[i], inamounts[i]);
-        DP(pseudoOuts[i]);
 
         key full_message = get_pre_mlsag_hash(rv);
         for (i = 0 ; i < inamounts.size(); i++)
@@ -658,12 +657,10 @@ namespace rct {
             masks[i] = rv.outPk[i].mask;
           }
           key sumOutpks = addKeys(masks);
-          DP(sumOutpks);
           const key txnFeeKey = scalarmultH(d2h(rv.txnFee));
           addKeys(sumOutpks, txnFeeKey, sumOutpks);
 
           key sumPseudoOuts = addKeys(pseudoOuts);
-          DP(sumPseudoOuts);
 
           //check pseudoOuts vs Outs..
           if (sumPseudoOuts != sumOutpks) {
@@ -774,14 +771,10 @@ namespace rct {
         mask = ecdh_info.mask;
         key amount = ecdh_info.amount;
         key C = rv.outPk[i].mask;
-        DP("C");
-        DP(C);
         key Ctmp;
         CHECK_AND_ASSERT_THROW_MES(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
         CHECK_AND_ASSERT_THROW_MES(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
         addKeys2(Ctmp, mask, amount);
-        DP("Ctmp");
-        DP(Ctmp);
         if (C != Ctmp) {
             CHECK_AND_ASSERT_THROW_MES(false, "warning, amount decoded incorrectly, will be unable to spend");
         }

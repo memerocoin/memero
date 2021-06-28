@@ -38,28 +38,11 @@ extern "C" {
 
 #include "tools/serialization/containers.h"
 
-
 #include <sodium/crypto_verify_32.h>
 
 
-
-//Define this flag when debugging to get additional info on the console
-#ifdef DBG
-#define DP(x) dp(x)
-#else
-#define DP(x)
-#endif
-
-//atomic units of moneros
-#define ATOMS 64
-
-//for printing large ints
-
 //Namespace specifically for ring ct code
 namespace rct {
-    //basic ops containers
-    typedef unsigned char * Bytes;
-
     // Can contain a secret or public key
     //  similar to secret_key / public_key of crypto-ops,
     //  but uses unsigned chars,
@@ -106,7 +89,6 @@ namespace rct {
 
     //containers for representing amounts
     typedef uint64_t amount_t;
-    typedef unsigned int bits[ATOMS];
 
     //Container for precomp
     struct geDsmp {
@@ -266,6 +248,7 @@ namespace rct {
           VARINT_FIELD(txnFee)
         END_SERIALIZE()
     };
+
     struct rctSigPrunable {
         std::vector<Bulletproof> bulletproofs;
         std::vector<clsag> CLSAGs;
@@ -368,6 +351,7 @@ namespace rct {
           FIELD(pseudoOuts)
         END_SERIALIZE()
     };
+
     struct rctSig: public rctSigBase {
         rctSigPrunable p;
 
@@ -387,35 +371,15 @@ namespace rct {
         END_SERIALIZE()
     };
 
-    //Debug printing for the above types
-    //Actually use DP(value) and #define DBG
-    void dp(key a);
-    void dp(bool a);
-    void dp(const char * a, int l);
-    void dp(keyV a);
-    void dp(keyM a);
-    void dp(amount_t vali);
-    void dp(int vali);
-    void dp(bits amountb);
-    void dp(const char * st);
-
     //various conversions
 
-    //uint long long to 32 byte key
-    void d2h(key & amounth, amount_t val);
-    key d2h(amount_t val);
-    //uint long long to int[64]
-    void d2b(bits  amountb, amount_t val);
     //32 byte key to uint long long
     // if the key holds a value > 2^64
     // then the value in the first 8 bytes is returned
-    amount_t h2d(const key &test);
-    //32 byte key to int[64]
-    void h2b(bits  amountb2, const key & test);
-    //int[64] to 32 byte key
-    void b2h(key  & amountdh, bits amountb2);
-    //int[64] to uint long long
-    amount_t b2d(bits amountb);
+    amount_t h2d(const key &in);
+
+    //uint long long to 32 byte key
+    key d2h(const amount_t in);
 
     static inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
     static inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }

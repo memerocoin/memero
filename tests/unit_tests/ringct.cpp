@@ -524,17 +524,8 @@ TEST(ringct, d2h)
   key k, P1;
   skpkGen(k, P1);
   for (auto amount: test_amounts) {
-    d2h(k, amount);
+    auto k = d2h(amount);
     ASSERT_TRUE(amount == h2d(k));
-  }
-}
-
-TEST(ringct, d2b)
-{
-  for (auto amount: test_amounts) {
-    bits b;
-    d2b(b, amount);
-    ASSERT_TRUE(amount == b2d(b));
   }
 }
 

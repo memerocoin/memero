@@ -30,24 +30,7 @@
 
 #pragma once
 
-//#define DBG
-
 #include "rctOps.hpp"
-
-
-
-
-//Define this flag when debugging to get additional info on the console
-#ifdef DBG
-#define DP(x) dp(x)
-#else
-#define DP(x)
-#endif
-
-namespace hw {
-    class device;
-}
-
 
 namespace rct {
 

@@ -42,150 +42,24 @@ using namespace std;
 
 namespace rct {
 
-    //dp
-    //Debug printing for the above types
-    //Actually use DP(value) and #define DBG
-
-    void dp(key a) {
-        int j = 0;
-        printf("\"");
-        for (j = 0; j < 32; j++) {
-            printf("%02x", (unsigned char)a.bytes[j]);
-        }
-        printf("\"");
-        printf("\n");
-    }
-
-    void dp(bool a) {
-        printf(" ... %s ... ", a ? "true" : "false");
-        printf("\n");
-    }
-
-    void dp(const char * a, int l) {
-        int j = 0;
-        printf("\"");
-        for (j = 0; j < l; j++) {
-            printf("%02x", (unsigned char)a[j]);
-        }
-        printf("\"");
-        printf("\n");
-    }
-    void dp(keyV a) {
-        size_t j = 0;
-        printf("[");
-        for (j = 0; j < a.size(); j++) {
-            dp(a[j]);
-            if (j < a.size() - 1) {
-                printf(",");
-            }
-        }
-        printf("]");
-        printf("\n");
-    }
-    void dp(keyM a) {
-        size_t j = 0;
-        printf("[");
-        for (j = 0; j < a.size(); j++) {
-            dp(a[j]);
-            if (j < a.size() - 1) {
-                printf(",");
-            }
-        }
-        printf("]");
-        printf("\n");
-    }
-    void dp(amount_t vali) {
-        printf("x: ");
-        std::cout << vali;
-        printf("\n\n");
-    }
-
-    void dp(int vali) {
-        printf("x: %d\n", vali);
-        printf("\n");
-    }
-    void dp(bits amountb) {
-        for (int i = 0; i < 64; i++) {
-            printf("%d", amountb[i]);
-        }
-        printf("\n");
-
-    }
-
-    void dp(const char * st) {
-        printf("%s\n", st);
-    }
-
     //Various Conversions
-
-    //uint long long to 32 byte key
-    void d2h(key & amounth, const amount_t in) {
-        sc_0(amounth.bytes);
-        memcpy_swap64le(amounth.bytes, &in, 1);
-    }
 
     //uint long long to 32 byte key
     key d2h(const amount_t in) {
         key amounth;
-        d2h(amounth, in);
+        sc_0(amounth.bytes);
+        memcpy_swap64le(amounth.bytes, &in, 1);
         return amounth;
-    }
-
-    //uint long long to int[64]
-    void d2b(bits  amountb, amount_t val) {
-        int i = 0;
-        while (i < 64) {
-            amountb[i++] = val & 1;
-            val >>= 1;
-        }
     }
 
     //32 byte key to uint long long
     // if the key holds a value > 2^64
     // then the value in the first 8 bytes is returned
-    amount_t h2d(const key & test) {
+    amount_t h2d(const key & in) {
         amount_t vali = 0;
         int j = 0;
         for (j = 7; j >= 0; j--) {
-            vali = (amount_t)(vali * 256 + (unsigned char)test.bytes[j]);
-        }
-        return vali;
-    }
-
-    //32 byte key to int[64]
-    void h2b(bits amountb2, const key & test) {
-        int val = 0, i = 0, j = 0;
-        for (j = 0; j < 8; j++) {
-            val = (unsigned char)test.bytes[j];
-            i = 0;
-            while (i < 8) {
-                amountb2[j*8+i++] = val & 1;
-                val >>= 1;
-            }
-        }
-    }
-
-    //int[64] to 32 byte key
-    void b2h(key & amountdh, const bits amountb2) {
-        int byte, i, j;
-        for (j = 0; j < 8; j++) {
-            byte = 0;
-            for (i = 7; i > -1; i--) {
-                byte = byte * 2 + amountb2[8 * j + i];
-            }
-            amountdh[j] = (unsigned char)byte;
-        }
-        for (j = 8; j < 32; j++) {
-            amountdh[j] = (unsigned char)(0x00);
-        }
-    }
-
-    //int[64] to uint long long
-    amount_t b2d(bits amountb) {
-        amount_t vali = 0;
-        int j = 0;
-        for (j = 63; j >= 0; j--) {
-            vali = (amount_t)(vali * 2 + amountb[j]);
+            vali = (amount_t)(vali * 256 + (unsigned char)in.bytes[j]);
         }
         return vali;
     }
