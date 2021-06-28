@@ -44,7 +44,7 @@ target_link_libraries(lolnerod
   tools_common
   network_p2p
   cryptonote_protocol
-  serialization
+  tools_serialization
   daemon_rpc_server
   version
   epee_storage

@@ -33,7 +33,7 @@ add_library(wallet_errors
 
 target_link_libraries(wallet_errors
   cryptonote_tx
-  serialization
+  tools_serialization
 )
 
 add_library(node_rpc_proxy
@@ -42,7 +42,7 @@ add_library(node_rpc_proxy
 
 target_link_libraries(node_rpc_proxy
   epee
-  serialization
+  tools_serialization
 )
 
 add_library(wallet_api
@@ -56,7 +56,7 @@ target_link_libraries(wallet_api
   wallet_logic
   math_ringct
   cryptonote_tx
-  serialization
+  tools_serialization
   wallet_errors
   node_rpc_proxy
   epee_storage
