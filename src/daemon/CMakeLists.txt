@@ -43,7 +43,7 @@ target_link_libraries(lolnerod
     cryptonote_core
     math_crypto
     common
-    p2p
+    network_p2p
     cryptonote_protocol
     serialization
     daemon_rpc_server
