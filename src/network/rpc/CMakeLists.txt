@@ -28,19 +28,19 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-add_library(rpc_base
+add_library(network_rpc_base
   rpc_args.cpp
   rpc_handler.cpp
   core_rpc_server_error_codes.cpp
   )
 
-add_library(rpc
+add_library(network_rpc
   core_rpc_server.cpp
   rpc_version_str.cpp
   )
 
-target_link_libraries(rpc
-    rpc_base
+target_link_libraries(network_rpc
+    network_rpc_base
     network_type
     )
 

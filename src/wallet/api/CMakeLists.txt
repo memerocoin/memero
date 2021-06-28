@@ -50,7 +50,7 @@ add_library(wallet_api
 )
 
 target_link_libraries(wallet_api
-  rpc_base
+  network_rpc_base
   mnemonics
   network_type
   wallet_logic
