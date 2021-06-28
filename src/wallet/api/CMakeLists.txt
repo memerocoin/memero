@@ -51,7 +51,7 @@ add_library(wallet_api
 
 target_link_libraries(wallet_api
   network_rpc_base
-  mnemonics
+  wallet_mnemonics
   network_type
   wallet_logic
   math_ringct
