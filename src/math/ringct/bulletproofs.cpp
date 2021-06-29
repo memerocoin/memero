@@ -90,10 +90,7 @@ static const rct::key ip12 = inner_product(oneN, twoN);
 
 static std::mutex init_mutex;
 
-static rct::key multiexp(const std::vector<MultiexpData> &data)
-{
-  return pippenger(data);
-}
+const auto multiexp = pippenger;
 
 static inline bool is_reduced(const rct::key &scalar)
 {
