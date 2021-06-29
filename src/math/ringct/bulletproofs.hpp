@@ -40,6 +40,6 @@ Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma);
 Bulletproof bulletproof_MAKE(const rct::keyV v, const rct::keyV gamma);
 Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::keyV gamma);
 bool bulletproof_VERIFY(const Bulletproof proof);
-bool bulletproof_VERIFY(const std::vector<Bulletproof> &proofs);
+bool bulletproof_VERIFY(const std::vector<Bulletproof> proofs);
 
 }

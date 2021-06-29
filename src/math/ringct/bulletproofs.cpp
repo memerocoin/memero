@@ -802,7 +802,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const std::vector<Bulletproof> &proofs)
+bool bulletproof_VERIFY(const std::vector<Bulletproof> proofs)
 {
   init_exponents();
 
@@ -824,7 +824,7 @@ bool bulletproof_VERIFY(const std::vector<Bulletproof> &proofs)
   {
     // check scalar range
     CHECK_AND_ASSERT_MES(is_reduced(proof.taux), false, "Input scalar not in range");
-    CHECK_AND_ASSERT_MES(is_reduced(proof.mu), false, "Input scalar not in range");
+
     CHECK_AND_ASSERT_MES(is_reduced(proof.a), false, "Input scalar not in range");
     CHECK_AND_ASSERT_MES(is_reduced(proof.b), false, "Input scalar not in range");
     CHECK_AND_ASSERT_MES(is_reduced(proof.t), false, "Input scalar not in range");
