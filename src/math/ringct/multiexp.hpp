@@ -51,8 +51,7 @@ struct MultiexpData {
 
 typedef std::vector<ge_cached> pippenger_cached_data;
 
-pippenger_cached_data pippenger_init_cache(const std::vector<MultiexpData> &data);
 size_t get_pippenger_c(size_t N);
-rct::key pippenger(const std::vector<MultiexpData> &data);
+rct::key pippenger(const std::vector<MultiexpData> data);
 
 }

@@ -139,7 +139,7 @@ pippenger_cached_data pippenger_init_cache(const std::vector<MultiexpData> &data
   return cache;
 }
 
-rct::key pippenger(const std::vector<MultiexpData> &data)
+rct::key pippenger(const std::vector<MultiexpData> data)
 {
   const size_t c = get_pippenger_c(data.size());
 
