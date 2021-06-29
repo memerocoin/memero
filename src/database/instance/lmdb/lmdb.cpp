@@ -3905,28 +3905,6 @@ void BlockchainLMDB::fixup()
   BlockchainDB::fixup();
 }
 
-#define RENAME_DB(name) do { \
-    char n2[] = name; \
-    MDB_dbi tdbi; \
-    n2[sizeof(n2)-2]--; \
-    /* play some games to put (name) on a writable page */ \
-    result = mdb_dbi_open(txn, n2, MDB_CREATE, &tdbi); \
-    if (result) \
-      throw0(DB_ERROR(lmdb_error("Failed to create " + std::string(n2) + ": ", result).c_str())); \
-    result = mdb_drop(txn, tdbi, 1); \
-    if (result) \
-      throw0(DB_ERROR(lmdb_error("Failed to delete " + std::string(n2) + ": ", result).c_str())); \
-    k.mv_data = (void *)name; \
-    k.mv_size = sizeof(name)-1; \
-    result = mdb_cursor_open(txn, 1, &c_cur); \
-    if (result) \
-      throw0(DB_ERROR(lmdb_error("Failed to open a cursor for " name ": ", result).c_str())); \
-    result = mdb_cursor_get(c_cur, &k, NULL, MDB_SET_KEY); \
-    if (result) \
-      throw0(DB_ERROR(lmdb_error("Failed to get DB record for " name ": ", result).c_str())); \
-    ptr = (char *)k.mv_data; \
-    ptr[sizeof(name)-2]++; } while(0)
-
 #define LOGIF(y)    if (ELPP->vRegistry()->allowed(y, "global"))
 
 void BlockchainLMDB::migrate(const uint32_t oldversion)
