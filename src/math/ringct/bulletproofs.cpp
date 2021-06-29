@@ -480,7 +480,7 @@ Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma)
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::keyV &sv, const rct::keyV &gamma)
+Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
 {
   CHECK_AND_ASSERT_THROW_MES(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
   CHECK_AND_ASSERT_THROW_MES(!sv.empty(), "sv is empty");
@@ -768,7 +768,7 @@ try_again:
   return Bulletproof(std::move(V), A, S, T1, T2, taux, mu, std::move(L), std::move(R), aprime[0], bprime[0], t);
 }
 
-Bulletproof bulletproof_MAKE(const std::vector<uint64_t> &v, const rct::keyV &gamma)
+Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::keyV gamma)
 {
   CHECK_AND_ASSERT_THROW_MES(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
