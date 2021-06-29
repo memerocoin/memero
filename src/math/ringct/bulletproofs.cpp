@@ -54,50 +54,43 @@ extern "C"
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "bulletproofs"
 
-//#define DEBUG_BP
-
-#if 0
-#define PERF_TIMER_START_BP(x) PERF_TIMER_START_UNIT(x, 1000000)
-#define PERF_TIMER_STOP_BP(x) PERF_TIMER_STOP(x)
-#else
-#define PERF_TIMER_START_BP(x) ((void)0)
-#define PERF_TIMER_STOP_BP(x) ((void)0)
-#endif
+#define PERF_TIMER_START_BP(x)
+#define PERF_TIMER_STOP_BP(x)
 
 constexpr size_t PIPPENGER_SIZE_LIMIT = 0;
 
 namespace rct
 {
 
-static rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b);
-static rct::keyV vector_powers(const rct::key &x, size_t n);
-static rct::keyV vector_dup(const rct::key &x, size_t n);
-static rct::key inner_product(const rct::keyV &a, const rct::keyV &b);
+rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b);
+rct::keyV vector_powers(const rct::key &x, size_t n);
+rct::keyV vector_dup(const rct::key &x, size_t n);
+rct::key inner_product(const rct::keyV &a, const rct::keyV &b);
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 
-static rct::key Hi[maxN*maxM], Gi[maxN*maxM];
-static ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
+rct::key Hi[maxN*maxM], Gi[maxN*maxM];
+ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
 
 inline constexpr rct::key TWO = { {0x02, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00 , 0x00, 0x00, 0x00,0x00  } };
 inline constexpr rct::key MINUS_ONE = { { 0xec, 0xd3, 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58, 0xd6, 0x9c, 0xf7, 0xa2, 0xde, 0xf9, 0xde, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10 } };
 inline constexpr rct::key MINUS_INV_EIGHT = { { 0x74, 0xa4, 0x19, 0x7a, 0xf0, 0x7d, 0x0b, 0xf7, 0x05, 0xc2, 0xda, 0x25, 0x2b, 0x5c, 0x0b, 0x0d, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0a } };
 
-static const rct::keyV oneN = vector_dup(rct::identity(), maxN);
-static const rct::keyV twoN = vector_powers(TWO, maxN);
-static const rct::key ip12 = inner_product(oneN, twoN);
+const rct::keyV oneN = vector_dup(rct::identity(), maxN);
+const rct::keyV twoN = vector_powers(TWO, maxN);
+const rct::key ip12 = inner_product(oneN, twoN);
 
-static std::mutex init_mutex;
+std::mutex init_mutex;
 
 const auto multiexp = pippenger;
 
-static inline bool is_reduced(const rct::key &scalar)
+inline bool is_reduced(const rct::key &scalar)
 {
   return sc_check(scalar.bytes) == 0;
 }
 
-static rct::key get_exponent(const rct::key &base, size_t idx)
+rct::key get_exponent(const rct::key &base, size_t idx)
 {
   static const std::string domain_separator(config::HASH_KEY_BULLETPROOF_EXPONENT);
   std::string hashed = std::string((const char*)base.bytes, sizeof(base)) + domain_separator + tools::get_varint_data(idx);
@@ -109,7 +102,7 @@ static rct::key get_exponent(const rct::key &base, size_t idx)
   return e;
 }
 
-static void init_exponents()
+void init_exponents()
 {
   std::lock_guard<std::mutex> lock(init_mutex);
 
@@ -133,7 +126,7 @@ static void init_exponents()
 }
 
 /* Given two scalar arrays, construct a vector commitment */
-static rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b)
+rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b)
 {
   CHECK_AND_ASSERT_THROW_MES(a.size() == b.size(), "Incompatible sizes of a and b");
   CHECK_AND_ASSERT_THROW_MES(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
@@ -149,7 +142,7 @@ static rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b)
 }
 
 /* Compute a custom vector-scalar commitment */
-static rct::key cross_vector_exponent8(size_t size, const std::vector<ge_p3> &A, size_t Ao, const std::vector<ge_p3> &B, size_t Bo, const rct::keyV &a, size_t ao, const rct::keyV &b, size_t bo, const rct::keyV *scale, const ge_p3 *extra_point, const rct::key *extra_scalar)
+rct::key cross_vector_exponent8(size_t size, const std::vector<ge_p3> &A, size_t Ao, const std::vector<ge_p3> &B, size_t Bo, const rct::keyV &a, size_t ao, const rct::keyV &b, size_t bo, const rct::keyV *scale, const ge_p3 *extra_point, const rct::key *extra_scalar)
 {
   CHECK_AND_ASSERT_THROW_MES(size + Ao <= A.size(), "Incompatible size for A");
   CHECK_AND_ASSERT_THROW_MES(size + Bo <= B.size(), "Incompatible size for B");
@@ -179,7 +172,7 @@ static rct::key cross_vector_exponent8(size_t size, const std::vector<ge_p3> &A,
 }
 
 /* Given a scalar, construct a vector of powers */
-static rct::keyV vector_powers(const rct::key &x, size_t n)
+rct::keyV vector_powers(const rct::key &x, size_t n)
 {
   rct::keyV res(n);
   if (n == 0)
@@ -196,7 +189,7 @@ static rct::keyV vector_powers(const rct::key &x, size_t n)
 }
 
 /* Given a scalar, return the sum of its powers from 0 to n-1 */
-static rct::key vector_power_sum(rct::key x, size_t n)
+rct::key vector_power_sum(rct::key x, size_t n)
 {
   if (n == 0)
     return rct::zero();
@@ -230,7 +223,7 @@ static rct::key vector_power_sum(rct::key x, size_t n)
 }
 
 /* Given two scalar arrays, construct the inner product */
-static rct::key inner_product(const epee::span<const rct::key> &a, const epee::span<const rct::key> &b)
+rct::key inner_product(const epee::span<const rct::key> &a, const epee::span<const rct::key> &b)
 {
   CHECK_AND_ASSERT_THROW_MES(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::key res = rct::zero();
@@ -241,13 +234,13 @@ static rct::key inner_product(const epee::span<const rct::key> &a, const epee::s
   return res;
 }
 
-static rct::key inner_product(const rct::keyV &a, const rct::keyV &b)
+rct::key inner_product(const rct::keyV &a, const rct::keyV &b)
 {
   return inner_product(epee::span<const rct::key>(a.data(), a.size()), epee::span<const rct::key>(b.data(), b.size()));
 }
 
 /* Given two scalar arrays, construct the Hadamard product */
-static rct::keyV hadamard(const rct::keyV &a, const rct::keyV &b)
+rct::keyV hadamard(const rct::keyV &a, const rct::keyV &b)
 {
   CHECK_AND_ASSERT_THROW_MES(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::keyV res(a.size());
@@ -259,7 +252,7 @@ static rct::keyV hadamard(const rct::keyV &a, const rct::keyV &b)
 }
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-static void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key &a, const rct::key &b)
+void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key &a, const rct::key &b)
 {
   CHECK_AND_ASSERT_THROW_MES((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
@@ -277,7 +270,7 @@ static void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const r
 }
 
 /* Add two vectors */
-static rct::keyV vector_add(const rct::keyV &a, const rct::keyV &b)
+rct::keyV vector_add(const rct::keyV &a, const rct::keyV &b)
 {
   CHECK_AND_ASSERT_THROW_MES(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::keyV res(a.size());
@@ -289,7 +282,7 @@ static rct::keyV vector_add(const rct::keyV &a, const rct::keyV &b)
 }
 
 /* Add a scalar to all elements of a vector */
-static rct::keyV vector_add(const rct::keyV &a, const rct::key &b)
+rct::keyV vector_add(const rct::keyV &a, const rct::key &b)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -300,7 +293,7 @@ static rct::keyV vector_add(const rct::keyV &a, const rct::key &b)
 }
 
 /* Subtract a scalar from all elements of a vector */
-static rct::keyV vector_subtract(const rct::keyV &a, const rct::key &b)
+rct::keyV vector_subtract(const rct::keyV &a, const rct::key &b)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -311,7 +304,7 @@ static rct::keyV vector_subtract(const rct::keyV &a, const rct::key &b)
 }
 
 /* Multiply a scalar and a vector */
-static rct::keyV vector_scalar(const epee::span<const rct::key> &a, const rct::key &x)
+rct::keyV vector_scalar(const epee::span<const rct::key> &a, const rct::key &x)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -321,18 +314,18 @@ static rct::keyV vector_scalar(const epee::span<const rct::key> &a, const rct::k
   return res;
 }
 
-static rct::keyV vector_scalar(const rct::keyV &a, const rct::key &x)
+rct::keyV vector_scalar(const rct::keyV &a, const rct::key &x)
 {
   return vector_scalar(epee::span<const rct::key>(a.data(), a.size()), x);
 }
 
 /* Create a vector from copies of a single value */
-static rct::keyV vector_dup(const rct::key &x, size_t N)
+rct::keyV vector_dup(const rct::key &x, size_t N)
 {
   return rct::keyV(N, x);
 }
 
-static rct::key sm(rct::key y, int n, const rct::key &x)
+rct::key sm(rct::key y, int n, const rct::key &x)
 {
   while (n--)
     sc_mul(y.bytes, y.bytes, y.bytes);
@@ -341,7 +334,7 @@ static rct::key sm(rct::key y, int n, const rct::key &x)
 }
 
 /* Compute the inverse of a scalar, the clever way */
-static rct::key invert(const rct::key &x)
+rct::key invert(const rct::key &x)
 {
   rct::key _1, _10, _100, _11, _101, _111, _1001, _1011, _1111;
 
@@ -394,7 +387,7 @@ static rct::key invert(const rct::key &x)
   return inv;
 }
 
-static rct::keyV invert(rct::keyV x)
+rct::keyV invert(rct::keyV x)
 {
   rct::keyV scratch;
   scratch.reserve(x.size());
@@ -423,7 +416,7 @@ static rct::keyV invert(rct::keyV x)
 }
 
 /* Compute the slice of a vector */
-static epee::span<const rct::key> slice(const rct::keyV &a, size_t start, size_t stop)
+epee::span<const rct::key> slice(const rct::keyV &a, size_t start, size_t stop)
 {
   CHECK_AND_ASSERT_THROW_MES(start < a.size(), "Invalid start index");
   CHECK_AND_ASSERT_THROW_MES(stop <= a.size(), "Invalid stop index");
@@ -431,7 +424,7 @@ static epee::span<const rct::key> slice(const rct::keyV &a, size_t start, size_t
   return epee::span<const rct::key>(&a[start], stop - start);
 }
 
-static rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1)
+rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1)
 {
   rct::key data[3];
   data[0] = hash_cache;
@@ -441,7 +434,7 @@ static rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, con
   return hash_cache;
 }
 
-static rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1, const rct::key &mash2)
+rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1, const rct::key &mash2)
 {
   rct::key data[4];
   data[0] = hash_cache;
@@ -452,7 +445,7 @@ static rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, con
   return hash_cache;
 }
 
-static rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1, const rct::key &mash2, const rct::key &mash3)
+rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1, const rct::key &mash2, const rct::key &mash3)
 {
   rct::key data[5];
   data[0] = hash_cache;
