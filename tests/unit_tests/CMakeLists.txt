@@ -39,7 +39,6 @@ add_executable(unit_tests_tools
   notify.cpp
   varint.cpp
   wipeable_string.cpp
-  aligned.cpp
   threadpool.cpp
   memwipe.cpp
   crypto.cpp
@@ -55,7 +54,6 @@ add_dependencies(unit_tests_tools test_notifier)
 target_link_libraries(unit_tests_tools
   epee
   tools_common
-  tools_common_basic
   epee_storage
   network_type 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}

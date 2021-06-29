@@ -119,7 +119,6 @@ add_library( easylogging
 
 ## tools
 add_subdirectory(src/tools/epee)
-add_subdirectory(src/tools/common_basic)
 add_subdirectory(src/tools/common)
 add_subdirectory(src/tools/serialization)
 add_subdirectory(src/tools/boost/archive)
