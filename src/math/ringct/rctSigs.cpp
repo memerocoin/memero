@@ -47,42 +47,13 @@ using namespace std;
 
 #define CHECK_AND_ASSERT_MES_L1(expr, ret, message) {if(!(expr)) {MCERROR("verify", message); return ret;}}
 
-namespace
-{
-    rct::Bulletproof make_dummy_bulletproof(const std::vector<uint64_t> &outamounts, rct::keyV &C, rct::keyV &masks)
-    {
-        const size_t n_outs = outamounts.size();
-        const rct::key I = rct::identity();
-        size_t nrl = 0;
-        while ((1u << nrl) < n_outs)
-          ++nrl;
-        nrl += 6;
-
-        C.resize(n_outs);
-        masks.resize(n_outs);
-        for (size_t i = 0; i < n_outs; ++i)
-        {
-            masks[i] = I;
-            rct::key sv8, sv;
-            sv = rct::zero();
-            sv.bytes[0] = outamounts[i] & 255;
-            sv.bytes[1] = (outamounts[i] >> 8) & 255;
-            sv.bytes[2] = (outamounts[i] >> 16) & 255;
-            sv.bytes[3] = (outamounts[i] >> 24) & 255;
-            sv.bytes[4] = (outamounts[i] >> 32) & 255;
-            sv.bytes[5] = (outamounts[i] >> 40) & 255;
-            sv.bytes[6] = (outamounts[i] >> 48) & 255;
-            sv.bytes[7] = (outamounts[i] >> 56) & 255;
-            sc_mul(sv8.bytes, sv.bytes, rct::INV_EIGHT.bytes);
-            rct::addKeys2(C[i], rct::INV_EIGHT, sv8);
-        }
-
-        return rct::Bulletproof{rct::keyV(n_outs, I), I, I, I, I, I, I, rct::keyV(nrl, I), rct::keyV(nrl, I), I, I, I};
-    }
-}
-
 namespace rct {
-    Bulletproof proveRangeBulletproof(keyV &C, keyV &masks, const std::vector<uint64_t> &amounts, epee::span<const key> sk)
+    Bulletproof proveRangeBulletproof
+    (
+     keyV& C
+     , keyV& masks
+     , const std::vector<uint64_t> amounts
+     , const epee::span<const key> sk)
     {
         hw::device& hwdev = hw::get_device("default");
         CHECK_AND_ASSERT_THROW_MES(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
@@ -95,14 +66,14 @@ namespace rct {
         return proof;
     }
 
-    bool verBulletproof(const Bulletproof &proof)
+    bool verBulletproof(const Bulletproof proof)
     {
       try { return bulletproof_VERIFY(proof); }
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
       catch (...) { return false; }
     }
 
-    bool verBulletproof(const std::vector<Bulletproof> &proofs)
+    bool verBulletproof(const std::vector<Bulletproof> proofs)
     {
       try { return bulletproof_VERIFY(proofs); }
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
@@ -118,13 +89,13 @@ namespace rct {
     //   C[i] == C_nonzero[i] - C_offset (for hashing purposes) for all i
     clsag CLSAG_Gen
     (
-     const key &message
-     , const keyV & P
-     , const key & p
-     , const keyV & C
-     , const key & z
-     , const keyV & C_nonzero
-     , const key & C_offset
+     const key message
+     , const keyV P
+     , const key p
+     , const keyV C
+     , const key z
+     , const keyV C_nonzero
+     , const key C_offset
      , const unsigned int l
      ) {
         hw::device& hwdev = hw::get_device("default");
@@ -254,7 +225,7 @@ namespace rct {
         return sig;
     }
 
-    key get_pre_mlsag_hash(const rctSig &rv)
+    key get_pre_mlsag_hash(const rctSig rv)
     {
       hw::device& hwdev = hw::get_device("default");
       keyV hashes;
@@ -303,11 +274,11 @@ namespace rct {
 
     clsag proveRctCLSAGSimple
     (
-     const key &message
-     , const ctkeyV &pubs
-     , const ctkey &inSk
-     , const key &a
-     , const key &Cout
+     const key message
+     , const ctkeyV pubs
+     , const ctkey inSk
+     , const key a
+     , const key Cout
      , const unsigned int index
      ) {
         //setup vars
@@ -341,7 +312,7 @@ namespace rct {
     }
 
 
-    bool verRctCLSAGSimple(const key &message, const clsag &sig, const ctkeyV & pubs, const key & C_offset) {
+    bool verRctCLSAGSimple(const key message, const clsag sig, const ctkeyV pubs, const key C_offset) {
         try
         {
             const size_t n = pubs.size();
@@ -455,12 +426,12 @@ namespace rct {
     }
 
 
-    void rand_assign_ctkey(ctkey & a) {
+    void rand_assign_ctkey(ctkey& a) {
         a.mask = pkGen();
         a.dest = pkGen();
     }
 
-    tuple<ctkeyM, size_t> populateRings(ctkeyV inPk, size_t mixin) {
+    tuple<ctkeyM, size_t> populateRings(ctkeyV inPk, const size_t mixin) {
         size_t rows = inPk.size();
         ctkeyM rv(mixin + 1, inPk);
         size_t index = ((size_t)std::rand()) % (mixin + 1);
@@ -474,7 +445,7 @@ namespace rct {
         return make_tuple(rv, index);
     }
 
-    size_t populateRingsSimple(ctkeyV & mixRing, const ctkey & inPk, size_t mixin) {
+    size_t populateRingsSimple(ctkeyV& mixRing, const ctkey inPk, const size_t mixin) {
         size_t index = ((size_t)std::rand()) % (mixin + 1);
         for (size_t i = 0; i <= mixin; i++) {
             if (i != index) {
@@ -488,16 +459,16 @@ namespace rct {
 
     rctSig genRctSimple
     (
-     const key &message
-     , const ctkeyV & inSk
-     , const keyV & destinations
-     , const vector<amount_t> &inamounts
-     , const vector<amount_t> &outamounts
-     , amount_t txnFee
-     , const ctkeyM & mixRing
-     , const keyV &amount_keys
-     , const std::vector<size_t> & index
-     , ctkeyV &outSk
+     const key message
+     , const ctkeyV inSk
+     , const keyV destinations
+     , const vector<amount_t> inamounts
+     , const vector<amount_t> outamounts
+     , const amount_t txnFee
+     , const ctkeyM mixRing
+     , const keyV amount_keys
+     , const std::vector<size_t> index
+     , ctkeyV& outSk
      ) {
         hw::device& hwdev = hw::get_device("default");
         CHECK_AND_ASSERT_THROW_MES(inamounts.size() > 0, "Empty inamounts");
@@ -532,19 +503,9 @@ namespace rct {
             size_t amounts_proved = 0;
             {
                 rct::keyV C, masks;
-                if (hwdev.get_mode() == hw::device::TRANSACTION_CREATE_FAKE)
-                {
-                    // use a fake bulletproof for speed
-                    rv.p.bulletproofs.push_back(make_dummy_bulletproof(outamounts, C, masks));
-                }
-                else
-                {
-                    const epee::span<const key> keys{&amount_keys[0], amount_keys.size()};
-                    rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));
-                    #ifdef DBG
-                    CHECK_AND_ASSERT_THROW_MES(verBulletproof(rv.p.bulletproofs.back()), "verBulletproof failed on newly created proof");
-                    #endif
-                }
+                const epee::span<const key> keys{&amount_keys[0], amount_keys.size()};
+                rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));
+
                 for (i = 0; i < outamounts.size(); ++i)
                 {
                     rv.outPk[i].mask = rct::scalarmult8(C[i]);
@@ -602,15 +563,15 @@ namespace rct {
 
     rctSig genRctSimple
     (
-     const key & message
-     , const ctkeyV & inSk
-     , const ctkeyV & inPk
-     , const keyV & destinations
-     , const std::vector<amount_t> & inamounts
-     , const std::vector<amount_t> & outamounts
-     , const keyV &amount_keys
-     , amount_t txnFee
-     , size_t mixin
+     const key message
+     , const ctkeyV inSk
+     , const ctkeyV inPk
+     , const keyV destinations
+     , const std::vector<amount_t> inamounts
+     , const std::vector<amount_t> outamounts
+     , const keyV amount_keys
+     , const amount_t txnFee
+     , const size_t mixin
      ) {
         std::vector<size_t> index;
         index.resize(inPk.size());
@@ -624,7 +585,7 @@ namespace rct {
         return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
     }
 
-    bool verRctSemanticsSimple(const std::vector<const rctSig*> & rvv) {
+    bool verRctSemanticsSimple(const std::vector<const rctSig*> rvv) {
       try
       {
         tools::threadpool& tpool = tools::threadpool::getInstance();
@@ -702,14 +663,14 @@ namespace rct {
       }
     }
 
-    bool verRctSemanticsSimple(const rctSig & rv)
+    bool verRctSemanticsSimple(const rctSig rv)
     {
       return verRctSemanticsSimple(std::vector<const rctSig*>(1, &rv));
     }
 
     //ver RingCT simple
     //assumes only post-rct style inputs (at least for max anonymity)
-    bool verRctNonSemanticsSimple(const rctSig & rv) {
+    bool verRctNonSemanticsSimple(const rctSig rv) {
       try
       {
         CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG,
@@ -759,7 +720,7 @@ namespace rct {
       }
     }
 
-    amount_t decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key &mask) {
+    amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, key& mask) {
         hw::device& hwdev = hw::get_device("default");
         CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
         CHECK_AND_ASSERT_THROW_MES(i < rv.ecdhInfo.size(), "Bad index");

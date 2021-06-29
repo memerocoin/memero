@@ -36,39 +36,39 @@ namespace rct {
 
     clsag CLSAG_Gen
     (
-     const key &message
-     , const keyV & P
-     , const key & p
-     , const keyV & C
-     , const key & z
-     , const keyV & C_nonzero
-     , const key & C_offset
+     const key message
+     , const keyV P
+     , const key p
+     , const keyV C
+     , const key z
+     , const keyV C_nonzero
+     , const key C_offset
      , const unsigned int l
      );
 
     clsag CLSAG_Gen
     (
-     const key &message
-     , const keyV & P
-     , const key & p
-     , const keyV & C
-     , const key & z
-     , const keyV & C_nonzero
-     , const key & C_offset
+     const key message
+     , const keyV P
+     , const key p
+     , const keyV C
+     , const key z
+     , const keyV C_nonzero
+     , const key C_offset
      , const unsigned int l
      );
 
     clsag proveRctCLSAGSimple
     (
-     const key &
-     , const ctkeyV &
-     , const ctkey &
-     , const key &
-     , const key &
+     const key message
+     , const ctkeyV
+     , const ctkey
+     , const key
+     , const key
      , const unsigned int
      );
 
-    bool verRctCLSAGSimple(const key &, const clsag &, const ctkeyV &, const key &);
+    bool verRctCLSAGSimple(const key, const clsag, const ctkeyV, const key);
 
     //RingCT protocol
     //genRct:
@@ -82,37 +82,36 @@ namespace rct {
     //   must know the destination private key to find the correct amount, else will return a random number
     rctSig genRctSimple
     (
-     const key & message
-     , const ctkeyV & inSk
-     , const ctkeyV & inPk
-     , const keyV & destinations
-     , const std::vector<amount_t> & inamounts
-     , const std::vector<amount_t> & outamounts
-     , const keyV &amount_keys
-     , amount_t txnFee
-     , size_t mixin
+     const key message
+     , const ctkeyV inSk
+     , const ctkeyV inPk
+     , const keyV destinations
+     , const std::vector<amount_t> inamounts
+     , const std::vector<amount_t> outamounts
+     , const keyV amount_keys
+     , const amount_t txnFee
+     , const size_t mixin
      );
 
     rctSig genRctSimple
     (
-     const key & message
-     , const ctkeyV & inSk
-     , const keyV & destinations
-     , const std::vector<amount_t> & inamounts
-     , const std::vector<amount_t> & outamounts
-     , amount_t txnFee
-     , const ctkeyM & mixRing
-     , const keyV &amount_keys
-     , const std::vector<size_t> & index
-     , ctkeyV &outSk
+     const key message
+     , const ctkeyV inSk
+     , const keyV destinations
+     , const std::vector<amount_t> inamounts
+     , const std::vector<amount_t> outamounts
+     , const amount_t txnFee
+     , const ctkeyM mixRing
+     , const keyV amount_keys
+     , const std::vector<size_t> index
+     , ctkeyV& outSk
      );
 
-    bool verRctSemanticsSimple(const rctSig & rv);
-    bool verRctSemanticsSimple(const std::vector<const rctSig*> & rv);
-    bool verRctNonSemanticsSimple(const rctSig & rv);
-    static inline bool verRctSimple(const rctSig & rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
-    amount_t decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i, key & mask);
-    amount_t decodeRctSimple(const rctSig & rv, const key & sk, unsigned int i);
-    key get_pre_mlsag_hash(const rctSig &rv);
+    bool verRctSemanticsSimple(const rctSig rv);
+    bool verRctSemanticsSimple(const std::vector<const rctSig*> rv);
+    bool verRctNonSemanticsSimple(const rctSig rv);
+    inline bool verRctSimple(const rctSig rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
+    amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, key& mask);
+    key get_pre_mlsag_hash(const rctSig rv);
 }
 
