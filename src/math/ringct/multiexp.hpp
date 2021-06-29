@@ -49,7 +49,6 @@ struct MultiexpData {
   }
 };
 
-size_t get_pippenger_c(size_t N);
 rct::key pippenger(const std::vector<MultiexpData> data);
 
 }
