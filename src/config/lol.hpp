@@ -6,6 +6,7 @@
 #include "tools/common/powerof.h"
 
 #include <chrono>
+#include <string_view>
 
 namespace constant
 {

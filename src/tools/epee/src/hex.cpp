@@ -30,6 +30,8 @@
 #include "tools/epee/include/storages/parserse_base_utils.h"
 
 #include <limits>
+#include <string>
+#include <iostream>
 
 namespace epee
 {
