@@ -481,4 +481,3 @@ namespace nodetool
     extern const command_line::arg_descriptor<int> arg_tos_flag;
 }
 
-#include "net_node.inl"
