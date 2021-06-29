@@ -89,7 +89,7 @@ namespace rct {
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
             masks[i] = hwdev.genCommitmentMask(sk[i]);
-        Bulletproof proof = bulletproof_PROVE(amounts, masks);
+        Bulletproof proof = bulletproof_MAKE(amounts, masks);
         CHECK_AND_ASSERT_THROW_MES(proof.V.size() == amounts.size(), "V does not have the expected size");
         C = proof.V;
         return proof;

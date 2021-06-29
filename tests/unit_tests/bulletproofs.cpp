@@ -41,13 +41,13 @@
 
 TEST(bulletproofs, valid_zero)
 {
-  rct::Bulletproof proof = bulletproof_PROVE(0, rct::skGen());
+  rct::Bulletproof proof = bulletproof_MAKE(0, rct::skGen());
   ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
 }
 
 TEST(bulletproofs, valid_max)
 {
-  rct::Bulletproof proof = bulletproof_PROVE(0xffffffffffffffff, rct::skGen());
+  rct::Bulletproof proof = bulletproof_MAKE(0xffffffffffffffff, rct::skGen());
   ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
 }
 
@@ -55,7 +55,7 @@ TEST(bulletproofs, valid_random)
 {
   for (int n = 0; n < 8; ++n)
   {
-    rct::Bulletproof proof = bulletproof_PROVE(crypto::rand<uint64_t>(), rct::skGen());
+    rct::Bulletproof proof = bulletproof_MAKE(crypto::rand<uint64_t>(), rct::skGen());
     ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
   }
 }
@@ -72,7 +72,7 @@ TEST(bulletproofs, valid_multi_random)
       amounts.push_back(crypto::rand<uint64_t>());
       gamma.push_back(rct::skGen());
     }
-    rct::Bulletproof proof = bulletproof_PROVE(amounts, gamma);
+    rct::Bulletproof proof = bulletproof_MAKE(amounts, gamma);
     ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
   }
 }
@@ -91,7 +91,7 @@ TEST(bulletproofs, valid_aggregated)
       amounts.push_back(crypto::rand<uint64_t>());
       gamma.push_back(rct::skGen());
     }
-    proofs[n] = bulletproof_PROVE(amounts, gamma);
+    proofs[n] = bulletproof_MAKE(amounts, gamma);
   }
   ASSERT_TRUE(rct::bulletproof_VERIFY(proofs));
 }
@@ -101,7 +101,7 @@ TEST(bulletproofs, invalid_8)
 {
   rct::key invalid_amount = rct::zero();
   invalid_amount[8] = 1;
-  rct::Bulletproof proof = bulletproof_PROVE(invalid_amount, rct::skGen());
+  rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, rct::skGen());
   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
 }
 
@@ -109,7 +109,7 @@ TEST(bulletproofs, invalid_31)
 {
   rct::key invalid_amount = rct::zero();
   invalid_amount[31] = 1;
-  rct::Bulletproof proof = bulletproof_PROVE(invalid_amount, rct::skGen());
+  rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, rct::skGen());
   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
 }
 
@@ -126,7 +126,7 @@ static const char * const torsion_elements[] =
 
 TEST(bulletproofs, invalid_torsion)
 {
-  rct::Bulletproof proof = bulletproof_PROVE(7329838943733, rct::skGen());
+  rct::Bulletproof proof = bulletproof_MAKE(7329838943733, rct::skGen());
   ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
   for (const auto &xs: torsion_elements)
   {

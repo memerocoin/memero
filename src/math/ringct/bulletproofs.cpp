@@ -469,18 +469,18 @@ static rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, con
 }
 
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
-Bulletproof bulletproof_PROVE(const rct::key &sv, const rct::key &gamma)
+Bulletproof bulletproof_MAKE(const rct::key &sv, const rct::key &gamma)
 {
-  return bulletproof_PROVE(rct::keyV(1, sv), rct::keyV(1, gamma));
+  return bulletproof_MAKE(rct::keyV(1, sv), rct::keyV(1, gamma));
 }
 
-Bulletproof bulletproof_PROVE(const uint64_t v, const rct::key &gamma)
+Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key &gamma)
 {
-  return bulletproof_PROVE(std::vector<uint64_t>(1, v), rct::keyV(1, gamma));
+  return bulletproof_MAKE(std::vector<uint64_t>(1, v), rct::keyV(1, gamma));
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_PROVE(const rct::keyV &sv, const rct::keyV &gamma)
+Bulletproof bulletproof_MAKE(const rct::keyV &sv, const rct::keyV &gamma)
 {
   CHECK_AND_ASSERT_THROW_MES(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
   CHECK_AND_ASSERT_THROW_MES(!sv.empty(), "sv is empty");
@@ -768,7 +768,7 @@ try_again:
   return Bulletproof(std::move(V), A, S, T1, T2, taux, mu, std::move(L), std::move(R), aprime[0], bprime[0], t);
 }
 
-Bulletproof bulletproof_PROVE(const std::vector<uint64_t> &v, const rct::keyV &gamma)
+Bulletproof bulletproof_MAKE(const std::vector<uint64_t> &v, const rct::keyV &gamma)
 {
   CHECK_AND_ASSERT_THROW_MES(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
@@ -788,7 +788,7 @@ Bulletproof bulletproof_PROVE(const std::vector<uint64_t> &v, const rct::keyV &g
     sv[i].bytes[7] = (v[i] >> 56) & 255;
   }
   PERF_TIMER_STOP_BP(PROVE_v);
-  return bulletproof_PROVE(sv, gamma);
+  return bulletproof_MAKE(sv, gamma);
 }
 
 struct proof_data_t
