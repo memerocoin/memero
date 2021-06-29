@@ -29,15 +29,17 @@
 #pragma once
 
 
-#include "tools/common/http_connection.h"
 #include "tools/common/scoped_message_writer.h"
 
 #include "network/rpc/core_rpc_server_commands_defs.h"
 
+#include "tools/epee/include/net/http_client.h"
 #include "tools/epee/include/storages/http_abstract_invoke.h"
 
 namespace tools
 {
+  const auto timeout = std::chrono::minutes(1);
+
   class t_rpc_client final
   {
   private:
@@ -61,15 +63,16 @@ namespace tools
       , std::string const & method_name
       )
     {
-      t_http_connection connection(&m_http_client);
-
-      bool ok = connection.is_open();
+      bool ok = m_http_client.connect(timeout);
       if (!ok)
       {
         fail_msg_writer() << "Couldn't connect to daemon: " << m_http_client.get_host() << ":" << m_http_client.get_port();
         return false;
       }
-      ok = epee::net_utils::invoke_http_json_rpc("/json_rpc", method_name, req, res, m_http_client, t_http_connection::TIMEOUT());
+
+      ok = epee::net_utils::invoke_http_json_rpc("/json_rpc", method_name, req, res, m_http_client, timeout);
+      m_http_client.disconnect();
+
       if (!ok)
       {
         fail_msg_writer() << "basic_json_rpc_request: Daemon request failed";
@@ -89,15 +92,16 @@ namespace tools
       , std::string const & fail_msg
       )
     {
-      t_http_connection connection(&m_http_client);
-
-      bool ok = connection.is_open();
+      bool ok = m_http_client.connect(timeout);
       if (!ok)
       {
         fail_msg_writer() << "Couldn't connect to daemon: " << m_http_client.get_host() << ":" << m_http_client.get_port();
         return false;
       }
-      ok = epee::net_utils::invoke_http_json_rpc("/json_rpc", method_name, req, res, m_http_client, t_http_connection::TIMEOUT());
+
+      ok = epee::net_utils::invoke_http_json_rpc("/json_rpc", method_name, req, res, m_http_client, timeout);
+      m_http_client.disconnect();
+
       if (!ok || res.status != CORE_RPC_STATUS_OK) // TODO - handle CORE_RPC_STATUS_BUSY ?
       {
         fail_msg_writer() << fail_msg << " -- json_rpc_request: " << res.status;
@@ -117,15 +121,16 @@ namespace tools
       , std::string const & fail_msg
       )
     {
-      t_http_connection connection(&m_http_client);
-
-      bool ok = connection.is_open();
+      bool ok = m_http_client.connect(timeout);
       if (!ok)
       {
         fail_msg_writer() << "Couldn't connect to daemon: " << m_http_client.get_host() << ":" << m_http_client.get_port();
         return false;
       }
-      ok = epee::net_utils::invoke_http_json(relative_url, req, res, m_http_client, t_http_connection::TIMEOUT());
+
+      ok = epee::net_utils::invoke_http_json(relative_url, req, res, m_http_client, timeout);
+      m_http_client.disconnect();
+
       if (!ok || res.status != CORE_RPC_STATUS_OK) // TODO - handle CORE_RPC_STATUS_BUSY ?
       {
         fail_msg_writer() << fail_msg << "-- rpc_request: " << res.status;
@@ -139,8 +144,11 @@ namespace tools
 
     bool check_connection()
     {
-      t_http_connection connection(&m_http_client);
-      return connection.is_open();
+      const auto ok = m_http_client.connect(timeout);
+      if (ok) {
+        m_http_client.disconnect();
+      }
+      return ok;
     }
   };
 }
