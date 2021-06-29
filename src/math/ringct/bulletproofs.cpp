@@ -376,11 +376,6 @@ rct::key invert(const rct::key &x)
   inv = sm(inv, 3, _101);
   inv = sm(inv, 1 + 2, _11);
 
-#ifdef DEBUG_BP
-  rct::key tmp;
-  sc_mul(tmp.bytes, inv.bytes, x.bytes);
-  CHECK_AND_ASSERT_THROW_MES(tmp == rct::identity(), "invert failed");
-#endif
   return inv;
 }
 
@@ -518,26 +513,6 @@ Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
     }
   }
 
-  // DEBUG: Test to ensure this recovers the value
-#ifdef DEBUG_BP
-  for (size_t j = 0; j < M; ++j)
-  {
-    uint64_t test_aL = 0, test_aR = 0;
-    for (size_t i = 0; i < N; ++i)
-    {
-      if (aL[j*N+i] == rct::identity())
-        test_aL += ((uint64_t)1)<<i;
-      if (aR[j*N+i] == rct::zero())
-        test_aR += ((uint64_t)1)<<i;
-    }
-    uint64_t v_test = 0;
-    if (j < sv.size())
-      for (int n = 0; n < 8; ++n) v_test |= (((uint64_t)sv[j][n]) << (8*n));
-    CHECK_AND_ASSERT_THROW_MES(test_aL == v_test, "test_aL failed");
-    CHECK_AND_ASSERT_THROW_MES(test_aR == v_test, "test_aR failed");
-  }
-#endif
-
 try_again:
   rct::key hash_cache = rct::hash_to_scalar(V);
 
@@ -643,15 +618,6 @@ try_again:
   r = vector_add(r, vector_scalar(r1, x));
 
   rct::key t = inner_product(l, r);
-
-  // DEBUG: Test if the l and r vectors match the polynomial forms
-#ifdef DEBUG_BP
-  rct::key test_t;
-  const rct::key t0 = inner_product(l0, r0);
-  sc_muladd(test_t.bytes, t1.bytes, x.bytes, t0.bytes);
-  sc_muladd(test_t.bytes, t2.bytes, xsq.bytes, test_t.bytes);
-  CHECK_AND_ASSERT_THROW_MES(test_t == t, "test_t check failed");
-#endif
 
   // PAPER LINE 6
   rct::key x_ip = hash_cache_mash(hash_cache, x, taux, mu, t);
