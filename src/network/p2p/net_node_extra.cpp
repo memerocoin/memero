@@ -2272,4 +2272,50 @@ namespace nodetool
       return {std::move(con)};
     return std::nullopt;
   }
+
+  //-----------------------------------------------------------------------------------
+  bool node_server::connect_to_peerlist(const Container& peers)
+  {
+    const network_zone& public_zone = m_network_zones.at(epee::net_utils::zone::public_);
+    for(const epee::net_utils::network_address& na: peers)
+    {
+      if(public_zone.m_net_server.is_stop_signal_sent())
+        return false;
+
+      if(is_addr_connected(na))
+        continue;
+
+      try_to_connect_and_handshake_with_new_peer(na);
+    }
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------------------
+  bool node_server::parse_peers_and_add_to_container(const boost::program_options::variables_map& vm, const command_line::arg_descriptor<std::vector<std::string> > & arg, Container& container)
+  {
+    std::vector<std::string> perrs = command_line::get_arg(vm, arg);
+
+    for(const std::string& pr_str: perrs)
+    {
+      const uint16_t default_port = cryptonote::get_config(m_nettype).P2P_DEFAULT_PORT;
+      expect<epee::net_utils::network_address> adr = net::get_network_address(pr_str, default_port);
+      if (adr)
+      {
+        add_zone(adr->get_zone());
+        container.push_back(std::move(*adr));
+        continue;
+      }
+      std::vector<epee::net_utils::network_address> resolved_addrs;
+      bool r = append_net_address(resolved_addrs, pr_str, default_port);
+      CHECK_AND_ASSERT_MES(r, false, "Failed to parse or resolve address from string: " << pr_str);
+      for (const epee::net_utils::network_address& addr : resolved_addrs)
+      {
+        container.push_back(addr);
+      }
+    }
+
+    return true;
+  }
+
 }

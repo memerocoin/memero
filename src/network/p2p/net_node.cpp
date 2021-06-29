@@ -405,5 +405,4 @@ namespace nodetool
     }
     return true;
   }
-
 }

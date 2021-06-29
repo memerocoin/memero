@@ -363,10 +363,8 @@ namespace nodetool
     std::set<std::string> get_seed_nodes(epee::net_utils::zone);
     bool connect_to_seed(epee::net_utils::zone);
 
-    template <class Container>
+    typedef std::vector<epee::net_utils::network_address> Container;
     bool connect_to_peerlist(const Container& peers);
-
-    template <class Container>
     bool parse_peers_and_add_to_container(const boost::program_options::variables_map& vm, const command_line::arg_descriptor<std::vector<std::string> > & arg, Container& container);
 
     bool set_max_out_peers(network_zone& zone, int64_t max);
@@ -424,7 +422,7 @@ namespace nodetool
     epee::math_helper::once_a_time_seconds<60> m_gray_peerlist_housekeeping_interval;
     epee::math_helper::once_a_time_seconds<3600, false> m_incoming_connections_interval;
 
-    std::list<epee::net_utils::network_address>   m_priority_peers;
+    std::vector<epee::net_utils::network_address> m_priority_peers;
     std::vector<epee::net_utils::network_address> m_exclusive_peers;
     std::atomic_flag m_fallback_seed_nodes_added;
     std::vector<nodetool::peerlist_entry> m_command_line_peers;
