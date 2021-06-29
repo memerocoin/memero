@@ -585,7 +585,7 @@ namespace rct {
         return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
     }
 
-    bool verRctSemanticsSimple(const std::vector<const rctSig*> rvv) {
+    bool verRctSemanticsSimple(const std::vector<rctSig> rvv) {
       try
       {
         tools::threadpool& tpool = tools::threadpool::getInstance();
@@ -594,10 +594,8 @@ namespace rct {
         std::vector<Bulletproof> proofs;
         size_t max_non_bp_proofs = 0, offset = 0;
 
-        for (const rctSig *rvp: rvv)
+        for (const rctSig& rv: rvv)
         {
-          CHECK_AND_ASSERT_MES(rvp, false, "rctSig pointer is NULL");
-          const rctSig &rv = *rvp;
           CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG,
               false, "verRctSemanticsSimple called on non simple rctSig");
           CHECK_AND_ASSERT_MES(rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs), false, "Mismatched sizes of outPk and bulletproofs");
@@ -607,10 +605,8 @@ namespace rct {
         }
 
         results.resize(max_non_bp_proofs);
-        for (const rctSig *rvp: rvv)
+        for (const rctSig& rv: rvv)
         {
-          const rctSig &rv = *rvp;
-
           const keyV &pseudoOuts = rv.p.pseudoOuts;
 
           rct::keyV masks(rv.outPk.size());
@@ -665,7 +661,7 @@ namespace rct {
 
     bool verRctSemanticsSimple(const rctSig rv)
     {
-      return verRctSemanticsSimple(std::vector<const rctSig*>(1, &rv));
+      return verRctSemanticsSimple(std::vector<rctSig>{rv});
     }
 
     //ver RingCT simple

@@ -108,7 +108,7 @@ namespace rct {
      );
 
     bool verRctSemanticsSimple(const rctSig rv);
-    bool verRctSemanticsSimple(const std::vector<const rctSig*> rv);
+    bool verRctSemanticsSimple(const std::vector<rctSig> rv);
     bool verRctNonSemanticsSimple(const rctSig rv);
     inline bool verRctSimple(const rctSig rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
     amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, key& mask);

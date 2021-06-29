@@ -494,7 +494,7 @@ namespace cryptonote
   bool core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool keeped_by_block)
   {
     bool ret = true;
-    std::vector<const rct::rctSig*> rvv;
+    std::vector<rct::rctSig> rvv;
     for (size_t n = 0; n < tx_info.size(); ++n)
     {
       if (!check_tx_semantic(*tx_info[n].tx, keeped_by_block))
@@ -525,7 +525,7 @@ namespace cryptonote
             tx_info[n].result = false;
             break;
           }
-          rvv.push_back(&rv); // delayed batch verification
+          rvv.push_back(rv); // delayed batch verification
           break;
         default:
           MERROR_VER("Unknown rct type: " << rv.type);
