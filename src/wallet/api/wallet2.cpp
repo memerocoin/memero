@@ -5199,16 +5199,6 @@ bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::cold_tx_aux_import(const std::vector<pending_tx> & ptx, const std::vector<std::string> & tx_device_aux)
-{
-  CHECK_AND_ASSERT_THROW_MES(ptx.size() == tx_device_aux.size(), "TX aux has invalid size");
-  for (size_t i = 0; i < ptx.size(); ++i){
-    crypto::hash txid;
-    txid = get_transaction_hash(ptx[i].tx);
-    set_tx_device_aux(txid, tx_device_aux[i]);
-  }
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_upper_transaction_weight_limit()
 {
   if (m_upper_transaction_weight_limit > 0)
