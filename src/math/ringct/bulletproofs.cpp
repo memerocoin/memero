@@ -469,12 +469,12 @@ static rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, con
 }
 
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::key &sv, const rct::key &gamma)
+Bulletproof bulletproof_MAKE(const rct::key sv, const rct::key gamma)
 {
   return bulletproof_MAKE(rct::keyV(1, sv), rct::keyV(1, gamma));
 }
 
-Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key &gamma)
+Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma)
 {
   return bulletproof_MAKE(std::vector<uint64_t>(1, v), rct::keyV(1, gamma));
 }
