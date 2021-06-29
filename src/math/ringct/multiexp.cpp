@@ -126,7 +126,7 @@ size_t get_pippenger_c(size_t N)
 
 typedef std::vector<ge_cached> pippenger_cached_data;
 
-pippenger_cached_data pippenger_init_cache(const std::vector<MultiexpData> &data)
+pippenger_cached_data pippenger_init_cache(const std::vector<MultiexpData> data)
 {
   MULTIEXP_PERF(PERF_TIMER_START_UNIT(pippenger_init_cache, 1000000));
   const size_t N = data.size();
@@ -150,7 +150,7 @@ rct::key pippenger(const std::vector<MultiexpData> data)
   std::unique_ptr<ge_p3[]> buckets{std::make_unique<ge_p3[]>(1<<c)};
   bool buckets_init[1<<9];
 
-  pippenger_cached_data local_cache = pippenger_init_cache(data);
+  const pippenger_cached_data local_cache = std::move(pippenger_init_cache(data));
 
   rct::key maxscalar = rct::zero();
   for (size_t i = 0; i < data.size(); ++i)
