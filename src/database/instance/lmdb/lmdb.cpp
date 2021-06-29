@@ -1223,10 +1223,6 @@ BlockchainLMDB::BlockchainLMDB(bool batch_transactions): BlockchainDB()
   // reset may also need changing when initialize things here
 }
 
-void BlockchainLMDB::check_mmap_support()
-{
-}
-
 void BlockchainLMDB::open(const std::string& filename, const int db_flags)
 {
   int result;
@@ -1262,8 +1258,6 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
   }
 
   m_folder = filename;
-
-  check_mmap_support();
 
 #ifdef __OpenBSD__
   if ((mdb_flags & MDB_WRITEMAP) == 0) {
@@ -3904,8 +3898,6 @@ void BlockchainLMDB::fixup()
   // Always call parent as well
   BlockchainDB::fixup();
 }
-
-#define LOGIF(y)    if (ELPP->vRegistry()->allowed(y, "global"))
 
 void BlockchainLMDB::migrate(const uint32_t oldversion)
 {
