@@ -120,7 +120,6 @@ TEST(multiexp, pippenger_cached)
     P[n].scalar = rct::zero();
     ASSERT_TRUE(ge_frombytes_vartime(&P[n].point, rct::scalarmultBase(rct::skGen()).bytes) == 0);
   }
-  std::shared_ptr<rct::pippenger_cached_data> cache = rct::pippenger_init_cache(P);
   for (size_t n = 0; n < N/16; ++n)
   {
     std::vector<rct::MultiexpData> data;
@@ -129,7 +128,7 @@ TEST(multiexp, pippenger_cached)
     {
       data.push_back({rct::skGen(), P[s].point});
     }
-    ASSERT_TRUE(basic(data) == pippenger(data, cache));
+    ASSERT_TRUE(basic(data) == pippenger(data));
   }
 }
 

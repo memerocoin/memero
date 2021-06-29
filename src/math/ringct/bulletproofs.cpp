@@ -91,14 +91,9 @@ static const rct::key ip12 = inner_product(oneN, twoN);
 
 static std::mutex init_mutex;
 
-static inline rct::key multiexp(const std::vector<MultiexpData> &data, size_t HiGi_size)
+static rct::key multiexp(const std::vector<MultiexpData> &data)
 {
-  if (HiGi_size > 0)
-  {
-    return pippenger(data, pippenger_HiGi_cache, HiGi_size, get_pippenger_c(data.size()));
-  }
-  else
-    return pippenger(data, NULL, 0, get_pippenger_c(data.size()));
+  return pippenger(data);
 }
 
 static inline bool is_reduced(const rct::key &scalar)
@@ -138,13 +133,6 @@ static void init_exponents()
     data.push_back({rct::zero(), Hi_p3[i]});
   }
 
-  pippenger_HiGi_cache = pippenger_init_cache(data, 0, PIPPENGER_SIZE_LIMIT);
-
-  MINFO("Hi/Gi cache size: " << (sizeof(Hi)+sizeof(Gi))/1024 << " kB");
-  MINFO("Hi_p3/Gi_p3 cache size: " << (sizeof(Hi_p3)+sizeof(Gi_p3))/1024 << " kB");
-  MINFO("Pippenger cache size: " << pippenger_get_cache_size(pippenger_HiGi_cache)/1024 << " kB");
-  size_t cache_size = (sizeof(Hi)+sizeof(Hi_p3))*2 + pippenger_get_cache_size(pippenger_HiGi_cache);
-  MINFO("Total cache size: " << cache_size/1024 << "kB");
   init_done = true;
 }
 
@@ -161,7 +149,7 @@ static rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b)
     multiexp_data.emplace_back(a[i], Gi_p3[i]);
     multiexp_data.emplace_back(b[i], Hi_p3[i]);
   }
-  return multiexp(multiexp_data, 2 * a.size());
+  return multiexp(multiexp_data);
 }
 
 /* Compute a custom vector-scalar commitment */
@@ -191,7 +179,7 @@ static rct::key cross_vector_exponent8(size_t size, const std::vector<ge_p3> &A,
     sc_mul(multiexp_data.back().scalar.bytes, extra_scalar->bytes, INV_EIGHT.bytes);
     multiexp_data.back().point = *extra_point;
   }
-  return multiexp(multiexp_data, 0);
+  return multiexp(multiexp_data);
 }
 
 /* Given a scalar, construct a vector of powers */
@@ -1073,7 +1061,7 @@ bool bulletproof_VERIFY(const std::vector<const Bulletproof*> &proofs)
     multiexp_data[i * 2] = {m_z4[i], Gi_p3[i]};
     multiexp_data[i * 2 + 1] = {m_z5[i], Hi_p3[i]};
   }
-  if (!(multiexp(multiexp_data, 2 * maxMN) == rct::identity()))
+  if (!(multiexp(multiexp_data) == rct::identity()))
   {
     PERF_TIMER_STOP_BP(VERIFY_step2_check);
     MERROR("Verification failure");
