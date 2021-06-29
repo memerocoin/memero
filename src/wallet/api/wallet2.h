@@ -315,7 +315,6 @@ namespace tools
     bool is_transfer_unlocked(const transfer_details& td);
     bool is_transfer_unlocked(const uint64_t unlock_time, const uint64_t block_height);
 
-    uint64_t get_last_block_reward() const { return m_last_block_reward; }
     uint64_t get_device_last_key_image_sync() const { return m_device_last_key_image_sync; }
 
     BEGIN_SERIALIZE_OBJECT()
@@ -339,7 +338,6 @@ namespace tools
       FIELD(m_attributes)
       FIELD(m_account_tags)
       FIELD(m_ring_history_saved)
-      FIELD(m_last_block_reward)
       FIELD(m_tx_device)
       FIELD(m_device_last_key_image_sync)
       FIELD(m_cold_key_images)
@@ -624,8 +622,6 @@ namespace tools
     serializable_unordered_map<crypto::public_key, serializable_map<uint64_t, crypto::key_image> > m_key_image_cache;
 
     bool m_ring_history_saved = false;
-
-    uint64_t m_last_block_reward;
 
     crypto::chacha_key m_cache_key;
 

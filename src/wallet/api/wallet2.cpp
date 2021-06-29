@@ -288,7 +288,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
   m_key_device_type(hw::device::device_type::SOFTWARE),
-  m_last_block_reward(0),
   m_devices_registered(false),
   m_device_last_key_image_sync(0),
   m_offline(false),
@@ -1338,7 +1337,6 @@ void wallet2::process_new_blockchain_entry(const cryptonote::block& b, const cry
       process_new_transaction(b.tx_hashes[idx], parsed_block.txes[idx], parsed_block.o_indices.indices[idx+1].indices, height, b.major_version, b.timestamp, false, false, false, tx_cache_data[tx_cache_data_offset++], output_tracker_cache);
     }
     TIME_MEASURE_FINISH(txs_handle_time);
-    m_last_block_reward = cryptonote::get_outs_money_amount(b.miner_tx);
     LOG_PRINT_L2("Processed block: " << bl_id << ", height " << height << ", " <<  miner_tx_handle_time + txs_handle_time << "(" << miner_tx_handle_time << "/" << txs_handle_time <<")ms");
   }else
   {
@@ -2333,7 +2331,6 @@ void wallet2::clear_soft()
   cryptonote::block b;
   generate_genesis(b);
   m_blockchain.push_back(get_block_hash(b));
-  m_last_block_reward = cryptonote::get_outs_money_amount(b.miner_tx);
 }
 
 /*!
@@ -2800,7 +2797,6 @@ void wallet2::setup_new_blockchain()
   cryptonote::block b;
   generate_genesis(b);
   m_blockchain.push_back(get_block_hash(b));
-  m_last_block_reward = cryptonote::get_outs_money_amount(b.miner_tx);
   add_subaddress_account(tr("Primary account"));
 }
 
@@ -3104,7 +3100,6 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
   if (m_blockchain.empty())
   {
     m_blockchain.push_back(genesis_hash);
-    m_last_block_reward = cryptonote::get_outs_money_amount(genesis.miner_tx);
   }
   else
   {
