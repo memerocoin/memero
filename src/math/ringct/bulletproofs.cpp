@@ -802,7 +802,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const std::vector<const Bulletproof*> &proofs)
+bool bulletproof_VERIFY(const std::vector<Bulletproof> &proofs)
 {
   init_exponents();
 
@@ -820,10 +820,8 @@ bool bulletproof_VERIFY(const std::vector<const Bulletproof*> &proofs)
   std::vector<rct::key> to_invert;
   to_invert.reserve(11 * proofs.size());
   size_t max_logM = 0;
-  for (const Bulletproof *p: proofs)
+  for (const Bulletproof& proof: proofs)
   {
-    const Bulletproof &proof = *p;
-
     // check scalar range
     CHECK_AND_ASSERT_MES(is_reduced(proof.taux), false, "Input scalar not in range");
     CHECK_AND_ASSERT_MES(is_reduced(proof.mu), false, "Input scalar not in range");
@@ -898,9 +896,8 @@ bool bulletproof_VERIFY(const std::vector<const Bulletproof*> &proofs)
   int proof_data_index = 0;
   rct::keyV w_cache;
   std::vector<ge_p3> proof8_V, proof8_L, proof8_R;
-  for (const Bulletproof *p: proofs)
+  for (const Bulletproof& proof: proofs)
   {
-    const Bulletproof &proof = *p;
     const proof_data_t &pd = proof_data[proof_data_index++];
 
     CHECK_AND_ASSERT_MES(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
@@ -1073,20 +1070,9 @@ bool bulletproof_VERIFY(const std::vector<const Bulletproof*> &proofs)
   return true;
 }
 
-bool bulletproof_VERIFY(const std::vector<Bulletproof> &proofs)
+bool bulletproof_VERIFY(const Bulletproof proof)
 {
-  std::vector<const Bulletproof*> proof_pointers;
-  proof_pointers.reserve(proofs.size());
-  for (const Bulletproof &proof: proofs)
-    proof_pointers.push_back(&proof);
-  return bulletproof_VERIFY(proof_pointers);
-}
-
-bool bulletproof_VERIFY(const Bulletproof &proof)
-{
-  std::vector<const Bulletproof*> proofs;
-  proofs.push_back(&proof);
-  return bulletproof_VERIFY(proofs);
+  return bulletproof_VERIFY(std::vector<Bulletproof>{proof});
 }
 
 }

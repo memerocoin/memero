@@ -102,7 +102,7 @@ namespace rct {
       catch (...) { return false; }
     }
 
-    bool verBulletproof(const std::vector<const Bulletproof*> &proofs)
+    bool verBulletproof(const std::vector<Bulletproof> &proofs)
     {
       try { return bulletproof_VERIFY(proofs); }
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
@@ -630,7 +630,7 @@ namespace rct {
         tools::threadpool& tpool = tools::threadpool::getInstance();
         tools::threadpool::waiter waiter(tpool);
         std::deque<bool> results;
-        std::vector<const Bulletproof*> proofs;
+        std::vector<Bulletproof> proofs;
         size_t max_non_bp_proofs = 0, offset = 0;
 
         for (const rctSig *rvp: rvv)
@@ -669,7 +669,7 @@ namespace rct {
           }
 
           for (size_t i = 0; i < rv.p.bulletproofs.size(); i++) {
-            proofs.push_back(&rv.p.bulletproofs[i]);
+            proofs.push_back(rv.p.bulletproofs[i]);
           }
         }
         if (!proofs.empty() && !verBulletproof(proofs))
