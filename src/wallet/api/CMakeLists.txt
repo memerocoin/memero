@@ -40,11 +40,14 @@ add_library(wallet_api
 )
 
 target_link_libraries(wallet_api
-  cryptonote_tx
-  math_ringct
-  network_rpc_base
-  network_type
-  wallet_errors
-  wallet_logic
-  wallet_node_rpc_proxy
+  PRIVATE
+    cryptonote_tx
+    math_ringct
+
+  PUBLIC
+    network_type
+    network_rpc_base
+    wallet_logic
+    wallet_node_rpc_proxy
+    wallet_errors
 )
