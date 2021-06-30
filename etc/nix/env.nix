@@ -46,6 +46,7 @@ in
     configureClang = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}";
     configureClangRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
     configureTest = "cmake ${CMakeFlags_Lolnero_Test} ${CMakeDevFlags} ${CMakeCCacheFlags}";
+    configureTestRelease = "cmake ${CMakeFlags_Lolnero_Test} ${CMakeCCacheFlags}";
     build = "make";
     ci = "make Continuous";
     testFilter = "ctest -R";
