@@ -4,6 +4,9 @@ with import <nixpkgs> {};
 let
   CMakeFlags_Lolnero = ''
     -DReadline_ROOT_DIR=${readline.dev}
+  '';
+
+  CMakeDevFlags = ''
     -DBUILD_SHARED_LIBS=ON
     -DCMAKE_BUILD_TYPE=Debug
   '';
@@ -38,7 +41,8 @@ in
     inherit CMakeCCacheFlags;
     inherit CMakeClangFlags;
 
-    configure = "cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}";
+    configure = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeCCacheFlags}";
+    configureRelease = "cmake ${CMakeFlags_Lolnero} {CMakeCCacheFlags}";
     configureClang = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
     configureTest = "cmake ${CMakeFlags_Lolnero_Test} ${CMakeCCacheFlags}";
     build = "make";
