@@ -29,20 +29,10 @@
 
 add_library(wallet_errors
   wallet_errors.cpp
-  )
-
-target_link_libraries(wallet_errors
-  cryptonote_tx
-  tools_serialization
-)
+ )
 
 add_library(wallet_node_rpc_proxy
   node_rpc_proxy.cpp
-  )
-
-target_link_libraries(wallet_node_rpc_proxy
-  epee
-  tools_serialization
 )
 
 add_library(wallet_api
@@ -50,14 +40,10 @@ add_library(wallet_api
 )
 
 target_link_libraries(wallet_api
-  network_rpc_base
-  wallet_mnemonics
-  network_type
-  wallet_logic
-  math_ringct
   cryptonote_tx
-  tools_serialization
+  network_rpc_base
+  network_type
   wallet_errors
+  wallet_logic
   wallet_node_rpc_proxy
-  epee_storage
 )

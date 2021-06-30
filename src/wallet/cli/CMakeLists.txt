@@ -32,13 +32,14 @@ add_executable(lolnero
   )
 
 target_link_libraries(lolnero
-    wallet_api
-    wallet_common
-    epee_storage
-    ${EPEE_READLINE}
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${GNU_READLINE_LIBRARY}
-    )
+  wallet_api
+  wallet_common
+  epee_storage
+  wallet_mnemonics
+  ${EPEE_READLINE}
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  ${GNU_READLINE_LIBRARY}
+  )
 
 set_property(TARGET lolnero
   PROPERTY

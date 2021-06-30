@@ -31,10 +31,9 @@ add_library(cryptonote_core
   tx_pool.cpp
   cryptonote_core.cpp
   blockchain.cpp
-  )
+)
 
 add_library(cryptonote_core_extra
   cryptonote_core_extra.cpp
   blockchain_extra.cpp
 )
-
