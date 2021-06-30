@@ -35,5 +35,6 @@ add_library(network_p2p
 )
 
 target_link_libraries(network_p2p
+  cryptonote_protocol
   tools_boost_archive
 )

@@ -33,6 +33,5 @@ add_library(cryptonote_tx
 )
 
 target_link_libraries(cryptonote_tx
-  math_ringct
   tools_serialization
 )

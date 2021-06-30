@@ -37,22 +37,24 @@ add_executable(lolnerod
   )
 
 target_link_libraries(lolnerod
-  network_rpc
-  database
   cryptonote_core
   cryptonote_core_extra
-  cryptonote_tx
-  database
-  math_crypto
-  tools_common
-  network_p2p
   cryptonote_protocol
-  tools_serialization
-  network_type
+  cryptonote_tx
   daemon_messages
   daemon_rpc_server
-  version
+  database
+  database
   epee_storage
+  math_crypto
+  math_ringct
+  network_p2p
+  network_rpc
+  network_type
+  tools_common
+  tools_serialization
+  version
+
   ${EPEE_READLINE}
   ${GNU_READLINE_LIBRARY}
   ${Boost_PROGRAM_OPTIONS_LIBRARY}

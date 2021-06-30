@@ -41,6 +41,7 @@ add_library(wallet_api
 
 target_link_libraries(wallet_api
   cryptonote_tx
+  math_ringct
   network_rpc_base
   network_type
   wallet_errors

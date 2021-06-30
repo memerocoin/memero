@@ -33,9 +33,9 @@ add_executable(lolnero-rpc
 )
 
 target_link_libraries(lolnero-rpc
+  epee_storage
   wallet_api
   wallet_common
-  epee_storage
   wallet_mnemonics
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
