@@ -48,6 +48,8 @@ target_link_libraries(lolnerod
   network_p2p
   cryptonote_protocol
   tools_serialization
+  network_type
+  daemon_messages
   daemon_rpc_server
   version
   epee_storage
