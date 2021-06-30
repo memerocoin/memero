@@ -42,8 +42,15 @@ add_library(network_rpc
 target_link_libraries(network_rpc
   network_rpc_base
   cryptonote_tx
-  cryptonote_core
 )
+
+# test specific added dependency for static build ...
+if(BUILD_TESTING)
+  target_link_libraries(network_rpc
+    cryptonote_core
+  )
+endif()
+
 
 add_library(daemon_messages
   message.cpp
