@@ -42,9 +42,10 @@ in
     inherit CMakeClangFlags;
 
     configure = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeCCacheFlags}";
-    configureRelease = "cmake ${CMakeFlags_Lolnero} {CMakeCCacheFlags}";
-    configureClang = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
-    configureTest = "cmake ${CMakeFlags_Lolnero_Test} ${CMakeCCacheFlags}";
+    configureRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}";
+    configureClang = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}";
+    configureClangRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
+    configureTest = "cmake ${CMakeFlags_Lolnero_Test} ${CMakeDevFlags} ${CMakeCCacheFlags}";
     build = "make";
     ci = "make Continuous";
     testFilter = "ctest -R";
