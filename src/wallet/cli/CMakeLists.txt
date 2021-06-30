@@ -38,7 +38,6 @@ target_link_libraries(lolnero
   wallet_api
 
   wallet_common
-  wallet_mnemonics
 
   ${EPEE_READLINE}
   ${Boost_PROGRAM_OPTIONS_LIBRARY}

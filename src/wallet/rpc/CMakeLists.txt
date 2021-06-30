@@ -37,7 +37,6 @@ target_link_libraries(lolnero-rpc
   network_type
   wallet_api
   wallet_common
-  wallet_mnemonics
   tools_serialization
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}

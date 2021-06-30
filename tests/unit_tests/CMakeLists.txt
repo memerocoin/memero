@@ -125,7 +125,8 @@ target_link_libraries(unit_tests_core
   math_ringct
   cryptonote_protocol
   cryptonote_core
-  # blockchain_db
+  cryptonote_core_extra
+  database
   network_rpc
   network_type
   tools_serialization
@@ -169,6 +170,7 @@ add_executable(unit_tests_wallet
 
 target_link_libraries(unit_tests_wallet
   wallet_api
+  epee_net
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main
