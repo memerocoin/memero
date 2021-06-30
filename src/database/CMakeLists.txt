@@ -31,11 +31,8 @@
 add_library(database
   interface/blockchain.cpp
   instance/lmdb/lmdb.cpp
-  )
+)
 
 target_link_libraries(database
-    lmdb
-    math_ringct_basic
-    tools_common
-    cryptonote_basic
-  )
+  lmdb
+)
