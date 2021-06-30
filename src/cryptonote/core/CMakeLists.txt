@@ -34,7 +34,14 @@ add_library(cryptonote_core
   )
 
 target_link_libraries(cryptonote_core
-  cryptonote_tx
-  math_ringct
   database
+ )
+
+add_library(cryptonote_core_extra
+  cryptonote_core_extra.cpp
+  blockchain_extra.cpp
+  )
+
+target_link_libraries(cryptonote_core_extra
+  math_ringct
  )

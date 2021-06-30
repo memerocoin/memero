@@ -40,6 +40,9 @@ target_link_libraries(lolnerod
   network_rpc
   database
   cryptonote_core
+  cryptonote_core_extra
+  cryptonote_tx
+  database
   math_crypto
   tools_common
   network_p2p

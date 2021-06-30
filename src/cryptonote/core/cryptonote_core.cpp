@@ -30,16 +30,8 @@
 
 #include "cryptonote_core.h"
 
-
-
-#include "math/ringct/rctSigs.hpp"
-
 #include "tools/common/notify.h"
 #include "tools/common/threadpool.h"
-
-
-
-
 
 #include <boost/uuid/nil_generator.hpp>
 
@@ -479,83 +471,6 @@ namespace cryptonote
       bad_semantics_txes[0].clear();
     }
     bad_semantics_txes_lock.unlock();
-  }
-  //-----------------------------------------------------------------------------------------------
-  static bool is_canonical_bulletproof_layout(const std::vector<rct::Bulletproof> &proofs)
-  {
-    if (proofs.size() != 1)
-      return false;
-    const size_t sz = proofs[0].V.size();
-    if (sz == 0 || sz > BULLETPROOF_MAX_OUTPUTS)
-      return false;
-    return true;
-  }
-  //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool keeped_by_block)
-  {
-    bool ret = true;
-    std::vector<rct::rctSig> rvv;
-    for (size_t n = 0; n < tx_info.size(); ++n)
-    {
-      if (!check_tx_semantic(*tx_info[n].tx, keeped_by_block))
-      {
-        set_semantics_failed(tx_info[n].tx_hash);
-        tx_info[n].tvc.m_verifivation_failed = true;
-        tx_info[n].result = false;
-        continue;
-      }
-
-      if (tx_info[n].tx->version < 2)
-        continue;
-      const rct::rctSig &rv = tx_info[n].tx->rct_signatures;
-      switch (rv.type) {
-        case rct::RCTTypeNull:
-          // coinbase should not come here, so we reject for all other types
-          MERROR_VER("Unexpected Null rctSig type");
-          set_semantics_failed(tx_info[n].tx_hash);
-          tx_info[n].tvc.m_verifivation_failed = true;
-          tx_info[n].result = false;
-          break;
-        case rct::RCTTypeCLSAG:
-          if (!is_canonical_bulletproof_layout(rv.p.bulletproofs))
-          {
-            MERROR_VER("Bulletproof does not have canonical form");
-            set_semantics_failed(tx_info[n].tx_hash);
-            tx_info[n].tvc.m_verifivation_failed = true;
-            tx_info[n].result = false;
-            break;
-          }
-          rvv.push_back(rv); // delayed batch verification
-          break;
-        default:
-          MERROR_VER("Unknown rct type: " << rv.type);
-          set_semantics_failed(tx_info[n].tx_hash);
-          tx_info[n].tvc.m_verifivation_failed = true;
-          tx_info[n].result = false;
-          break;
-      }
-    }
-    if (!rvv.empty() && !rct::verRctSemanticsSimple(rvv))
-    {
-      LOG_PRINT_L1("One transaction among this group has bad semantics, verifying one at a time");
-      ret = false;
-      const bool assumed_bad = rvv.size() == 1; // if there's only one tx, it must be the bad one
-      for (size_t n = 0; n < tx_info.size(); ++n)
-      {
-        if (!tx_info[n].result)
-          continue;
-        if (tx_info[n].tx->rct_signatures.type != rct::RCTTypeCLSAG)
-          continue;
-        if (assumed_bad || !rct::verRctSemanticsSimple(tx_info[n].tx->rct_signatures))
-        {
-          set_semantics_failed(tx_info[n].tx_hash);
-          tx_info[n].tvc.m_verifivation_failed = true;
-          tx_info[n].result = false;
-        }
-      }
-    }
-
-    return ret;
   }
   //-----------------------------------------------------------------------------------------------
   bool core::handle_incoming_txs(const epee::span<const tx_blob_entry> tx_blobs, epee::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed)
