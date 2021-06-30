@@ -40,20 +40,19 @@ add_library(network_rpc
   )
 
 target_link_libraries(network_rpc
-    network_rpc_base
-    network_type
-    )
+  network_rpc_base
+  network_type
+)
 
 add_library(daemon_messages
   message.cpp
   daemon_messages.cpp
-  )
+)
 
 add_library(daemon_rpc_server
   daemon_handler.cpp
-  )
+)
 
 target_link_libraries(daemon_rpc_server
-    daemon_messages
-    cryptonote_basic
-    )
+  daemon_messages
+)
