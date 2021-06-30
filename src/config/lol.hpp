@@ -36,7 +36,7 @@ namespace constant
 
 
 
-  constexpr uint32_t DEFAULT_MIN_OUTPUT_COUNT = 50;
+  constexpr uint32_t DEFAULT_MIN_OUTPUT_COUNT = 256;
   constexpr uint64_t DEFAULT_MIN_OUTPUT_VALUE = 2 * COIN;
 
   constexpr uint64_t FEE_PER_BYTE = 300000;
