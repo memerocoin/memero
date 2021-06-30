@@ -114,6 +114,7 @@ namespace config
     constexpr size_t SUBADDRESS_LOOKAHEAD_MAJOR = 50;
     constexpr size_t SUBADDRESS_LOOKAHEAD_MINOR = 400;
 
+    constexpr auto rpc_timeout = std::chrono::minutes(1);
   }
 
   namespace def

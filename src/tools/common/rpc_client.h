@@ -38,7 +38,7 @@
 
 namespace tools
 {
-  const auto timeout = std::chrono::minutes(1);
+  constexpr std::chrono::milliseconds timeout = config::lol::rpc_timeout;
 
   class t_rpc_client final
   {

@@ -46,7 +46,7 @@ using namespace epee;
 namespace tools
 {
 
-static const std::chrono::seconds rpc_timeout = std::chrono::minutes(3) + std::chrono::seconds(30);
+constexpr std::chrono::seconds rpc_timeout = config::lol::rpc_timeout;
 
 NodeRPCProxy::NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex)
   : m_http_client(http_client)
