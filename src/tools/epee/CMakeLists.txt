@@ -47,15 +47,12 @@ add_library( epee
 
 target_link_libraries( epee
   easylogging
+  epee_net_basic
   ${OPENSSL_LIBRARIES}
 )
 
 add_library( epee_net_basic
   src/net/net_parse_helpers.cpp
-)
-
-target_link_libraries( epee_net_basic
-  epee
 )
 
 add_library( epee_net

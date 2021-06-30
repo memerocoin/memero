@@ -33,12 +33,7 @@ add_library(cryptonote_core
   blockchain.cpp
 )
 
-add_library(cryptonote_core_extra
-  cryptonote_core_extra.cpp
-  blockchain_extra.cpp
-)
-
-target_link_libraries(cryptonote_core_extra
+target_link_libraries(cryptonote_core
   PRIVATE
     math_ringct
 )

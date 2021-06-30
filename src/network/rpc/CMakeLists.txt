@@ -42,6 +42,7 @@ add_library(network_rpc
 target_link_libraries(network_rpc
   network_rpc_base
   cryptonote_tx
+  cryptonote_core
 )
 
 add_library(daemon_messages

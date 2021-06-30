@@ -38,7 +38,6 @@ add_executable(lolnerod
 
 target_link_libraries(lolnerod
   cryptonote_core
-  cryptonote_core_extra
   cryptonote_protocol
   cryptonote_tx
   daemon_messages

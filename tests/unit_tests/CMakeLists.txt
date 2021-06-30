@@ -125,7 +125,6 @@ target_link_libraries(unit_tests_core
   math_ringct
   cryptonote_protocol
   cryptonote_core
-  cryptonote_core_extra
   database
   network_rpc
   network_type
