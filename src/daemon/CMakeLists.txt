@@ -44,7 +44,6 @@ target_link_libraries(lolnerod
   daemon_messages
   daemon_rpc_server
   database
-  database
   epee_storage
   math_crypto
   math_ringct
