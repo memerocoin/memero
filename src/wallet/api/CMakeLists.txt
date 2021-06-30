@@ -45,7 +45,6 @@ target_link_libraries(wallet_api
     math_ringct
 
   PUBLIC
-    network_type
     network_rpc_base
     wallet_logic
     wallet_node_rpc_proxy

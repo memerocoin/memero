@@ -29,7 +29,6 @@
 add_library(network_type
   dandelionpp.cpp
   error.cpp
-  http.cpp
   i2p_address.cpp
   parse.cpp
   socks.cpp

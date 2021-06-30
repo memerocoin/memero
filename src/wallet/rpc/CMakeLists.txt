@@ -34,6 +34,7 @@ add_executable(lolnero-rpc
 
 target_link_libraries(lolnero-rpc
   epee_storage
+  network_type
   wallet_api
   wallet_common
   wallet_mnemonics

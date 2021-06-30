@@ -42,7 +42,10 @@ class client : public epee::net_utils::http::http_simple_client
 class client_factory : public epee::net_utils::http::http_client_factory
 {
 public:
-  std::unique_ptr<epee::net_utils::http::abstract_http_client> create() override;
+  std::unique_ptr<epee::net_utils::http::abstract_http_client> create()
+  {
+    return std::unique_ptr<epee::net_utils::http::abstract_http_client>(std::make_unique<client>());
+  }
 };
 
 } // namespace http

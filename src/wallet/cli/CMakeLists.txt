@@ -33,7 +33,10 @@ add_executable(lolnero
 
 target_link_libraries(lolnero
   epee_storage
+
+  network_type
   wallet_api
+
   wallet_common
   wallet_mnemonics
 
