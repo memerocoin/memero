@@ -128,7 +128,7 @@ typedef std::vector<ge_cached> pippenger_cached_data;
 
 pippenger_cached_data pippenger_init_cache(const std::vector<MultiexpData> data)
 {
-  pippenger_cached_data cache = pippenger_cached_data(data.size());
+  pippenger_cached_data cache(data.size());
 
   std::transform(data.begin(), data.end(), cache.begin(),
                  [](const MultiexpData x) -> ge_cached {
