@@ -86,12 +86,12 @@ std::mutex init_mutex;
 
 const auto multiexp = pippenger;
 
-inline bool is_reduced(const rct::key &scalar)
+inline bool is_reduced(const rct::key scalar)
 {
   return sc_check(scalar.bytes) == 0;
 }
 
-rct::key get_exponent(const rct::key &base, size_t idx)
+rct::key get_exponent(const rct::key base, size_t idx)
 {
   static const std::string domain_separator(config::HASH_KEY_BULLETPROOF_EXPONENT);
   std::string hashed = std::string((const char*)base.bytes, sizeof(base)) + domain_separator + tools::get_varint_data(idx);
@@ -138,7 +138,21 @@ rct::key vector_exponent(const std::span<rct::key> a, const std::span<rct::key> 
 }
 
 /* Compute a custom vector-scalar commitment */
-rct::key cross_vector_exponent8(size_t size, const std::vector<ge_p3> &A, size_t Ao, const std::vector<ge_p3> &B, size_t Bo, const rct::keyV &a, size_t ao, const rct::keyV &b, size_t bo, const rct::keyV *scale, const ge_p3 *extra_point, const rct::key *extra_scalar)
+rct::key cross_vector_exponent8
+(
+ const size_t size
+ , const std::span<ge_p3> A
+ , const size_t Ao
+ , const std::span<ge_p3> B
+ , const size_t Bo
+ , const std::span<rct::key> a
+ , const size_t ao
+ , const std::span<rct::key> b
+ , const size_t bo
+ , const rct::keyV *scale
+ , const ge_p3 *extra_point
+ , const rct::key *extra_scalar
+ )
 {
   ASSERT_OR_LOG_THROW(size + Ao <= A.size(), "Incompatible size for A");
   ASSERT_OR_LOG_THROW(size + Bo <= B.size(), "Incompatible size for B");
@@ -185,8 +199,10 @@ rct::keyV vector_powers(const rct::key x, const size_t n)
 }
 
 /* Given a scalar, return the sum of its powers from 0 to n-1 */
-rct::key vector_power_sum(rct::key x, size_t n)
+rct::key vector_power_sum(const rct::key x_in, const size_t n_in)
 {
+  size_t n = n_in;
+
   if (n == 0)
     return rct::zero();
   rct::key res = rct::identity();
@@ -194,6 +210,8 @@ rct::key vector_power_sum(rct::key x, size_t n)
     return res;
 
   const bool is_power_of_2 = (n & (n - 1)) == 0;
+  rct::key x = x_in;
+
   if (is_power_of_2)
   {
     sc_add(res.bytes, res.bytes, x.bytes);
@@ -231,7 +249,7 @@ rct::key inner_product(const std::span<const rct::key> a, const std::span<const 
 }
 
 /* Given two scalar arrays, construct the Hadamard product */
-rct::keyV hadamard(const rct::keyV &a, const rct::keyV &b)
+rct::keyV hadamard(const std::span<const rct::key> a, const std::span<const rct::key> b)
 {
   ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::keyV res(a.size());
@@ -261,7 +279,7 @@ void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key
 }
 
 /* Add two vectors */
-rct::keyV vector_add(const rct::keyV &a, const rct::keyV &b)
+rct::keyV vector_add(const std::span<const rct::key> a, const std::span<const rct::key> b)
 {
   ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::keyV res(a.size());
@@ -273,7 +291,7 @@ rct::keyV vector_add(const rct::keyV &a, const rct::keyV &b)
 }
 
 /* Add a scalar to all elements of a vector */
-rct::keyV vector_add(const rct::keyV &a, const rct::key &b)
+rct::keyV vector_add(const std::span<const rct::key> a, const rct::key b)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -284,7 +302,7 @@ rct::keyV vector_add(const rct::keyV &a, const rct::key &b)
 }
 
 /* Subtract a scalar from all elements of a vector */
-rct::keyV vector_subtract(const rct::keyV &a, const rct::key &b)
+rct::keyV vector_subtract(const std::span<const rct::key> a, const rct::key b)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -305,8 +323,11 @@ rct::keyV vector_scalar(const std::span<const rct::key> a, const rct::key x)
   return res;
 }
 
-rct::key sm(rct::key y, int n, const rct::key &x)
+rct::key sm(const rct::key y_in, const int n_in, const rct::key x_in)
 {
+  int n = n_in;
+  rct::key y = y_in;
+  rct::key x = x_in;
   while (n--)
     sc_mul(y.bytes, y.bytes, y.bytes);
   sc_mul(y.bytes, y.bytes, x.bytes);
@@ -314,7 +335,7 @@ rct::key sm(rct::key y, int n, const rct::key &x)
 }
 
 /* Compute the inverse of a scalar, the clever way */
-rct::key invert(const rct::key &x)
+rct::key invert(const rct::key x)
 {
   rct::key _1, _10, _100, _11, _101, _111, _1001, _1011, _1111;
 
@@ -399,7 +420,7 @@ std::span<const rct::key> slice(const std::span<const rct::key> a, size_t start,
   return a.subspan(start, stop - start);
 }
 
-rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1)
+rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1)
 {
   rct::key data[3];
   data[0] = hash_cache;
@@ -409,7 +430,7 @@ rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct:
   return hash_cache;
 }
 
-rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1, const rct::key &mash2)
+rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1, const rct::key mash2)
 {
   rct::key data[4];
   data[0] = hash_cache;
@@ -420,7 +441,7 @@ rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct:
   return hash_cache;
 }
 
-rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1, const rct::key &mash2, const rct::key &mash3)
+rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1, const rct::key mash2, const rct::key mash3)
 {
   rct::key data[5];
   data[0] = hash_cache;
