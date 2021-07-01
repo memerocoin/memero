@@ -128,16 +128,14 @@ typedef std::vector<ge_cached> pippenger_cached_data;
 
 pippenger_cached_data pippenger_init_cache(const std::vector<MultiexpData> data)
 {
-  MULTIEXP_PERF(PERF_TIMER_START_UNIT(pippenger_init_cache, 1000000));
-  const size_t N = data.size();
+  pippenger_cached_data cache = pippenger_cached_data(data.size());
 
-  pippenger_cached_data cache = pippenger_cached_data(N);
+  std::transform(data.begin(), data.end(), cache.begin(),
+                 [](const MultiexpData x) -> ge_cached {
+                   return ge_p3_to_cached_by_value(x.point);
+                 }
+                 );
 
-  // CHECK_AND_ASSERT_THROW_MES(cache->cached, "Out of memory");
-  for (size_t i = 0; i < N; ++i)
-    ge_p3_to_cached(&cache[i], &data[i].point);
-
-  MULTIEXP_PERF(PERF_TIMER_STOP(pippenger_init_cache));
   return cache;
 }
 
