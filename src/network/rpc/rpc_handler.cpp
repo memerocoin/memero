@@ -61,7 +61,7 @@ namespace rpc
             d.cached_to -= 10;
             d.cached_top_hash = hash10;
             d.cached_m10_hash = crypto::null_hash;
-            CHECK_AND_ASSERT_MES(d.cached_distribution.size() >= 10, std::nullopt, "Cached distribution size does not match cached bounds");
+            ASSERT_OR_LOG_RETURN(d.cached_distribution.size() >= 10, std::nullopt, "Cached distribution size does not match cached bounds");
             for (int p = 0; p < 10; ++p)
               d.cached_distribution.pop_back();
             can_extend = true;

@@ -126,7 +126,7 @@ namespace cryptonote
   bool t_cryptonote_protocol_handler::on_callback(cryptonote_connection_context& context)
   {
     LOG_PRINT_CCONTEXT_L2("callback fired");
-    CHECK_AND_ASSERT_MES_CC( context.m_callback_request_count > 0, false, "false callback fired, but context.m_callback_request_count=" << context.m_callback_request_count);
+    ASSERT_OR_LOG_CONNECTION_CONTEXT_RETURN( context.m_callback_request_count > 0, false, "false callback fired, but context.m_callback_request_count=" << context.m_callback_request_count);
     --context.m_callback_request_count;
 
     if(context.m_state == cryptonote_connection_context::state_synchronizing
@@ -1912,7 +1912,7 @@ skip:
       NOTIFY_REQUEST_CHAIN::request r = {};
       context.m_expect_height = m_core.get_current_blockchain_height();
       m_core.get_short_chain_history(r.block_ids);
-      CHECK_AND_ASSERT_MES(!r.block_ids.empty(), false, "Short chain history is empty");
+      ASSERT_OR_LOG_RETURN(!r.block_ids.empty(), false, "Short chain history is empty");
 
       if (!start_from_current_chain)
       {
@@ -1935,7 +1935,7 @@ skip:
       MLOG_PEER_STATE("requesting chain");
     }else
     {
-      CHECK_AND_ASSERT_MES(context.m_last_response_height == context.m_remote_blockchain_height-1
+      ASSERT_OR_LOG_RETURN(context.m_last_response_height == context.m_remote_blockchain_height-1
                            && !context.m_needed_objects.size()
                            && !context.m_requested_objects.size(), false, "request_missing_blocks final condition failed!"
                            << "\r\nm_last_response_height=" << context.m_last_response_height

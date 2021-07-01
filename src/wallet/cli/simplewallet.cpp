@@ -1574,7 +1574,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         return false;
       }
       auto r = new_wallet(vm, m_recovery_key, true);
-      CHECK_AND_ASSERT_MES(r, false, sw::tr("account creation failed"));
+      ASSERT_OR_LOG_RETURN(r, false, sw::tr("account creation failed"));
       password = *r;
       welcome = true;
     }
@@ -1587,7 +1587,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       m_wallet_file = m_generate_new;
       std::optional<epee::wipeable_string> r;
       r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet);
-      CHECK_AND_ASSERT_MES(r, false, sw::tr("account creation failed"));
+      ASSERT_OR_LOG_RETURN(r, false, sw::tr("account creation failed"));
       password = *r;
       welcome = true;
     }
@@ -1607,7 +1607,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       return false;
     }
     auto r = open_wallet(vm);
-    CHECK_AND_ASSERT_MES(r, false, sw::tr("failed to open account"));
+    ASSERT_OR_LOG_RETURN(r, false, sw::tr("failed to open account"));
     password = *r;
   }
   if (!m_wallet)
@@ -4346,7 +4346,7 @@ int main(int argc, char* argv[])
 
   cryptonote::simple_wallet w;
   const bool r = w.init(*vm);
-  CHECK_AND_ASSERT_MES(r, 1, sw::tr("Failed to initialize wallet"));
+  ASSERT_OR_LOG_RETURN(r, 1, sw::tr("Failed to initialize wallet"));
 
   std::vector<std::string> command = command_line::get_arg(*vm, arg_command);
   if (!command.empty())

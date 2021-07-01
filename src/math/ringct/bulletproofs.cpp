@@ -95,7 +95,7 @@ rct::key get_exponent(const rct::key &base, size_t idx)
   ge_p3 e_p3;
   rct::hash_to_p3(e_p3, rct::hash2rct(crypto::cn_fast_hash(hashed.data(), hashed.size())));
   ge_p3_tobytes(e.bytes, &e_p3);
-  CHECK_AND_ASSERT_THROW_MES(!(e == rct::identity()), "Exponent is point at infinity");
+  ASSERT_OR_LOG_THROW(!(e == rct::identity()), "Exponent is point at infinity");
   return e;
 }
 
@@ -111,9 +111,9 @@ void init_exponents()
   for (size_t i = 0; i < maxN*maxM; ++i)
   {
     Hi[i] = get_exponent(rct::H, i * 2);
-    CHECK_AND_ASSERT_THROW_MES(ge_frombytes_vartime(&Hi_p3[i], Hi[i].bytes) == 0, "ge_frombytes_vartime failed");
+    ASSERT_OR_LOG_THROW(ge_frombytes_vartime(&Hi_p3[i], Hi[i].bytes) == 0, "ge_frombytes_vartime failed");
     Gi[i] = get_exponent(rct::H, i * 2 + 1);
-    CHECK_AND_ASSERT_THROW_MES(ge_frombytes_vartime(&Gi_p3[i], Gi[i].bytes) == 0, "ge_frombytes_vartime failed");
+    ASSERT_OR_LOG_THROW(ge_frombytes_vartime(&Gi_p3[i], Gi[i].bytes) == 0, "ge_frombytes_vartime failed");
 
     data.push_back({rct::zero(), Gi_p3[i]});
     data.push_back({rct::zero(), Hi_p3[i]});
@@ -125,8 +125,8 @@ void init_exponents()
 /* Given two scalar arrays, construct a vector commitment */
 rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b)
 {
-  CHECK_AND_ASSERT_THROW_MES(a.size() == b.size(), "Incompatible sizes of a and b");
-  CHECK_AND_ASSERT_THROW_MES(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
+  ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
+  ASSERT_OR_LOG_THROW(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
 
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(a.size()*2);
@@ -141,13 +141,13 @@ rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b)
 /* Compute a custom vector-scalar commitment */
 rct::key cross_vector_exponent8(size_t size, const std::vector<ge_p3> &A, size_t Ao, const std::vector<ge_p3> &B, size_t Bo, const rct::keyV &a, size_t ao, const rct::keyV &b, size_t bo, const rct::keyV *scale, const ge_p3 *extra_point, const rct::key *extra_scalar)
 {
-  CHECK_AND_ASSERT_THROW_MES(size + Ao <= A.size(), "Incompatible size for A");
-  CHECK_AND_ASSERT_THROW_MES(size + Bo <= B.size(), "Incompatible size for B");
-  CHECK_AND_ASSERT_THROW_MES(size + ao <= a.size(), "Incompatible size for a");
-  CHECK_AND_ASSERT_THROW_MES(size + bo <= b.size(), "Incompatible size for b");
-  CHECK_AND_ASSERT_THROW_MES(size <= maxN*maxM, "size is too large");
-  CHECK_AND_ASSERT_THROW_MES(!scale || size == scale->size() / 2, "Incompatible size for scale");
-  CHECK_AND_ASSERT_THROW_MES(!!extra_point == !!extra_scalar, "only one of extra point/scalar present");
+  ASSERT_OR_LOG_THROW(size + Ao <= A.size(), "Incompatible size for A");
+  ASSERT_OR_LOG_THROW(size + Bo <= B.size(), "Incompatible size for B");
+  ASSERT_OR_LOG_THROW(size + ao <= a.size(), "Incompatible size for a");
+  ASSERT_OR_LOG_THROW(size + bo <= b.size(), "Incompatible size for b");
+  ASSERT_OR_LOG_THROW(size <= maxN*maxM, "size is too large");
+  ASSERT_OR_LOG_THROW(!scale || size == scale->size() / 2, "Incompatible size for scale");
+  ASSERT_OR_LOG_THROW(!!extra_point == !!extra_scalar, "only one of extra point/scalar present");
 
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.resize(size*2 + (!!extra_point));
@@ -222,7 +222,7 @@ rct::key vector_power_sum(rct::key x, size_t n)
 /* Given two scalar arrays, construct the inner product */
 rct::key inner_product(const epee::span<const rct::key> &a, const epee::span<const rct::key> &b)
 {
-  CHECK_AND_ASSERT_THROW_MES(a.size() == b.size(), "Incompatible sizes of a and b");
+  ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::key res = rct::zero();
   for (size_t i = 0; i < a.size(); ++i)
   {
@@ -239,7 +239,7 @@ rct::key inner_product(const rct::keyV &a, const rct::keyV &b)
 /* Given two scalar arrays, construct the Hadamard product */
 rct::keyV hadamard(const rct::keyV &a, const rct::keyV &b)
 {
-  CHECK_AND_ASSERT_THROW_MES(a.size() == b.size(), "Incompatible sizes of a and b");
+  ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
@@ -251,7 +251,7 @@ rct::keyV hadamard(const rct::keyV &a, const rct::keyV &b)
 /* folds a curvepoint array using a two way scaled Hadamard product */
 void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key &a, const rct::key &b)
 {
-  CHECK_AND_ASSERT_THROW_MES((v.size() & 1) == 0, "Vector size should be even");
+  ASSERT_OR_LOG_THROW((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
   for (size_t n = 0; n < sz; ++n)
   {
@@ -269,7 +269,7 @@ void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key
 /* Add two vectors */
 rct::keyV vector_add(const rct::keyV &a, const rct::keyV &b)
 {
-  CHECK_AND_ASSERT_THROW_MES(a.size() == b.size(), "Incompatible sizes of a and b");
+  ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
@@ -410,9 +410,9 @@ rct::keyV invert(rct::keyV x)
 /* Compute the slice of a vector */
 epee::span<const rct::key> slice(const rct::keyV &a, size_t start, size_t stop)
 {
-  CHECK_AND_ASSERT_THROW_MES(start < a.size(), "Invalid start index");
-  CHECK_AND_ASSERT_THROW_MES(stop <= a.size(), "Invalid stop index");
-  CHECK_AND_ASSERT_THROW_MES(start < stop, "Invalid start/stop indices");
+  ASSERT_OR_LOG_THROW(start < a.size(), "Invalid start index");
+  ASSERT_OR_LOG_THROW(stop <= a.size(), "Invalid stop index");
+  ASSERT_OR_LOG_THROW(start < stop, "Invalid start/stop indices");
   return epee::span<const rct::key>(&a[start], stop - start);
 }
 
@@ -463,12 +463,12 @@ Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma)
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
 Bulletproof bulletproof_MAKE(const std::span<const rct::key> sv, const rct::keyV gamma)
 {
-  CHECK_AND_ASSERT_THROW_MES(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
-  CHECK_AND_ASSERT_THROW_MES(!sv.empty(), "sv is empty");
+  ASSERT_OR_LOG_THROW(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
+  ASSERT_OR_LOG_THROW(!sv.empty(), "sv is empty");
   for (const rct::key &sve: sv)
-    CHECK_AND_ASSERT_THROW_MES(is_reduced(sve), "Invalid sv input");
+    ASSERT_OR_LOG_THROW(is_reduced(sve), "Invalid sv input");
   for (const rct::key &g: gamma)
-    CHECK_AND_ASSERT_THROW_MES(is_reduced(g), "Invalid gamma input");
+    ASSERT_OR_LOG_THROW(is_reduced(g), "Invalid gamma input");
 
   init_exponents();
 
@@ -476,7 +476,7 @@ Bulletproof bulletproof_MAKE(const std::span<const rct::key> sv, const rct::keyV
   constexpr size_t N = 1<<logN;
   size_t M, logM;
   for (logM = 0; (M = 1<<logM) <= maxM && M < sv.size(); ++logM);
-  CHECK_AND_ASSERT_THROW_MES(M <= maxM, "sv/gamma are too large");
+  ASSERT_OR_LOG_THROW(M <= maxM, "sv/gamma are too large");
   const size_t logMN = logM + logN;
   const size_t MN = M * N;
 
@@ -556,8 +556,8 @@ try_again:
   {
       for (size_t i = 0; i < N; ++i)
       {
-          CHECK_AND_ASSERT_THROW_MES(j+2 < zpow.size(), "invalid zpow index");
-          CHECK_AND_ASSERT_THROW_MES(i < twoN.size(), "invalid twoN index");
+          ASSERT_OR_LOG_THROW(j+2 < zpow.size(), "invalid zpow index");
+          ASSERT_OR_LOG_THROW(i < twoN.size(), "invalid twoN index");
           sc_mul(zero_twos[j*N+i].bytes,zpow[j+2].bytes,twoN[i].bytes);
       }
   }
@@ -605,7 +605,7 @@ try_again:
   sc_muladd(taux.bytes, tau2.bytes, xsq.bytes, taux.bytes);
   for (size_t j = 1; j <= sv.size(); ++j)
   {
-    CHECK_AND_ASSERT_THROW_MES(j+1 < zpow.size(), "invalid zpow index");
+    ASSERT_OR_LOG_THROW(j+1 < zpow.size(), "invalid zpow index");
     sc_muladd(taux.bytes, zpow[j+1].bytes, gamma[j-1].bytes, taux.bytes);
   }
   rct::key mu;
@@ -696,7 +696,7 @@ try_again:
 
 Bulletproof bulletproof_MAKE(const std::span<const uint64_t> v, const rct::keyV gamma)
 {
-  CHECK_AND_ASSERT_THROW_MES(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
+  ASSERT_OR_LOG_THROW(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
   // vG + gammaH
   rct::keyV sv(v.size());
@@ -746,15 +746,15 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   for (const Bulletproof& proof: proofs)
   {
     // check scalar range
-    CHECK_AND_ASSERT_MES(is_reduced(proof.taux), false, "Input scalar not in range");
+    ASSERT_OR_LOG_RETURN(is_reduced(proof.taux), false, "Input scalar not in range");
 
-    CHECK_AND_ASSERT_MES(is_reduced(proof.a), false, "Input scalar not in range");
-    CHECK_AND_ASSERT_MES(is_reduced(proof.b), false, "Input scalar not in range");
-    CHECK_AND_ASSERT_MES(is_reduced(proof.t), false, "Input scalar not in range");
+    ASSERT_OR_LOG_RETURN(is_reduced(proof.a), false, "Input scalar not in range");
+    ASSERT_OR_LOG_RETURN(is_reduced(proof.b), false, "Input scalar not in range");
+    ASSERT_OR_LOG_RETURN(is_reduced(proof.t), false, "Input scalar not in range");
 
-    CHECK_AND_ASSERT_MES(proof.V.size() >= 1, false, "V does not have at least one element");
-    CHECK_AND_ASSERT_MES(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
-    CHECK_AND_ASSERT_MES(proof.L.size() > 0, false, "Empty proof");
+    ASSERT_OR_LOG_RETURN(proof.V.size() >= 1, false, "V does not have at least one element");
+    ASSERT_OR_LOG_RETURN(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
+    ASSERT_OR_LOG_RETURN(proof.L.size() > 0, false, "Empty proof");
 
     max_length = std::max(max_length, proof.L.size());
     nV += proof.V.size();
@@ -764,28 +764,28 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     proof_data_t &pd = proof_data.back();
     rct::key hash_cache = rct::hash_to_scalar(proof.V);
     pd.y = hash_cache_mash(hash_cache, proof.A, proof.S);
-    CHECK_AND_ASSERT_MES(!(pd.y == rct::zero()), false, "y == 0");
+    ASSERT_OR_LOG_RETURN(!(pd.y == rct::zero()), false, "y == 0");
     pd.z = hash_cache = rct::hash_to_scalar(pd.y);
-    CHECK_AND_ASSERT_MES(!(pd.z == rct::zero()), false, "z == 0");
+    ASSERT_OR_LOG_RETURN(!(pd.z == rct::zero()), false, "z == 0");
     pd.x = hash_cache_mash(hash_cache, pd.z, proof.T1, proof.T2);
-    CHECK_AND_ASSERT_MES(!(pd.x == rct::zero()), false, "x == 0");
+    ASSERT_OR_LOG_RETURN(!(pd.x == rct::zero()), false, "x == 0");
     pd.x_ip = hash_cache_mash(hash_cache, pd.x, proof.taux, proof.mu, proof.t);
-    CHECK_AND_ASSERT_MES(!(pd.x_ip == rct::zero()), false, "x_ip == 0");
+    ASSERT_OR_LOG_RETURN(!(pd.x_ip == rct::zero()), false, "x_ip == 0");
 
     size_t M;
     for (pd.logM = 0; (M = 1<<pd.logM) <= maxM && M < proof.V.size(); ++pd.logM);
-    CHECK_AND_ASSERT_MES(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
+    ASSERT_OR_LOG_RETURN(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
     max_logM = std::max(pd.logM, max_logM);
 
     const size_t rounds = pd.logM+logN;
-    CHECK_AND_ASSERT_MES(rounds > 0, false, "Zero rounds");
+    ASSERT_OR_LOG_RETURN(rounds > 0, false, "Zero rounds");
 
     // The inner product challenges are computed per round
     pd.w.resize(rounds);
     for (size_t i = 0; i < rounds; ++i)
     {
       pd.w[i] = hash_cache_mash(hash_cache, proof.L[i], proof.R[i]);
-      CHECK_AND_ASSERT_MES(!(pd.w[i] == rct::zero()), false, "w[i] == 0");
+      ASSERT_OR_LOG_RETURN(!(pd.w[i] == rct::zero()), false, "w[i] == 0");
     }
 
     pd.inv_offset = inv_offset;
@@ -794,7 +794,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     to_invert.push_back(pd.y);
     inv_offset += rounds + 1;
   }
-  CHECK_AND_ASSERT_MES(max_length < 32, false, "At least one proof is too large");
+  ASSERT_OR_LOG_RETURN(max_length < 32, false, "At least one proof is too large");
   size_t maxMN = 1u << max_length;
 
   rct::key tmp;
@@ -817,7 +817,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   {
     const proof_data_t &pd = proof_data[proof_data_index++];
 
-    CHECK_AND_ASSERT_MES(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
+    ASSERT_OR_LOG_RETURN(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
     const size_t M = 1 << pd.logM;
     const size_t MN = M*N;
     const rct::key weight_y = rct::skGen();
@@ -845,7 +845,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     sc_mulsub(k.bytes, zpow[2].bytes, ip1y.bytes, rct::zero().bytes);
     for (size_t j = 1; j <= M; ++j)
     {
-      CHECK_AND_ASSERT_MES(j+2 < zpow.size(), false, "invalid zpow index");
+      ASSERT_OR_LOG_RETURN(j+2 < zpow.size(), false, "invalid zpow index");
       sc_mulsub(k.bytes, zpow[j+2].bytes, ip12.bytes, k.bytes);
     }
 
@@ -870,7 +870,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     // Compute the number of rounds for the inner product
     const size_t rounds = pd.logM+logN;
-    CHECK_AND_ASSERT_MES(rounds > 0, false, "Zero rounds");
+    ASSERT_OR_LOG_RETURN(rounds > 0, false, "Zero rounds");
 
     // Compute the curvepoints from G[i] and H[i]
     rct::key yinvpow = rct::identity();
@@ -907,8 +907,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       sc_mul(h_scalar.bytes, h_scalar.bytes, w_cache[(~i) & (MN-1)].bytes);
 
       sc_add(g_scalar.bytes, g_scalar.bytes, pd.z.bytes);
-      CHECK_AND_ASSERT_MES(2+i/N < zpow.size(), false, "invalid zpow index");
-      CHECK_AND_ASSERT_MES(i%N < twoN.size(), false, "invalid twoN index");
+      ASSERT_OR_LOG_RETURN(2+i/N < zpow.size(), false, "invalid zpow index");
+      ASSERT_OR_LOG_RETURN(i%N < twoN.size(), false, "invalid twoN index");
       sc_mul(tmp.bytes, zpow[2+i/N].bytes, twoN[i%N].bytes);
       if (i == 0)
       {

@@ -317,7 +317,7 @@ public:
     {
       epee::misc_utils::sleep_no_w(100);
     }
-    CHECK_AND_ASSERT_MES_NO_RET(0 == m_wait_count, "Failed to wait for operation completion. m_wait_count = " << m_wait_count);
+    ASSERT_OR_LOG(0 == m_wait_count, "Failed to wait for operation completion. m_wait_count = " << m_wait_count);
 
     MTRACE(m_connection_context << "~async_protocol_handler()");
 
@@ -401,8 +401,8 @@ public:
 
     // these should never fail, but do runtime check for safety
     const uint64_t max_packet_size = m_max_packet_size;
-    CHECK_AND_ASSERT_MES(max_packet_size >= m_cache_in_buffer.size(), false, "Bad m_cache_in_buffer.size()");
-    CHECK_AND_ASSERT_MES(max_packet_size - m_cache_in_buffer.size() >= m_fragment_buffer.size(), false, "Bad m_cache_in_buffer.size() + m_fragment_buffer.size()");
+    ASSERT_OR_LOG_RETURN(max_packet_size >= m_cache_in_buffer.size(), false, "Bad m_cache_in_buffer.size()");
+    ASSERT_OR_LOG_RETURN(max_packet_size - m_cache_in_buffer.size() >= m_fragment_buffer.size(), false, "Bad m_cache_in_buffer.size() + m_fragment_buffer.size()");
 
     // flipped to subtraction; prevent overflow since m_max_packet_size is variable and public
     if(cb > max_packet_size - m_cache_in_buffer.size() - m_fragment_buffer.size())

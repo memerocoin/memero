@@ -393,7 +393,7 @@ namespace net_utils
 	bool simple_http_connection_handler<t_connection_context>::handle_request_and_send_response(const http::http_request_info& query_info)
 	{
 		http_response_info response{};
-		//CHECK_AND_ASSERT_MES(res, res, "handle_request(query_info, response) returned false" );
+		//ASSERT_OR_LOG_RETURN(res, res, "handle_request(query_info, response) returned false" );
 		bool res = true;
 
 		if (query_info.m_http_method != http::http_method_options)

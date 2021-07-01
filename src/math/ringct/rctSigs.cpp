@@ -45,7 +45,7 @@ using namespace std;
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
-#define CHECK_AND_ASSERT_MES_L1(expr, ret, message) {if(!(expr)) {MCERROR("verify", message); return ret;}}
+#define ASSERT_OR_LOG_RETURN_L1(expr, ret, message) {if(!(expr)) {MCERROR("verify", message); return ret;}}
 
 namespace rct {
     Bulletproof proveRangeBulletproof
@@ -56,12 +56,12 @@ namespace rct {
      , const epee::span<const key> sk)
     {
         hw::device& hwdev = hw::get_device("default");
-        CHECK_AND_ASSERT_THROW_MES(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
+        ASSERT_OR_LOG_THROW(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
             masks[i] = hwdev.genCommitmentMask(sk[i]);
         Bulletproof proof = bulletproof_MAKE(amounts, masks);
-        CHECK_AND_ASSERT_THROW_MES(proof.V.size() == amounts.size(), "V does not have the expected size");
+        ASSERT_OR_LOG_THROW(proof.V.size() == amounts.size(), "V does not have the expected size");
         C = proof.V;
         return proof;
     }
@@ -101,9 +101,9 @@ namespace rct {
         hw::device& hwdev = hw::get_device("default");
         clsag sig;
         size_t n = P.size(); // ring size
-        CHECK_AND_ASSERT_THROW_MES(n == C.size(), "Signing and commitment key vector sizes must match!");
-        CHECK_AND_ASSERT_THROW_MES(n == C_nonzero.size(), "Signing and commitment key vector sizes must match!");
-        CHECK_AND_ASSERT_THROW_MES(l < n, "Signing index out of range!");
+        ASSERT_OR_LOG_THROW(n == C.size(), "Signing and commitment key vector sizes must match!");
+        ASSERT_OR_LOG_THROW(n == C_nonzero.size(), "Signing and commitment key vector sizes must match!");
+        ASSERT_OR_LOG_THROW(l < n, "Signing index out of range!");
 
         // Key images
         ge_p3 H_p3;
@@ -235,11 +235,11 @@ namespace rct {
 
       std::stringstream ss;
       binary_archive<true> ba(ss);
-      CHECK_AND_ASSERT_THROW_MES(!rv.mixRing.empty(), "Empty mixRing");
+      ASSERT_OR_LOG_THROW(!rv.mixRing.empty(), "Empty mixRing");
       const size_t inputs = rv.mixRing.size();
       const size_t outputs = rv.ecdhInfo.size();
       key prehash;
-      CHECK_AND_ASSERT_THROW_MES(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
+      ASSERT_OR_LOG_THROW(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
           "Failed to serialize rctSigBase");
       cryptonote::get_blob_hash(ss.str(), h);
       hashes.push_back(hash2rct(h));
@@ -285,7 +285,7 @@ namespace rct {
         hw::device& hwdev = hw::get_device("default");
         size_t rows = 1;
         size_t cols = pubs.size();
-        CHECK_AND_ASSERT_THROW_MES(cols >= 1, "Empty pubs");
+        ASSERT_OR_LOG_THROW(cols >= 1, "Empty pubs");
         keyV tmp(rows + 1);
         keyV sk(rows + 1);
         size_t i;
@@ -318,23 +318,23 @@ namespace rct {
             const size_t n = pubs.size();
 
             // Check data
-            CHECK_AND_ASSERT_MES(n >= 1, false, "Empty pubs");
-            CHECK_AND_ASSERT_MES(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
+            ASSERT_OR_LOG_RETURN(n >= 1, false, "Empty pubs");
+            ASSERT_OR_LOG_RETURN(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
             for (const auto &s: sig.s)
-              CHECK_AND_ASSERT_MES(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
-            CHECK_AND_ASSERT_MES(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
-            CHECK_AND_ASSERT_MES(!(sig.I == rct::identity()), false, "Bad key image!");
+              ASSERT_OR_LOG_RETURN(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
+            ASSERT_OR_LOG_RETURN(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
+            ASSERT_OR_LOG_RETURN(!(sig.I == rct::identity()), false, "Bad key image!");
 
             // Cache commitment offset for efficient subtraction later
             ge_p3 C_offset_p3;
-            CHECK_AND_ASSERT_MES(ge_frombytes_vartime(&C_offset_p3, C_offset.bytes) == 0, false, "point conv failed");
+            ASSERT_OR_LOG_RETURN(ge_frombytes_vartime(&C_offset_p3, C_offset.bytes) == 0, false, "point conv failed");
             ge_cached C_offset_cached;
             ge_p3_to_cached(&C_offset_cached, &C_offset_p3);
 
             // Prepare key images
             key c = copy(sig.c1);
             key D_8 = scalarmult8(sig.D);
-            CHECK_AND_ASSERT_MES(!(D_8 == rct::identity()), false, "Bad auxiliary key image!");
+            ASSERT_OR_LOG_RETURN(!(D_8 == rct::identity()), false, "Bad auxiliary key image!");
             geDsmp I_precomp;
             geDsmp D_precomp;
             precomp(I_precomp.k,sig.I);
@@ -398,7 +398,7 @@ namespace rct {
                 // Precompute points for L/R
                 precomp(P_precomp.k,pubs[i].dest);
 
-                CHECK_AND_ASSERT_MES(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
+                ASSERT_OR_LOG_RETURN(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
                 ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
                 ge_p1p1_to_p3(&temp_p3,&temp_p1);
                 ge_dsm_precomp(C_precomp.k,&temp_p3);
@@ -414,7 +414,7 @@ namespace rct {
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;
                 c_new = hash_to_scalar(c_to_hash);
-                CHECK_AND_ASSERT_MES(!(c_new == rct::zero()), false, "Bad signature hash");
+                ASSERT_OR_LOG_RETURN(!(c_new == rct::zero()), false, "Bad signature hash");
                 copy(c,c_new);
 
                 i = i + 1;
@@ -471,14 +471,14 @@ namespace rct {
      , ctkeyV& outSk
      ) {
         hw::device& hwdev = hw::get_device("default");
-        CHECK_AND_ASSERT_THROW_MES(inamounts.size() > 0, "Empty inamounts");
-        CHECK_AND_ASSERT_THROW_MES(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
-        CHECK_AND_ASSERT_THROW_MES(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
-        CHECK_AND_ASSERT_THROW_MES(amount_keys.size() == destinations.size(), "Different number of amount_keys/destinations");
-        CHECK_AND_ASSERT_THROW_MES(index.size() == inSk.size(), "Different number of index/inSk");
-        CHECK_AND_ASSERT_THROW_MES(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
+        ASSERT_OR_LOG_THROW(inamounts.size() > 0, "Empty inamounts");
+        ASSERT_OR_LOG_THROW(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
+        ASSERT_OR_LOG_THROW(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
+        ASSERT_OR_LOG_THROW(amount_keys.size() == destinations.size(), "Different number of amount_keys/destinations");
+        ASSERT_OR_LOG_THROW(index.size() == inSk.size(), "Different number of index/inSk");
+        ASSERT_OR_LOG_THROW(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
         for (size_t n = 0; n < mixRing.size(); ++n) {
-          CHECK_AND_ASSERT_THROW_MES(index[n] < mixRing[n].size(), "Bad index into mixRing");
+          ASSERT_OR_LOG_THROW(index[n] < mixRing[n].size(), "Bad index into mixRing");
         }
 
         rctSig rv;
@@ -596,12 +596,12 @@ namespace rct {
 
         for (const rctSig& rv: rvv)
         {
-          CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG,
+          ASSERT_OR_LOG_RETURN(rv.type == RCTTypeCLSAG,
               false, "verRctSemanticsSimple called on non simple rctSig");
-          CHECK_AND_ASSERT_MES(rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs), false, "Mismatched sizes of outPk and bulletproofs");
-          CHECK_AND_ASSERT_MES(rv.p.pseudoOuts.size() == rv.p.CLSAGs.size(), false, "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs");
-          CHECK_AND_ASSERT_MES(rv.pseudoOuts.empty(), false, "rv.pseudoOuts is not empty");
-          CHECK_AND_ASSERT_MES(rv.outPk.size() == rv.ecdhInfo.size(), false, "Mismatched sizes of outPk and rv.ecdhInfo");
+          ASSERT_OR_LOG_RETURN(rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs), false, "Mismatched sizes of outPk and bulletproofs");
+          ASSERT_OR_LOG_RETURN(rv.p.pseudoOuts.size() == rv.p.CLSAGs.size(), false, "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs");
+          ASSERT_OR_LOG_RETURN(rv.pseudoOuts.empty(), false, "rv.pseudoOuts is not empty");
+          ASSERT_OR_LOG_RETURN(rv.outPk.size() == rv.ecdhInfo.size(), false, "Mismatched sizes of outPk and rv.ecdhInfo");
         }
 
         results.resize(max_non_bp_proofs);
@@ -669,10 +669,10 @@ namespace rct {
     bool verRctNonSemanticsSimple(const rctSig rv) {
       try
       {
-        CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG,
+        ASSERT_OR_LOG_RETURN(rv.type == RCTTypeCLSAG,
             false, "verRctNonSemanticsSimple called on non simple rctSig");
         // semantics check is early, and mixRing/MGs aren't resolved yet
-        CHECK_AND_ASSERT_MES(rv.p.pseudoOuts.size() == rv.mixRing.size(), false, "Mismatched sizes of rv.p.pseudoOuts and mixRing");
+        ASSERT_OR_LOG_RETURN(rv.p.pseudoOuts.size() == rv.mixRing.size(), false, "Mismatched sizes of rv.p.pseudoOuts and mixRing");
 
         const size_t threads = std::max(rv.outPk.size(), rv.mixRing.size());
 
@@ -718,9 +718,9 @@ namespace rct {
 
     amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, key& mask) {
         hw::device& hwdev = hw::get_device("default");
-        CHECK_AND_ASSERT_MES(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
-        CHECK_AND_ASSERT_THROW_MES(i < rv.ecdhInfo.size(), "Bad index");
-        CHECK_AND_ASSERT_THROW_MES(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
+        ASSERT_OR_LOG_RETURN(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
+        ASSERT_OR_LOG_THROW(i < rv.ecdhInfo.size(), "Bad index");
+        ASSERT_OR_LOG_THROW(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
 
         //mask amount and mask
         ecdhTuple ecdh_info = rv.ecdhInfo[i];
@@ -729,11 +729,11 @@ namespace rct {
         key amount = ecdh_info.amount;
         key C = rv.outPk[i].mask;
         key Ctmp;
-        CHECK_AND_ASSERT_THROW_MES(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
-        CHECK_AND_ASSERT_THROW_MES(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
+        ASSERT_OR_LOG_THROW(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
+        ASSERT_OR_LOG_THROW(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
         addKeys2(Ctmp, mask, amount);
         if (C != Ctmp) {
-            CHECK_AND_ASSERT_THROW_MES(false, "warning, amount decoded incorrectly, will be unable to spend");
+            ASSERT_OR_LOG_THROW(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
         return h2d(amount);
     }

@@ -234,11 +234,11 @@ bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, c
   // easy case if we have the whole tx
   if (!entry.as_hex.empty())
   {
-    CHECK_AND_ASSERT_MES(epee::string_tools::parse_hexstr_to_binbuff(entry.as_hex, bd), false, "Failed to parse tx data");
-    CHECK_AND_ASSERT_MES(cryptonote::parse_and_validate_tx_from_blob(bd, tx), false, "Invalid tx data");
+    ASSERT_OR_LOG_RETURN(epee::string_tools::parse_hexstr_to_binbuff(entry.as_hex, bd), false, "Failed to parse tx data");
+    ASSERT_OR_LOG_RETURN(cryptonote::parse_and_validate_tx_from_blob(bd, tx), false, "Invalid tx data");
     tx_hash = cryptonote::get_transaction_hash(tx);
     // if the hash was given, check it matches
-    CHECK_AND_ASSERT_MES(entry.tx_hash.empty() || epee::string_tools::pod_to_hex(tx_hash) == entry.tx_hash, false,
+    ASSERT_OR_LOG_RETURN(entry.tx_hash.empty() || epee::string_tools::pod_to_hex(tx_hash) == entry.tx_hash, false,
         "Response claims a different hash than the data yields");
     return true;
   }
@@ -541,7 +541,7 @@ void wallet2::set_subaddress_lookahead(size_t major, size_t minor)
 //----------------------------------------------------------------------------------------------------
 void wallet2::set_spent(size_t idx, uint64_t height)
 {
-  CHECK_AND_ASSERT_THROW_MES(idx < m_transfers.size(), "Invalid index");
+  ASSERT_OR_LOG_THROW(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
   LOG_PRINT_L2("Setting SPENT at " << height << ": ki " << td.m_key_image << ", amount " << print_money(td.m_amount));
   td.m_spent = true;
@@ -550,7 +550,7 @@ void wallet2::set_spent(size_t idx, uint64_t height)
 //----------------------------------------------------------------------------------------------------
 void wallet2::set_unspent(size_t idx)
 {
-  CHECK_AND_ASSERT_THROW_MES(idx < m_transfers.size(), "Invalid index");
+  ASSERT_OR_LOG_THROW(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
   LOG_PRINT_L2("Setting UNSPENT: ki " << td.m_key_image << ", amount " << print_money(td.m_amount));
   td.m_spent = false;
@@ -571,7 +571,7 @@ bool wallet2::is_spent(const transfer_details &td, bool strict) const
 //----------------------------------------------------------------------------------------------------
 bool wallet2::is_spent(size_t idx, bool strict) const
 {
-  CHECK_AND_ASSERT_THROW_MES(idx < m_transfers.size(), "Invalid index");
+  ASSERT_OR_LOG_THROW(idx < m_transfers.size(), "Invalid index");
   const transfer_details &td = m_transfers[idx];
   return is_spent(td, strict);
 }
@@ -584,7 +584,7 @@ size_t wallet2::get_transfer_details(const crypto::key_image &ki) const
     if (td.m_key_image_known && td.m_key_image == ki)
       return idx;
   }
-  CHECK_AND_ASSERT_THROW_MES(false, "Key image not found");
+  ASSERT_OR_LOG_THROW(false, "Key image not found");
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::key_derivation &derivation, const std::vector<crypto::key_derivation> &additional_derivations, size_t i, tx_scan_info_t &tx_scan_info) const
@@ -2342,14 +2342,14 @@ void wallet2::clear_soft()
 bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable_string& password)
 {
   std::optional<wallet::logic::type::wallet::keys_file_data> keys_file_data = get_keys_file_data(password);
-  CHECK_AND_ASSERT_MES(keys_file_data != std::nullopt, false, "failed to generate wallet keys data");
+  ASSERT_OR_LOG_RETURN(keys_file_data != std::nullopt, false, "failed to generate wallet keys data");
 
   std::string tmp_file_name = keys_file_name + ".new";
   std::string buf;
   bool r = ::serialization::dump_binary(keys_file_data.value(), buf);
   r = r && wallet::logic::controller::wallet::save_to_file
     (tmp_file_name, buf);
-  CHECK_AND_ASSERT_MES(r, false, "failed to generate wallet keys file " << tmp_file_name);
+  ASSERT_OR_LOG_RETURN(r, false, "failed to generate wallet keys file " << tmp_file_name);
 
   std::error_code e = tools::replace_file(tmp_file_name, keys_file_name);
 
@@ -2373,7 +2373,7 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   account.encrypt_keys(key);
 
   bool r = epee::serialization::store_t_to_binary(account, account_data);
-  CHECK_AND_ASSERT_MES(r, std::nullopt, "failed to serialize wallet keys");
+  ASSERT_OR_LOG_RETURN(r, std::nullopt, "failed to serialize wallet keys");
   std::optional<wallet::logic::type::wallet::keys_file_data> keys_file_data = (wallet::logic::type::wallet::keys_file_data) {};
 
   // Create a JSON object with "key_data" and "seed_language" as keys.
@@ -3554,8 +3554,8 @@ namespace
   template<typename T>
   T pop_index(std::vector<T>& vec, size_t idx)
   {
-    CHECK_AND_ASSERT_MES(!vec.empty(), T(), "Vector must be non-empty");
-    CHECK_AND_ASSERT_MES(idx < vec.size(), T(), "idx out of bounds");
+    ASSERT_OR_LOG_RETURN(!vec.empty(), T(), "Vector must be non-empty");
+    ASSERT_OR_LOG_RETURN(idx < vec.size(), T(), "idx out of bounds");
 
     T res = vec[idx];
     if (idx + 1 != vec.size())
@@ -3570,7 +3570,7 @@ namespace
   template<typename T>
   T pop_random_value(std::vector<T>& vec)
   {
-    CHECK_AND_ASSERT_MES(!vec.empty(), T(), "Vector must be non-empty");
+    ASSERT_OR_LOG_RETURN(!vec.empty(), T(), "Vector must be non-empty");
 
     size_t idx = crypto::rand_idx(vec.size());
     return pop_index (vec, idx);
@@ -3579,7 +3579,7 @@ namespace
   template<typename T>
   T pop_back(std::vector<T>& vec)
   {
-    CHECK_AND_ASSERT_MES(!vec.empty(), T(), "Vector must be non-empty");
+    ASSERT_OR_LOG_RETURN(!vec.empty(), T(), "Vector must be non-empty");
 
     T res = vec.back();
     vec.pop_back();
@@ -3879,7 +3879,7 @@ bool wallet2::tx_add_fake_output(std::vector<std::vector<tools::wallet2::get_out
   if (global_index == real_index) // don't re-add real one
     return false;
   auto item = std::make_tuple(global_index, output_public_key, mask);
-  CHECK_AND_ASSERT_MES(!outs.empty(), false, "internal error: outs is empty");
+  ASSERT_OR_LOG_RETURN(!outs.empty(), false, "internal error: outs is empty");
   if (std::find(outs.back().begin(), outs.back().end(), item) != outs.back().end()) // don't add duplicates
     return false;
   // check the keys are valid

@@ -36,26 +36,26 @@ namespace epee
 {
   namespace serialization
   {
-#define ASSERT_AND_THROW_WRONG_CONVERSION() ASSERT_MES_AND_THROW("WRONG DATA CONVERSION: from type=" << typeid(from).name() << " to type " << typeid(to).name())
+#define ASSERT_AND_THROW_WRONG_CONVERSION() LOG_AND_THROW("WRONG DATA CONVERSION: from type=" << typeid(from).name() << " to type " << typeid(to).name())
 
     template<typename from_type, typename to_type>
     void convert_int_to_uint(const from_type& from, to_type& to)
     {
-      CHECK_AND_ASSERT_THROW_MES(from >=0, "unexpected int value with signed storage value less than 0, and unsigned receiver value");
-      CHECK_AND_ASSERT_THROW_MES(from <= std::numeric_limits<to_type>::max(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
+      ASSERT_OR_LOG_THROW(from >=0, "unexpected int value with signed storage value less than 0, and unsigned receiver value");
+      ASSERT_OR_LOG_THROW(from <= std::numeric_limits<to_type>::max(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
       to = static_cast<to_type>(from);
     }
     template<typename from_type, typename to_type>
     void convert_int_to_int(const from_type& from, to_type& to)
     {
-      CHECK_AND_ASSERT_THROW_MES(from >= std::numeric_limits<to_type>::min(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with lowest possible value = " << std::numeric_limits<to_type>::min());
-      CHECK_AND_ASSERT_THROW_MES(from <= std::numeric_limits<to_type>::max(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
+      ASSERT_OR_LOG_THROW(from >= std::numeric_limits<to_type>::min(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with lowest possible value = " << std::numeric_limits<to_type>::min());
+      ASSERT_OR_LOG_THROW(from <= std::numeric_limits<to_type>::max(), "int value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
       to = static_cast<to_type>(from);
     }
     template<typename from_type, typename to_type>
     void convert_uint_to_any_int(const from_type& from, to_type& to)
     {
-        CHECK_AND_ASSERT_THROW_MES(from <= std::numeric_limits<to_type>::max(), "uint value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
+        ASSERT_OR_LOG_THROW(from <= std::numeric_limits<to_type>::max(), "uint value overhead: try to set value " << from << " to type " << typeid(to_type).name() << " with max possible value = " << std::numeric_limits<to_type>::max());
       to = static_cast<to_type>(from);
     }
 

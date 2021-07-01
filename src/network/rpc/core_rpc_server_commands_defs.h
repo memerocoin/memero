@@ -63,7 +63,7 @@ namespace
     {
       T t;
       read = tools::read_varint(std::string::const_iterator(i), s.end(), t);
-      CHECK_AND_ASSERT_THROW_MES(read > 0 && read <= 256, "Error decompressing data");
+      ASSERT_OR_LOG_THROW(read > 0 && read <= 256, "Error decompressing data");
       v.push_back(t);
     }
     return v;

@@ -195,7 +195,7 @@ namespace cryptonote
     std::stringstream ss;
     json_archive<true> ar(ss, true);
     bool r = ::serialization::serialize(ar, obj);
-    CHECK_AND_ASSERT_MES(r, "", "obj_to_json_str failed: serialization::serialize returned false");
+    ASSERT_OR_LOG_RETURN(r, "", "obj_to_json_str failed: serialization::serialize returned false");
     return ss.str();
   }
   //---------------------------------------------------------------
@@ -211,7 +211,7 @@ namespace cryptonote
   crypto::secret_key encrypt_key(crypto::secret_key key, const epee::wipeable_string &passphrase);
   crypto::secret_key decrypt_key(crypto::secret_key key, const epee::wipeable_string &passphrase);
 #define CHECKED_GET_SPECIFIC_VARIANT(variant_var, specific_type, variable_name, fail_return_val) \
-  CHECK_AND_ASSERT_MES(variant_var.type() == typeid(specific_type), fail_return_val, "wrong variant type: " << variant_var.type().name() << ", expected " << typeid(specific_type).name()); \
+  ASSERT_OR_LOG_RETURN(variant_var.type() == typeid(specific_type), fail_return_val, "wrong variant type: " << variant_var.type().name() << ", expected " << typeid(specific_type).name()); \
   specific_type& variable_name = boost::get<specific_type>(variant_var);
 
 

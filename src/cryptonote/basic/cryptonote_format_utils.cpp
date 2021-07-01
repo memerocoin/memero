@@ -55,7 +55,7 @@ static std::atomic<uint64_t> tx_hashes_cached_count(0);
 static std::atomic<uint64_t> block_hashes_calculated_count(0);
 static std::atomic<uint64_t> block_hashes_cached_count(0);
 
-#define CHECK_AND_ASSERT_THROW_MES_L1(expr, message) {if(!(expr)) {MWARNING(message); throw std::runtime_error(message);}}
+#define ASSERT_OR_LOG_THROW_L1(expr, message) {if(!(expr)) {MWARNING(message); throw std::runtime_error(message);}}
 
 namespace cryptonote
 {
@@ -69,8 +69,8 @@ namespace cryptonote
   // a copy of rct::addKeys, since we can't link to libringct to avoid circular dependencies
   static void add_public_key(crypto::public_key &AB, const crypto::public_key &A, const crypto::public_key &B) {
       ge_p3 B2, A2;
-      CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&B2, &B) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
-      CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&A2, &A) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
+      ASSERT_OR_LOG_THROW_L1(ge_frombytes_vartime(&B2, &B) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
+      ASSERT_OR_LOG_THROW_L1(ge_frombytes_vartime(&A2, &A) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
       ge_cached tmp2;
       ge_p3_to_cached(&tmp2, &B2);
       ge_p1p1 tmp3;
@@ -160,7 +160,7 @@ namespace cryptonote
             return false;
           }
           const size_t n_amounts = tx.vout.size();
-          CHECK_AND_ASSERT_MES(n_amounts == rv.outPk.size(), false, "Internal error filling out V");
+          ASSERT_OR_LOG_RETURN(n_amounts == rv.outPk.size(), false, "Internal error filling out V");
           rv.p.bulletproofs[0].V.resize(n_amounts);
           for (size_t i = 0; i < n_amounts; ++i)
             rv.p.bulletproofs[0].V[i] = rct::scalarmultKey(rv.outPk[i].mask, rct::INV_EIGHT);
@@ -176,8 +176,8 @@ namespace cryptonote
     ss << tx_blob;
     binary_archive<false> ba(ss);
     bool r = ::serialization::serialize(ba, tx);
-    CHECK_AND_ASSERT_MES(r, false, "Failed to parse transaction from blob");
-    CHECK_AND_ASSERT_MES(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
+    ASSERT_OR_LOG_RETURN(r, false, "Failed to parse transaction from blob");
+    ASSERT_OR_LOG_RETURN(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
     tx.invalidate_hashes();
     tx.set_blob_size(tx_blob.size());
     return true;
@@ -189,8 +189,8 @@ namespace cryptonote
     ss << tx_blob;
     binary_archive<false> ba(ss);
     bool r = tx.serialize_base(ba);
-    CHECK_AND_ASSERT_MES(r, false, "Failed to parse transaction from blob");
-    CHECK_AND_ASSERT_MES(expand_transaction_1(tx, true), false, "Failed to expand transaction data");
+    ASSERT_OR_LOG_RETURN(r, false, "Failed to parse transaction from blob");
+    ASSERT_OR_LOG_RETURN(expand_transaction_1(tx, true), false, "Failed to expand transaction data");
     tx.invalidate_hashes();
     return true;
   }
@@ -201,7 +201,7 @@ namespace cryptonote
     ss << tx_blob;
     binary_archive<false> ba(ss);
     bool r = ::serialization::serialize_noeof(ba, tx);
-    CHECK_AND_ASSERT_MES(r, false, "Failed to parse transaction prefix from blob");
+    ASSERT_OR_LOG_RETURN(r, false, "Failed to parse transaction prefix from blob");
     return true;
   }
   //---------------------------------------------------------------
@@ -211,8 +211,8 @@ namespace cryptonote
     ss << tx_blob;
     binary_archive<false> ba(ss);
     bool r = ::serialization::serialize(ba, tx);
-    CHECK_AND_ASSERT_MES(r, false, "Failed to parse transaction from blob");
-    CHECK_AND_ASSERT_MES(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
+    ASSERT_OR_LOG_RETURN(r, false, "Failed to parse transaction from blob");
+    ASSERT_OR_LOG_RETURN(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
     tx.invalidate_hashes();
     //TODO: validate tx
 
@@ -269,7 +269,7 @@ namespace cryptonote
     }
 
     std::optional<subaddress_receive_info> subaddr_recv_info = is_out_to_acc_precomp(subaddresses, out_key, recv_derivation, additional_recv_derivations, real_output_index,hwdev);
-    CHECK_AND_ASSERT_MES(subaddr_recv_info, false, "key image helper: given output pubkey doesn't seem to belong to this address");
+    ASSERT_OR_LOG_RETURN(subaddr_recv_info, false, "key image helper: given output pubkey doesn't seem to belong to this address");
 
     return generate_key_image_helper_precomp(ack, out_key, subaddr_recv_info->derivation, real_output_index, subaddr_recv_info->index, in_ephemeral, ki, hwdev);
   }
@@ -310,10 +310,10 @@ namespace cryptonote
 
       {
         // when not in multisig, we know the full spend secret key, so the output pubkey can be obtained by scalarmultBase
-        CHECK_AND_ASSERT_MES(hwdev.secret_key_to_public_key(in_ephemeral.sec, in_ephemeral.pub), false, "Failed to derive public key");
+        ASSERT_OR_LOG_RETURN(hwdev.secret_key_to_public_key(in_ephemeral.sec, in_ephemeral.pub), false, "Failed to derive public key");
       }
 
-      CHECK_AND_ASSERT_MES(in_ephemeral.pub == out_key,
+      ASSERT_OR_LOG_RETURN(in_ephemeral.pub == out_key,
            false, "key image helper precomp: given output pubkey doesn't match the derived one");
     }
 
@@ -399,13 +399,13 @@ namespace cryptonote
     uint64_t amount_out = 0;
     for(auto& in: tx.vin)
     {
-      CHECK_AND_ASSERT_MES(in.type() == typeid(txin_to_key), 0, "unexpected type id in transaction");
+      ASSERT_OR_LOG_RETURN(in.type() == typeid(txin_to_key), 0, "unexpected type id in transaction");
       amount_in += boost::get<txin_to_key>(in).amount;
     }
     for(auto& o: tx.vout)
       amount_out += o.amount;
 
-    CHECK_AND_ASSERT_MES(amount_in >= amount_out, false, "transaction spend (" <<amount_in << ") more than it has (" << amount_out << ")");
+    ASSERT_OR_LOG_RETURN(amount_in >= amount_out, false, "transaction spend (" <<amount_in << ") more than it has (" << amount_out << ")");
     fee = amount_in - amount_out;
     return true;
   }
@@ -434,14 +434,14 @@ namespace cryptonote
     {
       tx_extra_field field;
       bool r = ::do_serialize(ar, field);
-      CHECK_AND_NO_ASSERT_MES_L1(r, false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+      CHECK_OR_LOG_RETURN_LOGLEVEL_1(r, false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
       tx_extra_fields.push_back(field);
 
       std::ios_base::iostate state = iss.rdstate();
       eof = (EOF == iss.peek());
       iss.clear(state);
     }
-    CHECK_AND_NO_ASSERT_MES_L1(::serialization::check_stream_state(ar), false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+    CHECK_OR_LOG_RETURN_LOGLEVEL_1(::serialization::check_stream_state(ar), false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
 
     return true;
   }
@@ -453,9 +453,9 @@ namespace cryptonote
     while ((it = std::find_if(fields.begin(), fields.end(), [](const tx_extra_field &f) { return f.type() == typeid(T); })) != fields.end())
     {
       bool r = ::do_serialize(ar, tag);
-      CHECK_AND_NO_ASSERT_MES_L1(r, false, "failed to serialize tx extra field");
+      CHECK_OR_LOG_RETURN_LOGLEVEL_1(r, false, "failed to serialize tx extra field");
       r = ::do_serialize(ar, boost::get<T>(*it));
-      CHECK_AND_NO_ASSERT_MES_L1(r, false, "failed to serialize tx extra field");
+      CHECK_OR_LOG_RETURN_LOGLEVEL_1(r, false, "failed to serialize tx extra field");
       fields.erase(it);
     }
     return true;
@@ -592,7 +592,7 @@ namespace cryptonote
     std::ostringstream oss;
     binary_archive<true> ar(oss);
     bool r = ::do_serialize(ar, field);
-    CHECK_AND_NO_ASSERT_MES_L1(r, false, "failed to serialize tx extra additional tx pub keys");
+    CHECK_OR_LOG_RETURN_LOGLEVEL_1(r, false, "failed to serialize tx extra additional tx pub keys");
     // append
     std::string tx_extra_str = oss.str();
     size_t pos = tx_extra.size();
@@ -616,7 +616,7 @@ namespace cryptonote
     {
       tx_extra_field field;
       bool r = ::do_serialize(ar, field);
-      CHECK_AND_NO_ASSERT_MES_L1(r, false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+      CHECK_OR_LOG_RETURN_LOGLEVEL_1(r, false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
       if (field.type() != type)
         ::do_serialize(newar, field);
 
@@ -624,7 +624,7 @@ namespace cryptonote
       eof = (EOF == iss.peek());
       iss.clear(state);
     }
-    CHECK_AND_NO_ASSERT_MES_L1(::serialization::check_stream_state(ar), false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+    CHECK_OR_LOG_RETURN_LOGLEVEL_1(::serialization::check_stream_state(ar), false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
     tx_extra.clear();
     std::string s = oss.str();
     tx_extra.reserve(s.size());
@@ -645,7 +645,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   uint64_t get_block_height(const block& b)
   {
-    CHECK_AND_ASSERT_MES(b.miner_tx.vin.size() == 1, 0, "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1");
+    ASSERT_OR_LOG_RETURN(b.miner_tx.vin.size() == 1, 0, "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1");
     CHECKED_GET_SPECIFIC_VARIANT(b.miner_tx.vin[0], const txin_gen, coinbase_in, 0);
     return coinbase_in.height;
   }
@@ -654,7 +654,7 @@ namespace cryptonote
   {
     for(const auto& in: tx.vin)
     {
-      CHECK_AND_ASSERT_MES(in.type() == typeid(txin_to_key), false, "wrong variant type: "
+      ASSERT_OR_LOG_RETURN(in.type() == typeid(txin_to_key), false, "wrong variant type: "
         << in.type().name() << ", expected " << typeid(txin_to_key).name()
         << ", in transaction id=" << get_transaction_hash(tx));
 
@@ -666,13 +666,13 @@ namespace cryptonote
   {
     for(const tx_out& out: tx.vout)
     {
-      CHECK_AND_ASSERT_MES(out.target.type() == typeid(txout_to_key), false, "wrong variant type: "
+      ASSERT_OR_LOG_RETURN(out.target.type() == typeid(txout_to_key), false, "wrong variant type: "
         << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
         << ", in transaction id=" << get_transaction_hash(tx));
 
       if (tx.version == 1)
       {
-        CHECK_AND_NO_ASSERT_MES(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
+        CHECK_OR_LOG_RETURN(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
       }
 
       if(!check_key(boost::get<txout_to_key>(out.target).key))
@@ -722,7 +722,7 @@ namespace cryptonote
   std::string short_hash_str(const crypto::hash& h)
   {
     std::string res = epee::string_tools::pod_to_hex(h);
-    CHECK_AND_ASSERT_MES(res.size() == 64, res, "wrong hash256 with epee::string_tools::pod_to_hex conversion");
+    ASSERT_OR_LOG_RETURN(res.size() == 64, res, "wrong hash256 with epee::string_tools::pod_to_hex conversion");
     auto erased_pos = res.erase(8, 48);
     res.insert(8, "....");
     return res;
@@ -732,20 +732,20 @@ namespace cryptonote
   {
     crypto::key_derivation derivation;
     bool r = acc.get_device().generate_key_derivation(tx_pub_key, acc.m_view_secret_key, derivation);
-    CHECK_AND_ASSERT_MES(r, false, "Failed to generate key derivation");
+    ASSERT_OR_LOG_RETURN(r, false, "Failed to generate key derivation");
     crypto::public_key pk;
     r = acc.get_device().derive_public_key(derivation, output_index, acc.m_account_address.m_spend_public_key, pk);
-    CHECK_AND_ASSERT_MES(r, false, "Failed to derive public key");
+    ASSERT_OR_LOG_RETURN(r, false, "Failed to derive public key");
     if (pk == out_key.key)
       return true;
     // try additional tx pubkeys if available
     if (!additional_tx_pub_keys.empty())
     {
-      CHECK_AND_ASSERT_MES(output_index < additional_tx_pub_keys.size(), false, "wrong number of additional tx pubkeys");
+      ASSERT_OR_LOG_RETURN(output_index < additional_tx_pub_keys.size(), false, "wrong number of additional tx pubkeys");
       r = acc.get_device().generate_key_derivation(additional_tx_pub_keys[output_index], acc.m_view_secret_key, derivation);
-      CHECK_AND_ASSERT_MES(r, false, "Failed to generate key derivation");
+      ASSERT_OR_LOG_RETURN(r, false, "Failed to generate key derivation");
       r = acc.get_device().derive_public_key(derivation, output_index, acc.m_account_address.m_spend_public_key, pk);
-      CHECK_AND_ASSERT_MES(r, false, "Failed to derive public key");
+      ASSERT_OR_LOG_RETURN(r, false, "Failed to derive public key");
       return pk == out_key.key;
     }
     return false;
@@ -762,7 +762,7 @@ namespace cryptonote
     // try additional tx pubkeys if available
     if (!additional_derivations.empty())
     {
-      CHECK_AND_ASSERT_MES(output_index < additional_derivations.size(), std::nullopt, "wrong number of additional derivations");
+      ASSERT_OR_LOG_RETURN(output_index < additional_derivations.size(), std::nullopt, "wrong number of additional derivations");
       hwdev.derive_subaddress_public_key(out_key, additional_derivations[output_index], output_index, subaddress_spendkey);
       found = subaddresses.find(subaddress_spendkey);
       if (found != subaddresses.end())
@@ -782,12 +782,12 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, const crypto::public_key& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, std::vector<size_t>& outs, uint64_t& money_transfered)
   {
-    CHECK_AND_ASSERT_MES(additional_tx_pub_keys.empty() || additional_tx_pub_keys.size() == tx.vout.size(), false, "wrong number of additional pubkeys" );
+    ASSERT_OR_LOG_RETURN(additional_tx_pub_keys.empty() || additional_tx_pub_keys.size() == tx.vout.size(), false, "wrong number of additional pubkeys" );
     money_transfered = 0;
     size_t i = 0;
     for(const tx_out& o:  tx.vout)
     {
-      CHECK_AND_ASSERT_MES(o.target.type() ==  typeid(txout_to_key), false, "wrong type id in transaction out" );
+      ASSERT_OR_LOG_RETURN(o.target.type() ==  typeid(txout_to_key), false, "wrong type id in transaction out" );
       if(is_out_to_acc(acc, boost::get<txout_to_key>(o.target), tx_pub_key, additional_tx_pub_keys, i))
       {
         outs.push_back(i);
@@ -820,7 +820,7 @@ namespace cryptonote
         default_decimal_point = decimal_point;
         break;
       default:
-        ASSERT_MES_AND_THROW("Invalid decimal point specification: " << decimal_point);
+        LOG_AND_THROW("Invalid decimal point specification: " << decimal_point);
     }
   }
   //---------------------------------------------------------------
@@ -846,7 +846,7 @@ namespace cryptonote
       case 0:
         return "piconero";
       default:
-        ASSERT_MES_AND_THROW("Invalid decimal point specification: " << decimal_point);
+        LOG_AND_THROW("Invalid decimal point specification: " << decimal_point);
     }
   }
   //---------------------------------------------------------------
@@ -912,7 +912,7 @@ namespace cryptonote
   {
     crypto::hash h = null_hash;
     get_transaction_hash(t, h, NULL);
-    CHECK_AND_ASSERT_THROW_MES(get_transaction_hash(t, h, NULL), "Failed to calculate transaction hash");
+    ASSERT_OR_LOG_THROW(get_transaction_hash(t, h, NULL), "Failed to calculate transaction hash");
     return h;
   }
   //---------------------------------------------------------------
@@ -928,7 +928,7 @@ namespace cryptonote
     const unsigned int unprunable_size = t.unprunable_size;
     if (blob && unprunable_size)
     {
-      CHECK_AND_ASSERT_MES(unprunable_size <= blob->size(), false, "Inconsistent transaction unprunable and blob sizes");
+      ASSERT_OR_LOG_RETURN(unprunable_size <= blob->size(), false, "Inconsistent transaction unprunable and blob sizes");
       cryptonote::get_blob_hash(blobdata_ref(blob->data() + unprunable_size, blob->size() - unprunable_size), res);
     }
     else
@@ -940,7 +940,7 @@ namespace cryptonote
       const size_t outputs = t.vout.size();
       const size_t mixin = t.vin.empty() ? 0 : t.vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(t.vin[0]).key_offsets.size() - 1 : 0;
       bool r = tt.rct_signatures.p.serialize_rctsig_prunable(ba, t.rct_signatures.type, inputs, outputs, mixin);
-      CHECK_AND_ASSERT_MES(r, false, "Failed to serialize rct signatures prunable");
+      ASSERT_OR_LOG_RETURN(r, false, "Failed to serialize rct signatures prunable");
       cryptonote::get_blob_hash(ss.str(), res);
     }
     return true;
@@ -952,7 +952,7 @@ namespace cryptonote
     if (t.is_prunable_hash_valid())
     {
 #ifdef ENABLE_HASH_CASH_INTEGRITY_CHECK
-      CHECK_AND_ASSERT_THROW_MES(!calculate_transaction_prunable_hash(t, blobdata, res) || t.hash == res, "tx hash cash integrity failure");
+      ASSERT_OR_LOG_THROW(!calculate_transaction_prunable_hash(t, blobdata, res) || t.hash == res, "tx hash cash integrity failure");
 #endif
       res = t.prunable_hash;
       ++tx_hashes_cached_count;
@@ -960,7 +960,7 @@ namespace cryptonote
     }
 
     ++tx_hashes_calculated_count;
-    CHECK_AND_ASSERT_THROW_MES(calculate_transaction_prunable_hash(t, blobdata, res), "Failed to calculate tx prunable hash");
+    ASSERT_OR_LOG_THROW(calculate_transaction_prunable_hash(t, blobdata, res), "Failed to calculate tx prunable hash");
     t.set_prunable_hash(res);
     return res;
   }
@@ -968,7 +968,7 @@ namespace cryptonote
   crypto::hash get_pruned_transaction_hash(const transaction& t, const crypto::hash &pruned_data_hash)
   {
     // v1 transactions hash the entire blob
-    CHECK_AND_ASSERT_THROW_MES(t.version > 1, "Hash for pruned v1 tx cannot be calculated");
+    ASSERT_OR_LOG_THROW(t.version > 1, "Hash for pruned v1 tx cannot be calculated");
 
     // v2 transactions hash different parts together, than hash the set of those hashes
     crypto::hash hashes[3];
@@ -985,7 +985,7 @@ namespace cryptonote
       const size_t inputs = t.vin.size();
       const size_t outputs = t.vout.size();
       bool r = tt.rct_signatures.serialize_rctsig_base(ba, inputs, outputs);
-      CHECK_AND_ASSERT_THROW_MES(r, "Failed to serialize rct signatures base");
+      ASSERT_OR_LOG_THROW(r, "Failed to serialize rct signatures base");
       cryptonote::get_blob_hash(ss.str(), hashes[1]);
     }
 
@@ -1021,7 +1021,7 @@ namespace cryptonote
     const unsigned int prefix_size = t.prefix_size;
 
     // base rct
-    CHECK_AND_ASSERT_MES(prefix_size <= unprunable_size && unprunable_size <= blob.size(), false, "Inconsistent transaction prefix, unprunable and blob sizes");
+    ASSERT_OR_LOG_RETURN(prefix_size <= unprunable_size && unprunable_size <= blob.size(), false, "Inconsistent transaction prefix, unprunable and blob sizes");
     cryptonote::get_blob_hash(blobdata_ref(blob.data() + prefix_size, unprunable_size - prefix_size), hashes[1]);
 
     // prunable rct
@@ -1032,7 +1032,7 @@ namespace cryptonote
     else
     {
       cryptonote::blobdata_ref blobref(blob);
-      CHECK_AND_ASSERT_MES(calculate_transaction_prunable_hash(t, &blobref, hashes[2]), false, "Failed to get tx prunable hash");
+      ASSERT_OR_LOG_RETURN(calculate_transaction_prunable_hash(t, &blobref, hashes[2]), false, "Failed to get tx prunable hash");
     }
 
     // the tx hash is the hash of the 3 hashes
@@ -1056,7 +1056,7 @@ namespace cryptonote
     if (t.is_hash_valid())
     {
 #ifdef ENABLE_HASH_CASH_INTEGRITY_CHECK
-      CHECK_AND_ASSERT_THROW_MES(!calculate_transaction_hash(t, res, blob_size) || t.hash == res, "tx hash cash integrity failure");
+      ASSERT_OR_LOG_THROW(!calculate_transaction_hash(t, res, blob_size) || t.hash == res, "tx hash cash integrity failure");
 #endif
       res = t.hash;
       if (blob_size)
@@ -1117,7 +1117,7 @@ namespace cryptonote
     if (b.is_hash_valid())
     {
 #ifdef ENABLE_HASH_CASH_INTEGRITY_CHECK
-      CHECK_AND_ASSERT_THROW_MES(!calculate_block_hash(b, res) || b.hash == res, "block hash cash integrity failure");
+      ASSERT_OR_LOG_THROW(!calculate_block_hash(b, res) || b.hash == res, "block hash cash integrity failure");
 #endif
       res = b.hash;
       ++block_hashes_cached_count;
@@ -1164,7 +1164,7 @@ namespace cryptonote
     ss << b_blob;
     binary_archive<false> ba(ss);
     bool r = ::serialization::serialize(ba, b);
-    CHECK_AND_ASSERT_MES(r, false, "Failed to parse block from blob");
+    ASSERT_OR_LOG_RETURN(r, false, "Failed to parse block from blob");
     b.invalidate_hashes();
     b.miner_tx.invalidate_hashes();
     if (block_hash)
@@ -1224,7 +1224,7 @@ namespace cryptonote
     txs_ids.reserve(1 + b.tx_hashes.size());
     crypto::hash h = null_hash;
     size_t bl_sz = 0;
-    CHECK_AND_ASSERT_THROW_MES(get_transaction_hash(b.miner_tx, h, bl_sz), "Failed to calculate transaction hash");
+    ASSERT_OR_LOG_THROW(get_transaction_hash(b.miner_tx, h, bl_sz), "Failed to calculate transaction hash");
     txs_ids.push_back(h);
     for(auto& th: b.tx_hashes)
       txs_ids.push_back(th);

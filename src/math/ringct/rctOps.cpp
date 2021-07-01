@@ -45,7 +45,7 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
-#define CHECK_AND_ASSERT_THROW_MES_L1(expr, message) {if(!(expr)) {MWARNING(message); throw std::runtime_error(message);}}
+#define ASSERT_OR_LOG_THROW_L1(expr, message) {if(!(expr)) {MWARNING(message); throw std::runtime_error(message);}}
 #define CHECK_AND_MES_L1(expr, message) {if(!(expr)) {MWARNING(message); }}
 
 namespace rct {
@@ -84,7 +84,7 @@ namespace rct {
     //Generates a vector of secret key
     //Mainly used in testing
     keyV skvGen(size_t rows ) {
-        CHECK_AND_ASSERT_THROW_MES(rows > 0, "0 keys requested");
+        ASSERT_OR_LOG_THROW(rows > 0, "0 keys requested");
         keyV rv(rows);
         size_t i = 0;
         for (i = 0 ; i < rows ; i++) {
@@ -191,9 +191,9 @@ namespace rct {
     //does a * P where a is a scalar and P is an arbitrary point
     void scalarmultKey(key & aP, const key &P, const key &a) {
       key s = normalizeKey(a);
-      CHECK_AND_ASSERT_THROW_MES_L1(!sodium_is_zero(s.bytes, 32), "scalar key is zero");
+      ASSERT_OR_LOG_THROW_L1(!sodium_is_zero(s.bytes, 32), "scalar key is zero");
       int r = crypto_scalarmult_ed25519_noclamp(aP.bytes, s.bytes, P.bytes);
-      CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "scalar mult key not in subgroup");
+      ASSERT_OR_LOG_THROW_L1(r == 0, "scalar mult key not in subgroup");
     }
 
     //does a * P where a is a scalar and P is an arbitrary point
@@ -218,7 +218,7 @@ namespace rct {
     //Computes 8P
     key scalarmult8(const key & P) {
         ge_p3 p3;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&p3, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
+        ASSERT_OR_LOG_THROW_L1(ge_frombytes_vartime(&p3, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
         ge_p2 p2;
         ge_p3_to_p2(&p2, &p3);
         ge_p1p1 p1;
@@ -233,7 +233,7 @@ namespace rct {
     void scalarmult8(ge_p3 &res, const key &P)
     {
         ge_p3 p3;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&p3, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
+        ASSERT_OR_LOG_THROW_L1(ge_frombytes_vartime(&p3, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
         ge_p2 p2;
         ge_p3_to_p2(&p2, &p3);
         ge_p1p1 p1;
@@ -257,7 +257,7 @@ namespace rct {
     //for curve points: AB = A + B
     void addKeys(key &AB, const key &A, const key &B) {
       int r = crypto_core_ed25519_add(AB.bytes, A.bytes, B.bytes);
-      CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "add keys not in main group");
+      ASSERT_OR_LOG_THROW_L1(r == 0, "add keys not in main group");
     }
 
     rct::key addKeys(const key &A, const key &B) {
@@ -287,7 +287,7 @@ namespace rct {
     // input B a curve point and output a ge_dsmp which has precomputation applied
     void precomp(ge_dsmp rv, const key & B) {
         ge_p3 B2;
-        CHECK_AND_ASSERT_THROW_MES_L1(ge_frombytes_vartime(&B2, B.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
+        ASSERT_OR_LOG_THROW_L1(ge_frombytes_vartime(&B2, B.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
         ge_dsm_precomp(rv, &B2);
     }
 
@@ -313,7 +313,7 @@ namespace rct {
     //AB = A - B where A, B are curve points
     void subKeys(key & AB, const key &A, const key &B) {
       int r = crypto_core_ed25519_sub(AB.bytes, A.bytes, B.bytes);
-      CHECK_AND_ASSERT_THROW_MES_L1(r == 0, "sub keys not in main group");
+      ASSERT_OR_LOG_THROW_L1(r == 0, "sub keys not in main group");
     }
 
     //Hashing - cn_fast_hash

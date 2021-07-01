@@ -52,7 +52,7 @@ namespace epee
     void throwable_buffer_reader::read(void* target, size_t count)
     {
       RECURSION_LIMITATION();
-      CHECK_AND_ASSERT_THROW_MES(m_count >= count, " attempt to read " << count << " bytes from buffer with " << m_count << " bytes remained");
+      ASSERT_OR_LOG_THROW(m_count >= count, " attempt to read " << count << " bytes from buffer with " << m_count << " bytes remained");
       memcpy(target, m_ptr, count);
       m_ptr += count;
       m_count -= count;
@@ -63,7 +63,7 @@ namespace epee
       RECURSION_LIMITATION();
       uint8_t name_len = 0;
       read(name_len);
-      CHECK_AND_ASSERT_THROW_MES(name_len > 0, "Section name is missing");
+      ASSERT_OR_LOG_THROW(name_len > 0, "Section name is missing");
       sce_name.resize(name_len);
       read((void*)sce_name.data(), name_len);
     }
@@ -88,14 +88,14 @@ namespace epee
       case SERIALIZE_TYPE_OBJECT: return read_ae<section>();
       case SERIALIZE_TYPE_ARRAY:  return read_ae<array_entry>();
       default:
-        CHECK_AND_ASSERT_THROW_MES(false, "unknown entry_type code = " << type);
+        ASSERT_OR_LOG_THROW(false, "unknown entry_type code = " << type);
       }
     }
 
     size_t throwable_buffer_reader::read_varint()
     {
       RECURSION_LIMITATION();
-      CHECK_AND_ASSERT_THROW_MES(m_count >= 1, "empty buff, expected place for varint");
+      ASSERT_OR_LOG_THROW(m_count >= 1, "empty buff, expected place for varint");
       size_t v = 0;
       uint8_t size_mask = (*(uint8_t*)m_ptr) &PORTABLE_RAW_SIZE_MARK_MASK;
       switch (size_mask)
@@ -105,7 +105,7 @@ namespace epee
       case PORTABLE_RAW_SIZE_MARK_DWORD: v = read<uint32_t>();break;
       case PORTABLE_RAW_SIZE_MARK_INT64: v = read<uint64_t>();break;
       default:
-        CHECK_AND_ASSERT_THROW_MES(false, "unknown varint size_mask = " << size_mask);
+        ASSERT_OR_LOG_THROW(false, "unknown varint size_mask = " << size_mask);
       }
       v >>= 2;
       return v;
@@ -135,7 +135,7 @@ namespace epee
       case SERIALIZE_TYPE_OBJECT: return read_se<section>();
       case SERIALIZE_TYPE_ARRAY:  return read_se<array_entry>();
       default:
-        CHECK_AND_ASSERT_THROW_MES(false, "unknown entry_type code = " << ent_type);
+        ASSERT_OR_LOG_THROW(false, "unknown entry_type code = " << ent_type);
       }
     }
 
@@ -144,7 +144,7 @@ namespace epee
       RECURSION_LIMITATION();
       sec.m_entries.clear();
       size_t count = read_varint();
-      CHECK_AND_ASSERT_THROW_MES(count <= max_fields - m_fields, "Too many object fields");
+      ASSERT_OR_LOG_THROW(count <= max_fields - m_fields, "Too many object fields");
       m_fields += count;
       while(count--)
       {
@@ -152,7 +152,7 @@ namespace epee
         std::string sec_name;
         read_sec_name(sec_name);
         const auto insert_loc = sec.m_entries.lower_bound(sec_name);
-        CHECK_AND_ASSERT_THROW_MES(insert_loc == sec.m_entries.end() || insert_loc->first != sec_name, "duplicate key: " << sec_name);
+        ASSERT_OR_LOG_THROW(insert_loc == sec.m_entries.end() || insert_loc->first != sec_name, "duplicate key: " << sec_name);
         sec.m_entries.emplace_hint(insert_loc, std::move(sec_name), load_storage_entry());
       }
     }
@@ -161,8 +161,8 @@ namespace epee
     {
       RECURSION_LIMITATION();
       size_t len = read_varint();
-      CHECK_AND_ASSERT_THROW_MES(len < MAX_STRING_LEN_POSSIBLE, "to big string len value in storage: " << len);
-      CHECK_AND_ASSERT_THROW_MES(m_count >= len, "string len count value " << len << " goes out of remain storage len " << m_count);
+      ASSERT_OR_LOG_THROW(len < MAX_STRING_LEN_POSSIBLE, "to big string len value in storage: " << len);
+      ASSERT_OR_LOG_THROW(m_count >= len, "string len count value " << len << " goes out of remain storage len " << m_count);
       //do this manually to avoid double memory write in huge strings (first time at resize, second at read)
       str.assign((const char*)m_ptr, len);
       m_ptr+=len;
@@ -172,7 +172,7 @@ namespace epee
     void throwable_buffer_reader::read(array_entry &ae)
     {
       RECURSION_LIMITATION();
-      CHECK_AND_ASSERT_THROW_MES(false, "Reading array entry is not supported");
+      ASSERT_OR_LOG_THROW(false, "Reading array entry is not supported");
     }
 
     void throwable_buffer_reader::set_limits(size_t objects, size_t fields, size_t strings)
@@ -186,7 +186,7 @@ namespace epee
     storage_entry throwable_buffer_reader::read_se<std::string>()
     {
       RECURSION_LIMITATION();
-      CHECK_AND_ASSERT_THROW_MES(m_strings + 1 <= max_strings, "Too many strings");
+      ASSERT_OR_LOG_THROW(m_strings + 1 <= max_strings, "Too many strings");
       m_strings += 1;
       return storage_entry(read<std::string>());
     }
@@ -195,7 +195,7 @@ namespace epee
     storage_entry throwable_buffer_reader::read_se<section>()
     {
       RECURSION_LIMITATION();
-      CHECK_AND_ASSERT_THROW_MES(m_objects < max_objects, "Too many objects");
+      ASSERT_OR_LOG_THROW(m_objects < max_objects, "Too many objects");
       ++m_objects;
       section s;//use extra variable due to vs bug, line "storage_entry se(section()); " can't be compiled in visual studio
       storage_entry se(std::move(s));
@@ -210,7 +210,7 @@ namespace epee
       RECURSION_LIMITATION();
       uint8_t ent_type = 0;
       read(ent_type);
-      CHECK_AND_ASSERT_THROW_MES(ent_type&SERIALIZE_FLAG_ARRAY, "wrong type sequenses");
+      ASSERT_OR_LOG_THROW(ent_type&SERIALIZE_FLAG_ARRAY, "wrong type sequenses");
       return load_storage_array_entry(ent_type);
     }
   }

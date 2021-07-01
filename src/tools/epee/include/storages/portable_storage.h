@@ -161,8 +161,8 @@ namespace epee
     {
       static_assert(std::is_rvalue_reference<entry_type&&>(), "unexpected copy of value");
       TRY_ENTRY();
-      CHECK_AND_ASSERT(psection, nullptr);
-      CHECK_AND_ASSERT(!pentry_name.empty(), nullptr);
+      ASSERT_OR_RETURN(psection, nullptr);
+      ASSERT_OR_RETURN(!pentry_name.empty(), nullptr);
       auto ins_res = psection->m_entries.emplace(pentry_name, std::forward<entry_type>(entry));
       return &ins_res.first->second;
       CATCH_ENTRY("portable_storage::insert_new_entry_get_storage_entry", nullptr);
@@ -227,7 +227,7 @@ namespace epee
     {
       BOOST_MPL_ASSERT(( boost::mpl::contains<storage_entry::types, t_value> ));
       //TRY_ENTRY();
-      CHECK_AND_ASSERT(hval_array, false);
+      ASSERT_OR_RETURN(hval_array, false);
       array_entry& ar_entry = *hval_array;
       get_next_value_visitor<t_value> gnv(target);
       if(!boost::apply_visitor(gnv, ar_entry))
@@ -269,9 +269,9 @@ namespace epee
       using t_real_value = typename std::decay<t_value>::type;
       static_assert(std::is_rvalue_reference<t_value&&>(), "unexpected copy of value");
       TRY_ENTRY();
-      CHECK_AND_ASSERT(hval_array, false);
+      ASSERT_OR_RETURN(hval_array, false);
 
-      CHECK_AND_ASSERT_MES(hval_array->type() == typeid(array_entry_t<t_real_value>),
+      ASSERT_OR_LOG_RETURN(hval_array->type() == typeid(array_entry_t<t_real_value>),
         false, "unexpected type in insert_next_value: " << typeid(array_entry_t<t_real_value>).name());
 
       array_entry_t<t_real_value>& arr_typed = boost::get<array_entry_t<t_real_value> >(*hval_array);

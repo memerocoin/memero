@@ -160,38 +160,33 @@ namespace debug
 #define CATCH_ENTRY_L4(lacation, return_val) CATCH_ENTRY(lacation, return_val)
 
 
-#define ASSERT_MES_AND_THROW(message) {LOG_ERROR(message); std::stringstream ss; ss << message; throw std::runtime_error(ss.str());}
-#define CHECK_AND_ASSERT_THROW_MES(expr, message) do {if(!(expr)) ASSERT_MES_AND_THROW(message);} while(0)
+#define LOG_AND_THROW(message) {LOG_ERROR(message); std::stringstream ss; ss << message; throw std::runtime_error(ss.str());}
+#define ASSERT_OR_LOG_THROW(expr, message) do {if(!(expr)) LOG_AND_THROW(message);} while(0)
 
 
-#ifndef CHECK_AND_ASSERT
-#define CHECK_AND_ASSERT(expr, fail_ret_val)   do{if(!(expr)){LOCAL_ASSERT(expr); return fail_ret_val;};}while(0)
+#ifndef ASSERT_OR_RETURN
+#define ASSERT_OR_RETURN(expr, fail_ret_val)   do{if(!(expr)){LOCAL_ASSERT(expr); return fail_ret_val;};}while(0)
 #endif
 
-#ifndef CHECK_AND_ASSERT_MES
-#define CHECK_AND_ASSERT_MES(expr, fail_ret_val, message)   do{if(!(expr)) {LOG_ERROR(message); return fail_ret_val;};}while(0)
+#ifndef ASSERT_OR_LOG_RETURN
+#define ASSERT_OR_LOG_RETURN(expr, fail_ret_val, message)   do{if(!(expr)) {LOG_ERROR(message); return fail_ret_val;};}while(0)
 #endif
 
-#ifndef CHECK_AND_NO_ASSERT_MES_L
-#define CHECK_AND_NO_ASSERT_MES_L(expr, fail_ret_val, l, message)   do{if(!(expr)) {LOG_PRINT_L##l(message); /*LOCAL_ASSERT(expr);*/ return fail_ret_val;};}while(0)
+#ifndef CHECK_OR_LOG_RETURN_LOGLEVEL
+#define CHECK_OR_LOG_RETURN_LOGLEVEL(expr, fail_ret_val, l, message)   do{if(!(expr)) {LOG_PRINT_L##l(message); /*LOCAL_ASSERT(expr);*/ return fail_ret_val;};}while(0)
 #endif
 
-#ifndef CHECK_AND_NO_ASSERT_MES
-#define CHECK_AND_NO_ASSERT_MES(expr, fail_ret_val, message) CHECK_AND_NO_ASSERT_MES_L(expr, fail_ret_val, 0, message)
+#ifndef CHECK_OR_LOG_RETURN
+#define CHECK_OR_LOG_RETURN(expr, fail_ret_val, message) CHECK_OR_LOG_RETURN_LOGLEVEL(expr, fail_ret_val, 0, message)
 #endif
 
-#ifndef CHECK_AND_NO_ASSERT_MES_L1
-#define CHECK_AND_NO_ASSERT_MES_L1(expr, fail_ret_val, message) CHECK_AND_NO_ASSERT_MES_L(expr, fail_ret_val, 1, message)
-#endif
-
-
-#ifndef CHECK_AND_ASSERT_MES_NO_RET
-#define CHECK_AND_ASSERT_MES_NO_RET(expr, message)   do{if(!(expr)) {LOG_ERROR(message); return;};}while(0)
+#ifndef CHECK_OR_LOG_RETURN_LOGLEVEL_1
+#define CHECK_OR_LOG_RETURN_LOGLEVEL_1(expr, fail_ret_val, message) CHECK_OR_LOG_RETURN_LOGLEVEL(expr, fail_ret_val, 1, message)
 #endif
 
 
-#ifndef CHECK_AND_ASSERT_MES2
-#define CHECK_AND_ASSERT_MES2(expr, message)   do{if(!(expr)) {LOG_ERROR(message); };}while(0)
+#ifndef ASSERT_OR_LOG
+#define ASSERT_OR_LOG(expr, message)   do{if(!(expr)) {LOG_ERROR(message); return;};}while(0)
 #endif
 
 enum console_colors

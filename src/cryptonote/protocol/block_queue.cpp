@@ -69,7 +69,7 @@ void block_queue::add_blocks(uint64_t height, std::vector<cryptonote::block_comp
 
 void block_queue::add_blocks(uint64_t height, uint64_t nblocks, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, std::chrono::time_point<std::chrono::system_clock> time)
 {
-  CHECK_AND_ASSERT_THROW_MES(nblocks > 0, "Empty span");
+  ASSERT_OR_LOG_THROW(nblocks > 0, "Empty span");
   std::unique_lock<std::recursive_mutex> lock(mutex);
   blocks.insert(span(height, nblocks, connection_id, addr, time));
 }
@@ -90,7 +90,7 @@ void block_queue::flush_spans(const boost::uuids::uuid &connection_id, bool all)
 
 void block_queue::erase_block(block_map::iterator j)
 {
-  CHECK_AND_ASSERT_THROW_MES(j != blocks.end(), "Invalid iterator");
+  ASSERT_OR_LOG_THROW(j != blocks.end(), "Invalid iterator");
   for (const crypto::hash &h: j->hashes)
   {
     requested_hashes.erase(h);
@@ -309,10 +309,10 @@ std::pair<uint64_t, uint64_t> block_queue::get_next_span_if_scheduled(std::vecto
 void block_queue::reset_next_span_time(std::chrono::time_point<std::chrono::system_clock> t)
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
-  CHECK_AND_ASSERT_THROW_MES(!blocks.empty(), "No next span to reset time");
+  ASSERT_OR_LOG_THROW(!blocks.empty(), "No next span to reset time");
   block_map::iterator i = blocks.begin();
-  CHECK_AND_ASSERT_THROW_MES(i != blocks.end(), "No next span to reset time");
-  CHECK_AND_ASSERT_THROW_MES(i->blocks.empty(), "Next span is not empty");
+  ASSERT_OR_LOG_THROW(i != blocks.end(), "No next span to reset time");
+  ASSERT_OR_LOG_THROW(i->blocks.empty(), "Next span is not empty");
   (std::chrono::time_point<std::chrono::system_clock>&)i->time = t; // sod off, time doesn't influence sorting
 }
 

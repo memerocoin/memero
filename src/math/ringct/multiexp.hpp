@@ -47,7 +47,7 @@ struct MultiexpData {
   MultiexpData(const rct::key &s, const ge_p3 &p): scalar(s), point(p) {}
   MultiexpData(const rct::key &s, const rct::key &p): scalar(s)
   {
-    CHECK_AND_ASSERT_THROW_MES(ge_frombytes_vartime(&point, p.bytes) == 0, "ge_frombytes_vartime failed");
+    ASSERT_OR_LOG_THROW(ge_frombytes_vartime(&point, p.bytes) == 0, "ge_frombytes_vartime failed");
   }
 };
 

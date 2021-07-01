@@ -60,7 +60,7 @@ namespace cryptonote {
   {
     constexpr uint64_t N = constant::DIFFICULTY_WINDOW_IN_BLOCKS;
 
-    CHECK_AND_ASSERT_THROW_MES
+    ASSERT_OR_LOG_THROW
       (
        timestamps.size() == cumulative_difficulties.size()
        , "timestamp size mismatch"
@@ -73,7 +73,7 @@ namespace cryptonote {
     if (HEIGHT < N + 3) { return _b << 38; }
 
 
-    CHECK_AND_ASSERT_THROW_MES
+    ASSERT_OR_LOG_THROW
       (
        timestamps.size() == constant::DIFFICULTY_BLOCKS_COUNT
        , "timestamp size is invalid"
@@ -87,7 +87,7 @@ namespace cryptonote {
 
     const diff_t next = next_difficulty_pure(timestamps_array, cumulative_difficulties_array, HEIGHT);
 
-    CHECK_AND_ASSERT_THROW_MES(next > 0, "next difficulty overflowed 128bit unsigned int");
+    ASSERT_OR_LOG_THROW(next > 0, "next difficulty overflowed 128bit unsigned int");
     return next;
   }
 

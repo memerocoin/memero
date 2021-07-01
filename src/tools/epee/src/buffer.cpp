@@ -44,7 +44,7 @@ namespace net_utils
 
   void buffer::erase(size_t sz) {
     NET_BUFFER_LOG("erasing " << sz << "/" << size());
-    CHECK_AND_ASSERT_THROW_MES(offset + sz <= storage.size(), "erase: sz too large");
+    ASSERT_OR_LOG_THROW(offset + sz <= storage.size(), "erase: sz too large");
     offset += sz;
     if (offset == storage.size()) {
       storage.clear();
@@ -53,12 +53,12 @@ namespace net_utils
   }
 
   epee::span<const uint8_t> buffer::span(size_t sz) const {
-    CHECK_AND_ASSERT_THROW_MES(sz <= size(), "span is too large");
+    ASSERT_OR_LOG_THROW(sz <= size(), "span is too large");
     return epee::span<const uint8_t>(storage.data() + offset, sz);
   }
 
   epee::span<const uint8_t> buffer::carve(size_t sz) {
-    CHECK_AND_ASSERT_THROW_MES(sz <= size(), "span is too large");
+    ASSERT_OR_LOG_THROW(sz <= size(), "span is too large");
     offset += sz;
     return epee::span<const uint8_t>(storage.data() + offset - sz, sz);
   }

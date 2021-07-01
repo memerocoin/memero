@@ -143,7 +143,7 @@ void wipeable_string::operator+=(char c)
 void wipeable_string::append(const char *ptr, size_t len)
 {
   const size_t orgsz = size();
-  CHECK_AND_ASSERT_THROW_MES(orgsz < std::numeric_limits<size_t>::max() - len, "Appended data too large");
+  ASSERT_OR_LOG_THROW(orgsz < std::numeric_limits<size_t>::max() - len, "Appended data too large");
   grow(orgsz + len);
   if (len > 0)
     memcpy(data() + orgsz, ptr, len);
@@ -225,7 +225,7 @@ std::optional<epee::wipeable_string> wipeable_string::parse_hexstr() const
 char wipeable_string::pop_back()
 {
   const size_t sz = size();
-  CHECK_AND_ASSERT_THROW_MES(sz > 0, "Popping from an empty string");
+  ASSERT_OR_LOG_THROW(sz > 0, "Popping from an empty string");
   const char c = buffer.back();
   resize(sz - 1);
   return c;

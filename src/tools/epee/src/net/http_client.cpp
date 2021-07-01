@@ -109,10 +109,10 @@ namespace net_utils
         //--
 
         bool res = m_net_client.send(req_buff, timeout);
-        CHECK_AND_ASSERT_MES(res, false, "HTTP_CLIENT: Failed to SEND");
+        ASSERT_OR_LOG_RETURN(res, false, "HTTP_CLIENT: Failed to SEND");
         if(body.size())
           res = m_net_client.send(body, timeout);
-        CHECK_AND_ASSERT_MES(res, false, "HTTP_CLIENT: Failed to SEND");
+        ASSERT_OR_LOG_RETURN(res, false, "HTTP_CLIENT: Failed to SEND");
 
         m_response_info.clear();
         m_state = reciev_machine_state_header;
@@ -266,7 +266,7 @@ namespace net_utils
         m_state = reciev_machine_state_done;
         return true;
       }
-      CHECK_AND_ASSERT_MES(m_len_in_remain >= recv_buff.size(), false, "m_len_in_remain >= recv_buff.size()");
+      ASSERT_OR_LOG_RETURN(m_len_in_remain >= recv_buff.size(), false, "m_len_in_remain >= recv_buff.size()");
       m_len_in_remain -= recv_buff.size();
       if (!m_pcontent_encoding_handler->update_in(recv_buff))
       {
@@ -482,7 +482,7 @@ namespace net_utils
         // optional space (not in RFC, but in previous code)
         if (*ptr == ' ')
           ++ptr;
-        CHECK_AND_ASSERT_MES(*ptr == ':', true, "http_stream_filter::parse_cached_header() invalid header in: " << m_cache_to_process);
+        ASSERT_OR_LOG_RETURN(*ptr == ':', true, "http_stream_filter::parse_cached_header() invalid header in: " << m_cache_to_process);
         ++ptr;
         // optional whitespace, but not newlines - line folding is obsolete, let's ignore it
         while (isblank(*ptr))
@@ -496,7 +496,7 @@ namespace net_utils
           --value_end;
         if (*ptr == '\r')
           ++ptr;
-        CHECK_AND_ASSERT_MES(*ptr == '\n', true, "http_stream_filter::parse_cached_header() invalid header in: " << m_cache_to_process);
+        ASSERT_OR_LOG_RETURN(*ptr == '\n', true, "http_stream_filter::parse_cached_header() invalid header in: " << m_cache_to_process);
         ++ptr;
 
         const std::string key = std::string(key_pos, key_end - key_pos);
@@ -534,25 +534,25 @@ namespace net_utils
     {
       //First line response, look like this:	"HTTP/1.1 200 OK"
       const char *ptr = m_header_cache.c_str();
-      CHECK_AND_ASSERT_MES(!memcmp(ptr, "HTTP/", 5), false, "Invalid first response line: " + m_header_cache);
+      ASSERT_OR_LOG_RETURN(!memcmp(ptr, "HTTP/", 5), false, "Invalid first response line: " + m_header_cache);
       ptr += 5;
-      CHECK_AND_ASSERT_MES(epee::misc_utils::parse::isdigit(*ptr), false, "Invalid first response line: " + m_header_cache);
+      ASSERT_OR_LOG_RETURN(epee::misc_utils::parse::isdigit(*ptr), false, "Invalid first response line: " + m_header_cache);
       unsigned long ul;
       char *end;
       ul = strtoul(ptr, &end, 10);
-      CHECK_AND_ASSERT_MES(ul <= INT_MAX && *end =='.', false, "Invalid first response line: " + m_header_cache);
+      ASSERT_OR_LOG_RETURN(ul <= INT_MAX && *end =='.', false, "Invalid first response line: " + m_header_cache);
       m_response_info.m_http_ver_hi = ul;
       ptr = end + 1;
-      CHECK_AND_ASSERT_MES(epee::misc_utils::parse::isdigit(*ptr), false, "Invalid first response line: " + m_header_cache + ", ptr: " << ptr);
+      ASSERT_OR_LOG_RETURN(epee::misc_utils::parse::isdigit(*ptr), false, "Invalid first response line: " + m_header_cache + ", ptr: " << ptr);
       ul = strtoul(ptr, &end, 10);
-      CHECK_AND_ASSERT_MES(ul <= INT_MAX && isblank(*end), false, "Invalid first response line: " + m_header_cache + ", ptr: " << ptr);
+      ASSERT_OR_LOG_RETURN(ul <= INT_MAX && isblank(*end), false, "Invalid first response line: " + m_header_cache + ", ptr: " << ptr);
       m_response_info.m_http_ver_lo = ul;
       ptr = end + 1;
       while (isblank(*ptr))
         ++ptr;
-      CHECK_AND_ASSERT_MES(epee::misc_utils::parse::isdigit(*ptr), false, "Invalid first response line: " + m_header_cache);
+      ASSERT_OR_LOG_RETURN(epee::misc_utils::parse::isdigit(*ptr), false, "Invalid first response line: " + m_header_cache);
       ul = strtoul(ptr, &end, 10);
-      CHECK_AND_ASSERT_MES(ul >= 100 && ul <= 999 && isspace(*end), false, "Invalid first response line: " + m_header_cache);
+      ASSERT_OR_LOG_RETURN(ul >= 100 && ul <= 999 && isspace(*end), false, "Invalid first response line: " + m_header_cache);
       m_response_info.m_response_code = ul;
       ptr = end;
       // ignore the optional text, till the end
@@ -560,7 +560,7 @@ namespace net_utils
         ++ptr;
       if (*ptr == '\r')
         ++ptr;
-      CHECK_AND_ASSERT_MES(*ptr == '\n', false, "Invalid first response line: " << m_header_cache);
+      ASSERT_OR_LOG_RETURN(*ptr == '\n', false, "Invalid first response line: " << m_header_cache);
       ++ptr;
 
       m_header_cache.erase(0, ptr - m_header_cache.c_str());
@@ -596,7 +596,7 @@ namespace net_utils
       std::string fake_str; //gcc error workaround
 
       bool res = parse_header(m_response_info.m_header_info, m_header_cache);
-      CHECK_AND_ASSERT_MES(res, false, "http_stream_filter::analize_cached_reply_header_and_invoke_state(): failed to anilize reply header: " << m_header_cache);
+      ASSERT_OR_LOG_RETURN(res, false, "http_stream_filter::analize_cached_reply_header_and_invoke_state(): failed to anilize reply header: " << m_header_cache);
 
       set_reply_content_encoder();
 
