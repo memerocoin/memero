@@ -340,6 +340,5 @@ namespace tools
     std::cout << "\033[2J" << std::flush; // clear current screen only, scrollback is still around
     std::cout << "\033[3J" << std::flush; // does nothing, should clear current screen and scrollback
     std::cout << "\033[1;1H" << std::flush; // move cursor top/left
-    std::cout << "\r                                                \r" << std::flush; // erase odd chars if the ANSI codes were printed raw
   }
 }
