@@ -124,11 +124,11 @@ size_t get_pippenger_c(size_t N)
   return 9;
 }
 
-typedef std::vector<ge_cached> pippenger_cached_data;
+typedef std::vector<ge_cached> pippenger_cache;
 
-pippenger_cached_data pippenger_init_cache(const std::vector<MultiexpData> data)
+pippenger_cache pippenger_init_cache(const std::vector<MultiexpData> data)
 {
-  pippenger_cached_data cache(data.size());
+  pippenger_cache cache(data.size());
 
   std::transform(data.begin(), data.end(), cache.begin(),
                  [](const MultiexpData x) -> ge_cached {
@@ -149,7 +149,7 @@ rct::key pippenger(const std::vector<MultiexpData> data)
   std::vector<ge_p3> buckets(bucket_size);
   std::vector<bool> buckets_init(bucket_size);
 
-  const pippenger_cached_data local_cache = std::move(pippenger_init_cache(data));
+  const pippenger_cache local_cache = std::move(pippenger_init_cache(data));
 
   rct::key maxscalar = rct::zero();
   for (size_t i = 0; i < data.size(); ++i)
