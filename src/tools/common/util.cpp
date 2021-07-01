@@ -332,13 +332,4 @@ namespace tools
     const std::uint64_t divisor = size->bytes / 1024;
     return (boost::format(size->format) % (double(bytes) / divisor)).str();
   }
-
-  void clear_screen()
-  {
-    std::cout << "\033[2K" << std::flush; // clear whole line
-    std::cout << "\033c" << std::flush; // clear current screen and scrollback
-    std::cout << "\033[2J" << std::flush; // clear current screen only, scrollback is still around
-    std::cout << "\033[3J" << std::flush; // does nothing, should clear current screen and scrollback
-    std::cout << "\033[1;1H" << std::flush; // move cursor top/left
-  }
 }
