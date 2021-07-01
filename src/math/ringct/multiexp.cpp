@@ -145,7 +145,7 @@ rct::key pippenger(const std::vector<MultiexpData> data)
 
   ge_p3 result = ge_p3_identity;
   bool result_init = false;
-  std::unique_ptr<ge_p3[]> buckets{std::make_unique<ge_p3[]>(1<<c)};
+  std::vector<ge_p3> buckets(1<<c);
   bool buckets_init[1<<9];
 
   const pippenger_cached_data local_cache = std::move(pippenger_init_cache(data));
