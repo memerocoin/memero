@@ -31,6 +31,8 @@
 #include "rctOps.hpp"
 #include "multiexp.hpp"
 
+#include <map>
+
 extern "C"
 {
 #include "math/crypto/crypto-ops.h"
@@ -143,11 +145,9 @@ rct::key pippenger(const std::span<MultiexpData> data)
 {
   const pippenger_cache local_cache = std::move(pippenger_init_cache(data));
   const size_t c = get_pippenger_c(data.size());
-  const size_t bucket_size = 1 << c;
 
   ge_p3 result = ge_p3_identity;
   bool result_init = false;
-  std::vector<std::optional<ge_p3>> buckets(bucket_size);
 
   const rct::key maxscalar = data.empty() ? rct::zero() :
     (
@@ -177,7 +177,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
       }
     }
 
-    std::fill(buckets.begin(), buckets.end(), std::nullopt);
+    std::map<size_t, ge_p3> buckets;
 
     // partition scalars into buckets
     for (size_t i = 0; i < data.size(); ++i)
@@ -189,13 +189,13 @@ rct::key pippenger(const std::span<MultiexpData> data)
       if (bucket == 0)
         continue;
       ASSERT_OR_LOG_THROW(bucket < (1u<<c), "bucket overflow");
-      if (buckets[bucket])
+      if (buckets.contains(bucket))
       {
-        add(*buckets[bucket], local_cache[i]);
+        add(buckets[bucket], local_cache[i]);
       }
       else
       {
-        buckets[bucket] = {data[i].point};
+        buckets.emplace(bucket, data[i].point);
       }
     }
 
@@ -204,13 +204,13 @@ rct::key pippenger(const std::span<MultiexpData> data)
     bool pail_init = false;
     for (size_t i = (1<<c)-1; i > 0; --i)
     {
-      if (buckets[i])
+      if (buckets.contains(i))
       {
         if (pail_init)
-          add(pail, *buckets[i]);
+          add(pail, buckets[i]);
         else
         {
-          pail = *buckets[i];
+          pail = buckets[i];
           pail_init = true;
         }
       }
