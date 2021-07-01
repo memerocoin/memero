@@ -98,17 +98,12 @@ void init_exponents()
   static bool init_done = false;
   if (init_done)
     return;
-  std::vector<MultiexpData> data;
-  data.reserve(maxN*maxM*2);
   for (size_t i = 0; i < maxN*maxM; ++i)
   {
     Hi[i] = get_exponent(rct::H, i * 2);
     ASSERT_OR_LOG_THROW(ge_frombytes_vartime(&Hi_p3[i], Hi[i].bytes) == 0, "ge_frombytes_vartime failed");
     Gi[i] = get_exponent(rct::H, i * 2 + 1);
     ASSERT_OR_LOG_THROW(ge_frombytes_vartime(&Gi_p3[i], Gi[i].bytes) == 0, "ge_frombytes_vartime failed");
-
-    data.push_back({rct::zero(), Gi_p3[i]});
-    data.push_back({rct::zero(), Hi_p3[i]});
   }
 
   init_done = true;
