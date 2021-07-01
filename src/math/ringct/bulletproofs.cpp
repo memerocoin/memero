@@ -41,7 +41,6 @@ extern "C"
 }
 
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/span.h"
 #include "tools/common/varint.h"
 
 
@@ -62,7 +61,7 @@ namespace rct
 rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b);
 rct::keyV vector_powers(const rct::key &x, size_t n);
 rct::keyV vector_dup(const rct::key &x, size_t n);
-rct::key inner_product(const rct::keyV &a, const rct::keyV &b);
+rct::key inner_product(const std::span<const rct::key> a, const std::span<const rct::key> b);
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
@@ -216,7 +215,7 @@ rct::key vector_power_sum(rct::key x, size_t n)
 }
 
 /* Given two scalar arrays, construct the inner product */
-rct::key inner_product(const epee::span<const rct::key> &a, const epee::span<const rct::key> &b)
+rct::key inner_product(const std::span<const rct::key> a, const std::span<const rct::key> b)
 {
   ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::key res = rct::zero();
@@ -225,11 +224,6 @@ rct::key inner_product(const epee::span<const rct::key> &a, const epee::span<con
     sc_muladd(res.bytes, a[i].bytes, b[i].bytes, res.bytes);
   }
   return res;
-}
-
-rct::key inner_product(const rct::keyV &a, const rct::keyV &b)
-{
-  return inner_product(epee::span<const rct::key>(a.data(), a.size()), epee::span<const rct::key>(b.data(), b.size()));
 }
 
 /* Given two scalar arrays, construct the Hadamard product */
