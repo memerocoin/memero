@@ -39,7 +39,7 @@ namespace rct
 
 Bulletproof bulletproof_MAKE(const rct::key v, const rct::key gamma);
 Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma);
-Bulletproof bulletproof_MAKE(const rct::keyV v, const rct::keyV gamma);
+Bulletproof bulletproof_MAKE(const std::span<const rct::key> v, const rct::keyV gamma);
 Bulletproof bulletproof_MAKE(const std::span<const uint64_t> v, const rct::keyV gamma);
 bool bulletproof_VERIFY(const Bulletproof proof);
 bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs);

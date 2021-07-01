@@ -452,7 +452,7 @@ rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct:
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
 Bulletproof bulletproof_MAKE(const rct::key sv, const rct::key gamma)
 {
-  return bulletproof_MAKE(rct::keyV(1, sv), rct::keyV(1, gamma));
+  return bulletproof_MAKE(std::array<rct::key, 1>{sv}, rct::keyV(1, gamma));
 }
 
 Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma)
@@ -461,7 +461,7 @@ Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma)
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
+Bulletproof bulletproof_MAKE(const std::span<const rct::key> sv, const rct::keyV gamma)
 {
   CHECK_AND_ASSERT_THROW_MES(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
   CHECK_AND_ASSERT_THROW_MES(!sv.empty(), "sv is empty");
