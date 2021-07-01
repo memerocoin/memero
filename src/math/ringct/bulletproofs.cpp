@@ -58,8 +58,8 @@ constexpr size_t PIPPENGER_SIZE_LIMIT = 0;
 namespace rct
 {
 
-rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b);
-rct::keyV vector_powers(const rct::key &x, size_t n);
+rct::key vector_exponent(const std::span<rct::key> a, const std::span<rct::key> b);
+rct::keyV vector_powers(const rct::key x, const size_t n);
 rct::key inner_product(const std::span<const rct::key> a, const std::span<const rct::key> b);
 
 constexpr size_t maxN = 64;
@@ -122,7 +122,7 @@ void init_exponents()
 }
 
 /* Given two scalar arrays, construct a vector commitment */
-rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b)
+rct::key vector_exponent(const std::span<rct::key> a, const std::span<rct::key> b)
 {
   ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   ASSERT_OR_LOG_THROW(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
@@ -168,7 +168,7 @@ rct::key cross_vector_exponent8(size_t size, const std::vector<ge_p3> &A, size_t
 }
 
 /* Given a scalar, construct a vector of powers */
-rct::keyV vector_powers(const rct::key &x, size_t n)
+rct::keyV vector_powers(const rct::key x, const size_t n)
 {
   rct::keyV res(n);
   if (n == 0)
@@ -295,7 +295,7 @@ rct::keyV vector_subtract(const rct::keyV &a, const rct::key &b)
 }
 
 /* Multiply a scalar and a vector */
-rct::keyV vector_scalar(const epee::span<const rct::key> &a, const rct::key &x)
+rct::keyV vector_scalar(const std::span<const rct::key> a, const rct::key x)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -303,11 +303,6 @@ rct::keyV vector_scalar(const epee::span<const rct::key> &a, const rct::key &x)
     sc_mul(res[i].bytes, a[i].bytes, x.bytes);
   }
   return res;
-}
-
-rct::keyV vector_scalar(const rct::keyV &a, const rct::key &x)
-{
-  return vector_scalar(epee::span<const rct::key>(a.data(), a.size()), x);
 }
 
 rct::key sm(rct::key y, int n, const rct::key &x)
@@ -396,12 +391,12 @@ rct::keyV invert(rct::keyV x)
 }
 
 /* Compute the slice of a vector */
-epee::span<const rct::key> slice(const rct::keyV &a, size_t start, size_t stop)
+std::span<const rct::key> slice(const std::span<const rct::key> a, size_t start, size_t stop)
 {
   ASSERT_OR_LOG_THROW(start < a.size(), "Invalid start index");
   ASSERT_OR_LOG_THROW(stop <= a.size(), "Invalid stop index");
   ASSERT_OR_LOG_THROW(start < stop, "Invalid start/stop indices");
-  return epee::span<const rct::key>(&a[start], stop - start);
+  return a.subspan(start, stop - start);
 }
 
 rct::key hash_cache_mash(rct::key &hash_cache, const rct::key &mash0, const rct::key &mash1)
