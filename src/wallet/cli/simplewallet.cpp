@@ -1756,6 +1756,8 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
 
   crypto::ElectrumWords::bytes_to_words(recovery_val, electrum_words, mnemonic_language);
 
+  PAUSE_READLINE();
+
   if (!recover) {
     success_msg_writer(true) <<
       "\n" <<
