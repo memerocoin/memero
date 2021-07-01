@@ -141,6 +141,7 @@ pippenger_cache pippenger_init_cache(const std::vector<MultiexpData> data)
 
 rct::key pippenger(const std::vector<MultiexpData> data)
 {
+  const pippenger_cache local_cache = std::move(pippenger_init_cache(data));
   const size_t c = get_pippenger_c(data.size());
   const size_t bucket_size = 1 << c;
 
@@ -149,14 +150,12 @@ rct::key pippenger(const std::vector<MultiexpData> data)
   std::vector<ge_p3> buckets(bucket_size);
   std::vector<bool> buckets_init(bucket_size);
 
-  const pippenger_cache local_cache = std::move(pippenger_init_cache(data));
+  const rct::key maxscalar = data.empty() ? rct::zero() :
+    (
+     *std::max_element(data.begin(), data.end(),
+                       [](const auto x, const auto y) -> bool { return x.scalar < y.scalar; })
+     ).scalar;
 
-  rct::key maxscalar = rct::zero();
-  for (size_t i = 0; i < data.size(); ++i)
-  {
-    if (maxscalar < data[i].scalar)
-      maxscalar = data[i].scalar;
-  }
   size_t groups = 0;
   while (groups < 256 && !(maxscalar < pow2(groups)))
     ++groups;
