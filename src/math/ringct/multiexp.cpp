@@ -142,11 +142,12 @@ pippenger_cached_data pippenger_init_cache(const std::vector<MultiexpData> data)
 rct::key pippenger(const std::vector<MultiexpData> data)
 {
   const size_t c = get_pippenger_c(data.size());
+  const size_t bucket_size = 1 << c;
 
   ge_p3 result = ge_p3_identity;
   bool result_init = false;
-  std::vector<ge_p3> buckets(1<<c);
-  bool buckets_init[1<<9];
+  std::vector<ge_p3> buckets(bucket_size);
+  std::vector<bool> buckets_init(bucket_size);
 
   const pippenger_cached_data local_cache = std::move(pippenger_init_cache(data));
 
@@ -177,7 +178,8 @@ rct::key pippenger(const std::vector<MultiexpData> data)
           ge_p1p1_to_p2(&p2, &p1);
       }
     }
-    memset(buckets_init, 0, 1u<<c);
+
+    std::fill(buckets_init.begin(), buckets_init.end(), false);
 
     // partition scalars into buckets
     for (size_t i = 0; i < data.size(); ++i)
