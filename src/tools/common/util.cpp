@@ -35,10 +35,7 @@
 
 #include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...
 
-#include <wchar.h>
-
 #ifdef __GLIBC__
-#include <gnu/libc-version.h>
 #include <sys/resource.h>
 #endif
 
@@ -126,29 +123,14 @@ namespace tools
     mlog_configure("", true);
 
     setup_crash_dump();
-
-#ifdef __GLIBC__
-    const char *ver = gnu_get_libc_version();
-    if (!strcmp(ver, "2.25"))
-      MCLOG_RED(el::Level::Warning, "global", "Running with glibc " << ver << ", hangs may occur - change glibc version if possible");
-#endif
-
-#if OPENSSL_VERSION_NUMBER < 0x10100000 || defined(LIBRESSL_VERSION_TEXT)
-    SSL_library_init();
-#else
     OPENSSL_init_ssl(0, NULL);
-#endif
 
     return true;
   }
   void set_strict_default_file_permissions(bool strict)
   {
-#if defined(__MINGW32__) || defined(__MINGW__)
-    // no clue about the odd one out
-#else
     mode_t mode = strict ? 077 : 0;
     umask(mode);
-#endif
   }
 
   namespace
