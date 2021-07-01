@@ -106,6 +106,7 @@ void ge_p2_dbl(ge_p1p1 *, const ge_p2 *);
 
 extern const fe fe_d2;
 void ge_p3_to_cached(ge_cached *, const ge_p3 *);
+ge_cached ge_p3_to_cached_by_value(const ge_p3);
 
 /* From ge_p3_to_p2.c */
 

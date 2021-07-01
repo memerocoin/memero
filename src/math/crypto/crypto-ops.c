@@ -1545,6 +1545,13 @@ void ge_p3_to_cached(ge_cached *r, const ge_p3 *p) {
   fe_mul(r->T2d, p->T, fe_d2);
 }
 
+ge_cached ge_p3_to_cached_by_value(const ge_p3 p) {
+  ge_cached r;
+  ge_p3_to_cached(&r, &p);
+  return r;
+}
+
+
 /* From ge_p3_to_p2.c */
 
 /*
