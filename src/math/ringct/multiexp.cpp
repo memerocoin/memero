@@ -126,7 +126,7 @@ size_t get_pippenger_c(size_t N)
 
 typedef std::vector<ge_cached> pippenger_cache;
 
-pippenger_cache pippenger_init_cache(const std::vector<MultiexpData> data)
+pippenger_cache pippenger_init_cache(const std::span<MultiexpData> data)
 {
   pippenger_cache cache(data.size());
 
@@ -139,7 +139,7 @@ pippenger_cache pippenger_init_cache(const std::vector<MultiexpData> data)
   return cache;
 }
 
-rct::key pippenger(const std::vector<MultiexpData> data)
+rct::key pippenger(const std::span<MultiexpData> data)
 {
   const pippenger_cache local_cache = std::move(pippenger_init_cache(data));
   const size_t c = get_pippenger_c(data.size());

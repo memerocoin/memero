@@ -33,6 +33,8 @@
 
 #include "tools/epee/include/misc_log_ex.h"
 
+#include <span>
+
 
 namespace rct
 {
@@ -49,6 +51,6 @@ struct MultiexpData {
   }
 };
 
-rct::key pippenger(const std::vector<MultiexpData> data);
+rct::key pippenger(const std::span<MultiexpData> data);
 
 }

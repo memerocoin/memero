@@ -457,7 +457,7 @@ Bulletproof bulletproof_MAKE(const rct::key sv, const rct::key gamma)
 
 Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma)
 {
-  return bulletproof_MAKE(std::vector<uint64_t>(1, v), rct::keyV(1, gamma));
+  return bulletproof_MAKE(std::array<uint64_t, 1>{v}, rct::keyV(1, gamma));
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
@@ -694,7 +694,7 @@ try_again:
   return Bulletproof(std::move(V), A, S, T1, T2, taux, mu, std::move(L), std::move(R), aprime[0], bprime[0], t);
 }
 
-Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::keyV gamma)
+Bulletproof bulletproof_MAKE(const std::span<const uint64_t> v, const rct::keyV gamma)
 {
   CHECK_AND_ASSERT_THROW_MES(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
@@ -726,7 +726,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const std::vector<Bulletproof> proofs)
+bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 {
   init_exponents();
 
@@ -971,7 +971,7 @@ bool bulletproof_VERIFY(const std::vector<Bulletproof> proofs)
 
 bool bulletproof_VERIFY(const Bulletproof proof)
 {
-  return bulletproof_VERIFY(std::vector<Bulletproof>{proof});
+  return bulletproof_VERIFY(std::array<Bulletproof, 1>{proof});
 }
 
 }

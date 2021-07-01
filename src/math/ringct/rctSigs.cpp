@@ -73,7 +73,7 @@ namespace rct {
       catch (...) { return false; }
     }
 
-    bool verBulletproof(const std::vector<Bulletproof> proofs)
+    bool verBulletproof(const std::span<Bulletproof> proofs)
     {
       try { return bulletproof_VERIFY(proofs); }
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
