@@ -182,7 +182,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
     // partition scalars into buckets
     for (size_t i = 0; i < data.size(); ++i)
     {
-      unsigned int bucket = 0;
+      size_t bucket = 0;
       for (size_t j = 0; j < c; ++j)
         if (test(data[i].scalar, k*c+j))
           bucket |= 1<<j;
