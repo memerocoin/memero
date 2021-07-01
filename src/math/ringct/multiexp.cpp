@@ -147,8 +147,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
 
   ge_p3 result = ge_p3_identity;
   bool result_init = false;
-  std::vector<ge_p3> buckets(bucket_size);
-  std::vector<bool> buckets_init(bucket_size);
+  std::vector<std::optional<ge_p3>> buckets(bucket_size);
 
   const rct::key maxscalar = data.empty() ? rct::zero() :
     (
@@ -178,7 +177,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
       }
     }
 
-    std::fill(buckets_init.begin(), buckets_init.end(), false);
+    std::fill(buckets.begin(), buckets.end(), std::nullopt);
 
     // partition scalars into buckets
     for (size_t i = 0; i < data.size(); ++i)
@@ -190,14 +189,13 @@ rct::key pippenger(const std::span<MultiexpData> data)
       if (bucket == 0)
         continue;
       CHECK_AND_ASSERT_THROW_MES(bucket < (1u<<c), "bucket overflow");
-      if (buckets_init[bucket])
+      if (buckets[bucket])
       {
-        add(buckets[bucket], local_cache[i]);
+        add(*buckets[bucket], local_cache[i]);
       }
       else
       {
-        buckets[bucket] = data[i].point;
-        buckets_init[bucket] = true;
+        buckets[bucket] = {data[i].point};
       }
     }
 
@@ -206,13 +204,13 @@ rct::key pippenger(const std::span<MultiexpData> data)
     bool pail_init = false;
     for (size_t i = (1<<c)-1; i > 0; --i)
     {
-      if (buckets_init[i])
+      if (buckets[i])
       {
         if (pail_init)
-          add(pail, buckets[i]);
+          add(pail, *buckets[i]);
         else
         {
-          pail = buckets[i];
+          pail = *buckets[i];
           pail_init = true;
         }
       }
