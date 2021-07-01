@@ -39,11 +39,11 @@ namespace rct {
     //Various key initialization functions
 
     //Creates a zero scalar
-    inline key zero() { return Z; }
+    consteval key zero() { return Z; }
     //Creates a zero elliptic curve point
-    inline key identity() { return I; }
+    consteval key identity() { return I; }
     //Creates a key equal to the curve order
-    inline key curveOrder() { return L; }
+    consteval key curveOrder() { return L; }
     //copies a scalar or point
     inline void copy(key &AA, const key &A) { memcpy(&AA, &A, 32); }
     inline key copy(const key & A) { key AA; memcpy(&AA, &A, 32); return AA; }

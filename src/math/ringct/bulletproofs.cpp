@@ -60,17 +60,14 @@ namespace rct
 
 rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b);
 rct::keyV vector_powers(const rct::key &x, size_t n);
-rct::keyV vector_dup(const rct::key &x, size_t n);
 rct::key inner_product(const std::span<const rct::key> a, const std::span<const rct::key> b);
 
-constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
+const rct::keyV twoN = vector_powers(TWO, maxN);
 
 rct::key Hi[maxN*maxM], Gi[maxN*maxM];
 ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
 
-const rct::keyV oneN = vector_dup(rct::identity(), maxN);
-const rct::keyV twoN = vector_powers(TWO, maxN);
 const rct::key ip12 = inner_product(oneN, twoN);
 
 std::mutex init_mutex;
@@ -304,12 +301,6 @@ rct::keyV vector_scalar(const epee::span<const rct::key> &a, const rct::key &x)
 rct::keyV vector_scalar(const rct::keyV &a, const rct::key &x)
 {
   return vector_scalar(epee::span<const rct::key>(a.data(), a.size()), x);
-}
-
-/* Create a vector from copies of a single value */
-rct::keyV vector_dup(const rct::key &x, size_t N)
-{
-  return rct::keyV(N, x);
 }
 
 rct::key sm(rct::key y, int n, const rct::key &x)
