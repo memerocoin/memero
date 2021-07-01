@@ -62,7 +62,19 @@ rct::key vector_exponent(const rct::keyV &a, const rct::keyV &b);
 rct::keyV vector_powers(const rct::key &x, size_t n);
 rct::key inner_product(const std::span<const rct::key> a, const std::span<const rct::key> b);
 
+constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
+
+constexpr std::array<rct::key, maxN> oneN = {
+  I, I, I, I, I, I, I, I,
+  I, I, I, I, I, I, I, I,
+  I, I, I, I, I, I, I, I,
+  I, I, I, I, I, I, I, I,
+  I, I, I, I, I, I, I, I,
+  I, I, I, I, I, I, I, I,
+  I, I, I, I, I, I, I, I,
+  I, I, I, I, I, I, I, I,
+};
 const rct::keyV twoN = vector_powers(TWO, maxN);
 
 rct::key Hi[maxN*maxM], Gi[maxN*maxM];
