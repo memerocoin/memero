@@ -660,9 +660,8 @@ public:
 
     if (LEVIN_OK != err_code)
     {
-      const std::basic_string<uint8_t> stub_buff;
       // Never call callback inside critical section, that can cause deadlock
-      cb(err_code, std::span(stub_buff), m_connection_context);
+      cb(err_code, std::span<uint8_t>(), m_connection_context);
       return false;
     }
 
