@@ -53,7 +53,7 @@ namespace rct {
      keyV& C
      , keyV& masks
      , const std::vector<uint64_t> amounts
-     , const epee::span<const key> sk)
+     , const std::span<const key> sk)
     {
         hw::device& hwdev = hw::get_device("default");
         ASSERT_OR_LOG_THROW(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
@@ -503,7 +503,7 @@ namespace rct {
             size_t amounts_proved = 0;
             {
                 rct::keyV C, masks;
-                const epee::span<const key> keys{&amount_keys[0], amount_keys.size()};
+                const std::span<const key> keys{&amount_keys[0], amount_keys.size()};
                 rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));
 
                 for (i = 0; i < outamounts.size(); ++i)
