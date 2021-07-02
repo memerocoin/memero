@@ -119,7 +119,7 @@ namespace cryptonote
       *
       * @return true if the transactions were accepted, false otherwise
       */
-     bool handle_incoming_txs(const std::vector<tx_blob_entry> tx_blobs, epee::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed);
+     bool handle_incoming_txs_span(const std::vector<tx_blob_entry> tx_blobs, std::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed);
 
      /**
       * @brief handles a list of incoming transactions
@@ -137,7 +137,7 @@ namespace cryptonote
      bool handle_incoming_txs(const std::vector<tx_blob_entry> tx_blobs, std::vector<tx_verification_context>& tvc, relay_method tx_relay, bool relayed)
      {
        tvc.resize(tx_blobs.size());
-       return handle_incoming_txs(tx_blobs, epee::to_mut_span(tvc), tx_relay, relayed);
+       return handle_incoming_txs_span(tx_blobs, tvc, tx_relay, relayed);
      }
 
      /**

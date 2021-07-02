@@ -474,7 +474,7 @@ namespace cryptonote
     bad_semantics_txes_lock.unlock();
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_txs(const std::vector<tx_blob_entry> tx_blobs, epee::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed)
+  bool core::handle_incoming_txs_span(const std::vector<tx_blob_entry> tx_blobs, std::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed)
   {
     TRY_ENTRY();
 
