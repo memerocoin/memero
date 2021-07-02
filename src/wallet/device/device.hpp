@@ -35,6 +35,8 @@
 
 #include "config/cryptonote.hpp"
 
+#include <memory>
+
 
 #ifndef USE_DEVICE_LEDGER
 #define USE_DEVICE_LEDGER 1

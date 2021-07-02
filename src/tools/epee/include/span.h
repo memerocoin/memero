@@ -28,96 +28,11 @@
 
 #pragma once
 
-#include <algorithm>
-#include <memory>
 #include <string>
 #include <span>
 
 namespace epee
 {
-  /*!
-    \brief Non-owning sequence of data. Does not deep copy
-
-    Inspired by `gsl::span` and/or `boost::iterator_range`. This class is
-    intended to be used as a parameter type for functions that need to take a
-    writable or read-only sequence of data. Most common cases are `span<char>`
-    and `span<std::uint8_t>`. Using as a class member is only recommended if
-    clearly documented as not doing a deep-copy. C-arrays are easily convertible
-    to this type.
-
-    \note Conversion from C string literal to `span<const char>` will include
-      the NULL-terminator.
-    \note Never allows derived-to-base pointer conversion; an array of derived
-      types is not an array of base types.
-   */
-  template<typename T>
-  class span
-  {
-    template<typename U>
-    static constexpr bool safe_conversion() noexcept
-    {
-      // Allow exact matches or `T*` -> `const T*`.
-      using with_const = typename std::add_const<U>::type;
-      return std::is_same<T, U>() ||
-        (std::is_const<T>() && std::is_same<T, with_const>());
-    }
-
-  public:
-    using value_type = T;
-    using size_type = std::size_t;
-    using difference_type = std::ptrdiff_t;
-    using pointer = T*;
-    using const_pointer = const T*;
-    using reference = T&;
-    using const_reference = const T&;
-    using iterator = pointer;
-    using const_iterator = const_pointer;
-
-    constexpr span() noexcept : ptr(nullptr), len(0) {}
-    constexpr span(std::nullptr_t) noexcept : span() {}
-
-    //! Prevent derived-to-base conversions; invalid in this context.
-    template<typename U, typename = typename std::enable_if<safe_conversion<U>()>::type>
-    constexpr span(U* const src_ptr, const std::size_t count) noexcept
-      : ptr(src_ptr), len(count) {}
-
-    //! Conversion from C-array. Prevents common bugs with sizeof + arrays.
-    template<std::size_t N>
-    constexpr span(T (&src)[N]) noexcept : span(src, N) {}
-
-    constexpr span(const span&) noexcept = default;
-    span& operator=(const span&) noexcept = default;
-
-    /*! Try to remove `amount` elements from beginning of span.
-    \return Number of elements removed. */
-    std::size_t remove_prefix(std::size_t amount) noexcept
-    {
-        amount = std::min(len, amount);
-        ptr += amount;
-        len -= amount;
-        return amount;
-    }
-
-    constexpr iterator begin() const noexcept { return ptr; }
-    constexpr const_iterator cbegin() const noexcept { return ptr; }
-
-    constexpr iterator end() const noexcept { return begin() + size(); }
-    constexpr const_iterator cend() const noexcept { return cbegin() + size(); }
-
-    constexpr bool empty() const noexcept { return size() == 0; }
-    constexpr pointer data() const noexcept { return ptr; }
-    constexpr std::size_t size() const noexcept { return len; }
-    constexpr std::size_t size_bytes() const noexcept { return size() * sizeof(value_type); }
-
-    T &operator[](size_t idx) noexcept { return ptr[idx]; }
-    const T &operator[](size_t idx) const noexcept { return ptr[idx]; }
-
-  private:
-    T* ptr;
-    std::size_t len;
-  };
-
-
 
   template<typename T>
   constexpr bool has_padding() noexcept
