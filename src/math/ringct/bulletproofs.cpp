@@ -262,7 +262,7 @@ rct::keyV hadamard(const keyS a, const keyS b)
 }
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key &a, const rct::key &b)
+void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key a, const rct::key b)
 {
   ASSERT_OR_LOG_THROW((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
