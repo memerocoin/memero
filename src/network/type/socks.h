@@ -135,7 +135,7 @@ namespace socks
         socks::version socks_version() const noexcept { return ver_; }
 
         //! \return Contents of internal buffer.
-        epee::span<const std::uint8_t> buffer() const noexcept
+        std::span<const std::uint8_t> buffer() const noexcept
         {
             return {buffer_, buffer_size_};
         }

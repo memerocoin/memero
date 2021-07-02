@@ -56,7 +56,7 @@ namespace socks
             boost::endian::big_uint32_t ip;
         };
 
-        std::size_t write_domain_header(epee::span<std::uint8_t> out, const std::uint8_t command, const std::uint16_t port, const std::string_view domain)
+        std::size_t write_domain_header(std::span<std::uint8_t> out, const std::uint8_t command, const std::uint16_t port, const std::string_view domain)
         {
             if (std::numeric_limits<std::size_t>::max() - sizeof(v4_header) - 2 < domain.size())
                 return 0;
@@ -68,13 +68,13 @@ namespace socks
             // version 4, 1 indicates invalid ip for domain extension
             const v4_header temp{4, command, port, std::uint32_t(1)};
             std::memcpy(out.data(), std::addressof(temp), sizeof(temp));
-            out.remove_prefix(sizeof(temp));
+            out = out.subspan(sizeof(temp));
 
             *(out.data()) = 0;
-            out.remove_prefix(1);
+            out = out.subspan(1);
 
             std::memcpy(out.data(), domain.data(), domain.size());
-            out.remove_prefix(domain.size());
+            out = out.subspan(domain.size());
 
             *(out.data()) = 0;
             return buf_size;
