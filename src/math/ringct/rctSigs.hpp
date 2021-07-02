@@ -68,7 +68,7 @@ namespace rct {
      , const unsigned int
      );
 
-    bool verRctCLSAGSimple(const key, const clsag, const ctkeyV, const key);
+    bool verRctCLSAGSimple(const key, const clsag, const ctkeyS, const key);
 
     //RingCT protocol
     //genRct:
@@ -108,7 +108,7 @@ namespace rct {
      );
 
     bool verRctSemanticsSimple(const rctSig rv);
-    bool verRctSemanticsSimple(const std::vector<rctSig> rv);
+    bool verRctSemanticsSimple(const std::span<const rctSig> rv);
     bool verRctNonSemanticsSimple(const rctSig rv);
     inline bool verRctSimple(const rctSig rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
     amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, key& mask);

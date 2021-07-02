@@ -312,7 +312,7 @@ namespace rct {
     }
 
 
-    bool verRctCLSAGSimple(const key message, const clsag sig, const ctkeyV pubs, const key C_offset) {
+    bool verRctCLSAGSimple(const key message, const clsag sig, const ctkeyS pubs, const key C_offset) {
         try
         {
             const size_t n = pubs.size();
@@ -585,7 +585,7 @@ namespace rct {
         return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
     }
 
-    bool verRctSemanticsSimple(const std::vector<rctSig> rvv) {
+    bool verRctSemanticsSimple(const std::span<const rctSig> rvv) {
       try
       {
         tools::threadpool& tpool = tools::threadpool::getInstance();
