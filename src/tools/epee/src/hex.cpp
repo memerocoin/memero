@@ -38,7 +38,7 @@ namespace epee
   namespace
   {
     template<typename T>
-    void write_hex(T&& out, const span<const std::uint8_t> src)
+    void write_hex(T&& out, const std::span<const std::uint8_t> src)
     {
       static constexpr const char hex[] = "0123456789abcdef";
       static_assert(sizeof(hex) == 17, "bad string size");
@@ -53,7 +53,7 @@ namespace epee
   }
 
   template<typename T>
-  T to_hex::convert(const span<const std::uint8_t> src)
+  T to_hex::convert(const std::span<const std::uint8_t> src)
   {
     if (std::numeric_limits<std::size_t>::max() / 2 < src.size())
       throw std::range_error("hex_view::to_string exceeded maximum size");
@@ -64,22 +64,22 @@ namespace epee
     return out;
   }
 
-  std::string to_hex::string(const span<const std::uint8_t> src) { return convert<std::string>(src); }
-  epee::wipeable_string to_hex::wipeable_string(const span<const std::uint8_t> src) { return convert<epee::wipeable_string>(src); }
+  std::string to_hex::string(const std::span<const std::uint8_t> src) { return convert<std::string>(src); }
+  epee::wipeable_string to_hex::wipeable_string(const std::span<const std::uint8_t> src) { return convert<epee::wipeable_string>(src); }
 
-  void to_hex::buffer(std::ostream& out, const span<const std::uint8_t> src)
+  void to_hex::buffer(std::ostream& out, const std::span<const std::uint8_t> src)
   {
     write_hex(std::ostreambuf_iterator<char>{out}, src);
   }
 
-  void to_hex::formatted(std::ostream& out, const span<const std::uint8_t> src)
+  void to_hex::formatted(std::ostream& out, const std::span<const std::uint8_t> src)
   {
     out.put('<');
     buffer(out, src);
     out.put('>');
   }
 
-  void to_hex::buffer_unchecked(char* out, const span<const std::uint8_t> src) noexcept
+  void to_hex::buffer_unchecked(char* out, const std::span<const std::uint8_t> src) noexcept
   {
     return write_hex(out, src);
   }
