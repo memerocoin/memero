@@ -127,7 +127,6 @@ namespace
 
 TEST(ToHex, String)
 {
-  EXPECT_TRUE(epee::to_hex::string(nullptr).empty());
   EXPECT_EQ(
     std::string{"ffab0100"},
     epee::to_hex::string(epee::as_byte_span("\xff\xab\x01"))
@@ -135,7 +134,7 @@ TEST(ToHex, String)
 
   const std::vector<unsigned char> all_bytes = get_all_bytes();
   EXPECT_EQ(
-    std_to_hex(all_bytes), epee::to_hex::string(epee::to_span(all_bytes))
+    std_to_hex(all_bytes), epee::to_hex::string((all_bytes))
   );
 
 }
@@ -184,8 +183,6 @@ TEST(ToHex, ArrayFromPod)
 TEST(ToHex, Ostream)
 {
   std::stringstream out;
-  epee::to_hex::buffer(out, nullptr);
-  EXPECT_TRUE(out.str().empty());
 
   {
     const std::uint8_t source[] = {0xff, 0xab, 0x01, 0x00};
@@ -198,17 +195,14 @@ TEST(ToHex, Ostream)
   const std::vector<unsigned char> all_bytes = get_all_bytes();
 
   expected.append(std_to_hex(all_bytes));
-  epee::to_hex::buffer(out, epee::to_span(all_bytes));
+  epee::to_hex::buffer(out, (all_bytes));
   EXPECT_EQ(expected, out.str());
 }
 
 TEST(ToHex, Formatted)
 {
   std::stringstream out;
-  std::string expected{"<>"};
-
-  epee::to_hex::formatted(out, nullptr);
-  EXPECT_EQ(expected, out.str());
+  std::string expected{};
 
   expected.append("<ffab0100>");
   epee::to_hex::formatted(out, epee::as_byte_span("\xFF\xAB\x01"));
@@ -217,7 +211,7 @@ TEST(ToHex, Formatted)
   const std::vector<unsigned char> all_bytes = get_all_bytes();
 
   expected.append("<").append(std_to_hex(all_bytes)).append(">");
-  epee::to_hex::formatted(out, epee::to_span(all_bytes));
+  epee::to_hex::formatted(out, (all_bytes));
   EXPECT_EQ(expected, out.str());
 }
 
@@ -247,16 +241,16 @@ TEST(FromHex, ToBuffer)
 
   std::vector<std::uint8_t> out{};
   out.resize(sizeof(binary));
-  EXPECT_FALSE(epee::from_hex::to_buffer(epee::to_mut_span(out), hex));
+  EXPECT_FALSE(epee::from_hex::to_buffer((out), hex));
 
   std::string_view portion{hex};
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::from_hex::to_buffer(epee::to_mut_span(out), portion));
+  EXPECT_FALSE(epee::from_hex::to_buffer((out), portion));
 
   portion.remove_suffix(1);
   EXPECT_FALSE(epee::from_hex::to_buffer({out.data(), out.size() - 1}, portion));
 
-  EXPECT_TRUE(epee::from_hex::to_buffer(epee::to_mut_span(out), portion));
+  EXPECT_TRUE(epee::from_hex::to_buffer((out), portion));
   const std::vector<std::uint8_t> expected{std::begin(binary), std::end(binary)};
   EXPECT_EQ(expected, out);
 }
