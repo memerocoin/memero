@@ -116,3 +116,5 @@ etc/task/mainnet
 
 ### Emacs
 .#*
+
+vendor/rapidjson
