@@ -128,9 +128,6 @@ namespace rct {
     key cn_fast_hash(const key &in);
     key hash_to_scalar(const key &in);
     //for mg sigs
-    key cn_fast_hash(const ctkeyV &PC);
-    key hash_to_scalar(const ctkeyV &PC);
-    //for mg sigs
     key cn_fast_hash(const keyV &keys);
     key hash_to_scalar(const keyV &keys);
     //for ANSL

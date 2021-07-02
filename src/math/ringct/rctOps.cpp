@@ -351,22 +351,6 @@ namespace rct {
         return hash;
      }
 
-    //cn_fast_hash for multisig purpose
-    //This takes the outputs and commitments
-    //and hashes them into a 32 byte sized key
-    key cn_fast_hash(const ctkeyV &PC) {
-        if (PC.empty()) return rct::hash2rct(crypto::cn_fast_hash("", 0));
-        key rv;
-        cn_fast_hash(rv, &PC[0], 64*PC.size());
-        return rv;
-    }
-
-    key hash_to_scalar(const ctkeyV &PC) {
-        key rv = cn_fast_hash(PC);
-        sc_reduce32(rv.bytes);
-        return rv;
-    }
-
    //cn_fast_hash for a key-vector of arbitrary length
    //this is useful since you take a number of keys
    //put them in the key vector and it concatenates them
