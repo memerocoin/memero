@@ -40,6 +40,8 @@ extern "C" {
 
 #include <sodium/crypto_verify_32.h>
 
+#include <span>
+
 
 //Namespace specifically for ring ct code
 namespace rct {
@@ -59,6 +61,7 @@ namespace rct {
     };
     typedef std::vector<key> keyV; //vector of keys
     typedef std::vector<keyV> keyM; //matrix of keys (indexed by column first)
+    typedef std::span<const key> keyS; //vector of keys
 
     //containers For CT operations
     //if it's  representing a private ctkey then "dest" contains the secret key of the address
