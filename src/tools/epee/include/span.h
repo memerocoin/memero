@@ -133,11 +133,9 @@ namespace epee
     return {reinterpret_cast<const T*>(s.data()), s.size()};
   }
 
-
-
   //! \return `span<const std::uint8_t>` which represents the bytes at `&src`.
   template<typename T>
-  span<const std::uint8_t> as_byte_span(const T& src) noexcept
+  std::span<const std::uint8_t> as_byte_span(const T& src) noexcept
   {
     static_assert(!std::is_empty<T>(), "empty types will not work -> sizeof == 1");
     static_assert(!has_padding<T>(), "source type may have padding");
@@ -152,9 +150,5 @@ namespace epee
     static_assert(!has_padding<T>(), "source type may have padding");
     return {reinterpret_cast<std::uint8_t*>(std::addressof(src)), sizeof(T)};
   }
-
-
-
-
 
 }
