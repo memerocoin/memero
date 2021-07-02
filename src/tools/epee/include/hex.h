@@ -32,6 +32,8 @@
 #include "tools/epee/include/wipeable_string.h"
 #include "tools/epee/include/span.h"
 
+#include <span>
+
 namespace epee
 {
   struct to_hex
@@ -80,7 +82,7 @@ namespace epee
   {
     static bool to_string(std::string& out, std::string_view src);
 
-    static bool to_buffer(span<std::uint8_t> out, std::string_view src) noexcept;
+    static bool to_buffer(std::span<std::uint8_t> out, std::string_view src) noexcept;
 
   private:
     static bool to_buffer_unchecked(std::uint8_t* out, std::string_view src) noexcept;

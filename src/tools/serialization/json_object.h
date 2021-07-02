@@ -123,7 +123,7 @@ constexpr bool is_to_hex()
   return std::is_standard_layout<Type>() && std::is_trivial<Type>() && !std::is_integral<Type>();
 }
 
-void read_hex(const rapidjson::Value& val, epee::span<std::uint8_t> dest);
+void read_hex(const rapidjson::Value& val, std::span<std::uint8_t> dest);
 
 // POD to json key
 template <class Type>

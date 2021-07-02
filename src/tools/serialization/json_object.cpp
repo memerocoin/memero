@@ -117,7 +117,7 @@ namespace
   }
 }
 
-void read_hex(const rapidjson::Value& val, epee::span<std::uint8_t> dest)
+void read_hex(const rapidjson::Value& val, std::span<std::uint8_t> dest)
 {
   if (!val.IsString())
   {

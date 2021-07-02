@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <span>
 
 namespace epee
 {
@@ -116,6 +117,32 @@ namespace epee
     std::size_t len;
   };
 
+
+
+  template<typename T>
+  constexpr bool has_padding() noexcept
+  {
+    return !std::is_standard_layout<T>() || alignof(T) != 1;
+  }
+
+  //! \return Cast data from `src` as `span<const std::uint8_t>`.
+  template<typename T>
+  span<const std::uint8_t> to_byte_span(const span<const T> src) noexcept
+  {
+    static_assert(!has_padding<T>(), "source type may have padding");
+    return {reinterpret_cast<const std::uint8_t*>(src.data()), src.size_bytes()};
+  }
+
+
+
+
+
+
+
+
+
+
+
   //! \return `span<const T::value_type>` from a STL compatible `src`.
   template<typename T>
   constexpr span<const typename T::value_type> to_span(const T& src)
@@ -132,20 +159,6 @@ namespace epee
     return {src.data(), src.size()};
   }
 
-  template<typename T>
-  constexpr bool has_padding() noexcept
-  {
-    return !std::is_standard_layout<T>() || alignof(T) != 1;
-  }
-
-  //! \return Cast data from `src` as `span<const std::uint8_t>`.
-  template<typename T>
-  span<const std::uint8_t> to_byte_span(const span<const T> src) noexcept
-  {
-    static_assert(!has_padding<T>(), "source type may have padding");
-    return {reinterpret_cast<const std::uint8_t*>(src.data()), src.size_bytes()};
-  }
-
   //! \return `span<const std::uint8_t>` which represents the bytes at `&src`.
   template<typename T>
   span<const std::uint8_t> as_byte_span(const T& src) noexcept
@@ -157,7 +170,7 @@ namespace epee
 
   //! \return `span<std::uint8_t>` which represents the bytes at `&src`.
   template<typename T>
-  span<std::uint8_t> as_mut_byte_span(T& src) noexcept
+  std::span<std::uint8_t> as_mut_byte_span(T& src) noexcept
   {
     static_assert(!std::is_empty<T>(), "empty types will not work -> sizeof == 1");
     static_assert(!has_padding<T>(), "source type may have padding");
@@ -171,4 +184,10 @@ namespace epee
     static_assert(std::is_same<T, char>() || std::is_same<T, unsigned char>() || std::is_same<T, int8_t>() || std::is_same<T, uint8_t>(), "Unexpected type");
     return {reinterpret_cast<const T*>(s.data()), s.size()};
   }
+
+
+
+
+
+
 }

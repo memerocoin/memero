@@ -91,7 +91,7 @@ namespace epee
     return to_buffer_unchecked(reinterpret_cast<std::uint8_t*>(&out[0]), src);
   }
 
-  bool from_hex::to_buffer(span<std::uint8_t> out, const std::string_view src) noexcept
+  bool from_hex::to_buffer(std::span<std::uint8_t> out, const std::string_view src) noexcept
   {
     if (src.size() / 2 != out.size())
       return false;
