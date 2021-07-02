@@ -38,6 +38,7 @@
 
 #include <cassert>
 #include <mutex>
+#include <memory>
 
 
 namespace {
