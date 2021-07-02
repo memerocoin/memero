@@ -98,36 +98,6 @@ namespace epee
       CATCH_ENTRY("portable_storage::load_from_binary", false);
     }
 
-    bool portable_storage::load_from_binary(const epee::span<const uint8_t> source, const limits_t *limits)
-    {
-      m_root.m_entries.clear();
-      if(source.size() < sizeof(storage_block_header))
-      {
-        LOG_ERROR("portable_storage: wrong binary format, packet size = " << source.size() << " less than expected sizeof(storage_block_header)=" << sizeof(storage_block_header));
-        return false;
-      }
-      storage_block_header* pbuff = (storage_block_header*)source.data();
-      if(pbuff->m_signature_a != SWAP32LE(PORTABLE_STORAGE_SIGNATUREA) ||
-        pbuff->m_signature_b != SWAP32LE(PORTABLE_STORAGE_SIGNATUREB)
-        )
-      {
-        LOG_ERROR("portable_storage: wrong binary format - signature mismatch");
-        return false;
-      }
-      if(pbuff->m_ver != PORTABLE_STORAGE_FORMAT_VER)
-      {
-        LOG_ERROR("portable_storage: wrong binary format - unknown format ver = " << pbuff->m_ver);
-        return false;
-      }
-      TRY_ENTRY();
-      throwable_buffer_reader buf_reader(source.data()+sizeof(storage_block_header), source.size()-sizeof(storage_block_header));
-      if (limits)
-        buf_reader.set_limits(limits->n_objects, limits->n_fields, limits->n_strings);
-      buf_reader.read(m_root);
-      return true;//TODO:
-      CATCH_ENTRY("portable_storage::load_from_binary", false);
-    }
-
     hsection portable_storage::open_section(const std::string& section_name,  hsection hparent_section, bool create_if_notexist)
     {
       TRY_ENTRY();

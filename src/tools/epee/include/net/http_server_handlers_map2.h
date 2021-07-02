@@ -103,7 +103,7 @@
       handled = true; \
       uint64_t ticks = epee::misc_utils::get_tick_count(); \
       boost::value_initialized<command_type::request> req; \
-      bool parse_res = epee::serialization::load_t_from_binary(static_cast<command_type::request&>(req), epee::strspan<uint8_t>(query_info.m_body)); \
+      bool parse_res = epee::serialization::load_t_from_binary(static_cast<command_type::request&>(req), query_info.m_body); \
       ASSERT_OR_LOG_RETURN(parse_res, false, "Failed to parse bin body data, body size=" << query_info.m_body.size()); \
       uint64_t ticks1 = epee::misc_utils::get_tick_count(); \
       boost::value_initialized<command_type::response> resp;\
