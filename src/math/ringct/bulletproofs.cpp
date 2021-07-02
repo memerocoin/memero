@@ -58,9 +58,9 @@ constexpr size_t PIPPENGER_SIZE_LIMIT = 0;
 namespace rct
 {
 
-rct::key vector_exponent(const std::span<rct::key> a, const std::span<rct::key> b);
+rct::key vector_exponent(const keyS a, const keyS b);
 rct::keyV vector_powers(const rct::key x, const size_t n);
-rct::key inner_product(const std::span<const rct::key> a, const std::span<const rct::key> b);
+rct::key inner_product(const keyS a, const keyS b);
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
@@ -123,7 +123,7 @@ void init_exponents()
 }
 
 /* Given two scalar arrays, construct a vector commitment */
-rct::key vector_exponent(const std::span<rct::key> a, const std::span<rct::key> b)
+rct::key vector_exponent(const keyS a, const keyS b)
 {
   ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   ASSERT_OR_LOG_THROW(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
@@ -146,9 +146,9 @@ rct::key cross_vector_exponent8
  , const size_t Ao
  , const std::span<ge_p3> B
  , const size_t Bo
- , const std::span<rct::key> a
+ , const keyS a
  , const size_t ao
- , const std::span<rct::key> b
+ , const keyS b
  , const size_t bo
  , const rct::keyV *scale
  , const ge_p3 *extra_point
@@ -238,7 +238,7 @@ rct::key vector_power_sum(const rct::key x_in, const size_t n_in)
 }
 
 /* Given two scalar arrays, construct the inner product */
-rct::key inner_product(const std::span<const rct::key> a, const std::span<const rct::key> b)
+rct::key inner_product(const keyS a, const keyS b)
 {
   ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::key res = rct::zero();
@@ -250,7 +250,7 @@ rct::key inner_product(const std::span<const rct::key> a, const std::span<const 
 }
 
 /* Given two scalar arrays, construct the Hadamard product */
-rct::keyV hadamard(const std::span<const rct::key> a, const std::span<const rct::key> b)
+rct::keyV hadamard(const keyS a, const keyS b)
 {
   ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::keyV res(a.size());
@@ -280,7 +280,7 @@ void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key
 }
 
 /* Add two vectors */
-rct::keyV vector_add(const std::span<const rct::key> a, const std::span<const rct::key> b)
+rct::keyV vector_add(const keyS a, const keyS b)
 {
   ASSERT_OR_LOG_THROW(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::keyV res(a.size());
@@ -292,7 +292,7 @@ rct::keyV vector_add(const std::span<const rct::key> a, const std::span<const rc
 }
 
 /* Add a scalar to all elements of a vector */
-rct::keyV vector_add(const std::span<const rct::key> a, const rct::key b)
+rct::keyV vector_add(const keyS a, const rct::key b)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -303,7 +303,7 @@ rct::keyV vector_add(const std::span<const rct::key> a, const rct::key b)
 }
 
 /* Subtract a scalar from all elements of a vector */
-rct::keyV vector_subtract(const std::span<const rct::key> a, const rct::key b)
+rct::keyV vector_subtract(const keyS a, const rct::key b)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -314,7 +314,7 @@ rct::keyV vector_subtract(const std::span<const rct::key> a, const rct::key b)
 }
 
 /* Multiply a scalar and a vector */
-rct::keyV vector_scalar(const std::span<const rct::key> a, const rct::key x)
+rct::keyV vector_scalar(const keyS a, const rct::key x)
 {
   rct::keyV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
@@ -413,7 +413,7 @@ rct::keyV invert(rct::keyV x)
 }
 
 /* Compute the slice of a vector */
-std::span<const rct::key> slice(const std::span<const rct::key> a, size_t start, size_t stop)
+keyS slice(const keyS a, size_t start, size_t stop)
 {
   ASSERT_OR_LOG_THROW(start < a.size(), "Invalid start index");
   ASSERT_OR_LOG_THROW(stop <= a.size(), "Invalid stop index");
