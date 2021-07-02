@@ -591,7 +591,10 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::handle_incoming_tx(const tx_blob_entry tx_blob, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
-    return handle_incoming_txs(std::vector{tx_blob}, {std::addressof(tvc), 1}, tx_relay, relayed);
+    std::vector<tx_verification_context> tvcV{tvc};
+    const bool r = handle_incoming_txs(std::vector{tx_blob}, tvcV, tx_relay, relayed);
+    tvc = tvcV[0];
+    return r;
   }
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_semantic(const transaction& tx, bool keeped_by_block) const
