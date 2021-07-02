@@ -74,6 +74,7 @@ namespace rct {
     };
     typedef std::vector<ctkey> ctkeyV;
     typedef std::vector<ctkeyV> ctkeyM;
+    typedef std::span<const ctkey> ctkeyS;
 
     //data for passing the amount to the receiver secretly
     // If the pedersen commitment to an amount is C = aG + bH,
