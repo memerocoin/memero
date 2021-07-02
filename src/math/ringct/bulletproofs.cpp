@@ -80,7 +80,7 @@ const rct::keyV twoN = vector_powers(TWO, maxN);
 rct::key Hi[maxN*maxM], Gi[maxN*maxM];
 ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
 
-const rct::key ip12 = inner_product(oneN, twoN);
+const static rct::key ip12 = inner_product(oneN, twoN);
 
 std::mutex init_mutex;
 
