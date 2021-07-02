@@ -215,7 +215,7 @@ namespace cryptonote
       * @brief called when a transaction is relayed.
       * @note Should only be invoked from `levin_notify`.
       */
-     virtual void on_transactions_relayed(epee::span<const cryptonote::blobdata> tx_blobs, relay_method tx_relay) final;
+     virtual void on_transactions_relayed(const std::vector<cryptonote::blobdata> tx_blobs, relay_method tx_relay) final;
 
 
      /**

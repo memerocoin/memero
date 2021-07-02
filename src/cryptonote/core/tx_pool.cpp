@@ -694,7 +694,7 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------------------------
-  void tx_memory_pool::set_relayed(const epee::span<const crypto::hash> hashes, const relay_method method)
+  void tx_memory_pool::set_relayed(const std::vector<crypto::hash> hashes, const relay_method method)
   {
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
     LOCK_LOCKABLE_OBJECT(m_blockchain);

@@ -1762,7 +1762,7 @@ namespace nodetool
     {
       const cryptonote::relay_method tx_relay = cryptonote::relay_method::fluff;
 
-      core.on_transactions_relayed(epee::to_span(txs), tx_relay);
+      core.on_transactions_relayed(txs, tx_relay);
       if (network.second.m_notifier.send_txs(std::move(txs), source))
         return network.first;
       return enet::zone::invalid;

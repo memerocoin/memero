@@ -829,7 +829,7 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  void core::on_transactions_relayed(const epee::span<const cryptonote::blobdata> tx_blobs, const relay_method tx_relay)
+  void core::on_transactions_relayed(const std::vector<cryptonote::blobdata> tx_blobs, const relay_method tx_relay)
   {
     std::vector<crypto::hash> tx_hashes{};
     tx_hashes.resize(tx_blobs.size());
@@ -843,7 +843,7 @@ namespace cryptonote
         return;
       }
     }
-    m_mempool.set_relayed(epee::to_span(tx_hashes), tx_relay);
+    m_mempool.set_relayed(tx_hashes, tx_relay);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::get_block_template(block& b, const account_public_address& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)

@@ -326,7 +326,7 @@ namespace cryptonote
      * @param hashes list of tx hashes that are about to be relayed
      * @param tx_relay update how the tx left this node
      */
-    void set_relayed(epee::span<const crypto::hash> hashes, relay_method tx_relay);
+    void set_relayed(const std::vector<crypto::hash> hashes, relay_method tx_relay);
 
     /**
      * @brief get the total number of transactions in the pool
