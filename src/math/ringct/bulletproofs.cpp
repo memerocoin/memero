@@ -457,12 +457,12 @@ rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
 Bulletproof bulletproof_MAKE(const rct::key sv, const rct::key gamma)
 {
-  return bulletproof_MAKE(std::vector<rct::key>{sv}, rct::keyV(1, gamma));
+  return bulletproof_MAKE(std::vector<rct::key>{sv}, rct::keyV{gamma});
 }
 
 Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma)
 {
-  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::keyV(1, gamma));
+  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::keyV{gamma});
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
@@ -976,7 +976,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
 bool bulletproof_VERIFY(const Bulletproof proof)
 {
-  return bulletproof_VERIFY(std::array<Bulletproof, 1>{proof});
+  return bulletproof_VERIFY(std::array{proof});
 }
 
 }
