@@ -129,7 +129,7 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_to_ke
   {
     try
     {
-      m_db->get_output_key(epee::span<const uint64_t>(&tx_in_to_key.amount, 1), absolute_offsets, outputs, true);
+      m_db->get_output_key(std::span<const uint64_t>(&tx_in_to_key.amount, 1), absolute_offsets, outputs, true);
       if (absolute_offsets.size() != outputs.size())
       {
         MERROR_VER("Output does not exist! amount = " << tx_in_to_key.amount);
@@ -155,7 +155,7 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_to_ke
         add_offsets.push_back(absolute_offsets[i]);
       try
       {
-        m_db->get_output_key(epee::span<const uint64_t>(&tx_in_to_key.amount, 1), add_offsets, add_outputs, true);
+        m_db->get_output_key(std::span<const uint64_t>(&tx_in_to_key.amount, 1), add_offsets, add_outputs, true);
         if (add_offsets.size() != add_outputs.size())
         {
           MERROR_VER("Output does not exist! amount = " << tx_in_to_key.amount);
@@ -1781,7 +1781,7 @@ bool Blockchain::get_outs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMA
       amounts.push_back(i.amount);
       offsets.push_back(i.index);
     }
-    m_db->get_output_key(epee::span<const uint64_t>(amounts.data(), amounts.size()), offsets, data);
+    m_db->get_output_key(std::span<const uint64_t>(amounts.data(), amounts.size()), offsets, data);
     if (data.size() != req.outputs.size())
     {
       MERROR("Unexpected output data size: expected " << req.outputs.size() << ", got " << data.size());
@@ -3167,7 +3167,7 @@ void Blockchain::output_scan_worker(const uint64_t amount, const std::vector<uin
 {
   try
   {
-    m_db->get_output_key(epee::span<const uint64_t>(&amount, 1), offsets, outputs, true);
+    m_db->get_output_key(std::span<const uint64_t>(&amount, 1), offsets, outputs, true);
   }
   catch (const std::exception& e)
   {
