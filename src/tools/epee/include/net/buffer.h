@@ -28,7 +28,9 @@
 
 #pragma once
 
-#include "tools/epee/include/span.h"
+#include <span>
+#include <cstdint>
+#include <string>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.buffer"
@@ -47,9 +49,9 @@ public:
 
   void append(const void *data, size_t sz);
   void erase(size_t sz);
-  epee::span<const uint8_t> span(size_t sz) const;
+  std::span<const uint8_t> span(size_t sz) const;
   // carve must keep the data in scope till next call, other API calls (such as append, erase) can invalidate the carved buffer
-  epee::span<const uint8_t> carve(size_t sz);
+  std::span<const uint8_t> carve(size_t sz);
   size_t size() const;
 
 private:

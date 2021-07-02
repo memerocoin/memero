@@ -34,6 +34,8 @@
 
 #include <boost/mpl/contains.hpp>
 
+#include <span>
+
 namespace epee
 {
   namespace serialization
@@ -84,6 +86,7 @@ namespace epee
       bool        delete_entry(const std::string& pentry_name, hsection hparent_section = nullptr);
 
       bool		store_to_binary(binarybuffer& target);
+      bool		load_from_binary(const std::span<const uint8_t> target, const limits_t *limits = NULL);
       bool		load_from_binary(const epee::span<const uint8_t> target, const limits_t *limits = NULL);
       bool		load_from_binary(const std::string& target, const limits_t *limits = NULL) { return load_from_binary(epee::strspan<uint8_t>(target), limits); }
       bool		  dump_as_json(std::string& targetObj, size_t indent = 0, bool insert_newlines = true);

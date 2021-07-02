@@ -83,11 +83,11 @@ public:
   uint64_t m_max_packet_size;
   uint64_t m_invoke_timeout;
 
-  int invoke(int command, const epee::span<const uint8_t> in_buff, std::string& buff_out, boost::uuids::uuid connection_id);
+  int invoke(int command, const std::span<const uint8_t> in_buff, std::string& buff_out, boost::uuids::uuid connection_id);
   template<class callback_t>
-  int invoke_async(int command, const epee::span<const uint8_t> in_buff, boost::uuids::uuid connection_id, const callback_t &cb, size_t timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED);
+  int invoke_async(int command, const std::span<const uint8_t> in_buff, boost::uuids::uuid connection_id, const callback_t &cb, size_t timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED);
 
-  int notify(int command, const epee::span<const uint8_t> in_buff, boost::uuids::uuid connection_id);
+  int notify(int command, const std::span<const uint8_t> in_buff, boost::uuids::uuid connection_id);
   bool close(boost::uuids::uuid connection_id);
   bool update_connection_context(const t_connection_context& contxt);
   bool request_callback(boost::uuids::uuid connection_id);
@@ -116,10 +116,10 @@ class async_protocol_handler
 {
   std::string m_fragment_buffer;
 
-  bool send_message(uint32_t command, epee::span<const uint8_t> in_buff, uint32_t flags, bool expect_response)
+  bool send_message(uint32_t command, std::span<const uint8_t> in_buff, uint32_t flags, bool expect_response)
   {
     const bucket_head2 head = make_header(command, in_buff.size(), flags, expect_response);
-    epee::span<const uint8_t> head_span = as_byte_span(head);
+    std::span<const uint8_t> head_span = as_byte_span(head);
     const auto head_string = std::basic_string<uint8_t>(head_span.data(), head_span.size());
     const auto in_buff_string = std::basic_string<uint8_t>(in_buff.data(), in_buff.size());
     if(!m_pservice_endpoint->do_send(head_string + in_buff_string))
@@ -170,7 +170,7 @@ public:
 
   struct invoke_response_handler_base
   {
-    virtual bool handle(int res, const epee::span<const uint8_t> buff, connection_context& context)=0;
+    virtual bool handle(int res, const std::span<const uint8_t> buff, connection_context& context)=0;
     virtual bool is_timer_started() const=0;
     virtual void cancel()=0;
     virtual bool cancel_timer()=0;
@@ -192,7 +192,7 @@ public:
           if(ec == boost::asio::error::operation_aborted)
             return;
           MINFO(con.get_context_ref() << "Timeout on invoke operation happened, command: " << command << " timeout: " << timeout);
-          epee::span<const uint8_t> fake;
+          std::span<const uint8_t> fake;
           cb(LEVIN_ERROR_CONNECTION_TIMEDOUT, fake, con.get_context_ref());
           con.close();
           con.finish_outer_call();
@@ -210,7 +210,7 @@ public:
     bool m_timer_cancelled;
     uint64_t m_timeout;
     int m_command;
-    virtual bool handle(int res, const epee::span<const uint8_t> buff, typename async_protocol_handler::connection_context& context)
+    virtual bool handle(int res, const std::span<const uint8_t> buff, typename async_protocol_handler::connection_context& context)
     {
       if(!cancel_timer())
         return false;
@@ -226,7 +226,7 @@ public:
     {
       if(cancel_timer())
       {
-        epee::span<const uint8_t> fake;
+        std::span<const uint8_t> fake;
         m_cb(LEVIN_ERROR_CONNECTION_DESTROYED, fake, m_con.get_context_ref());
         m_con.finish_outer_call();
       }
@@ -256,7 +256,7 @@ public:
           if(ec == boost::asio::error::operation_aborted)
             return;
           MINFO(con.get_context_ref() << "Timeout on invoke operation happened, command: " << command << " timeout: " << timeout);
-          epee::span<const uint8_t> fake;
+          std::span<const uint8_t> fake;
           cb(LEVIN_ERROR_CONNECTION_TIMEDOUT, fake, con.get_context_ref());
           con.close();
           con.finish_outer_call();
@@ -440,7 +440,7 @@ public:
 
         {
           std::string temp{};
-          epee::span<const uint8_t> buff_to_invoke = m_cache_in_buffer.carve((std::string::size_type)m_current_head.m_cb);
+          std::span<const uint8_t> buff_to_invoke = m_cache_in_buffer.carve((std::string::size_type)m_current_head.m_cb);
           m_state = stream_state_head;
 
           // abstract_tcp_server2.h manages max bandwidth for a p2p link
@@ -504,7 +504,7 @@ public:
                 {
                   LOCK_RECURSIVE_MUTEX(m_local_inv_buff_lock);
                   m_local_inv_buff = std::string((const char*)buff_to_invoke.data(), buff_to_invoke.size());
-                  buff_to_invoke = epee::span<const uint8_t>((const uint8_t*)NULL, 0);
+                  buff_to_invoke = std::span<const uint8_t>((const uint8_t*)NULL, 0);
                   m_invoke_result_code = m_current_head.m_return_code;
                 }
                 m_invoke_buf_ready = true;
@@ -611,7 +611,7 @@ public:
   }
 
   template<class callback_t>
-  bool async_invoke(int command, const epee::span<const uint8_t> in_buff, const callback_t &cb, size_t timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
+  bool async_invoke(int command, const std::span<const uint8_t> in_buff, const callback_t &cb, size_t timeout = LEVIN_DEFAULT_TIMEOUT_PRECONFIGURED)
   {
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler(
       std::bind(&async_protocol_handler::finish_outer_call, this));
@@ -660,16 +660,16 @@ public:
 
     if (LEVIN_OK != err_code)
     {
-      epee::span<const uint8_t> stub_buff = nullptr;
+      const std::basic_string<uint8_t> stub_buff;
       // Never call callback inside critical section, that can cause deadlock
-      cb(err_code, stub_buff, m_connection_context);
+      cb(err_code, std::span(stub_buff), m_connection_context);
       return false;
     }
 
     return true;
   }
 
-  int invoke(int command, const epee::span<const uint8_t> in_buff, std::string& buff_out)
+  int invoke(int command, const std::span<const uint8_t> in_buff, std::string& buff_out)
   {
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler
       (std::bind(&async_protocol_handler::finish_outer_call, this));
@@ -725,7 +725,7 @@ public:
     return m_invoke_result_code;
   }
 
-  int notify(int command, const epee::span<const uint8_t> in_buff)
+  int notify(int command, const std::span<const uint8_t> in_buff)
   {
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler(
                           std::bind(&async_protocol_handler::finish_outer_call, this));
@@ -840,7 +840,7 @@ int async_protocol_handler_config<t_connection_context>::find_and_lock_connectio
 }
 //------------------------------------------------------------------------------------------
 template<class t_connection_context>
-int async_protocol_handler_config<t_connection_context>::invoke(int command, const epee::span<const uint8_t> in_buff, std::string& buff_out, boost::uuids::uuid connection_id)
+int async_protocol_handler_config<t_connection_context>::invoke(int command, const std::span<const uint8_t> in_buff, std::string& buff_out, boost::uuids::uuid connection_id)
 {
   async_protocol_handler<t_connection_context>* aph;
   int r = find_and_lock_connection(connection_id, aph);
@@ -848,7 +848,7 @@ int async_protocol_handler_config<t_connection_context>::invoke(int command, con
 }
 //------------------------------------------------------------------------------------------
 template<class t_connection_context> template<class callback_t>
-int async_protocol_handler_config<t_connection_context>::invoke_async(int command, const epee::span<const uint8_t> in_buff, boost::uuids::uuid connection_id, const callback_t &cb, size_t timeout)
+int async_protocol_handler_config<t_connection_context>::invoke_async(int command, const std::span<const uint8_t> in_buff, boost::uuids::uuid connection_id, const callback_t &cb, size_t timeout)
 {
   async_protocol_handler<t_connection_context>* aph;
   int r = find_and_lock_connection(connection_id, aph);
@@ -919,7 +919,7 @@ void async_protocol_handler_config<t_connection_context>::set_handler(levin_comm
 }
 //------------------------------------------------------------------------------------------
 template<class t_connection_context>
-int async_protocol_handler_config<t_connection_context>::notify(int command, const epee::span<const uint8_t> in_buff, boost::uuids::uuid connection_id)
+int async_protocol_handler_config<t_connection_context>::notify(int command, const std::span<const uint8_t> in_buff, boost::uuids::uuid connection_id)
 {
   async_protocol_handler<t_connection_context>* aph;
   int r = find_and_lock_connection(connection_id, aph);

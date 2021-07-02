@@ -1729,7 +1729,7 @@ namespace nodetool
   }
   //-----------------------------------------------------------------------------------
 
-  bool node_server::relay_notify_to_list(int command, const epee::span<const uint8_t> data_buff, std::vector<std::pair<epee::net_utils::zone, boost::uuids::uuid>> connections)
+  bool node_server::relay_notify_to_list(int command, const std::span<const uint8_t> data_buff, std::vector<std::pair<epee::net_utils::zone, boost::uuids::uuid>> connections)
   {
     std::sort(connections.begin(), connections.end());
     auto zone = m_network_zones.begin();
@@ -1807,7 +1807,7 @@ namespace nodetool
   }
   //-----------------------------------------------------------------------------------
 
-  bool node_server::invoke_notify_to_peer(int command, const epee::span<const uint8_t> req_buff, const epee::net_utils::connection_context_base& context)
+  bool node_server::invoke_notify_to_peer(int command, const std::span<const uint8_t> req_buff, const epee::net_utils::connection_context_base& context)
   {
     if(is_filtered_command(context.m_remote_address, command))
       return false;
@@ -1818,7 +1818,7 @@ namespace nodetool
   }
   //-----------------------------------------------------------------------------------
 
-  bool node_server::invoke_command_to_peer(int command, const epee::span<const uint8_t> req_buff, std::string& resp_buff, const epee::net_utils::connection_context_base& context)
+  bool node_server::invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, std::string& resp_buff, const epee::net_utils::connection_context_base& context)
   {
     if(is_filtered_command(context.m_remote_address, command))
       return false;

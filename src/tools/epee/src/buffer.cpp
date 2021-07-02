@@ -52,15 +52,15 @@ namespace net_utils
     }
   }
 
-  epee::span<const uint8_t> buffer::span(size_t sz) const {
+  std::span<const uint8_t> buffer::span(size_t sz) const {
     ASSERT_OR_LOG_THROW(sz <= size(), "span is too large");
-    return epee::span<const uint8_t>(storage.data() + offset, sz);
+    return std::span<const uint8_t>(storage).subspan(offset, sz);
   }
 
-  epee::span<const uint8_t> buffer::carve(size_t sz) {
+  std::span<const uint8_t> buffer::carve(size_t sz) {
     ASSERT_OR_LOG_THROW(sz <= size(), "span is too large");
     offset += sz;
-    return epee::span<const uint8_t>(storage.data() + offset - sz, sz);
+    return std::span<const uint8_t>(storage).subspan(offset - sz, sz);
   }
 
   size_t buffer::size() const {
