@@ -756,7 +756,7 @@ namespace cryptonote
      * @param blocks the blocks to be hashed
      * @param map return-by-reference the hashes for each block
      */
-    void block_longhash_worker(uint64_t height, const epee::span<const block> &blocks,
+    void block_longhash_worker(uint64_t height, const std::span<const block> blocks,
         std::unordered_map<crypto::hash, crypto::hash> &map) const;
 
     /**
