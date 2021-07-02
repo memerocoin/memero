@@ -504,7 +504,7 @@ public:
                 {
                   LOCK_RECURSIVE_MUTEX(m_local_inv_buff_lock);
                   m_local_inv_buff = std::string((const char*)buff_to_invoke.data(), buff_to_invoke.size());
-                  buff_to_invoke = std::span<const uint8_t>((const uint8_t*)NULL, 0);
+                  buff_to_invoke = std::span<const uint8_t>();
                   m_invoke_result_code = m_current_head.m_return_code;
                 }
                 m_invoke_buf_ready = true;
