@@ -621,7 +621,7 @@ namespace cryptonote
      *
      * @param notify the notify object to call at every new block
      */
-    void add_block_notify(boost::function<void(std::uint64_t, epee::span<const block>)> &&notify);
+    void add_block_notify(std::function<void(const uint64_t, const std::vector<block>)> &&notify);
 
     /**
      * @brief sets a reorg notify object to call for every reorg
@@ -887,7 +887,7 @@ namespace cryptonote
        the callable object has a single `std::shared_ptr` or `std::weap_ptr`
        internally. Whereas, the libstdc++ `std::function` will allocate. */
 
-    std::vector<boost::function<void(std::uint64_t, epee::span<const block>)>> m_block_notifiers;
+    std::vector<std::function<void(const uint64_t, const std::vector<block>)>> m_block_notifiers;
     std::shared_ptr<tools::Notify> m_reorg_notify;
 
     // for prepare_handle_incoming_blocks

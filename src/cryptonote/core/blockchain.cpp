@@ -977,7 +977,7 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
     std::size_t notify_height = split_height;
     for (const auto& bei: alt_chain)
     {
-      notifier(notify_height, {std::addressof(bei.bl), 1});
+      notifier(notify_height, std::vector{bei.bl});
       ++notify_height;
     }
   }
@@ -3013,7 +3013,7 @@ leave:
 
 
   for (const auto& notifier: m_block_notifiers)
-    notifier(new_height - 1, {std::addressof(bl), 1});
+    notifier(new_height - 1, std::vector{bl});
 
   return true;
 }
@@ -3597,7 +3597,7 @@ void Blockchain::set_user_options(bool sync_on_blocks, uint64_t sync_threshold, 
   m_db_sync_threshold = sync_threshold;
 }
 
-void Blockchain::add_block_notify(boost::function<void(std::uint64_t, epee::span<const block>)>&& notify)
+void Blockchain::add_block_notify(std::function<void(const uint64_t, const std::vector<block>)>&& notify)
 {
   if (notify)
   {
