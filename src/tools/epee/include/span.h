@@ -125,14 +125,6 @@ namespace epee
     return !std::is_standard_layout<T>() || alignof(T) != 1;
   }
 
-  //! \return Cast data from `src` as `span<const std::uint8_t>`.
-  template<typename T>
-  span<const std::uint8_t> to_byte_span(const span<const T> src) noexcept
-  {
-    static_assert(!has_padding<T>(), "source type may have padding");
-    return {reinterpret_cast<const std::uint8_t*>(src.data()), src.size_bytes()};
-  }
-
   //! make a span from a std::string
   template<typename T>
   std::span<const T> strspan(const std::string &s) noexcept
@@ -142,30 +134,6 @@ namespace epee
   }
 
 
-
-
-
-
-
-
-
-
-
-  //! \return `span<const T::value_type>` from a STL compatible `src`.
-  template<typename T>
-  constexpr span<const typename T::value_type> to_span(const T& src)
-  {
-    // compiler provides diagnostic if size() is not size_t.
-    return {src.data(), src.size()};
-  }
-
-  //! \return `span<T::value_type>` from a STL compatible `src`.
-  template<typename T>
-  constexpr span<typename T::value_type> to_mut_span(T& src)
-  {
-    // compiler provides diagnostic if size() is not size_t.
-    return {src.data(), src.size()};
-  }
 
   //! \return `span<const std::uint8_t>` which represents the bytes at `&src`.
   template<typename T>
