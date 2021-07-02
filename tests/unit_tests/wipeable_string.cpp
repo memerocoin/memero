@@ -207,6 +207,6 @@ TEST(wipeable_string, parse_hexstr)
 
 TEST(wipeable_string, to_hex)
 {
-  ASSERT_TRUE(epee::to_hex::wipeable_string(epee::span<const uint8_t>((const uint8_t*)"", 0)) == epee::wipeable_string(""));
-  ASSERT_TRUE(epee::to_hex::wipeable_string(epee::span<const uint8_t>((const uint8_t*)"abc", 3)) == epee::wipeable_string("616263"));
+  ASSERT_TRUE(epee::to_hex::wipeable_string(std::span<const uint8_t>((const uint8_t*)"", 0)) == epee::wipeable_string(""));
+  ASSERT_TRUE(epee::to_hex::wipeable_string(std::span<const uint8_t>((const uint8_t*)"abc", 3)) == epee::wipeable_string("616263"));
 }
