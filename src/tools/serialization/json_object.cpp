@@ -258,13 +258,13 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, version, tx.version);
-  INSERT_INTO_JSON_OBJECT(dest, unlock_time, tx.unlock_time);
-  INSERT_INTO_JSON_OBJECT(dest, inputs, tx.vin);
-  INSERT_INTO_JSON_OBJECT(dest, outputs, tx.vout);
-  INSERT_INTO_JSON_OBJECT(dest, extra, tx.extra);
-  INSERT_INTO_JSON_OBJECT(dest, signatures, tx.signatures);
-  INSERT_INTO_JSON_OBJECT(dest, ringct, tx.rct_signatures);
+  WRITE_JSON_FIELD_FROM(dest, version, tx.version);
+  WRITE_JSON_FIELD_FROM(dest, unlock_time, tx.unlock_time);
+  WRITE_JSON_FIELD_FROM(dest, inputs, tx.vin);
+  WRITE_JSON_FIELD_FROM(dest, outputs, tx.vout);
+  WRITE_JSON_FIELD_FROM(dest, extra, tx.extra);
+  WRITE_JSON_FIELD_FROM(dest, signatures, tx.signatures);
+  WRITE_JSON_FIELD_FROM(dest, ringct, tx.rct_signatures);
 
   dest.EndObject();
 }
@@ -277,12 +277,12 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, tx.version, version);
-  GET_FROM_JSON_OBJECT(val, tx.unlock_time, unlock_time);
-  GET_FROM_JSON_OBJECT(val, tx.vin, inputs);
-  GET_FROM_JSON_OBJECT(val, tx.vout, outputs);
-  GET_FROM_JSON_OBJECT(val, tx.extra, extra);
-  GET_FROM_JSON_OBJECT(val, tx.rct_signatures, ringct);
+  READ_JSON_VALUE_BY_KEY(val, tx.version, version);
+  READ_JSON_VALUE_BY_KEY(val, tx.unlock_time, unlock_time);
+  READ_JSON_VALUE_BY_KEY(val, tx.vin, inputs);
+  READ_JSON_VALUE_BY_KEY(val, tx.vout, outputs);
+  READ_JSON_VALUE_BY_KEY(val, tx.extra, extra);
+  READ_JSON_VALUE_BY_KEY(val, tx.rct_signatures, ringct);
 
   const auto& sigs = val.FindMember("signatures");
   if (sigs != val.MemberEnd())
@@ -297,13 +297,13 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, major_version, b.major_version);
-  INSERT_INTO_JSON_OBJECT(dest, minor_version, b.minor_version);
-  INSERT_INTO_JSON_OBJECT(dest, timestamp, b.timestamp);
-  INSERT_INTO_JSON_OBJECT(dest, prev_id, b.prev_id);
-  INSERT_INTO_JSON_OBJECT(dest, nonce, b.nonce);
-  INSERT_INTO_JSON_OBJECT(dest, miner_tx, b.miner_tx);
-  INSERT_INTO_JSON_OBJECT(dest, tx_hashes, b.tx_hashes);
+  WRITE_JSON_FIELD_FROM(dest, major_version, b.major_version);
+  WRITE_JSON_FIELD_FROM(dest, minor_version, b.minor_version);
+  WRITE_JSON_FIELD_FROM(dest, timestamp, b.timestamp);
+  WRITE_JSON_FIELD_FROM(dest, prev_id, b.prev_id);
+  WRITE_JSON_FIELD_FROM(dest, nonce, b.nonce);
+  WRITE_JSON_FIELD_FROM(dest, miner_tx, b.miner_tx);
+  WRITE_JSON_FIELD_FROM(dest, tx_hashes, b.tx_hashes);
 
   dest.EndObject();
 }
@@ -316,13 +316,13 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::block& b)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, b.major_version, major_version);
-  GET_FROM_JSON_OBJECT(val, b.minor_version, minor_version);
-  GET_FROM_JSON_OBJECT(val, b.timestamp, timestamp);
-  GET_FROM_JSON_OBJECT(val, b.prev_id, prev_id);
-  GET_FROM_JSON_OBJECT(val, b.nonce, nonce);
-  GET_FROM_JSON_OBJECT(val, b.miner_tx, miner_tx);
-  GET_FROM_JSON_OBJECT(val, b.tx_hashes, tx_hashes);
+  READ_JSON_VALUE_BY_KEY(val, b.major_version, major_version);
+  READ_JSON_VALUE_BY_KEY(val, b.minor_version, minor_version);
+  READ_JSON_VALUE_BY_KEY(val, b.timestamp, timestamp);
+  READ_JSON_VALUE_BY_KEY(val, b.prev_id, prev_id);
+  READ_JSON_VALUE_BY_KEY(val, b.nonce, nonce);
+  READ_JSON_VALUE_BY_KEY(val, b.miner_tx, miner_tx);
+  READ_JSON_VALUE_BY_KEY(val, b.tx_hashes, tx_hashes);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_v txin)
@@ -336,19 +336,19 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 
     void operator()(cryptonote::txin_to_key const& input) const
     {
-      INSERT_INTO_JSON_OBJECT(dest, to_key, input);
+      WRITE_JSON_FIELD_FROM(dest, to_key, input);
     }
     void operator()(cryptonote::txin_gen const& input) const
     {
-      INSERT_INTO_JSON_OBJECT(dest, gen, input);
+      WRITE_JSON_FIELD_FROM(dest, gen, input);
     }
     void operator()(cryptonote::txin_to_script const& input) const
     {
-      INSERT_INTO_JSON_OBJECT(dest, to_script, input);
+      WRITE_JSON_FIELD_FROM(dest, to_script, input);
     }
     void operator()(cryptonote::txin_to_scripthash const& input) const
     {
-      INSERT_INTO_JSON_OBJECT(dest, to_scripthash, input);
+      WRITE_JSON_FIELD_FROM(dest, to_scripthash, input);
     }
   };
   boost::apply_visitor(add_input{dest}, txin);
@@ -401,7 +401,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, height, txin.height);
+  WRITE_JSON_FIELD_FROM(dest, height, txin.height);
 
   dest.EndObject();
 }
@@ -413,16 +413,16 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_gen& txin)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, txin.height, height);
+  READ_JSON_VALUE_BY_KEY(val, txin.height, height);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_script txin)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, prev, txin.prev);
-  INSERT_INTO_JSON_OBJECT(dest, prevout, txin.prevout);
-  INSERT_INTO_JSON_OBJECT(dest, sigset, txin.sigset);
+  WRITE_JSON_FIELD_FROM(dest, prev, txin.prev);
+  WRITE_JSON_FIELD_FROM(dest, prevout, txin.prevout);
+  WRITE_JSON_FIELD_FROM(dest, sigset, txin.sigset);
 
   dest.EndObject();
 }
@@ -435,9 +435,9 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_script& txin
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, txin.prev, prev);
-  GET_FROM_JSON_OBJECT(val, txin.prevout, prevout);
-  GET_FROM_JSON_OBJECT(val, txin.sigset, sigset);
+  READ_JSON_VALUE_BY_KEY(val, txin.prev, prev);
+  READ_JSON_VALUE_BY_KEY(val, txin.prevout, prevout);
+  READ_JSON_VALUE_BY_KEY(val, txin.sigset, sigset);
 }
 
 
@@ -445,10 +445,10 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, prev, txin.prev);
-  INSERT_INTO_JSON_OBJECT(dest, prevout, txin.prevout);
-  INSERT_INTO_JSON_OBJECT(dest, script, txin.script);
-  INSERT_INTO_JSON_OBJECT(dest, sigset, txin.sigset);
+  WRITE_JSON_FIELD_FROM(dest, prev, txin.prev);
+  WRITE_JSON_FIELD_FROM(dest, prevout, txin.prevout);
+  WRITE_JSON_FIELD_FROM(dest, script, txin.script);
+  WRITE_JSON_FIELD_FROM(dest, sigset, txin.sigset);
 
   dest.EndObject();
 }
@@ -461,19 +461,19 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_scripthash& 
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, txin.prev, prev);
-  GET_FROM_JSON_OBJECT(val, txin.prevout, prevout);
-  GET_FROM_JSON_OBJECT(val, txin.script, script);
-  GET_FROM_JSON_OBJECT(val, txin.sigset, sigset);
+  READ_JSON_VALUE_BY_KEY(val, txin.prev, prev);
+  READ_JSON_VALUE_BY_KEY(val, txin.prevout, prevout);
+  READ_JSON_VALUE_BY_KEY(val, txin.script, script);
+  READ_JSON_VALUE_BY_KEY(val, txin.sigset, sigset);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key txin)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, amount, txin.amount);
-  INSERT_INTO_JSON_OBJECT(dest, key_offsets, txin.key_offsets);
-  INSERT_INTO_JSON_OBJECT(dest, key_image, txin.k_image);
+  WRITE_JSON_FIELD_FROM(dest, amount, txin.amount);
+  WRITE_JSON_FIELD_FROM(dest, key_offsets, txin.key_offsets);
+  WRITE_JSON_FIELD_FROM(dest, key_image, txin.k_image);
 
   dest.EndObject();
 }
@@ -485,9 +485,9 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, txin.amount, amount);
-  GET_FROM_JSON_OBJECT(val, txin.key_offsets, key_offsets);
-  GET_FROM_JSON_OBJECT(val, txin.k_image, key_image);
+  READ_JSON_VALUE_BY_KEY(val, txin.amount, amount);
+  READ_JSON_VALUE_BY_KEY(val, txin.key_offsets, key_offsets);
+  READ_JSON_VALUE_BY_KEY(val, txin.k_image, key_image);
 }
 
 
@@ -495,8 +495,8 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, keys, txout.keys);
-  INSERT_INTO_JSON_OBJECT(dest, script, txout.script);
+  WRITE_JSON_FIELD_FROM(dest, keys, txout.keys);
+  WRITE_JSON_FIELD_FROM(dest, script, txout.script);
 
   dest.EndObject();
 }
@@ -508,8 +508,8 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_script& txo
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, txout.keys, keys);
-  GET_FROM_JSON_OBJECT(val, txout.script, script);
+  READ_JSON_VALUE_BY_KEY(val, txout.keys, keys);
+  READ_JSON_VALUE_BY_KEY(val, txout.script, script);
 }
 
 
@@ -517,7 +517,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, hash, txout.hash);
+  WRITE_JSON_FIELD_FROM(dest, hash, txout.hash);
 
   dest.EndObject();
 }
@@ -529,7 +529,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_scripthash&
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, txout.hash, hash);
+  READ_JSON_VALUE_BY_KEY(val, txout.hash, hash);
 }
 
 
@@ -537,7 +537,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, key, txout.key);
+  WRITE_JSON_FIELD_FROM(dest, key, txout.key);
 
   dest.EndObject();
 }
@@ -549,13 +549,13 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_key& txout)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, txout.key, key);
+  READ_JSON_VALUE_BY_KEY(val, txout.key, key);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::tx_out txout)
 {
   dest.StartObject();
-  INSERT_INTO_JSON_OBJECT(dest, amount, txout.amount);
+  WRITE_JSON_FIELD_FROM(dest, amount, txout.amount);
 
   struct add_output
   {
@@ -565,15 +565,15 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 
     void operator()(cryptonote::txout_to_key const& output) const
     {
-      INSERT_INTO_JSON_OBJECT(dest, to_key, output);
+      WRITE_JSON_FIELD_FROM(dest, to_key, output);
     }
     void operator()(cryptonote::txout_to_script const& output) const
     {
-      INSERT_INTO_JSON_OBJECT(dest, to_script, output);
+      WRITE_JSON_FIELD_FROM(dest, to_script, output);
     }
     void operator()(cryptonote::txout_to_scripthash const& output) const
     {
-      INSERT_INTO_JSON_OBJECT(dest, to_scripthash, output);
+      WRITE_JSON_FIELD_FROM(dest, to_scripthash, output);
     }
   };
   boost::apply_visitor(add_output{dest}, txout.target);
@@ -624,32 +624,32 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, incoming, info.incoming);
-  INSERT_INTO_JSON_OBJECT(dest, localhost, info.localhost);
-  INSERT_INTO_JSON_OBJECT(dest, local_ip, info.local_ip);
-  INSERT_INTO_JSON_OBJECT(dest, address_type, info.address_type);
+  WRITE_JSON_FIELD_FROM(dest, incoming, info.incoming);
+  WRITE_JSON_FIELD_FROM(dest, localhost, info.localhost);
+  WRITE_JSON_FIELD_FROM(dest, local_ip, info.local_ip);
+  WRITE_JSON_FIELD_FROM(dest, address_type, info.address_type);
 
-  INSERT_INTO_JSON_OBJECT(dest, ip, info.ip);
-  INSERT_INTO_JSON_OBJECT(dest, port, info.port);
-  INSERT_INTO_JSON_OBJECT(dest, rpc_port, info.rpc_port);
+  WRITE_JSON_FIELD_FROM(dest, ip, info.ip);
+  WRITE_JSON_FIELD_FROM(dest, port, info.port);
+  WRITE_JSON_FIELD_FROM(dest, rpc_port, info.rpc_port);
 
-  INSERT_INTO_JSON_OBJECT(dest, peer_id, info.peer_id);
+  WRITE_JSON_FIELD_FROM(dest, peer_id, info.peer_id);
 
-  INSERT_INTO_JSON_OBJECT(dest, recv_count, info.recv_count);
-  INSERT_INTO_JSON_OBJECT(dest, recv_idle_time, info.recv_idle_time);
+  WRITE_JSON_FIELD_FROM(dest, recv_count, info.recv_count);
+  WRITE_JSON_FIELD_FROM(dest, recv_idle_time, info.recv_idle_time);
 
-  INSERT_INTO_JSON_OBJECT(dest, send_count, info.send_count);
-  INSERT_INTO_JSON_OBJECT(dest, send_idle_time, info.send_idle_time);
+  WRITE_JSON_FIELD_FROM(dest, send_count, info.send_count);
+  WRITE_JSON_FIELD_FROM(dest, send_idle_time, info.send_idle_time);
 
-  INSERT_INTO_JSON_OBJECT(dest, state, info.state);
+  WRITE_JSON_FIELD_FROM(dest, state, info.state);
 
-  INSERT_INTO_JSON_OBJECT(dest, live_time, info.live_time);
+  WRITE_JSON_FIELD_FROM(dest, live_time, info.live_time);
 
-  INSERT_INTO_JSON_OBJECT(dest, avg_download, info.avg_download);
-  INSERT_INTO_JSON_OBJECT(dest, current_download, info.current_download);
+  WRITE_JSON_FIELD_FROM(dest, avg_download, info.avg_download);
+  WRITE_JSON_FIELD_FROM(dest, current_download, info.current_download);
 
-  INSERT_INTO_JSON_OBJECT(dest, avg_upload, info.avg_upload);
-  INSERT_INTO_JSON_OBJECT(dest, current_upload, info.current_upload);
+  WRITE_JSON_FIELD_FROM(dest, avg_upload, info.avg_upload);
+  WRITE_JSON_FIELD_FROM(dest, current_upload, info.current_upload);
 
   dest.EndObject();
 }
@@ -662,40 +662,40 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::connection_info& inf
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, info.incoming, incoming);
-  GET_FROM_JSON_OBJECT(val, info.localhost, localhost);
-  GET_FROM_JSON_OBJECT(val, info.local_ip, local_ip);
-  GET_FROM_JSON_OBJECT(val, info.address_type, address_type);
+  READ_JSON_VALUE_BY_KEY(val, info.incoming, incoming);
+  READ_JSON_VALUE_BY_KEY(val, info.localhost, localhost);
+  READ_JSON_VALUE_BY_KEY(val, info.local_ip, local_ip);
+  READ_JSON_VALUE_BY_KEY(val, info.address_type, address_type);
 
-  GET_FROM_JSON_OBJECT(val, info.ip, ip);
-  GET_FROM_JSON_OBJECT(val, info.port, port);
-  GET_FROM_JSON_OBJECT(val, info.rpc_port, rpc_port);
+  READ_JSON_VALUE_BY_KEY(val, info.ip, ip);
+  READ_JSON_VALUE_BY_KEY(val, info.port, port);
+  READ_JSON_VALUE_BY_KEY(val, info.rpc_port, rpc_port);
 
-  GET_FROM_JSON_OBJECT(val, info.peer_id, peer_id);
+  READ_JSON_VALUE_BY_KEY(val, info.peer_id, peer_id);
 
-  GET_FROM_JSON_OBJECT(val, info.recv_count, recv_count);
-  GET_FROM_JSON_OBJECT(val, info.recv_idle_time, recv_idle_time);
+  READ_JSON_VALUE_BY_KEY(val, info.recv_count, recv_count);
+  READ_JSON_VALUE_BY_KEY(val, info.recv_idle_time, recv_idle_time);
 
-  GET_FROM_JSON_OBJECT(val, info.send_count, send_count);
-  GET_FROM_JSON_OBJECT(val, info.send_idle_time, send_idle_time);
+  READ_JSON_VALUE_BY_KEY(val, info.send_count, send_count);
+  READ_JSON_VALUE_BY_KEY(val, info.send_idle_time, send_idle_time);
 
-  GET_FROM_JSON_OBJECT(val, info.state, state);
+  READ_JSON_VALUE_BY_KEY(val, info.state, state);
 
-  GET_FROM_JSON_OBJECT(val, info.live_time, live_time);
+  READ_JSON_VALUE_BY_KEY(val, info.live_time, live_time);
 
-  GET_FROM_JSON_OBJECT(val, info.avg_download, avg_download);
-  GET_FROM_JSON_OBJECT(val, info.current_download, current_download);
+  READ_JSON_VALUE_BY_KEY(val, info.avg_download, avg_download);
+  READ_JSON_VALUE_BY_KEY(val, info.current_download, current_download);
 
-  GET_FROM_JSON_OBJECT(val, info.avg_upload, avg_upload);
-  GET_FROM_JSON_OBJECT(val, info.current_upload, current_upload);
+  READ_JSON_VALUE_BY_KEY(val, info.avg_upload, avg_upload);
+  READ_JSON_VALUE_BY_KEY(val, info.current_upload, current_upload);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::tx_blob_entry tx)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, blob, tx.blob);
-  INSERT_INTO_JSON_OBJECT(dest, prunable_hash, tx.prunable_hash);
+  WRITE_JSON_FIELD_FROM(dest, blob, tx.blob);
+  WRITE_JSON_FIELD_FROM(dest, prunable_hash, tx.prunable_hash);
 
   dest.EndObject();
 }
@@ -707,16 +707,16 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::tx_blob_entry& tx)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, tx.blob, blob);
-  GET_FROM_JSON_OBJECT(val, tx.prunable_hash, prunable_hash);
+  READ_JSON_VALUE_BY_KEY(val, tx.blob, blob);
+  READ_JSON_VALUE_BY_KEY(val, tx.prunable_hash, prunable_hash);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block_complete_entry blk)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, block, blk.block);
-  INSERT_INTO_JSON_OBJECT(dest, transactions, blk.txs);
+  WRITE_JSON_FIELD_FROM(dest, block, blk.block);
+  WRITE_JSON_FIELD_FROM(dest, transactions, blk.txs);
 
   dest.EndObject();
 }
@@ -729,16 +729,16 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::block_complete_entry
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, blk.block, block);
-  GET_FROM_JSON_OBJECT(val, blk.txs, transactions);
+  READ_JSON_VALUE_BY_KEY(val, blk.block, block);
+  READ_JSON_VALUE_BY_KEY(val, blk.txs, transactions);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::block_with_transactions blk)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, block, blk.block);
-  INSERT_INTO_JSON_OBJECT(dest, transactions, blk.transactions);
+  WRITE_JSON_FIELD_FROM(dest, block, blk.block);
+  WRITE_JSON_FIELD_FROM(dest, transactions, blk.transactions);
 
   dest.EndObject();
 }
@@ -751,17 +751,17 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::block_with_tran
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, blk.block, block);
-  GET_FROM_JSON_OBJECT(val, blk.transactions, transactions);
+  READ_JSON_VALUE_BY_KEY(val, blk.block, block);
+  READ_JSON_VALUE_BY_KEY(val, blk.transactions, transactions);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::transaction_info tx_info)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, height, tx_info.height);
-  INSERT_INTO_JSON_OBJECT(dest, in_pool, tx_info.in_pool);
-  INSERT_INTO_JSON_OBJECT(dest, transaction, tx_info.transaction);
+  WRITE_JSON_FIELD_FROM(dest, height, tx_info.height);
+  WRITE_JSON_FIELD_FROM(dest, in_pool, tx_info.in_pool);
+  WRITE_JSON_FIELD_FROM(dest, transaction, tx_info.transaction);
 
   dest.EndObject();
 }
@@ -774,17 +774,17 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::transaction_inf
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, tx_info.height, height);
-  GET_FROM_JSON_OBJECT(val, tx_info.in_pool, in_pool);
-  GET_FROM_JSON_OBJECT(val, tx_info.transaction, transaction);
+  READ_JSON_VALUE_BY_KEY(val, tx_info.height, height);
+  READ_JSON_VALUE_BY_KEY(val, tx_info.in_pool, in_pool);
+  READ_JSON_VALUE_BY_KEY(val, tx_info.transaction, transaction);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_key_and_amount_index out)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, amount_index, out.amount_index);
-  INSERT_INTO_JSON_OBJECT(dest, key, out.key);
+  WRITE_JSON_FIELD_FROM(dest, amount_index, out.amount_index);
+  WRITE_JSON_FIELD_FROM(dest, key, out.key);
 
   dest.EndObject();
 }
@@ -797,16 +797,16 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_key_and_
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, out.amount_index, amount_index);
-  GET_FROM_JSON_OBJECT(val, out.key, key);
+  READ_JSON_VALUE_BY_KEY(val, out.amount_index, amount_index);
+  READ_JSON_VALUE_BY_KEY(val, out.key, key);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::amount_with_random_outputs out)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, amount, out.amount);
-  INSERT_INTO_JSON_OBJECT(dest, outputs, out.outputs);
+  WRITE_JSON_FIELD_FROM(dest, amount, out.amount);
+  WRITE_JSON_FIELD_FROM(dest, outputs, out.outputs);
 
   dest.EndObject();
 }
@@ -819,19 +819,19 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::amount_with_ran
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, out.amount, amount);
-  GET_FROM_JSON_OBJECT(val, out.outputs, outputs);
+  READ_JSON_VALUE_BY_KEY(val, out.amount, amount);
+  READ_JSON_VALUE_BY_KEY(val, out.outputs, outputs);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::peer peer)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, id, peer.id);
-  INSERT_INTO_JSON_OBJECT(dest, ip, peer.ip);
-  INSERT_INTO_JSON_OBJECT(dest, port, peer.port);
-  INSERT_INTO_JSON_OBJECT(dest, rpc_port, peer.rpc_port);
-  INSERT_INTO_JSON_OBJECT(dest, last_seen, peer.last_seen);
+  WRITE_JSON_FIELD_FROM(dest, id, peer.id);
+  WRITE_JSON_FIELD_FROM(dest, ip, peer.ip);
+  WRITE_JSON_FIELD_FROM(dest, port, peer.port);
+  WRITE_JSON_FIELD_FROM(dest, rpc_port, peer.rpc_port);
+  WRITE_JSON_FIELD_FROM(dest, last_seen, peer.last_seen);
 
   dest.EndObject();
 }
@@ -844,32 +844,32 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::peer& peer)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, peer.id, id);
-  GET_FROM_JSON_OBJECT(val, peer.ip, ip);
-  GET_FROM_JSON_OBJECT(val, peer.port, port);
-  GET_FROM_JSON_OBJECT(val, peer.rpc_port, rpc_port);
-  GET_FROM_JSON_OBJECT(val, peer.last_seen, last_seen);
+  READ_JSON_VALUE_BY_KEY(val, peer.id, id);
+  READ_JSON_VALUE_BY_KEY(val, peer.ip, ip);
+  READ_JSON_VALUE_BY_KEY(val, peer.port, port);
+  READ_JSON_VALUE_BY_KEY(val, peer.rpc_port, rpc_port);
+  READ_JSON_VALUE_BY_KEY(val, peer.last_seen, last_seen);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::tx_in_pool tx)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, tx, tx.tx);
-  INSERT_INTO_JSON_OBJECT(dest, tx_hash, tx.tx_hash);
-  INSERT_INTO_JSON_OBJECT(dest, blob_size, tx.blob_size);
-  INSERT_INTO_JSON_OBJECT(dest, weight, tx.weight);
-  INSERT_INTO_JSON_OBJECT(dest, fee, tx.fee);
-  INSERT_INTO_JSON_OBJECT(dest, max_used_block_hash, tx.max_used_block_hash);
-  INSERT_INTO_JSON_OBJECT(dest, max_used_block_height, tx.max_used_block_height);
-  INSERT_INTO_JSON_OBJECT(dest, kept_by_block, tx.kept_by_block);
-  INSERT_INTO_JSON_OBJECT(dest, last_failed_block_hash, tx.last_failed_block_hash);
-  INSERT_INTO_JSON_OBJECT(dest, last_failed_block_height, tx.last_failed_block_height);
-  INSERT_INTO_JSON_OBJECT(dest, receive_time, tx.receive_time);
-  INSERT_INTO_JSON_OBJECT(dest, last_relayed_time, tx.last_relayed_time);
-  INSERT_INTO_JSON_OBJECT(dest, relayed, tx.relayed);
-  INSERT_INTO_JSON_OBJECT(dest, do_not_relay, tx.do_not_relay);
-  INSERT_INTO_JSON_OBJECT(dest, double_spend_seen, tx.double_spend_seen);
+  WRITE_JSON_FIELD_FROM(dest, tx, tx.tx);
+  WRITE_JSON_FIELD_FROM(dest, tx_hash, tx.tx_hash);
+  WRITE_JSON_FIELD_FROM(dest, blob_size, tx.blob_size);
+  WRITE_JSON_FIELD_FROM(dest, weight, tx.weight);
+  WRITE_JSON_FIELD_FROM(dest, fee, tx.fee);
+  WRITE_JSON_FIELD_FROM(dest, max_used_block_hash, tx.max_used_block_hash);
+  WRITE_JSON_FIELD_FROM(dest, max_used_block_height, tx.max_used_block_height);
+  WRITE_JSON_FIELD_FROM(dest, kept_by_block, tx.kept_by_block);
+  WRITE_JSON_FIELD_FROM(dest, last_failed_block_hash, tx.last_failed_block_hash);
+  WRITE_JSON_FIELD_FROM(dest, last_failed_block_height, tx.last_failed_block_height);
+  WRITE_JSON_FIELD_FROM(dest, receive_time, tx.receive_time);
+  WRITE_JSON_FIELD_FROM(dest, last_relayed_time, tx.last_relayed_time);
+  WRITE_JSON_FIELD_FROM(dest, relayed, tx.relayed);
+  WRITE_JSON_FIELD_FROM(dest, do_not_relay, tx.do_not_relay);
+  WRITE_JSON_FIELD_FROM(dest, double_spend_seen, tx.double_spend_seen);
 
   dest.EndObject();
 }
@@ -882,20 +882,20 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::tx_in_pool& tx)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, tx.tx, tx);
-  GET_FROM_JSON_OBJECT(val, tx.blob_size, blob_size);
-  GET_FROM_JSON_OBJECT(val, tx.weight, weight);
-  GET_FROM_JSON_OBJECT(val, tx.fee, fee);
-  GET_FROM_JSON_OBJECT(val, tx.max_used_block_hash, max_used_block_hash);
-  GET_FROM_JSON_OBJECT(val, tx.max_used_block_height, max_used_block_height);
-  GET_FROM_JSON_OBJECT(val, tx.kept_by_block, kept_by_block);
-  GET_FROM_JSON_OBJECT(val, tx.last_failed_block_hash, last_failed_block_hash);
-  GET_FROM_JSON_OBJECT(val, tx.last_failed_block_height, last_failed_block_height);
-  GET_FROM_JSON_OBJECT(val, tx.receive_time, receive_time);
-  GET_FROM_JSON_OBJECT(val, tx.last_relayed_time, last_relayed_time);
-  GET_FROM_JSON_OBJECT(val, tx.relayed, relayed);
-  GET_FROM_JSON_OBJECT(val, tx.do_not_relay, do_not_relay);
-  GET_FROM_JSON_OBJECT(val, tx.double_spend_seen, double_spend_seen);
+  READ_JSON_VALUE_BY_KEY(val, tx.tx, tx);
+  READ_JSON_VALUE_BY_KEY(val, tx.blob_size, blob_size);
+  READ_JSON_VALUE_BY_KEY(val, tx.weight, weight);
+  READ_JSON_VALUE_BY_KEY(val, tx.fee, fee);
+  READ_JSON_VALUE_BY_KEY(val, tx.max_used_block_hash, max_used_block_hash);
+  READ_JSON_VALUE_BY_KEY(val, tx.max_used_block_height, max_used_block_height);
+  READ_JSON_VALUE_BY_KEY(val, tx.kept_by_block, kept_by_block);
+  READ_JSON_VALUE_BY_KEY(val, tx.last_failed_block_hash, last_failed_block_hash);
+  READ_JSON_VALUE_BY_KEY(val, tx.last_failed_block_height, last_failed_block_height);
+  READ_JSON_VALUE_BY_KEY(val, tx.receive_time, receive_time);
+  READ_JSON_VALUE_BY_KEY(val, tx.last_relayed_time, last_relayed_time);
+  READ_JSON_VALUE_BY_KEY(val, tx.relayed, relayed);
+  READ_JSON_VALUE_BY_KEY(val, tx.do_not_relay, do_not_relay);
+  READ_JSON_VALUE_BY_KEY(val, tx.double_spend_seen, double_spend_seen);
 }
 
 
@@ -903,10 +903,10 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, amount, out.amount);
-  INSERT_INTO_JSON_OBJECT(dest, total_count, out.total_count);
-  INSERT_INTO_JSON_OBJECT(dest, unlocked_count, out.unlocked_count);
-  INSERT_INTO_JSON_OBJECT(dest, recent_count, out.recent_count);
+  WRITE_JSON_FIELD_FROM(dest, amount, out.amount);
+  WRITE_JSON_FIELD_FROM(dest, total_count, out.total_count);
+  WRITE_JSON_FIELD_FROM(dest, unlocked_count, out.unlocked_count);
+  WRITE_JSON_FIELD_FROM(dest, recent_count, out.recent_count);
 
   dest.EndObject();
 }
@@ -919,18 +919,18 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_amount_c
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, out.amount, amount);
-  GET_FROM_JSON_OBJECT(val, out.total_count, total_count);
-  GET_FROM_JSON_OBJECT(val, out.unlocked_count, unlocked_count);
-  GET_FROM_JSON_OBJECT(val, out.recent_count, recent_count);
+  READ_JSON_VALUE_BY_KEY(val, out.amount, amount);
+  READ_JSON_VALUE_BY_KEY(val, out.total_count, total_count);
+  READ_JSON_VALUE_BY_KEY(val, out.unlocked_count, unlocked_count);
+  READ_JSON_VALUE_BY_KEY(val, out.recent_count, recent_count);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_amount_and_index out)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, amount, out.amount);
-  INSERT_INTO_JSON_OBJECT(dest, index, out.index);
+  WRITE_JSON_FIELD_FROM(dest, amount, out.amount);
+  WRITE_JSON_FIELD_FROM(dest, index, out.index);
 
   dest.EndObject();
 }
@@ -943,17 +943,17 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_amount_a
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, out.amount, amount);
-  GET_FROM_JSON_OBJECT(val, out.index, index);
+  READ_JSON_VALUE_BY_KEY(val, out.amount, amount);
+  READ_JSON_VALUE_BY_KEY(val, out.index, index);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_key_mask_unlocked out)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, key, out.key);
-  INSERT_INTO_JSON_OBJECT(dest, mask, out.mask);
-  INSERT_INTO_JSON_OBJECT(dest, unlocked, out.unlocked);
+  WRITE_JSON_FIELD_FROM(dest, key, out.key);
+  WRITE_JSON_FIELD_FROM(dest, mask, out.mask);
+  WRITE_JSON_FIELD_FROM(dest, unlocked, out.unlocked);
 
   dest.EndObject();
 }
@@ -965,18 +965,18 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_key_mask
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, out.key, key);
-  GET_FROM_JSON_OBJECT(val, out.mask, mask);
-  GET_FROM_JSON_OBJECT(val, out.unlocked, unlocked);
+  READ_JSON_VALUE_BY_KEY(val, out.key, key);
+  READ_JSON_VALUE_BY_KEY(val, out.mask, mask);
+  READ_JSON_VALUE_BY_KEY(val, out.unlocked, unlocked);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::error err)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, code, err.code);
-  INSERT_INTO_JSON_OBJECT(dest, error_str, err.error_str);
-  INSERT_INTO_JSON_OBJECT(dest, message, err.message);
+  WRITE_JSON_FIELD_FROM(dest, code, err.code);
+  WRITE_JSON_FIELD_FROM(dest, error_str, err.error_str);
+  WRITE_JSON_FIELD_FROM(dest, message, err.message);
 
   dest.EndObject();
 }
@@ -988,25 +988,25 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::error& error)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, error.code, code);
-  GET_FROM_JSON_OBJECT(val, error.error_str, error_str);
-  GET_FROM_JSON_OBJECT(val, error.message, message);
+  READ_JSON_VALUE_BY_KEY(val, error.code, code);
+  READ_JSON_VALUE_BY_KEY(val, error.error_str, error_str);
+  READ_JSON_VALUE_BY_KEY(val, error.message, message);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::BlockHeaderResponse response)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, major_version, response.major_version);
-  INSERT_INTO_JSON_OBJECT(dest, minor_version, response.minor_version);
-  INSERT_INTO_JSON_OBJECT(dest, timestamp, response.timestamp);
-  INSERT_INTO_JSON_OBJECT(dest, prev_id, response.prev_id);
-  INSERT_INTO_JSON_OBJECT(dest, nonce, response.nonce);
-  INSERT_INTO_JSON_OBJECT(dest, height, response.height);
-  INSERT_INTO_JSON_OBJECT(dest, depth, response.depth);
-  INSERT_INTO_JSON_OBJECT(dest, hash, response.hash);
-  INSERT_INTO_JSON_OBJECT(dest, difficulty, response.difficulty);
-  INSERT_INTO_JSON_OBJECT(dest, reward, response.reward);
+  WRITE_JSON_FIELD_FROM(dest, major_version, response.major_version);
+  WRITE_JSON_FIELD_FROM(dest, minor_version, response.minor_version);
+  WRITE_JSON_FIELD_FROM(dest, timestamp, response.timestamp);
+  WRITE_JSON_FIELD_FROM(dest, prev_id, response.prev_id);
+  WRITE_JSON_FIELD_FROM(dest, nonce, response.nonce);
+  WRITE_JSON_FIELD_FROM(dest, height, response.height);
+  WRITE_JSON_FIELD_FROM(dest, depth, response.depth);
+  WRITE_JSON_FIELD_FROM(dest, hash, response.hash);
+  WRITE_JSON_FIELD_FROM(dest, difficulty, response.difficulty);
+  WRITE_JSON_FIELD_FROM(dest, reward, response.reward);
 
   dest.EndObject();
 }
@@ -1018,16 +1018,16 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::BlockHeaderResp
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, response.major_version, major_version);
-  GET_FROM_JSON_OBJECT(val, response.minor_version, minor_version);
-  GET_FROM_JSON_OBJECT(val, response.timestamp, timestamp);
-  GET_FROM_JSON_OBJECT(val, response.prev_id, prev_id);
-  GET_FROM_JSON_OBJECT(val, response.nonce, nonce);
-  GET_FROM_JSON_OBJECT(val, response.height, height);
-  GET_FROM_JSON_OBJECT(val, response.depth, depth);
-  GET_FROM_JSON_OBJECT(val, response.hash, hash);
-  GET_FROM_JSON_OBJECT(val, response.difficulty, difficulty);
-  GET_FROM_JSON_OBJECT(val, response.reward, reward);
+  READ_JSON_VALUE_BY_KEY(val, response.major_version, major_version);
+  READ_JSON_VALUE_BY_KEY(val, response.minor_version, minor_version);
+  READ_JSON_VALUE_BY_KEY(val, response.timestamp, timestamp);
+  READ_JSON_VALUE_BY_KEY(val, response.prev_id, prev_id);
+  READ_JSON_VALUE_BY_KEY(val, response.nonce, nonce);
+  READ_JSON_VALUE_BY_KEY(val, response.height, height);
+  READ_JSON_VALUE_BY_KEY(val, response.depth, depth);
+  READ_JSON_VALUE_BY_KEY(val, response.hash, hash);
+  READ_JSON_VALUE_BY_KEY(val, response.difficulty, difficulty);
+  READ_JSON_VALUE_BY_KEY(val, response.reward, reward);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rctSig sig)
@@ -1039,10 +1039,10 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   std::transform(sig.outPk.begin(), sig.outPk.end(), std::back_inserter(masks),
                 [] (const auto & key) { return key.mask; } );
 
-  INSERT_INTO_JSON_OBJECT(dest, type, sig.type);
-  INSERT_INTO_JSON_OBJECT(dest, encrypted, sig.ecdhInfo);
-  INSERT_INTO_JSON_OBJECT(dest, commitments, std::span(masks));
-  INSERT_INTO_JSON_OBJECT(dest, fee, sig.txnFee);
+  WRITE_JSON_FIELD_FROM(dest, type, sig.type);
+  WRITE_JSON_FIELD_FROM(dest, encrypted, sig.ecdhInfo);
+  WRITE_JSON_FIELD_FROM(dest, commitments, std::span(masks));
+  WRITE_JSON_FIELD_FROM(dest, fee, sig.txnFee);
 
   // prunable
   if (!sig.p.bulletproofs.empty() || !sig.get_pseudo_outs().empty())
@@ -1050,8 +1050,8 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
     dest.Key("prunable");
     dest.StartObject();
 
-    INSERT_INTO_JSON_OBJECT(dest, bulletproofs, sig.p.bulletproofs);
-    INSERT_INTO_JSON_OBJECT(dest, pseudo_outs, sig.get_pseudo_outs());
+    WRITE_JSON_FIELD_FROM(dest, bulletproofs, sig.p.bulletproofs);
+    WRITE_JSON_FIELD_FROM(dest, pseudo_outs, sig.get_pseudo_outs());
 
     dest.EndObject();
   }
@@ -1066,10 +1066,10 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, sig.type, type);
-  GET_FROM_JSON_OBJECT(val, sig.ecdhInfo, encrypted);
-  GET_FROM_JSON_OBJECT(val, sig.outPk, commitments);
-  GET_FROM_JSON_OBJECT(val, sig.txnFee, fee);
+  READ_JSON_VALUE_BY_KEY(val, sig.type, type);
+  READ_JSON_VALUE_BY_KEY(val, sig.ecdhInfo, encrypted);
+  READ_JSON_VALUE_BY_KEY(val, sig.outPk, commitments);
+  READ_JSON_VALUE_BY_KEY(val, sig.txnFee, fee);
 
   // prunable
   const auto prunable = val.FindMember("prunable");
@@ -1077,8 +1077,8 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
   {
     rct::keyV pseudo_outs = std::move(sig.get_pseudo_outs());
 
-    GET_FROM_JSON_OBJECT(prunable->value, sig.p.bulletproofs, bulletproofs);
-    GET_FROM_JSON_OBJECT(prunable->value, pseudo_outs, pseudo_outs);
+    READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.bulletproofs, bulletproofs);
+    READ_JSON_VALUE_BY_KEY(prunable->value, pseudo_outs, pseudo_outs);
 
     sig.get_pseudo_outs() = std::move(pseudo_outs);
   }
@@ -1098,8 +1098,8 @@ void fromJsonValue(const rapidjson::Value& val, rct::ctkey& key)
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhTuple tuple)
 {
   dest.StartObject();
-  INSERT_INTO_JSON_OBJECT(dest, mask, tuple.mask);
-  INSERT_INTO_JSON_OBJECT(dest, amount, tuple.amount);
+  WRITE_JSON_FIELD_FROM(dest, mask, tuple.mask);
+  WRITE_JSON_FIELD_FROM(dest, amount, tuple.amount);
   dest.EndObject();
 }
 
@@ -1110,26 +1110,26 @@ void fromJsonValue(const rapidjson::Value& val, rct::ecdhTuple& tuple)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, tuple.mask, mask);
-  GET_FROM_JSON_OBJECT(val, tuple.amount, amount);
+  READ_JSON_VALUE_BY_KEY(val, tuple.mask, mask);
+  READ_JSON_VALUE_BY_KEY(val, tuple.amount, amount);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof p)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, V, p.V);
-  INSERT_INTO_JSON_OBJECT(dest, A, p.A);
-  INSERT_INTO_JSON_OBJECT(dest, S, p.S);
-  INSERT_INTO_JSON_OBJECT(dest, T1, p.T1);
-  INSERT_INTO_JSON_OBJECT(dest, T2, p.T2);
-  INSERT_INTO_JSON_OBJECT(dest, taux, p.taux);
-  INSERT_INTO_JSON_OBJECT(dest, mu, p.mu);
-  INSERT_INTO_JSON_OBJECT(dest, L, p.L);
-  INSERT_INTO_JSON_OBJECT(dest, R, p.R);
-  INSERT_INTO_JSON_OBJECT(dest, a, p.a);
-  INSERT_INTO_JSON_OBJECT(dest, b, p.b);
-  INSERT_INTO_JSON_OBJECT(dest, t, p.t);
+  WRITE_JSON_FIELD_FROM(dest, V, p.V);
+  WRITE_JSON_FIELD_FROM(dest, A, p.A);
+  WRITE_JSON_FIELD_FROM(dest, S, p.S);
+  WRITE_JSON_FIELD_FROM(dest, T1, p.T1);
+  WRITE_JSON_FIELD_FROM(dest, T2, p.T2);
+  WRITE_JSON_FIELD_FROM(dest, taux, p.taux);
+  WRITE_JSON_FIELD_FROM(dest, mu, p.mu);
+  WRITE_JSON_FIELD_FROM(dest, L, p.L);
+  WRITE_JSON_FIELD_FROM(dest, R, p.R);
+  WRITE_JSON_FIELD_FROM(dest, a, p.a);
+  WRITE_JSON_FIELD_FROM(dest, b, p.b);
+  WRITE_JSON_FIELD_FROM(dest, t, p.t);
 
   dest.EndObject();
 }
@@ -1141,41 +1141,41 @@ void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof& p)
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, p.V, V);
-  GET_FROM_JSON_OBJECT(val, p.A, A);
-  GET_FROM_JSON_OBJECT(val, p.S, S);
-  GET_FROM_JSON_OBJECT(val, p.T1, T1);
-  GET_FROM_JSON_OBJECT(val, p.T2, T2);
-  GET_FROM_JSON_OBJECT(val, p.taux, taux);
-  GET_FROM_JSON_OBJECT(val, p.mu, mu);
-  GET_FROM_JSON_OBJECT(val, p.L, L);
-  GET_FROM_JSON_OBJECT(val, p.R, R);
-  GET_FROM_JSON_OBJECT(val, p.a, a);
-  GET_FROM_JSON_OBJECT(val, p.b, b);
-  GET_FROM_JSON_OBJECT(val, p.t, t);
+  READ_JSON_VALUE_BY_KEY(val, p.V, V);
+  READ_JSON_VALUE_BY_KEY(val, p.A, A);
+  READ_JSON_VALUE_BY_KEY(val, p.S, S);
+  READ_JSON_VALUE_BY_KEY(val, p.T1, T1);
+  READ_JSON_VALUE_BY_KEY(val, p.T2, T2);
+  READ_JSON_VALUE_BY_KEY(val, p.taux, taux);
+  READ_JSON_VALUE_BY_KEY(val, p.mu, mu);
+  READ_JSON_VALUE_BY_KEY(val, p.L, L);
+  READ_JSON_VALUE_BY_KEY(val, p.R, R);
+  READ_JSON_VALUE_BY_KEY(val, p.a, a);
+  READ_JSON_VALUE_BY_KEY(val, p.b, b);
+  READ_JSON_VALUE_BY_KEY(val, p.t, t);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::DaemonInfo info)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, height, info.height);
-  INSERT_INTO_JSON_OBJECT(dest, target_height, info.target_height);
-  INSERT_INTO_JSON_OBJECT(dest, difficulty, info.difficulty);
-  INSERT_INTO_JSON_OBJECT(dest, target, info.target);
-  INSERT_INTO_JSON_OBJECT(dest, tx_count, info.tx_count);
-  INSERT_INTO_JSON_OBJECT(dest, tx_pool_size, info.tx_pool_size);
-  INSERT_INTO_JSON_OBJECT(dest, alt_blocks_count, info.alt_blocks_count);
-  INSERT_INTO_JSON_OBJECT(dest, outgoing_connections_count, info.outgoing_connections_count);
-  INSERT_INTO_JSON_OBJECT(dest, incoming_connections_count, info.incoming_connections_count);
-  INSERT_INTO_JSON_OBJECT(dest, white_peerlist_size, info.white_peerlist_size);
-  INSERT_INTO_JSON_OBJECT(dest, grey_peerlist_size, info.grey_peerlist_size);
-  INSERT_INTO_JSON_OBJECT(dest, mainnet, info.mainnet);
-  INSERT_INTO_JSON_OBJECT(dest, testnet, info.testnet);
-  INSERT_INTO_JSON_OBJECT(dest, nettype, info.nettype);
-  INSERT_INTO_JSON_OBJECT(dest, top_block_hash, info.top_block_hash);
-  INSERT_INTO_JSON_OBJECT(dest, cumulative_difficulty, info.cumulative_difficulty);
-  INSERT_INTO_JSON_OBJECT(dest, start_time, info.start_time);
+  WRITE_JSON_FIELD_FROM(dest, height, info.height);
+  WRITE_JSON_FIELD_FROM(dest, target_height, info.target_height);
+  WRITE_JSON_FIELD_FROM(dest, difficulty, info.difficulty);
+  WRITE_JSON_FIELD_FROM(dest, target, info.target);
+  WRITE_JSON_FIELD_FROM(dest, tx_count, info.tx_count);
+  WRITE_JSON_FIELD_FROM(dest, tx_pool_size, info.tx_pool_size);
+  WRITE_JSON_FIELD_FROM(dest, alt_blocks_count, info.alt_blocks_count);
+  WRITE_JSON_FIELD_FROM(dest, outgoing_connections_count, info.outgoing_connections_count);
+  WRITE_JSON_FIELD_FROM(dest, incoming_connections_count, info.incoming_connections_count);
+  WRITE_JSON_FIELD_FROM(dest, white_peerlist_size, info.white_peerlist_size);
+  WRITE_JSON_FIELD_FROM(dest, grey_peerlist_size, info.grey_peerlist_size);
+  WRITE_JSON_FIELD_FROM(dest, mainnet, info.mainnet);
+  WRITE_JSON_FIELD_FROM(dest, testnet, info.testnet);
+  WRITE_JSON_FIELD_FROM(dest, nettype, info.nettype);
+  WRITE_JSON_FIELD_FROM(dest, top_block_hash, info.top_block_hash);
+  WRITE_JSON_FIELD_FROM(dest, cumulative_difficulty, info.cumulative_difficulty);
+  WRITE_JSON_FIELD_FROM(dest, start_time, info.start_time);
 
   dest.EndObject();
 }
@@ -1187,33 +1187,33 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::DaemonInfo& inf
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, info.height, height);
-  GET_FROM_JSON_OBJECT(val, info.target_height, target_height);
-  GET_FROM_JSON_OBJECT(val, info.difficulty, difficulty);
-  GET_FROM_JSON_OBJECT(val, info.target, target);
-  GET_FROM_JSON_OBJECT(val, info.tx_count, tx_count);
-  GET_FROM_JSON_OBJECT(val, info.tx_pool_size, tx_pool_size);
-  GET_FROM_JSON_OBJECT(val, info.alt_blocks_count, alt_blocks_count);
-  GET_FROM_JSON_OBJECT(val, info.outgoing_connections_count, outgoing_connections_count);
-  GET_FROM_JSON_OBJECT(val, info.incoming_connections_count, incoming_connections_count);
-  GET_FROM_JSON_OBJECT(val, info.white_peerlist_size, white_peerlist_size);
-  GET_FROM_JSON_OBJECT(val, info.grey_peerlist_size, grey_peerlist_size);
-  GET_FROM_JSON_OBJECT(val, info.mainnet, mainnet);
-  GET_FROM_JSON_OBJECT(val, info.testnet, testnet);
-  GET_FROM_JSON_OBJECT(val, info.nettype, nettype);
-  GET_FROM_JSON_OBJECT(val, info.top_block_hash, top_block_hash);
-  GET_FROM_JSON_OBJECT(val, info.cumulative_difficulty, cumulative_difficulty);
-  GET_FROM_JSON_OBJECT(val, info.start_time, start_time);
+  READ_JSON_VALUE_BY_KEY(val, info.height, height);
+  READ_JSON_VALUE_BY_KEY(val, info.target_height, target_height);
+  READ_JSON_VALUE_BY_KEY(val, info.difficulty, difficulty);
+  READ_JSON_VALUE_BY_KEY(val, info.target, target);
+  READ_JSON_VALUE_BY_KEY(val, info.tx_count, tx_count);
+  READ_JSON_VALUE_BY_KEY(val, info.tx_pool_size, tx_pool_size);
+  READ_JSON_VALUE_BY_KEY(val, info.alt_blocks_count, alt_blocks_count);
+  READ_JSON_VALUE_BY_KEY(val, info.outgoing_connections_count, outgoing_connections_count);
+  READ_JSON_VALUE_BY_KEY(val, info.incoming_connections_count, incoming_connections_count);
+  READ_JSON_VALUE_BY_KEY(val, info.white_peerlist_size, white_peerlist_size);
+  READ_JSON_VALUE_BY_KEY(val, info.grey_peerlist_size, grey_peerlist_size);
+  READ_JSON_VALUE_BY_KEY(val, info.mainnet, mainnet);
+  READ_JSON_VALUE_BY_KEY(val, info.testnet, testnet);
+  READ_JSON_VALUE_BY_KEY(val, info.nettype, nettype);
+  READ_JSON_VALUE_BY_KEY(val, info.top_block_hash, top_block_hash);
+  READ_JSON_VALUE_BY_KEY(val, info.cumulative_difficulty, cumulative_difficulty);
+  READ_JSON_VALUE_BY_KEY(val, info.start_time, start_time);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_distribution dist)
 {
   dest.StartObject();
 
-  INSERT_INTO_JSON_OBJECT(dest, distribution, dist.data.distribution);
-  INSERT_INTO_JSON_OBJECT(dest, amount, dist.amount);
-  INSERT_INTO_JSON_OBJECT(dest, start_height, dist.data.start_height);
-  INSERT_INTO_JSON_OBJECT(dest, base, dist.data.base);
+  WRITE_JSON_FIELD_FROM(dest, distribution, dist.data.distribution);
+  WRITE_JSON_FIELD_FROM(dest, amount, dist.amount);
+  WRITE_JSON_FIELD_FROM(dest, start_height, dist.data.start_height);
+  WRITE_JSON_FIELD_FROM(dest, base, dist.data.base);
 
   dest.EndObject();
 }
@@ -1225,10 +1225,10 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_distribu
     throw WRONG_TYPE("json object");
   }
 
-  GET_FROM_JSON_OBJECT(val, dist.data.distribution, distribution);
-  GET_FROM_JSON_OBJECT(val, dist.amount, amount);
-  GET_FROM_JSON_OBJECT(val, dist.data.start_height, start_height);
-  GET_FROM_JSON_OBJECT(val, dist.data.base, base);
+  READ_JSON_VALUE_BY_KEY(val, dist.data.distribution, distribution);
+  READ_JSON_VALUE_BY_KEY(val, dist.amount, amount);
+  READ_JSON_VALUE_BY_KEY(val, dist.data.start_height, start_height);
+  READ_JSON_VALUE_BY_KEY(val, dist.data.base, base);
 }
 
 }  // namespace json

@@ -64,17 +64,18 @@ namespace
 void Message::toJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   dest.StartObject();
-  INSERT_INTO_JSON_OBJECT(dest, status, status);
-  INSERT_INTO_JSON_OBJECT(dest, error_details, error_details);
+  // WRITE_JSON_FIELD_FROM(dest, status, status);
+  WRITE_FIELD(dest, status);
+  WRITE_FIELD(dest, error_details);
   doToJson(dest);
   dest.EndObject();
 }
 
 void Message::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, status, status);
-  GET_FROM_JSON_OBJECT(val, error_details, error_details);
-  GET_FROM_JSON_OBJECT(val, rpc_version, rpc_version);
+  READ_FIELD(val, status);
+  READ_FIELD(val, error_details);
+  READ_FIELD(val, rpc_version);
 }
 
 FullMessage::FullMessage(const std::string&& json_string, bool request)
@@ -143,7 +144,7 @@ cryptonote::rpc::error FullMessage::getError()
   err.use = false;
   if (doc.HasMember(error_field))
   {
-    GET_FROM_JSON_OBJECT(doc, err, error);
+    READ_JSON_VALUE_BY_KEY(doc, err, error);
     err.use = true;
   }
 
@@ -157,7 +158,7 @@ std::string FullMessage::getRequest(const std::string& request, const Message& m
     rapidjson::Writer<rapidjson::StringBuffer> dest{buffer};
 
     dest.StartObject();
-    INSERT_INTO_JSON_OBJECT(dest, jsonrpc, std::string_view("2.0"));
+    WRITE_JSON_FIELD_FROM(dest, jsonrpc, std::string_view("2.0"));
 
     dest.Key(id_field);
     json::toJsonValue(dest, id);
@@ -184,7 +185,7 @@ std::string FullMessage::getResponse(const Message& message, const rapidjson::Va
     rapidjson::Writer<rapidjson::StringBuffer> dest{buffer};
 
     dest.StartObject();
-    INSERT_INTO_JSON_OBJECT(dest, jsonrpc, std::string_view("2.0"));
+    WRITE_JSON_FIELD_FROM(dest, jsonrpc, std::string_view("2.0"));
 
     dest.Key(id_field);
     json::toJsonValue(dest, id);
@@ -201,7 +202,7 @@ std::string FullMessage::getResponse(const Message& message, const rapidjson::Va
       err.error_str = message.status;
       err.message = message.error_details;
 
-      INSERT_INTO_JSON_OBJECT(dest, error, err);
+      WRITE_JSON_FIELD_FROM(dest, error, err);
     }
     dest.EndObject();
 

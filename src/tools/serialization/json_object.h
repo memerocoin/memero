@@ -44,24 +44,28 @@
 #include <vector>
 
 
-#define OBJECT_HAS_MEMBER_OR_THROW(val, key) \
+#define OBJECT_HAS_MEMBER_OR_THROW(obj, key) \
   do \
   { \
-    if (!val.HasMember(key)) \
+    if (!obj.HasMember(key)) \
     { \
       throw cryptonote::json::MISSING_KEY(key); \
     } \
   } while (0);
 
-#define INSERT_INTO_JSON_OBJECT(dest, key, source) \
-    dest.Key(#key, sizeof(#key) - 1); \
-    cryptonote::json::toJsonValue(dest, source);
+#define WRITE_JSON_FIELD_FROM(obj, key, source) \
+    obj.Key(#key, sizeof(#key) - 1); \
+    cryptonote::json::toJsonValue(obj, source);
 
-#define GET_FROM_JSON_OBJECT(source, dst, key) \
-    OBJECT_HAS_MEMBER_OR_THROW(source, #key) \
+#define WRITE_FIELD(obj, key) WRITE_JSON_FIELD_FROM(obj, key, key)
+
+#define READ_JSON_VALUE_BY_KEY(obj, dst, key) \
+    OBJECT_HAS_MEMBER_OR_THROW(obj, #key) \
     decltype(dst) dstVal##key; \
-    cryptonote::json::fromJsonValue(source[#key], dstVal##key); \
+    cryptonote::json::fromJsonValue(obj[#key], dstVal##key); \
     dst = dstVal##key;
+
+#define READ_FIELD(obj, key) READ_JSON_VALUE_BY_KEY(obj, key, key)
 
 namespace cryptonote
 {

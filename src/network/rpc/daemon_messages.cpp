@@ -44,182 +44,182 @@ void GetHeight::Request::fromJson(const rapidjson::Value& val)
 
 void GetHeight::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, height, height);
+  WRITE_JSON_FIELD_FROM(dest, height, height);
 }
 
 void GetHeight::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, height, height);
+  READ_JSON_VALUE_BY_KEY(val, height, height);
 }
 
 
 void GetBlocksFast::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, block_ids, block_ids);
-  INSERT_INTO_JSON_OBJECT(dest, start_height, start_height);
-  INSERT_INTO_JSON_OBJECT(dest, prune, prune);
+  WRITE_JSON_FIELD_FROM(dest, block_ids, block_ids);
+  WRITE_JSON_FIELD_FROM(dest, start_height, start_height);
+  WRITE_JSON_FIELD_FROM(dest, prune, prune);
 }
 
 void GetBlocksFast::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, block_ids, block_ids);
-  GET_FROM_JSON_OBJECT(val, start_height, start_height);
-  GET_FROM_JSON_OBJECT(val, prune, prune);
+  READ_JSON_VALUE_BY_KEY(val, block_ids, block_ids);
+  READ_JSON_VALUE_BY_KEY(val, start_height, start_height);
+  READ_JSON_VALUE_BY_KEY(val, prune, prune);
 }
 
 void GetBlocksFast::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, blocks, blocks);
-  INSERT_INTO_JSON_OBJECT(dest, start_height, start_height);
-  INSERT_INTO_JSON_OBJECT(dest, current_height, current_height);
-  INSERT_INTO_JSON_OBJECT(dest, output_indices, output_indices);
+  WRITE_JSON_FIELD_FROM(dest, blocks, blocks);
+  WRITE_JSON_FIELD_FROM(dest, start_height, start_height);
+  WRITE_JSON_FIELD_FROM(dest, current_height, current_height);
+  WRITE_JSON_FIELD_FROM(dest, output_indices, output_indices);
 }
 
 void GetBlocksFast::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, blocks, blocks);
-  GET_FROM_JSON_OBJECT(val, start_height, start_height);
-  GET_FROM_JSON_OBJECT(val, current_height, current_height);
-  GET_FROM_JSON_OBJECT(val, output_indices, output_indices);
+  READ_JSON_VALUE_BY_KEY(val, blocks, blocks);
+  READ_JSON_VALUE_BY_KEY(val, start_height, start_height);
+  READ_JSON_VALUE_BY_KEY(val, current_height, current_height);
+  READ_JSON_VALUE_BY_KEY(val, output_indices, output_indices);
 }
 
 
 void GetHashesFast::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, known_hashes, known_hashes);
-  INSERT_INTO_JSON_OBJECT(dest, start_height, start_height);
+  WRITE_JSON_FIELD_FROM(dest, known_hashes, known_hashes);
+  WRITE_JSON_FIELD_FROM(dest, start_height, start_height);
 }
 
 void GetHashesFast::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, known_hashes, known_hashes);
-  GET_FROM_JSON_OBJECT(val, start_height, start_height);
+  READ_JSON_VALUE_BY_KEY(val, known_hashes, known_hashes);
+  READ_JSON_VALUE_BY_KEY(val, start_height, start_height);
 }
 
 void GetHashesFast::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, hashes, hashes);
-  INSERT_INTO_JSON_OBJECT(dest, start_height, start_height);
-  INSERT_INTO_JSON_OBJECT(dest, current_height, current_height);
+  WRITE_JSON_FIELD_FROM(dest, hashes, hashes);
+  WRITE_JSON_FIELD_FROM(dest, start_height, start_height);
+  WRITE_JSON_FIELD_FROM(dest, current_height, current_height);
 }
 
 void GetHashesFast::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, hashes, hashes);
-  GET_FROM_JSON_OBJECT(val, start_height, start_height);
-  GET_FROM_JSON_OBJECT(val, current_height, current_height);
+  READ_JSON_VALUE_BY_KEY(val, hashes, hashes);
+  READ_JSON_VALUE_BY_KEY(val, start_height, start_height);
+  READ_JSON_VALUE_BY_KEY(val, current_height, current_height);
 }
 
 
 void GetTransactions::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, tx_hashes, tx_hashes);
+  WRITE_JSON_FIELD_FROM(dest, tx_hashes, tx_hashes);
 }
 
 void GetTransactions::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, tx_hashes, tx_hashes);
+  READ_JSON_VALUE_BY_KEY(val, tx_hashes, tx_hashes);
 }
 
 void GetTransactions::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, txs, txs);
-  INSERT_INTO_JSON_OBJECT(dest, missed_hashes, missed_hashes);
+  WRITE_JSON_FIELD_FROM(dest, txs, txs);
+  WRITE_JSON_FIELD_FROM(dest, missed_hashes, missed_hashes);
 }
 
 void GetTransactions::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, txs, txs);
-  GET_FROM_JSON_OBJECT(val, missed_hashes, missed_hashes);
+  READ_JSON_VALUE_BY_KEY(val, txs, txs);
+  READ_JSON_VALUE_BY_KEY(val, missed_hashes, missed_hashes);
 }
 
 
 void KeyImagesSpent::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, key_images, key_images);
+  WRITE_JSON_FIELD_FROM(dest, key_images, key_images);
 }
 
 void KeyImagesSpent::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, key_images, key_images);
+  READ_JSON_VALUE_BY_KEY(val, key_images, key_images);
 }
 
 void KeyImagesSpent::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, spent_status, spent_status);
+  WRITE_JSON_FIELD_FROM(dest, spent_status, spent_status);
 }
 
 void KeyImagesSpent::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, spent_status, spent_status);
+  READ_JSON_VALUE_BY_KEY(val, spent_status, spent_status);
 }
 
 
 void GetTxGlobalOutputIndices::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, tx_hash, tx_hash);
+  WRITE_JSON_FIELD_FROM(dest, tx_hash, tx_hash);
 }
 
 void GetTxGlobalOutputIndices::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, tx_hash, tx_hash);
+  READ_JSON_VALUE_BY_KEY(val, tx_hash, tx_hash);
 }
 
 void GetTxGlobalOutputIndices::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, output_indices, output_indices);
+  WRITE_JSON_FIELD_FROM(dest, output_indices, output_indices);
 }
 
 void GetTxGlobalOutputIndices::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, output_indices, output_indices);
+  READ_JSON_VALUE_BY_KEY(val, output_indices, output_indices);
 }
 
 void SendRawTx::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, tx, tx);
-  INSERT_INTO_JSON_OBJECT(dest, relay, relay);
+  WRITE_JSON_FIELD_FROM(dest, tx, tx);
+  WRITE_JSON_FIELD_FROM(dest, relay, relay);
 }
 
 void SendRawTx::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, tx, tx);
-  GET_FROM_JSON_OBJECT(val, relay, relay);
+  READ_JSON_VALUE_BY_KEY(val, tx, tx);
+  READ_JSON_VALUE_BY_KEY(val, relay, relay);
 }
 
 void SendRawTx::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, relayed, relayed);
+  WRITE_JSON_FIELD_FROM(dest, relayed, relayed);
 }
 
 
 void SendRawTx::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, relayed, relayed);
+  READ_JSON_VALUE_BY_KEY(val, relayed, relayed);
 }
 
 void SendRawTxHex::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, tx_as_hex, tx_as_hex);
-  INSERT_INTO_JSON_OBJECT(dest, relay, relay);
+  WRITE_JSON_FIELD_FROM(dest, tx_as_hex, tx_as_hex);
+  WRITE_JSON_FIELD_FROM(dest, relay, relay);
 }
 
 void SendRawTxHex::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, tx_as_hex, tx_as_hex);
-  GET_FROM_JSON_OBJECT(val, relay, relay);
+  READ_JSON_VALUE_BY_KEY(val, tx_as_hex, tx_as_hex);
+  READ_JSON_VALUE_BY_KEY(val, relay, relay);
 }
 
 void StartMining::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, miner_address, miner_address);
-  INSERT_INTO_JSON_OBJECT(dest, threads_count, threads_count);
+  WRITE_JSON_FIELD_FROM(dest, miner_address, miner_address);
+  WRITE_JSON_FIELD_FROM(dest, threads_count, threads_count);
 }
 
 void StartMining::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, miner_address, miner_address);
-  GET_FROM_JSON_OBJECT(val, threads_count, threads_count);
+  READ_JSON_VALUE_BY_KEY(val, miner_address, miner_address);
+  READ_JSON_VALUE_BY_KEY(val, threads_count, threads_count);
 }
 
 void StartMining::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
@@ -254,18 +254,18 @@ void MiningStatus::Request::fromJson(const rapidjson::Value& val)
 
 void MiningStatus::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, active, active);
-  INSERT_INTO_JSON_OBJECT(dest, speed, speed);
-  INSERT_INTO_JSON_OBJECT(dest, threads_count, threads_count);
-  INSERT_INTO_JSON_OBJECT(dest, address, address);
+  WRITE_JSON_FIELD_FROM(dest, active, active);
+  WRITE_JSON_FIELD_FROM(dest, speed, speed);
+  WRITE_JSON_FIELD_FROM(dest, threads_count, threads_count);
+  WRITE_JSON_FIELD_FROM(dest, address, address);
 }
 
 void MiningStatus::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, active, active);
-  GET_FROM_JSON_OBJECT(val, speed, speed);
-  GET_FROM_JSON_OBJECT(val, threads_count, threads_count);
-  GET_FROM_JSON_OBJECT(val, address, address);
+  READ_JSON_VALUE_BY_KEY(val, active, active);
+  READ_JSON_VALUE_BY_KEY(val, speed, speed);
+  READ_JSON_VALUE_BY_KEY(val, threads_count, threads_count);
+  READ_JSON_VALUE_BY_KEY(val, address, address);
 }
 
 
@@ -278,12 +278,12 @@ void GetInfo::Request::fromJson(const rapidjson::Value& val)
 
 void GetInfo::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, info, info);
+  WRITE_JSON_FIELD_FROM(dest, info, info);
 }
 
 void GetInfo::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, info, info);
+  READ_JSON_VALUE_BY_KEY(val, info, info);
 }
 
 
@@ -304,22 +304,22 @@ void SaveBC::Response::fromJson(const rapidjson::Value& val)
 
 void GetBlockHash::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, height, height);
+  WRITE_JSON_FIELD_FROM(dest, height, height);
 }
 
 void GetBlockHash::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, height, height);
+  READ_JSON_VALUE_BY_KEY(val, height, height);
 }
 
 void GetBlockHash::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, hash, hash);
+  WRITE_JSON_FIELD_FROM(dest, hash, hash);
 }
 
 void GetBlockHash::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, hash, hash);
+  READ_JSON_VALUE_BY_KEY(val, hash, hash);
 }
 
 
@@ -332,75 +332,75 @@ void GetLastBlockHeader::Request::fromJson(const rapidjson::Value& val)
 
 void GetLastBlockHeader::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, header, header);
+  WRITE_JSON_FIELD_FROM(dest, header, header);
 }
 
 void GetLastBlockHeader::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, header, header);
+  READ_JSON_VALUE_BY_KEY(val, header, header);
 }
 
 
 void GetBlockHeaderByHash::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, hash, hash);
+  WRITE_JSON_FIELD_FROM(dest, hash, hash);
 }
 
 void GetBlockHeaderByHash::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, hash, hash);
+  READ_JSON_VALUE_BY_KEY(val, hash, hash);
 }
 
 void GetBlockHeaderByHash::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, header, header);
+  WRITE_JSON_FIELD_FROM(dest, header, header);
 }
 
 void GetBlockHeaderByHash::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, header, header);
+  READ_JSON_VALUE_BY_KEY(val, header, header);
 }
 
 
 void GetBlockHeaderByHeight::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, height, height);
+  WRITE_JSON_FIELD_FROM(dest, height, height);
 }
 
 void GetBlockHeaderByHeight::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, height, height);
+  READ_JSON_VALUE_BY_KEY(val, height, height);
 }
 
 void GetBlockHeaderByHeight::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, header, header);
+  WRITE_JSON_FIELD_FROM(dest, header, header);
 }
 
 void GetBlockHeaderByHeight::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, header, header);
+  READ_JSON_VALUE_BY_KEY(val, header, header);
 }
 
 
 void GetBlockHeadersByHeight::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, heights, heights);
+  WRITE_JSON_FIELD_FROM(dest, heights, heights);
 }
 
 void GetBlockHeadersByHeight::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, heights, heights);
+  READ_JSON_VALUE_BY_KEY(val, heights, heights);
 }
 
 void GetBlockHeadersByHeight::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, headers, headers);
+  WRITE_JSON_FIELD_FROM(dest, headers, headers);
 }
 
 void GetBlockHeadersByHeight::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, headers, headers);
+  READ_JSON_VALUE_BY_KEY(val, headers, headers);
 }
 
 
@@ -413,25 +413,25 @@ void GetPeerList::Request::fromJson(const rapidjson::Value& val)
 
 void GetPeerList::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, white_list, white_list);
-  INSERT_INTO_JSON_OBJECT(dest, gray_list, gray_list);
+  WRITE_JSON_FIELD_FROM(dest, white_list, white_list);
+  WRITE_JSON_FIELD_FROM(dest, gray_list, gray_list);
 }
 
 void GetPeerList::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, white_list, white_list);
-  GET_FROM_JSON_OBJECT(val, gray_list, gray_list);
+  READ_JSON_VALUE_BY_KEY(val, white_list, white_list);
+  READ_JSON_VALUE_BY_KEY(val, gray_list, gray_list);
 }
 
 
 void SetLogLevel::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, level, level);
+  WRITE_JSON_FIELD_FROM(dest, level, level);
 }
 
 void SetLogLevel::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, level, level);
+  READ_JSON_VALUE_BY_KEY(val, level, level);
 }
 
 void SetLogLevel::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
@@ -451,91 +451,91 @@ void GetTransactionPool::Request::fromJson(const rapidjson::Value& val)
 
 void GetTransactionPool::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, transactions, transactions);
-  INSERT_INTO_JSON_OBJECT(dest, key_images, key_images);
+  WRITE_JSON_FIELD_FROM(dest, transactions, transactions);
+  WRITE_JSON_FIELD_FROM(dest, key_images, key_images);
 }
 
 void GetTransactionPool::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, transactions, transactions);
-  GET_FROM_JSON_OBJECT(val, key_images, key_images);
+  READ_JSON_VALUE_BY_KEY(val, transactions, transactions);
+  READ_JSON_VALUE_BY_KEY(val, key_images, key_images);
 }
 
 void GetOutputHistogram::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, amounts, amounts);
-  INSERT_INTO_JSON_OBJECT(dest, min_count, min_count);
-  INSERT_INTO_JSON_OBJECT(dest, max_count, max_count);
-  INSERT_INTO_JSON_OBJECT(dest, unlocked, unlocked);
-  INSERT_INTO_JSON_OBJECT(dest, recent_cutoff, recent_cutoff);
+  WRITE_JSON_FIELD_FROM(dest, amounts, amounts);
+  WRITE_JSON_FIELD_FROM(dest, min_count, min_count);
+  WRITE_JSON_FIELD_FROM(dest, max_count, max_count);
+  WRITE_JSON_FIELD_FROM(dest, unlocked, unlocked);
+  WRITE_JSON_FIELD_FROM(dest, recent_cutoff, recent_cutoff);
 }
 
 void GetOutputHistogram::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, amounts, amounts);
-  GET_FROM_JSON_OBJECT(val, min_count, min_count);
-  GET_FROM_JSON_OBJECT(val, max_count, max_count);
-  GET_FROM_JSON_OBJECT(val, unlocked, unlocked);
-  GET_FROM_JSON_OBJECT(val, recent_cutoff, recent_cutoff);
+  READ_JSON_VALUE_BY_KEY(val, amounts, amounts);
+  READ_JSON_VALUE_BY_KEY(val, min_count, min_count);
+  READ_JSON_VALUE_BY_KEY(val, max_count, max_count);
+  READ_JSON_VALUE_BY_KEY(val, unlocked, unlocked);
+  READ_JSON_VALUE_BY_KEY(val, recent_cutoff, recent_cutoff);
 }
 
 void GetOutputHistogram::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, histogram, histogram);
+  WRITE_JSON_FIELD_FROM(dest, histogram, histogram);
 }
 
 void GetOutputHistogram::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, histogram, histogram);
+  READ_JSON_VALUE_BY_KEY(val, histogram, histogram);
 }
 
 
 void GetOutputKeys::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, outputs, outputs);
+  WRITE_JSON_FIELD_FROM(dest, outputs, outputs);
 }
 
 void GetOutputKeys::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, outputs, outputs);
+  READ_JSON_VALUE_BY_KEY(val, outputs, outputs);
 }
 
 void GetOutputKeys::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, keys, keys);
+  WRITE_JSON_FIELD_FROM(dest, keys, keys);
 }
 
 void GetOutputKeys::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, keys, keys);
+  READ_JSON_VALUE_BY_KEY(val, keys, keys);
 }
 
 void GetOutputDistribution::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, amounts, amounts);
-  INSERT_INTO_JSON_OBJECT(dest, from_height, from_height);
-  INSERT_INTO_JSON_OBJECT(dest, to_height, to_height);
-  INSERT_INTO_JSON_OBJECT(dest, cumulative, cumulative);
+  WRITE_JSON_FIELD_FROM(dest, amounts, amounts);
+  WRITE_JSON_FIELD_FROM(dest, from_height, from_height);
+  WRITE_JSON_FIELD_FROM(dest, to_height, to_height);
+  WRITE_JSON_FIELD_FROM(dest, cumulative, cumulative);
 }
 
 void GetOutputDistribution::Request::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, amounts, amounts);
-  GET_FROM_JSON_OBJECT(val, from_height, from_height);
-  GET_FROM_JSON_OBJECT(val, to_height, to_height);
-  GET_FROM_JSON_OBJECT(val, cumulative, cumulative);
+  READ_JSON_VALUE_BY_KEY(val, amounts, amounts);
+  READ_JSON_VALUE_BY_KEY(val, from_height, from_height);
+  READ_JSON_VALUE_BY_KEY(val, to_height, to_height);
+  READ_JSON_VALUE_BY_KEY(val, cumulative, cumulative);
 }
 
 void GetOutputDistribution::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  INSERT_INTO_JSON_OBJECT(dest, status, status);
-  INSERT_INTO_JSON_OBJECT(dest, distributions, distributions);
+  WRITE_JSON_FIELD_FROM(dest, status, status);
+  WRITE_JSON_FIELD_FROM(dest, distributions, distributions);
 }
 
 void GetOutputDistribution::Response::fromJson(const rapidjson::Value& val)
 {
-  GET_FROM_JSON_OBJECT(val, status, status);
-  GET_FROM_JSON_OBJECT(val, distributions, distributions);
+  READ_JSON_VALUE_BY_KEY(val, status, status);
+  READ_JSON_VALUE_BY_KEY(val, distributions, distributions);
 }
 
 }  // namespace rpc
