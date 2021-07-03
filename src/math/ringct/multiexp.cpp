@@ -31,7 +31,7 @@
 #include "rctOps.hpp"
 #include "multiexp.hpp"
 
-#include <map>
+#include <unordered_map>
 
 extern "C"
 {
@@ -177,7 +177,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
       }
     }
 
-    std::map<size_t, ge_p3> buckets;
+    std::unordered_map<size_t, ge_p3> buckets;
 
     // partition scalars into buckets
     for (size_t i = 0; i < data.size(); ++i)
