@@ -57,10 +57,6 @@ add_library(daemon_messages
   daemon_messages.cpp
 )
 
-target_link_libraries(daemon_messages
-  tools_serialization
-)
-
 add_library(daemon_rpc_server
   daemon_handler.cpp
 )

@@ -33,6 +33,7 @@
 
 #include "network/rpc/message_data_structs.h"
 
+#include "tools/common/sfinae_helpers.h"
 #include "tools/epee/include/hex.h"
 #include "tools/epee/include/span.h"
 
@@ -42,9 +43,6 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <vector>
-#include <concepts>
-#include <map>
-#include <unordered_map>
 
 
 #define OBJECT_HAS_MEMBER_OR_THROW(val, key) \
@@ -287,125 +285,67 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::DaemonInfo& inf
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_distribution& dist);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_distribution& dist);
 
-template <typename K, typename V>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::map<K, V>& map);
+template <typename Map>
+typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Map& map);
 
-template <typename K, typename V>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::unordered_map<K, V>& map);
+template <typename Map>
+typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type fromJsonValue(const rapidjson::Value& val, Map& map);
 
-template <typename K, typename V>
-void fromJsonValue(const rapidjson::Value& val, std::map<K, V>& map);
+template <typename Vec>
+typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Vec &vec);
 
-// template <typename K, typename V>
-// void fromJsonValue(const rapidjson::Value& val, std::map<K, V>& unorderd_map);
-
-template <typename T>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::vector<T> &xs);
-
-template <typename T>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::list<T> &xs);
-
-template <typename T>
-void fromJsonValue(const rapidjson::Value& val, std::vector<T>& xs);
-
-template <typename T>
-void fromJsonValue(const rapidjson::Value& val, std::list<T>& xs);
+template <typename Vec>
+typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type fromJsonValue(const rapidjson::Value& val, Vec& vec);
 
 
 // ideally would like to have the below functions in the .cpp file, but
 // unfortunately because of how templates work they have to be here.
 
-template <typename K, typename V>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::map<K, V>& map)
+template <typename Map>
+typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Map& map)
 {
-  using key_type = K;
+  using key_type = typename Map::key_type;
   static_assert(std::is_same<std::string, key_type>() || is_to_hex<key_type>(), "invalid map key type");
 
   dest.StartObject();
-  for (const auto &[k,v] : map)
+  for (const auto& i : map)
   {
-    toJsonKey(dest, k);
-    toJsonValue(dest, v);
+    toJsonKey(dest, i.first);
+    toJsonValue(dest, i.second);
   }
   dest.EndObject();
 }
 
-
-template <typename K, typename V>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::unordered_map<K, V>& map)
+template <typename Map>
+typename std::enable_if<sfinae::is_map_like<Map>::value, void>::type fromJsonValue(const rapidjson::Value& val, Map& map)
 {
-  using key_type = K;
-  static_assert(std::is_same<std::string, key_type>() || is_to_hex<key_type>(), "invalid map key type");
-
-  dest.StartObject();
-  for (const auto &[k,v] : map)
+  if (!val.IsObject())
   {
-    toJsonKey(dest, k);
-    toJsonValue(dest, v);
-  }
-  dest.EndObject();
-}
-
-template <typename K, typename V>
-void fromJsonValue(const rapidjson::Value& val, std::map<K, V>& map)
-{
-  if (!val.IsObject()) {
     throw WRONG_TYPE("json object");
   }
 
   auto itr = val.MemberBegin();
 
   map.clear();
-  K k;
-  V v;
   while (itr != val.MemberEnd())
   {
+    typename Map::key_type k;
+    typename Map::mapped_type m;
     fromJsonValue(itr->name, k);
-    fromJsonValue(itr->value, v);
-    map.emplace(k, v);
+    fromJsonValue(itr->value, m);
+    map.emplace(k, m);
     ++itr;
   }
 }
 
-template <typename K, typename V>
-void fromJsonValue(const rapidjson::Value& val, std::unordered_map<K, V>& map)
-{
-  if (!val.IsObject()) {
-    throw WRONG_TYPE("json object");
-  }
-
-  auto itr = val.MemberBegin();
-
-  map.clear();
-  K k;
-  V v;
-  while (itr != val.MemberEnd())
-  {
-    fromJsonValue(itr->name, k);
-    fromJsonValue(itr->value, v);
-    map.emplace(k, v);
-    ++itr;
-  }
-}
-
-template <typename T>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::list<T> &xs)
+template <typename Vec>
+typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Vec &vec)
 {
   dest.StartArray();
-  for (const auto& t : xs)
+  for (const auto& t : vec)
     toJsonValue(dest, t);
   dest.EndArray();
 }
-
-template <typename T>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::vector<T> &xs)
-{
-  dest.StartArray();
-  for (const auto& t : xs)
-    toJsonValue(dest, t);
-  dest.EndArray();
-}
-
 
 namespace traits
 {
@@ -420,36 +360,20 @@ namespace traits
   }
 }
 
-template <typename T>
-void fromJsonValue(const rapidjson::Value& val, std::vector<T>& xs)
+template <typename Vec>
+typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type fromJsonValue(const rapidjson::Value& val, Vec& vec)
 {
-  if (!val.IsArray()) {
+  if (!val.IsArray())
+  {
     throw WRONG_TYPE("json array");
   }
 
-  xs.clear();
-  xs.reserve(val.Size());
-  T v;
+  vec.clear();
+  traits::reserve(vec, val.Size());
   for (rapidjson::SizeType i=0; i < val.Size(); i++)
   {
-    fromJsonValue(val[i], v);
-    xs.emplace_back(v);
-  }
-}
-
-template <typename T>
-void fromJsonValue(const rapidjson::Value& val, std::list<T>& xs)
-{
-  if (!val.IsArray()) {
-    throw WRONG_TYPE("json array");
-  }
-
-  xs.clear();
-  T v;
-  for (rapidjson::SizeType i=0; i < val.Size(); i++)
-  {
-    fromJsonValue(val[i], v);
-    xs.emplace_back(v);
+    vec.emplace_back();
+    fromJsonValue(val[i], vec.back());
   }
 }
 
