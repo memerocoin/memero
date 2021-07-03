@@ -157,7 +157,7 @@ std::string FullMessage::getRequest(const std::string& request, const Message& m
     rapidjson::Writer<rapidjson::StringBuffer> dest{buffer};
 
     dest.StartObject();
-    INSERT_INTO_JSON_OBJECT(dest, jsonrpc, std::string("2.0"));
+    INSERT_INTO_JSON_OBJECT(dest, jsonrpc, std::string_view("2.0"));
 
     dest.Key(id_field);
     json::toJsonValue(dest, id);
@@ -184,7 +184,7 @@ std::string FullMessage::getResponse(const Message& message, const rapidjson::Va
     rapidjson::Writer<rapidjson::StringBuffer> dest{buffer};
 
     dest.StartObject();
-    INSERT_INTO_JSON_OBJECT(dest, jsonrpc, std::string("2.0"));
+    INSERT_INTO_JSON_OBJECT(dest, jsonrpc, std::string_view("2.0"));
 
     dest.Key(id_field);
     json::toJsonValue(dest, id);

@@ -151,6 +151,7 @@ typename std::enable_if<is_to_hex<Type>()>::type fromJsonValue(const rapidjson::
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rapidjson::Value& src);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string_view i);
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string& i);
 
 void fromJsonValue(const rapidjson::Value& val, std::string& str);
