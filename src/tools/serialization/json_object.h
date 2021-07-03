@@ -126,7 +126,7 @@ void read_hex(const rapidjson::Value& val, std::span<std::uint8_t> dest);
 
 // POD to json key
 template <class Type>
-typename std::enable_if<is_to_hex<Type>()>::type toJsonKey(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type& pod)
+typename std::enable_if<is_to_hex<Type>()>::type toJsonKey(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type pod)
 {
   const auto hex = epee::to_hex::array(pod);
   dest.Key(hex.data(), hex.size());
@@ -134,7 +134,7 @@ typename std::enable_if<is_to_hex<Type>()>::type toJsonKey(rapidjson::Writer<rap
 
 // POD to json value
 template <class Type>
-typename std::enable_if<is_to_hex<Type>()>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type& pod)
+typename std::enable_if<is_to_hex<Type>()>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type pod)
 {
   const auto hex = epee::to_hex::array(pod);
   dest.String(hex.data(), hex.size());
@@ -149,11 +149,11 @@ typename std::enable_if<is_to_hex<Type>()>::type fromJsonValue(const rapidjson::
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rapidjson::Value& src);
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string_view i);
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string& i);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string i);
 
 void fromJsonValue(const rapidjson::Value& val, std::string& str);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, bool i);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const bool i);
 void fromJsonValue(const rapidjson::Value& val, bool& b);
 
 // integers overloads for toJsonValue are not needed for standard promotions
@@ -190,34 +190,34 @@ void fromJsonValue(const rapidjson::Value& val, long& i);
 
 // end integers
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::transaction& tx);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::transaction tx);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block& b);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block b);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::block& b);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_v& txin);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_v txin);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_v& txin);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_gen& txin);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_gen txin);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_gen& txin);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_script& txin);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_script txin);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_script& txin);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_scripthash& txin);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_scripthash txin);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_scripthash& txin);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key& txin);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key txin);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_target_v& txout);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_target_v txout);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_target_v& txout);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_script& txout);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_script txout);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_script& txout);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_scripthash& txout);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_scripthash txout);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_scripthash& txout);
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_key& txout);
@@ -285,7 +285,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_distribution& dist);
 
 template <typename T>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::list<T> &xs)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::list<T> xs)
 {
   dest.StartArray();
   for (const auto& t : xs)
@@ -294,7 +294,16 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::li
 }
 
 template <typename T>
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::vector<T> &xs)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::span<T> xs)
+{
+  dest.StartArray();
+  for (const auto& t : xs)
+    toJsonValue(dest, t);
+  dest.EndArray();
+}
+
+template <typename T>
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::vector<T> xs)
 {
   dest.StartArray();
   for (const auto& t : xs)
@@ -367,7 +376,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::un
 }
 
 template <typename K, typename V>
-void fromJsonValue(const rapidjson::Value& val, std::map<K, V>& map)
+void fromJsonValue(const rapidjson::Value& val, std::map<K, V> map)
 {
   if (!val.IsObject()) {
     throw WRONG_TYPE("json object");
@@ -388,7 +397,7 @@ void fromJsonValue(const rapidjson::Value& val, std::map<K, V>& map)
 }
 
 template <typename K, typename V>
-void fromJsonValue(const rapidjson::Value& val, std::unordered_map<K, V>& map)
+void fromJsonValue(const rapidjson::Value& val, std::unordered_map<K, V> map)
 {
   if (!val.IsObject()) {
     throw WRONG_TYPE("json object");

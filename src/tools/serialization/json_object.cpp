@@ -139,7 +139,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::st
   dest.String(i.data(), i.size());
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string& i)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const std::string i)
 {
   toJsonValue(dest, std::string_view{i});
 }
@@ -154,7 +154,7 @@ void fromJsonValue(const rapidjson::Value& val, std::string& str)
   str = val.GetString();
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, bool i)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const bool i)
 {
   dest.Bool(i);
 }
@@ -254,7 +254,7 @@ void fromJsonValue(const rapidjson::Value& val, long& i)
   to_int64(val, i);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::transaction& tx)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::transaction tx)
 {
   dest.StartObject();
 
@@ -293,7 +293,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
   const auto& rsig = tx.rct_signatures;
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block& b)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block b)
 {
   dest.StartObject();
 
@@ -325,7 +325,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::block& b)
   GET_FROM_JSON_OBJECT(val, b.tx_hashes, tx_hashes);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_v& txin)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_v txin)
 {
   dest.StartObject();
   struct add_input
@@ -397,7 +397,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_v& txin)
   }
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_gen& txin)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_gen txin)
 {
   dest.StartObject();
 
@@ -416,7 +416,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_gen& txin)
   GET_FROM_JSON_OBJECT(val, txin.height, height);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_script& txin)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_script txin)
 {
   dest.StartObject();
 
@@ -441,7 +441,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_script& txin
 }
 
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_scripthash& txin)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_scripthash txin)
 {
   dest.StartObject();
 
@@ -467,7 +467,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_scripthash& 
   GET_FROM_JSON_OBJECT(val, txin.sigset, sigset);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key& txin)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key txin)
 {
   dest.StartObject();
 
@@ -491,7 +491,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin)
 }
 
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_script& txout)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_script txout)
 {
   dest.StartObject();
 
@@ -513,7 +513,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_script& txo
 }
 
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_scripthash& txout)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_scripthash txout)
 {
   dest.StartObject();
 
@@ -1035,12 +1035,13 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   dest.StartObject();
 
   std::vector<rct::key> masks;
+  masks.reserve(sig.outPk.size());
   std::transform(sig.outPk.begin(), sig.outPk.end(), std::back_inserter(masks),
                 [] (const auto & key) { return key.mask; } );
 
   INSERT_INTO_JSON_OBJECT(dest, type, sig.type);
   INSERT_INTO_JSON_OBJECT(dest, encrypted, sig.ecdhInfo);
-  INSERT_INTO_JSON_OBJECT(dest, commitments, masks);
+  INSERT_INTO_JSON_OBJECT(dest, commitments, std::span(masks));
   INSERT_INTO_JSON_OBJECT(dest, fee, sig.txnFee);
 
   // prunable
