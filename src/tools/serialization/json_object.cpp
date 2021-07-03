@@ -533,7 +533,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_scripthash&
 }
 
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_key& txout)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_key txout)
 {
   dest.StartObject();
 
@@ -552,7 +552,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_key& txout)
   GET_FROM_JSON_OBJECT(val, txout.key, key);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::tx_out& txout)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::tx_out txout)
 {
   dest.StartObject();
   INSERT_INTO_JSON_OBJECT(dest, amount, txout.amount);
@@ -620,7 +620,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::tx_out& txout)
   }
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::connection_info& info)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::connection_info info)
 {
   dest.StartObject();
 
@@ -690,7 +690,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::connection_info& inf
   GET_FROM_JSON_OBJECT(val, info.current_upload, current_upload);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::tx_blob_entry& tx)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::tx_blob_entry tx)
 {
   dest.StartObject();
 
@@ -711,7 +711,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::tx_blob_entry& tx)
   GET_FROM_JSON_OBJECT(val, tx.prunable_hash, prunable_hash);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block_complete_entry& blk)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block_complete_entry blk)
 {
   dest.StartObject();
 
@@ -733,7 +733,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::block_complete_entry
   GET_FROM_JSON_OBJECT(val, blk.txs, transactions);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::block_with_transactions& blk)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::block_with_transactions blk)
 {
   dest.StartObject();
 
@@ -755,7 +755,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::block_with_tran
   GET_FROM_JSON_OBJECT(val, blk.transactions, transactions);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::transaction_info& tx_info)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::transaction_info tx_info)
 {
   dest.StartObject();
 
@@ -779,7 +779,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::transaction_inf
   GET_FROM_JSON_OBJECT(val, tx_info.transaction, transaction);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_key_and_amount_index& out)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_key_and_amount_index out)
 {
   dest.StartObject();
 
@@ -801,7 +801,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_key_and_
   GET_FROM_JSON_OBJECT(val, out.key, key);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::amount_with_random_outputs& out)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::amount_with_random_outputs out)
 {
   dest.StartObject();
 
@@ -823,7 +823,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::amount_with_ran
   GET_FROM_JSON_OBJECT(val, out.outputs, outputs);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::peer& peer)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::peer peer)
 {
   dest.StartObject();
 
@@ -851,7 +851,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::peer& peer)
   GET_FROM_JSON_OBJECT(val, peer.last_seen, last_seen);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::tx_in_pool& tx)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::tx_in_pool tx)
 {
   dest.StartObject();
 
@@ -899,7 +899,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::tx_in_pool& tx)
 }
 
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_amount_count& out)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_amount_count out)
 {
   dest.StartObject();
 
@@ -925,7 +925,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_amount_c
   GET_FROM_JSON_OBJECT(val, out.recent_count, recent_count);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_amount_and_index& out)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_amount_and_index out)
 {
   dest.StartObject();
 
@@ -947,7 +947,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_amount_a
   GET_FROM_JSON_OBJECT(val, out.index, index);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_key_mask_unlocked& out)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_key_mask_unlocked out)
 {
   dest.StartObject();
 
@@ -970,7 +970,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::output_key_mask
   GET_FROM_JSON_OBJECT(val, out.unlocked, unlocked);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::error& err)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::error err)
 {
   dest.StartObject();
 
@@ -993,7 +993,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::error& error)
   GET_FROM_JSON_OBJECT(val, error.message, message);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::BlockHeaderResponse& response)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::BlockHeaderResponse response)
 {
   dest.StartObject();
 
@@ -1030,7 +1030,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::BlockHeaderResp
   GET_FROM_JSON_OBJECT(val, response.reward, reward);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rctSig& sig)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rctSig sig)
 {
   dest.StartObject();
 
@@ -1095,7 +1095,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::ctkey& key)
   fromJsonValue(val, key.mask);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhTuple& tuple)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhTuple tuple)
 {
   dest.StartObject();
   INSERT_INTO_JSON_OBJECT(dest, mask, tuple.mask);
@@ -1114,7 +1114,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::ecdhTuple& tuple)
   GET_FROM_JSON_OBJECT(val, tuple.amount, amount);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof& p)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof p)
 {
   dest.StartObject();
 
@@ -1155,7 +1155,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof& p)
   GET_FROM_JSON_OBJECT(val, p.t, t);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::DaemonInfo& info)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::DaemonInfo info)
 {
   dest.StartObject();
 
@@ -1206,7 +1206,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::DaemonInfo& inf
   GET_FROM_JSON_OBJECT(val, info.start_time, start_time);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_distribution& dist)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::rpc::output_distribution dist)
 {
   dest.StartObject();
 
