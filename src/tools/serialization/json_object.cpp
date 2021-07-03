@@ -35,12 +35,6 @@
 
 #include <boost/variant/apply_visitor.hpp>
 
-
-// drop macro from windows.h
-#ifdef GetObject
-  #undef GetObject
-#endif
-
 namespace cryptonote
 {
 
