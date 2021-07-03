@@ -33,7 +33,6 @@
 
 #include "network/rpc/message_data_structs.h"
 
-#include "tools/common/sfinae_helpers.h"
 #include "tools/epee/include/hex.h"
 #include "tools/epee/include/span.h"
 
@@ -408,17 +407,6 @@ void fromJsonValue(const rapidjson::Value& val, std::unordered_map<K, V>& map)
     ++itr;
   }
 }
-
-// This is strangely needed for test -R JsonS to pass ...
-template <typename Vec>
-typename std::enable_if<sfinae::is_vector_like<Vec>::value, void>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Vec vec)
-{
-  dest.StartArray();
-  for (const auto& t : vec)
-    toJsonValue(dest, t);
-  dest.EndArray();
-}
-
 
 }  // namespace json
 
