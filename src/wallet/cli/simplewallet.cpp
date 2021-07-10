@@ -555,15 +555,13 @@ bool simple_wallet::print_seed()
 {
   bool success =  false;
   epee::wipeable_string seed;
-  bool ready, multisig;
+  bool ready;
 
   if (m_wallet->key_on_device())
   {
     fail_msg_writer() << sw::tr("command not supported by HW wallet");
     return true;
   }
-
-  multisig = false;
 
   epee::wipeable_string seed_pass;
   success = m_wallet->get_seed(seed, seed_pass);

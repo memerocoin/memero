@@ -92,7 +92,6 @@ namespace tx {
     crypto::secret_key tx_key;
     std::vector<crypto::secret_key> additional_tx_keys;
     std::vector<cryptonote::tx_destination_entry> dests;
-    std::vector<rct::key> fake_multisig_sigs;
 
     tx_construction_data construction_data;
 
@@ -108,7 +107,6 @@ namespace tx {
       FIELD(additional_tx_keys)
       FIELD(dests)
       FIELD(construction_data)
-      FIELD(fake_multisig_sigs)
     END_SERIALIZE()
   };
 

@@ -182,22 +182,6 @@ namespace tools
       }
     };
     //----------------------------------------------------------------------------------------------------
-    struct multisig_export_needed : public wallet_runtime_error
-    {
-      explicit multisig_export_needed(std::string&& loc)
-        : wallet_runtime_error(std::move(loc), "This signature was made with stale data: export fresh multisig data, which other participants must then use")
-      {
-      }
-    };
-    //----------------------------------------------------------------------------------------------------
-    struct multisig_import_needed : public wallet_runtime_error
-    {
-      explicit multisig_import_needed(std::string&& loc)
-        : wallet_runtime_error(std::move(loc), "Not enough multisig data was found to sign: import multisig data from more other participants")
-      {
-      }
-    };
-    //----------------------------------------------------------------------------------------------------
     struct password_needed : public wallet_runtime_error
     {
       explicit password_needed(std::string&& loc, const std::string &msg = "Password needed")
@@ -269,16 +253,6 @@ namespace tools
     {
       explicit invalid_priority(std::string&& loc)
         : wallet_logic_error(std::move(loc), "invalid priority")
-      {
-      }
-
-      std::string to_string() const { return wallet_logic_error::to_string(); }
-    };
-
-    struct invalid_multisig_seed : public wallet_logic_error
-    {
-      explicit invalid_multisig_seed(std::string&& loc)
-        : wallet_logic_error(std::move(loc), "invalid multisig seed")
       {
       }
 
