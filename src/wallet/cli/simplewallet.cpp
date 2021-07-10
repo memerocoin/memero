@@ -993,19 +993,6 @@ bool simple_wallet::set_ignore_fractional_outputs(const std::vector<std::string>
 }
 
 
-bool simple_wallet::set_track_uses(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    parse_bool_and_use(args[1], [&](bool r) {
-      m_wallet->track_uses(r);
-      m_wallet->rewrite(m_wallet_file, pwd_container->password());
-    });
-  }
-  return true;
-}
-
 bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   if(args.empty())
@@ -1163,8 +1150,6 @@ simple_wallet::simple_wallet()
                                   "  Set the lookahead sizes for the subaddress hash table.\n "
                                   "ignore-fractional-outputs <1|0>\n "
                                   "  Whether to ignore fractional outputs that result in net loss when spending due to fee.\n "
-                                  "track-uses <1|0>\n "
-                                  "  Whether to keep track of owned outputs uses.\n "
                               ));
   m_cmd_binder.set_handler("rescan_spent",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_spent, std::placeholders::_1),
@@ -1280,7 +1265,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     const std::pair<size_t, size_t> lookahead = m_wallet->get_subaddress_lookahead();
     success_msg_writer() << "subaddress-lookahead = " << lookahead.first << ":" << lookahead.second;
     success_msg_writer() << "ignore-fractional-outputs = " << m_wallet->ignore_fractional_outputs();
-    success_msg_writer() << "track-uses = " << m_wallet->track_uses();
     return true;
   }
   else
@@ -1316,7 +1300,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("auto-low-priority", set_auto_low_priority, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("subaddress-lookahead", set_subaddress_lookahead, sw::tr("<major>:<minor>"));
     CHECK_SIMPLE_VARIABLE("ignore-fractional-outputs", set_ignore_fractional_outputs, sw::tr("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("track-uses", set_track_uses, sw::tr("0 or 1"));
   }
   fail_msg_writer() << sw::tr("set: unrecognized argument(s)");
   return true;

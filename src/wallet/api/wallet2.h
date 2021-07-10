@@ -380,8 +380,6 @@ namespace tools
     void auto_low_priority(bool value) { m_auto_low_priority = value; }
     bool ignore_fractional_outputs() const { return m_ignore_fractional_outputs; }
     void ignore_fractional_outputs(bool value) { m_ignore_fractional_outputs = value; }
-    bool track_uses() const { return m_track_uses; }
-    void track_uses(bool value) { m_track_uses = value; }
     const std::string & device_name() const { return m_device_name; }
     void device_name(const std::string & device_name) { m_device_name = device_name; }
     const std::string & device_derivation_path() const { return m_device_derivation_path; }
@@ -489,10 +487,10 @@ namespace tools
      */
     bool load_keys_buf(const std::string& keys_buf, const epee::wipeable_string& password);
     bool load_keys_buf(const std::string& keys_buf, const epee::wipeable_string& password, std::optional<crypto::chacha_key>& keys_to_encrypt);
-    void process_new_transaction(const crypto::hash &txid, const cryptonote::transaction& tx, const std::vector<uint64_t> &o_indices, uint64_t height, uint8_t block_version, uint64_t ts, bool miner_tx, bool pool, bool double_spend_seen, const tx_cache_data &tx_cache_data, std::map<std::pair<uint64_t, uint64_t>, size_t> *output_tracker_cache = NULL);
+    void process_new_transaction(const crypto::hash &txid, const cryptonote::transaction& tx, const std::vector<uint64_t> &o_indices, uint64_t height, uint8_t block_version, uint64_t ts, bool miner_tx, bool pool, bool double_spend_seen, const tx_cache_data &tx_cache_data);
     bool should_skip_block(const cryptonote::block &b, uint64_t height) const;
-    void process_new_blockchain_entry(const cryptonote::block& b, const cryptonote::block_complete_entry& bche, const parsed_block &parsed_block, const crypto::hash& bl_id, uint64_t height, const std::vector<tx_cache_data> &tx_cache_data, size_t tx_cache_data_offset, std::map<std::pair<uint64_t, uint64_t>, size_t> *output_tracker_cache = NULL);
-    void detach_blockchain(uint64_t height, std::map<std::pair<uint64_t, uint64_t>, size_t> *output_tracker_cache = NULL);
+    void process_new_blockchain_entry(const cryptonote::block& b, const cryptonote::block_complete_entry& bche, const parsed_block &parsed_block, const crypto::hash& bl_id, uint64_t height, const std::vector<tx_cache_data> &tx_cache_data, size_t tx_cache_data_offset);
+    void detach_blockchain(uint64_t height);
     void get_short_chain_history(std::list<crypto::hash>& ids, uint64_t granularity = 1) const;
     bool clear();
     void clear_soft();
@@ -500,7 +498,7 @@ namespace tools
     void pull_hashes(uint64_t start_height, uint64_t& blocks_start_height, const std::list<crypto::hash> &short_chain_history, std::vector<crypto::hash> &hashes);
     void fast_refresh(uint64_t stop_height, uint64_t &blocks_start_height, std::list<crypto::hash> &short_chain_history, bool force = false);
     void pull_and_parse_next_blocks(uint64_t start_height, uint64_t &blocks_start_height, std::list<crypto::hash> &short_chain_history, const std::vector<cryptonote::block_complete_entry> &prev_blocks, const std::vector<parsed_block> &prev_parsed_blocks, std::vector<cryptonote::block_complete_entry> &blocks, std::vector<parsed_block> &parsed_blocks, bool &last, bool &error, std::exception_ptr &exception);
-    void process_parsed_blocks(uint64_t start_height, const std::vector<cryptonote::block_complete_entry> &blocks, const std::vector<parsed_block> &parsed_blocks, uint64_t& blocks_added, std::map<std::pair<uint64_t, uint64_t>, size_t> *output_tracker_cache = NULL);
+    void process_parsed_blocks(uint64_t start_height, const std::vector<cryptonote::block_complete_entry> &blocks, const std::vector<parsed_block> &parsed_blocks, uint64_t& blocks_added);
     uint64_t select_transfers(uint64_t needed_money, std::vector<size_t> unused_transfers_indices, std::vector<size_t>& selected_transfers) const;
     bool prepare_file_names(const std::string& file_path);
     void process_unconfirmed(const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t height);
@@ -537,7 +535,6 @@ namespace tools
     bool get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution);
 
     void cache_tx_data(const cryptonote::transaction& tx, const crypto::hash &txid, tx_cache_data &tx_cache_data) const;
-    std::shared_ptr<std::map<std::pair<uint64_t, uint64_t>, size_t>> create_output_tracker_cache() const;
 
     void init_type(hw::device::device_type device_type);
     void setup_new_blockchain();
@@ -603,7 +600,6 @@ namespace tools
     bool m_ignore_fractional_outputs;
     uint64_t m_ignore_outputs_above;
     uint64_t m_ignore_outputs_below;
-    bool m_track_uses;
     bool m_is_initialized;
     NodeRPCProxy m_node_rpc_proxy;
     std::unordered_set<crypto::hash> m_scanned_pool_txs[2];
