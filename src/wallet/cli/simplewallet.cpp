@@ -612,63 +612,6 @@ bool simple_wallet::change_password(const std::vector<std::string> &args)
   return true;
 }
 
-bool simple_wallet::print_fee_info(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  if (!try_connect_to_daemon())
-    return true;
-  const uint64_t base_fee = wallet::logic::functional::fee::get_base_fee();
-  const std::string base = "kB";
-  const uint64_t typical_size = 2500;
-  const uint64_t size_granularity = 1;
-  message_writer() << (boost::format(tr("Current fee is %s %s per %s"))
-                       % print_money(base_fee * 1000)
-                       % cryptonote::get_unit(cryptonote::get_default_decimal_point())
-                       % base).str();
-
-  std::vector<uint64_t> fees;
-  for (uint32_t priority = 1; priority <= 4; ++priority)
-  {
-    uint64_t mult = wallet::logic::functional::fee::get_fee_multiplier(priority);
-    fees.push_back(base_fee * typical_size * mult);
-  }
-  std::vector<std::pair<uint64_t, uint64_t>> blocks;
-  try
-  {
-    uint64_t base_size = typical_size * size_granularity;
-    blocks = m_wallet->estimate_backlog(base_size, base_size + size_granularity - 1, fees);
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << sw::tr("Error: failed to estimate backlog array size: ") << e.what();
-    return true;
-  }
-  if (blocks.size() != 4)
-  {
-    fail_msg_writer() << sw::tr("Error: bad estimated backlog array size");
-    return true;
-  }
-
-  for (uint32_t priority = 1; priority <= 4; ++priority)
-  {
-    uint64_t nblocks_low = blocks[priority - 1].first;
-    uint64_t nblocks_high = blocks[priority - 1].second;
-    if (nblocks_low > 0)
-    {
-      std::string msg;
-      if (priority == m_wallet->get_default_priority() || (m_wallet->get_default_priority() == 0 && priority == 2))
-        msg = sw::tr(" (current)");
-      uint64_t minutes_low = nblocks_low * DIFFICULTY_TARGET_IN_SECONDS / 60, minutes_high = nblocks_high * DIFFICULTY_TARGET_IN_SECONDS / 60;
-      if (nblocks_high == nblocks_low)
-        message_writer() << (boost::format(tr("%u block (%u minutes) backlog at priority %u%s")) % nblocks_low % minutes_low % priority % msg).str();
-      else
-        message_writer() << (boost::format(tr("%u to %u block (%u to %u minutes) backlog at priority %u")) % nblocks_low % nblocks_high % minutes_low % minutes_high % priority).str();
-    }
-    else
-      message_writer() << sw::tr("No backlog at priority ") << priority;
-  }
-  return true;
-}
-
 bool simple_wallet::welcome(const std::vector<std::string> &args)
 {
   message_writer() << sw::tr("Welcome to Lolnero, a private ASIC friendly cryptocurrency.");
@@ -1215,9 +1158,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("password",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::change_password, std::placeholders::_1),
                            sw::tr("Change the wallet's password."));
-  m_cmd_binder.set_handler("fee",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::print_fee_info, std::placeholders::_1),
-                           sw::tr("Print the information about the current fee and transaction backlog."));
   m_cmd_binder.set_handler("welcome",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::welcome, std::placeholders::_1),
                            sw::tr(USAGE_WELCOME),
