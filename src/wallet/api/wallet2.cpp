@@ -274,7 +274,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_min_output_value(0),
   m_merge_destinations(false),
   m_confirm_export_overwrite(true),
-  m_auto_low_priority(true),
   m_ignore_fractional_outputs(true),
   m_ignore_outputs_above(MONEY_SUPPLY),
   m_ignore_outputs_below(0),
@@ -2375,9 +2374,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   value2.SetInt(m_confirm_export_overwrite ? 1 :0);
   json.AddMember("confirm_export_overwrite", value2, json.GetAllocator());
 
-  value2.SetInt(m_auto_low_priority ? 1 : 0);
-  json.AddMember("auto_low_priority", value2, json.GetAllocator());
-
   value2.SetUint(m_nettype);
   json.AddMember("nettype", value2, json.GetAllocator());
 
@@ -2566,8 +2562,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     m_merge_destinations = field_merge_destinations;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, confirm_export_overwrite, int, Int, false, true);
     m_confirm_export_overwrite = field_confirm_export_overwrite;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, auto_low_priority, int, Int, false, true);
-    m_auto_low_priority = field_auto_low_priority;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, nettype, uint8_t, Uint, false, static_cast<uint8_t>(m_nettype));
     // The network type given in the program argument is inconsistent with the network type saved in the wallet
     THROW_WALLET_EXCEPTION_IF(static_cast<uint8_t>(m_nettype) != field_nettype, error::wallet_internal_error,
@@ -3714,7 +3708,7 @@ uint64_t wallet2::adjust_mixin(uint64_t mixin)
 //----------------------------------------------------------------------------------------------------
 uint32_t wallet2::adjust_priority(uint32_t priority)
 {
-  if (priority == 0 && m_default_priority == 0 && auto_low_priority())
+  if (priority == 0 && m_default_priority == 0)
   {
     return 1;
   }

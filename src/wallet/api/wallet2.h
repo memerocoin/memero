@@ -372,8 +372,6 @@ namespace tools
     bool merge_destinations() const { return m_merge_destinations; }
     bool confirm_export_overwrite() const { return m_confirm_export_overwrite; }
     void confirm_export_overwrite(bool always) { m_confirm_export_overwrite = always; }
-    bool auto_low_priority() const { return m_auto_low_priority; }
-    void auto_low_priority(bool value) { m_auto_low_priority = value; }
     bool ignore_fractional_outputs() const { return m_ignore_fractional_outputs; }
     void ignore_fractional_outputs(bool value) { m_ignore_fractional_outputs = value; }
     const std::string & device_name() const { return m_device_name; }
@@ -587,7 +585,6 @@ namespace tools
     uint64_t m_min_output_value;
     bool m_merge_destinations;
     bool m_confirm_export_overwrite;
-    bool m_auto_low_priority;
     bool m_ignore_fractional_outputs;
     uint64_t m_ignore_outputs_above;
     uint64_t m_ignore_outputs_below;

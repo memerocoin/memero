@@ -105,7 +105,6 @@ namespace cryptonote
     bool set_merge_destinations(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_confirm_export_overwrite(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_refresh_from_block_height(const std::vector<std::string> &args = std::vector<std::string>());
-    bool set_auto_low_priority(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_subaddress_lookahead(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_ignore_fractional_outputs(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_ignore_outputs_above(const std::vector<std::string> &args = std::vector<std::string>());
