@@ -138,47 +138,6 @@ namespace wallet {
     return 0.0f;
   }
 
-  //----------------------------------------------------------------------------------------------------
-  std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog
-  (
-   const uint64_t height
-   , const std::vector<cryptonote::tx_backlog_entry>& backlog
-   , const std::vector<std::pair<double, double>>& fee_levels
-   )
-  {
-    const uint64_t block_weight_limit = cryptonote::get_max_block_weight(height);
-    const uint64_t full_reward_zone = block_weight_limit / 2;
-
-    std::vector<std::pair<uint64_t, uint64_t>> blocks;
-    for (const auto &fee_level: fee_levels)
-    {
-      const double our_fee_byte_min = fee_level.first;
-      const double our_fee_byte_max = fee_level.second;
-      uint64_t priority_weight_min = 0, priority_weight_max = 0;
-      for (const auto &i: backlog)
-      {
-        if (i.weight == 0)
-        {
-          MWARNING("Got 0 weight tx from txpool, ignored");
-          continue;
-        }
-        const double this_fee_byte = i.fee / (double)i.weight;
-        if (this_fee_byte >= our_fee_byte_min)
-          priority_weight_min += i.weight;
-        if (this_fee_byte >= our_fee_byte_max)
-          priority_weight_max += i.weight;
-      }
-
-      const uint64_t nblocks_min = priority_weight_min / full_reward_zone;
-      const uint64_t nblocks_max = priority_weight_max / full_reward_zone;
-      MDEBUG("estimate_backlog: priority_weight " << priority_weight_min << " - " << priority_weight_max << " for "
-          << our_fee_byte_min << " - " << our_fee_byte_max << " piconero byte fee, "
-          << nblocks_min << " - " << nblocks_max << " blocks at block weight " << full_reward_zone);
-      blocks.push_back(std::make_pair(nblocks_min, nblocks_max));
-    }
-    return blocks;
-  }
-
 } // wallet
 } // functional
 } // logic

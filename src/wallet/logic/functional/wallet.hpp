@@ -108,13 +108,6 @@ namespace wallet {
 
   float get_output_relatedness(const transfer_details& td0, const transfer_details& td1);
 
-  std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog
-  (
-   const uint64_t height
-   , const std::vector<cryptonote::tx_backlog_entry>& backlog
-   , const std::vector<std::pair<double, double>>& fee_levels
-   );
-
 } // wallet
 } // functional
 } // logic
