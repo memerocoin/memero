@@ -336,8 +336,6 @@ namespace tools
       FIELD(m_additional_tx_keys)
       FIELD(m_attributes)
       FIELD(m_account_tags)
-      FIELD(m_ring_history_saved)
-      FIELD(m_tx_device)
       FIELD(m_device_last_key_image_sync)
       FIELD(m_cold_key_images)
     END_SERIALIZE()
@@ -403,9 +401,6 @@ namespace tools
 
     size_t pop_best_value_from(const wallet::logic::type::wallet::transfer_container &transfers, std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
     size_t pop_best_value(std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
-
-    void set_tx_device_aux(const crypto::hash &txid, const std::string &aux);
-    std::string get_tx_device_aux(const crypto::hash &txid) const;
 
     std::string sign(const std::string &data,
                      wallet::logic::type::message_signature::message_signature_type_t signature_type,
@@ -598,17 +593,8 @@ namespace tools
     bool m_offline;
     uint32_t m_rpc_version;
 
-    // Aux transaction data from device
-    serializable_unordered_map<crypto::hash, std::string> m_tx_device;
-
-    // store calculated key image for faster lookup
-    serializable_unordered_map<crypto::public_key, serializable_map<uint64_t, crypto::key_image> > m_key_image_cache;
-
-    bool m_ring_history_saved = false;
-
     crypto::chacha_key m_cache_key;
 
-    bool m_unattended;
     bool m_devices_registered;
 
     std::shared_ptr<tools::Notify> m_tx_notify;

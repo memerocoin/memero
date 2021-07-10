@@ -5419,19 +5419,6 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
   return target_height;
 }
 
-void wallet2::set_tx_device_aux(const crypto::hash &txid, const std::string &aux)
-{
-  m_tx_device[txid] = aux;
-}
-
-std::string wallet2::get_tx_device_aux(const crypto::hash &txid) const
-{
-  std::unordered_map<crypto::hash, std::string>::const_iterator i = m_tx_device.find(txid);
-  if (i == m_tx_device.end())
-    return std::string();
-  return i->second;
-}
-
 // Sign a message with a private key from either the base address or a subaddress
 // The signature is also bound to both keys and the signature mode (spend, view) to prevent unintended reuse
 std::string wallet2::sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const
