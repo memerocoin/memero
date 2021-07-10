@@ -90,7 +90,7 @@ namespace
   constexpr char USAGE_START_MINING[] = "start_mining [<number_of_threads>]";
   constexpr char USAGE_SET_DAEMON[] = "set_daemon <host>[:<port>]";
   constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
-  constexpr char USAGE_INCOMING[] = "incoming [available|unavailable] [verbose] [uses] [index=<N1>[,<N2>[,...]]]";
+  constexpr char USAGE_INCOMING[] = "incoming [available|unavailable] [verbose] [index=<N1>[,<N2>[,...]]]";
   constexpr char USAGE_TRANSFER[] = "transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)";
   constexpr char USAGE_SET_LOG[] = "set_log <level>|{+,-,}<categories>";
   constexpr char USAGE_ACCOUNT[] = "account\n"
@@ -2234,7 +2234,6 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
   bool filter = false;
   bool available = false;
   bool verbose = false;
-  bool uses = false;
   if (local_args.size() > 0)
   {
     if (local_args[0] == "available")
@@ -2254,8 +2253,6 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
   {
     if (local_args[0] == "verbose")
       verbose = true;
-    else if (local_args[0] == "uses")
-      uses = true;
     else
     {
       fail_msg_writer() << sw::tr("Invalid keyword: ") << local_args.front();
@@ -2302,19 +2299,6 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
       std::string extra_string;
       if (verbose)
         extra_string += (boost::format("%68s%68s") % td.get_public_key() % (td.m_key_image_known ? epee::string_tools::pod_to_hex(td.m_key_image) : td.m_key_image_partial ? (epee::string_tools::pod_to_hex(td.m_key_image) + "/p") : std::string(64, '?'))).str();
-      if (uses)
-      {
-        std::vector<uint64_t> heights;
-        uint64_t idx = 0;
-        for (const auto &e: td.m_uses)
-        {
-          heights.push_back(e.first);
-          if (e.first < td.m_spent_height)
-            ++idx;
-        }
-        const std::pair<std::string, std::string> line = show_outputs_line(heights, blockchain_height, idx);
-        extra_string += std::string("\n    ") + sw::tr("Used at heights: ") + line.first + "\n    " + line.second;
-      }
       message_writer(td.m_spent ? epee::console_color_magenta : epee::console_color_green, false) <<
         boost::format("%21s%8s%12s%8s%16u%68s%16u%s") %
         print_money(td.amount()) %
