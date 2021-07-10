@@ -273,8 +273,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_min_output_count(0),
   m_min_output_value(0),
   m_merge_destinations(false),
-  m_confirm_backlog(true),
-  m_confirm_backlog_threshold(0),
   m_confirm_export_overwrite(true),
   m_auto_low_priority(true),
   m_ignore_fractional_outputs(true),
@@ -2374,12 +2372,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   value2.SetInt(m_merge_destinations ? 1 :0);
   json.AddMember("merge_destinations", value2, json.GetAllocator());
 
-  value2.SetInt(m_confirm_backlog ? 1 :0);
-  json.AddMember("confirm_backlog", value2, json.GetAllocator());
-
-  value2.SetUint(m_confirm_backlog_threshold);
-  json.AddMember("confirm_backlog_threshold", value2, json.GetAllocator());
-
   value2.SetInt(m_confirm_export_overwrite ? 1 :0);
   json.AddMember("confirm_export_overwrite", value2, json.GetAllocator());
 
@@ -2572,10 +2564,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     m_min_output_value = field_min_output_value;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, merge_destinations, int, Int, false, false);
     m_merge_destinations = field_merge_destinations;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, confirm_backlog, int, Int, false, true);
-    m_confirm_backlog = field_confirm_backlog;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, confirm_backlog_threshold, uint32_t, Uint, false, 0);
-    m_confirm_backlog_threshold = field_confirm_backlog_threshold;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, confirm_export_overwrite, int, Int, false, true);
     m_confirm_export_overwrite = field_confirm_export_overwrite;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, auto_low_priority, int, Int, false, true);
@@ -3728,77 +3716,7 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
 {
   if (priority == 0 && m_default_priority == 0 && auto_low_priority())
   {
-    try
-    {
-      // check if there's a backlog in the tx pool
-      const bool use_per_byte_fee = true;
-      const uint64_t base_fee = get_base_fee();
-      const uint64_t fee_multiplier = get_fee_multiplier(1);
-      const double fee_level = fee_multiplier * base_fee * (use_per_byte_fee ? 1 : (12/(double)13 / (double)1024));
-      const std::vector<std::pair<uint64_t, uint64_t>> blocks = estimate_backlog({std::make_pair(fee_level, fee_level)});
-      if (blocks.size() != 1)
-      {
-        MERROR("Bad estimated backlog array size");
-        return priority;
-      }
-      else if (blocks[0].first > 0)
-      {
-        MINFO("We don't use the low priority because there's a backlog in the tx pool.");
-        return priority;
-      }
-
-      // get the current full reward zone
-      uint64_t height;
-      std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
-      THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get height");
-
-      uint64_t block_weight_limit = get_max_block_weight(height);
-      const uint64_t full_reward_zone = block_weight_limit / 2;
-
-      // get the last N block headers and sum the block sizes
-      const size_t N = 10;
-      if (m_blockchain.size() < N)
-      {
-        MERROR("The blockchain is too short");
-        return priority;
-      }
-      cryptonote::COMMAND_RPC_GET_BLOCK_HEADERS_RANGE::request getbh_req = AUTO_VAL_INIT(getbh_req);
-      cryptonote::COMMAND_RPC_GET_BLOCK_HEADERS_RANGE::response getbh_res = AUTO_VAL_INIT(getbh_res);
-      getbh_req.start_height = m_blockchain.size() - N;
-      getbh_req.end_height = m_blockchain.size() - 1;
-
-      {
-        const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-        bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_block_headers_range", getbh_req, getbh_res, *m_http_client, rpc_timeout);
-        THROW_ON_RPC_RESPONSE_ERROR(r, {}, getbh_res, "get_block_headers_range", error::get_blocks_error, get_rpc_status(getbh_res.status));
-      }
-
-      if (getbh_res.headers.size() != N)
-      {
-        MERROR("Bad blockheaders size");
-        return priority;
-      }
-      size_t block_weight_sum = 0;
-      for (const cryptonote::block_header_response &i : getbh_res.headers)
-      {
-        block_weight_sum += i.block_weight;
-      }
-
-      // estimate how 'full' the last N blocks are
-      const size_t P = 100 * block_weight_sum / (N * full_reward_zone);
-      MINFO((boost::format("The last %d blocks fill roughly %d%% of the full reward zone.") % N % P).str());
-      if (P > 80)
-      {
-        MINFO("We don't use the low priority because recent blocks are quite full.");
-        return priority;
-      }
-      MINFO("We'll use the low priority because probably it's safe to do so.");
-      return 1;
-    }
-    catch (const std::exception &e)
-    {
-      MERROR(e.what());
-    }
+    return 1;
   }
   return priority;
 }
@@ -5540,53 +5458,6 @@ bool wallet2::is_synced()
   if (result && *result != CORE_RPC_STATUS_OK)
     return false;
   return get_blockchain_current_height() >= height;
-}
-//----------------------------------------------------------------------------------------------------
-std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(const std::vector<std::pair<double, double>> &fee_levels)
-{
-  for (const auto &fee_level: fee_levels)
-  {
-    THROW_WALLET_EXCEPTION_IF(fee_level.first == 0.0, error::wallet_internal_error, "Invalid 0 fee");
-    THROW_WALLET_EXCEPTION_IF(fee_level.second == 0.0, error::wallet_internal_error, "Invalid 0 fee");
-  }
-
-  // get txpool backlog
-  cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_BACKLOG::request req = AUTO_VAL_INIT(req);
-  cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_BACKLOG::response res = AUTO_VAL_INIT(res);
-
-  {
-    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_txpool_backlog", req, res, *m_http_client, rpc_timeout);
-    THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_txpool_backlog", error::get_tx_pool_error);
-  }
-
-  uint64_t height;
-  std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
-  THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get height");
-
-  return wallet::logic::functional::wallet::estimate_backlog
-    (
-     height
-     , res.backlog
-     , fee_levels
-     );
-}
-//----------------------------------------------------------------------------------------------------
-std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(uint64_t min_tx_weight, uint64_t max_tx_weight, const std::vector<uint64_t> &fees)
-{
-  THROW_WALLET_EXCEPTION_IF(min_tx_weight == 0, error::wallet_internal_error, "Invalid 0 fee");
-  THROW_WALLET_EXCEPTION_IF(max_tx_weight == 0, error::wallet_internal_error, "Invalid 0 fee");
-  for (uint64_t fee: fees)
-  {
-    THROW_WALLET_EXCEPTION_IF(fee == 0, error::wallet_internal_error, "Invalid 0 fee");
-  }
-  std::vector<std::pair<double, double>> fee_levels;
-  for (uint64_t fee: fees)
-  {
-    double our_fee_byte_min = fee / (double)min_tx_weight, our_fee_byte_max = fee / (double)max_tx_weight;
-    fee_levels.emplace_back(our_fee_byte_min, our_fee_byte_max);
-  }
-  return estimate_backlog(fee_levels);
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::generate_genesis(cryptonote::block& b) const {

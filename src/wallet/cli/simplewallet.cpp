@@ -833,37 +833,6 @@ bool simple_wallet::set_merge_destinations(const std::vector<std::string> &args/
   return true;
 }
 
-bool simple_wallet::set_confirm_backlog(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    parse_bool_and_use(args[1], [&](bool r) {
-      m_wallet->confirm_backlog(r);
-      m_wallet->rewrite(m_wallet_file, pwd_container->password());
-    });
-  }
-  return true;
-}
-
-bool simple_wallet::set_confirm_backlog_threshold(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  uint32_t threshold;
-  if (!epee::string_tools::get_xtype_from_string(threshold, args[1]))
-  {
-    fail_msg_writer() << sw::tr("invalid count: must be an unsigned integer");
-    return true;
-  }
-
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    m_wallet->set_confirm_backlog_threshold(threshold);
-    m_wallet->rewrite(m_wallet_file, pwd_container->password());
-  }
-  return true;
-}
-
 bool simple_wallet::set_confirm_export_overwrite(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   const auto pwd_container = get_and_verify_password();
@@ -1079,10 +1048,6 @@ simple_wallet::simple_wallet()
                                   "  Try to keep at least min-outputs-count outputs of at least that value.\n "
                                   "merge-destinations <1|0>\n "
                                   "  Whether to merge multiple payments to the same destination address.\n "
-                                  "confirm-backlog <1|0>\n "
-                                  "  Whether to warn if there is transaction backlog.\n "
-                                  "confirm-backlog-threshold [n]\n "
-                                  "  Set a threshold for confirm-backlog to only warn if the transaction backlog is greater than n blocks.\n "
                                   "confirm-export-overwrite <1|0>\n "
                                   "  Whether to warn if the file to be exported already exists.\n "
                                   "refresh-from-block-height [n]\n "
@@ -1197,8 +1162,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "min-outputs-count = " << m_wallet->get_min_output_count();
     success_msg_writer() << "min-outputs-value = " << cryptonote::print_money(m_wallet->get_min_output_value());
     success_msg_writer() << "merge-destinations = " << m_wallet->merge_destinations();
-    success_msg_writer() << "confirm-backlog = " << m_wallet->confirm_backlog();
-    success_msg_writer() << "confirm-backlog-threshold = " << m_wallet->get_confirm_backlog_threshold();
     success_msg_writer() << "confirm-export-overwrite = " << m_wallet->confirm_export_overwrite();
     success_msg_writer() << "refresh-from-block-height = " << m_wallet->get_refresh_from_block_height();
     success_msg_writer() << "auto-low-priority = " << m_wallet->auto_low_priority();
@@ -1233,8 +1196,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("min-outputs-count", set_min_output_count, sw::tr("unsigned integer"));
     CHECK_SIMPLE_VARIABLE("min-outputs-value", set_min_output_value, sw::tr("amount"));
     CHECK_SIMPLE_VARIABLE("merge-destinations", set_merge_destinations, sw::tr("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("confirm-backlog", set_confirm_backlog, sw::tr("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("confirm-backlog-threshold", set_confirm_backlog_threshold, sw::tr("unsigned integer"));
     CHECK_SIMPLE_VARIABLE("confirm-export-overwrite", set_confirm_export_overwrite, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("refresh-from-block-height", set_refresh_from_block_height, sw::tr("block height"));
     CHECK_SIMPLE_VARIABLE("auto-low-priority", set_auto_low_priority, sw::tr("0 or 1"));
@@ -2683,53 +2644,6 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     {
       fail_msg_writer() << sw::tr("No outputs found, or daemon is not ready");
       return true;
-    }
-
-    // if we need to check for backlog, check the worst case tx
-    if (m_wallet->confirm_backlog())
-    {
-      std::stringstream prompt;
-      double worst_fee_per_byte = std::numeric_limits<double>::max();
-      for (size_t n = 0; n < ptx_vector.size(); ++n)
-      {
-        const uint64_t blob_size = cryptonote::tx_to_blob(ptx_vector[n].tx).size();
-        const double fee_per_byte = ptx_vector[n].fee / (double)blob_size;
-        if (fee_per_byte < worst_fee_per_byte)
-        {
-          worst_fee_per_byte = fee_per_byte;
-        }
-      }
-      try
-      {
-        std::vector<std::pair<uint64_t, uint64_t>> nblocks = m_wallet->estimate_backlog({std::make_pair(worst_fee_per_byte, worst_fee_per_byte)});
-        if (nblocks.size() != 1)
-        {
-          prompt << "Internal error checking for backlog. " << sw::tr("Is this okay anyway?");
-        }
-        else
-        {
-          if (nblocks[0].first > m_wallet->get_confirm_backlog_threshold())
-            prompt << (boost::format(tr("There is currently a %u block backlog at that fee level. Is this okay?")) % nblocks[0].first).str();
-        }
-      }
-      catch (const std::exception &e)
-      {
-        prompt << sw::tr("Failed to check for backlog: ") << e.what() << ENDL << sw::tr("Is this okay anyway?");
-      }
-
-      std::string prompt_str = prompt.str();
-      if (!prompt_str.empty())
-      {
-        std::string accepted = input_line(prompt_str, true);
-        if (std::cin.eof())
-          return true;
-        if (!command_line::is_yes(accepted))
-        {
-          fail_msg_writer() << sw::tr("transaction cancelled.");
-
-          return true;
-        }
-      }
     }
 
     if (!prompt_if_old(ptx_vector))

@@ -370,10 +370,6 @@ namespace tools
     uint64_t get_min_output_value() const { return m_min_output_value; }
     void merge_destinations(bool merge) { m_merge_destinations = merge; }
     bool merge_destinations() const { return m_merge_destinations; }
-    bool confirm_backlog() const { return m_confirm_backlog; }
-    void confirm_backlog(bool always) { m_confirm_backlog = always; }
-    void set_confirm_backlog_threshold(uint32_t threshold) { m_confirm_backlog_threshold = threshold; };
-    uint32_t get_confirm_backlog_threshold() const { return m_confirm_backlog_threshold; };
     bool confirm_export_overwrite() const { return m_confirm_export_overwrite; }
     void confirm_export_overwrite(bool always) { m_confirm_export_overwrite = always; }
     bool auto_low_priority() const { return m_auto_low_priority; }
@@ -422,9 +418,6 @@ namespace tools
     void remove_obsolete_pool_txs(const std::vector<crypto::hash> &tx_hashes);
 
     bool is_synced();
-
-    std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog(const std::vector<std::pair<double, double>> &fee_levels);
-    std::vector<std::pair<uint64_t, uint64_t>> estimate_backlog(uint64_t min_tx_weight, uint64_t max_tx_weight, const std::vector<uint64_t> &fees);
 
     uint64_t get_min_ring_size();
     uint64_t get_max_ring_size();
@@ -593,8 +586,6 @@ namespace tools
     uint32_t m_min_output_count;
     uint64_t m_min_output_value;
     bool m_merge_destinations;
-    bool m_confirm_backlog;
-    uint32_t m_confirm_backlog_threshold;
     bool m_confirm_export_overwrite;
     bool m_auto_low_priority;
     bool m_ignore_fractional_outputs;
