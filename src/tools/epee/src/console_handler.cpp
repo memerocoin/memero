@@ -27,6 +27,8 @@
 
 #include "tools/epee/include/console_handler.h"
 
+#include <sys/select.h>
+
 namespace epee
 {
 
