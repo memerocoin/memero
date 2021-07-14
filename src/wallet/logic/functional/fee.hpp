@@ -31,8 +31,9 @@
 
 #pragma once
 
+#include "tools/epee/include/misc_log_ex.h"
 
-
+#include "config/lol.hpp"
 
 namespace wallet {
 namespace logic {
@@ -143,26 +144,12 @@ namespace fee {
     return calculate_fee_from_weight(base_fee, estimated_tx_weight, fee_multiplier, fee_quantization_mask);
   }
 
-  //----------------------------------------------------------------------------------------------------
-  const std::pair<size_t, uint64_t> estimate_tx_size_and_weight
+  std::pair<size_t, uint64_t> estimate_tx_size_and_weight
   (
    const int n_inputs
    , const int n_outputs
    , const size_t extra_size
-   )
-  {
-    THROW_WALLET_EXCEPTION_IF(n_inputs <= 0, tools::error::wallet_internal_error, "Invalid n_inputs");
-    THROW_WALLET_EXCEPTION_IF(n_outputs < 0, tools::error::wallet_internal_error, "Invalid n_outputs");
-
-    const int ring_size = config::lol::ring_size;
-    const int n_adjusted_outputs = n_outputs == 1 ? 2 : n_outputs;
-
-    const bool bulletproof = true;
-    const bool clsag = true;
-    const size_t size = estimate_tx_size(n_inputs, ring_size - 1, n_adjusted_outputs, extra_size);
-    const uint64_t weight = estimate_tx_weight(n_inputs, ring_size - 1, n_adjusted_outputs, extra_size);
-    return std::make_pair(size, weight);
-  }
+   );
 
   constexpr uint64_t get_fee_multiplier(const uint32_t priority)
   {
