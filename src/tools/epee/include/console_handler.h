@@ -42,6 +42,7 @@
 
 #include <iostream>
 #include <map>
+#include <thread>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
