@@ -294,11 +294,13 @@ void log_level_map(const el::Level level, const std::string cat, const std::stri
 
   if (!_spd_log_handle) {
     _spd_log_handle = spdlog::stdout_color_mt(cat);
+    std::string format_str;
     if (default_cat.find(cat) != default_cat.end()) {
-      _spd_log_handle->set_pattern("%Y-%m-%d %T.%e %L %v");
+      format_str = "%Y-%m-%d %T.%e %L %v";
     } else {
-      _spd_log_handle->set_pattern("%Y-%m-%d %T.%e %L [%n] %v");
+      format_str = "%Y-%m-%d %T.%e %L [%n] %v";
     }
+    _spd_log_handle->set_pattern(format_str, spdlog::pattern_time_type::utc);
   }
 
   switch (level) {
