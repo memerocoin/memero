@@ -131,11 +131,14 @@ std::string mlog_get_categories()
   return "";
 }
 
+std::atomic<int> m_log_level = 0;
+
 // maps epee style log level to new logging system
 void mlog_set_log_level(int level)
 {
   const char *categories = get_default_categories(level);
   mlog_set_categories(categories);
+  m_log_level = level;
 }
 
 void mlog_set_log(const char *log)
@@ -276,17 +279,105 @@ void reset_console_color() {
 
 }
 
-void log_level(const el::Level level, const std::string cat, const std::string_view x) {
+// SPDLOG_LEVEL_TRACE,
+// SPDLOG_LEVEL_DEBUG,
+// SPDLOG_LEVEL_INFO,
+// SPDLOG_LEVEL_WARN,
+// SPDLOG_LEVEL_ERROR,
+// SPDLOG_LEVEL_CRITICAL,
+// SPDLOG_LEVEL_OFF
+void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
   auto _spd_log_handle = spdlog::get(cat);
   if (!_spd_log_handle) _spd_log_handle = spdlog::stdout_color_mt(cat);
 
-  std::set<std::string> default_cat = {"global", "logging"};
-  if (default_cat.find(cat) == default_cat.end()) return;
-
   switch (level) {
+  case el::Level::Trace:
+    _spd_log_handle->trace(x);
+    break;
+  case el::Level::Debug:
+    _spd_log_handle->debug(x);
+    break;
   case el::Level::Info:
     _spd_log_handle->info(x);
     break;
+  case el::Level::Warning:
+    _spd_log_handle->warn(x);
+    break;
+  case el::Level::Error:
+    _spd_log_handle->error(x);
+    break;
+  case el::Level::Fatal:
+    _spd_log_handle->critical(x);
+    break;
+  default:
+    // _spd_log_handle->off(x);
+    break;
+  }
+}
+
+void log_level(const el::Level level, const std::string cat, const std::string_view x) {
+  if (level == el::Level::Fatal) {
+    log_level_map(level, cat, x);
+  }
+
+  const std::set<std::string> default_cat = {"global", "logging"};
+  switch (m_log_level) {
+  case 5:
+    log_level_map(level, cat, x);
+    return;
+  case 4:
+    switch(level) {
+    case el::Level::Trace:
+      break;
+    default:
+      log_level_map(level, cat, x);
+      break;
+    }
+  case 3:
+    switch(level) {
+    case el::Level::Trace:
+    case el::Level::Debug:
+      break;
+    default:
+      log_level_map(level, cat, x);
+      break;
+    }
+  case 2:
+    switch(level) {
+    case el::Level::Trace:
+    case el::Level::Debug:
+    case el::Level::Warning:
+      break;
+    default:
+      log_level_map(level, cat, x);
+      break;
+    }
+  case 1:
+    switch(level) {
+    case el::Level::Trace:
+    case el::Level::Debug:
+    case el::Level::Warning:
+    case el::Level::Error:
+      break;
+    default:
+      log_level_map(level, cat, x);
+      break;
+    }
+  case 0:
+    switch(level) {
+    case el::Level::Trace:
+    case el::Level::Debug:
+    case el::Level::Warning:
+    case el::Level::Error:
+      break;
+    case el::Level::Info:
+      if (default_cat.find(cat) == default_cat.end()) return;
+      log_level_map(level, cat, x);
+      break;
+    default:
+      log_level_map(level, cat, x);
+      break;
+    }
   default:
     break;
   }
