@@ -288,7 +288,12 @@ void reset_console_color() {
 // SPDLOG_LEVEL_OFF
 void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
   auto _spd_log_handle = spdlog::get(cat);
-  if (!_spd_log_handle) _spd_log_handle = spdlog::stdout_color_mt(cat);
+
+  if (!_spd_log_handle) {
+    _spd_log_handle = spdlog::stdout_color_mt(cat);
+    _spd_log_handle->set_pattern("%Y-%m-%d %T.%e %L %v");
+    // _spd_log_handle->set_pattern("%v");
+  }
 
   switch (level) {
   case el::Level::Trace:
