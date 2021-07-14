@@ -27,10 +27,17 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+add_library( epee_log
+  src/mlog.cpp
+)
+
+target_link_libraries( epee_log
+  spdlog::spdlog
+)
+
 add_library( epee
   src/hex.cpp
   src/abstract_http_client.cpp
-  src/mlog.cpp
   src/net_utils_base.cpp
   src/string_tools.cpp
   src/wipeable_string.cpp
@@ -46,10 +53,8 @@ add_library( epee
 )
 
 target_link_libraries( epee
-  easylogging
   epee_net_basic
-
-  spdlog::spdlog
+  epee_log
 
   ${OPENSSL_LIBRARIES}
 )
@@ -98,7 +103,7 @@ if (USE_READLINE AND (GNU_READLINE_FOUND))
   )
 
   target_link_libraries( epee_readline
-    easylogging
+    epee_log
     ${GNU_READLINE_LIBRARY}
   )
 

@@ -114,12 +114,6 @@ include_directories(
 ## version
 add_library(version src/version.cpp)
 
-## logging
-add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
-add_library( easylogging
-  src/tools/easylogging++/easylogging++.cc
-)
-
 ## tools
 add_subdirectory(src/tools/epee)
 add_subdirectory(src/tools/common)

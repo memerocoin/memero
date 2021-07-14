@@ -38,7 +38,31 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "default"
 
-#define MAX_LOG_FILE_SIZE 0
+namespace el {
+
+typedef unsigned int EnumType;
+
+enum class Level : EnumType {
+  /// @brief Generic level that represents all the levels. Useful when setting global configuration for all levels
+  Global = 1,
+  /// @brief Information that can be useful to back-trace certain events - mostly useful than debug logs.
+  Trace = 2,
+  /// @brief Informational events most useful for developers to debug application
+  Debug = 4,
+  /// @brief Severe error information that will presumably abort application
+  Fatal = 8,
+  /// @brief Information representing errors in application but application will keep running
+  Error = 16,
+  /// @brief Useful when application has potentially harmful situtaions
+  Warning = 32,
+  /// @brief Information that can be highly useful and vary with verbose logging level.
+  Verbose = 64,
+  /// @brief Mainly useful to represent current progress of application
+  Info = 128,
+  /// @brief Represents unknown level
+  Unknown = 1010
+};
+} // namespace el
 
 void log_level(const el::Level level, const std::string cat, const std::string_view x);
 
