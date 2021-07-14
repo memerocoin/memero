@@ -333,14 +333,3 @@ static bool mlog(el::Level level, const char *category, const char *format, va_l
 
   return ret;
 }
-
-#define DEFLOG(fun,lev) \
-  bool m##fun(const char *category, const char *fmt, ...) { va_list ap; va_start(ap, fmt); bool ret = mlog(el::Level::lev, category, fmt, ap); va_end(ap); return ret; }
-
-DEFLOG(error, Error)
-DEFLOG(warning, Warning)
-DEFLOG(info, Info)
-DEFLOG(debug, Debug)
-DEFLOG(trace, Trace)
-
-#undef DEFLOG

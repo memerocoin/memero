@@ -27,9 +27,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
-
 #include "tools/easylogging++/easylogging++.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -206,26 +203,3 @@ void set_console_color(int color, bool bright);
 void reset_console_color();
 
 }
-
-extern "C"
-{
-
-#endif
-
-#ifdef __GNUC__
-#define ATTRIBUTE_PRINTF __attribute__((format(printf, 2, 3)))
-#else
-#define ATTRIBUTE_PRINTF
-#endif
-
-bool merror(const char *category, const char *format, ...) ATTRIBUTE_PRINTF;
-bool mwarning(const char *category, const char *format, ...) ATTRIBUTE_PRINTF;
-bool minfo(const char *category, const char *format, ...) ATTRIBUTE_PRINTF;
-bool mdebug(const char *category, const char *format, ...) ATTRIBUTE_PRINTF;
-bool mtrace(const char *category, const char *format, ...) ATTRIBUTE_PRINTF;
-
-#ifdef __cplusplus
-
-}
-
-#endif
