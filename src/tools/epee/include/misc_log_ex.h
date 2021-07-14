@@ -27,11 +27,10 @@
 
 #pragma once
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-
 #include <sstream>
 #include <iostream>
+#include <memory>
+#include <mutex>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "default"

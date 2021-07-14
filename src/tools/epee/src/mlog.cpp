@@ -29,6 +29,9 @@
 
 #include "config/lol.hpp"
 
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+
 #include <filesystem>
 #include <set>
 
