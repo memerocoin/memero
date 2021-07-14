@@ -32,6 +32,9 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
+#include <sstream>
+#include <iostream>
+
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "default"
 
@@ -86,14 +89,6 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
 #define MGINFO_MAGENTA(x) MCLOG_MAGENTA(el::Level::Info, "global",x)
 #define MGINFO_CYAN(x) MCLOG_CYAN(el::Level::Info, "global",x)
 
-#define IFLOG(level, cat, color, type, init, x) \
-  do { \
-    if (ELPP->vRegistry()->allowed(level, cat)) { \
-      init; \
-      el::base::Writer(level, color, __FILE__, __LINE__, ELPP_FUNC, type).construct(cat) << x; \
-    } \
-  } while(0)
-#define MIDEBUG(init, x) IFLOG(el::Level::Debug, MONERO_DEFAULT_LOG_CATEGORY, el::Color::Default, el::base::DispatchAction::NormalLog, init, x)
 
 
 #define LOG_ERROR(x) MERROR(x)
@@ -113,7 +108,7 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
 #define _warn(x) MWARNING(x)
 #define _erro(x) MERROR(x)
 
-#define MLOG_SET_THREAD_NAME(x) el::Helpers::setThreadName(x)
+#define MLOG_SET_THREAD_NAME(x)
 
 #define LOCAL_ASSERT(expr)
 

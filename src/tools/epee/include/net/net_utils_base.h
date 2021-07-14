@@ -38,6 +38,7 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/address_v6.hpp>
 
+#include <iostream>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -457,11 +458,7 @@ namespace net_utils
   std::string print_connection_context(const connection_context_base& ctx);
   std::string print_connection_context_short(const connection_context_base& ctx);
 
-inline MAKE_LOGGABLE(connection_context_base, ct, os)
-{
-  os << "[" << epee::net_utils::print_connection_context_short(ct) << "] ";
-  return os;
-}
+  std::ostream& operator<<(std::ostream& os, const connection_context_base& ct);
 
 #define LOG_ERROR_CC(ct, message) MERROR(ct << message)
 #define LOG_WARNING_CC(ct, message) MWARNING(ct << message)

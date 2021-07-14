@@ -27,7 +27,7 @@
 
 #include "expect.h"
 
-#include "tools/easylogging++/easylogging++.h"
+#include <filesystem>
 
 namespace detail
 {
@@ -47,9 +47,7 @@ namespace detail
                 error_msg.append("thrown at ");
 
                 // remove path, get just filename + extension
-                char buff[256] = {0};
-                el::base::utils::File::buildBaseFilename(file, buff, sizeof(buff) - 1);
-                error_msg.append(buff);
+                error_msg.append(std::filesystem::path(file).filename());
 
                 error_msg.push_back(':');
                 error_msg.append(std::to_string(line));

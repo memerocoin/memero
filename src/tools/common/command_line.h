@@ -35,6 +35,8 @@
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
 
+#include <iostream>
+
 namespace command_line
 {
 

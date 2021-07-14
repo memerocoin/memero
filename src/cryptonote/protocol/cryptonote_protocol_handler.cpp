@@ -51,13 +51,9 @@
 #define MLOG_P2P_MESSAGE(x) MCINFO("net.p2p.msg", context << x)
 #define MLOGIF_P2P_MESSAGE(init, test, x) \
   do { \
-    const auto level = el::Level::Info; \
-    const char *cat = "net.p2p.msg"; \
-    if (ELPP->vRegistry()->allowed(level, cat)) { \
       init; \
       if (test) \
-        el::base::Writer(level, el::Color::Default, __FILE__, __LINE__, ELPP_FUNC, el::base::DispatchAction::NormalLog).construct(cat) << x; \
-    } \
+        MLOG_P2P_MESSAGE(x); \
   } while(0)
 
 #define MLOG_PEER_STATE(x) \
@@ -1461,14 +1457,15 @@ namespace cryptonote
             const uint32_t previous_stripe = 0;
             const uint32_t current_stripe = 0;
             std::string timing_message = "";
-            if (ELPP->vRegistry()->allowed(el::Level::Info, "sync-info"))
-              timing_message = std::string(" (") + std::to_string(dt.count()/1e6) + " sec, "
-                + std::to_string((current_blockchain_height - previous_height) * 1e6 / dt.count())
-                + " blocks/sec), " + std::to_string(m_block_queue.get_data_size() / 1048576.f) + " MB queued in "
-                + std::to_string(m_block_queue.get_num_filled_spans()) + " spans, stripe "
-                + std::to_string(previous_stripe) + " -> " + std::to_string(current_stripe);
-            if (ELPP->vRegistry()->allowed(el::Level::Debug, "sync-info"))
-              timing_message += std::string(": ") + m_block_queue.get_overview(current_blockchain_height);
+
+            timing_message = std::string(" (") + std::to_string(dt.count()/1e6) + " sec, "
+              + std::to_string((current_blockchain_height - previous_height) * 1e6 / dt.count())
+              + " blocks/sec), " + std::to_string(m_block_queue.get_data_size() / 1048576.f) + " MB queued in "
+              + std::to_string(m_block_queue.get_num_filled_spans()) + " spans, stripe "
+              + std::to_string(previous_stripe) + " -> " + std::to_string(current_stripe);
+
+            // if (ELPP->vRegistry()->allowed(el::Level::Debug, "sync-info"))
+            //   timing_message += std::string(": ") + m_block_queue.get_overview(current_blockchain_height);
             MGINFO_YELLOW("Synced " << current_blockchain_height << "/" << target_blockchain_height
                 << progress_message << timing_message);
           }

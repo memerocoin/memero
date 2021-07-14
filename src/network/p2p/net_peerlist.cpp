@@ -37,6 +37,8 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/range/join.hpp>
 
+#include <fstream>
+
 
 
 namespace nodetool

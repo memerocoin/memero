@@ -44,7 +44,7 @@ namespace epee { namespace net_utils
 	std::string ipv6_network_address::host_str() const { return m_address.to_string(); }
 	bool ipv6_network_address::is_loopback() const { return m_address.is_loopback(); }
 	bool ipv6_network_address::is_local() const { return m_address.is_link_local(); }
-
+  
 
 	bool ipv4_network_subnet::equal(const ipv4_network_subnet& other) const noexcept
 	{ return is_same_host(other) && m_mask == other.m_mask; }
@@ -157,6 +157,12 @@ namespace epee { namespace net_utils
     if (value == "tor")
       return zone::tor;
     return zone::invalid;
+  }
+
+  std::ostream& operator<<(std::ostream& os, const connection_context_base& ct)
+  {
+    os << "[" << epee::net_utils::print_connection_context_short(ct) << "] ";
+    return os;
   }
 }}
 

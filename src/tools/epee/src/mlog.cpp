@@ -39,22 +39,13 @@
 
 #define MLOG_BASE_FORMAT "%datetime{%Y-%M-%d %H:%m:%s.%g}\t%thread\t%level\t%logger\t%loc\t%msg"
 
-#define MLOG_LOG(x) CINFO(el::base::Writer,el::base::DispatchAction::FileOnlyLog,MONERO_DEFAULT_LOG_CATEGORY) << x
+// #define MLOG_LOG(x) CINFO(el::base::Writer,el::base::DispatchAction::FileOnlyLog,MONERO_DEFAULT_LOG_CATEGORY) << x
 
 using namespace epee;
 
 std::string mlog_get_default_log_path(const char *default_filename)
 {
   return (std::filesystem::path(config::def::log_path)).string();
-}
-
-static void mlog_set_common_prefix()
-{
-  static const char * const expected_filename = "src/epee/src/mlog.cpp";
-  const char *path = __FILE__, *expected_ptr = strstr(path, expected_filename);
-  if (!expected_ptr)
-    return;
-  el::Loggers::setFilenameCommonPrefix(std::string(path, expected_ptr - path));
 }
 
 static const char *get_default_categories(int level)
@@ -85,22 +76,6 @@ static const char *get_default_categories(int level)
 
 void mlog_configure(const std::string &filename_base, bool console)
 {
-  el::Configurations c;
-  c.setGlobally(el::ConfigurationType::Filename, filename_base);
-  c.setGlobally(el::ConfigurationType::ToFile, "true");
-  const char *log_format = getenv("MONERO_LOG_FORMAT");
-  if (!log_format)
-    log_format = MLOG_BASE_FORMAT;
-  c.setGlobally(el::ConfigurationType::Format, log_format);
-  c.setGlobally(el::ConfigurationType::ToStandardOutput, console ? "true" : "false");
-  el::Loggers::setDefaultConfigurations(c, true);
-
-  el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
-  el::Loggers::addFlag(el::LoggingFlag::CreateLoggerAutomatically);
-  el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
-  el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
-  el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
-  mlog_set_common_prefix();
   const char *monero_log = getenv("MONERO_LOGS");
   if (!monero_log)
   {
@@ -143,13 +118,14 @@ void mlog_set_categories(const char *categories)
       new_categories = categories;
     }
   }
-  el::Loggers::setCategories(new_categories.c_str(), true);
-  MLOG_LOG("New log categories: " << el::Loggers::getCategories());
+  // el::Loggers::setCategories(new_categories.c_str(), true);
+  // MLOG_LOG("New log categories: " << el::Loggers::getCategories());
 }
 
 std::string mlog_get_categories()
 {
-  return el::Loggers::getCategories();
+  // return el::Loggers::getCategories();
+  return "";
 }
 
 // maps epee style log level to new logging system

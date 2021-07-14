@@ -71,15 +71,6 @@ int Notify::notify(const char *tag, const char *s, ...) const
 
   replace(margs, tag, s);
 
-  va_list ap;
-  va_start(ap, s);
-  while ((tag = va_arg(ap, const char*)))
-  {
-    s = va_arg(ap, const char*);
-    replace(margs, tag, s);
-  }
-  va_end(ap);
-
   return tools::spawn(filename, margs, false);
 }
 
