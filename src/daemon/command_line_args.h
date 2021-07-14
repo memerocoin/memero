@@ -36,11 +36,6 @@ namespace daemon_args
     , "Config file"
     , std::string(std::string(config::lol::CRYPTONOTE_NAME) + std::string(".conf"))
   };
-  const command_line::arg_descriptor<std::string> arg_log_file = {
-    "log-file"
-  , "Specify log file"
-  , tools::get_default_log_file()
-  };
   const command_line::arg_descriptor<std::string> arg_log_level = {
     "log-level"
   , ""
