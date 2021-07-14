@@ -286,13 +286,19 @@ void reset_console_color() {
 // SPDLOG_LEVEL_ERROR,
 // SPDLOG_LEVEL_CRITICAL,
 // SPDLOG_LEVEL_OFF
+
+const std::set<std::string> default_cat = {"global", "logging"};
+
 void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
   auto _spd_log_handle = spdlog::get(cat);
 
   if (!_spd_log_handle) {
     _spd_log_handle = spdlog::stdout_color_mt(cat);
-    _spd_log_handle->set_pattern("%Y-%m-%d %T.%e %L %v");
-    // _spd_log_handle->set_pattern("%v");
+    if (default_cat.find(cat) != default_cat.end()) {
+      _spd_log_handle->set_pattern("%Y-%m-%d %T.%e %L %v");
+    } else {
+      _spd_log_handle->set_pattern("%Y-%m-%d %T.%e %L [%n] %v");
+    }
   }
 
   switch (level) {
@@ -325,7 +331,6 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     log_level_map(level, cat, x);
   }
 
-  const std::set<std::string> default_cat = {"global", "logging"};
   switch (m_log_level) {
   case 5:
     log_level_map(level, cat, x);
