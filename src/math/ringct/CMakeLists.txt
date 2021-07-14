@@ -32,18 +32,20 @@ add_library(math_ringct_basic
   rctTypes.cpp
   multiexp.cpp
   bulletproofs.cpp
-  )
+)
 
 target_link_libraries(math_ringct_basic
-    math_crypto
-  )
+  math_crypto
+  spdlog::spdlog
+)
 
 add_library(math_ringct
   rctSigs.cpp
-  )
+)
 
 target_link_libraries(math_ringct
-    math_ringct_basic
-    cryptonote_basic
-    wallet_device
-  )
+  math_ringct_basic
+  cryptonote_basic
+  wallet_device
+  spdlog::spdlog
+)

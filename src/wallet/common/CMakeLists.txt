@@ -29,7 +29,8 @@
 
 add_library(wallet_common
   wallet_args.cpp
-  )
+)
 
 target_link_libraries(wallet_common
-  )
+  spdlog::spdlog
+)

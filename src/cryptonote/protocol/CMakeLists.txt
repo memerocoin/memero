@@ -33,3 +33,6 @@ add_library(cryptonote_protocol
   cryptonote_protocol_handler.cpp
 )
 
+target_link_libraries( cryptonote_protocol
+  spdlog::spdlog
+)

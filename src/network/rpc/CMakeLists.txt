@@ -34,6 +34,10 @@ add_library(network_rpc_base
   core_rpc_server_error_codes.cpp
   )
 
+target_link_libraries( network_rpc_base
+  spdlog::spdlog
+)
+
 add_library(network_rpc
   core_rpc_server.cpp
   rpc_version_str.cpp
@@ -57,6 +61,14 @@ add_library(daemon_messages
   daemon_messages.cpp
 )
 
+target_link_libraries(daemon_messages
+  spdlog::spdlog
+)
+
 add_library(daemon_rpc_server
   daemon_handler.cpp
+)
+
+target_link_libraries(daemon_rpc_server
+  spdlog::spdlog
 )

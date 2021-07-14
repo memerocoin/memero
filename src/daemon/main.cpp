@@ -32,7 +32,6 @@
 #include "executor.h"
 #include "command_line_args.h"
 
-
 #include "network/rpc/rpc_args.h"
 
 
@@ -111,6 +110,9 @@ int main(int argc, char const * argv[])
     // Monero Version
     if (command_line::get_arg(vm, command_line::arg_version))
     {
+      // spdlog::info("Welcome to spdlog!");
+      // log->info("loggers can be retrieved from a global registry using the spdlog::get(logger_name)");
+
       std::cout << "Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")" << ENDL;
       return 0;
     }

@@ -48,12 +48,20 @@ add_library( epee
 target_link_libraries( epee
   easylogging
   epee_net_basic
+
+  spdlog::spdlog
+
   ${OPENSSL_LIBRARIES}
 )
 
 add_library( epee_net_basic
   src/net/net_parse_helpers.cpp
 )
+
+target_link_libraries( epee_net_basic
+  spdlog::spdlog
+)
+
 
 add_library( epee_net
   src/net/http_protocol_handler.cpp
@@ -67,6 +75,10 @@ target_link_libraries( epee_net
 
 add_library( epee_storage_basic
   src/storages/parserse_base_utils.cpp
+)
+
+target_link_libraries( epee_storage_basic
+  spdlog::spdlog
 )
 
 add_library( epee_storage

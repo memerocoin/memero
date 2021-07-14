@@ -30,6 +30,8 @@
 #include "config/lol.hpp"
 
 #include <filesystem>
+#include <set>
+
 #include <boost/algorithm/string.hpp>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -295,41 +297,18 @@ void reset_console_color() {
 
 }
 
-static bool mlog(el::Level level, const char *category, const char *format, va_list ap) noexcept
-{
-  int size = 0;
-  char *p = NULL;
-  va_list apc;
-  bool ret = true;
+void log_level(const el::Level level, const std::string cat, const std::string_view x) {
+  auto _spd_log_handle = spdlog::get(cat);
+  if (!_spd_log_handle) _spd_log_handle = spdlog::stdout_color_mt(cat);
 
-  /* Determine required size */
-  va_copy(apc, ap);
-  size = vsnprintf(p, size, format, apc);
-  va_end(apc);
-  if (size < 0)
-    return false;
+  std::set<std::string> default_cat = {"global", "logging"};
+  if (default_cat.find(cat) == default_cat.end()) return;
 
-  size++;             /* For '\0' */
-  p = (char*)malloc(size);
-  if (p == NULL)
-    return false;
-
-  size = vsnprintf(p, size, format, ap);
-  if (size < 0)
-  {
-    free(p);
-    return false;
+  switch (level) {
+  case el::Level::Info:
+    _spd_log_handle->info(x);
+    break;
+  default:
+    break;
   }
-
-  try
-  {
-    MCLOG(level, category, el::Color::Default, p);
-  }
-  catch(...)
-  {
-    ret = false;
-  }
-  free(p);
-
-  return ret;
 }

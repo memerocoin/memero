@@ -29,15 +29,20 @@
 
 #include "tools/easylogging++/easylogging++.h"
 
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "default"
 
 #define MAX_LOG_FILE_SIZE 0
 
+void log_level(const el::Level level, const std::string cat, const std::string_view x);
+
 #define MCLOG_TYPE(level, cat, color, type, x) do { \
-    if (ELPP->vRegistry()->allowed(level, cat)) { \
-      el::base::Writer(level, color, __FILE__, __LINE__, ELPP_FUNC, type).construct(cat) << x; \
-    } \
+    std::ostringstream stream;                                          \
+    stream << x;                                                        \
+    log_level(level, cat, std::string_view(stream.str()));              \
   } while (0)
 
 #define MCLOG(level, cat, color, x) MCLOG_TYPE(level, cat, color, el::base::DispatchAction::NormalLog, x)
@@ -203,3 +208,4 @@ void set_console_color(int color, bool bright);
 void reset_console_color();
 
 }
+

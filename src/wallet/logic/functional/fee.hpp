@@ -144,7 +144,7 @@ namespace fee {
   }
 
   //----------------------------------------------------------------------------------------------------
-  constexpr std::pair<size_t, uint64_t> estimate_tx_size_and_weight
+  const std::pair<size_t, uint64_t> estimate_tx_size_and_weight
   (
    const int n_inputs
    , const int n_outputs

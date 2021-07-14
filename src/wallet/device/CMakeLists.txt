@@ -30,10 +30,12 @@
 add_library(wallet_device
   device.cpp
   device_default.cpp
-  )
+)
 
 target_link_libraries(wallet_device
-    math_crypto
-    math_ringct_basic
-    version
-  )
+  math_crypto
+  math_ringct_basic
+  version
+
+  spdlog::spdlog
+)
