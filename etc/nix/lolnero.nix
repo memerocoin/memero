@@ -1,14 +1,14 @@
 { gcc11Stdenv
 , cmake, git, fetchgit
 , boost175, openssl, readline, libsodium, rapidjson
-, lib, gmock
+, lib, gmock, spdlog
 }:
 
 let
 
   stdenv = gcc11Stdenv
-; lolnero-rev = "v0.9.6.3"
-; lolnero-sha256 = "09m3nbsdpk09pcv8kgl4n76i0q7zkd8cb06wmm8yx92yqw3nq24y"
+; lolnero-rev = "v0.9.7.46"
+; lolnero-sha256 = "0ycw0dylixyjcsy750sw403vgwlimzx9w11l57smn4iw3zmcagab"
 ; doCheck = false
 
 ; in
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
   inherit doCheck;
 
   buildInputs = [
-    boost175 openssl readline libsodium rapidjson
+    boost175 openssl readline libsodium rapidjson spdlog
   ]
   ++ lib.optionals doCheck [gmock]
   ;
