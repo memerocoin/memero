@@ -353,21 +353,12 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
   }
 
   switch (m_log_level) {
-  case 5:
+  case 4:
     log_level_map(level, cat, x);
     return;
-  case 4:
-    switch(level) {
-    case el::Level::Trace:
-      break;
-    default:
-      log_level_map(level, cat, x);
-      break;
-    }
   case 3:
     switch(level) {
     case el::Level::Trace:
-    case el::Level::Debug:
       break;
     default:
       log_level_map(level, cat, x);
@@ -377,7 +368,6 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     switch(level) {
     case el::Level::Trace:
     case el::Level::Debug:
-    case el::Level::Warning:
       break;
     default:
       log_level_map(level, cat, x);
@@ -387,7 +377,6 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     switch(level) {
     case el::Level::Trace:
     case el::Level::Debug:
-    case el::Level::Warning:
     case el::Level::Error:
       break;
     default:
@@ -398,10 +387,10 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     switch(level) {
     case el::Level::Trace:
     case el::Level::Debug:
-    case el::Level::Warning:
     case el::Level::Error:
       break;
     case el::Level::Info:
+    case el::Level::Warning:
       if (default_cat.find(cat) == default_cat.end()) return;
       log_level_map(level, cat, x);
       break;
