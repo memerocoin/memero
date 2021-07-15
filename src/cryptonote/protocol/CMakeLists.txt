@@ -32,7 +32,3 @@ add_library(cryptonote_protocol
   levin_notify.cpp
   cryptonote_protocol_handler.cpp
 )
-
-target_link_libraries( cryptonote_protocol
-  spdlog::spdlog
-)

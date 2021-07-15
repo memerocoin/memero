@@ -31,9 +31,4 @@ add_library(tools_serialization
   json_object.cpp
   binary_archive.cpp
   json_archive.cpp
-  )
-
-
-target_link_libraries( tools_serialization
-  spdlog::spdlog
 )

@@ -35,5 +35,4 @@ add_library(database
 
 target_link_libraries(database
   lmdb
-  spdlog::spdlog
 )

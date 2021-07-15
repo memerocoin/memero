@@ -31,16 +31,8 @@ add_library(wallet_errors
   wallet_errors.cpp
  )
 
-target_link_libraries(wallet_errors
-  spdlog::spdlog
-)
-
 add_library(wallet_node_rpc_proxy
   node_rpc_proxy.cpp
-)
-
-target_link_libraries(wallet_node_rpc_proxy
-  spdlog::spdlog
 )
 
 add_library(wallet_api

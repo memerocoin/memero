@@ -53,8 +53,6 @@ target_link_libraries(lolnerod
   tools_serialization
   version
 
-  spdlog::spdlog
-
   ${EPEE_READLINE}
   ${GNU_READLINE_LIBRARY}
   ${Boost_PROGRAM_OPTIONS_LIBRARY}

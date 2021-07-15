@@ -30,8 +30,3 @@
 add_library(wallet_mnemonics
   electrum-words.cpp
 )
-
-
-target_link_libraries(wallet_mnemonics
-  spdlog::spdlog
-)

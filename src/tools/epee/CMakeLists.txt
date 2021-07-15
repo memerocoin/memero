@@ -31,10 +31,6 @@ add_library( epee_log
   src/mlog.cpp
 )
 
-target_link_libraries( epee_log
-  spdlog::spdlog
-)
-
 add_library( epee
   src/hex.cpp
   src/abstract_http_client.cpp
@@ -63,11 +59,6 @@ add_library( epee_net_basic
   src/net/net_parse_helpers.cpp
 )
 
-target_link_libraries( epee_net_basic
-  spdlog::spdlog
-)
-
-
 add_library( epee_net
   src/net/http_protocol_handler.cpp
   src/net/net_helper.cpp
@@ -80,10 +71,6 @@ target_link_libraries( epee_net
 
 add_library( epee_storage_basic
   src/storages/parserse_base_utils.cpp
-)
-
-target_link_libraries( epee_storage_basic
-  spdlog::spdlog
 )
 
 add_library( epee_storage

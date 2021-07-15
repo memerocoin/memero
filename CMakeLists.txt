@@ -67,9 +67,6 @@ endif()
 find_package(Threads REQUIRED)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-## spdlog
-find_package(spdlog REQUIRED)
-
 ## openssl
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
