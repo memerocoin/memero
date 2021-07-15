@@ -92,7 +92,7 @@ namespace
   constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
   constexpr char USAGE_INCOMING[] = "incoming [available|unavailable] [verbose] [index=<N1>[,<N2>[,...]]]";
   constexpr char USAGE_TRANSFER[] = "transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)";
-  constexpr char USAGE_SET_LOG[] = "set-log <level>|{+,-,}<categories>";
+  constexpr char USAGE_SET_LOG[] = "set-log <level>";
   constexpr char USAGE_ACCOUNT[] = "account\n"
                             "  account new <label>\n"
                             "  account switch <index> \n"
