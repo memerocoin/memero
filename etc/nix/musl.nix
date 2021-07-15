@@ -12,7 +12,6 @@ pkgs.pkgsMusl.callPackage
   , openssl
   , readline
   , rapidjson
-  , spdlog
   , }:
   mkShell {
     nativeBuildInputs = [ cmake ];
@@ -22,7 +21,6 @@ pkgs.pkgsMusl.callPackage
       openssl
       readline
       rapidjson
-      spdlog
     ];
 
     CMakeFlags_Lolnero = ''

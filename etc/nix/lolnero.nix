@@ -1,7 +1,7 @@
 { gcc11Stdenv
 , cmake, git, fetchgit
 , boost175, openssl, readline, libsodium, rapidjson
-, lib, gmock, spdlog
+, lib, gmock
 }:
 
 let
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
   inherit doCheck;
 
   buildInputs = [
-    boost175 openssl readline libsodium rapidjson spdlog
+    boost175 openssl readline libsodium rapidjson
   ]
   ++ lib.optionals doCheck [gmock]
   ;

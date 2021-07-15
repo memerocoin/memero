@@ -34,7 +34,6 @@ in
       cmake git ccache
       boost175 openssl readline libsodium rapidjson
       gmock
-      spdlog
     ];
 
     inherit CMakeFlags_Lolnero;
