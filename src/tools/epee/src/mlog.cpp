@@ -29,11 +29,12 @@
 
 #include "config/lol.hpp"
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+// #include "spdlog/spdlog.h"
+// #include "spdlog/sinks/stdout_color_sinks.h"
 
 #include <filesystem>
 #include <set>
+#include <atomic>
 
 #include <boost/algorithm/string.hpp>
 
@@ -288,44 +289,62 @@ void reset_console_color() {
 // SPDLOG_LEVEL_OFF
 
 const std::set<std::string> default_cat = {"global", "logging"};
+std::mutex g_log_mutex;
 
 void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
-  auto _spd_log_handle = spdlog::get(cat);
+  // auto _spd_log_handle = spdlog::get(cat);
 
-  if (!_spd_log_handle) {
-    _spd_log_handle = spdlog::stdout_color_mt(cat);
-    std::string format_str;
-    if (default_cat.find(cat) != default_cat.end()) {
-      format_str = "%Y-%m-%d %T.%e %L %v";
-    } else {
-      format_str = "%Y-%m-%d %T.%e %L [%n] %v";
-    }
-    _spd_log_handle->set_pattern(format_str, spdlog::pattern_time_type::utc);
-  }
+  // if (!_spd_log_handle) {
+  //   _spd_log_handle = spdlog::stdout_color_mt(cat);
+  //   std::string format_str;
+  //   if (default_cat.find(cat) != default_cat.end()) {
+  //     format_str = "%Y-%m-%d %T.%e %L %v";
+  //   } else {
+  //     format_str = "%Y-%m-%d %T.%e %L [%n] %v";
+  //   }
+  //   _spd_log_handle->set_pattern(format_str, spdlog::pattern_time_type::utc);
+  // }
 
+
+  const std::string cat_str = default_cat.find(cat) != default_cat.end() ? "" : "[" + cat + "] ";
+
+  std::string log_header;
   switch (level) {
   case el::Level::Trace:
-    _spd_log_handle->trace(x);
+    // _spd_log_handle->trace(x);
+    log_header = "T";
     break;
   case el::Level::Debug:
-    _spd_log_handle->debug(x);
+    // _spd_log_handle->debug(x);
+    log_header = "D";
     break;
   case el::Level::Info:
-    _spd_log_handle->info(x);
+    // _spd_log_handle->info(x);
+    log_header = "I";
     break;
   case el::Level::Warning:
-    _spd_log_handle->warn(x);
+    // _spd_log_handle->warn(x);
+    log_header = "W";
     break;
   case el::Level::Error:
-    _spd_log_handle->error(x);
+    // _spd_log_handle->error(x);
+    log_header = "E";
     break;
   case el::Level::Fatal:
-    _spd_log_handle->critical(x);
+    // _spd_log_handle->critical(x);
+    log_header = "F";
     break;
   default:
     // _spd_log_handle->off(x);
     break;
   }
+
+  auto now = std::chrono::system_clock::now();
+  auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+  std::lock_guard<std::mutex> guard(g_log_mutex);
+  std::cout << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %X")
+            << " " << log_header << " " << cat_str << x << std::endl;
 }
 
 void log_level(const el::Level level, const std::string cat, const std::string_view x) {
