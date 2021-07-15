@@ -129,7 +129,7 @@ namespace
     PAUSE_READLINE();
     std::cout << prompt;
     if (yesno)
-      std::cout << "  (Y/Yes/N/No)";
+      std::cout << "  (Y/N)";
     std::cout << ": " << std::flush;
 
     std::string buf;
