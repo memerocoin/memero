@@ -1455,9 +1455,10 @@ namespace cryptonote
               progress_message += ")";
             }
 
-            const std::string timing_message = std::string(" (")
-              + std::to_string((current_blockchain_height - previous_height) * 1e6 / dt.count())
-              + " blocks/sec)";
+            const auto sync_rate = (current_blockchain_height - previous_height) * 1e6 / dt.count();
+            const std::string timing_message = std::string(" \t[")
+              + std::to_string(static_cast<uint32_t>(sync_rate))
+              + " blocks/sec]";
 
             // if (ELPP->vRegistry()->allowed(el::Level::Debug, "sync-info"))
             //   timing_message += std::string(": ") + m_block_queue.get_overview(current_blockchain_height);
