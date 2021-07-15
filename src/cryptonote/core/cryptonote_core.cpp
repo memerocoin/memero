@@ -1175,9 +1175,6 @@ namespace cryptonote
         main_message = "The daemon will start synchronizing with the network. This may take a long time to complete.";
       MGINFO_YELLOW(ENDL << "**********************************************************************" << ENDL
         << main_message << ENDL
-        << ENDL
-        << "Use the \"help\" command to see the list of available commands." << ENDL
-        << "Use \"help <command>\" to see a command's documentation." << ENDL
         << "**********************************************************************" << ENDL);
       m_starter_message_showed = true;
     }
