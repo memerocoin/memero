@@ -87,12 +87,12 @@ namespace
   const command_line::arg_descriptor< std::vector<std::string> > arg_command = {"command", ""};
 
 
-  constexpr char USAGE_START_MINING[] = "start_mining [<number_of_threads>]";
-  constexpr char USAGE_SET_DAEMON[] = "set_daemon <host>[:<port>]";
+  constexpr char USAGE_START_MINING[] = "start-mining [<number_of_threads>]";
+  constexpr char USAGE_SET_DAEMON[] = "set-daemon <host>[:<port>]";
   constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
   constexpr char USAGE_INCOMING[] = "incoming [available|unavailable] [verbose] [index=<N1>[,<N2>[,...]]]";
   constexpr char USAGE_TRANSFER[] = "transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)";
-  constexpr char USAGE_SET_LOG[] = "set_log <level>|{+,-,}<categories>";
+  constexpr char USAGE_SET_LOG[] = "set-log <level>|{+,-,}<categories>";
   constexpr char USAGE_ACCOUNT[] = "account\n"
                             "  account new <label>\n"
                             "  account switch <index> \n"
@@ -106,17 +106,17 @@ namespace
                             "  address one-off <account> <subaddress>\n"
                             ;
   constexpr char USAGE_SET_VARIABLE[] = "set <option> [<value>]";
-  constexpr char USAGE_GET_TX_KEY[] = "get_tx_key <txid>";
-  constexpr char USAGE_CHECK_TX_KEY[] = "check_tx_key <txid> <txkey> <address>";
-  constexpr char USAGE_GET_TX_PROOF[] = "get_tx_proof <txid> <address> [<message>]";
-  constexpr char USAGE_CHECK_TX_PROOF[] = "check_tx_proof <txid> <address> <signature_file> [<message>]";
+  constexpr char USAGE_GET_TX_KEY[] = "get-tx-key <txid>";
+  constexpr char USAGE_CHECK_TX_KEY[] = "check-tx-key <txid> <txkey> <address>";
+  constexpr char USAGE_GET_TX_PROOF[] = "get-tx-proof <txid> <address> [<message>]";
+  constexpr char USAGE_CHECK_TX_PROOF[] = "check-tx-proof <txid> <address> <signature_file> [<message>]";
   constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
                          "     [<min_height> [<max_height>]]\n";
-  constexpr char USAGE_UNSPENT_OUTPUTS[] = "unspent_outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]";
-  constexpr char USAGE_RESCAN_BC[] = "rescan_bc [hard]";
+  constexpr char USAGE_UNSPENT_OUTPUTS[] = "unspent-outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]";
+  constexpr char USAGE_RESCAN_BC[] = "rescan-bc [hard]";
   constexpr char USAGE_SIGN[] = "sign [<account_index>,<address_index>] [--spend|--view] <filename>";
   constexpr char USAGE_VERIFY[] = "verify <filename> <address> <signature>";
-  constexpr char USAGE_SHOW_TRANSFER[] = "show_transfer <txid>";
+  constexpr char USAGE_SHOW_TRANSFER[] = "show-transfer <txid>";
   constexpr char USAGE_WELCOME[] = "welcome";
   constexpr char USAGE_VERSION[] = "version";
   constexpr char USAGE_HELP[] = "help [<command> | all]";
@@ -946,6 +946,36 @@ bool simple_wallet::apropos(const std::vector<std::string> &args)
   return true;
 }
 
+
+constexpr std::string_view set_help =
+  "Available options:\n "
+  "always-confirm-transfers <1|0>\n "
+  "  Whether to confirm unsplit txes.\n "
+  "print-ring-members <1|0>\n "
+  "  Whether to print detailed information about ring members during confirmation.\n "
+  "store-tx-info <1|0>\n "
+  "  Whether to store outgoing tx info (destination address, payment ID, tx secret key) for future reference.\n "
+  "refresh-type <full|optimize-coinbase|no-coinbase|default>\n "
+  "  Set the wallet's refresh behaviour.\n "
+  "priority [0|1|2|3|4]\n "
+  "  Set the fee to default/unimportant/normal/elevated/priority.\n "
+  "unit <lolnero|millinero|micronero|nanonero|piconero>\n "
+  "  Set the default lolnero (sub-)unit.\n "
+  "min-outputs-count [n]\n "
+  "  Try to keep at least that many outputs of value at least min-outputs-value.\n "
+  "min-outputs-value [n]\n "
+  "  Try to keep at least min-outputs-count outputs of at least that value.\n "
+  "merge-destinations <1|0>\n "
+  "  Whether to merge multiple payments to the same destination address.\n "
+  "confirm-export-overwrite <1|0>\n "
+  "  Whether to warn if the file to be exported already exists.\n "
+  "refresh-from-block-height [n]\n "
+  "  Set the height before which to ignore blocks.\n "
+  "subaddress-lookahead <major>:<minor>\n "
+  "  Set the lookahead sizes for the subaddress hash table.\n "
+  "ignore-fractional-outputs <1|0>\n "
+  "  Whether to ignore fractional outputs that result in net loss when spending due to fee.\n ";
+
 simple_wallet::simple_wallet()
   : m_refresh_progress_reporter(*this)
   , m_in_manual_refresh(false)
@@ -953,18 +983,18 @@ simple_wallet::simple_wallet()
   , m_last_activity_time(time(NULL))
   , m_in_command(false)
 {
-  m_cmd_binder.set_handler("start_mining",
+  m_cmd_binder.set_handler("start-mining",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::start_mining, std::placeholders::_1),
                            sw::tr(USAGE_START_MINING),
                            sw::tr("Start mining in the daemon."));
-  m_cmd_binder.set_handler("stop_mining",
+  m_cmd_binder.set_handler("stop-mining",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::stop_mining, std::placeholders::_1),
                            sw::tr("Stop mining in the daemon."));
-  m_cmd_binder.set_handler("set_daemon",
+  m_cmd_binder.set_handler("set-daemon",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_daemon, std::placeholders::_1),
                            sw::tr(USAGE_SET_DAEMON),
                            sw::tr("Set another daemon to connect to."));
-  m_cmd_binder.set_handler("save_bc",
+  m_cmd_binder.set_handler("save-bc",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::save_bc, std::placeholders::_1),
                            sw::tr("Save the current blockchain data."));
   m_cmd_binder.set_handler("refresh",
@@ -983,7 +1013,7 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("transfer", std::bind(&simple_wallet::on_command, this, &simple_wallet::transfer, std::placeholders::_1),
                            sw::tr(USAGE_TRANSFER),
                            sw::tr("Transfer <amount> to <address>. If the parameter \"index=<N1>[,<N2>,...]\" is specified, the wallet uses outputs received by addresses of those indices. If omitted, the wallet randomly chooses address indices to be used. In any case, it tries its best not to combine outputs across multiple addresses. <priority> is the priority of the transaction. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding URI_2 or <address_2> <amount_2> etcetera (before the payment ID, if it's included)"));
-  m_cmd_binder.set_handler("set_log",
+  m_cmd_binder.set_handler("set-log",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_log, std::placeholders::_1),
                            sw::tr(USAGE_SET_LOG),
                            sw::tr("Change the current log detail (level must be <0-4>)."));
@@ -1014,50 +1044,23 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("set",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_variable, std::placeholders::_1),
                            sw::tr(USAGE_SET_VARIABLE),
-                           sw::tr("Available options:\n "
-                                  "always-confirm-transfers <1|0>\n "
-                                  "  Whether to confirm unsplit txes.\n "
-                                  "print-ring-members <1|0>\n "
-                                  "  Whether to print detailed information about ring members during confirmation.\n "
-                                  "store-tx-info <1|0>\n "
-                                  "  Whether to store outgoing tx info (destination address, payment ID, tx secret key) for future reference.\n "
-                                  "refresh-type <full|optimize-coinbase|no-coinbase|default>\n "
-                                  "  Set the wallet's refresh behaviour.\n "
-                                  "priority [0|1|2|3|4]\n "
-                                  "  Set the fee to default/unimportant/normal/elevated/priority.\n "
-                                  "unit <lolnero|millinero|micronero|nanonero|piconero>\n "
-                                  "  Set the default lolnero (sub-)unit.\n "
-                                  "min-outputs-count [n]\n "
-                                  "  Try to keep at least that many outputs of value at least min-outputs-value.\n "
-                                  "min-outputs-value [n]\n "
-                                  "  Try to keep at least min-outputs-count outputs of at least that value.\n "
-                                  "merge-destinations <1|0>\n "
-                                  "  Whether to merge multiple payments to the same destination address.\n "
-                                  "confirm-export-overwrite <1|0>\n "
-                                  "  Whether to warn if the file to be exported already exists.\n "
-                                  "refresh-from-block-height [n]\n "
-                                  "  Set the height before which to ignore blocks.\n "
-                                  "subaddress-lookahead <major>:<minor>\n "
-                                  "  Set the lookahead sizes for the subaddress hash table.\n "
-                                  "ignore-fractional-outputs <1|0>\n "
-                                  "  Whether to ignore fractional outputs that result in net loss when spending due to fee.\n "
-                              ));
-  m_cmd_binder.set_handler("rescan_spent",
+                           std::string(set_help));
+  m_cmd_binder.set_handler("rescan-spent",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_spent, std::placeholders::_1),
                            sw::tr("Rescan the blockchain for spent outputs."));
-  m_cmd_binder.set_handler("get_tx_key",
+  m_cmd_binder.set_handler("get-tx-key",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_key, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_KEY),
                            sw::tr("Get the transaction key (r) for a given <txid>."));
-  m_cmd_binder.set_handler("check_tx_key",
+  m_cmd_binder.set_handler("check-tx-key",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::check_tx_key, std::placeholders::_1),
                            sw::tr(USAGE_CHECK_TX_KEY),
                            sw::tr("Check the amount going to <address> in <txid>."));
-  m_cmd_binder.set_handler("get_tx_proof",
+  m_cmd_binder.set_handler("get-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_PROOF),
                            sw::tr("Generate a signature proving funds sent to <address> in <txid>, optionally with a challenge string <message>, using either the transaction secret key (when <address> is not your wallet's address) or the view secret key (otherwise), which does not disclose the secret key."));
-  m_cmd_binder.set_handler("check_tx_proof",
+  m_cmd_binder.set_handler("check-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::check_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_CHECK_TX_PROOF),
                            sw::tr("Check the proof for funds going to <address> in <txid> with the challenge string <message> if any."));
@@ -1077,18 +1080,18 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::export_transfers, std::placeholders::_1),
                            sw::tr(USAGE_EXPORT),
                            sw::tr("Export to CSV the incoming/outgoing transfers within an optional height range."));
-  m_cmd_binder.set_handler("unspent_outputs",
+  m_cmd_binder.set_handler("unspent-outputs",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::unspent_outputs, std::placeholders::_1),
                            sw::tr(USAGE_UNSPENT_OUTPUTS),
                            sw::tr("Show the unspent outputs of a specified address within an optional amount range."));
-  m_cmd_binder.set_handler("rescan_bc",
+  m_cmd_binder.set_handler("rescan-bc",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_blockchain, std::placeholders::_1),
                            sw::tr(USAGE_RESCAN_BC),
                            sw::tr("Rescan the blockchain from scratch. If \"hard\" is specified, you will lose any information which can not be recovered from the blockchain itself."));
   m_cmd_binder.set_handler("status",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::status, std::placeholders::_1),
                            sw::tr("Show the wallet's status."));
-  m_cmd_binder.set_handler("wallet_info",
+  m_cmd_binder.set_handler("wallet-info",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::wallet_info, std::placeholders::_1),
                            sw::tr("Show the wallet's information."));
   m_cmd_binder.set_handler("sign",
@@ -1099,7 +1102,7 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::verify, std::placeholders::_1),
                            sw::tr(USAGE_VERIFY),
                            sw::tr("Verify a signature on the contents of a file."));
-  m_cmd_binder.set_handler("show_transfer",
+  m_cmd_binder.set_handler("show-transfer",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_transfer, std::placeholders::_1),
                            sw::tr(USAGE_SHOW_TRANSFER),
                            sw::tr("Show information about a transfer to/from this address."));
