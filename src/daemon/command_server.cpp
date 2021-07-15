@@ -65,88 +65,88 @@ t_command_server::t_command_server(
     , "Search all command descriptions for keyword(s)."
     );
   m_command_lookup.set_handler(
-      "print_height"
+      "p-height"
     , std::bind(&t_command_parser_executor::print_height, &m_parser, p::_1)
     , "Print the local blockchain height."
     );
   m_command_lookup.set_handler(
-      "print_pl"
+      "p-peer-list"
     , std::bind(&t_command_parser_executor::print_peer_list, &m_parser, p::_1)
-    , "print_pl [white] [gray] [<limit>]"
+    , "p-peer-list [white] [gray] [<limit>]"
     , "Print the current peer list."
     );
   m_command_lookup.set_handler(
-      "print_pl_stats"
+      "p-peer-list-stats"
     , std::bind(&t_command_parser_executor::print_peer_list_stats, &m_parser, p::_1)
     , "Print the peer list statistics."
     );
   m_command_lookup.set_handler(
-      "print_cn"
+      "p-connections"
     , std::bind(&t_command_parser_executor::print_connections, &m_parser, p::_1)
     , "Print the current connections."
     );
   m_command_lookup.set_handler(
-      "print_bc"
+      "p-blockchain"
     , std::bind(&t_command_parser_executor::print_blockchain_info, &m_parser, p::_1)
-    , "print_bc <begin_height> [<end_height>]"
+    , "p-blockchain <begin_height> [<end_height>]"
     , "Print the blockchain info in a given blocks range."
     );
   m_command_lookup.set_handler(
-      "print_block"
+      "p-block"
     , std::bind(&t_command_parser_executor::print_block, &m_parser, p::_1)
-    , "print_block <block_hash> | <block_height>"
+    , "p-block <block_hash> | <block_height>"
     , "Print a given block."
     );
   m_command_lookup.set_handler(
-      "print_tx"
+      "p-tx"
     , std::bind(&t_command_parser_executor::print_transaction, &m_parser, p::_1)
-    , "print_tx <transaction_hash> [+hex] [+json]"
+    , "p-tx <transaction_hash> [+hex] [+json]"
     , "Print a given transaction."
     );
   m_command_lookup.set_handler(
-      "is_key_image_spent"
+      "is-spent"
     , std::bind(&t_command_parser_executor::is_key_image_spent, &m_parser, p::_1)
-    , "is_key_image_spent <key_image>"
+    , "is-spent <key_image>"
     , "Print whether a given key image is in the spent key images set."
     );
   m_command_lookup.set_handler(
-      "start_mining"
+      "start-mining"
     , std::bind(&t_command_parser_executor::start_mining, &m_parser, p::_1)
-    , "start_mining <addr> [<threads>]"
+    , "start-mining <addr> [<threads>]"
     , "Start mining for specified address. Defaults to 1 thread."
     );
   m_command_lookup.set_handler(
-      "stop_mining"
+      "stop-mining"
     , std::bind(&t_command_parser_executor::stop_mining, &m_parser, p::_1)
     , "Stop mining."
     );
   m_command_lookup.set_handler(
-      "mining_status"
+      "mining-status"
     , std::bind(&t_command_parser_executor::mining_status, &m_parser, p::_1)
     , "Show current mining status."
     );
   m_command_lookup.set_handler(
-      "print_pool"
+      "p-pool-verbose"
     , std::bind(&t_command_parser_executor::print_transaction_pool_long, &m_parser, p::_1)
     , "Print the transaction pool using a long format."
     );
   m_command_lookup.set_handler(
-      "print_pool_sh"
+      "p-pool"
     , std::bind(&t_command_parser_executor::print_transaction_pool_short, &m_parser, p::_1)
     , "Print transaction pool using a short format."
     );
   m_command_lookup.set_handler(
-      "print_pool_stats"
+      "p-pool-stats"
     , std::bind(&t_command_parser_executor::print_transaction_pool_stats, &m_parser, p::_1)
     , "Print the transaction pool's statistics."
     );
   m_command_lookup.set_handler(
-      "show_hr"
+      "show-hashrate"
     , std::bind(&t_command_parser_executor::show_hash_rate, &m_parser, p::_1)
     , "Start showing the current hash rate."
     );
   m_command_lookup.set_handler(
-      "hide_hr"
+      "hide-hashrate"
     , std::bind(&t_command_parser_executor::hide_hash_rate, &m_parser, p::_1)
     , "Stop showing the hash rate."
     );
@@ -156,9 +156,9 @@ t_command_server::t_command_server(
     , "Save the blockchain."
     );
   m_command_lookup.set_handler(
-      "set_log"
+      "set-log"
     , std::bind(&t_command_parser_executor::set_log_level, &m_parser, p::_1)
-    , "set_log <level>|<{+,-,}categories>"
+    , "set-log <level>|<{+,-,}categories>"
     , "Change the current log level/categories where <level> is a number 0-4."
     );
   m_command_lookup.set_handler(
@@ -172,7 +172,7 @@ t_command_server::t_command_server(
     , "Show the current status."
     );
   m_command_lookup.set_handler(
-      "stop_daemon"
+      "stop-daemon"
     , std::bind(&t_command_parser_executor::stop_daemon, &m_parser, p::_1)
     , "Stop the daemon."
     );
@@ -182,24 +182,24 @@ t_command_server::t_command_server(
     , "Stop the daemon."
     );
   m_command_lookup.set_handler(
-      "print_status"
+      "p-status"
     , std::bind(&t_command_parser_executor::print_status, &m_parser, p::_1)
     , "Print the current daemon status."
     );
     m_command_lookup.set_handler(
-      "out_peers"
+      "set-out-peers"
     , std::bind(&t_command_parser_executor::out_peers, &m_parser, p::_1)
-    , "out_peers <max_number>"
+    , "set-out-peers <max_number>"
     , "Set the <max_number> of out peers."
     );
     m_command_lookup.set_handler(
-      "in_peers"
+      "set-in-peers"
     , std::bind(&t_command_parser_executor::in_peers, &m_parser, p::_1)
-    , "in_peers <max_number>"
+    , "set-in-peers <max_number>"
     , "Set the <max_number> of in peers."
     );
     m_command_lookup.set_handler(
-      "bans"
+      "p-banned"
     , std::bind(&t_command_parser_executor::show_bans, &m_parser, p::_1)
     , "Show the currently banned IPs."
     );
@@ -216,56 +216,56 @@ t_command_server::t_command_server(
     , "Unban a given <IP>."
     );
     m_command_lookup.set_handler(
-      "banned"
+      "is-banned"
     , std::bind(&t_command_parser_executor::banned, &m_parser, p::_1)
-    , "banned <address>"
+    , "is-banned <address>"
     , "Check whether an <address> is banned."
     );
     m_command_lookup.set_handler(
-      "flush_txpool"
+      "flush-tx"
     , std::bind(&t_command_parser_executor::flush_txpool, &m_parser, p::_1)
-    , "flush_txpool [<txid>]"
+    , "flush-tx [<txid>]"
     , "Flush a transaction from the tx pool by its <txid>, or the whole tx pool."
     );
     m_command_lookup.set_handler(
-      "output_histogram"
+      "output-histogram"
     , std::bind(&t_command_parser_executor::output_histogram, &m_parser, p::_1)
-    , "output_histogram [@<amount>] <min_count> [<max_count>]"
+    , "output-histogram [@<amount>] <min_count> [<max_count>]"
     , "Print the output histogram of outputs."
     );
     m_command_lookup.set_handler(
-      "print_coinbase_tx_sum"
+      "p-coinbase-tx-sum"
     , std::bind(&t_command_parser_executor::print_coinbase_tx_sum, &m_parser, p::_1)
-    , "print_coinbase_tx_sum <start_height> [<block_count>]"
+    , "p-coinbase-tx-sum <start_height> [<block_count>]"
     , "Print the sum of coinbase transactions."
     );
     m_command_lookup.set_handler(
-      "alt_chain_info"
+      "alt-chain-info"
     , std::bind(&t_command_parser_executor::alt_chain_info, &m_parser, p::_1)
-    , "alt_chain_info [blockhash]"
+    , "alt-chain-info [blockhash]"
     , "Print the information about alternative chains."
     );
     m_command_lookup.set_handler(
-      "bc_dyn_stats"
+      "blockchain-dynamic-stats"
     , std::bind(&t_command_parser_executor::print_blockchain_dynamic_stats, &m_parser, p::_1)
-    , "bc_dyn_stats <last_block_count>"
+    , "blockchain-dynamic-stats <last_block_count>"
     , "Print the information about current blockchain dynamic state."
     );
     m_command_lookup.set_handler(
-      "relay_tx"
+      "relay-tx"
     , std::bind(&t_command_parser_executor::relay_tx, &m_parser, p::_1)
-    , "relay_tx <txid>"
+    , "relay-tx <txid>"
     , "Relay a given transaction by its <txid>."
     );
     m_command_lookup.set_handler(
-      "sync_info"
+      "sync-info"
     , std::bind(&t_command_parser_executor::sync_info, &m_parser, p::_1)
     , "Print information about the blockchain sync state."
     );
     m_command_lookup.set_handler(
-      "pop_blocks"
+      "pop-blocks"
     , std::bind(&t_command_parser_executor::pop_blocks, &m_parser, p::_1)
-    , "pop_blocks <nblocks>"
+    , "pop-blocks <nblocks>"
     , "Remove blocks from end of blockchain"
     );
     m_command_lookup.set_handler(
@@ -274,9 +274,9 @@ t_command_server::t_command_server(
     , "Print version information."
     );
     m_command_lookup.set_handler(
-      "flush_cache"
+      "flush-cache"
     , std::bind(&t_command_parser_executor::flush_cache, &m_parser, p::_1)
-    , "flush_cache [bad-txs] [bad-blocks]"
+    , "flush-cache [bad-txs] [bad-blocks]"
     , "Flush the specified cache(s)."
     );
 }
