@@ -50,11 +50,13 @@ namespace state {
     const size_t blocks_to_consider = std::min<size_t>(rct_offsets.size(), blocks_in_a_year);
     const size_t outputs_to_consider = rct_offsets.back() -
       (blocks_to_consider < rct_offsets.size() ? rct_offsets[rct_offsets.size() - blocks_to_consider - 1] : 0);
+
     begin = rct_offsets.data();
     end = rct_offsets.data() + rct_offsets.size() - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE;
     num_rct_outputs = *(end - 1);
     THROW_WALLET_EXCEPTION_IF(num_rct_outputs == 0, tools::error::wallet_internal_error, "No rct outputs");
 
+    THROW_WALLET_EXCEPTION_IF(outputs_to_consider == 0, tools::error::wallet_internal_error, "No outputs to consider");
     average_output_time = constant::DIFFICULTY_TARGET_IN_SECONDS * blocks_to_consider /
       static_cast<double>(outputs_to_consider); // this assumes constant target over the whole rct range
   };
@@ -65,6 +67,7 @@ namespace state {
   {
     double x = gamma(engine);
     x = exp(x);
+    THROW_WALLET_EXCEPTION_IF(average_output_time == 0, tools::error::wallet_internal_error, "average output time is zero");
     uint64_t output_index = x / average_output_time;
     if (output_index >= num_rct_outputs)
       return std::numeric_limits<uint64_t>::max(); // bad pick
