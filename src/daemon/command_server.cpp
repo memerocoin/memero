@@ -172,11 +172,6 @@ t_command_server::t_command_server(
     , "Show the current status."
     );
   m_command_lookup.set_handler(
-      "stop-daemon"
-    , std::bind(&t_command_parser_executor::stop_daemon, &m_parser, p::_1)
-    , "Stop the daemon."
-    );
-  m_command_lookup.set_handler(
       "exit"
     , std::bind(&t_command_parser_executor::stop_daemon, &m_parser, p::_1)
     , "Stop the daemon."
