@@ -101,7 +101,7 @@ namespace
   constexpr char USAGE_ADDRESS[] = "address\n"
                             "  address new <label>\n"
                             "  address all \n"
-                            "  address <index_min> [<index_max>]\n"
+                            "  address <index min> [<index max>]\n"
                             "  address label <index> <label>\n"
                             "  address one-off <account> <subaddress>\n"
                             ;
@@ -109,12 +109,12 @@ namespace
   constexpr char USAGE_GET_TX_KEY[] = "get-tx-key <txid>";
   constexpr char USAGE_CHECK_TX_KEY[] = "check-tx-key <txid> <txkey> <address>";
   constexpr char USAGE_GET_TX_PROOF[] = "get-tx-proof <txid> <address> [<message>]";
-  constexpr char USAGE_CHECK_TX_PROOF[] = "check-tx-proof <txid> <address> <signature_file> [<message>]";
+  constexpr char USAGE_CHECK_TX_PROOF[] = "check-tx-proof <txid> <address> <signature file> [<message>]";
   constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
-                         "     [<min_height> [<max_height>]]\n";
-  constexpr char USAGE_UNSPENT_OUTPUTS[] = "unspent-outputs [index=<N1>[,<N2>,...]] [<min_amount> [<max_amount>]]";
+                         "     [<min height> [<max height>]]\n";
+  constexpr char USAGE_UNSPENT_OUTPUTS[] = "unspent-outputs [index=<N1>[,<N2>,...]] [<min amount> [<max amount>]]";
   constexpr char USAGE_RESCAN_BC[] = "rescan-bc [hard]";
-  constexpr char USAGE_SIGN[] = "sign [<account_index>,<address_index>] [--spend|--view] <filename>";
+  constexpr char USAGE_SIGN[] = "sign [<account index>,<address index>] [--spend|--view] <filename>";
   constexpr char USAGE_VERIFY[] = "verify <filename> <address> <signature>";
   constexpr char USAGE_SHOW_TRANSFER[] = "show-transfer <txid>";
   constexpr char USAGE_WELCOME[] = "welcome";
@@ -122,7 +122,7 @@ namespace
   constexpr char USAGE_HELP[] = "help [<command> | all]";
   constexpr char USAGE_APROPOS[] = "apropos <keyword> [<keyword> ...]";
   constexpr char USAGE_EXPORT[] = "export [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
-                           "       [<min_height> [<max_height>]] [output=<filepath>]\n";
+                           "       [<min height> [<max height>]] [output=<filepath>]\n";
 
   std::string input_line(const std::string& prompt, bool yesno = false)
   {
@@ -3410,7 +3410,7 @@ bool simple_wallet::unspent_outputs(const std::vector<std::string> &args_)
     }
     if (min_amount > max_amount)
     {
-      fail_msg_writer() << sw::tr("<min_amount> should be smaller than <max_amount>");
+      fail_msg_writer() << sw::tr("<min amount> should be smaller than <max amount>");
       return true;
     }
   }
@@ -3676,7 +3676,7 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
   //  address
   //  address new <label>
   //  address all
-  //  address <index_min> [<index_max>]
+  //  address <index min> [<index max>]
   //  address label <index> <label>
   //  address device [<index>]
 
@@ -3770,12 +3770,12 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
       std::swap(index_min, index_max);
     if (index_min >= m_wallet->get_num_subaddresses(m_current_subaddress_account))
     {
-      fail_msg_writer() << sw::tr("<index_min> is already out of bound");
+      fail_msg_writer() << sw::tr("<index min> is already out of bound");
       return true;
     }
     if (index_max >= m_wallet->get_num_subaddresses(m_current_subaddress_account))
     {
-      message_writer() << sw::tr("<index_max> exceeds the bound");
+      message_writer() << sw::tr("<index max> exceeds the bound");
       index_max = m_wallet->get_num_subaddresses(m_current_subaddress_account) - 1;
     }
     for (index = index_min; index <= index_max; ++index)
