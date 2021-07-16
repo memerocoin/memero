@@ -118,3 +118,6 @@ etc/task/mainnet
 .#*
 
 vendor/rapidjson
+
+### nix-build
+result
