@@ -7,8 +7,8 @@
 let
 
   stdenv = gcc11Stdenv
-; lolnero-rev = "v0.9.7.46"
-; lolnero-sha256 = "0ycw0dylixyjcsy750sw403vgwlimzx9w11l57smn4iw3zmcagab"
+; lolnero-rev = "v0.9.7.49"
+; lolnero-sha256 = "1k4mlgbqn0dkdmvaiadplqh8ycypl06pd8faqp98my7nbv9gybzj"
 ; doCheck = false
 
 ; in
@@ -43,7 +43,7 @@ stdenv.mkDerivation rec {
   ;
 
   meta = with lib; {
-    description = "A fork of Wownero with a linear emission and a SHA-3 PoW";
+    description = "A private ASIC friendly cryptocurrency";
     homepage    = https://lolnero.org/;
     license     = licenses.bsd3;
     platforms   = platforms.linux;
