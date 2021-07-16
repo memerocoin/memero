@@ -88,25 +88,25 @@ t_command_server::t_command_server(
   m_command_lookup.set_handler(
       "blockchain"
     , std::bind(&t_command_parser_executor::print_blockchain_info, &m_parser, p::_1)
-    , "blockchain <begin_height> [<end_height>]"
+    , "blockchain <begin height> [<end height>]"
     , "Print the blockchain info in a given blocks range."
     );
   m_command_lookup.set_handler(
       "block"
     , std::bind(&t_command_parser_executor::print_block, &m_parser, p::_1)
-    , "block <block_hash> | <block_height>"
+    , "block <block hash> | <block height>"
     , "Print a given block."
     );
   m_command_lookup.set_handler(
       "tx"
     , std::bind(&t_command_parser_executor::print_transaction, &m_parser, p::_1)
-    , "tx <transaction_hash> [+hex] [+json]"
+    , "tx <transaction hash> [+hex] [+json]"
     , "Print a given transaction."
     );
   m_command_lookup.set_handler(
       "is-spent"
     , std::bind(&t_command_parser_executor::is_key_image_spent, &m_parser, p::_1)
-    , "is-spent <key_image>"
+    , "is-spent <key image>"
     , "Print whether a given key image is in the spent key images set."
     );
   m_command_lookup.set_handler(
@@ -184,13 +184,13 @@ t_command_server::t_command_server(
     m_command_lookup.set_handler(
       "set-out-peers"
     , std::bind(&t_command_parser_executor::out_peers, &m_parser, p::_1)
-    , "set-out-peers <max_number>"
+    , "set-out-peers <max number>"
     , "Set the <max_number> of out peers."
     );
     m_command_lookup.set_handler(
       "set-in-peers"
     , std::bind(&t_command_parser_executor::in_peers, &m_parser, p::_1)
-    , "set-in-peers <max_number>"
+    , "set-in-peers <max number>"
     , "Set the <max_number> of in peers."
     );
     m_command_lookup.set_handler(
@@ -225,13 +225,13 @@ t_command_server::t_command_server(
     m_command_lookup.set_handler(
       "output-histogram"
     , std::bind(&t_command_parser_executor::output_histogram, &m_parser, p::_1)
-    , "output-histogram [@<amount>] <min_count> [<max_count>]"
+    , "output-histogram [@<amount>] <min count> [<max count>]"
     , "Print the output histogram of outputs."
     );
     m_command_lookup.set_handler(
       "coinbase-tx-sum"
     , std::bind(&t_command_parser_executor::print_coinbase_tx_sum, &m_parser, p::_1)
-    , "coinbase-tx-sum <start_height> [<block_count>]"
+    , "coinbase-tx-sum <start height> [<block count>]"
     , "Print the sum of coinbase transactions."
     );
     m_command_lookup.set_handler(
@@ -243,7 +243,7 @@ t_command_server::t_command_server(
     m_command_lookup.set_handler(
       "blockchain-dynamic-stats"
     , std::bind(&t_command_parser_executor::print_blockchain_dynamic_stats, &m_parser, p::_1)
-    , "blockchain-dynamic-stats <last_block_count>"
+    , "blockchain-dynamic-stats <last block count>"
     , "Print the information about current blockchain dynamic state."
     );
     m_command_lookup.set_handler(
@@ -260,7 +260,7 @@ t_command_server::t_command_server(
     m_command_lookup.set_handler(
       "pop-blocks"
     , std::bind(&t_command_parser_executor::pop_blocks, &m_parser, p::_1)
-    , "pop-blocks <nblocks>"
+    , "pop-blocks <number of blocks>"
     , "Remove blocks from end of blockchain"
     );
     m_command_lookup.set_handler(
@@ -271,7 +271,7 @@ t_command_server::t_command_server(
     m_command_lookup.set_handler(
       "flush-cache"
     , std::bind(&t_command_parser_executor::flush_cache, &m_parser, p::_1)
-    , "flush-cache [bad-txs] [bad-blocks]"
+    , "flush-cache [bad txs] [bad blocks]"
     , "Flush the specified cache(s)."
     );
 }
