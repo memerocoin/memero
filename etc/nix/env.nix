@@ -21,7 +21,7 @@ let
     -DCMAKE_C_COMPILER=clang
   '';
 
-  CMakeFlags_Lolnero_Test = CMakeFlags_Lolnero + ''
+  CMakeTestFlags = ''
     -DBUILD_TESTING=ON
   '';
 in
@@ -41,12 +41,12 @@ in
     inherit CMakeCCacheFlags;
     inherit CMakeClangFlags;
 
-    configure = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeCCacheFlags}";
-    configureRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}";
-    configureClang = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}";
-    configureClangRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
-    configureTest = "cmake ${CMakeFlags_Lolnero_Test} ${CMakeDevFlags} ${CMakeCCacheFlags}";
-    configureTestRelease = "cmake ${CMakeFlags_Lolnero_Test} ${CMakeCCacheFlags}";
+    configureGCC = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeCCacheFlags}";
+    configureGCCRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}";
+    configure = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}";
+    configureRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
+    configureTest = configure + " " + CMakeTestFlags;
+    configureTestRelease = configureRelease + " " + CMakeTestFlags;
     build = "make";
     ci = "make Continuous";
     testFilter = "ctest -R";

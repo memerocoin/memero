@@ -1,12 +1,12 @@
 { gcc11Stdenv
 , cmake, git, fetchgit
 , boost175, openssl, readline, libsodium, rapidjson
-, lib, gmock
+, lib, gmock, llvmPackages_12
 }:
 
 let
 
-  stdenv = gcc11Stdenv
+  stdenv = llvmPackages_12.stdenv
 ; lolnero-rev = "v0.9.7.51"
 ; lolnero-sha256 = "1mkmgfgc5m1fcd3z7pc63fz0cpd1l60dyw341c4yr5sy9ciqkrgj"
 ; doCheck = false
