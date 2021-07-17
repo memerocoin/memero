@@ -2116,7 +2116,7 @@ namespace tools
       er.message = "Error: log level not valid";
       return false;
     }
-    mlog_set_log_level(req.level);
+    epee::mlog_set_log_level(req.level);
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------

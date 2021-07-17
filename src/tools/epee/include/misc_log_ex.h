@@ -61,12 +61,11 @@ enum class Level : EnumType {
 };
 } // namespace el
 
-void log_level(const el::Level level, const std::string cat, const std::string_view x);
 
 #define MCLOG_TYPE(level, cat, color, type, x) do { \
     std::ostringstream stream;                                          \
     stream << x;                                                        \
-    log_level(level, cat, std::string_view(stream.str()));              \
+    epee::log_level(level, cat, std::string_view(stream.str()));        \
   } while (0)
 
 #define MCLOG(level, cat, color, x) MCLOG_TYPE(level, cat, color, el::base::DispatchAction::NormalLog, x)
@@ -133,23 +132,12 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
 
 #define LOCAL_ASSERT(expr)
 
-void mlog_set_log_level(int level);
-void mlog_set_log(const std::string x);
-
 namespace epee
 {
-namespace debug
-{
-  inline bool get_set_enable_assert(bool set = false, bool v = false)
-  {
-    static bool e = true;
-    if(set)
-      e = v;
-    return e;
-  }
-}
 
-
+void mlog_set_log_level(int level);
+void mlog_set_log(const std::string x);
+void log_level(const el::Level level, const std::string cat, const std::string_view x);
 
 #define ENDL std::endl
 

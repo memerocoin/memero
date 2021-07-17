@@ -1208,7 +1208,7 @@ bool simple_wallet::set_log(const std::vector<std::string> &args)
         fail_msg_writer() << boost::format(tr("wrong number range, use: %s")) % USAGE_SET_LOG;
         return true;
       }
-      mlog_set_log_level(level);
+      epee::mlog_set_log_level(level);
       success_msg_writer() << "New log level: " << std::to_string(level);
     }
     else

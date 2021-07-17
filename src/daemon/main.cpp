@@ -156,7 +156,7 @@ int main(int argc, char const * argv[])
     // Set log level
     if (!command_line::is_arg_defaulted(vm, daemon_args::arg_log_level))
     {
-      mlog_set_log(command_line::get_arg(vm, daemon_args::arg_log_level));
+      epee::mlog_set_log(command_line::get_arg(vm, daemon_args::arg_log_level));
     }
 
     // after logs initialized

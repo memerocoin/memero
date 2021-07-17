@@ -38,7 +38,8 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "logging"
 
-using namespace epee;
+namespace epee
+{
 
 std::atomic<int> m_log_level = 0;
 
@@ -58,16 +59,13 @@ void mlog_set_log(const std::string x)
 
   if (level >= 0 && level <= 4)
   {
-    mlog_set_log_level(level);
+    epee::mlog_set_log_level(level);
   }
   else
   {
     MERROR("Invalid numerical log level: " << x);
   }
 }
-
-namespace epee
-{
 
 bool is_stdout_a_tty()
 {
@@ -170,8 +168,6 @@ void reset_console_color() {
   std::cout.flush();
 }
 
-}
-
 const std::set<std::string> default_cat = {"global", "logging"};
 std::mutex g_log_mutex;
 
@@ -266,3 +262,5 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     break;
   }
 }
+
+} // epee

@@ -952,7 +952,7 @@ namespace cryptonote
       res.status = "Error: log level not valid";
       return true;
     }
-    mlog_set_log_level(req.level);
+    epee::mlog_set_log_level(req.level);
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }

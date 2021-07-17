@@ -167,7 +167,7 @@ namespace wallet_args
     std::string log_path;
     if (!command_line::is_arg_defaulted(vm, arg_log_level))
     {
-      mlog_set_log(command_line::get_arg(vm, arg_log_level));
+      epee::mlog_set_log(command_line::get_arg(vm, arg_log_level));
     }
 
     if (!notice.empty())
