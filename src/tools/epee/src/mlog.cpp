@@ -35,6 +35,7 @@
 #include <filesystem>
 #include <set>
 #include <atomic>
+#include <syncstream>
 
 #include <boost/algorithm/string.hpp>
 
@@ -289,7 +290,6 @@ void reset_console_color() {
 // SPDLOG_LEVEL_OFF
 
 const std::set<std::string> default_cat = {"global", "logging"};
-std::mutex g_log_mutex;
 
 void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
   // auto _spd_log_handle = spdlog::get(cat);
@@ -342,8 +342,8 @@ void log_level_map(const el::Level level, const std::string cat, const std::stri
   auto now = std::chrono::system_clock::now();
   auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-  std::lock_guard<std::mutex> guard(g_log_mutex);
-  std::cout << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %X")
+  std::osyncstream synced_out(std::cout);
+  synced_out << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %X")
             << " " << log_header << " " << cat_str << x << std::endl;
 }
 
