@@ -255,7 +255,6 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
       log_level_map(level, cat, x);
       break;
     default:
-      log_level_map(level, cat, x);
       break;
     }
   default:
