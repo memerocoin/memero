@@ -1209,14 +1209,17 @@ bool simple_wallet::set_log(const std::vector<std::string> &args)
         return true;
       }
       mlog_set_log_level(level);
+      success_msg_writer() << "New log level: " << std::to_string(level);
     }
     else
     {
-      mlog_set_log(args[0].c_str());
+      fail_msg_writer() << boost::format(tr("wrong number, use: %s")) % USAGE_SET_LOG;
     }
   }
+  else {
+    fail_msg_writer() << boost::format(tr("no argument, use: %s")) % USAGE_SET_LOG;
+  }
 
-  success_msg_writer() << "New log categories: " << mlog_get_categories();
   return true;
 }
 //----------------------------------------------------------------------------------------------------

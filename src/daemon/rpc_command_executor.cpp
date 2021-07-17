@@ -733,34 +733,6 @@ bool t_rpc_command_executor::set_log_level(int8_t level) {
   return true;
 }
 
-bool t_rpc_command_executor::set_log_categories(const std::string &categories) {
-  cryptonote::COMMAND_RPC_SET_LOG_CATEGORIES::request req;
-  cryptonote::COMMAND_RPC_SET_LOG_CATEGORIES::response res;
-  req.categories = categories;
-
-  std::string fail_message = "Unsuccessful";
-
-  if (m_is_rpc)
-  {
-    if (!m_rpc_client->rpc_request(req, res, "/set_log_categories", fail_message.c_str()))
-    {
-      return true;
-    }
-  }
-  else
-  {
-    if (!m_rpc_server->on_set_log_categories(req, res) || res.status != CORE_RPC_STATUS_OK)
-    {
-      tools::fail_msg_writer() << make_error(fail_message, res.status);
-      return true;
-    }
-  }
-
-  tools::success_msg_writer() << "Log categories are now " << res.categories;
-
-  return true;
-}
-
 bool t_rpc_command_executor::print_height() {
   cryptonote::COMMAND_RPC_GET_HEIGHT::request req;
   cryptonote::COMMAND_RPC_GET_HEIGHT::response res;

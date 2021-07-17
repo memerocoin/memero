@@ -42,7 +42,6 @@
 namespace tools
 {
   std::string get_default_data_dir();
-  std::string get_default_log_file();
 
   /*! \brief creates directories for a path
    *

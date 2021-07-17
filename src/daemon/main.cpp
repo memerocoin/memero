@@ -153,15 +153,10 @@ int main(int argc, char const * argv[])
 
     po::notify(vm);
 
-    fs::path log_file_path = tools::get_default_log_file();
-    if (!log_file_path.has_parent_path())
-      log_file_path = fs::absolute(log_file_path / relative_path_base);
-    mlog_configure(log_file_path.string(), true);
-
     // Set log level
     if (!command_line::is_arg_defaulted(vm, daemon_args::arg_log_level))
     {
-      mlog_set_log(command_line::get_arg(vm, daemon_args::arg_log_level).c_str());
+      mlog_set_log(command_line::get_arg(vm, daemon_args::arg_log_level));
     }
 
     // after logs initialized

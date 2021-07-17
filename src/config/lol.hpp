@@ -116,9 +116,4 @@ namespace config
 
     constexpr auto rpc_timeout = std::chrono::minutes(1);
   }
-
-  namespace def
-  {
-    constexpr std::string_view log_path = "/dev/null";
-  }
 }

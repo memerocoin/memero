@@ -1399,29 +1399,6 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_SET_LOG_CATEGORIES
-  {
-    struct request_t
-    {
-      std::string categories;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(categories)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      std::string categories;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(categories)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_ESTIMATE_TX_SIZE_AND_WEIGHT
   {
     struct request_t

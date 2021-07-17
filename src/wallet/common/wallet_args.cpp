@@ -89,7 +89,7 @@ namespace wallet_args
     namespace bf = std::filesystem;
     namespace po = boost::program_options;
 
-    const command_line::arg_descriptor<std::string> arg_log_level = {"log-level", "0-4 or categories", ""};
+    const command_line::arg_descriptor<std::string> arg_log_level = {"log-level", "0-4", ""};
     const command_line::arg_descriptor<uint32_t> arg_max_concurrency = {"max-concurrency", wallet_args::tr("Max number of threads to use for a parallel job"), DEFAULT_MAX_CONCURRENCY};
     const command_line::arg_descriptor<std::string> arg_config_file = {
       "config-file"
@@ -165,15 +165,9 @@ namespace wallet_args
       return {std::move(vm), should_terminate};
 
     std::string log_path;
-    log_path = mlog_get_default_log_path(default_log_name);
-    mlog_configure(log_path, log_to_console);
     if (!command_line::is_arg_defaulted(vm, arg_log_level))
     {
-      mlog_set_log(command_line::get_arg(vm, arg_log_level).c_str());
-    }
-    else if (!log_to_console)
-    {
-      mlog_set_categories("");
+      mlog_set_log(command_line::get_arg(vm, arg_log_level));
     }
 
     if (!notice.empty())
@@ -190,11 +184,6 @@ namespace wallet_args
     {
       const char *logs = getenv("MONERO_LOGS");
       MINFO("Setting log levels = " << (logs ? logs : "<default>"));
-    }
-
-    MINFO(wallet_args::tr("Logging to: ") << log_path);
-    if (log_path != std::string(config::def::log_path)) {
-      Print(print) << boost::format(wallet_args::tr("Logging to %s")) % log_path;
     }
 
     return {std::move(vm), should_terminate};

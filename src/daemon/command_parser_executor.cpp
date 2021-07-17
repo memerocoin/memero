@@ -188,7 +188,8 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
 
   if (args.empty())
   {
-    return m_executor.set_log_categories("+");
+    std::cout << "Invalid syntax: no argument, use: set_log <log_level_number_0-4>." << std::endl;
+    return true;
   }
 
   uint16_t l = 0;
@@ -196,15 +197,14 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
   {
     if(4 < l)
     {
-      std::cout << "Invalid syntax: Wrong number range, use: set_log <log_level_number_0-4>. For more details, use the help command." << std::endl;
+      std::cout << "Invalid syntax: Wrong number range, use: set_log <log_level_number_0-4>." << std::endl;
       return true;
     }
     return m_executor.set_log_level(l);
   }
-  else
-  {
-    return m_executor.set_log_categories(args.front());
-  }
+
+  std::cout << "Invalid syntax: Wrong number, use: set_log <log_level_number_0-4>." << std::endl;
+  return true;
 }
 
 bool t_command_parser_executor::print_height(const std::vector<std::string>& args)

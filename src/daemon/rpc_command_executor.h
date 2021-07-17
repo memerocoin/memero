@@ -84,8 +84,6 @@ public:
 
   bool set_log_level(int8_t level);
 
-  bool set_log_categories(const std::string &categories);
-
   bool print_height();
 
   bool print_block_by_hash(crypto::hash block_hash, bool include_hex);

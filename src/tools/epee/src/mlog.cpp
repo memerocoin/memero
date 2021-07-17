@@ -39,136 +39,31 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "logging"
 
-#define MLOG_BASE_FORMAT "%datetime{%Y-%M-%d %H:%m:%s.%g}\t%thread\t%level\t%logger\t%loc\t%msg"
-
-// #define MLOG_LOG(x) CINFO(el::base::Writer,el::base::DispatchAction::FileOnlyLog,MONERO_DEFAULT_LOG_CATEGORY) << x
-
 using namespace epee;
-
-std::string mlog_get_default_log_path(const char *default_filename)
-{
-  return (std::filesystem::path(config::def::log_path)).string();
-}
-
-static const char *get_default_categories(int level)
-{
-  const char *categories = "";
-  switch (level)
-  {
-    case 0:
-      categories = "*:WARNING,net:FATAL,net.http:FATAL,net.ssl:FATAL,net.p2p:FATAL,net.cn:FATAL,daemon.rpc:FATAL,global:INFO,verify:FATAL,serialization:FATAL,daemon.rpc.payment:ERROR,stacktrace:INFO,logging:INFO,msgwriter:INFO";
-      break;
-    case 1:
-      categories = "*:INFO,global:INFO,stacktrace:INFO,logging:INFO,msgwriter:INFO,perf.*:DEBUG";
-      break;
-    case 2:
-      categories = "*:DEBUG";
-      break;
-    case 3:
-      categories = "*:TRACE,*.dump:DEBUG";
-      break;
-    case 4:
-      categories = "*:TRACE";
-      break;
-    default:
-      break;
-  }
-  return categories;
-}
-
-void mlog_configure(const std::string &filename_base, bool console)
-{
-  const char *monero_log = getenv("MONERO_LOGS");
-  if (!monero_log)
-  {
-    monero_log = get_default_categories(0);
-  }
-  mlog_set_log(monero_log);
-}
-
-void mlog_set_categories(const char *categories)
-{
-  std::string new_categories;
-  if (*categories)
-  {
-    if (*categories == '+')
-    {
-      ++categories;
-      new_categories = mlog_get_categories();
-      if (*categories)
-      {
-        if (!new_categories.empty())
-          new_categories += ",";
-        new_categories += categories;
-      }
-    }
-    else if (*categories == '-')
-    {
-      ++categories;
-      new_categories = mlog_get_categories();
-      std::vector<std::string> single_categories;
-      boost::split(single_categories, categories, boost::is_any_of(","), boost::token_compress_on);
-      for (const std::string &s: single_categories)
-      {
-        size_t pos = new_categories.find(s);
-        if (pos != std::string::npos)
-          new_categories = new_categories.erase(pos, s.size());
-      }
-    }
-    else
-    {
-      new_categories = categories;
-    }
-  }
-  // el::Loggers::setCategories(new_categories.c_str(), true);
-  // MLOG_LOG("New log categories: " << el::Loggers::getCategories());
-}
-
-std::string mlog_get_categories()
-{
-  // return el::Loggers::getCategories();
-  return "";
-}
 
 std::atomic<int> m_log_level = 0;
 
 // maps epee style log level to new logging system
 void mlog_set_log_level(int level)
 {
-  const char *categories = get_default_categories(level);
-  mlog_set_categories(categories);
   m_log_level = level;
 }
 
-void mlog_set_log(const char *log)
+void mlog_set_log(const std::string x)
 {
-  long level;
-  char *ptr = NULL;
+  long level = -1;
+  try {
+    level = std::stoi(x);
+  }
+  catch (...) {}
 
-  if (!*log)
-  {
-    mlog_set_categories(log);
-    return;
-  }
-  level = strtol(log, &ptr, 10);
-  if (ptr && *ptr)
-  {
-    // we can have a default level, eg, 2,foo:ERROR
-    if (*ptr == ',') {
-      std::string new_categories = std::string(get_default_categories(level)) + ptr;
-      mlog_set_categories(new_categories.c_str());
-    }
-    else {
-      mlog_set_categories(log);
-    }
-  }
-  else if (level >= 0 && level <= 4)
+  if (level >= 0 && level <= 4)
   {
     mlog_set_log_level(level);
   }
   else
   {
-    MERROR("Invalid numerical log level: " << log);
+    MERROR("Invalid numerical log level: " << x);
   }
 }
 

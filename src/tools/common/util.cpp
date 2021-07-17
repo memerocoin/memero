@@ -65,11 +65,6 @@ namespace tools
     return config_folder;
   }
 
-  std::string get_default_log_file()
-  {
-    return (std::filesystem::path(config::def::log_path)).string();
-  }
-
   bool create_directories_if_necessary(const std::string& path)
   {
     namespace fs = std::filesystem;
@@ -120,8 +115,6 @@ namespace tools
 
   bool on_startup()
   {
-    mlog_configure("", true);
-
     setup_crash_dump();
     OPENSSL_init_ssl(0, NULL);
 
