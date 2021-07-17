@@ -130,8 +130,6 @@ enum class Level : EnumType {
 
 #define MLOG_SET_THREAD_NAME(x)
 
-#define LOCAL_ASSERT(expr)
-
 namespace epee
 {
 
@@ -163,19 +161,41 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
 
 
 #define LOG_AND_THROW(message) {LOG_ERROR(message); std::stringstream ss; ss << message; throw std::runtime_error(ss.str());}
-#define ASSERT_OR_LOG_THROW(expr, message) do {if(!(expr)) LOG_AND_THROW(message);} while(0)
+
+#define ASSERT_OR_LOG_THROW(expr, message)      \
+  do {                                          \
+    if(!(expr))                                 \
+      LOG_AND_THROW(message);                   \
+  } while(0)
 
 
 #ifndef ASSERT_OR_RETURN
-#define ASSERT_OR_RETURN(expr, fail_ret_val)   do{if(!(expr)){LOCAL_ASSERT(expr); return fail_ret_val;};}while(0)
+#define ASSERT_OR_RETURN(expr, fail_ret_val)    \
+  do {                                          \
+    if(!(expr)) {                               \
+      return fail_ret_val;                      \
+    };                                          \
+  } while(0)
 #endif
 
 #ifndef ASSERT_OR_LOG_RETURN
-#define ASSERT_OR_LOG_RETURN(expr, fail_ret_val, message)   do{if(!(expr)) {LOG_ERROR(message); return fail_ret_val;};}while(0)
+#define ASSERT_OR_LOG_RETURN(expr, fail_ret_val, message) \
+  do {                                                    \
+    if(!(expr)) {                                         \
+      LOG_ERROR(message);                                 \
+      return fail_ret_val;                                \
+    };                                                    \
+  } while(0)
 #endif
 
 #ifndef CHECK_OR_LOG_RETURN_LOGLEVEL
-#define CHECK_OR_LOG_RETURN_LOGLEVEL(expr, fail_ret_val, l, message)   do{if(!(expr)) {LOG_PRINT_L##l(message); /*LOCAL_ASSERT(expr);*/ return fail_ret_val;};}while(0)
+#define CHECK_OR_LOG_RETURN_LOGLEVEL(expr, fail_ret_val, l, message)  \
+  do {                                                                \
+    if(!(expr)) {                                                     \
+      LOG_PRINT_L##l(message);                                        \
+      return fail_ret_val;                                            \
+    };                                                                \
+  } while(0)
 #endif
 
 #ifndef CHECK_OR_LOG_RETURN
@@ -188,7 +208,13 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
 
 
 #ifndef ASSERT_OR_LOG
-#define ASSERT_OR_LOG(expr, message)   do{if(!(expr)) {LOG_ERROR(message); return;};}while(0)
+#define ASSERT_OR_LOG(expr, message)            \
+  do {                                          \
+    if(!(expr)) {                               \
+      LOG_ERROR(message);                       \
+      return;                                   \
+    };                                          \
+  } while(0)
 #endif
 
 enum console_colors
