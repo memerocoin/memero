@@ -395,7 +395,7 @@ namespace cryptonote
         const bool one_txid =
           (kei_image_set.empty() || (kei_image_set.size() == 1 && *(kei_image_set.cbegin()) == id));
         ASSERT_OR_LOG_RETURN(one_txid, false, "internal error: tx_relay=" << unsigned(tx_relay)
-                                           << ", kei_image_set.size()=" << kei_image_set.size() << ENDL << "txin.k_image=" << txin.k_image << ENDL
+                                           << ", kei_image_set.size()=" << kei_image_set.size() << std::endl << "txin.k_image=" << txin.k_image << std::endl
                                            << "tx_id=" << id);
       }
 
@@ -420,14 +420,14 @@ namespace cryptonote
     {
       CHECKED_GET_SPECIFIC_VARIANT(vi, const txin_to_key, txin, false);
       auto it = m_spent_key_images.find(txin.k_image);
-      ASSERT_OR_LOG_RETURN(it != m_spent_key_images.end(), false, "failed to find transaction input in key images. img=" << txin.k_image << ENDL
+      ASSERT_OR_LOG_RETURN(it != m_spent_key_images.end(), false, "failed to find transaction input in key images. img=" << txin.k_image << std::endl
                                     << "transaction id = " << actual_hash);
       std::unordered_set<crypto::hash>& key_image_set =  it->second;
-      ASSERT_OR_LOG_RETURN(key_image_set.size(), false, "empty key_image set, img=" << txin.k_image << ENDL
+      ASSERT_OR_LOG_RETURN(key_image_set.size(), false, "empty key_image set, img=" << txin.k_image << std::endl
         << "transaction id = " << actual_hash);
 
       auto it_in_set = key_image_set.find(actual_hash);
-      ASSERT_OR_LOG_RETURN(it_in_set != key_image_set.end(), false, "transaction id not found in key_image set, img=" << txin.k_image << ENDL
+      ASSERT_OR_LOG_RETURN(it_in_set != key_image_set.end(), false, "transaction id not found in key_image set, img=" << txin.k_image << std::endl
         << "transaction id = " << actual_hash);
       key_image_set.erase(it_in_set);
       if(!key_image_set.size())

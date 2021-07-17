@@ -789,7 +789,7 @@ bool t_rpc_command_executor::print_block_by_hash(crypto::hash block_hash, bool i
   if (include_hex)
     tools::success_msg_writer() << res.blob << std::endl;
   print_block_header(res.block_header);
-  tools::success_msg_writer() << res.json << ENDL;
+  tools::success_msg_writer() << res.json << std::endl;
 
   return true;
 }
@@ -823,7 +823,7 @@ bool t_rpc_command_executor::print_block_by_height(uint64_t height, bool include
   if (include_hex)
     tools::success_msg_writer() << res.blob << std::endl;
   print_block_header(res.block_header);
-  tools::success_msg_writer() << res.json << ENDL;
+  tools::success_msg_writer() << res.json << std::endl;
 
   return true;
 }

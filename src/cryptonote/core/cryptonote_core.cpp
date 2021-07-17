@@ -1173,9 +1173,9 @@ namespace cryptonote
         main_message = "The daemon is running offline and will not attempt to sync to the Monero network.";
       else
         main_message = "The daemon will start synchronizing with the network. This may take a long time to complete.";
-      MGINFO_YELLOW(ENDL << "**********************************************************************" << ENDL
-        << main_message << ENDL
-        << "**********************************************************************" << ENDL);
+      MGINFO_YELLOW(std::endl << "**********************************************************************" << std::endl
+        << main_message << std::endl
+        << "**********************************************************************" << std::endl);
       m_starter_message_showed = true;
     }
 

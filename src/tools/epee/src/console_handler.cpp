@@ -242,7 +242,7 @@ eof:
 
     for(auto& x:m_command_handlers)
     {
-      ss << x.second.second.first << ENDL;
+      ss << x.second.second.first << std::endl;
     }
     return ss.str();
   }

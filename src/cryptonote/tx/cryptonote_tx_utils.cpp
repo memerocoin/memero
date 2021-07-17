@@ -199,8 +199,8 @@ namespace cryptonote
       //check that derivated key is equal with real output key (if non multisig)
       if(!(in_ephemeral.pub == src_entr.outputs[src_entr.real_output].second.dest) )
       {
-        LOG_ERROR("derived public key mismatch with output public key at index " << idx << ", real out " << src_entr.real_output << "! "<< ENDL << "derived_key:"
-          << epee::string_tools::pod_to_hex(in_ephemeral.pub) << ENDL << "real output_public_key:"
+        LOG_ERROR("derived public key mismatch with output public key at index " << idx << ", real out " << src_entr.real_output << "! "<< std::endl << "derived_key:"
+          << epee::string_tools::pod_to_hex(in_ephemeral.pub) << std::endl << "real output_public_key:"
           << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.dest) );
         LOG_ERROR("amount " << src_entr.amount << ", rct " << src_entr.rct);
         LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key << ", real_output_in_tx_index " << src_entr.real_output_in_tx_index);
@@ -389,7 +389,7 @@ namespace cryptonote
 
       ASSERT_OR_LOG_RETURN(tx.vout.size() == outSk.size(), false, "outSk size does not match vout");
 
-      MCINFO("construct_tx", "transaction_created: " << get_transaction_hash(tx) << ENDL << obj_to_json_str(tx) << ENDL);
+      MCINFO("construct_tx", "transaction_created: " << get_transaction_hash(tx) << std::endl << obj_to_json_str(tx) << std::endl);
     }
 
     tx.invalidate_hashes();

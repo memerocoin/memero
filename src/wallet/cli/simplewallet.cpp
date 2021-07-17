@@ -490,11 +490,11 @@ std::string join_priority_strings(const char *delimiter)
 std::string simple_wallet::get_commands_str()
 {
   std::stringstream ss;
-  ss << sw::tr("Commands: ") << ENDL;
+  ss << sw::tr("Commands: ") << std::endl;
   std::string usage = m_cmd_binder.get_usage();
   boost::replace_all(usage, "\n", "\n  ");
   usage.insert(0, "  ");
-  ss << usage << ENDL;
+  ss << usage << std::endl;
   return ss.str();
 }
 
@@ -511,10 +511,10 @@ std::string simple_wallet::get_command_usage(const std::vector<std::string> &arg
     std::string usage = documentation.second.empty() ? args.front() : documentation.first;
     std::string description = documentation.second.empty() ? documentation.first : documentation.second;
     usage.insert(0, "  ");
-    ss << sw::tr("Command usage: ") << ENDL << usage << ENDL << ENDL;
+    ss << sw::tr("Command usage: ") << std::endl << usage << std::endl << std::endl;
     boost::replace_all(description, "\n", "\n  ");
     description.insert(0, "  ");
-    ss << sw::tr("Command description: ") << ENDL << description << ENDL;
+    ss << sw::tr("Command description: ") << std::endl << description << std::endl;
   }
   return ss.str();
 }
@@ -2407,7 +2407,7 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
         << (are_keys_from_same_tx ? sw::tr("the same transaction") : sw::tr("blocks that are temporally very close"))
         << sw::tr(", which can break the anonymity of ring signatures. Make sure this is intentional!");
     }
-    ostr << ENDL;
+    ostr << std::endl;
   }
   return true;
 }
@@ -2437,7 +2437,7 @@ bool simple_wallet::prompt_if_old(const std::vector<wallet::logic::type::tx::pen
   {
     std::stringstream prompt;
     prompt << sw::tr("Transaction spends more than one very old output. Privacy would be better if they were sent separately.");
-    prompt << ENDL << sw::tr("Spend them now anyway?");
+    prompt << std::endl << sw::tr("Spend them now anyway?");
     std::string accepted = input_line(prompt.str(), true);
     if (std::cin.eof())
       return false;
@@ -2686,7 +2686,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
             print_money(total_fee);
         }
         if (dust_in_fee != 0) prompt << boost::format(tr(", of which %s is dust from change")) % print_money(dust_in_fee);
-        if (dust_not_in_fee != 0)  prompt << sw::tr(".") << ENDL << boost::format(tr("A total of %s from dust change will be sent to dust address"))
+        if (dust_not_in_fee != 0)  prompt << sw::tr(".") << std::endl << boost::format(tr("A total of %s from dust change will be sent to dust address"))
                                                    % print_money(dust_not_in_fee);
         if (transfer_type == TransferLocked)
         {
@@ -2708,7 +2708,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
             }
           }
         }
-        prompt << ENDL << sw::tr("Is this okay?");
+        prompt << std::endl << sw::tr("Is this okay?");
         std::string accepted = input_line(prompt.str(), true);
         if (std::cin.eof())
           return true;
@@ -4101,7 +4101,7 @@ void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_
     else
     {
       m_wallet->commit_tx(ptx);
-      success_msg_writer(true) << sw::tr("Transaction successfully submitted, transaction ") << txid << ENDL
+      success_msg_writer(true) << sw::tr("Transaction successfully submitted, transaction ") << txid << std::endl
       << sw::tr("You can check its status by using the `show` command.");
     }
     // if no exception, remove element from vector

@@ -3676,10 +3676,10 @@ void wallet2::commit_tx(pending_tx& ptx)
   }
 
   //fee includes dust if dust policy specified it.
-  LOG_PRINT_L1("Transaction successfully sent. <" << txid << ">" << ENDL
-            << "Commission: " << print_money(ptx.fee) << " (dust sent to dust addr: " << print_money((ptx.dust_added_to_fee ? 0 : ptx.dust)) << ")" << ENDL
-            << "Balance: " << print_money(balance(ptx.construction_data.subaddr_account, false)) << ENDL
-            << "Unlocked: " << print_money(unlocked_balance(ptx.construction_data.subaddr_account, false)) << ENDL
+  LOG_PRINT_L1("Transaction successfully sent. <" << txid << ">" << std::endl
+            << "Commission: " << print_money(ptx.fee) << " (dust sent to dust addr: " << print_money((ptx.dust_added_to_fee ? 0 : ptx.dust)) << ")" << std::endl
+            << "Balance: " << print_money(balance(ptx.construction_data.subaddr_account, false)) << std::endl
+            << "Unlocked: " << print_money(unlocked_balance(ptx.construction_data.subaddr_account, false)) << std::endl
             << "Please, wait for confirmation for your balance to be unlocked.");
 }
 

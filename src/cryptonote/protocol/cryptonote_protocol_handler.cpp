@@ -168,7 +168,7 @@ namespace cryptonote
       << std::setw(14) << "Down(now)"
       << std::setw(10) << "Up (kB/s)"
       << std::setw(13) << "Up(now)"
-      << ENDL;
+      << std::endl;
 
     m_p2p->for_each_connection([&](const connection_context& cntxt, nodetool::peerid_type peer_id, uint32_t support_flags)
     {
@@ -187,7 +187,7 @@ namespace cryptonote
         << std::setw(13) << std::fixed << cntxt.m_current_speed_up / 1024
         << (local_ip ? "[LAN]" : "")
         << std::left << (cntxt.m_remote_address.is_loopback() ? "[LOCALHOST]" : "") // 127.0.0.1
-        << ENDL;
+        << std::endl;
 
       if (connection_time > 1)
       {
@@ -200,14 +200,14 @@ namespace cryptonote
 
       return true;
     });
-    ss << ENDL
+    ss << std::endl
       << std::setw(125) << " "
       << std::setw(12) << down_sum
       << std::setw(14) << down_curr_sum
       << std::setw(10) << up_sum
       << std::setw(13) << up_curr_sum
-      << ENDL;
-    LOG_PRINT_L0("Connections: " << ENDL << ss.str());
+      << std::endl;
+    LOG_PRINT_L0("Connections: " << std::endl << ss.str());
   }
   //------------------------------------------------------------------------------------------------------------------------
   // Returns a list of connection_info objects describing each open p2p connection
@@ -321,7 +321,7 @@ namespace cryptonote
     MCLOG(is_inital ? el::Level::Info : el::Level::Debug, "global", el::Color::Yellow, context <<  "Sync data returned a new top block candidate: " << m_core.get_current_blockchain_height() << " -> " << hshd.current_height
       << " [Your node is " << abs_diff << " blocks (" << tools::get_human_readable_timespan(diff_v2 * DIFFICULTY_TARGET_IN_SECONDS) << ") "
       << (0 <= diff ? std::string("behind") : std::string("ahead"))
-      << "] " << ENDL << "SYNCHRONIZATION started");
+      << "] " << std::endl << "SYNCHRONIZATION started");
       if (hshd.current_height >= m_core.get_current_blockchain_height() + 5) // don't switch to unsafe mode just for a few blocks
       {
         m_core.safesyncmode(false);
@@ -1979,10 +1979,10 @@ skip:
             << tools::get_human_readable_timespan(synced_seconds) << " (" << blocks_per_second << " blocks per second)");
         }
       }
-      MGINFO_YELLOW(ENDL << "**********************************************************************" << ENDL
-        << "You are now synchronized with the network. You may now start lolnero." << ENDL
-        << ENDL
-        << "Use the \"help\" command to see the list of available commands." << ENDL
+      MGINFO_YELLOW(std::endl << "**********************************************************************" << std::endl
+        << "You are now synchronized with the network. You may now start lolnero." << std::endl
+        << std::endl
+        << "Use the \"help\" command to see the list of available commands." << std::endl
         << "**********************************************************************");
       m_core.on_synchronized();
     }

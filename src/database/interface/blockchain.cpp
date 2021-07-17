@@ -337,23 +337,23 @@ void BlockchainDB::reset_stats()
 
 void BlockchainDB::show_stats()
 {
-  LOG_PRINT_L1(ENDL
+  LOG_PRINT_L1(std::endl
     << "*********************************"
-    << ENDL
+    << std::endl
     << "num_calls: " << num_calls
-    << ENDL
+    << std::endl
     << "time_blk_hash: " << time_blk_hash << "ms"
-    << ENDL
+    << std::endl
     << "time_tx_exists: " << time_tx_exists << "ms"
-    << ENDL
+    << std::endl
     << "time_add_block1: " << time_add_block1 << "ms"
-    << ENDL
+    << std::endl
     << "time_add_transaction: " << time_add_transaction << "ms"
-    << ENDL
+    << std::endl
     << "time_commit1: " << time_commit1 << "ms"
-    << ENDL
+    << std::endl
     << "*********************************"
-    << ENDL
+    << std::endl
   );
 }
 
