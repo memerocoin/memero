@@ -50,7 +50,7 @@ void mlog_set_log_level(int level)
 
 void mlog_set_log(const std::string x)
 {
-  long level = -1;
+  int level = -1;
   try {
     level = std::stoi(x);
   }
