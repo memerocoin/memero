@@ -7,8 +7,8 @@
 let
 
   stdenv = gcc11Stdenv
-; lolnero-rev = "v0.9.7.49"
-; lolnero-sha256 = "1k4mlgbqn0dkdmvaiadplqh8ycypl06pd8faqp98my7nbv9gybzj"
+; lolnero-rev = "v0.9.7.51"
+; lolnero-sha256 = "1mkmgfgc5m1fcd3z7pc63fz0cpd1l60dyw341c4yr5sy9ciqkrgj"
 ; doCheck = false
 
 ; in
