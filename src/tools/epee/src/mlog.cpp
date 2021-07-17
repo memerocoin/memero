@@ -213,6 +213,7 @@ void log_level_map(const el::Level level, const std::string cat, const std::stri
 void log_level(const el::Level level, const std::string cat, const std::string_view x) {
   if (level == el::Level::Fatal) {
     log_level_map(level, cat, x);
+    return;
   }
 
   switch (m_log_level) {
