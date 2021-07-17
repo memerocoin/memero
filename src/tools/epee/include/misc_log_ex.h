@@ -62,74 +62,6 @@ enum class Level : EnumType {
 } // namespace el
 
 
-#define MCLOG_TYPE(level, cat, color, type, x) do { \
-    std::ostringstream stream;                                          \
-    stream << x;                                                        \
-    epee::log_level(level, cat, std::string_view(stream.str()));        \
-  } while (0)
-
-#define MCLOG(level, cat, color, x) MCLOG_TYPE(level, cat, color, el::base::DispatchAction::NormalLog, x)
-#define MCLOG_FILE(level, cat, x) MCLOG_TYPE(level, cat, el::Color::Default, el::base::DispatchAction::FileOnlyLog, x)
-
-#define MCFATAL(cat,x) MCLOG(el::Level::Fatal,cat, el::Color::Default, x)
-#define MCERROR(cat,x) MCLOG(el::Level::Error,cat, el::Color::Default, x)
-#define MCWARNING(cat,x) MCLOG(el::Level::Warning,cat, el::Color::Default, x)
-#define MCINFO(cat,x) MCLOG(el::Level::Info,cat, el::Color::Default, x)
-#define MCDEBUG(cat,x) MCLOG(el::Level::Debug,cat, el::Color::Default, x)
-#define MCTRACE(cat,x) MCLOG(el::Level::Trace,cat, el::Color::Default, x)
-
-#define MCLOG_COLOR(level,cat,color,x) MCLOG(level,cat,color,x)
-#define MCLOG_RED(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Red,x)
-#define MCLOG_GREEN(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Green,x)
-#define MCLOG_YELLOW(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Yellow,x)
-#define MCLOG_BLUE(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Blue,x)
-#define MCLOG_MAGENTA(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Magenta,x)
-#define MCLOG_CYAN(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Cyan,x)
-
-#define MLOG_RED(level,x) MCLOG_RED(level,MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MLOG_GREEN(level,x) MCLOG_GREEN(level,MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MLOG_YELLOW(level,x) MCLOG_YELLOW(level,MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MLOG_BLUE(level,x) MCLOG_BLUE(level,MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MLOG_MAGENTA(level,x) MCLOG_MAGENTA(level,MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MLOG_CYAN(level,x) MCLOG_CYAN(level,MONERO_DEFAULT_LOG_CATEGORY,x)
-
-#define MFATAL(x) MCFATAL(MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MERROR(x) MCERROR(MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MWARNING(x) MCWARNING(MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MINFO(x) MCINFO(MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MDEBUG(x) MCDEBUG(MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MTRACE(x) MCTRACE(MONERO_DEFAULT_LOG_CATEGORY,x)
-#define MLOG(level,x) MCLOG(level,MONERO_DEFAULT_LOG_CATEGORY,el::Color::Default,x)
-
-#define MGINFO(x) MCINFO("global",x)
-#define MGINFO_RED(x) MCLOG_RED(el::Level::Info, "global",x)
-#define MGINFO_GREEN(x) MCLOG_GREEN(el::Level::Info, "global",x)
-#define MGINFO_YELLOW(x) MCLOG_YELLOW(el::Level::Info, "global",x)
-#define MGINFO_BLUE(x) MCLOG_BLUE(el::Level::Info, "global",x)
-#define MGINFO_MAGENTA(x) MCLOG_MAGENTA(el::Level::Info, "global",x)
-#define MGINFO_CYAN(x) MCLOG_CYAN(el::Level::Info, "global",x)
-
-
-
-#define LOG_ERROR(x) MERROR(x)
-#define LOG_PRINT_L0(x) MWARNING(x)
-#define LOG_PRINT_L1(x) MINFO(x)
-#define LOG_PRINT_L2(x) MDEBUG(x)
-#define LOG_PRINT_L3(x) MTRACE(x)
-#define LOG_PRINT_L4(x) MTRACE(x)
-
-#define _dbg3(x) MTRACE(x)
-#define _dbg2(x) MDEBUG(x)
-#define _dbg1(x) MDEBUG(x)
-#define _info(x) MINFO(x)
-#define _note(x) MDEBUG(x)
-#define _fact(x) MDEBUG(x)
-#define _mark(x) MDEBUG(x)
-#define _warn(x) MWARNING(x)
-#define _erro(x) MERROR(x)
-
-#define MLOG_SET_THREAD_NAME(x)
-
 namespace epee
 {
 
@@ -137,7 +69,21 @@ void mlog_set_log_level(int level);
 void mlog_set_log(const std::string x);
 void log_level(const el::Level level, const std::string cat, const std::string_view x);
 
-#define ENDL std::endl
+enum console_colors
+{
+  console_color_default,
+  console_color_white,
+  console_color_red,
+  console_color_green,
+  console_color_blue,
+  console_color_cyan,
+  console_color_magenta,
+  console_color_yellow
+};
+
+bool is_stdout_a_tty();
+void set_console_color(int color, bool bright);
+void reset_console_color();
 
 #define TRY_ENTRY()   try {
 #define CATCH_ENTRY(location, return_val) } \
@@ -217,21 +163,72 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
   } while(0)
 #endif
 
-enum console_colors
-{
-  console_color_default,
-  console_color_white,
-  console_color_red,
-  console_color_green,
-  console_color_blue,
-  console_color_cyan,
-  console_color_magenta,
-  console_color_yellow
-};
+} // epee
 
-bool is_stdout_a_tty();
-void set_console_color(int color, bool bright);
-void reset_console_color();
+#define MCLOG_TYPE(level, cat, color, type, x) do { \
+    std::ostringstream stream;                                          \
+    stream << x;                                                        \
+    epee::log_level(level, cat, std::string_view(stream.str()));        \
+  } while (0)
 
-}
+#define MCLOG(level, cat, color, x) MCLOG_TYPE(level, cat, color, el::base::DispatchAction::NormalLog, x)
+#define MCLOG_FILE(level, cat, x) MCLOG_TYPE(level, cat, el::Color::Default, el::base::DispatchAction::FileOnlyLog, x)
 
+#define MCFATAL(cat,x) MCLOG(el::Level::Fatal,cat, el::Color::Default, x)
+#define MCERROR(cat,x) MCLOG(el::Level::Error,cat, el::Color::Default, x)
+#define MCWARNING(cat,x) MCLOG(el::Level::Warning,cat, el::Color::Default, x)
+#define MCINFO(cat,x) MCLOG(el::Level::Info,cat, el::Color::Default, x)
+#define MCDEBUG(cat,x) MCLOG(el::Level::Debug,cat, el::Color::Default, x)
+#define MCTRACE(cat,x) MCLOG(el::Level::Trace,cat, el::Color::Default, x)
+
+#define MCLOG_COLOR(level,cat,color,x) MCLOG(level,cat,color,x)
+#define MCLOG_RED(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Red,x)
+#define MCLOG_GREEN(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Green,x)
+#define MCLOG_YELLOW(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Yellow,x)
+#define MCLOG_BLUE(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Blue,x)
+#define MCLOG_MAGENTA(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Magenta,x)
+#define MCLOG_CYAN(level,cat,x) MCLOG_COLOR(level,cat,el::Color::Cyan,x)
+
+#define MLOG_RED(level,x) MCLOG_RED(level,MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MLOG_GREEN(level,x) MCLOG_GREEN(level,MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MLOG_YELLOW(level,x) MCLOG_YELLOW(level,MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MLOG_BLUE(level,x) MCLOG_BLUE(level,MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MLOG_MAGENTA(level,x) MCLOG_MAGENTA(level,MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MLOG_CYAN(level,x) MCLOG_CYAN(level,MONERO_DEFAULT_LOG_CATEGORY,x)
+
+#define MFATAL(x) MCFATAL(MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MERROR(x) MCERROR(MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MWARNING(x) MCWARNING(MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MINFO(x) MCINFO(MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MDEBUG(x) MCDEBUG(MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MTRACE(x) MCTRACE(MONERO_DEFAULT_LOG_CATEGORY,x)
+#define MLOG(level,x) MCLOG(level,MONERO_DEFAULT_LOG_CATEGORY,el::Color::Default,x)
+
+#define MGINFO(x) MCINFO("global",x)
+#define MGINFO_RED(x) MCLOG_RED(el::Level::Info, "global",x)
+#define MGINFO_GREEN(x) MCLOG_GREEN(el::Level::Info, "global",x)
+#define MGINFO_YELLOW(x) MCLOG_YELLOW(el::Level::Info, "global",x)
+#define MGINFO_BLUE(x) MCLOG_BLUE(el::Level::Info, "global",x)
+#define MGINFO_MAGENTA(x) MCLOG_MAGENTA(el::Level::Info, "global",x)
+#define MGINFO_CYAN(x) MCLOG_CYAN(el::Level::Info, "global",x)
+
+
+
+#define LOG_ERROR(x) MERROR(x)
+#define LOG_PRINT_L0(x) MWARNING(x)
+#define LOG_PRINT_L1(x) MINFO(x)
+#define LOG_PRINT_L2(x) MDEBUG(x)
+#define LOG_PRINT_L3(x) MTRACE(x)
+#define LOG_PRINT_L4(x) MTRACE(x)
+
+#define _dbg3(x) MTRACE(x)
+#define _dbg2(x) MDEBUG(x)
+#define _dbg1(x) MDEBUG(x)
+#define _info(x) MINFO(x)
+#define _note(x) MDEBUG(x)
+#define _fact(x) MDEBUG(x)
+#define _mark(x) MDEBUG(x)
+#define _warn(x) MWARNING(x)
+#define _erro(x) MERROR(x)
+
+#define MLOG_SET_THREAD_NAME(x)
