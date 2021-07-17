@@ -24,6 +24,9 @@ let
   CMakeTestFlags = ''
     -DBUILD_TESTING=ON
   '';
+
+  configure = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}";
+  configureRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
 in
 {
   qpidEnv = stdenvNoCC.mkDerivation {
@@ -37,14 +40,14 @@ in
     ];
 
     inherit CMakeFlags_Lolnero;
-    inherit CMakeFlags_Lolnero_Test;
     inherit CMakeCCacheFlags;
     inherit CMakeClangFlags;
 
+    inherit configure;
+    inherit configureRelease;
+
     configureGCC = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeCCacheFlags}";
     configureGCCRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}";
-    configure = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}";
-    configureRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
     configureTest = configure + " " + CMakeTestFlags;
     configureTestRelease = configureRelease + " " + CMakeTestFlags;
     build = "make";
