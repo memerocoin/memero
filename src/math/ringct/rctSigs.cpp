@@ -282,13 +282,11 @@ namespace rct {
      , const unsigned int index
      ) {
         //setup vars
-        hw::device& hwdev = hw::get_device("default");
         size_t rows = 1;
         size_t cols = pubs.size();
         ASSERT_OR_LOG_THROW(cols >= 1, "Empty pubs");
         keyV tmp(rows + 1);
         keyV sk(rows + 1);
-        size_t i;
         keyM M(cols, tmp);
 
         keyV P, C, C_nonzero;
@@ -383,7 +381,6 @@ namespace rct {
             key R;
             geDsmp P_precomp;
             geDsmp C_precomp;
-            geDsmp H_precomp;
             size_t i = 0;
             ge_p3 hash8_p3;
             geDsmp hash_precomp;
@@ -499,8 +496,6 @@ namespace rct {
 
         rv.p.bulletproofs.clear();
         {
-            size_t n_amounts = outamounts.size();
-            size_t amounts_proved = 0;
             {
                 rct::keyV C, masks;
                 const std::span<const key> keys{&amount_keys[0], amount_keys.size()};
@@ -592,7 +587,7 @@ namespace rct {
         tools::threadpool::waiter waiter(tpool);
         std::deque<bool> results;
         std::vector<Bulletproof> proofs;
-        size_t max_non_bp_proofs = 0, offset = 0;
+        size_t max_non_bp_proofs = 0;
 
         for (const rctSig& rv: rvv)
         {

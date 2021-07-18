@@ -53,8 +53,6 @@ extern "C"
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "bulletproofs"
 
-constexpr size_t PIPPENGER_SIZE_LIMIT = 0;
-
 namespace rct
 {
 

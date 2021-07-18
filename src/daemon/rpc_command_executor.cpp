@@ -60,13 +60,6 @@ namespace {
     }
   }
 
-  std::string print_float(float f, int prec)
-  {
-    char buf[16];
-    snprintf(buf, sizeof(buf), "%*.*f", prec, prec, f);
-    return buf;
-  }
-
   void print_peer(std::string const & prefix, cryptonote::peer const & peer)
   {
     time_t now;
@@ -388,27 +381,6 @@ static std::string get_mining_speed(cryptonote::diff_t hr)
   get_metric_prefix(hr, hr_d, prefix);
   if (prefix == 0) return (boost::format("%.0f H/s") % hr).str();
   return (boost::format("%.2f %cH/s") % hr_d % prefix).str();
-}
-
-static std::string get_fork_extra_info(uint64_t t, uint64_t now, uint64_t block_time)
-{
-  uint64_t blocks_per_day = 86400 / block_time;
-
-  if (t == now)
-    return " (forking now)";
-
-  if (t > now)
-  {
-    uint64_t dblocks = t - now;
-    if (dblocks <= 30)
-      return (boost::format(" (next fork in %u blocks)") % (unsigned)dblocks).str();
-    if (dblocks <= blocks_per_day / 2)
-      return (boost::format(" (next fork in %.1f hours)") % (dblocks / (float)(blocks_per_day / 24))).str();
-    if (dblocks <= blocks_per_day * 30)
-      return (boost::format(" (next fork in %.1f days)") % (dblocks / (float)blocks_per_day)).str();
-    return "";
-  }
-  return "";
 }
 
 static float get_sync_percentage(uint64_t height, uint64_t target_height)
@@ -905,7 +877,6 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
     // Print json if requested
     if (include_json)
     {
-      crypto::hash tx_hash, tx_prefix_hash;
       cryptonote::transaction tx;
       cryptonote::blobdata blob;
       std::string source = as_hex;

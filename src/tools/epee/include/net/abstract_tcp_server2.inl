@@ -317,9 +317,6 @@ namespace net_utils
 
     if (!e)
     {
-        double current_speed_down;
-
-
       //_info("[sock " << socket().native_handle() << "] RECV " << bytes_transferred);
       logger_handle_net_read(bytes_transferred);
       context.m_last_recv = time(NULL);

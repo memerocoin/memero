@@ -320,7 +320,6 @@ namespace cryptonote
     }
 
     {
-      size_t n_total_outs = sources[0].outputs.size(); // only for non-simple rct
 
       // the non-simple version is slightly smaller, but assumes all real inputs
       // are on the same index, so can only be used if there just one ring.
@@ -411,7 +410,7 @@ namespace cryptonote
       if (need_additional_txkeys)
       {
         additional_tx_keys.clear();
-        for (const auto &d: destinations)
+        for (const auto _: destinations)
           additional_tx_keys.push_back(keypair::generate(sender_account_keys.get_device()).sec);
       }
 

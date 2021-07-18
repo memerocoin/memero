@@ -1155,7 +1155,6 @@ namespace cryptonote
 
     const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     const auto sync_time = std::chrono::duration_cast<std::chrono::microseconds>(now - m_sync_start_time);
-    cryptonote::network_type nettype = m_core.get_nettype();
 
     uint64_t synced = current_blockchain_height - m_sync_start_height;
     float us_per_block = (float)sync_time.count() / (float)synced;
@@ -1634,10 +1633,8 @@ skip:
   bool t_cryptonote_protocol_handler::should_download_next_span(cryptonote_connection_context& context, bool standby)
   {
     std::vector<crypto::hash> hashes;
-    boost::uuids::uuid span_connection_id;
     std::chrono::time_point<std::chrono::system_clock> request_time;
     boost::uuids::uuid connection_id;
-    std::pair<uint64_t, uint64_t> span;
     bool filled;
 
     const uint64_t blockchain_height = m_core.get_current_blockchain_height();
@@ -1663,7 +1660,6 @@ skip:
 
         // in standby, be ready to double download early since we're idling anyway
         // let the fastest peer trigger first
-        long threshold;
         const double dl_speed = context.m_max_speed_down;
         if (standby && dt >= REQUEST_NEXT_SCHEDULED_SPAN_THRESHOLD_STANDBY && dl_speed > 0)
         {
@@ -1802,7 +1798,6 @@ skip:
         }
 
         const uint64_t first_block_height = context.m_last_response_height - context.m_needed_objects.size() + 1;
-        static const uint64_t bp_fork_height = config::lol::constant_hf_height;
         span = m_block_queue.reserve_span(first_block_height, context.m_last_response_height, count_limit, context.m_connection_id, context.m_remote_address, context.m_remote_blockchain_height, context.m_needed_objects);
         MDEBUG(context << " span from " << first_block_height << ": " << span.first << "/" << span.second);
       }

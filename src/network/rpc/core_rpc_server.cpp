@@ -728,8 +728,6 @@ namespace cryptonote
     }
     res.sanity_check_failed = false;
 
-    const bool restricted = false;
-
     tx_verification_context tvc{};
     if(!m_core.handle_incoming_tx({tx_blob, crypto::null_hash}, tvc, (req.do_not_relay ? relay_method::none : relay_method::local), false) || tvc.m_verifivation_failed)
     {
@@ -1873,7 +1871,6 @@ namespace cryptonote
   {
     RPC_TRACKER(get_txpool_backlog);
 
-    size_t n_txes = m_core.get_pool_transactions_count();
     if (!m_core.get_txpool_backlog(res.backlog))
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
