@@ -73,19 +73,6 @@ static inline bool operator<(const rct::key &k0, const rct::key&k1)
   return false;
 }
 
-static inline rct::key div2(const rct::key &k)
-{
-  rct::key res;
-  int carry = 0;
-  for (int n = 31; n >= 0; --n)
-  {
-    int new_carry = (k.bytes[n] & 1) << 7;
-    res.bytes[n] = k.bytes[n] / 2 + carry;
-    carry = new_carry;
-  }
-  return res;
-}
-
 static inline rct::key pow2(size_t n)
 {
   ASSERT_OR_LOG_THROW(n < 256, "Invalid pow2 argument");
@@ -143,7 +130,7 @@ pippenger_cache pippenger_init_cache(const std::span<MultiexpData> data)
 
 rct::key pippenger(const std::span<MultiexpData> data)
 {
-  const pippenger_cache local_cache = std::move(pippenger_init_cache(data));
+  const pippenger_cache local_cache = pippenger_init_cache(data);
   const size_t c = get_pippenger_c(data.size());
 
   ge_p3 result = ge_p3_identity;

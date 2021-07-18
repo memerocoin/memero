@@ -410,8 +410,11 @@ namespace cryptonote
       if (need_additional_txkeys)
       {
         additional_tx_keys.clear();
-        for (const auto _: destinations)
-          additional_tx_keys.push_back(keypair::generate(sender_account_keys.get_device()).sec);
+        additional_tx_keys.resize(5);
+        std::generate(additional_tx_keys.begin(), additional_tx_keys.end(),
+                      [sender_account_keys]()  {
+                        return keypair::generate(sender_account_keys.get_device()).sec;
+                      });
       }
 
       bool r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, tx, unlock_time, tx_key, additional_tx_keys, rct);
