@@ -137,10 +137,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   if (daemon_address.empty())
     daemon_address = std::string("http://") + daemon_host + ":" + std::to_string(daemon_port);
 
-  {
-    const std::string_view real_daemon = std::string_view{daemon_address}.substr(0, daemon_address.rfind(':'));
-  }
-
   std::unique_ptr<tools::wallet2> wallet(new tools::wallet2(nettype, kdf_rounds, unattended));
   if (!wallet->init(std::move(daemon_address), 0))
   {
@@ -250,9 +246,6 @@ bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, c
 
 namespace tools
 {
-// for now, limit to 30 attempts.  TODO: discuss a good number to limit to.
-const size_t MAX_SPLIT_ATTEMPTS = 30;
-
 constexpr const std::chrono::seconds wallet2::rpc_timeout;
 const char* wallet2::tr(const char* str) { return str; }
 
@@ -353,7 +346,6 @@ bool wallet2::set_daemon(std::string daemon_address)
 
   if(m_http_client->is_connected())
     m_http_client->disconnect();
-  const bool changed = m_daemon_address != daemon_address;
   m_daemon_address = std::move(daemon_address);
 
   const std::string address = get_daemon_address();
@@ -3285,7 +3277,6 @@ std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> wallet2::
         uint64_t unlock_height = td.m_block_height + std::max<uint64_t>(CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE, CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS);
         if (td.m_tx.unlock_time > unlock_height)
           unlock_height = td.m_tx.unlock_time;
-        uint64_t unlock_time = 0;
         blocks_to_unlock = unlock_height > blockchain_height ? unlock_height - blockchain_height : 0;
         time_to_unlock = 0;
         amount = 0;
@@ -4519,8 +4510,6 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
   uint64_t needed_fee, available_for_fee = 0;
   uint64_t upper_transaction_weight_limit = get_upper_transaction_weight_limit();
   const bool use_rct = true;
-  const bool bulletproof = true;
-  const bool clsag = true;
 
   const uint64_t base_fee  = get_base_fee();
   const uint64_t fee_multiplier = get_fee_multiplier(priority);
@@ -5018,7 +5007,6 @@ bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx
   for (const auto &r: required)
   {
     const account_public_address &address = r.first;
-    const crypto::public_key &view_pkey = address.m_view_public_key;
 
     uint64_t total_received = 0;
     for (const auto &ptx: ptx_vector)

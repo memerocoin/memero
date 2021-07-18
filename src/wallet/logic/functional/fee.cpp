@@ -52,8 +52,6 @@ namespace fee {
     const int ring_size = config::lol::ring_size;
     const int n_adjusted_outputs = n_outputs == 1 ? 2 : n_outputs;
 
-    const bool bulletproof = true;
-    const bool clsag = true;
     const size_t size = estimate_tx_size(n_inputs, ring_size - 1, n_adjusted_outputs, extra_size);
     const uint64_t weight = estimate_tx_weight(n_inputs, ring_size - 1, n_adjusted_outputs, extra_size);
     return std::make_pair(size, weight);

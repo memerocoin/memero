@@ -434,21 +434,6 @@ void simple_wallet::handle_transfer_exception(const std::exception_ptr &e)
 
 namespace
 {
-  bool check_file_overwrite(const std::string &filename)
-  {
-    std::error_code errcode;
-    if (std::filesystem::exists(filename, errcode))
-    {
-      if (boost::ends_with(filename, ".keys"))
-      {
-        fail_msg_writer() << boost::format(sw::tr("File %s likely stores wallet private keys! Use a different file name.")) % filename;
-        return false;
-      }
-      return command_line::is_yes(input_line((boost::format(sw::tr("File %s already exists. Are you sure to overwrite it?")) % filename).str(), true));
-    }
-    return true;
-  }
-
   void print_secret_key(const crypto::secret_key &k)
   {
     static constexpr const char hex[] = "0123456789abcdef";
@@ -555,7 +540,6 @@ bool simple_wallet::print_seed()
 {
   bool success =  false;
   epee::wipeable_string seed;
-  bool ready;
 
   if (m_wallet->key_on_device())
   {
@@ -1336,36 +1320,11 @@ static bool might_be_partial_seed(const epee::wipeable_string &words)
   return seed.size() < 24;
 }
 //----------------------------------------------------------------------------------------------------
-static bool datestr_to_int(const std::string &heightstr, uint16_t &year, uint8_t &month, uint8_t &day)
-{
-  if (heightstr.size() != 10 || heightstr[4] != '-' || heightstr[7] != '-')
-  {
-    fail_msg_writer() << sw::tr("date format must be YYYY-MM-DD");
-    return false;
-  }
-  try
-  {
-    year  = boost::lexical_cast<uint16_t>(heightstr.substr(0,4));
-    // lexical_cast<uint8_t> won't work because uint8_t is treated as character type
-    month = boost::lexical_cast<uint16_t>(heightstr.substr(5,2));
-    day   = boost::lexical_cast<uint16_t>(heightstr.substr(8,2));
-  }
-  catch (const boost::bad_lexical_cast &)
-  {
-    fail_msg_writer() << sw::tr("bad height parameter: ") << heightstr;
-    return false;
-  }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
 bool simple_wallet::init(const boost::program_options::variables_map& vm)
 {
   epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){
     m_electrum_seed.wipe();
   });
-
-  const bool testnet = tools::wallet2::has_testnet_option(vm);
-  const network_type nettype = testnet ? TESTNET : MAINNET;
 
   epee::wipeable_string password;
 
@@ -1703,8 +1662,6 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
     m_wallet->callback(this);
     m_wallet->load(m_wallet_file, password);
     std::string prefix;
-    bool ready;
-    uint32_t threshold, total;
     prefix = sw::tr("Opened wallet");
     message_writer(epee::console_color_white, true) <<
       prefix << ": " << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
@@ -2149,8 +2106,6 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
     local_args.erase(local_args.begin());
   }
 
-  const uint64_t blockchain_height = m_wallet->get_blockchain_current_height();
-
   PAUSE_READLINE();
 
   std::set<uint32_t> subaddr_indices;
@@ -2451,8 +2406,6 @@ bool simple_wallet::prompt_if_old(const std::vector<wallet::logic::type::tx::pen
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::on_command(bool (simple_wallet::*cmd)(const std::vector<std::string>&), const std::vector<std::string> &args)
 {
-  const time_t now = time(NULL);
-  time_t dt = now - m_last_activity_time;
   m_last_activity_time = time(NULL);
 
   m_in_command = true;
@@ -3102,7 +3055,6 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
       if (!unlocked)
       {
         locked_msg = "locked";
-        const uint64_t unlock_time = pd.m_unlock_time;
         uint64_t bh = std::max(pd.m_unlock_time, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
         if (bh >= last_block_height)
           locked_msg = std::to_string(bh - last_block_height) + " blks";
@@ -3840,8 +3792,6 @@ bool simple_wallet::status(const std::vector<std::string> &args)
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::wallet_info(const std::vector<std::string> &args)
 {
-  bool ready;
-  uint32_t threshold, total;
   message_writer() << sw::tr("Filename: ") << m_wallet->get_wallet_file();
   message_writer() << sw::tr("Address: ") << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
   std::string type;
