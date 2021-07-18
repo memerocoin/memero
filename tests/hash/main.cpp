@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
       }
       cerr << endl << "Actual hash: ";
       for (i = 0; i < 32; i++) {
-          cerr << setbase(16) << setw(2) << setfill('0') << int(reinterpret_cast<unsigned uint8_t*>(&actual)[i]);
+          cerr << setbase(16) << setw(2) << setfill('0') << int(reinterpret_cast<unsigned char*>(&actual)[i]);
       }
       cerr << endl;
       error = true;

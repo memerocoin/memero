@@ -47,8 +47,6 @@ int main(int argc, char** argv)
   TRY_ENTRY();
 
   tools::on_startup();
-  mlog_configure(mlog_get_default_log_path("unit_tests.log"), true);
-  epee::debug::get_set_enable_assert(true, false);
 
   ::testing::InitGoogleTest(&argc, argv);
 
