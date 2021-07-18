@@ -178,7 +178,7 @@ namespace rct {
       key k = normalizeKey(a);
 
       // no need to check since a can be 0 in tests
-      static_cast<void>(crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes));
+      [[maybe_unused]] int _ = crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
@@ -210,7 +210,7 @@ namespace rct {
       key k;
 
       // no need to check since a can be 0 in tests, and H is on main group
-      static_cast<void>(crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, H.bytes));
+      [[maybe_unused]] int _ = crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, H.bytes);
 
       return k;
     }
