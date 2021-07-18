@@ -103,7 +103,7 @@ namespace cryptonote
   core::core(i_cryptonote_protocol* pprotocol):
               m_mempool(m_blockchain_storage),
               m_blockchain_storage(m_mempool),
-              m_miner(this, [this](const cryptonote::block &b, crypto::hash &hash) {
+              m_miner(this, [](const cryptonote::block &b, crypto::hash &hash) {
                 return cryptonote::get_block_longhash(b, hash);
               }),
               m_starter_message_showed(false),
@@ -320,8 +320,9 @@ namespace cryptonote
 
           void operator()(const uint64_t, const std::vector<block> blocks) const
           {
-            for (const block bl : blocks)
+            std::for_each(blocks.begin(), blocks.end(), [this](const auto& bl) {
               cmdline.notify("%s", epee::string_tools::pod_to_hex(get_block_hash(bl)).c_str(), NULL);
+            });
           }
         };
 
@@ -410,7 +411,7 @@ namespace cryptonote
 
     tx_hash = crypto::null_hash;
 
-    bool r;
+    bool r = false;
     if (tx_blob.prunable_hash == crypto::null_hash)
     {
       r = parse_tx_from_blob(tx, tx_hash, tx_blob.blob);

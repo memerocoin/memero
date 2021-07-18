@@ -880,8 +880,6 @@ namespace cryptonote
      std::unordered_set<crypto::hash> bad_semantics_txes[2];
      std::mutex bad_semantics_txes_lock;
 
-     size_t m_last_update_length;
-
      bool m_fluffy_blocks_enabled;
      bool m_offline;
 

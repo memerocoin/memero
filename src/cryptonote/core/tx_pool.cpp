@@ -301,7 +301,6 @@ namespace cryptonote
   bool tx_memory_pool::add_tx(transaction &tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
     crypto::hash h = null_hash;
-    size_t blob_size = 0;
     cryptonote::blobdata bl;
     t_serializable_object_to_blob(tx, bl);
     if (bl.size() == 0 || !get_transaction_hash(tx, h))
@@ -901,7 +900,6 @@ namespace cryptonote
       return true;
     }, true, category);
 
-    txpool_tx_meta_t meta;
     for (const key_images_container::value_type& kee : m_spent_key_images) {
       const crypto::key_image& k_image = kee.first;
       const std::unordered_set<crypto::hash>& kei_image_set = kee.second;

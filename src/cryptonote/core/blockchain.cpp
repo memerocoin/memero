@@ -999,7 +999,6 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
   std::vector<uint64_t> timestamps;
   std::vector<diff_t> cumulative_difficulties;
 
-  size_t height = m_db->height();
   size_t difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT;
 
   // if the alt chain isn't long enough to calculate the difficulty target
@@ -1205,7 +1204,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     else
     {
       height = alt_chain.back().height + 1;
-      uint64_t next_height;
     }
     b.major_version = config::lol::constant_hf_version;
     b.minor_version = config::lol::constant_hf_version;
@@ -1299,7 +1297,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
    block weight, so first miner transaction generated with fake amount of money, and with phase we know think we know expected block weight
    */
   //make blocks coin-base tx looks close to real coinbase tx to get truthful blob weight
-  uint8_t hf_version = b.major_version;
   // FIXME: max_outs of miner_tx for lol should be 32?
   size_t max_outs = 11;
   bool r = construct_miner_tx(height, txs_weight, fee, miner_address, b.miner_tx, ex_nonce, max_outs);
@@ -2513,7 +2510,6 @@ void Blockchain::check_ring_signature(const crypto::hash &tx_prefix_hash, const 
 //------------------------------------------------------------------
 bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 {
-  uint64_t median = 0;
   uint64_t needed_fee = 0;
   {
     uint64_t fee_per_byte = constant::FEE_PER_BYTE;
@@ -2711,8 +2707,6 @@ bool Blockchain::handle_block_to_main_chain(const block& bl, const crypto::hash&
   TIME_MEASURE_START(block_processing_time);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   TIME_MEASURE_START(t1);
-
-  static bool seen_future_version = false;
 
   db_rtxn_guard rtxn_guard(m_db);
   uint64_t blockchain_height;
@@ -3486,6 +3480,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete
 
     for (const auto &tx_blob : entry.txs)
     {
+      (void)tx_blob;
       if (tx_index >= txes.size())
         SCAN_TABLE_QUIT("tx_index is out of sync");
       const transaction &tx = txes[tx_index].first;
@@ -3864,7 +3859,6 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   tools::threadpool& tpool = tools::threadpool::getInstance();
   tools::threadpool::waiter waiter(tpool);
-  int threads = tpool.get_max_concurrency();
 
   uint64_t max_used_block_height = 0;
   if (!pmax_used_block_height)

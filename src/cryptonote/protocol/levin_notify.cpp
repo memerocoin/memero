@@ -38,8 +38,6 @@ namespace levin
 {
   namespace
   {
-    constexpr std::size_t connection_id_reserve_size = 100;
-
     /* A custom duration is used for the poisson distribution because of the
        variance. If 5 seconds is given to `std::poisson_distribution`, 95% of
        the values fall between 1-9s in 1s increments (not granular enough). If

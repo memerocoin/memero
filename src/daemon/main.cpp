@@ -135,8 +135,6 @@ int main(int argc, char const * argv[])
       return 1;
     }
 
-    const bool testnet = command_line::get_arg(vm, cryptonote::arg_testnet_on);
-
     // data_dir
     //   default: e.g. ~/.bitmonero/ or ~/.bitmonero/testnet
     //   if data-dir argument given:
