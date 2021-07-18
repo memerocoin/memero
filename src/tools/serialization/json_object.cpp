@@ -283,8 +283,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
   {
     fromJsonValue(sigs->value, tx.signatures);
   }
-
-  const auto& rsig = tx.rct_signatures;
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block b)
