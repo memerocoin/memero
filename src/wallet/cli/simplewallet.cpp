@@ -1331,8 +1331,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
   if (!handle_command_line(vm))
     return false;
 
-  bool welcome = false;
-
   if((!m_generate_new.empty()) + (!m_wallet_file.empty()) + (!m_generate_from_spend_key.empty()) > 1)
   {
     fail_msg_writer() << sw::tr("can't specify more than one of --new=\"wallet_name\", --open=\"wallet_name\" and --generate-from-spend-key=\"wallet_name\"");
@@ -1406,7 +1404,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       auto r = new_wallet(vm, m_recovery_key, true);
       ASSERT_OR_LOG_RETURN(r, false, sw::tr("account creation failed"));
       password = *r;
-      welcome = true;
     }
     else
     {
@@ -1419,7 +1416,6 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet);
       ASSERT_OR_LOG_RETURN(r, false, sw::tr("account creation failed"));
       password = *r;
-      welcome = true;
     }
 
     if (m_restoring)
@@ -2648,19 +2644,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
         }
         if (!process_ring_members(ptx_vector, prompt, m_wallet->print_ring_members()))
           return false;
-        bool default_ring_size = true;
-        for (const auto &ptx: ptx_vector)
-        {
-          for (const auto &vin: ptx.tx.vin)
-          {
-            if (vin.type() == typeid(txin_to_key))
-            {
-              const txin_to_key& in_to_key = boost::get<txin_to_key>(vin);
-              if (in_to_key.key_offsets.size() != config::lol::ring_size)
-                default_ring_size = false;
-            }
-          }
-        }
+
         prompt << std::endl << sw::tr("Is this okay?");
         std::string accepted = input_line(prompt.str(), true);
         if (std::cin.eof())

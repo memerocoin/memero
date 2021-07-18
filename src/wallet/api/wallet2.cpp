@@ -4067,20 +4067,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       outs.back().reserve(fake_outputs_count + 1);
       const rct::key mask = td.is_rct() ? rct::commit(td.amount(), td.m_mask) : rct::zeroCommit(td.amount());
 
-      uint64_t num_outs = 0;
-      const uint64_t amount = td.is_rct() ? 0 : td.amount();
-      for (const auto &he: resp_t.histogram)
-      {
-        if (he.amount == amount)
-        {
-          num_outs = he.unlocked_instances;
-          break;
-        }
-      }
-      bool use_histogram = amount != 0 || !has_rct_distribution;
-      if (!use_histogram)
-        num_outs = rct_offsets[rct_offsets.size() - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE];
-
       // make sure the real outputs we asked for are really included, along
       // with the correct key and mask: this guards against an active attack
       // where the node sends dummy data for all outputs, and we then send
