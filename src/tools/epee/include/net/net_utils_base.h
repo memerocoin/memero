@@ -97,13 +97,13 @@ namespace net_utils
 		BEGIN_KV_SERIALIZE_MAP()
 			if (is_store)
 			{
-				uint32_t ip = SWAP32LE(this_ref.m_ip);
+				uint32_t ip = SWAP32LE(this->m_ip);
 				epee::serialization::selector<is_store>::serialize(ip, stg, hparent_section, "m_ip");
 			}
 			else
 			{
 				KV_SERIALIZE(m_ip)
-				const_cast<ipv4_network_address&>(this_ref).m_ip = SWAP32LE(this_ref.m_ip);
+				const_cast<ipv4_network_address*>(this)->m_ip = SWAP32LE(this->m_ip);
 			}
 			KV_SERIALIZE(m_port)
 		END_KV_SERIALIZE_MAP()
@@ -202,9 +202,9 @@ namespace net_utils
 
 		static const uint8_t ID = 2;
 		BEGIN_KV_SERIALIZE_MAP()
-			boost::asio::ip::address_v6::bytes_type bytes = this_ref.m_address.to_bytes();
+			boost::asio::ip::address_v6::bytes_type bytes = this->m_address.to_bytes();
 			epee::serialization::selector<is_store>::serialize_t_val_as_blob(bytes, stg, hparent_section, "addr");
-			const_cast<boost::asio::ip::address_v6&>(this_ref.m_address) = boost::asio::ip::address_v6(bytes);
+			const_cast<boost::asio::ip::address_v6&>(this->m_address) = boost::asio::ip::address_v6(bytes);
 			KV_SERIALIZE(m_port)
 		END_KV_SERIALIZE_MAP()
 	};
@@ -321,20 +321,20 @@ namespace net_utils
 			// need to `#include "net/[i2p|tor]_address.h"` when serializing `network_address`
 			static constexpr std::integral_constant<bool, is_store> is_store_{};
 
-			std::uint8_t type = std::uint8_t(is_store ? this_ref.get_type_id() : address_type::invalid);
+			std::uint8_t type = std::uint8_t(is_store ? this->get_type_id() : address_type::invalid);
 			if (!epee::serialization::selector<is_store>::serialize(type, stg, hparent_section, "type"))
 				return false;
 
 			switch (address_type(type))
 			{
 				case address_type::ipv4:
-					return this_ref.template serialize_addr<ipv4_network_address>(is_store_, stg, hparent_section);
+					return this->template serialize_addr<ipv4_network_address>(is_store_, stg, hparent_section);
 				case address_type::ipv6:
-					return this_ref.template serialize_addr<ipv6_network_address>(is_store_, stg, hparent_section);
+					return this->template serialize_addr<ipv6_network_address>(is_store_, stg, hparent_section);
 				case address_type::tor:
-					return this_ref.template serialize_addr<net::tor_address>(is_store_, stg, hparent_section);
+					return this->template serialize_addr<net::tor_address>(is_store_, stg, hparent_section);
 				case address_type::i2p:
-					return this_ref.template serialize_addr<net::i2p_address>(is_store_, stg, hparent_section);
+					return this->template serialize_addr<net::i2p_address>(is_store_, stg, hparent_section);
 				case address_type::invalid:
 				default:
 					break;

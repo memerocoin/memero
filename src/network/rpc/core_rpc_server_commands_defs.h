@@ -349,7 +349,7 @@ namespace cryptonote
         KV_SERIALIZE(as_json)
         KV_SERIALIZE(in_pool)
         KV_SERIALIZE(double_spend_seen)
-        if (!this_ref.in_pool)
+        if (!this->in_pool)
         {
           KV_SERIALIZE(block_height)
           KV_SERIALIZE(block_timestamp)
@@ -1884,13 +1884,13 @@ namespace cryptonote
         KV_SERIALIZE_N(data.start_height, "start_height")
         KV_SERIALIZE(binary)
         KV_SERIALIZE(compress)
-        if (this_ref.binary)
+        if (this->binary)
         {
           if (is_store)
           {
-            if (this_ref.compress)
+            if (this->compress)
             {
-              const_cast<std::string&>(this_ref.compressed_data) = compress_integer_array(this_ref.data.distribution);
+              const_cast<std::string&>(this->compressed_data) = compress_integer_array(this->data.distribution);
               KV_SERIALIZE(compressed_data)
             }
             else
@@ -1898,10 +1898,10 @@ namespace cryptonote
           }
           else
           {
-            if (this_ref.compress)
+            if (this->compress)
             {
               KV_SERIALIZE(compressed_data)
-              const_cast<std::vector<uint64_t>&>(this_ref.data.distribution) = decompress_integer_array<uint64_t>(this_ref.compressed_data);
+              const_cast<std::vector<uint64_t>&>(this->data.distribution) = decompress_integer_array<uint64_t>(this->compressed_data);
             }
             else
               KV_SERIALIZE_CONTAINER_POD_AS_BLOB_N(data.distribution, "distribution")
