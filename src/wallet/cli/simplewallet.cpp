@@ -67,6 +67,7 @@
 using namespace cryptonote;
 using namespace wallet::usage;
 using namespace wallet::controller;
+using namespace wallet::arg;
 
 namespace po = boost::program_options;
 typedef cryptonote::simple_wallet sw;
@@ -81,123 +82,7 @@ static std::string get_human_readable_timespan(uint64_t seconds);
 
 namespace
 {
-  constexpr std::array<const char* const, 5> allowed_priority_strings = {{"default", "unimportant", "normal", "elevated", "priority"}};
   const auto arg_wallet_file = wallet_args::arg_wallet_file();
-  const command_line::arg_descriptor<std::string> arg_generate_new_wallet = {"new", sw::tr("Generate new wallet and save it to <arg>"), ""};
-  const command_line::arg_descriptor<std::string> arg_generate_from_spend_key = {"generate-from-spend-key", sw::tr("Generate deterministic wallet from spend key"), ""};
-  const command_line::arg_descriptor<std::string> arg_electrum_seed = {"electrum-seed", sw::tr("Specify Electrum seed for wallet recovery/creation"), ""};
-  const command_line::arg_descriptor<bool> arg_restore_deterministic_wallet = {"restore", sw::tr("Recover wallet using Electrum-style mnemonic seed"), false};
-  const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the lolnero network"), false};
-  const command_line::arg_descriptor<std::string> arg_subaddress_lookahead = {"subaddress-lookahead", tools::wallet2::tr("Set subaddress lookahead sizes to <major>:<minor>"), ""};
-  const command_line::arg_descriptor< std::vector<std::string> > arg_command = {"command", ""};
-
-}
-
-void simple_wallet::handle_transfer_exception(const std::exception_ptr &e)
-{
-    bool warn_of_possible_attack = false;
-    try
-    {
-      std::rethrow_exception(e);
-    }
-    catch (const tools::error::no_connection_to_daemon&)
-    {
-      fail_msg_writer() << sw::tr("no connection to daemon. Please make sure daemon is running.");
-    }
-    catch (const tools::error::daemon_busy&)
-    {
-      fail_msg_writer() << sw::tr("daemon is busy. Please try again later.");
-    }
-    catch (const tools::error::wallet_rpc_error& e)
-    {
-      LOG_ERROR("RPC error: " << e.to_string());
-      fail_msg_writer() << sw::tr("RPC error: ") << e.what();
-    }
-    catch (const tools::error::get_outs_error &e)
-    {
-      fail_msg_writer() << sw::tr("failed to get random outputs to mix: ") << e.what();
-    }
-    catch (const tools::error::not_enough_unlocked_money& e)
-    {
-      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, sent amount %s") %
-        print_money(e.available()) %
-        print_money(e.tx_amount()));
-      fail_msg_writer() << sw::tr("Not enough money in unlocked balance");
-      warn_of_possible_attack = false;
-    }
-    catch (const tools::error::not_enough_money& e)
-    {
-      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, sent amount %s") %
-        print_money(e.available()) %
-        print_money(e.tx_amount()));
-      fail_msg_writer() << sw::tr("Not enough money in unlocked balance");
-      warn_of_possible_attack = false;
-    }
-    catch (const tools::error::tx_not_possible& e)
-    {
-      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, transaction amount %s = %s + %s (fee)") %
-        print_money(e.available()) %
-        print_money(e.tx_amount() + e.fee())  %
-        print_money(e.tx_amount()) %
-        print_money(e.fee()));
-      fail_msg_writer() << sw::tr("Failed to find a way to create transactions. This is usually due to dust which is so small it cannot pay for itself in fees, or trying to send more money than the unlocked balance, or not leaving enough for fees");
-      warn_of_possible_attack = false;
-    }
-    catch (const tools::error::not_enough_outs_to_mix& e)
-    {
-      auto writer = fail_msg_writer();
-      writer << sw::tr("not enough outputs for specified ring size") << " = " << (e.mixin_count() + 1) << ":";
-      for (std::pair<uint64_t, uint64_t> outs_for_amount : e.scanty_outs())
-      {
-        writer << "\n" << sw::tr("output amount") << " = " << print_money(outs_for_amount.first) << ", " << sw::tr("found outputs to use") << " = " << outs_for_amount.second;
-      }
-      writer << sw::tr("Please use sweep_unmixable.");
-    }
-    catch (const tools::error::tx_not_constructed&)
-    {
-      fail_msg_writer() << sw::tr("transaction was not constructed");
-      warn_of_possible_attack = false;
-    }
-    catch (const tools::error::tx_rejected& e)
-    {
-      fail_msg_writer() << (boost::format(sw::tr("transaction %s was rejected by daemon")) % get_transaction_hash(e.tx()));
-      std::string reason = e.reason();
-      if (!reason.empty())
-        fail_msg_writer() << sw::tr("Reason: ") << reason;
-    }
-    catch (const tools::error::tx_sum_overflow& e)
-    {
-      fail_msg_writer() << e.what();
-      warn_of_possible_attack = false;
-    }
-    catch (const tools::error::zero_destination&)
-    {
-      fail_msg_writer() << sw::tr("one of destinations is zero");
-      warn_of_possible_attack = false;
-    }
-    catch (const tools::error::tx_too_big& e)
-    {
-      fail_msg_writer() << sw::tr("failed to find a suitable way to split transactions");
-      warn_of_possible_attack = false;
-    }
-    catch (const tools::error::transfer_error& e)
-    {
-      LOG_ERROR("unknown transfer error: " << e.to_string());
-      fail_msg_writer() << sw::tr("unknown transfer error: ") << e.what();
-    }
-    catch (const tools::error::wallet_internal_error& e)
-    {
-      LOG_ERROR("internal error: " << e.to_string());
-      fail_msg_writer() << sw::tr("internal error: ") << e.what();
-    }
-    catch (const std::exception& e)
-    {
-      LOG_ERROR("unexpected error: " << e.what());
-      fail_msg_writer() << sw::tr("unexpected error: ") << e.what();
-    }
-
-    if (warn_of_possible_attack)
-      fail_msg_writer() << sw::tr("There was an error, which could mean the node may be trying to get you to retry creating a transaction, and zero in on which outputs you own. Or it could be a bona fide error. It may be prudent to disconnect from this node, and not try to send a transaction immediately. Alternatively, connect to another node so the original node cannot correlate information.");
 }
 
 namespace
@@ -2387,7 +2272,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
   }
   catch (const std::exception &e)
   {
-    handle_transfer_exception(std::current_exception());
+    wallet::controller::handle_transfer_exception(std::current_exception());
   }
   catch (...)
   {

@@ -65,5 +65,7 @@ namespace controller {
 
   bool parse_subaddress_indices(const std::string& arg, std::set<uint32_t>& subaddr_indices);
   std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str);
+
+  void handle_transfer_exception(const std::exception_ptr &e);
 }
 }

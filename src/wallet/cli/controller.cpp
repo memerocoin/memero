@@ -35,6 +35,8 @@
 #include "tools/common/util.h"
 
 #include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
+#include <boost/program_options.hpp>
 
 namespace wallet {
 namespace controller {
@@ -151,6 +153,7 @@ namespace controller {
 
   std::string get_version_string(uint32_t version)
   {
+
     return boost::lexical_cast<std::string>(version >> 16) + "." + boost::lexical_cast<std::string>(version & 0xffff);
   }
 
@@ -186,6 +189,113 @@ namespace controller {
     return r;
   }
 
+
+  void handle_transfer_exception(const std::exception_ptr &e)
+  {
+    bool warn_of_possible_attack = false;
+    try
+    {
+      std::rethrow_exception(e);
+    }
+    catch (const tools::error::no_connection_to_daemon&)
+    {
+      fail_msg_writer() << ("no connection to daemon. Please make sure daemon is running.");
+    }
+    catch (const tools::error::daemon_busy&)
+    {
+      fail_msg_writer() << ("daemon is busy. Please try again later.");
+    }
+    catch (const tools::error::wallet_rpc_error& e)
+    {
+      LOG_ERROR("RPC error: " << e.to_string());
+      fail_msg_writer() << ("RPC error: ") << e.what();
+    }
+    catch (const tools::error::get_outs_error &e)
+    {
+      fail_msg_writer() << ("failed to get random outputs to mix: ") << e.what();
+    }
+    catch (const tools::error::not_enough_unlocked_money& e)
+    {
+      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, sent amount %s") %
+        cryptonote::print_money(e.available()) %
+        cryptonote::print_money(e.tx_amount()));
+      fail_msg_writer() << ("Not enough money in unlocked balance");
+      warn_of_possible_attack = false;
+    }
+    catch (const tools::error::not_enough_money& e)
+    {
+      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, sent amount %s") %
+        cryptonote::print_money(e.available()) %
+        cryptonote::print_money(e.tx_amount()));
+      fail_msg_writer() << ("Not enough money in unlocked balance");
+      warn_of_possible_attack = false;
+    }
+    catch (const tools::error::tx_not_possible& e)
+    {
+      LOG_PRINT_L0(boost::format("not enough money to transfer, available only %s, transaction amount %s = %s + %s (fee)") %
+        cryptonote::print_money(e.available()) %
+        cryptonote::print_money(e.tx_amount() + e.fee())  %
+        cryptonote::print_money(e.tx_amount()) %
+        cryptonote::print_money(e.fee()));
+      fail_msg_writer() << ("Failed to find a way to create transactions. This is usually due to dust which is so small it cannot pay for itself in fees, or trying to send more money than the unlocked balance, or not leaving enough for fees");
+      warn_of_possible_attack = false;
+    }
+    catch (const tools::error::not_enough_outs_to_mix& e)
+    {
+      auto writer = fail_msg_writer();
+      writer << ("not enough outputs for specified ring size") << " = " << (e.mixin_count() + 1) << ":";
+      for (std::pair<uint64_t, uint64_t> outs_for_amount : e.scanty_outs())
+      {
+        writer << "\n" << ("output amount") << " = " << cryptonote::print_money(outs_for_amount.first) << ", " << ("found outputs to use") << " = " << outs_for_amount.second;
+      }
+      writer << ("Please use sweep_unmixable.");
+    }
+    catch (const tools::error::tx_not_constructed&)
+    {
+      fail_msg_writer() << ("transaction was not constructed");
+      warn_of_possible_attack = false;
+    }
+    catch (const tools::error::tx_rejected& e)
+    {
+      fail_msg_writer() << (boost::format(("transaction %s was rejected by daemon")) % get_transaction_hash(e.tx()));
+      std::string reason = e.reason();
+      if (!reason.empty())
+        fail_msg_writer() << ("Reason: ") << reason;
+    }
+    catch (const tools::error::tx_sum_overflow& e)
+    {
+      fail_msg_writer() << e.what();
+      warn_of_possible_attack = false;
+    }
+    catch (const tools::error::zero_destination&)
+    {
+      fail_msg_writer() << ("one of destinations is zero");
+      warn_of_possible_attack = false;
+    }
+    catch (const tools::error::tx_too_big& e)
+    {
+      fail_msg_writer() << ("failed to find a suitable way to split transactions");
+      warn_of_possible_attack = false;
+    }
+    catch (const tools::error::transfer_error& e)
+    {
+      LOG_ERROR("unknown transfer error: " << e.to_string());
+      fail_msg_writer() << ("unknown transfer error: ") << e.what();
+    }
+    catch (const tools::error::wallet_internal_error& e)
+    {
+      LOG_ERROR("internal error: " << e.to_string());
+      fail_msg_writer() << ("internal error: ") << e.what();
+    }
+    catch (const std::exception& e)
+    {
+      LOG_ERROR("unexpected error: " << e.what());
+      fail_msg_writer() << ("unexpected error: ") << e.what();
+    }
+
+    if (warn_of_possible_attack)
+      fail_msg_writer() << ("There was an error, which could mean the node may be trying to get you to retry creating a transaction, and zero in on which outputs you own. Or it could be a bona fide error. It may be prudent to disconnect from this node, and not try to send a transaction immediately. Alternatively, connect to another node so the original node cannot correlate information.");
+  }
 
 }
 }

@@ -29,6 +29,7 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "tools/common/command_line.h"
 
 namespace wallet
 {
@@ -131,5 +132,30 @@ namespace help {
     "ignore-fractional-outputs <1|0>\n "
     "  Whether to ignore fractional outputs that result in net loss when spending due to fee.\n ";
 } // help
+
+namespace arg {
+  constexpr std::array<const char* const, 5> allowed_priority_strings =
+    {{"default", "unimportant", "normal", "elevated", "priority"}};
+
+  const command_line::arg_descriptor<std::string> arg_generate_new_wallet =
+    {"new", ("Generate new wallet and save it to <arg>"), ""};
+
+  const command_line::arg_descriptor<std::string> arg_generate_from_spend_key =
+    {"generate-from-spend-key", ("Generate deterministic wallet from spend key"), ""};
+
+  const command_line::arg_descriptor<std::string> arg_electrum_seed =
+    {"electrum-seed", ("Specify Electrum seed for wallet recovery/creation"), ""};
+
+  const command_line::arg_descriptor<bool> arg_restore_deterministic_wallet =
+    {"restore", ("Recover wallet using Electrum-style mnemonic seed"), false};
+
+  const command_line::arg_descriptor<bool> arg_do_not_relay =
+    {"do-not-relay", ("The newly created transaction will not be relayed to the lolnero network"), false};
+
+  const command_line::arg_descriptor<std::string> arg_subaddress_lookahead =
+    {"subaddress-lookahead", ("Set subaddress lookahead sizes to <major>:<minor>"), ""};
+
+  const command_line::arg_descriptor< std::vector<std::string> > arg_command = {"command", ""};
+}
 
 } // wallet
