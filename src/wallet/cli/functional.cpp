@@ -51,5 +51,17 @@ std::string get_refresh_type_name(const tools::wallet2::RefreshType type)
   return "invalid";
 }
 
+std::string join_priority_strings(const std::string_view delimiter)
+{
+  std::string s;
+  for (size_t n = 0; n < allowed_priority_strings.size(); ++n)
+    {
+      if (!s.empty())
+        s += delimiter;
+      s += allowed_priority_strings[n];
+    }
+  return s;
+}
+
 }
 }

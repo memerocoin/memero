@@ -67,5 +67,7 @@ namespace controller {
   std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str);
 
   void handle_transfer_exception(const std::exception_ptr &e);
+
+  void print_secret_key(const crypto::secret_key &k);
 }
 }

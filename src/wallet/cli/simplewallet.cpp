@@ -80,51 +80,6 @@ enum TransferType {
 static std::string get_human_readable_timespan(std::chrono::seconds seconds);
 static std::string get_human_readable_timespan(uint64_t seconds);
 
-namespace
-{
-  const auto arg_wallet_file = wallet_args::arg_wallet_file();
-}
-
-namespace
-{
-  void print_secret_key(const crypto::secret_key &k)
-  {
-    static constexpr const char hex[] = "0123456789abcdef";
-    const uint8_t *ptr = (const uint8_t*)k.data;
-    for (size_t i = 0, sz = sizeof(k); i < sz; ++i)
-    {
-      putchar(hex[*ptr >> 4]);
-      putchar(hex[*ptr & 15]);
-      ++ptr;
-    }
-  }
-}
-
-bool parse_priority(const std::string& arg, uint32_t& priority)
-{
-  auto priority_pos = std::find(
-    allowed_priority_strings.begin(),
-    allowed_priority_strings.end(),
-    arg);
-  if(priority_pos != allowed_priority_strings.end()) {
-    priority = std::distance(allowed_priority_strings.begin(), priority_pos);
-    return true;
-  }
-  return false;
-}
-
-std::string join_priority_strings(const char *delimiter)
-{
-  std::string s;
-  for (size_t n = 0; n < allowed_priority_strings.size(); ++n)
-  {
-    if (!s.empty())
-      s += delimiter;
-    s += allowed_priority_strings[n];
-  }
-  return s;
-}
-
 std::string simple_wallet::get_commands_str()
 {
   std::stringstream ss;
@@ -165,7 +120,7 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
     std::cout << "secret: On device. Not available" << std::endl;
   } else {
     printf("secret: ");
-    print_secret_key(m_wallet->get_account().get_keys().m_view_secret_key);
+    wallet::controller::print_secret_key(m_wallet->get_account().get_keys().m_view_secret_key);
     putchar('\n');
   }
   std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_view_public_key) << std::endl;
@@ -181,7 +136,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
     std::cout << "secret: On device. Not available" << std::endl;
   } else {
     printf("secret: ");
-    print_secret_key(m_wallet->get_account().get_keys().m_spend_secret_key);
+    wallet::controller::print_secret_key(m_wallet->get_account().get_keys().m_spend_secret_key);
     putchar('\n');
   }
   std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_spend_public_key) << std::endl;
@@ -323,7 +278,8 @@ bool simple_wallet::set_default_priority(const std::vector<std::string> &args/* 
   {
     if (strchr(args[1].c_str(), '-'))
     {
-      fail_msg_writer() << sw::tr("priority must be either 0, 1, 2, 3, or 4, or one of: ") << join_priority_strings(", ");
+      fail_msg_writer() << sw::tr("priority must be either 0, 1, 2, 3, or 4, or one of: ") <<
+        wallet::functional::join_priority_strings(", ");
       return true;
     }
     if (args[1] == "0")
@@ -333,9 +289,9 @@ bool simple_wallet::set_default_priority(const std::vector<std::string> &args/* 
     else
     {
       bool found = false;
-      for (size_t n = 0; n < allowed_priority_strings.size(); ++n)
+      for (size_t n = 0; n < wallet::functional::allowed_priority_strings.size(); ++n)
       {
-        if (allowed_priority_strings[n] == args[1])
+        if (wallet::functional::allowed_priority_strings[n] == args[1])
         {
           found = true;
           priority = n;
@@ -346,7 +302,7 @@ bool simple_wallet::set_default_priority(const std::vector<std::string> &args/* 
         priority = boost::lexical_cast<int>(args[1]);
         if (priority < 1 || priority > 4)
         {
-          fail_msg_writer() << sw::tr("priority must be either 0, 1, 2, 3, or 4, or one of: ") << join_priority_strings(", ");
+          fail_msg_writer() << sw::tr("priority must be either 0, 1, 2, 3, or 4, or one of: ") << wallet::functional::join_priority_strings(", ");
           return true;
         }
       }
@@ -362,7 +318,7 @@ bool simple_wallet::set_default_priority(const std::vector<std::string> &args/* 
   }
   catch(const boost::bad_lexical_cast &)
   {
-    fail_msg_writer() << sw::tr("priority must be either 0, 1, 2, 3, or 4, or one of: ") << join_priority_strings(", ");
+    fail_msg_writer() << sw::tr("priority must be either 0, 1, 2, 3, or 4, or one of: ") << wallet::functional::join_priority_strings(", ");
     return true;
   }
   catch(...)
@@ -730,8 +686,8 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     std::string seed_language = m_wallet->get_seed_language();
     std::string priority_string = "invalid";
     uint32_t priority = m_wallet->get_default_priority();
-    if (priority < allowed_priority_strings.size())
-      priority_string = allowed_priority_strings[priority];
+    if (priority < wallet::functional::allowed_priority_strings.size())
+      priority_string = wallet::functional::allowed_priority_strings[priority];
     success_msg_writer() << "always-confirm-transfers = " << m_wallet->always_confirm_transfers();
     success_msg_writer() << "print-ring-members = " << m_wallet->print_ring_members();
     success_msg_writer() << "store-tx-info = " << m_wallet->store_tx_info();
@@ -769,7 +725,7 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("print-ring-members", set_print_ring_members, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("store-tx-info", set_store_tx_info, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("refresh-type", set_refresh_type, sw::tr("full (slowest, no assumptions); optimize-coinbase (fast, assumes the whole coinbase is paid to a single address); no-coinbase (fastest, assumes we receive no coinbase transaction), default (same as optimize-coinbase)"));
-    CHECK_SIMPLE_VARIABLE("priority", set_default_priority, sw::tr("0, 1, 2, 3, or 4, or one of ") << join_priority_strings(", "));
+    CHECK_SIMPLE_VARIABLE("priority", set_default_priority, sw::tr("0, 1, 2, 3, or 4, or one of ") << wallet::functional::join_priority_strings(", "));
     CHECK_SIMPLE_VARIABLE("unit", set_unit, sw::tr("lolnero, millinero, micronero, nanonero, piconero"));
     CHECK_SIMPLE_VARIABLE("min-outputs-count", set_min_output_count, sw::tr("unsigned integer"));
     CHECK_SIMPLE_VARIABLE("min-outputs-value", set_min_output_value, sw::tr("amount"));
@@ -1067,7 +1023,7 @@ bool simple_wallet::deinit()
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::handle_command_line(const boost::program_options::variables_map& vm)
 {
-  m_wallet_file                   = command_line::get_arg(vm, arg_wallet_file);
+  m_wallet_file                   = command_line::get_arg(vm, wallet_args::arg_wallet_file());
   m_generate_new                  = command_line::get_arg(vm, arg_generate_new_wallet);
   m_generate_from_spend_key       = command_line::get_arg(vm, arg_generate_from_spend_key);
   m_electrum_seed                 = command_line::get_arg(vm, arg_electrum_seed);
@@ -2037,11 +1993,11 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     local_args.erase(local_args.begin());
   }
 
-  uint32_t priority = 0;
-  if (local_args.size() > 0 && parse_priority(local_args[0], priority))
+  const std::optional<uint32_t> maybe_priority = wallet::functional::parse_priority(local_args[0]);
+  if (local_args.size() > 0 && *maybe_priority)
     local_args.erase(local_args.begin());
 
-  priority = m_wallet->adjust_priority(priority);
+  const uint32_t priority = m_wallet->adjust_priority(maybe_priority.value_or(0));
 
   size_t fake_outs_count = config::lol::mixin;
   if(local_args.size() > 0) {
@@ -3660,7 +3616,7 @@ int main(int argc, char* argv[])
 
   po::options_description desc_params(wallet_args::tr("Wallet options"));
   tools::wallet2::init_options(desc_params);
-  command_line::add_arg(desc_params, arg_wallet_file);
+  command_line::add_arg(desc_params, wallet_args::arg_wallet_file());
   command_line::add_arg(desc_params, arg_generate_new_wallet);
   command_line::add_arg(desc_params, arg_generate_from_spend_key);
   command_line::add_arg(desc_params, arg_command);

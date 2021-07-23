@@ -47,5 +47,24 @@ std::optional<tools::wallet2::RefreshType> parse_refresh_type(const std::string 
 
 std::string get_refresh_type_name(const tools::wallet2::RefreshType type);
 
+constexpr std::array<std::string_view, 5> allowed_priority_strings =
+  {{"default", "unimportant", "normal", "elevated", "priority"}};
+
+constexpr std::optional<uint32_t> parse_priority(const std::string_view arg)
+{
+  const auto priority_pos = std::find(
+                                      allowed_priority_strings.begin(),
+                                      allowed_priority_strings.end(),
+                                      arg);
+
+  if(priority_pos != allowed_priority_strings.end()) {
+    return std::distance(allowed_priority_strings.begin(), priority_pos);
+  }
+  return {};
+}
+
+
+std::string join_priority_strings(const std::string_view delimiter);
+
 }
 }

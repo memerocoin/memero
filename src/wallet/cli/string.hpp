@@ -134,9 +134,6 @@ namespace help {
 } // help
 
 namespace arg {
-  constexpr std::array<const char* const, 5> allowed_priority_strings =
-    {{"default", "unimportant", "normal", "elevated", "priority"}};
-
   const command_line::arg_descriptor<std::string> arg_generate_new_wallet =
     {"new", ("Generate new wallet and save it to <arg>"), ""};
 

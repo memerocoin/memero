@@ -297,5 +297,16 @@ namespace controller {
       fail_msg_writer() << ("There was an error, which could mean the node may be trying to get you to retry creating a transaction, and zero in on which outputs you own. Or it could be a bona fide error. It may be prudent to disconnect from this node, and not try to send a transaction immediately. Alternatively, connect to another node so the original node cannot correlate information.");
   }
 
+  void print_secret_key(const crypto::secret_key &k)
+  {
+    static constexpr const char hex[] = "0123456789abcdef";
+    const uint8_t *ptr = (const uint8_t*)k.data;
+    for (size_t i = 0, sz = sizeof(k); i < sz; ++i)
+    {
+      putchar(hex[*ptr >> 4]);
+      putchar(hex[*ptr & 15]);
+      ++ptr;
+    }
+  }
 }
 }
