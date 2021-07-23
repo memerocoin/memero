@@ -27,6 +27,11 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+add_library(wallet_cli_support
+  functional.cpp
+  controller.cpp
+  )
+
 add_executable(lolnero
   simplewallet.cpp
   )
@@ -36,6 +41,7 @@ target_link_libraries(lolnero
 
   network_type
   wallet_api
+  wallet_cli_support
 
   wallet_common
 

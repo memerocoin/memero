@@ -37,6 +37,8 @@
 
 #include "simplewallet.h"
 #include "string.hpp"
+#include "functional.hpp"
+#include "controller.hpp"
 
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
@@ -64,6 +66,7 @@
 
 using namespace cryptonote;
 using namespace wallet::usage;
+using namespace wallet::controller;
 
 namespace po = boost::program_options;
 typedef cryptonote::simple_wallet sw;
@@ -88,207 +91,6 @@ namespace
   const command_line::arg_descriptor<std::string> arg_subaddress_lookahead = {"subaddress-lookahead", tools::wallet2::tr("Set subaddress lookahead sizes to <major>:<minor>"), ""};
   const command_line::arg_descriptor< std::vector<std::string> > arg_command = {"command", ""};
 
-
-
-  std::string input_line(const std::string& prompt, bool yesno = false)
-  {
-    PAUSE_READLINE();
-    std::cout << prompt;
-    if (yesno)
-      std::cout << "  (Y/N)";
-    std::cout << ": " << std::flush;
-
-    std::string buf;
-    std::getline(std::cin, buf);
-
-    return epee::string_tools::trim(buf);
-  }
-
-  epee::wipeable_string input_secure_line(const char *prompt)
-  {
-    PAUSE_READLINE();
-    auto pwd_container = tools::password_container::prompt(false, prompt, false);
-    if (!pwd_container)
-    {
-      MERROR("Failed to read secure line");
-      return "";
-    }
-
-    epee::wipeable_string buf = pwd_container->password();
-
-    buf.trim();
-    return buf;
-  }
-
-  std::optional<tools::password_container> password_prompter(const char *prompt, bool verify)
-  {
-    PAUSE_READLINE();
-    auto pwd_container = tools::password_container::prompt(verify, prompt);
-    if (!pwd_container)
-    {
-      tools::fail_msg_writer() << sw::tr("failed to read wallet password");
-    }
-    return pwd_container;
-  }
-
-  std::optional<tools::password_container> default_password_prompter(bool verify)
-  {
-    return password_prompter(verify ? sw::tr("Enter a new password for the wallet") : sw::tr("Wallet password"), verify);
-  }
-
-  inline std::string interpret_rpc_response(bool ok, const std::string& status)
-  {
-    std::string err;
-    if (ok)
-    {
-      if (status == CORE_RPC_STATUS_BUSY)
-      {
-        err = sw::tr("daemon is busy. Please try again later.");
-      }
-      else if (status != CORE_RPC_STATUS_OK)
-      {
-        err = status;
-      }
-    }
-    else
-    {
-      err = sw::tr("possibly lost connection to daemon");
-    }
-    return err;
-  }
-
-  tools::scoped_message_writer success_msg_writer(bool color = false)
-  {
-    return tools::scoped_message_writer(color ? epee::console_color_green : epee::console_color_default, false, std::string(), el::Level::Info);
-  }
-
-  tools::scoped_message_writer message_writer(epee::console_colors color = epee::console_color_default, bool bright = false)
-  {
-    return tools::scoped_message_writer(color, bright);
-  }
-
-  tools::scoped_message_writer fail_msg_writer()
-  {
-    return tools::scoped_message_writer(epee::console_color_red, true, sw::tr("Error: "), el::Level::Error);
-  }
-
-  bool parse_bool(const std::string& s, bool& result)
-  {
-    if (s == "1" || command_line::is_yes(s))
-    {
-      result = true;
-      return true;
-    }
-    if (s == "0" || command_line::is_no(s))
-    {
-      result = false;
-      return true;
-    }
-
-    boost::algorithm::is_iequal ignore_case{};
-    if (boost::algorithm::equals("true", s, ignore_case) || boost::algorithm::equals(simple_wallet::tr("true"), s, ignore_case))
-    {
-      result = true;
-      return true;
-    }
-    if (boost::algorithm::equals("false", s, ignore_case) || boost::algorithm::equals(simple_wallet::tr("false"), s, ignore_case))
-    {
-      result = false;
-      return true;
-    }
-
-    return false;
-  }
-
-  template <typename F>
-  bool parse_bool_and_use(const std::string& s, F func)
-  {
-    bool r;
-    if (parse_bool(s, r))
-    {
-      func(r);
-      return true;
-    }
-    else
-    {
-      fail_msg_writer() << sw::tr("invalid argument: must be either 0/1, true/false, y/n, yes/no");
-      return false;
-    }
-  }
-
-  const struct
-  {
-    const char *name;
-    tools::wallet2::RefreshType refresh_type;
-  } refresh_type_names[] =
-  {
-    { "full", tools::wallet2::RefreshFull },
-    { "optimize-coinbase", tools::wallet2::RefreshOptimizeCoinbase },
-    { "optimized-coinbase", tools::wallet2::RefreshOptimizeCoinbase },
-    { "no-coinbase", tools::wallet2::RefreshNoCoinbase },
-    { "default", tools::wallet2::RefreshDefault },
-  };
-
-  bool parse_refresh_type(const std::string &s, tools::wallet2::RefreshType &refresh_type)
-  {
-    for (size_t n = 0; n < sizeof(refresh_type_names) / sizeof(refresh_type_names[0]); ++n)
-    {
-      if (s == refresh_type_names[n].name)
-      {
-        refresh_type = refresh_type_names[n].refresh_type;
-        return true;
-      }
-    }
-    fail_msg_writer() << cryptonote::simple_wallet::tr("failed to parse refresh type");
-    return false;
-  }
-
-  std::string get_refresh_type_name(tools::wallet2::RefreshType type)
-  {
-    for (size_t n = 0; n < sizeof(refresh_type_names) / sizeof(refresh_type_names[0]); ++n)
-    {
-      if (type == refresh_type_names[n].refresh_type)
-        return refresh_type_names[n].name;
-    }
-    return "invalid";
-  }
-
-  std::string get_version_string(uint32_t version)
-  {
-    return boost::lexical_cast<std::string>(version >> 16) + "." + boost::lexical_cast<std::string>(version & 0xffff);
-  }
-
-  bool parse_subaddress_indices(const std::string& arg, std::set<uint32_t>& subaddr_indices)
-  {
-    subaddr_indices.clear();
-
-    if (arg.substr(0, 6) != "index=")
-      return false;
-    std::string subaddr_indices_str_unsplit = arg.substr(6, arg.size() - 6);
-    std::vector<std::string> subaddr_indices_str;
-    boost::split(subaddr_indices_str, subaddr_indices_str_unsplit, boost::is_any_of(","));
-
-    for (const auto& subaddr_index_str : subaddr_indices_str)
-    {
-      uint32_t subaddr_index;
-      if(!epee::string_tools::get_xtype_from_string(subaddr_index, subaddr_index_str))
-      {
-        fail_msg_writer() << sw::tr("failed to parse index: ") << subaddr_index_str;
-        subaddr_indices.clear();
-        return false;
-      }
-      subaddr_indices.insert(subaddr_index);
-    }
-    return true;
-  }
-
-  std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str)
-  {
-    auto r = tools::parse_subaddress_lookahead(str);
-    if (!r)
-      fail_msg_writer() << sw::tr("invalid format for subaddress lookahead; must be <major>:<minor>");
-    return r;
-  }
 }
 
 void simple_wallet::handle_transfer_exception(const std::exception_ptr &e)
@@ -687,8 +489,8 @@ bool simple_wallet::set_default_priority(const std::vector<std::string> &args/* 
 
 bool simple_wallet::set_refresh_type(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
-  tools::wallet2::RefreshType refresh_type;
-  if (!parse_refresh_type(args[1], refresh_type))
+  std::optional<tools::wallet2::RefreshType> refresh_type = wallet::functional::parse_refresh_type(args[1]);
+  if (!refresh_type)
   {
     return true;
   }
@@ -696,7 +498,7 @@ bool simple_wallet::set_refresh_type(const std::vector<std::string> &args/* = st
   const auto pwd_container = get_and_verify_password();
   if (pwd_container)
   {
-    m_wallet->set_refresh_type(refresh_type);
+    m_wallet->set_refresh_type(*refresh_type);
     m_wallet->rewrite(m_wallet_file, pwd_container->password());
   }
   return true;
@@ -1048,7 +850,7 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "always-confirm-transfers = " << m_wallet->always_confirm_transfers();
     success_msg_writer() << "print-ring-members = " << m_wallet->print_ring_members();
     success_msg_writer() << "store-tx-info = " << m_wallet->store_tx_info();
-    success_msg_writer() << "refresh-type = " << get_refresh_type_name(m_wallet->get_refresh_type());
+    success_msg_writer() << "refresh-type = " << wallet::functional::get_refresh_type_name(m_wallet->get_refresh_type());
     success_msg_writer() << "priority = " << priority<< " (" << priority_string << ")";
     success_msg_writer() << "unit = " << cryptonote::get_unit(cryptonote::get_default_decimal_point());
     success_msg_writer() << "min-outputs-count = " << m_wallet->get_min_output_count();
