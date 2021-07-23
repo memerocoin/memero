@@ -151,6 +151,21 @@ namespace controller {
     return false;
   }
 
+  bool parse_bool_and_use(const std::string& s, const std::function<void(const bool)> func)
+  {
+    bool r;
+    if (parse_bool(s, r))
+    {
+      func(r);
+      return true;
+    }
+    else
+    {
+      fail_msg_writer() << "invalid argument: must be either 0/1, true/false, y/n, yes/no";
+      return false;
+    }
+  }
+
   std::string get_version_string(uint32_t version)
   {
 

@@ -44,22 +44,7 @@ namespace controller {
   tools::scoped_message_writer message_writer(epee::console_colors color = epee::console_color_default, bool bright = false);
   tools::scoped_message_writer fail_msg_writer();
   bool parse_bool(const std::string& s, bool& result);
-
-  template <typename F>
-  bool parse_bool_and_use(const std::string& s, F func)
-  {
-    bool r;
-    if (parse_bool(s, r))
-    {
-      func(r);
-      return true;
-    }
-    else
-    {
-      fail_msg_writer() << "invalid argument: must be either 0/1, true/false, y/n, yes/no";
-      return false;
-    }
-  }
+  bool parse_bool_and_use(const std::string& s, const std::function<void(const bool)> func);
 
   std::string get_version_string(uint32_t version);
 
