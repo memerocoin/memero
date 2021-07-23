@@ -30,6 +30,7 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "controller.hpp"
+#include "functional.hpp"
 
 #include "tools/common/command_line.h"
 #include "tools/common/util.h"
@@ -123,52 +124,17 @@ namespace controller {
     return tools::scoped_message_writer(epee::console_color_red, true, ("Error: "), el::Level::Error);
   }
 
-  bool parse_bool(const std::string& s, bool& result)
+  void parse_bool_and_use(const std::string s, const std::function<void(const bool)> func)
   {
-    if (s == "1" || command_line::is_yes(s))
+    std::optional<bool> r = wallet::functional::parse_bool(s);
+    if (r.has_value())
     {
-      result = true;
-      return true;
-    }
-    if (s == "0" || command_line::is_no(s))
-    {
-      result = false;
-      return true;
-    }
-
-    boost::algorithm::is_iequal ignore_case{};
-    if (boost::algorithm::equals("true", s, ignore_case) || boost::algorithm::equals(("true"), s, ignore_case))
-    {
-      result = true;
-      return true;
-    }
-    if (boost::algorithm::equals("false", s, ignore_case) || boost::algorithm::equals(("false"), s, ignore_case))
-    {
-      result = false;
-      return true;
-    }
-
-    return false;
-  }
-
-  bool parse_bool_and_use(const std::string& s, const std::function<void(const bool)> func)
-  {
-    bool r;
-    if (parse_bool(s, r))
-    {
-      func(r);
-      return true;
-    }
-    else
-    {
-      fail_msg_writer() << "invalid argument: must be either 0/1, true/false, y/n, yes/no";
-      return false;
+      func(*r);
     }
   }
 
   std::string get_version_string(uint32_t version)
   {
-
     return boost::lexical_cast<std::string>(version >> 16) + "." + boost::lexical_cast<std::string>(version & 0xffff);
   }
 

@@ -66,5 +66,7 @@ constexpr std::optional<uint32_t> parse_priority(const std::string_view arg)
 
 std::string join_priority_strings(const std::string_view delimiter);
 
+std::optional<bool> parse_bool(const std::string s);
+
 }
 }

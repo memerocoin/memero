@@ -43,8 +43,7 @@ namespace controller {
   tools::scoped_message_writer success_msg_writer(bool color = false);
   tools::scoped_message_writer message_writer(epee::console_colors color = epee::console_color_default, bool bright = false);
   tools::scoped_message_writer fail_msg_writer();
-  bool parse_bool(const std::string& s, bool& result);
-  bool parse_bool_and_use(const std::string& s, const std::function<void(const bool)> func);
+  void parse_bool_and_use(const std::string s, const std::function<void(const bool)> func);
 
   std::string get_version_string(uint32_t version);
 

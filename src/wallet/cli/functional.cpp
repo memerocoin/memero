@@ -31,6 +31,8 @@
 
 #include "functional.hpp"
 
+#include "tools/common/command_line.h"
+
 namespace wallet {
 namespace functional {
 
@@ -62,6 +64,32 @@ std::string join_priority_strings(const std::string_view delimiter)
                          }
                          );
 }
+
+std::optional<bool> parse_bool(const std::string s)
+{
+  if (s == "1" || command_line::is_yes(s))
+  {
+    return true;
+  }
+  if (s == "0" || command_line::is_no(s))
+  {
+    return false;
+  }
+
+  boost::algorithm::is_iequal ignore_case{};
+
+  if (boost::algorithm::equals("true", s, ignore_case) || boost::algorithm::equals(("true"), s, ignore_case))
+  {
+    return true;
+  }
+  if (boost::algorithm::equals("false", s, ignore_case) || boost::algorithm::equals(("false"), s, ignore_case))
+  {
+    return false;
+  }
+
+  return {};
+}
+
 
 }
 }
