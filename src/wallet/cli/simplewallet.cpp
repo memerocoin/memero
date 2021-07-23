@@ -36,6 +36,7 @@
  */
 
 #include "simplewallet.h"
+#include "string.hpp"
 
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
@@ -62,6 +63,7 @@
 #define PRINT_USAGE(usage_help) fail_msg_writer() << boost::format(tr("usage: %s")) % usage_help;
 
 using namespace cryptonote;
+using namespace wallet::usage;
 
 namespace po = boost::program_options;
 typedef cryptonote::simple_wallet sw;
@@ -87,42 +89,6 @@ namespace
   const command_line::arg_descriptor< std::vector<std::string> > arg_command = {"command", ""};
 
 
-  constexpr char USAGE_START_MINING[] = "start-mining [<number_of_threads>]";
-  constexpr char USAGE_SET_DAEMON[] = "set-daemon <host>[:<port>]";
-  constexpr char USAGE_SHOW_BALANCE[] = "balance [detail]";
-  constexpr char USAGE_INCOMING[] = "incoming [available|unavailable] [verbose] [index=<N1>[,<N2>[,...]]]";
-  constexpr char USAGE_TRANSFER[] = "transfer [index=<N1>[,<N2>,...]] [<priority>] (<URI> | <address> <amount>)";
-  constexpr char USAGE_SET_LOG[] = "set-log <level>";
-  constexpr char USAGE_ACCOUNT[] = "account\n"
-                            "  account new <label>\n"
-                            "  account switch <index> \n"
-                            "  account label <index> <label>\n"
-                            ;
-  constexpr char USAGE_ADDRESS[] = "address\n"
-                            "  address new <label>\n"
-                            "  address all \n"
-                            "  address <index min> [<index max>]\n"
-                            "  address label <index> <label>\n"
-                            "  address one-off <account> <subaddress>\n"
-                            ;
-  constexpr char USAGE_SET_VARIABLE[] = "set <option> [<value>]";
-  constexpr char USAGE_GET_TX_KEY[] = "get-tx-key <txid>";
-  constexpr char USAGE_CHECK_TX_KEY[] = "check-tx-key <txid> <txkey> <address>";
-  constexpr char USAGE_GET_TX_PROOF[] = "get-tx-proof <txid> <address> [<message>]";
-  constexpr char USAGE_CHECK_TX_PROOF[] = "check-tx-proof <txid> <address> <signature file> [<message>]";
-  constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
-                         "     [<min height> [<max height>]]\n";
-  constexpr char USAGE_UNSPENT_OUTPUTS[] = "unspent-outputs [index=<N1>[,<N2>,...]] [<min amount> [<max amount>]]";
-  constexpr char USAGE_RESCAN_BC[] = "rescan-bc [hard]";
-  constexpr char USAGE_SIGN[] = "sign [<account index>,<address index>] [--spend|--view] <filename>";
-  constexpr char USAGE_VERIFY[] = "verify <filename> <address> <signature>";
-  constexpr char USAGE_SHOW_TRANSFER[] = "show-transfer <txid>";
-  constexpr char USAGE_WELCOME[] = "welcome";
-  constexpr char USAGE_VERSION[] = "version";
-  constexpr char USAGE_HELP[] = "help [<command> | all]";
-  constexpr char USAGE_APROPOS[] = "apropos <keyword> [<keyword> ...]";
-  constexpr char USAGE_EXPORT[] = "export [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
-                           "       [<min height> [<max height>]] [output=<filepath>]\n";
 
   std::string input_line(const std::string& prompt, bool yesno = false)
   {
@@ -930,36 +896,6 @@ bool simple_wallet::apropos(const std::vector<std::string> &args)
   return true;
 }
 
-
-constexpr std::string_view set_help =
-  "Available options:\n "
-  "always-confirm-transfers <1|0>\n "
-  "  Whether to confirm unsplit txes.\n "
-  "print-ring-members <1|0>\n "
-  "  Whether to print detailed information about ring members during confirmation.\n "
-  "store-tx-info <1|0>\n "
-  "  Whether to store outgoing tx info (destination address, payment ID, tx secret key) for future reference.\n "
-  "refresh-type <full|optimize-coinbase|no-coinbase|default>\n "
-  "  Set the wallet's refresh behaviour.\n "
-  "priority [0|1|2|3|4]\n "
-  "  Set the fee to default/unimportant/normal/elevated/priority.\n "
-  "unit <lolnero|millinero|micronero|nanonero|piconero>\n "
-  "  Set the default lolnero (sub-)unit.\n "
-  "min-outputs-count [n]\n "
-  "  Try to keep at least that many outputs of value at least min-outputs-value.\n "
-  "min-outputs-value [n]\n "
-  "  Try to keep at least min-outputs-count outputs of at least that value.\n "
-  "merge-destinations <1|0>\n "
-  "  Whether to merge multiple payments to the same destination address.\n "
-  "confirm-export-overwrite <1|0>\n "
-  "  Whether to warn if the file to be exported already exists.\n "
-  "refresh-from-block-height [n]\n "
-  "  Set the height before which to ignore blocks.\n "
-  "subaddress-lookahead <major>:<minor>\n "
-  "  Set the lookahead sizes for the subaddress hash table.\n "
-  "ignore-fractional-outputs <1|0>\n "
-  "  Whether to ignore fractional outputs that result in net loss when spending due to fee.\n ";
-
 simple_wallet::simple_wallet()
   : m_refresh_progress_reporter(*this)
   , m_in_manual_refresh(false)
@@ -991,12 +927,10 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("incoming",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_incoming,std::placeholders::_1),
                            sw::tr(USAGE_INCOMING),
-                           sw::tr("Show the incoming transfers, all or filtered by availability and address index.\n\n"
-                              "Output format:\n"
-                              "Amount, Spent(\"T\"|\"F\"), \"frozen\"|\"locked\"|\"unlocked\", RingCT, Global Index, Transaction Hash, Address Index, [Public Key, Key Image] "));
+                           std::string(wallet::help::incoming));
   m_cmd_binder.set_handler("transfer", std::bind(&simple_wallet::on_command, this, &simple_wallet::transfer, std::placeholders::_1),
                            sw::tr(USAGE_TRANSFER),
-                           sw::tr("Transfer <amount> to <address>. If the parameter \"index=<N1>[,<N2>,...]\" is specified, the wallet uses outputs received by addresses of those indices. If omitted, the wallet randomly chooses address indices to be used. In any case, it tries its best not to combine outputs across multiple addresses. <priority> is the priority of the transaction. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability. Multiple payments can be made at once by adding URI_2 or <address_2> <amount_2> etcetera (before the payment ID, if it's included)"));
+                           std::string(wallet::help::transfer));
   m_cmd_binder.set_handler("set-log",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_log, std::placeholders::_1),
                            sw::tr(USAGE_SET_LOG),
@@ -1004,15 +938,11 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("account",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::account, std::placeholders::_1),
                            sw::tr(USAGE_ACCOUNT),
-                           sw::tr("If no arguments are specified, the wallet shows all the existing accounts along with their balances.\n"
-                              "If the \"new\" argument is specified, the wallet creates a new account with its label initialized by the provided label text (which can be empty).\n"
-                              "If the \"switch\" argument is specified, the wallet switches to the account specified by <index>.\n"
-                              "If the \"label\" argument is specified, the wallet sets the label of the account specified by <index> to the provided label text.\n"
-                              ));
+                           std::string(wallet::help::account));
   m_cmd_binder.set_handler("address",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::print_address, std::placeholders::_1),
                            sw::tr(USAGE_ADDRESS),
-                           sw::tr("If no arguments are specified or <index> is specified, the wallet shows the default or specified address. If \"all\" is specified, the wallet shows all the existing addresses in the currently selected account. If \"new \" is specified, the wallet creates a new address with the provided label text (which can be empty). If \"label\" is specified, the wallet sets the label of the address specified by <index> to the provided label text. If \"one-off\" is specified, the address for the specified index is generated and displayed, and remembered by the wallet"));
+                           std::string(wallet::help::address));
   m_cmd_binder.set_handler("save",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::save, std::placeholders::_1),
                            sw::tr("Save the wallet data."));
@@ -1028,7 +958,7 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("set",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_variable, std::placeholders::_1),
                            sw::tr(USAGE_SET_VARIABLE),
-                           std::string(set_help));
+                           std::string(wallet::help::set_variable));
   m_cmd_binder.set_handler("rescan-spent",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_spent, std::placeholders::_1),
                            sw::tr("Rescan the blockchain for spent outputs."));
@@ -1051,15 +981,7 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("show",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show, std::placeholders::_1),
                            sw::tr(USAGE_SHOW),
-                           // Seemingly broken formatting to compensate for the backslash before the quotes.
-                           sw::tr("Show the incoming/outgoing transfers within an optional height range.\n\n"
-                              "Output format:\n"
-                              "In or Coinbase:    Block Number, \"block\"|\"in\",              Time, Amount,  Transaction Hash, Payment ID, Subaddress Index,                     \"-\", Note\n"
-                              "Out:               Block Number, \"out\",                     Time, Amount*, Transaction Hash, Payment ID, Fee, Destinations, Input addresses**, \"-\", Note\n"
-                              "Pool:                            \"pool\", \"in\",              Time, Amount,  Transaction Hash, Payment Id, Subaddress Index,                     \"-\", Note, Double Spend Note\n"
-                              "Pending or Failed:               \"failed\"|\"pending\", \"out\", Time, Amount*, Transaction Hash, Payment ID, Fee, Input addresses**,               \"-\", Note\n\n"
-                              "* Excluding change and fee.\n"
-                              "** Set of address indices used as inputs in this transfer."));
+                           std::string(wallet::help::show));
   m_cmd_binder.set_handler("export",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::export_transfers, std::placeholders::_1),
                            sw::tr(USAGE_EXPORT),
