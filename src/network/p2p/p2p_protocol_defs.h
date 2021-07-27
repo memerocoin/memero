@@ -48,7 +48,6 @@ namespace nodetool
 
   std::string peerid_to_string(peerid_type peer_id);
 
-#pragma pack (push, 1)
   template<typename AddressType>
   struct peerlist_entry_base
   {
@@ -111,8 +110,6 @@ namespace nodetool
     END_SERIALIZE()
   };
   typedef connection_entry_base<epee::net_utils::network_address> connection_entry;
-
-#pragma pack(pop)
 
   std::string print_peerlist_to_string(const std::vector<peerlist_entry>& pl);
 
