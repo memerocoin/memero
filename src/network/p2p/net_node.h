@@ -51,6 +51,19 @@ namespace nodetool
 {
   boost::asio::ip::address_v4 make_address_v4_from_v6(const boost::asio::ip::address_v6& a);
 
+  struct network_config
+  {
+    uint32_t max_out_connection_count;
+    uint32_t max_in_connection_count;
+    uint32_t connection_timeout;
+    uint32_t ping_connection_timeout;
+    uint32_t handshake_interval;
+    uint32_t packet_max_size;
+    uint32_t config_id;
+    uint32_t send_peerlist_sz;
+  };
+
+
   struct proxy
   {
     proxy()

@@ -116,26 +116,6 @@ namespace nodetool
 
   std::string print_peerlist_to_string(const std::vector<peerlist_entry>& pl);
 
-  struct network_config
-  {
-    BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(max_out_connection_count)
-      KV_SERIALIZE(max_in_connection_count)
-      KV_SERIALIZE(handshake_interval)
-      KV_SERIALIZE(packet_max_size)
-      KV_SERIALIZE(config_id)
-    END_KV_SERIALIZE_MAP()
-
-    uint32_t max_out_connection_count;
-    uint32_t max_in_connection_count;
-    uint32_t connection_timeout;
-    uint32_t ping_connection_timeout;
-    uint32_t handshake_interval;
-    uint32_t packet_max_size;
-    uint32_t config_id;
-    uint32_t send_peerlist_sz;
-  };
-
   struct basic_node_data
   {
     uuid network_id;
