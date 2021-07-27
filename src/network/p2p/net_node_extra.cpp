@@ -1716,7 +1716,7 @@ namespace nodetool
   }
   //-----------------------------------------------------------------------------------
 
-  int node_server::handle_get_support_flags(int command, COMMAND_REQUEST_SUPPORT_FLAGS::request& arg, COMMAND_REQUEST_SUPPORT_FLAGS::response& rsp, p2p_connection_context& context)
+  int node_server::handle_get_support_flags(int command, COMMAND_SUPPORT_FLAGS::request& arg, COMMAND_SUPPORT_FLAGS::response& rsp, p2p_connection_context& context)
   {
     rsp.support_flags = m_network_zones.at(context.m_remote_address.get_zone()).m_config.m_support_flags;
     return 1;
@@ -1839,18 +1839,18 @@ namespace nodetool
     if(context.m_remote_address.get_zone() != epee::net_utils::zone::public_)
       return false;
 
-    COMMAND_REQUEST_SUPPORT_FLAGS::request support_flags_request;
-    bool r = epee::net_utils::async_invoke_remote_command2<typename COMMAND_REQUEST_SUPPORT_FLAGS::response>
+    COMMAND_SUPPORT_FLAGS::request support_flags_request;
+    bool r = epee::net_utils::async_invoke_remote_command2<typename COMMAND_SUPPORT_FLAGS::response>
     (
       context,
-      COMMAND_REQUEST_SUPPORT_FLAGS::ID,
+      COMMAND_SUPPORT_FLAGS::ID,
       support_flags_request,
       m_network_zones.at(epee::net_utils::zone::public_).m_net_server.get_config_object(),
-      [=](int code, const typename COMMAND_REQUEST_SUPPORT_FLAGS::response& rsp, p2p_connection_context& context_)
+      [=](int code, const typename COMMAND_SUPPORT_FLAGS::response& rsp, p2p_connection_context& context_)
       {
         if(code < 0)
         {
-          LOG_WARNING_CC(context_, "COMMAND_REQUEST_SUPPORT_FLAGS invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
+          LOG_WARNING_CC(context_, "COMMAND_SUPPORT_FLAGS invoke failed. (" << code <<  ", " << epee::levin::get_err_descr(code) << ")");
           return;
         }
 

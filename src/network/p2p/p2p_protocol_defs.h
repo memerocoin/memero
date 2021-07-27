@@ -236,7 +236,7 @@ namespace nodetool
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  struct COMMAND_REQUEST_SUPPORT_FLAGS
+  struct COMMAND_SUPPORT_FLAGS
   {
     const static int ID = P2P_COMMANDS_POOL_BASE + 7;
 

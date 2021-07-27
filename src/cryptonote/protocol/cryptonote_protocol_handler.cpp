@@ -2351,7 +2351,7 @@ skip:
     context.set_max_bytes(nodetool::COMMAND_HANDSHAKE_T<cryptonote::CORE_SYNC_DATA>::ID, 65536);
     context.set_max_bytes(nodetool::COMMAND_TIMED_SYNC_T<cryptonote::CORE_SYNC_DATA>::ID, 65536);
     context.set_max_bytes(nodetool::COMMAND_PING::ID, 4096);
-    context.set_max_bytes(nodetool::COMMAND_REQUEST_SUPPORT_FLAGS::ID, 4096);
+    context.set_max_bytes(nodetool::COMMAND_SUPPORT_FLAGS::ID, 4096);
 
     context.set_max_bytes(cryptonote::NOTIFY_NEW_BLOCK::ID, 1024 * 1024 * 128); // 128 MB (max packet is a bit less than 100 MB though)
     context.set_max_bytes(cryptonote::NOTIFY_NEW_TRANSACTIONS::ID, 1024 * 1024 * 128); // 128 MB (max packet is a bit less than 100 MB though)
