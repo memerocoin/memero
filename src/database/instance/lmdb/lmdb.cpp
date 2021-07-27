@@ -59,7 +59,6 @@ using namespace constant;
 namespace
 {
 
-#pragma pack(push, 1)
 // This MUST be identical to output_data_t, without the extra rct data at the end
 struct pre_rct_output_data_t
 {
@@ -67,7 +66,6 @@ struct pre_rct_output_data_t
   uint64_t           unlock_time;  //!< the output's unlock time (or height)
   uint64_t           height;       //!< the height of the block which created the output
 };
-#pragma pack(pop)
 
 template <typename T>
 inline void throw0(const T &e)

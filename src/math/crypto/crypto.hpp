@@ -36,7 +36,6 @@
 
 namespace crypto {
 
-#pragma pack(push, 1)
   struct ec_point {
     char data[32];
   };
@@ -79,7 +78,6 @@ namespace crypto {
     ec_scalar c, r;
     friend class crypto_ops;
   };
-#pragma pack(pop)
 
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res);
   void random32_unbiased(unsigned char *bytes);

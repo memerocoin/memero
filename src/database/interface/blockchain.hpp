@@ -109,8 +109,6 @@ enum class relay_category : uint8_t
 
 bool matches_category(relay_method method, relay_category category) noexcept;
 
-#pragma pack(push, 1)
-
 /**
  * @brief a struct containing output metadata
  */
@@ -121,16 +119,13 @@ struct output_data_t
   uint64_t           height;       //!< the height of the block which created the output
   rct::key           commitment;   //!< the output's amount commitment (for spend verification)
 };
-#pragma pack(pop)
 
-#pragma pack(push, 1)
 struct tx_data_t
 {
   uint64_t tx_id;
   uint64_t unlock_time;
   uint64_t block_id;
 };
-#pragma pack(pop)
 
 struct alt_block_data_t
 {
