@@ -3821,9 +3821,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
           error::get_output_distribution, "Daemon reports suspicious number of rct outputs");
     }
 
-    // if we want to segregate fake outs pre or post fork, get distribution
-    std::unordered_map<uint64_t, std::pair<uint64_t, uint64_t>> segregation_limit;
-
     // we ask for more, to have spares if some outputs are still locked
     size_t base_requested_outputs_count = (size_t)((fake_outputs_count + 1) * 1.5 + 1);
     LOG_PRINT_L2("base_requested_outputs_count: " << base_requested_outputs_count);
