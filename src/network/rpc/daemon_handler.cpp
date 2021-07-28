@@ -83,7 +83,6 @@ namespace rpc
       {"get_info", handle_message<GetInfo>},
       {"get_last_block_header", handle_message<GetLastBlockHeader>},
       {"get_output_distribution", handle_message<GetOutputDistribution>},
-      {"get_output_histogram", handle_message<GetOutputHistogram>},
       {"get_output_keys", handle_message<GetOutputKeys>},
       {"get_peer_list", handle_message<GetPeerList>},
       {"get_transaction_pool", handle_message<GetTransactionPool>},
@@ -747,31 +746,6 @@ namespace rpc
   {
     res.status = Message::STATUS_FAILED;
     res.error_details = "RPC method not yet implemented.";
-  }
-
-  void DaemonHandler::handle(const GetOutputHistogram::Request& req, GetOutputHistogram::Response& res)
-  {
-    std::map<uint64_t, std::tuple<uint64_t, uint64_t, uint64_t> > histogram;
-    try
-    {
-      histogram = m_core.get_blockchain_storage().get_output_histogram(req.amounts, req.unlocked, req.recent_cutoff);
-    }
-    catch (const std::exception &e)
-    {
-      res.status = Message::STATUS_FAILED;
-      res.error_details = e.what();
-      return;
-    }
-
-    res.histogram.clear();
-    res.histogram.reserve(histogram.size());
-    for (const auto &i: histogram)
-    {
-      if (std::get<0>(i.second) >= req.min_count && (std::get<0>(i.second) <= req.max_count || req.max_count == 0))
-        res.histogram.emplace_back(output_amount_count{i.first, std::get<0>(i.second), std::get<1>(i.second), std::get<2>(i.second)});
-    }
-
-    res.status = Message::STATUS_OK;
   }
 
   void DaemonHandler::handle(const GetOutputKeys::Request& req, GetOutputKeys::Response& res)
