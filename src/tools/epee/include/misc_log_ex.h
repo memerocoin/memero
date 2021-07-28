@@ -172,7 +172,6 @@ void reset_console_color();
   } while (0)
 
 #define MCLOG(level, cat, color, x) MCLOG_TYPE(level, cat, color, el::base::DispatchAction::NormalLog, x)
-#define MCLOG_FILE(level, cat, x) MCLOG_TYPE(level, cat, el::Color::Default, el::base::DispatchAction::FileOnlyLog, x)
 
 #define MCFATAL(cat,x) MCLOG(el::Level::Fatal,cat, el::Color::Default, x)
 #define MCERROR(cat,x) MCLOG(el::Level::Error,cat, el::Color::Default, x)

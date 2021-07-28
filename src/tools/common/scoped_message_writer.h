@@ -94,8 +94,6 @@ public:
     {
       m_flush = false;
 
-      MCLOG_FILE(m_log_level, "msgwriter", m_oss.str());
-
       PAUSE_READLINE();
       if (epee::console_color_default == m_color)
       {
