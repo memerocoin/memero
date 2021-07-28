@@ -5013,44 +5013,6 @@ std::vector<uint64_t> wallet2::get_unspent_amounts_vector(bool strict)
   return vector;
 }
 //----------------------------------------------------------------------------------------------------
-std::vector<size_t> wallet2::select_available_outputs_from_histogram(uint64_t count, bool atleast, bool unlocked, bool allow_rct)
-{
-  cryptonote::COMMAND_RPC_GET_OUTPUT_HISTOGRAM::request req_t = AUTO_VAL_INIT(req_t);
-  cryptonote::COMMAND_RPC_GET_OUTPUT_HISTOGRAM::response resp_t = AUTO_VAL_INIT(resp_t);
-  req_t.amounts = get_unspent_amounts_vector(false);
-  req_t.min_count = count;
-  req_t.max_count = 0;
-  req_t.unlocked = unlocked;
-  req_t.recent_cutoff = 0;
-
-  {
-    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_output_histogram", req_t, resp_t, *m_http_client, rpc_timeout);
-    THROW_ON_RPC_RESPONSE_ERROR(r, {}, resp_t, "get_output_histogram", error::get_histogram_error, resp_t.status);
-  }
-
-  std::set<uint64_t> mixable;
-  for (const auto &i: resp_t.histogram)
-  {
-    mixable.insert(i.amount);
-  }
-
-  return select_available_outputs([mixable, atleast, allow_rct](const transfer_details &td) {
-    if (!allow_rct && td.is_rct())
-      return false;
-    const uint64_t amount = td.is_rct() ? 0 : td.amount();
-    if (atleast) {
-      if (mixable.find(amount) != mixable.end())
-        return true;
-    }
-    else {
-      if (mixable.find(amount) == mixable.end())
-        return true;
-    }
-    return false;
-  });
-}
-//----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_num_rct_outputs()
 {
   cryptonote::COMMAND_RPC_GET_OUTPUT_HISTOGRAM::request req_t = AUTO_VAL_INIT(req_t);
@@ -5076,18 +5038,6 @@ const wallet::logic::type::transfer::transfer_details &wallet2::get_transfer_det
 {
   THROW_WALLET_EXCEPTION_IF(idx >= m_transfers.size(), error::wallet_internal_error, "Bad transfer index");
   return m_transfers[idx];
-}
-//----------------------------------------------------------------------------------------------------
-std::vector<size_t> wallet2::select_available_unmixable_outputs()
-{
-  // request all outputs with less instances than the min ring size
-  return select_available_outputs_from_histogram(get_min_ring_size(), false, true, false);
-}
-//----------------------------------------------------------------------------------------------------
-std::vector<size_t> wallet2::select_available_mixable_outputs()
-{
-  // request all outputs with at least as many instances as the min ring size
-  return select_available_outputs_from_histogram(get_min_ring_size(), true, true, true);
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys) const

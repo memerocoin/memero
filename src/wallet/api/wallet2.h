@@ -394,10 +394,7 @@ namespace tools
     uint64_t get_daemon_blockchain_height(std::string& err);
     uint64_t get_daemon_blockchain_target_height(std::string& err);
 
-    std::vector<size_t> select_available_outputs_from_histogram(uint64_t count, bool atleast, bool unlocked, bool allow_rct);
     std::vector<size_t> select_available_outputs(const std::function<bool(const transfer_details &td)> &f);
-    std::vector<size_t> select_available_unmixable_outputs();
-    std::vector<size_t> select_available_mixable_outputs();
 
     size_t pop_best_value_from(const wallet::logic::type::wallet::transfer_container &transfers, std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
     size_t pop_best_value(std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
