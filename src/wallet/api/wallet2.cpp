@@ -2132,7 +2132,7 @@ bool wallet2::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t>
   try
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    r = epee::net_utils::invoke_http_json("/get_output_distribution", req, res, *m_http_client, rpc_timeout);
+    r = invoke_http_json_rpc("/json_rpc", "get_output_distribution", req, res);
     THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
   }
   catch(...)
@@ -2151,6 +2151,7 @@ bool wallet2::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t>
   }
   start_height = res.distributions[0].data.start_height;
   distribution = std::move(res.distributions[0].data.distribution);
+
   return true;
 }
 //----------------------------------------------------------------------------------------------------
@@ -3809,6 +3810,8 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
         max_rct_index = std::max(max_rct_index, m_transfers[idx].m_global_output_index);
       }
     const bool has_rct_distribution = !rct_offsets.empty() || get_rct_distribution(rct_start_height, rct_offsets);
+
+    THROW_WALLET_EXCEPTION_IF(!has_rct_distribution, error::wallet_internal_error, "no rct distribution");
     if (has_rct_distribution)
     {
       // check we're clear enough of rct start, to avoid corner cases below
@@ -3816,28 +3819,6 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
           error::get_output_distribution, "Not enough rct outputs");
       THROW_WALLET_EXCEPTION_IF(rct_offsets.back() <= max_rct_index,
           error::get_output_distribution, "Daemon reports suspicious number of rct outputs");
-    }
-
-    // get histogram for the amounts we need
-    cryptonote::COMMAND_RPC_GET_OUTPUT_HISTOGRAM::request req_t = AUTO_VAL_INIT(req_t);
-    cryptonote::COMMAND_RPC_GET_OUTPUT_HISTOGRAM::response resp_t = AUTO_VAL_INIT(resp_t);
-    // request histogram for all outputs, except 0 if we have the rct distribution
-    for(size_t idx: selected_transfers)
-      if (!m_transfers[idx].is_rct() || !has_rct_distribution)
-        req_t.amounts.push_back(m_transfers[idx].is_rct() ? 0 : m_transfers[idx].amount());
-    if (!req_t.amounts.empty())
-    {
-      std::sort(req_t.amounts.begin(), req_t.amounts.end());
-      auto end = std::unique(req_t.amounts.begin(), req_t.amounts.end());
-      req_t.amounts.resize(std::distance(req_t.amounts.begin(), end));
-      req_t.unlocked = true;
-      req_t.recent_cutoff = time(NULL) - RECENT_OUTPUT_ZONE;
-
-      {
-        const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-        bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_output_histogram", req_t, resp_t, *m_http_client, rpc_timeout);
-        THROW_ON_RPC_RESPONSE_ERROR(r, {}, resp_t, "get_output_histogram", error::get_histogram_error, get_rpc_status(resp_t.status));
-      }
     }
 
     // if we want to segregate fake outs pre or post fork, get distribution
@@ -3865,35 +3846,8 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       // request more for rct in base recent (locked) coinbases are picked, since they're locked for longer
       size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE : 0);
       size_t start = req.outputs.size();
-      bool use_histogram = !has_rct_distribution;
-
       uint64_t num_outs = 0, num_recent_outs = 0;
 
-      {
-        // if there are just enough outputs to mix with, use all of them.
-        // Eventually this should become impossible.
-        for (const auto &he: resp_t.histogram)
-        {
-          if (he.amount == amount)
-          {
-            LOG_PRINT_L2("Found " << print_money(amount) << ": " << he.total_instances << " total, "
-                << he.unlocked_instances << " unlocked, " << he.recent_instances << " recent");
-            num_outs = he.unlocked_instances;
-            num_recent_outs = he.recent_instances;
-            break;
-          }
-        }
-      }
-
-      if (use_histogram)
-      {
-        LOG_PRINT_L1("" << num_outs << " unlocked outputs of size " << print_money(amount));
-        THROW_WALLET_EXCEPTION_IF(num_outs == 0, error::wallet_internal_error,
-            "histogram reports no unlocked outputs for " + boost::lexical_cast<std::string>(amount) + ", not even ours");
-        THROW_WALLET_EXCEPTION_IF(num_recent_outs > num_outs, error::wallet_internal_error,
-            "histogram reports more recent outs than outs for " + boost::lexical_cast<std::string>(amount));
-      }
-      else
       {
         // the base offset of the first rct output in the first unlocked block (or the one to be if there's none)
         num_outs = rct_offsets[rct_offsets.size() - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE];
@@ -3904,20 +3858,8 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 
       // how many fake outs to draw on a pre-fork distribution
       // how many fake outs to draw otherwise
-      size_t normal_output_count = requested_outputs_count;
 
       size_t recent_outputs_count = 0;
-      if (use_histogram)
-      {
-        // X% of those outs are to be taken from recent outputs
-        recent_outputs_count = normal_output_count * RECENT_OUTPUT_RATIO;
-        if (recent_outputs_count == 0)
-          recent_outputs_count = 1; // ensure we have at least one, if possible
-        if (recent_outputs_count > num_recent_outs)
-          recent_outputs_count = num_recent_outs;
-        if (td.m_global_output_index >= num_outs - num_recent_outs && recent_outputs_count > 0)
-          --recent_outputs_count; // if the real out is recent, pick one less recent fake out
-      }
       LOG_PRINT_L1("Fake output makeup: " << requested_outputs_count << " requested: " << recent_outputs_count << " recent, " <<
           (requested_outputs_count - recent_outputs_count) << " full-chain");
 
