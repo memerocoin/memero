@@ -406,21 +406,6 @@ namespace net_utils
       return;
     }
 
-    // detect SSL
-    if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_autodetect)
-    {
-      if (is_ssl((const unsigned char*)buffer_.data(), buffer_ssl_init_fill))
-      {
-        MDEBUG("That looks like SSL");
-        m_ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_enabled; // read/write to the SSL socket
-      }
-      else
-      {
-        MDEBUG("That does not look like SSL");
-        m_ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled; // read/write to the raw socket
-      }
-    }
-
     if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
     {
       // Handshake
@@ -1125,7 +1110,6 @@ namespace net_utils
         {
           case epee::net_utils::ssl_support_t::e_ssl_support_disabled: ssl_message = "disabled"; break;
           case epee::net_utils::ssl_support_t::e_ssl_support_enabled: ssl_message = "enabled"; break;
-          case epee::net_utils::ssl_support_t::e_ssl_support_autodetect: ssl_message = "autodetection"; break;
         }
         MDEBUG("New server for RPC connections, SSL " << ssl_message);
         (*current_new_connection)->setRpcStation(); // hopefully this is not needed actually
@@ -1264,19 +1248,12 @@ namespace net_utils
     _dbg3("Connected success to " << adr << ':' << port);
 
     const ssl_support_t ssl_support = new_connection_l->get_ssl_support();
-    if (ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled || ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_autodetect)
+    if (ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
     {
       // Handshake
       MDEBUG("Handshaking SSL...");
       if (!new_connection_l->handshake(boost::asio::ssl::stream_base::client))
       {
-        if (ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_autodetect)
-        {
-          boost::system::error_code ignored_ec;
-          sock_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-          sock_.close();
-          return CONNECT_NO_SSL;
-        }
         MERROR("SSL handshake failed");
         if (sock_.is_open())
           sock_.close();
@@ -1382,15 +1359,6 @@ namespace net_utils
     auto try_connect_result = try_connect(new_connection_l, adr, port, sock_, remote_endpoint, bind_ip_to_use, conn_timeout, ssl_support);
     if (try_connect_result == CONNECT_FAILURE)
       return false;
-    if (ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_autodetect && try_connect_result == CONNECT_NO_SSL)
-    {
-      // we connected, but could not connect with SSL, try without
-      MERROR("SSL handshake failed on an autodetect connection, reconnecting without SSL");
-      new_connection_l->disable_ssl();
-      try_connect_result = try_connect(new_connection_l, adr, port, sock_, remote_endpoint, bind_ip_to_use, conn_timeout, epee::net_utils::ssl_support_t::e_ssl_support_disabled);
-      if (try_connect_result != CONNECT_SUCCESS)
-        return false;
-    }
 
     // start adds the connection to the config object's list, so we don't need to have it locally anymore
     connections_mutex.lock();

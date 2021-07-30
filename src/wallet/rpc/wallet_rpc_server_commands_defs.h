@@ -1334,7 +1334,7 @@ namespace wallet_rpc
     {
       std::string address;
       bool trusted;
-      std::string ssl_support; // disabled, enabled, autodetect
+      std::string ssl_support; // disabled, enabled
       std::string ssl_private_key_path;
       std::string ssl_certificate_path;
       std::string ssl_ca_file;
@@ -1344,7 +1344,7 @@ namespace wallet_rpc
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(address)
         KV_SERIALIZE_OPT(trusted, false)
-        KV_SERIALIZE_OPT(ssl_support, (std::string)"autodetect")
+        KV_SERIALIZE_OPT(ssl_support, (std::string)"disabled")
         KV_SERIALIZE(ssl_private_key_path)
         KV_SERIALIZE(ssl_certificate_path)
         KV_SERIALIZE(ssl_ca_file)
