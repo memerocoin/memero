@@ -277,7 +277,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
   m_key_device_type(hw::device::device_type::SOFTWARE),
-  m_devices_registered(false),
   m_device_last_key_image_sync(0),
   m_offline(false),
   m_rpc_version(0)

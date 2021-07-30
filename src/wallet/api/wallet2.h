@@ -553,8 +553,6 @@ namespace tools
 
     crypto::chacha_key m_cache_key;
 
-    bool m_devices_registered;
-
     std::shared_ptr<tools::Notify> m_tx_notify;
 
     static std::mutex default_daemon_address_lock;
