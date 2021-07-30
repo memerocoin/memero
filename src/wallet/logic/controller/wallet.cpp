@@ -32,8 +32,19 @@
 
 #include "wallet.hpp"
 
+#include "wallet/logic/type/wallet.hpp"
+#include "wallet/api/wallet_errors.h"
+
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/file_io_utils.h"
+#include "tools/epee/include/storages/portable_storage_template_helper.h"
+#include "tools/serialization/binary_utils.h"
+#include "tools/common/json_util.h"
+
+#include <cstdint>
 
 
 namespace wallet {
@@ -94,6 +105,67 @@ namespace wallet {
                  << ", real_output_in_tx_index=" << src.real_output_in_tx_index
                  << ", indexes: " << indexes);
   }
+
+  /*!
+  * \brief verify password for specified wallet keys file.
+  * \param keys_file_name  Keys file to verify password for
+  * \param password        Password to verify
+  * \param no_spend_key    If set = only verify view keys, otherwise also spend keys
+  * \param hwdev           The hardware device to use
+  * \return                true if password is correct
+  *
+  * for verification only
+  * should not mutate state, unlike load_keys()
+  * can be used prior to rewriting wallet keys file, to ensure user has entered the correct password
+  *
+  */
+  bool verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, hw::device &hwdev, uint64_t kdf_rounds)
+  {
+    rapidjson::Document json;
+    ::wallet::logic::type::wallet::keys_file_data keys_file_data;
+    std::string buf;
+    bool encrypted_secret_keys = false;
+    bool r = ::wallet::logic::controller::wallet::load_from_file(keys_file_name, buf);
+    THROW_WALLET_EXCEPTION_IF(!r, tools::error::file_read_error, keys_file_name);
+
+    // Decrypt the contents
+    r = ::serialization::parse_binary(buf, keys_file_data);
+    THROW_WALLET_EXCEPTION_IF(!r, tools::error::wallet_internal_error, "internal error: failed to deserialize \"" + keys_file_name + '\"');
+    crypto::chacha_key key;
+    crypto::generate_chacha_key(password.data(), password.size(), key, kdf_rounds);
+    std::string account_data;
+    account_data.resize(keys_file_data.account_data.size());
+    crypto::chacha20(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
+    if (json.Parse(account_data.c_str()).HasParseError() || !json.IsObject())
+      crypto::chacha8(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
+
+    // The contents should be JSON if the wallet follows the new format.
+    if (json.Parse(account_data.c_str()).HasParseError())
+    {
+      // old format before JSON wallet key file format
+    }
+    else
+    {
+      account_data = std::string(json["key_data"].GetString(), json["key_data"].GetString() +
+        json["key_data"].GetStringLength());
+      GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, encrypted_secret_keys, uint32_t, Uint, false, false);
+      encrypted_secret_keys = field_encrypted_secret_keys;
+    }
+
+    cryptonote::account_base account_data_check;
+
+    r = epee::serialization::load_t_from_binary(account_data_check, account_data);
+
+    if (encrypted_secret_keys)
+      account_data_check.decrypt_keys(key);
+
+    const cryptonote::account_keys& keys = account_data_check.get_keys();
+    r = r && hwdev.verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
+    if(!no_spend_key)
+      r = r && hwdev.verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
+    return r;
+  }
+
 
 } // wallet
 } // controller

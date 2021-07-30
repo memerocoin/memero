@@ -333,12 +333,6 @@ std::pair<std::unique_ptr<wallet2>, password_container> wallet2::make_new(const 
   return {make_basic(vm, unattended, opts, password_prompter), std::move(*pwd)};
 }
 
-std::unique_ptr<wallet2> wallet2::make_dummy(const boost::program_options::variables_map& vm, bool unattended, const std::function<std::optional<tools::password_container>(const char *, bool)> &password_prompter)
-{
-  const options opts{};
-  return make_basic(vm, unattended, opts, password_prompter);
-}
-
 //----------------------------------------------------------------------------------------------------
 bool wallet2::set_daemon(std::string daemon_address)
 {
@@ -2642,71 +2636,11 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
 bool wallet2::verify_password(const epee::wipeable_string& password)
 {
   // this temporary unlocking is necessary for Windows (otherwise the file couldn't be loaded).
-  bool r = verify_password
+  bool r = wallet::logic::controller::wallet::verify_password
     (
      m_keys_file, password
      , m_account.get_device().device_protocol() == hw::device::PROTOCOL_COLD
      , m_account.get_device(), m_kdf_rounds);
-  return r;
-}
-
-/*!
- * \brief verify password for specified wallet keys file.
- * \param keys_file_name  Keys file to verify password for
- * \param password        Password to verify
- * \param no_spend_key    If set = only verify view keys, otherwise also spend keys
- * \param hwdev           The hardware device to use
- * \return                true if password is correct
- *
- * for verification only
- * should not mutate state, unlike load_keys()
- * can be used prior to rewriting wallet keys file, to ensure user has entered the correct password
- *
- */
-bool wallet2::verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, hw::device &hwdev, uint64_t kdf_rounds)
-{
-  rapidjson::Document json;
-  wallet::logic::type::wallet::keys_file_data keys_file_data;
-  std::string buf;
-  bool encrypted_secret_keys = false;
-  bool r = wallet::logic::controller::wallet::load_from_file(keys_file_name, buf);
-  THROW_WALLET_EXCEPTION_IF(!r, error::file_read_error, keys_file_name);
-
-  // Decrypt the contents
-  r = ::serialization::parse_binary(buf, keys_file_data);
-  THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "internal error: failed to deserialize \"" + keys_file_name + '\"');
-  crypto::chacha_key key;
-  crypto::generate_chacha_key(password.data(), password.size(), key, kdf_rounds);
-  std::string account_data;
-  account_data.resize(keys_file_data.account_data.size());
-  crypto::chacha20(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
-  if (json.Parse(account_data.c_str()).HasParseError() || !json.IsObject())
-    crypto::chacha8(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
-
-  // The contents should be JSON if the wallet follows the new format.
-  if (json.Parse(account_data.c_str()).HasParseError())
-  {
-    // old format before JSON wallet key file format
-  }
-  else
-  {
-    account_data = std::string(json["key_data"].GetString(), json["key_data"].GetString() +
-      json["key_data"].GetStringLength());
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, encrypted_secret_keys, uint32_t, Uint, false, false);
-    encrypted_secret_keys = field_encrypted_secret_keys;
-  }
-
-  cryptonote::account_base account_data_check;
-
-  r = epee::serialization::load_t_from_binary(account_data_check, account_data);
-
-  if (encrypted_secret_keys)
-    account_data_check.decrypt_keys(key);
-
-  const cryptonote::account_keys& keys = account_data_check.get_keys();
-  r = r && hwdev.verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
-  if(!no_spend_key)
-    r = r && hwdev.verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
   return r;
 }
 

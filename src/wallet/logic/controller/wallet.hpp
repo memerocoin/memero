@@ -61,6 +61,8 @@ namespace wallet {
 
   void print_source_entry(const cryptonote::tx_source_entry& src);
 
+  bool verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, hw::device &hwdev, uint64_t kdf_rounds);
+
 } // wallet
 } // controller
 } // logic

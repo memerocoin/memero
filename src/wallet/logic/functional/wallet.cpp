@@ -32,10 +32,6 @@
 
 #include "wallet.hpp"
 
-
-
-
-
 namespace wallet {
 namespace logic {
 namespace functional {
