@@ -208,9 +208,9 @@ t_command_server::t_command_server(
     , "Flush a transaction from the tx pool by its <txid>, or the whole tx pool."
     );
     m_command_lookup.set_handler(
-      "coinbase-tx-sum"
+      "emission"
     , std::bind(&t_command_parser_executor::print_coinbase_tx_sum, &m_parser, p::_1)
-    , "coinbase-tx-sum <start height> [<block count>]"
+    , "emission <start height> [<block count>]"
     , "Print the sum of coinbase transactions."
     );
     m_command_lookup.set_handler(
