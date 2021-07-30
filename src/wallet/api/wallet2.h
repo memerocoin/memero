@@ -489,7 +489,6 @@ namespace tools
     void setup_new_blockchain();
     void create_keys_file(const std::string &wallet_, const epee::wipeable_string &password);
 
-    std::string get_rpc_status(const std::string &s) const;
     void throw_on_rpc_response_error(bool r, const epee::json_rpc::error &error, const std::string &status, const char *method) const;
 
     bool should_expand(const cryptonote::subaddress_index &index) const;
