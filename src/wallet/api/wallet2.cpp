@@ -3396,22 +3396,6 @@ bool wallet2::is_tx_spendtime_unlocked(const uint64_t unlock_time)
 namespace
 {
   template<typename T>
-  T pop_index(std::vector<T>& vec, size_t idx)
-  {
-    ASSERT_OR_LOG_RETURN(!vec.empty(), T(), "Vector must be non-empty");
-    ASSERT_OR_LOG_RETURN(idx < vec.size(), T(), "idx out of bounds");
-
-    T res = vec[idx];
-    if (idx + 1 != vec.size())
-    {
-      vec[idx] = vec.back();
-    }
-    vec.resize(vec.size() - 1);
-
-    return res;
-  }
-
-  template<typename T>
   T pop_random_value(std::vector<T>& vec)
   {
     ASSERT_OR_LOG_RETURN(!vec.empty(), T(), "Vector must be non-empty");
@@ -3444,58 +3428,9 @@ namespace
   }
 }
 //----------------------------------------------------------------------------------------------------
-size_t wallet2::pop_best_value_from(const wallet::logic::type::wallet::transfer_container &transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest) const
-{
-  std::vector<size_t> candidates;
-  float best_relatedness = 1.0f;
-  for (size_t n = 0; n < unused_indices.size(); ++n)
-  {
-    const transfer_details &candidate = transfers[unused_indices[n]];
-    float relatedness = 0.0f;
-    for (std::vector<size_t>::const_iterator i = selected_transfers.begin(); i != selected_transfers.end(); ++i)
-    {
-      float r = wallet::logic::functional::wallet::get_output_relatedness(candidate, transfers[*i]);
-      if (r > relatedness)
-      {
-        relatedness = r;
-        if (relatedness == 1.0f)
-          break;
-      }
-    }
-
-    if (relatedness < best_relatedness)
-    {
-      best_relatedness = relatedness;
-      candidates.clear();
-    }
-
-    if (relatedness == best_relatedness)
-      candidates.push_back(n);
-  }
-
-  // we have all the least related outputs in candidates, so we can pick either
-  // the smallest, or a random one, depending on request
-  size_t idx;
-  if (smallest)
-  {
-    idx = 0;
-    for (size_t n = 0; n < candidates.size(); ++n)
-    {
-      const transfer_details &td = transfers[unused_indices[candidates[n]]];
-      if (td.amount() < transfers[unused_indices[candidates[idx]]].amount())
-        idx = n;
-    }
-  }
-  else
-  {
-    idx = crypto::rand_idx(candidates.size());
-  }
-  return pop_index (unused_indices, candidates[idx]);
-}
-//----------------------------------------------------------------------------------------------------
 size_t wallet2::pop_best_value(std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest) const
 {
-  return pop_best_value_from(m_transfers, unused_indices, selected_transfers, smallest);
+  return wallet::logic::controller::wallet::pop_best_value_from(m_transfers, unused_indices, selected_transfers, smallest);
 }
 //----------------------------------------------------------------------------------------------------
 // Select random input sources for transaction.

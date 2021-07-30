@@ -33,6 +33,9 @@
 #include "wallet.hpp"
 
 #include "wallet/logic/type/wallet.hpp"
+#include "wallet/logic/type/transfer.hpp"
+#include "wallet/logic/functional/wallet.hpp"
+
 #include "wallet/api/wallet_errors.h"
 
 #include <rapidjson/document.h>
@@ -166,7 +169,55 @@ namespace wallet {
     return r;
   }
 
+  //----------------------------------------------------------------------------------------------------
+  size_t pop_best_value_from(const ::wallet::logic::type::wallet::transfer_container &transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest)
+  {
+    std::vector<size_t> candidates;
+    float best_relatedness = 1.0f;
+    for (size_t n = 0; n < unused_indices.size(); ++n)
+    {
+      const ::wallet::logic::type::transfer::transfer_details &candidate = transfers[unused_indices[n]];
+      float relatedness = 0.0f;
+      for (std::vector<size_t>::const_iterator i = selected_transfers.begin(); i != selected_transfers.end(); ++i)
+      {
+        float r = ::wallet::logic::functional::wallet::get_output_relatedness(candidate, transfers[*i]);
+        if (r > relatedness)
+        {
+          relatedness = r;
+          if (relatedness == 1.0f)
+            break;
+        }
+      }
 
+      if (relatedness < best_relatedness)
+      {
+        best_relatedness = relatedness;
+        candidates.clear();
+      }
+
+      if (relatedness == best_relatedness)
+        candidates.push_back(n);
+    }
+
+    // we have all the least related outputs in candidates, so we can pick either
+    // the smallest, or a random one, depending on request
+    size_t idx;
+    if (smallest)
+    {
+      idx = 0;
+      for (size_t n = 0; n < candidates.size(); ++n)
+      {
+        const transfer_details &td = transfers[unused_indices[candidates[n]]];
+        if (td.amount() < transfers[unused_indices[candidates[idx]]].amount())
+          idx = n;
+      }
+    }
+    else
+    {
+      idx = crypto::rand_idx(candidates.size());
+    }
+    return pop_index (unused_indices, candidates[idx]);
+  }
 } // wallet
 } // controller
 } // logic
