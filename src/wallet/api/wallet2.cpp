@@ -2385,9 +2385,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   value.SetString(m_device_name.c_str(), m_device_name.size());
   json.AddMember("device_name", value, json.GetAllocator());
 
-  value.SetString(m_device_derivation_path.c_str(), m_device_derivation_path.size());
-  json.AddMember("device_derivation_path", value, json.GetAllocator());
-
   // Serialize the JSON object
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -2583,9 +2580,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
         m_device_name = m_key_device_type == hw::device::device_type::LEDGER ? "Ledger" : "default";
       }
     }
-
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, device_derivation_path, std::string, String, false, std::string());
-    m_device_derivation_path = field_device_derivation_path;
   }
   else
   {
