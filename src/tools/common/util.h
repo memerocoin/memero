@@ -30,8 +30,6 @@
 
 #pragma once
 
-#include "config/cryptonote.hpp"
-
 #include <cstring>
 #include <optional>
 #include <csignal>

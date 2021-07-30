@@ -35,6 +35,8 @@
 
 #include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...
 
+#include "config/cryptonote.hpp"
+
 #ifdef __GLIBC__
 #include <sys/resource.h>
 #endif
