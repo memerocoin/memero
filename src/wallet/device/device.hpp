@@ -77,16 +77,6 @@ namespace hw {
       virtual bool indeterminate() const { return false; }
     };
 
-    class i_device_callback {
-    public:
-        virtual void on_button_request(uint64_t code=0) {}
-        virtual void on_button_pressed() {}
-        virtual std::optional<epee::wipeable_string> on_pin_request() { return std::nullopt; }
-        virtual std::optional<epee::wipeable_string> on_passphrase_request(bool & on_device) { on_device = true; return std::nullopt; }
-        virtual void on_progress(const device_progress& event) {}
-        virtual ~i_device_callback() = default;
-    };
-
     class device {
     protected:
         std::string  name;
@@ -136,7 +126,6 @@ namespace hw {
         virtual device_type get_type() const = 0;
 
         virtual device_protocol_t device_protocol() const { return PROTOCOL_DEFAULT; };
-        virtual void set_callback(i_device_callback * callback) {};
         virtual void set_derivation_path(const std::string &derivation_path) {};
 
         virtual void set_pin(const epee::wipeable_string & pin) {}

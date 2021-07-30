@@ -91,22 +91,8 @@ namespace tools
     virtual ~i_wallet2_callback() {}
   };
 
-  class wallet_device_callback : public hw::i_device_callback
-  {
-  public:
-    wallet_device_callback(wallet2 * wallet): wallet(wallet) {};
-    void on_button_request(uint64_t code=0) override;
-    void on_button_pressed() override;
-    std::optional<epee::wipeable_string> on_pin_request() override;
-    std::optional<epee::wipeable_string> on_passphrase_request(bool & on_device) override;
-    void on_progress(const hw::device_progress& event) override;
-  private:
-    wallet2 * wallet;
-  };
-
   class wallet2
   {
-    friend class wallet_device_callback;
   public:
     static constexpr const std::chrono::seconds rpc_timeout = std::chrono::minutes(3) + std::chrono::seconds(30);
 
@@ -584,7 +570,6 @@ namespace tools
     bool m_devices_registered;
 
     std::shared_ptr<tools::Notify> m_tx_notify;
-    std::unique_ptr<wallet_device_callback> m_device_callback;
 
     static std::mutex default_daemon_address_lock;
     static std::string default_daemon_address;
