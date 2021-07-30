@@ -160,6 +160,7 @@ bool t_command_parser_executor::print_blockchain_info(const std::vector<std::str
 
 bool t_command_parser_executor::set_log_level(const std::vector<std::string>& args)
 {
+  constexpr std::string_view set_log_usage = "use: set-log <log_level_number_0-4>.";
   if(args.size() > 1)
   {
     std::cout << "Invalid syntax: Too many parameters. For more details, use the help command." << std::endl;
@@ -168,7 +169,7 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
 
   if (args.empty())
   {
-    std::cout << "Invalid syntax: no argument, use: set_log <log_level_number_0-4>." << std::endl;
+    std::cout << "Invalid syntax: no argument, " << set_log_usage << std::endl;
     return true;
   }
 
@@ -177,13 +178,13 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
   {
     if(4 < l)
     {
-      std::cout << "Invalid syntax: Wrong number range, use: set_log <log_level_number_0-4>." << std::endl;
+      std::cout << "Invalid syntax: Wrong number range, " << set_log_usage << std::endl;
       return true;
     }
     return m_executor.set_log_level(l);
   }
 
-  std::cout << "Invalid syntax: Wrong number, use: set_log <log_level_number_0-4>." << std::endl;
+  std::cout << "Invalid syntax: Wrong number, " << set_log_usage << std::endl;
   return true;
 }
 
