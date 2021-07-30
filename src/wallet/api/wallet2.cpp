@@ -3569,14 +3569,6 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
   return priority;
 }
 
-hw::device& wallet2::lookup_device(const std::string & device_descriptor){
-  if (!m_devices_registered){
-    m_devices_registered = true;
-  }
-
-  return hw::get_device(device_descriptor);
-}
-
 bool wallet2::tx_add_fake_output(std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs, uint64_t global_index, const crypto::public_key& output_public_key, const rct::key& mask, uint64_t real_index, bool unlocked) const
 {
   if (!unlocked) // don't add locked outs
