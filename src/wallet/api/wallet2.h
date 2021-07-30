@@ -48,6 +48,7 @@
 #include "tools/serialization/containers.h"
 
 #include "tools/common/password.h"
+#include "tools/common/notify.h"
 
 #include "tools/epee/include/storages/http_abstract_invoke.h"
 
@@ -66,9 +67,6 @@
 #define THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, err, res, method) \
   THROW_ON_RPC_RESPONSE_ERROR(r, err, res, method, tools::error::wallet_generic_rpc_error, method, res.status)
 
-class Serialization_portability_wallet_Test;
-class wallet_accessor_test;
-
 namespace tools
 {
   using namespace wallet::logic::type::wallet;
@@ -76,9 +74,7 @@ namespace tools
   using namespace wallet::logic::type::transfer;
   using namespace wallet::logic::type::tx;
 
-  class ringdb;
   class wallet2;
-  class Notify;
 
   class i_wallet2_callback
   {
@@ -110,8 +106,6 @@ namespace tools
 
   class wallet2
   {
-    friend class ::Serialization_portability_wallet_Test;
-    friend class ::wallet_accessor_test;
     friend class wallet_device_callback;
   public:
     static constexpr const std::chrono::seconds rpc_timeout = std::chrono::minutes(3) + std::chrono::seconds(30);
@@ -416,6 +410,7 @@ namespace tools
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
       return epee::net_utils::invoke_http_json(uri, req, res, *m_http_client, timeout, http_method);
     }
+
     template<class t_request, class t_response>
     inline bool invoke_http_bin(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")
     {
@@ -423,6 +418,7 @@ namespace tools
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
       return epee::net_utils::invoke_http_bin(uri, req, res, *m_http_client, timeout, http_method);
     }
+
     template<class t_request, class t_response>
     inline bool invoke_http_json_rpc(const std::string_view uri, const std::string& method_name, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST", const std::string& req_id = "0")
     {
