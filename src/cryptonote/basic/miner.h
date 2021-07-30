@@ -78,7 +78,6 @@ namespace cryptonote
     void on_synchronized();
     void pause();
     void resume();
-    void do_print_hashrate(bool do_hr);
     uint64_t get_block_reward() const { return m_block_reward; }
 
   private:
@@ -110,7 +109,6 @@ namespace cryptonote
     std::atomic<uint64_t> m_current_hash_rate;
     std::mutex m_last_hash_rates_lock;
     std::list<uint64_t> m_last_hash_rates;
-    bool m_do_print_hashrate;
     bool m_do_mining;
     std::atomic<uint64_t> m_block_reward;
   };

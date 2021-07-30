@@ -64,7 +64,6 @@ namespace cryptonote
     m_starter_nonce(0),
     m_last_hr_merge_time(0),
     m_hashes(0),
-    m_do_print_hashrate(false),
     m_do_mining(false),
     m_current_hash_rate(0),
     m_block_reward(0)
@@ -130,11 +129,6 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------------
-  void miner::do_print_hashrate(bool do_hr)
-  {
-    m_do_print_hashrate = do_hr;
-  }
-  //-----------------------------------------------------------------------------------------------------
   void miner::merge_hr()
   {
     if(m_last_hr_merge_time && is_mining())
@@ -146,6 +140,7 @@ namespace cryptonote
         if(m_last_hash_rates.size() > 19)
           m_last_hash_rates.pop_front();
       }
+      constexpr auto m_do_print_hashrate = false;
       if(m_do_print_hashrate)
       {
         uint64_t total_hr = std::accumulate(m_last_hash_rates.begin(), m_last_hash_rates.end(), 0);
