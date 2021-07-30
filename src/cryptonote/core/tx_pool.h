@@ -241,15 +241,6 @@ namespace cryptonote
     void get_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive = false) const;
 
     /**
-     * @brief get (weight, fee, receive time) for all transaction in the pool
-     *
-     * @param txs return-by-reference that data
-     * @param include_sensitive return stempool, anonymity-pool, and unrelayed txes
-     *
-     */
-    void get_transaction_backlog(std::vector<tx_backlog_entry>& backlog, bool include_sensitive = false) const;
-
-    /**
      * @brief get a summary statistics of all transaction hashes in the pool
      *
      * @param stats return-by-reference the pool statistics

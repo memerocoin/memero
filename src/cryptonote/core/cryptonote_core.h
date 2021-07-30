@@ -396,14 +396,6 @@ namespace cryptonote
      bool get_pool_transactions(std::vector<transaction>& txs, bool include_sensitive_txes = false) const;
 
      /**
-      * @copydoc tx_memory_pool::get_txpool_backlog
-      * @param include_sensitive_txes include private transactions
-      *
-      * @note see tx_memory_pool::get_txpool_backlog
-      */
-     bool get_txpool_backlog(std::vector<tx_backlog_entry>& backlog, bool include_sensitive_txes = false) const;
-
-     /**
       * @copydoc tx_memory_pool::get_transactions
       * @param include_sensitive_txes include private transactions
       *

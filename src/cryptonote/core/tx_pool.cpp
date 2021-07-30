@@ -760,19 +760,6 @@ namespace cryptonote
     }, false, category);
   }
   //------------------------------------------------------------------
-  void tx_memory_pool::get_transaction_backlog(std::vector<tx_backlog_entry>& backlog, bool include_sensitive) const
-  {
-    LOCK_RECURSIVE_MUTEX(m_transactions_lock);
-    LOCK_LOCKABLE_OBJECT(m_blockchain);
-    const uint64_t now = time(NULL);
-    const relay_category category = include_sensitive ? relay_category::all : relay_category::broadcasted;
-    backlog.reserve(m_blockchain.get_txpool_tx_count(include_sensitive));
-    m_blockchain.for_all_txpool_txes([&backlog, now](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *bd){
-      backlog.push_back({meta.weight, meta.fee, meta.receive_time - now});
-      return true;
-    }, false, category);
-  }
-  //------------------------------------------------------------------
   void tx_memory_pool::get_transaction_stats(struct txpool_stats& stats, bool include_sensitive) const
   {
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
