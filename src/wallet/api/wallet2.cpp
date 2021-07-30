@@ -2243,7 +2243,6 @@ bool wallet2::clear()
   m_scanned_pool_txs[1].clear();
   m_subaddresses.clear();
   m_subaddress_labels.clear();
-  m_device_last_key_image_sync = 0;
   return true;
 }
 //----------------------------------------------------------------------------------------------------

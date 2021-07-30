@@ -288,8 +288,6 @@ namespace tools
     bool is_transfer_unlocked(const transfer_details& td);
     bool is_transfer_unlocked(const uint64_t unlock_time, const uint64_t block_height);
 
-    uint64_t get_device_last_key_image_sync() const { return m_device_last_key_image_sync; }
-
     BEGIN_SERIALIZE_OBJECT()
       MAGIC_FIELD("monero wallet cache")
       VERSION_FIELD(0)
