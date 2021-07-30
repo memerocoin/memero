@@ -75,8 +75,6 @@ namespace tools
   using namespace wallet::logic::type::transfer;
   using namespace wallet::logic::type::tx;
 
-  class wallet2;
-
   class i_wallet2_callback
   {
   public:
