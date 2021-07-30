@@ -1169,14 +1169,16 @@ namespace cryptonote
   {
     if(!m_starter_message_showed)
     {
-      std::string main_message;
-      if (m_offline)
-        main_message = "The daemon is running offline and will not attempt to sync to the Monero network.";
-      else
-        main_message = "The daemon will start synchronizing with the network. This may take a long time to complete.";
-      MGINFO_YELLOW(std::endl << "**********************************************************************" << std::endl
-        << main_message << std::endl
-        << "**********************************************************************" << std::endl);
+      if (m_offline) {
+        constexpr std::string_view main_message = "The daemon is running offline.";
+        MGINFO_YELLOW
+          (
+           std::endl
+           << "**********************************************************************" << std::endl
+           << main_message << std::endl
+           << "**********************************************************************" << std::endl
+           );
+      }
       m_starter_message_showed = true;
     }
 
