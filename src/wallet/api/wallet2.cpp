@@ -3569,13 +3569,9 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
   return priority;
 }
 
-void wallet2::register_devices(){
-}
-
 hw::device& wallet2::lookup_device(const std::string & device_descriptor){
   if (!m_devices_registered){
     m_devices_registered = true;
-    register_devices();
   }
 
   return hw::get_device(device_descriptor);

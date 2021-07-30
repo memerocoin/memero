@@ -482,7 +482,6 @@ namespace tools
     void setup_keys(const epee::wipeable_string &password);
     size_t get_transfer_details(const crypto::key_image &ki) const;
 
-    void register_devices();
     hw::device& lookup_device(const std::string & device_descriptor);
 
     bool get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution);
