@@ -1953,7 +1953,6 @@ skip:
   bool t_cryptonote_protocol_handler::on_connection_synchronized()
   {
     bool val_expected = false;
-    uint64_t current_blockchain_height = m_core.get_current_blockchain_height();
     if(m_synchronized.compare_exchange_strong(val_expected, true))
     {
       MGINFO_YELLOW(std::endl << "**********************************************************************" << std::endl
