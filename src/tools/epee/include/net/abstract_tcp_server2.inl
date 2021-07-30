@@ -328,7 +328,14 @@ namespace net_utils
         //_info("[sock " << socket().native_handle() << "] protocol_want_close");
         //some error in protocol, protocol handler ask to close connection
         m_want_close_connection = true;
-        shutdown();
+        bool do_shutdown = false;
+        {
+          LOCK_RECURSIVE_MUTEX(m_send_que_lock);
+          if(!m_send_que.size())
+            do_shutdown = true;
+        }
+        if(do_shutdown)
+          shutdown();
       }else
       {
         reset_timer(get_timeout_from_bytes_read(bytes_transferred));
@@ -352,7 +359,12 @@ namespace net_utils
       else
       {
         _dbg3("[sock " << socket().native_handle() << "] peer closed connection");
-        bool do_shutdown = true;
+        bool do_shutdown = false;
+        {
+          LOCK_RECURSIVE_MUTEX(m_send_que_lock);
+          if(!m_send_que.size())
+            do_shutdown = true;
+        }
         if (m_ready_to_close || do_shutdown)
           shutdown();
       }
@@ -417,7 +429,14 @@ namespace net_utils
         MERROR("SSL handshake failed");
         m_want_close_connection = true;
         m_ready_to_close = true;
-        shutdown();
+        bool do_shutdown = false;
+        {
+          LOCK_RECURSIVE_MUTEX(m_send_que_lock);
+          if(!m_send_que.size())
+            do_shutdown = true;
+        }
+        if(do_shutdown)
+          shutdown();
         return;
       }
     }
@@ -480,14 +499,71 @@ namespace net_utils
     //_info("[sock " << socket().native_handle() << "] SEND " << cb);
     context.m_last_send = time(NULL);
     context.m_send_cnt += chunk.size();
+    //some data should be wrote to stream
+    //request complete
+    // No sleeping here; sleeping is done once and for all in "handle_write"
 
-    reset_timer(get_default_timeout());
-    async_write(boost::asio::buffer(chunk, chunk.size()),
-                strand_.wrap(
-                             std::bind(&connection<t_protocol_handler>::handle_write,
-                                       self,
-                                       std::placeholders::_1,
-                                       std::placeholders::_2)));
+    m_send_que_lock.lock(); // *** critical ***
+    epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){m_send_que_lock.unlock();});
+
+    long int retry=0;
+    const long int retry_limit = 20;
+    while (m_send_que.size() > ABSTRACT_SERVER_SEND_QUE_MAX_COUNT)
+    {
+        retry++;
+
+        long int ms = 275;
+        MDEBUG("Sleeping because QUEUE is FULL, in " << __FUNCTION__ << " for " << ms << " ms before packet_size="<<chunk.size()); // XXX debug sleep
+        m_send_que_lock.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds( ms ) );
+        m_send_que_lock.lock();
+        _dbg1("sleep for queue: " << ms);
+	if (m_was_shutdown)
+		return false;
+
+        if (retry > retry_limit) {
+            MWARNING("send que size is more than ABSTRACT_SERVER_SEND_QUE_MAX_COUNT(" << ABSTRACT_SERVER_SEND_QUE_MAX_COUNT << "), shutting down connection");
+            shutdown();
+            return false;
+        }
+    }
+
+    m_send_que.push_back(chunk);
+
+    if(m_send_que.size() > 1)
+    { // active operation should be in progress, nothing to do, just wait last operation callback
+        auto size_now = m_send_que.back().size();
+        MDEBUG("do_send() NOW just queues: packet="<<size_now<<" B, is added to queue-size="<<m_send_que.size());
+        //do_send_handler_delayed( ptr , size_now ); // (((H))) // empty function
+
+      LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] Async send requested " << m_send_que.front().size());
+    }
+    else
+    { // no active operation
+
+        if(m_send_que.size()!=1)
+        {
+            _erro("Looks like no active operations, but send que size != 1!!");
+            return false;
+        }
+
+        auto size_now = m_send_que.front().size();
+        MDEBUG("do_send() NOW SENSD: packet="<<size_now<<" B");
+
+        ASSERT_OR_LOG_RETURN( size_now == m_send_que.front().size(), false, "Unexpected queue size");
+        reset_timer(get_default_timeout());
+        async_write(boost::asio::buffer(m_send_que.front().data(), size_now ) ,
+                    strand_.wrap(
+                                 std::bind(&connection<t_protocol_handler>::handle_write,
+                                           self,
+                                           std::placeholders::_1,
+                                           std::placeholders::_2)));
+        //_dbg3("(chunk): " << size_now);
+        //logger_handle_net_write(size_now);
+        //_info("[sock " << socket().native_handle() << "] Async send requested " << m_send_que.front().size());
+    }
+
+    //do_send_handler_stop( ptr , cb ); // empty function
 
     return true;
 
@@ -608,8 +684,16 @@ namespace net_utils
       return false;
     //_info("[sock " << socket().native_handle() << "] Que Shutdown called.");
     m_timer.cancel();
+    size_t send_que_size = 0;
+    {
+      LOCK_RECURSIVE_MUTEX(m_send_que_lock);
+      send_que_size = m_send_que.size();
+    }
     m_want_close_connection = true;
-    shutdown();
+    if(!send_que_size)
+    {
+      shutdown();
+    }
 
     return true;
     CATCH_ENTRY_L0("connection<t_protocol_handler>::close", false);
@@ -644,7 +728,45 @@ namespace net_utils
     }
     logger_handle_net_write(cb);
 
-    return;
+                // The single sleeping that is needed for correctly handling "out" speed throttling
+
+    bool do_shutdown = false;
+    {
+      LOCK_RECURSIVE_MUTEX(m_send_que_lock);
+      if(m_send_que.empty())
+      {
+        _erro("[sock " << socket().native_handle() << "] m_send_que.size() == 0 at handle_write!");
+        return;
+      }
+
+      m_send_que.pop_front();
+      if(m_send_que.empty())
+      {
+        if(m_want_close_connection)
+        {
+          do_shutdown = true;
+        }
+      }else
+      {
+        //have more data to send
+      reset_timer(get_default_timeout());
+      auto size_now = m_send_que.front().size();
+      MDEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
+      ASSERT_OR_LOG_RETURN( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
+      async_write(boost::asio::buffer(m_send_que.front().data(), size_now) ,
+                  strand_.wrap(
+                              std::bind(&connection<t_protocol_handler>::handle_write,
+                                        connection<t_protocol_handler>::shared_from_this(),
+                                        std::placeholders::_1,
+                                        std::placeholders::_2)));
+        //_dbg3("(normal)" << size_now);
+      }
+    }
+
+    if(do_shutdown)
+    {
+      shutdown();
+    }
     CATCH_ENTRY_L0("connection<t_protocol_handler>::handle_write", void());
   }
 
