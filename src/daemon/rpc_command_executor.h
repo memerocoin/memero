@@ -104,8 +104,6 @@ public:
 
   bool stop_daemon();
 
-  bool print_status();
-
   bool out_peers(bool set, uint32_t limit);
 
   bool in_peers(bool set, uint32_t limit);

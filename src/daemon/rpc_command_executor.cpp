@@ -1192,26 +1192,6 @@ bool t_rpc_command_executor::stop_daemon()
   return true;
 }
 
-bool t_rpc_command_executor::print_status()
-{
-  if (!m_is_rpc)
-  {
-    tools::success_msg_writer() << "print_status makes no sense in interactive mode";
-    return true;
-  }
-
-  bool daemon_is_alive = m_rpc_client->check_connection();
-
-  if(daemon_is_alive) {
-    tools::success_msg_writer() << "lolnerod is running";
-  }
-  else {
-    tools::fail_msg_writer() << "lolnerod is NOT running";
-  }
-
-  return true;
-}
-
 bool t_rpc_command_executor::out_peers(bool set, uint32_t limit)
 {
 	cryptonote::COMMAND_RPC_OUT_PEERS::request req;

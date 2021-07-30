@@ -92,8 +92,6 @@ public:
 
   bool stop_daemon(const std::vector<std::string>& args);
 
-  bool print_status(const std::vector<std::string>& args);
-
   bool out_peers(const std::vector<std::string>& args);
 
   bool in_peers(const std::vector<std::string>& args);
