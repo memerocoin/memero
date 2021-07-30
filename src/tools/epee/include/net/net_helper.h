@@ -90,7 +90,7 @@ namespace net_utils
 				m_ctx(boost::asio::ssl::context::tlsv12),
 				m_ssl_socket(std::make_shared<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>(m_io_service, m_ctx)),
 				m_connector(direct_connect{}),
-				m_ssl_options(epee::net_utils::ssl_support_t::e_ssl_support_autodetect),
+				m_ssl_options(epee::net_utils::ssl_support_t::e_ssl_support_disabled),
 				m_initialized(true),
 				m_connected(false),
 				m_deadline(m_io_service, std::chrono::steady_clock::time_point::max()),

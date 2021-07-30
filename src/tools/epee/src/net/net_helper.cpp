@@ -117,19 +117,10 @@ namespace net_utils
         m_connected = true;
         m_deadline.expires_at(std::chrono::steady_clock::time_point::max());
         // SSL Options
-        if (m_ssl_options.support == epee::net_utils::ssl_support_t::e_ssl_support_enabled || m_ssl_options.support == epee::net_utils::ssl_support_t::e_ssl_support_autodetect)
+        if (m_ssl_options.support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
         {
           if (!m_ssl_options.handshake(*m_ssl_socket, boost::asio::ssl::stream_base::client, {}, addr, timeout))
           {
-            if (m_ssl_options.support == epee::net_utils::ssl_support_t::e_ssl_support_autodetect)
-            {
-              boost::system::error_code ignored_ec;
-              m_ssl_socket->next_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-              m_ssl_socket->next_layer().close();
-              m_connected = false;
-              return CONNECT_NO_SSL;
-            }
-            else
             {
               MWARNING("Failed to establish SSL connection");
               m_connected = false;
@@ -162,16 +153,6 @@ namespace net_utils
       try_connect_result_t try_connect_result = try_connect(addr, port, timeout);
       if (try_connect_result == CONNECT_FAILURE)
         return false;
-      if (m_ssl_options.support == epee::net_utils::ssl_support_t::e_ssl_support_autodetect)
-      {
-        if (try_connect_result == CONNECT_NO_SSL)
-        {
-          MERROR("SSL handshake failed on an autodetect connection, reconnecting without SSL");
-          m_ssl_options.support = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
-          if (try_connect(addr, port, timeout) != CONNECT_SUCCESS)
-            return false;
-        }
-      }
     }
     catch(const boost::system::system_error& er)
     {

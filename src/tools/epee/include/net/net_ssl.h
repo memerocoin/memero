@@ -41,7 +41,6 @@ namespace net_utils
 	enum class ssl_support_t: uint8_t {
 		e_ssl_support_disabled,
 		e_ssl_support_enabled,
-		e_ssl_support_autodetect,
 	};
 
   enum class ssl_verification_t : uint8_t
@@ -105,11 +104,7 @@ namespace net_utils
 
     boost::asio::ssl::context create_context() const;
 
-    /*! \note If `this->support == autodetect && this->verification != none`,
-          then the handshake will not fail when peer verification fails. The
-          assumption is that a re-connect will be attempted, so a warning is
-          logged instead of failure.
-
+    /*!
         \note It is strongly encouraged that clients using `system_ca`
           verification provide a non-empty `host` for rfc2818 verification.
 

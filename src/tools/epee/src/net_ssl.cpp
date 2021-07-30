@@ -496,13 +496,8 @@ bool ssl_options_t::handshake(
 
       if (!verified && !has_fingerprint(ctx))
       {
-        // autodetect will reconnect without SSL - warn and keep connection encrypted
-        if (support != ssl_support_t::e_ssl_support_autodetect)
-        {
           MERROR("SSL certificate is not in the allowed list, connection dropped");
           return false;
-        }
-        MWARNING("SSL peer has not been verified");
       }
       return true;
     });
@@ -547,8 +542,6 @@ bool ssl_support_from_string(ssl_support_t &ssl, std::string_view s)
     ssl = epee::net_utils::ssl_support_t::e_ssl_support_enabled;
   else if (s == "disabled")
     ssl = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
-  else if (s == "autodetect")
-    ssl = epee::net_utils::ssl_support_t::e_ssl_support_autodetect;
   else
     return false;
   return true;

@@ -193,10 +193,11 @@ namespace net_utils
 
     bool init_server(uint32_t port, const std::string& address = "0.0.0.0",
 	uint32_t port_ipv6 = 0, const std::string& address_ipv6 = "::", bool use_ipv6 = false, bool require_ipv4 = true,
-	ssl_options_t ssl_options = ssl_support_t::e_ssl_support_autodetect);
+	ssl_options_t ssl_options = ssl_support_t::e_ssl_support_disabled);
+
     bool init_server(const std::string port,  const std::string& address = "0.0.0.0",
 	const std::string port_ipv6 = "", const std::string address_ipv6 = "::", bool use_ipv6 = false, bool require_ipv4 = true,
-	ssl_options_t ssl_options = ssl_support_t::e_ssl_support_autodetect);
+	ssl_options_t ssl_options = ssl_support_t::e_ssl_support_disabled);
 
     /// Run the server's io_service loop.
     bool run_server(size_t threads_count, bool wait = true);
@@ -224,11 +225,14 @@ namespace net_utils
       default_remote = std::move(remote);
     }
 
-    bool add_connection(t_connection_context& out, boost::asio::ip::tcp::socket&& sock, network_address real_remote, epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
+    bool add_connection(t_connection_context& out, boost::asio::ip::tcp::socket&& sock, network_address real_remote, epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled);
+
     try_connect_result_t try_connect(connection_ptr new_connection_l, const std::string& adr, const std::string& port, boost::asio::ip::tcp::socket &sock_, const boost::asio::ip::tcp::endpoint &remote_endpoint, const std::string &bind_ip, uint32_t conn_timeout, epee::net_utils::ssl_support_t ssl_support);
-    bool connect(const std::string& adr, const std::string& port, uint32_t conn_timeot, t_connection_context& cn, const std::string& bind_ip = "0.0.0.0", epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
+
+    bool connect(const std::string& adr, const std::string& port, uint32_t conn_timeot, t_connection_context& cn, const std::string& bind_ip = "0.0.0.0", epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled);
+
     template<class t_callback>
-    bool connect_async(const std::string& adr, const std::string& port, uint32_t conn_timeot, const t_callback &cb, const std::string& bind_ip = "0.0.0.0", epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_autodetect);
+    bool connect_async(const std::string& adr, const std::string& port, uint32_t conn_timeot, const t_callback &cb, const std::string& bind_ip = "0.0.0.0", epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled);
 
     typename t_protocol_handler::config_type& get_config_object()
     {
