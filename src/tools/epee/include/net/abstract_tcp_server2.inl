@@ -506,28 +506,6 @@ namespace net_utils
     m_send_que_lock.lock(); // *** critical ***
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){m_send_que_lock.unlock();});
 
-    long int retry=0;
-    const long int retry_limit = 20;
-    while (m_send_que.size() > ABSTRACT_SERVER_SEND_QUE_MAX_COUNT)
-    {
-        retry++;
-
-        long int ms = 275;
-        MDEBUG("Sleeping because QUEUE is FULL, in " << __FUNCTION__ << " for " << ms << " ms before packet_size="<<chunk.size()); // XXX debug sleep
-        m_send_que_lock.unlock();
-        std::this_thread::sleep_for(std::chrono::milliseconds( ms ) );
-        m_send_que_lock.lock();
-        _dbg1("sleep for queue: " << ms);
-	if (m_was_shutdown)
-		return false;
-
-        if (retry > retry_limit) {
-            MWARNING("send que size is more than ABSTRACT_SERVER_SEND_QUE_MAX_COUNT(" << ABSTRACT_SERVER_SEND_QUE_MAX_COUNT << "), shutting down connection");
-            shutdown();
-            return false;
-        }
-    }
-
     m_send_que.push_back(chunk);
 
     if(m_send_que.size() > 1)
