@@ -3569,7 +3569,7 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
   return priority;
 }
 
-bool wallet2::tx_add_fake_output(std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs, uint64_t global_index, const crypto::public_key& output_public_key, const rct::key& mask, uint64_t real_index, bool unlocked) const
+bool wallet2::tx_add_fake_output(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, uint64_t global_index, const crypto::public_key& output_public_key, const rct::key& mask, uint64_t real_index, bool unlocked) const
 {
   if (!unlocked) // don't add locked outs
     return false;
@@ -3595,25 +3595,7 @@ bool wallet2::tx_add_fake_output(std::vector<std::vector<tools::wallet2::get_out
 }
 
 
-std::pair<std::set<uint64_t>, size_t> outs_unique(const std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs)
-{
-  std::set<uint64_t> unique;
-  size_t total = 0;
-
-  for (const auto &it : outs)
-  {
-    for (const auto &out : it)
-    {
-      const uint64_t global_index = std::get<0>(out);
-      unique.insert(global_index);
-    }
-    total += it.size();
-  }
-
-  return std::make_pair(std::move(unique), total);
-}
-
-void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, bool rct)
+void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, bool rct)
 {
   std::vector<uint64_t> rct_offsets;
   for (size_t attempts = 3; attempts > 0; --attempts)
@@ -3623,7 +3605,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
     if (!rct)
       return;
 
-    const auto unique = outs_unique(outs);
+    const auto unique = wallet::logic::functional::wallet::outs_unique(outs);
     if (tx_sanity_check(unique.first, unique.second, rct_offsets.empty() ? 0 : rct_offsets.back()))
     {
       return;
@@ -3639,7 +3621,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
   THROW_WALLET_EXCEPTION(error::wallet_internal_error, tr("Transaction sanity check failed"));
 }
 
-void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, std::vector<uint64_t> &rct_offsets)
+void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, std::vector<uint64_t> &rct_offsets)
 {
   LOG_PRINT_L2("fake_outputs_count: " << fake_outputs_count);
   outs.clear();
@@ -3852,7 +3834,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
     {
       const transfer_details &td = m_transfers[idx];
       size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE : 0);
-      outs.push_back(std::vector<get_outs_entry>());
+      outs.push_back(std::vector<wallet::logic::type::get_outs_entry>());
       outs.back().reserve(fake_outputs_count + 1);
       const rct::key mask = td.is_rct() ? rct::commit(td.amount(), td.m_mask) : rct::zeroCommit(td.amount());
 
@@ -3898,7 +3880,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       else
       {
         // sort the subsection, so any spares are reset in order
-        std::sort(outs.back().begin(), outs.back().end(), [](const get_outs_entry &a, const get_outs_entry &b) { return std::get<0>(a) < std::get<0>(b); });
+        std::sort(outs.back().begin(), outs.back().end(), [](const wallet::logic::type::get_outs_entry &a, const wallet::logic::type::get_outs_entry &b) { return std::get<0>(a) < std::get<0>(b); });
       }
       base += requested_outputs_count;
     }
@@ -3909,7 +3891,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
     for (size_t idx: selected_transfers)
     {
       const transfer_details &td = m_transfers[idx];
-      std::vector<get_outs_entry> v;
+      std::vector<wallet::logic::type::get_outs_entry> v;
       const rct::key mask = td.is_rct() ? rct::commit(td.amount(), td.m_mask) : rct::zeroCommit(td.amount());
       v.push_back(std::make_tuple(td.m_global_output_index, td.get_public_key(), mask));
       outs.push_back(v);
@@ -3918,7 +3900,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
 }
 
 void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry> dsts, const std::vector<size_t>& selected_transfers, size_t fake_outputs_count,
-  std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs,
+  std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs,
   uint64_t unlock_time, uint64_t fee, const std::vector<uint8_t>& extra, cryptonote::transaction& tx, pending_tx &ptx)
 {
   using namespace cryptonote;
@@ -4249,7 +4231,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
     pending_tx ptx;
     size_t weight;
     uint64_t needed_fee;
-    std::vector<std::vector<tools::wallet2::get_outs_entry>> outs;
+    std::vector<std::vector<wallet::logic::type::get_outs_entry>> outs;
 
     TX() : weight(0), needed_fee(0) {}
 
@@ -4415,7 +4397,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
   accumulated_change = 0;
   adding_fee = false;
   needed_fee = 0;
-  std::vector<std::vector<tools::wallet2::get_outs_entry>> outs;
+  std::vector<std::vector<wallet::logic::type::get_outs_entry>> outs;
 
   // for rct, since we don't see the amounts, we will try to make all transactions
   // look the same, with 1 or 2 inputs, and 2 outputs. One input is preferable, as
@@ -4707,7 +4689,7 @@ skip_tx:
     transfer_selected_rct(tx.dsts,                    /* NOMOD std::vector<cryptonote::tx_destination_entry> dsts,*/
                           tx.selected_transfers,      /* const std::list<size_t> selected_transfers */
                           fake_outs_count,            /* CONST size_t fake_outputs_count, */
-                          tx.outs,                    /* MOD   std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs, */
+                          tx.outs,                    /* MOD   std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, */
                           unlock_time,                /* CONST uint64_t unlock_time,  */
                           tx.needed_fee,              /* CONST uint64_t fee, */
                           extra,                      /* const std::vector<uint8_t>& extra, */

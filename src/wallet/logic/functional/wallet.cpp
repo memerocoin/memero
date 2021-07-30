@@ -134,6 +134,25 @@ namespace wallet {
     return 0.0f;
   }
 
+  std::pair<std::set<uint64_t>, size_t> outs_unique(const std::vector<std::vector<::wallet::logic::type::get_outs_entry>> outs)
+  {
+    std::set<uint64_t> unique;
+    size_t total = 0;
+
+    for (const auto &it : outs)
+      {
+        for (const auto &out : it)
+          {
+            const uint64_t global_index = std::get<0>(out);
+            unique.insert(global_index);
+          }
+        total += it.size();
+      }
+
+    return std::make_pair(std::move(unique), total);
+  }
+
+
 } // wallet
 } // functional
 } // logic
