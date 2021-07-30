@@ -1956,24 +1956,6 @@ skip:
     uint64_t current_blockchain_height = m_core.get_current_blockchain_height();
     if(m_synchronized.compare_exchange_strong(val_expected, true))
     {
-      if ((current_blockchain_height > m_sync_start_height) && (m_sync_spans_downloaded > 0))
-      {
-        uint64_t synced_blocks = current_blockchain_height - m_sync_start_height;
-        // Report only after syncing an "interesting" number of blocks:
-        if (synced_blocks > 20)
-        {
-          const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-          uint64_t synced_seconds = std::chrono::duration_cast<
-            std::chrono::seconds>(now - m_sync_start_time).count();
-          if (synced_seconds == 0)
-          {
-            synced_seconds = 1;
-          }
-          float blocks_per_second = (1000 * synced_blocks / synced_seconds) / 1000.0f;
-          MGINFO_YELLOW("Synced " << synced_blocks << " blocks in "
-            << tools::get_human_readable_timespan(synced_seconds) << " (" << blocks_per_second << " blocks per second)");
-        }
-      }
       MGINFO_YELLOW(std::endl << "**********************************************************************" << std::endl
         << "You are now synchronized with the network. You may now start lolnero." << std::endl
         << std::endl
