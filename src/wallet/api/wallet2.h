@@ -381,7 +381,7 @@ namespace tools
     uint32_t adjust_priority(uint32_t priority);
 
     template<class t_request, class t_response>
-    inline bool invoke_http_json(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")
+    bool invoke_http_json(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")
     {
       if (m_offline) return false;
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
@@ -389,7 +389,7 @@ namespace tools
     }
 
     template<class t_request, class t_response>
-    inline bool invoke_http_bin(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")
+    bool invoke_http_bin(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")
     {
       if (m_offline) return false;
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
@@ -397,7 +397,7 @@ namespace tools
     }
 
     template<class t_request, class t_response>
-    inline bool invoke_http_json_rpc(const std::string_view uri, const std::string& method_name, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST", const std::string& req_id = "0")
+    bool invoke_http_json_rpc(const std::string_view uri, const std::string& method_name, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST", const std::string& req_id = "0")
     {
       if (m_offline) return false;
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);

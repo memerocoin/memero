@@ -38,7 +38,8 @@ namespace epee
   {
     template<class t_request, class t_response, class t_transport>
     bool invoke_http_json
-    (const std::string_view uri
+    (
+     const std::string_view uri
      , const t_request& out_struct
      , t_response& result_struct
      , t_transport& transport
