@@ -50,6 +50,6 @@ namespace hex
   // static bool to_string(std::string& out, std::string_view src);
   std::optional<epee::blob::data> to_blob(const std::string_view src);
   bool to_string(std::string& out, const std::string_view src);
-  bool to_buffer(std::span<std::uint8_t> out, const std::string_view src) noexcept;
+  bool to_span(std::span<std::uint8_t> out, const std::string_view src) noexcept;
 };
 }

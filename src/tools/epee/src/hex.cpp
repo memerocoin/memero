@@ -109,7 +109,7 @@ namespace hex
     return true;
   }
 
-  bool to_buffer(std::span<std::uint8_t> out, const std::string_view src) noexcept
+  bool to_span(std::span<std::uint8_t> out, const std::string_view src) noexcept
   {
     if (src.size() / 2 != out.size())
       return false;

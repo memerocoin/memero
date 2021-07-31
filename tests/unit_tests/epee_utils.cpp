@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2019, The Monero Project
+/ Copyright (c) 2014-2019, The Monero Project
 //
 // All rights reserved.
 //
@@ -161,32 +161,13 @@ TEST(HexLocale, String)
     EXPECT_EQ(source, epee::from_hex_locale::to_vector(std::string_view{hex.data(), hex.size() - 2}));
 }
 
-TEST(ToHex, Array)
-{
-  EXPECT_EQ(
-    (std::array<char, 8>{{'f', 'f', 'a', 'b', '0', '1', '0', '0'}}),
-    (epee::to_hex::array(std::array<unsigned char, 4>{{0xFF, 0xAB, 0x01, 0x00}}))
-  );
-}
-
-TEST(ToHex, ArrayFromPod)
-{
-  std::array<char, 64> expected{{'5', 'f', '2', 'b', '0', '1'}};
-  std::fill(expected.begin() + 6, expected.end(), '0');
-
-  EXPECT_EQ(
-    expected,
-    (epee::to_hex::array(crypto::ec_point{{0x5F, 0x2B, 0x01, 0x00}}))
-  );
-}
-
 TEST(ToHex, Ostream)
 {
   std::stringstream out;
 
   {
     const std::uint8_t source[] = {0xff, 0xab, 0x01, 0x00};
-    epee::to_hex::buffer(out, source);
+    epee::hex::decode(out, source);
   }
 
   std::string expected{"ffab0100"};
@@ -195,7 +176,7 @@ TEST(ToHex, Ostream)
   const std::vector<unsigned char> all_bytes = get_all_bytes();
 
   expected.append(std_to_hex(all_bytes));
-  epee::to_hex::buffer(out, (all_bytes));
+  epee::hex::decode(out, (all_bytes));
   EXPECT_EQ(expected, out.str());
 }
 
@@ -241,16 +222,16 @@ TEST(FromHex, ToBuffer)
 
   std::vector<std::uint8_t> out{};
   out.resize(sizeof(binary));
-  EXPECT_FALSE(epee::from_hex::to_buffer((out), hex));
+  EXPECT_FALSE(epee::hex::to_span((out), hex));
 
   std::string_view portion{hex};
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::from_hex::to_buffer((out), portion));
+  EXPECT_FALSE(epee::hex::to_span((out), portion));
 
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::from_hex::to_buffer({out.data(), out.size() - 1}, portion));
+  EXPECT_FALSE(epee::hex::to_span({out.data(), out.size() - 1}, portion));
 
-  EXPECT_TRUE(epee::from_hex::to_buffer((out), portion));
+  EXPECT_TRUE(epee::hex::to_span((out), portion));
   const std::vector<std::uint8_t> expected{std::begin(binary), std::end(binary)};
   EXPECT_EQ(expected, out);
 }
