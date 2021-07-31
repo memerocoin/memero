@@ -50,7 +50,13 @@ namespace string_tools
   //----------------------------------------------------------------------------
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)
   {
-    return from_hex::to_string(res, s);
+    const auto r = from_hex::to_blob(s);
+    if (r) {
+      res = uint8_t_string_to_string(*r);
+      return true;
+    } else {
+      return false;
+    }
   }
   //----------------------------------------------------------------------------
   bool parse_peer_from_string(uint32_t& ip, uint16_t& port, const std::string& addres)
@@ -211,9 +217,12 @@ namespace string_tools
 
   std::vector<uint8_t> to_vector(const std::string_view src)
   {
-    const auto str = epee::string_tools::string_to_uint8_t_string(std::string(src));
+    const std::optional<::epee::blob::data> r = from_hex::to_blob(src);
     std::vector<uint8_t> v;
-    std::copy( str.begin(), str.end(), std::back_inserter(v));
+    if (r) {
+      const auto str = *r;
+      std::copy( str.begin(), str.end(), std::back_inserter(v));
+    }
     return v;
   }
 } // string_tools

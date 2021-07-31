@@ -87,17 +87,23 @@ namespace epee
   }
 
 
-  bool from_hex::to_string(std::string& out, const std::string_view src)
-  {
+  std::optional<epee::blob::data> from_hex::to_blob(std::string_view src) {
+    epee::blob::data out;
     out.resize(src.size() / 2);
-    return to_buffer_unchecked(reinterpret_cast<std::uint8_t*>(&out[0]), src);
+    const bool r = to_buffer_unchecked(out.data(), src);
+    if (r) {
+      return out;
+    } else {
+      return {};
+    }
   }
 
-  epee::blob::data from_hex::to_blob(std::string_view src) {
-    epee::blob::data out;
-    to_string(out, src);
-    return out;
-  }
+  // std::string from_hex::to_string(const std::string_view src)
+  // {
+  //   return epee::string_tools::uint8_t_string_to_string
+  //     (to_blob(src));
+  // }
+
 
   bool from_hex::to_buffer(std::span<std::uint8_t> out, const std::string_view src) noexcept
   {
