@@ -60,6 +60,12 @@ namespace cryptonote
     bool rct;                           //true if the output is rct
     rct::key mask;                      //ringct amount mask
 
+    // needed for test
+    inline void push_output(uint64_t idx, const crypto::public_key &k, uint64_t amount) {
+      outputs.push_back(std::make_pair(idx, rct::ctkey({rct::pk2rct(k), rct::zeroCommit(amount)})));
+    }
+
+
     BEGIN_SERIALIZE_OBJECT()
       FIELD(outputs)
       FIELD(real_output)
