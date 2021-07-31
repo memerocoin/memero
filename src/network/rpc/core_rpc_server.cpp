@@ -58,7 +58,7 @@ namespace
   void store_128(boost::multiprecision::uint128_t value, uint64_t &slow64, std::string &swide, uint64_t &stop64)
   {
     slow64 = (value & 0xffffffffffffffff).convert_to<uint64_t>();
-    swide = cryptonote::hex(value);
+    swide = cryptonote::diff_to_hex(value);
     stop64 = ((value >> 64) & 0xffffffffffffffff).convert_to<uint64_t>();
   }
 

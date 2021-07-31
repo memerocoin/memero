@@ -140,5 +140,5 @@ namespace cryptonote
    , const uint64_t HEIGHT
    );
 
-  std::string hex(const diff_t v);
+  std::string diff_to_hex(const diff_t v);
 }

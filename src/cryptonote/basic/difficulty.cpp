@@ -91,19 +91,10 @@ namespace cryptonote {
     return next;
   }
 
-  std::string hex(const diff_t _v)
+  std::string diff_to_hex(const diff_t _v)
   {
-    constexpr char chars[] = "0123456789abcdef";
-    std::string s;
-    diff_t v = _v;
-    while (v > 0)
-      {
-        s.push_back(chars[(v & 0xf).convert_to<unsigned>()]);
-        v >>= 4;
-      }
-    if (s.empty())
-      s += "0";
-    std::reverse(s.begin(), s.end());
-    return "0x" + s;
+    std::stringstream stream;
+    stream << std::hex << _v;
+    return "0x" + stream.str();
   }
 }
