@@ -139,17 +139,6 @@ namespace string_tools
     }
     return s;
   }
-  //----------------------------------------------------------------------------
-	std::string get_extension(const std::string& str)
-	{
-		std::string res;
-		std::string::size_type pos = str.rfind('.');
-		if(std::string::npos == pos)
-			return res;
-
-		res = str.substr(pos+1, str.size()-pos);
-		return res;
-	}
 	//----------------------------------------------------------------------------
 	std::string cut_off_extension(const std::string& str)
 	{

@@ -65,7 +65,7 @@ namespace wallet {
     keys_file = file_path;
     wallet_file = file_path;
     std::error_code e;
-    if(epee::string_tools::get_extension(keys_file) == "keys")
+    if(std::filesystem::path(keys_file).extension() == ".keys")
     {//provided keys file name
       wallet_file = epee::string_tools::cut_off_extension(wallet_file);
     } else
