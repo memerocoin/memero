@@ -124,7 +124,7 @@ namespace string_tools
   bool hex_to_pod(const std::string_view hex_str, t_pod_type& s)
   {
     static_assert(std::is_standard_layout<t_pod_type>(), "expected standard layout type");
-    return from_hex::to_buffer(as_mut_byte_span(s), hex_str);
+    return hex::to_buffer(as_mut_byte_span(s), hex_str);
   }
   //----------------------------------------------------------------------------
   template<class t_pod_type>

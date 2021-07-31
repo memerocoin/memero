@@ -56,14 +56,11 @@ namespace epee
   };
 
   //! Convert hex in UTF8 encoding to binary
-  struct from_hex
+  namespace hex
   {
     // static bool to_string(std::string& out, std::string_view src);
-    static std::optional<epee::blob::data> to_blob(std::string_view src);
+    std::optional<epee::blob::data> to_blob(std::string_view src);
 
-    static bool to_buffer(std::span<std::uint8_t> out, std::string_view src) noexcept;
-
-  private:
-    static bool to_buffer_unchecked(std::uint8_t* out, std::string_view src) noexcept;
+    bool to_buffer(std::span<std::uint8_t> out, std::string_view src) noexcept;
   };
 }

@@ -50,7 +50,7 @@ namespace string_tools
   //----------------------------------------------------------------------------
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)
   {
-    const auto r = from_hex::to_blob(s);
+    const auto r = hex::to_blob(s);
     if (r) {
       res = uint8_t_string_to_string(*r);
       return true;
@@ -217,7 +217,7 @@ namespace string_tools
 
   std::vector<uint8_t> to_vector(const std::string_view src)
   {
-    const std::optional<::epee::blob::data> r = from_hex::to_blob(src);
+    const std::optional<::epee::blob::data> r = hex::to_blob(src);
     std::vector<uint8_t> v;
     if (r) {
       const auto str = *r;

@@ -87,38 +87,15 @@ namespace epee
   }
 
 
-  std::optional<epee::blob::data> from_hex::to_blob(std::string_view src) {
-    epee::blob::data out;
-    out.resize(src.size() / 2);
-    const bool r = to_buffer_unchecked(out.data(), src);
-    if (r) {
-      return out;
-    } else {
-      return {};
-    }
-  }
-
-  // std::string from_hex::to_string(const std::string_view src)
-  // {
-  //   return epee::string_tools::uint8_t_string_to_string
-  //     (to_blob(src));
-  // }
-
-
-  bool from_hex::to_buffer(std::span<std::uint8_t> out, const std::string_view src) noexcept
+namespace hex
+{
+  bool to_buffer_unchecked(std::uint8_t* dst, const std::string_view s) noexcept
   {
-    if (src.size() / 2 != out.size())
+    if (s.size() % 2 != 0)
       return false;
-    return to_buffer_unchecked(out.data(), src);
-  }
 
-  bool from_hex::to_buffer_unchecked(std::uint8_t* dst, const std::string_view s) noexcept
-  {
-      if (s.size() % 2 != 0)
-        return false;
-
-      const unsigned char *src = (const unsigned char *)s.data();
-      for(size_t i = 0; i < s.size(); i += 2)
+    const unsigned char *src = (const unsigned char *)s.data();
+    for(size_t i = 0; i < s.size(); i += 2)
       {
         int tmp = *src++;
         tmp = epee::misc_utils::parse::isx[tmp];
@@ -129,6 +106,26 @@ namespace epee
         *dst++ = (tmp << 4) | t2;
       }
 
-      return true;
+    return true;
   }
+
+  bool to_buffer(std::span<std::uint8_t> out, const std::string_view src) noexcept
+  {
+    if (src.size() / 2 != out.size())
+      return false;
+    return to_buffer_unchecked(out.data(), src);
+  }
+
+  std::optional<epee::blob::data> to_blob(std::string_view src) {
+    epee::blob::data out;
+    out.resize(src.size() / 2);
+    const bool r = to_buffer_unchecked(out.data(), src);
+    if (r) {
+      return out;
+    } else {
+      return {};
+    }
+  }
+
+} // hex
 }
