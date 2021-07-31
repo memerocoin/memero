@@ -147,8 +147,6 @@ namespace cryptonote
   {
     RPC_TRACKER(get_info);
 
-    constexpr bool restricted = false;
-
     crypto::hash top_hash;
     m_core.get_blockchain_top(res.height, top_hash);
     ++res.height; // turn top block height into blockchain height
@@ -157,14 +155,14 @@ namespace cryptonote
     store_difficulty(m_core.get_blockchain_storage().get_difficulty_for_next_block(), res.difficulty, res.wide_difficulty, res.difficulty_top64);
     res.target = m_core.get_blockchain_storage().get_difficulty_target();
     res.tx_count = m_core.get_blockchain_storage().get_total_transactions() - res.height; //without coinbase
-    res.tx_pool_size = m_core.get_pool_transactions_count(!restricted);
-    res.alt_blocks_count = restricted ? 0 : m_core.get_blockchain_storage().get_alternative_blocks_count();
-    uint64_t total_conn = restricted ? 0 : m_p2p.get_public_connections_count();
-    res.outgoing_connections_count = restricted ? 0 : m_p2p.get_public_outgoing_connections_count();
-    res.incoming_connections_count = restricted ? 0 : (total_conn - res.outgoing_connections_count);
-    res.rpc_connections_count = restricted ? 0 : get_connections_count();
-    res.white_peerlist_size = restricted ? 0 : m_p2p.get_public_white_peers_count();
-    res.grey_peerlist_size = restricted ? 0 : m_p2p.get_public_gray_peers_count();
+    res.tx_pool_size = m_core.get_pool_transactions_count(true);
+    res.alt_blocks_count = m_core.get_blockchain_storage().get_alternative_blocks_count();
+    uint64_t total_conn = m_p2p.get_public_connections_count();
+    res.outgoing_connections_count = m_p2p.get_public_outgoing_connections_count();
+    res.incoming_connections_count = (total_conn - res.outgoing_connections_count);
+    res.rpc_connections_count = get_connections_count();
+    res.white_peerlist_size = m_p2p.get_public_white_peers_count();
+    res.grey_peerlist_size = m_p2p.get_public_gray_peers_count();
 
     cryptonote::network_type net_type = nettype();
     res.mainnet = net_type == MAINNET;
@@ -173,13 +171,11 @@ namespace cryptonote
     store_difficulty(m_core.get_blockchain_storage().get_db().get_block_cumulative_difficulty(res.height - 1),
         res.cumulative_difficulty, res.wide_cumulative_difficulty, res.cumulative_difficulty_top64);
 
-    res.start_time = restricted ? 0 : (uint64_t)m_core.get_start_time();
-    res.free_space = restricted ? std::numeric_limits<uint64_t>::max() : m_core.get_free_space();
+    res.start_time = (uint64_t)m_core.get_start_time();
+    res.free_space = m_core.get_free_space();
     res.offline = m_core.offline();
     res.database_size = m_core.get_blockchain_storage().get_db().get_database_size();
-    if (restricted)
-      res.database_size = round_up(res.database_size, 5ull* 1024 * 1024 * 1024);
-    res.version = restricted ? "" : LOLNERO_VERSION_FULL;
+    res.version = LOLNERO_VERSION_FULL;
     res.busy_syncing = m_p2p.get_payload_object().is_busy_syncing();
 
     res.status = CORE_RPC_STATUS_OK;
@@ -409,7 +405,6 @@ namespace cryptonote
   {
     RPC_TRACKER(get_transactions);
 
-    constexpr bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
 
     std::vector<crypto::hash> vh;
@@ -446,7 +441,7 @@ namespace cryptonote
     {
       std::vector<tx_info> pool_tx_info;
       std::vector<spent_key_image_info> pool_key_image_info;
-      bool r = m_core.get_pool_transactions_and_spent_keys_info(pool_tx_info, pool_key_image_info, !request_has_rpc_origin || !restricted);
+      bool r = m_core.get_pool_transactions_and_spent_keys_info(pool_tx_info, pool_key_image_info, true);
       if(r)
       {
         // sort to match original request
@@ -588,7 +583,6 @@ namespace cryptonote
   {
     RPC_TRACKER(is_key_image_spent);
 
-    constexpr bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
 
     std::vector<crypto::key_image> key_images;
@@ -620,7 +614,7 @@ namespace cryptonote
     // check the pool too
     std::vector<cryptonote::tx_info> txs;
     std::vector<cryptonote::spent_key_image_info> ki;
-    r = m_core.get_pool_transactions_and_spent_keys_info(txs, ki, !request_has_rpc_origin || !restricted);
+    r = m_core.get_pool_transactions_and_spent_keys_info(txs, ki, true);
     if(!r)
     {
       res.status = "Failed";
