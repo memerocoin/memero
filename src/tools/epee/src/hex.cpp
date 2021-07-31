@@ -93,6 +93,12 @@ namespace epee
     return to_buffer_unchecked(reinterpret_cast<std::uint8_t*>(&out[0]), src);
   }
 
+  epee::blob::data from_hex::to_blob(std::string_view src) {
+    epee::blob::data out;
+    to_string(out, src);
+    return out;
+  }
+
   bool from_hex::to_buffer(std::span<std::uint8_t> out, const std::string_view src) noexcept
   {
     if (src.size() / 2 != out.size())

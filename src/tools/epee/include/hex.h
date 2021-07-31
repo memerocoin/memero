@@ -31,6 +31,7 @@
 
 #include "tools/epee/include/wipeable_string.h"
 #include "tools/epee/include/span.h"
+#include "tools/epee/include/blob.hpp"
 
 #include <span>
 
@@ -58,6 +59,7 @@ namespace epee
   struct from_hex
   {
     static bool to_string(std::string& out, std::string_view src);
+    static epee::blob::data to_blob(std::string_view src);
 
     static bool to_buffer(std::span<std::uint8_t> out, std::string_view src) noexcept;
 
