@@ -36,11 +36,7 @@
 
 #include "cryptonote/tx/tx_sanity_check.h"
 
-
-
-
 #include "config/version.hpp"
-
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -48,11 +44,6 @@
 
 #define MAX_RESTRICTED_FAKE_OUTS_COUNT 40
 #define MAX_RESTRICTED_GLOBAL_FAKE_OUTS_COUNT 5000
-
-#define RESTRICTED_BLOCK_HEADER_RANGE 1000
-#define RESTRICTED_TRANSACTIONS_COUNT 100
-#define RESTRICTED_SPENT_KEY_IMAGES_COUNT 5000
-#define RESTRICTED_BLOCK_COUNT 1000
 
 #define RPC_TRACKER(rpc)
 
@@ -314,11 +305,6 @@ namespace cryptonote
     RPC_TRACKER(get_blocks_by_height);
 
     const bool restricted = false;
-    if (restricted && req.heights.size() > RESTRICTED_BLOCK_COUNT)
-    {
-      res.status = "Too many blocks requested in restricted mode";
-      return true;
-    }
 
     res.status = "Failed";
     res.blocks.clear();
@@ -370,14 +356,6 @@ namespace cryptonote
     res.status = "Failed";
 
     const bool restricted = false;
-    if (restricted)
-    {
-      if (req.outputs.size() > MAX_RESTRICTED_GLOBAL_FAKE_OUTS_COUNT)
-      {
-        res.status = "Too many outs requested";
-        return true;
-      }
-    }
 
     if(!m_core.get_outs(req, res))
     {
@@ -395,14 +373,6 @@ namespace cryptonote
     res.status = "Failed";
 
     const bool restricted = false;
-    if (restricted)
-    {
-      if (req.outputs.size() > MAX_RESTRICTED_GLOBAL_FAKE_OUTS_COUNT)
-      {
-        res.status = "Too many outs requested";
-        return true;
-      }
-    }
 
     cryptonote::COMMAND_RPC_GET_OUTPUTS_BIN::request req_bin;
     req_bin.outputs = req.outputs;
@@ -451,12 +421,6 @@ namespace cryptonote
 
     const bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
-
-    if (restricted && req.txs_hashes.size() > RESTRICTED_TRANSACTIONS_COUNT)
-    {
-      res.status = "Too many transactions requested in restricted mode";
-      return true;
-    }
 
     std::vector<crypto::hash> vh;
     for(const auto& tx_hex_str: req.txs_hashes)
@@ -636,12 +600,6 @@ namespace cryptonote
 
     const bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
-
-    if (restricted && req.key_images.size() > RESTRICTED_SPENT_KEY_IMAGES_COUNT)
-    {
-      res.status = "Too many key images queried in restricted mode";
-      return true;
-    }
 
     std::vector<crypto::key_image> key_images;
     for(const auto& ki_hex_str: req.key_images)
@@ -1262,12 +1220,6 @@ namespace cryptonote
     RPC_TRACKER(get_block_header_by_hash);
 
     const bool restricted = false;
-    if (restricted && req.hashes.size() > RESTRICTED_BLOCK_COUNT)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_RESTRICTED;
-      error_resp.message = "Too many block headers requested in restricted mode";
-      return false;
-    }
 
     auto get = [this](const std::string &hash, bool fill_pow_hash, block_header_response &block_header, bool restricted, epee::json_rpc::error& error_resp) -> bool {
       crypto::hash block_hash;
@@ -1333,12 +1285,6 @@ namespace cryptonote
       return false;
     }
     const bool restricted = false;
-    if (restricted && req.end_height - req.start_height > RESTRICTED_BLOCK_HEADER_RANGE)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_RESTRICTED;
-      error_resp.message = "Too many block headers requested.";
-      return false;
-    }
 
     for (uint64_t h = req.start_height; h <= req.end_height; ++h)
     {
