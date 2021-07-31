@@ -129,7 +129,7 @@ TEST(ToHex, String)
 {
   EXPECT_EQ(
     std::string{"ffab0100"},
-    epee::hex::decode(epee::as_byte_span("\xff\xab\x01"))
+    epee::hex::decode(epee::pod_to_span("\xff\xab\x01"))
   );
 
   const std::vector<unsigned char> all_bytes = get_all_bytes();
@@ -205,7 +205,7 @@ TEST(ToHex, Formatted)
   std::string expected{};
 
   expected.append("<ffab0100>");
-  epee::hex::append_decode_formatted(out, epee::as_byte_span("\xFF\xAB\x01"));
+  epee::hex::append_decode_formatted(out, epee::pod_to_span("\xFF\xAB\x01"));
   EXPECT_EQ(expected, out.str());
 
   const std::vector<unsigned char> all_bytes = get_all_bytes();

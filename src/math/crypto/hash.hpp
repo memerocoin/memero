@@ -62,10 +62,10 @@ namespace crypto {
   void tree_hash(const hash *hashes, const std::size_t count, hash &root_hash);
 
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
-    epee::hex::append_decode_formatted(o, epee::as_byte_span(v)); return o;
+    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash8 &v) {
-    epee::hex::append_decode_formatted(o, epee::as_byte_span(v)); return o;
+    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 
   constexpr static crypto::hash null_hash = {};

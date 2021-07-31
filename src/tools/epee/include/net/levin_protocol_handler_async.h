@@ -119,7 +119,7 @@ class async_protocol_handler
   bool send_message(uint32_t command, std::span<const uint8_t> in_buff, uint32_t flags, bool expect_response)
   {
     const bucket_head2 head = make_header(command, in_buff.size(), flags, expect_response);
-    std::span<const uint8_t> head_span = as_byte_span(head);
+    std::span<const uint8_t> head_span = pod_to_span(head);
     const auto head_string = epee::blob::data(head_span.data(), head_span.size());
     const auto in_buff_string = epee::blob::data(in_buff.data(), in_buff.size());
     if(!m_pservice_endpoint->do_send(head_string + in_buff_string))

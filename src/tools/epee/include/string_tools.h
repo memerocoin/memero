@@ -118,14 +118,14 @@ namespace string_tools
   std::string pod_to_hex(const t_pod_type& s)
   {
     static_assert(std::is_standard_layout<t_pod_type>(), "expected standard layout type");
-    return hex::decode(as_byte_span(s));
+    return hex::decode(pod_to_span(s));
   }
   //----------------------------------------------------------------------------
   template<class t_pod_type>
   bool hex_to_pod(const std::string_view hex_str, t_pod_type& s)
   {
     static_assert(std::is_standard_layout<t_pod_type>(), "expected standard layout type");
-    return hex::to_buffer(as_mut_byte_span(s), hex_str);
+    return hex::to_buffer(pod_to_mutable_span(s), hex_str);
   }
   //----------------------------------------------------------------------------
   template<class t_pod_type>

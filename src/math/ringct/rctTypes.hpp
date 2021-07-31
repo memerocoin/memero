@@ -407,7 +407,7 @@ namespace cryptonote {
 
 namespace rct {
 inline std::ostream &operator <<(std::ostream &o, const rct::key &v) {
-  epee::hex::append_decode_formatted(o, epee::as_byte_span(v)); return o;
+  epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
 }
 }
 

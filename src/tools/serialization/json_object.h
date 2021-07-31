@@ -149,7 +149,7 @@ template <class Type>
 typename std::enable_if<is_to_hex<Type>()>::type fromJsonValue(const rapidjson::Value& val, Type& t)
 {
   static_assert(std::is_standard_layout<Type>(), "expected standard layout type");
-  json::read_hex(val, epee::as_mut_byte_span(t));
+  json::read_hex(val, epee::pod_to_mutable_span(t));
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rapidjson::Value& src);
