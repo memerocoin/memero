@@ -45,18 +45,12 @@ namespace string_tools
   //----------------------------------------------------------------------------
   std::string buff_to_hex_nodelimer(const std::string& src)
   {
-    return to_hex::string(string_to_uint8_t_string(src));
+    return hex::decode(string_to_uint8_t_string(src));
   }
   //----------------------------------------------------------------------------
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)
   {
-    const auto r = hex::to_blob(s);
-    if (r) {
-      res = uint8_t_string_to_string(*r);
-      return true;
-    } else {
-      return false;
-    }
+    return hex::to_string(res, s);
   }
   //----------------------------------------------------------------------------
   bool parse_peer_from_string(uint32_t& ip, uint16_t& port, const std::string& addres)

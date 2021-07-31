@@ -53,42 +53,42 @@ namespace epee
     }
   }
 
+
+namespace hex
+{
+  void buffer_unchecked(char* out, const std::span<const std::uint8_t> src) noexcept
+  {
+    return write_hex(out, src);
+  }
+
   template<typename T>
-  T to_hex::convert(const std::span<const std::uint8_t> src)
+  T convert(const std::span<const std::uint8_t> src)
   {
     if (std::numeric_limits<std::size_t>::max() / 2 < src.size())
       throw std::range_error("hex_view::to_string exceeded maximum size");
 
     T out{};
     out.resize(src.size() * 2);
-    to_hex::buffer_unchecked((char*)out.data(), src); // can't see the non const version in wipeable_string??
+    buffer_unchecked((char*)out.data(), src); // can't see the non const version in wipeable_string??
     return out;
   }
 
-  std::string to_hex::string(const std::span<const std::uint8_t> src) {
+  std::string decode(const std::span<const std::uint8_t> src) {
     return convert<std::string>(src);
   }
 
-  void to_hex::buffer(std::ostream& out, const std::span<const std::uint8_t> src)
+  void append_decode(std::ostream& out, const std::span<const std::uint8_t> src)
   {
     write_hex(std::ostreambuf_iterator<char>{out}, src);
   }
 
-  void to_hex::formatted(std::ostream& out, const std::span<const std::uint8_t> src)
+  void append_decode_formatted(std::ostream& out, const std::span<const std::uint8_t> src)
   {
     out.put('<');
-    buffer(out, src);
+    append_decode(out, src);
     out.put('>');
   }
 
-  void to_hex::buffer_unchecked(char* out, const std::span<const std::uint8_t> src) noexcept
-  {
-    return write_hex(out, src);
-  }
-
-
-namespace hex
-{
   bool to_buffer_unchecked(std::uint8_t* dst, const std::string_view s) noexcept
   {
     if (s.size() % 2 != 0)
@@ -96,15 +96,15 @@ namespace hex
 
     const unsigned char *src = (const unsigned char *)s.data();
     for(size_t i = 0; i < s.size(); i += 2)
-      {
-        int tmp = *src++;
-        tmp = epee::misc_utils::parse::isx[tmp];
-        if (tmp == 0xff) return false;
-        int t2 = *src++;
-        t2 = epee::misc_utils::parse::isx[t2];
-        if (t2 == 0xff) return false;
-        *dst++ = (tmp << 4) | t2;
-      }
+    {
+      int tmp = *src++;
+      tmp = epee::misc_utils::parse::isx[tmp];
+      if (tmp == 0xff) return false;
+      int t2 = *src++;
+      t2 = epee::misc_utils::parse::isx[t2];
+      if (t2 == 0xff) return false;
+      *dst++ = (tmp << 4) | t2;
+    }
 
     return true;
   }
@@ -116,7 +116,7 @@ namespace hex
     return to_buffer_unchecked(out.data(), src);
   }
 
-  std::optional<epee::blob::data> to_blob(std::string_view src) {
+  std::optional<epee::blob::data> to_blob(const std::string_view src) {
     epee::blob::data out;
     out.resize(src.size() / 2);
     const bool r = to_buffer_unchecked(out.data(), src);
@@ -124,6 +124,17 @@ namespace hex
       return out;
     } else {
       return {};
+    }
+  }
+
+  bool to_string(std::string& res, const std::string_view s)
+  {
+    const auto r = to_blob(s);
+    if (r) {
+      res = ::epee::string_tools::uint8_t_string_to_string(*r);
+      return true;
+    } else {
+      return false;
     }
   }
 

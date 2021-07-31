@@ -37,30 +37,19 @@
 
 namespace epee
 {
-  struct to_hex
-  {
-    //! \return A std::string containing hex of `src`.
-    static std::string string(const std::span<const std::uint8_t> src);
+namespace hex
+{
+  std::string decode(const std::span<const std::uint8_t> src);
 
-    //! Append `src` as hex to `out`.
-    static void buffer(std::ostream& out, const std::span<const std::uint8_t> src);
+  //! Append `src` as hex to `out`.
+  void append_decode(std::ostream& out, const std::span<const std::uint8_t> src);
 
-    //! Append `< + src + >` as hex to `out`.
-    static void formatted(std::ostream& out, const std::span<const std::uint8_t> src);
+  //! Append `< + src + >` as hex to `out`.
+  void append_decode_formatted(std::ostream& out, const std::span<const std::uint8_t> src);
 
-  private:
-    template<typename T> T static convert(const std::span<const std::uint8_t> src);
-
-    //! Write `src` bytes as hex to `out`. `out` must be twice the length
-    static void buffer_unchecked(char* out, const std::span<const std::uint8_t> src) noexcept;
-  };
-
-  //! Convert hex in UTF8 encoding to binary
-  namespace hex
-  {
-    // static bool to_string(std::string& out, std::string_view src);
-    std::optional<epee::blob::data> to_blob(std::string_view src);
-
-    bool to_buffer(std::span<std::uint8_t> out, std::string_view src) noexcept;
-  };
+  // static bool to_string(std::string& out, std::string_view src);
+  std::optional<epee::blob::data> to_blob(const std::string_view src);
+  bool to_string(std::string& out, const std::string_view src);
+  bool to_buffer(std::span<std::uint8_t> out, const std::string_view src) noexcept;
+};
 }

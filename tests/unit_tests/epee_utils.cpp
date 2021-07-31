@@ -129,12 +129,12 @@ TEST(ToHex, String)
 {
   EXPECT_EQ(
     std::string{"ffab0100"},
-    epee::to_hex::string(epee::as_byte_span("\xff\xab\x01"))
+    epee::hex::decode(epee::as_byte_span("\xff\xab\x01"))
   );
 
   const std::vector<unsigned char> all_bytes = get_all_bytes();
   EXPECT_EQ(
-    std_to_hex(all_bytes), epee::to_hex::string((all_bytes))
+    std_to_hex(all_bytes), epee::hex::decode((all_bytes))
   );
 
 }
@@ -145,7 +145,7 @@ TEST(HexLocale, String)
     std::vector<uint8_t> source{{ 0x00, 0xFF, 0x0F, 0xF0 }};
 
     // encode and decode the data
-    auto hex = epee::to_hex::string({ source.data(), source.size() });
+    auto hex = epee::hex::decode({ source.data(), source.size() });
     auto decoded = epee::from_hex_locale::to_vector(hex);
 
     // encoded should be twice the size and should decode to the exact same data
@@ -205,13 +205,13 @@ TEST(ToHex, Formatted)
   std::string expected{};
 
   expected.append("<ffab0100>");
-  epee::to_hex::formatted(out, epee::as_byte_span("\xFF\xAB\x01"));
+  epee::hex::append_decode_formatted(out, epee::as_byte_span("\xFF\xAB\x01"));
   EXPECT_EQ(expected, out.str());
 
   const std::vector<unsigned char> all_bytes = get_all_bytes();
 
   expected.append("<").append(std_to_hex(all_bytes)).append(">");
-  epee::to_hex::formatted(out, (all_bytes));
+  epee::hex::append_decode_formatted(out, (all_bytes));
   EXPECT_EQ(expected, out.str());
 }
 
@@ -223,14 +223,14 @@ TEST(FromHex, ToString)
   };
 
   std::string out{};
-  EXPECT_FALSE(epee::from_hex::to_string(out, hex));
+  EXPECT_FALSE(epee::hex::to_string(out, hex));
 
   std::string_view portion{hex};
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::from_hex::to_string(out, portion));
+  EXPECT_FALSE(epee::hex::to_string(out, portion));
 
   portion.remove_suffix(1);
-  EXPECT_TRUE(epee::from_hex::to_string(out, portion));
+  EXPECT_TRUE(epee::hex::to_string(out, portion));
   EXPECT_EQ(std::string{binary}, out);
 }
 
