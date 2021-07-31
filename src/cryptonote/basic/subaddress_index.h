@@ -32,6 +32,8 @@
 #include "tools/serialization/containers.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 
+#include <boost/functional/hash.hpp>
+
 namespace cryptonote
 {
   struct subaddress_index
@@ -63,19 +65,10 @@ namespace std
   {
     constexpr size_t operator()(const cryptonote::subaddress_index& index ) const
     {
-      size_t res;
-      if (sizeof(size_t) == 8)
-      {
-        res = ((uint64_t)index.major << 32) | index.minor;
-      }
-      else
-      {
-        // https://stackoverflow.com/a/17017281
-        res = 17;
-        res = res * 31 + hash<uint32_t>()(index.major);
-        res = res * 31 + hash<uint32_t>()(index.minor);
-      }
-      return res;
+      std::size_t h = 0;
+      boost::hash_combine(h, index.major);
+      boost::hash_combine(h, index.minor);
+      return h;
     }
   };
 }
