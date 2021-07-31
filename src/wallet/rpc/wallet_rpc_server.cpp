@@ -854,8 +854,8 @@ namespace tools
 
         desc.fee = desc.amount_in - desc.amount_out;
         desc.unlock_time = cd.unlock_time;
-        desc.extra = epee::string_tools::uint8_t_string_to_string
-          (std::basic_string<uint8_t>(cd.extra.data(), cd.extra.size()));
+        desc.extra = epee::string_tools::blob_to_string
+          (epee::blob::data(cd.extra.data(), cd.extra.size()));
       }
     }
     catch (const std::exception &e)

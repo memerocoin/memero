@@ -35,17 +35,17 @@ namespace epee
 namespace string_tools
 {
   //----------------------------------------------------------------------------
-  std::basic_string<uint8_t> string_to_uint8_t_string(const std::string& s) {
+  epee::blob::data string_to_blob(const std::string& s) {
     return std::basic_string((uint8_t*)s.data(), s.size());
   };
   //----------------------------------------------------------------------------
-  std::string uint8_t_string_to_string(const std::basic_string<uint8_t>& s) {
+  std::string blob_to_string(const epee::blob::data& s) {
     return std::string((char*)s.data(), s.size());
   };
   //----------------------------------------------------------------------------
   std::string buff_to_hex_nodelimer(const std::string& src)
   {
-    return hex::decode(string_to_uint8_t_string(src));
+    return hex::decode(string_to_blob(src));
   }
   //----------------------------------------------------------------------------
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)

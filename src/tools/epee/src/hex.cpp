@@ -131,7 +131,7 @@ namespace hex
   {
     const auto r = to_blob(s);
     if (r) {
-      res = ::epee::string_tools::uint8_t_string_to_string(*r);
+      res = ::epee::string_tools::blob_to_string(*r);
       return true;
     } else {
       return false;

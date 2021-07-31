@@ -109,7 +109,7 @@ namespace net_utils
 
   private:
     //----------------- i_service_endpoint ---------------------
-    virtual bool do_send(const std::basic_string<uint8_t> message); ///< (see do_send from i_service_endpoint)
+    virtual bool do_send(const epee::blob::data message); ///< (see do_send from i_service_endpoint)
     virtual bool send_done();
     virtual bool close();
     virtual bool call_run_once_service_io();

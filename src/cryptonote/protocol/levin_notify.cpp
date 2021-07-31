@@ -101,7 +101,7 @@ namespace levin
         on_levin_traffic(context, true, true, false, blob.size(), NOTIFY_NEW_TRANSACTIONS::ID);
         return true;
       });
-      return p2p.notify(NOTIFY_NEW_TRANSACTIONS::ID, epee::strspan<std::uint8_t>(blob), destination);
+      return p2p.notify(NOTIFY_NEW_TRANSACTIONS::ID, epee::string_tools::string_to_blob(blob), destination);
     }
 
     /* The current design uses `asio::strand`s. The documentation isn't as clear

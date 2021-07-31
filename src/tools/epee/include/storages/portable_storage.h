@@ -31,6 +31,7 @@
 #include "portable_storage_val_converters.h"
 
 #include "tools/epee/include/span.h"
+#include "tools/epee/include/string_tools.h"
 
 #include <boost/mpl/contains.hpp>
 
@@ -83,13 +84,21 @@ namespace epee
       bool            insert_next_section(harray hSecArray, hsection& hinserted_childsection);
       //------------------------------------------------------------------------
       //delete entry (section, value or array)
-      bool        delete_entry(const std::string& pentry_name, hsection hparent_section = nullptr);
+      bool delete_entry(const std::string& pentry_name, hsection hparent_section = nullptr);
 
-      bool		store_to_binary(binarybuffer& target);
-      bool		load_from_binary(const std::span<const uint8_t> target, const limits_t *limits = NULL);
-      bool		load_from_binary(const std::string& target, const limits_t *limits = NULL) { return load_from_binary(epee::strspan<uint8_t>(target), limits); }
-      bool		  dump_as_json(std::string& targetObj, size_t indent = 0, bool insert_newlines = true);
-      bool		  load_from_json(const std::string& source);
+      bool store_to_binary(binarybuffer& target);
+      bool load_from_binary
+      (
+       const std::span<const uint8_t> target
+       , const limits_t *limits = NULL
+       );
+
+      bool load_from_binary(const std::string& target, const limits_t *limits = NULL) {
+        return load_from_binary(epee::string_tools::string_to_blob(target), limits);
+      }
+
+      bool dump_as_json(std::string& targetObj, size_t indent = 0, bool insert_newlines = true);
+      bool load_from_json(const std::string& source);
 
     private:
       section m_root;

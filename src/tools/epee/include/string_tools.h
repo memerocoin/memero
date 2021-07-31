@@ -27,6 +27,7 @@
 #pragma once
 
 #include "tools/epee/include/hex.h"
+#include "tools/epee/include/blob.hpp"
 #include "tools/epee/include/storages/parserse_base_utils.h"
 
 #include <filesystem>
@@ -40,8 +41,8 @@ namespace epee
 {
 namespace string_tools
 {
-  std::basic_string<uint8_t> string_to_uint8_t_string(const std::string& s);
-  std::string uint8_t_string_to_string(const std::basic_string<uint8_t>& s);
+  epee::blob::data string_to_blob(const std::string& s);
+  std::string blob_to_string(const epee::blob::data& s);
   std::string buff_to_hex_nodelimer(const std::string& src);
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res);
   //----------------------------------------------------------------------------

@@ -2127,13 +2127,13 @@ skip:
     {
       std::string fluffyBlob;
       epee::serialization::store_t_to_binary(fluffy_arg, fluffyBlob);
-      m_p2p->relay_notify_to_list(NOTIFY_NEW_FLUFFY_BLOCK::ID, epee::strspan<uint8_t>(fluffyBlob), std::move(fluffyConnections));
+      m_p2p->relay_notify_to_list(NOTIFY_NEW_FLUFFY_BLOCK::ID, epee::string_tools::string_to_blob(fluffyBlob), std::move(fluffyConnections));
     }
     if (!fullConnections.empty())
     {
       std::string fullBlob;
       epee::serialization::store_t_to_binary(arg, fullBlob);
-      m_p2p->relay_notify_to_list(NOTIFY_NEW_BLOCK::ID, epee::strspan<uint8_t>(fullBlob), std::move(fullConnections));
+      m_p2p->relay_notify_to_list(NOTIFY_NEW_BLOCK::ID, epee::string_tools::string_to_blob(fullBlob), std::move(fullConnections));
     }
 
     return true;

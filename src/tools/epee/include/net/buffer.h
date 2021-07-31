@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "tools/epee/include/blob.hpp"
+
 #include <span>
 #include <cstdint>
 #include <string>
@@ -55,7 +57,7 @@ public:
   size_t size() const;
 
 private:
-  std::basic_string<uint8_t> storage;
+  epee::blob::data storage;
   size_t offset;
 };
 }

@@ -145,7 +145,7 @@ namespace epee
       std::string buff_to_send;
       stg.store_to_binary(buff_to_send);
       on_levin_traffic(context, true, true, false, buff_to_send.size(), command);
-      int res = transport.invoke_async(command, epee::strspan<uint8_t>(buff_to_send), conn_id, [cb, command](int code, const std::span<const uint8_t> buff, typename t_transport::connection_context& context)->bool
+      int res = transport.invoke_async(command, epee::string_tools::string_to_blob(buff_to_send), conn_id, [cb, command](int code, const std::span<const uint8_t> buff, typename t_transport::connection_context& context)->bool
       {
         t_result result_struct = AUTO_VAL_INIT(result_struct);
         if( code <=0 )
@@ -193,7 +193,7 @@ namespace epee
       stg.store_to_binary(buff_to_send);
 
       on_levin_traffic(context, true, true, false, buff_to_send.size(), command);
-      int res = transport.notify(command, epee::strspan<uint8_t>(buff_to_send), conn_id);
+      int res = transport.notify(command, epee::string_tools::string_to_blob(buff_to_send), conn_id);
       if(res <=0 )
       {
         MERROR("Failed to notify command " << command << " return code " << res);

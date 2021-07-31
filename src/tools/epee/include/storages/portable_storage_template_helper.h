@@ -96,7 +96,7 @@ namespace epee
     template<class t_struct>
     bool load_t_from_binary(t_struct& out, const std::string& binary_buff)
     {
-      return load_t_from_binary(out, epee::strspan<uint8_t>(binary_buff));
+      return load_t_from_binary(out, epee::string_tools::string_to_blob(binary_buff));
     }
     //-----------------------------------------------------------------------------------------------------------
     template<class t_struct>

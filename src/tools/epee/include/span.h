@@ -40,14 +40,6 @@ namespace epee
     return !std::is_standard_layout<T>() || alignof(T) != 1;
   }
 
-  //! make a span from a std::string
-  template<typename T>
-  std::span<const T> strspan(const std::string &s) noexcept
-  {
-    static_assert(std::is_same<T, char>() || std::is_same<T, unsigned char>() || std::is_same<T, int8_t>() || std::is_same<T, uint8_t>(), "Unexpected type");
-    return {reinterpret_cast<const T*>(s.data()), s.size()};
-  }
-
   //! \return `span<const std::uint8_t>` which represents the bytes at `&src`.
   template<typename T>
   std::span<const std::uint8_t> as_byte_span(const T& src) noexcept

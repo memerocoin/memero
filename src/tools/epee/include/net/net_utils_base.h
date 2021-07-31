@@ -33,6 +33,7 @@
 
 #include "tools/epee/include/serialization/keyvalue_serialization.h"
 #include "tools/epee/include/int-util.h"
+#include "tools/epee/include/blob.hpp"
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/asio/io_service.hpp>
@@ -438,7 +439,7 @@ namespace net_utils
 	/************************************************************************/
 	struct i_service_endpoint
 	{
-		virtual bool do_send(const std::basic_string<uint8_t> message)=0;
+		virtual bool do_send(const epee::blob::data message)=0;
     virtual bool close()=0;
     virtual bool send_done()=0;
     virtual bool call_run_once_service_io()=0;

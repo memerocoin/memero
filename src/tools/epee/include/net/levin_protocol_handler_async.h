@@ -120,8 +120,8 @@ class async_protocol_handler
   {
     const bucket_head2 head = make_header(command, in_buff.size(), flags, expect_response);
     std::span<const uint8_t> head_span = as_byte_span(head);
-    const auto head_string = std::basic_string<uint8_t>(head_span.data(), head_span.size());
-    const auto in_buff_string = std::basic_string<uint8_t>(in_buff.data(), in_buff.size());
+    const auto head_string = epee::blob::data(head_span.data(), head_span.size());
+    const auto in_buff_string = epee::blob::data(in_buff.data(), in_buff.size());
     if(!m_pservice_endpoint->do_send(head_string + in_buff_string))
       return false;
 
@@ -527,7 +527,7 @@ public:
               head.m_return_code = SWAP32LE(return_code);
               return_buff.insert(0, reinterpret_cast<const char*>(&head), sizeof(head));
 
-              if(!m_pservice_endpoint->do_send(epee::string_tools::string_to_uint8_t_string(return_buff)))
+              if(!m_pservice_endpoint->do_send(epee::string_tools::string_to_blob(return_buff)))
                 return false;
 
               MDEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb

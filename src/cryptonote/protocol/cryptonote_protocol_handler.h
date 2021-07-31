@@ -165,7 +165,7 @@ namespace cryptonote
         std::string blob;
         epee::serialization::store_t_to_binary(arg, blob);
         //handler_response_blocks_now(blob.size()); // XXX
-        return m_p2p->invoke_notify_to_peer(t_parameter::ID, epee::strspan<uint8_t>(blob), context);
+        return m_p2p->invoke_notify_to_peer(t_parameter::ID, epee::string_tools::string_to_blob(blob), context);
       }
   };
 

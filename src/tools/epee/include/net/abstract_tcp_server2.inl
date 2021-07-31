@@ -471,7 +471,7 @@ namespace net_utils
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  bool connection<t_protocol_handler>::do_send(const std::basic_string<uint8_t> chunk)
+  bool connection<t_protocol_handler>::do_send(const epee::blob::data chunk)
   {
     TRY_ENTRY();
     // Use safe_shared_from_this, because of this is public method and it can be called on the object being deleted
