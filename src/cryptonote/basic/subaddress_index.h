@@ -63,7 +63,7 @@ namespace std
   template <>
   struct hash<cryptonote::subaddress_index>
   {
-    constexpr size_t operator()(const cryptonote::subaddress_index& index ) const
+    size_t operator()(const cryptonote::subaddress_index& index ) const
     {
       std::size_t h = 0;
       boost::hash_combine(h, index.major);
