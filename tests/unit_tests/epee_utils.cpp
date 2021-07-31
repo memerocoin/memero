@@ -1,4 +1,4 @@
-/ Copyright (c) 2014-2019, The Monero Project
+// Copyright (c) 2014-2019, The Monero Project
 //
 // All rights reserved.
 //
@@ -134,7 +134,7 @@ TEST(ToHex, String)
 
   const std::vector<unsigned char> all_bytes = get_all_bytes();
   EXPECT_EQ(
-    std_to_hex(all_bytes), epee::hex::decode((all_bytes))
+    std_to_hex(all_bytes), epee::hex::decode(all_bytes)
   );
 
 }
@@ -145,8 +145,8 @@ TEST(HexLocale, String)
     std::vector<uint8_t> source{{ 0x00, 0xFF, 0x0F, 0xF0 }};
 
     // encode and decode the data
-    auto hex = epee::hex::decode({ source.data(), source.size() });
-    auto decoded = epee::from_hex_locale::to_vector(hex);
+    auto hex = epee::hex::decode(std::span{ source.data(), source.size() });
+    auto decoded = epee::string_tools::to_vector(hex);
 
     // encoded should be twice the size and should decode to the exact same data
     EXPECT_EQ(source.size() * 2, hex.size());
@@ -155,10 +155,10 @@ TEST(HexLocale, String)
     // we will now create a padded hex string, we want to explicitly allow
     // decoding it this way also, ignoring spaces and colons between the numbers
     hex.assign("00:ff 0f:f0");
-    EXPECT_EQ(source, epee::from_hex_locale::to_vector(hex));
+    EXPECT_EQ(source, epee::string_tools::to_vector(hex));
 
     hex.append("f0");
-    EXPECT_EQ(source, epee::from_hex_locale::to_vector(std::string_view{hex.data(), hex.size() - 2}));
+    EXPECT_EQ(source, epee::string_tools::to_vector(std::string_view{hex.data(), hex.size() - 2}));
 }
 
 TEST(ToHex, Ostream)
@@ -167,7 +167,7 @@ TEST(ToHex, Ostream)
 
   {
     const std::uint8_t source[] = {0xff, 0xab, 0x01, 0x00};
-    epee::hex::decode(out, source);
+    epee::hex::append_decode(out, source);
   }
 
   std::string expected{"ffab0100"};
@@ -176,7 +176,7 @@ TEST(ToHex, Ostream)
   const std::vector<unsigned char> all_bytes = get_all_bytes();
 
   expected.append(std_to_hex(all_bytes));
-  epee::hex::decode(out, (all_bytes));
+  epee::hex::append_decode(out, (all_bytes));
   EXPECT_EQ(expected, out.str());
 }
 

@@ -172,7 +172,20 @@ namespace string_tools
 
   std::vector<uint8_t> to_vector(const std::string_view src)
   {
-    const std::optional<::epee::blob::data> r = hex::to_blob(src);
+    std::string s(src);
+    constexpr std::string_view allowed = "0123456789abcdef";
+
+    s.erase(std::remove_if
+            (
+             s.begin()
+             , s.end(),
+             [allowed](const char c) {
+               return allowed.find(c) == std::string::npos;
+             }
+             ),
+            s.end());
+
+    const std::optional<::epee::blob::data> r = hex::to_blob(s);
     std::vector<uint8_t> v;
     if (r) {
       const auto str = *r;
