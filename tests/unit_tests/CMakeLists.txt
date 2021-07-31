@@ -37,7 +37,6 @@ add_executable(unit_tests_tools
   get_xtype_from_string.cpp
   notify.cpp
   varint.cpp
-  wipeable_string.cpp
   threadpool.cpp
   memwipe.cpp
   crypto.cpp
