@@ -32,6 +32,8 @@
 
 #include "wallet/api/wallet2.h"
 #include "wallet/logic/state/gamma_picker.hpp"
+#include "wallet/logic/controller/wallet.hpp"
+
 #include <string>
 
 static wallet::logic::type::wallet::transfer_container make_transfers_container(size_t N)
@@ -62,7 +64,8 @@ static wallet::logic::type::wallet::transfer_container make_transfers_container(
 
 #define PICK(expected) \
   do { \
-    size_t idx = w.pop_best_value_from(transfers, unused_indices, selected); \
+    size_t idx = wallet::logic::controller::wallet::pop_best_value_from \
+      (transfers, unused_indices, selected);                            \
     ASSERT_EQ(expected, idx); \
     selected.push_back(idx); \
   } while(0)
