@@ -62,15 +62,17 @@ namespace wallet {
    , std::string& wallet_file
    )
   {
-    keys_file = file_path;
-    wallet_file = file_path;
     std::error_code e;
-    if(std::filesystem::path(keys_file).extension() == ".keys")
-    {//provided keys file name
-      wallet_file = epee::string_tools::cut_off_extension(wallet_file);
+    if(std::filesystem::path(file_path).extension() == ".keys")
+    {
+      //provided keys file name
+      keys_file = file_path;
+      wallet_file = std::filesystem::path(file_path).replace_extension("");
     } else
-    {//provided wallet file name
-      keys_file += ".keys";
+    {
+      //provided wallet file name
+      keys_file = file_path + ".keys";
+      wallet_file = file_path;
     }
   }
 

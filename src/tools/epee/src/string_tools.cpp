@@ -139,17 +139,6 @@ namespace string_tools
     }
     return s;
   }
-	//----------------------------------------------------------------------------
-	std::string cut_off_extension(const std::string& str)
-	{
-		std::string res;
-		std::string::size_type pos = str.rfind('.');
-		if(std::string::npos == pos)
-			return str;
-
-		res = str.substr(0, pos);
-		return res;
-	}
 
   std::string get_ip_string_from_int32(uint32_t ip)
   {
