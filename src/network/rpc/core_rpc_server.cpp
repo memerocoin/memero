@@ -55,11 +55,6 @@ namespace
     reasons += reason;
   }
 
-  uint64_t round_up(uint64_t value, uint64_t quantum)
-  {
-    return (value + quantum - 1) / quantum * quantum;
-  }
-
   void store_128(boost::multiprecision::uint128_t value, uint64_t &slow64, std::string &swide, uint64_t &stop64)
   {
     slow64 = (value & 0xffffffffffffffff).convert_to<uint64_t>();
