@@ -41,6 +41,7 @@ namespace epee
 namespace string_tools
 {
   std::basic_string<uint8_t> string_to_uint8_t_string(const std::string& s);
+  std::string uint8_t_string_to_string(const std::basic_string<uint8_t>& s);
   std::string buff_to_hex_nodelimer(const std::string& src);
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res);
   //----------------------------------------------------------------------------

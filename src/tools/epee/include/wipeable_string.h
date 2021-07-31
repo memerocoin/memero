@@ -28,85 +28,13 @@
 
 #pragma once
 
-#include "tools/epee/include/fnv1.h"
 #include "tools/epee/include/memwipe.h"
 
 #include <optional>
 #include <vector>
 #include <string>
 
-
 namespace epee
 {
-  class wipeable_string
-  {
-  public:
-    typedef char value_type;
-
-    wipeable_string() {}
-    wipeable_string(const wipeable_string &other);
-    wipeable_string(wipeable_string &&other);
-    wipeable_string(const std::string &other);
-    wipeable_string(std::string &&other);
-    wipeable_string(const char *s);
-    wipeable_string(const char *s, size_t len);
-    ~wipeable_string();
-    void wipe();
-    void push_back(char c);
-    void operator+=(char c);
-    void operator+=(const std::string &s);
-    void operator+=(const epee::wipeable_string &s);
-    void operator+=(const char *s);
-    void append(const char *ptr, size_t len);
-    char pop_back();
-    const char *data() const noexcept { return buffer.data(); }
-    char *data() noexcept { return buffer.data(); }
-    size_t size() const noexcept { return buffer.size(); }
-    size_t length() const noexcept { return buffer.size(); }
-    bool empty() const noexcept { return buffer.empty(); }
-    void trim();
-    void split(std::vector<wipeable_string> &fields) const;
-    std::optional<wipeable_string> parse_hexstr() const;
-    template<typename T> bool hex_to_pod(T &pod) const;
-    template<typename T> bool hex_to_pod(tools::scrubbed<T> &pod) const { return hex_to_pod(unwrap(pod)); }
-    void resize(size_t sz);
-    void reserve(size_t sz);
-    void clear();
-    bool operator==(const wipeable_string &other) const noexcept { return buffer == other.buffer; }
-    bool operator!=(const wipeable_string &other) const noexcept { return buffer != other.buffer; }
-    wipeable_string &operator=(wipeable_string &&other);
-    wipeable_string &operator=(const wipeable_string &other);
-
-  private:
-    void grow(size_t sz, size_t reserved = 0);
-
-  private:
-    std::vector<char> buffer;
-  };
-
-  template<typename T> bool wipeable_string::hex_to_pod(T &pod) const
-  {
-    static_assert(std::is_standard_layout<T>::value, "expected standard layout type");
-    static_assert(std::is_trivial<T>::value, "expected trivial type");
-    if (size() != sizeof(T) * 2)
-      return false;
-    std::optional<epee::wipeable_string> blob = parse_hexstr();
-    if (!blob)
-      return false;
-    if (blob->size() != sizeof(T))
-      return false;
-    pod = *(const T*)blob->data();
-    return true;
-  }
-}
-
-namespace std
-{
-  template<> struct hash<epee::wipeable_string>
-  {
-    size_t operator()(const epee::wipeable_string &s) const
-    {
-      return epee::fnv::FNV1a(s.data(), s.size());
-    }
-  };
+  using wipeable_string = std::string;
 }

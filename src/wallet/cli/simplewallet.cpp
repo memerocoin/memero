@@ -881,14 +881,14 @@ static bool might_be_partial_seed(const epee::wipeable_string &words)
 {
   std::vector<epee::wipeable_string> seed;
 
-  words.split(seed);
+  boost::split(seed, words, boost::is_any_of("\t "), boost::token_compress_on);
   return seed.size() < 24;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::init(const boost::program_options::variables_map& vm)
 {
   epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){
-    m_electrum_seed.wipe();
+    m_electrum_seed.clear();
   });
 
   epee::wipeable_string password;
@@ -961,11 +961,8 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         fail_msg_writer() << sw::tr("No data supplied, cancelled");
         return false;
       }
-      if (!spendkey_string.hex_to_pod(unwrap(m_recovery_key)))
-      {
-        fail_msg_writer() << sw::tr("failed to parse spend key secret key");
-        return false;
-      }
+      spendkey_string = epee::string_tools::pod_to_hex(unwrap(m_recovery_key));
+
       auto r = new_wallet(vm, m_recovery_key, true);
       ASSERT_OR_LOG_RETURN(r, false, sw::tr("account creation failed"));
       password = *r;

@@ -53,7 +53,9 @@ namespace controller {
     std::string buf;
     std::getline(std::cin, buf);
 
-    return epee::string_tools::trim(buf);
+    boost::trim(buf);
+
+    return buf;
   }
 
   epee::wipeable_string input_secure_line(const char *prompt)
@@ -68,7 +70,7 @@ namespace controller {
 
     epee::wipeable_string buf = pwd_container->password();
 
-    buf.trim();
+    boost::trim(buf);
     return buf;
   }
 

@@ -46,6 +46,7 @@
 
 
 #include <boost/crc.hpp>
+#include <boost/algorithm/string.hpp>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -240,7 +241,7 @@ namespace crypto
     {
       std::vector<epee::wipeable_string> seed;
 
-      words.split(seed);
+      boost::split(seed, words, boost::is_any_of("\t "), boost::token_compress_on);
 
       if (len % 4)
       {

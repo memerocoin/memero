@@ -38,6 +38,7 @@ target_link_libraries(lolnero-rpc
   wallet_api
   wallet_common
   tools_serialization
+  epee
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )

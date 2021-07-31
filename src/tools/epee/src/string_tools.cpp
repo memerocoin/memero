@@ -39,6 +39,10 @@ namespace string_tools
     return std::basic_string((uint8_t*)s.data(), s.size());
   };
   //----------------------------------------------------------------------------
+  std::string uint8_t_string_to_string(const std::basic_string<uint8_t>& s) {
+    return std::string((char*)s.data(), s.size());
+  };
+  //----------------------------------------------------------------------------
   std::string buff_to_hex_nodelimer(const std::string& src)
   {
     return to_hex::string(string_to_uint8_t_string(src));

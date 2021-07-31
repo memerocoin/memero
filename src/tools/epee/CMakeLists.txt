@@ -36,7 +36,6 @@ add_library( epee
   src/abstract_http_client.cpp
   src/net_utils_base.cpp
   src/string_tools.cpp
-  src/wipeable_string.cpp
   src/levin_base.cpp
   src/memwipe.cpp
   src/connection_basic.cpp
