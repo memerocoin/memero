@@ -54,7 +54,7 @@ namespace cryptonote
            ssl_allowed_fingerprints.begin()
            , ssl_allowed_fingerprints.end()
            , allowed_fingerprints.begin()
-           , epee::string_tools::to_vector
+           , epee::string_tools::hex_to_vector_filtered
            );
         for (const auto &fpr: allowed_fingerprints)
         {

@@ -136,6 +136,6 @@ namespace string_tools
   //----------------------------------------------------------------------------
   bool validate_hex(uint64_t length, const std::string& str);
 
-  std::vector<uint8_t> to_vector(const std::string_view src);
+  std::vector<uint8_t> hex_to_vector_filtered(const std::string_view src);
 } // stringtools
 } // epee

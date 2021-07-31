@@ -146,7 +146,7 @@ TEST(HexLocale, String)
 
     // encode and decode the data
     auto hex = epee::hex::decode(std::span{ source.data(), source.size() });
-    auto decoded = epee::string_tools::to_vector(hex);
+    auto decoded = epee::string_tools::hex_to_vector_filtered(hex);
 
     // encoded should be twice the size and should decode to the exact same data
     EXPECT_EQ(source.size() * 2, hex.size());
@@ -155,10 +155,10 @@ TEST(HexLocale, String)
     // we will now create a padded hex string, we want to explicitly allow
     // decoding it this way also, ignoring spaces and colons between the numbers
     hex.assign("00:ff 0f:f0");
-    EXPECT_EQ(source, epee::string_tools::to_vector(hex));
+    EXPECT_EQ(source, epee::string_tools::hex_to_vector_filtered(hex));
 
     hex.append("f0");
-    EXPECT_EQ(source, epee::string_tools::to_vector(std::string_view{hex.data(), hex.size() - 2}));
+    EXPECT_EQ(source, epee::string_tools::hex_to_vector_filtered(std::string_view{hex.data(), hex.size() - 2}));
 }
 
 TEST(ToHex, Ostream)

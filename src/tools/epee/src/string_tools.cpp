@@ -26,8 +26,6 @@
 
 #include "tools/epee/include/string_tools.h"
 
-#include <random>
-
 #include <arpa/inet.h>
 
 namespace epee
@@ -170,7 +168,7 @@ namespace string_tools
     return true;
   }
 
-  std::vector<uint8_t> to_vector(const std::string_view src)
+  std::vector<uint8_t> hex_to_vector_filtered(const std::string_view src)
   {
     std::string s(src);
     constexpr std::string_view allowed = "0123456789abcdef";
