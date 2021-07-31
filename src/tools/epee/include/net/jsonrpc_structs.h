@@ -1,5 +1,7 @@
 #pragma once
 
+#include "tools/epee/include/storages/portable_storage_base.h"
+
 namespace epee
 {
   namespace json_rpc

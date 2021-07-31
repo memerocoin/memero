@@ -51,7 +51,7 @@
 #include "tools/common/password.h"
 #include "tools/common/notify.h"
 
-#include "tools/epee/include/storages/http_abstract_invoke.h"
+#include "tools/epee/include/net/http_abstract_invoke.h"
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>

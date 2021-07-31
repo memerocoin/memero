@@ -39,7 +39,7 @@
 #include "tools/common/command_line.h"
 #include "tools/epee/include/net/abstract_tcp_server2.h"
 #include "tools/epee/include/net/levin_protocol_handler_async.h"
-#include "tools/epee/include/storages/levin_abstract_invoke2.h"
+#include "tools/epee/include/net/levin_abstract_invoke2.h"
 #include "tools/epee/include/math_helper.h"
 
 #include "config/cryptonote.hpp"
