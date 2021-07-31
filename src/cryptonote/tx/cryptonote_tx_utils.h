@@ -36,7 +36,16 @@
 
 namespace cryptonote
 {
-  bool construct_miner_tx(size_t height, size_t current_block_weight, uint64_t fee, const account_public_address &miner_address, transaction& tx, const blobdata& extra_nonce = blobdata(), size_t max_outs = 999);
+  bool construct_miner_tx
+    (
+     size_t height
+     , size_t current_block_weight
+     , uint64_t fee
+     , const account_public_address &miner_address
+     , transaction& tx
+     , const blobdata& extra_nonce = blobdata()
+     , size_t max_outs = 999
+     );
 
   struct tx_source_entry
   {
@@ -50,8 +59,6 @@ namespace cryptonote
     uint64_t amount;                    //money
     bool rct;                           //true if the output is rct
     rct::key mask;                      //ringct amount mask
-
-    void push_output(uint64_t idx, const crypto::public_key &k, uint64_t amount) { outputs.push_back(std::make_pair(idx, rct::ctkey({rct::pk2rct(k), rct::zeroCommit(amount)}))); }
 
     BEGIN_SERIALIZE_OBJECT()
       FIELD(outputs)
@@ -71,14 +78,27 @@ namespace cryptonote
   struct tx_destination_entry
   {
     std::string original;
-    uint64_t amount;                    //money
+    uint64_t amount = 0;                    //money
     account_public_address addr;        //destination address
-    bool is_subaddress;
-    bool d_is_integrated;
+    bool is_subaddress = false;
+    bool d_is_integrated = false;
 
-    tx_destination_entry() : amount(0), addr(AUTO_VAL_INIT(addr)), is_subaddress(false), d_is_integrated(false) { }
-    tx_destination_entry(uint64_t a, const account_public_address &ad, bool is_subaddress) : amount(a), addr(ad), is_subaddress(is_subaddress), d_is_integrated(false) { }
-    tx_destination_entry(const std::string &o, uint64_t a, const account_public_address &ad, bool is_subaddress) : original(o), amount(a), addr(ad), is_subaddress(is_subaddress), d_is_integrated(false) { }
+    tx_destination_entry() : addr(AUTO_VAL_INIT(addr)) { }
+
+    tx_destination_entry
+    (
+     uint64_t a
+     , const account_public_address &ad
+     , bool is_subaddress
+     ) : amount(a), addr(ad), is_subaddress(is_subaddress) { }
+
+    tx_destination_entry
+    (
+     const std::string &o
+     , uint64_t a
+     , const account_public_address &ad
+     , bool is_subaddress
+     ) : original(o), amount(a), addr(ad), is_subaddress(is_subaddress) { }
 
 
     std::string address(network_type nettype) const
@@ -101,22 +121,36 @@ namespace cryptonote
   };
 
   //---------------------------------------------------------------
-  crypto::public_key get_destination_view_key_pub(const std::vector<tx_destination_entry> &destinations, const std::optional<cryptonote::account_public_address>& change_addr);
-  bool construct_tx_with_tx_key(const account_keys& sender_account_keys, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, std::vector<tx_source_entry>& sources, std::vector<tx_destination_entry>& destinations, const std::optional<cryptonote::account_public_address>& change_addr, const std::vector<uint8_t> &extra, transaction& tx, uint64_t unlock_time, const crypto::secret_key &tx_key, const std::vector<crypto::secret_key> &additional_tx_keys, bool rct = false, bool shuffle_outs = true);
-  bool construct_tx_and_get_tx_key(const account_keys& sender_account_keys, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, std::vector<tx_source_entry>& sources, std::vector<tx_destination_entry>& destinations, const std::optional<cryptonote::account_public_address>& change_addr, const std::vector<uint8_t> &extra, transaction& tx, uint64_t unlock_time, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys, bool rct = false);
-  bool generate_output_ephemeral_keys(const size_t tx_version, const cryptonote::account_keys &sender_account_keys, const crypto::public_key &txkey_pub,  const crypto::secret_key &tx_key,
-                                      const cryptonote::tx_destination_entry &dst_entr, const std::optional<cryptonote::account_public_address> &change_addr, const size_t output_index,
-                                      const bool &need_additional_txkeys, const std::vector<crypto::secret_key> &additional_tx_keys,
-                                      std::vector<crypto::public_key> &additional_tx_public_keys,
-                                      std::vector<rct::key> &amount_keys,
-                                      crypto::public_key &out_eph_public_key) ;
+  bool construct_tx_with_tx_key
+    (
+     const account_keys& sender_account_keys
+     , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
+     , std::vector<tx_source_entry>& sources
+     , std::vector<tx_destination_entry>& destinations
+     , const std::optional<cryptonote::account_public_address>& change_addr
+     , const std::vector<uint8_t> &extra
+     , transaction& tx
+     , uint64_t unlock_time
+     , const crypto::secret_key &tx_key
+     , const std::vector<crypto::secret_key> &additional_tx_keys
+     , bool rct = false
+     , bool shuffle_outs = true
+     );
 
-  bool generate_output_ephemeral_keys(const size_t tx_version, const cryptonote::account_keys &sender_account_keys, const crypto::public_key &txkey_pub,  const crypto::secret_key &tx_key,
-                                      const cryptonote::tx_destination_entry &dst_entr, const std::optional<cryptonote::account_public_address> &change_addr, const size_t output_index,
-                                      const bool &need_additional_txkeys, const std::vector<crypto::secret_key> &additional_tx_keys,
-                                      std::vector<crypto::public_key> &additional_tx_public_keys,
-                                      std::vector<rct::key> &amount_keys,
-                                      crypto::public_key &out_eph_public_key) ;
+  bool construct_tx_and_get_tx_key
+    (
+     const account_keys& sender_account_keys
+     , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
+     , std::vector<tx_source_entry>& sources
+     , std::vector<tx_destination_entry>& destinations
+     , const std::optional<cryptonote::account_public_address>& change_addr
+     , const std::vector<uint8_t> &extra
+     , transaction& tx
+     , uint64_t unlock_time
+     , crypto::secret_key &tx_key
+     , std::vector<crypto::secret_key> &additional_tx_keys
+     , bool rct = false
+     );
 
   bool generate_genesis_block(
       block& bl
