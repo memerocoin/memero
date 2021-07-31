@@ -35,7 +35,6 @@
 #pragma once
 
 #include "tools/epee/include/misc_log_ex.h"
-#include "tools/epee/include/fnv1.h"
 
 #include <vector>
 #include <unordered_map>
@@ -78,7 +77,7 @@ namespace Language
   {
     std::size_t operator()(const epee::wipeable_string &s) const
     {
-      return epee::fnv::FNV1a(s.data(), s.size());
+      return std::hash<std::string>{}(s);
     }
   };
 
