@@ -405,8 +405,6 @@ namespace cryptonote
   {
     RPC_TRACKER(get_transactions);
 
-    const bool request_has_rpc_origin = ctx != NULL;
-
     std::vector<crypto::hash> vh;
     for(const auto& tx_hex_str: req.txs_hashes)
     {
@@ -582,8 +580,6 @@ namespace cryptonote
   bool core_rpc_server::on_is_key_image_spent(const COMMAND_RPC_IS_KEY_IMAGE_SPENT::request& req, COMMAND_RPC_IS_KEY_IMAGE_SPENT::response& res, const connection_context *ctx)
   {
     RPC_TRACKER(is_key_image_spent);
-
-    const bool request_has_rpc_origin = ctx != NULL;
 
     std::vector<crypto::key_image> key_images;
     for(const auto& ki_hex_str: req.key_images)
