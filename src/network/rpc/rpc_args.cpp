@@ -29,7 +29,7 @@
 #include "rpc_args.h"
 
 #include "tools/epee/include/hex.h"
-
+#include "tools/epee/include/string_tools.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -49,7 +49,13 @@ namespace cryptonote
         const std::vector<std::string> ssl_allowed_fingerprints = command_line::get_arg(vm, arg.rpc_ssl_allowed_fingerprints);
 
         std::vector<std::vector<uint8_t>> allowed_fingerprints{ ssl_allowed_fingerprints.size() };
-        std::transform(ssl_allowed_fingerprints.begin(), ssl_allowed_fingerprints.end(), allowed_fingerprints.begin(), epee::from_hex_locale::to_vector);
+        std::transform
+          (
+           ssl_allowed_fingerprints.begin()
+           , ssl_allowed_fingerprints.end()
+           , allowed_fingerprints.begin()
+           , epee::string_tools::to_vector
+           );
         for (const auto &fpr: allowed_fingerprints)
         {
           if (fpr.size() != SSL_FINGERPRINT_SIZE)

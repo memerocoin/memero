@@ -138,5 +138,7 @@ namespace string_tools
 	std::string cut_off_extension(const std::string& str);
   std::string random_string();
   std::filesystem::path random_temp_path();
+
+  std::vector<uint8_t> to_vector(const std::string_view src);
 } // stringtools
 } // epee

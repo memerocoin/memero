@@ -208,5 +208,13 @@ namespace string_tools
   {
     return std::filesystem::temp_directory_path() / std::filesystem::path(random_string());
   }
+
+  std::vector<uint8_t> to_vector(const std::string_view src)
+  {
+    const auto str = epee::string_tools::string_to_uint8_t_string(std::string(src));
+    std::vector<uint8_t> v;
+    std::copy( str.begin(), str.end(), std::back_inserter(v));
+    return v;
+  }
 } // string_tools
 } // epee

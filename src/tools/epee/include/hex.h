@@ -64,10 +64,4 @@ namespace epee
   private:
     static bool to_buffer_unchecked(std::uint8_t* out, std::string_view src) noexcept;
   };
-
-  //! Convert hex in current C locale encoding to binary
-  struct from_hex_locale
-  {
-      static std::vector<uint8_t> to_vector(std::string_view src);
-  };
 }
