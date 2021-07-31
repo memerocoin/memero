@@ -40,28 +40,6 @@ namespace epee
   {
     //! \return A std::string containing hex of `src`.
     static std::string string(const std::span<const std::uint8_t> src);
-    //! \return A epee::wipeable_string containing hex of `src`.
-    template<typename T> static epee::wipeable_string wipeable_string(const T &pod) { return wipeable_string(std::span<const uint8_t>((const uint8_t*)&pod, sizeof(pod))); }
-
-    //! \return An array containing hex of `src`.
-    template<std::size_t N>
-    static std::array<char, N * 2> array(const std::array<std::uint8_t, N>& src) noexcept
-    {
-      std::array<char, N * 2> out;
-      static_assert(N <= 128, "keep the stack size down");
-      buffer_unchecked(out.data(), {src.data(), src.size()});
-      return out;
-    }
-
-    //! \return An array containing hex of `src`.
-    template<typename T>
-    static std::array<char, sizeof(T) * 2> array(const T& src) noexcept
-    {
-      std::array<char, sizeof(T) * 2> out;
-      static_assert(sizeof(T) <= 128, "keep the stack size down");
-      buffer_unchecked(out.data(), as_byte_span(src));
-      return out;
-    }
 
     //! Append `src` as hex to `out`.
     static void buffer(std::ostream& out, const std::span<const std::uint8_t> src);
