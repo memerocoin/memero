@@ -35,6 +35,7 @@
 
 #include "tools/epee/include/hex.h"
 #include "tools/epee/include/span.h"
+#include "tools/epee/include/string_tools.h"
 
 #include <string_view>
 #include <cstring>
@@ -132,7 +133,7 @@ void read_hex(const rapidjson::Value& val, std::span<std::uint8_t> dest);
 template <class Type>
 typename std::enable_if<is_to_hex<Type>()>::type toJsonKey(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type pod)
 {
-  const auto hex = epee::to_hex::array(pod);
+  const auto hex = epee::string_tools::pod_to_hex(pod);
   dest.Key(hex.data(), hex.size());
 }
 
@@ -140,7 +141,7 @@ typename std::enable_if<is_to_hex<Type>()>::type toJsonKey(rapidjson::Writer<rap
 template <class Type>
 typename std::enable_if<is_to_hex<Type>()>::type toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const Type pod)
 {
-  const auto hex = epee::to_hex::array(pod);
+  const auto hex = epee::string_tools::pod_to_hex(pod);
   dest.String(hex.data(), hex.size());
 }
 

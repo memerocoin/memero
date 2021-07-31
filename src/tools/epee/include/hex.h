@@ -41,7 +41,6 @@ namespace epee
     //! \return A std::string containing hex of `src`.
     static std::string string(const std::span<const std::uint8_t> src);
     //! \return A epee::wipeable_string containing hex of `src`.
-    static epee::wipeable_string wipeable_string(const std::span<const std::uint8_t> src);
     template<typename T> static epee::wipeable_string wipeable_string(const T &pod) { return wipeable_string(std::span<const uint8_t>((const uint8_t*)&pod, sizeof(pod))); }
 
     //! \return An array containing hex of `src`.

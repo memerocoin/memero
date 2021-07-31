@@ -64,8 +64,9 @@ namespace epee
     return out;
   }
 
-  std::string to_hex::string(const std::span<const std::uint8_t> src) { return convert<std::string>(src); }
-  epee::wipeable_string to_hex::wipeable_string(const std::span<const std::uint8_t> src) { return convert<epee::wipeable_string>(src); }
+  std::string to_hex::string(const std::span<const std::uint8_t> src) {
+    return convert<std::string>(src);
+  }
 
   void to_hex::buffer(std::ostream& out, const std::span<const std::uint8_t> src)
   {
