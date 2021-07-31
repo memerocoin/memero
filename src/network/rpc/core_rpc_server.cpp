@@ -42,9 +42,6 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon.rpc"
 
-#define MAX_RESTRICTED_FAKE_OUTS_COUNT 40
-#define MAX_RESTRICTED_GLOBAL_FAKE_OUTS_COUNT 5000
-
 #define RPC_TRACKER(rpc)
 
 using namespace constant;
@@ -103,7 +100,6 @@ namespace cryptonote
       , const std::string& port
     )
   {
-    m_restricted = false;
     m_net_server.set_threads_prefix("RPC");
     m_net_server.set_connection_filter(&m_p2p);
 
@@ -151,7 +147,7 @@ namespace cryptonote
   {
     RPC_TRACKER(get_info);
 
-    const bool restricted = m_restricted && ctx;
+    constexpr bool restricted = false;
 
     crypto::hash top_hash;
     m_core.get_blockchain_top(res.height, top_hash);
@@ -304,8 +300,6 @@ namespace cryptonote
   {
     RPC_TRACKER(get_blocks_by_height);
 
-    const bool restricted = false;
-
     res.status = "Failed";
     res.blocks.clear();
     res.blocks.reserve(req.heights.size());
@@ -355,8 +349,6 @@ namespace cryptonote
 
     res.status = "Failed";
 
-    const bool restricted = false;
-
     if(!m_core.get_outs(req, res))
     {
       return true;
@@ -371,8 +363,6 @@ namespace cryptonote
     RPC_TRACKER(get_outs);
 
     res.status = "Failed";
-
-    const bool restricted = false;
 
     cryptonote::COMMAND_RPC_GET_OUTPUTS_BIN::request req_bin;
     req_bin.outputs = req.outputs;
@@ -419,7 +409,7 @@ namespace cryptonote
   {
     RPC_TRACKER(get_transactions);
 
-    const bool restricted = false;
+    constexpr bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
 
     std::vector<crypto::hash> vh;
@@ -598,7 +588,7 @@ namespace cryptonote
   {
     RPC_TRACKER(is_key_image_spent);
 
-    const bool restricted = false;
+    constexpr bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
 
     std::vector<crypto::key_image> key_images;
@@ -900,9 +890,8 @@ namespace cryptonote
   {
     RPC_TRACKER(get_transaction_pool);
 
-    const bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
-    const bool allow_sensitive = !request_has_rpc_origin || !restricted;
+    const bool allow_sensitive = !request_has_rpc_origin;
 
     size_t n_txes = m_core.get_pool_transactions_count(allow_sensitive);
     if (n_txes > 0)
@@ -920,9 +909,8 @@ namespace cryptonote
   {
     RPC_TRACKER(get_transaction_pool_hashes);
 
-    const bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
-    const bool allow_sensitive = !request_has_rpc_origin || !restricted;
+    const bool allow_sensitive = !request_has_rpc_origin;
 
     size_t n_txes = m_core.get_pool_transactions_count(allow_sensitive);
     if (n_txes > 0)
@@ -938,9 +926,8 @@ namespace cryptonote
   {
     RPC_TRACKER(get_transaction_pool_hashes);
 
-    const bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
-    const bool allow_sensitive = !request_has_rpc_origin || !restricted;
+    const bool allow_sensitive = !request_has_rpc_origin;
 
     size_t n_txes = m_core.get_pool_transactions_count(allow_sensitive);
     if (n_txes > 0)
@@ -960,9 +947,8 @@ namespace cryptonote
   {
     RPC_TRACKER(get_transaction_pool_stats);
 
-    const bool restricted = false;
     const bool request_has_rpc_origin = ctx != NULL;
-    m_core.get_pool_transaction_stats(res.pool_stats, !request_has_rpc_origin || !restricted);
+    m_core.get_pool_transaction_stats(res.pool_stats, !request_has_rpc_origin);
 
     res.status = CORE_RPC_STATUS_OK;
     return true;
@@ -1203,8 +1189,7 @@ namespace cryptonote
       error_resp.message = "Internal error: can't get last block.";
       return false;
     }
-    const bool restricted = false;
-    bool response_filled = fill_block_header_response(last_block, false, last_block_height, last_block_hash, res.block_header, req.fill_pow_hash && !restricted);
+    bool response_filled = fill_block_header_response(last_block, false, last_block_height, last_block_hash, res.block_header, req.fill_pow_hash);
     if (!response_filled)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
@@ -1219,9 +1204,7 @@ namespace cryptonote
   {
     RPC_TRACKER(get_block_header_by_hash);
 
-    const bool restricted = false;
-
-    auto get = [this](const std::string &hash, bool fill_pow_hash, block_header_response &block_header, bool restricted, epee::json_rpc::error& error_resp) -> bool {
+    auto get = [this](const std::string &hash, bool fill_pow_hash, block_header_response &block_header, epee::json_rpc::error& error_resp) -> bool {
       crypto::hash block_hash;
       bool hash_parsed = parse_hash256(hash, block_hash);
       if(!hash_parsed)
@@ -1246,7 +1229,7 @@ namespace cryptonote
         return false;
       }
       uint64_t block_height = boost::get<txin_gen>(blk.miner_tx.vin.front()).height;
-      bool response_filled = fill_block_header_response(blk, orphan, block_height, block_hash, block_header, fill_pow_hash && !restricted);
+      bool response_filled = fill_block_header_response(blk, orphan, block_height, block_hash, block_header, fill_pow_hash);
       if (!response_filled)
       {
         error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
@@ -1258,14 +1241,14 @@ namespace cryptonote
 
     if (!req.hash.empty())
     {
-      if (!get(req.hash, req.fill_pow_hash, res.block_header, restricted, error_resp))
+      if (!get(req.hash, req.fill_pow_hash, res.block_header, error_resp))
         return false;
     }
     res.block_headers.reserve(req.hashes.size());
     for (const std::string &hash: req.hashes)
     {
       res.block_headers.push_back({});
-      if (!get(hash, req.fill_pow_hash, res.block_headers.back(), restricted, error_resp))
+      if (!get(hash, req.fill_pow_hash, res.block_headers.back(), error_resp))
         return false;
     }
 
@@ -1284,7 +1267,6 @@ namespace cryptonote
       error_resp.message = "Invalid start/end heights.";
       return false;
     }
-    const bool restricted = false;
 
     for (uint64_t h = req.start_height; h <= req.end_height; ++h)
     {
@@ -1311,7 +1293,7 @@ namespace cryptonote
         return false;
       }
       res.headers.push_back(block_header_response());
-      bool response_filled = fill_block_header_response(blk, false, block_height, block_hash, res.headers.back(), req.fill_pow_hash && !restricted);
+      bool response_filled = fill_block_header_response(blk, false, block_height, block_hash, res.headers.back(), req.fill_pow_hash);
       if (!response_filled)
       {
         error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
@@ -1342,8 +1324,7 @@ namespace cryptonote
       error_resp.message = "Internal error: can't get block by height. Height = " + std::to_string(req.height) + '.';
       return false;
     }
-    const bool restricted = false;
-    bool response_filled = fill_block_header_response(blk, false, req.height, block_hash, res.block_header, req.fill_pow_hash && !restricted);
+    bool response_filled = fill_block_header_response(blk, false, req.height, block_hash, res.block_header, req.fill_pow_hash);
     if (!response_filled)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
@@ -1395,8 +1376,7 @@ namespace cryptonote
       return false;
     }
     uint64_t block_height = boost::get<txin_gen>(blk.miner_tx.vin.front()).height;
-    const bool restricted = false;
-    bool response_filled = fill_block_header_response(blk, orphan, block_height, block_hash, res.block_header, req.fill_pow_hash && !restricted);
+    bool response_filled = fill_block_header_response(blk, orphan, block_height, block_hash, res.block_header, req.fill_pow_hash);
     if (!response_filled)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
