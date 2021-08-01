@@ -55,8 +55,6 @@ static std::atomic<uint64_t> tx_hashes_cached_count(0);
 static std::atomic<uint64_t> block_hashes_calculated_count(0);
 static std::atomic<uint64_t> block_hashes_cached_count(0);
 
-#define LOG_WARNING_AND_THROW_UNLESS(expr, message) {if(!(expr)) {MWARNING(message); throw std::runtime_error(message);}}
-
 namespace cryptonote
 {
   unsigned char *operator &(ec_point &point) {

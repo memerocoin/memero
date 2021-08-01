@@ -114,50 +114,81 @@ void reset_console_color();
     throw std::runtime_error(ss.str());         \
   } while(0)
 
-#define LOG_ERROR_AND_THROW_UNLESS(expr, message)   \
+#define LOG_ERROR_AND_THROW_IF(expr, message)   \
   do {                                          \
-    if(!(expr))                                 \
+    if(expr)                                    \
       LOG_ERROR_AND_THROW(message);             \
   } while(0)
 
+#define LOG_ERROR_AND_THROW_UNLESS(expr, message) \
+  LOG_ERROR_AND_THROW_IF(!(expr), message)
 
-#define RETURN_UNLESS(expr, fail_ret_val)           \
+#define RETURN_IF(expr, fail_ret_val)           \
   do {                                          \
-    if(!(expr)) {                               \
+    if(expr) {                                  \
       return fail_ret_val;                      \
     };                                          \
   } while(0)
 
-#define LOG_ERROR_AND_RETURN_UNLESS(expr, fail_ret_val, message)  \
+#define RETURN_UNLESS(expr, fail_ret_val)       \
+  RETURN_IF(!(expr), fail_ret_val)
+
+#define LOG_ERROR_AND_RETURN_IF(expr, fail_ret_val, message)  \
   do {                                                        \
-    if(!(expr)) {                                             \
+    if(expr) {                                                \
       LOG_ERROR(message);                                     \
       return fail_ret_val;                                    \
     };                                                        \
   } while(0)
 
-#define LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, l, message)  \
+#define LOG_ERROR_AND_RETURN_UNLESS(expr, fail_ret_val, message)  \
+  LOG_ERROR_AND_RETURN_IF(!(expr), fail_ret_val, message)
+
+#define LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, l, message)  \
   do {                                                                \
-    if(!(expr)) {                                                     \
+    if(expr) {                                                        \
       LOG_PRINT_L##l(message);                                        \
       return fail_ret_val;                                            \
     };                                                                \
   } while(0)
 
+#define LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, l, message) \
+  LOG_WITH_LEVEL_AND_RETURN_IF(!(expr), fail_ret_val, l, message)       \
+
+#define LOG_WITH_LEVEL_0_AND_RETURN_IF(expr, fail_ret_val, message) \
+  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 0, message)
+
 #define LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, 0, message)
+  LOG_WITH_LEVEL_AND_RETURN_IF(!(expr), fail_ret_val, 0, message)
+
+#define LOG_WITH_LEVEL_1_AND_RETURN_IF(expr, fail_ret_val, message) \
+  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 1, message)
 
 #define LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, 1, message)
+  LOG_WITH_LEVEL_1_AND_RETURN_IF(!(expr), fail_ret_val, message)        \
 
 
 #define LOG_ERROR_IF(expr, message)             \
   do {                                          \
-    if(!(expr)) {                               \
+    if(expr) {                                  \
       LOG_ERROR(message);                       \
       return;                                   \
     };                                          \
   } while(0)
+
+#define LOG_ERROR_UNLESS(expr, message)         \
+  LOG_ERROR_IF(!(expr), message)
+
+#define LOG_WARNING_AND_THROW_IF(expr, message) \
+  do {                                          \
+    if(expr) {                                  \
+      MWARNING(message);                        \
+      throw std::runtime_error(message);        \
+    };                                          \
+  } while(0)
+
+#define LOG_WARNING_AND_THROW_UNLESS(expr, message) \
+  LOG_WARNING_AND_THROW_IF(!(expr), message)
 
 } // epee
 

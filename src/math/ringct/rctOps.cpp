@@ -45,9 +45,6 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
-#define LOG_WARNING_AND_THROW_UNLESS(expr, message) {if(!(expr)) {MWARNING(message); throw std::runtime_error(message);}}
-#define CHECK_AND_MES_L1(expr, message) {if(!(expr)) {MWARNING(message); }}
-
 namespace rct {
 
     //Various key initialization functions

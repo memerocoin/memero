@@ -317,7 +317,7 @@ public:
     {
       epee::misc_utils::sleep_no_w(100);
     }
-    LOG_ERROR_IF(0 == m_wait_count, "Failed to wait for operation completion. m_wait_count = " << m_wait_count);
+    LOG_ERROR_IF(0 != m_wait_count, "Failed to wait for operation completion. m_wait_count = " << m_wait_count);
 
     MTRACE(m_connection_context << "~async_protocol_handler()");
 
