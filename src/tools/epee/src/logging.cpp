@@ -175,23 +175,32 @@ void log_level_map(const el::Level level, const std::string cat, const std::stri
 
   std::string log_header;
   switch (level) {
-  case el::Level::Trace:
-    log_header = "T";
+  case el::Level::Global:
+    log_header = "G";
     break;
-  case el::Level::Debug:
-    log_header = "D";
-    break;
-  case el::Level::Info:
-    log_header = "I";
-    break;
-  case el::Level::Warning:
-    log_header = "W";
+  case el::Level::Fatal:
+    log_header = "F";
     break;
   case el::Level::Error:
     log_header = "E";
     break;
-  case el::Level::Fatal:
-    log_header = "F";
+  case el::Level::Warning:
+    log_header = "W";
+    break;
+  case el::Level::Info:
+    log_header = "I";
+    break;
+  case el::Level::Verbose:
+    log_header = "V";
+    break;
+  case el::Level::Debug:
+    log_header = "D";
+    break;
+  case el::Level::Trace:
+    log_header = "T";
+    break;
+  case el::Level::Unknown:
+    log_header = "U";
     break;
   default:
     break;
@@ -217,6 +226,7 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     return;
   case 3:
     switch(level) {
+    case el::Level::Unknown:
     case el::Level::Trace:
       break;
     default:
@@ -225,6 +235,7 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     }
   case 2:
     switch(level) {
+    case el::Level::Unknown:
     case el::Level::Trace:
     case el::Level::Debug:
       break;
@@ -234,9 +245,10 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     }
   case 1:
     switch(level) {
+    case el::Level::Unknown:
     case el::Level::Trace:
     case el::Level::Debug:
-    case el::Level::Warning:
+    case el::Level::Verbose:
       break;
     default:
       log_level_map(level, cat, x);
@@ -244,9 +256,10 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     }
   case 0:
     switch(level) {
+    case el::Level::Unknown:
     case el::Level::Trace:
     case el::Level::Debug:
-    case el::Level::Warning:
+    case el::Level::Verbose:
       break;
     default:
       if (default_cat.find(cat) == default_cat.end()) return;

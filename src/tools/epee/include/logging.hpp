@@ -37,27 +37,16 @@
 
 namespace el {
 
-typedef unsigned int EnumType;
-
-enum class Level : EnumType {
-  /// @brief Generic level that represents all the levels. Useful when setting global configuration for all levels
-  Global = 1,
-  /// @brief Information that can be useful to back-trace certain events - mostly useful than debug logs.
-  Trace = 2,
-  /// @brief Informational events most useful for developers to debug application
-  Debug = 4,
-  /// @brief Severe error information that will presumably abort application
-  Fatal = 8,
-  /// @brief Information representing errors in application but application will keep running
-  Error = 16,
-  /// @brief Useful when application has potentially harmful situtaions
-  Warning = 32,
-  /// @brief Information that can be highly useful and vary with verbose logging level.
-  Verbose = 64,
-  /// @brief Mainly useful to represent current progress of application
-  Info = 128,
-  /// @brief Represents unknown level
-  Unknown = 1010
+enum class Level : unsigned int {
+  Global,
+  Fatal,
+  Error,
+  Warning,
+  Info,
+  Verbose,
+  Debug,
+  Trace,
+  Unknown,
 };
 } // namespace el
 
@@ -203,6 +192,7 @@ void reset_console_color();
 #define LOG_CATEGORY_ERROR(cat,x) LOG_CATEGORY(el::Level::Error,cat, el::Color::Default, x)
 #define LOG_CATEGORY_WARNING(cat,x) LOG_CATEGORY(el::Level::Warning,cat, el::Color::Default, x)
 #define LOG_CATEGORY_INFO(cat,x) LOG_CATEGORY(el::Level::Info,cat, el::Color::Default, x)
+#define LOG_CATEGORY_VERBOSE(cat,x) LOG_CATEGORY(el::Level::Verbose,cat, el::Color::Default, x)
 #define LOG_CATEGORY_DEBUG(cat,x) LOG_CATEGORY(el::Level::Debug,cat, el::Color::Default, x)
 #define LOG_CATEGORY_TRACE(cat,x) LOG_CATEGORY(el::Level::Trace,cat, el::Color::Default, x)
 
@@ -225,6 +215,7 @@ void reset_console_color();
 #define LOG_ERROR(x) LOG_CATEGORY_ERROR(MONERO_DEFAULT_LOG_CATEGORY,x)
 #define LOG_WARNING(x) LOG_CATEGORY_WARNING(MONERO_DEFAULT_LOG_CATEGORY,x)
 #define LOG_INFO(x) LOG_CATEGORY_INFO(MONERO_DEFAULT_LOG_CATEGORY,x)
+#define LOG_VERBOSE(x) LOG_CATEGORY_VERBOSE(MONERO_DEFAULT_LOG_CATEGORY,x)
 #define LOG_DEBUG(x) LOG_CATEGORY_DEBUG(MONERO_DEFAULT_LOG_CATEGORY,x)
 #define LOG_TRACE(x) LOG_CATEGORY_TRACE(MONERO_DEFAULT_LOG_CATEGORY,x)
 
@@ -239,15 +230,15 @@ void reset_console_color();
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)
-#define LOG_PRINT_L2(x) LOG_DEBUG(x)
-#define LOG_PRINT_L3(x) LOG_TRACE(x)
+#define LOG_PRINT_L2(x) LOG_VERBOSE(x)
+#define LOG_PRINT_L3(x) LOG_DEBUG(x)
 #define LOG_PRINT_L4(x) LOG_TRACE(x)
 
 #define _dbg3(x) LOG_TRACE(x)
 #define _dbg2(x) LOG_DEBUG(x)
 #define _dbg1(x) LOG_DEBUG(x)
 #define _info(x) LOG_INFO(x)
-#define _note(x) LOG_DEBUG(x)
+#define _note(x) LOG_VERBOSE(x)
 #define _fact(x) LOG_DEBUG(x)
 #define _mark(x) LOG_DEBUG(x)
 #define _warn(x) LOG_WARNING(x)
