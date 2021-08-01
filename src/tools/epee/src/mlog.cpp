@@ -167,7 +167,7 @@ void reset_console_color() {
   std::cout.flush();
 }
 
-const std::set<std::string> default_cat = {"global", "logging"};
+const std::set<std::string> default_cat = {"global", "logging", "default"};
 std::mutex g_log_mutex;
 
 void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
