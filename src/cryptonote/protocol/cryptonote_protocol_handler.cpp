@@ -48,7 +48,7 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net.cn"
 
-#define LOG_P2P_MESSAGE(x) LOG_CATEGORY_INFO("net.p2p.msg", context << x)
+#define LOG_P2P_MESSAGE(x) LOG_CATEGORY_VERBOSE("net.p2p.msg", context << x)
 #define LOG_P2P_MESSAGE_IF(init, test, x) \
   do { \
       init; \
