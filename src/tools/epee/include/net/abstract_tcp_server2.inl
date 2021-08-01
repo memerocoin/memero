@@ -89,7 +89,7 @@ namespace net_utils
 		m_local(false),
 		m_ready_to_close(false)
   {
-    MDEBUG("test, connection constructor set m_connection_type="<<m_connection_type);
+    LOG_DEBUG("test, connection constructor set m_connection_type="<<m_connection_type);
   }
 
   //---------------------------------------------------------------------------------
@@ -300,7 +300,7 @@ namespace net_utils
       address = endpoint.address().to_string();
       port = boost::lexical_cast<std::string>(endpoint.port());
     }
-    MDEBUG(" connection type " << to_string( m_connection_type ) << " "
+    LOG_DEBUG(" connection type " << to_string( m_connection_type ) << " "
         << socket().local_endpoint().address().to_string() << ":" << socket().local_endpoint().port()
         << " <--> " << context.m_remote_address.str() << " (via " << address << ":" << port << ")");
   }
@@ -393,7 +393,7 @@ namespace net_utils
     }
 
     buffer_ssl_init_fill += bytes_transferred;
-    MTRACE("we now have " << buffer_ssl_init_fill << "/" << get_ssl_magic_size() << " bytes needed to detect SSL");
+    LOG_TRACE("we now have " << buffer_ssl_init_fill << "/" << get_ssl_magic_size() << " bytes needed to detect SSL");
     if (buffer_ssl_init_fill < get_ssl_magic_size())
     {
       epee::misc_utils::sleep_no_w(100);
@@ -411,7 +411,7 @@ namespace net_utils
       // Handshake
       if (!handshake(boost::asio::ssl::stream_base::server, boost::asio::const_buffer(buffer_.data(), buffer_ssl_init_fill)))
       {
-        MERROR("SSL handshake failed");
+        LOG_ERROR("SSL handshake failed");
         m_want_close_connection = true;
         m_ready_to_close = true;
         bool do_shutdown = false;
@@ -496,7 +496,7 @@ namespace net_utils
     if(m_send_que.size() > 1)
     { // active operation should be in progress, nothing to do, just wait last operation callback
         auto size_now = m_send_que.back().size();
-        MDEBUG("do_send() NOW just queues: packet="<<size_now<<" B, is added to queue-size="<<m_send_que.size());
+        LOG_DEBUG("do_send() NOW just queues: packet="<<size_now<<" B, is added to queue-size="<<m_send_que.size());
         //do_send_handler_delayed( ptr , size_now ); // (((H))) // empty function
 
       LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] Async send requested " << m_send_que.front().size());
@@ -511,7 +511,7 @@ namespace net_utils
         }
 
         auto size_now = m_send_que.front().size();
-        MDEBUG("do_send() NOW SENSD: packet="<<size_now<<" B");
+        LOG_DEBUG("do_send() NOW SENSD: packet="<<size_now<<" B");
 
         LOG_ERROR_AND_RETURN_UNLESS( size_now == m_send_que.front().size(), false, "Unexpected queue size");
         reset_timer(get_default_timeout());
@@ -570,9 +570,9 @@ namespace net_utils
     static std::map<std::string, unsigned int> hosts;
     unsigned int &val = hosts[host];
     if (delta > 0)
-      MTRACE("New connection from host " << host << ": " << val);
+      LOG_TRACE("New connection from host " << host << ": " << val);
     else if (delta < 0)
-      MTRACE("Closed connection from host " << host << ": " << val);
+      LOG_TRACE("Closed connection from host " << host << ": " << val);
     LOG_ERROR_AND_THROW_UNLESS(delta >= 0 || val >= (unsigned)-delta, "Count would go negative");
     LOG_ERROR_AND_THROW_UNLESS(delta <= 0 || val <= std::numeric_limits<unsigned int>::max() - (unsigned)delta, "Count would wrap");
     val += delta;
@@ -585,19 +585,19 @@ namespace net_utils
     const auto tms = ms.count();
     if (tms < 0)
     {
-      MWARNING("Ignoring negative timeout " << tms);
+      LOG_WARNING("Ignoring negative timeout " << tms);
       return;
     }
-    MTRACE("Setting" << " " << tms << " expiry");
+    LOG_TRACE("Setting" << " " << tms << " expiry");
     auto self = safe_shared_from_this();
     if(!self)
     {
-      MERROR("Resetting timer on a dead object");
+      LOG_ERROR("Resetting timer on a dead object");
       return;
     }
     if (m_was_shutdown)
     {
-      MERROR("Setting timer on a shut down object");
+      LOG_ERROR("Setting timer on a shut down object");
       return;
     }
     m_timer.expires_after(ms);
@@ -605,7 +605,7 @@ namespace net_utils
     {
       if(ec == boost::asio::error::operation_aborted)
         return;
-      MDEBUG(context << "connection timeout, closing");
+      LOG_DEBUG(context << "connection timeout, closing");
       self->close();
     });
   }
@@ -714,7 +714,7 @@ namespace net_utils
         //have more data to send
       reset_timer(get_default_timeout());
       auto size_now = m_send_que.front().size();
-      MDEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
+      LOG_DEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
       LOG_ERROR_AND_RETURN_UNLESS( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
       async_write(boost::asio::buffer(m_send_que.front().data(), size_now) ,
                   strand_.wrap(
@@ -738,7 +738,7 @@ namespace net_utils
   void connection<t_protocol_handler>::setRpcStation()
   {
     m_connection_type = e_connection_type_RPC;
-    MDEBUG("set m_connection_type = RPC ");
+    LOG_DEBUG("set m_connection_type = RPC ");
   }
 
   /************************************************************************/
@@ -825,7 +825,7 @@ namespace net_utils
       acceptor_.listen();
       boost::asio::ip::tcp::endpoint binded_endpoint = acceptor_.local_endpoint();
       m_port = binded_endpoint.port();
-      MDEBUG("start accept (IPv4)");
+      LOG_DEBUG("start accept (IPv4)");
       new_connection_.reset(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type, m_state->ssl_options().support));
       acceptor_.async_accept(new_connection_->socket(),
                              std::bind(
@@ -840,7 +840,7 @@ namespace net_utils
 
     if (ipv4_failed != "")
     {
-      MERROR("Failed to bind IPv4: " << ipv4_failed);
+      LOG_ERROR("Failed to bind IPv4: " << ipv4_failed);
       if (require_ipv4)
       {
         throw std::runtime_error("Failed to bind IPv4 (set to required)");
@@ -862,7 +862,7 @@ namespace net_utils
         acceptor_ipv6.listen();
         boost::asio::ip::tcp::endpoint binded_endpoint = acceptor_ipv6.local_endpoint();
         m_port_ipv6 = binded_endpoint.port();
-        MDEBUG("start accept (IPv6)");
+        LOG_DEBUG("start accept (IPv6)");
         new_connection_ipv6.reset(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type, m_state->ssl_options().support));
         acceptor_ipv6.async_accept(new_connection_ipv6->socket(),
                                    std::bind(
@@ -878,7 +878,7 @@ namespace net_utils
 
       if (use_ipv6 && ipv6_failed != "")
       {
-        MERROR("Failed to bind IPv6: " << ipv6_failed);
+        LOG_ERROR("Failed to bind IPv6: " << ipv6_failed);
         if (ipv4_failed != "")
         {
           throw std::runtime_error("Failed to bind IPv4 and IPv6");
@@ -889,12 +889,12 @@ namespace net_utils
     }
     catch (const std::exception &e)
     {
-      MFATAL("Error starting server: " << e.what());
+      LOG_FATAL("Error starting server: " << e.what());
       return false;
     }
     catch (...)
     {
-      MFATAL("Error starting server");
+      LOG_FATAL("Error starting server");
       return false;
     }
   }
@@ -908,12 +908,12 @@ namespace net_utils
     uint32_t p_ipv6 = 0;
 
     if (port.size() && !string_tools::get_xtype_from_string(p, port)) {
-      MERROR("Failed to convert port no = " << port);
+      LOG_ERROR("Failed to convert port no = " << port);
       return false;
     }
 
     if (port_ipv6.size() && !string_tools::get_xtype_from_string(p_ipv6, port_ipv6)) {
-      MERROR("Failed to convert port no = " << port_ipv6);
+      LOG_ERROR("Failed to convert port no = " << port_ipv6);
       return false;
     }
     return this->init_server(p, address, p_ipv6, address_ipv6, use_ipv6, require_ipv4, std::move(ssl_options));
@@ -926,7 +926,7 @@ namespace net_utils
     uint32_t local_thr_index = index;
     std::string thread_name = std::string("[") + m_thread_name_prefix;
     thread_name += std::to_string(local_thr_index) + "]";
-    MLOG_SET_THREAD_NAME(thread_name);
+    LOG_SET_THREAD_NAME(thread_name);
     //   _fact("Thread name: " << m_thread_name_prefix);
     while(!m_stop_signal_sent)
     {
@@ -956,7 +956,7 @@ namespace net_utils
 		auto it = server_type_map.find(m_thread_name_prefix);
 		if (it==server_type_map.end()) throw std::runtime_error("Unknown prefix/server type:" + std::string(prefix_name));
     auto connection_type = it->second; // the value of type
-    MINFO("Set server type to: " << connection_type << " from name: " << m_thread_name_prefix << ", prefix_name = " << prefix_name);
+    LOG_INFO("Set server type to: " << connection_type << " from name: " << m_thread_name_prefix << ", prefix_name = " << prefix_name);
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
@@ -972,7 +972,7 @@ namespace net_utils
     TRY_ENTRY();
     m_threads_count = threads_count;
     m_main_thread_id = std::this_thread::get_id();
-    MLOG_SET_THREAD_NAME("[SRV_MAIN]");
+    LOG_SET_THREAD_NAME("[SRV_MAIN]");
     while(!m_stop_signal_sent)
     {
 
@@ -1088,7 +1088,7 @@ namespace net_utils
   template<class t_protocol_handler>
   void boosted_tcp_server<t_protocol_handler>::handle_accept(const boost::system::error_code& e, bool ipv6)
   {
-    MDEBUG("handle_accept");
+    LOG_DEBUG("handle_accept");
 
     boost::asio::ip::tcp::acceptor* current_acceptor = &acceptor_;
     connection_ptr* current_new_connection = &new_connection_;
@@ -1111,7 +1111,7 @@ namespace net_utils
           case epee::net_utils::ssl_support_t::e_ssl_support_disabled: ssl_message = "disabled"; break;
           case epee::net_utils::ssl_support_t::e_ssl_support_enabled: ssl_message = "enabled"; break;
         }
-        MDEBUG("New server for RPC connections, SSL " << ssl_message);
+        LOG_DEBUG("New server for RPC connections, SSL " << ssl_message);
         (*current_new_connection)->setRpcStation(); // hopefully this is not needed actually
       }
       connection_ptr conn(std::move((*current_new_connection)));
@@ -1137,12 +1137,12 @@ namespace net_utils
     }
     else
     {
-      MERROR("Error in boosted_tcp_server<t_protocol_handler>::handle_accept: " << e);
+      LOG_ERROR("Error in boosted_tcp_server<t_protocol_handler>::handle_accept: " << e);
     }
     }
     catch (const std::exception &e)
     {
-      MERROR("Exception in boosted_tcp_server<t_protocol_handler>::handle_accept: " << e.what());
+      LOG_ERROR("Exception in boosted_tcp_server<t_protocol_handler>::handle_accept: " << e.what());
     }
 
     // error path, if e or exception
@@ -1169,7 +1169,7 @@ namespace net_utils
     }
     else
     {
-	MWARNING(out << " was not added, socket/io_service mismatch");
+	LOG_WARNING(out << " was not added, socket/io_service mismatch");
     }
     return false;
   }
@@ -1187,7 +1187,7 @@ namespace net_utils
       sock_.bind(local_endpoint, ec);
       if (ec)
       {
-        MERROR("Error binding to " << bind_ip << ": " << ec.message());
+        LOG_ERROR("Error binding to " << bind_ip << ": " << ec.message());
         if (sock_.is_open())
           sock_.close();
         return CONNECT_FAILURE;
@@ -1251,10 +1251,10 @@ namespace net_utils
     if (ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
     {
       // Handshake
-      MDEBUG("Handshaking SSL...");
+      LOG_DEBUG("Handshaking SSL...");
       if (!new_connection_l->handshake(boost::asio::ssl::stream_base::client))
       {
-        MERROR("SSL handshake failed");
+        LOG_ERROR("SSL handshake failed");
         if (sock_.is_open())
           sock_.close();
         return CONNECT_FAILURE;
@@ -1274,7 +1274,7 @@ namespace net_utils
     connection_ptr new_connection_l(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type, ssl_support) );
     connections_mutex.lock();
     connections_.insert(new_connection_l);
-    MDEBUG("connections_ size now " << connections_.size());
+    LOG_DEBUG("connections_ size now " << connections_.size());
     connections_mutex.unlock();
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ LOCK_MUTEX(connections_mutex); connections_.erase(new_connection_l); });
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
@@ -1317,7 +1317,7 @@ namespace net_utils
       else
       {
         try_ipv6 = true;
-        MINFO("Resolving address as IPv4 failed, trying IPv6");
+        LOG_INFO("Resolving address as IPv4 failed, trying IPv6");
       }
     }
     else
@@ -1351,7 +1351,7 @@ namespace net_utils
 
     }
 
-    MDEBUG("Trying to connect to " << adr << ":" << port << ", bind_ip = " << bind_ip_to_use);
+    LOG_DEBUG("Trying to connect to " << adr << ":" << port << ", bind_ip = " << bind_ip_to_use);
 
     //boost::asio::ip::tcp::endpoint remote_endpoint(boost::asio::ip::address::from_string(addr.c_str()), port);
     boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
@@ -1390,7 +1390,7 @@ namespace net_utils
     connection_ptr new_connection_l(new connection<t_protocol_handler>(io_service_, m_state, m_connection_type, ssl_support) );
     connections_mutex.lock();
     connections_.insert(new_connection_l);
-    MDEBUG("connections_ size now " << connections_.size());
+    LOG_DEBUG("connections_ size now " << connections_.size());
     connections_mutex.unlock();
     epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ LOCK_MUTEX(connections_mutex); connections_.erase(new_connection_l); });
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
@@ -1430,7 +1430,7 @@ namespace net_utils
       }
       else
       {
-        MINFO("Resolving address as IPv4 failed, trying IPv6");
+        LOG_INFO("Resolving address as IPv4 failed, trying IPv6");
       }
     }
 
@@ -1458,7 +1458,7 @@ namespace net_utils
       sock_.bind(local_endpoint, ec);
       if (ec)
       {
-        MERROR("Error binding to " << bind_ip << ": " << ec.message());
+        LOG_ERROR("Error binding to " << bind_ip << ": " << ec.message());
         if (sock_.is_open())
           sock_.close();
         return false;

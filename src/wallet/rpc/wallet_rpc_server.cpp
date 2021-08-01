@@ -59,7 +59,7 @@ namespace
     auto pwd_container = tools::password_container::prompt(verify, prompt);
     if (!pwd_container)
     {
-      MERROR("failed to read wallet password");
+      LOG_ERROR("failed to read wallet password");
     }
     return pwd_container;
   }
@@ -156,7 +156,7 @@ namespace tools
     {
       if (!command_line::is_arg_defaulted(*m_vm, wallet_args::arg_wallet_file()))
       {
-        MERROR(arg_wallet_dir.name << " and " << wallet_args::arg_wallet_file().name << " are incompatible, use only one of them");
+        LOG_ERROR(arg_wallet_dir.name << " and " << wallet_args::arg_wallet_file().name << " are incompatible, use only one of them");
         return false;
       }
       m_wallet_dir = command_line::get_arg(*m_vm, arg_wallet_dir);
@@ -1502,7 +1502,7 @@ namespace tools
     {
       m_auto_refresh_period = req.enable ? req.period ? req.period :
         constant::DEFAULT_RPC_AUTO_REFRESH_PERIOD_IN_SECONDS : 0;
-      MINFO("Auto refresh now " << (m_auto_refresh_period ? std::to_string(m_auto_refresh_period) + " seconds" : std::string("disabled")));
+      LOG_INFO("Auto refresh now " << (m_auto_refresh_period ? std::to_string(m_auto_refresh_period) + " seconds" : std::string("disabled")));
       return true;
     }
     catch (const std::exception& e)
@@ -1980,7 +1980,7 @@ namespace tools
     try
     {
       recovery_val = wal->generate(wallet_file, std::move(rc.second).password(), recovery_key, true);
-      MINFO("Wallet has been restored.\n");
+      LOG_INFO("Wallet has been restored.\n");
     }
     catch (const std::exception &e)
     {
@@ -2147,7 +2147,7 @@ public:
       const bool testnet = tools::wallet2::has_testnet_option(vm);
       if (testnet)
       {
-        MERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --testnet"));
+        LOG_ERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --testnet"));
         return false;
       }
 
@@ -2191,12 +2191,12 @@ public:
       // if we ^C during potentially length load/refresh, there's no server loop yet
       if (quit)
       {
-        MINFO(tools::wallet_rpc_server::tr("Saving wallet..."));
+        LOG_INFO(tools::wallet_rpc_server::tr("Saving wallet..."));
         wal->store();
-        MINFO(tools::wallet_rpc_server::tr("Successfully saved"));
+        LOG_INFO(tools::wallet_rpc_server::tr("Successfully saved"));
         return false;
       }
-      MINFO(tools::wallet_rpc_server::tr("Successfully loaded"));
+      LOG_INFO(tools::wallet_rpc_server::tr("Successfully loaded"));
     }
     catch (const std::exception& e)
     {

@@ -122,7 +122,7 @@ namespace net_utils
           if (!m_ssl_options.handshake(*m_ssl_socket, boost::asio::ssl::stream_base::client, {}, addr, timeout))
           {
             {
-              MWARNING("Failed to establish SSL connection");
+              LOG_WARNING("Failed to establish SSL connection");
               m_connected = false;
               return CONNECT_FAILURE;
             }
@@ -131,7 +131,7 @@ namespace net_utils
         return CONNECT_SUCCESS;
       }else
       {
-        MWARNING("Some problems at connect, expected open socket");
+        LOG_WARNING("Some problems at connect, expected open socket");
         return CONNECT_FAILURE;
       }
 
@@ -156,12 +156,12 @@ namespace net_utils
     }
     catch(const boost::system::system_error& er)
     {
-      MDEBUG("Some problems at connect, message: " << er.what());
+      LOG_DEBUG("Some problems at connect, message: " << er.what());
       return false;
     }
     catch(...)
     {
-      MDEBUG("Some fatal problems.");
+      LOG_DEBUG("Some fatal problems.");
       return false;
     }
 
@@ -360,21 +360,21 @@ namespace net_utils
 
       if (ec)
       {
-                  MTRACE("READ ENDS: Connection err_code " << ec.value());
+                  LOG_TRACE("READ ENDS: Connection err_code " << ec.value());
                   if(ec == boost::asio::error::eof)
                   {
-                    MTRACE("Connection err_code eof.");
+                    LOG_TRACE("Connection err_code eof.");
                     //connection closed there, empty
                     buff.clear();
                     return true;
                   }
 
-        MDEBUG("Problems at read: " << ec.message());
+        LOG_DEBUG("Problems at read: " << ec.message());
                   m_connected = false;
         return false;
       }else
       {
-                  MTRACE("READ ENDS: Success. bytes_tr: " << bytes_transfered);
+                  LOG_TRACE("READ ENDS: Success. bytes_tr: " << bytes_transfered);
         m_deadline.expires_at(std::chrono::steady_clock::time_point::max());
       }
 
@@ -485,13 +485,13 @@ namespace net_utils
       shutdown_ssl();
     m_ssl_socket->next_layer().cancel(ec);
     if(ec)
-      MDEBUG("Problems at cancel: " << ec.message());
+      LOG_DEBUG("Problems at cancel: " << ec.message());
     m_ssl_socket->next_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
     if(ec)
-      MDEBUG("Problems at shutdown: " << ec.message());
+      LOG_DEBUG("Problems at shutdown: " << ec.message());
     m_ssl_socket->next_layer().close(ec);
     if(ec)
-      MDEBUG("Problems at close: " << ec.message());
+      LOG_DEBUG("Problems at close: " << ec.message());
     m_shutdowned = true;
     m_connected = false;
     return true;
@@ -559,7 +559,7 @@ namespace net_utils
         ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ)
 #endif
         )
-      MDEBUG("Problems at ssl shutdown: " << ec.message());
+      LOG_DEBUG("Problems at ssl shutdown: " << ec.message());
   }
 
   bool blocked_mode_client::write(const void* data, size_t sz, boost::system::error_code& ec)

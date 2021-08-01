@@ -135,7 +135,7 @@ namespace
       if (full_match)
       {
         *language = *it1;
-        MINFO("Full match for language " << (*language)->get_english_language_name());
+        LOG_INFO("Full match for language " << (*language)->get_english_language_name());
         return true;
       }
       // Some didn't match. Clear the index array.
@@ -149,11 +149,11 @@ namespace
     if (fallback)
     {
       *language = fallback;
-      MINFO("Fallback match for language " << (*language)->get_english_language_name());
+      LOG_INFO("Fallback match for language " << (*language)->get_english_language_name());
       return true;
     }
 
-    MINFO("No match found");
+    LOG_INFO("No match found");
     memwipe(matched_indices.data(), matched_indices.size() * sizeof(matched_indices[0]));
     return false;
   }
@@ -208,7 +208,7 @@ namespace
     epee::wipeable_string trimmed_last_word = last_word.length() > unique_prefix_length ? Language::utf8prefix(last_word, unique_prefix_length) :
       last_word;
     bool ret = Language::WordEqual()(trimmed_checksum, trimmed_last_word);
-    MINFO("Checksum is " << (ret ? "valid" : "invalid"));
+    LOG_INFO("Checksum is " << (ret ? "valid" : "invalid"));
     return ret;
   }
 }
@@ -245,7 +245,7 @@ namespace crypto
 
       if (len % 4)
       {
-        MERROR("Invalid seed: not a multiple of 4");
+        LOG_ERROR("Invalid seed: not a multiple of 4");
         return false;
       }
 
@@ -257,7 +257,7 @@ namespace crypto
         if (seed.size() != expected/2 && seed.size() != expected &&
           seed.size() != expected + 1)
         {
-          MERROR("Invalid seed: unexpected number of words");
+          LOG_ERROR("Invalid seed: unexpected number of words");
           return false;
         }
 
@@ -270,7 +270,7 @@ namespace crypto
       Language::Base *language;
       if (!find_seed_language(seed, has_checksum, matched_indices, &language))
       {
-        MERROR("Invalid seed: language not found");
+        LOG_ERROR("Invalid seed: language not found");
         return false;
       }
       language_name = language->get_language_name();
@@ -281,7 +281,7 @@ namespace crypto
         if (!checksum_test(seed, language))
         {
           // Checksum fail
-          MERROR("Invalid seed: invalid checksum");
+          LOG_ERROR("Invalid seed: invalid checksum");
           return false;
         }
         seed.pop_back();
@@ -300,7 +300,7 @@ namespace crypto
         if (!(w[0]% word_list_length == w[1]))
         {
           memwipe(w, sizeof(w));
-          MERROR("Invalid seed: mumble mumble");
+          LOG_ERROR("Invalid seed: mumble mumble");
           return false;
         }
 
@@ -334,12 +334,12 @@ namespace crypto
       epee::wipeable_string s;
       if (!words_to_bytes(words, s, sizeof(dst), true, language_name))
       {
-        MERROR("Invalid seed: failed to convert words to bytes");
+        LOG_ERROR("Invalid seed: failed to convert words to bytes");
         return false;
       }
       if (s.size() != sizeof(dst))
       {
-        MERROR("Invalid seed: wrong output size");
+        LOG_ERROR("Invalid seed: wrong output size");
         return false;
       }
       dst = *(const crypto::secret_key*)s.data();

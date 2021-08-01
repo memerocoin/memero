@@ -62,7 +62,7 @@ void mlog_set_log(const std::string x)
   }
   else
   {
-    MERROR("Invalid numerical log level: " << x);
+    LOG_ERROR("Invalid numerical log level: " << x);
   }
 }
 

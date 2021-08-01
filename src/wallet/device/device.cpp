@@ -80,9 +80,9 @@ namespace hw {
 
         auto device = registry.find(device_descriptor_lookup);
         if (device == registry.end()) {
-            MERROR("Device not found in registry: '" << device_descriptor << "'. Known devices: ");
+            LOG_ERROR("Device not found in registry: '" << device_descriptor << "'. Known devices: ");
             for( const auto& sm_pair : registry ) {
-                MERROR(" - " << sm_pair.first);
+                LOG_ERROR(" - " << sm_pair.first);
             }
             throw std::runtime_error("device not found: " + device_descriptor);
         }

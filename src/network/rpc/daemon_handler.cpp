@@ -340,7 +340,7 @@ namespace rpc
     std::string tx_blob;
     if(!epee::string_tools::parse_hexstr_to_binbuff(req.tx_as_hex, tx_blob))
     {
-      MERROR("[SendRawTxHex]: Failed to parse tx from hexbuff: " << req.tx_as_hex);
+      LOG_ERROR("[SendRawTxHex]: Failed to parse tx from hexbuff: " << req.tx_as_hex);
       res.status = Message::STATUS_FAILED;
       res.error_details = "Invalid hex";
       return;
@@ -363,11 +363,11 @@ namespace rpc
     {
       if (tvc.m_verifivation_failed)
       {
-        MERROR("[SendRawTx]: tx verification failed");
+        LOG_ERROR("[SendRawTx]: tx verification failed");
       }
       else
       {
-        MERROR("[SendRawTx]: Failed to process tx");
+        LOG_ERROR("[SendRawTx]: Failed to process tx");
       }
       res.status = Message::STATUS_FAILED;
       res.error_details = "";
@@ -421,7 +421,7 @@ namespace rpc
 
     if(!tvc.m_should_be_relayed || !relay)
     {
-      MERROR("[SendRawTx]: tx accepted, but not relayed");
+      LOG_ERROR("[SendRawTx]: tx accepted, but not relayed");
       res.error_details = "Not relayed";
       res.relayed = false;
       res.status = Message::STATUS_OK;
@@ -838,7 +838,7 @@ namespace rpc
 
   std::string DaemonHandler::handle(const std::string& request)
   {
-    MDEBUG("Handling RPC request: " << request);
+    LOG_DEBUG("Handling RPC request: " << request);
 
     try
     {
@@ -850,7 +850,7 @@ namespace rpc
         return BAD_REQUEST(request_type, req_full.getID());
 
       std::string response = matched_handler->call(*this, req_full.getID(), req_full.getMessage());
-      MDEBUG("Returning RPC response: " << response);
+      LOG_DEBUG("Returning RPC response: " << response);
       return response;
     }
     catch (const std::exception& e)

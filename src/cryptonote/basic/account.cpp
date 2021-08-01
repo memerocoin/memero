@@ -51,7 +51,7 @@ namespace cryptonote
   //-----------------------------------------------------------------
   void account_keys::set_device( hw::device &hwdev)  {
     m_device = &hwdev;
-    MCDEBUG("device", "account_keys::set_device device type: "<<typeid(hwdev).name());
+    LOG_CATEGORY_DEBUG("device", "account_keys::set_device device type: "<<typeid(hwdev).name());
   }
   //-----------------------------------------------------------------
   static void derive_key(const crypto::chacha_key &base_key, crypto::chacha_key &key)
@@ -129,7 +129,7 @@ namespace cryptonote
     try{
       m_keys.get_device().disconnect();
     } catch (const std::exception &e){
-      MERROR("Device disconnect exception: " << e.what());
+      LOG_ERROR("Device disconnect exception: " << e.what());
     }
   }
   //-----------------------------------------------------------------

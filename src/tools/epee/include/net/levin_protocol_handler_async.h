@@ -125,7 +125,7 @@ class async_protocol_handler
     if(!m_pservice_endpoint->do_send(head_string + in_buff_string))
       return false;
 
-    MDEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
+    LOG_DEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
         << ", flags" << head.m_flags
         << ", r?=" << head.m_have_to_return_data
         <<", cmd = " << head.m_command
@@ -185,13 +185,13 @@ public:
     {
       if(m_con.start_outer_call())
       {
-        MDEBUG(con.get_context_ref() << "anvoke_handler, timeout: " << timeout);
+        LOG_DEBUG(con.get_context_ref() << "anvoke_handler, timeout: " << timeout);
         m_timer.expires_after(std::chrono::milliseconds(timeout));
         m_timer.async_wait([&con, command, cb, timeout](const boost::system::error_code& ec)
         {
           if(ec == boost::asio::error::operation_aborted)
             return;
-          MINFO(con.get_context_ref() << "Timeout on invoke operation happened, command: " << command << " timeout: " << timeout);
+          LOG_INFO(con.get_context_ref() << "Timeout on invoke operation happened, command: " << command << " timeout: " << timeout);
           std::span<const uint8_t> fake;
           cb(LEVIN_ERROR_CONNECTION_TIMEDOUT, fake, con.get_context_ref());
           con.close();
@@ -255,7 +255,7 @@ public:
         {
           if(ec == boost::asio::error::operation_aborted)
             return;
-          MINFO(con.get_context_ref() << "Timeout on invoke operation happened, command: " << command << " timeout: " << timeout);
+          LOG_INFO(con.get_context_ref() << "Timeout on invoke operation happened, command: " << command << " timeout: " << timeout);
           std::span<const uint8_t> fake;
           cb(LEVIN_ERROR_CONNECTION_TIMEDOUT, fake, con.get_context_ref());
           con.close();
@@ -273,7 +273,7 @@ public:
     LOCK_RECURSIVE_MUTEX(m_invoke_response_handlers_lock);
     if (m_protocol_released)
     {
-      MERROR("Adding response handler to a released object");
+      LOG_ERROR("Adding response handler to a released object");
       return false;
     }
     std::shared_ptr<invoke_response_handler_base> handler(std::make_shared<anvoke_handler<callback_t>>(cb, timeout, con, command));
@@ -319,7 +319,7 @@ public:
     }
     LOG_ERROR_IF(0 != m_wait_count, "Failed to wait for operation completion. m_wait_count = " << m_wait_count);
 
-    MTRACE(m_connection_context << "~async_protocol_handler()");
+    LOG_TRACE(m_connection_context << "~async_protocol_handler()");
 
     }
     catch (...) { /* ignore */ }
@@ -327,10 +327,10 @@ public:
 
   bool start_outer_call()
   {
-    MTRACE(m_connection_context << "[levin_protocol] -->> start_outer_call");
+    LOG_TRACE(m_connection_context << "[levin_protocol] -->> start_outer_call");
     if(!m_pservice_endpoint->add_ref())
     {
-      MERROR(m_connection_context << "[levin_protocol] -->> start_outer_call failed");
+      LOG_ERROR(m_connection_context << "[levin_protocol] -->> start_outer_call failed");
       return false;
     }
     m_wait_count++;
@@ -338,7 +338,7 @@ public:
   }
   bool finish_outer_call()
   {
-    MTRACE(m_connection_context << "[levin_protocol] <<-- finish_outer_call");
+    LOG_TRACE(m_connection_context << "[levin_protocol] <<-- finish_outer_call");
     m_wait_count--;
     m_pservice_endpoint->release();
     return true;
@@ -395,7 +395,7 @@ public:
 
     if(!m_config.m_pcommands_handler)
     {
-      MERROR(m_connection_context << "Commands handler not set!");
+      LOG_ERROR(m_connection_context << "Commands handler not set!");
       return false;
     }
 
@@ -407,7 +407,7 @@ public:
     // flipped to subtraction; prevent overflow since m_max_packet_size is variable and public
     if(cb > max_packet_size - m_cache_in_buffer.size() - m_fragment_buffer.size())
     {
-      MWARNING(m_connection_context << "Maximum packet size exceed!, m_max_packet_size = " << max_packet_size
+      LOG_WARNING(m_connection_context << "Maximum packet size exceed!, m_max_packet_size = " << max_packet_size
                           << ", packet received " << m_cache_in_buffer.size() +  cb
                           << ", connection will be closed.");
       return false;
@@ -432,7 +432,7 @@ public:
               //async call scenario
               std::shared_ptr<invoke_response_handler_base> response_handler = m_invoke_response_handlers.front();
               response_handler->reset_timer();
-              MDEBUG(m_connection_context << "LEVIN_PACKET partial msg received. len=" << cb << ", current total " << m_cache_in_buffer.size() << "/" << m_current_head.m_cb << " (" << (100.0f * m_cache_in_buffer.size() / (m_current_head.m_cb ? m_current_head.m_cb : 1)) << "%)");
+              LOG_DEBUG(m_connection_context << "LEVIN_PACKET partial msg received. len=" << cb << ", current total " << m_cache_in_buffer.size() << "/" << m_current_head.m_cb << " (" << (100.0f * m_cache_in_buffer.size() / (m_current_head.m_cb ? m_current_head.m_cb : 1)) << "%)");
             }
           }
           break;
@@ -450,7 +450,7 @@ public:
 
             if (m_fragment_buffer.size() < sizeof(bucket_head2))
             {
-              MERROR(m_connection_context << "Fragmented data too small for levin header");
+              LOG_ERROR(m_connection_context << "Fragmented data too small for levin header");
               return false;
             }
 
@@ -460,7 +460,7 @@ public:
             const size_t max_bytes = m_connection_context.get_max_bytes(m_current_head.m_command);
             if(m_current_head.m_cb > std::min<size_t>(max_packet_size, max_bytes))
             {
-              MERROR(m_connection_context << "Maximum packet size exceed!, m_max_packet_size = " << std::min<size_t>(max_packet_size, max_bytes)
+              LOG_ERROR(m_connection_context << "Maximum packet size exceed!, m_max_packet_size = " << std::min<size_t>(max_packet_size, max_bytes)
                 << ", packet header received " << m_current_head.m_cb << ", command " << m_current_head.m_command
                 << ", connection will be closed.");
               return false;
@@ -470,7 +470,7 @@ public:
 
           bool is_response = (m_oponent_protocol_ver == LEVIN_PROTOCOL_VER_1 && m_current_head.m_flags&LEVIN_PACKET_RESPONSE);
 
-          MDEBUG(m_connection_context << "LEVIN_PACKET_RECEIVED. [len=" << m_current_head.m_cb
+          LOG_DEBUG(m_connection_context << "LEVIN_PACKET_RECEIVED. [len=" << m_current_head.m_cb
             << ", flags" << m_current_head.m_flags
             << ", r?=" << m_current_head.m_have_to_return_data
             <<", cmd = " << m_current_head.m_command
@@ -497,7 +497,7 @@ public:
               //use sync call scenario
               if(!m_wait_count && !m_close_called)
               {
-                MERROR(m_connection_context << "no active invoke when response came, wtf?");
+                LOG_ERROR(m_connection_context << "no active invoke when response came, wtf?");
                 return false;
               }else
               {
@@ -530,7 +530,7 @@ public:
               if(!m_pservice_endpoint->do_send(epee::string_tools::string_to_blob(return_buff)))
                 return false;
 
-              MDEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
+              LOG_DEBUG(m_connection_context << "LEVIN_PACKET_SENT. [len=" << head.m_cb
                 << ", flags" << head.m_flags
                 << ", r?=" << head.m_have_to_return_data
                 <<", cmd = " << head.m_command
@@ -553,7 +553,7 @@ public:
           {
             if(m_cache_in_buffer.size() >= sizeof(uint64_t) && *((uint64_t*)m_cache_in_buffer.span(8).data()) != SWAP64LE(constant::LEVIN_SIGNATURE))
             {
-              MWARNING(m_connection_context << "Signature mismatch, connection will be closed");
+              LOG_WARNING(m_connection_context << "Signature mismatch, connection will be closed");
               return false;
             }
             is_continue = false;
@@ -704,7 +704,7 @@ public:
       }
       if(misc_utils::get_tick_count() - ticks_start > m_config.m_invoke_timeout)
       {
-        MWARNING(m_connection_context << "invoke timeout (" << m_config.m_invoke_timeout << "), closing connection ");
+        LOG_WARNING(m_connection_context << "invoke timeout (" << m_config.m_invoke_timeout << "), closing connection ");
         close();
         return LEVIN_ERROR_CONNECTION_TIMEDOUT;
       }
@@ -790,7 +790,7 @@ void async_protocol_handler_config<t_connection_context>::delete_connections(siz
       }
       catch (const std::out_of_range &e)
       {
-        MWARNING("Connection not found in m_connects, continuing");
+        LOG_WARNING("Connection not found in m_connects, continuing");
       }
       --count;
     }

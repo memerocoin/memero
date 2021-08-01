@@ -232,7 +232,7 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          MERROR("Error adding transaction to txpool: " << e.what());
+          LOG_ERROR("Error adding transaction to txpool: " << e.what());
           return false;
         }
         tvc.m_verifivation_impossible = true;
@@ -277,7 +277,7 @@ namespace cryptonote
       }
       catch (const std::exception &e)
       {
-        MERROR("internal error: error adding transaction to txpool: " << e.what());
+        LOG_ERROR("internal error: error adding transaction to txpool: " << e.what());
         return false;
       }
       tvc.m_added_to_pool = true;
@@ -291,7 +291,7 @@ namespace cryptonote
 
     ++m_cookie;
 
-    MINFO("Transaction added to pool: txid " << id << " weight: " << tx_weight << " fee/byte: " << (fee / (double)(tx_weight ? tx_weight : 1)));
+    LOG_INFO("Transaction added to pool: txid " << id << " weight: " << tx_weight << " fee/byte: " << (fee / (double)(tx_weight ? tx_weight : 1)));
 
     prune(m_txpool_max_weight);
 
@@ -341,7 +341,7 @@ namespace cryptonote
         txpool_tx_meta_t meta;
         if (!m_blockchain.get_txpool_tx_meta(txid, meta))
         {
-          MERROR("Failed to find tx_meta in txpool");
+          LOG_ERROR("Failed to find tx_meta in txpool");
           return;
         }
         // don't prune the kept_by_block ones, they're likely added because we're adding a block with those
@@ -354,21 +354,21 @@ namespace cryptonote
         cryptonote::transaction_prefix tx;
         if (!parse_and_validate_tx_prefix_from_blob(txblob, tx))
         {
-          MERROR("Failed to parse tx from txpool");
+          LOG_ERROR("Failed to parse tx from txpool");
           return;
         }
         // remove first, in case this throws, so key images aren't removed
-        MINFO("Pruning tx " << txid << " from txpool: weight: " << meta.weight << ", fee/byte: " << it->first.first);
+        LOG_INFO("Pruning tx " << txid << " from txpool: weight: " << meta.weight << ", fee/byte: " << it->first.first);
         m_blockchain.remove_txpool_tx(txid);
         m_txpool_weight -= meta.weight;
         remove_transaction_keyimages(tx, txid);
-        MINFO("Pruned tx " << txid << " from txpool: weight: " << meta.weight << ", fee/byte: " << it->first.first);
+        LOG_INFO("Pruned tx " << txid << " from txpool: weight: " << meta.weight << ", fee/byte: " << it->first.first);
         m_txs_by_fee_and_receive_time.erase(it--);
         changed = true;
       }
       catch (const std::exception &e)
       {
-        MERROR("Error while pruning txpool: " << e.what());
+        LOG_ERROR("Error while pruning txpool: " << e.what());
         return;
       }
     }
@@ -376,7 +376,7 @@ namespace cryptonote
     if (changed)
       ++m_cookie;
     if (m_txpool_weight > bytes)
-      MINFO("Pool weight after pruning is larger than limit: " << m_txpool_weight << "/" << bytes);
+      LOG_INFO("Pool weight after pruning is larger than limit: " << m_txpool_weight << "/" << bytes);
   }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::insert_key_images(const transaction_prefix &tx, const crypto::hash &id, relay_method tx_relay)
@@ -453,7 +453,7 @@ namespace cryptonote
       txpool_tx_meta_t meta;
       if (!m_blockchain.get_txpool_tx_meta(id, meta))
       {
-        MERROR("Failed to find tx_meta in txpool");
+        LOG_ERROR("Failed to find tx_meta in txpool");
         return false;
       }
       txblob = m_blockchain.get_txpool_tx_blob(id, relay_category::all);
@@ -464,7 +464,7 @@ namespace cryptonote
       }
       else if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(txblob, tx) : parse_and_validate_tx_from_blob(txblob, tx)))
       {
-        MERROR("Failed to parse tx from txpool");
+        LOG_ERROR("Failed to parse tx from txpool");
         return false;
       }
       else
@@ -486,7 +486,7 @@ namespace cryptonote
     }
     catch (const std::exception &e)
     {
-      MERROR("Failed to remove tx from txpool: " << e.what());
+      LOG_ERROR("Failed to remove tx from txpool: " << e.what());
       return false;
     }
 
@@ -507,7 +507,7 @@ namespace cryptonote
       txpool_tx_meta_t meta;
       if (!m_blockchain.get_txpool_tx_meta(txid, meta))
       {
-        MERROR("Failed to find tx in txpool");
+        LOG_ERROR("Failed to find tx in txpool");
         return false;
       }
       cryptonote::blobdata txblob = m_blockchain.get_txpool_tx_blob(txid, relay_category::all);
@@ -518,7 +518,7 @@ namespace cryptonote
       }
       else if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(txblob, td.tx) : parse_and_validate_tx_from_blob(txblob, td.tx)))
       {
-        MERROR("Failed to parse tx from txpool");
+        LOG_ERROR("Failed to parse tx from txpool");
         return false;
       }
       else
@@ -541,7 +541,7 @@ namespace cryptonote
     }
     catch (const std::exception &e)
     {
-      MERROR("Failed to get tx from txpool: " << e.what());
+      LOG_ERROR("Failed to get tx from txpool: " << e.what());
       return false;
     }
 
@@ -565,14 +565,14 @@ namespace cryptonote
         {
           if (!m_blockchain.get_txpool_tx_blob(txid, bd, cryptonote::relay_category::broadcasted))
           {
-            MERROR("Failed to get blob for txpool transaction " << txid);
+            LOG_ERROR("Failed to get blob for txpool transaction " << txid);
             return true;
           }
           txes.emplace_back(std::move(bd));
         }
         catch (const std::exception &e)
         {
-          MERROR("Failed to get blob for txpool transaction " << txid << ": " << e.what());
+          LOG_ERROR("Failed to get blob for txpool transaction " << txid << ": " << e.what());
           return true;
         }
       }
@@ -635,7 +635,7 @@ namespace cryptonote
           cryptonote::transaction_prefix tx;
           if (!parse_and_validate_tx_prefix_from_blob(bd, tx))
           {
-            MERROR("Failed to parse tx from txpool");
+            LOG_ERROR("Failed to parse tx from txpool");
             // continue
           }
           else
@@ -648,7 +648,7 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          MWARNING("Failed to remove stuck transaction: " << txid);
+          LOG_WARNING("Failed to remove stuck transaction: " << txid);
           // ignore error
         }
       }
@@ -683,7 +683,7 @@ namespace cryptonote
           }
           catch (const std::exception &e)
           {
-            MERROR("Failed to get transaction blob from db");
+            LOG_ERROR("Failed to get transaction blob from db");
             // ignore error
           }
         }
@@ -714,7 +714,7 @@ namespace cryptonote
       }
       catch (const std::exception &e)
       {
-        MERROR("Failed to update txpool transaction metadata: " << e.what());
+        LOG_ERROR("Failed to update txpool transaction metadata: " << e.what());
         // continue
       }
     }
@@ -738,7 +738,7 @@ namespace cryptonote
       transaction tx;
       if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(*bd, tx) : parse_and_validate_tx_from_blob(*bd, tx)))
       {
-        MERROR("Failed to parse tx from txpool");
+        LOG_ERROR("Failed to parse tx from txpool");
         // continue
         return true;
       }
@@ -862,7 +862,7 @@ namespace cryptonote
       transaction tx;
       if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(*bd, tx) : parse_and_validate_tx_from_blob(*bd, tx)))
       {
-        MERROR("Failed to parse tx from txpool");
+        LOG_ERROR("Failed to parse tx from txpool");
         // continue
         return true;
       }
@@ -916,7 +916,7 @@ namespace cryptonote
       txi.tx_hash = txid;
       if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(*bd, txi.tx) : parse_and_validate_tx_from_blob(*bd, txi.tx)))
       {
-        MERROR("Failed to parse tx from txpool");
+        LOG_ERROR("Failed to parse tx from txpool");
         // continue
         return true;
       }
@@ -1175,13 +1175,13 @@ namespace cryptonote
           txpool_tx_meta_t meta;
           if (!m_blockchain.get_txpool_tx_meta(txid, meta))
           {
-            MDEBUG("Failed to find tx meta in txpool");
+            LOG_DEBUG("Failed to find tx meta in txpool");
             // continue, not fatal
             continue;
           }
           if (!meta.double_spend_seen)
           {
-            MDEBUG("Marking " << txid << " as double spending " << itk.k_image);
+            LOG_DEBUG("Marking " << txid << " as double spending " << itk.k_image);
             meta.double_spend_seen = true;
             changed = true;
             try
@@ -1190,7 +1190,7 @@ namespace cryptonote
             }
             catch (const std::exception &e)
             {
-              MERROR("Failed to update tx meta: " << e.what());
+              LOG_ERROR("Failed to update tx meta: " << e.what());
               // continue, not fatal
             }
           }
@@ -1213,7 +1213,7 @@ namespace cryptonote
         cryptonote::transaction tx;
         if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(*txblob, tx) : parse_and_validate_tx_from_blob(*txblob, tx)))
         {
-          MERROR("Failed to parse tx from txpool");
+          LOG_ERROR("Failed to parse tx from txpool");
           return true; // continue
         }
         ss << obj_to_json_str(tx) << std::endl;
@@ -1247,7 +1247,7 @@ namespace cryptonote
     //baseline empty block
     if (!check_block_weight(height, total_weight))
     {
-      MERROR("Failed to get block reward for empty block");
+      LOG_ERROR("Failed to get block reward for empty block");
       return false;
     }
 
@@ -1265,7 +1265,7 @@ namespace cryptonote
       txpool_tx_meta_t meta;
       if (!m_blockchain.get_txpool_tx_meta(sorted_it->second, meta) && !meta.matches(relay_category::legacy))
       {
-        MDEBUG("  failed to find tx meta");
+        LOG_DEBUG("  failed to find tx meta");
         continue;
       }
       LOG_PRINT_L2("Considering " << sorted_it->second << ", weight " << meta.weight << ", current block weight " << total_weight << "/" << max_total_weight << ", current coinbase " << print_money(best_coinbase));
@@ -1316,7 +1316,7 @@ namespace cryptonote
       }
       catch (const std::exception &e)
       {
-        MERROR("Failed to check transaction readiness: " << e.what());
+        LOG_ERROR("Failed to check transaction readiness: " << e.what());
         // continue, not fatal
       }
       if (memcmp(&original_meta, &meta, sizeof(meta)))
@@ -1327,7 +1327,7 @@ namespace cryptonote
 	}
         catch (const std::exception &e)
 	{
-	  MERROR("Failed to update tx meta: " << e.what());
+	  LOG_ERROR("Failed to update tx meta: " << e.what());
 	  // continue, not fatal
 	}
       }
@@ -1391,7 +1391,7 @@ namespace cryptonote
           cryptonote::transaction tx;
           if (!parse_and_validate_tx_from_blob(txblob, tx)) // remove pruned ones on startup, they're meant to be temporary
           {
-            MERROR("Failed to parse tx from txpool");
+            LOG_ERROR("Failed to parse tx from txpool");
             continue;
           }
           // remove tx from db first
@@ -1411,7 +1411,7 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          MERROR("Failed to remove invalid tx from pool");
+          LOG_ERROR("Failed to remove invalid tx from pool");
           // continue
         }
       }
@@ -1444,13 +1444,13 @@ namespace cryptonote
         cryptonote::transaction_prefix tx;
         if (!parse_and_validate_tx_prefix_from_blob(*bd, tx))
         {
-          MWARNING("Failed to parse tx from txpool, removing");
+          LOG_WARNING("Failed to parse tx from txpool, removing");
           remove.push_back(txid);
           return true;
         }
         if (!insert_key_images(tx, txid, meta.get_relay_method()))
         {
-          MFATAL("Failed to insert key images from txpool tx");
+          LOG_FATAL("Failed to insert key images from txpool tx");
           return false;
         }
         m_txs_by_fee_and_receive_time.emplace(std::pair<double, time_t>(meta.fee / (double)meta.weight, meta.receive_time), txid);
@@ -1471,7 +1471,7 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          MWARNING("Failed to remove corrupt transaction: " << txid);
+          LOG_WARNING("Failed to remove corrupt transaction: " << txid);
           // ignore error
         }
       }

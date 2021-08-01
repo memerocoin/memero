@@ -234,7 +234,7 @@ namespace cryptonote
     bool r = hwdev.generate_key_derivation(tx_public_key, ack.m_view_secret_key, recv_derivation);
     if (!r)
     {
-      MWARNING("key image helper: failed to generate_key_derivation(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
+      LOG_WARNING("key image helper: failed to generate_key_derivation(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
       memcpy(&recv_derivation, rct::identity().bytes, sizeof(recv_derivation));
     }
 
@@ -245,7 +245,7 @@ namespace cryptonote
       r = hwdev.generate_key_derivation(additional_tx_public_keys[i], ack.m_view_secret_key, additional_recv_derivation);
       if (!r)
       {
-        MWARNING("key image helper: failed to generate_key_derivation(" << additional_tx_public_keys[i] << ", " << ack.m_view_secret_key << ")");
+        LOG_WARNING("key image helper: failed to generate_key_derivation(" << additional_tx_public_keys[i] << ", " << ack.m_view_secret_key << ")");
       }
       else
       {
@@ -468,7 +468,7 @@ namespace cryptonote
       bool r = ::do_serialize(ar, field);
       if (!r)
       {
-        MWARNING("failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+        LOG_WARNING("failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
         if (!allow_partial)
           return false;
         break;
@@ -482,11 +482,11 @@ namespace cryptonote
     }
     if (!::serialization::check_stream_state(ar))
     {
-      MWARNING("failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+      LOG_WARNING("failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
       if (!allow_partial)
         return false;
     }
-    MTRACE("Sorted " << processed << "/" << tx_extra.size());
+    LOG_TRACE("Sorted " << processed << "/" << tx_extra.size());
 
     std::ostringstream oss;
     binary_archive<true> nar(oss);
@@ -498,14 +498,14 @@ namespace cryptonote
     // if not empty, someone added a new type and did not add a case above
     if (!tx_extra_fields.empty())
     {
-      MERROR("tx_extra_fields not empty after sorting, someone forgot to add a case above");
+      LOG_ERROR("tx_extra_fields not empty after sorting, someone forgot to add a case above");
       return false;
     }
 
     std::string oss_str = oss.str();
     if (allow_partial && processed < tx_extra.size())
     {
-      MDEBUG("Appending unparsed data");
+      LOG_DEBUG("Appending unparsed data");
       oss_str += std::string((const char*)tx_extra.data() + processed, tx_extra.size() - processed);
     }
     sorted_tx_extra = std::vector<uint8_t>(oss_str.begin(), oss_str.end());

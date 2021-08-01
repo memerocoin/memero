@@ -41,7 +41,7 @@ namespace
   template<typename context_t>
   void on_levin_traffic(const context_t &context, bool initiator, bool sent, bool error, size_t bytes, const char *category)
   {
-    MCINFO("net.p2p.traffic", context << bytes << " bytes " << (sent ? "sent" : "received") << (error ? "/corrupt" : "")
+    LOG_CATEGORY_INFO("net.p2p.traffic", context << bytes << " bytes " << (sent ? "sent" : "received") << (error ? "/corrupt" : "")
         << " for category " << category << " initiated by " << (initiator ? "us" : "peer"));
   }
   template<typename context_t>
@@ -77,7 +77,7 @@ namespace epee
       int res = transport.invoke(command, buff_to_send, buff_to_recv);
       if( res <=0 )
       {
-        MERROR("Failed to invoke command " << command << " return code " << res);
+        LOG_ERROR("Failed to invoke command " << command << " return code " << res);
         return false;
       }
       serialization::portable_storage stg_ret;
@@ -197,7 +197,7 @@ namespace epee
       int res = transport.notify(command, epee::string_tools::string_to_blob(buff_to_send), conn_id);
       if(res <=0 )
       {
-        MERROR("Failed to notify command " << command << " return code " << res);
+        LOG_ERROR("Failed to notify command " << command << " return code " << res);
         return false;
       }
       return true;
@@ -345,7 +345,7 @@ namespace epee
   return epee::levin::LEVIN_ERROR_CONNECTION_HANDLER_NOT_DEFINED;       \
   } \
   catch (const std::exception &e) { \
-    MERROR("Error in handle_invoke_map: " << e.what()); \
+    LOG_ERROR("Error in handle_invoke_map: " << e.what()); \
     return epee::levin::LEVIN_ERROR_CONNECTION_TIMEDOUT; /* seems kinda appropriate */ \
   } \
   }

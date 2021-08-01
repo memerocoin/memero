@@ -166,21 +166,21 @@ namespace epee
             break;
           if (m_stdin_reader.eos())
           {
-            MGINFO("EOF on stdin, exiting");
+            LOG_GLOBAL_INFO("EOF on stdin, exiting");
             std::cout << std::endl;
             break;
           }
 
           if (m_cancel)
           {
-            MDEBUG("Input cancelled");
+            LOG_DEBUG("Input cancelled");
             cmd_handler(std::nullopt);
             m_cancel = false;
             continue;
           }
           if (!get_line_ret)
           {
-            MERROR("Failed to read line.");
+            LOG_ERROR("Failed to read line.");
           }
 
           epee::string_tools::trim(command);

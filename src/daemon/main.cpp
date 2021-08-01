@@ -164,7 +164,7 @@ int main(int argc, char const * argv[])
       tools::set_max_concurrency(command_line::get_arg(vm, daemon_args::arg_max_concurrency));
 
     // logging is now set up
-    MGINFO("Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")");
+    LOG_GLOBAL_INFO("Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")");
 
     // If there are positional options, we're running a daemon command
     {
@@ -205,7 +205,7 @@ int main(int argc, char const * argv[])
       }
     }
 
-    MINFO("Moving from main() into the daemonize now.");
+    LOG_INFO("Moving from main() into the daemonize now.");
 
     if (command_line::has_arg(vm, daemon_args::arg_non_interactive))
       {

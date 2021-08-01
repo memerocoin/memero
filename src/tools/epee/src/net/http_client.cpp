@@ -80,13 +80,13 @@ namespace net_utils
       {
         if (!m_auto_connect)
         {
-          MWARNING("Auto connect attempt to " << m_host_buff << ":" << m_port << " disabled");
+          LOG_WARNING("Auto connect attempt to " << m_host_buff << ":" << m_port << " disabled");
           return false;
         }
-        MDEBUG("Reconnecting...");
+        LOG_DEBUG("Reconnecting...");
         if(!connect(timeout))
         {
-          MDEBUG("Failed to connect to " << m_host_buff << ":" << m_port);
+          LOG_DEBUG("Failed to connect to " << m_host_buff << ":" << m_port);
           return false;
         }
       }
@@ -170,7 +170,7 @@ namespace net_utils
         {
           if(!m_net_client.recv(recv_buffer, timeout))
           {
-            MERROR("Unexpected recv fail");
+            LOG_ERROR("Unexpected recv fail");
             m_state = reciev_machine_state_error;
           }
           if(!recv_buffer.size())
@@ -243,7 +243,7 @@ namespace net_utils
         analize_cached_header_and_invoke_state();
         if (!on_header(m_response_info))
         {
-          MDEBUG("Connection cancelled by on_header");
+          LOG_DEBUG("Connection cancelled by on_header");
           m_state = reciev_machine_state_done;
           return false;
         }
@@ -262,7 +262,7 @@ namespace net_utils
       LOCK_RECURSIVE_MUTEX(m_lock);
       if(!recv_buff.size())
       {
-        MERROR("Warning: Content-Len mode, but connection unexpectedly closed");
+        LOG_ERROR("Warning: Content-Len mode, but connection unexpectedly closed");
         m_state = reciev_machine_state_done;
         return true;
       }
@@ -376,7 +376,7 @@ namespace net_utils
       LOCK_RECURSIVE_MUTEX(m_lock);
       if(!recv_buff.size())
       {
-        MERROR("Warning: CHUNKED mode, but connection unexpectedly closed");
+        LOG_ERROR("Warning: CHUNKED mode, but connection unexpectedly closed");
         m_state = reciev_machine_state_done;
         return true;
       }
@@ -466,7 +466,7 @@ namespace net_utils
 
     bool http_simple_client_template::parse_header(http_header_info& body_info, const std::string& m_cache_to_process)
     {
-      MTRACE("http_stream_filter::parse_cached_header(*)");
+      LOG_TRACE("http_stream_filter::parse_cached_header(*)");
 
       const char *ptr = m_cache_to_process.c_str();
       while (ptr[0] != '\r' || ptr[1] != '\n')
@@ -657,7 +657,7 @@ namespace net_utils
       }else
       {   //Apparently there are no signs of the form of transfer, will receive data until the connection is closed
         m_state = reciev_machine_state_error;
-        MERROR("Undefined transfer type, consider http_body_transfer_connection_close method. header: " << m_header_cache);
+        LOG_ERROR("Undefined transfer type, consider http_body_transfer_connection_close method. header: " << m_header_cache);
         return false;
       }
       return false;

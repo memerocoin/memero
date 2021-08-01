@@ -119,11 +119,11 @@ namespace net_utils
 // https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
 bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert)
 {
-  MINFO("Generating SSL certificate");
+  LOG_INFO("Generating SSL certificate");
   pkey = EVP_PKEY_new();
   if (!pkey)
   {
-    MERROR("Failed to create new private key");
+    LOG_ERROR("Failed to create new private key");
     return false;
   }
 
@@ -131,14 +131,14 @@ bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert)
   openssl_rsa rsa{RSA_new()};
   if (!rsa)
   {
-    MERROR("Error allocating RSA private key");
+    LOG_ERROR("Error allocating RSA private key");
     return false;
   }
 
   openssl_bignum exponent{BN_new()};
   if (!exponent)
   {
-    MERROR("Error allocating exponent");
+    LOG_ERROR("Error allocating exponent");
     return false;
   }
 
@@ -146,13 +146,13 @@ bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert)
 
   if (RSA_generate_key_ex(rsa.get(), 4096, exponent.get(), nullptr) != 1)
   {
-    MERROR("Error generating RSA private key");
+    LOG_ERROR("Error generating RSA private key");
     return false;
   }
 
   if (EVP_PKEY_assign_RSA(pkey, rsa.get()) <= 0)
   {
-    MERROR("Error assigning RSA private key");
+    LOG_ERROR("Error assigning RSA private key");
     return false;
   }
 
@@ -162,7 +162,7 @@ bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert)
   cert = X509_new();
   if (!cert)
   {
-    MERROR("Failed to create new X509 certificate");
+    LOG_ERROR("Failed to create new X509 certificate");
     return false;
   }
   ASN1_INTEGER_set(X509_get_serialNumber(cert), 1);
@@ -170,7 +170,7 @@ bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert)
   X509_gmtime_adj(X509_get_notAfter(cert), 3600 * 24 * 182); // half a year
   if (!X509_set_pubkey(cert, pkey))
   {
-    MERROR("Error setting pubkey on certificate");
+    LOG_ERROR("Error setting pubkey on certificate");
     X509_free(cert);
     return false;
   }
@@ -179,7 +179,7 @@ bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert)
 
   if (X509_sign(cert, pkey, EVP_sha256()) == 0)
   {
-    MERROR("Error signing certificate");
+    LOG_ERROR("Error signing certificate");
     X509_free(cert);
     return false;
   }
@@ -189,11 +189,11 @@ bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert)
 
 bool create_ec_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert, int type)
 {
-  MINFO("Generating SSL certificate");
+  LOG_INFO("Generating SSL certificate");
   pkey = EVP_PKEY_new();
   if (!pkey)
   {
-    MERROR("Failed to create new private key");
+    LOG_ERROR("Failed to create new private key");
     return false;
   }
 
@@ -201,14 +201,14 @@ bool create_ec_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert, int type)
   openssl_ec_key ec_key{EC_KEY_new()};
   if (!ec_key)
   {
-    MERROR("Error allocating EC private key");
+    LOG_ERROR("Error allocating EC private key");
     return false;
   }
 
   EC_GROUP *group = EC_GROUP_new_by_curve_name(type);
   if (!group)
   {
-    MERROR("Error getting EC group " << type);
+    LOG_ERROR("Error getting EC group " << type);
     return false;
   }
   openssl_group group_deleter{group};
@@ -218,22 +218,22 @@ bool create_ec_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert, int type)
 
   if (!EC_GROUP_check(group, NULL))
   {
-    MERROR("Group failed check: " << ERR_reason_error_string(ERR_get_error()));
+    LOG_ERROR("Group failed check: " << ERR_reason_error_string(ERR_get_error()));
     return false;
   }
   if (EC_KEY_set_group(ec_key.get(), group) != 1)
   {
-    MERROR("Error setting EC group");
+    LOG_ERROR("Error setting EC group");
     return false;
   }
   if (EC_KEY_generate_key(ec_key.get()) != 1)
   {
-    MERROR("Error generating EC private key");
+    LOG_ERROR("Error generating EC private key");
     return false;
   }
   if (EVP_PKEY_assign_EC_KEY(pkey, ec_key.get()) <= 0)
   {
-    MERROR("Error assigning EC private key");
+    LOG_ERROR("Error assigning EC private key");
     return false;
   }
 
@@ -243,7 +243,7 @@ bool create_ec_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert, int type)
   cert = X509_new();
   if (!cert)
   {
-    MERROR("Failed to create new X509 certificate");
+    LOG_ERROR("Failed to create new X509 certificate");
     return false;
   }
   ASN1_INTEGER_set(X509_get_serialNumber(cert), 1);
@@ -251,7 +251,7 @@ bool create_ec_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert, int type)
   X509_gmtime_adj(X509_get_notAfter(cert), 3600 * 24 * 182); // half a year
   if (!X509_set_pubkey(cert, pkey))
   {
-    MERROR("Error setting pubkey on certificate");
+    LOG_ERROR("Error setting pubkey on certificate");
     X509_free(cert);
     return false;
   }
@@ -260,7 +260,7 @@ bool create_ec_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert, int type)
 
   if (X509_sign(cert, pkey, EVP_sha256()) == 0)
   {
-    MERROR("Error signing certificate");
+    LOG_ERROR("Error signing certificate");
     X509_free(cert);
     return false;
   }
@@ -349,7 +349,7 @@ boost::asio::ssl::context ssl_options_t::create_context() const
     LOG_ERROR_AND_THROW_UNLESS(create_ec_ssl_certificate(pkey, cert, NID_secp256k1), "Failed to create certificate");
     LOG_ERROR_AND_THROW_UNLESS(SSL_CTX_use_certificate(ctx, cert), "Failed to use generated certificate");
     if (!SSL_CTX_use_PrivateKey(ctx, pkey))
-      MERROR("Failed to use generated EC private key for " << NID_secp256k1);
+      LOG_ERROR("Failed to use generated EC private key for " << NID_secp256k1);
     else
       ok = true;
     X509_free(cert);
@@ -359,7 +359,7 @@ boost::asio::ssl::context ssl_options_t::create_context() const
     LOG_ERROR_AND_THROW_UNLESS(create_rsa_ssl_certificate(pkey, cert), "Failed to create certificate");
     LOG_ERROR_AND_THROW_UNLESS(SSL_CTX_use_certificate(ctx, cert), "Failed to use generated certificate");
     if (!SSL_CTX_use_PrivateKey(ctx, pkey))
-      MERROR("Failed to use generated RSA private key for RSA");
+      LOG_ERROR("Failed to use generated RSA private key for RSA");
     else
       ok = true;
     X509_free(cert);
@@ -385,7 +385,7 @@ bool is_ssl(const unsigned char *data, size_t len)
     return false;
 
   // https://security.stackexchange.com/questions/34780/checking-client-hello-for-https-classification
-  MDEBUG("SSL detection buffer, " << len << " bytes: "
+  LOG_DEBUG("SSL detection buffer, " << len << " bytes: "
     << (unsigned)(unsigned char)data[0] << " " << (unsigned)(unsigned char)data[1] << " "
     << (unsigned)(unsigned char)data[2] << " " << (unsigned)(unsigned char)data[3] << " "
     << (unsigned)(unsigned char)data[4] << " " << (unsigned)(unsigned char)data[5] << " "
@@ -426,7 +426,7 @@ bool ssl_options_t::has_fingerprint(boost::asio::ssl::verify_context &ctx) const
     X509_STORE_CTX *sctx = ctx.native_handle();
     if (!sctx)
     {
-      MERROR("Error getting verify_context handle");
+      LOG_ERROR("Error getting verify_context handle");
       return false;
     }
 
@@ -434,7 +434,7 @@ bool ssl_options_t::has_fingerprint(boost::asio::ssl::verify_context &ctx) const
     const STACK_OF(X509)* chain = X509_STORE_CTX_get_chain(sctx);
     if (!chain || sk_X509_num(chain) < 1 || !(cert = sk_X509_value(chain, 0)))
     {
-      MERROR("No certificate found in verify_context");
+      LOG_ERROR("No certificate found in verify_context");
       return false;
     }
 
@@ -444,7 +444,7 @@ bool ssl_options_t::has_fingerprint(boost::asio::ssl::verify_context &ctx) const
 
     // create the digest from the certificate
     if (!X509_digest(cert, EVP_sha256(), digest.data(), &size)) {
-      MERROR("Failed to create certificate fingerprint");
+      LOG_ERROR("Failed to create certificate fingerprint");
       return false;
     }
 
@@ -496,7 +496,7 @@ bool ssl_options_t::handshake(
 
       if (!verified && !has_fingerprint(ctx))
       {
-          MERROR("SSL certificate is not in the allowed list, connection dropped");
+          LOG_ERROR("SSL certificate is not in the allowed list, connection dropped");
           return false;
       }
       return true;
@@ -529,10 +529,10 @@ bool ssl_options_t::handshake(
 
   if (ec)
   {
-    MERROR("SSL handshake failed, connection dropped: " << ec.message());
+    LOG_ERROR("SSL handshake failed, connection dropped: " << ec.message());
     return false;
   }
-  MDEBUG("SSL handshake success");
+  LOG_DEBUG("SSL handshake success");
   return true;
 }
 

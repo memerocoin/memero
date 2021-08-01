@@ -952,7 +952,7 @@ namespace
             work(io_service),
             server(io_service),
             acceptor(io_service),
-            io([this] () { try { this->io_service.run(); } catch (const std::exception& e) { MERROR(e.what()); }}),
+            io([this] () { try { this->io_service.run(); } catch (const std::exception& e) { LOG_ERROR(e.what()); }}),
             connected(false)
         {
             acceptor.open(boost::asio::ip::tcp::v4());

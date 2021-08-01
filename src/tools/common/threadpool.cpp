@@ -115,7 +115,7 @@ threadpool::waiter::~waiter()
   {
     std::unique_lock<std::mutex> lock(mt);
     if (num)
-      MERROR("wait should have been called before waiter dtor - waiting now");
+      LOG_ERROR("wait should have been called before waiter dtor - waiting now");
   }
   catch (...) { /* ignore */ }
   try
@@ -167,7 +167,7 @@ void threadpool::run(bool flush) {
     ++depth;
     is_leaf = e.leaf;
     try { e.f(); }
-    catch (const std::exception &ex) { e.wo->set_error(); try { MERROR("Exception in threadpool job: " << ex.what()); } catch (...) {} }
+    catch (const std::exception &ex) { e.wo->set_error(); try { LOG_ERROR("Exception in threadpool job: " << ex.what()); } catch (...) {} }
     --depth;
     is_leaf = false;
 

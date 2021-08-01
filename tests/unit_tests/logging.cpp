@@ -79,19 +79,19 @@ static bool load_log_to_string(const std::string &filename, std::string &str)
 
 static void log()
 {
-  MFATAL("fatal");
-  MERROR("error");
-  MWARNING("warning");
-  MINFO("info");
-  MDEBUG("debug");
-  MTRACE("trace");
+  LOG_FATAL("fatal");
+  LOG_ERROR("error");
+  LOG_WARNING("warning");
+  LOG_INFO("info");
+  LOG_DEBUG("debug");
+  LOG_TRACE("trace");
 
-  MCINFO("a.b.c.d", "a.b.c.d");
-  MCINFO("a.b.c.e", "a.b.c.e");
-  MCINFO("global", "global");
-  MCINFO("x.y.z", "x.y.z");
-  MCINFO("y.y.z", "y.y.z");
-  MCINFO("x.y.x", "x.y.x");
+  LOG_CATEGORY_INFO("a.b.c.d", "a.b.c.d");
+  LOG_CATEGORY_INFO("a.b.c.e", "a.b.c.e");
+  LOG_CATEGORY_INFO("global", "global");
+  LOG_CATEGORY_INFO("x.y.z", "x.y.z");
+  LOG_CATEGORY_INFO("y.y.z", "y.y.z");
+  LOG_CATEGORY_INFO("x.y.x", "x.y.x");
 }
 
 TEST(logging, no_logs)
@@ -181,7 +181,7 @@ TEST(logging, multiline)
 {
   init();
   mlog_set_categories("global:INFO");
-  MGINFO("first\nsecond\nthird");
+  LOG_GLOBAL_INFO("first\nsecond\nthird");
   std::string str;
   ASSERT_TRUE(load_log_to_string(log_filename, str));
   ASSERT_TRUE(nlines(str) == 3);

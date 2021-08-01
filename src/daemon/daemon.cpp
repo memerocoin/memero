@@ -124,17 +124,17 @@ bool t_daemon::run(bool interactive)
       rpc_commands->stop_handling();
 
     mp_internals->rpc.stop();
-    MGINFO("Node stopped.");
+    LOG_GLOBAL_INFO("Node stopped.");
     return true;
   }
   catch (std::exception const & ex)
   {
-    MFATAL("Uncaught exception! " << ex.what());
+    LOG_FATAL("Uncaught exception! " << ex.what());
     return false;
   }
   catch (...)
   {
-    MFATAL("Uncaught exception!");
+    LOG_FATAL("Uncaught exception!");
     return false;
   }
 }

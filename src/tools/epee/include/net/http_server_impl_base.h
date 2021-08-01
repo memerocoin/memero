@@ -69,10 +69,10 @@ namespace epee
       std::sort(access_control_origins.begin(), access_control_origins.end());
       m_net_server.get_config_object().m_access_control_origins = std::move(access_control_origins);
 
-      MGINFO("Binding on " << bind_ip << " (IPv4):" << bind_port);
+      LOG_GLOBAL_INFO("Binding on " << bind_ip << " (IPv4):" << bind_port);
       if (use_ipv6)
       {
-        MGINFO("Binding on " << bind_ipv6_address << " (IPv6):" << bind_port);
+        LOG_GLOBAL_INFO("Binding on " << bind_ipv6_address << " (IPv6):" << bind_port);
       }
       bool res = m_net_server.init_server(bind_port, bind_ip, bind_port, bind_ipv6_address, use_ipv6, require_ipv4, std::move(ssl_options));
       if(!res)
@@ -86,14 +86,14 @@ namespace epee
     bool run(size_t threads_count, bool wait = true)
     {
       //go to loop
-      MINFO("Run net_service loop( " << threads_count << " threads)...");
+      LOG_INFO("Run net_service loop( " << threads_count << " threads)...");
       if(!m_net_server.run_server(threads_count, wait))
       {
         LOG_ERROR("Failed to run net tcp server!");
       }
 
       if(wait)
-        MINFO("net_service loop stopped.");
+        LOG_INFO("net_service loop stopped.");
       return true;
     }
 

@@ -77,7 +77,7 @@ namespace
             set = client->set_connect_command(remote.as<epee::net_utils::ipv4_network_address>());
             break;
         default:
-            MERROR("Unsupported network address in socks_connect");
+            LOG_ERROR("Unsupported network address in socks_connect");
             return false;
         }
 
@@ -171,7 +171,7 @@ namespace nodetool
             {
                 if (2 <= count)
                 {
-                    MERROR("Too many ',' characters given to --" << arg_proxy.name);
+                    LOG_ERROR("Too many ',' characters given to --" << arg_proxy.name);
                     return std::nullopt;
                 }
 
@@ -182,7 +182,7 @@ namespace nodetool
                     proxies.back().max_connections = get_max_connections(*next);
                     if (proxies.back().max_connections == 0)
                     {
-                        MERROR("Invalid max connections given to --" << arg_proxy.name);
+                        LOG_ERROR("Invalid max connections given to --" << arg_proxy.name);
                         return std::nullopt;
                     }
                 }
@@ -190,7 +190,7 @@ namespace nodetool
 
             const epee::net_utils::zone _zone = epee::net_utils::zone_from_string(zone);
             if (_zone == epee::net_utils::zone::invalid) {
-              MERROR("Invalid network for --" << arg_proxy.name);
+              LOG_ERROR("Invalid network for --" << arg_proxy.name);
               return std::nullopt;
             }
 
@@ -200,7 +200,7 @@ namespace nodetool
             std::uint16_t port = 0;
             if (!epee::string_tools::parse_peer_from_string(ip, port, std::string{proxy}) || port == 0)
             {
-                MERROR("Invalid ipv4:port given for --" << arg_proxy.name);
+                LOG_ERROR("Invalid ipv4:port given for --" << arg_proxy.name);
                 return std::nullopt;
             }
             proxies.back().address = ip::tcp::endpoint{ip::address_v4{boost::endian::native_to_big(ip)}, port};
@@ -237,7 +237,7 @@ namespace nodetool
                 inbounds.back().max_connections = get_max_connections(*next);
                 if (inbounds.back().max_connections == 0)
                 {
-                    MERROR("Invalid max connections given to --" << arg_proxy.name);
+                    LOG_ERROR("Invalid max connections given to --" << arg_proxy.name);
                     return std::nullopt;
                 }
             }
@@ -254,7 +254,7 @@ namespace nodetool
                 inbounds.back().default_remote = net::i2p_address::unknown();
                 break;
             default:
-                MERROR("Invalid inbound address (" << address << ") for --" << arg_anonymous_inbound.name << ": " << (our_address ? "invalid type" : our_address.error().message()));
+                LOG_ERROR("Invalid inbound address (" << address << ") for --" << arg_anonymous_inbound.name << ": " << (our_address ? "invalid type" : our_address.error().message()));
                 return std::nullopt;
             }
 
@@ -266,7 +266,7 @@ namespace nodetool
             std::uint16_t port = 0;
             if (!epee::string_tools::parse_peer_from_string(ip, port, std::string{bind}))
             {
-                MERROR("Invalid ipv4:port given for --" << arg_anonymous_inbound.name);
+                LOG_ERROR("Invalid ipv4:port given for --" << arg_anonymous_inbound.name);
                 return std::nullopt;
             }
             inbounds.back().local_ip = std::string{bind.substr(0, colon)};
@@ -294,7 +294,7 @@ namespace nodetool
           case epee::net_utils::zone::i2p:
             return false;
           default:
-            MWARNING("Filtered command (#" << command << ") to/from " << address.str());
+            LOG_WARNING("Filtered command (#" << command << ") to/from " << address.str());
             return true;
         }
     }
@@ -332,7 +332,7 @@ namespace nodetool
         {
             if (socks_connect_timeout < std::chrono::steady_clock::now() - start)
             {
-                MERROR("Timeout on socks connect (" << proxy << " to " << remote.str() << ")");
+                LOG_ERROR("Timeout on socks connect (" << proxy << " to " << remote.str() << ")");
                 return std::nullopt;
             }
 
@@ -346,7 +346,7 @@ namespace nodetool
             if (!result.first)
                 return {std::move(result.second)};
 
-            MERROR("Failed to make socks connection to " << remote.str() << " (via " << proxy << "): " << result.first.message());
+            LOG_ERROR("Failed to make socks connection to " << remote.str() << " (via " << proxy << "): " << result.first.message());
         }
         catch (std::future_error const&)
         {}
@@ -377,7 +377,7 @@ namespace nodetool
     {
       net::get_network_address_host_and_port(addr, host, port);
     }
-    MINFO("Resolving node address: host=" << host << ", port=" << port);
+    LOG_INFO("Resolving node address: host=" << host << ", port=" << port);
 
     io_service io_srv;
     ip::tcp::resolver resolver(io_srv);
@@ -394,13 +394,13 @@ namespace nodetool
       {
         epee::net_utils::network_address na{epee::net_utils::ipv4_network_address{boost::asio::detail::socket_ops::host_to_network_long(endpoint.address().to_v4().to_ulong()), endpoint.port()}};
         seed_nodes.push_back(na);
-        MINFO("Added node: " << na.str());
+        LOG_INFO("Added node: " << na.str());
       }
       else
       {
         epee::net_utils::network_address na{epee::net_utils::ipv6_network_address{endpoint.address().to_v6(), endpoint.port()}};
         seed_nodes.push_back(na);
-        MINFO("Added node: " << na.str());
+        LOG_INFO("Added node: " << na.str());
       }
     }
     return true;

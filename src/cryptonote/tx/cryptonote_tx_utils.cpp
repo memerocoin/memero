@@ -325,7 +325,7 @@ namespace cryptonote
     bool zero_secret_key = true;
     if (zero_secret_key)
     {
-      MDEBUG("Null secret key, skipping signatures");
+      LOG_DEBUG("Null secret key, skipping signatures");
     }
 
     {
@@ -397,7 +397,7 @@ namespace cryptonote
 
       LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), false, "outSk size does not match vout");
 
-      MCINFO("construct_tx", "transaction_created: " << get_transaction_hash(tx) << std::endl << obj_to_json_str(tx) << std::endl);
+      LOG_CATEGORY_INFO("construct_tx", "transaction_created: " << get_transaction_hash(tx) << std::endl << obj_to_json_str(tx) << std::endl);
     }
 
     tx.invalidate_hashes();

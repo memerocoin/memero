@@ -64,7 +64,7 @@ namespace controller {
     auto pwd_container = tools::password_container::prompt(false, prompt, false);
     if (!pwd_container)
     {
-      MERROR("Failed to read secure line");
+      LOG_ERROR("Failed to read secure line");
       return "";
     }
 

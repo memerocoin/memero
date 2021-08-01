@@ -269,7 +269,7 @@ namespace levin
         });
 
         if (!available)
-          MWARNING("Unable to send transaction(s), no available connections");
+          LOG_WARNING("Unable to send transaction(s), no available connections");
 
         if (next_flush < zone_->flush_time)
           fluff_flush::queue(std::move(zone_), next_flush);

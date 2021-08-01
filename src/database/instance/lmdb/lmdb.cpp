@@ -462,7 +462,7 @@ void lmdb_resized(MDB_env *env)
 {
   mdb_txn_safe::prevent_new_txns();
 
-  MGINFO("LMDB map resize detected.");
+  LOG_GLOBAL_INFO("LMDB map resize detected.");
 
   MDB_envinfo mei;
 
@@ -478,7 +478,7 @@ void lmdb_resized(MDB_env *env)
   mdb_env_info(env, &mei);
   uint64_t new_mapsize = mei.me_mapsize;
 
-  MGINFO("LMDB Mapsize increased." << "  Old: " << old / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
+  LOG_GLOBAL_INFO("LMDB Mapsize increased." << "  Old: " << old / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
 
   mdb_txn_safe::allow_new_txns();
 }
@@ -522,7 +522,7 @@ void BlockchainLMDB::do_resize(uint64_t increase_size)
     std::filesystem::space_info si = std::filesystem::space(path);
     if(si.available < add_size)
     {
-      MERROR("!! WARNING: Insufficient free space to extend database !!: " <<
+      LOG_ERROR("!! WARNING: Insufficient free space to extend database !!: " <<
           (si.available >> 20L) << " MB available, " << (add_size >> 20L) << " MB needed");
       return;
     }
@@ -530,7 +530,7 @@ void BlockchainLMDB::do_resize(uint64_t increase_size)
   catch(...)
   {
     // print something but proceed.
-    MWARNING("Unable to query free disk space.");
+    LOG_WARNING("Unable to query free disk space.");
   }
 
   MDB_envinfo mei;
@@ -572,7 +572,7 @@ void BlockchainLMDB::do_resize(uint64_t increase_size)
   if (result)
     throw0(DB_ERROR(lmdb_error("Failed to set new mapsize: ", result).c_str()));
 
-  MGINFO("LMDB Mapsize increased." << "  Old: " << mei.me_mapsize / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
+  LOG_GLOBAL_INFO("LMDB Mapsize increased." << "  Old: " << mei.me_mapsize / (1024 * 1024) << "MiB" << ", New: " << new_mapsize / (1024 * 1024) << "MiB");
 
   mdb_txn_safe::allow_new_txns();
 }
@@ -596,18 +596,18 @@ bool BlockchainLMDB::need_resize(uint64_t threshold_size) const
   // additional size needed.
   uint64_t size_used = mst.ms_psize * mei.me_last_pgno;
 
-  MDEBUG("DB map size:     " << mei.me_mapsize);
-  MDEBUG("Space used:      " << size_used);
-  MDEBUG("Space remaining: " << mei.me_mapsize - size_used);
-  MDEBUG("Size threshold:  " << threshold_size);
+  LOG_DEBUG("DB map size:     " << mei.me_mapsize);
+  LOG_DEBUG("Space used:      " << size_used);
+  LOG_DEBUG("Space remaining: " << mei.me_mapsize - size_used);
+  LOG_DEBUG("Size threshold:  " << threshold_size);
   float resize_percent = RESIZE_PERCENT;
-  MDEBUG(boost::format("Percent used: %.04f  Percent threshold: %.04f") % (100.*size_used/mei.me_mapsize) % (100.*resize_percent));
+  LOG_DEBUG(boost::format("Percent used: %.04f  Percent threshold: %.04f") % (100.*size_used/mei.me_mapsize) % (100.*resize_percent));
 
   if (threshold_size > 0)
   {
     if (mei.me_mapsize - size_used < threshold_size)
     {
-      MINFO("Threshold met (size-based)");
+      LOG_INFO("Threshold met (size-based)");
       return true;
     }
     else
@@ -616,7 +616,7 @@ bool BlockchainLMDB::need_resize(uint64_t threshold_size) const
 
   if ((double)size_used / mei.me_mapsize  > resize_percent)
   {
-    MINFO("Threshold met (percent-based)");
+    LOG_INFO("Threshold met (percent-based)");
     return true;
   }
   return false;
@@ -628,14 +628,14 @@ bool BlockchainLMDB::need_resize(uint64_t threshold_size) const
 void BlockchainLMDB::check_and_resize_for_batch(uint64_t batch_num_blocks, uint64_t batch_bytes)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
-  MTRACE("[" << __func__ << "] " << "checking DB size");
+  LOG_TRACE("[" << __func__ << "] " << "checking DB size");
   const uint64_t min_increase_size = 512 * (1 << 20);
   uint64_t threshold_size = 0;
   uint64_t increase_size = 0;
   if (batch_num_blocks > 0)
   {
     threshold_size = get_estimated_batch_size(batch_num_blocks, batch_bytes);
-    MDEBUG("calculated batch size: " << threshold_size);
+    LOG_DEBUG("calculated batch size: " << threshold_size);
 
     // The increased DB size could be a multiple of threshold_size, a fixed
     // size increase (> threshold_size), or other variations.
@@ -644,7 +644,7 @@ void BlockchainLMDB::check_and_resize_for_batch(uint64_t batch_num_blocks, uint6
     // minimum size increase is used to avoid frequent resizes when the batch
     // size is set to a very small numbers of blocks.
     increase_size = (threshold_size > min_increase_size) ? threshold_size : min_increase_size;
-    MDEBUG("increase size: " << increase_size);
+    LOG_DEBUG("increase size: " << increase_size);
   }
 
   // if threshold_size is 0 (i.e. number of blocks for batch not passed in), it
@@ -652,7 +652,7 @@ void BlockchainLMDB::check_and_resize_for_batch(uint64_t batch_num_blocks, uint6
   // size-based check
   if (need_resize(threshold_size))
   {
-    MGINFO("[batch] DB resize needed");
+    LOG_GLOBAL_INFO("[batch] DB resize needed");
     do_resize(increase_size);
   }
 }
@@ -682,7 +682,7 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
     block_start = block_stop - num_prev_blocks + 1;
   uint32_t num_blocks_used = 0;
   uint64_t total_block_size = 0;
-  MDEBUG("[" << __func__ << "] " << "m_height: " << m_height << "  block_start: " << block_start << "  block_stop: " << block_stop);
+  LOG_DEBUG("[" << __func__ << "] " << "m_height: " << m_height << "  block_start: " << block_start << "  block_stop: " << block_stop);
   size_t avg_block_size = 0;
   if (batch_bytes)
   {
@@ -691,12 +691,12 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
   }
   if (m_height == 0)
   {
-    MDEBUG("No existing blocks to check for average block size");
+    LOG_DEBUG("No existing blocks to check for average block size");
   }
   else if (m_cum_count >= num_prev_blocks)
   {
     avg_block_size = m_cum_size / m_cum_count;
-    MDEBUG("average block size across recent " << m_cum_count << " blocks: " << avg_block_size);
+    LOG_DEBUG("average block size across recent " << m_cum_count << " blocks: " << avg_block_size);
     m_cum_size = 0;
     m_cum_count = 0;
   }
@@ -718,12 +718,12 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
     }
     if (my_rtxn) block_rtxn_stop();
     avg_block_size = total_block_size / (num_blocks_used ? num_blocks_used : 1);
-    MDEBUG("average block size across recent " << num_blocks_used << " blocks: " << avg_block_size);
+    LOG_DEBUG("average block size across recent " << num_blocks_used << " blocks: " << avg_block_size);
   }
 estim:
   if (avg_block_size < min_block_size)
     avg_block_size = min_block_size;
-  MDEBUG("estimated average block size for batch: " << avg_block_size);
+  LOG_DEBUG("estimated average block size for batch: " << avg_block_size);
 
   // bigger safety margin on smaller block sizes
   if (batch_fudge_factor < 5000.0)
@@ -1386,7 +1386,7 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
     const uint32_t db_version = *(const uint32_t*)v.mv_data;
     if (db_version > VERSION)
     {
-      MWARNING("Existing lmdb database was made by a later version (" << db_version << "). We don't know how it will change yet.");
+      LOG_WARNING("Existing lmdb database was made by a later version (" << db_version << "). We don't know how it will change yet.");
       compatible = false;
     }
     else if (db_version < VERSION)
@@ -1396,8 +1396,8 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
         txn.abort();
         mdb_env_close(m_env);
         m_open = false;
-        MFATAL("Existing lmdb database needs to be converted, which cannot be done on a read-only database.");
-        MFATAL("Please run lolnerod once to convert the database.");
+        LOG_FATAL("Existing lmdb database needs to be converted, which cannot be done on a read-only database.");
+        LOG_FATAL("Please run lolnerod once to convert the database.");
         return;
       }
       // Note that there was a schema change within version 0 as well.
@@ -1423,8 +1423,8 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
     txn.abort();
     mdb_env_close(m_env);
     m_open = false;
-    MFATAL("Existing lmdb database is incompatible with this version.");
-    MFATAL("Please delete the existing database and resync.");
+    LOG_FATAL("Existing lmdb database is incompatible with this version.");
+    LOG_FATAL("Please delete the existing database and resync.");
     return;
   }
 
@@ -1441,7 +1441,7 @@ void BlockchainLMDB::open(const std::string& filename, const int db_flags)
         txn.abort();
         mdb_env_close(m_env);
         m_open = false;
-        MERROR("Failed to write version to database.");
+        LOG_ERROR("Failed to write version to database.");
         return;
       }
     }
@@ -1488,7 +1488,7 @@ void BlockchainLMDB::sync()
 
 void BlockchainLMDB::safesyncmode(const bool onoff)
 {
-  MINFO("switching safe mode " << (onoff ? "on" : "off"));
+  LOG_INFO("switching safe mode " << (onoff ? "on" : "off"));
   mdb_env_set_flags(m_env, MDB_NOSYNC|MDB_MAPASYNC, !onoff);
 }
 
@@ -1567,7 +1567,7 @@ bool BlockchainLMDB::remove_data_file(const std::string& folder) const
   }
   catch (const std::exception &e)
   {
-    MERROR("Failed to remove " << filename << ": " << e.what());
+    LOG_ERROR("Failed to remove " << filename << ": " << e.what());
     return false;
   }
   return true;
@@ -3122,7 +3122,7 @@ bool BlockchainLMDB::for_all_outputs(uint64_t amount, const std::function<bool(u
     uint64_t out_amount = *(const uint64_t*)k.mv_data;
     if (amount != out_amount)
     {
-      MERROR("Amount is not the expected amount");
+      LOG_ERROR("Amount is not the expected amount");
       fret = false;
       break;
     }
@@ -3276,10 +3276,10 @@ void BlockchainLMDB::set_batch_transactions(bool batch_transactions)
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   if ((batch_transactions) && (m_batch_transactions))
   {
-    MINFO("batch transaction mode already enabled, but asked to enable batch mode");
+    LOG_INFO("batch transaction mode already enabled, but asked to enable batch mode");
   }
   m_batch_transactions = batch_transactions;
-  MINFO("batch transactions " << (m_batch_transactions ? "enabled" : "disabled"));
+  LOG_INFO("batch transactions " << (m_batch_transactions ? "enabled" : "disabled"));
 }
 
 // return true if we started the txn, false if already started
@@ -3514,7 +3514,7 @@ void BlockchainLMDB::get_output_key(const std::span<const uint64_t> &amounts, co
     {
       if (allow_partial)
       {
-        MDEBUG("Partial result: " << outputs.size() << "/" << offsets.size());
+        LOG_DEBUG("Partial result: " << outputs.size() << "/" << offsets.size());
         break;
       }
       throw1(OUTPUT_DNE((std::string("Attempting to get output pubkey by global index (amount ") + boost::lexical_cast<std::string>(amount) + ", index " + boost::lexical_cast<std::string>(offsets[i]) + ", count " + boost::lexical_cast<std::string>(get_num_outputs(amount)) + "), but key does not exist (current height " + boost::lexical_cast<std::string>(height()) + ")").c_str()));

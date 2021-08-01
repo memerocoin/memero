@@ -224,7 +224,7 @@ namespace cryptonote
       m_threads.push_back(std::thread(&miner::worker_thread, this, i));
     }
 
-    MINFO("Mining has started with " << threads_count << " threads, good luck!" );
+    LOG_INFO("Mining has started with " << threads_count << " threads, good luck!" );
 
     return true;
   }
@@ -246,13 +246,13 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------------
   bool miner::stop()
   {
-    MTRACE("Miner has received stop signal");
+    LOG_TRACE("Miner has received stop signal");
 
     std::unique_lock<std::mutex> lock(m_threads_lock);
     bool mining = !m_threads.empty();
     if (!mining)
     {
-      MTRACE("Not mining - nothing to stop" );
+      LOG_TRACE("Not mining - nothing to stop" );
       return true;
     }
 
@@ -265,7 +265,7 @@ namespace cryptonote
       epee::misc_utils::sleep_no_w(32);
     }
 
-    MINFO("Mining has been stopped, " << m_threads.size() << " finished" );
+    LOG_INFO("Mining has been stopped, " << m_threads.size() << " finished" );
 
     for (auto& thread : m_threads) {
       thread.join();
@@ -286,31 +286,31 @@ namespace cryptonote
   void miner::pause()
   {
     std::unique_lock<std::mutex> lock(m_miners_count_lock);
-    MDEBUG("miner::pause: " << m_pausers_count << " -> " << (m_pausers_count + 1));
+    LOG_DEBUG("miner::pause: " << m_pausers_count << " -> " << (m_pausers_count + 1));
     ++m_pausers_count;
     if(m_pausers_count == 1 && is_mining())
-      MDEBUG("MINING PAUSED");
+      LOG_DEBUG("MINING PAUSED");
   }
   //-----------------------------------------------------------------------------------------------------
   void miner::resume()
   {
     std::unique_lock<std::mutex> lock(m_miners_count_lock);
-    MDEBUG("miner::resume: " << m_pausers_count << " -> " << (m_pausers_count - 1));
+    LOG_DEBUG("miner::resume: " << m_pausers_count << " -> " << (m_pausers_count - 1));
     --m_pausers_count;
     if(m_pausers_count < 0)
     {
       m_pausers_count = 0;
-      MERROR("Unexpected miner::resume() called");
+      LOG_ERROR("Unexpected miner::resume() called");
     }
     if(!m_pausers_count && is_mining())
-      MDEBUG("MINING RESUMED");
+      LOG_DEBUG("MINING RESUMED");
   }
   //-----------------------------------------------------------------------------------------------------
   bool miner::worker_thread(const size_t index)
   {
     uint32_t th_local_index = index;
-    MLOG_SET_THREAD_NAME(std::string("[miner ") + std::to_string(th_local_index) + "]");
-    MGINFO("Miner thread was started ["<< th_local_index << "]");
+    LOG_SET_THREAD_NAME(std::string("[miner ") + std::to_string(th_local_index) + "]");
+    LOG_GLOBAL_INFO("Miner thread was started ["<< th_local_index << "]");
     uint64_t nonce = m_starter_nonce + th_local_index;
     uint64_t height = 0;
     uint32_t threads_total = m_threads_total;
@@ -371,7 +371,7 @@ namespace cryptonote
       {
         b.nonce = nonce;
         //we lucky!
-        MGINFO_GREEN("Found block " << get_block_hash(b) << " at height " << height << " for difficulty: " << local_diff);
+        LOG_GLOBAL_INFO_GREEN("Found block " << get_block_hash(b) << " at height " << height << " for difficulty: " << local_diff);
         cryptonote::block_verification_context bvc;
         if(!m_phandler->handle_block_found(b, bvc) || !bvc.m_added_to_main_chain)
         {
@@ -384,7 +384,7 @@ namespace cryptonote
         m_hashes += max16bit;
       }
     }
-    MGINFO("Miner thread stopped ["<< th_local_index << "]");
+    LOG_GLOBAL_INFO("Miner thread stopped ["<< th_local_index << "]");
     --m_threads_active;
     return true;
   }

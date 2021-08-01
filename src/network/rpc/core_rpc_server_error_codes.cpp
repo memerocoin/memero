@@ -56,7 +56,7 @@ const char *get_rpc_server_error_message(int64_t code)
     case CORE_RPC_ERROR_CODE_STALE_PAYMENT: return "Stale payment";
     case CORE_RPC_ERROR_CODE_RESTRICTED: return "Parameters beyond restricted allowance";
     default:
-      MERROR("Unknown error: " << code);
+      LOG_ERROR("Unknown error: " << code);
       return "Unknown error";
   }
 }

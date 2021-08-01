@@ -259,7 +259,7 @@ namespace cryptonote
       }
     }
 
-    MDEBUG("on_get_blocks: " << bs.size() << " blocks, " << ntxes << " txes, size " << size);
+    LOG_DEBUG("on_get_blocks: " << bs.size() << " blocks, " << ntxes << " txes, size " << size);
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }
@@ -282,7 +282,7 @@ namespace cryptonote
           res.blks_hashes.push_back(epee::string_tools::pod_to_hex(get_block_hash(blk)));
       }
 
-      MDEBUG("on_get_alt_blocks_hashes: " << blks.size() << " blocks " );
+      LOG_DEBUG("on_get_alt_blocks_hashes: " << blks.size() << " blocks " );
       res.status = CORE_RPC_STATUS_OK;
       return true;
   }
@@ -535,7 +535,7 @@ namespace cryptonote
         }
         else
         {
-          MERROR("Failed to determine pool info for " << tx_hash);
+          LOG_ERROR("Failed to determine pool info for " << tx_hash);
           e.double_spend_seen = false;
           e.relayed = false;
           e.received_timestamp = 0;

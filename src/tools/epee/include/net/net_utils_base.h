@@ -341,7 +341,7 @@ namespace net_utils
 					break;
 			}
 
-			MERROR("Unsupported network address type: " << (unsigned)type);
+			LOG_ERROR("Unsupported network address type: " << (unsigned)type);
 			return false;
 		END_KV_SERIALIZE_MAP()
 	};
@@ -461,12 +461,12 @@ namespace net_utils
 
   std::ostream& operator<<(std::ostream& os, const connection_context_base& ct);
 
-#define LOG_ERROR_CC(ct, message) MERROR(ct << message)
-#define LOG_WARNING_CC(ct, message) MWARNING(ct << message)
-#define LOG_INFO_CC(ct, message) MINFO(ct << message)
-#define LOG_DEBUG_CC(ct, message) MDEBUG(ct << message)
-#define LOG_TRACE_CC(ct, message) MTRACE(ct << message)
-#define LOG_CC(level, ct, message) MLOG(level, ct << message)
+#define LOG_ERROR_CC(ct, message) LOG_ERROR(ct << message)
+#define LOG_WARNING_CC(ct, message) LOG_WARNING(ct << message)
+#define LOG_INFO_CC(ct, message) LOG_INFO(ct << message)
+#define LOG_DEBUG_CC(ct, message) LOG_DEBUG(ct << message)
+#define LOG_TRACE_CC(ct, message) LOG_TRACE(ct << message)
+#define LOG_CC(level, ct, message) LOG_DEFAULT(level, ct << message)
 
 #define LOG_PRINT_CC_L0(ct, message) LOG_PRINT_L0(ct << message)
 #define LOG_PRINT_CC_L1(ct, message) LOG_PRINT_L1(ct << message)

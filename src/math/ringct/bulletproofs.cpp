@@ -538,13 +538,13 @@ try_again:
   rct::key y = hash_cache_mash(hash_cache, A, S);
   if (y == rct::zero())
   {
-    MINFO("y is 0, trying again");
+    LOG_INFO("y is 0, trying again");
     goto try_again;
   }
   rct::key z = hash_cache = rct::hash_to_scalar(y);
   if (z == rct::zero())
   {
-    MINFO("z is 0, trying again");
+    LOG_INFO("z is 0, trying again");
     goto try_again;
   }
 
@@ -596,7 +596,7 @@ try_again:
   rct::key x = hash_cache_mash(hash_cache, z, T1, T2);
   if (x == rct::zero())
   {
-    MINFO("x is 0, trying again");
+    LOG_INFO("x is 0, trying again");
     goto try_again;
   }
 
@@ -626,7 +626,7 @@ try_again:
   rct::key x_ip = hash_cache_mash(hash_cache, x, taux, mu, t);
   if (x_ip == rct::zero())
   {
-    MINFO("x_ip is 0, trying again");
+    LOG_INFO("x_ip is 0, trying again");
     goto try_again;
   }
 
@@ -674,7 +674,7 @@ try_again:
     w[round] = hash_cache_mash(hash_cache, L[round], R[round]);
     if (w[round] == rct::zero())
     {
-      MINFO("w[round] is 0, trying again");
+      LOG_INFO("w[round] is 0, trying again");
       goto try_again;
     }
 
@@ -966,7 +966,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   }
   if (!(multiexp(multiexp_data) == rct::identity()))
   {
-    MERROR("Verification failure");
+    LOG_ERROR("Verification failure");
     return false;
   }
   return true;

@@ -58,12 +58,12 @@ public:
     : m_server{protocol.get()}
   {
     //initialize objects
-    MGINFO("Initializing p2p server...");
+    LOG_GLOBAL_INFO("Initializing p2p server...");
     if (!m_server.init(vm))
     {
       throw std::runtime_error("Failed to initialize p2p server.");
     }
-    MGINFO("p2p server initialized OK");
+    LOG_GLOBAL_INFO("p2p server initialized OK");
   }
 
   t_node_server & get()
@@ -73,9 +73,9 @@ public:
 
   void run()
   {
-    MGINFO("Starting p2p net loop...");
+    LOG_GLOBAL_INFO("Starting p2p net loop...");
     m_server.run();
-    MGINFO("p2p net loop stopped");
+    LOG_GLOBAL_INFO("p2p net loop stopped");
   }
 
   void stop()
@@ -85,11 +85,11 @@ public:
 
   ~t_p2p()
   {
-    MGINFO("Deinitializing p2p...");
+    LOG_GLOBAL_INFO("Deinitializing p2p...");
     try {
       m_server.deinit();
     } catch (...) {
-      MERROR("Failed to deinitialize p2p...");
+      LOG_ERROR("Failed to deinitialize p2p...");
     }
   }
 };

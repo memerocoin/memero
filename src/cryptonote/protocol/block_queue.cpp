@@ -177,9 +177,9 @@ uint64_t block_queue::get_next_needed_height(uint64_t blockchain_height) const
 void block_queue::print() const
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
-  MDEBUG("Block queue has " << blocks.size() << " spans");
+  LOG_DEBUG("Block queue has " << blocks.size() << " spans");
   for (const auto &span: blocks)
-    MDEBUG("  " << span.start_block_height << " - " << (span.start_block_height+span.nblocks-1) << " (" << span.nblocks << ") - " << (span.blocks.empty() ? "scheduled" : "filled    ") << "  " << span.connection_id << " (" << ((unsigned)(span.rate*10/1024.f))/10.f << " kB/s)");
+    LOG_DEBUG("  " << span.start_block_height << " - " << (span.start_block_height+span.nblocks-1) << " (" << span.nblocks << ") - " << (span.blocks.empty() ? "scheduled" : "filled    ") << "  " << span.connection_id << " (" << ((unsigned)(span.rate*10/1024.f))/10.f << " kB/s)");
 }
 
 std::string block_queue::get_overview(uint64_t blockchain_height) const
@@ -230,7 +230,7 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
 
-  MDEBUG("reserve_span: first_block_height " << first_block_height
+  LOG_DEBUG("reserve_span: first_block_height " << first_block_height
          << ", last_block_height " << last_block_height
          << ", max " << max_blocks
          << ", blockchain_height " << blockchain_height
@@ -238,12 +238,12 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
          );
   if (last_block_height < first_block_height || max_blocks == 0)
   {
-    MDEBUG("reserve_span: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
+    LOG_DEBUG("reserve_span: early out: first_block_height " << first_block_height << ", last_block_height " << last_block_height << ", max_blocks " << max_blocks);
     return std::make_pair(0, 0);
   }
   if (block_hashes.size() > last_block_height)
   {
-    MDEBUG("reserve_span: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
+    LOG_DEBUG("reserve_span: more block hashes than fit within last_block_height: " << block_hashes.size() << " and " << last_block_height);
     return std::make_pair(0, 0);
   }
 
@@ -256,11 +256,11 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
     ++span_start_height;
   }
 
-  MDEBUG("span_start_height: " <<span_start_height);
+  LOG_DEBUG("span_start_height: " <<span_start_height);
   const uint64_t block_hashes_start_height = last_block_height - block_hashes.size() + 1;
   if (span_start_height >= block_hashes.size() + block_hashes_start_height)
   {
-    MDEBUG("Out of hashes, cannot reserve");
+    LOG_DEBUG("Out of hashes, cannot reserve");
     return std::make_pair(0, 0);
   }
 
@@ -281,10 +281,10 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
   }
   if (span_length == 0)
   {
-    MDEBUG("span_length 0, cannot reserve");
+    LOG_DEBUG("span_length 0, cannot reserve");
     return std::make_pair(0, 0);
   }
-  MDEBUG("Reserving span " << span_start_height << " - " << (span_start_height + span_length - 1) << " for " << connection_id);
+  LOG_DEBUG("Reserving span " << span_start_height << " - " << (span_start_height + span_length - 1) << " for " << connection_id);
   add_blocks(span_start_height, span_length, connection_id, addr, time);
   set_span_hashes(span_start_height, connection_id, hashes);
   return std::make_pair(span_start_height, span_length);
@@ -481,7 +481,7 @@ float block_queue::get_speed(const boost::uuids::uuid &connection_id) const
     return 1.0f; // everything dead ? Can't happen, but let's trap anyway
 
   const float speed = conn_rate / best_rate;
-  MTRACE(" Relative speed for " << connection_id << ": " << speed << " (" << conn_rate << "/" << best_rate);
+  LOG_TRACE(" Relative speed for " << connection_id << ": " << speed << " (" << conn_rate << "/" << best_rate);
   return speed;
 }
 
@@ -506,7 +506,7 @@ float block_queue::get_download_rate(const boost::uuids::uuid &connection_id) co
 
   if (conn_rate < 0)
     conn_rate = 0.0f;
-  MTRACE("Download rate for " << connection_id << ": " << conn_rate << " b/s");
+  LOG_TRACE("Download rate for " << connection_id << ": " << conn_rate << " b/s");
   return conn_rate;
 }
 

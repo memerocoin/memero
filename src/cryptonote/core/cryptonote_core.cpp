@@ -40,7 +40,7 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
 
-#define MERROR_VER(x) MCERROR("verify", x)
+#define LOG_ERROR_VER(x) LOG_CATEGORY_ERROR("verify", x)
 
 #define BAD_SEMANTICS_TXES_MAX_SIZE 100
 
@@ -249,10 +249,10 @@ namespace cryptonote
       const std::filesystem::path old_files = folder;
       if (std::filesystem::exists(old_files / "blockchain.bin"))
       {
-        MWARNING("Found old-style blockchain.bin in " << old_files.string());
-        MWARNING("Lolnero now uses a new format. You can either remove blockchain.bin to start syncing");
-        MWARNING("the blockchain anew, or use lolnero-blockchain-export and lolnero-blockchain-import to");
-        MWARNING("convert your existing blockchain.bin to the new format. See README.md for instructions.");
+        LOG_WARNING("Found old-style blockchain.bin in " << old_files.string());
+        LOG_WARNING("Lolnero now uses a new format. You can either remove blockchain.bin to start syncing");
+        LOG_WARNING("the blockchain anew, or use lolnero-blockchain-export and lolnero-blockchain-import to");
+        LOG_WARNING("convert your existing blockchain.bin to the new format. See README.md for instructions.");
         return false;
       }
     }
@@ -267,7 +267,7 @@ namespace cryptonote
     }
 
     folder /= db->get_db_name();
-    MGINFO("Loading blockchain from folder " << folder.string() << " ...");
+    LOG_GLOBAL_INFO("Loading blockchain from folder " << folder.string() << " ...");
 
     const std::string filename = folder.string();
     // default to fast:async:1 if overridden
@@ -280,7 +280,7 @@ namespace cryptonote
       // reset the db by removing the database file before opening it
       if (!db->remove_data_file(filename))
       {
-        MERROR("Failed to remove data file in " << filename);
+        LOG_ERROR("Failed to remove data file in " << filename);
         return false;
       }
     }
@@ -325,7 +325,7 @@ namespace cryptonote
     }
     catch (const std::exception &e)
     {
-      MERROR("Failed to parse block notify spec: " << e.what());
+      LOG_ERROR("Failed to parse block notify spec: " << e.what());
     }
 
     try
@@ -335,7 +335,7 @@ namespace cryptonote
     }
     catch (const std::exception &e)
     {
-      MERROR("Failed to parse reorg notify spec: " << e.what());
+      LOG_ERROR("Failed to parse reorg notify spec: " << e.what());
     }
 
     try
@@ -345,7 +345,7 @@ namespace cryptonote
     }
     catch (const std::exception &e)
     {
-      MERROR("Failed to parse block rate notify spec: " << e.what());
+      LOG_ERROR("Failed to parse block rate notify spec: " << e.what());
     }
 
     const diff_t fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
@@ -436,7 +436,7 @@ namespace cryptonote
     if (tx.version == 0 || tx.version > max_tx_version)
     {
       // v2 is the latest one we know
-      MERROR_VER("Bad tx version (" << tx.version << ", max is " << max_tx_version << ")");
+      LOG_ERROR_VER("Bad tx version (" << tx.version << ", max is " << max_tx_version << ")");
       tvc.m_verifivation_failed = true;
       return false;
     }
@@ -475,7 +475,7 @@ namespace cryptonote
 
     if (tx_blobs.size() != tvc.size())
     {
-      MERROR("tx_blobs and tx_verification_context spans must have equal size");
+      LOG_ERROR("tx_blobs and tx_verification_context spans must have equal size");
       return false;
     }
 
@@ -494,7 +494,7 @@ namespace cryptonote
         }
         catch (const std::exception &e)
         {
-          MERROR_VER("Exception in handle_incoming_tx_pre: " << e.what());
+          LOG_ERROR_VER("Exception in handle_incoming_tx_pre: " << e.what());
           tvc[i].m_verifivation_failed = true;
           results[i].res = false;
         }
@@ -526,7 +526,7 @@ namespace cryptonote
           }
           catch (const std::exception &e)
           {
-            MERROR_VER("Exception in handle_incoming_tx_post: " << e.what());
+            LOG_ERROR_VER("Exception in handle_incoming_tx_post: " << e.what());
             tvc[i].m_verifivation_failed = true;
             results[i].res = false;
           }
@@ -564,13 +564,13 @@ namespace cryptonote
       ok &= add_new_tx(results[i].tx, results[i].hash, tx_blobs[i].blob, weight, tvc[i], tx_relay, relayed);
 
       if(tvc[i].m_verifivation_failed)
-      {MERROR_VER("Transaction verification failed: " << results[i].hash);}
+      {LOG_ERROR_VER("Transaction verification failed: " << results[i].hash);}
       else if(tvc[i].m_verifivation_impossible)
-      {MERROR_VER("Transaction verification impossible: " << results[i].hash);}
+      {LOG_ERROR_VER("Transaction verification impossible: " << results[i].hash);}
 
       if(tvc[i].m_added_to_pool)
       {
-        MDEBUG("tx added: " << results[i].hash);
+        LOG_DEBUG("tx added: " << results[i].hash);
         valid_events = true;
       }
       else
@@ -596,33 +596,33 @@ namespace cryptonote
   {
     if(!tx.vin.size())
     {
-      MERROR_VER("tx with empty inputs, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("tx with empty inputs, rejected for tx id= " << get_transaction_hash(tx));
       return false;
     }
 
     if(!check_inputs_types_supported(tx))
     {
-      MERROR_VER("unsupported input types for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("unsupported input types for tx id= " << get_transaction_hash(tx));
       return false;
     }
 
     if(!check_outs_valid(tx))
     {
-      MERROR_VER("tx with invalid outputs, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("tx with invalid outputs, rejected for tx id= " << get_transaction_hash(tx));
       return false;
     }
     if (tx.version > 1)
     {
       if (tx.rct_signatures.outPk.size() != tx.vout.size())
       {
-        MERROR_VER("tx with mismatched vout/outPk count, rejected for tx id= " << get_transaction_hash(tx));
+        LOG_ERROR_VER("tx with mismatched vout/outPk count, rejected for tx id= " << get_transaction_hash(tx));
         return false;
       }
     }
 
     if(!check_money_overflow(tx))
     {
-      MERROR_VER("tx has money overflow, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("tx has money overflow, rejected for tx id= " << get_transaction_hash(tx));
       return false;
     }
 
@@ -634,7 +634,7 @@ namespace cryptonote
 
       if(amount_in <= amount_out)
       {
-        MERROR_VER("tx with wrong amounts: ins " << amount_in << ", outs " << amount_out << ", rejected for tx id= " << get_transaction_hash(tx));
+        LOG_ERROR_VER("tx with wrong amounts: ins " << amount_in << ", outs " << amount_out << ", rejected for tx id= " << get_transaction_hash(tx));
         return false;
       }
     }
@@ -643,26 +643,26 @@ namespace cryptonote
     uint64_t tx_weight_limit = get_max_tx_size() - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     if(!keeped_by_block && get_transaction_weight(tx) >= tx_weight_limit)
     {
-      MERROR_VER("tx is too large " << get_transaction_weight(tx) << ", expected not bigger than " << tx_weight_limit);
+      LOG_ERROR_VER("tx is too large " << get_transaction_weight(tx) << ", expected not bigger than " << tx_weight_limit);
       return false;
     }
 
     //check if tx use different key images
     if(!check_tx_inputs_keyimages_diff(tx))
     {
-      MERROR_VER("tx uses a single key image more than once");
+      LOG_ERROR_VER("tx uses a single key image more than once");
       return false;
     }
 
     if (!check_tx_inputs_ring_members_diff(tx))
     {
-      MERROR_VER("tx uses duplicate ring members");
+      LOG_ERROR_VER("tx uses duplicate ring members");
       return false;
     }
 
     if (!check_tx_inputs_keyimages_domain(tx))
     {
-      MERROR_VER("tx uses key image not in the valid domain");
+      LOG_ERROR_VER("tx uses key image not in the valid domain");
       return false;
     }
 
@@ -925,7 +925,7 @@ namespace cryptonote
     std::vector<block> pblocks;
     if (!prepare_handle_incoming_blocks(blocks, pblocks))
     {
-      MERROR("Block found, but failed to prepare to add");
+      LOG_ERROR("Block found, but failed to prepare to add");
       m_miner.resume();
       return false;
     }
@@ -1016,7 +1016,7 @@ namespace cryptonote
     }
 
     if (((size_t)-1) <= 0xffffffff && block_blob.size() >= 0x3fffffff)
-      MWARNING("This block's size is " << block_blob.size() << ", closing on the 32 bit limit");
+      LOG_WARNING("This block's size is " << block_blob.size() << ", closing on the 32 bit limit");
 
     block lb;
     if (!b)
@@ -1165,7 +1165,7 @@ namespace cryptonote
     {
       if (m_offline) {
         constexpr std::string_view main_message = "The daemon is running offline.";
-        MGINFO_YELLOW
+        LOG_GLOBAL_INFO_YELLOW
           (
            std::endl
            << "**********************************************************************" << std::endl
@@ -1190,7 +1190,7 @@ namespace cryptonote
     if (free_space < 1ull * 1024 * 1024 * 1024) // 1 GB
     {
       const el::Level level = el::Level::Warning;
-      MCLOG_RED(level, "global", "Free space is below 1 GB on " << m_config_folder);
+      LOG_CATEGORY_RED(level, "global", "Free space is below 1 GB on " << m_config_folder);
     }
     return true;
   }
@@ -1231,7 +1231,7 @@ namespace cryptonote
   {
     if (m_offline || m_nettype == FAKECHAIN || m_target_blockchain_height > get_current_blockchain_height() || m_target_blockchain_height == 0)
     {
-      MDEBUG("Not checking block rate, offline or syncing");
+      LOG_DEBUG("Not checking block rate, offline or syncing");
       return true;
     }
 
@@ -1248,10 +1248,10 @@ namespace cryptonote
       const time_t time_boundary = now - static_cast<time_t>(seconds[n]);
       for (time_t ts: timestamps) b += ts >= time_boundary;
       const double p = probability(b, seconds[n] / DIFFICULTY_TARGET_IN_SECONDS);
-      MDEBUG("blocks in the last " << seconds[n] / 60 << " minutes: " << b << " (probability " << p << ")");
+      LOG_DEBUG("blocks in the last " << seconds[n] / 60 << " minutes: " << b << " (probability " << p << ")");
       if (p < threshold)
       {
-        MDEBUG("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Lolnero network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
+        LOG_DEBUG("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Lolnero network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
 
         std::shared_ptr<tools::Notify> block_rate_notify = m_block_rate_notify;
         if (block_rate_notify)
@@ -1349,7 +1349,7 @@ namespace cryptonote
       switch (rv.type) {
         case rct::RCTTypeNull:
           // coinbase should not come here, so we reject for all other types
-          MERROR_VER("Unexpected Null rctSig type");
+          LOG_ERROR_VER("Unexpected Null rctSig type");
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;
@@ -1357,7 +1357,7 @@ namespace cryptonote
         case rct::RCTTypeCLSAG:
           if (!is_canonical_bulletproof_layout(rv.p.bulletproofs))
           {
-            MERROR_VER("Bulletproof does not have canonical form");
+            LOG_ERROR_VER("Bulletproof does not have canonical form");
             set_semantics_failed(tx_info[n].tx_hash);
             tx_info[n].tvc.m_verifivation_failed = true;
             tx_info[n].result = false;
@@ -1366,7 +1366,7 @@ namespace cryptonote
           rvv.push_back(rv); // delayed batch verification
           break;
         default:
-          MERROR_VER("Unknown rct type: " << rv.type);
+          LOG_ERROR_VER("Unknown rct type: " << rv.type);
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;

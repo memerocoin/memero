@@ -60,7 +60,7 @@ namespace cryptonote
         {
           if (fpr.size() != SSL_FINGERPRINT_SIZE)
           {
-            MERROR("SHA-256 fingerprint should be " BOOST_PP_STRINGIZE(SSL_FINGERPRINT_SIZE) " bytes long.");
+            LOG_ERROR("SHA-256 fingerprint should be " BOOST_PP_STRINGIZE(SSL_FINGERPRINT_SIZE) " bytes long.");
             return std::nullopt;
           }
         }
@@ -77,7 +77,7 @@ namespace cryptonote
       // user specified CA file or fingeprints implies enabled SSL by default
       if (!ssl_required && !epee::net_utils::ssl_support_from_string(ssl_options.support, command_line::get_arg(vm, arg.rpc_ssl)))
       {
-        MERROR("Invalid argument for " << std::string(arg.rpc_ssl.name));
+        LOG_ERROR("Invalid argument for " << std::string(arg.rpc_ssl.name));
         return std::nullopt;
       }
 

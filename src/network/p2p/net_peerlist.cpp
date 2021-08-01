@@ -209,7 +209,7 @@ namespace nodetool
         // This is different from the `return std::nullopt` cases above. Those
         // cases could fail due to bad file permissions, so a shutdown is
         // likely more appropriate.
-        MWARNING("Failed to load p2p config file, falling back to default config");
+        LOG_WARNING("Failed to load p2p config file, falling back to default config");
         out.emplace();
       }
     }

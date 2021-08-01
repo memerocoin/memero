@@ -125,7 +125,7 @@ namespace Language
         if ((*it).size() < unique_prefix_length)
         {
           if (flags & ALLOW_SHORT_WORDS)
-            MWARNING(language_name << " word '" << *it << "' is shorter than its prefix length, " << unique_prefix_length);
+            LOG_WARNING(language_name << " word '" << *it << "' is shorter than its prefix length, " << unique_prefix_length);
           else
             throw std::runtime_error("Too short word in " + language_name + " word list: " + *it);
         }
@@ -141,7 +141,7 @@ namespace Language
         if (trimmed_word_map.find(trimmed) != trimmed_word_map.end())
         {
           if (flags & ALLOW_DUPLICATE_PREFIXES)
-            MWARNING("Duplicate prefix in " << language_name << " word list: " << std::string(trimmed.data(), trimmed.size()));
+            LOG_WARNING("Duplicate prefix in " << language_name << " word list: " << std::string(trimmed.data(), trimmed.size()));
           else
             throw std::runtime_error("Duplicate prefix in " + language_name + " word list: " + std::string(trimmed.data(), trimmed.size()));
         }

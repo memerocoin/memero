@@ -108,7 +108,7 @@ namespace tools
     rlimit.rlim_cur = rlimit.rlim_max = 0;
     if (setrlimit(RLIMIT_CORE, &rlimit))
     {
-      MWARNING("Failed to disable core dumps");
+      LOG_WARNING("Failed to disable core dumps");
       return false;
     }
 #endif
@@ -156,7 +156,7 @@ namespace tools
     // always assume Tor/I2P addresses to be untrusted by default
     if (boost::ends_with(address, ".onion") || boost::ends_with(address, ".i2p"))
     {
-      MDEBUG("Address '" << address << "' is Tor/I2P, non local");
+      LOG_DEBUG("Address '" << address << "' is Tor/I2P, non local");
       return false;
     }
 
@@ -164,12 +164,12 @@ namespace tools
     epee::net_utils::http::url_content u_c;
     if (!epee::net_utils::parse_url(address, u_c))
     {
-      MWARNING("Failed to determine whether address '" << address << "' is local, assuming not");
+      LOG_WARNING("Failed to determine whether address '" << address << "' is local, assuming not");
       return false;
     }
     if (u_c.host.empty())
     {
-      MWARNING("Failed to determine whether address '" << address << "' is local, assuming not");
+      LOG_WARNING("Failed to determine whether address '" << address << "' is local, assuming not");
       return false;
     }
 
@@ -183,13 +183,13 @@ namespace tools
       const boost::asio::ip::tcp::endpoint &ep = *i;
       if (ep.address().is_loopback())
       {
-        MDEBUG("Address '" << address << "' is local");
+        LOG_DEBUG("Address '" << address << "' is local");
         return true;
       }
       ++i;
     }
 
-    MDEBUG("Address '" << address << "' is not local");
+    LOG_DEBUG("Address '" << address << "' is not local");
     return false;
   }
 

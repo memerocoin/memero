@@ -373,14 +373,14 @@ bool BlockchainDB::txpool_tx_matches_category(const crypto::hash& tx_hash, relay
     txpool_tx_meta_t meta{};
     if (!get_txpool_tx_meta(tx_hash, meta))
     {
-      MERROR("Failed to get tx meta from txpool");
+      LOG_ERROR("Failed to get tx meta from txpool");
       return false;
     }
     return meta.matches(category);
   }
   catch (const std::exception &e)
   {
-    MERROR("Failed to get tx meta from txpool: " << e.what());
+    LOG_ERROR("Failed to get tx meta from txpool: " << e.what());
   }
   return false;
 }

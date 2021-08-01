@@ -185,14 +185,14 @@ namespace net_utils
 			if (!analize_http_method(result, m_query_info.m_http_method, m_query_info.m_http_ver_hi, m_query_info.m_http_ver_hi))
 			{
 				m_state = http_state_error;
-				MERROR("Failed to analyze method");
+				LOG_ERROR("Failed to analyze method");
 				return false;
 			}
 			m_query_info.m_URI = result[10];
 			if (!parse_uri(m_query_info.m_URI, m_query_info.m_uri_content))
 			{
 				m_state = http_state_error;
-				MERROR("Failed to parse URI: m_query_info.m_URI");
+				LOG_ERROR("Failed to parse URI: m_query_info.m_URI");
 				return false;
 			}
 			m_query_info.m_http_method_str = result[2];
@@ -437,7 +437,7 @@ namespace net_utils
 		m_config.m_lock.unlock();
 		if(!file_io_utils::load_file_to_string(destination_file_path.c_str(), response.m_body))
 		{
-			MWARNING("URI \""<< query_info.m_full_request_str.substr(0, query_info.m_full_request_str.size()-2) << "\" [" << destination_file_path << "] Not Found (404 )");
+			LOG_WARNING("URI \""<< query_info.m_full_request_str.substr(0, query_info.m_full_request_str.size()-2) << "\" [" << destination_file_path << "] Not Found (404 )");
 			response.m_body = get_not_found_response_body(query_info.m_URI);
 			response.m_response_code = 404;
 			response.m_response_comment = "Not found";
@@ -445,7 +445,7 @@ namespace net_utils
 			return true;
 		}
 
-		MDEBUG(" -->> " << query_info.m_full_request_str << "\r\n<<--OK");
+		LOG_DEBUG(" -->> " << query_info.m_full_request_str << "\r\n<<--OK");
 		response.m_response_code = 200;
 		response.m_response_comment = "OK";
 		response.m_mime_tipe = get_file_mime_tipe(uri_to_path);

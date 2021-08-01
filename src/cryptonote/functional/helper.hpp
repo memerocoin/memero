@@ -49,7 +49,7 @@ namespace cryptonote {
   constexpr uint64_t get_max_block_weight(const uint64_t height)
   {
     const uint64_t max_weight = std::max(config::lol::min_block_weight, height);
-    // MGINFO("get max block weight: " << max_weight);
+    // LOG_GLOBAL_INFO("get max block weight: " << max_weight);
     return max_weight;
   }
   //-----------------------------------------------------------------------------------------------

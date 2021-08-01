@@ -60,12 +60,12 @@ public:
     , m_vm_HACK{vm}
   {
     //initialize core here
-    MGINFO("Initializing core...");
+    LOG_GLOBAL_INFO("Initializing core...");
     if (!m_core.init(m_vm_HACK))
     {
       throw std::runtime_error("Failed to initialize core");
     }
-    MGINFO("Core initialized OK");
+    LOG_GLOBAL_INFO("Core initialized OK");
   }
 
   // TODO - get rid of circular dependencies in internals
@@ -86,12 +86,12 @@ public:
 
   ~t_core()
   {
-    MGINFO("Deinitializing core...");
+    LOG_GLOBAL_INFO("Deinitializing core...");
     try {
       m_core.deinit();
       m_core.set_cryptonote_protocol(nullptr);
     } catch (...) {
-      MERROR("Failed to deinitialize core...");
+      LOG_ERROR("Failed to deinitialize core...");
     }
   }
 };

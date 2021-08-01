@@ -1469,7 +1469,7 @@ std::optional<epee::wipeable_string> simple_wallet::on_get_password(const char *
   auto pwd_container = tools::password_container::prompt(false, msg.c_str());
   if (!pwd_container)
   {
-    MERROR("Failed to read password");
+    LOG_ERROR("Failed to read password");
     return std::nullopt;
   }
 

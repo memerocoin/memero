@@ -114,7 +114,7 @@ namespace net_utils
 			std::string boundary;
 			if(!match_boundary(content_type, boundary))
 			{
-				MERROR("Failed to match boundary in content type: " << content_type);
+				LOG_ERROR("Failed to match boundary in content type: " << content_type);
 				return false;
 			}
 
@@ -136,7 +136,7 @@ namespace net_utils
 					pos = body.find(boundary, std::distance(body.begin(), it_begin));
 					if(std::string::npos == pos)
 					{
-						MERROR("Error: Filed to match closing multipart tag");
+						LOG_ERROR("Error: Filed to match closing multipart tag");
 						it_end = body.end();
 					}else
 					{
@@ -158,7 +158,7 @@ namespace net_utils
 				out_values.push_back(multipart_entry());
 				if(!handle_part_of_multipart(it_begin, it_end, out_values.back()))
 				{
-					MERROR("Failed to handle_part_of_multipart");
+					LOG_ERROR("Failed to handle_part_of_multipart");
 					return false;
 				}
 
