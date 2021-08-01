@@ -154,13 +154,19 @@ void reset_console_color();
   LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 0, message)
 
 #define LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_IF(!(expr), fail_ret_val, 0, message)
+  LOG_WITH_LEVEL_0_AND_RETURN_IF(!(expr), fail_ret_val, message)
 
 #define LOG_WITH_LEVEL_1_AND_RETURN_IF(expr, fail_ret_val, message) \
   LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 1, message)
 
 #define LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
   LOG_WITH_LEVEL_1_AND_RETURN_IF(!(expr), fail_ret_val, message)
+
+#define LOG_WITH_LEVEL_2_AND_RETURN_IF(expr, fail_ret_val, message) \
+  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 2, message)
+
+#define LOG_WITH_LEVEL_2_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
+  LOG_WITH_LEVEL_2_AND_RETURN_IF(!(expr), fail_ret_val, message)
 
 
 #define LOG_ERROR_IF(expr, message)             \
