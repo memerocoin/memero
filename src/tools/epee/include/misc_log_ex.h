@@ -121,16 +121,13 @@ void reset_console_color();
   } while(0)
 
 
-#ifndef RETURN_UNLESS
 #define RETURN_UNLESS(expr, fail_ret_val)           \
   do {                                          \
     if(!(expr)) {                               \
       return fail_ret_val;                      \
     };                                          \
   } while(0)
-#endif
 
-#ifndef LOG_ERROR_AND_RETURN_UNLESS
 #define LOG_ERROR_AND_RETURN_UNLESS(expr, fail_ret_val, message)  \
   do {                                                        \
     if(!(expr)) {                                             \
@@ -138,9 +135,7 @@ void reset_console_color();
       return fail_ret_val;                                    \
     };                                                        \
   } while(0)
-#endif
 
-#ifndef LOG_WITH_LEVEL_AND_RETURN_UNLESS
 #define LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, l, message)  \
   do {                                                                \
     if(!(expr)) {                                                     \
@@ -148,20 +143,14 @@ void reset_console_color();
       return fail_ret_val;                                            \
     };                                                                \
   } while(0)
-#endif
 
-#ifndef LOG_WITH_LEVEL_0_AND_RETURN_UNLESS
 #define LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
   LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, 0, message)
-#endif
 
-#ifndef LOG_WITH_LEVEL_1_AND_RETURN_UNLESS
 #define LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
   LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, 1, message)
-#endif
 
 
-#ifndef LOG_ERROR_IF
 #define LOG_ERROR_IF(expr, message)             \
   do {                                          \
     if(!(expr)) {                               \
@@ -169,7 +158,6 @@ void reset_console_color();
       return;                                   \
     };                                          \
   } while(0)
-#endif
 
 } // epee
 
