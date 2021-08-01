@@ -466,7 +466,6 @@ namespace net_utils
 #define LOG_INFO_CC(ct, message) LOG_INFO(ct << message)
 #define LOG_DEBUG_CC(ct, message) LOG_DEBUG(ct << message)
 #define LOG_TRACE_CC(ct, message) LOG_TRACE(ct << message)
-#define LOG_CC(level, ct, message) LOG_DEFAULT(level, ct << message)
 
 #define LOG_PRINT_CC_L0(ct, message) LOG_PRINT_L0(ct << message)
 #define LOG_PRINT_CC_L1(ct, message) LOG_PRINT_L1(ct << message)
@@ -480,7 +479,7 @@ namespace net_utils
 #define LOG_PRINT_CCONTEXT_L3(message) LOG_PRINT_CC_L3(context, message)
 #define LOG_ERROR_CCONTEXT(message)    LOG_ERROR_CC(context, message)
 
-#define LOG_ERROR_IF_CONNECTION_CONTEXT_RETURN(condition, return_val, err_message) LOG_ERROR_AND_RETURN_UNLESS(condition, return_val, "[" << epee::net_utils::print_connection_context_short(context) << "]" << err_message)
+#define LOG_ERROR_WITH_CONNECTION_CONTEXT_RETURN_UNLESS(condition, return_val, err_message) LOG_ERROR_AND_RETURN_UNLESS(condition, return_val, "[" << epee::net_utils::print_connection_context_short(context) << "]" << err_message)
 
 }
 }
