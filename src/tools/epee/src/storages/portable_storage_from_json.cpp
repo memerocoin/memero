@@ -252,7 +252,7 @@ namespace epee
                 state = match_state_array_after_value;
                 array_md = array_mode_booleans;
 
-              }else LOG_ERROR_AND_THROW("Unknown value keyword " << word)
+              }else LOG_ERROR_AND_THROW("Unknown value keyword " << word);
             }else CHECK_ISSPACE();
             break;
           case match_state_array_after_value:

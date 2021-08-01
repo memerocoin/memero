@@ -106,7 +106,13 @@ void reset_console_color();
 #define CATCH_ENTRY_L4(lacation, return_val) CATCH_ENTRY(lacation, return_val)
 
 
-#define LOG_ERROR_AND_THROW(message) {LOG_ERROR(message); std::stringstream ss; ss << message; throw std::runtime_error(ss.str());}
+#define LOG_ERROR_AND_THROW(message)            \
+  do {                                          \
+    LOG_ERROR(message);                         \
+    std::stringstream ss;                       \
+    ss << message;                              \
+    throw std::runtime_error(ss.str());         \
+  } while(0)
 
 #define LOG_ERROR_AND_THROW_IF(expr, message)   \
   do {                                          \
@@ -145,11 +151,13 @@ void reset_console_color();
 #endif
 
 #ifndef LOG_WITH_LEVEL_0_AND_RETURN_IF
-#define LOG_WITH_LEVEL_0_AND_RETURN_IF(expr, fail_ret_val, message) LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 0, message)
+#define LOG_WITH_LEVEL_0_AND_RETURN_IF(expr, fail_ret_val, message) \
+  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 0, message)
 #endif
 
 #ifndef LOG_WITH_LEVEL_1_AND_RETURN_IF
-#define LOG_WITH_LEVEL_1_AND_RETURN_IF(expr, fail_ret_val, message) LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 1, message)
+#define LOG_WITH_LEVEL_1_AND_RETURN_IF(expr, fail_ret_val, message) \
+  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 1, message)
 #endif
 
 
@@ -171,7 +179,8 @@ void reset_console_color();
     epee::log_level(level, cat, std::string_view(stream.str()));  \
   } while (0)
 
-#define MCLOG(level, cat, color, x) MCLOG_TYPE(level, cat, color, el::base::DispatchAction::NormalLog, x)
+#define MCLOG(level, cat, color, x) \
+  MCLOG_TYPE(level, cat, color, el::base::DispatchAction::NormalLog, x)
 
 #define MCFATAL(cat,x) MCLOG(el::Level::Fatal,cat, el::Color::Default, x)
 #define MCERROR(cat,x) MCLOG(el::Level::Error,cat, el::Color::Default, x)
