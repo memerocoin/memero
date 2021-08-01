@@ -98,7 +98,7 @@ rct::key get_exponent(const rct::key base, size_t idx)
   ge_p3 e_p3;
   rct::hash_to_p3(e_p3, rct::hash2rct(crypto::cn_fast_hash(hashed.data(), hashed.size())));
   ge_p3_tobytes(e.bytes, &e_p3);
-  LOG_ERROR_AND_THROW_UNLESS(!(e == rct::identity()), "Exponent is point at infinity");
+  LOG_ERROR_AND_THROW_IF((e == rct::identity()), "Exponent is point at infinity");
   return e;
 }
 
@@ -767,13 +767,13 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     proof_data_t &pd = proof_data.back();
     rct::key hash_cache = rct::hash_to_scalar(proof.V);
     pd.y = hash_cache_mash(hash_cache, proof.A, proof.S);
-    LOG_ERROR_AND_RETURN_UNLESS(!(pd.y == rct::zero()), false, "y == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.y == rct::zero()), false, "y == 0");
     pd.z = hash_cache = rct::hash_to_scalar(pd.y);
-    LOG_ERROR_AND_RETURN_UNLESS(!(pd.z == rct::zero()), false, "z == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.z == rct::zero()), false, "z == 0");
     pd.x = hash_cache_mash(hash_cache, pd.z, proof.T1, proof.T2);
-    LOG_ERROR_AND_RETURN_UNLESS(!(pd.x == rct::zero()), false, "x == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.x == rct::zero()), false, "x == 0");
     pd.x_ip = hash_cache_mash(hash_cache, pd.x, proof.taux, proof.mu, proof.t);
-    LOG_ERROR_AND_RETURN_UNLESS(!(pd.x_ip == rct::zero()), false, "x_ip == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::zero()), false, "x_ip == 0");
 
     size_t M;
     for (pd.logM = 0; (M = 1<<pd.logM) <= maxM && M < proof.V.size(); ++pd.logM);
@@ -788,7 +788,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     for (size_t i = 0; i < rounds; ++i)
     {
       pd.w[i] = hash_cache_mash(hash_cache, proof.L[i], proof.R[i]);
-      LOG_ERROR_AND_RETURN_UNLESS(!(pd.w[i] == rct::zero()), false, "w[i] == 0");
+      LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::zero()), false, "w[i] == 0");
     }
 
     pd.inv_offset = inv_offset;

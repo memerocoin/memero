@@ -157,7 +157,7 @@ namespace epee
       {
         size_t loaded_size = buff.size();
         typename stl_container::value_type* pelem =  (typename stl_container::value_type*)buff.data();
-        LOG_ERROR_AND_RETURN_UNLESS(!(loaded_size%sizeof(typename stl_container::value_type)),
+        LOG_ERROR_AND_RETURN_IF((loaded_size%sizeof(typename stl_container::value_type)),
           false,
           "size in blob " << loaded_size << " not have not zero modulo for sizeof(value_type) = " << sizeof(typename stl_container::value_type) << ", type " << typeid(typename stl_container::value_type).name());
         size_t count = (loaded_size/sizeof(typename stl_container::value_type));

@@ -319,7 +319,7 @@ namespace rct {
             for (const auto &s: sig.s)
               LOG_ERROR_AND_RETURN_UNLESS(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
             LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
-            LOG_ERROR_AND_RETURN_UNLESS(!(sig.I == rct::identity()), false, "Bad key image!");
+            LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity()), false, "Bad key image!");
 
             // Cache commitment offset for efficient subtraction later
             ge_p3 C_offset_p3;
@@ -330,7 +330,7 @@ namespace rct {
             // Prepare key images
             key c = copy(sig.c1);
             key D_8 = scalarmult8(sig.D);
-            LOG_ERROR_AND_RETURN_UNLESS(!(D_8 == rct::identity()), false, "Bad auxiliary key image!");
+            LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity()), false, "Bad auxiliary key image!");
             geDsmp I_precomp;
             geDsmp D_precomp;
             precomp(I_precomp.k,sig.I);
@@ -409,7 +409,7 @@ namespace rct {
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;
                 c_new = hash_to_scalar(c_to_hash);
-                LOG_ERROR_AND_RETURN_UNLESS(!(c_new == rct::zero()), false, "Bad signature hash");
+                LOG_ERROR_AND_RETURN_IF((c_new == rct::zero()), false, "Bad signature hash");
                 copy(c,c_new);
 
                 i = i + 1;
