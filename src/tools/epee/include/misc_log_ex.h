@@ -106,17 +106,17 @@ void reset_console_color();
 #define CATCH_ENTRY_L4(lacation, return_val) CATCH_ENTRY(lacation, return_val)
 
 
-#define LOG_AND_THROW(message) {LOG_ERROR(message); std::stringstream ss; ss << message; throw std::runtime_error(ss.str());}
+#define LOG_ERROR_AND_THROW(message) {LOG_ERROR(message); std::stringstream ss; ss << message; throw std::runtime_error(ss.str());}
 
-#define ASSERT_OR_LOG_THROW(expr, message)      \
+#define LOG_ERROR_AND_THROW_IF(expr, message)      \
   do {                                          \
     if(!(expr))                                 \
-      LOG_AND_THROW(message);                   \
+      LOG_ERROR_AND_THROW(message);                   \
   } while(0)
 
 
-#ifndef ASSERT_OR_RETURN
-#define ASSERT_OR_RETURN(expr, fail_ret_val)    \
+#ifndef RETURN_IF
+#define RETURN_IF(expr, fail_ret_val)    \
   do {                                          \
     if(!(expr)) {                               \
       return fail_ret_val;                      \
@@ -124,8 +124,8 @@ void reset_console_color();
   } while(0)
 #endif
 
-#ifndef ASSERT_OR_LOG_RETURN
-#define ASSERT_OR_LOG_RETURN(expr, fail_ret_val, message) \
+#ifndef LOG_ERROR_AND_RETURN_IF
+#define LOG_ERROR_AND_RETURN_IF(expr, fail_ret_val, message) \
   do {                                                    \
     if(!(expr)) {                                         \
       LOG_ERROR(message);                                 \
@@ -134,8 +134,8 @@ void reset_console_color();
   } while(0)
 #endif
 
-#ifndef CHECK_OR_LOG_RETURN_LOGLEVEL
-#define CHECK_OR_LOG_RETURN_LOGLEVEL(expr, fail_ret_val, l, message)  \
+#ifndef LOG_WITH_LEVEL_AND_RETURN_IF
+#define LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, l, message)  \
   do {                                                                \
     if(!(expr)) {                                                     \
       LOG_PRINT_L##l(message);                                        \
@@ -144,17 +144,17 @@ void reset_console_color();
   } while(0)
 #endif
 
-#ifndef CHECK_OR_LOG_RETURN
-#define CHECK_OR_LOG_RETURN(expr, fail_ret_val, message) CHECK_OR_LOG_RETURN_LOGLEVEL(expr, fail_ret_val, 0, message)
+#ifndef LOG_WITH_LEVEL_0_AND_RETURN_IF
+#define LOG_WITH_LEVEL_0_AND_RETURN_IF(expr, fail_ret_val, message) LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 0, message)
 #endif
 
-#ifndef CHECK_OR_LOG_RETURN_LOGLEVEL_1
-#define CHECK_OR_LOG_RETURN_LOGLEVEL_1(expr, fail_ret_val, message) CHECK_OR_LOG_RETURN_LOGLEVEL(expr, fail_ret_val, 1, message)
+#ifndef LOG_WITH_LEVEL_1_AND_RETURN_IF
+#define LOG_WITH_LEVEL_1_AND_RETURN_IF(expr, fail_ret_val, message) LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 1, message)
 #endif
 
 
-#ifndef ASSERT_OR_LOG
-#define ASSERT_OR_LOG(expr, message)            \
+#ifndef LOG_ERROR_IF
+#define LOG_ERROR_IF(expr, message)            \
   do {                                          \
     if(!(expr)) {                               \
       LOG_ERROR(message);                       \

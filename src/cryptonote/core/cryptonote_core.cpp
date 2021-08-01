@@ -231,7 +231,7 @@ namespace cryptonote
       m_nettype = FAKECHAIN;
     }
     bool r = handle_command_line(vm);
-    ASSERT_OR_LOG_RETURN(r, false, "Failed to handle command line");
+    LOG_ERROR_AND_RETURN_IF(r, false, "Failed to handle command line");
 
     bool keep_alt_blocks = false;
 
@@ -240,7 +240,7 @@ namespace cryptonote
       folder /= "fake";
 
     // make sure the data directory exists, and try to lock it
-    ASSERT_OR_LOG_RETURN (std::filesystem::exists(folder) || std::filesystem::create_directories(folder), false,
+    LOG_ERROR_AND_RETURN_IF (std::filesystem::exists(folder) || std::filesystem::create_directories(folder), false,
       std::string("Failed to create directory ").append(folder.string()).c_str());
 
     // check for blockchain.bin
@@ -350,10 +350,10 @@ namespace cryptonote
 
     const diff_t fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
     r = m_blockchain_storage.init(db.release(), m_nettype, m_offline, fixed_difficulty);
-    ASSERT_OR_LOG_RETURN(r, false, "Failed to initialize blockchain storage");
+    LOG_ERROR_AND_RETURN_IF(r, false, "Failed to initialize blockchain storage");
 
     r = m_mempool.init();
-    ASSERT_OR_LOG_RETURN(r, false, "Failed to initialize memory pool");
+    LOG_ERROR_AND_RETURN_IF(r, false, "Failed to initialize memory pool");
 
     // now that we have a valid m_blockchain_storage, we can clean out any
     // transactions in the pool that do not conform to the current fork
@@ -361,10 +361,10 @@ namespace cryptonote
 
     bool show_time_stats = false;
     m_blockchain_storage.set_show_time_stats(show_time_stats);
-    ASSERT_OR_LOG_RETURN(r, false, "Failed to initialize blockchain storage");
+    LOG_ERROR_AND_RETURN_IF(r, false, "Failed to initialize blockchain storage");
 
     r = m_miner.init(vm, m_nettype);
-    ASSERT_OR_LOG_RETURN(r, false, "Failed to initialize miner instance");
+    LOG_ERROR_AND_RETURN_IF(r, false, "Failed to initialize miner instance");
 
     if (!keep_alt_blocks && !m_blockchain_storage.get_db().is_read_only())
       m_blockchain_storage.get_db().drop_alt_blocks();
@@ -902,7 +902,7 @@ namespace cryptonote
     for (const auto &tx_hash: b.tx_hashes)
     {
       cryptonote::blobdata txblob;
-      ASSERT_OR_LOG_THROW(pool.get_transaction(tx_hash, txblob, relay_category::all), "Transaction not found in pool");
+      LOG_ERROR_AND_THROW_IF(pool.get_transaction(tx_hash, txblob, relay_category::all), "Transaction not found in pool");
       bce.txs.push_back({txblob, crypto::null_hash});
     }
     return bce;
@@ -936,7 +936,7 @@ namespace cryptonote
     m_miner.resume();
 
 
-    ASSERT_OR_LOG_RETURN(!bvc.m_verifivation_failed, false, "mined block failed verification");
+    LOG_ERROR_AND_RETURN_IF(!bvc.m_verifivation_failed, false, "mined block failed verification");
     if(bvc.m_added_to_main_chain)
     {
       cryptonote_connection_context exclude_context = {};
@@ -950,7 +950,7 @@ namespace cryptonote
         LOG_PRINT_L1("Block found but, seems that reorganize just happened after that, do not relay this block");
         return true;
       }
-      ASSERT_OR_LOG_RETURN(txs.size() == b.tx_hashes.size() && !missed_txs.size(), false, "can't find some transactions in found block:" << get_block_hash(b) << " txs.size()=" << txs.size()
+      LOG_ERROR_AND_RETURN_IF(txs.size() == b.tx_hashes.size() && !missed_txs.size(), false, "can't find some transactions in found block:" << get_block_hash(b) << " txs.size()=" << txs.size()
         << ", b.tx_hashes.size()=" << b.tx_hashes.size() << ", missed_txs.size()" << missed_txs.size());
 
       block_to_blob(b, arg.b.block);

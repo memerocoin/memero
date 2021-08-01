@@ -134,7 +134,7 @@ namespace http
   {
     http::url_content parsed{};
     const bool r = parse_url(address, parsed);
-    ASSERT_OR_LOG_RETURN(r, false, "failed to parse url: " << address);
+    LOG_ERROR_AND_RETURN_IF(r, false, "failed to parse url: " << address);
     set_server(std::move(parsed.host), std::to_string(parsed.port));
     return true;
   }

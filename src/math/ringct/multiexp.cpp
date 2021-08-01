@@ -75,7 +75,7 @@ static inline bool operator<(const rct::key &k0, const rct::key&k1)
 
 static inline rct::key pow2(size_t n)
 {
-  ASSERT_OR_LOG_THROW(n < 256, "Invalid pow2 argument");
+  LOG_ERROR_AND_THROW_IF(n < 256, "Invalid pow2 argument");
   rct::key res = rct::zero();
   res[n >> 3] |= 1<<(n&7);
   return res;
@@ -175,7 +175,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
           bucket |= 1<<j;
       if (bucket == 0)
         continue;
-      ASSERT_OR_LOG_THROW(bucket < (1u<<c), "bucket overflow");
+      LOG_ERROR_AND_THROW_IF(bucket < (1u<<c), "bucket overflow");
       if (buckets.contains(bucket))
       {
         add(buckets[bucket], local_cache[i]);

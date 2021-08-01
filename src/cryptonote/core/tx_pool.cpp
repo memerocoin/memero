@@ -393,7 +393,7 @@ namespace cryptonote
       {
         const bool one_txid =
           (kei_image_set.empty() || (kei_image_set.size() == 1 && *(kei_image_set.cbegin()) == id));
-        ASSERT_OR_LOG_RETURN(one_txid, false, "internal error: tx_relay=" << unsigned(tx_relay)
+        LOG_ERROR_AND_RETURN_IF(one_txid, false, "internal error: tx_relay=" << unsigned(tx_relay)
                                            << ", kei_image_set.size()=" << kei_image_set.size() << std::endl << "txin.k_image=" << txin.k_image << std::endl
                                            << "tx_id=" << id);
       }
@@ -401,7 +401,7 @@ namespace cryptonote
       const bool new_or_previously_private =
         kei_image_set.insert(id).second ||
         !m_blockchain.txpool_tx_matches_category(id, relay_category::legacy);
-      ASSERT_OR_LOG_RETURN(new_or_previously_private, false, "internal error: try to insert duplicate iterator in key_image set");
+      LOG_ERROR_AND_RETURN_IF(new_or_previously_private, false, "internal error: try to insert duplicate iterator in key_image set");
     }
     ++m_cookie;
     return true;
@@ -419,14 +419,14 @@ namespace cryptonote
     {
       CHECKED_GET_SPECIFIC_VARIANT(vi, const txin_to_key, txin, false);
       auto it = m_spent_key_images.find(txin.k_image);
-      ASSERT_OR_LOG_RETURN(it != m_spent_key_images.end(), false, "failed to find transaction input in key images. img=" << txin.k_image << std::endl
+      LOG_ERROR_AND_RETURN_IF(it != m_spent_key_images.end(), false, "failed to find transaction input in key images. img=" << txin.k_image << std::endl
                                     << "transaction id = " << actual_hash);
       std::unordered_set<crypto::hash>& key_image_set =  it->second;
-      ASSERT_OR_LOG_RETURN(key_image_set.size(), false, "empty key_image set, img=" << txin.k_image << std::endl
+      LOG_ERROR_AND_RETURN_IF(key_image_set.size(), false, "empty key_image set, img=" << txin.k_image << std::endl
         << "transaction id = " << actual_hash);
 
       auto it_in_set = key_image_set.find(actual_hash);
-      ASSERT_OR_LOG_RETURN(it_in_set != key_image_set.end(), false, "transaction id not found in key_image set, img=" << txin.k_image << std::endl
+      LOG_ERROR_AND_RETURN_IF(it_in_set != key_image_set.end(), false, "transaction id not found in key_image set, img=" << txin.k_image << std::endl
         << "transaction id = " << actual_hash);
       key_image_set.erase(it_in_set);
       if(!key_image_set.size())
@@ -1153,7 +1153,7 @@ namespace cryptonote
     {
       CHECKED_GET_SPECIFIC_VARIANT(tx.vin[i], const txin_to_key, itk, false);
       auto i_res = k_images.insert(itk.k_image);
-      ASSERT_OR_LOG_RETURN(i_res.second, false, "internal error: key images pool cache - inserted duplicate image in set: " << itk.k_image);
+      LOG_ERROR_AND_RETURN_IF(i_res.second, false, "internal error: key images pool cache - inserted duplicate image in set: " << itk.k_image);
     }
     return true;
   }

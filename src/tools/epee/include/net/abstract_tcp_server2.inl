@@ -57,7 +57,7 @@ namespace net_utils
   template<typename T>
   T& check_and_get(std::shared_ptr<T>& ptr)
   {
-    ASSERT_OR_LOG_THROW(bool(ptr), "shared_state cannot be null");
+    LOG_ERROR_AND_THROW_IF(bool(ptr), "shared_state cannot be null");
     return *ptr;
   }
 
@@ -126,8 +126,8 @@ namespace net_utils
 
     boost::system::error_code ec;
     auto remote_ep = socket().remote_endpoint(ec);
-    CHECK_OR_LOG_RETURN(!ec, false, "Failed to get remote endpoint: " << ec.message() << ':' << ec.value());
-    CHECK_OR_LOG_RETURN(remote_ep.address().is_v4() || remote_ep.address().is_v6(), false, "only IPv4 and IPv6 supported here");
+    LOG_WITH_LEVEL_0_AND_RETURN_IF(!ec, false, "Failed to get remote endpoint: " << ec.message() << ':' << ec.value());
+    LOG_WITH_LEVEL_0_AND_RETURN_IF(remote_ep.address().is_v4() || remote_ep.address().is_v6(), false, "only IPv4 and IPv6 supported here");
 
     if (remote_ep.address().is_v4())
     {
@@ -164,7 +164,7 @@ namespace net_utils
 
     boost::system::error_code ec;
     auto local_ep = socket().local_endpoint(ec);
-    CHECK_OR_LOG_RETURN(!ec, false, "Failed to get local endpoint: " << ec.message() << ':' << ec.value());
+    LOG_WITH_LEVEL_0_AND_RETURN_IF(!ec, false, "Failed to get local endpoint: " << ec.message() << ':' << ec.value());
 
     _dbg3("[sock " << socket_.native_handle() << "] new connection from " << print_connection_context_short(context) <<
       " to " << local_ep.address().to_string() << ':' << local_ep.port() <<
@@ -263,7 +263,7 @@ namespace net_utils
     LOG_TRACE_CC(context, "[sock " << socket().native_handle() << "] release");
     {
       LOCK_RECURSIVE_MUTEX(m_self_refs_lock);
-      ASSERT_OR_LOG_RETURN(m_reference_count, false, "[sock " << socket().native_handle() << "] m_reference_count already at 0 at connection<t_protocol_handler>::release() call");
+      LOG_ERROR_AND_RETURN_IF(m_reference_count, false, "[sock " << socket().native_handle() << "] m_reference_count already at 0 at connection<t_protocol_handler>::release() call");
       // is this the last reference?
       if (--m_reference_count == 0) {
           // move the held reference to a local variable, keeping the object alive until the function terminates
@@ -513,7 +513,7 @@ namespace net_utils
         auto size_now = m_send_que.front().size();
         MDEBUG("do_send() NOW SENSD: packet="<<size_now<<" B");
 
-        ASSERT_OR_LOG_RETURN( size_now == m_send_que.front().size(), false, "Unexpected queue size");
+        LOG_ERROR_AND_RETURN_IF( size_now == m_send_que.front().size(), false, "Unexpected queue size");
         reset_timer(get_default_timeout());
         async_write(boost::asio::buffer(m_send_que.front().data(), size_now ) ,
                     strand_.wrap(
@@ -573,8 +573,8 @@ namespace net_utils
       MTRACE("New connection from host " << host << ": " << val);
     else if (delta < 0)
       MTRACE("Closed connection from host " << host << ": " << val);
-    ASSERT_OR_LOG_THROW(delta >= 0 || val >= (unsigned)-delta, "Count would go negative");
-    ASSERT_OR_LOG_THROW(delta <= 0 || val <= std::numeric_limits<unsigned int>::max() - (unsigned)delta, "Count would wrap");
+    LOG_ERROR_AND_THROW_IF(delta >= 0 || val >= (unsigned)-delta, "Count would go negative");
+    LOG_ERROR_AND_THROW_IF(delta <= 0 || val <= std::numeric_limits<unsigned int>::max() - (unsigned)delta, "Count would wrap");
     val += delta;
     return val;
   }
@@ -715,7 +715,7 @@ namespace net_utils
       reset_timer(get_default_timeout());
       auto size_now = m_send_que.front().size();
       MDEBUG("handle_write() NOW SENDS: packet="<<size_now<<" B" <<", from  queue size="<<m_send_que.size());
-      ASSERT_OR_LOG_RETURN( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
+      LOG_ERROR_AND_RETURN_IF( size_now == m_send_que.front().size(), void(), "Unexpected queue size");
       async_write(boost::asio::buffer(m_send_que.front().data(), size_now) ,
                   strand_.wrap(
                               std::bind(&connection<t_protocol_handler>::handle_write,

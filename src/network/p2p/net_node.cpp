@@ -62,7 +62,7 @@ namespace
 
     bool start_socks(std::shared_ptr<net::socks::client> client, const boost::asio::ip::tcp::endpoint& proxy, const epee::net_utils::network_address& remote)
     {
-        ASSERT_OR_LOG_RETURN(client != nullptr, false, "Unexpected null client");
+        LOG_ERROR_AND_RETURN_IF(client != nullptr, false, "Unexpected null client");
 
         bool set = false;
         switch (remote.get_type_id())
@@ -83,7 +83,7 @@ namespace
 
         const bool sent =
             set && net::socks::client::connect_and_send(std::move(client), proxy);
-        ASSERT_OR_LOG_RETURN(sent, false, "Unexpected failure to init socks client");
+        LOG_ERROR_AND_RETURN_IF(sent, false, "Unexpected failure to init socks client");
         return true;
     }
 }
@@ -159,11 +159,11 @@ namespace nodetool
             proxies.emplace_back();
 
             auto next = boost::algorithm::make_split_iterator(arg, boost::algorithm::first_finder(","));
-            ASSERT_OR_LOG_RETURN(!next.eof() && !next->empty(), std::nullopt, "No network type for --" << arg_proxy.name);
+            LOG_ERROR_AND_RETURN_IF(!next.eof() && !next->empty(), std::nullopt, "No network type for --" << arg_proxy.name);
             const std::string_view zone{next->begin(), next->size()};
 
             ++next;
-            ASSERT_OR_LOG_RETURN(!next.eof() && !next->empty(), std::nullopt, "No ipv4:port given for --" << arg_proxy.name);
+            LOG_ERROR_AND_RETURN_IF(!next.eof() && !next->empty(), std::nullopt, "No ipv4:port given for --" << arg_proxy.name);
             const std::string_view proxy{next->begin(), next->size()};
 
             ++next;
@@ -221,15 +221,15 @@ namespace nodetool
             inbounds.emplace_back();
 
             auto next = boost::algorithm::make_split_iterator(arg, boost::algorithm::first_finder(","));
-            ASSERT_OR_LOG_RETURN(!next.eof() && !next->empty(), std::nullopt, "No inbound address for --" << arg_anonymous_inbound.name);
+            LOG_ERROR_AND_RETURN_IF(!next.eof() && !next->empty(), std::nullopt, "No inbound address for --" << arg_anonymous_inbound.name);
             const std::string_view address{next->begin(), next->size()};
 
             ++next;
-            ASSERT_OR_LOG_RETURN(!next.eof() && !next->empty(), std::nullopt, "No local ipv4:port given for --" << arg_anonymous_inbound.name);
+            LOG_ERROR_AND_RETURN_IF(!next.eof() && !next->empty(), std::nullopt, "No local ipv4:port given for --" << arg_anonymous_inbound.name);
             const std::string_view bind{next->begin(), next->size()};
 
             const std::size_t colon = bind.find_first_of(':');
-            ASSERT_OR_LOG_RETURN(colon < bind.size(), std::nullopt, "No local port given for --" << arg_anonymous_inbound.name);
+            LOG_ERROR_AND_RETURN_IF(colon < bind.size(), std::nullopt, "No local port given for --" << arg_anonymous_inbound.name);
 
             ++next;
             if (!next.eof())
@@ -384,7 +384,7 @@ namespace nodetool
     ip::tcp::resolver::query query(host, port, boost::asio::ip::tcp::resolver::query::canonical_name);
     boost::system::error_code ec;
     ip::tcp::resolver::iterator i = resolver.resolve(query, ec);
-    ASSERT_OR_LOG_RETURN(!ec, false, "Failed to resolve host name '" << host << "': " << ec.message() << ':' << ec.value());
+    LOG_ERROR_AND_RETURN_IF(!ec, false, "Failed to resolve host name '" << host << "': " << ec.message() << ':' << ec.value());
 
     ip::tcp::resolver::iterator iend;
     for (; i != iend; ++i)

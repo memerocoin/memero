@@ -171,7 +171,7 @@ namespace net_utils
     //--------------------------------------------------------------------------------------------
     bool analize_http_method(const std::smatch& result, http::http_method& method, int& http_ver_major, int& http_ver_minor)
     {
-      ASSERT_OR_LOG_RETURN(result[0].matched, false, "simple_http_connection_handler::analize_http_method() assert failed...");
+      LOG_ERROR_AND_RETURN_IF(result[0].matched, false, "simple_http_connection_handler::analize_http_method() assert failed...");
       if (!boost::conversion::try_lexical_convert<int>(result[11], http_ver_major))
         return false;
       if (!boost::conversion::try_lexical_convert<int>(result[12], http_ver_minor))

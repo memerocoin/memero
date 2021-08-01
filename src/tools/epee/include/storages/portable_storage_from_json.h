@@ -38,7 +38,7 @@ namespace epee
   {
     namespace json
     {
-#define CHECK_ISSPACE()  if(!epee::misc_utils::parse::isspace(*it)){ LOG_AND_THROW("Wrong JSON character at: " << std::string(it, buf_end));}
+#define CHECK_ISSPACE()  if(!epee::misc_utils::parse::isspace(*it)){ LOG_ERROR_AND_THROW("Wrong JSON character at: " << std::string(it, buf_end));}
 
       void run_handler(hsection current_section, std::string::const_iterator& sec_buf_begin, std::string::const_iterator buf_end, portable_storage& stg, unsigned int recursion);
       bool load_from_json(const std::string& buff_json, portable_storage& stg);

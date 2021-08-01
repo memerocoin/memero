@@ -184,7 +184,7 @@ namespace command_line
   {
     if (0 != description.find_nothrow(arg.name, false))
     {
-      ASSERT_OR_LOG_RETURN(!unique, void(), "Argument already exists: " << arg.name);
+      LOG_ERROR_AND_RETURN_IF(!unique, void(), "Argument already exists: " << arg.name);
       return;
     }
 
@@ -196,7 +196,7 @@ namespace command_line
   {
     if (0 != description.find_nothrow(arg.name, false))
     {
-      ASSERT_OR_LOG_RETURN(!unique, void(), "Argument already exists: " << arg.name);
+      LOG_ERROR_AND_RETURN_IF(!unique, void(), "Argument already exists: " << arg.name);
       return;
     }
 
@@ -208,7 +208,7 @@ namespace command_line
   {
     if (0 != description.find_nothrow(arg.name, false))
     {
-      ASSERT_OR_LOG_RETURN(!unique, void(), "Argument already exists: " << arg.name);
+      LOG_ERROR_AND_RETURN_IF(!unique, void(), "Argument already exists: " << arg.name);
       return;
     }
 

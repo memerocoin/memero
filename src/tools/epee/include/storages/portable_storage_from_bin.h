@@ -90,11 +90,11 @@ namespace epee
         recursuion_limitation_guard(size_t& counter):m_counter_ref(counter)
         {
           ++m_counter_ref;
-          ASSERT_OR_LOG_THROW(m_counter_ref < EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL, "Wrong blob data in portable storage: recursion limitation (" << EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL << ") exceeded");
+          LOG_ERROR_AND_THROW_IF(m_counter_ref < EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL, "Wrong blob data in portable storage: recursion limitation (" << EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL << ") exceeded");
         }
         ~recursuion_limitation_guard() noexcept(false)
         {
-          ASSERT_OR_LOG_THROW(m_counter_ref != 0, "Internal error: m_counter_ref == 0 while ~recursuion_limitation_guard()");
+          LOG_ERROR_AND_THROW_IF(m_counter_ref != 0, "Internal error: m_counter_ref == 0 while ~recursuion_limitation_guard()");
           --m_counter_ref;
         }
       };
@@ -139,15 +139,15 @@ namespace epee
       //for pod types
       array_entry_t<type_name> sa;
       size_t size = read_varint();
-      ASSERT_OR_LOG_THROW(size <= m_count / ps_min_bytes<type_name>::strict, "Size sanity check failed");
+      LOG_ERROR_AND_THROW_IF(size <= m_count / ps_min_bytes<type_name>::strict, "Size sanity check failed");
       if (std::is_same<type_name, section>())
       {
-        ASSERT_OR_LOG_THROW(size <= max_objects - m_objects, "Too many objects");
+        LOG_ERROR_AND_THROW_IF(size <= max_objects - m_objects, "Too many objects");
         m_objects += size;
       }
       else if (std::is_same<type_name, std::string>())
       {
-        ASSERT_OR_LOG_THROW(size <= max_strings - m_strings, "Too many strings");
+        LOG_ERROR_AND_THROW_IF(size <= max_strings - m_strings, "Too many strings");
         m_strings += size;
       }
 

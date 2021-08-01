@@ -40,8 +40,8 @@ namespace {
   template<typename T>
   T pop_index(std::vector<T>& vec, size_t idx)
   {
-    ASSERT_OR_LOG_RETURN(!vec.empty(), T(), "Vector must be non-empty");
-    ASSERT_OR_LOG_RETURN(idx < vec.size(), T(), "idx out of bounds");
+    LOG_ERROR_AND_RETURN_IF(!vec.empty(), T(), "Vector must be non-empty");
+    LOG_ERROR_AND_RETURN_IF(idx < vec.size(), T(), "idx out of bounds");
 
     T res = vec[idx];
     if (idx + 1 != vec.size())

@@ -186,7 +186,7 @@ namespace net_utils
 			{}
 			inline bool handle_request(const http_request_info& query_info, http_response_info& response)
 			{
-				ASSERT_OR_LOG_RETURN(m_config.m_phandler, false, "m_config.m_phandler is NULL!!!!");
+				LOG_ERROR_AND_RETURN_IF(m_config.m_phandler, false, "m_config.m_phandler is NULL!!!!");
 
 				//fill with default values
 				response.m_mime_tipe = "text/plain";

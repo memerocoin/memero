@@ -109,7 +109,7 @@ namespace epee
           return nullptr;
         return insert_new_section(section_name, hparent_section);
       }
-      ASSERT_OR_RETURN(pentry , nullptr);
+      RETURN_IF(pentry , nullptr);
       //check that section_entry we find is real "CSSection"
       if(pentry->type() != typeid(section))
       {
@@ -138,7 +138,7 @@ namespace epee
     storage_entry* portable_storage::find_storage_entry(const std::string& pentry_name, hsection psection)
     {
       TRY_ENTRY();
-      ASSERT_OR_RETURN(psection, nullptr);
+      RETURN_IF(psection, nullptr);
       auto it = psection->m_entries.find(pentry_name);
       if(it == psection->m_entries.end())
         return nullptr;
@@ -180,7 +180,7 @@ namespace epee
     bool portable_storage::get_next_section(harray hsec_array, hsection& h_child_section)
     {
       TRY_ENTRY();
-      ASSERT_OR_RETURN(hsec_array, false);
+      RETURN_IF(hsec_array, false);
       if(hsec_array->type() != typeid(array_entry_t<section>))
         return false;
       array_entry_t<section>& sec_array = boost::get<array_entry_t<section>>(*hsec_array);
@@ -218,8 +218,8 @@ namespace epee
     bool portable_storage::insert_next_section(harray hsec_array, hsection& hinserted_childsection)
     {
       TRY_ENTRY();
-      ASSERT_OR_RETURN(hsec_array, false);
-      ASSERT_OR_LOG_RETURN(hsec_array->type() == typeid(array_entry_t<section>),
+      RETURN_IF(hsec_array, false);
+      LOG_ERROR_AND_RETURN_IF(hsec_array->type() == typeid(array_entry_t<section>),
         false, "unexpected type(not 'section') in insert_next_section, type: " << hsec_array->type().name());
 
       array_entry_t<section>& sec_array = boost::get<array_entry_t<section>>(*hsec_array);
