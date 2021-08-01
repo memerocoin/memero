@@ -2206,7 +2206,7 @@ public:
   just_dir:
     if (wal) wrpc->set_wallet(wal.release());
     bool r = wrpc->init(&vm);
-    LOG_ERROR_AND_RETURN_IF(r, false, tools::wallet_rpc_server::tr("Failed to initialize wallet RPC server"));
+    LOG_ERROR_AND_RETURN_UNLESS(r, false, tools::wallet_rpc_server::tr("Failed to initialize wallet RPC server"));
     tools::signal_handler::install([this](int) {
       wrpc->send_stop_signal();
     });

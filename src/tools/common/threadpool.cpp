@@ -83,7 +83,7 @@ void threadpool::create(unsigned int max_threads) {
 }
 
 void threadpool::submit(waiter *obj, std::function<void()> f, bool leaf) {
-  LOG_ERROR_AND_THROW_IF(!is_leaf, "A leaf routine is using a thread pool");
+  LOG_ERROR_AND_THROW_UNLESS(!is_leaf, "A leaf routine is using a thread pool");
   std::unique_lock<std::mutex> lock(mutex);
   if (!leaf && ((active == max && !queue.empty()) || depth > 0)) {
     // if all available threads are already running

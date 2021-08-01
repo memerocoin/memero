@@ -1842,7 +1842,7 @@ skip:
       NOTIFY_REQUEST_CHAIN::request r = {};
       context.m_expect_height = m_core.get_current_blockchain_height();
       m_core.get_short_chain_history(r.block_ids);
-      LOG_ERROR_AND_RETURN_IF(!r.block_ids.empty(), false, "Short chain history is empty");
+      LOG_ERROR_AND_RETURN_UNLESS(!r.block_ids.empty(), false, "Short chain history is empty");
 
       if (!start_from_current_chain)
       {
@@ -1865,7 +1865,7 @@ skip:
       MLOG_PEER_STATE("requesting chain");
     }else
     {
-      LOG_ERROR_AND_RETURN_IF(context.m_last_response_height == context.m_remote_blockchain_height-1
+      LOG_ERROR_AND_RETURN_UNLESS(context.m_last_response_height == context.m_remote_blockchain_height-1
                            && !context.m_needed_objects.size()
                            && !context.m_requested_objects.size(), false, "request_missing_blocks final condition failed!"
                            << "\r\nm_last_response_height=" << context.m_last_response_height

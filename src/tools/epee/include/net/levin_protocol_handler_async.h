@@ -401,8 +401,8 @@ public:
 
     // these should never fail, but do runtime check for safety
     const uint64_t max_packet_size = m_max_packet_size;
-    LOG_ERROR_AND_RETURN_IF(max_packet_size >= m_cache_in_buffer.size(), false, "Bad m_cache_in_buffer.size()");
-    LOG_ERROR_AND_RETURN_IF(max_packet_size - m_cache_in_buffer.size() >= m_fragment_buffer.size(), false, "Bad m_cache_in_buffer.size() + m_fragment_buffer.size()");
+    LOG_ERROR_AND_RETURN_UNLESS(max_packet_size >= m_cache_in_buffer.size(), false, "Bad m_cache_in_buffer.size()");
+    LOG_ERROR_AND_RETURN_UNLESS(max_packet_size - m_cache_in_buffer.size() >= m_fragment_buffer.size(), false, "Bad m_cache_in_buffer.size() + m_fragment_buffer.size()");
 
     // flipped to subtraction; prevent overflow since m_max_packet_size is variable and public
     if(cb > max_packet_size - m_cache_in_buffer.size() - m_fragment_buffer.size())

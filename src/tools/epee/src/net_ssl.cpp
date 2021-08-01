@@ -298,7 +298,7 @@ boost::asio::ssl::context ssl_options_t::create_context() const
 
   // set options on the SSL context for added security
   SSL_CTX *ctx = ssl_context.native_handle();
-  LOG_ERROR_AND_THROW_IF(ctx, "Failed to get SSL context");
+  LOG_ERROR_AND_THROW_UNLESS(ctx, "Failed to get SSL context");
   SSL_CTX_clear_options(ctx, SSL_OP_LEGACY_SERVER_CONNECT); // SSL_CTX_SET_OPTIONS(3)
   SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF); // https://stackoverflow.com/questions/22378442
 #ifdef SSL_OP_NO_TICKET
@@ -338,7 +338,7 @@ boost::asio::ssl::context ssl_options_t::create_context() const
       break;
   }
 
-  LOG_ERROR_AND_THROW_IF(auth.private_key_path.empty() == auth.certificate_path.empty(), "private key and certificate must be either both given or both empty");
+  LOG_ERROR_AND_THROW_UNLESS(auth.private_key_path.empty() == auth.certificate_path.empty(), "private key and certificate must be either both given or both empty");
   if (auth.private_key_path.empty())
   {
     EVP_PKEY *pkey;
@@ -346,8 +346,8 @@ boost::asio::ssl::context ssl_options_t::create_context() const
     bool ok = false;
 
 #ifdef USE_EXTRA_EC_CERT
-    LOG_ERROR_AND_THROW_IF(create_ec_ssl_certificate(pkey, cert, NID_secp256k1), "Failed to create certificate");
-    LOG_ERROR_AND_THROW_IF(SSL_CTX_use_certificate(ctx, cert), "Failed to use generated certificate");
+    LOG_ERROR_AND_THROW_UNLESS(create_ec_ssl_certificate(pkey, cert, NID_secp256k1), "Failed to create certificate");
+    LOG_ERROR_AND_THROW_UNLESS(SSL_CTX_use_certificate(ctx, cert), "Failed to use generated certificate");
     if (!SSL_CTX_use_PrivateKey(ctx, pkey))
       MERROR("Failed to use generated EC private key for " << NID_secp256k1);
     else
@@ -356,8 +356,8 @@ boost::asio::ssl::context ssl_options_t::create_context() const
     EVP_PKEY_free(pkey);
 #endif
 
-    LOG_ERROR_AND_THROW_IF(create_rsa_ssl_certificate(pkey, cert), "Failed to create certificate");
-    LOG_ERROR_AND_THROW_IF(SSL_CTX_use_certificate(ctx, cert), "Failed to use generated certificate");
+    LOG_ERROR_AND_THROW_UNLESS(create_rsa_ssl_certificate(pkey, cert), "Failed to create certificate");
+    LOG_ERROR_AND_THROW_UNLESS(SSL_CTX_use_certificate(ctx, cert), "Failed to use generated certificate");
     if (!SSL_CTX_use_PrivateKey(ctx, pkey))
       MERROR("Failed to use generated RSA private key for RSA");
     else
@@ -365,7 +365,7 @@ boost::asio::ssl::context ssl_options_t::create_context() const
     X509_free(cert);
     EVP_PKEY_free(pkey);
 
-    LOG_ERROR_AND_THROW_IF(ok, "Failed to use any generated certificate");
+    LOG_ERROR_AND_THROW_UNLESS(ok, "Failed to use any generated certificate");
   }
   else
     auth.use_ssl_certificate(ssl_context);

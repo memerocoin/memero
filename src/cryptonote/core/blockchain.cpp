@@ -275,7 +275,7 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
     generate_genesis_block(bl, get_config(m_nettype).GENESIS_TX, get_config(m_nettype).GENESIS_NONCE);
     db_wtxn_guard wtxn_guard(m_db);
     add_new_block(bl, bvc);
-    LOG_ERROR_AND_RETURN_IF(!bvc.m_verifivation_failed, false, "Failed to add genesis block to blockchain");
+    LOG_ERROR_AND_RETURN_UNLESS(!bvc.m_verifivation_failed, false, "Failed to add genesis block to blockchain");
   }
   // TODO: if blockchain load successful, verify blockchain against both
   //       hard-coded and runtime-loaded (and enforced) checkpoints.
@@ -448,7 +448,7 @@ block Blockchain::pop_block_from_blockchain()
   block popped_block;
   std::vector<transaction> popped_txs;
 
-  LOG_ERROR_AND_THROW_IF(m_db->height() > 1, "Cannot pop the genesis block");
+  LOG_ERROR_AND_THROW_UNLESS(m_db->height() > 1, "Cannot pop the genesis block");
 
   try
   {
@@ -491,7 +491,7 @@ block Blockchain::pop_block_from_blockchain()
   m_scan_table.clear();
   m_blocks_txs_check.clear();
 
-  LOG_ERROR_AND_THROW_IF(update_next_cumulative_weight_limit(), "Error updating next cumulative weight limit");
+  LOG_ERROR_AND_THROW_UNLESS(update_next_cumulative_weight_limit(), "Error updating next cumulative weight limit");
   uint64_t top_block_height;
   crypto::hash top_block_hash = get_tail_id(top_block_height);
   m_tx_pool.on_blockchain_dec(top_block_height, top_block_hash);
@@ -861,7 +861,7 @@ bool Blockchain::rollback_blockchain_switching(std::list<block>& original_chain,
   {
     block_verification_context bvc = {};
     bool r = handle_block_to_main_chain(bl, bvc, false);
-    LOG_ERROR_AND_RETURN_IF(r && bvc.m_added_to_main_chain, false, "PANIC! failed to add (again) block while chain switching during the rollback!");
+    LOG_ERROR_AND_RETURN_UNLESS(r && bvc.m_added_to_main_chain, false, "PANIC! failed to add (again) block while chain switching during the rollback!");
   }
 
   MINFO("Rollback to height " << rollback_height << " was successful.");
@@ -883,7 +883,7 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
   m_reset_timestamps_and_difficulties_height = true;
 
   // if empty alt chain passed (not sure how that could happen), return false
-  LOG_ERROR_AND_RETURN_IF(alt_chain.size(), false, "switch_to_alternative_blockchain: empty chain passed");
+  LOG_ERROR_AND_RETURN_UNLESS(alt_chain.size(), false, "switch_to_alternative_blockchain: empty chain passed");
 
   // verify that main chain has front of alt chain's parent block
   if (!m_db->block_exists(alt_chain.front().bl.prev_id))
@@ -1024,7 +1024,7 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
     }
 
     // make sure we haven't accidentally grabbed too many blocks...maybe don't need this check?
-    LOG_ERROR_AND_RETURN_IF((alt_chain.size() + timestamps.size()) <= difficulty_blocks_count, false, "Internal error, alt_chain.size()[" << alt_chain.size() << "] + vtimestampsec.size()[" << timestamps.size() << "] NOT <= DIFFICULTY_WINDOW[]" << difficulty_blocks_count);
+    LOG_ERROR_AND_RETURN_UNLESS((alt_chain.size() + timestamps.size()) <= difficulty_blocks_count, false, "Internal error, alt_chain.size()[" << alt_chain.size() << "] + vtimestampsec.size()[" << timestamps.size() << "] NOT <= DIFFICULTY_WINDOW[]" << difficulty_blocks_count);
 
     for (const auto &bei : alt_chain)
     {
@@ -1067,16 +1067,16 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
 bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-  LOG_ERROR_AND_RETURN_IF(b.miner_tx.vin.size() == 1, false, "coinbase transaction in the block has no inputs");
-  LOG_ERROR_AND_RETURN_IF(b.miner_tx.vin[0].type() == typeid(txin_gen), false, "coinbase transaction in the block has the wrong type");
+  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin.size() == 1, false, "coinbase transaction in the block has no inputs");
+  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin[0].type() == typeid(txin_gen), false, "coinbase transaction in the block has the wrong type");
 
   if (height == 0) return true;
-  LOG_ERROR_AND_RETURN_IF(b.miner_tx.version > 1, false, "Invalid coinbase transaction version");
+  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.version > 1, false, "Invalid coinbase transaction version");
 
   // for v2 txes (ringct), we only accept empty rct signatures for miner transactions,
   if (b.miner_tx.version >= 2)
   {
-    LOG_ERROR_AND_RETURN_IF(b.miner_tx.rct_signatures.type == rct::RCTTypeNull, false, "RingCT signatures not allowed in coinbase transactions");
+    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.rct_signatures.type == rct::RCTTypeNull, false, "RingCT signatures not allowed in coinbase transactions");
   }
 
   if(boost::get<txin_gen>(b.miner_tx.vin[0]).height != height)
@@ -1085,7 +1085,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
     return false;
   }
   MDEBUG("Miner tx hash: " << get_transaction_hash(b.miner_tx));
-  LOG_ERROR_AND_RETURN_IF(b.miner_tx.unlock_time == height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW, false, "coinbase transaction transaction has the wrong unlock time=" << b.miner_tx.unlock_time << ", expected " << height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
+  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.unlock_time == height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW, false, "coinbase transaction transaction has the wrong unlock time=" << b.miner_tx.unlock_time << ", expected " << height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
 
   //check outs overflow
   //NOTE: not entirely sure this is necessary, given that this function is
@@ -1197,7 +1197,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     if (parent_in_main)
     {
       cryptonote::block prev_block;
-      LOG_ERROR_AND_RETURN_IF(get_block_by_hash(*from_block, prev_block), false, "From block not found"); // TODO
+      LOG_ERROR_AND_RETURN_UNLESS(get_block_by_hash(*from_block, prev_block), false, "From block not found"); // TODO
       uint64_t from_block_height = cryptonote::get_block_height(prev_block);
       height = from_block_height + 1;
     }
@@ -1232,7 +1232,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     b.timestamp = median_ts;
   }
 
-  LOG_ERROR_AND_RETURN_IF(diffic, false, "difficulty overhead.");
+  LOG_ERROR_AND_RETURN_UNLESS(diffic, false, "difficulty overhead.");
 
   size_t txs_weight;
   uint64_t fee;
@@ -1300,7 +1300,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
   // FIXME: max_outs of miner_tx for lol should be 32?
   size_t max_outs = 11;
   bool r = construct_miner_tx(height, txs_weight, fee, miner_address, b.miner_tx, ex_nonce, max_outs);
-  LOG_ERROR_AND_RETURN_IF(r, false, "Failed to construct miner tx, first chance");
+  LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to construct miner tx, first chance");
   size_t cumulative_weight = txs_weight + get_transaction_weight(b.miner_tx);
 #if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
   MDEBUG("Creating block template: miner tx weight " << get_transaction_weight(b.miner_tx) <<
@@ -1312,7 +1312,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
   {
     r = construct_miner_tx(height, cumulative_weight, fee, miner_address, b.miner_tx, ex_nonce, max_outs);
 
-    LOG_ERROR_AND_RETURN_IF(r, false, "Failed to construct miner tx, second chance");
+    LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to construct miner tx, second chance");
     size_t coinbase_weight = get_transaction_weight(b.miner_tx);
     if (coinbase_weight > cumulative_weight - txs_weight)
     {
@@ -1336,7 +1336,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       //here  could be 1 byte difference, because of extra field counter is varint, and it can become from 1-byte len to 2-bytes len.
       if (cumulative_weight != txs_weight + get_transaction_weight(b.miner_tx))
       {
-        LOG_ERROR_AND_RETURN_IF(cumulative_weight + 1 == txs_weight + get_transaction_weight(b.miner_tx), false, "unexpected case: cumulative_weight=" << cumulative_weight << " + 1 is not equal txs_cumulative_weight=" << txs_weight << " + get_transaction_weight(b.miner_tx)=" << get_transaction_weight(b.miner_tx));
+        LOG_ERROR_AND_RETURN_UNLESS(cumulative_weight + 1 == txs_weight + get_transaction_weight(b.miner_tx), false, "unexpected case: cumulative_weight=" << cumulative_weight << " + 1 is not equal txs_cumulative_weight=" << txs_weight << " + get_transaction_weight(b.miner_tx)=" << get_transaction_weight(b.miner_tx));
         b.miner_tx.extra.resize(b.miner_tx.extra.size() - 1);
         if (cumulative_weight != txs_weight + get_transaction_weight(b.miner_tx))
         {
@@ -1348,7 +1348,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
         MDEBUG("Setting extra for block: " << b.miner_tx.extra.size() << ", try_count=" << try_count);
       }
     }
-    LOG_ERROR_AND_RETURN_IF(cumulative_weight == txs_weight + get_transaction_weight(b.miner_tx), false, "unexpected case: cumulative_weight=" << cumulative_weight << " is not equal txs_cumulative_weight=" << txs_weight << " + get_transaction_weight(b.miner_tx)=" << get_transaction_weight(b.miner_tx));
+    LOG_ERROR_AND_RETURN_UNLESS(cumulative_weight == txs_weight + get_transaction_weight(b.miner_tx), false, "unexpected case: cumulative_weight=" << cumulative_weight << " is not equal txs_cumulative_weight=" << txs_weight << " + get_transaction_weight(b.miner_tx)=" << get_transaction_weight(b.miner_tx));
 #if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
     MDEBUG("Creating block template: miner tx weight " << coinbase_weight <<
         ", cumulative weight " << cumulative_weight << " is now good");
@@ -1378,7 +1378,7 @@ bool Blockchain::complete_timestamps_vector(uint64_t start_top_height, std::vect
 
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   size_t need_elements = blockchain_timestamp_check_window - timestamps.size();
-  LOG_ERROR_AND_RETURN_IF(start_top_height < m_db->height(), false, "internal error: passed start_height not < " << " m_db->height() -- " << start_top_height << " >= " << m_db->height());
+  LOG_ERROR_AND_RETURN_UNLESS(start_top_height < m_db->height(), false, "internal error: passed start_height not < " << " m_db->height() -- " << start_top_height << " >= " << m_db->height());
   size_t stop_offset = start_top_height > need_elements ? start_top_height - need_elements : 0;
   timestamps.reserve(timestamps.size() + start_top_height - stop_offset);
   while (start_top_height != stop_offset)
@@ -1399,7 +1399,7 @@ bool Blockchain::build_alt_chain(const crypto::hash &prev_id, std::list<block_ex
     while(found)
     {
       block_extended_info bei;
-      LOG_ERROR_AND_RETURN_IF(cryptonote::parse_and_validate_block_from_blob(blob, bei.bl), false, "Failed to parse alt block");
+      LOG_ERROR_AND_RETURN_UNLESS(cryptonote::parse_and_validate_block_from_blob(blob, bei.bl), false, "Failed to parse alt block");
       bei.height = data.height;
       bei.block_cumulative_weight = data.cumulative_weight;
       bei.cumulative_difficulty = data.cumulative_difficulty_high;
@@ -1415,7 +1415,7 @@ bool Blockchain::build_alt_chain(const crypto::hash &prev_id, std::list<block_ex
     if(!alt_chain.empty())
     {
       // make sure alt chain doesn't somehow start past the end of the main chain
-      LOG_ERROR_AND_RETURN_IF(m_db->height() > alt_chain.front().height, false, "main blockchain wrong height");
+      LOG_ERROR_AND_RETURN_UNLESS(m_db->height() > alt_chain.front().height, false, "main blockchain wrong height");
 
       // make sure that the blockchain contains the block that should connect
       // this alternate chain with it.
@@ -1427,7 +1427,7 @@ bool Blockchain::build_alt_chain(const crypto::hash &prev_id, std::list<block_ex
 
       // make sure block connects correctly to the main chain
       auto h = m_db->get_block_hash_from_height(alt_chain.front().height - 1);
-      LOG_ERROR_AND_RETURN_IF(h == alt_chain.front().bl.prev_id, false, "alternative chain has wrong connection to main chain");
+      LOG_ERROR_AND_RETURN_UNLESS(h == alt_chain.front().bl.prev_id, false, "alternative chain has wrong connection to main chain");
       complete_timestamps_vector(m_db->get_block_height(alt_chain.front().bl.prev_id), timestamps);
     }
     // if block not associated with known alternate chain
@@ -1436,7 +1436,7 @@ bool Blockchain::build_alt_chain(const crypto::hash &prev_id, std::list<block_ex
       // if block parent is not part of main chain or an alternate chain,
       // we ignore it
       bool parent_in_main = m_db->block_exists(prev_id);
-      LOG_ERROR_AND_RETURN_IF(parent_in_main, false, "internal error: broken imperative condition: parent_in_main");
+      LOG_ERROR_AND_RETURN_UNLESS(parent_in_main, false, "internal error: broken imperative condition: parent_in_main");
 
       complete_timestamps_vector(m_db->get_block_height(prev_id), timestamps);
     }
@@ -1497,7 +1497,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
 
     // Check the block's hash against the difficulty target for its alt chain
     diff_t current_diff = get_next_difficulty_for_alternative_chain(alt_chain, bei);
-    LOG_ERROR_AND_RETURN_IF(current_diff, false, "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!");
+    LOG_ERROR_AND_RETURN_UNLESS(current_diff, false, "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!");
     crypto::hash proof_of_work;
     memset(proof_of_work.data, 0xff, sizeof(proof_of_work.data));
     {
@@ -1573,7 +1573,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
 
     // add block to alternate blocks storage,
     // as well as the current "alt chain" container
-    LOG_ERROR_AND_RETURN_IF(!m_db->get_alt_block(id, NULL, NULL), false, "insertion of new alternative block returned as it already exists");
+    LOG_ERROR_AND_RETURN_UNLESS(!m_db->get_alt_block(id, NULL, NULL), false, "insertion of new alternative block returned as it already exists");
     cryptonote::alt_block_data_t data;
     data.height = bei.height;
     data.cumulative_weight = bei.block_cumulative_weight;
@@ -1629,7 +1629,7 @@ bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std
   {
     std::vector<crypto::hash> missed_ids;
     get_transactions_blobs(blk.second.tx_hashes, txs, missed_ids);
-    LOG_ERROR_AND_RETURN_IF(!missed_ids.size(), false, "has missed transactions in own block in main blockchain");
+    LOG_ERROR_AND_RETURN_UNLESS(!missed_ids.size(), false, "has missed transactions in own block in main blockchain");
   }
 
   return true;
@@ -2180,7 +2180,7 @@ bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, cons
   db_rtxn_guard rtxn_guard(m_db);
   total_height = get_current_blockchain_height();
   blocks.reserve(std::min(std::min(max_count, (size_t)10000), (size_t)(total_height - start_height)));
-  LOG_ERROR_AND_RETURN_IF(m_db->get_blocks_from(start_height, 3, max_count, FIND_BLOCKCHAIN_SUPPLEMENT_MAX_SIZE, blocks, true, get_miner_tx_hash),
+  LOG_ERROR_AND_RETURN_UNLESS(m_db->get_blocks_from(start_height, 3, max_count, FIND_BLOCKCHAIN_SUPPLEMENT_MAX_SIZE, blocks, true, get_miner_tx_hash),
       false, "Error getting blocks");
 
   return true;
@@ -2199,7 +2199,7 @@ bool Blockchain::add_block_as_invalid(const block_extended_info& bei, const cryp
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   auto i_res = m_invalid_blocks.insert(std::map<crypto::hash, block_extended_info>::value_type(h, bei));
-  LOG_ERROR_AND_RETURN_IF(i_res.second, false, "at insertion invalid by tx returned status existed");
+  LOG_ERROR_AND_RETURN_UNLESS(i_res.second, false, "at insertion invalid by tx returned status existed");
   MINFO("BLOCK ADDED AS INVALID: " << h << std::endl << ", prev_id=" << bei.bl.prev_id << ", m_invalid_blocks count=" << m_invalid_blocks.size());
   return true;
 }
@@ -2343,7 +2343,7 @@ bool Blockchain::get_tx_outputs_gindexs(const crypto::hash& tx_id, size_t n_txes
     return false;
   }
   indexs = m_db->get_tx_amount_output_indices(tx_index, n_txes);
-  LOG_ERROR_AND_RETURN_IF(n_txes == indexs.size(), false, "Wrong indexs size");
+  LOG_ERROR_AND_RETURN_UNLESS(n_txes == indexs.size(), false, "Wrong indexs size");
 
   return true;
 }
@@ -2359,7 +2359,7 @@ bool Blockchain::get_tx_outputs_gindexs(const crypto::hash& tx_id, std::vector<u
     return false;
   }
   std::vector<std::vector<uint64_t>> indices = m_db->get_tx_amount_output_indices(tx_index, 1);
-  LOG_ERROR_AND_RETURN_IF(indices.size() == 1, false, "Wrong indices size");
+  LOG_ERROR_AND_RETURN_UNLESS(indices.size() == 1, false, "Wrong indices size");
   indexs = indices.front();
   return true;
 }
@@ -2392,7 +2392,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, uint64_t& max_used_block_heigh
   if (!res)
     return false;
 
-  LOG_ERROR_AND_RETURN_IF(max_used_block_height < m_db->height(), false,  "internal error: max used block index=" << max_used_block_height << " is not less then blockchain size = " << m_db->height());
+  LOG_ERROR_AND_RETURN_UNLESS(max_used_block_height < m_db->height(), false,  "internal error: max used block index=" << max_used_block_height << " is not less then blockchain size = " << m_db->height());
   max_used_block_id = m_db->get_block_hash_from_height(max_used_block_height);
   return true;
 }
@@ -2449,7 +2449,7 @@ bool Blockchain::have_tx_keyimges_as_spent(const transaction &tx) const
 }
 bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_prefix_hash, const std::vector<std::vector<rct::ctkey>> &pubkeys) const
 {
-  LOG_ERROR_AND_RETURN_IF(tx.version == 2, false, "Transaction version is not 2");
+  LOG_ERROR_AND_RETURN_UNLESS(tx.version == 2, false, "Transaction version is not 2");
 
   rct::rctSig &rv = tx.rct_signatures;
 
@@ -2459,7 +2459,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
   // mixRing - full and simple store it in opposite ways
   if (rv.type == rct::RCTTypeCLSAG)
   {
-    LOG_ERROR_AND_RETURN_IF(!pubkeys.empty() && !pubkeys[0].empty(), false, "empty pubkeys");
+    LOG_ERROR_AND_RETURN_UNLESS(!pubkeys.empty() && !pubkeys[0].empty(), false, "empty pubkeys");
     rv.mixRing.resize(pubkeys.size());
     for (size_t n = 0; n < pubkeys.size(); ++n)
     {
@@ -2472,13 +2472,13 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
   }
   else
   {
-    LOG_ERROR_AND_RETURN_IF(false, false, "Unsupported rct tx type: " + boost::lexical_cast<std::string>(rv.type));
+    LOG_ERROR_AND_RETURN_UNLESS(false, false, "Unsupported rct tx type: " + boost::lexical_cast<std::string>(rv.type));
   }
 
   // II
   if (rv.type == rct::RCTTypeCLSAG)
   {
-      LOG_ERROR_AND_RETURN_IF(rv.p.CLSAGs.size() == tx.vin.size(), false, "Bad CLSAGs size");
+      LOG_ERROR_AND_RETURN_UNLESS(rv.p.CLSAGs.size() == tx.vin.size(), false, "Bad CLSAGs size");
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
         rv.p.CLSAGs[n].I = rct::ki2rct(boost::get<txin_to_key>(tx.vin[n]).k_image);
@@ -2486,7 +2486,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
   }
   else
   {
-    LOG_ERROR_AND_RETURN_IF(false, false, "Unsupported rct tx type: " + boost::lexical_cast<std::string>(rv.type));
+    LOG_ERROR_AND_RETURN_UNLESS(false, false, "Unsupported rct tx type: " + boost::lexical_cast<std::string>(rv.type));
   }
 
   // outPk was already done by handle_incoming_tx
@@ -2594,7 +2594,7 @@ bool Blockchain::check_tx_input(size_t tx_version, const txin_to_key& txin, cons
     return false;
   }
   if (tx_version == 1) {
-    LOG_ERROR_AND_RETURN_IF(sig.size() == output_keys.size(), false, "internal error: tx signatures count=" << sig.size() << " mismatch with outputs keys count for inputs=" << output_keys.size());
+    LOG_ERROR_AND_RETURN_UNLESS(sig.size() == output_keys.size(), false, "internal error: tx signatures count=" << sig.size() << " mismatch with outputs keys count for inputs=" << output_keys.size());
   }
   // rct_signatures will be expanded after this
   return true;
@@ -2742,7 +2742,7 @@ leave:
   // FIXME: get_difficulty_for_next_block can also assert, look into
   // changing this to throwing exceptions instead so we can clean up.
   diff_t current_diffic = get_difficulty_for_next_block();
-  LOG_ERROR_AND_RETURN_IF(current_diffic, false, "!!!!!!!!! difficulty overhead !!!!!!!!!");
+  LOG_ERROR_AND_RETURN_UNLESS(current_diffic, false, "!!!!!!!!! difficulty overhead !!!!!!!!!");
 
   TIME_MEASURE_FINISH(target_calculating_time);
 
@@ -3175,7 +3175,7 @@ void Blockchain::output_scan_worker(const uint64_t amount, const std::vector<uin
 
 bool Blockchain::has_block_weights(uint64_t height, uint64_t nblocks) const
 {
-  LOG_ERROR_AND_RETURN_IF(nblocks > 0, false, "nblocks is 0");
+  LOG_ERROR_AND_RETURN_UNLESS(nblocks > 0, false, "nblocks is 0");
   uint64_t last_block_height = height + nblocks - 1;
   if (last_block_height >= m_blocks_hash_check.size())
     return false;
@@ -3862,11 +3862,11 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
   {
     // make sure output being spent is of type txin_to_key, rather than
     // e.g. txin_gen, which is only used for miner transactions
-    LOG_ERROR_AND_RETURN_IF(txin.type() == typeid(txin_to_key), false, "wrong type id in tx input at Blockchain::check_tx_inputs");
+    LOG_ERROR_AND_RETURN_UNLESS(txin.type() == typeid(txin_to_key), false, "wrong type id in tx input at Blockchain::check_tx_inputs");
     const txin_to_key& in_to_key = boost::get<txin_to_key>(txin);
 
     // make sure tx output has key offset(s) (is signed to be used)
-    LOG_ERROR_AND_RETURN_IF(in_to_key.key_offsets.size(), false, "empty in_to_key.key_offsets in transaction with id " << get_transaction_hash(tx));
+    LOG_ERROR_AND_RETURN_UNLESS(in_to_key.key_offsets.size(), false, "empty in_to_key.key_offsets in transaction with id " << get_transaction_hash(tx));
 
     if(have_tx_keyimg_as_spent(in_to_key.k_image))
     {
@@ -3892,7 +3892,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
   }
   // enforce min output age
   {
-    LOG_ERROR_AND_RETURN_IF(*pmax_used_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE <= m_db->height(),
+    LOG_ERROR_AND_RETURN_UNLESS(*pmax_used_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE <= m_db->height(),
         false, "Transaction spends at least one output which is too young");
   }
 

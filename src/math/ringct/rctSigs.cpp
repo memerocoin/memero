@@ -54,12 +54,12 @@ namespace rct {
      , const std::span<const key> sk)
     {
         hw::device& hwdev = hw::get_device("default");
-        LOG_ERROR_AND_THROW_IF(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
+        LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
             masks[i] = hwdev.genCommitmentMask(sk[i]);
         Bulletproof proof = bulletproof_MAKE(amounts, masks);
-        LOG_ERROR_AND_THROW_IF(proof.V.size() == amounts.size(), "V does not have the expected size");
+        LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
         C = proof.V;
         return proof;
     }
@@ -99,9 +99,9 @@ namespace rct {
         hw::device& hwdev = hw::get_device("default");
         clsag sig;
         size_t n = P.size(); // ring size
-        LOG_ERROR_AND_THROW_IF(n == C.size(), "Signing and commitment key vector sizes must match!");
-        LOG_ERROR_AND_THROW_IF(n == C_nonzero.size(), "Signing and commitment key vector sizes must match!");
-        LOG_ERROR_AND_THROW_IF(l < n, "Signing index out of range!");
+        LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment key vector sizes must match!");
+        LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment key vector sizes must match!");
+        LOG_ERROR_AND_THROW_UNLESS(l < n, "Signing index out of range!");
 
         // Key images
         ge_p3 H_p3;
@@ -233,11 +233,11 @@ namespace rct {
 
       std::stringstream ss;
       binary_archive<true> ba(ss);
-      LOG_ERROR_AND_THROW_IF(!rv.mixRing.empty(), "Empty mixRing");
+      LOG_ERROR_AND_THROW_UNLESS(!rv.mixRing.empty(), "Empty mixRing");
       const size_t inputs = rv.mixRing.size();
       const size_t outputs = rv.ecdhInfo.size();
       key prehash;
-      LOG_ERROR_AND_THROW_IF(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
+      LOG_ERROR_AND_THROW_UNLESS(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
           "Failed to serialize rctSigBase");
       cryptonote::get_blob_hash(ss.str(), h);
       hashes.push_back(hash2rct(h));
@@ -282,7 +282,7 @@ namespace rct {
         //setup vars
         size_t rows = 1;
         size_t cols = pubs.size();
-        LOG_ERROR_AND_THROW_IF(cols >= 1, "Empty pubs");
+        LOG_ERROR_AND_THROW_UNLESS(cols >= 1, "Empty pubs");
         keyV tmp(rows + 1);
         keyV sk(rows + 1);
         keyM M(cols, tmp);
@@ -314,23 +314,23 @@ namespace rct {
             const size_t n = pubs.size();
 
             // Check data
-            LOG_ERROR_AND_RETURN_IF(n >= 1, false, "Empty pubs");
-            LOG_ERROR_AND_RETURN_IF(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
+            LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
+            LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
             for (const auto &s: sig.s)
-              LOG_ERROR_AND_RETURN_IF(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
-            LOG_ERROR_AND_RETURN_IF(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
-            LOG_ERROR_AND_RETURN_IF(!(sig.I == rct::identity()), false, "Bad key image!");
+              LOG_ERROR_AND_RETURN_UNLESS(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
+            LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
+            LOG_ERROR_AND_RETURN_UNLESS(!(sig.I == rct::identity()), false, "Bad key image!");
 
             // Cache commitment offset for efficient subtraction later
             ge_p3 C_offset_p3;
-            LOG_ERROR_AND_RETURN_IF(ge_frombytes_vartime(&C_offset_p3, C_offset.bytes) == 0, false, "point conv failed");
+            LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&C_offset_p3, C_offset.bytes) == 0, false, "point conv failed");
             ge_cached C_offset_cached;
             ge_p3_to_cached(&C_offset_cached, &C_offset_p3);
 
             // Prepare key images
             key c = copy(sig.c1);
             key D_8 = scalarmult8(sig.D);
-            LOG_ERROR_AND_RETURN_IF(!(D_8 == rct::identity()), false, "Bad auxiliary key image!");
+            LOG_ERROR_AND_RETURN_UNLESS(!(D_8 == rct::identity()), false, "Bad auxiliary key image!");
             geDsmp I_precomp;
             geDsmp D_precomp;
             precomp(I_precomp.k,sig.I);
@@ -393,7 +393,7 @@ namespace rct {
                 // Precompute points for L/R
                 precomp(P_precomp.k,pubs[i].dest);
 
-                LOG_ERROR_AND_RETURN_IF(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
+                LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
                 ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
                 ge_p1p1_to_p3(&temp_p3,&temp_p1);
                 ge_dsm_precomp(C_precomp.k,&temp_p3);
@@ -409,7 +409,7 @@ namespace rct {
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;
                 c_new = hash_to_scalar(c_to_hash);
-                LOG_ERROR_AND_RETURN_IF(!(c_new == rct::zero()), false, "Bad signature hash");
+                LOG_ERROR_AND_RETURN_UNLESS(!(c_new == rct::zero()), false, "Bad signature hash");
                 copy(c,c_new);
 
                 i = i + 1;
@@ -466,14 +466,14 @@ namespace rct {
      , ctkeyV& outSk
      ) {
         hw::device& hwdev = hw::get_device("default");
-        LOG_ERROR_AND_THROW_IF(inamounts.size() > 0, "Empty inamounts");
-        LOG_ERROR_AND_THROW_IF(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
-        LOG_ERROR_AND_THROW_IF(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
-        LOG_ERROR_AND_THROW_IF(amount_keys.size() == destinations.size(), "Different number of amount_keys/destinations");
-        LOG_ERROR_AND_THROW_IF(index.size() == inSk.size(), "Different number of index/inSk");
-        LOG_ERROR_AND_THROW_IF(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
+        LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
+        LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
+        LOG_ERROR_AND_THROW_UNLESS(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
+        LOG_ERROR_AND_THROW_UNLESS(amount_keys.size() == destinations.size(), "Different number of amount_keys/destinations");
+        LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
+        LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
         for (size_t n = 0; n < mixRing.size(); ++n) {
-          LOG_ERROR_AND_THROW_IF(index[n] < mixRing[n].size(), "Bad index into mixRing");
+          LOG_ERROR_AND_THROW_UNLESS(index[n] < mixRing[n].size(), "Bad index into mixRing");
         }
 
         rctSig rv;
@@ -589,12 +589,12 @@ namespace rct {
 
         for (const rctSig& rv: rvv)
         {
-          LOG_ERROR_AND_RETURN_IF(rv.type == RCTTypeCLSAG,
+          LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG,
               false, "verRctSemanticsSimple called on non simple rctSig");
-          LOG_ERROR_AND_RETURN_IF(rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs), false, "Mismatched sizes of outPk and bulletproofs");
-          LOG_ERROR_AND_RETURN_IF(rv.p.pseudoOuts.size() == rv.p.CLSAGs.size(), false, "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs");
-          LOG_ERROR_AND_RETURN_IF(rv.pseudoOuts.empty(), false, "rv.pseudoOuts is not empty");
-          LOG_ERROR_AND_RETURN_IF(rv.outPk.size() == rv.ecdhInfo.size(), false, "Mismatched sizes of outPk and rv.ecdhInfo");
+          LOG_ERROR_AND_RETURN_UNLESS(rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs), false, "Mismatched sizes of outPk and bulletproofs");
+          LOG_ERROR_AND_RETURN_UNLESS(rv.p.pseudoOuts.size() == rv.p.CLSAGs.size(), false, "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs");
+          LOG_ERROR_AND_RETURN_UNLESS(rv.pseudoOuts.empty(), false, "rv.pseudoOuts is not empty");
+          LOG_ERROR_AND_RETURN_UNLESS(rv.outPk.size() == rv.ecdhInfo.size(), false, "Mismatched sizes of outPk and rv.ecdhInfo");
         }
 
         results.resize(max_non_bp_proofs);
@@ -662,10 +662,10 @@ namespace rct {
     bool verRctNonSemanticsSimple(const rctSig rv) {
       try
       {
-        LOG_ERROR_AND_RETURN_IF(rv.type == RCTTypeCLSAG,
+        LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG,
             false, "verRctNonSemanticsSimple called on non simple rctSig");
         // semantics check is early, and mixRing/MGs aren't resolved yet
-        LOG_ERROR_AND_RETURN_IF(rv.p.pseudoOuts.size() == rv.mixRing.size(), false, "Mismatched sizes of rv.p.pseudoOuts and mixRing");
+        LOG_ERROR_AND_RETURN_UNLESS(rv.p.pseudoOuts.size() == rv.mixRing.size(), false, "Mismatched sizes of rv.p.pseudoOuts and mixRing");
 
         const size_t threads = std::max(rv.outPk.size(), rv.mixRing.size());
 
@@ -711,9 +711,9 @@ namespace rct {
 
     amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, key& mask) {
         hw::device& hwdev = hw::get_device("default");
-        LOG_ERROR_AND_RETURN_IF(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
-        LOG_ERROR_AND_THROW_IF(i < rv.ecdhInfo.size(), "Bad index");
-        LOG_ERROR_AND_THROW_IF(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
+        LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
+        LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");
+        LOG_ERROR_AND_THROW_UNLESS(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
 
         //mask amount and mask
         ecdhTuple ecdh_info = rv.ecdhInfo[i];
@@ -722,11 +722,11 @@ namespace rct {
         key amount = ecdh_info.amount;
         key C = rv.outPk[i].mask;
         key Ctmp;
-        LOG_ERROR_AND_THROW_IF(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
-        LOG_ERROR_AND_THROW_IF(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
+        LOG_ERROR_AND_THROW_UNLESS(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
+        LOG_ERROR_AND_THROW_UNLESS(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
         addKeys2(Ctmp, mask, amount);
         if (C != Ctmp) {
-            LOG_ERROR_AND_THROW_IF(false, "warning, amount decoded incorrectly, will be unable to spend");
+            LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
         return h2d(amount);
     }

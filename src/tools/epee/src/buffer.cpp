@@ -44,7 +44,7 @@ namespace net_utils
 
   void buffer::erase(size_t sz) {
     NET_BUFFER_LOG("erasing " << sz << "/" << size());
-    LOG_ERROR_AND_THROW_IF(offset + sz <= storage.size(), "erase: sz too large");
+    LOG_ERROR_AND_THROW_UNLESS(offset + sz <= storage.size(), "erase: sz too large");
     offset += sz;
     if (offset == storage.size()) {
       storage.clear();
@@ -53,12 +53,12 @@ namespace net_utils
   }
 
   std::span<const uint8_t> buffer::span(size_t sz) const {
-    LOG_ERROR_AND_THROW_IF(sz <= size(), "span is too large");
+    LOG_ERROR_AND_THROW_UNLESS(sz <= size(), "span is too large");
     return std::span<const uint8_t>(storage).subspan(offset, sz);
   }
 
   std::span<const uint8_t> buffer::carve(size_t sz) {
-    LOG_ERROR_AND_THROW_IF(sz <= size(), "span is too large");
+    LOG_ERROR_AND_THROW_UNLESS(sz <= size(), "span is too large");
     offset += sz;
     return std::span<const uint8_t>(storage).subspan(offset - sz, sz);
   }

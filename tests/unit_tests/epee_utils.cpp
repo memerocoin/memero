@@ -548,7 +548,7 @@ TEST(NetUtils, NetworkAddress)
 static bool is_local(const char *s)
 {
   uint32_t ip;
-  LOG_ERROR_AND_THROW_IF(epee::string_tools::get_ip_int32_from_string(ip, s), std::string("Invalid IP address: ") + s);
+  LOG_ERROR_AND_THROW_UNLESS(epee::string_tools::get_ip_int32_from_string(ip, s), std::string("Invalid IP address: ") + s);
   return epee::net_utils::is_ip_local(ip);
 }
 

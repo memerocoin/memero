@@ -48,14 +48,14 @@ namespace tools
 */
 Notify::Notify(const char *spec)
 {
-  LOG_ERROR_AND_THROW_IF(spec, "Null spec");
+  LOG_ERROR_AND_THROW_UNLESS(spec, "Null spec");
 
   boost::split(args, spec, boost::is_any_of(" \t"), boost::token_compress_on);
-  LOG_ERROR_AND_THROW_IF(args.size() > 0, "Failed to parse spec");
+  LOG_ERROR_AND_THROW_UNLESS(args.size() > 0, "Failed to parse spec");
   if (strchr(spec, '\'') || strchr(spec, '\"') || strchr(spec, '\\'))
     MWARNING("A notification spec contains a quote or backslash: note that these are handled verbatim, which may not be the intent");
   filename = args[0];
-  LOG_ERROR_AND_THROW_IF(std::filesystem::exists(std::filesystem::path(filename)),
+  LOG_ERROR_AND_THROW_UNLESS(std::filesystem::exists(std::filesystem::path(filename)),
                              "File not found: " << filename);
 }
 

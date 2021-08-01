@@ -230,11 +230,11 @@ bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, c
   // easy case if we have the whole tx
   if (!entry.as_hex.empty())
   {
-    LOG_ERROR_AND_RETURN_IF(epee::string_tools::parse_hexstr_to_binbuff(entry.as_hex, bd), false, "Failed to parse tx data");
-    LOG_ERROR_AND_RETURN_IF(cryptonote::parse_and_validate_tx_from_blob(bd, tx), false, "Invalid tx data");
+    LOG_ERROR_AND_RETURN_UNLESS(epee::string_tools::parse_hexstr_to_binbuff(entry.as_hex, bd), false, "Failed to parse tx data");
+    LOG_ERROR_AND_RETURN_UNLESS(cryptonote::parse_and_validate_tx_from_blob(bd, tx), false, "Invalid tx data");
     tx_hash = cryptonote::get_transaction_hash(tx);
     // if the hash was given, check it matches
-    LOG_ERROR_AND_RETURN_IF(entry.tx_hash.empty() || epee::string_tools::pod_to_hex(tx_hash) == entry.tx_hash, false,
+    LOG_ERROR_AND_RETURN_UNLESS(entry.tx_hash.empty() || epee::string_tools::pod_to_hex(tx_hash) == entry.tx_hash, false,
         "Response claims a different hash than the data yields");
     return true;
   }
@@ -522,7 +522,7 @@ void wallet2::set_subaddress_lookahead(size_t major, size_t minor)
 //----------------------------------------------------------------------------------------------------
 void wallet2::set_spent(size_t idx, uint64_t height)
 {
-  LOG_ERROR_AND_THROW_IF(idx < m_transfers.size(), "Invalid index");
+  LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
   LOG_PRINT_L2("Setting SPENT at " << height << ": ki " << td.m_key_image << ", amount " << print_money(td.m_amount));
   td.m_spent = true;
@@ -531,7 +531,7 @@ void wallet2::set_spent(size_t idx, uint64_t height)
 //----------------------------------------------------------------------------------------------------
 void wallet2::set_unspent(size_t idx)
 {
-  LOG_ERROR_AND_THROW_IF(idx < m_transfers.size(), "Invalid index");
+  LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
   LOG_PRINT_L2("Setting UNSPENT: ki " << td.m_key_image << ", amount " << print_money(td.m_amount));
   td.m_spent = false;
@@ -552,7 +552,7 @@ bool wallet2::is_spent(const transfer_details &td, bool strict) const
 //----------------------------------------------------------------------------------------------------
 bool wallet2::is_spent(size_t idx, bool strict) const
 {
-  LOG_ERROR_AND_THROW_IF(idx < m_transfers.size(), "Invalid index");
+  LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   const transfer_details &td = m_transfers[idx];
   return is_spent(td, strict);
 }
@@ -565,7 +565,7 @@ size_t wallet2::get_transfer_details(const crypto::key_image &ki) const
     if (td.m_key_image_known && td.m_key_image == ki)
       return idx;
   }
-  LOG_ERROR_AND_THROW_IF(false, "Key image not found");
+  LOG_ERROR_AND_THROW_UNLESS(false, "Key image not found");
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::key_derivation &derivation, const std::vector<crypto::key_derivation> &additional_derivations, size_t i, tx_scan_info_t &tx_scan_info) const
@@ -2272,14 +2272,14 @@ void wallet2::clear_soft()
 bool wallet2::store_keys(const std::string& keys_file_name, const epee::wipeable_string& password)
 {
   std::optional<wallet::logic::type::wallet::keys_file_data> keys_file_data = get_keys_file_data(password);
-  LOG_ERROR_AND_RETURN_IF(keys_file_data != std::nullopt, false, "failed to generate wallet keys data");
+  LOG_ERROR_AND_RETURN_UNLESS(keys_file_data != std::nullopt, false, "failed to generate wallet keys data");
 
   std::string tmp_file_name = keys_file_name + ".new";
   std::string buf;
   bool r = ::serialization::dump_binary(keys_file_data.value(), buf);
   r = r && wallet::logic::controller::wallet::save_to_file
     (tmp_file_name, buf);
-  LOG_ERROR_AND_RETURN_IF(r, false, "failed to generate wallet keys file " << tmp_file_name);
+  LOG_ERROR_AND_RETURN_UNLESS(r, false, "failed to generate wallet keys file " << tmp_file_name);
 
   std::error_code e = tools::replace_file(tmp_file_name, keys_file_name);
 
@@ -2303,7 +2303,7 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   account.encrypt_keys(key);
 
   bool r = epee::serialization::store_t_to_binary(account, account_data);
-  LOG_ERROR_AND_RETURN_IF(r, std::nullopt, "failed to serialize wallet keys");
+  LOG_ERROR_AND_RETURN_UNLESS(r, std::nullopt, "failed to serialize wallet keys");
   std::optional<wallet::logic::type::wallet::keys_file_data> keys_file_data = (wallet::logic::type::wallet::keys_file_data) {};
 
   // Create a JSON object with "key_data" and "seed_language" as keys.
@@ -3397,7 +3397,7 @@ namespace
   template<typename T>
   T pop_random_value(std::vector<T>& vec)
   {
-    LOG_ERROR_AND_RETURN_IF(!vec.empty(), T(), "Vector must be non-empty");
+    LOG_ERROR_AND_RETURN_UNLESS(!vec.empty(), T(), "Vector must be non-empty");
 
     size_t idx = crypto::rand_idx(vec.size());
     return pop_index (vec, idx);
@@ -3406,7 +3406,7 @@ namespace
   template<typename T>
   T pop_back(std::vector<T>& vec)
   {
-    LOG_ERROR_AND_RETURN_IF(!vec.empty(), T(), "Vector must be non-empty");
+    LOG_ERROR_AND_RETURN_UNLESS(!vec.empty(), T(), "Vector must be non-empty");
 
     T res = vec.back();
     vec.pop_back();
@@ -3575,7 +3575,7 @@ bool wallet2::tx_add_fake_output(std::vector<std::vector<wallet::logic::type::ge
   if (global_index == real_index) // don't re-add real one
     return false;
   auto item = std::make_tuple(global_index, output_public_key, mask);
-  LOG_ERROR_AND_RETURN_IF(!outs.empty(), false, "internal error: outs is empty");
+  LOG_ERROR_AND_RETURN_UNLESS(!outs.empty(), false, "internal error: outs is empty");
   if (std::find(outs.back().begin(), outs.back().end(), item) != outs.back().end()) // don't add duplicates
     return false;
   // check the keys are valid

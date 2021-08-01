@@ -140,7 +140,7 @@ namespace hw {
         }
 
         std::vector<crypto::public_key>  device_default::get_subaddress_spend_public_keys(const cryptonote::account_keys &keys, uint32_t account, uint32_t begin, uint32_t end) {
-            LOG_ERROR_AND_THROW_IF(begin <= end, "begin > end");
+            LOG_ERROR_AND_THROW_UNLESS(begin <= end, "begin > end");
 
             std::vector<crypto::public_key> pkeys;
             pkeys.reserve(end - begin);
@@ -148,7 +148,7 @@ namespace hw {
 
             ge_p3 p3;
             ge_cached cached;
-            LOG_ERROR_AND_THROW_IF(ge_frombytes_vartime(&p3, (const unsigned char*)keys.m_account_address.m_spend_public_key.data) == 0,
+            LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&p3, (const unsigned char*)keys.m_account_address.m_spend_public_key.data) == 0,
                 "ge_frombytes_vartime failed to convert spend public key");
             ge_p3_to_cached(&cached, &p3);
 
@@ -319,13 +319,13 @@ namespace hw {
             {
             // sending change to yourself; derivation = a*R
                 r = generate_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key, derivation);
-                LOG_ERROR_AND_RETURN_IF(r, false, "at creation outs: failed to generate_key_derivation(" << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")");
+                LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to generate_key_derivation(" << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")");
             }
             else
             {
             // sending to the recipient; derivation = r*A (or s*C in the subaddress scheme)
                 r = generate_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key, derivation);
-                LOG_ERROR_AND_RETURN_IF(r, false, "at creation outs: failed to generate_key_derivation(" << dst_entr.addr.m_view_public_key << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")");
+                LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to generate_key_derivation(" << dst_entr.addr.m_view_public_key << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")");
             }
 
             if (need_additional_txkeys)
@@ -340,7 +340,7 @@ namespace hw {
                 amount_keys.push_back(rct::sk2rct(scalar1));
             }
             r = derive_public_key(derivation, output_index, dst_entr.addr.m_spend_public_key, out_eph_public_key);
-            LOG_ERROR_AND_RETURN_IF(r, false, "at creation outs: failed to derive_public_key(" << derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
+            LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to derive_public_key(" << derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
 
             return r;
         }

@@ -114,15 +114,15 @@ void reset_console_color();
     throw std::runtime_error(ss.str());         \
   } while(0)
 
-#define LOG_ERROR_AND_THROW_IF(expr, message)   \
+#define LOG_ERROR_AND_THROW_UNLESS(expr, message)   \
   do {                                          \
     if(!(expr))                                 \
       LOG_ERROR_AND_THROW(message);             \
   } while(0)
 
 
-#ifndef RETURN_IF
-#define RETURN_IF(expr, fail_ret_val)           \
+#ifndef RETURN_UNLESS
+#define RETURN_UNLESS(expr, fail_ret_val)           \
   do {                                          \
     if(!(expr)) {                               \
       return fail_ret_val;                      \
@@ -130,8 +130,8 @@ void reset_console_color();
   } while(0)
 #endif
 
-#ifndef LOG_ERROR_AND_RETURN_IF
-#define LOG_ERROR_AND_RETURN_IF(expr, fail_ret_val, message)  \
+#ifndef LOG_ERROR_AND_RETURN_UNLESS
+#define LOG_ERROR_AND_RETURN_UNLESS(expr, fail_ret_val, message)  \
   do {                                                        \
     if(!(expr)) {                                             \
       LOG_ERROR(message);                                     \
@@ -140,8 +140,8 @@ void reset_console_color();
   } while(0)
 #endif
 
-#ifndef LOG_WITH_LEVEL_AND_RETURN_IF
-#define LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, l, message)  \
+#ifndef LOG_WITH_LEVEL_AND_RETURN_UNLESS
+#define LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, l, message)  \
   do {                                                                \
     if(!(expr)) {                                                     \
       LOG_PRINT_L##l(message);                                        \
@@ -150,14 +150,14 @@ void reset_console_color();
   } while(0)
 #endif
 
-#ifndef LOG_WITH_LEVEL_0_AND_RETURN_IF
-#define LOG_WITH_LEVEL_0_AND_RETURN_IF(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 0, message)
+#ifndef LOG_WITH_LEVEL_0_AND_RETURN_UNLESS
+#define LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
+  LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, 0, message)
 #endif
 
-#ifndef LOG_WITH_LEVEL_1_AND_RETURN_IF
-#define LOG_WITH_LEVEL_1_AND_RETURN_IF(expr, fail_ret_val, message) \
-  LOG_WITH_LEVEL_AND_RETURN_IF(expr, fail_ret_val, 1, message)
+#ifndef LOG_WITH_LEVEL_1_AND_RETURN_UNLESS
+#define LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(expr, fail_ret_val, message) \
+  LOG_WITH_LEVEL_AND_RETURN_UNLESS(expr, fail_ret_val, 1, message)
 #endif
 
 

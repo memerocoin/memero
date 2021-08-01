@@ -304,7 +304,7 @@ namespace nodetool
     if(fails > P2P_IP_FAILS_BEFORE_BLOCK)
     {
       auto it = m_host_fails_score.find(address.host_str());
-      LOG_ERROR_AND_RETURN_IF(it != m_host_fails_score.end(), false, "internal error");
+      LOG_ERROR_AND_RETURN_UNLESS(it != m_host_fails_score.end(), false, "internal error");
       it->second = P2P_IP_FAILS_BEFORE_BLOCK/2;
       block_host(address);
     }
@@ -351,13 +351,13 @@ namespace nodetool
           m_command_line_peers.push_back(std::move(pe));
           continue;
         }
-        LOG_ERROR_AND_RETURN_IF(
+        LOG_ERROR_AND_RETURN_UNLESS(
           adr == net::error::unsupported_address, false, "Bad address (\"" << pr_str << "\"): " << adr.error().message()
         );
 
         std::vector<epee::net_utils::network_address> resolved_addrs;
         bool r = append_net_address(resolved_addrs, pr_str, default_port);
-        LOG_ERROR_AND_RETURN_IF(r, false, "Failed to parse or resolve address from string: " << pr_str);
+        LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse or resolve address from string: " << pr_str);
         for (const epee::net_utils::network_address& addr : resolved_addrs)
         {
           pe.id = crypto::rand<uint64_t>();
@@ -527,7 +527,7 @@ namespace nodetool
   bool node_server::init(const boost::program_options::variables_map& vm)
   {
     bool res = handle_command_line(vm);
-    LOG_ERROR_AND_RETURN_IF(res, false, "Failed to handle command line");
+    LOG_ERROR_AND_RETURN_UNLESS(res, false, "Failed to handle command line");
 
     if (m_nettype == cryptonote::TESTNET)
     {
@@ -552,12 +552,12 @@ namespace nodetool
 
 
     res = init_config();
-    LOG_ERROR_AND_RETURN_IF(res, false, "Failed to init config.");
+    LOG_ERROR_AND_RETURN_UNLESS(res, false, "Failed to init config.");
 
     for (auto& zone : m_network_zones)
     {
       res = zone.second.m_peerlist.init(m_peerlist_storage.take_zone(zone.first), m_allow_local_ip);
-      LOG_ERROR_AND_RETURN_IF(res, false, "Failed to init peerlist.");
+      LOG_ERROR_AND_RETURN_UNLESS(res, false, "Failed to init peerlist.");
     }
 
     for(const auto& p: m_command_line_peers)
@@ -599,7 +599,7 @@ namespace nodetool
           MINFO("Binding (IPv6) on " << zone.second.m_bind_ipv6_address << ":" << zone.second.m_port_ipv6);
         }
         res = zone.second.m_net_server.init_server(zone.second.m_port, zone.second.m_bind_ip, ipv6_port, ipv6_addr, m_use_ipv6, m_require_ipv4, epee::net_utils::ssl_support_t::e_ssl_support_disabled);
-        LOG_ERROR_AND_RETURN_IF(res, false, "Failed to bind server");
+        LOG_ERROR_AND_RETURN_UNLESS(res, false, "Failed to bind server");
       }
     }
 
@@ -1262,9 +1262,9 @@ namespace nodetool
       else
         random_index = crypto::rand_idx(filtered.size());
 
-      LOG_ERROR_AND_RETURN_IF(random_index < filtered.size(), false, "random_index < filtered.size() failed!!");
+      LOG_ERROR_AND_RETURN_UNLESS(random_index < filtered.size(), false, "random_index < filtered.size() failed!!");
       random_index = filtered[random_index];
-      LOG_ERROR_AND_RETURN_IF(random_index < (use_white_list ? zone.m_peerlist.get_white_peers_count() : zone.m_peerlist.get_gray_peers_count()),
+      LOG_ERROR_AND_RETURN_UNLESS(random_index < (use_white_list ? zone.m_peerlist.get_white_peers_count() : zone.m_peerlist.get_gray_peers_count()),
           false, "random_index < peers size failed!!");
 
       if(tried_peers.count(random_index))
@@ -1273,7 +1273,7 @@ namespace nodetool
       tried_peers.insert(random_index);
       peerlist_entry pe = AUTO_VAL_INIT(pe);
       bool r = use_white_list ? zone.m_peerlist.get_white_peer_by_index(pe, random_index):zone.m_peerlist.get_gray_peer_by_index(pe, random_index);
-      LOG_ERROR_AND_RETURN_IF(r, false, "Failed to get random peer from peerlist(white:" << use_white_list << ")");
+      LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to get random peer from peerlist(white:" << use_white_list << ")");
 
       ++try_count;
 
@@ -1977,7 +1977,7 @@ namespace nodetool
       //try ping to be sure that we can add this peer to peer_list
       try_ping(arg.node_data, context, [peer_id_l, port_l, context, this]()
       {
-        LOG_ERROR_AND_RETURN_IF((context.m_remote_address.get_type_id() == epee::net_utils::ipv4_network_address::get_type_id() || context.m_remote_address.get_type_id() == epee::net_utils::ipv6_network_address::get_type_id()), void(),
+        LOG_ERROR_AND_RETURN_UNLESS((context.m_remote_address.get_type_id() == epee::net_utils::ipv4_network_address::get_type_id() || context.m_remote_address.get_type_id() == epee::net_utils::ipv6_network_address::get_type_id()), void(),
             "Only IPv4 or IPv6 addresses are supported here");
         //called only(!) if success pinged, update local peerlist
         peerlist_entry pe;
@@ -2239,7 +2239,7 @@ namespace nodetool
   {
     bool is_ipv4 = na.get_type_id() == epee::net_utils::ipv4_network_address::get_type_id();
     bool is_ipv6 = na.get_type_id() == epee::net_utils::ipv6_network_address::get_type_id();
-    LOG_ERROR_AND_RETURN_IF(is_ipv4 || is_ipv6, std::nullopt,
+    LOG_ERROR_AND_RETURN_UNLESS(is_ipv4 || is_ipv6, std::nullopt,
       "Only IPv4 or IPv6 addresses are supported here");
 
     std::string address;
@@ -2308,7 +2308,7 @@ namespace nodetool
       }
       std::vector<epee::net_utils::network_address> resolved_addrs;
       bool r = append_net_address(resolved_addrs, pr_str, default_port);
-      LOG_ERROR_AND_RETURN_IF(r, false, "Failed to parse or resolve address from string: " << pr_str);
+      LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse or resolve address from string: " << pr_str);
       for (const epee::net_utils::network_address& addr : resolved_addrs)
       {
         container.push_back(addr);
@@ -2325,7 +2325,7 @@ namespace nodetool
       return false;
 
     bool address_ok = (context.m_remote_address.get_type_id() == epee::net_utils::ipv4_network_address::get_type_id() || context.m_remote_address.get_type_id() == epee::net_utils::ipv6_network_address::get_type_id());
-    LOG_ERROR_AND_RETURN_IF(address_ok, false,
+    LOG_ERROR_AND_RETURN_UNLESS(address_ok, false,
         "Only IPv4 or IPv6 addresses are supported here");
 
     const epee::net_utils::network_address na = context.m_remote_address;

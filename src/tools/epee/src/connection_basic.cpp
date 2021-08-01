@@ -62,7 +62,7 @@ namespace
 {
 	boost::asio::ssl::context& get_context(connection_basic_shared_state* state)
 	{
-		LOG_ERROR_AND_THROW_IF(state != nullptr, "state shared_ptr cannot be null");
+		LOG_ERROR_AND_THROW_UNLESS(state != nullptr, "state shared_ptr cannot be null");
 		return state->ssl_context;
 	}
 }

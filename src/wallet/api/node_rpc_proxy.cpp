@@ -33,12 +33,12 @@
 
 #define RETURN_ON_RPC_RESPONSE_ERROR(r, error, res, method) \
   do { \
-    LOG_ERROR_AND_RETURN_IF(error.code == 0, error.message, error.message); \
-    LOG_ERROR_AND_RETURN_IF(r, std::string("Failed to connect to daemon"), "Failed to connect to daemon"); \
+    LOG_ERROR_AND_RETURN_UNLESS(error.code == 0, error.message, error.message); \
+    LOG_ERROR_AND_RETURN_UNLESS(r, std::string("Failed to connect to daemon"), "Failed to connect to daemon"); \
     /* empty string -> not connection */ \
-    LOG_ERROR_AND_RETURN_IF(!res.status.empty(), res.status, "No connection to daemon"); \
-    LOG_ERROR_AND_RETURN_IF(res.status != CORE_RPC_STATUS_BUSY, res.status, "Daemon busy"); \
-    LOG_ERROR_AND_RETURN_IF(res.status == CORE_RPC_STATUS_OK, res.status, "Error calling " + std::string(method) + " daemon RPC"); \
+    LOG_ERROR_AND_RETURN_UNLESS(!res.status.empty(), res.status, "No connection to daemon"); \
+    LOG_ERROR_AND_RETURN_UNLESS(res.status != CORE_RPC_STATUS_BUSY, res.status, "Daemon busy"); \
+    LOG_ERROR_AND_RETURN_UNLESS(res.status == CORE_RPC_STATUS_OK, res.status, "Error calling " + std::string(method) + " daemon RPC"); \
   } while(0)
 
 using namespace epee;

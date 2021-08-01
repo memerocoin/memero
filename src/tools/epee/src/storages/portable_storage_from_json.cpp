@@ -41,7 +41,7 @@ namespace epee
     {
       void run_handler(hsection current_section, std::string::const_iterator& sec_buf_begin, std::string::const_iterator buf_end, portable_storage& stg, unsigned int recursion)
       {
-        LOG_ERROR_AND_THROW_IF(recursion < EPEE_JSON_RECURSION_LIMIT_INTERNAL, "Wrong JSON data: recursion limitation (" << EPEE_JSON_RECURSION_LIMIT_INTERNAL << ") exceeded");
+        LOG_ERROR_AND_THROW_UNLESS(recursion < EPEE_JSON_RECURSION_LIMIT_INTERNAL, "Wrong JSON data: recursion limitation (" << EPEE_JSON_RECURSION_LIMIT_INTERNAL << ") exceeded");
 
         std::string name;
         harray h_array = nullptr;
@@ -157,7 +157,7 @@ namespace epee
             {
               //sub section here
               hsection new_sec = stg.open_section(name, current_section, true);
-              LOG_ERROR_AND_THROW_IF(new_sec, "Failed to insert new section in json: " << std::string(it, buf_end));
+              LOG_ERROR_AND_THROW_UNLESS(new_sec, "Failed to insert new section in json: " << std::string(it, buf_end));
               run_handler(new_sec, it, buf_end, stg, recursion + 1);
               state = match_state_wonder_after_value;
             }else if(*it == '[')
@@ -186,7 +186,7 @@ namespace epee
               //mean array of sections
               hsection new_sec = nullptr;
               h_array = stg.insert_first_section(name, new_sec, current_section);
-              LOG_ERROR_AND_THROW_IF(h_array&&new_sec, "failed to create new section");
+              LOG_ERROR_AND_THROW_UNLESS(h_array&&new_sec, "failed to create new section");
               run_handler(new_sec, it, buf_end, stg, recursion + 1);
               state = match_state_array_after_value;
               array_md = array_mode_sections;
@@ -196,7 +196,7 @@ namespace epee
               std::string val;
               match_string2(it, buf_end, val);
               h_array = stg.insert_first_value(name, std::move(val), current_section);
-              LOG_ERROR_AND_THROW_IF(h_array, " failed to insert values entry");
+              LOG_ERROR_AND_THROW_UNLESS(h_array, " failed to insert values entry");
               state = match_state_array_after_value;
               array_md = array_mode_string;
             }else if (epee::misc_utils::parse::isdigit(*it) || *it == '-')
@@ -219,14 +219,14 @@ namespace epee
                   if (errno) throw std::runtime_error("Invalid number: " + std::string(val));
                   h_array = stg.insert_first_value(name, uint64_t(nval), current_section);
                 }
-                LOG_ERROR_AND_THROW_IF(h_array, " failed to insert values section entry");
+                LOG_ERROR_AND_THROW_UNLESS(h_array, " failed to insert values section entry");
               }else
               {
                 errno = 0;
                 double nval = strtod(val.data(), NULL);
                 if (errno) throw std::runtime_error("Invalid number: " + std::string(val));
                 h_array = stg.insert_first_value(name, double(nval), current_section);
-                LOG_ERROR_AND_THROW_IF(h_array, " failed to insert values section entry");
+                LOG_ERROR_AND_THROW_UNLESS(h_array, " failed to insert values section entry");
               }
 
               state = match_state_array_after_value;
@@ -242,13 +242,13 @@ namespace epee
               if(boost::iequals(word, "true"))
               {
                 h_array = stg.insert_first_value(name, true, current_section);
-                LOG_ERROR_AND_THROW_IF(h_array, " failed to insert values section entry");
+                LOG_ERROR_AND_THROW_UNLESS(h_array, " failed to insert values section entry");
                 state = match_state_array_after_value;
                 array_md = array_mode_booleans;
               }else if(boost::iequals(word, "false"))
               {
                 h_array = stg.insert_first_value(name, false, current_section);
-                LOG_ERROR_AND_THROW_IF(h_array, " failed to insert values section entry");
+                LOG_ERROR_AND_THROW_UNLESS(h_array, " failed to insert values section entry");
                 state = match_state_array_after_value;
                 array_md = array_mode_booleans;
 
@@ -273,7 +273,7 @@ namespace epee
               {
                 hsection new_sec = NULL;
                 bool res = stg.insert_next_section(h_array, new_sec);
-                LOG_ERROR_AND_THROW_IF(res&&new_sec, "failed to insert next section");
+                LOG_ERROR_AND_THROW_UNLESS(res&&new_sec, "failed to insert next section");
                 run_handler(new_sec, it, buf_end, stg, recursion + 1);
                 state = match_state_array_after_value;
               }else CHECK_ISSPACE();
@@ -284,7 +284,7 @@ namespace epee
                 std::string val;
                 match_string2(it, buf_end, val);
                 bool res = stg.insert_next_value(h_array, std::move(val));
-                LOG_ERROR_AND_THROW_IF(res, "failed to insert values");
+                LOG_ERROR_AND_THROW_UNLESS(res, "failed to insert values");
                 state = match_state_array_after_value;
               }else CHECK_ISSPACE();
               break;
@@ -317,7 +317,7 @@ namespace epee
                   if (errno) throw std::runtime_error("Invalid number: " + std::string(val));
                   insert_res = stg.insert_next_value(h_array, double(nval));
                 }
-                LOG_ERROR_AND_THROW_IF(insert_res, "Failed to insert next value");
+                LOG_ERROR_AND_THROW_UNLESS(insert_res, "Failed to insert next value");
                 state = match_state_array_after_value;
                 array_md = array_mode_numbers;
               }else CHECK_ISSPACE();
@@ -330,12 +330,12 @@ namespace epee
                 if(boost::iequals(word, "true"))
                 {
                   bool r = stg.insert_next_value(h_array, true);
-                  LOG_ERROR_AND_THROW_IF(r, " failed to insert values section entry");
+                  LOG_ERROR_AND_THROW_UNLESS(r, " failed to insert values section entry");
                   state = match_state_array_after_value;
                 }else if(boost::iequals(word, "false"))
                 {
                   bool r = stg.insert_next_value(h_array, false);
-                  LOG_ERROR_AND_THROW_IF(r, " failed to insert values section entry");
+                  LOG_ERROR_AND_THROW_UNLESS(r, " failed to insert values section entry");
                   state = match_state_array_after_value;
                 }
                 else LOG_ERROR_AND_THROW("Unknown value keyword " << word);

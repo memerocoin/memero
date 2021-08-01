@@ -149,7 +149,7 @@ namespace parse
             for (int i = 0; i < 4; ++i)
             {
               const unsigned char tmp = isx[(unsigned char)*++it];
-              LOG_ERROR_AND_THROW_IF(tmp != 0xff, "Bad Unicode encoding");
+              LOG_ERROR_AND_THROW_UNLESS(tmp != 0xff, "Bad Unicode encoding");
               dst = dst << 4 | tmp;
             }
             // encode as UTF-8

@@ -124,7 +124,7 @@ namespace signature {
           skey = keys.m_view_secret_key;
           pkey = keys.m_account_address.m_view_public_key;
           break;
-        default: LOG_ERROR_AND_THROW_IF(false, "Invalid signature type requested");
+        default: LOG_ERROR_AND_THROW_UNLESS(false, "Invalid signature type requested");
       }
     }
     // Use a subaddress
@@ -150,7 +150,7 @@ namespace signature {
           skey = skey_view;
           pkey = pkey_view;
           break;
-        default: LOG_ERROR_AND_THROW_IF(false, "Invalid signature type requested");
+        default: LOG_ERROR_AND_THROW_UNLESS(false, "Invalid signature type requested");
       }
       secret_key_to_public_key(skey, pkey);
     }

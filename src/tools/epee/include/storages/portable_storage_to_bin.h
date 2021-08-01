@@ -63,7 +63,7 @@ namespace epee
         return pack_varint_t<uint32_t>(strm, PORTABLE_RAW_SIZE_MARK_DWORD, val);
       }else
       {
-        LOG_ERROR_AND_THROW_IF(val <= 4611686018427387903, "failed to pack varint - too big amount = " << val);
+        LOG_ERROR_AND_THROW_UNLESS(val <= 4611686018427387903, "failed to pack varint - too big amount = " << val);
         return pack_varint_t<uint64_t>(strm, PORTABLE_RAW_SIZE_MARK_INT64, val);
       }
     }
@@ -203,8 +203,8 @@ namespace epee
       pack_varint(strm, sec.m_entries.size());
       for(const section_pair& se: sec.m_entries)
       {
-        LOG_ERROR_AND_THROW_IF(se.first.size() < std::numeric_limits<uint8_t>::max(), "storage_entry_name is too long: " << se.first.size() << ", val: " << se.first);
-        LOG_ERROR_AND_THROW_IF(!se.first.empty(), "storage_entry_name is empty");
+        LOG_ERROR_AND_THROW_UNLESS(se.first.size() < std::numeric_limits<uint8_t>::max(), "storage_entry_name is too long: " << se.first.size() << ", val: " << se.first);
+        LOG_ERROR_AND_THROW_UNLESS(!se.first.empty(), "storage_entry_name is empty");
         uint8_t len = static_cast<uint8_t>(se.first.size());
         strm.write((const char*)&len, sizeof(len));
         strm.write(se.first.data(), size_t(len));

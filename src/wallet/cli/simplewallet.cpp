@@ -964,7 +964,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       spendkey_string = epee::string_tools::pod_to_hex(unwrap(m_recovery_key));
 
       auto r = new_wallet(vm, m_recovery_key, true);
-      LOG_ERROR_AND_RETURN_IF(r, false, sw::tr("account creation failed"));
+      LOG_ERROR_AND_RETURN_UNLESS(r, false, sw::tr("account creation failed"));
       password = *r;
     }
     else
@@ -976,7 +976,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       m_wallet_file = m_generate_new;
       std::optional<epee::wipeable_string> r;
       r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet);
-      LOG_ERROR_AND_RETURN_IF(r, false, sw::tr("account creation failed"));
+      LOG_ERROR_AND_RETURN_UNLESS(r, false, sw::tr("account creation failed"));
       password = *r;
     }
 
@@ -995,7 +995,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       return false;
     }
     auto r = open_wallet(vm);
-    LOG_ERROR_AND_RETURN_IF(r, false, sw::tr("failed to open account"));
+    LOG_ERROR_AND_RETURN_UNLESS(r, false, sw::tr("failed to open account"));
     password = *r;
   }
   if (!m_wallet)
@@ -3650,7 +3650,7 @@ int main(int argc, char* argv[])
 
   cryptonote::simple_wallet w;
   const bool r = w.init(*vm);
-  LOG_ERROR_AND_RETURN_IF(r, 1, sw::tr("Failed to initialize wallet"));
+  LOG_ERROR_AND_RETURN_UNLESS(r, 1, sw::tr("Failed to initialize wallet"));
 
   std::vector<std::string> command = command_line::get_arg(*vm, arg_command);
   if (!command.empty())
