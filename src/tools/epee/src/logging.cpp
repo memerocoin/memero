@@ -171,7 +171,7 @@ const std::set<std::string> default_cat = {"global", "logging", "default"};
 std::mutex g_log_mutex;
 
 void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
-  const std::string cat_str = default_cat.find(cat) != default_cat.end() ? "" : "[" + cat + "] ";
+  const std::string cat_str = m_log_level == 0 ? "" : "[" + cat + "] ";
 
   std::string log_header;
   switch (level) {
