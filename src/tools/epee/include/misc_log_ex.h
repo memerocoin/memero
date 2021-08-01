@@ -86,18 +86,18 @@ void set_console_color(int color, bool bright);
 void reset_console_color();
 
 #define TRY_ENTRY()   try {
-#define CATCH_ENTRY(location, return_val) } \
-  catch(const std::exception& ex) \
-{ \
-  (void)(ex); \
-  LOG_ERROR("Exception at [" << location << "], what=" << ex.what()); \
-  return return_val; \
-}\
-  catch(...)\
-{\
-  LOG_ERROR("Exception at [" << location << "], generic exception \"...\"");\
-  return return_val; \
-}
+#define CATCH_ENTRY(location, return_val) }                             \
+  catch(const std::exception& ex)                                       \
+    {                                                                   \
+      (void)(ex);                                                       \
+      LOG_ERROR("Exception at [" << location << "], what=" << ex.what()); \
+      return return_val;                                                \
+    }                                                                   \
+  catch(...)                                                            \
+    {                                                                   \
+      LOG_ERROR("Exception at [" << location << "], generic exception \"...\""); \
+      return return_val;                                                \
+    }
 
 #define CATCH_ENTRY_L0(lacation, return_val) CATCH_ENTRY(lacation, return_val)
 #define CATCH_ENTRY_L1(lacation, return_val) CATCH_ENTRY(lacation, return_val)
@@ -108,15 +108,15 @@ void reset_console_color();
 
 #define LOG_ERROR_AND_THROW(message) {LOG_ERROR(message); std::stringstream ss; ss << message; throw std::runtime_error(ss.str());}
 
-#define LOG_ERROR_AND_THROW_IF(expr, message)      \
+#define LOG_ERROR_AND_THROW_IF(expr, message)   \
   do {                                          \
     if(!(expr))                                 \
-      LOG_ERROR_AND_THROW(message);                   \
+      LOG_ERROR_AND_THROW(message);             \
   } while(0)
 
 
 #ifndef RETURN_IF
-#define RETURN_IF(expr, fail_ret_val)    \
+#define RETURN_IF(expr, fail_ret_val)           \
   do {                                          \
     if(!(expr)) {                               \
       return fail_ret_val;                      \
@@ -125,12 +125,12 @@ void reset_console_color();
 #endif
 
 #ifndef LOG_ERROR_AND_RETURN_IF
-#define LOG_ERROR_AND_RETURN_IF(expr, fail_ret_val, message) \
-  do {                                                    \
-    if(!(expr)) {                                         \
-      LOG_ERROR(message);                                 \
-      return fail_ret_val;                                \
-    };                                                    \
+#define LOG_ERROR_AND_RETURN_IF(expr, fail_ret_val, message)  \
+  do {                                                        \
+    if(!(expr)) {                                             \
+      LOG_ERROR(message);                                     \
+      return fail_ret_val;                                    \
+    };                                                        \
   } while(0)
 #endif
 
@@ -154,7 +154,7 @@ void reset_console_color();
 
 
 #ifndef LOG_ERROR_IF
-#define LOG_ERROR_IF(expr, message)            \
+#define LOG_ERROR_IF(expr, message)             \
   do {                                          \
     if(!(expr)) {                               \
       LOG_ERROR(message);                       \
@@ -165,10 +165,10 @@ void reset_console_color();
 
 } // epee
 
-#define MCLOG_TYPE(level, cat, color, type, x) do { \
-    std::ostringstream stream;                                          \
-    stream << x;                                                        \
-    epee::log_level(level, cat, std::string_view(stream.str()));        \
+#define MCLOG_TYPE(level, cat, color, type, x) do {               \
+    std::ostringstream stream;                                    \
+    stream << x;                                                  \
+    epee::log_level(level, cat, std::string_view(stream.str()));  \
   } while (0)
 
 #define MCLOG(level, cat, color, x) MCLOG_TYPE(level, cat, color, el::base::DispatchAction::NormalLog, x)
