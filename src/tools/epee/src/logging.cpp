@@ -247,6 +247,7 @@ void log_level(const el::Level level, const std::string cat, const std::string_v
     case el::Level::Trace:
     case el::Level::Debug:
     case el::Level::Warning:
+      break;
     default:
       if (default_cat.find(cat) == default_cat.end()) return;
       log_level_map(level, cat, x);
