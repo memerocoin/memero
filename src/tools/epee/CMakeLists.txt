@@ -28,7 +28,7 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library( epee_log
-  src/mlog.cpp
+  src/logging.cpp
 )
 
 add_library( epee
