@@ -32,7 +32,7 @@
 
 #include <boost/program_options.hpp>
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"
 #include "tools/common/command_line.h"
 #include "tools/common/util.h"

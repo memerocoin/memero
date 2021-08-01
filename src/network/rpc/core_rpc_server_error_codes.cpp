@@ -31,7 +31,7 @@
 
 #include "core_rpc_server_error_codes.h"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 const char *get_rpc_server_error_message(int64_t code)
 {

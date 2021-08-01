@@ -30,7 +30,7 @@
 
 #include "tools/common/util.h"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 
 static __thread int depth = 0;

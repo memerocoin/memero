@@ -29,7 +29,7 @@
 
 #include "tools/epee/include/net/net_parse_helpers.h"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"

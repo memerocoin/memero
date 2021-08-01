@@ -30,7 +30,7 @@
 
 #include "util.h"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/misc_os_dependent.h"
 
 #include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...

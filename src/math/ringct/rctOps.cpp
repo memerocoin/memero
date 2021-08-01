@@ -34,7 +34,7 @@
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 #include <boost/lexical_cast.hpp>
 

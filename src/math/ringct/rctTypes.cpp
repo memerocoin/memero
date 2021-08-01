@@ -30,7 +30,7 @@
 
 #include "rctTypes.hpp"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/int-util.h"
 
 #include "config/cryptonote.hpp"

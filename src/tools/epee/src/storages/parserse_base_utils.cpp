@@ -27,7 +27,7 @@
 
 #include "tools/epee/include/storages/parserse_base_utils.h"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

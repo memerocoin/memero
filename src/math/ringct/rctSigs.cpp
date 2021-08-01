@@ -35,7 +35,7 @@
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
 #include "tools/common/threadpool.h"
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 
 #include "config/cryptonote.hpp"

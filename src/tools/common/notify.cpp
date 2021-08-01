@@ -30,7 +30,7 @@
 
 #include "spawn.h"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/file_io_utils.h"
 
 #include <boost/algorithm/string.hpp>

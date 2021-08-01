@@ -29,7 +29,7 @@
 #include "gtest/gtest.h"
 
 #include <stdint.h>
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/memwipe.h"
 
 // Probably won't catch the optimized out case, but at least we test

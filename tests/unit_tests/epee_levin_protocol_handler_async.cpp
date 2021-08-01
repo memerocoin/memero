@@ -33,7 +33,7 @@
 
 #include "gtest/gtest.h"
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/net/levin_protocol_handler_async.h"
 #include "tools/epee/include/net/net_utils_base.h"

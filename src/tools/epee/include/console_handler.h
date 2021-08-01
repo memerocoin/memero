@@ -33,7 +33,7 @@
 #include "tools/epee/include/readline_buffer.h"
 #endif
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 #include <condition_variable>
 

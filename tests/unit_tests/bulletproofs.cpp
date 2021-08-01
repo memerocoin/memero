@@ -37,7 +37,7 @@
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 #include "wallet/device/device.hpp"
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 TEST(bulletproofs, valid_zero)
 {

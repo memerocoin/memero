@@ -40,7 +40,7 @@ extern "C"
 #include "math/crypto/crypto-ops.h"
 }
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 #include "tools/common/varint.h"
 
 

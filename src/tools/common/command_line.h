@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "tools/epee/include/misc_log_ex.h"
+#include "tools/epee/include/logging.hpp"
 
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
