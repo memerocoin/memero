@@ -166,7 +166,7 @@ namespace epee
             break;
           if (m_stdin_reader.eos())
           {
-            LOG_GLOBAL_INFO("EOF on stdin, exiting");
+            LOG_GLOBAL_VERBOSE("EOF on stdin, exiting");
             std::cout << std::endl;
             break;
           }

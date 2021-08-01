@@ -227,6 +227,7 @@ void reset_console_color();
 #define LOG_GLOBAL_INFO_MAGENTA(x) LOG_CATEGORY_MAGENTA(el::Level::Info, "global",x)
 #define LOG_GLOBAL_INFO_CYAN(x) LOG_CATEGORY_CYAN(el::Level::Info, "global",x)
 
+#define LOG_GLOBAL_VERBOSE(x) LOG_CATEGORY_VERBOSE("global",x)
 
 #define LOG_PRINT_L0(x) LOG_WARNING(x)
 #define LOG_PRINT_L1(x) LOG_INFO(x)
