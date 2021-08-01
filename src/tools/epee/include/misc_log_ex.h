@@ -177,7 +177,7 @@ void reset_console_color();
 #define LOG_WARNING_AND_THROW_IF(expr, message) \
   do {                                          \
     if(expr) {                                  \
-      LOG_WARNING(message);                        \
+      LOG_WARNING(message);                     \
       throw std::runtime_error(message);        \
     };                                          \
   } while(0)
