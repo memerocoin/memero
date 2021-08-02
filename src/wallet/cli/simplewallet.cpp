@@ -3043,20 +3043,14 @@ bool simple_wallet::rescan_blockchain(const std::vector<std::string> &args_)
   return refresh_main(0, reset_type, true);
 }
 //----------------------------------------------------------------------------------------------------
-std::string simple_wallet::get_prompt()
+std::string simple_wallet::get_prompt() const
 {
   std::string addr_start = m_wallet->get_subaddress_as_str({m_current_subaddress_account, 0}).substr(0, 6);
   std::string prompt = std::string("[") + sw::tr("wallet") + " " + addr_start;
   if (!m_wallet->check_connection(NULL))
-    prompt += sw::tr(" (no daemon)");
-  else if (!m_wallet->is_synced()) {
-    if (try_connect_to_daemon(true)) {
-      // don't check the pool in background mode
-      refresh({});
-    } else {
-      prompt += sw::tr(" (out of sync)");
-    }
-  }
+    prompt += " (no daemon)";
+  else if (!m_wallet->is_synced())
+    prompt += " (out of sync)";
   prompt += "]: ";
   return prompt;
 }
