@@ -115,5 +115,12 @@ namespace config
     constexpr size_t SUBADDRESS_LOOKAHEAD_MINOR = 400;
 
     constexpr auto rpc_timeout = std::chrono::minutes(1);
+
+    constexpr std::string_view hash_sep = "######";
+    constexpr std::string_view dash_sep = "------";
+    constexpr std::string_view plus_sep = "++++++";
+    constexpr std::string_view x_sep    = "xxxxxx";
+    constexpr std::string_view tab_sep = "        ";
+
   }
 }
