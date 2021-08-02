@@ -1594,16 +1594,16 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
          << config::lol::hash_sep << " REORGANIZE" << std::endl
          << std::endl
          << "OLD" << std::endl
-         << config::lol::tab_sep << "height:\t\t" << current_height << std::endl
-         << config::lol::tab_sep << "∑ difficulty:\t" << main_chain_cumulative_difficulty << std::endl
+         << config::lol::tab_sep << "height:         " << current_height << std::endl
+         << config::lol::tab_sep << "∑ difficulty:   " << main_chain_cumulative_difficulty << std::endl
          << std::endl
          << "NEW" << std::endl
-         << config::lol::tab_sep << "height:\t\t" << bei.height << std::endl
-         << config::lol::tab_sep << "∑ difficulty:\t" << bei.cumulative_difficulty << std::endl
-         << config::lol::tab_sep << "id:\t\t" << id << std::endl
-         << config::lol::tab_sep << "PoW:\t\t" << proof_of_work << std::endl
-         << config::lol::tab_sep << "difficulty:\t" << current_diff << std::endl
-         << config::lol::tab_sep << "new blocks:\t" << alt_chain.size() << std::endl
+         << config::lol::tab_sep << "height:         " << bei.height << std::endl
+         << config::lol::tab_sep << "∑ difficulty:   " << bei.cumulative_difficulty << std::endl
+         << config::lol::tab_sep << "id:             " << id << std::endl
+         << config::lol::tab_sep << "PoW:            " << proof_of_work << std::endl
+         << config::lol::tab_sep << "difficulty:     " << current_diff << std::endl
+         << config::lol::tab_sep << "new blocks:     " << alt_chain.size() << std::endl
          );
 
       bool r = switch_to_alternative_blockchain(alt_chain, false);
@@ -1621,15 +1621,15 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
          << config::lol::dash_sep << " BLOCK ADDED AS ALTERNATIVE" << std::endl
          << std::endl
          << "CURRENT" << std::endl
-         << config::lol::tab_sep << "height:\t\t" << current_height << std::endl
-         << config::lol::tab_sep << "∑ difficulty:\t" << main_chain_cumulative_difficulty << std::endl
+         << config::lol::tab_sep << "height:         " << current_height << std::endl
+         << config::lol::tab_sep << "∑ difficulty:   " << main_chain_cumulative_difficulty << std::endl
          << std::endl
          << "ALTTERNATIVE" << std::endl
-         << config::lol::tab_sep << "height:\t\t" << bei.height << std::endl
-         << config::lol::tab_sep << "∑ difficulty:\t" << bei.cumulative_difficulty << std::endl
-         << config::lol::tab_sep << "id:\t\t" << id << std::endl
-         << config::lol::tab_sep << "PoW:\t\t" << proof_of_work << std::endl
-         << config::lol::tab_sep << "difficulty:\t" << current_diff << std::endl
+         << config::lol::tab_sep << "height:         " << bei.height << std::endl
+         << config::lol::tab_sep << "∑ difficulty:   " << bei.cumulative_difficulty << std::endl
+         << config::lol::tab_sep << "id:             " << id << std::endl
+         << config::lol::tab_sep << "PoW:            " << proof_of_work << std::endl
+         << config::lol::tab_sep << "difficulty:     " << current_diff << std::endl
          );
       return true;
     }
@@ -1644,15 +1644,15 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
        << config::lol::x_sep << " Block recognized as orphaned and rejected" << std::endl
        << std::endl
        << "CURRENT" << std::endl
-       << config::lol::tab_sep << "height:\t\t" << get_current_blockchain_height() << std::endl
-       << config::lol::tab_sep << "top:\t\t" << get_tail_id() << std::endl
+       << config::lol::tab_sep << "height:         " << get_current_blockchain_height() << std::endl
+       << config::lol::tab_sep << "top:            " << get_tail_id() << std::endl
        << std::endl
        << "ORPHANED" << std::endl
-       << config::lol::tab_sep << "height:\t\t" << block_height << std::endl
-       << config::lol::tab_sep << "id:\t\t" << id << std::endl
-       << config::lol::tab_sep << "parent:\t\t" << b.prev_id << std::endl
-       << config::lol::tab_sep << "parent in alt:\t" << parent_in_alt << std::endl
-       << config::lol::tab_sep << "parent in main:\t" << parent_in_main << std::endl
+       << config::lol::tab_sep << "height:         " << block_height << std::endl
+       << config::lol::tab_sep << "id:             " << id << std::endl
+       << config::lol::tab_sep << "parent:         " << b.prev_id << std::endl
+       << config::lol::tab_sep << "parent in alt:  " << parent_in_alt << std::endl
+       << config::lol::tab_sep << "parent in main: " << parent_in_main << std::endl
        );
   }
 
@@ -3038,13 +3038,12 @@ leave:
      std::endl
      << "++++++ BLOCK SUCCESSFULLY ADDED" << std::endl
      << std::endl
-     << "id:\t\t" << id << std::endl
-     << "PoW:\t\t" << proof_of_work << std::endl
-     << "height:\t\t" << new_height - 1 << std::endl
-     << "difficulty:\t" << current_diffic << std::endl
-     << "block reward:\t" << print_money(fee_summary + base_reward)
-     << "(" << print_money(base_reward) << " + " << print_money(fee_summary) << ")" << std::endl
-     << "weight:\t\t" << cumulative_block_weight << std::endl
+     << "id:             " << id << std::endl
+     << "PoW:            " << proof_of_work << std::endl
+     << "height:         " << new_height - 1 << std::endl
+     << "difficulty:     " << current_diffic << std::endl
+     << "block reward:   " << print_money(fee_summary + base_reward) << "(" << print_money(base_reward) << " + " << print_money(fee_summary) << ")" << std::endl
+     << "weight:         " << cumulative_block_weight << std::endl
     );
   if(m_show_time_stats)
   {
