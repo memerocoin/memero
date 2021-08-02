@@ -1586,7 +1586,17 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     if(main_chain_cumulative_difficulty < bei.cumulative_difficulty) //check if difficulty bigger then in main chain
     {
       //do reorganize!
-      LOG_GLOBAL_INFO_GREEN("###### REORGANIZE on height: " << alt_chain.front().height << " of " << m_db->height() - 1 << " with cum_difficulty " << m_db->get_block_cumulative_difficulty(m_db->height() - 1) << std::endl << " alternative blockchain size: " << alt_chain.size() << " with cum_difficulty " << bei.cumulative_difficulty);
+      LOG_GLOBAL_INFO_GREEN
+        (
+         "###### REORGANIZE on height: " << alt_chain.front().height << " of " << m_db->height() - 1 << std::endl
+         << "OLD:" << std::endl
+         <<" ∑ difficulty:\t" << main_chain_cumulative_difficulty << std::endl
+         << "NEW (" << alt_chain.size() << "):" << std::endl
+         << "id:\t\t" << id << std::endl
+         << "PoW:\t\t" << proof_of_work << std::endl
+         << "difficulty:\t" << current_diff << std::endl
+         << "∑ difficulty:\t" << bei.cumulative_difficulty
+         );
 
       bool r = switch_to_alternative_blockchain(alt_chain, false);
       if (r)
@@ -1597,7 +1607,13 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     }
     else
     {
-      LOG_GLOBAL_INFO_BLUE("----- BLOCK ADDED AS ALTERNATIVE ON HEIGHT " << bei.height << std::endl << "id:\t" << id << std::endl << "PoW:\t" << proof_of_work << std::endl << "difficulty:\t" << current_diff);
+      LOG_GLOBAL_INFO_BLUE
+        (
+         "------ BLOCK ADDED AS ALTERNATIVE ON HEIGHT " << bei.height << std::endl
+         << "id:\t\t" << id << std::endl
+         << "PoW:\t\t" << proof_of_work << std::endl
+         << "difficulty:\t" << current_diff
+         );
       return true;
     }
   }
