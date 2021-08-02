@@ -3042,7 +3042,7 @@ leave:
      << "PoW:            " << proof_of_work << std::endl
      << "height:         " << new_height - 1 << std::endl
      << "difficulty:     " << current_diffic << std::endl
-     << "block reward:   " << print_money(fee_summary + base_reward) << "(" << print_money(base_reward) << " + " << print_money(fee_summary) << ")" << std::endl
+     << "block reward:   " << print_money(fee_summary + base_reward) << " (" << print_money(base_reward) << " + " << print_money(fee_summary) << ")" << std::endl
      << "weight:         " << cumulative_block_weight << std::endl
     );
   if(m_show_time_stats)
