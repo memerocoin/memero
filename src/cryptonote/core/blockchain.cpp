@@ -3043,9 +3043,9 @@ leave:
      << "height:         " << new_height - 1 << std::endl
      << "difficulty:     " << current_diffic << std::endl
      << "block reward:   " << print_money(fee_summary + base_reward)
-     << config::lol::money_symbol << " (" << print_money(base_reward)
+     << config::lol::money_symbol << " ( " << print_money(base_reward)
      << config::lol::money_symbol << " + " << print_money(fee_summary)
-     << config::lol::money_symbol << ")" << std::endl
+     << config::lol::money_symbol << " )" << std::endl
      << "size:           " << cumulative_block_weight << " bytes" << std::endl
     );
   if(m_show_time_stats)
