@@ -171,7 +171,7 @@ namespace string_tools
   std::vector<uint8_t> hex_to_vector_filtered(const std::string_view src)
   {
     std::string s(src);
-    constexpr std::string_view allowed = "0123456789abcdef";
+    constexpr std::string_view allowed = "0123456789abcdefABCDEF";
 
     s.erase(std::remove_if
             (
