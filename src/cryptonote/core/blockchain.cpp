@@ -1591,7 +1591,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
       LOG_GLOBAL_INFO_GREEN
         (
          std::endl
-         << config::lol::hash_sep << " REORGANIZE" << std::endl
+         << config::lol::hash_sep << "REORGANIZE" << std::endl
          << std::endl
          << "OLD" << std::endl
          << config::lol::tab_sep << "height:         " << current_height << std::endl
@@ -1618,7 +1618,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
       LOG_GLOBAL_INFO_BLUE
         (
          std::endl
-         << config::lol::dash_sep << " BLOCK ADDED AS ALTERNATIVE" << std::endl
+         << config::lol::dash_sep << "BLOCK ADDED AS ALTERNATIVE" << std::endl
          << std::endl
          << "CURRENT" << std::endl
          << config::lol::tab_sep << "height:         " << current_height << std::endl
@@ -1641,7 +1641,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     LOG_VERBOSE
       (
        std::endl
-       << config::lol::x_sep << " Block recognized as orphaned and rejected" << std::endl
+       << config::lol::x_sep << "Block recognized as orphaned and rejected" << std::endl
        << std::endl
        << "CURRENT" << std::endl
        << config::lol::tab_sep << "height:         " << get_current_blockchain_height() << std::endl
@@ -3036,7 +3036,7 @@ leave:
   LOG_INFO
     (
      std::endl
-     << config::lol::plus_sep << " BLOCK SUCCESSFULLY ADDED" << std::endl
+     << config::lol::plus_sep << "BLOCK SUCCESSFULLY ADDED" << std::endl
      << std::endl
      << "id:             " << id << std::endl
      << "PoW:            " << proof_of_work << std::endl
