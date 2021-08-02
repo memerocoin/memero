@@ -1601,7 +1601,6 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
          << "id:\t\t" << id << std::endl
          << "PoW:\t\t" << proof_of_work << std::endl
          << "difficulty:\t" << current_diff << std::endl
-         << "######" << std::endl
          );
 
       bool r = switch_to_alternative_blockchain(alt_chain, false);
@@ -1627,7 +1626,6 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
          << "id:\t\t" << id << std::endl
          << "PoW:\t\t" << proof_of_work << std::endl
          << "difficulty:\t" << current_diff << std::endl
-         << "------" << std::endl
          );
       return true;
     }
@@ -3029,7 +3027,6 @@ leave:
      << "block reward:\t" << print_money(fee_summary + base_reward)
      << "(" << print_money(base_reward) << " + " << print_money(fee_summary) << ")" << std::endl
      << "weight:\t\t" << cumulative_block_weight << std::endl
-     << "++++++" << std::endl
     );
   if(m_show_time_stats)
   {
