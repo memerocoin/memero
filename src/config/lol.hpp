@@ -122,6 +122,7 @@ namespace config
     constexpr std::string_view x_sep    = "xxxxxxxx";
     constexpr std::string_view tab_sep  = "        ";
 
+    constexpr std::string_view money_symbol = "λ";
 
   }
 }
