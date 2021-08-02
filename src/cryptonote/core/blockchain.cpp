@@ -1634,9 +1634,21 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
   {
     //block orphaned
     bvc.m_marked_as_orphaned = true;
-    LOG_ERROR_VER("Block recognized as orphaned and rejected, id = " << id << ", height " << block_height
-        << ", parent in alt " << parent_in_alt << ", parent in main " << parent_in_main
-        << " (parent " << b.prev_id << ", current top " << get_tail_id() << ", chain height " << get_current_blockchain_height() << ")");
+    LOG_VERBOSE
+      (
+       std::endl
+       << "xxxxxx Block recognized as orphaned and rejected" << std::endl
+       << "CURRENT:" << std::endl
+       << "height:\t\t" << get_current_blockchain_height() << std::endl
+       << "top:\t\t" << get_tail_id() << std::endl
+       << std::endl
+       << "ORPHANED:" << std::endl
+       << "height:\t\t" << block_height << std::endl
+       << "id:\t\t" << id << std::endl
+       << "parent:\t\t" << b.prev_id << std::endl
+       << "parent in alt:\t" << parent_in_alt << std::endl
+       << "parent in main:\t" << parent_in_main << std::endl
+       );
   }
 
   return true;
