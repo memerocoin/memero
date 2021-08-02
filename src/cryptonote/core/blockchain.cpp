@@ -3036,7 +3036,7 @@ leave:
   LOG_INFO
     (
      std::endl
-     << "++++++ BLOCK SUCCESSFULLY ADDED" << std::endl
+     << config::lol::plus_sep << " BLOCK SUCCESSFULLY ADDED" << std::endl
      << std::endl
      << "id:             " << id << std::endl
      << "PoW:            " << proof_of_work << std::endl
