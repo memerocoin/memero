@@ -6,7 +6,7 @@ test-1:
 --p2p-bind-ip 127.0.0.1 \
 --p2p-bind-port 40000 \
 --rpc-bind-port 44000 \
---log-level 4 \
+--log-level 1 \
 --add-exclusive-node 127.0.0.1:40001 \
 --fixed-difficulty 1000 \
 # --add-exclusive-node 127.0.0.1:40002 \
@@ -30,7 +30,12 @@ make-test-wallet:
 
 test-wallet:
 	../../build/bin/lolnero --testnet --open testnet/test1 \
---daemon-address 127.0.0.1:44000 --log-level 4 \
+--daemon-address 127.0.0.1:44000 --log-level 1 \
+--password ''
+
+test-wallet-2:
+	../../build/bin/lolnero --testnet --open testnet/test1 \
+--daemon-address 127.0.0.1:44001 --log-level 1 \
 --password ''
 
 clear-test:

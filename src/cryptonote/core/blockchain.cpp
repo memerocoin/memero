@@ -1521,7 +1521,8 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     // FIXME:
     // this brings up an interesting point: consider allowing to get block
     // difficulty both by height OR by hash, not just height.
-    diff_t main_chain_cumulative_difficulty = m_db->get_block_cumulative_difficulty(m_db->height() - 1);
+    const auto current_height = m_db->height() - 1;
+    diff_t main_chain_cumulative_difficulty = m_db->get_block_cumulative_difficulty(current_height);
     if (alt_chain.size())
     {
       bei.cumulative_difficulty = prev_data.cumulative_difficulty_high;
@@ -1588,14 +1589,19 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
       //do reorganize!
       LOG_GLOBAL_INFO_GREEN
         (
-         "###### REORGANIZE on height: " << alt_chain.front().height << " of " << m_db->height() - 1 << std::endl
+         std::endl
+         << "###### REORGANIZE" << std::endl
          << "OLD:" << std::endl
-         <<" ∑ difficulty:\t" << main_chain_cumulative_difficulty << std::endl
+         << "height:\t\t" << current_height << std::endl
+         << "∑ difficulty:\t" << main_chain_cumulative_difficulty << std::endl
+         << std::endl
          << "NEW (" << alt_chain.size() << "):" << std::endl
+         << "height:\t\t" << bei.height << std::endl
+         << "∑ difficulty:\t" << bei.cumulative_difficulty << std::endl
          << "id:\t\t" << id << std::endl
          << "PoW:\t\t" << proof_of_work << std::endl
          << "difficulty:\t" << current_diff << std::endl
-         << "∑ difficulty:\t" << bei.cumulative_difficulty
+         << "######" << std::endl
          );
 
       bool r = switch_to_alternative_blockchain(alt_chain, false);
@@ -1609,10 +1615,19 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     {
       LOG_GLOBAL_INFO_BLUE
         (
-         "------ BLOCK ADDED AS ALTERNATIVE ON HEIGHT " << bei.height << std::endl
+         std::endl
+         << "------ BLOCK ADDED AS ALTERNATIVE" << std::endl
+         << "CURRENT:" << std::endl
+         << "height:\t\t" << current_height << std::endl
+         << "∑ difficulty:\t" << main_chain_cumulative_difficulty << std::endl
+         << std::endl
+         << "ALTTERNATIVE:" << std::endl
+         << "height:\t\t" << bei.height << std::endl
+         << "∑ difficulty:\t" << bei.cumulative_difficulty << std::endl
          << "id:\t\t" << id << std::endl
          << "PoW:\t\t" << proof_of_work << std::endl
-         << "difficulty:\t" << current_diff
+         << "difficulty:\t" << current_diff << std::endl
+         << "------" << std::endl
          );
       return true;
     }
@@ -2989,21 +3004,33 @@ leave:
     }
   }
   else
-  {
-    LOG_ERROR("Blocks that failed verification should not reach here");
-  }
+    {
+      LOG_ERROR("Blocks that failed verification should not reach here");
+    }
 
   TIME_MEASURE_FINISH(addblock);
 
   // do this after updating the hard fork state since the weight limit may change due to fork
   if (!update_next_cumulative_weight_limit())
-  {
-    LOG_ERROR("Failed to update next cumulative weight limit");
-    pop_block_from_blockchain();
-    return false;
-  }
+    {
+      LOG_ERROR("Failed to update next cumulative weight limit");
+      pop_block_from_blockchain();
+      return false;
+    }
 
-  LOG_INFO("+++++ BLOCK SUCCESSFULLY ADDED" << std::endl << "id:\t" << id << std::endl << "PoW:\t" << proof_of_work << std::endl << "HEIGHT " << new_height-1 << ", difficulty:\t" << current_diffic << std::endl << "block reward: " << print_money(fee_summary + base_reward) << "(" << print_money(base_reward) << " + " << print_money(fee_summary) << "), coinbase_weight: " << coinbase_weight << ", cumulative weight: " << cumulative_block_weight << ", " << block_processing_time << "(" << target_calculating_time << "/" << longhash_calculating_time << ")ms");
+  LOG_INFO
+    (
+     std::endl
+     << "++++++ BLOCK SUCCESSFULLY ADDED" << std::endl
+     << "id:\t\t" << id << std::endl
+     << "PoW:\t\t" << proof_of_work << std::endl
+     << "height:\t\t" << new_height - 1 << std::endl
+     << "difficulty:\t" << current_diffic << std::endl
+     << "block reward:\t" << print_money(fee_summary + base_reward)
+     << "(" << print_money(base_reward) << " + " << print_money(fee_summary) << ")" << std::endl
+     << "weight:\t\t" << cumulative_block_weight << std::endl
+     << "++++++" << std::endl
+    );
   if(m_show_time_stats)
   {
     LOG_INFO("Height: " << new_height << " coinbase weight: " << coinbase_weight << " cumm: "
