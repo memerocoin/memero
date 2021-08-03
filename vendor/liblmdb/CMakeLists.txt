@@ -35,6 +35,9 @@ add_library(lmdb
   midl.c
   )
 
+set_source_files_properties("mdb.c" PROPERTIES COMPILE_FLAGS
+"-Wno-unused-but-set-variable -Wno-stringop-overflow")
+
 target_link_libraries(lmdb
     ${CMAKE_THREAD_LIBS_INIT}
     )
