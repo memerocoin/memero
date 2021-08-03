@@ -1624,7 +1624,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
          << config::lol::tab_sep << "height:         " << current_height << std::endl
          << config::lol::tab_sep << "∑ difficulty:   " << main_chain_cumulative_difficulty << std::endl
          << std::endl
-         << "ALTTERNATIVE" << std::endl
+         << "ALTERNATIVE" << std::endl
          << config::lol::tab_sep << "height:         " << bei.height << std::endl
          << config::lol::tab_sep << "∑ difficulty:   " << bei.cumulative_difficulty << std::endl
          << config::lol::tab_sep << "id:             " << id << std::endl
