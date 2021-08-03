@@ -328,23 +328,6 @@ bool simple_wallet::set_default_priority(const std::vector<std::string> &args/* 
   }
 }
 
-bool simple_wallet::set_refresh_type(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  std::optional<tools::wallet2::RefreshType> refresh_type = wallet::functional::parse_refresh_type(args[1]);
-  if (!refresh_type)
-  {
-    return true;
-  }
-
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    m_wallet->set_refresh_type(*refresh_type);
-    m_wallet->rewrite(m_wallet_file, pwd_container->password());
-  }
-  return true;
-}
-
 bool simple_wallet::set_unit(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   const std::string &unit = args[1];
@@ -691,7 +674,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "always-confirm-transfers = " << m_wallet->always_confirm_transfers();
     success_msg_writer() << "print-ring-members = " << m_wallet->print_ring_members();
     success_msg_writer() << "store-tx-info = " << m_wallet->store_tx_info();
-    success_msg_writer() << "refresh-type = " << wallet::functional::get_refresh_type_name(m_wallet->get_refresh_type());
     success_msg_writer() << "priority = " << priority<< " (" << priority_string << ")";
     success_msg_writer() << "unit = " << cryptonote::get_unit(cryptonote::get_default_decimal_point());
     success_msg_writer() << "min-outputs-count = " << m_wallet->get_min_output_count();
@@ -724,7 +706,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("always-confirm-transfers", set_always_confirm_transfers, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("print-ring-members", set_print_ring_members, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("store-tx-info", set_store_tx_info, sw::tr("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("refresh-type", set_refresh_type, sw::tr("full (slowest, no assumptions); optimize-coinbase (fast, assumes the whole coinbase is paid to a single address); no-coinbase (fastest, assumes we receive no coinbase transaction), default (same as optimize-coinbase)"));
     CHECK_SIMPLE_VARIABLE("priority", set_default_priority, sw::tr("0, 1, 2, 3, or 4, or one of ") << wallet::functional::join_priority_strings(", "));
     CHECK_SIMPLE_VARIABLE("unit", set_unit, sw::tr("lolnero, millinero, micronero, nanonero, piconero"));
     CHECK_SIMPLE_VARIABLE("min-outputs-count", set_min_output_count, sw::tr("unsigned integer"));

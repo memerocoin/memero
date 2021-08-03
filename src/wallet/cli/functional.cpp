@@ -36,23 +36,6 @@
 namespace wallet {
 namespace functional {
 
-std::optional<tools::wallet2::RefreshType> parse_refresh_type(const std::string s)
-{
-  const auto r = refresh_type_names.find(s);
-  if (r != refresh_type_names.end())
-    return r->second;
-  return {};
-}
-
-std::string get_refresh_type_name(const tools::wallet2::RefreshType type)
-{
-  for (const auto& [k, v] : refresh_type_names) {
-    if (v == type)
-      return k;
-  }
-  return "invalid";
-}
-
 std::string join_priority_strings(const std::string_view delimiter)
 {
   return std::accumulate(

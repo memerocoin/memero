@@ -259,7 +259,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_print_ring_members(false),
   m_store_tx_info(true),
   m_default_priority(0),
-  m_refresh_type(RefreshOptimizeCoinbase),
   m_refresh_from_block_height(0),
   m_explicit_refresh_from_block_height(true),
   m_ask_password(AskPasswordNever),
@@ -682,9 +681,8 @@ void wallet2::cache_tx_data(const cryptonote::transaction& tx, const crypto::has
 
   // Don't try to extract tx public key if tx has no ouputs
   const bool is_miner = tx.vin.size() == 1 && tx.vin[0].type() == typeid(cryptonote::txin_gen);
-  if (!is_miner || m_refresh_type != RefreshType::RefreshNoCoinbase)
   {
-    const size_t rec_size = is_miner && m_refresh_type == RefreshType::RefreshOptimizeCoinbase ? 1 : tx.vout.size();
+    const size_t rec_size = tx.vout.size();
     if (!tx.vout.empty())
     {
       // if tx.vout is not empty, we loop through all tx pubkeys
@@ -828,46 +826,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       }
     }
 
-    if (miner_tx && m_refresh_type == RefreshNoCoinbase)
-    {
-      // assume coinbase isn't for us
-    }
-    else if (miner_tx && m_refresh_type == RefreshOptimizeCoinbase)
-    {
-      check_acc_out_precomp_once(tx.vout[0], derivation, additional_derivations, 0, is_out_data_ptr, tx_scan_info[0], output_found[0]);
-      THROW_WALLET_EXCEPTION_IF(tx_scan_info[0].error, error::acc_outs_lookup_error, tx, tx_pub_key, m_account.get_keys());
-
-      // this assumes that the miner tx pays a single address
-      if (tx_scan_info[0].received)
-      {
-        // process the other outs from that tx
-        // the first one was already checked
-        for (size_t i = 1; i < tx.vout.size(); ++i)
-        {
-          tpool.submit(&waiter, std::bind(&wallet2::check_acc_out_precomp_once, this, std::cref(tx.vout[i]), std::cref(derivation), std::cref(additional_derivations), i,
-            std::cref(is_out_data_ptr), std::ref(tx_scan_info[i]), std::ref(output_found[i])), true);
-        }
-        THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
-        // then scan all outputs from 0
-        hw::device &hwdev = m_account.get_device();
-        std::unique_lock<hw::device> hwdev_lock (hwdev);
-        hwdev.set_mode(hw::device::NONE);
-        for (size_t i = 0; i < tx.vout.size(); ++i)
-        {
-          THROW_WALLET_EXCEPTION_IF(tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key, m_account.get_keys());
-          if (tx_scan_info[i].received)
-          {
-            hwdev.conceal_derivation(tx_scan_info[i].received->derivation, tx_pub_key, additional_tx_pub_keys.data, derivation, additional_derivations);
-            scan_output(tx, miner_tx, tx_pub_key, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs, pool);
-            if (!tx_scan_info[i].error)
-            {
-              tx_amounts_individual_outs[tx_scan_info[i].received->index].push_back(tx_scan_info[i].money_transfered);
-            }
-          }
-        }
-      }
-    }
-    else if (tx.vout.size() > 1 && tools::threadpool::getInstance().get_max_concurrency() > 1 && !is_out_data_ptr)
+    if (tx.vout.size() > 1 && tools::threadpool::getInstance().get_max_concurrency() > 1 && !is_out_data_ptr)
     {
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
@@ -1274,8 +1233,7 @@ void wallet2::process_new_blockchain_entry(const cryptonote::block& b, const cry
   if (!should_skip_block(b, height))
   {
     TIME_MEASURE_START(miner_tx_handle_time);
-    if (m_refresh_type != RefreshNoCoinbase)
-      process_new_transaction(get_transaction_hash(b.miner_tx), b.miner_tx, parsed_block.o_indices.indices[0].indices, height, b.major_version, b.timestamp, true, false, false, tx_cache_data[tx_cache_data_offset]);
+    process_new_transaction(get_transaction_hash(b.miner_tx), b.miner_tx, parsed_block.o_indices.indices[0].indices, height, b.major_version, b.timestamp, true, false, false, tx_cache_data[tx_cache_data_offset]);
     ++tx_cache_data_offset;
     TIME_MEASURE_FINISH(miner_tx_handle_time);
 
@@ -1347,7 +1305,7 @@ void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, 
 
   req.prune = true;
   req.start_height = start_height;
-  req.no_miner_tx = m_refresh_type == RefreshNoCoinbase;
+  req.no_miner_tx = false;
 
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
@@ -1410,8 +1368,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       txidx += 1 + parsed_blocks[i].block.tx_hashes.size();
       continue;
     }
-    if (m_refresh_type != RefreshNoCoinbase)
-      tpool.submit(&waiter, [&, i, txidx](){ cache_tx_data(parsed_blocks[i].block.miner_tx, get_transaction_hash(parsed_blocks[i].block.miner_tx), tx_cache_data[txidx]); });
+    tpool.submit(&waiter, [&, i, txidx](){ cache_tx_data(parsed_blocks[i].block.miner_tx, get_transaction_hash(parsed_blocks[i].block.miner_tx), tx_cache_data[txidx]); });
     ++txidx;
     for (size_t idx = 0; idx < parsed_blocks[i].txes.size(); ++idx)
     {
@@ -1482,10 +1439,9 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       continue;
     }
 
-    if (m_refresh_type != RefreshType::RefreshNoCoinbase)
     {
       THROW_WALLET_EXCEPTION_IF(txidx >= tx_cache_data.size(), error::wallet_internal_error, "txidx out of range");
-      const size_t n_vouts = m_refresh_type == RefreshType::RefreshOptimizeCoinbase ? 1 : parsed_blocks[i].block.miner_tx.vout.size();
+      const size_t n_vouts = parsed_blocks[i].block.miner_tx.vout.size();
       tpool.submit(&waiter, [&, i, n_vouts, txidx](){ geniod(parsed_blocks[i].block.miner_tx, n_vouts, txidx); }, true);
     }
     ++txidx;
@@ -2335,9 +2291,6 @@ std::optional<wallet::logic::type::wallet::keys_file_data> wallet2::get_keys_fil
   value2.SetUint(m_default_priority);
   json.AddMember("default_priority", value2, json.GetAllocator());
 
-  value2.SetInt(m_refresh_type);
-  json.AddMember("refresh_type", value2, json.GetAllocator());
-
   value2.SetUint64(m_refresh_from_block_height);
   json.AddMember("refresh_height", value2, json.GetAllocator());
 
@@ -2520,15 +2473,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
         m_default_priority = field_default_fee_multiplier;
       else
         m_default_priority = 0;
-    }
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, refresh_type, int, Int, false, RefreshType::RefreshDefault);
-    m_refresh_type = RefreshType::RefreshDefault;
-    if (field_refresh_type_found)
-    {
-      if (field_refresh_type == RefreshFull || field_refresh_type == RefreshOptimizeCoinbase || field_refresh_type == RefreshNoCoinbase)
-        m_refresh_type = (RefreshType)field_refresh_type;
-      else
-        LOG_PRINT_L0("Unknown refresh-type value (" << field_refresh_type << "), using default");
     }
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, refresh_height, uint64_t, Uint64, false, 0);
     m_refresh_from_block_height = field_refresh_height;

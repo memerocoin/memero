@@ -95,13 +95,6 @@ namespace tools
   public:
     static constexpr const std::chrono::seconds rpc_timeout = std::chrono::minutes(3) + std::chrono::seconds(30);
 
-    enum RefreshType {
-      RefreshFull,
-      RefreshOptimizeCoinbase,
-      RefreshNoCoinbase,
-      RefreshDefault = RefreshOptimizeCoinbase,
-    };
-
     enum AskPasswordType {
       AskPasswordNever = 0,
       AskPasswordOnAction = 1,
@@ -242,9 +235,6 @@ namespace tools
     void refresh(uint64_t start_height, uint64_t & blocks_fetched);
     void refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& received_money, bool check_pool = true);
     bool refresh(uint64_t & blocks_fetched, bool& received_money, bool& ok);
-
-    void set_refresh_type(RefreshType refresh_type) { m_refresh_type = refresh_type; }
-    RefreshType get_refresh_type() const { return m_refresh_type; }
 
     cryptonote::network_type nettype() const { return m_nettype; }
     bool has_unknown_key_images() const;
@@ -529,7 +519,6 @@ namespace tools
     bool m_print_ring_members;
     bool m_store_tx_info; /*!< request txkey to be returned in RPC, and store in the wallet cache file */
     uint32_t m_default_priority;
-    RefreshType m_refresh_type;
     uint64_t m_refresh_from_block_height;
     // If m_refresh_from_block_height is explicitly set to zero we need this to differentiate it from the case that
     // m_refresh_from_block_height was defaulted to zero.*/

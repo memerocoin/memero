@@ -34,19 +34,6 @@
 namespace wallet {
 namespace functional {
 
-const std::map<std::string, tools::wallet2::RefreshType> refresh_type_names =
-{
-  { "full", tools::wallet2::RefreshFull },
-  { "optimize-coinbase", tools::wallet2::RefreshOptimizeCoinbase },
-  { "optimized-coinbase", tools::wallet2::RefreshOptimizeCoinbase },
-  { "no-coinbase", tools::wallet2::RefreshNoCoinbase },
-  { "default", tools::wallet2::RefreshDefault },
-};
-
-std::optional<tools::wallet2::RefreshType> parse_refresh_type(const std::string s);
-
-std::string get_refresh_type_name(const tools::wallet2::RefreshType type);
-
 constexpr std::array<std::string_view, 5> allowed_priority_strings =
   {{"default", "unimportant", "normal", "elevated", "priority"}};
 

@@ -111,8 +111,6 @@ namespace help {
     "  Whether to print detailed information about ring members during confirmation.\n "
     "store-tx-info <1|0>\n "
     "  Whether to store outgoing tx info (destination address, payment ID, tx secret key) for future reference.\n "
-    "refresh-type <full|optimize-coinbase|no-coinbase|default>\n "
-    "  Set the wallet's refresh behaviour.\n "
     "priority [0|1|2|3|4]\n "
     "  Set the fee to default/unimportant/normal/elevated/priority.\n "
     "unit <lolnero|millinero|micronero|nanonero|piconero>\n "
