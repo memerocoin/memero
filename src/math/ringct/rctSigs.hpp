@@ -112,6 +112,6 @@ namespace rct {
     bool verRctNonSemanticsSimple(const rctSig rv);
     inline bool verRctSimple(const rctSig rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
     amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, key& mask);
-    key get_pre_mlsag_hash(const rctSig rv);
+    key get_mlsag_pre_hash(const rctSig rv);
 }
 

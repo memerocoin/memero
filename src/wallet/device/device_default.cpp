@@ -359,7 +359,7 @@ namespace hw {
             return true;
         }
 
-        bool  device_default::mlsag_prehash(const std::string &blob, size_t inputs_size, size_t outputs_size, const rct::keyV &hashes, const rct::ctkeyV &outPk, rct::key &prehash) {
+        bool  device_default::mlsag_pre_hash(const std::string &blob, size_t inputs_size, size_t outputs_size, const rct::keyV &hashes, const rct::ctkeyV &outPk, rct::key &prehash) {
             prehash = rct::cn_fast_hash(hashes);
             return true;
         }

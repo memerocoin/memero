@@ -223,7 +223,7 @@ namespace rct {
         return sig;
     }
 
-    key get_pre_mlsag_hash(const rctSig rv)
+    key get_mlsag_pre_hash(const rctSig rv)
     {
       hw::device& hwdev = hw::get_device("default");
       keyV hashes;
@@ -265,7 +265,7 @@ namespace rct {
         }
       }
       hashes.push_back(cn_fast_hash(kv));
-      hwdev.mlsag_prehash(ss.str(), inputs, outputs, hashes, rv.outPk, prehash);
+      hwdev.mlsag_pre_hash(ss.str(), inputs, outputs, hashes, rv.outPk, prehash);
       return  prehash;
     }
 
@@ -536,7 +536,7 @@ namespace rct {
         sc_sub(a[i].bytes, sumout.bytes, sumpouts.bytes);
         genC(pseudoOuts[i], a[i], inamounts[i]);
 
-        key full_message = get_pre_mlsag_hash(rv);
+        key full_message = get_mlsag_pre_hash(rv);
         for (i = 0 ; i < inamounts.size(); i++)
         {
             {
@@ -675,7 +675,7 @@ namespace rct {
 
         const keyV &pseudoOuts = rv.p.pseudoOuts;
 
-        const key message = get_pre_mlsag_hash(rv);
+        const key message = get_mlsag_pre_hash(rv);
 
         results.clear();
         results.resize(rv.mixRing.size());
