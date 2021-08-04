@@ -4743,19 +4743,18 @@ std::vector<size_t> wallet2::select_available_outputs(const std::function<bool(c
 {
   std::vector<size_t> outputs;
   size_t n = 0;
-  for (wallet::logic::type::wallet::transfer_container::const_iterator i = m_transfers.begin();
-       i != m_transfers.end(); ++i, ++n)
-  {
-    if (is_spent(*i, false))
+  for (const auto& x: m_transfers) {
+    if (is_spent(x, false))
       continue;
-    if (i->m_frozen)
+    if (x.m_frozen)
       continue;
-    if (i->m_key_image_partial)
+    if (x.m_key_image_partial)
       continue;
-    if (!is_transfer_unlocked(*i))
+    if (!is_transfer_unlocked(x))
       continue;
-    if (f(*i))
+    if (f(x))
       outputs.push_back(n);
+    ++n;
   }
   return outputs;
 }
