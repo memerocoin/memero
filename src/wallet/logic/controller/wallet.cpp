@@ -180,9 +180,9 @@ namespace wallet {
     {
       const ::wallet::logic::type::transfer::transfer_details &candidate = transfers[unused_indices[n]];
       float relatedness = 0.0f;
-      for (std::vector<size_t>::const_iterator i = selected_transfers.begin(); i != selected_transfers.end(); ++i)
+      for (const auto &i: selected_transfers)
       {
-        float r = ::wallet::logic::functional::wallet::get_output_relatedness(candidate, transfers[*i]);
+        float r = ::wallet::logic::functional::wallet::get_output_relatedness(candidate, transfers[i]);
         if (r > relatedness)
         {
           relatedness = r;
