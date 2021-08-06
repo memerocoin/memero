@@ -44,11 +44,7 @@ namespace {
     LOG_ERROR_AND_RETURN_UNLESS(idx < vec.size(), T(), "idx out of bounds");
 
     T res = vec[idx];
-    if (idx + 1 != vec.size())
-      {
-        vec[idx] = vec.back();
-      }
-    vec.resize(vec.size() - 1);
+    vec.erase(vec.begin() + idx);
 
     return res;
   }
