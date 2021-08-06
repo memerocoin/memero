@@ -4153,8 +4153,11 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
   // throw if attempting a transaction with no destinations
   THROW_WALLET_EXCEPTION_IF(dsts_vec.empty(), error::zero_destination);
 
-  // calculate total amount being sent to all destinations
-  // throw if total amount overflows uint64_t
+  const auto original_dsts = dsts_vec;
+  std::stack<cryptonote::tx_destination_entry> dsts;
+  // 1. calculate total amount being sent to all destinations
+  // 2. throw if total amount overflows uint64_t
+  // 3. initialize dsts stack
   needed_money = 0;
   for(const auto& dt: dsts_vec)
   {
@@ -4162,12 +4165,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
     needed_money += dt.amount;
     LOG_PRINT_L2("transfer: adding " << print_money(dt.amount) << ", for a total of " << print_money (needed_money));
     THROW_WALLET_EXCEPTION_IF(needed_money < dt.amount, error::tx_sum_overflow, dsts_vec, 0, m_nettype);
-  }
-
-  const auto original_dsts = dsts_vec;
-  std::stack<cryptonote::tx_destination_entry> dsts;
-  for (const auto& x: dsts_vec) {
-    dsts.push(x);
+    dsts.push(dt);
   }
 
   // throw if attempting a transaction with no money
