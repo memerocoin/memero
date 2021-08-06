@@ -4153,7 +4153,6 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
   // throw if attempting a transaction with no destinations
   THROW_WALLET_EXCEPTION_IF(dsts_vec.empty(), error::zero_destination);
 
-  const auto original_dsts = dsts_vec;
   std::stack<cryptonote::tx_destination_entry> dsts;
   // 1. calculate total amount being sent to all destinations
   // 2. throw if total amount overflows uint64_t
@@ -4300,7 +4299,6 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
       string s;
       for (auto i: preferred_inputs) s += boost::lexical_cast<std::string>(i) + " (" + print_money(m_transfers[i].amount()) + ") ";
       LOG_PRINT_L1("Found preferred rct inputs for rct tx: " << s);
-
       // bring the list of available outputs stored by the same subaddress index to the front of the list
       uint32_t index_minor = m_transfers[preferred_inputs[0]].m_subaddr_index.minor;
       for (size_t i = 1; i < unused_transfers_indices_per_subaddr.size(); ++i)
@@ -4571,7 +4569,7 @@ skip_tx:
     ptx_vector.push_back(tx.ptx);
   }
 
-  THROW_WALLET_EXCEPTION_IF(!sanity_check(ptx_vector, original_dsts), error::wallet_internal_error, "Created transaction(s) failed sanity check");
+  THROW_WALLET_EXCEPTION_IF(!sanity_check(ptx_vector, dsts_vec), error::wallet_internal_error, "Created transaction(s) failed sanity check");
 
   // if we made it this far, we're OK to actually send the transactions
   return ptx_vector;
