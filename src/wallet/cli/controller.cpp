@@ -32,6 +32,8 @@
 #include "controller.hpp"
 #include "functional.hpp"
 
+#include "wallet/common/controller.hpp"
+
 #include "tools/common/command_line.h"
 #include "tools/common/util.h"
 
@@ -39,7 +41,11 @@
 #include <boost/format.hpp>
 #include <boost/program_options.hpp>
 
+#undef MONERO_DEFAULT_LOG_CATEGORY
+#define MONERO_DEFAULT_LOG_CATEGORY "wallet.cli.controller"
+
 namespace wallet {
+namespace cli {
 namespace controller {
 
   std::string input_line(const std::string& prompt, bool yesno)
@@ -74,20 +80,9 @@ namespace controller {
     return buf;
   }
 
-  std::optional<tools::password_container> password_prompter(const char *prompt, bool verify)
-  {
-    PAUSE_READLINE();
-    auto pwd_container = tools::password_container::prompt(verify, prompt);
-    if (!pwd_container)
-    {
-      tools::fail_msg_writer() << ("failed to read wallet password");
-    }
-    return pwd_container;
-  }
-
   std::optional<tools::password_container> default_password_prompter(bool verify)
   {
-    return password_prompter(verify ? ("Enter a new password for the wallet") : ("Wallet password"), verify);
+    return ::wallet::common::controller::password_prompter(verify ? ("Enter a new password for the wallet") : ("Wallet password"), verify);
   }
 
   std::string interpret_rpc_response(bool ok, const std::string& status)
@@ -291,5 +286,6 @@ namespace controller {
       ++ptr;
     }
   }
+}
 }
 }

@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2014-2020, The Monero Project
 //
 // All rights reserved.
@@ -25,34 +26,31 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "controller.hpp"
 
-#include "tools/common/command_line.h"
+#include "tools/common/scoped_message_writer.h"
 
-#include <optional>
+#undef MONERO_DEFAULT_LOG_CATEGORY
+#define MONERO_DEFAULT_LOG_CATEGORY "wallet.common.controller"
 
-namespace wallet_args
-{
-  command_line::arg_descriptor<std::string> arg_wallet_file();
+namespace wallet {
+namespace common {
+namespace controller {
 
-  const char* tr(const char* str);
+  std::optional<tools::password_container> password_prompter(const char *prompt, bool verify)
+  {
+    PAUSE_READLINE();
+    auto pwd_container = tools::password_container::prompt(verify, prompt);
+    if (!pwd_container)
+    {
+      tools::fail_msg_writer() << ("failed to read wallet password");
+    }
+    return pwd_container;
+  }
 
-  /*! Processes command line arguments (`argc` and `argv`) using `desc_params`
-  and `positional_options`, while adding parameters for log files and
-  concurrency. Log file and concurrency arguments are handled, along with basic
-  global init for the wallet process.
-
-  \return
-    pair.first: The list of parsed options, iff there are no errors.
-    pair.second: Should the execution terminate succesfully without actually launching the application
-  */
-  std::pair<std::optional<boost::program_options::variables_map>, bool> main
-    (
-     int argc, char** argv,
-     const char* const usage,
-     const std::string notice,
-     boost::program_options::options_description desc_params,
-     const boost::program_options::positional_options_description& positional_options,
-     const std::function<void(const std::string&, bool)> &print
-     );
+}
+}
 }

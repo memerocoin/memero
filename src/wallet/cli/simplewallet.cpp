@@ -46,6 +46,7 @@
 #include "wallet/logic/controller/wallet.hpp"
 
 #include "wallet/common/wallet_args.h"
+#include "wallet/common/controller.hpp"
 #include "wallet/mnemonics/electrum-words.h"
 
 #include "tools/common/scoped_message_writer.h"
@@ -66,7 +67,8 @@
 
 using namespace cryptonote;
 using namespace wallet::usage;
-using namespace wallet::controller;
+using namespace wallet::cli::controller;
+using namespace wallet::common::controller;
 using namespace wallet::arg;
 
 namespace po = boost::program_options;
@@ -120,7 +122,7 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
     std::cout << "secret: On device. Not available" << std::endl;
   } else {
     printf("secret: ");
-    wallet::controller::print_secret_key(m_wallet->get_account().get_keys().m_view_secret_key);
+    wallet::cli::controller::print_secret_key(m_wallet->get_account().get_keys().m_view_secret_key);
     putchar('\n');
   }
   std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_view_public_key) << std::endl;
@@ -136,7 +138,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
     std::cout << "secret: On device. Not available" << std::endl;
   } else {
     printf("secret: ");
-    wallet::controller::print_secret_key(m_wallet->get_account().get_keys().m_spend_secret_key);
+    wallet::cli::controller::print_secret_key(m_wallet->get_account().get_keys().m_spend_secret_key);
     putchar('\n');
   }
   std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_spend_public_key) << std::endl;
@@ -2166,7 +2168,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
   }
   catch (const std::exception &e)
   {
-    wallet::controller::handle_transfer_exception(std::current_exception());
+    wallet::cli::controller::handle_transfer_exception(std::current_exception());
   }
   catch (...)
   {
@@ -3563,15 +3565,17 @@ int main(int argc, char* argv[])
 
   std::optional<po::variables_map> vm;
   bool should_terminate = false;
-  std::tie(vm, should_terminate) = wallet_args::main(
-   argc, argv,
-   "lolnero [--open=<filename>|--new=<filename>] [<COMMAND>]",
-   "",
-    desc_params,
-    positional_options,
-    [](const std::string &s, bool emphasis){ tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s; },
-    "lolnero.log"
-  );
+  std::tie(vm, should_terminate) = wallet_args::main
+    (
+     argc, argv,
+     "lolnero [--open=<filename>|--new=<filename>] [<COMMAND>]",
+     "",
+     desc_params,
+     positional_options,
+     [](const std::string &s, bool emphasis){
+       tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s;
+     }
+     );
 
   if (!vm)
   {

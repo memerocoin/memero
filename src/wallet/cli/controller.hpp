@@ -33,11 +33,11 @@
 #include "tools/common/scoped_message_writer.h"
 
 namespace wallet {
+namespace cli {
 namespace controller {
 
   std::string input_line(const std::string& prompt, bool yesno = false);
   epee::wipeable_string input_secure_line(const char *prompt);
-  std::optional<tools::password_container> password_prompter(const char *prompt, bool verify);
   std::optional<tools::password_container> default_password_prompter(bool verify);
   std::string interpret_rpc_response(bool ok, const std::string& status);
   tools::scoped_message_writer success_msg_writer(bool color = false);
@@ -53,5 +53,6 @@ namespace controller {
   void handle_transfer_exception(const std::exception_ptr &e);
 
   void print_secret_key(const crypto::secret_key &k);
+}
 }
 }

@@ -37,9 +37,13 @@
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
-#include "wallet/mnemonics/electrum-words.h"
-#include "wallet/common/wallet_args.h"
 
+#include "wallet/mnemonics/electrum-words.h"
+
+#include "wallet/common/wallet_args.h"
+#include "wallet/common/controller.hpp"
+
+#include "tools/common/scoped_message_writer.h"
 
 #include <boost/format.hpp>
 
@@ -54,15 +58,6 @@ namespace
   const command_line::arg_descriptor<std::string> arg_wallet_dir = {"wallet-dir", "Directory for newly created wallets"};
   const command_line::arg_descriptor<bool> arg_prompt_for_password = {"prompt-for-password", "Prompts for password when not provided", false};
 
-  std::optional<tools::password_container> password_prompter(const char *prompt, bool verify)
-  {
-    auto pwd_container = tools::password_container::prompt(verify, prompt);
-    if (!pwd_container)
-    {
-      LOG_ERROR("failed to read wallet password");
-    }
-    return pwd_container;
-  }
   //------------------------------------------------------------------------------------------------------------------------------
   void set_confirmations(tools::wallet_rpc::transfer_entry &entry, uint64_t blockchain_height, uint64_t unlock_time)
   {
@@ -2156,7 +2151,7 @@ public:
       const auto wallet_file = command_line::get_arg(vm, arg_wallet_file);
       const auto wallet_dir = command_line::get_arg(vm, arg_wallet_dir);
       const auto prompt_for_password = command_line::get_arg(vm, arg_prompt_for_password);
-      const auto password_prompt = prompt_for_password ? password_prompter : nullptr;
+      const auto password_prompt = prompt_for_password ? wallet::common::controller::password_prompter : nullptr;
 
       if (!wallet_dir.empty())
       {
@@ -2289,16 +2284,19 @@ int main(int argc, char** argv) {
 
   std::optional<po::variables_map> vm;
   bool should_terminate = false;
-  std::tie(vm, should_terminate) = wallet_args::main(
-    argc, argv,
-    "lolnero-rpc [--open=<file>|--wallet-dir=<directory>] [--rpc-bind-port=<port>]",
-    "",
-    desc_params,
-    po::positional_options_description(),
-    [](const std::string &s, bool emphasis){ epee::set_console_color(emphasis ? epee::console_color_white : epee::console_color_default, true); std::cout << s << std::endl; if (emphasis) epee::reset_console_color(); },
-    "lolnero-rpc.log",
-    true
-  );
+
+  std::tie(vm, should_terminate) = wallet_args::main
+    (
+     argc, argv,
+     "lolnero-rpc [--open=<file>|--wallet-dir=<directory>] [--rpc-bind-port=<port>]",
+     "",
+     desc_params,
+     po::positional_options_description(),
+     [](const std::string &s, bool emphasis){
+       tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s;
+     }
+     );
+
   if (!vm)
   {
     return 1;
