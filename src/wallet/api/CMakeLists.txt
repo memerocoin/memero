@@ -31,8 +31,8 @@ add_library(wallet_errors
   wallet_errors.cpp
  )
 
-add_library(wallet_node_rpc_proxy
-  node_rpc_proxy.cpp
+add_library(wallet_rpc_client
+  rpc_client.cpp
 )
 
 add_library(wallet_api
@@ -49,7 +49,7 @@ target_link_libraries(wallet_api
   PUBLIC
     network_rpc_base
     wallet_logic
-    wallet_node_rpc_proxy
+    wallet_rpc_client
     wallet_errors
     wallet_mnemonics
 )

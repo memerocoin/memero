@@ -270,7 +270,7 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_ignore_outputs_below(0),
   m_is_initialized(false),
   m_kdf_rounds(kdf_rounds),
-  m_node_rpc_proxy(*m_http_client, m_daemon_rpc_mutex),
+  m_rpc_client(*m_http_client, m_daemon_rpc_mutex),
   m_account_public_address{crypto::null_pkey, crypto::null_pkey},
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
@@ -1941,7 +1941,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
       added_blocks = 0;
       if (!first && blocks.empty())
       {
-        // m_node_rpc_proxy.set_height(m_blockchain.size());
+        // m_rpc_client.set_height(m_blockchain.size());
         break;
       }
       if (!last)
@@ -1986,7 +1986,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
       THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
       if(!first && blocks_start_height == next_blocks_start_height)
       {
-        // m_node_rpc_proxy.set_height(m_blockchain.size());
+        // m_rpc_client.set_height(m_blockchain.size());
         break;
       }
 
@@ -2774,7 +2774,7 @@ bool wallet2::check_connection(uint32_t *version, uint32_t timeout)
 void wallet2::set_offline(bool offline)
 {
   m_offline = offline;
-  m_node_rpc_proxy.set_offline(offline);
+  m_rpc_client.set_offline(offline);
   m_http_client->set_auto_connect(!offline);
   if (offline)
   {
@@ -3550,7 +3550,7 @@ void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_ent
   {
     // check whether we're shortly after the fork
     uint64_t height;
-    std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
+    std::optional<std::string> result = m_rpc_client.get_height(height);
     THROW_WALLET_EXCEPTION_IF(result, error::wallet_internal_error, "Failed to get height");
 
     // if we have at least one rct out, get the distribution, or fall back to the previous system
@@ -4912,7 +4912,7 @@ uint64_t wallet2::get_daemon_blockchain_height(string &err)
 {
   uint64_t height;
 
-  std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
+  std::optional<std::string> result = m_rpc_client.get_height(height);
   if (result)
   {
     err = *result;
@@ -4927,7 +4927,7 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
 {
   err = "";
   uint64_t target_height = 0;
-  const auto result = m_node_rpc_proxy.get_target_height(target_height);
+  const auto result = m_rpc_client.get_target_height(target_height);
   if (result && *result != CORE_RPC_STATUS_OK)
   {
     err = *result;
@@ -4952,7 +4952,7 @@ std::string wallet2::sign(const std::string &data, message_signature_type_t sign
 bool wallet2::is_synced()
 {
   uint64_t height;
-  std::optional<std::string> result = m_node_rpc_proxy.get_height(height);
+  std::optional<std::string> result = m_rpc_client.get_height(height);
   if (result && *result != CORE_RPC_STATUS_OK)
     return false;
   return get_blockchain_current_height() >= height;

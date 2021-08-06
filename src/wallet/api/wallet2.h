@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "wallet/api/node_rpc_proxy.h"
+#include "wallet/api/rpc_client.h"
 #include "wallet/api/wallet_errors.h"
 
 #include "wallet/logic/type/typedef.hpp"
@@ -531,7 +531,7 @@ namespace tools
     uint64_t m_ignore_outputs_above;
     uint64_t m_ignore_outputs_below;
     bool m_is_initialized;
-    NodeRPCProxy m_node_rpc_proxy;
+    NodeRPCProxy m_rpc_client;
     std::unordered_set<crypto::hash> m_scanned_pool_txs[2];
     size_t m_subaddress_lookahead_major, m_subaddress_lookahead_minor;
     std::string m_device_name;
