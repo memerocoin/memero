@@ -321,10 +321,6 @@ namespace tools
     void store_tx_info(bool store) { m_store_tx_info = store; }
     uint32_t get_default_priority() const { return m_default_priority; }
     void set_default_priority(uint32_t p) { m_default_priority = p; }
-    void set_min_output_count(uint32_t count) { m_min_output_count = count; }
-    uint32_t get_min_output_count() const { return m_min_output_count; }
-    void set_min_output_value(uint64_t value) { m_min_output_value = value; }
-    uint64_t get_min_output_value() const { return m_min_output_value; }
     void merge_destinations(bool merge) { m_merge_destinations = merge; }
     bool merge_destinations() const { return m_merge_destinations; }
     bool confirm_export_overwrite() const { return m_confirm_export_overwrite; }
@@ -519,8 +515,6 @@ namespace tools
     // m_refresh_from_block_height was defaulted to zero.*/
     bool m_explicit_refresh_from_block_height;
     AskPasswordType m_ask_password;
-    uint32_t m_min_output_count;
-    uint64_t m_min_output_value;
     bool m_merge_destinations;
     bool m_confirm_export_overwrite;
     bool m_ignore_fractional_outputs;

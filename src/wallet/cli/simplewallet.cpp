@@ -358,42 +358,6 @@ bool simple_wallet::set_unit(const std::vector<std::string> &args/* = std::vecto
   return true;
 }
 
-bool simple_wallet::set_min_output_count(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  uint32_t count;
-  if (!epee::string_tools::get_xtype_from_string(count, args[1]))
-  {
-    fail_msg_writer() << sw::tr("invalid count: must be an unsigned integer");
-    return true;
-  }
-
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    m_wallet->set_min_output_count(count);
-    m_wallet->rewrite(m_wallet_file, pwd_container->password());
-  }
-  return true;
-}
-
-bool simple_wallet::set_min_output_value(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
-{
-  uint64_t value;
-  if (!cryptonote::parse_amount(value, args[1]))
-  {
-    fail_msg_writer() << sw::tr("invalid value");
-    return true;
-  }
-
-  const auto pwd_container = get_and_verify_password();
-  if (pwd_container)
-  {
-    m_wallet->set_min_output_value(value);
-    m_wallet->rewrite(m_wallet_file, pwd_container->password());
-  }
-  return true;
-}
-
 bool simple_wallet::set_merge_destinations(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   const auto pwd_container = get_and_verify_password();
@@ -676,8 +640,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     success_msg_writer() << "store-tx-info = " << m_wallet->store_tx_info();
     success_msg_writer() << "priority = " << priority<< " (" << priority_string << ")";
     success_msg_writer() << "unit = " << cryptonote::get_unit(cryptonote::get_default_decimal_point());
-    success_msg_writer() << "min-outputs-count = " << m_wallet->get_min_output_count();
-    success_msg_writer() << "min-outputs-value = " << cryptonote::print_money(m_wallet->get_min_output_value());
     success_msg_writer() << "merge-destinations = " << m_wallet->merge_destinations();
     success_msg_writer() << "confirm-export-overwrite = " << m_wallet->confirm_export_overwrite();
     success_msg_writer() << "refresh-from-block-height = " << m_wallet->get_refresh_from_block_height();
@@ -708,8 +670,6 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("store-tx-info", set_store_tx_info, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("priority", set_default_priority, sw::tr("0, 1, 2, 3, or 4, or one of ") << wallet::functional::join_priority_strings(", "));
     CHECK_SIMPLE_VARIABLE("unit", set_unit, sw::tr("lolnero, millinero, micronero, nanonero, piconero"));
-    CHECK_SIMPLE_VARIABLE("min-outputs-count", set_min_output_count, sw::tr("unsigned integer"));
-    CHECK_SIMPLE_VARIABLE("min-outputs-value", set_min_output_value, sw::tr("amount"));
     CHECK_SIMPLE_VARIABLE("merge-destinations", set_merge_destinations, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("confirm-export-overwrite", set_confirm_export_overwrite, sw::tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("refresh-from-block-height", set_refresh_from_block_height, sw::tr("block height"));
