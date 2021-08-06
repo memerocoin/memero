@@ -4089,8 +4089,19 @@ std::vector<size_t> wallet2::get_only_rct(const std::vector<size_t> &unused_dust
 // This system allows for sending (almost) the entire balance, since it does
 // not generate spurious change in all txes, thus decreasing the instantaneous
 // usable balance.
-std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(const std::vector<cryptonote::tx_destination_entry> dsts_vec, const size_t fake_outs_count, const uint64_t unlock_time, uint32_t priority, const std::vector<uint8_t>& extra, uint32_t subaddr_account, std::set<uint32_t> subaddr_indices)
+std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
+(
+ const std::vector<cryptonote::tx_destination_entry> dsts_vec
+ , const size_t fake_outs_count
+ , const uint64_t unlock_time
+ , const uint32_t priority
+ , const std::vector<uint8_t> extra
+ , const uint32_t subaddr_account
+ , const std::set<uint32_t> subaddr_indices_
+ )
 {
+
+  auto subaddr_indices = subaddr_indices_;
 
   //ensure device is let in NONE mode in any case
   hw::device &hwdev = m_account.get_device();
