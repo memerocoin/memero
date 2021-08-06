@@ -41,26 +41,15 @@ class NodeRPCProxy
 public:
   NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex);
 
-  void invalidate();
   void set_offline(bool offline) { m_offline = offline; }
 
   std::optional<std::string> get_height(uint64_t &height);
-  void set_height(uint64_t h);
   std::optional<std::string> get_target_height(uint64_t &height);
 
 private:
-  std::optional<std::string> get_info();
-
   epee::net_utils::http::abstract_http_client &m_http_client;
   std::recursive_mutex &m_daemon_rpc_mutex;
   bool m_offline;
-
-  uint64_t m_height;
-  uint64_t m_earliest_height[256];
-  uint32_t m_rpc_version;
-  uint64_t m_target_height;
-  time_t m_get_info_time;
-  time_t m_height_time;
 };
 
 }

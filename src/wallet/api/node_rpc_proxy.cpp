@@ -53,73 +53,44 @@ NodeRPCProxy::NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_cli
   , m_daemon_rpc_mutex(mutex)
   , m_offline(false)
 {
-  invalidate();
-}
-
-void NodeRPCProxy::invalidate()
-{
-  m_height = 0;
-  for (size_t n = 0; n < 256; ++n)
-    m_earliest_height[n] = 0;
-  m_rpc_version = 0;
-  m_target_height = 0;
-  m_get_info_time = 0;
-  m_height_time = 0;
-}
-
-void NodeRPCProxy::set_height(uint64_t h)
-{
-  m_height = h;
-  m_height_time = time(NULL);
-}
-
-std::optional<std::string> NodeRPCProxy::get_info()
-{
-  if (m_offline)
-    return std::optional<std::string>("offline");
-  const time_t now = time(NULL);
-  if (now >= m_get_info_time + 30) // re-cache every 30 seconds
-  {
-    cryptonote::COMMAND_RPC_GET_INFO::request req_t = AUTO_VAL_INIT(req_t);
-    cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
-
-    {
-      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t, m_http_client, rpc_timeout);
-      RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
-    }
-
-    m_height = resp_t.height;
-    m_target_height = resp_t.target_height;
-    m_get_info_time = now;
-    m_height_time = now;
-  }
-  return std::optional<std::string>();
 }
 
 std::optional<std::string> NodeRPCProxy::get_height(uint64_t &height)
 {
-  const time_t now = time(NULL);
-  if (now < m_height_time + 30) // re-cache every 30 seconds
+  if (m_offline)
+    return std::optional<std::string>("offline");
+
+  cryptonote::COMMAND_RPC_GET_INFO::request req_t = AUTO_VAL_INIT(req_t);
+  cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
+
   {
-    height = m_height;
-    return std::optional<std::string>();
+    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
+    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t, m_http_client, rpc_timeout);
+    RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
   }
 
-  auto res = get_info();
-  if (res)
-    return res;
-  height = m_height;
-  return std::optional<std::string>();
+  height = resp_t.height;
+
+  return {};
 }
 
 std::optional<std::string> NodeRPCProxy::get_target_height(uint64_t &height)
 {
-  auto res = get_info();
-  if (res)
-    return res;
-  height = m_target_height;
-  return std::optional<std::string>();
+  if (m_offline)
+    return std::optional<std::string>("offline");
+
+  cryptonote::COMMAND_RPC_GET_INFO::request req_t = AUTO_VAL_INIT(req_t);
+  cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
+
+  {
+    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
+    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t, m_http_client, rpc_timeout);
+    RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
+  }
+
+  height = resp_t.target_height;
+
+  return {};
 }
 
 }

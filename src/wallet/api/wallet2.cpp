@@ -1941,7 +1941,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
       added_blocks = 0;
       if (!first && blocks.empty())
       {
-        m_node_rpc_proxy.set_height(m_blockchain.size());
+        // m_node_rpc_proxy.set_height(m_blockchain.size());
         break;
       }
       if (!last)
@@ -1986,7 +1986,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
       THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
       if(!first && blocks_start_height == next_blocks_start_height)
       {
-        m_node_rpc_proxy.set_height(m_blockchain.size());
+        // m_node_rpc_proxy.set_height(m_blockchain.size());
         break;
       }
 
@@ -2746,7 +2746,6 @@ bool wallet2::check_connection(uint32_t *version, uint32_t timeout)
     if(!m_http_client->is_connected())
     {
       m_rpc_version = 0;
-      m_node_rpc_proxy.invalidate();
       if (!m_http_client->connect(std::chrono::milliseconds(timeout)))
         return false;
       if(!m_http_client->is_connected())
