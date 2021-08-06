@@ -4085,16 +4085,6 @@ std::vector<size_t> wallet2::get_only_rct(const std::vector<size_t> &unused_dust
   return indices;
 }
 
-static uint32_t get_count_above(const std::vector<wallet::logic::type::transfer::transfer_details> &transfers, const std::vector<size_t> &indices, uint64_t threshold)
-{
-  uint32_t count = 0;
-  for (size_t idx: indices)
-    if (transfers[idx].amount() >= threshold)
-      ++count;
-  return count;
-}
-
-
 // Another implementation of transaction creation that is hopefully better
 // While there is anything left to pay, it goes through random outputs and tries
 // to fill the next destination/amount. If it fully fills it, it will use the
@@ -4370,38 +4360,9 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
       idx = pop_back(preferred_inputs);
       pop_if_present(*unused_transfers_indices, idx);
       pop_if_present(*unused_dust_indices, idx);
-    } else if ((dsts.empty() || dsts[0].amount == 0) && !adding_fee) {
-      // the "make rct txes 2/2" case - we pick a small value output to "clean up" the wallet too
-      std::vector<size_t> indices = get_only_rct(*unused_dust_indices, *unused_transfers_indices);
-      idx = pop_best_value(indices, tx.selected_transfers, true);
-
-      // we might not want to add it if it's a large output and we don't have many left
-      uint64_t min_output_value = m_min_output_value;
-      uint32_t min_output_count = m_min_output_count;
-      if (min_output_value == 0 && min_output_count == 0)
-      {
-        min_output_value = DEFAULT_MIN_OUTPUT_VALUE;
-        min_output_count = DEFAULT_MIN_OUTPUT_COUNT;
-      }
-      if (m_transfers[idx].amount() >= min_output_value) {
-        if (get_count_above(m_transfers, *unused_transfers_indices, min_output_value) < min_output_count) {
-          LOG_PRINT_L2("Second output was not strictly needed, and we're running out of outputs above " << print_money(min_output_value) << ", not adding");
-          break;
-        }
-      }
-
-      // since we're trying to add a second output which is not strictly needed,
-      // we only add it if it's unrelated enough to the first one
-      float relatedness = wallet::logic::functional::wallet::get_output_relatedness(m_transfers[idx], m_transfers[tx.selected_transfers.front()]);
-      if (relatedness > SECOND_OUTPUT_RELATEDNESS_THRESHOLD)
-      {
-        LOG_PRINT_L2("Second output was not strictly needed, and relatedness " << relatedness << ", not adding");
-        break;
-      }
-      pop_if_present(*unused_transfers_indices, idx);
-      pop_if_present(*unused_dust_indices, idx);
-    } else
+    } else {
       idx = pop_best_value(unused_transfers_indices->empty() ? *unused_dust_indices : *unused_transfers_indices, tx.selected_transfers);
+    }
 
     const transfer_details &td = m_transfers[idx];
     LOG_PRINT_L2("Picking output " << idx << ", amount " << print_money(td.amount()) << ", ki " << td.m_key_image);
