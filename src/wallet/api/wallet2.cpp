@@ -4532,9 +4532,8 @@ skip_tx:
     " total fee, " << print_money(accumulated_change) << " total change");
 
   hwdev.set_mode(hw::device::TRANSACTION_CREATE_REAL);
-  for (std::vector<TX>::iterator i = txes.begin(); i != txes.end(); ++i)
+  for (auto& tx: txes)
   {
-    TX &tx = *i;
     cryptonote::transaction test_tx;
     pending_tx test_ptx;
     transfer_selected_rct
@@ -4556,13 +4555,13 @@ skip_tx:
   }
 
   std::vector<wallet::logic::type::tx::pending_tx> ptx_vector;
-  for (std::vector<TX>::iterator i = txes.begin(); i != txes.end(); ++i)
+  for (size_t i = 0; const auto& tx: txes)
   {
-    TX &tx = *i;
+    i++;
     uint64_t tx_money = 0;
     for (size_t idx: tx.selected_transfers)
       tx_money += m_transfers[idx].amount();
-    LOG_PRINT_L1("  Transaction " << (1+std::distance(txes.begin(), i)) << "/" << txes.size() <<
+    LOG_PRINT_L1("  Transaction " << i << "/" << txes.size() <<
       " " << get_transaction_hash(tx.ptx.tx) << ": " << wallet::logic::functional::wallet::get_weight_string(tx.weight) << ", sending " << print_money(tx_money) << " in " << tx.selected_transfers.size() <<
       " outputs to " << tx.dsts.size() << " destination(s), including " <<
       print_money(tx.ptx.fee) << " fee, " << print_money(tx.ptx.change_dts.amount) << " change");
