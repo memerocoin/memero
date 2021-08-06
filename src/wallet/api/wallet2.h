@@ -350,8 +350,6 @@ namespace tools
     uint64_t get_daemon_blockchain_height(std::string& err);
     uint64_t get_daemon_blockchain_target_height(std::string& err);
 
-    std::vector<size_t> select_available_outputs(const std::function<bool(const transfer_details &td)> &f);
-
     size_t pop_best_value(std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
 
     std::string sign(const std::string &data,

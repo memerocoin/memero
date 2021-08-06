@@ -4739,26 +4739,6 @@ uint64_t wallet2::get_upper_transaction_weight_limit()
   return get_max_tx_size() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
 }
 //----------------------------------------------------------------------------------------------------
-std::vector<size_t> wallet2::select_available_outputs(const std::function<bool(const transfer_details &td)> &f)
-{
-  std::vector<size_t> outputs;
-  for (size_t i = 0; const auto& x: m_transfers) {
-    const auto current_index = i;
-    i++;
-    if (is_spent(x, false))
-      continue;
-    if (x.m_frozen)
-      continue;
-    if (x.m_key_image_partial)
-      continue;
-    if (!is_transfer_unlocked(x))
-      continue;
-    if (f(x))
-      outputs.push_back(current_index);
-  }
-  return outputs;
-}
-//----------------------------------------------------------------------------------------------------
 std::vector<uint64_t> wallet2::get_unspent_amounts_vector(bool strict)
 {
   std::set<uint64_t> set;
