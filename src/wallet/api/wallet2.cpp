@@ -4073,37 +4073,6 @@ std::vector<size_t> wallet2::pick_preferred_rct_inputs(uint64_t needed_money, ui
   return picks;
 }
 
-bool wallet2::should_pick_a_second_output(size_t n_transfers, const std::vector<size_t> &unused_transfers_indices, const std::vector<size_t> &unused_dust_indices) const
-{
-  if (n_transfers > 1)
-    return false;
-  if (unused_dust_indices.empty() && unused_transfers_indices.empty())
-    return false;
-  // we want at least one free rct output to avoid a corner case where
-  // we'd choose a non rct output which doesn't have enough "siblings"
-  // value-wise on the chain, and thus can't be mixed
-  bool found = false;
-  for (auto i: unused_dust_indices)
-  {
-    if (m_transfers[i].is_rct())
-    {
-      found = true;
-      break;
-    }
-  }
-  if (!found) for (auto i: unused_transfers_indices)
-  {
-    if (m_transfers[i].is_rct())
-    {
-      found = true;
-      break;
-    }
-  }
-  if (!found)
-    return false;
-  return true;
-}
-
 std::vector<size_t> wallet2::get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const
 {
   std::vector<size_t> indices;
@@ -4379,7 +4348,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2(
   std::vector<size_t>* unused_dust_indices      = &unused_dust_indices_per_subaddr[0].second;
 
   hwdev.set_mode(hw::device::TRANSACTION_CREATE_FAKE);
-  while ((!dsts.empty() && dsts[0].amount > 0) || adding_fee || !preferred_inputs.empty() || should_pick_a_second_output(txes.back().selected_transfers.size(), *unused_transfers_indices, *unused_dust_indices)) {
+  while ((!dsts.empty() && dsts[0].amount > 0) || adding_fee || !preferred_inputs.empty()) {
     TX &tx = txes.back();
 
     LOG_PRINT_L2("Start of loop with " << unused_transfers_indices->size() << " " << unused_dust_indices->size() << ", tx.dsts.size() " << tx.dsts.size());
