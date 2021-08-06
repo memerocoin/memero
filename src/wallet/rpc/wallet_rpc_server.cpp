@@ -82,19 +82,12 @@ namespace tools
   }
 
   //------------------------------------------------------------------------------------------------------------------------------
-  wallet_rpc_server::wallet_rpc_server():m_wallet(NULL), m_stop(false), m_restricted(false), m_vm(NULL)
+  wallet_rpc_server::wallet_rpc_server():m_wallet(), m_stop(false), m_restricted(false), m_vm(NULL)
   {
   }
   //------------------------------------------------------------------------------------------------------------------------------
   wallet_rpc_server::~wallet_rpc_server()
   {
-    if (m_wallet)
-      delete m_wallet;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  void wallet_rpc_server::set_wallet(wallet2 *cr)
-  {
-    m_wallet = cr;
   }
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::run()
@@ -132,8 +125,7 @@ namespace tools
     {
       m_wallet->store();
       m_wallet->deinit();
-      delete m_wallet;
-      m_wallet = NULL;
+      m_wallet.reset(nullptr);
     }
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -1663,9 +1655,9 @@ namespace tools
         handle_rpc_exception(std::current_exception(), er, WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR);
         return false;
       }
-      delete m_wallet;
+      m_wallet.reset(nullptr);
     }
-    m_wallet = wal.release();
+    m_wallet = std::move(wal);
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -1728,9 +1720,7 @@ namespace tools
       return false;
     }
 
-    if (m_wallet)
-      delete m_wallet;
-    m_wallet = wal.release();
+    m_wallet = std::move(wal);
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -1750,8 +1740,7 @@ namespace tools
         return false;
       }
     }
-    delete m_wallet;
-    m_wallet = NULL;
+    m_wallet.reset(nullptr);
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -2011,9 +2000,7 @@ namespace tools
       return false;
     }
 
-    if (m_wallet)
-      delete m_wallet;
-    m_wallet = wal.release();
+    m_wallet = std::move(wal);
     res.address = m_wallet->get_account().get_public_address_str(m_wallet->nettype());
     res.info = "Wallet has been restored successfully.";
     return true;
@@ -2155,7 +2142,7 @@ public:
 
       if (!wallet_dir.empty())
       {
-        wal = NULL;
+        wal.reset(nullptr);
         goto just_dir;
       }
 
@@ -2199,7 +2186,7 @@ public:
       return false;
     }
   just_dir:
-    if (wal) wrpc->set_wallet(wal.release());
+    if (wal) wrpc->set_wallet(std::move(wal));
     bool r = wrpc->init(&vm);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, tools::wallet_rpc_server::tr("Failed to initialize wallet RPC server"));
     tools::signal_handler::install([this](int) {

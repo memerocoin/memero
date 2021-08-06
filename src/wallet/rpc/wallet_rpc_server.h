@@ -60,7 +60,7 @@ namespace tools
     bool init(const boost::program_options::variables_map *vm);
     bool run();
     void stop();
-    void set_wallet(wallet2 *cr);
+    void set_wallet(std::unique_ptr<wallet2> cr) { m_wallet = std::move(cr); };
 
   private:
 
@@ -174,7 +174,7 @@ namespace tools
 
       bool validate_transfer(const std::list<wallet_rpc::transfer_destination>& destinations, std::vector<cryptonote::tx_destination_entry>& dsts, std::vector<uint8_t>& extra, bool at_least_one_destination, epee::json_rpc::error& er);
 
-      wallet2 *m_wallet;
+      std::unique_ptr<wallet2> m_wallet;
       std::string m_wallet_dir;
       std::atomic<bool> m_stop;
       bool m_restricted;
