@@ -48,14 +48,14 @@ namespace tools
 
 constexpr std::chrono::seconds rpc_timeout = config::lol::rpc_timeout;
 
-NodeRPCProxy::NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex)
+RPC_Client::RPC_Client(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex)
   : m_http_client(http_client)
   , m_daemon_rpc_mutex(mutex)
   , m_offline(false)
 {
 }
 
-std::optional<std::string> NodeRPCProxy::get_height(uint64_t &height)
+std::optional<std::string> RPC_Client::get_height(uint64_t &height)
 {
   if (m_offline)
     return std::optional<std::string>("offline");
@@ -74,7 +74,7 @@ std::optional<std::string> NodeRPCProxy::get_height(uint64_t &height)
   return {};
 }
 
-std::optional<std::string> NodeRPCProxy::get_target_height(uint64_t &height)
+std::optional<std::string> RPC_Client::get_target_height(uint64_t &height)
 {
   if (m_offline)
     return std::optional<std::string>("offline");

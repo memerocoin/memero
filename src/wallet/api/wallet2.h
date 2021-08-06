@@ -531,7 +531,7 @@ namespace tools
     uint64_t m_ignore_outputs_above;
     uint64_t m_ignore_outputs_below;
     bool m_is_initialized;
-    NodeRPCProxy m_rpc_client;
+    RPC_Client m_rpc_client;
     std::unordered_set<crypto::hash> m_scanned_pool_txs[2];
     size_t m_subaddress_lookahead_major, m_subaddress_lookahead_minor;
     std::string m_device_name;

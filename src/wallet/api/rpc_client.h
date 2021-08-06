@@ -36,10 +36,10 @@
 namespace tools
 {
 
-class NodeRPCProxy
+class RPC_Client
 {
 public:
-  NodeRPCProxy(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex);
+  RPC_Client(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex);
 
   void set_offline(bool offline) { m_offline = offline; }
 
