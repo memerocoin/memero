@@ -7,7 +7,7 @@ void handleErrors(void) {
   exit(1);
 }
 
-void sha3(const uint8_t *data, const size_t length, uint8_t *hash)
+void sha3_raw(const uint8_t *data, const size_t length, uint8_t *hash)
 {
   EVP_MD_CTX *mdctx;
 
