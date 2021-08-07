@@ -184,15 +184,6 @@ void generate_chacha_key(const void *data, size_t size, chacha_key& key, uint64_
   memcpy(&unwrap(key), pwd_hash.data(), sizeof(key));
 }
 
-void generate_chacha_key_prehashed(const void *data, size_t size, chacha_key& key, uint64_t kdf_rounds) {
-  static_assert(sizeof(chacha_key) <= sizeof(hash), "Size of hash must be at least that of chacha_key");
-  tools::scrubbed_arr<uint8_t, HASH_SIZE> pwd_hash;
-  crypto::cn_fast_hash(data, size, pwd_hash.data());
-  for (uint64_t n = 1; n < kdf_rounds; ++n)
-    crypto::cn_fast_hash(pwd_hash.data(), pwd_hash.size(), pwd_hash.data());
-  memcpy(&unwrap(key), pwd_hash.data(), sizeof(key));
-}
-
 void generate_chacha_key(std::string password, chacha_key& key, uint64_t kdf_rounds) {
   return generate_chacha_key(password.data(), password.size(), key, kdf_rounds);
 }

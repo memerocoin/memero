@@ -50,7 +50,6 @@ namespace crypto {
 
   void chacha20(const void* data, std::size_t length, const chacha_key& key, const chacha_iv& iv, char* cipher);
   void generate_chacha_key(const void *data, size_t size, chacha_key& key, uint64_t kdf_rounds);
-  void generate_chacha_key_prehashed(const void *data, size_t size, chacha_key& key, uint64_t kdf_rounds);
   void generate_chacha_key(std::string password, chacha_key& key, uint64_t kdf_rounds);
 }
 
