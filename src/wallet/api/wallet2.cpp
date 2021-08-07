@@ -3423,15 +3423,17 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
 }
 
 
-void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, bool rct) const
+void wallet2::get_outs
+(
+ const std::vector<size_t> selected_transfers
+ , const size_t fake_outputs_count
+ , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+ ) const
 {
   std::vector<uint64_t> rct_offsets;
   for (size_t attempts = config::lol::get_out_retry; attempts > 0; --attempts)
   {
-    m_rpc_client.get_outs(outs, selected_transfers, fake_outputs_count, rct_offsets, m_transfers);
-
-    if (!rct)
-      return;
+    m_rpc_client.get_outs(selected_transfers, m_transfers, fake_outputs_count, outs, rct_offsets);
 
     const auto unique = wallet::logic::functional::wallet::outs_unique(outs);
     if (tx_sanity_check(unique.first, unique.second, rct_offsets.empty() ? 0 : rct_offsets.back()))
@@ -3474,12 +3476,10 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
 
   std::vector<std::unordered_set<crypto::public_key>> ignore_sets;
 
-  bool all_rct = true;
   uint64_t found_money = 0;
   for(size_t idx: selected_transfers)
   {
     found_money += m_transfers[idx].amount();
-    all_rct &= m_transfers[idx].is_rct();
   }
 
   LOG_PRINT_L2("wanted " << print_money(needed_money) << ", found " << print_money(found_money) << ", fee " << print_money(fee));
@@ -3490,7 +3490,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
     THROW_WALLET_EXCEPTION_IF(subaddr_account != m_transfers[*i].m_subaddr_index.major, error::wallet_internal_error, "the tx uses funds from multiple accounts");
 
   if (outs.empty())
-    get_outs(outs, selected_transfers, fake_outputs_count, all_rct); // may throw
+    get_outs(selected_transfers, fake_outputs_count, outs); // may throw
 
   //prepare inputs
   LOG_PRINT_L2("preparing outputs");

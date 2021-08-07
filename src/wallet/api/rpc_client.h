@@ -51,11 +51,11 @@ public:
   bool get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution) const;
   void get_outs
   (
-   std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
-   , const std::vector<size_t> &selected_transfers
-   , size_t fake_outputs_count
+     const std::vector<size_t> selected_transfers
+   , const wallet::logic::type::wallet::transfer_container m_transfers
+   , const size_t fake_outputs_count
+   , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
    , std::vector<uint64_t> &rct_offsets
-   , wallet::logic::type::wallet::transfer_container m_transfers
    ) const;
 
 private:
