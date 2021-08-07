@@ -17,13 +17,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #pragma once
 
 #include <string>
+#include <span>
 #include <cstdint>
 
 namespace epee {
 namespace blob {
 
   using data = std::basic_string<uint8_t>;
-  using ref = std::basic_string_view<uint8_t>;
+  using view = std::basic_string_view<uint8_t>;
+  using span = std::span<const uint8_t>;
 
 }
 }

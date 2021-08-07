@@ -950,42 +950,6 @@ namespace cryptonote
     return res;
   }
   //---------------------------------------------------------------
-  crypto::hash get_pruned_transaction_hash(const transaction& t, const crypto::hash &pruned_data_hash)
-  {
-    // v1 transactions hash the entire blob
-    LOG_ERROR_AND_THROW_UNLESS(t.version > 1, "Hash for pruned v1 tx cannot be calculated");
-
-    // v2 transactions hash different parts together, than hash the set of those hashes
-    crypto::hash hashes[3];
-
-    // prefix
-    get_transaction_prefix_hash(t, hashes[0]);
-
-    transaction &tt = const_cast<transaction&>(t);
-
-    // base rct
-    {
-      std::stringstream ss;
-      binary_archive<true> ba(ss);
-      const size_t inputs = t.vin.size();
-      const size_t outputs = t.vout.size();
-      bool r = tt.rct_signatures.serialize_rctsig_base(ba, inputs, outputs);
-      LOG_ERROR_AND_THROW_UNLESS(r, "Failed to serialize rct signatures base");
-      cryptonote::get_blob_hash(ss.str(), hashes[1]);
-    }
-
-    // prunable rct
-    if (t.rct_signatures.type == rct::RCTTypeNull)
-      hashes[2] = crypto::null_hash;
-    else
-      hashes[2] = pruned_data_hash;
-
-    // the tx hash is the hash of the 3 hashes
-    crypto::hash res = cn_fast_hash(hashes, sizeof(hashes));
-    t.set_hash(res);
-    return res;
-  }
-  //---------------------------------------------------------------
   bool calculate_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size)
   {
     // v1 transactions hash the entire blob
@@ -1021,7 +985,7 @@ namespace cryptonote
     }
 
     // the tx hash is the hash of the 3 hashes
-    res = cn_fast_hash(hashes, sizeof(hashes));
+    res = cn_fast_hash(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
 
     // we still need the size
     if (blob_size)

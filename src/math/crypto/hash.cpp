@@ -16,13 +16,19 @@ hash cn_fast_hash(const void *data, const std::size_t length) {
   return h;
 }
 
+hash cn_fast_hash(const epee::blob::span x) {
+  hash h;
+  cn_fast_hash(x.data(), x.size(), h);
+  return h;
+}
+
 void sha3(const uint8_t *data, const std::size_t length, hash &hash) {
   ::sha3(data, length, reinterpret_cast<uint8_t *>(&hash));
 }
 
-hash sha3(const uint8_t *data, const std::size_t length) {
+hash sha3(const epee::blob::span x) {
   hash h;
-  sha3(data, length, h);
+  sha3(x.data(), x.size(), h);
   return h;
 }
 

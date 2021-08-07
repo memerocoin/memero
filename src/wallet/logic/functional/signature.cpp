@@ -51,7 +51,7 @@ namespace signature {
    )
   {
     const std::string message = std::string(config::MESSAGE_SIGNING_HEADER) + data;
-    return crypto::cn_fast_hash(message.data(), message.size());
+    return crypto::cn_fast_hash(epee::string_tools::string_to_blob(message));
   }
 
   wallet::logic::type::message_signature::message_signature_result_t verify

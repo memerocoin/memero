@@ -473,7 +473,7 @@ namespace cryptonote
   bool get_block_longhash(const block& b, crypto::hash& res)
   {
     blobdata bd = get_block_hashing_blob(b);
-    crypto::sha3((const uint8_t*)bd.data(), bd.size(), res);
+    res = crypto::sha3(epee::string_tools::string_to_blob(bd));
     return true;
   }
 

@@ -41,6 +41,7 @@ extern "C"
 }
 
 #include "tools/epee/include/logging.hpp"
+#include "tools/epee/include/string_tools.h"
 #include "tools/common/varint.h"
 
 
@@ -94,9 +95,14 @@ rct::key get_exponent(const rct::key base, size_t idx)
   constexpr std::string_view domain_separator(config::HASH_KEY_BULLETPROOF_EXPONENT);
   const std::string hashed =
     std::string((const char*)base.bytes, sizeof(base)) + std::string(domain_separator) + tools::get_varint_data(idx);
+
   rct::key e;
   ge_p3 e_p3;
-  rct::hash_to_p3(e_p3, rct::hash2rct(crypto::cn_fast_hash(hashed.data(), hashed.size())));
+  rct::hash_to_p3
+    (
+     e_p3
+     , rct::hash2rct(crypto::cn_fast_hash(epee::string_tools::string_to_blob(hashed)))
+     );
   ge_p3_tobytes(e.bytes, &e_p3);
   LOG_ERROR_AND_THROW_IF((e == rct::identity()), "Exponent is point at infinity");
   return e;

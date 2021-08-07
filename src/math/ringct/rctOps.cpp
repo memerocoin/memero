@@ -352,13 +352,15 @@ namespace rct {
    //this is useful since you take a number of keys
    //put them in the key vector and it concatenates them
    //and then hashes them
-   key cn_fast_hash(const keyV &keys) {
-       if (keys.empty()) return rct::hash2rct(crypto::cn_fast_hash("", 0));
-       key rv;
-       cn_fast_hash(rv, &keys[0], keys.size() * sizeof(keys[0]));
-       //dp(rv);
-       return rv;
-   }
+    key cn_fast_hash(const keyV &keys) {
+      if (keys.empty()) {
+        return rct::hash2rct(crypto::cn_fast_hash({}));
+      }
+      key rv;
+      cn_fast_hash(rv, &keys[0], keys.size() * sizeof(keys[0]));
+      //dp(rv);
+      return rv;
+    }
 
    key hash_to_scalar(const keyV &keys) {
        key rv = cn_fast_hash(keys);
