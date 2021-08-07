@@ -780,7 +780,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
     {
       // only available for new style answers
       static const std::string empty_hash =
-        epee::string_tools::pod_to_hex(crypto::cn_fast_hash({}));
+        epee::string_tools::pod_to_hex(crypto::sha3({}));
       // prunable_hash will equal empty_hash when nothing is prunable (mostly when the transaction is coinbase)
       if (res.txs.front().in_pool)
         tools::success_msg_writer() << "Found in pool";

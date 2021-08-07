@@ -178,10 +178,10 @@ void chacha20(const void* data, std::size_t length, const chacha_key& key, const
 void generate_chacha_key(const void *data, size_t size, chacha_key& key, uint64_t kdf_rounds) {
   static_assert(sizeof(chacha_key) <= sizeof(hash), "Size of hash must be at least that of chacha_key");
   tools::scrubbed_arr<uint8_t, HASH_SIZE> pwd_hash;
-  const crypto::hash h = crypto::cn_fast_hash(epee::blob::span((const uint8_t*)data, size));
+  const crypto::hash h = crypto::sha3(epee::blob::span((const uint8_t*)data, size));
   std::copy(std::begin(h.data), std::end(h.data), pwd_hash.begin());
   for (uint64_t n = 1; n < kdf_rounds; ++n) {
-    const crypto::hash h1 = crypto::cn_fast_hash(pwd_hash);
+    const crypto::hash h1 = crypto::sha3(pwd_hash);
     std::copy(std::begin(h1.data), std::end(h1.data), pwd_hash.begin());
   }
   memcpy(&unwrap(key), pwd_hash.data(), sizeof(key));

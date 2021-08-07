@@ -233,7 +233,7 @@ namespace tools
     {
       std::string buf = get_varint_data(tag);
       buf += data;
-      crypto::hash hash = crypto::cn_fast_hash
+      crypto::hash hash = crypto::sha3
         (epee::string_tools::string_to_blob(buf));
 
       const char* hash_data = reinterpret_cast<const char*>(&hash);
@@ -252,7 +252,7 @@ namespace tools
       checksum = addr_data.substr(addr_data.size() - addr_checksum_size);
 
       addr_data.resize(addr_data.size() - addr_checksum_size);
-      crypto::hash hash = crypto::cn_fast_hash
+      crypto::hash hash = crypto::sha3
         (epee::string_tools::string_to_blob(addr_data));
       std::string expected_checksum(reinterpret_cast<const char*>(&hash), addr_checksum_size);
       if (expected_checksum != checksum) return false;

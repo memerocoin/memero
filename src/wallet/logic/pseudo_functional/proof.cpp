@@ -97,7 +97,7 @@ namespace proof {
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     std::string prefix_data((const char*)&txid, sizeof(crypto::hash));
     prefix_data += message;
-    crypto::hash prefix_hash = crypto::cn_fast_hash(epee::string_tools::string_to_blob(prefix_data));
+    crypto::hash prefix_hash = crypto::sha3(epee::string_tools::string_to_blob(prefix_data));
 
     // check signature
     std::vector<int> good_signature(num_sigs, 0);

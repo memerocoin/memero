@@ -201,7 +201,7 @@ namespace rct {
     }
 
 
-    //Computes aH where H= toPoint(cn_fast_hash(G)), G the basepoint
+    //Computes aH where H= toPoint(sha3(G)), G the basepoint
     key scalarmultH(const key & a) {
       key s = normalizeKey(a);
       key k;
@@ -313,7 +313,7 @@ namespace rct {
       LOG_WARNING_AND_THROW_UNLESS(r == 0, "sub keys not in main group");
     }
 
-    //cn_fast_hash for a 32 byte key
+    //sha3 for a 32 byte key
     key hash_key(const key & in) {
         return hash2rct(crypto::sha3(epee::pod_to_span(in)));
     }
@@ -326,7 +326,7 @@ namespace rct {
 
     key hash_keys(const keyV &keys) {
       if (keys.empty()) {
-        return rct::hash2rct(crypto::cn_fast_hash({}));
+        return rct::hash2rct(crypto::sha3({}));
       }
       const auto h = crypto::sha3(epee::blob::span((const uint8_t*)&keys[0], keys.size() * sizeof(keys[0])));
       return hash2rct(h);

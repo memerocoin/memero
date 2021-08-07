@@ -141,7 +141,7 @@ namespace crypto {
   }
 
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res) {
-    const auto h = cn_fast_hash(epee::blob::span((const uint8_t*)data, length));
+    const auto h = sha3(epee::blob::span((const uint8_t*)data, length));
     res = convert_hash_to_scalar(h);
     sc_reduce32(&res);
   }
@@ -398,7 +398,7 @@ namespace crypto {
         buf.B = *B;
     else
         buf.B = zero;
-    buf.sep = cn_fast_hash(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1));
+    buf.sep = sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1));
 
     if (B)
     {
@@ -517,7 +517,7 @@ namespace crypto {
         buf.B = *B;
     else
         buf.B = zero;
-    buf.sep = cn_fast_hash(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1));
+    buf.sep = sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1));
     ge_tobytes(&buf.X, &X_p2);
     ge_tobytes(&buf.Y, &Y_p2);
     ec_scalar c2;
@@ -534,7 +534,7 @@ namespace crypto {
     hash h;
     ge_p2 point;
     ge_p1p1 point2;
-    h = cn_fast_hash(epee::pod_to_span(key));
+    h = sha3(epee::pod_to_span(key));
     ge_fromfe_frombytes_vartime(&point, reinterpret_cast<const unsigned char *>(&h));
     ge_mul8(&point2, &point);
     ge_p1p1_to_p3(&res, &point2);

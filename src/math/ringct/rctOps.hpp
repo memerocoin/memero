@@ -89,7 +89,7 @@ namespace rct {
     //does a * P where a is a scalar and P is an arbitrary point
     void scalarmultKey(key &aP, const key &P, const key &a);
     key scalarmultKey(const key &P, const key &a);
-    //Computes aH where H= toPoint(cn_fast_hash(G)), G the basepoint
+    //Computes aH where H= toPoint(sha3(G)), G the basepoint
     key scalarmultH(const key & a);
     // multiplies a point by 8
     key scalarmult8(const key & P);

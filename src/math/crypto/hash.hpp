@@ -53,7 +53,6 @@ namespace crypto {
     Cryptonight hash functions
   */
 
-  hash cn_fast_hash(const epee::blob::span);
   hash sha3(const epee::blob::span);
 
   void tree_hash(const hash *hashes, const std::size_t count, hash &root_hash);

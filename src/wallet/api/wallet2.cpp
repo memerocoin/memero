@@ -2285,7 +2285,7 @@ void wallet2::setup_keys(const epee::wipeable_string &password)
   tools::scrubbed_arr<uint8_t, HASH_SIZE+1> cache_key_data;
   memcpy(cache_key_data.data(), &key, HASH_SIZE);
   cache_key_data[HASH_SIZE] = config::HASH_KEY_WALLET_CACHE;
-  auto h = cn_fast_hash(cache_key_data);
+  auto h = sha3(cache_key_data);
   std::copy(std::begin(h.data), std::end(h.data), m_cache_key.begin());
 }
 //----------------------------------------------------------------------------------------------------
