@@ -3,7 +3,7 @@
 #include <openssl/evp.h>
 
 void handleErrors(void) {
-  printf("sha3 error, wow is ded\n");
+  printf("sha3 error, lol is ded\n");
   exit(1);
 }
 

@@ -9,5 +9,3 @@
 #include <cstddef>
 
 void sha3_raw(const uint8_t *data, const size_t length, uint8_t *hash);
-// void sha3_as_keccak1600(const uint8_t *in, const size_t inlen, uint8_t *md);
-// void sha3_as_keccak_256(const uint8_t *in, const size_t inlen, uint8_t *md);
