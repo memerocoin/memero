@@ -144,7 +144,8 @@ namespace cryptonote
 
     // rng for generating second set of keys is hash of first rng.  means only one set of electrum-style words needed for recovery
     crypto::secret_key second;
-    sha3_as_keccak_256((uint8_t *)&m_keys.m_spend_secret_key, sizeof(crypto::secret_key), (uint8_t *)&second);
+    const auto h = crypto::sha3(epee::pod_to_span(m_keys.m_spend_secret_key));
+    std::copy(std::begin(h.data), std::end(h.data), unwrap(second).data);
 
     generate_keys(m_keys.m_account_address.m_view_public_key, m_keys.m_view_secret_key, second, true);
 

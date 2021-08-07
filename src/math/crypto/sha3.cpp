@@ -30,12 +30,3 @@ void sha3(const uint8_t *data, const size_t length, uint8_t *hash)
 
   EVP_MD_CTX_free(mdctx);
 }
-
-
-void sha3_as_keccak1600(const uint8_t *in, const size_t inlen, uint8_t *md) {
-  sha3(in, inlen, md);
-}
-
-void sha3_as_keccak_256(const uint8_t *in, const size_t inlen, uint8_t *md) {
-  sha3(in, inlen, md);
-}
