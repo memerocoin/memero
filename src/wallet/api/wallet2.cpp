@@ -2065,43 +2065,6 @@ bool wallet2::refresh(uint64_t & blocks_fetched, bool& received_money, bool& ok)
   return ok;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution)
-{
-  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request req = AUTO_VAL_INIT(req);
-  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response res = AUTO_VAL_INIT(res);
-  req.amounts.push_back(0);
-  req.from_height = 0;
-  req.cumulative = true;
-  req.binary = true;
-  req.compress = true;
-
-  bool r;
-  try
-  {
-    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    r = invoke_http_json_rpc("/json_rpc", "get_output_distribution", req, res);
-    THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
-  }
-  catch(...)
-  {
-    return false;
-  }
-  if (res.distributions.size() != 1)
-  {
-    LOG_WARNING("Failed to request output distribution: not the expected single result");
-    return false;
-  }
-  if (res.distributions[0].amount != 0)
-  {
-    LOG_WARNING("Failed to request output distribution: results are not for amount 0");
-    return false;
-  }
-  start_height = res.distributions[0].data.start_height;
-  distribution = std::move(res.distributions[0].data.distribution);
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
 void wallet2::detach_blockchain(uint64_t height)
 {
   LOG_PRINT_L0("Detaching blockchain on height " << height);
@@ -3561,7 +3524,8 @@ void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_ent
       {
         max_rct_index = std::max(max_rct_index, m_transfers[idx].m_global_output_index);
       }
-    const bool has_rct_distribution = !rct_offsets.empty() || get_rct_distribution(rct_start_height, rct_offsets);
+    const bool has_rct_distribution = !rct_offsets.empty() ||
+      m_rpc_client.get_rct_distribution(rct_start_height, rct_offsets);
 
     THROW_WALLET_EXCEPTION_IF(!has_rct_distribution, error::wallet_internal_error, "no rct distribution");
     if (has_rct_distribution)
@@ -4961,14 +4925,6 @@ bool wallet2::is_synced()
 void wallet2::generate_genesis(cryptonote::block& b) const {
   cryptonote::generate_genesis_block(b, get_config(m_nettype).GENESIS_TX, get_config(m_nettype).GENESIS_NONCE);
 }
-//----------------------------------------------------------------------------------------------------
-void wallet2::throw_on_rpc_response_error(bool r, const epee::json_rpc::error &error, const std::string &status, const char *method) const
-{
-  THROW_WALLET_EXCEPTION_IF(error.code, tools::error::wallet_coded_rpc_error, method, error.code, get_rpc_server_error_message(error.code));
-  THROW_WALLET_EXCEPTION_IF(!r, tools::error::no_connection_to_daemon, method);
-  // empty string -> not connection
-  THROW_WALLET_EXCEPTION_IF(status.empty(), tools::error::no_connection_to_daemon, method);
 
-  THROW_WALLET_EXCEPTION_IF(status == CORE_RPC_STATUS_BUSY, tools::error::daemon_busy, method);
-}
-}
+
+} // tools

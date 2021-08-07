@@ -30,6 +30,8 @@
 
 #include "wallet_errors.h"
 
+#include "network/rpc/core_rpc_server_error_codes.h"
+
 namespace tools
 {
 namespace error
@@ -170,5 +172,19 @@ namespace error
     ss << wallet_logic_error::to_string() << ", request = " << m_request;
     return ss.str();
   }
-}
-}
+} // error
+
+
+  //----------------------------------------------------------------------------------------------------
+  void throw_on_rpc_response_error(bool r, const epee::json_rpc::error &error, const std::string &status, const char *method)
+  {
+    THROW_WALLET_EXCEPTION_IF(error.code, tools::error::wallet_coded_rpc_error, method, error.code,
+                              get_rpc_server_error_message(error.code));
+    THROW_WALLET_EXCEPTION_IF(!r, tools::error::no_connection_to_daemon, method);
+    // empty string -> not connection
+    THROW_WALLET_EXCEPTION_IF(status.empty(), tools::error::no_connection_to_daemon, method);
+
+    THROW_WALLET_EXCEPTION_IF(status == CORE_RPC_STATUS_BUSY, tools::error::daemon_busy, method);
+  }
+
+} //tools

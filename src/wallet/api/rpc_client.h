@@ -45,6 +45,7 @@ public:
 
   std::optional<std::string> get_height(uint64_t &height);
   std::optional<std::string> get_target_height(uint64_t &height);
+  bool get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution);
 
 private:
   epee::net_utils::http::abstract_http_client &m_http_client;

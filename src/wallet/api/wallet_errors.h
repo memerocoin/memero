@@ -30,12 +30,16 @@
 
 #pragma once
 
+#include "tools/epee/include/net/jsonrpc_structs.h"
+
+#include "network/rpc/core_rpc_server_commands_defs.h"
 
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 
-
 namespace tools
 {
+  void throw_on_rpc_response_error(bool r, const epee::json_rpc::error &error, const std::string &status, const char *method);
+
   namespace error
   {
     // std::exception
@@ -730,3 +734,13 @@ namespace tools
     LOG_ERROR(#cond << ". THROW EXCEPTION: " << #err_type);                                                 \
     tools::error::throw_wallet_ex<err_type>(std::string(__FILE__ ":" STRINGIZE(__LINE__)), ## __VA_ARGS__); \
   }
+
+
+#define THROW_ON_RPC_RESPONSE_ERROR(r, error, res, method, ...)         \
+  do {                                                                  \
+    tools::throw_on_rpc_response_error(r, error, res.status, method);   \
+    THROW_WALLET_EXCEPTION_IF(res.status != CORE_RPC_STATUS_OK, ## __VA_ARGS__); \
+  } while(0)
+
+#define THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, err, res, method)        \
+  THROW_ON_RPC_RESPONSE_ERROR(r, err, res, method, tools::error::wallet_generic_rpc_error, method, res.status)

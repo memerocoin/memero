@@ -28,8 +28,10 @@
 
 #include "rpc_client.h"
 
+#include "wallet_errors.h"
 
 #include "tools/epee/include/net/http_abstract_invoke.h"
+
 
 #define RETURN_ON_RPC_RESPONSE_ERROR(r, error, res, method) \
   do { \
@@ -91,6 +93,42 @@ std::optional<std::string> RPC_Client::get_target_height(uint64_t &height)
   height = resp_t.target_height;
 
   return {};
+}
+
+bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution)
+{
+  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request req = AUTO_VAL_INIT(req);
+  cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response res = AUTO_VAL_INIT(res);
+  req.amounts.push_back(0);
+  req.from_height = 0;
+  req.cumulative = true;
+  req.binary = true;
+  req.compress = true;
+
+  try
+  {
+    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
+    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_output_distribution", req, res, m_http_client, rpc_timeout);
+    THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
+  }
+  catch(...)
+  {
+    return false;
+  }
+  if (res.distributions.size() != 1)
+  {
+    LOG_WARNING("Failed to request output distribution: not the expected single result");
+    return false;
+  }
+  if (res.distributions[0].amount != 0)
+  {
+    LOG_WARNING("Failed to request output distribution: results are not for amount 0");
+    return false;
+  }
+  start_height = res.distributions[0].data.start_height;
+  distribution = std::move(res.distributions[0].data.distribution);
+
+  return true;
 }
 
 }
