@@ -327,9 +327,7 @@ namespace rct {
 
     //cn_fast_hash for a 32 byte key
     key hash_key(const key & in) {
-        key hash;
-        sha3_as_keccak_256((const uint8_t *)in.bytes, 32, hash.bytes);
-        return hash;
+        return hash2rct(crypto::sha3(epee::pod_to_span(in)));
     }
 
     key hash_to_scalar(const key & in) {
