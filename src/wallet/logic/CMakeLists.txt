@@ -27,6 +27,10 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+add_library(wallet_logic_state
+  state/gamma_picker.cpp
+)
+
 add_library(wallet_logic
   functional/proof.cpp
   functional/signature.cpp
@@ -37,7 +41,6 @@ add_library(wallet_logic
   pseudo_functional/uri.cpp
   controller/proof.cpp
   controller/wallet.cpp
-  state/gamma_picker.cpp
   )
 
 target_link_libraries(wallet_logic

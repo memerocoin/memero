@@ -31,6 +31,9 @@
 #include "network/rpc/core_rpc_server_commands_defs.h"
 #include "tools/epee/include/net/abstract_http_client.h"
 
+#include "wallet/logic/type/typedef.hpp"
+#include "wallet/logic/type/wallet.hpp"
+
 #include <mutex>
 
 namespace tools
@@ -46,11 +49,29 @@ public:
   std::optional<std::string> get_height(uint64_t &height) const;
   std::optional<std::string> get_target_height(uint64_t &height) const;
   bool get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution) const;
+  void get_outs
+  (
+   std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+   , const std::vector<size_t> &selected_transfers
+   , size_t fake_outputs_count
+   , std::vector<uint64_t> &rct_offsets
+   , wallet::logic::type::wallet::transfer_container m_transfers
+   ) const;
 
 private:
   epee::net_utils::http::abstract_http_client &m_http_client;
   std::recursive_mutex &m_daemon_rpc_mutex;
   bool m_offline;
+
+  bool tx_add_fake_output
+  (
+   std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+   , uint64_t global_index
+   , const crypto::public_key& tx_public_key
+   , const rct::key& mask
+   , uint64_t real_index
+   , bool unlocked
+   ) const;
 };
 
 }

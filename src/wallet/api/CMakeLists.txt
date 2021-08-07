@@ -31,8 +31,16 @@ add_library(wallet_errors
   wallet_errors.cpp
  )
 
+target_link_libraries(wallet_errors
+  network_rpc_base
+)
+
 add_library(wallet_rpc_client
   rpc_client.cpp
+)
+
+target_link_libraries(wallet_rpc_client
+  wallet_logic_state
 )
 
 add_library(wallet_api
