@@ -320,19 +320,9 @@ namespace rct {
         sha3_as_keccak_256((const uint8_t *)data, l, hash.bytes);
     }
 
-    void hash_to_scalar(key &hash, const void * data, const std::size_t l) {
-        cn_fast_hash(hash, data, l);
-        sc_reduce32(hash.bytes);
-    }
-
     //cn_fast_hash for a 32 byte key
     void cn_fast_hash(key & hash, const key & in) {
         sha3_as_keccak_256((const uint8_t *)in.bytes, 32, hash.bytes);
-    }
-
-    void hash_to_scalar(key & hash, const key & in) {
-        cn_fast_hash(hash, in);
-        sc_reduce32(hash.bytes);
     }
 
     //cn_fast_hash for a 32 byte key
@@ -342,11 +332,11 @@ namespace rct {
         return hash;
     }
 
-     key hash_to_scalar(const key & in) {
-        key hash = cn_fast_hash(in);
-        sc_reduce32(hash.bytes);
-        return hash;
-     }
+    key hash_to_scalar(const key & in) {
+      key hash = cn_fast_hash(in);
+      sc_reduce32(hash.bytes);
+      return hash;
+    }
 
     key hash_keys(const keyV &keys) {
       if (keys.empty()) {
@@ -395,9 +385,9 @@ namespace rct {
         char data[15 + sizeof(key)];
         memcpy(data, "commitment_mask", 15);
         memcpy(data + 15, &sk, sizeof(sk));
-        key scalar;
-        hash_to_scalar(scalar, data, sizeof(data));
-        return scalar;
+        key h = rct::hash2rct(crypto::sha3(epee::pod_to_span(data)));
+        sc_reduce32(h.bytes);
+        return h;
     }
 
     void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec) {
