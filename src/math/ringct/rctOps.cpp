@@ -348,11 +348,7 @@ namespace rct {
         return hash;
      }
 
-   //cn_fast_hash for a key-vector of arbitrary length
-   //this is useful since you take a number of keys
-   //put them in the key vector and it concatenates them
-   //and then hashes them
-    key cn_fast_hash(const keyV &keys) {
+    key hash_keys(const keyV &keys) {
       if (keys.empty()) {
         return rct::hash2rct(crypto::cn_fast_hash({}));
       }
@@ -363,7 +359,7 @@ namespace rct {
     }
 
    key hash_keys_to_scalar(const keyV &keys) {
-       key rv = cn_fast_hash(keys);
+       key rv = hash_keys(keys);
        sc_reduce32(rv.bytes);
        return rv;
    }

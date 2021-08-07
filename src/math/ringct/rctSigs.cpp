@@ -264,7 +264,7 @@ namespace rct {
           kv.push_back(p.t);
         }
       }
-      hashes.push_back(cn_fast_hash(kv));
+      hashes.push_back(hash_keys(kv));
       hwdev.mlsag_pre_hash(ss.str(), inputs, outputs, hashes, rv.outPk, prehash);
       return  prehash;
     }
