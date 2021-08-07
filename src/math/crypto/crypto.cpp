@@ -42,18 +42,6 @@
 #include <memory>
 
 
-namespace {
-  static void local_abort(const char *msg)
-  {
-    fprintf(stderr, "%s\n", msg);
-#ifdef NDEBUG
-    _exit(1);
-#else
-    abort();
-#endif
-  }
-}
-
 namespace crypto {
 
   using std::abort;
