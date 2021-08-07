@@ -76,21 +76,14 @@ using namespace wallet::logic::type::message_signature;
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
 
-// used to target a given block weight (additional outputs may be added on top to build fee)
-#define TX_WEIGHT_TARGET(bytes) (bytes*2/3)
-
-#define RECENT_OUTPUT_RATIO (0.5) // 50% of outputs are from the recent zone
-#define RECENT_OUTPUT_DAYS (1.8) // last 1.8 day makes up the recent zone (taken from monerolink.pdf, Miller et al)
-#define RECENT_OUTPUT_ZONE ((time_t)(RECENT_OUTPUT_DAYS * 86400))
-#define RECENT_OUTPUT_BLOCKS (RECENT_OUTPUT_DAYS * 720)
-
-#define FEE_ESTIMATE_GRACE_BLOCKS 10 // estimate fee valid for that many blocks
-
-#define SECOND_OUTPUT_RELATEDNESS_THRESHOLD 0.0f
-
 
 std::mutex tools::wallet2::default_daemon_address_lock;
 std::string tools::wallet2::default_daemon_address = "";
+
+// used to target a given block weight (additional outputs may be added on top to build fee)
+constexpr uint64_t TX_WEIGHT_TARGET(const uint64_t bytes) {
+  return bytes * 2 / 3;
+}
 
 namespace
 {
@@ -135,7 +128,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
     daemon_address = std::string("http://") + daemon_host + ":" + std::to_string(daemon_port);
 
   std::unique_ptr<tools::wallet2> wallet(new tools::wallet2(nettype, kdf_rounds, unattended));
-  if (!wallet->init(std::move(daemon_address), 0))
+  if (!wallet->init(std::move(daemon_address)))
   {
     THROW_WALLET_EXCEPTION(tools::error::wallet_internal_error, tools::wallet2::tr("failed to initialize the wallet"));
   }
@@ -248,7 +241,6 @@ const char* wallet2::tr(const char* str) { return str; }
 
 wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory):
   m_http_client(http_client_factory->create()),
-  m_upper_transaction_weight_limit(0),
   m_run(true),
   m_callback(0),
   m_nettype(nettype),
@@ -346,10 +338,9 @@ bool wallet2::set_daemon(std::string daemon_address)
   return ret;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::init(std::string daemon_address, uint64_t upper_transaction_weight_limit)
+bool wallet2::init(std::string daemon_address)
 {
   m_is_initialized = true;
-  m_upper_transaction_weight_limit = upper_transaction_weight_limit;
   return set_daemon(daemon_address);
 }
 //----------------------------------------------------------------------------------------------------
@@ -4321,8 +4312,6 @@ bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::get_upper_transaction_weight_limit()
 {
-  if (m_upper_transaction_weight_limit > 0)
-    return m_upper_transaction_weight_limit;
   return get_max_tx_size() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
 }
 //----------------------------------------------------------------------------------------------------

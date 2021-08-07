@@ -181,8 +181,7 @@ namespace tools
     bool get_explicit_refresh_from_block_height() const {return m_explicit_refresh_from_block_height;}
 
     bool deinit();
-    bool init(std::string daemon_address = "http://localhost:8080",
-              uint64_t upper_transaction_weight_limit = 0);
+    bool init(std::string daemon_address);
     bool set_daemon(std::string daemon_address = "http://localhost:8080");
     void stop() { m_run.store(false, std::memory_order_relaxed); }
 
@@ -489,7 +488,6 @@ namespace tools
     std::vector<std::vector<std::string>> m_subaddress_labels;
     serializable_unordered_map<std::string, std::string> m_attributes;
     std::pair<serializable_map<std::string, std::string>, std::vector<std::string>> m_account_tags;
-    uint64_t m_upper_transaction_weight_limit; //TODO: auto-calc this value or request from daemon, now use some fixed value
     serializable_unordered_map<crypto::public_key, crypto::key_image> m_cold_key_images;
 
     std::atomic<bool> m_run;
