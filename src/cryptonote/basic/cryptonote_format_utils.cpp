@@ -93,7 +93,7 @@ namespace cryptonote
     std::ostringstream s;
     binary_archive<true> a(s);
     ::serialization::serialize(a, const_cast<transaction_prefix&>(tx));
-    crypto::cn_fast_hash(s.str().data(), s.str().size(), h);
+    h = crypto::cn_fast_hash(epee::string_tools::string_to_blob(s.str()));
   }
   //---------------------------------------------------------------
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx)
@@ -785,12 +785,12 @@ namespace cryptonote
   //---------------------------------------------------------------
   void get_blob_hash(const blobdata_ref& blob, crypto::hash& res)
   {
-    cn_fast_hash(blob.data(), blob.size(), res);
+    res = cn_fast_hash(epee::string_tools::string_view_to_blob_view(blob));
   }
   //---------------------------------------------------------------
   void get_blob_hash(const blobdata& blob, crypto::hash& res)
   {
-    cn_fast_hash(blob.data(), blob.size(), res);
+    res = cn_fast_hash(epee::string_tools::string_to_blob(blob));
   }
   //---------------------------------------------------------------
   void set_default_decimal_point(unsigned int decimal_point)
@@ -1190,16 +1190,14 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::secret_key encrypt_key(crypto::secret_key key, const epee::wipeable_string &passphrase)
   {
-    crypto::hash hash;
-    crypto::cn_fast_hash(passphrase.data(), passphrase.size(), hash);
+    crypto::hash hash = crypto::cn_fast_hash(epee::string_tools::string_to_blob(passphrase));
     sc_add((unsigned char*)key.data, (const unsigned char*)key.data, (const unsigned char*)hash.data);
     return key;
   }
   //---------------------------------------------------------------
   crypto::secret_key decrypt_key(crypto::secret_key key, const epee::wipeable_string &passphrase)
   {
-    crypto::hash hash;
-    crypto::cn_fast_hash(passphrase.data(), passphrase.size(), hash);
+    crypto::hash hash = crypto::cn_fast_hash(epee::string_tools::string_to_blob(passphrase));
     sc_sub((unsigned char*)key.data, (const unsigned char*)key.data, (const unsigned char*)hash.data);
     return key;
   }

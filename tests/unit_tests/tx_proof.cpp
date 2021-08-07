@@ -28,6 +28,8 @@
 
 #include "gtest/gtest.h"
 
+#include "tools/epee/include/string_tools.h"
+
 #include "math/crypto/crypto.hpp"
 extern "C" {
 #include "math/crypto/crypto-ops.h"
@@ -82,8 +84,8 @@ TEST(tx_proof, prove_verify_v2)
 
     // Message data
     crypto::hash prefix_hash;
-    char data[] = "hash input";
-    crypto::cn_fast_hash(data,sizeof(data)-1,prefix_hash);
+    constexpr std::string_view data = "hash input";
+    prefix_hash = crypto::sha3(epee::string_tools::string_view_to_blob_view(data));
 
     // Generate/verify valid v2 proof with standard address
     crypto::generate_tx_proof(prefix_hash, R_G, A, std::nullopt, D, r, sig);

@@ -2282,10 +2282,11 @@ void wallet2::setup_keys(const epee::wipeable_string &password)
   crypto::generate_chacha_key(password.data(), password.size(), key, m_kdf_rounds);
 
   static_assert(HASH_SIZE == sizeof(crypto::chacha_key), "Mismatched sizes of hash and chacha key");
-  tools::scrubbed_arr<char, HASH_SIZE+1> cache_key_data;
+  tools::scrubbed_arr<uint8_t, HASH_SIZE+1> cache_key_data;
   memcpy(cache_key_data.data(), &key, HASH_SIZE);
   cache_key_data[HASH_SIZE] = config::HASH_KEY_WALLET_CACHE;
-  cn_fast_hash(cache_key_data.data(), HASH_SIZE+1, (crypto::hash&)m_cache_key);
+  auto h = cn_fast_hash(cache_key_data);
+  std::copy(std::begin(h.data), std::end(h.data), m_cache_key.begin());
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::change_password(const std::string &filename, const epee::wipeable_string &original_password, const epee::wipeable_string &new_password)

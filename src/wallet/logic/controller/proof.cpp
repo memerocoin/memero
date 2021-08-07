@@ -65,8 +65,7 @@ namespace proof {
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     std::string prefix_data((const char*)&txid, sizeof(crypto::hash));
     prefix_data += message;
-    crypto::hash prefix_hash;
-    crypto::cn_fast_hash(prefix_data.data(), prefix_data.size(), prefix_hash);
+    crypto::hash prefix_hash= crypto::cn_fast_hash(epee::string_tools::string_to_blob(prefix_data));
 
     std::vector<crypto::public_key> shared_secret;
     std::vector<crypto::signature> sig;

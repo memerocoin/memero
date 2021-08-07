@@ -33,6 +33,10 @@ namespace epee
 namespace string_tools
 {
   //----------------------------------------------------------------------------
+  epee::blob::view string_view_to_blob_view(const std::string_view s) {
+    return std::basic_string_view((uint8_t*)s.data(), s.size());
+  };
+  //----------------------------------------------------------------------------
   epee::blob::data string_to_blob(const std::string& s) {
     return std::basic_string((uint8_t*)s.data(), s.size());
   };

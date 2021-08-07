@@ -42,6 +42,7 @@ namespace epee
 namespace string_tools
 {
   epee::blob::data string_to_blob(const std::string& s);
+  epee::blob::view string_view_to_blob_view(const std::string_view s);
   std::string blob_to_string(const epee::blob::data& s);
   std::string buff_to_hex_nodelimer(const std::string& src);
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res);

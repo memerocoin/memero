@@ -54,7 +54,6 @@ namespace crypto {
   */
 
   void cn_fast_hash(const void *data, const size_t length, uint8_t *hash);
-  void cn_fast_hash(const void *data, const std::size_t length, hash &hash);
 
   hash cn_fast_hash(const epee::blob::span);
   hash sha3(const epee::blob::span);

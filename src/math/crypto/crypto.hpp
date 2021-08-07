@@ -79,6 +79,7 @@ namespace crypto {
     friend class crypto_ops;
   };
 
+  ec_scalar convert_hash_to_scalar(const crypto::hash x);
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res);
   void random32_unbiased(unsigned char *bytes);
 
