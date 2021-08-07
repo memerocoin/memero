@@ -57,7 +57,7 @@ RPC_Client::RPC_Client(epee::net_utils::http::abstract_http_client &http_client,
 {
 }
 
-std::optional<std::string> RPC_Client::get_height(uint64_t &height)
+std::optional<std::string> RPC_Client::get_height(uint64_t &height) const
 {
   if (m_offline)
     return std::optional<std::string>("offline");
@@ -76,7 +76,7 @@ std::optional<std::string> RPC_Client::get_height(uint64_t &height)
   return {};
 }
 
-std::optional<std::string> RPC_Client::get_target_height(uint64_t &height)
+std::optional<std::string> RPC_Client::get_target_height(uint64_t &height) const
 {
   if (m_offline)
     return std::optional<std::string>("offline");
@@ -95,7 +95,7 @@ std::optional<std::string> RPC_Client::get_target_height(uint64_t &height)
   return {};
 }
 
-bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution)
+bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64_t> &distribution) const
 {
   cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request req = AUTO_VAL_INIT(req);
   cryptonote::COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response res = AUTO_VAL_INIT(res);

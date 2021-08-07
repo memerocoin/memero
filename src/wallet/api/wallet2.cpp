@@ -3478,7 +3478,7 @@ bool wallet2::tx_add_fake_output(std::vector<std::vector<wallet::logic::type::ge
 }
 
 
-void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, bool rct)
+void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, bool rct) const
 {
   std::vector<uint64_t> rct_offsets;
   for (size_t attempts = 3; attempts > 0; --attempts)
@@ -3504,7 +3504,7 @@ void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_ent
   THROW_WALLET_EXCEPTION(error::wallet_internal_error, tr("Transaction sanity check failed"));
 }
 
-void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, std::vector<uint64_t> &rct_offsets)
+void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, std::vector<uint64_t> &rct_offsets) const
 {
   LOG_PRINT_L2("fake_outputs_count: " << fake_outputs_count);
   outs.clear();
