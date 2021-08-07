@@ -126,7 +126,7 @@ namespace rct {
     void cn_fast_hash(key &hash, const key &in);
     // void hash_to_scalar(key &hash, const key &in);
     //cn_fast_hash for a 32 byte key
-    key cn_fast_hash(const key &in);
+    key hash_key(const key &in);
     key hash_to_scalar(const key &in);
     //for mg sigs
     key hash_keys(const keyV &keys);

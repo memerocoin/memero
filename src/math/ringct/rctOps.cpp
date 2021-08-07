@@ -326,14 +326,14 @@ namespace rct {
     }
 
     //cn_fast_hash for a 32 byte key
-    key cn_fast_hash(const key & in) {
+    key hash_key(const key & in) {
         key hash;
         sha3_as_keccak_256((const uint8_t *)in.bytes, 32, hash.bytes);
         return hash;
     }
 
     key hash_to_scalar(const key & in) {
-      key hash = cn_fast_hash(in);
+      key hash = hash_key(in);
       sc_reduce32(hash.bytes);
       return hash;
     }
@@ -356,9 +356,9 @@ namespace rct {
 
     // Hash a key to p3 representation
     void hash_to_p3(ge_p3 &hash8_p3, const key &k) {
-      key hash_key = cn_fast_hash(k);
+      key h = hash_key(k);
       ge_p2 hash_p2;
-      ge_fromfe_frombytes_vartime(&hash_p2, hash_key.bytes);
+      ge_fromfe_frombytes_vartime(&hash_p2, h.bytes);
       ge_p1p1 hash8_p1p1;
       ge_mul8(&hash8_p1p1, &hash_p2);
       ge_p1p1_to_p3(&hash8_p3, &hash8_p1p1);
