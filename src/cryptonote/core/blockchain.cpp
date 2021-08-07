@@ -2540,20 +2540,6 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
   return true;
 }
 //------------------------------------------------------------------
-void Blockchain::check_ring_signature(const crypto::hash &tx_prefix_hash, const crypto::key_image &key_image, const std::vector<rct::ctkey> &pubkeys, const std::vector<crypto::signature>& sig, uint64_t &result) const
-{
-  std::vector<const crypto::public_key *> p_output_keys;
-  p_output_keys.reserve(pubkeys.size());
-  for (auto &key : pubkeys)
-  {
-    // rct::key and crypto::public_key have the same structure, avoid object ctor/memcpy
-    p_output_keys.push_back(&(const crypto::public_key&)key.dest);
-  }
-
-  result = crypto::check_ring_signature(tx_prefix_hash, key_image, p_output_keys, sig.data()) ? 1 : 0;
-}
-
-//------------------------------------------------------------------
 bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 {
   uint64_t needed_fee = 0;

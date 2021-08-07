@@ -120,10 +120,6 @@ namespace crypto {
     friend bool check_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const signature &);
     static void generate_key_image(const public_key &, const secret_key &, key_image &);
     friend void generate_key_image(const public_key &, const secret_key &, key_image &);
-    static bool check_ring_signature(const hash &, const key_image &,
-      const public_key *const *, std::size_t, const signature *);
-    friend bool check_ring_signature(const hash &, const key_image &,
-      const public_key *const *, std::size_t, const signature *);
   };
 
   void generate_random_bytes_thread_safe(size_t N, uint8_t *bytes);
@@ -240,20 +236,9 @@ namespace crypto {
   inline void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
     crypto_ops::generate_key_image(pub, sec, image);
   }
-  inline bool check_ring_signature(const hash &prefix_hash, const key_image &image,
-    const public_key *const *pubs, std::size_t pubs_count,
-    const signature *sig) {
-    return crypto_ops::check_ring_signature(prefix_hash, image, pubs, pubs_count, sig);
-  }
 
   /* Variants with vector<const public_key *> parameters.
    */
-
-  inline bool check_ring_signature(const hash &prefix_hash, const key_image &image,
-    const std::vector<const public_key *> &pubs,
-    const signature *sig) {
-    return check_ring_signature(prefix_hash, image, pubs.data(), pubs.size(), sig);
-  }
 
   inline std::ostream &operator <<(std::ostream &o, const crypto::public_key &v) {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;

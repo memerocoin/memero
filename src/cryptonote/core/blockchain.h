@@ -1191,18 +1191,6 @@ namespace cryptonote
     bool check_for_double_spend(const transaction& tx, key_images_container& keys_this_block) const;
 
     /**
-     * @brief validates a transaction input's ring signature
-     *
-     * @param tx_prefix_hash the transaction prefix' hash
-     * @param key_image the key image generated from the true input
-     * @param pubkeys the public keys for each input in the ring signature
-     * @param sig the signature generated for each input in the ring signature
-     * @param result false if the ring signature is invalid, otherwise true
-     */
-    void check_ring_signature(const crypto::hash &tx_prefix_hash, const crypto::key_image &key_image,
-        const std::vector<rct::ctkey> &pubkeys, const std::vector<crypto::signature> &sig, uint64_t &result) const;
-
-    /**
      * @brief expands v2 transaction data from blockchain
      *
      * RingCT transactions do not transmit some of their data if it

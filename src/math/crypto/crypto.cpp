@@ -560,48 +560,6 @@ namespace crypto {
   static inline size_t rs_comm_size(size_t pubs_count) {
     return sizeof(rs_comm) + pubs_count * sizeof(ec_point_pair);
   }
-
-  bool crypto_ops::check_ring_signature(const hash &prefix_hash, const key_image &image,
-    const public_key *const *pubs, size_t pubs_count,
-    const signature *sig) {
-    size_t i;
-    ge_p3 image_unp;
-    ge_dsmp image_pre;
-    ec_scalar sum, h;
-    std::shared_ptr<rs_comm> buf(reinterpret_cast<rs_comm *>(malloc(rs_comm_size(pubs_count))), free);
-    if (!buf)
-      return false;
-#if !defined(NDEBUG)
-    for (i = 0; i < pubs_count; i++) {
-      assert(check_key(*pubs[i]));
-    }
-#endif
-    if (ge_frombytes_vartime(&image_unp, &image) != 0) {
-      return false;
-    }
-    ge_dsm_precomp(image_pre, &image_unp);
-    sc_0(&sum);
-    buf->h = prefix_hash;
-    for (i = 0; i < pubs_count; i++) {
-      ge_p2 tmp2;
-      ge_p3 tmp3;
-      if (sc_check(&sig[i].c) != 0 || sc_check(&sig[i].r) != 0) {
-        return false;
-      }
-      if (ge_frombytes_vartime(&tmp3, &*pubs[i]) != 0) {
-        return false;
-      }
-      ge_double_scalarmult_base_vartime(&tmp2, &sig[i].c, &tmp3, &sig[i].r);
-      ge_tobytes(&buf->ab[i].a, &tmp2);
-      hash_to_ec(*pubs[i], tmp3);
-      ge_double_scalarmult_precomp_vartime(&tmp2, &sig[i].r, &tmp3, &sig[i].c, image_pre);
-      ge_tobytes(&buf->ab[i].b, &tmp2);
-      sc_add(&sum, &sum, &sig[i].c);
-    }
-    hash_to_scalar(buf.get(), rs_comm_size(pubs_count), h);
-    sc_sub(&h, &h, &sum);
-    return sc_isnonzero(&h) == 0;
-  }
 }
 
 CRYPTO_MAKE_HASHABLE_CPP(public_key)
