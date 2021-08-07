@@ -1491,12 +1491,12 @@ void wallet2::pull_and_parse_next_blocks(uint64_t start_height, uint64_t &blocks
 
   try
   {
-    drop_from_short_history(short_chain_history, 3);
+    drop_from_short_history(short_chain_history, config::lol::reorg_buffer);
 
     THROW_WALLET_EXCEPTION_IF(prev_blocks.size() != prev_parsed_blocks.size(), error::wallet_internal_error, "size mismatch");
 
-    // prepend the last 3 blocks, should be enough to guard against a block or two's reorg
-    auto s = std::next(prev_parsed_blocks.rbegin(), std::min((size_t)3, prev_parsed_blocks.size())).base();
+    // prepend the last reorg_buffer blocks, should be enough to guard against a block or two's reorg
+    auto s = std::next(prev_parsed_blocks.rbegin(), std::min(config::lol::reorg_buffer, prev_parsed_blocks.size())).base();
     for (; s != prev_parsed_blocks.end(); ++s)
     {
       short_chain_history.push_front(s->hash);
@@ -1808,10 +1808,10 @@ void wallet2::fast_refresh(uint64_t stop_height, uint64_t &blocks_start_height, 
   std::vector<crypto::hash> hashes;
 
   size_t current_index = m_blockchain.size();
-  while(m_run.load(std::memory_order_relaxed) && current_index < stop_height)
+  while(m_run && current_index < stop_height)
   {
     pull_hashes(0, blocks_start_height, short_chain_history, hashes);
-    if (hashes.size() <= 3)
+    if (hashes.size() <= config::lol::reorg_buffer)
       return;
     if (blocks_start_height < m_blockchain.offset())
     {
@@ -1820,10 +1820,10 @@ void wallet2::fast_refresh(uint64_t stop_height, uint64_t &blocks_start_height, 
     }
     current_index = blocks_start_height;
     if (hashes.size() + current_index < stop_height) {
-      drop_from_short_history(short_chain_history, 3);
+      drop_from_short_history(short_chain_history, config::lol::reorg_buffer);
       std::vector<crypto::hash>::iterator right = hashes.end();
-      // prepend 3 more
-      for (int i = 0; i<3; i++) {
+      // prepend reorg_buffer more
+      for (int i = 0; i< config::lol::reorg_buffer; i++) {
         right--;
         short_chain_history.push_front(*right);
       }
@@ -1880,7 +1880,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
 
   // pull the first set of blocks
   get_short_chain_history(short_chain_history);
-  m_run.store(true, std::memory_order_relaxed);
+  m_run = true;
   if (start_height > m_blockchain.size() || m_refresh_from_block_height > m_blockchain.size()) {
     if (!start_height)
       start_height = m_refresh_from_block_height;
@@ -1894,7 +1894,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
   }
 
   // If stop() is called during fast refresh we don't need to continue
-  if(!m_run.load(std::memory_order_relaxed))
+  if(!m_run)
     return;
   // always reset start_height to 0 to force short_chain_ history to be used on
   // subsequent pulls in this refresh.
@@ -1910,7 +1910,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
   update_pool_state(process_pool_txs, true);
 
   bool first = true, last = false;
-  while(m_run.load(std::memory_order_relaxed))
+  while(m_run)
   {
     uint64_t next_blocks_start_height;
     std::vector<cryptonote::block_complete_entry> next_blocks;
@@ -2002,7 +2002,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
     {
       blocks_fetched += added_blocks;
       THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
-      if(try_count < 3)
+      if(try_count < config::lol::reorg_buffer)
       {
         LOG_PRINT_L1("Another try pull_blocks (try_count=" << try_count << ")...");
         first = true;
@@ -2026,7 +2026,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
   try
   {
     // If stop() is called we don't need to check pending transactions
-    if (check_pool && m_run.load(std::memory_order_relaxed) && !process_pool_txs.empty())
+    if (check_pool && m_run && !process_pool_txs.empty())
       process_pool_state(process_pool_txs);
   }
   catch (...)
@@ -3442,7 +3442,7 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
 void wallet2::get_outs(std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, const std::vector<size_t> &selected_transfers, size_t fake_outputs_count, bool rct) const
 {
   std::vector<uint64_t> rct_offsets;
-  for (size_t attempts = 3; attempts > 0; --attempts)
+  for (size_t attempts = config::lol::get_out_retry; attempts > 0; --attempts)
   {
     m_rpc_client.get_outs(outs, selected_transfers, fake_outputs_count, rct_offsets, m_transfers);
 

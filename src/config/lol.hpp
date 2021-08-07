@@ -124,5 +124,7 @@ namespace config
 
     constexpr std::string_view money_symbol = "λ";
 
+    constexpr size_t reorg_buffer = 3;
+    constexpr size_t get_out_retry = 3;
   }
 }

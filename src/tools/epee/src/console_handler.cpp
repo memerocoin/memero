@@ -71,7 +71,7 @@ namespace epee
   {
     if (m_run)
     {
-      m_run.store(false, std::memory_order_relaxed);
+      m_run = false;
 
       m_request_cv.notify_one();
       m_reader_thread.join();
@@ -92,7 +92,7 @@ namespace epee
   bool async_stdin_reader::start_read()
   {
     std::unique_lock<std::mutex> lock(m_request_mutex);
-    if (!m_run.load(std::memory_order_relaxed) || m_has_read_request)
+    if (!m_run || m_has_read_request)
       return false;
 
     m_has_read_request = true;
@@ -103,7 +103,7 @@ namespace epee
   bool async_stdin_reader::wait_read()
   {
     std::unique_lock<std::mutex> lock(m_request_mutex);
-    while (m_run.load(std::memory_order_relaxed) && !m_has_read_request)
+    while (m_run && !m_has_read_request)
     {
       m_request_cv.wait(lock);
     }
@@ -121,7 +121,7 @@ namespace epee
   {
     int stdin_fileno = fileno(stdin);
 
-    while (m_run.load(std::memory_order_relaxed))
+    while (m_run)
     {
       if (m_read_status == state_cancelled)
         return false;
@@ -157,7 +157,7 @@ reread:
 #endif
       if (wait_stdin_data())
       {
-        if (m_run.load(std::memory_order_relaxed))
+        if (m_run)
         {
 #ifdef HAVE_READLINE
           switch (m_readline_buffer.get_line(line))
@@ -188,7 +188,7 @@ eof:
       else
       {
         std::unique_lock<std::mutex> lock(m_response_mutex);
-        if (m_run.load(std::memory_order_relaxed))
+        if (m_run)
         {
           m_line = std::move(line);
           m_read_status = read_ok ? state_success : state_error;

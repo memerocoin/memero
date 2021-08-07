@@ -73,11 +73,11 @@ bool is_stdout_a_tty()
 
   if (!initialized.load(std::memory_order_acquire))
   {
-    is_a_tty.store(0 != isatty(fileno(stdout)), std::memory_order_relaxed);
+    is_a_tty = (0 != isatty(fileno(stdout)));
     initialized.store(true, std::memory_order_release);
   }
 
-  return is_a_tty.load(std::memory_order_relaxed);
+  return is_a_tty;
 }
 
 void set_console_color(int color, bool bright)

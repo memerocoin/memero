@@ -107,7 +107,7 @@ namespace tools
       return true;
     }, 1000);
     m_net_server.add_idle_handler([this](){
-      if (m_stop.load(std::memory_order_relaxed))
+      if (m_stop)
       {
         send_stop_signal();
         return false;
