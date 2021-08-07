@@ -1242,12 +1242,11 @@ void wallet2::process_new_blockchain_entry(const cryptonote::block& b, const cry
     m_callback->on_new_block(height, b);
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::get_short_chain_history(std::list<crypto::hash>& ids, uint64_t granularity) const
+void wallet2::get_short_chain_history(std::list<crypto::hash>& ids) const
 {
   size_t i = 0;
   size_t current_multiplier = 1;
-  size_t blockchain_size = std::max((size_t)(m_blockchain.size() / granularity * granularity), m_blockchain.offset());
-  size_t sz = blockchain_size - m_blockchain.offset();
+  size_t sz = m_blockchain.size() - m_blockchain.offset();
   if(!sz)
   {
     ids.push_back(m_blockchain.genesis());
@@ -1880,7 +1879,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
   hw::device &hwdev = m_account.get_device();
 
   // pull the first set of blocks
-  get_short_chain_history(short_chain_history, 1);
+  get_short_chain_history(short_chain_history);
   m_run.store(true, std::memory_order_relaxed);
   if (start_height > m_blockchain.size() || m_refresh_from_block_height > m_blockchain.size()) {
     if (!start_height)
@@ -1889,7 +1888,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
     fast_refresh(start_height, blocks_start_height, short_chain_history);
     // regenerate the history now that we've got a full set of hashes
     short_chain_history.clear();
-    get_short_chain_history(short_chain_history, 1);
+    get_short_chain_history(short_chain_history);
     start_height = 0;
     // and then fall through to regular refresh processing
   }
@@ -2011,7 +2010,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
         blocks.clear();
         parsed_blocks.clear();
         short_chain_history.clear();
-        get_short_chain_history(short_chain_history, 1);
+        get_short_chain_history(short_chain_history);
         ++try_count;
       }
       else
@@ -4313,23 +4312,6 @@ bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx
 uint64_t wallet2::get_upper_transaction_weight_limit()
 {
   return get_max_tx_size() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
-}
-//----------------------------------------------------------------------------------------------------
-std::vector<uint64_t> wallet2::get_unspent_amounts_vector(bool strict)
-{
-  std::set<uint64_t> set;
-  for (const auto &td: m_transfers)
-  {
-    if (!is_spent(td, strict) && !td.m_frozen)
-      set.insert(td.is_rct() ? 0 : td.amount());
-  }
-  std::vector<uint64_t> vector;
-  vector.reserve(set.size());
-  for (const auto &i: set)
-  {
-    vector.push_back(i);
-  }
-  return vector;
 }
 //----------------------------------------------------------------------------------------------------
 const wallet::logic::type::transfer::transfer_details &wallet2::get_transfer_details(size_t idx) const

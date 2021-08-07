@@ -182,8 +182,8 @@ namespace tools
 
     bool deinit();
     bool init(std::string daemon_address);
-    bool set_daemon(std::string daemon_address = "http://localhost:8080");
-    void stop() { m_run.store(false, std::memory_order_relaxed); }
+    bool set_daemon(std::string daemon_address);
+    void stop() { m_run = false; };
 
     i_wallet2_callback* callback() const { return m_callback; }
     void callback(i_wallet2_callback* callback) { m_callback = callback; }
@@ -221,6 +221,7 @@ namespace tools
     void set_subaddress_label(const cryptonote::subaddress_index &index, const std::string &label);
     void set_subaddress_lookahead(size_t major, size_t minor);
     std::pair<size_t, size_t> get_subaddress_lookahead() const { return {m_subaddress_lookahead_major, m_subaddress_lookahead_minor}; }
+
     void refresh();
     void refresh(uint64_t start_height, uint64_t & blocks_fetched);
     void refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& received_money, bool check_pool = true);
@@ -423,7 +424,7 @@ namespace tools
     bool should_skip_block(const cryptonote::block &b, uint64_t height) const;
     void process_new_blockchain_entry(const cryptonote::block& b, const cryptonote::block_complete_entry& bche, const parsed_block &parsed_block, const crypto::hash& bl_id, uint64_t height, const std::vector<tx_cache_data> &tx_cache_data, size_t tx_cache_data_offset);
     void detach_blockchain(uint64_t height);
-    void get_short_chain_history(std::list<crypto::hash>& ids, uint64_t granularity = 1) const;
+    void get_short_chain_history(std::list<crypto::hash>& ids) const;
     bool clear();
     void clear_soft();
     void pull_blocks(uint64_t start_height, uint64_t& blocks_start_height, const std::list<crypto::hash> &short_chain_history, std::vector<cryptonote::block_complete_entry> &blocks, std::vector<cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::block_output_indices> &o_indices, uint64_t &current_height);
@@ -445,7 +446,6 @@ namespace tools
     void check_acc_out_precomp_once(const cryptonote::tx_out &o, const crypto::key_derivation &derivation, const std::vector<crypto::key_derivation> &additional_derivations, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info, bool &already_seen) const;
     void parse_block_round(const cryptonote::blobdata &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const;
     uint64_t get_upper_transaction_weight_limit();
-    std::vector<uint64_t> get_unspent_amounts_vector(bool strict);
     std::vector<size_t> pick_preferred_rct_inputs(uint64_t needed_money, uint32_t subaddr_account, const std::set<uint32_t> &subaddr_indices);
     void set_spent(size_t idx, uint64_t height);
     void set_unspent(size_t idx);
