@@ -117,15 +117,6 @@ namespace rct {
     //AB = A - B where A, B are curve points
     void subKeys(key &AB, const key &A, const  key &B);
 
-    //Hashing - cn_fast_hash
-    //be careful these are also in crypto namespace
-    //cn_fast_hash for arbitrary l multiples of 32 bytes
-    void cn_fast_hash(key &hash, const void * data, const size_t l);
-    // void hash_to_scalar(key &hash, const void * data, const size_t l);
-    //cn_fast_hash for a 32 byte key
-    void cn_fast_hash(key &hash, const key &in);
-    // void hash_to_scalar(key &hash, const key &in);
-    //cn_fast_hash for a 32 byte key
     key hash_key(const key &in);
     key hash_to_scalar(const key &in);
     //for mg sigs

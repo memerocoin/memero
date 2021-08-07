@@ -313,18 +313,6 @@ namespace rct {
       LOG_WARNING_AND_THROW_UNLESS(r == 0, "sub keys not in main group");
     }
 
-    //Hashing - cn_fast_hash
-    //be careful these are also in crypto namespace
-    //cn_fast_hash for arbitrary multiples of 32 bytes
-    void cn_fast_hash(key &hash, const void * data, const std::size_t l) {
-        sha3_as_keccak_256((const uint8_t *)data, l, hash.bytes);
-    }
-
-    //cn_fast_hash for a 32 byte key
-    void cn_fast_hash(key & hash, const key & in) {
-        sha3_as_keccak_256((const uint8_t *)in.bytes, 32, hash.bytes);
-    }
-
     //cn_fast_hash for a 32 byte key
     key hash_key(const key & in) {
         return hash2rct(crypto::sha3(epee::pod_to_span(in)));
@@ -340,10 +328,8 @@ namespace rct {
       if (keys.empty()) {
         return rct::hash2rct(crypto::cn_fast_hash({}));
       }
-      key rv;
-      cn_fast_hash(rv, &keys[0], keys.size() * sizeof(keys[0]));
-      //dp(rv);
-      return rv;
+      const auto h = crypto::sha3(epee::blob::span((const uint8_t*)&keys[0], keys.size() * sizeof(keys[0])));
+      return hash2rct(h);
     }
 
    key hash_keys_to_scalar(const keyV &keys) {
@@ -367,11 +353,9 @@ namespace rct {
     static key ecdhHash(const key &k)
     {
         char data[38];
-        rct::key hash;
         memcpy(data, "amount", 6);
         memcpy(data + 6, &k, sizeof(k));
-        cn_fast_hash(hash, data, sizeof(data));
-        return hash;
+        return hash2rct(crypto::sha3(epee::pod_to_span(data)));
     }
     static void xor8(key &v, const key &k)
     {
