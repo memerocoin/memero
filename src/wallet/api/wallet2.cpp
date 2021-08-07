@@ -2342,8 +2342,7 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
   std::string account_data;
   account_data.resize(keys_file_data.account_data.size());
   crypto::chacha20(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
-  if (json.Parse(account_data.c_str()).HasParseError() || !json.IsObject())
-    crypto::chacha8(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
+  json.Parse(account_data.c_str());
   if(json.IsObject())
   {
     if (!json.HasMember("key_data"))

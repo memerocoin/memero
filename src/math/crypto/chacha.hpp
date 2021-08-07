@@ -38,7 +38,6 @@
 #include "hash.hpp"
 
 namespace crypto {
-  void chacha8(const void* data, size_t length, const uint8_t* key, const uint8_t* iv, char* cipher);
   void chacha20(const void* data, size_t length, const uint8_t* key, const uint8_t* iv, char* cipher);
 
   using chacha_key = tools::scrubbed_arr<uint8_t, CHACHA_KEY_SIZE>;
@@ -49,7 +48,6 @@ namespace crypto {
 
   static_assert(sizeof(chacha_key) == CHACHA_KEY_SIZE && sizeof(chacha_iv) == CHACHA_IV_SIZE, "Invalid structure size");
 
-  void chacha8(const void* data, std::size_t length, const chacha_key& key, const chacha_iv& iv, char* cipher);
   void chacha20(const void* data, std::size_t length, const chacha_key& key, const chacha_iv& iv, char* cipher);
   void generate_chacha_key(const void *data, size_t size, chacha_key& key, uint64_t kdf_rounds);
   void generate_chacha_key_prehashed(const void *data, size_t size, chacha_key& key, uint64_t kdf_rounds);
