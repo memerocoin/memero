@@ -130,7 +130,7 @@ namespace rct {
     key hash_to_scalar(const key &in);
     //for mg sigs
     key cn_fast_hash(const keyV &keys);
-    key hash_to_scalar(const keyV &keys);
+    key hash_keys_to_scalar(const keyV &keys);
     //for ANSL
 
     void hash_to_p3(ge_p3 &hash8_p3, const key &k);

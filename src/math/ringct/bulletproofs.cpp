@@ -427,34 +427,37 @@ keyS slice(const keyS a, size_t start, size_t stop)
 
 rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1)
 {
-  rct::key data[3];
-  data[0] = hash_cache;
-  data[1] = mash0;
-  data[2] = mash1;
-  rct::hash_to_scalar(hash_cache, data, sizeof(data));
+  rct::keyV data = {
+   hash_cache
+   , mash0
+   , mash1
+  };
+  hash_cache = rct::hash_keys_to_scalar(data);
   return hash_cache;
 }
 
 rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1, const rct::key mash2)
 {
-  rct::key data[4];
-  data[0] = hash_cache;
-  data[1] = mash0;
-  data[2] = mash1;
-  data[3] = mash2;
-  rct::hash_to_scalar(hash_cache, data, sizeof(data));
+  rct::keyV data = {
+    hash_cache
+    , mash0
+    , mash1
+    , mash2
+  };
+  hash_cache = rct::hash_keys_to_scalar(data);
   return hash_cache;
 }
 
 rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1, const rct::key mash2, const rct::key mash3)
 {
-  rct::key data[5];
-  data[0] = hash_cache;
-  data[1] = mash0;
-  data[2] = mash1;
-  data[3] = mash2;
-  data[4] = mash3;
-  rct::hash_to_scalar(hash_cache, data, sizeof(data));
+  rct::keyV data = {
+    hash_cache
+    , mash0
+    , mash1
+    , mash2
+    , mash3
+  };
+  hash_cache = rct::hash_keys_to_scalar(data);
   return hash_cache;
 }
 
@@ -523,7 +526,7 @@ Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
   }
 
 try_again:
-  rct::key hash_cache = rct::hash_to_scalar(V);
+  rct::key hash_cache = rct::hash_keys_to_scalar(V);
 
   // PAPER LINES 43-44
   rct::key alpha = rct::skGen();
@@ -771,7 +774,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     // Reconstruct the challenges
     proof_data.resize(proof_data.size() + 1);
     proof_data_t &pd = proof_data.back();
-    rct::key hash_cache = rct::hash_to_scalar(proof.V);
+    rct::key hash_cache = rct::hash_keys_to_scalar(proof.V);
     pd.y = hash_cache_mash(hash_cache, proof.A, proof.S);
     LOG_ERROR_AND_RETURN_IF((pd.y == rct::zero()), false, "y == 0");
     pd.z = hash_cache = rct::hash_to_scalar(pd.y);

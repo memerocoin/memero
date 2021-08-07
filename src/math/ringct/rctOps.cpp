@@ -362,7 +362,7 @@ namespace rct {
       return rv;
     }
 
-   key hash_to_scalar(const keyV &keys) {
+   key hash_keys_to_scalar(const keyV &keys) {
        key rv = cn_fast_hash(keys);
        sc_reduce32(rv.bytes);
        return rv;
