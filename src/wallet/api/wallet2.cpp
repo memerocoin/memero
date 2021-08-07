@@ -77,9 +77,6 @@ using namespace wallet::logic::type::message_signature;
 #define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
 
 
-std::mutex tools::wallet2::default_daemon_address_lock;
-std::string tools::wallet2::default_daemon_address = "";
-
 // used to target a given block weight (additional outputs may be added on top to build fee)
 constexpr uint64_t TX_WEIGHT_TARGET(const uint64_t bytes) {
   return bytes * 2 / 3;
@@ -115,14 +112,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   auto daemon_address = command_line::get_arg(vm, opts.daemon_address);
   const std::string daemon_host(config::lol::RPC_DEFAULT_HOST);
   const auto daemon_port = get_config(nettype).RPC_DEFAULT_PORT;
-
-  // if no daemon settings are given and we have a previous one, reuse that one
-  if (command_line::is_arg_defaulted(vm, opts.daemon_address))
-  {
-    const std::string def = tools::wallet2::get_default_daemon_address();
-    if (!def.empty())
-      daemon_address = def;
-  }
 
   if (daemon_address.empty())
     daemon_address = std::string("http://") + daemon_host + ":" + std::to_string(daemon_port);
@@ -325,16 +314,11 @@ bool wallet2::set_daemon(std::string daemon_address)
 
   if(m_http_client->is_connected())
     m_http_client->disconnect();
-  m_daemon_address = std::move(daemon_address);
+  m_daemon_address = daemon_address;
 
   const std::string address = get_daemon_address();
   LOG_INFO("setting daemon to " << address);
   bool ret =  m_http_client->set_server(address);
-  if (ret)
-  {
-    std::unique_lock<std::mutex> lock(default_daemon_address_lock);
-    default_daemon_address = address;
-  }
   return ret;
 }
 //----------------------------------------------------------------------------------------------------
