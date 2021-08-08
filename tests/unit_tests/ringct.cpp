@@ -50,14 +50,14 @@ TEST(ringct, CLSAG)
   const size_t N = 11;
   const size_t idx = 5;
   ctkeyV pubs;
-  key p, t, t2, u;
+  scalar p, t, t2, u;
   const key message = rct::identity;
   ctkey backup;
   clsag clsag;
 
   for (size_t i = 0; i < N; ++i)
   {
-    key sk;
+    scalar sk;
     ctkey tmp;
 
     skpkGen(sk, tmp.dest);
@@ -72,11 +72,11 @@ TEST(ringct, CLSAG)
   // Set C[idx]
   t = skGen();
   u = skGen();
-  pubs[idx].mask = addScalarMult_G_H(t,u);
+  pubs[idx].mask = addScalarMult_G_H(s2k(t),s2k(u));
 
   // Set commitment offset
   t2 = skGen();
-  key Cout = addScalarMult_G_H(t2,u);
+  key Cout = addScalarMult_G_H(s2k(t2),s2k(u));
 
   // Prepare generation inputs
   pri_ctkey insk;
@@ -100,7 +100,7 @@ TEST(ringct, CLSAG)
      zero,
      pubs,
      insk,
-     t2,
+     s2k(t2),
      Cout,
      idx
      );
@@ -109,7 +109,7 @@ TEST(ringct, CLSAG)
   // bad index at creation
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,(idx + 1) % N);
+    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,s2k(t2),Cout,(idx + 1) % N);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -120,17 +120,17 @@ TEST(ringct, CLSAG)
     pri_ctkey insk2;
     insk2.addr = insk.addr;
     insk2.blinding_factor = skGen();
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,s2k(t2),Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
 
   // bad C at creation
   backup = pubs[idx];
-  pubs[idx].mask = scalarmultBase(skGen());
+  pubs[idx].mask = scalarmultBase(rct::s2k(skGen()));
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,s2k(t2),Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -142,24 +142,24 @@ TEST(ringct, CLSAG)
     pri_ctkey insk2;
     insk2.addr = skGen();
     insk2.blinding_factor = insk.blinding_factor;
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,s2k(t2),Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
 
   // bad P at creation
   backup = pubs[idx];
-  pubs[idx].dest = scalarmultBase(skGen());
+  pubs[idx].dest = scalarmultBase(rct::s2k(skGen()));
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,s2k(t2),Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
   pubs[idx] = backup;
 
   // Test correct signature
-  clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+  clsag = rct::proveRctCLSAGSimple(message,pubs,insk,s2k(t2),Cout,idx);
   ASSERT_TRUE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
 
   // empty s
@@ -176,7 +176,7 @@ TEST(ringct, CLSAG)
   clsag.s.push_back(backup_key);
 
   // too many s elements
-  clsag.s.push_back(skGen());
+  clsag.s.push_back(rct::s2k(skGen()));
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.s.pop_back();
 
@@ -184,26 +184,26 @@ TEST(ringct, CLSAG)
   for (auto &s: clsag.s)
   {
     backup_key = s;
-    s = skGen();
+    s = s2k(skGen());
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
     s = backup_key;
   }
 
   // bad c1 in clsag at verification
   backup_key = clsag.c1;
-  clsag.c1 = skGen();
+  clsag.c1 = s2k(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.c1 = backup_key;
 
   // bad I in clsag at verification
   backup_key = clsag.I;
-  clsag.I = scalarmultBase(skGen());
+  clsag.I = scalarmultBase(rct::s2k(skGen()));
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.I = backup_key;
 
   // bad D in clsag at verification
   backup_key = clsag.D;
-  clsag.D = scalarmultBase(skGen());
+  clsag.D = scalarmultBase(rct::s2k(skGen()));
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.D = backup_key;
 
@@ -234,7 +234,8 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
     vector<amount_t> inamounts, outamounts;
     keyV destinations;
     keyV amount_keys;
-    key Sk, Pk;
+    scalar Sk;
+    key Pk;
 
     for (int n = 0; n < n_inputs; ++n) {
         inamounts.push_back(input_amounts[n]);
@@ -493,7 +494,7 @@ TEST(ringct, range_proofs_accept_very_long_simple)
 
 TEST(ringct, HPow2)
 {
-  key G = scalarmultBase(int_to_scalar(1));
+  key G = scalarmultBase(s2k(int_to_scalar(1)));
 
   // in lolnero, hashPoint uses sha3, but H is hashPoint with keccak256, so we use that H
   key H = rct::H;
@@ -523,7 +524,9 @@ static const amount_t test_amounts[]={0, 1, 2, 3, 4, 5, 10000, 10000000000000000
 TEST(ringct, d2h)
 {
   key k, P1;
-  skpkGen(k, P1);
+  scalar s;
+  skpkGen(s, P1);
+  k = s2k(s);
   for (auto amount: test_amounts) {
     auto k = int_to_scalar(amount);
     ASSERT_TRUE(amount == scalar_to_int(k));
@@ -629,14 +632,14 @@ TEST(ringct, dummyCommit)
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::key z = rct::dummyCommit(amount);
   const rct::key a = rct::scalarmultBase(rct::identity);
-  const rct::key b = rct::scalarmultH(rct::int_to_scalar(amount));
+  const rct::key b = rct::scalarmultH(s2k(rct::int_to_scalar(amount)));
   const rct::key manual = rct::addKeys(a, b);
   ASSERT_EQ(z, manual);
 }
 
 static rct::key uncachedZeroCommit(uint64_t amount)
 {
-  const rct::key am = rct::int_to_scalar(amount);
+  const rct::key am = s2k(rct::int_to_scalar(amount));
   const rct::key bH = rct::scalarmultH(am);
   return rct::addKeys(rct::G, bH);
 }

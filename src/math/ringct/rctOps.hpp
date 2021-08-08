@@ -53,17 +53,17 @@ namespace rct {
     //Various key generation functions
 
     //generates a random scalar which can be used as a secret key or mask
-    key skGen();
-    void skGen(key &);
+    scalar skGen();
+    void skGen(scalar &);
 
     //generates a vector of secret keys of size "int"
-    keyV skvGen(size_t rows );
+    scalarV skvGen(size_t rows );
 
     //generates a random curve point (for testing)
     key pkGen();
     //generates a random secret and corresponding public key
-    void skpkGen(key &sk, key &pk);
-    std::tuple<key, key> skpkGen();
+    void skpkGen(scalar &sk, key &pk);
+    std::tuple<scalar, key> skpkGen();
     //generates a <secret , public> / Pedersen commitment to the amount
     std::tuple<pri_ctkey, ctkey> ctskpkGen(amount_t amount);
     //generates C =aG + bH from b, a is random

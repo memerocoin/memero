@@ -45,17 +45,17 @@ namespace rct {
     //Various Conversions
 
     //uint long long to 32 byte key
-    key int_to_scalar(const amount_t in) {
-        key amounth;
-        sc_0(amounth.bytes);
-        memcpy_swap64le(amounth.bytes, &in, 1);
-        return amounth;
+    scalar int_to_scalar(const amount_t in) {
+        scalar x;
+        sc_0(x.bytes);
+        memcpy_swap64le(x.bytes, &in, 1);
+        return x;
     }
 
     //32 byte key to uint long long
     // if the key holds a value > 2^64
     // then the value in the first 8 bytes is returned
-    amount_t scalar_to_int(const key & in) {
+    amount_t scalar_to_int(const scalar & in) {
         amount_t vali = 0;
         int j = 0;
         for (j = 7; j >= 0; j--) {

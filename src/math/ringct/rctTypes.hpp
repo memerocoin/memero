@@ -78,6 +78,10 @@ namespace rct {
     typedef std::vector<keyV> keyM; //matrix of keys (indexed by column first)
     typedef std::span<const key> keyS; //vector of keys
 
+    typedef std::vector<scalar> scalarV; //vector of keys
+    typedef std::vector<scalarV> scalarM; //matrix of keys (indexed by column first)
+    typedef std::span<const scalar> scalarS; //vector of keys
+
     //containers For CT operations
     //if it's  representing a private ctkey then "dest" contains the secret key of the address
     // while "mask" contains a where C = aG + bH is CT pedersen commitment and b is the amount
@@ -92,8 +96,8 @@ namespace rct {
     typedef std::span<const ctkey> ctkeyS;
 
     struct pri_ctkey {
-      key addr;
-      key blinding_factor; //C here if public
+      scalar addr;
+      scalar blinding_factor; //C here if public
     };
 
     typedef std::vector<pri_ctkey> pri_ctkeyV;
@@ -404,10 +408,32 @@ namespace rct {
     //32 byte key to uint long long
     // if the key holds a value > 2^64
     // then the value in the first 8 bytes is returned
-    amount_t scalar_to_int(const key &in);
+    amount_t scalar_to_int(const scalar &in);
 
     //uint long long to 32 byte key
-    key int_to_scalar(const amount_t in);
+    scalar int_to_scalar(const amount_t in);
+    static inline const rct::key &scalar2key(const scalar &x) { return (const rct::key&)x; }
+    static inline const rct::scalar &key2scalar(const key &x) { return (const rct::scalar&)x; }
+    static auto s2k = scalar2key;
+    static auto k2s = key2scalar;
+
+    static inline const rct::scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::scalar&)sk; }
+
+  static inline scalarV kv2sv(const keyV& xs) {
+    scalarV r;
+    for (const auto& x: xs) {
+      r.emplace_back(k2s(x));
+    }
+    return r;
+  }
+
+  static inline keyV sv2kv(const scalarV& xs) {
+    keyV r;
+    for (const auto& x: xs) {
+      r.emplace_back(s2k(x));
+    }
+    return r;
+  }
 
     static inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
     static inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }

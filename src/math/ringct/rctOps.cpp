@@ -67,22 +67,22 @@ namespace rct {
     //Various key generation functions
 
     //generates a random scalar which can be used as a secret key or mask
-    void skGen(key &sk) {
+    void skGen(scalar &sk) {
       crypto::random32_unbiased(sk.bytes);
     }
 
     //generates a random scalar which can be used as a secret key or mask
-    key skGen() {
-        key sk;
+    scalar skGen() {
+        scalar sk;
         skGen(sk);
         return sk;
     }
 
     //Generates a vector of secret key
     //Mainly used in testing
-    keyV skvGen(size_t rows ) {
+    scalarV skvGen(size_t rows ) {
         LOG_ERROR_AND_THROW_UNLESS(rows > 0, "0 keys requested");
-        keyV rv(rows);
+        scalarV rv(rows);
         size_t i = 0;
         for (i = 0 ; i < rows ; i++) {
             skGen(rv[i]);
@@ -91,28 +91,28 @@ namespace rct {
     }
 
     //generates a random curve point (for testing)
-    key  pkGen() {
-        key sk = skGen();
-        key pk = scalarmultBase(sk);
+    key pkGen() {
+        scalar sk = skGen();
+        key pk = scalarmultBase(scalar2key(sk));
         return pk;
     }
 
     //generates a random secret and corresponding public key
-    void skpkGen(key &sk, key &pk) {
+    void skpkGen(scalar &sk, key &pk) {
         skGen(sk);
-        scalarmultBase(pk, sk);
+        scalarmultBase(pk, scalar2key(sk));
     }
 
     //generates a random secret and corresponding public key
-    std::tuple<key, key>  skpkGen() {
-        key sk = skGen();
-        key pk = scalarmultBase(sk);
+    std::tuple<scalar, key> skpkGen() {
+        scalar sk = skGen();
+        key pk = scalarmultBase(scalar2key(sk));
         return std::make_tuple(sk, pk);
     }
 
     //generates C =aG + bH from b, a is given..
     key genC(const key & a, amount_t amount) {
-        return addScalarMult_G_H(a, int_to_scalar(amount));
+        return addScalarMult_G_H(a, s2k(int_to_scalar(amount)));
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
@@ -121,7 +121,7 @@ namespace rct {
         ctkey pk;
         skpkGen(sk.addr, pk.dest);
         skpkGen(sk.blinding_factor, pk.mask);
-        key am = int_to_scalar(amount);
+        key am = s2k(int_to_scalar(amount));
         key bH = scalarmultH(am);
         addKeys(pk.mask, pk.mask, bH);
         return std::make_tuple(sk, pk);
@@ -139,7 +139,7 @@ namespace rct {
     }
 
     key dummyCommit(amount_t amount) {
-        key am = int_to_scalar(amount);
+        key am = s2k(int_to_scalar(amount));
         key bH = scalarmultH(am);
         return addKeys(G, bH);
     }

@@ -32,10 +32,13 @@
 #include "math/ringct/rctOps.hpp"
 #include "math/ringct/multiexp.hpp"
 
-#define TESTSCALAR []{ static const rct::key TESTSCALAR = rct::skGen(); return TESTSCALAR; }()
+#define TESTSCALAR []{ static const rct::key TESTSCALAR = rct::s2k(rct::skGen()); return TESTSCALAR; }()
 #define TESTPOW2SCALAR []{ static const rct::key TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()
 #define TESTSMALLSCALAR []{ static const rct::key TESTSMALLSCALAR = {{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTSMALLSCALAR; }()
-#define TESTPOINT []{ static const rct::key TESTPOINT = rct::scalarmultBase(rct::skGen()); return TESTPOINT; }()
+#define TESTPOINT []{ \
+    static const rct::key TESTPOINT = rct::scalarmultBase(rct::s2k(rct::skGen())); \
+ return TESTPOINT;                                                   \
+}()
 
 static rct::key basic(const std::vector<rct::MultiexpData> &data)
 {
@@ -106,7 +109,7 @@ TEST(multiexp, pippenger_random)
   std::vector<rct::MultiexpData> data;
   for (int n = 0; n < 32; ++n)
   {
-    data.push_back({rct::skGen(), get_p3(rct::scalarmultBase(rct::skGen()))});
+    data.push_back({rct::s2k(rct::skGen()), get_p3(rct::scalarmultBase(rct::s2k(rct::skGen())))});
     ASSERT_TRUE(basic(data) == pippenger(data));
   }
 }
@@ -118,7 +121,7 @@ TEST(multiexp, pippenger_cached)
   for (size_t n = 0; n < N; ++n)
   {
     P[n].scalar = rct::zero;
-    ASSERT_TRUE(ge_frombytes_vartime(&P[n].point, rct::scalarmultBase(rct::skGen()).bytes) == 0);
+    ASSERT_TRUE(ge_frombytes_vartime(&P[n].point, rct::scalarmultBase(rct::s2k(rct::skGen())).bytes) == 0);
   }
   for (size_t n = 0; n < N/16; ++n)
   {
@@ -126,7 +129,7 @@ TEST(multiexp, pippenger_cached)
     size_t sz = 1 + crypto::rand<size_t>() % (N-1);
     for (size_t s = 0; s < sz; ++s)
     {
-      data.push_back({rct::skGen(), P[s].point});
+      data.push_back({rct::s2k(rct::skGen()), P[s].point});
     }
     ASSERT_TRUE(basic(data) == pippenger(data));
   }

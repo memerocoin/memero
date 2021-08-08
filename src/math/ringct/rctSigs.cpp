@@ -189,7 +189,7 @@ namespace rct {
         ge_p3 Hi_p3;
 
         while (i != l) {
-            sig.s[i] = skGen();
+            sig.s[i] = s2k(skGen());
             sc_0(c_new.bytes);
             sc_mul(c_p.bytes,mu_P.bytes,c.bytes);
             sc_mul(c_c.bytes,mu_C.bytes,c.bytes);
@@ -300,7 +300,7 @@ namespace rct {
             C.push_back(tmp);
         }
 
-        sk[0] = inSk.addr;
+        sk[0] = s2k(inSk.addr);
         sc_sub(sk[1].bytes, inSk.blinding_factor.bytes, a.bytes);
         clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
         memwipe(sk.data(), sk.size() * sizeof(key));
@@ -514,7 +514,7 @@ namespace rct {
 
             //mask amount and mask
             rv.ecdhInfo[i].mask = outSk[i].mask;
-            rv.ecdhInfo[i].amount = int_to_scalar(outamounts[i]);
+            rv.ecdhInfo[i].amount = s2k(int_to_scalar(outamounts[i]));
             hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i]);
         }
 
@@ -529,7 +529,9 @@ namespace rct {
         key sumpouts = zero; //sum pseudoOut masks
         keyV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
-            skGen(a[i]);
+            scalar k;
+            skGen(k);
+            a[i] = s2k(k);
             sc_add(sumpouts.bytes, a[i].bytes, sumpouts.bytes);
             pseudoOuts[i] = genC(a[i], inamounts[i]);
         }
@@ -607,7 +609,7 @@ namespace rct {
             masks[i] = rv.outPk[i].mask;
           }
           key sumOutpks = addKeys(masks);
-          const key txnFeeKey = scalarmultH(int_to_scalar(rv.txnFee));
+          const key txnFeeKey = scalarmultH(s2k(int_to_scalar(rv.txnFee)));
           addKeys(sumOutpks, txnFeeKey, sumOutpks);
 
           key sumPseudoOuts = addKeys(pseudoOuts);
@@ -727,6 +729,6 @@ namespace rct {
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
-        return scalar_to_int(amount);
+        return scalar_to_int(k2s(amount));
     }
 }

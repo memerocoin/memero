@@ -529,18 +529,18 @@ try_again:
   rct::key hash_cache = rct::hash_keys_to_scalar(V);
 
   // PAPER LINES 43-44
-  rct::key alpha = rct::skGen();
+  rct::scalar alpha = rct::skGen();
   rct::key ve = vector_exponent(aL8, aR8);
   rct::key A;
   sc_mul(tmp.bytes, alpha.bytes, INV_EIGHT.bytes);
   rct::addKeys(A, ve, rct::scalarmultBase(tmp));
 
   // PAPER LINES 45-47
-  rct::keyV sL = rct::skvGen(MN), sR = rct::skvGen(MN);
-  rct::key rho = rct::skGen();
-  ve = vector_exponent(sL, sR);
+  rct::scalarV sL = rct::skvGen(MN), sR = rct::skvGen(MN);
+  rct::scalar rho = rct::skGen();
+  ve = vector_exponent(sv2kv(sL), sv2kv(sR));
   rct::key S;
-  rct::addKeys(S, ve, rct::scalarmultBase(rho));
+  rct::addKeys(S, ve, rct::scalarmultBase(s2k(rho)));
   S = rct::scalarmultKey(S, INV_EIGHT);
 
   // PAPER LINES 48-50
@@ -560,7 +560,7 @@ try_again:
   // Polynomial construction by coefficients
   // PAPER LINES 70-71
   rct::keyV l0 = vector_subtract(aL, z);
-  const rct::keyV &l1 = sL;
+  const rct::scalarV &l1 = sL;
 
   rct::keyV zero_twos(MN);
   const rct::keyV zpow = vector_powers(z, M+2);
@@ -578,17 +578,17 @@ try_again:
   const auto yMN = vector_powers(y, MN);
   r0 = hadamard(r0, yMN);
   r0 = vector_add(r0, zero_twos);
-  rct::keyV r1 = hadamard(yMN, sR);
+  rct::keyV r1 = hadamard(yMN, sv2kv(sR));
 
   // Polynomial construction before PAPER LINE 51
   rct::key t1_1 = inner_product(l0, r1);
-  rct::key t1_2 = inner_product(l1, r0);
+  rct::key t1_2 = inner_product(sv2kv(l1), r0);
   rct::key t1;
   sc_add(t1.bytes, t1_1.bytes, t1_2.bytes);
-  rct::key t2 = inner_product(l1, r1);
+  rct::key t2 = inner_product(sv2kv(l1), r1);
 
   // PAPER LINES 52-53
-  rct::key tau1 = rct::skGen(), tau2 = rct::skGen();
+  rct::scalar tau1 = rct::skGen(), tau2 = rct::skGen();
 
   rct::key T1, T2;
   ge_p3 p3;
@@ -625,7 +625,7 @@ try_again:
 
   // PAPER LINES 58-60
   rct::keyV l = l0;
-  l = vector_add(l, vector_scalar(l1, x));
+  l = vector_add(l, vector_scalar(sv2kv(l1), x));
   rct::keyV r = r0;
   r = vector_add(r, vector_scalar(r1, x));
 
@@ -832,8 +832,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
     const size_t M = 1 << pd.logM;
     const size_t MN = M*N;
-    const rct::key weight_y = rct::skGen();
-    const rct::key weight_z = rct::skGen();
+    const rct::scalar weight_y = rct::skGen();
+    const rct::scalar weight_z = rct::skGen();
 
     // pre-multiply some points by 8
     proof8_V.resize(proof.V.size()); for (size_t i = 0; i < proof.V.size(); ++i) rct::scalarmult8(proof8_V[i], proof.V[i]);
@@ -876,7 +876,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     sc_mul(tmp.bytes, xsq.bytes, weight_y.bytes);
     multiexp_data.emplace_back(tmp, proof8_T2);
 
-    multiexp_data.emplace_back(weight_z, proof8_A);
+    multiexp_data.emplace_back(s2k(weight_z), proof8_A);
     sc_mul(tmp.bytes, pd.x.bytes, weight_z.bytes);
     multiexp_data.emplace_back(tmp, proof8_S);
 

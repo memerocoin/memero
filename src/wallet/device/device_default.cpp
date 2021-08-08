@@ -365,7 +365,9 @@ namespace hw {
         }
 
         bool device_default::clsag_prepare(const rct::key &p, const rct::key &z, rct::key &I, rct::key &D, const rct::key &H, rct::key &a, rct::key &aG, rct::key &aH) {
-            rct::skpkGen(a,aG); // aG = a*G
+          rct::scalar k;
+            rct::skpkGen(k,aG); // aG = a*G
+            a = rct::s2k(k);
             rct::scalarmultKey(aH,H,a); // aH = a*H
             rct::scalarmultKey(I,H,p); // I = p*H
             rct::scalarmultKey(D,H,z); // D = z*H

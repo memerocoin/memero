@@ -67,13 +67,15 @@ TEST(device, ops)
   hw::core::device_default dev;
   rct::key resd, res;
   crypto::key_derivation derd, der;
-  rct::key sk, pk;
+  rct::scalar sk_;
+  rct::key pk;
   crypto::secret_key sk0, sk1;
   crypto::public_key pk0, pk1;
   crypto::ec_scalar ressc0, ressc1;
   crypto::key_image ki0, ki1;
 
-  rct::skpkGen(sk, pk);
+  rct::skpkGen(sk_, pk);
+  rct::key sk = rct::s2k(sk_);
   rct::scalarmultBase((rct::key&)pk0, (rct::key&)sk0);
   rct::scalarmultBase((rct::key&)pk1, (rct::key&)sk1);
 
