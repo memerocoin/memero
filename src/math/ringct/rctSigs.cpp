@@ -174,7 +174,7 @@ namespace rct {
         size_t i;
         i = (l + 1) % n;
         if (i == 0)
-            copy(sig.c1, c);
+            sig.c1 = c;
 
         // Decoy indices
         sig.s = keyV(n);
@@ -209,11 +209,11 @@ namespace rct {
             c_to_hash[2*n+3] = L;
             c_to_hash[2*n+4] = R;
             hwdev.clsag_hash(c_to_hash,c_new);
-            copy(c,c_new);
+            c = c_new;
 
             i = (i + 1) % n;
             if (i == 0)
-                copy(sig.c1,c);
+                sig.c1 = c;
         }
 
         // Compute final scalar
@@ -300,7 +300,7 @@ namespace rct {
             C.push_back(tmp);
         }
 
-        sk[0] = copy(inSk.dest);
+        sk[0] = inSk.dest;
         sc_sub(sk[1].bytes, inSk.mask.bytes, a.bytes);
         clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
         memwipe(sk.data(), sk.size() * sizeof(key));
@@ -319,7 +319,7 @@ namespace rct {
             for (const auto &s: sig.s)
               LOG_ERROR_AND_RETURN_UNLESS(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
             LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
-            LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity()), false, "Bad key image!");
+            LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad key image!");
 
             // Cache commitment offset for efficient subtraction later
             ge_p3 C_offset_p3;
@@ -328,9 +328,9 @@ namespace rct {
             ge_p3_to_cached(&C_offset_cached, &C_offset_p3);
 
             // Prepare key images
-            key c = copy(sig.c1);
+            key c = sig.c1;
             key D_8 = scalarmult8(sig.D);
-            LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity()), false, "Bad auxiliary key image!");
+            LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary key image!");
             geDsmp I_precomp;
             geDsmp D_precomp;
             precomp(I_precomp.k,sig.I);
@@ -409,8 +409,8 @@ namespace rct {
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;
                 c_new = hash_keys_to_scalar(c_to_hash);
-                LOG_ERROR_AND_RETURN_IF((c_new == rct::zero()), false, "Bad signature hash");
-                copy(c,c_new);
+                LOG_ERROR_AND_RETURN_IF((c_new == rct::zero), false, "Bad signature hash");
+                c = c_new;
 
                 i = i + 1;
             }
@@ -488,7 +488,7 @@ namespace rct {
         for (i = 0; i < destinations.size(); i++) {
 
             //add destination to sig
-            rv.outPk[i].dest = copy(destinations[i]);
+            rv.outPk[i].dest = destinations[i];
             //compute range proof
         }
 
@@ -507,13 +507,13 @@ namespace rct {
             }
         }
 
-        key sumout = zero();
+        key sumout = zero;
         for (i = 0; i < outSk.size(); ++i)
         {
             sc_add(sumout.bytes, outSk[i].mask.bytes, sumout.bytes);
 
             //mask amount and mask
-            rv.ecdhInfo[i].mask = copy(outSk[i].mask);
+            rv.ecdhInfo[i].mask = outSk[i].mask;
             rv.ecdhInfo[i].amount = d2h(outamounts[i]);
             hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i]);
         }
@@ -526,7 +526,7 @@ namespace rct {
         keyV &pseudoOuts = rv.p.pseudoOuts;
         pseudoOuts.resize(inamounts.size());
         rv.p.CLSAGs.resize(inamounts.size());
-        key sumpouts = zero(); //sum pseudoOut masks
+        key sumpouts = zero; //sum pseudoOut masks
         keyV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
             skGen(a[i]);

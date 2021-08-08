@@ -76,7 +76,7 @@ static inline bool operator<(const rct::key &k0, const rct::key&k1)
 static inline rct::key pow2(size_t n)
 {
   LOG_ERROR_AND_THROW_UNLESS(n < 256, "Invalid pow2 argument");
-  rct::key res = rct::zero();
+  rct::key res = rct::zero;
   res[n >> 3] |= 1<<(n&7);
   return res;
 }
@@ -136,7 +136,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
   ge_p3 result = ge_p3_identity;
   bool result_init = false;
 
-  const rct::key maxscalar = data.empty() ? rct::zero() :
+  const rct::key maxscalar = data.empty() ? rct::zero :
     (
      *std::max_element(data.begin(), data.end(),
                        [](const auto x, const auto y) -> bool { return x.scalar < y.scalar; })

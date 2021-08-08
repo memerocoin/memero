@@ -139,7 +139,7 @@ namespace rct {
     key zeroCommit(amount_t amount) {
         const zero_commitment *begin = zero_commitments;
         const zero_commitment *end = zero_commitments + len_zero_commitments;
-        const zero_commitment value{amount, rct::zero()};
+        const zero_commitment value{amount, rct::zero};
         const auto it = std::lower_bound(begin, end, value, [](const zero_commitment &e0, const zero_commitment &e1){ return e0.amount < e1.amount; });
         if (it != end && it->amount == amount)
         {
@@ -164,7 +164,7 @@ namespace rct {
     //Scalar multiplications of curve points
 
     key normalizeKey(const key& a) {
-      key k = identity();
+      key k = identity;
       k = a;
       sc_reduce32(k.bytes);
       return k;
@@ -265,8 +265,8 @@ namespace rct {
 
     rct::key addKeys(const keyV &A) {
       if (A.empty())
-        return rct::identity();
-      key k = identity();
+        return rct::identity;
+      key k = identity;
       for (const key& x: A)
       {
         k = addKeys(k, x);
@@ -374,7 +374,7 @@ namespace rct {
 
     void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec) {
         //encode
-        unmasked.mask = zero();
+        unmasked.mask = zero;
         xor8(unmasked.amount, ecdhHash(sharedSec));
     }
 

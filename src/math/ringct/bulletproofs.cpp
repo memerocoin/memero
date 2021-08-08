@@ -104,7 +104,7 @@ rct::key get_exponent(const rct::key base, size_t idx)
      , rct::hash2rct(crypto::sha3(epee::string_tools::string_to_blob(hashed)))
      );
   ge_p3_tobytes(e.bytes, &e_p3);
-  LOG_ERROR_AND_THROW_IF((e == rct::identity()), "Exponent is point at infinity");
+  LOG_ERROR_AND_THROW_IF((e == rct::identity), "Exponent is point at infinity");
   return e;
 }
 
@@ -192,7 +192,7 @@ rct::keyV vector_powers(const rct::key x, const size_t n)
   rct::keyV res(n);
   if (n == 0)
     return res;
-  res[0] = rct::identity();
+  res[0] = rct::identity;
   if (n == 1)
     return res;
   res[1] = x;
@@ -209,8 +209,8 @@ rct::key vector_power_sum(const rct::key x_in, const size_t n_in)
   size_t n = n_in;
 
   if (n == 0)
-    return rct::zero();
-  rct::key res = rct::identity();
+    return rct::zero;
+  rct::key res = rct::identity;
   if (n == 1)
     return res;
 
@@ -245,7 +245,7 @@ rct::key vector_power_sum(const rct::key x_in, const size_t n_in)
 rct::key inner_product(const keyS a, const keyS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  rct::key res = rct::zero();
+  rct::key res = rct::zero;
   for (size_t i = 0; i < a.size(); ++i)
   {
     sc_muladd(res.bytes, a[i].bytes, b[i].bytes, res.bytes);
@@ -393,7 +393,7 @@ rct::keyV invert(rct::keyV x)
   rct::keyV scratch;
   scratch.reserve(x.size());
 
-  rct::key acc = rct::identity();
+  rct::key acc = rct::identity;
   for (size_t n = 0; n < x.size(); ++n)
   {
     scratch.push_back(acc);
@@ -512,13 +512,13 @@ Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
     {
       if (j < sv.size() && (sv[j][i/8] & (((uint64_t)1)<<(i%8))))
       {
-        aL[j*N+i] = rct::identity();
+        aL[j*N+i] = rct::identity;
         aL8[j*N+i] = INV_EIGHT;
-        aR[j*N+i] = aR8[j*N+i] = rct::zero();
+        aR[j*N+i] = aR8[j*N+i] = rct::zero;
       }
       else
       {
-        aL[j*N+i] = aL8[j*N+i] = rct::zero();
+        aL[j*N+i] = aL8[j*N+i] = rct::zero;
         aR[j*N+i] = MINUS_ONE;
         aR8[j*N+i] = MINUS_INV_EIGHT;
       }
@@ -545,13 +545,13 @@ try_again:
 
   // PAPER LINES 48-50
   rct::key y = hash_cache_mash(hash_cache, A, S);
-  if (y == rct::zero())
+  if (y == rct::zero)
   {
     LOG_INFO("y is 0, trying again");
     goto try_again;
   }
   rct::key z = hash_cache = rct::hash_to_scalar(y);
-  if (z == rct::zero())
+  if (z == rct::zero)
   {
     LOG_INFO("z is 0, trying again");
     goto try_again;
@@ -603,7 +603,7 @@ try_again:
 
   // PAPER LINES 54-56
   rct::key x = hash_cache_mash(hash_cache, z, T1, T2);
-  if (x == rct::zero())
+  if (x == rct::zero)
   {
     LOG_INFO("x is 0, trying again");
     goto try_again;
@@ -633,7 +633,7 @@ try_again:
 
   // PAPER LINE 6
   rct::key x_ip = hash_cache_mash(hash_cache, x, taux, mu, t);
-  if (x_ip == rct::zero())
+  if (x_ip == rct::zero)
   {
     LOG_INFO("x_ip is 0, trying again");
     goto try_again;
@@ -647,7 +647,7 @@ try_again:
   rct::keyV bprime(MN);
   const rct::key yinv = invert(y);
   rct::keyV yinvpow(MN);
-  yinvpow[0] = rct::identity();
+  yinvpow[0] = rct::identity;
   yinvpow[1] = yinv;
   for (size_t i = 0; i < MN; ++i)
   {
@@ -681,7 +681,7 @@ try_again:
 
     // PAPER LINES 25-27
     w[round] = hash_cache_mash(hash_cache, L[round], R[round]);
-    if (w[round] == rct::zero())
+    if (w[round] == rct::zero)
     {
       LOG_INFO("w[round] is 0, trying again");
       goto try_again;
@@ -714,7 +714,7 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::keyV gamm
   rct::keyV sv(v.size());
   for (size_t i = 0; i < v.size(); ++i)
   {
-    sv[i] = rct::zero();
+    sv[i] = rct::zero;
     sv[i].bytes[0] = v[i] & 255;
     sv[i].bytes[1] = (v[i] >> 8) & 255;
     sv[i].bytes[2] = (v[i] >> 16) & 255;
@@ -776,13 +776,13 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     proof_data_t &pd = proof_data.back();
     rct::key hash_cache = rct::hash_keys_to_scalar(proof.V);
     pd.y = hash_cache_mash(hash_cache, proof.A, proof.S);
-    LOG_ERROR_AND_RETURN_IF((pd.y == rct::zero()), false, "y == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.y == rct::zero), false, "y == 0");
     pd.z = hash_cache = rct::hash_to_scalar(pd.y);
-    LOG_ERROR_AND_RETURN_IF((pd.z == rct::zero()), false, "z == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.z == rct::zero), false, "z == 0");
     pd.x = hash_cache_mash(hash_cache, pd.z, proof.T1, proof.T2);
-    LOG_ERROR_AND_RETURN_IF((pd.x == rct::zero()), false, "x == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.x == rct::zero), false, "x == 0");
     pd.x_ip = hash_cache_mash(hash_cache, pd.x, proof.taux, proof.mu, proof.t);
-    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::zero()), false, "x_ip == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::zero), false, "x_ip == 0");
 
     size_t M;
     for (pd.logM = 0; (M = 1<<pd.logM) <= maxM && M < proof.V.size(); ++pd.logM);
@@ -797,7 +797,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     for (size_t i = 0; i < rounds; ++i)
     {
       pd.w[i] = hash_cache_mash(hash_cache, proof.L[i], proof.R[i]);
-      LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::zero()), false, "w[i] == 0");
+      LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::zero), false, "w[i] == 0");
     }
 
     pd.inv_offset = inv_offset;
@@ -818,10 +818,10 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   const std::vector<rct::key> inverses = invert(to_invert);
 
   // setup weighted aggregates
-  rct::key z1 = rct::zero();
-  rct::key z3 = rct::zero();
-  rct::keyV m_z4(maxMN, rct::zero()), m_z5(maxMN, rct::zero());
-  rct::key m_y0 = rct::zero(), y1 = rct::zero();
+  rct::key z1 = rct::zero;
+  rct::key z3 = rct::zero;
+  rct::keyV m_z4(maxMN, rct::zero), m_z5(maxMN, rct::zero);
+  rct::key m_y0 = rct::zero, y1 = rct::zero;
   int proof_data_index = 0;
   rct::keyV w_cache;
   std::vector<ge_p3> proof8_V, proof8_L, proof8_R;
@@ -854,7 +854,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     rct::key k;
     const rct::key ip1y = vector_power_sum(pd.y, MN);
-    sc_mulsub(k.bytes, zpow[2].bytes, ip1y.bytes, rct::zero().bytes);
+    sc_mulsub(k.bytes, zpow[2].bytes, ip1y.bytes, rct::zero.bytes);
     for (size_t j = 1; j <= M; ++j)
     {
       LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
@@ -885,8 +885,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
     // Compute the curvepoints from G[i] and H[i]
-    rct::key yinvpow = rct::identity();
-    rct::key ypow = rct::identity();
+    rct::key yinvpow = rct::identity;
+    rct::key ypow = rct::identity;
 
     const rct::key *winv = &inverses[pd.inv_offset];
     const rct::key yinv = inverses[pd.inv_offset + rounds];
@@ -973,7 +973,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     multiexp_data[i * 2] = {m_z4[i], Gi_p3[i]};
     multiexp_data[i * 2 + 1] = {m_z5[i], Hi_p3[i]};
   }
-  if (!(multiexp(multiexp_data) == rct::identity()))
+  if (!(multiexp(multiexp_data) == rct::identity))
   {
     LOG_ERROR("Verification failure");
     return false;

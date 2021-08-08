@@ -51,7 +51,7 @@ TEST(ringct, CLSAG)
   const size_t idx = 5;
   ctkeyV pubs;
   key p, t, t2, u;
-  const key message = rct::identity();
+  const key message = rct::identity;
   ctkey backup;
   clsag clsag;
 
@@ -98,7 +98,7 @@ TEST(ringct, CLSAG)
   // bad message
   clsag = rct::proveRctCLSAGSimple
     (
-     zero(),
+     zero,
      pubs,
      insk,
      t2,
@@ -244,12 +244,12 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
 
     for (int n = 0; n < n_outputs; ++n) {
         outamounts.push_back(output_amounts[n]);
-        amount_keys.push_back(hash_to_scalar(zero()));
+        amount_keys.push_back(hash_to_scalar(zero));
         skpkGen(Sk, Pk);
         destinations.push_back(Pk);
     }
 
-    return genRctSimple(rct::zero(), sc, pc, destinations, inamounts, outamounts, amount_keys, fee, 3);
+    return genRctSimple(rct::zero, sc, pc, destinations, inamounts, outamounts, amount_keys, fee, 3);
 }
 
 static bool range_proof_test(bool expected_valid,
@@ -627,7 +627,7 @@ TEST(ringct, zeroCommmit)
 {
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::key z = rct::zeroCommit(amount);
-  const rct::key a = rct::scalarmultBase(rct::identity());
+  const rct::key a = rct::scalarmultBase(rct::identity);
   const rct::key b = rct::scalarmultH(rct::d2h(amount));
   const rct::key manual = rct::addKeys(a, b);
   ASSERT_EQ(z, manual);
@@ -663,10 +663,10 @@ TEST(ringct, mul8)
 {
   ge_p3 p3;
   rct::key key;
-  ASSERT_EQ(rct::scalarmult8(rct::identity()), rct::identity());
-  rct::scalarmult8(p3,rct::identity());
+  ASSERT_EQ(rct::scalarmult8(rct::identity), rct::identity);
+  rct::scalarmult8(p3,rct::identity);
   ge_p3_tobytes(key.bytes, &p3);
-  ASSERT_EQ(key, rct::identity());
+  ASSERT_EQ(key, rct::identity);
   ASSERT_EQ(rct::scalarmult8(rct::H), rct::scalarmultKey(rct::H, rct::EIGHT));
   rct::scalarmult8(p3,rct::H);
   ge_p3_tobytes(key.bytes, &p3);

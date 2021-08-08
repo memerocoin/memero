@@ -40,14 +40,9 @@ namespace rct {
 
     // Can't us consteval here or android will panic
     //Creates a zero scalar
-    constexpr key zero() { return Z; }
+    constexpr key zero = Z;
     //Creates a zero elliptic curve point
-    constexpr key identity() { return I; }
-    //Creates a key equal to the curve order
-    constexpr key curveOrder() { return L; }
-    //copies a scalar or point
-    inline void copy(key &AA, const key &A) { memcpy(&AA, &A, 32); }
-    inline key copy(const key & A) { key AA; memcpy(&AA, &A, 32); return AA; }
+    constexpr key identity = I;
 
     //initializes a key matrix;
     //first parameter is rows,

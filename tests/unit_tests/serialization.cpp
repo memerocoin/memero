@@ -567,14 +567,14 @@ TEST(Serialization, serializes_ringct_types)
   rct::keyV amount_keys;
   //add output 500
   amounts.push_back(500);
-  amount_keys.push_back(rct::hash_to_scalar(rct::zero()));
+  amount_keys.push_back(rct::hash_to_scalar(rct::zero));
   rct::keyV destinations;
   rct::key Sk, Pk;
   rct::skpkGen(Sk, Pk);
   destinations.push_back(Pk);
   //add output for 12500
   amounts.push_back(12500);
-  amount_keys.push_back(rct::hash_to_scalar(rct::zero()));
+  amount_keys.push_back(rct::hash_to_scalar(rct::zero));
   rct::skpkGen(Sk, Pk);
   destinations.push_back(Pk);
 
