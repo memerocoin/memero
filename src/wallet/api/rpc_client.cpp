@@ -365,6 +365,10 @@ void RPC_Client::get_outs
       size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE : 0);
       outs.push_back(std::vector<wallet::logic::type::get_outs_entry>());
       outs.back().reserve(fake_outputs_count + 1);
+
+      THROW_WALLET_EXCEPTION_IF(!td.is_rct(), error::wallet_internal_error,
+                                "td is not rct");
+
       const rct::key mask = td.is_rct() ? rct::commit(td.amount(), td.m_mask) : rct::zeroCommit(td.amount());
 
       // make sure the real outputs we asked for are really included, along
@@ -421,6 +425,10 @@ void RPC_Client::get_outs
     {
       const transfer_details &td = m_transfers[idx];
       std::vector<wallet::logic::type::get_outs_entry> v;
+
+      THROW_WALLET_EXCEPTION_IF(!td.is_rct(), error::wallet_internal_error,
+                                "td is not rct");
+
       const rct::key mask = td.is_rct() ? rct::commit(td.amount(), td.m_mask) : rct::zeroCommit(td.amount());
       v.push_back(std::make_tuple(td.m_global_output_index, td.get_public_key(), mask));
       outs.push_back(v);

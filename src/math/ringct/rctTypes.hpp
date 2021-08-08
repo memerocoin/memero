@@ -60,6 +60,20 @@ namespace rct {
 
         unsigned char bytes[32];
     };
+
+
+    struct point {
+      unsigned char & operator[](int i) {
+        return bytes[i];
+      }
+      unsigned char operator[](int i) const {
+        return bytes[i];
+      }
+      bool operator==(const key &k) const { return !crypto_verify_32(bytes, k.bytes); }
+
+      unsigned char bytes[32];
+    };
+
     typedef std::vector<key> keyV; //vector of keys
     typedef std::vector<keyV> keyM; //matrix of keys (indexed by column first)
     typedef std::span<const key> keyS; //vector of keys
