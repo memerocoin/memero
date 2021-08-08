@@ -57,7 +57,10 @@ namespace test
                 auto const& key = boost::get<cryptonote::txout_to_key>(input.value().target);
 
                 actual_sources.push_back(
-                    {{}, 0, key_field.pub_key, {}, std::size_t(input.index()), input.value().amount, rct, rct::identity}
+                    {
+                      {}, 0, key_field.pub_key, {}
+                     , std::size_t(input.index()), input.value().amount, rct, rct::sone
+                    }
                 );
 
                 for (unsigned ring = 0; ring < 31; ++ring)

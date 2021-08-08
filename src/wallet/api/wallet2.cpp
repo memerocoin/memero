@@ -3538,7 +3538,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
     src.real_out_additional_tx_keys = get_additional_tx_pub_keys_from_extra(td.m_tx);
     src.real_output = it_to_replace - src.outputs.begin();
     src.real_output_in_tx_index = td.m_internal_output_index;
-    src.mask = rct::s2k(td.m_mask);
+    src.mask = td.m_mask;
     wallet::logic::controller::wallet::print_source_entry(src);
     ++out_index;
   }
