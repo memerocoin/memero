@@ -349,24 +349,25 @@ namespace rct {
         memcpy(data + 6, &k, sizeof(k));
         return hash2rct(crypto::sha3(epee::pod_to_span(data)));
     }
-    static void xor8(key &v, const key &k)
+    static void xor8(scalar &v, const key &k)
     {
         for (int i = 0; i < 8; ++i)
             v.bytes[i] ^= k.bytes[i];
     }
-    key genCommitmentMask(const key &sk)
+    scalar genCommitmentMask(const key &sk)
     {
         char data[15 + sizeof(key)];
         memcpy(data, "commitment_mask", 15);
         memcpy(data + 15, &sk, sizeof(sk));
         key h = rct::hash2rct(crypto::sha3(epee::pod_to_span(data)));
-        sc_reduce32(h.bytes);
-        return h;
+        scalar s = k2s(h);
+        sc_reduce32(s.bytes);
+        return s;
     }
 
     void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec) {
         //encode
-        unmasked.mask = zero;
+        unmasked.mask = szero;
         xor8(unmasked.amount, ecdhHash(sharedSec));
     }
 

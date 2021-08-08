@@ -345,7 +345,7 @@ namespace hw {
             return r;
         }
 
-        rct::key device_default::genCommitmentMask(const rct::key &amount_key) {
+        rct::scalar device_default::genCommitmentMask(const rct::key &amount_key) {
             return rct::genCommitmentMask(amount_key);
         }
 

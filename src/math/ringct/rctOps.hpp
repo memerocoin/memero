@@ -40,7 +40,11 @@ namespace rct {
 
     // Can't us consteval here or android will panic
     //Creates a zero scalar
+    const scalar szero = k2s(Z);
+    const scalar sone = k2s(I);
+
     constexpr key zero = Z;
+
     constexpr key emptyPoint = Z;
     //Creates a zero elliptic curve point
     constexpr key identity = I;
@@ -124,7 +128,7 @@ namespace rct {
 
     //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
     // where C= aG + bH
-    key genCommitmentMask(const key &sk);
+    scalar genCommitmentMask(const key &sk);
     void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec);
     void ecdhDecode(ecdhTuple & masked, const key & sharedSec);
 }

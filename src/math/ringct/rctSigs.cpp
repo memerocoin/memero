@@ -57,7 +57,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
-            masks[i] = hwdev.genCommitmentMask(sk[i]);
+              masks[i] = s2k(hwdev.genCommitmentMask(sk[i]));
         Bulletproof proof = bulletproof_MAKE(amounts, masks);
         LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
         C = proof.V;
@@ -513,8 +513,8 @@ namespace rct {
             sc_add(sumout.bytes, outSk[i].mask.bytes, sumout.bytes);
 
             //mask amount and mask
-            rv.ecdhInfo[i].mask = outSk[i].mask;
-            rv.ecdhInfo[i].amount = s2k(int_to_scalar(outamounts[i]));
+            rv.ecdhInfo[i].mask = k2s(outSk[i].mask);
+            rv.ecdhInfo[i].amount = int_to_scalar(outamounts[i]);
             hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i]);
         }
 
@@ -720,8 +720,8 @@ namespace rct {
         //mask amount and mask
         ecdhTuple ecdh_info = rv.ecdhInfo[i];
         hwdev.ecdhDecode(ecdh_info, sk);
-        mask = ecdh_info.mask;
-        key amount = ecdh_info.amount;
+        mask = rct::s2k(ecdh_info.mask);
+        key amount = rct::s2k(ecdh_info.amount);
         key C = rv.outPk[i].mask;
         LOG_ERROR_AND_THROW_UNLESS(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
         LOG_ERROR_AND_THROW_UNLESS(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");

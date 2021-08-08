@@ -110,8 +110,8 @@ namespace rct {
     // "amount" contains a hex representation (in 32 bytes) of a 64 bit number
     // the purpose of the ECDH exchange
     struct ecdhTuple {
-        key mask;
-        key amount;
+        scalar mask;
+        scalar amount;
 
         BEGIN_SERIALIZE_OBJECT()
           FIELD(mask) // not saved from v2 BPs
