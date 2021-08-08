@@ -50,7 +50,7 @@ namespace transfer {
     bool m_frozen;
     uint64_t m_spent_height;
     crypto::key_image m_key_image; //TODO: key_image stored twice :(
-    rct::key m_mask;
+    rct::scalar m_mask;
     uint64_t m_amount;
     bool m_rct;
     bool m_key_image_known;

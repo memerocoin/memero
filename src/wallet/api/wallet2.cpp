@@ -587,7 +587,7 @@ void wallet2::check_acc_out_precomp_once(const tx_out &o, const crypto::key_deri
     already_seen = true;
 }
 //----------------------------------------------------------------------------------------------------
-static uint64_t decodeRct(const rct::rctSig & rv, const crypto::key_derivation &derivation, unsigned int i, rct::key & mask, hw::device &hwdev)
+static uint64_t decodeRct(const rct::rctSig & rv, const crypto::key_derivation &derivation, unsigned int i, rct::scalar & mask, hw::device &hwdev)
 {
   crypto::secret_key scalar1;
   hwdev.derivation_to_scalar(derivation, i, scalar1);
@@ -623,7 +623,8 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
   THROW_WALLET_EXCEPTION_IF(std::find(outs.begin(), outs.end(), i) != outs.end(), error::wallet_internal_error, "Same output cannot be added twice");
   if (tx_scan_info.money_transfered == 0 && !miner_tx)
   {
-    tx_scan_info.money_transfered = tools::decodeRct(tx.rct_signatures, tx_scan_info.received->derivation, i, tx_scan_info.mask, m_account.get_device());
+    tx_scan_info.money_transfered =
+      tools::decodeRct(tx.rct_signatures, tx_scan_info.received->derivation, i, tx_scan_info.mask, m_account.get_device());
   }
   if (tx_scan_info.money_transfered == 0)
   {
@@ -902,12 +903,12 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             }
             else if (miner_tx && tx.version == 2)
             {
-              td.m_mask = rct::identity;
+              td.m_mask = rct::sone;
               td.m_rct = true;
             }
             else
             {
-              td.m_mask = rct::identity;
+              td.m_mask = rct::sone;
               td.m_rct = false;
             }
             td.m_frozen = false;
@@ -972,12 +973,12 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             }
             else if (miner_tx && tx.version == 2)
             {
-              td.m_mask = rct::identity;
+              td.m_mask = rct::sone;
               td.m_rct = true;
             }
             else
             {
-              td.m_mask = rct::identity;
+              td.m_mask = rct::sone;
               td.m_rct = false;
             }
             THROW_WALLET_EXCEPTION_IF(td.get_public_key() != tx_scan_info[o].in_ephemeral.pub, error::wallet_internal_error, "Inconsistent public keys");
@@ -3531,13 +3532,13 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
     tx_output_entry real_oe;
     real_oe.first = td.m_global_output_index;
     real_oe.second.dest = rct::pk2rct(td.get_public_key());
-    real_oe.second.mask = rct::commit(td.amount(), td.m_mask);
+    real_oe.second.mask = rct::commit(td.amount(), rct::s2k(td.m_mask));
     *it_to_replace = real_oe;
     src.real_out_tx_key = get_tx_pub_key_from_extra(td.m_tx, td.m_pk_index);
     src.real_out_additional_tx_keys = get_additional_tx_pub_keys_from_extra(td.m_tx);
     src.real_output = it_to_replace - src.outputs.begin();
     src.real_output_in_tx_index = td.m_internal_output_index;
-    src.mask = td.m_mask;
+    src.mask = rct::s2k(td.m_mask);
     wallet::logic::controller::wallet::print_source_entry(src);
     ++out_index;
   }

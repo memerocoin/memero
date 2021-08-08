@@ -711,7 +711,7 @@ namespace rct {
       }
     }
 
-    amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, key& mask) {
+    amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, scalar& mask) {
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
         LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");
@@ -720,15 +720,15 @@ namespace rct {
         //mask amount and mask
         ecdhTuple ecdh_info = rv.ecdhInfo[i];
         hwdev.ecdhDecode(ecdh_info, sk);
-        mask = rct::s2k(ecdh_info.mask);
-        key amount = rct::s2k(ecdh_info.amount);
+        mask = ecdh_info.mask;
+        scalar amount = ecdh_info.amount;
         key C = rv.outPk[i].mask;
         LOG_ERROR_AND_THROW_UNLESS(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
         LOG_ERROR_AND_THROW_UNLESS(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
-        const key Ctmp = addScalarMult_G_H(k2s(mask), k2s(amount));
+        const key Ctmp = addScalarMult_G_H(mask, amount);
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
-        return scalar_to_int(k2s(amount));
+        return scalar_to_int(amount);
     }
 }
