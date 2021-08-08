@@ -300,8 +300,8 @@ namespace rct {
             C.push_back(tmp);
         }
 
-        sk[0] = inSk.dest;
-        sc_sub(sk[1].bytes, inSk.mask.bytes, a.bytes);
+        sk[0] = inSk.addr;
+        sc_sub(sk[1].bytes, inSk.blinding_factor.bytes, a.bytes);
         clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
         memwipe(sk.data(), sk.size() * sizeof(key));
         return result;

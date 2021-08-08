@@ -80,8 +80,8 @@ TEST(ringct, CLSAG)
 
   // Prepare generation inputs
   pri_ctkey insk;
-  insk.dest = p;
-  insk.mask = t;
+  insk.addr = p;
+  insk.blinding_factor = t;
 
 
   // clsag proveRctCLSAGSimple
@@ -118,8 +118,8 @@ TEST(ringct, CLSAG)
   try
   {
     pri_ctkey insk2;
-    insk2.dest = insk.dest;
-    insk2.mask = skGen();
+    insk2.addr = insk.addr;
+    insk2.blinding_factor = skGen();
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
@@ -140,8 +140,8 @@ TEST(ringct, CLSAG)
   try
   {
     pri_ctkey insk2;
-    insk2.dest = skGen();
-    insk2.mask = insk.mask;
+    insk2.addr = skGen();
+    insk2.blinding_factor = insk.blinding_factor;
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }

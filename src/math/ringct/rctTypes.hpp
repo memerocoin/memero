@@ -82,7 +82,7 @@ namespace rct {
     //if it's  representing a private ctkey then "dest" contains the secret key of the address
     // while "mask" contains a where C = aG + bH is CT pedersen commitment and b is the amount
     // (store b, the amount, separately
-    //if it's representing a public ctkey, then "dest" = P the address, mask = C the commitment
+    //if it's representing a public ctkey, then "dest" = P the address, mask = aG the commitment
     struct ctkey {
         key dest;
         key mask; //C here if public
@@ -92,8 +92,8 @@ namespace rct {
     typedef std::span<const ctkey> ctkeyS;
 
     struct pri_ctkey {
-      key dest;
-      key mask; //C here if public
+      key addr;
+      key blinding_factor; //C here if public
     };
 
     typedef std::vector<pri_ctkey> pri_ctkeyV;

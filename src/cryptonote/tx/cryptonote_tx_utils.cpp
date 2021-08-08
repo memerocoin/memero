@@ -349,8 +349,8 @@ namespace cryptonote
         inamounts.push_back(sources[i].amount);
         index.push_back(sources[i].real_output);
         // inSk: (secret key, mask)
-        ctkey.dest = rct::sk2rct(in_contexts[i].in_ephemeral.sec);
-        ctkey.mask = sources[i].mask;
+        ctkey.addr = rct::sk2rct(in_contexts[i].in_ephemeral.sec);
+        ctkey.blinding_factor = sources[i].mask;
         inSk.push_back(ctkey);
         memwipe(&ctkey, sizeof(rct::ctkey));
         // inPk: (public key, commitment)

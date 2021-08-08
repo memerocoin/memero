@@ -119,8 +119,8 @@ namespace rct {
     std::tuple<pri_ctkey, ctkey> ctskpkGen(amount_t amount) {
         pri_ctkey sk;
         ctkey pk;
-        skpkGen(sk.dest, pk.dest);
-        skpkGen(sk.mask, pk.mask);
+        skpkGen(sk.addr, pk.dest);
+        skpkGen(sk.blinding_factor, pk.mask);
         key am = int_to_scalar(amount);
         key bH = scalarmultH(am);
         addKeys(pk.mask, pk.mask, bH);
@@ -132,8 +132,8 @@ namespace rct {
     std::tuple<pri_ctkey, ctkey> ctskpkGen(const key &bH) {
         pri_ctkey sk;
         ctkey pk;
-        skpkGen(sk.dest, pk.dest);
-        skpkGen(sk.mask, pk.mask);
+        skpkGen(sk.addr, pk.dest);
+        skpkGen(sk.blinding_factor, pk.mask);
         addKeys(pk.mask, pk.mask, bH);
         return std::make_tuple(sk, pk);
     }
