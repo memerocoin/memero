@@ -724,7 +724,7 @@ namespace rct {
         key Ctmp;
         LOG_ERROR_AND_THROW_UNLESS(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
         LOG_ERROR_AND_THROW_UNLESS(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
-        addKeys2(Ctmp, mask, amount);
+        addScalarMult_G_H(Ctmp, mask, amount);
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
         }

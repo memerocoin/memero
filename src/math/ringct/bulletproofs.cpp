@@ -502,7 +502,7 @@ Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
     rct::key gamma8, sv8;
     sc_mul(gamma8.bytes, gamma[i].bytes, INV_EIGHT.bytes);
     sc_mul(sv8.bytes, sv[i].bytes, INV_EIGHT.bytes);
-    rct::addKeys2(V[i], gamma8, sv8);
+    rct::addScalarMult_G_H(V[i], gamma8, sv8);
   }
 
   // PAPER LINES 41-42

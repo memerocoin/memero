@@ -88,7 +88,7 @@ namespace proof {
           rct::key Ctmp;
           THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.mask.bytes) != 0, error::wallet_internal_error, "Bad ECDH input mask");
           THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.amount.bytes) != 0, error::wallet_internal_error, "Bad ECDH input amount");
-          rct::addKeys2(Ctmp, ecdh_info.mask, ecdh_info.amount);
+          rct::addScalarMult_G_H(Ctmp, ecdh_info.mask, ecdh_info.amount);
           if (C == Ctmp)
             amount = rct::h2d(ecdh_info.amount);
           else
