@@ -136,8 +136,8 @@ rct::key vector_exponent(const keyS a, const keyS b)
   multiexp_data.reserve(a.size()*2);
   for (size_t i = 0; i < a.size(); ++i)
   {
-    multiexp_data.emplace_back(a[i], Gi_p3[i]);
-    multiexp_data.emplace_back(b[i], Hi_p3[i]);
+    multiexp_data.emplace_back(k2s(a[i]), Gi_p3[i]);
+    multiexp_data.emplace_back(k2s(b[i]), Hi_p3[i]);
   }
   return multiexp(multiexp_data);
 }
@@ -809,7 +809,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   LOG_ERROR_AND_RETURN_UNLESS(max_length < 32, false, "At least one proof is too large");
   size_t maxMN = 1u << max_length;
 
-  rct::key tmp;
+  rct::scalar tmp;
 
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) * proofs.size() + 2 * maxMN);
@@ -876,7 +876,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     sc_mul(tmp.bytes, xsq.bytes, weight_y.bytes);
     multiexp_data.emplace_back(tmp, proof8_T2);
 
-    multiexp_data.emplace_back(s2k(weight_z), proof8_A);
+    multiexp_data.emplace_back(weight_z, proof8_A);
     sc_mul(tmp.bytes, pd.x.bytes, weight_z.bytes);
     multiexp_data.emplace_back(tmp, proof8_S);
 
@@ -970,8 +970,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   multiexp_data.emplace_back(tmp, rct::H);
   for (size_t i = 0; i < maxMN; ++i)
   {
-    multiexp_data[i * 2] = {m_z4[i], Gi_p3[i]};
-    multiexp_data[i * 2 + 1] = {m_z5[i], Hi_p3[i]};
+    multiexp_data[i * 2] = {k2s(m_z4[i]), Gi_p3[i]};
+    multiexp_data[i * 2 + 1] = {k2s(m_z5[i]), Hi_p3[i]};
   }
   if (!(multiexp(multiexp_data) == rct::identity))
   {

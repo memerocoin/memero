@@ -61,27 +61,27 @@ extern "C"
 namespace rct
 {
 
-static inline bool operator<(const rct::key &k0, const rct::key&k1)
+static inline bool operator<(const rct::scalar &k0, const rct::scalar &k1)
 {
   for (int n = 31; n >= 0; --n)
-  {
-    if (k0.bytes[n] < k1.bytes[n])
-      return true;
-    if (k0.bytes[n] > k1.bytes[n])
-      return false;
-  }
+    {
+      if (k0.bytes[n] < k1.bytes[n])
+        return true;
+      if (k0.bytes[n] > k1.bytes[n])
+        return false;
+    }
   return false;
 }
 
-static inline rct::key pow2(size_t n)
+static inline rct::scalar pow2(size_t n)
 {
   LOG_ERROR_AND_THROW_UNLESS(n < 256, "Invalid pow2 argument");
-  rct::key res = rct::zero;
+  rct::scalar res = rct::szero;
   res[n >> 3] |= 1<<(n&7);
   return res;
 }
 
-static inline int test(const rct::key &k, size_t n)
+static inline int test(const rct::scalar &k, size_t n)
 {
   if (n >= 256) return 0;
   return k[n >> 3] & (1 << (n & 7));
@@ -136,7 +136,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
   ge_p3 result = ge_p3_identity;
   bool result_init = false;
 
-  const rct::key maxscalar = data.empty() ? rct::zero :
+  const rct::scalar maxscalar = data.empty() ? rct::szero :
     (
      *std::max_element(data.begin(), data.end(),
                        [](const auto x, const auto y) -> bool { return x.scalar < y.scalar; })
