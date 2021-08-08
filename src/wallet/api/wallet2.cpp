@@ -3729,6 +3729,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
  , const std::set<uint32_t> subaddr_indices_
  )
 {
+  auto dsts = dsts_vec;
 
   auto subaddr_indices = subaddr_indices_;
 
@@ -3737,12 +3738,12 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
   std::unique_lock<hw::device> hwdev_lock (hwdev);
   hw::reset_mode rst(hwdev);
 
+  auto original_dsts = dsts;
 
   std::vector<std::pair<uint32_t, std::vector<size_t>>> unused_transfers_indices_per_subaddr;
   std::vector<std::pair<uint32_t, std::vector<size_t>>> unused_dust_indices_per_subaddr;
   uint64_t needed_money;
   uint64_t accumulated_fee, accumulated_outputs, accumulated_change;
-
   struct TX {
     std::vector<size_t> selected_transfers;
     std::vector<cryptonote::tx_destination_entry> dsts;
@@ -3781,7 +3782,6 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
       }
     }
   };
-
   std::vector<TX> txes;
   bool adding_fee; // true if new outputs go towards fee, rather than destinations
   uint64_t needed_fee, available_for_fee = 0;
@@ -3792,23 +3792,17 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
   const uint64_t fee_quantization_mask = constant::fee_quantization_mask;
 
   // throw if attempting a transaction with no destinations
-  THROW_WALLET_EXCEPTION_IF(dsts_vec.empty(), error::zero_destination);
+  THROW_WALLET_EXCEPTION_IF(dsts.empty(), error::zero_destination);
 
   // calculate total amount being sent to all destinations
   // throw if total amount overflows uint64_t
   needed_money = 0;
-  for(const auto& dt: dsts_vec)
+  for(auto& dt: dsts)
   {
     THROW_WALLET_EXCEPTION_IF(0 == dt.amount, error::zero_destination);
     needed_money += dt.amount;
     LOG_PRINT_L2("transfer: adding " << print_money(dt.amount) << ", for a total of " << print_money (needed_money));
-    THROW_WALLET_EXCEPTION_IF(needed_money < dt.amount, error::tx_sum_overflow, dsts_vec, 0, m_nettype);
-  }
-
-  const auto original_dsts = dsts_vec;
-  std::stack<cryptonote::tx_destination_entry> dsts;
-  for (const auto& x: dsts_vec) {
-    dsts.push(x);
+    THROW_WALLET_EXCEPTION_IF(needed_money < dt.amount, error::tx_sum_overflow, dsts, 0, m_nettype);
   }
 
   // throw if attempting a transaction with no money
@@ -3974,12 +3968,12 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
   std::vector<size_t>& unused_transfers_indices = unused_transfers_indices_per_subaddr[0].second;
 
   hwdev.set_mode(hw::device::TRANSACTION_CREATE_FAKE);
-  while ((!dsts.empty() && dsts.top().amount > 0) || adding_fee || !preferred_inputs.empty()) {
+  while ((!dsts.empty() && dsts[0].amount > 0) || adding_fee || !preferred_inputs.empty()) {
     TX &tx = txes.back();
 
     LOG_PRINT_L2("Start of loop with " << unused_transfers_indices.size() << ", tx.dsts.size() " << tx.dsts.size());
     LOG_PRINT_L2("unused_transfers_indices: " << wallet::logic::functional::helper::strjoin(unused_transfers_indices, " "));
-    LOG_PRINT_L2("dsts size " << dsts.size() << ", first " << (dsts.empty() ? "-" : cryptonote::print_money(dsts.top().amount)));
+    LOG_PRINT_L2("dsts size " << dsts.size() << ", first " << (dsts.empty() ? "-" : cryptonote::print_money(dsts[0].amount)));
     LOG_PRINT_L2("adding_fee " << adding_fee);
 
     // if we need to spend money and don't have any left, we fail
@@ -4016,27 +4010,24 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
     }
     else
     {
-      while (!dsts.empty() && dsts.top().amount <= available_amount && estimate_tx_weight(tx.selected_transfers.size(), fake_outs_count, tx.dsts.size()+1, extra.size()) < TX_WEIGHT_TARGET(upper_transaction_weight_limit))
+      while (!dsts.empty() && dsts[0].amount <= available_amount && estimate_tx_weight(tx.selected_transfers.size(), fake_outs_count, tx.dsts.size()+1, extra.size()) < TX_WEIGHT_TARGET(upper_transaction_weight_limit))
       {
         // we can fully pay that destination
-        LOG_PRINT_L2("We can fully pay " << get_account_address_as_str(m_nettype, dsts.top().is_subaddress, dsts.top().addr) <<
-                     " for " << print_money(dsts.top().amount));
-
-        tx.add(dsts.top(), dsts.top().amount, original_output_index, m_merge_destinations);
-        available_amount -= dsts.top().amount;
-        dsts.pop();
+        LOG_PRINT_L2("We can fully pay " << get_account_address_as_str(m_nettype, dsts[0].is_subaddress, dsts[0].addr) <<
+          " for " << print_money(dsts[0].amount));
+        tx.add(dsts[0], dsts[0].amount, original_output_index, m_merge_destinations);
+        available_amount -= dsts[0].amount;
+        dsts[0].amount = 0;
+        pop_index(dsts, 0);
         ++original_output_index;
       }
 
       if (available_amount > 0 && !dsts.empty() && estimate_tx_weight(tx.selected_transfers.size(), fake_outs_count, tx.dsts.size()+1, extra.size()) < TX_WEIGHT_TARGET(upper_transaction_weight_limit)) {
         // we can partially fill that destination
-        LOG_PRINT_L2("We can partially pay " << get_account_address_as_str(m_nettype, dsts.top().is_subaddress, dsts.top().addr) <<
-                     " for " << print_money(available_amount) << "/" << print_money(dsts.top().amount));
-
-        tx.add(dsts.top(), available_amount, original_output_index, m_merge_destinations);
-        auto dst = dsts.top();
-        dst.amount -= available_amount;
-        dsts.emplace(dst);
+        LOG_PRINT_L2("We can partially pay " << get_account_address_as_str(m_nettype, dsts[0].is_subaddress, dsts[0].addr) <<
+          " for " << print_money(available_amount) << "/" << print_money(dsts[0].amount));
+        tx.add(dsts[0], available_amount, original_output_index, m_merge_destinations);
+        dsts[0].amount -= available_amount;
         available_amount = 0;
       }
     }
@@ -4090,16 +4081,13 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
       LOG_PRINT_L2("Made a " << wallet::logic::functional::wallet::get_weight_string(test_ptx.tx, txBlob.size()) << " tx, with " << print_money(available_for_fee) << " available for fee (" <<
         print_money(needed_fee) << " needed)");
 
-      if (needed_fee > available_for_fee && !dsts.empty() && dsts.top().amount > 0)
+      if (needed_fee > available_for_fee && !dsts.empty() && dsts[0].amount > 0)
       {
         // we don't have enough for the fee, but we've only partially paid the current address,
         // so we can take the fee from the paid amount, since we'll have to make another tx anyway
         std::vector<cryptonote::tx_destination_entry>::iterator i;
         i = std::find_if(tx.dsts.begin(), tx.dsts.end(),
-                         [&](const cryptonote::tx_destination_entry &d) {
-                           return !memcmp (&d.addr, &dsts.top().addr, sizeof(dsts.top().addr));
-                         }
-                         );
+          [&](const cryptonote::tx_destination_entry &d) { return !memcmp (&d.addr, &dsts[0].addr, sizeof(dsts[0].addr)); });
         THROW_WALLET_EXCEPTION_IF(i == tx.dsts.end(), error::wallet_internal_error, "paid address not found in outputs");
         if (i->amount > needed_fee)
         {
@@ -4107,9 +4095,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
           LOG_PRINT_L2("Adjusting amount paid to " << get_account_address_as_str(m_nettype, i->is_subaddress, i->addr) << " from " <<
             print_money(i->amount) << " to " << print_money(new_paid_amount) << " to accommodate " <<
             print_money(needed_fee) << " fee");
-          auto dst = dsts.top();
-          dst.amount += i->amount - new_paid_amount;
-          dsts.emplace(dst);
+          dsts[0].amount += i->amount - new_paid_amount;
           i->amount = new_paid_amount;
           test_ptx.fee = needed_fee;
           available_for_fee = needed_fee;
@@ -4157,7 +4143,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
 skip_tx:
     // if unused_*_indices is empty while unused_*_indices_per_subaddr has multiple elements, and if we still have something to pay,
     // pop front of unused_*_indices_per_subaddr and have unused_*_indices point to the front of unused_*_indices_per_subaddr
-    if ((!dsts.empty() && dsts.top().amount > 0) || adding_fee)
+    if ((!dsts.empty() && dsts[0].amount > 0) || adding_fee)
     {
       if (unused_transfers_indices.empty() && unused_transfers_indices_per_subaddr.size() > 1)
       {
