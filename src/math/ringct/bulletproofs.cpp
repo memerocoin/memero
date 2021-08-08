@@ -820,7 +820,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   // setup weighted aggregates
   rct::key z1 = rct::zero;
   rct::key z3 = rct::zero;
-  rct::keyV m_z4(maxMN, rct::zero), m_z5(maxMN, rct::zero);
+  rct::scalarV m_z4(maxMN, rct::szero), m_z5(maxMN, rct::szero);
   rct::key m_y0 = rct::zero, y1 = rct::zero;
   int proof_data_index = 0;
   rct::keyV w_cache;
@@ -970,8 +970,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   multiexp_data.emplace_back(tmp, rct::H);
   for (size_t i = 0; i < maxMN; ++i)
   {
-    multiexp_data[i * 2] = {k2s(m_z4[i]), Gi_p3[i]};
-    multiexp_data[i * 2 + 1] = {k2s(m_z5[i]), Hi_p3[i]};
+    multiexp_data[i * 2] = {m_z4[i], Gi_p3[i]};
+    multiexp_data[i * 2 + 1] = {m_z5[i], Hi_p3[i]};
   }
   if (!(multiexp(multiexp_data) == rct::identity))
   {
