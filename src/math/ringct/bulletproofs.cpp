@@ -499,7 +499,7 @@ Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
 
   for (size_t i = 0; i < sv.size(); ++i)
   {
-    rct::key gamma8, sv8;
+    rct::scalar gamma8, sv8;
     sc_mul(gamma8.bytes, gamma[i].bytes, INV_EIGHT.bytes);
     sc_mul(sv8.bytes, sv[i].bytes, INV_EIGHT.bytes);
     V[i] = rct::addScalarMult_G_H(gamma8, sv8);

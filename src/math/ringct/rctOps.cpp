@@ -112,7 +112,7 @@ namespace rct {
 
     //generates C =aG + bH from b, a is given..
     key genC(const key & a, amount_t amount) {
-        return addScalarMult_G_H(a, s2k(int_to_scalar(amount)));
+        return addScalarMult_G_H(k2s(a), int_to_scalar(amount));
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
@@ -268,8 +268,8 @@ namespace rct {
 
     //addKeys2
     //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
-    key addScalarMult_G_H(const key &a, const key &b) {
-      return addKeys(scalarmultBase(a), scalarmultH(b));
+    key addScalarMult_G_H(const scalar &a, const scalar &b) {
+      return addKeys(scalarmultBase(s2k(a)), scalarmultH(s2k(b)));
     }
 
     //Does some precomputation to make addKeys3 more efficient
