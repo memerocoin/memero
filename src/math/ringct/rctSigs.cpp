@@ -514,14 +514,14 @@ namespace rct {
 
             //mask amount and mask
             rv.ecdhInfo[i].mask = outSk[i].mask;
-            rv.ecdhInfo[i].amount = d2h(outamounts[i]);
+            rv.ecdhInfo[i].amount = int_to_scalar(outamounts[i]);
             hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i]);
         }
 
         //set txn fee
         rv.txnFee = txnFee;
 //        TODO: unused ??
-//        key txnFeeKey = scalarmultH(d2h(rv.txnFee));
+//        key txnFeeKey = scalarmultH(int_to_scalar(rv.txnFee));
         rv.mixRing = mixRing;
         keyV &pseudoOuts = rv.p.pseudoOuts;
         pseudoOuts.resize(inamounts.size());
@@ -607,7 +607,7 @@ namespace rct {
             masks[i] = rv.outPk[i].mask;
           }
           key sumOutpks = addKeys(masks);
-          const key txnFeeKey = scalarmultH(d2h(rv.txnFee));
+          const key txnFeeKey = scalarmultH(int_to_scalar(rv.txnFee));
           addKeys(sumOutpks, txnFeeKey, sumOutpks);
 
           key sumPseudoOuts = addKeys(pseudoOuts);
@@ -727,6 +727,6 @@ namespace rct {
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
-        return h2d(amount);
+        return scalar_to_int(amount);
     }
 }

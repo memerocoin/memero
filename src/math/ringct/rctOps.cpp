@@ -112,7 +112,7 @@ namespace rct {
 
     //generates C =aG + bH from b, a is given..
     key genC(const key & a, amount_t amount) {
-        return addScalarMult_G_H(a, d2h(amount));
+        return addScalarMult_G_H(a, int_to_scalar(amount));
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
@@ -120,7 +120,7 @@ namespace rct {
         ctkey sk, pk;
         skpkGen(sk.dest, pk.dest);
         skpkGen(sk.mask, pk.mask);
-        key am = d2h(amount);
+        key am = int_to_scalar(amount);
         key bH = scalarmultH(am);
         addKeys(pk.mask, pk.mask, bH);
         return std::make_tuple(sk, pk);
@@ -137,7 +137,7 @@ namespace rct {
     }
 
     key dummyCommit(amount_t amount) {
-        key am = d2h(amount);
+        key am = int_to_scalar(amount);
         key bH = scalarmultH(am);
         return addKeys(G, bH);
     }
@@ -148,7 +148,7 @@ namespace rct {
 
     //generates a random uint long long (for testing)
     amount_t randXmrAmount(amount_t upperlimit) {
-        return h2d(skGen()) % (upperlimit);
+        return scalar_to_int(skGen()) % (upperlimit);
     }
 
     //Scalar multiplications of curve points

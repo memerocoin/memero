@@ -395,10 +395,10 @@ namespace rct {
     //32 byte key to uint long long
     // if the key holds a value > 2^64
     // then the value in the first 8 bytes is returned
-    amount_t h2d(const key &in);
+    amount_t scalar_to_int(const key &in);
 
     //uint long long to 32 byte key
-    key d2h(const amount_t in);
+    key int_to_scalar(const amount_t in);
 
     static inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
     static inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }

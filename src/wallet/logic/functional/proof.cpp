@@ -89,7 +89,7 @@ namespace proof {
           THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.amount.bytes) != 0, error::wallet_internal_error, "Bad ECDH input amount");
           const rct::key Ctmp = rct::addScalarMult_G_H(ecdh_info.mask, ecdh_info.amount);
           if (C == Ctmp)
-            amount = rct::h2d(ecdh_info.amount);
+            amount = rct::scalar_to_int(ecdh_info.amount);
           else
             amount = 0;
         }

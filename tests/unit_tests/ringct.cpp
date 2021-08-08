@@ -491,7 +491,7 @@ TEST(ringct, range_proofs_accept_very_long_simple)
 
 TEST(ringct, HPow2)
 {
-  key G = scalarmultBase(d2h(1));
+  key G = scalarmultBase(int_to_scalar(1));
 
   // in lolnero, hashPoint uses sha3, but H is hashPoint with keccak256, so we use that H
   key H = rct::H;
@@ -523,8 +523,8 @@ TEST(ringct, d2h)
   key k, P1;
   skpkGen(k, P1);
   for (auto amount: test_amounts) {
-    auto k = d2h(amount);
-    ASSERT_TRUE(amount == h2d(k));
+    auto k = int_to_scalar(amount);
+    ASSERT_TRUE(amount == scalar_to_int(k));
   }
 }
 
@@ -627,14 +627,14 @@ TEST(ringct, dummyCommit)
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::key z = rct::dummyCommit(amount);
   const rct::key a = rct::scalarmultBase(rct::identity);
-  const rct::key b = rct::scalarmultH(rct::d2h(amount));
+  const rct::key b = rct::scalarmultH(rct::int_to_scalar(amount));
   const rct::key manual = rct::addKeys(a, b);
   ASSERT_EQ(z, manual);
 }
 
 static rct::key uncachedZeroCommit(uint64_t amount)
 {
-  const rct::key am = rct::d2h(amount);
+  const rct::key am = rct::int_to_scalar(amount);
   const rct::key bH = rct::scalarmultH(am);
   return rct::addKeys(rct::G, bH);
 }
