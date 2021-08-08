@@ -111,8 +111,10 @@ namespace rct {
     }
 
     //generates C =aG + bH from b, a is given..
-    void genC(key & C, const key & a, amount_t amount) {
+    key genC(const key & a, amount_t amount) {
+        key C;
         addScalarMult_G_H(C, a, d2h(amount));
+        return C;
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
@@ -143,9 +145,7 @@ namespace rct {
     }
 
     key commit(amount_t amount, const key &mask) {
-        key c;
-        genC(c, mask, amount);
-        return c;
+        return genC(mask, amount);
     }
 
     //generates a random uint long long (for testing)
