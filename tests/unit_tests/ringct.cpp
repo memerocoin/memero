@@ -72,12 +72,11 @@ TEST(ringct, CLSAG)
   // Set C[idx]
   t = skGen();
   u = skGen();
-  addScalarMult_G_H(pubs[idx].mask,t,u);
+  pubs[idx].mask = addScalarMult_G_H(t,u);
 
   // Set commitment offset
-  key Cout;
   t2 = skGen();
-  addScalarMult_G_H(Cout,t2,u);
+  key Cout = addScalarMult_G_H(t2,u);
 
   // Prepare generation inputs
   ctkey insk;
