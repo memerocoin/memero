@@ -136,7 +136,7 @@ namespace rct {
         return std::make_tuple(sk, pk);
     }
 
-    key zeroCommit(amount_t amount) {
+    key dummyCommit(amount_t amount) {
         key am = d2h(amount);
         key bH = scalarmultH(am);
         return addKeys(G, bH);

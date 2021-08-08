@@ -41,6 +41,7 @@ namespace rct {
     // Can't us consteval here or android will panic
     //Creates a zero scalar
     constexpr key zero = Z;
+    constexpr key emptyPoint = Z;
     //Creates a zero elliptic curve point
     constexpr key identity = I;
 
@@ -72,7 +73,7 @@ namespace rct {
     // make a pedersen commitment with given key
     key commit(amount_t amount, const key &mask);
     // make a pedersen commitment with zero key
-    key zeroCommit(amount_t amount);
+    key dummyCommit(amount_t amount);
     //generates a random uint long long
     amount_t randXmrAmount(amount_t upperlimit);
 
