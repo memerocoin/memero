@@ -79,7 +79,7 @@ TEST(ringct, CLSAG)
   key Cout = addScalarMult_G_H(t2,u);
 
   // Prepare generation inputs
-  ctkey insk;
+  pri_ctkey insk;
   insk.dest = p;
   insk.mask = t;
 
@@ -117,7 +117,7 @@ TEST(ringct, CLSAG)
   // bad z at creation
   try
   {
-    ctkey insk2;
+    pri_ctkey insk2;
     insk2.dest = insk.dest;
     insk2.mask = skGen();
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
@@ -139,7 +139,7 @@ TEST(ringct, CLSAG)
   // bad p at creation
   try
   {
-    ctkey insk2;
+    pri_ctkey insk2;
     insk2.dest = skGen();
     insk2.mask = insk.mask;
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
@@ -227,8 +227,10 @@ TEST(ringct, CLSAG)
 
 static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
 {
-    ctkeyV sc, pc;
-    ctkey sctmp, pctmp;
+    pri_ctkeyV sc;
+    ctkeyV pc;
+    pri_ctkey sctmp;
+    ctkey pctmp;
     vector<amount_t> inamounts, outamounts;
     keyV destinations;
     keyV amount_keys;

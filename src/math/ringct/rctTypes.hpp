@@ -62,7 +62,7 @@ namespace rct {
     };
 
 
-    struct point {
+    struct scalar {
       unsigned char & operator[](int i) {
         return bytes[i];
       }
@@ -90,6 +90,15 @@ namespace rct {
     typedef std::vector<ctkey> ctkeyV;
     typedef std::vector<ctkeyV> ctkeyM;
     typedef std::span<const ctkey> ctkeyS;
+
+    struct pri_ctkey {
+      key dest;
+      key mask; //C here if public
+    };
+
+    typedef std::vector<pri_ctkey> pri_ctkeyV;
+    typedef std::vector<pri_ctkeyV> pri_ctkeyM;
+    typedef std::span<const pri_ctkey> pri_ctkeyS;
 
     //data for passing the amount to the receiver secretly
     // If the pedersen commitment to an amount is C = aG + bH,
@@ -434,4 +443,6 @@ namespace std
 
 BLOB_SERIALIZER(rct::key);
 BLOB_SERIALIZER(rct::ctkey);
+BLOB_SERIALIZER(rct::scalar);
+BLOB_SERIALIZER(rct::pri_ctkey);
 

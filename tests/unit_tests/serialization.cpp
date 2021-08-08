@@ -553,8 +553,10 @@ TEST(Serialization, serializes_ringct_types)
 
   // create a full rct signature to use its innards
   vector<uint64_t> inamounts;
-  rct::ctkeyV sc, pc;
-  rct::ctkey sctmp, pctmp;
+  rct::pri_ctkeyV sc;
+  rct::ctkeyV pc;
+  rct::pri_ctkey sctmp;
+  rct::ctkey pctmp;
   inamounts.push_back(6000);
   tie(sctmp, pctmp) = rct::ctskpkGen(inamounts.back());
   sc.push_back(sctmp);

@@ -60,13 +60,13 @@ namespace rct {
 
     clsag proveRctCLSAGSimple
     (
-     const key message
-     , const ctkeyV
-     , const ctkey
-     , const key
-     , const key
-     , const unsigned int
-     );
+    const key message
+    , const ctkeyV pubs
+    , const pri_ctkey inSk
+    , const key a
+    , const key Cout
+    , const unsigned int index
+    );
 
     bool verRctCLSAGSimple(const key, const clsag, const ctkeyS, const key);
 
@@ -83,7 +83,7 @@ namespace rct {
     rctSig genRctSimple
     (
      const key message
-     , const ctkeyV inSk
+     , const pri_ctkeyV inSk
      , const ctkeyV inPk
      , const keyV destinations
      , const std::vector<amount_t> inamounts
@@ -96,7 +96,7 @@ namespace rct {
     rctSig genRctSimple
     (
      const key message
-     , const ctkeyV inSk
+     , const pri_ctkeyV inSk
      , const keyV destinations
      , const std::vector<amount_t> inamounts
      , const std::vector<amount_t> outamounts

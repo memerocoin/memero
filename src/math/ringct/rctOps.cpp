@@ -116,8 +116,9 @@ namespace rct {
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
-    std::tuple<ctkey, ctkey> ctskpkGen(amount_t amount) {
-        ctkey sk, pk;
+    std::tuple<pri_ctkey, ctkey> ctskpkGen(amount_t amount) {
+        pri_ctkey sk;
+        ctkey pk;
         skpkGen(sk.dest, pk.dest);
         skpkGen(sk.mask, pk.mask);
         key am = int_to_scalar(amount);
@@ -128,8 +129,9 @@ namespace rct {
 
 
     //generates a <secret , public> / Pedersen commitment but takes bH as input
-    std::tuple<ctkey, ctkey> ctskpkGen(const key &bH) {
-        ctkey sk, pk;
+    std::tuple<pri_ctkey, ctkey> ctskpkGen(const key &bH) {
+        pri_ctkey sk;
+        ctkey pk;
         skpkGen(sk.dest, pk.dest);
         skpkGen(sk.mask, pk.mask);
         addKeys(pk.mask, pk.mask, bH);

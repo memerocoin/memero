@@ -65,11 +65,11 @@ namespace rct {
     void skpkGen(key &sk, key &pk);
     std::tuple<key, key> skpkGen();
     //generates a <secret , public> / Pedersen commitment to the amount
-    std::tuple<ctkey, ctkey> ctskpkGen(amount_t amount);
+    std::tuple<pri_ctkey, ctkey> ctskpkGen(amount_t amount);
     //generates C =aG + bH from b, a is random
     key genC(const key & a, amount_t amount);
     //this one is mainly for testing, can take arbitrary amounts..
-    std::tuple<ctkey, ctkey> ctskpkGen(const key &bH);
+    std::tuple<pri_ctkey, ctkey> ctskpkGen(const key &bH);
     // make a pedersen commitment with given key
     key commit(amount_t amount, const key &mask);
     // make a pedersen commitment with zero key

@@ -274,7 +274,7 @@ namespace rct {
     (
      const key message
      , const ctkeyV pubs
-     , const ctkey inSk
+     , const pri_ctkey inSk
      , const key a
      , const key Cout
      , const unsigned int index
@@ -455,7 +455,7 @@ namespace rct {
     rctSig genRctSimple
     (
      const key message
-     , const ctkeyV inSk
+     , const pri_ctkeyV inSk
      , const keyV destinations
      , const vector<amount_t> inamounts
      , const vector<amount_t> outamounts
@@ -557,7 +557,7 @@ namespace rct {
     rctSig genRctSimple
     (
      const key message
-     , const ctkeyV inSk
+     , const pri_ctkeyV inSk
      , const ctkeyV inPk
      , const keyV destinations
      , const std::vector<amount_t> inamounts
