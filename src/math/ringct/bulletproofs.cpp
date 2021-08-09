@@ -512,7 +512,7 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
       {
         aL[j*N+i] = aL8[j*N+i] = rct::s_zero;
         aR[j*N+i] = rct::s_minus_one;
-        aR8[j*N+i] = rct::sminus_inv_eight;
+        aR8[j*N+i] = rct::s_minus_inv_eight;
       }
     }
   }
