@@ -42,6 +42,11 @@ namespace rct {
     //Creates a zero scalar
     const scalar szero = k2s(Z);
     const scalar sone = k2s(I);
+    const scalar stwo= k2s(TWO);
+    const scalar sminus_one = k2s(MINUS_ONE);
+    const scalar seight = k2s(EIGHT);
+    const scalar sinv_eight= k2s(INV_EIGHT);
+    const scalar sminus_inv_eight= k2s(MINUS_INV_EIGHT);
 
     constexpr key zero = Z;
 

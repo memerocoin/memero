@@ -57,29 +57,20 @@ extern "C"
 namespace rct
 {
 
-rct::key vector_exponent(const keyS a, const keyS b);
-rct::keyV vector_powers(const rct::key x, const size_t n);
-rct::key inner_product(const keyS a, const keyS b);
+rct::key vector_exponent(const scalarS a, const scalarS b);
+rct::scalarV vector_powers(const rct::scalar x, const size_t n);
+rct::scalar inner_product(const scalarS a, const scalarS b);
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 
-constexpr std::array<rct::key, maxN> oneN = {
-  I, I, I, I, I, I, I, I,
-  I, I, I, I, I, I, I, I,
-  I, I, I, I, I, I, I, I,
-  I, I, I, I, I, I, I, I,
-  I, I, I, I, I, I, I, I,
-  I, I, I, I, I, I, I, I,
-  I, I, I, I, I, I, I, I,
-  I, I, I, I, I, I, I, I,
-};
-const rct::keyV twoN = vector_powers(TWO, maxN);
+const rct::scalarV oneN = vector_powers(rct::sone, maxN);
+const rct::scalarV twoN = vector_powers(rct::stwo, maxN);
 
 rct::key Hi[maxN*maxM], Gi[maxN*maxM];
 ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
 
-const static rct::key ip12 = inner_product(oneN, twoN);
+const static rct::scalar ip12 = inner_product(oneN, twoN);
 
 std::mutex init_mutex;
 
@@ -127,7 +118,7 @@ void init_exponents()
 }
 
 /* Given two scalar arrays, construct a vector commitment */
-rct::key vector_exponent(const keyS a, const keyS b)
+rct::key vector_exponent(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
   LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
@@ -136,8 +127,8 @@ rct::key vector_exponent(const keyS a, const keyS b)
   multiexp_data.reserve(a.size()*2);
   for (size_t i = 0; i < a.size(); ++i)
   {
-    multiexp_data.emplace_back(k2s(a[i]), Gi_p3[i]);
-    multiexp_data.emplace_back(k2s(b[i]), Hi_p3[i]);
+    multiexp_data.emplace_back(a[i], Gi_p3[i]);
+    multiexp_data.emplace_back(b[i], Hi_p3[i]);
   }
   return multiexp(multiexp_data);
 }
@@ -150,13 +141,13 @@ rct::key cross_vector_exponent8
  , const size_t Ao
  , const std::span<ge_p3> B
  , const size_t Bo
- , const keyS a
+ , const scalarS a
  , const size_t ao
- , const keyS b
+ , const scalarS b
  , const size_t bo
- , const rct::keyV *scale
+ , const rct::scalarV *scale
  , const ge_p3 *extra_point
- , const rct::key *extra_scalar
+ , const rct::scalar *extra_scalar
  )
 {
   LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
@@ -187,12 +178,12 @@ rct::key cross_vector_exponent8
 }
 
 /* Given a scalar, construct a vector of powers */
-rct::keyV vector_powers(const rct::key x, const size_t n)
+rct::scalarV vector_powers(const rct::scalar x, const size_t n)
 {
-  rct::keyV res(n);
+  rct::scalarV res(n);
   if (n == 0)
     return res;
-  res[0] = rct::identity;
+  res[0] = rct::sone;
   if (n == 1)
     return res;
   res[1] = x;
@@ -242,10 +233,10 @@ rct::key vector_power_sum(const rct::key x_in, const size_t n_in)
 }
 
 /* Given two scalar arrays, construct the inner product */
-rct::key inner_product(const keyS a, const keyS b)
+rct::scalar inner_product(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  rct::key res = rct::zero;
+  rct::scalar res = rct::szero;
   for (size_t i = 0; i < a.size(); ++i)
   {
     sc_muladd(res.bytes, a[i].bytes, b[i].bytes, res.bytes);
@@ -254,10 +245,10 @@ rct::key inner_product(const keyS a, const keyS b)
 }
 
 /* Given two scalar arrays, construct the Hadamard product */
-rct::keyV hadamard(const keyS a, const keyS b)
+rct::scalarV hadamard(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  rct::keyV res(a.size());
+  rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
     sc_mul(res[i].bytes, a[i].bytes, b[i].bytes);
@@ -266,7 +257,7 @@ rct::keyV hadamard(const keyS a, const keyS b)
 }
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key a, const rct::key b)
+void hadamard_fold(std::vector<ge_p3> &v, const rct::scalarV *scale, const rct::scalar a, const rct::scalar b)
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
@@ -275,7 +266,7 @@ void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key
     ge_dsmp c[2];
     ge_dsm_precomp(c[0], &v[n]);
     ge_dsm_precomp(c[1], &v[sz + n]);
-    rct::key sa, sb;
+    rct::scalar sa, sb;
     if (scale) sc_mul(sa.bytes, a.bytes, (*scale)[n].bytes); else sa = a;
     if (scale) sc_mul(sb.bytes, b.bytes, (*scale)[sz + n].bytes); else sb = b;
     ge_double_scalarmult_precomp_vartime2_p3(&v[n], sa.bytes, c[0], sb.bytes, c[1]);
@@ -284,10 +275,10 @@ void hadamard_fold(std::vector<ge_p3> &v, const rct::keyV *scale, const rct::key
 }
 
 /* Add two vectors */
-rct::keyV vector_add(const keyS a, const keyS b)
+rct::scalarV vector_add(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  rct::keyV res(a.size());
+  rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
     sc_add(res[i].bytes, a[i].bytes, b[i].bytes);
@@ -296,9 +287,9 @@ rct::keyV vector_add(const keyS a, const keyS b)
 }
 
 /* Add a scalar to all elements of a vector */
-rct::keyV vector_add(const keyS a, const rct::key b)
+rct::scalarV vector_add(const scalarS a, const rct::scalar b)
 {
-  rct::keyV res(a.size());
+  rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
     sc_add(res[i].bytes, a[i].bytes, b.bytes);
@@ -307,9 +298,9 @@ rct::keyV vector_add(const keyS a, const rct::key b)
 }
 
 /* Subtract a scalar from all elements of a vector */
-rct::keyV vector_subtract(const keyS a, const rct::key b)
+rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
 {
-  rct::keyV res(a.size());
+  rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
     sc_sub(res[i].bytes, a[i].bytes, b.bytes);
@@ -318,9 +309,9 @@ rct::keyV vector_subtract(const keyS a, const rct::key b)
 }
 
 /* Multiply a scalar and a vector */
-rct::keyV vector_scalar(const keyS a, const rct::key x)
+rct::scalarV vector_scalar(const scalarS a, const rct::scalar x)
 {
-  rct::keyV res(a.size());
+  rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
     sc_mul(res[i].bytes, a[i].bytes, x.bytes);
@@ -328,11 +319,11 @@ rct::keyV vector_scalar(const keyS a, const rct::key x)
   return res;
 }
 
-rct::key sm(const rct::key y_in, const int n_in, const rct::key x_in)
+rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
 {
   int n = n_in;
-  rct::key y = y_in;
-  rct::key x = x_in;
+  rct::scalar y = y_in;
+  rct::scalar x = x_in;
   while (n--)
     sc_mul(y.bytes, y.bytes, y.bytes);
   sc_mul(y.bytes, y.bytes, x.bytes);
@@ -340,9 +331,9 @@ rct::key sm(const rct::key y_in, const int n_in, const rct::key x_in)
 }
 
 /* Compute the inverse of a scalar, the clever way */
-rct::key invert(const rct::key x)
+rct::scalar invert(const rct::scalar x)
 {
-  rct::key _1, _10, _100, _11, _101, _111, _1001, _1011, _1111;
+  rct::scalar _1, _10, _100, _11, _101, _111, _1001, _1011, _1111;
 
   _1 = x;
   sc_mul(_10.bytes, _1.bytes, _1.bytes);
@@ -354,7 +345,7 @@ rct::key invert(const rct::key x)
   sc_mul(_1011.bytes, _10.bytes, _1001.bytes);
   sc_mul(_1111.bytes, _100.bytes, _1011.bytes);
 
-  rct::key inv;
+  rct::scalar inv;
   sc_mul(inv.bytes, _1111.bytes, _1.bytes);
 
   inv = sm(inv, 123 + 3, _101);
@@ -388,12 +379,12 @@ rct::key invert(const rct::key x)
   return inv;
 }
 
-rct::keyV invert(rct::keyV x)
+rct::scalarV invert(rct::scalarV x)
 {
-  rct::keyV scratch;
+  rct::scalarV scratch;
   scratch.reserve(x.size());
 
-  rct::key acc = rct::identity;
+  rct::scalar acc = rct::sone;
   for (size_t n = 0; n < x.size(); ++n)
   {
     scratch.push_back(acc);
@@ -405,7 +396,7 @@ rct::keyV invert(rct::keyV x)
 
   acc = invert(acc);
 
-  rct::key tmp;
+  rct::scalar tmp;
   for (int i = x.size(); i-- > 0; )
   {
     sc_mul(tmp.bytes, acc.bytes, x[i].bytes);
@@ -417,7 +408,7 @@ rct::keyV invert(rct::keyV x)
 }
 
 /* Compute the slice of a vector */
-keyS slice(const keyS a, size_t start, size_t stop)
+scalarS slice(const scalarS a, size_t start, size_t stop)
 {
   LOG_ERROR_AND_THROW_UNLESS(start < a.size(), "Invalid start index");
   LOG_ERROR_AND_THROW_UNLESS(stop <= a.size(), "Invalid stop index");
@@ -493,9 +484,10 @@ Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
   const size_t MN = M * N;
 
   rct::keyV V(sv.size());
-  rct::keyV aL(MN), aR(MN);
-  rct::keyV aL8(MN), aR8(MN);
-  rct::key tmp, tmp2;
+  rct::scalarV aL(MN), aR(MN);
+  rct::scalarV aL8(MN), aR8(MN);
+  rct::scalar tmp;
+  rct::key tmp2;
 
   for (size_t i = 0; i < sv.size(); ++i)
   {
@@ -512,15 +504,15 @@ Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
     {
       if (j < sv.size() && (sv[j][i/8] & (((uint64_t)1)<<(i%8))))
       {
-        aL[j*N+i] = rct::identity;
-        aL8[j*N+i] = INV_EIGHT;
-        aR[j*N+i] = aR8[j*N+i] = rct::zero;
+        aL[j*N+i] = rct::sone;
+        aL8[j*N+i] = rct::sinv_eight;
+        aR[j*N+i] = aR8[j*N+i] = rct::szero;
       }
       else
       {
-        aL[j*N+i] = aL8[j*N+i] = rct::zero;
-        aR[j*N+i] = MINUS_ONE;
-        aR8[j*N+i] = MINUS_INV_EIGHT;
+        aL[j*N+i] = aL8[j*N+i] = rct::szero;
+        aR[j*N+i] = rct::sminus_one;
+        aR8[j*N+i] = rct::sminus_inv_eight;
       }
     }
   }
@@ -533,12 +525,12 @@ try_again:
   rct::key ve = vector_exponent(aL8, aR8);
   rct::key A;
   sc_mul(tmp.bytes, alpha.bytes, INV_EIGHT.bytes);
-  rct::addKeys(A, ve, rct::scalarmultBase(tmp));
+  rct::addKeys(A, ve, rct::scalarmultBase(s2k(tmp)));
 
   // PAPER LINES 45-47
   rct::scalarV sL = rct::skvGen(MN), sR = rct::skvGen(MN);
   rct::scalar rho = rct::skGen();
-  ve = vector_exponent(sv2kv(sL), sv2kv(sR));
+  ve = vector_exponent(sL, sR);
   rct::key S;
   rct::addKeys(S, ve, rct::scalarmultBase(s2k(rho)));
   S = rct::scalarmultKey(S, INV_EIGHT);
@@ -550,7 +542,7 @@ try_again:
     LOG_INFO("y is 0, trying again");
     goto try_again;
   }
-  rct::key z = hash_cache = rct::hash_to_scalar(y);
+  key z = hash_cache = rct::hash_to_scalar(y);
   if (z == rct::zero)
   {
     LOG_INFO("z is 0, trying again");
@@ -559,11 +551,11 @@ try_again:
 
   // Polynomial construction by coefficients
   // PAPER LINES 70-71
-  rct::keyV l0 = vector_subtract(aL, z);
+  rct::scalarV l0 = vector_subtract(aL, k2s(z));
   const rct::scalarV &l1 = sL;
 
-  rct::keyV zero_twos(MN);
-  const rct::keyV zpow = vector_powers(z, M+2);
+  rct::scalarV zero_twos(MN);
+  const rct::scalarV zpow = vector_powers(k2s(z), M+2);
   for (size_t j = 0; j < M; ++j)
   {
       for (size_t i = 0; i < N; ++i)
@@ -574,18 +566,18 @@ try_again:
       }
   }
 
-  rct::keyV r0 = vector_add(aR, z);
-  const auto yMN = vector_powers(y, MN);
+  rct::scalarV r0 = vector_add(aR, k2s(z));
+  const auto yMN = vector_powers(k2s(y), MN);
   r0 = hadamard(r0, yMN);
   r0 = vector_add(r0, zero_twos);
-  rct::keyV r1 = hadamard(yMN, sv2kv(sR));
+  rct::scalarV r1 = hadamard(yMN, sR);
 
   // Polynomial construction before PAPER LINE 51
-  rct::key t1_1 = inner_product(l0, r1);
-  rct::key t1_2 = inner_product(sv2kv(l1), r0);
-  rct::key t1;
+  rct::scalar t1_1 = inner_product(l0, r1);
+  rct::scalar t1_2 = inner_product(l1, r0);
+  rct::scalar t1;
   sc_add(t1.bytes, t1_1.bytes, t1_2.bytes);
-  rct::key t2 = inner_product(sv2kv(l1), r1);
+  rct::scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
   rct::scalar tau1 = rct::skGen(), tau2 = rct::skGen();
@@ -610,9 +602,9 @@ try_again:
   }
 
   // PAPER LINES 61-63
-  rct::key taux;
+  rct::scalar taux;
   sc_mul(taux.bytes, tau1.bytes, x.bytes);
-  rct::key xsq;
+  rct::scalar xsq;
   sc_mul(xsq.bytes, x.bytes, x.bytes);
   sc_muladd(taux.bytes, tau2.bytes, xsq.bytes, taux.bytes);
   for (size_t j = 1; j <= sv.size(); ++j)
@@ -620,19 +612,19 @@ try_again:
     LOG_ERROR_AND_THROW_UNLESS(j+1 < zpow.size(), "invalid zpow index");
     sc_muladd(taux.bytes, zpow[j+1].bytes, gamma[j-1].bytes, taux.bytes);
   }
-  rct::key mu;
+  rct::scalar mu;
   sc_muladd(mu.bytes, x.bytes, rho.bytes, alpha.bytes);
 
   // PAPER LINES 58-60
-  rct::keyV l = l0;
-  l = vector_add(l, vector_scalar(sv2kv(l1), x));
-  rct::keyV r = r0;
-  r = vector_add(r, vector_scalar(r1, x));
+  rct::scalarV l = l0;
+  l = vector_add(l, vector_scalar(l1, k2s(x)));
+  rct::scalarV r = r0;
+  r = vector_add(r, vector_scalar(r1, k2s(x)));
 
-  rct::key t = inner_product(l, r);
+  rct::scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  rct::key x_ip = hash_cache_mash(hash_cache, x, taux, mu, t);
+  rct::key x_ip = hash_cache_mash(hash_cache, x, s2k(taux), s2k(mu), s2k(t));
   if (x_ip == rct::zero)
   {
     LOG_INFO("x_ip is 0, trying again");
@@ -643,11 +635,11 @@ try_again:
   size_t nprime = MN;
   std::vector<ge_p3> Gprime(MN);
   std::vector<ge_p3> Hprime(MN);
-  rct::keyV aprime(MN);
-  rct::keyV bprime(MN);
-  const rct::key yinv = invert(y);
-  rct::keyV yinvpow(MN);
-  yinvpow[0] = rct::identity;
+  rct::scalarV aprime(MN);
+  rct::scalarV bprime(MN);
+  const rct::scalar yinv = invert(k2s(y));
+  rct::scalarV yinvpow(MN);
+  yinvpow[0] = rct::sone;
   yinvpow[1] = yinv;
   for (size_t i = 0; i < MN; ++i)
   {
@@ -661,34 +653,36 @@ try_again:
   rct::keyV L(logMN);
   rct::keyV R(logMN);
   int round = 0;
-  rct::keyV w(logMN); // this is the challenge x in the inner product protocol
+  rct::scalarV w(logMN); // this is the challenge x in the inner product protocol
 
-  const rct::keyV *scale = &yinvpow;
+  const rct::scalarV *scale = &yinvpow;
   while (nprime > 1)
   {
     // PAPER LINE 20
     nprime /= 2;
 
     // PAPER LINES 21-22
-    rct::key cL = inner_product(slice(aprime, 0, nprime), slice(bprime, nprime, bprime.size()));
-    rct::key cR = inner_product(slice(aprime, nprime, aprime.size()), slice(bprime, 0, nprime));
+    rct::scalar cL = inner_product(slice(aprime, 0, nprime), slice(bprime, nprime, bprime.size()));
+    rct::scalar cR = inner_product(slice(aprime, nprime, aprime.size()), slice(bprime, 0, nprime));
 
     // PAPER LINES 23-24
     sc_mul(tmp.bytes, cL.bytes, x_ip.bytes);
-    L[round] = cross_vector_exponent8(nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &ge_p3_H, &tmp);
+    L[round] = cross_vector_exponent8
+      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &ge_p3_H, &tmp);
     sc_mul(tmp.bytes, cR.bytes, x_ip.bytes);
-    R[round] = cross_vector_exponent8(nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &ge_p3_H, &tmp);
+    R[round] = cross_vector_exponent8
+      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &ge_p3_H, &tmp);
 
     // PAPER LINES 25-27
-    w[round] = hash_cache_mash(hash_cache, L[round], R[round]);
-    if (w[round] == rct::zero)
+    w[round] = k2s(hash_cache_mash(hash_cache, L[round], R[round]));
+    if (w[round] == rct::szero)
     {
       LOG_INFO("w[round] is 0, trying again");
       goto try_again;
     }
 
     // PAPER LINES 29-30
-    const rct::key winv = invert(w[round]);
+    const rct::scalar winv = invert(w[round]);
     if (nprime > 1)
     {
       hadamard_fold(Gprime, NULL, winv, w[round]);
@@ -703,7 +697,11 @@ try_again:
     ++round;
   }
 
-  return Bulletproof(std::move(V), A, S, T1, T2, taux, mu, std::move(L), std::move(R), aprime[0], bprime[0], t);
+  return Bulletproof
+    (
+     std::move(V), A, S, T1, T2, s2k(taux), s2k(mu), std::move(L), std::move(R)
+     , s2k(aprime[0]), s2k(bprime[0]), s2k(t)
+     );
 }
 
 Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::keyV gamma)
@@ -815,7 +813,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) * proofs.size() + 2 * maxMN);
   multiexp_data.resize(2 * maxMN);
 
-  const std::vector<rct::key> inverses = invert(to_invert);
+  const scalarV inverses = invert(kv2sv(to_invert));
 
   // setup weighted aggregates
   rct::key z1 = rct::zero;
@@ -823,7 +821,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   rct::scalarV m_z4(maxMN, rct::szero), m_z5(maxMN, rct::szero);
   rct::key m_y0 = rct::zero, y1 = rct::zero;
   int proof_data_index = 0;
-  rct::keyV w_cache;
+  rct::scalarV w_cache;
   std::vector<ge_p3> proof8_V, proof8_L, proof8_R;
   for (const Bulletproof& proof: proofs)
   {
@@ -850,7 +848,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     sc_mulsub(m_y0.bytes, proof.taux.bytes, weight_y.bytes, m_y0.bytes);
 
-    const rct::keyV zpow = vector_powers(pd.z, M+3);
+    const rct::scalarV zpow = vector_powers(k2s(pd.z), M+3);
 
     rct::key k;
     const rct::key ip1y = vector_power_sum(pd.y, MN);
@@ -888,13 +886,13 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     rct::key yinvpow = rct::identity;
     rct::key ypow = rct::identity;
 
-    const rct::key *winv = &inverses[pd.inv_offset];
-    const rct::key yinv = inverses[pd.inv_offset + rounds];
+    const rct::scalar *winv = &inverses[pd.inv_offset];
+    const rct::scalar yinv = inverses[pd.inv_offset + rounds];
 
     // precalc
     w_cache.resize(1<<rounds);
     w_cache[0] = winv[0];
-    w_cache[1] = pd.w[0];
+    w_cache[1] = k2s(pd.w[0]);
     for (size_t j = 1; j < rounds; ++j)
     {
       const size_t slots = 1<<(j+1);
@@ -938,7 +936,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
       if (i == 0)
       {
-        yinvpow = yinv;
+        yinvpow = s2k(yinv);
         ypow = pd.y;
       }
       else if (i != MN-1)

@@ -69,7 +69,7 @@ namespace rct {
       unsigned char operator[](int i) const {
         return bytes[i];
       }
-      bool operator==(const key &k) const { return !crypto_verify_32(bytes, k.bytes); }
+      bool operator==(const scalar &k) const { return !crypto_verify_32(bytes, k.bytes); }
 
       unsigned char bytes[32];
     };
