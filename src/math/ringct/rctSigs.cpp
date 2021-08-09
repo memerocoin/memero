@@ -719,7 +719,7 @@ namespace rct {
 
         return std::transform_reduce
           (
-           std::execution::par
+           std::execution::seq
            , clsagInputs.begin()
            , clsagInputs.end()
            , true
