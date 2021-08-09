@@ -309,8 +309,8 @@ namespace rct {
         return hash2rct(crypto::sha3(epee::pod_to_span(in)));
     }
 
-    key hash_to_scalar(const key & in) {
-      key hash = hash_key(in);
+    scalar hash_to_scalar(const key & in) {
+      scalar hash = k2s(hash_key(in));
       sc_reduce32(hash.bytes);
       return hash;
     }
@@ -323,11 +323,11 @@ namespace rct {
       return hash2rct(h);
     }
 
-   key hash_keys_to_scalar(const keyV &keys) {
-       key rv = hash_keys(keys);
-       sc_reduce32(rv.bytes);
-       return rv;
-   }
+    scalar hash_keys_to_scalar(const keyV &keys) {
+        scalar rv = k2s(hash_keys(keys));
+        sc_reduce32(rv.bytes);
+        return rv;
+    }
 
     // Hash a key to p3 representation
     void hash_to_p3(ge_p3 &hash8_p3, const key &k) {

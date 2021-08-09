@@ -149,8 +149,8 @@ namespace rct {
         mu_C_to_hash[2*n+2] = sig.D;
         mu_C_to_hash[2*n+3] = C_offset;
         scalar mu_P, mu_C;
-        mu_P = k2s(hash_keys_to_scalar(mu_P_to_hash));
-        mu_C = k2s(hash_keys_to_scalar(mu_C_to_hash));
+        mu_P = hash_keys_to_scalar(mu_P_to_hash);
+        mu_C = hash_keys_to_scalar(mu_C_to_hash);
 
         // Initial commitment
         keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
@@ -358,8 +358,8 @@ namespace rct {
             mu_C_to_hash[2*n+2] = sig.D;
             mu_C_to_hash[2*n+3] = C_offset;
             scalar mu_P, mu_C;
-            mu_P = k2s(hash_keys_to_scalar(mu_P_to_hash));
-            mu_C = k2s(hash_keys_to_scalar(mu_C_to_hash));
+            mu_P = hash_keys_to_scalar(mu_P_to_hash);
+            mu_C = hash_keys_to_scalar(mu_C_to_hash);
 
             // Set up round hash
             keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
@@ -408,7 +408,7 @@ namespace rct {
 
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;
-                c_new = k2s(hash_keys_to_scalar(c_to_hash));
+                c_new = hash_keys_to_scalar(c_to_hash);
                 LOG_ERROR_AND_RETURN_IF((c_new == rct::szero), false, "Bad signature hash");
                 c = c_new;
 

@@ -416,40 +416,40 @@ scalarS slice(const scalarS a, size_t start, size_t stop)
   return a.subspan(start, stop - start);
 }
 
-rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1)
+rct::scalar hash_carry_mash(rct::scalar & hash_carry, const rct::key mash0, const rct::key mash1)
 {
   rct::keyV data = {
-   hash_cache
+    s2k(hash_carry)
    , mash0
    , mash1
   };
-  hash_cache = rct::hash_keys_to_scalar(data);
-  return hash_cache;
+  hash_carry = rct::hash_keys_to_scalar(data);
+  return hash_carry;
 }
 
-rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1, const rct::key mash2)
+rct::scalar hash_carry_mash(rct::scalar& hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2)
 {
   rct::keyV data = {
-    hash_cache
+    s2k(hash_carry)
     , mash0
     , mash1
     , mash2
   };
-  hash_cache = rct::hash_keys_to_scalar(data);
-  return hash_cache;
+  hash_carry = rct::hash_keys_to_scalar(data);
+  return hash_carry;
 }
 
-rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::key mash1, const rct::key mash2, const rct::key mash3)
+rct::scalar hash_carry_mash(rct::scalar& hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2, const rct::key mash3)
 {
   rct::keyV data = {
-    hash_cache
+    s2k(hash_carry)
     , mash0
     , mash1
     , mash2
     , mash3
   };
-  hash_cache = rct::hash_keys_to_scalar(data);
-  return hash_cache;
+  hash_carry = rct::hash_keys_to_scalar(data);
+  return hash_carry;
 }
 
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
@@ -518,7 +518,7 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   }
 
 try_again:
-  rct::key hash_cache = rct::hash_keys_to_scalar(V);
+  rct::scalar hash_carry = rct::hash_keys_to_scalar(V);
 
   // PAPER LINES 43-44
   rct::scalar alpha = rct::skGen();
@@ -536,16 +536,14 @@ try_again:
   S = rct::scalarmultKey(S, rct::sinv_eight);
 
   // PAPER LINES 48-50
-  hash_cache_mash(hash_cache, A, S);
-  rct::scalar y = k2s(hash_cache);
+  scalar y = hash_carry_mash(hash_carry, A, S);
   if (y == rct::szero)
   {
     LOG_INFO("y is 0, trying again");
     goto try_again;
   }
 
-  hash_cache = rct::hash_to_scalar(s2k(y));
-  scalar z = k2s(hash_cache);
+  scalar z = rct::hash_to_scalar(s2k(y));
   if (z == rct::szero)
   {
     LOG_INFO("z is 0, trying again");
@@ -597,7 +595,7 @@ try_again:
   ge_p3_tobytes(T2.bytes, &p3);
 
   // PAPER LINES 54-56
-  rct::scalar x = k2s(hash_cache_mash(hash_cache, s2k(z), T1, T2));
+  rct::scalar x = hash_carry_mash(hash_carry, s2k(z), T1, T2);
   if (x == rct::szero)
   {
     LOG_INFO("x is 0, trying again");
@@ -627,7 +625,7 @@ try_again:
   rct::scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  rct::scalar x_ip = k2s(hash_cache_mash(hash_cache, s2k(x), s2k(taux), s2k(mu), s2k(t)));
+  rct::scalar x_ip = hash_carry_mash(hash_carry, s2k(x), s2k(taux), s2k(mu), s2k(t));
   if (x_ip == rct::szero)
   {
     LOG_INFO("x_ip is 0, trying again");
@@ -677,7 +675,7 @@ try_again:
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &ge_p3_H, &tmp);
 
     // PAPER LINES 25-27
-    w[round] = k2s(hash_cache_mash(hash_cache, L[round], R[round]));
+    w[round] = hash_carry_mash(hash_carry, L[round], R[round]);
     if (w[round] == rct::szero)
     {
       LOG_INFO("w[round] is 0, trying again");
@@ -775,19 +773,18 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     // Reconstruct the challenges
     proof_data.resize(proof_data.size() + 1);
     proof_data_t &pd = proof_data.back();
-    rct::key hash_cache = rct::hash_keys_to_scalar(proof.V);
+    rct::scalar hash_carry = rct::hash_keys_to_scalar(proof.V);
 
-    pd.y = k2s(hash_cache_mash(hash_cache, proof.A, proof.S));
+    pd.y = hash_carry_mash(hash_carry, proof.A, proof.S);
     LOG_ERROR_AND_RETURN_IF((pd.y == rct::szero), false, "y == 0");
 
-    hash_cache = rct::hash_to_scalar(s2k(pd.y));
-    pd.z = k2s(hash_cache);
+    pd.z = rct::hash_to_scalar(s2k(pd.y));
     LOG_ERROR_AND_RETURN_IF((pd.z == rct::szero), false, "z == 0");
 
-    pd.x = k2s(hash_cache_mash(hash_cache, s2k(pd.z), proof.T1, proof.T2));
+    pd.x = hash_carry_mash(hash_carry, s2k(pd.z), proof.T1, proof.T2);
     LOG_ERROR_AND_RETURN_IF((pd.x == rct::szero), false, "x == 0");
 
-    pd.x_ip = k2s(hash_cache_mash(hash_cache, s2k(pd.x), s2k(proof.taux), s2k(proof.mu), s2k(proof.t)));
+    pd.x_ip = hash_carry_mash(hash_carry, s2k(pd.x), s2k(proof.taux), s2k(proof.mu), s2k(proof.t));
     LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::szero), false, "x_ip == 0");
 
     size_t M;
@@ -802,7 +799,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     pd.w.resize(rounds);
     for (size_t i = 0; i < rounds; ++i)
     {
-      pd.w[i] = k2s(hash_cache_mash(hash_cache, proof.L[i], proof.R[i]));
+      pd.w[i] = hash_carry_mash(hash_carry, proof.L[i], proof.R[i]);
       LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::szero), false, "w[i] == 0");
     }
 

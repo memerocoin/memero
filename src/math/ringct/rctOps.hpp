@@ -123,10 +123,10 @@ namespace rct {
     void subKeys(key &AB, const key &A, const  key &B);
 
     key hash_key(const key &in);
-    key hash_to_scalar(const key &in);
+    scalar hash_to_scalar(const key &in);
     //for mg sigs
     key hash_keys(const keyV &keys);
-    key hash_keys_to_scalar(const keyV &keys);
+    scalar hash_keys_to_scalar(const keyV &keys);
     //for ANSL
 
     void hash_to_p3(ge_p3 &hash8_p3, const key &k);

@@ -386,7 +386,7 @@ namespace hw {
         }
 
         bool device_default::clsag_hash(const rct::keyV &data, rct::scalar &hash) {
-            hash = rct::k2s(rct::hash_keys_to_scalar(data));
+            hash = rct::hash_keys_to_scalar(data);
             return true;
         }
 
