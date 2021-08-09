@@ -62,7 +62,7 @@ rct::key vector_exponent(const scalarS a, const scalarS b);
 rct::scalarV vector_powers(const rct::scalar x, const size_t n);
 
 /* Given two scalar arrays, construct the inner product */
-constexpr rct::scalar inner_product(const scalarS a, const scalarS b)
+rct::scalar inner_product(const scalarS a, const scalarS b)
 {
   assert(a.size() == b.size());
   rct::scalar res = rct::s_zero;
@@ -202,7 +202,7 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n)
 }
 
 /* Given a scalar, return the sum of its powers from 0 to n-1 */
-constexpr rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
+rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
 {
   size_t n = n_in;
 
@@ -315,7 +315,7 @@ rct::scalarV vector_scalar(const scalarS a, const rct::scalar x)
   return res;
 }
 
-constexpr rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
+rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
 {
   int n = n_in;
   rct::scalar y = y_in;
