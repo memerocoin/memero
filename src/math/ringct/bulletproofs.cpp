@@ -839,17 +839,25 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     const rct::scalar weight_z = rct::skGen();
 
     // pre-multiply some points by 8
-    proof8_V.resize(proof.V.size()); for (size_t i = 0; i < proof.V.size(); ++i) rct::scalarmult8(proof8_V[i], proof.V[i]);
-    proof8_L.resize(proof.L.size()); for (size_t i = 0; i < proof.L.size(); ++i) rct::scalarmult8(proof8_L[i], proof.L[i]);
-    proof8_R.resize(proof.R.size()); for (size_t i = 0; i < proof.R.size(); ++i) rct::scalarmult8(proof8_R[i], proof.R[i]);
-    ge_p3 proof8_T1;
-    ge_p3 proof8_T2;
-    ge_p3 proof8_S;
-    ge_p3 proof8_A;
-    rct::scalarmult8(proof8_T1, proof.T1);
-    rct::scalarmult8(proof8_T2, proof.T2);
-    rct::scalarmult8(proof8_S, proof.S);
-    rct::scalarmult8(proof8_A, proof.A);
+    proof8_V.resize(proof.V.size());
+    for (size_t i = 0; i < proof.V.size(); ++i) {
+      proof8_V[i] = rct::multPoint8raw(proof.V[i]);
+    }
+
+    proof8_L.resize(proof.L.size());
+    for (size_t i = 0; i < proof.L.size(); ++i) {
+      proof8_L[i] = rct::multPoint8raw(proof.L[i]);
+    }
+
+    proof8_R.resize(proof.R.size());
+    for (size_t i = 0; i < proof.R.size(); ++i) {
+      proof8_R[i] = rct::multPoint8raw(proof.R[i]);
+    }
+
+    ge_p3 proof8_T1 = rct::multPoint8raw(proof.T1);
+    ge_p3 proof8_T2 = rct::multPoint8raw(proof.T2);
+    ge_p3 proof8_S  = rct::multPoint8raw(proof.S);
+    ge_p3 proof8_A  = rct::multPoint8raw(proof.A);
 
     sc_mulsub(m_y0.bytes, proof.taux.bytes, weight_y.bytes, m_y0.bytes);
 

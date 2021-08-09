@@ -96,13 +96,17 @@ namespace rct {
     key scalarmultBase(const scalar a);
 
     //does a * P where a is a scalar and P is an arbitrary point
-    key scalarmultKey(const key &P, const scalar &a);
+    key scalarmultKey(const key P, const scalar a);
 
     //Computes aH where H= toPoint(sha3(G)), G the basepoint
-    key scalarmultH(const scalar & a);
+    key scalarmultH(const scalar a);
+
     // multiplies a point by 8
-    key scalarmult8(const key & P);
-    void scalarmult8(ge_p3 &res, const key & P);
+    key multPoint8(const key P);
+
+    //Computes 8P without byte conversion
+    ge_p3 multPoint8raw(const key P);
+
     // checks a is in the main subgroup (ie, not a small one)
     bool isInMainSubgroup(const key & a);
 

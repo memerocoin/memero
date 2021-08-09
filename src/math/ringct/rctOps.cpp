@@ -162,7 +162,7 @@ namespace rct {
     }
 
     //does a * P where a is a scalar and P is an arbitrary point
-    key scalarmultKey(const key & P, const scalar & a) {
+    key scalarmultKey(const key P, const scalar a) {
       scalar s = normalizeKey(a);
       LOG_WARNING_AND_THROW_UNLESS(!sodium_is_zero(s.bytes, 32), "scalar key is zero");
 
@@ -175,7 +175,7 @@ namespace rct {
 
 
     //Computes aH where H= toPoint(sha3(G)), G the basepoint
-    key scalarmultH(const scalar & a) {
+    key scalarmultH(const scalar a) {
       scalar s = normalizeKey(a);
       key k;
 
@@ -186,7 +186,7 @@ namespace rct {
     }
 
     //Computes 8P
-    key scalarmult8(const key & P) {
+    key multPoint8(const key P) {
         ge_p3 p3;
         LOG_WARNING_AND_THROW_UNLESS(ge_frombytes_vartime(&p3, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
         ge_p2 p2;
@@ -200,8 +200,9 @@ namespace rct {
     }
 
     //Computes 8P without byte conversion
-    void scalarmult8(ge_p3 &res, const key &P)
+    ge_p3 multPoint8raw(const key P)
     {
+        ge_p3 res;
         ge_p3 p3;
         LOG_WARNING_AND_THROW_UNLESS(ge_frombytes_vartime(&p3, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
         ge_p2 p2;
@@ -209,6 +210,7 @@ namespace rct {
         ge_p1p1 p1;
         ge_mul8(&p1, &p2);
         ge_p1p1_to_p3(&res, &p1);
+        return res;
     }
 
     //Computes lA where l is the curve order

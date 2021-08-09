@@ -329,7 +329,7 @@ namespace rct {
 
             // Prepare key images
             scalar c = sig.c1;
-            key D_8 = scalarmult8(sig.D);
+            key D_8 = multPoint8(sig.D);
             LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary key image!");
             geDsmp I_precomp;
             geDsmp D_precomp;
@@ -502,7 +502,7 @@ namespace rct {
 
                 for (i = 0; i < outamounts.size(); ++i)
                 {
-                    rv.outPk[i].mask = rct::scalarmult8(C[i]);
+                    rv.outPk[i].mask = rct::multPoint8(C[i]);
                     outSk[i].blinding_factor = masks[i];
                 }
             }
