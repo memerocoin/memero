@@ -425,20 +425,6 @@ namespace rct {
         a.dest = pkGen();
     }
 
-    tuple<ctkeyM, size_t> populateRings(ctkeyV inPk, const size_t mixin) {
-        size_t rows = inPk.size();
-        ctkeyM rv(mixin + 1, inPk);
-        size_t index = ((size_t)std::rand()) % (mixin + 1);
-        for (size_t i = 0; i <= mixin; i++) {
-            if (i != index) {
-                for (size_t j = 0; j < rows; j++) {
-                  rand_assign_ctkey(rv[i][j]);
-                }
-            }
-        }
-        return make_tuple(rv, index);
-    }
-
     size_t populateRingsSimple(ctkeyV& mixRing, const ctkey inPk, const size_t mixin) {
         size_t index = ((size_t)std::rand()) % (mixin + 1);
         for (size_t i = 0; i <= mixin; i++) {
