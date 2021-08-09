@@ -162,6 +162,6 @@ namespace rct {
     // where C= aG + bH
     scalar genCommitmentMask(const key sk);
 
-    void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec);
-    void ecdhDecode(ecdhTuple & masked, const key & sharedSec);
+  ecdhTuple ecdhEncode(const scalar amount, const key sharedSec);
+  ecdhTuple ecdhDecode(const scalar amount, const key sharedSec);
 }

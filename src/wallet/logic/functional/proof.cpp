@@ -82,8 +82,8 @@ namespace proof {
         {
           crypto::secret_key scalar1;
           crypto::derivation_to_scalar(found_derivation, n, scalar1);
-          rct::ecdhTuple ecdh_info = tx.rct_signatures.ecdhInfo[n];
-          rct::ecdhDecode(ecdh_info, rct::sk2rct(scalar1));
+          rct::scalar ecdh_amount = tx.rct_signatures.ecdhInfo[n].amount;
+          rct::ecdhTuple ecdh_info = rct::ecdhDecode(ecdh_amount, rct::sk2rct(scalar1));
           const rct::key C = tx.rct_signatures.outPk[n].mask;
           THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.mask.bytes) != 0, error::wallet_internal_error, "Bad ECDH input mask");
           THROW_WALLET_EXCEPTION_IF(sc_check(ecdh_info.amount.bytes) != 0, error::wallet_internal_error, "Bad ECDH input amount");

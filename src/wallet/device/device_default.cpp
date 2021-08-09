@@ -351,12 +351,12 @@ namespace hw {
         }
 
         bool  device_default::ecdhEncode(rct::ecdhTuple & unmasked, const rct::key & sharedSec) {
-            rct::ecdhEncode(unmasked, sharedSec);
+            unmasked = rct::ecdhEncode(unmasked.amount, sharedSec);
             return true;
         }
 
         bool  device_default::ecdhDecode(rct::ecdhTuple & masked, const rct::key & sharedSec) {
-            rct::ecdhDecode(masked, sharedSec);
+            masked = rct::ecdhDecode(masked.amount, sharedSec);
             return true;
         }
 

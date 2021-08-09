@@ -340,12 +340,13 @@ namespace rct {
 
   // Hash a key to p3 representation
   ge_p3 hash_to_p3(const key k) {
-    ge_p3 hash8_p3;
     key h = hash_key(k);
     ge_p2 hash_p2;
     ge_fromfe_frombytes_vartime(&hash_p2, h.bytes);
     ge_p1p1 hash8_p1p1;
     ge_mul8(&hash8_p1p1, &hash_p2);
+
+    ge_p3 hash8_p3;
     ge_p1p1_to_p3(&hash8_p3, &hash8_p1p1);
 
     return hash8_p3;
@@ -353,18 +354,22 @@ namespace rct {
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH
-  static key ecdhHash(const key k)
+  key ecdhHash(const key k)
   {
     char data[38];
     memcpy(data, "amount", 6);
     memcpy(data + 6, &k, sizeof(k));
     return hash2rct(crypto::sha3(epee::pod_to_span(data)));
   }
-  static void xor8(scalar v, const key k)
+  scalar xor8(const scalar x, const key k)
   {
+    scalar r = x;
     for (int i = 0; i < 8; ++i)
-      v.bytes[i] ^= k.bytes[i];
+      r.bytes[i] ^= k.bytes[i];
+
+    return r;
   }
+
   scalar genCommitmentMask(const key sk)
   {
     char data[15 + sizeof(key)];
@@ -376,15 +381,19 @@ namespace rct {
     return s;
   }
 
-  void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec) {
-    //encode
-    unmasked.mask = s_zero;
-    xor8(unmasked.amount, ecdhHash(sharedSec));
+  ecdhTuple ecdhEncode(const scalar amount, const key sharedSec) {
+    ecdhTuple x = {
+      s_zero
+      , xor8(amount, ecdhHash(sharedSec))
+    };
+    return x;
   }
 
-  void ecdhDecode(ecdhTuple & masked, const key & sharedSec) {
-    //decode
-    masked.mask = genCommitmentMask(sharedSec);
-    xor8(masked.amount, ecdhHash(sharedSec));
+  ecdhTuple ecdhDecode(const scalar amount, const key sharedSec) {
+    ecdhTuple x = {
+      genCommitmentMask(sharedSec)
+      , xor8(amount, ecdhHash(sharedSec))
+    };
+    return x;
   }
 }
