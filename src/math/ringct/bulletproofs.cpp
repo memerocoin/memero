@@ -487,7 +487,7 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   rct::scalarV aL(MN), aR(MN);
   rct::scalarV aL8(MN), aR8(MN);
   rct::scalar tmp;
-  rct::key tmp2;
+  rct::scalar tmp2;
 
   for (size_t i = 0; i < sv.size(); ++i)
   {
@@ -536,14 +536,17 @@ try_again:
   S = rct::scalarmultKey(S, INV_EIGHT);
 
   // PAPER LINES 48-50
-  rct::key y = hash_cache_mash(hash_cache, A, S);
-  if (y == rct::zero)
+  hash_cache_mash(hash_cache, A, S);
+  rct::scalar y = k2s(hash_cache);
+  if (y == rct::szero)
   {
     LOG_INFO("y is 0, trying again");
     goto try_again;
   }
-  key z = hash_cache = rct::hash_to_scalar(y);
-  if (z == rct::zero)
+
+  hash_cache = rct::hash_to_scalar(s2k(y));
+  scalar z = k2s(hash_cache);
+  if (z == rct::szero)
   {
     LOG_INFO("z is 0, trying again");
     goto try_again;
@@ -551,11 +554,11 @@ try_again:
 
   // Polynomial construction by coefficients
   // PAPER LINES 70-71
-  rct::scalarV l0 = vector_subtract(aL, k2s(z));
+  rct::scalarV l0 = vector_subtract(aL, z);
   const rct::scalarV &l1 = sL;
 
   rct::scalarV zero_twos(MN);
-  const rct::scalarV zpow = vector_powers(k2s(z), M+2);
+  const rct::scalarV zpow = vector_powers(z, M+2);
   for (size_t j = 0; j < M; ++j)
   {
       for (size_t i = 0; i < N; ++i)
@@ -566,8 +569,8 @@ try_again:
       }
   }
 
-  rct::scalarV r0 = vector_add(aR, k2s(z));
-  const auto yMN = vector_powers(k2s(y), MN);
+  rct::scalarV r0 = vector_add(aR, z);
+  const auto yMN = vector_powers(y, MN);
   r0 = hadamard(r0, yMN);
   r0 = vector_add(r0, zero_twos);
   rct::scalarV r1 = hadamard(yMN, sR);
@@ -594,8 +597,8 @@ try_again:
   ge_p3_tobytes(T2.bytes, &p3);
 
   // PAPER LINES 54-56
-  rct::key x = hash_cache_mash(hash_cache, z, T1, T2);
-  if (x == rct::zero)
+  rct::scalar x = k2s(hash_cache_mash(hash_cache, s2k(z), T1, T2));
+  if (x == rct::szero)
   {
     LOG_INFO("x is 0, trying again");
     goto try_again;
@@ -617,15 +620,15 @@ try_again:
 
   // PAPER LINES 58-60
   rct::scalarV l = l0;
-  l = vector_add(l, vector_scalar(l1, k2s(x)));
+  l = vector_add(l, vector_scalar(l1, x));
   rct::scalarV r = r0;
-  r = vector_add(r, vector_scalar(r1, k2s(x)));
+  r = vector_add(r, vector_scalar(r1, x));
 
   rct::scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  rct::key x_ip = hash_cache_mash(hash_cache, x, s2k(taux), s2k(mu), s2k(t));
-  if (x_ip == rct::zero)
+  rct::scalar x_ip = k2s(hash_cache_mash(hash_cache, s2k(x), s2k(taux), s2k(mu), s2k(t)));
+  if (x_ip == rct::szero)
   {
     LOG_INFO("x_ip is 0, trying again");
     goto try_again;
@@ -637,7 +640,7 @@ try_again:
   std::vector<ge_p3> Hprime(MN);
   rct::scalarV aprime(MN);
   rct::scalarV bprime(MN);
-  const rct::scalar yinv = invert(k2s(y));
+  const rct::scalar yinv = invert(y);
   rct::scalarV yinvpow(MN);
   yinvpow[0] = rct::sone;
   yinvpow[1] = yinv;
@@ -727,8 +730,7 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::scalarV g
 
 struct proof_data_t
 {
-  rct::key x, x_ip;
-  rct::scalar y, z;
+  rct::scalar x, y, z, x_ip;
   std::vector<rct::scalar> w;
   size_t logM, inv_offset;
 };
@@ -782,11 +784,11 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     pd.z = k2s(hash_cache);
     LOG_ERROR_AND_RETURN_IF((pd.z == rct::szero), false, "z == 0");
 
-    pd.x = hash_cache_mash(hash_cache, s2k(pd.z), proof.T1, proof.T2);
-    LOG_ERROR_AND_RETURN_IF((pd.x == rct::zero), false, "x == 0");
+    pd.x = k2s(hash_cache_mash(hash_cache, s2k(pd.z), proof.T1, proof.T2));
+    LOG_ERROR_AND_RETURN_IF((pd.x == rct::szero), false, "x == 0");
 
-    pd.x_ip = hash_cache_mash(hash_cache, pd.x, s2k(proof.taux), s2k(proof.mu), s2k(proof.t));
-    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::zero), false, "x_ip == 0");
+    pd.x_ip = k2s(hash_cache_mash(hash_cache, s2k(pd.x), s2k(proof.taux), s2k(proof.mu), s2k(proof.t)));
+    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::szero), false, "x_ip == 0");
 
     size_t M;
     for (pd.logM = 0; (M = 1<<pd.logM) <= maxM && M < proof.V.size(); ++pd.logM);
