@@ -120,14 +120,30 @@ namespace rct {
     rct::key addKeys(const keyS A);
 
     //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
-    key addScalarMult_G_H(const scalar &a, const scalar &b);
+    key addScalarMult_G_H(const scalar a, const scalar b);
 
     //Does some precomputation to make addKeys3 more efficient
     // input B a curve point and output a ge_dsmp which has precomputation applied
-    void precomp(ge_dsmp rv, const key &B);
+    void precomp(ge_dsmp rv, const key B);
 
-    void addKeys_aGbBcC(key &aGbBcC, const scalar &a, const scalar &b, const ge_dsmp B, const scalar &c, const ge_dsmp C);
-    void addKeys_aAbBcC(key &aAbBcC, const scalar &a, const ge_dsmp A, const scalar &b, const ge_dsmp B, const scalar &c, const ge_dsmp C);
+    key addKeys_aGbBcC
+    (
+     const scalar a
+     , const scalar b
+     , const ge_dsmp B
+     , const scalar c
+     , const ge_dsmp C
+     );
+
+    key addKeys_aAbBcC
+    (
+     const scalar a
+     , const ge_dsmp A
+     , const scalar b
+     , const ge_dsmp B
+     , const scalar c
+     , const ge_dsmp C
+     );
 
     //AB = A - B where A, B are curve points
     void subKeys(key &AB, const key &A, const  key &B);

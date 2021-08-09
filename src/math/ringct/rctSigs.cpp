@@ -199,12 +199,12 @@ namespace rct {
             precomp(C_precomp.k,C[i]);
 
             // Compute L
-            addKeys_aGbBcC(L,sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
+            L = addKeys_aGbBcC(sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
 
             // Compute R
             hash_to_p3(Hi_p3,P[i]);
             ge_dsm_precomp(H_precomp.k, &Hi_p3);
-            addKeys_aAbBcC(R,sig.s[i],H_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
+            R = addKeys_aAbBcC(sig.s[i],H_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
 
             c_to_hash[2*n+3] = L;
             c_to_hash[2*n+4] = R;
@@ -399,12 +399,12 @@ namespace rct {
                 ge_dsm_precomp(C_precomp.k,&temp_p3);
 
                 // Compute L
-                addKeys_aGbBcC(L,sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
+                L = addKeys_aGbBcC(sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
 
                 // Compute R
                 hash_to_p3(hash8_p3,pubs[i].dest);
                 ge_dsm_precomp(hash_precomp.k, &hash8_p3);
-                addKeys_aAbBcC(R,sig.s[i],hash_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
+                R = addKeys_aAbBcC(sig.s[i],hash_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
 
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;
