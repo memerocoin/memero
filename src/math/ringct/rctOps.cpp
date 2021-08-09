@@ -190,7 +190,11 @@ namespace rct {
   //Computes 8P
   key multPoint8(const key P) {
     ge_p3 p3;
-    LOG_WARNING_AND_THROW_UNLESS(ge_frombytes_vartime(&p3, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
+    LOG_WARNING_AND_THROW_UNLESS
+      (
+       ge_frombytes_vartime(&p3, P.bytes) == 0
+       , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
+       );
     ge_p2 p2;
     ge_p3_to_p2(&p2, &p3);
     ge_p1p1 p1;
@@ -206,7 +210,11 @@ namespace rct {
   {
     ge_p3 res;
     ge_p3 p3;
-    LOG_WARNING_AND_THROW_UNLESS(ge_frombytes_vartime(&p3, P.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
+    LOG_WARNING_AND_THROW_UNLESS
+      (
+       ge_frombytes_vartime(&p3, P.bytes) == 0
+       , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
+       );
     ge_p2 p2;
     ge_p3_to_p2(&p2, &p3);
     ge_p1p1 p1;
@@ -257,7 +265,11 @@ namespace rct {
   // input B a curve point and output a ge_dsmp which has precomputation applied
   void precomp(ge_dsmp rv, const key B) {
     ge_p3 B2;
-    LOG_WARNING_AND_THROW_UNLESS(ge_frombytes_vartime(&B2, B.bytes) == 0, "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__));
+    LOG_WARNING_AND_THROW_UNLESS
+      (
+       ge_frombytes_vartime(&B2, B.bytes) == 0
+       , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
+       );
     ge_dsm_precomp(rv, &B2);
   }
 
