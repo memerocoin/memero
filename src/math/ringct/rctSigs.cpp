@@ -307,116 +307,120 @@ namespace rct {
     }
 
 
-    bool verRctCLSAGSimple(const key message, const clsag sig, const ctkeyS pubs, const key C_offset) {
-        try
-        {
-            const size_t n = pubs.size();
+    bool verRctCLSAGSimpleMayThrow(const key message, const clsag sig, const ctkeyS pubs, const key C_offset)
+    {
+        const size_t n = pubs.size();
 
-            // Check data
-            LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
-            LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
-            for (const auto &s: sig.s)
-              LOG_ERROR_AND_RETURN_UNLESS(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
-            LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
-            LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad key image!");
+        // Check data
+        LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
+        LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
+        for (const auto &s: sig.s)
+          LOG_ERROR_AND_RETURN_UNLESS(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
+        LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
+        LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad key image!");
 
-            // Cache commitment offset for efficient subtraction later
-            ge_p3 C_offset_p3;
-            LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&C_offset_p3, C_offset.bytes) == 0, false, "point conv failed");
-            ge_cached C_offset_cached;
-            ge_p3_to_cached(&C_offset_cached, &C_offset_p3);
+        // Cache commitment offset for efficient subtraction later
+        ge_p3 C_offset_p3;
+        LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&C_offset_p3, C_offset.bytes) == 0, false, "point conv failed");
+        ge_cached C_offset_cached;
+        ge_p3_to_cached(&C_offset_cached, &C_offset_p3);
 
-            // Prepare key images
-            scalar c = sig.c1;
-            key D_8 = multPoint8(sig.D);
-            LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary key image!");
-            geDsmp I_precomp;
-            geDsmp D_precomp;
-            precomp(I_precomp.k,sig.I);
-            precomp(D_precomp.k,D_8);
+        // Prepare key images
+        scalar c = sig.c1;
+        key D_8 = multPoint8(sig.D);
+        LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary key image!");
+        geDsmp I_precomp;
+        geDsmp D_precomp;
+        precomp(I_precomp.k,sig.I);
+        precomp(D_precomp.k,D_8);
 
-            // Aggregation hashes
-            keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-            keyV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-            sc_0(mu_P_to_hash[0].bytes);
-            memcpy(mu_P_to_hash[0].bytes,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
-            sc_0(mu_C_to_hash[0].bytes);
-            memcpy(mu_C_to_hash[0].bytes,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
-            for (size_t i = 1; i < n+1; ++i) {
-                mu_P_to_hash[i] = pubs[i-1].dest;
-                mu_C_to_hash[i] = pubs[i-1].dest;
-            }
-            for (size_t i = n+1; i < 2*n+1; ++i) {
-                mu_P_to_hash[i] = pubs[i-n-1].mask;
-                mu_C_to_hash[i] = pubs[i-n-1].mask;
-            }
-            mu_P_to_hash[2*n+1] = sig.I;
-            mu_P_to_hash[2*n+2] = sig.D;
-            mu_P_to_hash[2*n+3] = C_offset;
-            mu_C_to_hash[2*n+1] = sig.I;
-            mu_C_to_hash[2*n+2] = sig.D;
-            mu_C_to_hash[2*n+3] = C_offset;
-            scalar mu_P, mu_C;
-            mu_P = hash_keys_to_scalar(mu_P_to_hash);
-            mu_C = hash_keys_to_scalar(mu_C_to_hash);
-
-            // Set up round hash
-            keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
-            sc_0(c_to_hash[0].bytes);
-            memcpy(c_to_hash[0].bytes,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
-            for (size_t i = 1; i < n+1; ++i)
-            {
-                c_to_hash[i] = pubs[i-1].dest;
-                c_to_hash[i+n] = pubs[i-1].mask;
-            }
-            c_to_hash[2*n+1] = C_offset;
-            c_to_hash[2*n+2] = message;
-            scalar c_p; // = c[i]*mu_P
-            scalar c_c; // = c[i]*mu_C
-            scalar c_new;
-            key L;
-            key R;
-            geDsmp P_precomp;
-            geDsmp C_precomp;
-            size_t i = 0;
-            ge_p3 hash8_p3;
-            geDsmp hash_precomp;
-            ge_p3 temp_p3;
-            ge_p1p1 temp_p1;
-
-            while (i < n) {
-                sc_0(c_new.bytes);
-                sc_mul(c_p.bytes,mu_P.bytes,c.bytes);
-                sc_mul(c_c.bytes,mu_C.bytes,c.bytes);
-
-                // Precompute points for L/R
-                precomp(P_precomp.k,pubs[i].dest);
-
-                LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
-                ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
-                ge_p1p1_to_p3(&temp_p3,&temp_p1);
-                ge_dsm_precomp(C_precomp.k,&temp_p3);
-
-                // Compute L
-                L = addKeys_aGbBcC(sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
-
-                // Compute R
-                hash8_p3 = hash_to_p3(pubs[i].dest);
-                ge_dsm_precomp(hash_precomp.k, &hash8_p3);
-                R = addKeys_aAbBcC(sig.s[i],hash_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
-
-                c_to_hash[2*n+3] = L;
-                c_to_hash[2*n+4] = R;
-                c_new = hash_keys_to_scalar(c_to_hash);
-                LOG_ERROR_AND_RETURN_IF((c_new == rct::s_zero), false, "Bad signature hash");
-                c = c_new;
-
-                i = i + 1;
-            }
-            sc_sub(c_new.bytes,c.bytes,sig.c1.bytes);
-            return sc_isnonzero(c_new.bytes) == 0;
+        // Aggregation hashes
+        keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
+        keyV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
+        sc_0(mu_P_to_hash[0].bytes);
+        memcpy(mu_P_to_hash[0].bytes,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
+        sc_0(mu_C_to_hash[0].bytes);
+        memcpy(mu_C_to_hash[0].bytes,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
+        for (size_t i = 1; i < n+1; ++i) {
+            mu_P_to_hash[i] = pubs[i-1].dest;
+            mu_C_to_hash[i] = pubs[i-1].dest;
         }
-        catch (...) { return false; }
+        for (size_t i = n+1; i < 2*n+1; ++i) {
+            mu_P_to_hash[i] = pubs[i-n-1].mask;
+            mu_C_to_hash[i] = pubs[i-n-1].mask;
+        }
+        mu_P_to_hash[2*n+1] = sig.I;
+        mu_P_to_hash[2*n+2] = sig.D;
+        mu_P_to_hash[2*n+3] = C_offset;
+        mu_C_to_hash[2*n+1] = sig.I;
+        mu_C_to_hash[2*n+2] = sig.D;
+        mu_C_to_hash[2*n+3] = C_offset;
+        scalar mu_P, mu_C;
+        mu_P = hash_keys_to_scalar(mu_P_to_hash);
+        mu_C = hash_keys_to_scalar(mu_C_to_hash);
+
+        // Set up round hash
+        keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
+        sc_0(c_to_hash[0].bytes);
+        memcpy(c_to_hash[0].bytes,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
+        for (size_t i = 1; i < n+1; ++i)
+        {
+            c_to_hash[i] = pubs[i-1].dest;
+            c_to_hash[i+n] = pubs[i-1].mask;
+        }
+        c_to_hash[2*n+1] = C_offset;
+        c_to_hash[2*n+2] = message;
+        scalar c_p; // = c[i]*mu_P
+        scalar c_c; // = c[i]*mu_C
+        scalar c_new;
+        key L;
+        key R;
+        geDsmp P_precomp;
+        geDsmp C_precomp;
+        size_t i = 0;
+        ge_p3 hash8_p3;
+        geDsmp hash_precomp;
+        ge_p3 temp_p3;
+        ge_p1p1 temp_p1;
+
+        while (i < n) {
+            sc_0(c_new.bytes);
+            sc_mul(c_p.bytes,mu_P.bytes,c.bytes);
+            sc_mul(c_c.bytes,mu_C.bytes,c.bytes);
+
+            // Precompute points for L/R
+            precomp(P_precomp.k,pubs[i].dest);
+
+            LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
+            ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
+            ge_p1p1_to_p3(&temp_p3,&temp_p1);
+            ge_dsm_precomp(C_precomp.k,&temp_p3);
+
+            // Compute L
+            L = addKeys_aGbBcC(sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
+
+            // Compute R
+            hash8_p3 = hash_to_p3(pubs[i].dest);
+            ge_dsm_precomp(hash_precomp.k, &hash8_p3);
+            R = addKeys_aAbBcC(sig.s[i],hash_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
+
+            c_to_hash[2*n+3] = L;
+            c_to_hash[2*n+4] = R;
+            c_new = hash_keys_to_scalar(c_to_hash);
+            LOG_ERROR_AND_RETURN_IF((c_new == rct::s_zero), false, "Bad signature hash");
+            c = c_new;
+
+            i = i + 1;
+        }
+        sc_sub(c_new.bytes,c.bytes,sig.c1.bytes);
+        return sc_isnonzero(c_new.bytes) == 0;
+    }
+
+    bool verRctCLSAGSimple(const key message, const clsag sig, const ctkeyS pubs, const key C_offset) {
+      try {
+        return verRctCLSAGSimpleMayThrow(message, sig, pubs, C_offset);
+      }
+      catch (...) { return false; }
     }
 
 
@@ -566,9 +570,8 @@ namespace rct {
           (message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
     }
 
-    bool verRctSemanticsSimple(const std::span<const rctSig> rvv) {
-      try
-      {
+    bool verRctSemanticsSimpleMayThrow(const std::span<const rctSig> rvv)
+    {
         tools::threadpool& tpool = tools::threadpool::getInstance();
         tools::threadpool::waiter waiter(tpool);
         std::deque<bool> results;
@@ -626,18 +629,23 @@ namespace rct {
         }
 
         return true;
+    }
+
+    bool verRctSemanticsSimple(const std::span<const rctSig> rvv) {
+      try {
+        return verRctSemanticsSimpleMayThrow(rvv);
       }
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
       catch (const std::exception &e)
-      {
-        LOG_PRINT_L1("Error in verRctSemanticsSimple: " << e.what());
-        return false;
-      }
+        {
+          LOG_PRINT_L1("Error in verRctSemanticsSimple: " << e.what());
+          return false;
+        }
       catch (...)
-      {
-        LOG_PRINT_L1("Error in verRctSemanticsSimple, but not an actual exception");
-        return false;
-      }
+        {
+          LOG_PRINT_L1("Error in verRctSemanticsSimple, but not an actual exception");
+          return false;
+        }
     }
 
     bool verRctSemanticsSimple(const rctSig rv)
@@ -647,9 +655,8 @@ namespace rct {
 
     //ver RingCT simple
     //assumes only post-rct style inputs (at least for max anonymity)
-    bool verRctNonSemanticsSimple(const rctSig rv) {
-      try
-      {
+    bool verRctNonSemanticsSimpleMayThrow(const rctSig rv)
+    {
         LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG,
             false, "verRctNonSemanticsSimple called on non simple rctSig");
         // semantics check is early, and mixRing/MGs aren't resolved yet
@@ -683,7 +690,13 @@ namespace rct {
         }
 
         return true;
+    }
+
+    bool verRctNonSemanticsSimple(const rctSig rv) {
+      try {
+        return verRctNonSemanticsSimpleMayThrow(rv);
       }
+
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
       catch (const std::exception &e)
       {
