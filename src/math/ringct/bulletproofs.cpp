@@ -195,18 +195,18 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n)
 }
 
 /* Given a scalar, return the sum of its powers from 0 to n-1 */
-rct::key vector_power_sum(const rct::key x_in, const size_t n_in)
+rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
 {
   size_t n = n_in;
 
   if (n == 0)
-    return rct::zero;
-  rct::key res = rct::identity;
+    return rct::szero;
+  rct::scalar res = rct::sone;
   if (n == 1)
     return res;
 
   const bool is_power_of_2 = (n & (n - 1)) == 0;
-  rct::key x = x_in;
+  rct::scalar x = x_in;
 
   if (is_power_of_2)
   {
@@ -220,7 +220,7 @@ rct::key vector_power_sum(const rct::key x_in, const size_t n_in)
   }
   else
   {
-    rct::key prev = x;
+    rct::scalar prev = x;
     for (size_t i = 1; i < n; ++i)
     {
       if (i > 1)
@@ -727,8 +727,9 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::keyV gamm
 
 struct proof_data_t
 {
-  rct::key x, y, z, x_ip;
-  std::vector<rct::key> w;
+  rct::key x, z, x_ip;
+  rct::scalar y;
+  std::vector<rct::scalar> w;
   size_t logM, inv_offset;
 };
 
@@ -750,7 +751,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   std::vector<proof_data_t> proof_data;
   proof_data.reserve(proofs.size());
   size_t inv_offset = 0;
-  std::vector<rct::key> to_invert;
+  std::vector<rct::scalar> to_invert;
   to_invert.reserve(11 * proofs.size());
   size_t max_logM = 0;
   for (const Bulletproof& proof: proofs)
@@ -773,12 +774,16 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     proof_data.resize(proof_data.size() + 1);
     proof_data_t &pd = proof_data.back();
     rct::key hash_cache = rct::hash_keys_to_scalar(proof.V);
-    pd.y = hash_cache_mash(hash_cache, proof.A, proof.S);
-    LOG_ERROR_AND_RETURN_IF((pd.y == rct::zero), false, "y == 0");
-    pd.z = hash_cache = rct::hash_to_scalar(pd.y);
+
+    pd.y = k2s(hash_cache_mash(hash_cache, proof.A, proof.S));
+    LOG_ERROR_AND_RETURN_IF((pd.y == rct::szero), false, "y == 0");
+
+    pd.z = hash_cache = rct::hash_to_scalar(s2k(pd.y));
     LOG_ERROR_AND_RETURN_IF((pd.z == rct::zero), false, "z == 0");
+
     pd.x = hash_cache_mash(hash_cache, pd.z, proof.T1, proof.T2);
     LOG_ERROR_AND_RETURN_IF((pd.x == rct::zero), false, "x == 0");
+
     pd.x_ip = hash_cache_mash(hash_cache, pd.x, proof.taux, proof.mu, proof.t);
     LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::zero), false, "x_ip == 0");
 
@@ -794,8 +799,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     pd.w.resize(rounds);
     for (size_t i = 0; i < rounds; ++i)
     {
-      pd.w[i] = hash_cache_mash(hash_cache, proof.L[i], proof.R[i]);
-      LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::zero), false, "w[i] == 0");
+      pd.w[i] = k2s(hash_cache_mash(hash_cache, proof.L[i], proof.R[i]));
+      LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::szero), false, "w[i] == 0");
     }
 
     pd.inv_offset = inv_offset;
@@ -813,7 +818,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) * proofs.size() + 2 * maxMN);
   multiexp_data.resize(2 * maxMN);
 
-  const scalarV inverses = invert(kv2sv(to_invert));
+  const scalarV inverses = invert(to_invert);
 
   // setup weighted aggregates
   rct::key z1 = rct::zero;
@@ -851,7 +856,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     const rct::scalarV zpow = vector_powers(k2s(pd.z), M+3);
 
     rct::key k;
-    const rct::key ip1y = vector_power_sum(pd.y, MN);
+    const rct::scalar ip1y = vector_power_sum(pd.y, MN);
     sc_mulsub(k.bytes, zpow[2].bytes, ip1y.bytes, rct::zero.bytes);
     for (size_t j = 1; j <= M; ++j)
     {
@@ -892,7 +897,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     // precalc
     w_cache.resize(1<<rounds);
     w_cache[0] = winv[0];
-    w_cache[1] = k2s(pd.w[0]);
+    w_cache[1] = pd.w[0];
     for (size_t j = 1; j < rounds; ++j)
     {
       const size_t slots = 1<<(j+1);
@@ -937,7 +942,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       if (i == 0)
       {
         yinvpow = s2k(yinv);
-        ypow = pd.y;
+        ypow = s2k(pd.y);
       }
       else if (i != MN-1)
       {
