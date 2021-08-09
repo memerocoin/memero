@@ -49,7 +49,7 @@ namespace rct {
     Bulletproof proveRangeBulletproof
     (
      keyV& C
-     , keyV& masks
+     , scalarV& masks
      , const std::vector<uint64_t> amounts
      , const std::span<const key> sk)
     {
@@ -57,7 +57,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
-              masks[i] = s2k(hwdev.genCommitmentMask(sk[i]));
+              masks[i] = hwdev.genCommitmentMask(sk[i]);
         Bulletproof proof = bulletproof_MAKE(amounts, masks);
         LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
         C = proof.V;
@@ -253,15 +253,15 @@ namespace rct {
           kv.push_back(p.S);
           kv.push_back(p.T1);
           kv.push_back(p.T2);
-          kv.push_back(p.taux);
-          kv.push_back(p.mu);
+          kv.push_back(s2k(p.taux));
+          kv.push_back(s2k(p.mu));
           for (const auto &l: p.L)
             kv.push_back(l);
           for (const auto &r: p.R)
             kv.push_back(r);
-          kv.push_back(p.a);
-          kv.push_back(p.b);
-          kv.push_back(p.t);
+          kv.push_back(s2k(p.a));
+          kv.push_back(s2k(p.b));
+          kv.push_back(s2k(p.t));
         }
       }
       hashes.push_back(hash_keys(kv));
@@ -495,14 +495,15 @@ namespace rct {
         rv.p.bulletproofs.clear();
         {
             {
-                rct::keyV C, masks;
+                rct::keyV C;
+                rct::scalarV masks;
                 const std::span<const key> keys{&amount_keys[0], amount_keys.size()};
                 rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));
 
                 for (i = 0; i < outamounts.size(); ++i)
                 {
                     rv.outPk[i].mask = rct::scalarmult8(C[i]);
-                    outSk[i].mask = masks[i];
+                    outSk[i].mask = s2k(masks[i]);
                 }
             }
         }

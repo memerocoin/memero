@@ -147,15 +147,30 @@ namespace rct {
     {
       rct::keyV V;
       rct::key A, S, T1, T2;
-      rct::key taux, mu;
+      rct::scalar taux;
+      rct::scalar mu;
       rct::keyV L, R;
-      rct::key a, b, t;
+      rct::scalar a, b, t;
 
       Bulletproof():
         A({}), S({}), T1({}), T2({}), taux({}), mu({}), a({}), b({}), t({}) {}
-      Bulletproof(const rct::key &V, const rct::key &A, const rct::key &S, const rct::key &T1, const rct::key &T2, const rct::key &taux, const rct::key &mu, const rct::keyV &L, const rct::keyV &R, const rct::key &a, const rct::key &b, const rct::key &t):
+      Bulletproof
+      (
+       const rct::key &V
+       , const rct::key &A, const rct::key &S, const rct::key &T1, const rct::key &T2
+       , const rct::scalar &taux, const rct::scalar &mu
+       , const rct::keyV &L, const rct::keyV &R
+       , const rct::scalar &a, const rct::scalar &b, const rct::scalar &t
+       ):
         V({V}), A(A), S(S), T1(T1), T2(T2), taux(taux), mu(mu), L(L), R(R), a(a), b(b), t(t) {}
-      Bulletproof(const rct::keyV &V, const rct::key &A, const rct::key &S, const rct::key &T1, const rct::key &T2, const rct::key &taux, const rct::key &mu, const rct::keyV &L, const rct::keyV &R, const rct::key &a, const rct::key &b, const rct::key &t):
+
+      Bulletproof
+      (
+       const rct::keyV &V, const rct::key &A, const rct::key &S, const rct::key &T1, const rct::key &T2
+       , const rct::scalar &taux, const rct::scalar &mu
+       , const rct::keyV &L, const rct::keyV &R
+       , const rct::scalar &a, const rct::scalar &b, const rct::scalar &t
+       ):
         V(V), A(A), S(S), T1(T1), T2(T2), taux(taux), mu(mu), L(L), R(R), a(a), b(b), t(t) {}
 
       bool operator==(const Bulletproof &other) const { return V == other.V && A == other.A && S == other.S && T1 == other.T1 && T2 == other.T2 && taux == other.taux && mu == other.mu && L == other.L && R == other.R && a == other.a && b == other.b && t == other.t; }

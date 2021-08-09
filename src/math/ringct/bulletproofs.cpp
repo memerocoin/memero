@@ -76,7 +76,7 @@ std::mutex init_mutex;
 
 const auto multiexp = pippenger;
 
-inline bool is_reduced(const rct::key scalar)
+inline bool is_reduced(const rct::scalar scalar)
 {
   return sc_check(scalar.bytes) == 0;
 }
@@ -453,24 +453,24 @@ rct::key hash_cache_mash(rct::key& hash_cache, const rct::key mash0, const rct::
 }
 
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::key sv, const rct::key gamma)
+Bulletproof bulletproof_MAKE(const rct::scalar sv, const rct::scalar gamma)
 {
-  return bulletproof_MAKE(std::vector<rct::key>{sv}, rct::keyV{gamma});
+  return bulletproof_MAKE(std::vector<rct::scalar>{sv}, rct::scalarV{gamma});
 }
 
-Bulletproof bulletproof_MAKE(const uint64_t v, const rct::key gamma)
+Bulletproof bulletproof_MAKE(const uint64_t v, const rct::scalar gamma)
 {
-  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::keyV{gamma});
+  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::scalarV{gamma});
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::keyV sv, const rct::keyV gamma)
+Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
 {
   LOG_ERROR_AND_THROW_UNLESS(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
   LOG_ERROR_AND_THROW_UNLESS(!sv.empty(), "sv is empty");
-  for (const rct::key &sve: sv)
+  for (const auto& sve: sv)
     LOG_ERROR_AND_THROW_UNLESS(is_reduced(sve), "Invalid sv input");
-  for (const rct::key &g: gamma)
+  for (const auto& g: gamma)
     LOG_ERROR_AND_THROW_UNLESS(is_reduced(g), "Invalid gamma input");
 
   init_exponents();
@@ -699,20 +699,20 @@ try_again:
 
   return Bulletproof
     (
-     std::move(V), A, S, T1, T2, s2k(taux), s2k(mu), std::move(L), std::move(R)
-     , s2k(aprime[0]), s2k(bprime[0]), s2k(t)
+     std::move(V), A, S, T1, T2, taux, mu, std::move(L), std::move(R)
+     , aprime[0], bprime[0], t
      );
 }
 
-Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::keyV gamma)
+Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::scalarV gamma)
 {
   LOG_ERROR_AND_THROW_UNLESS(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
   // vG + gammaH
-  rct::keyV sv(v.size());
+  rct::scalarV sv(v.size());
   for (size_t i = 0; i < v.size(); ++i)
   {
-    sv[i] = rct::zero;
+    sv[i] = rct::szero;
     sv[i].bytes[0] = v[i] & 255;
     sv[i].bytes[1] = (v[i] >> 8) & 255;
     sv[i].bytes[2] = (v[i] >> 16) & 255;
@@ -785,7 +785,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     pd.x = hash_cache_mash(hash_cache, s2k(pd.z), proof.T1, proof.T2);
     LOG_ERROR_AND_RETURN_IF((pd.x == rct::zero), false, "x == 0");
 
-    pd.x_ip = hash_cache_mash(hash_cache, pd.x, proof.taux, proof.mu, proof.t);
+    pd.x_ip = hash_cache_mash(hash_cache, pd.x, s2k(proof.taux), s2k(proof.mu), s2k(proof.t));
     LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::zero), false, "x_ip == 0");
 
     size_t M;
@@ -911,8 +911,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     for (size_t i = 0; i < MN; ++i)
     {
-      rct::key g_scalar = proof.a;
-      rct::key h_scalar;
+      rct::scalar g_scalar = proof.a;
+      rct::scalar h_scalar;
       if (i == 0)
         h_scalar = proof.b;
       else
