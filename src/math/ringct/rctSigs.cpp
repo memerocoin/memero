@@ -463,7 +463,7 @@ namespace rct {
      , const ctkeyM mixRing
      , const keyV amount_keys
      , const std::vector<size_t> index
-     , ctkeyV& outSk
+     , pri_ctkeyV& outSk
      ) {
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
@@ -503,7 +503,7 @@ namespace rct {
                 for (i = 0; i < outamounts.size(); ++i)
                 {
                     rv.outPk[i].mask = rct::scalarmult8(C[i]);
-                    outSk[i].mask = s2k(masks[i]);
+                    outSk[i].blinding_factor = masks[i];
                 }
             }
         }
@@ -511,10 +511,10 @@ namespace rct {
         key sumout = zero;
         for (i = 0; i < outSk.size(); ++i)
         {
-            sc_add(sumout.bytes, outSk[i].mask.bytes, sumout.bytes);
+            sc_add(sumout.bytes, outSk[i].blinding_factor.bytes, sumout.bytes);
 
             //mask amount and mask
-            rv.ecdhInfo[i].mask = k2s(outSk[i].mask);
+            rv.ecdhInfo[i].mask = outSk[i].blinding_factor;
             rv.ecdhInfo[i].amount = int_to_scalar(outamounts[i]);
             hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i]);
         }
@@ -572,13 +572,14 @@ namespace rct {
         std::vector<size_t> index;
         index.resize(inPk.size());
         ctkeyM mixRing;
-        ctkeyV outSk;
+        pri_ctkeyV outSk;
         mixRing.resize(inPk.size());
         for (size_t i = 0; i < inPk.size(); ++i) {
           mixRing[i].resize(mixin+1);
           index[i] = populateRingsSimple(mixRing[i], inPk[i], mixin);
         }
-        return genRctSimple(message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
+        return genRctSimple
+          (message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
     }
 
     bool verRctSemanticsSimple(const std::span<const rctSig> rvv) {

@@ -104,7 +104,7 @@ namespace rct {
      , const ctkeyM mixRing
      , const keyV amount_keys
      , const std::vector<size_t> index
-     , ctkeyV& outSk
+     , pri_ctkeyV& outSk
      );
 
     bool verRctSemanticsSimple(const rctSig rv);
