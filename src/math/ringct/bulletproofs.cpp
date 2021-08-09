@@ -855,7 +855,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     const rct::scalarV zpow = vector_powers(pd.z, M+3);
 
-    rct::key k;
+    rct::scalar k;
     const rct::scalar ip1y = vector_power_sum(pd.y, MN);
     sc_mulsub(k.bytes, zpow[2].bytes, ip1y.bytes, rct::zero.bytes);
     for (size_t j = 1; j <= M; ++j)
@@ -874,7 +874,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     }
     sc_mul(tmp.bytes, pd.x.bytes, weight_y.bytes);
     multiexp_data.emplace_back(tmp, proof8_T1);
-    rct::key xsq;
+    rct::scalar xsq;
     sc_mul(xsq.bytes, pd.x.bytes, pd.x.bytes);
     sc_mul(tmp.bytes, xsq.bytes, weight_y.bytes);
     multiexp_data.emplace_back(tmp, proof8_T2);
