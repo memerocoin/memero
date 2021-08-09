@@ -67,14 +67,9 @@ namespace rct {
     //Various key generation functions
 
     //generates a random scalar which can be used as a secret key or mask
-    void skGen(scalar &sk) {
-      crypto::random32_unbiased(sk.bytes);
-    }
-
-    //generates a random scalar which can be used as a secret key or mask
     scalar skGen() {
         scalar sk;
-        skGen(sk);
+        crypto::random32_unbiased(sk.bytes);
         return sk;
     }
 
@@ -85,7 +80,7 @@ namespace rct {
         scalarV rv(rows);
         size_t i = 0;
         for (i = 0 ; i < rows ; i++) {
-            skGen(rv[i]);
+            rv[i] = skGen();
         }
         return rv;
     }
@@ -99,7 +94,7 @@ namespace rct {
 
     //generates a random secret and corresponding public key
     void skpkGen(scalar &sk, key &pk) {
-        skGen(sk);
+        sk = skGen();
         scalarmultBase(pk, sk);
     }
 

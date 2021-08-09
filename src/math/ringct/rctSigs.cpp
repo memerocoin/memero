@@ -508,6 +508,7 @@ namespace rct {
             }
         }
 
+        // TODO: scalar
         key sumout = zero;
         for (i = 0; i < outSk.size(); ++i)
         {
@@ -527,12 +528,11 @@ namespace rct {
         keyV &pseudoOuts = rv.p.pseudoOuts;
         pseudoOuts.resize(inamounts.size());
         rv.p.CLSAGs.resize(inamounts.size());
+        // TODO: scalar
         key sumpouts = zero; //sum pseudoOut masks
         scalarV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
-            scalar k;
-            skGen(k);
-            a[i] = k;
+            a[i] = skGen();
             sc_add(sumpouts.bytes, a[i].bytes, sumpouts.bytes);
             pseudoOuts[i] = genC(a[i], inamounts[i]);
         }

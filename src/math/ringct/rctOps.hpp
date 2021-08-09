@@ -64,7 +64,6 @@ namespace rct {
 
     //generates a random scalar which can be used as a secret key or mask
     scalar skGen();
-    void skGen(scalar &);
 
     //generates a vector of secret keys of size "int"
     scalarV skvGen(size_t rows );
