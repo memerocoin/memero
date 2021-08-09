@@ -314,17 +314,17 @@ namespace rct {
   }
 
   //sha3 for a 32 byte key
-  key hash_key(const key & in) {
+  key hash_key(const key in) {
     return hash2rct(crypto::sha3(epee::pod_to_span(in)));
   }
 
-  scalar hash_to_scalar(const key & in) {
+  scalar hash_to_scalar(const key in) {
     scalar hash = k2s(hash_key(in));
     sc_reduce32(hash.bytes);
     return hash;
   }
 
-  key hash_keys(const keyV &keys) {
+  key hash_keys(const keyS keys) {
     if (keys.empty()) {
       return rct::hash2rct(crypto::sha3({}));
     }
@@ -332,14 +332,14 @@ namespace rct {
     return hash2rct(h);
   }
 
-  scalar hash_keys_to_scalar(const keyV &keys) {
+  scalar hash_keys_to_scalar(const keyS keys) {
     scalar rv = k2s(hash_keys(keys));
     sc_reduce32(rv.bytes);
     return rv;
   }
 
   // Hash a key to p3 representation
-  void hash_to_p3(ge_p3 &hash8_p3, const key &k) {
+  void hash_to_p3(ge_p3 &hash8_p3, const key k) {
     key h = hash_key(k);
     ge_p2 hash_p2;
     ge_fromfe_frombytes_vartime(&hash_p2, h.bytes);
@@ -350,19 +350,19 @@ namespace rct {
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH
-  static key ecdhHash(const key &k)
+  static key ecdhHash(const key k)
   {
     char data[38];
     memcpy(data, "amount", 6);
     memcpy(data + 6, &k, sizeof(k));
     return hash2rct(crypto::sha3(epee::pod_to_span(data)));
   }
-  static void xor8(scalar &v, const key &k)
+  static void xor8(scalar v, const key k)
   {
     for (int i = 0; i < 8; ++i)
       v.bytes[i] ^= k.bytes[i];
   }
-  scalar genCommitmentMask(const key &sk)
+  scalar genCommitmentMask(const key sk)
   {
     char data[15 + sizeof(key)];
     memcpy(data, "commitment_mask", 15);

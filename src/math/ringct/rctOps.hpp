@@ -146,20 +146,22 @@ namespace rct {
      );
 
     //AB = A - B where A, B are curve points
-    key subKeys(const key A, const  key B);
+    key subKeys(const key A, const key B);
 
-    key hash_key(const key &in);
-    scalar hash_to_scalar(const key &in);
+    key hash_key(const key in);
+    scalar hash_to_scalar(const key in);
+
     //for mg sigs
-    key hash_keys(const keyV &keys);
-    scalar hash_keys_to_scalar(const keyV &keys);
+    key hash_keys(const keyS keys);
+    scalar hash_keys_to_scalar(const keyS keys);
     //for ANSL
 
-    void hash_to_p3(ge_p3 &hash8_p3, const key &k);
+    void hash_to_p3(ge_p3& hash8_p3, const key k);
 
     //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
     // where C= aG + bH
-    scalar genCommitmentMask(const key &sk);
+    scalar genCommitmentMask(const key sk);
+
     void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec);
     void ecdhDecode(ecdhTuple & masked, const key & sharedSec);
 }
