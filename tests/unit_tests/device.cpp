@@ -79,7 +79,7 @@ TEST(device, ops)
   pk1 = rct::rct2pk(rct::scalarmultBase((rct::scalar&)sk1));
 
   dev.scalarmultKey(resd, pk, sk);
-  rct::scalarmultKey(res, pk, sk);
+  res = rct::scalarmultKey(pk, sk);
   ASSERT_EQ(resd, res);
 
   dev.scalarmultBase(resd, sk);

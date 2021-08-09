@@ -162,17 +162,14 @@ namespace rct {
     }
 
     //does a * P where a is a scalar and P is an arbitrary point
-    void scalarmultKey(key & aP, const key &P, const scalar &a) {
+    key scalarmultKey(const key & P, const scalar & a) {
       scalar s = normalizeKey(a);
       LOG_WARNING_AND_THROW_UNLESS(!sodium_is_zero(s.bytes, 32), "scalar key is zero");
-      int r = crypto_scalarmult_ed25519_noclamp(aP.bytes, s.bytes, P.bytes);
-      LOG_WARNING_AND_THROW_UNLESS(r == 0, "scalar mult key not in subgroup");
-    }
 
-    //does a * P where a is a scalar and P is an arbitrary point
-    key scalarmultKey(const key & P, const scalar & a) {
       key k;
-      scalarmultKey(k, P, a);
+      int r = crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, P.bytes);
+      LOG_WARNING_AND_THROW_UNLESS(r == 0, "scalar mult key not in subgroup");
+
       return k;
     }
 

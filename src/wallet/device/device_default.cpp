@@ -218,7 +218,7 @@ namespace hw {
         }
 
         bool device_default::scalarmultKey(rct::key & aP, const rct::key &P, const rct::scalar &a) {
-            rct::scalarmultKey(aP, P,a);
+            aP = rct::scalarmultKey(P,a);
             return true;
         }
 
@@ -377,9 +377,9 @@ namespace hw {
          , rct::key &aH
          ) {
             std::tie(a, aG) = rct::skpkGen(); // aG = a*G
-            rct::scalarmultKey(aH,H, a); // aH = a*H
-            rct::scalarmultKey(I,H, p); // I = p*H
-            rct::scalarmultKey(D,H, z); // D = z*H
+            aH = rct::scalarmultKey(H, a); // aH = a*H
+            I = rct::scalarmultKey(H, p); // I = p*H
+            D = rct::scalarmultKey(H, z); // D = z*H
             return true;
         }
 
