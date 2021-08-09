@@ -111,8 +111,8 @@ namespace rct {
     }
 
     //generates C =aG + bH from b, a is given..
-    key genC(const key & a, amount_t amount) {
-        return addScalarMult_G_H(k2s(a), int_to_scalar(amount));
+    key genC(const scalar & a, amount_t amount) {
+        return addScalarMult_G_H(a, int_to_scalar(amount));
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
@@ -144,7 +144,7 @@ namespace rct {
         return addKeys(G, bH);
     }
 
-    key commit(amount_t amount, const key &mask) {
+    key commit(amount_t amount, const scalar &mask) {
         return genC(mask, amount);
     }
 

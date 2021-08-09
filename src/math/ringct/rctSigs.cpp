@@ -534,10 +534,10 @@ namespace rct {
             skGen(k);
             a[i] = s2k(k);
             sc_add(sumpouts.bytes, a[i].bytes, sumpouts.bytes);
-            pseudoOuts[i] = genC(a[i], inamounts[i]);
+            pseudoOuts[i] = genC(k2s(a[i]), inamounts[i]);
         }
         sc_sub(a[i].bytes, sumout.bytes, sumpouts.bytes);
-        pseudoOuts[i] = genC(a[i], inamounts[i]);
+        pseudoOuts[i] = genC(k2s(a[i]), inamounts[i]);
 
         key full_message = get_mlsag_pre_hash(rv);
         for (i = 0 ; i < inamounts.size(); i++)
