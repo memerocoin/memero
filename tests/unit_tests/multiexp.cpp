@@ -36,7 +36,7 @@
 #define TESTPOW2SCALAR []{ static const rct::scalar TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()
 #define TESTSMALLSCALAR []{ static const rct::scalar TESTSMALLSCALAR = {{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTSMALLSCALAR; }()
 #define TESTPOINT []{ \
-    static const rct::key TESTPOINT = rct::scalarmultBase(rct::s2k(rct::skGen())); \
+    static const rct::key TESTPOINT = rct::scalarmultBase(rct::skGen()); \
  return TESTPOINT;                                                   \
 }()
 
@@ -109,7 +109,7 @@ TEST(multiexp, pippenger_random)
   std::vector<rct::MultiexpData> data;
   for (int n = 0; n < 32; ++n)
   {
-    data.push_back({rct::skGen(), get_p3(rct::scalarmultBase(rct::s2k(rct::skGen())))});
+    data.push_back({rct::skGen(), get_p3(rct::scalarmultBase(rct::skGen()))});
     ASSERT_TRUE(basic(data) == pippenger(data));
   }
 }
@@ -121,7 +121,7 @@ TEST(multiexp, pippenger_cached)
   for (size_t n = 0; n < N; ++n)
   {
     P[n].scalar = rct::szero;
-    ASSERT_TRUE(ge_frombytes_vartime(&P[n].point, rct::scalarmultBase(rct::s2k(rct::skGen())).bytes) == 0);
+    ASSERT_TRUE(ge_frombytes_vartime(&P[n].point, rct::scalarmultBase(rct::skGen()).bytes) == 0);
   }
   for (size_t n = 0; n < N/16; ++n)
   {

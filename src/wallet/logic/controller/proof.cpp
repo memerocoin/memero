@@ -77,12 +77,12 @@ namespace proof {
       shared_secret.resize(num_sigs);
       sig.resize(num_sigs);
 
-      hwdev.scalarmultKey(aP, rct::pk2rct(address.m_view_public_key), rct::sk2rct(tx_key));
+      hwdev.scalarmultKey(aP, rct::pk2rct(address.m_view_public_key), rct::sk2scalar(tx_key));
       shared_secret[0] = rct::rct2pk(aP);
       crypto::public_key tx_pub_key;
       if (is_subaddress)
       {
-        hwdev.scalarmultKey(aP, rct::pk2rct(address.m_spend_public_key), rct::sk2rct(tx_key));
+        hwdev.scalarmultKey(aP, rct::pk2rct(address.m_spend_public_key), rct::sk2scalar(tx_key));
         tx_pub_key = rct2pk(aP);
         hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], tx_key, sig[0]);
       }
@@ -93,11 +93,11 @@ namespace proof {
       }
       for (size_t i = 1; i < num_sigs; ++i)
       {
-        hwdev.scalarmultKey(aP, rct::pk2rct(address.m_view_public_key), rct::sk2rct(additional_tx_keys[i - 1]));
+        hwdev.scalarmultKey(aP, rct::pk2rct(address.m_view_public_key), rct::sk2scalar(additional_tx_keys[i - 1]));
         shared_secret[i] = rct::rct2pk(aP);
         if (is_subaddress)
         {
-          hwdev.scalarmultKey(aP, rct::pk2rct(address.m_spend_public_key), rct::sk2rct(additional_tx_keys[i - 1]));
+          hwdev.scalarmultKey(aP, rct::pk2rct(address.m_spend_public_key), rct::sk2scalar(additional_tx_keys[i - 1]));
           tx_pub_key = rct2pk(aP);
           hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[i], additional_tx_keys[i - 1], sig[i]);
         }
@@ -120,7 +120,7 @@ namespace proof {
       sig.resize(num_sigs);
 
       const crypto::secret_key& a = view_secret_key.value();
-      hwdev.scalarmultKey(aP, rct::pk2rct(tx_pub_key), rct::sk2rct(a));
+      hwdev.scalarmultKey(aP, rct::pk2rct(tx_pub_key), rct::sk2scalar(a));
       shared_secret[0] =  rct2pk(aP);
       if (is_subaddress)
       {
@@ -132,7 +132,7 @@ namespace proof {
       }
       for (size_t i = 1; i < num_sigs; ++i)
       {
-        hwdev.scalarmultKey(aP,rct::pk2rct(additional_tx_pub_keys[i - 1]), rct::sk2rct(a));
+        hwdev.scalarmultKey(aP,rct::pk2rct(additional_tx_pub_keys[i - 1]), rct::sk2scalar(a));
         shared_secret[i] = rct2pk(aP);
         if (is_subaddress)
         {

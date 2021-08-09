@@ -184,7 +184,8 @@ namespace hw {
             crypto::public_key D = get_subaddress_spend_public_key(keys, index);
 
             // C = a*D
-            crypto::public_key C = rct::rct2pk(rct::scalarmultKey(rct::pk2rct(D), rct::sk2rct(keys.m_view_secret_key)));
+            crypto::public_key C = rct::rct2pk
+              (rct::scalarmultKey(rct::pk2rct(D), rct::sk2scalar(keys.m_view_secret_key)));
 
             // result: (C, D)
             cryptonote::account_public_address address;
@@ -216,12 +217,12 @@ namespace hw {
             return r && public_key == calculated_pub;
         }
 
-        bool device_default::scalarmultKey(rct::key & aP, const rct::key &P, const rct::key &a) {
+        bool device_default::scalarmultKey(rct::key & aP, const rct::key &P, const rct::scalar &a) {
             rct::scalarmultKey(aP, P,a);
             return true;
         }
 
-        bool device_default::scalarmultBase(rct::key &aG, const rct::key &a) {
+        bool device_default::scalarmultBase(rct::key &aG, const rct::scalar &a) {
             rct::scalarmultBase(aG,a);
             return true;
         }
@@ -309,9 +310,9 @@ namespace hw {
             {
                 additional_txkey.sec = additional_tx_keys[output_index];
                 if (dst_entr.is_subaddress)
-                    additional_txkey.pub = rct::rct2pk(rct::scalarmultKey(rct::pk2rct(dst_entr.addr.m_spend_public_key), rct::sk2rct(additional_txkey.sec)));
+                    additional_txkey.pub = rct::rct2pk(rct::scalarmultKey(rct::pk2rct(dst_entr.addr.m_spend_public_key), rct::sk2scalar(additional_txkey.sec)));
                 else
-                    additional_txkey.pub = rct::rct2pk(rct::scalarmultBase(rct::sk2rct(additional_txkey.sec)));
+                    additional_txkey.pub = rct::rct2pk(rct::scalarmultBase(rct::sk2scalar(additional_txkey.sec)));
             }
 
             bool r;
@@ -368,9 +369,9 @@ namespace hw {
           rct::scalar k;
             rct::skpkGen(k,aG); // aG = a*G
             a = rct::s2k(k);
-            rct::scalarmultKey(aH,H,a); // aH = a*H
-            rct::scalarmultKey(I,H,p); // I = p*H
-            rct::scalarmultKey(D,H,z); // D = z*H
+            rct::scalarmultKey(aH,H, rct::k2s(a)); // aH = a*H
+            rct::scalarmultKey(I,H, rct::k2s(p)); // I = p*H
+            rct::scalarmultKey(D,H, rct::k2s(z)); // D = z*H
             return true;
         }
 

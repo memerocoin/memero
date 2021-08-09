@@ -127,7 +127,7 @@ TEST(ringct, CLSAG)
 
   // bad C at creation
   backup = pubs[idx];
-  pubs[idx].mask = scalarmultBase(rct::s2k(skGen()));
+  pubs[idx].mask = scalarmultBase(skGen());
   try
   {
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk,s2k(t2),Cout,idx);
@@ -149,7 +149,7 @@ TEST(ringct, CLSAG)
 
   // bad P at creation
   backup = pubs[idx];
-  pubs[idx].dest = scalarmultBase(rct::s2k(skGen()));
+  pubs[idx].dest = scalarmultBase(skGen());
   try
   {
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk,s2k(t2),Cout,idx);
@@ -176,7 +176,7 @@ TEST(ringct, CLSAG)
   clsag.s.push_back(backup_key);
 
   // too many s elements
-  clsag.s.push_back(rct::s2k(skGen()));
+  clsag.s.push_back(s2k(skGen()));
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.s.pop_back();
 
@@ -197,13 +197,13 @@ TEST(ringct, CLSAG)
 
   // bad I in clsag at verification
   backup_key = clsag.I;
-  clsag.I = scalarmultBase(rct::s2k(skGen()));
+  clsag.I = scalarmultBase(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.I = backup_key;
 
   // bad D in clsag at verification
   backup_key = clsag.D;
-  clsag.D = scalarmultBase(rct::s2k(skGen()));
+  clsag.D = scalarmultBase(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.D = backup_key;
 
@@ -494,7 +494,7 @@ TEST(ringct, range_proofs_accept_very_long_simple)
 
 TEST(ringct, HPow2)
 {
-  key G = scalarmultBase(s2k(int_to_scalar(1)));
+  // key G = scalarmultBase(int_to_scalar(1));
 
   // in lolnero, hashPoint uses sha3, but H is hashPoint with keccak256, so we use that H
   key H = rct::H;
@@ -631,17 +631,10 @@ TEST(ringct, dummyCommit)
 {
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::key z = rct::dummyCommit(amount);
-  const rct::key a = rct::scalarmultBase(rct::identity);
-  const rct::key b = rct::scalarmultH(s2k(rct::int_to_scalar(amount)));
+  const rct::key a = rct::scalarmultBase(rct::sone);
+  const rct::key b = rct::scalarmultH(rct::int_to_scalar(amount));
   const rct::key manual = rct::addKeys(a, b);
   ASSERT_EQ(z, manual);
-}
-
-static rct::key uncachedZeroCommit(uint64_t amount)
-{
-  const rct::key am = s2k(rct::int_to_scalar(amount));
-  const rct::key bH = rct::scalarmultH(am);
-  return rct::addKeys(rct::G, bH);
 }
 
 TEST(ringct, H)
@@ -659,11 +652,11 @@ TEST(ringct, mul8)
   rct::scalarmult8(p3,rct::identity);
   ge_p3_tobytes(key.bytes, &p3);
   ASSERT_EQ(key, rct::identity);
-  ASSERT_EQ(rct::scalarmult8(rct::H), rct::scalarmultKey(rct::H, rct::EIGHT));
+  ASSERT_EQ(rct::scalarmult8(rct::H), rct::scalarmultKey(rct::H, rct::seight));
   rct::scalarmult8(p3,rct::H);
   ge_p3_tobytes(key.bytes, &p3);
-  ASSERT_EQ(key, rct::scalarmultKey(rct::H, rct::EIGHT));
-  ASSERT_EQ(rct::scalarmultKey(rct::scalarmultKey(rct::H, rct::INV_EIGHT), rct::EIGHT), rct::H);
+  ASSERT_EQ(key, rct::scalarmultKey(rct::H, rct::seight));
+  ASSERT_EQ(rct::scalarmultKey(rct::scalarmultKey(rct::H, rct::sinv_eight), rct::seight), rct::H);
 }
 
 TEST(ringct, aggregated)

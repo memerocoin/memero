@@ -125,7 +125,7 @@ namespace rct {
         precomp(D_precomp.k,D);
 
         // Offset key image
-        scalarmultKey(sig.D,D,INV_EIGHT);
+        scalarmultKey(sig.D,D, rct::sinv_eight);
 
         // Aggregation hashes
         keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
@@ -610,7 +610,7 @@ namespace rct {
             masks[i] = rv.outPk[i].mask;
           }
           key sumOutpks = addKeys(masks);
-          const key txnFeeKey = scalarmultH(s2k(int_to_scalar(rv.txnFee)));
+          const key txnFeeKey = scalarmultH(int_to_scalar(rv.txnFee));
           addKeys(sumOutpks, txnFeeKey, sumOutpks);
 
           key sumPseudoOuts = addKeys(pseudoOuts);

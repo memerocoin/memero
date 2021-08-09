@@ -525,15 +525,15 @@ try_again:
   rct::key ve = vector_exponent(aL8, aR8);
   rct::key A;
   sc_mul(tmp.bytes, alpha.bytes, INV_EIGHT.bytes);
-  rct::addKeys(A, ve, rct::scalarmultBase(s2k(tmp)));
+  rct::addKeys(A, ve, rct::scalarmultBase(tmp));
 
   // PAPER LINES 45-47
   rct::scalarV sL = rct::skvGen(MN), sR = rct::skvGen(MN);
   rct::scalar rho = rct::skGen();
   ve = vector_exponent(sL, sR);
   rct::key S;
-  rct::addKeys(S, ve, rct::scalarmultBase(s2k(rho)));
-  S = rct::scalarmultKey(S, INV_EIGHT);
+  rct::addKeys(S, ve, rct::scalarmultBase(rho));
+  S = rct::scalarmultKey(S, rct::sinv_eight);
 
   // PAPER LINES 48-50
   hash_cache_mash(hash_cache, A, S);

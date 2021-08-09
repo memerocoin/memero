@@ -93,20 +93,20 @@ namespace rct {
     //generates a random curve point (for testing)
     key pkGen() {
         scalar sk = skGen();
-        key pk = scalarmultBase(scalar2key(sk));
+        key pk = scalarmultBase(sk);
         return pk;
     }
 
     //generates a random secret and corresponding public key
     void skpkGen(scalar &sk, key &pk) {
         skGen(sk);
-        scalarmultBase(pk, scalar2key(sk));
+        scalarmultBase(pk, sk);
     }
 
     //generates a random secret and corresponding public key
     std::tuple<scalar, key> skpkGen() {
         scalar sk = skGen();
-        key pk = scalarmultBase(scalar2key(sk));
+        key pk = scalarmultBase(sk);
         return std::make_tuple(sk, pk);
     }
 
@@ -121,7 +121,7 @@ namespace rct {
         ctkey pk;
         skpkGen(sk.addr, pk.dest);
         skpkGen(sk.blinding_factor, pk.mask);
-        key am = s2k(int_to_scalar(amount));
+        scalar am = int_to_scalar(amount);
         key bH = scalarmultH(am);
         addKeys(pk.mask, pk.mask, bH);
         return std::make_tuple(sk, pk);
@@ -139,7 +139,7 @@ namespace rct {
     }
 
     key dummyCommit(amount_t amount) {
-        key am = s2k(int_to_scalar(amount));
+        scalar am = int_to_scalar(amount);
         key bH = scalarmultH(am);
         return addKeys(G, bH);
     }
@@ -155,38 +155,37 @@ namespace rct {
 
     //Scalar multiplications of curve points
 
-    key normalizeKey(const key& a) {
-      key k = identity;
-      k = a;
+    scalar normalizeKey(const scalar& a) {
+      scalar k = a;
       sc_reduce32(k.bytes);
       return k;
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
-    void scalarmultBase(key &aG,const key &a) {
-      key k = normalizeKey(a);
+    void scalarmultBase(key &aG,const scalar &a) {
+      scalar k = normalizeKey(a);
 
       // no need to check since a can be 0 in tests
       [[maybe_unused]] int _ = crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
-    key scalarmultBase(const key & a) {
+    key scalarmultBase(const scalar & a) {
       key aG;
       scalarmultBase(aG, a);
       return aG;
     }
 
     //does a * P where a is a scalar and P is an arbitrary point
-    void scalarmultKey(key & aP, const key &P, const key &a) {
-      key s = normalizeKey(a);
+    void scalarmultKey(key & aP, const key &P, const scalar &a) {
+      scalar s = normalizeKey(a);
       LOG_WARNING_AND_THROW_UNLESS(!sodium_is_zero(s.bytes, 32), "scalar key is zero");
       int r = crypto_scalarmult_ed25519_noclamp(aP.bytes, s.bytes, P.bytes);
       LOG_WARNING_AND_THROW_UNLESS(r == 0, "scalar mult key not in subgroup");
     }
 
     //does a * P where a is a scalar and P is an arbitrary point
-    key scalarmultKey(const key & P, const key & a) {
+    key scalarmultKey(const key & P, const scalar & a) {
       key k;
       scalarmultKey(k, P, a);
       return k;
@@ -194,8 +193,8 @@ namespace rct {
 
 
     //Computes aH where H= toPoint(sha3(G)), G the basepoint
-    key scalarmultH(const key & a) {
-      key s = normalizeKey(a);
+    key scalarmultH(const scalar & a) {
+      scalar s = normalizeKey(a);
       key k;
 
       // no need to check since a can be 0 in tests, and H is on main group
@@ -269,7 +268,7 @@ namespace rct {
     //addKeys2
     //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
     key addScalarMult_G_H(const scalar &a, const scalar &b) {
-      return addKeys(scalarmultBase(s2k(a)), scalarmultH(s2k(b)));
+      return addKeys(scalarmultBase(a), scalarmultH(b));
     }
 
     //Does some precomputation to make addKeys3 more efficient

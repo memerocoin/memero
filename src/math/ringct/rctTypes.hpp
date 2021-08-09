@@ -433,6 +433,7 @@ namespace rct {
     static auto k2s = key2scalar;
 
     static inline const rct::scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::scalar&)sk; }
+    static inline const crypto::secret_key &scalar2sk(const rct::scalar&k) { return (const crypto::secret_key&)k; }
 
   static inline scalarV kv2sv(const keyV& xs) {
     scalarV r;

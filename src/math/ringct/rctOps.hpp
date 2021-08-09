@@ -89,13 +89,13 @@ namespace rct {
     //Scalar multiplications of curve points
 
     //does a * G where a is a scalar and G is the curve basepoint
-    void scalarmultBase(key & aG, const key &a);
-    key scalarmultBase(const key & a);
+    void scalarmultBase(key & aG, const scalar &a);
+    key scalarmultBase(const scalar & a);
     //does a * P where a is a scalar and P is an arbitrary point
-    void scalarmultKey(key &aP, const key &P, const key &a);
-    key scalarmultKey(const key &P, const key &a);
+    void scalarmultKey(key &aP, const key &P, const scalar &a);
+    key scalarmultKey(const key &P, const scalar &a);
     //Computes aH where H= toPoint(sha3(G)), G the basepoint
-    key scalarmultH(const key & a);
+    key scalarmultH(const scalar & a);
     // multiplies a point by 8
     key scalarmult8(const key & P);
     void scalarmult8(ge_p3 &res, const key & P);

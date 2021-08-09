@@ -67,17 +67,16 @@ TEST(device, ops)
   hw::core::device_default dev;
   rct::key resd, res;
   crypto::key_derivation derd, der;
-  rct::scalar sk_;
+  rct::scalar sk;
   rct::key pk;
   crypto::secret_key sk0, sk1;
   crypto::public_key pk0, pk1;
   crypto::ec_scalar ressc0, ressc1;
   crypto::key_image ki0, ki1;
 
-  rct::skpkGen(sk_, pk);
-  rct::key sk = rct::s2k(sk_);
-  rct::scalarmultBase((rct::key&)pk0, (rct::key&)sk0);
-  rct::scalarmultBase((rct::key&)pk1, (rct::key&)sk1);
+  rct::skpkGen(sk ,pk);
+  rct::scalarmultBase((rct::key&)pk0, (rct::scalar&)sk0);
+  rct::scalarmultBase((rct::key&)pk1, (rct::scalar&)sk1);
 
   dev.scalarmultKey(resd, pk, sk);
   rct::scalarmultKey(res, pk, sk);
@@ -99,16 +98,16 @@ TEST(device, ops)
   crypto::derivation_to_scalar(der, 0, ressc1);
   ASSERT_FALSE(memcmp(&ressc0, &ressc1, sizeof(ressc1)));
 
-  dev.derive_secret_key(der, 0, rct::rct2sk(sk), sk0);
-  crypto::derive_secret_key(der, 0, rct::rct2sk(sk), sk1);
+  dev.derive_secret_key(der, 0, rct::scalar2sk(sk), sk0);
+  crypto::derive_secret_key(der, 0, rct::scalar2sk(sk), sk1);
   ASSERT_EQ(sk0, sk1);
 
   dev.derive_public_key(der, 0, rct::rct2pk(pk), pk0);
   crypto::derive_public_key(der, 0, rct::rct2pk(pk), pk1);
   ASSERT_EQ(pk0, pk1);
 
-  dev.secret_key_to_public_key(rct::rct2sk(sk), pk0);
-  crypto::secret_key_to_public_key(rct::rct2sk(sk), pk1);
+  dev.secret_key_to_public_key(rct::scalar2sk(sk), pk0);
+  crypto::secret_key_to_public_key(rct::scalar2sk(sk), pk1);
   ASSERT_EQ(pk0, pk1);
 
   dev.generate_key_image(pk0, sk0, ki0);
@@ -120,7 +119,7 @@ TEST(device, ops)
 // ecdhEncode uses ecdhHash, which we replaced with sha3, so these will fail
 /*
 TEST(device, ecdh32)
-{
+
   hw::core::device_default dev;
   rct::ecdhTuple tuple, tuple2;
   rct::key key = rct::skGen();
