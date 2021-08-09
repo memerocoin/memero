@@ -414,7 +414,7 @@ scalarS slice(const scalarS a, size_t start, size_t stop)
 
 rct::scalar hash_carry_mash(rct::scalar & hash_carry, const rct::key mash0, const rct::key mash1)
 {
-  rct::keyV data = {
+  std::array<key, 3> data {
     s2k(hash_carry)
    , mash0
    , mash1
@@ -425,7 +425,7 @@ rct::scalar hash_carry_mash(rct::scalar & hash_carry, const rct::key mash0, cons
 
 rct::scalar hash_carry_mash(rct::scalar& hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2)
 {
-  rct::keyV data = {
+  std::array<key, 4> data {
     s2k(hash_carry)
     , mash0
     , mash1
@@ -437,7 +437,7 @@ rct::scalar hash_carry_mash(rct::scalar& hash_carry, const rct::key mash0, const
 
 rct::scalar hash_carry_mash(rct::scalar& hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2, const rct::key mash3)
 {
-  rct::keyV data = {
+  std::array<key, 5> data {
     s2k(hash_carry)
     , mash0
     , mash1

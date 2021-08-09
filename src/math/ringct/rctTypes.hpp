@@ -427,15 +427,15 @@ namespace rct {
 
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in);
-    static inline const rct::key &scalar2key(const scalar &x) { return (const rct::key&)x; }
-    static inline const rct::scalar &key2scalar(const key &x) { return (const rct::scalar&)x; }
-    static auto s2k = scalar2key;
-    static auto k2s = key2scalar;
+    inline const rct::key &scalar2key(const scalar &x) { return (const rct::key&)x; }
+    inline const rct::scalar &key2scalar(const key &x) { return (const rct::scalar&)x; }
+    inline auto s2k = scalar2key;
+    inline auto k2s = key2scalar;
 
-    static inline const rct::scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::scalar&)sk; }
-    static inline const crypto::secret_key &scalar2sk(const rct::scalar&k) { return (const crypto::secret_key&)k; }
+    inline const rct::scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::scalar&)sk; }
+    inline const crypto::secret_key &scalar2sk(const rct::scalar&k) { return (const crypto::secret_key&)k; }
 
-  static inline scalarV kv2sv(const keyV& xs) {
+  inline scalarV kv2sv(const keyV& xs) {
     scalarV r;
     for (const auto& x: xs) {
       r.emplace_back(k2s(x));
@@ -443,7 +443,7 @@ namespace rct {
     return r;
   }
 
-  static inline keyV sv2kv(const scalarV& xs) {
+  inline keyV sv2kv(const scalarV& xs) {
     keyV r;
     for (const auto& x: xs) {
       r.emplace_back(s2k(x));
@@ -451,24 +451,24 @@ namespace rct {
     return r;
   }
 
-    static inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
-    static inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }
-    static inline const rct::key &ki2rct(const crypto::key_image &ki) { return (const rct::key&)ki; }
-    static inline const rct::key &hash2rct(const crypto::hash &h) { return (const rct::key&)h; }
-    static inline const crypto::public_key &rct2pk(const rct::key &k) { return (const crypto::public_key&)k; }
-    static inline const crypto::secret_key &rct2sk(const rct::key &k) { return (const crypto::secret_key&)k; }
-    static inline const crypto::key_image &rct2ki(const rct::key &k) { return (const crypto::key_image&)k; }
-    static inline const crypto::hash &rct2hash(const rct::key &k) { return (const crypto::hash&)k; }
-    static inline bool operator==(const rct::key &k0, const crypto::public_key &k1) { return !crypto_verify_32(k0.bytes, (const unsigned char*)&k1); }
-    static inline bool operator!=(const rct::key &k0, const crypto::public_key &k1) { return crypto_verify_32(k0.bytes, (const unsigned char*)&k1); }
+    inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
+    inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }
+    inline const rct::key &ki2rct(const crypto::key_image &ki) { return (const rct::key&)ki; }
+    inline const rct::key &hash2rct(const crypto::hash &h) { return (const rct::key&)h; }
+    inline const crypto::public_key &rct2pk(const rct::key &k) { return (const crypto::public_key&)k; }
+    inline const crypto::secret_key &rct2sk(const rct::key &k) { return (const crypto::secret_key&)k; }
+    inline const crypto::key_image &rct2ki(const rct::key &k) { return (const crypto::key_image&)k; }
+    inline const crypto::hash &rct2hash(const rct::key &k) { return (const crypto::hash&)k; }
+    inline bool operator==(const rct::key &k0, const crypto::public_key &k1) { return !crypto_verify_32(k0.bytes, (const unsigned char*)&k1); }
+    inline bool operator!=(const rct::key &k0, const crypto::public_key &k1) { return crypto_verify_32(k0.bytes, (const unsigned char*)&k1); }
 }
 
 
 namespace cryptonote {
-    static inline bool operator==(const crypto::public_key &k0, const rct::key &k1) { return !crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
-    static inline bool operator!=(const crypto::public_key &k0, const rct::key &k1) { return crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
-    static inline bool operator==(const crypto::secret_key &k0, const rct::key &k1) { return !crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
-    static inline bool operator!=(const crypto::secret_key &k0, const rct::key &k1) { return crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
+    inline bool operator==(const crypto::public_key &k0, const rct::key &k1) { return !crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
+    inline bool operator!=(const crypto::public_key &k0, const rct::key &k1) { return crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
+    inline bool operator==(const crypto::secret_key &k0, const rct::key &k1) { return !crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
+    inline bool operator!=(const crypto::secret_key &k0, const rct::key &k1) { return crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
 }
 
 namespace rct {
