@@ -37,8 +37,9 @@
 #include "tools/common/threadpool.h"
 #include "tools/epee/include/logging.hpp"
 
-
 #include "config/cryptonote.hpp"
+
+#include <execution>
 
 using namespace std;
 
@@ -700,34 +701,48 @@ namespace rct {
            , "Mismatched sizes of rv.p.pseudoOuts and mixRing"
            );
 
-        const size_t threads = std::max(rv.outPk.size(), rv.mixRing.size());
-
-        std::deque<bool> results(threads);
-        tools::threadpool& tpool = tools::threadpool::getInstance();
-        tools::threadpool::waiter waiter(tpool);
 
         const keyV &pseudoOuts = rv.p.pseudoOuts;
 
         const key message = get_mlsag_pre_hash(rv);
 
-        results.clear();
-        results.resize(rv.mixRing.size());
-        for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
-          tpool.submit(&waiter, [&, i] {
-            results[i] = verRctCLSAGSimple(message, rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i]);
-          });
-        }
-        if (!waiter.wait())
-          return false;
+        struct clsagVerifyInput
+        {
+          clsag _clsag;
+          ctkeyS _ctkeyS;
+          key _key;
+        };
 
-        for (size_t i = 0; i < results.size(); ++i) {
-          if (!results[i]) {
-            LOG_PRINT_L1("verRctCLSAGSimple failed for input " << i);
-            return false;
-          }
+        if (rv.mixRing.empty()) return false;
+
+        const size_t clsagInputSize = rv.mixRing.size();
+        std::vector<clsagVerifyInput> clsagInputs;
+        clsagInputs.reserve(clsagInputSize);
+
+        for (size_t i = 0 ; i < clsagInputSize; i++) {
+          clsagInputs.emplace_back
+            (
+             clsagVerifyInput
+             {
+              rv.p.CLSAGs[i]
+              , rv.mixRing[i]
+              , pseudoOuts[i]
+              }
+             );
         }
 
-        return true;
+        return std::transform_reduce
+          (
+           std::execution::seq
+           , clsagInputs.begin()
+           , clsagInputs.end()
+           , true
+           , std::logical_and<bool>()
+           , [message](const clsagVerifyInput x)
+           {
+             return verRctCLSAGSimple(message, x._clsag, x._ctkeyS, x._key);
+           }
+           );
     }
 
     bool verRctNonSemanticsSimple(const rctSig rv) {
