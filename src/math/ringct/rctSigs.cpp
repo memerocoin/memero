@@ -89,9 +89,9 @@ namespace rct {
     (
      const key message
      , const keyV P
-     , const key p
+     , const scalar p
      , const keyV C
-     , const key z
+     , const scalar z
      , const keyV C_nonzero
      , const key C_offset
      , const unsigned int l
@@ -116,7 +116,7 @@ namespace rct {
         key aH;
 
         {
-          hwdev.clsag_prepare(k2s(p),k2s(z),sig.I,D,H,a,aG,aH);
+          hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
         }
 
         geDsmp I_precomp;
@@ -148,9 +148,9 @@ namespace rct {
         mu_C_to_hash[2*n+1] = sig.I;
         mu_C_to_hash[2*n+2] = sig.D;
         mu_C_to_hash[2*n+3] = C_offset;
-        key mu_P, mu_C;
-        mu_P = hash_keys_to_scalar(mu_P_to_hash);
-        mu_C = hash_keys_to_scalar(mu_C_to_hash);
+        scalar mu_P, mu_C;
+        mu_P = k2s(hash_keys_to_scalar(mu_P_to_hash));
+        mu_C = k2s(hash_keys_to_scalar(mu_C_to_hash));
 
         // Initial commitment
         keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
@@ -217,7 +217,7 @@ namespace rct {
         }
 
         // Compute final scalar
-        hwdev.clsag_sign(c,a,k2s(p),k2s(z),k2s(mu_P),k2s(mu_C),sig.s[l]);
+        hwdev.clsag_sign(c,a,p,z,mu_P,mu_C,sig.s[l]);
         memwipe(&a, sizeof(key));
 
         return sig;
@@ -284,7 +284,7 @@ namespace rct {
         size_t cols = pubs.size();
         LOG_ERROR_AND_THROW_UNLESS(cols >= 1, "Empty pubs");
         keyV tmp(rows + 1);
-        keyV sk(rows + 1);
+        scalarV sk(rows + 1);
         keyM M(cols, tmp);
 
         keyV P, C, C_nonzero;
@@ -300,7 +300,7 @@ namespace rct {
             C.push_back(tmp);
         }
 
-        sk[0] = s2k(inSk.addr);
+        sk[0] = inSk.addr;
         sc_sub(sk[1].bytes, inSk.blinding_factor.bytes, a.bytes);
         clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
         memwipe(sk.data(), sk.size() * sizeof(key));

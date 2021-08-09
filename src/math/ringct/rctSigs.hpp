@@ -38,9 +38,9 @@ namespace rct {
     (
      const key message
      , const keyV P
-     , const key p
+     , const scalar p
      , const keyV C
-     , const key z
+     , const scalar z
      , const keyV C_nonzero
      , const key C_offset
      , const unsigned int l
@@ -50,9 +50,9 @@ namespace rct {
     (
      const key message
      , const keyV P
-     , const key p
+     , const scalar p
      , const keyV C
-     , const key z
+     , const scalar z
      , const keyV C_nonzero
      , const key C_offset
      , const unsigned int l
