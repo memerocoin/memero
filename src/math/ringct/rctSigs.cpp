@@ -296,7 +296,7 @@ namespace rct {
             P.push_back(k.dest);
             C_nonzero.push_back(k.mask);
             rct::key tmp;
-            subKeys(tmp, k.mask, Cout);
+            tmp = subKeys(k.mask, Cout);
             C.push_back(tmp);
         }
 

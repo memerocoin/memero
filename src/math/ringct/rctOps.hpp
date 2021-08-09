@@ -146,7 +146,7 @@ namespace rct {
      );
 
     //AB = A - B where A, B are curve points
-    void subKeys(key &AB, const key &A, const  key &B);
+    key subKeys(const key A, const  key B);
 
     key hash_key(const key &in);
     scalar hash_to_scalar(const key &in);

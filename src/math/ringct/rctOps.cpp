@@ -306,9 +306,11 @@ namespace rct {
 
   //subtract Keys (subtracts curve points)
   //AB = A - B where A, B are curve points
-  void subKeys(key & AB, const key &A, const key &B) {
+  key subKeys(const key A, const key B) {
+    key AB;
     int r = crypto_core_ed25519_sub(AB.bytes, A.bytes, B.bytes);
     LOG_WARNING_AND_THROW_UNLESS(r == 0, "sub keys not in main group");
+    return AB;
   }
 
   //sha3 for a 32 byte key
