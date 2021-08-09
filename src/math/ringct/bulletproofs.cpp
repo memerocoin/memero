@@ -523,16 +523,14 @@ try_again:
   // PAPER LINES 43-44
   rct::scalar alpha = rct::skGen();
   rct::key ve = vector_exponent(aL8, aR8);
-  rct::key A;
   sc_mul(tmp.bytes, alpha.bytes, rct::s_inv_eight.bytes);
-  rct::addKeys(A, ve, rct::scalarmultBase(tmp));
+  const key A = rct::addKeys(ve, rct::scalarmultBase(tmp));
 
   // PAPER LINES 45-47
   rct::scalarV sL = rct::skvGen(MN), sR = rct::skvGen(MN);
   rct::scalar rho = rct::skGen();
   ve = vector_exponent(sL, sR);
-  rct::key S;
-  rct::addKeys(S, ve, rct::scalarmultBase(rho));
+  rct::key S = rct::addKeys(ve, rct::scalarmultBase(rho));
   S = rct::scalarmultKey(S, rct::s_inv_eight);
 
   // PAPER LINES 48-50

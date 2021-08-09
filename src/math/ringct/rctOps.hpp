@@ -108,18 +108,20 @@ namespace rct {
     ge_p3 multPoint8raw(const key P);
 
     // checks a is in the main subgroup (ie, not a small one)
-    bool isInMainSubgroup(const key & a);
+    bool isInMainSubgroup(const key a);
 
-    key ge_p3_tokey(const ge_p3& x);
+    key ge_p3_tokey(const ge_p3 x);
 
     //Curve addition / subtractions
 
     //for curve points: AB = A + B
-    void addKeys(key &AB, const key &A, const key &B);
-    rct::key addKeys(const key &A, const key &B);
-    rct::key addKeys(const keyV &A);
+    rct::key addKeys(const key A, const key B);
+
+    rct::key addKeys(const keyS A);
+
     //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
     key addScalarMult_G_H(const scalar &a, const scalar &b);
+
     //Does some precomputation to make addKeys3 more efficient
     // input B a curve point and output a ge_dsmp which has precomputation applied
     void precomp(ge_dsmp rv, const key &B);

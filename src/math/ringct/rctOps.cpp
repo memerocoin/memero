@@ -40,6 +40,8 @@
 
 #include <sodium.h>
 
+#include <numeric>
+
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -109,9 +111,9 @@ namespace rct {
         std::tie(sk.addr, pk.dest) = skpkGen();
         std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 
-        scalar am = int_to_scalar(amount);
-        key bH = scalarmultH(am);
-        addKeys(pk.mask, pk.mask, bH);
+        const scalar am = int_to_scalar(amount);
+        const key bH = scalarmultH(am);
+        pk.mask = addKeys(pk.mask, bH);
         return std::make_pair(sk, pk);
     }
 
@@ -123,7 +125,7 @@ namespace rct {
         std::tie(sk.addr, pk.dest) = skpkGen();
         std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 
-        addKeys(pk.mask, pk.mask, bH);
+        pk.mask = addKeys(pk.mask, bH);
         return std::make_pair(sk, pk);
     }
 
@@ -214,11 +216,11 @@ namespace rct {
     }
 
     //Computes lA where l is the curve order
-    bool isInMainSubgroup(const key & A) {
+    bool isInMainSubgroup(const key A) {
         return 1 == crypto_core_ed25519_is_valid_point(A.bytes);
     }
 
-    key ge_p3_tokey(const ge_p3 & x) {
+    key ge_p3_tokey(const ge_p3 x) {
       key k;
       ge_p3_tobytes(k.bytes, &x);
       return k;
@@ -227,26 +229,22 @@ namespace rct {
     //Curve addition / subtractions
 
     //for curve points: AB = A + B
-    void addKeys(key &AB, const key &A, const key &B) {
-      int r = crypto_core_ed25519_add(AB.bytes, A.bytes, B.bytes);
-      LOG_WARNING_AND_THROW_UNLESS(r == 0, "add keys not in main group");
-    }
-
-    rct::key addKeys(const key &A, const key &B) {
+    rct::key addKeys(const key A, const key B) {
       key k;
-      addKeys(k, A, B);
+      int r = crypto_core_ed25519_add(k.bytes, A.bytes, B.bytes);
+      LOG_WARNING_AND_THROW_UNLESS(r == 0, "add keys not in main group");
+
       return k;
     }
 
-    rct::key addKeys(const keyV &A) {
-      if (A.empty())
-        return rct::identity;
-      key k = identity;
-      for (const key& x: A)
-      {
-        k = addKeys(k, x);
-      }
-      return k;
+    rct::key addKeys(const keyS A) {
+      return std::accumulate
+        (
+         A.begin()
+         , A.end()
+         , rct::identity
+         , [](const auto x, const auto y) { return addKeys(x, y); }
+         );
     }
 
     //addKeys2

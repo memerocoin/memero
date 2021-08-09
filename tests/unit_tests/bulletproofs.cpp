@@ -136,38 +136,38 @@ TEST(bulletproofs, invalid_torsion)
     for (auto &k: proof.V)
     {
       const rct::key org_k = k;
-      rct::addKeys(k, org_k, x);
+      k = rct::addKeys(org_k, x);
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     for (auto &k: proof.L)
     {
       const rct::key org_k = k;
-      rct::addKeys(k, org_k, x);
+      k = rct::addKeys(org_k, x);
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     for (auto &k: proof.R)
     {
       const rct::key org_k = k;
-      rct::addKeys(k, org_k, x);
+      k = rct::addKeys(org_k, x);
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     const rct::key org_A = proof.A;
-    rct::addKeys(proof.A, org_A, x);
+    proof.A = rct::addKeys(org_A, x);
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.A = org_A;
     const rct::key org_S = proof.S;
-    rct::addKeys(proof.S, org_S, x);
+    proof.S = rct::addKeys(org_S, x);
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.S = org_S;
     const rct::key org_T1 = proof.T1;
-    rct::addKeys(proof.T1, org_T1, x);
+    proof.T1 = rct::addKeys(org_T1, x);
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.T1 = org_T1;
     const rct::key org_T2 = proof.T2;
-    rct::addKeys(proof.T2, org_T2, x);
+    proof.T2 = rct::addKeys(org_T2, x);
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.T2 = org_T2;
   }
