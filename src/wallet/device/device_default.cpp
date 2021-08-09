@@ -365,25 +365,45 @@ namespace hw {
             return true;
         }
 
-        bool device_default::clsag_prepare(const rct::key &p, const rct::key &z, rct::key &I, rct::key &D, const rct::key &H, rct::key &a, rct::key &aG, rct::key &aH) {
+        bool device_default::clsag_prepare
+        (
+         const rct::scalar &p
+         , const rct::scalar &z
+         , rct::key &I
+         , rct::key &D
+         , const rct::key &H
+         , rct::scalar &a
+         , rct::key &aG
+         , rct::key &aH
+         ) {
           rct::scalar k;
             rct::skpkGen(k,aG); // aG = a*G
-            a = rct::s2k(k);
-            rct::scalarmultKey(aH,H, rct::k2s(a)); // aH = a*H
-            rct::scalarmultKey(I,H, rct::k2s(p)); // I = p*H
-            rct::scalarmultKey(D,H, rct::k2s(z)); // D = z*H
+            a = k;
+            rct::scalarmultKey(aH,H, a); // aH = a*H
+            rct::scalarmultKey(I,H, p); // I = p*H
+            rct::scalarmultKey(D,H, z); // D = z*H
             return true;
         }
 
-        bool device_default::clsag_hash(const rct::keyV &data, rct::key &hash) {
-            hash = rct::hash_keys_to_scalar(data);
+        bool device_default::clsag_hash(const rct::keyV &data, rct::scalar &hash) {
+            hash = rct::k2s(rct::hash_keys_to_scalar(data));
             return true;
         }
 
-        bool device_default::clsag_sign(const rct::key &c, const rct::key &a, const rct::key &p, const rct::key &z, const rct::key &mu_P, const rct::key &mu_C, rct::key &s) {
-            rct::key s0_p_mu_P;
+        bool device_default::clsag_sign
+        (
+          const rct::scalar &c
+            , const rct::scalar &a
+            , const rct::scalar &p
+            , const rct::scalar &z
+            , const rct::scalar &mu_P
+            , const rct::scalar &mu_C
+            , rct::scalar &s
+         )
+        {
+            rct::scalar s0_p_mu_P;
             sc_mul(s0_p_mu_P.bytes,mu_P.bytes,p.bytes);
-            rct::key s0_add_z_mu_C;
+            rct::scalar s0_add_z_mu_C;
             sc_muladd(s0_add_z_mu_C.bytes,mu_C.bytes,z.bytes,s0_p_mu_P.bytes);
             sc_mulsub(s.bytes,c.bytes,s0_add_z_mu_C.bytes,a.bytes);
 

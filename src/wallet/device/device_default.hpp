@@ -137,9 +137,29 @@ namespace hw {
 
             bool  mlsag_pre_hash(const std::string &blob, size_t inputs_size, size_t outputs_size, const rct::keyV &hashes, const rct::ctkeyV &outPk, rct::key &prehash) override;
 
-            bool clsag_prepare(const rct::key &p, const rct::key &z, rct::key &I, rct::key &D, const rct::key &H, rct::key &a, rct::key &aG, rct::key &aH) override;
-            bool clsag_hash(const rct::keyV &data, rct::key &hash) override;
-            bool clsag_sign(const rct::key &c, const rct::key &a, const rct::key &p, const rct::key &z, const rct::key &mu_P, const rct::key &mu_C, rct::key &s) override;
+            bool clsag_prepare
+            (
+             const rct::scalar &p
+             , const rct::scalar &z
+             , rct::key &I
+             , rct::key &D
+             , const rct::key &H
+             , rct::scalar &a
+             , rct::key &aG
+             , rct::key &aH
+             ) override;
+
+            bool clsag_hash(const rct::keyV &data, rct::scalar &hash) override;
+            bool clsag_sign
+            (
+             const rct::scalar &c
+             , const rct::scalar &a
+             , const rct::scalar &p
+             , const rct::scalar &z
+             , const rct::scalar &mu_P
+             , const rct::scalar &mu_C
+             , rct::scalar &s
+             ) override;
 
             bool  close_tx(void) override;
         };

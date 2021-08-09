@@ -129,8 +129,8 @@ namespace rct {
 
     // CLSAG signature
     struct clsag {
-        keyV s; // scalars
-        key c1;
+        scalarV s; // scalars
+        scalar c1;
 
         key I; // signing key image
         key D; // commitment key image

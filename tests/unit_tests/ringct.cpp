@@ -169,14 +169,14 @@ TEST(ringct, CLSAG)
   clsag.s = sbackup;
 
   // too few s elements
-  key backup_key;
+  scalar backup_key;
   backup_key = clsag.s.back();
   clsag.s.pop_back();
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.s.push_back(backup_key);
 
   // too many s elements
-  clsag.s.push_back(s2k(skGen()));
+  clsag.s.push_back(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.s.pop_back();
 
@@ -184,36 +184,36 @@ TEST(ringct, CLSAG)
   for (auto &s: clsag.s)
   {
     backup_key = s;
-    s = s2k(skGen());
+    s = skGen();
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
     s = backup_key;
   }
 
   // bad c1 in clsag at verification
   backup_key = clsag.c1;
-  clsag.c1 = s2k(skGen());
+  clsag.c1 = skGen();
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.c1 = backup_key;
 
   // bad I in clsag at verification
-  backup_key = clsag.I;
+  backup_key = k2s(clsag.I);
   clsag.I = scalarmultBase(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.I = backup_key;
+  clsag.I = s2k(backup_key);
 
   // bad D in clsag at verification
-  backup_key = clsag.D;
+  backup_key = k2s(clsag.D);
   clsag.D = scalarmultBase(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.D = backup_key;
+  clsag.D = s2k(backup_key);
 
   // D not in main subgroup in clsag at verification
-  backup_key = clsag.D;
+  backup_key = k2s(clsag.D);
   rct::key x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
   clsag.D = rct::addKeys(clsag.D, x);
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.D = backup_key;
+  clsag.D = s2k(backup_key);
 
   // swapped I and D in clsag at verification
   std::swap(clsag.I, clsag.D);

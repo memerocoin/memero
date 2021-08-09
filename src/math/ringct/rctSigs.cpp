@@ -111,12 +111,12 @@ namespace rct {
         key D;
 
         // Initial values
-        key a;
+        scalar a;
         key aG;
         key aH;
 
         {
-            hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
+          hwdev.clsag_prepare(k2s(p),k2s(z),sig.I,D,H,a,aG,aH);
         }
 
         geDsmp I_precomp;
@@ -154,7 +154,7 @@ namespace rct {
 
         // Initial commitment
         keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
-        key c;
+        scalar c;
         sc_0(c_to_hash[0].bytes);
         memcpy(c_to_hash[0].bytes,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
         for (size_t i = 1; i < n+1; ++i)
@@ -177,19 +177,19 @@ namespace rct {
             sig.c1 = c;
 
         // Decoy indices
-        sig.s = keyV(n);
-        key c_new;
+        sig.s = scalarV(n);
+        scalar c_new;
         key L;
         key R;
-        key c_p; // = c[i]*mu_P
-        key c_c; // = c[i]*mu_C
+        scalar c_p; // = c[i]*mu_P
+        scalar c_c; // = c[i]*mu_C
         geDsmp P_precomp;
         geDsmp C_precomp;
         geDsmp H_precomp;
         ge_p3 Hi_p3;
 
         while (i != l) {
-            sig.s[i] = s2k(skGen());
+            sig.s[i] = skGen();
             sc_0(c_new.bytes);
             sc_mul(c_p.bytes,mu_P.bytes,c.bytes);
             sc_mul(c_c.bytes,mu_C.bytes,c.bytes);
@@ -217,7 +217,7 @@ namespace rct {
         }
 
         // Compute final scalar
-        hwdev.clsag_sign(c,a,p,z,mu_P,mu_C,sig.s[l]);
+        hwdev.clsag_sign(c,a,k2s(p),k2s(z),k2s(mu_P),k2s(mu_C),sig.s[l]);
         memwipe(&a, sizeof(key));
 
         return sig;
@@ -328,7 +328,7 @@ namespace rct {
             ge_p3_to_cached(&C_offset_cached, &C_offset_p3);
 
             // Prepare key images
-            key c = sig.c1;
+            scalar c = sig.c1;
             key D_8 = scalarmult8(sig.D);
             LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary key image!");
             geDsmp I_precomp;
@@ -357,9 +357,9 @@ namespace rct {
             mu_C_to_hash[2*n+1] = sig.I;
             mu_C_to_hash[2*n+2] = sig.D;
             mu_C_to_hash[2*n+3] = C_offset;
-            key mu_P, mu_C;
-            mu_P = hash_keys_to_scalar(mu_P_to_hash);
-            mu_C = hash_keys_to_scalar(mu_C_to_hash);
+            scalar mu_P, mu_C;
+            mu_P = k2s(hash_keys_to_scalar(mu_P_to_hash));
+            mu_C = k2s(hash_keys_to_scalar(mu_C_to_hash));
 
             // Set up round hash
             keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
@@ -372,9 +372,9 @@ namespace rct {
             }
             c_to_hash[2*n+1] = C_offset;
             c_to_hash[2*n+2] = message;
-            key c_p; // = c[i]*mu_P
-            key c_c; // = c[i]*mu_C
-            key c_new;
+            scalar c_p; // = c[i]*mu_P
+            scalar c_c; // = c[i]*mu_C
+            scalar c_new;
             key L;
             key R;
             geDsmp P_precomp;
@@ -408,8 +408,8 @@ namespace rct {
 
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;
-                c_new = hash_keys_to_scalar(c_to_hash);
-                LOG_ERROR_AND_RETURN_IF((c_new == rct::zero), false, "Bad signature hash");
+                c_new = k2s(hash_keys_to_scalar(c_to_hash));
+                LOG_ERROR_AND_RETURN_IF((c_new == rct::szero), false, "Bad signature hash");
                 c = c_new;
 
                 i = i + 1;
