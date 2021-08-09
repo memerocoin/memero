@@ -631,7 +631,7 @@ TEST(ringct, dummyCommit)
 {
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::key z = rct::dummyCommit(amount);
-  const rct::key a = rct::scalarmultBase(rct::sone);
+  const rct::key a = rct::scalarmultBase(rct::s_one);
   const rct::key b = rct::scalarmultH(rct::int_to_scalar(amount));
   const rct::key manual = rct::addKeys(a, b);
   ASSERT_EQ(z, manual);
@@ -652,11 +652,11 @@ TEST(ringct, mul8)
   rct::scalarmult8(p3,rct::identity);
   ge_p3_tobytes(key.bytes, &p3);
   ASSERT_EQ(key, rct::identity);
-  ASSERT_EQ(rct::scalarmult8(rct::H), rct::scalarmultKey(rct::H, rct::seight));
+  ASSERT_EQ(rct::scalarmult8(rct::H), rct::scalarmultKey(rct::H, rct::s_eight));
   rct::scalarmult8(p3,rct::H);
   ge_p3_tobytes(key.bytes, &p3);
-  ASSERT_EQ(key, rct::scalarmultKey(rct::H, rct::seight));
-  ASSERT_EQ(rct::scalarmultKey(rct::scalarmultKey(rct::H, rct::sinv_eight), rct::seight), rct::H);
+  ASSERT_EQ(key, rct::scalarmultKey(rct::H, rct::s_eight));
+  ASSERT_EQ(rct::scalarmultKey(rct::scalarmultKey(rct::H, rct::s_inv_eight), rct::s_eight), rct::H);
 }
 
 TEST(ringct, aggregated)

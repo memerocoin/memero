@@ -40,13 +40,14 @@ namespace rct {
 
     // Can't us consteval here or android will panic
     //Creates a zero scalar
-    const scalar szero = k2s(Z);
-    const scalar sone = k2s(I);
-    const scalar stwo= k2s(TWO);
-    const scalar sminus_one = k2s(MINUS_ONE);
-    const scalar seight = k2s(EIGHT);
-    const scalar sinv_eight= k2s(INV_EIGHT);
-    const scalar sminus_inv_eight= k2s(MINUS_INV_EIGHT);
+    const scalar s_zero = ZERO;
+    const scalar s_one = ONE;
+    const scalar s_two= TWO;
+    const scalar s_minus_one = MINUS_ONE;
+    const scalar s_eight = EIGHT;
+    const scalar s_inv_eight = INV_EIGHT;
+    const scalar s_minus_inv_eight= MINUS_INV_EIGHT;
+    const scalar s_l = MINUS_INV_EIGHT;
 
     constexpr key zero = Z;
 

@@ -125,7 +125,7 @@ namespace rct {
         precomp(D_precomp.k,D);
 
         // Offset key image
-        scalarmultKey(sig.D,D, rct::sinv_eight);
+        scalarmultKey(sig.D,D, rct::s_inv_eight);
 
         // Aggregation hashes
         keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
@@ -409,7 +409,7 @@ namespace rct {
                 c_to_hash[2*n+3] = L;
                 c_to_hash[2*n+4] = R;
                 c_new = hash_keys_to_scalar(c_to_hash);
-                LOG_ERROR_AND_RETURN_IF((c_new == rct::szero), false, "Bad signature hash");
+                LOG_ERROR_AND_RETURN_IF((c_new == rct::s_zero), false, "Bad signature hash");
                 c = c_new;
 
                 i = i + 1;

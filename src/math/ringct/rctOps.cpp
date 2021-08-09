@@ -366,7 +366,7 @@ namespace rct {
 
     void ecdhEncode(ecdhTuple & unmasked, const key & sharedSec) {
         //encode
-        unmasked.mask = szero;
+        unmasked.mask = s_zero;
         xor8(unmasked.amount, ecdhHash(sharedSec));
     }
 

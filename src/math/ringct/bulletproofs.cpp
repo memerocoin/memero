@@ -64,8 +64,8 @@ rct::scalar inner_product(const scalarS a, const scalarS b);
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 
-const rct::scalarV oneN = vector_powers(rct::sone, maxN);
-const rct::scalarV twoN = vector_powers(rct::stwo, maxN);
+const rct::scalarV oneN = vector_powers(rct::s_one, maxN);
+const rct::scalarV twoN = vector_powers(rct::s_two, maxN);
 
 rct::key Hi[maxN*maxM], Gi[maxN*maxM];
 ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
@@ -162,16 +162,16 @@ rct::key cross_vector_exponent8
   multiexp_data.resize(size*2 + (!!extra_point));
   for (size_t i = 0; i < size; ++i)
   {
-    sc_mul(multiexp_data[i*2].scalar.bytes, a[ao+i].bytes, INV_EIGHT.bytes);
+    sc_mul(multiexp_data[i*2].scalar.bytes, a[ao+i].bytes, rct::s_inv_eight.bytes);
     multiexp_data[i*2].point = A[Ao+i];
-    sc_mul(multiexp_data[i*2+1].scalar.bytes, b[bo+i].bytes, INV_EIGHT.bytes);
+    sc_mul(multiexp_data[i*2+1].scalar.bytes, b[bo+i].bytes, rct::s_inv_eight.bytes);
     if (scale)
       sc_mul(multiexp_data[i*2+1].scalar.bytes, multiexp_data[i*2+1].scalar.bytes, (*scale)[Bo+i].bytes);
     multiexp_data[i*2+1].point = B[Bo+i];
   }
   if (extra_point)
   {
-    sc_mul(multiexp_data.back().scalar.bytes, extra_scalar->bytes, INV_EIGHT.bytes);
+    sc_mul(multiexp_data.back().scalar.bytes, extra_scalar->bytes, rct::s_inv_eight.bytes);
     multiexp_data.back().point = *extra_point;
   }
   return multiexp(multiexp_data);
@@ -183,7 +183,7 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n)
   rct::scalarV res(n);
   if (n == 0)
     return res;
-  res[0] = rct::sone;
+  res[0] = rct::s_one;
   if (n == 1)
     return res;
   res[1] = x;
@@ -200,8 +200,8 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
   size_t n = n_in;
 
   if (n == 0)
-    return rct::szero;
-  rct::scalar res = rct::sone;
+    return rct::s_zero;
+  rct::scalar res = rct::s_one;
   if (n == 1)
     return res;
 
@@ -236,7 +236,7 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
 rct::scalar inner_product(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  rct::scalar res = rct::szero;
+  rct::scalar res = rct::s_zero;
   for (size_t i = 0; i < a.size(); ++i)
   {
     sc_muladd(res.bytes, a[i].bytes, b[i].bytes, res.bytes);
@@ -384,7 +384,7 @@ rct::scalarV invert(rct::scalarV x)
   rct::scalarV scratch;
   scratch.reserve(x.size());
 
-  rct::scalar acc = rct::sone;
+  rct::scalar acc = rct::s_one;
   for (size_t n = 0; n < x.size(); ++n)
   {
     scratch.push_back(acc);
@@ -492,8 +492,8 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   for (size_t i = 0; i < sv.size(); ++i)
   {
     rct::scalar gamma8, sv8;
-    sc_mul(gamma8.bytes, gamma[i].bytes, INV_EIGHT.bytes);
-    sc_mul(sv8.bytes, sv[i].bytes, INV_EIGHT.bytes);
+    sc_mul(gamma8.bytes, gamma[i].bytes, rct::s_inv_eight.bytes);
+    sc_mul(sv8.bytes, sv[i].bytes, rct::s_inv_eight.bytes);
     V[i] = rct::addScalarMult_G_H(gamma8, sv8);
   }
 
@@ -504,14 +504,14 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
     {
       if (j < sv.size() && (sv[j][i/8] & (((uint64_t)1)<<(i%8))))
       {
-        aL[j*N+i] = rct::sone;
-        aL8[j*N+i] = rct::sinv_eight;
-        aR[j*N+i] = aR8[j*N+i] = rct::szero;
+        aL[j*N+i] = rct::s_one;
+        aL8[j*N+i] = rct::s_inv_eight;
+        aR[j*N+i] = aR8[j*N+i] = rct::s_zero;
       }
       else
       {
-        aL[j*N+i] = aL8[j*N+i] = rct::szero;
-        aR[j*N+i] = rct::sminus_one;
+        aL[j*N+i] = aL8[j*N+i] = rct::s_zero;
+        aR[j*N+i] = rct::s_minus_one;
         aR8[j*N+i] = rct::sminus_inv_eight;
       }
     }
@@ -524,7 +524,7 @@ try_again:
   rct::scalar alpha = rct::skGen();
   rct::key ve = vector_exponent(aL8, aR8);
   rct::key A;
-  sc_mul(tmp.bytes, alpha.bytes, INV_EIGHT.bytes);
+  sc_mul(tmp.bytes, alpha.bytes, rct::s_inv_eight.bytes);
   rct::addKeys(A, ve, rct::scalarmultBase(tmp));
 
   // PAPER LINES 45-47
@@ -533,18 +533,18 @@ try_again:
   ve = vector_exponent(sL, sR);
   rct::key S;
   rct::addKeys(S, ve, rct::scalarmultBase(rho));
-  S = rct::scalarmultKey(S, rct::sinv_eight);
+  S = rct::scalarmultKey(S, rct::s_inv_eight);
 
   // PAPER LINES 48-50
   scalar y = hash_carry_mash(hash_carry, A, S);
-  if (y == rct::szero)
+  if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
     goto try_again;
   }
 
   scalar z = rct::hash_to_scalar(s2k(y));
-  if (z == rct::szero)
+  if (z == rct::s_zero)
   {
     LOG_INFO("z is 0, trying again");
     goto try_again;
@@ -585,18 +585,18 @@ try_again:
 
   rct::key T1, T2;
   ge_p3 p3;
-  sc_mul(tmp.bytes, t1.bytes, INV_EIGHT.bytes);
-  sc_mul(tmp2.bytes, tau1.bytes, INV_EIGHT.bytes);
+  sc_mul(tmp.bytes, t1.bytes, rct::s_inv_eight.bytes);
+  sc_mul(tmp2.bytes, tau1.bytes, rct::s_inv_eight.bytes);
   ge_double_scalarmult_base_vartime_p3(&p3, tmp.bytes, &ge_p3_H, tmp2.bytes);
   ge_p3_tobytes(T1.bytes, &p3);
-  sc_mul(tmp.bytes, t2.bytes, INV_EIGHT.bytes);
-  sc_mul(tmp2.bytes, tau2.bytes, INV_EIGHT.bytes);
+  sc_mul(tmp.bytes, t2.bytes, rct::s_inv_eight.bytes);
+  sc_mul(tmp2.bytes, tau2.bytes, rct::s_inv_eight.bytes);
   ge_double_scalarmult_base_vartime_p3(&p3, tmp.bytes, &ge_p3_H, tmp2.bytes);
   ge_p3_tobytes(T2.bytes, &p3);
 
   // PAPER LINES 54-56
   rct::scalar x = hash_carry_mash(hash_carry, s2k(z), T1, T2);
-  if (x == rct::szero)
+  if (x == rct::s_zero)
   {
     LOG_INFO("x is 0, trying again");
     goto try_again;
@@ -626,7 +626,7 @@ try_again:
 
   // PAPER LINE 6
   rct::scalar x_ip = hash_carry_mash(hash_carry, s2k(x), s2k(taux), s2k(mu), s2k(t));
-  if (x_ip == rct::szero)
+  if (x_ip == rct::s_zero)
   {
     LOG_INFO("x_ip is 0, trying again");
     goto try_again;
@@ -640,7 +640,7 @@ try_again:
   rct::scalarV bprime(MN);
   const rct::scalar yinv = invert(y);
   rct::scalarV yinvpow(MN);
-  yinvpow[0] = rct::sone;
+  yinvpow[0] = rct::s_one;
   yinvpow[1] = yinv;
   for (size_t i = 0; i < MN; ++i)
   {
@@ -676,7 +676,7 @@ try_again:
 
     // PAPER LINES 25-27
     w[round] = hash_carry_mash(hash_carry, L[round], R[round]);
-    if (w[round] == rct::szero)
+    if (w[round] == rct::s_zero)
     {
       LOG_INFO("w[round] is 0, trying again");
       goto try_again;
@@ -713,7 +713,7 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::scalarV g
   rct::scalarV sv(v.size());
   for (size_t i = 0; i < v.size(); ++i)
   {
-    sv[i] = rct::szero;
+    sv[i] = rct::s_zero;
     sv[i].bytes[0] = v[i] & 255;
     sv[i].bytes[1] = (v[i] >> 8) & 255;
     sv[i].bytes[2] = (v[i] >> 16) & 255;
@@ -776,16 +776,16 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     rct::scalar hash_carry = rct::hash_keys_to_scalar(proof.V);
 
     pd.y = hash_carry_mash(hash_carry, proof.A, proof.S);
-    LOG_ERROR_AND_RETURN_IF((pd.y == rct::szero), false, "y == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
     pd.z = rct::hash_to_scalar(s2k(pd.y));
-    LOG_ERROR_AND_RETURN_IF((pd.z == rct::szero), false, "z == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
 
     pd.x = hash_carry_mash(hash_carry, s2k(pd.z), proof.T1, proof.T2);
-    LOG_ERROR_AND_RETURN_IF((pd.x == rct::szero), false, "x == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
 
     pd.x_ip = hash_carry_mash(hash_carry, s2k(pd.x), s2k(proof.taux), s2k(proof.mu), s2k(proof.t));
-    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::szero), false, "x_ip == 0");
+    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
     size_t M;
     for (pd.logM = 0; (M = 1<<pd.logM) <= maxM && M < proof.V.size(); ++pd.logM);
@@ -800,7 +800,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     for (size_t i = 0; i < rounds; ++i)
     {
       pd.w[i] = hash_carry_mash(hash_carry, proof.L[i], proof.R[i]);
-      LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::szero), false, "w[i] == 0");
+      LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::s_zero), false, "w[i] == 0");
     }
 
     pd.inv_offset = inv_offset;
@@ -821,10 +821,10 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   const scalarV inverses = invert(to_invert);
 
   // setup weighted aggregates
-  rct::scalar z1 = rct::szero;
-  rct::scalar z3 = rct::szero;
-  rct::scalarV m_z4(maxMN, rct::szero), m_z5(maxMN, rct::szero);
-  rct::scalar m_y0 = rct::szero, y1 = rct::szero;
+  rct::scalar z1 = rct::s_zero;
+  rct::scalar z3 = rct::s_zero;
+  rct::scalarV m_z4(maxMN, rct::s_zero), m_z5(maxMN, rct::s_zero);
+  rct::scalar m_y0 = rct::s_zero, y1 = rct::s_zero;
   int proof_data_index = 0;
   rct::scalarV w_cache;
   std::vector<ge_p3> proof8_V, proof8_L, proof8_R;
@@ -888,8 +888,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
     // Compute the curvepoints from G[i] and H[i]
-    rct::scalar yinvpow = rct::sone;
-    rct::scalar ypow = rct::sone;
+    rct::scalar yinvpow = rct::s_one;
+    rct::scalar ypow = rct::s_one;
 
     const rct::scalar *winv = &inverses[pd.inv_offset];
     const rct::scalar yinv = inverses[pd.inv_offset + rounds];

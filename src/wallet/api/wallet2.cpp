@@ -903,12 +903,12 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             }
             else if (miner_tx && tx.version == 2)
             {
-              td.m_mask = rct::sone;
+              td.m_mask = rct::s_one;
               td.m_rct = true;
             }
             else
             {
-              td.m_mask = rct::sone;
+              td.m_mask = rct::s_one;
               td.m_rct = false;
             }
             td.m_frozen = false;
@@ -973,12 +973,12 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             }
             else if (miner_tx && tx.version == 2)
             {
-              td.m_mask = rct::sone;
+              td.m_mask = rct::s_one;
               td.m_rct = true;
             }
             else
             {
-              td.m_mask = rct::sone;
+              td.m_mask = rct::s_one;
               td.m_rct = false;
             }
             THROW_WALLET_EXCEPTION_IF(td.get_public_key() != tx_scan_info[o].in_ephemeral.pub, error::wallet_internal_error, "Inconsistent public keys");
