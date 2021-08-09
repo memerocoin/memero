@@ -34,84 +34,88 @@
 
 namespace rct {
 
-    clsag CLSAG_Gen
-    (
-     const key message
-     , const keyV P
-     , const scalar p
-     , const keyV C
-     , const scalar z
-     , const keyV C_nonzero
-     , const key C_offset
-     , const unsigned int l
-     );
+  clsag CLSAG_Gen
+  (
+   const key message
+   , const keyV P
+   , const scalar p
+   , const keyV C
+   , const scalar z
+   , const keyV C_nonzero
+   , const key C_offset
+   , const unsigned int l
+   );
 
-    clsag CLSAG_Gen
-    (
-     const key message
-     , const keyV P
-     , const scalar p
-     , const keyV C
-     , const scalar z
-     , const keyV C_nonzero
-     , const key C_offset
-     , const unsigned int l
-     );
+  clsag CLSAG_Gen
+  (
+   const key message
+   , const keyV P
+   , const scalar p
+   , const keyV C
+   , const scalar z
+   , const keyV C_nonzero
+   , const key C_offset
+   , const unsigned int l
+   );
 
-    clsag proveRctCLSAGSimple
-    (
-    const key message
-    , const ctkeyV pubs
-    , const pri_ctkey inSk
-    , const scalar a
-    , const key Cout
-    , const unsigned int index
-    );
+  clsag proveRctCLSAGSimple
+  (
+   const key message
+   , const ctkeyV pubs
+   , const pri_ctkey inSk
+   , const scalar a
+   , const key Cout
+   , const unsigned int index
+   );
 
-    bool verRctCLSAGSimple(const key, const clsag, const ctkeyS, const key);
+  bool verRctCLSAGSimple(const key, const clsag, const ctkeyS, const key);
 
-    //RingCT protocol
-    //genRct:
-    //   creates an rctSig with all data necessary to verify the rangeProofs and that the signer owns one of the
-    //   columns that are claimed as inputs, and that the sum of inputs  = sum of outputs.
-    //   Also contains masked "amount" and "mask" so the receiver can see how much they received
-    //verRct:
-    //   verifies that all signatures (rangeProogs, MG sig, sum inputs = outputs) are correct
-    //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
-    //   uses the attached ecdh info to find the amounts represented by each output commitment
-    //   must know the destination private key to find the correct amount, else will return a random number
-    rctSig genRctSimple
-    (
-     const key message
-     , const pri_ctkeyV inSk
-     , const ctkeyV inPk
-     , const keyV destinations
-     , const std::vector<amount_t> inamounts
-     , const std::vector<amount_t> outamounts
-     , const keyV amount_keys
-     , const amount_t txnFee
-     , const size_t mixin
-     );
+  //RingCT protocol
+  //genRct:
+  //   creates an rctSig with all data necessary to verify the rangeProofs and that the signer owns one of the
+  //   columns that are claimed as inputs, and that the sum of inputs  = sum of outputs.
+  //   Also contains masked "amount" and "mask" so the receiver can see how much they received
+  //verRct:
+  //   verifies that all signatures (rangeProogs, MG sig, sum inputs = outputs) are correct
+  //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
+  //   uses the attached ecdh info to find the amounts represented by each output commitment
+  //   must know the destination private key to find the correct amount, else will return a random number
+  rctSig genRctSimple
+  (
+   const key message
+   , const pri_ctkeyV inSk
+   , const ctkeyV inPk
+   , const keyV destinations
+   , const std::vector<amount_t> inamounts
+   , const std::vector<amount_t> outamounts
+   , const keyV amount_keys
+   , const amount_t txnFee
+   , const size_t mixin
+   );
 
-    rctSig genRctSimple
-    (
-     const key message
-     , const pri_ctkeyV inSk
-     , const keyV destinations
-     , const std::vector<amount_t> inamounts
-     , const std::vector<amount_t> outamounts
-     , const amount_t txnFee
-     , const ctkeyM mixRing
-     , const keyV amount_keys
-     , const std::vector<size_t> index
-     , pri_ctkeyV& outSk
-     );
+  rctSig genRctSimple
+  (
+   const key message
+   , const pri_ctkeyV inSk
+   , const keyV destinations
+   , const std::vector<amount_t> inamounts
+   , const std::vector<amount_t> outamounts
+   , const amount_t txnFee
+   , const ctkeyM mixRing
+   , const keyV amount_keys
+   , const std::vector<size_t> index
+   , pri_ctkeyV& outSk
+   );
 
-    bool verRctSemanticsSimple(const rctSig rv);
-    bool verRctSemanticsSimple(const std::span<const rctSig> rv);
-    bool verRctNonSemanticsSimple(const rctSig rv);
-    inline bool verRctSimple(const rctSig rv) { return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv); }
-    amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, scalar& mask);
-    key get_mlsag_pre_hash(const rctSig rv);
+  bool verRctSemanticsSimple(const rctSig rv);
+  bool verRctSemanticsSimple(const std::span<const rctSig> rv);
+  bool verRctNonSemanticsSimple(const rctSig rv);
+
+  inline bool verRctSimple(const rctSig rv) {
+    return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv);
+  }
+
+  amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, scalar& mask);
+  key get_mlsag_pre_hash(const rctSig rv);
 }
 
