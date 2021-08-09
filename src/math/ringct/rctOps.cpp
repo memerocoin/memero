@@ -1,3 +1,4 @@
+// Copyright (c) 2020-2021, The Lolnero Project
 // Copyright (c) 2016, Monero Research Labs
 //
 // Author: Shen Noether <shen.noether@gmx.com>
