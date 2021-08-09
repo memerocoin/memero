@@ -544,10 +544,6 @@ namespace crypto {
     hash h;
     struct ec_point_pair ab[];
   };
-
-  static inline size_t rs_comm_size(size_t pubs_count) {
-    return sizeof(rs_comm) + pubs_count * sizeof(ec_point_pair);
-  }
 }
 
 CRYPTO_MAKE_HASHABLE_CPP(public_key)
