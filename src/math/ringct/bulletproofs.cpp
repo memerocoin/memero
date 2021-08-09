@@ -49,6 +49,7 @@ extern "C"
 
 #include <stdlib.h>
 #include <mutex>
+#include <atomic>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -59,7 +60,18 @@ namespace rct
 
 rct::key vector_exponent(const scalarS a, const scalarS b);
 rct::scalarV vector_powers(const rct::scalar x, const size_t n);
-rct::scalar inner_product(const scalarS a, const scalarS b);
+
+/* Given two scalar arrays, construct the inner product */
+constexpr rct::scalar inner_product(const scalarS a, const scalarS b)
+{
+  assert(a.size() == b.size());
+  rct::scalar res = rct::s_zero;
+  for (size_t i = 0; i < a.size(); ++i)
+  {
+    sc_muladd(res.bytes, a[i].bytes, b[i].bytes, res.bytes);
+  }
+  return res;
+}
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
@@ -72,11 +84,9 @@ ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
 
 const static rct::scalar ip12 = inner_product(oneN, twoN);
 
-std::mutex init_mutex;
-
 const auto multiexp = pippenger;
 
-inline bool is_reduced(const rct::scalar scalar)
+bool is_reduced(const rct::scalar scalar)
 {
   return sc_check(scalar.bytes) == 0;
 }
@@ -95,22 +105,23 @@ rct::key get_exponent(const rct::key base, size_t idx)
   return e;
 }
 
+std::atomic<bool> init_done(false);
+std::mutex init_mutex;
+
 void init_exponents()
 {
-  std::lock_guard<std::mutex> lock(init_mutex);
+  if (!init_done) {
+    std::lock_guard<std::mutex> lock(init_mutex);
+    for (size_t i = 0; i < maxN*maxM; ++i)
+    {
+      Hi[i] = get_exponent(rct::H, i * 2);
+      LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Hi_p3[i], Hi[i].bytes) == 0, "ge_frombytes_vartime failed");
+      Gi[i] = get_exponent(rct::H, i * 2 + 1);
+      LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Gi_p3[i], Gi[i].bytes) == 0, "ge_frombytes_vartime failed");
+    }
 
-  static bool init_done = false;
-  if (init_done)
-    return;
-  for (size_t i = 0; i < maxN*maxM; ++i)
-  {
-    Hi[i] = get_exponent(rct::H, i * 2);
-    LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Hi_p3[i], Hi[i].bytes) == 0, "ge_frombytes_vartime failed");
-    Gi[i] = get_exponent(rct::H, i * 2 + 1);
-    LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Gi_p3[i], Gi[i].bytes) == 0, "ge_frombytes_vartime failed");
+    init_done = true;
   }
-
-  init_done = true;
 }
 
 /* Given two scalar arrays, construct a vector commitment */
@@ -191,7 +202,7 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n)
 }
 
 /* Given a scalar, return the sum of its powers from 0 to n-1 */
-rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
+constexpr rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
 {
   size_t n = n_in;
 
@@ -228,17 +239,6 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
   return res;
 }
 
-/* Given two scalar arrays, construct the inner product */
-rct::scalar inner_product(const scalarS a, const scalarS b)
-{
-  LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  rct::scalar res = rct::s_zero;
-  for (size_t i = 0; i < a.size(); ++i)
-  {
-    sc_muladd(res.bytes, a[i].bytes, b[i].bytes, res.bytes);
-  }
-  return res;
-}
 
 /* Given two scalar arrays, construct the Hadamard product */
 rct::scalarV hadamard(const scalarS a, const scalarS b)
@@ -315,7 +315,7 @@ rct::scalarV vector_scalar(const scalarS a, const rct::scalar x)
   return res;
 }
 
-rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
+constexpr rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
 {
   int n = n_in;
   rct::scalar y = y_in;

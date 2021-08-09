@@ -61,7 +61,7 @@ extern "C"
 namespace rct
 {
 
-static inline bool operator<(const rct::scalar &k0, const rct::scalar &k1)
+bool operator<(const rct::scalar &k0, const rct::scalar &k1)
 {
   for (int n = 31; n >= 0; --n)
     {
@@ -73,7 +73,7 @@ static inline bool operator<(const rct::scalar &k0, const rct::scalar &k1)
   return false;
 }
 
-static inline rct::scalar pow2(size_t n)
+rct::scalar pow2(size_t n)
 {
   LOG_ERROR_AND_THROW_UNLESS(n < 256, "Invalid pow2 argument");
   rct::scalar res = rct::s_zero;
@@ -81,20 +81,20 @@ static inline rct::scalar pow2(size_t n)
   return res;
 }
 
-static inline int test(const rct::scalar &k, size_t n)
+int test(const rct::scalar &k, size_t n)
 {
   if (n >= 256) return 0;
   return k[n >> 3] & (1 << (n & 7));
 }
 
-static inline void add(ge_p3 &p3, const ge_cached &other)
+void add(ge_p3 &p3, const ge_cached &other)
 {
   ge_p1p1 p1;
   ge_add(&p1, &p3, &other);
   ge_p1p1_to_p3(&p3, &p1);
 }
 
-static inline void add(ge_p3 &p3, const ge_p3 &other)
+void add(ge_p3 &p3, const ge_p3 &other)
 {
   ge_cached cached;
   ge_p3_to_cached(&cached, &other);
