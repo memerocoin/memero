@@ -580,12 +580,40 @@ namespace rct {
 
         for (const rctSig& rv: rvv)
         {
-          LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG,
-              false, "verRctSemanticsSimple called on non simple rctSig");
-          LOG_ERROR_AND_RETURN_UNLESS(rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs), false, "Mismatched sizes of outPk and bulletproofs");
-          LOG_ERROR_AND_RETURN_UNLESS(rv.p.pseudoOuts.size() == rv.p.CLSAGs.size(), false, "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs");
-          LOG_ERROR_AND_RETURN_UNLESS(rv.pseudoOuts.empty(), false, "rv.pseudoOuts is not empty");
-          LOG_ERROR_AND_RETURN_UNLESS(rv.outPk.size() == rv.ecdhInfo.size(), false, "Mismatched sizes of outPk and rv.ecdhInfo");
+          LOG_ERROR_AND_RETURN_UNLESS
+            (
+             rv.type == RCTTypeCLSAG
+             , false
+             , "verRctSemanticsSimple called on non simple rctSig"
+             );
+
+          LOG_ERROR_AND_RETURN_UNLESS
+            (
+             rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs)
+             , false
+             , "Mismatched sizes of outPk and bulletproofs"
+             );
+
+          LOG_ERROR_AND_RETURN_UNLESS
+            (
+             rv.p.pseudoOuts.size() == rv.p.CLSAGs.size()
+             , false
+             , "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs"
+             );
+
+          LOG_ERROR_AND_RETURN_UNLESS
+            (
+             rv.pseudoOuts.empty()
+             , false
+             , "rv.pseudoOuts is not empty"
+             );
+
+          LOG_ERROR_AND_RETURN_UNLESS
+            (
+             rv.outPk.size() == rv.ecdhInfo.size()
+             , false
+             , "Mismatched sizes of outPk and rv.ecdhInfo"
+             );
         }
 
         results.resize(max_non_bp_proofs);
@@ -657,10 +685,20 @@ namespace rct {
     //assumes only post-rct style inputs (at least for max anonymity)
     bool verRctNonSemanticsSimpleMayThrow(const rctSig rv)
     {
-        LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG,
-            false, "verRctNonSemanticsSimple called on non simple rctSig");
+        LOG_ERROR_AND_RETURN_UNLESS
+          (
+           rv.type == RCTTypeCLSAG
+           , false
+           , "verRctNonSemanticsSimple called on non simple rctSig"
+           );
+
         // semantics check is early, and mixRing/MGs aren't resolved yet
-        LOG_ERROR_AND_RETURN_UNLESS(rv.p.pseudoOuts.size() == rv.mixRing.size(), false, "Mismatched sizes of rv.p.pseudoOuts and mixRing");
+        LOG_ERROR_AND_RETURN_UNLESS
+          (
+           rv.p.pseudoOuts.size() == rv.mixRing.size()
+           , false
+           , "Mismatched sizes of rv.p.pseudoOuts and mixRing"
+           );
 
         const size_t threads = std::max(rv.outPk.size(), rv.mixRing.size());
 
