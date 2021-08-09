@@ -53,7 +53,7 @@ namespace controller {
     PAUSE_READLINE();
     std::cout << prompt;
     if (yesno)
-      std::cout << "  (Y/N)";
+      std::cout << "  (y/n)";
     std::cout << ": " << std::flush;
 
     std::string buf;
