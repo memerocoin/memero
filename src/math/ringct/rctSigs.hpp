@@ -63,7 +63,7 @@ namespace rct {
     const key message
     , const ctkeyV pubs
     , const pri_ctkey inSk
-    , const key a
+    , const scalar a
     , const key Cout
     , const unsigned int index
     );

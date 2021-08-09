@@ -275,7 +275,7 @@ namespace rct {
      const key message
      , const ctkeyV pubs
      , const pri_ctkey inSk
-     , const key a
+     , const scalar a
      , const key Cout
      , const unsigned int index
      ) {
@@ -528,16 +528,16 @@ namespace rct {
         pseudoOuts.resize(inamounts.size());
         rv.p.CLSAGs.resize(inamounts.size());
         key sumpouts = zero; //sum pseudoOut masks
-        keyV a(inamounts.size());
+        scalarV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
             scalar k;
             skGen(k);
-            a[i] = s2k(k);
+            a[i] = k;
             sc_add(sumpouts.bytes, a[i].bytes, sumpouts.bytes);
-            pseudoOuts[i] = genC(k2s(a[i]), inamounts[i]);
+            pseudoOuts[i] = genC(a[i], inamounts[i]);
         }
         sc_sub(a[i].bytes, sumout.bytes, sumpouts.bytes);
-        pseudoOuts[i] = genC(k2s(a[i]), inamounts[i]);
+        pseudoOuts[i] = genC(a[i], inamounts[i]);
 
         key full_message = get_mlsag_pre_hash(rv);
         for (i = 0 ; i < inamounts.size(); i++)
