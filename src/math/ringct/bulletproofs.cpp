@@ -888,8 +888,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
     // Compute the curvepoints from G[i] and H[i]
-    rct::key yinvpow = rct::identity;
-    rct::key ypow = rct::identity;
+    rct::scalar yinvpow = rct::sone;
+    rct::scalar ypow = rct::sone;
 
     const rct::scalar *winv = &inverses[pd.inv_offset];
     const rct::scalar yinv = inverses[pd.inv_offset + rounds];
@@ -941,8 +941,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
       if (i == 0)
       {
-        yinvpow = s2k(yinv);
-        ypow = s2k(pd.y);
+        yinvpow = yinv;
+        ypow = pd.y;
       }
       else if (i != MN-1)
       {
