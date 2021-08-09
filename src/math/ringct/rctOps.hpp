@@ -70,9 +70,8 @@ namespace rct {
 
     //generates a random curve point (for testing)
     key pkGen();
-    //generates a random secret and corresponding public key
-    void skpkGen(scalar &sk, key &pk);
-    std::tuple<scalar, key> skpkGen();
+    std::pair<scalar, key> skpkGen();
+
     //generates a <secret , public> / Pedersen commitment to the amount
     std::tuple<pri_ctkey, ctkey> ctskpkGen(amount_t amount);
     //generates C =aG + bH from b, a is random

@@ -88,21 +88,13 @@ namespace rct {
     //generates a random curve point (for testing)
     key pkGen() {
         scalar sk = skGen();
-        key pk = scalarmultBase(sk);
-        return pk;
+        return scalarmultBase(sk);
     }
 
     //generates a random secret and corresponding public key
-    void skpkGen(scalar &sk, key &pk) {
-        sk = skGen();
-        scalarmultBase(pk, sk);
-    }
-
-    //generates a random secret and corresponding public key
-    std::tuple<scalar, key> skpkGen() {
-        scalar sk = skGen();
-        key pk = scalarmultBase(sk);
-        return std::make_tuple(sk, pk);
+    std::pair<scalar, key> skpkGen() {
+        const scalar sk = skGen();
+        return std::make_pair(sk, scalarmultBase(sk));
     }
 
     //generates C =aG + bH from b, a is given..
@@ -114,8 +106,9 @@ namespace rct {
     std::tuple<pri_ctkey, ctkey> ctskpkGen(amount_t amount) {
         pri_ctkey sk;
         ctkey pk;
-        skpkGen(sk.addr, pk.dest);
-        skpkGen(sk.blinding_factor, pk.mask);
+        std::tie(sk.addr, pk.dest) = skpkGen();
+        std::tie(sk.blinding_factor, pk.mask) = skpkGen();
+
         scalar am = int_to_scalar(amount);
         key bH = scalarmultH(am);
         addKeys(pk.mask, pk.mask, bH);
@@ -127,8 +120,9 @@ namespace rct {
     std::tuple<pri_ctkey, ctkey> ctskpkGen(const key &bH) {
         pri_ctkey sk;
         ctkey pk;
-        skpkGen(sk.addr, pk.dest);
-        skpkGen(sk.blinding_factor, pk.mask);
+        std::tie(sk.addr, pk.dest) = skpkGen();
+        std::tie(sk.blinding_factor, pk.mask) = skpkGen();
+
         addKeys(pk.mask, pk.mask, bH);
         return std::make_tuple(sk, pk);
     }

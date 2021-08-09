@@ -74,7 +74,7 @@ TEST(device, ops)
   crypto::ec_scalar ressc0, ressc1;
   crypto::key_image ki0, ki1;
 
-  rct::skpkGen(sk ,pk);
+  std::tie(sk, pk) = rct::skpkGen();
   rct::scalarmultBase((rct::key&)pk0, (rct::scalar&)sk0);
   rct::scalarmultBase((rct::key&)pk1, (rct::scalar&)sk1);
 

@@ -376,9 +376,7 @@ namespace hw {
          , rct::key &aG
          , rct::key &aH
          ) {
-          rct::scalar k;
-            rct::skpkGen(k,aG); // aG = a*G
-            a = k;
+            std::tie(a, aG) = rct::skpkGen(); // aG = a*G
             rct::scalarmultKey(aH,H, a); // aH = a*H
             rct::scalarmultKey(I,H, p); // I = p*H
             rct::scalarmultKey(D,H, z); // D = z*H

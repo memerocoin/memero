@@ -60,14 +60,14 @@ TEST(ringct, CLSAG)
     scalar sk;
     ctkey tmp;
 
-    skpkGen(sk, tmp.dest);
-    skpkGen(sk, tmp.mask);
+    std::tie(sk, tmp.dest) = skpkGen();
+    std::tie(sk, tmp.mask) = skpkGen();
 
     pubs.push_back(tmp);
   }
 
   // Set P[idx]
-  skpkGen(p, pubs[idx].dest);
+  std::tie(p, pubs[idx].dest) = skpkGen();
 
   // Set C[idx]
   t = skGen();
@@ -247,7 +247,7 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
     for (int n = 0; n < n_outputs; ++n) {
         outamounts.push_back(output_amounts[n]);
         amount_keys.push_back(s2k(hash_to_scalar(zero)));
-        skpkGen(Sk, Pk);
+        std::tie(Sk, Pk) = skpkGen();
         destinations.push_back(Pk);
     }
 
@@ -523,9 +523,8 @@ static const amount_t test_amounts[]={0, 1, 2, 3, 4, 5, 10000, 10000000000000000
 
 TEST(ringct, d2h)
 {
-  key k, P1;
-  scalar s;
-  skpkGen(s, P1);
+  key k;
+  auto [s, P1] = skpkGen();
   k = s2k(s);
   for (auto amount: test_amounts) {
     auto k = int_to_scalar(amount);
