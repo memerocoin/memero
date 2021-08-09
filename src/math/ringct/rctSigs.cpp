@@ -508,8 +508,7 @@ namespace rct {
             }
         }
 
-        // TODO: scalar
-        key sumout = zero;
+        scalar sumout = s_zero;
         for (i = 0; i < outSk.size(); ++i)
         {
             sc_add(sumout.bytes, outSk[i].blinding_factor.bytes, sumout.bytes);
@@ -529,7 +528,7 @@ namespace rct {
         pseudoOuts.resize(inamounts.size());
         rv.p.CLSAGs.resize(inamounts.size());
         // TODO: scalar
-        key sumpouts = zero; //sum pseudoOut masks
+        scalar sumpouts = s_zero; //sum pseudoOut masks
         scalarV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
             a[i] = skGen();
