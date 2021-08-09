@@ -34,6 +34,7 @@
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
+#include "tools/common/threadpool.h"
 #include "tools/epee/include/logging.hpp"
 
 #include "config/cryptonote.hpp"
@@ -572,8 +573,11 @@ namespace rct {
 
     bool verRctSemanticsSimpleMayThrow(const std::span<const rctSig> rvv)
     {
+        tools::threadpool& tpool = tools::threadpool::getInstance();
+        tools::threadpool::waiter waiter(tpool);
         std::deque<bool> results;
         std::vector<Bulletproof> proofs;
+        size_t max_non_bp_proofs = 0;
 
         for (const rctSig& rv: rvv)
         {
@@ -613,6 +617,7 @@ namespace rct {
              );
         }
 
+        results.resize(max_non_bp_proofs);
         for (const rctSig& rv: rvv)
         {
           const keyV &pseudoOuts = rv.p.pseudoOuts;
@@ -641,6 +646,15 @@ namespace rct {
         {
           LOG_PRINT_L1("Aggregate range proof verified failed");
           return false;
+        }
+
+        if (!waiter.wait())
+          return false;
+        for (size_t i = 0; i < results.size(); ++i) {
+          if (!results[i]) {
+            LOG_PRINT_L1("Range proof verified failed for proof " << i);
+            return false;
+          }
         }
 
         return true;
