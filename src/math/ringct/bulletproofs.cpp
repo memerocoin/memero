@@ -727,8 +727,8 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::keyV gamm
 
 struct proof_data_t
 {
-  rct::key x, z, x_ip;
-  rct::scalar y;
+  rct::key x, x_ip;
+  rct::scalar y, z;
   std::vector<rct::scalar> w;
   size_t logM, inv_offset;
 };
@@ -778,10 +778,11 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     pd.y = k2s(hash_cache_mash(hash_cache, proof.A, proof.S));
     LOG_ERROR_AND_RETURN_IF((pd.y == rct::szero), false, "y == 0");
 
-    pd.z = hash_cache = rct::hash_to_scalar(s2k(pd.y));
-    LOG_ERROR_AND_RETURN_IF((pd.z == rct::zero), false, "z == 0");
+    hash_cache = rct::hash_to_scalar(s2k(pd.y));
+    pd.z = k2s(hash_cache);
+    LOG_ERROR_AND_RETURN_IF((pd.z == rct::szero), false, "z == 0");
 
-    pd.x = hash_cache_mash(hash_cache, pd.z, proof.T1, proof.T2);
+    pd.x = hash_cache_mash(hash_cache, s2k(pd.z), proof.T1, proof.T2);
     LOG_ERROR_AND_RETURN_IF((pd.x == rct::zero), false, "x == 0");
 
     pd.x_ip = hash_cache_mash(hash_cache, pd.x, proof.taux, proof.mu, proof.t);
@@ -853,7 +854,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     sc_mulsub(m_y0.bytes, proof.taux.bytes, weight_y.bytes, m_y0.bytes);
 
-    const rct::scalarV zpow = vector_powers(k2s(pd.z), M+3);
+    const rct::scalarV zpow = vector_powers(pd.z, M+3);
 
     rct::key k;
     const rct::scalar ip1y = vector_power_sum(pd.y, MN);
