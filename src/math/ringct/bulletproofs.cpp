@@ -537,7 +537,7 @@ try_again:
     goto try_again;
   }
 
-  scalar z = rct::hash_to_scalar(s2k(y));
+  scalar z = hash_carry = rct::hash_to_scalar(s2k(y));
   if (z == rct::s_zero)
   {
     LOG_INFO("z is 0, trying again");
@@ -772,7 +772,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     pd.y = hash_carry_mash(hash_carry, proof.A, proof.S);
     LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
-    pd.z = rct::hash_to_scalar(s2k(pd.y));
+    pd.z = hash_carry = rct::hash_to_scalar(s2k(pd.y));
     LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
 
     pd.x = hash_carry_mash(hash_carry, s2k(pd.z), proof.T1, proof.T2);
