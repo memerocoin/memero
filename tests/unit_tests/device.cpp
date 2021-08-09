@@ -75,15 +75,15 @@ TEST(device, ops)
   crypto::key_image ki0, ki1;
 
   std::tie(sk, pk) = rct::skpkGen();
-  rct::scalarmultBase((rct::key&)pk0, (rct::scalar&)sk0);
-  rct::scalarmultBase((rct::key&)pk1, (rct::scalar&)sk1);
+  pk0 = rct::rct2pk(rct::scalarmultBase((rct::scalar&)sk0));
+  pk1 = rct::rct2pk(rct::scalarmultBase((rct::scalar&)sk1));
 
   dev.scalarmultKey(resd, pk, sk);
   rct::scalarmultKey(res, pk, sk);
   ASSERT_EQ(resd, res);
 
   dev.scalarmultBase(resd, sk);
-  rct::scalarmultBase(res, sk);
+  res = rct::scalarmultBase(sk);
   ASSERT_EQ(resd, res);
 
   dev.sc_secret_add((crypto::secret_key&)resd, sk0, sk1);

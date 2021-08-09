@@ -223,7 +223,7 @@ namespace hw {
         }
 
         bool device_default::scalarmultBase(rct::key &aG, const rct::scalar &a) {
-            rct::scalarmultBase(aG,a);
+            aG = rct::scalarmultBase(a);
             return true;
         }
 

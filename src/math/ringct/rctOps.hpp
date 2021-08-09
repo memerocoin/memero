@@ -73,23 +73,28 @@ namespace rct {
     std::pair<scalar, key> skpkGen();
 
     //generates a <secret , public> / Pedersen commitment to the amount
-    std::tuple<pri_ctkey, ctkey> ctskpkGen(amount_t amount);
+    std::pair<pri_ctkey, ctkey> ctskpkGen(amount_t amount);
+
     //generates C =aG + bH from b, a is random
-    key genC(const scalar & a, amount_t amount);
+    key genC(const scalar a, amount_t amount);
+
     //this one is mainly for testing, can take arbitrary amounts..
-    std::tuple<pri_ctkey, ctkey> ctskpkGen(const key &bH);
+    std::pair<pri_ctkey, ctkey> ctskpkGen(const key bH);
+
     // make a pedersen commitment with given key
-    key commit(amount_t amount, const scalar &mask);
+    key commit(const amount_t amount, const scalar &mask);
+
     // make a pedersen commitment with zero key
-    key dummyCommit(amount_t amount);
+    key dummyCommit(const amount_t amount);
+
     //generates a random uint long long
-    amount_t randXmrAmount(amount_t upperlimit);
+    amount_t randXmrAmount(const amount_t upperlimit);
 
     //Scalar multiplications of curve points
 
     //does a * G where a is a scalar and G is the curve basepoint
-    void scalarmultBase(key & aG, const scalar &a);
-    key scalarmultBase(const scalar & a);
+    key scalarmultBase(const scalar a);
+
     //does a * P where a is a scalar and P is an arbitrary point
     void scalarmultKey(key &aP, const key &P, const scalar &a);
     key scalarmultKey(const key &P, const scalar &a);

@@ -98,12 +98,12 @@ namespace rct {
     }
 
     //generates C =aG + bH from b, a is given..
-    key genC(const scalar & a, amount_t amount) {
+    key genC(const scalar a, amount_t amount) {
         return addScalarMult_G_H(a, int_to_scalar(amount));
     }
 
     //generates a <secret , public> / Pedersen commitment to the amount
-    std::tuple<pri_ctkey, ctkey> ctskpkGen(amount_t amount) {
+    std::pair<pri_ctkey, ctkey> ctskpkGen(amount_t amount) {
         pri_ctkey sk;
         ctkey pk;
         std::tie(sk.addr, pk.dest) = skpkGen();
@@ -112,56 +112,52 @@ namespace rct {
         scalar am = int_to_scalar(amount);
         key bH = scalarmultH(am);
         addKeys(pk.mask, pk.mask, bH);
-        return std::make_tuple(sk, pk);
+        return std::make_pair(sk, pk);
     }
 
 
     //generates a <secret , public> / Pedersen commitment but takes bH as input
-    std::tuple<pri_ctkey, ctkey> ctskpkGen(const key &bH) {
+    std::pair<pri_ctkey, ctkey> ctskpkGen(const key bH) {
         pri_ctkey sk;
         ctkey pk;
         std::tie(sk.addr, pk.dest) = skpkGen();
         std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 
         addKeys(pk.mask, pk.mask, bH);
-        return std::make_tuple(sk, pk);
+        return std::make_pair(sk, pk);
     }
 
-    key dummyCommit(amount_t amount) {
+    key dummyCommit(const amount_t amount) {
         scalar am = int_to_scalar(amount);
         key bH = scalarmultH(am);
         return addKeys(G, bH);
     }
 
-    key commit(amount_t amount, const scalar &mask) {
+    key commit(const amount_t amount, const scalar &mask) {
         return genC(mask, amount);
     }
 
     //generates a random uint long long (for testing)
-    amount_t randXmrAmount(amount_t upperlimit) {
+    amount_t randXmrAmount(const amount_t upperlimit) {
         return scalar_to_int(skGen()) % (upperlimit);
     }
 
     //Scalar multiplications of curve points
 
-    scalar normalizeKey(const scalar& a) {
+    scalar normalizeKey(const scalar a) {
       scalar k = a;
       sc_reduce32(k.bytes);
       return k;
     }
 
     //does a * G where a is a scalar and G is the curve basepoint
-    void scalarmultBase(key &aG,const scalar &a) {
+    key scalarmultBase(const scalar a) {
       scalar k = normalizeKey(a);
+      key aG;
 
       // no need to check since a can be 0 in tests
       [[maybe_unused]] int _ = crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
-    }
 
-    //does a * G where a is a scalar and G is the curve basepoint
-    key scalarmultBase(const scalar & a) {
-      key aG;
-      scalarmultBase(aG, a);
       return aG;
     }
 
