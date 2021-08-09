@@ -88,12 +88,8 @@ rct::key get_exponent(const rct::key base, size_t idx)
     std::string((const char*)base.bytes, sizeof(base)) + std::string(domain_separator) + tools::get_varint_data(idx);
 
   rct::key e;
-  ge_p3 e_p3;
-  rct::hash_to_p3
-    (
-     e_p3
-     , rct::hash2rct(crypto::sha3(epee::string_tools::string_to_blob(hashed)))
-     );
+  ge_p3 e_p3 = rct::hash_to_p3
+    ( rct::hash2rct(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
   ge_p3_tobytes(e.bytes, &e_p3);
   LOG_ERROR_AND_THROW_IF((e == rct::identity), "Exponent is point at infinity");
   return e;

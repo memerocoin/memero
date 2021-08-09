@@ -339,13 +339,16 @@ namespace rct {
   }
 
   // Hash a key to p3 representation
-  void hash_to_p3(ge_p3 &hash8_p3, const key k) {
+  ge_p3 hash_to_p3(const key k) {
+    ge_p3 hash8_p3;
     key h = hash_key(k);
     ge_p2 hash_p2;
     ge_fromfe_frombytes_vartime(&hash_p2, h.bytes);
     ge_p1p1 hash8_p1p1;
     ge_mul8(&hash8_p1p1, &hash_p2);
     ge_p1p1_to_p3(&hash8_p3, &hash8_p1p1);
+
+    return hash8_p3;
   }
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a

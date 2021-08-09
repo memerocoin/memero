@@ -156,7 +156,7 @@ namespace rct {
     scalar hash_keys_to_scalar(const keyS keys);
     //for ANSL
 
-    void hash_to_p3(ge_p3& hash8_p3, const key k);
+    ge_p3 hash_to_p3(const key k);
 
     //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
     // where C= aG + bH

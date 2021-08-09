@@ -104,8 +104,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(l < n, "Signing index out of range!");
 
         // Key images
-        ge_p3 H_p3;
-        hash_to_p3(H_p3,P[l]);
+        ge_p3 H_p3 = hash_to_p3(P[l]);
         key H = ge_p3_tokey(H_p3);
 
         key D;
@@ -202,7 +201,7 @@ namespace rct {
             L = addKeys_aGbBcC(sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
 
             // Compute R
-            hash_to_p3(Hi_p3,P[i]);
+            Hi_p3 = hash_to_p3(P[i]);
             ge_dsm_precomp(H_precomp.k, &Hi_p3);
             R = addKeys_aAbBcC(sig.s[i],H_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
 
@@ -402,7 +401,7 @@ namespace rct {
                 L = addKeys_aGbBcC(sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
 
                 // Compute R
-                hash_to_p3(hash8_p3,pubs[i].dest);
+                hash8_p3 = hash_to_p3(pubs[i].dest);
                 ge_dsm_precomp(hash_precomp.k, &hash8_p3);
                 R = addKeys_aAbBcC(sig.s[i],hash_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
 
