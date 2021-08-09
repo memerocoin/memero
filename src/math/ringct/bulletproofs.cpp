@@ -824,10 +824,10 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   const scalarV inverses = invert(to_invert);
 
   // setup weighted aggregates
-  rct::key z1 = rct::zero;
-  rct::key z3 = rct::zero;
+  rct::scalar z1 = rct::szero;
+  rct::scalar z3 = rct::szero;
   rct::scalarV m_z4(maxMN, rct::szero), m_z5(maxMN, rct::szero);
-  rct::key m_y0 = rct::zero, y1 = rct::zero;
+  rct::scalar m_y0 = rct::szero, y1 = rct::szero;
   int proof_data_index = 0;
   rct::scalarV w_cache;
   std::vector<ge_p3> proof8_V, proof8_L, proof8_R;
