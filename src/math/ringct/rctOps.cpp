@@ -31,7 +31,6 @@
 
 #include "curveConstants.hpp"
 #include "rctOps.hpp"
-#include "zeroCommitment.hpp"
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
