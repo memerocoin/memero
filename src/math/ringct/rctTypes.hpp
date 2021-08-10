@@ -50,7 +50,14 @@ namespace rct {
     //  but uses unsigned chars,
     //  also includes an operator for accessing the i'th byte.
     struct key : crypto::ec_point {};
-    struct scalar : crypto::ec_scalar {};
+    struct scalar : crypto::ec_scalar {
+      unsigned char & operator[](int i) {
+        return data[i];
+      }
+      unsigned char operator[](int i) const {
+        return data[i];
+      }
+    };
 
     typedef std::vector<key> keyV; //vector of keys
     typedef std::vector<keyV> keyM; //matrix of keys (indexed by column first)

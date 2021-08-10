@@ -37,14 +37,6 @@
 namespace crypto {
   struct crypto_data {
     uint8_t data[32];
-
-    unsigned char & operator[](int i) {
-      return data[i];
-    }
-    unsigned char operator[](int i) const {
-      return data[i];
-    }
-
     bool operator==(const crypto_data &x) const { return !crypto_verify_32(data, x.data); }
   };
 
