@@ -31,6 +31,7 @@
 #pragma once
 
 #include <inttypes.h>
+/* #include <sodium.h> */
 
 /* From fe.h */
 
@@ -124,10 +125,6 @@ void ge_scalarmult_base(ge_p3 *, const unsigned char *);
 /* From ge_tobytes.c */
 
 void ge_tobytes(unsigned char *, const ge_p2 *);
-
-/* From sc_reduce.c */
-
-void sc_reduce(unsigned char *);
 
 /* New code */
 
