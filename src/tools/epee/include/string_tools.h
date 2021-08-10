@@ -129,12 +129,6 @@ namespace string_tools
     return hex::to_span(pod_to_mutable_span(s), hex_str);
   }
   //----------------------------------------------------------------------------
-  template<class t_pod_type>
-  bool hex_to_pod(const std::string_view hex_str, tools::scrubbed<t_pod_type>& s)
-  {
-    return hex_to_pod(hex_str, unwrap(s));
-  }
-  //----------------------------------------------------------------------------
   bool validate_hex(uint64_t length, const std::string& str);
 
   std::vector<uint8_t> hex_to_vector_filtered(const std::string_view src);

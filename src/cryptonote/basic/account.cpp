@@ -57,7 +57,7 @@ namespace cryptonote
   static void derive_key(const crypto::chacha_key &base_key, crypto::chacha_key &key)
   {
     static_assert(sizeof(base_key) == sizeof(crypto::hash), "chacha key and hash should be the same size");
-    tools::scrubbed_arr<char, sizeof(base_key)+1> data;
+    std::array<char, sizeof(base_key)+1> data;
     memcpy(data.data(), &base_key, sizeof(base_key));
     data[sizeof(base_key)] = config::HASH_KEY_MEMORY;
     crypto::generate_chacha_key(data.data(), sizeof(data), key, 1);
@@ -145,7 +145,7 @@ namespace cryptonote
     // rng for generating second set of keys is hash of first rng.  means only one set of electrum-style words needed for recovery
     crypto::secret_key second;
     const auto h = crypto::sha3(epee::pod_to_span(m_keys.m_spend_secret_key));
-    std::copy(std::begin(h.data), std::end(h.data), unwrap(second).data);
+    std::copy(std::begin(h.data), std::end(h.data), (second).data);
 
     generate_keys(m_keys.m_account_address.m_view_public_key, m_keys.m_view_secret_key, second, true);
 
@@ -193,7 +193,7 @@ namespace cryptonote
   void account_base::create_from_viewkey(const cryptonote::account_public_address& address, const crypto::secret_key& viewkey)
   {
     crypto::secret_key fake;
-    memset(&unwrap(fake), 0, sizeof(fake));
+    memset(&(fake), 0, sizeof(fake));
     create_from_keys(address, fake, viewkey);
   }
   //-----------------------------------------------------------------

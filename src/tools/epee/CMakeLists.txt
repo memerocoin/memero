@@ -37,7 +37,6 @@ add_library( epee
   src/net_utils_base.cpp
   src/string_tools.cpp
   src/levin_base.cpp
-  src/memwipe.cpp
   src/connection_basic.cpp
   src/buffer.cpp
   src/file_io_utils.cpp

@@ -116,7 +116,7 @@ namespace crypto {
       random_scalar(sec);
     }
 
-    sc_reduce32(&unwrap(sec));  // reduce in case second round of keys (sendkeys)
+    sc_reduce32(&(sec));  // reduce in case second round of keys (sendkeys)
 
     crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
 
@@ -139,7 +139,7 @@ namespace crypto {
     if (ge_frombytes_vartime(&point, &key1) != 0) {
       return false;
     }
-    ge_scalarmult(&point2, &unwrap(key2), &point);
+    ge_scalarmult(&point2, &(key2), &point);
     ge_mul8(&point3, &point2);
     ge_p1p1_to_p2(&point2, &point3);
     ge_tobytes(&derivation, &point2);
@@ -183,7 +183,7 @@ namespace crypto {
     ec_scalar scalar;
     assert(sc_check(&base) == 0);
     derivation_to_scalar(derivation, output_index, scalar);
-    sc_add(&unwrap(derived_key), &unwrap(base), &scalar);
+    sc_add(&(derived_key), &(base), &scalar);
   }
 
   bool crypto_ops::derive_subaddress_public_key(const public_key &out_key, const key_derivation &derivation, std::size_t output_index, public_key &derived_key) {
@@ -246,7 +246,7 @@ namespace crypto {
     hash_to_scalar(&buf, sizeof(s_comm), sig.c);
     if (!sc_isnonzero((const unsigned char*)sig.c.data))
       goto try_again;
-    sc_mulsub(&sig.r, &sig.c, &unwrap(sec), &k);
+    sc_mulsub(&sig.r, &sig.c, &(sec), &k);
     if (!sc_isnonzero((const unsigned char*)sig.r.data))
       goto try_again;
     memwipe(&k, sizeof(k));
@@ -359,7 +359,7 @@ namespace crypto {
     hash_to_scalar(&buf, sizeof(buf), sig.c);
 
     // sig.r = k - sig.c*r
-    sc_mulsub(&sig.r, &sig.c, &unwrap(r), &k);
+    sc_mulsub(&sig.r, &sig.c, &(r), &k);
 
     memwipe(&k, sizeof(k));
   }
@@ -480,7 +480,7 @@ namespace crypto {
     ge_p2 point2;
     assert(sc_check(&sec) == 0);
     hash_to_ec(pub, point);
-    ge_scalarmult(&point2, &unwrap(sec), &point);
+    ge_scalarmult(&point2, &(sec), &point);
     ge_tobytes(&image, &point2);
   }
 

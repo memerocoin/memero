@@ -40,7 +40,7 @@
 namespace crypto {
   void chacha20(const void* data, size_t length, const uint8_t* key, const uint8_t* iv, char* cipher);
 
-  using chacha_key = tools::scrubbed_arr<uint8_t, CHACHA_KEY_SIZE>;
+  using chacha_key = std::array<uint8_t, CHACHA_KEY_SIZE>;
 
   struct chacha_iv {
     uint8_t data[CHACHA_IV_SIZE];

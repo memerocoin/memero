@@ -38,7 +38,6 @@ add_executable(unit_tests_tools
   notify.cpp
   varint.cpp
   threadpool.cpp
-  memwipe.cpp
   crypto.cpp
   hashchain.cpp
   levin.cpp

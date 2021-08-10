@@ -44,11 +44,14 @@ namespace crypto {
     uint8_t data[32];
   };
 
+  struct secret_key: ec_scalar{
+    friend class crypto_ops;
+  };
+
   struct public_key: ec_point {
     friend class crypto_ops;
   };
 
-  using secret_key = tools::scrubbed<ec_scalar>;
 
   struct public_keyV {
     std::vector<public_key> keys;

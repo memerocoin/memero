@@ -904,7 +904,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
         fail_msg_writer() << sw::tr("No data supplied, cancelled");
         return false;
       }
-      spendkey_string = epee::string_tools::pod_to_hex(unwrap(m_recovery_key));
+      spendkey_string = epee::string_tools::pod_to_hex((m_recovery_key));
 
       auto r = new_wallet(vm, m_recovery_key, true);
       LOG_ERROR_AND_RETURN_UNLESS(r, false, sw::tr("account creation failed"));
