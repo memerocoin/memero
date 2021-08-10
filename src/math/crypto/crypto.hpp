@@ -37,11 +37,11 @@
 namespace crypto {
 
   struct ec_point {
-    char data[32];
+    uint8_t data[32];
   };
 
   struct ec_scalar {
-    char data[32];
+    uint8_t data[32];
   };
 
   struct public_key: ec_point {

@@ -353,7 +353,7 @@ namespace crypto
      * \param  language_name Seed language name
      * \return               true if successful false if not. Unsuccessful if wrong key size.
      */
-    bool bytes_to_words(const char *src, size_t len, epee::wipeable_string& words,
+    bool bytes_to_words(const uint8_t *src, size_t len, epee::wipeable_string& words,
       const std::string &language_name)
     {
 

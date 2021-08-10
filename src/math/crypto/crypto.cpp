@@ -74,51 +74,18 @@ namespace crypto {
     return &reinterpret_cast<const unsigned char &>(scalar);
   }
 
-  std::mutex &get_random_lock()
-  {
-    static std::mutex random_lock;
-    return random_lock;
-  }
-
-  // https://stackoverflow.com/questions/25298585/efficiently-generating-random-bytes-of-data-in-c11-14
-  using random_bytes_engine = std::independent_bits_engine<
-    std::default_random_engine, CHAR_BIT, uint8_t>;
-
   void generate_random_bytes_thread_safe(size_t N, uint8_t *bytes)
   {
-    std::lock_guard<std::mutex> lock(get_random_lock());
     randombytes_buf(bytes, N);
-  }
-
-  static inline bool less32(const unsigned char *k0, const unsigned char *k1)
-  {
-    for (int n = 31; n >= 0; --n)
-    {
-      if (k0[n] < k1[n])
-        return true;
-      if (k0[n] > k1[n])
-        return false;
-    }
-    return false;
   }
 
   void random32_unbiased(unsigned char *bytes)
   {
-    // l = 2^252 + 27742317777372353535851937790883648493.
-    // l fits 15 times in 32 bytes (iow, 15 l is the highest multiple of l that fits in 32 bytes)
-    static const unsigned char limit[32] = { 0xe3, 0x6a, 0x67, 0x72, 0x8b, 0xce, 0x13, 0x29, 0x8f, 0x30, 0x82, 0x8c, 0x0b, 0xa4, 0x10, 0x39, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0 };
-    while(1)
-    {
-      generate_random_bytes_thread_safe(32, bytes);
-      if (!less32(bytes, limit))
-        continue;
-      sc_reduce32(bytes);
-      if (sc_isnonzero(bytes))
-        break;
-    }
+    crypto_core_ed25519_scalar_random(bytes);
   }
+
   /* generate a random 32-byte (256-bit) integer and copy it to res */
-  static inline void random_scalar(ec_scalar &res) {
+  void random_scalar(ec_scalar &res) {
     random32_unbiased((unsigned char*)res.data);
   }
 
@@ -254,14 +221,6 @@ namespace crypto {
     hash h;
     ec_point key;
     ec_point comm;
-  };
-
-  // Used in v1 tx proofs
-  struct s_comm_2_v1 {
-    hash msg;
-    ec_point D;
-    ec_point X;
-    ec_point Y;
   };
 
   // Used in v1/v2 tx proofs
