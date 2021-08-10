@@ -73,7 +73,13 @@ namespace crypto {
 
   /* Generate a new key pair
     */
-  secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key = secret_key(), bool recover = false);
+  secret_key generate_keys
+  (
+   public_key &pub
+   , secret_key &sec
+   , const secret_key& recovery_key = secret_key()
+   , bool recover = false
+   );
 
   /* Check a public key. Returns true if it is valid, false otherwise.
     */
@@ -106,9 +112,26 @@ namespace crypto {
     * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
     * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
     */
-  void generate_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const secret_key &, signature &);
+  void generate_tx_proof
+  (
+   const hash &prefix_hash
+   , const public_key &R
+   , const public_key &A
+   , const std::optional<public_key> &B
+   , const public_key &D
+   , const secret_key &r
+   , signature &sig
+   );
 
-  bool check_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const signature &);
+  bool check_tx_proof
+  (
+   const hash &prefix_hash
+   , const public_key &R
+   , const public_key &A
+   , const std::optional<public_key> &B
+   , const public_key &D
+   , const signature &sig
+   );
 
   /* To send money to a key:
     * * The sender generates an ephemeral key and includes it in transaction output.
