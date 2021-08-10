@@ -129,10 +129,10 @@ namespace rct {
         // Aggregation hashes
         keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         keyV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        sc_0(mu_P_to_hash[0].bytes);
-        memcpy(mu_P_to_hash[0].bytes,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
-        sc_0(mu_C_to_hash[0].bytes);
-        memcpy(mu_C_to_hash[0].bytes,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
+        sc_0(mu_P_to_hash[0].data);
+        memcpy(mu_P_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
+        sc_0(mu_C_to_hash[0].data);
+        memcpy(mu_C_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
         for (size_t i = 1; i < n+1; ++i) {
             mu_P_to_hash[i] = P[i-1];
             mu_C_to_hash[i] = P[i-1];
@@ -154,8 +154,8 @@ namespace rct {
         // Initial commitment
         keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
         scalar c;
-        sc_0(c_to_hash[0].bytes);
-        memcpy(c_to_hash[0].bytes,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
+        sc_0(c_to_hash[0].data);
+        memcpy(c_to_hash[0].data,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
         for (size_t i = 1; i < n+1; ++i)
         {
             c_to_hash[i] = P[i-1];
@@ -189,9 +189,9 @@ namespace rct {
 
         while (i != l) {
             sig.s[i] = skGen();
-            sc_0(c_new.bytes);
-            sc_mul(c_p.bytes,mu_P.bytes,c.bytes);
-            sc_mul(c_c.bytes,mu_C.bytes,c.bytes);
+            sc_0(c_new.data);
+            sc_mul(c_p.data,mu_P.data,c.data);
+            sc_mul(c_c.data,mu_C.data,c.data);
 
             // Precompute points
             precomp(P_precomp.k,P[i]);
@@ -300,7 +300,7 @@ namespace rct {
         }
 
         sk[0] = inSk.addr;
-        sc_sub(sk[1].bytes, inSk.blinding_factor.bytes, a.bytes);
+        sc_sub(sk[1].data, inSk.blinding_factor.data, a.data);
         clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
         memwipe(sk.data(), sk.size() * sizeof(key));
         return result;
@@ -315,13 +315,13 @@ namespace rct {
         LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
         LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
         for (const auto &s: sig.s)
-          LOG_ERROR_AND_RETURN_UNLESS(sc_check(s.bytes) == 0, false, "Bad signature scalar!");
-        LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.bytes) == 0, false, "Bad signature commitment!");
+          LOG_ERROR_AND_RETURN_UNLESS(sc_check(s.data) == 0, false, "Bad signature scalar!");
+        LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.data) == 0, false, "Bad signature commitment!");
         LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad key image!");
 
         // Cache commitment offset for efficient subtraction later
         ge_p3 C_offset_p3;
-        LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&C_offset_p3, C_offset.bytes) == 0, false, "point conv failed");
+        LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&C_offset_p3, C_offset.data) == 0, false, "point conv failed");
         ge_cached C_offset_cached;
         ge_p3_to_cached(&C_offset_cached, &C_offset_p3);
 
@@ -337,10 +337,10 @@ namespace rct {
         // Aggregation hashes
         keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         keyV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        sc_0(mu_P_to_hash[0].bytes);
-        memcpy(mu_P_to_hash[0].bytes,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
-        sc_0(mu_C_to_hash[0].bytes);
-        memcpy(mu_C_to_hash[0].bytes,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
+        sc_0(mu_P_to_hash[0].data);
+        memcpy(mu_P_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
+        sc_0(mu_C_to_hash[0].data);
+        memcpy(mu_C_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
         for (size_t i = 1; i < n+1; ++i) {
             mu_P_to_hash[i] = pubs[i-1].dest;
             mu_C_to_hash[i] = pubs[i-1].dest;
@@ -361,8 +361,8 @@ namespace rct {
 
         // Set up round hash
         keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
-        sc_0(c_to_hash[0].bytes);
-        memcpy(c_to_hash[0].bytes,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
+        sc_0(c_to_hash[0].data);
+        memcpy(c_to_hash[0].data,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
         for (size_t i = 1; i < n+1; ++i)
         {
             c_to_hash[i] = pubs[i-1].dest;
@@ -384,14 +384,14 @@ namespace rct {
         ge_p1p1 temp_p1;
 
         while (i < n) {
-            sc_0(c_new.bytes);
-            sc_mul(c_p.bytes,mu_P.bytes,c.bytes);
-            sc_mul(c_c.bytes,mu_C.bytes,c.bytes);
+            sc_0(c_new.data);
+            sc_mul(c_p.data,mu_P.data,c.data);
+            sc_mul(c_c.data,mu_C.data,c.data);
 
             // Precompute points for L/R
             precomp(P_precomp.k,pubs[i].dest);
 
-            LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&temp_p3, pubs[i].mask.bytes) == 0, false, "point conv failed");
+            LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&temp_p3, pubs[i].mask.data) == 0, false, "point conv failed");
             ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
             ge_p1p1_to_p3(&temp_p3,&temp_p1);
             ge_dsm_precomp(C_precomp.k,&temp_p3);
@@ -412,8 +412,8 @@ namespace rct {
 
             i = i + 1;
         }
-        sc_sub(c_new.bytes,c.bytes,sig.c1.bytes);
-        return sc_isnonzero(c_new.bytes) == 0;
+        sc_sub(c_new.data,c.data,sig.c1.data);
+        return sc_isnonzero(c_new.data) == 0;
     }
 
     bool verRctCLSAGSimple(const key message, const clsag sig, const ctkeyS pubs, const key C_offset) {
@@ -500,7 +500,7 @@ namespace rct {
         scalar sumout = s_zero;
         for (i = 0; i < outSk.size(); ++i)
         {
-            sc_add(sumout.bytes, outSk[i].blinding_factor.bytes, sumout.bytes);
+            sc_add(sumout.data, outSk[i].blinding_factor.data, sumout.data);
 
             //mask amount and mask
             rv.ecdhInfo[i].mask = outSk[i].blinding_factor;
@@ -521,10 +521,10 @@ namespace rct {
         scalarV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
             a[i] = skGen();
-            sc_add(sumpouts.bytes, a[i].bytes, sumpouts.bytes);
+            sc_add(sumpouts.data, a[i].data, sumpouts.data);
             pseudoOuts[i] = genC(a[i], inamounts[i]);
         }
-        sc_sub(a[i].bytes, sumout.bytes, sumpouts.bytes);
+        sc_sub(a[i].data, sumout.data, sumpouts.data);
         pseudoOuts[i] = genC(a[i], inamounts[i]);
 
         key full_message = get_mlsag_pre_hash(rv);
@@ -760,8 +760,8 @@ namespace rct {
         mask = ecdh_info.mask;
         scalar amount = ecdh_info.amount;
         key C = rv.outPk[i].mask;
-        LOG_ERROR_AND_THROW_UNLESS(sc_check(mask.bytes) == 0, "warning, bad ECDH mask");
-        LOG_ERROR_AND_THROW_UNLESS(sc_check(amount.bytes) == 0, "warning, bad ECDH amount");
+        LOG_ERROR_AND_THROW_UNLESS(sc_check(mask.data) == 0, "warning, bad ECDH mask");
+        LOG_ERROR_AND_THROW_UNLESS(sc_check(amount.data) == 0, "warning, bad ECDH amount");
         const key Ctmp = addScalarMult_G_H(mask, amount);
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");

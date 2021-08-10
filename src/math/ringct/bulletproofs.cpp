@@ -68,7 +68,7 @@ rct::scalar inner_product(const scalarS a, const scalarS b)
   rct::scalar res = rct::s_zero;
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_muladd(res.bytes, a[i].bytes, b[i].bytes, res.bytes);
+    sc_muladd(res.data, a[i].data, b[i].data, res.data);
   }
   return res;
 }
@@ -88,19 +88,19 @@ const auto multiexp = pippenger;
 
 bool is_reduced(const rct::scalar scalar)
 {
-  return sc_check(scalar.bytes) == 0;
+  return sc_check(scalar.data) == 0;
 }
 
 rct::key get_exponent(const rct::key base, size_t idx)
 {
   constexpr std::string_view domain_separator(config::HASH_KEY_BULLETPROOF_EXPONENT);
   const std::string hashed =
-    std::string((const char*)base.bytes, sizeof(base)) + std::string(domain_separator) + tools::get_varint_data(idx);
+    std::string((const char*)base.data, sizeof(base)) + std::string(domain_separator) + tools::get_varint_data(idx);
 
   rct::key e;
   ge_p3 e_p3 = rct::hash_to_p3
     ( rct::hash2rct(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
-  ge_p3_tobytes(e.bytes, &e_p3);
+  ge_p3_tobytes(e.data, &e_p3);
   LOG_ERROR_AND_THROW_IF((e == rct::identity), "Exponent is point at infinity");
   return e;
 }
@@ -115,9 +115,9 @@ void init_exponents()
     for (size_t i = 0; i < maxN*maxM; ++i)
     {
       Hi[i] = get_exponent(rct::H, i * 2);
-      LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Hi_p3[i], Hi[i].bytes) == 0, "ge_frombytes_vartime failed");
+      LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Hi_p3[i], Hi[i].data) == 0, "ge_frombytes_vartime failed");
       Gi[i] = get_exponent(rct::H, i * 2 + 1);
-      LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Gi_p3[i], Gi[i].bytes) == 0, "ge_frombytes_vartime failed");
+      LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Gi_p3[i], Gi[i].data) == 0, "ge_frombytes_vartime failed");
     }
 
     init_done = true;
@@ -169,16 +169,16 @@ rct::key cross_vector_exponent8
   multiexp_data.resize(size*2 + (!!extra_point));
   for (size_t i = 0; i < size; ++i)
   {
-    sc_mul(multiexp_data[i*2].scalar.bytes, a[ao+i].bytes, rct::s_inv_eight.bytes);
+    sc_mul(multiexp_data[i*2].scalar.data, a[ao+i].data, rct::s_inv_eight.data);
     multiexp_data[i*2].point = A[Ao+i];
-    sc_mul(multiexp_data[i*2+1].scalar.bytes, b[bo+i].bytes, rct::s_inv_eight.bytes);
+    sc_mul(multiexp_data[i*2+1].scalar.data, b[bo+i].data, rct::s_inv_eight.data);
     if (scale)
-      sc_mul(multiexp_data[i*2+1].scalar.bytes, multiexp_data[i*2+1].scalar.bytes, (*scale)[Bo+i].bytes);
+      sc_mul(multiexp_data[i*2+1].scalar.data, multiexp_data[i*2+1].scalar.data, (*scale)[Bo+i].data);
     multiexp_data[i*2+1].point = B[Bo+i];
   }
   if (extra_point)
   {
-    sc_mul(multiexp_data.back().scalar.bytes, extra_scalar->bytes, rct::s_inv_eight.bytes);
+    sc_mul(multiexp_data.back().scalar.data, extra_scalar->data, rct::s_inv_eight.data);
     multiexp_data.back().point = *extra_point;
   }
   return multiexp(multiexp_data);
@@ -196,7 +196,7 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n)
   res[1] = x;
   for (size_t i = 2; i < n; ++i)
   {
-    sc_mul(res[i].bytes, res[i-1].bytes, x.bytes);
+    sc_mul(res[i].data, res[i-1].data, x.data);
   }
   return res;
 }
@@ -217,11 +217,11 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
 
   if (is_power_of_2)
   {
-    sc_add(res.bytes, res.bytes, x.bytes);
+    sc_add(res.data, res.data, x.data);
     while (n > 2)
     {
-      sc_mul(x.bytes, x.bytes, x.bytes);
-      sc_muladd(res.bytes, x.bytes, res.bytes, res.bytes);
+      sc_mul(x.data, x.data, x.data);
+      sc_muladd(res.data, x.data, res.data, res.data);
       n /= 2;
     }
   }
@@ -231,8 +231,8 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
     for (size_t i = 1; i < n; ++i)
     {
       if (i > 1)
-        sc_mul(prev.bytes, prev.bytes, x.bytes);
-      sc_add(res.bytes, res.bytes, prev.bytes);
+        sc_mul(prev.data, prev.data, x.data);
+      sc_add(res.data, res.data, prev.data);
     }
   }
 
@@ -247,7 +247,7 @@ rct::scalarV hadamard(const scalarS a, const scalarS b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_mul(res[i].bytes, a[i].bytes, b[i].bytes);
+    sc_mul(res[i].data, a[i].data, b[i].data);
   }
   return res;
 }
@@ -263,9 +263,9 @@ void hadamard_fold(std::vector<ge_p3> &v, const rct::scalarV *scale, const rct::
     ge_dsm_precomp(c[0], &v[n]);
     ge_dsm_precomp(c[1], &v[sz + n]);
     rct::scalar sa, sb;
-    if (scale) sc_mul(sa.bytes, a.bytes, (*scale)[n].bytes); else sa = a;
-    if (scale) sc_mul(sb.bytes, b.bytes, (*scale)[sz + n].bytes); else sb = b;
-    ge_double_scalarmult_precomp_vartime2_p3(&v[n], sa.bytes, c[0], sb.bytes, c[1]);
+    if (scale) sc_mul(sa.data, a.data, (*scale)[n].data); else sa = a;
+    if (scale) sc_mul(sb.data, b.data, (*scale)[sz + n].data); else sb = b;
+    ge_double_scalarmult_precomp_vartime2_p3(&v[n], sa.data, c[0], sb.data, c[1]);
   }
   v.resize(sz);
 }
@@ -277,7 +277,7 @@ rct::scalarV vector_add(const scalarS a, const scalarS b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_add(res[i].bytes, a[i].bytes, b[i].bytes);
+    sc_add(res[i].data, a[i].data, b[i].data);
   }
   return res;
 }
@@ -288,7 +288,7 @@ rct::scalarV vector_add(const scalarS a, const rct::scalar b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_add(res[i].bytes, a[i].bytes, b.bytes);
+    sc_add(res[i].data, a[i].data, b.data);
   }
   return res;
 }
@@ -299,7 +299,7 @@ rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_sub(res[i].bytes, a[i].bytes, b.bytes);
+    sc_sub(res[i].data, a[i].data, b.data);
   }
   return res;
 }
@@ -310,7 +310,7 @@ rct::scalarV vector_scalar(const scalarS a, const rct::scalar x)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_mul(res[i].bytes, a[i].bytes, x.bytes);
+    sc_mul(res[i].data, a[i].data, x.data);
   }
   return res;
 }
@@ -321,8 +321,8 @@ rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
   rct::scalar y = y_in;
   rct::scalar x = x_in;
   while (n--)
-    sc_mul(y.bytes, y.bytes, y.bytes);
-  sc_mul(y.bytes, y.bytes, x.bytes);
+    sc_mul(y.data, y.data, y.data);
+  sc_mul(y.data, y.data, x.data);
   return y;
 }
 
@@ -332,17 +332,17 @@ rct::scalar invert(const rct::scalar x)
   rct::scalar _1, _10, _100, _11, _101, _111, _1001, _1011, _1111;
 
   _1 = x;
-  sc_mul(_10.bytes, _1.bytes, _1.bytes);
-  sc_mul(_100.bytes, _10.bytes, _10.bytes);
-  sc_mul(_11.bytes, _10.bytes, _1.bytes);
-  sc_mul(_101.bytes, _10.bytes, _11.bytes);
-  sc_mul(_111.bytes, _10.bytes, _101.bytes);
-  sc_mul(_1001.bytes, _10.bytes, _111.bytes);
-  sc_mul(_1011.bytes, _10.bytes, _1001.bytes);
-  sc_mul(_1111.bytes, _100.bytes, _1011.bytes);
+  sc_mul(_10.data, _1.data, _1.data);
+  sc_mul(_100.data, _10.data, _10.data);
+  sc_mul(_11.data, _10.data, _1.data);
+  sc_mul(_101.data, _10.data, _11.data);
+  sc_mul(_111.data, _10.data, _101.data);
+  sc_mul(_1001.data, _10.data, _111.data);
+  sc_mul(_1011.data, _10.data, _1001.data);
+  sc_mul(_1111.data, _100.data, _1011.data);
 
   rct::scalar inv;
-  sc_mul(inv.bytes, _1111.bytes, _1.bytes);
+  sc_mul(inv.data, _1111.data, _1.data);
 
   inv = sm(inv, 123 + 3, _101);
   inv = sm(inv, 2 + 2, _11);
@@ -387,7 +387,7 @@ rct::scalarV invert(rct::scalarV x)
     if (n == 0)
       acc = x[0];
     else
-      sc_mul(acc.bytes, acc.bytes, x[n].bytes);
+      sc_mul(acc.data, acc.data, x[n].data);
   }
 
   acc = invert(acc);
@@ -395,8 +395,8 @@ rct::scalarV invert(rct::scalarV x)
   rct::scalar tmp;
   for (int i = x.size(); i-- > 0; )
   {
-    sc_mul(tmp.bytes, acc.bytes, x[i].bytes);
-    sc_mul(x[i].bytes, acc.bytes, scratch[i].bytes);
+    sc_mul(tmp.data, acc.data, x[i].data);
+    sc_mul(x[i].data, acc.data, scratch[i].data);
     acc = tmp;
   }
 
@@ -488,8 +488,8 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   for (size_t i = 0; i < sv.size(); ++i)
   {
     rct::scalar gamma8, sv8;
-    sc_mul(gamma8.bytes, gamma[i].bytes, rct::s_inv_eight.bytes);
-    sc_mul(sv8.bytes, sv[i].bytes, rct::s_inv_eight.bytes);
+    sc_mul(gamma8.data, gamma[i].data, rct::s_inv_eight.data);
+    sc_mul(sv8.data, sv[i].data, rct::s_inv_eight.data);
     V[i] = rct::addScalarMult_G_H(gamma8, sv8);
   }
 
@@ -519,7 +519,7 @@ try_again:
   // PAPER LINES 43-44
   rct::scalar alpha = rct::skGen();
   rct::key ve = vector_exponent(aL8, aR8);
-  sc_mul(tmp.bytes, alpha.bytes, rct::s_inv_eight.bytes);
+  sc_mul(tmp.data, alpha.data, rct::s_inv_eight.data);
   const key A = rct::addKeys(ve, rct::scalarmultBase(tmp));
 
   // PAPER LINES 45-47
@@ -557,7 +557,7 @@ try_again:
       {
           LOG_ERROR_AND_THROW_UNLESS(j+2 < zpow.size(), "invalid zpow index");
           LOG_ERROR_AND_THROW_UNLESS(i < twoN.size(), "invalid twoN index");
-          sc_mul(zero_twos[j*N+i].bytes,zpow[j+2].bytes,twoN[i].bytes);
+          sc_mul(zero_twos[j*N+i].data,zpow[j+2].data,twoN[i].data);
       }
   }
 
@@ -571,7 +571,7 @@ try_again:
   rct::scalar t1_1 = inner_product(l0, r1);
   rct::scalar t1_2 = inner_product(l1, r0);
   rct::scalar t1;
-  sc_add(t1.bytes, t1_1.bytes, t1_2.bytes);
+  sc_add(t1.data, t1_1.data, t1_2.data);
   rct::scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
@@ -579,14 +579,14 @@ try_again:
 
   rct::key T1, T2;
   ge_p3 p3;
-  sc_mul(tmp.bytes, t1.bytes, rct::s_inv_eight.bytes);
-  sc_mul(tmp2.bytes, tau1.bytes, rct::s_inv_eight.bytes);
-  ge_double_scalarmult_base_vartime_p3(&p3, tmp.bytes, &ge_p3_H, tmp2.bytes);
-  ge_p3_tobytes(T1.bytes, &p3);
-  sc_mul(tmp.bytes, t2.bytes, rct::s_inv_eight.bytes);
-  sc_mul(tmp2.bytes, tau2.bytes, rct::s_inv_eight.bytes);
-  ge_double_scalarmult_base_vartime_p3(&p3, tmp.bytes, &ge_p3_H, tmp2.bytes);
-  ge_p3_tobytes(T2.bytes, &p3);
+  sc_mul(tmp.data, t1.data, rct::s_inv_eight.data);
+  sc_mul(tmp2.data, tau1.data, rct::s_inv_eight.data);
+  ge_double_scalarmult_base_vartime_p3(&p3, tmp.data, &ge_p3_H, tmp2.data);
+  ge_p3_tobytes(T1.data, &p3);
+  sc_mul(tmp.data, t2.data, rct::s_inv_eight.data);
+  sc_mul(tmp2.data, tau2.data, rct::s_inv_eight.data);
+  ge_double_scalarmult_base_vartime_p3(&p3, tmp.data, &ge_p3_H, tmp2.data);
+  ge_p3_tobytes(T2.data, &p3);
 
   // PAPER LINES 54-56
   rct::scalar x = hash_carry_mash(hash_carry, s2k(z), T1, T2);
@@ -598,17 +598,17 @@ try_again:
 
   // PAPER LINES 61-63
   rct::scalar taux;
-  sc_mul(taux.bytes, tau1.bytes, x.bytes);
+  sc_mul(taux.data, tau1.data, x.data);
   rct::scalar xsq;
-  sc_mul(xsq.bytes, x.bytes, x.bytes);
-  sc_muladd(taux.bytes, tau2.bytes, xsq.bytes, taux.bytes);
+  sc_mul(xsq.data, x.data, x.data);
+  sc_muladd(taux.data, tau2.data, xsq.data, taux.data);
   for (size_t j = 1; j <= sv.size(); ++j)
   {
     LOG_ERROR_AND_THROW_UNLESS(j+1 < zpow.size(), "invalid zpow index");
-    sc_muladd(taux.bytes, zpow[j+1].bytes, gamma[j-1].bytes, taux.bytes);
+    sc_muladd(taux.data, zpow[j+1].data, gamma[j-1].data, taux.data);
   }
   rct::scalar mu;
-  sc_muladd(mu.bytes, x.bytes, rho.bytes, alpha.bytes);
+  sc_muladd(mu.data, x.data, rho.data, alpha.data);
 
   // PAPER LINES 58-60
   rct::scalarV l = l0;
@@ -641,7 +641,7 @@ try_again:
     Gprime[i] = Gi_p3[i];
     Hprime[i] = Hi_p3[i];
     if (i > 1)
-      sc_mul(yinvpow[i].bytes, yinvpow[i-1].bytes, yinv.bytes);
+      sc_mul(yinvpow[i].data, yinvpow[i-1].data, yinv.data);
     aprime[i] = l[i];
     bprime[i] = r[i];
   }
@@ -661,10 +661,10 @@ try_again:
     rct::scalar cR = inner_product(slice(aprime, nprime, aprime.size()), slice(bprime, 0, nprime));
 
     // PAPER LINES 23-24
-    sc_mul(tmp.bytes, cL.bytes, x_ip.bytes);
+    sc_mul(tmp.data, cL.data, x_ip.data);
     L[round] = cross_vector_exponent8
       (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &ge_p3_H, &tmp);
-    sc_mul(tmp.bytes, cR.bytes, x_ip.bytes);
+    sc_mul(tmp.data, cR.data, x_ip.data);
     R[round] = cross_vector_exponent8
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &ge_p3_H, &tmp);
 
@@ -708,14 +708,14 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::scalarV g
   for (size_t i = 0; i < v.size(); ++i)
   {
     sv[i] = rct::s_zero;
-    sv[i].bytes[0] = v[i] & 255;
-    sv[i].bytes[1] = (v[i] >> 8) & 255;
-    sv[i].bytes[2] = (v[i] >> 16) & 255;
-    sv[i].bytes[3] = (v[i] >> 24) & 255;
-    sv[i].bytes[4] = (v[i] >> 32) & 255;
-    sv[i].bytes[5] = (v[i] >> 40) & 255;
-    sv[i].bytes[6] = (v[i] >> 48) & 255;
-    sv[i].bytes[7] = (v[i] >> 56) & 255;
+    sv[i].data[0] = v[i] & 255;
+    sv[i].data[1] = (v[i] >> 8) & 255;
+    sv[i].data[2] = (v[i] >> 16) & 255;
+    sv[i].data[3] = (v[i] >> 24) & 255;
+    sv[i].data[4] = (v[i] >> 32) & 255;
+    sv[i].data[5] = (v[i] >> 40) & 255;
+    sv[i].data[6] = (v[i] >> 48) & 255;
+    sv[i].data[7] = (v[i] >> 56) & 255;
   }
   return bulletproof_MAKE(sv, gamma);
 }
@@ -853,36 +853,36 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     ge_p3 proof8_S  = rct::multPoint8raw(proof.S);
     ge_p3 proof8_A  = rct::multPoint8raw(proof.A);
 
-    sc_mulsub(m_y0.bytes, proof.taux.bytes, weight_y.bytes, m_y0.bytes);
+    sc_mulsub(m_y0.data, proof.taux.data, weight_y.data, m_y0.data);
 
     const rct::scalarV zpow = vector_powers(pd.z, M+3);
 
     rct::scalar k;
     const rct::scalar ip1y = vector_power_sum(pd.y, MN);
-    sc_mulsub(k.bytes, zpow[2].bytes, ip1y.bytes, rct::zero.bytes);
+    sc_mulsub(k.data, zpow[2].data, ip1y.data, rct::zero.data);
     for (size_t j = 1; j <= M; ++j)
     {
       LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
-      sc_mulsub(k.bytes, zpow[j+2].bytes, ip12.bytes, k.bytes);
+      sc_mulsub(k.data, zpow[j+2].data, ip12.data, k.data);
     }
 
-    sc_muladd(tmp.bytes, pd.z.bytes, ip1y.bytes, k.bytes);
-    sc_sub(tmp.bytes, proof.t.bytes, tmp.bytes);
-    sc_muladd(y1.bytes, tmp.bytes, weight_y.bytes, y1.bytes);
+    sc_muladd(tmp.data, pd.z.data, ip1y.data, k.data);
+    sc_sub(tmp.data, proof.t.data, tmp.data);
+    sc_muladd(y1.data, tmp.data, weight_y.data, y1.data);
     for (size_t j = 0; j < proof8_V.size(); j++)
     {
-      sc_mul(tmp.bytes, zpow[j+2].bytes, weight_y.bytes);
+      sc_mul(tmp.data, zpow[j+2].data, weight_y.data);
       multiexp_data.emplace_back(tmp, proof8_V[j]);
     }
-    sc_mul(tmp.bytes, pd.x.bytes, weight_y.bytes);
+    sc_mul(tmp.data, pd.x.data, weight_y.data);
     multiexp_data.emplace_back(tmp, proof8_T1);
     rct::scalar xsq;
-    sc_mul(xsq.bytes, pd.x.bytes, pd.x.bytes);
-    sc_mul(tmp.bytes, xsq.bytes, weight_y.bytes);
+    sc_mul(xsq.data, pd.x.data, pd.x.data);
+    sc_mul(tmp.data, xsq.data, weight_y.data);
     multiexp_data.emplace_back(tmp, proof8_T2);
 
     multiexp_data.emplace_back(weight_z, proof8_A);
-    sc_mul(tmp.bytes, pd.x.bytes, weight_z.bytes);
+    sc_mul(tmp.data, pd.x.data, weight_z.data);
     multiexp_data.emplace_back(tmp, proof8_S);
 
     // Compute the number of rounds for the inner product
@@ -905,8 +905,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       const size_t slots = 1<<(j+1);
       for (size_t s = slots; s-- > 0; --s)
       {
-        sc_mul(w_cache[s].bytes, w_cache[s/2].bytes, pd.w[j].bytes);
-        sc_mul(w_cache[s-1].bytes, w_cache[s/2].bytes, winv[j].bytes);
+        sc_mul(w_cache[s].data, w_cache[s/2].data, pd.w[j].data);
+        sc_mul(w_cache[s-1].data, w_cache[s/2].data, winv[j].data);
       }
     }
 
@@ -917,29 +917,29 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       if (i == 0)
         h_scalar = proof.b;
       else
-        sc_mul(h_scalar.bytes, proof.b.bytes, yinvpow.bytes);
+        sc_mul(h_scalar.data, proof.b.data, yinvpow.data);
 
       // Convert the index to binary IN REVERSE and construct the scalar exponent
-      sc_mul(g_scalar.bytes, g_scalar.bytes, w_cache[i].bytes);
-      sc_mul(h_scalar.bytes, h_scalar.bytes, w_cache[(~i) & (MN-1)].bytes);
+      sc_mul(g_scalar.data, g_scalar.data, w_cache[i].data);
+      sc_mul(h_scalar.data, h_scalar.data, w_cache[(~i) & (MN-1)].data);
 
-      sc_add(g_scalar.bytes, g_scalar.bytes, pd.z.bytes);
+      sc_add(g_scalar.data, g_scalar.data, pd.z.data);
       LOG_ERROR_AND_RETURN_UNLESS(2+i/N < zpow.size(), false, "invalid zpow index");
       LOG_ERROR_AND_RETURN_UNLESS(i%N < twoN.size(), false, "invalid twoN index");
-      sc_mul(tmp.bytes, zpow[2+i/N].bytes, twoN[i%N].bytes);
+      sc_mul(tmp.data, zpow[2+i/N].data, twoN[i%N].data);
       if (i == 0)
       {
-        sc_add(tmp.bytes, tmp.bytes, pd.z.bytes);
-        sc_sub(h_scalar.bytes, h_scalar.bytes, tmp.bytes);
+        sc_add(tmp.data, tmp.data, pd.z.data);
+        sc_sub(h_scalar.data, h_scalar.data, tmp.data);
       }
       else
       {
-        sc_muladd(tmp.bytes, pd.z.bytes, ypow.bytes, tmp.bytes);
-        sc_mulsub(h_scalar.bytes, tmp.bytes, yinvpow.bytes, h_scalar.bytes);
+        sc_muladd(tmp.data, pd.z.data, ypow.data, tmp.data);
+        sc_mulsub(h_scalar.data, tmp.data, yinvpow.data, h_scalar.data);
       }
 
-      sc_mulsub(m_z4[i].bytes, g_scalar.bytes, weight_z.bytes, m_z4[i].bytes);
-      sc_mulsub(m_z5[i].bytes, h_scalar.bytes, weight_z.bytes, m_z5[i].bytes);
+      sc_mulsub(m_z4[i].data, g_scalar.data, weight_z.data, m_z4[i].data);
+      sc_mulsub(m_z5[i].data, h_scalar.data, weight_z.data, m_z5[i].data);
 
       if (i == 0)
       {
@@ -948,30 +948,30 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       }
       else if (i != MN-1)
       {
-        sc_mul(yinvpow.bytes, yinvpow.bytes, yinv.bytes);
-        sc_mul(ypow.bytes, ypow.bytes, pd.y.bytes);
+        sc_mul(yinvpow.data, yinvpow.data, yinv.data);
+        sc_mul(ypow.data, ypow.data, pd.y.data);
       }
     }
 
-    sc_muladd(z1.bytes, proof.mu.bytes, weight_z.bytes, z1.bytes);
+    sc_muladd(z1.data, proof.mu.data, weight_z.data, z1.data);
     for (size_t i = 0; i < rounds; ++i)
     {
-      sc_mul(tmp.bytes, pd.w[i].bytes, pd.w[i].bytes);
-      sc_mul(tmp.bytes, tmp.bytes, weight_z.bytes);
+      sc_mul(tmp.data, pd.w[i].data, pd.w[i].data);
+      sc_mul(tmp.data, tmp.data, weight_z.data);
       multiexp_data.emplace_back(tmp, proof8_L[i]);
-      sc_mul(tmp.bytes, winv[i].bytes, winv[i].bytes);
-      sc_mul(tmp.bytes, tmp.bytes, weight_z.bytes);
+      sc_mul(tmp.data, winv[i].data, winv[i].data);
+      sc_mul(tmp.data, tmp.data, weight_z.data);
       multiexp_data.emplace_back(tmp, proof8_R[i]);
     }
-    sc_mulsub(tmp.bytes, proof.a.bytes, proof.b.bytes, proof.t.bytes);
-    sc_mul(tmp.bytes, tmp.bytes, pd.x_ip.bytes);
-    sc_muladd(z3.bytes, tmp.bytes, weight_z.bytes, z3.bytes);
+    sc_mulsub(tmp.data, proof.a.data, proof.b.data, proof.t.data);
+    sc_mul(tmp.data, tmp.data, pd.x_ip.data);
+    sc_muladd(z3.data, tmp.data, weight_z.data, z3.data);
   }
 
   // now check all proofs at once
-  sc_sub(tmp.bytes, m_y0.bytes, z1.bytes);
+  sc_sub(tmp.data, m_y0.data, z1.data);
   multiexp_data.emplace_back(tmp, rct::G);
-  sc_sub(tmp.bytes, z3.bytes, y1.bytes);
+  sc_sub(tmp.data, z3.data, y1.data);
   multiexp_data.emplace_back(tmp, rct::H);
   for (size_t i = 0; i < maxMN; ++i)
   {

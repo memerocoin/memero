@@ -71,7 +71,7 @@ namespace rct {
   //generates a random scalar which can be used as a secret key or mask
   scalar skGen() {
     scalar sk;
-    crypto::random32_unbiased(sk.bytes);
+    crypto::random32_unbiased(sk.data);
     return sk;
   }
 
@@ -148,7 +148,7 @@ namespace rct {
 
   scalar normalizeKey(const scalar a) {
     scalar k = a;
-    sc_reduce32(k.bytes);
+    sc_reduce32(k.data);
     return k;
   }
 
@@ -158,7 +158,7 @@ namespace rct {
     key aG;
 
     // no need to check since a can be 0 in tests
-    [[maybe_unused]] int _ = crypto_scalarmult_ed25519_base_noclamp(aG.bytes, k.bytes);
+    [[maybe_unused]] int _ = crypto_scalarmult_ed25519_base_noclamp(aG.data, k.data);
 
     return aG;
   }
@@ -166,10 +166,10 @@ namespace rct {
   //does a * P where a is a scalar and P is an arbitrary point
   key scalarmultKey(const key P, const scalar a) {
     scalar s = normalizeKey(a);
-    LOG_WARNING_AND_THROW_UNLESS(!sodium_is_zero(s.bytes, 32), "scalar key is zero");
+    LOG_WARNING_AND_THROW_UNLESS(!sodium_is_zero(s.data, 32), "scalar key is zero");
 
     key k;
-    int r = crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, P.bytes);
+    int r = crypto_scalarmult_ed25519_noclamp(k.data, s.data, P.data);
     LOG_WARNING_AND_THROW_UNLESS(r == 0, "scalar mult key not in subgroup");
 
     return k;
@@ -182,7 +182,7 @@ namespace rct {
     key k;
 
     // no need to check since a can be 0 in tests, and H is on main group
-    [[maybe_unused]] int _ = crypto_scalarmult_ed25519_noclamp(k.bytes, s.bytes, H.bytes);
+    [[maybe_unused]] int _ = crypto_scalarmult_ed25519_noclamp(k.data, s.data, H.data);
 
     return k;
   }
@@ -192,7 +192,7 @@ namespace rct {
     ge_p3 p3;
     LOG_WARNING_AND_THROW_UNLESS
       (
-       ge_frombytes_vartime(&p3, P.bytes) == 0
+       ge_frombytes_vartime(&p3, P.data) == 0
        , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
        );
     ge_p2 p2;
@@ -201,7 +201,7 @@ namespace rct {
     ge_mul8(&p1, &p2);
     ge_p1p1_to_p2(&p2, &p1);
     rct::key res;
-    ge_tobytes(res.bytes, &p2);
+    ge_tobytes(res.data, &p2);
     return res;
   }
 
@@ -212,7 +212,7 @@ namespace rct {
     ge_p3 p3;
     LOG_WARNING_AND_THROW_UNLESS
       (
-       ge_frombytes_vartime(&p3, P.bytes) == 0
+       ge_frombytes_vartime(&p3, P.data) == 0
        , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
        );
     ge_p2 p2;
@@ -225,12 +225,12 @@ namespace rct {
 
   //Computes lA where l is the curve order
   bool isInMainSubgroup(const key A) {
-    return 1 == crypto_core_ed25519_is_valid_point(A.bytes);
+    return 1 == crypto_core_ed25519_is_valid_point(A.data);
   }
 
   key ge_p3_tokey(const ge_p3 x) {
     key k;
-    ge_p3_tobytes(k.bytes, &x);
+    ge_p3_tobytes(k.data, &x);
     return k;
   }
 
@@ -239,7 +239,7 @@ namespace rct {
   //for curve points: AB = A + B
   rct::key addKeys(const key A, const key B) {
     key k;
-    int r = crypto_core_ed25519_add(k.bytes, A.bytes, B.bytes);
+    int r = crypto_core_ed25519_add(k.data, A.data, B.data);
     LOG_WARNING_AND_THROW_UNLESS(r == 0, "add keys not in main group");
 
     return k;
@@ -267,7 +267,7 @@ namespace rct {
     ge_p3 B2;
     LOG_WARNING_AND_THROW_UNLESS
       (
-       ge_frombytes_vartime(&B2, B.bytes) == 0
+       ge_frombytes_vartime(&B2, B.data) == 0
        , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
        );
     ge_dsm_precomp(rv, &B2);
@@ -286,10 +286,10 @@ namespace rct {
    )
   {
     ge_p2 rv;
-    ge_triple_scalarmult_base_vartime(&rv, a.bytes, b.bytes, B, c.bytes, C);
+    ge_triple_scalarmult_base_vartime(&rv, a.data, b.data, B, c.data, C);
 
     key r;
-    ge_tobytes(r.bytes, &rv);
+    ge_tobytes(r.data, &rv);
 
     return r;
   }
@@ -308,10 +308,10 @@ namespace rct {
    )
   {
     ge_p2 rv;
-    ge_triple_scalarmult_precomp_vartime(&rv, a.bytes, A, b.bytes, B, c.bytes, C);
+    ge_triple_scalarmult_precomp_vartime(&rv, a.data, A, b.data, B, c.data, C);
 
     key r;
-    ge_tobytes(r.bytes, &rv);
+    ge_tobytes(r.data, &rv);
 
     return r;
   }
@@ -320,7 +320,7 @@ namespace rct {
   //AB = A - B where A, B are curve points
   key subKeys(const key A, const key B) {
     key AB;
-    int r = crypto_core_ed25519_sub(AB.bytes, A.bytes, B.bytes);
+    int r = crypto_core_ed25519_sub(AB.data, A.data, B.data);
     LOG_WARNING_AND_THROW_UNLESS(r == 0, "sub keys not in main group");
     return AB;
   }
@@ -332,7 +332,7 @@ namespace rct {
 
   scalar hash_to_scalar(const key in) {
     scalar hash = k2s(hash_key(in));
-    sc_reduce32(hash.bytes);
+    sc_reduce32(hash.data);
     return hash;
   }
 
@@ -346,7 +346,7 @@ namespace rct {
 
   scalar hash_keys_to_scalar(const keyS keys) {
     scalar rv = k2s(hash_keys(keys));
-    sc_reduce32(rv.bytes);
+    sc_reduce32(rv.data);
     return rv;
   }
 
@@ -354,7 +354,7 @@ namespace rct {
   ge_p3 hash_to_p3(const key k) {
     key h = hash_key(k);
     ge_p2 hash_p2;
-    ge_fromfe_frombytes_vartime(&hash_p2, h.bytes);
+    ge_fromfe_frombytes_vartime(&hash_p2, h.data);
     ge_p1p1 hash8_p1p1;
     ge_mul8(&hash8_p1p1, &hash_p2);
 
@@ -377,7 +377,7 @@ namespace rct {
   {
     scalar r = x;
     for (int i = 0; i < 8; ++i)
-      r.bytes[i] ^= k.bytes[i];
+      r.data[i] ^= k.data[i];
 
     return r;
   }
@@ -389,7 +389,7 @@ namespace rct {
     memcpy(data + 15, &sk, sizeof(sk));
     key h = rct::hash2rct(crypto::sha3(epee::pod_to_span(data)));
     scalar s = k2s(h);
-    sc_reduce32(s.bytes);
+    sc_reduce32(s.data);
     return s;
   }
 

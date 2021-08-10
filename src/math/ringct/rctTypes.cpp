@@ -47,8 +47,8 @@ namespace rct {
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in) {
         scalar x;
-        sc_0(x.bytes);
-        memcpy_swap64le(x.bytes, &in, 1);
+        sc_0(x.data);
+        memcpy_swap64le(x.data, &in, 1);
         return x;
     }
 
@@ -59,7 +59,7 @@ namespace rct {
         amount_t vali = 0;
         int j = 0;
         for (j = 7; j >= 0; j--) {
-            vali = (amount_t)(vali * 256 + (unsigned char)in.bytes[j]);
+            vali = (amount_t)(vali * 256 + (unsigned char)in.data[j]);
         }
         return vali;
     }

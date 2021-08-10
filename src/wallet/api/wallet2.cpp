@@ -760,7 +760,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       {
         LOG_WARNING("Failed to generate key derivation from tx pubkey in " << txid << ", skipping");
         static_assert(sizeof(derivation) == sizeof(rct::key), "Mismatched sizes of key_derivation and rct::key");
-        memcpy(&derivation, rct::identity.bytes, sizeof(derivation));
+        memcpy(&derivation, rct::identity.data, sizeof(derivation));
       }
 
       if (pk_index == 1)
@@ -774,7 +774,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             if (!hwdev.generate_key_derivation(additional_tx_pub_keys.data[i], keys.m_view_secret_key, additional_derivations.back()))
             {
               LOG_WARNING("Failed to generate key derivation from additional tx pubkey in " << txid << ", skipping");
-              memcpy(&additional_derivations.back(), rct::identity.bytes, sizeof(crypto::key_derivation));
+              memcpy(&additional_derivations.back(), rct::identity.data, sizeof(crypto::key_derivation));
             }
           }
         }
@@ -1358,7 +1358,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
     {
       LOG_WARNING("Failed to generate key derivation from tx pubkey, skipping");
       static_assert(sizeof(iod.derivation) == sizeof(rct::key), "Mismatched sizes of key_derivation and rct::key");
-      memcpy(&iod.derivation, rct::identity.bytes, sizeof(iod.derivation));
+      memcpy(&iod.derivation, rct::identity.data, sizeof(iod.derivation));
     }
   };
 

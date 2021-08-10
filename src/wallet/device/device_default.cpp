@@ -400,10 +400,10 @@ namespace hw {
          )
         {
             rct::scalar s0_p_mu_P;
-            sc_mul(s0_p_mu_P.bytes,mu_P.bytes,p.bytes);
+            sc_mul(s0_p_mu_P.data,mu_P.data,p.data);
             rct::scalar s0_add_z_mu_C;
-            sc_muladd(s0_add_z_mu_C.bytes,mu_C.bytes,z.bytes,s0_p_mu_P.bytes);
-            sc_mulsub(s.bytes,c.bytes,s0_add_z_mu_C.bytes,a.bytes);
+            sc_muladd(s0_add_z_mu_C.data,mu_C.data,z.data,s0_p_mu_P.data);
+            sc_mulsub(s.data,c.data,s0_add_z_mu_C.data,a.data);
 
             return true;
         }

@@ -49,29 +49,19 @@ namespace rct {
     //  similar to secret_key / public_key of crypto-ops,
     //  but uses unsigned chars,
     //  also includes an operator for accessing the i'th byte.
-    struct key {
-        unsigned char & operator[](int i) {
-            return bytes[i];
-        }
-        unsigned char operator[](int i) const {
-            return bytes[i];
-        }
-        bool operator==(const key &k) const { return !crypto_verify_32(bytes, k.bytes); }
-
-        unsigned char bytes[32];
+    struct key : crypto::ec_point {
+        bool operator==(const key &k) const { return !crypto_verify_32(data, k.data); }
     };
 
 
-    struct scalar {
+    struct scalar : crypto::ec_scalar {
       unsigned char & operator[](int i) {
-        return bytes[i];
+        return data[i];
       }
       unsigned char operator[](int i) const {
-        return bytes[i];
+        return data[i];
       }
-      bool operator==(const scalar &k) const { return !crypto_verify_32(bytes, k.bytes); }
-
-      unsigned char bytes[32];
+      bool operator==(const scalar &x) const { return !crypto_verify_32(data, x.data); }
     };
 
     typedef std::vector<key> keyV; //vector of keys
@@ -256,7 +246,7 @@ namespace rct {
             {
               ar.begin_object();
               if (!typename Archive<W>::is_saving())
-                memset(ecdhInfo[i].amount.bytes, 0, sizeof(ecdhInfo[i].amount.bytes));
+                memset(ecdhInfo[i].amount.data, 0, sizeof(ecdhInfo[i].amount.data));
               crypto::hash8 &amount = (crypto::hash8&)ecdhInfo[i].amount;
               FIELD(amount);
               ar.end_object();
@@ -459,16 +449,16 @@ namespace rct {
     inline const crypto::secret_key &rct2sk(const rct::key &k) { return (const crypto::secret_key&)k; }
     inline const crypto::key_image &rct2ki(const rct::key &k) { return (const crypto::key_image&)k; }
     inline const crypto::hash &rct2hash(const rct::key &k) { return (const crypto::hash&)k; }
-    inline bool operator==(const rct::key &k0, const crypto::public_key &k1) { return !crypto_verify_32(k0.bytes, (const unsigned char*)&k1); }
-    inline bool operator!=(const rct::key &k0, const crypto::public_key &k1) { return crypto_verify_32(k0.bytes, (const unsigned char*)&k1); }
+    inline bool operator==(const rct::key &k0, const crypto::public_key &k1) { return !crypto_verify_32(k0.data, (const unsigned char*)&k1); }
+    inline bool operator!=(const rct::key &k0, const crypto::public_key &k1) { return crypto_verify_32(k0.data, (const unsigned char*)&k1); }
 }
 
 
 namespace cryptonote {
-    inline bool operator==(const crypto::public_key &k0, const rct::key &k1) { return !crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
-    inline bool operator!=(const crypto::public_key &k0, const rct::key &k1) { return crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
-    inline bool operator==(const crypto::secret_key &k0, const rct::key &k1) { return !crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
-    inline bool operator!=(const crypto::secret_key &k0, const rct::key &k1) { return crypto_verify_32((const unsigned char*)&k0, k1.bytes); }
+    inline bool operator==(const crypto::public_key &k0, const rct::key &k1) { return !crypto_verify_32((const unsigned char*)&k0, k1.data); }
+    inline bool operator!=(const crypto::public_key &k0, const rct::key &k1) { return crypto_verify_32((const unsigned char*)&k0, k1.data); }
+    inline bool operator==(const crypto::secret_key &k0, const rct::key &k1) { return !crypto_verify_32((const unsigned char*)&k0, k1.data); }
+    inline bool operator!=(const crypto::secret_key &k0, const rct::key &k1) { return crypto_verify_32((const unsigned char*)&k0, k1.data); }
 }
 
 namespace rct {

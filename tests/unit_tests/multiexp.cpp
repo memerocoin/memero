@@ -48,20 +48,20 @@ static rct::key basic(const std::vector<rct::MultiexpData> &data)
     ge_cached cached;
     ge_p3 p3;
     ge_p1p1 p1;
-    ge_scalarmult_p3(&p3, d.scalar.bytes, &d.point);
+    ge_scalarmult_p3(&p3, d.scalar.data, &d.point);
     ge_p3_to_cached(&cached, &p3);
     ge_add(&p1, &res_p3, &cached);
     ge_p1p1_to_p3(&res_p3, &p1);
   }
   rct::key res;
-  ge_p3_tobytes(res.bytes, &res_p3);
+  ge_p3_tobytes(res.data, &res_p3);
   return res;
 }
 
 static ge_p3 get_p3(const rct::key &point)
 {
   ge_p3 p3;
-  EXPECT_TRUE(ge_frombytes_vartime(&p3, point.bytes) == 0);
+  EXPECT_TRUE(ge_frombytes_vartime(&p3, point.data) == 0);
   return p3;
 }
 
@@ -121,7 +121,7 @@ TEST(multiexp, pippenger_cached)
   for (size_t n = 0; n < N; ++n)
   {
     P[n].scalar = rct::s_zero;
-    ASSERT_TRUE(ge_frombytes_vartime(&P[n].point, rct::scalarmultBase(rct::skGen()).bytes) == 0);
+    ASSERT_TRUE(ge_frombytes_vartime(&P[n].point, rct::scalarmultBase(rct::skGen()).data) == 0);
   }
   for (size_t n = 0; n < N/16; ++n)
   {
@@ -142,7 +142,7 @@ TEST(multiexp, scalarmult_triple)
   rct::key res;
   ge_p3 Gp3;
 
-  ge_frombytes_vartime(&Gp3, rct::G.bytes);
+  ge_frombytes_vartime(&Gp3, rct::G.data);
 
   static const rct::scalar scalars[] = {
     rct::s_zero,
@@ -179,15 +179,15 @@ TEST(multiexp, scalarmult_triple)
             data[0].point = Gp3;
             data[2].point = points[j];
 
-            ge_triple_scalarmult_base_vartime(&p2, data[0].scalar.bytes, data[1].scalar.bytes, ppre[i], data[2].scalar.bytes, ppre[j]);
-            ge_tobytes(res.bytes, &p2);
+            ge_triple_scalarmult_base_vartime(&p2, data[0].scalar.data, data[1].scalar.data, ppre[i], data[2].scalar.data, ppre[j]);
+            ge_tobytes(res.data, &p2);
             ASSERT_TRUE(basic(data) == res);
 
             for (size_t k = 0; k < sizeof(points) / sizeof(points[0]); ++k)
             {
               data[0].point = points[k];
-              ge_triple_scalarmult_precomp_vartime(&p2, data[0].scalar.bytes, ppre[k], data[1].scalar.bytes, ppre[i], data[2].scalar.bytes, ppre[j]);
-              ge_tobytes(res.bytes, &p2);
+              ge_triple_scalarmult_precomp_vartime(&p2, data[0].scalar.data, ppre[k], data[1].scalar.data, ppre[i], data[2].scalar.data, ppre[j]);
+              ge_tobytes(res.data, &p2);
               ASSERT_TRUE(basic(data) == res);
             }
           }

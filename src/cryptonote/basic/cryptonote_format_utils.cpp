@@ -235,7 +235,7 @@ namespace cryptonote
     if (!r)
     {
       LOG_WARNING("key image helper: failed to generate_key_derivation(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
-      memcpy(&recv_derivation, rct::identity.bytes, sizeof(recv_derivation));
+      memcpy(&recv_derivation, rct::identity.data, sizeof(recv_derivation));
     }
 
     std::vector<crypto::key_derivation> additional_recv_derivations;

@@ -65,9 +65,9 @@ bool operator<(const rct::scalar &k0, const rct::scalar &k1)
 {
   for (int n = 31; n >= 0; --n)
     {
-      if (k0.bytes[n] < k1.bytes[n])
+      if (k0.data[n] < k1.data[n])
         return true;
-      if (k0.bytes[n] > k1.bytes[n])
+      if (k0.data[n] > k1.data[n])
         return false;
     }
   return false;
@@ -215,7 +215,7 @@ rct::key pippenger(const std::span<MultiexpData> data)
   }
 
   rct::key res;
-  ge_p3_tobytes(res.bytes, &result);
+  ge_p3_tobytes(res.data, &result);
   return res;
 }
 
