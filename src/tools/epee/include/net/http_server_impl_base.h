@@ -52,7 +52,7 @@ namespace epee
         : m_net_server(external_io_service)
     {}
 
-    bool init(std::function<void(size_t, uint8_t*)> rng, const std::string& bind_port = "0", const std::string& bind_ip = "0.0.0.0",
+    bool init(const std::string& bind_port = "0", const std::string& bind_ip = "0.0.0.0",
       const std::string& bind_ipv6_address = "::", bool use_ipv6 = false, bool require_ipv4 = true,
       std::vector<std::string> access_control_origins = std::vector<std::string>(),
       epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_disabled)
@@ -60,7 +60,6 @@ namespace epee
 
       //set self as callback handler
       m_net_server.get_config_object().m_phandler = static_cast<t_child_class*>(this);
-      m_net_server.get_config_object().rng = std::move(rng);
 
       //here set folder for hosting reqests
       m_net_server.get_config_object().m_folder = "";

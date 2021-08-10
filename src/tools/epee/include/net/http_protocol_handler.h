@@ -167,7 +167,6 @@ namespace net_utils
 		struct custum_handler_config: public http_server_config
 		{
 			i_http_server_handler<t_connection_context>* m_phandler;
-			std::function<void(size_t, uint8_t*)> rng;
 		};
 
 		/************************************************************************/

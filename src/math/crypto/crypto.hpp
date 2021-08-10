@@ -50,17 +50,13 @@ namespace crypto {
     bool operator==(const ec_scalar &x) const { return !crypto_verify_32(data, x.data); }
   };
 
-  struct secret_key: ec_scalar{
-  };
+  struct secret_key: ec_scalar{};
 
-  struct public_key: ec_point {
-  };
+  struct public_key: ec_point {};
 
-  struct key_derivation: ec_point {
-  };
+  struct key_derivation: ec_point {};
 
-  struct key_image: ec_point {
-  };
+  struct key_image: ec_point {};
 
   struct signature {
     ec_scalar c, r;
@@ -70,15 +66,10 @@ namespace crypto {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 
+
   ec_scalar convert_hash_to_scalar(const crypto::hash x);
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res);
   void random32_unbiased(unsigned char *bytes);
-
-
-  static_assert(sizeof(ec_point) == 32 && sizeof(ec_scalar) == 32 &&
-    sizeof(public_key) == 32 && sizeof(secret_key) == 32 &&
-    sizeof(key_derivation) == 32 && sizeof(key_image) == 32 &&
-    sizeof(signature) == 64, "Invalid structure size");
 
   /* Generate a new key pair
     */
@@ -129,12 +120,6 @@ namespace crypto {
 
 
   void generate_random_bytes(size_t N, uint8_t *bytes);
-
-  /* Generate N random bytes
-   */
-  inline void rand(size_t N, uint8_t *bytes) {
-    generate_random_bytes(N, bytes);
-  }
 
   /* Generate a value filled with random bytes.
    */
