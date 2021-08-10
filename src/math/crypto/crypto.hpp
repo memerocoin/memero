@@ -35,14 +35,21 @@
 #include <random>
 
 namespace crypto {
-
-  struct ec_point {
+  struct crypto_data {
     uint8_t data[32];
+
+    unsigned char & operator[](int i) {
+      return data[i];
+    }
+    unsigned char operator[](int i) const {
+      return data[i];
+    }
+
+    bool operator==(const crypto_data &x) const { return !crypto_verify_32(data, x.data); }
   };
 
-  struct ec_scalar {
-    uint8_t data[32];
-  };
+  struct ec_point : crypto_data {};
+  struct ec_scalar : crypto_data {};
 
   struct secret_key: ec_scalar{
     friend class crypto_ops;
