@@ -329,50 +329,9 @@ rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
 /* Compute the inverse of a scalar, the clever way */
 rct::scalar invert(const rct::scalar x)
 {
-  rct::scalar _1, _10, _100, _11, _101, _111, _1001, _1011, _1111;
-
-  _1 = x;
-  sc_mul(_10.data, _1.data, _1.data);
-  sc_mul(_100.data, _10.data, _10.data);
-  sc_mul(_11.data, _10.data, _1.data);
-  sc_mul(_101.data, _10.data, _11.data);
-  sc_mul(_111.data, _10.data, _101.data);
-  sc_mul(_1001.data, _10.data, _111.data);
-  sc_mul(_1011.data, _10.data, _1001.data);
-  sc_mul(_1111.data, _100.data, _1011.data);
-
-  rct::scalar inv;
-  sc_mul(inv.data, _1111.data, _1.data);
-
-  inv = sm(inv, 123 + 3, _101);
-  inv = sm(inv, 2 + 2, _11);
-  inv = sm(inv, 1 + 4, _1111);
-  inv = sm(inv, 1 + 4, _1111);
-  inv = sm(inv, 4, _1001);
-  inv = sm(inv, 2, _11);
-  inv = sm(inv, 1 + 4, _1111);
-  inv = sm(inv, 1 + 3, _101);
-  inv = sm(inv, 3 + 3, _101);
-  inv = sm(inv, 3, _111);
-  inv = sm(inv, 1 + 4, _1111);
-  inv = sm(inv, 2 + 3, _111);
-  inv = sm(inv, 2 + 2, _11);
-  inv = sm(inv, 1 + 4, _1011);
-  inv = sm(inv, 2 + 4, _1011);
-  inv = sm(inv, 6 + 4, _1001);
-  inv = sm(inv, 2 + 2, _11);
-  inv = sm(inv, 3 + 2, _11);
-  inv = sm(inv, 3 + 2, _11);
-  inv = sm(inv, 1 + 4, _1001);
-  inv = sm(inv, 1 + 3, _111);
-  inv = sm(inv, 2 + 4, _1111);
-  inv = sm(inv, 1 + 4, _1011);
-  inv = sm(inv, 3, _101);
-  inv = sm(inv, 2 + 4, _1111);
-  inv = sm(inv, 3, _101);
-  inv = sm(inv, 1 + 2, _11);
-
-  return inv;
+  rct::scalar r;
+  crypto_core_ed25519_scalar_invert(r.data, x.data);
+  return r;
 }
 
 rct::scalarV invert(rct::scalarV x)
