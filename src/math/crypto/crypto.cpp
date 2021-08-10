@@ -107,40 +107,28 @@ namespace crypto {
    *
    */
   secret_key crypto_ops::generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
-    ge_p3 point;
-
-    secret_key rng;
-
     if (recover)
     {
-      rng = recovery_key;
+      sec= recovery_key;
     }
     else
     {
-      random_scalar(rng);
+      random_scalar(sec);
     }
-    sec = rng;
+
     sc_reduce32(&unwrap(sec));  // reduce in case second round of keys (sendkeys)
 
-    ge_scalarmult_base(&point, &unwrap(sec));
-    ge_p3_tobytes(&pub, &point);
+    crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
 
-    return rng;
+    return sec;
   }
 
   bool crypto_ops::check_key(const public_key &key) {
-    ge_p3 point;
-    return ge_frombytes_vartime(&point, &key) == 0;
+    return crypto_core_ed25519_is_valid_point(key.data);
   }
 
   bool crypto_ops::secret_key_to_public_key(const secret_key &sec, public_key &pub) {
-    ge_p3 point;
-    if (sc_check(&unwrap(sec)) != 0) {
-      return false;
-    }
-    ge_scalarmult_base(&point, &unwrap(sec));
-    ge_p3_tobytes(&pub, &point);
-    return true;
+    return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
   }
 
   bool crypto_ops::generate_key_derivation(const public_key &key1, const secret_key &key2, key_derivation &derivation) {
