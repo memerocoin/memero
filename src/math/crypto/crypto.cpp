@@ -55,9 +55,6 @@ namespace crypto {
 #include "crypto-ops.h"
   }
 
-  const crypto::public_key null_pkey = crypto::public_key{};
-  const crypto::secret_key null_skey = crypto::secret_key{};
-
   static inline unsigned char *operator &(ec_point &point) {
     return &reinterpret_cast<unsigned char &>(point);
   }
@@ -106,7 +103,7 @@ namespace crypto {
    * TODO: allow specifying random value (for wallet recovery)
    *
    */
-  secret_key crypto_ops::generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
+  secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
     if (recover)
     {
       sec= recovery_key;
@@ -123,15 +120,15 @@ namespace crypto {
     return sec;
   }
 
-  bool crypto_ops::check_key(const public_key &key) {
+  bool check_key(const public_key &key) {
     return crypto_core_ed25519_is_valid_point(key.data);
   }
 
-  bool crypto_ops::secret_key_to_public_key(const secret_key &sec, public_key &pub) {
+  bool secret_key_to_public_key(const secret_key &sec, public_key &pub) {
     return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
   }
 
-  bool crypto_ops::generate_key_derivation(const public_key &key1, const secret_key &key2, key_derivation &derivation) {
+  bool generate_key_derivation(const public_key &key1, const secret_key &key2, key_derivation &derivation) {
     ge_p3 point;
     ge_p2 point2;
     ge_p1p1 point3;
@@ -146,7 +143,7 @@ namespace crypto {
     return true;
   }
 
-  void crypto_ops::derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res) {
+  void derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res) {
     struct {
       key_derivation derivation;
       char output_index[(sizeof(size_t) * 8 + 6) / 7];
@@ -158,7 +155,7 @@ namespace crypto {
     hash_to_scalar(&buf, end - reinterpret_cast<char *>(&buf), res);
   }
 
-  bool crypto_ops::derive_public_key(const key_derivation &derivation, size_t output_index,
+  bool derive_public_key(const key_derivation &derivation, size_t output_index,
     const public_key &base, public_key &derived_key) {
     ec_scalar scalar;
     ge_p3 point1;
@@ -178,7 +175,7 @@ namespace crypto {
     return true;
   }
 
-  void crypto_ops::derive_secret_key(const key_derivation &derivation, size_t output_index,
+  void derive_secret_key(const key_derivation &derivation, size_t output_index,
     const secret_key &base, secret_key &derived_key) {
     ec_scalar scalar;
     assert(sc_check(&base) == 0);
@@ -186,7 +183,7 @@ namespace crypto {
     sc_add(&(derived_key), &(base), &scalar);
   }
 
-  bool crypto_ops::derive_subaddress_public_key(const public_key &out_key, const key_derivation &derivation, std::size_t output_index, public_key &derived_key) {
+  bool derive_subaddress_public_key(const public_key &out_key, const key_derivation &derivation, std::size_t output_index, public_key &derived_key) {
     ec_scalar scalar;
     ge_p3 point1;
     ge_p3 point2;
@@ -223,7 +220,7 @@ namespace crypto {
     ec_point B;
   };
 
-  void crypto_ops::generate_signature(const hash &prefix_hash, const public_key &pub, const secret_key &sec, signature &sig) {
+  void generate_signature(const hash &prefix_hash, const public_key &pub, const secret_key &sec, signature &sig) {
     ge_p3 tmp3;
     ec_scalar k;
     s_comm buf;
@@ -252,7 +249,7 @@ namespace crypto {
     memwipe(&k, sizeof(k));
   }
 
-  bool crypto_ops::check_signature(const hash &prefix_hash, const public_key &pub, const signature &sig) {
+  bool check_signature(const hash &prefix_hash, const public_key &pub, const signature &sig) {
     ge_p2 tmp2;
     ge_p3 tmp3;
     ec_scalar c;
@@ -280,7 +277,7 @@ namespace crypto {
   // This handles use cases for both standard addresses and subaddresses
   //
   // Generates only proofs for InProofV2 and OutProofV2
-  void crypto_ops::generate_tx_proof(const hash &prefix_hash, const public_key &R, const public_key &A, const std::optional<public_key> &B, const public_key &D, const secret_key &r, signature &sig) {
+  void generate_tx_proof(const hash &prefix_hash, const public_key &R, const public_key &A, const std::optional<public_key> &B, const public_key &D, const secret_key &r, signature &sig) {
     // sanity check
     ge_p3 R_p3;
     ge_p3 A_p3;
@@ -364,7 +361,7 @@ namespace crypto {
     memwipe(&k, sizeof(k));
   }
 
-  bool crypto_ops::check_tx_proof(const hash &prefix_hash, const public_key &R, const public_key &A, const std::optional<public_key> &B, const public_key &D, const signature &sig) {
+  bool check_tx_proof(const hash &prefix_hash, const public_key &R, const public_key &A, const std::optional<public_key> &B, const public_key &D, const signature &sig) {
     // sanity check
     ge_p3 R_p3;
     ge_p3 A_p3;
@@ -475,7 +472,7 @@ namespace crypto {
     ge_p1p1_to_p3(&res, &point2);
   }
 
-  void crypto_ops::generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
+  void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
     ge_p3 point;
     ge_p2 point2;
     assert(sc_check(&sec) == 0);

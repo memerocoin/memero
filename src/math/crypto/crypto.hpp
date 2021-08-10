@@ -39,6 +39,10 @@ namespace crypto {
     uint8_t data[32];
   };
 
+  inline std::ostream &operator <<(std::ostream &o, const crypto::crypto_data &v) {
+    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+  }
+
   struct ec_point : crypto_data {
     bool operator==(const ec_point &x) const { return !crypto_verify_32(data, x.data); }
   };
@@ -47,42 +51,24 @@ namespace crypto {
   };
 
   struct secret_key: ec_scalar{
-    friend class crypto_ops;
   };
 
   struct public_key: ec_point {
-    friend class crypto_ops;
-  };
-
-
-  struct public_keyV {
-    std::vector<public_key> keys;
-    int rows;
-  };
-
-  struct secret_keyV {
-    std::vector<secret_key> keys;
-    int rows;
-  };
-
-  struct public_keyM {
-    int cols;
-    int rows;
-    std::vector<secret_keyV> column_vectors;
   };
 
   struct key_derivation: ec_point {
-    friend class crypto_ops;
   };
 
   struct key_image: ec_point {
-    friend class crypto_ops;
   };
 
   struct signature {
     ec_scalar c, r;
-    friend class crypto_ops;
   };
+
+  inline std::ostream &operator <<(std::ostream &o, const crypto::signature &v) {
+    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+  }
 
   ec_scalar convert_hash_to_scalar(const crypto::hash x);
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res);
@@ -94,39 +80,53 @@ namespace crypto {
     sizeof(key_derivation) == 32 && sizeof(key_image) == 32 &&
     sizeof(signature) == 64, "Invalid structure size");
 
-  class crypto_ops {
-    crypto_ops();
-    crypto_ops(const crypto_ops &);
-    void operator=(const crypto_ops &);
-    ~crypto_ops();
+  /* Generate a new key pair
+    */
+  secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key = secret_key(), bool recover = false);
 
-    static secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key = secret_key(), bool recover = false);
-    friend secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover);
-    static bool check_key(const public_key &);
-    friend bool check_key(const public_key &);
-    static bool secret_key_to_public_key(const secret_key &, public_key &);
-    friend bool secret_key_to_public_key(const secret_key &, public_key &);
-    static bool generate_key_derivation(const public_key &, const secret_key &, key_derivation &);
-    friend bool generate_key_derivation(const public_key &, const secret_key &, key_derivation &);
-    static void derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res);
-    friend void derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res);
-    static bool derive_public_key(const key_derivation &, std::size_t, const public_key &, public_key &);
-    friend bool derive_public_key(const key_derivation &, std::size_t, const public_key &, public_key &);
-    static void derive_secret_key(const key_derivation &, std::size_t, const secret_key &, secret_key &);
-    friend void derive_secret_key(const key_derivation &, std::size_t, const secret_key &, secret_key &);
-    static bool derive_subaddress_public_key(const public_key &, const key_derivation &, std::size_t, public_key &);
-    friend bool derive_subaddress_public_key(const public_key &, const key_derivation &, std::size_t, public_key &);
-    static void generate_signature(const hash &, const public_key &, const secret_key &, signature &);
-    friend void generate_signature(const hash &, const public_key &, const secret_key &, signature &);
-    static bool check_signature(const hash &, const public_key &, const signature &);
-    friend bool check_signature(const hash &, const public_key &, const signature &);
-    static void generate_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const secret_key &, signature &);
-    friend void generate_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const secret_key &, signature &);
-    static bool check_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const signature &);
-    friend bool check_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const signature &);
-    static void generate_key_image(const public_key &, const secret_key &, key_image &);
-    friend void generate_key_image(const public_key &, const secret_key &, key_image &);
-  };
+  /* Check a public key. Returns true if it is valid, false otherwise.
+    */
+  bool check_key(const public_key &);
+
+  /* Checks a private key and computes the corresponding public key.
+    */
+  bool secret_key_to_public_key(const secret_key &, public_key &);
+
+  /* To generate an ephemeral key used to send money to:
+    * * The sender generates a new key pair, which becomes the transaction key. The public transaction key is included in "extra" field.
+    * * Both the sender and the receiver generate key derivation from the transaction key, the receivers' "view" key and the output index.
+    * * The sender uses key derivation and the receivers' "spend" key to derive an ephemeral public key.
+    * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
+    */
+  bool generate_key_derivation(const public_key &, const secret_key &, key_derivation &);
+
+  void derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res);
+  bool derive_public_key(const key_derivation &, std::size_t, const public_key &, public_key &);
+  void derive_secret_key(const key_derivation &, std::size_t, const secret_key &, secret_key &);
+  bool derive_subaddress_public_key(const public_key &, const key_derivation &, std::size_t, public_key &);
+
+  /* Generation and checking of a standard signature.
+    */
+  void generate_signature(const hash &, const public_key &, const secret_key &, signature &);
+
+  bool check_signature(const hash &, const public_key &, const signature &);
+
+  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
+    * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
+    * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
+    */
+  void generate_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const secret_key &, signature &);
+
+  bool check_tx_proof(const hash &, const public_key &, const public_key &, const std::optional<public_key> &, const public_key &, const signature &);
+
+  /* To send money to a key:
+    * * The sender generates an ephemeral key and includes it in transaction output.
+    * * To spend the money, the receiver generates a key image from it.
+    * * Then he selects a bunch of outputs, including the one he spends, and uses them to generate a ring signature.
+    * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
+    */
+  void generate_key_image(const public_key &, const secret_key &, key_image &);
+
 
   void generate_random_bytes_thread_safe(size_t N, uint8_t *bytes);
 
@@ -171,99 +171,10 @@ namespace crypto {
     return crypto::rand_range<T>(0, sz-1);
   }
 
-  /* Generate a new key pair
-   */
-  inline secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key = secret_key(), bool recover = false) {
-    return crypto_ops::generate_keys(pub, sec, recovery_key, recover);
-  }
 
-  /* Check a public key. Returns true if it is valid, false otherwise.
-   */
-  inline bool check_key(const public_key &key) {
-    return crypto_ops::check_key(key);
-  }
+  inline constexpr crypto::public_key null_pkey = crypto::public_key{};
+  inline constexpr crypto::secret_key null_skey = crypto::secret_key{};
 
-  /* Checks a private key and computes the corresponding public key.
-   */
-  inline bool secret_key_to_public_key(const secret_key &sec, public_key &pub) {
-    return crypto_ops::secret_key_to_public_key(sec, pub);
-  }
-
-  /* To generate an ephemeral key used to send money to:
-   * * The sender generates a new key pair, which becomes the transaction key. The public transaction key is included in "extra" field.
-   * * Both the sender and the receiver generate key derivation from the transaction key, the receivers' "view" key and the output index.
-   * * The sender uses key derivation and the receivers' "spend" key to derive an ephemeral public key.
-   * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
-   */
-  inline bool generate_key_derivation(const public_key &key1, const secret_key &key2, key_derivation &derivation) {
-    return crypto_ops::generate_key_derivation(key1, key2, derivation);
-  }
-  inline bool derive_public_key(const key_derivation &derivation, std::size_t output_index,
-    const public_key &base, public_key &derived_key) {
-    return crypto_ops::derive_public_key(derivation, output_index, base, derived_key);
-  }
-  inline void derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res) {
-    return crypto_ops::derivation_to_scalar(derivation, output_index, res);
-  }
-  inline void derive_secret_key(const key_derivation &derivation, std::size_t output_index,
-    const secret_key &base, secret_key &derived_key) {
-    crypto_ops::derive_secret_key(derivation, output_index, base, derived_key);
-  }
-  inline bool derive_subaddress_public_key(const public_key &out_key, const key_derivation &derivation, std::size_t output_index, public_key &result) {
-    return crypto_ops::derive_subaddress_public_key(out_key, derivation, output_index, result);
-  }
-
-  /* Generation and checking of a standard signature.
-   */
-  inline void generate_signature(const hash &prefix_hash, const public_key &pub, const secret_key &sec, signature &sig) {
-    crypto_ops::generate_signature(prefix_hash, pub, sec, sig);
-  }
-  inline bool check_signature(const hash &prefix_hash, const public_key &pub, const signature &sig) {
-    return crypto_ops::check_signature(prefix_hash, pub, sig);
-  }
-
-  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-   * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
-   * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
-   */
-  inline void generate_tx_proof(const hash &prefix_hash, const public_key &R, const public_key &A, const std::optional<public_key> &B, const public_key &D, const secret_key &r, signature &sig) {
-    crypto_ops::generate_tx_proof(prefix_hash, R, A, B, D, r, sig);
-  }
-  inline bool check_tx_proof(const hash &prefix_hash, const public_key &R, const public_key &A, const std::optional<public_key> &B, const public_key &D, const signature &sig) {
-    return crypto_ops::check_tx_proof(prefix_hash, R, A, B, D, sig);
-  }
-
-  /* To send money to a key:
-   * * The sender generates an ephemeral key and includes it in transaction output.
-   * * To spend the money, the receiver generates a key image from it.
-   * * Then he selects a bunch of outputs, including the one he spends, and uses them to generate a ring signature.
-   * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
-   */
-  inline void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
-    crypto_ops::generate_key_image(pub, sec, image);
-  }
-
-  /* Variants with vector<const public_key *> parameters.
-   */
-
-  inline std::ostream &operator <<(std::ostream &o, const crypto::public_key &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
-  inline std::ostream &operator <<(std::ostream &o, const crypto::secret_key &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
-  inline std::ostream &operator <<(std::ostream &o, const crypto::key_derivation &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
-  inline std::ostream &operator <<(std::ostream &o, const crypto::key_image &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
-  inline std::ostream &operator <<(std::ostream &o, const crypto::signature &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
-
-  const extern crypto::public_key null_pkey;
-  const extern crypto::secret_key null_skey;
 }
 
 CRYPTO_MAKE_HASHABLE_HEADER(public_key)
