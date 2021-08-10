@@ -128,12 +128,12 @@ namespace crypto {
   void generate_key_image(const public_key &, const secret_key &, key_image &);
 
 
-  void generate_random_bytes_thread_safe(size_t N, uint8_t *bytes);
+  void generate_random_bytes(size_t N, uint8_t *bytes);
 
   /* Generate N random bytes
    */
   inline void rand(size_t N, uint8_t *bytes) {
-    generate_random_bytes_thread_safe(N, bytes);
+    generate_random_bytes(N, bytes);
   }
 
   /* Generate a value filled with random bytes.
@@ -141,7 +141,7 @@ namespace crypto {
   template<typename T>
   typename std::enable_if<std::is_trivial<T>::value, T>::type rand() {
     typename std::remove_cv<T>::type res;
-    generate_random_bytes_thread_safe(sizeof(T), (uint8_t*)&res);
+    generate_random_bytes(sizeof(T), (uint8_t*)&res);
     return res;
   }
 

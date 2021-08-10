@@ -71,7 +71,7 @@ namespace crypto {
     return &reinterpret_cast<const unsigned char &>(scalar);
   }
 
-  void generate_random_bytes_thread_safe(size_t N, uint8_t *bytes)
+  void generate_random_bytes(size_t N, uint8_t *bytes)
   {
     randombytes_buf(bytes, N);
   }
