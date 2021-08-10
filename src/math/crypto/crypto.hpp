@@ -37,11 +37,14 @@
 namespace crypto {
   struct crypto_data {
     uint8_t data[32];
-    bool operator==(const crypto_data &x) const { return !crypto_verify_32(data, x.data); }
   };
 
-  struct ec_point : crypto_data {};
-  struct ec_scalar : crypto_data {};
+  struct ec_point : crypto_data {
+    bool operator==(const ec_point &x) const { return !crypto_verify_32(data, x.data); }
+  };
+  struct ec_scalar : crypto_data {
+    bool operator==(const ec_scalar &x) const { return !crypto_verify_32(data, x.data); }
+  };
 
   struct secret_key: ec_scalar{
     friend class crypto_ops;
