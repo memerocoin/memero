@@ -67,7 +67,15 @@ namespace crypto {
   }
 
 
-  ec_scalar convert_hash_to_scalar(const crypto::hash x);
+  inline const ec_scalar &h2s(const hash &x) { return (const ec_scalar&)x; }
+  inline const ec_point &h2p(const hash &x) { return (const ec_point&)x; }
+  inline const secret_key &h2sk(const hash &x) { return (const secret_key&)x; }
+  inline const public_key &h2pk(const hash &x) { return (const public_key&)x; }
+
+  inline const secret_key &s2sk(const ec_scalar &x) { return (const secret_key&)x; }
+  inline const public_key &p2pk(const ec_point &x) { return (const public_key&)x; }
+  inline const key_image &p2img(const ec_point &x) { return (const key_image&)x; }
+
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res);
   void random32_unbiased(unsigned char *bytes);
 
@@ -182,6 +190,11 @@ namespace crypto {
 
   inline constexpr crypto::public_key null_pkey = crypto::public_key{};
   inline constexpr crypto::secret_key null_skey = crypto::secret_key{};
+
+  inline constexpr ec_scalar s_8 = { {8, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0  } };
+
+  ec_point scalarMult(const ec_point X, const ec_scalar);
+  ec_point mult8(const ec_point X);
 
 }
 

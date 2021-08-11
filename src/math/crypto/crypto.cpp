@@ -86,15 +86,9 @@ namespace crypto {
     random32_unbiased((unsigned char*)res.data);
   }
 
-  ec_scalar convert_hash_to_scalar(const crypto::hash x) {
-    ec_scalar r;
-    std::copy(std::begin(x.data), std::end(x.data), std::begin(r.data));
-    return r;
-  }
-
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res) {
     const auto h = sha3(epee::blob::span((const uint8_t*)data, length));
-    res = convert_hash_to_scalar(h);
+    res = h2s(h);
     sc_reduce32(&res);
   }
 
@@ -491,13 +485,22 @@ namespace crypto {
     ge_p1p1_to_p3(&res, &point2);
   }
 
+
+  ec_point mult(const ec_point X, const ec_scalar a) {
+    ec_point x;
+    [[maybe_unused]] int _ = crypto_scalarmult_ed25519_noclamp(x.data, a.data, X.data);
+
+    return x;
+  }
+
+  ec_point mult8(const ec_point X) {
+    return mult(X, s_8);
+  }
+
   void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
-    ge_p3 point;
-    ge_p2 point2;
-    assert(sc_check(&sec) == 0);
-    hash_to_ec(pub, point);
-    ge_scalarmult(&point2, &(sec), &point);
-    ge_tobytes(&image, &point2);
+    const ec_point h = h2p(sha3(epee::pod_to_span(pub)));
+    const ec_point r = mult8(mult(h, sec));
+    image = p2img(r);
   }
 
   struct ec_point_pair {
