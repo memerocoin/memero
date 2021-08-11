@@ -2171,7 +2171,7 @@ setsign:
   fe_add(r->Z, z, w);
   fe_sub(r->Y, z, w);
   fe_mul(r->X, r->X, r->Z);
-#if !defined(NDEBUG)
+#if defined(DEBUG)
   {
     fe check_x, check_y, check_iz, check_v;
     fe_invert(check_iz, r->Z);

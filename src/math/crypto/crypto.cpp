@@ -232,16 +232,6 @@ namespace crypto {
     ge_p3 tmp3;
     ec_scalar k;
     s_comm buf;
-#if !defined(NDEBUG)
-    {
-      ge_p3 t;
-      public_key t2;
-      assert(sc_check(&sec) == 0);
-      ge_scalarmult_base(&t, &sec);
-      ge_p3_tobytes(&t2, &t);
-      assert(pub == t2);
-    }
-#endif
     buf.h = prefix_hash;
     buf.key = pub;
   try_again:
@@ -305,32 +295,6 @@ namespace crypto {
     if (ge_frombytes_vartime(&A_p3, &A) != 0) throw std::runtime_error("recipient view pubkey is invalid");
     if (B && ge_frombytes_vartime(&B_p3, &*B) != 0) throw std::runtime_error("recipient spend pubkey is invalid");
     if (ge_frombytes_vartime(&D_p3, &D) != 0) throw std::runtime_error("key derivation is invalid");
-#if !defined(NDEBUG)
-    {
-      assert(sc_check(&r) == 0);
-      // check R == r*G or R == r*B
-      public_key dbg_R;
-      if (B)
-      {
-        ge_p2 dbg_R_p2;
-        ge_scalarmult(&dbg_R_p2, &r, &B_p3);
-        ge_tobytes(&dbg_R, &dbg_R_p2);
-      }
-      else
-      {
-        ge_p3 dbg_R_p3;
-        ge_scalarmult_base(&dbg_R_p3, &r);
-        ge_p3_tobytes(&dbg_R, &dbg_R_p3);
-      }
-      assert(R == dbg_R);
-      // check D == r*A
-      ge_p2 dbg_D_p2;
-      ge_scalarmult(&dbg_D_p2, &r, &A_p3);
-      public_key dbg_D;
-      ge_tobytes(&dbg_D, &dbg_D_p2);
-      assert(D == dbg_D);
-    }
-#endif
 
     // pick random k
     ec_scalar k;

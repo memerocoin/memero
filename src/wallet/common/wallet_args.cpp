@@ -99,7 +99,7 @@ namespace wallet_args
 
 
     tools::on_startup();
-#ifdef NDEBUG
+#if defined(DEBUG)
     tools::disable_core_dumps();
 #endif
     tools::set_strict_default_file_permissions(true);
