@@ -154,6 +154,16 @@ namespace rct {
    , const ge_dsmp C
    );
 
+  key addKeys_aAbBcC
+  (
+   const scalar a
+   , const key A
+   , const scalar b
+   , const key B
+   , const scalar c
+   , const key C
+   );
+
   //AB = A - B where A, B are curve points
   key subKeys(const key A, const key B);
 

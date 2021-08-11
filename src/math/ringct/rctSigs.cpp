@@ -207,9 +207,18 @@ namespace rct {
 
 
             // Compute R
+            const key A = hash_to_key_via_f2(P[i]);
             Hi_p3 = hash_to_p3_via_f2(P[i]);
             ge_dsm_precomp(H_precomp.k, &Hi_p3);
-            R = addKeys_aAbBcC(sig.s[i],H_precomp.k,c_p,I_precomp.k,c_c,D_precomp.k);
+            R = addKeys_aAbBcC
+              (
+               sig.s[i]
+               , A
+               , c_p
+               , sig.I
+               , c_c
+               , D
+               );
 
             c_to_hash[2*n+3] = L;
             c_to_hash[2*n+4] = R;

@@ -266,7 +266,8 @@ namespace rct {
     return r;
   }
 
-  // addKeys_aAbBcC
+  
+// addKeys_aAbBcC
   // computes aA + bB + cC
   // A,B,C require precomputation
   key addKeys_aAbBcC
@@ -286,6 +287,27 @@ namespace rct {
     ge_tobytes(r.data, &rv);
 
     return r;
+  }
+
+  key addKeys_aAbBcC
+  (
+   const scalar a
+   , const key A
+   , const scalar b
+   , const key B
+   , const scalar c
+   , const key C
+   )
+  {
+    return addKeys
+      (
+       std::array
+       {
+         scalarmultKey(A, a)
+         , scalarmultKey(B, b)
+         , scalarmultKey(C, c)
+       }
+       );
   }
 
   //subtract Keys (subtracts curve points)
