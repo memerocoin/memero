@@ -198,7 +198,13 @@ namespace rct {
             precomp(C_precomp.k,C[i]);
 
             // Compute L
-            L = addKeys_aGbBcC(sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
+            L = addKeys_aGbBcC
+              (
+               sig.s[i]
+               , c_p, P[i]
+               , c_c, C[i]
+               );
+
 
             // Compute R
             Hi_p3 = hash_to_p3_via_f2(P[i]);

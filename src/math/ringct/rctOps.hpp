@@ -135,6 +135,15 @@ namespace rct {
    , const ge_dsmp C
    );
 
+  key addKeys_aGbBcC
+  (
+   const scalar a
+   , const scalar b
+   , const key B
+   , const scalar c
+   , const key C
+   );
+
   key addKeys_aAbBcC
   (
    const scalar a

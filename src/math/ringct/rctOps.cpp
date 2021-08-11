@@ -228,14 +228,34 @@ namespace rct {
   // addKeys_aGbBcC
   // computes aG + bB + cC
   // G is the fixed basepoint and B,C require precomputation
+    key addKeys_aGbBcC
+    (
+     const scalar a
+     , const scalar b
+     , const key B
+     , const scalar c
+     , const key C
+     )
+  {
+    return addKeys
+      (
+       std::array
+       {
+         scalarmultBase(a)
+         , scalarmultKey(B, b)
+         , scalarmultKey(C, c)
+       }
+       );
+  }
+
   key addKeys_aGbBcC
-  (
-   const scalar a
-   , const scalar b
-   , const ge_dsmp B
-   , const scalar c
-   , const ge_dsmp C
-   )
+    (
+     const scalar a
+     , const scalar b
+     , const ge_dsmp B
+     , const scalar c
+     , const ge_dsmp C
+     )
   {
     ge_p2 rv;
     ge_triple_scalarmult_base_vartime(&rv, a.data, b.data, B, c.data, C);
