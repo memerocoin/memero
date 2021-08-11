@@ -296,7 +296,7 @@ namespace rct {
   }
 
   // Hash a key to p3 representation
-  ge_p3 hash_to_p3(const key k) {
+  ge_p3 hash_to_p3_via_f2(const key k) {
     key h = hash_key(k);
     const crypto::ec_point p = viaF2(h);
     return crypto::p3FromPoint(p2rct(mult8(p)));
