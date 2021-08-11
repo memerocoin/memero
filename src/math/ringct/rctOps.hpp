@@ -122,19 +122,6 @@ namespace rct {
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
   key addScalarMult_G_H(const scalar a, const scalar b);
 
-  //Does some precomputation to make addKeys3 more efficient
-  // input B a curve point and output a ge_dsmp which has precomputation applied
-  void precomp(ge_dsmp rv, const key B);
-
-  key addKeys_aGbBcC
-  (
-   const scalar a
-   , const scalar b
-   , const ge_dsmp B
-   , const scalar c
-   , const ge_dsmp C
-   );
-
   key addKeys_aGbBcC
   (
    const scalar a
@@ -142,16 +129,6 @@ namespace rct {
    , const key B
    , const scalar c
    , const key C
-   );
-
-  key addKeys_aAbBcC
-  (
-   const scalar a
-   , const ge_dsmp A
-   , const scalar b
-   , const ge_dsmp B
-   , const scalar c
-   , const ge_dsmp C
    );
 
   key addKeys_aAbBcC

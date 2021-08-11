@@ -213,18 +213,6 @@ namespace rct {
     return addKeys(scalarmultBase(a), scalarmultH(b));
   }
 
-  //Does some precomputation to make addKeys3 more efficient
-  // input B a curve point and output a ge_dsmp which has precomputation applied
-  void precomp(ge_dsmp rv, const key B) {
-    ge_p3 B2;
-    LOG_WARNING_AND_THROW_UNLESS
-      (
-       ge_frombytes_vartime(&B2, B.data) == 0
-       , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
-       );
-    ge_dsm_precomp(rv, &B2);
-  }
-
   // addKeys_aGbBcC
   // computes aG + bB + cC
   // G is the fixed basepoint and B,C require precomputation
@@ -248,46 +236,9 @@ namespace rct {
        );
   }
 
-  key addKeys_aGbBcC
-    (
-     const scalar a
-     , const scalar b
-     , const ge_dsmp B
-     , const scalar c
-     , const ge_dsmp C
-     )
-  {
-    ge_p2 rv;
-    ge_triple_scalarmult_base_vartime(&rv, a.data, b.data, B, c.data, C);
-
-    key r;
-    ge_tobytes(r.data, &rv);
-
-    return r;
-  }
-
-  
-// addKeys_aAbBcC
+  // addKeys_aAbBcC
   // computes aA + bB + cC
   // A,B,C require precomputation
-  key addKeys_aAbBcC
-  (
-   const scalar a
-   , const ge_dsmp A
-   , const scalar b
-   , const ge_dsmp B
-   , const scalar c
-   , const ge_dsmp C
-   )
-  {
-    ge_p2 rv;
-    ge_triple_scalarmult_precomp_vartime(&rv, a.data, A, b.data, B, c.data, C);
-
-    key r;
-    ge_tobytes(r.data, &rv);
-
-    return r;
-  }
 
   key addKeys_aAbBcC
   (
