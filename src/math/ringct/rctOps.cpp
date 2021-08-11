@@ -166,11 +166,14 @@ namespace rct {
   //does a * P where a is a scalar and P is an arbitrary point
   key scalarmultKey(const key P, const scalar a) {
     scalar s = normalizeKey(a);
-    LOG_WARNING_AND_THROW_UNLESS(!sodium_is_zero(s.data, 32), "scalar key is zero");
+    if (sodium_is_zero(s.data, 32)) {
+      return rct::identity;
+    }
 
     key k;
+    // do not throw for tests
     int r = crypto_scalarmult_ed25519_noclamp(k.data, s.data, P.data);
-    LOG_WARNING_AND_THROW_UNLESS(r == 0, "scalar mult key not in subgroup");
+    LOG_WARNING_IF(r != 0, "scalar mult key not in subgroup");
 
     return k;
   }

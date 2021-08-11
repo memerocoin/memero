@@ -180,6 +180,13 @@ void reset_console_color();
 #define LOG_WARNING_AND_THROW_UNLESS(expr, message) \
   LOG_WARNING_AND_THROW_IF(!(expr), message)
 
+#define LOG_WARNING_IF(expr, message)           \
+  do {                                          \
+    if(expr) {                                  \
+      LOG_WARNING(message);                     \
+    };                                          \
+  } while(0)
+
 } // epee
 
 #define LOG_CATEGORY(level, cat, color, x) do {                   \

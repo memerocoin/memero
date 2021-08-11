@@ -130,30 +130,19 @@ pippenger_cache pippenger_init_cache(const std::span<MultiexpData> data)
 
 rct::key pippenger(const std::span<MultiexpData> data)
 {
-  const ge_p3 res_p3 = std::transform_reduce
+  return std::transform_reduce
     (
      data.begin()
      , data.end()
-     , ge_p3_identity
-     , [](const auto& x, const auto& y) {
-       ge_p1p1 p1;
-       ge_cached cached;
-       ge_p3 res_p3 = ge_p3_identity;
-       ge_p3_to_cached(&cached, &y);
-       ge_add(&p1, &x, &cached);
-       ge_p1p1_to_p3(&res_p3, &p1);
-       return res_p3;
-     }
-     , [](const auto& d) {
-       ge_p3 p3;
-       ge_scalarmult_p3(&p3, d.scalar.data, &d.point);
-       return p3;
+     , rct::identity
+     , [](const auto& x, const auto& y) { return rct::addKeys(x, y); }
+     , [](const auto& x) {
+       rct::key p;
+       ge_p3_tobytes(p.data, &x.point);
+
+       return rct::scalarmultKey(p, x.scalar);
      }
      );
-
-  rct::key res;
-  ge_p3_tobytes(res.data, &res_p3);
-  return res;
 }
 
 }
