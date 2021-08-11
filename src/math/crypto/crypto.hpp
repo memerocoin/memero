@@ -75,9 +75,12 @@ namespace crypto {
   inline const secret_key &s2sk(const ec_scalar &x) { return (const secret_key&)x; }
   inline const public_key &p2pk(const ec_point &x) { return (const public_key&)x; }
   inline const key_image &p2img(const ec_point &x) { return (const key_image&)x; }
+  inline const key_derivation &p2derivation(const ec_point &x) { return (const key_derivation&)x; }
 
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res);
   void random32_unbiased(unsigned char *bytes);
+
+  bool is_valid_point(const ec_point x);
 
   /* Generate a new key pair
     */
@@ -193,7 +196,7 @@ namespace crypto {
 
   inline constexpr ec_scalar s_8 = { {8, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0  } };
 
-  ec_point scalarMult(const ec_point X, const ec_scalar);
+  ec_point mult(const ec_point X, const ec_scalar);
   ec_point mult8(const ec_point X);
 
 }

@@ -92,6 +92,9 @@ namespace crypto {
     sc_reduce32(&res);
   }
 
+  bool is_valid_point(const ec_point x) {
+    return crypto_core_ed25519_is_valid_point(x.data);
+  }
   /*
    * generate public and secret keys from a random 256-bit integer
    * TODO: allow specifying random value (for wallet recovery)
@@ -123,25 +126,23 @@ namespace crypto {
   }
 
   bool generate_key_derivation(const public_key &key1, const secret_key &key2, key_derivation &derivation) {
-    ge_p3 point;
-    ge_p2 point2;
-    ge_p1p1 point3;
-    assert(sc_check(&key2) == 0);
-    if (ge_frombytes_vartime(&point, &key1) != 0) {
-      return false;
-    }
-    ge_scalarmult(&point2, &(key2), &point);
-    ge_mul8(&point3, &point2);
-    ge_p1p1_to_p2(&point2, &point3);
-    ge_tobytes(&derivation, &point2);
+    if (!is_valid_point(key1)) return false;
+
+    ec_point r = mult8(mult(key1, key2));
+
+    derivation = p2derivation(r);
+
     return true;
   }
+
+  constexpr size_t output_index_size = (sizeof(size_t) * 8 + 6) / 7;
 
   void derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res) {
     struct {
       key_derivation derivation;
-      char output_index[(sizeof(size_t) * 8 + 6) / 7];
+      char output_index[output_index_size];
     } buf;
+
     char *end = buf.output_index;
     buf.derivation = derivation;
     tools::write_varint(end, output_index);
@@ -483,17 +484,6 @@ namespace crypto {
     return out;
   }
 
-  static void hash_to_ec(const public_key &key, ge_p3 &res) {
-    hash h;
-    ge_p2 point;
-    ge_p1p1 point2;
-    h = sha3(epee::pod_to_span(key));
-    ge_fromfe_frombytes_vartime(&point, reinterpret_cast<const unsigned char *>(&h));
-    ge_mul8(&point2, &point);
-    ge_p1p1_to_p3(&res, &point2);
-  }
-
-
   ec_point mult(const ec_point X, const ec_scalar a) {
     ec_point x;
     [[maybe_unused]] int _ = crypto_scalarmult_ed25519_noclamp(x.data, a.data, X.data);
@@ -504,18 +494,23 @@ namespace crypto {
   // needed because point can be out of main group
   ec_point mult8(const ec_point X) {
     ec_point res;
+    ge_p3 in;
     ge_p2 point;
     ge_p1p1 point2;
     ge_p3 p3;
-    ge_fromfe_frombytes_vartime(&point, X.data);
+
+    ge_frombytes_vartime(&in, X.data);
+    ge_p3_to_p2(&point, &in);
+
     ge_mul8(&point2, &point);
+
     ge_p1p1_to_p3(&p3, &point2);
     ge_p3_tobytes(res.data, &p3);
     return res;
   }
 
   void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
-    const ec_point h = h2p(sha3(epee::pod_to_span(pub)));
+    const ec_point h = from_bytes_p2(h2p(sha3(epee::pod_to_span(pub))));
     const ec_point r = mult(mult8(h), sec);
     image = p2img(r);
   }
