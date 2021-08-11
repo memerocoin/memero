@@ -501,13 +501,22 @@ namespace crypto {
     return x;
   }
 
+  // needed because point can be out of main group
   ec_point mult8(const ec_point X) {
-    return mult(X, s_8);
+    ec_point res;
+    ge_p2 point;
+    ge_p1p1 point2;
+    ge_p3 p3;
+    ge_fromfe_frombytes_vartime(&point, X.data);
+    ge_mul8(&point2, &point);
+    ge_p1p1_to_p3(&p3, &point2);
+    ge_p3_tobytes(res.data, &p3);
+    return res;
   }
 
   void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
-    const ec_point h = from_bytes_p2(h2p(sha3(epee::pod_to_span(pub))));
-    const ec_point r = mult8(mult(h, sec));
+    const ec_point h = h2p(sha3(epee::pod_to_span(pub)));
+    const ec_point r = mult(mult8(h), sec);
     image = p2img(r);
   }
 
