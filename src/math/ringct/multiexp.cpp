@@ -34,7 +34,7 @@
 namespace rct
 {
 
-rct::key pippenger(const std::span<rct::MultiexpData> data)
+rct::key dummy(const std::span<rct::MultiexpData> data)
 {
   return std::transform_reduce
     (

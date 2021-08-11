@@ -84,7 +84,7 @@ ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
 
 const static rct::scalar ip12 = inner_product(oneN, twoN);
 
-const auto multiexp = pippenger;
+const auto multiexp = dummy;
 
 bool is_reduced(const rct::scalar scalar)
 {
