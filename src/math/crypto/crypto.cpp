@@ -194,21 +194,16 @@ namespace crypto {
   }
 
   bool derive_subaddress_public_key(const public_key &out_key, const key_derivation &derivation, std::size_t output_index, public_key &derived_key) {
+    if (!is_valid_point(out_key)) return false;
+
     ec_scalar scalar;
-    ge_p3 point1;
-    ge_p3 point2;
-    ge_cached point3;
-    ge_p1p1 point4;
-    ge_p2 point5;
-    if (ge_frombytes_vartime(&point1, &out_key) != 0) {
-      return false;
-    }
     hash_derivation_to_scalar(derivation, output_index, scalar);
-    ge_scalarmult_base(&point2, &scalar);
-    ge_p3_to_cached(&point3, &point2);
-    ge_sub(&point4, &point1, &point3);
-    ge_p1p1_to_p2(&point5, &point4);
-    ge_tobytes(&derived_key, &point5);
+
+    if (scalar == s_0) return false;
+
+    const ec_point p = multBase(scalar);
+
+    derived_key = p2pk(sub(out_key, p));
     return true;
   }
 
@@ -261,7 +256,8 @@ namespace crypto {
       if (!sc_isnonzero(sig_r.data))
         continue;
 
-      sig = { sig_c, sig_r };
+      sig.c = sig_c;
+      sig.r = sig_r;
       return;
     }
 
@@ -277,7 +273,6 @@ namespace crypto {
 
     const ec_point r = add(mult(pub, sig.c), multBase(sig.r));
 
-    static const ec_point infinity = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
     if (r == infinity) return false;
 

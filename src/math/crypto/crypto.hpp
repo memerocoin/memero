@@ -192,9 +192,13 @@ namespace crypto {
   inline constexpr crypto::public_key null_pkey = crypto::public_key{};
   inline constexpr crypto::secret_key null_skey = crypto::secret_key{};
 
-  inline constexpr ec_scalar s_8 = { {8, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0  } };
+  inline constexpr ec_scalar s_8 =
+    { {8, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0  } };
 
   inline constexpr ec_scalar s_0 = {};
+
+  inline constexpr ec_point infinity =
+    {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
   bool is_valid_point(const ec_point x);
   ec_point add(const ec_point X, const ec_point Y);
