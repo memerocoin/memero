@@ -102,15 +102,7 @@ namespace crypto {
    *
    */
   secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
-    if (recover)
-    {
-      sec = recovery_key;
-    }
-    else
-    {
-      random_scalar(sec);
-    }
-
+    sec = recover ? recovery_key : s2sk(random_scalar());
     sc_reduce32(&(sec));  // reduce in case second round of keys (sendkeys)
 
     secret_key_to_public_key(sec, pub);
@@ -140,6 +132,16 @@ namespace crypto {
     int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
     if (r != 0) {
       LOG_FATAL("add keys not in main group");
+    }
+
+    return p;
+  }
+
+  ec_point sub(const ec_point X, const ec_point Y) {
+    ec_point p;
+    int r = crypto_core_ed25519_sub(p.data, X.data, Y.data);
+    if (r != 0) {
+      LOG_FATAL("sub keys not in main group");
     }
 
     return p;
@@ -228,47 +230,64 @@ namespace crypto {
     ec_point B;
   };
 
+  ec_scalar random_scalar() {
+    ec_scalar x;
+    random_scalar(x);
+    return x;
+  }
+
+  ec_scalar hash_to_scalar(const std::span<const uint8_t> x) {
+    ec_scalar s;
+    hash_to_scalar(x.data(), x.size(), s);
+    return s;
+  }
+
   void generate_signature(const hash &prefix_hash, const public_key &pub, const secret_key &sec, signature &sig) {
-    ge_p3 tmp3;
-    ec_scalar k;
-    s_comm buf;
-    buf.h = prefix_hash;
-    buf.key = pub;
-  try_again:
-    random_scalar(k);
-    ge_scalarmult_base(&tmp3, &k);
-    ge_p3_tobytes(&buf.comm, &tmp3);
-    hash_to_scalar(&buf, sizeof(s_comm), sig.c);
-    if (!sc_isnonzero((const unsigned char*)sig.c.data))
-      goto try_again;
-    sc_mulsub(&sig.r, &sig.c, &(sec), &k);
-    if (!sc_isnonzero((const unsigned char*)sig.r.data))
-      goto try_again;
-    memwipe(&k, sizeof(k));
+    bool found = false;
+    while (!found) {
+      const ec_scalar k = random_scalar();
+      if (k == s_0) continue;
+
+      const ec_point comm = multBase(k);
+      const s_comm buf {prefix_hash, pub, comm};
+      const ec_scalar sig_c = hash_to_scalar(epee::pod_to_span(buf));
+
+      if (!sc_isnonzero(sig_c.data))
+        continue;
+
+      ec_scalar sig_r;
+      sc_mulsub(&sig.r, &sig.c, &sec, &k);
+
+      if (!sc_isnonzero(sig_r.data))
+        continue;
+
+      sig = { sig_c, sig_r };
+      return;
+    }
+
   }
 
   bool check_signature(const hash &prefix_hash, const public_key &pub, const signature &sig) {
-    ge_p2 tmp2;
-    ge_p3 tmp3;
-    ec_scalar c;
-    s_comm buf;
     assert(check_key(pub));
-    buf.h = prefix_hash;
-    buf.key = pub;
-    if (ge_frombytes_vartime(&tmp3, &pub) != 0) {
-      return false;
-    }
+    if (!is_valid_point(pub)) return false;
+
     if (sc_check(&sig.c) != 0 || sc_check(&sig.r) != 0 || !sc_isnonzero(&sig.c)) {
       return false;
     }
-    ge_double_scalarmult_base_vartime(&tmp2, &sig.c, &tmp3, &sig.r);
-    ge_tobytes(&buf.comm, &tmp2);
+
+    const ec_point r = add(mult(pub, sig.c), multBase(sig.r));
+
     static const ec_point infinity = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    if (memcmp(&buf.comm, &infinity, 32) == 0)
-      return false;
-    hash_to_scalar(&buf, sizeof(s_comm), c);
-    sc_sub(&c, &c, &sig.c);
-    return sc_isnonzero(&c) == 0;
+
+    if (r == infinity) return false;
+
+    const s_comm buf { prefix_hash, pub, r };
+    const ec_scalar h = hash_to_scalar(epee::pod_to_span(buf));
+
+    ec_scalar s;
+    sc_sub(&s, &h, &sig.c);
+
+    return sc_isnonzero(&s) == 0;
   }
 
   // Generate a proof of knowledge of `r` such that (`R = rG` and `D = rA`) or (`R = rB` and `D = rA`) via a Schnorr proof

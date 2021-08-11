@@ -80,8 +80,6 @@ namespace crypto {
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res);
   void random32_unbiased(unsigned char *bytes);
 
-  bool is_valid_point(const ec_point x);
-
   /* Generate a new key pair
     */
   secret_key generate_keys
@@ -196,12 +194,18 @@ namespace crypto {
 
   inline constexpr ec_scalar s_8 = { {8, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0  } };
 
+  inline constexpr ec_scalar s_0 = {};
+
+  bool is_valid_point(const ec_point x);
+  ec_point add(const ec_point X, const ec_point Y);
+  ec_point sub(const ec_point X, const ec_point Y);
   ec_point mult(const ec_point X, const ec_scalar);
   ec_point mult8(const ec_point X);
-
   ec_point multBase(const ec_scalar);
 
-  ec_point add(const ec_point X, const ec_point Y);
+  ec_scalar random_scalar();
+  ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
+
 
 }
 
