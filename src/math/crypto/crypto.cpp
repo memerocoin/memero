@@ -475,6 +475,14 @@ namespace crypto {
     return sc_isnonzero(&c2) == 0;
   }
 
+  ec_point from_bytes_p2(const ec_point x) {
+    ge_p2 in;
+    ge_fromfe_frombytes_vartime(&in, x.data);
+    ec_point out;
+    ge_tobytes(&out, &in);
+    return out;
+  }
+
   static void hash_to_ec(const public_key &key, ge_p3 &res) {
     hash h;
     ge_p2 point;
@@ -498,7 +506,7 @@ namespace crypto {
   }
 
   void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
-    const ec_point h = h2p(sha3(epee::pod_to_span(pub)));
+    const ec_point h = from_bytes_p2(h2p(sha3(epee::pod_to_span(pub))));
     const ec_point r = mult8(mult(h, sec));
     image = p2img(r);
   }
