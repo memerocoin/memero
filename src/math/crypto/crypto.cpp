@@ -104,7 +104,7 @@ namespace crypto {
   secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
     if (recover)
     {
-      sec= recovery_key;
+      sec = recovery_key;
     }
     else
     {
@@ -113,13 +113,13 @@ namespace crypto {
 
     sc_reduce32(&(sec));  // reduce in case second round of keys (sendkeys)
 
-    crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
+    secret_key_to_public_key(sec, pub);
 
     return sec;
   }
 
   bool check_key(const public_key &key) {
-    return crypto_core_ed25519_is_valid_point(key.data);
+    return is_valid_point(key);
   }
 
   bool secret_key_to_public_key(const secret_key &sec, public_key &pub) {
