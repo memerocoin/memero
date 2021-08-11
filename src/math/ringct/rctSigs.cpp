@@ -397,6 +397,7 @@ namespace rct {
         geDsmp hash_precomp;
         ge_p3 temp_p3;
         ge_p1p1 temp_p1;
+        key C;
 
         while (i < n) {
             sc_0(c_new.data);
@@ -410,9 +411,17 @@ namespace rct {
             ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
             ge_p1p1_to_p3(&temp_p3,&temp_p1);
             ge_dsm_precomp(C_precomp.k,&temp_p3);
+            const key C = ge_p3_tokey(temp_p3);
 
             // Compute L
-            L = addKeys_aGbBcC(sig.s[i],c_p,P_precomp.k,c_c,C_precomp.k);
+            L = addKeys_aGbBcC
+              (
+               sig.s[i]
+               , c_p
+               , pubs[i].dest
+               , c_c
+               , C
+               );
 
             // Compute R
             hash8_p3 = hash_to_p3_via_f2(pubs[i].dest);
