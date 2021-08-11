@@ -135,18 +135,18 @@ namespace crypto {
     return true;
   }
 
-  constexpr size_t output_index_size = (sizeof(size_t) * 8 + 6) / 7;
+  constexpr size_t output_index_buffer_size = (sizeof(size_t) * 8 + 6) / 7;
 
-  void derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res) {
+  void derivation_to_scalar(const key_derivation &derivation, size_t index, ec_scalar &res) {
     struct {
       key_derivation derivation;
-      char output_index[output_index_size];
+      char output_index_buffer[output_index_buffer_size];
     } buf;
 
-    char *end = buf.output_index;
+    char *end = buf.output_index_buffer;
     buf.derivation = derivation;
-    tools::write_varint(end, output_index);
-    assert(end <= buf.output_index + sizeof buf.output_index);
+    tools::write_varint(end, index);
+    assert(end <= buf.output_index_buffer + output_index_buffer_size);
     hash_to_scalar(&buf, end - reinterpret_cast<char *>(&buf), res);
   }
 
