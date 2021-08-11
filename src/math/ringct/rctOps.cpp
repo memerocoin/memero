@@ -172,8 +172,10 @@ namespace rct {
 
     key k;
     // do not throw for tests
-    int r = crypto_scalarmult_ed25519_noclamp(k.data, s.data, P.data);
-    LOG_WARNING_IF(r != 0, "scalar mult key not in subgroup");
+    const int r = crypto_scalarmult_ed25519_noclamp(k.data, s.data, P.data);
+    if (r != 0) {
+      LOG_FATAL("scalar mult key not in subgroup");
+    }
 
     return k;
   }

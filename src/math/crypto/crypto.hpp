@@ -108,9 +108,9 @@ namespace crypto {
     */
   bool generate_key_derivation(const public_key &, const secret_key &, key_derivation &);
 
-  void hash_derivation_to_scalar(const key_derivation &derivation, size_t output_index, ec_scalar &res);
-  bool derive_public_key(const key_derivation &, std::size_t, const public_key &, public_key &);
-  void derive_secret_key(const key_derivation &, std::size_t, const secret_key &, secret_key &);
+  void hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index, ec_scalar &res);
+  bool derive_public_key(const key_derivation &, const std::size_t, const public_key &, public_key &);
+  void derive_secret_key(const key_derivation &, const std::size_t, const secret_key &, secret_key &);
   bool derive_subaddress_public_key(const public_key &, const key_derivation &, std::size_t, public_key &);
 
   /* Generation and checking of a standard signature.
@@ -198,6 +198,10 @@ namespace crypto {
 
   ec_point mult(const ec_point X, const ec_scalar);
   ec_point mult8(const ec_point X);
+
+  ec_point multBase(const ec_scalar);
+
+  ec_point add(const ec_point X, const ec_point Y);
 
 }
 

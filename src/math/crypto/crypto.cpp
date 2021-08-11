@@ -32,6 +32,7 @@
 
 #include "tools/common/varint.h"
 #include "tools/epee/include/string_tools.h"
+#include "tools/epee/include/logging.hpp"
 
 #include "config/cryptonote.hpp"
 
@@ -125,19 +126,39 @@ namespace crypto {
     return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
   }
 
+  ec_point multBase(const ec_scalar x) {
+    ec_point p;
+    const int r = crypto_scalarmult_ed25519_base_noclamp(p.data, x.data);
+    if (r != 0) {
+      LOG_FATAL("scalar mult key not in subgroup");
+    }
+    return p;
+  }
+
+  ec_point add(const ec_point X, const ec_point Y) {
+    ec_point p;
+    int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
+    if (r != 0) {
+      LOG_FATAL("add keys not in main group");
+    }
+
+    return p;
+  }
+
   bool generate_key_derivation(const public_key &key1, const secret_key &key2, key_derivation &derivation) {
     if (!is_valid_point(key1)) return false;
 
-    ec_point r = mult8(mult(key1, key2));
+    // here mult8 is really not needed
+    ec_point p = mult8(mult(key1, key2));
 
-    derivation = p2derivation(r);
+    derivation = p2derivation(p);
 
     return true;
   }
 
   constexpr size_t output_index_buffer_size = (sizeof(size_t) * 8 + 6) / 7;
 
-  void hash_derivation_to_scalar(const key_derivation &derivation, size_t index, ec_scalar &res) {
+  void hash_derivation_to_scalar(const key_derivation &derivation, const size_t index, ec_scalar &res) {
     struct {
       key_derivation derivation;
       char output_index_buffer[output_index_buffer_size];
@@ -150,27 +171,19 @@ namespace crypto {
     hash_to_scalar(&buf, end - reinterpret_cast<char *>(&buf), res);
   }
 
-  bool derive_public_key(const key_derivation &derivation, size_t output_index,
+  bool derive_public_key(const key_derivation &derivation, const size_t output_index,
     const public_key &base, public_key &derived_key) {
+    if (!is_valid_point(base)) return false;
+
     ec_scalar scalar;
-    ge_p3 point1;
-    ge_p3 point2;
-    ge_cached point3;
-    ge_p1p1 point4;
-    ge_p2 point5;
-    if (ge_frombytes_vartime(&point1, &base) != 0) {
-      return false;
-    }
     hash_derivation_to_scalar(derivation, output_index, scalar);
-    ge_scalarmult_base(&point2, &scalar);
-    ge_p3_to_cached(&point3, &point2);
-    ge_add(&point4, &point1, &point3);
-    ge_p1p1_to_p2(&point5, &point4);
-    ge_tobytes(&derived_key, &point5);
+    const ec_point derived = multBase(scalar);
+    const ec_point r = add(derived, base);
+    derived_key = p2pk(r);
     return true;
   }
 
-  void derive_secret_key(const key_derivation &derivation, size_t output_index,
+  void derive_secret_key(const key_derivation &derivation, const size_t output_index,
     const secret_key &base, secret_key &derived_key) {
     ec_scalar scalar;
     assert(sc_check(&base) == 0);
@@ -511,8 +524,8 @@ namespace crypto {
 
   void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
     const ec_point h = from_bytes_p2(h2p(sha3(epee::pod_to_span(pub))));
-    const ec_point r = mult(mult8(h), sec);
-    image = p2img(r);
+    const ec_point p = mult(mult8(h), sec);
+    image = p2img(p);
   }
 
   struct ec_point_pair {
