@@ -122,7 +122,7 @@ namespace crypto {
     ec_point p;
     const int r = crypto_scalarmult_ed25519_base_noclamp(p.data, x.data);
     if (r != 0) {
-      LOG_FATAL("scalar mult key not in subgroup");
+      LOG_FATAL("scalar mult base failed");
     }
     return p;
   }
@@ -131,7 +131,7 @@ namespace crypto {
     ec_point p;
     int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
     if (r != 0) {
-      LOG_FATAL("add keys not in main group");
+      LOG_FATAL("add keys not in main group: " << X << "\n" << Y);
     }
 
     return p;
@@ -141,7 +141,7 @@ namespace crypto {
     ec_point p;
     int r = crypto_core_ed25519_sub(p.data, X.data, Y.data);
     if (r != 0) {
-      LOG_FATAL("sub keys not in main group");
+      LOG_FATAL("sub keys not in main group: " << X << "\n" << Y);
     }
 
     return p;
@@ -483,7 +483,10 @@ namespace crypto {
 
   ec_point mult(const ec_point X, const ec_scalar a) {
     ec_point x;
-    [[maybe_unused]] int _ = crypto_scalarmult_ed25519_noclamp(x.data, a.data, X.data);
+    const int r = crypto_scalarmult_ed25519_noclamp(x.data, a.data, X.data);
+    if (r != 0) {
+      LOG_FATAL("mult point is not on curve: " << X << "\nresult: " << x);
+    }
 
     return x;
   }
