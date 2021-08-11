@@ -590,7 +590,7 @@ void wallet2::check_acc_out_precomp_once(const tx_out &o, const crypto::key_deri
 static uint64_t decodeRct(const rct::rctSig & rv, const crypto::key_derivation &derivation, unsigned int i, rct::scalar & mask, hw::device &hwdev)
 {
   crypto::secret_key scalar1;
-  hwdev.derivation_to_scalar(derivation, i, scalar1);
+  hwdev.hash_derivation_to_scalar(derivation, i, scalar1);
   try
   {
     switch (rv.type)

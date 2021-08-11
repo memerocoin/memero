@@ -137,7 +137,7 @@ namespace crypto {
 
   constexpr size_t output_index_buffer_size = (sizeof(size_t) * 8 + 6) / 7;
 
-  void derivation_to_scalar(const key_derivation &derivation, size_t index, ec_scalar &res) {
+  void hash_derivation_to_scalar(const key_derivation &derivation, size_t index, ec_scalar &res) {
     struct {
       key_derivation derivation;
       char output_index_buffer[output_index_buffer_size];
@@ -161,7 +161,7 @@ namespace crypto {
     if (ge_frombytes_vartime(&point1, &base) != 0) {
       return false;
     }
-    derivation_to_scalar(derivation, output_index, scalar);
+    hash_derivation_to_scalar(derivation, output_index, scalar);
     ge_scalarmult_base(&point2, &scalar);
     ge_p3_to_cached(&point3, &point2);
     ge_add(&point4, &point1, &point3);
@@ -174,7 +174,7 @@ namespace crypto {
     const secret_key &base, secret_key &derived_key) {
     ec_scalar scalar;
     assert(sc_check(&base) == 0);
-    derivation_to_scalar(derivation, output_index, scalar);
+    hash_derivation_to_scalar(derivation, output_index, scalar);
     sc_add(&(derived_key), &(base), &scalar);
   }
 
@@ -188,7 +188,7 @@ namespace crypto {
     if (ge_frombytes_vartime(&point1, &out_key) != 0) {
       return false;
     }
-    derivation_to_scalar(derivation, output_index, scalar);
+    hash_derivation_to_scalar(derivation, output_index, scalar);
     ge_scalarmult_base(&point2, &scalar);
     ge_p3_to_cached(&point3, &point2);
     ge_sub(&point4, &point1, &point3);

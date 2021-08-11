@@ -94,8 +94,8 @@ TEST(device, ops)
   crypto::generate_key_derivation(pk0, sk0, der);
   ASSERT_FALSE(memcmp(&derd, &der, sizeof(der)));
 
-  dev.derivation_to_scalar(der, 0, ressc0);
-  crypto::derivation_to_scalar(der, 0, ressc1);
+  dev.hash_derivation_to_scalar(der, 0, ressc0);
+  crypto::hash_derivation_to_scalar(der, 0, ressc1);
   ASSERT_FALSE(memcmp(&ressc0, &ressc1, sizeof(ressc1)));
 
   dev.derive_secret_key(der, 0, rct::scalar2sk(sk), sk0);

@@ -240,8 +240,8 @@ namespace hw {
             return crypto::generate_key_derivation(key1, key2, derivation);
         }
 
-        bool device_default::derivation_to_scalar(const crypto::key_derivation &derivation, const size_t output_index, crypto::ec_scalar &res){
-            crypto::derivation_to_scalar(derivation,output_index, res);
+        bool device_default::hash_derivation_to_scalar(const crypto::key_derivation &derivation, const size_t output_index, crypto::ec_scalar &res){
+            crypto::hash_derivation_to_scalar(derivation,output_index, res);
             return true;
         }
 
@@ -337,7 +337,7 @@ namespace hw {
             if (tx_version > 1)
             {
                 crypto::secret_key scalar1;
-                derivation_to_scalar(derivation, output_index, scalar1);
+                hash_derivation_to_scalar(derivation, output_index, scalar1);
                 amount_keys.push_back(rct::sk2rct(scalar1));
             }
             r = derive_public_key(derivation, output_index, dst_entr.addr.m_spend_public_key, out_eph_public_key);
