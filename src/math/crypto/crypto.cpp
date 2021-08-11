@@ -515,13 +515,6 @@ namespace crypto {
     image = p2img(p);
   }
 
-  struct ec_point_pair {
-    ec_point a, b;
-  };
-  struct rs_comm {
-    hash h;
-    struct ec_point_pair ab[];
-  };
 }
 
 CRYPTO_MAKE_HASHABLE_CPP(public_key)

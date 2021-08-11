@@ -216,6 +216,7 @@ namespace crypto {
   ec_scalar random_scalar();
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 
+  ec_point from_bytes_p2(const ec_point x);
 
 }
 
