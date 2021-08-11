@@ -89,8 +89,7 @@ namespace crypto {
 
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res) {
     const auto h = sha3(epee::blob::span((const uint8_t*)data, length));
-    res = h2s(h);
-    sc_reduce32(&res);
+    res = reduce(h2s(h));
   }
 
   bool is_valid_point(const ec_point x) {
@@ -103,7 +102,7 @@ namespace crypto {
    */
   secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
     sec = recover ? recovery_key : s2sk(random_scalar());
-    sc_reduce32(&(sec));  // reduce in case second round of keys (sendkeys)
+    sec = s2sk(reduce(sec));  // reduce in case second round of keys (sendkeys)
 
     secret_key_to_public_key(sec, pub);
 
@@ -279,8 +278,7 @@ namespace crypto {
 
     const ec_point r = add(mult(pub, sig.c), multBase(sig.r));
 
-
-    if (r == infinity) return false;
+    if (r == identity) return false;
 
     const s_comm buf { prefix_hash, pub, r };
     const ec_scalar h = hash_to_scalar(epee::pod_to_span(buf));
@@ -473,7 +471,7 @@ namespace crypto {
     return sc_isnonzero(&c2) == 0;
   }
 
-  ec_point from_bytes_p2(const ec_point x) {
+  ec_point viaF2(const ec_point x) {
     ge_p2 in;
     ge_fromfe_frombytes_vartime(&in, x.data);
     ec_point out;
@@ -483,6 +481,10 @@ namespace crypto {
 
   ec_point mult(const ec_point X, const ec_scalar a) {
     ec_point x;
+    if (a == s_0) {
+      return identity;
+    }
+
     const int r = crypto_scalarmult_ed25519_noclamp(x.data, a.data, X.data);
     if (r != 0) {
       LOG_FATAL("mult point is not on curve: " << X << "\nresult: " << x);
@@ -509,12 +511,23 @@ namespace crypto {
     return res;
   }
 
+  ge_p3 p3FromPoint(const ec_point x) {
+    ge_p3 p;
+    ge_frombytes_vartime(&p, x.data);
+    return p;
+  }
+
   void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
-    const ec_point h = from_bytes_p2(h2p(sha3(epee::pod_to_span(pub))));
+    const ec_point h = viaF2(h2p(sha3(epee::pod_to_span(pub))));
     const ec_point p = mult(mult8(h), sec);
     image = p2img(p);
   }
 
+  ec_scalar reduce(const ec_scalar x) {
+    ec_scalar y = x;
+    sc_reduce32(y.data);
+    return y;
+  }
 }
 
 CRYPTO_MAKE_HASHABLE_CPP(public_key)

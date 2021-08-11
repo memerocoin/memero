@@ -34,6 +34,10 @@
 
 #include <random>
 
+extern "C" {
+#include "crypto-ops.h"
+}
+
 namespace crypto {
   struct crypto_data {
     uint8_t data[32];
@@ -203,7 +207,7 @@ namespace crypto {
 
   inline constexpr ec_scalar s_0 = {};
 
-  inline constexpr ec_point infinity =
+  inline constexpr ec_point identity =
     {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
   bool is_valid_point(const ec_point x);
@@ -216,7 +220,11 @@ namespace crypto {
   ec_scalar random_scalar();
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 
-  ec_point from_bytes_p2(const ec_point x);
+  ec_point viaF2(const ec_point x);
+
+  ge_p3 p3FromPoint(const ec_point x);
+
+  ec_scalar reduce(const ec_scalar x);
 
 }
 

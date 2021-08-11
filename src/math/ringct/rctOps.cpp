@@ -147,90 +147,41 @@ namespace rct {
   //Scalar multiplications of curve points
 
   scalar normalizeKey(const scalar a) {
-    scalar k = a;
-    sc_reduce32(k.data);
-    return k;
+    return s2s(crypto::reduce(a));
   }
 
   //does a * G where a is a scalar and G is the curve basepoint
   key scalarmultBase(const scalar a) {
-    scalar k = normalizeKey(a);
-    key aG;
-
-    // no need to check since a can be 0 in tests
-    [[maybe_unused]] int _ = crypto_scalarmult_ed25519_base_noclamp(aG.data, k.data);
-
-    return aG;
+    scalar s = normalizeKey(a);
+    return p2rct(crypto::multBase(s));
   }
 
   //does a * P where a is a scalar and P is an arbitrary point
   key scalarmultKey(const key P, const scalar a) {
     scalar s = normalizeKey(a);
-    if (sodium_is_zero(s.data, 32)) {
-      return rct::identity;
-    }
-
-    key k;
-    // do not throw for tests
-    const int r = crypto_scalarmult_ed25519_noclamp(k.data, s.data, P.data);
-    if (r != 0) {
-      LOG_FATAL("scalar mult key not in subgroup");
-    }
-
-    return k;
+    return p2rct(crypto::mult(P, s));
   }
 
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
   key scalarmultH(const scalar a) {
-    scalar s = normalizeKey(a);
-    key k;
-
-    // no need to check since a can be 0 in tests, and H is on main group
-    [[maybe_unused]] int _ = crypto_scalarmult_ed25519_noclamp(k.data, s.data, H.data);
-
-    return k;
+    return scalarmultKey(H, a);
   }
 
   //Computes 8P
   key multPoint8(const key P) {
-    ge_p3 p3;
-    LOG_WARNING_AND_THROW_UNLESS
-      (
-       ge_frombytes_vartime(&p3, P.data) == 0
-       , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
-       );
-    ge_p2 p2;
-    ge_p3_to_p2(&p2, &p3);
-    ge_p1p1 p1;
-    ge_mul8(&p1, &p2);
-    ge_p1p1_to_p2(&p2, &p1);
-    rct::key res;
-    ge_tobytes(res.data, &p2);
-    return res;
+    return p2rct(crypto::mult8(P));
   }
 
   //Computes 8P without byte conversion
   ge_p3 multPoint8raw(const key P)
   {
-    ge_p3 res;
-    ge_p3 p3;
-    LOG_WARNING_AND_THROW_UNLESS
-      (
-       ge_frombytes_vartime(&p3, P.data) == 0
-       , "ge_frombytes_vartime failed at "+boost::lexical_cast<std::string>(__LINE__)
-       );
-    ge_p2 p2;
-    ge_p3_to_p2(&p2, &p3);
-    ge_p1p1 p1;
-    ge_mul8(&p1, &p2);
-    ge_p1p1_to_p3(&res, &p1);
-    return res;
+    return crypto::p3FromPoint(crypto::mult8(P));
   }
 
   //Computes lA where l is the curve order
   bool isInMainSubgroup(const key A) {
-    return 1 == crypto_core_ed25519_is_valid_point(A.data);
+    return crypto::is_valid_point(A);
   }
 
   key ge_p3_tokey(const ge_p3 x) {
@@ -243,11 +194,7 @@ namespace rct {
 
   //for curve points: AB = A + B
   rct::key addKeys(const key A, const key B) {
-    key k;
-    int r = crypto_core_ed25519_add(k.data, A.data, B.data);
-    LOG_WARNING_AND_THROW_UNLESS(r == 0, "add keys not in main group");
-
-    return k;
+    return p2rct(crypto::add(A, B));
   }
 
   rct::key addKeys(const keyS A) {
@@ -324,10 +271,7 @@ namespace rct {
   //subtract Keys (subtracts curve points)
   //AB = A - B where A, B are curve points
   key subKeys(const key A, const key B) {
-    key AB;
-    int r = crypto_core_ed25519_sub(AB.data, A.data, B.data);
-    LOG_WARNING_AND_THROW_UNLESS(r == 0, "sub keys not in main group");
-    return AB;
+    return p2rct(crypto::sub(A, B));
   }
 
   //sha3 for a 32 byte key
@@ -336,9 +280,7 @@ namespace rct {
   }
 
   scalar hash_to_scalar(const key in) {
-    scalar hash = k2s(hash_key(in));
-    sc_reduce32(hash.data);
-    return hash;
+    return s2s(reduce(k2s(hash_key(in))));
   }
 
   key hash_keys(const keyS keys) {
@@ -350,23 +292,14 @@ namespace rct {
   }
 
   scalar hash_keys_to_scalar(const keyS keys) {
-    scalar rv = k2s(hash_keys(keys));
-    sc_reduce32(rv.data);
-    return rv;
+    return s2s(reduce(k2s(hash_keys(keys))));
   }
 
   // Hash a key to p3 representation
   ge_p3 hash_to_p3(const key k) {
     key h = hash_key(k);
-    ge_p2 hash_p2;
-    ge_fromfe_frombytes_vartime(&hash_p2, h.data);
-    ge_p1p1 hash8_p1p1;
-    ge_mul8(&hash8_p1p1, &hash_p2);
-
-    ge_p3 hash8_p3;
-    ge_p1p1_to_p3(&hash8_p3, &hash8_p1p1);
-
-    return hash8_p3;
+    const crypto::ec_point p = viaF2(h);
+    return crypto::p3FromPoint(p2rct(mult8(p)));
   }
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
@@ -393,9 +326,7 @@ namespace rct {
     memcpy(data, "commitment_mask", 15);
     memcpy(data + 15, &sk, sizeof(sk));
     key h = rct::hash2rct(crypto::sha3(epee::pod_to_span(data)));
-    scalar s = k2s(h);
-    sc_reduce32(s.data);
-    return s;
+    return s2s(reduce(k2s(h)));
   }
 
   ecdhTuple ecdhEncode(const scalar amount, const key sharedSec) {
