@@ -193,7 +193,14 @@ namespace crypto {
     sc_add(&(derived_key), &(base), &scalar);
   }
 
-  bool derive_subaddress_public_key(const public_key &out_key, const key_derivation &derivation, std::size_t output_index, public_key &derived_key) {
+  bool derive_subaddress_public_key
+  (
+   const public_key &out_key
+   , const key_derivation &derivation
+   , const std::size_t output_index,
+   public_key &derived_key
+   )
+  {
     if (!is_valid_point(out_key)) return false;
 
     ec_scalar scalar;
@@ -238,8 +245,7 @@ namespace crypto {
   }
 
   void generate_signature(const hash &prefix_hash, const public_key &pub, const secret_key &sec, signature &sig) {
-    bool found = false;
-    while (!found) {
+    while (true) {
       const ec_scalar k = random_scalar();
       if (k == s_0) continue;
 
@@ -258,7 +264,7 @@ namespace crypto {
 
       sig.c = sig_c;
       sig.r = sig_r;
-      return;
+      break;
     }
 
   }

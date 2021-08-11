@@ -109,7 +109,13 @@ namespace crypto {
   void hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index, ec_scalar &res);
   bool derive_public_key(const key_derivation &, const std::size_t, const public_key &, public_key &);
   void derive_secret_key(const key_derivation &, const std::size_t, const secret_key &, secret_key &);
-  bool derive_subaddress_public_key(const public_key &, const key_derivation &, std::size_t, public_key &);
+  bool derive_subaddress_public_key
+  (
+   const public_key &out_key
+   , const key_derivation &derivation
+   , const std::size_t output_index,
+   public_key &derived_key
+   );
 
   /* Generation and checking of a standard signature.
     */
