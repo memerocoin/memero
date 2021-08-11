@@ -130,92 +130,29 @@ pippenger_cache pippenger_init_cache(const std::span<MultiexpData> data)
 
 rct::key pippenger(const std::span<MultiexpData> data)
 {
-  const pippenger_cache local_cache = pippenger_init_cache(data);
-  const size_t c = get_pippenger_c(data.size());
-
-  ge_p3 result = ge_p3_identity;
-  bool result_init = false;
-
-  const rct::scalar maxscalar = data.empty() ? rct::s_zero :
+  const ge_p3 res_p3 = std::transform_reduce
     (
-     *std::max_element(data.begin(), data.end(),
-                       [](const auto x, const auto y) -> bool { return x.scalar < y.scalar; })
-     ).scalar;
-
-  size_t groups = 0;
-  while (groups < 256 && !(maxscalar < pow2(groups)))
-    ++groups;
-  groups = (groups + c - 1) / c;
-
-  for (size_t k = groups; k-- > 0; )
-  {
-    if (result_init)
-    {
-      ge_p2 p2;
-      ge_p3_to_p2(&p2, &result);
-      for (size_t i = 0; i < c; ++i)
-      {
-        ge_p1p1 p1;
-        ge_p2_dbl(&p1, &p2);
-        if (i == c - 1)
-          ge_p1p1_to_p3(&result, &p1);
-        else
-          ge_p1p1_to_p2(&p2, &p1);
-      }
-    }
-
-    std::unordered_map<size_t, ge_p3> buckets;
-
-    // partition scalars into buckets
-    for (size_t i = 0; i < data.size(); ++i)
-    {
-      size_t bucket = 0;
-      for (size_t j = 0; j < c; ++j)
-        if (test(data[i].scalar, k*c+j))
-          bucket |= 1<<j;
-      if (bucket == 0)
-        continue;
-      LOG_ERROR_AND_THROW_UNLESS(bucket < (1u<<c), "bucket overflow");
-      if (buckets.contains(bucket))
-      {
-        add(buckets[bucket], local_cache[i]);
-      }
-      else
-      {
-        buckets.emplace(bucket, data[i].point);
-      }
-    }
-
-    // sum the buckets
-    ge_p3 pail;
-    bool pail_init = false;
-    for (size_t i = (1<<c)-1; i > 0; --i)
-    {
-      if (buckets.contains(i))
-      {
-        if (pail_init)
-          add(pail, buckets[i]);
-        else
-        {
-          pail = buckets[i];
-          pail_init = true;
-        }
-      }
-      if (pail_init)
-      {
-        if (result_init)
-          add(result, pail);
-        else
-        {
-          result = pail;
-          result_init = true;
-        }
-      }
-    }
-  }
+     data.begin()
+     , data.end()
+     , ge_p3_identity
+     , [](const auto& x, const auto& y) {
+       ge_p1p1 p1;
+       ge_cached cached;
+       ge_p3 res_p3 = ge_p3_identity;
+       ge_p3_to_cached(&cached, &y);
+       ge_add(&p1, &x, &cached);
+       ge_p1p1_to_p3(&res_p3, &p1);
+       return res_p3;
+     }
+     , [](const auto& d) {
+       ge_p3 p3;
+       ge_scalarmult_p3(&p3, d.scalar.data, &d.point);
+       return p3;
+     }
+     );
 
   rct::key res;
-  ge_p3_tobytes(res.data, &result);
+  ge_p3_tobytes(res.data, &res_p3);
   return res;
 }
 
