@@ -104,8 +104,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(l < n, "Signing index out of range!");
 
         // Key images
-        ge_p3 H_p3 = hash_to_p3_via_f2(P[l]);
-        key H = ge_p3_tokey(H_p3);
+        key H = hash_to_key_via_f2(P[l]);
 
         key D;
 
@@ -321,11 +320,10 @@ namespace rct {
         LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.data) == 0, false, "Bad signature commitment!");
         LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad key image!");
 
-        // Cache commitment offset for efficient subtraction later
-        ge_p3 C_offset_p3;
-        LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&C_offset_p3, C_offset.data) == 0, false, "point conv failed");
-        ge_cached C_offset_cached;
-        ge_p3_to_cached(&C_offset_cached, &C_offset_p3);
+        if (!is_valid_point(C_offset)) {
+          LOG_ERROR("C_offset is not a valid point: " << C_offset);
+          return false;
+        }
 
         // Prepare key images
         scalar c = sig.c1;
@@ -374,19 +372,19 @@ namespace rct {
         key L;
         key R;
         size_t i = 0;
-        ge_p3 hash8_p3;
-        ge_p3 temp_p3;
-        ge_p1p1 temp_p1;
 
         while (i < n) {
             sc_0(c_new.data);
             sc_mul(c_p.data,mu_P.data,c.data);
             sc_mul(c_c.data,mu_C.data,c.data);
 
-            LOG_ERROR_AND_RETURN_UNLESS(ge_frombytes_vartime(&temp_p3, pubs[i].mask.data) == 0, false, "point conv failed");
-            ge_sub(&temp_p1,&temp_p3,&C_offset_cached);
-            ge_p1p1_to_p3(&temp_p3,&temp_p1);
-            const key C = ge_p3_tokey(temp_p3);
+            const key mask = span2rct(epee::pod_to_span(pubs[i].mask.data));
+            if (!is_valid_point(mask)) {
+              LOG_ERROR("pubs[" << i << "].mask.data is not a valid point: " << mask);
+              return false;
+            }
+
+            const key C = subKeys(mask, C_offset);
 
             // Compute L
             L = addKeys_aGbBcC
@@ -399,7 +397,6 @@ namespace rct {
                );
 
             // Compute R
-            hash8_p3 = hash_to_p3_via_f2(pubs[i].dest);
             const key k = hash_to_key_via_f2(pubs[i].dest);
 
             R = addKeys_aAbBcC
