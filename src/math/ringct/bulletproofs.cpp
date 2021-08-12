@@ -238,7 +238,7 @@ rct::scalarV hadamard(const scalarS a, const scalarS b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_mul(res[i].data, a[i].data, b[i].data);
+    res[i] = a[i] * b[i];
   }
   return res;
 }
@@ -255,8 +255,17 @@ std::vector<key> hadamard_fold(std::span<key> v, const rct::scalarV *scale, cons
     key c_1 = v[sz + n];
     rct::scalar sa, sb;
 
-    if (scale) sc_mul(sa.data, a.data, (*scale)[n].data); else sa = a;
-    if (scale) sc_mul(sb.data, b.data, (*scale)[sz + n].data); else sb = b;
+    if (scale) {
+      sa = a * (*scale)[n];
+    } else {
+      sa = a;
+    }
+
+    if (scale) {
+      sb = b * (*scale)[sz + n];
+    } else {
+      sb = b;
+    }
 
     const key r = scalarmultKey(c_0, sa) + scalarmultKey(c_1, sb);
 
@@ -295,7 +304,7 @@ rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    res[i] = s2s(a[i] - b);
+    res[i] = a[i] - b;
   }
   return res;
 }
@@ -306,7 +315,7 @@ rct::scalarV vector_scalar(const scalarS a, const rct::scalar x)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_mul(res[i].data, a[i].data, x.data);
+    res[i] = a[i] * x;
   }
   return res;
 }
@@ -317,8 +326,9 @@ rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
   rct::scalar y = y_in;
   rct::scalar x = x_in;
   while (n--)
-    sc_mul(y.data, y.data, y.data);
-  sc_mul(y.data, y.data, x.data);
+    y = y * y;
+
+  y = y * x;
   return y;
 }
 
@@ -342,7 +352,7 @@ rct::scalarV invert(rct::scalarV x)
     if (n == 0)
       acc = x[0];
     else
-      sc_mul(acc.data, acc.data, x[n].data);
+      acc = acc * x[n];
   }
 
   acc = invert(acc);
@@ -350,8 +360,8 @@ rct::scalarV invert(rct::scalarV x)
   rct::scalar tmp;
   for (int i = x.size(); i-- > 0; )
   {
-    sc_mul(tmp.data, acc.data, x[i].data);
-    sc_mul(x[i].data, acc.data, scratch[i].data);
+    tmp = acc * x[i];
+    x[i] =acc * scratch[i];
     acc = tmp;
   }
 
@@ -413,6 +423,7 @@ Bulletproof bulletproof_MAKE(const uint64_t v, const rct::scalar gamma)
 {
   return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::scalarV{gamma});
 }
+
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
 Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
