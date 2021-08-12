@@ -120,7 +120,6 @@ void ge_p3_tobytes(unsigned char *, const ge_p3 *);
 /* From ge_scalarmult_base.c */
 
 extern const ge_precomp ge_base[32][8];
-void ge_scalarmult_base(ge_p3 *, const unsigned char *);
 
 /* From ge_tobytes.c */
 
