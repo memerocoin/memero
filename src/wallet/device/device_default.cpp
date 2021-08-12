@@ -146,11 +146,11 @@ namespace hw {
             pkeys.reserve(end - begin);
             cryptonote::subaddress_index index = {account, begin};
 
-            ge_p3 p3;
-            ge_cached cached;
-            LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&p3, (const unsigned char*)keys.m_account_address.m_spend_public_key.data) == 0,
-                "ge_frombytes_vartime failed to convert spend public key");
-            ge_p3_to_cached(&cached, &p3);
+            const auto public_spend_key = keys.m_account_address.m_spend_public_key;
+            if (!is_valid_point(public_spend_key)) {
+              LOG_FATAL("public spend key is not on the main group");
+            }
+
 
             for (uint32_t idx = begin; idx < end; ++idx)
             {
@@ -163,14 +163,10 @@ namespace hw {
                 crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
 
                 // M = m*G
-                ge_scalarmult_base(&p3, (const unsigned char*)m.data);
+                const crypto::ec_point mG = crypto::multBase(m);
 
                 // D = B + M
-                crypto::public_key D;
-                ge_p1p1 p1p1;
-                ge_add(&p1p1, &p3, &cached);
-                ge_p1p1_to_p3(&p3, &p1p1);
-                ge_p3_tobytes((unsigned char*)D.data, &p3);
+                const crypto::public_key D = crypto::p2pk(crypto::add(public_spend_key, mG));
 
                 pkeys.push_back(D);
             }
