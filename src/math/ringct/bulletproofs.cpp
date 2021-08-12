@@ -537,16 +537,16 @@ try_again:
   // PAPER LINES 52-53
   rct::scalar tau1 = rct::skGen(), tau2 = rct::skGen();
 
-  rct::key T1, T2;
-  ge_p3 p3;
   sc_mul(tmp.data, t1.data, rct::s_inv_eight.data);
   sc_mul(tmp2.data, tau1.data, rct::s_inv_eight.data);
-  ge_double_scalarmult_base_vartime_p3(&p3, tmp.data, &ge_p3_H, tmp2.data);
-  ge_p3_tobytes(T1.data, &p3);
+
+  const key T1 = addKeys(scalarmultBase(tmp2), scalarmultH(tmp));
+
+
   sc_mul(tmp.data, t2.data, rct::s_inv_eight.data);
   sc_mul(tmp2.data, tau2.data, rct::s_inv_eight.data);
-  ge_double_scalarmult_base_vartime_p3(&p3, tmp.data, &ge_p3_H, tmp2.data);
-  ge_p3_tobytes(T2.data, &p3);
+
+  const key T2 = addKeys(scalarmultBase(tmp2), scalarmultH(tmp));
 
   // PAPER LINES 54-56
   rct::scalar x = hash_carry_mash(hash_carry, s2k(z), T1, T2);
