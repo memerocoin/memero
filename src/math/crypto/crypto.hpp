@@ -58,6 +58,7 @@ namespace crypto {
     bool operator==(const ec_scalar &x) const { return !crypto_verify_32(data, x.data); }
 
     ec_scalar operator+(const ec_scalar& x) const;
+    ec_scalar operator-(const ec_scalar& x) const;
 
     // ec_scalar operator+(const ec_scalar& x) {sc_add
     //   return add(*this, x);

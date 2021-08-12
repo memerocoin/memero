@@ -295,7 +295,7 @@ rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_sub(res[i].data, a[i].data, b.data);
+    res[i] = s2s(a[i] - b);
   }
   return res;
 }
@@ -822,7 +822,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     }
 
     sc_muladd(tmp.data, pd.z.data, ip1y.data, k.data);
-    sc_sub(tmp.data, proof.t.data, tmp.data);
+    tmp = s2s(proof.t - tmp);
     sc_muladd(y1.data, tmp.data, weight_y.data, y1.data);
     for (size_t j = 0; j < proof8_V.size(); j++)
     {
@@ -885,7 +885,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       if (i == 0)
       {
         tmp = tmp + pd.z;
-        sc_sub(h_scalar.data, h_scalar.data, tmp.data);
+        h_scalar = s2s(h_scalar - tmp);
       }
       else
       {
@@ -924,11 +924,10 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   }
 
   // now check all proofs at once
-  sc_sub(tmp.data, m_y0.data, z1.data);
+  tmp = s2s(m_y0 - z1);
 
-  // ??? is this implicit cast OK ???
   multiexp_data.emplace_back(tmp, rct::G);
-  sc_sub(tmp.data, z3.data, y1.data);
+  tmp = s2s(z3 - y1);
   multiexp_data.emplace_back(tmp, rct::H);
   for (size_t i = 0; i < maxMN; ++i)
   {

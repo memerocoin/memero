@@ -100,6 +100,12 @@ namespace crypto {
     return s;
   }
 
+  ec_scalar ec_scalar::operator-(const ec_scalar& x) const {
+    ec_scalar s;
+    crypto_core_ed25519_scalar_sub(s.data, this->data, x.data);
+    return s;
+  }
+
   // secret_key secret_key::operator+(const secret_key& y) const
   // {
   //   return s2sk(ec_scalar::operator+(y));
@@ -289,7 +295,7 @@ namespace crypto {
     const ec_scalar h = hash_to_scalar(epee::pod_to_span(buf));
 
     ec_scalar s;
-    sc_sub(&s, &h, &sig.c);
+    s = h - sig.c;
 
     return sc_isnonzero(&s) == 0;
   }
@@ -425,7 +431,7 @@ namespace crypto {
     hash_to_scalar(&buf, sizeof(s_comm_2), c2);
 
     // test if c2 == sig.c
-    sc_sub(&c2, &c2, &sig.c);
+    c2 = c2 - sig.c;
     return sc_isnonzero(&c2) == 0;
   }
 

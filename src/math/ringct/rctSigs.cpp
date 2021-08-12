@@ -299,7 +299,7 @@ namespace rct {
         }
 
         sk[0] = inSk.addr;
-        sc_sub(sk[1].data, inSk.blinding_factor.data, a.data);
+        sk[1] = s2s(inSk.blinding_factor - a);
         clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
         memwipe(sk.data(), sk.size() * sizeof(key));
         return result;
@@ -415,7 +415,7 @@ namespace rct {
 
             i = i + 1;
         }
-        sc_sub(c_new.data,c.data,sig.c1.data);
+        c_new = s2s(c - sig.c1);
         return sc_isnonzero(c_new.data) == 0;
     }
 
@@ -527,7 +527,7 @@ namespace rct {
             sumpouts = a[i] + sumpouts;
             pseudoOuts[i] = genC(a[i], inamounts[i]);
         }
-        sc_sub(a[i].data, sumout.data, sumpouts.data);
+        a[i] = s2s(sumout - sumpouts);
         pseudoOuts[i] = genC(a[i], inamounts[i]);
 
         key full_message = get_mlsag_pre_hash(rv);

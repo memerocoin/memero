@@ -1197,8 +1197,8 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::secret_key decrypt_key(crypto::secret_key key, const epee::wipeable_string &passphrase)
   {
-    crypto::hash hash = crypto::sha3(epee::string_tools::string_to_blob(passphrase));
-    sc_sub((unsigned char*)key.data, (const unsigned char*)key.data, (const unsigned char*)hash.data);
+    crypto::ec_scalar hash = crypto::hash_to_scalar(epee::string_tools::string_to_blob(passphrase));
+    key = s2sk(key - hash);
     return key;
   }
 }
