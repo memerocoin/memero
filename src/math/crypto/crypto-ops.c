@@ -39,7 +39,6 @@
 static void fe_mul(fe, const fe, const fe);
 static void fe_sq(fe, const fe);
 static void ge_p2_0(ge_p2 *);
-static void ge_p3_dbl(ge_p1p1 *, const ge_p3 *);
 static void fe_divpowm1(fe, const fe, const fe);
 
 /* Common functions */
@@ -1282,26 +1281,6 @@ void ge_p2_dbl(ge_p1p1 *r, const ge_p2 *p) {
   fe_sub(r->T, r->T, r->Z);
 }
 
-/* From ge_p3_0.c */
-
-static void ge_p3_0(ge_p3 *h) {
-  fe_0(h->X);
-  fe_1(h->Y);
-  fe_1(h->Z);
-  fe_0(h->T);
-}
-
-/* From ge_p3_dbl.c */
-
-/*
-r = 2 * p
-*/
-
-static void ge_p3_dbl(ge_p1p1 *r, const ge_p3 *p) {
-  ge_p2 q;
-  ge_p3_to_p2(&q, p);
-  ge_p2_dbl(r, &q);
-}
 
 /* From ge_p3_to_cached.c */
 
@@ -1349,14 +1328,6 @@ void ge_p3_tobytes(unsigned char *s, const ge_p3 *h) {
   s[31] ^= fe_isnegative(x) << 7;
 }
 
-/* From ge_precomp_0.c */
-
-static void ge_precomp_0(ge_precomp *h) {
-  fe_1(h->yplusx);
-  fe_1(h->yminusx);
-  fe_0(h->xy2d);
-}
-
 /* From ge_scalarmult_base.c */
 
 static unsigned char equal(signed char b, signed char c) {
@@ -1374,41 +1345,6 @@ static unsigned char negative(signed char b) {
   x >>= 63; /* 1: yes; 0: no */
   return x;
 }
-
-static void ge_precomp_cmov(ge_precomp *t, const ge_precomp *u, unsigned char b) {
-  fe_cmov(t->yplusx, u->yplusx, b);
-  fe_cmov(t->yminusx, u->yminusx, b);
-  fe_cmov(t->xy2d, u->xy2d, b);
-}
-
-static void my_select(ge_precomp *t, int pos, signed char b) {
-  ge_precomp minust;
-  unsigned char bnegative = negative(b);
-  unsigned char babs = b - (((-bnegative) & b) << 1);
-
-  ge_precomp_0(t);
-  ge_precomp_cmov(t, &ge_base[pos][0], equal(babs, 1));
-  ge_precomp_cmov(t, &ge_base[pos][1], equal(babs, 2));
-  ge_precomp_cmov(t, &ge_base[pos][2], equal(babs, 3));
-  ge_precomp_cmov(t, &ge_base[pos][3], equal(babs, 4));
-  ge_precomp_cmov(t, &ge_base[pos][4], equal(babs, 5));
-  ge_precomp_cmov(t, &ge_base[pos][5], equal(babs, 6));
-  ge_precomp_cmov(t, &ge_base[pos][6], equal(babs, 7));
-  ge_precomp_cmov(t, &ge_base[pos][7], equal(babs, 8));
-  fe_copy(minust.yplusx, t->yminusx);
-  fe_copy(minust.yminusx, t->yplusx);
-  fe_neg(minust.xy2d, t->xy2d);
-  ge_precomp_cmov(t, &minust, bnegative);
-}
-
-/*
-h = a * B
-where a = a[0]+256*a[1]+...+256^31 a[31]
-B is the Ed25519 base point (x,4/5) with x positive.
-
-Preconditions:
-  a[31] <= 127
-*/
 
 /* From ge_sub.c */
 
