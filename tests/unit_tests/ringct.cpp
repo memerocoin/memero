@@ -211,7 +211,7 @@ TEST(ringct, CLSAG)
   backup_key = k2s(clsag.D);
   rct::key x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
-  clsag.D = rct::addKeys(clsag.D, x);
+  clsag.D = clsag.D + x;
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.D = s2k(backup_key);
 
@@ -632,7 +632,7 @@ TEST(ringct, dummyCommit)
   const rct::key z = rct::dummyCommit(amount);
   const rct::key a = rct::scalarmultBase(rct::s_one);
   const rct::key b = rct::scalarmultH(rct::int_to_scalar(amount));
-  const rct::key manual = rct::addKeys(a, b);
+  const rct::key manual = a + b;
   ASSERT_EQ(z, manual);
 }
 

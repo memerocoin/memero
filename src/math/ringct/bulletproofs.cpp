@@ -258,7 +258,7 @@ std::vector<key> hadamard_fold(std::span<key> v, const rct::scalarV *scale, cons
     if (scale) sc_mul(sa.data, a.data, (*scale)[n].data); else sa = a;
     if (scale) sc_mul(sb.data, b.data, (*scale)[sz + n].data); else sb = b;
 
-    const key r = addKeys(scalarmultKey(c_0, sa), scalarmultKey(c_1, sb));
+    const key r = scalarmultKey(c_0, sa) + scalarmultKey(c_1, sb);
 
     out[n] = r;
   }
@@ -475,13 +475,13 @@ try_again:
   rct::scalar alpha = rct::skGen();
   rct::key ve = vector_exponent(aL8, aR8);
   sc_mul(tmp.data, alpha.data, rct::s_inv_eight.data);
-  const key A = rct::addKeys(ve, rct::scalarmultBase(tmp));
+  const key A = ve + rct::scalarmultBase(tmp);
 
   // PAPER LINES 45-47
   rct::scalarV sL = rct::skvGen(MN), sR = rct::skvGen(MN);
   rct::scalar rho = rct::skGen();
   ve = vector_exponent(sL, sR);
-  rct::key S = rct::addKeys(ve, rct::scalarmultBase(rho));
+  rct::key S = ve + rct::scalarmultBase(rho);
   S = rct::scalarmultKey(S, rct::s_inv_eight);
 
   // PAPER LINES 48-50
@@ -535,13 +535,13 @@ try_again:
   sc_mul(tmp.data, t1.data, rct::s_inv_eight.data);
   sc_mul(tmp2.data, tau1.data, rct::s_inv_eight.data);
 
-  const key T1 = addKeys(scalarmultBase(tmp2), scalarmultH(tmp));
+  const key T1 = scalarmultBase(tmp2) + scalarmultH(tmp);
 
 
   sc_mul(tmp.data, t2.data, rct::s_inv_eight.data);
   sc_mul(tmp2.data, tau2.data, rct::s_inv_eight.data);
 
-  const key T2 = addKeys(scalarmultBase(tmp2), scalarmultH(tmp));
+  const key T2 = scalarmultBase(tmp2) + scalarmultH(tmp);
 
   // PAPER LINES 54-56
   rct::scalar x = hash_carry_mash(hash_carry, s2k(z), T1, T2);

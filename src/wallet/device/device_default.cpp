@@ -135,7 +135,7 @@ namespace hw {
             crypto::secret_key_to_public_key(m, M);
 
             // D = B + M
-            crypto::public_key D = rct::rct2pk(rct::addKeys(rct::pk2rct(keys.m_account_address.m_spend_public_key), rct::pk2rct(M)));
+            crypto::public_key D = crypto::p2pk(keys.m_account_address.m_spend_public_key + M);
             return D;
         }
 

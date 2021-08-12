@@ -113,7 +113,7 @@ namespace rct {
 
     const scalar am = int_to_scalar(amount);
     const key bH = scalarmultH(am);
-    pk.mask = addKeys(pk.mask, bH);
+    pk.mask = pk.mask + bH;
     return std::make_pair(sk, pk);
   }
 
@@ -125,14 +125,14 @@ namespace rct {
     std::tie(sk.addr, pk.dest) = skpkGen();
     std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 
-    pk.mask = addKeys(pk.mask, bH);
+    pk.mask = pk.mask + bH;
     return std::make_pair(sk, pk);
   }
 
   key dummyCommit(const amount_t amount) {
     scalar am = int_to_scalar(amount);
     key bH = scalarmultH(am);
-    return addKeys(G, bH);
+    return G + bH;
   }
 
   key commit(const amount_t amount, const scalar &mask) {
@@ -186,25 +186,20 @@ namespace rct {
 
   //Curve addition / subtractions
 
-  //for curve points: AB = A + B
-  rct::key addKeys(const key A, const key B) {
-    return A + B;
-  }
-
   rct::key addKeys(const keyS A) {
     return std::accumulate
       (
        A.begin()
        , A.end()
        , rct::identity
-       , [](const auto x, const auto y) { return addKeys(x, y); }
+       , std::plus<key>()
        );
   }
 
   //addKeys2
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
   key addScalarMult_G_H(const scalar a, const scalar b) {
-    return addKeys(scalarmultBase(a), scalarmultH(b));
+    return scalarmultBase(a) + scalarmultH(b);
   }
 
   // addKeys_aGbBcC

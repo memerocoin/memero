@@ -18,6 +18,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "rctOps.hpp"
 #include "multiexp.hpp"
 
+#include <functional>
+
 namespace rct
 {
 
@@ -28,7 +30,7 @@ rct::key dummy(const std::span<rct::MultiexpData> data)
      data.begin()
      , data.end()
      , rct::identity
-     , [](const auto& x, const auto& y) { return rct::addKeys(x, y); }
+     , std::plus<key>()
      , [](const auto& x) {
        return rct::scalarmultKey(x.point, x.scalar);
      }

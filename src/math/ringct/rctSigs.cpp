@@ -630,7 +630,7 @@ namespace rct {
           }
           key sumOutpks = addKeys(masks);
           const key txnFeeKey = scalarmultH(int_to_scalar(rv.txnFee));
-          sumOutpks = addKeys(txnFeeKey, sumOutpks);
+          sumOutpks = txnFeeKey + sumOutpks;
 
           key sumPseudoOuts = addKeys(pseudoOuts);
 

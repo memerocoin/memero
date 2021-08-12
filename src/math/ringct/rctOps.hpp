@@ -111,9 +111,6 @@ namespace rct {
 
   //Curve addition / subtractions
 
-  //for curve points: AB = A + B
-  rct::key addKeys(const key A, const key B);
-
   rct::key addKeys(const keyS A);
 
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
