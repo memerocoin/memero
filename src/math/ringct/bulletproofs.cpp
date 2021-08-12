@@ -781,7 +781,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   rct::scalar m_y0 = rct::s_zero, y1 = rct::s_zero;
   int proof_data_index = 0;
   rct::scalarV w_cache;
-  std::vector<ge_p3> proof8_V, proof8_L, proof8_R;
+  std::vector<key> proof8_V, proof8_L, proof8_R;
   for (const Bulletproof& proof: proofs)
   {
     const proof_data_t &pd = proof_data[proof_data_index++];
@@ -795,23 +795,23 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     // pre-multiply some points by 8
     proof8_V.resize(proof.V.size());
     for (size_t i = 0; i < proof.V.size(); ++i) {
-      proof8_V[i] = rct::multPoint8raw(proof.V[i]);
+      proof8_V[i] = rct::multPoint8(proof.V[i]);
     }
 
     proof8_L.resize(proof.L.size());
     for (size_t i = 0; i < proof.L.size(); ++i) {
-      proof8_L[i] = rct::multPoint8raw(proof.L[i]);
+      proof8_L[i] = rct::multPoint8(proof.L[i]);
     }
 
     proof8_R.resize(proof.R.size());
     for (size_t i = 0; i < proof.R.size(); ++i) {
-      proof8_R[i] = rct::multPoint8raw(proof.R[i]);
+      proof8_R[i] = rct::multPoint8(proof.R[i]);
     }
 
-    ge_p3 proof8_T1 = rct::multPoint8raw(proof.T1);
-    ge_p3 proof8_T2 = rct::multPoint8raw(proof.T2);
-    ge_p3 proof8_S  = rct::multPoint8raw(proof.S);
-    ge_p3 proof8_A  = rct::multPoint8raw(proof.A);
+    key proof8_T1 = rct::multPoint8(proof.T1);
+    key proof8_T2 = rct::multPoint8(proof.T2);
+    key proof8_S  = rct::multPoint8(proof.S);
+    key proof8_A  = rct::multPoint8(proof.A);
 
     sc_mulsub(m_y0.data, proof.taux.data, weight_y.data, m_y0.data);
 
@@ -832,18 +832,18 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     for (size_t j = 0; j < proof8_V.size(); j++)
     {
       sc_mul(tmp.data, zpow[j+2].data, weight_y.data);
-      multiexp_data.emplace_back(tmp, ge_p3_tokey(proof8_V[j]));
+      multiexp_data.emplace_back(tmp, proof8_V[j]);
     }
     sc_mul(tmp.data, pd.x.data, weight_y.data);
-    multiexp_data.emplace_back(tmp, ge_p3_tokey(proof8_T1));
+    multiexp_data.emplace_back(tmp, proof8_T1);
     rct::scalar xsq;
     sc_mul(xsq.data, pd.x.data, pd.x.data);
     sc_mul(tmp.data, xsq.data, weight_y.data);
-    multiexp_data.emplace_back(tmp, ge_p3_tokey(proof8_T2));
+    multiexp_data.emplace_back(tmp, proof8_T2);
 
-    multiexp_data.emplace_back(weight_z, ge_p3_tokey(proof8_A));
+    multiexp_data.emplace_back(weight_z, proof8_A);
     sc_mul(tmp.data, pd.x.data, weight_z.data);
-    multiexp_data.emplace_back(tmp, ge_p3_tokey(proof8_S));
+    multiexp_data.emplace_back(tmp, proof8_S);
 
     // Compute the number of rounds for the inner product
     const size_t rounds = pd.logM+logN;
@@ -918,10 +918,10 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     {
       sc_mul(tmp.data, pd.w[i].data, pd.w[i].data);
       sc_mul(tmp.data, tmp.data, weight_z.data);
-      multiexp_data.emplace_back(tmp, ge_p3_tokey(proof8_L[i]));
+      multiexp_data.emplace_back(tmp, proof8_L[i]);
       sc_mul(tmp.data, winv[i].data, winv[i].data);
       sc_mul(tmp.data, tmp.data, weight_z.data);
-      multiexp_data.emplace_back(tmp, ge_p3_tokey(proof8_R[i]));
+      multiexp_data.emplace_back(tmp, proof8_R[i]);
     }
     sc_mulsub(tmp.data, proof.a.data, proof.b.data, proof.t.data);
     sc_mul(tmp.data, tmp.data, pd.x_ip.data);
