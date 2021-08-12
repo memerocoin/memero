@@ -34,6 +34,7 @@
 #include "tools/epee/include/logging.hpp"
 
 #include <span>
+#include <cassert>
 
 
 namespace rct
@@ -41,14 +42,11 @@ namespace rct
 
 struct MultiexpData {
   rct::scalar scalar;
-  ge_p3 point;
+  key point;
 
   MultiexpData() {}
-  MultiexpData(const rct::scalar s, const ge_p3 p): scalar(s), point(p) {}
-  MultiexpData(const rct::scalar s, const rct::key p): scalar(s)
-  {
-    const bool valid_point = 0 == ge_frombytes_vartime(&point, p.data);
-    LOG_ERROR_AND_THROW_UNLESS(valid_point, "ge_frombytes_vartime failed");
+  MultiexpData(const rct::scalar s, const key p): scalar(s), point(p) {
+    assert(is_valid_point(p));
   }
 };
 

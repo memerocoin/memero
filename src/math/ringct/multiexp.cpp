@@ -30,10 +30,7 @@ rct::key dummy(const std::span<rct::MultiexpData> data)
      , rct::identity
      , [](const auto& x, const auto& y) { return rct::addKeys(x, y); }
      , [](const auto& x) {
-       rct::key p;
-       ge_p3_tobytes(p.data, &x.point);
-
-       return rct::scalarmultKey(p, x.scalar);
+       return rct::scalarmultKey(x.point, x.scalar);
      }
      );
 }
