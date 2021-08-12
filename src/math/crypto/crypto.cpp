@@ -305,14 +305,13 @@ namespace crypto {
    )
   {
     // sanity check
-    ge_p3 R_p3;
-    ge_p3 A_p3;
-    ge_p3 B_p3;
-    ge_p3 D_p3;
-    if (ge_frombytes_vartime(&R_p3, &R) != 0) throw std::runtime_error("tx pubkey is invalid");
-    if (ge_frombytes_vartime(&A_p3, &A) != 0) throw std::runtime_error("recipient view pubkey is invalid");
-    if (B && ge_frombytes_vartime(&B_p3, &*B) != 0) throw std::runtime_error("recipient spend pubkey is invalid");
-    if (ge_frombytes_vartime(&D_p3, &D) != 0) throw std::runtime_error("key derivation is invalid");
+
+    if (!is_valid_point(R)) throw std::runtime_error("tx pubkey is invalid");
+    if (!is_valid_point(A)) throw std::runtime_error("recipient view pubkey is invalid");
+    if (B) {
+      if (!is_valid_point(*B)) throw std::runtime_error("recipient spend pubkey is invalid");
+    }
+    if (!is_valid_point(D)) throw std::runtime_error("key derivation is invalid");
 
     // pick random k
     ec_scalar k;
@@ -326,31 +325,27 @@ namespace crypto {
     buf.D = D;
     buf.R = R;
     buf.A = A;
+
     if (B)
         buf.B = *B;
     else
         buf.B = zero;
+
     buf.sep = sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1));
 
     if (B)
     {
       // compute X = k*B
-      ge_p2 X_p2;
-      ge_scalarmult(&X_p2, &k, &B_p3);
-      ge_tobytes(&buf.X, &X_p2);
+      buf.X = mult(*B, k);
     }
     else
     {
       // compute X = k*G
-      ge_p3 X_p3;
-      ge_scalarmult_base(&X_p3, &k);
-      ge_p3_tobytes(&buf.X, &X_p3);
+      buf.X = multBase(k);
     }
 
     // compute Y = k*A
-    ge_p2 Y_p2;
-    ge_scalarmult(&Y_p2, &k, &A_p3);
-    ge_tobytes(&buf.Y, &Y_p2);
+    buf.Y = mult(A, k);
 
     // sig.c = Hs(Msg || D || X || Y || sep || R || A || B)
     hash_to_scalar(&buf, sizeof(buf), sig.c);
