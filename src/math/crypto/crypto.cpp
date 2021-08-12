@@ -94,6 +94,17 @@ namespace crypto {
     return sub(*this, x);
   }
 
+  ec_scalar ec_scalar::operator+(const ec_scalar& x) const {
+    ec_scalar s;
+    crypto_core_ed25519_scalar_add(s.data, this->data, x.data);
+    return s;
+  }
+
+  secret_key secret_key::operator+(const secret_key& y) const
+  {
+    return s2sk(ec_scalar::operator+(y));
+  }
+
 
   void generate_random_bytes(size_t N, uint8_t *bytes)
   {

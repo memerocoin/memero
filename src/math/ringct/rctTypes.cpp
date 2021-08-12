@@ -54,6 +54,11 @@ namespace rct {
       return p2rct(ec_point::operator-(y));
     }
 
+    scalar scalar::operator+(const scalar& y) const
+    {
+      return s2s(ec_scalar::operator+(y));
+    }
+
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in) {
         scalar x;

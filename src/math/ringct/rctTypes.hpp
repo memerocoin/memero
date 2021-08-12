@@ -58,6 +58,8 @@ namespace rct {
       unsigned char operator[](int i) const {
         return data[i];
       }
+
+      scalar operator+(const scalar& y) const;
     };
 
     typedef std::vector<key> keyV; //vector of keys

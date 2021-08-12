@@ -57,6 +57,8 @@ namespace crypto {
   struct ec_scalar : crypto_data {
     bool operator==(const ec_scalar &x) const { return !crypto_verify_32(data, x.data); }
 
+    ec_scalar operator+(const ec_scalar& x) const;
+
     // ec_scalar operator+(const ec_scalar& x) {sc_add
     //   return add(*this, x);
     // }
@@ -67,9 +69,12 @@ namespace crypto {
     // void sc_mul(unsigned char *, const unsigned char *, const unsigned char *);
   };
 
-  struct secret_key: ec_scalar{};
+  struct secret_key: ec_scalar{
+    secret_key operator+(const secret_key& y) const;
+  };
 
-  struct public_key: ec_point {};
+  struct public_key: ec_point {
+  };
 
   struct key_derivation: ec_point {};
 
