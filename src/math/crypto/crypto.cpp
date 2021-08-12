@@ -477,9 +477,12 @@ namespace crypto {
   }
 
   ec_scalar reduce(const ec_scalar x) {
-    ec_scalar y = x;
-    sc_reduce32(y.data);
-    return y;
+    unsigned char t[64] = {0};
+    memcpy(t, x, 32);
+
+    ec_scalar s;
+    crypto_core_ed25519_scalar_reduce(s, t);
+    return s;
   }
 }
 

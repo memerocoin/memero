@@ -1466,12 +1466,6 @@ void sc_0(unsigned char *s) {
   }
 }
 
-void sc_reduce32(unsigned char *s) {
-  unsigned char t[64] = {0};
-  memcpy(t, s, 32);
-  crypto_core_ed25519_scalar_reduce(s, t);
-}
-
 void sc_add(unsigned char *s, const unsigned char *a, const unsigned char *b) {
   crypto_core_ed25519_scalar_add(s, a, b);
 }
