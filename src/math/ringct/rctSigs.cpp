@@ -176,7 +176,6 @@ namespace rct {
         key R;
         scalar c_p; // = c[i]*mu_P
         scalar c_c; // = c[i]*mu_C
-        ge_p3 Hi_p3;
 
         while (i != l) {
             sig.s[i] = skGen();
@@ -195,7 +194,6 @@ namespace rct {
 
             // Compute R
             const key A = hash_to_key_via_f2(P[i]);
-            Hi_p3 = hash_to_p3_via_f2(P[i]);
             R = addKeys_aAbBcC
               (
                sig.s[i]
