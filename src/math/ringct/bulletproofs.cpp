@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2017-2020, The Monero Project
 //
 // All rights reserved.
@@ -179,56 +180,30 @@ rct::key cross_vector_exponent8
 /* Given a scalar, construct a vector of powers */
 rct::scalarV vector_powers(const rct::scalar x, const size_t n)
 {
-  rct::scalarV res(n);
   if (n == 0)
-    return res;
-  res[0] = rct::s_one;
+    return {};
+
   if (n == 1)
-    return res;
+    return {rct::s_one};
+
+  rct::scalarV res(n);
+  res[0] = rct::s_one;
   res[1] = x;
+
   for (size_t i = 2; i < n; ++i)
   {
     res[i] = res[i-1] * x;
   }
+
   return res;
 }
 
 /* Given a scalar, return the sum of its powers from 0 to n-1 */
-rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
+rct::scalar vector_power_sum(const rct::scalar x, const size_t n)
 {
-  size_t n = n_in;
+  const auto xs = vector_powers(x, n);
 
-  if (n == 0)
-    return rct::s_zero;
-  rct::scalar res = rct::s_one;
-  if (n == 1)
-    return res;
-
-  const bool is_power_of_2 = (n & (n - 1)) == 0;
-  rct::scalar x = x_in;
-
-  if (is_power_of_2)
-  {
-    res = res + x;
-    while (n > 2)
-    {
-      x = x * x;
-      sc_muladd(res.data, x.data, res.data, res.data);
-      n /= 2;
-    }
-  }
-  else
-  {
-    rct::scalar prev = x;
-    for (size_t i = 1; i < n; ++i)
-    {
-      if (i > 1)
-        prev = prev * x;
-      res = res + prev;
-    }
-  }
-
-  return res;
+  return std::reduce(xs.begin(), xs.end(), rct::s_zero);
 }
 
 
