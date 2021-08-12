@@ -173,12 +173,6 @@ namespace rct {
     return p2rct(crypto::mult8(P));
   }
 
-  //Computes 8P without byte conversion
-  ge_p3 multPoint8raw(const key P)
-  {
-    return crypto::p3FromPoint(crypto::mult8(P));
-  }
-
   //Computes lA where l is the curve order
   bool isInMainSubgroup(const key A) {
     return crypto::is_valid_point(A);

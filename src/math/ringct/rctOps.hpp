@@ -104,9 +104,6 @@ namespace rct {
   // multiplies a point by 8
   key multPoint8(const key P);
 
-  //Computes 8P without byte conversion
-  ge_p3 multPoint8raw(const key P);
-
   // checks a is in the main subgroup (ie, not a small one)
   bool isInMainSubgroup(const key a);
 
