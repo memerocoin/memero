@@ -294,7 +294,7 @@ namespace rct {
             P.push_back(k.dest);
             C_nonzero.push_back(k.mask);
             rct::key tmp;
-            tmp = subKeys(k.mask, Cout);
+            tmp = k.mask - Cout;
             C.push_back(tmp);
         }
 
@@ -382,7 +382,7 @@ namespace rct {
               return false;
             }
 
-            const key C = subKeys(mask, C_offset);
+            const key C = mask - C_offset;
 
             // Compute L
             L = addKeys_aGbBcC

@@ -250,12 +250,6 @@ namespace rct {
        );
   }
 
-  //subtract Keys (subtracts curve points)
-  //AB = A - B where A, B are curve points
-  key subKeys(const key A, const key B) {
-    return p2rct(crypto::sub(A, B));
-  }
-
   //sha3 for a 32 byte key
   key hash_key(const key in) {
     return hash2rct(crypto::sha3(epee::pod_to_span(in)));

@@ -80,6 +80,21 @@ namespace crypto {
     return add(*this, x);
   }
 
+  ec_point sub(const ec_point X, const ec_point Y) {
+    ec_point p;
+    int r = crypto_core_ed25519_sub(p.data, X.data, Y.data);
+    if (r != 0) {
+      LOG_FATAL("sub keys not in main group: " << X << "\n" << Y);
+    }
+
+    return p;
+  }
+
+  ec_point ec_point::operator-(const ec_point& x) const {
+    return sub(*this, x);
+  }
+
+
   void generate_random_bytes(size_t N, uint8_t *bytes)
   {
     randombytes_buf(bytes, N);
@@ -409,16 +424,6 @@ namespace crypto {
     ec_point out;
     ge_tobytes(out.data, &in);
     return out;
-  }
-
-  ec_point sub(const ec_point X, const ec_point Y) {
-    ec_point p;
-    int r = crypto_core_ed25519_sub(p.data, X.data, Y.data);
-    if (r != 0) {
-      LOG_FATAL("sub keys not in main group: " << X << "\n" << Y);
-    }
-
-    return p;
   }
 
 

@@ -47,6 +47,7 @@ namespace rct {
     //  also includes an operator for accessing the i'th byte.
     struct key : crypto::ec_point {
       key operator+(const key& y) const;
+      key operator-(const key& y) const;
     };
 
 
