@@ -287,10 +287,6 @@ namespace rct {
     const crypto::ec_point p = viaF2(h);
     return p2rct(mult8(p));
   }
-  // Hash a key to p3 representation
-  ge_p3 hash_to_p3_via_f2(const key k) {
-    return crypto::p3FromPoint(hash_to_key_via_f2(k));
-  }
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH

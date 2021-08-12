@@ -150,7 +150,6 @@ namespace rct {
   //for ANSL
 
   key hash_to_key_via_f2(const key k);
-  ge_p3 hash_to_p3_via_f2(const key k);
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH
