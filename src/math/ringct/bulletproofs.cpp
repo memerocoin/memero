@@ -253,10 +253,11 @@ rct::scalarV hadamard(const scalarS a, const scalarS b)
 }
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-void hadamard_fold(std::vector<key> &v, const rct::scalarV *scale, const rct::scalar a, const rct::scalar b)
+std::vector<key> hadamard_fold(std::span<key> v, const rct::scalarV *scale, const rct::scalar a, const rct::scalar b)
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
+  std::vector<key> out(sz);
   for (size_t n = 0; n < sz; ++n)
   {
     key c_0 = v[n];
@@ -268,9 +269,10 @@ void hadamard_fold(std::vector<key> &v, const rct::scalarV *scale, const rct::sc
 
     const key r = addKeys(scalarmultKey(c_0, sa), scalarmultKey(c_1, sb));
 
-    v[n] = r;
+    out[n] = r;
   }
-  v.resize(sz);
+
+  return out;
 }
 
 /* Add two vectors */
@@ -643,8 +645,8 @@ try_again:
     const rct::scalar winv = invert(w[round]);
     if (nprime > 1)
     {
-      hadamard_fold(Gprime, NULL, winv, w[round]);
-      hadamard_fold(Hprime, scale, w[round], winv);
+      Gprime = hadamard_fold(Gprime, NULL, winv, w[round]);
+      Hprime = hadamard_fold(Hprime, scale, w[round], winv);
     }
 
     // PAPER LINES 33-34
