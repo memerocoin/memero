@@ -188,7 +188,7 @@ namespace rct {
 
   //for curve points: AB = A + B
   rct::key addKeys(const key A, const key B) {
-    return p2rct(crypto::add(A, B));
+    return A + B;
   }
 
   rct::key addKeys(const keyS A) {

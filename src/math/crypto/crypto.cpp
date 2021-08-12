@@ -72,7 +72,8 @@ namespace crypto {
     return &reinterpret_cast<const unsigned char &>(scalar);
   }
 
-  ec_point ec_point::operator+(const ec_point& x) {
+
+  ec_point ec_point::operator+(const ec_point& x) const {
     return add(*this, x);
   }
 
@@ -119,35 +120,6 @@ namespace crypto {
 
   bool secret_key_to_public_key(const secret_key &sec, public_key &pub) {
     return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
-  }
-
-  ec_point multBase(const ec_scalar x) {
-    ec_point p;
-    const int r = crypto_scalarmult_ed25519_base_noclamp(p.data, x.data);
-    if (r != 0) {
-      LOG_FATAL("scalar mult base failed");
-    }
-    return p;
-  }
-
-  ec_point add(const ec_point X, const ec_point Y) {
-    ec_point p;
-    int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
-    if (r != 0) {
-      LOG_FATAL("add keys not in main group: " << X << "\n" << Y);
-    }
-
-    return p;
-  }
-
-  ec_point sub(const ec_point X, const ec_point Y) {
-    ec_point p;
-    int r = crypto_core_ed25519_sub(p.data, X.data, Y.data);
-    if (r != 0) {
-      LOG_FATAL("sub keys not in main group: " << X << "\n" << Y);
-    }
-
-    return p;
   }
 
   bool generate_key_derivation(const public_key &key1, const secret_key &key2, key_derivation &derivation) {
@@ -435,6 +407,37 @@ namespace crypto {
     ge_tobytes(&out, &in);
     return out;
   }
+
+  ec_point add(const ec_point X, const ec_point Y) {
+    ec_point p;
+    int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
+    if (r != 0) {
+      LOG_FATAL("add keys not in main group: " << X << "\n" << Y);
+    }
+
+    return p;
+  }
+
+  ec_point sub(const ec_point X, const ec_point Y) {
+    ec_point p;
+    int r = crypto_core_ed25519_sub(p.data, X.data, Y.data);
+    if (r != 0) {
+      LOG_FATAL("sub keys not in main group: " << X << "\n" << Y);
+    }
+
+    return p;
+  }
+
+
+  ec_point multBase(const ec_scalar x) {
+    ec_point p;
+    const int r = crypto_scalarmult_ed25519_base_noclamp(p.data, x.data);
+    if (r != 0) {
+      LOG_FATAL("scalar mult base failed");
+    }
+    return p;
+  }
+
 
   ec_point mult(const ec_point X, const ec_scalar a) {
     ec_point x;

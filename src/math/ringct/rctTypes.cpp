@@ -44,6 +44,11 @@ namespace rct {
 
     //Various Conversions
 
+    key key::operator+(const key& y) const
+    {
+      return p2rct(crypto::add(*this, y));
+    }
+
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in) {
         scalar x;

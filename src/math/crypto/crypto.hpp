@@ -50,7 +50,7 @@ namespace crypto {
   struct ec_point : crypto_data {
     bool operator==(const ec_point &x) const { return !crypto_verify_32(data, x.data); }
 
-    ec_point operator+(const ec_point& x);
+    ec_point operator+(const ec_point& x) const;
     //   return add(*this, x);
     // }
 
@@ -58,6 +58,7 @@ namespace crypto {
     //   return sub(*this, x);
     // }
   };
+
   struct ec_scalar : crypto_data {
     bool operator==(const ec_scalar &x) const { return !crypto_verify_32(data, x.data); }
 
@@ -228,6 +229,7 @@ namespace crypto {
     {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
   bool is_valid_point(const ec_point x);
+
   ec_point add(const ec_point X, const ec_point Y);
   ec_point sub(const ec_point X, const ec_point Y);
   ec_point mult(const ec_point X, const ec_scalar);
