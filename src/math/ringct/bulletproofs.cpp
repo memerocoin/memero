@@ -80,7 +80,6 @@ const rct::scalarV oneN = vector_powers(rct::s_one, maxN);
 const rct::scalarV twoN = vector_powers(rct::s_two, maxN);
 
 rct::key Hi[maxN*maxM], Gi[maxN*maxM];
-ge_p3 Hi_p3[maxN*maxM], Gi_p3[maxN*maxM];
 
 const static rct::scalar ip12 = inner_product(oneN, twoN);
 
@@ -115,9 +114,7 @@ void init_exponents()
     for (size_t i = 0; i < maxN*maxM; ++i)
     {
       Hi[i] = get_exponent(rct::H, i * 2);
-      LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Hi_p3[i], Hi[i].data) == 0, "ge_frombytes_vartime failed");
       Gi[i] = get_exponent(rct::H, i * 2 + 1);
-      LOG_ERROR_AND_THROW_UNLESS(ge_frombytes_vartime(&Gi_p3[i], Gi[i].data) == 0, "ge_frombytes_vartime failed");
     }
 
     init_done = true;
@@ -134,8 +131,8 @@ rct::key vector_exponent(const scalarS a, const scalarS b)
   multiexp_data.reserve(a.size()*2);
   for (size_t i = 0; i < a.size(); ++i)
   {
-    multiexp_data.emplace_back(a[i], ge_p3_tokey(Gi_p3[i]));
-    multiexp_data.emplace_back(b[i], ge_p3_tokey(Hi_p3[i]));
+    multiexp_data.emplace_back(a[i], Gi[i]);
+    multiexp_data.emplace_back(b[i], Hi[i]);
   }
   return multiexp(multiexp_data);
 }
@@ -602,8 +599,8 @@ try_again:
   yinvpow[1] = yinv;
   for (size_t i = 0; i < MN; ++i)
   {
-    Gprime[i] = ge_p3_tokey(Gi_p3[i]);
-    Hprime[i] = ge_p3_tokey(Hi_p3[i]);
+    Gprime[i] = Gi[i];
+    Hprime[i] = Hi[i];
     if (i > 1)
       sc_mul(yinvpow[i].data, yinvpow[i-1].data, yinv.data);
     aprime[i] = l[i];
@@ -941,8 +938,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   multiexp_data.emplace_back(tmp, rct::H);
   for (size_t i = 0; i < maxMN; ++i)
   {
-    multiexp_data[i * 2] = {m_z4[i], ge_p3_tokey(Gi_p3[i])};
-    multiexp_data[i * 2 + 1] = {m_z5[i], ge_p3_tokey(Hi_p3[i])};
+    multiexp_data[i * 2] = {m_z4[i], Gi[i]};
+    multiexp_data[i * 2 + 1] = {m_z5[i], Hi[i]};
   }
   if (!(multiexp(multiexp_data) == rct::identity))
   {
