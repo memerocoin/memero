@@ -160,16 +160,17 @@ rct::key cross_vector_exponent8
   multiexp_data.resize(size*2 + (!!extra_point));
   for (size_t i = 0; i < size; ++i)
   {
-    sc_mul(multiexp_data[i*2].scalar.data, a[ao+i].data, rct::s_inv_eight.data);
+    multiexp_data[i*2].scalar = a[ao+i] * rct::s_inv_eight;
     multiexp_data[i*2].point = A[Ao+i];
-    sc_mul(multiexp_data[i*2+1].scalar.data, b[bo+i].data, rct::s_inv_eight.data);
-    if (scale)
-      sc_mul(multiexp_data[i*2+1].scalar.data, multiexp_data[i*2+1].scalar.data, (*scale)[Bo+i].data);
+    multiexp_data[i*2+1].scalar = b[bo+i] * rct::s_inv_eight;
+    if (scale) {
+      multiexp_data[i*2+1].scalar = multiexp_data[i*2+1].scalar * (*scale)[Bo+i];
+    }
     multiexp_data[i*2+1].point = B[Bo+i];
   }
   if (extra_point)
   {
-    sc_mul(multiexp_data.back().scalar.data, extra_scalar->data, rct::s_inv_eight.data);
+    multiexp_data.back().scalar = (*extra_scalar) * rct::s_inv_eight;
     multiexp_data.back().point = *extra_point;
   }
   return multiexp(multiexp_data);
