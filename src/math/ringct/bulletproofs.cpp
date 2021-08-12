@@ -187,7 +187,7 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n)
   res[1] = x;
   for (size_t i = 2; i < n; ++i)
   {
-    sc_mul(res[i].data, res[i-1].data, x.data);
+    res[i] = res[i-1] * x;
   }
   return res;
 }
@@ -211,7 +211,7 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
     res = res + x;
     while (n > 2)
     {
-      sc_mul(x.data, x.data, x.data);
+      x = x * x;
       sc_muladd(res.data, x.data, res.data, res.data);
       n /= 2;
     }
@@ -222,7 +222,7 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
     for (size_t i = 1; i < n; ++i)
     {
       if (i > 1)
-        sc_mul(prev.data, prev.data, x.data);
+        prev = prev * x;
       res = res + prev;
     }
   }
