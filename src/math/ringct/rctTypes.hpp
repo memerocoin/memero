@@ -32,10 +32,6 @@
 
 #include "math/crypto/crypto.hpp"
 
-extern "C" {
-#include "math/crypto/crypto-ops.h"
-}
-
 #include "tools/serialization/containers.h"
 
 #include <sodium/crypto_verify_32.h>

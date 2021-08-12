@@ -43,6 +43,7 @@
 #include <memory>
 
 
+
 namespace crypto {
 
   using std::abort;
@@ -56,14 +57,6 @@ namespace crypto {
 #include "crypto-ops.h"
   }
 
-  static inline unsigned char *operator &(ec_point &point) {
-    return &reinterpret_cast<unsigned char &>(point);
-  }
-
-  static inline const unsigned char *operator &(const ec_point &point) {
-    return &reinterpret_cast<const unsigned char &>(point);
-  }
-
   static inline unsigned char *operator &(ec_scalar &scalar) {
     return &reinterpret_cast<unsigned char &>(scalar);
   }
@@ -72,6 +65,16 @@ namespace crypto {
     return &reinterpret_cast<const unsigned char &>(scalar);
   }
 
+
+  ec_point add(const ec_point X, const ec_point Y) {
+    ec_point p;
+    int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
+    if (r != 0) {
+      LOG_FATAL("add keys not in main group: " << X << "\n" << Y);
+    }
+
+    return p;
+  }
 
   ec_point ec_point::operator+(const ec_point& x) const {
     return add(*this, x);
@@ -404,18 +407,8 @@ namespace crypto {
     ge_p2 in;
     ge_fromfe_frombytes_vartime(&in, x.data);
     ec_point out;
-    ge_tobytes(&out, &in);
+    ge_tobytes(out.data, &in);
     return out;
-  }
-
-  ec_point add(const ec_point X, const ec_point Y) {
-    ec_point p;
-    int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
-    if (r != 0) {
-      LOG_FATAL("add keys not in main group: " << X << "\n" << Y);
-    }
-
-    return p;
   }
 
   ec_point sub(const ec_point X, const ec_point Y) {

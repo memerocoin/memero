@@ -166,7 +166,7 @@ namespace hw {
                 const crypto::ec_point mG = crypto::multBase(m);
 
                 // D = B + M
-                const crypto::public_key D = crypto::p2pk(crypto::add(public_spend_key, mG));
+                const crypto::public_key D = crypto::p2pk(public_spend_key + mG);
 
                 pkeys.push_back(D);
             }

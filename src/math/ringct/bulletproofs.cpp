@@ -35,11 +35,6 @@
 #include "curveConstants.hpp"
 #include "multiexp.hpp"
 
-extern "C"
-{
-#include "math/crypto/crypto-ops.h"
-}
-
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"
 #include "tools/common/varint.h"

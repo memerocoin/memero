@@ -230,7 +230,7 @@ namespace crypto {
 
   bool is_valid_point(const ec_point x);
 
-  ec_point add(const ec_point X, const ec_point Y);
+  // ec_point add(const ec_point X, const ec_point Y);
   ec_point sub(const ec_point X, const ec_point Y);
   ec_point mult(const ec_point X, const ec_scalar);
   ec_point mult8(const ec_point X);

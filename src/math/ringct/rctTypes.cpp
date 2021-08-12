@@ -46,7 +46,7 @@ namespace rct {
 
     key key::operator+(const key& y) const
     {
-      return p2rct(crypto::add(*this, y));
+      return p2rct(ec_point::operator+(y));
     }
 
     //uint long long to 32 byte key
