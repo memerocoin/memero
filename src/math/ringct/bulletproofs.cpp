@@ -626,12 +626,11 @@ try_again:
 
     // PAPER LINES 23-24
     sc_mul(tmp.data, cL.data, x_ip.data);
-    const key kH = ge_p3_tokey(ge_p3_H);
     L[round] = cross_vector_exponent8
-      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &kH, &tmp);
+      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &H, &tmp);
     sc_mul(tmp.data, cR.data, x_ip.data);
     R[round] = cross_vector_exponent8
-      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &kH, &tmp);
+      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &H, &tmp);
 
     // PAPER LINES 25-27
     w[round] = hash_carry_mash(hash_carry, L[round], R[round]);
