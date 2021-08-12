@@ -38,7 +38,6 @@
 
 static void fe_mul(fe, const fe, const fe);
 static void fe_sq(fe, const fe);
-static void ge_p2_0(ge_p2 *);
 static void fe_divpowm1(fe, const fe, const fe);
 
 /* Common functions */
@@ -59,25 +58,6 @@ uint64_t load_4(const unsigned char *in)
   result |= ((uint64_t) in[2]) << 16;
   result |= ((uint64_t) in[3]) << 24;
   return result;
-}
-
-/* From fe_0.c */
-
-/*
-h = 0
-*/
-
-static void fe_0(fe h) {
-  h[0] = 0;
-  h[1] = 0;
-  h[2] = 0;
-  h[3] = 0;
-  h[4] = 0;
-  h[5] = 0;
-  h[6] = 0;
-  h[7] = 0;
-  h[8] = 0;
-  h[9] = 0;
 }
 
 /* From fe_1.c */
@@ -154,70 +134,6 @@ void fe_add(fe h, const fe f, const fe g) {
   h[7] = h7;
   h[8] = h8;
   h[9] = h9;
-}
-
-/* From fe_cmov.c */
-
-/*
-Replace (f,g) with (g,g) if b == 1;
-replace (f,g) with (f,g) if b == 0.
-
-Preconditions: b in {0,1}.
-*/
-
-static void fe_cmov(fe f, const fe g, unsigned int b) {
-  int32_t f0 = f[0];
-  int32_t f1 = f[1];
-  int32_t f2 = f[2];
-  int32_t f3 = f[3];
-  int32_t f4 = f[4];
-  int32_t f5 = f[5];
-  int32_t f6 = f[6];
-  int32_t f7 = f[7];
-  int32_t f8 = f[8];
-  int32_t f9 = f[9];
-  int32_t g0 = g[0];
-  int32_t g1 = g[1];
-  int32_t g2 = g[2];
-  int32_t g3 = g[3];
-  int32_t g4 = g[4];
-  int32_t g5 = g[5];
-  int32_t g6 = g[6];
-  int32_t g7 = g[7];
-  int32_t g8 = g[8];
-  int32_t g9 = g[9];
-  int32_t x0 = f0 ^ g0;
-  int32_t x1 = f1 ^ g1;
-  int32_t x2 = f2 ^ g2;
-  int32_t x3 = f3 ^ g3;
-  int32_t x4 = f4 ^ g4;
-  int32_t x5 = f5 ^ g5;
-  int32_t x6 = f6 ^ g6;
-  int32_t x7 = f7 ^ g7;
-  int32_t x8 = f8 ^ g8;
-  int32_t x9 = f9 ^ g9;
-  assert((((b - 1) & ~b) | ((b - 2) & ~(b - 1))) == (unsigned int) -1);
-  b = -b;
-  x0 &= b;
-  x1 &= b;
-  x2 &= b;
-  x3 &= b;
-  x4 &= b;
-  x5 &= b;
-  x6 &= b;
-  x7 &= b;
-  x8 &= b;
-  x9 &= b;
-  f[0] = f0 ^ x0;
-  f[1] = f1 ^ x1;
-  f[2] = f2 ^ x2;
-  f[3] = f3 ^ x3;
-  f[4] = f4 ^ x4;
-  f[5] = f5 ^ x5;
-  f[6] = f6 ^ x6;
-  f[7] = f7 ^ x7;
-  f[8] = f8 ^ x8;
-  f[9] = f9 ^ x9;
 }
 
 /* From fe_copy.c */
@@ -1254,14 +1170,6 @@ void ge_p1p1_to_p3(ge_p3 *r, const ge_p1p1 *p) {
   fe_mul(r->T, p->X, p->Y);
 }
 
-/* From ge_p2_0.c */
-
-static void ge_p2_0(ge_p2 *h) {
-  fe_0(h->X);
-  fe_1(h->Y);
-  fe_1(h->Z);
-}
-
 /* From ge_p2_dbl.c */
 
 /*
@@ -1327,25 +1235,6 @@ void ge_p3_tobytes(unsigned char *s, const ge_p3 *h) {
   fe_tobytes(s, y);
   s[31] ^= fe_isnegative(x) << 7;
 }
-
-/* From ge_scalarmult_base.c */
-
-static unsigned char equal(signed char b, signed char c) {
-  unsigned char ub = b;
-  unsigned char uc = c;
-  unsigned char x = ub ^ uc; /* 0: yes; 1..255: no */
-  uint32_t y = x; /* 0: yes; 1..255: no */
-  y -= 1; /* 4294967295: yes; 0..254: no */
-  y >>= 31; /* 1: yes; 0: no */
-  return y;
-}
-
-static unsigned char negative(signed char b) {
-  unsigned long long x = b; /* 18446744073709551361..18446744073709551615: yes; 0..255: no */
-  x >>= 63; /* 1: yes; 0: no */
-  return x;
-}
-
 
 void ge_sub(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q) {
   fe t0;
@@ -1443,145 +1332,6 @@ static void fe_divpowm1(fe r, const fe u, const fe v) {
   /* t0 = (uv^7)^((q-5)/8) */
   fe_mul(t0, t0, v3);
   fe_mul(r, t0, u); /* u^(m+1)v^(-(m+1)) */
-}
-
-static void ge_cached_0(ge_cached *r) {
-  fe_1(r->YplusX);
-  fe_1(r->YminusX);
-  fe_1(r->Z);
-  fe_0(r->T2d);
-}
-
-static void ge_cached_cmov(ge_cached *t, const ge_cached *u, unsigned char b) {
-  fe_cmov(t->YplusX, u->YplusX, b);
-  fe_cmov(t->YminusX, u->YminusX, b);
-  fe_cmov(t->Z, u->Z, b);
-  fe_cmov(t->T2d, u->T2d, b);
-}
-
-/* Assumes that a[31] <= 127 */
-void ge_scalarmult(ge_p2 *r, const unsigned char *a, const ge_p3 *A) {
-  signed char e[64];
-  int carry, carry2, i;
-  ge_cached Ai[8]; /* 1 * A, 2 * A, ..., 8 * A */
-  ge_p1p1 t;
-  ge_p3 u;
-
-  carry = 0; /* 0..1 */
-  for (i = 0; i < 31; i++) {
-    carry += a[i]; /* 0..256 */
-    carry2 = (carry + 8) >> 4; /* 0..16 */
-    e[2 * i] = carry - (carry2 << 4); /* -8..7 */
-    carry = (carry2 + 8) >> 4; /* 0..1 */
-    e[2 * i + 1] = carry2 - (carry << 4); /* -8..7 */
-  }
-  carry += a[31]; /* 0..128 */
-  carry2 = (carry + 8) >> 4; /* 0..8 */
-  e[62] = carry - (carry2 << 4); /* -8..7 */
-  e[63] = carry2; /* 0..8 */
-
-  ge_p3_to_cached(&Ai[0], A);
-  for (i = 0; i < 7; i++) {
-    ge_add(&t, A, &Ai[i]);
-    ge_p1p1_to_p3(&u, &t);
-    ge_p3_to_cached(&Ai[i + 1], &u);
-  }
-
-  ge_p2_0(r);
-  for (i = 63; i >= 0; i--) {
-    signed char b = e[i];
-    unsigned char bnegative = negative(b);
-    unsigned char babs = b - (((-bnegative) & b) << 1);
-    ge_cached cur, minuscur;
-    ge_p2_dbl(&t, r);
-    ge_p1p1_to_p2(r, &t);
-    ge_p2_dbl(&t, r);
-    ge_p1p1_to_p2(r, &t);
-    ge_p2_dbl(&t, r);
-    ge_p1p1_to_p2(r, &t);
-    ge_p2_dbl(&t, r);
-    ge_p1p1_to_p3(&u, &t);
-    ge_cached_0(&cur);
-    ge_cached_cmov(&cur, &Ai[0], equal(babs, 1));
-    ge_cached_cmov(&cur, &Ai[1], equal(babs, 2));
-    ge_cached_cmov(&cur, &Ai[2], equal(babs, 3));
-    ge_cached_cmov(&cur, &Ai[3], equal(babs, 4));
-    ge_cached_cmov(&cur, &Ai[4], equal(babs, 5));
-    ge_cached_cmov(&cur, &Ai[5], equal(babs, 6));
-    ge_cached_cmov(&cur, &Ai[6], equal(babs, 7));
-    ge_cached_cmov(&cur, &Ai[7], equal(babs, 8));
-    fe_copy(minuscur.YplusX, cur.YminusX);
-    fe_copy(minuscur.YminusX, cur.YplusX);
-    fe_copy(minuscur.Z, cur.Z);
-    fe_neg(minuscur.T2d, cur.T2d);
-    ge_cached_cmov(&cur, &minuscur, bnegative);
-    ge_add(&t, &u, &cur);
-    ge_p1p1_to_p2(r, &t);
-  }
-}
-
-void ge_scalarmult_p3(ge_p3 *r3, const unsigned char *a, const ge_p3 *A) {
-  signed char e[64];
-  int carry, carry2, i;
-  ge_cached Ai[8]; /* 1 * A, 2 * A, ..., 8 * A */
-  ge_p1p1 t;
-  ge_p3 u;
-  ge_p2 r;
-
-  carry = 0; /* 0..1 */
-  for (i = 0; i < 31; i++) {
-    carry += a[i]; /* 0..256 */
-    carry2 = (carry + 8) >> 4; /* 0..16 */
-    e[2 * i] = carry - (carry2 << 4); /* -8..7 */
-    carry = (carry2 + 8) >> 4; /* 0..1 */
-    e[2 * i + 1] = carry2 - (carry << 4); /* -8..7 */
-  }
-  carry += a[31]; /* 0..128 */
-  carry2 = (carry + 8) >> 4; /* 0..8 */
-  e[62] = carry - (carry2 << 4); /* -8..7 */
-  e[63] = carry2; /* 0..8 */
-
-  ge_p3_to_cached(&Ai[0], A);
-  for (i = 0; i < 7; i++) {
-    ge_add(&t, A, &Ai[i]);
-    ge_p1p1_to_p3(&u, &t);
-    ge_p3_to_cached(&Ai[i + 1], &u);
-  }
-
-  ge_p2_0(&r);
-  for (i = 63; i >= 0; i--) {
-    signed char b = e[i];
-    unsigned char bnegative = negative(b);
-    unsigned char babs = b - (((-bnegative) & b) << 1);
-    ge_cached cur, minuscur;
-    ge_p2_dbl(&t, &r);
-    ge_p1p1_to_p2(&r, &t);
-    ge_p2_dbl(&t, &r);
-    ge_p1p1_to_p2(&r, &t);
-    ge_p2_dbl(&t, &r);
-    ge_p1p1_to_p2(&r, &t);
-    ge_p2_dbl(&t, &r);
-    ge_p1p1_to_p3(&u, &t);
-    ge_cached_0(&cur);
-    ge_cached_cmov(&cur, &Ai[0], equal(babs, 1));
-    ge_cached_cmov(&cur, &Ai[1], equal(babs, 2));
-    ge_cached_cmov(&cur, &Ai[2], equal(babs, 3));
-    ge_cached_cmov(&cur, &Ai[3], equal(babs, 4));
-    ge_cached_cmov(&cur, &Ai[4], equal(babs, 5));
-    ge_cached_cmov(&cur, &Ai[5], equal(babs, 6));
-    ge_cached_cmov(&cur, &Ai[6], equal(babs, 7));
-    ge_cached_cmov(&cur, &Ai[7], equal(babs, 8));
-    fe_copy(minuscur.YplusX, cur.YminusX);
-    fe_copy(minuscur.YminusX, cur.YplusX);
-    fe_copy(minuscur.Z, cur.Z);
-    fe_neg(minuscur.T2d, cur.T2d);
-    ge_cached_cmov(&cur, &minuscur, bnegative);
-    ge_add(&t, &u, &cur);
-    if (i == 0)
-      ge_p1p1_to_p3(r3, &t);
-    else
-      ge_p1p1_to_p2(&r, &t);
-  }
 }
 
 void ge_mul8(ge_p1p1 *r, const ge_p2 *t) {
