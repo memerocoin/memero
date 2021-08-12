@@ -180,8 +180,8 @@ namespace rct {
         while (i != l) {
             sig.s[i] = skGen();
             sc_0(c_new.data);
-            sc_mul(c_p.data,mu_P.data,c.data);
-            sc_mul(c_c.data,mu_C.data,c.data);
+            c_p = mu_P * c;
+            c_c = mu_C * c;
 
             // Compute L
             L = addKeys_aGbBcC
@@ -373,8 +373,8 @@ namespace rct {
 
         while (i < n) {
             sc_0(c_new.data);
-            sc_mul(c_p.data,mu_P.data,c.data);
-            sc_mul(c_c.data,mu_C.data,c.data);
+            c_p = mu_P * c;
+            c_c = mu_C * c;
 
             const key mask = span2rct(epee::pod_to_span(pubs[i].mask.data));
             if (!is_valid_point(mask)) {

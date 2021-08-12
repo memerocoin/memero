@@ -138,7 +138,7 @@ namespace signature {
       const crypto::secret_key m = subaddress_secret_view_key;
       skey_spend = s2sk(m + skey_spend);
       secret_key_to_public_key(skey_spend,pkey_spend);
-      sc_mul((unsigned char*)&skey_view, (unsigned char*)&keys.m_view_secret_key, (unsigned char*)&skey_spend);
+      skey_view = s2sk(keys.m_view_secret_key * skey_spend);
       secret_key_to_public_key(skey_view,pkey_view);
       switch (signature_type)
       {

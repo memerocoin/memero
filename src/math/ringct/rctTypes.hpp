@@ -60,6 +60,8 @@ namespace rct {
       }
 
       scalar operator+(const scalar& y) const;
+      scalar operator-(const scalar& y) const;
+      scalar operator*(const scalar& y) const;
     };
 
     typedef std::vector<key> keyV; //vector of keys

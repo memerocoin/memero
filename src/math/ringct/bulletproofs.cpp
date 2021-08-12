@@ -443,8 +443,8 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   for (size_t i = 0; i < sv.size(); ++i)
   {
     rct::scalar gamma8, sv8;
-    sc_mul(gamma8.data, gamma[i].data, rct::s_inv_eight.data);
-    sc_mul(sv8.data, sv[i].data, rct::s_inv_eight.data);
+    gamma8 = gamma[i] * rct::s_inv_eight;
+    sv8 = sv[i] * rct::s_inv_eight;
     V[i] = rct::addScalarMult_G_H(gamma8, sv8);
   }
 
@@ -474,7 +474,7 @@ try_again:
   // PAPER LINES 43-44
   rct::scalar alpha = rct::skGen();
   rct::key ve = vector_exponent(aL8, aR8);
-  sc_mul(tmp.data, alpha.data, rct::s_inv_eight.data);
+  tmp = alpha * rct::s_inv_eight;
   const key A = ve + rct::scalarmultBase(tmp);
 
   // PAPER LINES 45-47
@@ -512,7 +512,7 @@ try_again:
       {
           LOG_ERROR_AND_THROW_UNLESS(j+2 < zpow.size(), "invalid zpow index");
           LOG_ERROR_AND_THROW_UNLESS(i < twoN.size(), "invalid twoN index");
-          sc_mul(zero_twos[j*N+i].data,zpow[j+2].data,twoN[i].data);
+          zero_twos[j*N+i] = zpow[j+2] * twoN[i];
       }
   }
 
@@ -532,14 +532,14 @@ try_again:
   // PAPER LINES 52-53
   rct::scalar tau1 = rct::skGen(), tau2 = rct::skGen();
 
-  sc_mul(tmp.data, t1.data, rct::s_inv_eight.data);
-  sc_mul(tmp2.data, tau1.data, rct::s_inv_eight.data);
+  tmp = t1 * rct::s_inv_eight;
+  tmp2 = tau1 = rct::s_inv_eight;
 
   const key T1 = scalarmultBase(tmp2) + scalarmultH(tmp);
 
 
-  sc_mul(tmp.data, t2.data, rct::s_inv_eight.data);
-  sc_mul(tmp2.data, tau2.data, rct::s_inv_eight.data);
+  tmp = t2 * rct::s_inv_eight;
+  tmp2 = tau2 * rct::s_inv_eight;
 
   const key T2 = scalarmultBase(tmp2) + scalarmultH(tmp);
 
@@ -553,9 +553,9 @@ try_again:
 
   // PAPER LINES 61-63
   rct::scalar taux;
-  sc_mul(taux.data, tau1.data, x.data);
+  taux = tau1 = x;
   rct::scalar xsq;
-  sc_mul(xsq.data, x.data, x.data);
+  xsq = x * x;
   sc_muladd(taux.data, tau2.data, xsq.data, taux.data);
   for (size_t j = 1; j <= sv.size(); ++j)
   {
@@ -596,7 +596,7 @@ try_again:
     Gprime[i] = Gi[i];
     Hprime[i] = Hi[i];
     if (i > 1)
-      sc_mul(yinvpow[i].data, yinvpow[i-1].data, yinv.data);
+      yinvpow[i] = yinvpow[i-1] * yinv;
     aprime[i] = l[i];
     bprime[i] = r[i];
   }
@@ -616,10 +616,10 @@ try_again:
     rct::scalar cR = inner_product(slice(aprime, nprime, aprime.size()), slice(bprime, 0, nprime));
 
     // PAPER LINES 23-24
-    sc_mul(tmp.data, cL.data, x_ip.data);
+    tmp = cL * x_ip;
     L[round] = cross_vector_exponent8
       (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &H, &tmp);
-    sc_mul(tmp.data, cR.data, x_ip.data);
+    tmp = cR * x_ip;
     R[round] = cross_vector_exponent8
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &H, &tmp);
 
@@ -822,22 +822,22 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     }
 
     sc_muladd(tmp.data, pd.z.data, ip1y.data, k.data);
-    tmp = s2s(proof.t - tmp);
+    tmp = proof.t - tmp;
     sc_muladd(y1.data, tmp.data, weight_y.data, y1.data);
     for (size_t j = 0; j < proof8_V.size(); j++)
     {
-      sc_mul(tmp.data, zpow[j+2].data, weight_y.data);
+      tmp = zpow[j+2] * weight_y;
       multiexp_data.emplace_back(tmp, proof8_V[j]);
     }
-    sc_mul(tmp.data, pd.x.data, weight_y.data);
+    tmp = pd.x * weight_y;
     multiexp_data.emplace_back(tmp, proof8_T1);
     rct::scalar xsq;
-    sc_mul(xsq.data, pd.x.data, pd.x.data);
-    sc_mul(tmp.data, xsq.data, weight_y.data);
+    xsq = pd.x * pd.x;
+    tmp = xsq * weight_y;
     multiexp_data.emplace_back(tmp, proof8_T2);
 
     multiexp_data.emplace_back(weight_z, proof8_A);
-    sc_mul(tmp.data, pd.x.data, weight_z.data);
+    tmp = pd.x * weight_z;
     multiexp_data.emplace_back(tmp, proof8_S);
 
     // Compute the number of rounds for the inner product
@@ -860,8 +860,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       const size_t slots = 1<<(j+1);
       for (size_t s = slots; s-- > 0; --s)
       {
-        sc_mul(w_cache[s].data, w_cache[s/2].data, pd.w[j].data);
-        sc_mul(w_cache[s-1].data, w_cache[s/2].data, winv[j].data);
+        w_cache[s] = w_cache[s/2] * pd.w[j];
+        w_cache[s-1] = w_cache[s/2] * winv[j];
       }
     }
 
@@ -872,20 +872,20 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       if (i == 0)
         h_scalar = proof.b;
       else
-        sc_mul(h_scalar.data, proof.b.data, yinvpow.data);
+        h_scalar = proof.b * yinvpow;
 
       // Convert the index to binary IN REVERSE and construct the scalar exponent
-      sc_mul(g_scalar.data, g_scalar.data, w_cache[i].data);
-      sc_mul(h_scalar.data, h_scalar.data, w_cache[(~i) & (MN-1)].data);
+      g_scalar = g_scalar * w_cache[i];
+      h_scalar = h_scalar * w_cache[(~i) & (MN-1)];
 
       g_scalar = g_scalar + pd.z;
       LOG_ERROR_AND_RETURN_UNLESS(2+i/N < zpow.size(), false, "invalid zpow index");
       LOG_ERROR_AND_RETURN_UNLESS(i%N < twoN.size(), false, "invalid twoN index");
-      sc_mul(tmp.data, zpow[2+i/N].data, twoN[i%N].data);
+      tmp = zpow[2+i/N] * twoN[i%N];
       if (i == 0)
       {
         tmp = tmp + pd.z;
-        h_scalar = s2s(h_scalar - tmp);
+        h_scalar = h_scalar - tmp;
       }
       else
       {
@@ -903,31 +903,31 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       }
       else if (i != MN-1)
       {
-        sc_mul(yinvpow.data, yinvpow.data, yinv.data);
-        sc_mul(ypow.data, ypow.data, pd.y.data);
+        yinvpow = yinvpow * yinv;
+        ypow = ypow * pd.y;
       }
     }
 
     sc_muladd(z1.data, proof.mu.data, weight_z.data, z1.data);
     for (size_t i = 0; i < rounds; ++i)
     {
-      sc_mul(tmp.data, pd.w[i].data, pd.w[i].data);
-      sc_mul(tmp.data, tmp.data, weight_z.data);
+      tmp = pd.w[i] * pd.w[i];
+      tmp = tmp * weight_z;
       multiexp_data.emplace_back(tmp, proof8_L[i]);
-      sc_mul(tmp.data, winv[i].data, winv[i].data);
-      sc_mul(tmp.data, tmp.data, weight_z.data);
+      tmp = winv[i] * winv[i];
+      tmp = tmp * weight_z;
       multiexp_data.emplace_back(tmp, proof8_R[i]);
     }
     sc_mulsub(tmp.data, proof.a.data, proof.b.data, proof.t.data);
-    sc_mul(tmp.data, tmp.data, pd.x_ip.data);
+    tmp = tmp * pd.x_ip;
     sc_muladd(z3.data, tmp.data, weight_z.data, z3.data);
   }
 
   // now check all proofs at once
-  tmp = s2s(m_y0 - z1);
+  tmp = m_y0 - z1;
 
   multiexp_data.emplace_back(tmp, rct::G);
-  tmp = s2s(z3 - y1);
+  tmp = z3 - y1;
   multiexp_data.emplace_back(tmp, rct::H);
   for (size_t i = 0; i < maxMN; ++i)
   {

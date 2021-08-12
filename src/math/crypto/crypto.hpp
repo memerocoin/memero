@@ -59,6 +59,7 @@ namespace crypto {
 
     ec_scalar operator+(const ec_scalar& x) const;
     ec_scalar operator-(const ec_scalar& x) const;
+    ec_scalar operator*(const ec_scalar& x) const;
 
     // ec_scalar operator+(const ec_scalar& x) {sc_add
     //   return add(*this, x);

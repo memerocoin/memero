@@ -1474,23 +1474,6 @@ void sc_sub(unsigned char *s, const unsigned char *a, const unsigned char *b) {
   crypto_core_ed25519_scalar_sub(s, a, b);
 }
 
-/*
-Input:
-  a[0]+256*a[1]+...+256^31*a[31] = a
-  b[0]+256*b[1]+...+256^31*b[31] = b
-  c[0]+256*c[1]+...+256^31*c[31] = c
-
-Output:
-  s[0]+256*s[1]+...+256^31*s[31] = (c-ab) mod l
-  where l = 2^252 + 27742317777372353535851937790883648493.
-*/
-
-void sc_mulsub(unsigned char *s, const unsigned char *a, const unsigned char *b, const unsigned char *c) {
-  unsigned char p[32];
-  sc_mul(p, a, b);
-  sc_sub(s, c, p);
-}
-
 //copied from above and modified
 /*
 Input:
@@ -1522,6 +1505,24 @@ void sc_muladd(unsigned char *s, const unsigned char *a, const unsigned char *b,
   sc_mul(p, a, b);
   sc_add(s, p, c);
 }
+
+/*
+  Input:
+  a[0]+256*a[1]+...+256^31*a[31] = a
+  b[0]+256*b[1]+...+256^31*b[31] = b
+  c[0]+256*c[1]+...+256^31*c[31] = c
+
+  Output:
+  s[0]+256*s[1]+...+256^31*s[31] = (c-ab) mod l
+  where l = 2^252 + 27742317777372353535851937790883648493.
+*/
+
+void sc_mulsub(unsigned char *s, const unsigned char *a, const unsigned char *b, const unsigned char *c) {
+  unsigned char p[32];
+  sc_mul(p, a, b);
+  sc_sub(s, c, p);
+}
+
 
 static int64_t signum(int64_t a) {
   return a > 0 ? 1 : a < 0 ? -1 : 0;
