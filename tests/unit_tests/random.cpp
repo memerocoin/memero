@@ -36,12 +36,12 @@ extern "C" {
 
 TEST(random32_unbiased, less_than_order)
 {
-  unsigned char tmp[32], tmp2[32];
+  crypto::ec_scalar tmp, tmp2;
   for (int i = 0; i < 1000; ++i)
   {
-    crypto::random32_unbiased(tmp);
-    memcpy(tmp2, tmp, 32);
-    sc_reduce32(tmp2);
-    ASSERT_EQ(memcmp(tmp, tmp2, 32), 0);
+    crypto::random32_unbiased(tmp.data);
+    tmp2 = tmp;
+    tmp2 = reduce(tmp2);
+    ASSERT_EQ(tmp, tmp2);
   }
 }

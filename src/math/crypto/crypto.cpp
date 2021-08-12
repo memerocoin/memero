@@ -72,6 +72,10 @@ namespace crypto {
     return &reinterpret_cast<const unsigned char &>(scalar);
   }
 
+  ec_point ec_point::operator+(const ec_point& x) {
+    return add(*this, x);
+  }
+
   void generate_random_bytes(size_t N, uint8_t *bytes)
   {
     randombytes_buf(bytes, N);
@@ -478,10 +482,10 @@ namespace crypto {
 
   ec_scalar reduce(const ec_scalar x) {
     unsigned char t[64] = {0};
-    memcpy(t, x, 32);
+    std::copy(std::begin(x.data), std::end(x.data), t);
 
     ec_scalar s;
-    crypto_core_ed25519_scalar_reduce(s, t);
+    crypto_core_ed25519_scalar_reduce(s.data, t);
     return s;
   }
 }
