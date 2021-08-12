@@ -1346,11 +1346,6 @@ static unsigned char negative(signed char b) {
   return x;
 }
 
-/* From ge_sub.c */
-
-/*
-r = p - q
-*/
 
 void ge_sub(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q) {
   fe t0;
