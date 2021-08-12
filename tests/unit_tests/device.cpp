@@ -66,6 +66,7 @@ TEST(device, ops)
 {
   hw::core::device_default dev;
   rct::key resd, res;
+  crypto::secret_key resd_s, res_s;
   crypto::key_derivation derd, der;
   rct::scalar sk;
   rct::key pk;
@@ -75,6 +76,8 @@ TEST(device, ops)
   crypto::key_image ki0, ki1;
 
   std::tie(sk, pk) = rct::skpkGen();
+  sk0 = crypto::s2sk(crypto::scalarGen());
+  sk1 = crypto::s2sk(crypto::scalarGen());
   pk0 = rct::rct2pk(rct::scalarmultBase((rct::scalar&)sk0));
   pk1 = rct::rct2pk(rct::scalarmultBase((rct::scalar&)sk1));
 
@@ -86,13 +89,15 @@ TEST(device, ops)
   res = rct::scalarmultBase(sk);
   ASSERT_EQ(resd, res);
 
-  dev.sc_secret_add((crypto::secret_key&)resd, sk0, sk1);
-  sc_add((unsigned char*)&res, (unsigned char*)&sk0, (unsigned char*)&sk1);
-  ASSERT_EQ(resd, res);
+  dev.sc_secret_add(resd_s, sk0, sk1);
+  res_s = crypto::s2sk(sk0 + sk1);
+  ASSERT_EQ(resd_s, res_s);
+
+  ASSERT_TRUE(is_valid_point(pk0));
 
   dev.generate_key_derivation(pk0, sk0, derd);
   crypto::generate_key_derivation(pk0, sk0, der);
-  ASSERT_FALSE(memcmp(&derd, &der, sizeof(der)));
+  ASSERT_EQ(derd, der);
 
   dev.hash_derivation_to_scalar(der, 0, ressc0);
   crypto::hash_derivation_to_scalar(der, 0, ressc1);

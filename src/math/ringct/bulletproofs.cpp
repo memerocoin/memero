@@ -208,7 +208,7 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
 
   if (is_power_of_2)
   {
-    sc_add(res.data, res.data, x.data);
+    res = res + x;
     while (n > 2)
     {
       sc_mul(x.data, x.data, x.data);
@@ -223,7 +223,7 @@ rct::scalar vector_power_sum(const rct::scalar x_in, const size_t n_in)
     {
       if (i > 1)
         sc_mul(prev.data, prev.data, x.data);
-      sc_add(res.data, res.data, prev.data);
+      res = res + prev;
     }
   }
 
@@ -273,7 +273,7 @@ rct::scalarV vector_add(const scalarS a, const scalarS b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_add(res[i].data, a[i].data, b[i].data);
+    res[i] = a[i] + b[i];
   }
   return res;
 }
@@ -284,7 +284,7 @@ rct::scalarV vector_add(const scalarS a, const rct::scalar b)
   rct::scalarV res(a.size());
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_add(res[i].data, a[i].data, b.data);
+    res[i] = a[i] + b;
   }
   return res;
 }
@@ -526,7 +526,7 @@ try_again:
   rct::scalar t1_1 = inner_product(l0, r1);
   rct::scalar t1_2 = inner_product(l1, r0);
   rct::scalar t1;
-  sc_add(t1.data, t1_1.data, t1_2.data);
+  t1 = t1_1 + t1_2;
   rct::scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
@@ -878,13 +878,13 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       sc_mul(g_scalar.data, g_scalar.data, w_cache[i].data);
       sc_mul(h_scalar.data, h_scalar.data, w_cache[(~i) & (MN-1)].data);
 
-      sc_add(g_scalar.data, g_scalar.data, pd.z.data);
+      g_scalar = g_scalar + pd.z;
       LOG_ERROR_AND_RETURN_UNLESS(2+i/N < zpow.size(), false, "invalid zpow index");
       LOG_ERROR_AND_RETURN_UNLESS(i%N < twoN.size(), false, "invalid twoN index");
       sc_mul(tmp.data, zpow[2+i/N].data, twoN[i%N].data);
       if (i == 0)
       {
-        sc_add(tmp.data, tmp.data, pd.z.data);
+        tmp = tmp + pd.z;
         sc_sub(h_scalar.data, h_scalar.data, tmp.data);
       }
       else

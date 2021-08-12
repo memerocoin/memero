@@ -503,7 +503,7 @@ namespace rct {
         scalar sumout = s_zero;
         for (i = 0; i < outSk.size(); ++i)
         {
-            sc_add(sumout.data, outSk[i].blinding_factor.data, sumout.data);
+            sumout = outSk[i].blinding_factor + sumout;
 
             //mask amount and mask
             rv.ecdhInfo[i].mask = outSk[i].blinding_factor;
@@ -524,7 +524,7 @@ namespace rct {
         scalarV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
             a[i] = skGen();
-            sc_add(sumpouts.data, a[i].data, sumpouts.data);
+            sumpouts = a[i] + sumpouts;
             pseudoOuts[i] = genC(a[i], inamounts[i]);
         }
         sc_sub(a[i].data, sumout.data, sumpouts.data);

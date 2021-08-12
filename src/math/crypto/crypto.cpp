@@ -100,10 +100,10 @@ namespace crypto {
     return s;
   }
 
-  secret_key secret_key::operator+(const secret_key& y) const
-  {
-    return s2sk(ec_scalar::operator+(y));
-  }
+  // secret_key secret_key::operator+(const secret_key& y) const
+  // {
+  //   return s2sk(ec_scalar::operator+(y));
+  // }
 
 
   void generate_random_bytes(size_t N, uint8_t *bytes)
@@ -194,7 +194,7 @@ namespace crypto {
     ec_scalar scalar;
     assert(sc_check(&base) == 0);
     hash_derivation_to_scalar(derivation, output_index, scalar);
-    sc_add(&(derived_key), &(base), &scalar);
+    derived_key = s2sk(base + scalar);
   }
 
   bool derive_subaddress_public_key
@@ -437,6 +437,13 @@ namespace crypto {
     return out;
   }
 
+
+  //generates a random scalar which can be used as a secret key or mask
+  ec_scalar scalarGen() {
+    ec_scalar s;
+    crypto::random32_unbiased(s.data);
+    return s;
+  }
 
   ec_point multBase(const ec_scalar x) {
     ec_point p;

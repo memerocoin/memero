@@ -136,7 +136,7 @@ namespace signature {
       // m = m_account.get_device().get_subaddress_secret_key(keys.m_view_secret_key, index);
 
       const crypto::secret_key m = subaddress_secret_view_key;
-      sc_add((unsigned char*)&skey_spend, (unsigned char*)&m, (unsigned char*)&skey_spend);
+      skey_spend = s2sk(m + skey_spend);
       secret_key_to_public_key(skey_spend,pkey_spend);
       sc_mul((unsigned char*)&skey_view, (unsigned char*)&keys.m_view_secret_key, (unsigned char*)&skey_spend);
       secret_key_to_public_key(skey_view,pkey_view);

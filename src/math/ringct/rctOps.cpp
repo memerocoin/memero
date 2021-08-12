@@ -70,9 +70,7 @@ namespace rct {
 
   //generates a random scalar which can be used as a secret key or mask
   scalar skGen() {
-    scalar sk;
-    crypto::random32_unbiased(sk.data);
-    return sk;
+    return s2s(crypto::scalarGen());
   }
 
   //Generates a vector of secret key

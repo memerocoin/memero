@@ -70,7 +70,6 @@ namespace crypto {
   };
 
   struct secret_key: ec_scalar{
-    secret_key operator+(const secret_key& y) const;
   };
 
   struct public_key: ec_point {
@@ -232,6 +231,10 @@ namespace crypto {
 
   // ec_point add(const ec_point X, const ec_point Y);
   // ec_point sub(const ec_point X, const ec_point Y);
+
+  //generates a random scalar which can be used as a secret key or mask
+  ec_scalar scalarGen();
+
   ec_point mult(const ec_point X, const ec_scalar);
   ec_point mult8(const ec_point X);
   ec_point multBase(const ec_scalar);

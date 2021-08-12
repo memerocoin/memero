@@ -46,16 +46,6 @@ namespace hw {
 
         device_default::~device_default() { }
 
-        /* ===================================================================== */
-        /* ===                        Misc                                ==== */
-        /* ===================================================================== */
-        static inline unsigned char *operator &(crypto::ec_scalar &scalar) {
-            return &reinterpret_cast<unsigned char &>(scalar);
-        }
-        static inline const unsigned char *operator &(const crypto::ec_scalar &scalar) {
-            return &reinterpret_cast<const unsigned char &>(scalar);
-        }
-
         /* ======================================================================= */
         /*                              SETUP/TEARDOWN                             */
         /* ======================================================================= */
@@ -224,7 +214,7 @@ namespace hw {
         }
 
         bool device_default::sc_secret_add(crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) {
-            sc_add(&r, &a, &b);
+            r = crypto::s2sk(a + b);
             return true;
         }
 
