@@ -367,75 +367,30 @@ namespace crypto {
    )
   {
     // sanity check
-    ge_p3 R_p3;
-    ge_p3 A_p3;
-    ge_p3 B_p3;
-    ge_p3 D_p3;
-    if (ge_frombytes_vartime(&R_p3, &R) != 0) return false;
-    if (ge_frombytes_vartime(&A_p3, &A) != 0) return false;
-    if (B && ge_frombytes_vartime(&B_p3, &*B) != 0) return false;
-    if (ge_frombytes_vartime(&D_p3, &D) != 0) return false;
+
+    if (!is_valid_point(R)) return false;
+    if (!is_valid_point(A)) return false;
+    if (!is_valid_point(D)) return false;
+    if (B && !is_valid_point(*B)) return false;
+
     if (sc_check(&sig.c) != 0 || sc_check(&sig.r) != 0) return false;
 
     // compute sig.c*R
-    ge_p3 cR_p3;
-    {
-      ge_p2 cR_p2;
-      ge_scalarmult(&cR_p2, &sig.c, &R_p3);
-      public_key cR;
-      ge_tobytes(&cR, &cR_p2);
-      if (ge_frombytes_vartime(&cR_p3, &cR) != 0) return false;
-    }
 
-    ge_p1p1 X_p1p1;
-    if (B)
-    {
-      // compute X = sig.c*R + sig.r*B
-      ge_p2 rB_p2;
-      ge_scalarmult(&rB_p2, &sig.r, &B_p3);
-      public_key rB;
-      ge_tobytes(&rB, &rB_p2);
-      ge_p3 rB_p3;
-      if (ge_frombytes_vartime(&rB_p3, &rB) != 0) return false;
-      ge_cached rB_cached;
-      ge_p3_to_cached(&rB_cached, &rB_p3);
-      ge_add(&X_p1p1, &cR_p3, &rB_cached);
-    }
-    else
-    {
-      // compute X = sig.c*R + sig.r*G
-      ge_p3 rG_p3;
-      ge_scalarmult_base(&rG_p3, &sig.r);
-      ge_cached rG_cached;
-      ge_p3_to_cached(&rG_cached, &rG_p3);
-      ge_add(&X_p1p1, &cR_p3, &rG_cached);
-    }
-    ge_p2 X_p2;
-    ge_p1p1_to_p2(&X_p2, &X_p1p1);
+    const ec_point cR = mult(R, sig.c);
+
+    const ec_point X = B
+      ? add(mult(*B, sig.r), cR)
+      : add(multBase(sig.r), cR);
 
     // compute sig.c*D
-    ge_p2 cD_p2;
-    ge_scalarmult(&cD_p2, &sig.c, &D_p3);
+    const ec_point cD = mult(D, sig.c);
 
     // compute sig.r*A
-    ge_p2 rA_p2;
-    ge_scalarmult(&rA_p2, &sig.r, &A_p3);
+    const ec_point rA = mult(A, sig.r);
 
     // compute Y = sig.c*D + sig.r*A
-    public_key cD;
-    public_key rA;
-    ge_tobytes(&cD, &cD_p2);
-    ge_tobytes(&rA, &rA_p2);
-    ge_p3 cD_p3;
-    ge_p3 rA_p3;
-    if (ge_frombytes_vartime(&cD_p3, &cD) != 0) return false;
-    if (ge_frombytes_vartime(&rA_p3, &rA) != 0) return false;
-    ge_cached rA_cached;
-    ge_p3_to_cached(&rA_cached, &rA_p3);
-    ge_p1p1 Y_p1p1;
-    ge_add(&Y_p1p1, &cD_p3, &rA_cached);
-    ge_p2 Y_p2;
-    ge_p1p1_to_p2(&Y_p2, &Y_p1p1);
+    const ec_point Y = add(cD, rA);
 
     // Compute hash challenge
     // for v1, c2 = Hs(Msg || D || X || Y)
@@ -453,9 +408,12 @@ namespace crypto {
         buf.B = *B;
     else
         buf.B = zero;
+
     buf.sep = sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1));
-    ge_tobytes(&buf.X, &X_p2);
-    ge_tobytes(&buf.Y, &Y_p2);
+
+    buf.X = X;
+    buf.Y = Y;
+
     ec_scalar c2;
 
     // Hash depends on version
