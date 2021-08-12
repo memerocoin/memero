@@ -37,10 +37,6 @@ extern "C" {
 #include "math/crypto/hash.hpp"
 #include <boost/algorithm/string.hpp>
 
-static inline unsigned char *operator &(crypto::ec_point &point) {
-    return &reinterpret_cast<unsigned char &>(point);
-  }
-
 static inline unsigned char *operator &(crypto::ec_scalar &scalar) {
     return &reinterpret_cast<unsigned char &>(scalar);
   }
@@ -58,27 +54,13 @@ TEST(tx_proof, prove_verify_v2)
     crypto::generate_keys(B, b, b, false);
 
     // R_B = rB
-    crypto::public_key R_B;
-    ge_p3 B_p3;
-    ge_frombytes_vartime(&B_p3,&B);
-    ge_p2 R_B_p2;
-    ge_scalarmult(&R_B_p2, &(r), &B_p3);
-    ge_tobytes(&R_B, &R_B_p2);
+    crypto::public_key R_B = crypto::p2pk(crypto::mult(B, r));
 
     // R_G = rG
-    crypto::public_key R_G;
-    ge_frombytes_vartime(&B_p3,&B);
-    ge_p3 R_G_p3;
-    ge_scalarmult_base(&R_G_p3, &(r));
-    ge_p3_tobytes(&R_G, &R_G_p3);
+    crypto::public_key R_G = crypto::p2pk(crypto::multBase(r));
 
     // D = rA
-    crypto::public_key D;
-    ge_p3 A_p3;
-    ge_frombytes_vartime(&A_p3,&A);
-    ge_p2 D_p2;
-    ge_scalarmult(&D_p2, &(r), &A_p3);
-    ge_tobytes(&D, &D_p2);
+    crypto::public_key D = crypto::p2pk(crypto::mult(A, r));
 
     crypto::signature sig;
 
