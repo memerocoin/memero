@@ -259,13 +259,16 @@ void hadamard_fold(std::vector<ge_p3> &v, const rct::scalarV *scale, const rct::
   const size_t sz = v.size() / 2;
   for (size_t n = 0; n < sz; ++n)
   {
-    ge_dsmp c[2];
-    ge_dsm_precomp(c[0], &v[n]);
-    ge_dsm_precomp(c[1], &v[sz + n]);
+    key c_0 = ge_p3_tokey(v[n]);
+    key c_1 = ge_p3_tokey(v[sz + n]);
     rct::scalar sa, sb;
+
     if (scale) sc_mul(sa.data, a.data, (*scale)[n].data); else sa = a;
     if (scale) sc_mul(sb.data, b.data, (*scale)[sz + n].data); else sb = b;
-    ge_double_scalarmult_precomp_vartime2_p3(&v[n], sa.data, c[0], sb.data, c[1]);
+
+    const key r = addKeys(scalarmultKey(c_0, sa), scalarmultKey(c_1, sb));
+
+    v[n] = p3FromPoint(r);
   }
   v.resize(sz);
 }
