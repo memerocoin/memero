@@ -144,16 +144,16 @@ rct::key vector_exponent(const scalarS a, const scalarS b)
 rct::key cross_vector_exponent8
 (
  const size_t size
- , const std::span<ge_p3> A
+ , const std::span<key> A
  , const size_t Ao
- , const std::span<ge_p3> B
+ , const std::span<key> B
  , const size_t Bo
  , const scalarS a
  , const size_t ao
  , const scalarS b
  , const size_t bo
  , const rct::scalarV *scale
- , const ge_p3 *extra_point
+ , const key *extra_point
  , const rct::scalar *extra_scalar
  )
 {
@@ -170,16 +170,16 @@ rct::key cross_vector_exponent8
   for (size_t i = 0; i < size; ++i)
   {
     sc_mul(multiexp_data[i*2].scalar.data, a[ao+i].data, rct::s_inv_eight.data);
-    multiexp_data[i*2].point = ge_p3_tokey(A[Ao+i]);
+    multiexp_data[i*2].point = A[Ao+i];
     sc_mul(multiexp_data[i*2+1].scalar.data, b[bo+i].data, rct::s_inv_eight.data);
     if (scale)
       sc_mul(multiexp_data[i*2+1].scalar.data, multiexp_data[i*2+1].scalar.data, (*scale)[Bo+i].data);
-    multiexp_data[i*2+1].point = ge_p3_tokey(B[Bo+i]);
+    multiexp_data[i*2+1].point = B[Bo+i];
   }
   if (extra_point)
   {
     sc_mul(multiexp_data.back().scalar.data, extra_scalar->data, rct::s_inv_eight.data);
-    multiexp_data.back().point = ge_p3_tokey(*extra_point);
+    multiexp_data.back().point = *extra_point;
   }
   return multiexp(multiexp_data);
 }
@@ -253,14 +253,14 @@ rct::scalarV hadamard(const scalarS a, const scalarS b)
 }
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-void hadamard_fold(std::vector<ge_p3> &v, const rct::scalarV *scale, const rct::scalar a, const rct::scalar b)
+void hadamard_fold(std::vector<key> &v, const rct::scalarV *scale, const rct::scalar a, const rct::scalar b)
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
   for (size_t n = 0; n < sz; ++n)
   {
-    key c_0 = ge_p3_tokey(v[n]);
-    key c_1 = ge_p3_tokey(v[sz + n]);
+    key c_0 = v[n];
+    key c_1 = v[sz + n];
     rct::scalar sa, sb;
 
     if (scale) sc_mul(sa.data, a.data, (*scale)[n].data); else sa = a;
@@ -268,7 +268,7 @@ void hadamard_fold(std::vector<ge_p3> &v, const rct::scalarV *scale, const rct::
 
     const key r = addKeys(scalarmultKey(c_0, sa), scalarmultKey(c_1, sb));
 
-    v[n] = p3FromPoint(r);
+    v[n] = r;
   }
   v.resize(sz);
 }
@@ -590,8 +590,8 @@ try_again:
 
   // These are used in the inner product rounds
   size_t nprime = MN;
-  std::vector<ge_p3> Gprime(MN);
-  std::vector<ge_p3> Hprime(MN);
+  std::vector<key> Gprime(MN);
+  std::vector<key> Hprime(MN);
   rct::scalarV aprime(MN);
   rct::scalarV bprime(MN);
   const rct::scalar yinv = invert(y);
@@ -600,8 +600,8 @@ try_again:
   yinvpow[1] = yinv;
   for (size_t i = 0; i < MN; ++i)
   {
-    Gprime[i] = Gi_p3[i];
-    Hprime[i] = Hi_p3[i];
+    Gprime[i] = ge_p3_tokey(Gi_p3[i]);
+    Hprime[i] = ge_p3_tokey(Hi_p3[i]);
     if (i > 1)
       sc_mul(yinvpow[i].data, yinvpow[i-1].data, yinv.data);
     aprime[i] = l[i];
@@ -624,11 +624,12 @@ try_again:
 
     // PAPER LINES 23-24
     sc_mul(tmp.data, cL.data, x_ip.data);
+    const key kH = ge_p3_tokey(ge_p3_H);
     L[round] = cross_vector_exponent8
-      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &ge_p3_H, &tmp);
+      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &kH, &tmp);
     sc_mul(tmp.data, cR.data, x_ip.data);
     R[round] = cross_vector_exponent8
-      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &ge_p3_H, &tmp);
+      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &kH, &tmp);
 
     // PAPER LINES 25-27
     w[round] = hash_carry_mash(hash_carry, L[round], R[round]);
