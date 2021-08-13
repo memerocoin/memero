@@ -854,16 +854,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       m_z4[i] = m_z4[i] - g_scalar * weight_z;
       m_z5[i] = m_z5[i] - h_scalar * weight_z;
 
-      if (i == 0)
-      {
-        yinvpow = yinv;
-        ypow = pd.y;
-      }
-      else if (i != MN-1)
-      {
-        yinvpow = yinvpow * yinv;
-        ypow = ypow * pd.y;
-      }
+      yinvpow = yinvpow * yinv;
+      ypow = ypow * pd.y;
     }
 
     z1 = proof.mu * weight_z + z1;
