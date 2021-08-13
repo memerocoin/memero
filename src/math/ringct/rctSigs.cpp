@@ -314,8 +314,8 @@ namespace rct {
         LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
         LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
         for (const auto &s: sig.s)
-          LOG_ERROR_AND_RETURN_UNLESS(sc_check(s.data) == 0, false, "Bad signature scalar!");
-        LOG_ERROR_AND_RETURN_UNLESS(sc_check(sig.c1.data) == 0, false, "Bad signature commitment!");
+          LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(s), false, "Bad signature scalar!");
+        LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(sig.c1), false, "Bad signature commitment!");
         LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad key image!");
 
         if (!is_valid_point(C_offset)) {
@@ -763,8 +763,8 @@ namespace rct {
         mask = ecdh_info.mask;
         scalar amount = ecdh_info.amount;
         key C = rv.outPk[i].mask;
-        LOG_ERROR_AND_THROW_UNLESS(sc_check(mask.data) == 0, "warning, bad ECDH mask");
-        LOG_ERROR_AND_THROW_UNLESS(sc_check(amount.data) == 0, "warning, bad ECDH amount");
+        LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(mask), "warning, bad ECDH mask");
+        LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount), "warning, bad ECDH amount");
         const key Ctmp = addScalarMult_G_H(mask, amount);
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");

@@ -81,11 +81,6 @@ const static rct::scalar ip12 = inner_product(oneN, twoN);
 
 const auto multiexp = dummy;
 
-bool is_reduced(const rct::scalar scalar)
-{
-  return sc_check(scalar.data) == 0;
-}
-
 rct::key get_exponent(const rct::key base, size_t idx)
 {
   constexpr std::string_view domain_separator(config::HASH_KEY_BULLETPROOF_EXPONENT);
