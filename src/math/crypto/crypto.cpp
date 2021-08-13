@@ -231,9 +231,8 @@ namespace crypto {
   }
 
   ec_scalar hash_to_scalar(const std::span<const uint8_t> x) {
-    ec_scalar s;
-    hash_to_scalar(x.data(), x.size(), s);
-    return s;
+    const auto h = sha3(x);
+    return reduce(h2s(h));
   }
 
   void generate_signature(const hash &prefix_hash, const public_key &pub, const secret_key &sec, signature &sig) {

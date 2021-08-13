@@ -188,9 +188,7 @@ namespace hw {
             memcpy(data + sizeof(config::HASH_KEY_SUBADDRESS) + sizeof(crypto::secret_key), &idx, sizeof(uint32_t));
             idx = SWAP32LE(index.minor);
             memcpy(data + sizeof(config::HASH_KEY_SUBADDRESS) + sizeof(crypto::secret_key) + sizeof(uint32_t), &idx, sizeof(uint32_t));
-            crypto::secret_key m;
-            crypto::hash_to_scalar(data, sizeof(data), m);
-            return m;
+            return s2sk(crypto::hash_to_scalar(epee::pod_to_span(data)));
         }
 
         /* ======================================================================= */

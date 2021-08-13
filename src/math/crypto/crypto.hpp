@@ -93,7 +93,6 @@ namespace crypto {
   inline const key_image &p2img(const ec_point &x) { return (const key_image&)x; }
   inline const key_derivation &p2derivation(const ec_point &x) { return (const key_derivation&)x; }
 
-  void hash_to_scalar(const void *data, size_t length, ec_scalar &res);
   void random32_unbiased(unsigned char *bytes);
 
   /* Generate a new key pair
