@@ -262,10 +262,14 @@ rct::scalarV vector_add(const scalarS a, const scalarS b)
 rct::scalarV vector_add(const scalarS a, const rct::scalar b)
 {
   rct::scalarV res(a.size());
-  for (size_t i = 0; i < a.size(); ++i)
-  {
-    res[i] = a[i] + b;
-  }
+  std::transform
+    (
+     a.begin()
+     , a.end()
+     , res.begin()
+     , [b](const auto& x) { return x + b; }
+     );
+
   return res;
 }
 
@@ -273,10 +277,14 @@ rct::scalarV vector_add(const scalarS a, const rct::scalar b)
 rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
 {
   rct::scalarV res(a.size());
-  for (size_t i = 0; i < a.size(); ++i)
-  {
-    res[i] = a[i] - b;
-  }
+  std::transform
+    (
+     a.begin()
+     , a.end()
+     , res.begin()
+     , [b](const auto& x) { return x - b; }
+     );
+
   return res;
 }
 
