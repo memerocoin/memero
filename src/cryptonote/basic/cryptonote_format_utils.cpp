@@ -302,7 +302,7 @@ namespace cryptonote
            false, "key image helper precomp: given output pubkey doesn't match the derived one");
     }
 
-    hwdev.generate_key_image(in_ephemeral.pub, in_ephemeral.sec, ki);
+    ki = hwdev.generate_key_image(in_ephemeral.pub, in_ephemeral.sec);
     return true;
   }
   //---------------------------------------------------------------

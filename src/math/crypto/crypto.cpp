@@ -475,10 +475,10 @@ namespace crypto {
     return res;
   }
 
-  void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
+  key_image generate_key_image(const public_key &pub, const secret_key &sec) {
     const ec_point h = viaF2(h2p(sha3(epee::pod_to_span(pub))));
     const ec_point p = mult(mult8(h), sec);
-    image = p2img(p);
+    return p2img(p);
   }
 
   ec_scalar reduce(const ec_scalar x) {

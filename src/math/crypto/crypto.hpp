@@ -170,7 +170,7 @@ namespace crypto {
     * * Then he selects a bunch of outputs, including the one he spends, and uses them to generate a ring signature.
     * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
     */
-  void generate_key_image(const public_key &, const secret_key &, key_image &);
+  key_image generate_key_image(const public_key &, const secret_key &);
 
 
   void generate_random_bytes(size_t N, uint8_t *bytes);
