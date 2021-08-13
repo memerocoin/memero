@@ -182,7 +182,7 @@ namespace crypto {
     ec_scalar scalar;
     hash_derivation_to_scalar(derivation, output_index, scalar);
     const ec_point derived = multBase(scalar);
-    const ec_point r = add(derived, base);
+    const ec_point r = derived + base;
     derived_key = p2pk(r);
     return true;
   }
@@ -278,7 +278,7 @@ namespace crypto {
       return false;
     }
 
-    const ec_point r = add(mult(pub, sig.c), multBase(sig.r));
+    const ec_point r = mult(pub, sig.c) + multBase(sig.r);
 
     if (r == identity) return false;
 
@@ -380,8 +380,8 @@ namespace crypto {
     const ec_point cR = mult(R, sig.c);
 
     const ec_point X = B
-      ? add(mult(*B, sig.r), cR)
-      : add(multBase(sig.r), cR);
+      ? mult(*B, sig.r) + cR
+      : multBase(sig.r) + cR;
 
     // compute sig.c*D
     const ec_point cD = mult(D, sig.c);
@@ -390,7 +390,7 @@ namespace crypto {
     const ec_point rA = mult(A, sig.r);
 
     // compute Y = sig.c*D + sig.r*A
-    const ec_point Y = add(cD, rA);
+    const ec_point Y = cD + rA;
 
     // Compute hash challenge
     // for v1, c2 = Hs(Msg || D || X || Y)
