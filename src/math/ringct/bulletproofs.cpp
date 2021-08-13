@@ -141,8 +141,6 @@ rct::key cross_vector_exponent8
  , const scalarS b
  , const size_t bo
  , const std::optional<rct::scalarS> scale
- , const key extra_point
- , const rct::scalar extra_scalar
  )
 {
   LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
@@ -160,8 +158,6 @@ rct::key cross_vector_exponent8
     const auto b_bo = b[bo+i] * rct::s_inv_eight;
     multiexp_data.emplace_back(scale ? b_bo * (*scale)[Bo+i] : b_bo, B[Bo+i]);
   }
-
-  multiexp_data.emplace_back(extra_scalar * rct::s_inv_eight, extra_point);
 
   return multiexp(multiexp_data);
 }
@@ -583,9 +579,11 @@ try_again:
 
     // PAPER LINES 23-24
     L[round] = cross_vector_exponent8
-      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, H, cL * x_ip);
+      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
+      + scalarmultH(cL * x_ip * s_inv_eight);
     R[round] = cross_vector_exponent8
-      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, H, cR * x_ip);
+      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
+      + scalarmultH(cR * x_ip * s_inv_eight);
 
     // PAPER LINES 25-27
     w[round] = hash_carry = hash_carry_mash_3(hash_carry, L[round], R[round]);
