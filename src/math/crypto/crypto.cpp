@@ -101,12 +101,6 @@ namespace crypto {
     randombytes_buf(bytes, N);
   }
 
-  void random32_unbiased(unsigned char *bytes)
-  {
-    crypto_core_ed25519_scalar_random(bytes);
-  }
-
-
   bool is_valid_point(const ec_point x) {
     return crypto_core_ed25519_is_valid_point(x.data);
   }
@@ -116,7 +110,7 @@ namespace crypto {
    *
    */
   secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
-    const secret_key s = recover ? recovery_key : s2sk(random_scalar());
+    const secret_key s = recover ? recovery_key : s2sk(scalarGen());
     const auto s_safe = s2sk(reduce(s));  // reduce in case second round of keys (sendkeys)
 
     secret_key_to_public_key(s_safe, pub);
@@ -218,13 +212,6 @@ namespace crypto {
     ec_point B;
   };
 
-  /* generate a random 32-byte (256-bit) integer and copy it to res */
-  ec_scalar random_scalar() {
-    ec_scalar x;
-    random32_unbiased(x.data);
-    return x;
-  }
-
   ec_scalar hash_to_scalar(const std::span<const uint8_t> x) {
     const auto h = sha3(x);
     return reduce(h2s(h));
@@ -238,7 +225,7 @@ namespace crypto {
    )
   {
     while (true) {
-      const ec_scalar k = random_scalar();
+      const ec_scalar k = scalarGen();
       if (k == s_0) continue;
 
       const ec_point comm = multBase(k);
@@ -308,7 +295,7 @@ namespace crypto {
     if (!is_valid_point(D)) throw std::runtime_error("key derivation is invalid");
 
     // pick random k
-    const ec_scalar k = random_scalar();
+    const ec_scalar k = scalarGen();
 
     // if B is not present
     static const ec_point zero = {};
@@ -424,7 +411,7 @@ namespace crypto {
   //generates a random scalar which can be used as a secret key or mask
   ec_scalar scalarGen() {
     ec_scalar s;
-    crypto::random32_unbiased(s.data);
+    crypto_core_ed25519_scalar_random(s.data);
     return s;
   }
 

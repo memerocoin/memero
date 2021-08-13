@@ -37,14 +37,9 @@ extern "C" {
 #include "math/crypto/hash.hpp"
 #include <boost/algorithm/string.hpp>
 
-static inline unsigned char *operator &(crypto::ec_scalar &scalar) {
-    return &reinterpret_cast<unsigned char &>(scalar);
-  }
-
 TEST(tx_proof, prove_verify_v2)
 {
-    crypto::secret_key r;
-    crypto::random32_unbiased(&r);
+    crypto::secret_key r = s2sk(crypto::scalarGen());
 
     // A = aG
     // B = bG

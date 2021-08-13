@@ -39,7 +39,7 @@ TEST(random32_unbiased, less_than_order)
   crypto::ec_scalar tmp, tmp2;
   for (int i = 0; i < 1000; ++i)
   {
-    crypto::random32_unbiased(tmp.data);
+    tmp = crypto::scalarGen();
     tmp2 = tmp;
     tmp2 = reduce(tmp2);
     ASSERT_EQ(tmp, tmp2);
