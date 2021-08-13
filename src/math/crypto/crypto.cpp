@@ -50,11 +50,6 @@ extern "C" {
 
 namespace crypto {
 
-  static inline const unsigned char *operator &(const ec_scalar &scalar) {
-    return &reinterpret_cast<const unsigned char &>(scalar);
-  }
-
-
   ec_point add(const ec_point X, const ec_point Y) {
     ec_point p;
     int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
