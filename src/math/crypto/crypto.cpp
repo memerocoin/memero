@@ -358,7 +358,7 @@ namespace crypto {
     buf.Y = mult(A, k);
 
     // sig.c = Hs(Msg || D || X || Y || sep || R || A || B)
-    hash_to_scalar(&buf, sizeof(buf), sig.c);
+    sig.c = hash_to_scalar(epee::pod_to_span(buf));
 
     // sig.r = k - sig.c*r
     sig.r = k - sig.c * r;
