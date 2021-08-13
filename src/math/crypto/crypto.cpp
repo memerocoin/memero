@@ -266,8 +266,7 @@ namespace crypto {
       if (!sc_isnonzero(sig_c.data))
         continue;
 
-      ec_scalar sig_r;
-      sc_mulsub(&sig.r, &sig.c, &sec, &k);
+      const ec_scalar sig_r = k - sig.c * sec;
 
       if (!sc_isnonzero(sig_r.data))
         continue;
@@ -362,9 +361,7 @@ namespace crypto {
     hash_to_scalar(&buf, sizeof(buf), sig.c);
 
     // sig.r = k - sig.c*r
-    sc_mulsub(&sig.r, &sig.c, &(r), &k);
-
-    memwipe(&k, sizeof(k));
+    sig.r = k - sig.c * r;
   }
 
   bool check_tx_proof
