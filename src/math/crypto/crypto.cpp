@@ -106,10 +106,6 @@ namespace crypto {
     crypto_core_ed25519_scalar_random(bytes);
   }
 
-  /* generate a random 32-byte (256-bit) integer and copy it to res */
-  void random_scalar(ec_scalar &res) {
-    random32_unbiased((unsigned char*)res.data);
-  }
 
   void hash_to_scalar(const void *data, size_t length, ec_scalar &res) {
     const auto h = sha3(epee::blob::span((const uint8_t*)data, length));
@@ -227,9 +223,10 @@ namespace crypto {
     ec_point B;
   };
 
+  /* generate a random 32-byte (256-bit) integer and copy it to res */
   ec_scalar random_scalar() {
     ec_scalar x;
-    random_scalar(x);
+    random32_unbiased(x.data);
     return x;
   }
 
@@ -309,8 +306,7 @@ namespace crypto {
     if (!is_valid_point(D)) throw std::runtime_error("key derivation is invalid");
 
     // pick random k
-    ec_scalar k;
-    random_scalar(k);
+    const ec_scalar k = random_scalar();
 
     // if B is not present
     static const ec_point zero = {};
