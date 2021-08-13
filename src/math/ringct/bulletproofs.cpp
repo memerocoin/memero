@@ -241,27 +241,20 @@ keyV hadamard_fold(keyS v, const std::optional<rct::scalarS> scale, const rct::s
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
   std::vector<key> out(sz);
+
   for (size_t n = 0; n < sz; ++n)
   {
-    key c_0 = v[n];
-    key c_1 = v[sz + n];
-    rct::scalar sa, sb;
+    const scalar x = scale
+      ? a * (*scale)[n]
+      : a;
 
-    if (scale) {
-      sa = a * (*scale)[n];
-    } else {
-      sa = a;
-    }
+    const size_t iy = sz + n;
 
-    if (scale) {
-      sb = b * (*scale)[sz + n];
-    } else {
-      sb = b;
-    }
+    const scalar y = scale
+      ? b * (*scale)[iy]
+      : b;
 
-    const key r = scalarmultKey(c_0, sa) + scalarmultKey(c_1, sb);
-
-    out[n] = r;
+    out[n] = scalarmultKey(v[n], x) + scalarmultKey(v[iy], y);
   }
 
   return out;
