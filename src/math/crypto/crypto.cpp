@@ -125,12 +125,13 @@ namespace crypto {
    *
    */
   secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
-    sec = recover ? recovery_key : s2sk(random_scalar());
-    sec = s2sk(reduce(sec));  // reduce in case second round of keys (sendkeys)
+    const secret_key s = recover ? recovery_key : s2sk(random_scalar());
+    const auto s_safe = s2sk(reduce(s));  // reduce in case second round of keys (sendkeys)
 
-    secret_key_to_public_key(sec, pub);
+    secret_key_to_public_key(s_safe, pub);
+    sec = s_safe;
 
-    return sec;
+    return s_safe;
   }
 
   bool check_key(const public_key &key) {
