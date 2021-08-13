@@ -223,7 +223,7 @@ namespace hw {
          , rct::key &aG
          , rct::key &aH
          ) = 0;
-        virtual bool clsag_hash(const rct::keyV &data, rct::scalar &hash) = 0;
+        virtual rct::scalar clsag_hash(const rct::keyV &data) = 0;
         virtual bool clsag_sign
         (
          const rct::scalar &c

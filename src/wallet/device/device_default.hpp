@@ -149,7 +149,7 @@ namespace hw {
              , rct::key &aH
              ) override;
 
-            bool clsag_hash(const rct::keyV &data, rct::scalar &hash) override;
+            rct::scalar clsag_hash(const rct::keyV &data) override;
             bool clsag_sign
             (
              const rct::scalar &c

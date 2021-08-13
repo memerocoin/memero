@@ -162,7 +162,7 @@ namespace rct {
             c_to_hash[2*n+3] = aG;
             c_to_hash[2*n+4] = aH;
         }
-        hwdev.clsag_hash(c_to_hash,c);
+        c = hwdev.clsag_hash(c_to_hash);
 
         size_t i;
         i = (l + 1) % n;
@@ -171,7 +171,6 @@ namespace rct {
 
         // Decoy indices
         sig.s = scalarV(n);
-        scalar c_new;
         key L;
         key R;
         scalar c_p; // = c[i]*mu_P
@@ -179,7 +178,6 @@ namespace rct {
 
         while (i != l) {
             sig.s[i] = skGen();
-            c_new = s_zero;
             c_p = mu_P * c;
             c_c = mu_C * c;
 
@@ -206,8 +204,7 @@ namespace rct {
 
             c_to_hash[2*n+3] = L;
             c_to_hash[2*n+4] = R;
-            hwdev.clsag_hash(c_to_hash,c_new);
-            c = c_new;
+            c = hwdev.clsag_hash(c_to_hash);
 
             i = (i + 1) % n;
             if (i == 0)
