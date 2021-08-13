@@ -493,16 +493,15 @@ try_again:
   rct::scalarV r1 = hadamard(yMN, sR);
 
   // Polynomial construction before PAPER LINE 51
-  rct::scalar t1_1 = inner_product(l0, r1);
-  rct::scalar t1_2 = inner_product(l1, r0);
-  rct::scalar t1;
-  t1 = t1_1 + t1_2;
-  rct::scalar t2 = inner_product(l1, r1);
+  const rct::scalar t1_1 = inner_product(l0, r1);
+  const rct::scalar t1_2 = inner_product(l1, r0);
+  const rct::scalar t1 = t1_1 + t1_2;
+  const rct::scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
   rct::scalar tau1 = rct::skGen(), tau2 = rct::skGen();
 
-  const key T1 = scalarmultBase(tau1 = rct::s_inv_eight) + scalarmultH(t1 * rct::s_inv_eight);
+  const key T1 = scalarmultBase(tau1 * rct::s_inv_eight) + scalarmultH(t1 * rct::s_inv_eight);
   const key T2 = scalarmultBase(tau2 * rct::s_inv_eight) + scalarmultH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
@@ -515,7 +514,7 @@ try_again:
 
   // PAPER LINES 61-63
   rct::scalar taux;
-  taux = tau1 = x;
+  taux = tau1 * x;
   rct::scalar xsq;
   xsq = x * x;
   taux = tau2 * xsq + taux;
@@ -602,8 +601,16 @@ try_again:
     }
 
     // PAPER LINES 33-34
-    aprime = vector_add(vector_mult(slice(aprime, 0, nprime), w[round]), vector_mult(slice(aprime, nprime, aprime.size()), winv));
-    bprime = vector_add(vector_mult(slice(bprime, 0, nprime), winv), vector_mult(slice(bprime, nprime, bprime.size()), w[round]));
+    aprime = vector_add
+      (
+       vector_mult(slice(aprime, 0, nprime), w[round])
+       , vector_mult(slice(aprime, nprime, aprime.size()), winv)
+       );
+    bprime = vector_add
+      (
+       vector_mult(slice(bprime, 0, nprime), winv)
+       , vector_mult(slice(bprime, nprime, bprime.size()), w[round])
+       );
 
     scale = {};
     ++round;
