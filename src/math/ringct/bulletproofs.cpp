@@ -836,16 +836,14 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       g_scalar = g_scalar + pd.z;
       LOG_ERROR_AND_RETURN_UNLESS(2+i/N < zpow.size(), false, "invalid zpow index");
       LOG_ERROR_AND_RETURN_UNLESS(i%N < twoN.size(), false, "invalid twoN index");
-      tmp = zpow[2+i/N] * twoN[i%N];
+      const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
       if (i == 0)
       {
-        tmp = tmp + pd.z;
-        h_scalar = h_scalar - tmp;
+        h_scalar = h_scalar - (zpowTwoN + pd.z);
       }
       else
       {
-        tmp = pd.z * ypow + tmp;
-        h_scalar = h_scalar - tmp * yinvpow ;
+        h_scalar = h_scalar - (pd.z * ypow + zpowTwoN) * yinvpow ;
       }
 
       m_z4[i] = m_z4[i] - g_scalar * weight_z;
@@ -866,16 +864,10 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     z1 = proof.mu * weight_z + z1;
     for (size_t i = 0; i < rounds; ++i)
     {
-      tmp = pd.w[i] * pd.w[i];
-      tmp = tmp * weight_z;
-      multiexp_data.emplace_back(tmp, proof8_L[i]);
-      tmp = winv[i] * winv[i];
-      tmp = tmp * weight_z;
-      multiexp_data.emplace_back(tmp, proof8_R[i]);
+      multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, proof8_L[i]);
+      multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, proof8_R[i]);
     }
-    tmp = proof.t - proof.a * proof.b;
-    tmp = tmp * pd.x_ip;
-    z3 = tmp * weight_z + z3;
+    z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z + z3;
   }
 
   // now check all proofs at once
