@@ -40,6 +40,12 @@ static void fe_mul(fe, const fe, const fe);
 static void fe_sq(fe, const fe);
 static void fe_divpowm1(fe, const fe, const fe);
 
+uint64_t load_3(const unsigned char *in);
+uint64_t load_4(const unsigned char *in);
+void fe_add(fe h, const fe f, const fe g);
+void fe_tobytes(unsigned char *, const fe);
+void fe_invert(fe out, const fe z);
+
 /* Common functions */
 
 uint64_t load_3(const unsigned char *in) {
