@@ -100,8 +100,8 @@ TEST(device, ops)
   ASSERT_EQ(derd, der);
 
   dev.hash_derivation_to_scalar(der, 0, ressc0);
-  crypto::hash_derivation_to_scalar(der, 0, ressc1);
-  ASSERT_FALSE(memcmp(&ressc0, &ressc1, sizeof(ressc1)));
+  ressc1 = crypto::hash_derivation_to_scalar(der, 0);
+  ASSERT_EQ(ressc0, ressc1);
 
   dev.derive_secret_key(der, 0, rct::scalar2sk(sk), sk0);
   crypto::derive_secret_key(der, 0, rct::scalar2sk(sk), sk1);

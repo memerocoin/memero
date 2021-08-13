@@ -107,11 +107,6 @@ namespace crypto {
   }
 
 
-  void hash_to_scalar(const void *data, size_t length, ec_scalar &res) {
-    const auto h = sha3(epee::blob::span((const uint8_t*)data, length));
-    res = reduce(h2s(h));
-  }
-
   bool is_valid_point(const ec_point x) {
     return crypto_core_ed25519_is_valid_point(x.data);
   }
@@ -151,7 +146,7 @@ namespace crypto {
 
   constexpr size_t output_index_buffer_size = (sizeof(size_t) * 8 + 6) / 7;
 
-  void hash_derivation_to_scalar(const key_derivation &derivation, const size_t index, ec_scalar &res) {
+  ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) {
     struct {
       key_derivation derivation;
       char output_index_buffer[output_index_buffer_size];
@@ -161,15 +156,15 @@ namespace crypto {
     buf.derivation = derivation;
     tools::write_varint(end, index);
     assert(end <= buf.output_index_buffer + output_index_buffer_size);
-    hash_to_scalar(&buf, end - reinterpret_cast<char *>(&buf), res);
+    const size_t count = end - reinterpret_cast<char *>(&buf);
+    return hash_to_scalar(epee::pod_to_span(buf).subspan(0, count));
   }
 
   bool derive_public_key(const key_derivation &derivation, const size_t output_index,
     const public_key &base, public_key &derived_key) {
     if (!is_valid_point(base)) return false;
 
-    ec_scalar scalar;
-    hash_derivation_to_scalar(derivation, output_index, scalar);
+    const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
     const ec_point derived = multBase(scalar);
     const ec_point r = derived + base;
     derived_key = p2pk(r);
@@ -177,10 +172,11 @@ namespace crypto {
   }
 
   void derive_secret_key(const key_derivation &derivation, const size_t output_index,
-    const secret_key &base, secret_key &derived_key) {
-    ec_scalar scalar;
+    const secret_key &base, secret_key &derived_key)
+  {
     assert(is_reduced(base));
-    hash_derivation_to_scalar(derivation, output_index, scalar);
+
+    const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
     derived_key = s2sk(base + scalar);
   }
 
@@ -194,8 +190,7 @@ namespace crypto {
   {
     if (!is_valid_point(out_key)) return false;
 
-    ec_scalar scalar;
-    hash_derivation_to_scalar(derivation, output_index, scalar);
+    const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
 
     if (scalar == s_0) return false;
 
@@ -402,14 +397,11 @@ namespace crypto {
     buf.X = X;
     buf.Y = Y;
 
-    ec_scalar c2;
-
     // Hash depends on version
-    hash_to_scalar(&buf, sizeof(s_comm_2), c2);
+    const ec_scalar c2 = hash_to_scalar(epee::pod_to_span(buf));
 
     // test if c2 == sig.c
-    c2 = c2 - sig.c;
-    return c2 == s_0;
+    return c2 - sig.c == s_0;
   }
 
   ec_point viaF2(const ec_point x) {

@@ -225,7 +225,7 @@ namespace hw {
         }
 
         bool device_default::hash_derivation_to_scalar(const crypto::key_derivation &derivation, const size_t output_index, crypto::ec_scalar &res){
-            crypto::hash_derivation_to_scalar(derivation,output_index, res);
+            res = crypto::hash_derivation_to_scalar(derivation,output_index);
             return true;
         }
 
