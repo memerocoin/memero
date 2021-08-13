@@ -322,32 +322,19 @@ rct::scalar invert(const rct::scalar x)
   return r;
 }
 
-rct::scalarV invert(rct::scalarV x)
+rct::scalarV invert(const rct::scalarV v)
 {
-  rct::scalarV scratch;
-  scratch.reserve(x.size());
+  scalarV r(v.size());
 
-  rct::scalar acc = rct::s_one;
-  for (size_t n = 0; n < x.size(); ++n)
-  {
-    scratch.push_back(acc);
-    if (n == 0)
-      acc = x[0];
-    else
-      acc = acc * x[n];
-  }
+  std::transform
+    (
+     v.begin()
+     , v.end()
+     , r.begin()
+     , [](const auto& x) { return invert(x); }
+     );
 
-  acc = invert(acc);
-
-  rct::scalar tmp;
-  for (int i = x.size(); i-- > 0; )
-  {
-    tmp = acc * x[i];
-    x[i] =acc * scratch[i];
-    acc = tmp;
-  }
-
-  return x;
+  return r;
 }
 
 /* Compute the slice of a vector */
