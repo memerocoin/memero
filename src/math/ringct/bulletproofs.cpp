@@ -448,8 +448,7 @@ try_again:
   // PAPER LINES 43-44
   rct::scalar alpha = rct::skGen();
   rct::key ve = vector_exponent(aL8, aR8);
-  tmp = alpha * rct::s_inv_eight;
-  const key A = ve + rct::scalarmultBase(tmp);
+  const key A = ve + rct::scalarmultBase(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
   rct::scalarV sL = rct::skvGen(MN), sR = rct::skvGen(MN);
@@ -506,16 +505,8 @@ try_again:
   // PAPER LINES 52-53
   rct::scalar tau1 = rct::skGen(), tau2 = rct::skGen();
 
-  tmp = t1 * rct::s_inv_eight;
-  tmp2 = tau1 = rct::s_inv_eight;
-
-  const key T1 = scalarmultBase(tmp2) + scalarmultH(tmp);
-
-
-  tmp = t2 * rct::s_inv_eight;
-  tmp2 = tau2 * rct::s_inv_eight;
-
-  const key T2 = scalarmultBase(tmp2) + scalarmultH(tmp);
+  const key T1 = scalarmultBase(tau1 = rct::s_inv_eight) + scalarmultH(t1 * rct::s_inv_eight);
+  const key T2 = scalarmultBase(tau2 * rct::s_inv_eight) + scalarmultH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
   rct::scalar x = hash_carry = hash_carry_mash_4(hash_carry, s2k(z), T1, T2);
@@ -590,12 +581,10 @@ try_again:
     rct::scalar cR = inner_product(slice(aprime, nprime, aprime.size()), slice(bprime, 0, nprime));
 
     // PAPER LINES 23-24
-    tmp = cL * x_ip;
     L[round] = cross_vector_exponent8
-      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, H, tmp);
-    tmp = cR * x_ip;
+      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, H, cL * x_ip);
     R[round] = cross_vector_exponent8
-      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, H, tmp);
+      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, H, cR * x_ip);
 
     // PAPER LINES 25-27
     w[round] = hash_carry = hash_carry_mash_3(hash_carry, L[round], R[round]);
@@ -794,9 +783,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       k = k - zpow[j+2] * ip12;
     }
 
-    tmp = pd.z * ip1y + k;
-    tmp = proof.t - tmp;
-    y1 = tmp * weight_y + y1;
+    y1 = (proof.t - (pd.z * ip1y + k)) * weight_y + y1;
     for (size_t j = 0; j < proof8_V.size(); j++)
     {
       tmp = zpow[j+2] * weight_y;
