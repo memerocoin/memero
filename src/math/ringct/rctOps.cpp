@@ -179,12 +179,11 @@ namespace rct {
   //Curve addition / subtractions
 
   rct::key addKeys(const keyS A) {
-    return std::accumulate
+    return std::reduce
       (
        A.begin()
        , A.end()
        , rct::identity
-       , std::plus<key>()
        );
   }
 
