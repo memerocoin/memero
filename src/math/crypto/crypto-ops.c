@@ -1032,23 +1032,6 @@ void fe_tobytes(unsigned char *s, const fe h) {
   s[31] = h9 >> 18;
 }
 
-/* From ge_add.c */
-
-void ge_add(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q) {
-  fe t0;
-  fe_add(r->X, p->Y, p->X);
-  fe_sub(r->Y, p->Y, p->X);
-  fe_mul(r->Z, r->X, q->YplusX);
-  fe_mul(r->Y, r->Y, q->YminusX);
-  fe_mul(r->T, q->T2d, p->T);
-  fe_mul(r->X, p->Z, q->Z);
-  fe_add(t0, r->X, r->X);
-  fe_sub(r->X, r->Z, r->Y);
-  fe_add(r->Y, r->Z, r->Y);
-  fe_add(r->Z, t0, r->T);
-  fe_sub(r->T, t0, r->T);
-}
-
 /* From ge_frombytes.c, modified */
 
 int ge_frombytes_vartime(ge_p3 *h, const unsigned char *s) {
@@ -1190,26 +1173,6 @@ void ge_p2_dbl(ge_p1p1 *r, const ge_p2 *p) {
 }
 
 
-/* From ge_p3_to_cached.c */
-
-/*
-r = p
-*/
-
-void ge_p3_to_cached(ge_cached *r, const ge_p3 *p) {
-  fe_add(r->YplusX, p->Y, p->X);
-  fe_sub(r->YminusX, p->Y, p->X);
-  fe_copy(r->Z, p->Z);
-  fe_mul(r->T2d, p->T, fe_d2);
-}
-
-ge_cached ge_p3_to_cached_by_value(const ge_p3 p) {
-  ge_cached r;
-  ge_p3_to_cached(&r, &p);
-  return r;
-}
-
-
 /* From ge_p3_to_p2.c */
 
 /*
@@ -1234,21 +1197,6 @@ void ge_p3_tobytes(unsigned char *s, const ge_p3 *h) {
   fe_mul(y, h->Y, recip);
   fe_tobytes(s, y);
   s[31] ^= fe_isnegative(x) << 7;
-}
-
-void ge_sub(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q) {
-  fe t0;
-  fe_add(r->X, p->Y, p->X);
-  fe_sub(r->Y, p->Y, p->X);
-  fe_mul(r->Z, r->X, q->YminusX);
-  fe_mul(r->Y, r->Y, q->YplusX);
-  fe_mul(r->T, q->T2d, p->T);
-  fe_mul(r->X, p->Z, q->Z);
-  fe_add(t0, r->X, r->X);
-  fe_sub(r->X, r->Z, r->Y);
-  fe_add(r->Y, r->Z, r->Y);
-  fe_sub(r->Z, t0, r->T);
-  fe_add(r->T, t0, r->T);
 }
 
 /* From ge_tobytes.c */

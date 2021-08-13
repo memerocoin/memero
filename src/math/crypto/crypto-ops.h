@@ -78,10 +78,6 @@ void ge_add(ge_p1p1 *, const ge_p3 *, const ge_cached *);
 
 /* From ge_double_scalarmult.c, modified */
 
-typedef ge_cached ge_dsmp[8];
-extern const ge_precomp ge_Bi[8];
-void ge_dsm_precomp(ge_dsmp r, const ge_p3 *s);
-
 /* From ge_frombytes.c, modified */
 
 extern const fe fe_sqrtm1;
@@ -103,8 +99,6 @@ void ge_p2_dbl(ge_p1p1 *, const ge_p2 *);
 /* From ge_p3_to_cached.c */
 
 extern const fe fe_d2;
-void ge_p3_to_cached(ge_cached *, const ge_p3 *);
-ge_cached ge_p3_to_cached_by_value(const ge_p3);
 
 /* From ge_p3_to_p2.c */
 
@@ -144,7 +138,6 @@ int sc_isnonzero(const unsigned char *); /* Doesn't normalize */
 // internal
 uint64_t load_3(const unsigned char *in);
 uint64_t load_4(const unsigned char *in);
-void ge_sub(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q);
 void fe_add(fe h, const fe f, const fe g);
 void fe_tobytes(unsigned char *, const fe);
 void fe_invert(fe out, const fe z);

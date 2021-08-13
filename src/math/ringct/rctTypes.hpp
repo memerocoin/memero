@@ -112,11 +112,6 @@ namespace rct {
     //containers for representing amounts
     typedef uint64_t amount_t;
 
-    //Container for precomp
-    struct geDsmp {
-        ge_dsmp k;
-    };
-
     // CLSAG signature
     struct clsag {
         scalarV s; // scalars
