@@ -412,13 +412,16 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   rct::scalarV aL(MN), aR(MN);
   rct::scalarV aL8(MN), aR8(MN);
 
-  for (size_t i = 0; i < sv.size(); ++i)
-  {
-    rct::scalar gamma8, sv8;
-    gamma8 = gamma[i] * rct::s_inv_eight;
-    sv8 = sv[i] * rct::s_inv_eight;
-    V[i] = rct::addScalarMult_G_H(gamma8, sv8);
-  }
+  std::transform
+    (
+     sv.begin()
+     , sv.end()
+     , gamma.begin()
+     , V.begin()
+     , [](const auto& sv, const auto& g) {
+       return rct::addScalarMult_G_H(g * s_inv_eight, sv * s_inv_eight);
+     }
+     );
 
   // PAPER LINES 41-42
   for (size_t j = 0; j < M; ++j)
@@ -610,7 +613,7 @@ try_again:
 
   return Bulletproof
     (
-     std::move(V), A, S, T1, T2, taux, mu, std::move(L), std::move(R)
+     V, A, S, T1, T2, taux, mu, L, R
      , aprime[0], bprime[0], t
      );
 }
