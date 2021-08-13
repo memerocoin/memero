@@ -171,13 +171,13 @@ namespace crypto {
     return true;
   }
 
-  void derive_secret_key(const key_derivation &derivation, const size_t output_index,
-    const secret_key &base, secret_key &derived_key)
+  secret_key derive_secret_key(const key_derivation &derivation, const size_t output_index,
+    const secret_key &base)
   {
     assert(is_reduced(base));
 
     const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
-    derived_key = s2sk(base + scalar);
+    return s2sk(base + scalar);
   }
 
   bool derive_subaddress_public_key

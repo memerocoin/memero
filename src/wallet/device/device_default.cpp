@@ -230,7 +230,7 @@ namespace hw {
         }
 
         bool device_default::derive_secret_key(const crypto::key_derivation &derivation, const std::size_t output_index, const crypto::secret_key &base, crypto::secret_key &derived_key){
-            crypto::derive_secret_key(derivation, output_index, base, derived_key);
+            derived_key = crypto::derive_secret_key(derivation, output_index, base);
             return true;
         }
 

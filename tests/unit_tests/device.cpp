@@ -104,7 +104,7 @@ TEST(device, ops)
   ASSERT_EQ(ressc0, ressc1);
 
   dev.derive_secret_key(der, 0, rct::scalar2sk(sk), sk0);
-  crypto::derive_secret_key(der, 0, rct::scalar2sk(sk), sk1);
+  sk1 = crypto::derive_secret_key(der, 0, rct::scalar2sk(sk));
   ASSERT_EQ(sk0, sk1);
 
   dev.derive_public_key(der, 0, rct::rct2pk(pk), pk0);
