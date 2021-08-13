@@ -411,8 +411,6 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   rct::keyV V(sv.size());
   rct::scalarV aL(MN), aR(MN);
   rct::scalarV aL8(MN), aR8(MN);
-  rct::scalar tmp;
-  rct::scalar tmp2;
 
   for (size_t i = 0; i < sv.size(); ++i)
   {
@@ -724,8 +722,6 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   LOG_ERROR_AND_RETURN_UNLESS(max_length < 32, false, "At least one proof is too large");
   size_t maxMN = 1u << max_length;
 
-  rct::scalar tmp;
-
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) * proofs.size() + 2 * maxMN);
 
@@ -871,11 +867,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   }
 
   // now check all proofs at once
-  tmp = m_y0 - z1;
-
-  multiexp_data.emplace_back(tmp, rct::G);
-  tmp = z3 - y1;
-  multiexp_data.emplace_back(tmp, rct::H);
+  multiexp_data.emplace_back(m_y0 - z1, rct::G);
+  multiexp_data.emplace_back(z3 - y1, rct::H);
   for (size_t i = 0; i < maxMN; ++i)
   {
     multiexp_data.emplace_back(m_z4[i], Gi[i]);
