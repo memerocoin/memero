@@ -416,7 +416,7 @@ namespace rct {
             i = i + 1;
         }
         c_new = s2s(c - sig.c1);
-        return sc_isnonzero(c_new.data) == 0;
+        return c_new == s_zero;
     }
 
     bool verRctCLSAGSimple(const key message, const clsag sig, const ctkeyS pubs, const key C_offset) {

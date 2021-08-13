@@ -49,10 +49,6 @@ extern "C" {
 
 namespace crypto {
 
-  static inline unsigned char *operator &(ec_scalar &scalar) {
-    return &reinterpret_cast<unsigned char &>(scalar);
-  }
-
   static inline const unsigned char *operator &(const ec_scalar &scalar) {
     return &reinterpret_cast<const unsigned char &>(scalar);
   }
@@ -255,12 +251,12 @@ namespace crypto {
       const s_comm buf {prefix_hash, pub, comm};
       const ec_scalar sig_c = hash_to_scalar(epee::pod_to_span(buf));
 
-      if (!sc_isnonzero(sig_c.data))
+      if (sig_c != s_0)
         continue;
 
       const ec_scalar sig_r = k - sig.c * sec;
 
-      if (!sc_isnonzero(sig_r.data))
+      if (sig_r != s_0)
         continue;
 
       sig.c = sig_c;
@@ -288,7 +284,7 @@ namespace crypto {
     ec_scalar s;
     s = h - sig.c;
 
-    return sc_isnonzero(&s) == 0;
+    return s == s_0;
   }
 
   // Generate a proof of knowledge of `r` such that (`R = rG` and `D = rA`) or (`R = rB` and `D = rA`) via a Schnorr proof
@@ -421,7 +417,7 @@ namespace crypto {
 
     // test if c2 == sig.c
     c2 = c2 - sig.c;
-    return sc_isnonzero(&c2) == 0;
+    return c2 == s_0;
   }
 
   ec_point viaF2(const ec_point x) {
