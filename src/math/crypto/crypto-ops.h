@@ -94,7 +94,7 @@ void ge_mul8(ge_p1p1 *, const ge_p2 *);
 
 
 void ge_fromfe_frombytes_vartime(ge_p2 *, const unsigned char *);
-void sc_0(unsigned char *);
+/* void sc_0(unsigned char *); */
 /* void sc_add(unsigned char *, const unsigned char *, const unsigned char *); */
 /* void sc_sub(unsigned char *, const unsigned char *, const unsigned char *); */
 /* void sc_mulsub(unsigned char *, const unsigned char *, const unsigned char *, const unsigned char *); */

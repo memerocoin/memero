@@ -350,7 +350,7 @@ namespace rct {
 
         // Set up round hash
         keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
-        sc_0(c_to_hash[0].data);
+        c_to_hash[0] = zero;
         memcpy(c_to_hash[0].data,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
         for (size_t i = 1; i < n+1; ++i)
         {
@@ -367,7 +367,7 @@ namespace rct {
         size_t i = 0;
 
         while (i < n) {
-            sc_0(c_new.data);
+            c_new = s_zero;
             c_p = mu_P * c;
             c_c = mu_C * c;
 

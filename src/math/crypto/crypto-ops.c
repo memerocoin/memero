@@ -1380,13 +1380,6 @@ setsign:
 #endif
 }
 
-void sc_0(unsigned char *s) {
-  int i;
-  for (i = 0; i < 32; i++) {
-    s[i] = 0;
-  }
-}
-
 void sc_add(unsigned char *s, const unsigned char *a, const unsigned char *b) {
   crypto_core_ed25519_scalar_add(s, a, b);
 }
