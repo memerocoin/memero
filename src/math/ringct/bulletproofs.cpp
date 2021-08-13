@@ -296,17 +296,6 @@ rct::scalarV vector_mult(const scalarS a, const rct::scalar b)
   return res;
 }
 
-rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x)
-{
-  int n = n_in;
-  rct::scalar y = y_in;
-
-  while (n--)
-    y = y * y;
-
-  return y * x;
-}
-
 /* Compute the inverse of a scalar, the clever way */
 rct::scalar invert(const rct::scalar x)
 {
