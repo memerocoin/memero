@@ -123,9 +123,9 @@ namespace rct {
         // Aggregation hashes
         keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         keyV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        sc_0(mu_P_to_hash[0].data);
+        mu_P_to_hash[0] = zero;
         memcpy(mu_P_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
-        sc_0(mu_C_to_hash[0].data);
+        mu_C_to_hash[0] = zero;
         memcpy(mu_C_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
         for (size_t i = 1; i < n+1; ++i) {
             mu_P_to_hash[i] = P[i-1];
@@ -148,7 +148,7 @@ namespace rct {
         // Initial commitment
         keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
         scalar c;
-        sc_0(c_to_hash[0].data);
+        c_to_hash[0] = zero;
         memcpy(c_to_hash[0].data,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
         for (size_t i = 1; i < n+1; ++i)
         {
@@ -179,7 +179,7 @@ namespace rct {
 
         while (i != l) {
             sig.s[i] = skGen();
-            sc_0(c_new.data);
+            c_new = s_zero;
             c_p = mu_P * c;
             c_c = mu_C * c;
 
@@ -331,9 +331,9 @@ namespace rct {
         // Aggregation hashes
         keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         keyV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        sc_0(mu_P_to_hash[0].data);
+        mu_P_to_hash[0] = zero;
         memcpy(mu_P_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
-        sc_0(mu_C_to_hash[0].data);
+        mu_C_to_hash[0] = zero;
         memcpy(mu_C_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
         for (size_t i = 1; i < n+1; ++i) {
             mu_P_to_hash[i] = pubs[i-1].dest;

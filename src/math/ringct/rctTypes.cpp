@@ -71,8 +71,7 @@ namespace rct {
 
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in) {
-        scalar x;
-        sc_0(x.data);
+        scalar x = s2s(crypto::s_0);
         memcpy_swap64le(x.data, &in, 1);
         return x;
     }
