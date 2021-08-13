@@ -32,6 +32,7 @@
 
 #include "hash.hpp"
 
+#include <sodium.h>
 #include <random>
 
 extern "C" {

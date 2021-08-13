@@ -213,7 +213,6 @@ namespace rct {
 
         // Compute final scalar
         hwdev.clsag_sign(c,a,p,z,mu_P,mu_C,sig.s[l]);
-        memwipe(&a, sizeof(key));
 
         return sig;
     }
@@ -298,7 +297,6 @@ namespace rct {
         sk[0] = inSk.addr;
         sk[1] = s2s(inSk.blinding_factor - a);
         clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
-        memwipe(sk.data(), sk.size() * sizeof(key));
         return result;
     }
 

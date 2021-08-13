@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "tools/epee/include/memwipe.h"
-
 #include <optional>
 #include <vector>
 #include <string>

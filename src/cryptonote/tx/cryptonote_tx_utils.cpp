@@ -353,7 +353,6 @@ namespace cryptonote
         ctkey.addr = rct::sk2scalar(in_contexts[i].in_ephemeral.sec);
         ctkey.blinding_factor = sources[i].mask;
         inSk.push_back(ctkey);
-        memwipe(&ctkey, sizeof(rct::ctkey));
         // inPk: (public key, commitment)
         // will be done when filling in mixRing
       }
@@ -395,7 +394,6 @@ namespace cryptonote
       rct::pri_ctkeyV outSk;
       tx.rct_signatures = rct::genRctSimple
         (rct::hash2rct(tx_prefix_hash), inSk, destinations, inamounts, outamounts, amount_in - amount_out, mixRing, amount_keys, index, outSk);
-      memwipe(inSk.data(), inSk.size() * sizeof(rct::ctkey));
 
       LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), false, "outSk size does not match vout");
 

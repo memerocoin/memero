@@ -29,7 +29,6 @@
 #pragma once
 
 #include "tools/epee/include/string_tools.h"
-#include "tools/epee/include/memwipe.h"
 
 #include <regex>
 #include <list>
@@ -188,7 +187,6 @@ namespace net_utils
 
 			void wipe()
 			{
-				memwipe(&m_body[0], m_body.size());
 			}
 		};
 	}
