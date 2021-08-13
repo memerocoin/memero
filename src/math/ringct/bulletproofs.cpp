@@ -795,17 +795,17 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     key proof8_S  = rct::multPoint8(proof.S);
     key proof8_A  = rct::multPoint8(proof.A);
 
-    sc_mulsub(m_y0.data, proof.taux.data, weight_y.data, m_y0.data);
+    m_y0 = m_y0 - proof.taux * weight_y;
 
     const rct::scalarV zpow = vector_powers(pd.z, M+3);
 
     rct::scalar k;
     const rct::scalar ip1y = vector_power_sum(pd.y, MN);
-    sc_mulsub(k.data, zpow[2].data, ip1y.data, rct::zero.data);
+    k = s_zero - zpow[2] * ip1y;
     for (size_t j = 1; j <= M; ++j)
     {
       LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
-      sc_mulsub(k.data, zpow[j+2].data, ip12.data, k.data);
+      k = k - zpow[j+2] * ip12;
     }
 
     tmp = pd.z * ip1y + k;
@@ -877,11 +877,11 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       else
       {
         tmp = pd.z * ypow + tmp;
-        sc_mulsub(h_scalar.data, tmp.data, yinvpow.data, h_scalar.data);
+        h_scalar = h_scalar - tmp * yinvpow ;
       }
 
-      sc_mulsub(m_z4[i].data, g_scalar.data, weight_z.data, m_z4[i].data);
-      sc_mulsub(m_z5[i].data, h_scalar.data, weight_z.data, m_z5[i].data);
+      m_z4[i] = m_z4[i] - g_scalar * weight_z;
+      m_z5[i] = m_z5[i] - h_scalar * weight_z;
 
       if (i == 0)
       {
@@ -905,7 +905,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       tmp = tmp * weight_z;
       multiexp_data.emplace_back(tmp, proof8_R[i]);
     }
-    sc_mulsub(tmp.data, proof.a.data, proof.b.data, proof.t.data);
+    tmp = proof.t - proof.a * proof.b;
     tmp = tmp * pd.x_ip;
     z3 = tmp * weight_z + z3;
   }
