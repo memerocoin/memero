@@ -443,26 +443,24 @@ try_again:
   rct::scalar hash_carry = rct::hash_keys_to_scalar(V);
 
   // PAPER LINES 43-44
-  rct::scalar alpha = rct::skGen();
-  rct::key ve = vector_exponent(aL8, aR8);
-  const key A = ve + rct::scalarmultBase(alpha * rct::s_inv_eight);
+  const rct::scalar alpha = rct::skGen();
+  const key A = vector_exponent(aL8, aR8) + rct::scalarmultBase(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
-  rct::scalarV sL = rct::skvGen(MN), sR = rct::skvGen(MN);
-  rct::scalar rho = rct::skGen();
-  ve = vector_exponent(sL, sR);
-  rct::key S = ve + rct::scalarmultBase(rho);
-  S = rct::scalarmultKey(S, rct::s_inv_eight);
+  const rct::scalarV sL = rct::skvGen(MN);
+  const rct::scalarV sR = rct::skvGen(MN);
+  const rct::scalar rho = rct::skGen();
+  const rct::key S = scalarmultKey(vector_exponent(sL, sR) + rct::scalarmultBase(rho), rct::s_inv_eight);
 
   // PAPER LINES 48-50
-  scalar y = hash_carry = hash_carry_mash_3(hash_carry, A, S);
+  const scalar y = hash_carry = hash_carry_mash_3(hash_carry, A, S);
   if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
     goto try_again;
   }
 
-  scalar z = hash_carry = rct::hash_to_scalar(s2k(y));
+  const scalar z = hash_carry = rct::hash_to_scalar(s2k(y));
   if (z == rct::s_zero)
   {
     LOG_INFO("z is 0, trying again");
@@ -471,8 +469,8 @@ try_again:
 
   // Polynomial construction by coefficients
   // PAPER LINES 70-71
-  rct::scalarV l0 = vector_subtract(aL, z);
-  const rct::scalarV &l1 = sL;
+  const rct::scalarV l0 = vector_subtract(aL, z);
+  const rct::scalarS l1 = sL;
 
   rct::scalarV zero_twos(MN);
   const rct::scalarV zpow = vector_powers(z, M+2);
@@ -486,11 +484,14 @@ try_again:
       }
   }
 
-  rct::scalarV r0 = vector_add(aR, z);
   const auto yMN = vector_powers(y, MN);
-  r0 = hadamard(r0, yMN);
-  r0 = vector_add(r0, zero_twos);
-  rct::scalarV r1 = hadamard(yMN, sR);
+  const rct::scalarV r0 = vector_add
+    (
+     hadamard(vector_add(aR, z), yMN)
+     , zero_twos
+     );
+
+  const rct::scalarV r1 = hadamard(yMN, sR);
 
   // Polynomial construction before PAPER LINE 51
   const rct::scalar t1_1 = inner_product(l0, r1);
@@ -499,7 +500,8 @@ try_again:
   const rct::scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
-  rct::scalar tau1 = rct::skGen(), tau2 = rct::skGen();
+  const rct::scalar tau1 = rct::skGen();
+  const rct::scalar tau2 = rct::skGen();
 
   const key T1 = scalarmultBase(tau1 * rct::s_inv_eight) + scalarmultH(t1 * rct::s_inv_eight);
   const key T2 = scalarmultBase(tau2 * rct::s_inv_eight) + scalarmultH(t2 * rct::s_inv_eight);
