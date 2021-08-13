@@ -253,10 +253,15 @@ rct::scalarV vector_add(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::scalarV res(a.size());
-  for (size_t i = 0; i < a.size(); ++i)
-  {
-    res[i] = a[i] + b[i];
-  }
+  std::transform
+    (
+     a.begin()
+     , a.end()
+     , b.begin()
+     , res.begin()
+     , std::plus<scalar>()
+     );
+
   return res;
 }
 
