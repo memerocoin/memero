@@ -779,18 +779,17 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
        , [](const auto& x) { return rct::multPoint8(x); }
        );
 
-    key proof8_T1 = rct::multPoint8(proof.T1);
-    key proof8_T2 = rct::multPoint8(proof.T2);
-    key proof8_S  = rct::multPoint8(proof.S);
-    key proof8_A  = rct::multPoint8(proof.A);
+    const key proof8_T1 = rct::multPoint8(proof.T1);
+    const key proof8_T2 = rct::multPoint8(proof.T2);
+    const key proof8_S  = rct::multPoint8(proof.S);
+    const key proof8_A  = rct::multPoint8(proof.A);
 
     m_y0 = m_y0 - proof.taux * weight_y;
 
     const rct::scalarV zpow = vector_powers(pd.z, M+3);
 
-    rct::scalar k;
     const rct::scalar ip1y = vector_power_sum(pd.y, MN);
-    k = s_zero - zpow[2] * ip1y;
+    rct::scalar k = s_zero - zpow[2] * ip1y;
     for (size_t j = 1; j <= M; ++j)
     {
       LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
@@ -809,8 +808,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
        );
 
     multiexp_data.emplace_back(pd.x * weight_y, proof8_T1);
-    rct::scalar xsq;
-    xsq = pd.x * pd.x;
+    const rct::scalar xsq = pd.x * pd.x;
     multiexp_data.emplace_back(xsq * weight_y, proof8_T2);
     multiexp_data.emplace_back(weight_z, proof8_A);
     multiexp_data.emplace_back(pd.x * weight_z, proof8_S);
@@ -818,10 +816,6 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     // Compute the number of rounds for the inner product
     const size_t rounds = pd.logM+logN;
     LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
-
-    // Compute the curvepoints from G[i] and H[i]
-    rct::scalar yinvpow = rct::s_one;
-    rct::scalar ypow = rct::s_one;
 
     const rct::scalar *winv = &inverses[pd.inv_offset];
     const rct::scalar yinv = inverses[pd.inv_offset + rounds];
@@ -840,31 +834,22 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       }
     }
 
+    // Compute the curvepoints from G[i] and H[i]
+    rct::scalar yinvpow = rct::s_one;
+    rct::scalar ypow = rct::s_one;
+
     for (size_t i = 0; i < MN; ++i)
     {
-      rct::scalar g_scalar = proof.a;
-      rct::scalar h_scalar;
-      if (i == 0)
-        h_scalar = proof.b;
-      else
-        h_scalar = proof.b * yinvpow;
-
       // Convert the index to binary IN REVERSE and construct the scalar exponent
-      g_scalar = g_scalar * w_cache[i];
-      h_scalar = h_scalar * w_cache[(~i) & (MN-1)];
+      const scalar g_scalar = proof.a * w_cache[i] + pd.z;
 
-      g_scalar = g_scalar + pd.z;
       LOG_ERROR_AND_RETURN_UNLESS(2+i/N < zpow.size(), false, "invalid zpow index");
       LOG_ERROR_AND_RETURN_UNLESS(i%N < twoN.size(), false, "invalid twoN index");
       const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
-      if (i == 0)
-      {
-        h_scalar = h_scalar - (zpowTwoN + pd.z);
-      }
-      else
-      {
-        h_scalar = h_scalar - (pd.z * ypow + zpowTwoN) * yinvpow ;
-      }
+
+      const scalar h_scalar =
+        proof.b * yinvpow * w_cache[(~i) & (MN-1)]
+        - (pd.z * ypow + zpowTwoN) * yinvpow ;
 
       m_z4[i] = m_z4[i] - g_scalar * weight_z;
       m_z5[i] = m_z5[i] - h_scalar * weight_z;
