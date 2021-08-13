@@ -65,11 +65,11 @@ TEST(tx_proof, prove_verify_v2)
     prefix_hash = crypto::sha3(epee::string_tools::string_view_to_blob_view(data));
 
     // Generate/verify valid v2 proof with standard address
-    crypto::generate_tx_proof(prefix_hash, R_G, A, std::nullopt, D, r, sig);
+    sig = crypto::generate_tx_proof(prefix_hash, R_G, A, std::nullopt, D, r);
     ASSERT_TRUE(crypto::check_tx_proof(prefix_hash, R_G, A, std::nullopt, D, sig));
 
     // Generate/verify valid v2 proof with subaddress
-    crypto::generate_tx_proof(prefix_hash, R_B, A, B, D, r, sig);
+    sig = crypto::generate_tx_proof(prefix_hash, R_B, A, B, D, r);
     ASSERT_TRUE(crypto::check_tx_proof(prefix_hash, R_B, A, B, D, sig));
 
     // Randomly-distributed test points
@@ -81,7 +81,7 @@ TEST(tx_proof, prove_verify_v2)
     crypto::generate_keys(evil_R, evil_r, evil_r, false);
 
     // Selectively choose bad point in v2 proof (bad)
-    crypto::generate_tx_proof(prefix_hash, R_B, A, B, D, r, sig);
+    sig = crypto::generate_tx_proof(prefix_hash, R_B, A, B, D, r);
     ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, evil_R, A, B, D, sig));
     ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, evil_A, B, D, sig));
     ASSERT_FALSE(crypto::check_tx_proof(prefix_hash, R_B, A, evil_B, D, sig));

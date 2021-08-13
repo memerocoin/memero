@@ -140,7 +140,7 @@ namespace crypto {
     * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
     * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
     */
-  void generate_tx_proof
+  signature generate_tx_proof
   (
    const hash &prefix_hash
    , const public_key &R
@@ -148,7 +148,6 @@ namespace crypto {
    , const std::optional<public_key> &B
    , const public_key &D
    , const secret_key &r
-   , signature &sig
    );
 
   bool check_tx_proof

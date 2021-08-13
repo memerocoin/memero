@@ -271,7 +271,7 @@ namespace crypto {
   // This handles use cases for both standard addresses and subaddresses
   //
   // Generates only proofs for InProofV2 and OutProofV2
-  void generate_tx_proof
+  signature generate_tx_proof
   (
    const hash &prefix_hash
    , const public_key &R
@@ -279,7 +279,6 @@ namespace crypto {
    , const std::optional<public_key> &B
    , const public_key &D
    , const secret_key &r
-   , signature &sig
    )
   {
     // sanity check
@@ -324,8 +323,11 @@ namespace crypto {
     // sig.c = Hs(Msg || D || X || Y || sep || R || A || B)
     // sig.r = k - sig.c*r
 
-    sig.c = hash_to_scalar(epee::pod_to_span(buf));
-    sig.r = k - sig.c * r;
+    const auto sig_c = hash_to_scalar(epee::pod_to_span(buf));
+    return {
+      sig_c
+      , k - sig_c * r
+    };
   }
 
   bool check_tx_proof
