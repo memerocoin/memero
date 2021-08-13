@@ -286,7 +286,7 @@ rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
 }
 
 /* Multiply a scalar and a vector */
-rct::scalarV vector_scalar(const scalarS a, const rct::scalar b)
+rct::scalarV vector_mult(const scalarS a, const rct::scalar b)
 {
   rct::scalarV res(a.size());
   std::transform
@@ -533,9 +533,9 @@ try_again:
 
   // PAPER LINES 58-60
   rct::scalarV l = l0;
-  l = vector_add(l, vector_scalar(l1, x));
+  l = vector_add(l, vector_mult(l1, x));
   rct::scalarV r = r0;
-  r = vector_add(r, vector_scalar(r1, x));
+  r = vector_add(r, vector_mult(r1, x));
 
   rct::scalar t = inner_product(l, r);
 
@@ -604,8 +604,8 @@ try_again:
     }
 
     // PAPER LINES 33-34
-    aprime = vector_add(vector_scalar(slice(aprime, 0, nprime), w[round]), vector_scalar(slice(aprime, nprime, aprime.size()), winv));
-    bprime = vector_add(vector_scalar(slice(bprime, 0, nprime), winv), vector_scalar(slice(bprime, nprime, bprime.size()), w[round]));
+    aprime = vector_add(vector_mult(slice(aprime, 0, nprime), w[round]), vector_mult(slice(aprime, nprime, aprime.size()), winv));
+    bprime = vector_add(vector_mult(slice(bprime, 0, nprime), winv), vector_mult(slice(bprime, nprime, bprime.size()), w[round]));
 
     scale = {};
     ++round;
