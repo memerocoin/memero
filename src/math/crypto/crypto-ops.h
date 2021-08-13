@@ -31,7 +31,6 @@
 #pragma once
 
 #include <inttypes.h>
-/* #include <sodium.h> */
 
 /* From fe.h */
 
