@@ -88,10 +88,6 @@ int ge_frombytes_vartime(ge_p3 *, const unsigned char *);
 
 void ge_p1p1_to_p2(ge_p2 *, const ge_p1p1 *);
 
-/* From ge_p1p1_to_p3.c */
-
-void ge_p1p1_to_p3(ge_p3 *, const ge_p1p1 *);
-
 /* From ge_p2_dbl.c */
 
 void ge_p2_dbl(ge_p1p1 *, const ge_p2 *);
@@ -141,5 +137,3 @@ uint64_t load_4(const unsigned char *in);
 void fe_add(fe h, const fe f, const fe g);
 void fe_tobytes(unsigned char *, const fe);
 void fe_invert(fe out, const fe z);
-
-int ge_p3_is_point_at_infinity(const ge_p3 *p);

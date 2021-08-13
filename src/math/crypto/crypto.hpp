@@ -246,8 +246,6 @@ namespace crypto {
 
   ec_point viaF2(const ec_point x);
 
-  ge_p3 p3FromPoint(const ec_point x);
-
   ec_scalar reduce(const ec_scalar x);
 
 }

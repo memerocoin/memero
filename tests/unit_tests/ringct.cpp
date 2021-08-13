@@ -498,17 +498,16 @@ TEST(ringct, HPow2)
 
   // in lolnero, hashPoint uses sha3, but H is hashPoint with keccak256, so we use that H
   key H = rct::H;
-  ge_p3 H_p3;
-  int decode = ge_frombytes_vartime(&H_p3, H.data);
-  ASSERT_EQ(decode, 0); // this is known to pass for the particular value G
+  ASSERT_TRUE(crypto::is_valid_point(H)); // this is known to pass for the particular value G
 
-  key H_2;
-  ge_p2 H_p2;
-  ge_p3_to_p2(&H_p2, &H_p3);
-  ge_p1p1 H8_p1p1;
-  ge_mul8(&H8_p1p1, &H_p2);
-  ge_p1p1_to_p3(&H_p3, &H8_p1p1);
-  ge_p3_tobytes(H_2.data, &H_p3);
+  // key H_2;
+  // key H_2_8 = mult8(H_2);
+  // ge_p2 H_p2;
+  // ge_p3_to_p2(&H_p2, &H_p3);
+  // ge_p1p1 H8_p1p1;
+  // ge_mul8(&H8_p1p1, &H_p2);
+  // ge_p1p1_to_p3(&H_p3, &H8_p1p1);
+  // ge_p3_tobytes(H_2.data, &H_p3);
 
   // FIXME why fail?
   // ASSERT_TRUE(equalKeys(H_2, H));

@@ -1140,19 +1140,6 @@ void ge_p1p1_to_p2(ge_p2 *r, const ge_p1p1 *p) {
   fe_mul(r->Z, p->Z, p->T);
 }
 
-/* From ge_p1p1_to_p3.c */
-
-/*
-r = p
-*/
-
-void ge_p1p1_to_p3(ge_p3 *r, const ge_p1p1 *p) {
-  fe_mul(r->X, p->X, p->T);
-  fe_mul(r->Y, p->Y, p->Z);
-  fe_mul(r->Z, p->Z, p->T);
-  fe_mul(r->T, p->X, p->Y);
-}
-
 /* From ge_p2_dbl.c */
 
 /*
@@ -1493,17 +1480,4 @@ int sc_isnonzero(const unsigned char *s) {
     s[9] | s[10] | s[11] | s[12] | s[13] | s[14] | s[15] | s[16] | s[17] |
     s[18] | s[19] | s[20] | s[21] | s[22] | s[23] | s[24] | s[25] | s[26] |
     s[27] | s[28] | s[29] | s[30] | s[31]) - 1) >> 8) + 1;
-}
-
-int ge_p3_is_point_at_infinity(const ge_p3 *p) {
-  // X = 0 and Y == Z
-  int n;
-  for (n = 0; n < 10; ++n)
-  {
-    if (p->X[n] | p->T[n])
-      return 0;
-    if (p->Y[n] != p->Z[n])
-      return 0;
-  }
-  return 1;
 }

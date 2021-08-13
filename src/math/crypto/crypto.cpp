@@ -478,22 +478,16 @@ namespace crypto {
     ge_p3 in;
     ge_p2 point;
     ge_p1p1 point2;
-    ge_p3 p3;
+    ge_p2 p2;
 
     ge_frombytes_vartime(&in, X.data);
     ge_p3_to_p2(&point, &in);
 
     ge_mul8(&point2, &point);
 
-    ge_p1p1_to_p3(&p3, &point2);
-    ge_p3_tobytes(res.data, &p3);
+    ge_p1p1_to_p2(&p2, &point2);
+    ge_tobytes(res.data, &p2);
     return res;
-  }
-
-  ge_p3 p3FromPoint(const ec_point x) {
-    ge_p3 p;
-    ge_frombytes_vartime(&p, x.data);
-    return p;
   }
 
   void generate_key_image(const public_key &pub, const secret_key &sec, key_image &image) {
