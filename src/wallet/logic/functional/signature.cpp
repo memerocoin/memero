@@ -155,8 +155,7 @@ namespace signature {
       secret_key_to_public_key(skey, pkey);
     }
 
-    crypto::signature signature;
-    crypto::generate_signature(hash, pkey, skey, signature);
+    const crypto::signature signature = crypto::generate_signature(hash, pkey, skey);
     return std::string(config::MESSAGE_SIGNING_HEADER) + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
   }
 

@@ -230,7 +230,13 @@ namespace crypto {
     return reduce(h2s(h));
   }
 
-  void generate_signature(const hash &prefix_hash, const public_key &pub, const secret_key &sec, signature &sig) {
+  signature generate_signature
+  (
+   const hash &prefix_hash
+   , const public_key &pub
+   , const secret_key &sec
+   )
+  {
     while (true) {
       const ec_scalar k = random_scalar();
       if (k == s_0) continue;
@@ -242,14 +248,16 @@ namespace crypto {
       if (sig_c != s_0)
         continue;
 
-      const ec_scalar sig_r = k - sig.c * sec;
+      const ec_scalar sig_r = k - sig_c * sec;
 
       if (sig_r != s_0)
         continue;
 
-      sig.c = sig_c;
-      sig.r = sig_r;
-      break;
+      return
+        {
+          sig_c
+          , sig_r
+        };
     }
 
   }

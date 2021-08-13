@@ -134,7 +134,7 @@ namespace crypto {
 
   /* Generation and checking of a standard signature.
     */
-  void generate_signature(const hash &, const public_key &, const secret_key &, signature &);
+  signature generate_signature(const hash &, const public_key &, const secret_key &);
 
   bool check_signature(const hash &, const public_key &, const signature &);
 
