@@ -100,8 +100,6 @@ void sc_0(unsigned char *);
 /* void sc_mulsub(unsigned char *, const unsigned char *, const unsigned char *, const unsigned char *); */
 /* void sc_mul(unsigned char *, const unsigned char *, const unsigned char *); */
 /* void sc_muladd(unsigned char *s, const unsigned char *a, const unsigned char *b, const unsigned char *c); */
-int sc_check(const unsigned char *);
-int sc_isnonzero(const unsigned char *); /* Doesn't normalize */
 
 // internal
 uint64_t load_3(const unsigned char *in);

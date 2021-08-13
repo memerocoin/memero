@@ -1443,27 +1443,3 @@ void sc_mulsub(unsigned char *s, const unsigned char *a, const unsigned char *b,
   sc_mul(p, a, b);
   sc_sub(s, c, p);
 }
-
-
-static int64_t signum(int64_t a) {
-  return a > 0 ? 1 : a < 0 ? -1 : 0;
-}
-
-int sc_check(const unsigned char *s) {
-  int64_t s0 = load_4(s);
-  int64_t s1 = load_4(s + 4);
-  int64_t s2 = load_4(s + 8);
-  int64_t s3 = load_4(s + 12);
-  int64_t s4 = load_4(s + 16);
-  int64_t s5 = load_4(s + 20);
-  int64_t s6 = load_4(s + 24);
-  int64_t s7 = load_4(s + 28);
-  return (signum(1559614444 - s0) + (signum(1477600026 - s1) << 1) + (signum(2734136534 - s2) << 2) + (signum(350157278 - s3) << 3) + (signum(-s4) << 4) + (signum(-s5) << 5) + (signum(-s6) << 6) + (signum(268435456 - s7) << 7)) >> 8;
-}
-
-int sc_isnonzero(const unsigned char *s) {
-  return (((int) (s[0] | s[1] | s[2] | s[3] | s[4] | s[5] | s[6] | s[7] | s[8] |
-    s[9] | s[10] | s[11] | s[12] | s[13] | s[14] | s[15] | s[16] | s[17] |
-    s[18] | s[19] | s[20] | s[21] | s[22] | s[23] | s[24] | s[25] | s[26] |
-    s[27] | s[28] | s[29] | s[30] | s[31]) - 1) >> 8) + 1;
-}

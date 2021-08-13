@@ -494,7 +494,7 @@ namespace crypto {
   }
 
   bool is_reduced(const ec_scalar x) {
-    return 0 == sc_check(x.data);
+    return x == reduce(x);
   }
 
   bool is_not_reduced(const ec_scalar x) {
