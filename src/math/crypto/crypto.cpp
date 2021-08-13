@@ -43,19 +43,11 @@
 #include <memory>
 
 
+extern "C" {
+#include "crypto-ops.h"
+}
 
 namespace crypto {
-
-  using std::abort;
-  using std::int32_t;
-  using std::int64_t;
-  using std::size_t;
-  using std::uint32_t;
-  using std::uint64_t;
-
-  extern "C" {
-#include "crypto-ops.h"
-  }
 
   static inline unsigned char *operator &(ec_scalar &scalar) {
     return &reinterpret_cast<unsigned char &>(scalar);

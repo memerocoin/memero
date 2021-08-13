@@ -60,15 +60,6 @@ namespace crypto {
     ec_scalar operator+(const ec_scalar& x) const;
     ec_scalar operator-(const ec_scalar& x) const;
     ec_scalar operator*(const ec_scalar& x) const;
-
-    // ec_scalar operator+(const ec_scalar& x) {sc_add
-    //   return add(*this, x);
-    // }
-
-    // void sc_add(unsigned char *, const unsigned char *, const unsigned char *);
-    // void sc_sub(unsigned char *, const unsigned char *, const unsigned char *);
-    // void sc_mulsub(unsigned char *, const unsigned char *, const unsigned char *, const unsigned char *);
-    // void sc_mul(unsigned char *, const unsigned char *, const unsigned char *);
   };
 
   struct secret_key: ec_scalar{
@@ -230,9 +221,6 @@ namespace crypto {
     {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
   bool is_valid_point(const ec_point x);
-
-  // ec_point add(const ec_point X, const ec_point Y);
-  // ec_point sub(const ec_point X, const ec_point Y);
 
   //generates a random scalar which can be used as a secret key or mask
   ec_scalar scalarGen();
