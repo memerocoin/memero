@@ -786,19 +786,14 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     y1 = (proof.t - (pd.z * ip1y + k)) * weight_y + y1;
     for (size_t j = 0; j < proof8_V.size(); j++)
     {
-      tmp = zpow[j+2] * weight_y;
-      multiexp_data.emplace_back(tmp, proof8_V[j]);
+      multiexp_data.emplace_back(zpow[j+2] * weight_y, proof8_V[j]);
     }
-    tmp = pd.x * weight_y;
-    multiexp_data.emplace_back(tmp, proof8_T1);
+    multiexp_data.emplace_back(pd.x * weight_y, proof8_T1);
     rct::scalar xsq;
     xsq = pd.x * pd.x;
-    tmp = xsq * weight_y;
-    multiexp_data.emplace_back(tmp, proof8_T2);
-
+    multiexp_data.emplace_back(xsq * weight_y, proof8_T2);
     multiexp_data.emplace_back(weight_z, proof8_A);
-    tmp = pd.x * weight_z;
-    multiexp_data.emplace_back(tmp, proof8_S);
+    multiexp_data.emplace_back(pd.x * weight_z, proof8_S);
 
     // Compute the number of rounds for the inner product
     const size_t rounds = pd.logM+logN;
