@@ -61,12 +61,15 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n);
 rct::scalar inner_product(const scalarS a, const scalarS b)
 {
   assert(a.size() == b.size());
-  rct::scalar res = rct::s_zero;
-  for (size_t i = 0; i < a.size(); ++i)
-  {
-    res = a[i] * b[i] + res;
-  }
-  return res;
+  return std::transform_reduce
+    (
+     a.begin()
+     , a.end()
+     , b.begin()
+     , rct::s_zero
+     , std::plus<scalar>()
+     , std::multiplies<scalar>()
+     );
 }
 
 constexpr size_t maxN = 64;
@@ -201,10 +204,15 @@ rct::scalarV hadamard(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
   rct::scalarV res(a.size());
-  for (size_t i = 0; i < a.size(); ++i)
-  {
-    res[i] = a[i] * b[i];
-  }
+  std::transform
+    (
+     a.begin()
+     , a.end()
+     , b.begin()
+     , res.begin()
+     , std::multiplies<scalar>()
+     );
+
   return res;
 }
 
