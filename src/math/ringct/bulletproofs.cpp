@@ -747,19 +747,31 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     // pre-multiply some points by 8
     proof8_V.resize(proof.V.size());
-    for (size_t i = 0; i < proof.V.size(); ++i) {
-      proof8_V[i] = rct::multPoint8(proof.V[i]);
-    }
+    std::transform
+      (
+       proof.V.begin()
+       , proof.V.end()
+       , proof8_V.begin()
+       , [](const auto& x) { return rct::multPoint8(x); }
+       );
 
     proof8_L.resize(proof.L.size());
-    for (size_t i = 0; i < proof.L.size(); ++i) {
-      proof8_L[i] = rct::multPoint8(proof.L[i]);
-    }
+    std::transform
+      (
+       proof.L.begin()
+       , proof.L.end()
+       , proof8_L.begin()
+       , [](const auto& x) { return rct::multPoint8(x); }
+       );
 
     proof8_R.resize(proof.R.size());
-    for (size_t i = 0; i < proof.R.size(); ++i) {
-      proof8_R[i] = rct::multPoint8(proof.R[i]);
-    }
+    std::transform
+      (
+       proof.R.begin()
+       , proof.R.end()
+       , proof8_R.begin()
+       , [](const auto& x) { return rct::multPoint8(x); }
+       );
 
     key proof8_T1 = rct::multPoint8(proof.T1);
     key proof8_T2 = rct::multPoint8(proof.T2);
@@ -780,10 +792,16 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     }
 
     y1 = (proof.t - (pd.z * ip1y + k)) * weight_y + y1;
-    for (size_t j = 0; j < proof8_V.size(); j++)
-    {
-      multiexp_data.emplace_back(zpow[j+2] * weight_y, proof8_V[j]);
-    }
+
+    std::transform
+      (
+       proof8_V.begin()
+       , proof8_V.end()
+       , std::next(std::next(zpow.begin()))
+       , std::back_inserter(multiexp_data)
+       , [weight_y](const auto& x, const auto& y) -> MultiexpData { return {y * weight_y, x}; }
+       );
+
     multiexp_data.emplace_back(pd.x * weight_y, proof8_T1);
     rct::scalar xsq;
     xsq = pd.x * pd.x;
