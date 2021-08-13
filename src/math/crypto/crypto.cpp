@@ -131,7 +131,7 @@ namespace crypto {
     if (!is_valid_point(key1)) return false;
 
     // here mult8 is really not needed
-    ec_point p = mult8(mult(key1, key2));
+    const ec_point p = mult8(mult(key1, key2));
 
     derivation = p2derivation(p);
 
@@ -264,10 +264,7 @@ namespace crypto {
     const s_comm buf { prefix_hash, pub, r };
     const ec_scalar h = hash_to_scalar(epee::pod_to_span(buf));
 
-    ec_scalar s;
-    s = h - sig.c;
-
-    return s == s_0;
+    return h - sig.c == s_0;
   }
 
   // Generate a proof of knowledge of `r` such that (`R = rG` and `D = rA`) or (`R = rB` and `D = rA`) via a Schnorr proof
@@ -300,37 +297,34 @@ namespace crypto {
     // if B is not present
     static const ec_point zero = {};
 
-    s_comm_2 buf;
-    buf.msg = prefix_hash;
-    buf.D = D;
-    buf.R = R;
-    buf.A = A;
+    // struct s_comm_2 {
+    //   hash msg;
+    //   ec_point D;
+    //   ec_point X;
+    //   ec_point Y;
+    //   hash sep; // domain separation
+    //   ec_point R;
+    //   ec_point A;
+    //   ec_point B;
+    // };
 
-    if (B)
-        buf.B = *B;
-    else
-        buf.B = zero;
+    const s_comm_2 buf =
+      {
+        prefix_hash
+        , D
+        , B ? mult(*B, k) : multBase(k)
+        , mult(A, k)
+        , sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1))
+        , R
+        , A
+        , B ? *B : zero
+      };
 
-    buf.sep = sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1));
-
-    if (B)
-    {
-      // compute X = k*B
-      buf.X = mult(*B, k);
-    }
-    else
-    {
-      // compute X = k*G
-      buf.X = multBase(k);
-    }
-
-    // compute Y = k*A
-    buf.Y = mult(A, k);
 
     // sig.c = Hs(Msg || D || X || Y || sep || R || A || B)
-    sig.c = hash_to_scalar(epee::pod_to_span(buf));
-
     // sig.r = k - sig.c*r
+
+    sig.c = hash_to_scalar(epee::pod_to_span(buf));
     sig.r = k - sig.c * r;
   }
 
@@ -377,20 +371,29 @@ namespace crypto {
     // if B is not present
     static const ec_point zero = {};
 
-    s_comm_2 buf;
-    buf.msg = prefix_hash;
-    buf.D = D;
-    buf.R = R;
-    buf.A = A;
-    if (B)
-        buf.B = *B;
-    else
-        buf.B = zero;
+    // struct s_comm_2 {
+    //   hash msg;
+    //   ec_point D;
+    //   ec_point X;
+    //   ec_point Y;
+    //   hash sep; // domain separation
+    //   ec_point R;
+    //   ec_point A;
+    //   ec_point B;
+    // };
 
-    buf.sep = sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1));
+    const s_comm_2 buf =
+      {
+        prefix_hash
+        , D
+        , X
+        , Y
+        , sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1))
+        , R
+        , A
+        , B ? *B : zero
+      };
 
-    buf.X = X;
-    buf.Y = Y;
 
     // Hash depends on version
     const ec_scalar c2 = hash_to_scalar(epee::pod_to_span(buf));
@@ -426,11 +429,11 @@ namespace crypto {
 
 
   ec_point mult(const ec_point X, const ec_scalar a) {
-    ec_point x;
     if (a == s_0) {
       return identity;
     }
 
+    ec_point x;
     const int r = crypto_scalarmult_ed25519_noclamp(x.data, a.data, X.data);
     if (r != 0) {
       LOG_FATAL("mult point is not on curve: " << X << "\nresult: " << x);
