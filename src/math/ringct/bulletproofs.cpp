@@ -817,7 +817,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     const size_t rounds = pd.logM+logN;
     LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
-    const rct::scalar *winv = &inverses[pd.inv_offset];
+    const rct::scalarS winv = std::span(inverses).subspan(pd.inv_offset);
     const rct::scalar yinv = inverses[pd.inv_offset + rounds];
 
     // precalc
