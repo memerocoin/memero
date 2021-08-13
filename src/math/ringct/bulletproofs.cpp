@@ -304,7 +304,7 @@ rct::scalar invert(const rct::scalar x)
   return r;
 }
 
-rct::scalarV invert(const rct::scalarV v)
+rct::scalarV invertV(const rct::scalarV v)
 {
   scalarV r(v.size());
 
@@ -720,7 +720,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) * proofs.size() + 2 * maxMN);
 
-  const scalarV inverses = invert(to_invert);
+  const scalarV inverses = invertV(to_invert);
 
   // setup weighted aggregates
   rct::scalar z1 = rct::s_zero;
