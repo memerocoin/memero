@@ -527,15 +527,13 @@ try_again:
   const rct::scalar mu = x * rho + alpha;
 
   // PAPER LINES 58-60
-  rct::scalarV l = l0;
-  l = vector_add(l, vector_mult(l1, x));
-  rct::scalarV r = r0;
-  r = vector_add(r, vector_mult(r1, x));
+  const rct::scalarV l = vector_add(l0, vector_mult(l1, x));
+  const rct::scalarV r = vector_add(r0, vector_mult(r1, x));
 
-  rct::scalar t = inner_product(l, r);
+  const rct::scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  rct::scalar x_ip = hash_carry = hash_carry_mash_5(hash_carry, s2k(x), s2k(taux), s2k(mu), s2k(t));
+  const rct::scalar x_ip = hash_carry = hash_carry_mash_5(hash_carry, s2k(x), s2k(taux), s2k(mu), s2k(t));
   if (x_ip == rct::s_zero)
   {
     LOG_INFO("x_ip is 0, trying again");
