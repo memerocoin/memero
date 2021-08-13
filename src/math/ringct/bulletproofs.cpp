@@ -289,26 +289,29 @@ rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
 }
 
 /* Multiply a scalar and a vector */
-rct::scalarV vector_scalar(const scalarS a, const rct::scalar x)
+rct::scalarV vector_scalar(const scalarS a, const rct::scalar b)
 {
   rct::scalarV res(a.size());
-  for (size_t i = 0; i < a.size(); ++i)
-  {
-    res[i] = a[i] * x;
-  }
+  std::transform
+    (
+     a.begin()
+     , a.end()
+     , res.begin()
+     , [b](const auto& x) { return x * b; }
+     );
+
   return res;
 }
 
-rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x_in)
+rct::scalar sm(const rct::scalar y_in, const int n_in, const rct::scalar x)
 {
   int n = n_in;
   rct::scalar y = y_in;
-  rct::scalar x = x_in;
+
   while (n--)
     y = y * y;
 
-  y = y * x;
-  return y;
+  return y * x;
 }
 
 /* Compute the inverse of a scalar, the clever way */
