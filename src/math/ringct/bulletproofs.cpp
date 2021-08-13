@@ -374,7 +374,7 @@ rct::scalar hash_carry_mash_4(const rct::scalar hash_carry, const rct::key mash0
   return rct::hash_keys_to_scalar(data);
 }
 
-rct::scalar hash_carry_mash(rct::scalar& hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2, const rct::key mash3)
+rct::scalar hash_carry_mash_5(const rct::scalar hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2, const rct::key mash3)
 {
   std::array<key, 5> data {
     s2k(hash_carry)
@@ -383,8 +383,7 @@ rct::scalar hash_carry_mash(rct::scalar& hash_carry, const rct::key mash0, const
     , mash2
     , mash3
   };
-  hash_carry = rct::hash_keys_to_scalar(data);
-  return hash_carry;
+  return rct::hash_keys_to_scalar(data);
 }
 
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
@@ -559,7 +558,7 @@ try_again:
   rct::scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  rct::scalar x_ip = hash_carry_mash(hash_carry, s2k(x), s2k(taux), s2k(mu), s2k(t));
+  rct::scalar x_ip = hash_carry = hash_carry_mash_5(hash_carry, s2k(x), s2k(taux), s2k(mu), s2k(t));
   if (x_ip == rct::s_zero)
   {
     LOG_INFO("x_ip is 0, trying again");
@@ -718,7 +717,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     pd.x = hash_carry = hash_carry_mash_4(hash_carry, s2k(pd.z), proof.T1, proof.T2);
     LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
 
-    pd.x_ip = hash_carry_mash(hash_carry, s2k(pd.x), s2k(proof.taux), s2k(proof.mu), s2k(proof.t));
+    pd.x_ip = hash_carry = hash_carry_mash_5(hash_carry, s2k(pd.x), s2k(proof.taux), s2k(proof.mu), s2k(proof.t));
     LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
     size_t M;
