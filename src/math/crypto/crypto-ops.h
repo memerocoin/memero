@@ -80,7 +80,7 @@ void ge_p3_to_p2(ge_p2 *, const ge_p3 *);
 
 void ge_tobytes(unsigned char *, const ge_p2 *);
 
-/* New code */
+/* New cryptonote specific code */
 
 extern const fe fe_ma2;
 extern const fe fe_ma;
