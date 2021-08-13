@@ -353,15 +353,14 @@ scalarS slice(const scalarS a, size_t start, size_t stop)
   return a.subspan(start, stop - start);
 }
 
-rct::scalar hash_carry_mash(rct::scalar & hash_carry, const rct::key mash0, const rct::key mash1)
+rct::scalar hash_carry_mash_3(const rct::scalar hash_carry, const rct::key mash0, const rct::key mash1)
 {
   std::array<key, 3> data {
     s2k(hash_carry)
    , mash0
    , mash1
   };
-  hash_carry = rct::hash_keys_to_scalar(data);
-  return hash_carry;
+  return rct::hash_keys_to_scalar(data);
 }
 
 rct::scalar hash_carry_mash(rct::scalar& hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2)
@@ -472,7 +471,7 @@ try_again:
   S = rct::scalarmultKey(S, rct::s_inv_eight);
 
   // PAPER LINES 48-50
-  scalar y = hash_carry_mash(hash_carry, A, S);
+  scalar y = hash_carry = hash_carry_mash_3(hash_carry, A, S);
   if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
@@ -611,7 +610,7 @@ try_again:
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, H, tmp);
 
     // PAPER LINES 25-27
-    w[round] = hash_carry_mash(hash_carry, L[round], R[round]);
+    w[round] = hash_carry = hash_carry_mash_3(hash_carry, L[round], R[round]);
     if (w[round] == rct::s_zero)
     {
       LOG_INFO("w[round] is 0, trying again");
@@ -711,7 +710,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     proof_data_t &pd = proof_data.back();
     rct::scalar hash_carry = rct::hash_keys_to_scalar(proof.V);
 
-    pd.y = hash_carry_mash(hash_carry, proof.A, proof.S);
+    pd.y = hash_carry = hash_carry_mash_3(hash_carry, proof.A, proof.S);
     LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
     pd.z = hash_carry = rct::hash_to_scalar(s2k(pd.y));
@@ -735,7 +734,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     pd.w.resize(rounds);
     for (size_t i = 0; i < rounds; ++i)
     {
-      pd.w[i] = hash_carry_mash(hash_carry, proof.L[i], proof.R[i]);
+      pd.w[i] = hash_carry = hash_carry_mash_3(hash_carry, proof.L[i], proof.R[i]);
       LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::s_zero), false, "w[i] == 0");
     }
 
