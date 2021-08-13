@@ -64,7 +64,7 @@ rct::scalar inner_product(const scalarS a, const scalarS b)
   rct::scalar res = rct::s_zero;
   for (size_t i = 0; i < a.size(); ++i)
   {
-    sc_muladd(res.data, a[i].data, b[i].data, res.data);
+    res = a[i] * b[i] + res;
   }
   return res;
 }
@@ -543,14 +543,14 @@ try_again:
   taux = tau1 = x;
   rct::scalar xsq;
   xsq = x * x;
-  sc_muladd(taux.data, tau2.data, xsq.data, taux.data);
+  taux = tau2 * xsq + taux;
   for (size_t j = 1; j <= sv.size(); ++j)
   {
     LOG_ERROR_AND_THROW_UNLESS(j+1 < zpow.size(), "invalid zpow index");
-    sc_muladd(taux.data, zpow[j+1].data, gamma[j-1].data, taux.data);
+    taux = zpow[j+1] * gamma[j-1] + taux;
   }
   rct::scalar mu;
-  sc_muladd(mu.data, x.data, rho.data, alpha.data);
+  mu = x * rho + alpha;
 
   // PAPER LINES 58-60
   rct::scalarV l = l0;
@@ -808,9 +808,9 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       sc_mulsub(k.data, zpow[j+2].data, ip12.data, k.data);
     }
 
-    sc_muladd(tmp.data, pd.z.data, ip1y.data, k.data);
+    tmp = pd.z * ip1y + k;
     tmp = proof.t - tmp;
-    sc_muladd(y1.data, tmp.data, weight_y.data, y1.data);
+    y1 = tmp * weight_y + y1;
     for (size_t j = 0; j < proof8_V.size(); j++)
     {
       tmp = zpow[j+2] * weight_y;
@@ -876,7 +876,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       }
       else
       {
-        sc_muladd(tmp.data, pd.z.data, ypow.data, tmp.data);
+        tmp = pd.z * ypow + tmp;
         sc_mulsub(h_scalar.data, tmp.data, yinvpow.data, h_scalar.data);
       }
 
@@ -895,7 +895,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       }
     }
 
-    sc_muladd(z1.data, proof.mu.data, weight_z.data, z1.data);
+    z1 = proof.mu * weight_z + z1;
     for (size_t i = 0; i < rounds; ++i)
     {
       tmp = pd.w[i] * pd.w[i];
@@ -907,7 +907,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     }
     sc_mulsub(tmp.data, proof.a.data, proof.b.data, proof.t.data);
     tmp = tmp * pd.x_ip;
-    sc_muladd(z3.data, tmp.data, weight_z.data, z3.data);
+    z3 = tmp * weight_z + z3;
   }
 
   // now check all proofs at once

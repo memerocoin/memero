@@ -388,7 +388,7 @@ namespace hw {
             rct::scalar s0_p_mu_P;
             s0_p_mu_P = mu_P * p;
             rct::scalar s0_add_z_mu_C;
-            sc_muladd(s0_add_z_mu_C.data,mu_C.data,z.data,s0_p_mu_P.data);
+            s0_add_z_mu_C = mu_C * z + s0_p_mu_P;
             sc_mulsub(s.data,c.data,s0_add_z_mu_C.data,a.data);
 
             return true;
