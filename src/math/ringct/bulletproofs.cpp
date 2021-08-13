@@ -156,32 +156,12 @@ rct::key cross_vector_exponent8
   multiexp_data.reserve(size*2 + 1);
   for (size_t i = 0; i < size; ++i)
   {
-    multiexp_data.push_back
-      (
-       {
-         a[ao+i] * rct::s_inv_eight
-         , A[Ao+i]
-       }
-       );
-
+    multiexp_data.emplace_back(a[ao+i] * rct::s_inv_eight, A[Ao+i]);
     const auto b_bo = b[bo+i] * rct::s_inv_eight;
-
-    multiexp_data.push_back
-      (
-       {
-         scale ? b_bo * (*scale)[Bo+i] : b_bo
-         , B[Bo+i]
-       }
-       );
+    multiexp_data.emplace_back(scale ? b_bo * (*scale)[Bo+i] : b_bo, B[Bo+i]);
   }
 
-  multiexp_data.push_back
-    (
-     {
-       extra_scalar * rct::s_inv_eight
-       , extra_point
-     }
-     );
+  multiexp_data.emplace_back(extra_scalar * rct::s_inv_eight, extra_point);
 
   return multiexp(multiexp_data);
 }
@@ -759,7 +739,6 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) * proofs.size() + 2 * maxMN);
-  multiexp_data.resize(2 * maxMN);
 
   const scalarV inverses = invert(to_invert);
 
@@ -925,8 +904,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   multiexp_data.emplace_back(tmp, rct::H);
   for (size_t i = 0; i < maxMN; ++i)
   {
-    multiexp_data[i * 2] = {m_z4[i], Gi[i]};
-    multiexp_data[i * 2 + 1] = {m_z5[i], Hi[i]};
+    multiexp_data.emplace_back(m_z4[i], Gi[i]);
+    multiexp_data.emplace_back(m_z5[i], Hi[i]);
   }
   if (!(multiexp(multiexp_data) == rct::identity))
   {
