@@ -139,7 +139,7 @@ rct::key cross_vector_exponent8
  , const size_t ao
  , const scalarS b
  , const size_t bo
- , const rct::scalarV *scale
+ , const std::optional<rct::scalarS> scale
  , const key *extra_point
  , const rct::scalar *extra_scalar
  )
@@ -158,10 +158,8 @@ rct::key cross_vector_exponent8
   {
     multiexp_data[i*2].scalar = a[ao+i] * rct::s_inv_eight;
     multiexp_data[i*2].point = A[Ao+i];
-    multiexp_data[i*2+1].scalar = b[bo+i] * rct::s_inv_eight;
-    if (scale) {
-      multiexp_data[i*2+1].scalar = multiexp_data[i*2+1].scalar * (*scale)[Bo+i];
-    }
+    const auto b_bo = b[bo+i] * rct::s_inv_eight;
+    multiexp_data[i*2+1].scalar = scale ? b_bo * (*scale)[Bo+i] : b_bo;
     multiexp_data[i*2+1].point = B[Bo+i];
   }
   if (extra_point)
@@ -215,7 +213,7 @@ rct::scalarV hadamard(const scalarS a, const scalarS b)
 }
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-std::vector<key> hadamard_fold(std::span<key> v, const rct::scalarV *scale, const rct::scalar a, const rct::scalar b)
+keyV hadamard_fold(keyS v, const std::optional<rct::scalarS> scale, const rct::scalar a, const rct::scalar b)
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
@@ -585,7 +583,7 @@ try_again:
   int round = 0;
   rct::scalarV w(logMN); // this is the challenge x in the inner product protocol
 
-  const rct::scalarV *scale = &yinvpow;
+  std::optional<rct::scalarS> scale = yinvpow;
   while (nprime > 1)
   {
     // PAPER LINE 20
@@ -615,7 +613,7 @@ try_again:
     const rct::scalar winv = invert(w[round]);
     if (nprime > 1)
     {
-      Gprime = hadamard_fold(Gprime, NULL, winv, w[round]);
+      Gprime = hadamard_fold(Gprime, {}, winv, w[round]);
       Hprime = hadamard_fold(Hprime, scale, w[round], winv);
     }
 
@@ -623,7 +621,7 @@ try_again:
     aprime = vector_add(vector_scalar(slice(aprime, 0, nprime), w[round]), vector_scalar(slice(aprime, nprime, aprime.size()), winv));
     bprime = vector_add(vector_scalar(slice(bprime, 0, nprime), winv), vector_scalar(slice(bprime, nprime, bprime.size()), w[round]));
 
-    scale = NULL;
+    scale = {};
     ++round;
   }
 
