@@ -59,30 +59,10 @@ typedef struct {
   fe T;
 } ge_p1p1;
 
-typedef struct {
-  fe yplusx;
-  fe yminusx;
-  fe xy2d;
-} ge_precomp;
-
-typedef struct {
-  fe YplusX;
-  fe YminusX;
-  fe Z;
-  fe T2d;
-} ge_cached;
-
-/* From ge_add.c */
-
-void ge_add(ge_p1p1 *, const ge_p3 *, const ge_cached *);
-
-/* From ge_double_scalarmult.c, modified */
-
 /* From ge_frombytes.c, modified */
 
 extern const fe fe_sqrtm1;
 extern const fe fe_d;
-int ge_frombytes_vartime(ge_p3 *, const unsigned char *);
 
 /* From ge_p1p1_to_p2.c */
 
@@ -92,19 +72,9 @@ void ge_p1p1_to_p2(ge_p2 *, const ge_p1p1 *);
 
 void ge_p2_dbl(ge_p1p1 *, const ge_p2 *);
 
-/* From ge_p3_to_cached.c */
-
-extern const fe fe_d2;
-
 /* From ge_p3_to_p2.c */
 
 void ge_p3_to_p2(ge_p2 *, const ge_p3 *);
-
-/* From ge_p3_tobytes.c */
-
-void ge_p3_tobytes(unsigned char *, const ge_p3 *);
-
-extern const ge_precomp ge_base[32][8];
 
 /* From ge_tobytes.c */
 
@@ -112,15 +82,17 @@ void ge_tobytes(unsigned char *, const ge_p2 *);
 
 /* New code */
 
-void ge_mul8(ge_p1p1 *, const ge_p2 *);
 extern const fe fe_ma2;
 extern const fe fe_ma;
 extern const fe fe_fffb1;
 extern const fe fe_fffb2;
 extern const fe fe_fffb3;
 extern const fe fe_fffb4;
-extern const ge_p3 ge_p3_identity;
-extern const ge_p3 ge_p3_H;
+
+int ge_frombytes_vartime(ge_p3 *, const unsigned char *);
+void ge_mul8(ge_p1p1 *, const ge_p2 *);
+
+
 void ge_fromfe_frombytes_vartime(ge_p2 *, const unsigned char *);
 void sc_0(unsigned char *);
 /* void sc_add(unsigned char *, const unsigned char *, const unsigned char *); */

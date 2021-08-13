@@ -176,12 +176,6 @@ namespace rct {
     return crypto::is_valid_point(A);
   }
 
-  key ge_p3_tokey(const ge_p3 x) {
-    key k;
-    ge_p3_tobytes(k.data, &x);
-    return k;
-  }
-
   //Curve addition / subtractions
 
   rct::key addKeys(const keyS A) {
