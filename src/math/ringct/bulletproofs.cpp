@@ -140,8 +140,8 @@ rct::key cross_vector_exponent8
  , const scalarS b
  , const size_t bo
  , const std::optional<rct::scalarS> scale
- , const key *extra_point
- , const rct::scalar *extra_scalar
+ , const key extra_point
+ , const rct::scalar extra_scalar
  )
 {
   LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
@@ -150,10 +150,9 @@ rct::key cross_vector_exponent8
   LOG_ERROR_AND_THROW_UNLESS(size + bo <= b.size(), "Incompatible size for b");
   LOG_ERROR_AND_THROW_UNLESS(size <= maxN*maxM, "size is too large");
   LOG_ERROR_AND_THROW_UNLESS(!scale || size == scale->size() / 2, "Incompatible size for scale");
-  LOG_ERROR_AND_THROW_UNLESS(!!extra_point == !!extra_scalar, "only one of extra point/scalar present");
 
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.resize(size*2 + (!!extra_point));
+  multiexp_data.resize(size*2 + 1);
   for (size_t i = 0; i < size; ++i)
   {
     multiexp_data[i*2].scalar = a[ao+i] * rct::s_inv_eight;
@@ -162,11 +161,8 @@ rct::key cross_vector_exponent8
     multiexp_data[i*2+1].scalar = scale ? b_bo * (*scale)[Bo+i] : b_bo;
     multiexp_data[i*2+1].point = B[Bo+i];
   }
-  if (extra_point)
-  {
-    multiexp_data.back().scalar = (*extra_scalar) * rct::s_inv_eight;
-    multiexp_data.back().point = *extra_point;
-  }
+  multiexp_data.back().scalar = extra_scalar * rct::s_inv_eight;
+  multiexp_data.back().point = extra_point;
   return multiexp(multiexp_data);
 }
 
@@ -596,10 +592,10 @@ try_again:
     // PAPER LINES 23-24
     tmp = cL * x_ip;
     L[round] = cross_vector_exponent8
-      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, &H, &tmp);
+      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale, H, tmp);
     tmp = cR * x_ip;
     R[round] = cross_vector_exponent8
-      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, &H, &tmp);
+      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale, H, tmp);
 
     // PAPER LINES 25-27
     w[round] = hash_carry_mash(hash_carry, L[round], R[round]);
