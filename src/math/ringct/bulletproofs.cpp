@@ -507,7 +507,7 @@ try_again:
   const key T2 = scalarmultBase(tau2 * rct::s_inv_eight) + scalarmultH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
-  rct::scalar x = hash_carry = hash_carry_mash_4(hash_carry, s2k(z), T1, T2);
+  const rct::scalar x = hash_carry = hash_carry_mash_4(hash_carry, s2k(z), T1, T2);
   if (x == rct::s_zero)
   {
     LOG_INFO("x is 0, trying again");
@@ -515,18 +515,16 @@ try_again:
   }
 
   // PAPER LINES 61-63
-  rct::scalar taux;
-  taux = tau1 * x;
-  rct::scalar xsq;
-  xsq = x * x;
-  taux = tau2 * xsq + taux;
+  const rct::scalar xsq = x * x;
+
+  rct::scalar taux = tau1 * x + tau2 * xsq;
   for (size_t j = 1; j <= sv.size(); ++j)
   {
     LOG_ERROR_AND_THROW_UNLESS(j+1 < zpow.size(), "invalid zpow index");
     taux = zpow[j+1] * gamma[j-1] + taux;
   }
-  rct::scalar mu;
-  mu = x * rho + alpha;
+
+  const rct::scalar mu = x * rho + alpha;
 
   // PAPER LINES 58-60
   rct::scalarV l = l0;
