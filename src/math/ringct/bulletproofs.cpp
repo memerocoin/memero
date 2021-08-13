@@ -40,10 +40,8 @@
 #include "tools/epee/include/string_tools.h"
 #include "tools/common/varint.h"
 
-
 #include "config/cryptonote.hpp"
 
-#include <stdlib.h>
 #include <mutex>
 #include <atomic>
 
