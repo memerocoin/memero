@@ -155,17 +155,36 @@ rct::key cross_vector_exponent8
   LOG_ERROR_AND_THROW_UNLESS(!scale || size == scale->size() / 2, "Incompatible size for scale");
 
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.resize(size*2 + 1);
+  multiexp_data.reserve(size*2 + 1);
   for (size_t i = 0; i < size; ++i)
   {
-    multiexp_data[i*2].scalar = a[ao+i] * rct::s_inv_eight;
-    multiexp_data[i*2].point = A[Ao+i];
+    multiexp_data.push_back
+      (
+       {
+         a[ao+i] * rct::s_inv_eight
+         , A[Ao+i]
+       }
+       );
+
     const auto b_bo = b[bo+i] * rct::s_inv_eight;
-    multiexp_data[i*2+1].scalar = scale ? b_bo * (*scale)[Bo+i] : b_bo;
-    multiexp_data[i*2+1].point = B[Bo+i];
+
+    multiexp_data.push_back
+      (
+       {
+         scale ? b_bo * (*scale)[Bo+i] : b_bo
+         , B[Bo+i]
+       }
+       );
   }
-  multiexp_data.back().scalar = extra_scalar * rct::s_inv_eight;
-  multiexp_data.back().point = extra_point;
+
+  multiexp_data.push_back
+    (
+     {
+       extra_scalar * rct::s_inv_eight
+       , extra_point
+     }
+     );
+
   return multiexp(multiexp_data);
 }
 
