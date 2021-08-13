@@ -190,7 +190,7 @@ namespace crypto {
   void derive_secret_key(const key_derivation &derivation, const size_t output_index,
     const secret_key &base, secret_key &derived_key) {
     ec_scalar scalar;
-    assert(sc_check(&base) == 0);
+    assert(is_reduced(base));
     hash_derivation_to_scalar(derivation, output_index, scalar);
     derived_key = s2sk(base + scalar);
   }
@@ -274,7 +274,7 @@ namespace crypto {
     assert(check_key(pub));
     if (!is_valid_point(pub)) return false;
 
-    if (sc_check(&sig.c) != 0 || sc_check(&sig.r) != 0 || !sc_isnonzero(&sig.c)) {
+    if (is_not_reduced(sig.c) || is_not_reduced(sig.r) || (sig.c != s_0)) {
       return false;
     }
 
@@ -373,7 +373,7 @@ namespace crypto {
     if (!is_valid_point(D)) return false;
     if (B && !is_valid_point(*B)) return false;
 
-    if (sc_check(&sig.c) != 0 || sc_check(&sig.r) != 0) return false;
+    if (is_not_reduced(sig.c) || is_not_reduced(sig.r)) return false;
 
     // compute sig.c*R
 
@@ -495,6 +495,14 @@ namespace crypto {
     ec_scalar s;
     crypto_core_ed25519_scalar_reduce(s.data, t);
     return s;
+  }
+
+  bool is_reduced(const ec_scalar x) {
+    return 0 == sc_check(x.data);
+  }
+
+  bool is_not_reduced(const ec_scalar x) {
+    return !(is_reduced(x));
   }
 }
 

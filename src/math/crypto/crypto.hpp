@@ -236,6 +236,9 @@ namespace crypto {
 
   ec_scalar reduce(const ec_scalar x);
 
+  bool is_reduced(const ec_scalar x);
+  bool is_not_reduced(const ec_scalar x);
+
 }
 
 CRYPTO_MAKE_HASHABLE_HEADER(public_key)
