@@ -39,15 +39,15 @@ namespace rct {
   //Various key initialization functions
 
   // Can't us consteval here or android will panic
-  //Creates a zero scalar
+  // Creates a zero scalar
   constexpr scalar s_zero = ZERO;
   constexpr scalar s_one = ONE;
   constexpr scalar s_two= TWO;
   constexpr scalar s_minus_one = MINUS_ONE;
   constexpr scalar s_eight = EIGHT;
+  // inv is multiplicative inverse
   constexpr scalar s_inv_eight = INV_EIGHT;
-  constexpr scalar s_minus_inv_eight= MINUS_INV_EIGHT;
-  constexpr scalar s_l = MINUS_INV_EIGHT;
+  constexpr scalar s_minus_inv_eight = MINUS_INV_EIGHT;
 
   constexpr key zero = Z;
 
