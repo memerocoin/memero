@@ -926,7 +926,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
      , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
      );
 
-  if (!(multiexp(multiexp_data) == rct::identity))
+  if (multiexp(multiexp_data) != rct::identity)
   {
     LOG_ERROR("Verification failure");
     return false;
