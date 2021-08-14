@@ -532,19 +532,16 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::scalarV g
   LOG_ERROR_AND_THROW_UNLESS(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
   // vG + gammaH
-  rct::scalarV sv(v.size());
-  for (size_t i = 0; i < v.size(); ++i)
-  {
-    sv[i] = rct::s_zero;
-    sv[i].data[0] = v[i] & 255;
-    sv[i].data[1] = (v[i] >> 8) & 255;
-    sv[i].data[2] = (v[i] >> 16) & 255;
-    sv[i].data[3] = (v[i] >> 24) & 255;
-    sv[i].data[4] = (v[i] >> 32) & 255;
-    sv[i].data[5] = (v[i] >> 40) & 255;
-    sv[i].data[6] = (v[i] >> 48) & 255;
-    sv[i].data[7] = (v[i] >> 56) & 255;
-  }
+  rct::scalarV sv;
+  std::transform
+    (
+     v.begin()
+     , v.end()
+     , std::back_inserter(sv)
+     , [](const auto& v) {
+       return int_to_scalar(v);
+     }
+     );
   return bulletproof_MAKE(sv, gamma);
 }
 
