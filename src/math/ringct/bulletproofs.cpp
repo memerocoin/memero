@@ -168,17 +168,18 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n)
   if (n == 0)
     return {};
 
-  if (n == 1)
-    return {rct::s_one};
-
-  rct::scalarV res(n);
-  res[0] = rct::s_one;
-  res[1] = x;
-
-  for (size_t i = 2; i < n; ++i)
-  {
-    res[i] = res[i-1] * x;
-  }
+  rct::scalarV xs(n - 1, x);
+  rct::scalarV res = std::accumulate
+    (
+     xs.begin()
+     , xs.end()
+     , scalarV{rct::s_one}
+     , [](const auto& carry, const auto& i) {
+       scalarV ys = carry;
+       ys.push_back(ys.back() * i);
+       return ys;
+     }
+     );
 
   return res;
 }
