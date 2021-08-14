@@ -105,6 +105,8 @@ namespace crypto {
   inline const ec_point_unsafe &d2p(const crypto_data &x) { return (const ec_point_unsafe&)x; }
   inline const crypto_data &h2d(const hash &x) { return (const crypto_data&)x; }
 
+  inline const ec_point &unsafe_p2p(const ec_point_unsafe &x) { return (const ec_point&)x; }
+
   /* Generate a new key pair
     */
   secret_key generate_keys
@@ -239,8 +241,10 @@ namespace crypto {
   //generates a random scalar which can be used as a secret key or mask
   ec_scalar scalarGen();
 
+  std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x);
   ec_point mult(const ec_point X, const ec_scalar);
   ec_point mult8(const ec_point_unsafe X);
+  ec_point mult8Safe(const ec_point X);
   ec_point multBase(const ec_scalar);
 
   ec_scalar invert(const ec_scalar x);

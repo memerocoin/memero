@@ -449,6 +449,10 @@ namespace crypto {
     return x;
   }
 
+  ec_point mult8Safe(const ec_point X) {
+    return X * 8;
+  }
+
   // needed because point can be out of main group
   ec_point mult8(const ec_point_unsafe X) {
     ec_point res;
@@ -496,6 +500,14 @@ namespace crypto {
 
   bool is_not_reduced(const ec_scalar_unnormalized x) {
     return !(is_reduced(x));
+  }
+
+  std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) {
+    if (is_valid_point(x)) {
+      return unsafe_p2p(x);
+    } else {
+      return {};
+    }
   }
 
   //uint long long to 32 byte key
