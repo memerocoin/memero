@@ -137,11 +137,23 @@ rct::key vector_exponent(const scalarS a, const scalarS b)
 
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(a.size()*2);
-  for (size_t i = 0; i < a.size(); ++i)
-  {
-    multiexp_data.emplace_back(a[i], Gi[i]);
-    multiexp_data.emplace_back(b[i], Hi[i]);
-  }
+  std::transform
+    (
+     a.begin()
+     , a.end()
+     , Gi.begin()
+     , std::back_inserter(multiexp_data)
+     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+     );
+
+    std::transform
+    (
+     b.begin()
+     , b.end()
+     , Hi.begin()
+     , std::back_inserter(multiexp_data)
+     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+     );
   return multiexp(multiexp_data);
 }
 
