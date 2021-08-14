@@ -751,7 +751,7 @@ namespace cryptonote
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if(!isInMainSubgroup(rct::ki2rct(tokey_in.k_image)))
+      if(!crypto::is_valid_point(rct::ki2rct(tokey_in.k_image)))
         return false;
     }
     return true;

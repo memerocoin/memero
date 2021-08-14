@@ -104,9 +104,6 @@ namespace rct {
   // multiplies a point by 8
   key multP8(const key P);
 
-  // checks a is in the main subgroup (ie, not a small one)
-  bool isInMainSubgroup(const key a);
-
   //Curve addition / subtractions
 
   rct::key addPoints(const keyS A);

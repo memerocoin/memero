@@ -132,7 +132,7 @@ TEST(bulletproofs, invalid_torsion)
   {
     rct::key x;
     ASSERT_TRUE(epee::string_tools::hex_to_pod(xs, x));
-    ASSERT_FALSE(rct::isInMainSubgroup(x));
+    ASSERT_FALSE(crypto::is_valid_point(x));
     for (auto &k: proof.V)
     {
       const rct::key org_k = k;

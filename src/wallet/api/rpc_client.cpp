@@ -455,12 +455,12 @@ bool RPC_Client::tx_add_fake_output
   if (std::find(outs.back().begin(), outs.back().end(), item) != outs.back().end()) // don't add duplicates
     return false;
   // check the keys are valid
-  if (!rct::isInMainSubgroup(rct::pk2rct(output_public_key)))
+  if (!crypto::is_valid_point(rct::pk2rct(output_public_key)))
   {
     LOG_WARNING("Key " << output_public_key << " at index " << global_index << " is not in the main subgroup");
     return false;
   }
-  if (!rct::isInMainSubgroup(mask))
+  if (!crypto::is_valid_point(mask))
   {
     LOG_WARNING("Commitment " << mask << " at index " << global_index << " is not in the main subgroup");
     return false;
