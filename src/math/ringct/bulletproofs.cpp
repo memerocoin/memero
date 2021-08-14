@@ -802,7 +802,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       k = k - zpow[j+2] * ip12;
     }
 
-    y1 = (proof.t - (pd.z * ip1y + k)) * weight_y + y1;
+    y1 = y1 + (proof.t - (pd.z * ip1y + k)) * weight_y;
 
     std::transform
       (
@@ -863,13 +863,13 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       ypow = ypow * pd.y;
     }
 
-    z1 = proof.mu * weight_z + z1;
+    z1 = z1 + proof.mu * weight_z;
     for (size_t i = 0; i < rounds; ++i)
     {
       multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, proof8_L[i]);
       multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, proof8_R[i]);
     }
-    z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z + z3;
+    z3 = z3 + (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
   }
 
   // now check all proofs at once
