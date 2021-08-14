@@ -86,7 +86,7 @@ namespace proof {
           const rct::key C = tx.rct_signatures.outPk[n].mask;
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.mask), error::wallet_internal_error, "Bad ECDH input mask");
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.amount), error::wallet_internal_error, "Bad ECDH input amount");
-          const rct::key Ctmp = rct::addScalarMult_G_H(ecdh_info.mask, ecdh_info.amount);
+          const rct::key Ctmp = rct::addMultG_H(ecdh_info.mask, ecdh_info.amount);
           if (C == Ctmp)
             amount = rct::scalar_to_int(ecdh_info.amount);
           else
