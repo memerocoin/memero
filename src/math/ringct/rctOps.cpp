@@ -88,13 +88,13 @@ namespace rct {
   //generates a random curve point (for testing)
   key pkGen() {
     scalar sk = skGen();
-    return scalarmultBase(sk);
+    return multG(sk);
   }
 
   //generates a random secret and corresponding public key
   std::pair<scalar, key> skpkGen() {
     const scalar sk = skGen();
-    return std::make_pair(sk, scalarmultBase(sk));
+    return std::make_pair(sk, multG(sk));
   }
 
   //generates C =aG + bH from b, a is given..
@@ -149,7 +149,7 @@ namespace rct {
   }
 
   //does a * G where a is a scalar and G is the curve basepoint
-  key scalarmultBase(const scalar a) {
+  key multG(const scalar a) {
     scalar s = normalizeKey(a);
     return p2rct(crypto::multBase(s));
   }
@@ -190,7 +190,7 @@ namespace rct {
   //addKeys2
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
   key addScalarMult_G_H(const scalar a, const scalar b) {
-    return scalarmultBase(a) + scalarmultH(b);
+    return multG(a) + scalarmultH(b);
   }
 
   // addKeys_aGbBcC
@@ -209,7 +209,7 @@ namespace rct {
       (
        std::array
        {
-         scalarmultBase(a)
+         multG(a)
          , scalarmultKey(B, b)
          , scalarmultKey(C, c)
        }

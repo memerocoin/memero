@@ -206,8 +206,8 @@ namespace hw {
             return true;
         }
 
-        bool device_default::scalarmultBase(rct::key &aG, const rct::scalar &a) {
-            aG = rct::scalarmultBase(a);
+        bool device_default::multG(rct::key &aG, const rct::scalar &a) {
+            aG = rct::multG(a);
             return true;
         }
 
@@ -295,7 +295,7 @@ namespace hw {
                 if (dst_entr.is_subaddress)
                     additional_txkey.pub = rct::rct2pk(rct::scalarmultKey(rct::pk2rct(dst_entr.addr.m_spend_public_key), rct::sk2scalar(additional_txkey.sec)));
                 else
-                    additional_txkey.pub = rct::rct2pk(rct::scalarmultBase(rct::sk2scalar(additional_txkey.sec)));
+                    additional_txkey.pub = rct::rct2pk(rct::multG(rct::sk2scalar(additional_txkey.sec)));
             }
 
             bool r;

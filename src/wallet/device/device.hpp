@@ -160,7 +160,7 @@ namespace hw {
         /* ======================================================================= */
         virtual bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) = 0;
         virtual bool  scalarmultKey(rct::key & aP, const rct::key &P, const rct::scalar &a) = 0;
-        virtual bool  scalarmultBase(rct::key &aG, const rct::scalar &a) = 0;
+        virtual bool  multG(rct::key &aG, const rct::scalar &a) = 0;
         virtual bool  sc_secret_add( crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) = 0;
         virtual crypto::secret_key  generate_keys(crypto::public_key &pub, crypto::secret_key &sec, const crypto::secret_key& recovery_key = crypto::secret_key(), bool recover = false) = 0;
         virtual bool  generate_key_derivation(const crypto::public_key &pub, const crypto::secret_key &sec, crypto::key_derivation &derivation) = 0;
@@ -179,10 +179,10 @@ namespace hw {
             return aP;
         }
 
-        rct::key scalarmultBase(const rct::scalar &a)
+        rct::key multG(const rct::scalar &a)
         {
             rct::key aG;
-            scalarmultBase(aG, a);
+            multG(aG, a);
             return aG;
         }
 

@@ -263,7 +263,7 @@ namespace cryptonote
     }
     else
     {
-      txkey_pub = rct::rct2pk(hwdev.scalarmultBase(rct::sk2scalar(tx_key)));
+      txkey_pub = rct::rct2pk(hwdev.multG(rct::sk2scalar(tx_key)));
     }
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
     add_tx_pub_key_to_extra(tx, txkey_pub);

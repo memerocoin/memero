@@ -322,13 +322,13 @@ try_again:
 
   // PAPER LINES 43-44
   const rct::scalar alpha = rct::skGen();
-  const key A = vector_exponent(aL8, aR8) + rct::scalarmultBase(alpha * rct::s_inv_eight);
+  const key A = vector_exponent(aL8, aR8) + rct::multG(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
   const rct::scalarV sL = rct::skvGen(MN);
   const rct::scalarV sR = rct::skvGen(MN);
   const rct::scalar rho = rct::skGen();
-  const rct::key S = scalarmultKey(vector_exponent(sL, sR) + rct::scalarmultBase(rho), rct::s_inv_eight);
+  const rct::key S = scalarmultKey(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
 
   // PAPER LINES 48-50
   const scalar y = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), A, S});
@@ -381,8 +381,8 @@ try_again:
   const rct::scalar tau1 = rct::skGen();
   const rct::scalar tau2 = rct::skGen();
 
-  const key T1 = scalarmultBase(tau1 * rct::s_inv_eight) + scalarmultH(t1 * rct::s_inv_eight);
-  const key T2 = scalarmultBase(tau2 * rct::s_inv_eight) + scalarmultH(t2 * rct::s_inv_eight);
+  const key T1 = multG(tau1 * rct::s_inv_eight) + scalarmultH(t1 * rct::s_inv_eight);
+  const key T2 = multG(tau2 * rct::s_inv_eight) + scalarmultH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
   const rct::scalar x = hash_carry = hash_keys_to_scalar

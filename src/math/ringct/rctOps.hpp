@@ -93,7 +93,7 @@ namespace rct {
   //Scalar multiplications of curve points
 
   //does a * G where a is a scalar and G is the curve basepoint
-  key scalarmultBase(const scalar a);
+  key multG(const scalar a);
 
   //does a * P where a is a scalar and P is an arbitrary point
   key scalarmultKey(const key P, const scalar a);
