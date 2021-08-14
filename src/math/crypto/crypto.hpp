@@ -229,7 +229,7 @@ namespace crypto {
   inline constexpr ec_point identity =
     {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
-  bool is_valid_point(const ec_point x);
+  bool is_valid_point(const ec_point_unsafe x);
 
   //generates a random scalar which can be used as a secret key or mask
   ec_scalar scalarGen();

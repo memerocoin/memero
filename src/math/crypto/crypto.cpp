@@ -101,7 +101,7 @@ namespace crypto {
     randombytes_buf(bytes, N);
   }
 
-  bool is_valid_point(const ec_point x) {
+  bool is_valid_point(const ec_point_unsafe x) {
     return crypto_core_ed25519_is_valid_point(x.data);
   }
   /*
