@@ -114,25 +114,6 @@ namespace rct {
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
   key addMultG_H(const scalar a, const scalar b);
 
-  key addKeys_aGbBcC
-  (
-   const scalar a
-   , const scalar b
-   , const key B
-   , const scalar c
-   , const key C
-   );
-
-  key addKeys_aAbBcC
-  (
-   const scalar a
-   , const key A
-   , const scalar b
-   , const key B
-   , const scalar c
-   , const key C
-   );
-
   key hash_key(const key in);
   scalar hash_to_scalar(const key in);
 

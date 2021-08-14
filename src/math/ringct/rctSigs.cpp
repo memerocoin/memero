@@ -182,24 +182,26 @@ namespace rct {
             c_c = mu_C * c;
 
             // Compute L
-            L = addKeys_aGbBcC
+            L = addKeys
               (
-               sig.s[i]
-               , c_p, P[i]
-               , c_c, C[i]
+               std::array
+               {
+                 multG(sig.s[i])
+                 , multP(P[i], c_p)
+                 , multP(C[i], c_c)
+               }
                );
-
 
             // Compute R
             const key A = hash_to_key_via_f2(P[i]);
-            R = addKeys_aAbBcC
+            R = addKeys
               (
-               sig.s[i]
-               , A
-               , c_p
-               , sig.I
-               , c_c
-               , D
+               std::array
+               {
+                 multP(A, sig.s[i])
+                 , multP(sig.I, c_p)
+                 , multP(D, c_c)
+               }
                );
 
             c_to_hash[2*n+3] = L;
@@ -380,26 +382,27 @@ namespace rct {
             const key C = mask - C_offset;
 
             // Compute L
-            L = addKeys_aGbBcC
+            L = addKeys
               (
-               sig.s[i]
-               , c_p
-               , pubs[i].dest
-               , c_c
-               , C
+               std::array
+               {
+                 multG(sig.s[i])
+                 , multP(pubs[i].dest, c_p)
+                 , multP(C, c_c)
+               }
                );
 
             // Compute R
             const key k = hash_to_key_via_f2(pubs[i].dest);
 
-            R = addKeys_aAbBcC
+            R = addKeys
               (
-               sig.s[i]
-               , k
-               , c_p
-               , sig.I
-               , c_c
-               , D_8
+               std::array
+               {
+                 multP(k, sig.s[i])
+                 , multP(sig.I, c_p)
+                 , multP(D_8, c_c)
+               }
                );
 
             c_to_hash[2*n+3] = L;

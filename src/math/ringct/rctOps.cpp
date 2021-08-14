@@ -193,54 +193,6 @@ namespace rct {
     return multG(a) + multH(b);
   }
 
-  // addKeys_aGbBcC
-  // computes aG + bB + cC
-  // G is the fixed basepoint and B,C require precomputation
-    key addKeys_aGbBcC
-    (
-     const scalar a
-     , const scalar b
-     , const key B
-     , const scalar c
-     , const key C
-     )
-  {
-    return addKeys
-      (
-       std::array
-       {
-         multG(a)
-         , multP(B, b)
-         , multP(C, c)
-       }
-       );
-  }
-
-  // addKeys_aAbBcC
-  // computes aA + bB + cC
-  // A,B,C require precomputation
-
-  key addKeys_aAbBcC
-  (
-   const scalar a
-   , const key A
-   , const scalar b
-   , const key B
-   , const scalar c
-   , const key C
-   )
-  {
-    return addKeys
-      (
-       std::array
-       {
-         multP(A, a)
-         , multP(B, b)
-         , multP(C, c)
-       }
-       );
-  }
-
   //sha3 for a 32 byte key
   key hash_key(const key in) {
     return hash2rct(crypto::sha3(epee::pod_to_span(in)));
