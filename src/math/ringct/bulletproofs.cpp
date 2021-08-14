@@ -552,14 +552,14 @@ struct proof_data_t
 {
   rct::scalar x, y, z, x_ip;
   std::vector<rct::scalar> w;
-  size_t logM, inv_offset;
+  size_t logM;
 };
 
 /* Given a range proof, determine if it is valid
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
+bool bulletproof_VERIFY_1(const Bulletproof proof)
 {
   init_exponents();
 
@@ -571,9 +571,8 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
   size_t max_length = 0;
   size_t nV = 0;
   std::vector<rct::scalar> to_invert;
-  to_invert.reserve(11 * proofs.size());
+  to_invert.reserve(11);
   size_t max_logM = 0;
-  const Bulletproof& proof = proofs[0];
 
     // check scalar range
     LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input scalar not in range");
@@ -627,6 +626,7 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
     max_logM = std::max(pd.logM, max_logM);
 
     const size_t rounds = pd.logM + logN;
+
     LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
     // The inner product challenges are computed per round
@@ -640,7 +640,6 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
       to_invert.push_back(pd_w);
     }
 
-    pd.inv_offset = 0;
     to_invert.push_back(pd.y);
 
 
@@ -648,21 +647,17 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
   size_t maxMN = 1u << max_length;
 
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) * proofs.size() + 2 * maxMN);
+  multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) + 2 * maxMN);
 
   const scalarV inverses = invertV(to_invert);
 
   // setup weighted aggregates
   // accumulator
-  rct::scalar z1 = rct::s_zero;
-  rct::scalar z3 = rct::s_zero;
-  rct::scalarV m_z4(maxMN, rct::s_zero), m_z5(maxMN, rct::s_zero);
-  rct::scalar y0 = rct::s_zero, y1 = rct::s_zero;
 
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
 
-    const rct::scalarS winv = std::span(inverses).subspan(pd.inv_offset);
-    const rct::scalar yinv = inverses[pd.inv_offset + rounds];
+    const rct::scalarS winv = std::span(inverses);
+    const rct::scalar yinv = inverses[rounds];
 
     const rct::scalar weight_y = rct::skGen();
     const rct::scalar weight_z = rct::skGen();
@@ -715,13 +710,13 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
     // rct::scalar yinvpow = rct::s_one;
     // rct::scalar ypow = rct::s_one;
 
-    const scalarV c_z5 = m_z5;
-    std::generate_n
+    rct::scalarV m_z5(MN);
+    std::generate
       (
        m_z5.begin()
-       , MN
+       , m_z5.end()
        , [i = 0, yinvpow = s_one, ypow = s_one
-          , zpow, yinv, pd, weight_z, proof, w_cache, MN, c_z5
+          , zpow, yinv, pd, weight_z, proof, w_cache, MN
           ] () mutable -> scalar {
          // Convert the index to binary IN REVERSE and construct the scalar exponent
 
@@ -738,21 +733,21 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
          yinvpow = yinvpow * yinv;
          ypow = ypow * pd.y;
 
-         const scalar r = c_z5[i] - h_scalar * weight_z;
+         const scalar r = s_zero - h_scalar * weight_z;
          i++;
          return r;
        }
        );
 
+    rct::scalarV m_z4(MN);
     std::transform
       (
-       m_z4.begin()
-       , std::next(m_z4.begin(), MN)
-       , w_cache.begin()
+       w_cache.begin()
+       , std::next(w_cache.begin(), MN)
        , m_z4.begin()
-       , [proof, pd, weight_z](const auto& z4, const auto& cache) {
+       , [proof, pd, weight_z](const auto& cache) {
          const scalar g_scalar = proof.a * cache + pd.z;
-         return z4 - g_scalar * weight_z;
+         return s_zero - g_scalar * weight_z;
        }
        );
 
@@ -766,10 +761,10 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
       k = k - zpow[j+2] * ip12;
     }
 
-    y0 = y0 - proof.taux * weight_y;
-    y1 = y1 + (proof.t - (pd.z * ip1y + k)) * weight_y;
-    z1 = z1 + proof.mu * weight_z;
-    z3 = z3 + (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
+    const scalar y0 = s_zero - proof.taux * weight_y;
+    const scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
+    const scalar z1 = proof.mu * weight_z;
+    const scalar z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
 
   // now check all proofs at once
   multiexp_data.emplace_back(y0 - z1, rct::G);
@@ -803,16 +798,6 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
 
 bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 {
-
-  // return std::transform_reduce
-  //   (
-  //    a.begin()
-  //    , a.end()
-  //    , b.begin()
-  //    , rct::s_zero
-  //    , std::plus<scalar>()
-  //    , std::multiplies<scalar>()
-  //    );
   return std::transform_reduce
     (
      proofs.begin()
@@ -820,7 +805,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
      , true
      , std::logical_and()
      , [](const auto& p) {
-       return bulletproof_VERIFY_1(std::array{p});
+       return bulletproof_VERIFY_1(p);
      }
      );
 }
