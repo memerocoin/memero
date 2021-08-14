@@ -219,7 +219,7 @@ namespace rct {
         return sig;
     }
 
-    key get_mlsag_pre_hash(const rctSig rv)
+  crypto::hash get_mlsag_pre_hash(const rctSig rv)
     {
       hw::device& hwdev = hw::get_device("default");
       crypto::dataV hashes;
@@ -232,7 +232,7 @@ namespace rct {
       LOG_ERROR_AND_THROW_UNLESS(!rv.mixRing.empty(), "Empty mixRing");
       const size_t inputs = rv.mixRing.size();
       const size_t outputs = rv.ecdhInfo.size();
-      key prehash;
+      crypto::hash prehash;
       LOG_ERROR_AND_THROW_UNLESS(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
           "Failed to serialize rctSigBase");
       cryptonote::get_blob_hash(ss.str(), h);

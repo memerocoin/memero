@@ -350,10 +350,10 @@ namespace hw {
         , size_t outputs_size
         , const crypto::dataV &hashes
         , const rct::ctkeyV &outPk
-        , rct::key &prehash
+        , crypto::hash &prehash
         )
         {
-            prehash = rct::d2rct(rct::hash_keys(hashes));
+            prehash = rct::hash_keys(hashes);
             return true;
         }
 

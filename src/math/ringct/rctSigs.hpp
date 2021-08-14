@@ -116,6 +116,6 @@ namespace rct {
   }
 
   amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, scalar& mask);
-  key get_mlsag_pre_hash(const rctSig rv);
+  cryptO::jhash get_mlsag_pre_hash(const rctSig rv);
 }
 

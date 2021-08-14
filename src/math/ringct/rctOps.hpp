@@ -111,12 +111,12 @@ namespace rct {
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
   key addMultG_H(const scalar a, const scalar b);
 
-  crypto::crypto_data hash_key(const crypto::crypto_data in);
+  crypto::hash hash_key(const crypto::crypto_data in);
   scalar hash_to_scalar(const crypto::crypto_data in);
 
 
   //for mg sigs
-  crypto::crypto_data hash_keys(const std::span<const crypto::crypto_data> keys);
+  crypto::hash hash_keys(const std::span<const crypto::crypto_data> keys);
   scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys);
 
   //for ANSL

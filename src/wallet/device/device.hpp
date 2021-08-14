@@ -218,7 +218,7 @@ namespace hw {
        , size_t outputs_size
        , const crypto::dataV &hashes
        , const rct::ctkeyV &outPk
-       , rct::key &prehash
+       , crypto::hash &prehash
        ) = 0;
 
         virtual bool clsag_prepare
