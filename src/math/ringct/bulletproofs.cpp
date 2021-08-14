@@ -788,13 +788,14 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   const scalarV inverses = invertV(to_invert);
 
   // setup weighted aggregates
+  // accumulator
   rct::scalar z1 = rct::s_zero;
   rct::scalar z3 = rct::s_zero;
   rct::scalarV m_z4(maxMN, rct::s_zero), m_z5(maxMN, rct::s_zero);
   rct::scalar y0 = rct::s_zero, y1 = rct::s_zero;
+
   int proof_data_index = 0;
-  rct::scalarV w_cache;
-  std::vector<key> proof8_V, proof8_L, proof8_R;
+
   for (const Bulletproof& proof: proofs)
   {
     const proof_data_t &pd = proof_data[proof_data_index++];
@@ -840,7 +841,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
 
     // precalc
-    w_cache.resize(1<<rounds);
+    rct::scalarV w_cache(1<<rounds);
     w_cache[0] = winv[0];
     w_cache[1] = pd.w[0];
     for (size_t j = 1; j < rounds; ++j)
