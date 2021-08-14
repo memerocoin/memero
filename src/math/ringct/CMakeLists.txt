@@ -32,6 +32,7 @@ add_library(math_ringct_basic
   rctTypes.cpp
   multiexp.cpp
   bulletproofs.cpp
+  vectorOps.cpp
 )
 
 target_link_libraries(math_ringct_basic

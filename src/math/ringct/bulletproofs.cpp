@@ -32,6 +32,7 @@
 
 #include "bulletproofs.hpp"
 
+#include "vectorOps.hpp"
 #include "rctOps.hpp"
 #include "curveConstants.hpp"
 #include "multiexp.hpp"
@@ -54,22 +55,6 @@ namespace rct
 {
 
 rct::key vector_exponent(const scalarS a, const scalarS b);
-rct::scalarV vector_powers(const rct::scalar x, const size_t n);
-
-/* Given two scalar arrays, construct the inner product */
-rct::scalar inner_product(const scalarS a, const scalarS b)
-{
-  assert(a.size() == b.size());
-  return std::transform_reduce
-    (
-     a.begin()
-     , a.end()
-     , b.begin()
-     , rct::s_zero
-     , std::plus<scalar>()
-     , std::multiplies<scalar>()
-     );
-}
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
@@ -217,56 +202,7 @@ rct::key cross_vector_exponent8
   return multiexp(multiexp_data);
 }
 
-/* Given a scalar, construct a vector of powers */
-rct::scalarV vector_powers(const rct::scalar x, const size_t n)
-{
-  if (n == 0)
-    return {};
 
-  rct::scalarV xs(n - 1, x);
-  scalarL accum = std::accumulate
-    (
-     xs.begin()
-     , xs.end()
-     , scalarL{rct::s_one}
-     , [](const auto& carry, const auto& i) {
-       scalarL ys = std::move(carry);
-       ys.push_back(ys.back() * i);
-       return ys;
-     }
-     );
-
-  scalarV res(accum.size());
-  std::copy(accum.begin(), accum.end(), res.begin());
-
-  return res;
-}
-
-/* Given a scalar, return the sum of its powers from 0 to n-1 */
-rct::scalar vector_power_sum(const rct::scalar x, const size_t n)
-{
-  const auto xs = vector_powers(x, n);
-
-  return std::reduce(xs.begin(), xs.end(), rct::s_zero);
-}
-
-
-/* Given two scalar arrays, construct the Hadamard product */
-rct::scalarV hadamard(const scalarS a, const scalarS b)
-{
-  LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  rct::scalarV res(a.size());
-  std::transform
-    (
-     a.begin()
-     , a.end()
-     , b.begin()
-     , res.begin()
-     , std::multiplies<scalar>()
-     );
-
-  return res;
-}
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
 keyV hadamard_fold(keyS v, const std::optional<rct::scalarS> scale, const rct::scalar a, const rct::scalar b)
@@ -299,90 +235,6 @@ keyV hadamard_fold(keyS v, const std::optional<rct::scalarS> scale, const rct::s
   return out;
 }
 
-/* Add two vectors */
-rct::scalarV vector_add(const scalarS a, const scalarS b)
-{
-  LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  rct::scalarV res(a.size());
-  std::transform
-    (
-     a.begin()
-     , a.end()
-     , b.begin()
-     , res.begin()
-     , std::plus<scalar>()
-     );
-
-  return res;
-}
-
-/* Add a scalar to all elements of a vector */
-rct::scalarV vector_add(const scalarS a, const rct::scalar b)
-{
-  rct::scalarV res(a.size());
-  std::transform
-    (
-     a.begin()
-     , a.end()
-     , res.begin()
-     , [b](const auto& x) { return x + b; }
-     );
-
-  return res;
-}
-
-/* Subtract a scalar from all elements of a vector */
-rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
-{
-  rct::scalarV res(a.size());
-  std::transform
-    (
-     a.begin()
-     , a.end()
-     , res.begin()
-     , [b](const auto& x) { return x - b; }
-     );
-
-  return res;
-}
-
-/* Multiply a scalar and a vector */
-rct::scalarV vector_mult(const scalarS a, const rct::scalar b)
-{
-  rct::scalarV res(a.size());
-  std::transform
-    (
-     a.begin()
-     , a.end()
-     , res.begin()
-     , [b](const auto& x) { return x * b; }
-     );
-
-  return res;
-}
-
-/* Compute the inverse of a scalar, the clever way */
-rct::scalar invert(const rct::scalar x)
-{
-  rct::scalar r;
-  crypto_core_ed25519_scalar_invert(r.data, x.data);
-  return r;
-}
-
-rct::scalarV invertV(const rct::scalarV v)
-{
-  scalarV r(v.size());
-
-  std::transform
-    (
-     v.begin()
-     , v.end()
-     , r.begin()
-     , [](const auto& x) { return invert(x); }
-     );
-
-  return r;
-}
 
 rct::scalar hash_carry_mash_3(const rct::scalar hash_carry, const rct::key mash0, const rct::key mash1)
 {
@@ -539,7 +391,7 @@ try_again:
   }
 
   const auto yMN = vector_powers(y, MN);
-  const rct::scalarV r0 = vector_add
+  const rct::scalarV r0 = vector_addV
     (
      hadamard(vector_add(aR, z), yMN)
      , zero_twos
@@ -581,8 +433,8 @@ try_again:
   const rct::scalar mu = x * rho + alpha;
 
   // PAPER LINES 58-60
-  const rct::scalarV l = vector_add(l0, vector_mult(l1, x));
-  const rct::scalarV r = vector_add(r0, vector_mult(r1, x));
+  const rct::scalarV l = vector_addV(l0, vector_mult(l1, x));
+  const rct::scalarV r = vector_addV(r0, vector_mult(r1, x));
 
   const rct::scalar t = inner_product(l, r);
 
@@ -662,7 +514,7 @@ try_again:
     }
 
     // PAPER LINES 33-34
-    aprime = vector_add
+    aprime = vector_addV
       (
        vector_mult
        (
@@ -676,7 +528,7 @@ try_again:
         )
        );
 
-    bprime = vector_add
+    bprime = vector_addV
       (
        vector_mult
        (
