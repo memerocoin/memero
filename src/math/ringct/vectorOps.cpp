@@ -48,7 +48,7 @@ namespace rct
   /* Given two scalar arrays, construct the inner product */
   rct::scalar inner_product(const scalarS a, const scalarS b)
   {
-    assert(a.size() == b.size());
+    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
     return std::transform_reduce
       (
        a.begin()
