@@ -56,7 +56,7 @@ namespace crypto {
   struct ec_point : ec_point_unsafe {
     ec_point operator+(const ec_point& x) const;
     ec_point operator-(const ec_point& x) const;
-    // ec_point operator*(const uint64_t x) const;
+    ec_point operator*(const uint64_t x) const;
   };
 
   struct ec_scalar_unnormalized : crypto_data {

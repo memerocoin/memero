@@ -79,6 +79,10 @@ namespace crypto {
     return sub(*this, x);
   }
 
+  ec_point ec_point::operator*(const uint64_t x) const {
+    return mult(*this, int_to_scalar(x));
+  }
+
   ec_scalar ec_scalar::operator+(const ec_scalar& x) const {
     ec_scalar s;
     crypto_core_ed25519_scalar_add(s.data, this->data, x.data);
