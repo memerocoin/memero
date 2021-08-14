@@ -54,6 +54,11 @@ namespace rct {
       return p2rct(ec_point::operator-(y));
     }
 
+    key key::operator*(const uint64_t y) const
+    {
+      return p2rct(ec_point::operator*(y));
+    }
+
     scalar scalar::operator+(const scalar& y) const
     {
       return s2s(ec_scalar::operator+(y));

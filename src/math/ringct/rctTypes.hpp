@@ -48,6 +48,8 @@ namespace rct {
     struct key : crypto::ec_point {
       key operator+(const key& y) const;
       key operator-(const key& y) const;
+
+      key operator*(const uint64_t x) const;
     };
 
 
