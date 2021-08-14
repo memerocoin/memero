@@ -305,7 +305,7 @@ namespace net_utils
 			m_cache.clear();
 		}else
 		{
-			m_query_info.m_body.append(m_cache.begin(), m_cache.begin() + m_len_remain);
+			m_query_info.m_body.append(m_cache.begin(), std::next(m_cache.begin(), m_len_remain));
 			m_cache.erase(0, m_len_remain);
 			m_len_remain = 0;
 		}

@@ -140,10 +140,10 @@ namespace net_utils
 						it_end = body.end();
 					}else
 					{
-						it_end =  body.begin() + pos;
+						it_end =  std::next(body.begin(), pos);
 					}
 				}else
-					it_end =  body.begin() + pos;
+					it_end =  std::next(body.begin(), pos);
 
 
 				if(first_step && !is_stop)
