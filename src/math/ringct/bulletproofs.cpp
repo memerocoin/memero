@@ -814,7 +814,6 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     for (size_t i = 0; i < MN; ++i)
     {
       // Convert the index to binary IN REVERSE and construct the scalar exponent
-      const scalar g_scalar = proof.a * w_cache[i] + pd.z;
 
       LOG_ERROR_AND_RETURN_UNLESS(2+i/N < zpow.size(), false, "invalid zpow index");
       LOG_ERROR_AND_RETURN_UNLESS(i%N < twoN.size(), false, "invalid twoN index");
@@ -825,12 +824,24 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
         proof.b * yinvpow * w_cache[(~i) & (MN-1)]
         - (pd.z * ypow + zpowTwoN) * yinvpow ;
 
-      m_z4[i] = m_z4[i] - g_scalar * weight_z;
       m_z5[i] = m_z5[i] - h_scalar * weight_z;
 
       yinvpow = yinvpow * yinv;
       ypow = ypow * pd.y;
     }
+
+    std::transform
+      (
+       m_z4.begin()
+       , std::next(m_z4.begin(), MN)
+       , w_cache.begin()
+       , m_z4.begin()
+       , [proof, pd, weight_z](const auto& z4, const auto& cache) {
+         const scalar g_scalar = proof.a * cache + pd.z;
+         return z4 - g_scalar * weight_z;
+       }
+       );
+
 
     for (size_t i = 0; i < rounds; ++i)
     {
