@@ -219,16 +219,20 @@ namespace crypto {
   }
 
 
-  inline constexpr crypto::public_key null_pkey = crypto::public_key{};
-  inline constexpr crypto::secret_key null_skey = crypto::secret_key{};
 
-  inline constexpr ec_scalar s_8 =
-    { {8, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0 , 0, 0, 0,0  } };
+  uint64_t scalar_to_int(const ec_scalar &in);
+  ec_scalar int_to_scalar(const uint64_t in);
+
+  const crypto::public_key null_pkey = {};
+  const crypto::secret_key null_skey = {};
 
   inline constexpr ec_scalar s_0 = {};
-
   inline constexpr ec_point identity =
     {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+  inline constexpr ec_point generator =
+    { { 0x58, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66
+        , 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66 } };
 
   bool is_valid_point(const ec_point_unsafe x);
 
@@ -250,13 +254,6 @@ namespace crypto {
   bool is_reduced(const ec_scalar_unnormalized x);
   bool is_not_reduced(const ec_scalar_unnormalized x);
 
-  //32 byte key to uint long long
-  // if the key holds a value > 2^64
-  // then the value in the first 8 bytes is returned
-  uint64_t scalar_to_int(const ec_scalar &in);
-
-  //uint long long to 32 byte key
-  ec_scalar int_to_scalar(const uint64_t in);
 }
 
 CRYPTO_MAKE_HASHABLE_HEADER(public_key)
