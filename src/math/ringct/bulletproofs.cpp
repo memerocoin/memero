@@ -568,203 +568,199 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   const size_t N = 1 << logN;
 
   // sanity and figure out which proof is longest
-  size_t max_length = 0;
-  size_t nV = 0;
   std::vector<rct::scalar> to_invert;
   to_invert.reserve(11);
-  size_t max_logM = 0;
 
-    // check scalar range
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input scalar not in range");
+  // STEP 1, fill proof_data
 
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), false, "Input scalar not in range");
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), false, "Input scalar not in range");
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), false, "Input scalar not in range");
+  // check scalar range
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input scalar not in range");
 
-    LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, false, "V does not have at least one element");
-    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
-    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), false, "Input scalar not in range");
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), false, "Input scalar not in range");
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), false, "Input scalar not in range");
 
-    max_length = std::max(max_length, proof.L.size());
-    nV += proof.V.size();
+  LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, false, "V does not have at least one element");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
 
-    // Reconstruct the challenges
-    proof_data_t pd;
-    rct::scalar hash_carry = rct::hash_keys_to_scalar(proof.V);
+  // Reconstruct the challenges
+  proof_data_t pd;
+  rct::scalar hash_carry = rct::hash_keys_to_scalar(proof.V);
 
-    pd.y = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), proof.A, proof.S});
-    LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
+  pd.y = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), proof.A, proof.S});
+  LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
-    pd.z = hash_carry = rct::hash_to_scalar(s2k(pd.y));
-    LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
+  pd.z = hash_carry = rct::hash_to_scalar(s2k(pd.y));
+  LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
 
-    pd.x = hash_carry =
-      hash_keys_to_scalar(std::array{s2k(hash_carry), s2k(pd.z), proof.T1, proof.T2});
-    LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
+  pd.x = hash_carry =
+    hash_keys_to_scalar(std::array{s2k(hash_carry), s2k(pd.z), proof.T1, proof.T2});
+  LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
 
-    pd.x_ip = hash_carry =
-      hash_keys_to_scalar
-      (
-       std::array
-       {
-         s2k(hash_carry)
-         , s2k(pd.x)
-         , s2k(proof.taux)
-         , s2k(proof.mu)
-         , s2k(proof.t)
-       });
-    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
+  pd.x_ip = hash_carry =
+    hash_keys_to_scalar
+    (
+      std::array
+      {
+        s2k(hash_carry)
+        , s2k(pd.x)
+        , s2k(proof.taux)
+        , s2k(proof.mu)
+        , s2k(proof.t)
+      });
+  LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
-    size_t M = 1;
-    pd.logM = 0;
-    while (M < std::min(maxM, proof.V.size())) {
-      pd.logM++;
-      M = M << 1;
-    }
-    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
+  size_t M = 1;
+  pd.logM = 0;
+  while (M < std::min(maxM, proof.V.size())) {
+    pd.logM++;
+    M = M << 1;
+  }
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
 
-    max_logM = std::max(pd.logM, max_logM);
+  const size_t rounds = pd.logM + logN;
 
-    const size_t rounds = pd.logM + logN;
+  LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
-    LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
+  // The inner product challenges are computed per round
+  for (size_t i = 0; i < rounds; ++i)
+  {
+    const auto pd_w = hash_carry =
+      hash_keys_to_scalar(std::array{s2k(hash_carry), proof.L[i], proof.R[i]});
+    LOG_ERROR_AND_RETURN_IF((pd_w == rct::s_zero), false, "pd_w[i] == 0");
+    pd.w.push_back(pd_w);
 
-    // The inner product challenges are computed per round
-    for (size_t i = 0; i < rounds; ++i)
-    {
-      const auto pd_w = hash_carry =
-        hash_keys_to_scalar(std::array{s2k(hash_carry), proof.L[i], proof.R[i]});
-      LOG_ERROR_AND_RETURN_IF((pd_w == rct::s_zero), false, "pd_w[i] == 0");
-      pd.w.push_back(pd_w);
+    to_invert.push_back(pd_w);
+  }
 
-      to_invert.push_back(pd_w);
-    }
-
-    to_invert.push_back(pd.y);
+  to_invert.push_back(pd.y);
 
 
-  LOG_ERROR_AND_RETURN_UNLESS(max_length < 32, false, "At least one proof is too large");
-  size_t maxMN = 1u << max_length;
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() < 32, false, "At least one proof is too large");
+  size_t maxMN = 1u << proof.L.size();
 
+  // STEP 2, use proof_data
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(nV + (2 * (max_logM + logN) + 4) + 2 * maxMN);
+  multiexp_data.reserve(proof.V.size() + (2 * (pd.logM + logN) + 4) + 2 * maxMN);
 
   const scalarV inverses = invertV(to_invert);
 
   // setup weighted aggregates
-  // accumulator
-
-    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
-
-    const rct::scalarS winv = std::span(inverses);
-    const rct::scalar yinv = inverses[rounds];
-
-    const rct::scalar weight_y = rct::skGen();
-    const rct::scalar weight_z = rct::skGen();
-
-    for (size_t i = 0; i < rounds; ++i)
-    {
-      multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, multP8(proof.L[i]));
-      multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, multP8(proof.R[i]));
-    }
-
-    const size_t MN = M*N;
-
-    const rct::scalarV zpow = vector_powers(pd.z, M+3);
-
-    std::transform
-      (
-       proof.V.begin()
-       , proof.V.end()
-       , std::next(std::next(zpow.begin()))
-       , std::back_inserter(multiexp_data)
-       , [weight_y](const auto& x, const auto& y) -> MultiexpData {
-         return {y * weight_y, multP8(x)};
-       }
-       );
-
-    multiexp_data.emplace_back(pd.x * weight_y, multP8(proof.T1));
-    multiexp_data.emplace_back(pd.x * pd.x * weight_y, multP8(proof.T2));
-    multiexp_data.emplace_back(weight_z, multP8(proof.A));
-    multiexp_data.emplace_back(pd.x * weight_z, multP8(proof.S));
-
-    // Compute the number of rounds for the inner product
-    LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
 
-    // precalc
-    rct::scalarV w_cache(1<<rounds);
-    w_cache[0] = winv[0];
-    w_cache[1] = pd.w[0];
-    for (size_t j = 1; j < rounds; ++j)
-    {
-      const size_t slots = 1<<(j+1);
-      for (size_t s = slots; s-- > 0; --s)
-      {
-        w_cache[s] = w_cache[s/2] * pd.w[j];
-        w_cache[s-1] = w_cache[s/2] * winv[j];
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
+
+  const rct::scalarS winv = std::span(inverses);
+  const rct::scalar yinv = inverses[rounds];
+
+  const rct::scalar weight_y = rct::skGen();
+  const rct::scalar weight_z = rct::skGen();
+
+  for (size_t i = 0; i < rounds; ++i)
+  {
+    multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, multP8(proof.L[i]));
+    multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, multP8(proof.R[i]));
+  }
+
+  const size_t MN = M*N;
+
+  const rct::scalarV zpow = vector_powers(pd.z, M+3);
+
+  std::transform
+    (
+      proof.V.begin()
+      , proof.V.end()
+      , std::next(std::next(zpow.begin()))
+      , std::back_inserter(multiexp_data)
+      , [weight_y](const auto& x, const auto& y) -> MultiexpData {
+        return {y * weight_y, multP8(x)};
       }
-    }
+      );
 
-    // Compute the curvepoints from G[i] and H[i]
-    // rct::scalar yinvpow = rct::s_one;
-    // rct::scalar ypow = rct::s_one;
+  multiexp_data.emplace_back(pd.x * weight_y, multP8(proof.T1));
+  multiexp_data.emplace_back(pd.x * pd.x * weight_y, multP8(proof.T2));
+  multiexp_data.emplace_back(weight_z, multP8(proof.A));
+  multiexp_data.emplace_back(pd.x * weight_z, multP8(proof.S));
 
-    rct::scalarV m_z5(MN);
-    std::generate
-      (
-       m_z5.begin()
-       , m_z5.end()
-       , [i = 0, yinvpow = s_one, ypow = s_one
-          , zpow, yinv, pd, weight_z, proof, w_cache, MN
-          ] () mutable -> scalar {
-         // Convert the index to binary IN REVERSE and construct the scalar exponent
-
-         LOG_ERROR_AND_THROW_UNLESS(2+i/N < zpow.size(), "invalid zpow index");
-         LOG_ERROR_AND_THROW_UNLESS(i%N < twoN.size(), "invalid twoN index");
-
-         const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
-
-         const scalar h_scalar =
-           proof.b * yinvpow * w_cache[(~i) & (MN-1)]
-           - (pd.z * ypow + zpowTwoN) * yinvpow ;
+  // Compute the number of rounds for the inner product
+  LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
 
-         yinvpow = yinvpow * yinv;
-         ypow = ypow * pd.y;
-
-         const scalar r = s_zero - h_scalar * weight_z;
-         i++;
-         return r;
-       }
-       );
-
-    rct::scalarV m_z4(MN);
-    std::transform
-      (
-       w_cache.begin()
-       , std::next(w_cache.begin(), MN)
-       , m_z4.begin()
-       , [proof, pd, weight_z](const auto& cache) {
-         const scalar g_scalar = proof.a * cache + pd.z;
-         return s_zero - g_scalar * weight_z;
-       }
-       );
-
-
-    // collect
-    const rct::scalar ip1y = vector_power_sum(pd.y, MN);
-    rct::scalar k = s_zero - zpow[2] * ip1y;
-    for (size_t j = 1; j <= M; ++j)
+  // precalc
+  rct::scalarV w_cache(1<<rounds);
+  w_cache[0] = winv[0];
+  w_cache[1] = pd.w[0];
+  for (size_t j = 1; j < rounds; ++j)
+  {
+    const size_t slots = 1<<(j+1);
+    for (size_t s = slots; s-- > 0; --s)
     {
-      LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
-      k = k - zpow[j+2] * ip12;
+      w_cache[s] = w_cache[s/2] * pd.w[j];
+      w_cache[s-1] = w_cache[s/2] * winv[j];
     }
+  }
 
-    const scalar y0 = s_zero - proof.taux * weight_y;
-    const scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
-    const scalar z1 = proof.mu * weight_z;
-    const scalar z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
+  // Compute the curvepoints from G[i] and H[i]
+  // rct::scalar yinvpow = rct::s_one;
+  // rct::scalar ypow = rct::s_one;
+
+  rct::scalarV m_z5(MN);
+  std::generate
+    (
+      m_z5.begin()
+      , m_z5.end()
+      , [i = 0, yinvpow = s_one, ypow = s_one
+        , zpow, yinv, pd, weight_z, proof, w_cache, MN
+        ] () mutable -> scalar {
+        // Convert the index to binary IN REVERSE and construct the scalar exponent
+
+        LOG_ERROR_AND_THROW_UNLESS(2+i/N < zpow.size(), "invalid zpow index");
+        LOG_ERROR_AND_THROW_UNLESS(i%N < twoN.size(), "invalid twoN index");
+
+        const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
+
+        const scalar h_scalar =
+          proof.b * yinvpow * w_cache[(~i) & (MN-1)]
+          - (pd.z * ypow + zpowTwoN) * yinvpow ;
+
+
+        yinvpow = yinvpow * yinv;
+        ypow = ypow * pd.y;
+
+        const scalar r = s_zero - h_scalar * weight_z;
+        i++;
+        return r;
+      }
+      );
+
+  rct::scalarV m_z4(MN);
+  std::transform
+    (
+      w_cache.begin()
+      , std::next(w_cache.begin(), MN)
+      , m_z4.begin()
+      , [proof, pd, weight_z](const auto& cache) {
+        const scalar g_scalar = proof.a * cache + pd.z;
+        return s_zero - g_scalar * weight_z;
+      }
+      );
+
+
+  // collect
+  const rct::scalar ip1y = vector_power_sum(pd.y, MN);
+  rct::scalar k = s_zero - zpow[2] * ip1y;
+  for (size_t j = 1; j <= M; ++j)
+  {
+    LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
+    k = k - zpow[j+2] * ip12;
+  }
+
+  const scalar y0 = s_zero - proof.taux * weight_y;
+  const scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
+  const scalar z1 = proof.mu * weight_z;
+  const scalar z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
+
 
   // now check all proofs at once
   multiexp_data.emplace_back(y0 - z1, rct::G);
