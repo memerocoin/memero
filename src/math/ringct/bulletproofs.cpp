@@ -693,8 +693,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     nV += proof.V.size();
 
     // Reconstruct the challenges
-    proof_data.resize(proof_data.size() + 1);
-    proof_data_t &pd = proof_data.back();
+    proof_data_t pd;
     rct::scalar hash_carry = rct::hash_keys_to_scalar(proof.V);
 
     pd.y = hash_carry = hash_carry_mash_3(hash_carry, proof.A, proof.S);
@@ -712,23 +711,27 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     size_t M;
     for (pd.logM = 0; (M = 1<<pd.logM) <= maxM && M < proof.V.size(); ++pd.logM);
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
+
     max_logM = std::max(pd.logM, max_logM);
 
-    const size_t rounds = pd.logM+logN;
+    const size_t rounds = pd.logM + logN;
     LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
     // The inner product challenges are computed per round
-    pd.w.resize(rounds);
     for (size_t i = 0; i < rounds; ++i)
     {
-      pd.w[i] = hash_carry = hash_carry_mash_3(hash_carry, proof.L[i], proof.R[i]);
-      LOG_ERROR_AND_RETURN_IF((pd.w[i] == rct::s_zero), false, "w[i] == 0");
+      const auto pd_w = hash_carry = hash_carry_mash_3(hash_carry, proof.L[i], proof.R[i]);
+      LOG_ERROR_AND_RETURN_IF((pd_w == rct::s_zero), false, "pd_w[i] == 0");
+      pd.w.push_back(pd_w);
+
+      to_invert.push_back(pd_w);
     }
 
     pd.inv_offset = inv_offset;
-    for (size_t i = 0; i < rounds; ++i)
-      to_invert.push_back(pd.w[i]);
     to_invert.push_back(pd.y);
+
+    proof_data.push_back(pd);
+
     inv_offset += rounds + 1;
   }
   LOG_ERROR_AND_RETURN_UNLESS(max_length < 32, false, "At least one proof is too large");
@@ -785,12 +788,6 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
        , [](const auto& x) { return rct::multPoint8(x); }
        );
 
-    const key proof8_T1 = rct::multPoint8(proof.T1);
-    const key proof8_T2 = rct::multPoint8(proof.T2);
-    const key proof8_S  = rct::multPoint8(proof.S);
-    const key proof8_A  = rct::multPoint8(proof.A);
-
-    m_y0 = m_y0 - proof.taux * weight_y;
 
     const rct::scalarV zpow = vector_powers(pd.z, M+3);
 
@@ -802,8 +799,6 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       k = k - zpow[j+2] * ip12;
     }
 
-    y1 = y1 + (proof.t - (pd.z * ip1y + k)) * weight_y;
-
     std::transform
       (
        proof8_V.begin()
@@ -813,10 +808,10 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
        , [weight_y](const auto& x, const auto& y) -> MultiexpData { return {y * weight_y, x}; }
        );
 
-    multiexp_data.emplace_back(pd.x * weight_y, proof8_T1);
-    multiexp_data.emplace_back(pd.x * pd.x * weight_y, proof8_T2);
-    multiexp_data.emplace_back(weight_z, proof8_A);
-    multiexp_data.emplace_back(pd.x * weight_z, proof8_S);
+    multiexp_data.emplace_back(pd.x * weight_y, multPoint8(proof.T1));
+    multiexp_data.emplace_back(pd.x * pd.x * weight_y, multPoint8(proof.T2));
+    multiexp_data.emplace_back(weight_z, multPoint8(proof.A));
+    multiexp_data.emplace_back(pd.x * weight_z, multPoint8(proof.S));
 
     // Compute the number of rounds for the inner product
     const size_t rounds = pd.logM+logN;
@@ -850,6 +845,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
       LOG_ERROR_AND_RETURN_UNLESS(2+i/N < zpow.size(), false, "invalid zpow index");
       LOG_ERROR_AND_RETURN_UNLESS(i%N < twoN.size(), false, "invalid twoN index");
+
       const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
 
       const scalar h_scalar =
@@ -863,23 +859,41 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
       ypow = ypow * pd.y;
     }
 
-    z1 = z1 + proof.mu * weight_z;
     for (size_t i = 0; i < rounds; ++i)
     {
       multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, proof8_L[i]);
       multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, proof8_R[i]);
     }
+
+    // collect
+    y1 = y1 + (proof.t - (pd.z * ip1y + k)) * weight_y;
+    z1 = z1 + proof.mu * weight_z;
     z3 = z3 + (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
+    m_y0 = m_y0 - proof.taux * weight_y;
   }
 
   // now check all proofs at once
   multiexp_data.emplace_back(m_y0 - z1, rct::G);
   multiexp_data.emplace_back(z3 - y1, rct::H);
-  for (size_t i = 0; i < maxMN; ++i)
-  {
-    multiexp_data.emplace_back(m_z4[i], Gi[i]);
-    multiexp_data.emplace_back(m_z5[i], Hi[i]);
-  }
+
+  std::transform
+    (
+     m_z4.begin()
+     , m_z4.end()
+     , std::begin(Gi)
+     , std::back_inserter(multiexp_data)
+     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+     );
+
+  std::transform
+    (
+     m_z5.begin()
+     , m_z5.end()
+     , std::begin(Hi)
+     , std::back_inserter(multiexp_data)
+     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+     );
+
   if (!(multiexp(multiexp_data) == rct::identity))
   {
     LOG_ERROR("Verification failure");
