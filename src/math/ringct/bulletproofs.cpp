@@ -382,7 +382,7 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   size_t M = 1;
   size_t logM = 0;
 
-  while (M < maxM && M < sv.size()) {
+  while (M < std::min(maxM, sv.size())) {
     logM++;
     M = M << 1;
   }
