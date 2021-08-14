@@ -182,7 +182,7 @@ namespace rct {
             c_c = mu_C * c;
 
             // Compute L
-            L = addKeys
+            L = addPoints
               (
                std::array
                {
@@ -194,7 +194,7 @@ namespace rct {
 
             // Compute R
             const key A = hash_to_key_via_f2(P[i]);
-            R = addKeys
+            R = addPoints
               (
                std::array
                {
@@ -382,7 +382,7 @@ namespace rct {
             const key C = mask - C_offset;
 
             // Compute L
-            L = addKeys
+            L = addPoints
               (
                std::array
                {
@@ -395,7 +395,7 @@ namespace rct {
             // Compute R
             const key k = hash_to_key_via_f2(pubs[i].dest);
 
-            R = addKeys
+            R = addPoints
               (
                std::array
                {
@@ -626,11 +626,11 @@ namespace rct {
           for (size_t i = 0; i < rv.outPk.size(); i++) {
             masks[i] = rv.outPk[i].mask;
           }
-          key sumOutpks = addKeys(masks);
+          key sumOutpks = addPoints(masks);
           const key txnFeeKey = multH(int_to_scalar(rv.txnFee));
           sumOutpks = txnFeeKey + sumOutpks;
 
-          key sumPseudoOuts = addKeys(pseudoOuts);
+          key sumPseudoOuts = addPoints(pseudoOuts);
 
           //check pseudoOuts vs Outs..
           if (sumPseudoOuts != sumOutpks) {

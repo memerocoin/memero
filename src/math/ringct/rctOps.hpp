@@ -109,7 +109,7 @@ namespace rct {
 
   //Curve addition / subtractions
 
-  rct::key addKeys(const keyS A);
+  rct::key addPoints(const keyS A);
 
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
   key addMultG_H(const scalar a, const scalar b);
