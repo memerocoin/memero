@@ -319,15 +319,6 @@ rct::scalarV invertV(const rct::scalarV v)
   return r;
 }
 
-/* Compute the slice of a vector */
-scalarS slice(const scalarS a, size_t start, size_t stop)
-{
-  LOG_ERROR_AND_THROW_UNLESS(start < a.size(), "Invalid start index");
-  LOG_ERROR_AND_THROW_UNLESS(stop <= a.size(), "Invalid stop index");
-  LOG_ERROR_AND_THROW_UNLESS(start < stop, "Invalid start/stop indices");
-  return a.subspan(start, stop - start);
-}
-
 rct::scalar hash_carry_mash_3(const rct::scalar hash_carry, const rct::key mash0, const rct::key mash1)
 {
   std::array<key, 3> data {
@@ -560,8 +551,17 @@ try_again:
     nprime /= 2;
 
     // PAPER LINES 21-22
-    rct::scalar cL = inner_product(slice(aprime, 0, nprime), slice(bprime, nprime, bprime.size()));
-    rct::scalar cR = inner_product(slice(aprime, nprime, aprime.size()), slice(bprime, 0, nprime));
+    rct::scalar cL = inner_product
+      (
+       std::span(aprime).subspan(0, nprime)
+       , std::span(bprime).subspan(nprime, bprime.size() - nprime)
+       );
+
+    rct::scalar cR = inner_product
+      (
+       std::span(aprime).subspan(nprime, aprime.size() - nprime)
+       , std::span(bprime).subspan(0, nprime)
+       );
 
     // PAPER LINES 23-24
     L[round] = cross_vector_exponent8
@@ -590,13 +590,30 @@ try_again:
     // PAPER LINES 33-34
     aprime = vector_add
       (
-       vector_mult(slice(aprime, 0, nprime), w[round])
-       , vector_mult(slice(aprime, nprime, aprime.size()), winv)
+       vector_mult
+       (
+        std::span(aprime).subspan(0, nprime)
+        , w[round]
+        )
+       , vector_mult
+       (
+        std::span(aprime).subspan(nprime, aprime.size() - nprime)
+        , winv
+        )
        );
+
     bprime = vector_add
       (
-       vector_mult(slice(bprime, 0, nprime), winv)
-       , vector_mult(slice(bprime, nprime, bprime.size()), w[round])
+       vector_mult
+       (
+        std::span(bprime).subspan(0, nprime)
+        , winv
+        )
+       , vector_mult
+       (
+        std::span(bprime).subspan(nprime, bprime.size() - nprime)
+        , w[round]
+        )
        );
 
     scale = {};
