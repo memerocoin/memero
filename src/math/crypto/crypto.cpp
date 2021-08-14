@@ -462,6 +462,14 @@ namespace crypto {
     return res;
   }
 
+  // multiplicative inverse
+  ec_scalar invert(const ec_scalar x)
+  {
+    ec_scalar r;
+    crypto_core_ed25519_scalar_invert(r.data, x.data);
+    return r;
+  }
+
   key_image generate_key_image(const public_key &pub, const secret_key &sec) {
     const ec_point h = viaF2(h2p(sha3(epee::pod_to_span(pub))));
     const ec_point p = mult(mult8(h), sec);

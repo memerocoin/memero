@@ -35,7 +35,6 @@
 
 #include "tools/epee/include/logging.hpp"
 
-#include <cassert>
 #include <list>
 
 
@@ -164,9 +163,7 @@ namespace rct
   /* Compute the inverse of a scalar, the clever way */
   rct::scalar invert(const rct::scalar x)
   {
-    rct::scalar r;
-    crypto_core_ed25519_scalar_invert(r.data, x.data);
-    return r;
+    return s2s(crypto::invert(x));
   }
 
   rct::scalarV invertV(const rct::scalarV v)

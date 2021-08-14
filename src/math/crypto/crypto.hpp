@@ -227,6 +227,8 @@ namespace crypto {
   ec_point mult8(const ec_point X);
   ec_point multBase(const ec_scalar);
 
+  ec_scalar invert(const ec_scalar x);
+
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 
   ec_point viaF2(const ec_point x);
