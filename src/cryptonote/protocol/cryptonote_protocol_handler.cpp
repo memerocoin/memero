@@ -1672,7 +1672,8 @@ skip:
     if (skip > 0)
     {
       LOG_DEBUG(context << "skipping " << skip << "/" << context.m_needed_objects.size() << " blocks");
-      context.m_needed_objects = std::vector<std::pair<crypto::hash, uint64_t>>(context.m_needed_objects.begin() + skip, context.m_needed_objects.end());
+      context.m_needed_objects = std::vector<std::pair<crypto::hash, uint64_t>>
+        (std::next(context.m_needed_objects.begin(), skip), context.m_needed_objects.end());
     }
     return skip;
   }
@@ -1780,7 +1781,8 @@ skip:
             return false;
           }
           if (skip > 0)
-            context.m_needed_objects = std::vector<std::pair<crypto::hash, uint64_t>>(context.m_needed_objects.begin() + skip, context.m_needed_objects.end());
+            context.m_needed_objects = std::vector<std::pair<crypto::hash, uint64_t>>
+              (std::next(context.m_needed_objects.begin(), skip), context.m_needed_objects.end());
           if (context.m_needed_objects.size() < span.second)
           {
             LOG_ERROR("ERROR: span " << span.first << "/" << span.second << ", m_needed_objects " << context.m_needed_objects.size());
@@ -1794,7 +1796,8 @@ skip:
             ++count;
             context.m_requested_objects.insert(context.m_needed_objects[n].first);
           }
-          context.m_needed_objects = std::vector<std::pair<crypto::hash, uint64_t>>(context.m_needed_objects.begin() + span.second, context.m_needed_objects.end());
+          context.m_needed_objects = std::vector<std::pair<crypto::hash, uint64_t>>
+            (std::next(context.m_needed_objects.begin(), span.second), context.m_needed_objects.end());
         }
 
         context.m_last_request_time = std::chrono::system_clock::now();

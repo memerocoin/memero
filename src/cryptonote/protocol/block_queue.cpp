@@ -264,7 +264,7 @@ std::pair<uint64_t, uint64_t> block_queue::reserve_span(uint64_t first_block_hei
     return std::make_pair(0, 0);
   }
 
-  i = block_hashes.begin() + span_start_height - block_hashes_start_height;
+  i = std::next(block_hashes.begin(), span_start_height - block_hashes_start_height);
   while (i != block_hashes.end() && requested_internal((*i).first))
   {
     ++i;

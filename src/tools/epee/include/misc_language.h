@@ -68,7 +68,7 @@ namespace misc_utils
       return v[0];
 
     const size_t n = v.size() / 2;
-    std::nth_element(v.begin(), v.begin() + n, v.end());
+    std::nth_element(v.begin(), std::next(v.begin(), n), v.end());
     return v[n];
   }
 

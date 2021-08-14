@@ -329,7 +329,7 @@ void RPC_Client::get_outs
       }
 
       // sort the subsection, to ensure the daemon doesn't know which output is ours
-      std::sort(req.outputs.begin() + start, req.outputs.end(),
+      std::sort(std::next(req.outputs.begin(), start), req.outputs.end(),
           [](const get_outputs_out &a, const get_outputs_out &b) { return a.index < b.index; });
     }
 
