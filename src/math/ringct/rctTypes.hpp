@@ -414,6 +414,7 @@ namespace rct {
 
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in);
+
     inline const rct::key &scalar2key(const scalar &x) { return (const rct::key&)x; }
     inline const rct::scalar &key2scalar(const key &x) { return (const rct::scalar&)x; }
     inline auto s2k = scalar2key;

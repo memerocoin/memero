@@ -526,8 +526,8 @@ TEST(ringct, d2h)
   auto [s, P1] = skpkGen();
   k = s2k(s);
   for (auto amount: test_amounts) {
-    auto k = int_to_scalar(amount);
-    ASSERT_TRUE(amount == scalar_to_int(k));
+    auto k = rct::int_to_scalar(amount);
+    ASSERT_TRUE(amount == rct::scalar_to_int(k));
   }
 }
 

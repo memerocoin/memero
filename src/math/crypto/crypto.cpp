@@ -34,6 +34,7 @@
 #include "tools/common/varint.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/logging.hpp"
+#include "tools/epee/include/int-util.h"
 
 #include "config/cryptonote.hpp"
 
@@ -491,6 +492,25 @@ namespace crypto {
 
   bool is_not_reduced(const ec_scalar_unnormalized x) {
     return !(is_reduced(x));
+  }
+
+  //uint long long to 32 byte key
+  ec_scalar int_to_scalar(const uint64_t in) {
+    ec_scalar x = {};
+    memcpy_swap64le(x.data, &in, 1);
+    return x;
+  }
+
+  //32 byte key to uint long long
+  // if the key holds a value > 2^64
+  // then the value in the first 8 bytes is returned
+  uint64_t scalar_to_int(const ec_scalar & in) {
+    uint64_t vali = 0;
+    int j = 0;
+    for (j = 7; j >= 0; j--) {
+      vali = (uint64_t)(vali * 256 + (unsigned char)in.data[j]);
+    }
+    return vali;
   }
 }
 

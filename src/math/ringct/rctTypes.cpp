@@ -71,21 +71,14 @@ namespace rct {
 
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in) {
-        scalar x = s2s(crypto::s_0);
-        memcpy_swap64le(x.data, &in, 1);
-        return x;
+      return s2s(crypto::int_to_scalar(in));
     }
 
     //32 byte key to uint long long
     // if the key holds a value > 2^64
     // then the value in the first 8 bytes is returned
     amount_t scalar_to_int(const scalar & in) {
-        amount_t vali = 0;
-        int j = 0;
-        for (j = 7; j >= 0; j--) {
-            vali = (amount_t)(vali * 256 + (unsigned char)in.data[j]);
-        }
-        return vali;
+      return crypto::scalar_to_int(in);
     }
 
     size_t n_bulletproof_amounts(const Bulletproof &proof)

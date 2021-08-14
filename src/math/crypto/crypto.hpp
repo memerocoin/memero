@@ -56,6 +56,7 @@ namespace crypto {
   struct ec_point : ec_point_unsafe {
     ec_point operator+(const ec_point& x) const;
     ec_point operator-(const ec_point& x) const;
+    // ec_point operator*(const uint64_t x) const;
   };
 
   struct ec_scalar_unnormalized : crypto_data {
@@ -248,6 +249,14 @@ namespace crypto {
 
   bool is_reduced(const ec_scalar_unnormalized x);
   bool is_not_reduced(const ec_scalar_unnormalized x);
+
+  //32 byte key to uint long long
+  // if the key holds a value > 2^64
+  // then the value in the first 8 bytes is returned
+  uint64_t scalar_to_int(const ec_scalar &in);
+
+  //uint long long to 32 byte key
+  ec_scalar int_to_scalar(const uint64_t in);
 }
 
 CRYPTO_MAKE_HASHABLE_HEADER(public_key)
