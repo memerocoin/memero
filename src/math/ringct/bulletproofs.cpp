@@ -760,35 +760,6 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     const rct::scalar weight_y = rct::skGen();
     const rct::scalar weight_z = rct::skGen();
 
-    // pre-multiply some points by 8
-    proof8_V.resize(proof.V.size());
-    std::transform
-      (
-       proof.V.begin()
-       , proof.V.end()
-       , proof8_V.begin()
-       , [](const auto& x) { return rct::multPoint8(x); }
-       );
-
-    proof8_L.resize(proof.L.size());
-    std::transform
-      (
-       proof.L.begin()
-       , proof.L.end()
-       , proof8_L.begin()
-       , [](const auto& x) { return rct::multPoint8(x); }
-       );
-
-    proof8_R.resize(proof.R.size());
-    std::transform
-      (
-       proof.R.begin()
-       , proof.R.end()
-       , proof8_R.begin()
-       , [](const auto& x) { return rct::multPoint8(x); }
-       );
-
-
     const rct::scalarV zpow = vector_powers(pd.z, M+3);
 
     const rct::scalar ip1y = vector_power_sum(pd.y, MN);
@@ -801,11 +772,13 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     std::transform
       (
-       proof8_V.begin()
-       , proof8_V.end()
+       proof.V.begin()
+       , proof.V.end()
        , std::next(std::next(zpow.begin()))
        , std::back_inserter(multiexp_data)
-       , [weight_y](const auto& x, const auto& y) -> MultiexpData { return {y * weight_y, x}; }
+       , [weight_y](const auto& x, const auto& y) -> MultiexpData {
+         return {y * weight_y, multPoint8(x)};
+       }
        );
 
     multiexp_data.emplace_back(pd.x * weight_y, multPoint8(proof.T1));
@@ -861,8 +834,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
 
     for (size_t i = 0; i < rounds; ++i)
     {
-      multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, proof8_L[i]);
-      multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, proof8_R[i]);
+      multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, multPoint8(proof.L[i]));
+      multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, multPoint8(proof.R[i]));
     }
 
     // collect
