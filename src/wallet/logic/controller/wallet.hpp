@@ -44,7 +44,7 @@ namespace {
     LOG_ERROR_AND_RETURN_UNLESS(idx < vec.size(), T(), "idx out of bounds");
 
     T res = vec[idx];
-    vec.erase(vec.begin() + idx);
+    vec.erase(std::next(vec.begin(), idx));
 
     return res;
   }

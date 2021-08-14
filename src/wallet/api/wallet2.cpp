@@ -3309,7 +3309,7 @@ uint64_t wallet2::select_transfers(uint64_t needed_money, std::vector<size_t> un
   {
     size_t idx = pop_best_value(unused_transfers_indices, selected_transfers);
 
-    const wallet::logic::type::wallet::transfer_container::const_iterator it = m_transfers.begin() + idx;
+    const auto it = std::next(m_transfers.begin(), idx);
     selected_transfers.push_back(idx);
     found_money += it->amount();
   }
