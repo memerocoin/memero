@@ -81,8 +81,8 @@ TEST(device, ops)
   pk0 = rct::rct2pk(rct::multG((rct::scalar&)sk0));
   pk1 = rct::rct2pk(rct::multG((rct::scalar&)sk1));
 
-  dev.scalarmultKey(resd, pk, sk);
-  res = rct::scalarmultKey(pk, sk);
+  dev.multP(resd, pk, sk);
+  res = rct::multP(pk, sk);
   ASSERT_EQ(resd, res);
 
   dev.multG(resd, sk);

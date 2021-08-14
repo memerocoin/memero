@@ -96,7 +96,7 @@ namespace rct {
   key multG(const scalar a);
 
   //does a * P where a is a scalar and P is an arbitrary point
-  key scalarmultKey(const key P, const scalar a);
+  key multP(const key P, const scalar a);
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
   key scalarmultH(const scalar a);

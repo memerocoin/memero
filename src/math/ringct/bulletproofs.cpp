@@ -232,7 +232,7 @@ keyV hadamard_fold
          ? b * (*scale)[iy]
          : b;
 
-       const auto r = scalarmultKey(v[n], x) + scalarmultKey(v[iy], y);
+       const auto r = multP(v[n], x) + multP(v[iy], y);
        n++;
        return r;
      }
@@ -328,7 +328,7 @@ try_again:
   const rct::scalarV sL = rct::skvGen(MN);
   const rct::scalarV sR = rct::skvGen(MN);
   const rct::scalar rho = rct::skGen();
-  const rct::key S = scalarmultKey(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
+  const rct::key S = multP(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
 
   // PAPER LINES 48-50
   const scalar y = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), A, S});

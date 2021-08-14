@@ -32,7 +32,7 @@ rct::key dummy(const std::span<rct::MultiexpData> data)
      , rct::identity
      , std::plus<key>()
      , [](const auto& x) {
-       return rct::scalarmultKey(x.point, x.scalar);
+       return rct::multP(x.point, x.scalar);
      }
      );
 }

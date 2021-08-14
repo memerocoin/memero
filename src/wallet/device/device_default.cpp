@@ -171,7 +171,7 @@ namespace hw {
 
             // C = a*D
             crypto::public_key C = rct::rct2pk
-              (rct::scalarmultKey(rct::pk2rct(D), rct::sk2scalar(keys.m_view_secret_key)));
+              (rct::multP(rct::pk2rct(D), rct::sk2scalar(keys.m_view_secret_key)));
 
             // result: (C, D)
             cryptonote::account_public_address address;
@@ -201,8 +201,8 @@ namespace hw {
             return r && public_key == calculated_pub;
         }
 
-        bool device_default::scalarmultKey(rct::key & aP, const rct::key &P, const rct::scalar &a) {
-            aP = rct::scalarmultKey(P,a);
+        bool device_default::multP(rct::key & aP, const rct::key &P, const rct::scalar &a) {
+            aP = rct::multP(P,a);
             return true;
         }
 
@@ -293,7 +293,7 @@ namespace hw {
             {
                 additional_txkey.sec = additional_tx_keys[output_index];
                 if (dst_entr.is_subaddress)
-                    additional_txkey.pub = rct::rct2pk(rct::scalarmultKey(rct::pk2rct(dst_entr.addr.m_spend_public_key), rct::sk2scalar(additional_txkey.sec)));
+                    additional_txkey.pub = rct::rct2pk(rct::multP(rct::pk2rct(dst_entr.addr.m_spend_public_key), rct::sk2scalar(additional_txkey.sec)));
                 else
                     additional_txkey.pub = rct::rct2pk(rct::multG(rct::sk2scalar(additional_txkey.sec)));
             }
@@ -360,9 +360,9 @@ namespace hw {
          , rct::key &aH
          ) {
             std::tie(a, aG) = rct::skpkGen(); // aG = a*G
-            aH = rct::scalarmultKey(H, a); // aH = a*H
-            I = rct::scalarmultKey(H, p); // I = p*H
-            D = rct::scalarmultKey(H, z); // D = z*H
+            aH = rct::multP(H, a); // aH = a*H
+            I = rct::multP(H, p); // I = p*H
+            D = rct::multP(H, z); // D = z*H
             return true;
         }
 

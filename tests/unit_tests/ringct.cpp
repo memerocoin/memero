@@ -641,10 +641,10 @@ TEST(ringct, mul8)
   ASSERT_EQ(rct::multPoint8(rct::identity), rct::identity);
   key = rct::multPoint8(rct::identity);
   ASSERT_EQ(key, rct::identity);
-  ASSERT_EQ(rct::multPoint8(rct::H), rct::scalarmultKey(rct::H, rct::s_eight));
+  ASSERT_EQ(rct::multPoint8(rct::H), rct::multP(rct::H, rct::s_eight));
   key = rct::multPoint8(rct::H);
-  ASSERT_EQ(key, rct::scalarmultKey(rct::H, rct::s_eight));
-  ASSERT_EQ(rct::scalarmultKey(rct::scalarmultKey(rct::H, rct::s_inv_eight), rct::s_eight), rct::H);
+  ASSERT_EQ(key, rct::multP(rct::H, rct::s_eight));
+  ASSERT_EQ(rct::multP(rct::multP(rct::H, rct::s_inv_eight), rct::s_eight), rct::H);
 }
 
 TEST(ringct, aggregated)

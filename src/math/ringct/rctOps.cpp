@@ -155,7 +155,7 @@ namespace rct {
   }
 
   //does a * P where a is a scalar and P is an arbitrary point
-  key scalarmultKey(const key P, const scalar a) {
+  key multP(const key P, const scalar a) {
     scalar s = normalizeKey(a);
     return p2rct(crypto::mult(P, s));
   }
@@ -163,7 +163,7 @@ namespace rct {
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
   key scalarmultH(const scalar a) {
-    return scalarmultKey(H, a);
+    return multP(H, a);
   }
 
   //Computes 8P
@@ -210,8 +210,8 @@ namespace rct {
        std::array
        {
          multG(a)
-         , scalarmultKey(B, b)
-         , scalarmultKey(C, c)
+         , multP(B, b)
+         , multP(C, c)
        }
        );
   }
@@ -234,9 +234,9 @@ namespace rct {
       (
        std::array
        {
-         scalarmultKey(A, a)
-         , scalarmultKey(B, b)
-         , scalarmultKey(C, c)
+         multP(A, a)
+         , multP(B, b)
+         , multP(C, c)
        }
        );
   }

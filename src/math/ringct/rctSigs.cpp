@@ -118,7 +118,7 @@ namespace rct {
         }
 
         // Offset key image
-        sig.D = scalarmultKey(D, rct::s_inv_eight);
+        sig.D = multP(D, rct::s_inv_eight);
 
         // Aggregation hashes
         keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset

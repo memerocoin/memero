@@ -159,7 +159,7 @@ namespace hw {
         /*                            DERIVATION & KEY                             */
         /* ======================================================================= */
         virtual bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) = 0;
-        virtual bool  scalarmultKey(rct::key & aP, const rct::key &P, const rct::scalar &a) = 0;
+        virtual bool  multP(rct::key & aP, const rct::key &P, const rct::scalar &a) = 0;
         virtual bool  multG(rct::key &aG, const rct::scalar &a) = 0;
         virtual bool  sc_secret_add( crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) = 0;
         virtual crypto::secret_key  generate_keys(crypto::public_key &pub, crypto::secret_key &sec, const crypto::secret_key& recovery_key = crypto::secret_key(), bool recover = false) = 0;
@@ -172,10 +172,10 @@ namespace hw {
         virtual crypto::key_image generate_key_image(const crypto::public_key &pub, const crypto::secret_key &sec) = 0;
 
         // alternative prototypes available in libringct
-        rct::key scalarmultKey(const rct::key &P, const rct::scalar &a)
+        rct::key multP(const rct::key &P, const rct::scalar &a)
         {
             rct::key aP;
-            scalarmultKey(aP, P, a);
+            multP(aP, P, a);
             return aP;
         }
 

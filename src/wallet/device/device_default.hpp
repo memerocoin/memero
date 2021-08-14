@@ -90,7 +90,7 @@ namespace hw {
             /*                            DERIVATION & KEY                             */
             /* ======================================================================= */
             bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key)  override;
-            bool  scalarmultKey(rct::key & aP, const rct::key &P, const rct::scalar &a) override;
+            bool  multP(rct::key & aP, const rct::key &P, const rct::scalar &a) override;
             bool  multG(rct::key &aG, const rct::scalar &a) override;
             bool  sc_secret_add(crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) override;
             crypto::secret_key  generate_keys(crypto::public_key &pub, crypto::secret_key &sec, const crypto::secret_key& recovery_key = crypto::secret_key(), bool recover = false) override;
