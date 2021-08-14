@@ -570,14 +570,11 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
   // sanity and figure out which proof is longest
   size_t max_length = 0;
   size_t nV = 0;
-  std::vector<proof_data_t> proof_data;
-  proof_data.reserve(proofs.size());
-  size_t inv_offset = 0;
   std::vector<rct::scalar> to_invert;
   to_invert.reserve(11 * proofs.size());
   size_t max_logM = 0;
-  for (const Bulletproof& proof: proofs)
-  {
+  const Bulletproof& proof = proofs[0];
+
     // check scalar range
     LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input scalar not in range");
 
@@ -619,8 +616,12 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
        });
     LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
-    size_t M;
-    for (pd.logM = 0; (M = 1<<pd.logM) <= maxM && M < proof.V.size(); ++pd.logM);
+    size_t M = 1;
+    pd.logM = 0;
+    while (M < std::min(maxM, proof.V.size())) {
+      pd.logM++;
+      M = M << 1;
+    }
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
 
     max_logM = std::max(pd.logM, max_logM);
@@ -639,13 +640,10 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
       to_invert.push_back(pd_w);
     }
 
-    pd.inv_offset = inv_offset;
+    pd.inv_offset = 0;
     to_invert.push_back(pd.y);
 
-    proof_data.push_back(pd);
 
-    inv_offset += rounds + 1;
-  }
   LOG_ERROR_AND_RETURN_UNLESS(max_length < 32, false, "At least one proof is too large");
   size_t maxMN = 1u << max_length;
 
@@ -661,14 +659,8 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
   rct::scalarV m_z4(maxMN, rct::s_zero), m_z5(maxMN, rct::s_zero);
   rct::scalar y0 = rct::s_zero, y1 = rct::s_zero;
 
-  int proof_data_index = 0;
-
-  for (const Bulletproof& proof: proofs)
-  {
-    const proof_data_t &pd = proof_data[proof_data_index++];
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
 
-    const size_t rounds = pd.logM+logN;
     const rct::scalarS winv = std::span(inverses).subspan(pd.inv_offset);
     const rct::scalar yinv = inverses[pd.inv_offset + rounds];
 
@@ -681,8 +673,6 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
       multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, multP8(proof.R[i]));
     }
 
-
-    const size_t M = 1 << pd.logM;
     const size_t MN = M*N;
 
     const rct::scalarV zpow = vector_powers(pd.z, M+3);
@@ -780,7 +770,6 @@ bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
     y1 = y1 + (proof.t - (pd.z * ip1y + k)) * weight_y;
     z1 = z1 + proof.mu * weight_z;
     z3 = z3 + (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
-  }
 
   // now check all proofs at once
   multiexp_data.emplace_back(y0 - z1, rct::G);
