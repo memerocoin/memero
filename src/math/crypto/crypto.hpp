@@ -49,20 +49,20 @@ namespace crypto {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 
-  struct ec_point_unsafe : crypto_data {};
+  struct ec_point_unsafe : crypto_data {
+    bool operator==(const ec_point_unsafe &x) const { return !crypto_verify_32(data, x.data); }
+  };
 
   struct ec_point : ec_point_unsafe {
-    bool operator==(const ec_point &x) const { return !crypto_verify_32(data, x.data); }
-
     ec_point operator+(const ec_point& x) const;
     ec_point operator-(const ec_point& x) const;
   };
 
-  struct ec_scalar_unnormalized : crypto_data {};
+  struct ec_scalar_unnormalized : crypto_data {
+    bool operator==(const ec_scalar_unnormalized &x) const { return !crypto_verify_32(data, x.data); }
+  };
 
   struct ec_scalar : ec_scalar_unnormalized {
-    bool operator==(const ec_scalar &x) const { return !crypto_verify_32(data, x.data); }
-
     ec_scalar operator+(const ec_scalar& x) const;
     ec_scalar operator-(const ec_scalar& x) const;
     ec_scalar operator*(const ec_scalar& x) const;
@@ -246,8 +246,8 @@ namespace crypto {
 
   ec_scalar reduce(const ec_scalar_unnormalized x);
 
-  bool is_reduced(const ec_scalar x);
-  bool is_not_reduced(const ec_scalar x);
+  bool is_reduced(const ec_scalar_unnormalized x);
+  bool is_not_reduced(const ec_scalar_unnormalized x);
 }
 
 CRYPTO_MAKE_HASHABLE_HEADER(public_key)

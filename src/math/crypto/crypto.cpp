@@ -485,11 +485,11 @@ namespace crypto {
     return s;
   }
 
-  bool is_reduced(const ec_scalar x) {
-    return x == reduce(x);
+  bool is_reduced(const ec_scalar_unnormalized x) {
+    return reduce(x) == x;
   }
 
-  bool is_not_reduced(const ec_scalar x) {
+  bool is_not_reduced(const ec_scalar_unnormalized x) {
     return !(is_reduced(x));
   }
 }
