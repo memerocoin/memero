@@ -814,8 +814,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
        );
 
     multiexp_data.emplace_back(pd.x * weight_y, proof8_T1);
-    const rct::scalar xsq = pd.x * pd.x;
-    multiexp_data.emplace_back(xsq * weight_y, proof8_T2);
+    multiexp_data.emplace_back(pd.x * pd.x * weight_y, proof8_T2);
     multiexp_data.emplace_back(weight_z, proof8_A);
     multiexp_data.emplace_back(pd.x * weight_z, proof8_S);
 
