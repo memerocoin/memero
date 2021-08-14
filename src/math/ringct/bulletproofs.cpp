@@ -205,7 +205,13 @@ rct::key cross_vector_exponent8
 
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-keyV hadamard_fold(keyS v, const std::optional<rct::scalarS> scale, const rct::scalar a, const rct::scalar b)
+keyV hadamard_fold
+(
+ const keyS v
+ , const std::optional<rct::scalarS> scale
+ , const rct::scalar a
+ , const rct::scalar b
+ )
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
@@ -233,40 +239,6 @@ keyV hadamard_fold(keyS v, const std::optional<rct::scalarS> scale, const rct::s
      );
 
   return out;
-}
-
-
-rct::scalar hash_carry_mash_3(const rct::scalar hash_carry, const rct::key mash0, const rct::key mash1)
-{
-  std::array<key, 3> data {
-    s2k(hash_carry)
-   , mash0
-   , mash1
-  };
-  return rct::hash_keys_to_scalar(data);
-}
-
-rct::scalar hash_carry_mash_4(const rct::scalar hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2)
-{
-  std::array<key, 4> data {
-    s2k(hash_carry)
-    , mash0
-    , mash1
-    , mash2
-  };
-  return rct::hash_keys_to_scalar(data);
-}
-
-rct::scalar hash_carry_mash_5(const rct::scalar hash_carry, const rct::key mash0, const rct::key mash1, const rct::key mash2, const rct::key mash3)
-{
-  std::array<key, 5> data {
-    s2k(hash_carry)
-    , mash0
-    , mash1
-    , mash2
-    , mash3
-  };
-  return rct::hash_keys_to_scalar(data);
 }
 
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
@@ -359,7 +331,7 @@ try_again:
   const rct::key S = scalarmultKey(vector_exponent(sL, sR) + rct::scalarmultBase(rho), rct::s_inv_eight);
 
   // PAPER LINES 48-50
-  const scalar y = hash_carry = hash_carry_mash_3(hash_carry, A, S);
+  const scalar y = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), A, S});
   if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
@@ -413,7 +385,8 @@ try_again:
   const key T2 = scalarmultBase(tau2 * rct::s_inv_eight) + scalarmultH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
-  const rct::scalar x = hash_carry = hash_carry_mash_4(hash_carry, s2k(z), T1, T2);
+  const rct::scalar x = hash_carry = hash_keys_to_scalar
+    (std::array{s2k(hash_carry), s2k(z), T1, T2});
   if (x == rct::s_zero)
   {
     LOG_INFO("x is 0, trying again");
@@ -439,7 +412,8 @@ try_again:
   const rct::scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  const rct::scalar x_ip = hash_carry = hash_carry_mash_5(hash_carry, s2k(x), s2k(taux), s2k(mu), s2k(t));
+  const rct::scalar x_ip = hash_carry =
+    hash_keys_to_scalar(std::array{s2k(hash_carry), s2k(x), s2k(taux), s2k(mu), s2k(t)});
   if (x_ip == rct::s_zero)
   {
     LOG_INFO("x_ip is 0, trying again");
@@ -498,7 +472,7 @@ try_again:
       + scalarmultH(cR * x_ip * s_inv_eight);
 
     // PAPER LINES 25-27
-    w[round] = hash_carry = hash_carry_mash_3(hash_carry, L[round], R[round]);
+    w[round] = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), L[round], R[round]});
     if (w[round] == rct::s_zero)
     {
       LOG_INFO("w[round] is 0, trying again");
@@ -622,16 +596,27 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     proof_data_t pd;
     rct::scalar hash_carry = rct::hash_keys_to_scalar(proof.V);
 
-    pd.y = hash_carry = hash_carry_mash_3(hash_carry, proof.A, proof.S);
+    pd.y = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), proof.A, proof.S});
     LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
     pd.z = hash_carry = rct::hash_to_scalar(s2k(pd.y));
     LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
 
-    pd.x = hash_carry = hash_carry_mash_4(hash_carry, s2k(pd.z), proof.T1, proof.T2);
+    pd.x = hash_carry =
+      hash_keys_to_scalar(std::array{s2k(hash_carry), s2k(pd.z), proof.T1, proof.T2});
     LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
 
-    pd.x_ip = hash_carry = hash_carry_mash_5(hash_carry, s2k(pd.x), s2k(proof.taux), s2k(proof.mu), s2k(proof.t));
+    pd.x_ip = hash_carry =
+      hash_keys_to_scalar
+      (
+       std::array
+       {
+         s2k(hash_carry)
+         , s2k(pd.x)
+         , s2k(proof.taux)
+         , s2k(proof.mu)
+         , s2k(proof.t)
+       });
     LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
     size_t M;
@@ -646,7 +631,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     // The inner product challenges are computed per round
     for (size_t i = 0; i < rounds; ++i)
     {
-      const auto pd_w = hash_carry = hash_carry_mash_3(hash_carry, proof.L[i], proof.R[i]);
+      const auto pd_w = hash_carry =
+        hash_keys_to_scalar(std::array{s2k(hash_carry), proof.L[i], proof.R[i]});
       LOG_ERROR_AND_RETURN_IF((pd_w == rct::s_zero), false, "pd_w[i] == 0");
       pd.w.push_back(pd_w);
 
