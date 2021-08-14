@@ -49,14 +49,18 @@ namespace crypto {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 
-  struct ec_point : crypto_data {
+  struct ec_point_unsafe : crypto_data {};
+
+  struct ec_point : ec_point_unsafe {
     bool operator==(const ec_point &x) const { return !crypto_verify_32(data, x.data); }
 
     ec_point operator+(const ec_point& x) const;
     ec_point operator-(const ec_point& x) const;
   };
 
-  struct ec_scalar : crypto_data {
+  struct ec_scalar_unnormalized : crypto_data {};
+
+  struct ec_scalar : ec_scalar_unnormalized {
     bool operator==(const ec_scalar &x) const { return !crypto_verify_32(data, x.data); }
 
     ec_scalar operator+(const ec_scalar& x) const;
@@ -224,16 +228,16 @@ namespace crypto {
   ec_scalar scalarGen();
 
   ec_point mult(const ec_point X, const ec_scalar);
-  ec_point mult8(const ec_point X);
+  ec_point mult8(const ec_point_unsafe X);
   ec_point multBase(const ec_scalar);
 
   ec_scalar invert(const ec_scalar x);
 
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 
-  ec_point viaF2(const ec_point x);
+  ec_point viaF2(const ec_point_unsafe x);
 
-  ec_scalar reduce(const ec_scalar x);
+  ec_scalar reduce(const ec_scalar_unnormalized x);
 
   bool is_reduced(const ec_scalar x);
   bool is_not_reduced(const ec_scalar x);

@@ -404,7 +404,7 @@ namespace crypto {
     return c2 - sig.c == s_0;
   }
 
-  ec_point viaF2(const ec_point x) {
+  ec_point viaF2(const ec_point_unsafe x) {
     ge_p2 in;
     ge_fromfe_frombytes_vartime(&in, x.data);
     ec_point out;
@@ -445,7 +445,7 @@ namespace crypto {
   }
 
   // needed because point can be out of main group
-  ec_point mult8(const ec_point X) {
+  ec_point mult8(const ec_point_unsafe X) {
     ec_point res;
     ge_p3 in;
     ge_p2 point;
@@ -476,7 +476,7 @@ namespace crypto {
     return p2img(p);
   }
 
-  ec_scalar reduce(const ec_scalar x) {
+  ec_scalar reduce(const ec_scalar_unnormalized x) {
     unsigned char t[64] = {0};
     std::copy(std::begin(x.data), std::end(x.data), t);
 
