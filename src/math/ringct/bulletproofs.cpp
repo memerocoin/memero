@@ -638,7 +638,7 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
 
 
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() < 32, false, "At least one proof is too large");
-  size_t maxMN = 1u << proof.L.size();
+  const size_t maxMN = 1u << proof.L.size();
 
   // STEP 2, use proof_data
   std::vector<MultiexpData> multiexp_data;
@@ -702,14 +702,11 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   }
 
   // Compute the curvepoints from G[i] and H[i]
-  // rct::scalar yinvpow = rct::s_one;
-  // rct::scalar ypow = rct::s_one;
-
-  rct::scalarV m_z5(MN);
+  rct::scalarV z5_v(MN);
   std::generate
     (
-      m_z5.begin()
-      , m_z5.end()
+      z5_v.begin()
+      , z5_v.end()
       , [i = 0, yinvpow = s_one, ypow = s_one
         , zpow, yinv, pd, weight_z, proof, w_cache, MN
         ] () mutable -> scalar {
@@ -734,12 +731,12 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
       }
       );
 
-  rct::scalarV m_z4(MN);
+  rct::scalarV z4_v(MN);
   std::transform
     (
       w_cache.begin()
       , std::next(w_cache.begin(), MN)
-      , m_z4.begin()
+      , z4_v.begin()
       , [proof, pd, weight_z](const auto& cache) {
         const scalar g_scalar = proof.a * cache + pd.z;
         return s_zero - g_scalar * weight_z;
@@ -768,8 +765,8 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
 
   std::transform
     (
-     m_z4.begin()
-     , m_z4.end()
+     z4_v.begin()
+     , z4_v.end()
      , std::begin(Gi)
      , std::back_inserter(multiexp_data)
      , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
@@ -777,8 +774,8 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
 
   std::transform
     (
-     m_z5.begin()
-     , m_z5.end()
+     z5_v.begin()
+     , z5_v.end()
      , std::begin(Hi)
      , std::back_inserter(multiexp_data)
      , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
