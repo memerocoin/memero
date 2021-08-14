@@ -318,7 +318,9 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   }
 
 try_again:
-  rct::scalar hash_carry = rct::hash_keys_to_scalar(V);
+  crypto::dataV hash_keys(V.size());
+  std::copy(V.begin(), V.end(), hash_keys.begin());
+  rct::scalar hash_carry = rct::hash_keys_to_scalar(hash_keys);
 
   // PAPER LINES 43-44
   const rct::scalar alpha = rct::skGen();
@@ -331,7 +333,7 @@ try_again:
   const rct::key S = multP(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
 
   // PAPER LINES 48-50
-  const scalar y = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), A, S});
+  const scalar y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, A, S});
   if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
@@ -386,7 +388,7 @@ try_again:
 
   // PAPER LINES 54-56
   const rct::scalar x = hash_carry = hash_keys_to_scalar
-    (std::array{s2k(hash_carry), s2k(z), T1, T2});
+    (crypto::dataV{hash_carry, z, T1, T2});
   if (x == rct::s_zero)
   {
     LOG_INFO("x is 0, trying again");
@@ -413,7 +415,7 @@ try_again:
 
   // PAPER LINE 6
   const rct::scalar x_ip = hash_carry =
-    hash_keys_to_scalar(std::array{s2k(hash_carry), s2k(x), s2k(taux), s2k(mu), s2k(t)});
+    hash_keys_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
   if (x_ip == rct::s_zero)
   {
     LOG_INFO("x_ip is 0, trying again");
@@ -472,7 +474,7 @@ try_again:
       + multH(cR * x_ip * s_inv_eight);
 
     // PAPER LINES 25-27
-    w[round] = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), L[round], R[round]});
+    w[round] = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, L[round], R[round]});
     if (w[round] == rct::s_zero)
     {
       LOG_INFO("w[round] is 0, trying again");
@@ -582,29 +584,31 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
 
   // Reconstruct the challenges
-  proof_data_t pd;
-  rct::scalar hash_carry = rct::hash_keys_to_scalar(proof.V);
+  crypto::dataV hash_keys(proof.V.size());
+  std::copy(proof.V.begin(), proof.V.end(), hash_keys.begin());
+  rct::scalar hash_carry = rct::hash_keys_to_scalar(hash_keys);
 
-  pd.y = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), proof.A, proof.S});
+  proof_data_t pd;
+  pd.y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, proof.A, proof.S});
   LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
   pd.z = hash_carry = rct::hash_to_scalar(s2k(pd.y));
   LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
 
   pd.x = hash_carry =
-    hash_keys_to_scalar(std::array{s2k(hash_carry), s2k(pd.z), proof.T1, proof.T2});
+    hash_keys_to_scalar(crypto::dataV{hash_carry, pd.z, proof.T1, proof.T2});
   LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
 
   pd.x_ip = hash_carry =
     hash_keys_to_scalar
     (
-      std::array
+      crypto::dataV
       {
-        s2k(hash_carry)
-        , s2k(pd.x)
-        , s2k(proof.taux)
-        , s2k(proof.mu)
-        , s2k(proof.t)
+        hash_carry
+        , pd.x
+        , proof.taux
+        , proof.mu
+        , proof.t
       });
   LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
@@ -624,7 +628,7 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   for (size_t i = 0; i < rounds; ++i)
   {
     const auto pd_w = hash_carry =
-      hash_keys_to_scalar(std::array{s2k(hash_carry), proof.L[i], proof.R[i]});
+      hash_keys_to_scalar(crypto::dataV{hash_carry, proof.L[i], proof.R[i]});
     LOG_ERROR_AND_RETURN_IF((pd_w == rct::s_zero), false, "pd_w[i] == 0");
     pd.w.push_back(pd_w);
 

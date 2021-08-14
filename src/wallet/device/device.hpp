@@ -210,7 +210,16 @@ namespace hw {
                                                      std::vector<rct::key> &amount_keys,
                                                      crypto::public_key &out_eph_public_key) = 0;
 
-        virtual bool  mlsag_pre_hash(const std::string &blob, size_t inputs_size, size_t outputs_size, const rct::keyV &hashes, const rct::ctkeyV &outPk, rct::key &prehash) = 0;
+
+      virtual bool mlsag_pre_hash
+      (
+       const std::string &blob
+       , size_t inputs_size
+       , size_t outputs_size
+       , const crypto::dataV &hashes
+       , const rct::ctkeyV &outPk
+       , rct::key &prehash
+       ) = 0;
 
         virtual bool clsag_prepare
         (

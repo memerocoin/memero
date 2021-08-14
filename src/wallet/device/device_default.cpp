@@ -343,8 +343,17 @@ namespace hw {
             return true;
         }
 
-        bool  device_default::mlsag_pre_hash(const std::string &blob, size_t inputs_size, size_t outputs_size, const rct::keyV &hashes, const rct::ctkeyV &outPk, rct::key &prehash) {
-            prehash = rct::hash_keys(hashes);
+        bool  device_default::mlsag_pre_hash
+        (
+        const std::string &blob
+        , size_t inputs_size
+        , size_t outputs_size
+        , const crypto::dataV &hashes
+        , const rct::ctkeyV &outPk
+        , rct::key &prehash
+        )
+        {
+            prehash = rct::d2rct(rct::hash_keys(hashes));
             return true;
         }
 
@@ -367,7 +376,9 @@ namespace hw {
         }
 
         rct::scalar device_default::clsag_hash(const rct::keyV &data) {
-            return rct::hash_keys_to_scalar(data);
+            crypto::dataV hash_keys(data.size());
+            std::copy(data.begin(), data.end(), hash_keys.begin());
+            return rct::hash_keys_to_scalar(hash_keys);
         }
 
         bool device_default::clsag_sign

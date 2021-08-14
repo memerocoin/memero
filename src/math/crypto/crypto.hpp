@@ -86,6 +86,9 @@ namespace crypto {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 
+  using dataV = std::vector<crypto_data>;
+  using dataS = std::span<crypto_data>;
+
 
   inline const ec_scalar &h2s(const hash &x) { return (const ec_scalar&)x; }
   inline const ec_point &h2p(const hash &x) { return (const ec_point&)x; }
@@ -96,6 +99,10 @@ namespace crypto {
   inline const public_key &p2pk(const ec_point &x) { return (const public_key&)x; }
   inline const key_image &p2img(const ec_point &x) { return (const key_image&)x; }
   inline const key_derivation &p2derivation(const ec_point &x) { return (const key_derivation&)x; }
+
+  inline const ec_scalar_unnormalized &d2s(const crypto_data &x) { return (const ec_scalar_unnormalized&)x; }
+  inline const ec_point_unsafe &d2p(const crypto_data &x) { return (const ec_point_unsafe&)x; }
+  inline const crypto_data &h2d(const hash &x) { return (const crypto_data&)x; }
 
   /* Generate a new key pair
     */
@@ -235,7 +242,7 @@ namespace crypto {
 
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 
-  ec_point viaF2(const ec_point_unsafe x);
+  ec_point viaF2(const crypto_data x);
 
   ec_scalar reduce(const ec_scalar_unnormalized x);
 

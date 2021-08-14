@@ -404,7 +404,7 @@ namespace crypto {
     return c2 - sig.c == s_0;
   }
 
-  ec_point viaF2(const ec_point_unsafe x) {
+  ec_point viaF2(const crypto_data x) {
     ge_p2 in;
     ge_fromfe_frombytes_vartime(&in, x.data);
     ec_point out;

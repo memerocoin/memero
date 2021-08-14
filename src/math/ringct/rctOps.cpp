@@ -167,7 +167,7 @@ namespace rct {
   }
 
   //Computes 8P
-  key multP8(const key P) {
+  key multP8(const crypto::ec_point_unsafe P) {
     return p2rct(crypto::mult8(P));
   }
 
@@ -189,28 +189,28 @@ namespace rct {
   }
 
   //sha3 for a 32 byte key
-  key hash_key(const key in) {
-    return hash2rct(crypto::sha3(epee::pod_to_span(in)));
+  crypto::crypto_data hash_key(const crypto::crypto_data in) {
+    return crypto::h2d(crypto::sha3(epee::pod_to_span(in)));
   }
 
-  scalar hash_to_scalar(const key in) {
-    return s2s(reduce(k2s(hash_key(in))));
+  scalar hash_to_scalar(const crypto::crypto_data in) {
+    return s2s(reduce(d2s(hash_key(in))));
   }
 
-  key hash_keys(const keyS keys) {
+  crypto::crypto_data hash_keys(const std::span<const crypto::crypto_data> keys) {
     if (keys.empty()) {
       return rct::hash2rct(crypto::sha3({}));
     }
     const auto h = crypto::sha3(epee::blob::span((const uint8_t*)&keys[0], keys.size() * sizeof(keys[0])));
-    return hash2rct(h);
+    return h2d(h);
   }
 
-  scalar hash_keys_to_scalar(const keyS keys) {
-    return s2s(reduce(k2s(hash_keys(keys))));
+  scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys) {
+    return s2s(reduce(d2s(hash_keys(keys))));
   }
 
-  key hash_to_key_via_f2(const key k) {
-    key h = hash_key(k);
+  key hash_to_key_via_f2(const crypto::ec_point_unsafe k) {
+    const auto h = hash_key(k);
     const crypto::ec_point p = viaF2(h);
     return p2rct(mult8(p));
   }

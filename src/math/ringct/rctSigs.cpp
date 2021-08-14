@@ -121,8 +121,8 @@ namespace rct {
         sig.D = multP(D, rct::s_inv_eight);
 
         // Aggregation hashes
-        keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        keyV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
+        crypto::dataV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
+        crypto::dataV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         mu_P_to_hash[0] = zero;
         memcpy(mu_P_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
         mu_C_to_hash[0] = zero;
@@ -222,7 +222,7 @@ namespace rct {
     key get_mlsag_pre_hash(const rctSig rv)
     {
       hw::device& hwdev = hw::get_device("default");
-      keyV hashes;
+      crypto::dataV hashes;
       hashes.reserve(3);
       hashes.push_back(rv.message);
       crypto::hash h;
@@ -238,7 +238,7 @@ namespace rct {
       cryptonote::get_blob_hash(ss.str(), h);
       hashes.push_back(hash2rct(h));
 
-      keyV kv;
+      crypto::dataV kv;
       {
         kv.reserve((6*2+9) * rv.p.bulletproofs.size());
         for (const auto &p: rv.p.bulletproofs)
@@ -249,15 +249,15 @@ namespace rct {
           kv.push_back(p.S);
           kv.push_back(p.T1);
           kv.push_back(p.T2);
-          kv.push_back(s2k(p.taux));
-          kv.push_back(s2k(p.mu));
+          kv.push_back(p.taux);
+          kv.push_back(p.mu);
           for (const auto &l: p.L)
             kv.push_back(l);
           for (const auto &r: p.R)
             kv.push_back(r);
-          kv.push_back(s2k(p.a));
-          kv.push_back(s2k(p.b));
-          kv.push_back(s2k(p.t));
+          kv.push_back(p.a);
+          kv.push_back(p.b);
+          kv.push_back(p.t);
         }
       }
       hashes.push_back(hash_keys(kv));
@@ -326,8 +326,8 @@ namespace rct {
         LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary key image!");
 
         // Aggregation hashes
-        keyV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        keyV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
+        crypto::dataV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
+        crypto::dataV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         mu_P_to_hash[0] = zero;
         memcpy(mu_P_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
         mu_C_to_hash[0] = zero;
@@ -351,7 +351,7 @@ namespace rct {
         mu_C = hash_keys_to_scalar(mu_C_to_hash);
 
         // Set up round hash
-        keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
+        crypto::dataV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
         c_to_hash[0] = zero;
         memcpy(c_to_hash[0].data,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
         for (size_t i = 1; i < n+1; ++i)

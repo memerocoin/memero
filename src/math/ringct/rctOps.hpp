@@ -102,7 +102,7 @@ namespace rct {
   key multH(const scalar a);
 
   // multiplies a point by 8
-  key multP8(const key P);
+  key multP8(const crypto::ec_point_unsafe P);
 
   //Curve addition / subtractions
 
@@ -111,15 +111,17 @@ namespace rct {
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
   key addMultG_H(const scalar a, const scalar b);
 
-  key hash_key(const key in);
-  scalar hash_to_scalar(const key in);
+  crypto::crypto_data hash_key(const crypto::crypto_data in);
+  scalar hash_to_scalar(const crypto::crypto_data in);
+
 
   //for mg sigs
-  key hash_keys(const keyS keys);
-  scalar hash_keys_to_scalar(const keyS keys);
+  crypto::crypto_data hash_keys(const std::span<const crypto::crypto_data> keys);
+  scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys);
+
   //for ANSL
 
-  key hash_to_key_via_f2(const key k);
+  key hash_to_key_via_f2(const crypto::ec_point_unsafe k);
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH

@@ -456,6 +456,9 @@ namespace rct {
     inline const crypto::hash &rct2hash(const rct::key &k) { return (const crypto::hash&)k; }
 
     inline const rct::scalar &s2s(const crypto::ec_scalar &s) { return (const rct::scalar&)s; }
+
+    // unsafe
+    inline const rct::key &d2rct(const crypto::crypto_data &p) { return (const rct::key&)p; }
 }
 
 
