@@ -167,7 +167,7 @@ namespace rct {
   }
 
   //Computes 8P
-  key multPoint8(const key P) {
+  key multP8(const key P) {
     return p2rct(crypto::mult8(P));
   }
 

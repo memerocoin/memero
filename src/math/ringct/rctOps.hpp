@@ -102,7 +102,7 @@ namespace rct {
   key multH(const scalar a);
 
   // multiplies a point by 8
-  key multPoint8(const key P);
+  key multP8(const key P);
 
   // checks a is in the main subgroup (ie, not a small one)
   bool isInMainSubgroup(const key a);
