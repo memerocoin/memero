@@ -76,7 +76,8 @@ constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 const rct::scalarV oneN = vector_powers(rct::s_one, maxN);
 const rct::scalarV twoN = vector_powers(rct::s_two, maxN);
 
-rct::key Hi[maxN*maxM], Gi[maxN*maxM];
+std::array<rct::key, maxN*maxM> Hi;
+std::array<rct::key, maxN*maxM> Gi;
 
 const static rct::scalar ip12 = inner_product(oneN, twoN);
 
@@ -102,11 +103,27 @@ void init_exponents()
 {
   if (!init_done) {
     std::lock_guard<std::mutex> lock(init_mutex);
-    for (size_t i = 0; i < maxN*maxM; ++i)
-    {
-      Hi[i] = get_exponent(rct::H, i * 2);
-      Gi[i] = get_exponent(rct::H, i * 2 + 1);
-    }
+    std::generate
+      (
+       Hi.begin()
+       , Hi.end()
+       , [i = 0] () mutable {
+         const auto r = get_exponent(rct::H, i * 2);
+         i++;
+         return r;
+       }
+       );
+
+    std::generate
+      (
+       Gi.begin()
+       , Gi.end()
+       , [i = 0] () mutable {
+         const auto r = get_exponent(rct::H, i * 2 + 1);
+         i++;
+         return r;
+       }
+       );
 
     init_done = true;
   }
