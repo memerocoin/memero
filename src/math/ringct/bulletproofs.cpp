@@ -855,27 +855,37 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     }
 
     // Compute the curvepoints from G[i] and H[i]
-    rct::scalar yinvpow = rct::s_one;
-    rct::scalar ypow = rct::s_one;
+    // rct::scalar yinvpow = rct::s_one;
+    // rct::scalar ypow = rct::s_one;
 
-    for (size_t i = 0; i < MN; ++i)
-    {
-      // Convert the index to binary IN REVERSE and construct the scalar exponent
+    const scalarV c_z5 = m_z5;
+    std::generate_n
+      (
+       m_z5.begin()
+       , MN
+       , [i = 0, yinvpow = s_one, ypow = s_one
+          , zpow, yinv, pd, weight_z, proof, w_cache, MN, c_z5
+          ] () mutable -> scalar {
+         // Convert the index to binary IN REVERSE and construct the scalar exponent
 
-      LOG_ERROR_AND_RETURN_UNLESS(2+i/N < zpow.size(), false, "invalid zpow index");
-      LOG_ERROR_AND_RETURN_UNLESS(i%N < twoN.size(), false, "invalid twoN index");
+         LOG_ERROR_AND_THROW_UNLESS(2+i/N < zpow.size(), "invalid zpow index");
+         LOG_ERROR_AND_THROW_UNLESS(i%N < twoN.size(), "invalid twoN index");
 
-      const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
+         const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
 
-      const scalar h_scalar =
-        proof.b * yinvpow * w_cache[(~i) & (MN-1)]
-        - (pd.z * ypow + zpowTwoN) * yinvpow ;
+         const scalar h_scalar =
+           proof.b * yinvpow * w_cache[(~i) & (MN-1)]
+           - (pd.z * ypow + zpowTwoN) * yinvpow ;
 
-      m_z5[i] = m_z5[i] - h_scalar * weight_z;
 
-      yinvpow = yinvpow * yinv;
-      ypow = ypow * pd.y;
-    }
+         yinvpow = yinvpow * yinv;
+         ypow = ypow * pd.y;
+
+         const scalar r = c_z5[i] - h_scalar * weight_z;
+         i++;
+         return r;
+       }
+       );
 
     std::transform
       (
