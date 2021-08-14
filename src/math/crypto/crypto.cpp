@@ -254,19 +254,21 @@ namespace crypto {
 
   }
 
-  bool check_signature(const hash &prefix_hash, const public_key &pub, const signature &sig) {
-    assert(check_key(pub));
-    if (!is_valid_point(pub)) return false;
+  bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) {
+    const auto p = maybeSafePoint(pub);
+
+    // if (!p) throw std::runtime_error("signature pubkey is invalid");
+    if (!p) return false;
 
     if (is_not_reduced(sig.c) || is_not_reduced(sig.r) || (sig.c != s_0)) {
       return false;
     }
 
-    const ec_point r = mult(pub, sig.c) + multBase(sig.r);
+    const ec_point r = mult(*p, sig.c) + multBase(sig.r);
 
     if (r == identity) return false;
 
-    const s_comm buf { prefix_hash, pub, r };
+    const s_comm buf { prefix_hash, *p, r };
     const ec_scalar h = hash_to_scalar(epee::pod_to_span(buf));
 
     return h - sig.c == s_0;

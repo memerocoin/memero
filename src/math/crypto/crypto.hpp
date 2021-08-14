@@ -148,7 +148,7 @@ namespace crypto {
     */
   signature generate_signature(const hash &, const public_key &, const secret_key &);
 
-  bool check_signature(const hash &, const public_key &, const signature &);
+  bool check_signature(const hash &, const ec_point_unsafe &, const signature &);
 
   /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
     * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
