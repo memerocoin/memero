@@ -63,24 +63,13 @@ namespace rct
   /* Given a scalar, construct a vector of powers */
   rct::scalarV vector_powers(const rct::scalar x, const size_t n)
   {
-    if (n == 0)
-      return {};
+    scalarV res(n);
 
-    rct::scalarV xs(n - 1, x);
-    scalarL accum = std::accumulate
-      (
-       xs.begin()
-       , xs.end()
-       , scalarL{rct::s_one}
-       , [](const auto& carry, const auto& i) {
-         scalarL ys = std::move(carry);
-         ys.push_back(ys.back() * i);
-         return ys;
-       }
-       );
-
-    scalarV res(accum.size());
-    std::copy(accum.begin(), accum.end(), res.begin());
+    std::generate(res.begin(), res.end(), [accum = rct::s_one, x] () mutable {
+      const auto current = accum;
+      accum = accum * x;
+      return current;
+    });
 
     return res;
   }
