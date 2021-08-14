@@ -753,22 +753,26 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   for (const Bulletproof& proof: proofs)
   {
     const proof_data_t &pd = proof_data[proof_data_index++];
-
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
-    const size_t M = 1 << pd.logM;
-    const size_t MN = M*N;
+
+    const size_t rounds = pd.logM+logN;
+    const rct::scalarS winv = std::span(inverses).subspan(pd.inv_offset);
+    const rct::scalar yinv = inverses[pd.inv_offset + rounds];
+
     const rct::scalar weight_y = rct::skGen();
     const rct::scalar weight_z = rct::skGen();
 
-    const rct::scalarV zpow = vector_powers(pd.z, M+3);
-
-    const rct::scalar ip1y = vector_power_sum(pd.y, MN);
-    rct::scalar k = s_zero - zpow[2] * ip1y;
-    for (size_t j = 1; j <= M; ++j)
+    for (size_t i = 0; i < rounds; ++i)
     {
-      LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
-      k = k - zpow[j+2] * ip12;
+      multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, multPoint8(proof.L[i]));
+      multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, multPoint8(proof.R[i]));
     }
+
+
+    const size_t M = 1 << pd.logM;
+    const size_t MN = M*N;
+
+    const rct::scalarV zpow = vector_powers(pd.z, M+3);
 
     std::transform
       (
@@ -787,11 +791,8 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     multiexp_data.emplace_back(pd.x * weight_z, multPoint8(proof.S));
 
     // Compute the number of rounds for the inner product
-    const size_t rounds = pd.logM+logN;
     LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
 
-    const rct::scalarS winv = std::span(inverses).subspan(pd.inv_offset);
-    const rct::scalar yinv = inverses[pd.inv_offset + rounds];
 
     // precalc
     w_cache.resize(1<<rounds);
@@ -843,13 +844,15 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
        );
 
 
-    for (size_t i = 0; i < rounds; ++i)
+    // collect
+    const rct::scalar ip1y = vector_power_sum(pd.y, MN);
+    rct::scalar k = s_zero - zpow[2] * ip1y;
+    for (size_t j = 1; j <= M; ++j)
     {
-      multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, multPoint8(proof.L[i]));
-      multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, multPoint8(proof.R[i]));
+      LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
+      k = k - zpow[j+2] * ip12;
     }
 
-    // collect
     y0 = y0 - proof.taux * weight_y;
     y1 = y1 + (proof.t - (pd.z * ip1y + k)) * weight_y;
     z1 = z1 + proof.mu * weight_z;
