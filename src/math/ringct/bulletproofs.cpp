@@ -746,7 +746,7 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
   rct::scalar z1 = rct::s_zero;
   rct::scalar z3 = rct::s_zero;
   rct::scalarV m_z4(maxMN, rct::s_zero), m_z5(maxMN, rct::s_zero);
-  rct::scalar m_y0 = rct::s_zero, y1 = rct::s_zero;
+  rct::scalar y0 = rct::s_zero, y1 = rct::s_zero;
   int proof_data_index = 0;
   rct::scalarV w_cache;
   std::vector<key> proof8_V, proof8_L, proof8_R;
@@ -850,14 +850,14 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     }
 
     // collect
+    y0 = y0 - proof.taux * weight_y;
     y1 = y1 + (proof.t - (pd.z * ip1y + k)) * weight_y;
     z1 = z1 + proof.mu * weight_z;
     z3 = z3 + (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
-    m_y0 = m_y0 - proof.taux * weight_y;
   }
 
   // now check all proofs at once
-  multiexp_data.emplace_back(m_y0 - z1, rct::G);
+  multiexp_data.emplace_back(y0 - z1, rct::G);
   multiexp_data.emplace_back(z3 - y1, rct::H);
 
   std::transform
