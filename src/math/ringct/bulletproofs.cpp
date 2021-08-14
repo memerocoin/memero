@@ -191,11 +191,27 @@ rct::key cross_vector_exponent8
      , [](const auto& s, const auto& p) -> MultiexpData { return {s * s_inv_eight, p}; }
      );
 
-  for (size_t i = 0; i < size; ++i)
-  {
-    const auto b_bo = b[bo+i] * rct::s_inv_eight;
-    multiexp_data.emplace_back(scale ? b_bo * (*scale)[Bo+i] : b_bo, B[Bo+i]);
-  }
+  scalarV b_scalars(size);
+  std::generate
+    (
+
+     b_scalars.begin()
+     , b_scalars.end()
+     , [i = 0, b, bo, scale, Bo]() mutable {
+       const auto b_scaled = scale ? b[bo+i] * (*scale)[Bo+i] : b[bo+i];
+       i++;
+       return b_scaled;
+     }
+     );
+
+  std::transform
+    (
+     b_scalars.begin()
+     , b_scalars.end()
+     , std::next(B.begin(), Bo)
+     , std::back_inserter(multiexp_data)
+     , [](const auto& s, const auto& p) -> MultiexpData { return {s * s_inv_eight, p}; }
+     );
 
   return multiexp(multiexp_data);
 }
