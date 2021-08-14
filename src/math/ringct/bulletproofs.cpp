@@ -378,9 +378,18 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
 
   constexpr size_t logN = 6; // log2(64)
   constexpr size_t N = 1<<logN;
-  size_t M, logM;
-  for (logM = 0; (M = 1<<logM) <= maxM && M < sv.size(); ++logM);
+
+  size_t M = 1;
+  size_t logM = 0;
+
+  while (M < maxM && M < sv.size()) {
+    logM++;
+    M = M << 1;
+  }
+
   LOG_ERROR_AND_THROW_UNLESS(M <= maxM, "sv/gamma are too large");
+
+
   const size_t logMN = logM + logN;
   const size_t MN = M * N;
 
