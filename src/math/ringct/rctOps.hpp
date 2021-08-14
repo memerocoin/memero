@@ -99,7 +99,7 @@ namespace rct {
   key multP(const key P, const scalar a);
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
-  key scalarmultH(const scalar a);
+  key multH(const scalar a);
 
   // multiplies a point by 8
   key multPoint8(const key P);

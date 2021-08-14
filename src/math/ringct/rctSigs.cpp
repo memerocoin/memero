@@ -509,7 +509,7 @@ namespace rct {
         //set txn fee
         rv.txnFee = txnFee;
 //        TODO: unused ??
-//        key txnFeeKey = scalarmultH(int_to_scalar(rv.txnFee));
+//        key txnFeeKey = multH(int_to_scalar(rv.txnFee));
         rv.mixRing = mixRing;
         keyV &pseudoOuts = rv.p.pseudoOuts;
         pseudoOuts.resize(inamounts.size());
@@ -624,7 +624,7 @@ namespace rct {
             masks[i] = rv.outPk[i].mask;
           }
           key sumOutpks = addKeys(masks);
-          const key txnFeeKey = scalarmultH(int_to_scalar(rv.txnFee));
+          const key txnFeeKey = multH(int_to_scalar(rv.txnFee));
           sumOutpks = txnFeeKey + sumOutpks;
 
           key sumPseudoOuts = addKeys(pseudoOuts);

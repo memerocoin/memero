@@ -630,7 +630,7 @@ TEST(ringct, dummyCommit)
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::key z = rct::dummyCommit(amount);
   const rct::key a = rct::multG(rct::s_one);
-  const rct::key b = rct::scalarmultH(rct::int_to_scalar(amount));
+  const rct::key b = rct::multH(rct::int_to_scalar(amount));
   const rct::key manual = a + b;
   ASSERT_EQ(z, manual);
 }

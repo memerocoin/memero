@@ -381,8 +381,8 @@ try_again:
   const rct::scalar tau1 = rct::skGen();
   const rct::scalar tau2 = rct::skGen();
 
-  const key T1 = multG(tau1 * rct::s_inv_eight) + scalarmultH(t1 * rct::s_inv_eight);
-  const key T2 = multG(tau2 * rct::s_inv_eight) + scalarmultH(t2 * rct::s_inv_eight);
+  const key T1 = multG(tau1 * rct::s_inv_eight) + multH(t1 * rct::s_inv_eight);
+  const key T2 = multG(tau2 * rct::s_inv_eight) + multH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
   const rct::scalar x = hash_carry = hash_keys_to_scalar
@@ -466,10 +466,10 @@ try_again:
     // PAPER LINES 23-24
     L[round] = cross_vector_exponent8
       (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
-      + scalarmultH(cL * x_ip * s_inv_eight);
+      + multH(cL * x_ip * s_inv_eight);
     R[round] = cross_vector_exponent8
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
-      + scalarmultH(cR * x_ip * s_inv_eight);
+      + multH(cR * x_ip * s_inv_eight);
 
     // PAPER LINES 25-27
     w[round] = hash_carry = hash_keys_to_scalar(std::array{s2k(hash_carry), L[round], R[round]});

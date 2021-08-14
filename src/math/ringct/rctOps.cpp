@@ -110,7 +110,7 @@ namespace rct {
     std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 
     const scalar am = int_to_scalar(amount);
-    const key bH = scalarmultH(am);
+    const key bH = multH(am);
     pk.mask = pk.mask + bH;
     return std::make_pair(sk, pk);
   }
@@ -129,7 +129,7 @@ namespace rct {
 
   key dummyCommit(const amount_t amount) {
     scalar am = int_to_scalar(amount);
-    key bH = scalarmultH(am);
+    key bH = multH(am);
     return G + bH;
   }
 
@@ -162,7 +162,7 @@ namespace rct {
 
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
-  key scalarmultH(const scalar a) {
+  key multH(const scalar a) {
     return multP(H, a);
   }
 
@@ -190,7 +190,7 @@ namespace rct {
   //addKeys2
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
   key addScalarMult_G_H(const scalar a, const scalar b) {
-    return multG(a) + scalarmultH(b);
+    return multG(a) + multH(b);
   }
 
   // addKeys_aGbBcC
