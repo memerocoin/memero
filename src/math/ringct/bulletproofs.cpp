@@ -559,7 +559,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
+bool bulletproof_VERIFY_1(const std::span<const Bulletproof> proofs)
 {
   init_exponents();
 
@@ -810,6 +810,30 @@ bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
     return false;
   }
   return true;
+}
+
+bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs)
+{
+
+  // return std::transform_reduce
+  //   (
+  //    a.begin()
+  //    , a.end()
+  //    , b.begin()
+  //    , rct::s_zero
+  //    , std::plus<scalar>()
+  //    , std::multiplies<scalar>()
+  //    );
+  return std::transform_reduce
+    (
+     proofs.begin()
+     , proofs.end()
+     , true
+     , std::logical_and()
+     , [](const auto& p) {
+       return bulletproof_VERIFY_1(std::array{p});
+     }
+     );
 }
 
 bool bulletproof_VERIFY(const Bulletproof proof)
