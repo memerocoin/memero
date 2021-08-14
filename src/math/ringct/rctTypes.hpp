@@ -67,10 +67,12 @@ namespace rct {
     typedef std::vector<key> keyV; //vector of keys
     typedef std::vector<keyV> keyM; //matrix of keys (indexed by column first)
     typedef std::span<const key> keyS; //vector of keys
+    typedef std::list<const key> keyL; //vector of keys
 
     typedef std::vector<scalar> scalarV; //vector of keys
     typedef std::vector<scalarV> scalarM; //matrix of keys (indexed by column first)
     typedef std::span<const scalar> scalarS; //vector of keys
+    typedef std::list<scalar> scalarL; //vector of keys
 
     //containers For CT operations
     //if it's  representing a private ctkey then "dest" contains the secret key of the address

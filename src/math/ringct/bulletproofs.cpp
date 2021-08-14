@@ -44,6 +44,7 @@
 
 #include <mutex>
 #include <atomic>
+#include <list>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -223,17 +224,20 @@ rct::scalarV vector_powers(const rct::scalar x, const size_t n)
     return {};
 
   rct::scalarV xs(n - 1, x);
-  rct::scalarV res = std::accumulate
+  scalarL accum = std::accumulate
     (
      xs.begin()
      , xs.end()
-     , scalarV{rct::s_one}
+     , scalarL{rct::s_one}
      , [](const auto& carry, const auto& i) {
-       scalarV ys = carry;
+       scalarL ys = std::move(carry);
        ys.push_back(ys.back() * i);
        return ys;
      }
      );
+
+  scalarV res(accum.size());
+  std::copy(accum.begin(), accum.end(), res.begin());
 
   return res;
 }
