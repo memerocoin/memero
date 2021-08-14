@@ -97,7 +97,7 @@ TEST(ringct, CLSAG)
   // bad message
   clsag = rct::proveRctCLSAGSimple
     (
-     zero,
+     {},
      pubs,
      insk,
      t2,
@@ -109,7 +109,7 @@ TEST(ringct, CLSAG)
   // bad index at creation
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,(idx + 1) % N);
+    clsag = rct::proveRctCLSAGSimple(rct2hash(message),pubs,insk,t2,Cout,(idx + 1) % N);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -120,7 +120,7 @@ TEST(ringct, CLSAG)
     pri_ctkey insk2;
     insk2.addr = insk.addr;
     insk2.blinding_factor = skGen();
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::proveRctCLSAGSimple(rct2hash(message),pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -130,7 +130,7 @@ TEST(ringct, CLSAG)
   pubs[idx].mask = multG(skGen());
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::proveRctCLSAGSimple(rct2hash(message),pubs,insk,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -142,7 +142,7 @@ TEST(ringct, CLSAG)
     pri_ctkey insk2;
     insk2.addr = skGen();
     insk2.blinding_factor = insk.blinding_factor;
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::proveRctCLSAGSimple(rct2hash(message),pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -152,14 +152,14 @@ TEST(ringct, CLSAG)
   pubs[idx].dest = multG(skGen());
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::proveRctCLSAGSimple(rct2hash(message),pubs,insk,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
   pubs[idx] = backup;
 
   // Test correct signature
-  clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+  clsag = rct::proveRctCLSAGSimple(rct2hash(message),pubs,insk,t2,Cout,idx);
   ASSERT_TRUE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
 
   // empty s

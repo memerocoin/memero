@@ -236,7 +236,7 @@ namespace rct {
       LOG_ERROR_AND_THROW_UNLESS(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
           "Failed to serialize rctSigBase");
       cryptonote::get_blob_hash(ss.str(), h);
-      hashes.push_back(hash2rct(h));
+      hashes.push_back(h2d(h));
 
       crypto::dataV kv;
       {
@@ -260,7 +260,7 @@ namespace rct {
           kv.push_back(p.t);
         }
       }
-      hashes.push_back(hash_keys(kv));
+      hashes.push_back(h2d(hash_keys(kv)));
       hwdev.mlsag_pre_hash(ss.str(), inputs, outputs, hashes, rv.outPk, prehash);
       return  prehash;
     }
@@ -268,7 +268,7 @@ namespace rct {
 
     clsag proveRctCLSAGSimple
     (
-     const key message
+     const crypto::hash message
      , const ctkeyV pubs
      , const pri_ctkey inSk
      , const scalar a
@@ -298,7 +298,8 @@ namespace rct {
 
         sk[0] = inSk.addr;
         sk[1] = s2s(inSk.blinding_factor - a);
-        clsag result = CLSAG_Gen(message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
+        clsag result = CLSAG_Gen
+          (rct::unsafe_d2rct(crypto::h2d(message)), P, sk[0], C, sk[1], C_nonzero, Cout, index);
         return result;
     }
 
@@ -528,7 +529,7 @@ namespace rct {
         a[i] = s2s(sumout - sumpouts);
         pseudoOuts[i] = genC(a[i], inamounts[i]);
 
-        key full_message = get_mlsag_pre_hash(rv);
+        crypto::hash full_message = get_mlsag_pre_hash(rv);
         for (i = 0 ; i < inamounts.size(); i++)
         {
             {
@@ -709,13 +710,14 @@ namespace rct {
 
         const keyV &pseudoOuts = rv.p.pseudoOuts;
 
-        const key message = get_mlsag_pre_hash(rv);
+        const crypto::hash message = get_mlsag_pre_hash(rv);
 
         results.clear();
         results.resize(rv.mixRing.size());
         for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
           tpool.submit(&waiter, [&, i] {
-            results[i] = verRctCLSAGSimple(message, rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i]);
+            results[i] = verRctCLSAGSimple
+              (rct::unsafe_d2rct(crypto::h2d(message)), rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i]);
           });
         }
         if (!waiter.wait())

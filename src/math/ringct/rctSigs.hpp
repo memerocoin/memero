@@ -60,7 +60,7 @@ namespace rct {
 
   clsag proveRctCLSAGSimple
   (
-   const key message
+   const crypto::hash message
    , const ctkeyV pubs
    , const pri_ctkey inSk
    , const scalar a
@@ -116,6 +116,6 @@ namespace rct {
   }
 
   amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, scalar& mask);
-  cryptO::jhash get_mlsag_pre_hash(const rctSig rv);
+  crypto::hash get_mlsag_pre_hash(const rctSig rv);
 }
 
