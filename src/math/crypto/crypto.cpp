@@ -140,20 +140,12 @@ namespace crypto {
     return true;
   }
 
-  constexpr size_t output_index_buffer_size = (sizeof(size_t) * 8 + 6) / 7;
-
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) {
-    struct {
-      key_derivation derivation;
-      char output_index_buffer[output_index_buffer_size];
-    } buf;
+    const epee::blob::data hashData =
+      epee::blob::data(derivation.data, sizeof(derivation.data))
+      + epee::string_tools::string_to_blob(tools::get_varint_data(index));
 
-    char *end = buf.output_index_buffer;
-    buf.derivation = derivation;
-    tools::write_varint(end, index);
-    assert(end <= buf.output_index_buffer + output_index_buffer_size);
-    const size_t count = end - reinterpret_cast<char *>(&buf);
-    return hash_to_scalar(epee::pod_to_span(buf).subspan(0, count));
+    return hash_to_scalar(hashData);
   }
 
   bool derive_public_key
