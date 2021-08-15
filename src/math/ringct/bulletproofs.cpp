@@ -340,7 +340,7 @@ try_again:
     goto try_again;
   }
 
-  const scalar z = hash_carry = rct::hash_to_scalar(s2k(y));
+  const scalar z = hash_carry = rct::hash_to_scalar(y);
   if (z == rct::s_zero)
   {
     LOG_INFO("z is 0, trying again");
@@ -592,7 +592,7 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   pd.y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, proof.A, proof.S});
   LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
-  pd.z = hash_carry = rct::hash_to_scalar(s2k(pd.y));
+  pd.z = hash_carry = rct::hash_to_scalar(pd.y);
   LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
 
   pd.x = hash_carry =

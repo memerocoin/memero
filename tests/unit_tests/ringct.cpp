@@ -196,24 +196,24 @@ TEST(ringct, CLSAG)
   clsag.c1 = backup_key;
 
   // bad I in clsag at verification
-  backup_key = k2s(clsag.I);
+  backup_key = unsafe_k2s(clsag.I);
   clsag.I = multG(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.I = s2k(backup_key);
+  clsag.I = unsafe_s2k(backup_key);
 
   // bad D in clsag at verification
-  backup_key = k2s(clsag.D);
+  backup_key = unsafe_k2s(clsag.D);
   clsag.D = multG(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.D = s2k(backup_key);
+  clsag.D = unsafe_s2k(backup_key);
 
   // D not in main subgroup in clsag at verification
-  backup_key = k2s(clsag.D);
+  backup_key = unsafe_k2s(clsag.D);
   rct::key x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
   clsag.D = clsag.D + x;
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.D = s2k(backup_key);
+  clsag.D = unsafe_s2k(backup_key);
 
   // swapped I and D in clsag at verification
   std::swap(clsag.I, clsag.D);
@@ -246,7 +246,7 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
 
     for (int n = 0; n < n_outputs; ++n) {
         outamounts.push_back(output_amounts[n]);
-        amount_keys.push_back(s2k(hash_to_scalar(zero)));
+        amount_keys.push_back(unsafe_s2k(hash_to_scalar(zero)));
         std::tie(Sk, Pk) = skpkGen();
         destinations.push_back(Pk);
     }
@@ -524,7 +524,7 @@ TEST(ringct, d2h)
 {
   key k;
   auto [s, P1] = skpkGen();
-  k = s2k(s);
+  k = unsafe_s2k(s);
   for (auto amount: test_amounts) {
     auto k = rct::int_to_scalar(amount);
     ASSERT_TRUE(amount == rct::scalar_to_int(k));

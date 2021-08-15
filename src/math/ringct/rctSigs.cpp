@@ -410,7 +410,7 @@ namespace rct {
             c_p = mu_P * c;
             c_c = mu_C * c;
 
-            const key mask = span2rct(epee::pod_to_span(pubs[i].mask.data));
+            const key mask = pubs[i].mask;
             if (!is_valid_point(mask)) {
               LOG_ERROR("pubs[" << i << "].mask.data is not a valid point: " << mask);
               return false;

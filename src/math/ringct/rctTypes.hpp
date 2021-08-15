@@ -417,35 +417,11 @@ namespace rct {
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in);
 
-    inline const rct::key &scalar2key(const scalar &x) { return (const rct::key&)x; }
-    inline const rct::scalar &key2scalar(const key &x) { return (const rct::scalar&)x; }
-    inline auto s2k = scalar2key;
-    inline auto k2s = key2scalar;
+    inline const rct::key &unsafe_s2k(const scalar &x) { return (const rct::key&)x; }
+    inline const rct::scalar &unsafe_k2s(const key &x) { return (const rct::scalar&)x; }
 
     inline const rct::scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::scalar&)sk; }
     inline const crypto::secret_key &scalar2sk(const rct::scalar&k) { return (const crypto::secret_key&)k; }
-
-  inline scalarV kv2sv(const keyV& xs) {
-    scalarV r;
-    for (const auto& x: xs) {
-      r.emplace_back(k2s(x));
-    }
-    return r;
-  }
-
-  inline keyV sv2kv(const scalarV& xs) {
-    keyV r;
-    for (const auto& x: xs) {
-      r.emplace_back(s2k(x));
-    }
-    return r;
-  }
-
-  inline rct::key span2rct(const std::span<const uint8_t> x) {
-    key r;
-    std::copy(x.begin(), x.end(), std::begin(r.data));
-    return r;
-  }
 
     inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
     inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }
