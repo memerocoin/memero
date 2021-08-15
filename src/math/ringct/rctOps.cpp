@@ -219,11 +219,11 @@ namespace rct {
   // where C= aG + bH
 
   constexpr std::string_view ecdhHashPrefix = "amount";
-  key ecdhHash(const key k)
+  key ecdhHash(const crypto::crypto_data x)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(ecdhHashPrefix))
-      + epee::blob::data(k.data.begin(), k.data.size());
+      + epee::blob::data(x.data.begin(), x.data.size());
 
     return hash2rct(crypto::sha3(hashData));
   }
@@ -237,16 +237,16 @@ namespace rct {
   }
 
   constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
-  scalar genCommitmentMask(const key sk)
+  scalar genCommitmentMask(const crypto::crypto_data x)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
-      + epee::blob::data(sk.data.begin(), sk.data.size());
+      + epee::blob::data(x.data.begin(), x.data.size());
 
     return s2s(crypto::hash_to_scalar(hashData));
   }
 
-  ecdhTuple ecdhEncode(const scalar amount, const key sharedSec) {
+  ecdhTuple ecdhEncode(const scalar amount, const scalar sharedSec) {
     ecdhTuple x = {
       s_zero
       , xor8(amount, ecdhHash(sharedSec))
@@ -254,7 +254,7 @@ namespace rct {
     return x;
   }
 
-  ecdhTuple ecdhDecode(const scalar amount, const key sharedSec) {
+  ecdhTuple ecdhDecode(const scalar amount, const scalar sharedSec) {
     ecdhTuple x = {
       genCommitmentMask(sharedSec)
       , xor8(amount, ecdhHash(sharedSec))

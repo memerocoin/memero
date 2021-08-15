@@ -51,7 +51,7 @@ namespace rct {
      keyV& C
      , scalarV& masks
      , const std::vector<uint64_t> amounts
-     , const std::span<const key> sk)
+     , const std::span<const scalar> sk)
     {
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
@@ -488,7 +488,7 @@ namespace rct {
      , const vector<amount_t> outamounts
      , const amount_t txnFee
      , const ctkeyM mixRing
-     , const keyV amount_keys
+     , const scalarV amount_keys
      , const std::vector<size_t> index
      , pri_ctkeyV& outSk
      ) {
@@ -524,7 +524,7 @@ namespace rct {
             {
                 rct::keyV C;
                 rct::scalarV masks;
-                const std::span<const key> keys{&amount_keys[0], amount_keys.size()};
+                const std::span<const scalar> keys{&amount_keys[0], amount_keys.size()};
                 rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));
 
                 for (i = 0; i < outamounts.size(); ++i)
@@ -591,7 +591,7 @@ namespace rct {
      , const keyV destinations
      , const std::vector<amount_t> inamounts
      , const std::vector<amount_t> outamounts
-     , const keyV amount_keys
+     , const scalarV amount_keys
      , const amount_t txnFee
      , const size_t mixin
      ) {
@@ -787,7 +787,7 @@ namespace rct {
       }
     }
 
-    amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, scalar& mask) {
+    amount_t decodeRctSimple(const rctSig rv, const scalar sk, const unsigned int i, scalar& mask) {
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
         LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");

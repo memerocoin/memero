@@ -312,7 +312,7 @@ namespace hw {
         , const bool &need_additional_txkeys
         , const std::vector<crypto::secret_key> &additional_tx_keys
         , std::vector<crypto::public_key> &additional_tx_public_keys
-        , std::vector<rct::key> &amount_keys
+        , rct::scalarV &amount_keys
         , crypto::public_key &out_eph_public_key
          )
         {
@@ -350,9 +350,9 @@ namespace hw {
 
             if (tx_version > 1)
             {
-                crypto::secret_key scalar1;
+                rct::scalar scalar1;
                 hash_derivation_to_scalar(derivation, output_index, scalar1);
-                amount_keys.push_back(rct::sk2rct(scalar1));
+                amount_keys.push_back(scalar1);
             }
             r = derive_public_key(derivation, output_index, dst_entr.addr.m_spend_public_key, out_eph_public_key);
             LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to derive_public_key(" << derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
@@ -360,16 +360,16 @@ namespace hw {
             return r;
         }
 
-        rct::scalar device_default::genCommitmentMask(const rct::key &amount_key) {
+        rct::scalar device_default::genCommitmentMask(const crypto::crypto_data &amount_key) {
             return rct::genCommitmentMask(amount_key);
         }
 
-        bool  device_default::ecdhEncode(rct::ecdhTuple & unmasked, const rct::key & sharedSec) {
+        bool  device_default::ecdhEncode(rct::ecdhTuple & unmasked, const rct::scalar & sharedSec) {
             unmasked = rct::ecdhEncode(unmasked.amount, sharedSec);
             return true;
         }
 
-        bool  device_default::ecdhDecode(rct::ecdhTuple & masked, const rct::key & sharedSec) {
+        bool  device_default::ecdhDecode(rct::ecdhTuple & masked, const rct::scalar & sharedSec) {
             masked = rct::ecdhDecode(masked.amount, sharedSec);
             return true;
         }

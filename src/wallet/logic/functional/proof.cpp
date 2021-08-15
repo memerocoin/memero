@@ -80,9 +80,9 @@ namespace proof {
         }
         else
         {
-          const crypto::secret_key scalar1 = crypto::s2sk(crypto::hash_derivation_to_scalar(found_derivation, n));
+          const rct::scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(found_derivation, n));
           rct::scalar ecdh_amount = tx.rct_signatures.ecdhInfo[n].amount;
-          rct::ecdhTuple ecdh_info = rct::ecdhDecode(ecdh_amount, rct::sk2rct(scalar1));
+          rct::ecdhTuple ecdh_info = rct::ecdhDecode(ecdh_amount, scalar1);
           const rct::key C = tx.rct_signatures.outPk[n].mask;
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.mask), error::wallet_internal_error, "Bad ECDH input mask");
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.amount), error::wallet_internal_error, "Bad ECDH input amount");

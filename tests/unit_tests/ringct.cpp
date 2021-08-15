@@ -233,7 +233,7 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
     ctkey pctmp;
     vector<amount_t> inamounts, outamounts;
     keyV destinations;
-    keyV amount_keys;
+    scalarV amount_keys;
     scalar Sk;
     key Pk;
 
@@ -246,7 +246,7 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
 
     for (int n = 0; n < n_outputs; ++n) {
         outamounts.push_back(output_amounts[n]);
-        amount_keys.push_back(unsafe_s2k(hash_to_scalar(zero)));
+        amount_keys.push_back(hash_to_scalar(zero));
         std::tie(Sk, Pk) = skpkGen();
         destinations.push_back(Pk);
     }

@@ -203,17 +203,26 @@ namespace hw {
 
         virtual void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) = 0;
 
-        virtual rct::scalar genCommitmentMask(const rct::key &amount_key) = 0;
+        virtual rct::scalar genCommitmentMask(const crypto::crypto_data &amount_key) = 0;
 
-        virtual bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::key & sharedSec) = 0;
-        virtual bool  ecdhDecode(rct::ecdhTuple & masked, const rct::key & sharedSec) = 0;
+        virtual bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::scalar & sharedSec) = 0;
+        virtual bool  ecdhDecode(rct::ecdhTuple & masked, const rct::scalar & sharedSec) = 0;
 
-        virtual bool  generate_output_ephemeral_keys(const size_t tx_version, const cryptonote::account_keys &sender_account_keys, const crypto::public_key &txkey_pub,  const crypto::secret_key &tx_key,
-                                                     const cryptonote::tx_destination_entry &dst_entr, const std::optional<cryptonote::account_public_address> &change_addr, const size_t output_index,
-                                                     const bool &need_additional_txkeys, const std::vector<crypto::secret_key> &additional_tx_keys,
-                                                     std::vector<crypto::public_key> &additional_tx_public_keys,
-                                                     std::vector<rct::key> &amount_keys,
-                                                     crypto::public_key &out_eph_public_key) = 0;
+        virtual bool  generate_output_ephemeral_keys
+        (
+         const size_t tx_version
+         , const cryptonote::account_keys &sender_account_keys
+         , const crypto::public_key &txkey_pub
+         , const crypto::secret_key &tx_key
+         , const cryptonote::tx_destination_entry &dst_entr
+         , const std::optional<cryptonote::account_public_address> &change_addr
+         , const size_t output_index
+         , const bool &need_additional_txkeys
+         , const std::vector<crypto::secret_key> &additional_tx_keys
+         , std::vector<crypto::public_key> &additional_tx_public_keys
+         , rct::scalarV &amount_keys
+         , crypto::public_key &out_eph_public_key
+         ) = 0;
 
 
       virtual bool mlsag_pre_hash

@@ -88,7 +88,7 @@ namespace rct {
    , const keyV destinations
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
-   , const keyV amount_keys
+   , const scalarV amount_keys
    , const amount_t txnFee
    , const size_t mixin
    );
@@ -102,7 +102,7 @@ namespace rct {
    , const std::vector<amount_t> outamounts
    , const amount_t txnFee
    , const ctkeyM mixRing
-   , const keyV amount_keys
+   , const scalarV amount_keys
    , const std::vector<size_t> index
    , pri_ctkeyV& outSk
    );
@@ -115,7 +115,7 @@ namespace rct {
     return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv);
   }
 
-  amount_t decodeRctSimple(const rctSig rv, const key sk, const unsigned int i, scalar& mask);
+  amount_t decodeRctSimple(const rctSig rv, const scalar sk, const unsigned int i, scalar& mask);
   crypto::hash get_mlsag_pre_hash(const rctSig rv);
 }
 

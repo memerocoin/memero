@@ -26,7 +26,7 @@
 // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
 // PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIomm
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
@@ -125,8 +125,8 @@ namespace rct {
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH
-  scalar genCommitmentMask(const key sk);
+  scalar genCommitmentMask(const crypto::crypto_data x);
 
-  ecdhTuple ecdhEncode(const scalar amount, const key sharedSec);
-  ecdhTuple ecdhDecode(const scalar amount, const key sharedSec);
+  ecdhTuple ecdhEncode(const scalar amount, const scalar sharedSec);
+  ecdhTuple ecdhDecode(const scalar amount, const scalar sharedSec);
 }

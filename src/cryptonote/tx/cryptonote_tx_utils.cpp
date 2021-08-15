@@ -165,9 +165,8 @@ namespace cryptonote
       return false;
     }
 
-    std::vector<rct::key> amount_keys;
+    rct::scalarV amount_keys;
     tx.set_null();
-    amount_keys.clear();
 
     tx.version = rct ? 2 : 1;
     tx.unlock_time = unlock_time;

@@ -424,7 +424,7 @@ namespace rct {
     inline const crypto::secret_key &scalar2sk(const rct::scalar&k) { return (const crypto::secret_key&)k; }
 
     inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
-    inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }
+    // inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }
     inline const rct::key &ki2rct(const crypto::key_image &ki) { return (const rct::key&)ki; }
     inline const rct::key &hash2rct(const crypto::hash &h) { return (const rct::key&)h; }
     inline const rct::key &p2rct(const crypto::ec_point &p) { return (const rct::key&)p; }

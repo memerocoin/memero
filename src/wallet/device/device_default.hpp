@@ -118,10 +118,10 @@ namespace hw {
             bool  open_tx(crypto::secret_key &tx_key) override;
             void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) override;
 
-            rct::scalar genCommitmentMask(const rct::key &amount_key) override;
+            rct::scalar genCommitmentMask(const crypto::crypto_data &amount_key) override;
 
-            bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::key & sharedSec) override;
-            bool  ecdhDecode(rct::ecdhTuple & masked, const rct::key & sharedSec) override;
+            bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::scalar & sharedSec) override;
+            bool  ecdhDecode(rct::ecdhTuple & masked, const rct::scalar & sharedSec) override;
 
             bool generate_output_ephemeral_keys
             (
@@ -135,7 +135,7 @@ namespace hw {
             , const bool &need_additional_txkeys
             , const std::vector<crypto::secret_key> &additional_tx_keys
             , std::vector<crypto::public_key> &additional_tx_public_keys
-            , std::vector<rct::key> &amount_keys
+            , rct::scalarV &amount_keys
             , crypto::public_key &out_eph_public_key
             ) override;
 
