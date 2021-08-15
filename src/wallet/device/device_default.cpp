@@ -406,10 +406,8 @@ namespace hw {
             return true;
         }
 
-        rct::scalar device_default::clsag_hash(const rct::keyV &data) {
-            crypto::dataV hash_keys(data.size());
-            std::copy(data.begin(), data.end(), hash_keys.begin());
-            return rct::hash_keys_to_scalar(hash_keys);
+        rct::scalar device_default::clsag_hash(const crypto::dataS data) {
+            return rct::hash_keys_to_scalar(data);
         }
 
         bool device_default::clsag_sign

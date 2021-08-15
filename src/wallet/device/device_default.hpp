@@ -161,7 +161,7 @@ namespace hw {
              , rct::key &aH
              ) override;
 
-            rct::scalar clsag_hash(const rct::keyV &data) override;
+            rct::scalar clsag_hash(const crypto::dataS data) override;
             bool clsag_sign
             (
              const rct::scalar &c

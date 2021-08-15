@@ -87,7 +87,7 @@ namespace rct {
     //   C[i] == C_nonzero[i] - C_offset (for hashing purposes) for all i
     clsag CLSAG_Gen
     (
-     const key message
+     const crypto::hash message
      , const keyV P
      , const scalar p
      , const keyV C
@@ -158,7 +158,7 @@ namespace rct {
         mu_C = hash_keys_to_scalar(mu_C_to_hash);
 
         // Initial commitment
-        keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
+        crypto::dataV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
         scalar c;
         c_to_hash[0] = zero;
         std::copy_n
@@ -174,7 +174,7 @@ namespace rct {
             c_to_hash[i+n] = C_nonzero[i-1];
         }
         c_to_hash[2*n+1] = C_offset;
-        c_to_hash[2*n+2] = message;
+        c_to_hash[2*n+2] = crypto::h2d(message);
 
         {
             c_to_hash[2*n+3] = aG;
@@ -317,7 +317,7 @@ namespace rct {
         sk[0] = inSk.addr;
         sk[1] = s2s(inSk.blinding_factor - a);
         clsag result = CLSAG_Gen
-          (rct::unsafe_d2rct(crypto::h2d(message)), P, sk[0], C, sk[1], C_nonzero, Cout, index);
+          (message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
         return result;
     }
 

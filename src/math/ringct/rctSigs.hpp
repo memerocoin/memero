@@ -36,7 +36,7 @@ namespace rct {
 
   clsag CLSAG_Gen
   (
-   const key message
+   const crypto::hash message
    , const keyV P
    , const scalar p
    , const keyV C
@@ -48,7 +48,7 @@ namespace rct {
 
   clsag CLSAG_Gen
   (
-   const key message
+   const crypto::hash message
    , const keyV P
    , const scalar p
    , const keyV C
