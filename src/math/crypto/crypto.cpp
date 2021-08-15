@@ -132,11 +132,17 @@ namespace crypto {
     return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
   }
 
-  bool generate_key_derivation(const public_key &key1, const secret_key &key2, key_derivation &derivation) {
-    if (!is_valid_point(key1)) return false;
+  bool generate_key_derivation
+  (
+   const ec_point_unsafe &unsafe_key1
+   , const secret_key &key2
+   , key_derivation &derivation
+   ) {
+    const auto key1 = maybeSafePoint(unsafe_key1);
+    if (!key1) return false;
 
     // here mult8 is really not needed
-    const ec_point p = mult8(mult(key1, key2));
+    const ec_point p = mult8Safe(mult(*key1, key2));
 
     derivation = p2derivation(p);
 
