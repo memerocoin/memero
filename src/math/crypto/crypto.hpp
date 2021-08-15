@@ -134,7 +134,7 @@ namespace crypto {
   bool generate_key_derivation(const public_key &, const secret_key &, key_derivation &);
 
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index);
-  bool derive_public_key(const key_derivation &, const std::size_t, const public_key &, public_key &);
+  bool derive_public_key(const key_derivation &, const std::size_t, const ec_point_unsafe &, public_key &);
   secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &);
   bool derive_subaddress_public_key
   (

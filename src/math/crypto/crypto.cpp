@@ -159,13 +159,19 @@ namespace crypto {
     return hash_to_scalar(epee::pod_to_span(buf).subspan(0, count));
   }
 
-  bool derive_public_key(const key_derivation &derivation, const size_t output_index,
-    const public_key &base, public_key &derived_key) {
-    if (!is_valid_point(base)) return false;
+  bool derive_public_key
+  (
+   const key_derivation &derivation
+   , const size_t output_index
+   , const ec_point_unsafe &unsafe_base
+   , public_key &derived_key
+   ) {
+    const auto base = maybeSafePoint(unsafe_base);
+    if (!base) return false;
 
     const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
     const ec_point derived = multBase(scalar);
-    const ec_point r = derived + base;
+    const ec_point r = derived + *base;
     derived_key = p2pk(r);
     return true;
   }
