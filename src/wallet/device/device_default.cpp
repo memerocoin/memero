@@ -36,6 +36,7 @@
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 
 #include "tools/epee/include/int-util.h"
+#include "tools/epee/include/string_tools.h"
 
 
 namespace hw {
@@ -181,14 +182,20 @@ namespace hw {
         }
 
         crypto::secret_key  device_default::get_subaddress_secret_key(const crypto::secret_key &a, const cryptonote::subaddress_index &index) {
-            char data[sizeof(config::HASH_KEY_SUBADDRESS) + sizeof(crypto::secret_key) + 2 * sizeof(uint32_t)];
-            memcpy(data, config::HASH_KEY_SUBADDRESS, sizeof(config::HASH_KEY_SUBADDRESS));
-            memcpy(data + sizeof(config::HASH_KEY_SUBADDRESS), &a, sizeof(crypto::secret_key));
-            uint32_t idx = SWAP32LE(index.major);
-            memcpy(data + sizeof(config::HASH_KEY_SUBADDRESS) + sizeof(crypto::secret_key), &idx, sizeof(uint32_t));
-            idx = SWAP32LE(index.minor);
-            memcpy(data + sizeof(config::HASH_KEY_SUBADDRESS) + sizeof(crypto::secret_key) + sizeof(uint32_t), &idx, sizeof(uint32_t));
-            return s2sk(crypto::hash_to_scalar(epee::pod_to_span(data)));
+          const uint32_t major_i = SWAP32LE(index.major);
+          const uint32_t minor_i = SWAP32LE(index.minor);
+          const epee::blob::data major = epee::blob::data((uint8_t*)&major_i, sizeof(uint32_t));
+          const epee::blob::data minor = epee::blob::data((uint8_t*)&minor_i, sizeof(uint32_t));
+
+
+          // here trailing 0 is part of the HASH_KEY ..
+          const epee::blob::data hashData =
+            epee::blob::data((const uint8_t*)config::HASH_KEY_SUBADDRESS, sizeof(config::HASH_KEY_SUBADDRESS))
+            + epee::blob::data(a.data, sizeof(a.data))
+            + major
+            + minor;
+
+          return s2sk(crypto::hash_to_scalar(hashData));
         }
 
         /* ======================================================================= */
