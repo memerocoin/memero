@@ -972,13 +972,11 @@ namespace wallet_rpc
     {
       bool good;
       unsigned version;
-      bool old;
       std::string signature_type;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(good);
         KV_SERIALIZE(version);
-        KV_SERIALIZE(old);
         KV_SERIALIZE(signature_type);
       END_KV_SERIALIZE_MAP()
     };

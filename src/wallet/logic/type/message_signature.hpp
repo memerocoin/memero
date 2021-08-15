@@ -45,7 +45,6 @@ enum message_signature_type_t {
 struct message_signature_result_t {
   bool valid;
   unsigned version;
-  bool old;
   message_signature_type_t type;
 };
 

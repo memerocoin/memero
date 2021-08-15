@@ -85,6 +85,10 @@ namespace crypto {
 
   struct signature {
     ec_scalar c, r;
+
+    bool operator==(const signature_unnormalized &x) const {
+      return c == x.c && r == x.r;
+    }
   };
 
   inline std::ostream &operator <<(std::ostream &o, const crypto::signature &v) {

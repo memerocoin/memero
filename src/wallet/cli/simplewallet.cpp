@@ -3379,7 +3379,15 @@ bool simple_wallet::verify(const std::vector<std::string> &args)
   }
   else
   {
-    success_msg_writer() << sw::tr("Good signature from ") << address_string << (result.old ? " (using old signature algorithm)" : "") << " with " << (result.type == wallet::logic::type::message_signature::sign_with_spend_key ? "spend key" : result.type == wallet::logic::type::message_signature::sign_with_view_key ? "view key" : "unknown key combination (suspicious)");
+    success_msg_writer()
+      << sw::tr("Good signature from ") << address_string << " with "
+      << (
+          result.type == wallet::logic::type::message_signature::sign_with_spend_key
+          ? "spend key"
+          : result.type == wallet::logic::type::message_signature::sign_with_view_key
+          ? "view key"
+          : "unknown key combination (suspicious)"
+          );
   }
   return true;
 }

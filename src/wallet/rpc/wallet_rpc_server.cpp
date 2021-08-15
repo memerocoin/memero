@@ -1083,7 +1083,6 @@ namespace tools
       (req.data, info.address, req.signature);
     res.good = result.valid;
     res.version = result.version;
-    res.old = result.old;
     switch (result.type)
     {
       case wallet::logic::type::message_signature::sign_with_spend_key: res.signature_type = "spend"; break;
