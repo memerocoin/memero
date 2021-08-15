@@ -128,7 +128,7 @@ namespace rct {
           (
            config::HASH_KEY_CLSAG_AGG_0
            , sizeof(config::HASH_KEY_CLSAG_AGG_0)-1
-           , mu_P_to_hash[0].data.data()
+           , mu_P_to_hash[0].data.begin()
            );
 
         mu_C_to_hash[0] = zero;
@@ -136,7 +136,7 @@ namespace rct {
           (
            config::HASH_KEY_CLSAG_AGG_1
            , sizeof(config::HASH_KEY_CLSAG_AGG_1)-1
-           , mu_C_to_hash[0].data.data()
+           , mu_C_to_hash[0].data.begin()
            );
 
         for (size_t i = 1; i < n+1; ++i) {
@@ -165,7 +165,7 @@ namespace rct {
           (
            config::HASH_KEY_CLSAG_ROUND
            , sizeof(config::HASH_KEY_CLSAG_ROUND)-1
-           , c_to_hash[0].data.data()
+           , c_to_hash[0].data.begin()
            );
 
         for (size_t i = 1; i < n+1; ++i)
@@ -352,7 +352,7 @@ namespace rct {
           (
            config::HASH_KEY_CLSAG_AGG_0
            , sizeof(config::HASH_KEY_CLSAG_AGG_0)-1
-           , mu_P_to_hash[0].data.data()
+           , mu_P_to_hash[0].data.begin()
            );
 
         mu_C_to_hash[0] = zero;
@@ -360,7 +360,7 @@ namespace rct {
           (
            config::HASH_KEY_CLSAG_AGG_1
            , sizeof(config::HASH_KEY_CLSAG_AGG_1)-1
-           , mu_C_to_hash[0].data.data()
+           , mu_C_to_hash[0].data.begin()
            );
 
         for (size_t i = 1; i < n+1; ++i) {
@@ -388,7 +388,7 @@ namespace rct {
           (
            config::HASH_KEY_CLSAG_ROUND
            , sizeof(config::HASH_KEY_CLSAG_ROUND)-1
-           , c_to_hash[0].data.data()
+           , c_to_hash[0].data.begin()
            );
 
         for (size_t i = 1; i < n+1; ++i)

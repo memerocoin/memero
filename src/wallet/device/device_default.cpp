@@ -208,7 +208,7 @@ namespace hw {
           // here trailing 0 is part of the HASH_KEY ..
           const epee::blob::data hashData =
             epee::blob::data((const uint8_t*)config::HASH_KEY_SUBADDRESS, sizeof(config::HASH_KEY_SUBADDRESS))
-            + epee::blob::data(a.data.data(), a.data.size())
+            + epee::blob::data(a.data.begin(), a.data.size())
             + major
             + minor;
 

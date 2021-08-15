@@ -223,7 +223,7 @@ namespace rct {
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(ecdhHashPrefix))
-      + epee::blob::data(k.data.data(), k.data.size());
+      + epee::blob::data(k.data.begin(), k.data.size());
 
     return hash2rct(crypto::sha3(hashData));
   }
@@ -241,7 +241,7 @@ namespace rct {
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
-      + epee::blob::data(sk.data.data(), sk.data.size());
+      + epee::blob::data(sk.data.begin(), sk.data.size());
 
     return s2s(crypto::hash_to_scalar(hashData));
   }
