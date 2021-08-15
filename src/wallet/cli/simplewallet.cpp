@@ -123,7 +123,7 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
   } else {
     std::cout << "secret: " << m_wallet->get_account().get_keys().m_view_secret_key << std::endl;
   }
-  std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_view_public_key) << std::endl;
+  std::cout << "public: " << m_wallet->get_account().get_keys().m_account_address.m_view_public_key << std::endl;
 
   return true;
 }
@@ -137,7 +137,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
   } else {
     std::cout << "secret: " << m_wallet->get_account().get_keys().m_spend_secret_key << std::endl;
   }
-  std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_spend_public_key) << std::endl;
+  std::cout << "public: " << m_wallet->get_account().get_keys().m_account_address.m_spend_public_key << std::endl;
 
   return true;
 }
