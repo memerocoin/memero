@@ -32,6 +32,7 @@
 #pragma once
 
 #include "hash.hpp"
+#include "random.hpp"
 
 #include <sodium.h>
 #include <random>
@@ -182,46 +183,6 @@ namespace crypto {
     * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
     */
   key_image generate_key_image(const public_key &, const secret_key &);
-
-
-  void generate_random_bytes(size_t N, uint8_t *bytes);
-
-  /* Generate a value filled with random bytes.
-   */
-  template<typename T>
-  typename std::enable_if<std::is_trivial<T>::value, T>::type rand() {
-    typename std::remove_cv<T>::type res;
-    generate_random_bytes(sizeof(T), (uint8_t*)&res);
-    return res;
-  }
-
-  /* UniformRandomBitGenerator using crypto::rand<uint64_t>()
-   */
-  struct random_device
-  {
-    typedef uint64_t result_type;
-    static constexpr result_type min() { return 0; }
-    static constexpr result_type max() { return result_type(-1); }
-    result_type operator()() const { return crypto::rand<result_type>(); }
-  };
-
-  /* Generate a random value between range_min and range_max
-   */
-  template<typename T>
-  typename std::enable_if<std::is_integral<T>::value, T>::type rand_range(T range_min, T range_max) {
-    crypto::random_device rd;
-    std::uniform_int_distribution<T> dis(range_min, range_max);
-    return dis(rd);
-  }
-
-  /* Generate a random index between 0 and sz-1
-   */
-  template<typename T>
-  typename std::enable_if<std::is_unsigned<T>::value, T>::type rand_idx(T sz) {
-    return crypto::rand_range<T>(0, sz-1);
-  }
-
-
 
   uint64_t scalar_to_int(const ec_scalar &in);
   ec_scalar int_to_scalar(const uint64_t in);

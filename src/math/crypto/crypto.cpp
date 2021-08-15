@@ -101,11 +101,6 @@ namespace crypto {
     return s;
   }
 
-  void generate_random_bytes(size_t N, uint8_t *bytes)
-  {
-    randombytes_buf(bytes, N);
-  }
-
   bool is_valid_point(const ec_point_unsafe x) {
     return crypto_core_ed25519_is_valid_point(x.data);
   }

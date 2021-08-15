@@ -35,6 +35,7 @@ add_library(math_crypto
   sha3.cpp
   tree-hash.cpp
   hash.cpp
+  random.cpp
   )
 
 target_link_libraries(math_crypto
