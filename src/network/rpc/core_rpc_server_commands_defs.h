@@ -38,38 +38,6 @@
 
 using namespace constant;
 
-namespace
-{
-  template<typename T>
-  std::string compress_integer_array(const std::vector<T> &v)
-  {
-    std::string s;
-    s.resize(v.size() * (sizeof(T) * 8 / 7 + 1));
-    char *ptr = (char*)s.data();
-    for (const T &t: v)
-      tools::write_varint(ptr, t);
-    s.resize(ptr - s.data());
-    return s;
-  }
-
-  template<typename T>
-  std::vector<T> decompress_integer_array(const std::string &s)
-  {
-    std::vector<T> v;
-    v.reserve(s.size());
-    int read = 0;
-    const std::string::const_iterator end = s.end();
-    for (std::string::const_iterator i = s.begin(); i != end; std::advance(i, read))
-    {
-      T t;
-      read = tools::read_varint(std::string::const_iterator(i), s.end(), t);
-      LOG_ERROR_AND_THROW_UNLESS(read > 0 && read <= 256, "Error decompressing data");
-      v.push_back(t);
-    }
-    return v;
-  }
-}
-
 namespace cryptonote
 {
   //-----------------------------------------------
@@ -1735,7 +1703,6 @@ namespace cryptonote
       uint64_t to_height;
       bool cumulative;
       bool binary;
-      bool compress;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_request_base)
@@ -1744,7 +1711,6 @@ namespace cryptonote
         KV_SERIALIZE_OPT(to_height, (uint64_t)0)
         KV_SERIALIZE_OPT(cumulative, false)
         KV_SERIALIZE_OPT(binary, true)
-        KV_SERIALIZE_OPT(compress, false)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<request_t> request;
@@ -1753,36 +1719,21 @@ namespace cryptonote
     {
       rpc::output_distribution_data data;
       uint64_t amount;
-      std::string compressed_data;
       bool binary;
-      bool compress;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(amount)
         KV_SERIALIZE_N(data.start_height, "start_height")
         KV_SERIALIZE(binary)
-        KV_SERIALIZE(compress)
         if (this->binary)
         {
           if (is_store)
           {
-            if (this->compress)
-            {
-              const_cast<std::string&>(this->compressed_data) = compress_integer_array(this->data.distribution);
-              KV_SERIALIZE(compressed_data)
-            }
-            else
-              KV_SERIALIZE_CONTAINER_POD_AS_BLOB_N(data.distribution, "distribution")
+            KV_SERIALIZE_CONTAINER_POD_AS_BLOB_N(data.distribution, "distribution")
           }
           else
           {
-            if (this->compress)
-            {
-              KV_SERIALIZE(compressed_data)
-              const_cast<std::vector<uint64_t>&>(this->data.distribution) = decompress_integer_array<uint64_t>(this->compressed_data);
-            }
-            else
-              KV_SERIALIZE_CONTAINER_POD_AS_BLOB_N(data.distribution, "distribution")
+            KV_SERIALIZE_CONTAINER_POD_AS_BLOB_N(data.distribution, "distribution")
           }
         }
         else
