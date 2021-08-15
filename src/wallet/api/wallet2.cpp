@@ -2533,8 +2533,11 @@ void wallet2::init_type(hw::device::device_type device_type)
  * \param  recover                 Whether it is a restore
  * \return                         The secret key of the generated wallet
  */
-crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
-  const crypto::secret_key& recovery_param, bool recover)
+crypto::secret_key wallet2::generate
+(
+ const std::string& wallet_
+ , const epee::wipeable_string& password
+ , const std::optional<crypto::secret_key> recovery_key)
 {
   clear();
   prepare_file_names(wallet_);
@@ -2546,13 +2549,13 @@ crypto::secret_key wallet2::generate(const std::string& wallet_, const epee::wip
     THROW_WALLET_EXCEPTION_IF(std::filesystem::exists(m_keys_file,   ignored_ec), error::file_exists, m_keys_file);
   }
 
-  crypto::secret_key retval = m_account.generate(recovery_param, recover);
+  crypto::secret_key retval = m_account.generate(recovery_key);
 
   init_type(hw::device::device_type::SOFTWARE);
   setup_keys(password);
 
   // calculate a starting refresh height
-  if(m_refresh_from_block_height == 0 && !recover){
+  if(m_refresh_from_block_height == 0 && !recovery_key){
     std::string err;
     const uint64_t _target_height = get_daemon_blockchain_target_height(err);
     std::optional<uint64_t> target_height =

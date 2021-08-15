@@ -45,8 +45,8 @@ TEST(tx_proof, prove_verify_v2)
     // B = bG
     crypto::secret_key a,b;
     crypto::public_key A,B;
-    crypto::generate_keys(A, a, a, false);
-    crypto::generate_keys(B, b, b, false);
+    a = crypto::generate_keys(A, {});
+    b = crypto::generate_keys(B, {});
 
     // R_B = rB
     crypto::public_key R_B = crypto::p2pk(crypto::mult(B, r));
@@ -75,10 +75,10 @@ TEST(tx_proof, prove_verify_v2)
     // Randomly-distributed test points
     crypto::secret_key evil_a, evil_b, evil_d, evil_r;
     crypto::public_key evil_A, evil_B, evil_D, evil_R;
-    crypto::generate_keys(evil_A, evil_a, evil_a, false);
-    crypto::generate_keys(evil_B, evil_b, evil_b, false);
-    crypto::generate_keys(evil_D, evil_d, evil_d, false);
-    crypto::generate_keys(evil_R, evil_r, evil_r, false);
+    evil_a = crypto::generate_keys(evil_A, {});
+    evil_b = crypto::generate_keys(evil_B, {});
+    evil_d = crypto::generate_keys(evil_D, {});
+    evil_r = crypto::generate_keys(evil_R, {});
 
     // Selectively choose bad point in v2 proof (bad)
     sig = crypto::generate_tx_proof(prefix_hash, R_B, A, B, D, r);

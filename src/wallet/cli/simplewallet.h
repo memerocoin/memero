@@ -85,8 +85,11 @@ namespace cryptonote
     //! \return Prompts user for password and verifies against local file. Logs on error and returns `none`
     std::optional<tools::password_container> get_and_verify_password() const;
 
-    std::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm,
-                                                    const crypto::secret_key& recovery_key, bool recover);
+    std::optional<epee::wipeable_string> new_wallet
+    (
+     const boost::program_options::variables_map& vm
+     , const std::optional<crypto::secret_key> recovery_key
+     );
     std::optional<epee::wipeable_string> new_wallet(const boost::program_options::variables_map& vm);
     std::optional<epee::wipeable_string> open_wallet(const boost::program_options::variables_map& vm);
     bool close_wallet();

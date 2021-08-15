@@ -112,9 +112,7 @@ namespace crypto {
   secret_key generate_keys
   (
    public_key &pub
-   , secret_key &sec
-   , const secret_key& recovery_key = secret_key()
-   , bool recover = false
+   , const std::optional<secret_key> recovery_key
    );
 
   /* Check a public key. Returns true if it is valid, false otherwise.

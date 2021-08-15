@@ -121,12 +121,15 @@ namespace tools
      * \brief Generates a wallet or restores one.
      * \param  wallet_              Name of wallet file
      * \param  password             Password of wallet file
-     * \param  recovery_param       If it is a restore, the recovery key
-     * \param  recover              Whether it is a restore
+     * \param  recovery_key         If it is a restore, the recovery key
      * \return                      The secret key of the generated wallet
      */
-    crypto::secret_key generate(const std::string& wallet, const epee::wipeable_string& password,
-      const crypto::secret_key& recovery_param = crypto::secret_key(), bool recover = false);
+    crypto::secret_key generate
+    (
+     const std::string& wallet
+     , const epee::wipeable_string& password
+     , const std::optional<crypto::secret_key> recovery_key
+     );
     /*!
      * \brief Creates a wallet from a public address and a spend/view secret key pair.
      * \param  wallet_                 Name of wallet file

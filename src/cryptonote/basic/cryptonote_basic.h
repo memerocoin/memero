@@ -408,7 +408,7 @@ namespace cryptonote
     static inline keypair generate(hw::device &hwdev)
     {
       keypair k;
-      hwdev.generate_keys(k.pub, k.sec);
+      k.sec = hwdev.generate_keys(k.pub, {});
       return k;
     }
   };

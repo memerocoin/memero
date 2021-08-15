@@ -1627,9 +1627,8 @@ namespace tools
     bool r = wal->invoke_http_json("/get_height", hreq, hres);
     if (r)
       wal->set_refresh_from_block_height(hres.height);
-    crypto::secret_key dummy_key;
     try {
-      wal->generate(wallet_file, req.password, dummy_key, false);
+      wal->generate(wallet_file, req.password, {});
     }
     catch (const std::exception& e)
     {
@@ -1962,7 +1961,7 @@ namespace tools
     crypto::secret_key recovery_val;
     try
     {
-      recovery_val = wal->generate(wallet_file, std::move(rc.second).password(), recovery_key, true);
+      recovery_val = wal->generate(wallet_file, std::move(rc.second).password(), recovery_key);
       LOG_INFO("Wallet has been restored.\n");
     }
     catch (const std::exception &e)

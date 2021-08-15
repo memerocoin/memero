@@ -114,14 +114,11 @@ namespace crypto {
    * TODO: allow specifying random value (for wallet recovery)
    *
    */
-  secret_key generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
-    const secret_key s = recover ? recovery_key : s2sk(scalarGen());
-    const auto s_safe = s2sk(reduce(s));  // reduce in case second round of keys (sendkeys)
+  secret_key generate_keys(public_key & pub, std::optional<secret_key> recovery_key) {
+    const secret_key s = recovery_key ? s2sk(reduce(*recovery_key)) : s2sk(scalarGen());
+    secret_key_to_public_key(s, pub);
 
-    secret_key_to_public_key(s_safe, pub);
-    sec = s_safe;
-
-    return s_safe;
+    return s;
   }
 
   bool check_key(const public_key &key) {

@@ -216,8 +216,13 @@ namespace hw {
             return true;
         }
 
-        crypto::secret_key  device_default::generate_keys(crypto::public_key &pub, crypto::secret_key &sec, const crypto::secret_key& recovery_key, bool recover) {
-            return crypto::generate_keys(pub, sec, recovery_key, recover);
+        crypto::secret_key  device_default::generate_keys
+        (
+         crypto::public_key &pub
+         , const std::optional<crypto::secret_key> recovery_key
+         )
+        {
+            return crypto::generate_keys(pub, recovery_key);
         }
 
         bool device_default::generate_key_derivation(const crypto::public_key &key1, const crypto::secret_key &key2, crypto::key_derivation &derivation) {

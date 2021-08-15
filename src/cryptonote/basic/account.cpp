@@ -138,16 +138,23 @@ namespace cryptonote
     m_keys.m_spend_secret_key = crypto::secret_key();
   }
   //-----------------------------------------------------------------
-  crypto::secret_key account_base::generate(const crypto::secret_key& recovery_key, bool recover)
+  crypto::secret_key account_base::generate(const std::optional<crypto::secret_key> recovery_key)
   {
-    crypto::secret_key first = generate_keys(m_keys.m_account_address.m_spend_public_key, m_keys.m_spend_secret_key, recovery_key, recover);
+    const crypto::secret_key first = generate_keys
+      (
+       m_keys.m_account_address.m_spend_public_key
+       , recovery_key
+       );
+    m_keys.m_spend_secret_key = first;
 
     // rng for generating second set of keys is hash of first rng.  means only one set of electrum-style words needed for recovery
-    crypto::secret_key second;
-    const auto h = crypto::sha3(epee::pod_to_span(m_keys.m_spend_secret_key));
-    std::copy(std::begin(h.data), std::end(h.data), (second).data);
+    const crypto::ec_scalar h = crypto::hash_to_scalar(epee::pod_to_span(m_keys.m_spend_secret_key));
 
-    generate_keys(m_keys.m_account_address.m_view_public_key, m_keys.m_view_secret_key, second, true);
+    m_keys.m_view_secret_key = generate_keys
+      (
+       m_keys.m_account_address.m_view_public_key
+       , crypto::s2sk(h)
+       );
 
     struct tm timestamp = {0};
     timestamp.tm_year = 2014 - 1900;  // year 2014
@@ -157,7 +164,7 @@ namespace cryptonote
     timestamp.tm_min = 0;
     timestamp.tm_sec = 0;
 
-    if (recover)
+    if (recovery_key)
     {
       m_creation_timestamp = mktime(&timestamp);
       if (m_creation_timestamp == (uint64_t)-1) // failure

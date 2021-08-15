@@ -906,7 +906,7 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       }
       spendkey_string = epee::string_tools::pod_to_hex((m_recovery_key));
 
-      auto r = new_wallet(vm, m_recovery_key, true);
+      auto r = new_wallet(vm, m_recovery_key);
       LOG_ERROR_AND_RETURN_UNLESS(r, false, sw::tr("account creation failed"));
       password = *r;
     }
@@ -918,7 +918,12 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm)
       }
       m_wallet_file = m_generate_new;
       std::optional<epee::wipeable_string> r;
-      r = new_wallet(vm, m_recovery_key, m_restore_deterministic_wallet);
+      if (m_restore_deterministic_wallet) {
+        r = new_wallet(vm, m_recovery_key);
+      } else {
+        r = new_wallet(vm, {});
+      }
+
       LOG_ERROR_AND_RETURN_UNLESS(r, false, sw::tr("account creation failed"));
       password = *r;
     }
@@ -1026,8 +1031,11 @@ std::optional<tools::password_container> simple_wallet::get_and_verify_password(
   return pwd_container;
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::program_options::variables_map& vm,
-  const crypto::secret_key& recovery_key, bool recover)
+std::optional<epee::wipeable_string> simple_wallet::new_wallet
+(
+ const boost::program_options::variables_map& vm
+ , const std::optional<crypto::secret_key> recovery_key
+ )
 {
   std::pair<std::unique_ptr<tools::wallet2>, tools::password_container> rc;
   try { rc = tools::wallet2::make_new(vm, false, password_prompter); }
@@ -1072,7 +1080,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
   crypto::secret_key recovery_val;
   try
   {
-    recovery_val = m_wallet->generate(m_wallet_file, std::move(rc.second).password(), recovery_key, recover);
+    recovery_val = m_wallet->generate(m_wallet_file, std::move(rc.second).password(), recovery_key);
     message_writer(epee::console_color_white, true) << sw::tr("Generated new wallet: ")
       << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
   }
@@ -1089,7 +1097,7 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet(const boost::prog
 
   PAUSE_READLINE();
 
-  if (!recover) {
+  if (!recovery_key) {
     success_msg_writer(true) <<
       "\n" <<
       boost::format(tr("NOTE: the following %s can be used to recover access to your wallet. "
