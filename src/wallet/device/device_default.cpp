@@ -222,7 +222,9 @@ namespace hw {
          , const std::optional<crypto::secret_key> recovery_key
          )
         {
-            return crypto::generate_keys(pub, recovery_key);
+          crypto::secret_key k;
+          std::tie(k, pub) = crypto::generate_keys(recovery_key);
+          return k;
         }
 
         bool device_default::generate_key_derivation(const crypto::public_key &key1, const crypto::secret_key &key2, crypto::key_derivation &derivation) {

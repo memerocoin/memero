@@ -109,10 +109,9 @@ namespace crypto {
 
   /* Generate a new key pair
     */
-  secret_key generate_keys
+  std::pair<secret_key, public_key> generate_keys
   (
-   public_key &pub
-   , const std::optional<secret_key> recovery_key
+     const std::optional<secret_key> recovery_key
    );
 
   /* Checks a private key and computes the corresponding public key.

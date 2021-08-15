@@ -140,21 +140,14 @@ namespace cryptonote
   //-----------------------------------------------------------------
   crypto::secret_key account_base::generate(const std::optional<crypto::secret_key> recovery_key)
   {
-    const crypto::secret_key first = generate_keys
-      (
-       m_keys.m_account_address.m_spend_public_key
-       , recovery_key
-       );
-    m_keys.m_spend_secret_key = first;
+    std::tie(m_keys.m_spend_secret_key, m_keys.m_account_address.m_spend_public_key) =
+      generate_keys(recovery_key);
 
     // rng for generating second set of keys is hash of first rng.  means only one set of electrum-style words needed for recovery
     const crypto::ec_scalar h = crypto::hash_to_scalar(epee::pod_to_span(m_keys.m_spend_secret_key));
 
-    m_keys.m_view_secret_key = generate_keys
-      (
-       m_keys.m_account_address.m_view_public_key
-       , crypto::s2sk(h)
-       );
+    std::tie(m_keys.m_view_secret_key, m_keys.m_account_address.m_view_public_key) =
+      generate_keys(crypto::s2sk(h));
 
     struct tm timestamp = {0};
     timestamp.tm_year = 2014 - 1900;  // year 2014
@@ -165,16 +158,17 @@ namespace cryptonote
     timestamp.tm_sec = 0;
 
     if (recovery_key)
-    {
-      m_creation_timestamp = mktime(&timestamp);
-      if (m_creation_timestamp == (uint64_t)-1) // failure
-        m_creation_timestamp = 0; // lowest value
-    }
+      {
+        m_creation_timestamp = mktime(&timestamp);
+        if (m_creation_timestamp == (uint64_t)-1) // failure
+          m_creation_timestamp = 0; // lowest value
+      }
     else
-    {
-      m_creation_timestamp = time(NULL);
-    }
-    return first;
+      {
+        m_creation_timestamp = time(NULL);
+      }
+
+    return m_keys.m_spend_secret_key;
   }
   //-----------------------------------------------------------------
   void account_base::create_from_keys(const cryptonote::account_public_address& address, const crypto::secret_key& spendkey, const crypto::secret_key& viewkey)
