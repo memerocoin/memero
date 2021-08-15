@@ -100,6 +100,7 @@ namespace hw {
             crypto::generate_chacha_key(data.data(), sizeof(data), key, kdf_rounds);
             return true;
         }
+
         bool  device_default::get_public_address(cryptonote::account_public_address &pubkey) {
              dfns();
         }
@@ -110,27 +111,43 @@ namespace hw {
         /*                               SUB ADDRESS                               */
         /* ======================================================================= */
 
-        bool device_default::derive_subaddress_public_key(const crypto::public_key &out_key, const crypto::key_derivation &derivation, const std::size_t output_index, crypto::public_key &derived_key) {
+        bool device_default::derive_subaddress_public_key
+        (
+         const crypto::public_key &out_key
+         , const crypto::key_derivation &derivation
+         , const std::size_t output_index
+         , crypto::public_key &derived_key
+         ) {
             return crypto::derive_subaddress_public_key(out_key, derivation, output_index,derived_key);
         }
 
-        crypto::public_key device_default::get_subaddress_spend_public_key(const cryptonote::account_keys& keys, const cryptonote::subaddress_index &index) {
+        crypto::public_key device_default::get_subaddress_spend_public_key
+        (
+         const cryptonote::account_keys& keys
+         , const cryptonote::subaddress_index &index
+         )
+        {
             if (index.is_zero())
               return keys.m_account_address.m_spend_public_key;
 
             // m = Hs(a || index_major || index_minor)
-            crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
+            const crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
 
             // M = m*G
-            crypto::public_key M;
-            crypto::secret_key_to_public_key(m, M);
+            const crypto::public_key M = crypto::p2pk(crypto::multBase(m));
 
             // D = B + M
-            crypto::public_key D = crypto::p2pk(keys.m_account_address.m_spend_public_key + M);
-            return D;
+            return crypto::p2pk(keys.m_account_address.m_spend_public_key + M);
         }
 
-        std::vector<crypto::public_key>  device_default::get_subaddress_spend_public_keys(const cryptonote::account_keys &keys, uint32_t account, uint32_t begin, uint32_t end) {
+        std::vector<crypto::public_key> device_default::get_subaddress_spend_public_keys
+        (
+         const cryptonote::account_keys &keys
+         , uint32_t account
+         , uint32_t begin
+         , uint32_t end
+         )
+        {
             LOG_ERROR_AND_THROW_UNLESS(begin <= end, "begin > end");
 
             std::vector<crypto::public_key> pkeys;
@@ -181,7 +198,7 @@ namespace hw {
             return address;
         }
 
-        crypto::secret_key  device_default::get_subaddress_secret_key(const crypto::secret_key &a, const cryptonote::subaddress_index &index) {
+        crypto::secret_key device_default::get_subaddress_secret_key(const crypto::secret_key &a, const cryptonote::subaddress_index &index) {
           const uint32_t major_i = SWAP32LE(index.major);
           const uint32_t minor_i = SWAP32LE(index.minor);
           const epee::blob::data major = epee::blob::data((uint8_t*)&major_i, sizeof(uint32_t));
