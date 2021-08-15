@@ -121,10 +121,6 @@ namespace crypto {
     return s;
   }
 
-  bool check_key(const public_key &key) {
-    return is_valid_point(key);
-  }
-
   bool secret_key_to_public_key(const secret_key &sec, public_key &pub) {
     return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
   }

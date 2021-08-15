@@ -660,7 +660,7 @@ namespace cryptonote
         LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
       }
 
-      if(!check_key(boost::get<txout_to_key>(out.target).key))
+      if(!is_valid_point(boost::get<txout_to_key>(out.target).key))
         return false;
     }
     return true;

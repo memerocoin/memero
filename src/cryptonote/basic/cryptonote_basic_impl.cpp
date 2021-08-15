@@ -116,7 +116,7 @@ namespace cryptonote {
         }
       }
 
-      if (!crypto::check_key(info.address.m_spend_public_key) || !crypto::check_key(info.address.m_view_public_key))
+      if (!crypto::is_valid_point(info.address.m_spend_public_key) || !crypto::is_valid_point(info.address.m_view_public_key))
       {
         LOG_PRINT_L1("Failed to validate address keys");
         return false;

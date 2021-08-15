@@ -115,10 +115,6 @@ namespace crypto {
    , const std::optional<secret_key> recovery_key
    );
 
-  /* Check a public key. Returns true if it is valid, false otherwise.
-    */
-  bool check_key(const public_key &);
-
   /* Checks a private key and computes the corresponding public key.
     */
   bool secret_key_to_public_key(const secret_key &, public_key &);
