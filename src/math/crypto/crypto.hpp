@@ -79,6 +79,10 @@ namespace crypto {
 
   struct key_image: ec_point {};
 
+  struct signature_unnormalized {
+    ec_scalar_unnormalized c, r;
+  };
+
   struct signature {
     ec_scalar c, r;
   };

@@ -74,12 +74,21 @@ namespace signature {
       LOG_PRINT_L0("Signature decoding error");
       return {};
     }
-    crypto::signature s;
-    if (sizeof(s) != decoded.size()) {
+    crypto::signature_unnormalized s_unsafe;
+    if (sizeof(s_unsafe) != decoded.size()) {
       LOG_PRINT_L0("Signature decoding error");
       return {};
     }
-    memcpy(&s, decoded.data(), sizeof(s));
+
+    memcpy(&s_unsafe, decoded.data(), decoded.size());
+
+    const crypto::signature s =
+      {
+        crypto::reduce(s_unsafe.c)
+        , crypto::reduce(s_unsafe.r)
+      };
+
+
 
     // Test each mode and return which mode, if either, succeeded
     const crypto::hash hash = get_message_hash(data);
