@@ -81,14 +81,17 @@ namespace proof {
         else
         {
           const rct::scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(found_derivation, n));
-          rct::scalar ecdh_amount = tx.rct_signatures.ecdhInfo[n].amount;
-          rct::ecdhTuple ecdh_info = rct::ecdhDecode(ecdh_amount, scalar1);
+          const crypto::ec_scalar_unnormalized ecdh_amount_raw = tx.rct_signatures.ecdhInfo[n].amount;
+          const rct::ecdhTuple ecdh_info = rct::ecdhDecode(ecdh_amount_raw, scalar1);
           const rct::key C = tx.rct_signatures.outPk[n].mask;
+
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.mask), error::wallet_internal_error, "Bad ECDH input mask");
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.amount), error::wallet_internal_error, "Bad ECDH input amount");
-          const rct::key Ctmp = rct::addMultG_H(ecdh_info.mask, ecdh_info.amount);
+
+          const rct::scalar ecdh_amount = rct::s2s(crypto::reduce(ecdh_info.amount));
+          const rct::key Ctmp = rct::addMultG_H(ecdh_info.mask, ecdh_amount);
           if (C == Ctmp)
-            amount = rct::scalar_to_int(ecdh_info.amount);
+            amount = rct::scalar_to_int(ecdh_amount);
           else
             amount = 0;
         }

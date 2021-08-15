@@ -150,10 +150,16 @@ namespace proof {
 
     // check if this address actually received any funds
     crypto::key_derivation derivation;
-    THROW_WALLET_EXCEPTION_IF(!crypto::generate_key_derivation(shared_secret[0], rct::rct2sk(rct::I), derivation), tools::error::wallet_internal_error, "Failed to generate key derivation");
+    THROW_WALLET_EXCEPTION_IF
+      (!crypto::generate_key_derivation(shared_secret[0], crypto::s2sk(rct::s_one), derivation)
+       , tools::error::wallet_internal_error, "Failed to generate key derivation");
+
     std::vector<crypto::key_derivation> additional_derivations(num_sigs - 1);
     for (size_t i = 1; i < num_sigs; ++i)
-      THROW_WALLET_EXCEPTION_IF(!crypto::generate_key_derivation(shared_secret[i], rct::rct2sk(rct::I), additional_derivations[i - 1]), tools::error::wallet_internal_error, "Failed to generate key derivation");
+      THROW_WALLET_EXCEPTION_IF
+        (!crypto::generate_key_derivation(shared_secret[i], crypto::s2sk(rct::s_one), additional_derivations[i - 1])
+         , tools::error::wallet_internal_error, "Failed to generate key derivation");
+
     uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
       (tx, derivation, additional_derivations, address);
     THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");

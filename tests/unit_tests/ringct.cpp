@@ -169,11 +169,12 @@ TEST(ringct, CLSAG)
   clsag.s = sbackup;
 
   // too few s elements
-  scalar backup_key;
-  backup_key = clsag.s.back();
+  scalar backup_s;
+  key backup_key;
+  backup_s = clsag.s.back();
   clsag.s.pop_back();
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.s.push_back(backup_key);
+  clsag.s.push_back(backup_s);
 
   // too many s elements
   clsag.s.push_back(skGen());
@@ -183,37 +184,37 @@ TEST(ringct, CLSAG)
   // bad s in clsag at verification
   for (auto &s: clsag.s)
   {
-    backup_key = s;
+    backup_s = s;
     s = skGen();
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-    s = backup_key;
+    s = backup_s;
   }
 
   // bad c1 in clsag at verification
-  backup_key = clsag.c1;
+  backup_s = clsag.c1;
   clsag.c1 = skGen();
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.c1 = backup_key;
+  clsag.c1 = backup_s;
 
   // bad I in clsag at verification
-  backup_key = unsafe_k2s(clsag.I);
+  backup_key = clsag.I;
   clsag.I = multG(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.I = unsafe_s2k(backup_key);
+  clsag.I = backup_key;
 
   // bad D in clsag at verification
-  backup_key = unsafe_k2s(clsag.D);
+  backup_key = clsag.D;
   clsag.D = multG(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.D = unsafe_s2k(backup_key);
+  clsag.D = backup_key;
 
   // D not in main subgroup in clsag at verification
-  backup_key = unsafe_k2s(clsag.D);
+  backup_key = clsag.D;
   rct::key x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
   clsag.D = clsag.D + x;
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.D = unsafe_s2k(backup_key);
+  clsag.D = backup_key;
 
   // swapped I and D in clsag at verification
   std::swap(clsag.I, clsag.D);
@@ -251,7 +252,7 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
         destinations.push_back(Pk);
     }
 
-    return genRctSimple(rct::zero, sc, pc, destinations, inamounts, outamounts, amount_keys, fee, 3);
+    return genRctSimple({}, sc, pc, destinations, inamounts, outamounts, amount_keys, fee, 3);
 }
 
 static bool range_proof_test(bool expected_valid,
@@ -522,9 +523,9 @@ static const amount_t test_amounts[]={0, 1, 2, 3, 4, 5, 10000, 10000000000000000
 
 TEST(ringct, d2h)
 {
-  key k;
+  crypto::ec_scalar k;
   auto [s, P1] = skpkGen();
-  k = unsafe_s2k(s);
+  k = s;
   for (auto amount: test_amounts) {
     auto k = rct::int_to_scalar(amount);
     ASSERT_TRUE(amount == rct::scalar_to_int(k));

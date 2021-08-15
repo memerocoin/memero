@@ -121,12 +121,12 @@ namespace rct {
 
   //for ANSL
 
-  key hash_to_key_via_f2(const crypto::ec_point_unsafe k);
+  key hash_to_key_via_f2(const crypto::crypto_data k);
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH
   scalar genCommitmentMask(const crypto::crypto_data x);
 
-  ecdhTuple ecdhEncode(const scalar amount, const scalar sharedSec);
-  ecdhTuple ecdhDecode(const scalar amount, const scalar sharedSec);
+  ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const scalar sharedSec);
+  ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const scalar sharedSec);
 }

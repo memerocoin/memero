@@ -105,7 +105,7 @@ namespace rct {
     // the purpose of the ECDH exchange
     struct ecdhTuple {
         scalar mask;
-        scalar amount;
+        crypto::ec_scalar_unnormalized amount;
 
         BEGIN_SERIALIZE_OBJECT()
           FIELD(mask) // not saved from v2 BPs
@@ -214,7 +214,7 @@ namespace rct {
 
     struct rctSigBase {
         uint8_t type;
-        key message;
+        crypto::hash message;
         ctkeyM mixRing; //the set of all pubkeys / copy
         //pairs that you mix with
         keyV pseudoOuts; //C - for simple rct
@@ -417,26 +417,22 @@ namespace rct {
     //uint long long to 32 byte key
     scalar int_to_scalar(const amount_t in);
 
-    inline const rct::key &unsafe_s2k(const scalar &x) { return (const rct::key&)x; }
-    inline const rct::scalar &unsafe_k2s(const key &x) { return (const rct::scalar&)x; }
-
     inline const rct::scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::scalar&)sk; }
     inline const crypto::secret_key &scalar2sk(const rct::scalar&k) { return (const crypto::secret_key&)k; }
 
     inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
-    // inline const rct::key &sk2rct(const crypto::secret_key &sk) { return (const rct::key&)sk; }
     inline const rct::key &ki2rct(const crypto::key_image &ki) { return (const rct::key&)ki; }
-    inline const rct::key &hash2rct(const crypto::hash &h) { return (const rct::key&)h; }
     inline const rct::key &p2rct(const crypto::ec_point &p) { return (const rct::key&)p; }
 
     inline const crypto::public_key &rct2pk(const rct::key &k) { return (const crypto::public_key&)k; }
-    inline const crypto::secret_key &rct2sk(const rct::key &k) { return (const crypto::secret_key&)k; }
+    inline const crypto::secret_key &unsafe_rct2sk(const rct::key &k) { return (const crypto::secret_key&)k; }
     inline const crypto::key_image &rct2ki(const rct::key &k) { return (const crypto::key_image&)k; }
     inline const crypto::hash &rct2hash(const rct::key &k) { return (const crypto::hash&)k; }
 
     inline const rct::scalar &s2s(const crypto::ec_scalar &s) { return (const rct::scalar&)s; }
 
     // unsafe
+    inline const rct::key &unsafe_hash2rct(const crypto::hash &h) { return (const rct::key&)h; }
     inline const rct::key &unsafe_d2rct(const crypto::crypto_data &p) { return (const rct::key&)p; }
 }
 
@@ -459,3 +455,5 @@ BLOB_SERIALIZER(rct::ctkey);
 BLOB_SERIALIZER(rct::scalar);
 BLOB_SERIALIZER(rct::pri_ctkey);
 
+
+BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);

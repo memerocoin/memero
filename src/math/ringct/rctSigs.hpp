@@ -70,7 +70,7 @@ namespace rct {
   //   must know the destination private key to find the correct amount, else will return a random number
   rctSig genRctSimple
   (
-   const key message
+   const crypto::hash message
    , const pri_ctkeyV inSk
    , const ctkeyV inPk
    , const keyV destinations
@@ -83,7 +83,7 @@ namespace rct {
 
   rctSig genRctSimple
   (
-   const key message
+   const crypto::hash message
    , const pri_ctkeyV inSk
    , const keyV destinations
    , const std::vector<amount_t> inamounts

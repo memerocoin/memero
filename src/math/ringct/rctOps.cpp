@@ -209,7 +209,7 @@ namespace rct {
     return s2s(reduce(d2s(h2d(hash_keys(keys)))));
   }
 
-  key hash_to_key_via_f2(const crypto::ec_point_unsafe k) {
+  key hash_to_key_via_f2(const crypto::crypto_data k) {
     const auto h = h2d(hash_key(k));
     const crypto::ec_point p = viaF2(h);
     return p2rct(mult8(p));
@@ -219,17 +219,18 @@ namespace rct {
   // where C= aG + bH
 
   constexpr std::string_view ecdhHashPrefix = "amount";
-  key ecdhHash(const crypto::crypto_data x)
+  crypto::hash ecdhHash(const crypto::crypto_data x)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(ecdhHashPrefix))
       + epee::blob::data(x.data.begin(), x.data.size());
 
-    return hash2rct(crypto::sha3(hashData));
+    return crypto::sha3(hashData);
   }
-  scalar xor8(const scalar x, const key k)
+
+  crypto::crypto_data xor8(const crypto::crypto_data x, crypto::hash k)
   {
-    scalar r = x;
+    crypto::crypto_data r = x;
     for (int i = 0; i < 8; ++i)
       r.data[i] ^= k.data[i];
 
@@ -246,7 +247,7 @@ namespace rct {
     return s2s(crypto::hash_to_scalar(hashData));
   }
 
-  ecdhTuple ecdhEncode(const scalar amount, const scalar sharedSec) {
+  ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const scalar sharedSec) {
     ecdhTuple x = {
       s_zero
       , xor8(amount, ecdhHash(sharedSec))
@@ -254,7 +255,7 @@ namespace rct {
     return x;
   }
 
-  ecdhTuple ecdhDecode(const scalar amount, const scalar sharedSec) {
+  ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const scalar sharedSec) {
     ecdhTuple x = {
       genCommitmentMask(sharedSec)
       , xor8(amount, ecdhHash(sharedSec))

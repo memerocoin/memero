@@ -2500,7 +2500,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
   rct::rctSig &rv = tx.rct_signatures;
 
   // message - hash of the transaction prefix
-  rv.message = rct::hash2rct(tx_prefix_hash);
+  rv.message = tx_prefix_hash;
 
   // mixRing - full and simple store it in opposite ways
   if (rv.type == rct::RCTTypeCLSAG)

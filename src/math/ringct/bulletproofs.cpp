@@ -76,7 +76,7 @@ rct::key get_exponent(const rct::key base, size_t idx)
     std::string((const char*)base.data.begin(), base.data.size()) + std::string(domain_separator) + tools::get_varint_data(idx);
 
   rct::key e = rct::hash_to_key_via_f2
-    ( rct::hash2rct(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
+    ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
 
   LOG_ERROR_AND_THROW_IF((e == rct::identity), "Exponent is point at infinity");
   return e;

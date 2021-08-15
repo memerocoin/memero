@@ -242,7 +242,7 @@ namespace rct {
       hw::device& hwdev = hw::get_device("default");
       crypto::dataV hashes;
       hashes.reserve(3);
-      hashes.push_back(rv.message);
+      hashes.push_back(crypto::h2d(rv.message));
       crypto::hash h;
 
       std::stringstream ss;
@@ -481,7 +481,7 @@ namespace rct {
 
     rctSig genRctSimple
     (
-     const key message
+     const crypto::hash message
      , const pri_ctkeyV inSk
      , const keyV destinations
      , const vector<amount_t> inamounts
@@ -585,7 +585,7 @@ namespace rct {
 
     rctSig genRctSimple
     (
-     const key message
+     const crypto::hash message
      , const pri_ctkeyV inSk
      , const ctkeyV inPk
      , const keyV destinations
@@ -797,10 +797,11 @@ namespace rct {
         ecdhTuple ecdh_info = rv.ecdhInfo[i];
         hwdev.ecdhDecode(ecdh_info, sk);
         mask = ecdh_info.mask;
-        scalar amount = ecdh_info.amount;
+        const crypto::ec_scalar_unnormalized amount_raw = ecdh_info.amount;
         key C = rv.outPk[i].mask;
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(mask), "warning, bad ECDH mask");
-        LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount), "warning, bad ECDH amount");
+        LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_raw), "warning, bad ECDH amount");
+        const auto amount = rct::s2s(crypto::reduce(amount_raw));
         const key Ctmp = addMultG_H(mask, amount);
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");

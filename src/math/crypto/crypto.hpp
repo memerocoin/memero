@@ -100,10 +100,10 @@ namespace crypto {
   using dataS = std::span<crypto_data>;
 
 
-  inline const ec_scalar &h2s(const hash &x) { return (const ec_scalar&)x; }
-  inline const ec_point &h2p(const hash &x) { return (const ec_point&)x; }
-  inline const secret_key &h2sk(const hash &x) { return (const secret_key&)x; }
-  inline const public_key &h2pk(const hash &x) { return (const public_key&)x; }
+  inline const ec_scalar_unnormalized &h2s(const hash &x) { return (const ec_scalar&)x; }
+  inline const ec_point_unsafe &h2p(const hash &x) { return (const ec_point&)x; }
+  inline const secret_key &unsafe_h2sk(const hash &x) { return (const secret_key&)x; }
+  inline const public_key &unsafe_h2pk(const hash &x) { return (const public_key&)x; }
 
   inline const secret_key &s2sk(const ec_scalar &x) { return (const secret_key&)x; }
   inline const public_key &p2pk(const ec_point &x) { return (const public_key&)x; }
