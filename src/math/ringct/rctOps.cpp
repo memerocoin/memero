@@ -35,6 +35,7 @@
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
 #include "tools/epee/include/logging.hpp"
+#include "tools/epee/include/string_tools.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -190,7 +191,7 @@ namespace rct {
 
   //sha3 for a 32 byte key
   crypto::hash hash_key(const crypto::crypto_data in) {
-    return crypto::sha3(epee::pod_to_span(in));
+    return crypto::sha3(in.data);
   }
 
   scalar hash_to_scalar(const crypto::crypto_data in) {
@@ -216,12 +217,15 @@ namespace rct {
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH
+
+  constexpr std::string_view ecdhHashPrefix = "amount";
   key ecdhHash(const key k)
   {
-    char data[38];
-    memcpy(data, "amount", 6);
-    memcpy(data + 6, &k, sizeof(k));
-    return hash2rct(crypto::sha3(epee::pod_to_span(data)));
+    const epee::blob::data hashData =
+      epee::string_tools::string_to_blob(std::string(ecdhHashPrefix))
+      + epee::blob::data(k.data, sizeof(k.data));
+
+    return hash2rct(crypto::sha3(hashData));
   }
   scalar xor8(const scalar x, const key k)
   {
@@ -232,13 +236,14 @@ namespace rct {
     return r;
   }
 
+  constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
   scalar genCommitmentMask(const key sk)
   {
-    char data[15 + sizeof(key)];
-    memcpy(data, "commitment_mask", 15);
-    memcpy(data + 15, &sk, sizeof(sk));
-    key h = rct::hash2rct(crypto::sha3(epee::pod_to_span(data)));
-    return s2s(reduce(k2s(h)));
+    const epee::blob::data hashData =
+      epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
+      + epee::blob::data(sk.data, sizeof(sk.data));
+
+    return s2s(crypto::hash_to_scalar(hashData));
   }
 
   ecdhTuple ecdhEncode(const scalar amount, const key sharedSec) {

@@ -144,7 +144,7 @@ namespace cryptonote
       generate_keys(recovery_key);
 
     // rng for generating second set of keys is hash of first rng.  means only one set of electrum-style words needed for recovery
-    const crypto::ec_scalar h = crypto::hash_to_scalar(epee::pod_to_span(m_keys.m_spend_secret_key));
+    const crypto::ec_scalar h = crypto::hash_to_scalar(m_keys.m_spend_secret_key.data);
 
     std::tie(m_keys.m_view_secret_key, m_keys.m_account_address.m_view_public_key) =
       generate_keys(crypto::s2sk(h));

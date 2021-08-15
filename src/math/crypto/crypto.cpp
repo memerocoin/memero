@@ -486,7 +486,7 @@ namespace crypto {
   }
 
   key_image generate_key_image(const public_key &pub, const secret_key &sec) {
-    const ec_point h = viaF2(h2p(sha3(epee::pod_to_span(pub))));
+    const ec_point h = viaF2(h2p(sha3(pub.data)));
     const ec_point p = mult(mult8(h), sec);
     return p2img(p);
   }
