@@ -239,7 +239,10 @@ namespace crypto
     {
       std::vector<epee::wipeable_string> seed;
 
-      boost::split(seed, words, boost::is_any_of("\t "), boost::token_compress_on);
+      std::string trimmed_words = words;
+      boost::trim(trimmed_words);
+
+      boost::split(seed, trimmed_words, boost::is_any_of("\t "), boost::token_compress_on);
 
       if (len % 4)
       {
