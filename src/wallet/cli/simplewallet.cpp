@@ -121,9 +121,7 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
   if (m_wallet->key_on_device()) {
     std::cout << "secret: On device. Not available" << std::endl;
   } else {
-    printf("secret: ");
-    wallet::cli::controller::print_secret_key(m_wallet->get_account().get_keys().m_view_secret_key);
-    putchar('\n');
+    std::cout << "secret: " << m_wallet->get_account().get_keys().m_view_secret_key << std::endl;
   }
   std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_view_public_key) << std::endl;
 
@@ -137,9 +135,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
   if (m_wallet->key_on_device()) {
     std::cout << "secret: On device. Not available" << std::endl;
   } else {
-    printf("secret: ");
-    wallet::cli::controller::print_secret_key(m_wallet->get_account().get_keys().m_spend_secret_key);
-    putchar('\n');
+    std::cout << "secret: " << m_wallet->get_account().get_keys().m_spend_secret_key << std::endl;
   }
   std::cout << "public: " << epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_account_address.m_spend_public_key) << std::endl;
 

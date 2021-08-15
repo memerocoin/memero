@@ -397,7 +397,7 @@ namespace crypto
     bool bytes_to_words(const crypto::secret_key& src, epee::wipeable_string& words,
       const std::string &language_name)
     {
-      return bytes_to_words(src.data, sizeof(src), words, language_name);
+      return bytes_to_words(src.data.data(), src.data.size(), words, language_name);
     }
 
     std::vector<const Language::Base*> get_language_list()

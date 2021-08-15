@@ -78,8 +78,8 @@ TEST(Crypto, null_keys)
 {
   char zero[32];
   memset(zero, 0, 32);
-  ASSERT_EQ(memcmp(crypto::null_skey.data, zero, 32), 0);
-  ASSERT_EQ(memcmp(crypto::null_pkey.data, zero, 32), 0);
+  ASSERT_EQ(memcmp(crypto::null_skey.data.data(), zero, 32), 0);
+  ASSERT_EQ(memcmp(crypto::null_pkey.data.data(), zero, 32), 0);
 }
 
 TEST(Crypto, verify_32)

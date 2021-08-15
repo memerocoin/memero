@@ -53,7 +53,7 @@ namespace crypto {
 
   ec_point add(const ec_point X, const ec_point Y) {
     ec_point p;
-    int r = crypto_core_ed25519_add(p.data, X.data, Y.data);
+    int r = crypto_core_ed25519_add(p.data.data(), X.data.data(), Y.data.data());
     if (r != 0) {
       LOG_FATAL("add keys not in main group: " << X << "\n" << Y);
     }
@@ -67,7 +67,7 @@ namespace crypto {
 
   ec_point sub(const ec_point X, const ec_point Y) {
     ec_point p;
-    int r = crypto_core_ed25519_sub(p.data, X.data, Y.data);
+    int r = crypto_core_ed25519_sub(p.data.data(), X.data.data(), Y.data.data());
     if (r != 0) {
       LOG_FATAL("sub keys not in main group: " << X << "\n" << Y);
     }
@@ -85,24 +85,24 @@ namespace crypto {
 
   ec_scalar ec_scalar::operator+(const ec_scalar& x) const {
     ec_scalar s;
-    crypto_core_ed25519_scalar_add(s.data, this->data, x.data);
+    crypto_core_ed25519_scalar_add(s.data.data(), this->data.data(), x.data.data());
     return s;
   }
 
   ec_scalar ec_scalar::operator-(const ec_scalar& x) const {
     ec_scalar s;
-    crypto_core_ed25519_scalar_sub(s.data, this->data, x.data);
+    crypto_core_ed25519_scalar_sub(s.data.data(), this->data.data(), x.data.data());
     return s;
   }
 
   ec_scalar ec_scalar::operator*(const ec_scalar& x) const {
     ec_scalar s;
-    crypto_core_ed25519_scalar_mul(s.data, this->data, x.data);
+    crypto_core_ed25519_scalar_mul(s.data.data(), this->data.data(), x.data.data());
     return s;
   }
 
   bool is_valid_point(const ec_point_unsafe x) {
-    return crypto_core_ed25519_is_valid_point(x.data);
+    return crypto_core_ed25519_is_valid_point(x.data.data());
   }
   /*
    * generate public and secret keys from a random 256-bit integer
@@ -115,7 +115,7 @@ namespace crypto {
   }
 
   bool secret_key_to_public_key(const secret_key &sec, public_key &pub) {
-    return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data, sec.data);
+    return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sec.data.data());
   }
 
   bool generate_key_derivation
@@ -137,7 +137,7 @@ namespace crypto {
 
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) {
     const epee::blob::data hashData =
-      epee::blob::data(derivation.data, sizeof(derivation.data))
+      epee::blob::data(derivation.data.data(), derivation.data.size())
       + epee::string_tools::string_to_blob(tools::get_varint_data(index));
 
     return hash_to_scalar(hashData);
@@ -404,9 +404,9 @@ namespace crypto {
 
   ec_point viaF2(const crypto_data x) {
     ge_p2 in;
-    ge_fromfe_frombytes_vartime(&in, x.data);
+    ge_fromfe_frombytes_vartime(&in, x.data.data());
     ec_point out;
-    ge_tobytes(out.data, &in);
+    ge_tobytes(out.data.data(), &in);
     return out;
   }
 
@@ -414,13 +414,13 @@ namespace crypto {
   //generates a random scalar which can be used as a secret key or mask
   ec_scalar scalarGen() {
     ec_scalar s;
-    crypto_core_ed25519_scalar_random(s.data);
+    crypto_core_ed25519_scalar_random(s.data.data());
     return s;
   }
 
   ec_point multBase(const ec_scalar x) {
     ec_point p;
-    const int r = crypto_scalarmult_ed25519_base_noclamp(p.data, x.data);
+    const int r = crypto_scalarmult_ed25519_base_noclamp(p.data.data(), x.data.data());
     if (r != 0) {
       LOG_FATAL("scalar mult base failed");
     }
@@ -434,7 +434,7 @@ namespace crypto {
     }
 
     ec_point x;
-    const int r = crypto_scalarmult_ed25519_noclamp(x.data, a.data, X.data);
+    const int r = crypto_scalarmult_ed25519_noclamp(x.data.data(), a.data.data(), X.data.data());
     if (r != 0) {
       LOG_FATAL("mult point is not on curve: " << X << "\nresult: " << x);
     }
@@ -454,13 +454,13 @@ namespace crypto {
     ge_p1p1 point2;
     ge_p2 p2;
 
-    ge_frombytes_vartime(&in, X.data);
+    ge_frombytes_vartime(&in, X.data.data());
     ge_p3_to_p2(&point, &in);
 
     ge_mul8(&point2, &point);
 
     ge_p1p1_to_p2(&p2, &point2);
-    ge_tobytes(res.data, &p2);
+    ge_tobytes(res.data.data(), &p2);
     return res;
   }
 
@@ -468,7 +468,7 @@ namespace crypto {
   ec_scalar invert(const ec_scalar x)
   {
     ec_scalar r;
-    crypto_core_ed25519_scalar_invert(r.data, x.data);
+    crypto_core_ed25519_scalar_invert(r.data.data(), x.data.data());
     return r;
   }
 
@@ -480,10 +480,10 @@ namespace crypto {
 
   ec_scalar reduce(const ec_scalar_unnormalized x) {
     unsigned char t[64] = {0};
-    std::copy(std::begin(x.data), std::end(x.data), t);
+    std::copy(x.data.begin(), x.data.end(), t);
 
     ec_scalar s;
-    crypto_core_ed25519_scalar_reduce(s.data, t);
+    crypto_core_ed25519_scalar_reduce(s.data.data(), t);
     return s;
   }
 
@@ -506,7 +506,7 @@ namespace crypto {
   //uint long long to 32 byte key
   ec_scalar int_to_scalar(const uint64_t in) {
     ec_scalar x = {};
-    memcpy_swap64le(x.data, &in, 1);
+    memcpy_swap64le(x.data.data(), &in, 1);
     return x;
   }
 
@@ -517,7 +517,7 @@ namespace crypto {
     uint64_t vali = 0;
     int j = 0;
     for (j = 7; j >= 0; j--) {
-      vali = (uint64_t)(vali * 256 + (unsigned char)in.data[j]);
+      vali = (uint64_t)(vali * 256 + (unsigned char)in.data.data()[j]);
     }
     return vali;
   }

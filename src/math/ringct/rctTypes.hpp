@@ -245,7 +245,7 @@ namespace rct {
             {
               ar.begin_object();
               if (!typename Archive<W>::is_saving())
-                memset(ecdhInfo[i].amount.data, 0, sizeof(ecdhInfo[i].amount.data));
+                ecdhInfo[i].amount = {};
               crypto::hash8 &amount = (crypto::hash8&)ecdhInfo[i].amount;
               FIELD(amount);
               ar.end_object();

@@ -73,7 +73,7 @@ rct::key get_exponent(const rct::key base, size_t idx)
 {
   constexpr std::string_view domain_separator(config::HASH_KEY_BULLETPROOF_EXPONENT);
   const std::string hashed =
-    std::string((const char*)base.data, sizeof(base)) + std::string(domain_separator) + tools::get_varint_data(idx);
+    std::string((const char*)base.data.data(), base.data.size()) + std::string(domain_separator) + tools::get_varint_data(idx);
 
   rct::key e = rct::hash_to_key_via_f2
     ( rct::hash2rct(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );

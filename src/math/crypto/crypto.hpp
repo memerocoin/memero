@@ -43,7 +43,7 @@ extern "C" {
 
 namespace crypto {
   struct crypto_data {
-    uint8_t data[32];
+    std::array<uint8_t, 32> data;
   };
 
   inline std::ostream &operator <<(std::ostream &o, const crypto::crypto_data &v) {
@@ -51,7 +51,7 @@ namespace crypto {
   }
 
   struct ec_point_unsafe : crypto_data {
-    bool operator==(const ec_point_unsafe &x) const { return !crypto_verify_32(data, x.data); }
+    bool operator==(const ec_point_unsafe &x) const { return !crypto_verify_32(data.data(), x.data.data()); }
   };
 
   struct ec_point : ec_point_unsafe {
@@ -61,7 +61,7 @@ namespace crypto {
   };
 
   struct ec_scalar_unnormalized : crypto_data {
-    bool operator==(const ec_scalar_unnormalized &x) const { return !crypto_verify_32(data, x.data); }
+    bool operator==(const ec_scalar_unnormalized &x) const { return !crypto_verify_32(data.data(), x.data.data()); }
   };
 
   struct ec_scalar : ec_scalar_unnormalized {

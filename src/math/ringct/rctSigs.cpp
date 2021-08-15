@@ -124,9 +124,21 @@ namespace rct {
         crypto::dataV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         crypto::dataV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         mu_P_to_hash[0] = zero;
-        memcpy(mu_P_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
+        std::copy_n
+          (
+           config::HASH_KEY_CLSAG_AGG_0
+           , sizeof(config::HASH_KEY_CLSAG_AGG_0)-1
+           , mu_P_to_hash[0].data.data()
+           );
+
         mu_C_to_hash[0] = zero;
-        memcpy(mu_C_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
+        std::copy_n
+          (
+           config::HASH_KEY_CLSAG_AGG_1
+           , sizeof(config::HASH_KEY_CLSAG_AGG_1)-1
+           , mu_C_to_hash[0].data.data()
+           );
+
         for (size_t i = 1; i < n+1; ++i) {
             mu_P_to_hash[i] = P[i-1];
             mu_C_to_hash[i] = P[i-1];
@@ -149,7 +161,13 @@ namespace rct {
         keyV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
         scalar c;
         c_to_hash[0] = zero;
-        memcpy(c_to_hash[0].data,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
+        std::copy_n
+          (
+           config::HASH_KEY_CLSAG_ROUND
+           , sizeof(config::HASH_KEY_CLSAG_ROUND)-1
+           , c_to_hash[0].data.data()
+           );
+
         for (size_t i = 1; i < n+1; ++i)
         {
             c_to_hash[i] = P[i-1];
@@ -330,9 +348,21 @@ namespace rct {
         crypto::dataV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         crypto::dataV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
         mu_P_to_hash[0] = zero;
-        memcpy(mu_P_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_0,sizeof(config::HASH_KEY_CLSAG_AGG_0)-1);
+        std::copy_n
+          (
+           config::HASH_KEY_CLSAG_AGG_0
+           , sizeof(config::HASH_KEY_CLSAG_AGG_0)-1
+           , mu_P_to_hash[0].data.data()
+           );
+
         mu_C_to_hash[0] = zero;
-        memcpy(mu_C_to_hash[0].data,config::HASH_KEY_CLSAG_AGG_1,sizeof(config::HASH_KEY_CLSAG_AGG_1)-1);
+        std::copy_n
+          (
+           config::HASH_KEY_CLSAG_AGG_1
+           , sizeof(config::HASH_KEY_CLSAG_AGG_1)-1
+           , mu_C_to_hash[0].data.data()
+           );
+
         for (size_t i = 1; i < n+1; ++i) {
             mu_P_to_hash[i] = pubs[i-1].dest;
             mu_C_to_hash[i] = pubs[i-1].dest;
@@ -354,7 +384,13 @@ namespace rct {
         // Set up round hash
         crypto::dataV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
         c_to_hash[0] = zero;
-        memcpy(c_to_hash[0].data,config::HASH_KEY_CLSAG_ROUND,sizeof(config::HASH_KEY_CLSAG_ROUND)-1);
+        std::copy_n
+          (
+           config::HASH_KEY_CLSAG_ROUND
+           , sizeof(config::HASH_KEY_CLSAG_ROUND)-1
+           , c_to_hash[0].data.data()
+           );
+
         for (size_t i = 1; i < n+1; ++i)
         {
             c_to_hash[i] = pubs[i-1].dest;
