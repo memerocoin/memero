@@ -181,13 +181,14 @@ namespace crypto {
 
   bool derive_subaddress_public_key
   (
-   const public_key &out_key
+   const ec_point_unsafe &unsafe_out_key
    , const key_derivation &derivation
    , const std::size_t output_index,
    public_key &derived_key
    )
   {
-    if (!is_valid_point(out_key)) return false;
+    const auto out_key = maybeSafePoint(unsafe_out_key);
+    if (!out_key) return false;
 
     const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
 
@@ -195,7 +196,7 @@ namespace crypto {
 
     const ec_point p = multBase(scalar);
 
-    derived_key = p2pk(sub(out_key, p));
+    derived_key = p2pk(sub(*out_key, p));
     return true;
   }
 

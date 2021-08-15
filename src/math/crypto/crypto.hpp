@@ -138,7 +138,7 @@ namespace crypto {
   secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &);
   bool derive_subaddress_public_key
   (
-   const public_key &out_key
+   const ec_point_unsafe &out_key
    , const key_derivation &derivation
    , const std::size_t output_index,
    public_key &derived_key
