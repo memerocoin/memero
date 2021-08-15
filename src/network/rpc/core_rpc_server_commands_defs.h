@@ -1702,7 +1702,6 @@ namespace cryptonote
       uint64_t from_height;
       uint64_t to_height;
       bool cumulative;
-      bool binary;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_request_base)
@@ -1710,7 +1709,6 @@ namespace cryptonote
         KV_SERIALIZE_OPT(from_height, (uint64_t)0)
         KV_SERIALIZE_OPT(to_height, (uint64_t)0)
         KV_SERIALIZE_OPT(cumulative, false)
-        KV_SERIALIZE_OPT(binary, true)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<request_t> request;
@@ -1719,25 +1717,11 @@ namespace cryptonote
     {
       rpc::output_distribution_data data;
       uint64_t amount;
-      bool binary;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(amount)
         KV_SERIALIZE_N(data.start_height, "start_height")
-        KV_SERIALIZE(binary)
-        if (this->binary)
-        {
-          if (is_store)
-          {
-            KV_SERIALIZE_CONTAINER_POD_AS_BLOB_N(data.distribution, "distribution")
-          }
-          else
-          {
-            KV_SERIALIZE_CONTAINER_POD_AS_BLOB_N(data.distribution, "distribution")
-          }
-        }
-        else
-          KV_SERIALIZE_N(data.distribution, "distribution")
+        KV_SERIALIZE_N(data.distribution, "distribution")
         KV_SERIALIZE_N(data.base, "base")
       END_KV_SERIALIZE_MAP()
     };

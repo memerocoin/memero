@@ -1740,53 +1740,13 @@ namespace cryptonote
           return false;
         }
 
-        res.distributions.push_back({std::move(*data), amount, req.binary});
+        res.distributions.push_back({std::move(*data), amount});
       }
     }
     catch (const std::exception &e)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
       error_resp.message = "Failed to get output distribution";
-      return false;
-    }
-
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_output_distribution_bin(const COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::request& req, COMMAND_RPC_GET_OUTPUT_DISTRIBUTION::response& res, const connection_context *ctx)
-  {
-    RPC_TRACKER(get_output_distribution_bin);
-
-    size_t n_0 = 0, n_non0 = 0;
-    for (uint64_t amount: req.amounts)
-      if (amount) ++n_non0; else ++n_0;
-    res.status = "Failed";
-
-    if (!req.binary)
-    {
-      res.status = "Binary only call";
-      return false;
-    }
-    try
-    {
-      // 0 is placeholder for the whole chain
-      const uint64_t req_to_height = req.to_height ? req.to_height : (m_core.get_current_blockchain_height() - 1);
-      for (uint64_t amount: req.amounts)
-      {
-        auto data = rpc::RpcHandler::get_output_distribution([this](uint64_t amount, uint64_t from, uint64_t to, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) { return m_core.get_output_distribution(amount, from, to, start_height, distribution, base); }, amount, req.from_height, req_to_height, [this](uint64_t height) { return m_core.get_blockchain_storage().get_db().get_block_hash_from_height(height); }, req.cumulative, m_core.get_current_blockchain_height());
-        if (!data)
-        {
-          res.status = "Failed to get output distribution";
-          return false;
-        }
-
-        res.distributions.push_back({std::move(*data), amount, req.binary});
-      }
-    }
-    catch (const std::exception &e)
-    {
-      res.status = "Failed to get output distribution";
       return false;
     }
 

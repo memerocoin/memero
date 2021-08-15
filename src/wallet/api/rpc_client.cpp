@@ -113,7 +113,6 @@ bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64
   req.amounts.push_back(0);
   req.from_height = 0;
   req.cumulative = true;
-  req.binary = false;
 
   try
   {
