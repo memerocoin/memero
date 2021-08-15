@@ -113,6 +113,7 @@ namespace crypto {
   inline const ec_scalar_unnormalized &d2s(const crypto_data &x) { return (const ec_scalar_unnormalized&)x; }
   inline const ec_point_unsafe &d2p(const crypto_data &x) { return (const ec_point_unsafe&)x; }
   inline const crypto_data &h2d(const hash &x) { return (const crypto_data&)x; }
+  inline const hash &d2h(const crypto_data &x) { return (const hash&)x; }
 
   inline const ec_point &unsafe_p2p(const ec_point_unsafe &x) { return (const ec_point&)x; }
 

@@ -322,7 +322,7 @@ namespace rct {
     }
 
 
-    bool verRctCLSAGSimpleMayThrow(const key message, const clsag sig, const ctkeyS pubs, const key C_offset)
+    bool verRctCLSAGSimpleMayThrow(const crypto::hash message, const clsag sig, const ctkeyS pubs, const key C_offset)
     {
         const size_t n = pubs.size();
 
@@ -397,7 +397,7 @@ namespace rct {
             c_to_hash[i+n] = pubs[i-1].mask;
         }
         c_to_hash[2*n+1] = C_offset;
-        c_to_hash[2*n+2] = message;
+        c_to_hash[2*n+2] = crypto::h2d(message);
         scalar c_p; // = c[i]*mu_P
         scalar c_c; // = c[i]*mu_C
         scalar c_new;
@@ -454,7 +454,7 @@ namespace rct {
         return c_new == s_zero;
     }
 
-    bool verRctCLSAGSimple(const key message, const clsag sig, const ctkeyS pubs, const key C_offset) {
+    bool verRctCLSAGSimple(const crypto::hash message, const clsag sig, const ctkeyS pubs, const key C_offset) {
       try {
         return verRctCLSAGSimpleMayThrow(message, sig, pubs, C_offset);
       }
@@ -753,7 +753,7 @@ namespace rct {
         for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
           tpool.submit(&waiter, [&, i] {
             results[i] = verRctCLSAGSimple
-              (rct::unsafe_d2rct(crypto::h2d(message)), rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i]);
+              (message, rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i]);
           });
         }
         if (!waiter.wait())

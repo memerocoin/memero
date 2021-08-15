@@ -56,7 +56,7 @@ namespace rct {
    , const unsigned int index
    );
 
-  bool verRctCLSAGSimple(const key, const clsag, const ctkeyS, const key);
+  bool verRctCLSAGSimple(const crypto::hash, const clsag, const ctkeyS, const key);
 
   //RingCT protocol
   //genRct:
