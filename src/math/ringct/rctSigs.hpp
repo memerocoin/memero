@@ -46,18 +46,6 @@ namespace rct {
    , const unsigned int l
    );
 
-  clsag CLSAG_Gen
-  (
-   const crypto::hash message
-   , const keyV P
-   , const scalar p
-   , const keyV C
-   , const scalar z
-   , const keyV C_nonzero
-   , const key C_offset
-   , const unsigned int l
-   );
-
   clsag proveRctCLSAGSimple
   (
    const crypto::hash message
