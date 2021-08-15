@@ -142,8 +142,8 @@ namespace crypto {
   (
    const ec_point_unsafe &out_key
    , const key_derivation &derivation
-   , const std::size_t output_index,
-   public_key &derived_key
+   , const std::size_t output_index
+   , public_key &derived_key
    );
 
   /* Generation and checking of a standard signature.
