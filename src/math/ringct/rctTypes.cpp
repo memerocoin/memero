@@ -35,6 +35,8 @@
 
 #include "config/cryptonote.hpp"
 
+#include <cstring>
+
 using namespace std;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -57,6 +59,11 @@ namespace rct {
     key key::operator*(const uint64_t y) const
     {
       return p2rct(ec_point::operator*(y));
+    }
+
+    bool key::operator<(const key& y) const
+    {
+      return std::strncmp((const char*)data.data(), (const char*)y.data.data(), data.size()) < 0;
     }
 
     scalar scalar::operator+(const scalar& y) const

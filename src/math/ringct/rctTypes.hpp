@@ -50,6 +50,7 @@ namespace rct {
       key operator-(const key& y) const;
 
       key operator*(const uint64_t x) const;
+      bool operator<(const key& y) const;
     };
 
 
