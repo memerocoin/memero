@@ -69,7 +69,7 @@ add_executable(unit_tests_basic
   account.cpp
   mnemonics.cpp
   bulletproofs.cpp
-  multiexp.cpp
+  # multiexp.cpp
 )
 
 target_link_libraries(unit_tests_basic

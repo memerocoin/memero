@@ -51,6 +51,5 @@ struct MultiexpData {
 };
 
 rct::key dummy(const std::span<MultiexpData> data);
-rct::key pippenger(const std::span<MultiexpData> data);
 
 }
