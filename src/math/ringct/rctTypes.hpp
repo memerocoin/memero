@@ -241,7 +241,6 @@ namespace rct {
             return false;
           for (size_t i = 0; i < outputs; ++i)
           {
-            if (type == RCTTypeCLSAG)
             {
               ar.begin_object();
               if (!typename Archive<W>::is_saving())
@@ -249,10 +248,6 @@ namespace rct {
               crypto::hash8 &amount = (crypto::hash8&)ecdhInfo[i].amount;
               FIELD(amount);
               ar.end_object();
-            }
-            else
-            {
-              FIELDS(ecdhInfo[i])
             }
             if (outputs - i > 1)
               ar.delimit_array();
@@ -323,7 +318,6 @@ namespace rct {
             ar.end_array();
           }
 
-          if (type == RCTTypeCLSAG)
           {
             ar.tag("CLSAGs");
             ar.begin_array();
@@ -363,7 +357,7 @@ namespace rct {
 
             ar.end_array();
           }
-          if (type == RCTTypeCLSAG)
+
           {
             ar.tag("pseudoOuts");
             ar.begin_array();
