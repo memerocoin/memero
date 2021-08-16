@@ -1032,9 +1032,11 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
                 [] (const auto & key) { return key.mask; } );
 
   WRITE_JSON_FIELD_FROM(dest, type, sig.type);
-  WRITE_JSON_FIELD_FROM(dest, encrypted, sig.ecdhInfo);
-  WRITE_JSON_FIELD_FROM(dest, commitments, std::span(masks));
-  WRITE_JSON_FIELD_FROM(dest, fee, sig.txnFee);
+  if (sig.type != rct::RCTTypeNull) {
+    WRITE_JSON_FIELD_FROM(dest, encrypted, sig.ecdhInfo);
+    WRITE_JSON_FIELD_FROM(dest, commitments, std::span(masks));
+    WRITE_JSON_FIELD_FROM(dest, fee, sig.txnFee);
+  }
 
   // prunable
   if (!sig.p.bulletproofs.empty() || !sig.get_pseudo_outs().empty())
@@ -1059,9 +1061,11 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
   }
 
   READ_JSON_VALUE_BY_KEY(val, sig.type, type);
-  READ_JSON_VALUE_BY_KEY(val, sig.ecdhInfo, encrypted);
-  READ_JSON_VALUE_BY_KEY(val, sig.outPk, commitments);
-  READ_JSON_VALUE_BY_KEY(val, sig.txnFee, fee);
+  if (sig.type != rct::RCTTypeNull) {
+    READ_JSON_VALUE_BY_KEY(val, sig.ecdhInfo, encrypted);
+    READ_JSON_VALUE_BY_KEY(val, sig.outPk, commitments);
+    READ_JSON_VALUE_BY_KEY(val, sig.txnFee, fee);
+  }
 
   // prunable
   const auto prunable = val.FindMember("prunable");
