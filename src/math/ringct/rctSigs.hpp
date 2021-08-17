@@ -50,7 +50,7 @@ namespace rct {
   (
    const crypto::hash message
    , const ctrct_pointV pubs
-   , const pri_ctkey inSk
+   , const ct_secret_key inSk
    , const rct_scalar a
    , const rct_point Cout
    , const unsigned int index

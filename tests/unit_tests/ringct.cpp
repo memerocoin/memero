@@ -52,13 +52,13 @@ TEST(ringct, CLSAG)
   ctrct_pointV pubs;
   rct_scalar p, t, t2, u;
   const crypto::hash message = crypto::d2h(rct::identity);
-  ctkey backup;
+  ct_public_key backup;
   clsag clsag;
 
   for (size_t i = 0; i < N; ++i)
   {
     rct_scalar sk;
-    ctkey tmp;
+    ct_public_key tmp;
 
     std::tie(sk, tmp.dest) = skpkGen();
     std::tie(sk, tmp.mask) = skpkGen();
@@ -79,7 +79,7 @@ TEST(ringct, CLSAG)
   rct_point Cout = addMultG_H(t2,u);
 
   // Prepare generation inputs
-  pri_ctkey insk;
+  ct_secret_key insk;
   insk.addr = p;
   insk.blinding_factor = t;
 
@@ -88,7 +88,7 @@ TEST(ringct, CLSAG)
   //   (
   //    const rct_point &
   //    , const ctrct_pointV &
-  //    , const ctkey &
+  //    , const ct_public_key &
   //    , const rct_point &
   //    , const rct_point &
   //    , const unsigned int
@@ -117,7 +117,7 @@ TEST(ringct, CLSAG)
   // bad z at creation
   try
   {
-    pri_ctkey insk2;
+    ct_secret_key insk2;
     insk2.addr = insk.addr;
     insk2.blinding_factor = skGen();
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
@@ -139,7 +139,7 @@ TEST(ringct, CLSAG)
   // bad p at creation
   try
   {
-    pri_ctkey insk2;
+    ct_secret_key insk2;
     insk2.addr = skGen();
     insk2.blinding_factor = insk.blinding_factor;
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
@@ -238,8 +238,8 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
 {
     pri_ctrct_pointV sc;
     ctrct_pointV pc;
-    pri_ctkey sctmp;
-    ctkey pctmp;
+    ct_secret_key sctmp;
+    ct_public_key pctmp;
     vector<amount_t> inamounts, outamounts;
     rct_pointV destinations;
     rct_scalarV amount_keys;

@@ -73,13 +73,13 @@ namespace rct {
   std::pair<rct_scalar, rct_point> skpkGen();
 
   //generates a <secret , public> / Pedersen commitment to the amount
-  std::pair<pri_ctkey, ctkey> ctskpkGen(amount_t amount);
+  std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount);
 
   //generates C =aG + bH from b, a is random
   rct_point genC(const rct_scalar a, amount_t amount);
 
   //this one is mainly for testing, can take arbitrary amounts..
-  std::pair<pri_ctkey, ctkey> ctskpkGen(const rct_point bH);
+  std::pair<ct_secret_key, ct_public_key> ctskpkGen(const rct_point bH);
 
   // make a pedersen commitment with given key
   rct_point commit(const amount_t amount, const rct_scalar &mask);

@@ -2493,7 +2493,7 @@ bool Blockchain::have_tx_keyimges_as_spent(const transaction &tx) const
   }
   return false;
 }
-bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_prefix_hash, const std::vector<std::vector<rct::ctkey>> &pubkeys) const
+bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_prefix_hash, const std::vector<std::vector<rct::ct_public_key>> &pubkeys) const
 {
   LOG_ERROR_AND_RETURN_UNLESS(tx.version == 2, false, "Transaction version is not 2");
 
@@ -2575,7 +2575,7 @@ bool Blockchain::is_tx_spendtime_unlocked(const uint64_t unlock_time) const
 // This function locates all outputs associated with a given input (mixins)
 // and validates that they exist and are usable.  It also checks the ring
 // signature for each input.
-bool Blockchain::check_tx_input(size_t tx_version, const txin_to_key& txin, const crypto::hash& tx_prefix_hash, const std::vector<crypto::signature>& sig, const rct::rctSig &rct_signatures, std::vector<rct::ctkey> &output_keys, uint64_t* pmax_related_block_height) const
+bool Blockchain::check_tx_input(size_t tx_version, const txin_to_key& txin, const crypto::hash& tx_prefix_hash, const std::vector<crypto::signature>& sig, const rct::rctSig &rct_signatures, std::vector<rct::ct_public_key> &output_keys, uint64_t* pmax_related_block_height) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
 
@@ -2585,9 +2585,9 @@ bool Blockchain::check_tx_input(size_t tx_version, const txin_to_key& txin, cons
 
   struct outputs_visitor
   {
-    std::vector<rct::ctkey >& m_output_keys;
+    std::vector<rct::ct_public_key >& m_output_keys;
     const Blockchain& m_bch;
-    outputs_visitor(std::vector<rct::ctkey>& output_keys, const Blockchain& bch) :
+    outputs_visitor(std::vector<rct::ct_public_key>& output_keys, const Blockchain& bch) :
       m_output_keys(output_keys), m_bch(bch)
     {
     }
@@ -2605,7 +2605,7 @@ bool Blockchain::check_tx_input(size_t tx_version, const txin_to_key& txin, cons
       // but only txout_to_key outputs are stored in the DB in the first place, done in
       // Blockchain*::add_output
 
-      m_output_keys.push_back(rct::ctkey({rct::pk2rct(pubkey), commitment}));
+      m_output_keys.push_back(rct::ct_public_key({rct::pk2rct(pubkey), commitment}));
       return true;
     }
   };
@@ -3863,7 +3863,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     }
   }
 
-  std::vector<std::vector<rct::ctkey>> pubkeys(tx.vin.size());
+  std::vector<std::vector<rct::ct_public_key>> pubkeys(tx.vin.size());
   std::vector < uint64_t > results;
   results.resize(tx.vin.size(), 0);
 

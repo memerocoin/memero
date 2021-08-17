@@ -104,9 +104,9 @@ namespace rct {
   }
 
   //generates a <secret , public> / Pedersen commitment to the amount
-  std::pair<pri_ctkey, ctkey> ctskpkGen(amount_t amount) {
-    pri_ctkey sk;
-    ctkey pk;
+  std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount) {
+    ct_secret_key sk;
+    ct_public_key pk;
     std::tie(sk.addr, pk.dest) = skpkGen();
     std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 
@@ -118,9 +118,9 @@ namespace rct {
 
 
   //generates a <secret , public> / Pedersen commitment but takes bH as input
-  std::pair<pri_ctkey, ctkey> ctskpkGen(const rct_point bH) {
-    pri_ctkey sk;
-    ctkey pk;
+  std::pair<ct_secret_key, ct_public_key> ctskpkGen(const rct_point bH) {
+    ct_secret_key sk;
+    ct_public_key pk;
     std::tie(sk.addr, pk.dest) = skpkGen();
     std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 

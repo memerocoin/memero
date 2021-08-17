@@ -469,9 +469,9 @@ TEST(Serialization, serializes_ringct_types)
   rct::rct_point key0, key1;
   rct::rct_pointV keyv0, keyv1;
   rct::rct_pointM keym0, keym1;
-  rct::ctkey ctkey0, ctkey1;
-  rct::ctrct_pointV ctkeyv0, ctkeyv1;
-  rct::ctrct_pointM ctkeym0, ctkeym1;
+  rct::ct_public_key ct_public_key0, ct_public_key1;
+  rct::ctrct_pointV ct_public_keyv0, ct_public_keyv1;
+  rct::ctrct_pointM ct_public_keym0, ct_public_keym1;
   rct::ecdhTuple ecdh0, ecdh1;
   rct::clsag clsag0, clsag1;
   rct::rctSig s0, s1;
@@ -509,38 +509,38 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  rct::skpkGen(ctkey0.dest, ctkey0.mask);
-  ASSERT_TRUE(serialization::dump_binary(ctkey0, blob));
-  ASSERT_TRUE(serialization::parse_binary(blob, ctkey1));
-  ASSERT_TRUE(!memcmp(&ctkey0, &ctkey1, sizeof(ctkey0)));
+  rct::skpkGen(ct_public_key0.dest, ct_public_key0.mask);
+  ASSERT_TRUE(serialization::dump_binary(ct_public_key0, blob));
+  ASSERT_TRUE(serialization::parse_binary(blob, ct_public_key1));
+  ASSERT_TRUE(!memcmp(&ct_public_key0, &ct_public_key1, sizeof(ct_public_key0)));
 
-  ctkeyv0 = std::vector<rct::ctkey>(14);
-  for (size_t n = 0; n < ctkeyv0.size(); ++n)
-    rct::skpkGen(ctkeyv0[n].dest, ctkeyv0[n].mask);
-  ASSERT_TRUE(serialization::dump_binary(ctkeyv0, blob));
-  ASSERT_TRUE(serialization::parse_binary(blob, ctkeyv1));
-  ASSERT_TRUE(ctkeyv0.size() == ctkeyv1.size());
-  for (size_t n = 0; n < ctkeyv0.size(); ++n)
+  ct_public_keyv0 = std::vector<rct::ct_public_key>(14);
+  for (size_t n = 0; n < ct_public_keyv0.size(); ++n)
+    rct::skpkGen(ct_public_keyv0[n].dest, ct_public_keyv0[n].mask);
+  ASSERT_TRUE(serialization::dump_binary(ct_public_keyv0, blob));
+  ASSERT_TRUE(serialization::parse_binary(blob, ct_public_keyv1));
+  ASSERT_TRUE(ct_public_keyv0.size() == ct_public_keyv1.size());
+  for (size_t n = 0; n < ct_public_keyv0.size(); ++n)
   {
-    ASSERT_TRUE(!memcmp(&ctkeyv0[n], &ctkeyv1[n], sizeof(ctkeyv0[n])));
+    ASSERT_TRUE(!memcmp(&ct_public_keyv0[n], &ct_public_keyv1[n], sizeof(ct_public_keyv0[n])));
   }
 
-  ctkeym0 = std::vector<rct::ctrct_pointV>(9);
-  for (size_t n = 0; n < ctkeym0.size(); ++n)
+  ct_public_keym0 = std::vector<rct::ctrct_pointV>(9);
+  for (size_t n = 0; n < ct_public_keym0.size(); ++n)
   {
-    ctkeym0[n] = std::vector<rct::ctkey>(11);
-    for (size_t i = 0; i < ctkeym0[n].size(); ++i)
-      rct::skpkGen(ctkeym0[n][i].dest, ctkeym0[n][i].mask);
+    ct_public_keym0[n] = std::vector<rct::ct_public_key>(11);
+    for (size_t i = 0; i < ct_public_keym0[n].size(); ++i)
+      rct::skpkGen(ct_public_keym0[n][i].dest, ct_public_keym0[n][i].mask);
   }
-  ASSERT_TRUE(serialization::dump_binary(ctkeym0, blob));
-  ASSERT_TRUE(serialization::parse_binary(blob, ctkeym1));
-  ASSERT_TRUE(ctkeym0.size() == ctkeym1.size());
-  for (size_t n = 0; n < ctkeym0.size(); ++n)
+  ASSERT_TRUE(serialization::dump_binary(ct_public_keym0, blob));
+  ASSERT_TRUE(serialization::parse_binary(blob, ct_public_keym1));
+  ASSERT_TRUE(ct_public_keym0.size() == ct_public_keym1.size());
+  for (size_t n = 0; n < ct_public_keym0.size(); ++n)
   {
-    ASSERT_TRUE(ctkeym0[n].size() == ctkeym1[n].size());
-    for (size_t i = 0; i < ctkeym0.size(); ++i)
+    ASSERT_TRUE(ct_public_keym0[n].size() == ct_public_keym1[n].size());
+    for (size_t i = 0; i < ct_public_keym0.size(); ++i)
     {
-      ASSERT_TRUE(!memcmp(&ctkeym0[n][i], &ctkeym1[n][i], sizeof(ctkeym0[n][i])));
+      ASSERT_TRUE(!memcmp(&ct_public_keym0[n][i], &ct_public_keym1[n][i], sizeof(ct_public_keym0[n][i])));
     }
   }
 
@@ -555,8 +555,8 @@ TEST(Serialization, serializes_ringct_types)
   vector<uint64_t> inamounts;
   rct::pri_ctrct_pointV sc;
   rct::ctrct_pointV pc;
-  rct::pri_ctkey sctmp;
-  rct::ctkey pctmp;
+  rct::ct_secret_key sctmp;
+  rct::ct_public_key pctmp;
   inamounts.push_back(6000);
   tie(sctmp, pctmp) = rct::ctskpkGen(inamounts.back());
   sc.push_back(sctmp);

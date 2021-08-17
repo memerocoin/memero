@@ -288,7 +288,7 @@ namespace rct {
     (
      const crypto::hash message
      , const ctrct_pointV pubs
-     , const pri_ctkey inSk
+     , const ct_secret_key inSk
      , const rct_scalar a
      , const rct_point Cout
      , const unsigned int index
@@ -305,7 +305,7 @@ namespace rct {
         P.reserve(pubs.size());
         C.reserve(pubs.size());
         C_nonzero.reserve(pubs.size());
-        for (const ctkey &k: pubs)
+        for (const ct_public_key &k: pubs)
         {
             P.push_back(k.dest);
             C_nonzero.push_back(k.mask);
@@ -462,16 +462,16 @@ namespace rct {
     }
 
 
-    void rand_assign_ctkey(ctkey& a) {
+    void rand_assign_ct_public_key(ct_public_key& a) {
         a.mask = pkGen();
         a.dest = pkGen();
     }
 
-    size_t populateRingsSimple(ctrct_pointV& mixRing, const ctkey inPk, const size_t mixin) {
+    size_t populateRingsSimple(ctrct_pointV& mixRing, const ct_public_key inPk, const size_t mixin) {
         size_t index = ((size_t)std::rand()) % (mixin + 1);
         for (size_t i = 0; i <= mixin; i++) {
             if (i != index) {
-                rand_assign_ctkey(mixRing[i]);
+                rand_assign_ct_public_key(mixRing[i]);
             } else {
                 mixRing[i] = inPk;
             }

@@ -80,26 +80,26 @@ namespace rct {
 
 
     //containers For CT operations
-    //if it's  representing a private ctkey then "dest" contains the secret rct_point of the address
+    //if it's  representing a private ct_public_key then "dest" contains the secret rct_point of the address
     // while "mask" contains a where C = aG + bH is CT pedersen commitment and b is the amount
     // (store b, the amount, separately
-    //if it's representing a public ctkey, then "dest" = P the address, mask = aG the commitment
-    struct ctkey {
+    //if it's representing a public ct_public_key, then "dest" = P the address, mask = aG the commitment
+    struct ct_public_key {
         rct_point dest;
         rct_point mask; //C here if public
     };
-    typedef std::vector<ctkey> ctrct_pointV;
+    typedef std::vector<ct_public_key> ctrct_pointV;
     typedef std::vector<ctrct_pointV> ctrct_pointM;
-    typedef std::span<const ctkey> ctrct_pointS;
+    typedef std::span<const ct_public_key> ctrct_pointS;
 
-    struct pri_ctkey {
+    struct ct_secret_key {
       rct_scalar addr;
       rct_scalar blinding_factor; //C here if public
     };
 
-    typedef std::vector<pri_ctkey> pri_ctrct_pointV;
+    typedef std::vector<ct_secret_key> pri_ctrct_pointV;
     typedef std::vector<pri_ctrct_pointV> pri_ctrct_pointM;
-    typedef std::span<const pri_ctkey> pri_ctrct_pointS;
+    typedef std::span<const ct_secret_key> pri_ctrct_pointS;
 
     //data for passing the amount to the receiver secretly
     // If the pedersen commitment to an amount is C = aG + bH,
@@ -466,8 +466,8 @@ namespace std
 
 BLOB_SERIALIZER(rct::rct_point);
 BLOB_SERIALIZER(rct::inv8);
-BLOB_SERIALIZER(rct::ctkey);
+BLOB_SERIALIZER(rct::ct_public_key);
 BLOB_SERIALIZER(rct::rct_scalar);
-BLOB_SERIALIZER(rct::pri_ctkey);
+BLOB_SERIALIZER(rct::ct_secret_key);
 
 BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);

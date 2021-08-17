@@ -344,14 +344,14 @@ namespace cryptonote
       std::vector<size_t> index;
       for (size_t i = 0; i < sources.size(); ++i)
       {
-        rct::pri_ctkey ctkey;
+        rct::ct_secret_key ct_public_key;
         amount_in += sources[i].amount;
         inamounts.push_back(sources[i].amount);
         index.push_back(sources[i].real_output);
         // inSk: (secret key, mask)
-        ctkey.addr = rct::sk2scalar(in_contexts[i].in_ephemeral.sec);
-        ctkey.blinding_factor = sources[i].mask;
-        inSk.push_back(ctkey);
+        ct_public_key.addr = rct::sk2scalar(in_contexts[i].in_ephemeral.sec);
+        ct_public_key.blinding_factor = sources[i].mask;
+        inSk.push_back(ct_public_key);
         // inPk: (public key, commitment)
         // will be done when filling in mixRing
       }

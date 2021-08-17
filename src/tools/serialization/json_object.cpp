@@ -1085,7 +1085,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
   }
 }
 
-void fromJsonValue(const rapidjson::Value& val, rct::ctkey& key)
+void fromJsonValue(const rapidjson::Value& val, rct::ct_public_key& key)
 {
   key.dest = {};
   fromJsonValue(val, key.mask);
