@@ -553,7 +553,7 @@ TEST(Serialization, serializes_ringct_types)
 
   // create a full rct signature to use its innards
   vector<uint64_t> inamounts;
-  rct::pri_ctrct_pointV sc;
+  rct::ct_secret_keyV sc;
   rct::ctrct_pointV pc;
   rct::ct_secret_key sctmp;
   rct::ct_public_key pctmp;

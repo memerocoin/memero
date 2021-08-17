@@ -236,7 +236,7 @@ TEST(ringct, CLSAG)
 
 static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
 {
-    pri_ctrct_pointV sc;
+    ct_secret_keyV sc;
     ctrct_pointV pc;
     ct_secret_key sctmp;
     ct_public_key pctmp;

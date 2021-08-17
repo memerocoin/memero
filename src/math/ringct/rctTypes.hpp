@@ -97,8 +97,8 @@ namespace rct {
       rct_scalar blinding_factor; //C here if public
     };
 
-    using pri_ctrct_pointV = std::vector<ct_secret_key>;
-    using pri_ctrct_pointS = std::span<const ct_secret_key>;
+    using ct_secret_keyV = std::vector<ct_secret_key>;
+    using ct_secret_keyS = std::span<const ct_secret_key>;
 
     //data for passing the amount to the receiver secretly
     // If the pedersen commitment to an amount is C = aG + bH,

@@ -335,7 +335,7 @@ namespace cryptonote
       bool use_simple_rct = true;
 
       uint64_t amount_in = 0, amount_out = 0;
-      rct::pri_ctrct_pointV inSk;
+      rct::ct_secret_keyV inSk;
       inSk.reserve(sources.size());
       // mixRing indexing is done the other way round for simple
       rct::ctrct_pointM mixRing(sources.size());
@@ -390,7 +390,7 @@ namespace cryptonote
 
       crypto::hash tx_prefix_hash;
       get_transaction_prefix_hash(tx, tx_prefix_hash, hwdev);
-      rct::pri_ctrct_pointV outSk;
+      rct::ct_secret_keyV outSk;
       tx.rct_signatures = rct::genRctSimple
         (tx_prefix_hash, inSk, destinations, inamounts, outamounts, amount_in - amount_out, mixRing, amount_keys, index, outSk);
 

@@ -482,7 +482,7 @@ namespace rct {
     rctSig genRctSimple
     (
      const crypto::hash message
-     , const pri_ctrct_pointV inSk
+     , const ct_secret_keyV inSk
      , const rct_pointV destinations
      , const vector<amount_t> inamounts
      , const vector<amount_t> outamounts
@@ -490,7 +490,7 @@ namespace rct {
      , const ctrct_pointM mixRing
      , const rct_scalarV amount_keys
      , const std::vector<size_t> index
-     , pri_ctrct_pointV& outSk
+     , ct_secret_keyV& outSk
      ) {
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
@@ -586,7 +586,7 @@ namespace rct {
     rctSig genRctSimple
     (
      const crypto::hash message
-     , const pri_ctrct_pointV inSk
+     , const ct_secret_keyV inSk
      , const ctrct_pointV inPk
      , const rct_pointV destinations
      , const std::vector<amount_t> inamounts
@@ -598,7 +598,7 @@ namespace rct {
         std::vector<size_t> index;
         index.resize(inPk.size());
         ctrct_pointM mixRing;
-        pri_ctrct_pointV outSk;
+        ct_secret_keyV outSk;
         mixRing.resize(inPk.size());
         for (size_t i = 0; i < inPk.size(); ++i) {
           mixRing[i].resize(mixin+1);

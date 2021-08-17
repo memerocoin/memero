@@ -71,7 +71,7 @@ namespace rct {
   rctSig genRctSimple
   (
    const crypto::hash message
-   , const pri_ctrct_pointV inSk
+   , const ct_secret_keyV inSk
    , const ctrct_pointV inPk
    , const rct_pointV destinations
    , const std::vector<amount_t> inamounts
@@ -84,7 +84,7 @@ namespace rct {
   rctSig genRctSimple
   (
    const crypto::hash message
-   , const pri_ctrct_pointV inSk
+   , const ct_secret_keyV inSk
    , const rct_pointV destinations
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
@@ -92,7 +92,7 @@ namespace rct {
    , const ctrct_pointM mixRing
    , const rct_scalarV amount_keys
    , const std::vector<size_t> index
-   , pri_ctrct_pointV& outSk
+   , ct_secret_keyV& outSk
    );
 
   bool verRctSemanticsSimple(const rctSig rv);
