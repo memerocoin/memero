@@ -30,10 +30,6 @@
 
 #include "math/crypto/crypto.hpp"
 
-extern "C" {
-#include "math/crypto/crypto-ops.h"
-}
-
 TEST(random32_unbiased, less_than_order)
 {
   crypto::ec_scalar tmp, tmp2;

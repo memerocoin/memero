@@ -116,9 +116,11 @@ include_directories(vendor/rapidjson/include)
 
 
 
-# set global include path
+# set include path
 include_directories(
   src
+  vendor/curve25519/cryptonote
+  vendor/liblmdb
 )
 
 
@@ -136,8 +138,10 @@ add_subdirectory(src/tools/serialization)
 add_subdirectory(src/tools/boost/archive)
 
 ## math
+add_subdirectory(vendor/curve25519/cryptonote)
 add_subdirectory(src/math/crypto)
 add_subdirectory(src/math/ringct)
+
 
 ## cryptonote
 add_subdirectory(src/cryptonote/basic)
@@ -165,7 +169,6 @@ set(BLOCKCHAIN_DB DB_LMDB)
 add_definitions("-DDEFAULT_DB_TYPE=\"lmdb\"")
 add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 
-include_directories(vendor/liblmdb)
 add_subdirectory(vendor/liblmdb)
 add_subdirectory(src/database)
 

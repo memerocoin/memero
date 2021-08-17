@@ -27,19 +27,10 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+add_library(curve25519_cryptonote
+  crypto-ops-data.c
+  crypto-ops.c
+)
 
-
-add_library(math_crypto
-  chacha.cpp
-  crypto.cpp
-  sha3.cpp
-  tree-hash.cpp
-  hash.cpp
-  random.cpp
-  )
-
-target_link_libraries(math_crypto
-    epee
-    curve25519_cryptonote
-    ${SODIUM_LIBRARY}
-  )
+target_link_libraries(curve25519_cryptonote
+)
