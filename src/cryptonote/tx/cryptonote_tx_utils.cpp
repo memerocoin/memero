@@ -258,11 +258,11 @@ namespace cryptonote
     if (num_stdaddresses == 0 && num_subaddresses == 1)
     {
       txkey_pub = rct::rct_p2pk
-        (hwdev.multP(rct::pk2rct_p(single_dest_subaddress.m_spend_public_key), rct::sk2scalar(tx_key)));
+        (hwdev.multP(rct::pk2rct_p(single_dest_subaddress.m_spend_public_key), rct::sk2rct_s(tx_key)));
     }
     else
     {
-      txkey_pub = rct::rct_p2pk(hwdev.multG(rct::sk2scalar(tx_key)));
+      txkey_pub = rct::rct_p2pk(hwdev.multG(rct::sk2rct_s(tx_key)));
     }
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
     add_tx_pub_key_to_extra(tx, txkey_pub);
@@ -349,7 +349,7 @@ namespace cryptonote
         inamounts.push_back(sources[i].amount);
         index.push_back(sources[i].real_output);
         // inSk: (secret key, mask)
-        ct_public_key.addr = rct::sk2scalar(in_contexts[i].in_ephemeral.sec);
+        ct_public_key.addr = rct::sk2rct_s(in_contexts[i].in_ephemeral.sec);
         ct_public_key.blinding_factor = sources[i].mask;
         inSk.push_back(ct_public_key);
         // inPk: (public key, commitment)

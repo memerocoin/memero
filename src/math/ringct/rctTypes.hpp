@@ -417,8 +417,8 @@ namespace rct {
     //uint long long to 32 byte key
     rct_scalar int_to_scalar(const amount_t in);
 
-    inline const rct::rct_scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::rct_scalar&)sk; }
-    inline const crypto::secret_key &scalar2sk(const rct::rct_scalar&k) { return (const crypto::secret_key&)k; }
+    inline const rct::rct_scalar &sk2rct_s(const crypto::secret_key &sk) { return (const rct::rct_scalar&)sk; }
+    inline const crypto::secret_key &rct_s2sk(const rct::rct_scalar&k) { return (const crypto::secret_key&)k; }
 
     inline const rct::rct_point &pk2rct_p(const crypto::public_key &pk) { return (const rct::rct_point&)pk; }
     inline const rct::rct_point &ki2rct_p(const crypto::key_image &ki) { return (const rct::rct_point&)ki; }
