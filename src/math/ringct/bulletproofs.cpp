@@ -523,10 +523,10 @@ try_again:
   }
 
   return Bulletproof
-    (
+    {
      to_inv8V(V), A, S, T1, T2, taux, mu, to_inv8V(L), to_inv8V(R)
      , aprime[0], bprime[0], t
-     );
+     };
 }
 
 Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma)

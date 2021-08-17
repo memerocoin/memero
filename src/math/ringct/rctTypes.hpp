@@ -144,29 +144,6 @@ namespace rct {
       rct::inv8V L, R;
       rct::rct_scalar a, b, t;
 
-      Bulletproof():
-        A({}), S({}), T1({}), T2({}), taux({}), mu({}), a({}), b({}), t({}) {}
-      Bulletproof
-      (
-       const rct::inv8 &V
-       , const rct::inv8 &A, const rct::inv8 &S
-       , const rct::inv8 &T1, const rct::inv8 &T2
-       , const rct::rct_scalar &taux, const rct::rct_scalar &mu
-       , const rct::inv8V &L, const rct::inv8V &R
-       , const rct::rct_scalar &a, const rct::rct_scalar &b, const rct::rct_scalar &t
-       ):
-        V({V}), A(A), S(S), T1(T1), T2(T2), taux(taux), mu(mu), L(L), R(R), a(a), b(b), t(t) {}
-
-      Bulletproof
-      (
-       const rct::inv8V &V, const rct::inv8 &A, const rct::inv8 &S
-       , const rct::inv8 &T1, const rct::inv8 &T2
-       , const rct::rct_scalar &taux, const rct::rct_scalar &mu
-       , const rct::inv8V &L, const rct::inv8V &R
-       , const rct::rct_scalar &a, const rct::rct_scalar &b, const rct::rct_scalar &t
-       ):
-        V(V), A(A), S(S), T1(T1), T2(T2), taux(taux), mu(mu), L(L), R(R), a(a), b(b), t(t) {}
-
       bool operator==(const Bulletproof &other) const { return V == other.V && A == other.A && S == other.S && T1 == other.T1 && T2 == other.T2 && taux == other.taux && mu == other.mu && L == other.L && R == other.R && a == other.a && b == other.b && t == other.t; }
 
       BEGIN_SERIALIZE_OBJECT()
