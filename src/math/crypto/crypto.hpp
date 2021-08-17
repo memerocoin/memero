@@ -214,7 +214,8 @@ namespace crypto {
 
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 
-  ec_point viaF2(const crypto_data x);
+  ec_point_unsafe viaF2(const crypto_data x);
+  ec_point viaF2Mult8(const crypto_data x);
 
   ec_scalar reduce(const ec_scalar_unnormalized x);
 

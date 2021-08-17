@@ -402,12 +402,17 @@ namespace crypto {
     return c2 - sig.c == s_0;
   }
 
-  ec_point viaF2(const crypto_data x) {
+  ec_point_unsafe viaF2(const crypto_data x) {
     ge_p2 in;
     ge_fromfe_frombytes_vartime(&in, x.data.data());
     ec_point out;
     ge_tobytes(out.data.data(), &in);
     return out;
+  }
+
+
+  ec_point viaF2Mult8(const crypto_data x) {
+    return mult8(viaF2(x));
   }
 
 
@@ -436,7 +441,7 @@ namespace crypto {
     ec_point x;
     const int r = crypto_scalarmult_ed25519_noclamp(x.data.data(), a.data.data(), X.data.data());
     if (r != 0) {
-      LOG_FATAL("mult point is not on curve: " << X << "\nresult: " << x);
+      LOG_FATAL("mult point is not on curve: \npoint: " << X << "\nscalar" << a << "\nresult: " << x);
     }
 
     return x;
@@ -473,8 +478,8 @@ namespace crypto {
   }
 
   key_image generate_key_image(const public_key &pub, const secret_key &sec) {
-    const ec_point h = viaF2(h2p(sha3(pub.data)));
-    const ec_point p = mult(mult8(h), sec);
+    const ec_point h8 = viaF2Mult8(h2p(sha3(pub.data)));
+    const ec_point p = mult(h8, sec);
     return p2img(p);
   }
 

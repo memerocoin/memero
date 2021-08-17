@@ -210,9 +210,8 @@ namespace rct {
   }
 
   key hash_to_key_via_f2(const crypto::crypto_data k) {
-    const auto h = h2d(hash_key(k));
-    const crypto::ec_point p = viaF2(h);
-    return p2rct(mult8(p));
+    const crypto::ec_point p = viaF2Mult8(h);
+    return p2rct(p);
   }
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
