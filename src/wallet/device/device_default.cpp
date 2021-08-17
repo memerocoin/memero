@@ -188,8 +188,8 @@ namespace hw {
             crypto::public_key D = get_subaddress_spend_public_key(keys, index);
 
             // C = a*D
-            crypto::public_key C = rct::rct2pk
-              (rct::multP(rct::pk2rct(D), rct::sk2scalar(keys.m_view_secret_key)));
+            crypto::public_key C = rct::rct_p2pk
+              (rct::multP(rct::pk2rct_p(D), rct::sk2scalar(keys.m_view_secret_key)));
 
             // result: (C, D)
             cryptonote::account_public_address address;
@@ -324,9 +324,9 @@ namespace hw {
             {
                 additional_txkey.sec = additional_tx_keys[output_index];
                 if (dst_entr.is_subaddress)
-                    additional_txkey.pub = rct::rct2pk(rct::multP(rct::pk2rct(dst_entr.addr.m_spend_public_key), rct::sk2scalar(additional_txkey.sec)));
+                    additional_txkey.pub = rct::rct_p2pk(rct::multP(rct::pk2rct_p(dst_entr.addr.m_spend_public_key), rct::sk2scalar(additional_txkey.sec)));
                 else
-                    additional_txkey.pub = rct::rct2pk(rct::multG(rct::sk2scalar(additional_txkey.sec)));
+                    additional_txkey.pub = rct::rct_p2pk(rct::multG(rct::sk2scalar(additional_txkey.sec)));
             }
 
             bool r;

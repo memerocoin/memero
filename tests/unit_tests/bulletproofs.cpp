@@ -136,41 +136,41 @@ TEST(bulletproofs, invalid_torsion)
     for (auto &k: proof.V)
     {
       const auto org_k = k;
-      k = rct::unsafe_d2rct(k) + x;
+      k = rct::unsafe_d2rct_p(k) + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     for (auto &k: proof.L)
     {
       const auto org_k = k;
-      k = rct::unsafe_d2rct(k) + x;
+      k = rct::unsafe_d2rct_p(k) + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     for (auto &k: proof.R)
     {
       const auto org_k = k;
-      k = rct::unsafe_d2rct(k) + x;
+      k = rct::unsafe_d2rct_p(k) + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     const auto org_A = proof.A;
-    proof.A = rct::unsafe_d2rct(org_A) + x;
+    proof.A = rct::unsafe_d2rct_p(org_A) + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.A = org_A;
 
     const auto org_S = proof.S;
-    proof.S = rct::unsafe_d2rct(org_S) + x;
+    proof.S = rct::unsafe_d2rct_p(org_S) + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.S = org_S;
 
     const auto org_T1 = proof.T1;
-    proof.T1 = rct::unsafe_d2rct(org_T1) + x;
+    proof.T1 = rct::unsafe_d2rct_p(org_T1) + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.T1 = org_T1;
 
     const auto org_T2 = proof.T2;
-    proof.T2 = rct::unsafe_d2rct(org_T2) + x;
+    proof.T2 = rct::unsafe_d2rct_p(org_T2) + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.T2 = org_T2;
   }

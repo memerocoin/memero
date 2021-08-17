@@ -2527,7 +2527,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
       LOG_ERROR_AND_RETURN_UNLESS(rv.p.CLSAGs.size() == tx.vin.size(), false, "Bad CLSAGs size");
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
-        rv.p.CLSAGs[n].I = rct::ki2rct(boost::get<txin_to_key>(tx.vin[n]).k_image);
+        rv.p.CLSAGs[n].I = rct::ki2rct_p(boost::get<txin_to_key>(tx.vin[n]).k_image);
       }
   }
   else
@@ -2605,7 +2605,7 @@ bool Blockchain::check_tx_input(size_t tx_version, const txin_to_key& txin, cons
       // but only txout_to_key outputs are stored in the DB in the first place, done in
       // Blockchain*::add_output
 
-      m_output_keys.push_back(rct::ct_public_key({rct::pk2rct(pubkey), commitment}));
+      m_output_keys.push_back(rct::ct_public_key({rct::pk2rct_p(pubkey), commitment}));
       return true;
     }
   };
@@ -3951,12 +3951,12 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
         {
           for (size_t m = 0; m < pubkeys[n].size(); ++m)
           {
-            if (pubkeys[n][m].dest != rct::rct2pk(rv.mixRing[n][m].dest))
+            if (pubkeys[n][m].dest != rct::rct_p2pk(rv.mixRing[n][m].dest))
             {
               LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkey at vin " << n << ", index " << m);
               return false;
             }
-            if (pubkeys[n][m].mask != rct::rct2pk(rv.mixRing[n][m].mask))
+            if (pubkeys[n][m].mask != rct::rct_p2pk(rv.mixRing[n][m].mask))
             {
               LOG_ERROR_VER("Failed to check ringct signatures: mismatched commitment at vin " << n << ", index " << m);
               return false;

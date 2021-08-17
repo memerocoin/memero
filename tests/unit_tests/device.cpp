@@ -78,8 +78,8 @@ TEST(device, ops)
   std::tie(sk, pk) = rct::skpkGen();
   sk0 = crypto::s2sk(crypto::scalarGen());
   sk1 = crypto::s2sk(crypto::scalarGen());
-  pk0 = rct::rct2pk(rct::multG((rct::rct_scalar&)sk0));
-  pk1 = rct::rct2pk(rct::multG((rct::rct_scalar&)sk1));
+  pk0 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk0));
+  pk1 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk1));
 
   dev.multP(resd, pk, sk);
   res = rct::multP(pk, sk);
@@ -107,8 +107,8 @@ TEST(device, ops)
   sk1 = crypto::derive_secret_key(der, 0, rct::scalar2sk(sk));
   ASSERT_EQ(sk0, sk1);
 
-  dev.derive_public_key(der, 0, rct::rct2pk(pk), pk0);
-  crypto::derive_public_key(der, 0, rct::rct2pk(pk), pk1);
+  dev.derive_public_key(der, 0, rct::rct_p2pk(pk), pk0);
+  crypto::derive_public_key(der, 0, rct::rct_p2pk(pk), pk1);
   ASSERT_EQ(pk0, pk1);
 
   dev.secret_key_to_public_key(rct::scalar2sk(sk), pk0);

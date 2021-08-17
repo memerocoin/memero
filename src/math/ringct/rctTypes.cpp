@@ -48,17 +48,17 @@ namespace rct {
 
     rct_point rct_point::operator+(const rct_point& y) const
     {
-      return p2rct(ec_point::operator+(y));
+      return p2rct_p(ec_point::operator+(y));
     }
 
     rct_point rct_point::operator-(const rct_point& y) const
     {
-      return p2rct(ec_point::operator-(y));
+      return p2rct_p(ec_point::operator-(y));
     }
 
     rct_point rct_point::operator*(const uint64_t y) const
     {
-      return p2rct(ec_point::operator*(y));
+      return p2rct_p(ec_point::operator*(y));
     }
 
     bool rct_point::operator<(const rct_point& y) const

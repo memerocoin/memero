@@ -420,14 +420,14 @@ namespace rct {
     inline const rct::rct_scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::rct_scalar&)sk; }
     inline const crypto::secret_key &scalar2sk(const rct::rct_scalar&k) { return (const crypto::secret_key&)k; }
 
-    inline const rct::rct_point &pk2rct(const crypto::public_key &pk) { return (const rct::rct_point&)pk; }
-    inline const rct::rct_point &ki2rct(const crypto::key_image &ki) { return (const rct::rct_point&)ki; }
-    inline const rct::rct_point &p2rct(const crypto::ec_point &p) { return (const rct::rct_point&)p; }
+    inline const rct::rct_point &pk2rct_p(const crypto::public_key &pk) { return (const rct::rct_point&)pk; }
+    inline const rct::rct_point &ki2rct_p(const crypto::key_image &ki) { return (const rct::rct_point&)ki; }
+    inline const rct::rct_point &p2rct_p(const crypto::ec_point &p) { return (const rct::rct_point&)p; }
 
-    inline const crypto::public_key &rct2pk(const rct::rct_point &k) { return (const crypto::public_key&)k; }
-    inline const crypto::secret_key &unsafe_rct2sk(const rct::rct_point &k) { return (const crypto::secret_key&)k; }
-    inline const crypto::key_image &rct2ki(const rct::rct_point &k) { return (const crypto::key_image&)k; }
-    inline const crypto::hash &rct2hash(const rct::rct_point &k) { return (const crypto::hash&)k; }
+    inline const crypto::public_key &rct_p2pk(const rct::rct_point &k) { return (const crypto::public_key&)k; }
+    inline const crypto::secret_key &unsafe_rct_p2sk(const rct::rct_point &k) { return (const crypto::secret_key&)k; }
+    inline const crypto::key_image &rct_p2ki(const rct::rct_point &k) { return (const crypto::key_image&)k; }
+    inline const crypto::hash &rct_p2hash(const rct::rct_point &k) { return (const crypto::hash&)k; }
 
     inline const rct::rct_scalar &s2s(const crypto::ec_scalar &s) { return (const rct::rct_scalar&)s; }
 
@@ -446,8 +446,8 @@ namespace rct {
 
 
     // unsafe
-    inline const rct::rct_point &unsafe_hash2rct(const crypto::hash &h) { return (const rct::rct_point&)h; }
-    inline const rct::rct_point &unsafe_d2rct(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
+    inline const rct::rct_point &unsafe_hash2rct_p(const crypto::hash &h) { return (const rct::rct_point&)h; }
+    inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
 }
 
 

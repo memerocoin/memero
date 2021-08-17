@@ -152,13 +152,13 @@ namespace rct {
   //does a * G where a is a rct_scalar and G is the curve basepoint
   rct_point multG(const rct_scalar a) {
     rct_scalar s = normalizeKey(a);
-    return p2rct(crypto::multBase(s));
+    return p2rct_p(crypto::multBase(s));
   }
 
   //does a * P where a is a rct_scalar and P is an arbitrary point
   rct_point multP(const rct_point P, const rct_scalar a) {
     rct_scalar s = normalizeKey(a);
-    return p2rct(crypto::mult(P, s));
+    return p2rct_p(crypto::mult(P, s));
   }
 
 
@@ -169,11 +169,11 @@ namespace rct {
 
   //Computes 8P
   rct_point multP8(const crypto::ec_point_unsafe P) {
-    return p2rct(crypto::mult8(P));
+    return p2rct_p(crypto::mult8(P));
   }
 
   rct_point multP8Safe(const rct_point P) {
-    return p2rct(crypto::mult8Safe(P));
+    return p2rct_p(crypto::mult8Safe(P));
   }
 
 
@@ -217,7 +217,7 @@ namespace rct {
   rct_point hash_to_key_via_f2(const crypto::crypto_data k) {
     const auto h = h2d(hash_key(k));
     const crypto::ec_point p = viaF2Mult8(h);
-    return p2rct(p);
+    return p2rct_p(p);
   }
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
