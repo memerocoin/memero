@@ -116,7 +116,7 @@ namespace rct {
     };
 
     //containers for representing amounts
-    typedef uint64_t amount_t;
+    using amount_t = uint64_t;
 
     // CLSAG signature
     struct clsag {
