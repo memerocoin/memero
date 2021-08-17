@@ -112,11 +112,13 @@ namespace rct {
         scalar a;
         key aG;
         key aH;
+        key sig_I;
 
         {
-          hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
+          hwdev.clsag_prepare(p,z,sig_I,D,H,a,aG,aH);
         }
 
+        sig.I = sig_I;
         // Offset key image
         sig.D = multP(D, rct::s_inv_eight);
 
@@ -217,7 +219,7 @@ namespace rct {
                std::array
                {
                  multP(A, sig.s[i])
-                 , multP(sig.I, c_p)
+                 , multP(sig_I, c_p)
                  , multP(D, c_c)
                }
                );
@@ -334,6 +336,9 @@ namespace rct {
         LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(sig.c1), false, "Bad signature commitment!");
         LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad key image!");
 
+        const auto maybe_sig_I = crypto::maybeSafePoint(sig.I);
+        LOG_ERROR_AND_RETURN_UNLESS(maybe_sig_I, false, "key image is not a valid point!");
+
         if (!is_valid_point(C_offset)) {
           LOG_ERROR("C_offset is not a valid point: " << C_offset);
           return false;
@@ -371,10 +376,10 @@ namespace rct {
             mu_P_to_hash[i] = pubs[i-n-1].mask;
             mu_C_to_hash[i] = pubs[i-n-1].mask;
         }
-        mu_P_to_hash[2*n+1] = sig.I;
+        mu_P_to_hash[2*n+1] = *maybe_sig_I;
         mu_P_to_hash[2*n+2] = sig.D;
         mu_P_to_hash[2*n+3] = C_offset;
-        mu_C_to_hash[2*n+1] = sig.I;
+        mu_C_to_hash[2*n+1] = *maybe_sig_I;
         mu_C_to_hash[2*n+2] = sig.D;
         mu_C_to_hash[2*n+3] = C_offset;
         scalar mu_P, mu_C;
@@ -437,7 +442,7 @@ namespace rct {
                std::array
                {
                  multP(k, sig.s[i])
-                 , multP(sig.I, c_p)
+                 , multP(p2rct(*maybe_sig_I), c_p)
                  , multP(D_8, c_c)
                }
                );

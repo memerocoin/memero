@@ -170,7 +170,7 @@ TEST(ringct, CLSAG)
 
   // too few s elements
   scalar backup_s;
-  key backup_key;
+  crypto::ec_point_unsafe backup_key_p;
   inv8 backup_key_inv8;
   backup_s = clsag.s.back();
   clsag.s.pop_back();
@@ -198,10 +198,10 @@ TEST(ringct, CLSAG)
   clsag.c1 = backup_s;
 
   // bad I in clsag at verification
-  backup_key = clsag.I;
+  backup_key_p = clsag.I;
   clsag.I = multG(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.I = backup_key;
+  clsag.I = backup_key_p;
 
   // bad D in clsag at verification
   backup_key_inv8 = clsag.D;
@@ -219,14 +219,14 @@ TEST(ringct, CLSAG)
 
   // swapped I and D in clsag at verification
   backup_key_inv8 = clsag.D;
-  backup_key = clsag.I;
+  backup_key_p = clsag.I;
 
   clsag.I = rct::unsafe_d2rct(backup_key_inv8);
   clsag.D = clsag.I;
 
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
 
-  clsag.I = backup_key;
+  clsag.I = backup_key_p;
   clsag.D = backup_key_inv8;
 
   // check it's still good, in case we failed to restore
