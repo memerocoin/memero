@@ -37,33 +37,45 @@
 
 #include "tools/epee/include/hex.h"
 
+#include <boost/functional/hash.hpp>
+
 namespace crypto {
 
   struct hash {
     std::array<uint8_t, HASH_SIZE> data;
+    bool operator==(const hash&) const = default;
   };
+  inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
+    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+  }
+
   struct hash8 {
     std::array<uint8_t, 8> data;
   };
+  inline std::ostream &operator <<(std::ostream &o, const crypto::hash8 &v) {
+    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+  }
+
+  hash sha3(const epee::blob::span);
 
   /*
     Cryptonight hash functions
   */
-
-  hash sha3(const epee::blob::span);
-
   void tree_hash(const hash *hashes, const std::size_t count, hash &root_hash);
 
-  inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
-  inline std::ostream &operator <<(std::ostream &o, const crypto::hash8 &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
 
   constexpr static crypto::hash null_hash = {};
   constexpr static crypto::hash8 null_hash8 = {};
 }
 
-CRYPTO_MAKE_HASHABLE_HEADER(hash)
-CRYPTO_MAKE_COMPARABLE_HEADER(hash8)
+namespace std
+{
+  template<> struct hash<crypto::hash>
+  {
+    std::size_t operator()(crypto::hash const& x) const noexcept
+    {
+      boost::hash<std::array<uint8_t, HASH_SIZE>> array_hash;
+      return array_hash(x.data);
+    }
+  };
+}

@@ -15,5 +15,3 @@ void tree_hash(const hash *hashes, const std::size_t count, hash &root_hash) {
 }
 
 
-CRYPTO_MAKE_HASHABLE_CPP(hash)
-CRYPTO_MAKE_COMPARABLE_CPP(hash8)
