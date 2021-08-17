@@ -144,7 +144,7 @@ namespace rct {
       rct::inv8V L, R;
       rct::rct_scalar a, b, t;
 
-      bool operator==(const Bulletproof &other) const { return V == other.V && A == other.A && S == other.S && T1 == other.T1 && T2 == other.T2 && taux == other.taux && mu == other.mu && L == other.L && R == other.R && a == other.a && b == other.b && t == other.t; }
+      // bool operator==(const Bulletproof&) const = default;
 
       BEGIN_SERIALIZE_OBJECT()
         // Commitments aren't saved, they're restored via outPk

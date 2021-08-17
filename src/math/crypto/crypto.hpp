@@ -35,6 +35,8 @@
 #include "random.hpp"
 
 #include <sodium.h>
+
+#include <boost/functional/hash.hpp>
 #include <random>
 
 extern "C" {
@@ -221,9 +223,36 @@ namespace crypto {
   bool is_reduced(const ec_scalar_unnormalized x);
   bool is_not_reduced(const ec_scalar_unnormalized x);
 
+  inline std::size_t hash_value(const crypto_data& x) {
+    boost::hash<std::array<uint8_t,32>> array_hash;
+    return array_hash(x.data);
+  }
+
+  inline std::size_t hash_value(const public_key& x) {
+    boost::hash<std::array<uint8_t,32>> array_hash;
+    return array_hash(x.data);
+  }
 }
 
-CRYPTO_MAKE_HASHABLE_HEADER(public_key)
-CRYPTO_MAKE_HASHABLE_HEADER(secret_key)
-CRYPTO_MAKE_HASHABLE_HEADER(key_image)
-CRYPTO_MAKE_COMPARABLE_HEADER(signature)
+namespace std
+{
+  template<> struct hash<crypto::public_key>
+  {
+    std::size_t operator()(crypto::public_key const& x) const noexcept
+    {
+      boost::hash<std::array<uint8_t,32>> array_hash;
+      return array_hash(x.data);
+    }
+  };
+
+  template<> struct hash<crypto::key_image>
+  {
+    std::size_t operator()(crypto::key_image const& x) const noexcept
+    {
+      boost::hash<std::array<uint8_t,32>> array_hash;
+      return array_hash(x.data);
+    }
+  };
+
+}
+
