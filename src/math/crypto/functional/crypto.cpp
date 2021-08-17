@@ -74,7 +74,7 @@ namespace crypto {
     // if (!p) throw std::runtime_error("signature pubkey is invalid");
     if (!p) return false;
 
-    if (is_not_reduced(sig.c) || is_not_reduced(sig.r) || (sig.c != s_0)) {
+    if (is_not_reduced(sig.c) || is_not_reduced(sig.r) || (sig.c == s_0)) {
       return false;
     }
 
