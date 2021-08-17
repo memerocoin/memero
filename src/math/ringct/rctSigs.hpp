@@ -67,7 +67,7 @@ namespace rct {
   //   verifies that all signatures (rangeProogs, MG sig, sum inputs = outputs) are correct
   //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
   //   uses the attached ecdh info to find the amounts represented by each output commitment
-  //   must know the destination private rct_point to find the correct amount, else will return a random number
+  //   must know the destination private key to find the correct amount, else will return a random number
   rctSig genRctSimple
   (
    const crypto::hash message

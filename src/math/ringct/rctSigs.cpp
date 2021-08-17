@@ -103,7 +103,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment rct_point vector sizes must match!");
         LOG_ERROR_AND_THROW_UNLESS(l < n, "Signing index out of range!");
 
-        // rct_point images
+        // mages images
         rct_point H = hash_to_key_via_f2(P[l]);
 
         rct_point D;
@@ -117,7 +117,7 @@ namespace rct {
           hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
         }
 
-        // Offset rct_point image
+        // Offset key image
         sig.D = multP(D, rct::s_inv_eight);
 
         // Aggregation hashes
@@ -339,7 +339,7 @@ namespace rct {
           return false;
         }
 
-        // Prepare rct_point images
+        // Prepare key images
         rct_scalar c = sig.c1;
         rct_point D_8 = multP8(sig.D);
         LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary rct_point image!");

@@ -79,7 +79,7 @@ namespace rct {
 
 
     //containers For CT operations
-    //if it's  representing a private ct_public_key then "dest" contains the secret rct_point of the address
+    //if it's  representing a private ct_public_key then "dest" contains the secret key of the address
     // while "mask" contains a where C = aG + bH is CT pedersen commitment and b is the amount
     // (store b, the amount, separately
     //if it's representing a public ct_public_key, then "dest" = P the address, mask = aG the commitment
@@ -123,8 +123,8 @@ namespace rct {
         rct_scalarV s; // scalars
         rct_scalar c1;
 
-        reconstructed_point I; // signing rct_point image
-        inv8 D; // commitment rct_point image
+        reconstructed_point I; // signing key image
+        inv8 D; // commitment key image
 
         BEGIN_SERIALIZE_OBJECT()
             FIELD(s)

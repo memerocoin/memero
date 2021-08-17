@@ -67,9 +67,9 @@ namespace rct {
 
 
 
-  //Various rct_point generation functions
+  //Various key generation functions
 
-  //generates a random rct_scalar which can be used as a secret rct_point or mask
+  //generates a random rct_scalar which can be used as a secret key or mask
   rct_scalar skGen() {
     return s2s(crypto::scalarGen());
   }
