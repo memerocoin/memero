@@ -172,6 +172,11 @@ namespace rct {
     return p2rct(crypto::mult8(P));
   }
 
+  key multP8Safe(const key P) {
+    return p2rct(crypto::mult8Safe(P));
+  }
+
+
   //Curve addition / subtractions
 
   rct::key addPoints(const keyS A) {

@@ -103,6 +103,7 @@ namespace rct {
 
   // multiplies a point by 8
   key multP8(const crypto::ec_point_unsafe P);
+  key multP8Safe(const key P);
 
   //Curve addition / subtractions
 
