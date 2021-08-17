@@ -100,7 +100,7 @@ TEST(bulletproofs, valid_aggregated)
 TEST(bulletproofs, invalid_8)
 {
   rct::scalar invalid_amount = rct::s_zero;
-  invalid_amount[8] = 1;
+  invalid_amount.data[8] = 1;
   rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, rct::skGen());
   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
 }
@@ -108,7 +108,7 @@ TEST(bulletproofs, invalid_8)
 TEST(bulletproofs, invalid_31)
 {
   rct::scalar invalid_amount = rct::s_zero;
-  invalid_amount[31] = 1;
+  invalid_amount.data[31] = 1;
   rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, rct::skGen());
   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
 }

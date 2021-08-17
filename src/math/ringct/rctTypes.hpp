@@ -55,13 +55,6 @@ namespace rct {
 
 
     struct scalar : crypto::ec_scalar {
-      unsigned char & operator[](int i) {
-        return data[i];
-      }
-      unsigned char operator[](int i) const {
-        return data[i];
-      }
-
       scalar operator+(const scalar& y) const;
       scalar operator-(const scalar& y) const;
       scalar operator*(const scalar& y) const;

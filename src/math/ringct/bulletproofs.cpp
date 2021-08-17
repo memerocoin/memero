@@ -302,7 +302,7 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   {
     for (size_t i = N; i-- > 0; )
     {
-      if (j < sv.size() && (sv[j][i/8] & (((uint64_t)1)<<(i%8))))
+      if (j < sv.size() && (sv[j].data[i/8] & (((uint64_t)1)<<(i%8))))
       {
         aL[j*N+i] = rct::s_one;
         aL8[j*N+i] = rct::s_inv_eight;
