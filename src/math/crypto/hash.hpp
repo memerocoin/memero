@@ -63,8 +63,8 @@ namespace crypto {
   void tree_hash(const hash *hashes, const std::size_t count, hash &root_hash);
 
 
-  constexpr static crypto::hash null_hash = {};
-  constexpr static crypto::hash8 null_hash8 = {};
+  constexpr crypto::hash null_hash = {};
+  constexpr crypto::hash8 null_hash8 = {};
 }
 
 namespace std
