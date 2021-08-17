@@ -55,7 +55,7 @@ namespace rct {
 
 
     using inv8 = crypto::ec_point_unsafe;
-    using reconstructed_key = rct::rct_point;
+    using reconstructed_point = rct::rct_point;
 
 
     struct rct_scalar : crypto::ec_scalar {
@@ -124,7 +124,7 @@ namespace rct {
         rct_scalarV s; // scalars
         rct_scalar c1;
 
-        reconstructed_key I; // signing rct_point image
+        reconstructed_point I; // signing rct_point image
         inv8 D; // commitment rct_point image
 
         BEGIN_SERIALIZE_OBJECT()
