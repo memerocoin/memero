@@ -137,7 +137,7 @@ namespace rct {
     struct Bulletproof
     {
       rct::inv8V V;
-      rct::key A, S;
+      rct::inv8 A, S;
       inv8 T1, T2;
       rct::scalar taux;
       rct::scalar mu;
@@ -149,7 +149,7 @@ namespace rct {
       Bulletproof
       (
        const rct::inv8 &V
-       , const rct::key &A, const rct::key &S
+       , const rct::inv8 &A, const rct::inv8 &S
        , const rct::inv8 &T1, const rct::inv8 &T2
        , const rct::scalar &taux, const rct::scalar &mu
        , const rct::inv8V &L, const rct::inv8V &R
@@ -159,7 +159,7 @@ namespace rct {
 
       Bulletproof
       (
-       const rct::inv8V &V, const rct::key &A, const rct::key &S
+       const rct::inv8V &V, const rct::inv8 &A, const rct::inv8 &S
        , const rct::inv8 &T1, const rct::inv8 &T2
        , const rct::scalar &taux, const rct::scalar &mu
        , const rct::inv8V &L, const rct::inv8V &R

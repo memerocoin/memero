@@ -155,12 +155,12 @@ TEST(bulletproofs, invalid_torsion)
       k = org_k;
     }
     const auto org_A = proof.A;
-    proof.A = org_A + x;
+    proof.A = rct::unsafe_d2rct(org_A) + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.A = org_A;
 
-    const rct::key org_S = proof.S;
-    proof.S = org_S + x;
+    const auto org_S = proof.S;
+    proof.S = rct::unsafe_d2rct(org_S) + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.S = org_S;
 
