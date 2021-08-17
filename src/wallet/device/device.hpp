@@ -31,7 +31,7 @@
 
 #include "math/ringct/rctTypes.hpp"
 
-#include "math/crypto/chacha.hpp"
+#include "math/crypto/controller/chacha.hpp"
 
 #include "config/cryptonote.hpp"
 

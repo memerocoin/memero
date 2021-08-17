@@ -35,7 +35,7 @@
 #define CHACHA_IV_SIZE 8
 
 
-#include "functional/hash.hpp"
+#include "../functional/hash.hpp"
 
 namespace crypto {
   void chacha20(const void* data, size_t length, const uint8_t* key, const uint8_t* iv, char* cipher);

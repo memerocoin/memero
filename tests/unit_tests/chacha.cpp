@@ -32,7 +32,7 @@
 
 #include "gtest/gtest.h"
 
-#include "math/crypto/chacha.hpp"
+#include "math/crypto/controller/chacha.hpp"
 
 namespace
 {
