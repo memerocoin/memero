@@ -31,6 +31,7 @@
 
 add_library(math_crypto
   functional/group.cpp
+  functional/curve25519_cryptonote_extension.cpp
   functional/crypto.cpp
   functional/hash.cpp
   controller/crypto.cpp

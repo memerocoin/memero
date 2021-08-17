@@ -44,11 +44,6 @@
 #include <mutex>
 #include <memory>
 
-
-extern "C" {
-#include "crypto-ops.h"
-}
-
 namespace crypto {
 
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) {
@@ -166,38 +161,6 @@ namespace crypto {
 
     // test if c2 == sig.c
     return c2 - sig.c == s_0;
-  }
-
-  ec_point_unsafe viaF2(const crypto_data x) {
-    ge_p2 in;
-    ge_fromfe_frombytes_vartime(&in, x.data.data());
-    ec_point out;
-    ge_tobytes(out.data.data(), &in);
-    return out;
-  }
-
-
-  ec_point viaF2Mult8(const crypto_data x) {
-    return mult8(viaF2(x));
-  }
-
-  // needed because point can be out of main group
-  ec_point mult8(const ec_point_unsafe X) {
-    ge_p3 in;
-    ge_frombytes_vartime(&in, X.data.data());
-
-    ge_p2 point;
-    ge_p3_to_p2(&point, &in);
-
-    ge_p1p1 point2;
-    ge_mul8(&point2, &point);
-
-    ge_p2 p2;
-    ge_p1p1_to_p2(&p2, &point2);
-
-    ec_point res;
-    ge_tobytes(res.data.data(), &p2);
-    return res;
   }
 
   key_image generate_key_image(const public_key &pub, const secret_key &sec) {

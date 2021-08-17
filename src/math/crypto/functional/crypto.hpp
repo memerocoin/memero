@@ -32,6 +32,8 @@
 #pragma once
 
 #include "group.hpp"
+#include "curve25519_cryptonote_extension.hpp"
+
 #include "hash.hpp"
 
 #include <sodium.h>
@@ -131,8 +133,6 @@ namespace crypto {
   const crypto::public_key null_pkey = {};
   const crypto::secret_key null_skey = {};
 
-  ec_point mult8(const ec_point_unsafe X);
-  ec_point viaF2Mult8(const crypto_data x);
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 }
 
