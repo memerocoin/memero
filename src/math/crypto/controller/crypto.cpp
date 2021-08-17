@@ -135,12 +135,12 @@ namespace crypto {
       const s_comm buf {prefix_hash, pub, comm};
       const ec_scalar sig_c = hash_to_scalar(epee::pod_to_span(buf));
 
-      if (sig_c != s_0)
+      if (sig_c == s_0)
         continue;
 
       const ec_scalar sig_r = k - sig_c * sec;
 
-      if (sig_r != s_0)
+      if (sig_r == s_0)
         continue;
 
       return
