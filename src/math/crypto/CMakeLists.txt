@@ -31,6 +31,7 @@
 
 add_library(math_crypto
   functional/crypto.cpp
+  controller/crypto.cpp
   chacha.cpp
   sha3.cpp
   tree-hash.cpp

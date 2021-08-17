@@ -36,6 +36,7 @@
 #include "tools/epee/include/logging.hpp"
 
 #include <list>
+#include <numeric>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

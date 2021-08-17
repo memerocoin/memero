@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 
-#include "math/crypto/functional/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 #include "math/ringct/rctOps.hpp"
 #include "math/ringct/multiexp.hpp"
 

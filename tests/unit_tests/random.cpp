@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 
-#include "math/crypto/functional/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 
 TEST(random32_unbiased, less_than_order)
 {

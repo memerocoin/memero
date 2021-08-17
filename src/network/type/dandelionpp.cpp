@@ -29,7 +29,7 @@
 #include "dandelionpp.h"
 
 #include "tools/common/expect.h"
-#include "math/crypto/functional/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 
 
 #include <boost/uuid/nil_generator.hpp>

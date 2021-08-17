@@ -46,6 +46,7 @@
 #include <mutex>
 #include <atomic>
 #include <list>
+#include <numeric>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

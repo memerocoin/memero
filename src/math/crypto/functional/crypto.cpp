@@ -104,36 +104,6 @@ namespace crypto {
   bool is_valid_point(const ec_point_unsafe x) {
     return crypto_core_ed25519_is_valid_point(x.data.data());
   }
-  /*
-   * generate public and secret keys from a random 256-bit integer
-   * TODO: allow specifying random value (for wallet recovery)
-   *
-   */
-  std::pair<secret_key, public_key> generate_keys(std::optional<secret_key> recovery_key) {
-    const secret_key s = recovery_key ? s2sk(reduce(*recovery_key)) : s2sk(scalarGen());
-    return {s, p2pk(multBase(s))};
-  }
-
-  bool secret_key_to_public_key(const secret_key &sec, public_key &pub) {
-    return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sec.data.data());
-  }
-
-  bool generate_key_derivation
-  (
-   const ec_point_unsafe &unsafe_key1
-   , const secret_key &key2
-   , key_derivation &derivation
-   ) {
-    const auto key1 = maybeSafePoint(unsafe_key1);
-    if (!key1) return false;
-
-    // here mult8 is really not needed
-    const ec_point p = mult8Safe(mult(*key1, key2));
-
-    derivation = p2derivation(p);
-
-    return true;
-  }
 
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) {
     const epee::blob::data hashData =
@@ -141,23 +111,6 @@ namespace crypto {
       + epee::string_tools::string_to_blob(tools::get_varint_data(index));
 
     return hash_to_scalar(hashData);
-  }
-
-  bool derive_public_key
-  (
-   const key_derivation &derivation
-   , const size_t output_index
-   , const ec_point_unsafe &unsafe_base
-   , public_key &derived_key
-   ) {
-    const auto base = maybeSafePoint(unsafe_base);
-    if (!base) return false;
-
-    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
-    const ec_point derived = multBase(rct_scalar);
-    const ec_point r = derived + *base;
-    derived_key = p2pk(r);
-    return true;
   }
 
   secret_key derive_secret_key(const key_derivation &derivation, const size_t output_index,
@@ -169,80 +122,9 @@ namespace crypto {
     return s2sk(base + rct_scalar);
   }
 
-  bool derive_subaddress_public_key
-  (
-   const ec_point_unsafe &unsafe_out_key
-   , const key_derivation &derivation
-   , const std::size_t output_index,
-   public_key &derived_key
-   )
-  {
-    const auto out_key = maybeSafePoint(unsafe_out_key);
-    if (!out_key) return false;
-
-    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
-
-    if (rct_scalar == s_0) return false;
-
-    const ec_point p = multBase(rct_scalar);
-
-    derived_key = p2pk(sub(*out_key, p));
-    return true;
-  }
-
-  struct s_comm {
-    hash h;
-    ec_point key;
-    ec_point comm;
-  };
-
-  // Used in v1/v2 tx proofs
-  struct s_comm_2 {
-    hash msg;
-    ec_point D;
-    ec_point X;
-    ec_point Y;
-    hash sep; // domain separation
-    ec_point R;
-    ec_point A;
-    ec_point B;
-  };
-
   ec_scalar hash_to_scalar(const std::span<const uint8_t> x) {
     const auto h = sha3(x);
     return reduce(h2s(h));
-  }
-
-  signature generate_signature
-  (
-   const hash &prefix_hash
-   , const public_key &pub
-   , const secret_key &sec
-   )
-  {
-    while (true) {
-      const ec_scalar k = scalarGen();
-      if (k == s_0) continue;
-
-      const ec_point comm = multBase(k);
-      const s_comm buf {prefix_hash, pub, comm};
-      const ec_scalar sig_c = hash_to_scalar(epee::pod_to_span(buf));
-
-      if (sig_c != s_0)
-        continue;
-
-      const ec_scalar sig_r = k - sig_c * sec;
-
-      if (sig_r != s_0)
-        continue;
-
-      return
-        {
-          sig_c
-          , sig_r
-        };
-    }
-
   }
 
   bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) {
@@ -265,68 +147,6 @@ namespace crypto {
     return h - sig.c == s_0;
   }
 
-  // Generate a proof of knowledge of `r` such that (`R = rG` and `D = rA`) or (`R = rB` and `D = rA`) via a Schnorr proof
-  // This handles use cases for both standard addresses and subaddresses
-  //
-  // Generates only proofs for InProofV2 and OutProofV2
-  signature generate_tx_proof
-  (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
-   )
-  {
-    // sanity check
-
-    if (!is_valid_point(R)) throw std::runtime_error("tx pubkey is invalid");
-    if (!is_valid_point(A)) throw std::runtime_error("recipient view pubkey is invalid");
-    if (B) {
-      if (!is_valid_point(*B)) throw std::runtime_error("recipient spend pubkey is invalid");
-    }
-    if (!is_valid_point(D)) throw std::runtime_error("key derivation is invalid");
-
-    // pick random k
-    const ec_scalar k = scalarGen();
-
-    // if B is not present
-    static const ec_point zero = {};
-
-    // struct s_comm_2 {
-    //   hash msg;
-    //   ec_point D;
-    //   ec_point X;
-    //   ec_point Y;
-    //   hash sep; // domain separation
-    //   ec_point R;
-    //   ec_point A;
-    //   ec_point B;
-    // };
-
-    const s_comm_2 buf =
-      {
-        prefix_hash
-        , D
-        , B ? mult(*B, k) : multBase(k)
-        , mult(A, k)
-        , sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1))
-        , R
-        , A
-        , B ? *B : zero
-      };
-
-
-    // sig.c = Hs(Msg || D || X || Y || sep || R || A || B)
-    // sig.r = k - sig.c*r
-
-    const auto sig_c = hash_to_scalar(epee::pod_to_span(buf));
-    return {
-      sig_c
-      , k - sig_c * r
-    };
-  }
 
   bool check_tx_proof
   (
@@ -413,14 +233,6 @@ namespace crypto {
 
   ec_point viaF2Mult8(const crypto_data x) {
     return mult8(viaF2(x));
-  }
-
-
-  //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen() {
-    ec_scalar s;
-    crypto_core_ed25519_scalar_random(s.data.data());
-    return s;
   }
 
   ec_point multBase(const ec_scalar x) {

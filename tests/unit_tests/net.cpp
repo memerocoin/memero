@@ -53,7 +53,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "math/crypto/functional/crypto.hpp"
+#include "math/crypto/crypto.hpp"
 #include "network/type/error.h"
 #include "network/type/i2p_address.h"
 #include "tools/epee/include/net/net_utils_base.h"

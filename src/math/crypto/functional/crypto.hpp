@@ -37,17 +37,13 @@
 #include <sodium.h>
 
 #include <boost/functional/hash.hpp>
-#include <random>
-
-extern "C" {
-#include "crypto-ops.h"
-}
 
 namespace crypto {
   struct crypto_data {
     std::array<uint8_t, 32> data;
   };
 
+  // not really functional but needed in other part of the code
   inline std::ostream &operator <<(std::ostream &o, const crypto::crypto_data &v) {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
@@ -119,55 +115,32 @@ namespace crypto {
 
   inline const ec_point &unsafe_p2p(const ec_point_unsafe &x) { return (const ec_point&)x; }
 
-  /* Generate a new key pair
-    */
-  std::pair<secret_key, public_key> generate_keys
-  (
-     const std::optional<secret_key> recovery_key
-   );
-
-  /* Checks a private key and computes the corresponding public key.
-    */
-  bool secret_key_to_public_key(const secret_key &, public_key &);
-
-  /* To generate an ephemeral key used to send money to:
-    * * The sender generates a new key pair, which becomes the transaction key. The public transaction key is included in "extra" field.
-    * * Both the sender and the receiver generate key derivation from the transaction key, the receivers' "view" key and the output index.
-    * * The sender uses key derivation and the receivers' "spend" key to derive an ephemeral public key.
-    * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
-    */
-  bool generate_key_derivation(const ec_point_unsafe &, const secret_key &, key_derivation &);
-
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index);
-  bool derive_public_key(const key_derivation &, const std::size_t, const ec_point_unsafe &, public_key &);
+
   secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &);
-  bool derive_subaddress_public_key
-  (
-   const ec_point_unsafe &out_key
-   , const key_derivation &derivation
-   , const std::size_t output_index
-   , public_key &derived_key
-   );
 
   /* Generation and checking of a standard signature.
     */
-  signature generate_signature(const hash &, const public_key &, const secret_key &);
+
+  struct s_comm {
+    hash h;
+    ec_point key;
+    ec_point comm;
+  };
+
+  // Used in v1/v2 tx proofs
+  struct s_comm_2 {
+    hash msg;
+    ec_point D;
+    ec_point X;
+    ec_point Y;
+    hash sep; // domain separation
+    ec_point R;
+    ec_point A;
+    ec_point B;
+  };
 
   bool check_signature(const hash &, const ec_point_unsafe &, const signature &);
-
-  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-    * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
-    * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
-    */
-  signature generate_tx_proof
-  (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
-   );
 
   bool check_tx_proof
   (
@@ -202,9 +175,6 @@ namespace crypto {
         , 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66 } };
 
   bool is_valid_point(const ec_point_unsafe x);
-
-  //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen();
 
   std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x);
   ec_point mult(const ec_point X, const ec_scalar);
