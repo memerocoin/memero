@@ -30,7 +30,7 @@
 
 #include "tools/common/expect.h"
 #include "math/crypto/crypto.hpp"
-#include "math/crypto/random.hpp"
+#include "math/crypto/controller/random.hpp"
 
 
 #include <boost/uuid/nil_generator.hpp>

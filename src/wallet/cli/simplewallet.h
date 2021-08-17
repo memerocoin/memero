@@ -41,7 +41,7 @@
 #include "tools/epee/include/console_handler.h"
 #include "tools/epee/include/math_helper.h"
 
-#include "math/crypto/random.hpp"
+#include "math/crypto/controller/random.hpp"
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

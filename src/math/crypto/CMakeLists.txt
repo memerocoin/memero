@@ -36,7 +36,7 @@ add_library(math_crypto
   controller/sha3.cpp
   controller/tree-hash.cpp
   controller/chacha.cpp
-  random.cpp
+  controller/random.cpp
   )
 
 target_link_libraries(math_crypto

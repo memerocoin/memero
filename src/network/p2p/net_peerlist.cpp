@@ -37,7 +37,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/range/join.hpp>
 
-#include "math/crypto/random.hpp"
+#include "math/crypto/controller/random.hpp"
 
 #include <fstream>
 

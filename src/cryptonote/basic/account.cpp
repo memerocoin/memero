@@ -31,7 +31,7 @@
 
 #include "cryptonote_format_utils.h"
 
-#include "math/crypto/random.hpp"
+#include "math/crypto/controller/random.hpp"
 
 
 

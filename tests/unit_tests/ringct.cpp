@@ -40,7 +40,7 @@
 #include "math/ringct/rctSigs.hpp"
 #include "math/ringct/rctOps.hpp"
 #include "math/ringct/curveConstants.hpp"
-#include "math/crypto/random.hpp"
+#include "math/crypto/controller/random.hpp"
 
 #include "wallet/device/device.hpp"
 

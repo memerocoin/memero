@@ -32,7 +32,7 @@
 #include "tools/epee/include/string_tools.h"
 
 #include "math/crypto/crypto.hpp"
-#include "math/crypto/random.hpp"
+#include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/protocol/block_queue.h"

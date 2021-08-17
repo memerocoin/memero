@@ -36,7 +36,7 @@
 #include "math/ringct/rctOps.hpp"
 #include "math/ringct/rctSigs.hpp"
 #include "math/ringct/bulletproofs.hpp"
-#include "math/crypto/random.hpp"
+#include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
