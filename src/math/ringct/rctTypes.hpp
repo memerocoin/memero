@@ -70,7 +70,6 @@ namespace rct {
     using rct_pointL = std::list<const rct_point>; //vector of keys
 
     using rct_scalarV = std::vector<rct_scalar>; //vector of keys
-    using rct_scalarM = std::vector<rct_scalarV>; //matrix of keys (indexed by column first)
     using rct_scalarS = std::span<const rct_scalar>; //vector of keys
     using rct_scalarL = std::list<rct_scalar>; //vector of keys
 
@@ -88,18 +87,18 @@ namespace rct {
         rct_point dest;
         rct_point mask; //C here if public
     };
-    typedef std::vector<ct_public_key> ctrct_pointV;
-    typedef std::vector<ctrct_pointV> ctrct_pointM;
-    typedef std::span<const ct_public_key> ctrct_pointS;
+
+    using ctrct_pointV = std::vector<ct_public_key>;
+    using ctrct_pointM = std::vector<ctrct_pointV>; //matrix of keys (indexed by column first)
+    using ctrct_pointS = std::span<const ct_public_key>;
 
     struct ct_secret_key {
       rct_scalar addr;
       rct_scalar blinding_factor; //C here if public
     };
 
-    typedef std::vector<ct_secret_key> pri_ctrct_pointV;
-    typedef std::vector<pri_ctrct_pointV> pri_ctrct_pointM;
-    typedef std::span<const ct_secret_key> pri_ctrct_pointS;
+    using pri_ctrct_pointV = std::vector<ct_secret_key>;
+    using pri_ctrct_pointS = std::span<const ct_secret_key>;
 
     //data for passing the amount to the receiver secretly
     // If the pedersen commitment to an amount is C = aG + bH,
