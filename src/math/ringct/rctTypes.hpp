@@ -451,14 +451,6 @@ namespace rct {
 }
 
 
-
-namespace rct {
-inline std::ostream &operator <<(std::ostream &o, const rct::rct_point &v) {
-  epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-}
-}
-
-
 namespace std
 {
   template<> struct hash<rct::rct_point> { std::size_t operator()(const rct::rct_point &k) const { return reinterpret_cast<const std::size_t&>(k); } };
