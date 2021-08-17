@@ -54,7 +54,7 @@ namespace rct {
     };
 
 
-    using inv8 = rct::key;
+    using inv8 = crypto::ec_point;
 
 
     struct scalar : crypto::ec_scalar {
@@ -464,7 +464,7 @@ namespace std
 }
 
 BLOB_SERIALIZER(rct::key);
-// BLOB_SERIALIZER(rct::inv8);
+BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::ctkey);
 BLOB_SERIALIZER(rct::scalar);
 BLOB_SERIALIZER(rct::pri_ctkey);

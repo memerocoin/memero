@@ -135,38 +135,41 @@ TEST(bulletproofs, invalid_torsion)
     ASSERT_FALSE(crypto::is_valid_point(x));
     for (auto &k: proof.V)
     {
-      const rct::key org_k = k;
+      const auto org_k = k;
       k = org_k + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     for (auto &k: proof.L)
     {
-      const rct::key org_k = k;
+      const auto org_k = k;
       k = org_k + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     for (auto &k: proof.R)
     {
-      const rct::key org_k = k;
+      const auto org_k = k;
       k = org_k + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
-    const rct::key org_A = proof.A;
+    const auto org_A = proof.A;
     proof.A = org_A + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.A = org_A;
+
     const rct::key org_S = proof.S;
     proof.S = org_S + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.S = org_S;
-    const rct::key org_T1 = proof.T1;
+
+    const auto org_T1 = proof.T1;
     proof.T1 = org_T1 + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.T1 = org_T1;
-    const rct::key org_T2 = proof.T2;
+
+    const auto org_T2 = proof.T2;
     proof.T2 = org_T2 + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.T2 = org_T2;

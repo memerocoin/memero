@@ -48,7 +48,7 @@ using namespace std;
 namespace rct {
     Bulletproof proveRangeBulletproof
     (
-     keyV& C
+     inv8V& C
      , scalarV& masks
      , const std::vector<uint64_t> amounts
      , const std::span<const scalar> sk)
@@ -522,7 +522,7 @@ namespace rct {
         rv.p.bulletproofs.clear();
         {
             {
-                rct::keyV C;
+                rct::inv8V C;
                 rct::scalarV masks;
                 const std::span<const scalar> keys{&amount_keys[0], amount_keys.size()};
                 rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));

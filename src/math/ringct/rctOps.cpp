@@ -215,6 +215,7 @@ namespace rct {
   }
 
   key hash_to_key_via_f2(const crypto::crypto_data k) {
+    const auto h = h2d(hash_key(k));
     const crypto::ec_point p = viaF2Mult8(h);
     return p2rct(p);
   }
