@@ -123,7 +123,7 @@ namespace rct {
         scalarV s; // scalars
         scalar c1;
 
-        crypto::ec_point_unsafe I; // signing key image
+        key I; // signing key image
         inv8 D; // commitment key image
 
         BEGIN_SERIALIZE_OBJECT()
