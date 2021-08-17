@@ -31,8 +31,8 @@
 
 #pragma once
 
-#include "hash.hpp"
-#include "random.hpp"
+#include "../hash.hpp"
+#include "../random.hpp"
 
 #include <sodium.h>
 

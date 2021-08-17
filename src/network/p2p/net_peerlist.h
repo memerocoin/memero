@@ -32,7 +32,7 @@
 
 #include "p2p_protocol_defs.h"
 
-#include "math/crypto/crypto.hpp"
+#include "math/crypto/functional/crypto.hpp"
 #include "tools/epee/include/syncobj.h"
 
 #include "config/cryptonote.hpp"

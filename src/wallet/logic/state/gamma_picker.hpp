@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "math/crypto/crypto.hpp" // crypto::
+#include "math/crypto/functional/crypto.hpp" // crypto::
 
 namespace wallet {
 namespace logic {

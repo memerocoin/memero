@@ -30,8 +30,8 @@
 
 
 add_library(math_crypto
+  functional/crypto.cpp
   chacha.cpp
-  crypto.cpp
   sha3.cpp
   tree-hash.cpp
   hash.cpp
