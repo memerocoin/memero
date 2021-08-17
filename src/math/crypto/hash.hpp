@@ -40,7 +40,7 @@
 namespace crypto {
 
   struct hash {
-    uint8_t data[HASH_SIZE];
+    std::array<uint8_t, HASH_SIZE> data;
   };
   struct hash8 {
     uint8_t data[8];

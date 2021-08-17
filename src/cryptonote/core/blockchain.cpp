@@ -1498,8 +1498,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     // Check the block's hash against the difficulty target for its alt chain
     diff_t current_diff = get_next_difficulty_for_alternative_chain(alt_chain, bei);
     LOG_ERROR_AND_RETURN_UNLESS(current_diff, false, "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!");
-    crypto::hash proof_of_work;
-    memset(proof_of_work.data, 0xff, sizeof(proof_of_work.data));
+    crypto::hash proof_of_work = {{0xff}};
     {
       get_block_longhash(bei.bl, proof_of_work);
     }
@@ -2780,8 +2779,7 @@ leave:
 
   TIME_MEASURE_START(longhash_calculating_time);
 
-  crypto::hash proof_of_work;
-  memset(proof_of_work.data, 0xff, sizeof(proof_of_work.data));
+  crypto::hash proof_of_work = {{0xff}};
 
   // Formerly the code below contained an if loop with the following condition
   // !m_checkpoints.is_in_checkpoint_zone(get_current_blockchain_height())

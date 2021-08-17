@@ -4,7 +4,7 @@ namespace crypto {
 
 hash sha3(const epee::blob::span x) {
   hash h;
-  sha3_raw(x.data(), x.size(), h.data);
+  sha3_raw(x.data(), x.size(), h.data.data());
   return h;
 }
 
