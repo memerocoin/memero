@@ -470,8 +470,8 @@ TEST(Serialization, serializes_ringct_types)
   rct::rct_pointV keyv0, keyv1;
   rct::rct_pointM keym0, keym1;
   rct::ct_public_key ct_public_key0, ct_public_key1;
-  rct::ctrct_pointV ct_public_keyv0, ct_public_keyv1;
-  rct::ctrct_pointM ct_public_keym0, ct_public_keym1;
+  rct::ct_public_keyV ct_public_keyv0, ct_public_keyv1;
+  rct::ct_public_keyM ct_public_keym0, ct_public_keym1;
   rct::ecdhTuple ecdh0, ecdh1;
   rct::clsag clsag0, clsag1;
   rct::rctSig s0, s1;
@@ -525,7 +525,7 @@ TEST(Serialization, serializes_ringct_types)
     ASSERT_TRUE(!memcmp(&ct_public_keyv0[n], &ct_public_keyv1[n], sizeof(ct_public_keyv0[n])));
   }
 
-  ct_public_keym0 = std::vector<rct::ctrct_pointV>(9);
+  ct_public_keym0 = std::vector<rct::ct_public_keyV>(9);
   for (size_t n = 0; n < ct_public_keym0.size(); ++n)
   {
     ct_public_keym0[n] = std::vector<rct::ct_public_key>(11);
@@ -554,7 +554,7 @@ TEST(Serialization, serializes_ringct_types)
   // create a full rct signature to use its innards
   vector<uint64_t> inamounts;
   rct::ct_secret_keyV sc;
-  rct::ctrct_pointV pc;
+  rct::ct_public_keyV pc;
   rct::ct_secret_key sctmp;
   rct::ct_public_key pctmp;
   inamounts.push_back(6000);

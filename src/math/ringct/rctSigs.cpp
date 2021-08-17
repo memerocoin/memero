@@ -287,7 +287,7 @@ namespace rct {
     clsag proveRctCLSAGSimple
     (
      const crypto::hash message
-     , const ctrct_pointV pubs
+     , const ct_public_keyV pubs
      , const ct_secret_key inSk
      , const rct_scalar a
      , const rct_point Cout
@@ -322,7 +322,7 @@ namespace rct {
     }
 
 
-    bool verRctCLSAGSimpleMayThrow(const crypto::hash message, const clsag sig, const ctrct_pointS pubs, const rct_point C_offset)
+    bool verRctCLSAGSimpleMayThrow(const crypto::hash message, const clsag sig, const ct_public_keyS pubs, const rct_point C_offset)
     {
         const size_t n = pubs.size();
 
@@ -454,7 +454,7 @@ namespace rct {
         return c_new == s_zero;
     }
 
-    bool verRctCLSAGSimple(const crypto::hash message, const clsag sig, const ctrct_pointS pubs, const rct_point C_offset) {
+    bool verRctCLSAGSimple(const crypto::hash message, const clsag sig, const ct_public_keyS pubs, const rct_point C_offset) {
       try {
         return verRctCLSAGSimpleMayThrow(message, sig, pubs, C_offset);
       }
@@ -467,7 +467,7 @@ namespace rct {
         a.dest = pkGen();
     }
 
-    size_t populateRingsSimple(ctrct_pointV& mixRing, const ct_public_key inPk, const size_t mixin) {
+    size_t populateRingsSimple(ct_public_keyV& mixRing, const ct_public_key inPk, const size_t mixin) {
         size_t index = ((size_t)std::rand()) % (mixin + 1);
         for (size_t i = 0; i <= mixin; i++) {
             if (i != index) {
@@ -487,7 +487,7 @@ namespace rct {
      , const vector<amount_t> inamounts
      , const vector<amount_t> outamounts
      , const amount_t txnFee
-     , const ctrct_pointM mixRing
+     , const ct_public_keyM mixRing
      , const rct_scalarV amount_keys
      , const std::vector<size_t> index
      , ct_secret_keyV& outSk
@@ -587,7 +587,7 @@ namespace rct {
     (
      const crypto::hash message
      , const ct_secret_keyV inSk
-     , const ctrct_pointV inPk
+     , const ct_public_keyV inPk
      , const rct_pointV destinations
      , const std::vector<amount_t> inamounts
      , const std::vector<amount_t> outamounts
@@ -597,7 +597,7 @@ namespace rct {
      ) {
         std::vector<size_t> index;
         index.resize(inPk.size());
-        ctrct_pointM mixRing;
+        ct_public_keyM mixRing;
         ct_secret_keyV outSk;
         mixRing.resize(inPk.size());
         for (size_t i = 0; i < inPk.size(); ++i) {

@@ -145,7 +145,7 @@ namespace hw {
             , size_t inputs_size
             , size_t outputs_size
             , const crypto::dataV &hashes
-            , const rct::ctrct_pointV &outPk
+            , const rct::ct_public_keyV &outPk
             , crypto::hash &prehash
             ) override;
 

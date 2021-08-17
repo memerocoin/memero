@@ -88,9 +88,9 @@ namespace rct {
         rct_point mask; //C here if public
     };
 
-    using ctrct_pointV = std::vector<ct_public_key>;
-    using ctrct_pointM = std::vector<ctrct_pointV>; //matrix of keys (indexed by column first)
-    using ctrct_pointS = std::span<const ct_public_key>;
+    using ct_public_keyV = std::vector<ct_public_key>;
+    using ct_public_keyM = std::vector<ct_public_keyV>; //matrix of keys (indexed by column first)
+    using ct_public_keyS = std::span<const ct_public_key>;
 
     struct ct_secret_key {
       rct_scalar addr;
@@ -220,11 +220,11 @@ namespace rct {
     struct rctSigBase {
         uint8_t type;
         crypto::hash message;
-        ctrct_pointM mixRing; //the set of all pubkeys / copy
+        ct_public_keyM mixRing; //the set of all pubkeys / copy
         //pairs that you mix with
         rct_pointV pseudoOuts; //C - for simple rct
         std::vector<ecdhTuple> ecdhInfo;
-        ctrct_pointV outPk;
+        ct_public_keyV outPk;
         amount_t txnFee; // contains b
 
         template<bool W, template <bool> class Archive>

@@ -49,7 +49,7 @@ TEST(ringct, CLSAG)
 {
   const size_t N = 11;
   const size_t idx = 5;
-  ctrct_pointV pubs;
+  ct_public_keyV pubs;
   rct_scalar p, t, t2, u;
   const crypto::hash message = crypto::d2h(rct::identity);
   ct_public_key backup;
@@ -87,7 +87,7 @@ TEST(ringct, CLSAG)
   // clsag proveRctCLSAGSimple
   //   (
   //    const rct_point &
-  //    , const ctrct_pointV &
+  //    , const ct_public_keyV &
   //    , const ct_public_key &
   //    , const rct_point &
   //    , const rct_point &
@@ -237,7 +237,7 @@ TEST(ringct, CLSAG)
 static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
 {
     ct_secret_keyV sc;
-    ctrct_pointV pc;
+    ct_public_keyV pc;
     ct_secret_key sctmp;
     ct_public_key pctmp;
     vector<amount_t> inamounts, outamounts;

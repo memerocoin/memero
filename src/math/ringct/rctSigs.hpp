@@ -49,14 +49,14 @@ namespace rct {
   clsag proveRctCLSAGSimple
   (
    const crypto::hash message
-   , const ctrct_pointV pubs
+   , const ct_public_keyV pubs
    , const ct_secret_key inSk
    , const rct_scalar a
    , const rct_point Cout
    , const unsigned int index
    );
 
-  bool verRctCLSAGSimple(const crypto::hash, const clsag, const ctrct_pointS, const rct_point);
+  bool verRctCLSAGSimple(const crypto::hash, const clsag, const ct_public_keyS, const rct_point);
 
   //RingCT protocol
   //genRct:
@@ -72,7 +72,7 @@ namespace rct {
   (
    const crypto::hash message
    , const ct_secret_keyV inSk
-   , const ctrct_pointV inPk
+   , const ct_public_keyV inPk
    , const rct_pointV destinations
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
@@ -89,7 +89,7 @@ namespace rct {
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
    , const amount_t txnFee
-   , const ctrct_pointM mixRing
+   , const ct_public_keyM mixRing
    , const rct_scalarV amount_keys
    , const std::vector<size_t> index
    , ct_secret_keyV& outSk
