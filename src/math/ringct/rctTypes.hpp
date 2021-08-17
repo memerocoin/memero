@@ -54,21 +54,29 @@ namespace rct {
     };
 
 
+    using inv8 = crypto::ec_point_unsafe;
+
+
     struct scalar : crypto::ec_scalar {
       scalar operator+(const scalar& y) const;
       scalar operator-(const scalar& y) const;
       scalar operator*(const scalar& y) const;
     };
 
-    typedef std::vector<key> keyV; //vector of keys
-    typedef std::vector<keyV> keyM; //matrix of keys (indexed by column first)
-    typedef std::span<const key> keyS; //vector of keys
-    typedef std::list<const key> keyL; //vector of keys
+    using keyV = std::vector<key>; //vector of keys
+    using keyM = std::vector<keyV>; //matrix of keys (indexed by column first)
+    using keyS = std::span<const key>; //vector of keys
+    using keyL = std::list<const key>; //vector of keys
 
-    typedef std::vector<scalar> scalarV; //vector of keys
-    typedef std::vector<scalarV> scalarM; //matrix of keys (indexed by column first)
-    typedef std::span<const scalar> scalarS; //vector of keys
-    typedef std::list<scalar> scalarL; //vector of keys
+    using scalarV = std::vector<scalar>; //vector of keys
+    using scalarM = std::vector<scalarV>; //matrix of keys (indexed by column first)
+    using scalarS = std::span<const scalar>; //vector of keys
+    using scalarL = std::list<scalar>; //vector of keys
+
+    using inv8V = std::vector<inv8>; //vector of keys
+    using inv8S = std::span<const inv8>; //vector of keys
+    using inv8L = std::list<const inv8>; //vector of keys
+
 
     //containers For CT operations
     //if it's  representing a private ctkey then "dest" contains the secret key of the address
@@ -419,6 +427,20 @@ namespace rct {
 
     inline const rct::scalar &s2s(const crypto::ec_scalar &s) { return (const rct::scalar&)s; }
 
+    inline const rct::inv8V keyV2invV(const keyV &xs) {
+      inv8V ys;
+      std::transform
+        (
+        xs.begin()
+        , xs.end()
+        , std::back_inserter(ys)
+        , [](const auto& x) { return x; }
+        );
+
+      return ys;
+    }
+
+
     // unsafe
     inline const rct::key &unsafe_hash2rct(const crypto::hash &h) { return (const rct::key&)h; }
     inline const rct::key &unsafe_d2rct(const crypto::crypto_data &p) { return (const rct::key&)p; }
@@ -439,6 +461,7 @@ namespace std
 }
 
 BLOB_SERIALIZER(rct::key);
+BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::ctkey);
 BLOB_SERIALIZER(rct::scalar);
 BLOB_SERIALIZER(rct::pri_ctkey);
