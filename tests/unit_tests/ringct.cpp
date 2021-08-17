@@ -213,7 +213,7 @@ TEST(ringct, CLSAG)
   backup_key_inv8 = clsag.D;
   rct::key x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
-  clsag.D = clsag.D + x;
+  clsag.D = rct::unsafe_d2rct(clsag.D) + x;
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.D = backup_key_inv8;
 

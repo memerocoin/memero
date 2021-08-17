@@ -54,7 +54,7 @@ namespace rct {
     };
 
 
-    using inv8 = crypto::ec_point;
+    using inv8 = crypto::ec_point_unsafe;
 
 
     struct scalar : crypto::ec_scalar {

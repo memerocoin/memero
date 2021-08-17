@@ -136,21 +136,21 @@ TEST(bulletproofs, invalid_torsion)
     for (auto &k: proof.V)
     {
       const auto org_k = k;
-      k = org_k + x;
+      k = rct::unsafe_d2rct(k) + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     for (auto &k: proof.L)
     {
       const auto org_k = k;
-      k = org_k + x;
+      k = rct::unsafe_d2rct(k) + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
     for (auto &k: proof.R)
     {
       const auto org_k = k;
-      k = org_k + x;
+      k = rct::unsafe_d2rct(k) + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
@@ -165,12 +165,12 @@ TEST(bulletproofs, invalid_torsion)
     proof.S = org_S;
 
     const auto org_T1 = proof.T1;
-    proof.T1 = org_T1 + x;
+    proof.T1 = rct::unsafe_d2rct(org_T1) + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.T1 = org_T1;
 
     const auto org_T2 = proof.T2;
-    proof.T2 = org_T2 + x;
+    proof.T2 = rct::unsafe_d2rct(org_T2) + x;
     ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
     proof.T2 = org_T2;
   }
