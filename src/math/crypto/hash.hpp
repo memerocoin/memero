@@ -31,7 +31,6 @@
 #pragma once
 
 
-#include "generic-ops.h"
 #include "sha3.hpp"
 #include "tree-hash.hpp"
 
