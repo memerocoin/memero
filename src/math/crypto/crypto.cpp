@@ -457,18 +457,19 @@ namespace crypto {
 
   // needed because point can be out of main group
   ec_point mult8(const ec_point_unsafe X) {
-    ec_point res;
     ge_p3 in;
-    ge_p2 point;
-    ge_p1p1 point2;
-    ge_p2 p2;
-
     ge_frombytes_vartime(&in, X.data.data());
+
+    ge_p2 point;
     ge_p3_to_p2(&point, &in);
 
+    ge_p1p1 point2;
     ge_mul8(&point2, &point);
 
+    ge_p2 p2;
     ge_p1p1_to_p2(&p2, &point2);
+
+    ec_point res;
     ge_tobytes(res.data.data(), &p2);
     return res;
   }
