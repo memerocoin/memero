@@ -53,7 +53,7 @@ namespace crypto {
   }
 
   struct ec_point_unsafe : crypto_data {
-    bool operator==(const ec_point_unsafe &x) const { return !crypto_verify_32(data.data(), x.data.data()); }
+    bool operator==(const ec_point_unsafe &x) const { return 0 == crypto_verify_32(data.data(), x.data.data()); }
   };
 
   struct ec_point : ec_point_unsafe {
@@ -63,7 +63,7 @@ namespace crypto {
   };
 
   struct ec_scalar_unnormalized : crypto_data {
-    bool operator==(const ec_scalar_unnormalized &x) const { return !crypto_verify_32(data.data(), x.data.data()); }
+    bool operator==(const ec_scalar_unnormalized &x) const { return 0 == crypto_verify_32(data.data(), x.data.data()); }
   };
 
   struct ec_scalar : ec_scalar_unnormalized {
