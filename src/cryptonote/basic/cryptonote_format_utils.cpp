@@ -1156,7 +1156,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   void get_tx_tree_hash(const std::vector<crypto::hash>& tx_hashes, crypto::hash& h)
   {
-    tree_hash(tx_hashes.data(), tx_hashes.size(), h);
+    h = tree_hash(tx_hashes);
   }
   //---------------------------------------------------------------
   crypto::hash get_tx_tree_hash(const std::vector<crypto::hash>& tx_hashes)

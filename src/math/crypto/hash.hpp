@@ -60,7 +60,7 @@ namespace crypto {
   /*
     Cryptonight hash functions
   */
-  void tree_hash(const hash *hashes, const std::size_t count, hash &root_hash);
+  hash tree_hash(const std::span<const hash> hashes);
 
 
   constexpr crypto::hash null_hash = {};

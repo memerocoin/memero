@@ -8,8 +8,10 @@ hash sha3(const epee::blob::span x) {
   return h;
 }
 
-void tree_hash(const hash *hashes, const std::size_t count, hash &root_hash) {
-  ::tree_hash(reinterpret_cast<const uint8_t (*)[HASH_SIZE]>(hashes), count, reinterpret_cast<uint8_t *>(&root_hash));
+hash tree_hash(const std::span<const hash> hashes) {
+  hash root_hash;
+  ::tree_hash(reinterpret_cast<const uint8_t (*)[HASH_SIZE]>(hashes.data()), hashes.size(), reinterpret_cast<uint8_t *>(&root_hash));
+  return root_hash;
 }
 
 }
