@@ -36,8 +36,7 @@
 #include <cfenv>
 
 #include "tools/epee/include/logging.hpp"
-#include "math/crypto/hash.hpp"
-#include "math/crypto/hash-ops.hpp"
+#include "math/crypto/functional/hash.hpp"
 #include "../io.h"
 
 using namespace std;

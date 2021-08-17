@@ -35,7 +35,7 @@
 
 #include "math/crypto/chacha.hpp"
 #include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
+#include "math/crypto/functional/hash.hpp"
 
 #include <vector>
 

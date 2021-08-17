@@ -31,11 +31,11 @@
 
 add_library(math_crypto
   functional/crypto.cpp
+  functional/hash.cpp
   controller/crypto.cpp
+  controller/sha3.cpp
+  controller/tree-hash.cpp
   chacha.cpp
-  sha3.cpp
-  tree-hash.cpp
-  hash.cpp
   random.cpp
   )
 

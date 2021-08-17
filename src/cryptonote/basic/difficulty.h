@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #pragma once
 
-#include "math/crypto/hash.hpp"
+#include "math/crypto/functional/hash.hpp"
 
 #include "config/lol.hpp"
 

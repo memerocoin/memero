@@ -32,7 +32,7 @@
 
 #include "varint.h"
 
-#include "math/crypto/hash.hpp"
+#include "math/crypto/functional/hash.hpp"
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/string_tools.h"
 

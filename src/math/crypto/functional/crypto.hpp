@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "../hash.hpp"
+#include "hash.hpp"
 
 #include <sodium.h>
 

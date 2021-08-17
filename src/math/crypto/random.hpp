@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "hash.hpp"
+#include "functional/hash.hpp"
 
 #include <cstdint>
 

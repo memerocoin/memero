@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hash-ops.hpp"
+#include "../functional/hash-ops.hpp"
 
 #include <cstdint>
 

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "math/crypto/hash.hpp"
+#include "math/crypto/functional/hash.hpp"
 
 #include <optional>
 #include <functional>

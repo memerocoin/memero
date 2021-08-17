@@ -31,8 +31,8 @@
 #pragma once
 
 
-#include "sha3.hpp"
-#include "tree-hash.hpp"
+#include "../controller/sha3.hpp"
+#include "../controller/tree-hash.hpp"
 
 #include "tools/epee/include/hex.h"
 

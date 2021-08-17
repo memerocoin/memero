@@ -31,7 +31,7 @@
 #include "tools/epee/include/string_tools.h"
 
 #include "math/crypto/crypto.hpp"
-#include "math/crypto/hash.hpp"
+#include "math/crypto/functional/hash.hpp"
 #include <boost/algorithm/string.hpp>
 
 TEST(tx_proof, prove_verify_v2)
