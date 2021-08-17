@@ -54,18 +54,18 @@
 namespace rct
 {
 
-rct::rct_point vector_exponent(const scalarS a, const scalarS b);
+rct::rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b);
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 
-const rct::scalarV oneN = vector_powers(rct::s_one, maxN);
-const rct::scalarV twoN = vector_powers(rct::s_two, maxN);
+const rct::rct_scalarV oneN = vector_powers(rct::s_one, maxN);
+const rct::rct_scalarV twoN = vector_powers(rct::s_two, maxN);
 
 std::array<rct::rct_point, maxN*maxM> Hi;
 std::array<rct::rct_point, maxN*maxM> Gi;
 
-const static rct::scalar ip12 = inner_product(oneN, twoN);
+const static rct::rct_scalar ip12 = inner_product(oneN, twoN);
 
 const auto multiexp = dummy;
 
@@ -115,8 +115,8 @@ void init_exponents()
   }
 }
 
-/* Given two scalar arrays, construct a vector commitment */
-rct::rct_point vector_exponent(const scalarS a, const scalarS b)
+/* Given two rct_scalar arrays, construct a vector commitment */
+rct::rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
   LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
@@ -151,11 +151,11 @@ rct::rct_point cross_vector_exponent8
  , const size_t Ao
  , const std::span<rct_point> B
  , const size_t Bo
- , const scalarS a
+ , const rct_scalarS a
  , const size_t ao
- , const scalarS b
+ , const rct_scalarS b
  , const size_t bo
- , const std::optional<rct::scalarS> scale
+ , const std::optional<rct::rct_scalarS> scale
  )
 {
   LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
@@ -177,7 +177,7 @@ rct::rct_point cross_vector_exponent8
      , [](const auto& s, const auto& p) -> MultiexpData { return {s * s_inv_eight, p}; }
      );
 
-  scalarV b_scalars(size);
+  rct_scalarV b_scalars(size);
   std::generate
     (
 
@@ -208,9 +208,9 @@ rct::rct_point cross_vector_exponent8
 rct_pointV hadamard_fold
 (
  const rct_pointS v
- , const std::optional<rct::scalarS> scale
- , const rct::scalar a
- , const rct::scalar b
+ , const std::optional<rct::rct_scalarS> scale
+ , const rct::rct_scalar a
+ , const rct::rct_scalar b
  )
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
@@ -222,13 +222,13 @@ rct_pointV hadamard_fold
      out.begin()
      , out.end()
      , [n = 0, v, scale, a, b, sz] () mutable {
-       const scalar x = scale
+       const rct_scalar x = scale
          ? a * (*scale)[n]
          : a;
 
        const size_t iy = sz + n;
 
-       const scalar y = scale
+       const rct_scalar y = scale
          ? b * (*scale)[iy]
          : b;
 
@@ -242,19 +242,19 @@ rct_pointV hadamard_fold
 }
 
 /* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::scalar sv, const rct::scalar gamma)
+Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gamma)
 {
-  return bulletproof_MAKE(std::vector<rct::scalar>{sv}, rct::scalarV{gamma});
+  return bulletproof_MAKE(std::vector<rct::rct_scalar>{sv}, rct::rct_scalarV{gamma});
 }
 
-Bulletproof bulletproof_MAKE(const uint64_t v, const rct::scalar gamma)
+Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
 {
-  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::scalarV{gamma});
+  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::rct_scalarV{gamma});
 }
 
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
+Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV gamma)
 {
   LOG_ERROR_AND_THROW_UNLESS(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
   LOG_ERROR_AND_THROW_UNLESS(!sv.empty(), "sv is empty");
@@ -283,8 +283,8 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   const size_t MN = M * N;
 
   rct::rct_pointV V(sv.size());
-  rct::scalarV aL(MN), aR(MN);
-  rct::scalarV aL8(MN), aR8(MN);
+  rct::rct_scalarV aL(MN), aR(MN);
+  rct::rct_scalarV aL8(MN), aR8(MN);
 
   std::transform
     (
@@ -320,27 +320,27 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
 try_again:
   crypto::dataV hash_keys(V.size());
   std::copy(V.begin(), V.end(), hash_keys.begin());
-  rct::scalar hash_carry = rct::hash_keys_to_scalar(hash_keys);
+  rct::rct_scalar hash_carry = rct::hash_keys_to_scalar(hash_keys);
 
   // PAPER LINES 43-44
-  const rct::scalar alpha = rct::skGen();
+  const rct::rct_scalar alpha = rct::skGen();
   const rct_point A = vector_exponent(aL8, aR8) + rct::multG(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
-  const rct::scalarV sL = rct::skvGen(MN);
-  const rct::scalarV sR = rct::skvGen(MN);
-  const rct::scalar rho = rct::skGen();
+  const rct::rct_scalarV sL = rct::skvGen(MN);
+  const rct::rct_scalarV sR = rct::skvGen(MN);
+  const rct::rct_scalar rho = rct::skGen();
   const rct::rct_point S = multP(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
 
   // PAPER LINES 48-50
-  const scalar y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, A, S});
+  const rct_scalar y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, A, S});
   if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
     goto try_again;
   }
 
-  const scalar z = hash_carry = rct::hash_to_scalar(y);
+  const rct_scalar z = hash_carry = rct::hash_to_scalar(y);
   if (z == rct::s_zero)
   {
     LOG_INFO("z is 0, trying again");
@@ -349,11 +349,11 @@ try_again:
 
   // Polynomial construction by coefficients
   // PAPER LINES 70-71
-  const rct::scalarV l0 = vector_subtract(aL, z);
-  const rct::scalarS l1 = sL;
+  const rct::rct_scalarV l0 = vector_subtract(aL, z);
+  const rct::rct_scalarS l1 = sL;
 
-  rct::scalarV zero_twos(MN);
-  const rct::scalarV zpow = vector_powers(z, M+2);
+  rct::rct_scalarV zero_twos(MN);
+  const rct::rct_scalarV zpow = vector_powers(z, M+2);
   for (size_t j = 0; j < M; ++j)
   {
       for (size_t i = 0; i < N; ++i)
@@ -365,29 +365,29 @@ try_again:
   }
 
   const auto yMN = vector_powers(y, MN);
-  const rct::scalarV r0 = vector_addV
+  const rct::rct_scalarV r0 = vector_addV
     (
      hadamard(vector_add(aR, z), yMN)
      , zero_twos
      );
 
-  const rct::scalarV r1 = hadamard(yMN, sR);
+  const rct::rct_scalarV r1 = hadamard(yMN, sR);
 
   // Polynomial construction before PAPER LINE 51
-  const rct::scalar t1_1 = inner_product(l0, r1);
-  const rct::scalar t1_2 = inner_product(l1, r0);
-  const rct::scalar t1 = t1_1 + t1_2;
-  const rct::scalar t2 = inner_product(l1, r1);
+  const rct::rct_scalar t1_1 = inner_product(l0, r1);
+  const rct::rct_scalar t1_2 = inner_product(l1, r0);
+  const rct::rct_scalar t1 = t1_1 + t1_2;
+  const rct::rct_scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
-  const rct::scalar tau1 = rct::skGen();
-  const rct::scalar tau2 = rct::skGen();
+  const rct::rct_scalar tau1 = rct::skGen();
+  const rct::rct_scalar tau2 = rct::skGen();
 
   const rct_point T1 = multG(tau1 * rct::s_inv_eight) + multH(t1 * rct::s_inv_eight);
   const rct_point T2 = multG(tau2 * rct::s_inv_eight) + multH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
-  const rct::scalar x = hash_carry = hash_keys_to_scalar
+  const rct::rct_scalar x = hash_carry = hash_keys_to_scalar
     (crypto::dataV{hash_carry, z, T1, T2});
   if (x == rct::s_zero)
   {
@@ -396,25 +396,25 @@ try_again:
   }
 
   // PAPER LINES 61-63
-  const rct::scalar xsq = x * x;
+  const rct::rct_scalar xsq = x * x;
 
-  rct::scalar taux = tau1 * x + tau2 * xsq;
+  rct::rct_scalar taux = tau1 * x + tau2 * xsq;
   for (size_t j = 1; j <= sv.size(); ++j)
   {
     LOG_ERROR_AND_THROW_UNLESS(j+1 < zpow.size(), "invalid zpow index");
     taux = zpow[j+1] * gamma[j-1] + taux;
   }
 
-  const rct::scalar mu = x * rho + alpha;
+  const rct::rct_scalar mu = x * rho + alpha;
 
   // PAPER LINES 58-60
-  const rct::scalarV l = vector_addV(l0, vector_mult(l1, x));
-  const rct::scalarV r = vector_addV(r0, vector_mult(r1, x));
+  const rct::rct_scalarV l = vector_addV(l0, vector_mult(l1, x));
+  const rct::rct_scalarV r = vector_addV(r0, vector_mult(r1, x));
 
-  const rct::scalar t = inner_product(l, r);
+  const rct::rct_scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  const rct::scalar x_ip = hash_carry =
+  const rct::rct_scalar x_ip = hash_carry =
     hash_keys_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
   if (x_ip == rct::s_zero)
   {
@@ -426,10 +426,10 @@ try_again:
   size_t nprime = MN;
   std::vector<rct_point> Gprime(MN);
   std::vector<rct_point> Hprime(MN);
-  rct::scalarV aprime(MN);
-  rct::scalarV bprime(MN);
-  const rct::scalar yinv = invert(y);
-  rct::scalarV yinvpow(MN);
+  rct::rct_scalarV aprime(MN);
+  rct::rct_scalarV bprime(MN);
+  const rct::rct_scalar yinv = invert(y);
+  rct::rct_scalarV yinvpow(MN);
   yinvpow[0] = rct::s_one;
   yinvpow[1] = yinv;
   for (size_t i = 0; i < MN; ++i)
@@ -444,22 +444,22 @@ try_again:
   rct::rct_pointV L(logMN);
   rct::rct_pointV R(logMN);
   int round = 0;
-  rct::scalarV w(logMN); // this is the challenge x in the inner product protocol
+  rct::rct_scalarV w(logMN); // this is the challenge x in the inner product protocol
 
-  std::optional<rct::scalarS> scale = yinvpow;
+  std::optional<rct::rct_scalarS> scale = yinvpow;
   while (nprime > 1)
   {
     // PAPER LINE 20
     nprime /= 2;
 
     // PAPER LINES 21-22
-    rct::scalar cL = inner_product
+    rct::rct_scalar cL = inner_product
       (
        std::span(aprime).subspan(0, nprime)
        , std::span(bprime).subspan(nprime, bprime.size() - nprime)
        );
 
-    rct::scalar cR = inner_product
+    rct::rct_scalar cR = inner_product
       (
        std::span(aprime).subspan(nprime, aprime.size() - nprime)
        , std::span(bprime).subspan(0, nprime)
@@ -482,7 +482,7 @@ try_again:
     }
 
     // PAPER LINES 29-30
-    const rct::scalar winv = invert(w[round]);
+    const rct::rct_scalar winv = invert(w[round]);
     if (nprime > 1)
     {
       Gprime = hadamard_fold(Gprime, {}, winv, w[round]);
@@ -529,12 +529,12 @@ try_again:
      );
 }
 
-Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::scalarV gamma)
+Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma)
 {
   LOG_ERROR_AND_THROW_UNLESS(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
   // vG + gammaH
-  rct::scalarV sv;
+  rct::rct_scalarV sv;
   std::transform
     (
      v.begin()
@@ -549,8 +549,8 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::scalarV g
 
 struct proof_data_t
 {
-  rct::scalar x, y, z, x_ip;
-  std::vector<rct::scalar> w;
+  rct::rct_scalar x, y, z, x_ip;
+  std::vector<rct::rct_scalar> w;
   size_t logM;
 };
 
@@ -567,17 +567,17 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   const size_t N = 1 << logN;
 
   // sanity and figure out which proof is longest
-  std::vector<rct::scalar> to_invert;
+  std::vector<rct::rct_scalar> to_invert;
   to_invert.reserve(11);
 
   // STEP 1, fill proof_data
 
-  // check scalar range
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input scalar not in range");
+  // check rct_scalar range
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input rct_scalar not in range");
 
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), false, "Input scalar not in range");
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), false, "Input scalar not in range");
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), false, "Input scalar not in range");
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), false, "Input rct_scalar not in range");
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), false, "Input rct_scalar not in range");
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), false, "Input rct_scalar not in range");
 
   LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, false, "V does not have at least one element");
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
@@ -586,7 +586,7 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   // Reconstruct the challenges
   crypto::dataV hash_keys(proof.V.size());
   std::copy(proof.V.begin(), proof.V.end(), hash_keys.begin());
-  rct::scalar hash_carry = rct::hash_keys_to_scalar(hash_keys);
+  rct::rct_scalar hash_carry = rct::hash_keys_to_scalar(hash_keys);
 
   proof_data_t pd;
   pd.y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, proof.A, proof.S});
@@ -645,18 +645,18 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(proof.V.size() + (2 * (pd.logM + logN) + 4) + 2 * maxMN);
 
-  const scalarV inverses = invertV(to_invert);
+  const rct_scalarV inverses = invertV(to_invert);
 
   // setup weighted aggregates
 
 
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
 
-  const rct::scalarS winv = std::span(inverses);
-  const rct::scalar yinv = inverses[rounds];
+  const rct::rct_scalarS winv = std::span(inverses);
+  const rct::rct_scalar yinv = inverses[rounds];
 
-  const rct::scalar weight_y = rct::skGen();
-  const rct::scalar weight_z = rct::skGen();
+  const rct::rct_scalar weight_y = rct::skGen();
+  const rct::rct_scalar weight_z = rct::skGen();
 
   for (size_t i = 0; i < rounds; ++i)
   {
@@ -666,7 +666,7 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
 
   const size_t MN = M*N;
 
-  const rct::scalarV zpow = vector_powers(pd.z, M+3);
+  const rct::rct_scalarV zpow = vector_powers(pd.z, M+3);
 
   std::transform
     (
@@ -689,7 +689,7 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
 
 
   // precalc
-  rct::scalarV w_cache(1<<rounds);
+  rct::rct_scalarV w_cache(1<<rounds);
   w_cache[0] = winv[0];
   w_cache[1] = pd.w[0];
   for (size_t j = 1; j < rounds; ++j)
@@ -703,22 +703,22 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   }
 
   // Compute the curvepoints from G[i] and H[i]
-  rct::scalarV z5_v(MN);
+  rct::rct_scalarV z5_v(MN);
   std::generate
     (
       z5_v.begin()
       , z5_v.end()
       , [i = 0, yinvpow = s_one, ypow = s_one
         , zpow, yinv, pd, weight_z, proof, w_cache, MN
-        ] () mutable -> scalar {
-        // Convert the index to binary IN REVERSE and construct the scalar exponent
+        ] () mutable -> rct_scalar {
+        // Convert the index to binary IN REVERSE and construct the rct_scalar exponent
 
         LOG_ERROR_AND_THROW_UNLESS(2+i/N < zpow.size(), "invalid zpow index");
         LOG_ERROR_AND_THROW_UNLESS(i%N < twoN.size(), "invalid twoN index");
 
         const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
 
-        const scalar h_scalar =
+        const rct_scalar h_scalar =
           proof.b * yinvpow * w_cache[(~i) & (MN-1)]
           - (pd.z * ypow + zpowTwoN) * yinvpow ;
 
@@ -726,38 +726,38 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
         yinvpow = yinvpow * yinv;
         ypow = ypow * pd.y;
 
-        const scalar r = s_zero - h_scalar * weight_z;
+        const rct_scalar r = s_zero - h_scalar * weight_z;
         i++;
         return r;
       }
       );
 
-  rct::scalarV z4_v(MN);
+  rct::rct_scalarV z4_v(MN);
   std::transform
     (
       w_cache.begin()
       , std::next(w_cache.begin(), MN)
       , z4_v.begin()
       , [proof, pd, weight_z](const auto& cache) {
-        const scalar g_scalar = proof.a * cache + pd.z;
+        const rct_scalar g_scalar = proof.a * cache + pd.z;
         return s_zero - g_scalar * weight_z;
       }
       );
 
 
   // collect
-  const rct::scalar ip1y = vector_power_sum(pd.y, MN);
-  rct::scalar k = s_zero - zpow[2] * ip1y;
+  const rct::rct_scalar ip1y = vector_power_sum(pd.y, MN);
+  rct::rct_scalar k = s_zero - zpow[2] * ip1y;
   for (size_t j = 1; j <= M; ++j)
   {
     LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
     k = k - zpow[j+2] * ip12;
   }
 
-  const scalar y0 = s_zero - proof.taux * weight_y;
-  const scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
-  const scalar z1 = proof.mu * weight_z;
-  const scalar z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
+  const rct_scalar y0 = s_zero - proof.taux * weight_y;
+  const rct_scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
+  const rct_scalar z1 = proof.mu * weight_z;
+  const rct_scalar z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
 
 
   // now check all proofs at once

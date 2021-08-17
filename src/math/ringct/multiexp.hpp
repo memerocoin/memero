@@ -41,11 +41,11 @@ namespace rct
 {
 
 struct MultiexpData {
-  rct::scalar scalar;
+  rct::rct_scalar scalar;
   rct_point point;
 
   MultiexpData() {}
-  MultiexpData(const rct::scalar s, const rct_point p): scalar(s), point(p) {
+  MultiexpData(const rct::rct_scalar s, const rct_point p): scalar(s), point(p) {
     assert(is_valid_point(p));
   }
 };

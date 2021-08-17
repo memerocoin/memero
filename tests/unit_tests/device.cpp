@@ -68,7 +68,7 @@ TEST(device, ops)
   rct::rct_point resd, res;
   crypto::secret_key resd_s, res_s;
   crypto::key_derivation derd, der;
-  rct::scalar sk;
+  rct::rct_scalar sk;
   rct::rct_point pk;
   crypto::secret_key sk0, sk1;
   crypto::public_key pk0, pk1;
@@ -78,8 +78,8 @@ TEST(device, ops)
   std::tie(sk, pk) = rct::skpkGen();
   sk0 = crypto::s2sk(crypto::scalarGen());
   sk1 = crypto::s2sk(crypto::scalarGen());
-  pk0 = rct::rct2pk(rct::multG((rct::scalar&)sk0));
-  pk1 = rct::rct2pk(rct::multG((rct::scalar&)sk1));
+  pk0 = rct::rct2pk(rct::multG((rct::rct_scalar&)sk0));
+  pk1 = rct::rct2pk(rct::multG((rct::rct_scalar&)sk1));
 
   dev.multP(resd, pk, sk);
   res = rct::multP(pk, sk);

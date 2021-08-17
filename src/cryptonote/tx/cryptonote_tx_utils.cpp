@@ -165,7 +165,7 @@ namespace cryptonote
       return false;
     }
 
-    rct::scalarV amount_keys;
+    rct::rct_scalarV amount_keys;
     tx.set_null();
 
     tx.version = rct ? 2 : 1;

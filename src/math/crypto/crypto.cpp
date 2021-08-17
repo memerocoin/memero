@@ -153,8 +153,8 @@ namespace crypto {
     const auto base = maybeSafePoint(unsafe_base);
     if (!base) return false;
 
-    const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
-    const ec_point derived = multBase(scalar);
+    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
+    const ec_point derived = multBase(rct_scalar);
     const ec_point r = derived + *base;
     derived_key = p2pk(r);
     return true;
@@ -165,8 +165,8 @@ namespace crypto {
   {
     assert(is_reduced(base));
 
-    const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
-    return s2sk(base + scalar);
+    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
+    return s2sk(base + rct_scalar);
   }
 
   bool derive_subaddress_public_key
@@ -180,11 +180,11 @@ namespace crypto {
     const auto out_key = maybeSafePoint(unsafe_out_key);
     if (!out_key) return false;
 
-    const ec_scalar scalar = hash_derivation_to_scalar(derivation, output_index);
+    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
 
-    if (scalar == s_0) return false;
+    if (rct_scalar == s_0) return false;
 
-    const ec_point p = multBase(scalar);
+    const ec_point p = multBase(rct_scalar);
 
     derived_key = p2pk(sub(*out_key, p));
     return true;
@@ -416,7 +416,7 @@ namespace crypto {
   }
 
 
-  //generates a random scalar which can be used as a secret key or mask
+  //generates a random rct_scalar which can be used as a secret key or mask
   ec_scalar scalarGen() {
     ec_scalar s;
     crypto_core_ed25519_scalar_random(s.data.data());

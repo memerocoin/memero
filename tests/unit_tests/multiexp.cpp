@@ -32,9 +32,9 @@
 #include "math/ringct/rctOps.hpp"
 #include "math/ringct/multiexp.hpp"
 
-#define TESTSCALAR []{ static const rct::scalar TESTSCALAR = rct::skGen(); return TESTSCALAR; }()
-#define TESTPOW2SCALAR []{ static const rct::scalar TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()
-#define TESTSMALLSCALAR []{ static const rct::scalar TESTSMALLSCALAR = {{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTSMALLSCALAR; }()
+#define TESTSCALAR []{ static const rct::rct_scalar TESTSCALAR = rct::skGen(); return TESTSCALAR; }()
+#define TESTPOW2SCALAR []{ static const rct::rct_scalar TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()
+#define TESTSMALLSCALAR []{ static const rct::rct_scalar TESTSMALLSCALAR = {{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTSMALLSCALAR; }()
 #define TESTPOINT []{ \
     static const rct::rct_point TESTPOINT = rct::multG(rct::skGen()); \
  return TESTPOINT;                                                   \
@@ -132,7 +132,7 @@ TEST(multiexp, scalarmult_triple)
   std::vector<rct::MultiexpData> data;
   rct::rct_point res;
 
-  static const rct::scalar scalars[] = {
+  static const rct::rct_scalar scalars[] = {
     rct::s_zero,
     rct::s_one,
     rct::L,
@@ -146,13 +146,13 @@ TEST(multiexp, scalarmult_triple)
   };
 
   data.resize(3);
-  for (const rct::scalar &x: scalars)
+  for (const rct::rct_scalar &x: scalars)
   {
     data[0].scalar = x;
-    for (const rct::scalar &y: scalars)
+    for (const rct::rct_scalar &y: scalars)
     {
       data[1].scalar = y;
-      for (const rct::scalar &z: scalars)
+      for (const rct::rct_scalar &z: scalars)
       {
         data[2].scalar = z;
         for (size_t i = 0; i < sizeof(points) / sizeof(points[0]); ++i)

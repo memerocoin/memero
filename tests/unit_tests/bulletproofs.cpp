@@ -66,7 +66,7 @@ TEST(bulletproofs, valid_multi_random)
   {
     size_t outputs = 2 + n;
     std::vector<uint64_t> amounts;
-    rct::scalarV gamma;
+    rct::rct_scalarV gamma;
     for (size_t i = 0; i < outputs; ++i)
     {
       amounts.push_back(crypto::rand<uint64_t>());
@@ -85,7 +85,7 @@ TEST(bulletproofs, valid_aggregated)
   {
     size_t outputs = 2 + n;
     std::vector<uint64_t> amounts;
-    rct::scalarV gamma;
+    rct::rct_scalarV gamma;
     for (size_t i = 0; i < outputs; ++i)
     {
       amounts.push_back(crypto::rand<uint64_t>());
@@ -99,7 +99,7 @@ TEST(bulletproofs, valid_aggregated)
 
 TEST(bulletproofs, invalid_8)
 {
-  rct::scalar invalid_amount = rct::s_zero;
+  rct::rct_scalar invalid_amount = rct::s_zero;
   invalid_amount.data[8] = 1;
   rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, rct::skGen());
   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
@@ -107,7 +107,7 @@ TEST(bulletproofs, invalid_8)
 
 TEST(bulletproofs, invalid_31)
 {
-  rct::scalar invalid_amount = rct::s_zero;
+  rct::rct_scalar invalid_amount = rct::s_zero;
   invalid_amount.data[31] = 1;
   rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, rct::skGen());
   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));

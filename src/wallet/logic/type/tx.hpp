@@ -42,7 +42,7 @@ namespace tx {
   {
     cryptonote::keypair in_ephemeral;
     crypto::key_image ki;
-    rct::scalar mask;
+    rct::rct_scalar mask;
     uint64_t amount;
     uint64_t money_transfered;
     bool error;

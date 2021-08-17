@@ -69,16 +69,16 @@ namespace rct {
 
   //Various rct_point generation functions
 
-  //generates a random scalar which can be used as a secret rct_point or mask
-  scalar skGen() {
+  //generates a random rct_scalar which can be used as a secret rct_point or mask
+  rct_scalar skGen() {
     return s2s(crypto::scalarGen());
   }
 
   //Generates a vector of secret key
   //Mainly used in testing
-  scalarV skvGen(size_t rows ) {
+  rct_scalarV skvGen(size_t rows ) {
     LOG_ERROR_AND_THROW_UNLESS(rows > 0, "0 keys requested");
-    scalarV rv(rows);
+    rct_scalarV rv(rows);
     size_t i = 0;
     for (i = 0 ; i < rows ; i++) {
       rv[i] = skGen();
@@ -88,18 +88,18 @@ namespace rct {
 
   //generates a random curve point (for testing)
   rct_point pkGen() {
-    scalar sk = skGen();
+    rct_scalar sk = skGen();
     return multG(sk);
   }
 
   //generates a random secret and corresponding public key
-  std::pair<scalar, rct_point> skpkGen() {
-    const scalar sk = skGen();
+  std::pair<rct_scalar, rct_point> skpkGen() {
+    const rct_scalar sk = skGen();
     return std::make_pair(sk, multG(sk));
   }
 
   //generates C =aG + bH from b, a is given..
-  rct_point genC(const scalar a, amount_t amount) {
+  rct_point genC(const rct_scalar a, amount_t amount) {
     return addMultG_H(a, int_to_scalar(amount));
   }
 
@@ -110,7 +110,7 @@ namespace rct {
     std::tie(sk.addr, pk.dest) = skpkGen();
     std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 
-    const scalar am = int_to_scalar(amount);
+    const rct_scalar am = int_to_scalar(amount);
     const rct_point bH = multH(am);
     pk.mask = pk.mask + bH;
     return std::make_pair(sk, pk);
@@ -129,12 +129,12 @@ namespace rct {
   }
 
   rct_point dummyCommit(const amount_t amount) {
-    scalar am = int_to_scalar(amount);
+    rct_scalar am = int_to_scalar(amount);
     rct_point bH = multH(am);
     return G + bH;
   }
 
-  rct_point commit(const amount_t amount, const scalar &mask) {
+  rct_point commit(const amount_t amount, const rct_scalar &mask) {
     return genC(mask, amount);
   }
 
@@ -145,25 +145,25 @@ namespace rct {
 
   //Scalar multiplications of curve points
 
-  scalar normalizeKey(const scalar a) {
+  rct_scalar normalizeKey(const rct_scalar a) {
     return s2s(crypto::reduce(a));
   }
 
-  //does a * G where a is a scalar and G is the curve basepoint
-  rct_point multG(const scalar a) {
-    scalar s = normalizeKey(a);
+  //does a * G where a is a rct_scalar and G is the curve basepoint
+  rct_point multG(const rct_scalar a) {
+    rct_scalar s = normalizeKey(a);
     return p2rct(crypto::multBase(s));
   }
 
-  //does a * P where a is a scalar and P is an arbitrary point
-  rct_point multP(const rct_point P, const scalar a) {
-    scalar s = normalizeKey(a);
+  //does a * P where a is a rct_scalar and P is an arbitrary point
+  rct_point multP(const rct_point P, const rct_scalar a) {
+    rct_scalar s = normalizeKey(a);
     return p2rct(crypto::mult(P, s));
   }
 
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
-  rct_point multH(const scalar a) {
+  rct_point multH(const rct_scalar a) {
     return multP(H, a);
   }
 
@@ -189,8 +189,8 @@ namespace rct {
   }
 
   //addPoints2
-  //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
-  rct_point addMultG_H(const scalar a, const scalar b) {
+  //aGbB = aG + bH where a, b are rct_scalars, G is the basepoint and H is the second basepoint
+  rct_point addMultG_H(const rct_scalar a, const rct_scalar b) {
     return multG(a) + multH(b);
   }
 
@@ -199,7 +199,7 @@ namespace rct {
     return crypto::sha3(in.data);
   }
 
-  scalar hash_to_scalar(const crypto::crypto_data in) {
+  rct_scalar hash_to_scalar(const crypto::crypto_data in) {
     return s2s(reduce(d2s(h2d(hash_key(in)))));
   }
 
@@ -210,7 +210,7 @@ namespace rct {
     return crypto::sha3(epee::blob::span((const uint8_t*)&keys[0], keys.size() * sizeof(keys[0])));
   }
 
-  scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys) {
+  rct_scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys) {
     return s2s(reduce(d2s(h2d(hash_keys(keys)))));
   }
 
@@ -243,7 +243,7 @@ namespace rct {
   }
 
   constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
-  scalar genCommitmentMask(const crypto::crypto_data x)
+  rct_scalar genCommitmentMask(const crypto::crypto_data x)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
@@ -252,7 +252,7 @@ namespace rct {
     return s2s(crypto::hash_to_scalar(hashData));
   }
 
-  ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const scalar sharedSec) {
+  ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec) {
     ecdhTuple x = {
       s_zero
       , xor8(amount, ecdhHash(sharedSec))
@@ -260,7 +260,7 @@ namespace rct {
     return x;
   }
 
-  ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const scalar sharedSec) {
+  ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec) {
     ecdhTuple x = {
       genCommitmentMask(sharedSec)
       , xor8(amount, ecdhHash(sharedSec))

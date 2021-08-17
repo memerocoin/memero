@@ -44,8 +44,8 @@
 namespace rct
 {
 
-  /* Given two scalar arrays, construct the inner product */
-  rct::scalar inner_product(const scalarS a, const scalarS b)
+  /* Given two rct_scalar arrays, construct the inner product */
+  rct::rct_scalar inner_product(const rct_scalarS a, const rct_scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
     return std::transform_reduce
@@ -54,15 +54,15 @@ namespace rct
        , a.end()
        , b.begin()
        , rct::s_zero
-       , std::plus<scalar>()
-       , std::multiplies<scalar>()
+       , std::plus<rct_scalar>()
+       , std::multiplies<rct_scalar>()
        );
   }
 
-  /* Given a scalar, construct a vector of powers */
-  rct::scalarV vector_powers(const rct::scalar x, const size_t n)
+  /* Given a rct_scalar, construct a vector of powers */
+  rct::rct_scalarV vector_powers(const rct::rct_scalar x, const size_t n)
   {
-    scalarV res(n);
+    rct_scalarV res(n);
 
     std::generate(res.begin(), res.end(), [accum = rct::s_one, x] () mutable {
       const auto current = accum;
@@ -73,52 +73,52 @@ namespace rct
     return res;
   }
 
-  /* Given a scalar, return the sum of its powers from 0 to n-1 */
-  rct::scalar vector_power_sum(const rct::scalar x, const size_t n)
+  /* Given a rct_scalar, return the sum of its powers from 0 to n-1 */
+  rct::rct_scalar vector_power_sum(const rct::rct_scalar x, const size_t n)
   {
     const auto xs = vector_powers(x, n);
 
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
   }
 
-  /* Given two scalar arrays, construct the Hadamard product */
-  rct::scalarV hadamard(const scalarS a, const scalarS b)
+  /* Given two rct_scalar arrays, construct the Hadamard product */
+  rct::rct_scalarV hadamard(const rct_scalarS a, const rct_scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-    rct::scalarV res(a.size());
+    rct::rct_scalarV res(a.size());
     std::transform
       (
        a.begin()
        , a.end()
        , b.begin()
        , res.begin()
-       , std::multiplies<scalar>()
+       , std::multiplies<rct_scalar>()
        );
 
     return res;
   }
 
   /* Add two vectors */
-  rct::scalarV vector_addV(const scalarS a, const scalarS b)
+  rct::rct_scalarV vector_addV(const rct_scalarS a, const rct_scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-    rct::scalarV res(a.size());
+    rct::rct_scalarV res(a.size());
     std::transform
       (
       a.begin()
       , a.end()
       , b.begin()
       , res.begin()
-      , std::plus<scalar>()
+      , std::plus<rct_scalar>()
       );
 
     return res;
   }
 
-  /* Add a scalar to all elements of a vector */
-  rct::scalarV vector_add(const scalarS a, const rct::scalar b)
+  /* Add a rct_scalar to all elements of a vector */
+  rct::rct_scalarV vector_add(const rct_scalarS a, const rct::rct_scalar b)
   {
-    rct::scalarV res(a.size());
+    rct::rct_scalarV res(a.size());
     std::transform
       (
       a.begin()
@@ -130,10 +130,10 @@ namespace rct
     return res;
   }
 
-  /* Subtract a scalar from all elements of a vector */
-  rct::scalarV vector_subtract(const scalarS a, const rct::scalar b)
+  /* Subtract a rct_scalar from all elements of a vector */
+  rct::rct_scalarV vector_subtract(const rct_scalarS a, const rct::rct_scalar b)
   {
-    rct::scalarV res(a.size());
+    rct::rct_scalarV res(a.size());
     std::transform
       (
       a.begin()
@@ -145,10 +145,10 @@ namespace rct
     return res;
   }
 
-  /* Multiply a scalar and a vector */
-  rct::scalarV vector_mult(const scalarS a, const rct::scalar b)
+  /* Multiply a rct_scalar and a vector */
+  rct::rct_scalarV vector_mult(const rct_scalarS a, const rct::rct_scalar b)
   {
-    rct::scalarV res(a.size());
+    rct::rct_scalarV res(a.size());
     std::transform
       (
       a.begin()
@@ -160,15 +160,15 @@ namespace rct
     return res;
   }
 
-  /* Compute the inverse of a scalar, the clever way */
-  rct::scalar invert(const rct::scalar x)
+  /* Compute the inverse of a rct_scalar, the clever way */
+  rct::rct_scalar invert(const rct::rct_scalar x)
   {
     return s2s(crypto::invert(x));
   }
 
-  rct::scalarV invertV(const rct::scalarV v)
+  rct::rct_scalarV invertV(const rct::rct_scalarV v)
   {
-    scalarV r(v.size());
+    rct_scalarV r(v.size());
 
     std::transform
       (

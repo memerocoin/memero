@@ -39,15 +39,15 @@ namespace rct {
   //Various key initialization functions
 
   // Can't us consteval here or android will panic
-  // Creates a zero scalar
-  constexpr scalar s_zero = ZERO;
-  constexpr scalar s_one = ONE;
-  constexpr scalar s_two= TWO;
-  constexpr scalar s_minus_one = MINUS_ONE;
-  constexpr scalar s_eight = EIGHT;
+  // Creates a zero rct_scalar
+  constexpr rct_scalar s_zero = ZERO;
+  constexpr rct_scalar s_one = ONE;
+  constexpr rct_scalar s_two= TWO;
+  constexpr rct_scalar s_minus_one = MINUS_ONE;
+  constexpr rct_scalar s_eight = EIGHT;
   // inv is multiplicative inverse
-  constexpr scalar s_inv_eight = INV_EIGHT;
-  constexpr scalar s_minus_inv_eight = MINUS_INV_EIGHT;
+  constexpr rct_scalar s_inv_eight = INV_EIGHT;
+  constexpr rct_scalar s_minus_inv_eight = MINUS_INV_EIGHT;
 
   constexpr rct_point zero = Z;
 
@@ -62,27 +62,27 @@ namespace rct {
 
   //Various rct_point generation functions
 
-  //generates a random scalar which can be used as a secret rct_point or mask
-  scalar skGen();
+  //generates a random rct_scalar which can be used as a secret rct_point or mask
+  rct_scalar skGen();
 
   //generates a vector of secret keys of size "int"
-  scalarV skvGen(size_t rows );
+  rct_scalarV skvGen(size_t rows );
 
   //generates a random curve point (for testing)
   rct_point pkGen();
-  std::pair<scalar, rct_point> skpkGen();
+  std::pair<rct_scalar, rct_point> skpkGen();
 
   //generates a <secret , public> / Pedersen commitment to the amount
   std::pair<pri_ctkey, ctkey> ctskpkGen(amount_t amount);
 
   //generates C =aG + bH from b, a is random
-  rct_point genC(const scalar a, amount_t amount);
+  rct_point genC(const rct_scalar a, amount_t amount);
 
   //this one is mainly for testing, can take arbitrary amounts..
   std::pair<pri_ctkey, ctkey> ctskpkGen(const rct_point bH);
 
   // make a pedersen commitment with given key
-  rct_point commit(const amount_t amount, const scalar &mask);
+  rct_point commit(const amount_t amount, const rct_scalar &mask);
 
   // make a pedersen commitment with zero key
   rct_point dummyCommit(const amount_t amount);
@@ -92,14 +92,14 @@ namespace rct {
 
   //Scalar multiplications of curve points
 
-  //does a * G where a is a scalar and G is the curve basepoint
-  rct_point multG(const scalar a);
+  //does a * G where a is a rct_scalar and G is the curve basepoint
+  rct_point multG(const rct_scalar a);
 
-  //does a * P where a is a scalar and P is an arbitrary point
-  rct_point multP(const rct_point P, const scalar a);
+  //does a * P where a is a rct_scalar and P is an arbitrary point
+  rct_point multP(const rct_point P, const rct_scalar a);
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
-  rct_point multH(const scalar a);
+  rct_point multH(const rct_scalar a);
 
   // multiplies a point by 8
   rct_point multP8(const crypto::ec_point_unsafe P);
@@ -109,16 +109,16 @@ namespace rct {
 
   rct::rct_point addPoints(const rct_pointS A);
 
-  //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
-  rct_point addMultG_H(const scalar a, const scalar b);
+  //aGbB = aG + bH where a, b are rct_scalars, G is the basepoint and H is the second basepoint
+  rct_point addMultG_H(const rct_scalar a, const rct_scalar b);
 
   crypto::hash hash_key(const crypto::crypto_data in);
-  scalar hash_to_scalar(const crypto::crypto_data in);
+  rct_scalar hash_to_scalar(const crypto::crypto_data in);
 
 
   //for mg sigs
   crypto::hash hash_keys(const std::span<const crypto::crypto_data> keys);
-  scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys);
+  rct_scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys);
 
   //for ANSL
 
@@ -126,8 +126,8 @@ namespace rct {
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH
-  scalar genCommitmentMask(const crypto::crypto_data x);
+  rct_scalar genCommitmentMask(const crypto::crypto_data x);
 
-  ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const scalar sharedSec);
-  ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const scalar sharedSec);
+  ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec);
+  ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec);
 }

@@ -90,8 +90,8 @@ namespace hw {
             /*                            DERIVATION & KEY                             */
             /* ======================================================================= */
             bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key)  override;
-            bool  multP(rct::rct_point & aP, const rct::rct_point &P, const rct::scalar &a) override;
-            bool  multG(rct::rct_point &aG, const rct::scalar &a) override;
+            bool  multP(rct::rct_point & aP, const rct::rct_point &P, const rct::rct_scalar &a) override;
+            bool  multG(rct::rct_point &aG, const rct::rct_scalar &a) override;
             bool  sc_secret_add(crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) override;
             crypto::secret_key  generate_keys
             (
@@ -118,10 +118,10 @@ namespace hw {
             bool  open_tx(crypto::secret_key &tx_key) override;
             void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) override;
 
-            rct::scalar genCommitmentMask(const crypto::crypto_data &amount_key) override;
+            rct::rct_scalar genCommitmentMask(const crypto::crypto_data &amount_key) override;
 
-            bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::scalar & sharedSec) override;
-            bool  ecdhDecode(rct::ecdhTuple & masked, const rct::scalar & sharedSec) override;
+            bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::rct_scalar & sharedSec) override;
+            bool  ecdhDecode(rct::ecdhTuple & masked, const rct::rct_scalar & sharedSec) override;
 
             bool generate_output_ephemeral_keys
             (
@@ -135,7 +135,7 @@ namespace hw {
             , const bool &need_additional_txkeys
             , const std::vector<crypto::secret_key> &additional_tx_keys
             , std::vector<crypto::public_key> &additional_tx_public_keys
-            , rct::scalarV &amount_keys
+            , rct::rct_scalarV &amount_keys
             , crypto::public_key &out_eph_public_key
             ) override;
 
@@ -151,26 +151,26 @@ namespace hw {
 
             bool clsag_prepare
             (
-             const rct::scalar &p
-             , const rct::scalar &z
+             const rct::rct_scalar &p
+             , const rct::rct_scalar &z
              , rct::rct_point &I
              , rct::rct_point &D
              , const rct::rct_point &H
-             , rct::scalar &a
+             , rct::rct_scalar &a
              , rct::rct_point &aG
              , rct::rct_point &aH
              ) override;
 
-            rct::scalar clsag_hash(const crypto::dataS data) override;
+            rct::rct_scalar clsag_hash(const crypto::dataS data) override;
             bool clsag_sign
             (
-             const rct::scalar &c
-             , const rct::scalar &a
-             , const rct::scalar &p
-             , const rct::scalar &z
-             , const rct::scalar &mu_P
-             , const rct::scalar &mu_C
-             , rct::scalar &s
+             const rct::rct_scalar &c
+             , const rct::rct_scalar &a
+             , const rct::rct_scalar &p
+             , const rct::rct_scalar &z
+             , const rct::rct_scalar &mu_P
+             , const rct::rct_scalar &mu_C
+             , rct::rct_scalar &s
              ) override;
 
             bool  close_tx(void) override;

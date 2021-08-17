@@ -49,9 +49,9 @@ namespace rct {
     Bulletproof proveRangeBulletproof
     (
      inv8V& C
-     , scalarV& masks
+     , rct_scalarV& masks
      , const std::vector<uint64_t> amounts
-     , const std::span<const scalar> sk)
+     , const std::span<const rct_scalar> sk)
     {
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
@@ -89,9 +89,9 @@ namespace rct {
     (
      const crypto::hash message
      , const rct_pointV P
-     , const scalar p
+     , const rct_scalar p
      , const rct_pointV C
-     , const scalar z
+     , const rct_scalar z
      , const rct_pointV C_nonzero
      , const rct_point C_offset
      , const unsigned int l
@@ -109,7 +109,7 @@ namespace rct {
         rct_point D;
 
         // Initial values
-        scalar a;
+        rct_scalar a;
         rct_point aG;
         rct_point aH;
 
@@ -153,13 +153,13 @@ namespace rct {
         mu_C_to_hash[2*n+1] = sig.I;
         mu_C_to_hash[2*n+2] = sig.D;
         mu_C_to_hash[2*n+3] = C_offset;
-        scalar mu_P, mu_C;
+        rct_scalar mu_P, mu_C;
         mu_P = hash_keys_to_scalar(mu_P_to_hash);
         mu_C = hash_keys_to_scalar(mu_C_to_hash);
 
         // Initial commitment
         crypto::dataV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
-        scalar c;
+        rct_scalar c;
         c_to_hash[0] = zero;
         std::copy_n
           (
@@ -188,11 +188,11 @@ namespace rct {
             sig.c1 = c;
 
         // Decoy indices
-        sig.s = scalarV(n);
+        sig.s = rct_scalarV(n);
         rct_point L;
         rct_point R;
-        scalar c_p; // = c[i]*mu_P
-        scalar c_c; // = c[i]*mu_C
+        rct_scalar c_p; // = c[i]*mu_P
+        rct_scalar c_c; // = c[i]*mu_C
 
         while (i != l) {
             sig.s[i] = skGen();
@@ -289,7 +289,7 @@ namespace rct {
      const crypto::hash message
      , const ctrct_pointV pubs
      , const pri_ctkey inSk
-     , const scalar a
+     , const rct_scalar a
      , const rct_point Cout
      , const unsigned int index
      ) {
@@ -298,7 +298,7 @@ namespace rct {
         size_t cols = pubs.size();
         LOG_ERROR_AND_THROW_UNLESS(cols >= 1, "Empty pubs");
         rct_pointV tmp(rows + 1);
-        scalarV sk(rows + 1);
+        rct_scalarV sk(rows + 1);
         rct_pointM M(cols, tmp);
 
         rct_pointV P, C, C_nonzero;
@@ -328,7 +328,7 @@ namespace rct {
 
         // Check data
         LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
-        LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature scalar vector is the wrong size!");
+        LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature rct_scalar vector is the wrong size!");
         for (const auto &s: sig.s)
           LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(s), false, "Bad signature scalar!");
         LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(sig.c1), false, "Bad signature commitment!");
@@ -340,7 +340,7 @@ namespace rct {
         }
 
         // Prepare rct_point images
-        scalar c = sig.c1;
+        rct_scalar c = sig.c1;
         rct_point D_8 = multP8(sig.D);
         LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary rct_point image!");
 
@@ -377,7 +377,7 @@ namespace rct {
         mu_C_to_hash[2*n+1] = sig.I;
         mu_C_to_hash[2*n+2] = sig.D;
         mu_C_to_hash[2*n+3] = C_offset;
-        scalar mu_P, mu_C;
+        rct_scalar mu_P, mu_C;
         mu_P = hash_keys_to_scalar(mu_P_to_hash);
         mu_C = hash_keys_to_scalar(mu_C_to_hash);
 
@@ -398,9 +398,9 @@ namespace rct {
         }
         c_to_hash[2*n+1] = C_offset;
         c_to_hash[2*n+2] = crypto::h2d(message);
-        scalar c_p; // = c[i]*mu_P
-        scalar c_c; // = c[i]*mu_C
-        scalar c_new;
+        rct_scalar c_p; // = c[i]*mu_P
+        rct_scalar c_c; // = c[i]*mu_C
+        rct_scalar c_new;
         rct_point L;
         rct_point R;
         size_t i = 0;
@@ -488,7 +488,7 @@ namespace rct {
      , const vector<amount_t> outamounts
      , const amount_t txnFee
      , const ctrct_pointM mixRing
-     , const scalarV amount_keys
+     , const rct_scalarV amount_keys
      , const std::vector<size_t> index
      , pri_ctrct_pointV& outSk
      ) {
@@ -523,8 +523,8 @@ namespace rct {
         {
             {
                 rct::inv8V C;
-                rct::scalarV masks;
-                const std::span<const scalar> keys{&amount_keys[0], amount_keys.size()};
+                rct::rct_scalarV masks;
+                const std::span<const rct_scalar> keys{&amount_keys[0], amount_keys.size()};
                 rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));
 
                 for (i = 0; i < outamounts.size(); ++i)
@@ -535,7 +535,7 @@ namespace rct {
             }
         }
 
-        scalar sumout = s_zero;
+        rct_scalar sumout = s_zero;
         for (i = 0; i < outSk.size(); ++i)
         {
             sumout = outSk[i].blinding_factor + sumout;
@@ -555,8 +555,8 @@ namespace rct {
         pseudoOuts.resize(inamounts.size());
         rv.p.CLSAGs.resize(inamounts.size());
         // TODO: scalar
-        scalar sumpouts = s_zero; //sum pseudoOut masks
-        scalarV a(inamounts.size());
+        rct_scalar sumpouts = s_zero; //sum pseudoOut masks
+        rct_scalarV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
             a[i] = skGen();
             sumpouts = a[i] + sumpouts;
@@ -591,7 +591,7 @@ namespace rct {
      , const rct_pointV destinations
      , const std::vector<amount_t> inamounts
      , const std::vector<amount_t> outamounts
-     , const scalarV amount_keys
+     , const rct_scalarV amount_keys
      , const amount_t txnFee
      , const size_t mixin
      ) {
@@ -787,7 +787,7 @@ namespace rct {
       }
     }
 
-    amount_t decodeRctSimple(const rctSig rv, const scalar sk, const unsigned int i, scalar& mask) {
+    amount_t decodeRctSimple(const rctSig rv, const rct_scalar sk, const unsigned int i, rct_scalar& mask) {
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
         LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");

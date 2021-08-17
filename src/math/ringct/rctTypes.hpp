@@ -58,10 +58,10 @@ namespace rct {
     using reconstructed_key = rct::rct_point;
 
 
-    struct scalar : crypto::ec_scalar {
-      scalar operator+(const scalar& y) const;
-      scalar operator-(const scalar& y) const;
-      scalar operator*(const scalar& y) const;
+    struct rct_scalar : crypto::ec_scalar {
+      rct_scalar operator+(const rct_scalar& y) const;
+      rct_scalar operator-(const rct_scalar& y) const;
+      rct_scalar operator*(const rct_scalar& y) const;
     };
 
     using rct_pointV = std::vector<rct_point>; //vector of keys
@@ -69,10 +69,10 @@ namespace rct {
     using rct_pointS = std::span<const rct_point>; //vector of keys
     using rct_pointL = std::list<const rct_point>; //vector of keys
 
-    using scalarV = std::vector<scalar>; //vector of keys
-    using scalarM = std::vector<scalarV>; //matrix of keys (indexed by column first)
-    using scalarS = std::span<const scalar>; //vector of keys
-    using scalarL = std::list<scalar>; //vector of keys
+    using rct_scalarV = std::vector<rct_scalar>; //vector of keys
+    using rct_scalarM = std::vector<rct_scalarV>; //matrix of keys (indexed by column first)
+    using rct_scalarS = std::span<const rct_scalar>; //vector of keys
+    using rct_scalarL = std::list<rct_scalar>; //vector of keys
 
     using inv8V = std::vector<inv8>; //vector of keys
     using inv8S = std::span<const inv8>; //vector of keys
@@ -93,8 +93,8 @@ namespace rct {
     typedef std::span<const ctkey> ctrct_pointS;
 
     struct pri_ctkey {
-      scalar addr;
-      scalar blinding_factor; //C here if public
+      rct_scalar addr;
+      rct_scalar blinding_factor; //C here if public
     };
 
     typedef std::vector<pri_ctkey> pri_ctrct_pointV;
@@ -107,7 +107,7 @@ namespace rct {
     // "amount" contains a hex representation (in 32 bytes) of a 64 bit number
     // the purpose of the ECDH exchange
     struct ecdhTuple {
-        scalar mask;
+        rct_scalar mask;
         crypto::ec_scalar_unnormalized amount;
 
         BEGIN_SERIALIZE_OBJECT()
@@ -121,8 +121,8 @@ namespace rct {
 
     // CLSAG signature
     struct clsag {
-        scalarV s; // scalars
-        scalar c1;
+        rct_scalarV s; // scalars
+        rct_scalar c1;
 
         reconstructed_key I; // signing rct_point image
         inv8 D; // commitment rct_point image
@@ -140,10 +140,10 @@ namespace rct {
       rct::inv8V V;
       rct::inv8 A, S;
       inv8 T1, T2;
-      rct::scalar taux;
-      rct::scalar mu;
+      rct::rct_scalar taux;
+      rct::rct_scalar mu;
       rct::inv8V L, R;
-      rct::scalar a, b, t;
+      rct::rct_scalar a, b, t;
 
       Bulletproof():
         A({}), S({}), T1({}), T2({}), taux({}), mu({}), a({}), b({}), t({}) {}
@@ -152,9 +152,9 @@ namespace rct {
        const rct::inv8 &V
        , const rct::inv8 &A, const rct::inv8 &S
        , const rct::inv8 &T1, const rct::inv8 &T2
-       , const rct::scalar &taux, const rct::scalar &mu
+       , const rct::rct_scalar &taux, const rct::rct_scalar &mu
        , const rct::inv8V &L, const rct::inv8V &R
-       , const rct::scalar &a, const rct::scalar &b, const rct::scalar &t
+       , const rct::rct_scalar &a, const rct::rct_scalar &b, const rct::rct_scalar &t
        ):
         V({V}), A(A), S(S), T1(T1), T2(T2), taux(taux), mu(mu), L(L), R(R), a(a), b(b), t(t) {}
 
@@ -162,9 +162,9 @@ namespace rct {
       (
        const rct::inv8V &V, const rct::inv8 &A, const rct::inv8 &S
        , const rct::inv8 &T1, const rct::inv8 &T2
-       , const rct::scalar &taux, const rct::scalar &mu
+       , const rct::rct_scalar &taux, const rct::rct_scalar &mu
        , const rct::inv8V &L, const rct::inv8V &R
-       , const rct::scalar &a, const rct::scalar &b, const rct::scalar &t
+       , const rct::rct_scalar &a, const rct::rct_scalar &b, const rct::rct_scalar &t
        ):
         V(V), A(A), S(S), T1(T1), T2(T2), taux(taux), mu(mu), L(L), R(R), a(a), b(b), t(t) {}
 
@@ -412,13 +412,13 @@ namespace rct {
     //32 byte rct_point to uint long long
     // if the rct_point holds a value > 2^64
     // then the value in the first 8 bytes is returned
-    amount_t scalar_to_int(const scalar &in);
+    amount_t scalar_to_int(const rct_scalar &in);
 
     //uint long long to 32 byte key
-    scalar int_to_scalar(const amount_t in);
+    rct_scalar int_to_scalar(const amount_t in);
 
-    inline const rct::scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::scalar&)sk; }
-    inline const crypto::secret_key &scalar2sk(const rct::scalar&k) { return (const crypto::secret_key&)k; }
+    inline const rct::rct_scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::rct_scalar&)sk; }
+    inline const crypto::secret_key &scalar2sk(const rct::rct_scalar&k) { return (const crypto::secret_key&)k; }
 
     inline const rct::rct_point &pk2rct(const crypto::public_key &pk) { return (const rct::rct_point&)pk; }
     inline const rct::rct_point &ki2rct(const crypto::key_image &ki) { return (const rct::rct_point&)ki; }
@@ -429,7 +429,7 @@ namespace rct {
     inline const crypto::key_image &rct2ki(const rct::rct_point &k) { return (const crypto::key_image&)k; }
     inline const crypto::hash &rct2hash(const rct::rct_point &k) { return (const crypto::hash&)k; }
 
-    inline const rct::scalar &s2s(const crypto::ec_scalar &s) { return (const rct::scalar&)s; }
+    inline const rct::rct_scalar &s2s(const crypto::ec_scalar &s) { return (const rct::rct_scalar&)s; }
 
     inline const rct::inv8V to_inv8V(const rct_pointS &xs) {
       inv8V ys;
@@ -467,7 +467,7 @@ namespace std
 BLOB_SERIALIZER(rct::rct_point);
 BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::ctkey);
-BLOB_SERIALIZER(rct::scalar);
+BLOB_SERIALIZER(rct::rct_scalar);
 BLOB_SERIALIZER(rct::pri_ctkey);
 
 BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);

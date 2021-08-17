@@ -225,12 +225,12 @@ namespace hw {
             return r && public_key == calculated_pub;
         }
 
-        bool device_default::multP(rct::rct_point & aP, const rct::rct_point &P, const rct::scalar &a) {
+        bool device_default::multP(rct::rct_point & aP, const rct::rct_point &P, const rct::rct_scalar &a) {
             aP = rct::multP(P,a);
             return true;
         }
 
-        bool device_default::multG(rct::rct_point &aG, const rct::scalar &a) {
+        bool device_default::multG(rct::rct_point &aG, const rct::rct_scalar &a) {
             aG = rct::multG(a);
             return true;
         }
@@ -312,7 +312,7 @@ namespace hw {
         , const bool &need_additional_txkeys
         , const std::vector<crypto::secret_key> &additional_tx_keys
         , std::vector<crypto::public_key> &additional_tx_public_keys
-        , rct::scalarV &amount_keys
+        , rct::rct_scalarV &amount_keys
         , crypto::public_key &out_eph_public_key
          )
         {
@@ -350,7 +350,7 @@ namespace hw {
 
             if (tx_version > 1)
             {
-                rct::scalar scalar1;
+                rct::rct_scalar scalar1;
                 hash_derivation_to_scalar(derivation, output_index, scalar1);
                 amount_keys.push_back(scalar1);
             }
@@ -360,16 +360,16 @@ namespace hw {
             return r;
         }
 
-        rct::scalar device_default::genCommitmentMask(const crypto::crypto_data &amount_key) {
+        rct::rct_scalar device_default::genCommitmentMask(const crypto::crypto_data &amount_key) {
             return rct::genCommitmentMask(amount_key);
         }
 
-        bool  device_default::ecdhEncode(rct::ecdhTuple & unmasked, const rct::scalar & sharedSec) {
+        bool  device_default::ecdhEncode(rct::ecdhTuple & unmasked, const rct::rct_scalar & sharedSec) {
             unmasked = rct::ecdhEncode(unmasked.amount, sharedSec);
             return true;
         }
 
-        bool  device_default::ecdhDecode(rct::ecdhTuple & masked, const rct::scalar & sharedSec) {
+        bool  device_default::ecdhDecode(rct::ecdhTuple & masked, const rct::rct_scalar & sharedSec) {
             masked = rct::ecdhDecode(masked.amount, sharedSec);
             return true;
         }
@@ -390,12 +390,12 @@ namespace hw {
 
         bool device_default::clsag_prepare
         (
-         const rct::scalar &p
-         , const rct::scalar &z
+         const rct::rct_scalar &p
+         , const rct::rct_scalar &z
          , rct::rct_point &I
          , rct::rct_point &D
          , const rct::rct_point &H
-         , rct::scalar &a
+         , rct::rct_scalar &a
          , rct::rct_point &aG
          , rct::rct_point &aH
          ) {
@@ -406,24 +406,24 @@ namespace hw {
             return true;
         }
 
-        rct::scalar device_default::clsag_hash(const crypto::dataS data) {
+        rct::rct_scalar device_default::clsag_hash(const crypto::dataS data) {
             return rct::hash_keys_to_scalar(data);
         }
 
         bool device_default::clsag_sign
         (
-          const rct::scalar &c
-            , const rct::scalar &a
-            , const rct::scalar &p
-            , const rct::scalar &z
-            , const rct::scalar &mu_P
-            , const rct::scalar &mu_C
-            , rct::scalar &s
+          const rct::rct_scalar &c
+            , const rct::rct_scalar &a
+            , const rct::rct_scalar &p
+            , const rct::rct_scalar &z
+            , const rct::rct_scalar &mu_P
+            , const rct::rct_scalar &mu_C
+            , rct::rct_scalar &s
          )
         {
-            rct::scalar s0_p_mu_P;
+            rct::rct_scalar s0_p_mu_P;
             s0_p_mu_P = mu_P * p;
-            rct::scalar s0_add_z_mu_C;
+            rct::rct_scalar s0_add_z_mu_C;
             s0_add_z_mu_C = mu_C * z + s0_p_mu_P;
             s = a - c * s0_add_z_mu_C;
 

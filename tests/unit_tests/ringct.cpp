@@ -50,14 +50,14 @@ TEST(ringct, CLSAG)
   const size_t N = 11;
   const size_t idx = 5;
   ctrct_pointV pubs;
-  scalar p, t, t2, u;
+  rct_scalar p, t, t2, u;
   const crypto::hash message = crypto::d2h(rct::identity);
   ctkey backup;
   clsag clsag;
 
   for (size_t i = 0; i < N; ++i)
   {
-    scalar sk;
+    rct_scalar sk;
     ctkey tmp;
 
     std::tie(sk, tmp.dest) = skpkGen();
@@ -169,7 +169,7 @@ TEST(ringct, CLSAG)
   clsag.s = sbackup;
 
   // too few s elements
-  scalar backup_s;
+  rct_scalar backup_s;
   rct_point backup_key;
   inv8 backup_key_inv8;
   backup_s = clsag.s.back();
@@ -242,8 +242,8 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
     ctkey pctmp;
     vector<amount_t> inamounts, outamounts;
     rct_pointV destinations;
-    scalarV amount_keys;
-    scalar Sk;
+    rct_scalarV amount_keys;
+    rct_scalar Sk;
     rct_point Pk;
 
     for (int n = 0; n < n_inputs; ++n) {
@@ -458,7 +458,7 @@ TEST(ringct, range_proofs_reject_higher_list_simple)
 }
 
 
-// these require one of scalar of H to be 0, why?
+// these require one of rct_scalar of H to be 0, why?
 TEST(ringct, range_proofs_accept_1_to_1_simple)
 {
   const uint64_t inputs[] = {5000};

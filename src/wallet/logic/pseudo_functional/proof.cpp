@@ -130,7 +130,7 @@ namespace proof {
 
     if (std::any_of(good_signature.begin(), good_signature.end(), [](int i) { return i > 0; }))
     {
-      // obtain key derivation by multiplying scalar 1 to the shared secret
+      // obtain key derivation by multiplying rct_scalar 1 to the shared secret
       crypto::key_derivation derivation;
       if (good_signature[0])
         THROW_WALLET_EXCEPTION_IF

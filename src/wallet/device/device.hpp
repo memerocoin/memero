@@ -159,8 +159,8 @@ namespace hw {
         /*                            DERIVATION & KEY                             */
         /* ======================================================================= */
         virtual bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) = 0;
-        virtual bool  multP(rct::rct_point & aP, const rct::rct_point &P, const rct::scalar &a) = 0;
-        virtual bool  multG(rct::rct_point &aG, const rct::scalar &a) = 0;
+        virtual bool  multP(rct::rct_point & aP, const rct::rct_point &P, const rct::rct_scalar &a) = 0;
+        virtual bool  multG(rct::rct_point &aG, const rct::rct_scalar &a) = 0;
         virtual bool  sc_secret_add( crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) = 0;
         virtual crypto::secret_key  generate_keys
         (
@@ -177,14 +177,14 @@ namespace hw {
         virtual crypto::key_image generate_key_image(const crypto::public_key &pub, const crypto::secret_key &sec) = 0;
 
         // alternative prototypes available in libringct
-        rct::rct_point multP(const rct::rct_point &P, const rct::scalar &a)
+        rct::rct_point multP(const rct::rct_point &P, const rct::rct_scalar &a)
         {
             rct::rct_point aP;
             multP(aP, P, a);
             return aP;
         }
 
-        rct::rct_point multG(const rct::scalar &a)
+        rct::rct_point multG(const rct::rct_scalar &a)
         {
             rct::rct_point aG;
             multG(aG, a);
@@ -203,10 +203,10 @@ namespace hw {
 
         virtual void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) = 0;
 
-        virtual rct::scalar genCommitmentMask(const crypto::crypto_data &amount_key) = 0;
+        virtual rct::rct_scalar genCommitmentMask(const crypto::crypto_data &amount_key) = 0;
 
-        virtual bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::scalar & sharedSec) = 0;
-        virtual bool  ecdhDecode(rct::ecdhTuple & masked, const rct::scalar & sharedSec) = 0;
+        virtual bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::rct_scalar & sharedSec) = 0;
+        virtual bool  ecdhDecode(rct::ecdhTuple & masked, const rct::rct_scalar & sharedSec) = 0;
 
         virtual bool  generate_output_ephemeral_keys
         (
@@ -220,7 +220,7 @@ namespace hw {
          , const bool &need_additional_txkeys
          , const std::vector<crypto::secret_key> &additional_tx_keys
          , std::vector<crypto::public_key> &additional_tx_public_keys
-         , rct::scalarV &amount_keys
+         , rct::rct_scalarV &amount_keys
          , crypto::public_key &out_eph_public_key
          ) = 0;
 
@@ -237,25 +237,25 @@ namespace hw {
 
         virtual bool clsag_prepare
         (
-         const rct::scalar &p
-         , const rct::scalar &z
+         const rct::rct_scalar &p
+         , const rct::rct_scalar &z
          , rct::rct_point &I
          , rct::rct_point &D
          , const rct::rct_point &H
-         , rct::scalar &a
+         , rct::rct_scalar &a
          , rct::rct_point &aG
          , rct::rct_point &aH
          ) = 0;
-        virtual rct::scalar clsag_hash(const crypto::dataS data) = 0;
+        virtual rct::rct_scalar clsag_hash(const crypto::dataS data) = 0;
         virtual bool clsag_sign
         (
-         const rct::scalar &c
-         , const rct::scalar &a
-         , const rct::scalar &p
-         , const rct::scalar &z
-         , const rct::scalar &mu_P
-         , const rct::scalar &mu_C
-         , rct::scalar &s
+         const rct::rct_scalar &c
+         , const rct::rct_scalar &a
+         , const rct::rct_scalar &p
+         , const rct::rct_scalar &z
+         , const rct::rct_scalar &mu_P
+         , const rct::rct_scalar &mu_C
+         , rct::rct_scalar &s
          ) = 0;
 
         virtual bool  close_tx(void) = 0;

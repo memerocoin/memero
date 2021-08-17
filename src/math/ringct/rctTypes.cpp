@@ -66,30 +66,30 @@ namespace rct {
       return std::strncmp((const char*)data.data(), (const char*)y.data.data(), data.size()) < 0;
     }
 
-    scalar scalar::operator+(const scalar& y) const
+    rct_scalar rct_scalar::operator+(const rct_scalar& y) const
     {
       return s2s(ec_scalar::operator+(y));
     }
 
-    scalar scalar::operator-(const scalar& y) const
+    rct_scalar rct_scalar::operator-(const rct_scalar& y) const
     {
       return s2s(ec_scalar::operator-(y));
     }
 
-    scalar scalar::operator*(const scalar& y) const
+    rct_scalar rct_scalar::operator*(const rct_scalar& y) const
     {
       return s2s(ec_scalar::operator*(y));
     }
 
     //uint long long to 32 byte key
-    scalar int_to_scalar(const amount_t in) {
+    rct_scalar int_to_scalar(const amount_t in) {
       return s2s(crypto::int_to_scalar(in));
     }
 
     //32 byte rct_point to uint long long
     // if the rct_point holds a value > 2^64
     // then the value in the first 8 bytes is returned
-    amount_t scalar_to_int(const scalar & in) {
+    amount_t scalar_to_int(const rct_scalar & in) {
       return crypto::scalar_to_int(in);
     }
 

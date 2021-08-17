@@ -201,7 +201,7 @@ namespace crypto {
 
   bool is_valid_point(const ec_point_unsafe x);
 
-  //generates a random scalar which can be used as a secret key or mask
+  //generates a random rct_scalar which can be used as a secret key or mask
   ec_scalar scalarGen();
 
   std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x);

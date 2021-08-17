@@ -38,9 +38,9 @@ namespace rct {
   (
    const crypto::hash message
    , const rct_pointV P
-   , const scalar p
+   , const rct_scalar p
    , const rct_pointV C
-   , const scalar z
+   , const rct_scalar z
    , const rct_pointV C_nonzero
    , const rct_point C_offset
    , const unsigned int l
@@ -51,7 +51,7 @@ namespace rct {
    const crypto::hash message
    , const ctrct_pointV pubs
    , const pri_ctkey inSk
-   , const scalar a
+   , const rct_scalar a
    , const rct_point Cout
    , const unsigned int index
    );
@@ -76,7 +76,7 @@ namespace rct {
    , const rct_pointV destinations
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
-   , const scalarV amount_keys
+   , const rct_scalarV amount_keys
    , const amount_t txnFee
    , const size_t mixin
    );
@@ -90,7 +90,7 @@ namespace rct {
    , const std::vector<amount_t> outamounts
    , const amount_t txnFee
    , const ctrct_pointM mixRing
-   , const scalarV amount_keys
+   , const rct_scalarV amount_keys
    , const std::vector<size_t> index
    , pri_ctrct_pointV& outSk
    );
@@ -103,7 +103,7 @@ namespace rct {
     return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv);
   }
 
-  amount_t decodeRctSimple(const rctSig rv, const scalar sk, const unsigned int i, scalar& mask);
+  amount_t decodeRctSimple(const rctSig rv, const rct_scalar sk, const unsigned int i, rct_scalar& mask);
   crypto::hash get_mlsag_pre_hash(const rctSig rv);
 }
 
