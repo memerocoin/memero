@@ -441,7 +441,11 @@ namespace crypto {
     ec_point x;
     const int r = crypto_scalarmult_ed25519_noclamp(x.data.data(), a.data.data(), X.data.data());
     if (r != 0) {
-      LOG_FATAL("mult point is not on curve: \npoint: " << X << "\nscalar" << a << "\nresult: " << x);
+      LOG_FATAL
+        (
+         "mult point is not on curve: \npoint: " << X
+         // << "\nscalar" << a
+         << "\nresult: " << x);
     }
 
     return x;
