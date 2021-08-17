@@ -524,7 +524,7 @@ try_again:
 
   return Bulletproof
     (
-     V, A, S, T1, T2, taux, mu, L, R
+     to_inv8V(V), A, S, T1, T2, taux, mu, to_inv8V(L), to_inv8V(R)
      , aprime[0], bprime[0], t
      );
 }

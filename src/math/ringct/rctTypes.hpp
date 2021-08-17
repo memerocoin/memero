@@ -54,7 +54,7 @@ namespace rct {
     };
 
 
-    using inv8 = crypto::ec_point_unsafe;
+    using inv8 = rct::key;
 
 
     struct scalar : crypto::ec_scalar {
@@ -124,7 +124,7 @@ namespace rct {
         scalar c1;
 
         key I; // signing key image
-        key D; // commitment key image
+        inv8 D; // commitment key image
 
         BEGIN_SERIALIZE_OBJECT()
             FIELD(s)
@@ -136,30 +136,33 @@ namespace rct {
 
     struct Bulletproof
     {
-      rct::keyV V;
-      rct::key A, S, T1, T2;
+      rct::inv8V V;
+      rct::key A, S;
+      inv8 T1, T2;
       rct::scalar taux;
       rct::scalar mu;
-      rct::keyV L, R;
+      rct::inv8V L, R;
       rct::scalar a, b, t;
 
       Bulletproof():
         A({}), S({}), T1({}), T2({}), taux({}), mu({}), a({}), b({}), t({}) {}
       Bulletproof
       (
-       const rct::key &V
-       , const rct::key &A, const rct::key &S, const rct::key &T1, const rct::key &T2
+       const rct::inv8 &V
+       , const rct::key &A, const rct::key &S
+       , const rct::inv8 &T1, const rct::inv8 &T2
        , const rct::scalar &taux, const rct::scalar &mu
-       , const rct::keyV &L, const rct::keyV &R
+       , const rct::inv8V &L, const rct::inv8V &R
        , const rct::scalar &a, const rct::scalar &b, const rct::scalar &t
        ):
         V({V}), A(A), S(S), T1(T1), T2(T2), taux(taux), mu(mu), L(L), R(R), a(a), b(b), t(t) {}
 
       Bulletproof
       (
-       const rct::keyV &V, const rct::key &A, const rct::key &S, const rct::key &T1, const rct::key &T2
+       const rct::inv8V &V, const rct::key &A, const rct::key &S
+       , const rct::inv8 &T1, const rct::inv8 &T2
        , const rct::scalar &taux, const rct::scalar &mu
-       , const rct::keyV &L, const rct::keyV &R
+       , const rct::inv8V &L, const rct::inv8V &R
        , const rct::scalar &a, const rct::scalar &b, const rct::scalar &t
        ):
         V(V), A(A), S(S), T1(T1), T2(T2), taux(taux), mu(mu), L(L), R(R), a(a), b(b), t(t) {}
@@ -427,7 +430,7 @@ namespace rct {
 
     inline const rct::scalar &s2s(const crypto::ec_scalar &s) { return (const rct::scalar&)s; }
 
-    inline const rct::inv8V keyV2invV(const keyV &xs) {
+    inline const rct::inv8V to_inv8V(const keyS &xs) {
       inv8V ys;
       std::transform
         (
@@ -461,7 +464,7 @@ namespace std
 }
 
 BLOB_SERIALIZER(rct::key);
-BLOB_SERIALIZER(rct::inv8);
+// BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::ctkey);
 BLOB_SERIALIZER(rct::scalar);
 BLOB_SERIALIZER(rct::pri_ctkey);
