@@ -37,26 +37,26 @@ namespace rct {
   clsag CLSAG_Gen
   (
    const crypto::hash message
-   , const keyV P
+   , const rct_pointV P
    , const scalar p
-   , const keyV C
+   , const rct_pointV C
    , const scalar z
-   , const keyV C_nonzero
-   , const key C_offset
+   , const rct_pointV C_nonzero
+   , const rct_point C_offset
    , const unsigned int l
    );
 
   clsag proveRctCLSAGSimple
   (
    const crypto::hash message
-   , const ctkeyV pubs
+   , const ctrct_pointV pubs
    , const pri_ctkey inSk
    , const scalar a
-   , const key Cout
+   , const rct_point Cout
    , const unsigned int index
    );
 
-  bool verRctCLSAGSimple(const crypto::hash, const clsag, const ctkeyS, const key);
+  bool verRctCLSAGSimple(const crypto::hash, const clsag, const ctrct_pointS, const rct_point);
 
   //RingCT protocol
   //genRct:
@@ -67,13 +67,13 @@ namespace rct {
   //   verifies that all signatures (rangeProogs, MG sig, sum inputs = outputs) are correct
   //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
   //   uses the attached ecdh info to find the amounts represented by each output commitment
-  //   must know the destination private key to find the correct amount, else will return a random number
+  //   must know the destination private rct_point to find the correct amount, else will return a random number
   rctSig genRctSimple
   (
    const crypto::hash message
-   , const pri_ctkeyV inSk
-   , const ctkeyV inPk
-   , const keyV destinations
+   , const pri_ctrct_pointV inSk
+   , const ctrct_pointV inPk
+   , const rct_pointV destinations
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
    , const scalarV amount_keys
@@ -84,15 +84,15 @@ namespace rct {
   rctSig genRctSimple
   (
    const crypto::hash message
-   , const pri_ctkeyV inSk
-   , const keyV destinations
+   , const pri_ctrct_pointV inSk
+   , const rct_pointV destinations
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
    , const amount_t txnFee
-   , const ctkeyM mixRing
+   , const ctrct_pointM mixRing
    , const scalarV amount_keys
    , const std::vector<size_t> index
-   , pri_ctkeyV& outSk
+   , pri_ctrct_pointV& outSk
    );
 
   bool verRctSemanticsSimple(const rctSig rv);

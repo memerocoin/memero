@@ -57,7 +57,7 @@ namespace proof {
    , hw::device &hwdev
    )
   {
-    rct::key  aP;
+    rct::rct_point  aP;
     // determine if the address is found in the subaddress hash table (i.e. whether the proof is outbound or inbound)
 
     // const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;

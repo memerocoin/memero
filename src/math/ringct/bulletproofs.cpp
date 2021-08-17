@@ -54,7 +54,7 @@
 namespace rct
 {
 
-rct::key vector_exponent(const scalarS a, const scalarS b);
+rct::rct_point vector_exponent(const scalarS a, const scalarS b);
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
@@ -62,20 +62,20 @@ constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 const rct::scalarV oneN = vector_powers(rct::s_one, maxN);
 const rct::scalarV twoN = vector_powers(rct::s_two, maxN);
 
-std::array<rct::key, maxN*maxM> Hi;
-std::array<rct::key, maxN*maxM> Gi;
+std::array<rct::rct_point, maxN*maxM> Hi;
+std::array<rct::rct_point, maxN*maxM> Gi;
 
 const static rct::scalar ip12 = inner_product(oneN, twoN);
 
 const auto multiexp = dummy;
 
-rct::key get_exponent(const rct::key base, size_t idx)
+rct::rct_point get_exponent(const rct::rct_point base, size_t idx)
 {
   constexpr std::string_view domain_separator(config::HASH_KEY_BULLETPROOF_EXPONENT);
   const std::string hashed =
     std::string((const char*)base.data.begin(), base.data.size()) + std::string(domain_separator) + tools::get_varint_data(idx);
 
-  rct::key e = rct::hash_to_key_via_f2
+  rct::rct_point e = rct::hash_to_key_via_f2
     ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
 
   LOG_ERROR_AND_THROW_IF((e == rct::identity), "Exponent is point at infinity");
@@ -116,7 +116,7 @@ void init_exponents()
 }
 
 /* Given two scalar arrays, construct a vector commitment */
-rct::key vector_exponent(const scalarS a, const scalarS b)
+rct::rct_point vector_exponent(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
   LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
@@ -144,12 +144,12 @@ rct::key vector_exponent(const scalarS a, const scalarS b)
 }
 
 /* Compute a custom vector-scalar commitment */
-rct::key cross_vector_exponent8
+rct::rct_point cross_vector_exponent8
 (
  const size_t size
- , const std::span<key> A
+ , const std::span<rct_point> A
  , const size_t Ao
- , const std::span<key> B
+ , const std::span<rct_point> B
  , const size_t Bo
  , const scalarS a
  , const size_t ao
@@ -205,9 +205,9 @@ rct::key cross_vector_exponent8
 
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-keyV hadamard_fold
+rct_pointV hadamard_fold
 (
- const keyS v
+ const rct_pointS v
  , const std::optional<rct::scalarS> scale
  , const rct::scalar a
  , const rct::scalar b
@@ -215,7 +215,7 @@ keyV hadamard_fold
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
-  std::vector<key> out(sz);
+  std::vector<rct_point> out(sz);
 
   std::generate
     (
@@ -282,7 +282,7 @@ Bulletproof bulletproof_MAKE(const rct::scalarV sv, const rct::scalarV gamma)
   const size_t logMN = logM + logN;
   const size_t MN = M * N;
 
-  rct::keyV V(sv.size());
+  rct::rct_pointV V(sv.size());
   rct::scalarV aL(MN), aR(MN);
   rct::scalarV aL8(MN), aR8(MN);
 
@@ -324,13 +324,13 @@ try_again:
 
   // PAPER LINES 43-44
   const rct::scalar alpha = rct::skGen();
-  const key A = vector_exponent(aL8, aR8) + rct::multG(alpha * rct::s_inv_eight);
+  const rct_point A = vector_exponent(aL8, aR8) + rct::multG(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
   const rct::scalarV sL = rct::skvGen(MN);
   const rct::scalarV sR = rct::skvGen(MN);
   const rct::scalar rho = rct::skGen();
-  const rct::key S = multP(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
+  const rct::rct_point S = multP(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
 
   // PAPER LINES 48-50
   const scalar y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, A, S});
@@ -383,8 +383,8 @@ try_again:
   const rct::scalar tau1 = rct::skGen();
   const rct::scalar tau2 = rct::skGen();
 
-  const key T1 = multG(tau1 * rct::s_inv_eight) + multH(t1 * rct::s_inv_eight);
-  const key T2 = multG(tau2 * rct::s_inv_eight) + multH(t2 * rct::s_inv_eight);
+  const rct_point T1 = multG(tau1 * rct::s_inv_eight) + multH(t1 * rct::s_inv_eight);
+  const rct_point T2 = multG(tau2 * rct::s_inv_eight) + multH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
   const rct::scalar x = hash_carry = hash_keys_to_scalar
@@ -424,8 +424,8 @@ try_again:
 
   // These are used in the inner product rounds
   size_t nprime = MN;
-  std::vector<key> Gprime(MN);
-  std::vector<key> Hprime(MN);
+  std::vector<rct_point> Gprime(MN);
+  std::vector<rct_point> Hprime(MN);
   rct::scalarV aprime(MN);
   rct::scalarV bprime(MN);
   const rct::scalar yinv = invert(y);
@@ -441,8 +441,8 @@ try_again:
     aprime[i] = l[i];
     bprime[i] = r[i];
   }
-  rct::keyV L(logMN);
-  rct::keyV R(logMN);
+  rct::rct_pointV L(logMN);
+  rct::rct_pointV R(logMN);
   int round = 0;
   rct::scalarV w(logMN); // this is the challenge x in the inner product protocol
 

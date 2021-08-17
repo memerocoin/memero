@@ -225,12 +225,12 @@ namespace hw {
             return r && public_key == calculated_pub;
         }
 
-        bool device_default::multP(rct::key & aP, const rct::key &P, const rct::scalar &a) {
+        bool device_default::multP(rct::rct_point & aP, const rct::rct_point &P, const rct::scalar &a) {
             aP = rct::multP(P,a);
             return true;
         }
 
-        bool device_default::multG(rct::key &aG, const rct::scalar &a) {
+        bool device_default::multG(rct::rct_point &aG, const rct::scalar &a) {
             aG = rct::multG(a);
             return true;
         }
@@ -380,7 +380,7 @@ namespace hw {
         , size_t inputs_size
         , size_t outputs_size
         , const crypto::dataV &hashes
-        , const rct::ctkeyV &outPk
+        , const rct::ctrct_pointV &outPk
         , crypto::hash &prehash
         )
         {
@@ -392,12 +392,12 @@ namespace hw {
         (
          const rct::scalar &p
          , const rct::scalar &z
-         , rct::key &I
-         , rct::key &D
-         , const rct::key &H
+         , rct::rct_point &I
+         , rct::rct_point &D
+         , const rct::rct_point &H
          , rct::scalar &a
-         , rct::key &aG
-         , rct::key &aH
+         , rct::rct_point &aG
+         , rct::rct_point &aH
          ) {
             std::tie(a, aG) = rct::skpkGen(); // aG = a*G
             aH = rct::multP(H, a); // aH = a*H

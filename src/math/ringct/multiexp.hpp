@@ -42,14 +42,14 @@ namespace rct
 
 struct MultiexpData {
   rct::scalar scalar;
-  key point;
+  rct_point point;
 
   MultiexpData() {}
-  MultiexpData(const rct::scalar s, const key p): scalar(s), point(p) {
+  MultiexpData(const rct::scalar s, const rct_point p): scalar(s), point(p) {
     assert(is_valid_point(p));
   }
 };
 
-rct::key dummy(const std::span<MultiexpData> data);
+rct::rct_point dummy(const std::span<MultiexpData> data);
 
 }

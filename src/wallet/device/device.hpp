@@ -159,8 +159,8 @@ namespace hw {
         /*                            DERIVATION & KEY                             */
         /* ======================================================================= */
         virtual bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) = 0;
-        virtual bool  multP(rct::key & aP, const rct::key &P, const rct::scalar &a) = 0;
-        virtual bool  multG(rct::key &aG, const rct::scalar &a) = 0;
+        virtual bool  multP(rct::rct_point & aP, const rct::rct_point &P, const rct::scalar &a) = 0;
+        virtual bool  multG(rct::rct_point &aG, const rct::scalar &a) = 0;
         virtual bool  sc_secret_add( crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) = 0;
         virtual crypto::secret_key  generate_keys
         (
@@ -177,16 +177,16 @@ namespace hw {
         virtual crypto::key_image generate_key_image(const crypto::public_key &pub, const crypto::secret_key &sec) = 0;
 
         // alternative prototypes available in libringct
-        rct::key multP(const rct::key &P, const rct::scalar &a)
+        rct::rct_point multP(const rct::rct_point &P, const rct::scalar &a)
         {
-            rct::key aP;
+            rct::rct_point aP;
             multP(aP, P, a);
             return aP;
         }
 
-        rct::key multG(const rct::scalar &a)
+        rct::rct_point multG(const rct::scalar &a)
         {
-            rct::key aG;
+            rct::rct_point aG;
             multG(aG, a);
             return aG;
         }
@@ -231,7 +231,7 @@ namespace hw {
        , size_t inputs_size
        , size_t outputs_size
        , const crypto::dataV &hashes
-       , const rct::ctkeyV &outPk
+       , const rct::ctrct_pointV &outPk
        , crypto::hash &prehash
        ) = 0;
 
@@ -239,12 +239,12 @@ namespace hw {
         (
          const rct::scalar &p
          , const rct::scalar &z
-         , rct::key &I
-         , rct::key &D
-         , const rct::key &H
+         , rct::rct_point &I
+         , rct::rct_point &D
+         , const rct::rct_point &H
          , rct::scalar &a
-         , rct::key &aG
-         , rct::key &aH
+         , rct::rct_point &aG
+         , rct::rct_point &aH
          ) = 0;
         virtual rct::scalar clsag_hash(const crypto::dataS data) = 0;
         virtual bool clsag_sign

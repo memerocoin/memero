@@ -88,36 +88,36 @@ namespace rct {
     clsag CLSAG_Gen
     (
      const crypto::hash message
-     , const keyV P
+     , const rct_pointV P
      , const scalar p
-     , const keyV C
+     , const rct_pointV C
      , const scalar z
-     , const keyV C_nonzero
-     , const key C_offset
+     , const rct_pointV C_nonzero
+     , const rct_point C_offset
      , const unsigned int l
      ) {
         hw::device& hwdev = hw::get_device("default");
         clsag sig;
         size_t n = P.size(); // ring size
-        LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment key vector sizes must match!");
-        LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment key vector sizes must match!");
+        LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment rct_point vector sizes must match!");
+        LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment rct_point vector sizes must match!");
         LOG_ERROR_AND_THROW_UNLESS(l < n, "Signing index out of range!");
 
-        // Key images
-        key H = hash_to_key_via_f2(P[l]);
+        // rct_point images
+        rct_point H = hash_to_key_via_f2(P[l]);
 
-        key D;
+        rct_point D;
 
         // Initial values
         scalar a;
-        key aG;
-        key aH;
+        rct_point aG;
+        rct_point aH;
 
         {
           hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
         }
 
-        // Offset key image
+        // Offset rct_point image
         sig.D = multP(D, rct::s_inv_eight);
 
         // Aggregation hashes
@@ -189,8 +189,8 @@ namespace rct {
 
         // Decoy indices
         sig.s = scalarV(n);
-        key L;
-        key R;
+        rct_point L;
+        rct_point R;
         scalar c_p; // = c[i]*mu_P
         scalar c_c; // = c[i]*mu_C
 
@@ -211,7 +211,7 @@ namespace rct {
                );
 
             // Compute R
-            const key A = hash_to_key_via_f2(P[i]);
+            const rct_point A = hash_to_key_via_f2(P[i]);
             R = addPoints
               (
                std::array
@@ -287,21 +287,21 @@ namespace rct {
     clsag proveRctCLSAGSimple
     (
      const crypto::hash message
-     , const ctkeyV pubs
+     , const ctrct_pointV pubs
      , const pri_ctkey inSk
      , const scalar a
-     , const key Cout
+     , const rct_point Cout
      , const unsigned int index
      ) {
         //setup vars
         size_t rows = 1;
         size_t cols = pubs.size();
         LOG_ERROR_AND_THROW_UNLESS(cols >= 1, "Empty pubs");
-        keyV tmp(rows + 1);
+        rct_pointV tmp(rows + 1);
         scalarV sk(rows + 1);
-        keyM M(cols, tmp);
+        rct_pointM M(cols, tmp);
 
-        keyV P, C, C_nonzero;
+        rct_pointV P, C, C_nonzero;
         P.reserve(pubs.size());
         C.reserve(pubs.size());
         C_nonzero.reserve(pubs.size());
@@ -309,7 +309,7 @@ namespace rct {
         {
             P.push_back(k.dest);
             C_nonzero.push_back(k.mask);
-            rct::key tmp;
+            rct::rct_point tmp;
             tmp = k.mask - Cout;
             C.push_back(tmp);
         }
@@ -322,7 +322,7 @@ namespace rct {
     }
 
 
-    bool verRctCLSAGSimpleMayThrow(const crypto::hash message, const clsag sig, const ctkeyS pubs, const key C_offset)
+    bool verRctCLSAGSimpleMayThrow(const crypto::hash message, const clsag sig, const ctrct_pointS pubs, const rct_point C_offset)
     {
         const size_t n = pubs.size();
 
@@ -332,17 +332,17 @@ namespace rct {
         for (const auto &s: sig.s)
           LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(s), false, "Bad signature scalar!");
         LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(sig.c1), false, "Bad signature commitment!");
-        LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad key image!");
+        LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad rct_point image!");
 
         if (!is_valid_point(C_offset)) {
           LOG_ERROR("C_offset is not a valid point: " << C_offset);
           return false;
         }
 
-        // Prepare key images
+        // Prepare rct_point images
         scalar c = sig.c1;
-        key D_8 = multP8(sig.D);
-        LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary key image!");
+        rct_point D_8 = multP8(sig.D);
+        LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary rct_point image!");
 
         // Aggregation hashes
         crypto::dataV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
@@ -401,8 +401,8 @@ namespace rct {
         scalar c_p; // = c[i]*mu_P
         scalar c_c; // = c[i]*mu_C
         scalar c_new;
-        key L;
-        key R;
+        rct_point L;
+        rct_point R;
         size_t i = 0;
 
         while (i < n) {
@@ -410,13 +410,13 @@ namespace rct {
             c_p = mu_P * c;
             c_c = mu_C * c;
 
-            const key mask = pubs[i].mask;
+            const rct_point mask = pubs[i].mask;
             if (!is_valid_point(mask)) {
               LOG_ERROR("pubs[" << i << "].mask.data is not a valid point: " << mask);
               return false;
             }
 
-            const key C = mask - C_offset;
+            const rct_point C = mask - C_offset;
 
             // Compute L
             L = addPoints
@@ -430,7 +430,7 @@ namespace rct {
                );
 
             // Compute R
-            const key k = hash_to_key_via_f2(pubs[i].dest);
+            const rct_point k = hash_to_key_via_f2(pubs[i].dest);
 
             R = addPoints
               (
@@ -454,7 +454,7 @@ namespace rct {
         return c_new == s_zero;
     }
 
-    bool verRctCLSAGSimple(const crypto::hash message, const clsag sig, const ctkeyS pubs, const key C_offset) {
+    bool verRctCLSAGSimple(const crypto::hash message, const clsag sig, const ctrct_pointS pubs, const rct_point C_offset) {
       try {
         return verRctCLSAGSimpleMayThrow(message, sig, pubs, C_offset);
       }
@@ -467,7 +467,7 @@ namespace rct {
         a.dest = pkGen();
     }
 
-    size_t populateRingsSimple(ctkeyV& mixRing, const ctkey inPk, const size_t mixin) {
+    size_t populateRingsSimple(ctrct_pointV& mixRing, const ctkey inPk, const size_t mixin) {
         size_t index = ((size_t)std::rand()) % (mixin + 1);
         for (size_t i = 0; i <= mixin; i++) {
             if (i != index) {
@@ -482,15 +482,15 @@ namespace rct {
     rctSig genRctSimple
     (
      const crypto::hash message
-     , const pri_ctkeyV inSk
-     , const keyV destinations
+     , const pri_ctrct_pointV inSk
+     , const rct_pointV destinations
      , const vector<amount_t> inamounts
      , const vector<amount_t> outamounts
      , const amount_t txnFee
-     , const ctkeyM mixRing
+     , const ctrct_pointM mixRing
      , const scalarV amount_keys
      , const std::vector<size_t> index
-     , pri_ctkeyV& outSk
+     , pri_ctrct_pointV& outSk
      ) {
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
@@ -510,7 +510,7 @@ namespace rct {
         rv.ecdhInfo.resize(destinations.size());
 
         size_t i;
-        keyV masks(destinations.size()); //sk mask..
+        rct_pointV masks(destinations.size()); //sk mask..
         outSk.resize(destinations.size());
         for (i = 0; i < destinations.size(); i++) {
 
@@ -549,9 +549,9 @@ namespace rct {
         //set txn fee
         rv.txnFee = txnFee;
 //        TODO: unused ??
-//        key txnFeeKey = multH(int_to_scalar(rv.txnFee));
+//        rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
         rv.mixRing = mixRing;
-        keyV &pseudoOuts = rv.p.pseudoOuts;
+        rct_pointV &pseudoOuts = rv.p.pseudoOuts;
         pseudoOuts.resize(inamounts.size());
         rv.p.CLSAGs.resize(inamounts.size());
         // TODO: scalar
@@ -586,9 +586,9 @@ namespace rct {
     rctSig genRctSimple
     (
      const crypto::hash message
-     , const pri_ctkeyV inSk
-     , const ctkeyV inPk
-     , const keyV destinations
+     , const pri_ctrct_pointV inSk
+     , const ctrct_pointV inPk
+     , const rct_pointV destinations
      , const std::vector<amount_t> inamounts
      , const std::vector<amount_t> outamounts
      , const scalarV amount_keys
@@ -597,8 +597,8 @@ namespace rct {
      ) {
         std::vector<size_t> index;
         index.resize(inPk.size());
-        ctkeyM mixRing;
-        pri_ctkeyV outSk;
+        ctrct_pointM mixRing;
+        pri_ctrct_pointV outSk;
         mixRing.resize(inPk.size());
         for (size_t i = 0; i < inPk.size(); ++i) {
           mixRing[i].resize(mixin+1);
@@ -657,17 +657,17 @@ namespace rct {
         results.resize(max_non_bp_proofs);
         for (const rctSig& rv: rvv)
         {
-          const keyV &pseudoOuts = rv.p.pseudoOuts;
+          const rct_pointV &pseudoOuts = rv.p.pseudoOuts;
 
-          rct::keyV masks(rv.outPk.size());
+          rct::rct_pointV masks(rv.outPk.size());
           for (size_t i = 0; i < rv.outPk.size(); i++) {
             masks[i] = rv.outPk[i].mask;
           }
-          key sumOutpks = addPoints(masks);
-          const key txnFeeKey = multH(int_to_scalar(rv.txnFee));
+          rct_point sumOutpks = addPoints(masks);
+          const rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
           sumOutpks = txnFeeKey + sumOutpks;
 
-          key sumPseudoOuts = addPoints(pseudoOuts);
+          rct_point sumPseudoOuts = addPoints(pseudoOuts);
 
           //check pseudoOuts vs Outs..
           if (sumPseudoOuts != sumOutpks) {
@@ -744,7 +744,7 @@ namespace rct {
         tools::threadpool& tpool = tools::threadpool::getInstance();
         tools::threadpool::waiter waiter(tpool);
 
-        const keyV &pseudoOuts = rv.p.pseudoOuts;
+        const rct_pointV &pseudoOuts = rv.p.pseudoOuts;
 
         const crypto::hash message = get_mlsag_pre_hash(rv);
 
@@ -798,11 +798,11 @@ namespace rct {
         hwdev.ecdhDecode(ecdh_info, sk);
         mask = ecdh_info.mask;
         const crypto::ec_scalar_unnormalized amount_raw = ecdh_info.amount;
-        key C = rv.outPk[i].mask;
+        rct_point C = rv.outPk[i].mask;
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(mask), "warning, bad ECDH mask");
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_raw), "warning, bad ECDH amount");
         const auto amount = rct::s2s(crypto::reduce(amount_raw));
-        const key Ctmp = addMultG_H(mask, amount);
+        const rct_point Ctmp = addMultG_H(mask, amount);
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
         }

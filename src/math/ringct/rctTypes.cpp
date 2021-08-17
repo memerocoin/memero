@@ -46,22 +46,22 @@ namespace rct {
 
     //Various Conversions
 
-    key key::operator+(const key& y) const
+    rct_point rct_point::operator+(const rct_point& y) const
     {
       return p2rct(ec_point::operator+(y));
     }
 
-    key key::operator-(const key& y) const
+    rct_point rct_point::operator-(const rct_point& y) const
     {
       return p2rct(ec_point::operator-(y));
     }
 
-    key key::operator*(const uint64_t y) const
+    rct_point rct_point::operator*(const uint64_t y) const
     {
       return p2rct(ec_point::operator*(y));
     }
 
-    bool key::operator<(const key& y) const
+    bool rct_point::operator<(const rct_point& y) const
     {
       return std::strncmp((const char*)data.data(), (const char*)y.data.data(), data.size()) < 0;
     }
@@ -86,8 +86,8 @@ namespace rct {
       return s2s(crypto::int_to_scalar(in));
     }
 
-    //32 byte key to uint long long
-    // if the key holds a value > 2^64
+    //32 byte rct_point to uint long long
+    // if the rct_point holds a value > 2^64
     // then the value in the first 8 bytes is returned
     amount_t scalar_to_int(const scalar & in) {
       return crypto::scalar_to_int(in);

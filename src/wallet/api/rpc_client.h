@@ -68,7 +68,7 @@ private:
    std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
    , uint64_t global_index
    , const crypto::public_key& tx_public_key
-   , const rct::key& mask
+   , const rct::rct_point& mask
    , uint64_t real_index
    , bool unlocked
    ) const;

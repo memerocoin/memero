@@ -442,7 +442,7 @@ namespace cryptonote
     struct outkey
     {
       crypto::public_key key;
-      rct::key mask;
+      rct::rct_point mask;
       bool unlocked;
       uint64_t height;
       crypto::hash txid;

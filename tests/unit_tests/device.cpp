@@ -65,11 +65,11 @@ TEST(device, open_close)
 TEST(device, ops)
 {
   hw::core::device_default dev;
-  rct::key resd, res;
+  rct::rct_point resd, res;
   crypto::secret_key resd_s, res_s;
   crypto::key_derivation derd, der;
   rct::scalar sk;
-  rct::key pk;
+  rct::rct_point pk;
   crypto::secret_key sk0, sk1;
   crypto::public_key pk0, pk1;
   crypto::ec_scalar ressc0, ressc1;
@@ -127,7 +127,7 @@ TEST(device, ecdh32)
 
   hw::core::device_default dev;
   rct::ecdhTuple tuple, tuple2;
-  rct::key key = rct::skGen();
+  rct::rct_point key = rct::skGen();
   tuple.mask = rct::skGen();
   tuple.amount = rct::skGen();
   tuple2 = tuple;

@@ -49,7 +49,7 @@ TEST(ringct, CLSAG)
 {
   const size_t N = 11;
   const size_t idx = 5;
-  ctkeyV pubs;
+  ctrct_pointV pubs;
   scalar p, t, t2, u;
   const crypto::hash message = crypto::d2h(rct::identity);
   ctkey backup;
@@ -76,7 +76,7 @@ TEST(ringct, CLSAG)
 
   // Set commitment offset
   t2 = skGen();
-  key Cout = addMultG_H(t2,u);
+  rct_point Cout = addMultG_H(t2,u);
 
   // Prepare generation inputs
   pri_ctkey insk;
@@ -86,11 +86,11 @@ TEST(ringct, CLSAG)
 
   // clsag proveRctCLSAGSimple
   //   (
-  //    const key &
-  //    , const ctkeyV &
+  //    const rct_point &
+  //    , const ctrct_pointV &
   //    , const ctkey &
-  //    , const key &
-  //    , const key &
+  //    , const rct_point &
+  //    , const rct_point &
   //    , const unsigned int
   //    );
 
@@ -170,7 +170,7 @@ TEST(ringct, CLSAG)
 
   // too few s elements
   scalar backup_s;
-  key backup_key;
+  rct_point backup_key;
   inv8 backup_key_inv8;
   backup_s = clsag.s.back();
   clsag.s.pop_back();
@@ -211,7 +211,7 @@ TEST(ringct, CLSAG)
 
   // D not in main subgroup in clsag at verification
   backup_key_inv8 = clsag.D;
-  rct::key x;
+  rct::rct_point x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
   clsag.D = rct::unsafe_d2rct(clsag.D) + x;
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
@@ -236,15 +236,15 @@ TEST(ringct, CLSAG)
 
 static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
 {
-    pri_ctkeyV sc;
-    ctkeyV pc;
+    pri_ctrct_pointV sc;
+    ctrct_pointV pc;
     pri_ctkey sctmp;
     ctkey pctmp;
     vector<amount_t> inamounts, outamounts;
-    keyV destinations;
+    rct_pointV destinations;
     scalarV amount_keys;
     scalar Sk;
-    key Pk;
+    rct_point Pk;
 
     for (int n = 0; n < n_inputs; ++n) {
         inamounts.push_back(input_amounts[n]);
@@ -503,14 +503,14 @@ TEST(ringct, range_proofs_accept_very_long_simple)
 
 TEST(ringct, HPow2)
 {
-  // key G = multG(int_to_scalar(1));
+  // rct_point G = multG(int_to_scalar(1));
 
   // in lolnero, hashPoint uses sha3, but H is hashPoint with keccak256, so we use that H
-  key H = rct::H;
+  rct_point H = rct::H;
   ASSERT_TRUE(crypto::is_valid_point(H)); // this is known to pass for the particular value G
 
-  // key H_2;
-  // key H_2_8 = mult8(H_2);
+  // rct_point H_2;
+  // rct_point H_2_8 = mult8(H_2);
   // ge_p2 H_p2;
   // ge_p3_to_p2(&H_p2, &H_p3);
   // ge_p1p1 H8_p1p1;
@@ -637,22 +637,22 @@ TEST(ringct, key_ostream)
 TEST(ringct, dummyCommit)
 {
   static const uint64_t amount = crypto::rand<uint64_t>();
-  const rct::key z = rct::dummyCommit(amount);
-  const rct::key a = rct::multG(rct::s_one);
-  const rct::key b = rct::multH(rct::int_to_scalar(amount));
-  const rct::key manual = a + b;
+  const rct::rct_point z = rct::dummyCommit(amount);
+  const rct::rct_point a = rct::multG(rct::s_one);
+  const rct::rct_point b = rct::multH(rct::int_to_scalar(amount));
+  const rct::rct_point manual = a + b;
   ASSERT_EQ(z, manual);
 }
 
 TEST(ringct, mul8)
 {
-  rct::key key;
+  rct::rct_point p;
   ASSERT_EQ(rct::multP8(rct::identity), rct::identity);
-  key = rct::multP8(rct::identity);
-  ASSERT_EQ(key, rct::identity);
+  p = rct::multP8(rct::identity);
+  ASSERT_EQ(p, rct::identity);
   ASSERT_EQ(rct::multP8(rct::H), rct::multP(rct::H, rct::s_eight));
-  key = rct::multP8(rct::H);
-  ASSERT_EQ(key, rct::multP(rct::H, rct::s_eight));
+  p = rct::multP8(rct::H);
+  ASSERT_EQ(p, rct::multP(rct::H, rct::s_eight));
   ASSERT_EQ(rct::multP(rct::multP(rct::H, rct::s_inv_eight), rct::s_eight), rct::H);
 }
 

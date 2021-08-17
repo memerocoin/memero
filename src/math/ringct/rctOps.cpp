@@ -50,16 +50,16 @@
 
 namespace rct {
 
-  //Various key initialization functions
+  //Various rct_point initialization functions
 
-  //initializes a key matrix;
+  //initializes a rct_point matrix;
   //first parameter is rows,
   //second is columns
-  keyM keyMInit(size_t rows, size_t cols) {
-    keyM rv(cols);
+  rct_pointM rct_pointMInit(size_t rows, size_t cols) {
+    rct_pointM rv(cols);
     size_t i = 0;
     for (i = 0 ; i < cols ; i++) {
-      rv[i] = keyV(rows);
+      rv[i] = rct_pointV(rows);
     }
     return rv;
   }
@@ -67,9 +67,9 @@ namespace rct {
 
 
 
-  //Various key generation functions
+  //Various rct_point generation functions
 
-  //generates a random scalar which can be used as a secret key or mask
+  //generates a random scalar which can be used as a secret rct_point or mask
   scalar skGen() {
     return s2s(crypto::scalarGen());
   }
@@ -87,19 +87,19 @@ namespace rct {
   }
 
   //generates a random curve point (for testing)
-  key pkGen() {
+  rct_point pkGen() {
     scalar sk = skGen();
     return multG(sk);
   }
 
   //generates a random secret and corresponding public key
-  std::pair<scalar, key> skpkGen() {
+  std::pair<scalar, rct_point> skpkGen() {
     const scalar sk = skGen();
     return std::make_pair(sk, multG(sk));
   }
 
   //generates C =aG + bH from b, a is given..
-  key genC(const scalar a, amount_t amount) {
+  rct_point genC(const scalar a, amount_t amount) {
     return addMultG_H(a, int_to_scalar(amount));
   }
 
@@ -111,14 +111,14 @@ namespace rct {
     std::tie(sk.blinding_factor, pk.mask) = skpkGen();
 
     const scalar am = int_to_scalar(amount);
-    const key bH = multH(am);
+    const rct_point bH = multH(am);
     pk.mask = pk.mask + bH;
     return std::make_pair(sk, pk);
   }
 
 
   //generates a <secret , public> / Pedersen commitment but takes bH as input
-  std::pair<pri_ctkey, ctkey> ctskpkGen(const key bH) {
+  std::pair<pri_ctkey, ctkey> ctskpkGen(const rct_point bH) {
     pri_ctkey sk;
     ctkey pk;
     std::tie(sk.addr, pk.dest) = skpkGen();
@@ -128,13 +128,13 @@ namespace rct {
     return std::make_pair(sk, pk);
   }
 
-  key dummyCommit(const amount_t amount) {
+  rct_point dummyCommit(const amount_t amount) {
     scalar am = int_to_scalar(amount);
-    key bH = multH(am);
+    rct_point bH = multH(am);
     return G + bH;
   }
 
-  key commit(const amount_t amount, const scalar &mask) {
+  rct_point commit(const amount_t amount, const scalar &mask) {
     return genC(mask, amount);
   }
 
@@ -150,36 +150,36 @@ namespace rct {
   }
 
   //does a * G where a is a scalar and G is the curve basepoint
-  key multG(const scalar a) {
+  rct_point multG(const scalar a) {
     scalar s = normalizeKey(a);
     return p2rct(crypto::multBase(s));
   }
 
   //does a * P where a is a scalar and P is an arbitrary point
-  key multP(const key P, const scalar a) {
+  rct_point multP(const rct_point P, const scalar a) {
     scalar s = normalizeKey(a);
     return p2rct(crypto::mult(P, s));
   }
 
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
-  key multH(const scalar a) {
+  rct_point multH(const scalar a) {
     return multP(H, a);
   }
 
   //Computes 8P
-  key multP8(const crypto::ec_point_unsafe P) {
+  rct_point multP8(const crypto::ec_point_unsafe P) {
     return p2rct(crypto::mult8(P));
   }
 
-  key multP8Safe(const key P) {
+  rct_point multP8Safe(const rct_point P) {
     return p2rct(crypto::mult8Safe(P));
   }
 
 
   //Curve addition / subtractions
 
-  rct::key addPoints(const keyS A) {
+  rct::rct_point addPoints(const rct_pointS A) {
     return std::reduce
       (
        A.begin()
@@ -190,7 +190,7 @@ namespace rct {
 
   //addPoints2
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
-  key addMultG_H(const scalar a, const scalar b) {
+  rct_point addMultG_H(const scalar a, const scalar b) {
     return multG(a) + multH(b);
   }
 
@@ -214,7 +214,7 @@ namespace rct {
     return s2s(reduce(d2s(h2d(hash_keys(keys)))));
   }
 
-  key hash_to_key_via_f2(const crypto::crypto_data k) {
+  rct_point hash_to_key_via_f2(const crypto::crypto_data k) {
     const auto h = h2d(hash_key(k));
     const crypto::ec_point p = viaF2Mult8(h);
     return p2rct(p);

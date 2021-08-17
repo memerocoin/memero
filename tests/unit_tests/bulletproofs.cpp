@@ -130,7 +130,7 @@ TEST(bulletproofs, invalid_torsion)
   ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
   for (const auto &xs: torsion_elements)
   {
-    rct::key x;
+    rct::rct_point x;
     ASSERT_TRUE(epee::string_tools::hex_to_pod(xs, x));
     ASSERT_FALSE(crypto::is_valid_point(x));
     for (auto &k: proof.V)

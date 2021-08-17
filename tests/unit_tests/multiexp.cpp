@@ -36,22 +36,22 @@
 #define TESTPOW2SCALAR []{ static const rct::scalar TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()
 #define TESTSMALLSCALAR []{ static const rct::scalar TESTSMALLSCALAR = {{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTSMALLSCALAR; }()
 #define TESTPOINT []{ \
-    static const rct::key TESTPOINT = rct::multG(rct::skGen()); \
+    static const rct::rct_point TESTPOINT = rct::multG(rct::skGen()); \
  return TESTPOINT;                                                   \
 }()
 
-static rct::key basic(const std::vector<rct::MultiexpData> &data)
+static rct::rct_point basic(const std::vector<rct::MultiexpData> &data)
 {
-  rct::key res = rct::identity;
+  rct::rct_point res = rct::identity;
   for (const auto &d: data)
   {
-    rct::key p3 = rct::multP(d.point, d.scalar);
+    rct::rct_point p3 = rct::multP(d.point, d.scalar);
     res = res + p3;
   }
   return res;
 }
 
-static rct::key get_p(const rct::key &point)
+static rct::rct_point get_p(const rct::rct_point &point)
 {
   EXPECT_TRUE(crypto::is_valid_point(point));
   return point;
@@ -130,7 +130,7 @@ TEST(multiexp, pippenger_cached)
 TEST(multiexp, scalarmult_triple)
 {
   std::vector<rct::MultiexpData> data;
-  rct::key res;
+  rct::rct_point res;
 
   static const rct::scalar scalars[] = {
     rct::s_zero,
@@ -139,7 +139,7 @@ TEST(multiexp, scalarmult_triple)
     rct::s_eight,
     rct::s_inv_eight,
   };
-  static const rct::key points[] = {
+  static const rct::rct_point points[] = {
     rct::identity,
     rct::H,
     rct::G,

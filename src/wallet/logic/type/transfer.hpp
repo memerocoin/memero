@@ -58,8 +58,8 @@ namespace transfer {
     size_t m_pk_index;
     cryptonote::subaddress_index m_subaddr_index;
     bool m_key_image_partial;
-    std::vector<rct::key> m_multisig_k;
-    std::vector<rct::key> m_fake_multisig_info; // one per other participant
+    std::vector<rct::rct_point> m_multisig_k;
+    std::vector<rct::rct_point> m_fake_multisig_info; // one per other participant
     std::vector<std::pair<uint64_t, crypto::hash>> m_uses;
 
     bool is_rct() const { return m_rct; }

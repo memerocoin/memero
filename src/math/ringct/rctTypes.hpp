@@ -45,17 +45,17 @@ namespace rct {
     //  similar to secret_key / public_key of crypto-ops,
     //  but uses unsigned chars,
     //  also includes an operator for accessing the i'th byte.
-    struct key : crypto::ec_point {
-      key operator+(const key& y) const;
-      key operator-(const key& y) const;
+    struct rct_point : crypto::ec_point {
+      rct_point operator+(const rct_point& y) const;
+      rct_point operator-(const rct_point& y) const;
 
-      key operator*(const uint64_t x) const;
-      bool operator<(const key& y) const;
+      rct_point operator*(const uint64_t x) const;
+      bool operator<(const rct_point& y) const;
     };
 
 
     using inv8 = crypto::ec_point_unsafe;
-    using reconstructed_key = rct::key;
+    using reconstructed_key = rct::rct_point;
 
 
     struct scalar : crypto::ec_scalar {
@@ -64,10 +64,10 @@ namespace rct {
       scalar operator*(const scalar& y) const;
     };
 
-    using keyV = std::vector<key>; //vector of keys
-    using keyM = std::vector<keyV>; //matrix of keys (indexed by column first)
-    using keyS = std::span<const key>; //vector of keys
-    using keyL = std::list<const key>; //vector of keys
+    using rct_pointV = std::vector<rct_point>; //vector of keys
+    using rct_pointM = std::vector<rct_pointV>; //matrix of keys (indexed by column first)
+    using rct_pointS = std::span<const rct_point>; //vector of keys
+    using rct_pointL = std::list<const rct_point>; //vector of keys
 
     using scalarV = std::vector<scalar>; //vector of keys
     using scalarM = std::vector<scalarV>; //matrix of keys (indexed by column first)
@@ -80,30 +80,30 @@ namespace rct {
 
 
     //containers For CT operations
-    //if it's  representing a private ctkey then "dest" contains the secret key of the address
+    //if it's  representing a private ctkey then "dest" contains the secret rct_point of the address
     // while "mask" contains a where C = aG + bH is CT pedersen commitment and b is the amount
     // (store b, the amount, separately
     //if it's representing a public ctkey, then "dest" = P the address, mask = aG the commitment
     struct ctkey {
-        key dest;
-        key mask; //C here if public
+        rct_point dest;
+        rct_point mask; //C here if public
     };
-    typedef std::vector<ctkey> ctkeyV;
-    typedef std::vector<ctkeyV> ctkeyM;
-    typedef std::span<const ctkey> ctkeyS;
+    typedef std::vector<ctkey> ctrct_pointV;
+    typedef std::vector<ctrct_pointV> ctrct_pointM;
+    typedef std::span<const ctkey> ctrct_pointS;
 
     struct pri_ctkey {
       scalar addr;
       scalar blinding_factor; //C here if public
     };
 
-    typedef std::vector<pri_ctkey> pri_ctkeyV;
-    typedef std::vector<pri_ctkeyV> pri_ctkeyM;
-    typedef std::span<const pri_ctkey> pri_ctkeyS;
+    typedef std::vector<pri_ctkey> pri_ctrct_pointV;
+    typedef std::vector<pri_ctrct_pointV> pri_ctrct_pointM;
+    typedef std::span<const pri_ctkey> pri_ctrct_pointS;
 
     //data for passing the amount to the receiver secretly
     // If the pedersen commitment to an amount is C = aG + bH,
-    // "mask" contains a 32 byte key a
+    // "mask" contains a 32 byte rct_point a
     // "amount" contains a hex representation (in 32 bytes) of a 64 bit number
     // the purpose of the ECDH exchange
     struct ecdhTuple {
@@ -124,8 +124,8 @@ namespace rct {
         scalarV s; // scalars
         scalar c1;
 
-        reconstructed_key I; // signing key image
-        inv8 D; // commitment key image
+        reconstructed_key I; // signing rct_point image
+        inv8 D; // commitment rct_point image
 
         BEGIN_SERIALIZE_OBJECT()
             FIELD(s)
@@ -221,11 +221,11 @@ namespace rct {
     struct rctSigBase {
         uint8_t type;
         crypto::hash message;
-        ctkeyM mixRing; //the set of all pubkeys / copy
+        ctrct_pointM mixRing; //the set of all pubkeys / copy
         //pairs that you mix with
-        keyV pseudoOuts; //C - for simple rct
+        rct_pointV pseudoOuts; //C - for simple rct
         std::vector<ecdhTuple> ecdhInfo;
-        ctkeyV outPk;
+        ctrct_pointV outPk;
         amount_t txnFee; // contains b
 
         template<bool W, template <bool> class Archive>
@@ -289,7 +289,7 @@ namespace rct {
     struct rctSigPrunable {
         std::vector<Bulletproof> bulletproofs;
         std::vector<clsag> CLSAGs;
-        keyV pseudoOuts; //C - for simple rct
+        rct_pointV pseudoOuts; //C - for simple rct
 
         // when changing this function, update cryptonote::get_pruned_transaction_weight
         template<bool W, template <bool> class Archive>
@@ -391,12 +391,12 @@ namespace rct {
     struct rctSig: public rctSigBase {
         rctSigPrunable p;
 
-        keyV& get_pseudo_outs()
+        rct_pointV& get_pseudo_outs()
         {
           return type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
         }
 
-        keyV const& get_pseudo_outs() const
+        rct_pointV const& get_pseudo_outs() const
         {
           return type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
         }
@@ -409,8 +409,8 @@ namespace rct {
 
     //various conversions
 
-    //32 byte key to uint long long
-    // if the key holds a value > 2^64
+    //32 byte rct_point to uint long long
+    // if the rct_point holds a value > 2^64
     // then the value in the first 8 bytes is returned
     amount_t scalar_to_int(const scalar &in);
 
@@ -420,18 +420,18 @@ namespace rct {
     inline const rct::scalar &sk2scalar(const crypto::secret_key &sk) { return (const rct::scalar&)sk; }
     inline const crypto::secret_key &scalar2sk(const rct::scalar&k) { return (const crypto::secret_key&)k; }
 
-    inline const rct::key &pk2rct(const crypto::public_key &pk) { return (const rct::key&)pk; }
-    inline const rct::key &ki2rct(const crypto::key_image &ki) { return (const rct::key&)ki; }
-    inline const rct::key &p2rct(const crypto::ec_point &p) { return (const rct::key&)p; }
+    inline const rct::rct_point &pk2rct(const crypto::public_key &pk) { return (const rct::rct_point&)pk; }
+    inline const rct::rct_point &ki2rct(const crypto::key_image &ki) { return (const rct::rct_point&)ki; }
+    inline const rct::rct_point &p2rct(const crypto::ec_point &p) { return (const rct::rct_point&)p; }
 
-    inline const crypto::public_key &rct2pk(const rct::key &k) { return (const crypto::public_key&)k; }
-    inline const crypto::secret_key &unsafe_rct2sk(const rct::key &k) { return (const crypto::secret_key&)k; }
-    inline const crypto::key_image &rct2ki(const rct::key &k) { return (const crypto::key_image&)k; }
-    inline const crypto::hash &rct2hash(const rct::key &k) { return (const crypto::hash&)k; }
+    inline const crypto::public_key &rct2pk(const rct::rct_point &k) { return (const crypto::public_key&)k; }
+    inline const crypto::secret_key &unsafe_rct2sk(const rct::rct_point &k) { return (const crypto::secret_key&)k; }
+    inline const crypto::key_image &rct2ki(const rct::rct_point &k) { return (const crypto::key_image&)k; }
+    inline const crypto::hash &rct2hash(const rct::rct_point &k) { return (const crypto::hash&)k; }
 
     inline const rct::scalar &s2s(const crypto::ec_scalar &s) { return (const rct::scalar&)s; }
 
-    inline const rct::inv8V to_inv8V(const keyS &xs) {
+    inline const rct::inv8V to_inv8V(const rct_pointS &xs) {
       inv8V ys;
       std::transform
         (
@@ -446,14 +446,14 @@ namespace rct {
 
 
     // unsafe
-    inline const rct::key &unsafe_hash2rct(const crypto::hash &h) { return (const rct::key&)h; }
-    inline const rct::key &unsafe_d2rct(const crypto::crypto_data &p) { return (const rct::key&)p; }
+    inline const rct::rct_point &unsafe_hash2rct(const crypto::hash &h) { return (const rct::rct_point&)h; }
+    inline const rct::rct_point &unsafe_d2rct(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
 }
 
 
 
 namespace rct {
-inline std::ostream &operator <<(std::ostream &o, const rct::key &v) {
+inline std::ostream &operator <<(std::ostream &o, const rct::rct_point &v) {
   epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
 }
 }
@@ -461,14 +461,13 @@ inline std::ostream &operator <<(std::ostream &o, const rct::key &v) {
 
 namespace std
 {
-  template<> struct hash<rct::key> { std::size_t operator()(const rct::key &k) const { return reinterpret_cast<const std::size_t&>(k); } };
+  template<> struct hash<rct::rct_point> { std::size_t operator()(const rct::rct_point &k) const { return reinterpret_cast<const std::size_t&>(k); } };
 }
 
-BLOB_SERIALIZER(rct::key);
+BLOB_SERIALIZER(rct::rct_point);
 BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::ctkey);
 BLOB_SERIALIZER(rct::scalar);
 BLOB_SERIALIZER(rct::pri_ctkey);
-
 
 BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);

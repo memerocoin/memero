@@ -90,8 +90,8 @@ namespace hw {
             /*                            DERIVATION & KEY                             */
             /* ======================================================================= */
             bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key)  override;
-            bool  multP(rct::key & aP, const rct::key &P, const rct::scalar &a) override;
-            bool  multG(rct::key &aG, const rct::scalar &a) override;
+            bool  multP(rct::rct_point & aP, const rct::rct_point &P, const rct::scalar &a) override;
+            bool  multG(rct::rct_point &aG, const rct::scalar &a) override;
             bool  sc_secret_add(crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) override;
             crypto::secret_key  generate_keys
             (
@@ -145,7 +145,7 @@ namespace hw {
             , size_t inputs_size
             , size_t outputs_size
             , const crypto::dataV &hashes
-            , const rct::ctkeyV &outPk
+            , const rct::ctrct_pointV &outPk
             , crypto::hash &prehash
             ) override;
 
@@ -153,12 +153,12 @@ namespace hw {
             (
              const rct::scalar &p
              , const rct::scalar &z
-             , rct::key &I
-             , rct::key &D
-             , const rct::key &H
+             , rct::rct_point &I
+             , rct::rct_point &D
+             , const rct::rct_point &H
              , rct::scalar &a
-             , rct::key &aG
-             , rct::key &aH
+             , rct::rct_point &aG
+             , rct::rct_point &aH
              ) override;
 
             rct::scalar clsag_hash(const crypto::dataS data) override;

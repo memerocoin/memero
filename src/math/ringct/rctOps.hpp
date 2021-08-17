@@ -49,43 +49,43 @@ namespace rct {
   constexpr scalar s_inv_eight = INV_EIGHT;
   constexpr scalar s_minus_inv_eight = MINUS_INV_EIGHT;
 
-  constexpr key zero = Z;
+  constexpr rct_point zero = Z;
 
-  constexpr key emptyPoint = Z;
+  constexpr rct_point emptyPoint = Z;
   //Creates a zero elliptic curve point
-  constexpr key identity = I;
+  constexpr rct_point identity = I;
 
-  //initializes a key matrix;
+  //initializes a rct_point matrix;
   //first parameter is rows,
   //second is columns
-  keyM keyMInit(size_t rows, size_t cols);
+  rct_pointM rct_pointMInit(size_t rows, size_t cols);
 
-  //Various key generation functions
+  //Various rct_point generation functions
 
-  //generates a random scalar which can be used as a secret key or mask
+  //generates a random scalar which can be used as a secret rct_point or mask
   scalar skGen();
 
   //generates a vector of secret keys of size "int"
   scalarV skvGen(size_t rows );
 
   //generates a random curve point (for testing)
-  key pkGen();
-  std::pair<scalar, key> skpkGen();
+  rct_point pkGen();
+  std::pair<scalar, rct_point> skpkGen();
 
   //generates a <secret , public> / Pedersen commitment to the amount
   std::pair<pri_ctkey, ctkey> ctskpkGen(amount_t amount);
 
   //generates C =aG + bH from b, a is random
-  key genC(const scalar a, amount_t amount);
+  rct_point genC(const scalar a, amount_t amount);
 
   //this one is mainly for testing, can take arbitrary amounts..
-  std::pair<pri_ctkey, ctkey> ctskpkGen(const key bH);
+  std::pair<pri_ctkey, ctkey> ctskpkGen(const rct_point bH);
 
   // make a pedersen commitment with given key
-  key commit(const amount_t amount, const scalar &mask);
+  rct_point commit(const amount_t amount, const scalar &mask);
 
   // make a pedersen commitment with zero key
-  key dummyCommit(const amount_t amount);
+  rct_point dummyCommit(const amount_t amount);
 
   //generates a random uint long long
   amount_t randXmrAmount(const amount_t upperlimit);
@@ -93,24 +93,24 @@ namespace rct {
   //Scalar multiplications of curve points
 
   //does a * G where a is a scalar and G is the curve basepoint
-  key multG(const scalar a);
+  rct_point multG(const scalar a);
 
   //does a * P where a is a scalar and P is an arbitrary point
-  key multP(const key P, const scalar a);
+  rct_point multP(const rct_point P, const scalar a);
 
   //Computes aH where H= toPoint(sha3(G)), G the basepoint
-  key multH(const scalar a);
+  rct_point multH(const scalar a);
 
   // multiplies a point by 8
-  key multP8(const crypto::ec_point_unsafe P);
-  key multP8Safe(const key P);
+  rct_point multP8(const crypto::ec_point_unsafe P);
+  rct_point multP8Safe(const rct_point P);
 
   //Curve addition / subtractions
 
-  rct::key addPoints(const keyS A);
+  rct::rct_point addPoints(const rct_pointS A);
 
   //aGbB = aG + bH where a, b are scalars, G is the basepoint and H is the second basepoint
-  key addMultG_H(const scalar a, const scalar b);
+  rct_point addMultG_H(const scalar a, const scalar b);
 
   crypto::hash hash_key(const crypto::crypto_data in);
   scalar hash_to_scalar(const crypto::crypto_data in);
@@ -122,7 +122,7 @@ namespace rct {
 
   //for ANSL
 
-  key hash_to_key_via_f2(const crypto::crypto_data k);
+  rct_point hash_to_key_via_f2(const crypto::crypto_data k);
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH

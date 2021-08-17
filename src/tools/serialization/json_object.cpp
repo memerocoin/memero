@@ -1026,7 +1026,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
 {
   dest.StartObject();
 
-  std::vector<rct::key> masks;
+  std::vector<rct::rct_point> masks;
   masks.reserve(sig.outPk.size());
   std::transform(sig.outPk.begin(), sig.outPk.end(), std::back_inserter(masks),
                 [] (const auto & key) { return key.mask; } );
@@ -1071,7 +1071,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
   const auto prunable = val.FindMember("prunable");
   if (prunable != val.MemberEnd())
   {
-    rct::keyV pseudo_outs = std::move(sig.get_pseudo_outs());
+    rct::rct_pointV pseudo_outs = std::move(sig.get_pseudo_outs());
 
     READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.bulletproofs, bulletproofs);
     READ_JSON_VALUE_BY_KEY(prunable->value, pseudo_outs, pseudo_outs);

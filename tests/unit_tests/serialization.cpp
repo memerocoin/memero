@@ -466,12 +466,12 @@ TEST(Serialization, serializes_transacion_signatures_correctly)
 TEST(Serialization, serializes_ringct_types)
 {
   string blob;
-  rct::key key0, key1;
-  rct::keyV keyv0, keyv1;
-  rct::keyM keym0, keym1;
+  rct::rct_point key0, key1;
+  rct::rct_pointV keyv0, keyv1;
+  rct::rct_pointM keym0, keym1;
   rct::ctkey ctkey0, ctkey1;
-  rct::ctkeyV ctkeyv0, ctkeyv1;
-  rct::ctkeyM ctkeym0, ctkeym1;
+  rct::ctrct_pointV ctkeyv0, ctkeyv1;
+  rct::ctrct_pointM ctkeym0, ctkeym1;
   rct::ecdhTuple ecdh0, ecdh1;
   rct::clsag clsag0, clsag1;
   rct::rctSig s0, s1;
@@ -493,7 +493,7 @@ TEST(Serialization, serializes_ringct_types)
     ASSERT_TRUE(keyv0[n] == keyv1[n]);
   }
 
-  keym0 = rct::keyMInit(9, 12);
+  keym0 = rct::rct_pointMInit(9, 12);
   for (size_t n = 0; n < keym0.size(); ++n)
     for (size_t i = 0; i < keym0[n].size(); ++i)
       keym0[n][i] = rct::s2k(rct::skGen());
@@ -525,7 +525,7 @@ TEST(Serialization, serializes_ringct_types)
     ASSERT_TRUE(!memcmp(&ctkeyv0[n], &ctkeyv1[n], sizeof(ctkeyv0[n])));
   }
 
-  ctkeym0 = std::vector<rct::ctkeyV>(9);
+  ctkeym0 = std::vector<rct::ctrct_pointV>(9);
   for (size_t n = 0; n < ctkeym0.size(); ++n)
   {
     ctkeym0[n] = std::vector<rct::ctkey>(11);
@@ -553,8 +553,8 @@ TEST(Serialization, serializes_ringct_types)
 
   // create a full rct signature to use its innards
   vector<uint64_t> inamounts;
-  rct::pri_ctkeyV sc;
-  rct::ctkeyV pc;
+  rct::pri_ctrct_pointV sc;
+  rct::ctrct_pointV pc;
   rct::pri_ctkey sctmp;
   rct::ctkey pctmp;
   inamounts.push_back(6000);
@@ -566,12 +566,12 @@ TEST(Serialization, serializes_ringct_types)
   sc.push_back(sctmp);
   pc.push_back(pctmp);
   vector<uint64_t> amounts;
-  rct::keyV amount_keys;
+  rct::rct_pointV amount_keys;
   //add output 500
   amounts.push_back(500);
   amount_keys.push_back(rct::hash_to_scalar(rct::zero));
-  rct::keyV destinations;
-  rct::key Sk, Pk;
+  rct::rct_pointV destinations;
+  rct::rct_point Sk, Pk;
   rct::skpkGen(Sk, Pk);
   destinations.push_back(Pk);
   //add output for 12500

@@ -759,7 +759,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       if (!hwdev.generate_key_derivation(tx_pub_key, keys.m_view_secret_key, derivation))
       {
         LOG_WARNING("Failed to generate key derivation from tx pubkey in " << txid << ", skipping");
-        static_assert(sizeof(derivation) == sizeof(rct::key), "Mismatched sizes of key_derivation and rct::key");
+        static_assert(sizeof(derivation) == sizeof(rct::rct_point), "Mismatched sizes of key_derivation and rct::rct_point");
         derivation = p2derivation(rct::identity);
       }
 
@@ -1357,7 +1357,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
     if (!hwdev.generate_key_derivation(iod.pkey, keys.m_view_secret_key, iod.derivation))
     {
       LOG_WARNING("Failed to generate key derivation from tx pubkey, skipping");
-      static_assert(sizeof(iod.derivation) == sizeof(rct::key), "Mismatched sizes of key_derivation and rct::key");
+      static_assert(sizeof(iod.derivation) == sizeof(rct::rct_point), "Mismatched sizes of key_derivation and rct::rct_point");
       iod.derivation = p2derivation(rct::identity);
     }
   };
@@ -3500,7 +3500,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   LOG_PRINT_L2("preparing outputs");
   size_t i = 0, out_index = 0;
   std::vector<cryptonote::tx_source_entry> sources;
-  std::unordered_set<rct::key> used_L;
+  std::unordered_set<rct::rct_point> used_L;
   for(size_t idx: selected_transfers)
   {
     sources.resize(sources.size()+1);

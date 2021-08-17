@@ -23,14 +23,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace rct
 {
 
-rct::key dummy(const std::span<rct::MultiexpData> data)
+rct::rct_point dummy(const std::span<rct::MultiexpData> data)
 {
   return std::transform_reduce
     (
      data.begin()
      , data.end()
      , rct::identity
-     , std::plus<key>()
+     , std::plus<rct_point>()
      , [](const auto& x) {
        return rct::multP(x.point, x.scalar);
      }
