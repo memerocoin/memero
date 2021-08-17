@@ -26,11 +26,18 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <boost/uuid/uuid.hpp>
 #include "gtest/gtest.h"
+
+
+#include "tools/epee/include/string_tools.h"
+
 #include "math/crypto/crypto.hpp"
+#include "math/crypto/random.hpp"
+
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 #include "cryptonote/protocol/block_queue.h"
+
+#include <boost/uuid/uuid.hpp>
 
 static const boost::uuids::uuid &uuid1()
 {

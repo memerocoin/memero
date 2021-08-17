@@ -34,12 +34,16 @@
 #include <algorithm>
 #include <sstream>
 
+#include "tools/epee/include/string_tools.h"
+
 #include "math/ringct/rctTypes.hpp"
 #include "math/ringct/rctSigs.hpp"
 #include "math/ringct/rctOps.hpp"
 #include "math/ringct/curveConstants.hpp"
+#include "math/crypto/random.hpp"
+
 #include "wallet/device/device.hpp"
-#include "tools/epee/include/string_tools.h"
+
 
 using namespace std;
 using namespace crypto;

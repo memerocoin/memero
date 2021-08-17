@@ -32,7 +32,8 @@
 #pragma once
 
 
-#include "math/crypto/crypto.hpp" // crypto::
+#include "math/crypto/crypto.hpp"
+#include "math/crypto/random.hpp"
 
 #include <random>
 

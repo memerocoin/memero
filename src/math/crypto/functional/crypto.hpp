@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../hash.hpp"
-#include "../random.hpp"
 
 #include <sodium.h>
 
@@ -47,6 +46,10 @@ namespace crypto {
   inline std::ostream &operator <<(std::ostream &o, const crypto::crypto_data &v) {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
+
+  using dataV = std::vector<crypto_data>;
+  using dataS = std::span<crypto_data>;
+
 
   struct ec_point_unsafe : crypto_data {
     bool operator==(const ec_point_unsafe &x) const { return 0 == crypto_verify_32(data.data(), x.data.data()); }
@@ -93,10 +96,6 @@ namespace crypto {
   inline std::ostream &operator <<(std::ostream &o, const crypto::signature &v) {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
-
-  using dataV = std::vector<crypto_data>;
-  using dataS = std::span<crypto_data>;
-
 
   inline const ec_scalar_unnormalized &h2s(const hash &x) { return (const ec_scalar&)x; }
   inline const ec_point_unsafe &h2p(const hash &x) { return (const ec_point&)x; }
@@ -192,16 +191,6 @@ namespace crypto {
 
   bool is_reduced(const ec_scalar_unnormalized x);
   bool is_not_reduced(const ec_scalar_unnormalized x);
-
-  inline std::size_t hash_value(const crypto_data& x) {
-    boost::hash<std::array<uint8_t,32>> array_hash;
-    return array_hash(x.data);
-  }
-
-  inline std::size_t hash_value(const public_key& x) {
-    boost::hash<std::array<uint8_t,32>> array_hash;
-    return array_hash(x.data);
-  }
 }
 
 namespace std

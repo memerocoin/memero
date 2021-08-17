@@ -47,6 +47,8 @@
 #include "tools/serialization/binary_utils.h"
 #include "tools/common/json_util.h"
 
+#include "math/crypto/random.hpp"
+
 #include <cstdint>
 
 

@@ -32,7 +32,10 @@
 #include "miner.h"
 
 #include "tools/common/command_line.h"
+#include "math/crypto/random.hpp"
+
 #include "cryptonote/tx/cryptonote_tx_utils.h"
+
 
 #include <openssl/evp.h>
 

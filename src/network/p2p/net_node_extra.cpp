@@ -36,6 +36,8 @@
 
 #include "network/type/parse.h"
 
+#include "math/crypto/random.hpp"
+
 #include <boost/uuid/uuid_io.hpp>
 
 

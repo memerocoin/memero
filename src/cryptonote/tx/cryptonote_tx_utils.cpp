@@ -34,6 +34,8 @@
 #include "tools/common/apply_permutation.h"
 #include "tools/epee/include/string_tools.h"
 
+#include "math/crypto/random.hpp"
+
 #include "math/ringct/rctSigs.hpp"
 
 
