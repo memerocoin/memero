@@ -43,11 +43,8 @@ namespace crypto {
     std::array<uint8_t, HASH_SIZE> data;
   };
   struct hash8 {
-    uint8_t data[8];
+    std::array<uint8_t, 8> data;
   };
-
-  static_assert(sizeof(hash) == HASH_SIZE, "Invalid structure size");
-  static_assert(sizeof(hash8) == 8, "Invalid structure size");
 
   /*
     Cryptonight hash functions
