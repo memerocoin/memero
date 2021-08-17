@@ -31,6 +31,7 @@
 
 #pragma once
 
+#include "group.hpp"
 #include "hash.hpp"
 
 #include <sodium.h>
@@ -38,39 +39,6 @@
 #include <boost/functional/hash.hpp>
 
 namespace crypto {
-  struct crypto_data {
-    std::array<uint8_t, 32> data;
-  };
-
-  // not really functional but needed in other part of the code
-  inline std::ostream &operator <<(std::ostream &o, const crypto::crypto_data &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
-
-  using dataV = std::vector<crypto_data>;
-  using dataS = std::span<crypto_data>;
-
-
-  struct ec_point_unsafe : crypto_data {
-    bool operator==(const ec_point_unsafe &x) const { return 0 == crypto_verify_32(data.data(), x.data.data()); }
-  };
-
-  struct ec_point : ec_point_unsafe {
-    ec_point operator+(const ec_point& x) const;
-    ec_point operator-(const ec_point& x) const;
-    ec_point operator*(const uint64_t x) const;
-  };
-
-  struct ec_scalar_unnormalized : crypto_data {
-    bool operator==(const ec_scalar_unnormalized &x) const { return 0 == crypto_verify_32(data.data(), x.data.data()); }
-  };
-
-  struct ec_scalar : ec_scalar_unnormalized {
-    ec_scalar operator+(const ec_scalar& x) const;
-    ec_scalar operator-(const ec_scalar& x) const;
-    ec_scalar operator*(const ec_scalar& x) const;
-  };
-
   struct secret_key: ec_scalar{
   };
 
@@ -111,8 +79,6 @@ namespace crypto {
   inline const ec_point_unsafe &d2p(const crypto_data &x) { return (const ec_point_unsafe&)x; }
   inline const crypto_data &h2d(const hash &x) { return (const crypto_data&)x; }
   inline const hash &d2h(const crypto_data &x) { return (const hash&)x; }
-
-  inline const ec_point &unsafe_p2p(const ec_point_unsafe &x) { return (const ec_point&)x; }
 
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index);
 
@@ -165,32 +131,9 @@ namespace crypto {
   const crypto::public_key null_pkey = {};
   const crypto::secret_key null_skey = {};
 
-  inline constexpr ec_scalar s_0 = {};
-  inline constexpr ec_point identity =
-    {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-
-  inline constexpr ec_point generator =
-    { { 0x58, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66
-        , 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66 } };
-
-  bool is_valid_point(const ec_point_unsafe x);
-
-  std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x);
-  ec_point mult(const ec_point X, const ec_scalar);
   ec_point mult8(const ec_point_unsafe X);
-  ec_point mult8Safe(const ec_point X);
-  ec_point multBase(const ec_scalar);
-
-  ec_scalar invert(const ec_scalar x);
-
-  ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
-
   ec_point viaF2Mult8(const crypto_data x);
-
-  ec_scalar reduce(const ec_scalar_unnormalized x);
-
-  bool is_reduced(const ec_scalar_unnormalized x);
-  bool is_not_reduced(const ec_scalar_unnormalized x);
+  ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 }
 
 namespace std

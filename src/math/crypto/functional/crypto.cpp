@@ -51,60 +51,6 @@ extern "C" {
 
 namespace crypto {
 
-  ec_point add(const ec_point X, const ec_point Y) {
-    ec_point p;
-    int r = crypto_core_ed25519_add(p.data.data(), X.data.data(), Y.data.data());
-    if (r != 0) {
-      LOG_FATAL("add keys not in main group: " << X << "\n" << Y);
-    }
-
-    return p;
-  }
-
-  ec_point ec_point::operator+(const ec_point& x) const {
-    return add(*this, x);
-  }
-
-  ec_point sub(const ec_point X, const ec_point Y) {
-    ec_point p;
-    int r = crypto_core_ed25519_sub(p.data.data(), X.data.data(), Y.data.data());
-    if (r != 0) {
-      LOG_FATAL("sub keys not in main group: " << X << "\n" << Y);
-    }
-
-    return p;
-  }
-
-  ec_point ec_point::operator-(const ec_point& x) const {
-    return sub(*this, x);
-  }
-
-  ec_point ec_point::operator*(const uint64_t x) const {
-    return mult(*this, int_to_scalar(x));
-  }
-
-  ec_scalar ec_scalar::operator+(const ec_scalar& x) const {
-    ec_scalar s;
-    crypto_core_ed25519_scalar_add(s.data.data(), this->data.data(), x.data.data());
-    return s;
-  }
-
-  ec_scalar ec_scalar::operator-(const ec_scalar& x) const {
-    ec_scalar s;
-    crypto_core_ed25519_scalar_sub(s.data.data(), this->data.data(), x.data.data());
-    return s;
-  }
-
-  ec_scalar ec_scalar::operator*(const ec_scalar& x) const {
-    ec_scalar s;
-    crypto_core_ed25519_scalar_mul(s.data.data(), this->data.data(), x.data.data());
-    return s;
-  }
-
-  bool is_valid_point(const ec_point_unsafe x) {
-    return crypto_core_ed25519_is_valid_point(x.data.data());
-  }
-
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) {
     const epee::blob::data hashData =
       epee::blob::data(derivation.data.data(), derivation.data.size())
@@ -235,38 +181,6 @@ namespace crypto {
     return mult8(viaF2(x));
   }
 
-  ec_point multBase(const ec_scalar x) {
-    ec_point p;
-    const int r = crypto_scalarmult_ed25519_base_noclamp(p.data.data(), x.data.data());
-    if (r != 0) {
-      LOG_FATAL("scalar mult base failed");
-    }
-    return p;
-  }
-
-
-  ec_point mult(const ec_point X, const ec_scalar a) {
-    if (a == s_0) {
-      return identity;
-    }
-
-    ec_point x;
-    const int r = crypto_scalarmult_ed25519_noclamp(x.data.data(), a.data.data(), X.data.data());
-    if (r != 0) {
-      LOG_FATAL
-        (
-         "mult point is not on curve: \npoint: " << X
-         // << "\nscalar" << a
-         << "\nresult: " << x);
-    }
-
-    return x;
-  }
-
-  ec_point mult8Safe(const ec_point X) {
-    return X * 8;
-  }
-
   // needed because point can be out of main group
   ec_point mult8(const ec_point_unsafe X) {
     ge_p3 in;
@@ -286,44 +200,12 @@ namespace crypto {
     return res;
   }
 
-  // multiplicative inverse
-  ec_scalar invert(const ec_scalar x)
-  {
-    ec_scalar r;
-    crypto_core_ed25519_scalar_invert(r.data.data(), x.data.data());
-    return r;
-  }
-
   key_image generate_key_image(const public_key &pub, const secret_key &sec) {
     const ec_point h8 = viaF2Mult8(h2p(sha3(pub.data)));
     const ec_point p = mult(h8, sec);
     return p2img(p);
   }
 
-  ec_scalar reduce(const ec_scalar_unnormalized x) {
-    unsigned char t[64] = {0};
-    std::copy(x.data.begin(), x.data.end(), t);
-
-    ec_scalar s;
-    crypto_core_ed25519_scalar_reduce(s.data.data(), t);
-    return s;
-  }
-
-  bool is_reduced(const ec_scalar_unnormalized x) {
-    return reduce(x) == x;
-  }
-
-  bool is_not_reduced(const ec_scalar_unnormalized x) {
-    return !(is_reduced(x));
-  }
-
-  std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) {
-    if (is_valid_point(x)) {
-      return unsafe_p2p(x);
-    } else {
-      return {};
-    }
-  }
 
   //uint long long to 32 byte key
   ec_scalar int_to_scalar(const uint64_t in) {

@@ -30,7 +30,6 @@
 
 #pragma once
 
-
 #include "../controller/sha3.hpp"
 #include "../controller/tree-hash.hpp"
 

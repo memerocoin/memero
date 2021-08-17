@@ -30,6 +30,7 @@
 
 
 add_library(math_crypto
+  functional/group.cpp
   functional/crypto.cpp
   functional/hash.cpp
   controller/crypto.cpp

@@ -49,7 +49,7 @@ namespace rct {
       rct_point operator+(const rct_point& y) const;
       rct_point operator-(const rct_point& y) const;
 
-      rct_point operator*(const uint64_t x) const;
+      // rct_point operator*(const uint64_t x) const;
       bool operator<(const rct_point& y) const;
     };
 
