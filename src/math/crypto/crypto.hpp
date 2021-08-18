@@ -31,6 +31,6 @@
 
 #pragma once
 
-#include "functional/crypto.hpp"
+#include "functional/key.hpp"
 #include "controller/key.hpp"
 

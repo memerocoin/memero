@@ -30,14 +30,15 @@
 
 
 add_library(math_crypto
+
+  functional/hash.cpp
   functional/group.cpp
   functional/curve25519_cryptonote_extension.cpp
-  functional/crypto.cpp
-  functional/hash.cpp
+  functional/key.cpp
 
-  controller/key.cpp
   controller/sha3.cpp
   controller/tree-hash.cpp
+  controller/key.cpp
   controller/chacha.cpp
   controller/random.cpp
   )

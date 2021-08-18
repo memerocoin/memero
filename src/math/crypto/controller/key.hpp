@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "../functional/crypto.hpp"
+#include "../functional/key.hpp"
 
 namespace crypto {
   //generates a random rct_scalar which can be used as a secret key or mask
