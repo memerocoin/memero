@@ -34,7 +34,8 @@ add_library(math_crypto
   functional/curve25519_cryptonote_extension.cpp
   functional/crypto.cpp
   functional/hash.cpp
-  controller/crypto.cpp
+
+  controller/key.cpp
   controller/sha3.cpp
   controller/tree-hash.cpp
   controller/chacha.cpp
