@@ -64,20 +64,15 @@ namespace rct {
   }
 
 
-  //generates C =aG + bH from b, a is given..
-  rct_point genC(const rct_scalar a, amount_t amount) {
-    return addMultG_H(a, int_to_scalar(amount));
+
+  rct_point commit(const rct_scalar mask, const amount_t amount) {
+    return addMultG_H(mask ,int_to_scalar(amount));
   }
 
   rct_point dummyCommit(const amount_t amount) {
-    rct_scalar am = int_to_scalar(amount);
-    rct_point bH = multH(am);
-    return G + bH;
+    return commit(s_one, amount);
   }
 
-  rct_point commit(const amount_t amount, const rct_scalar &mask) {
-    return genC(mask, amount);
-  }
 
   //Scalar multiplications of curve points
 

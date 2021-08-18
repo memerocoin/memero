@@ -327,10 +327,10 @@ namespace rct {
         for (i = 0 ; i < inamounts.size() - 1; i++) {
             a[i] = skGen();
             sumpouts = a[i] + sumpouts;
-            pseudoOuts[i] = genC(a[i], inamounts[i]);
+            pseudoOuts[i] = commit(a[i], inamounts[i]);
         }
         a[i] = s2s(sumout - sumpouts);
-        pseudoOuts[i] = genC(a[i], inamounts[i]);
+        pseudoOuts[i] = commit(a[i], inamounts[i]);
 
         crypto::hash full_message = get_mlsag_pre_hash(rv);
         for (i = 0 ; i < inamounts.size(); i++)

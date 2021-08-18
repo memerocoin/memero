@@ -62,11 +62,9 @@ namespace rct {
 
   //Various rct_point generation functions
 
-  //generates C =aG + bH from b, a is random
-  rct_point genC(const rct_scalar a, amount_t amount);
-
   // make a pedersen commitment with given key
-  rct_point commit(const amount_t amount, const rct_scalar &mask);
+  // generates C = mask * G + amount * H
+  rct_point commit(const rct_scalar mask, const amount_t amount);
 
   // make a pedersen commitment with zero key
   rct_point dummyCommit(const amount_t amount);
