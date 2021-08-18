@@ -42,7 +42,7 @@ target_link_libraries(math_ringct_basic
 )
 
 add_library(math_ringct
-  functional/rctSigs.cpp
+  pseudo_functional/rctSigs.cpp
   controller/rctSigGen.cpp
 )
 

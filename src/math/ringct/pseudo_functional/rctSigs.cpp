@@ -30,7 +30,7 @@
 
 #include "rctSigs.hpp"
 
-#include "curveConstants.hpp"
+#include "math/ringct/functional/curveConstants.hpp"
 
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
 

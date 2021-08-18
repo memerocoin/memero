@@ -34,7 +34,7 @@
 #include "tools/epee/include/logging.hpp"
 
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/functional/rctSigs.hpp"
+#include "math/ringct/pseudo_functional/rctSigs.hpp"
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
 #include "math/ringct/controller/rctGen.hpp"
 #include "math/crypto/controller/random.hpp"

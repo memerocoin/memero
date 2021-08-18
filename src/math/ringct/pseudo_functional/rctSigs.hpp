@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "rctOps.hpp"
+#include "math/ringct/functional/rctOps.hpp"
 
 namespace rct {
   bool verRctCLSAGSimple(const crypto::hash, const clsag, const ct_public_keyS, const rct_point);

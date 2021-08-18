@@ -32,7 +32,7 @@
 #include "tx_pool.h"
 #include "core_type.h"
 
-#include "math/ringct/functional/rctSigs.hpp"
+#include "math/ringct/pseudo_functional/rctSigs.hpp"
 
 #include "tools/common/threadpool.h"
 #include "tools/common/notify.h"

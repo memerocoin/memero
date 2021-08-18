@@ -44,7 +44,7 @@
 
 #include "network/rpc/core_rpc_server_error_codes.h"
 
-#include "math/ringct/functional/rctSigs.hpp"
+#include "math/ringct/pseudo_functional/rctSigs.hpp"
 #include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/tx/tx_sanity_check.h"
