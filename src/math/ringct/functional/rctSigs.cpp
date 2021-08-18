@@ -787,9 +787,11 @@ namespace rct {
       }
     }
 
-    amount_t decodeRctSimple(const rctSig rv, const rct_scalar sk, const unsigned int i, rct_scalar& mask) {
+    std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar sk, const unsigned int i)
+    {
+        rct_scalar mask;
         hw::device& hwdev = hw::get_device("default");
-        LOG_ERROR_AND_RETURN_UNLESS(rv.type == RCTTypeCLSAG, false, "decodeRct called on non simple rctSig");
+        LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctSig");
         LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");
         LOG_ERROR_AND_THROW_UNLESS(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
 
@@ -806,6 +808,6 @@ namespace rct {
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
-        return scalar_to_int(amount);
+        return {scalar_to_int(amount), mask};
     }
 }

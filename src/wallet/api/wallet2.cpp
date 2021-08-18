@@ -596,8 +596,11 @@ static uint64_t decodeRct(const rct::rctSig & rv, const crypto::key_derivation &
   {
     switch (rv.type)
     {
-    case rct::RCTTypeCLSAG:
-      return rct::decodeRctSimple(rv, rct::s2s(scalar1), i, mask);
+    case rct::RCTTypeCLSAG: {
+      const auto [amount, mask_] = rct::decodeRctSimple(rv, rct::s2s(scalar1), i);
+      mask = mask_;
+      return amount;
+    }
     default:
       LOG_ERROR("Unsupported rct type: " << rv.type);
       return 0;

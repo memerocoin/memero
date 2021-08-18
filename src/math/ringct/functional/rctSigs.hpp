@@ -102,7 +102,7 @@ namespace rct {
     return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv);
   }
 
-  amount_t decodeRctSimple(const rctSig rv, const rct_scalar sk, const unsigned int i, rct_scalar& mask);
+  std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar sk, const unsigned int i);
   crypto::hash get_mlsag_pre_hash(const rctSig rv);
 }
 
