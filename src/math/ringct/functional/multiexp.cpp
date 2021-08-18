@@ -15,8 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-#include "rctOps.hpp"
 #include "multiexp.hpp"
+
+#include "rctOps.hpp"
 
 #include <functional>
 #include <numeric>

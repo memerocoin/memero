@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "math/ringct/rctTypes.hpp"
+#include "math/ringct/functional/rctTypes.hpp"
 
 #include "math/crypto/controller/chacha.hpp"
 

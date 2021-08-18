@@ -36,7 +36,7 @@
 
 #include "math/crypto/controller/random.hpp"
 
-#include "math/ringct/rctSigs.hpp"
+#include "math/ringct/functional/rctSigs.hpp"
 
 
 

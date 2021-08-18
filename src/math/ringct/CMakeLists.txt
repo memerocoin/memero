@@ -28,11 +28,11 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(math_ringct_basic
-  rctOps.cpp
-  rctTypes.cpp
-  multiexp.cpp
-  bulletproofs.cpp
-  vectorOps.cpp
+  functional/rctTypes.cpp
+  functional/rctOps.cpp
+  functional/vectorOps.cpp
+  functional/multiexp.cpp
+  functional/bulletproofs.cpp
 )
 
 target_link_libraries(math_ringct_basic
@@ -40,7 +40,7 @@ target_link_libraries(math_ringct_basic
 )
 
 add_library(math_ringct
-  rctSigs.cpp
+  functional/rctSigs.cpp
 )
 
 target_link_libraries(math_ringct

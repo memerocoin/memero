@@ -33,9 +33,9 @@
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/logging.hpp"
 
-#include "math/ringct/rctOps.hpp"
-#include "math/ringct/rctSigs.hpp"
-#include "math/ringct/bulletproofs.hpp"
+#include "math/ringct/functional/rctOps.hpp"
+#include "math/ringct/functional/rctSigs.hpp"
+#include "math/ringct/functional/bulletproofs.hpp"
 #include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/basic/blobdatatype.h"

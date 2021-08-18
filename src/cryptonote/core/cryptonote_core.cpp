@@ -29,7 +29,7 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "cryptonote_core.h"
-#include "math/ringct/rctSigs.hpp"
+#include "math/ringct/functional/rctSigs.hpp"
 
 #include "tools/common/notify.h"
 #include "tools/common/threadpool.h"

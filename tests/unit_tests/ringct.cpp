@@ -36,10 +36,10 @@
 
 #include "tools/epee/include/string_tools.h"
 
-#include "math/ringct/rctTypes.hpp"
-#include "math/ringct/rctSigs.hpp"
-#include "math/ringct/rctOps.hpp"
-#include "math/ringct/curveConstants.hpp"
+#include "math/ringct/functional/rctTypes.hpp"
+#include "math/ringct/functional/rctSigs.hpp"
+#include "math/ringct/functional/rctOps.hpp"
+#include "math/ringct/functional/curveConstants.hpp"
 #include "math/crypto/controller/random.hpp"
 
 #include "wallet/device/device.hpp"

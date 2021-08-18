@@ -29,7 +29,7 @@
 #include "gtest/gtest.h"
 
 #include "math/crypto/key.hpp"
-#include "math/ringct/rctOps.hpp"
+#include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/multiexp.hpp"
 
 #define TESTSCALAR []{ static const rct::rct_scalar TESTSCALAR = rct::skGen(); return TESTSCALAR; }()

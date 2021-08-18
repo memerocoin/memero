@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "math/ringct/rctTypes.hpp"
+#include "math/ringct/functional/rctTypes.hpp"
 
 namespace wallet {
 namespace logic {

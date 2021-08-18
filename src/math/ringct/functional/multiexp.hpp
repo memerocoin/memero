@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "rctTypes.hpp"
 
 #include "tools/epee/include/logging.hpp"
 
