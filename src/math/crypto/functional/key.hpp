@@ -67,6 +67,30 @@ namespace crypto {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 
+
+  struct s_comm {
+    hash h;
+    ec_point key;
+    ec_point comm;
+  };
+
+  // Used in v1/v2 tx proofs
+  struct s_comm_2 {
+    hash msg;
+    ec_point D;
+    ec_point X;
+    ec_point Y;
+    hash sep; // domain separation
+    ec_point R;
+    ec_point A;
+    ec_point B;
+  };
+
+
+  const crypto::public_key null_pkey = {};
+  const crypto::secret_key null_skey = {};
+
+
   inline const ec_scalar_unnormalized &h2s(const hash &x) { return (const ec_scalar&)x; }
   inline const ec_point_unsafe &h2p(const hash &x) { return (const ec_point&)x; }
   inline const secret_key &unsafe_h2sk(const hash &x) { return (const secret_key&)x; }
@@ -88,24 +112,6 @@ namespace crypto {
 
   /* Generation and checking of a standard signature.
     */
-
-  struct s_comm {
-    hash h;
-    ec_point key;
-    ec_point comm;
-  };
-
-  // Used in v1/v2 tx proofs
-  struct s_comm_2 {
-    hash msg;
-    ec_point D;
-    ec_point X;
-    ec_point Y;
-    hash sep; // domain separation
-    ec_point R;
-    ec_point A;
-    ec_point B;
-  };
 
   bool check_signature(const hash &, const ec_point_unsafe &, const signature &);
 
@@ -129,9 +135,6 @@ namespace crypto {
 
   uint64_t scalar_to_int(const ec_scalar &in);
   ec_scalar int_to_scalar(const uint64_t in);
-
-  const crypto::public_key null_pkey = {};
-  const crypto::secret_key null_skey = {};
 
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
 }
