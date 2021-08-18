@@ -81,7 +81,7 @@ namespace rct {
    , const size_t mixin
    );
 
-  rctSig genRctSimple
+  std::pair<rctSig, ct_secret_keyV> genRctSimple
   (
    const crypto::hash message
    , const ct_secret_keyV inSk
@@ -92,7 +92,6 @@ namespace rct {
    , const ct_public_keyM mixRing
    , const rct_scalarV amount_keys
    , const std::vector<size_t> index
-   , ct_secret_keyV& outSk
    );
 
   bool verRctSemanticsSimple(const rctSig rv);

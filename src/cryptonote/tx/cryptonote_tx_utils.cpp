@@ -393,8 +393,8 @@ namespace cryptonote
       crypto::hash tx_prefix_hash;
       get_transaction_prefix_hash(tx, tx_prefix_hash, hwdev);
       rct::ct_secret_keyV outSk;
-      tx.rct_signatures = rct::genRctSimple
-        (tx_prefix_hash, inSk, destinations, inamounts, outamounts, amount_in - amount_out, mixRing, amount_keys, index, outSk);
+      std::tie(tx.rct_signatures, outSk) = rct::genRctSimple
+        (tx_prefix_hash, inSk, destinations, inamounts, outamounts, amount_in - amount_out, mixRing, amount_keys, index);
 
       LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), false, "outSk size does not match vout");
 

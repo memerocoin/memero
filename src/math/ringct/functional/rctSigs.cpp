@@ -480,7 +480,7 @@ namespace rct {
         return index;
     }
 
-    rctSig genRctSimple
+  std::pair<rctSig, ct_secret_keyV> genRctSimple
     (
      const crypto::hash message
      , const ct_secret_keyV inSk
@@ -491,8 +491,8 @@ namespace rct {
      , const ct_public_keyM mixRing
      , const rct_scalarV amount_keys
      , const std::vector<size_t> index
-     , ct_secret_keyV& outSk
      ) {
+        ct_secret_keyV outSk;
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
@@ -581,7 +581,7 @@ namespace rct {
                    );
             }
         }
-        return rv;
+        return {rv, outSk};
     }
 
     rctSig genRctSimple
@@ -599,14 +599,13 @@ namespace rct {
         std::vector<size_t> index;
         index.resize(inPk.size());
         ct_public_keyM mixRing;
-        ct_secret_keyV outSk;
         mixRing.resize(inPk.size());
         for (size_t i = 0; i < inPk.size(); ++i) {
           mixRing[i].resize(mixin+1);
           index[i] = populateRingsSimple(mixRing[i], inPk[i], mixin);
         }
         return genRctSimple
-          (message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index, outSk);
+          (message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index).first;
     }
 
     bool verRctSemanticsSimpleMayThrow(const std::span<const rctSig> rvv)
