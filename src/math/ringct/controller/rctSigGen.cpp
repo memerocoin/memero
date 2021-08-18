@@ -307,8 +307,7 @@ namespace rct {
         {
             sumout = outSk[i].blinding_factor + sumout;
 
-            //mask amount and mask
-            rv.ecdhInfo[i].mask = outSk[i].blinding_factor;
+            rv.ecdhInfo[i].blinding_factor = outSk[i].blinding_factor;
             rv.ecdhInfo[i].amount = int_to_scalar(outamounts[i]);
             hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i]);
         }
@@ -322,7 +321,7 @@ namespace rct {
         pseudoOuts.resize(inamounts.size());
         rv.p.CLSAGs.resize(inamounts.size());
         // TODO: scalar
-        rct_scalar sumpouts = s_zero; //sum pseudoOut masks
+        rct_scalar sumpouts = s_zero; //sum pseudoOut blinding_factors
         rct_scalarV a(inamounts.size());
         for (i = 0 ; i < inamounts.size() - 1; i++) {
             a[i] = skGen();

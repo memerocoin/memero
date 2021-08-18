@@ -416,25 +416,24 @@ namespace rct {
 
     std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar sk, const unsigned int i)
     {
-        rct_scalar mask;
+        rct_scalar blinding_factor;
         hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctSig");
         LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");
         LOG_ERROR_AND_THROW_UNLESS(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
 
-        //mask amount and mask
         ecdhTuple ecdh_info = rv.ecdhInfo[i];
         hwdev.ecdhDecode(ecdh_info, sk);
-        mask = ecdh_info.mask;
+        blinding_factor = ecdh_info.blinding_factor;
         const crypto::ec_scalar_unnormalized amount_raw = ecdh_info.amount;
         rct_point C = rv.outPk[i].commit_of_amount;
-        LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(mask), "warning, bad ECDH mask");
+        LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_raw), "warning, bad ECDH amount");
         const auto amount = rct::s2s(crypto::reduce(amount_raw));
-        const rct_point Ctmp = addMultG_H(mask, amount);
+        const rct_point Ctmp = addMultG_H(blinding_factor, amount);
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
         }
-        return {scalar_to_int(amount), mask};
+        return {scalar_to_int(amount), blinding_factor};
     }
 }

@@ -106,11 +106,11 @@ namespace rct {
     // then "mask" is a  "amount" is b
     // the purpose of the ECDH exchange
     struct ecdhTuple {
-        rct_scalar mask;
+        rct_scalar blinding_factor;
         crypto::ec_scalar_unnormalized amount;
 
         BEGIN_SERIALIZE_OBJECT()
-          FIELD(mask) // not saved from v2 BPs
+          FIELD(blinding_factor) // not saved from v2 BPs
           FIELD(amount)
         END_SERIALIZE()
     };
@@ -175,7 +175,7 @@ namespace rct {
     // rangeSigs holds all the rangeproof data of a transaction
     // MG holds the MLSAG signature of a transaction
     // mixRing holds all the public keypairs (P, C) for a transaction
-    // ecdhInfo holds an encoded mask / amount to be passed to each receiver
+    // ecdhInfo holds an encoded blinding_factor / amount to be passed to each receiver
     // outPk contains public keypairs which are destinations (P, C),
     //  P = address, C = commitment to amount
     enum {

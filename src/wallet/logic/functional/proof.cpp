@@ -85,11 +85,11 @@ namespace proof {
           const rct::ecdhTuple ecdh_info = rct::ecdhDecode(ecdh_amount_raw, scalar1);
           const rct::rct_point C = tx.rct_signatures.outPk[n].commit_of_amount;
 
-          THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.mask), error::wallet_internal_error, "Bad ECDH input mask");
+          THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.blinding_factor), error::wallet_internal_error, "Bad ECDH input blinding_factor");
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.amount), error::wallet_internal_error, "Bad ECDH input amount");
 
           const rct::rct_scalar ecdh_amount = rct::s2s(crypto::reduce(ecdh_info.amount));
-          const rct::rct_point Ctmp = rct::addMultG_H(ecdh_info.mask, ecdh_amount);
+          const rct::rct_point Ctmp = rct::addMultG_H(ecdh_info.blinding_factor, ecdh_amount);
           if (C == Ctmp)
             amount = rct::scalar_to_int(ecdh_amount);
           else
