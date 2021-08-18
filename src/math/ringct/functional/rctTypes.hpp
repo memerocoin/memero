@@ -79,12 +79,12 @@ namespace rct {
 
 
     // containers For CT operations
-    // "dest" = addr * G
-    // "commit_of_amount" = bliding_factor * G + amount * H
-    // so f : (ct_secret_key, uint64_t) -> ct_public_key
+    // "dest": addr * G
+    // "commit_of_amount": bliding_factor * G + amount * H
+    // f : (ct_secret_key, uint64_t) -> ct_public_key
     struct ct_public_key {
         rct_point dest;
-        rct_point commit_of_amount; //C here f public
+        rct_point commit_of_amount;
     };
 
     using ct_public_keyV = std::vector<ct_public_key>;
@@ -95,16 +95,13 @@ namespace rct {
     // blinding_factor is for committed value
     struct ct_secret_key {
       rct_scalar addr;
-      rct_scalar blinding_factor; //C here if public
+      rct_scalar blinding_factor;
     };
 
     using ct_secret_keyV = std::vector<ct_secret_key>;
     using ct_secret_keyS = std::span<const ct_secret_key>;
 
     //data for passing the amount to the receiver secretly
-    // If the pedersen commitment to an amount is C = aG + bH,
-    // then "mask" is a  "amount" is b
-    // the purpose of the ECDH exchange
     struct ecdhTuple {
         rct_scalar blinding_factor;
         crypto::ec_scalar_unnormalized amount;
