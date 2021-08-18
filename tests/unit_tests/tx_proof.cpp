@@ -30,7 +30,7 @@
 
 #include "tools/epee/include/string_tools.h"
 
-#include "math/crypto/crypto.hpp"
+#include "math/crypto/key.hpp"
 #include "math/crypto/functional/hash.hpp"
 #include <boost/algorithm/string.hpp>
 

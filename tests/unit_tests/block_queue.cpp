@@ -31,7 +31,7 @@
 
 #include "tools/epee/include/string_tools.h"
 
-#include "math/crypto/crypto.hpp"
+#include "math/crypto/key.hpp"
 #include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"

@@ -32,7 +32,7 @@
 
 #include "tools/epee/include/logging.hpp"
 #include "wallet/api/wallet2.h"
-#include "math/crypto/crypto.hpp"
+#include "math/crypto/key.hpp"
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/subaddress_index.h"

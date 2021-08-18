@@ -34,7 +34,7 @@
 #include "serialization.h"
 
 #include "math/crypto/controller/chacha.hpp"
-#include "math/crypto/crypto.hpp"
+#include "math/crypto/key.hpp"
 #include "math/crypto/functional/hash.hpp"
 
 #include <vector>

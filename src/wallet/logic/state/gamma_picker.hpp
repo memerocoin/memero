@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "math/crypto/crypto.hpp"
+#include "math/crypto/key.hpp"
 #include "math/crypto/controller/random.hpp"
 
 #include <random>

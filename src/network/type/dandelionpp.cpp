@@ -29,7 +29,7 @@
 #include "dandelionpp.h"
 
 #include "tools/common/expect.h"
-#include "math/crypto/crypto.hpp"
+#include "math/crypto/key.hpp"
 #include "math/crypto/controller/random.hpp"
 
 
