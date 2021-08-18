@@ -126,27 +126,27 @@ namespace rct {
   }
 
   //sha3 for a 32 byte key
-  crypto::hash hash_key(const crypto::crypto_data in) {
+  crypto::hash hash_data(const crypto::crypto_data in) {
     return crypto::sha3(in.data);
   }
 
   rct_scalar hash_to_scalar(const crypto::crypto_data in) {
-    return s2s(reduce(d2s(h2d(hash_key(in)))));
+    return s2s(reduce(d2s(h2d(hash_data(in)))));
   }
 
-  crypto::hash hash_keys(const std::span<const crypto::crypto_data> keys) {
+  crypto::hash hash_dataV(const std::span<const crypto::crypto_data> keys) {
     if (keys.empty()) {
       return crypto::sha3({});
     }
     return crypto::sha3(epee::blob::span((const uint8_t*)&keys[0], keys.size() * sizeof(keys[0])));
   }
 
-  rct_scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys) {
-    return s2s(reduce(d2s(h2d(hash_keys(keys)))));
+  rct_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys) {
+    return s2s(reduce(d2s(h2d(hash_dataV(keys)))));
   }
 
-  rct_point hash_to_key_via_f2(const crypto::crypto_data k) {
-    const auto h = h2d(hash_key(k));
+  rct_point hash_to_point_via_f2(const crypto::crypto_data k) {
+    const auto h = h2d(hash_data(k));
     const crypto::ec_point p = viaF2Mult8(h);
     return p2rct_p(p);
   }
@@ -155,7 +155,7 @@ namespace rct {
   // where C= aG + bH
 
   constexpr std::string_view ecdhHashPrefix = "amount";
-  crypto::hash ecdhHash(const crypto::crypto_data x)
+  crypto::hash hash_for_ecdh_with_amount_prefix(const crypto::crypto_data x)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(ecdhHashPrefix))
@@ -174,7 +174,7 @@ namespace rct {
   }
 
   constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
-  rct_scalar genCommitmentMask(const crypto::crypto_data x)
+  rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data x)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
@@ -185,16 +185,16 @@ namespace rct {
 
   ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec) {
     ecdhTuple x = {
-      s_zero
-      , xor8(amount, ecdhHash(sharedSec))
+      s_zero // reconstructed
+      , xor8(amount, hash_for_ecdh_with_amount_prefix(sharedSec))
     };
     return x;
   }
 
   ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec) {
     ecdhTuple x = {
-      genCommitmentMask(sharedSec)
-      , xor8(amount, ecdhHash(sharedSec))
+      hash_to_scalar_with_commitment_mask_prefix(sharedSec)
+      , xor8(amount, hash_for_ecdh_with_amount_prefix(sharedSec))
     };
     return x;
   }

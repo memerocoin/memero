@@ -79,7 +79,7 @@ rct::rct_point get_exponent(const rct::rct_point base, size_t idx)
   const std::string hashed =
     std::string((const char*)base.data.begin(), base.data.size()) + std::string(domain_separator) + tools::get_varint_data(idx);
 
-  rct::rct_point e = rct::hash_to_key_via_f2
+  rct::rct_point e = rct::hash_to_point_via_f2
     ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
 
   LOG_ERROR_AND_THROW_IF((e == rct::identity), "Exponent is point at infinity");
@@ -322,9 +322,9 @@ Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV g
   }
 
 try_again:
-  crypto::dataV hash_keys(V.size());
-  std::copy(V.begin(), V.end(), hash_keys.begin());
-  rct::rct_scalar hash_carry = rct::hash_keys_to_scalar(hash_keys);
+  crypto::dataV hash_dataV(V.size());
+  std::copy(V.begin(), V.end(), hash_dataV.begin());
+  rct::rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   // PAPER LINES 43-44
   const rct::rct_scalar alpha = rct::skGen();
@@ -337,7 +337,7 @@ try_again:
   const rct::rct_point S = multP(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
 
   // PAPER LINES 48-50
-  const rct_scalar y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, A, S});
+  const rct_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, A, S});
   if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
@@ -391,7 +391,7 @@ try_again:
   const rct_point T2 = multG(tau2 * rct::s_inv_eight) + multH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
-  const rct::rct_scalar x = hash_carry = hash_keys_to_scalar
+  const rct::rct_scalar x = hash_carry = hash_dataV_to_scalar
     (crypto::dataV{hash_carry, z, T1, T2});
   if (x == rct::s_zero)
   {
@@ -419,7 +419,7 @@ try_again:
 
   // PAPER LINE 6
   const rct::rct_scalar x_ip = hash_carry =
-    hash_keys_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
+    hash_dataV_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
   if (x_ip == rct::s_zero)
   {
     LOG_INFO("x_ip is 0, trying again");
@@ -478,7 +478,7 @@ try_again:
       + multH(cR * x_ip * s_inv_eight);
 
     // PAPER LINES 25-27
-    w[round] = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, L[round], R[round]});
+    w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, L[round], R[round]});
     if (w[round] == rct::s_zero)
     {
       LOG_INFO("w[round] is 0, trying again");
@@ -588,23 +588,23 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
 
   // Reconstruct the challenges
-  crypto::dataV hash_keys(proof.V.size());
-  std::copy(proof.V.begin(), proof.V.end(), hash_keys.begin());
-  rct::rct_scalar hash_carry = rct::hash_keys_to_scalar(hash_keys);
+  crypto::dataV hash_dataV(proof.V.size());
+  std::copy(proof.V.begin(), proof.V.end(), hash_dataV.begin());
+  rct::rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   proof_data_t pd;
-  pd.y = hash_carry = hash_keys_to_scalar(crypto::dataV{hash_carry, proof.A, proof.S});
+  pd.y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, proof.A, proof.S});
   LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
   pd.z = hash_carry = rct::hash_to_scalar(pd.y);
   LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
 
   pd.x = hash_carry =
-    hash_keys_to_scalar(crypto::dataV{hash_carry, pd.z, proof.T1, proof.T2});
+    hash_dataV_to_scalar(crypto::dataV{hash_carry, pd.z, proof.T1, proof.T2});
   LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
 
   pd.x_ip = hash_carry =
-    hash_keys_to_scalar
+    hash_dataV_to_scalar
     (
       crypto::dataV
       {
@@ -632,7 +632,7 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   for (size_t i = 0; i < rounds; ++i)
   {
     const auto pd_w = hash_carry =
-      hash_keys_to_scalar(crypto::dataV{hash_carry, proof.L[i], proof.R[i]});
+      hash_dataV_to_scalar(crypto::dataV{hash_carry, proof.L[i], proof.R[i]});
     LOG_ERROR_AND_RETURN_IF((pd_w == rct::s_zero), false, "pd_w[i] == 0");
     pd.w.push_back(pd_w);
 

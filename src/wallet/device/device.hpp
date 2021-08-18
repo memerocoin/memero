@@ -203,7 +203,7 @@ namespace hw {
 
         virtual void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) = 0;
 
-        virtual rct::rct_scalar genCommitmentMask(const crypto::crypto_data &amount_key) = 0;
+        virtual rct::rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data &amount_key) = 0;
 
         virtual bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::rct_scalar & sharedSec) = 0;
         virtual bool  ecdhDecode(rct::ecdhTuple & masked, const rct::rct_scalar & sharedSec) = 0;

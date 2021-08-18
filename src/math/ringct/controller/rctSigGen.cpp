@@ -61,7 +61,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
-              masks[i] = hwdev.genCommitmentMask(sk[i]);
+              masks[i] = hwdev.hash_to_scalar_with_commitment_mask_prefix(sk[i]);
         Bulletproof proof = bulletproof_MAKE(amounts, masks);
         LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
         C = proof.V;
@@ -95,7 +95,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(l < n, "Signing index out of range!");
 
         // mages images
-        rct_point H = hash_to_key_via_f2(P[l]);
+        rct_point H = hash_to_point_via_f2(P[l]);
 
         rct_point D;
 
@@ -145,8 +145,8 @@ namespace rct {
         mu_C_to_hash[2*n+2] = sig.D;
         mu_C_to_hash[2*n+3] = C_offset;
         rct_scalar mu_P, mu_C;
-        mu_P = hash_keys_to_scalar(mu_P_to_hash);
-        mu_C = hash_keys_to_scalar(mu_C_to_hash);
+        mu_P = hash_dataV_to_scalar(mu_P_to_hash);
+        mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
         // Initial commitment
         crypto::dataV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
@@ -202,7 +202,7 @@ namespace rct {
                );
 
             // Compute R
-            const rct_point A = hash_to_key_via_f2(P[i]);
+            const rct_point A = hash_to_point_via_f2(P[i]);
             R = addPoints
               (
                std::array

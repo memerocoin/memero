@@ -362,8 +362,8 @@ namespace hw {
             return r;
         }
 
-        rct::rct_scalar device_default::genCommitmentMask(const crypto::crypto_data &amount_key) {
-            return rct::genCommitmentMask(amount_key);
+        rct::rct_scalar device_default::hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data &amount_key) {
+            return rct::hash_to_scalar_with_commitment_mask_prefix(amount_key);
         }
 
         bool  device_default::ecdhEncode(rct::ecdhTuple & unmasked, const rct::rct_scalar & sharedSec) {
@@ -386,7 +386,7 @@ namespace hw {
         , crypto::hash &prehash
         )
         {
-            prehash = rct::hash_keys(hashes);
+            prehash = rct::hash_dataV(hashes);
             return true;
         }
 
@@ -409,7 +409,7 @@ namespace hw {
         }
 
         rct::rct_scalar device_default::clsag_hash(const crypto::dataS data) {
-            return rct::hash_keys_to_scalar(data);
+            return rct::hash_dataV_to_scalar(data);
         }
 
         bool device_default::clsag_sign

@@ -91,21 +91,21 @@ namespace rct {
   //aGbB = aG + bH where a, b are rct_scalars, G is the basepoint and H is the second basepoint
   rct_point addMultG_H(const rct_scalar a, const rct_scalar b);
 
-  crypto::hash hash_key(const crypto::crypto_data in);
+  crypto::hash hash_data(const crypto::crypto_data in);
   rct_scalar hash_to_scalar(const crypto::crypto_data in);
 
 
   //for mg sigs
-  crypto::hash hash_keys(const std::span<const crypto::crypto_data> keys);
-  rct_scalar hash_keys_to_scalar(const std::span<const crypto::crypto_data> keys);
+  crypto::hash hash_dataV(const std::span<const crypto::crypto_data> keys);
+  rct_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys);
 
   //for ANSL
 
-  rct_point hash_to_key_via_f2(const crypto::crypto_data k);
+  rct_point hash_to_point_via_f2(const crypto::crypto_data k);
 
   //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
   // where C= aG + bH
-  rct_scalar genCommitmentMask(const crypto::crypto_data x);
+  rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data x);
 
   ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec);
   ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec);

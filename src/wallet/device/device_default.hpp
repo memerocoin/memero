@@ -118,7 +118,7 @@ namespace hw {
             bool  open_tx(crypto::secret_key &tx_key) override;
             void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) override;
 
-            rct::rct_scalar genCommitmentMask(const crypto::crypto_data &amount_key) override;
+            rct::rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data &amount_key) override;
 
             bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::rct_scalar & sharedSec) override;
             bool  ecdhDecode(rct::ecdhTuple & masked, const rct::rct_scalar & sharedSec) override;

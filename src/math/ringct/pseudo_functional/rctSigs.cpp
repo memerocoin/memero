@@ -89,7 +89,7 @@ namespace rct {
           kv.push_back(p.t);
         }
       }
-      hashes.push_back(h2d(hash_keys(kv)));
+      hashes.push_back(h2d(hash_dataV(kv)));
       hwdev.mlsag_pre_hash(ss.str(), inputs, outputs, hashes, rv.outPk, prehash);
       return  prehash;
     }
@@ -151,8 +151,8 @@ namespace rct {
         mu_C_to_hash[2*n+2] = sig.D;
         mu_C_to_hash[2*n+3] = C_offset;
         rct_scalar mu_P, mu_C;
-        mu_P = hash_keys_to_scalar(mu_P_to_hash);
-        mu_C = hash_keys_to_scalar(mu_C_to_hash);
+        mu_P = hash_dataV_to_scalar(mu_P_to_hash);
+        mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
         // Set up round hash
         crypto::dataV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
@@ -203,7 +203,7 @@ namespace rct {
                );
 
             // Compute R
-            const rct_point k = hash_to_key_via_f2(pubs[i].dest);
+            const rct_point k = hash_to_point_via_f2(pubs[i].dest);
 
             R = addPoints
               (
@@ -217,7 +217,7 @@ namespace rct {
 
             c_to_hash[2*n+3] = L;
             c_to_hash[2*n+4] = R;
-            c_new = hash_keys_to_scalar(c_to_hash);
+            c_new = hash_dataV_to_scalar(c_to_hash);
             LOG_ERROR_AND_RETURN_IF((c_new == rct::s_zero), false, "Bad signature hash");
             c = c_new;
 
