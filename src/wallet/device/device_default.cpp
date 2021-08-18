@@ -38,6 +38,8 @@
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/string_tools.h"
 
+#include "math/ringct/controller/rctGen.hpp"
+
 
 namespace hw {
 

@@ -64,67 +64,9 @@ namespace rct {
   }
 
 
-
-
-  //Various key generation functions
-
-  //generates a random rct_scalar which can be used as a secret key or mask
-  rct_scalar skGen() {
-    return s2s(crypto::scalarGen());
-  }
-
-  //Generates a vector of secret key
-  //Mainly used in testing
-  rct_scalarV skvGen(size_t rows ) {
-    LOG_ERROR_AND_THROW_UNLESS(rows > 0, "0 keys requested");
-    rct_scalarV rv(rows);
-    size_t i = 0;
-    for (i = 0 ; i < rows ; i++) {
-      rv[i] = skGen();
-    }
-    return rv;
-  }
-
-  //generates a random curve point (for testing)
-  rct_point pkGen() {
-    rct_scalar sk = skGen();
-    return multG(sk);
-  }
-
-  //generates a random secret and corresponding public key
-  std::pair<rct_scalar, rct_point> skpkGen() {
-    const rct_scalar sk = skGen();
-    return std::make_pair(sk, multG(sk));
-  }
-
   //generates C =aG + bH from b, a is given..
   rct_point genC(const rct_scalar a, amount_t amount) {
     return addMultG_H(a, int_to_scalar(amount));
-  }
-
-  //generates a <secret , public> / Pedersen commitment to the amount
-  std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount) {
-    ct_secret_key sk;
-    ct_public_key pk;
-    std::tie(sk.addr, pk.dest) = skpkGen();
-    std::tie(sk.blinding_factor, pk.mask) = skpkGen();
-
-    const rct_scalar am = int_to_scalar(amount);
-    const rct_point bH = multH(am);
-    pk.mask = pk.mask + bH;
-    return std::make_pair(sk, pk);
-  }
-
-
-  //generates a <secret , public> / Pedersen commitment but takes bH as input
-  std::pair<ct_secret_key, ct_public_key> ctskpkGen(const rct_point bH) {
-    ct_secret_key sk;
-    ct_public_key pk;
-    std::tie(sk.addr, pk.dest) = skpkGen();
-    std::tie(sk.blinding_factor, pk.mask) = skpkGen();
-
-    pk.mask = pk.mask + bH;
-    return std::make_pair(sk, pk);
   }
 
   rct_point dummyCommit(const amount_t amount) {
@@ -135,11 +77,6 @@ namespace rct {
 
   rct_point commit(const amount_t amount, const rct_scalar &mask) {
     return genC(mask, amount);
-  }
-
-  //generates a random uint long long (for testing)
-  amount_t randXmrAmount(const amount_t upperlimit) {
-    return scalar_to_int(skGen()) % (upperlimit);
   }
 
   //Scalar multiplications of curve points

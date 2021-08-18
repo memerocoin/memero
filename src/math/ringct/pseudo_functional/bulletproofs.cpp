@@ -32,10 +32,13 @@
 
 #include "bulletproofs.hpp"
 
-#include "vectorOps.hpp"
-#include "rctOps.hpp"
-#include "curveConstants.hpp"
-#include "multiexp.hpp"
+#include "math/ringct/functional/vectorOps.hpp"
+#include "math/ringct/functional/rctOps.hpp"
+#include "math/ringct/functional/curveConstants.hpp"
+#include "math/ringct/functional/multiexp.hpp"
+
+#include "math/ringct/controller/rctGen.hpp"
+
 
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"

@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "rctTypes.hpp"
+#include "math/ringct/functional/rctTypes.hpp"
 
 #include <span>
 

@@ -32,7 +32,9 @@ add_library(math_ringct_basic
   functional/rctOps.cpp
   functional/vectorOps.cpp
   functional/multiexp.cpp
-  functional/bulletproofs.cpp
+
+  controller/rctGen.cpp
+  pseudo_functional/bulletproofs.cpp
 )
 
 target_link_libraries(math_ringct_basic
@@ -41,6 +43,7 @@ target_link_libraries(math_ringct_basic
 
 add_library(math_ringct
   functional/rctSigs.cpp
+  controller/rctSigGen.cpp
 )
 
 target_link_libraries(math_ringct
