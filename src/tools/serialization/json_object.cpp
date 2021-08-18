@@ -1029,7 +1029,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   std::vector<rct::rct_point> masks;
   masks.reserve(sig.outPk.size());
   std::transform(sig.outPk.begin(), sig.outPk.end(), std::back_inserter(masks),
-                [] (const auto & key) { return key.mask; } );
+                [] (const auto & key) { return key.commit_of_amount; } );
 
   WRITE_JSON_FIELD_FROM(dest, type, sig.type);
   if (sig.type != rct::RCTTypeNull) {
@@ -1088,7 +1088,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
 void fromJsonValue(const rapidjson::Value& val, rct::ct_public_key& key)
 {
   key.dest = {};
-  fromJsonValue(val, key.mask);
+  fromJsonValue(val, key.commit_of_amount);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhTuple tuple)

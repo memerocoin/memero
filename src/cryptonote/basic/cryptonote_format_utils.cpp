@@ -148,7 +148,7 @@ namespace cryptonote
           LOG_ERROR_AND_RETURN_UNLESS(n_amounts == rv.outPk.size(), false, "Internal error filling out V");
           rv.p.bulletproofs[0].V.resize(n_amounts);
           for (size_t i = 0; i < n_amounts; ++i)
-            rv.p.bulletproofs[0].V[i] = rct::multP(rv.outPk[i].mask, rct::s_inv_eight);
+            rv.p.bulletproofs[0].V[i] = rct::multP(rv.outPk[i].commit_of_amount, rct::s_inv_eight);
         }
       }
     }

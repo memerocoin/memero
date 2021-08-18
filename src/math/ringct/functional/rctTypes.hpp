@@ -78,20 +78,21 @@ namespace rct {
     using inv8L = std::list<const inv8>; //vector of keys
 
 
-    //containers For CT operations
-    //if it's  representing a private ct_public_key then "dest" contains the secret key of the address
-    // while "mask" contains a where C = aG + bH is CT pedersen commitment and b is the amount
-    // (store b, the amount, separately
-    //if it's representing a public ct_public_key, then "dest" = P the address, mask = aG the commitment
+    // containers For CT operations
+    // "dest" = addr * G
+    // "commit_of_amount" = bliding_factor * G + amount * H
+    // so f : (ct_secret_key, uint64_t) -> ct_public_key
     struct ct_public_key {
         rct_point dest;
-        rct_point mask; //C here if public
+        rct_point commit_of_amount; //C here f public
     };
 
     using ct_public_keyV = std::vector<ct_public_key>;
     using ct_public_keyM = std::vector<ct_public_keyV>; //matrix of keys (indexed by column first)
     using ct_public_keyS = std::span<const ct_public_key>;
 
+    // addr is the secret key
+    // blinding_factor is for committed value
     struct ct_secret_key {
       rct_scalar addr;
       rct_scalar blinding_factor; //C here if public
@@ -102,8 +103,7 @@ namespace rct {
 
     //data for passing the amount to the receiver secretly
     // If the pedersen commitment to an amount is C = aG + bH,
-    // "mask" contains a 32 byte rct_point a
-    // "amount" contains a hex representation (in 32 bytes) of a 64 bit number
+    // then "mask" is a  "amount" is b
     // the purpose of the ECDH exchange
     struct ecdhTuple {
         rct_scalar mask;
@@ -232,7 +232,7 @@ namespace rct {
             return false;
           for (size_t i = 0; i < outputs; ++i)
           {
-            FIELDS(outPk[i].mask)
+            FIELDS(outPk[i].commit_of_amount)
             if (outputs - i > 1)
               ar.delimit_array();
           }

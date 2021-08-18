@@ -68,7 +68,7 @@ TEST(ringct, CLSAG)
     ct_public_key tmp;
 
     std::tie(sk, tmp.dest) = skpkGen();
-    std::tie(sk, tmp.mask) = skpkGen();
+    std::tie(sk, tmp.commit_of_amount) = skpkGen();
 
     pubs.push_back(tmp);
   }
@@ -79,7 +79,7 @@ TEST(ringct, CLSAG)
   // Set C[idx]
   t = skGen();
   u = skGen();
-  pubs[idx].mask = addMultG_H(t,u);
+  pubs[idx].commit_of_amount = addMultG_H(t,u);
 
   // Set commitment offset
   t2 = skGen();
@@ -134,7 +134,7 @@ TEST(ringct, CLSAG)
 
   // bad C at creation
   backup = pubs[idx];
-  pubs[idx].mask = multG(skGen());
+  pubs[idx].commit_of_amount = multG(skGen());
   try
   {
     clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);

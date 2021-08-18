@@ -141,8 +141,8 @@ namespace rct {
             mu_C_to_hash[i] = pubs[i-1].dest;
         }
         for (size_t i = n+1; i < 2*n+1; ++i) {
-            mu_P_to_hash[i] = pubs[i-n-1].mask;
-            mu_C_to_hash[i] = pubs[i-n-1].mask;
+            mu_P_to_hash[i] = pubs[i-n-1].commit_of_amount;
+            mu_C_to_hash[i] = pubs[i-n-1].commit_of_amount;
         }
         mu_P_to_hash[2*n+1] = sig.I;
         mu_P_to_hash[2*n+2] = sig.D;
@@ -167,7 +167,7 @@ namespace rct {
         for (size_t i = 1; i < n+1; ++i)
         {
             c_to_hash[i] = pubs[i-1].dest;
-            c_to_hash[i+n] = pubs[i-1].mask;
+            c_to_hash[i+n] = pubs[i-1].commit_of_amount;
         }
         c_to_hash[2*n+1] = C_offset;
         c_to_hash[2*n+2] = crypto::h2d(message);
@@ -183,9 +183,9 @@ namespace rct {
             c_p = mu_P * c;
             c_c = mu_C * c;
 
-            const rct_point mask = pubs[i].mask;
+            const rct_point mask = pubs[i].commit_of_amount;
             if (!is_valid_point(mask)) {
-              LOG_ERROR("pubs[" << i << "].mask.data is not a valid point: " << mask);
+              LOG_ERROR("pubs[" << i << "].commit_of_amount.data is not a valid point: " << mask);
               return false;
             }
 
@@ -288,7 +288,7 @@ namespace rct {
 
           rct::rct_pointV masks(rv.outPk.size());
           for (size_t i = 0; i < rv.outPk.size(); i++) {
-            masks[i] = rv.outPk[i].mask;
+            masks[i] = rv.outPk[i].commit_of_amount;
           }
           rct_point sumOutpks = addPoints(masks);
           const rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
@@ -427,7 +427,7 @@ namespace rct {
         hwdev.ecdhDecode(ecdh_info, sk);
         mask = ecdh_info.mask;
         const crypto::ec_scalar_unnormalized amount_raw = ecdh_info.amount;
-        rct_point C = rv.outPk[i].mask;
+        rct_point C = rv.outPk[i].commit_of_amount;
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(mask), "warning, bad ECDH mask");
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_raw), "warning, bad ECDH amount");
         const auto amount = rct::s2s(crypto::reduce(amount_raw));

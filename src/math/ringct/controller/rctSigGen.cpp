@@ -230,8 +230,8 @@ namespace rct {
 
 
     void rand_assign_ct_public_key(ct_public_key& a) {
-        a.mask = pkGen();
         a.dest = pkGen();
+        a.commit_of_amount = pkGen();
     }
 
     size_t populateRingsSimple(ct_public_keyV& mixRing, const ct_public_key inPk, const size_t mixin) {
@@ -296,7 +296,7 @@ namespace rct {
 
                 for (i = 0; i < outamounts.size(); ++i)
                 {
-                    rv.outPk[i].mask = rct::multP8(C[i]);
+                    rv.outPk[i].commit_of_amount = rct::multP8(C[i]);
                     outSk[i].blinding_factor = masks[i];
                 }
             }
@@ -374,9 +374,9 @@ namespace rct {
         for (const ct_public_key &k: pubs)
         {
             P.push_back(k.dest);
-            C_nonzero.push_back(k.mask);
+            C_nonzero.push_back(k.commit_of_amount);
             rct::rct_point tmp;
-            tmp = k.mask - Cout;
+            tmp = k.commit_of_amount - Cout;
             C.push_back(tmp);
         }
 

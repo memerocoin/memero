@@ -83,27 +83,30 @@ namespace rct {
 
   //generates a <secret , public> / Pedersen commitment to the amount
   std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount) {
-    ct_secret_key sk;
-    ct_public_key pk;
-    std::tie(sk.addr, pk.dest) = skpkGen();
-    std::tie(sk.blinding_factor, pk.mask) = skpkGen();
+    const auto [addr_sk, addr_pk] = skpkGen();
+    const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
     const rct_scalar am = int_to_scalar(amount);
     const rct_point bH = multH(am);
-    pk.mask = pk.mask + bH;
-    return std::make_pair(sk, pk);
+
+    return
+      {
+        {addr_sk, blinding_factor_sk}
+        , {addr_pk, blinding_factor_pk + bH}
+      };
   }
 
 
   //generates a <secret , public> / Pedersen commitment but takes bH as input
   std::pair<ct_secret_key, ct_public_key> ctskpkGen(const rct_point bH) {
-    ct_secret_key sk;
-    ct_public_key pk;
-    std::tie(sk.addr, pk.dest) = skpkGen();
-    std::tie(sk.blinding_factor, pk.mask) = skpkGen();
+    const auto [addr_sk, addr_pk] = skpkGen();
+    const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
-    pk.mask = pk.mask + bH;
-    return std::make_pair(sk, pk);
+    return
+      {
+        {addr_sk, blinding_factor_sk}
+        , {addr_pk, blinding_factor_pk + bH}
+      };
   }
 
   //generates a random uint long long (for testing)

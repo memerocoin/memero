@@ -83,7 +83,7 @@ namespace proof {
           const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(found_derivation, n));
           const crypto::ec_scalar_unnormalized ecdh_amount_raw = tx.rct_signatures.ecdhInfo[n].amount;
           const rct::ecdhTuple ecdh_info = rct::ecdhDecode(ecdh_amount_raw, scalar1);
-          const rct::rct_point C = tx.rct_signatures.outPk[n].mask;
+          const rct::rct_point C = tx.rct_signatures.outPk[n].commit_of_amount;
 
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.mask), error::wallet_internal_error, "Bad ECDH input mask");
           THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.amount), error::wallet_internal_error, "Bad ECDH input amount");
