@@ -7,8 +7,8 @@
 let
 
   stdenv = llvmPackages_12.stdenv
-; lolnero-rev = "v0.9.7.75"
-; lolnero-sha256 = "17jr6qpmy8g19fr817j1qxhzq9a0bqqzfhi5v34f2xrfqpcsmwqd"
+; lolnero-rev = "v0.9.8.14"
+; lolnero-sha256 = "149cskvn5zq4ab17pfs2qpk7p3wjvwyl6hm3nn8h2cc9cc0vb89n"
 ; doCheck = false
 
 ; in
