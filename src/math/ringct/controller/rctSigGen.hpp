@@ -47,7 +47,7 @@ namespace rct {
    , const unsigned int l
    );
 
-  clsag proveRctCLSAGSimple
+  clsag makeRctCLSAGSimple
   (
    const crypto::hash message
    , const ct_public_keyV pubs

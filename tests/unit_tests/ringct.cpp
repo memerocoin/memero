@@ -91,7 +91,7 @@ TEST(ringct, CLSAG)
   insk.blinding_factor = t;
 
 
-  // clsag proveRctCLSAGSimple
+  // clsag makeRctCLSAGSimple
   //   (
   //    const rct_point &
   //    , const ct_public_keyV &
@@ -102,7 +102,7 @@ TEST(ringct, CLSAG)
   //    );
 
   // bad message
-  clsag = rct::proveRctCLSAGSimple
+  clsag = rct::makeRctCLSAGSimple
     (
      {},
      pubs,
@@ -116,7 +116,7 @@ TEST(ringct, CLSAG)
   // bad index at creation
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,(idx + 1) % N);
+    clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,(idx + 1) % N);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -127,7 +127,7 @@ TEST(ringct, CLSAG)
     ct_secret_key insk2;
     insk2.addr = insk.addr;
     insk2.blinding_factor = skGen();
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::makeRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -137,7 +137,7 @@ TEST(ringct, CLSAG)
   pubs[idx].commit_of_amount = multG(skGen());
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -149,7 +149,7 @@ TEST(ringct, CLSAG)
     ct_secret_key insk2;
     insk2.addr = skGen();
     insk2.blinding_factor = insk.blinding_factor;
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::makeRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -159,14 +159,14 @@ TEST(ringct, CLSAG)
   pubs[idx].dest = multG(skGen());
   try
   {
-    clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
     ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
   pubs[idx] = backup;
 
   // Test correct signature
-  clsag = rct::proveRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+  clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
   ASSERT_TRUE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
 
   // empty s

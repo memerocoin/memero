@@ -378,7 +378,7 @@ namespace rct {
            clsags.begin()
            , clsags.end()
            , [full_message, rv, inSk, pseudo_blinding_factors, pseudoOuts, index, i = 0]() mutable {
-             const auto clsag = proveRctCLSAGSimple
+             const auto clsag = makeRctCLSAGSimple
                (
                 full_message
                 , rv.mixRing[i]
@@ -396,7 +396,7 @@ namespace rct {
         return {rv, outSk};
     }
 
-    clsag proveRctCLSAGSimple
+    clsag makeRctCLSAGSimple
     (
      const crypto::hash message
      , const ct_public_keyV pubs
