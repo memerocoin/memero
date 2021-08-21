@@ -235,23 +235,6 @@ namespace rct {
     }
 
 
-    void rand_assign_ct_public_key(ct_public_key& a) {
-        a.dest = pkGen();
-        a.commit_of_amount = pkGen();
-    }
-
-    size_t populateRingsSimple(ct_public_keyV& mixRing, const ct_public_key inPk, const size_t mixin) {
-        size_t index = ((size_t)std::rand()) % (mixin + 1);
-        for (size_t i = 0; i <= mixin; i++) {
-            if (i != index) {
-                rand_assign_ct_public_key(mixRing[i]);
-            } else {
-                mixRing[i] = inPk;
-            }
-        }
-        return index;
-    }
-
   std::pair<rctSig, ct_secret_keyV> genRctSimple
     (
      const crypto::hash message
@@ -437,6 +420,21 @@ namespace rct {
       clsag result = CLSAG_Gen
         (message, P, inSk.addr, C, s2s(inSk.blinding_factor - a), C_nonzero, Cout, index);
       return result;
+    }
+
+
+
+
+    size_t populateRingsSimple(ct_public_keyV& mixRing, const ct_public_key inPk, const size_t mixin) {
+      size_t index = ((size_t)std::rand()) % (mixin + 1);
+      for (size_t i = 0; i <= mixin; i++) {
+        if (i != index) {
+          mixRing[i] = {pkGen(), pkGen()};
+        } else {
+          mixRing[i] = inPk;
+        }
+      }
+      return index;
     }
 
     rctSig genRctSimple
