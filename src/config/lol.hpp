@@ -85,9 +85,9 @@ namespace config
   constexpr unsigned char HASH_KEY_WALLET = 0x8c;
   constexpr unsigned char HASH_KEY_WALLET_CACHE = 0x8d;
   constexpr unsigned char HASH_KEY_MEMORY = 'k';
-  constexpr unsigned char HASH_KEY_CLSAG_ROUND[] = "CLSAG_round";
-  constexpr unsigned char HASH_KEY_CLSAG_AGG_0[] = "CLSAG_agg_0";
-  constexpr unsigned char HASH_KEY_CLSAG_AGG_1[] = "CLSAG_agg_1";
+  constexpr std::string_view HASH_KEY_CLSAG_ROUND = "CLSAG_round";
+  constexpr std::string_view HASH_KEY_CLSAG_AGG_0 = "CLSAG_agg_0";
+  constexpr std::string_view HASH_KEY_CLSAG_AGG_1 = "CLSAG_agg_1";
 
   constexpr unsigned char HASH_KEY_TXPROOF_V2[] = "TXPROOF_V2";
   constexpr std::string_view MESSAGE_SIGNING_HEADER = "Lolnero_Message_Signature_";

@@ -125,15 +125,15 @@ namespace rct {
 
         std::copy_n
           (
-           config::HASH_KEY_CLSAG_AGG_0
-           , sizeof(config::HASH_KEY_CLSAG_AGG_0)-1
+           config::HASH_KEY_CLSAG_AGG_0.data()
+           , config::HASH_KEY_CLSAG_AGG_0.size()
            , mu_P_to_hash[0].data.begin()
            );
 
         std::copy_n
           (
-           config::HASH_KEY_CLSAG_AGG_1
-           , sizeof(config::HASH_KEY_CLSAG_AGG_1)-1
+           config::HASH_KEY_CLSAG_AGG_1.data()
+           , config::HASH_KEY_CLSAG_AGG_1.size()
            , mu_C_to_hash[0].data.begin()
            );
 
@@ -145,8 +145,8 @@ namespace rct {
         crypto::dataV c_to_hash = {zero};
         std::copy_n
           (
-           config::HASH_KEY_CLSAG_ROUND
-           , sizeof(config::HASH_KEY_CLSAG_ROUND)-1
+           config::HASH_KEY_CLSAG_ROUND.data()
+           , config::HASH_KEY_CLSAG_ROUND.size()
            , c_to_hash[0].data.begin()
            );
 
