@@ -170,42 +170,46 @@ namespace rct {
         sig.s = rct_scalarV(n);
 
         while (i != idx) {
-            sig.s[i] = skGen();
-            const rct_scalar c_p = mu_P * c;
-            const rct_scalar c_c = mu_C * c;
+          // carried from last round
+          const rct_scalar c_p = mu_P * c;
+          const rct_scalar c_c = mu_C * c;
 
-            // Compute L
-            const rct_point L = addPoints
-              (
-               std::array
-               {
-                 multG(sig.s[i])
-                 , multP(P[i], c_p)
-                 , multP(C[i], c_c)
-               }
-               );
+          const auto sk = skGen();
 
-            // Compute R
-            const rct_point A = hash_to_point_via_f2(P[i]);
-            const rct_point R = addPoints
-              (
-               std::array
-               {
-                 multP(A, sig.s[i])
-                 , multP(sig.I, c_p)
-                 , multP(D, c_c)
-               }
-               );
+          // Compute L
+          const rct_point L = addPoints
+            (
+             std::array
+             {
+               multG(sk)
+               , multP(P[i], c_p)
+               , multP(C[i], c_c)
+             }
+             );
 
-            c_to_hash[2*n+3] = L;
-            c_to_hash[2*n+4] = R;
-            // need to be remembered
-            c = hwdev.clsag_hash(c_to_hash);
+          // Compute R
+          const rct_point A = hash_to_point_via_f2(P[i]);
+          const rct_point R = addPoints
+            (
+             std::array
+             {
+               multP(A, sk)
+               , multP(sig.I, c_p)
+               , multP(D, c_c)
+             }
+             );
 
-            i = (i + 1) % n;
-            if (i == 0) {
-              sig.c1 = c;
-            }
+          sig.s[i] = sk;
+
+          c_to_hash[2*n+3] = L;
+          c_to_hash[2*n+4] = R;
+          // need to be remembered
+          c = hwdev.clsag_hash(c_to_hash);
+
+          i = (i + 1) % n;
+          if (i == 0) {
+            sig.c1 = c;
+          }
         }
 
         // Compute final scalar
