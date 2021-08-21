@@ -81,15 +81,25 @@ namespace proof {
         else
         {
           const rct::rct_scalar ecdh_shared_secret = rct::s2s(crypto::hash_derivation_to_scalar(found_derivation, n));
-          const crypto::ec_scalar_unnormalized ecdh_amount_masked = tx.rct_signatures.ecdhInfo[n].amount;
 
           const crypto::ec_scalar_unnormalized blinding_factor =
             get_blinding_factor_from_ecdh_shared_secret(ecdh_shared_secret);
-          THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(blinding_factor), error::wallet_internal_error, "Bad ECDH input blinding_factor");
+          THROW_WALLET_EXCEPTION_IF
+            (
+             crypto::is_not_reduced(blinding_factor)
+             , error::wallet_internal_error
+             , "Bad ECDH input blinding_factor"
+             );
 
+          const crypto::ec_scalar_unnormalized masked_amount = tx.rct_signatures.ecdhInfo[n].masked_amount;
           const crypto::ec_scalar_unnormalized amount_unnormalized =
-            crypto::d2s(rct::decode_by_ecdh_shared_secret(ecdh_amount_masked, ecdh_shared_secret));
-          THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(amount_unnormalized), error::wallet_internal_error, "Bad ECDH input amount");
+            crypto::d2s(rct::decode_by_ecdh_shared_secret(masked_amount, ecdh_shared_secret));
+          THROW_WALLET_EXCEPTION_IF
+            (
+             crypto::is_not_reduced(amount_unnormalized)
+             , error::wallet_internal_error
+             , "Bad ECDH input amount"
+             );
 
           const rct::rct_point C = tx.rct_signatures.outPk[n].commit_of_amount;
 

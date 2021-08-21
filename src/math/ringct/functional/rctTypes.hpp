@@ -103,10 +103,10 @@ namespace rct {
 
     //data for passing the amount to the receiver secretly
     struct ecdhTuple {
-        crypto::ec_scalar_unnormalized amount;
+        crypto::ec_scalar_unnormalized masked_amount;
 
         BEGIN_SERIALIZE_OBJECT()
-          FIELD(amount)
+          FIELD(masked_amount)
         END_SERIALIZE()
     };
 
@@ -210,9 +210,9 @@ namespace rct {
             {
               ar.begin_object();
               if (!typename Archive<W>::is_saving())
-                ecdhInfo[i].amount = {};
-              crypto::hash8 &amount = (crypto::hash8&)ecdhInfo[i].amount;
-              FIELD(amount);
+                ecdhInfo[i].masked_amount = {};
+              crypto::hash8 &masked_amount = (crypto::hash8&)ecdhInfo[i].masked_amount;
+              FIELD(masked_amount);
               ar.end_object();
             }
             if (outputs - i > 1)
