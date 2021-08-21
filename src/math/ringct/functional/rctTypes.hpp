@@ -102,7 +102,7 @@ namespace rct {
     using ct_secret_keyS = std::span<const ct_secret_key>;
 
     //data for passing the amount to the receiver secretly
-    struct ecdhTuple {
+    struct ecdhData {
         crypto::ec_scalar_unnormalized masked_amount;
 
         BEGIN_SERIALIZE_OBJECT()
@@ -184,7 +184,7 @@ namespace rct {
         ct_public_keyM mixRing; //the set of all pubkeys / copy
         //pairs that you mix with
         rct_pointV pseudoOuts; //C - for simple rct
-        std::vector<ecdhTuple> ecdhInfo;
+        std::vector<ecdhData> ecdhInfo;
         ct_public_keyV outPk;
         amount_t txnFee; // contains b
 

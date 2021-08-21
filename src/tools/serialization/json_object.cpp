@@ -1091,14 +1091,14 @@ void fromJsonValue(const rapidjson::Value& val, rct::ct_public_key& key)
   fromJsonValue(val, key.commit_of_amount);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhTuple tuple)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhData tuple)
 {
   dest.StartObject();
   WRITE_JSON_FIELD_FROM(dest, masked_amount, tuple.masked_amount);
   dest.EndObject();
 }
 
-void fromJsonValue(const rapidjson::Value& val, rct::ecdhTuple& tuple)
+void fromJsonValue(const rapidjson::Value& val, rct::ecdhData& tuple)
 {
   if (!val.IsObject())
   {
