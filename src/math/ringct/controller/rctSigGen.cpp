@@ -50,21 +50,23 @@ using namespace std;
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
 namespace rct {
-    Bulletproof proveRangeBulletproof
+  std::tuple<rct_scalarV, Bulletproof> proveRangeBulletproof
     (
-     inv8V& C
-     , rct_scalarV& masks
-     , const std::vector<uint64_t> amounts
+       const std::vector<uint64_t> amounts
      , const std::span<const rct_scalar> sk)
     {
         LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
+
+        rct_scalarV masks;
         masks.resize(amounts.size());
+
         for (size_t i = 0; i < masks.size(); ++i)
           masks[i] = rct::derive_secret_key_for_blinding_factor(sk[i]);
+
         Bulletproof proof = bulletproof_MAKE(amounts, masks);
         LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
-        C = proof.V;
-        return proof;
+
+        return {masks, proof};
     }
 
 
@@ -287,14 +289,12 @@ namespace rct {
         rv.p.bulletproofs.clear();
         {
             {
-                rct::inv8V C;
-                rct::rct_scalarV masks;
-                const std::span<const rct_scalar> keys{&amount_keys[0], amount_keys.size()};
-                rv.p.bulletproofs.push_back(proveRangeBulletproof(C, masks, outamounts, keys));
+              const auto [masks, proof] = proveRangeBulletproof(outamounts, amount_keys);
+              rv.p.bulletproofs.push_back(proof);
 
                 for (i = 0; i < outamounts.size(); ++i)
                 {
-                    rv.outPk[i].commit_of_amount = rct::multP8(C[i]);
+                    rv.outPk[i].commit_of_amount = rct::multP8(proof.V[i]);
                     outSk[i].blinding_factor = masks[i];
                 }
             }
