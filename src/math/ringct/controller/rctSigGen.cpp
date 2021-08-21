@@ -138,9 +138,8 @@ namespace rct {
            );
 
 
-        rct_scalar mu_P, mu_C;
-        mu_P = hash_dataV_to_scalar(mu_P_to_hash);
-        mu_C = hash_dataV_to_scalar(mu_C_to_hash);
+        const rct_scalar mu_P = hash_dataV_to_scalar(mu_P_to_hash);
+        const rct_scalar mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
         // Initial commitment
         crypto::dataV c_to_hash = {zero};

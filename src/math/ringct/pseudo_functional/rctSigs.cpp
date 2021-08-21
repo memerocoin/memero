@@ -67,8 +67,7 @@ namespace rct {
       LOG_ERROR_AND_THROW_UNLESS(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
           "Failed to serialize rctSigBase");
 
-      crypto::hash h;
-      cryptonote::get_blob_hash(ss.str(), h);
+      const crypto::hash h = cryptonote::get_blob_hash(ss.str());
 
       hashes.push_back(h2d(h));
 
@@ -160,9 +159,8 @@ namespace rct {
            , mu_C_to_hash[0].data.begin()
            );
 
-        rct_scalar mu_P, mu_C;
-        mu_P = hash_dataV_to_scalar(mu_P_to_hash);
-        mu_C = hash_dataV_to_scalar(mu_C_to_hash);
+        const rct_scalar mu_P = hash_dataV_to_scalar(mu_P_to_hash);
+        const rct_scalar mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
         // Set up round hash
         crypto::dataV c_to_hash = {zero}; // domain, P, C, C_offset, message, L, R

@@ -782,14 +782,14 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------
-  void get_blob_hash(const blobdata_ref& blob, crypto::hash& res)
+  crypto::hash get_blob_hash(const blobdata_ref& blob)
   {
-    res = sha3(epee::string_tools::string_view_to_blob_view(blob));
+    return sha3(epee::string_tools::string_view_to_blob_view(blob));
   }
   //---------------------------------------------------------------
-  void get_blob_hash(const blobdata& blob, crypto::hash& res)
+  crypto::hash get_blob_hash(const blobdata& blob)
   {
-    res = sha3(epee::string_tools::string_to_blob(blob));
+    return sha3(epee::string_tools::string_to_blob(blob));
   }
   //---------------------------------------------------------------
   void set_default_decimal_point(unsigned int decimal_point)
@@ -878,20 +878,6 @@ namespace cryptonote
     return str;
   }
   //---------------------------------------------------------------
-  crypto::hash get_blob_hash(const blobdata& blob)
-  {
-    crypto::hash h = null_hash;
-    get_blob_hash(blob, h);
-    return h;
-  }
-  //---------------------------------------------------------------
-  crypto::hash get_blob_hash(const blobdata_ref& blob)
-  {
-    crypto::hash h = null_hash;
-    get_blob_hash(blob, h);
-    return h;
-  }
-  //---------------------------------------------------------------
   crypto::hash get_transaction_hash(const transaction& t)
   {
     crypto::hash h = null_hash;
@@ -913,7 +899,7 @@ namespace cryptonote
     if (blob && unprunable_size)
     {
       LOG_ERROR_AND_RETURN_UNLESS(unprunable_size <= blob->size(), false, "Inconsistent transaction unprunable and blob sizes");
-      cryptonote::get_blob_hash(blobdata_ref(blob->data() + unprunable_size, blob->size() - unprunable_size), res);
+      res = cryptonote::get_blob_hash(blobdata_ref(blob->data() + unprunable_size, blob->size() - unprunable_size));
     }
     else
     {
@@ -925,7 +911,7 @@ namespace cryptonote
       const size_t mixin = t.vin.empty() ? 0 : t.vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(t.vin[0]).key_offsets.size() - 1 : 0;
       bool r = tt.rct_signatures.p.serialize_rctsig_prunable(ba, t.rct_signatures.type, inputs, outputs, mixin);
       LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to serialize rct signatures prunable");
-      cryptonote::get_blob_hash(ss.str(), res);
+      res = cryptonote::get_blob_hash(ss.str());
     }
     return true;
   }
@@ -970,7 +956,7 @@ namespace cryptonote
 
     // base rct
     LOG_ERROR_AND_RETURN_UNLESS(prefix_size <= unprunable_size && unprunable_size <= blob.size(), false, "Inconsistent transaction prefix, unprunable and blob sizes");
-    cryptonote::get_blob_hash(blobdata_ref(blob.data() + prefix_size, unprunable_size - prefix_size), hashes[1]);
+    hashes[1] = cryptonote::get_blob_hash(blobdata_ref(blob.data() + prefix_size, unprunable_size - prefix_size));
 
     // prunable rct
     if (t.rct_signatures.type == rct::RCTTypeNull)
