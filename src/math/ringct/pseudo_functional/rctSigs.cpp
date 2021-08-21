@@ -433,7 +433,7 @@ namespace rct {
       }
     }
 
-    std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar ecdh_shared_secret, const unsigned int i)
+    std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i)
     {
         LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctSig");
         LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");

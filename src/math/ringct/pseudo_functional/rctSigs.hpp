@@ -44,7 +44,7 @@ namespace rct {
     return verRctSemanticsSimple(rv) && verRctNonSemanticsSimple(rv);
   }
 
-  std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar ecdh_shared_secret, const unsigned int i);
+  std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i);
   crypto::hash get_mlsag_pre_hash(const rctSig rv);
 }
 
