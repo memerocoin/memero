@@ -241,12 +241,8 @@ namespace rct {
           LOG_ERROR_AND_THROW_UNLESS(index[n] < mixRing[n].size(), "Bad index into mixRing");
         }
 
-        rctSig rv;
-        rv.type = RCTTypeCLSAG;
-        rv.message = message;
 
         const auto [blinding_factors, proof] = makeRangeBulletproof(outamounts, amount_keys);
-        rv.p.bulletproofs = {proof};
 
         ct_secret_keyV outSk;
         std::transform
@@ -272,8 +268,6 @@ namespace rct {
            }
            );
 
-        rv.outPk = outPk;
-
 
         std::vector<ecdhData> ecdhInfo;
         std::transform
@@ -287,7 +281,6 @@ namespace rct {
            }
            );
 
-        rv.ecdhInfo = ecdhInfo;
 
         rct_scalar sum_blinding_factors = std::accumulate
           (
@@ -299,9 +292,6 @@ namespace rct {
            }
            );
 
-        //set txn fee
-        rv.txnFee = txnFee;
-        rv.mixRing = mixRing;
 
         // reserve the last one for generating a balanced pseudo sum
         rct_scalarV pseudo_blinding_factors(inamounts.size() - 1);
@@ -336,19 +326,33 @@ namespace rct {
         pseudo_blinding_factors.push_back(s2s(sum_blinding_factors - pseudo_sum_blinding_factors));
         pseudoOuts.push_back(commit(pseudo_blinding_factors.back(), inamounts.back()));
 
-        rv.p.pseudoOuts = pseudoOuts;
+        const rctSig preRctSig =
+          {
+            RCTTypeCLSAG
+            , message
+            , mixRing
+            , {}
+            , ecdhInfo
+            , outPk
+            , txnFee
+            , {
+              {proof}
+              , {}
+              , pseudoOuts
+            }
+          };
 
-        crypto::hash full_message = get_mlsag_pre_hash(rv);
+        const crypto::hash full_message = get_mlsag_pre_hash(preRctSig);
         std::vector<clsag> clsags(inamounts.size());
         std::generate
           (
            clsags.begin()
            , clsags.end()
-           , [full_message, rv, inSk, pseudo_blinding_factors, pseudoOuts, index, i = 0]() mutable {
+           , [full_message, mixRing, inSk, pseudo_blinding_factors, pseudoOuts, index, i = 0]() mutable {
              const auto clsag = makeRctCLSAGSimple
                (
                 full_message
-                , rv.mixRing[i]
+                , mixRing[i]
                 , inSk[i]
                 , pseudo_blinding_factors[i]
                 , pseudoOuts[i]
@@ -359,8 +363,10 @@ namespace rct {
            }
            );
 
-        rv.p.CLSAGs = clsags;
-        return {rv, outSk};
+        rctSig rctSig = preRctSig;
+        rctSig.p.CLSAGs = clsags;
+
+        return {rctSig, outSk};
     }
 
     clsag makeRctCLSAGSimple
