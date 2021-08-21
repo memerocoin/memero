@@ -50,21 +50,25 @@ using namespace std;
 namespace rct {
   crypto::hash get_mlsag_pre_hash(const rctSig rv)
     {
-      hw::device& hwdev = hw::get_device("default");
+      LOG_ERROR_AND_THROW_UNLESS(!rv.mixRing.empty(), "Empty mixRing");
+
       crypto::dataV hashes;
-      hashes.reserve(3);
       hashes.push_back(crypto::h2d(rv.message));
-      crypto::hash h;
+
 
       std::stringstream ss;
       binary_archive<true> ba(ss);
-      LOG_ERROR_AND_THROW_UNLESS(!rv.mixRing.empty(), "Empty mixRing");
+
       const size_t inputs = rv.mixRing.size();
       const size_t outputs = rv.ecdhInfo.size();
-      crypto::hash prehash;
+
+
       LOG_ERROR_AND_THROW_UNLESS(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
           "Failed to serialize rctSigBase");
+
+      crypto::hash h;
       cryptonote::get_blob_hash(ss.str(), h);
+
       hashes.push_back(h2d(h));
 
       crypto::dataV kv;
@@ -89,9 +93,10 @@ namespace rct {
           kv.push_back(p.t);
         }
       }
+
       hashes.push_back(h2d(hash_dataV(kv)));
-      hwdev.mlsag_pre_hash(ss.str(), inputs, outputs, hashes, rv.outPk, prehash);
-      return  prehash;
+
+      return hash_dataV(hashes);
     }
 
 

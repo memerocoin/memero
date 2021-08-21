@@ -362,20 +362,6 @@ namespace hw {
             return r;
         }
 
-        bool  device_default::mlsag_pre_hash
-        (
-        const std::string &blob
-        , size_t inputs_size
-        , size_t outputs_size
-        , const crypto::dataV &hashes
-        , const rct::ct_public_keyV &outPk
-        , crypto::hash &prehash
-        )
-        {
-            prehash = rct::hash_dataV(hashes);
-            return true;
-        }
-
         bool device_default::clsag_prepare
         (
          const rct::rct_scalar &p

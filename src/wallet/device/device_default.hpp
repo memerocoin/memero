@@ -134,16 +134,6 @@ namespace hw {
             , crypto::public_key &out_eph_public_key
             ) override;
 
-            bool mlsag_pre_hash
-            (
-            const std::string &blob
-            , size_t inputs_size
-            , size_t outputs_size
-            , const crypto::dataV &hashes
-            , const rct::ct_public_keyV &outPk
-            , crypto::hash &prehash
-            ) override;
-
             bool clsag_prepare
             (
              const rct::rct_scalar &p
