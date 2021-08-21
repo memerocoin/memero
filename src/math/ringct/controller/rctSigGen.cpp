@@ -264,7 +264,6 @@ namespace rct {
      , const rct_scalarV amount_keys
      , const std::vector<size_t> index
      ) {
-        ct_secret_keyV outSk;
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
         LOG_ERROR_AND_THROW_UNLESS(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
@@ -278,62 +277,107 @@ namespace rct {
         rctSig rv;
         rv.type = RCTTypeCLSAG;
         rv.message = message;
-        rv.outPk.resize(destinations.size());
-        rv.ecdhInfo.resize(destinations.size());
 
-        size_t i;
-        rct_pointV masks(destinations.size()); //sk mask..
-        outSk.resize(destinations.size());
-        for (i = 0; i < destinations.size(); i++) {
+        const auto [blinding_factors, proof] = makeRangeBulletproof(outamounts, amount_keys);
+        rv.p.bulletproofs = {proof};
 
-            //add destination to sig
-            rv.outPk[i].dest = destinations[i];
-            //compute range proof
-        }
+        ct_secret_keyV outSk;
+        std::transform
+          (
+             blinding_factors.begin()
+           , blinding_factors.end()
+           , std::back_inserter(outSk)
+           , [](const auto& x) -> ct_secret_key {
+             return {{}, x};
+           }
+           );
 
-        rv.p.bulletproofs.clear();
-        {
-            {
-              const auto [blinding_factors, proof] = makeRangeBulletproof(outamounts, amount_keys);
-              rv.p.bulletproofs.push_back(proof);
 
-                for (i = 0; i < outamounts.size(); ++i)
-                {
-                    rv.outPk[i].commit_of_amount = rct::multP8(proof.V[i]);
-                    outSk[i].blinding_factor = blinding_factors[i];
-                }
-            }
-        }
+        ct_public_keyV outPk;
+        std::transform
+          (
+           destinations.begin()
+           , destinations.end()
+           , proof.V.begin()
+           , std::back_inserter(outPk)
+           , [](const auto& x, const auto& y) -> ct_public_key {
+             return {x, rct::multP8(y)};
+           }
+           );
 
-        rct_scalar sumout = s_zero;
-        for (i = 0; i < outSk.size(); ++i)
-        {
-            sumout = outSk[i].blinding_factor + sumout;
-            rv.ecdhInfo[i].masked_amount =
-              crypto::d2s(encode_by_ecdh_shared_secret(int_to_scalar(outamounts[i]), amount_keys[i]));
-        }
+        rv.outPk = outPk;
+
+
+        std::vector<ecdhData> ecdhInfo;
+        std::transform
+          (
+           outamounts.begin(),
+           outamounts.end(),
+           amount_keys.begin(),
+           std::back_inserter(ecdhInfo),
+           [](const auto& x, const auto& y) -> ecdhData {
+             return {crypto::d2s(encode_by_ecdh_shared_secret(int_to_scalar(x), y))};
+           }
+           );
+
+        rv.ecdhInfo = ecdhInfo;
+
+        rct_scalar sum_blinding_factors = std::accumulate
+          (
+           outSk.begin()
+           , outSk.end()
+           , s_zero
+           , [](const auto& x, const auto& y) {
+             return x + y.blinding_factor;
+           }
+           );
 
         //set txn fee
         rv.txnFee = txnFee;
 //        TODO: unused ??
 //        rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
         rv.mixRing = mixRing;
-        rct_pointV &pseudoOuts = rv.p.pseudoOuts;
-        pseudoOuts.resize(inamounts.size());
+
         rv.p.CLSAGs.resize(inamounts.size());
-        // TODO: scalar
-        rct_scalar sumpouts = s_zero; //sum pseudoOut blinding_factors
-        rct_scalarV a(inamounts.size());
-        for (i = 0 ; i < inamounts.size() - 1; i++) {
-            a[i] = skGen();
-            sumpouts = a[i] + sumpouts;
-            pseudoOuts[i] = commit(a[i], inamounts[i]);
-        }
-        a[i] = s2s(sumout - sumpouts);
-        pseudoOuts[i] = commit(a[i], inamounts[i]);
+
+
+        // reserve the last one for generating a balanced pseudo sum
+        rct_scalarV pseudo_blinding_factors(inamounts.size() - 1);
+        std::generate
+          (
+           pseudo_blinding_factors.begin()
+           , pseudo_blinding_factors.end()
+           , []() { return skGen(); }
+           );
+
+        rct_scalar pseudo_sum_blinding_factors =
+          std::accumulate
+          (
+           pseudo_blinding_factors.begin()
+           , pseudo_blinding_factors.end()
+           , s_zero
+           , std::plus<>()
+           );
+
+        rct_pointV pseudoOuts;
+        std::transform
+          (
+           pseudo_blinding_factors.begin()
+           , pseudo_blinding_factors.end()
+           , inamounts.begin()
+           , std::back_inserter(pseudoOuts)
+           , [](const auto& x, const auto& y) -> rct_point {
+             return commit(x, y);
+           }
+           );
+
+        pseudo_blinding_factors.push_back(s2s(sum_blinding_factors - pseudo_sum_blinding_factors));
+        pseudoOuts.push_back(commit(pseudo_blinding_factors.back(), inamounts.back()));
+
+        rv.p.pseudoOuts = pseudoOuts;
 
         crypto::hash full_message = get_mlsag_pre_hash(rv);
-        for (i = 0 ; i < inamounts.size(); i++)
+        for (size_t i = 0 ; i < inamounts.size(); i++)
         {
             {
                 rv.p.CLSAGs[i] = proveRctCLSAGSimple
@@ -341,7 +385,7 @@ namespace rct {
                    full_message
                    , rv.mixRing[i]
                    , inSk[i]
-                   , a[i]
+                   , pseudo_blinding_factors[i]
                    , pseudoOuts[i]
                    , index[i]
                    );
