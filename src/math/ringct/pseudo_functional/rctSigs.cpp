@@ -118,14 +118,33 @@ namespace rct {
         }
 
         // Prepare key images
-        rct_scalar c = sig.c1;
-        rct_point D_8 = multP8(sig.D);
+        const rct_point D_8 = multP8(sig.D);
         LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary rct_point image!");
 
         // Aggregation hashes
-        crypto::dataV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        crypto::dataV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        mu_P_to_hash[0] = zero;
+        crypto::dataV mu_P_to_hash = {zero};
+        std::transform
+          (
+           pubs.begin()
+           , pubs.end()
+           , std::back_inserter(mu_P_to_hash)
+           , [](const auto& x) { return x.dest; }
+           );
+
+        std::transform
+          (
+           pubs.begin()
+           , pubs.end()
+           , std::back_inserter(mu_P_to_hash)
+           , [](const auto& x) { return x.commit_of_amount; }
+           );
+
+        mu_P_to_hash.push_back(sig.I);
+        mu_P_to_hash.push_back(sig.D);
+        mu_P_to_hash.push_back(C_offset);
+
+        crypto::dataV mu_C_to_hash = mu_P_to_hash;
+
         std::copy_n
           (
            config::HASH_KEY_CLSAG_AGG_0
@@ -133,7 +152,6 @@ namespace rct {
            , mu_P_to_hash[0].data.begin()
            );
 
-        mu_C_to_hash[0] = zero;
         std::copy_n
           (
            config::HASH_KEY_CLSAG_AGG_1
@@ -141,27 +159,12 @@ namespace rct {
            , mu_C_to_hash[0].data.begin()
            );
 
-        for (size_t i = 1; i < n+1; ++i) {
-            mu_P_to_hash[i] = pubs[i-1].dest;
-            mu_C_to_hash[i] = pubs[i-1].dest;
-        }
-        for (size_t i = n+1; i < 2*n+1; ++i) {
-            mu_P_to_hash[i] = pubs[i-n-1].commit_of_amount;
-            mu_C_to_hash[i] = pubs[i-n-1].commit_of_amount;
-        }
-        mu_P_to_hash[2*n+1] = sig.I;
-        mu_P_to_hash[2*n+2] = sig.D;
-        mu_P_to_hash[2*n+3] = C_offset;
-        mu_C_to_hash[2*n+1] = sig.I;
-        mu_C_to_hash[2*n+2] = sig.D;
-        mu_C_to_hash[2*n+3] = C_offset;
         rct_scalar mu_P, mu_C;
         mu_P = hash_dataV_to_scalar(mu_P_to_hash);
         mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
         // Set up round hash
-        crypto::dataV c_to_hash(2*n+5); // domain, P, C, C_offset, message, L, R
-        c_to_hash[0] = zero;
+        crypto::dataV c_to_hash = {zero}; // domain, P, C, C_offset, message, L, R
         std::copy_n
           (
            config::HASH_KEY_CLSAG_ROUND
@@ -169,24 +172,34 @@ namespace rct {
            , c_to_hash[0].data.begin()
            );
 
-        for (size_t i = 1; i < n+1; ++i)
-        {
-            c_to_hash[i] = pubs[i-1].dest;
-            c_to_hash[i+n] = pubs[i-1].commit_of_amount;
-        }
-        c_to_hash[2*n+1] = C_offset;
-        c_to_hash[2*n+2] = crypto::h2d(message);
-        rct_scalar c_p; // = c[i]*mu_P
-        rct_scalar c_c; // = c[i]*mu_C
-        rct_scalar c_new;
-        rct_point L;
-        rct_point R;
+        std::transform
+          (
+           pubs.begin()
+           , pubs.end()
+           , std::back_inserter(c_to_hash)
+           , [](const auto& x) { return x.dest; }
+           );
+
+        std::transform
+          (
+           pubs.begin()
+           , pubs.end()
+           , std::back_inserter(c_to_hash)
+           , [](const auto& x) { return x.commit_of_amount; }
+           );
+
+        c_to_hash.push_back(C_offset);
+        c_to_hash.push_back(crypto::h2d(message));
+        c_to_hash.push_back({}); // reserve for L
+        c_to_hash.push_back({}); // reserve for R
+
+
+        rct_scalar c = sig.c1;
         size_t i = 0;
 
         while (i < n) {
-            c_new = s_zero;
-            c_p = mu_P * c;
-            c_c = mu_C * c;
+            const rct_scalar c_p = mu_P * c;
+            const rct_scalar c_c = mu_C * c;
 
             const rct_point mask = pubs[i].commit_of_amount;
             if (!is_valid_point(mask)) {
@@ -197,7 +210,7 @@ namespace rct {
             const rct_point C = mask - C_offset;
 
             // Compute L
-            L = addPoints
+            const rct_point L = addPoints
               (
                std::array
                {
@@ -210,7 +223,7 @@ namespace rct {
             // Compute R
             const rct_point k = hash_to_point_via_f2(pubs[i].dest);
 
-            R = addPoints
+            const rct_point R = addPoints
               (
                std::array
                {
@@ -222,14 +235,14 @@ namespace rct {
 
             c_to_hash[2*n+3] = L;
             c_to_hash[2*n+4] = R;
-            c_new = hash_dataV_to_scalar(c_to_hash);
-            LOG_ERROR_AND_RETURN_IF((c_new == rct::s_zero), false, "Bad signature hash");
-            c = c_new;
 
-            i = i + 1;
+            c = hash_dataV_to_scalar(c_to_hash);
+            LOG_ERROR_AND_RETURN_IF((c == rct::s_zero), false, "Bad signature hash");
+
+            i++;
         }
-        c_new = s2s(c - sig.c1);
-        return c_new == s_zero;
+
+        return s2s(c - sig.c1) == s_zero;
     }
 
     bool verRctCLSAGSimple(const crypto::hash message, const clsag sig, const ct_public_keyS pubs, const rct_point C_offset) {
@@ -432,7 +445,7 @@ namespace rct {
           crypto::d2s(rct::decode_by_ecdh_shared_secret(rv.ecdhInfo[i].masked_amount, ecdh_shared_secret));
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_unnormalized), "warning, bad ECDH amount");
 
-        rct_point C = rv.outPk[i].commit_of_amount;
+        const rct_point C = rv.outPk[i].commit_of_amount;
 
         const auto amount = rct::s2s(crypto::reduce(amount_unnormalized));
 
