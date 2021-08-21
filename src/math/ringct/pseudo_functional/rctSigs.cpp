@@ -255,10 +255,6 @@ namespace rct {
 
     bool verRctSemanticsSimpleMayThrow(const std::span<const rctSig> rvv)
     {
-        std::deque<bool> results;
-        std::vector<Bulletproof> proofs;
-        size_t max_non_bp_proofs = 0;
-
         for (const rctSig& rv: rvv)
         {
           LOG_ERROR_AND_RETURN_UNLESS
@@ -297,51 +293,39 @@ namespace rct {
              );
         }
 
-        results.resize(max_non_bp_proofs);
-        for (const rctSig& rv: rvv)
-        {
-          const rct_pointV &pseudoOuts = rv.p.pseudoOuts;
+        return std::transform_reduce
+          (
+           rvv.begin()
+           , rvv.end()
+           , true
+           , std::logical_and<>()
+           , [](const rctSig& rv) {
+             const rct_pointV &pseudoOuts = rv.p.pseudoOuts;
 
-          rct::rct_pointV masks;
-          std::transform
-            (
-             rv.outPk.begin()
-             , rv.outPk.end()
-             , std::back_inserter(masks)
-             , [](const auto& x) {
-               return x.commit_of_amount;
+             rct::rct_pointV masks;
+             std::transform
+               (
+                rv.outPk.begin()
+                , rv.outPk.end()
+                , std::back_inserter(masks)
+                , [](const auto& x) {
+                  return x.commit_of_amount;
+                }
+                );
+
+             const rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
+             const rct_point sumOutpks = addPoints(masks) + txnFeeKey;
+             const rct_point sumPseudoOuts = addPoints(pseudoOuts);
+
+             //check pseudoOuts vs Outs..
+             if (sumPseudoOuts != sumOutpks) {
+               LOG_PRINT_L1("Sum check failed");
+               return false;
              }
-             );
 
-          const rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
-          const rct_point sumOutpks = addPoints(masks) + txnFeeKey;
-          const rct_point sumPseudoOuts = addPoints(pseudoOuts);
-
-          //check pseudoOuts vs Outs..
-          if (sumPseudoOuts != sumOutpks) {
-            LOG_PRINT_L1("Sum check failed");
-            return false;
-          }
-
-          for (size_t i = 0; i < rv.p.bulletproofs.size(); i++) {
-            proofs.push_back(rv.p.bulletproofs[i]);
-          }
-        }
-
-        if (!proofs.empty() && !bulletproof_VERIFY(proofs))
-        {
-          LOG_PRINT_L1("Aggregate range proof verified failed");
-          return false;
-        }
-
-        for (size_t i = 0; i < results.size(); ++i) {
-          if (!results[i]) {
-            LOG_PRINT_L1("Range proof verified failed for proof " << i);
-            return false;
-          }
-        }
-
-        return true;
+             return bulletproof_VERIFY(rv.p.bulletproofs);
+           }
+           );
     }
 
     bool verRctSemanticsSimple(const std::span<const rctSig> rvv) {
