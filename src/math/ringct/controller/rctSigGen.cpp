@@ -143,9 +143,7 @@ namespace rct {
         mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
         // Initial commitment
-        crypto::dataV c_to_hash(2*n+5); // domain, P, C, C_offset, message, aG, aH
-        rct_scalar c;
-        c_to_hash[0] = zero;
+        crypto::dataV c_to_hash = {zero};
         std::copy_n
           (
            config::HASH_KEY_CLSAG_ROUND
@@ -153,39 +151,31 @@ namespace rct {
            , c_to_hash[0].data.begin()
            );
 
-        for (size_t i = 1; i < n+1; ++i)
-        {
-            c_to_hash[i] = P[i-1];
-            c_to_hash[i+n] = C_nonzero[i-1];
-        }
-        c_to_hash[2*n+1] = C_offset;
-        c_to_hash[2*n+2] = crypto::h2d(message);
+        c_to_hash.insert(c_to_hash.end(), P.begin(), P.end());
+        c_to_hash.insert(c_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
+        c_to_hash.push_back(C_offset);
+        c_to_hash.push_back(crypto::h2d(message));
+        c_to_hash.push_back(aG);
+        c_to_hash.push_back(aH);
 
-        {
-            c_to_hash[2*n+3] = aG;
-            c_to_hash[2*n+4] = aH;
-        }
-        c = hwdev.clsag_hash(c_to_hash);
 
-        size_t i;
-        i = (idx + 1) % n;
-        if (i == 0)
-            sig.c1 = c;
+        rct_scalar c = hwdev.clsag_hash(c_to_hash);
+
+        size_t i = (idx + 1) % n;
+        if (i == 0) {
+          sig.c1 = c;
+        }
 
         // Decoy indices
         sig.s = rct_scalarV(n);
-        rct_point L;
-        rct_point R;
-        rct_scalar c_p; // = c[i]*mu_P
-        rct_scalar c_c; // = c[i]*mu_C
 
         while (i != idx) {
             sig.s[i] = skGen();
-            c_p = mu_P * c;
-            c_c = mu_C * c;
+            const rct_scalar c_p = mu_P * c;
+            const rct_scalar c_c = mu_C * c;
 
             // Compute L
-            L = addPoints
+            const rct_point L = addPoints
               (
                std::array
                {
@@ -197,7 +187,7 @@ namespace rct {
 
             // Compute R
             const rct_point A = hash_to_point_via_f2(P[i]);
-            R = addPoints
+            const rct_point R = addPoints
               (
                std::array
                {
@@ -209,11 +199,13 @@ namespace rct {
 
             c_to_hash[2*n+3] = L;
             c_to_hash[2*n+4] = R;
+            // need to be remembered
             c = hwdev.clsag_hash(c_to_hash);
 
             i = (i + 1) % n;
-            if (i == 0)
-                sig.c1 = c;
+            if (i == 0) {
+              sig.c1 = c;
+            }
         }
 
         // Compute final scalar
@@ -374,7 +366,7 @@ namespace rct {
      , const ct_secret_key inSk
      , const rct_scalar a
      , const rct_point Cout
-     , const unsigned int index
+     , const size_t index
      )
     {
       LOG_ERROR_AND_THROW_IF(pubs.empty(), "Empty pubs");

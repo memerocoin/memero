@@ -54,7 +54,7 @@ namespace rct {
    , const ct_secret_key inSk
    , const rct_scalar a
    , const rct_point Cout
-   , const unsigned int index
+   , const size_t index
    );
 
 
