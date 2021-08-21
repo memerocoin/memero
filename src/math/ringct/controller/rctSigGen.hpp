@@ -44,7 +44,7 @@ namespace rct {
    , const rct_scalar z
    , const rct_pointV C_nonzero
    , const rct_point C_offset
-   , const unsigned int l
+   , const size_t idx
    );
 
   clsag makeRctCLSAGSimple

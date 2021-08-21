@@ -90,17 +90,17 @@ namespace rct {
      , const rct_scalar z
      , const rct_pointV C_nonzero
      , const rct_point C_offset
-     , const unsigned int l
+     , const size_t idx
      ) {
         hw::device& hwdev = hw::get_device("default");
         clsag sig;
         size_t n = P.size(); // ring size
         LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment rct_point vector sizes must match!");
         LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment rct_point vector sizes must match!");
-        LOG_ERROR_AND_THROW_UNLESS(l < n, "Signing index out of range!");
+        LOG_ERROR_AND_THROW_UNLESS(idx < n, "Signing index out of range!");
 
         // mages images
-        rct_point H = hash_to_point_via_f2(P[l]);
+        rct_point H = hash_to_point_via_f2(P[idx]);
 
         rct_point D;
 
@@ -179,7 +179,7 @@ namespace rct {
         c = hwdev.clsag_hash(c_to_hash);
 
         size_t i;
-        i = (l + 1) % n;
+        i = (idx + 1) % n;
         if (i == 0)
             sig.c1 = c;
 
@@ -190,7 +190,7 @@ namespace rct {
         rct_scalar c_p; // = c[i]*mu_P
         rct_scalar c_c; // = c[i]*mu_C
 
-        while (i != l) {
+        while (i != idx) {
             sig.s[i] = skGen();
             c_p = mu_P * c;
             c_c = mu_C * c;
@@ -228,7 +228,7 @@ namespace rct {
         }
 
         // Compute final scalar
-        hwdev.clsag_sign(c,a,p,z,mu_P,mu_C,sig.s[l]);
+        hwdev.clsag_sign(c,a,p,z,mu_P,mu_C,sig.s[idx]);
 
         return sig;
     }
