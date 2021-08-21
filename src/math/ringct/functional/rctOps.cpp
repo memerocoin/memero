@@ -176,16 +176,11 @@ namespace rct {
   }
 
   constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
-  rct_scalar derive_secret_key_for_blinding_factor(const rct_scalar x)
-  {
+  rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar x) {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
       + epee::blob::data(x.data.begin(), x.data.size());
 
     return s2s(crypto::hash_to_scalar(hashData));
-  }
-
-  rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar ecdh_shared_secret) {
-    return derive_secret_key_for_blinding_factor(ecdh_shared_secret);
   }
 }
