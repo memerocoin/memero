@@ -109,17 +109,20 @@ namespace rct {
         rct_point aG;
         rct_point aH;
 
-        {
-          hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
-        }
+        hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
 
         // Offset key image
         sig.D = multP(D, rct::s_inv_eight);
 
-        // Aggregation hashes
-        crypto::dataV mu_P_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        crypto::dataV mu_C_to_hash(2*n+4); // domain, I, D, P, C, C_offset
-        mu_P_to_hash[0] = zero;
+        crypto::dataV mu_P_to_hash = {zero};
+        mu_P_to_hash.insert(mu_P_to_hash.end(), P.begin(), P.end());
+        mu_P_to_hash.insert(mu_P_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
+        mu_P_to_hash.push_back(sig.I);
+        mu_P_to_hash.push_back(sig.D);
+        mu_P_to_hash.push_back(C_offset);
+
+        crypto::dataV mu_C_to_hash = mu_P_to_hash;
+
         std::copy_n
           (
            config::HASH_KEY_CLSAG_AGG_0
@@ -127,7 +130,6 @@ namespace rct {
            , mu_P_to_hash[0].data.begin()
            );
 
-        mu_C_to_hash[0] = zero;
         std::copy_n
           (
            config::HASH_KEY_CLSAG_AGG_1
@@ -135,20 +137,7 @@ namespace rct {
            , mu_C_to_hash[0].data.begin()
            );
 
-        for (size_t i = 1; i < n+1; ++i) {
-            mu_P_to_hash[i] = P[i-1];
-            mu_C_to_hash[i] = P[i-1];
-        }
-        for (size_t i = n+1; i < 2*n+1; ++i) {
-            mu_P_to_hash[i] = C_nonzero[i-n-1];
-            mu_C_to_hash[i] = C_nonzero[i-n-1];
-        }
-        mu_P_to_hash[2*n+1] = sig.I;
-        mu_P_to_hash[2*n+2] = sig.D;
-        mu_P_to_hash[2*n+3] = C_offset;
-        mu_C_to_hash[2*n+1] = sig.I;
-        mu_C_to_hash[2*n+2] = sig.D;
-        mu_C_to_hash[2*n+3] = C_offset;
+
         rct_scalar mu_P, mu_C;
         mu_P = hash_dataV_to_scalar(mu_P_to_hash);
         mu_C = hash_dataV_to_scalar(mu_C_to_hash);
