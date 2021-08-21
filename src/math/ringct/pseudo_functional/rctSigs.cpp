@@ -49,7 +49,7 @@ using namespace std;
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
 namespace rct {
-  crypto::hash get_mlsag_pre_hash(const rctSig rv)
+    crypto::hash get_mlsag_pre_hash(const rctSig rv)
     {
       LOG_ERROR_AND_THROW_UNLESS(!rv.mixRing.empty(), "Empty mixRing");
 
@@ -64,8 +64,11 @@ namespace rct {
       const size_t outputs = rv.ecdhInfo.size();
 
 
-      LOG_ERROR_AND_THROW_UNLESS(const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs),
-          "Failed to serialize rctSigBase");
+      LOG_ERROR_AND_THROW_UNLESS
+        (
+         const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs)
+         , "Failed to serialize rctSigBase"
+         );
 
       const crypto::hash h = cryptonote::get_blob_hash(ss.str());
 
@@ -100,7 +103,13 @@ namespace rct {
     }
 
 
-    bool verRctCLSAGSimpleMayThrow(const crypto::hash message, const clsag sig, const ct_public_keyS pubs, const rct_point C_offset)
+    bool verRctCLSAGSimpleMayThrow
+    (
+     const crypto::hash message
+     , const clsag sig
+     , const ct_public_keyS pubs
+     , const rct_point C_offset
+     )
     {
         const size_t n = pubs.size();
 
@@ -244,7 +253,14 @@ namespace rct {
         return s2s(c - sig.c1) == s_zero;
     }
 
-    bool verRctCLSAGSimple(const crypto::hash message, const clsag sig, const ct_public_keyS pubs, const rct_point C_offset) {
+    bool verRctCLSAGSimple
+    (
+     const crypto::hash message
+     , const clsag sig
+     , const ct_public_keyS pubs
+     , const rct_point C_offset
+     )
+    {
       try {
         return verRctCLSAGSimpleMayThrow(message, sig, pubs, C_offset);
       }
