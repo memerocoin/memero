@@ -149,7 +149,7 @@ namespace crypto {
         , D
         , X
         , Y
-        , sha3(epee::blob::span(config::HASH_KEY_TXPROOF_V2, sizeof(config::HASH_KEY_TXPROOF_V2) - 1))
+        , sha3(epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V2))
         , R
         , A
         , B ? *B : zero
