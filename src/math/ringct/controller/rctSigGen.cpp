@@ -334,12 +334,7 @@ namespace rct {
 
         //set txn fee
         rv.txnFee = txnFee;
-//        TODO: unused ??
-//        rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
         rv.mixRing = mixRing;
-
-        rv.p.CLSAGs.resize(inamounts.size());
-
 
         // reserve the last one for generating a balanced pseudo sum
         rct_scalarV pseudo_blinding_factors(inamounts.size() - 1);
@@ -377,20 +372,27 @@ namespace rct {
         rv.p.pseudoOuts = pseudoOuts;
 
         crypto::hash full_message = get_mlsag_pre_hash(rv);
-        for (size_t i = 0 ; i < inamounts.size(); i++)
-        {
-            {
-                rv.p.CLSAGs[i] = proveRctCLSAGSimple
-                  (
-                   full_message
-                   , rv.mixRing[i]
-                   , inSk[i]
-                   , pseudo_blinding_factors[i]
-                   , pseudoOuts[i]
-                   , index[i]
-                   );
-            }
-        }
+        std::vector<clsag> clsags(inamounts.size());
+        std::generate
+          (
+           clsags.begin()
+           , clsags.end()
+           , [full_message, rv, inSk, pseudo_blinding_factors, pseudoOuts, index, i = 0]() mutable {
+             const auto clsag = proveRctCLSAGSimple
+               (
+                full_message
+                , rv.mixRing[i]
+                , inSk[i]
+                , pseudo_blinding_factors[i]
+                , pseudoOuts[i]
+                , index[i]
+                );
+             i++;
+             return clsag;
+           }
+           );
+
+        rv.p.CLSAGs = clsags;
         return {rv, outSk};
     }
 
