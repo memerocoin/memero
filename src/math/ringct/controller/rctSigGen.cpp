@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2016, Monero Research Labs
 //
 // Author: Shen Noether <shen.noether@gmx.com>
@@ -31,9 +32,7 @@
 #include "rctSigGen.hpp"
 
 #include "math/ringct/functional/curveConstants.hpp"
-
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
-
 #include "math/ringct/controller/rctGen.hpp"
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
@@ -390,7 +389,6 @@ namespace rct {
      )
     {
       rct_pointV P;
-
       std::transform
         (
          pubs.begin()
