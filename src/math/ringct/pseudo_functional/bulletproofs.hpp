@@ -1,3 +1,4 @@
+// Copyright (c) 2021, The Lolnero Project
 // Copyright (c) 2017-2020, The Monero Project
 //
 // All rights reserved.
