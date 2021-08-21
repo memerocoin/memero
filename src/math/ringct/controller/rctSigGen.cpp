@@ -388,6 +388,8 @@ namespace rct {
      , const unsigned int index
      )
     {
+      LOG_ERROR_AND_THROW_IF(pubs.empty(), "Empty pubs");
+
       rct_pointV P;
       std::transform
         (
