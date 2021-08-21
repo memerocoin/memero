@@ -75,7 +75,7 @@ const auto multiexp = dummy;
 
 rct::rct_point get_exponent(const rct::rct_point base, size_t idx)
 {
-  constexpr std::string_view domain_separator(config::HASH_KEY_BULLETPROOF_EXPONENT);
+  constexpr std::string_view domain_separator = config::HASH_KEY_BULLETPROOF_EXPONENT;
   const std::string hashed =
     std::string((const char*)base.data.begin(), base.data.size()) + std::string(domain_separator) + tools::get_varint_data(idx);
 

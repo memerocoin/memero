@@ -80,7 +80,7 @@ namespace constant
 namespace config
 {
   // Hash domain separators
-  constexpr char HASH_KEY_BULLETPROOF_EXPONENT[] = "bulletproof";
+  constexpr std::string_view HASH_KEY_BULLETPROOF_EXPONENT = "bulletproof";
   constexpr char HASH_KEY_SUBADDRESS[] = "SubAddr";
   constexpr unsigned char HASH_KEY_WALLET = 0x8c;
   constexpr unsigned char HASH_KEY_WALLET_CACHE = 0x8d;
