@@ -103,9 +103,7 @@ namespace rct {
 
   rct_point hash_to_point_via_f2(const crypto::crypto_data k);
 
-  //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
-  // where C= aG + bH
-  rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data x);
+  rct_scalar derive_secret_key_for_blinding_factor(const crypto::crypto_data x);
 
   rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar ecdh_shared_secret);
 

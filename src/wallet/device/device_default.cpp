@@ -362,8 +362,8 @@ namespace hw {
             return r;
         }
 
-        rct::rct_scalar device_default::hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data &amount_key) {
-            return rct::hash_to_scalar_with_commitment_mask_prefix(amount_key);
+        rct::rct_scalar device_default::derive_secret_key_for_blinding_factor(const crypto::crypto_data &amount_key) {
+            return rct::derive_secret_key_for_blinding_factor(amount_key);
         }
 
         bool  device_default::mlsag_pre_hash

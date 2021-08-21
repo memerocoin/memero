@@ -118,7 +118,7 @@ namespace hw {
             bool  open_tx(crypto::secret_key &tx_key) override;
             void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) override;
 
-            rct::rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data &amount_key) override;
+            rct::rct_scalar derive_secret_key_for_blinding_factor(const crypto::crypto_data &amount_key) override;
 
             bool generate_output_ephemeral_keys
             (

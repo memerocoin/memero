@@ -155,7 +155,7 @@ namespace rct {
   // where C= aG + bH
 
   constexpr std::string_view ecdhHashPrefix = "amount";
-  crypto::hash hash_for_ecdh_with_amount_prefix(const crypto::crypto_data x)
+  crypto::hash derive_secret_key_for_ecdh_amount(const crypto::crypto_data x)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(ecdhHashPrefix))
@@ -166,7 +166,7 @@ namespace rct {
 
   crypto::crypto_data hash_and_xor_first_8_bytes(const crypto::crypto_data x, const rct_scalar y)
   {
-    const crypto::hash h = hash_for_ecdh_with_amount_prefix(y);
+    const crypto::hash h = derive_secret_key_for_ecdh_amount(y);
     crypto::crypto_data r = x;
 
     for (int i = 0; i < 8; ++i)
@@ -176,7 +176,7 @@ namespace rct {
   }
 
   constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
-  rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data x)
+  rct_scalar derive_secret_key_for_blinding_factor(const crypto::crypto_data x)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
@@ -186,6 +186,6 @@ namespace rct {
   }
 
   rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar ecdh_shared_secret) {
-    return hash_to_scalar_with_commitment_mask_prefix(ecdh_shared_secret);
+    return derive_secret_key_for_blinding_factor(ecdh_shared_secret);
   }
 }

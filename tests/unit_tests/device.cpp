@@ -124,7 +124,7 @@ TEST(device, ops)
 }
 
 // TODO fix tests
-// ecdhEncode uses hash_for_ecdh_with_amount_prefix, which we replaced with sha3, so these will fail
+// ecdhEncode uses derive_secret_key_for_ecdh_amount, which we replaced with sha3, so these will fail
 /*
 TEST(device, ecdh32)
 

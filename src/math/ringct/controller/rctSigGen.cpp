@@ -61,7 +61,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
-              masks[i] = hwdev.hash_to_scalar_with_commitment_mask_prefix(sk[i]);
+              masks[i] = hwdev.derive_secret_key_for_blinding_factor(sk[i]);
         Bulletproof proof = bulletproof_MAKE(amounts, masks);
         LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
         C = proof.V;
