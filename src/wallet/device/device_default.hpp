@@ -118,8 +118,6 @@ namespace hw {
             bool  open_tx(crypto::secret_key &tx_key) override;
             void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) override;
 
-            rct::rct_scalar derive_secret_key_for_blinding_factor(const crypto::crypto_data &amount_key) override;
-
             bool generate_output_ephemeral_keys
             (
             const size_t tx_version

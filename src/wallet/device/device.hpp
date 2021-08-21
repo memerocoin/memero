@@ -203,8 +203,6 @@ namespace hw {
 
         virtual void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) = 0;
 
-        virtual rct::rct_scalar derive_secret_key_for_blinding_factor(const crypto::crypto_data &amount_key) = 0;
-
         virtual bool  generate_output_ephemeral_keys
         (
          const size_t tx_version

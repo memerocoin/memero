@@ -103,7 +103,7 @@ namespace rct {
 
   rct_point hash_to_point_via_f2(const crypto::crypto_data k);
 
-  rct_scalar derive_secret_key_for_blinding_factor(const crypto::crypto_data x);
+  rct_scalar derive_secret_key_for_blinding_factor(const rct_scalar x);
 
   rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar ecdh_shared_secret);
 

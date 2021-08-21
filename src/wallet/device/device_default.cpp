@@ -362,10 +362,6 @@ namespace hw {
             return r;
         }
 
-        rct::rct_scalar device_default::derive_secret_key_for_blinding_factor(const crypto::crypto_data &amount_key) {
-            return rct::derive_secret_key_for_blinding_factor(amount_key);
-        }
-
         bool  device_default::mlsag_pre_hash
         (
         const std::string &blob

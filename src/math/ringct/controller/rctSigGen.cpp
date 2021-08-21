@@ -57,11 +57,10 @@ namespace rct {
      , const std::vector<uint64_t> amounts
      , const std::span<const rct_scalar> sk)
     {
-        hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
         masks.resize(amounts.size());
         for (size_t i = 0; i < masks.size(); ++i)
-              masks[i] = hwdev.derive_secret_key_for_blinding_factor(sk[i]);
+          masks[i] = rct::derive_secret_key_for_blinding_factor(sk[i]);
         Bulletproof proof = bulletproof_MAKE(amounts, masks);
         LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
         C = proof.V;
