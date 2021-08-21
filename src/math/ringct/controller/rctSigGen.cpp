@@ -259,7 +259,6 @@ namespace rct {
      , const std::vector<size_t> index
      ) {
         ct_secret_keyV outSk;
-        hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
         LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
         LOG_ERROR_AND_THROW_UNLESS(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
