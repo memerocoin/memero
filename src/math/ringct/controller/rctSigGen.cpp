@@ -404,33 +404,39 @@ namespace rct {
      , const rct_scalar a
      , const rct_point Cout
      , const unsigned int index
-     ) {
-        //setup vars
-        size_t rows = 1;
-        size_t cols = pubs.size();
-        LOG_ERROR_AND_THROW_UNLESS(cols >= 1, "Empty pubs");
-        rct_pointV tmp(rows + 1);
-        rct_scalarV sk(rows + 1);
-        rct_pointM M(cols, tmp);
+     )
+    {
+      rct_pointV P;
 
-        rct_pointV P, C, C_nonzero;
-        P.reserve(pubs.size());
-        C.reserve(pubs.size());
-        C_nonzero.reserve(pubs.size());
-        for (const ct_public_key &k: pubs)
-        {
-            P.push_back(k.dest);
-            C_nonzero.push_back(k.commit_of_amount);
-            rct::rct_point tmp;
-            tmp = k.commit_of_amount - Cout;
-            C.push_back(tmp);
-        }
+      std::transform
+        (
+         pubs.begin()
+         , pubs.end()
+         , std::back_inserter(P)
+         , [](const auto& x) { return x.dest; }
+         );
 
-        sk[0] = inSk.addr;
-        sk[1] = s2s(inSk.blinding_factor - a);
-        clsag result = CLSAG_Gen
-          (message, P, sk[0], C, sk[1], C_nonzero, Cout, index);
-        return result;
+      rct_pointV C_nonzero;
+      std::transform
+        (
+         pubs.begin()
+         , pubs.end()
+         , std::back_inserter(C_nonzero)
+         , [](const auto& x) { return x.commit_of_amount; }
+         );
+
+      rct_pointV C;
+      std::transform
+        (
+         pubs.begin()
+         , pubs.end()
+         , std::back_inserter(C)
+         , [Cout](const auto& x) { return x.commit_of_amount - Cout; }
+         );
+
+      clsag result = CLSAG_Gen
+        (message, P, inSk.addr, C, s2s(inSk.blinding_factor - a), C_nonzero, Cout, index);
+      return result;
     }
 
     rctSig genRctSimple
