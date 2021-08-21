@@ -1094,7 +1094,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::ct_public_key& key)
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhTuple tuple)
 {
   dest.StartObject();
-  WRITE_JSON_FIELD_FROM(dest, blinding_factor, tuple.blinding_factor);
   WRITE_JSON_FIELD_FROM(dest, amount, tuple.amount);
   dest.EndObject();
 }
@@ -1106,7 +1105,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::ecdhTuple& tuple)
     throw WRONG_TYPE("json object");
   }
 
-  READ_JSON_VALUE_BY_KEY(val, tuple.blinding_factor, blinding_factor);
   READ_JSON_VALUE_BY_KEY(val, tuple.amount, amount);
 }
 

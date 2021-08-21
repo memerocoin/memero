@@ -414,22 +414,23 @@ namespace rct {
       }
     }
 
-    std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar sk, const unsigned int i)
+    std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar ecdh_shared_secret, const unsigned int i)
     {
-        rct_scalar blinding_factor;
-        hw::device& hwdev = hw::get_device("default");
         LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctSig");
         LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");
         LOG_ERROR_AND_THROW_UNLESS(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
 
-        ecdhTuple ecdh_info = rv.ecdhInfo[i];
-        hwdev.ecdhDecode(ecdh_info, sk);
-        blinding_factor = ecdh_info.blinding_factor;
-        const crypto::ec_scalar_unnormalized amount_raw = ecdh_info.amount;
-        rct_point C = rv.outPk[i].commit_of_amount;
+        const rct_scalar blinding_factor = rct::get_blinding_factor_from_ecdh_shared_secret(ecdh_shared_secret);
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
+
+        const crypto::ec_scalar_unnormalized amount_raw =
+          crypto::d2s(rct::decode_by_ecdh_shared_secret(rv.ecdhInfo[i].amount, ecdh_shared_secret));
         LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_raw), "warning, bad ECDH amount");
+
+        rct_point C = rv.outPk[i].commit_of_amount;
+
         const auto amount = rct::s2s(crypto::reduce(amount_raw));
+
         const rct_point Ctmp = addMultG_H(blinding_factor, amount);
         if (C != Ctmp) {
             LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");

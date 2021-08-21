@@ -164,11 +164,13 @@ namespace rct {
     return crypto::sha3(hashData);
   }
 
-  crypto::crypto_data xor8(const crypto::crypto_data x, crypto::hash k)
+  crypto::crypto_data hash_and_xor_first_8_bytes(const crypto::crypto_data x, const rct_scalar y)
   {
+    const crypto::hash h = hash_for_ecdh_with_amount_prefix(y);
     crypto::crypto_data r = x;
+
     for (int i = 0; i < 8; ++i)
-      r.data[i] ^= k.data[i];
+      r.data[i] ^= h.data[i];
 
     return r;
   }
@@ -183,19 +185,7 @@ namespace rct {
     return s2s(crypto::hash_to_scalar(hashData));
   }
 
-  ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec) {
-    ecdhTuple x = {
-      s_zero // reconstructed
-      , xor8(amount, hash_for_ecdh_with_amount_prefix(sharedSec))
-    };
-    return x;
-  }
-
-  ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec) {
-    ecdhTuple x = {
-      hash_to_scalar_with_commitment_mask_prefix(sharedSec)
-      , xor8(amount, hash_for_ecdh_with_amount_prefix(sharedSec))
-    };
-    return x;
+  rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar ecdh_shared_secret) {
+    return hash_to_scalar_with_commitment_mask_prefix(ecdh_shared_secret);
   }
 }

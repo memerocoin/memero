@@ -120,9 +120,6 @@ namespace hw {
 
             rct::rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data &amount_key) override;
 
-            bool  ecdhEncode(rct::ecdhTuple & unmasked, const rct::rct_scalar & sharedSec) override;
-            bool  ecdhDecode(rct::ecdhTuple & masked, const rct::rct_scalar & sharedSec) override;
-
             bool generate_output_ephemeral_keys
             (
             const size_t tx_version

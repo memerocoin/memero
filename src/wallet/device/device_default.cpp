@@ -366,16 +366,6 @@ namespace hw {
             return rct::hash_to_scalar_with_commitment_mask_prefix(amount_key);
         }
 
-        bool  device_default::ecdhEncode(rct::ecdhTuple & unmasked, const rct::rct_scalar & sharedSec) {
-            unmasked = rct::ecdhEncode(unmasked.amount, sharedSec);
-            return true;
-        }
-
-        bool  device_default::ecdhDecode(rct::ecdhTuple & masked, const rct::rct_scalar & sharedSec) {
-            masked = rct::ecdhDecode(masked.amount, sharedSec);
-            return true;
-        }
-
         bool  device_default::mlsag_pre_hash
         (
         const std::string &blob

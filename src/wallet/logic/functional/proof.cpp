@@ -80,16 +80,22 @@ namespace proof {
         }
         else
         {
-          const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(found_derivation, n));
-          const crypto::ec_scalar_unnormalized ecdh_amount_raw = tx.rct_signatures.ecdhInfo[n].amount;
-          const rct::ecdhTuple ecdh_info = rct::ecdhDecode(ecdh_amount_raw, scalar1);
+          const rct::rct_scalar ecdh_shared_secret = rct::s2s(crypto::hash_derivation_to_scalar(found_derivation, n));
+          const crypto::ec_scalar_unnormalized ecdh_amount_masked = tx.rct_signatures.ecdhInfo[n].amount;
+
+          const crypto::ec_scalar_unnormalized blinding_factor =
+            get_blinding_factor_from_ecdh_shared_secret(ecdh_shared_secret);
+          THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(blinding_factor), error::wallet_internal_error, "Bad ECDH input blinding_factor");
+
+          const crypto::ec_scalar_unnormalized amount_unnormalized =
+            crypto::d2s(rct::decode_by_ecdh_shared_secret(ecdh_amount_masked, ecdh_shared_secret));
+          THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(amount_unnormalized), error::wallet_internal_error, "Bad ECDH input amount");
+
           const rct::rct_point C = tx.rct_signatures.outPk[n].commit_of_amount;
 
-          THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.blinding_factor), error::wallet_internal_error, "Bad ECDH input blinding_factor");
-          THROW_WALLET_EXCEPTION_IF(crypto::is_not_reduced(ecdh_info.amount), error::wallet_internal_error, "Bad ECDH input amount");
+          const rct::rct_scalar ecdh_amount = rct::s2s(crypto::reduce(amount_unnormalized));
+          const rct::rct_point Ctmp = rct::addMultG_H(rct::s2s(crypto::reduce(blinding_factor)), ecdh_amount);
 
-          const rct::rct_scalar ecdh_amount = rct::s2s(crypto::reduce(ecdh_info.amount));
-          const rct::rct_point Ctmp = rct::addMultG_H(ecdh_info.blinding_factor, ecdh_amount);
           if (C == Ctmp)
             amount = rct::scalar_to_int(ecdh_amount);
           else

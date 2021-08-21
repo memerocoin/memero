@@ -103,11 +103,9 @@ namespace rct {
 
     //data for passing the amount to the receiver secretly
     struct ecdhTuple {
-        rct_scalar blinding_factor;
         crypto::ec_scalar_unnormalized amount;
 
         BEGIN_SERIALIZE_OBJECT()
-          FIELD(blinding_factor) // not saved from v2 BPs
           FIELD(amount)
         END_SERIALIZE()
     };

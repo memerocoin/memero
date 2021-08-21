@@ -107,6 +107,10 @@ namespace rct {
   // where C= aG + bH
   rct_scalar hash_to_scalar_with_commitment_mask_prefix(const crypto::crypto_data x);
 
-  ecdhTuple ecdhEncode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec);
-  ecdhTuple ecdhDecode(const crypto::ec_scalar_unnormalized amount, const rct_scalar sharedSec);
+  rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar ecdh_shared_secret);
+
+  crypto::crypto_data hash_and_xor_first_8_bytes(const crypto::crypto_data x, const rct_scalar y);
+
+  inline const auto encode_by_ecdh_shared_secret = hash_and_xor_first_8_bytes;
+  inline const auto decode_by_ecdh_shared_secret = hash_and_xor_first_8_bytes;
 }

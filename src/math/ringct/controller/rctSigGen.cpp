@@ -306,10 +306,7 @@ namespace rct {
         for (i = 0; i < outSk.size(); ++i)
         {
             sumout = outSk[i].blinding_factor + sumout;
-
-            rv.ecdhInfo[i].blinding_factor = outSk[i].blinding_factor;
-            rv.ecdhInfo[i].amount = int_to_scalar(outamounts[i]);
-            hwdev.ecdhEncode(rv.ecdhInfo[i], amount_keys[i]);
+            rv.ecdhInfo[i].amount = crypto::d2s(encode_by_ecdh_shared_secret(int_to_scalar(outamounts[i]), amount_keys[i]));
         }
 
         //set txn fee
