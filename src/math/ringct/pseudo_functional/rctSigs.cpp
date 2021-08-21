@@ -255,8 +255,6 @@ namespace rct {
 
     bool verRctSemanticsSimpleMayThrow(const std::span<const rctSig> rvv)
     {
-        tools::threadpool& tpool = tools::threadpool::getInstance();
-        tools::threadpool::waiter waiter(tpool);
         std::deque<bool> results;
         std::vector<Bulletproof> proofs;
         size_t max_non_bp_proofs = 0;
@@ -304,15 +302,20 @@ namespace rct {
         {
           const rct_pointV &pseudoOuts = rv.p.pseudoOuts;
 
-          rct::rct_pointV masks(rv.outPk.size());
-          for (size_t i = 0; i < rv.outPk.size(); i++) {
-            masks[i] = rv.outPk[i].commit_of_amount;
-          }
-          rct_point sumOutpks = addPoints(masks);
-          const rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
-          sumOutpks = txnFeeKey + sumOutpks;
+          rct::rct_pointV masks;
+          std::transform
+            (
+             rv.outPk.begin()
+             , rv.outPk.end()
+             , std::back_inserter(masks)
+             , [](const auto& x) {
+               return x.commit_of_amount;
+             }
+             );
 
-          rct_point sumPseudoOuts = addPoints(pseudoOuts);
+          const rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
+          const rct_point sumOutpks = addPoints(masks) + txnFeeKey;
+          const rct_point sumPseudoOuts = addPoints(pseudoOuts);
 
           //check pseudoOuts vs Outs..
           if (sumPseudoOuts != sumOutpks) {
@@ -324,14 +327,13 @@ namespace rct {
             proofs.push_back(rv.p.bulletproofs[i]);
           }
         }
+
         if (!proofs.empty() && !bulletproof_VERIFY(proofs))
         {
           LOG_PRINT_L1("Aggregate range proof verified failed");
           return false;
         }
 
-        if (!waiter.wait())
-          return false;
         for (size_t i = 0; i < results.size(); ++i) {
           if (!results[i]) {
             LOG_PRINT_L1("Range proof verified failed for proof " << i);
