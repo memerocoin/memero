@@ -4,36 +4,51 @@
   inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
 
   outputs = { self, nixpkgs }:
-    with import nixpkgs { system = "x86_64-linux"; };
     let
-      stdenv = llvmPackages_12.stdenv
-    ; lolnero-rev = "v0.9.8.14"
-    ; doCheck = false
-    ; in
+      supportedSystems = [ "x86_64-linux" "aarch64-linux" ]
+      ; forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system)
+      ; nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; })
+      ; in
     {
-      defaultPackage.x86_64-linux =
-        stdenv.mkDerivation {
-          pname = "lolnero";
-          version = lolnero-rev;
-          src = self;
+      # A Nixpkgs overlay.
+      overlay = final: prev:
+        with final;
+        let
+          stdenv = llvmPackages_12.stdenv
+          ; doCheck = false
+          ; version = builtins.substring 0 8 self.lastModifiedDate
+          ; in
+        {
+          lolnero = stdenv.mkDerivation rec {
+            pname = "lolnero";
+            inherit version;
+            src = ./.;
 
-          nativeBuildInputs = [ cmake ];
+            nativeBuildInputs = [ cmake ];
 
-          inherit doCheck;
+            inherit doCheck;
 
-          buildInputs = [
-            boost175 openssl readline libsodium rapidjson
-          ]
-          ++ lib.optionals doCheck [gmock]
-          ;
+            buildInputs = [
+              boost175 openssl readline libsodium rapidjson
+            ]
+            ++ lib.optionals doCheck [gmock]
+            ;
 
-          cmakeFlags = [
-            "--no-warn-unused-cli"
-            "-DReadline_ROOT_DIR=${readline.dev}"
-            "-DVERSIONTAG=${lolnero-rev}"
-          ]
-          ++ lib.optionals doCheck ["-DBUILD_TESTING=ON"]
-          ;
+            cmakeFlags = [
+              "--no-warn-unused-cli"
+              "-DReadline_ROOT_DIR=${readline.dev}"
+              "-DVERSIONTAG=${version}"
+            ]
+            ++ lib.optionals doCheck ["-DBUILD_TESTING=ON"]
+            ;
+          };
         };
+
+      packages = forAllSystems (system:
+        {
+          inherit (nixpkgsFor.${system}) lolnero;
+        });
+
+      defaultPackage = forAllSystems (system: self.packages.${system}.lolnero);
     };
 }
