@@ -14,7 +14,8 @@
       overlay = final: prev:
         with final;
         let
-          stdenv = llvmPackages_12.stdenv
+          # stdenv = llvmPackages_12.stdenv
+          stdenv = gcc11Stdenv
           ; doCheck = false
           ; version = builtins.substring 0 8 self.lastModifiedDate
           ; in
