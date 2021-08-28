@@ -722,8 +722,25 @@ namespace cryptonote
       crypto::derive_tx_public_key(*derivation, output_index, acc.m_account_address.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
-    return *pk == out_key.key;
+    if (*pk == out_key.key) {
+      return true;
+    }
+    // try additional tx pubkeys if available
+    if (!additional_tx_pub_keys.empty())
+    {
+      LOG_ERROR_AND_RETURN_UNLESS(output_index < additional_tx_pub_keys.size(), false, "wrong number of additional tx pubkeys");
+
+      const auto kd = crypto::derive_key_derivation(additional_tx_pub_keys[output_index], acc.m_view_secret_key);
+      LOG_ERROR_AND_RETURN_UNLESS(kd, false, "Failed to generate key derivation");
+
+      const auto tx_out_pk = crypto::derive_tx_public_key(*derivation, output_index, acc.m_account_address.m_spend_public_key);
+      LOG_ERROR_AND_RETURN_UNLESS(tx_out_pk, false, "Failed to derive public key");
+
+      return *tx_out_pk == out_key.key;
+    }
+    return false;
   }
+
   //---------------------------------------------------------------
   std::optional<subaddress_receive_info> is_out_to_acc_precomp(const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::key_derivation& derivation, const std::vector<crypto::key_derivation>& additional_derivations, size_t output_index, hw::device &hwdev)
   {
