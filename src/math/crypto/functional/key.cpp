@@ -212,6 +212,24 @@ namespace crypto {
     return p2pk(r);
   }
 
+  std::optional<public_key> derive_subaddress_public_key
+  (
+   const ec_point_unsafe &unsafe_out_key
+   , const key_derivation &derivation
+   , const std::size_t output_index
+   )
+  {
+    const auto out_key = maybeSafePoint(unsafe_out_key);
+    if (!out_key) return {};
+
+    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
+
+    if (rct_scalar == s_0) return {};
+
+    const ec_point p = multBase(rct_scalar);
+
+    return p2pk(*out_key - p);
+  }
 
 }
 

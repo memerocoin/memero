@@ -158,6 +158,13 @@ namespace crypto {
    , const ec_point_unsafe &unsafe_base
    );
 
+  std::optional<public_key> derive_subaddress_public_key
+  (
+   const ec_point_unsafe &unsafe_out_key
+   , const key_derivation &derivation
+   , const std::size_t output_index
+   );
+
 }
 
 namespace std

@@ -41,14 +41,6 @@ namespace crypto {
     */
   bool secret_key_to_public_key(const secret_key &, public_key &);
 
-  std::optional<public_key> derive_subaddress_public_key
-  (
-   const ec_point_unsafe &unsafe_out_key
-   , const key_derivation &derivation
-   , const std::size_t output_index
-   );
-
-
   /* Generate a new key pair
    */
   std::pair<secret_key, public_key> generate_keys
