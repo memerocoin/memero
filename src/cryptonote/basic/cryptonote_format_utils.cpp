@@ -403,15 +403,26 @@ namespace cryptonote
     {
       tx_extra_field field;
       bool r = ::do_serialize(ar, field);
-      LOG_WITH_LEVEL_2_AND_RETURN_UNLESS(r, false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+      LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+        (
+         r
+         , false
+         , "failed to deserialize extra field. extra = "
+         << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+         );
       tx_extra_fields.push_back(field);
 
       std::ios_base::iostate state = iss.rdstate();
       eof = (EOF == iss.peek());
       iss.clear(state);
     }
-    LOG_WITH_LEVEL_2_AND_RETURN_UNLESS(::serialization::check_stream_state(ar), false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
-
+    LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+      (
+       ::serialization::check_stream_state(ar)
+       , false
+       , "failed to deserialize extra field. extra = "
+       << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+       );
     return true;
   }
   //---------------------------------------------------------------
@@ -452,7 +463,12 @@ namespace cryptonote
       bool r = ::do_serialize(ar, field);
       if (!r)
       {
-        LOG_DEBUG("failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+        LOG_DEBUG
+          (
+           "failed to deserialize extra field. extra = "
+           << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+           );
+
         if (!allow_partial)
           return false;
         break;
@@ -466,7 +482,11 @@ namespace cryptonote
     }
     if (!::serialization::check_stream_state(ar))
     {
-      LOG_DEBUG("failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+      LOG_DEBUG
+        (
+         "failed to deserialize extra field. extra = "
+         << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+         );
       if (!allow_partial)
         return false;
     }
