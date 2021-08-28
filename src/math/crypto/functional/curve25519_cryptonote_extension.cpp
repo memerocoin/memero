@@ -21,7 +21,7 @@ extern "C" {
 }
 
 namespace crypto {
-  ec_point_unsafe viaF2(const crypto_data x) {
+  ec_point_unsafe viaField(const crypto_data x) {
     ge_p2 p2_in;
     ge_fromfe_frombytes_vartime(&p2_in, x.data.data());
 
@@ -31,8 +31,8 @@ namespace crypto {
   }
 
 
-  ec_point viaF2Mult8(const crypto_data x) {
-    return mult8(viaF2(x));
+  ec_point viaFieldMult8(const crypto_data x) {
+    return mult8(viaField(x));
   }
 
   // needed because point can be out of main group
