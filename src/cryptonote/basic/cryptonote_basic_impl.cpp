@@ -46,12 +46,10 @@ namespace cryptonote {
   //------------------------------------------------------------------------------------
   uint8_t get_account_address_checksum(const public_address_outer_blob& bl)
   {
-    const unsigned char* pbuf = reinterpret_cast<const unsigned char*>(&bl);
-    uint8_t summ = 0;
-    for(size_t i = 0; i!= sizeof(public_address_outer_blob)-1; i++)
-      summ += pbuf[i];
+    const auto buf = epee::pod_to_span(bl);
+    const auto buf_data = buf.subspan(0, buf.size() - 1);
 
-    return summ;
+    return std::reduce(buf_data.begin(), buf_data.end());
   }
   //------------------------------------------------------------------------------------
   std::string get_account_address_as_str(
