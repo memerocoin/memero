@@ -510,7 +510,7 @@ namespace cryptonote
     if (allow_partial && processed < tx_extra.size())
     {
       LOG_DEBUG("Appending unparsed data");
-      oss_str += std::string((const char*)tx_extra.data() + processed, tx_extra.size() - processed);
+      oss_str += epee::string_tools::blob_to_string(std::span(tx_extra).subspan(processed, tx_extra.size() - processed));
     }
     sorted_tx_extra = std::vector<uint8_t>(oss_str.begin(), oss_str.end());
     return true;
