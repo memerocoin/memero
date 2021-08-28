@@ -182,5 +182,20 @@ namespace crypto {
     memcpy_swap64le(&out, in.data.data(), 1);
     return out;
   }
+
+  std::optional<key_derivation> generate_key_derivation
+  (
+   const ec_point_unsafe &unsafe_point
+   , const secret_key &sk
+   ) {
+    const auto p = maybeSafePoint(unsafe_point);
+    if (!p) return {};
+
+    // here mult8 is really not needed
+    const key_derivation derivation = p2derivation(mult8Safe(mult(*p, sk)));
+
+    return derivation;
+  }
+
 }
 
