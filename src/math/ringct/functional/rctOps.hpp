@@ -101,7 +101,7 @@ namespace rct {
 
   //for ANSL
 
-  rct_point hash_to_point_via_f2(const crypto::crypto_data k);
+  rct_point hash_to_point_via_field(const crypto::crypto_data k);
 
   rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar x);
 

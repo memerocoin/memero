@@ -229,7 +229,7 @@ namespace rct {
                );
 
             // Compute R
-            const rct_point k = hash_to_point_via_f2(pubs[i].dest);
+            const rct_point k = hash_to_point_via_field(pubs[i].dest);
 
             const rct_point R = addPoints
               (

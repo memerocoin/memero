@@ -100,7 +100,7 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(idx < n, "Signing index out of range!");
 
         // mages images
-        rct_point H = hash_to_point_via_f2(P[idx]);
+        rct_point H = hash_to_point_via_field(P[idx]);
 
         rct_point D;
 
@@ -187,7 +187,7 @@ namespace rct {
              );
 
           // Compute R
-          const rct_point A = hash_to_point_via_f2(P[i]);
+          const rct_point A = hash_to_point_via_field(P[i]);
           const rct_point R = addPoints
             (
              std::array
