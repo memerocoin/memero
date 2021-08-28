@@ -27,7 +27,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace cryptonote
 {
-  typedef boost::multiprecision::uint128_t diff_t;
+  using diff_t = boost::multiprecision::uint128_t;
 
   constexpr boost::multiprecision::uint512_t max256bit
   (std::numeric_limits<boost::multiprecision::uint256_t>::max());
