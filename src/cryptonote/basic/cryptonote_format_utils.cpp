@@ -718,10 +718,11 @@ namespace cryptonote
       crypto::derive_key_derivation(tx_pub_key, acc.m_view_secret_key);
     LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "Failed to generate key derivation");
 
-    crypto::public_key pk;
-    const bool r = crypto::derive_public_key(*derivation, output_index, acc.m_account_address.m_spend_public_key, pk);
-    LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to derive public key");
-    return pk == out_key.key;
+    const std::optional<crypto::public_key> pk =
+      crypto::derive_tx_public_key(*derivation, output_index, acc.m_account_address.m_spend_public_key);
+
+    LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
+    return *pk == out_key.key;
   }
   //---------------------------------------------------------------
   std::optional<subaddress_receive_info> is_out_to_acc_precomp(const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::key_derivation& derivation, const std::vector<crypto::key_derivation>& additional_derivations, size_t output_index, hw::device &hwdev)

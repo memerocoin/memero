@@ -264,10 +264,6 @@ namespace hw {
             return true;
         }
 
-        bool device_default::derive_public_key(const crypto::key_derivation &derivation, const std::size_t output_index, const crypto::public_key &base, crypto::public_key &derived_key){
-            return crypto::derive_public_key(derivation, output_index, base, derived_key);
-        }
-
         bool device_default::secret_key_to_public_key(const crypto::secret_key &sec, crypto::public_key &pub) {
             return crypto::secret_key_to_public_key(sec,pub);
         }
@@ -352,10 +348,12 @@ namespace hw {
                 hash_derivation_to_scalar(*derivation, output_index, scalar1);
                 amount_keys.push_back(scalar1);
             }
-            const bool r = derive_public_key(*derivation, output_index, dst_entr.addr.m_spend_public_key, out_eph_public_key);
-            LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to derive_public_key(" << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
+            const auto eph_pk = crypto::derive_tx_public_key
+              (*derivation, output_index, dst_entr.addr.m_spend_public_key);
+            LOG_ERROR_AND_RETURN_UNLESS(eph_pk, false, "at creation outs: failed to derive_tx_public_key(" << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
 
-            return r;
+            out_eph_public_key = *eph_pk;
+            return true;
         }
 
         bool device_default::clsag_prepare
