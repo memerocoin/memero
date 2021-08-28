@@ -745,21 +745,20 @@ namespace cryptonote
   std::optional<subaddress_receive_info> is_out_to_acc_precomp(const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::key_derivation& derivation, const std::vector<crypto::key_derivation>& additional_derivations, size_t output_index, hw::device &hwdev)
   {
     // try the shared tx pubkey
-    crypto::public_key subaddress_spendkey;
-    hwdev.derive_subaddress_public_key(out_key, derivation, output_index, subaddress_spendkey);
-    auto found = subaddresses.find(subaddress_spendkey);
+    const std::optional<crypto::public_key> subaddress_spendkey = crypto::derive_subaddress_public_key(out_key, derivation, output_index);
+    auto found = subaddresses.find(subaddress_spendkey.value_or(crypto::null_pkey));
     if (found != subaddresses.end())
       return subaddress_receive_info{ found->second, derivation };
     // try additional tx pubkeys if available
     if (!additional_derivations.empty())
     {
       LOG_ERROR_AND_RETURN_UNLESS(output_index < additional_derivations.size(), std::nullopt, "wrong number of additional derivations");
-      hwdev.derive_subaddress_public_key(out_key, additional_derivations[output_index], output_index, subaddress_spendkey);
-      found = subaddresses.find(subaddress_spendkey);
+      const auto sub_pk = crypto::derive_subaddress_public_key(out_key, additional_derivations[output_index], output_index);
+      found = subaddresses.find(sub_pk.value_or(crypto::null_pkey));
       if (found != subaddresses.end())
         return subaddress_receive_info{ found->second, additional_derivations[output_index] };
     }
-    return std::nullopt;
+    return {};
   }
   //---------------------------------------------------------------
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered)

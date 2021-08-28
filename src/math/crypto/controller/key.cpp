@@ -55,25 +55,23 @@ namespace crypto {
     return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sec.data.data());
   }
 
-  bool derive_subaddress_public_key
+  std::optional<public_key> derive_subaddress_public_key
   (
    const ec_point_unsafe &unsafe_out_key
    , const key_derivation &derivation
-   , const std::size_t output_index,
-   public_key &derived_key
+   , const std::size_t output_index
    )
   {
     const auto out_key = maybeSafePoint(unsafe_out_key);
-    if (!out_key) return false;
+    if (!out_key) return {};
 
     const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
 
-    if (rct_scalar == s_0) return false;
+    if (rct_scalar == s_0) return {};
 
     const ec_point p = multBase(rct_scalar);
 
-    derived_key = p2pk(*out_key - p);
-    return true;
+    return p2pk(*out_key - p);
   }
 
   /*
