@@ -1349,7 +1349,7 @@ namespace tools
 
     if(sizeof(txid) == txid_blob.size())
     {
-      txid = *reinterpret_cast<const crypto::hash*>(txid_blob.data());
+      std::copy(txid_blob.begin(), txid_blob.end(), txid.data.begin());
     }
     else
     {
