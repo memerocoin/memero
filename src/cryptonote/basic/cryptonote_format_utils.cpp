@@ -600,7 +600,13 @@ namespace cryptonote
     {
       tx_extra_field field;
       bool r = ::do_serialize(ar, field);
-      LOG_WITH_LEVEL_2_AND_RETURN_UNLESS(r, false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+      LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+        (
+         r
+         , false
+         , "failed to deserialize extra field. extra = "
+         << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+         );
       if (field.type() != type)
         ::do_serialize(newar, field);
 
@@ -608,7 +614,13 @@ namespace cryptonote
       eof = (EOF == iss.peek());
       iss.clear(state);
     }
-    LOG_WITH_LEVEL_2_AND_RETURN_UNLESS(::serialization::check_stream_state(ar), false, "failed to deserialize extra field. extra = " << epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size())));
+    LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+      (
+       ::serialization::check_stream_state(ar)
+       , false
+       , "failed to deserialize extra field. extra = "
+       << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+       );
     tx_extra.clear();
     std::string s = oss.str();
     tx_extra.reserve(s.size());
@@ -1031,7 +1043,7 @@ namespace cryptonote
   {
     blobdata blob;
     crypto::hash tree_root_hash = get_tx_tree_hash(b);
-    blob.append(reinterpret_cast<const char*>(&tree_root_hash), sizeof(tree_root_hash));
+    blob.append(epee::string_tools::blob_to_string(tree_root_hash.data));
     blob.append(tools::get_varint_data(b.tx_hashes.size()+1));
     return blob;
   }
