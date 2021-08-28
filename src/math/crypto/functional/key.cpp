@@ -181,12 +181,9 @@ namespace crypto {
   // if the key holds a value > 2^64
   // then the value in the first 8 bytes is returned
   uint64_t scalar_to_int(const ec_scalar & in) {
-    uint64_t vali = 0;
-    int j = 0;
-    for (j = 7; j >= 0; j--) {
-      vali = (uint64_t)(vali * 256 + (unsigned char)in.data.data()[j]);
-    }
-    return vali;
+    uint64_t out = 0;
+    memcpy_swap64le(&out, in.data.data(), 1);
+    return out;
   }
 }
 
