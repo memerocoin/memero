@@ -57,22 +57,6 @@ static std::atomic<uint64_t> block_hashes_cached_count(0);
 
 namespace cryptonote
 {
-  unsigned char *operator &(ec_point &point) {
-    return &reinterpret_cast<unsigned char &>(point);
-  }
-  const unsigned char *operator &(const ec_point &point) {
-    return &reinterpret_cast<const unsigned char &>(point);
-  }
-
-  uint64_t get_transaction_weight_clawback(const transaction &tx, size_t n_padded_outputs)
-  {
-    return 0;
-  }
-  //---------------------------------------------------------------
-}
-
-namespace cryptonote
-{
   //---------------------------------------------------------------
   void get_transaction_prefix_hash(const transaction_prefix& tx, crypto::hash& h, hw::device &hwdev)
   {
