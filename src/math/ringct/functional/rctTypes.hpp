@@ -413,7 +413,14 @@ namespace rct {
 
 namespace std
 {
-  template<> struct hash<rct::rct_point> { std::size_t operator()(const rct::rct_point &k) const { return reinterpret_cast<const std::size_t&>(k); } };
+  template<> struct hash<rct::rct_point>
+  {
+    std::size_t operator()(const rct::rct_point& x) const noexcept
+    {
+      boost::hash<std::array<uint8_t,32>> array_hash;
+      return array_hash(x.data);
+    }
+  };
 }
 
 BLOB_SERIALIZER(rct::rct_point);
