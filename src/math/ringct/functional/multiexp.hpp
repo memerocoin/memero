@@ -32,11 +32,7 @@
 
 #include "rctTypes.hpp"
 
-#include "tools/epee/include/logging.hpp"
-
 #include <span>
-#include <cassert>
-
 
 namespace rct
 {
@@ -47,7 +43,8 @@ struct MultiexpData {
 
   MultiexpData() {}
   MultiexpData(const rct::rct_scalar s, const rct_point p): scalar(s), point(p) {
-    assert(is_valid_point(p));
+    // we can ignore this in lolnero, since unsafe point can't really get here
+    // assert(is_valid_point(p));
   }
 };
 
