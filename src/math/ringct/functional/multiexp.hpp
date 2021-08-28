@@ -31,6 +31,7 @@
 #pragma once
 
 #include "rctTypes.hpp"
+#include "rctOps.hpp"
 
 #include <span>
 
@@ -43,8 +44,8 @@ struct MultiexpData {
 
   MultiexpData() {}
   MultiexpData(const rct::rct_scalar s, const rct_point p): scalar(s), point(p) {
-    // we can ignore this in lolnero, since unsafe point can't really get here
-    // assert(is_valid_point(p));
+    // only check identity, since point can be the result of a scalar mult
+    assert(p != rct::identity);
   }
 };
 
