@@ -81,14 +81,10 @@ namespace rct {
       return s2s(ec_scalar::operator*(y));
     }
 
-    //uint long long to 32 byte key
     rct_scalar int_to_scalar(const amount_t in) {
       return s2s(crypto::int_to_scalar(in));
     }
 
-    //32 byte rct_point to uint long long
-    // if the rct_point holds a value > 2^64
-    // then the value in the first 8 bytes is returned
     amount_t scalar_to_int(const rct_scalar & in) {
       return crypto::scalar_to_int(in);
     }
