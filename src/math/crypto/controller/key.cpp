@@ -55,21 +55,18 @@ namespace crypto {
     return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sec.data.data());
   }
 
-  bool generate_key_derivation
+  std::optional<key_derivation> generate_key_derivation
   (
-   const ec_point_unsafe &unsafe_key1
-   , const secret_key &key2
-   , key_derivation &derivation
+   const ec_point_unsafe &unsafe_point
+   , const secret_key &sk
    ) {
-    const auto key1 = maybeSafePoint(unsafe_key1);
-    if (!key1) return false;
+    const auto p = maybeSafePoint(unsafe_point);
+    if (!p) return {};
 
     // here mult8 is really not needed
-    const ec_point p = mult8Safe(mult(*key1, key2));
+    const key_derivation derivation = p2derivation(mult8Safe(mult(*p, sk)));
 
-    derivation = p2derivation(p);
-
-    return true;
+    return derivation;
   }
 
   bool derive_public_key

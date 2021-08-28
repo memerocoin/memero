@@ -47,7 +47,11 @@ namespace crypto {
     * * The sender uses key derivation and the receivers' "spend" key to derive an ephemeral public key.
     * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
     */
-  bool generate_key_derivation(const ec_point_unsafe &, const secret_key &, key_derivation &);
+  std::optional<key_derivation> generate_key_derivation
+  (
+   const ec_point_unsafe &unsafe_point
+   , const secret_key &sk
+   );
 
   bool derive_public_key(const key_derivation &, const std::size_t, const ec_point_unsafe &, public_key &);
 

@@ -230,9 +230,9 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool generate_key_image_helper(const account_keys& ack, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::public_key& tx_public_key, const std::vector<crypto::public_key>& additional_tx_public_keys, size_t real_output_index, keypair& in_ephemeral, crypto::key_image& ki, hw::device &hwdev)
   {
-    crypto::key_derivation recv_derivation = AUTO_VAL_INIT(recv_derivation);
-    bool r = hwdev.generate_key_derivation(tx_public_key, ack.m_view_secret_key, recv_derivation);
-    if (!r)
+    const std::optional<crypto::key_derivation> recv_derivation =
+      crypto::generate_key_derivation(tx_public_key, ack.m_view_secret_key);
+    if (!recv_derivation)
     {
       LOG_WARNING("key image helper: failed to generate_key_derivation(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
       return false;
@@ -241,19 +241,19 @@ namespace cryptonote
     std::vector<crypto::key_derivation> additional_recv_derivations;
     for (size_t i = 0; i < additional_tx_public_keys.size(); ++i)
     {
-      crypto::key_derivation additional_recv_derivation = AUTO_VAL_INIT(additional_recv_derivation);
-      r = hwdev.generate_key_derivation(additional_tx_public_keys[i], ack.m_view_secret_key, additional_recv_derivation);
-      if (!r)
+      const std::optional<crypto::key_derivation> additional_recv_derivation =
+        crypto::generate_key_derivation(additional_tx_public_keys[i], ack.m_view_secret_key);
+      if (!additional_recv_derivation)
       {
         LOG_WARNING("key image helper: failed to generate_key_derivation(" << additional_tx_public_keys[i] << ", " << ack.m_view_secret_key << ")");
       }
       else
       {
-        additional_recv_derivations.push_back(additional_recv_derivation);
+        additional_recv_derivations.push_back(*additional_recv_derivation);
       }
     }
 
-    std::optional<subaddress_receive_info> subaddr_recv_info = is_out_to_acc_precomp(subaddresses, out_key, recv_derivation, additional_recv_derivations, real_output_index,hwdev);
+    std::optional<subaddress_receive_info> subaddr_recv_info = is_out_to_acc_precomp(subaddresses, out_key, *recv_derivation, additional_recv_derivations, real_output_index,hwdev);
     LOG_ERROR_AND_RETURN_UNLESS(subaddr_recv_info, false, "key image helper: given output pubkey doesn't seem to belong to this address");
 
     return generate_key_image_helper_precomp(ack, out_key, subaddr_recv_info->derivation, real_output_index, subaddr_recv_info->index, in_ephemeral, ki, hwdev);
@@ -714,25 +714,14 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool is_out_to_acc(const account_keys& acc, const txout_to_key& out_key, const crypto::public_key& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, size_t output_index)
   {
-    crypto::key_derivation derivation;
-    bool r = acc.get_device().generate_key_derivation(tx_pub_key, acc.m_view_secret_key, derivation);
-    LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to generate key derivation");
+    const std::optional<crypto::key_derivation> derivation =
+      crypto::generate_key_derivation(tx_pub_key, acc.m_view_secret_key);
+    LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "Failed to generate key derivation");
+
     crypto::public_key pk;
-    r = acc.get_device().derive_public_key(derivation, output_index, acc.m_account_address.m_spend_public_key, pk);
+    const bool r = crypto::derive_public_key(*derivation, output_index, acc.m_account_address.m_spend_public_key, pk);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to derive public key");
-    if (pk == out_key.key)
-      return true;
-    // try additional tx pubkeys if available
-    if (!additional_tx_pub_keys.empty())
-    {
-      LOG_ERROR_AND_RETURN_UNLESS(output_index < additional_tx_pub_keys.size(), false, "wrong number of additional tx pubkeys");
-      r = acc.get_device().generate_key_derivation(additional_tx_pub_keys[output_index], acc.m_view_secret_key, derivation);
-      LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to generate key derivation");
-      r = acc.get_device().derive_public_key(derivation, output_index, acc.m_account_address.m_spend_public_key, pk);
-      LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to derive public key");
-      return pk == out_key.key;
-    }
-    return false;
+    return pk == out_key.key;
   }
   //---------------------------------------------------------------
   std::optional<subaddress_receive_info> is_out_to_acc_precomp(const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::key_derivation& derivation, const std::vector<crypto::key_derivation>& additional_derivations, size_t output_index, hw::device &hwdev)

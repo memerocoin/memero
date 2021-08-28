@@ -254,10 +254,6 @@ namespace hw {
           return k;
         }
 
-        bool device_default::generate_key_derivation(const crypto::public_key &key1, const crypto::secret_key &key2, crypto::key_derivation &derivation) {
-            return crypto::generate_key_derivation(key1, key2, derivation);
-        }
-
         bool device_default::hash_derivation_to_scalar(const crypto::key_derivation &derivation, const size_t output_index, crypto::ec_scalar &res){
             res = crypto::hash_derivation_to_scalar(derivation,output_index);
             return true;
@@ -319,7 +315,7 @@ namespace hw {
         , crypto::public_key &out_eph_public_key
          )
         {
-            crypto::key_derivation derivation;
+          std::optional<crypto::key_derivation> derivation;
 
             // make additional tx pubkey if necessary
             cryptonote::keypair additional_txkey;
@@ -332,18 +328,17 @@ namespace hw {
                     additional_txkey.pub = rct::rct_p2pk(rct::multG(rct::sk2rct_s(additional_txkey.sec)));
             }
 
-            bool r;
             if (change_addr && dst_entr.addr == *change_addr)
             {
             // sending change to yourself; derivation = a*R
-                r = generate_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key, derivation);
-                LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to generate_key_derivation(" << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")");
+              derivation = crypto::generate_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key);
+              LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "at creation outs: failed to generate_key_derivation(" << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")");
             }
             else
             {
             // sending to the recipient; derivation = r*A (or s*C in the subaddress scheme)
-                r = generate_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key, derivation);
-                LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to generate_key_derivation(" << dst_entr.addr.m_view_public_key << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")");
+                derivation = generate_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
+                LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "at creation outs: failed to generate_key_derivation(" << dst_entr.addr.m_view_public_key << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")");
             }
 
             if (need_additional_txkeys)
@@ -354,11 +349,11 @@ namespace hw {
             if (tx_version > 1)
             {
                 rct::rct_scalar scalar1;
-                hash_derivation_to_scalar(derivation, output_index, scalar1);
+                hash_derivation_to_scalar(*derivation, output_index, scalar1);
                 amount_keys.push_back(scalar1);
             }
-            r = derive_public_key(derivation, output_index, dst_entr.addr.m_spend_public_key, out_eph_public_key);
-            LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to derive_public_key(" << derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
+            const bool r = derive_public_key(*derivation, output_index, dst_entr.addr.m_spend_public_key, out_eph_public_key);
+            LOG_ERROR_AND_RETURN_UNLESS(r, false, "at creation outs: failed to derive_public_key(" << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
 
             return r;
         }

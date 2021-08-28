@@ -70,7 +70,7 @@ TEST(device, ops)
   hw::core::device_default dev;
   rct::rct_point resd, res;
   crypto::secret_key resd_s, res_s;
-  crypto::key_derivation derd, der;
+  std::optional<crypto::key_derivation> derd, maybeDer;
   rct::rct_scalar sk;
   rct::rct_point pk;
   crypto::secret_key sk0, sk1;
@@ -98,9 +98,12 @@ TEST(device, ops)
 
   ASSERT_TRUE(is_valid_point(pk0));
 
-  dev.generate_key_derivation(pk0, sk0, derd);
-  crypto::generate_key_derivation(pk0, sk0, der);
-  ASSERT_EQ(derd, der);
+  derd = crypto::generate_key_derivation(pk0, sk0);
+  maybeDer = crypto::generate_key_derivation(pk0, sk0);
+  ASSERT_EQ(derd, maybeDer);
+
+  ASSERT_TRUE(maybeDer);
+  const crypto::key_derivation der = *maybeDer;
 
   dev.hash_derivation_to_scalar(der, 0, ressc0);
   ressc1 = crypto::hash_derivation_to_scalar(der, 0);
