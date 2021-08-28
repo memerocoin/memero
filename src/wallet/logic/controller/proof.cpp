@@ -63,9 +63,9 @@ namespace proof {
     // const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
 
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
-    std::string prefix_data((const char*)&txid, sizeof(crypto::hash));
-    prefix_data += message;
-    crypto::hash prefix_hash= crypto::sha3(epee::string_tools::string_to_blob(prefix_data));
+    epee::blob::data prefix_data(txid.data.data(), txid.data.size());
+    prefix_data += epee::string_tools::string_to_blob(message);
+    crypto::hash prefix_hash= crypto::sha3(prefix_data);
 
     std::vector<crypto::public_key> shared_secret;
     std::vector<crypto::signature> sig;
@@ -171,8 +171,8 @@ namespace proof {
     // concatenate all signature strings
     for (size_t i = 0; i < num_sigs; ++i)
       sig_str +=
-        tools::base58::encode(std::string((const char *)&shared_secret[i], sizeof(crypto::public_key))) +
-        tools::base58::encode(std::string((const char *)&sig[i], sizeof(crypto::signature)));
+        tools::base58::encode(epee::string_tools::blob_to_string(shared_secret[i].data)) +
+        tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig[i])));
     return sig_str;
   }
 
