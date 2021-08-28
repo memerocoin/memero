@@ -163,7 +163,7 @@ namespace crypto {
     return c2 - sig.c == s_0;
   }
 
-  key_image generate_key_image(const public_key &pub, const secret_key &sec) {
+  key_image derive_key_image(const public_key &pub, const secret_key &sec) {
     const ec_point h8 = viaFieldMult8(h2p(sha3(pub.data)));
     const ec_point p = mult(h8, sec);
     return p2img(p);

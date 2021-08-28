@@ -121,8 +121,8 @@ TEST(device, ops)
   crypto::secret_key_to_public_key(rct::rct_s2sk(sk), pk1);
   ASSERT_EQ(pk0, pk1);
 
-  ki0 = dev.generate_key_image(pk0, sk0);
-  ki1 = crypto::generate_key_image(pk0, sk0);
+  ki0 = dev.derive_key_image(pk0, sk0);
+  ki1 = crypto::derive_key_image(pk0, sk0);
   ASSERT_EQ(ki0, ki1);
 }
 
