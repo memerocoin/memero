@@ -170,16 +170,13 @@ namespace crypto {
   }
 
 
-  //uint long long to 32 byte key
+  // only sizeof(uint64_t) bytes of the scalar are used
   ec_scalar int_to_scalar(const uint64_t in) {
     ec_scalar x = {};
     memcpy_swap64le(x.data.data(), &in, 1);
     return x;
   }
 
-  //32 byte key to uint long long
-  // if the key holds a value > 2^64
-  // then the value in the first 8 bytes is returned
   uint64_t scalar_to_int(const ec_scalar & in) {
     uint64_t out = 0;
     memcpy_swap64le(&out, in.data.data(), 1);
