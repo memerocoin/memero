@@ -169,7 +169,8 @@ namespace signature {
     }
 
     const crypto::signature signature = crypto::generate_signature(hash, pkey, skey);
-    return std::string(config::MESSAGE_SIGNING_HEADER) + tools::base58::encode(std::string((const char *)&signature, sizeof(signature)));
+    return std::string(config::MESSAGE_SIGNING_HEADER) +
+      tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(signature)));
   }
 
 } // signature

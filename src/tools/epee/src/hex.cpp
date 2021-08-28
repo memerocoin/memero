@@ -56,11 +56,6 @@ namespace epee
 
 namespace hex
 {
-  void buffer_unchecked(char* out, const std::span<const std::uint8_t> src) noexcept
-  {
-    return write_hex(out, src);
-  }
-
   template<typename T>
   T convert(const std::span<const std::uint8_t> src)
   {
@@ -69,7 +64,7 @@ namespace hex
 
     T out{};
     out.resize(src.size() * 2);
-    buffer_unchecked((char*)out.data(), src); // can't see the non const version in wipeable_string??
+    write_hex(out.data(), src); // can't see the non const version in wipeable_string??
     return out;
   }
 
