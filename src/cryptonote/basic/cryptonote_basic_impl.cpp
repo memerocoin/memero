@@ -152,14 +152,14 @@ bool parse_hash256(const std::string &str_hash, crypto::hash& hash)
 {
   std::string buf;
   bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
-  if (!res || buf.size() != sizeof(crypto::hash))
+  if (!res || buf.size() != hash.data.size())
   {
     LOG_ERROR("invalid hash format: " << str_hash);
     return false;
   }
   else
   {
-    buf.copy(reinterpret_cast<char *>(&hash), sizeof(crypto::hash));
+    std::copy(buf.begin(), buf.end(), hash.data.begin());
     return true;
   }
 }
