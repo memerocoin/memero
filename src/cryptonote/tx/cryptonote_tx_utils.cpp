@@ -119,12 +119,12 @@ namespace cryptonote
     LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "while creating outs: failed to derive_key_derivation(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");
 
     const std::optional<crypto::public_key> out_eph_public_key =
-      crypto::derive_tx_public_key(*derivation, 0, miner_address.m_spend_public_key);
+      crypto::derive_tx_output_public_key(*derivation, 0, miner_address.m_spend_public_key);
     LOG_ERROR_AND_RETURN_UNLESS
       (
        out_eph_public_key
        , false
-       , "while creating outs: failed to derive_tx_public_key("
+       , "while creating outs: failed to derive_tx_output_public_key("
        << *derivation << ", " << 0 << ", "
        << miner_address.m_spend_public_key << ")"
        );

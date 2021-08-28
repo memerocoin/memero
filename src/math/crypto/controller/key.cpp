@@ -55,7 +55,7 @@ namespace crypto {
     return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sec.data.data());
   }
 
-  std::optional<public_key> derive_tx_public_key
+  std::optional<public_key> derive_tx_output_public_key
   (
    const key_derivation &derivation
    , const size_t output_index

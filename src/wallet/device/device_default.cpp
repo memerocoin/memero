@@ -348,9 +348,9 @@ namespace hw {
                 hash_derivation_to_scalar(*derivation, output_index, scalar1);
                 amount_keys.push_back(scalar1);
             }
-            const auto eph_pk = crypto::derive_tx_public_key
+            const auto eph_pk = crypto::derive_tx_output_public_key
               (*derivation, output_index, dst_entr.addr.m_spend_public_key);
-            LOG_ERROR_AND_RETURN_UNLESS(eph_pk, false, "at creation outs: failed to derive_tx_public_key(" << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
+            LOG_ERROR_AND_RETURN_UNLESS(eph_pk, false, "at creation outs: failed to derive_tx_output_public_key(" << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
 
             out_eph_public_key = *eph_pk;
             return true;

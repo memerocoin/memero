@@ -59,14 +59,14 @@ namespace proof {
         continue;
 
       const std::optional<crypto::public_key> derived_out_key =
-        crypto::derive_tx_public_key(derivation, n, address.m_spend_public_key);
+        crypto::derive_tx_output_public_key(derivation, n, address.m_spend_public_key);
       THROW_WALLET_EXCEPTION_IF(!derived_out_key, error::wallet_internal_error, "Failed to derive public key");
       bool found = out_key->key == *derived_out_key;
 
       crypto::key_derivation found_derivation = derivation;
       if (!found && !additional_derivations.empty())
       {
-        const auto additional_derived_out = crypto::derive_tx_public_key(additional_derivations[n], n, address.m_spend_public_key);
+        const auto additional_derived_out = crypto::derive_tx_output_public_key(additional_derivations[n], n, address.m_spend_public_key);
         THROW_WALLET_EXCEPTION_IF(!additional_derived_out, error::wallet_internal_error, "Failed to derive public key");
 
         found = out_key->key == *additional_derived_out;
