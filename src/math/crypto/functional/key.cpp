@@ -197,5 +197,21 @@ namespace crypto {
     return derivation;
   }
 
+  std::optional<public_key> derive_tx_output_public_key
+  (
+   const key_derivation &derivation
+   , const size_t output_index
+   , const ec_point_unsafe &unsafe_base
+   ) {
+    const auto base = maybeSafePoint(unsafe_base);
+    if (!base) return {};
+
+    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
+    const ec_point derived = multBase(rct_scalar);
+    const ec_point r = derived + *base;
+    return p2pk(r);
+  }
+
+
 }
 

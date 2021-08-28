@@ -150,6 +150,14 @@ namespace crypto {
    const ec_point_unsafe &unsafe_point
    , const secret_key &sk
    );
+
+  std::optional<public_key> derive_tx_output_public_key
+  (
+   const key_derivation &derivation
+   , const size_t output_index
+   , const ec_point_unsafe &unsafe_base
+   );
+
 }
 
 namespace std
