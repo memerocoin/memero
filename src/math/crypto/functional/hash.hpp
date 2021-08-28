@@ -30,14 +30,14 @@ namespace crypto {
     bool operator==(const hash&) const = default;
   };
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+    epee::hex::append_decode_formatted(o, v.data); return o;
   }
 
   struct hash8 {
     std::array<uint8_t, 8> data;
   };
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash8 &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+    epee::hex::append_decode_formatted(o, v.data); return o;
   }
 
   constexpr crypto::hash null_hash = {};

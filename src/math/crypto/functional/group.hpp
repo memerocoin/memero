@@ -29,7 +29,7 @@ namespace crypto {
 
   // not really functional but needed in other part of the code
   inline std::ostream &operator <<(std::ostream &o, const crypto::crypto_data &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+    epee::hex::append_decode_formatted(o, v.data); return o;
   }
 
   using dataV = std::vector<crypto_data>;
