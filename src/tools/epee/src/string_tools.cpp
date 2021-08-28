@@ -41,7 +41,7 @@ namespace string_tools
     return std::basic_string((uint8_t*)s.data(), s.size());
   };
   //----------------------------------------------------------------------------
-  std::string blob_to_string(const epee::blob::data& s) {
+  std::string blob_to_string(const epee::blob::span s) {
     return std::string((char*)s.data(), s.size());
   };
   //----------------------------------------------------------------------------

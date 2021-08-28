@@ -410,7 +410,7 @@ namespace cryptonote
     if(tx_extra.empty())
       return true;
 
-    std::string extra_str(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size());
+    std::string extra_str = epee::string_tools::blob_to_string(tx_extra);
     std::istringstream iss(extra_str);
     binary_archive<false> ar(iss);
 
@@ -456,7 +456,7 @@ namespace cryptonote
       return true;
     }
 
-    std::string extra_str(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size());
+    std::string extra_str = epee::string_tools::blob_to_string(tx_extra);
     std::istringstream iss(extra_str);
     binary_archive<false> ar(iss);
 
@@ -589,7 +589,7 @@ namespace cryptonote
   {
     if (tx_extra.empty())
       return true;
-    std::string extra_str(reinterpret_cast<const char*>(tx_extra.data()), tx_extra.size());
+    std::string extra_str = epee::string_tools::blob_to_string(tx_extra);
     std::istringstream iss(extra_str);
     binary_archive<false> ar(iss);
     std::ostringstream oss;
