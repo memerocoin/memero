@@ -3402,7 +3402,8 @@ bool simple_wallet::show_transfer(const std::vector<std::string> &args)
     fail_msg_writer() << sw::tr("failed to parse txid");
     return true;
   }
-  crypto::hash txid = *reinterpret_cast<const crypto::hash*>(txid_data.data());
+  crypto::hash txid;
+  std::copy(txid_data.begin(), txid_data.end(), txid.data.begin());
 
   const uint64_t last_block_height = m_wallet->get_blockchain_current_height();
 
