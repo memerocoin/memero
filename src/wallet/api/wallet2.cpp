@@ -760,7 +760,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       hw::reset_mode rst(hwdev);
 
       hwdev.set_mode(hw::device::TRANSACTION_PARSE);
-      const auto maybeDerivation = crypto::generate_key_derivation(tx_pub_key, keys.m_view_secret_key);
+      const auto maybeDerivation = crypto::derive_key_derivation(tx_pub_key, keys.m_view_secret_key);
       if (!maybeDerivation)
       {
         LOG_WARNING("Failed to generate key derivation from tx pubkey in " << txid << ", skipping");
@@ -778,7 +778,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
           for (size_t i = 0; i < additional_tx_pub_keys.data.size(); ++i)
           {
             const auto additional_derivation =
-              crypto::generate_key_derivation(additional_tx_pub_keys.data[i], keys.m_view_secret_key);
+              crypto::derive_key_derivation(additional_tx_pub_keys.data[i], keys.m_view_secret_key);
             if (!additional_derivation) {
               LOG_WARNING("Failed to generate key derivation from additional tx pubkey in " << txid << ", skipping");
               additional_derivations.push_back(p2derivation(rct::identity));
@@ -1364,7 +1364,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
 
   auto gender = [&](wallet::logic::type::wallet::is_out_data &iod) {
     const auto d =
-      crypto::generate_key_derivation(iod.pkey, keys.m_view_secret_key);
+      crypto::derive_key_derivation(iod.pkey, keys.m_view_secret_key);
     if (!d)
     {
       LOG_WARNING("Failed to generate key derivation from tx pubkey, skipping");
@@ -4343,13 +4343,13 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
 void wallet2::check_tx_key(const crypto::hash &txid, const crypto::secret_key &tx_key, const std::vector<crypto::secret_key> &additional_tx_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
 {
   std::optional<crypto::key_derivation> derivation =
-    crypto::generate_key_derivation(address.m_view_public_key, tx_key);
+    crypto::derive_key_derivation(address.m_view_public_key, tx_key);
   THROW_WALLET_EXCEPTION_IF(!derivation, error::wallet_internal_error,
     "Failed to generate key derivation from supplied parameters");
 
   std::vector<crypto::key_derivation> additional_derivations;
   for (size_t i = 0; i < additional_tx_keys.size(); ++i) {
-    const auto d = crypto::generate_key_derivation(address.m_view_public_key, additional_tx_keys[i]);
+    const auto d = crypto::derive_key_derivation(address.m_view_public_key, additional_tx_keys[i]);
     THROW_WALLET_EXCEPTION_IF
       (!d
        , error::wallet_internal_error

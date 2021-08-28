@@ -150,14 +150,14 @@ namespace proof {
 
     // check if this address actually received any funds
     const std::optional<crypto::key_derivation> derivation =
-      crypto::generate_key_derivation(shared_secret[0], crypto::s2sk(rct::s_one));
+      crypto::derive_key_derivation(shared_secret[0], crypto::s2sk(rct::s_one));
     THROW_WALLET_EXCEPTION_IF(!derivation
        , tools::error::wallet_internal_error, "Failed to generate key derivation");
 
     std::vector<crypto::key_derivation> additional_derivations(num_sigs - 1);
     for (size_t i = 1; i < num_sigs; ++i) {
       const std::optional<crypto::key_derivation> additional_derivation =
-        crypto::generate_key_derivation(shared_secret[i], crypto::s2sk(rct::s_one));
+        crypto::derive_key_derivation(shared_secret[i], crypto::s2sk(rct::s_one));
       THROW_WALLET_EXCEPTION_IF
         ( !additional_derivation
          , tools::error::wallet_internal_error, "Failed to generate key derivation");

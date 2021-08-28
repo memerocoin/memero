@@ -331,14 +331,14 @@ namespace hw {
             if (change_addr && dst_entr.addr == *change_addr)
             {
             // sending change to yourself; derivation = a*R
-              derivation = crypto::generate_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key);
-              LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "at creation outs: failed to generate_key_derivation(" << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")");
+              derivation = crypto::derive_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key);
+              LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "at creation outs: failed to derive_key_derivation(" << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")");
             }
             else
             {
             // sending to the recipient; derivation = r*A (or s*C in the subaddress scheme)
-                derivation = generate_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
-                LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "at creation outs: failed to generate_key_derivation(" << dst_entr.addr.m_view_public_key << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")");
+                derivation = derive_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
+                LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "at creation outs: failed to derive_key_derivation(" << dst_entr.addr.m_view_public_key << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")");
             }
 
             if (need_additional_txkeys)

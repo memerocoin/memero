@@ -134,7 +134,7 @@ namespace proof {
       std::optional<crypto::key_derivation> derivation = {{}};
       if (good_signature[0]) {
         // obtain key derivation by multiplying rct_scalar 1 to the shared secret
-          derivation = crypto::generate_key_derivation(shared_secret[0], crypto::s2sk(rct::s_one));
+          derivation = crypto::derive_key_derivation(shared_secret[0], crypto::s2sk(rct::s_one));
           THROW_WALLET_EXCEPTION_IF
           ( !derivation
             , error::wallet_internal_error, "Failed to generate key derivation");
@@ -145,7 +145,7 @@ namespace proof {
       for (size_t i = 1; i < num_sigs; ++i) {
         if (good_signature[i]) {
           const std::optional<crypto::key_derivation> additional_derivation =
-            crypto::generate_key_derivation(shared_secret[i], crypto::s2sk(rct::s_one));
+            crypto::derive_key_derivation(shared_secret[i], crypto::s2sk(rct::s_one));
           THROW_WALLET_EXCEPTION_IF
             ( !additional_derivation
              , error::wallet_internal_error, "Failed to generate key derivation");

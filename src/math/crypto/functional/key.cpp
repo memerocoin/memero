@@ -183,7 +183,7 @@ namespace crypto {
     return out;
   }
 
-  std::optional<key_derivation> generate_key_derivation
+  std::optional<key_derivation> derive_key_derivation
   (
    const ec_point_unsafe &unsafe_point
    , const secret_key &sk

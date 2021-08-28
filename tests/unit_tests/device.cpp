@@ -98,8 +98,8 @@ TEST(device, ops)
 
   ASSERT_TRUE(is_valid_point(pk0));
 
-  derd = crypto::generate_key_derivation(pk0, sk0);
-  maybeDer = crypto::generate_key_derivation(pk0, sk0);
+  derd = crypto::derive_key_derivation(pk0, sk0);
+  maybeDer = crypto::derive_key_derivation(pk0, sk0);
   ASSERT_EQ(derd, maybeDer);
 
   ASSERT_TRUE(maybeDer);
