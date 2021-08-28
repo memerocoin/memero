@@ -45,8 +45,8 @@ namespace cryptonote
   // rewritten in purely functional style by fuwa
   constexpr diff_t next_difficulty_pure
   (
-   const std::array<std::uint64_t, constant::DIFFICULTY_BLOCKS_COUNT> timestamps
-   , const std::array<diff_t, constant::DIFFICULTY_BLOCKS_COUNT> cumulative_difficulties
+   const std::span<std::uint64_t, constant::DIFFICULTY_BLOCKS_COUNT> timestamps
+   , const std::span<diff_t, constant::DIFFICULTY_BLOCKS_COUNT> cumulative_difficulties
    , const uint64_t HEIGHT
    )
   {
