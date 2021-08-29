@@ -158,9 +158,6 @@ namespace hw {
         /*                            DERIVATION & KEY                             */
         /* ======================================================================= */
         virtual bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) = 0;
-        virtual bool  multP(rct::rct_point & aP, const rct::rct_point &P, const rct::rct_scalar &a) = 0;
-        virtual bool  multG(rct::rct_point &aG, const rct::rct_scalar &a) = 0;
-        virtual bool  sc_secret_add( crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) = 0;
         virtual crypto::secret_key  generate_keys
         (
          crypto::public_key &pub
@@ -171,21 +168,6 @@ namespace hw {
         virtual bool  hash_derivation_to_scalar(const crypto::key_derivation &derivation, const size_t output_index, crypto::ec_scalar &res) = 0;
         virtual bool  derive_secret_key(const crypto::key_derivation &derivation, const std::size_t output_index, const crypto::secret_key &sec,  crypto::secret_key &derived_sec) = 0;
         virtual crypto::key_image derive_key_image(const crypto::public_key &pub, const crypto::secret_key &sec) = 0;
-
-        // alternative prototypes available in libringct
-        rct::rct_point multP(const rct::rct_point &P, const rct::rct_scalar &a)
-        {
-            rct::rct_point aP;
-            multP(aP, P, a);
-            return aP;
-        }
-
-        rct::rct_point multG(const rct::rct_scalar &a)
-        {
-            rct::rct_point aG;
-            multG(aG, a);
-            return aG;
-        }
 
         /* ======================================================================= */
         /*                               TRANSACTION                               */

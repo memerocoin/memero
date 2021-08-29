@@ -89,9 +89,6 @@ namespace hw {
             /*                            DERIVATION & KEY                             */
             /* ======================================================================= */
             bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key)  override;
-            bool  multP(rct::rct_point & aP, const rct::rct_point &P, const rct::rct_scalar &a) override;
-            bool  multG(rct::rct_point &aG, const rct::rct_scalar &a) override;
-            bool  sc_secret_add(crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) override;
             crypto::secret_key  generate_keys
             (
              crypto::public_key &pub

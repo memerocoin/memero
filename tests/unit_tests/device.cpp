@@ -69,8 +69,6 @@ TEST(device, open_close)
 TEST(device, ops)
 {
   hw::core::device_default dev;
-  rct::rct_point resd, res;
-  crypto::secret_key resd_s, res_s;
   std::optional<crypto::key_derivation> derd, maybeDer;
   rct::rct_scalar sk;
   rct::rct_point pk;
@@ -84,18 +82,6 @@ TEST(device, ops)
   sk1 = crypto::s2sk(crypto::scalarGen());
   pk0 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk0));
   pk1 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk1));
-
-  dev.multP(resd, pk, sk);
-  res = rct::multP(pk, sk);
-  ASSERT_EQ(resd, res);
-
-  dev.multG(resd, sk);
-  res = rct::multG(sk);
-  ASSERT_EQ(resd, res);
-
-  dev.sc_secret_add(resd_s, sk0, sk1);
-  res_s = crypto::s2sk(sk0 + sk1);
-  ASSERT_EQ(resd_s, res_s);
 
   ASSERT_TRUE(is_valid_point(pk0));
 

@@ -218,21 +218,6 @@ namespace hw {
             return public_key == calculated_pub;
         }
 
-        bool device_default::multP(rct::rct_point & aP, const rct::rct_point &P, const rct::rct_scalar &a) {
-            aP = rct::multP(P,a);
-            return true;
-        }
-
-        bool device_default::multG(rct::rct_point &aG, const rct::rct_scalar &a) {
-            aG = rct::multG(a);
-            return true;
-        }
-
-        bool device_default::sc_secret_add(crypto::secret_key &r, const crypto::secret_key &a, const crypto::secret_key &b) {
-            r = crypto::s2sk(a + b);
-            return true;
-        }
-
         crypto::secret_key  device_default::generate_keys
         (
          crypto::public_key &pub
