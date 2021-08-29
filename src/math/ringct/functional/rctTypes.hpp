@@ -45,11 +45,11 @@ namespace rct {
     //  similar to secret_key / public_key of crypto-ops,
     //  but uses unsigned chars,
     //  also includes an operator for accessing the i'th byte.
+    struct rct_scalar;
     struct rct_point : crypto::ec_point {
       rct_point operator+(const rct_point& y) const;
       rct_point operator-(const rct_point& y) const;
-
-      // rct_point operator*(const uint64_t x) const;
+      rct_point operator^(const rct_scalar& x) const;
       bool operator<(const rct_point& y) const;
     };
 
