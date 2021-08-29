@@ -30,7 +30,7 @@
 
 #include "tree-hash.hpp"
 
-#include "../pseudo_functional/sha3.hpp"
+#include "sha3.hpp"
 
 #include <assert.h>
 #include <stdlib.h>

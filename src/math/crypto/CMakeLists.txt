@@ -37,8 +37,8 @@ add_library(math_crypto
   functional/key.cpp
 
   pseudo_functional/sha3.cpp
+  pseudo_functional/tree-hash.cpp
 
-  controller/tree-hash.cpp
   controller/chacha.cpp
   controller/random.cpp
   controller/keyGen.cpp

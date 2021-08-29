@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #pragma once
 
 #include "../pseudo_functional/sha3.hpp"
-#include "../controller/tree-hash.hpp"
+#include "../pseudo_functional/tree-hash.hpp"
 
 #include "tools/epee/include/hex.h"
 
