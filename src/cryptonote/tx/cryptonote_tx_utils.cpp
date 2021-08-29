@@ -94,7 +94,7 @@ namespace cryptonote
     tx.vout.clear();
     tx.extra.clear();
 
-    keypair txkey = keypair::generate(hw::get_device("default"));
+    keypair txkey = keypair::generate();
     add_tx_pub_key_to_extra(tx, txkey.pub);
     if (!sort_tx_extra(tx.extra, tx.extra))
       return false;
@@ -442,8 +442,8 @@ namespace cryptonote
         additional_tx_keys.clear();
         additional_tx_keys.resize(5);
         std::generate(additional_tx_keys.begin(), additional_tx_keys.end(),
-                      [sender_account_keys]()  {
-                        return keypair::generate(sender_account_keys.get_device()).sec;
+                      []() {
+                        return keypair::generate().sec;
                       });
       }
 

@@ -218,17 +218,6 @@ namespace hw {
             return public_key == calculated_pub;
         }
 
-        crypto::secret_key  device_default::generate_keys
-        (
-         crypto::public_key &pub
-         , const std::optional<crypto::secret_key> recovery_key
-         )
-        {
-          crypto::secret_key k;
-          std::tie(k, pub) = crypto::generate_keys(recovery_key);
-          return k;
-        }
-
         bool device_default::hash_derivation_to_scalar(const crypto::key_derivation &derivation, const size_t output_index, crypto::ec_scalar &res){
             res = crypto::hash_derivation_to_scalar(derivation,output_index);
             return true;
@@ -257,7 +246,7 @@ namespace hw {
         }
 
         bool device_default::open_tx(crypto::secret_key &tx_key) {
-            cryptonote::keypair txkey = cryptonote::keypair::generate(*this);
+            cryptonote::keypair txkey = cryptonote::keypair::generate();
             tx_key = txkey.sec;
             return true;
         }

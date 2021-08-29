@@ -31,7 +31,6 @@
 #pragma once
 
 
-#include "wallet/device/device.hpp"
 
 
 #include "tools/epee/include/misc_language.h"
@@ -41,7 +40,9 @@
 #include "tools/serialization/json_archive.h"
 #include "tools/serialization/variant.h"
 
+#include "math/crypto/controller/keyGen.hpp"
 
+#include "wallet/device/device.hpp"
 
 #include <boost/variant.hpp>
 
@@ -405,10 +406,10 @@ namespace cryptonote
     crypto::public_key pub;
     crypto::secret_key sec;
 
-    static inline keypair generate(hw::device &hwdev)
+    static inline keypair generate()
     {
       keypair k;
-      k.sec = hwdev.generate_keys(k.pub, {});
+      std::tie(k.sec, k.pub) = crypto::generate_keys({});
       return k;
     }
   };
