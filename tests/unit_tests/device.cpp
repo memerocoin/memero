@@ -88,13 +88,6 @@ TEST(device, ops)
   maybeDer = crypto::derive_key_derivation(pk0, sk0);
   ASSERT_EQ(derd, maybeDer);
 
-  ASSERT_TRUE(maybeDer);
-  const crypto::key_derivation der = *maybeDer;
-
-  dev.derive_secret_key(der, 0, rct::rct_s2sk(sk), sk0);
-  sk1 = crypto::derive_secret_key(der, 0, rct::rct_s2sk(sk));
-  ASSERT_EQ(sk0, sk1);
-
   ki0 = dev.derive_key_image(pk0, sk0);
   ki1 = crypto::derive_key_image(pk0, sk0);
   ASSERT_EQ(ki0, ki1);

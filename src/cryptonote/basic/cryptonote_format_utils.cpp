@@ -259,8 +259,9 @@ namespace cryptonote
     else
     {
       // derive secret key with subaddress - step 1: original CN derivation
-      crypto::secret_key scalar_step1;
-      hwdev.derive_secret_key(recv_derivation, real_output_index, ack.m_spend_secret_key, scalar_step1); // computes Hs(a*R || idx) + b
+      const crypto::secret_key scalar_step1 =
+        derive_secret_key(recv_derivation, real_output_index, ack.m_spend_secret_key);
+      // computes Hs(a*R || idx) + b
 
       // step 2: add Hs(a || index_major || index_minor)
       crypto::secret_key subaddr_sk;

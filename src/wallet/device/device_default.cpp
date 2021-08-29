@@ -218,11 +218,6 @@ namespace hw {
             return public_key == calculated_pub;
         }
 
-        bool device_default::derive_secret_key(const crypto::key_derivation &derivation, const std::size_t output_index, const crypto::secret_key &base, crypto::secret_key &derived_key){
-            derived_key = crypto::derive_secret_key(derivation, output_index, base);
-            return true;
-        }
-
         crypto::key_image device_default::derive_key_image(const crypto::public_key &pub, const crypto::secret_key &sec){
             return crypto::derive_key_image(pub, sec);
         }
