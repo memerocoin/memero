@@ -37,23 +37,27 @@ namespace crypto {
 
 
   struct ec_point_unsafe : crypto_data {
-    bool operator==(const ec_point_unsafe &x) const { return 0 == crypto_verify_32(data.data(), x.data.data()); }
+    bool operator==(const ec_point_unsafe &x) const noexcept {
+      return 0 == crypto_verify_32(data.data(), x.data.data());
+    }
   };
 
   struct ec_point : ec_point_unsafe {
-    ec_point operator+(const ec_point& x) const;
-    ec_point operator-(const ec_point& x) const;
+    ec_point operator+(const ec_point& x) const noexcept;
+    ec_point operator-(const ec_point& x) const noexcept;
     // ec_point operator*(const uint64_t x) const;
   };
 
   struct ec_scalar_unnormalized : crypto_data {
-    bool operator==(const ec_scalar_unnormalized &x) const { return 0 == crypto_verify_32(data.data(), x.data.data()); }
+    bool operator==(const ec_scalar_unnormalized &x) const noexcept {
+      return 0 == crypto_verify_32(data.data(), x.data.data());
+    }
   };
 
   struct ec_scalar : ec_scalar_unnormalized {
-    ec_scalar operator+(const ec_scalar& x) const;
-    ec_scalar operator-(const ec_scalar& x) const;
-    ec_scalar operator*(const ec_scalar& x) const;
+    ec_scalar operator+(const ec_scalar& x) const noexcept;
+    ec_scalar operator-(const ec_scalar& x) const noexcept;
+    ec_scalar operator*(const ec_scalar& x) const noexcept;
   };
 
 
@@ -68,20 +72,22 @@ namespace crypto {
     { { 0x58, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66
         , 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66 } };
 
-  inline const ec_point &unsafe_p2p(const ec_point_unsafe &x) { return (const ec_point&)x; }
+  inline const ec_point &unsafe_p2p(const ec_point_unsafe &x) noexcept {
+    return (const ec_point&)x;
+  }
 
 
-  bool is_valid_point(const ec_point_unsafe x);
+  bool is_valid_point(const ec_point_unsafe x) noexcept;
 
-  std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x);
-  ec_point mult(const ec_point X, const ec_scalar);
-  ec_point mult8Safe(const ec_point X);
-  ec_point multBase(const ec_scalar);
+  std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) noexcept;
+  ec_point mult(const ec_point X, const ec_scalar) noexcept;
+  ec_point mult8Safe(const ec_point X) noexcept;
+  ec_point multBase(const ec_scalar) noexcept;
 
-  ec_scalar invert(const ec_scalar x);
+  ec_scalar invert(const ec_scalar x) noexcept;
 
-  ec_scalar reduce(const ec_scalar_unnormalized x);
-  bool is_reduced(const ec_scalar_unnormalized x);
-  bool is_not_reduced(const ec_scalar_unnormalized x);
+  ec_scalar reduce(const ec_scalar_unnormalized x) noexcept;
+  bool is_reduced(const ec_scalar_unnormalized x) noexcept;
+  bool is_not_reduced(const ec_scalar_unnormalized x) noexcept;
 
 }

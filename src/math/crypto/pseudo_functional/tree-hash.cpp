@@ -39,7 +39,7 @@
 /***
 * Round to power of two, for count>=3 and for count being not too large (as reasonable for tree hash calculations)
 */
-size_t tree_hash_cnt(size_t count) {
+size_t tree_hash_cnt(size_t count) noexcept {
 	// This algo has some bad history but all we are doing is 1 << floor(log2(count))
 	// There are _many_ ways to do log2, for some reason the one selected was the most obscure one,
 	// and fixing it made it even more obscure.
@@ -60,7 +60,7 @@ size_t tree_hash_cnt(size_t count) {
 	return pow >> 1;
 }
 
-void tree_hash(const uint8_t (*hashes)[HASH_SIZE], size_t count, uint8_t *root_hash) {
+void tree_hash(const uint8_t (*hashes)[HASH_SIZE], size_t count, uint8_t *root_hash) noexcept {
 // The blockchain block at height 202612 https://moneroblocks.info/block/202612
 // contained 514 transactions, that triggered bad calculation of variable "cnt" in the original version of this function
 // as from CryptoNote code.

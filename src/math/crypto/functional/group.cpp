@@ -32,7 +32,7 @@ extern "C" {
 
 namespace crypto {
 
-  ec_point add(const ec_point X, const ec_point Y) {
+  ec_point add(const ec_point X, const ec_point Y) noexcept {
     ec_point p;
     int r = crypto_core_ed25519_add(p.data.data(), X.data.data(), Y.data.data());
     if (r != 0) {
@@ -42,11 +42,11 @@ namespace crypto {
     return p;
   }
 
-  ec_point ec_point::operator+(const ec_point& x) const {
+  ec_point ec_point::operator+(const ec_point& x) const noexcept {
     return add(*this, x);
   }
 
-  ec_point sub(const ec_point X, const ec_point Y) {
+  ec_point sub(const ec_point X, const ec_point Y) noexcept {
     ec_point p;
     int r = crypto_core_ed25519_sub(p.data.data(), X.data.data(), Y.data.data());
     if (r != 0) {
@@ -56,7 +56,7 @@ namespace crypto {
     return p;
   }
 
-  ec_point ec_point::operator-(const ec_point& x) const {
+  ec_point ec_point::operator-(const ec_point& x) const noexcept {
     return sub(*this, x);
   }
 
@@ -64,30 +64,30 @@ namespace crypto {
   //   return mult(*this, int_to_scalar(x));
   // }
 
-  ec_scalar ec_scalar::operator+(const ec_scalar& x) const {
+  ec_scalar ec_scalar::operator+(const ec_scalar& x) const noexcept {
     ec_scalar s;
     crypto_core_ed25519_scalar_add(s.data.data(), this->data.data(), x.data.data());
     return s;
   }
 
-  ec_scalar ec_scalar::operator-(const ec_scalar& x) const {
+  ec_scalar ec_scalar::operator-(const ec_scalar& x) const noexcept {
     ec_scalar s;
     crypto_core_ed25519_scalar_sub(s.data.data(), this->data.data(), x.data.data());
     return s;
   }
 
-  ec_scalar ec_scalar::operator*(const ec_scalar& x) const {
+  ec_scalar ec_scalar::operator*(const ec_scalar& x) const noexcept {
     ec_scalar s;
     crypto_core_ed25519_scalar_mul(s.data.data(), this->data.data(), x.data.data());
     return s;
   }
 
-  bool is_valid_point(const ec_point_unsafe x) {
+  bool is_valid_point(const ec_point_unsafe x) noexcept {
     return crypto_core_ed25519_is_valid_point(x.data.data());
   }
 
 
-  ec_point multBase(const ec_scalar x) {
+  ec_point multBase(const ec_scalar x) noexcept {
     ec_point p;
     const int r = crypto_scalarmult_ed25519_base_noclamp(p.data.data(), x.data.data());
     if (r != 0) {
@@ -97,7 +97,7 @@ namespace crypto {
   }
 
 
-  ec_point mult(const ec_point X, const ec_scalar a) {
+  ec_point mult(const ec_point X, const ec_scalar a) noexcept {
     if (a == s_0) {
       return identity;
     }
@@ -115,19 +115,19 @@ namespace crypto {
     return x;
   }
 
-  ec_point mult8Safe(const ec_point X) {
+  ec_point mult8Safe(const ec_point X) noexcept {
     return mult(X, s_8);
   }
 
   // multiplicative inverse
-  ec_scalar invert(const ec_scalar x)
+  ec_scalar invert(const ec_scalar x) noexcept
   {
     ec_scalar r;
     crypto_core_ed25519_scalar_invert(r.data.data(), x.data.data());
     return r;
   }
 
-  ec_scalar reduce(const ec_scalar_unnormalized x) {
+  ec_scalar reduce(const ec_scalar_unnormalized x) noexcept {
     unsigned char t[64] = {0};
     std::copy(x.data.begin(), x.data.end(), t);
 
@@ -136,15 +136,15 @@ namespace crypto {
     return s;
   }
 
-  bool is_reduced(const ec_scalar_unnormalized x) {
+  bool is_reduced(const ec_scalar_unnormalized x) noexcept {
     return reduce(x) == x;
   }
 
-  bool is_not_reduced(const ec_scalar_unnormalized x) {
+  bool is_not_reduced(const ec_scalar_unnormalized x) noexcept {
     return !(is_reduced(x));
   }
 
-  std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) {
+  std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) noexcept {
     if (is_valid_point(x)) {
       return unsafe_p2p(x);
     } else {
