@@ -218,11 +218,6 @@ namespace hw {
             return public_key == calculated_pub;
         }
 
-        bool device_default::hash_derivation_to_scalar(const crypto::key_derivation &derivation, const size_t output_index, crypto::ec_scalar &res){
-            res = crypto::hash_derivation_to_scalar(derivation,output_index);
-            return true;
-        }
-
         bool device_default::derive_secret_key(const crypto::key_derivation &derivation, const std::size_t output_index, const crypto::secret_key &base, crypto::secret_key &derived_key){
             derived_key = crypto::derive_secret_key(derivation, output_index, base);
             return true;
@@ -304,9 +299,8 @@ namespace hw {
 
             if (tx_version > 1)
             {
-                rct::rct_scalar scalar1;
-                hash_derivation_to_scalar(*derivation, output_index, scalar1);
-                amount_keys.push_back(scalar1);
+              const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(*derivation, output_index));
+              amount_keys.push_back(scalar1);
             }
             const auto eph_pk = crypto::derive_tx_output_public_key
               (*derivation, output_index, dst_entr.addr.m_spend_public_key);

@@ -74,7 +74,6 @@ TEST(device, ops)
   rct::rct_point pk;
   crypto::secret_key sk0, sk1;
   crypto::public_key pk0, pk1;
-  crypto::ec_scalar ressc0, ressc1;
   crypto::key_image ki0, ki1;
 
   std::tie(sk, pk) = rct::skpkGen();
@@ -91,10 +90,6 @@ TEST(device, ops)
 
   ASSERT_TRUE(maybeDer);
   const crypto::key_derivation der = *maybeDer;
-
-  dev.hash_derivation_to_scalar(der, 0, ressc0);
-  ressc1 = crypto::hash_derivation_to_scalar(der, 0);
-  ASSERT_EQ(ressc0, ressc1);
 
   dev.derive_secret_key(der, 0, rct::rct_s2sk(sk), sk0);
   sk1 = crypto::derive_secret_key(der, 0, rct::rct_s2sk(sk));
