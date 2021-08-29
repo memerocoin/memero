@@ -83,12 +83,12 @@ namespace proof {
       {
         tx_pub_key = rct_p2pk
           (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(tx_key)));
-        hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], tx_key, sig[0]);
+        sig[0] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], tx_key);
       }
       else
       {
         tx_pub_key = to_pk(tx_key);
-        hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], tx_key, sig[0]);
+        sig[0] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], tx_key);
       }
       for (size_t i = 1; i < num_sigs; ++i)
       {
@@ -98,12 +98,12 @@ namespace proof {
         {
           tx_pub_key = rct_p2pk
             (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(additional_tx_keys[i - 1])));
-          hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[i], additional_tx_keys[i - 1], sig[i]);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[i], additional_tx_keys[i - 1]);
         }
         else
         {
           tx_pub_key = to_pk(additional_tx_keys[i - 1]);
-          hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[i], additional_tx_keys[i - 1], sig[i]);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[i], additional_tx_keys[i - 1]);
         }
       }
       sig_str = std::string("OutProofV2");
@@ -123,11 +123,11 @@ namespace proof {
         (rct::multP(rct::pk2rct_p(tx_pub_key), rct::sk2rct_s(a)));
       if (is_subaddress)
       {
-        hwdev.generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, address.m_spend_public_key, shared_secret[0], a, sig[0]);
+        sig[0] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, address.m_spend_public_key, shared_secret[0], a);
       }
       else
       {
-        hwdev.generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, std::nullopt, shared_secret[0], a, sig[0]);
+        sig[0] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, std::nullopt, shared_secret[0], a);
       }
       for (size_t i = 1; i < num_sigs; ++i)
       {
@@ -135,11 +135,11 @@ namespace proof {
           (rct::multP(rct::pk2rct_p(additional_tx_pub_keys[i - 1]), rct::sk2rct_s(a)));
         if (is_subaddress)
         {
-          hwdev.generate_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i - 1], address.m_spend_public_key, shared_secret[i], a, sig[i]);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i - 1], address.m_spend_public_key, shared_secret[i], a);
         }
         else
         {
-          hwdev.generate_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i - 1], std::nullopt, shared_secret[i], a, sig[i]);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i - 1], std::nullopt, shared_secret[i], a);
         }
       }
       sig_str = std::string("InProofV2");
