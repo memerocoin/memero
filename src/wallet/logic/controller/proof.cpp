@@ -77,13 +77,13 @@ namespace proof {
       shared_secret.resize(num_sigs);
       sig.resize(num_sigs);
 
-      hwdev.multP(aP, rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(tx_key));
-      shared_secret[0] = rct::rct_p2pk(aP);
+      shared_secret[0] = rct::rct_p2pk
+        (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(tx_key)));
       crypto::public_key tx_pub_key;
       if (is_subaddress)
       {
-        hwdev.multP(aP, rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(tx_key));
-        tx_pub_key = rct_p2pk(aP);
+        tx_pub_key = rct_p2pk
+          (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(tx_key)));
         hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], tx_key, sig[0]);
       }
       else
@@ -93,12 +93,12 @@ namespace proof {
       }
       for (size_t i = 1; i < num_sigs; ++i)
       {
-        hwdev.multP(aP, rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(additional_tx_keys[i - 1]));
-        shared_secret[i] = rct::rct_p2pk(aP);
+        shared_secret[i] = rct::rct_p2pk
+          (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(additional_tx_keys[i - 1])));
         if (is_subaddress)
         {
-          hwdev.multP(aP, rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(additional_tx_keys[i - 1]));
-          tx_pub_key = rct_p2pk(aP);
+          tx_pub_key = rct_p2pk
+            (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(additional_tx_keys[i - 1])));
           hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[i], additional_tx_keys[i - 1], sig[i]);
         }
         else
@@ -120,8 +120,8 @@ namespace proof {
       sig.resize(num_sigs);
 
       const crypto::secret_key& a = view_secret_key.value();
-      hwdev.multP(aP, rct::pk2rct_p(tx_pub_key), rct::sk2rct_s(a));
-      shared_secret[0] =  rct_p2pk(aP);
+      shared_secret[0] =  rct_p2pk
+        (rct::multP(rct::pk2rct_p(tx_pub_key), rct::sk2rct_s(a)));
       if (is_subaddress)
       {
         hwdev.generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, address.m_spend_public_key, shared_secret[0], a, sig[0]);
@@ -132,8 +132,8 @@ namespace proof {
       }
       for (size_t i = 1; i < num_sigs; ++i)
       {
-        hwdev.multP(aP,rct::pk2rct_p(additional_tx_pub_keys[i - 1]), rct::sk2rct_s(a));
-        shared_secret[i] = rct_p2pk(aP);
+        shared_secret[i] = rct_p2pk
+          (rct::multP(rct::pk2rct_p(additional_tx_pub_keys[i - 1]), rct::sk2rct_s(a)));
         if (is_subaddress)
         {
           hwdev.generate_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i - 1], address.m_spend_public_key, shared_secret[i], a, sig[i]);
