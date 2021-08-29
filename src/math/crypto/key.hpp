@@ -32,5 +32,5 @@
 #pragma once
 
 #include "functional/key.hpp"
-#include "controller/key.hpp"
+#include "controller/keyGen.hpp"
 
