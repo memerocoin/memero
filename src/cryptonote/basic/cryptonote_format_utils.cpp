@@ -272,7 +272,7 @@ namespace cryptonote
       else
       {
         subaddr_sk = hwdev.get_subaddress_secret_key(ack.m_view_secret_key, received_index);
-        hwdev.sc_secret_add(scalar_step2, scalar_step1,subaddr_sk);
+        scalar_step2 = s2sk(scalar_step1 + subaddr_sk);
       }
 
       in_ephemeral.sec = scalar_step2;
