@@ -95,7 +95,6 @@ namespace hw {
             /*                               TRANSACTION                               */
             /* ======================================================================= */
 
-            bool  open_tx(crypto::secret_key &tx_key) override;
             void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) override;
 
             bool generate_output_ephemeral_keys
@@ -138,7 +137,6 @@ namespace hw {
              , rct::rct_scalar &s
              ) override;
 
-            bool  close_tx(void) override;
         };
 
     }

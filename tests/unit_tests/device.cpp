@@ -58,14 +58,6 @@ TEST(device, locking)
 }
 */
 
-TEST(device, open_close)
-{
-  hw::core::device_default dev;
-  crypto::secret_key key;
-  ASSERT_TRUE(dev.open_tx(key));
-  ASSERT_TRUE(dev.close_tx());
-}
-
 TEST(device, ops)
 {
   hw::core::device_default dev;

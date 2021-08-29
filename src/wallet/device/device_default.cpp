@@ -221,11 +221,6 @@ namespace hw {
         /* ======================================================================= */
         /*                               TRANSACTION                               */
         /* ======================================================================= */
-        bool device_default::open_tx(crypto::secret_key &tx_key) {
-            cryptonote::keypair txkey = cryptonote::keypair::generate();
-            tx_key = txkey.sec;
-            return true;
-        }
 
         void device_default::get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) {
             cryptonote::get_transaction_prefix_hash(tx, h);
@@ -330,10 +325,6 @@ namespace hw {
             s0_add_z_mu_C = mu_C * z + s0_p_mu_P;
             s = a - c * s0_add_z_mu_C;
 
-            return true;
-        }
-
-        bool device_default::close_tx() {
             return true;
         }
 

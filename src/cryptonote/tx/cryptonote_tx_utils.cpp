@@ -428,8 +428,7 @@ namespace cryptonote
    , bool rct
    )
   {
-    hw::device &hwdev = sender_account_keys.get_device();
-    hwdev.open_tx(tx_key);
+    tx_key = cryptonote::keypair::generate().sec;
     try {
       // figure out if we need to make additional tx pubkeys
       size_t num_stdaddresses = 0;
@@ -448,10 +447,8 @@ namespace cryptonote
       }
 
       bool r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, tx, unlock_time, tx_key, additional_tx_keys, rct);
-      hwdev.close_tx();
       return r;
     } catch(...) {
-      hwdev.close_tx();
       throw;
     }
   }

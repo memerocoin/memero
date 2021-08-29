@@ -163,8 +163,6 @@ namespace hw {
         /*                               TRANSACTION                               */
         /* ======================================================================= */
 
-        virtual bool  open_tx(crypto::secret_key &tx_key) = 0;
-
         virtual void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) = 0;
 
         virtual bool  generate_output_ephemeral_keys
@@ -206,8 +204,6 @@ namespace hw {
          , const rct::rct_scalar &mu_C
          , rct::rct_scalar &s
          ) = 0;
-
-        virtual bool  close_tx(void) = 0;
 
         virtual bool  has_ki_cold_sync(void) const { return false; }
         virtual bool  has_tx_cold_sign(void) const { return false; }
