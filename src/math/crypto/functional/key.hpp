@@ -72,8 +72,8 @@ namespace crypto {
   };
 
 
-  const crypto::public_key null_pkey = {};
-  const crypto::secret_key null_skey = {};
+  constexpr crypto::public_key null_pkey = {};
+  constexpr crypto::secret_key null_skey = {};
 
 
   inline const ec_scalar_unnormalized &h2s(const hash &x) { return (const ec_scalar&)x; }
