@@ -112,7 +112,7 @@ namespace rct {
         hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
 
         // Offset key image
-        sig.D = multP(D, rct::s_inv_eight);
+        sig.D = D ^ rct::s_inv_eight;
 
         crypto::dataV mu_P_to_hash = {zero};
         mu_P_to_hash.insert(mu_P_to_hash.end(), P.begin(), P.end());
@@ -181,8 +181,8 @@ namespace rct {
              std::array
              {
                multG(sk)
-               , multP(P[i], c_p)
-               , multP(C[i], c_c)
+               , P[i] ^ c_p
+               , C[i] ^ c_c
              }
              );
 
@@ -192,9 +192,9 @@ namespace rct {
             (
              std::array
              {
-               multP(A, sk)
-               , multP(sig.I, c_p)
-               , multP(D, c_c)
+               A ^ sk
+               , sig.I ^ c_p
+               , D ^ c_c
              }
              );
 

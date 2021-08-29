@@ -236,7 +236,7 @@ rct_pointV hadamard_fold
          ? b * (*scale)[iy]
          : b;
 
-       const auto r = multP(v[n], x) + multP(v[iy], y);
+       const auto r = (v[n] ^ x) + (v[iy] ^ y);
        n++;
        return r;
      }
@@ -334,7 +334,7 @@ try_again:
   const rct::rct_scalarV sL = rct::skvGen(MN);
   const rct::rct_scalarV sR = rct::skvGen(MN);
   const rct::rct_scalar rho = rct::skGen();
-  const rct::rct_point S = multP(vector_exponent(sL, sR) + rct::multG(rho), rct::s_inv_eight);
+  const rct::rct_point S = (vector_exponent(sL, sR) + rct::multG(rho)) ^ rct::s_inv_eight;
 
   // PAPER LINES 48-50
   const rct_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, A, S});

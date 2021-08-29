@@ -223,8 +223,8 @@ namespace rct {
                std::array
                {
                  multG(sig.s[i])
-                 , multP(pubs[i].dest, c_p)
-                 , multP(C, c_c)
+                 , pubs[i].dest ^ c_p
+                 , C ^ c_c
                }
                );
 
@@ -235,9 +235,9 @@ namespace rct {
               (
                std::array
                {
-                 multP(k, sig.s[i])
-                 , multP(sig.I, c_p)
-                 , multP(D_8, c_c)
+                 k ^ sig.s[i]
+                 , sig.I ^ c_p
+                 , D_8 ^ c_c
                }
                );
 
