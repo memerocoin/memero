@@ -74,7 +74,6 @@ TEST(device, ops)
   rct::rct_point pk;
   crypto::secret_key sk0, sk1;
   crypto::public_key pk0, pk1;
-  crypto::key_image ki0, ki1;
 
   std::tie(sk, pk) = rct::skpkGen();
   sk0 = crypto::s2sk(crypto::scalarGen());
@@ -87,10 +86,6 @@ TEST(device, ops)
   derd = crypto::derive_key_derivation(pk0, sk0);
   maybeDer = crypto::derive_key_derivation(pk0, sk0);
   ASSERT_EQ(derd, maybeDer);
-
-  ki0 = dev.derive_key_image(pk0, sk0);
-  ki1 = crypto::derive_key_image(pk0, sk0);
-  ASSERT_EQ(ki0, ki1);
 }
 
 // TODO fix tests

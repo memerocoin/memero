@@ -283,7 +283,7 @@ namespace cryptonote
            false, "key image helper precomp: given output pubkey doesn't match the derived one");
     }
 
-    ki = hwdev.derive_key_image(in_ephemeral.pub, in_ephemeral.sec);
+    ki = crypto::derive_key_image(in_ephemeral.pub, in_ephemeral.sec);
     return true;
   }
   //---------------------------------------------------------------

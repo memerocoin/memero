@@ -160,7 +160,6 @@ namespace hw {
         virtual bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) = 0;
 
         virtual bool  conceal_derivation(crypto::key_derivation &derivation, const crypto::public_key &tx_pub_key, const std::vector<crypto::public_key> &additional_tx_pub_keys, const crypto::key_derivation &main_derivation, const std::vector<crypto::key_derivation> &additional_derivations) = 0;
-        virtual crypto::key_image derive_key_image(const crypto::public_key &pub, const crypto::secret_key &sec) = 0;
 
         /* ======================================================================= */
         /*                               TRANSACTION                               */
