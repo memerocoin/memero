@@ -2,12 +2,14 @@
 
 #include <openssl/evp.h>
 
-void handleErrors(void) {
+#include <exception>
+
+void handleErrors() noexcept {
   printf("sha3 error, lol is ded\n");
-  exit(1);
+  std::terminate();
 }
 
-void sha3_raw(const uint8_t *data, const size_t length, uint8_t *hash)
+void sha3_raw(const uint8_t *data, const size_t length, uint8_t *hash) noexcept
 {
   EVP_MD_CTX *mdctx;
 

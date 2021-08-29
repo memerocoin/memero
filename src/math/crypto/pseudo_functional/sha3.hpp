@@ -8,4 +8,4 @@
 #include <cstdint>
 #include <cstddef>
 
-void sha3_raw(const uint8_t *data, const size_t length, uint8_t *hash);
+void sha3_raw(const uint8_t *data, const size_t length, uint8_t *hash) noexcept;
