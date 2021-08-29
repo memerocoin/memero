@@ -267,7 +267,7 @@ namespace cryptonote
     if (num_stdaddresses == 0 && num_subaddresses == 1)
     {
       txkey_pub = rct::rct_p2pk
-        (hwdev.multP(rct::pk2rct_p(single_dest_subaddress.m_spend_public_key), rct::sk2rct_s(tx_key)));
+        (rct::multP(rct::pk2rct_p(single_dest_subaddress.m_spend_public_key), rct::sk2rct_s(tx_key)));
     }
     else
     {
