@@ -113,10 +113,6 @@ TEST(device, ops)
   sk1 = crypto::derive_secret_key(der, 0, rct::rct_s2sk(sk));
   ASSERT_EQ(sk0, sk1);
 
-  dev.secret_key_to_public_key(rct::rct_s2sk(sk), pk0);
-  crypto::secret_key_to_public_key(rct::rct_s2sk(sk), pk1);
-  ASSERT_EQ(pk0, pk1);
-
   ki0 = dev.derive_key_image(pk0, sk0);
   ki1 = crypto::derive_key_image(pk0, sk0);
   ASSERT_EQ(ki0, ki1);

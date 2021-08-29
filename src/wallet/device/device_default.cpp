@@ -213,9 +213,8 @@ namespace hw {
         /* ======================================================================= */
 
         bool  device_default::verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) {
-            crypto::public_key calculated_pub;
-            bool r = crypto::secret_key_to_public_key(secret_key, calculated_pub);
-            return r && public_key == calculated_pub;
+            const auto calculated_pub = crypto::to_maybe_pk(secret_key);
+            return public_key == calculated_pub;
         }
 
         bool device_default::multP(rct::rct_point & aP, const rct::rct_point &P, const rct::rct_scalar &a) {
@@ -252,10 +251,6 @@ namespace hw {
         bool device_default::derive_secret_key(const crypto::key_derivation &derivation, const std::size_t output_index, const crypto::secret_key &base, crypto::secret_key &derived_key){
             derived_key = crypto::derive_secret_key(derivation, output_index, base);
             return true;
-        }
-
-        bool device_default::secret_key_to_public_key(const crypto::secret_key &sec, crypto::public_key &pub) {
-            return crypto::secret_key_to_public_key(sec,pub);
         }
 
         crypto::key_image device_default::derive_key_image(const crypto::public_key &pub, const crypto::secret_key &sec){

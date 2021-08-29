@@ -88,7 +88,7 @@ namespace proof {
       }
       else
       {
-        hwdev.secret_key_to_public_key(tx_key, tx_pub_key);
+        tx_pub_key = to_pk(tx_key);
         hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], tx_key, sig[0]);
       }
       for (size_t i = 1; i < num_sigs; ++i)
@@ -103,7 +103,7 @@ namespace proof {
         }
         else
         {
-          hwdev.secret_key_to_public_key(additional_tx_keys[i - 1], tx_pub_key);
+          tx_pub_key = to_pk(additional_tx_keys[i - 1]);
           hwdev.generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[i], additional_tx_keys[i - 1], sig[i]);
         }
       }

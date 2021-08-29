@@ -39,7 +39,8 @@ namespace crypto {
 
   /* Checks a private key and computes the corresponding public key.
     */
-  bool secret_key_to_public_key(const secret_key &, public_key &);
+  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk);
+  public_key to_pk(const secret_key& sk);
 
   /* Generate a new key pair
    */

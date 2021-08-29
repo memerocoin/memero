@@ -51,8 +51,18 @@ extern "C" {
 
 namespace crypto {
 
-  bool secret_key_to_public_key(const secret_key &sec, public_key &pub) {
-    return 0 == crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sec.data.data());
+  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) {
+    public_key pub;
+    const bool r = crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sk.data.data());
+    if (0 == r) {
+      return pub;
+    } else {
+      return {};
+    }
+  }
+
+  public_key to_pk(const secret_key& sk) {
+    return p2pk(multBase(sk));
   }
 
   /*

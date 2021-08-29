@@ -150,9 +150,9 @@ namespace signature {
 
       const crypto::secret_key m = subaddress_secret_view_key;
       skey_spend = s2sk(m + skey_spend);
-      secret_key_to_public_key(skey_spend,pkey_spend);
+      pkey_spend = to_pk(skey_spend);
       skey_view = s2sk(keys.m_view_secret_key * skey_spend);
-      secret_key_to_public_key(skey_view,pkey_view);
+      pkey_view = to_pk(skey_view);
       switch (signature_type)
       {
         case wallet::logic::type::message_signature::sign_with_spend_key:
@@ -165,7 +165,7 @@ namespace signature {
           break;
         default: LOG_ERROR_AND_THROW_UNLESS(false, "Invalid signature type requested");
       }
-      secret_key_to_public_key(skey, pkey);
+      pkey = to_pk(skey);
     }
 
     const crypto::signature signature = crypto::generate_signature(hash, pkey, skey);

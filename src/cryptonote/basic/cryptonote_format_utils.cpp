@@ -276,11 +276,7 @@ namespace cryptonote
       }
 
       in_ephemeral.sec = scalar_step2;
-
-      {
-        // when not in multisig, we know the full spend secret key, so the output pubkey can be obtained by multG
-        LOG_ERROR_AND_RETURN_UNLESS(hwdev.secret_key_to_public_key(in_ephemeral.sec, in_ephemeral.pub), false, "Failed to derive public key");
-      }
+      in_ephemeral.pub = to_pk(in_ephemeral.sec);
 
       LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
            false, "key image helper precomp: given output pubkey doesn't match the derived one");
