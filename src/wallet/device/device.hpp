@@ -163,8 +163,6 @@ namespace hw {
         /*                               TRANSACTION                               */
         /* ======================================================================= */
 
-        virtual void get_transaction_prefix_hash(const cryptonote::transaction_prefix& tx, crypto::hash& h) = 0;
-
         virtual bool  generate_output_ephemeral_keys
         (
          const size_t tx_version

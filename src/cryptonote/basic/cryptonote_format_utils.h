@@ -46,9 +46,6 @@
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  void get_transaction_prefix_hash(const transaction_prefix& tx, crypto::hash& h, hw::device &hwdev);
-  crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx, hw::device &hwdev);
-  void get_transaction_prefix_hash(const transaction_prefix& tx, crypto::hash& h);
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx);
   bool parse_and_validate_tx_prefix_from_blob(const blobdata_ref& tx_blob, transaction_prefix& tx);
   bool parse_and_validate_tx_from_blob(const blobdata_ref& tx_blob, transaction& tx, crypto::hash& tx_hash, crypto::hash& tx_prefix_hash);

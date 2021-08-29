@@ -3398,7 +3398,8 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete
 
       if (!parse_and_validate_tx_base_from_blob(tx_blob.blob, tx))
         SCAN_TABLE_QUIT("Could not parse tx from incoming blocks.");
-      cryptonote::get_transaction_prefix_hash(tx, tx_prefix_hash);
+
+      tx_prefix_hash = cryptonote::get_transaction_prefix_hash(tx);
 
       auto its = m_scan_table.find(tx_prefix_hash);
       if (its != m_scan_table.end())

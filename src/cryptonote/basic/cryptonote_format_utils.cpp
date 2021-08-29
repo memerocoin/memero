@@ -58,32 +58,13 @@ static std::atomic<uint64_t> block_hashes_cached_count(0);
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  void get_transaction_prefix_hash(const transaction_prefix& tx, crypto::hash& h, hw::device &hwdev)
-  {
-    hwdev.get_transaction_prefix_hash(tx,h);
-  }
-
-  //---------------------------------------------------------------
-  crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx, hw::device &hwdev)
+  crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx)
   {
     crypto::hash h = null_hash;
-    get_transaction_prefix_hash(tx, h, hwdev);
-    return h;
-  }
-
-  //---------------------------------------------------------------
-  void get_transaction_prefix_hash(const transaction_prefix& tx, crypto::hash& h)
-  {
     std::ostringstream s;
     binary_archive<true> a(s);
     ::serialization::serialize(a, const_cast<transaction_prefix&>(tx));
     h = crypto::sha3(epee::string_tools::string_to_blob(s.str()));
-  }
-  //---------------------------------------------------------------
-  crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx)
-  {
-    crypto::hash h = null_hash;
-    get_transaction_prefix_hash(tx, h);
     return h;
   }
   //---------------------------------------------------------------
@@ -192,7 +173,7 @@ namespace cryptonote
   {
     if (!parse_and_validate_tx_from_blob(tx_blob, tx, tx_hash))
       return false;
-    get_transaction_prefix_hash(tx, tx_prefix_hash);
+    tx_prefix_hash = get_transaction_prefix_hash(tx);
     return true;
   }
   //---------------------------------------------------------------
@@ -966,7 +947,7 @@ namespace cryptonote
     crypto::hash hashes[3];
 
     // prefix
-    get_transaction_prefix_hash(t, hashes[0]);
+    hashes[0] = get_transaction_prefix_hash(t);
 
     const blobdata blob = tx_to_blob(t);
     const unsigned int unprunable_size = t.unprunable_size;
