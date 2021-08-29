@@ -80,25 +80,20 @@ namespace rct {
     return s2s(crypto::reduce(a));
   }
 
-  //does a * G where a is a rct_scalar and G is the curve basepoint
   rct_point multG(const rct_scalar a) {
     rct_scalar s = normalizeKey(a);
     return p2rct_p(crypto::multBase(s));
   }
 
-  //does a * P where a is a rct_scalar and P is an arbitrary point
   rct_point multP(const rct_point P, const rct_scalar a) {
     rct_scalar s = normalizeKey(a);
     return p2rct_p(crypto::mult(P, s));
   }
 
-
-  //Computes aH where H= toPoint(sha3(G)), G the basepoint
   rct_point multH(const rct_scalar a) {
-    return multP(H, a);
+    return H ^ a;
   }
 
-  //Computes 8P
   rct_point multP8(const crypto::ec_point_unsafe P) {
     return p2rct_p(crypto::mult8(P));
   }
@@ -119,8 +114,6 @@ namespace rct {
        );
   }
 
-  //addPoints2
-  //aGbB = aG + bH where a, b are rct_scalars, G is the basepoint and H is the second basepoint
   rct_point addMultG_H(const rct_scalar a, const rct_scalar b) {
     return multG(a) + multH(b);
   }

@@ -71,16 +71,12 @@ namespace rct {
 
   //Scalar multiplications of curve points
 
-  //does a * G where a is a rct_scalar and G is the curve basepoint
   rct_point multG(const rct_scalar a);
 
-  //does a * P where a is a rct_scalar and P is an arbitrary point
   rct_point multP(const rct_point P, const rct_scalar a);
 
-  //Computes aH where H= toPoint(sha3(G)), G the basepoint
   rct_point multH(const rct_scalar a);
 
-  // multiplies a point by 8
   rct_point multP8(const crypto::ec_point_unsafe P);
   rct_point multP8Safe(const rct_point P);
 
@@ -88,7 +84,6 @@ namespace rct {
 
   rct::rct_point addPoints(const rct_pointS A);
 
-  //aGbB = aG + bH where a, b are rct_scalars, G is the basepoint and H is the second basepoint
   rct_point addMultG_H(const rct_scalar a, const rct_scalar b);
 
   crypto::hash hash_data(const crypto::crypto_data in);
