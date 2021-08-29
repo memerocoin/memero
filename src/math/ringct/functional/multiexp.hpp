@@ -49,6 +49,6 @@ struct MultiexpData {
   }
 };
 
-rct::rct_point dummy(const std::span<MultiexpData> data);
+rct::rct_point dummy(const std::span<MultiexpData> data) noexcept;
 
 }
