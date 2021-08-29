@@ -82,9 +82,9 @@ namespace config
   // Hash domain separators
   constexpr std::string_view HASH_KEY_BULLETPROOF_EXPONENT = "bulletproof";
   constexpr std::string_view HASH_KEY_SUBADDRESS = "SubAddr";
-  constexpr unsigned char HASH_KEY_WALLET = 0x8c;
-  constexpr unsigned char HASH_KEY_WALLET_CACHE = 0x8d;
-  constexpr unsigned char HASH_KEY_MEMORY = 'k';
+  constexpr uint8_t HASH_KEY_WALLET = 0x8c;
+  constexpr uint8_t HASH_KEY_WALLET_CACHE = 0x8d;
+  constexpr uint8_t HASH_KEY_MEMORY = 'k';
   constexpr std::string_view HASH_KEY_CLSAG_ROUND = "CLSAG_round";
   constexpr std::string_view HASH_KEY_CLSAG_AGG_0 = "CLSAG_agg_0";
   constexpr std::string_view HASH_KEY_CLSAG_AGG_1 = "CLSAG_agg_1";
