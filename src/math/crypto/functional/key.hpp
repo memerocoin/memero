@@ -43,7 +43,7 @@ namespace crypto {
   struct signature {
     ec_scalar c, r;
 
-    bool operator==(const signature_unnormalized &x) const {
+    bool operator==(const signature_unnormalized &x) const noexcept {
       return c == x.c && r == x.r;
     }
   };
@@ -76,37 +76,37 @@ namespace crypto {
   constexpr crypto::secret_key null_skey = {};
 
 
-  inline const ec_scalar_unnormalized &h2s(const hash &x) { return (const ec_scalar&)x; }
-  inline const ec_point_unsafe &h2p(const hash &x) { return (const ec_point&)x; }
-  inline const secret_key &unsafe_h2sk(const hash &x) { return (const secret_key&)x; }
-  inline const public_key &unsafe_h2pk(const hash &x) { return (const public_key&)x; }
+  inline const ec_scalar_unnormalized &h2s(const hash &x)        noexcept { return (const ec_scalar&)x; }
+  inline const ec_point_unsafe &h2p(const hash &x)               noexcept { return (const ec_point&)x; }
+  inline const secret_key &unsafe_h2sk(const hash &x)            noexcept { return (const secret_key&)x; }
+  inline const public_key &unsafe_h2pk(const hash &x)            noexcept { return (const public_key&)x; }
 
-  inline const secret_key &s2sk(const ec_scalar &x) { return (const secret_key&)x; }
-  inline const public_key &p2pk(const ec_point &x) { return (const public_key&)x; }
-  inline const key_image &p2img(const ec_point &x) { return (const key_image&)x; }
-  inline const key_derivation &p2derivation(const ec_point &x) { return (const key_derivation&)x; }
+  inline const secret_key &s2sk(const ec_scalar &x)              noexcept { return (const secret_key&)x; }
+  inline const public_key &p2pk(const ec_point &x)               noexcept { return (const public_key&)x; }
+  inline const key_image &p2img(const ec_point &x)               noexcept { return (const key_image&)x; }
+  inline const key_derivation &p2derivation(const ec_point &x)   noexcept { return (const key_derivation&)x; }
 
-  inline const ec_scalar_unnormalized &d2s(const crypto_data &x) { return (const ec_scalar_unnormalized&)x; }
-  inline const ec_point_unsafe &d2p(const crypto_data &x) { return (const ec_point_unsafe&)x; }
-  inline const crypto_data &h2d(const hash &x) { return (const crypto_data&)x; }
-  inline const hash &d2h(const crypto_data &x) { return (const hash&)x; }
+  inline const ec_scalar_unnormalized &d2s(const crypto_data &x) noexcept { return (const ec_scalar_unnormalized&)x; }
+  inline const ec_point_unsafe &d2p(const crypto_data &x)        noexcept { return (const ec_point_unsafe&)x; }
+  inline const crypto_data &h2d(const hash &x)                   noexcept { return (const crypto_data&)x; }
+  inline const hash &d2h(const crypto_data &x)                   noexcept { return (const hash&)x; }
 
 
 
 
   /* Checks a private key and computes the corresponding public key.
    */
-  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk);
-  public_key to_pk(const secret_key& sk);
+  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) noexcept;
+  public_key to_pk(const secret_key& sk) noexcept;
 
-  ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index);
+  ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index) noexcept;
 
-  secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &);
+  secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &) noexcept;
 
   /* Generation and checking of a standard signature.
     */
 
-  bool check_signature(const hash &, const ec_point_unsafe &, const signature &);
+  bool check_signature(const hash &, const ec_point_unsafe &, const signature &) noexcept;
 
   bool check_tx_proof
   (
@@ -116,7 +116,7 @@ namespace crypto {
    , const std::optional<public_key> &B
    , const public_key &D
    , const signature &sig
-   );
+   ) noexcept;
 
   /* To send money to a key:
     * * The sender generates an ephemeral key and includes it in transaction output.
@@ -124,12 +124,12 @@ namespace crypto {
     * * Then he selects a bunch of outputs, including the one he spends, and uses them to generate a ring signature.
     * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
     */
-  key_image derive_key_image(const public_key &, const secret_key &);
+  key_image derive_key_image(const public_key &, const secret_key &) noexcept;
 
-  uint64_t scalar_to_int(const ec_scalar &in);
-  ec_scalar int_to_scalar(const uint64_t in);
+  uint64_t scalar_to_int(const ec_scalar &in) noexcept;
+  ec_scalar int_to_scalar(const uint64_t in) noexcept;
 
-  ec_scalar hash_to_scalar(const std::span<const uint8_t>x);
+  ec_scalar hash_to_scalar(const std::span<const uint8_t>x) noexcept;
 
 
   /* To generate an ephemeral key used to send money to:
@@ -142,21 +142,21 @@ namespace crypto {
   (
    const ec_point_unsafe &unsafe_point
    , const secret_key &sk
-   );
+   ) noexcept;
 
   std::optional<public_key> derive_tx_output_public_key
   (
    const key_derivation &derivation
    , const size_t output_index
    , const ec_point_unsafe &unsafe_base
-   );
+   ) noexcept;
 
   std::optional<public_key> derive_subaddress_public_key
   (
    const ec_point_unsafe &unsafe_out_key
    , const key_derivation &derivation
    , const std::size_t output_index
-   );
+   ) noexcept;
 
 }
 

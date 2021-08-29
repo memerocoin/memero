@@ -43,12 +43,12 @@ namespace crypto {
   constexpr crypto::hash null_hash = {};
   constexpr crypto::hash8 null_hash8 = {};
 
-  hash sha3(const epee::blob::span);
+  hash sha3(const epee::blob::span) noexcept;
 
   /*
     Cryptonight hash functions
   */
-  hash tree_hash(const std::span<const hash> hashes);
+  hash tree_hash(const std::span<const hash> hashes) noexcept;
 }
 
 namespace std

@@ -18,13 +18,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace crypto {
 
-hash sha3(const epee::blob::span x) {
+hash sha3(const epee::blob::span x) noexcept {
   hash h;
   sha3_raw(x.data(), x.size(), h.data.data());
   return h;
 }
 
-hash tree_hash(const std::span<const hash> hashes) {
+hash tree_hash(const std::span<const hash> hashes) noexcept {
   hash root_hash;
   ::tree_hash(reinterpret_cast<const uint8_t (*)[HASH_SIZE]>(hashes.data()), hashes.size(), root_hash.data.data());
   return root_hash;

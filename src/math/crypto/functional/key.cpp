@@ -31,7 +31,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace crypto {
 
-  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) {
+  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) noexcept {
     public_key pub;
     const bool r = crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sk.data.data());
     if (0 == r) {
@@ -41,12 +41,12 @@ namespace crypto {
     }
   }
 
-  public_key to_pk(const secret_key& sk) {
+  public_key to_pk(const secret_key& sk) noexcept {
     return p2pk(multBase(sk));
   }
 
 
-  ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) {
+  ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) noexcept {
     const epee::blob::data hashData =
       epee::blob::data(derivation.data.data(), derivation.data.size())
       + epee::string_tools::string_to_blob(tools::get_varint_data(index));
@@ -55,7 +55,7 @@ namespace crypto {
   }
 
   secret_key derive_secret_key(const key_derivation &derivation, const size_t output_index,
-    const secret_key &base)
+    const secret_key &base) noexcept
   {
     assert(is_reduced(base));
 
@@ -63,12 +63,12 @@ namespace crypto {
     return s2sk(base + rct_scalar);
   }
 
-  ec_scalar hash_to_scalar(const std::span<const uint8_t> x) {
+  ec_scalar hash_to_scalar(const std::span<const uint8_t> x) noexcept {
     const auto h = sha3(x);
     return reduce(h2s(h));
   }
 
-  bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) {
+  bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) noexcept {
     const auto p = maybeSafePoint(pub);
 
     // if (!p) throw std::runtime_error("signature pubkey is invalid");
@@ -97,7 +97,7 @@ namespace crypto {
    , const std::optional<public_key> &B
    , const public_key &D
    , const signature &sig
-   )
+   ) noexcept
   {
     // sanity check
 
@@ -163,7 +163,7 @@ namespace crypto {
     return c2 - sig.c == s_0;
   }
 
-  key_image derive_key_image(const public_key &pub, const secret_key &sec) {
+  key_image derive_key_image(const public_key &pub, const secret_key &sec) noexcept {
     const ec_point h8 = viaFieldMult8(h2p(sha3(pub.data)));
     const ec_point p = mult(h8, sec);
     return p2img(p);
@@ -171,13 +171,13 @@ namespace crypto {
 
 
   // only sizeof(uint64_t) bytes of the scalar are used
-  ec_scalar int_to_scalar(const uint64_t in) {
+  ec_scalar int_to_scalar(const uint64_t in) noexcept {
     ec_scalar x = {};
     memcpy_swap64le(x.data.data(), &in, 1);
     return x;
   }
 
-  uint64_t scalar_to_int(const ec_scalar & in) {
+  uint64_t scalar_to_int(const ec_scalar & in) noexcept {
     uint64_t out = 0;
     memcpy_swap64le(&out, in.data.data(), 1);
     return out;
@@ -187,7 +187,8 @@ namespace crypto {
   (
    const ec_point_unsafe &unsafe_point
    , const secret_key &sk
-   ) {
+   ) noexcept
+  {
     const auto p = maybeSafePoint(unsafe_point);
     if (!p) return {};
 
@@ -202,7 +203,8 @@ namespace crypto {
    const key_derivation &derivation
    , const size_t output_index
    , const ec_point_unsafe &unsafe_base
-   ) {
+   ) noexcept
+  {
     const auto base = maybeSafePoint(unsafe_base);
     if (!base) return {};
 
@@ -217,7 +219,7 @@ namespace crypto {
    const ec_point_unsafe &unsafe_out_key
    , const key_derivation &derivation
    , const std::size_t output_index
-   )
+   ) noexcept
   {
     const auto out_key = maybeSafePoint(unsafe_out_key);
     if (!out_key) return {};
