@@ -33,6 +33,8 @@
 #include "rctTypes.hpp"
 #include "rctOps.hpp"
 
+#include "tools/epee/include/logging.hpp"
+
 #include <span>
 
 namespace rct
@@ -44,8 +46,14 @@ struct MultiexpData {
 
   MultiexpData() {}
   MultiexpData(const rct::rct_scalar s, const rct_point p): scalar(s), point(p) {
+    // small order group element * 8 = identity in cryptonote mult8
     // only check identity, since point can be the result of a scalar mult
-    assert(p != rct::identity);
+    // throw since we want to catch this
+    if (p == rct::identity) {
+      const std::string err = "identity point being used in multi exp data";
+      LOG_FATAL(err);
+      throw std::runtime_error(err);
+    }
   }
 };
 

@@ -113,6 +113,7 @@ int main(int argc, char const * argv[])
       return 0;
     }
 
+
     std::string config = command_line::get_arg(vm, daemon_args::arg_config_file);
     std::filesystem::path config_path(config);
     std::error_code ec;
