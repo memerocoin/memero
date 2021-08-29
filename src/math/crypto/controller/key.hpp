@@ -37,11 +37,6 @@ namespace crypto {
   //generates a random rct_scalar which can be used as a secret key or mask
   ec_scalar scalarGen();
 
-  /* Checks a private key and computes the corresponding public key.
-    */
-  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk);
-  public_key to_pk(const secret_key& sk);
-
   /* Generate a new key pair
    */
   std::pair<secret_key, public_key> generate_keys

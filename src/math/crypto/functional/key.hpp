@@ -106,6 +106,14 @@ namespace crypto {
   inline const crypto_data &h2d(const hash &x) { return (const crypto_data&)x; }
   inline const hash &d2h(const crypto_data &x) { return (const hash&)x; }
 
+
+
+
+  /* Checks a private key and computes the corresponding public key.
+   */
+  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk);
+  public_key to_pk(const secret_key& sk);
+
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index);
 
   secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &);

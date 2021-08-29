@@ -46,6 +46,21 @@
 
 namespace crypto {
 
+  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) {
+    public_key pub;
+    const bool r = crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sk.data.data());
+    if (0 == r) {
+      return pub;
+    } else {
+      return {};
+    }
+  }
+
+  public_key to_pk(const secret_key& sk) {
+    return p2pk(multBase(sk));
+  }
+
+
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) {
     const epee::blob::data hashData =
       epee::blob::data(derivation.data.data(), derivation.data.size())

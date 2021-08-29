@@ -51,20 +51,6 @@ extern "C" {
 
 namespace crypto {
 
-  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) {
-    public_key pub;
-    const bool r = crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sk.data.data());
-    if (0 == r) {
-      return pub;
-    } else {
-      return {};
-    }
-  }
-
-  public_key to_pk(const secret_key& sk) {
-    return p2pk(multBase(sk));
-  }
-
   /*
    * generate public and secret keys from a random 256-bit integer
    * TODO: allow specifying random value (for wallet recovery)
