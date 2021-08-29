@@ -3758,7 +3758,6 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
   std::vector<std::pair<uint32_t, std::vector<size_t>>> unused_transfers_indices_per_subaddr;
   std::vector<std::pair<uint32_t, std::vector<size_t>>> unused_dust_indices_per_subaddr;
   uint64_t needed_money;
-  uint64_t accumulated_fee, accumulated_outputs, accumulated_change;
   struct TX {
     std::vector<size_t> selected_transfers;
     std::vector<cryptonote::tx_destination_entry> dsts;
@@ -3926,9 +3925,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
 
   // start with an empty tx
   txes.push_back(TX());
-  accumulated_fee = 0;
-  accumulated_outputs = 0;
-  accumulated_change = 0;
+
   adding_fee = false;
   needed_fee = 0;
   std::vector<std::vector<wallet::logic::type::get_outs_entry>> outs;
@@ -3940,8 +3937,6 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
   // the destination, and one for change.
   LOG_PRINT_L2("checking preferred");
   std::vector<size_t> preferred_inputs;
-  uint64_t rct_outs_needed = 2 * (fake_outs_count + 1);
-  rct_outs_needed += 100; // some fudge factor since we don't know how many are locked
   {
     // this is used to build a tx that's 1 or 2 inputs, and 2 outputs, which
     // will get us a known fee.
@@ -3983,6 +3978,10 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
   std::vector<size_t>& unused_transfers_indices = unused_transfers_indices_per_subaddr[0].second;
 
   hwdev.set_mode(hw::device::TRANSACTION_CREATE_FAKE);
+
+  uint64_t accumulated_fee = 0;
+  uint64_t accumulated_change = 0;
+
   while ((!dsts.empty() && dsts[0].amount > 0) || adding_fee || !preferred_inputs.empty()) {
     TX &tx = txes.back();
 
@@ -4013,7 +4012,6 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
     // add this output to the list to spend
     tx.selected_transfers.push_back(idx);
     uint64_t available_amount = td.amount();
-    accumulated_outputs += available_amount;
 
     // clear any fake outs we'd already gathered, since we'll need a new set
     outs.clear();

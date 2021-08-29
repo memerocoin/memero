@@ -33,7 +33,7 @@ in
     name = "lolnero-build-environment";
     buildInputs = [
       gcc11
-      clang_12
+      llvmPackages_13.clang
       cmake git ccache
       boost175 openssl readline libsodium rapidjson
       gmock
