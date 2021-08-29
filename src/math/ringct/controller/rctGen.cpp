@@ -32,6 +32,7 @@
 #include "rctGen.hpp"
 
 #include "math/ringct/functional/rctOps.hpp"
+#include "math/crypto/controller/keyGen.hpp"
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 

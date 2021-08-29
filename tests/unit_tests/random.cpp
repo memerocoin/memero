@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 
-#include "math/crypto/key.hpp"
+#include "math/crypto/controller/keyGen.hpp"
 
 TEST(random32_unbiased, less_than_order)
 {

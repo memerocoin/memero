@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "math/crypto/key.hpp"
+#include "math/crypto/functional/key.hpp"
 
 #include "tools/serialization/containers.h"
 

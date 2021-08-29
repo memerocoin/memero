@@ -30,6 +30,7 @@
 
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/controller/rctGen.hpp"
+#include "math/crypto/controller/keyGen.hpp"
 
 #include "wallet/device/device_default.hpp"
 

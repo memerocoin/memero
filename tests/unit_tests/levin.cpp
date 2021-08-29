@@ -32,7 +32,7 @@
 #include <limits>
 #include <set>
 
-#include "math/crypto/key.hpp"
+#include "math/crypto/functional/key.hpp"
 #include "cryptonote/basic/connection_context.h"
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"

@@ -36,6 +36,8 @@
 
 #include "tools/common/base58.h"
 
+#include "math/crypto/controller/keyGen.hpp"
+
 
 
 namespace wallet {

@@ -30,8 +30,10 @@
 
 #include "tools/epee/include/string_tools.h"
 
-#include "math/crypto/key.hpp"
+#include "math/crypto/functional/key.hpp"
 #include "math/crypto/functional/hash.hpp"
+#include "math/crypto/controller/keyGen.hpp"
+
 #include <boost/algorithm/string.hpp>
 
 TEST(tx_proof, prove_verify_v2)

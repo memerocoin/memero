@@ -38,7 +38,7 @@
 
 #pragma once
 
-#include "math/crypto/key.hpp"  // for declaration of crypto::secret_key
+#include "math/crypto/functional/key.hpp"  // for declaration of crypto::secret_key
 #include "tools/epee/include/wipeable_string.h"
 
 
