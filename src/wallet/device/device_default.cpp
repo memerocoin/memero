@@ -104,12 +104,6 @@ namespace hw {
             return true;
         }
 
-        bool  device_default::get_public_address(cryptonote::account_public_address &pubkey) {
-             dfns();
-        }
-        bool  device_default::get_secret_keys(crypto::secret_key &viewkey , crypto::secret_key &spendkey)  {
-             dfns();
-        }
         /* ======================================================================= */
         /*                               SUB ADDRESS                               */
         /* ======================================================================= */
