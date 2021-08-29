@@ -42,10 +42,11 @@ namespace crypto {
     }
   };
 
+  struct ec_scalar; // for ^
   struct ec_point : ec_point_unsafe {
     ec_point operator+(const ec_point& x) const noexcept;
     ec_point operator-(const ec_point& x) const noexcept;
-    // ec_point operator*(const uint64_t x) const;
+    ec_point operator^(const ec_scalar& x) const noexcept;
   };
 
   struct ec_scalar_unnormalized : crypto_data {

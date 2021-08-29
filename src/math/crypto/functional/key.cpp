@@ -78,7 +78,7 @@ namespace crypto {
       return false;
     }
 
-    const ec_point r = mult(*p, sig.c) + multBase(sig.r);
+    const ec_point r = (*p ^ sig.c) + multBase(sig.r);
 
     if (r == identity) return false;
 
@@ -110,17 +110,17 @@ namespace crypto {
 
     // compute sig.c*R
 
-    const ec_point cR = mult(R, sig.c);
+    const ec_point cR = R ^ sig.c;
 
     const ec_point X = B
-      ? mult(*B, sig.r) + cR
+      ? (*B ^ sig.r) + cR
       : multBase(sig.r) + cR;
 
     // compute sig.c*D
-    const ec_point cD = mult(D, sig.c);
+    const ec_point cD = D ^ sig.c;
 
     // compute sig.r*A
-    const ec_point rA = mult(A, sig.r);
+    const ec_point rA = A ^ sig.r;
 
     // compute Y = sig.c*D + sig.r*A
     const ec_point Y = cD + rA;
@@ -165,7 +165,7 @@ namespace crypto {
 
   key_image derive_key_image(const public_key &pub, const secret_key &sec) noexcept {
     const ec_point h8 = viaFieldMult8(h2p(sha3(pub.data)));
-    const ec_point p = mult(h8, sec);
+    const ec_point p = h8 ^ sec;
     return p2img(p);
   }
 
@@ -193,7 +193,7 @@ namespace crypto {
     if (!p) return {};
 
     // here mult8 is really not needed
-    const key_derivation derivation = p2derivation(mult8Safe(mult(*p, sk)));
+    const key_derivation derivation = p2derivation(mult8Safe(*p ^ sk));
 
     return derivation;
   }

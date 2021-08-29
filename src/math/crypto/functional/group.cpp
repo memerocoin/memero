@@ -60,9 +60,9 @@ namespace crypto {
     return sub(*this, x);
   }
 
-  // ec_point ec_point::operator*(const uint64_t x) const {
-  //   return mult(*this, int_to_scalar(x));
-  // }
+  ec_point ec_point::operator^(const ec_scalar& x) const noexcept {
+    return mult(*this, x);
+  }
 
   ec_scalar ec_scalar::operator+(const ec_scalar& x) const noexcept {
     ec_scalar s;

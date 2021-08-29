@@ -124,8 +124,8 @@ namespace crypto {
       {
         prefix_hash
         , D
-        , B ? mult(*B, k) : multBase(k)
-        , mult(A, k)
+        , B ? (*B ^ k) : multBase(k)
+        , A ^ k
         , sha3(epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V2))
         , R
         , A
