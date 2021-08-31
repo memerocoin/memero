@@ -286,7 +286,7 @@ namespace device {
     return rct::hash_dataV_to_scalar(data);
   }
 
-  bool clsag_sign
+  rct::rct_scalar clsag_sign
   (
    const rct::rct_scalar &c
    , const rct::rct_scalar &a
@@ -294,16 +294,17 @@ namespace device {
    , const rct::rct_scalar &z
    , const rct::rct_scalar &mu_P
    , const rct::rct_scalar &mu_C
-   , rct::rct_scalar &s
    )
   {
+    rct::rct_scalar s;
+
     rct::rct_scalar s0_p_mu_P;
     s0_p_mu_P = mu_P * p;
     rct::rct_scalar s0_add_z_mu_C;
     s0_add_z_mu_C = mu_C * z + s0_p_mu_P;
     s = a - c * s0_add_z_mu_C;
 
-    return true;
+    return s;
   }
 
 

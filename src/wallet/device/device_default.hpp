@@ -111,7 +111,7 @@ namespace device {
 
   rct::rct_scalar clsag_hash(const crypto::dataS data);
 
-  bool clsag_sign
+  rct::rct_scalar clsag_sign
   (
     const rct::rct_scalar &c
     , const rct::rct_scalar &a
@@ -119,6 +119,5 @@ namespace device {
     , const rct::rct_scalar &z
     , const rct::rct_scalar &mu_P
     , const rct::rct_scalar &mu_C
-    , rct::rct_scalar &s
     );
 }

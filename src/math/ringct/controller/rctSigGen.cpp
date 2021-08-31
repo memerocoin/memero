@@ -213,7 +213,7 @@ namespace rct {
         }
 
         // Compute final scalar
-        device::clsag_sign(c,a,p,z,mu_P,mu_C,sig.s[idx]);
+        sig.s[idx] = device::clsag_sign(c,a,p,z,mu_P,mu_C);
 
         return sig;
     }
