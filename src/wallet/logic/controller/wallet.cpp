@@ -128,7 +128,7 @@ namespace wallet {
   * can be used prior to rewriting wallet keys file, to ensure user has entered the correct password
   *
   */
-  bool verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, hw::device &hwdev, uint64_t kdf_rounds)
+  bool verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, uint64_t kdf_rounds)
   {
     rapidjson::Document json;
     ::wallet::logic::type::wallet::keys_file_data keys_file_data;

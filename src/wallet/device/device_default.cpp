@@ -32,7 +32,6 @@
 
 #include "device_default.hpp"
 
-
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 
 #include "tools/epee/include/int-util.h"
@@ -40,70 +39,6 @@
 
 #include "math/ringct/controller/rctGen.hpp"
 #include "math/crypto/controller/keyGen.hpp"
-
-
-namespace hw {
-
-    namespace core {
-
-        device_default::device_default() { }
-
-        device_default::~device_default() { }
-
-        /* ======================================================================= */
-        /*                              SETUP/TEARDOWN                             */
-        /* ======================================================================= */
-        bool device_default::set_name(const std::string &name)  {
-            this->name = name;
-            return true;
-        }
-        const std::string device_default::get_name()  const {
-            return this->name;
-        }
-
-        bool device_default::init(void) {
-            return true;
-        }
-        bool device_default::release() {
-            return true;
-        }
-
-        bool device_default::connect(void) {
-            return true;
-        }
-        bool device_default::disconnect() {
-            return true;
-        }
-
-        bool  device_default::set_mode(device_mode mode) {
-            return device::set_mode(mode);
-        }
-
-        /* ======================================================================= */
-        /*  LOCKER                                                                 */
-        /* ======================================================================= */
-
-        void device_default::lock() { }
-
-        bool device_default::try_lock() { return true; }
-
-        void device_default::unlock() { }
-
-        /* ---------------------------------------------------------- */
-        static device_default *default_core_device = NULL;
-        void register_all(std::map<std::string, std::unique_ptr<device>> &registry) {
-            if (!default_core_device) {
-                default_core_device = new device_default();
-                default_core_device->set_name("default_core_device");
-
-            }
-            registry.insert(std::make_pair("default", std::unique_ptr<device>(default_core_device)));
-        }
-
-
-    }
-
-}
 
 
 namespace device {

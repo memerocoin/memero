@@ -166,8 +166,6 @@ namespace cryptonote
    , bool shuffle_outs
    )
   {
-    hw::device &hwdev = sender_account_keys.get_device();
-
     if (sources.empty())
     {
       LOG_ERROR("Empty sources");
@@ -207,7 +205,7 @@ namespace cryptonote
       keypair& in_ephemeral = in_contexts.back().in_ephemeral;
       crypto::key_image img;
       const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.dest);
-      if(!derive_key_image_helper(sender_account_keys, subaddresses, out_key, src_entr.real_out_tx_key, src_entr.real_out_additional_tx_keys, src_entr.real_output_in_tx_index, in_ephemeral,img, hwdev))
+      if(!derive_key_image_helper(sender_account_keys, subaddresses, out_key, src_entr.real_out_tx_key, src_entr.real_out_additional_tx_keys, src_entr.real_output_in_tx_index, in_ephemeral,img))
       {
         LOG_ERROR("Key image generation failed!");
         return false;

@@ -45,16 +45,6 @@ using namespace std;
 
 namespace cryptonote
 {
-
-  //-----------------------------------------------------------------
-  hw::device& account_keys::get_device() const  {
-    return *m_device;
-  }
-  //-----------------------------------------------------------------
-  void account_keys::set_device( hw::device &hwdev)  {
-    m_device = &hwdev;
-    LOG_CATEGORY_DEBUG("device", "account_keys::set_device device type: "<<typeid(hwdev).name());
-  }
   //-----------------------------------------------------------------
   static void derive_key(const crypto::chacha_key &base_key, crypto::chacha_key &key)
   {
@@ -128,11 +118,6 @@ namespace cryptonote
   //-----------------------------------------------------------------
   void account_base::deinit()
   {
-    try{
-      m_keys.get_device().disconnect();
-    } catch (const std::exception &e){
-      LOG_ERROR("Device disconnect exception: " << e.what());
-    }
   }
   //-----------------------------------------------------------------
   void account_base::forget_spend_key()

@@ -1170,9 +1170,6 @@ std::optional<epee::wipeable_string> simple_wallet::open_wallet(const boost::pro
     prefix = sw::tr("Opened wallet");
     message_writer(epee::console_color_white, true) <<
       prefix << ": " << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
-    if (m_wallet->get_account().get_device()) {
-       message_writer(epee::console_color_white, true) << "Wallet is on device: " << m_wallet->get_account().get_device().get_name();
-    }
   }
   catch (const std::exception& e)
   {
@@ -2190,11 +2187,6 @@ bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
 {
   std::vector<std::string> local_args = args_;
 
-  if (m_wallet->key_on_device() && m_wallet->get_account().get_device().get_type() != hw::device::TREZOR)
-  {
-    fail_msg_writer() << sw::tr("command not supported by HW wallet");
-    return true;
-  }
   if(local_args.size() != 1) {
     PRINT_USAGE(USAGE_GET_TX_KEY);
     return true;

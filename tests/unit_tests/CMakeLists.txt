@@ -65,7 +65,7 @@ gtest_discover_tests(
 
 
 add_executable(unit_tests_basic
-  device.cpp
+  # device.cpp
   account.cpp
   mnemonics.cpp
   bulletproofs.cpp

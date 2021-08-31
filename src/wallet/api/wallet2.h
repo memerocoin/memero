@@ -232,8 +232,7 @@ namespace tools
 
     cryptonote::network_type nettype() const { return m_nettype; }
     bool has_unknown_key_images() const;
-    bool key_on_device() const { return get_device_type() != hw::device::device_type::SOFTWARE; }
-    hw::device::device_type get_device_type() const { return m_key_device_type; }
+    bool key_on_device() const { return false; }
     bool reconnect_device();
 
     // locked & unlocked balance of given or current subaddress account
@@ -470,7 +469,7 @@ namespace tools
 
     void cache_tx_data(const cryptonote::transaction& tx, const crypto::hash &txid, tx_cache_data &tx_cache_data) const;
 
-    void init_type(hw::device::device_type device_type);
+    void init_type();
     void setup_new_blockchain();
     void create_keys_file(const std::string &wallet_, const epee::wipeable_string &password);
 
@@ -505,7 +504,6 @@ namespace tools
     std::recursive_mutex m_daemon_rpc_mutex;
 
     i_wallet2_callback* m_callback;
-    hw::device::device_type m_key_device_type;
     cryptonote::network_type m_nettype;
     uint64_t m_kdf_rounds;
     std::string seed_language; /*!< Language of the mnemonics (seed). */

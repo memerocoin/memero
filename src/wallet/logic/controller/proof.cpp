@@ -54,7 +54,6 @@ namespace proof {
    , const bool is_subaddress
    , const std::string &message
    , const std::optional<crypto::secret_key> view_secret_key
-   , hw::device &hwdev
    )
   {
     // determine if the address is found in the subaddress hash table (i.e. whether the proof is outbound or inbound)

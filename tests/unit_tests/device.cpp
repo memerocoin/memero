@@ -36,7 +36,6 @@
 
 TEST(device, name)
 {
-  hw::core::device_default dev;
   ASSERT_TRUE(dev.set_name("test"));
   ASSERT_EQ(dev.get_name(), "test");
 }

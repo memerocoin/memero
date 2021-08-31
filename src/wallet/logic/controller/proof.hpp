@@ -48,7 +48,6 @@ namespace proof {
    , const bool is_subaddress
    , const std::string &message
    , const std::optional<crypto::secret_key> view_secret_key
-   , hw::device &hwdev
    );
 
 } // proof

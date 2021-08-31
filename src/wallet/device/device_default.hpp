@@ -31,56 +31,6 @@
 
 #include "device.hpp"
 
-namespace hw {
-
-    namespace core {
-
-        void register_all(std::map<std::string, std::unique_ptr<device>> &registry);
-
-        class device_default : public hw::device {
-        public:
-            device_default();
-            ~device_default();
-
-            device_default(const device_default &device) = delete;
-            device_default& operator=(const device_default &device) = delete;
-
-            explicit operator bool() const override { return false; };
-
-             /* ======================================================================= */
-            /*                              SETUP/TEARDOWN                             */
-            /* ======================================================================= */
-            bool set_name(const std::string &name) override;
-            const std::string get_name() const override;
-
-            bool init(void) override;
-            bool release() override;
-
-            bool connect(void) override;
-            bool disconnect() override;
-
-            bool set_mode(device_mode mode) override;
-
-            device_type get_type() const override {return device_type::SOFTWARE;};
-
-            /* ======================================================================= */
-            /*  LOCKER                                                                 */
-            /* ======================================================================= */
-            void lock(void)  override;
-            void unlock(void) override;
-            bool try_lock(void) override;
-
-
-
-        };
-
-    }
-
-
-
-}
-
-
 namespace device {
   /* ======================================================================= */
   /*                             WALLET & ADDRESS                            */
