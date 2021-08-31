@@ -90,105 +90,6 @@ namespace hw {
         void device_default::unlock() { }
 
         /* ======================================================================= */
-        /*                               SUB ADDRESS                               */
-        /* ======================================================================= */
-
-        crypto::public_key device_default::get_subaddress_spend_public_key
-        (
-         const cryptonote::account_keys& keys
-         , const cryptonote::subaddress_index &index
-         )
-        {
-            if (index.is_zero())
-              return keys.m_account_address.m_spend_public_key;
-
-            // m = Hs(a || index_major || index_minor)
-            const crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
-
-            // M = m*G
-            const crypto::public_key M = crypto::p2pk(crypto::multBase(m));
-
-            // D = B + M
-            return crypto::p2pk(keys.m_account_address.m_spend_public_key + M);
-        }
-
-        std::vector<crypto::public_key> device_default::get_subaddress_spend_public_keys
-        (
-         const cryptonote::account_keys &keys
-         , uint32_t account
-         , uint32_t begin
-         , uint32_t end
-         )
-        {
-            LOG_ERROR_AND_THROW_UNLESS(begin <= end, "begin > end");
-
-            std::vector<crypto::public_key> pkeys;
-            pkeys.reserve(end - begin);
-            cryptonote::subaddress_index index = {account, begin};
-
-            const auto public_spend_key = keys.m_account_address.m_spend_public_key;
-            if (!is_valid_point(public_spend_key)) {
-              LOG_FATAL("public spend key is not on the main group");
-            }
-
-
-            for (uint32_t idx = begin; idx < end; ++idx)
-            {
-                index.minor = idx;
-                if (index.is_zero())
-                {
-                    pkeys.push_back(keys.m_account_address.m_spend_public_key);
-                    continue;
-                }
-                crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
-
-                // M = m*G
-                const crypto::ec_point mG = crypto::multBase(m);
-
-                // D = B + M
-                const crypto::public_key D = crypto::p2pk(public_spend_key + mG);
-
-                pkeys.push_back(D);
-            }
-            return pkeys;
-        }
-
-        cryptonote::account_public_address device_default::get_subaddress(const cryptonote::account_keys& keys, const cryptonote::subaddress_index &index) {
-            if (index.is_zero())
-              return keys.m_account_address;
-
-            crypto::public_key D = get_subaddress_spend_public_key(keys, index);
-
-            // C = a*D
-            crypto::public_key C = rct::rct_p2pk
-              (rct::multP(rct::pk2rct_p(D), rct::sk2rct_s(keys.m_view_secret_key)));
-
-            // result: (C, D)
-            cryptonote::account_public_address address;
-            address.m_view_public_key  = C;
-            address.m_spend_public_key = D;
-            return address;
-        }
-
-        crypto::secret_key device_default::get_subaddress_secret_key(const crypto::secret_key &a, const cryptonote::subaddress_index &index) {
-          const uint32_t major_i = SWAP32LE(index.major);
-          const uint32_t minor_i = SWAP32LE(index.minor);
-          const epee::blob::data major = epee::blob::data((uint8_t*)&major_i, sizeof(uint32_t));
-          const epee::blob::data minor = epee::blob::data((uint8_t*)&minor_i, sizeof(uint32_t));
-
-
-          // here trailing 0 is part of the HASH_KEY ..
-          const epee::blob::data hashData =
-            epee::string_tools::string_to_blob(config::HASH_KEY_SUBADDRESS)
-            + epee::blob::data({0})
-            + epee::blob::data(a.data.begin(), a.data.size())
-            + major
-            + minor;
-
-          return s2sk(crypto::hash_to_scalar(hashData));
-        }
-
-        /* ======================================================================= */
         /*                            DERIVATION & KEY                             */
         /* ======================================================================= */
 
@@ -337,4 +238,112 @@ namespace device {
     crypto::generate_chacha_key(data.data(), sizeof(data), key, kdf_rounds);
     return key;
   }
+
+  crypto::public_key get_subaddress_spend_public_key
+  (
+   const cryptonote::account_keys& keys
+   , const cryptonote::subaddress_index &index
+   )
+  {
+    if (index.is_zero())
+      return keys.m_account_address.m_spend_public_key;
+
+    // m = Hs(a || index_major || index_minor)
+    const crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
+
+    // M = m*G
+    const crypto::public_key M = crypto::p2pk(crypto::multBase(m));
+
+    // D = B + M
+    return crypto::p2pk(keys.m_account_address.m_spend_public_key + M);
+  }
+
+
+  std::vector<crypto::public_key> get_subaddress_spend_public_keys
+  (
+    const cryptonote::account_keys &keys
+    , const uint32_t account
+    , const uint32_t begin
+    , const uint32_t end
+    )
+  {
+    LOG_ERROR_AND_THROW_UNLESS(begin <= end, "begin > end");
+
+    std::vector<crypto::public_key> pkeys;
+    pkeys.reserve(end - begin);
+    cryptonote::subaddress_index index = {account, begin};
+
+    const auto public_spend_key = keys.m_account_address.m_spend_public_key;
+    if (!is_valid_point(public_spend_key)) {
+      LOG_FATAL("public spend key is not on the main group");
+    }
+
+
+    for (uint32_t idx = begin; idx < end; ++idx)
+    {
+      index.minor = idx;
+      if (index.is_zero())
+      {
+          pkeys.push_back(keys.m_account_address.m_spend_public_key);
+          continue;
+      }
+      crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
+
+      // M = m*G
+      const crypto::ec_point mG = crypto::multBase(m);
+
+      // D = B + M
+      const crypto::public_key D = crypto::p2pk(public_spend_key + mG);
+
+      pkeys.push_back(D);
+    }
+    return pkeys;
+  }
+
+  cryptonote::account_public_address get_subaddress
+  (
+   const cryptonote::account_keys& keys
+   , const cryptonote::subaddress_index &index
+   )
+  {
+    if (index.is_zero())
+      return keys.m_account_address;
+
+    crypto::public_key D = ::device::get_subaddress_spend_public_key(keys, index);
+
+    // C = a*D
+    crypto::public_key C = rct::rct_p2pk
+      (rct::multP(rct::pk2rct_p(D), rct::sk2rct_s(keys.m_view_secret_key)));
+
+    // result: (C, D)
+    cryptonote::account_public_address address;
+    address.m_view_public_key  = C;
+    address.m_spend_public_key = D;
+    return address;
+  }
+
+  crypto::secret_key get_subaddress_secret_key
+  (
+   const crypto::secret_key &sec
+   , const cryptonote::subaddress_index &index
+   )
+  {
+    const uint32_t major_i = SWAP32LE(index.major);
+    const uint32_t minor_i = SWAP32LE(index.minor);
+    const epee::blob::data major = epee::blob::data((uint8_t*)&major_i, sizeof(uint32_t));
+    const epee::blob::data minor = epee::blob::data((uint8_t*)&minor_i, sizeof(uint32_t));
+
+
+    // here trailing 0 is part of the HASH_KEY ..
+    const epee::blob::data hashData =
+      epee::string_tools::string_to_blob(config::HASH_KEY_SUBADDRESS)
+      + epee::blob::data({0})
+      + epee::blob::data(sec.data.begin(), sec.data.size())
+      + major
+      + minor;
+
+    return s2sk(crypto::hash_to_scalar(hashData));
+  }
+
+
 }

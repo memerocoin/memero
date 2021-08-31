@@ -73,10 +73,6 @@ namespace hw {
             /* ======================================================================= */
             /*                               SUB ADDRESS                               */
             /* ======================================================================= */
-            crypto::public_key  get_subaddress_spend_public_key(const cryptonote::account_keys& keys, const cryptonote::subaddress_index& index) override;
-            std::vector<crypto::public_key>  get_subaddress_spend_public_keys(const cryptonote::account_keys &keys, uint32_t account, uint32_t begin, uint32_t end) override;
-            cryptonote::account_public_address  get_subaddress(const cryptonote::account_keys& keys, const cryptonote::subaddress_index &index) override;
-            crypto::secret_key  get_subaddress_secret_key(const crypto::secret_key &sec, const cryptonote::subaddress_index &index) override;
 
             /* ======================================================================= */
             /*                            DERIVATION & KEY                             */
@@ -139,4 +135,30 @@ namespace hw {
 
 namespace device {
   crypto::chacha_key generate_chacha_key(const cryptonote::account_keys &keys, const uint64_t kdf_rounds);
+
+  crypto::public_key get_subaddress_spend_public_key
+  (
+   const cryptonote::account_keys& keys
+   , const cryptonote::subaddress_index& index
+   );
+
+  std::vector<crypto::public_key> get_subaddress_spend_public_keys
+  (
+   const cryptonote::account_keys &keys
+   , const uint32_t account
+   , const uint32_t begin
+   , const uint32_t end
+   );
+
+  cryptonote::account_public_address get_subaddress
+  (
+   const cryptonote::account_keys& keys
+   , const cryptonote::subaddress_index &index
+   );
+
+  crypto::secret_key get_subaddress_secret_key
+  (
+   const crypto::secret_key &sec
+   , const cryptonote::subaddress_index &index
+   );
 }
