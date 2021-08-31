@@ -42,8 +42,6 @@
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
-#include "wallet/device/device.hpp"
-
 TEST(bulletproofs, valid_zero)
 {
   rct::Bulletproof proof = bulletproof_MAKE(0, rct::skGen());

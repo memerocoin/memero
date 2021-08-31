@@ -40,7 +40,6 @@
 #include "tools/serialization/binary_utils.h"
 #include "math/ringct/controller/rctGen.hpp"
 
-#include "wallet/device/device.hpp"
 #include "wallet/logic/type/wallet.hpp"
 
 #include "gtest/gtest.h"

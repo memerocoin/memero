@@ -30,10 +30,6 @@
 
 #include "gtest/gtest.h"
 
-#include <cstdint>
-#include <algorithm>
-#include <sstream>
-
 #include "tools/epee/include/string_tools.h"
 
 #include "math/ringct/functional/rctTypes.hpp"
@@ -45,7 +41,9 @@
 
 #include "math/crypto/controller/random.hpp"
 
-#include "wallet/device/device.hpp"
+#include <cstdint>
+#include <algorithm>
+#include <sstream>
 
 
 using namespace std;

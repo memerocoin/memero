@@ -30,9 +30,6 @@
 
 #pragma once
 
-
-
-
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
 #include "tools/serialization/binary_archive.h"
@@ -41,8 +38,9 @@
 #include "tools/serialization/variant.h"
 
 #include "math/crypto/controller/keyGen.hpp"
+#include "math/ringct/functional/rctTypes.hpp"
 
-#include "wallet/device/device.hpp"
+#include "config/cryptonote.hpp"
 
 #include <boost/variant.hpp>
 
