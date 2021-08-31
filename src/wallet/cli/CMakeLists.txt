@@ -44,6 +44,7 @@ target_link_libraries(lolnero
   wallet_cli_support
 
   wallet_common
+  version
 
   ${EPEE_READLINE}
   ${Boost_PROGRAM_OPTIONS_LIBRARY}

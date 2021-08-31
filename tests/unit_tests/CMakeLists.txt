@@ -77,6 +77,7 @@ target_link_libraries(unit_tests_basic
   wallet_mnemonics
   tools_serialization
   epee_storage
+  version
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main
@@ -128,6 +129,8 @@ target_link_libraries(unit_tests_core
   tools_serialization
   network_p2p
   epee_storage
+  version
+
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main

@@ -28,12 +28,10 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(wallet_device
-  device.cpp
   device_default.cpp
 )
 
 target_link_libraries(wallet_device
   math_crypto
   math_ringct_basic
-  version
 )
