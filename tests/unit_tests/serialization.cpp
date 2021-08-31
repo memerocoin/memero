@@ -128,7 +128,7 @@ bool try_parse(const string &blob)
 }
 
 
-//initializes a rct_point matrix;
+//initializes a rct_scalar matrix;
 //first parameter is rows,
 //second is columns
 rct::rct_scalarM rct_scalarMInit(size_t rows, size_t cols) {
@@ -139,6 +139,11 @@ rct::rct_scalarM rct_scalarMInit(size_t rows, size_t cols) {
   }
   return rv;
 }
+
+rct::rct_point pkGen() {
+  return rct::skpkGen().second;
+}
+
 
 
 TEST(Serialization, BinaryArchiveInts) {
@@ -533,8 +538,8 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  ct_public_key0.dest = rct::pkGen();
-  ct_public_key0.commit_of_amount = rct::pkGen();
+  ct_public_key0.dest = pkGen();
+  ct_public_key0.commit_of_amount = pkGen();
 
   ASSERT_TRUE(serialization::dump_binary(ct_public_key0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, ct_public_key1));
@@ -542,8 +547,8 @@ TEST(Serialization, serializes_ringct_types)
 
   ct_public_keyv0 = std::vector<rct::ct_public_key>(14);
   for (size_t n = 0; n < ct_public_keyv0.size(); ++n) {
-    ct_public_keyv0[n].dest = rct::pkGen();
-    ct_public_keyv0[n].commit_of_amount = rct::pkGen();
+    ct_public_keyv0[n].dest = pkGen();
+    ct_public_keyv0[n].commit_of_amount = pkGen();
   }
 
   ASSERT_TRUE(serialization::dump_binary(ct_public_keyv0, blob));
@@ -559,8 +564,8 @@ TEST(Serialization, serializes_ringct_types)
   {
     ct_public_keym0[n] = std::vector<rct::ct_public_key>(11);
     for (size_t i = 0; i < ct_public_keym0[n].size(); ++i) {
-      ct_public_keym0[n][i].dest = rct::pkGen();
-      ct_public_keym0[n][i].commit_of_amount = rct::pkGen();
+      ct_public_keym0[n][i].dest = pkGen();
+      ct_public_keym0[n][i].commit_of_amount = pkGen();
     }
   }
   ASSERT_TRUE(serialization::dump_binary(ct_public_keym0, blob));

@@ -52,8 +52,9 @@ using namespace std;
 using namespace crypto;
 using namespace rct;
 
-
-
+rct::rct_point pkGen() {
+  return rct::skpkGen().second;
+}
 
 size_t populateRingsSimpleDummy(ct_public_keyV& mixRing, const ct_public_key inPk, const size_t mixin) {
   size_t index = ((size_t)std::rand()) % (mixin + 1);

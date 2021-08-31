@@ -70,12 +70,6 @@ namespace rct {
     return rv;
   }
 
-  //generates a random curve point (for testing)
-  rct_point pkGen() {
-    rct_scalar sk = skGen();
-    return multG(sk);
-  }
-
   //generates a random secret and corresponding public key
   std::pair<rct_scalar, rct_point> skpkGen() {
     const rct_scalar sk = skGen();
@@ -89,19 +83,6 @@ namespace rct {
 
     const rct_scalar am = int_to_scalar(amount);
     const rct_point bH = multH(am);
-
-    return
-      {
-        {addr_sk, blinding_factor_sk}
-        , {addr_pk, blinding_factor_pk + bH}
-      };
-  }
-
-
-  //generates a <secret , public> / Pedersen commitment but takes bH as input
-  std::pair<ct_secret_key, ct_public_key> ctskpkGen(const rct_point bH) {
-    const auto [addr_sk, addr_pk] = skpkGen();
-    const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
     return
       {

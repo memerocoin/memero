@@ -44,14 +44,10 @@ namespace rct {
   rct_scalarV skvGen(size_t rows );
 
   //generates a random curve point (for testing)
-  rct_point pkGen();
   std::pair<rct_scalar, rct_point> skpkGen();
 
   //generates a <secret , public> / Pedersen commitment to the amount
   std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount);
-
-  //this one is mainly for testing, can take arbitrary amounts..
-  std::pair<ct_secret_key, ct_public_key> ctskpkGen(const rct_point bH);
 
   //generates a random uint long long
   amount_t randXmrAmount(const amount_t upperlimit);
