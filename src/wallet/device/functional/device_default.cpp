@@ -197,15 +197,7 @@ namespace device {
    , const rct::rct_scalar &mu_C
    )
   {
-    rct::rct_scalar s;
-
-    rct::rct_scalar s0_p_mu_P;
-    s0_p_mu_P = mu_P * p;
-    rct::rct_scalar s0_add_z_mu_C;
-    s0_add_z_mu_C = mu_C * z + s0_p_mu_P;
-    s = a - c * s0_add_z_mu_C;
-
-    return s;
+    return a - c * (mu_C * z + mu_P * p);
   }
 
 
