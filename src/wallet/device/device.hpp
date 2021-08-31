@@ -142,7 +142,6 @@ namespace hw {
         /* ======================================================================= */
         /*                             WALLET & ADDRESS                            */
         /* ======================================================================= */
-        virtual bool  generate_chacha_key(const cryptonote::account_keys &keys, crypto::chacha_key &key, uint64_t kdf_rounds) = 0;
 
         /* ======================================================================= */
         /*                               SUB ADDRESS                               */

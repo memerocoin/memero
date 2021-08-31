@@ -40,6 +40,8 @@
 #include "wallet/logic/controller/proof.hpp"
 #include "wallet/logic/controller/wallet.hpp"
 
+#include "wallet/device/device_default.hpp"
+
 #include "wallet/mnemonics/electrum-words.h"
 
 #include "network/rpc/core_rpc_server_error_codes.h"
@@ -2734,8 +2736,8 @@ void wallet2::set_offline(bool offline)
 //----------------------------------------------------------------------------------------------------
 bool wallet2::generate_chacha_key_from_secret_keys(crypto::chacha_key &key) const
 {
-  hw::device &hwdev =  m_account.get_device();
-  return hwdev.generate_chacha_key(m_account.get_keys(), key, m_kdf_rounds);
+  key = device::generate_chacha_key(m_account.get_keys(), m_kdf_rounds);
+  return true;
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::generate_chacha_key_from_password(const epee::wipeable_string &pass, crypto::chacha_key &key) const

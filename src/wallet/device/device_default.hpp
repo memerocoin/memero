@@ -71,11 +71,6 @@ namespace hw {
             bool try_lock(void) override;
 
             /* ======================================================================= */
-            /*                             WALLET & ADDRESS                            */
-            /* ======================================================================= */
-            bool  generate_chacha_key(const cryptonote::account_keys &keys, crypto::chacha_key &key, uint64_t kdf_rounds) override;
-
-            /* ======================================================================= */
             /*                               SUB ADDRESS                               */
             /* ======================================================================= */
             crypto::public_key  get_subaddress_spend_public_key(const cryptonote::account_keys& keys, const cryptonote::subaddress_index& index) override;
@@ -141,3 +136,7 @@ namespace hw {
 
 }
 
+
+namespace device {
+  crypto::chacha_key generate_chacha_key(const cryptonote::account_keys &keys, const uint64_t kdf_rounds);
+}
