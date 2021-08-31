@@ -43,6 +43,8 @@ namespace crypto {
   struct signature {
     ec_scalar c, r;
 
+    bool operator==(const signature&) const = default;
+
     bool operator==(const signature_unnormalized &x) const noexcept {
       return c == x.c && r == x.r;
     }

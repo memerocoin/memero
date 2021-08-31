@@ -28,25 +28,32 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include <cstring>
-#include <cstdint>
-#include <cstdio>
-#include <iostream>
-#include <vector>
-#include <boost/foreach.hpp>
+#include "unit_tests_utils.h"
 
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
+
 #include "tools/serialization/binary_archive.h"
 #include "tools/serialization/json_archive.h"
 #include "tools/serialization/variant.h"
 #include "tools/serialization/containers.h"
 #include "tools/serialization/binary_utils.h"
+#include "math/ringct/controller/rctGen.hpp"
 
-#include "gtest/gtest.h"
-#include "unit_tests_utils.h"
 #include "wallet/device/device.hpp"
 #include "wallet/logic/type/wallet.hpp"
+
+#include "gtest/gtest.h"
+
+#include <boost/foreach.hpp>
+
+#include <cstring>
+#include <cstdint>
+#include <cstdio>
+#include <iostream>
+#include <vector>
+
+
 
 using namespace std;
 using namespace crypto;
@@ -119,6 +126,20 @@ bool try_parse(const string &blob)
   Struct1 s1;
   return serialization::parse_binary(blob, s1);
 }
+
+
+//initializes a rct_point matrix;
+//first parameter is rows,
+//second is columns
+rct::rct_scalarM rct_scalarMInit(size_t rows, size_t cols) {
+  rct::rct_scalarM rv(cols);
+  size_t i = 0;
+  for (i = 0 ; i < cols ; i++) {
+    rv[i] = rct::rct_scalarV(rows);
+  }
+  return rv;
+}
+
 
 TEST(Serialization, BinaryArchiveInts) {
   uint64_t x = 0xff00000000, x1;
@@ -294,7 +315,7 @@ namespace
   std::vector<T> linearize_vector2(const std::vector< std::vector<T> >& vec_vec)
   {
     std::vector<T> res;
-    BOOST_FOREACH(const auto& vec, vec_vec)
+    for(const auto& vec: vec_vec)
     {
       res.insert(res.end(), vec.begin(), vec.end());
     }
@@ -466,9 +487,9 @@ TEST(Serialization, serializes_transacion_signatures_correctly)
 TEST(Serialization, serializes_ringct_types)
 {
   string blob;
-  rct::rct_point key0, key1;
-  rct::rct_pointV keyv0, keyv1;
-  rct::rct_pointM keym0, keym1;
+  rct::rct_scalar key0, key1;
+  rct::rct_scalarV keyv0, keyv1;
+  rct::rct_scalarM keym0, keym1;
   rct::ct_public_key ct_public_key0, ct_public_key1;
   rct::ct_public_keyV ct_public_keyv0, ct_public_keyv1;
   rct::ct_public_keyM ct_public_keym0, ct_public_keym1;
@@ -477,14 +498,14 @@ TEST(Serialization, serializes_ringct_types)
   rct::rctSig s0, s1;
   cryptonote::transaction tx0, tx1;
 
-  key0 = rct::s2k(rct::skGen());
+  key0 = rct::skGen();
   ASSERT_TRUE(serialization::dump_binary(key0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, key1));
   ASSERT_TRUE(key0 == key1);
 
-  keyv0 = rct::sv2kv(rct::skvGen(30));
+  keyv0 = rct::skvGen(30);
   for (size_t n = 0; n < keyv0.size(); ++n)
-    keyv0[n] = rct::s2k(rct::skGen());
+    keyv0[n] = rct::skGen();
   ASSERT_TRUE(serialization::dump_binary(keyv0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, keyv1));
   ASSERT_TRUE(keyv0.size() == keyv1.size());
@@ -493,13 +514,16 @@ TEST(Serialization, serializes_ringct_types)
     ASSERT_TRUE(keyv0[n] == keyv1[n]);
   }
 
-  keym0 = rct::rct_pointMInit(9, 12);
+  keym0 = rct_scalarMInit(9, 12);
+
   for (size_t n = 0; n < keym0.size(); ++n)
     for (size_t i = 0; i < keym0[n].size(); ++i)
-      keym0[n][i] = rct::s2k(rct::skGen());
+      keym0[n][i] = rct::skGen();
+
   ASSERT_TRUE(serialization::dump_binary(keym0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, keym1));
   ASSERT_TRUE(keym0.size() == keym1.size());
+
   for (size_t n = 0; n < keym0.size(); ++n)
   {
     ASSERT_TRUE(keym0[n].size() == keym1[n].size());
@@ -509,14 +533,19 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  rct::skpkGen(ct_public_key0.dest, ct_public_key0.mask);
+  ct_public_key0.dest = rct::pkGen();
+  ct_public_key0.commit_of_amount = rct::pkGen();
+
   ASSERT_TRUE(serialization::dump_binary(ct_public_key0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, ct_public_key1));
   ASSERT_TRUE(!memcmp(&ct_public_key0, &ct_public_key1, sizeof(ct_public_key0)));
 
   ct_public_keyv0 = std::vector<rct::ct_public_key>(14);
-  for (size_t n = 0; n < ct_public_keyv0.size(); ++n)
-    rct::skpkGen(ct_public_keyv0[n].dest, ct_public_keyv0[n].mask);
+  for (size_t n = 0; n < ct_public_keyv0.size(); ++n) {
+    ct_public_keyv0[n].dest = rct::pkGen();
+    ct_public_keyv0[n].commit_of_amount = rct::pkGen();
+  }
+
   ASSERT_TRUE(serialization::dump_binary(ct_public_keyv0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, ct_public_keyv1));
   ASSERT_TRUE(ct_public_keyv0.size() == ct_public_keyv1.size());
@@ -529,8 +558,10 @@ TEST(Serialization, serializes_ringct_types)
   for (size_t n = 0; n < ct_public_keym0.size(); ++n)
   {
     ct_public_keym0[n] = std::vector<rct::ct_public_key>(11);
-    for (size_t i = 0; i < ct_public_keym0[n].size(); ++i)
-      rct::skpkGen(ct_public_keym0[n][i].dest, ct_public_keym0[n][i].mask);
+    for (size_t i = 0; i < ct_public_keym0[n].size(); ++i) {
+      ct_public_keym0[n][i].dest = rct::pkGen();
+      ct_public_keym0[n][i].commit_of_amount = rct::pkGen();
+    }
   }
   ASSERT_TRUE(serialization::dump_binary(ct_public_keym0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, ct_public_keym1));
@@ -544,12 +575,10 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  ecdh0.mask = rct::s2k(rct::skGen());
-  ecdh0.amount = rct::s2k(rct::skGen());
+  ecdh0.masked_amount = rct::skGen();
   ASSERT_TRUE(serialization::dump_binary(ecdh0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, ecdh1));
-  ASSERT_TRUE(!memcmp(&ecdh0.mask, &ecdh1.mask, sizeof(ecdh0.mask)));
-  ASSERT_TRUE(!memcmp(&ecdh0.amount, &ecdh1.amount, sizeof(ecdh0.amount)));
+  ASSERT_TRUE(!memcmp(&ecdh0.masked_amount, &ecdh1.masked_amount, sizeof(ecdh0.masked_amount)));
 
   // create a full rct signature to use its innards
   vector<uint64_t> inamounts;
@@ -566,23 +595,25 @@ TEST(Serialization, serializes_ringct_types)
   sc.push_back(sctmp);
   pc.push_back(pctmp);
   vector<uint64_t> amounts;
-  rct::rct_pointV amount_keys;
+  rct::rct_scalarV amount_keys;
   //add output 500
   amounts.push_back(500);
   amount_keys.push_back(rct::hash_to_scalar(rct::zero));
   rct::rct_pointV destinations;
-  rct::rct_point Sk, Pk;
-  rct::skpkGen(Sk, Pk);
+  rct::rct_scalar Sk;
+  rct::rct_point Pk;
+  std::tie(Sk, Pk) = rct::skpkGen();
   destinations.push_back(Pk);
   //add output for 12500
   amounts.push_back(12500);
   amount_keys.push_back(rct::hash_to_scalar(rct::zero));
-  rct::skpkGen(Sk, Pk);
+  std::tie(Sk, Pk) = rct::skpkGen();
   destinations.push_back(Pk);
 
   ASSERT_TRUE(serialization::dump_binary(clsag0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, clsag1));
   ASSERT_TRUE(clsag0.s.size() == clsag1.s.size());
+
   for (size_t n = 0; n < clsag0.s.size(); ++n)
   {
     ASSERT_TRUE(clsag0.s[n] == clsag1.s[n]);

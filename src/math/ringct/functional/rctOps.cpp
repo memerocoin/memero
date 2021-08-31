@@ -49,22 +49,6 @@
 
 namespace rct {
 
-  //Various rct_point initialization functions
-
-  //initializes a rct_point matrix;
-  //first parameter is rows,
-  //second is columns
-  rct_pointM rct_pointMInit(size_t rows, size_t cols) {
-    rct_pointM rv(cols);
-    size_t i = 0;
-    for (i = 0 ; i < cols ; i++) {
-      rv[i] = rct_pointV(rows);
-    }
-    return rv;
-  }
-
-
-
   rct_point commit(const rct_scalar mask, const amount_t amount) {
     return addMultG_H(mask ,int_to_scalar(amount));
   }

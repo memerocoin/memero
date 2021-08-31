@@ -55,13 +55,6 @@ namespace rct {
   //Creates a zero elliptic curve point
   constexpr rct_point identity = I;
 
-  //initializes a rct_point matrix;
-  //first parameter is rows,
-  //second is columns
-  rct_pointM rct_pointMInit(size_t rows, size_t cols);
-
-  //Various rct_point generation functions
-
   // make a pedersen commitment with given key
   // generates C = mask * G + amount * H
   rct_point commit(const rct_scalar mask, const amount_t amount);

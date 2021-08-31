@@ -64,18 +64,19 @@ namespace rct {
       rct_scalar operator*(const rct_scalar& y) const;
     };
 
-    using rct_pointV = std::vector<rct_point>; //vector of keys
-    using rct_pointM = std::vector<rct_pointV>; //matrix of keys (indexed by column first)
-    using rct_pointS = std::span<const rct_point>; //vector of keys
-    using rct_pointL = std::list<const rct_point>; //vector of keys
+    using rct_pointV = std::vector<rct_point>;
+    using rct_pointM = std::vector<rct_pointV>;
+    using rct_pointS = std::span<const rct_point>;
+    using rct_pointL = std::list<const rct_point>;
 
-    using rct_scalarV = std::vector<rct_scalar>; //vector of keys
-    using rct_scalarS = std::span<const rct_scalar>; //vector of keys
-    using rct_scalarL = std::list<rct_scalar>; //vector of keys
+    using rct_scalarV = std::vector<rct_scalar>;
+    using rct_scalarM = std::vector<rct_scalarV>;
+    using rct_scalarS = std::span<const rct_scalar>;
+    using rct_scalarL = std::list<rct_scalar>;
 
-    using inv8V = std::vector<inv8>; //vector of keys
-    using inv8S = std::span<const inv8>; //vector of keys
-    using inv8L = std::list<const inv8>; //vector of keys
+    using inv8V = std::vector<inv8>;
+    using inv8S = std::span<const inv8>;
+    using inv8L = std::list<const inv8>;
 
 
     // containers For CT operations

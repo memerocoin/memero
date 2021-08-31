@@ -107,7 +107,7 @@ namespace crypto {
     const ec_scalar k = scalarGen();
 
     // if B is not present
-    static const ec_point zero = {};
+    constexpr ec_point zero = {};
 
     // struct s_comm_2 {
     //   hash msg;
