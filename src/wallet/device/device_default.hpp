@@ -97,18 +97,6 @@ namespace device {
   , crypto::public_key &out_eph_public_key
   );
 
-  bool clsag_prepare
-  (
-    const rct::rct_scalar &p
-    , const rct::rct_scalar &z
-    , rct::rct_point &I
-    , rct::rct_point &D
-    , const rct::rct_point &H
-    , rct::rct_scalar &a
-    , rct::rct_point &aG
-    , rct::rct_point &aH
-    );
-
   rct::rct_scalar clsag_hash(const crypto::dataS data);
 
   rct::rct_scalar clsag_sign

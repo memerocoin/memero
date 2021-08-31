@@ -263,25 +263,6 @@ namespace device {
     return true;
   }
 
-  bool clsag_prepare
-  (
-   const rct::rct_scalar &p
-   , const rct::rct_scalar &z
-   , rct::rct_point &I
-   , rct::rct_point &D
-   , const rct::rct_point &H
-   , rct::rct_scalar &a
-   , rct::rct_point &aG
-   , rct::rct_point &aH
-   )
-  {
-    std::tie(a, aG) = rct::skpkGen(); // aG = a*G
-    aH = rct::multP(H, a); // aH = a*H
-    I = rct::multP(H, p); // I = p*H
-    D = rct::multP(H, z); // D = z*H
-    return true;
-  }
-
   rct::rct_scalar clsag_hash(const crypto::dataS data) {
     return rct::hash_dataV_to_scalar(data);
   }

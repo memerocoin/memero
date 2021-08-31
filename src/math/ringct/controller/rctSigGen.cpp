@@ -101,16 +101,12 @@ namespace rct {
         LOG_ERROR_AND_THROW_UNLESS(idx < n, "Signing index out of range!");
 
         // mages images
-        rct_point H = hash_to_point_via_field(P[idx]);
+        const rct_point H = hash_to_point_via_field(P[idx]);
 
-        rct_point D;
-
-        // Initial values
-        rct_scalar a;
-        rct_point aG;
-        rct_point aH;
-
-        device::clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
+        const auto[a, aG] = rct::skpkGen();
+        const rct_point aH = H ^ a;
+        sig.I = H ^ p;
+        const rct_point D = H ^ z;
 
         // Offset key image
         sig.D = D ^ rct::s_inv_eight;
