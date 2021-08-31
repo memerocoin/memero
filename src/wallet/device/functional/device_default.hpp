@@ -76,20 +76,4 @@ namespace device {
   /* ======================================================================= */
 
   bool verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key);
-
-  /* ======================================================================= */
-  /*                               TRANSACTION                               */
-  /* ======================================================================= */
-
-  rct::rct_scalar clsag_hash(const crypto::dataS data);
-
-  rct::rct_scalar clsag_sign
-  (
-    const rct::rct_scalar &c
-    , const rct::rct_scalar &a
-    , const rct::rct_scalar &p
-    , const rct::rct_scalar &z
-    , const rct::rct_scalar &mu_P
-    , const rct::rct_scalar &mu_C
-    );
 }

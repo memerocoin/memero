@@ -178,27 +178,4 @@ namespace device {
     return public_key == calculated_pub;
   }
 
-  /* ======================================================================= */
-  /*                               TRANSACTION                               */
-  /* ======================================================================= */
-
-
-  rct::rct_scalar clsag_hash(const crypto::dataS data) {
-    return rct::hash_dataV_to_scalar(data);
-  }
-
-  rct::rct_scalar clsag_sign
-  (
-   const rct::rct_scalar &c
-   , const rct::rct_scalar &a
-   , const rct::rct_scalar &p
-   , const rct::rct_scalar &z
-   , const rct::rct_scalar &mu_P
-   , const rct::rct_scalar &mu_C
-   )
-  {
-    return a - c * (mu_C * z + mu_P * p);
-  }
-
-
 }

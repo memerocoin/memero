@@ -155,7 +155,7 @@ namespace rct {
         c_to_hash.push_back(aH);
 
 
-        rct_scalar c = device::clsag_hash(c_to_hash);
+        rct_scalar c = rct::hash_dataV_to_scalar(c_to_hash);
 
         size_t i = (idx + 1) % n;
         if (i == 0) {
@@ -200,7 +200,7 @@ namespace rct {
           c_to_hash[2*n+3] = L;
           c_to_hash[2*n+4] = R;
           // need to be remembered
-          c = device::clsag_hash(c_to_hash);
+          c = rct::hash_dataV_to_scalar(c_to_hash);
 
           i = (i + 1) % n;
           if (i == 0) {
@@ -209,7 +209,7 @@ namespace rct {
         }
 
         // Compute final scalar
-        sig.s[idx] = device::clsag_sign(c,a,p,z,mu_P,mu_C);
+        sig.s[idx] = a - c * (mu_C * z + mu_P * p);
 
         return sig;
     }
