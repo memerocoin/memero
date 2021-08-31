@@ -413,42 +413,4 @@ namespace rct {
     }
 
 
-
-
-    size_t populateRingsSimple(ct_public_keyV& mixRing, const ct_public_key inPk, const size_t mixin) {
-      size_t index = ((size_t)std::rand()) % (mixin + 1);
-      for (size_t i = 0; i <= mixin; i++) {
-        if (i != index) {
-          mixRing[i] = {pkGen(), pkGen()};
-        } else {
-          mixRing[i] = inPk;
-        }
-      }
-      return index;
-    }
-
-    rctSig genRctSimple
-    (
-     const crypto::hash message
-     , const ct_secret_keyV inSk
-     , const ct_public_keyV inPk
-     , const rct_pointV destinations
-     , const std::vector<amount_t> inamounts
-     , const std::vector<amount_t> outamounts
-     , const rct_scalarV amount_keys
-     , const amount_t txnFee
-     , const size_t mixin
-     ) {
-        std::vector<size_t> index;
-        index.resize(inPk.size());
-        ct_public_keyM mixRing;
-        mixRing.resize(inPk.size());
-        for (size_t i = 0; i < inPk.size(); ++i) {
-          mixRing[i].resize(mixin+1);
-          index[i] = populateRingsSimple(mixRing[i], inPk[i], mixin);
-        }
-        return genRctSimple
-          (message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index).first;
-    }
-
 }
