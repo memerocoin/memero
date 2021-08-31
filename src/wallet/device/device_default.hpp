@@ -70,15 +70,6 @@ namespace hw {
             void unlock(void) override;
             bool try_lock(void) override;
 
-            /* ======================================================================= */
-            /*                               SUB ADDRESS                               */
-            /* ======================================================================= */
-
-            /* ======================================================================= */
-            /*                            DERIVATION & KEY                             */
-            /* ======================================================================= */
-            bool  verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key)  override;
-
 
             /* ======================================================================= */
             /*                               TRANSACTION                               */
@@ -134,7 +125,15 @@ namespace hw {
 
 
 namespace device {
+  /* ======================================================================= */
+  /*                             WALLET & ADDRESS                            */
+  /* ======================================================================= */
+
   crypto::chacha_key generate_chacha_key(const cryptonote::account_keys &keys, const uint64_t kdf_rounds);
+
+  /* ======================================================================= */
+  /*                               SUB ADDRESS                               */
+  /* ======================================================================= */
 
   crypto::public_key get_subaddress_spend_public_key
   (
@@ -161,4 +160,11 @@ namespace device {
    const crypto::secret_key &sec
    , const cryptonote::subaddress_index &index
    );
+
+  /* ======================================================================= */
+  /*                            DERIVATION & KEY                             */
+  /* ======================================================================= */
+
+  bool verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key);
+
 }

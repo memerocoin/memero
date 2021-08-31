@@ -90,15 +90,6 @@ namespace hw {
         void device_default::unlock() { }
 
         /* ======================================================================= */
-        /*                            DERIVATION & KEY                             */
-        /* ======================================================================= */
-
-        bool  device_default::verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) {
-            const auto calculated_pub = crypto::to_maybe_pk(secret_key);
-            return public_key == calculated_pub;
-        }
-
-        /* ======================================================================= */
         /*                               TRANSACTION                               */
         /* ======================================================================= */
 
@@ -239,6 +230,11 @@ namespace device {
     return key;
   }
 
+
+  /* ======================================================================= */
+  /*                               SUB ADDRESS                               */
+  /* ======================================================================= */
+
   crypto::public_key get_subaddress_spend_public_key
   (
    const cryptonote::account_keys& keys
@@ -345,5 +341,13 @@ namespace device {
     return s2sk(crypto::hash_to_scalar(hashData));
   }
 
+  /* ======================================================================= */
+  /*                            DERIVATION & KEY                             */
+  /* ======================================================================= */
+
+  bool verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) {
+    const auto calculated_pub = crypto::to_maybe_pk(secret_key);
+    return public_key == calculated_pub;
+  }
 
 }

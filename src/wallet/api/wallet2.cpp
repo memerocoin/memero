@@ -2480,9 +2480,9 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
   }
   const cryptonote::account_keys& keys = m_account.get_keys();
   hw::device &hwdev = m_account.get_device();
-  r = r && hwdev.verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
+  r = r && device::verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
   if (hwdev.device_protocol() != hw::device::PROTOCOL_COLD)
-    r = r && hwdev.verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
+    r = r && device::verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
   THROW_WALLET_EXCEPTION_IF(!r, error::wallet_files_doesnt_correspond, m_keys_file, m_wallet_file);
 
   if (r)
