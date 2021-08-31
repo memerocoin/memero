@@ -149,6 +149,88 @@ namespace cryptonote
     //  << "), current_block_size=" << current_block_size << ", already_generated_coins=" << already_generated_coins << ", tx_id=" << get_transaction_hash(tx), LOG_LEVEL_2);
     return true;
   }
+
+  bool generate_output_ephemeral_keys
+  (
+   const size_t tx_version
+   , const cryptonote::account_keys &sender_account_keys
+   , const crypto::public_key &txkey_pub
+   ,  const crypto::secret_key &tx_key
+   , const cryptonote::tx_destination_entry &dst_entr
+   , const std::optional<cryptonote::account_public_address> &change_addr
+   , const size_t output_index
+   , const bool &need_additional_txkeys
+   , const std::vector<crypto::secret_key> &additional_tx_keys
+   , std::vector<crypto::public_key> &additional_tx_public_keys
+   , rct::rct_scalarV &amount_keys
+   , crypto::public_key &out_eph_public_key
+   )
+  {
+    std::optional<crypto::key_derivation> derivation;
+
+    // make additional tx pubkey if necessary
+    cryptonote::keypair additional_txkey;
+    if (need_additional_txkeys)
+    {
+      additional_txkey.sec = additional_tx_keys[output_index];
+      if (dst_entr.is_subaddress)
+        additional_txkey.pub = rct::rct_p2pk(rct::multP(rct::pk2rct_p(dst_entr.addr.m_spend_public_key), rct::sk2rct_s(additional_txkey.sec)));
+      else
+        additional_txkey.pub = rct::rct_p2pk(rct::multG(rct::sk2rct_s(additional_txkey.sec)));
+    }
+
+    if (change_addr && dst_entr.addr == *change_addr)
+    {
+    // sending change to yourself; derivation = a*R
+      derivation = crypto::derive_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         derivation
+         , false
+         , "at creation outs: failed to derive_key_derivation("
+         << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")"
+         );
+    }
+    else
+    {
+    // sending to the recipient; derivation = r*A (or s*C in the subaddress scheme)
+      derivation = derive_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         derivation
+         , false
+         , "at creation outs: failed to derive_key_derivation("
+         << dst_entr.addr.m_view_public_key
+         << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")"
+         );
+    }
+
+    if (need_additional_txkeys)
+    {
+      additional_tx_public_keys.push_back(additional_txkey.pub);
+    }
+
+    if (tx_version > 1)
+    {
+      const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(*derivation, output_index));
+      amount_keys.push_back(scalar1);
+    }
+
+    const auto eph_pk = crypto::derive_tx_output_public_key
+      (*derivation, output_index, dst_entr.addr.m_spend_public_key);
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       eph_pk
+       , false
+       , "at creation outs: failed to derive_tx_output_public_key("
+       << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
+       );
+
+    out_eph_public_key = *eph_pk;
+    return true;
+  }
+
   //---------------------------------------------------------------
   bool construct_tx_with_tx_key
   (
@@ -291,7 +373,7 @@ namespace cryptonote
       LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, false, "Destination with wrong amount: " << dst_entr.amount);
       crypto::public_key out_eph_public_key;
 
-      device::generate_output_ephemeral_keys(tx.version,sender_account_keys, txkey_pub, tx_key,
+      generate_output_ephemeral_keys(tx.version,sender_account_keys, txkey_pub, tx_key,
                                            dst_entr, change_addr, output_index,
                                            need_additional_txkeys, additional_tx_keys,
                                            additional_tx_public_keys, amount_keys, out_eph_public_key);
