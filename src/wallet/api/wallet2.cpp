@@ -40,7 +40,7 @@
 #include "wallet/logic/controller/proof.hpp"
 #include "wallet/logic/controller/wallet.hpp"
 
-#include "wallet/device/device_default.hpp"
+#include "wallet/device/functional/device_default.hpp"
 
 #include "wallet/mnemonics/electrum-words.h"
 

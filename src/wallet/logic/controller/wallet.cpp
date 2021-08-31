@@ -36,7 +36,7 @@
 #include "wallet/logic/type/transfer.hpp"
 #include "wallet/logic/functional/wallet.hpp"
 
-#include "wallet/device/device_default.hpp"
+#include "wallet/device/functional/device_default.hpp"
 
 #include "wallet/api/wallet_errors.h"
 

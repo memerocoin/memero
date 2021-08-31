@@ -32,7 +32,7 @@
 #include "math/ringct/controller/rctGen.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 
-#include "wallet/device/device_default.hpp"
+#include "wallet/device/functional/device_default.hpp"
 
 TEST(device, name)
 {

@@ -40,7 +40,7 @@
 #include "tools/common/threadpool.h"
 #include "tools/epee/include/logging.hpp"
 
-#include "wallet/device/device_default.hpp"
+#include "wallet/device/functional/device_default.hpp"
 
 
 #include "config/cryptonote.hpp"
