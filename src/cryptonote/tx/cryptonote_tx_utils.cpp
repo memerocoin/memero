@@ -39,7 +39,7 @@
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 #include "math/ringct/controller/rctSigGen.hpp"
 
-
+#include "wallet/device/device_default.hpp"
 
 
 
@@ -293,7 +293,7 @@ namespace cryptonote
       LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, false, "Destination with wrong amount: " << dst_entr.amount);
       crypto::public_key out_eph_public_key;
 
-      hwdev.generate_output_ephemeral_keys(tx.version,sender_account_keys, txkey_pub, tx_key,
+      device::generate_output_ephemeral_keys(tx.version,sender_account_keys, txkey_pub, tx_key,
                                            dst_entr, change_addr, output_index,
                                            need_additional_txkeys, additional_tx_keys,
                                            additional_tx_public_keys, amount_keys, out_eph_public_key);

@@ -89,113 +89,6 @@ namespace hw {
 
         void device_default::unlock() { }
 
-        /* ======================================================================= */
-        /*                               TRANSACTION                               */
-        /* ======================================================================= */
-
-        bool device_default::generate_output_ephemeral_keys
-        (
-        const size_t tx_version
-        , const cryptonote::account_keys &sender_account_keys
-        , const crypto::public_key &txkey_pub
-        ,  const crypto::secret_key &tx_key
-        , const cryptonote::tx_destination_entry &dst_entr
-        , const std::optional<cryptonote::account_public_address> &change_addr
-        , const size_t output_index
-        , const bool &need_additional_txkeys
-        , const std::vector<crypto::secret_key> &additional_tx_keys
-        , std::vector<crypto::public_key> &additional_tx_public_keys
-        , rct::rct_scalarV &amount_keys
-        , crypto::public_key &out_eph_public_key
-         )
-        {
-          std::optional<crypto::key_derivation> derivation;
-
-            // make additional tx pubkey if necessary
-            cryptonote::keypair additional_txkey;
-            if (need_additional_txkeys)
-            {
-                additional_txkey.sec = additional_tx_keys[output_index];
-                if (dst_entr.is_subaddress)
-                    additional_txkey.pub = rct::rct_p2pk(rct::multP(rct::pk2rct_p(dst_entr.addr.m_spend_public_key), rct::sk2rct_s(additional_txkey.sec)));
-                else
-                    additional_txkey.pub = rct::rct_p2pk(rct::multG(rct::sk2rct_s(additional_txkey.sec)));
-            }
-
-            if (change_addr && dst_entr.addr == *change_addr)
-            {
-            // sending change to yourself; derivation = a*R
-              derivation = crypto::derive_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key);
-              LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "at creation outs: failed to derive_key_derivation(" << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")");
-            }
-            else
-            {
-            // sending to the recipient; derivation = r*A (or s*C in the subaddress scheme)
-                derivation = derive_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
-                LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "at creation outs: failed to derive_key_derivation(" << dst_entr.addr.m_view_public_key << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")");
-            }
-
-            if (need_additional_txkeys)
-            {
-                additional_tx_public_keys.push_back(additional_txkey.pub);
-            }
-
-            if (tx_version > 1)
-            {
-              const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(*derivation, output_index));
-              amount_keys.push_back(scalar1);
-            }
-            const auto eph_pk = crypto::derive_tx_output_public_key
-              (*derivation, output_index, dst_entr.addr.m_spend_public_key);
-            LOG_ERROR_AND_RETURN_UNLESS(eph_pk, false, "at creation outs: failed to derive_tx_output_public_key(" << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")");
-
-            out_eph_public_key = *eph_pk;
-            return true;
-        }
-
-        bool device_default::clsag_prepare
-        (
-         const rct::rct_scalar &p
-         , const rct::rct_scalar &z
-         , rct::rct_point &I
-         , rct::rct_point &D
-         , const rct::rct_point &H
-         , rct::rct_scalar &a
-         , rct::rct_point &aG
-         , rct::rct_point &aH
-         ) {
-            std::tie(a, aG) = rct::skpkGen(); // aG = a*G
-            aH = rct::multP(H, a); // aH = a*H
-            I = rct::multP(H, p); // I = p*H
-            D = rct::multP(H, z); // D = z*H
-            return true;
-        }
-
-        rct::rct_scalar device_default::clsag_hash(const crypto::dataS data) {
-            return rct::hash_dataV_to_scalar(data);
-        }
-
-        bool device_default::clsag_sign
-        (
-          const rct::rct_scalar &c
-            , const rct::rct_scalar &a
-            , const rct::rct_scalar &p
-            , const rct::rct_scalar &z
-            , const rct::rct_scalar &mu_P
-            , const rct::rct_scalar &mu_C
-            , rct::rct_scalar &s
-         )
-        {
-            rct::rct_scalar s0_p_mu_P;
-            s0_p_mu_P = mu_P * p;
-            rct::rct_scalar s0_add_z_mu_C;
-            s0_add_z_mu_C = mu_C * z + s0_p_mu_P;
-            s = a - c * s0_add_z_mu_C;
-
-            return true;
-        }
-
-
         /* ---------------------------------------------------------- */
         static device_default *default_core_device = NULL;
         void register_all(std::map<std::string, std::unique_ptr<device>> &registry) {
@@ -349,5 +242,134 @@ namespace device {
     const auto calculated_pub = crypto::to_maybe_pk(secret_key);
     return public_key == calculated_pub;
   }
+
+  /* ======================================================================= */
+  /*                               TRANSACTION                               */
+  /* ======================================================================= */
+
+  bool generate_output_ephemeral_keys
+  (
+   const size_t tx_version
+   , const cryptonote::account_keys &sender_account_keys
+   , const crypto::public_key &txkey_pub
+   ,  const crypto::secret_key &tx_key
+   , const cryptonote::tx_destination_entry &dst_entr
+   , const std::optional<cryptonote::account_public_address> &change_addr
+   , const size_t output_index
+   , const bool &need_additional_txkeys
+   , const std::vector<crypto::secret_key> &additional_tx_keys
+   , std::vector<crypto::public_key> &additional_tx_public_keys
+   , rct::rct_scalarV &amount_keys
+   , crypto::public_key &out_eph_public_key
+   )
+  {
+    std::optional<crypto::key_derivation> derivation;
+
+    // make additional tx pubkey if necessary
+    cryptonote::keypair additional_txkey;
+    if (need_additional_txkeys)
+    {
+      additional_txkey.sec = additional_tx_keys[output_index];
+      if (dst_entr.is_subaddress)
+        additional_txkey.pub = rct::rct_p2pk(rct::multP(rct::pk2rct_p(dst_entr.addr.m_spend_public_key), rct::sk2rct_s(additional_txkey.sec)));
+      else
+        additional_txkey.pub = rct::rct_p2pk(rct::multG(rct::sk2rct_s(additional_txkey.sec)));
+    }
+
+    if (change_addr && dst_entr.addr == *change_addr)
+    {
+    // sending change to yourself; derivation = a*R
+      derivation = crypto::derive_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         derivation
+         , false
+         , "at creation outs: failed to derive_key_derivation("
+         << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")"
+         );
+    }
+    else
+    {
+    // sending to the recipient; derivation = r*A (or s*C in the subaddress scheme)
+      derivation = derive_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         derivation
+         , false
+         , "at creation outs: failed to derive_key_derivation("
+         << dst_entr.addr.m_view_public_key
+         << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")"
+         );
+    }
+
+    if (need_additional_txkeys)
+    {
+      additional_tx_public_keys.push_back(additional_txkey.pub);
+    }
+
+    if (tx_version > 1)
+    {
+      const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(*derivation, output_index));
+      amount_keys.push_back(scalar1);
+    }
+
+    const auto eph_pk = crypto::derive_tx_output_public_key
+      (*derivation, output_index, dst_entr.addr.m_spend_public_key);
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       eph_pk
+       , false
+       , "at creation outs: failed to derive_tx_output_public_key("
+       << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
+       );
+
+    out_eph_public_key = *eph_pk;
+    return true;
+  }
+
+  bool clsag_prepare
+  (
+   const rct::rct_scalar &p
+   , const rct::rct_scalar &z
+   , rct::rct_point &I
+   , rct::rct_point &D
+   , const rct::rct_point &H
+   , rct::rct_scalar &a
+   , rct::rct_point &aG
+   , rct::rct_point &aH
+   )
+  {
+    std::tie(a, aG) = rct::skpkGen(); // aG = a*G
+    aH = rct::multP(H, a); // aH = a*H
+    I = rct::multP(H, p); // I = p*H
+    D = rct::multP(H, z); // D = z*H
+    return true;
+  }
+
+  rct::rct_scalar clsag_hash(const crypto::dataS data) {
+    return rct::hash_dataV_to_scalar(data);
+  }
+
+  bool clsag_sign
+  (
+   const rct::rct_scalar &c
+   , const rct::rct_scalar &a
+   , const rct::rct_scalar &p
+   , const rct::rct_scalar &z
+   , const rct::rct_scalar &mu_P
+   , const rct::rct_scalar &mu_C
+   , rct::rct_scalar &s
+   )
+  {
+    rct::rct_scalar s0_p_mu_P;
+    s0_p_mu_P = mu_P * p;
+    rct::rct_scalar s0_add_z_mu_C;
+    s0_add_z_mu_C = mu_C * z + s0_p_mu_P;
+    s = a - c * s0_add_z_mu_C;
+
+    return true;
+  }
+
 
 }

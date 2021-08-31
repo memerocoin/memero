@@ -138,50 +138,6 @@ namespace hw {
         virtual void unlock(void) = 0;
         virtual bool try_lock(void) = 0;
 
-        /* ======================================================================= */
-        /*                               TRANSACTION                               */
-        /* ======================================================================= */
-
-        virtual bool  generate_output_ephemeral_keys
-        (
-         const size_t tx_version
-         , const cryptonote::account_keys &sender_account_keys
-         , const crypto::public_key &txkey_pub
-         , const crypto::secret_key &tx_key
-         , const cryptonote::tx_destination_entry &dst_entr
-         , const std::optional<cryptonote::account_public_address> &change_addr
-         , const size_t output_index
-         , const bool &need_additional_txkeys
-         , const std::vector<crypto::secret_key> &additional_tx_keys
-         , std::vector<crypto::public_key> &additional_tx_public_keys
-         , rct::rct_scalarV &amount_keys
-         , crypto::public_key &out_eph_public_key
-         ) = 0;
-
-
-        virtual bool clsag_prepare
-        (
-         const rct::rct_scalar &p
-         , const rct::rct_scalar &z
-         , rct::rct_point &I
-         , rct::rct_point &D
-         , const rct::rct_point &H
-         , rct::rct_scalar &a
-         , rct::rct_point &aG
-         , rct::rct_point &aH
-         ) = 0;
-        virtual rct::rct_scalar clsag_hash(const crypto::dataS data) = 0;
-        virtual bool clsag_sign
-        (
-         const rct::rct_scalar &c
-         , const rct::rct_scalar &a
-         , const rct::rct_scalar &p
-         , const rct::rct_scalar &z
-         , const rct::rct_scalar &mu_P
-         , const rct::rct_scalar &mu_C
-         , rct::rct_scalar &s
-         ) = 0;
-
         virtual bool  has_ki_cold_sync(void) const { return false; }
         virtual bool  has_tx_cold_sign(void) const { return false; }
         virtual bool  has_ki_live_refresh(void) const { return true; }

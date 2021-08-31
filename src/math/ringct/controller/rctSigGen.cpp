@@ -40,6 +40,8 @@
 #include "tools/common/threadpool.h"
 #include "tools/epee/include/logging.hpp"
 
+#include "wallet/device/device_default.hpp"
+
 
 #include "config/cryptonote.hpp"
 
@@ -92,7 +94,6 @@ namespace rct {
      , const rct_point C_offset
      , const size_t idx
      ) {
-        hw::device& hwdev = hw::get_device("default");
         clsag sig;
         size_t n = P.size(); // ring size
         LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment rct_point vector sizes must match!");
@@ -109,7 +110,7 @@ namespace rct {
         rct_point aG;
         rct_point aH;
 
-        hwdev.clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
+        device::clsag_prepare(p,z,sig.I,D,H,a,aG,aH);
 
         // Offset key image
         sig.D = D ^ rct::s_inv_eight;
@@ -158,7 +159,7 @@ namespace rct {
         c_to_hash.push_back(aH);
 
 
-        rct_scalar c = hwdev.clsag_hash(c_to_hash);
+        rct_scalar c = device::clsag_hash(c_to_hash);
 
         size_t i = (idx + 1) % n;
         if (i == 0) {
@@ -203,7 +204,7 @@ namespace rct {
           c_to_hash[2*n+3] = L;
           c_to_hash[2*n+4] = R;
           // need to be remembered
-          c = hwdev.clsag_hash(c_to_hash);
+          c = device::clsag_hash(c_to_hash);
 
           i = (i + 1) % n;
           if (i == 0) {
@@ -212,7 +213,7 @@ namespace rct {
         }
 
         // Compute final scalar
-        hwdev.clsag_sign(c,a,p,z,mu_P,mu_C,sig.s[idx]);
+        device::clsag_sign(c,a,p,z,mu_P,mu_C,sig.s[idx]);
 
         return sig;
     }

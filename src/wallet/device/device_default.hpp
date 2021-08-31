@@ -71,49 +71,6 @@ namespace hw {
             bool try_lock(void) override;
 
 
-            /* ======================================================================= */
-            /*                               TRANSACTION                               */
-            /* ======================================================================= */
-
-            bool generate_output_ephemeral_keys
-            (
-            const size_t tx_version
-            , const cryptonote::account_keys &sender_account_keys
-            , const crypto::public_key &txkey_pub
-            ,  const crypto::secret_key &tx_key
-            , const cryptonote::tx_destination_entry &dst_entr
-            , const std::optional<cryptonote::account_public_address> &change_addr
-            , const size_t output_index
-            , const bool &need_additional_txkeys
-            , const std::vector<crypto::secret_key> &additional_tx_keys
-            , std::vector<crypto::public_key> &additional_tx_public_keys
-            , rct::rct_scalarV &amount_keys
-            , crypto::public_key &out_eph_public_key
-            ) override;
-
-            bool clsag_prepare
-            (
-             const rct::rct_scalar &p
-             , const rct::rct_scalar &z
-             , rct::rct_point &I
-             , rct::rct_point &D
-             , const rct::rct_point &H
-             , rct::rct_scalar &a
-             , rct::rct_point &aG
-             , rct::rct_point &aH
-             ) override;
-
-            rct::rct_scalar clsag_hash(const crypto::dataS data) override;
-            bool clsag_sign
-            (
-             const rct::rct_scalar &c
-             , const rct::rct_scalar &a
-             , const rct::rct_scalar &p
-             , const rct::rct_scalar &z
-             , const rct::rct_scalar &mu_P
-             , const rct::rct_scalar &mu_C
-             , rct::rct_scalar &s
-             ) override;
 
         };
 
@@ -167,4 +124,48 @@ namespace device {
 
   bool verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key);
 
+  /* ======================================================================= */
+  /*                               TRANSACTION                               */
+  /* ======================================================================= */
+
+  bool generate_output_ephemeral_keys
+  (
+  const size_t tx_version
+  , const cryptonote::account_keys &sender_account_keys
+  , const crypto::public_key &txkey_pub
+  ,  const crypto::secret_key &tx_key
+  , const cryptonote::tx_destination_entry &dst_entr
+  , const std::optional<cryptonote::account_public_address> &change_addr
+  , const size_t output_index
+  , const bool &need_additional_txkeys
+  , const std::vector<crypto::secret_key> &additional_tx_keys
+  , std::vector<crypto::public_key> &additional_tx_public_keys
+  , rct::rct_scalarV &amount_keys
+  , crypto::public_key &out_eph_public_key
+  );
+
+  bool clsag_prepare
+  (
+    const rct::rct_scalar &p
+    , const rct::rct_scalar &z
+    , rct::rct_point &I
+    , rct::rct_point &D
+    , const rct::rct_point &H
+    , rct::rct_scalar &a
+    , rct::rct_point &aG
+    , rct::rct_point &aH
+    );
+
+  rct::rct_scalar clsag_hash(const crypto::dataS data);
+
+  bool clsag_sign
+  (
+    const rct::rct_scalar &c
+    , const rct::rct_scalar &a
+    , const rct::rct_scalar &p
+    , const rct::rct_scalar &z
+    , const rct::rct_scalar &mu_P
+    , const rct::rct_scalar &mu_C
+    , rct::rct_scalar &s
+    );
 }
