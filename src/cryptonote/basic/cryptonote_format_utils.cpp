@@ -62,65 +62,75 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx)
   {
-    crypto::hash h = null_hash;
     std::ostringstream s;
     binary_archive<true> a(s);
     ::serialization::serialize(a, const_cast<transaction_prefix&>(tx));
-    h = crypto::sha3(epee::string_tools::string_to_blob(s.str()));
-    return h;
+
+    return crypto::sha3(epee::string_tools::string_to_blob(s.str()));
   }
   //---------------------------------------------------------------
   bool expand_transaction_1(transaction &tx, bool base_only)
   {
-    if (tx.version >= 2 && !is_coinbase(tx))
+    if (tx.version < 2) return true;
+    if (is_coinbase(tx)) return true;
+
+    rct::rctSig &rv = tx.rct_signatures;
+    if (rv.type == rct::RCTTypeNull)
+      return true;
+
+    if (rv.outPk.size() != tx.vout.size())
     {
-      rct::rctSig &rv = tx.rct_signatures;
-      if (rv.type == rct::RCTTypeNull)
-        return true;
-      if (rv.outPk.size() != tx.vout.size())
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad outPk size in tx " << get_transaction_hash(tx));
+      return false;
+    }
+
+    for (size_t n = 0; n < tx.rct_signatures.outPk.size(); ++n)
+    {
+      if (tx.vout[n].target.type() != typeid(txout_to_key))
       {
-        LOG_PRINT_L1("Failed to parse transaction from blob, bad outPk size in tx " << get_transaction_hash(tx));
+        LOG_PRINT_L1("Unsupported output type in tx " << get_transaction_hash(tx));
         return false;
       }
-      for (size_t n = 0; n < tx.rct_signatures.outPk.size(); ++n)
-      {
-        if (tx.vout[n].target.type() != typeid(txout_to_key))
-        {
-          LOG_PRINT_L1("Unsupported output type in tx " << get_transaction_hash(tx));
-          return false;
-        }
-        rv.outPk[n].dest = rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[n].target).key);
-      }
-
-      if (!base_only)
-      {
-        {
-          if (rv.p.bulletproofs.size() != 1)
-          {
-            LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs size in tx " << get_transaction_hash(tx));
-            return false;
-          }
-          if (rv.p.bulletproofs[0].L.size() < 6)
-          {
-            LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs L size in tx " << get_transaction_hash(tx));
-            return false;
-          }
-          const size_t max_outputs = 1 << (rv.p.bulletproofs[0].L.size() - 6);
-          if (max_outputs < tx.vout.size())
-          {
-            LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << get_transaction_hash(tx));
-            return false;
-          }
-          const size_t n_amounts = tx.vout.size();
-          LOG_ERROR_AND_RETURN_UNLESS(n_amounts == rv.outPk.size(), false, "Internal error filling out V");
-          rv.p.bulletproofs[0].V.resize(n_amounts);
-          for (size_t i = 0; i < n_amounts; ++i)
-            rv.p.bulletproofs[0].V[i] = rct::multP(rv.outPk[i].commit_of_amount, rct::s_inv_eight);
-        }
-      }
+      rv.outPk[n].dest = rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[n].target).key);
     }
+
+    if (base_only) return true;
+
+    if (rv.p.bulletproofs.size() != 1)
+    {
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs size in tx " << get_transaction_hash(tx));
+      return false;
+    }
+
+    if (rv.p.bulletproofs[0].L.size() < 6)
+    {
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs L size in tx " << get_transaction_hash(tx));
+      return false;
+    }
+
+    const size_t max_outputs = 1 << (rv.p.bulletproofs[0].L.size() - 6);
+    if (max_outputs < tx.vout.size())
+    {
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << get_transaction_hash(tx));
+      return false;
+    }
+
+    const size_t n_amounts = tx.vout.size();
+    LOG_ERROR_AND_RETURN_UNLESS(n_amounts == rv.outPk.size(), false, "Internal error filling out V");
+
+    std::transform
+      (
+       rv.outPk.begin()
+       , rv.outPk.end()
+       , std::back_inserter(rv.p.bulletproofs[0].V)
+       , [](const auto& x) {
+         return x.commit_of_amount ^ rct::s_inv_eight;
+       }
+       );
+
     return true;
   }
+
   //---------------------------------------------------------------
   bool parse_and_validate_tx_from_blob(const blobdata_ref& tx_blob, transaction& tx)
   {
