@@ -176,7 +176,7 @@ namespace cryptonote
       if (dst_entr.is_subaddress)
         additional_txkey.pub = rct::rct_p2pk(rct::multP(rct::pk2rct_p(dst_entr.addr.m_spend_public_key), rct::sk2rct_s(additional_txkey.sec)));
       else
-        additional_txkey.pub = rct::rct_p2pk(rct::G_(rct::normalizeKey(additional_txkey.sec)));
+        additional_txkey.pub = rct::rct_p2pk(rct::G_(rct::rct_reduce(additional_txkey.sec)));
     }
 
     if (change_addr && dst_entr.addr == *change_addr)
@@ -351,7 +351,7 @@ namespace cryptonote
     }
     else
     {
-      txkey_pub = rct::rct_p2pk(rct::G_(rct::normalizeKey(tx_key)));
+      txkey_pub = rct::rct_p2pk(rct::G_(rct::rct_reduce(tx_key)));
     }
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
     add_tx_pub_key_to_extra(tx, txkey_pub);

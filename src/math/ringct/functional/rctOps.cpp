@@ -50,7 +50,7 @@
 namespace rct {
 
   rct_point commit(const rct_scalar mask, const amount_t amount) {
-    return addMultG_H(normalizeKey(mask), int_to_scalar(amount));
+    return addMultG_H(rct_reduce(mask), int_to_scalar(amount));
   }
 
   rct_point dummyCommit(const amount_t amount) {
@@ -60,7 +60,7 @@ namespace rct {
 
   //Scalar multiplications of curve points
 
-  rct_scalar normalizeKey(const crypto::ec_scalar_unnormalized a) {
+  rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a) {
     return s2s(crypto::reduce(a));
   }
 
@@ -69,7 +69,7 @@ namespace rct {
   }
 
   rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a) {
-    return P ^ normalizeKey(a);
+    return P ^ rct_reduce(a);
   }
 
   rct_point multH(const rct_scalar a) {
