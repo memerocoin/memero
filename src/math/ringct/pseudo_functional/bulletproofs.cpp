@@ -566,6 +566,7 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
 
   // check rct_scalar range
   LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input rct_scalar not in range");
+  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), false, "Input rct_scalar not in range");
 
   LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), false, "Input rct_scalar not in range");
   LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), false, "Input rct_scalar not in range");
