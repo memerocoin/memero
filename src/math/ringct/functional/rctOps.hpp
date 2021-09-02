@@ -64,9 +64,8 @@ namespace rct {
 
   //Scalar multiplications of curve points
 
-  rct_point multG(const rct_scalar a);
-
-  rct_point multP(const rct_point P, const rct_scalar a);
+  rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a);
+  rct_point multG(const crypto::ec_scalar_unnormalized a);
 
   rct_point multH(const rct_scalar a);
 

@@ -60,16 +60,16 @@ namespace rct {
 
   //Scalar multiplications of curve points
 
-  rct_scalar normalizeKey(const rct_scalar a) {
+  rct_scalar normalizeKey(const crypto::ec_scalar_unnormalized a) {
     return s2s(crypto::reduce(a));
   }
 
-  rct_point multG(const rct_scalar a) {
+  rct_point multG(const crypto::ec_scalar_unnormalized a) {
     rct_scalar s = normalizeKey(a);
     return p2rct_p(crypto::multBase(s));
   }
 
-  rct_point multP(const rct_point P, const rct_scalar a) {
+  rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a) {
     rct_scalar s = normalizeKey(a);
     return p2rct_p(crypto::mult(P, s));
   }
