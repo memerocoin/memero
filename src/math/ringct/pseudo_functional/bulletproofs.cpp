@@ -375,8 +375,8 @@ try_again:
   const rct::rct_scalar tau1 = rct::skGen();
   const rct::rct_scalar tau2 = rct::skGen();
 
-  const rct_point T1 = G_(tau1 * rct::s_inv_eight) + multH(t1 * rct::s_inv_eight);
-  const rct_point T2 = G_(tau2 * rct::s_inv_eight) + multH(t2 * rct::s_inv_eight);
+  const rct_point T1 = G_(tau1 * rct::s_inv_eight) + H_(t1 * rct::s_inv_eight);
+  const rct_point T2 = G_(tau2 * rct::s_inv_eight) + H_(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
   const rct::rct_scalar x = hash_carry = hash_dataV_to_scalar
@@ -460,10 +460,10 @@ try_again:
     // PAPER LINES 23-24
     L[round] = cross_vector_exponent8
       (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
-      + multH(cL * x_ip * s_inv_eight);
+      + H_(cL * x_ip * s_inv_eight);
     R[round] = cross_vector_exponent8
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
-      + multH(cR * x_ip * s_inv_eight);
+      + H_(cR * x_ip * s_inv_eight);
 
     // PAPER LINES 25-27
     w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, L[round], R[round]});

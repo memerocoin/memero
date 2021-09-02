@@ -328,7 +328,7 @@ namespace rct {
                 }
                 );
 
-             const rct_point txnFeeKey = multH(int_to_scalar(rv.txnFee));
+             const rct_point txnFeeKey = H_(int_to_scalar(rv.txnFee));
              const rct_point sumOutpks = addPoints(masks) + txnFeeKey;
              const rct_point sumPseudoOuts = addPoints(pseudoOuts);
 

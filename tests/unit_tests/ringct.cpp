@@ -685,7 +685,7 @@ TEST(ringct, dummyCommit)
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::rct_point z = rct::dummyCommit(amount);
   const rct::rct_point a = rct::G_(rct::s_one);
-  const rct::rct_point b = rct::multH(rct::int_to_scalar(amount));
+  const rct::rct_point b = rct::H_(rct::int_to_scalar(amount));
   const rct::rct_point manual = a + b;
   ASSERT_EQ(z, manual);
 }

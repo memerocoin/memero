@@ -82,7 +82,7 @@ namespace rct {
     const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
     const rct_scalar am = int_to_scalar(amount);
-    const rct_point bH = multH(am);
+    const rct_point bH = H_(am);
 
     return
       {

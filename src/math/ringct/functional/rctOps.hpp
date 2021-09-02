@@ -69,7 +69,7 @@ namespace rct {
   rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a);
   rct_point G_(const rct_scalar a);
 
-  rct_point multH(const rct_scalar a);
+  rct_point H_(const rct_scalar a);
 
   rct_point multP8(const crypto::ec_point_unsafe P);
   rct_point multP8Safe(const rct_point P);

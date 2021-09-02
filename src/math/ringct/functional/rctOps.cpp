@@ -72,7 +72,7 @@ namespace rct {
     return P ^ rct_reduce(a);
   }
 
-  rct_point multH(const rct_scalar a) {
+  rct_point H_(const rct_scalar a) {
     return H ^ a;
   }
 
@@ -97,7 +97,7 @@ namespace rct {
   }
 
   rct_point addMultG_H(const rct_scalar a, const rct_scalar b) {
-    return G_(a) + multH(b);
+    return G_(a) + H_(b);
   }
 
   //sha3 for a 32 byte key
