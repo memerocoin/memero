@@ -60,9 +60,30 @@ namespace crypto {
     return sub(*this, x);
   }
 
+
+  ec_point mult(const ec_point X, const ec_scalar a) noexcept {
+    if (a == s_0) {
+      return identity;
+    }
+
+    ec_point x;
+    const int r = crypto_scalarmult_ed25519_noclamp(x.data.data(), a.data.data(), X.data.data());
+    if (r != 0) {
+      LOG_FATAL
+        (
+         "mult point is not on curve: \npoint: " << X
+         // << "\nscalar" << a
+         << "\nresult: " << x);
+    }
+
+    return x;
+  }
+
   ec_point ec_point::operator^(const ec_scalar& x) const noexcept {
     return mult(*this, x);
   }
+
+
 
   ec_scalar ec_scalar::operator+(const ec_scalar& x) const noexcept {
     ec_scalar s;
@@ -94,25 +115,6 @@ namespace crypto {
       LOG_FATAL("scalar mult base failed");
     }
     return p;
-  }
-
-
-  ec_point mult(const ec_point X, const ec_scalar a) noexcept {
-    if (a == s_0) {
-      return identity;
-    }
-
-    ec_point x;
-    const int r = crypto_scalarmult_ed25519_noclamp(x.data.data(), a.data.data(), X.data.data());
-    if (r != 0) {
-      LOG_FATAL
-        (
-         "mult point is not on curve: \npoint: " << X
-         // << "\nscalar" << a
-         << "\nresult: " << x);
-    }
-
-    return x;
   }
 
   ec_point mult8Safe(const ec_point X) noexcept {

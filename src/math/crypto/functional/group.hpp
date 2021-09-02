@@ -81,7 +81,6 @@ namespace crypto {
   bool is_valid_point(const ec_point_unsafe x) noexcept;
 
   std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) noexcept;
-  ec_point mult(const ec_point X, const ec_scalar) noexcept;
   ec_point mult8Safe(const ec_point X) noexcept;
   ec_point multBase(const ec_scalar) noexcept;
 

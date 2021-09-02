@@ -48,13 +48,13 @@ TEST(tx_proof, prove_verify_v2)
     std::tie(b, B) = crypto::generate_keys({});
 
     // R_B = rB
-    crypto::public_key R_B = crypto::p2pk(crypto::mult(B, r));
+    crypto::public_key R_B = crypto::p2pk(B ^ r);
 
     // R_G = rG
     crypto::public_key R_G = crypto::p2pk(crypto::multBase(r));
 
     // D = rA
-    crypto::public_key D = crypto::p2pk(crypto::mult(A, r));
+    crypto::public_key D = crypto::p2pk(A ^ r);
 
     crypto::signature sig;
 
