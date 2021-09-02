@@ -116,7 +116,7 @@ namespace rct {
 
     // CLSAG signature
     struct clsag {
-        rct_scalarV s; // scalars
+        std::vector<crypto::ec_scalar_unnormalized> s; // scalars
         crypto::ec_scalar_unnormalized c1;
 
         reconstructed_point I; // signing key image

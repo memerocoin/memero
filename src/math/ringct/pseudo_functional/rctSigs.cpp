@@ -236,7 +236,7 @@ namespace rct {
               (
                std::array
                {
-                 k ^ sig.s[i]
+                 k ^ rct_reduce(sig.s[i])
                  , sig.I ^ c_p
                  , D_8 ^ c_c
                }

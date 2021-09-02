@@ -215,7 +215,7 @@ TEST(ringct, CLSAG)
   clsag.s = sbackup;
 
   // too few s elements
-  rct_scalar backup_s;
+  ec_scalar_unnormalized backup_s;
   ec_scalar_unnormalized backup_c1;
   rct_point backup_key;
   inv8 backup_key_inv8;

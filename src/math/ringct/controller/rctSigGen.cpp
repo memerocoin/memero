@@ -163,7 +163,7 @@ namespace rct {
         }
 
         // Decoy indices
-        sig.s = rct_scalarV(n);
+        rct_scalarV s(n);
 
         while (i != idx) {
           // carried from last round
@@ -195,7 +195,7 @@ namespace rct {
              }
              );
 
-          sig.s[i] = sk;
+          s[i] = sk;
 
           c_to_hash[2*n+3] = L;
           c_to_hash[2*n+4] = R;
@@ -209,7 +209,15 @@ namespace rct {
         }
 
         // Compute final scalar
-        sig.s[idx] = a - c * (mu_C * z + mu_P * p);
+        s[idx] = a - c * (mu_C * z + mu_P * p);
+
+        std::transform
+          (
+           s.begin()
+           , s.end()
+           , std::back_inserter(sig.s)
+           , [](const auto& x) -> crypto::ec_scalar_unnormalized { return x; }
+           );
 
         return sig;
     }
