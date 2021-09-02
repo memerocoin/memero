@@ -49,7 +49,7 @@
 
 namespace rct {
 
-  rct_point commit(const rct_scalar mask, const amount_t amount) {
+  rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount) {
     return addMultG_H(rct_reduce(mask), int_to_scalar(amount));
   }
 

@@ -57,7 +57,7 @@ namespace rct {
 
   // make a pedersen commitment with given key
   // generates C = mask * G + amount * H
-  rct_point commit(const rct_scalar mask, const amount_t amount);
+  rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount);
 
   // make a pedersen commitment with zero key
   rct_point dummyCommit(const amount_t amount);
