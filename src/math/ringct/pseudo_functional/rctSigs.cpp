@@ -450,9 +450,8 @@ namespace rct {
 
         const auto amount = rct::s2s(crypto::reduce(amount_unnormalized));
 
-        const rct_point Ctmp = addMultG_H(blinding_factor, amount);
-        if (C != Ctmp) {
-            LOG_ERROR_AND_THROW_UNLESS(false, "warning, amount decoded incorrectly, will be unable to spend");
+        if (C != addMultG_H(blinding_factor, amount)) {
+            LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");
         }
         return {scalar_to_int(amount), blinding_factor};
     }
