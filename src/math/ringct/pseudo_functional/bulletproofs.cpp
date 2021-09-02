@@ -316,13 +316,13 @@ try_again:
 
   // PAPER LINES 43-44
   const rct::rct_scalar alpha = rct::skGen();
-  const rct_point A = vector_exponent(aL8, aR8) + rct::multG(alpha * rct::s_inv_eight);
+  const rct_point A = vector_exponent(aL8, aR8) + G_(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
   const rct::rct_scalarV sL = rct::skvGen(MN);
   const rct::rct_scalarV sR = rct::skvGen(MN);
   const rct::rct_scalar rho = rct::skGen();
-  const rct::rct_point S = (vector_exponent(sL, sR) + rct::multG(rho)) ^ rct::s_inv_eight;
+  const rct::rct_point S = (vector_exponent(sL, sR) + G_(rho)) ^ rct::s_inv_eight;
 
   // PAPER LINES 48-50
   const rct_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, A, S});
@@ -375,8 +375,8 @@ try_again:
   const rct::rct_scalar tau1 = rct::skGen();
   const rct::rct_scalar tau2 = rct::skGen();
 
-  const rct_point T1 = multG(tau1 * rct::s_inv_eight) + multH(t1 * rct::s_inv_eight);
-  const rct_point T2 = multG(tau2 * rct::s_inv_eight) + multH(t2 * rct::s_inv_eight);
+  const rct_point T1 = G_(tau1 * rct::s_inv_eight) + multH(t1 * rct::s_inv_eight);
+  const rct_point T2 = G_(tau2 * rct::s_inv_eight) + multH(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
   const rct::rct_scalar x = hash_carry = hash_dataV_to_scalar

@@ -50,7 +50,7 @@
 namespace rct {
 
   rct_point commit(const rct_scalar mask, const amount_t amount) {
-    return addMultG_H(mask ,int_to_scalar(amount));
+    return addMultG_H(normalizeKey(mask), int_to_scalar(amount));
   }
 
   rct_point dummyCommit(const amount_t amount) {
@@ -64,9 +64,8 @@ namespace rct {
     return s2s(crypto::reduce(a));
   }
 
-  rct_point multG(const crypto::ec_scalar_unnormalized a) {
-    const rct_scalar s = normalizeKey(a);
-    return p2rct_p(crypto::multBase(s));
+  rct_point G_(const rct_scalar a) {
+    return p2rct_p(crypto::multBase(a));
   }
 
   rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a) {
@@ -98,7 +97,7 @@ namespace rct {
   }
 
   rct_point addMultG_H(const rct_scalar a, const rct_scalar b) {
-    return multG(a) + multH(b);
+    return G_(a) + multH(b);
   }
 
   //sha3 for a 32 byte key

@@ -202,7 +202,7 @@ namespace rct {
         c_to_hash.push_back({}); // reserve for R
 
 
-        rct_scalar c = sig.c1;
+        rct_scalar c = normalizeKey(sig.c1);
         size_t i = 0;
 
         while (i < n) {
@@ -222,7 +222,7 @@ namespace rct {
               (
                std::array
                {
-                 multG(sig.s[i])
+                 G_(normalizeKey(sig.s[i]))
                  , pubs[i].dest ^ c_p
                  , C ^ c_c
                }

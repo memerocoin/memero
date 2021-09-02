@@ -173,7 +173,7 @@ TEST(ringct, CLSAG)
 
   // bad C at creation
   backup = pubs[idx];
-  pubs[idx].commit_of_amount = multG(skGen());
+  pubs[idx].commit_of_amount = G_(skGen());
   try
   {
     clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
@@ -195,7 +195,7 @@ TEST(ringct, CLSAG)
 
   // bad P at creation
   backup = pubs[idx];
-  pubs[idx].dest = multG(skGen());
+  pubs[idx].dest = G_(skGen());
   try
   {
     clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
@@ -245,13 +245,13 @@ TEST(ringct, CLSAG)
 
   // bad I in clsag at verification
   backup_key = clsag.I;
-  clsag.I = multG(skGen());
+  clsag.I = G_(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.I = backup_key;
 
   // bad D in clsag at verification
   backup_key_inv8 = clsag.D;
-  clsag.D = multG(skGen());
+  clsag.D = G_(skGen());
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
   clsag.D = backup_key_inv8;
 
@@ -549,7 +549,7 @@ TEST(ringct, range_proofs_accept_very_long_simple)
 
 TEST(ringct, HPow2)
 {
-  // rct_point G = multG(int_to_scalar(1));
+  // rct_point G = G_(int_to_scalar(1));
 
   // in lolnero, hashPoint uses sha3, but H is hashPoint with keccak256, so we use that H
   rct_point H = rct::H;
@@ -684,7 +684,7 @@ TEST(ringct, dummyCommit)
 {
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::rct_point z = rct::dummyCommit(amount);
-  const rct::rct_point a = rct::multG(rct::s_one);
+  const rct::rct_point a = rct::G_(rct::s_one);
   const rct::rct_point b = rct::multH(rct::int_to_scalar(amount));
   const rct::rct_point manual = a + b;
   ASSERT_EQ(z, manual);

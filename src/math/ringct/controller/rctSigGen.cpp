@@ -177,7 +177,7 @@ namespace rct {
             (
              std::array
              {
-               multG(sk)
+               G_(sk)
                , P[i] ^ c_p
                , C[i] ^ c_c
              }

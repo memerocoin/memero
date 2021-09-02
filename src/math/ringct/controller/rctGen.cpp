@@ -73,7 +73,7 @@ namespace rct {
   //generates a random secret and corresponding public key
   std::pair<rct_scalar, rct_point> skpkGen() {
     const rct_scalar sk = skGen();
-    return std::make_pair(sk, multG(sk));
+    return std::make_pair(sk, G_(sk));
   }
 
   //generates a <secret , public> / Pedersen commitment to the amount
