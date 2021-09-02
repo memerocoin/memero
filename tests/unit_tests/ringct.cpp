@@ -216,6 +216,7 @@ TEST(ringct, CLSAG)
 
   // too few s elements
   rct_scalar backup_s;
+  ec_scalar_unnormalized backup_c1;
   rct_point backup_key;
   inv8 backup_key_inv8;
   backup_s = clsag.s.back();
@@ -238,10 +239,10 @@ TEST(ringct, CLSAG)
   }
 
   // bad c1 in clsag at verification
-  backup_s = clsag.c1;
+  backup_c1 = clsag.c1;
   clsag.c1 = skGen();
   ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
-  clsag.c1 = backup_s;
+  clsag.c1 = backup_c1;
 
   // bad I in clsag at verification
   backup_key = clsag.I;

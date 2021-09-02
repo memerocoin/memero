@@ -202,7 +202,8 @@ namespace rct {
         c_to_hash.push_back({}); // reserve for R
 
 
-        rct_scalar c = rct_reduce(sig.c1);
+        const rct_scalar c1 = rct_reduce(sig.c1);
+        rct_scalar c = c1;
         size_t i = 0;
 
         while (i < n) {
@@ -250,7 +251,7 @@ namespace rct {
             i++;
         }
 
-        return s2s(c - sig.c1) == s_zero;
+        return s2s(c - c1) == s_zero;
     }
 
     bool verRctCLSAGSimple
