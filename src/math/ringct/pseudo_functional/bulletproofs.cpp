@@ -245,18 +245,6 @@ rct_pointV hadamard_fold
   return out;
 }
 
-/* Given a value v (0..2^N-1) and a mask gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gamma)
-{
-  return bulletproof_MAKE(std::vector<rct::rct_scalar>{sv}, rct::rct_scalarV{gamma});
-}
-
-Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
-{
-  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::rct_scalarV{gamma});
-}
-
-
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
 Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV gamma)
 {

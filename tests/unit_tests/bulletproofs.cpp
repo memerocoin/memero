@@ -42,6 +42,17 @@
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
+rct::Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
+{
+  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::rct_scalarV{gamma});
+}
+
+rct::Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gamma)
+{
+  return rct::bulletproof_MAKE(std::vector<rct::rct_scalar>{sv}, rct::rct_scalarV{gamma});
+}
+
+
 TEST(bulletproofs, valid_zero)
 {
   rct::Bulletproof proof = bulletproof_MAKE(0, rct::skGen());
