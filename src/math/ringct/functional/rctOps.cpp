@@ -65,13 +65,12 @@ namespace rct {
   }
 
   rct_point multG(const crypto::ec_scalar_unnormalized a) {
-    rct_scalar s = normalizeKey(a);
+    const rct_scalar s = normalizeKey(a);
     return p2rct_p(crypto::multBase(s));
   }
 
   rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a) {
-    rct_scalar s = normalizeKey(a);
-    return p2rct_p(crypto::mult(P, s));
+    return P ^ normalizeKey(a);
   }
 
   rct_point multH(const rct_scalar a) {
