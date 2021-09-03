@@ -53,10 +53,9 @@ namespace crypto {
    , const secret_key sec
    )
   {
-    const public_key pub = to_pk(sec);
     const epee::blob::data hash_data(prefix_hash.data.begin(), prefix_hash.data.end());
-    const epee::blob::data pub_data(pub.data.begin(), pub.data.end());
-    return generate_schnorr_signature(hash_data + pub_data, sec);
+
+    return generate_schnorr_signature(hash_data + to_pk(sec).blob(), sec);
   }
 
 

@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #pragma once
 
 #include "tools/epee/include/hex.h"
+#include "tools/epee/include/blob.hpp"
 
 #include <sodium.h>
 
@@ -25,6 +26,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace crypto {
   struct crypto_data {
     std::array<uint8_t, 32> data;
+
+    inline epee::blob::data blob() const {
+      return epee::blob::data(data.begin(), data.end());
+    }
   };
 
   // not really functional but needed in other part of the code
