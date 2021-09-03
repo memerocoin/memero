@@ -37,13 +37,7 @@ namespace crypto {
       const ec_point K = multBase(k);
       const auto K_span = epee::pod_to_span(K);
 
-      std::transform
-        (
-         K_span.begin()
-         , K_span.end()
-         , std::back_inserter(hash_data)
-         , std::identity()
-         );
+      hash_data.append(K_span.begin(), K_span.end());
 
       const ec_scalar scalar_hash = hash_to_scalar(hash_data);
 
