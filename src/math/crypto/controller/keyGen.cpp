@@ -53,8 +53,10 @@ namespace crypto {
    , const secret_key sec
    )
   {
-    const sig_buf buf {prefix_hash, to_pk(sec)};
-    return generate_schnorr_signature(epee::pod_to_span(buf), sec);
+    const public_key pub = to_pk(sec);
+    const epee::blob::data hash_data(prefix_hash.data.begin(), prefix_hash.data.end());
+    const epee::blob::data pub_data(pub.data.begin(), pub.data.end());
+    return generate_schnorr_signature(hash_data + pub_data, sec);
   }
 
 

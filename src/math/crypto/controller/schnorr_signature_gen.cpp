@@ -32,14 +32,13 @@ namespace crypto {
       const ec_scalar k = scalarGen();
       if (k == s_0) continue;
 
-      epee::blob::data hash_data(message.data(), message.size());
+      const epee::blob::data message_data(message.begin(), message.end());
 
       const ec_point K = multBase(k);
       const auto K_span = epee::pod_to_span(K);
+      const epee::blob::data point_data(K_span.begin(), K_span.end());
 
-      hash_data.append(K_span.begin(), K_span.end());
-
-      const ec_scalar scalar_hash = hash_to_scalar(hash_data);
+      const ec_scalar scalar_hash = hash_to_scalar(message_data + point_data);
 
       if (scalar_hash == s_0)
         continue;

@@ -70,8 +70,10 @@ namespace crypto {
 
 
   bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const schnorr_signature &sig) noexcept {
-    const sig_buf buf { prefix_hash, pub };
-    return validate_schnorr_signature(epee::pod_to_span(buf), pub, sig);
+    const epee::blob::data hash_data(prefix_hash.data.begin(), prefix_hash.data.end());
+    const epee::blob::data pub_data(pub.data.begin(), pub.data.end());
+
+    return validate_schnorr_signature(hash_data + pub_data, pub, sig);
   }
 
 

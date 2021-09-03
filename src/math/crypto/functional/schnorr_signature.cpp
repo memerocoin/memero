@@ -41,18 +41,14 @@ namespace crypto {
 
     if (r == identity) return false;
 
-    epee::blob::data hash_data(message.data(), message.size());
+    const epee::blob::data message_data(message.begin(), message.end());
+
     const auto pub_span = epee::pod_to_span(*p);
+    const epee::blob::data point_data(pub_span.begin(), pub_span.end());
 
-    std::transform
-      (
-       pub_span.begin()
-       , pub_span.end()
-       , std::back_inserter(hash_data)
-       , std::identity()
-       );
+    const ec_scalar scalar_hash = hash_to_scalar(message_data + point_data);
 
-    return sig.scalar_hash == hash_to_scalar(hash_data);
+    return sig.scalar_hash == scalar_hash;
   }
 
 }

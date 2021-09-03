@@ -37,12 +37,6 @@ namespace crypto {
 
   struct key_image: ec_point {};
 
-
-  struct sig_buf {
-    hash h;
-    ec_point_unsafe pub;
-  };
-
   // Used in v1/v2 tx proofs
   struct s_comm_2 {
     hash msg;
