@@ -43,7 +43,7 @@ namespace crypto {
 
     const epee::blob::data message_data(message.begin(), message.end());
 
-    const auto pub_span = epee::pod_to_span(*p);
+    const auto pub_span = epee::pod_to_span(r);
     const epee::blob::data point_data(pub_span.begin(), pub_span.end());
 
     const ec_scalar scalar_hash = hash_to_scalar(message_data + point_data);
