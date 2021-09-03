@@ -33,11 +33,11 @@ namespace crypto {
     const auto p = maybeSafePoint(pub);
     if (!p) return false;
 
-    if (is_not_reduced(sig.hashed_scalar) || is_not_reduced(sig.r) || (sig.hashed_scalar == s_0)) {
+    if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.r) || (sig.scalar_hash == s_0)) {
       return false;
     }
 
-    const ec_point r = (*p ^ sig.hashed_scalar) + multBase(sig.r);
+    const ec_point r = (*p ^ sig.scalar_hash) + multBase(sig.r);
 
     if (r == identity) return false;
 
@@ -52,7 +52,7 @@ namespace crypto {
        , std::identity()
        );
 
-    return sig.hashed_scalar == hash_to_scalar(hash_data);
+    return sig.scalar_hash == hash_to_scalar(hash_data);
   }
 
 }

@@ -94,23 +94,23 @@ namespace crypto {
     if (!is_valid_point(D)) return false;
     if (B && !is_valid_point(*B)) return false;
 
-    if (is_not_reduced(sig.hashed_scalar) || is_not_reduced(sig.r)) return false;
+    if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.r)) return false;
 
-    // compute sig.hashed_scalar*R
+    // compute sig.scalar_hash*R
 
-    const ec_point cR = R ^ sig.hashed_scalar;
+    const ec_point cR = R ^ sig.scalar_hash;
 
     const ec_point X = B
       ? (*B ^ sig.r) + cR
       : multBase(sig.r) + cR;
 
-    // compute sig.hashed_scalar*D
-    const ec_point cD = D ^ sig.hashed_scalar;
+    // compute sig.scalar_hash*D
+    const ec_point cD = D ^ sig.scalar_hash;
 
     // compute sig.r*A
     const ec_point rA = A ^ sig.r;
 
-    // compute Y = sig.hashed_scalar*D + sig.r*A
+    // compute Y = sig.scalar_hash*D + sig.r*A
     const ec_point Y = cD + rA;
 
     // Compute hash challenge
@@ -147,8 +147,8 @@ namespace crypto {
     // Hash depends on version
     const ec_scalar c2 = hash_to_scalar(epee::pod_to_span(buf));
 
-    // test if c2 == sig.hashed_scalar
-    return c2 - sig.hashed_scalar == s_0;
+    // test if c2 == sig.scalar_hash
+    return c2 - sig.scalar_hash == s_0;
   }
 
   key_image derive_key_image(const public_key &pub, const secret_key &sec) noexcept {

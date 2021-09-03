@@ -112,8 +112,8 @@ namespace crypto {
       };
 
 
-    // sig.hashed_scalar = Hs(Msg || D || X || Y || sep || R || A || B)
-    // sig.r = k - sig.hashed_scalar*r
+    // sig.scalar_hash = Hs(Msg || D || X || Y || sep || R || A || B)
+    // sig.r = k - sig.scalar_hash*r
 
     const auto sig_c = hash_to_scalar(epee::pod_to_span(buf));
     return {
