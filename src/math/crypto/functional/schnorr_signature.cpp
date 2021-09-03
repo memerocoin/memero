@@ -30,6 +30,37 @@ namespace crypto {
    , const schnorr_signature sig
    )
   {
+    /*
+        given
+          * sec/pub
+          * k/K
+        key pairs
+
+        from the generator function:
+
+        s = k - hash(m, K) * sec
+          = k - scalar_hash * sec
+
+        we know:
+        1. m = message
+        2. pub
+        3. sig = (s, scalar_hash)
+
+        multiply both ends of the equation by G:
+
+        sG = (k - scalar_hash * sec) G
+           = kG - scalar_hash (sec G)
+           = K - scalar_hash pub
+
+        so K = sG + scalar_hash pub
+
+        We know K now.
+
+        use K to compute scalar_hash as in:
+
+        scalar_hash = hash(m, K), and compare the result from sig
+    */
+
     const auto p = maybeSafePoint(pub);
     if (!p) return false;
 
