@@ -29,6 +29,12 @@ namespace crypto {
    const std::optional<secret_key> recovery_key
    );
 
+  signature generate_schnorr_signature
+  (
+   const epee::blob::span message
+   , const secret_key &sec
+   );
+
   /* Generation and checking of a standard signature.
     */
   signature generate_signature(const hash &, const public_key &, const secret_key &);

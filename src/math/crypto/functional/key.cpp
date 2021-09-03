@@ -68,24 +68,44 @@ namespace crypto {
     return reduce(h2s(h));
   }
 
-  bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) noexcept {
-    const auto p = maybeSafePoint(pub);
 
-    // if (!p) throw std::runtime_error("signature pubkey is invalid");
+  bool validate_schnorr_signature
+  (
+   const epee::blob::span message
+   , const ec_point_unsafe pub
+   , const signature sig
+   )
+  {
+    const auto p = maybeSafePoint(pub);
     if (!p) return false;
 
-    if (is_not_reduced(sig.c) || is_not_reduced(sig.r) || (sig.c == s_0)) {
+    if (is_not_reduced(sig.hashed_scalar) || is_not_reduced(sig.r) || (sig.hashed_scalar == s_0)) {
       return false;
     }
 
-    const ec_point r = (*p ^ sig.c) + multBase(sig.r);
+    const ec_point r = (*p ^ sig.hashed_scalar) + multBase(sig.r);
 
     if (r == identity) return false;
 
-    const s_comm buf { prefix_hash, *p, r };
-    const ec_scalar h = hash_to_scalar(epee::pod_to_span(buf));
+    epee::blob::data hash_data(message.data(), message.size());
+    const auto pub_span = epee::pod_to_span(*p);
 
-    return h - sig.c == s_0;
+    std::transform
+      (
+       pub_span.begin()
+       , pub_span.end()
+       , std::back_inserter(hash_data)
+       , std::identity()
+       );
+
+    return sig.hashed_scalar == hash_to_scalar(hash_data);
+  }
+
+  // bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) noexcept {
+
+  bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) noexcept {
+    const sig_buf buf { prefix_hash, pub };
+    return validate_schnorr_signature(epee::pod_to_span(buf), pub, sig);
   }
 
 
@@ -106,23 +126,23 @@ namespace crypto {
     if (!is_valid_point(D)) return false;
     if (B && !is_valid_point(*B)) return false;
 
-    if (is_not_reduced(sig.c) || is_not_reduced(sig.r)) return false;
+    if (is_not_reduced(sig.hashed_scalar) || is_not_reduced(sig.r)) return false;
 
-    // compute sig.c*R
+    // compute sig.hashed_scalar*R
 
-    const ec_point cR = R ^ sig.c;
+    const ec_point cR = R ^ sig.hashed_scalar;
 
     const ec_point X = B
       ? (*B ^ sig.r) + cR
       : multBase(sig.r) + cR;
 
-    // compute sig.c*D
-    const ec_point cD = D ^ sig.c;
+    // compute sig.hashed_scalar*D
+    const ec_point cD = D ^ sig.hashed_scalar;
 
     // compute sig.r*A
     const ec_point rA = A ^ sig.r;
 
-    // compute Y = sig.c*D + sig.r*A
+    // compute Y = sig.hashed_scalar*D + sig.r*A
     const ec_point Y = cD + rA;
 
     // Compute hash challenge
@@ -159,8 +179,8 @@ namespace crypto {
     // Hash depends on version
     const ec_scalar c2 = hash_to_scalar(epee::pod_to_span(buf));
 
-    // test if c2 == sig.c
-    return c2 - sig.c == s_0;
+    // test if c2 == sig.hashed_scalar
+    return c2 - sig.hashed_scalar == s_0;
   }
 
   key_image derive_key_image(const public_key &pub, const secret_key &sec) noexcept {

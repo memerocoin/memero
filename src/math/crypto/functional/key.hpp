@@ -37,16 +37,17 @@ namespace crypto {
   struct key_image: ec_point {};
 
   struct signature_unnormalized {
-    ec_scalar_unnormalized c, r;
+    ec_scalar_unnormalized hashed_scalar; // e
+    ec_scalar_unnormalized r; // s
   };
 
   struct signature {
-    ec_scalar c, r;
+    ec_scalar hashed_scalar, r;
 
     bool operator==(const signature&) const = default;
 
     bool operator==(const signature_unnormalized &x) const noexcept {
-      return c == x.c && r == x.r;
+      return hashed_scalar == x.hashed_scalar && r == x.r;
     }
   };
 
@@ -54,6 +55,11 @@ namespace crypto {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 
+
+  struct sig_buf {
+    hash h;
+    ec_point_unsafe pub;
+  };
 
   struct s_comm {
     hash h;
@@ -105,6 +111,13 @@ namespace crypto {
 
   secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &) noexcept;
 
+
+  bool validate_schnorr_signature
+  (
+   const epee::blob::span message
+   , const ec_point_unsafe pub
+   , const signature sig
+   );
   /* Generation and checking of a standard signature.
     */
 

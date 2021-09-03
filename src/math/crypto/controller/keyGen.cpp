@@ -47,10 +47,9 @@ namespace crypto {
     return {s, p2pk(multBase(s))};
   }
 
-  signature generate_signature
+  signature generate_schnorr_signature
   (
-   const hash &prefix_hash
-   , const public_key &pub
+   const epee::blob::span message
    , const secret_key &sec
    )
   {
@@ -58,25 +57,47 @@ namespace crypto {
       const ec_scalar k = scalarGen();
       if (k == s_0) continue;
 
-      const ec_point comm = multBase(k);
-      const s_comm buf {prefix_hash, pub, comm};
-      const ec_scalar sig_c = hash_to_scalar(epee::pod_to_span(buf));
+      epee::blob::data hash_data(message.data(), message.size());
 
-      if (sig_c == s_0)
+      const ec_point K = multBase(k);
+      const auto K_span = epee::pod_to_span(K);
+
+      std::transform
+        (
+         K_span.begin()
+         , K_span.end()
+         , std::back_inserter(hash_data)
+         , std::identity()
+         );
+
+      const ec_scalar e = hash_to_scalar(hash_data);
+
+      if (e == s_0)
         continue;
 
-      const ec_scalar sig_r = k - sig_c * sec;
+      const ec_scalar s = k - e * sec;
 
-      if (sig_r == s_0)
+      if (s == s_0)
         continue;
 
       return
         {
-          sig_c
-          , sig_r
+          e
+          , s
         };
     }
 
+  }
+
+  signature generate_signature
+  (
+   const hash &prefix_hash
+   , const public_key &pub
+   , const secret_key &sec
+   )
+  {
+    const sig_buf buf {prefix_hash, pub};
+    return generate_schnorr_signature(epee::pod_to_span(buf), sec);
   }
 
 
@@ -133,8 +154,8 @@ namespace crypto {
       };
 
 
-    // sig.c = Hs(Msg || D || X || Y || sep || R || A || B)
-    // sig.r = k - sig.c*r
+    // sig.hashed_scalar = Hs(Msg || D || X || Y || sep || R || A || B)
+    // sig.r = k - sig.hashed_scalar*r
 
     const auto sig_c = hash_to_scalar(epee::pod_to_span(buf));
     return {
