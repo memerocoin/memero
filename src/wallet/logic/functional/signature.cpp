@@ -87,7 +87,7 @@ namespace signature {
     const crypto::signature s =
       {
         crypto::reduce(s_unsafe.scalar_hash)
-        , crypto::reduce(s_unsafe.r)
+        , crypto::reduce(s_unsafe.s)
       };
 
     if (s != s_unsafe) {

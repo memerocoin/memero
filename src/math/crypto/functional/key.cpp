@@ -94,23 +94,23 @@ namespace crypto {
     if (!is_valid_point(D)) return false;
     if (B && !is_valid_point(*B)) return false;
 
-    if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.r)) return false;
+    if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.s)) return false;
 
     // compute sig.scalar_hash*R
 
     const ec_point cR = R ^ sig.scalar_hash;
 
     const ec_point X = B
-      ? (*B ^ sig.r) + cR
-      : multBase(sig.r) + cR;
+      ? (*B ^ sig.s) + cR
+      : multBase(sig.s) + cR;
 
     // compute sig.scalar_hash*D
     const ec_point cD = D ^ sig.scalar_hash;
 
-    // compute sig.r*A
-    const ec_point rA = A ^ sig.r;
+    // compute sig.s*A
+    const ec_point rA = A ^ sig.s;
 
-    // compute Y = sig.scalar_hash*D + sig.r*A
+    // compute Y = sig.scalar_hash*D + sig.s*A
     const ec_point Y = cD + rA;
 
     // Compute hash challenge

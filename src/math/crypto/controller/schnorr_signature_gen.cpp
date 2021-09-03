@@ -57,8 +57,8 @@ namespace crypto {
 
       return
         {
-          e
-          , s
+          s
+          , e
         };
     }
   }

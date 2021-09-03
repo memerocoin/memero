@@ -24,17 +24,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace crypto {
 
   struct signature_unnormalized {
-    ec_scalar_unnormalized scalar_hash; // e
-    ec_scalar_unnormalized r; // s
+    ec_scalar_unnormalized s;
+    ec_scalar_unnormalized scalar_hash;
   };
 
   struct signature {
-    ec_scalar scalar_hash, r;
+    ec_scalar s, scalar_hash;
 
     bool operator==(const signature&) const = default;
 
     bool operator==(const signature_unnormalized &x) const noexcept {
-      return scalar_hash == x.scalar_hash && r == x.r;
+      return scalar_hash == x.scalar_hash && s == x.s;
     }
   };
 

@@ -117,8 +117,8 @@ namespace crypto {
 
     const auto sig_c = hash_to_scalar(epee::pod_to_span(buf));
     return {
-      sig_c
-      , k - sig_c * r
+      k - sig_c * r
+      , sig_c
     };
   }
 
