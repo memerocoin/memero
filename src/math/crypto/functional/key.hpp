@@ -88,12 +88,6 @@ namespace crypto {
   secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &) noexcept;
 
 
-  bool validate_schnorr_signature
-  (
-   const epee::blob::span message
-   , const ec_point_unsafe pub
-   , const schnorr_signature sig
-   );
   /* Generation and checking of a standard signature.
     */
 

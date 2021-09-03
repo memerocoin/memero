@@ -69,8 +69,6 @@ namespace crypto {
   }
 
 
-  // bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const schnorr_signature &sig) noexcept {
-
   bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const schnorr_signature &sig) noexcept {
     const sig_buf buf { prefix_hash, pub };
     return validate_schnorr_signature(epee::pod_to_span(buf), pub, sig);
