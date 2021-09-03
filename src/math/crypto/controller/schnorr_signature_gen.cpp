@@ -25,7 +25,7 @@ namespace crypto {
   schnorr_signature generate_schnorr_signature
   (
    const epee::blob::span message
-   , const secret_key &sec
+   , const secret_key sec
    )
   {
     while (true) {
@@ -45,12 +45,12 @@ namespace crypto {
          , std::identity()
          );
 
-      const ec_scalar e = hash_to_scalar(hash_data);
+      const ec_scalar scalar_hash = hash_to_scalar(hash_data);
 
-      if (e == s_0)
+      if (scalar_hash == s_0)
         continue;
 
-      const ec_scalar s = k - e * sec;
+      const ec_scalar s = k - scalar_hash * sec;
 
       if (s == s_0)
         continue;
@@ -58,7 +58,7 @@ namespace crypto {
       return
         {
           s
-          , e
+          , scalar_hash
         };
     }
   }
