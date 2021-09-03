@@ -27,7 +27,7 @@ namespace crypto {
   (
    const epee::blob::span message
    , const ec_point_unsafe pub
-   , const signature sig
+   , const schnorr_signature sig
    )
   {
     const auto p = maybeSafePoint(pub);

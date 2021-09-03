@@ -47,7 +47,7 @@ namespace crypto {
     return {s, p2pk(multBase(s))};
   }
 
-  signature generate_signature
+  schnorr_signature generate_signature
   (
    const hash prefix_hash
    , const secret_key sec
@@ -62,7 +62,7 @@ namespace crypto {
   // This handles use cases for both standard addresses and subaddresses
   //
   // Generates only proofs for InProofV2 and OutProofV2
-  signature generate_tx_proof
+  schnorr_signature generate_tx_proof
   (
    const hash &prefix_hash
    , const public_key &R

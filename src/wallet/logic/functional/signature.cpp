@@ -76,7 +76,7 @@ namespace signature {
       LOG_PRINT_L0("Signature decoding error");
       return {};
     }
-    crypto::signature_unnormalized s_unsafe;
+    crypto::schnorr_signature_unnormalized s_unsafe;
     if (sizeof(s_unsafe) != decoded.size()) {
       LOG_PRINT_L0("Signature decoding error");
       return {};
@@ -84,7 +84,7 @@ namespace signature {
 
     memcpy(&s_unsafe, decoded.data(), decoded.size());
 
-    const crypto::signature s =
+    const crypto::schnorr_signature s =
       {
         crypto::reduce(s_unsafe.scalar_hash)
         , crypto::reduce(s_unsafe.s)
@@ -161,7 +161,7 @@ namespace signature {
       }
     }
 
-    const crypto::signature signature = crypto::generate_signature(hash, skey);
+    const crypto::schnorr_signature signature = crypto::generate_signature(hash, skey);
     return std::string(config::MESSAGE_SIGNING_HEADER) +
       tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(signature)));
   }

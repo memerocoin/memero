@@ -69,7 +69,7 @@ TEST(Crypto, Ostream)
   EXPECT_TRUE(is_formatted<crypto::hash>());
   EXPECT_TRUE(is_formatted<crypto::public_key>());
   EXPECT_TRUE(is_formatted<crypto::secret_key>());
-  EXPECT_TRUE(is_formatted<crypto::signature>());
+  EXPECT_TRUE(is_formatted<crypto::schnorr_signature>());
   EXPECT_TRUE(is_formatted<crypto::key_derivation>());
   EXPECT_TRUE(is_formatted<crypto::key_image>());
 }

@@ -47,7 +47,7 @@
 
 namespace cryptonote
 {
-  typedef std::vector<crypto::signature> ring_signature;
+  typedef std::vector<crypto::schnorr_signature> ring_signature;
 
 
   /* outputs */
@@ -187,7 +187,7 @@ namespace cryptonote
     mutable std::atomic<bool> blob_size_valid;
 
   public:
-    std::vector<std::vector<crypto::signature> > signatures; //count signatures  always the same as inputs count
+    std::vector<std::vector<crypto::schnorr_signature> > signatures; //count signatures  always the same as inputs count
     rct::rctSig rct_signatures;
 
     // hash cash

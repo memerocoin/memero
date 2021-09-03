@@ -33,17 +33,17 @@ namespace crypto {
 
   /* Generation and checking of a standard signature.
     */
-  signature generate_signature
+  schnorr_signature generate_signature
   (
    const hash prefix_hash
    , const secret_key sec
    );
 
   /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-    * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
+    * derivation D, the schnorr_signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
     * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
     */
-  signature generate_tx_proof
+  schnorr_signature generate_tx_proof
   (
    const hash &prefix_hash
    , const public_key &R

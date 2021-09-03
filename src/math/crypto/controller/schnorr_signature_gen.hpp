@@ -20,7 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace crypto {
 
-  signature generate_schnorr_signature
+  schnorr_signature generate_schnorr_signature
   (
    const epee::blob::span message
    , const secret_key &sec

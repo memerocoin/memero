@@ -23,22 +23,22 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace crypto {
 
-  struct signature_unnormalized {
+  struct schnorr_signature_unnormalized {
     ec_scalar_unnormalized s;
     ec_scalar_unnormalized scalar_hash;
   };
 
-  struct signature {
+  struct schnorr_signature {
     ec_scalar s, scalar_hash;
 
-    bool operator==(const signature&) const = default;
+    bool operator==(const schnorr_signature&) const = default;
 
-    bool operator==(const signature_unnormalized &x) const noexcept {
+    bool operator==(const schnorr_signature_unnormalized &x) const noexcept {
       return scalar_hash == x.scalar_hash && s == x.s;
     }
   };
 
-  inline std::ostream &operator <<(std::ostream &o, const crypto::signature &v) {
+  inline std::ostream &operator <<(std::ostream &o, const schnorr_signature &v) {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 

@@ -41,18 +41,18 @@
 
 // read
 template <template <bool> class Archive>
-bool do_serialize(Archive<false> &ar, std::vector<crypto::signature> &v)
+bool do_serialize(Archive<false> &ar, std::vector<crypto::schnorr_signature> &v)
 {
   const size_t cnt = v.size();
 
   // very basic sanity check
-  if (ar.remaining_bytes() < cnt*sizeof(crypto::signature)) {
+  if (ar.remaining_bytes() < cnt*sizeof(crypto::schnorr_signature)) {
     ar.stream().setstate(std::ios::failbit);
     return false;
   }
 
-  for (crypto::signature& x: v) {
-    ar.serialize_blob(&x, sizeof(crypto::signature));
+  for (crypto::schnorr_signature& x: v) {
+    ar.serialize_blob(&x, sizeof(crypto::schnorr_signature));
     if (!ar.stream().good())
       return false;
   }
@@ -61,12 +61,12 @@ bool do_serialize(Archive<false> &ar, std::vector<crypto::signature> &v)
 
 // write
 template <template <bool> class Archive>
-bool do_serialize(Archive<true> &ar, const std::vector<crypto::signature> v)
+bool do_serialize(Archive<true> &ar, const std::vector<crypto::schnorr_signature> v)
 {
   if (v.empty()) return true;
   ar.begin_string();
-  for (const crypto::signature& x: v) {
-    ar.serialize_blob(&x, sizeof(crypto::signature));
+  for (const crypto::schnorr_signature& x: v) {
+    ar.serialize_blob(&x, sizeof(crypto::schnorr_signature));
     if (!ar.stream().good())
       return false;
   }
@@ -81,4 +81,4 @@ BLOB_SERIALIZER(crypto::public_key);
 BLOB_SERIALIZER(crypto::secret_key);
 BLOB_SERIALIZER(crypto::key_derivation);
 BLOB_SERIALIZER(crypto::key_image);
-BLOB_SERIALIZER(crypto::signature);
+BLOB_SERIALIZER(crypto::schnorr_signature);

@@ -92,12 +92,12 @@ namespace crypto {
   (
    const epee::blob::span message
    , const ec_point_unsafe pub
-   , const signature sig
+   , const schnorr_signature sig
    );
   /* Generation and checking of a standard signature.
     */
 
-  bool check_signature(const hash &, const ec_point_unsafe &, const signature &) noexcept;
+  bool check_signature(const hash &, const ec_point_unsafe &, const schnorr_signature &) noexcept;
 
   bool check_tx_proof
   (
@@ -106,7 +106,7 @@ namespace crypto {
    , const public_key &A
    , const std::optional<public_key> &B
    , const public_key &D
-   , const signature &sig
+   , const schnorr_signature &sig
    ) noexcept;
 
   /* To send money to a key:
