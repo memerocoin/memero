@@ -69,38 +69,6 @@ namespace crypto {
   }
 
 
-  bool validate_schnorr_signature
-  (
-   const epee::blob::span message
-   , const ec_point_unsafe pub
-   , const signature sig
-   )
-  {
-    const auto p = maybeSafePoint(pub);
-    if (!p) return false;
-
-    if (is_not_reduced(sig.hashed_scalar) || is_not_reduced(sig.r) || (sig.hashed_scalar == s_0)) {
-      return false;
-    }
-
-    const ec_point r = (*p ^ sig.hashed_scalar) + multBase(sig.r);
-
-    if (r == identity) return false;
-
-    epee::blob::data hash_data(message.data(), message.size());
-    const auto pub_span = epee::pod_to_span(*p);
-
-    std::transform
-      (
-       pub_span.begin()
-       , pub_span.end()
-       , std::back_inserter(hash_data)
-       , std::identity()
-       );
-
-    return sig.hashed_scalar == hash_to_scalar(hash_data);
-  }
-
   // bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) noexcept {
 
   bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const signature &sig) noexcept {

@@ -14,39 +14,53 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 */
 
-#pragma once
 
 #include "schnorr_signature_gen.hpp"
 
-#include "../functional/key.hpp"
+#include "keyGen.hpp"
+
 
 namespace crypto {
-  //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen();
 
-  /* Generate a new key pair
-   */
-  std::pair<secret_key, public_key> generate_keys
+  signature generate_schnorr_signature
   (
-   const std::optional<secret_key> recovery_key
-   );
+   const epee::blob::span message
+   , const secret_key &sec
+   )
+  {
+    while (true) {
+      const ec_scalar k = scalarGen();
+      if (k == s_0) continue;
 
-  /* Generation and checking of a standard signature.
-    */
-  signature generate_signature(const hash &, const public_key &, const secret_key &);
+      epee::blob::data hash_data(message.data(), message.size());
 
-  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-    * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
-    * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
-    */
-  signature generate_tx_proof
-  (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
-   );
+      const ec_point K = multBase(k);
+      const auto K_span = epee::pod_to_span(K);
+
+      std::transform
+        (
+         K_span.begin()
+         , K_span.end()
+         , std::back_inserter(hash_data)
+         , std::identity()
+         );
+
+      const ec_scalar e = hash_to_scalar(hash_data);
+
+      if (e == s_0)
+        continue;
+
+      const ec_scalar s = k - e * sec;
+
+      if (s == s_0)
+        continue;
+
+      return
+        {
+          e
+          , s
+        };
+    }
+  }
 
 }

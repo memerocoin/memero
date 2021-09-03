@@ -20,6 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "curve25519_cryptonote_extension.hpp"
 
 #include "hash.hpp"
+#include "schnorr_signature.hpp"
 
 #include <sodium.h>
 
@@ -35,25 +36,6 @@ namespace crypto {
   struct key_derivation: ec_point {};
 
   struct key_image: ec_point {};
-
-  struct signature_unnormalized {
-    ec_scalar_unnormalized hashed_scalar; // e
-    ec_scalar_unnormalized r; // s
-  };
-
-  struct signature {
-    ec_scalar hashed_scalar, r;
-
-    bool operator==(const signature&) const = default;
-
-    bool operator==(const signature_unnormalized &x) const noexcept {
-      return hashed_scalar == x.hashed_scalar && r == x.r;
-    }
-  };
-
-  inline std::ostream &operator <<(std::ostream &o, const crypto::signature &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
-  }
 
 
   struct sig_buf {

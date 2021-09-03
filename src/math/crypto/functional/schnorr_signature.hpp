@@ -16,37 +16,30 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #pragma once
 
-#include "schnorr_signature_gen.hpp"
+#include "group.hpp"
+#include "hash.hpp"
 
-#include "../functional/key.hpp"
+#include <sodium.h>
 
 namespace crypto {
-  //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen();
 
-  /* Generate a new key pair
-   */
-  std::pair<secret_key, public_key> generate_keys
-  (
-   const std::optional<secret_key> recovery_key
-   );
+  struct signature_unnormalized {
+    ec_scalar_unnormalized hashed_scalar; // e
+    ec_scalar_unnormalized r; // s
+  };
 
-  /* Generation and checking of a standard signature.
-    */
-  signature generate_signature(const hash &, const public_key &, const secret_key &);
+  struct signature {
+    ec_scalar hashed_scalar, r;
 
-  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-    * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
-    * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
-    */
-  signature generate_tx_proof
-  (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
-   );
+    bool operator==(const signature&) const = default;
+
+    bool operator==(const signature_unnormalized &x) const noexcept {
+      return hashed_scalar == x.hashed_scalar && r == x.r;
+    }
+  };
+
+  inline std::ostream &operator <<(std::ostream &o, const crypto::signature &v) {
+    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+  }
 
 }

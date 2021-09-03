@@ -47,48 +47,6 @@ namespace crypto {
     return {s, p2pk(multBase(s))};
   }
 
-  signature generate_schnorr_signature
-  (
-   const epee::blob::span message
-   , const secret_key &sec
-   )
-  {
-    while (true) {
-      const ec_scalar k = scalarGen();
-      if (k == s_0) continue;
-
-      epee::blob::data hash_data(message.data(), message.size());
-
-      const ec_point K = multBase(k);
-      const auto K_span = epee::pod_to_span(K);
-
-      std::transform
-        (
-         K_span.begin()
-         , K_span.end()
-         , std::back_inserter(hash_data)
-         , std::identity()
-         );
-
-      const ec_scalar e = hash_to_scalar(hash_data);
-
-      if (e == s_0)
-        continue;
-
-      const ec_scalar s = k - e * sec;
-
-      if (s == s_0)
-        continue;
-
-      return
-        {
-          e
-          , s
-        };
-    }
-
-  }
-
   signature generate_signature
   (
    const hash &prefix_hash

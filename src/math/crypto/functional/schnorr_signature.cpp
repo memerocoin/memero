@@ -14,39 +14,45 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 */
 
-#pragma once
+#include "schnorr_signature.hpp"
+#include "key.hpp" // hash_to_scalar
 
-#include "schnorr_signature_gen.hpp"
+#include "tools/epee/include/string_tools.h"
 
-#include "../functional/key.hpp"
+#include "config/cryptonote.hpp"
 
 namespace crypto {
-  //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen();
 
-  /* Generate a new key pair
-   */
-  std::pair<secret_key, public_key> generate_keys
+  bool validate_schnorr_signature
   (
-   const std::optional<secret_key> recovery_key
-   );
+   const epee::blob::span message
+   , const ec_point_unsafe pub
+   , const signature sig
+   )
+  {
+    const auto p = maybeSafePoint(pub);
+    if (!p) return false;
 
-  /* Generation and checking of a standard signature.
-    */
-  signature generate_signature(const hash &, const public_key &, const secret_key &);
+    if (is_not_reduced(sig.hashed_scalar) || is_not_reduced(sig.r) || (sig.hashed_scalar == s_0)) {
+      return false;
+    }
 
-  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-    * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
-    * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
-    */
-  signature generate_tx_proof
-  (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
-   );
+    const ec_point r = (*p ^ sig.hashed_scalar) + multBase(sig.r);
+
+    if (r == identity) return false;
+
+    epee::blob::data hash_data(message.data(), message.size());
+    const auto pub_span = epee::pod_to_span(*p);
+
+    std::transform
+      (
+       pub_span.begin()
+       , pub_span.end()
+       , std::back_inserter(hash_data)
+       , std::identity()
+       );
+
+    return sig.hashed_scalar == hash_to_scalar(hash_data);
+  }
 
 }

@@ -16,37 +16,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #pragma once
 
-#include "schnorr_signature_gen.hpp"
-
 #include "../functional/key.hpp"
 
 namespace crypto {
-  //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen();
 
-  /* Generate a new key pair
-   */
-  std::pair<secret_key, public_key> generate_keys
+  signature generate_schnorr_signature
   (
-   const std::optional<secret_key> recovery_key
-   );
-
-  /* Generation and checking of a standard signature.
-    */
-  signature generate_signature(const hash &, const public_key &, const secret_key &);
-
-  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-    * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
-    * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
-    */
-  signature generate_tx_proof
-  (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
+   const epee::blob::span message
+   , const secret_key &sec
    );
 
 }
