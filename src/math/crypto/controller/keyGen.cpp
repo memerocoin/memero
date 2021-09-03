@@ -47,7 +47,7 @@ namespace crypto {
     return {s, p2pk(multBase(s))};
   }
 
-  schnorr_signature generate_signature
+  schnorr_signature generate_schnorr_signature_with_pubkey_data
   (
    const hash prefix_hash
    , const secret_key sec
@@ -109,7 +109,6 @@ namespace crypto {
         , A
         , B ? *B : zero
       };
-
 
     // sig.scalar_hash = Hs(Msg || D || X || Y || sep || R || A || B)
     // sig.r = k - sig.scalar_hash*r

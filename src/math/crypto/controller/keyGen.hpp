@@ -33,7 +33,7 @@ namespace crypto {
 
   /* Generation and checking of a standard signature.
     */
-  schnorr_signature generate_signature
+  schnorr_signature generate_schnorr_signature_with_pubkey_data
   (
    const hash prefix_hash
    , const secret_key sec

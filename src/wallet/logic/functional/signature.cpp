@@ -161,7 +161,7 @@ namespace signature {
       }
     }
 
-    const crypto::schnorr_signature signature = crypto::generate_signature(hash, skey);
+    const crypto::schnorr_signature signature = crypto::generate_schnorr_signature_with_pubkey_data(hash, skey);
     return std::string(config::MESSAGE_SIGNING_HEADER) +
       tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(signature)));
   }
