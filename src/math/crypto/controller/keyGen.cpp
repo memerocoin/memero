@@ -44,7 +44,7 @@ namespace crypto {
    */
   std::pair<secret_key, public_key> generate_keys(std::optional<secret_key> recovery_key) {
     const secret_key s = recovery_key ? s2sk(reduce(*recovery_key)) : s2sk(scalarGen());
-    return {s, p2pk(multBase(s))};
+    return {s, to_pk(s)};
   }
 
   schnorr_signature generate_schnorr_signature_with_pubkey_data
