@@ -61,12 +61,6 @@ namespace crypto {
     ec_point_unsafe pub;
   };
 
-  struct s_comm {
-    hash h;
-    ec_point key;
-    ec_point comm;
-  };
-
   // Used in v1/v2 tx proofs
   struct s_comm_2 {
     hash msg;
