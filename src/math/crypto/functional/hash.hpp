@@ -28,6 +28,10 @@ namespace crypto {
   struct hash {
     std::array<uint8_t, HASH_SIZE> data;
     bool operator==(const hash&) const = default;
+
+    inline epee::blob::data blob() const {
+      return epee::blob::data(data.begin(), data.end());
+    }
   };
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
     epee::hex::append_decode_formatted(o, v.data); return o;

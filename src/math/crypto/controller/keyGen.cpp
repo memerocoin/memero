@@ -49,13 +49,11 @@ namespace crypto {
 
   schnorr_signature generate_schnorr_signature_with_pubkey_data
   (
-   const hash prefix_hash
+   const hash h
    , const secret_key sec
    )
   {
-    const epee::blob::data hash_data(prefix_hash.data.begin(), prefix_hash.data.end());
-
-    return generate_schnorr_signature(hash_data + to_pk(sec).blob(), sec);
+    return generate_schnorr_signature(h.blob() + to_pk(sec).blob(), sec);
   }
 
 

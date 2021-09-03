@@ -35,7 +35,7 @@ namespace crypto {
     */
   schnorr_signature generate_schnorr_signature_with_pubkey_data
   (
-   const hash prefix_hash
+   const hash h
    , const secret_key sec
    );
 
