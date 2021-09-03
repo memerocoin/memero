@@ -99,10 +99,10 @@ namespace signature {
     // Test each mode and return which mode, if either, succeeded
     const crypto::hash hash = get_message_hash(data);
     constexpr unsigned ver = config::MESSAGE_SIGNING_VERSION;
-    if (crypto::check_signature(hash, address.m_spend_public_key, s))
+    if (crypto::validate_schnorr_signature_with_pubkey_data(hash, address.m_spend_public_key, s))
       return {true, ver, wallet::logic::type::message_signature::sign_with_spend_key };
 
-    if (crypto::check_signature(hash, address.m_view_public_key, s))
+    if (crypto::validate_schnorr_signature_with_pubkey_data(hash, address.m_view_public_key, s))
       return {true, ver, wallet::logic::type::message_signature::sign_with_view_key };
 
     // Both modes failed

@@ -85,7 +85,12 @@ namespace crypto {
   /* Generation and checking of a standard signature.
     */
 
-  bool check_signature(const hash &, const ec_point_unsafe &, const schnorr_signature &) noexcept;
+  bool validate_schnorr_signature_with_pubkey_data
+  (
+   const hash prefix_hash
+   , const ec_point_unsafe pub
+   , const schnorr_signature sig
+   ) noexcept;
 
   bool check_tx_proof
   (

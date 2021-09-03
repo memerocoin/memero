@@ -69,7 +69,12 @@ namespace crypto {
   }
 
 
-  bool check_signature(const hash &prefix_hash, const ec_point_unsafe &pub, const schnorr_signature &sig) noexcept {
+  bool validate_schnorr_signature_with_pubkey_data
+  (
+   const hash prefix_hash
+   , const ec_point_unsafe pub
+   , const schnorr_signature sig
+   ) noexcept {
     const epee::blob::data hash_data(prefix_hash.data.begin(), prefix_hash.data.end());
     const epee::blob::data pub_data(pub.data.begin(), pub.data.end());
 
