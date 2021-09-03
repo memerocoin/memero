@@ -68,13 +68,13 @@ namespace crypto {
       return false;
     }
 
-    const ec_point r = multBase(sig.s) + (*p ^ sig.scalar_hash);
+    const ec_point K = multBase(sig.s) + (*p ^ sig.scalar_hash);
 
-    if (r == identity) return false;
+    if (K == identity) return false;
 
     const epee::blob::data message_data(message.begin(), message.end());
 
-    const ec_scalar scalar_hash = hash_to_scalar(message_data + r.blob());
+    const ec_scalar scalar_hash = hash_to_scalar(message_data + K.blob());
 
     return sig.scalar_hash == scalar_hash;
   }
