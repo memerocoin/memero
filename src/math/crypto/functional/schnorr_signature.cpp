@@ -59,6 +59,24 @@ namespace crypto {
         use K to compute scalar_hash as in:
 
         scalar_hash = hash(m, K), and compare the result from sig
+
+
+
+        Why:
+
+        The reason that this is unforgeable, which means that only the person with
+        access to sec can produce such signature (s, scalar_hash), is that
+        there's no obvious way to produce another signature that satisfies this
+        check without knowing sec, that is, to sum up:
+
+          sig.scalar_hash = hash(m, sig.s G + sig.scalar_hash pub)
+
+        Or another (s, k) from which scalar_hash can be derived, in which case
+        one needs to solve
+
+          S = K - derived_scalar_hash pub
+
+        where S = sG, K = kG with either a guessed s or k.
     */
 
     const auto p = maybeSafePoint(pub);
