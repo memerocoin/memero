@@ -33,7 +33,11 @@ namespace crypto {
 
   /* Generation and checking of a standard signature.
     */
-  signature generate_signature(const hash &, const public_key &, const secret_key &);
+  signature generate_signature
+  (
+   const hash prefix_hash
+   , const secret_key sec
+   );
 
   /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
     * derivation D, the signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A

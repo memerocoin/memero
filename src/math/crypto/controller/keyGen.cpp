@@ -49,12 +49,11 @@ namespace crypto {
 
   signature generate_signature
   (
-   const hash &prefix_hash
-   , const public_key &pub
-   , const secret_key &sec
+   const hash prefix_hash
+   , const secret_key sec
    )
   {
-    const sig_buf buf {prefix_hash, pub};
+    const sig_buf buf {prefix_hash, to_pk(sec)};
     return generate_schnorr_signature(epee::pod_to_span(buf), sec);
   }
 
