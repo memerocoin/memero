@@ -37,7 +37,7 @@ namespace crypto {
       return false;
     }
 
-    const ec_point r = (*p ^ sig.scalar_hash) + multBase(sig.s);
+    const ec_point r = multBase(sig.s) + (*p ^ sig.scalar_hash);
 
     if (r == identity) return false;
 

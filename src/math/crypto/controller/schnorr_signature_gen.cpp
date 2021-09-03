@@ -43,7 +43,7 @@ namespace crypto {
       if (scalar_hash == s_0)
         continue;
 
-      const ec_scalar s = k - scalar_hash * sec;
+      const ec_scalar s = k - sec * scalar_hash;
 
       if (s == s_0)
         continue;
