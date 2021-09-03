@@ -85,7 +85,7 @@ namespace crypto {
   /* Generation and checking of a standard signature.
     */
 
-  bool validate_schnorr_signature_with_pubkey_data
+  bool verify_schnorr_signature_with_pubkey_data
   (
    const hash prefix_hash
    , const ec_point_unsafe pub

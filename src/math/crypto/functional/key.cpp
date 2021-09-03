@@ -69,7 +69,7 @@ namespace crypto {
   }
 
 
-  bool validate_schnorr_signature_with_pubkey_data
+  bool verify_schnorr_signature_with_pubkey_data
   (
    const hash prefix_hash
    , const ec_point_unsafe pub
@@ -78,7 +78,7 @@ namespace crypto {
     const epee::blob::data hash_data(prefix_hash.data.begin(), prefix_hash.data.end());
     const epee::blob::data pub_data(pub.data.begin(), pub.data.end());
 
-    return validate_schnorr_signature(hash_data + pub_data, pub, sig);
+    return verify_schnorr_signature(hash_data + pub_data, pub, sig);
   }
 
 

@@ -23,7 +23,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace crypto {
 
-  bool validate_schnorr_signature
+  bool verify_schnorr_signature
   (
    const epee::blob::span message
    , const ec_point_unsafe pub

@@ -42,7 +42,7 @@ namespace crypto {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
   }
 
-  bool validate_schnorr_signature
+  bool verify_schnorr_signature
   (
    const epee::blob::span message
    , const ec_point_unsafe pub
