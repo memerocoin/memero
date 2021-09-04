@@ -99,7 +99,7 @@ namespace crypto {
     const epee::blob::data B_blob = B ? B->blob() : epee::blob::data();
 
     const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V3);
-    const auto schnorr_1 = generate_schnorr_signature(hash_key + h.blob() + R.blob() + B_blob, r, B);
+    const auto schnorr_1 = generate_schnorr_signature(hash_key + h.blob() + B_blob + R.blob(), r, B);
     const auto schnorr_2 = generate_schnorr_signature(hash_key + h.blob() + A.blob() + D.blob(), r, {A});
 
     return {schnorr_1, schnorr_2};
