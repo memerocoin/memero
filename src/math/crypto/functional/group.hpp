@@ -96,7 +96,7 @@ namespace crypto {
   }
 
 
-  bool is_not_identity_but_valid(const ec_point_unsafe x) noexcept;
+  bool is_safe_point(const ec_point_unsafe x) noexcept;
   bool is_valid_group_element(const ec_point_unsafe x) noexcept;
 
   std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) noexcept;

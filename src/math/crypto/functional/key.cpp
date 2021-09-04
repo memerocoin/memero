@@ -94,10 +94,10 @@ namespace crypto {
   {
     // sanity check
 
-    if (!is_not_identity_but_valid(R)) return false;
-    if (!is_not_identity_but_valid(A)) return false;
-    if (!is_not_identity_but_valid(D)) return false;
-    if (B && !is_not_identity_but_valid(*B)) return false;
+    if (!is_safe_point(R)) return false;
+    if (!is_safe_point(A)) return false;
+    if (!is_safe_point(D)) return false;
+    if (B && !is_safe_point(*B)) return false;
 
     if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.s)) return false;
 

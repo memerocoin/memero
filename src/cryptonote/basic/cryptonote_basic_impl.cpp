@@ -114,7 +114,7 @@ namespace cryptonote {
         }
       }
 
-      if (!crypto::is_not_identity_but_valid(info.address.m_spend_public_key) || !crypto::is_not_identity_but_valid(info.address.m_view_public_key))
+      if (!crypto::is_safe_point(info.address.m_spend_public_key) || !crypto::is_safe_point(info.address.m_view_public_key))
       {
         LOG_PRINT_L1("Failed to validate address keys");
         return false;

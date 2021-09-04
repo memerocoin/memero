@@ -98,7 +98,7 @@ namespace device {
     cryptonote::subaddress_index index = {account, begin};
 
     const auto public_spend_key = keys.m_account_address.m_spend_public_key;
-    if (!is_not_identity_but_valid(public_spend_key)) {
+    if (!is_safe_point(public_spend_key)) {
       LOG_FATAL("public spend key is not on the main group");
     }
 
