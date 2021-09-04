@@ -26,9 +26,14 @@ TEST(EC_Group, g_is_a_valid_ec_point)
   EXPECT_TRUE(is_valid_ec_point(generator));
 }
 
-TEST(EC_Group, i_is_an_invalid_point)
+TEST(EC_Group, i_is_an_invalid_ec_point)
 {
   EXPECT_FALSE(is_valid_ec_point(identity));
+}
+
+TEST(EC_Group, i_is_a_valid_group_element)
+{
+  EXPECT_TRUE(is_valid_group_element(identity));
 }
 
 TEST(EC_Group, g_mult_l_is_identity)
