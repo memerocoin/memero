@@ -47,6 +47,8 @@ namespace crypto {
     }
   };
 
+  struct ec_point_unsafe_small_order : ec_point_unsafe {};
+
   struct ec_scalar; // for ^
   struct ec_point : ec_point_unsafe {
     ec_point operator+(const ec_point& x) const noexcept;
@@ -75,6 +77,13 @@ namespace crypto {
 
   inline const ec_scalar order_minus_1 = s_0 - s_1;
 
+  inline constexpr ec_point_unsafe_small_order zero_small_order =
+    {{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+  inline constexpr ec_point_unsafe_small_order one_small_order =
+    {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+  // pretty arbitrarily defined in libsodium
   inline constexpr ec_point identity =
     {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 

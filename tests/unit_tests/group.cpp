@@ -21,7 +21,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using namespace crypto;
 
-TEST(EC_Group, g_is_a_valid_ec_point)
+TEST(EC_Group, g_is_a_group_element)
 {
   EXPECT_TRUE(is_not_identity_but_valid(generator));
 }
