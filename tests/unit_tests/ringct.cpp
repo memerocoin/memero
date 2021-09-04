@@ -554,7 +554,7 @@ TEST(ringct, HPow2)
 
   // in lolnero, hashPoint uses sha3, but H is hashPoint with keccak256, so we use that H
   rct_point H = rct::H;
-  ASSERT_TRUE(crypto::is_valid_ec_point(H)); // this is known to pass for the particular value G
+  ASSERT_TRUE(crypto::is_not_identity_but_valid(H)); // this is known to pass for the particular value G
 
   // rct_point H_2;
   // rct_point H_2_8 = mult8(H_2);

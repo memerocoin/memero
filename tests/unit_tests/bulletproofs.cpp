@@ -146,7 +146,7 @@ TEST(bulletproofs, invalid_torsion)
   {
     rct::rct_point x;
     ASSERT_TRUE(epee::string_tools::hex_to_pod(xs, x));
-    ASSERT_FALSE(crypto::is_valid_ec_point(x));
+    ASSERT_FALSE(crypto::is_not_identity_but_valid(x));
     for (auto &k: proof.V)
     {
       const auto org_k = k;

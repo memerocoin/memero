@@ -23,12 +23,12 @@ using namespace crypto;
 
 TEST(EC_Group, g_is_a_valid_ec_point)
 {
-  EXPECT_TRUE(is_valid_ec_point(generator));
+  EXPECT_TRUE(is_not_identity_but_valid(generator));
 }
 
 TEST(EC_Group, i_is_an_invalid_ec_point)
 {
-  EXPECT_FALSE(is_valid_ec_point(identity));
+  EXPECT_FALSE(is_not_identity_but_valid(identity));
 }
 
 TEST(EC_Group, i_is_a_valid_group_element)

@@ -87,12 +87,12 @@ namespace crypto {
   {
     // sanity check
 
-    if (!is_valid_ec_point(R)) throw std::runtime_error("tx pubkey is invalid");
-    if (!is_valid_ec_point(A)) throw std::runtime_error("recipient view pubkey is invalid");
+    if (!is_not_identity_but_valid(R)) throw std::runtime_error("tx pubkey is invalid");
+    if (!is_not_identity_but_valid(A)) throw std::runtime_error("recipient view pubkey is invalid");
     if (B) {
-      if (!is_valid_ec_point(*B)) throw std::runtime_error("recipient spend pubkey is invalid");
+      if (!is_not_identity_but_valid(*B)) throw std::runtime_error("recipient spend pubkey is invalid");
     }
-    if (!is_valid_ec_point(D)) throw std::runtime_error("key derivation is invalid");
+    if (!is_not_identity_but_valid(D)) throw std::runtime_error("key derivation is invalid");
 
     // pick random k
     const ec_scalar k = scalarGen();

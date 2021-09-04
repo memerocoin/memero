@@ -53,7 +53,7 @@ static rct::rct_point basic(const std::vector<rct::MultiexpData> &data)
 
 static rct::rct_point get_p(const rct::rct_point &point)
 {
-  EXPECT_TRUE(crypto::is_valid_ec_point(point));
+  EXPECT_TRUE(crypto::is_not_identity_but_valid(point));
   return point;
 }
 
