@@ -89,7 +89,7 @@ namespace config
   constexpr std::string_view HASH_KEY_CLSAG_AGG_0 = "CLSAG_agg_0";
   constexpr std::string_view HASH_KEY_CLSAG_AGG_1 = "CLSAG_agg_1";
 
-  constexpr std::string_view HASH_KEY_TXPROOF_V2 = "TXPROOF_V2";
+  constexpr std::string_view HASH_KEY_TXPROOF_V3 = "TXPROOF_V3";
   constexpr std::string_view MESSAGE_SIGNING_HEADER = "Lolnero_Message_Signature_";
 
   constexpr unsigned MESSAGE_SIGNING_VERSION = 1u;

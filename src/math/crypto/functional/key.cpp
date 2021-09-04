@@ -98,9 +98,11 @@ namespace crypto {
 
     const epee::blob::data B_blob = B ? B->blob() : epee::blob::data();
 
+    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V3);
+
     return
-      verify_schnorr_signature(h.blob() + R.blob() + B_blob, R, double_sig.first, B)
-      && verify_schnorr_signature(h.blob() + A.blob() + D.blob(), D, double_sig.second, {A});
+      verify_schnorr_signature(hash_key + h.blob() + R.blob() + B_blob, R, double_sig.first, B)
+      && verify_schnorr_signature(hash_key + h.blob() + A.blob() + D.blob(), D, double_sig.second, {A});
   }
 
   key_image derive_key_image(const public_key &pub, const secret_key &sec) noexcept {
