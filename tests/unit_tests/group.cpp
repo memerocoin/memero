@@ -78,3 +78,9 @@ TEST(EC_Group, is_a_group_for_Invertibility)
   EXPECT_EQ(inv_a + a, identity);
 }
 
+TEST(EC_Group, implementation_specific_identity_can_be_derived)
+{
+  const auto a = randomPoint();
+  EXPECT_EQ(a - a, identity);
+}
+
