@@ -41,7 +41,7 @@ TEST(EC_Group, g_mult_l_is_identity)
   EXPECT_TRUE((generator ^ order_minus_1) + generator == identity);
 }
 
-TEST(EC_Group_is_a_semigroup, Associative)
+TEST(EC_Group, is_a_semigroup_for_Associativity)
 {
   const auto a = randomPoint();
   const auto b = randomPoint();
@@ -50,7 +50,7 @@ TEST(EC_Group_is_a_semigroup, Associative)
   EXPECT_EQ((a + b) + c, a + (b + c));
 }
 
-TEST(EC_Group_is_a_monoid, embeded_Identity)
+TEST(EC_Group, is_a_monoid_with_an_embeded_Identity)
 {
   const auto a = randomPoint();
 
@@ -58,7 +58,7 @@ TEST(EC_Group_is_a_monoid, embeded_Identity)
   EXPECT_EQ(a + identity, a);
 }
 
-TEST(EC_Group_is_a_group, Invertable)
+TEST(EC_Group, is_a_group_for_Invertibility)
 {
   const auto a = randomPoint();
   const auto inv_a = identity - a;
