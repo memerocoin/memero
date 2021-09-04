@@ -554,7 +554,7 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_key, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_KEY),
                            sw::tr("Get the transaction key (r) for a given <txid>."));
-  m_cmd_binder.set_handler("check-tx-key",
+  m_cmd_binder.set_handler("verify-tx-key",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_key, std::placeholders::_1),
                            sw::tr(USAGE_CHECK_TX_KEY),
                            sw::tr("Check the amount going to <address> in <txid>."));
