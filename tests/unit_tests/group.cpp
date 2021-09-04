@@ -14,45 +14,52 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 */
 
-#pragma once
+#include <gtest/gtest.h>
 
-#include "schnorr_signature_gen.hpp"
+#include "math/crypto/functional/group.hpp"
+#include "math/crypto/controller/keyGen.hpp"
 
-#include "../functional/key.hpp"
+using namespace crypto;
 
-namespace crypto {
-  //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen();
-
-  ec_point randomPoint();
-
-  /* Generate a new key pair
-   */
-  std::pair<secret_key, public_key> generate_keys
-  (
-   const std::optional<secret_key> recovery_key
-   );
-
-  /* Generation and checking of a standard signature.
-    */
-  schnorr_signature generate_schnorr_signature_with_pubkey_data
-  (
-   const hash h
-   , const secret_key sec
-   );
-
-  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-    * derivation D, the schnorr_signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
-    * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
-    */
-  schnorr_signature generate_tx_proof
-  (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
-   );
-
+TEST(EC_Group, g_is_valid_point)
+{
+  EXPECT_TRUE(is_valid_point(generator));
 }
+
+TEST(EC_Group, i_is_invalid_point)
+{
+  EXPECT_FALSE(is_valid_point(identity));
+}
+
+TEST(EC_Group, g_mult_l_is_identity)
+{
+  EXPECT_TRUE((generator ^ order_minus_1) + generator == identity);
+}
+
+TEST(EC_Group_is_a_semigroup, Associative)
+{
+  const auto a = randomPoint();
+  const auto b = randomPoint();
+  const auto c = randomPoint();
+
+  EXPECT_EQ((a + b) + c, a + (b + c));
+}
+
+TEST(EC_Group_is_a_monoid, embeded_Identity)
+{
+  const auto a = randomPoint();
+
+  EXPECT_EQ(identity + a, a);
+  EXPECT_EQ(a + identity, a);
+}
+
+
+TEST(EC_Group_is_a_group, Invertable)
+{
+  const auto a = randomPoint();
+  const auto inv_a = identity - a;
+
+  EXPECT_EQ(a + inv_a, identity);
+  EXPECT_EQ(inv_a + a, identity);
+}
+

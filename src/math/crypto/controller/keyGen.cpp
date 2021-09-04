@@ -37,6 +37,20 @@ extern "C" {
 
 namespace crypto {
 
+
+  //generates a random rct_scalar which can be used as a secret key or mask
+  ec_scalar scalarGen() {
+    ec_scalar s;
+    crypto_core_ed25519_scalar_random(s.data.data());
+    return s;
+  }
+
+  ec_point randomPoint() {
+    ec_point x;
+    crypto_core_ed25519_random(x.data.data());
+    return x;
+  }
+
   /*
    * generate public and secret keys from a random 256-bit integer
    * TODO: allow specifying random value (for wallet recovery)
@@ -119,14 +133,6 @@ namespace crypto {
     };
   }
 
-
-
-  //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen() {
-    ec_scalar s;
-    crypto_core_ed25519_scalar_random(s.data.data());
-    return s;
-  }
 
 }
 

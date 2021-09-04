@@ -43,6 +43,7 @@ add_executable(unit_tests_tools
   levin.cpp
   # epee_boosted_tcp_server.cpp
   epee_serialization.cpp
+  group.cpp
 )
 
 add_executable(test_notifier test_notifier.cpp)
@@ -53,6 +54,7 @@ target_link_libraries(unit_tests_tools
   tools_common
   epee_storage
   network_type 
+  math_crypto
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main

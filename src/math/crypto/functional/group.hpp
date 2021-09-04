@@ -68,8 +68,12 @@ namespace crypto {
 
 
   inline constexpr ec_scalar s_0 = {};
+  inline constexpr ec_scalar s_1 =
+    {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
   inline constexpr ec_scalar s_8 =
     {{ 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+  inline const ec_scalar order_minus_1 = s_0 - s_1;
 
   inline constexpr ec_point identity =
     {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
