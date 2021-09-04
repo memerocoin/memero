@@ -82,7 +82,7 @@ namespace crypto {
   }
 
 
-  bool check_tx_proof
+  bool verify_tx_proof
   (
    const hash &h
    , const public_key &R

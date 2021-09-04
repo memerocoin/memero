@@ -94,7 +94,7 @@ namespace crypto {
    , const schnorr_signature sig
    ) noexcept;
 
-  bool check_tx_proof
+  bool verify_tx_proof
   (
    const hash &prefix_hash
    , const public_key &R

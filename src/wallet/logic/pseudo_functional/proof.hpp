@@ -39,7 +39,7 @@ namespace logic {
 namespace pseudo_functional {
 namespace proof {
 
-  const bool check_tx_proof
+  const bool verify_tx_proof
   (
    const cryptonote::transaction &tx
    , const cryptonote::account_public_address &address

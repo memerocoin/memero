@@ -563,7 +563,7 @@ simple_wallet::simple_wallet()
                            sw::tr(USAGE_GET_TX_PROOF),
                            sw::tr("Generate a signature proving funds sent to <address> in <txid>, optionally with a challenge string <message>, using either the transaction secret key (when <address> is not your wallet's address) or the view secret key (otherwise), which does not disclose the secret key."));
   m_cmd_binder.set_handler("check-tx-proof",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::check_tx_proof, std::placeholders::_1),
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_CHECK_TX_PROOF),
                            sw::tr("Check the proof for funds going to <address> in <txid> with the challenge string <message> if any."));
   m_cmd_binder.set_handler("show",
@@ -2345,7 +2345,7 @@ bool simple_wallet::check_tx_key(const std::vector<std::string> &args_)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::check_tx_proof(const std::vector<std::string> &args)
+bool simple_wallet::verify_tx_proof(const std::vector<std::string> &args)
 {
   if(args.size() != 3 && args.size() != 4) {
     PRINT_USAGE(USAGE_CHECK_TX_PROOF);
@@ -2384,7 +2384,7 @@ bool simple_wallet::check_tx_proof(const std::vector<std::string> &args)
     uint64_t received;
     bool in_pool;
     uint64_t confirmations;
-    if (m_wallet->check_tx_proof(txid, info.address, info.is_subaddress, args.size() == 4 ? args[3] : "", sig_str, received, in_pool, confirmations))
+    if (m_wallet->verify_tx_proof(txid, info.address, info.is_subaddress, args.size() == 4 ? args[3] : "", sig_str, received, in_pool, confirmations))
     {
       success_msg_writer() << sw::tr("Good signature");
       if (received > 0)

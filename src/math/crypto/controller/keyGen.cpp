@@ -70,11 +70,6 @@ namespace crypto {
     return generate_schnorr_signature(h.blob() + to_pk(sec).blob(), sec);
   }
 
-
-  // Generate a proof of knowledge of `r` such that (`R = rG` and `D = rA`) or (`R = rB` and `D = rA`) via a Schnorr proof
-  // This handles use cases for both standard addresses and subaddresses
-  //
-  // Generates only proofs for InProofV2 and OutProofV2
   double_schnorr_signature generate_tx_proof
   (
    const hash &h

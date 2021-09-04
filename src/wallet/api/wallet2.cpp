@@ -4219,7 +4219,7 @@ bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx
           (ptx.tx, ptx.tx_key, ptx.additional_tx_keys, address, r.second.second,
            "automatic-sanity-check", view_secret_key);
 
-        wallet::logic::pseudo_functional::proof::check_tx_proof
+        wallet::logic::pseudo_functional::proof::verify_tx_proof
           (ptx.tx, address, r.second.second, "automatic-sanity-check", proof, received);
       }
       catch (const std::exception &e) { received = 0; }
@@ -4398,7 +4398,7 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
       (tx, tx_key, additional_tx_keys, address, is_subaddress, message, view_secret_key);
 }
 
-bool wallet2::check_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message, const std::string &sig_str, uint64_t &received, bool &in_pool, uint64_t &confirmations)
+bool wallet2::verify_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message, const std::string &sig_str, uint64_t &received, bool &in_pool, uint64_t &confirmations)
 {
   // fetch tx pubkey from the daemon
   COMMAND_RPC_GET_TRANSACTIONS::request req;
@@ -4434,7 +4434,7 @@ bool wallet2::check_tx_proof(const crypto::hash &txid, const cryptonote::account
 
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
 
-  if (!wallet::logic::pseudo_functional::proof::check_tx_proof
+  if (!wallet::logic::pseudo_functional::proof::verify_tx_proof
       (tx, address, is_subaddress, message, sig_str, received))
     return false;
 

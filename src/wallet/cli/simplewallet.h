@@ -137,7 +137,7 @@ namespace cryptonote
     bool get_tx_key(const std::vector<std::string> &args);
     bool check_tx_key(const std::vector<std::string> &args);
     bool get_tx_proof(const std::vector<std::string> &args);
-    bool check_tx_proof(const std::vector<std::string> &args);
+    bool verify_tx_proof(const std::vector<std::string> &args);
     bool show(const std::vector<std::string> &args);
     bool export_transfers(const std::vector<std::string> &args);
     bool unspent_outputs(const std::vector<std::string> &args);
