@@ -38,13 +38,13 @@ TEST(EC_Group, i_is_a_valid_group_element)
 
 TEST(EC_Group, g_mult_l_is_identity)
 {
-  EXPECT_TRUE((generator ^ order_minus_1) + generator == identity);
+  EXPECT_EQ((generator ^ order_minus_1) + generator, identity);
 }
 
 TEST(EC_Group, anything_mult_l_is_identity)
 {
   const auto a = randomPoint();
-  EXPECT_TRUE((a ^ order_minus_1) + a == identity);
+  EXPECT_EQ((a ^ order_minus_1) + a, identity);
 }
 
 TEST(EC_Group, is_a_semigroup_for_Associativity)
