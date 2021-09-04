@@ -26,7 +26,7 @@ TEST(EC_Group, g_is_a_valid_ec_point)
   EXPECT_TRUE(is_not_identity_but_valid(generator));
 }
 
-TEST(EC_Group, i_is_an_invalid_ec_point)
+TEST(EC_Group, i_is_usually_not_accepted)
 {
   EXPECT_FALSE(is_not_identity_but_valid(identity));
 }
