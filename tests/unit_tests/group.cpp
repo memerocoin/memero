@@ -21,14 +21,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using namespace crypto;
 
-TEST(EC_Group, g_is_valid_point)
+TEST(EC_Group, g_is_a_valid_ec_point)
 {
-  EXPECT_TRUE(is_valid_point(generator));
+  EXPECT_TRUE(is_valid_ec_point(generator));
 }
 
-TEST(EC_Group, i_is_invalid_point)
+TEST(EC_Group, i_is_an_invalid_point)
 {
-  EXPECT_FALSE(is_valid_point(identity));
+  EXPECT_FALSE(is_valid_ec_point(identity));
 }
 
 TEST(EC_Group, g_mult_l_is_identity)
@@ -52,7 +52,6 @@ TEST(EC_Group_is_a_monoid, embeded_Identity)
   EXPECT_EQ(identity + a, a);
   EXPECT_EQ(a + identity, a);
 }
-
 
 TEST(EC_Group_is_a_group, Invertable)
 {

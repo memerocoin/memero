@@ -121,7 +121,7 @@ namespace rct {
         LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(sig.c1), false, "Bad signature commitment!");
         LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad rct_point image!");
 
-        if (!is_valid_point(C_offset)) {
+        if (!is_valid_ec_point(C_offset)) {
           LOG_ERROR("C_offset is not a valid point: " << C_offset);
           return false;
         }
@@ -211,7 +211,7 @@ namespace rct {
             const rct_scalar c_c = mu_C * c;
 
             const rct_point mask = pubs[i].commit_of_amount;
-            if (!is_valid_point(mask)) {
+            if (!is_valid_ec_point(mask)) {
               LOG_ERROR("pubs[" << i << "].commit_of_amount.data is not a valid point: " << mask);
               return false;
             }

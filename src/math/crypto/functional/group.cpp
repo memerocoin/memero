@@ -103,8 +103,12 @@ namespace crypto {
     return s;
   }
 
-  bool is_valid_point(const ec_point_unsafe x) noexcept {
+  bool is_valid_ec_point(const ec_point_unsafe x) noexcept {
     return crypto_core_ed25519_is_valid_point(x.data.data());
+  }
+
+  bool is_valid_group_element(const ec_point_unsafe x) noexcept {
+    return x == identity || is_valid_ec_point(x);
   }
 
 
@@ -147,7 +151,7 @@ namespace crypto {
   }
 
   std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) noexcept {
-    if (is_valid_point(x)) {
+    if (is_valid_ec_point(x)) {
       return unsafe_p2p(x);
     } else {
       return {};

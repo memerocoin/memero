@@ -94,10 +94,10 @@ namespace crypto {
   {
     // sanity check
 
-    if (!is_valid_point(R)) return false;
-    if (!is_valid_point(A)) return false;
-    if (!is_valid_point(D)) return false;
-    if (B && !is_valid_point(*B)) return false;
+    if (!is_valid_ec_point(R)) return false;
+    if (!is_valid_ec_point(A)) return false;
+    if (!is_valid_ec_point(D)) return false;
+    if (B && !is_valid_ec_point(*B)) return false;
 
     if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.s)) return false;
 

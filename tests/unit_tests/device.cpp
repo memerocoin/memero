@@ -72,7 +72,7 @@ TEST(device, ops)
   pk0 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk0));
   pk1 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk1));
 
-  ASSERT_TRUE(is_valid_point(pk0));
+  ASSERT_TRUE(is_valid_ec_point(pk0));
 
   derd = crypto::derive_key_derivation(pk0, sk0);
   maybeDer = crypto::derive_key_derivation(pk0, sk0);

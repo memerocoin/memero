@@ -87,7 +87,8 @@ namespace crypto {
   }
 
 
-  bool is_valid_point(const ec_point_unsafe x) noexcept;
+  bool is_valid_ec_point(const ec_point_unsafe x) noexcept;
+  bool is_valid_group_element(const ec_point_unsafe x) noexcept;
 
   std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) noexcept;
   ec_point mult8Safe(const ec_point X) noexcept;
