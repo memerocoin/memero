@@ -48,7 +48,7 @@ namespace crypto {
 
   ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) noexcept {
     const epee::blob::data hashData =
-      epee::blob::data(derivation.data.data(), derivation.data.size())
+      derivation.blob()
       + epee::string_tools::string_to_blob(tools::get_varint_data(index));
 
     return hash_to_scalar(hashData);

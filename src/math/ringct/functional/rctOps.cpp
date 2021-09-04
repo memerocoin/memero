@@ -134,7 +134,7 @@ namespace rct {
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(ecdhHashPrefix))
-      + epee::blob::data(x.data.begin(), x.data.size());
+      + x.blob();
 
     return crypto::sha3(hashData);
   }
@@ -154,7 +154,7 @@ namespace rct {
   rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar x) {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
-      + epee::blob::data(x.data.begin(), x.data.size());
+      + x.blob();
 
     return s2s(crypto::hash_to_scalar(hashData));
   }
