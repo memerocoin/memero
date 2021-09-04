@@ -21,9 +21,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using namespace crypto;
 
-TEST(EC_Group, g_is_a_group_element)
+TEST(EC_Group, g_is_safe)
 {
   EXPECT_TRUE(is_safe_point(generator));
+}
+
+TEST(EC_Group, zero_is_not_valid)
+{
+  EXPECT_FALSE(is_valid_group_element(zero_small_order));
 }
 
 TEST(EC_Group, i_is_usually_not_accepted)
