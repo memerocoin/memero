@@ -26,6 +26,7 @@ namespace crypto {
   (
    const epee::blob::span message
    , const secret_key sec
+   , const std::optional<ec_point> base
    )
   {
     while (true) {
@@ -34,7 +35,7 @@ namespace crypto {
 
       const epee::blob::data message_data(message.begin(), message.end());
 
-      const ec_point K = multBase(k);
+      const ec_point K = base ? *base ^ k : multBase(k);
 
       const ec_scalar scalar_hash = hash_to_scalar(message_data + K.blob());
 

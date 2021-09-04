@@ -84,76 +84,21 @@ namespace crypto {
 
   bool check_tx_proof
   (
-   const hash &prefix_hash
+   const hash &h
    , const public_key &R
    , const public_key &A
    , const std::optional<public_key> &B
    , const public_key &D
-   , const schnorr_signature &sig
+   , const double_schnorr_signature &double_sig
    ) noexcept
   {
-    // sanity check
+    // keypair (r R) (r D)@A
 
-    if (!is_safe_point(R)) return false;
-    if (!is_safe_point(A)) return false;
-    if (!is_safe_point(D)) return false;
-    if (B && !is_safe_point(*B)) return false;
+    if (B && (!is_safe_point(*B))) return false;
 
-    if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.s)) return false;
-
-    // compute sig.scalar_hash*R
-
-    const ec_point cR = R ^ sig.scalar_hash;
-
-    const ec_point X = B
-      ? (*B ^ sig.s) + cR
-      : multBase(sig.s) + cR;
-
-    // compute sig.scalar_hash*D
-    const ec_point cD = D ^ sig.scalar_hash;
-
-    // compute sig.s*A
-    const ec_point rA = A ^ sig.s;
-
-    // compute Y = sig.scalar_hash*D + sig.s*A
-    const ec_point Y = cD + rA;
-
-    // Compute hash challenge
-    // for v1, c2 = Hs(Msg || D || X || Y)
-    // for v2, c2 = Hs(Msg || D || X || Y || sep || R || A || B)
-
-    // if B is not present
-    static const ec_point zero = {};
-
-    // struct s_comm_2 {
-    //   hash msg;
-    //   ec_point D;
-    //   ec_point X;
-    //   ec_point Y;
-    //   hash sep; // domain separation
-    //   ec_point R;
-    //   ec_point A;
-    //   ec_point B;
-    // };
-
-    const s_comm_2 buf =
-      {
-        prefix_hash
-        , D
-        , X
-        , Y
-        , sha3(epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V2))
-        , R
-        , A
-        , B ? *B : zero
-      };
-
-
-    // Hash depends on version
-    const ec_scalar c2 = hash_to_scalar(epee::pod_to_span(buf));
-
-    // test if c2 == sig.scalar_hash
-    return c2 - sig.scalar_hash == s_0;
+    return
+      verify_schnorr_signature(h.data, R, double_sig.first, B)
+      && verify_schnorr_signature(h.data, D, double_sig.second, {A});
   }
 
   key_image derive_key_image(const public_key &pub, const secret_key &sec) noexcept {

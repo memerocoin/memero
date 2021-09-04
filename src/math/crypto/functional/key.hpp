@@ -85,6 +85,8 @@ namespace crypto {
   /* Generation and checking of a standard signature.
     */
 
+  using double_schnorr_signature = std::pair<schnorr_signature, schnorr_signature>;
+
   bool verify_schnorr_signature_with_pubkey_data
   (
    const hash prefix_hash
@@ -99,7 +101,7 @@ namespace crypto {
    , const public_key &A
    , const std::optional<public_key> &B
    , const public_key &D
-   , const schnorr_signature &sig
+   , const double_schnorr_signature &sig
    ) noexcept;
 
   /* To send money to a key:

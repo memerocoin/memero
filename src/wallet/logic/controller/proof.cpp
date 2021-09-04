@@ -66,7 +66,7 @@ namespace proof {
     crypto::hash prefix_hash= crypto::sha3(prefix_data);
 
     std::vector<crypto::public_key> shared_secret;
-    std::vector<crypto::schnorr_signature> sig;
+    std::vector<crypto::double_schnorr_signature> sig;
     std::string sig_str;
 
     if (!view_secret_key)

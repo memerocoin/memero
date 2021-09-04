@@ -75,9 +75,9 @@ namespace crypto {
   // This handles use cases for both standard addresses and subaddresses
   //
   // Generates only proofs for InProofV2 and OutProofV2
-  schnorr_signature generate_tx_proof
+  double_schnorr_signature generate_tx_proof
   (
-   const hash &prefix_hash
+   const hash &h
    , const public_key &R
    , const public_key &A
    , const std::optional<public_key> &B
@@ -94,43 +94,12 @@ namespace crypto {
     }
     if (!is_safe_point(D)) throw std::runtime_error("key derivation is invalid");
 
-    // pick random k
-    const ec_scalar k = scalarGen();
+    // keypair (r R) (r D)@A
 
-    // if B is not present
-    constexpr ec_point zero = {};
+    const auto schnorr_1 = generate_schnorr_signature(h.data, r, B);
+    const auto schnorr_2 = generate_schnorr_signature(h.data, r, {A});
 
-    // struct s_comm_2 {
-    //   hash msg;
-    //   ec_point D;
-    //   ec_point X;
-    //   ec_point Y;
-    //   hash sep; // domain separation
-    //   ec_point R;
-    //   ec_point A;
-    //   ec_point B;
-    // };
-
-    const s_comm_2 buf =
-      {
-        prefix_hash
-        , D
-        , B ? (*B ^ k) : multBase(k)
-        , A ^ k
-        , sha3(epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V2))
-        , R
-        , A
-        , B ? *B : zero
-      };
-
-    // sig.scalar_hash = Hs(Msg || D || X || Y || sep || R || A || B)
-    // sig.r = k - sig.scalar_hash*r
-
-    const auto sig_c = hash_to_scalar(epee::pod_to_span(buf));
-    return {
-      k - sig_c * r
-      , sig_c
-    };
+    return {schnorr_1, schnorr_2};
   }
 
 

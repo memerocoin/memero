@@ -24,6 +24,7 @@ namespace crypto {
   (
    const epee::blob::span message
    , const secret_key sec
+   , const std::optional<ec_point> base = {}
    );
 
 }

@@ -45,7 +45,8 @@ namespace crypto {
     * derivation D, the schnorr_signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
     * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
     */
-  schnorr_signature generate_tx_proof
+
+  double_schnorr_signature generate_tx_proof
   (
    const hash &prefix_hash
    , const public_key &R

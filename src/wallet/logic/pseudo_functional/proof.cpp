@@ -66,7 +66,7 @@ namespace proof {
 
     // decode base58
     std::vector<crypto::public_key> shared_secret(1);
-    std::vector<crypto::schnorr_signature> sig(1);
+    std::vector<crypto::double_schnorr_signature> sig(1);
     const size_t pk_len = tools::base58::encode(epee::string_tools::blob_to_string(shared_secret[0].data)).size();
     const size_t sig_len = tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig[0]))).size();
     const size_t num_sigs = (sig_str.size() - header_len) / (pk_len + sig_len);
@@ -86,7 +86,7 @@ namespace proof {
       THROW_WALLET_EXCEPTION_IF(sizeof(crypto::public_key) != pk_decoded.size() || sizeof(crypto::schnorr_signature) != sig_decoded.size(), error::wallet_internal_error,
         "Signature decoding error");
       memcpy(&shared_secret[i], pk_decoded.data(), sizeof(crypto::public_key));
-      memcpy(&sig[i], sig_decoded.data(), sizeof(crypto::schnorr_signature));
+      memcpy(&sig[i], sig_decoded.data(), sizeof(crypto::double_schnorr_signature));
     }
 
     crypto::public_key tx_pub_key = get_tx_pub_key_from_extra(tx);

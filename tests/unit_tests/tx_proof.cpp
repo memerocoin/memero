@@ -56,7 +56,7 @@ TEST(tx_proof, prove_verify_v2)
     // D = rA
     crypto::public_key D = crypto::p2pk(A ^ r);
 
-    crypto::schnorr_signature sig;
+    crypto::double_schnorr_signature sig;
 
     // Message data
     crypto::hash prefix_hash;
