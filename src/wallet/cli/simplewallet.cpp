@@ -555,7 +555,7 @@ simple_wallet::simple_wallet()
                            sw::tr(USAGE_GET_TX_KEY),
                            sw::tr("Get the transaction key (r) for a given <txid>."));
   m_cmd_binder.set_handler("check-tx-key",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::check_tx_key, std::placeholders::_1),
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_key, std::placeholders::_1),
                            sw::tr(USAGE_CHECK_TX_KEY),
                            sw::tr("Check the amount going to <address> in <txid>."));
   m_cmd_binder.set_handler("get-tx-proof",
@@ -2257,7 +2257,7 @@ bool simple_wallet::get_tx_proof(const std::vector<std::string> &args)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::check_tx_key(const std::vector<std::string> &args_)
+bool simple_wallet::verify_tx_key(const std::vector<std::string> &args_)
 {
   std::vector<std::string> local_args = args_;
 
@@ -2312,7 +2312,7 @@ bool simple_wallet::check_tx_key(const std::vector<std::string> &args_)
     uint64_t received;
     bool in_pool;
     uint64_t confirmations;
-    m_wallet->check_tx_key(txid, tx_key, additional_tx_keys, info.address, received, in_pool, confirmations);
+    m_wallet->verify_tx_key(txid, tx_key, additional_tx_keys, info.address, received, in_pool, confirmations);
 
     if (received > 0)
     {
