@@ -37,19 +37,6 @@ namespace crypto {
 
   struct key_image: ec_point {};
 
-  // Used in v1/v2 tx proofs
-  struct s_comm_2 {
-    hash msg;
-    ec_point D;
-    ec_point X;
-    ec_point Y;
-    hash sep; // domain separation
-    ec_point R;
-    ec_point A;
-    ec_point B;
-  };
-
-
   constexpr crypto::public_key null_pkey = {};
   constexpr crypto::secret_key null_skey = {};
 
