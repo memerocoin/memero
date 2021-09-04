@@ -562,7 +562,7 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_PROOF),
                            sw::tr("Generate a signature proving funds sent to <address> in <txid>, optionally with a challenge string <message>, using either the transaction secret key (when <address> is not your wallet's address) or the view secret key (otherwise), which does not disclose the secret key."));
-  m_cmd_binder.set_handler("check-tx-proof",
+  m_cmd_binder.set_handler("verify-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_CHECK_TX_PROOF),
                            sw::tr("Check the proof for funds going to <address> in <txid> with the challenge string <message> if any."));
