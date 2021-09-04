@@ -71,14 +71,11 @@ namespace crypto {
 
   bool verify_schnorr_signature_with_pubkey_data
   (
-   const hash prefix_hash
+   const hash h
    , const ec_point_unsafe pub
    , const schnorr_signature sig
    ) noexcept {
-    const epee::blob::data hash_data(prefix_hash.data.begin(), prefix_hash.data.end());
-    const epee::blob::data pub_data(pub.data.begin(), pub.data.end());
-
-    return verify_schnorr_signature(hash_data + pub_data, pub, sig);
+    return verify_schnorr_signature(h.blob() + pub.blob(), pub, sig);
   }
 
 
