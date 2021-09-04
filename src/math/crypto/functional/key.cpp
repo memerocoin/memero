@@ -96,9 +96,11 @@ namespace crypto {
 
     if (B && (!is_safe_point(*B))) return false;
 
+    const epee::blob::data B_blob = B ? B->blob() : epee::blob::data();
+
     return
-      verify_schnorr_signature(h.data, R, double_sig.first, B)
-      && verify_schnorr_signature(h.data, D, double_sig.second, {A});
+      verify_schnorr_signature(h.blob() + R.blob() + B_blob, R, double_sig.first, B)
+      && verify_schnorr_signature(h.blob() + A.blob() + D.blob(), D, double_sig.second, {A});
   }
 
   key_image derive_key_image(const public_key &pub, const secret_key &sec) noexcept {

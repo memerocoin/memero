@@ -23,7 +23,7 @@ namespace crypto {
   schnorr_signature generate_schnorr_signature
   (
    const epee::blob::span message
-   , const secret_key sec
+   , const ec_scalar sec
    , const std::optional<ec_point> base = {}
    );
 
