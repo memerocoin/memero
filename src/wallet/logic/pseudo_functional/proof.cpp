@@ -176,7 +176,7 @@ namespace proof {
             , error::wallet_internal_error, "Failed to generate key derivation");
       }
 
-      std::vector<crypto::tx_ecdh_shared_secret> additional_derivations(num_sigs - 1);
+      std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets(num_sigs - 1);
 
       for (size_t i = 1; i < num_sigs; ++i) {
         if (good_signature[i]) {
@@ -185,12 +185,12 @@ namespace proof {
           THROW_WALLET_EXCEPTION_IF
             ( !additional_derivation
              , error::wallet_internal_error, "Failed to generate key derivation");
-          additional_derivations[i-1] = *additional_derivation;
+          tx_shared_secrets[i-1] = *additional_derivation;
         }
       }
 
       received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, *derivation, additional_derivations, address);
+        (tx, *derivation, tx_shared_secrets, address);
       return true;
     }
     return false;

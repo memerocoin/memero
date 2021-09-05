@@ -43,7 +43,7 @@ namespace proof {
   (
    const cryptonote::transaction &tx
    , const crypto::tx_ecdh_shared_secret &tx_shared_secret
-   , const std::vector<crypto::tx_ecdh_shared_secret> &additional_derivations
+   , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
    , const cryptonote::account_public_address &address
    );
 

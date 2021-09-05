@@ -152,18 +152,18 @@ namespace proof {
     THROW_WALLET_EXCEPTION_IF(!derivation
        , tools::error::wallet_internal_error, "Failed to generate key derivation");
 
-    std::vector<crypto::tx_ecdh_shared_secret> additional_derivations(num_sigs - 1);
+    std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets(num_sigs - 1);
     for (size_t i = 1; i < num_sigs; ++i) {
       const std::optional<crypto::tx_ecdh_shared_secret> additional_derivation =
         crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
       THROW_WALLET_EXCEPTION_IF
         ( !additional_derivation
          , tools::error::wallet_internal_error, "Failed to generate key derivation");
-      additional_derivations[i - 1] = *additional_derivation;
+      tx_shared_secrets[i - 1] = *additional_derivation;
     }
 
     uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
-      (tx, *derivation, additional_derivations, address);
+      (tx, *derivation, tx_shared_secrets, address);
     THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");
 
     // concatenate all signature strings

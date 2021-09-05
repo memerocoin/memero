@@ -536,7 +536,7 @@ size_t wallet2::get_transfer_details(const crypto::key_image &ki) const
   LOG_ERROR_AND_THROW_UNLESS(false, "Key image not found");
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &additional_derivations, size_t i, tx_scan_info_t &tx_scan_info) const
+void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, tx_scan_info_t &tx_scan_info) const
 {
   if (o.target.type() !=  typeid(txout_to_key))
   {
@@ -549,7 +549,7 @@ void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_share
      m_subaddresses
      , boost::get<txout_to_key>(o.target).key
      , tx_shared_secret
-     , additional_derivations
+     , tx_shared_secrets
      , i
      );
   if(tx_scan_info.received)
@@ -563,10 +563,10 @@ void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_share
   tx_scan_info.error = false;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &additional_derivations, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info) const
+void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info) const
 {
   if (!is_out_data || i >= is_out_data->received.size())
-    return check_acc_out_precomp(o, tx_shared_secret, additional_derivations, i, tx_scan_info);
+    return check_acc_out_precomp(o, tx_shared_secret, tx_shared_secrets, i, tx_scan_info);
 
   tx_scan_info.received = is_out_data->received[i];
   if(tx_scan_info.received)
@@ -580,12 +580,12 @@ void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_share
   tx_scan_info.error = false;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::check_acc_out_precomp_once(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &additional_derivations, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info, bool &already_seen) const
+void wallet2::check_acc_out_precomp_once(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info, bool &already_seen) const
 {
   tx_scan_info.received = std::nullopt;
   if (already_seen)
     return;
-  check_acc_out_precomp(o, tx_shared_secret, additional_derivations, i, is_out_data, tx_scan_info);
+  check_acc_out_precomp(o, tx_shared_secret, tx_shared_secrets, i, is_out_data, tx_scan_info);
   if (tx_scan_info.received)
     already_seen = true;
 }
@@ -751,7 +751,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     const cryptonote::account_keys& keys = m_account.get_keys();
     crypto::tx_ecdh_shared_secret tx_shared_secret;
 
-    std::vector<crypto::tx_ecdh_shared_secret> additional_derivations;
+    std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets;
     tx_extra_additional_pub_keys additional_tx_pub_keys;
     const wallet::logic::type::wallet::is_out_data *is_out_data_ptr = NULL;
     if (tx_cache_data.primary.empty())
@@ -777,9 +777,9 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
               crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys.data[i], keys.m_view_secret_key);
             if (!additional_derivation) {
               LOG_WARNING("Failed to generate key derivation from additional tx pubkey in " << txid << ", skipping");
-              additional_derivations.push_back(p2derivation(rct::identity));
+              tx_shared_secrets.push_back(p2derivation(rct::identity));
             } else {
-              additional_derivations.push_back(*additional_derivation);
+              tx_shared_secrets.push_back(*additional_derivation);
             }
           }
         }
@@ -796,7 +796,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         for (size_t n = 0; n < tx_cache_data.additional.size(); ++n)
         {
           additional_tx_pub_keys.data.push_back(tx_cache_data.additional[n].pkey);
-          additional_derivations.push_back(tx_cache_data.additional[n].derivation);
+          tx_shared_secrets.push_back(tx_cache_data.additional[n].derivation);
         }
       }
     }
@@ -805,7 +805,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     {
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        tpool.submit(&waiter, std::bind(&wallet2::check_acc_out_precomp_once, this, std::cref(tx.vout[i]), std::cref(tx_shared_secret), std::cref(additional_derivations), i,
+        tpool.submit(&waiter, std::bind(&wallet2::check_acc_out_precomp_once, this, std::cref(tx.vout[i]), std::cref(tx_shared_secret), std::cref(tx_shared_secrets), i,
             std::cref(is_out_data_ptr), std::ref(tx_scan_info[i]), std::ref(output_found[i])), true);
       }
       THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
@@ -827,7 +827,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     {
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, additional_derivations, i, is_out_data_ptr, tx_scan_info[i], output_found[i]);
+        check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, tx_shared_secrets, i, is_out_data_ptr, tx_scan_info[i], output_found[i]);
         THROW_WALLET_EXCEPTION_IF(tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key, m_account.get_keys());
         if (tx_scan_info[i].received)
         {
@@ -1381,17 +1381,17 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       const auto &o = tx.vout[k];
       if (o.target.type() == typeid(cryptonote::txout_to_key))
       {
-        std::vector<crypto::tx_ecdh_shared_secret> additional_derivations;
-        additional_derivations.reserve(tx_cache_data[txidx].additional.size());
+        std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets;
+        tx_shared_secrets.reserve(tx_cache_data[txidx].additional.size());
         for (const auto &iod: tx_cache_data[txidx].additional)
-          additional_derivations.push_back(iod.derivation);
+          tx_shared_secrets.push_back(iod.derivation);
         const auto &key = boost::get<txout_to_key>(o.target).key;
         for (size_t l = 0; l < tx_cache_data[txidx].primary.size(); ++l)
         {
           THROW_WALLET_EXCEPTION_IF(tx_cache_data[txidx].primary[l].received.size() != n_vouts,
               error::wallet_internal_error, "Unexpected received array size");
-          tx_cache_data[txidx].primary[l].received[k] = is_out_to_acc_precomp(m_subaddresses, key, tx_cache_data[txidx].primary[l].derivation, additional_derivations, k);
-          additional_derivations.clear();
+          tx_cache_data[txidx].primary[l].received[k] = is_out_to_acc_precomp(m_subaddresses, key, tx_cache_data[txidx].primary[l].derivation, tx_shared_secrets, k);
+          tx_shared_secrets.clear();
         }
       }
     }
@@ -4289,20 +4289,20 @@ void wallet2::verify_tx_key(const crypto::hash &txid, const crypto::secret_key &
   THROW_WALLET_EXCEPTION_IF(!derivation, error::wallet_internal_error,
     "Failed to generate key derivation from supplied parameters");
 
-  std::vector<crypto::tx_ecdh_shared_secret> additional_derivations;
+  std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets;
   for (size_t i = 0; i < additional_tx_keys.size(); ++i) {
     const auto d = crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, additional_tx_keys[i]);
     THROW_WALLET_EXCEPTION_IF
       (!d
        , error::wallet_internal_error
        , "Failed to generate key derivation from supplied parameters");
-    additional_derivations[i] = *d;
+    tx_shared_secrets[i] = *d;
   }
 
-  verify_tx_key_helper(txid, *derivation, additional_derivations, address, received, in_pool, confirmations);
+  verify_tx_key_helper(txid, *derivation, tx_shared_secrets, address, received, in_pool, confirmations);
 }
 
-void wallet2::verify_tx_key_helper(const crypto::hash &txid, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &additional_derivations, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
+void wallet2::verify_tx_key_helper(const crypto::hash &txid, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
 {
   COMMAND_RPC_GET_TRANSACTIONS::request req;
   COMMAND_RPC_GET_TRANSACTIONS::response res;
@@ -4337,11 +4337,11 @@ void wallet2::verify_tx_key_helper(const crypto::hash &txid, const crypto::tx_ec
 
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error,
     "Failed to get the right transaction from daemon");
-  THROW_WALLET_EXCEPTION_IF(!additional_derivations.empty() && additional_derivations.size() != tx.vout.size(), error::wallet_internal_error,
+  THROW_WALLET_EXCEPTION_IF(!tx_shared_secrets.empty() && tx_shared_secrets.size() != tx.vout.size(), error::wallet_internal_error,
     "The size of additional derivations is wrong");
 
   received = wallet::logic::functional::proof::get_tx_key_received_helper
-    (tx, tx_shared_secret, additional_derivations, address);
+    (tx, tx_shared_secret, tx_shared_secrets, address);
 
   in_pool = res.txs.front().in_pool;
   confirmations = 0;
