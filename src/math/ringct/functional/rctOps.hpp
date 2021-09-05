@@ -40,7 +40,7 @@ namespace rct {
 
   constexpr rct_scalar s_zero = ZERO;
   constexpr rct_scalar s_one = ONE;
-  constexpr rct_scalar s_two= TWO;
+  constexpr rct_scalar s_two = TWO;
   constexpr rct_scalar s_minus_one = MINUS_ONE;
   constexpr rct_scalar s_eight = EIGHT;
   // inv is multiplicative inverse
@@ -48,8 +48,6 @@ namespace rct {
   constexpr rct_scalar s_minus_inv_eight = MINUS_INV_EIGHT;
 
   constexpr rct_point zero = Z;
-
-  constexpr rct_point emptyPoint = Z;
   constexpr rct_point identity = I;
 
   rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a);
