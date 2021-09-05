@@ -83,7 +83,7 @@ namespace crypto {
     const auto p = maybeSafePoint(pub);
     if (!p) return false;
 
-    if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.s) || (sig.scalar_hash == s_0)) {
+    if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.s)) {
       return false;
     }
 
