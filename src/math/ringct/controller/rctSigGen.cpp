@@ -346,7 +346,7 @@ namespace rct {
             }
           };
 
-        const crypto::hash full_message = get_mlsag_pre_hash(preRctSig);
+        const crypto::hash full_message = get_ring_signature_message(preRctSig);
         std::vector<clsag> clsags(inamounts.size());
         std::generate
           (

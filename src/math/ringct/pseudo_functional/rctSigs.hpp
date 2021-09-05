@@ -45,6 +45,6 @@ namespace rct {
   }
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i);
-  crypto::hash get_mlsag_pre_hash(const rctSig rv);
+  crypto::hash get_ring_signature_message(const rctSig rv);
 }
 

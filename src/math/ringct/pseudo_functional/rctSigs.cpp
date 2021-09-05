@@ -49,7 +49,7 @@ using namespace std;
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
 namespace rct {
-    crypto::hash get_mlsag_pre_hash(const rctSig rv)
+    crypto::hash get_ring_signature_message(const rctSig rv)
     {
       LOG_ERROR_AND_THROW_UNLESS(!rv.mixRing.empty(), "Empty mixRing");
 
@@ -394,7 +394,7 @@ namespace rct {
 
         const rct_pointV &pseudoOuts = rv.p.pseudoOuts;
 
-        const crypto::hash message = get_mlsag_pre_hash(rv);
+        const crypto::hash message = get_ring_signature_message(rv);
 
         results.clear();
         results.resize(rv.mixRing.size());
