@@ -79,12 +79,27 @@ namespace proof {
       std::string pk_decoded;
       std::string sig_decoded;
       const size_t offset = header_len + i * (pk_len + sig_len);
-      THROW_WALLET_EXCEPTION_IF(!tools::base58::decode(sig_str.substr(offset, pk_len), pk_decoded), error::wallet_internal_error,
-        "Signature decoding error");
-      THROW_WALLET_EXCEPTION_IF(!tools::base58::decode(sig_str.substr(offset + pk_len, sig_len), sig_decoded), error::wallet_internal_error,
-        "Signature decoding error");
-      THROW_WALLET_EXCEPTION_IF(sizeof(crypto::public_key) != pk_decoded.size() || sizeof(crypto::double_schnorr_signature) != sig_decoded.size(), error::wallet_internal_error,
-        "Signature decoding error");
+
+      THROW_WALLET_EXCEPTION_IF
+        (
+         !tools::base58::decode(sig_str.substr(offset, pk_len), pk_decoded)
+         , error::wallet_internal_error
+         , "Signature decoding error"
+         );
+
+      THROW_WALLET_EXCEPTION_IF
+        (
+         !tools::base58::decode(sig_str.substr(offset + pk_len, sig_len), sig_decoded)
+         , error::wallet_internal_error
+         , "Signature decoding error"
+         );
+
+      THROW_WALLET_EXCEPTION_IF
+        (
+         sizeof(crypto::public_key) != pk_decoded.size() || sizeof(crypto::double_schnorr_signature) != sig_decoded.size()
+         , error::wallet_internal_error
+         , "Signature decoding error"
+         );
 
       memcpy(&shared_secret[i], pk_decoded.data(), sizeof(crypto::public_key));
 
