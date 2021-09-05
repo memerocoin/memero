@@ -619,7 +619,7 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
   THROW_WALLET_EXCEPTION_IF(i >= tx.vout.size(), error::wallet_internal_error, "Invalid vout index");
 
   {
-    bool r = cryptonote::derive_key_image_helper_precomp(m_account.get_keys(), boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key, tx_scan_info.received->derivation, i, tx_scan_info.received->index, tx_scan_info.in_ephemeral, tx_scan_info.ki);
+    bool r = cryptonote::derive_key_image_helper_precomp(m_account.get_keys(), boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key, tx_scan_info.received->tx_shared_secret, i, tx_scan_info.received->index, tx_scan_info.in_ephemeral, tx_scan_info.ki);
     THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "Failed to generate key image");
     THROW_WALLET_EXCEPTION_IF(tx_scan_info.in_ephemeral.pub != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key,
         error::wallet_internal_error, "key_image generated ephemeral public key not matched with output_key");
@@ -629,7 +629,7 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
   if (tx_scan_info.money_transfered == 0 && !miner_tx)
   {
     tx_scan_info.money_transfered =
-      tools::decodeRct(tx.rct_signatures, tx_scan_info.received->derivation, i, tx_scan_info.mask);
+      tools::decodeRct(tx.rct_signatures, tx_scan_info.received->tx_shared_secret, i, tx_scan_info.mask);
   }
   if (tx_scan_info.money_transfered == 0)
   {
