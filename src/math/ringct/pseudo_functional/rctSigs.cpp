@@ -270,7 +270,7 @@ namespace rct {
     }
 
 
-    bool verify_clsag_commitment_no_catch(const std::span<const rctSig> rvv)
+    bool verify_ringct_rangeproof_no_catch(const std::span<const rctSig> rvv)
     {
         for (const rctSig& rv: rvv)
         {
@@ -278,7 +278,7 @@ namespace rct {
             (
              rv.type == RCTTypeCLSAG
              , false
-             , "verify_clsag_commitment called on non simple rctSig"
+             , "verify_ringct_rangeproof called on non simple rctSig"
              );
 
           LOG_ERROR_AND_RETURN_UNLESS
@@ -345,26 +345,26 @@ namespace rct {
            );
     }
 
-    bool verify_clsag_commitments(const std::span<const rctSig> rvv) {
+    bool verify_ringct_rangeproofs(const std::span<const rctSig> rvv) {
       try {
-        return verify_clsag_commitment_no_catch(rvv);
+        return verify_ringct_rangeproof_no_catch(rvv);
       }
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
       catch (const std::exception &e)
         {
-          LOG_PRINT_L1("Error in verify_clsag_commitment: " << e.what());
+          LOG_PRINT_L1("Error in verify_ringct_rangeproof: " << e.what());
           return false;
         }
       catch (...)
         {
-          LOG_PRINT_L1("Error in verify_clsag_commitment, but not an actual exception");
+          LOG_PRINT_L1("Error in verify_ringct_rangeproof, but not an actual exception");
           return false;
         }
     }
 
-    bool verify_clsag_commitment(const rctSig rv)
+    bool verify_ringct_rangeproof(const rctSig rv)
     {
-      return verify_clsag_commitments(std::vector<rctSig>{rv});
+      return verify_ringct_rangeproofs(std::vector<rctSig>{rv});
     }
 
     //ver RingCT simple
@@ -435,7 +435,7 @@ namespace rct {
       }
     }
 
-    std::pair<amount_t, rct_scalar> decode_rct_commitment
+    std::pair<amount_t, rct_scalar> decode_ringct_commitment
     (
      const rctSig rv
      , const rct_scalar ecdh_shared_secret

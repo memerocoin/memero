@@ -598,7 +598,7 @@ static uint64_t decodeRct(const rct::rctSig & rv, const crypto::tx_ecdh_shared_s
     switch (rv.type)
     {
     case rct::RCTTypeCLSAG: {
-      const auto [amount, mask_] = rct::decode_rct_commitment(rv, rct::s2s(s_der), i);
+      const auto [amount, mask_] = rct::decode_ringct_commitment(rv, rct::s2s(s_der), i);
       mask = mask_;
       return amount;
     }

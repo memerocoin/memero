@@ -37,14 +37,14 @@ namespace rct {
   bool verify_clsag_signature(const crypto::hash, const clsag, const ct_public_keyS, const rct_point);
   bool verify_clsag_signatures(const rctSig rv);
 
-  bool verify_clsag_commitment(const rctSig rv);
-  bool verify_clsag_commitments(const std::span<const rctSig> rv);
+  bool verify_ringct_rangeproof(const rctSig rv);
+  bool verify_ringct_rangeproofs(const std::span<const rctSig> rv);
 
-  inline bool verify_clsag(const rctSig rv) {
-    return verify_clsag_commitment(rv) && verify_clsag_signatures(rv);
+  inline bool verify_ringct(const rctSig rv) {
+    return verify_ringct_rangeproof(rv) && verify_clsag_signatures(rv);
   }
 
-  std::pair<amount_t, rct_scalar> decode_rct_commitment(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i);
+  std::pair<amount_t, rct_scalar> decode_ringct_commitment(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i);
   crypto::hash get_mlsag_pre_hash(const rctSig rv);
 }
 
