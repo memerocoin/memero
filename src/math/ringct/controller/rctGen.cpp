@@ -51,15 +51,11 @@
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
 namespace rct {
-  //Various key generation functions
 
-  //generates a random rct_scalar which can be used as a secret key or mask
   rct_scalar skGen() {
     return s2s(crypto::scalarGen());
   }
 
-  //Generates a vector of secret key
-  //Mainly used in testing
   rct_scalarV skvGen(size_t rows ) {
     LOG_ERROR_AND_THROW_UNLESS(rows > 0, "0 keys requested");
     rct_scalarV rv(rows);
@@ -70,7 +66,6 @@ namespace rct {
     return rv;
   }
 
-  //generates a random secret and corresponding public key
   std::pair<rct_scalar, rct_point> skpkGen() {
     const rct_scalar sk = skGen();
     return std::make_pair(sk, G_(sk));
