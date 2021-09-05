@@ -80,14 +80,7 @@ namespace cryptonote
 
   struct txin_to_script
   {
-    crypto::hash prev;
-    size_t prevout;
-    std::vector<uint8_t> sigset;
-
     BEGIN_SERIALIZE_OBJECT()
-      FIELD(prev)
-      VARINT_FIELD(prevout)
-      FIELD(sigset)
     END_SERIALIZE()
   };
 

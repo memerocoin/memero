@@ -329,7 +329,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
     }
     void operator()(cryptonote::txin_to_script const& input) const
     {
-      WRITE_JSON_FIELD_FROM(dest, to_script, input);
     }
     void operator()(cryptonote::txin_to_scripthash const& input) const
     {
@@ -367,12 +366,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_v& txin)
       fromJsonValue(elem.value, tmpVal);
       txin = std::move(tmpVal);
     }
-    else if (elem.name == "to_script")
-    {
-      cryptonote::txin_to_script tmpVal;
-      fromJsonValue(elem.value, tmpVal);
-      txin = std::move(tmpVal);
-    }
     else if (elem.name == "to_scripthash")
     {
       cryptonote::txin_to_scripthash tmpVal;
@@ -403,26 +396,11 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_gen& txin)
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_script txin)
 {
-  dest.StartObject();
-
-  WRITE_JSON_FIELD_FROM(dest, prev, txin.prev);
-  WRITE_JSON_FIELD_FROM(dest, prevout, txin.prevout);
-  WRITE_JSON_FIELD_FROM(dest, sigset, txin.sigset);
-
-  dest.EndObject();
 }
 
 
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_script& txin)
 {
-  if (!val.IsObject())
-  {
-    throw WRONG_TYPE("json object");
-  }
-
-  READ_JSON_VALUE_BY_KEY(val, txin.prev, prev);
-  READ_JSON_VALUE_BY_KEY(val, txin.prevout, prevout);
-  READ_JSON_VALUE_BY_KEY(val, txin.sigset, sigset);
 }
 
 
