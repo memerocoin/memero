@@ -332,7 +332,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
     }
     void operator()(cryptonote::txin_to_scripthash const& input) const
     {
-      WRITE_JSON_FIELD_FROM(dest, to_scripthash, input);
     }
   };
   boost::apply_visitor(add_input{dest}, txin);
@@ -363,12 +362,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_v& txin)
     else if (elem.name == "gen")
     {
       cryptonote::txin_gen tmpVal;
-      fromJsonValue(elem.value, tmpVal);
-      txin = std::move(tmpVal);
-    }
-    else if (elem.name == "to_scripthash")
-    {
-      cryptonote::txin_to_scripthash tmpVal;
       fromJsonValue(elem.value, tmpVal);
       txin = std::move(tmpVal);
     }
@@ -406,28 +399,11 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_script& txin
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_scripthash txin)
 {
-  dest.StartObject();
-
-  WRITE_JSON_FIELD_FROM(dest, prev, txin.prev);
-  WRITE_JSON_FIELD_FROM(dest, prevout, txin.prevout);
-  WRITE_JSON_FIELD_FROM(dest, script, txin.script);
-  WRITE_JSON_FIELD_FROM(dest, sigset, txin.sigset);
-
-  dest.EndObject();
 }
 
 
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_scripthash& txin)
 {
-  if (!val.IsObject())
-  {
-    throw WRONG_TYPE("json object");
-  }
-
-  READ_JSON_VALUE_BY_KEY(val, txin.prev, prev);
-  READ_JSON_VALUE_BY_KEY(val, txin.prevout, prevout);
-  READ_JSON_VALUE_BY_KEY(val, txin.script, script);
-  READ_JSON_VALUE_BY_KEY(val, txin.sigset, sigset);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key txin)

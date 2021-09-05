@@ -86,16 +86,7 @@ namespace cryptonote
 
   struct txin_to_scripthash
   {
-    crypto::hash prev;
-    size_t prevout;
-    txout_to_script script;
-    std::vector<uint8_t> sigset;
-
     BEGIN_SERIALIZE_OBJECT()
-      FIELD(prev)
-      VARINT_FIELD(prevout)
-      FIELD(script)
-      FIELD(sigset)
     END_SERIALIZE()
   };
 
@@ -150,7 +141,8 @@ namespace cryptonote
 
     BEGIN_SERIALIZE()
       VARINT_FIELD(version)
-      if(version == 0 || config::lol::constant_transaction_version < version) return false;
+      if(version == 0) return false;
+
       VARINT_FIELD(unlock_time)
       FIELD(vin)
       FIELD(vout)
