@@ -556,7 +556,7 @@ simple_wallet::simple_wallet()
                            sw::tr("Get the transaction key (r) for a given <txid>."));
   m_cmd_binder.set_handler("verify-tx-key",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_key, std::placeholders::_1),
-                           sw::tr(USAGE_CHECK_TX_KEY),
+                           sw::tr(USAGE_VERIFY_TX_KEY),
                            sw::tr("Check the amount going to <address> in <txid>."));
   m_cmd_binder.set_handler("get-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_proof, std::placeholders::_1),
@@ -564,7 +564,7 @@ simple_wallet::simple_wallet()
                            sw::tr("Generate a signature proving funds sent to <address> in <txid>, optionally with a challenge string <message>, using either the transaction secret key (when <address> is not your wallet's address) or the view secret key (otherwise), which does not disclose the secret key."));
   m_cmd_binder.set_handler("verify-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_proof, std::placeholders::_1),
-                           sw::tr(USAGE_CHECK_TX_PROOF),
+                           sw::tr(USAGE_VERIFY_TX_PROOF),
                            sw::tr("Check the proof for funds going to <address> in <txid> with the challenge string <message> if any."));
   m_cmd_binder.set_handler("show",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show, std::placeholders::_1),
@@ -2262,7 +2262,7 @@ bool simple_wallet::verify_tx_key(const std::vector<std::string> &args_)
   std::vector<std::string> local_args = args_;
 
   if(local_args.size() != 3) {
-    PRINT_USAGE(USAGE_CHECK_TX_KEY);
+    PRINT_USAGE(USAGE_VERIFY_TX_KEY);
     return true;
   }
 
@@ -2348,7 +2348,7 @@ bool simple_wallet::verify_tx_key(const std::vector<std::string> &args_)
 bool simple_wallet::verify_tx_proof(const std::vector<std::string> &args)
 {
   if(args.size() != 3 && args.size() != 4) {
-    PRINT_USAGE(USAGE_CHECK_TX_PROOF);
+    PRINT_USAGE(USAGE_VERIFY_TX_PROOF);
     return true;
   }
 

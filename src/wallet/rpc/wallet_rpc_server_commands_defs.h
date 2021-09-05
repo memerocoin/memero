@@ -708,7 +708,7 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_CHECK_TX_KEY
+  struct COMMAND_RPC_VERIFY_TX_KEY
   {
     struct request_t
     {
@@ -766,7 +766,7 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_CHECK_TX_PROOF
+  struct COMMAND_RPC_VERIFY_TX_PROOF
   {
     struct request_t
     {
