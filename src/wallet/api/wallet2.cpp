@@ -592,7 +592,7 @@ void wallet2::check_acc_out_precomp_once(const tx_out &o, const crypto::tx_ecdh_
 //----------------------------------------------------------------------------------------------------
 static uint64_t decodeRct(const rct::rctSig & rv, const crypto::tx_ecdh_shared_secret &tx_shared_secret, unsigned int i, rct::rct_scalar & mask)
 {
-  const crypto::ec_scalar s_der = crypto::hash_derivation_to_scalar(tx_shared_secret, i);
+  const crypto::ec_scalar s_der = crypto::hash_tx_shared_secret_to_scalar(tx_shared_secret, i);
   try
   {
     switch (rv.type)

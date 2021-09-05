@@ -84,7 +84,7 @@ namespace proof {
         else
         {
           const rct::rct_scalar ecdh_derived_secret =
-            rct::s2s(crypto::hash_derivation_to_scalar(found_shared_secret, n));
+            rct::s2s(crypto::hash_tx_shared_secret_to_scalar(found_shared_secret, n));
 
           const crypto::ec_scalar_unnormalized blinding_factor =
             get_blinding_factor_from_ecdh_shared_secret(ecdh_derived_secret);

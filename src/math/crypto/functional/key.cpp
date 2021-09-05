@@ -46,7 +46,7 @@ namespace crypto {
   }
 
 
-  ec_scalar hash_derivation_to_scalar(const tx_ecdh_shared_secret &tx_shared_secret, const size_t index) noexcept {
+  ec_scalar hash_tx_shared_secret_to_scalar(const tx_ecdh_shared_secret &tx_shared_secret, const size_t index) noexcept {
     const epee::blob::data hashData =
       tx_shared_secret.blob()
       + epee::string_tools::string_to_blob(tools::get_varint_data(index));
@@ -59,7 +59,7 @@ namespace crypto {
   {
     assert(is_reduced(base));
 
-    const ec_scalar rct_scalar = hash_derivation_to_scalar(tx_shared_secret, output_index);
+    const ec_scalar rct_scalar = hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index);
     return s2sk(base + rct_scalar);
   }
 
@@ -145,7 +145,7 @@ namespace crypto {
     const auto base = maybeSafePoint(unsafe_base);
     if (!base) return {};
 
-    const ec_scalar rct_scalar = hash_derivation_to_scalar(tx_shared_secret, output_index);
+    const ec_scalar rct_scalar = hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index);
     const ec_point derived = multBase(rct_scalar);
     const ec_point r = derived + *base;
     return p2pk(r);
@@ -161,7 +161,7 @@ namespace crypto {
     const auto out_key = maybeSafePoint(unsafe_out_key);
     if (!out_key) return {};
 
-    const ec_scalar rct_scalar = hash_derivation_to_scalar(tx_shared_secret, output_index);
+    const ec_scalar rct_scalar = hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index);
 
     if (rct_scalar == s_0) return {};
 

@@ -212,7 +212,7 @@ namespace cryptonote
 
     if (tx_version > 1)
     {
-      const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_derivation_to_scalar(*derivation, output_index));
+      const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_tx_shared_secret_to_scalar(*derivation, output_index));
       amount_keys.push_back(scalar1);
     }
 
