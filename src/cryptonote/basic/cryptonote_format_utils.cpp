@@ -295,16 +295,7 @@ namespace cryptonote
     ki = crypto::derive_key_image(in_ephemeral.pub, in_ephemeral.sec);
     return true;
   }
-  //---------------------------------------------------------------
-  uint64_t power_integral(uint64_t a, uint64_t b)
-  {
-    if(b == 0)
-      return 1;
-    uint64_t total = a;
-    for(uint64_t i = 1; i != b; i++)
-      total *= a;
-    return total;
-  }
+
   //---------------------------------------------------------------
   bool parse_amount(uint64_t& amount, const std::string& str_amount_)
   {
@@ -362,35 +353,15 @@ namespace cryptonote
     }
     return get_transaction_weight(tx, blob_size);
   }
-  //---------------------------------------------------------------
-  bool get_tx_fee(const transaction& tx, uint64_t & fee)
-  {
-    if (tx.version > 1)
-    {
-      fee = tx.rct_signatures.txnFee;
-      return true;
-    }
-    uint64_t amount_in = 0;
-    uint64_t amount_out = 0;
-    for(auto& in: tx.vin)
-    {
-      LOG_ERROR_AND_RETURN_UNLESS(in.type() == typeid(txin_to_key), 0, "unexpected type id in transaction");
-      amount_in += boost::get<txin_to_key>(in).amount;
-    }
-    for(auto& o: tx.vout)
-      amount_out += o.amount;
 
-    LOG_ERROR_AND_RETURN_UNLESS(amount_in >= amount_out, false, "transaction spend (" <<amount_in << ") more than it has (" << amount_out << ")");
-    fee = amount_in - amount_out;
-    return true;
-  }
   //---------------------------------------------------------------
   uint64_t get_tx_fee(const transaction& tx)
   {
-    uint64_t r = 0;
-    if(!get_tx_fee(tx, r))
-      return 0;
-    return r;
+    if (tx.version > 1)
+    {
+      return tx.rct_signatures.txnFee;
+    }
+    else return 0;
   }
   //---------------------------------------------------------------
   bool parse_tx_extra(const std::vector<uint8_t>& tx_extra, std::vector<tx_extra_field>& tx_extra_fields)
