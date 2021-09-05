@@ -167,21 +167,21 @@ namespace proof {
     if (std::any_of(good_signature.begin(), good_signature.end(), [](int i) { return i > 0; }))
     {
       // non empty optional with default value
-      std::optional<crypto::key_derivation> derivation = {{}};
+      std::optional<crypto::tx_ecdh_shared_secret> derivation = {{}};
       if (good_signature[0]) {
         // obtain key derivation by multiplying rct_scalar 1 to the shared secret
-          derivation = crypto::derive_key_derivation(shared_secret[0], crypto::s2sk(rct::s_one));
+          derivation = crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
           THROW_WALLET_EXCEPTION_IF
           ( !derivation
             , error::wallet_internal_error, "Failed to generate key derivation");
       }
 
-      std::vector<crypto::key_derivation> additional_derivations(num_sigs - 1);
+      std::vector<crypto::tx_ecdh_shared_secret> additional_derivations(num_sigs - 1);
 
       for (size_t i = 1; i < num_sigs; ++i) {
         if (good_signature[i]) {
-          const std::optional<crypto::key_derivation> additional_derivation =
-            crypto::derive_key_derivation(shared_secret[i], crypto::s2sk(rct::s_one));
+          const std::optional<crypto::tx_ecdh_shared_secret> additional_derivation =
+            crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
           THROW_WALLET_EXCEPTION_IF
             ( !additional_derivation
              , error::wallet_internal_error, "Failed to generate key derivation");

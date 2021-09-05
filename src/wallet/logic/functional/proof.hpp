@@ -42,8 +42,8 @@ namespace proof {
   const uint64_t get_tx_key_received_helper
   (
    const cryptonote::transaction &tx
-   , const crypto::key_derivation &derivation
-   , const std::vector<crypto::key_derivation> &additional_derivations
+   , const crypto::tx_ecdh_shared_secret &derivation
+   , const std::vector<crypto::tx_ecdh_shared_secret> &additional_derivations
    , const cryptonote::account_public_address &address
    );
 

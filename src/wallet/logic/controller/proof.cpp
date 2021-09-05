@@ -147,15 +147,15 @@ namespace proof {
     const size_t num_sigs = shared_secret.size();
 
     // check if this address actually received any funds
-    const std::optional<crypto::key_derivation> derivation =
-      crypto::derive_key_derivation(shared_secret[0], crypto::s2sk(rct::s_one));
+    const std::optional<crypto::tx_ecdh_shared_secret> derivation =
+      crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
     THROW_WALLET_EXCEPTION_IF(!derivation
        , tools::error::wallet_internal_error, "Failed to generate key derivation");
 
-    std::vector<crypto::key_derivation> additional_derivations(num_sigs - 1);
+    std::vector<crypto::tx_ecdh_shared_secret> additional_derivations(num_sigs - 1);
     for (size_t i = 1; i < num_sigs; ++i) {
-      const std::optional<crypto::key_derivation> additional_derivation =
-        crypto::derive_key_derivation(shared_secret[i], crypto::s2sk(rct::s_one));
+      const std::optional<crypto::tx_ecdh_shared_secret> additional_derivation =
+        crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
       THROW_WALLET_EXCEPTION_IF
         ( !additional_derivation
          , tools::error::wallet_internal_error, "Failed to generate key derivation");

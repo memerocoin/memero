@@ -207,22 +207,22 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool derive_key_image_helper(const account_keys& ack, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::public_key& tx_public_key, const std::vector<crypto::public_key>& additional_tx_public_keys, size_t real_output_index, keypair& in_ephemeral, crypto::key_image& ki)
   {
-    const std::optional<crypto::key_derivation> recv_derivation =
-      crypto::derive_key_derivation(tx_public_key, ack.m_view_secret_key);
+    const std::optional<crypto::tx_ecdh_shared_secret> recv_derivation =
+      crypto::derive_tx_ecdh_shared_secret(tx_public_key, ack.m_view_secret_key);
     if (!recv_derivation)
     {
-      LOG_WARNING("key image helper: failed to derive_key_derivation(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
+      LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
       return false;
     }
 
-    std::vector<crypto::key_derivation> additional_recv_derivations;
+    std::vector<crypto::tx_ecdh_shared_secret> additional_recv_derivations;
     for (size_t i = 0; i < additional_tx_public_keys.size(); ++i)
     {
-      const std::optional<crypto::key_derivation> additional_recv_derivation =
-        crypto::derive_key_derivation(additional_tx_public_keys[i], ack.m_view_secret_key);
+      const std::optional<crypto::tx_ecdh_shared_secret> additional_recv_derivation =
+        crypto::derive_tx_ecdh_shared_secret(additional_tx_public_keys[i], ack.m_view_secret_key);
       if (!additional_recv_derivation)
       {
-        LOG_WARNING("key image helper: failed to derive_key_derivation(" << additional_tx_public_keys[i] << ", " << ack.m_view_secret_key << ")");
+        LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << additional_tx_public_keys[i] << ", " << ack.m_view_secret_key << ")");
       }
       else
       {
@@ -236,7 +236,7 @@ namespace cryptonote
     return derive_key_image_helper_precomp(ack, out_key, subaddr_recv_info->derivation, real_output_index, subaddr_recv_info->index, in_ephemeral, ki);
   }
   //---------------------------------------------------------------
-  bool derive_key_image_helper_precomp(const account_keys& ack, const crypto::public_key& out_key, const crypto::key_derivation& recv_derivation, size_t real_output_index, const subaddress_index& received_index, keypair& in_ephemeral, crypto::key_image& ki)
+  bool derive_key_image_helper_precomp(const account_keys& ack, const crypto::public_key& out_key, const crypto::tx_ecdh_shared_secret& recv_derivation, size_t real_output_index, const subaddress_index& received_index, keypair& in_ephemeral, crypto::key_image& ki)
   {
     if (ack.m_spend_secret_key == crypto::null_skey)
     {
@@ -714,8 +714,8 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool is_out_to_acc(const account_keys& acc, const txout_to_key& out_key, const crypto::public_key& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, size_t output_index)
   {
-    const std::optional<crypto::key_derivation> derivation =
-      crypto::derive_key_derivation(tx_pub_key, acc.m_view_secret_key);
+    const std::optional<crypto::tx_ecdh_shared_secret> derivation =
+      crypto::derive_tx_ecdh_shared_secret(tx_pub_key, acc.m_view_secret_key);
     LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "Failed to generate key derivation");
 
     const std::optional<crypto::public_key> pk =
@@ -730,7 +730,7 @@ namespace cryptonote
     {
       LOG_ERROR_AND_RETURN_UNLESS(output_index < additional_tx_pub_keys.size(), false, "wrong number of additional tx pubkeys");
 
-      const auto kd = crypto::derive_key_derivation(additional_tx_pub_keys[output_index], acc.m_view_secret_key);
+      const auto kd = crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys[output_index], acc.m_view_secret_key);
       LOG_ERROR_AND_RETURN_UNLESS(kd, false, "Failed to generate key derivation");
 
       const auto tx_out_pk = crypto::derive_tx_output_public_key(*derivation, output_index, acc.m_account_address.m_spend_public_key);
@@ -742,7 +742,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<subaddress_receive_info> is_out_to_acc_precomp(const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::key_derivation& derivation, const std::vector<crypto::key_derivation>& additional_derivations, size_t output_index)
+  std::optional<subaddress_receive_info> is_out_to_acc_precomp(const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::tx_ecdh_shared_secret& derivation, const std::vector<crypto::tx_ecdh_shared_secret>& additional_derivations, size_t output_index)
   {
     // try the shared tx pubkey
     const std::optional<crypto::public_key> subaddress_spendkey = crypto::derive_subaddress_public_key(out_key, derivation, output_index);

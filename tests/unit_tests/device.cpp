@@ -60,7 +60,7 @@ TEST(device, locking)
 TEST(device, ops)
 {
   hw::core::device_default dev;
-  std::optional<crypto::key_derivation> derd, maybeDer;
+  std::optional<crypto::tx_ecdh_shared_secret> derd, maybeDer;
   rct::rct_scalar sk;
   rct::rct_point pk;
   crypto::secret_key sk0, sk1;
@@ -74,8 +74,8 @@ TEST(device, ops)
 
   ASSERT_TRUE(is_safe_point(pk0));
 
-  derd = crypto::derive_key_derivation(pk0, sk0);
-  maybeDer = crypto::derive_key_derivation(pk0, sk0);
+  derd = crypto::derive_tx_ecdh_shared_secret(pk0, sk0);
+  maybeDer = crypto::derive_tx_ecdh_shared_secret(pk0, sk0);
   ASSERT_EQ(derd, maybeDer);
 }
 

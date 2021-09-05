@@ -45,8 +45,8 @@ namespace proof {
   const uint64_t get_tx_key_received_helper
   (
    const cryptonote::transaction &tx
-   , const crypto::key_derivation &derivation
-   , const std::vector<crypto::key_derivation> &additional_derivations
+   , const crypto::tx_ecdh_shared_secret &derivation
+   , const std::vector<crypto::tx_ecdh_shared_secret> &additional_derivations
    , const cryptonote::account_public_address &address
    )
   {
@@ -60,10 +60,11 @@ namespace proof {
 
       const std::optional<crypto::public_key> derived_out_key =
         crypto::derive_tx_output_public_key(derivation, n, address.m_spend_public_key);
+
       THROW_WALLET_EXCEPTION_IF(!derived_out_key, error::wallet_internal_error, "Failed to derive public key");
       bool found = out_key->key == *derived_out_key;
 
-      crypto::key_derivation found_derivation = derivation;
+      crypto::tx_ecdh_shared_secret found_derivation = derivation;
       if (!found && !additional_derivations.empty())
       {
         const auto additional_derived_out = crypto::derive_tx_output_public_key(additional_derivations[n], n, address.m_spend_public_key);
@@ -86,6 +87,7 @@ namespace proof {
 
           const crypto::ec_scalar_unnormalized blinding_factor =
             get_blinding_factor_from_ecdh_shared_secret(ecdh_shared_secret);
+
           THROW_WALLET_EXCEPTION_IF
             (
              crypto::is_not_reduced(blinding_factor)
@@ -96,6 +98,7 @@ namespace proof {
           const crypto::ec_scalar_unnormalized masked_amount = tx.rct_signatures.ecdhInfo[n].masked_amount;
           const crypto::ec_scalar_unnormalized amount_unnormalized =
             crypto::d2s(rct::decode_by_ecdh_shared_secret(masked_amount, ecdh_shared_secret));
+
           THROW_WALLET_EXCEPTION_IF
             (
              crypto::is_not_reduced(amount_unnormalized)

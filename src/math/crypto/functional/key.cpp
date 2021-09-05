@@ -46,7 +46,7 @@ namespace crypto {
   }
 
 
-  ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t index) noexcept {
+  ec_scalar hash_derivation_to_scalar(const tx_ecdh_shared_secret &derivation, const size_t index) noexcept {
     const epee::blob::data hashData =
       derivation.blob()
       + epee::string_tools::string_to_blob(tools::get_varint_data(index));
@@ -54,7 +54,7 @@ namespace crypto {
     return hash_to_scalar(hashData);
   }
 
-  secret_key derive_secret_key(const key_derivation &derivation, const size_t output_index,
+  secret_key derive_secret_key(const tx_ecdh_shared_secret &derivation, const size_t output_index,
     const secret_key &base) noexcept
   {
     assert(is_reduced(base));
@@ -120,7 +120,7 @@ namespace crypto {
     return out;
   }
 
-  std::optional<key_derivation> derive_key_derivation
+  std::optional<tx_ecdh_shared_secret> derive_tx_ecdh_shared_secret
   (
    const ec_point_unsafe &unsafe_point
    , const secret_key &sk
@@ -130,14 +130,14 @@ namespace crypto {
     if (!p) return {};
 
     // here mult8 is really not needed
-    const key_derivation derivation = p2derivation(mult8Safe(*p ^ sk));
+    const tx_ecdh_shared_secret derivation = p2derivation(mult8Safe(*p ^ sk));
 
     return derivation;
   }
 
   std::optional<public_key> derive_tx_output_public_key
   (
-   const key_derivation &derivation
+   const tx_ecdh_shared_secret &derivation
    , const size_t output_index
    , const ec_point_unsafe &unsafe_base
    ) noexcept
@@ -154,7 +154,7 @@ namespace crypto {
   std::optional<public_key> derive_subaddress_public_key
   (
    const ec_point_unsafe &unsafe_out_key
-   , const key_derivation &derivation
+   , const tx_ecdh_shared_secret &derivation
    , const std::size_t output_index
    ) noexcept
   {

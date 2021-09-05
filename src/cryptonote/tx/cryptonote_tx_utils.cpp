@@ -115,8 +115,8 @@ namespace cryptonote
 #endif
     block_reward += fee;
 
-    std::optional<crypto::key_derivation> derivation = crypto::derive_key_derivation(miner_address.m_view_public_key, txkey.sec);
-    LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "while creating outs: failed to derive_key_derivation(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");
+    std::optional<crypto::tx_ecdh_shared_secret> derivation = crypto::derive_tx_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
+    LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "while creating outs: failed to derive_tx_ecdh_shared_secret(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");
 
     const std::optional<crypto::public_key> out_eph_public_key =
       crypto::derive_tx_output_public_key(*derivation, 0, miner_address.m_spend_public_key);
@@ -166,7 +166,7 @@ namespace cryptonote
    , crypto::public_key &out_eph_public_key
    )
   {
-    std::optional<crypto::key_derivation> derivation;
+    std::optional<crypto::tx_ecdh_shared_secret> derivation;
 
     // make additional tx pubkey if necessary
     cryptonote::keypair additional_txkey;
@@ -182,24 +182,24 @@ namespace cryptonote
     if (change_addr && dst_entr.addr == *change_addr)
     {
     // sending change to yourself; derivation = a*R
-      derivation = crypto::derive_key_derivation(txkey_pub, sender_account_keys.m_view_secret_key);
+      derivation = crypto::derive_tx_ecdh_shared_secret(txkey_pub, sender_account_keys.m_view_secret_key);
       LOG_ERROR_AND_RETURN_UNLESS
         (
          derivation
          , false
-         , "at creation outs: failed to derive_key_derivation("
+         , "at creation outs: failed to derive_tx_ecdh_shared_secret("
          << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")"
          );
     }
     else
     {
     // sending to the recipient; derivation = r*A (or s*C in the subaddress scheme)
-      derivation = derive_key_derivation(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
+      derivation = derive_tx_ecdh_shared_secret(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
       LOG_ERROR_AND_RETURN_UNLESS
         (
          derivation
          , false
-         , "at creation outs: failed to derive_key_derivation("
+         , "at creation outs: failed to derive_tx_ecdh_shared_secret("
          << dst_entr.addr.m_view_public_key
          << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")"
          );
@@ -282,7 +282,7 @@ namespace cryptonote
       }
       summary_inputs_money += src_entr.amount;
 
-      //key_derivation recv_derivation;
+      //tx_ecdh_shared_secret recv_derivation;
       in_contexts.push_back(input_generation_context_data());
       keypair& in_ephemeral = in_contexts.back().in_ephemeral;
       crypto::key_image img;

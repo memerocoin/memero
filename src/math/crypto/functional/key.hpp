@@ -33,7 +33,7 @@ namespace crypto {
   struct public_key: ec_point {
   };
 
-  struct key_derivation: ec_point {};
+  struct tx_ecdh_shared_secret: ec_point {};
 
   struct key_image: ec_point {};
 
@@ -49,7 +49,7 @@ namespace crypto {
   inline const secret_key &s2sk(const ec_scalar &x)              noexcept { return (const secret_key&)x; }
   inline const public_key &p2pk(const ec_point &x)               noexcept { return (const public_key&)x; }
   inline const key_image &p2img(const ec_point &x)               noexcept { return (const key_image&)x; }
-  inline const key_derivation &p2derivation(const ec_point &x)   noexcept { return (const key_derivation&)x; }
+  inline const tx_ecdh_shared_secret &p2derivation(const ec_point &x)   noexcept { return (const tx_ecdh_shared_secret&)x; }
 
   inline const ec_scalar_unnormalized &d2s(const crypto_data &x) noexcept { return (const ec_scalar_unnormalized&)x; }
   inline const ec_point_unsafe &d2p(const crypto_data &x)        noexcept { return (const ec_point_unsafe&)x; }
@@ -64,9 +64,9 @@ namespace crypto {
   std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) noexcept;
   public_key to_pk(const secret_key& sk) noexcept;
 
-  ec_scalar hash_derivation_to_scalar(const key_derivation &derivation, const size_t output_index) noexcept;
+  ec_scalar hash_derivation_to_scalar(const tx_ecdh_shared_secret &derivation, const size_t output_index) noexcept;
 
-  secret_key derive_secret_key(const key_derivation &, const std::size_t, const secret_key &) noexcept;
+  secret_key derive_secret_key(const tx_ecdh_shared_secret &, const std::size_t, const secret_key &) noexcept;
 
 
   /* Generation and checking of a standard signature.
@@ -111,7 +111,7 @@ namespace crypto {
    * * The sender uses key derivation and the receivers' "spend" key to derive an ephemeral public key.
    * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
    */
-  std::optional<key_derivation> derive_key_derivation
+  std::optional<tx_ecdh_shared_secret> derive_tx_ecdh_shared_secret
   (
    const ec_point_unsafe &unsafe_point
    , const secret_key &sk
@@ -119,7 +119,7 @@ namespace crypto {
 
   std::optional<public_key> derive_tx_output_public_key
   (
-   const key_derivation &derivation
+   const tx_ecdh_shared_secret &derivation
    , const size_t output_index
    , const ec_point_unsafe &unsafe_base
    ) noexcept;
@@ -127,7 +127,7 @@ namespace crypto {
   std::optional<public_key> derive_subaddress_public_key
   (
    const ec_point_unsafe &unsafe_out_key
-   , const key_derivation &derivation
+   , const tx_ecdh_shared_secret &derivation
    , const std::size_t output_index
    ) noexcept;
 

@@ -107,7 +107,7 @@ namespace wallet {
   struct is_out_data
   {
     crypto::public_key pkey;
-    crypto::key_derivation derivation;
+    crypto::tx_ecdh_shared_secret derivation;
     std::vector<std::optional<cryptonote::subaddress_receive_info>> received;
   };
 
