@@ -67,13 +67,22 @@ namespace proof {
     // decode base58
     std::vector<crypto::public_key> shared_secret(1);
     std::vector<crypto::double_schnorr_signature> sig(1);
+
     const size_t pk_len = tools::base58::encode(epee::string_tools::blob_to_string(shared_secret[0].data)).size();
     const size_t sig_len = tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig[0]))).size();
+
     const size_t num_sigs = (sig_str.size() - header_len) / (pk_len + sig_len);
-    THROW_WALLET_EXCEPTION_IF(sig_str.size() != header_len + num_sigs * (pk_len + sig_len), error::wallet_internal_error,
-      "Wrong signature size");
+
+    THROW_WALLET_EXCEPTION_IF
+      (
+       sig_str.size() != header_len + num_sigs * (pk_len + sig_len)
+       , error::wallet_internal_error
+       , "Wrong signature size"
+       );
+
     shared_secret.resize(num_sigs);
     sig.resize(num_sigs);
+
     for (size_t i = 0; i < num_sigs; ++i)
     {
       std::string pk_decoded;
