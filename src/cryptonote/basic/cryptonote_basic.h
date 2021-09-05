@@ -223,9 +223,9 @@ namespace cryptonote
           unprunable_size = getpos(ar) - start_pos;
         if (rct_signatures.type != rct::RCTTypeNull)
         {
-          ar.tag("rctsig_prunable");
+          ar.tag("ringct_prunable");
           ar.begin_object();
-          r = rct_signatures.p.serialize_rctsig_prunable
+          r = rct_signatures.p.serialize_ringct_prunable
             (
               ar
               , rct_signatures.type
