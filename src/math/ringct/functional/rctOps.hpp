@@ -36,8 +36,6 @@
 
 namespace rct {
 
-  //Various key initialization functions
-
   // Can't us consteval here or android will panic
   // Creates a zero rct_scalar
   constexpr rct_scalar s_zero = ZERO;
@@ -52,48 +50,36 @@ namespace rct {
   constexpr rct_point zero = Z;
 
   constexpr rct_point emptyPoint = Z;
-  //Creates a zero elliptic curve point
   constexpr rct_point identity = I;
-
-  // make a pedersen commitment with given key
-  // generates C = mask * G + amount * H
-  rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount);
-
-  // make a pedersen commitment with zero key
-  rct_point dummyCommit(const amount_t amount);
-
-  //Scalar multiplications of curve points
-
-  rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a);
 
   rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a);
   rct_point G_(const rct_scalar a);
-
   rct_point H_(const rct_scalar a);
 
   rct_point multP8(const crypto::ec_point_unsafe P);
   rct_point multP8Safe(const rct_point P);
 
-  //Curve addition / subtractions
-
   rct::rct_point addPoints(const rct_pointS A);
-
   rct_point addMultG_H(const rct_scalar a, const rct_scalar b);
 
+  rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a);
+
+
+  // generates C = mask * G + amount * H
+  rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount);
+  rct_point dummyCommit(const amount_t amount);
+
+
+  // hash
   crypto::hash hash_data(const crypto::crypto_data in);
   rct_scalar hash_to_scalar(const crypto::crypto_data in);
-
-
-  //for mg sigs
   crypto::hash hash_dataV(const std::span<const crypto::crypto_data> keys);
   rct_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys);
-
-  //for ANSL
-
   rct_point hash_to_point_via_field(const crypto::crypto_data k);
 
-  rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar x);
 
+  // ecdh
+  rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar x);
   crypto::crypto_data hash_and_xor_first_8_bytes(const crypto::crypto_data x, const rct_scalar y);
 
   inline const auto encode_by_ecdh_shared_secret = hash_and_xor_first_8_bytes;
