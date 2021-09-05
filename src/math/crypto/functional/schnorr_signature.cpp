@@ -83,12 +83,11 @@ namespace crypto {
     const auto p = maybeSafePoint(pub);
     if (!p) return false;
 
-    if (is_not_reduced(sig.scalar_hash) || is_not_reduced(sig.s)) {
-      return false;
-    }
+    if (!sig.is_reduced()) return false;
 
     if (base && (!is_safe_point(*base))) return false;
     const auto maybeCustomBase = base ? maybeSafePoint(*base) : std::optional<ec_point>();
+
 
     const ec_point K = (maybeCustomBase ? *maybeCustomBase ^ sig.s : multBase(sig.s)) + (*p ^ sig.scalar_hash);
 
