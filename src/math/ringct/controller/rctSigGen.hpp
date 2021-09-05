@@ -36,7 +36,7 @@
 
 namespace rct {
 
-  clsag CLSAG_Gen
+  clsag generate_clsag_signature_internal
   (
    const crypto::hash message
    , const rct_pointV P
@@ -48,7 +48,7 @@ namespace rct {
    , const size_t idx
    );
 
-  clsag makeRctCLSAGSimple
+  clsag generate_clsag_signature
   (
    const crypto::hash message
    , const ct_public_keyV pubs
@@ -70,7 +70,7 @@ namespace rct {
   //   uses the attached ecdh info to find the amounts represented by each output commitment
   //   must know the destination private key to find the correct amount, else will return a random number
 
-  std::pair<rctSig, ct_secret_keyV> genRctSimple
+  std::pair<rctSig, ct_secret_keyV> generate_ringct
   (
    const crypto::hash message
    , const ct_secret_keyV inSk

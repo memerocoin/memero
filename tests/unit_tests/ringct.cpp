@@ -66,7 +66,7 @@ size_t populateRingsSimpleDummy(ct_public_keyV& mixRing, const ct_public_key inP
   return index;
 }
 
-rctSig genRctSimple
+rctSig generate_ringct
 (
   const crypto::hash message
   , const ct_secret_keyV inSk
@@ -86,7 +86,7 @@ rctSig genRctSimple
       mixRing[i].resize(mixin+1);
       index[i] = populateRingsSimpleDummy(mixRing[i], inPk[i], mixin);
     }
-    return genRctSimple
+    return generate_ringct
       (message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index).first;
 }
 
@@ -130,7 +130,7 @@ TEST(ringct, CLSAG)
   insk.blinding_factor = t;
 
 
-  // clsag makeRctCLSAGSimple
+  // clsag generate_clsag_signature
   //   (
   //    const rct_point &
   //    , const ct_public_keyV &
@@ -141,7 +141,7 @@ TEST(ringct, CLSAG)
   //    );
 
   // bad message
-  clsag = rct::makeRctCLSAGSimple
+  clsag = rct::generate_clsag_signature
     (
      {},
      pubs,
@@ -155,7 +155,7 @@ TEST(ringct, CLSAG)
   // bad index at creation
   try
   {
-    clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,(idx + 1) % N);
+    clsag = rct::generate_clsag_signature(message,pubs,insk,t2,Cout,(idx + 1) % N);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -166,7 +166,7 @@ TEST(ringct, CLSAG)
     ct_secret_key insk2;
     insk2.addr = insk.addr;
     insk2.blinding_factor = skGen();
-    clsag = rct::makeRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::generate_clsag_signature(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -176,7 +176,7 @@ TEST(ringct, CLSAG)
   pubs[idx].commit_of_amount = G_(skGen());
   try
   {
-    clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::generate_clsag_signature(message,pubs,insk,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -188,7 +188,7 @@ TEST(ringct, CLSAG)
     ct_secret_key insk2;
     insk2.addr = skGen();
     insk2.blinding_factor = insk.blinding_factor;
-    clsag = rct::makeRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::generate_clsag_signature(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -198,14 +198,14 @@ TEST(ringct, CLSAG)
   pubs[idx].dest = G_(skGen());
   try
   {
-    clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::generate_clsag_signature(message,pubs,insk,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
   pubs[idx] = backup;
 
   // Test correct signature
-  clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
+  clsag = rct::generate_clsag_signature(message,pubs,insk,t2,Cout,idx);
   ASSERT_TRUE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 
   // empty s
@@ -307,7 +307,7 @@ static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input
         destinations.push_back(Pk);
     }
 
-    return genRctSimple({}, sc, pc, destinations, inamounts, outamounts, amount_keys, fee, 3);
+    return generate_ringct({}, sc, pc, destinations, inamounts, outamounts, amount_keys, fee, 3);
 }
 
 static bool range_proof_test(bool expected_valid,

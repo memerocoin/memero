@@ -51,7 +51,7 @@ using namespace std;
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
 namespace rct {
-  std::tuple<rct_scalarV, Bulletproof> makeRangeBulletproof
+  std::tuple<rct_scalarV, Bulletproof> generate_range_proof
     (
        const std::vector<uint64_t> amounts
      , const std::span<const rct_scalar> sk)
@@ -83,7 +83,7 @@ namespace rct {
     //   P[l] == p*G
     //   C[l] == z*G
     //   C[i] == C_nonzero[i] - C_offset (for hashing purposes) for all i
-    clsag CLSAG_Gen
+    clsag generate_clsag_signature_internal
     (
      const crypto::hash message
      , const rct_pointV P
@@ -223,7 +223,7 @@ namespace rct {
     }
 
 
-  std::pair<rctSig, ct_secret_keyV> genRctSimple
+  std::pair<rctSig, ct_secret_keyV> generate_ringct
     (
      const crypto::hash message
      , const ct_secret_keyV inSk
@@ -246,7 +246,7 @@ namespace rct {
         }
 
 
-        const auto [blinding_factors, proof] = makeRangeBulletproof(outamounts, amount_keys);
+        const auto [blinding_factors, proof] = generate_range_proof(outamounts, amount_keys);
 
         ct_secret_keyV outSk;
         std::transform
@@ -353,7 +353,7 @@ namespace rct {
            clsags.begin()
            , clsags.end()
            , [full_message, mixRing, inSk, pseudo_blinding_factors, pseudoOuts, index, i = 0]() mutable {
-             const auto clsag = makeRctCLSAGSimple
+             const auto clsag = generate_clsag_signature
                (
                 full_message
                 , mixRing[i]
@@ -373,7 +373,7 @@ namespace rct {
         return {rctSig, outSk};
     }
 
-    clsag makeRctCLSAGSimple
+    clsag generate_clsag_signature
     (
      const crypto::hash message
      , const ct_public_keyV pubs
@@ -412,7 +412,7 @@ namespace rct {
          , [Cout](const auto& x) { return x.commit_of_amount - Cout; }
          );
 
-      clsag result = CLSAG_Gen
+      clsag result = generate_clsag_signature_internal
         (message, P, inSk.addr, C, s2s(inSk.blinding_factor - a), C_nonzero, Cout, index);
       return result;
     }
