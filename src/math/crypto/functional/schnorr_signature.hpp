@@ -37,7 +37,7 @@ namespace crypto {
       return scalar_hash == x.scalar_hash && s == x.s;
     }
 
-    bool is_reduced() {
+    bool is_reduced() const noexcept {
       return s == reduce(s) && scalar_hash == reduce(scalar_hash);
     }
   };

@@ -80,8 +80,8 @@ namespace crypto {
         where S = sG, K = kG with either a guessed s or k.
     */
 
-    const auto p = maybeSafePoint(pub);
-    if (!p) return false;
+    const auto pk = maybeSafePoint(pub);
+    if (!pk) return false;
 
     if (!sig.is_reduced()) return false;
 
@@ -89,7 +89,7 @@ namespace crypto {
     const auto maybeCustomBase = base ? maybeSafePoint(*base) : std::optional<ec_point>();
 
 
-    const ec_point K = (maybeCustomBase ? *maybeCustomBase ^ sig.s : multBase(sig.s)) + (*p ^ sig.scalar_hash);
+    const ec_point K = (maybeCustomBase ? *maybeCustomBase ^ sig.s : multBase(sig.s)) + (*pk ^ sig.scalar_hash);
 
     const epee::blob::data message_data(message.begin(), message.end());
 
