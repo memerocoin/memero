@@ -76,19 +76,19 @@ namespace crypto {
 
   bool verify_schnorr_signature_with_pubkey_data
   (
-   const hash prefix_hash
+   const hash h
    , const ec_point_unsafe pub
    , const schnorr_signature sig
    ) noexcept;
 
   bool verify_tx_proof
   (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const double_schnorr_signature &sig
+   const hash h
+   , const public_key R
+   , const public_key A
+   , const std::optional<public_key> B
+   , const public_key D
+   , const double_schnorr_signature sig
    ) noexcept;
 
   /* To send money to a key:

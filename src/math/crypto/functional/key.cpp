@@ -81,12 +81,12 @@ namespace crypto {
 
   bool verify_tx_proof
   (
-   const hash &h
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const double_schnorr_signature &double_sig
+   const hash h
+   , const public_key R
+   , const public_key A
+   , const std::optional<public_key> B
+   , const public_key D
+   , const double_schnorr_signature double_sig
    ) noexcept
   {
     // keypair (r R) (r D)@A
