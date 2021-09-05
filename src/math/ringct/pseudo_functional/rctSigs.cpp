@@ -435,7 +435,12 @@ namespace rct {
       }
     }
 
-    std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i)
+    std::pair<amount_t, rct_scalar> decode_rct_commitment
+    (
+     const rctSig rv
+     , const rct_scalar ecdh_shared_secret
+     , const size_t i
+     )
     {
         LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctSig");
         LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");
@@ -450,11 +455,12 @@ namespace rct {
 
         const rct_point C = rv.outPk[i].commit_of_amount;
 
-        const auto amount = rct::s2s(crypto::reduce(amount_unnormalized));
+        const auto amount = scalar_to_int(rct::s2s(crypto::reduce(amount_unnormalized)));
 
-        if (C != addMultG_H(blinding_factor, amount)) {
+        if (C != commit(blinding_factor, amount)) {
             LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");
         }
-        return {scalar_to_int(amount), blinding_factor};
+
+        return {amount, blinding_factor};
     }
 }

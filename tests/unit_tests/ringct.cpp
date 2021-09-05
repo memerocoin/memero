@@ -319,7 +319,7 @@ static bool range_proof_test(bool expected_valid,
         rctSig s;
         // simple takes fee as a parameter, non-simple takes it as an extra element to output amounts
         s = make_sample_simple_rct_sig(n_inputs, input_amounts, last_is_fee ? n_outputs - 1 : n_outputs, output_amounts, last_is_fee ? output_amounts[n_outputs - 1] : 0);
-        valid = verRctSimple(s);
+        valid = verify_clsag(s);
     }
     catch (const std::exception &e) {
         valid = false;
@@ -650,9 +650,9 @@ static rct::rctSig make_sig_simple()
 TEST(ringct, rctSig_##name##_simple) \
 { \
   rct::rctSig sig = make_sig_simple(); \
-  ASSERT_TRUE(rct::verRctSimple(sig)); \
+  ASSERT_TRUE(rct::verify_clsag(sig)); \
   op; \
-  ASSERT_FALSE(rct::verRctSimple(sig)); \
+  ASSERT_FALSE(rct::verify_clsag(sig)); \
 }
 
 TEST_rctSig_elements_simple(mixRing_empty, sig.mixRing.resize(0));

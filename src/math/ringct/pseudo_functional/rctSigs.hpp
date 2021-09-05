@@ -40,11 +40,11 @@ namespace rct {
   bool verify_clsag_commitment(const rctSig rv);
   bool verify_clsag_commitments(const std::span<const rctSig> rv);
 
-  inline bool verRctSimple(const rctSig rv) {
+  inline bool verify_clsag(const rctSig rv) {
     return verify_clsag_commitment(rv) && verify_clsag_signatures(rv);
   }
 
-  std::pair<amount_t, rct_scalar> decodeRctSimple(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i);
+  std::pair<amount_t, rct_scalar> decode_rct_commitment(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i);
   crypto::hash get_mlsag_pre_hash(const rctSig rv);
 }
 
