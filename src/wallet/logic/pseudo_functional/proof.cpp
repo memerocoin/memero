@@ -85,8 +85,12 @@ namespace proof {
         "Signature decoding error");
       THROW_WALLET_EXCEPTION_IF(sizeof(crypto::public_key) != pk_decoded.size() || sizeof(crypto::schnorr_signature) != sig_decoded.size(), error::wallet_internal_error,
         "Signature decoding error");
+
       memcpy(&shared_secret[i], pk_decoded.data(), sizeof(crypto::public_key));
-      memcpy(&sig[i], sig_decoded.data(), sizeof(crypto::double_schnorr_signature));
+
+      constexpr size_t schnorr_size = sizeof(crypto::schnorr_signature);
+      memcpy(&sig[i].first, sig_decoded.data(), schnorr_size);
+      memcpy(&sig[i].second, sig_decoded.data() + schnorr_size, schnorr_size);
     }
 
     crypto::public_key tx_pub_key = get_tx_pub_key_from_extra(tx);
