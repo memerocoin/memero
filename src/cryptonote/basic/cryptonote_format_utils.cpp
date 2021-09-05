@@ -74,7 +74,7 @@ namespace cryptonote
     if (tx.version < 2) return true;
     if (is_coinbase(tx)) return true;
 
-    rct::rctSig &rv = tx.ringct_essential;
+    rct::rctData &rv = tx.ringct_essential;
     if (rv.type == rct::RCTTypeNull)
       return true;
 

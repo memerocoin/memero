@@ -35,22 +35,22 @@
 
 namespace rct {
   bool verify_clsag_signature(const crypto::hash, const clsag, const ct_public_keyS, const rct_point);
-  bool verify_clsag_signatures(const rctSig rv);
+  bool verify_clsag_signatures(const rctData rv);
 
-  bool verify_ringct_rangeproof(const rctSig rv);
-  bool verify_ringct_rangeproofs(const std::span<const rctSig> rv);
+  bool verify_ringct_rangeproof(const rctData rv);
+  bool verify_ringct_rangeproofs(const std::span<const rctData> rv);
 
-  inline bool verify_ringct(const rctSig rv) {
+  inline bool verify_ringct(const rctData rv) {
     return verify_ringct_rangeproof(rv) && verify_clsag_signatures(rv);
   }
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
   (
-   const rctSig rv
+   const rctData rv
    , const rct_scalar ecdh_shared_secret
    , const size_t i
    );
 
-  crypto::hash get_ring_signature_message(const rctSig rv);
+  crypto::hash get_ring_signature_message(const rctData rv);
 }
 

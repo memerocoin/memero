@@ -50,7 +50,7 @@ using namespace std;
 
 namespace rct {
 
-  crypto::hash get_ring_signature_message(const rctSig rv)
+  crypto::hash get_ring_signature_message(const rctData rv)
   {
     LOG_ERROR_AND_THROW_UNLESS(!rv.mixRing.empty(), "Empty mixRing");
 
@@ -67,8 +67,8 @@ namespace rct {
 
     LOG_ERROR_AND_THROW_UNLESS
       (
-        const_cast<rctSig&>(rv).serialize_rctsig_base(ba, inputs, outputs)
-        , "Failed to serialize rctSigBase"
+        const_cast<rctData&>(rv).serialize_rctsig_base(ba, inputs, outputs)
+        , "Failed to serialize rctDataEssential"
         );
 
     const crypto::hash h = cryptonote::get_blob_hash(ss.str());
@@ -81,7 +81,7 @@ namespace rct {
       for (const auto &p: rv.p.bulletproofs)
       {
         // V are not hashed as they're expanded from outPk.mask
-        // (and thus hashed as part of rctSigBase above)
+        // (and thus hashed as part of rctDataEssential above)
         kv.push_back(p.A);
         kv.push_back(p.S);
         kv.push_back(p.T1);
@@ -271,15 +271,15 @@ namespace rct {
   }
 
 
-  bool verify_ringct_rangeproof_no_catch(const std::span<const rctSig> rvv)
+  bool verify_ringct_rangeproof_no_catch(const std::span<const rctData> rvv)
   {
-    for (const rctSig& rv: rvv)
+    for (const rctData& rv: rvv)
     {
       LOG_ERROR_AND_RETURN_UNLESS
         (
           rv.type == RCTTypeCLSAG
           , false
-          , "verify_ringct_rangeproof called on non simple rctSig"
+          , "verify_ringct_rangeproof called on non simple rctData"
           );
 
       LOG_ERROR_AND_RETURN_UNLESS
@@ -310,7 +310,7 @@ namespace rct {
         , rvv.end()
         , true
         , std::logical_and<>()
-        , [](const rctSig& rv) {
+        , [](const rctData& rv) {
           const rct_pointV &pseudo_amount_commits = rv.p.pseudo_amount_commits;
 
           rct::rct_pointV commits;
@@ -339,7 +339,7 @@ namespace rct {
         );
   }
 
-  bool verify_ringct_rangeproofs(const std::span<const rctSig> rvv) {
+  bool verify_ringct_rangeproofs(const std::span<const rctData> rvv) {
     try {
       return verify_ringct_rangeproof_no_catch(rvv);
     }
@@ -356,20 +356,20 @@ namespace rct {
       }
   }
 
-  bool verify_ringct_rangeproof(const rctSig rv)
+  bool verify_ringct_rangeproof(const rctData rv)
   {
-    return verify_ringct_rangeproofs(std::vector<rctSig>{rv});
+    return verify_ringct_rangeproofs(std::vector<rctData>{rv});
   }
 
   //ver RingCT simple
   //assumes only post-rct style inputs (at least for max anonymity)
-  bool verify_clsag_signatures_no_catch(const rctSig rv)
+  bool verify_clsag_signatures_no_catch(const rctData rv)
   {
     LOG_ERROR_AND_RETURN_UNLESS
       (
         rv.type == RCTTypeCLSAG
         , false
-        , "verify_clsag_signatures called on non simple rctSig"
+        , "verify_clsag_signatures called on non simple rctData"
         );
 
     // semantics check is early, and mixRing/MGs aren't resolved yet
@@ -411,7 +411,7 @@ namespace rct {
     return true;
   }
 
-  bool verify_clsag_signatures(const rctSig rv) {
+  bool verify_clsag_signatures(const rctData rv) {
     try {
       return verify_clsag_signatures_no_catch(rv);
     }
@@ -431,12 +431,12 @@ namespace rct {
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
   (
-    const rctSig rv
+    const rctData rv
     , const rct_scalar ecdh_shared_secret
     , const size_t i
     )
   {
-    LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctSig");
+    LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctData");
     LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdh.size(), "Bad index");
     LOG_ERROR_AND_THROW_UNLESS(rv.outPk.size() == rv.ecdh.size(), "Mismatched sizes of rv.outPk and rv.ecdh");
 

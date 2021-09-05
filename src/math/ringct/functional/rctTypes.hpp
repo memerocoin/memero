@@ -179,7 +179,7 @@ namespace rct {
       RCTTypeCLSAG = 5,
     };
 
-    struct rctSigBase {
+    struct rctDataEssential {
         uint8_t type;
         crypto::hash message;
         ct_public_keyM mixRing; //the set of all pubkeys / copy
@@ -237,7 +237,7 @@ namespace rct {
         }
     };
 
-    struct rctSigPrunable {
+    struct rctDataPrunable {
         std::vector<Bulletproof> bulletproofs;
         std::vector<clsag> CLSAGs;
         rct_pointV pseudo_amount_commits; //C - for simple rct
@@ -333,8 +333,8 @@ namespace rct {
         }
     };
 
-    struct rctSig: public rctSigBase {
-        rctSigPrunable p;
+    struct rctData: public rctDataEssential {
+        rctDataPrunable p;
     };
 
     //various conversions

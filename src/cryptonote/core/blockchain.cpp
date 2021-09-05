@@ -2496,7 +2496,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
 {
   LOG_ERROR_AND_RETURN_UNLESS(tx.version == 2, false, "Transaction version is not 2");
 
-  rct::rctSig &rv = tx.ringct_essential;
+  rct::rctData &rv = tx.ringct_essential;
 
   // message - hash of the transaction prefix
   rv.message = tx_prefix_hash;
@@ -2579,7 +2579,7 @@ bool Blockchain::check_tx_input
   size_t tx_version
   , const txin_to_key& txin
   , const crypto::hash& tx_prefix_hash
-  , const rct::rctSig &ringct_essential
+  , const rct::rctData &ringct_essential
   , std::vector<rct::ct_public_key> &output_keys
   , uint64_t* pmax_related_block_height
   ) const
@@ -3925,7 +3925,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     // from version 2, check ringct signatures
     // obviously, the original and simple rct APIs use a mixRing that's indexes
     // in opposite orders, because it'd be too simple otherwise...
-    const rct::rctSig &rv = tx.ringct_essential;
+    const rct::rctData &rv = tx.ringct_essential;
     switch (rv.type)
     {
     case rct::RCTTypeNull: {

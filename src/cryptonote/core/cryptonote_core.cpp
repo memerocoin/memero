@@ -1332,7 +1332,7 @@ namespace cryptonote
   bool core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool keeped_by_block)
   {
     bool ret = true;
-    std::vector<rct::rctSig> rvv;
+    std::vector<rct::rctData> rvv;
     for (size_t n = 0; n < tx_info.size(); ++n)
     {
       if (!check_tx_semantic(*tx_info[n].tx, keeped_by_block))
@@ -1345,11 +1345,11 @@ namespace cryptonote
 
       if (tx_info[n].tx->version < 2)
         continue;
-      const rct::rctSig &rv = tx_info[n].tx->ringct_essential;
+      const rct::rctData &rv = tx_info[n].tx->ringct_essential;
       switch (rv.type) {
         case rct::RCTTypeNull:
           // coinbase should not come here, so we reject for all other types
-          LOG_ERROR_VER("Unexpected Null rctSig type");
+          LOG_ERROR_VER("Unexpected Null rctData type");
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;

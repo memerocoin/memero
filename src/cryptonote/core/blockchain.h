@@ -931,7 +931,7 @@ namespace cryptonote
      size_t tx_version
      , const txin_to_key& txin
      , const crypto::hash& tx_prefix_hash
-     , const rct::rctSig &ringct_essential
+     , const rct::rctData &ringct_essential
      , std::vector<rct::ct_public_key> &output_keys
      , uint64_t* pmax_related_block_height
      ) const;

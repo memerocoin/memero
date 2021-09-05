@@ -49,7 +49,7 @@ namespace rct {
 
   //RingCT protocol
   //genRct:
-  //   creates an rctSig with all data necessary to verify the rangeProofs and that the signer owns one of the
+  //   creates an rctData with all data necessary to verify the rangeProofs and that the signer owns one of the
   //   columns that are claimed as inputs, and that the sum of inputs  = sum of outputs.
   //   Also contains masked "amount" and "mask" so the receiver can see how much they received
   //verRct:
@@ -58,7 +58,7 @@ namespace rct {
   //   uses the attached ecdh info to find the amounts represented by each output commitment
   //   must know the destination private key to find the correct amount, else will return a random number
 
-  std::pair<rctSig, ct_secret_keyV> generate_ringct
+  std::pair<rctData, ct_secret_keyV> generate_ringct
   (
    const crypto::hash message
    , const ct_secret_keyV inSk

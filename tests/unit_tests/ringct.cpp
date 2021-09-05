@@ -81,7 +81,7 @@ size_t populateRingsSimpleDummy(ct_public_keyV& mixRing, const ct_public_key inP
   return index;
 }
 
-rctSig generate_ringct
+rctData generate_ringct
 (
   const crypto::hash message
   , const ct_secret_keyV inSk
@@ -296,7 +296,7 @@ TEST(ringct, CLSAG)
 }
 
 
-static rct::rctSig make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
+static rct::rctData make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
 {
     ct_secret_keyV sc;
     ct_public_keyV pc;
@@ -331,7 +331,7 @@ static bool range_proof_test(bool expected_valid,
     //compute rct data
     bool valid;
     try {
-        rctSig s;
+        rctData s;
         // simple takes fee as a parameter, non-simple takes it as an extra element to output amounts
         s = make_sample_simple_rct_sig(n_inputs, input_amounts, last_is_fee ? n_outputs - 1 : n_outputs, output_amounts, last_is_fee ? output_amounts[n_outputs - 1] : 0);
         valid = verify_ringct(s);
@@ -653,38 +653,38 @@ TEST(ringct, fee_burn_valid_one_out_simple)
 // }
 
 
-static rct::rctSig make_sig_simple()
+static rct::rctData make_sig_simple()
 {
   static const uint64_t inputs[] = {1000, 1000};
   static const uint64_t outputs[] = {1000};
-  static rct::rctSig sig = make_sample_simple_rct_sig(NELTS(inputs), inputs, NELTS(outputs), outputs, 1000);
+  static rct::rctData sig = make_sample_simple_rct_sig(NELTS(inputs), inputs, NELTS(outputs), outputs, 1000);
   return sig;
 }
 
-#define TEST_rctSig_elements_simple(name, op) \
-TEST(ringct, rctSig_##name##_simple) \
+#define TEST_rctData_elements_simple(name, op) \
+TEST(ringct, rctData_##name##_simple) \
 { \
-  rct::rctSig sig = make_sig_simple(); \
+  rct::rctData sig = make_sig_simple(); \
   ASSERT_TRUE(rct::verify_ringct(sig)); \
   op; \
   ASSERT_FALSE(rct::verify_ringct(sig)); \
 }
 
-TEST_rctSig_elements_simple(mixRing_empty, sig.mixRing.resize(0));
-TEST_rctSig_elements_simple(mixRing_too_many, sig.mixRing.push_back(sig.mixRing.back()));
-TEST_rctSig_elements_simple(mixRing_too_few, sig.mixRing.pop_back());
-TEST_rctSig_elements_simple(mixRing0_empty, sig.mixRing[0].resize(0));
-TEST_rctSig_elements_simple(mixRing0_too_many, sig.mixRing[0].push_back(sig.mixRing[0].back()));
-TEST_rctSig_elements_simple(mixRing0_too_few, sig.mixRing[0].pop_back());
-// TEST_rctSig_elements_simple(pseudo_amount_commits_empty, sig.pseudo_amount_commits.resize(0));
-// TEST_rctSig_elements_simple(pseudo_amount_commits_too_many, sig.pseudo_amount_commits.push_back(sig.pseudo_amount_commits.back()));
-// TEST_rctSig_elements_simple(pseudo_amount_commits_too_few, sig.pseudo_amount_commits.pop_back());
-TEST_rctSig_elements_simple(ecdh_empty, sig.ecdh.resize(0));
-TEST_rctSig_elements_simple(ecdh_too_many, sig.ecdh.push_back(sig.ecdh.back()));
-TEST_rctSig_elements_simple(ecdh_too_few, sig.ecdh.pop_back());
-TEST_rctSig_elements_simple(outPk_empty, sig.outPk.resize(0));
-TEST_rctSig_elements_simple(outPk_too_many, sig.outPk.push_back(sig.outPk.back()));
-TEST_rctSig_elements_simple(outPk_too_few, sig.outPk.pop_back());
+TEST_rctData_elements_simple(mixRing_empty, sig.mixRing.resize(0));
+TEST_rctData_elements_simple(mixRing_too_many, sig.mixRing.push_back(sig.mixRing.back()));
+TEST_rctData_elements_simple(mixRing_too_few, sig.mixRing.pop_back());
+TEST_rctData_elements_simple(mixRing0_empty, sig.mixRing[0].resize(0));
+TEST_rctData_elements_simple(mixRing0_too_many, sig.mixRing[0].push_back(sig.mixRing[0].back()));
+TEST_rctData_elements_simple(mixRing0_too_few, sig.mixRing[0].pop_back());
+// TEST_rctData_elements_simple(pseudo_amount_commits_empty, sig.pseudo_amount_commits.resize(0));
+// TEST_rctData_elements_simple(pseudo_amount_commits_too_many, sig.pseudo_amount_commits.push_back(sig.pseudo_amount_commits.back()));
+// TEST_rctData_elements_simple(pseudo_amount_commits_too_few, sig.pseudo_amount_commits.pop_back());
+TEST_rctData_elements_simple(ecdh_empty, sig.ecdh.resize(0));
+TEST_rctData_elements_simple(ecdh_too_many, sig.ecdh.push_back(sig.ecdh.back()));
+TEST_rctData_elements_simple(ecdh_too_few, sig.ecdh.pop_back());
+TEST_rctData_elements_simple(outPk_empty, sig.outPk.resize(0));
+TEST_rctData_elements_simple(outPk_too_many, sig.outPk.push_back(sig.outPk.back()));
+TEST_rctData_elements_simple(outPk_too_few, sig.outPk.pop_back());
 
 TEST(ringct, key_ostream)
 {
@@ -721,7 +721,7 @@ TEST(ringct, mul8)
 TEST(ringct, aggregated)
 {
   static const size_t N_PROOFS = 16;
-  std::vector<rctSig> s(N_PROOFS);
+  std::vector<rctData> s(N_PROOFS);
 
   for (size_t n = 0; n < N_PROOFS; ++n)
   {

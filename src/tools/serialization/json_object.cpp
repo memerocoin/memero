@@ -933,7 +933,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::BlockHeaderResp
   READ_JSON_VALUE_BY_KEY(val, response.reward, reward);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rctSig sig)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rctData sig)
 {
   dest.StartObject();
 
@@ -964,7 +964,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   dest.EndObject();
 }
 
-void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
+void fromJsonValue(const rapidjson::Value& val, rct::rctData& sig)
 {
   if (!val.IsObject())
   {

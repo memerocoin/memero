@@ -270,7 +270,7 @@ namespace rct {
   }
 
 
-  std::pair<rctSig, ct_secret_keyV> generate_ringct
+  std::pair<rctData, ct_secret_keyV> generate_ringct
   (
    const crypto::hash message
    , const ct_secret_keyV inSk
@@ -380,7 +380,7 @@ namespace rct {
 
     pseudo_amount_commits.push_back(commit(pseudo_sum_blinding_factor_difference, inamounts.back()));
 
-    const rctSig preRctSig =
+    const rctData preRctSig =
       {
         RCTTypeCLSAG
         , message
@@ -416,10 +416,10 @@ namespace rct {
        }
        );
 
-    rctSig rctSig = preRctSig;
-    rctSig.p.CLSAGs = clsags;
+    rctData rctData = preRctSig;
+    rctData.p.CLSAGs = clsags;
 
-    return {rctSig, outSk};
+    return {rctData, outSk};
   }
 
 }

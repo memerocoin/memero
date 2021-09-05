@@ -160,7 +160,7 @@ namespace cryptonote
     mutable std::atomic<bool> blob_size_valid;
 
   public:
-    rct::rctSig ringct_essential;
+    rct::rctData ringct_essential;
 
     // hash cash
     mutable crypto::hash hash;
