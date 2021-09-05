@@ -150,13 +150,13 @@ TEST(ringct, CLSAG)
      Cout,
      idx
      );
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 
   // bad index at creation
   try
   {
     clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,(idx + 1) % N);
-    ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+    ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
 
@@ -167,7 +167,7 @@ TEST(ringct, CLSAG)
     insk2.addr = insk.addr;
     insk2.blinding_factor = skGen();
     clsag = rct::makeRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
-    ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+    ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
 
@@ -177,7 +177,7 @@ TEST(ringct, CLSAG)
   try
   {
     clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
-    ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+    ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
   pubs[idx] = backup;
@@ -189,7 +189,7 @@ TEST(ringct, CLSAG)
     insk2.addr = skGen();
     insk2.blinding_factor = insk.blinding_factor;
     clsag = rct::makeRctCLSAGSimple(message,pubs,insk2,t2,Cout,idx);
-    ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+    ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
 
@@ -199,19 +199,19 @@ TEST(ringct, CLSAG)
   try
   {
     clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
-    ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+    ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
   pubs[idx] = backup;
 
   // Test correct signature
   clsag = rct::makeRctCLSAGSimple(message,pubs,insk,t2,Cout,idx);
-  ASSERT_TRUE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_TRUE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 
   // empty s
   auto sbackup = clsag.s;
   clsag.s.clear();
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.s = sbackup;
 
   // too few s elements
@@ -221,12 +221,12 @@ TEST(ringct, CLSAG)
   inv8 backup_key_inv8;
   backup_s = clsag.s.back();
   clsag.s.pop_back();
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.s.push_back(backup_s);
 
   // too many s elements
   clsag.s.push_back(skGen());
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.s.pop_back();
 
   // bad s in clsag at verification
@@ -234,26 +234,26 @@ TEST(ringct, CLSAG)
   {
     backup_s = s;
     s = skGen();
-    ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+    ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
     s = backup_s;
   }
 
   // bad c1 in clsag at verification
   backup_c1 = clsag.c1;
   clsag.c1 = skGen();
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.c1 = backup_c1;
 
   // bad I in clsag at verification
   backup_key = clsag.I;
   clsag.I = G_(skGen());
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.I = backup_key;
 
   // bad D in clsag at verification
   backup_key_inv8 = clsag.D;
   clsag.D = G_(skGen());
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.D = backup_key_inv8;
 
   // D not in main subgroup in clsag at verification
@@ -261,7 +261,7 @@ TEST(ringct, CLSAG)
   rct::rct_point x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
   clsag.D = rct::unsafe_d2rct_p(clsag.D) + x;
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.D = backup_key_inv8;
 
   // swapped I and D in clsag at verification
@@ -271,13 +271,13 @@ TEST(ringct, CLSAG)
   clsag.I = rct::unsafe_d2rct_p(backup_key_inv8);
   clsag.D = clsag.I;
 
-  ASSERT_FALSE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 
   clsag.I = backup_key;
   clsag.D = backup_key_inv8;
 
   // check it's still good, in case we failed to restore
-  ASSERT_TRUE(rct::verRctCLSAGSimple(message,clsag,pubs,Cout));
+  ASSERT_TRUE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 }
 
 
@@ -715,5 +715,5 @@ TEST(ringct, aggregated)
     s[n] = make_sample_simple_rct_sig(NELTS(inputs), inputs, NELTS(outputs), outputs, 0);
   }
 
-  ASSERT_TRUE(verRctSemanticsSimple(s));
+  ASSERT_TRUE(verify_clsag_commitments(s));
 }

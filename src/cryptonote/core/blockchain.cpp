@@ -3986,7 +3986,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
         }
       }
 
-      if (!rct::verRctNonSemanticsSimple(rv))
+      if (!rct::verify_clsag_signatures(rv))
       {
         LOG_ERROR_VER("Failed to check ringct signatures!");
         return false;

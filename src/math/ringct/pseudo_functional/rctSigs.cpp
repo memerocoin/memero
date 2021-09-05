@@ -103,7 +103,7 @@ namespace rct {
     }
 
 
-    bool verRctCLSAGSimpleMayThrow
+    bool verify_clsag_signature_no_catch
     (
      const crypto::hash message
      , const clsag sig
@@ -255,7 +255,7 @@ namespace rct {
         return c == c1;
     }
 
-    bool verRctCLSAGSimple
+    bool verify_clsag_signature
     (
      const crypto::hash message
      , const clsag sig
@@ -264,13 +264,13 @@ namespace rct {
      )
     {
       try {
-        return verRctCLSAGSimpleMayThrow(message, sig, pubs, C_offset);
+        return verify_clsag_signature_no_catch(message, sig, pubs, C_offset);
       }
       catch (...) { return false; }
     }
 
 
-    bool verRctSemanticsSimpleMayThrow(const std::span<const rctSig> rvv)
+    bool verify_clsag_commitment_no_catch(const std::span<const rctSig> rvv)
     {
         for (const rctSig& rv: rvv)
         {
@@ -278,7 +278,7 @@ namespace rct {
             (
              rv.type == RCTTypeCLSAG
              , false
-             , "verRctSemanticsSimple called on non simple rctSig"
+             , "verify_clsag_commitment called on non simple rctSig"
              );
 
           LOG_ERROR_AND_RETURN_UNLESS
@@ -345,37 +345,37 @@ namespace rct {
            );
     }
 
-    bool verRctSemanticsSimple(const std::span<const rctSig> rvv) {
+    bool verify_clsag_commitments(const std::span<const rctSig> rvv) {
       try {
-        return verRctSemanticsSimpleMayThrow(rvv);
+        return verify_clsag_commitment_no_catch(rvv);
       }
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
       catch (const std::exception &e)
         {
-          LOG_PRINT_L1("Error in verRctSemanticsSimple: " << e.what());
+          LOG_PRINT_L1("Error in verify_clsag_commitment: " << e.what());
           return false;
         }
       catch (...)
         {
-          LOG_PRINT_L1("Error in verRctSemanticsSimple, but not an actual exception");
+          LOG_PRINT_L1("Error in verify_clsag_commitment, but not an actual exception");
           return false;
         }
     }
 
-    bool verRctSemanticsSimple(const rctSig rv)
+    bool verify_clsag_commitment(const rctSig rv)
     {
-      return verRctSemanticsSimple(std::vector<rctSig>{rv});
+      return verify_clsag_commitments(std::vector<rctSig>{rv});
     }
 
     //ver RingCT simple
     //assumes only post-rct style inputs (at least for max anonymity)
-    bool verRctNonSemanticsSimpleMayThrow(const rctSig rv)
+    bool verify_clsag_signatures_no_catch(const rctSig rv)
     {
         LOG_ERROR_AND_RETURN_UNLESS
           (
            rv.type == RCTTypeCLSAG
            , false
-           , "verRctNonSemanticsSimple called on non simple rctSig"
+           , "verify_clsag_signatures called on non simple rctSig"
            );
 
         // semantics check is early, and mixRing/MGs aren't resolved yet
@@ -400,7 +400,7 @@ namespace rct {
         results.resize(rv.mixRing.size());
         for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
           tpool.submit(&waiter, [&, i] {
-            results[i] = verRctCLSAGSimple
+            results[i] = verify_clsag_signature
               (message, rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i]);
           });
         }
@@ -409,7 +409,7 @@ namespace rct {
 
         for (size_t i = 0; i < results.size(); ++i) {
           if (!results[i]) {
-            LOG_PRINT_L1("verRctCLSAGSimple failed for input " << i);
+            LOG_PRINT_L1("verify_clsag_signature failed for input " << i);
             return false;
           }
         }
@@ -417,20 +417,20 @@ namespace rct {
         return true;
     }
 
-    bool verRctNonSemanticsSimple(const rctSig rv) {
+    bool verify_clsag_signatures(const rctSig rv) {
       try {
-        return verRctNonSemanticsSimpleMayThrow(rv);
+        return verify_clsag_signatures_no_catch(rv);
       }
 
       // we can get deep throws from ge_frombytes_vartime if input isn't valid
       catch (const std::exception &e)
       {
-        LOG_PRINT_L1("Error in verRctNonSemanticsSimple: " << e.what());
+        LOG_PRINT_L1("Error in verify_clsag_signatures: " << e.what());
         return false;
       }
       catch (...)
       {
-        LOG_PRINT_L1("Error in verRctNonSemanticsSimple, but not an actual exception");
+        LOG_PRINT_L1("Error in verify_clsag_signatures, but not an actual exception");
         return false;
       }
     }

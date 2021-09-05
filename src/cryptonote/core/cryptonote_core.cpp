@@ -1373,7 +1373,7 @@ namespace cryptonote
           break;
       }
     }
-    if (!rvv.empty() && !rct::verRctSemanticsSimple(rvv))
+    if (!rvv.empty() && !rct::verify_clsag_commitments(rvv))
     {
       LOG_PRINT_L1("One transaction among this group has bad semantics, verifying one at a time");
       ret = false;
@@ -1384,7 +1384,7 @@ namespace cryptonote
           continue;
         if (tx_info[n].tx->rct_signatures.type != rct::RCTTypeCLSAG)
           continue;
-        if (assumed_bad || !rct::verRctSemanticsSimple(tx_info[n].tx->rct_signatures))
+        if (assumed_bad || !rct::verify_clsag_commitment(tx_info[n].tx->rct_signatures))
         {
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
