@@ -107,7 +107,7 @@ namespace proof {
              , "Bad ECDH input amount"
              );
 
-          const rct::rct_point C = tx.rct_signatures.outPk[n].commit_of_amount;
+          const rct::rct_point C = tx.rct_signatures.outPk[n].amount_commit;
 
           const auto ecdh_amount = scalar_to_int(rct::s2s(crypto::reduce(amount_unnormalized)));
           const rct::rct_point C_check = rct::commit(blinding_factor, ecdh_amount);

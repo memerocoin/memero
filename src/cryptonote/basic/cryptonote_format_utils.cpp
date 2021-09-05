@@ -124,7 +124,7 @@ namespace cryptonote
        , rv.outPk.end()
        , std::back_inserter(rv.p.bulletproofs[0].V)
        , [](const auto& x) {
-         return x.commit_of_amount ^ rct::s_inv_eight;
+         return x.amount_commit ^ rct::s_inv_eight;
        }
        );
 

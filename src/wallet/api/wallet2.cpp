@@ -3490,7 +3490,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
       tx_output_entry oe;
       oe.first = std::get<0>(outs[out_index][n]);
       oe.second.dest = rct::pk2rct_p(std::get<1>(outs[out_index][n]));
-      oe.second.commit_of_amount = std::get<2>(outs[out_index][n]);
+      oe.second.amount_commit = std::get<2>(outs[out_index][n]);
       src.outputs.push_back(oe);
     }
     ++i;
@@ -3506,7 +3506,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
     tx_output_entry real_oe;
     real_oe.first = td.m_global_output_index;
     real_oe.second.dest = rct::pk2rct_p(td.get_public_key());
-    real_oe.second.commit_of_amount = rct::commit(td.m_mask, td.amount());
+    real_oe.second.amount_commit = rct::commit(td.m_mask, td.amount());
     *it_to_replace = real_oe;
     src.real_out_tx_key = get_tx_pub_key_from_extra(td.m_tx, td.m_pk_index);
     src.real_out_additional_tx_keys = get_additional_tx_pub_keys_from_extra(td.m_tx);

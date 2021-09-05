@@ -183,7 +183,7 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
     else
     {
       amount_output_indices[i] = add_output(tx_hash, tx.vout[i], i, tx.unlock_time,
-        tx.version > 1 ? &tx.rct_signatures.outPk[i].commit_of_amount : NULL);
+        tx.version > 1 ? &tx.rct_signatures.outPk[i].amount_commit : NULL);
     }
   }
   add_tx_amount_output_indices(tx_id, amount_output_indices);

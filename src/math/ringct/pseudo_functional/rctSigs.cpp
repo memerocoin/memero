@@ -146,7 +146,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(mu_P_to_hash)
-        , [](const auto& x) { return x.commit_of_amount; }
+        , [](const auto& x) { return x.amount_commit; }
         );
 
     mu_P_to_hash.push_back(sig.I);
@@ -194,7 +194,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(c_to_hash)
-        , [](const auto& x) { return x.commit_of_amount; }
+        , [](const auto& x) { return x.amount_commit; }
         );
 
     c_to_hash.push_back(C_offset);
@@ -212,9 +212,9 @@ namespace rct {
       const rct_scalar c_p = mu_P * c;
       const rct_scalar c_c = mu_C * c;
 
-      const rct_point mask = pubs[i].commit_of_amount;
+      const rct_point mask = pubs[i].amount_commit;
       if (!is_safe_point(mask)) {
-        LOG_ERROR("pubs[" << i << "].commit_of_amount.data is not a valid point: " << mask);
+        LOG_ERROR("pubs[" << i << "].amount_commit.data is not a valid point: " << mask);
         return false;
       }
 
@@ -291,16 +291,16 @@ namespace rct {
 
       LOG_ERROR_AND_RETURN_UNLESS
         (
-          rv.p.pseudoOuts.size() == rv.p.CLSAGs.size()
+          rv.p.pseudo_amount_commits.size() == rv.p.CLSAGs.size()
           , false
-          , "Mismatched sizes of rv.p.pseudoOuts and rv.p.CLSAGs"
+          , "Mismatched sizes of rv.p.pseudo_amount_commits and rv.p.CLSAGs"
           );
 
       LOG_ERROR_AND_RETURN_UNLESS
         (
-          rv.pseudoOuts.empty()
+          rv.pseudo_amount_commits.empty()
           , false
-          , "rv.pseudoOuts is not empty"
+          , "rv.pseudo_amount_commits is not empty"
           );
 
       LOG_ERROR_AND_RETURN_UNLESS
@@ -318,25 +318,25 @@ namespace rct {
         , true
         , std::logical_and<>()
         , [](const rctSig& rv) {
-          const rct_pointV &pseudoOuts = rv.p.pseudoOuts;
+          const rct_pointV &pseudo_amount_commits = rv.p.pseudo_amount_commits;
 
-          rct::rct_pointV masks;
+          rct::rct_pointV commits;
           std::transform
             (
             rv.outPk.begin()
             , rv.outPk.end()
-            , std::back_inserter(masks)
+            , std::back_inserter(commits)
             , [](const auto& x) {
-              return x.commit_of_amount;
+              return x.amount_commit;
             }
             );
 
           const rct_point txnFeeKey = H_(int_to_scalar(rv.txnFee));
-          const rct_point sumOutpks = addPoints(masks) + txnFeeKey;
-          const rct_point sumPseudoOuts = addPoints(pseudoOuts);
+          const rct_point sumCommits = addPoints(commits) + txnFeeKey;
+          const rct_point sumPseudoCommits = addPoints(pseudo_amount_commits);
 
-          //check pseudoOuts vs Outs..
-          if (sumPseudoOuts != sumOutpks) {
+          //check pseudo_amount_commits vs Outs..
+          if (sumPseudoCommits != sumCommits) {
             LOG_PRINT_L1("Sum check failed");
             return false;
           }
@@ -382,9 +382,9 @@ namespace rct {
     // semantics check is early, and mixRing/MGs aren't resolved yet
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.p.pseudoOuts.size() == rv.mixRing.size()
+        rv.p.pseudo_amount_commits.size() == rv.mixRing.size()
         , false
-        , "Mismatched sizes of rv.p.pseudoOuts and mixRing"
+        , "Mismatched sizes of rv.p.pseudo_amount_commits and mixRing"
         );
 
     const size_t threads = std::max(rv.outPk.size(), rv.mixRing.size());
@@ -393,7 +393,7 @@ namespace rct {
     tools::threadpool& tpool = tools::threadpool::getInstance();
     tools::threadpool::waiter waiter(tpool);
 
-    const rct_pointV &pseudoOuts = rv.p.pseudoOuts;
+    const rct_pointV &pseudo_amount_commits = rv.p.pseudo_amount_commits;
 
     const crypto::hash message = get_ring_signature_message(rv);
 
@@ -402,7 +402,7 @@ namespace rct {
     for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
       tpool.submit(&waiter, [&, i] {
         results[i] = verify_clsag_signature
-          (message, rv.p.CLSAGs[i], rv.mixRing[i], pseudoOuts[i]);
+          (message, rv.p.CLSAGs[i], rv.mixRing[i], pseudo_amount_commits[i]);
       });
     }
     if (!waiter.wait())
@@ -454,7 +454,7 @@ namespace rct {
       crypto::d2s(rct::decode_by_ecdh_shared_secret(rv.ecdhInfo[i].masked_amount, ecdh_shared_secret));
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_unnormalized), "warning, bad ECDH amount");
 
-    const rct_point C = rv.outPk[i].commit_of_amount;
+    const rct_point C = rv.outPk[i].amount_commit;
 
     const auto amount = scalar_to_int(rct::s2s(crypto::reduce(amount_unnormalized)));
 

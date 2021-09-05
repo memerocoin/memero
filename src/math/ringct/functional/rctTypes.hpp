@@ -81,11 +81,11 @@ namespace rct {
 
     // containers For CT operations
     // "dest": addr * G
-    // "commit_of_amount": bliding_factor * G + amount * H
+    // "amount_commit": bliding_factor * G + amount * H
     // f : (ct_secret_key, uint64_t) -> ct_public_key
     struct ct_public_key {
         rct_point dest;
-        rct_point commit_of_amount;
+        rct_point amount_commit;
     };
 
     using ct_public_keyV = std::vector<ct_public_key>;
@@ -184,7 +184,7 @@ namespace rct {
         crypto::hash message;
         ct_public_keyM mixRing; //the set of all pubkeys / copy
         //pairs that you mix with
-        rct_pointV pseudoOuts; //C - for simple rct
+        rct_pointV pseudo_amount_commits; //C - for simple rct
         std::vector<ecdhData> ecdhInfo;
         ct_public_keyV outPk;
         amount_t txnFee; // contains b
@@ -201,7 +201,7 @@ namespace rct {
           // inputs/outputs not saved, only here for serialization help
           // FIELD(message) - not serialized, it can be reconstructed
           // FIELD(mixRing) - not serialized, it can be reconstructed
-          ar.tag("ecdhInfo");
+          ar.tag("ecdh_masked_amount");
           ar.begin_array();
           PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, ecdhInfo);
           if (ecdhInfo.size() != outputs)
@@ -221,14 +221,14 @@ namespace rct {
           }
           ar.end_array();
 
-          ar.tag("outPk");
+          ar.tag("amount_commits");
           ar.begin_array();
           PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, outPk);
           if (outPk.size() != outputs)
             return false;
           for (size_t i = 0; i < outputs; ++i)
           {
-            FIELDS(outPk[i].commit_of_amount)
+            FIELDS(outPk[i].amount_commit)
             if (outputs - i > 1)
               ar.delimit_array();
           }
@@ -240,7 +240,7 @@ namespace rct {
           FIELD(type)
           FIELD(message)
           FIELD(mixRing)
-          FIELD(pseudoOuts)
+          FIELD(pseudo_amount_commits)
           FIELD(ecdhInfo)
           FIELD(outPk)
           VARINT_FIELD(txnFee)
@@ -250,7 +250,7 @@ namespace rct {
     struct rctSigPrunable {
         std::vector<Bulletproof> bulletproofs;
         std::vector<clsag> CLSAGs;
-        rct_pointV pseudoOuts; //C - for simple rct
+        rct_pointV pseudo_amount_commits; //C - for simple rct
 
         // when changing this function, update cryptonote::get_pruned_transaction_weight
         template<bool W, template <bool> class Archive>
@@ -326,14 +326,14 @@ namespace rct {
           }
 
           {
-            ar.tag("pseudoOuts");
+            ar.tag("pseudo_amount_commits");
             ar.begin_array();
-            PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, pseudoOuts);
-            if (pseudoOuts.size() != inputs)
+            PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, pseudo_amount_commits);
+            if (pseudo_amount_commits.size() != inputs)
               return false;
             for (size_t i = 0; i < inputs; ++i)
             {
-              FIELDS(pseudoOuts[i])
+              FIELDS(pseudo_amount_commits[i])
               if (inputs - i > 1)
                 ar.delimit_array();
             }
@@ -345,7 +345,7 @@ namespace rct {
         BEGIN_SERIALIZE_OBJECT()
           FIELD(bulletproofs)
           FIELD(CLSAGs)
-          FIELD(pseudoOuts)
+          FIELD(pseudo_amount_commits)
         END_SERIALIZE()
     };
 
@@ -354,12 +354,12 @@ namespace rct {
 
         rct_pointV& get_pseudo_outs()
         {
-          return type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
+          return type == RCTTypeCLSAG ? p.pseudo_amount_commits : pseudo_amount_commits;
         }
 
         rct_pointV const& get_pseudo_outs() const
         {
-          return type == RCTTypeCLSAG ? p.pseudoOuts : pseudoOuts;
+          return type == RCTTypeCLSAG ? p.pseudo_amount_commits : pseudo_amount_commits;
         }
 
         BEGIN_SERIALIZE_OBJECT()

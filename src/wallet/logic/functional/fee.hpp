@@ -83,7 +83,7 @@ namespace fee {
     // mixRing - not serialized, can be reconstructed
     /* size += 2 * 32 * (mixin+1) * n_inputs; */
 
-    // pseudoOuts
+    // pseudo_amount_commits
     size += 32 * n_inputs;
     // ecdhInfo
     size += 8 * n_outputs;

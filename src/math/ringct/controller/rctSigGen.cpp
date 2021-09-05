@@ -253,7 +253,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(C_nonzero)
-        , [](const auto& x) { return x.commit_of_amount; }
+        , [](const auto& x) { return x.amount_commit; }
         );
 
     rct_pointV C;
@@ -262,7 +262,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(C)
-        , [Cout](const auto& x) { return x.commit_of_amount - Cout; }
+        , [Cout](const auto& x) { return x.amount_commit - Cout; }
         );
 
     return generate_clsag_signature_internal
@@ -363,20 +363,22 @@ namespace rct {
        , std::plus<>()
        );
 
-    rct_pointV pseudoOuts;
+    rct_pointV pseudo_amount_commits;
     std::transform
       (
        pseudo_blinding_factors.begin()
        , pseudo_blinding_factors.end()
        , inamounts.begin()
-       , std::back_inserter(pseudoOuts)
+       , std::back_inserter(pseudo_amount_commits)
        , [](const auto& x, const auto& y) -> rct_point {
          return commit(x, y);
        }
        );
 
-    pseudo_blinding_factors.push_back(s2s(sum_blinding_factors - pseudo_sum_blinding_factors));
-    pseudoOuts.push_back(commit(pseudo_blinding_factors.back(), inamounts.back()));
+    const auto pseudo_sum_blinding_factor_difference = s2s(sum_blinding_factors - pseudo_sum_blinding_factors);
+    pseudo_blinding_factors.push_back(pseudo_sum_blinding_factor_difference);
+
+    pseudo_amount_commits.push_back(commit(pseudo_sum_blinding_factor_difference, inamounts.back()));
 
     const rctSig preRctSig =
       {
@@ -390,7 +392,7 @@ namespace rct {
         , {
           {proof}
           , {}
-          , pseudoOuts
+          , pseudo_amount_commits
         }
       };
 
@@ -400,14 +402,14 @@ namespace rct {
       (
        clsags.begin()
        , clsags.end()
-       , [full_message, mixRing, inSk, pseudo_blinding_factors, pseudoOuts, index, i = 0]() mutable {
+       , [full_message, mixRing, inSk, pseudo_blinding_factors, pseudo_amount_commits, index, i = 0]() mutable {
          const auto clsag = generate_clsag_signature
            (
             full_message
             , mixRing[i]
             , inSk[i]
             , pseudo_blinding_factors[i]
-            , pseudoOuts[i]
+            , pseudo_amount_commits[i]
             , index[i]
             );
          i++;
