@@ -187,7 +187,7 @@ namespace rct {
         rct_pointV pseudo_amount_commits; //C - for simple rct
         std::vector<ecdh_encrypted_data> ecdh;
         ct_public_keyV outPk;
-        amount_t txnFee; // contains b
+        amount_t fee; // contains b
 
         template<bool W, template <bool> class Archive>
         bool serialize_rctsig_base(Archive<W> &ar, size_t inputs, size_t outputs)
@@ -197,7 +197,7 @@ namespace rct {
             return ar.stream().good();
           if (type != RCTTypeCLSAG)
             return false;
-          VARINT_FIELD(txnFee)
+          VARINT_FIELD(fee)
           // inputs/outputs not saved, only here for serialization help
           // FIELD(message) - not serialized, it can be reconstructed
           // FIELD(mixRing) - not serialized, it can be reconstructed
@@ -243,7 +243,7 @@ namespace rct {
           FIELD(pseudo_amount_commits)
           FIELD(ecdh)
           FIELD(outPk)
-          VARINT_FIELD(txnFee)
+          VARINT_FIELD(fee)
         END_SERIALIZE()
     };
 

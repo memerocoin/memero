@@ -65,7 +65,7 @@ namespace rct {
    , const rct_pointV destinations
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
-   , const amount_t txnFee
+   , const amount_t fee
    , const ct_public_keyM mixRing
    , const rct_scalarV amount_keys
    , const std::vector<size_t> index

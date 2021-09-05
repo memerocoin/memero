@@ -1016,7 +1016,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   if (sig.type != rct::RCTTypeNull) {
     WRITE_JSON_FIELD_FROM(dest, encrypted, sig.ecdh);
     WRITE_JSON_FIELD_FROM(dest, commitments, std::span(masks));
-    WRITE_JSON_FIELD_FROM(dest, fee, sig.txnFee);
+    WRITE_JSON_FIELD_FROM(dest, fee, sig.fee);
   }
 
   // prunable
@@ -1045,7 +1045,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
   if (sig.type != rct::RCTTypeNull) {
     READ_JSON_VALUE_BY_KEY(val, sig.ecdh, encrypted);
     READ_JSON_VALUE_BY_KEY(val, sig.outPk, commitments);
-    READ_JSON_VALUE_BY_KEY(val, sig.txnFee, fee);
+    READ_JSON_VALUE_BY_KEY(val, sig.fee, fee);
   }
 
   // prunable

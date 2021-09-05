@@ -147,7 +147,7 @@ namespace cryptonote
     }
     else
     {
-      fee = tx.rct_signatures.txnFee;
+      fee = tx.rct_signatures.fee;
     }
 
     if (!kept_by_block && !m_blockchain.check_fee(tx_weight, fee))

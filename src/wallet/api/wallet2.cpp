@@ -1042,7 +1042,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     }
   }
 
-  uint64_t fee = miner_tx ? 0 : tx.rct_signatures.txnFee;
+  uint64_t fee = miner_tx ? 0 : tx.rct_signatures.fee;
 
   if (tx_money_spent_in_ins > 0 && !pool)
   {
@@ -1160,7 +1160,7 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
     // wallet (eg, we're a cold wallet and the hot wallet sent it). For RCT transactions,
     // we only see 0 input amounts, so have to deduce amount out from other parameters.
     entry.first->second.m_amount_in = spent;
-    entry.first->second.m_amount_out = spent - tx.rct_signatures.txnFee;
+    entry.first->second.m_amount_out = spent - tx.rct_signatures.fee;
     entry.first->second.m_change = received;
 
     std::vector<tx_extra_field> tx_extra_fields;

@@ -90,7 +90,7 @@ rctSig generate_ringct
   , const std::vector<amount_t> inamounts
   , const std::vector<amount_t> outamounts
   , const rct_scalarV amount_keys
-  , const amount_t txnFee
+  , const amount_t fee
   , const size_t mixin
   ) {
     std::vector<size_t> index;
@@ -102,7 +102,7 @@ rctSig generate_ringct
       index[i] = populateRingsSimpleDummy(mixRing[i], inPk[i], mixin);
     }
     return generate_ringct
-      (message, inSk, destinations, inamounts, outamounts, txnFee, mixRing, amount_keys, index).first;
+      (message, inSk, destinations, inamounts, outamounts, fee, mixRing, amount_keys, index).first;
 }
 
 

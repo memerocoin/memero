@@ -354,7 +354,7 @@ namespace cryptonote
   {
     if (tx.version > 1)
     {
-      return tx.rct_signatures.txnFee;
+      return tx.rct_signatures.fee;
     }
     else return 0;
   }

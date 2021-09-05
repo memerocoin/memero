@@ -89,7 +89,7 @@ namespace fee {
     size += 8 * n_outputs;
     // outPk - only commitment is saved
     size += 32 * n_outputs;
-    // txnFee
+    // fee
     size += 4;
 
     // LOG_PRINT_L2

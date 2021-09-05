@@ -1273,7 +1273,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     }
     else
     {
-      if (cur_tx.fee != cur_tx.tx.rct_signatures.txnFee)
+      if (cur_tx.fee != cur_tx.tx.rct_signatures.fee)
       {
         LOG_ERROR("Creating block template: error: invalid fee");
       }
