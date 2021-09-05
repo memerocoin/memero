@@ -51,8 +51,6 @@ namespace cryptonote
 
   struct txout_to_script
   {
-    BEGIN_SERIALIZE_OBJECT()
-    END_SERIALIZE()
   };
 
   struct txout_to_scripthash
@@ -80,14 +78,10 @@ namespace cryptonote
 
   struct txin_to_script
   {
-    BEGIN_SERIALIZE_OBJECT()
-    END_SERIALIZE()
   };
 
   struct txin_to_scripthash
   {
-    BEGIN_SERIALIZE_OBJECT()
-    END_SERIALIZE()
   };
 
   struct txin_to_key
@@ -380,7 +374,11 @@ namespace std {
   };
 }
 
+BLOB_SERIALIZER(cryptonote::txin_to_script);
+BLOB_SERIALIZER(cryptonote::txin_to_scripthash);
+
 BLOB_SERIALIZER(cryptonote::txout_to_key);
+BLOB_SERIALIZER(cryptonote::txout_to_script);
 BLOB_SERIALIZER(cryptonote::txout_to_scripthash);
 
 VARIANT_TAG(binary_archive, cryptonote::txin_gen, 0xff);
