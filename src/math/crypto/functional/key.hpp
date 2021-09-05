@@ -64,7 +64,7 @@ namespace crypto {
   std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) noexcept;
   public_key to_pk(const secret_key& sk) noexcept;
 
-  ec_scalar hash_derivation_to_scalar(const tx_ecdh_shared_secret &derivation, const size_t output_index) noexcept;
+  ec_scalar hash_derivation_to_scalar(const tx_ecdh_shared_secret &tx_shared_secret, const size_t output_index) noexcept;
 
   secret_key derive_secret_key(const tx_ecdh_shared_secret &, const std::size_t, const secret_key &) noexcept;
 
@@ -119,7 +119,7 @@ namespace crypto {
 
   std::optional<public_key> derive_tx_output_public_key
   (
-   const tx_ecdh_shared_secret &derivation
+   const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
    , const ec_point_unsafe &unsafe_base
    ) noexcept;
@@ -127,7 +127,7 @@ namespace crypto {
   std::optional<public_key> derive_subaddress_public_key
   (
    const ec_point_unsafe &unsafe_out_key
-   , const tx_ecdh_shared_secret &derivation
+   , const tx_ecdh_shared_secret &tx_shared_secret
    , const std::size_t output_index
    ) noexcept;
 

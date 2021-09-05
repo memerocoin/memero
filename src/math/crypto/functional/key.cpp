@@ -46,20 +46,20 @@ namespace crypto {
   }
 
 
-  ec_scalar hash_derivation_to_scalar(const tx_ecdh_shared_secret &derivation, const size_t index) noexcept {
+  ec_scalar hash_derivation_to_scalar(const tx_ecdh_shared_secret &tx_shared_secret, const size_t index) noexcept {
     const epee::blob::data hashData =
-      derivation.blob()
+      tx_shared_secret.blob()
       + epee::string_tools::string_to_blob(tools::get_varint_data(index));
 
     return hash_to_scalar(hashData);
   }
 
-  secret_key derive_secret_key(const tx_ecdh_shared_secret &derivation, const size_t output_index,
+  secret_key derive_secret_key(const tx_ecdh_shared_secret &tx_shared_secret, const size_t output_index,
     const secret_key &base) noexcept
   {
     assert(is_reduced(base));
 
-    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
+    const ec_scalar rct_scalar = hash_derivation_to_scalar(tx_shared_secret, output_index);
     return s2sk(base + rct_scalar);
   }
 
@@ -137,7 +137,7 @@ namespace crypto {
 
   std::optional<public_key> derive_tx_output_public_key
   (
-   const tx_ecdh_shared_secret &derivation
+   const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
    , const ec_point_unsafe &unsafe_base
    ) noexcept
@@ -145,7 +145,7 @@ namespace crypto {
     const auto base = maybeSafePoint(unsafe_base);
     if (!base) return {};
 
-    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
+    const ec_scalar rct_scalar = hash_derivation_to_scalar(tx_shared_secret, output_index);
     const ec_point derived = multBase(rct_scalar);
     const ec_point r = derived + *base;
     return p2pk(r);
@@ -154,14 +154,14 @@ namespace crypto {
   std::optional<public_key> derive_subaddress_public_key
   (
    const ec_point_unsafe &unsafe_out_key
-   , const tx_ecdh_shared_secret &derivation
+   , const tx_ecdh_shared_secret &tx_shared_secret
    , const std::size_t output_index
    ) noexcept
   {
     const auto out_key = maybeSafePoint(unsafe_out_key);
     if (!out_key) return {};
 
-    const ec_scalar rct_scalar = hash_derivation_to_scalar(derivation, output_index);
+    const ec_scalar rct_scalar = hash_derivation_to_scalar(tx_shared_secret, output_index);
 
     if (rct_scalar == s_0) return {};
 
