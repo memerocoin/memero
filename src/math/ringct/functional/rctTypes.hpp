@@ -105,10 +105,6 @@ namespace rct {
     //data for passing the amount to the receiver secretly
     struct ecdh_encrypted_data {
         crypto::ec_scalar_unnormalized masked_amount;
-
-        BEGIN_SERIALIZE_OBJECT()
-          FIELD(masked_amount)
-        END_SERIALIZE()
     };
 
     //containers for representing amounts
@@ -398,5 +394,5 @@ BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::ct_public_key);
 BLOB_SERIALIZER(rct::rct_scalar);
 BLOB_SERIALIZER(rct::ct_secret_key);
-
+BLOB_SERIALIZER(rct::ecdh_encrypted_data);
 BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);
