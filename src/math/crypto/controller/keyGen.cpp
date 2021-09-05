@@ -64,38 +64,52 @@ namespace crypto {
   schnorr_signature generate_schnorr_signature_with_pubkey_data
   (
    const hash h
-   , const secret_key sec
+   , const ec_scalar_unnormalized sec
    )
   {
-    return generate_schnorr_signature(h.blob() + to_pk(sec).blob(), sec);
+    if (is_not_reduced(sec)) throw std::runtime_error("invalid secrect key");
+
+    const auto sk = s2sk(reduce(sec));
+    return generate_schnorr_signature(h.blob() + to_pk(sk).blob(), sk);
   }
 
   double_schnorr_signature generate_tx_proof
   (
    const hash &h
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
+   , const ec_point_unsafe &R
+   , const ec_point_unsafe &A
+   , const std::optional<ec_point_unsafe> &base
+   , const ec_point_unsafe &D
+   , const ec_scalar_unnormalized &r
    )
   {
     // sanity check
 
-    if (!is_safe_point(R)) throw std::runtime_error("tx pubkey is invalid");
-    if (!is_safe_point(A)) throw std::runtime_error("recipient view pubkey is invalid");
-    if (B) {
-      if (!is_safe_point(*B)) throw std::runtime_error("recipient spend pubkey is invalid");
+    const auto maybeR = maybeSafePoint(R);
+    if (!maybeR) throw std::runtime_error("tx pubkey is invalid");
+
+    const auto maybeA = maybeSafePoint(A);
+    if (!maybeA) throw std::runtime_error("recipient view pubkey is invalid");
+
+    const auto maybeD = maybeSafePoint(D);
+    if (!maybeD) throw std::runtime_error("key derivation is invalid");
+
+    if (base && (!is_safe_point(*base))) {
+      throw std::runtime_error("recipient spend pubkey is invalid");
     }
-    if (!is_safe_point(D)) throw std::runtime_error("key derivation is invalid");
+    const auto maybeCustomBase = base ? maybeSafePoint(*base) : std::optional<ec_point>();
+
+    if (is_not_reduced(r)) throw std::runtime_error("invalid secrect key");
+
+    const auto sk = s2sk(reduce(r));
 
     // keypair (r R) (r D)@A
 
-    const epee::blob::data B_blob = B ? B->blob() : epee::blob::data();
+    const epee::blob::data B_blob = maybeCustomBase ? maybeCustomBase->blob() : epee::blob::data();
 
     const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V3);
-    const auto schnorr_1 = generate_schnorr_signature(hash_key + h.blob() + B_blob + R.blob(), r, B);
-    const auto schnorr_2 = generate_schnorr_signature(hash_key + h.blob() + A.blob() + D.blob(), r, {A});
+    const auto schnorr_1 = generate_schnorr_signature(hash_key + h.blob() + B_blob + maybeR->blob(), sk, maybeCustomBase);
+    const auto schnorr_2 = generate_schnorr_signature(hash_key + h.blob() + maybeA->blob() + maybeD->blob(), sk, {*maybeA});
 
     return {schnorr_1, schnorr_2};
   }

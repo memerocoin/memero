@@ -38,7 +38,7 @@ namespace crypto {
   schnorr_signature generate_schnorr_signature_with_pubkey_data
   (
    const hash h
-   , const secret_key sec
+   , const ec_scalar_unnormalized sec
    );
 
   /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
@@ -48,12 +48,12 @@ namespace crypto {
 
   double_schnorr_signature generate_tx_proof
   (
-   const hash &prefix_hash
-   , const public_key &R
-   , const public_key &A
-   , const std::optional<public_key> &B
-   , const public_key &D
-   , const secret_key &r
+   const hash &h
+   , const ec_point_unsafe &R
+   , const ec_point_unsafe &A
+   , const std::optional<ec_point_unsafe> &base
+   , const ec_point_unsafe &D
+   , const ec_scalar_unnormalized &r
    );
 
 }

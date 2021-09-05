@@ -88,10 +88,9 @@ namespace crypto {
     }
 
     if (base && (!is_safe_point(*base))) return false;
+    const auto maybeCustomBase = base ? maybeSafePoint(*base) : std::optional<ec_point>();
 
-    const auto maybeBase = base ? maybeSafePoint(*base) : std::optional<ec_point>();
-
-    const ec_point K = (maybeBase ? *maybeBase ^ sig.s : multBase(sig.s)) + (*p ^ sig.scalar_hash);
+    const ec_point K = (maybeCustomBase ? *maybeCustomBase ^ sig.s : multBase(sig.s)) + (*p ^ sig.scalar_hash);
 
     const epee::blob::data message_data(message.begin(), message.end());
 
