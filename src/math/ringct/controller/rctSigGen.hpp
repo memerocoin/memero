@@ -36,18 +36,6 @@
 
 namespace rct {
 
-  clsag generate_clsag_signature_internal
-  (
-   const crypto::hash message
-   , const rct_pointV P
-   , const rct_scalar p
-   , const rct_pointV C
-   , const rct_scalar z
-   , const rct_pointV C_nonzero
-   , const rct_point C_offset
-   , const size_t idx
-   );
-
   clsag generate_clsag_signature
   (
    const crypto::hash message
