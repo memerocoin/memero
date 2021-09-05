@@ -134,10 +134,4 @@ namespace cryptonote
 
     return boost::apply_visitor(txin_signature_size_visitor(), tx_in);
   }
-
-  bool account_public_address::operator==(const account_public_address& rhs) const
-  {
-    return m_spend_public_key == rhs.m_spend_public_key &&
-      m_view_public_key == rhs.m_view_public_key;
-  }
 }

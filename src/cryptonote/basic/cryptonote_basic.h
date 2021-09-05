@@ -343,7 +343,7 @@ namespace cryptonote
       KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
     END_KV_SERIALIZE_MAP()
 
-    bool operator==(const account_public_address& rhs) const;
+    bool operator==(const account_public_address& rhs) const = default;
   };
 
   struct keypair
