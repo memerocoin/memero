@@ -91,8 +91,6 @@ namespace crypto {
   {
     // keypair (r R) (r D)@A
 
-    if (B && (!is_safe_point(*B))) return false;
-
     const epee::blob::data B_blob = B ? B->blob() : epee::blob::data();
 
     const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V3);

@@ -28,7 +28,7 @@ namespace crypto {
    const epee::blob::span message
    , const ec_point_unsafe pub
    , const schnorr_signature sig
-   , const std::optional<ec_point> base
+   , const std::optional<ec_point_unsafe> base
    )
   {
     /*
@@ -87,7 +87,11 @@ namespace crypto {
       return false;
     }
 
-    const ec_point K = (base ? *base ^ sig.s : multBase(sig.s)) + (*p ^ sig.scalar_hash);
+    if (base && (!is_safe_point(*base))) return false;
+
+    const auto maybeBase = base ? maybeSafePoint(*base) : std::optional<ec_point>();
+
+    const ec_point K = (maybeBase ? *maybeBase ^ sig.s : multBase(sig.s)) + (*p ^ sig.scalar_hash);
 
     if (K == identity) return false;
 

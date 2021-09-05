@@ -47,6 +47,6 @@ namespace crypto {
    const epee::blob::span message
    , const ec_point_unsafe pub
    , const schnorr_signature sig
-   , const std::optional<ec_point> base = {}
+   , const std::optional<ec_point_unsafe> base = {}
    );
 }
