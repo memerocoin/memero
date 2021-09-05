@@ -32,6 +32,8 @@
 
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
+#include "tools/epee/include/string_tools.h"
+
 #include "tools/serialization/binary_archive.h"
 #include "tools/serialization/crypto.h"
 #include "tools/serialization/json_archive.h"
@@ -43,6 +45,7 @@
 #include "config/cryptonote.hpp"
 
 #include <boost/variant.hpp>
+#include <boost/functional/hash.hpp>
 
 
 namespace cryptonote
@@ -365,11 +368,8 @@ namespace std {
   {
     std::size_t operator()(const cryptonote::account_public_address& addr) const
     {
-      // https://stackoverflow.com/a/17017281
-      size_t res = 17;
-      res = res * 31 + hash<crypto::public_key>()(addr.m_spend_public_key);
-      res = res * 31 + hash<crypto::public_key>()(addr.m_view_public_key);
-      return res;
+      const epee::blob::data x = addr.m_spend_public_key.blob() + addr.m_view_public_key.blob();
+      return std::hash<std::string>{}(epee::string_tools::blob_to_string(x));
     }
   };
 }
