@@ -76,21 +76,17 @@ namespace signature {
       LOG_PRINT_L0("Signature decoding error");
       return {};
     }
-    crypto::schnorr_signature_unnormalized s_unsafe;
-    if (sizeof(s_unsafe) != decoded.size()) {
+    crypto::schnorr_signature_unnormalized sig_unsafe;
+    if (sizeof(sig_unsafe) != decoded.size()) {
       LOG_PRINT_L0("Signature decoding error");
       return {};
     }
 
-    memcpy(&s_unsafe, decoded.data(), decoded.size());
+    memcpy(&sig_unsafe, decoded.data(), decoded.size());
 
-    const crypto::schnorr_signature s =
-      {
-        crypto::reduce(s_unsafe.scalar_hash)
-        , crypto::reduce(s_unsafe.s)
-      };
+    const crypto::schnorr_signature sig = reduce_schnorr(sig_unsafe);
 
-    if (s != s_unsafe) {
+    if (sig != sig_unsafe) {
       return {};
     }
 
@@ -99,10 +95,10 @@ namespace signature {
     // Test each mode and return which mode, if either, succeeded
     const crypto::hash hash = get_message_hash(data);
     constexpr unsigned ver = config::MESSAGE_SIGNING_VERSION;
-    if (crypto::verify_schnorr_signature_with_pubkey_data(hash, address.m_spend_public_key, s))
+    if (crypto::verify_schnorr_signature_with_pubkey_data(hash, address.m_spend_public_key, sig))
       return {true, ver, wallet::logic::type::message_signature::sign_with_spend_key };
 
-    if (crypto::verify_schnorr_signature_with_pubkey_data(hash, address.m_view_public_key, s))
+    if (crypto::verify_schnorr_signature_with_pubkey_data(hash, address.m_view_public_key, sig))
       return {true, ver, wallet::logic::type::message_signature::sign_with_view_key };
 
     // Both modes failed

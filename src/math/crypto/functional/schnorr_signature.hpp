@@ -37,10 +37,17 @@ namespace crypto {
       return scalar_hash == x.scalar_hash && s == x.s;
     }
 
+    /*
     bool is_reduced() const noexcept {
       return s == reduce(s) && scalar_hash == reduce(scalar_hash);
     }
+    */
+
   };
+
+  inline schnorr_signature reduce_schnorr(const schnorr_signature_unnormalized x) {
+    return {reduce(x.s), reduce(x.scalar_hash)};
+  }
 
   inline std::ostream &operator <<(std::ostream &o, const schnorr_signature &v) {
     epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;

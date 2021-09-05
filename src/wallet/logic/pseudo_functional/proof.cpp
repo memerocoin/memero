@@ -104,8 +104,15 @@ namespace proof {
       memcpy(&shared_secret[i], pk_decoded.data(), sizeof(crypto::public_key));
 
       constexpr size_t schnorr_size = sizeof(crypto::schnorr_signature);
-      memcpy(&sig[i].first, sig_decoded.data(), schnorr_size);
-      memcpy(&sig[i].second, sig_decoded.data() + schnorr_size, schnorr_size);
+
+      crypto::schnorr_signature_unnormalized sig_unsafe_1;
+      crypto::schnorr_signature_unnormalized sig_unsafe_2;
+
+      memcpy(&sig_unsafe_1, sig_decoded.data(), schnorr_size);
+      memcpy(&sig_unsafe_2, sig_decoded.data() + schnorr_size, schnorr_size);
+
+      sig[i].first = reduce_schnorr(sig_unsafe_1);
+      sig[i].second = reduce_schnorr(sig_unsafe_2);
     }
 
     crypto::public_key tx_pub_key = get_tx_pub_key_from_extra(tx);
