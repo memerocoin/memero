@@ -51,18 +51,12 @@ namespace cryptonote
 
   struct txout_to_script
   {
-    std::vector<crypto::public_key> keys;
-    std::vector<uint8_t> script;
-
     BEGIN_SERIALIZE_OBJECT()
-      FIELD(keys)
-      FIELD(script)
     END_SERIALIZE()
   };
 
   struct txout_to_scripthash
   {
-    crypto::hash hash;
   };
 
   struct txout_to_key

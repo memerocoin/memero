@@ -478,43 +478,19 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin)
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_script txout)
 {
-  dest.StartObject();
-
-  WRITE_JSON_FIELD_FROM(dest, keys, txout.keys);
-  WRITE_JSON_FIELD_FROM(dest, script, txout.script);
-
-  dest.EndObject();
 }
 
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_script& txout)
 {
-  if (!val.IsObject())
-  {
-    throw WRONG_TYPE("json object");
-  }
-
-  READ_JSON_VALUE_BY_KEY(val, txout.keys, keys);
-  READ_JSON_VALUE_BY_KEY(val, txout.script, script);
 }
 
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_scripthash txout)
 {
-  dest.StartObject();
-
-  WRITE_JSON_FIELD_FROM(dest, hash, txout.hash);
-
-  dest.EndObject();
 }
 
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_scripthash& txout)
 {
-  if (!val.IsObject())
-  {
-    throw WRONG_TYPE("json object");
-  }
-
-  READ_JSON_VALUE_BY_KEY(val, txout.hash, hash);
 }
 
 
