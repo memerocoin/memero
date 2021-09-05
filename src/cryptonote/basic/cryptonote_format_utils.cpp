@@ -209,6 +209,7 @@ namespace cryptonote
   {
     const std::optional<crypto::tx_ecdh_shared_secret> recv_tx_shared_secret =
       crypto::derive_tx_ecdh_shared_secret(tx_public_key, ack.m_view_secret_key);
+
     if (!recv_tx_shared_secret)
     {
       LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
@@ -230,11 +231,31 @@ namespace cryptonote
       }
     }
 
-    std::optional<subaddress_receive_info> subaddr_recv_info = is_out_to_acc_precomp(subaddresses, out_key, *recv_tx_shared_secret, additional_recv_tx_shared_secrets, real_output_index);
-    LOG_ERROR_AND_RETURN_UNLESS(subaddr_recv_info, false, "key image helper: given output pubkey doesn't seem to belong to this address");
+    std::optional<subaddress_receive_info> subaddr_recv_info =
+      is_out_to_acc_precomp
+      (
+       subaddresses, out_key, *recv_tx_shared_secret, additional_recv_tx_shared_secrets, real_output_index
+       );
 
-    return derive_key_image_helper_precomp(ack, out_key, subaddr_recv_info->tx_shared_secret, real_output_index, subaddr_recv_info->index, in_ephemeral, ki);
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       subaddr_recv_info
+       , false
+       , "key image helper: given output pubkey doesn't seem to belong to this address"
+       );
+
+    return derive_key_image_helper_precomp
+      (
+       ack
+       , out_key
+       , subaddr_recv_info->tx_shared_secret
+       , real_output_index
+       , subaddr_recv_info->index
+       , in_ephemeral
+       , ki
+       );
   }
+
   //---------------------------------------------------------------
   bool derive_key_image_helper_precomp(const account_keys& ack, const crypto::public_key& out_key, const crypto::tx_ecdh_shared_secret& recv_tx_shared_secret, size_t real_output_index, const subaddress_index& received_index, keypair& in_ephemeral, crypto::key_image& ki)
   {
