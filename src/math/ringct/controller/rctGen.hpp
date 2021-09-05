@@ -35,20 +35,10 @@
 
 namespace rct {
 
-  //Various rct_point generation functions
-
-  //generates a random rct_scalar which can be used as a secret key or mask
   rct_scalar skGen();
-
-  //generates a vector of secret keys of size "int"
-  rct_scalarV skvGen(size_t rows );
-
-  //generates a random curve point (for testing)
+  rct_scalarV skvGen(size_t rows);
   std::pair<rct_scalar, rct_point> skpkGen();
 
   //generates a <secret , public> / Pedersen commitment to the amount
   std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount);
-
-  //generates a random uint long long
-  amount_t randXmrAmount(const amount_t upperlimit);
 }

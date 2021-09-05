@@ -91,8 +91,4 @@ namespace rct {
       };
   }
 
-  //generates a random uint long long (for testing)
-  amount_t randXmrAmount(const amount_t upperlimit) {
-    return scalar_to_int(skGen()) % (upperlimit);
-  }
 }
