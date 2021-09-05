@@ -226,6 +226,50 @@ namespace rct {
   }
 
 
+  clsag generate_clsag_signature
+  (
+   const crypto::hash message
+   , const ct_public_keyV pubs
+   , const ct_secret_key inSk
+   , const rct_scalar a
+   , const rct_point Cout
+   , const size_t index
+   )
+  {
+    LOG_ERROR_AND_THROW_IF(pubs.empty(), "Empty pubs");
+
+    rct_pointV P;
+    std::transform
+      (
+        pubs.begin()
+        , pubs.end()
+        , std::back_inserter(P)
+        , [](const auto& x) { return x.dest; }
+        );
+
+    rct_pointV C_nonzero;
+    std::transform
+      (
+        pubs.begin()
+        , pubs.end()
+        , std::back_inserter(C_nonzero)
+        , [](const auto& x) { return x.commit_of_amount; }
+        );
+
+    rct_pointV C;
+    std::transform
+      (
+        pubs.begin()
+        , pubs.end()
+        , std::back_inserter(C)
+        , [Cout](const auto& x) { return x.commit_of_amount - Cout; }
+        );
+
+    return generate_clsag_signature_internal
+      (message, P, inSk.addr, C, s2s(inSk.blinding_factor - a), C_nonzero, Cout, index);
+  }
+
+
   std::pair<rctSig, ct_secret_keyV> generate_ringct
   (
    const crypto::hash message
@@ -375,50 +419,6 @@ namespace rct {
     rctSig.p.CLSAGs = clsags;
 
     return {rctSig, outSk};
-  }
-
-  clsag generate_clsag_signature
-  (
-   const crypto::hash message
-   , const ct_public_keyV pubs
-   , const ct_secret_key inSk
-   , const rct_scalar a
-   , const rct_point Cout
-   , const size_t index
-   )
-  {
-    LOG_ERROR_AND_THROW_IF(pubs.empty(), "Empty pubs");
-
-    rct_pointV P;
-    std::transform
-      (
-        pubs.begin()
-        , pubs.end()
-        , std::back_inserter(P)
-        , [](const auto& x) { return x.dest; }
-        );
-
-    rct_pointV C_nonzero;
-    std::transform
-      (
-        pubs.begin()
-        , pubs.end()
-        , std::back_inserter(C_nonzero)
-        , [](const auto& x) { return x.commit_of_amount; }
-        );
-
-    rct_pointV C;
-    std::transform
-      (
-        pubs.begin()
-        , pubs.end()
-        , std::back_inserter(C)
-        , [Cout](const auto& x) { return x.commit_of_amount - Cout; }
-        );
-
-    clsag result = generate_clsag_signature_internal
-      (message, P, inSk.addr, C, s2s(inSk.blinding_factor - a), C_nonzero, Cout, index);
-    return result;
   }
 
 }
