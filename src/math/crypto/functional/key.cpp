@@ -129,10 +129,7 @@ namespace crypto {
     const auto p = maybeSafePoint(unsafe_point);
     if (!p) return {};
 
-    // here mult8 is really not needed
-    const tx_ecdh_shared_secret derivation = p2tx_shared_secret(mult8Safe(*p ^ sk));
-
-    return derivation;
+    return p2tx_shared_secret(mult8Safe(*p ^ sk));
   }
 
   std::optional<public_key> derive_tx_output_public_key
