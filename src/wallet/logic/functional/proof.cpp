@@ -77,7 +77,7 @@ namespace proof {
       if (found)
       {
         uint64_t amount;
-        if (tx.rct_signatures.type == rct::RCTTypeNull)
+        if (tx.ringct_essential.type == rct::RCTTypeNull)
         {
           amount = tx.vout[n].amount;
         }
@@ -96,7 +96,7 @@ namespace proof {
              , "Bad ECDH input blinding_factor"
              );
 
-          const crypto::ec_scalar_unnormalized masked_amount = tx.rct_signatures.ecdh[n].masked_amount;
+          const crypto::ec_scalar_unnormalized masked_amount = tx.ringct_essential.ecdh[n].masked_amount;
           const crypto::ec_scalar_unnormalized amount_unnormalized =
             crypto::d2s(rct::decode_by_ecdh_shared_secret(masked_amount, ecdh_derived_secret));
 
@@ -107,7 +107,7 @@ namespace proof {
              , "Bad ECDH input amount"
              );
 
-          const rct::rct_point C = tx.rct_signatures.outPk[n].amount_commit;
+          const rct::rct_point C = tx.ringct_essential.outPk[n].amount_commit;
 
           const auto ecdh_amount = scalar_to_int(rct::s2s(crypto::reduce(amount_unnormalized)));
           const rct::rct_point C_check = rct::commit(blinding_factor, ecdh_amount);

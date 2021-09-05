@@ -160,7 +160,7 @@ namespace cryptonote
     mutable std::atomic<bool> blob_size_valid;
 
   public:
-    rct::rctSig rct_signatures;
+    rct::rctSig ringct_essential;
 
     // hash cash
     mutable crypto::hash hash;
@@ -212,23 +212,23 @@ namespace cryptonote
     }
     else
     {
-      ar.tag("rct_signatures");
+      ar.tag("ringct_essential");
       if (!vin.empty())
       {
         ar.begin_object();
-        bool r = rct_signatures.serialize_rctsig_base(ar, vin.size(), vout.size());
+        bool r = ringct_essential.serialize_rctsig_base(ar, vin.size(), vout.size());
         if (!r || !ar.stream().good()) return false;
         ar.end_object();
         if (std::is_same<Archive<W>, binary_archive<W>>())
           unprunable_size = getpos(ar) - start_pos;
-        if (rct_signatures.type != rct::RCTTypeNull)
+        if (ringct_essential.type != rct::RCTTypeNull)
         {
           ar.tag("ringct_prunable");
           ar.begin_object();
-          r = rct_signatures.p.serialize_ringct_prunable
+          r = ringct_essential.p.serialize_ringct_prunable
             (
               ar
-              , rct_signatures.type
+              , ringct_essential.type
               , vin.size()
               , vout.size()
               , vin.size() > 0 && vin[0].type() == typeid(txin_to_key) ?
@@ -250,11 +250,11 @@ namespace cryptonote
 
       if (version != 1)
       {
-        ar.tag("rct_signatures");
+        ar.tag("ringct_essential");
         if (!vin.empty())
         {
           ar.begin_object();
-          bool r = rct_signatures.serialize_rctsig_base(ar, vin.size(), vout.size());
+          bool r = ringct_essential.serialize_rctsig_base(ar, vin.size(), vout.size());
           if (!r || !ar.stream().good()) return false;
           ar.end_object();
         }

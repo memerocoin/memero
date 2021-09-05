@@ -74,7 +74,7 @@ namespace cryptonote
     if (tx.version < 2) return true;
     if (is_coinbase(tx)) return true;
 
-    rct::rctSig &rv = tx.rct_signatures;
+    rct::rctSig &rv = tx.ringct_essential;
     if (rv.type == rct::RCTTypeNull)
       return true;
 
@@ -84,7 +84,7 @@ namespace cryptonote
       return false;
     }
 
-    for (size_t n = 0; n < tx.rct_signatures.outPk.size(); ++n)
+    for (size_t n = 0; n < tx.ringct_essential.outPk.size(); ++n)
     {
       if (tx.vout[n].target.type() != typeid(txout_to_key))
       {
@@ -354,7 +354,7 @@ namespace cryptonote
   {
     if (tx.version > 1)
     {
-      return tx.rct_signatures.fee;
+      return tx.ringct_essential.fee;
     }
     else return 0;
   }
@@ -902,7 +902,7 @@ namespace cryptonote
       const size_t inputs = t.vin.size();
       const size_t outputs = t.vout.size();
       const size_t mixin = t.vin.empty() ? 0 : t.vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(t.vin[0]).key_offsets.size() - 1 : 0;
-      bool r = tt.rct_signatures.p.serialize_ringct_prunable(ba, t.rct_signatures.type, inputs, outputs, mixin);
+      bool r = tt.ringct_essential.p.serialize_ringct_prunable(ba, t.ringct_essential.type, inputs, outputs, mixin);
       LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to serialize rct signatures prunable");
       res = cryptonote::get_blob_hash(ss.str());
     }
@@ -952,7 +952,7 @@ namespace cryptonote
     hashes[1] = cryptonote::get_blob_hash(blobdata_ref(blob.data() + prefix_size, unprunable_size - prefix_size));
 
     // prunable rct
-    if (t.rct_signatures.type == rct::RCTTypeNull)
+    if (t.ringct_essential.type == rct::RCTTypeNull)
     {
       hashes[2] = crypto::null_hash;
     }

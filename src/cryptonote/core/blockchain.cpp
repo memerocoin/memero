@@ -1076,7 +1076,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
   // for v2 txes (ringct), we only accept empty rct signatures for miner transactions,
   if (b.miner_tx.version >= 2)
   {
-    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.rct_signatures.type == rct::RCTTypeNull, false, "RingCT signatures not allowed in coinbase transactions");
+    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.ringct_essential.type == rct::RCTTypeNull, false, "RingCT signatures not allowed in coinbase transactions");
   }
 
   if(boost::get<txin_gen>(b.miner_tx.vin[0]).height != height)
@@ -1273,7 +1273,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     }
     else
     {
-      if (cur_tx.fee != cur_tx.tx.rct_signatures.fee)
+      if (cur_tx.fee != cur_tx.tx.ringct_essential.fee)
       {
         LOG_ERROR("Creating block template: error: invalid fee");
       }
@@ -2470,9 +2470,9 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
 
   // from v14, allow only CLSAGs
     if (tx.version >= 2) {
-      if (tx.rct_signatures.type != rct::RCTTypeCLSAG)
+      if (tx.ringct_essential.type != rct::RCTTypeCLSAG)
       {
-        LOG_ERROR_VER("Ringct type " << (unsigned)tx.rct_signatures.type << " is not allowed");
+        LOG_ERROR_VER("Ringct type " << (unsigned)tx.ringct_essential.type << " is not allowed");
         tvc.m_invalid_output = true;
         return false;
       }
@@ -2496,7 +2496,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
 {
   LOG_ERROR_AND_RETURN_UNLESS(tx.version == 2, false, "Transaction version is not 2");
 
-  rct::rctSig &rv = tx.rct_signatures;
+  rct::rctSig &rv = tx.ringct_essential;
 
   // message - hash of the transaction prefix
   rv.message = tx_prefix_hash;
@@ -2579,7 +2579,7 @@ bool Blockchain::check_tx_input
   size_t tx_version
   , const txin_to_key& txin
   , const crypto::hash& tx_prefix_hash
-  , const rct::rctSig &rct_signatures
+  , const rct::rctSig &ringct_essential
   , std::vector<rct::ct_public_key> &output_keys
   , uint64_t* pmax_related_block_height
   ) const
@@ -2632,7 +2632,7 @@ bool Blockchain::check_tx_input
     LOG_ERROR_VER("Output keys for tx with amount = " << txin.amount << " and count indexes " << txin.key_offsets.size() << " returned wrong keys count " << output_keys.size());
     return false;
   }
-  // rct_signatures will be expanded after this
+  // ringct_essential will be expanded after this
   return true;
 }
 //------------------------------------------------------------------
@@ -3896,7 +3896,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
     // make sure that output being spent matches up correctly with the
     // signature spending it.
-    if (!check_tx_input(tx.version, in_to_key, tx_prefix_hash, tx.rct_signatures, pubkeys[sig_index], pmax_used_block_height))
+    if (!check_tx_input(tx.version, in_to_key, tx_prefix_hash, tx.ringct_essential, pubkeys[sig_index], pmax_used_block_height))
     {
       LOG_ERROR_VER("Failed to check ring signature for tx " << get_transaction_hash(tx) << "  vin key with k_image: " << in_to_key.k_image << "  sig_index: " << sig_index);
       if (pmax_used_block_height) // a default value of NULL is used when called from Blockchain::handle_block_to_main_chain()
@@ -3925,7 +3925,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     // from version 2, check ringct signatures
     // obviously, the original and simple rct APIs use a mixRing that's indexes
     // in opposite orders, because it'd be too simple otherwise...
-    const rct::rctSig &rv = tx.rct_signatures;
+    const rct::rctSig &rv = tx.ringct_essential;
     switch (rv.type)
     {
     case rct::RCTTypeNull: {

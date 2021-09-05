@@ -920,7 +920,7 @@ namespace cryptonote
      * @param txin the transaction input
      * @param tx_prefix_hash the transaction prefix hash, for caching organization
      * @param output_keys return-by-reference the public keys of the outputs in the input set
-     * @param rct_signatures the ringCT signatures, which are only valid if tx version > 1
+     * @param ringct_essential the ringCT signatures, which are only valid if tx version > 1
      * @param pmax_related_block_height return-by-pointer the height of the most recent block in the input set
      * @param hf_version the consensus rules version to use
      *
@@ -931,7 +931,7 @@ namespace cryptonote
      size_t tx_version
      , const txin_to_key& txin
      , const crypto::hash& tx_prefix_hash
-     , const rct::rctSig &rct_signatures
+     , const rct::rctSig &ringct_essential
      , std::vector<rct::ct_public_key> &output_keys
      , uint64_t* pmax_related_block_height
      ) const;

@@ -613,7 +613,7 @@ namespace cryptonote
     }
     if (tx.version > 1)
     {
-      if (tx.rct_signatures.outPk.size() != tx.vout.size())
+      if (tx.ringct_essential.outPk.size() != tx.vout.size())
       {
         LOG_ERROR_VER("tx with mismatched vout/outPk count, rejected for tx id= " << get_transaction_hash(tx));
         return false;
@@ -1345,7 +1345,7 @@ namespace cryptonote
 
       if (tx_info[n].tx->version < 2)
         continue;
-      const rct::rctSig &rv = tx_info[n].tx->rct_signatures;
+      const rct::rctSig &rv = tx_info[n].tx->ringct_essential;
       switch (rv.type) {
         case rct::RCTTypeNull:
           // coinbase should not come here, so we reject for all other types
@@ -1382,9 +1382,9 @@ namespace cryptonote
       {
         if (!tx_info[n].result)
           continue;
-        if (tx_info[n].tx->rct_signatures.type != rct::RCTTypeCLSAG)
+        if (tx_info[n].tx->ringct_essential.type != rct::RCTTypeCLSAG)
           continue;
-        if (assumed_bad || !rct::verify_ringct_rangeproof(tx_info[n].tx->rct_signatures))
+        if (assumed_bad || !rct::verify_ringct_rangeproof(tx_info[n].tx->ringct_essential))
         {
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
