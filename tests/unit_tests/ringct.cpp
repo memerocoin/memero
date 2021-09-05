@@ -118,11 +118,11 @@ TEST(ringct, CLSAG)
   // Set C[idx]
   t = skGen();
   u = skGen();
-  pubs[idx].commit_of_amount = addMultG_H(t,u);
+  pubs[idx].commit_of_amount = G_(t) + H_(u);
 
   // Set commitment offset
   t2 = skGen();
-  rct_point Cout = addMultG_H(t2,u);
+  rct_point Cout = G_(t2) + H_(u);
 
   // Prepare generation inputs
   ct_secret_key insk;

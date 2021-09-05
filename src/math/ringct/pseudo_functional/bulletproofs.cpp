@@ -285,7 +285,7 @@ Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV g
      , gamma.begin()
      , V.begin()
      , [](const auto& sv, const auto& g) {
-       return rct::addMultG_H(g * s_inv_eight, sv * s_inv_eight);
+       return rct::G_(g * s_inv_eight) + rct::H_(sv * s_inv_eight);
      }
      );
 

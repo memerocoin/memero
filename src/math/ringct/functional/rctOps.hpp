@@ -60,7 +60,6 @@ namespace rct {
   rct_point multP8Safe(const rct_point P);
 
   rct::rct_point addPoints(const rct_pointS A);
-  rct_point addMultG_H(const rct_scalar a, const rct_scalar b);
 
   rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a);
 
