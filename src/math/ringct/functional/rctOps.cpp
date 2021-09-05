@@ -49,17 +49,6 @@
 
 namespace rct {
 
-  rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount) {
-    return G_(rct_reduce(mask)) + H_(int_to_scalar(amount));
-  }
-
-  rct_point dummyCommit(const amount_t amount) {
-    return commit(s_one, amount);
-  }
-
-
-  //Scalar multiplications of curve points
-
   rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a) {
     return s2s(crypto::reduce(a));
   }
@@ -84,9 +73,6 @@ namespace rct {
     return p2rct_p(crypto::mult8Safe(P));
   }
 
-
-  //Curve addition / subtractions
-
   rct::rct_point addPoints(const rct_pointS A) {
     return std::reduce
       (
@@ -96,7 +82,20 @@ namespace rct {
        );
   }
 
-  //sha3 for a 32 byte key
+
+
+  // ct
+  rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount) {
+    return G_(rct_reduce(mask)) + H_(int_to_scalar(amount));
+  }
+
+  rct_point dummyCommit(const amount_t amount) {
+    return commit(s_one, amount);
+  }
+
+
+
+  // hash
   crypto::hash hash_data(const crypto::crypto_data in) {
     return crypto::sha3(in.data);
   }
@@ -122,9 +121,9 @@ namespace rct {
     return p2rct_p(p);
   }
 
-  //Elliptic Curve Diffie Helman: encodes and decodes the amount b and mask a
-  // where C= aG + bH
 
+
+  // ecdh
   constexpr std::string_view ecdhHashPrefix = "amount";
   crypto::hash derive_secret_key_for_ecdh_amount(const rct_scalar x)
   {

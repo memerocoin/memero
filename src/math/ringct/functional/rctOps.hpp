@@ -37,7 +37,7 @@
 namespace rct {
 
   // Can't us consteval here or android will panic
-  // Creates a zero rct_scalar
+
   constexpr rct_scalar s_zero = ZERO;
   constexpr rct_scalar s_one = ONE;
   constexpr rct_scalar s_two= TWO;
@@ -52,19 +52,18 @@ namespace rct {
   constexpr rct_point emptyPoint = Z;
   constexpr rct_point identity = I;
 
-  rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a);
+  rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a);
+
   rct_point G_(const rct_scalar a);
   rct_point H_(const rct_scalar a);
 
+  rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a);
   rct_point multP8(const crypto::ec_point_unsafe P);
   rct_point multP8Safe(const rct_point P);
-
   rct::rct_point addPoints(const rct_pointS A);
 
-  rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a);
 
-
-  // generates C = mask * G + amount * H
+  // ct
   rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount);
   rct_point dummyCommit(const amount_t amount);
 
