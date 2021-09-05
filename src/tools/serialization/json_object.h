@@ -277,8 +277,8 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
 void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig);
 
 void fromJsonValue(const rapidjson::Value& val, rct::ct_public_key& key);
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhData tuple);
-void fromJsonValue(const rapidjson::Value& val, rct::ecdhData& tuple);
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdh_encrypted_data tuple);
+void fromJsonValue(const rapidjson::Value& val, rct::ecdh_encrypted_data& tuple);
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof p);
 void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof& p);

@@ -1014,7 +1014,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
 
   WRITE_JSON_FIELD_FROM(dest, type, sig.type);
   if (sig.type != rct::RCTTypeNull) {
-    WRITE_JSON_FIELD_FROM(dest, encrypted, sig.ecdhInfo);
+    WRITE_JSON_FIELD_FROM(dest, encrypted, sig.ecdh);
     WRITE_JSON_FIELD_FROM(dest, commitments, std::span(masks));
     WRITE_JSON_FIELD_FROM(dest, fee, sig.txnFee);
   }
@@ -1043,7 +1043,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
 
   READ_JSON_VALUE_BY_KEY(val, sig.type, type);
   if (sig.type != rct::RCTTypeNull) {
-    READ_JSON_VALUE_BY_KEY(val, sig.ecdhInfo, encrypted);
+    READ_JSON_VALUE_BY_KEY(val, sig.ecdh, encrypted);
     READ_JSON_VALUE_BY_KEY(val, sig.outPk, commitments);
     READ_JSON_VALUE_BY_KEY(val, sig.txnFee, fee);
   }
@@ -1072,14 +1072,14 @@ void fromJsonValue(const rapidjson::Value& val, rct::ct_public_key& key)
   fromJsonValue(val, key.amount_commit);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdhData tuple)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdh_encrypted_data tuple)
 {
   dest.StartObject();
   WRITE_JSON_FIELD_FROM(dest, masked_amount, tuple.masked_amount);
   dest.EndObject();
 }
 
-void fromJsonValue(const rapidjson::Value& val, rct::ecdhData& tuple)
+void fromJsonValue(const rapidjson::Value& val, rct::ecdh_encrypted_data& tuple)
 {
   if (!val.IsObject())
   {

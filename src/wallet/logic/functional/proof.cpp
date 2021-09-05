@@ -96,7 +96,7 @@ namespace proof {
              , "Bad ECDH input blinding_factor"
              );
 
-          const crypto::ec_scalar_unnormalized masked_amount = tx.rct_signatures.ecdhInfo[n].masked_amount;
+          const crypto::ec_scalar_unnormalized masked_amount = tx.rct_signatures.ecdh[n].masked_amount;
           const crypto::ec_scalar_unnormalized amount_unnormalized =
             crypto::d2s(rct::decode_by_ecdh_shared_secret(masked_amount, ecdh_derived_secret));
 

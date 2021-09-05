@@ -103,7 +103,7 @@ namespace rct {
     using ct_secret_keyS = std::span<const ct_secret_key>;
 
     //data for passing the amount to the receiver secretly
-    struct ecdhData {
+    struct ecdh_encrypted_data {
         crypto::ec_scalar_unnormalized masked_amount;
 
         BEGIN_SERIALIZE_OBJECT()
@@ -171,7 +171,7 @@ namespace rct {
     // rangeSigs holds all the rangeproof data of a transaction
     // MG holds the MLSAG signature of a transaction
     // mixRing holds all the public keypairs (P, C) for a transaction
-    // ecdhInfo holds an encoded blinding_factor / amount to be passed to each receiver
+    // ecdh holds an encoded blinding_factor / amount to be passed to each receiver
     // outPk contains public keypairs which are destinations (P, C),
     //  P = address, C = commitment to amount
     enum {
@@ -185,7 +185,7 @@ namespace rct {
         ct_public_keyM mixRing; //the set of all pubkeys / copy
         //pairs that you mix with
         rct_pointV pseudo_amount_commits; //C - for simple rct
-        std::vector<ecdhData> ecdhInfo;
+        std::vector<ecdh_encrypted_data> ecdh;
         ct_public_keyV outPk;
         amount_t txnFee; // contains b
 
@@ -201,18 +201,18 @@ namespace rct {
           // inputs/outputs not saved, only here for serialization help
           // FIELD(message) - not serialized, it can be reconstructed
           // FIELD(mixRing) - not serialized, it can be reconstructed
-          ar.tag("ecdh_masked_amount");
+          ar.tag("ecdh");
           ar.begin_array();
-          PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, ecdhInfo);
-          if (ecdhInfo.size() != outputs)
+          PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, ecdh);
+          if (ecdh.size() != outputs)
             return false;
           for (size_t i = 0; i < outputs; ++i)
           {
             {
               ar.begin_object();
               if (!typename Archive<W>::is_saving())
-                ecdhInfo[i].masked_amount = {};
-              crypto::hash8 &masked_amount = (crypto::hash8&)ecdhInfo[i].masked_amount;
+                ecdh[i].masked_amount = {};
+              crypto::hash8 &masked_amount = (crypto::hash8&)ecdh[i].masked_amount;
               FIELD(masked_amount);
               ar.end_object();
             }
@@ -241,7 +241,7 @@ namespace rct {
           FIELD(message)
           FIELD(mixRing)
           FIELD(pseudo_amount_commits)
-          FIELD(ecdhInfo)
+          FIELD(ecdh)
           FIELD(outPk)
           VARINT_FIELD(txnFee)
         END_SERIALIZE()

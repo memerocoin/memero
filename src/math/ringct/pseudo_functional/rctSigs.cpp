@@ -62,7 +62,7 @@ namespace rct {
     binary_archive<true> ba(ss);
 
     const size_t inputs = rv.mixRing.size();
-    const size_t outputs = rv.ecdhInfo.size();
+    const size_t outputs = rv.ecdh.size();
 
 
     LOG_ERROR_AND_THROW_UNLESS
@@ -305,9 +305,9 @@ namespace rct {
 
       LOG_ERROR_AND_RETURN_UNLESS
         (
-          rv.outPk.size() == rv.ecdhInfo.size()
+          rv.outPk.size() == rv.ecdh.size()
           , false
-          , "Mismatched sizes of outPk and rv.ecdhInfo"
+          , "Mismatched sizes of outPk and rv.ecdh"
           );
     }
 
@@ -444,14 +444,14 @@ namespace rct {
     )
   {
     LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctSig");
-    LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdhInfo.size(), "Bad index");
-    LOG_ERROR_AND_THROW_UNLESS(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
+    LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdh.size(), "Bad index");
+    LOG_ERROR_AND_THROW_UNLESS(rv.outPk.size() == rv.ecdh.size(), "Mismatched sizes of rv.outPk and rv.ecdh");
 
     const rct_scalar blinding_factor = rct::get_blinding_factor_from_ecdh_shared_secret(ecdh_shared_secret);
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
 
     const crypto::ec_scalar_unnormalized amount_unnormalized =
-      crypto::d2s(rct::decode_by_ecdh_shared_secret(rv.ecdhInfo[i].masked_amount, ecdh_shared_secret));
+      crypto::d2s(rct::decode_by_ecdh_shared_secret(rv.ecdh[i].masked_amount, ecdh_shared_secret));
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_unnormalized), "warning, bad ECDH amount");
 
     const rct_point C = rv.outPk[i].amount_commit;

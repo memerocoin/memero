@@ -321,14 +321,14 @@ namespace rct {
        );
 
 
-    std::vector<ecdhData> ecdhInfo;
+    std::vector<ecdh_encrypted_data> ecdh;
     std::transform
       (
        outamounts.begin(),
        outamounts.end(),
        amount_keys.begin(),
-       std::back_inserter(ecdhInfo),
-       [](const auto& x, const auto& y) -> ecdhData {
+       std::back_inserter(ecdh),
+       [](const auto& x, const auto& y) -> ecdh_encrypted_data {
          return {crypto::d2s(encode_by_ecdh_shared_secret(int_to_scalar(x), y))};
        }
        );
@@ -386,7 +386,7 @@ namespace rct {
         , message
         , mixRing
         , {}
-        , ecdhInfo
+        , ecdh
         , outPk
         , txnFee
         , {

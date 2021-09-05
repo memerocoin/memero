@@ -85,7 +85,7 @@ namespace fee {
 
     // pseudo_amount_commits
     size += 32 * n_inputs;
-    // ecdhInfo
+    // ecdh
     size += 8 * n_outputs;
     // outPk - only commitment is saved
     size += 32 * n_outputs;
