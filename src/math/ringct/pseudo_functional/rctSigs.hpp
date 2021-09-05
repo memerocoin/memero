@@ -44,7 +44,13 @@ namespace rct {
     return verify_ringct_rangeproof(rv) && verify_clsag_signatures(rv);
   }
 
-  std::pair<amount_t, rct_scalar> decode_ringct_commitment(const rctSig rv, const rct_scalar ecdh_shared_secret, const size_t i);
+  std::pair<amount_t, rct_scalar> decode_ringct_commitment
+  (
+   const rctSig rv
+   , const rct_scalar ecdh_shared_secret
+   , const size_t i
+   );
+
   crypto::hash get_ring_signature_message(const rctSig rv);
 }
 
