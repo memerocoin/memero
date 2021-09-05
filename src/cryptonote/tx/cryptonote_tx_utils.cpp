@@ -282,7 +282,7 @@ namespace cryptonote
       }
       summary_inputs_money += src_entr.amount;
 
-      //tx_ecdh_shared_secret recv_derivation;
+      //tx_ecdh_shared_secret recv_tx_shared_secret;
       in_contexts.push_back(input_generation_context_data());
       keypair& in_ephemeral = in_contexts.back().in_ephemeral;
       crypto::key_image img;
