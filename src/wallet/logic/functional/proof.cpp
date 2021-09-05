@@ -105,14 +105,15 @@ namespace proof {
 
           const rct::rct_point C = tx.rct_signatures.outPk[n].commit_of_amount;
 
-          const rct::rct_scalar ecdh_amount = rct::s2s(crypto::reduce(amount_unnormalized));
-          const rct::rct_point Ctmp = rct::addMultG_H(rct::s2s(crypto::reduce(blinding_factor)), ecdh_amount);
+          const auto ecdh_amount = scalar_to_int(rct::s2s(crypto::reduce(amount_unnormalized)));
+          const rct::rct_point C_check = rct::commit(blinding_factor, ecdh_amount);
 
-          if (C == Ctmp)
-            amount = rct::scalar_to_int(ecdh_amount);
+          if (C == C_check)
+            amount = ecdh_amount;
           else
             amount = 0;
         }
+
         received += amount;
       }
     }
