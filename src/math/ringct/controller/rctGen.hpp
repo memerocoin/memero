@@ -39,6 +39,4 @@ namespace rct {
   rct_scalarV skvGen(size_t rows);
   std::pair<rct_scalar, rct_point> skpkGen();
 
-  //generates a <secret , public> / Pedersen commitment to the amount
-  std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount);
 }

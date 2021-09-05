@@ -47,12 +47,27 @@
 
 
 using namespace std;
-using namespace crypto;
 using namespace rct;
 
 rct::rct_point pkGen() {
   return rct::skpkGen().second;
 }
+
+//generates a <secret , public> / Pedersen commitment to the amount
+std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount) {
+  const auto [addr_sk, addr_pk] = skpkGen();
+  const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
+
+  const rct_scalar am = int_to_scalar(amount);
+  const rct_point bH = H_(am);
+
+  return
+    {
+      {addr_sk, blinding_factor_sk}
+      , {addr_pk, blinding_factor_pk + bH}
+    };
+}
+
 
 size_t populateRingsSimpleDummy(ct_public_keyV& mixRing, const ct_public_key inPk, const size_t mixin) {
   size_t index = ((size_t)std::rand()) % (mixin + 1);
@@ -215,8 +230,8 @@ TEST(ringct, CLSAG)
   clsag.s = sbackup;
 
   // too few s elements
-  ec_scalar_unnormalized backup_s;
-  ec_scalar_unnormalized backup_c1;
+  crypto::ec_scalar_unnormalized backup_s;
+  crypto::ec_scalar_unnormalized backup_c1;
   rct_point backup_key;
   inv8 backup_key_inv8;
   backup_s = clsag.s.back();
