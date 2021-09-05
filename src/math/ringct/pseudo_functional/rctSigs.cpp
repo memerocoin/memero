@@ -298,13 +298,6 @@ namespace rct {
 
       LOG_ERROR_AND_RETURN_UNLESS
         (
-          rv.pseudo_amount_commits.empty()
-          , false
-          , "rv.pseudo_amount_commits is not empty"
-          );
-
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
           rv.outPk.size() == rv.ecdh.size()
           , false
           , "Mismatched sizes of outPk and rv.ecdh"

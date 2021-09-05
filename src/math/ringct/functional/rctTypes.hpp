@@ -184,7 +184,7 @@ namespace rct {
         crypto::hash message;
         ct_public_keyM mixRing; //the set of all pubkeys / copy
         //pairs that you mix with
-        rct_pointV pseudo_amount_commits; //C - for simple rct
+        // rct_pointV unusedPoints;
         std::vector<ecdh_encrypted_data> ecdh;
         ct_public_keyV outPk;
         amount_t fee; // contains b
@@ -235,16 +235,6 @@ namespace rct {
           ar.end_array();
           return ar.stream().good();
         }
-
-        BEGIN_SERIALIZE_OBJECT()
-          FIELD(type)
-          FIELD(message)
-          FIELD(mixRing)
-          FIELD(pseudo_amount_commits)
-          FIELD(ecdh)
-          FIELD(outPk)
-          VARINT_FIELD(fee)
-        END_SERIALIZE()
     };
 
     struct rctSigPrunable {
@@ -269,7 +259,7 @@ namespace rct {
           {
             uint32_t nbp = bulletproofs.size();
             VARINT_FIELD(nbp)
-            ar.tag("bp");
+            ar.tag("range_proofs");
             ar.begin_array();
             if (nbp > outputs)
               return false;
@@ -286,7 +276,7 @@ namespace rct {
           }
 
           {
-            ar.tag("CLSAGs");
+            ar.tag("ring_signatures");
             ar.begin_array();
             PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, CLSAGs);
             if (CLSAGs.size() != inputs)
@@ -341,31 +331,10 @@ namespace rct {
           }
           return ar.stream().good();
         }
-
-        BEGIN_SERIALIZE_OBJECT()
-          FIELD(bulletproofs)
-          FIELD(CLSAGs)
-          FIELD(pseudo_amount_commits)
-        END_SERIALIZE()
     };
 
     struct rctSig: public rctSigBase {
         rctSigPrunable p;
-
-        rct_pointV& get_pseudo_outs()
-        {
-          return type == RCTTypeCLSAG ? p.pseudo_amount_commits : pseudo_amount_commits;
-        }
-
-        rct_pointV const& get_pseudo_outs() const
-        {
-          return type == RCTTypeCLSAG ? p.pseudo_amount_commits : pseudo_amount_commits;
-        }
-
-        BEGIN_SERIALIZE_OBJECT()
-          FIELDS((rctSigBase&)*this)
-          FIELD(p)
-        END_SERIALIZE()
     };
 
     //various conversions

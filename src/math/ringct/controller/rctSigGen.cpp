@@ -385,7 +385,6 @@ namespace rct {
         RCTTypeCLSAG
         , message
         , mixRing
-        , {}
         , ecdh
         , outPk
         , fee

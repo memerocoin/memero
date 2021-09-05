@@ -950,13 +950,13 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   }
 
   // prunable
-  if (!sig.p.bulletproofs.empty() || !sig.get_pseudo_outs().empty())
+  if (!sig.p.bulletproofs.empty())
   {
     dest.Key("prunable");
     dest.StartObject();
 
     WRITE_JSON_FIELD_FROM(dest, bulletproofs, sig.p.bulletproofs);
-    WRITE_JSON_FIELD_FROM(dest, pseudo_outs, sig.get_pseudo_outs());
+    WRITE_JSON_FIELD_FROM(dest, pseudo_amount_commits, sig.p.pseudo_amount_commits);
 
     dest.EndObject();
   }
@@ -980,19 +980,10 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctSig& sig)
 
   // prunable
   const auto prunable = val.FindMember("prunable");
-  if (prunable != val.MemberEnd())
-  {
-    rct::rct_pointV pseudo_outs = std::move(sig.get_pseudo_outs());
 
+  if (prunable != val.MemberEnd()) {
     READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.bulletproofs, bulletproofs);
-    READ_JSON_VALUE_BY_KEY(prunable->value, pseudo_outs, pseudo_outs);
-
-    sig.get_pseudo_outs() = std::move(pseudo_outs);
-  }
-  else
-  {
-    sig.p.bulletproofs.clear();
-    sig.get_pseudo_outs().clear();
+    READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.pseudo_amount_commits, pseudo_amount_commits);
   }
 }
 
