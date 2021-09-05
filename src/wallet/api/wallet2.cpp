@@ -790,13 +790,13 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       THROW_WALLET_EXCEPTION_IF(pk_index - 1 >= tx_cache_data.primary.size(),
           error::wallet_internal_error, "pk_index out of range of tx_cache_data");
       is_out_data_ptr = &tx_cache_data.primary[pk_index - 1];
-      tx_shared_secret = tx_cache_data.primary[pk_index - 1].derivation;
+      tx_shared_secret = tx_cache_data.primary[pk_index - 1].tx_shared_secret;
       if (pk_index == 1)
       {
         for (size_t n = 0; n < tx_cache_data.additional.size(); ++n)
         {
           additional_tx_pub_keys.data.push_back(tx_cache_data.additional[n].pkey);
-          tx_shared_secrets.push_back(tx_cache_data.additional[n].derivation);
+          tx_shared_secrets.push_back(tx_cache_data.additional[n].tx_shared_secret);
         }
       }
     }
@@ -1353,11 +1353,11 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
     if (!d)
     {
       LOG_WARNING("Failed to generate key derivation from tx pubkey, skipping");
-      static_assert(sizeof(iod.derivation) == sizeof(rct::rct_point), "Mismatched sizes of tx_ecdh_shared_secret and rct::rct_point");
-      iod.derivation = p2tx_shared_secret(rct::identity);
+      static_assert(sizeof(iod.tx_shared_secret) == sizeof(rct::rct_point), "Mismatched sizes of tx_ecdh_shared_secret and rct::rct_point");
+      iod.tx_shared_secret = p2tx_shared_secret(rct::identity);
     }
     else {
-      iod.derivation = *d;
+      iod.tx_shared_secret = *d;
     }
   };
 
@@ -1384,13 +1384,18 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
         std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets;
         tx_shared_secrets.reserve(tx_cache_data[txidx].additional.size());
         for (const auto &iod: tx_cache_data[txidx].additional)
-          tx_shared_secrets.push_back(iod.derivation);
+          tx_shared_secrets.push_back(iod.tx_shared_secret);
         const auto &key = boost::get<txout_to_key>(o.target).key;
         for (size_t l = 0; l < tx_cache_data[txidx].primary.size(); ++l)
         {
           THROW_WALLET_EXCEPTION_IF(tx_cache_data[txidx].primary[l].received.size() != n_vouts,
               error::wallet_internal_error, "Unexpected received array size");
-          tx_cache_data[txidx].primary[l].received[k] = is_out_to_acc_precomp(m_subaddresses, key, tx_cache_data[txidx].primary[l].derivation, tx_shared_secrets, k);
+          tx_cache_data[txidx].primary[l].received[k] =
+            is_out_to_acc_precomp
+            (
+             m_subaddresses, key, tx_cache_data[txidx].primary[l].tx_shared_secret
+             , tx_shared_secrets, k
+             );
           tx_shared_secrets.clear();
         }
       }
