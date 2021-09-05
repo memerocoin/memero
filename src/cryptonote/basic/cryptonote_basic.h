@@ -47,9 +47,6 @@
 
 namespace cryptonote
 {
-  typedef std::vector<crypto::schnorr_signature> ring_signature;
-
-
   /* outputs */
 
   struct txout_to_script

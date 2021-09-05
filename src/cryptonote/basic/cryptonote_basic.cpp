@@ -46,7 +46,6 @@ namespace cryptonote
     hash_valid(false),
     prunable_hash_valid(false),
     blob_size_valid(false),
-    signatures(t.signatures),
     rct_signatures(t.rct_signatures),
     unprunable_size(t.unprunable_size.load()),
     prefix_size(t.prefix_size.load())
@@ -75,7 +74,6 @@ namespace cryptonote
     set_hash_valid(false);
     set_prunable_hash_valid(false);
     set_blob_size_valid(false);
-    signatures = t.signatures;
     rct_signatures = t.rct_signatures;
     if (t.is_hash_valid())
     {
@@ -109,7 +107,6 @@ namespace cryptonote
   void transaction::set_null()
   {
     transaction_prefix::set_null();
-    signatures.clear();
     rct_signatures.type = rct::RCTTypeNull;
     set_hash_valid(false);
     set_prunable_hash_valid(false);

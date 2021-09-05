@@ -257,7 +257,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
   WRITE_JSON_FIELD_FROM(dest, inputs, tx.vin);
   WRITE_JSON_FIELD_FROM(dest, outputs, tx.vout);
   WRITE_JSON_FIELD_FROM(dest, extra, tx.extra);
-  WRITE_JSON_FIELD_FROM(dest, signatures, tx.signatures);
   WRITE_JSON_FIELD_FROM(dest, ringct, tx.rct_signatures);
 
   dest.EndObject();
@@ -277,12 +276,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
   READ_JSON_VALUE_BY_KEY(val, tx.vout, outputs);
   READ_JSON_VALUE_BY_KEY(val, tx.extra, extra);
   READ_JSON_VALUE_BY_KEY(val, tx.rct_signatures, ringct);
-
-  const auto& sigs = val.FindMember("signatures");
-  if (sigs != val.MemberEnd())
-  {
-    fromJsonValue(sigs->value, tx.signatures);
-  }
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::block b)

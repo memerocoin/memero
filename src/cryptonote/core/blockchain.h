@@ -919,7 +919,6 @@ namespace cryptonote
      * @param tx_version the transaction version
      * @param txin the transaction input
      * @param tx_prefix_hash the transaction prefix hash, for caching organization
-     * @param sig the input signature
      * @param output_keys return-by-reference the public keys of the outputs in the input set
      * @param rct_signatures the ringCT signatures, which are only valid if tx version > 1
      * @param pmax_related_block_height return-by-pointer the height of the most recent block in the input set
@@ -927,7 +926,15 @@ namespace cryptonote
      *
      * @return false if any output is not yet unlocked, or is missing, otherwise true
      */
-    bool check_tx_input(size_t tx_version,const txin_to_key& txin, const crypto::hash& tx_prefix_hash, const std::vector<crypto::schnorr_signature>& sig, const rct::rctSig &rct_signatures, std::vector<rct::ct_public_key> &output_keys, uint64_t* pmax_related_block_height) const;
+    bool check_tx_input
+    (
+     size_t tx_version
+     , const txin_to_key& txin
+     , const crypto::hash& tx_prefix_hash
+     , const rct::rctSig &rct_signatures
+     , std::vector<rct::ct_public_key> &output_keys
+     , uint64_t* pmax_related_block_height
+     ) const;
 
     /**
      * @brief validate a transaction's inputs and their keys
