@@ -203,6 +203,7 @@ namespace rct {
 
 
         const rct_scalar c1 = rct_reduce(sig.c1);
+
         rct_scalar c = c1;
         size_t i = 0;
 
@@ -251,7 +252,7 @@ namespace rct {
             i++;
         }
 
-        return s2s(c - c1) == s_zero;
+        return c == c1;
     }
 
     bool verRctCLSAGSimple
