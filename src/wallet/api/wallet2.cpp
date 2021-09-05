@@ -773,13 +773,13 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         {
           for (size_t i = 0; i < additional_tx_pub_keys.data.size(); ++i)
           {
-            const auto additional_derivation =
+            const auto additional_tx_shared_secret =
               crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys.data[i], keys.m_view_secret_key);
-            if (!additional_derivation) {
+            if (!additional_tx_shared_secret) {
               LOG_WARNING("Failed to generate key derivation from additional tx pubkey in " << txid << ", skipping");
               tx_shared_secrets.push_back(p2derivation(rct::identity));
             } else {
-              tx_shared_secrets.push_back(*additional_derivation);
+              tx_shared_secrets.push_back(*additional_tx_shared_secret);
             }
           }
         }

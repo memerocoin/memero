@@ -180,12 +180,12 @@ namespace proof {
 
       for (size_t i = 1; i < num_sigs; ++i) {
         if (good_signature[i]) {
-          const std::optional<crypto::tx_ecdh_shared_secret> additional_derivation =
+          const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
             crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
           THROW_WALLET_EXCEPTION_IF
-            ( !additional_derivation
+            ( !additional_tx_shared_secret
              , error::wallet_internal_error, "Failed to generate key derivation");
-          tx_shared_secrets[i-1] = *additional_derivation;
+          tx_shared_secrets[i-1] = *additional_tx_shared_secret;
         }
       }
 

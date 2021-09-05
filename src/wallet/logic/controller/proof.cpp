@@ -154,12 +154,12 @@ namespace proof {
 
     std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets(num_sigs - 1);
     for (size_t i = 1; i < num_sigs; ++i) {
-      const std::optional<crypto::tx_ecdh_shared_secret> additional_derivation =
+      const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
         crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
       THROW_WALLET_EXCEPTION_IF
-        ( !additional_derivation
+        ( !additional_tx_shared_secret
          , tools::error::wallet_internal_error, "Failed to generate key derivation");
-      tx_shared_secrets[i - 1] = *additional_derivation;
+      tx_shared_secrets[i - 1] = *additional_tx_shared_secret;
     }
 
     uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
