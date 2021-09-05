@@ -49,7 +49,7 @@ namespace crypto {
   inline const secret_key &s2sk(const ec_scalar &x)              noexcept { return (const secret_key&)x; }
   inline const public_key &p2pk(const ec_point &x)               noexcept { return (const public_key&)x; }
   inline const key_image &p2img(const ec_point &x)               noexcept { return (const key_image&)x; }
-  inline const tx_ecdh_shared_secret &p2derivation(const ec_point &x)   noexcept { return (const tx_ecdh_shared_secret&)x; }
+  inline const tx_ecdh_shared_secret &p2tx_shared_secret(const ec_point &x)   noexcept { return (const tx_ecdh_shared_secret&)x; }
 
   inline const ec_scalar_unnormalized &d2s(const crypto_data &x) noexcept { return (const ec_scalar_unnormalized&)x; }
   inline const ec_point_unsafe &d2p(const crypto_data &x)        noexcept { return (const ec_point_unsafe&)x; }

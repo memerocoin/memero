@@ -761,7 +761,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       {
         LOG_WARNING("Failed to generate key derivation from tx pubkey in " << txid << ", skipping");
         static_assert(sizeof(tx_shared_secret) == sizeof(rct::rct_point), "Mismatched sizes of tx_ecdh_shared_secret and rct::rct_point");
-        tx_shared_secret = p2derivation(rct::identity);
+        tx_shared_secret = p2tx_shared_secret(rct::identity);
       } else {
         tx_shared_secret = *maybeDerivation;
       }
@@ -777,7 +777,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
               crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys.data[i], keys.m_view_secret_key);
             if (!additional_tx_shared_secret) {
               LOG_WARNING("Failed to generate key derivation from additional tx pubkey in " << txid << ", skipping");
-              tx_shared_secrets.push_back(p2derivation(rct::identity));
+              tx_shared_secrets.push_back(p2tx_shared_secret(rct::identity));
             } else {
               tx_shared_secrets.push_back(*additional_tx_shared_secret);
             }
@@ -1354,7 +1354,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
     {
       LOG_WARNING("Failed to generate key derivation from tx pubkey, skipping");
       static_assert(sizeof(iod.derivation) == sizeof(rct::rct_point), "Mismatched sizes of tx_ecdh_shared_secret and rct::rct_point");
-      iod.derivation = p2derivation(rct::identity);
+      iod.derivation = p2tx_shared_secret(rct::identity);
     }
     else {
       iod.derivation = *d;

@@ -130,7 +130,7 @@ namespace crypto {
     if (!p) return {};
 
     // here mult8 is really not needed
-    const tx_ecdh_shared_secret derivation = p2derivation(mult8Safe(*p ^ sk));
+    const tx_ecdh_shared_secret derivation = p2tx_shared_secret(mult8Safe(*p ^ sk));
 
     return derivation;
   }
