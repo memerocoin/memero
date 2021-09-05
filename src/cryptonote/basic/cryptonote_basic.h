@@ -184,7 +184,6 @@ namespace cryptonote
     mutable std::atomic<bool> blob_size_valid;
 
   public:
-    std::vector<std::vector<crypto::schnorr_signature> > signatures; //count signatures  always the same as inputs count
     rct::rctSig rct_signatures;
 
     // hash cash
@@ -233,7 +232,6 @@ namespace cryptonote
 
       ar.tag("signatures");
       ar.begin_array();
-      PREPARE_CUSTOM_VECTOR_SERIALIZATION(vin.size(), signatures);
       ar.end_array();
     }
     else
