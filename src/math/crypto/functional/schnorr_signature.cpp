@@ -93,8 +93,6 @@ namespace crypto {
 
     const ec_point K = (maybeBase ? *maybeBase ^ sig.s : multBase(sig.s)) + (*p ^ sig.scalar_hash);
 
-    if (K == identity) return false;
-
     const epee::blob::data message_data(message.begin(), message.end());
 
     const ec_scalar scalar_hash = hash_to_scalar(message_data + K.blob());
