@@ -36,13 +36,6 @@ namespace crypto {
     bool operator==(const schnorr_signature_unnormalized &x) const noexcept {
       return scalar_hash == x.scalar_hash && s == x.s;
     }
-
-    /*
-    bool is_reduced() const noexcept {
-      return s == reduce(s) && scalar_hash == reduce(scalar_hash);
-    }
-    */
-
   };
 
   inline schnorr_signature reduce_schnorr(const schnorr_signature_unnormalized x) {
