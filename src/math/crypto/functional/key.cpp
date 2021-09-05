@@ -100,8 +100,8 @@ namespace crypto {
       && verify_schnorr_signature(hash_key + h.blob() + A.blob() + D.blob(), D, double_sig.second, {A});
   }
 
-  key_image derive_key_image(const public_key &pub, const secret_key &sec) noexcept {
-    const ec_point h8 = viaFieldMult8(h2p(sha3(pub.data)));
+  key_image derive_key_image(const secret_key sec) noexcept {
+    const ec_point h8 = viaFieldMult8(h2p(sha3(to_pk(sec).data)));
     const ec_point p = h8 ^ sec;
     return p2img(p);
   }

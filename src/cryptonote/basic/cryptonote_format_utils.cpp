@@ -268,31 +268,26 @@ namespace cryptonote
     else
     {
       // derive secret key with subaddress - step 1: original CN derivation
-      const crypto::secret_key scalar_step1 =
-        derive_secret_key(recv_tx_shared_secret, real_output_index, ack.m_spend_secret_key);
+
       // computes Hs(a*R || idx) + b
+      const crypto::secret_key derived_secret_key_base =
+        derive_secret_key(recv_tx_shared_secret, real_output_index, ack.m_spend_secret_key);
 
-      // step 2: add Hs(a || index_major || index_minor)
-      crypto::secret_key subaddr_sk;
-      crypto::secret_key scalar_step2;
-      if (received_index.is_zero())
-      {
-        scalar_step2 = scalar_step1;    // treat index=(0,0) as a special case representing the main address
-      }
-      else
-      {
-        subaddr_sk = device::get_subaddress_secret_key(ack.m_view_secret_key, received_index);
-        scalar_step2 = s2sk(scalar_step1 + subaddr_sk);
-      }
+      // add subaddress secret key: Hs(a || index_major || index_minor)
+      const crypto::secret_key key_offset =
+        received_index.is_zero()
+        ? crypto::s2sk(s_0)
+        : device::get_subaddress_secret_key(ack.m_view_secret_key, received_index)
+        ;
 
-      in_ephemeral.sec = scalar_step2;
+      in_ephemeral.sec = crypto::s2sk(derived_secret_key_base + key_offset);
       in_ephemeral.pub = to_pk(in_ephemeral.sec);
 
       LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
            false, "key image helper precomp: given output pubkey doesn't match the derived one");
     }
 
-    ki = crypto::derive_key_image(in_ephemeral.pub, in_ephemeral.sec);
+    ki = crypto::derive_key_image(in_ephemeral.sec);
     return true;
   }
 
