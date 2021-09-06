@@ -157,9 +157,9 @@ namespace crypto {
 
   std::optional<public_key> derive_spend_public_key_from_tx_output_public_key
   (
-   const ec_point_unsafe &unsafe_out_key
-   , const tx_ecdh_shared_secret &tx_shared_secret
+     const tx_ecdh_shared_secret &tx_shared_secret
    , const std::size_t output_index
+   , const ec_point_unsafe &unsafe_out_key
    ) noexcept
   {
     const auto out_key = maybeSafePoint(unsafe_out_key);

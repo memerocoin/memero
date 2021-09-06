@@ -701,28 +701,39 @@ namespace cryptonote
     return res;
   }
   //---------------------------------------------------------------
-  bool is_out_to_acc(const account_keys& acc, const txout_to_key& out_key, const crypto::public_key& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, size_t output_index)
+  bool is_out_to_acc
+  (
+   const account_keys& acc
+   , const txout_to_key& out_key
+   , const crypto::public_key& tx_pub_key
+   , const std::vector<crypto::public_key>& additional_tx_pub_keys
+   , size_t output_index
+   )
   {
-    const std::optional<crypto::tx_ecdh_shared_secret> derivation =
+    const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret =
       crypto::derive_tx_ecdh_shared_secret(tx_pub_key, acc.m_view_secret_key);
-    LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "Failed to generate key derivation");
+    LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret, false, "Failed to generate key derivation");
 
     const std::optional<crypto::public_key> pk =
-      crypto::derive_tx_output_public_key_from_spend_public_key(*derivation, output_index, acc.m_account_address.m_spend_public_key);
+      crypto::derive_tx_output_public_key_from_spend_public_key
+      (*tx_shared_secret, output_index, acc.m_account_address.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
     if (*pk == out_key.key) {
       return true;
     }
+
     // try additional tx pubkeys if available
     if (!additional_tx_pub_keys.empty())
     {
       LOG_ERROR_AND_RETURN_UNLESS(output_index < additional_tx_pub_keys.size(), false, "wrong number of additional tx pubkeys");
 
-      const auto kd = crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys[output_index], acc.m_view_secret_key);
-      LOG_ERROR_AND_RETURN_UNLESS(kd, false, "Failed to generate key derivation");
+      const auto tx_shared_secret_2 = crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys[output_index], acc.m_view_secret_key);
+      LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret_2, false, "Failed to generate key derivation");
 
-      const auto tx_out_pk = crypto::derive_tx_output_public_key_from_spend_public_key(*derivation, output_index, acc.m_account_address.m_spend_public_key);
+      const auto tx_out_pk = crypto::derive_tx_output_public_key_from_spend_public_key
+        (*tx_shared_secret_2, output_index, acc.m_account_address.m_spend_public_key);
+
       LOG_ERROR_AND_RETURN_UNLESS(tx_out_pk, false, "Failed to derive public key");
 
       return *tx_out_pk == out_key.key;
@@ -742,7 +753,7 @@ namespace cryptonote
   {
     // try the shared tx pubkey
     const std::optional<crypto::public_key> subaddress_spendkey =
-      crypto::derive_spend_public_key_from_tx_output_public_key(tx_out_key, tx_shared_secret, output_index);
+      crypto::derive_spend_public_key_from_tx_output_public_key(tx_shared_secret, output_index, tx_out_key);
 
     auto found = subaddresses.find(subaddress_spendkey.value_or(crypto::null_pkey));
 
@@ -753,8 +764,8 @@ namespace cryptonote
     if (!tx_shared_secrets.empty())
     {
       LOG_ERROR_AND_RETURN_UNLESS(output_index < tx_shared_secrets.size(), std::nullopt, "wrong number of additional derivations");
-      const auto sub_pk =
-        crypto::derive_spend_public_key_from_tx_output_public_key(tx_out_key, tx_shared_secrets[output_index], output_index);
+      const auto sub_pk = crypto::derive_spend_public_key_from_tx_output_public_key
+        (tx_shared_secrets[output_index], output_index, tx_out_key);
 
       found = subaddresses.find(sub_pk.value_or(crypto::null_pkey));
 
