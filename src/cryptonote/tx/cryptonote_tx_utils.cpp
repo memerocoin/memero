@@ -287,7 +287,17 @@ namespace cryptonote
       keypair& in_ephemeral = in_contexts.back().in_ephemeral;
       crypto::key_image img;
       const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.dest);
-      if(!derive_key_image_helper(sender_account_keys, subaddresses, out_key, src_entr.real_out_tx_key, src_entr.real_out_additional_tx_keys, src_entr.real_output_in_tx_index, in_ephemeral,img))
+      if(!derive_key_image_helper
+         (
+          sender_account_keys
+          , subaddresses
+          , out_key
+          , crypto::maybeNotNull(src_entr.real_out_tx_key)
+          , src_entr.real_out_additional_tx_keys
+          , src_entr.real_output_in_tx_index
+          , in_ephemeral,img
+          )
+         )
       {
         LOG_ERROR("Key image generation failed!");
         return false;
@@ -300,7 +310,8 @@ namespace cryptonote
           << epee::string_tools::pod_to_hex(in_ephemeral.pub) << std::endl << "real output_public_key:"
           << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.dest) );
         LOG_ERROR("amount " << src_entr.amount << ", rct " << src_entr.rct);
-        LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key << ", real_output_in_tx_index " << src_entr.real_output_in_tx_index);
+        LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key);
+        LOG_ERROR(", real_output_in_tx_index " << src_entr.real_output_in_tx_index);
         return false;
       }
 

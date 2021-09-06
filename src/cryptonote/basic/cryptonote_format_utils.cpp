@@ -205,16 +205,29 @@ namespace cryptonote
     return is_v1_tx(blobdata_ref{tx_blob.data(), tx_blob.size()});
   }
   //---------------------------------------------------------------
-  bool derive_key_image_helper(const account_keys& ack, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::public_key& tx_public_key, const std::vector<crypto::public_key>& additional_tx_public_keys, size_t real_output_index, keypair& in_ephemeral, crypto::key_image& ki)
+  bool derive_key_image_helper
+  (
+   const account_keys& ack
+   , const std::unordered_map<crypto::public_key
+   , subaddress_index>& subaddresses
+   , const crypto::public_key& out_key
+   , const std::optional<crypto::public_key>& tx_public_key
+   , const std::vector<crypto::public_key>& additional_tx_public_keys
+   , size_t real_output_index
+   , keypair& in_ephemeral
+   , crypto::key_image& ki
+   )
   {
     const std::optional<crypto::tx_ecdh_shared_secret> recv_tx_shared_secret =
-      crypto::derive_tx_ecdh_shared_secret(tx_public_key, ack.m_view_secret_key);
+      tx_public_key
+      ? crypto::derive_tx_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key)
+      : std::optional<crypto::tx_ecdh_shared_secret>();
 
-    if (!recv_tx_shared_secret)
-    {
-      LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
-      return false;
-    }
+    // if (!recv_tx_shared_secret)
+    // {
+    //   LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
+    //   return false;
+    // }
 
     std::vector<crypto::tx_ecdh_shared_secret> additional_recv_tx_shared_secrets;
     for (size_t i = 0; i < additional_tx_public_keys.size(); ++i)
@@ -234,7 +247,7 @@ namespace cryptonote
     std::optional<subaddress_receive_info> subaddr_recv_info =
       is_out_to_acc_precomp
       (
-       subaddresses, out_key, *recv_tx_shared_secret, additional_recv_tx_shared_secrets, real_output_index
+       subaddresses, out_key, recv_tx_shared_secret, additional_recv_tx_shared_secrets, real_output_index
        );
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -490,7 +503,7 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------
-  crypto::public_key get_tx_pub_key_from_extra(const std::vector<uint8_t>& tx_extra, size_t pk_index)
+  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const std::vector<uint8_t>& tx_extra, size_t pk_index)
   {
     std::vector<tx_extra_field> tx_extra_fields;
     parse_tx_extra(tx_extra, tx_extra_fields);
@@ -502,7 +515,7 @@ namespace cryptonote
     return pub_key_field.pub_key;
   }
   //---------------------------------------------------------------
-  crypto::public_key get_tx_pub_key_from_extra(const transaction_prefix& tx_prefix, size_t pk_index)
+  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction_prefix& tx_prefix, size_t pk_index)
   {
     return get_tx_pub_key_from_extra(tx_prefix.extra, pk_index);
   }
@@ -764,19 +777,21 @@ namespace cryptonote
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key& tx_out_key
-   , const crypto::tx_ecdh_shared_secret& tx_shared_secret
+   , const std::optional<crypto::tx_ecdh_shared_secret>& tx_shared_secret
    , const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets
    , size_t output_index
    )
   {
     // try the shared tx pubkey
-    const std::optional<crypto::public_key> spend_pk =
-      crypto::derive_spend_public_key_from_tx_output_public_key(tx_shared_secret, output_index, tx_out_key);
+    if (tx_shared_secret) {
+      const std::optional<crypto::public_key> spend_pk =
+        crypto::derive_spend_public_key_from_tx_output_public_key(*tx_shared_secret, output_index, tx_out_key);
 
-    auto found = subaddresses.find(spend_pk.value_or(crypto::null_pkey));
+      auto found = subaddresses.find(spend_pk.value_or(crypto::null_pkey));
 
-    if (found != subaddresses.end())
-      return subaddress_receive_info{ found->second, tx_shared_secret };
+      if (found != subaddresses.end())
+        return subaddress_receive_info{ found->second, *tx_shared_secret};
+    }
 
     // try additional tx pubkeys if available
     if (!tx_shared_secrets.empty())

@@ -174,5 +174,13 @@ namespace crypto {
     return p2pk(*out_key - p);
   }
 
+  std::optional<crypto::public_key> maybeNotNull(const crypto::public_key x) {
+    if (x == crypto::null_pkey) {
+      return {};
+    } else {
+      return x;
+    }
+  }
+
 }
 

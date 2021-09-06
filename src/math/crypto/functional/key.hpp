@@ -141,6 +141,8 @@ namespace crypto {
    , const ec_point_unsafe &unsafe_out_key
    ) noexcept;
 
+  std::optional<crypto::public_key> maybeNotNull(const crypto::public_key);
+
 }
 
 namespace std
