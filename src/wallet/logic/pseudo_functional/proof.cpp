@@ -140,30 +140,53 @@ namespace proof {
     std::vector<int> good_signature(num_sigs, 0);
     if (is_out)
     {
-      good_signature[0] = !tx_pub_key ? false
-        : is_subaddress ?
-        crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
-        crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
+      if (tx_pub_key) {
+          is_subaddress
+          ? crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0])
+          : crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
 
-      for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
-      {
-        good_signature[i + 1] = is_subaddress ?
-          crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i + 1], sig[i + 1]) :
-          crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i + 1], sig[i + 1]);
+        for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
+        {
+          good_signature[i + 1] = is_subaddress ?
+            crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i + 1], sig[i + 1]) :
+            crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i + 1], sig[i + 1]);
+        }
+      }
+      else {
+        for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
+        {
+          good_signature[i] = is_subaddress ?
+            crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i]) :
+            crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
+        }
       }
     }
     else
     {
-      good_signature[0] = !tx_pub_key ? false
-        : is_subaddress ?
-        crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, *tx_pub_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
-        crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, *tx_pub_key, std::nullopt, shared_secret[0], sig[0]);
+      if (tx_pub_key) {
+        good_signature[0] =
+          is_subaddress
+          ? crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, *tx_pub_key, address.m_spend_public_key, shared_secret[0], sig[0])
+          : crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, *tx_pub_key, std::nullopt, shared_secret[0], sig[0]);
 
-      for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
-      {
-        good_signature[i + 1] = is_subaddress ?
-          crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], address.m_spend_public_key, shared_secret[i + 1], sig[i + 1]) :
-          crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], std::nullopt, shared_secret[i + 1], sig[i + 1]);
+        for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
+        {
+          good_signature[i + 1] = is_subaddress
+            ? crypto::verify_tx_proof
+            (prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], address.m_spend_public_key, shared_secret[i + 1], sig[i + 1]) 
+            : crypto::verify_tx_proof
+            (prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], std::nullopt, shared_secret[i + 1], sig[i + 1]);
+        }
+      }
+      else {
+        for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
+        {
+          good_signature[i] = is_subaddress
+            ? crypto::verify_tx_proof
+            (prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], address.m_spend_public_key, shared_secret[i], sig[i])
+            : crypto::verify_tx_proof
+             (prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], std::nullopt, shared_secret[i], sig[i]);
+        }
       }
     }
 
@@ -172,30 +195,34 @@ namespace proof {
       // non empty optional with default value
       std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
 
-      if (good_signature[0]) {
-        // obtain key derivation by multiplying rct_scalar 1 to the shared secret
-          tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
-          THROW_WALLET_EXCEPTION_IF
-          ( !tx_shared_secret
-            , error::wallet_internal_error, "Failed to generate key derivation");
-      }
-
-      std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets(num_sigs - 1);
-
-      for (size_t i = 1; i < num_sigs; ++i) {
-        if (good_signature[i]) {
-          const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
-            crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
-          THROW_WALLET_EXCEPTION_IF
-            ( !additional_tx_shared_secret
-             , error::wallet_internal_error, "Failed to generate key derivation");
-          tx_shared_secrets[i-1] = *additional_tx_shared_secret;
+      if (tx_pub_key) {
+        if (good_signature[0]) {
+          // obtain key derivation by multiplying rct_scalar 1 to the shared secret
+            tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
+            THROW_WALLET_EXCEPTION_IF
+            ( !tx_shared_secret
+              , error::wallet_internal_error, "Failed to generate key derivation");
         }
-      }
 
-      received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, *tx_shared_secret, tx_shared_secrets, address);
-      return true;
+        std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets(num_sigs - 1);
+
+        for (size_t i = 1; i < num_sigs; ++i) {
+          if (good_signature[i]) {
+            const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
+              crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
+            THROW_WALLET_EXCEPTION_IF
+              ( !additional_tx_shared_secret
+              , error::wallet_internal_error, "Failed to generate key derivation");
+            tx_shared_secrets[i-1] = *additional_tx_shared_secret;
+          }
+        }
+
+        received = wallet::logic::functional::proof::get_tx_key_received_helper
+          (tx, *tx_shared_secret, tx_shared_secrets, address);
+        return true;
+      }
+      else {
+      }
     }
     return false;
   }
