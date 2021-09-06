@@ -124,13 +124,12 @@ namespace proof {
       sig[i].second = reduce_schnorr(sig_unsafe_2);
     }
 
-    const auto maybe_tx_pub_key = get_tx_pub_key_from_extra(tx);
-    THROW_WALLET_EXCEPTION_IF(!maybe_tx_pub_key, error::wallet_internal_error, "Tx pubkey was not found");
-
-    const auto tx_pub_key = *maybe_tx_pub_key;
+    const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
 
     std::vector<crypto::public_key> additional_tx_pub_keys = get_additional_tx_pub_keys_from_extra(tx);
-    THROW_WALLET_EXCEPTION_IF(additional_tx_pub_keys.size() + 1 != num_sigs, error::wallet_internal_error, "Signature size mismatch with additional tx pubkeys");
+
+    const auto expected_sigs = tx_pub_key ? additional_tx_pub_keys.size() + 1 : additional_tx_pub_keys.size();
+    THROW_WALLET_EXCEPTION_IF(expected_sigs != num_sigs, error::wallet_internal_error, "Signature size mismatch with additional tx pubkeys");
 
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     epee::blob::data prefix_data(txid.data.data(), txid.data.size());
@@ -141,9 +140,10 @@ namespace proof {
     std::vector<int> good_signature(num_sigs, 0);
     if (is_out)
     {
-      good_signature[0] = is_subaddress ?
-        crypto::verify_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
-        crypto::verify_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
+      good_signature[0] = !tx_pub_key ? false
+        : is_subaddress ?
+        crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
+        crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
 
       for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
       {
@@ -154,9 +154,10 @@ namespace proof {
     }
     else
     {
-      good_signature[0] = is_subaddress ?
-        crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
-        crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, std::nullopt, shared_secret[0], sig[0]);
+      good_signature[0] = !tx_pub_key ? false
+        : is_subaddress ?
+        crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, *tx_pub_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
+        crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, *tx_pub_key, std::nullopt, shared_secret[0], sig[0]);
 
       for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
       {
@@ -169,12 +170,13 @@ namespace proof {
     if (std::any_of(good_signature.begin(), good_signature.end(), [](int i) { return i > 0; }))
     {
       // non empty optional with default value
-      std::optional<crypto::tx_ecdh_shared_secret> derivation = {{}};
+      std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
+
       if (good_signature[0]) {
         // obtain key derivation by multiplying rct_scalar 1 to the shared secret
-          derivation = crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
+          tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
           THROW_WALLET_EXCEPTION_IF
-          ( !derivation
+          ( !tx_shared_secret
             , error::wallet_internal_error, "Failed to generate key derivation");
       }
 
@@ -192,7 +194,7 @@ namespace proof {
       }
 
       received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, *derivation, tx_shared_secrets, address);
+        (tx, *tx_shared_secret, tx_shared_secrets, address);
       return true;
     }
     return false;
