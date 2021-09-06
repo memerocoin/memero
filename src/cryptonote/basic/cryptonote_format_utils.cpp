@@ -545,6 +545,7 @@ namespace cryptonote
   {
     return get_additional_tx_pub_keys_from_extra(tx.extra);
   }
+
   //---------------------------------------------------------------
   bool add_additional_tx_pub_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& additional_pub_keys)
   {
@@ -561,6 +562,20 @@ namespace cryptonote
     std::copy(tx_extra_str.begin(), tx_extra_str.end(), std::back_inserter(tx_extra));
     return true;
   }
+
+  //---------------------------------------------------------------
+  std::optional<std::vector<crypto::public_key>> get_tx_pub_keys_from_extra(const transaction& tx)
+  {
+    const auto x = get_tx_pub_key_from_extra(tx);
+    if(null_pkey == x) {
+      return {};
+    } else {
+      std::vector<crypto::public_key> xs = get_additional_tx_pub_keys_from_extra(tx);
+      xs.insert(xs.begin(), x);
+      return xs;
+    }
+  }
+
   //---------------------------------------------------------------
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type)
   {
