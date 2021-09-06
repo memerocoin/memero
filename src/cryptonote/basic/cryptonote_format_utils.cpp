@@ -720,22 +720,25 @@ namespace cryptonote
   (
    const account_keys& acc
    , const txout_to_key& out_key
-   , const crypto::public_key& tx_pub_key
+   , const std::optional<crypto::public_key>& tx_pub_key
    , const std::vector<crypto::public_key>& additional_tx_pub_keys
    , size_t output_index
    )
   {
-    const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret =
-      crypto::derive_tx_ecdh_shared_secret(tx_pub_key, acc.m_view_secret_key);
-    LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret, false, "Failed to generate key derivation");
+    if (tx_pub_key) {
+      const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret =
+        crypto::derive_tx_ecdh_shared_secret(*tx_pub_key, acc.m_view_secret_key);
 
-    const std::optional<crypto::public_key> pk =
-      crypto::derive_tx_output_public_key_from_spend_public_key
-      (*tx_shared_secret, output_index, acc.m_account_address.m_spend_public_key);
+      LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret, false, "Failed to generate key derivation");
 
-    LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
-    if (*pk == out_key.key) {
-      return true;
+      const std::optional<crypto::public_key> pk =
+        crypto::derive_tx_output_public_key_from_spend_public_key
+        (*tx_shared_secret, output_index, acc.m_account_address.m_spend_public_key);
+
+      LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
+      if (*pk == out_key.key) {
+        return true;
+      }
     }
 
     // try additional tx pubkeys if available
@@ -794,15 +797,12 @@ namespace cryptonote
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered)
   {
     const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
-    if(!tx_pub_key)
-      return false;
-
     std::vector<crypto::public_key> additional_tx_pub_keys = get_additional_tx_pub_keys_from_extra(tx);
-    return lookup_acc_outs(acc, tx, *tx_pub_key, additional_tx_pub_keys, outs, money_transfered);
+    return lookup_acc_outs(acc, tx, tx_pub_key, additional_tx_pub_keys, outs, money_transfered);
   }
 
   //---------------------------------------------------------------
-  bool lookup_acc_outs(const account_keys& acc, const transaction& tx, const crypto::public_key& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, std::vector<size_t>& outs, uint64_t& money_transfered)
+  bool lookup_acc_outs(const account_keys& acc, const transaction& tx, const std::optional<crypto::public_key>& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, std::vector<size_t>& outs, uint64_t& money_transfered)
   {
     LOG_ERROR_AND_RETURN_UNLESS(additional_tx_pub_keys.empty() || additional_tx_pub_keys.size() == tx.vout.size(), false, "wrong number of additional pubkeys" );
     money_transfered = 0;
