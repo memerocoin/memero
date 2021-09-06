@@ -46,23 +46,6 @@ namespace crypto {
   }
 
 
-  ec_scalar hash_tx_shared_secret_to_scalar(const tx_ecdh_shared_secret &tx_shared_secret, const size_t index) noexcept {
-    const epee::blob::data hashData =
-      tx_shared_secret.blob()
-      + epee::string_tools::string_to_blob(tools::get_varint_data(index));
-
-    return hash_to_scalar(hashData);
-  }
-
-  secret_key derive_secret_key(const tx_ecdh_shared_secret &tx_shared_secret, const size_t output_index,
-    const secret_key &base) noexcept
-  {
-    assert(is_reduced(base));
-
-    const ec_scalar rct_scalar = hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index);
-    return s2sk(base + rct_scalar);
-  }
-
   ec_scalar hash_to_scalar(const std::span<const uint8_t> x) noexcept {
     const auto h = sha3(x);
     return reduce(h2s(h));
@@ -130,6 +113,30 @@ namespace crypto {
     if (!p) return {};
 
     return p2tx_shared_secret(mult8Safe(*p ^ sk));
+  }
+
+  ec_scalar hash_tx_shared_secret_to_scalar
+  (
+   const tx_ecdh_shared_secret &tx_shared_secret
+   , const size_t index
+   ) noexcept
+  {
+    const epee::blob::data hashData =
+      tx_shared_secret.blob()
+      + epee::string_tools::string_to_blob(tools::get_varint_data(index));
+
+    return hash_to_scalar(hashData);
+  }
+
+  secret_key derive_tx_output_secret_key_from_spend_secret_key
+  (
+   const tx_ecdh_shared_secret &tx_shared_secret
+   , const size_t output_index
+   , const secret_key &spend_sk
+   ) noexcept
+  {
+    const ec_scalar rct_scalar = hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index);
+    return s2sk(spend_sk + rct_scalar);
   }
 
   std::optional<public_key> derive_tx_output_public_key

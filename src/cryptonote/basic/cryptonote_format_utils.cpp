@@ -268,10 +268,12 @@ namespace cryptonote
     else
     {
       // derive secret key with subaddress - step 1: original CN derivation
+      const auto spend_sk = ack.m_spend_secret_key;
+      if (is_not_reduced(spend_sk)) return false;
 
-      // computes Hs(a*R || idx) + b
-      const crypto::secret_key derived_secret_key_base =
-        derive_secret_key(recv_tx_shared_secret, real_output_index, ack.m_spend_secret_key);
+        // computes Hs(a*R || idx) + b
+      const crypto::secret_key derived_tx_output_secret_key =
+        derive_tx_output_secret_key_from_spend_secret_key(recv_tx_shared_secret, real_output_index, spend_sk);
 
       // add subaddress secret key: Hs(a || index_major || index_minor)
       const crypto::secret_key key_offset =
@@ -280,7 +282,7 @@ namespace cryptonote
         : device::get_subaddress_secret_key(ack.m_view_secret_key, received_index)
         ;
 
-      in_ephemeral.sec = crypto::s2sk(derived_secret_key_base + key_offset);
+      in_ephemeral.sec = crypto::s2sk(derived_tx_output_secret_key + key_offset);
       in_ephemeral.pub = to_pk(in_ephemeral.sec);
 
       LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
