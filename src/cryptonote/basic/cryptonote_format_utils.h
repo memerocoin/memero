@@ -86,7 +86,14 @@ namespace cryptonote
     crypto::tx_ecdh_shared_secret tx_shared_secret;
   };
 
-  std::optional<subaddress_receive_info> is_out_to_acc_precomp(const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::tx_ecdh_shared_secret& derivation, const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets, size_t output_index);
+  std::optional<subaddress_receive_info> is_out_to_acc_precomp
+  (
+   const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
+   , const crypto::public_key& tx_out_key
+   , const crypto::tx_ecdh_shared_secret& tx_shared_secret
+   , const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets
+   , size_t output_index
+   );
 
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, const crypto::public_key& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_public_keys, std::vector<size_t>& outs, uint64_t& money_transfered);
 

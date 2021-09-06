@@ -155,7 +155,7 @@ namespace crypto {
     return p2pk(r);
   }
 
-  std::optional<public_key> derive_subaddress_public_key
+  std::optional<public_key> derive_spend_public_key_from_tx_output_public_key
   (
    const ec_point_unsafe &unsafe_out_key
    , const tx_ecdh_shared_secret &tx_shared_secret

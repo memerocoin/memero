@@ -731,19 +731,33 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<subaddress_receive_info> is_out_to_acc_precomp(const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, const crypto::public_key& out_key, const crypto::tx_ecdh_shared_secret& derivation, const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets, size_t output_index)
+  std::optional<subaddress_receive_info> is_out_to_acc_precomp
+  (
+   const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
+   , const crypto::public_key& tx_out_key
+   , const crypto::tx_ecdh_shared_secret& tx_shared_secret
+   , const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets
+   , size_t output_index
+   )
   {
     // try the shared tx pubkey
-    const std::optional<crypto::public_key> subaddress_spendkey = crypto::derive_subaddress_public_key(out_key, derivation, output_index);
+    const std::optional<crypto::public_key> subaddress_spendkey =
+      crypto::derive_spend_public_key_from_tx_output_public_key(tx_out_key, tx_shared_secret, output_index);
+
     auto found = subaddresses.find(subaddress_spendkey.value_or(crypto::null_pkey));
+
     if (found != subaddresses.end())
-      return subaddress_receive_info{ found->second, derivation };
+      return subaddress_receive_info{ found->second, tx_shared_secret };
+
     // try additional tx pubkeys if available
     if (!tx_shared_secrets.empty())
     {
       LOG_ERROR_AND_RETURN_UNLESS(output_index < tx_shared_secrets.size(), std::nullopt, "wrong number of additional derivations");
-      const auto sub_pk = crypto::derive_subaddress_public_key(out_key, tx_shared_secrets[output_index], output_index);
+      const auto sub_pk =
+        crypto::derive_spend_public_key_from_tx_output_public_key(tx_out_key, tx_shared_secrets[output_index], output_index);
+
       found = subaddresses.find(sub_pk.value_or(crypto::null_pkey));
+
       if (found != subaddresses.end())
         return subaddress_receive_info{ found->second, tx_shared_secrets[output_index] };
     }
