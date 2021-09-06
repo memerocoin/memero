@@ -11,7 +11,9 @@ let
     -DCMAKE_BUILD_TYPE=Debug
   '';
 
-  CMakeCCacheFlags = ''
+  CMakeCCacheFlags = "";
+
+  CMakeCCacheFlags1 = ''
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     -DCMAKE_C_COMPILER_LAUNCHER=ccache
   '';
@@ -34,7 +36,10 @@ in
     buildInputs = [
       gcc11
       llvmPackages_13.clang
-      cmake git ccache
+      cmake git
+
+      # ccache
+
       boost175 openssl readline libsodium rapidjson
       gmock
     ];
