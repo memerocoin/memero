@@ -77,7 +77,7 @@ namespace cryptonote
   std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const std::vector<uint8_t>& tx_extra);
   std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const transaction_prefix& tx);
 
-  std::optional<std::vector<crypto::public_key>> get_tx_pub_keys_from_extra(const transaction& tx);
+  std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx);
 
   bool add_additional_tx_pub_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& additional_pub_keys);
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);

@@ -564,16 +564,16 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::vector<crypto::public_key>> get_tx_pub_keys_from_extra(const transaction& tx)
+  std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx)
   {
     const auto x = get_tx_pub_key_from_extra(tx);
-    if(!x) {
-      return {};
-    } else {
-      std::vector<crypto::public_key> xs = get_additional_tx_pub_keys_from_extra(tx);
+    std::vector<crypto::public_key> xs = get_additional_tx_pub_keys_from_extra(tx);
+
+    if(x) {
       xs.insert(xs.begin(), *x);
-      return xs;
     }
+
+    return xs;
   }
 
   //---------------------------------------------------------------

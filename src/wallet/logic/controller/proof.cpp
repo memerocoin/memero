@@ -109,38 +109,27 @@ namespace proof {
     }
     else
     {
-      const auto maybe_tx_pub_key = get_tx_pub_key_from_extra(tx);
-      THROW_WALLET_EXCEPTION_IF(!maybe_tx_pub_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
+      const auto tx_pub_keys = get_tx_pub_keys_from_extra(tx);
+      // THROW_WALLET_EXCEPTION_IF(!tx_pub_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
 
-      const auto tx_pub_key = *maybe_tx_pub_key;
+      const auto num_sigs = tx_pub_keys.size();
 
-      std::vector<crypto::public_key> additional_tx_pub_keys = get_additional_tx_pub_keys_from_extra(tx);
-      const size_t num_sigs = 1 + additional_tx_pub_keys.size();
       shared_secret.resize(num_sigs);
       sig.resize(num_sigs);
 
       const crypto::secret_key& a = view_secret_key.value();
-      shared_secret[0] =  rct_p2pk
-        (rct::multP(rct::pk2rct_p(tx_pub_key), rct::sk2rct_s(a)));
-      if (is_subaddress)
-      {
-        sig[0] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, address.m_spend_public_key, shared_secret[0], a);
-      }
-      else
-      {
-        sig[0] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_key, std::nullopt, shared_secret[0], a);
-      }
-      for (size_t i = 1; i < num_sigs; ++i)
+
+      for (size_t i = 0; i < num_sigs; ++i)
       {
         shared_secret[i] = rct_p2pk
-          (rct::multP(rct::pk2rct_p(additional_tx_pub_keys[i - 1]), rct::sk2rct_s(a)));
+          (rct::multP(rct::pk2rct_p(tx_pub_keys[i]), rct::sk2rct_s(a)));
         if (is_subaddress)
         {
-          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i - 1], address.m_spend_public_key, shared_secret[i], a);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_keys[i], address.m_spend_public_key, shared_secret[i], a);
         }
         else
         {
-          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i - 1], std::nullopt, shared_secret[i], a);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_keys[i], std::nullopt, shared_secret[i], a);
         }
       }
       sig_str = std::string("InProofV2");
@@ -158,6 +147,7 @@ namespace proof {
     for (size_t i = 1; i < num_sigs; ++i) {
       const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
         crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
+
       THROW_WALLET_EXCEPTION_IF
         ( !additional_tx_shared_secret
          , tools::error::wallet_internal_error, "Failed to generate key derivation");
