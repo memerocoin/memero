@@ -119,12 +119,12 @@ namespace cryptonote
     LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "while creating outs: failed to derive_tx_ecdh_shared_secret(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");
 
     const std::optional<crypto::public_key> out_eph_public_key =
-      crypto::derive_tx_output_public_key(*derivation, 0, miner_address.m_spend_public_key);
+      crypto::derive_tx_output_public_key_from_spend_public_key(*derivation, 0, miner_address.m_spend_public_key);
     LOG_ERROR_AND_RETURN_UNLESS
       (
        out_eph_public_key
        , false
-       , "while creating outs: failed to derive_tx_output_public_key("
+       , "while creating outs: failed to derive_tx_output_public_key_from_spend_public_key("
        << *derivation << ", " << 0 << ", "
        << miner_address.m_spend_public_key << ")"
        );
@@ -216,14 +216,14 @@ namespace cryptonote
       amount_keys.push_back(scalar1);
     }
 
-    const auto eph_pk = crypto::derive_tx_output_public_key
+    const auto eph_pk = crypto::derive_tx_output_public_key_from_spend_public_key
       (*derivation, output_index, dst_entr.addr.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
        eph_pk
        , false
-       , "at creation outs: failed to derive_tx_output_public_key("
+       , "at creation outs: failed to derive_tx_output_public_key_from_spend_public_key("
        << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
        );
 

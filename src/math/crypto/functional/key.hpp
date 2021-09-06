@@ -127,7 +127,7 @@ namespace crypto {
    , const secret_key &base
    ) noexcept;
 
-  std::optional<public_key> derive_tx_output_public_key
+  std::optional<public_key> derive_tx_output_public_key_from_spend_public_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
