@@ -752,10 +752,10 @@ namespace cryptonote
    )
   {
     // try the shared tx pubkey
-    const std::optional<crypto::public_key> subaddress_spendkey =
+    const std::optional<crypto::public_key> spend_pk =
       crypto::derive_spend_public_key_from_tx_output_public_key(tx_shared_secret, output_index, tx_out_key);
 
-    auto found = subaddresses.find(subaddress_spendkey.value_or(crypto::null_pkey));
+    auto found = subaddresses.find(spend_pk.value_or(crypto::null_pkey));
 
     if (found != subaddresses.end())
       return subaddress_receive_info{ found->second, tx_shared_secret };
@@ -764,25 +764,28 @@ namespace cryptonote
     if (!tx_shared_secrets.empty())
     {
       LOG_ERROR_AND_RETURN_UNLESS(output_index < tx_shared_secrets.size(), std::nullopt, "wrong number of additional derivations");
-      const auto sub_pk = crypto::derive_spend_public_key_from_tx_output_public_key
+      const auto spend_pk_1 = crypto::derive_spend_public_key_from_tx_output_public_key
         (tx_shared_secrets[output_index], output_index, tx_out_key);
 
-      found = subaddresses.find(sub_pk.value_or(crypto::null_pkey));
+      const auto found_1 = subaddresses.find(spend_pk_1.value_or(crypto::null_pkey));
 
-      if (found != subaddresses.end())
-        return subaddress_receive_info{ found->second, tx_shared_secrets[output_index] };
+      if (found_1 != subaddresses.end())
+        return subaddress_receive_info{ found_1->second, tx_shared_secrets[output_index] };
     }
     return {};
   }
+
   //---------------------------------------------------------------
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered)
   {
     crypto::public_key tx_pub_key = get_tx_pub_key_from_extra(tx);
     if(null_pkey == tx_pub_key)
       return false;
+
     std::vector<crypto::public_key> additional_tx_pub_keys = get_additional_tx_pub_keys_from_extra(tx);
     return lookup_acc_outs(acc, tx, tx_pub_key, additional_tx_pub_keys, outs, money_transfered);
   }
+
   //---------------------------------------------------------------
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, const crypto::public_key& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, std::vector<size_t>& outs, uint64_t& money_transfered)
   {
