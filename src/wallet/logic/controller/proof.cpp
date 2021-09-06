@@ -109,8 +109,10 @@ namespace proof {
     }
     else
     {
-      crypto::public_key tx_pub_key = get_tx_pub_key_from_extra(tx);
-      THROW_WALLET_EXCEPTION_IF(tx_pub_key == crypto::null_pkey, tools::error::wallet_internal_error, "Tx pubkey was not found");
+      const auto maybe_tx_pub_key = get_tx_pub_key_from_extra(tx);
+      THROW_WALLET_EXCEPTION_IF(!maybe_tx_pub_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
+
+      const auto tx_pub_key = *maybe_tx_pub_key;
 
       std::vector<crypto::public_key> additional_tx_pub_keys = get_additional_tx_pub_keys_from_extra(tx);
       const size_t num_sigs = 1 + additional_tx_pub_keys.size();

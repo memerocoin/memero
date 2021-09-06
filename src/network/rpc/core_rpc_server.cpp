@@ -1004,8 +1004,8 @@ namespace cryptonote
       return false;
     }
     blobdata block_blob = t_serializable_object_to_blob(b);
-    crypto::public_key tx_pub_key = cryptonote::get_tx_pub_key_from_extra(b.miner_tx);
-    if(tx_pub_key == crypto::null_pkey)
+    const auto maybe_tx_pub_key = cryptonote::get_tx_pub_key_from_extra(b.miner_tx);
+    if(!maybe_tx_pub_key)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
       error_resp.message = "Internal error: failed to create block template";

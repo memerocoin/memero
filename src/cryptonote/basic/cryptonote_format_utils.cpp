@@ -507,9 +507,9 @@ namespace cryptonote
     return get_tx_pub_key_from_extra(tx_prefix.extra, pk_index);
   }
   //---------------------------------------------------------------
-  crypto::public_key get_tx_pub_key_from_extra(const transaction& tx, size_t pk_index)
+  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction& tx)
   {
-    return get_tx_pub_key_from_extra(tx.extra, pk_index);
+    return get_tx_pub_key_from_extra(tx.extra);
   }
   //---------------------------------------------------------------
   bool add_tx_pub_key_to_extra(transaction& tx, const crypto::public_key& tx_pub_key)
@@ -567,11 +567,11 @@ namespace cryptonote
   std::optional<std::vector<crypto::public_key>> get_tx_pub_keys_from_extra(const transaction& tx)
   {
     const auto x = get_tx_pub_key_from_extra(tx);
-    if(null_pkey == x) {
+    if(!x) {
       return {};
     } else {
       std::vector<crypto::public_key> xs = get_additional_tx_pub_keys_from_extra(tx);
-      xs.insert(xs.begin(), x);
+      xs.insert(xs.begin(), *x);
       return xs;
     }
   }
@@ -793,12 +793,12 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered)
   {
-    crypto::public_key tx_pub_key = get_tx_pub_key_from_extra(tx);
-    if(null_pkey == tx_pub_key)
+    const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
+    if(!tx_pub_key)
       return false;
 
     std::vector<crypto::public_key> additional_tx_pub_keys = get_additional_tx_pub_keys_from_extra(tx);
-    return lookup_acc_outs(acc, tx, tx_pub_key, additional_tx_pub_keys, outs, money_transfered);
+    return lookup_acc_outs(acc, tx, *tx_pub_key, additional_tx_pub_keys, outs, money_transfered);
   }
 
   //---------------------------------------------------------------

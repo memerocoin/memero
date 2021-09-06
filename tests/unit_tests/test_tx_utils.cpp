@@ -68,8 +68,8 @@ TEST(parse_and_validate_tx_extra, is_valid_tx_extra_parsed)
   acc.generate();
   cryptonote::blobdata b = "dsdsdfsdfsf";
   ASSERT_TRUE(cryptonote::construct_miner_tx(0, 0, TEST_FEE, acc.get_keys().m_account_address, tx, b, 1));
-  crypto::public_key tx_pub_key = cryptonote::get_tx_pub_key_from_extra(tx);
-  ASSERT_NE(tx_pub_key, crypto::null_pkey);
+  const auto tx_pub_key = cryptonote::get_tx_pub_key_from_extra(tx);
+  ASSERT_TRUE(tx_pub_key);
 }
 
 // TODO fix parse amount
