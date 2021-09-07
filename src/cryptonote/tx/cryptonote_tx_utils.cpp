@@ -162,7 +162,7 @@ namespace cryptonote
    , const bool &need_additional_txkeys
    , const std::vector<crypto::secret_key> &additional_tx_keys
    , std::vector<crypto::public_key> &additional_tx_public_keys
-   , rct::rct_scalarV &amount_keys
+   , rct::rct_scalarV &tx_shared_secret_indexed_hashes
    , crypto::public_key &out_eph_public_key
    )
   {
@@ -219,10 +219,10 @@ namespace cryptonote
       additional_tx_public_keys.push_back(additional_txkey.pub);
     }
 
-    const rct::rct_scalar amount_key =
+    const rct::rct_scalar tx_shared_secret_indexed_hash =
       rct::s2s(crypto::hash_tx_shared_secret_to_scalar(*tx_shared_secret, output_index));
 
-    amount_keys.push_back(amount_key);
+    tx_shared_secret_indexed_hashes.push_back(tx_shared_secret_indexed_hash);
 
     const auto eph_pk = crypto::derive_tx_output_public_key_from_spend_public_key
       (*tx_shared_secret, output_index, dst_entr.addr.m_spend_public_key);
@@ -262,7 +262,7 @@ namespace cryptonote
       return false;
     }
 
-    rct::rct_scalarV amount_keys;
+    rct::rct_scalarV tx_shared_secret_indexed_hashes;
     tx.set_null();
 
     tx.version = rct ? 2 : 1;
@@ -393,7 +393,7 @@ namespace cryptonote
       generate_output_ephemeral_keys(tx.version,sender_account_keys, txkey_pub, tx_key,
                                            dst_entr, change_addr, output_index,
                                            need_additional_txkeys, additional_tx_keys,
-                                           additional_tx_public_keys, amount_keys, out_eph_public_key);
+                                           additional_tx_public_keys, tx_shared_secret_indexed_hashes, out_eph_public_key);
 
       const txout_to_key txout_key_type{out_eph_public_key};
       const tx_out out{dst_entr.amount, txout_key_type};
@@ -495,7 +495,17 @@ namespace cryptonote
       const crypto::hash tx_prefix_hash = get_transaction_prefix_hash(tx);
       rct::ct_secret_keyV outSk;
       std::tie(tx.ringct_essential, outSk) = rct::generate_ringct
-        (tx_prefix_hash, inSk, destinations, inamounts, outamounts, amount_in - amount_out, mixRing, amount_keys, index);
+        (
+         tx_prefix_hash
+         , inSk
+         , destinations
+         , inamounts
+         , outamounts
+         , amount_in - amount_out
+         , mixRing
+         , tx_shared_secret_indexed_hashes
+         , index
+         );
 
       LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), false, "outSk size does not match vout");
 
