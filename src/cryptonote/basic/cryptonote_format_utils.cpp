@@ -247,19 +247,6 @@ namespace cryptonote
     else return 0;
   }
   //---------------------------------------------------------------
-  bool parse_tx_extra(const std::vector<uint8_t>& tx_extra, std::vector<tx_extra_field>& tx_extra_fields)
-  {
-    const auto r = parse_tx_extra(tx_extra);
-
-    if (r) {
-      tx_extra_fields = *r;
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-  //---------------------------------------------------------------
   template<typename T>
   static bool pick(binary_archive<true> &ar, std::vector<tx_extra_field> &fields, uint8_t tag)
   {
@@ -352,12 +339,13 @@ namespace cryptonote
   //---------------------------------------------------------------
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const std::vector<uint8_t>& tx_extra, size_t pk_index)
   {
-    std::vector<tx_extra_field> tx_extra_fields;
-    parse_tx_extra(tx_extra, tx_extra_fields);
+    const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
+
+    if (!maybe_tx_extra_fields) return {};
 
     tx_extra_pub_key pub_key_field;
-    if(!find_tx_extra_field_by_type(tx_extra_fields, pub_key_field, pk_index))
-      return null_pkey;
+    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, pub_key_field, pk_index))
+      return {};
 
     return pub_key_field.pub_key;
   }
@@ -391,13 +379,15 @@ namespace cryptonote
   //---------------------------------------------------------------
   std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const std::vector<uint8_t>& tx_extra)
   {
-    // parse
-    std::vector<tx_extra_field> tx_extra_fields;
-    parse_tx_extra(tx_extra, tx_extra_fields);
+    const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
+
+    if (!maybe_tx_extra_fields) return {};
+
     // find corresponding field
     tx_extra_additional_pub_keys additional_pub_keys;
-    if(!find_tx_extra_field_by_type(tx_extra_fields, additional_pub_keys))
+    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, additional_pub_keys))
       return {};
+
     return additional_pub_keys.data;
   }
   //---------------------------------------------------------------

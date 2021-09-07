@@ -45,9 +45,9 @@ namespace
 TEST(parse_tx_extra, handles_empty_extra)
 {
   std::vector<uint8_t> extra;
-  std::vector<cryptonote::tx_extra_field> tx_extra_fields;
-  ASSERT_TRUE(cryptonote::parse_tx_extra(extra, tx_extra_fields));
-  ASSERT_TRUE(tx_extra_fields.empty());
+  const auto r = cryptonote::parse_tx_extra(extra);
+  ASSERT_TRUE(r);
+  ASSERT_TRUE(r->empty());
 }
 
 TEST(parse_tx_extra, handles_pub_key_only)
@@ -55,10 +55,10 @@ TEST(parse_tx_extra, handles_pub_key_only)
   const uint8_t extra_arr[] = {1, 30, 208, 98, 162, 133, 64, 85, 83, 112, 91, 188, 89, 211, 24, 131, 39, 154, 22, 228,
     80, 63, 198, 141, 173, 111, 244, 183, 4, 149, 186, 140, 230};
   std::vector<uint8_t> extra(&extra_arr[0], &extra_arr[0] + sizeof(extra_arr));
-  std::vector<cryptonote::tx_extra_field> tx_extra_fields;
-  ASSERT_TRUE(cryptonote::parse_tx_extra(extra, tx_extra_fields));
-  ASSERT_EQ(1, tx_extra_fields.size());
-  ASSERT_EQ(typeid(cryptonote::tx_extra_pub_key), tx_extra_fields[0].type());
+  const auto tx_extra_fields = cryptonote::parse_tx_extra(extra);
+  ASSERT_TRUE(tx_extra_fields);
+  ASSERT_EQ(1, tx_extra_fields->size());
+  ASSERT_EQ(typeid(cryptonote::tx_extra_pub_key), (*tx_extra_fields)[0].type());
 }
 
 TEST(parse_and_validate_tx_extra, is_valid_tx_extra_parsed)

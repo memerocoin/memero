@@ -660,13 +660,14 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
 //----------------------------------------------------------------------------------------------------
 void wallet2::cache_tx_data(const cryptonote::transaction& tx, const crypto::hash &txid, tx_cache_data &tx_cache_data) const
 {
-  if(!parse_tx_extra(tx.extra, tx_cache_data.tx_extra_fields))
+  const auto maybe_tx_extra_fields = parse_tx_extra(tx.extra);
+  if(!maybe_tx_extra_fields)
   {
-    // Extra may only be partially parsed, it's OK if tx_extra_fields contains public key
-    // LOG_PRINT_L2("Transaction extra has unsupported format: " << txid);
-    if (tx_cache_data.tx_extra_fields.empty())
-      return;
+    tx_cache_data.tx_extra_fields.clear();
+    return;
   }
+
+  tx_cache_data.tx_extra_fields = *maybe_tx_extra_fields;
 
   // Don't try to extract tx public key if tx has no ouputs
   {
@@ -723,12 +724,12 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   std::vector<tx_extra_field> local_tx_extra_fields;
   if (tx_cache_data.tx_extra_fields.empty())
   {
-    if(!parse_tx_extra(tx.extra, local_tx_extra_fields))
-    {
-      // Extra may only be partially parsed, it's OK if tx_extra_fields contains public key
-      // LOG_PRINT_L2("Transaction extra has unsupported format: " << txid);
+    const auto maybe_tx_extra_fields = parse_tx_extra(tx.extra);
+    if(maybe_tx_extra_fields) {
+      local_tx_extra_fields = *maybe_tx_extra_fields;
     }
   }
+
   const std::vector<tx_extra_field> &tx_extra_fields = tx_cache_data.tx_extra_fields.empty() ? local_tx_extra_fields : tx_cache_data.tx_extra_fields;
 
   // Don't try to extract tx public key if tx has no ouputs
@@ -1176,8 +1177,6 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
     entry.first->second.m_amount_out = spent - tx.ringct_essential.fee;
     entry.first->second.m_change = received;
 
-    std::vector<tx_extra_field> tx_extra_fields;
-    parse_tx_extra(tx.extra, tx_extra_fields); // ok if partially parsed
     entry.first->second.m_subaddr_account = subaddr_account;
     entry.first->second.m_subaddr_indices = subaddr_indices;
   }
