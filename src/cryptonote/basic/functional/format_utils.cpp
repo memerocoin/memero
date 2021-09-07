@@ -609,4 +609,24 @@ namespace cryptonote
   {
     return calculate_block_hash(b);
   }
+
+  //---------------------------------------------------------------
+  std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const std::vector<uint8_t>& tx_extra)
+  {
+    const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
+
+    if (!maybe_tx_extra_fields) return {};
+
+    // find corresponding field
+    tx_extra_additional_pub_keys additional_pub_keys;
+    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, additional_pub_keys))
+      return {};
+
+    return additional_pub_keys.data;
+  }
+  //---------------------------------------------------------------
+  std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const transaction_prefix& tx)
+  {
+    return get_additional_tx_pub_keys_from_extra(tx.extra);
+  }
 }

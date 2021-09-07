@@ -183,4 +183,8 @@ namespace cryptonote
   crypto::hash calculate_block_hash(const block& b);
   std::optional<crypto::hash> get_maybe_block_hash(const block& b);
   crypto::hash get_block_hash(const block& b);
+
+  std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const std::vector<uint8_t>& tx_extra);
+  std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const transaction_prefix& tx);
+
 }
