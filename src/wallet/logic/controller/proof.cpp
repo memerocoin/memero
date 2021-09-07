@@ -139,35 +139,74 @@ namespace proof {
       sig_str = std::string("InProofV2");
     }
 
-    const size_t num_sigs = shared_secret.size();
-
     // check if this address actually received any funds
-    const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret =
-      crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
-    THROW_WALLET_EXCEPTION_IF(!tx_shared_secret
-       , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
 
-    std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets(num_sigs - 1);
-    for (size_t i = 1; i < num_sigs; ++i) {
-      const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
-        crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
+    const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
+
+    std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
+
+    if (tx_pub_key) {
+      tx_shared_secret =
+      crypto::derive_tx_ecdh_shared_secret(shared_secret.front(), crypto::s2sk(rct::s_one));
 
       THROW_WALLET_EXCEPTION_IF
-        ( !additional_tx_shared_secret
-         , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
-      tx_shared_secrets[i - 1] = *additional_tx_shared_secret;
+      (!tx_shared_secret
+       , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
+
+      sig_str +=
+        tools::base58::encode(epee::string_tools::blob_to_string(shared_secret.front().data)) +
+        tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig.front())));
+
+      shared_secret.erase(shared_secret.begin());
+      sig.erase(sig.begin());
     }
 
-    uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
-      (tx, *tx_shared_secret, tx_shared_secrets, address);
-    THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");
+
+    std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets;
+    std::transform
+      (
+       shared_secret.begin()
+       , shared_secret.end()
+       , std::back_inserter(tx_shared_secrets)
+       , [](const auto& secret) -> crypto::tx_ecdh_shared_secret {
+         const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
+           crypto::derive_tx_ecdh_shared_secret(secret, crypto::s2sk(rct::s_one));
+
+         THROW_WALLET_EXCEPTION_IF
+           ( !additional_tx_shared_secret
+             , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
+
+         return *additional_tx_shared_secret;
+         }
+       );
+
+    std::vector<std::string> sig_str_v;
+    std::transform
+      (
+       shared_secret.begin()
+       , shared_secret.end()
+       , sig.begin()
+       , std::back_inserter(sig_str_v)
+       , [](const auto& secret, const auto& s) {
+         return tools::base58::encode(epee::string_tools::blob_to_string(secret.data))
+           + tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(s)));
+       }
+       );
 
     // concatenate all signature strings
-    for (size_t i = 0; i < num_sigs; ++i)
-      sig_str +=
-        tools::base58::encode(epee::string_tools::blob_to_string(shared_secret[i].data)) +
-        tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig[i])));
-    return sig_str;
+    const std::string sig_str_final = std::reduce
+      (
+       sig_str_v.begin()
+       , sig_str_v.end()
+       , sig_str
+       );
+
+    uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
+      (tx, tx_shared_secret, tx_shared_secrets, address);
+
+    THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");
+
+    return sig_str_final;
   }
 
 } // proof
