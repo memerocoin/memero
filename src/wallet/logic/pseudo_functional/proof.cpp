@@ -141,9 +141,10 @@ namespace proof {
     if (is_out)
     {
       if (tx_pub_key) {
-          is_subaddress
-          ? crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0])
-          : crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
+        good_signature[0] =
+          is_subaddress ?
+          crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
+          crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
 
         for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
         {
