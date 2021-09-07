@@ -60,15 +60,6 @@ static std::atomic<uint64_t> block_hashes_cached_count(0);
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx)
-  {
-    std::ostringstream s;
-    binary_archive<true> a(s);
-    ::serialization::serialize(a, const_cast<transaction_prefix&>(tx));
-
-    return crypto::sha3(epee::string_tools::string_to_blob(s.str()));
-  }
-  //---------------------------------------------------------------
   bool expand_transaction_1(transaction &tx, bool base_only)
   {
     if (tx.version < 2) return true;

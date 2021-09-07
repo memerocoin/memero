@@ -36,6 +36,8 @@ set(cryptonote_basic_sources
   subaddress_index.cpp
   cryptonote_basic.cpp
   connection_context.cpp
+
+  functional/format_utils.cpp
   )
 
 add_library(cryptonote_basic
