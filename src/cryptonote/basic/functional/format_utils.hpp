@@ -176,4 +176,8 @@ namespace cryptonote
   bool check_outs_overflow(const transaction& tx);
   bool check_inputs_overflow(const transaction& tx);
 
+  blobdata get_block_hashing_blob(const block& b);
+  blobdata get_block_hashing_blob_head(const block& b);
+  blobdata get_block_hashing_blob_tail(const block& b);
+
 }

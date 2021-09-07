@@ -82,7 +82,6 @@ namespace cryptonote
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered);
 
 
-  blobdata get_block_hashing_blob(const block& b);
   bool calculate_block_hash(const block& b, crypto::hash& res, const blobdata_ref *blob = NULL);
   bool get_block_hash(const block& b, crypto::hash& res);
   crypto::hash get_block_hash(const block& b);
@@ -96,6 +95,7 @@ namespace cryptonote
 
   std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off);
   std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off);
+
   void set_default_decimal_point(unsigned int decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT);
   unsigned int get_default_decimal_point();
   std::string get_unit(unsigned int decimal_point = -1);
@@ -125,9 +125,6 @@ namespace cryptonote
   LOG_ERROR_AND_RETURN_UNLESS(variant_var.type() == typeid(specific_type), fail_return_val, "wrong variant type: " << variant_var.type().name() << ", expected " << typeid(specific_type).name()); \
   specific_type& variable_name = boost::get<specific_type>(variant_var);
 
-
-  blobdata get_block_hashing_blob_head(const block& b);
-  blobdata get_block_hashing_blob_tail(const block& b);
 
   // here const is a lie
   crypto::hash fill_transaction_hash(const transaction& t);
