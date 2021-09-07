@@ -594,4 +594,19 @@ namespace cryptonote
   {
     return get_object_hash(get_block_hashing_blob(b));
   }
+
+  std::optional<crypto::hash> get_maybe_block_hash(const block& b) {
+    crypto::hash h;
+    try {
+      h = get_block_hash(b);
+    }
+    catch (...) { return {}; }
+
+    return h;
+  }
+  //---------------------------------------------------------------
+  crypto::hash get_block_hash(const block& b)
+  {
+    return calculate_block_hash(b);
+  }
 }

@@ -82,10 +82,7 @@ namespace cryptonote
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered);
 
 
-  bool get_block_hash(const block& b, crypto::hash& res);
-  std::optional<crypto::hash> get_maybe_block_hash(const block& b);
 
-  crypto::hash get_block_hash(const block& b);
   bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b, crypto::hash *block_hash);
   bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b);
   bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b, crypto::hash &block_hash);
