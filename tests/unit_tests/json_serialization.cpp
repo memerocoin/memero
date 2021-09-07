@@ -35,8 +35,7 @@ namespace test
     make_transaction(
         cryptonote::account_keys const& from,
         std::vector<cryptonote::transaction> const& sources,
-        std::vector<cryptonote::account_public_address> const& destinations,
-        bool rct
+        std::vector<cryptonote::account_public_address> const& destinations
     )
     {
         std::uint64_t source_amount = 0;
@@ -59,7 +58,7 @@ namespace test
                 actual_sources.push_back(
                     {
                       {}, 0, key_field.pub_key, {}
-                     , std::size_t(input.index()), input.value().amount, rct, rct::s_one
+                     , std::size_t(input.index()), input.value().amount, true, rct::s_one
                     }
                 );
 
@@ -80,7 +79,7 @@ namespace test
         std::unordered_map<crypto::public_key, cryptonote::subaddress_index> subaddresses;
         subaddresses[from.m_account_address.m_spend_public_key] = {0,0};
 
-        if (!cryptonote::construct_tx_and_get_tx_key(from, subaddresses, actual_sources, to, std::nullopt, {}, tx, 0, tx_key, extra_keys, rct))
+        if (!cryptonote::construct_tx_and_get_tx_key(from, subaddresses, actual_sources, to, std::nullopt, {}, tx, 0, tx_key, extra_keys))
             throw std::runtime_error{"transaction construction error"};
 
         return tx;
@@ -145,7 +144,7 @@ TEST(JsonSerialization, BulletproofTransaction)
 
     const auto miner_tx = test::make_miner_transaction(acct1.get_keys().m_account_address);
     const auto tx = test::make_transaction(
-        acct1.get_keys(), {miner_tx}, {acct2.get_keys().m_account_address}, true
+        acct1.get_keys(), {miner_tx}, {acct2.get_keys().m_account_address}
     );
 
     crypto::hash tx_hash{};

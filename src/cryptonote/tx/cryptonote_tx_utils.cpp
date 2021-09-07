@@ -252,7 +252,6 @@ namespace cryptonote
    , uint64_t unlock_time
    , const crypto::secret_key &tx_key
    , const std::vector<crypto::secret_key> &additional_tx_keys
-   , bool rct
    , bool shuffle_outs
    )
   {
@@ -265,7 +264,7 @@ namespace cryptonote
     rct::rct_scalarV tx_shared_secret_indexed_hashes;
     tx.set_null();
 
-    tx.version = rct ? 2 : 1;
+    tx.version = 2;
     tx.unlock_time = unlock_time;
 
     tx.extra = extra;
@@ -539,7 +538,6 @@ namespace cryptonote
    , uint64_t unlock_time
    , crypto::secret_key &tx_key
    , std::vector<crypto::secret_key> &additional_tx_keys
-   , bool rct
    )
   {
     tx_key = cryptonote::keypair::generate().sec;
@@ -560,7 +558,7 @@ namespace cryptonote
                       });
       }
 
-      bool r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, tx, unlock_time, tx_key, additional_tx_keys, rct);
+      bool r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, tx, unlock_time, tx_key, additional_tx_keys);
       return r;
     } catch(...) {
       throw;

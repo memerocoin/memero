@@ -139,7 +139,6 @@ namespace cryptonote
      , uint64_t unlock_time
      , const crypto::secret_key &tx_key
      , const std::vector<crypto::secret_key> &additional_tx_keys
-     , bool rct = false
      , bool shuffle_outs = true
      );
 
@@ -155,7 +154,6 @@ namespace cryptonote
      , uint64_t unlock_time
      , crypto::secret_key &tx_key
      , std::vector<crypto::secret_key> &additional_tx_keys
-     , bool rct = false
      );
 
   bool generate_genesis_block(

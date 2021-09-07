@@ -33,10 +33,10 @@ namespace test
   cryptonote::transaction make_miner_transaction(cryptonote::account_public_address const& to);
 
   cryptonote::transaction
-  make_transaction(
-      cryptonote::account_keys const& from,
-      std::vector<cryptonote::transaction> const& sources,
-      std::vector<cryptonote::account_public_address> const& destinations,
-      bool rct,
-      bool bulletproof);
+  make_transaction
+    (
+     cryptonote::account_keys const& from,
+     std::vector<cryptonote::transaction> const& sources,
+     std::vector<cryptonote::account_public_address> const& destinations,
+     );
 }
