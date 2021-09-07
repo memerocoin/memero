@@ -390,10 +390,20 @@ namespace cryptonote
       LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, false, "Destination with wrong amount: " << dst_entr.amount);
       crypto::public_key out_eph_public_key;
 
-      generate_output_ephemeral_keys(tx.version,sender_account_keys, txkey_pub, tx_key,
-                                           dst_entr, change_addr, output_index,
-                                           need_additional_txkeys, additional_tx_keys,
-                                           additional_tx_public_keys, tx_shared_secret_indexed_hashes, out_eph_public_key);
+      generate_output_ephemeral_keys
+        (
+         tx.version,sender_account_keys
+         , txkey_pub
+         , tx_key
+         , dst_entr
+         , change_addr
+         , output_index
+         , need_additional_txkeys
+         , additional_tx_keys
+         , additional_tx_public_keys
+         , tx_shared_secret_indexed_hashes
+         , out_eph_public_key
+         );
 
       const txout_to_key txout_key_type{out_eph_public_key};
       const tx_out out{dst_entr.amount, txout_key_type};
@@ -543,7 +553,7 @@ namespace cryptonote
       if (need_additional_txkeys)
       {
         additional_tx_keys.clear();
-        additional_tx_keys.resize(5);
+        additional_tx_keys.resize(destinations.size());
         std::generate(additional_tx_keys.begin(), additional_tx_keys.end(),
                       []() {
                         return keypair::generate().sec;
