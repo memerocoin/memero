@@ -187,4 +187,7 @@ namespace cryptonote
   std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const std::vector<uint8_t>& tx_extra);
   std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const transaction_prefix& tx);
 
+  std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off);
+  std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off);
+
 }

@@ -629,4 +629,25 @@ namespace cryptonote
   {
     return get_additional_tx_pub_keys_from_extra(tx.extra);
   }
+
+  //---------------------------------------------------------------
+  std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off)
+  {
+    std::vector<uint64_t> res = off;
+    for(size_t i = 1; i < res.size(); i++)
+      res[i] += res[i-1];
+    return res;
+  }
+  //---------------------------------------------------------------
+  std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off)
+  {
+    std::vector<uint64_t> res = off;
+    if(!off.size())
+      return res;
+    std::sort(res.begin(), res.end());//just to be sure, actually it is already should be sorted
+    for(size_t i = res.size()-1; i != 0; i--)
+      res[i] -= res[i-1];
+
+    return res;
+  }
 }

@@ -506,26 +506,7 @@ namespace cryptonote
     str.erase ( str.find_last_not_of('.') + 1, std::string::npos );
     return str;
   }
-  //---------------------------------------------------------------
-  std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off)
-  {
-    std::vector<uint64_t> res = off;
-    for(size_t i = 1; i < res.size(); i++)
-      res[i] += res[i-1];
-    return res;
-  }
-  //---------------------------------------------------------------
-  std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off)
-  {
-    std::vector<uint64_t> res = off;
-    if(!off.size())
-      return res;
-    std::sort(res.begin(), res.end());//just to be sure, actually it is already should be sorted
-    for(size_t i = res.size()-1; i != 0; i--)
-      res[i] -= res[i-1];
-
-    return res;
-  }
+  
   //---------------------------------------------------------------
   bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b, crypto::hash *block_hash)
   {
