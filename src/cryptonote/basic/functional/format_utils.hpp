@@ -105,4 +105,6 @@ namespace cryptonote
    , const cryptonote::blobdata_ref blob
    );
 
+  //---------------------------------------------------------------
+  crypto::hash calculate_transaction_hash(const transaction& t);
 }

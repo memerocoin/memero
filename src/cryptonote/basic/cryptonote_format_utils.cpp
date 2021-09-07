@@ -647,50 +647,6 @@ namespace cryptonote
     return str;
   }
   //---------------------------------------------------------------
-  crypto::hash calculate_transaction_hash(const transaction& t)
-  {
-    crypto::hash res;
-    // v1 transactions hash the entire blob
-    if (t.version == 1)
-    {
-      get_object_hash(t, res);
-      return res;
-    }
-
-    // v2 transactions hash different parts together, than hash the set of those hashes
-    crypto::hash hashes[3];
-
-    // prefix
-    hashes[0] = get_transaction_prefix_hash(t);
-
-    const blobdata blob = tx_to_blob(t);
-    const unsigned int unprunable_size = t.unprunable_size;
-    const unsigned int prefix_size = t.prefix_size;
-
-    // base rct
-    if (! (prefix_size <= unprunable_size && unprunable_size <= blob.size() )) {
-      LOG_FATAL("Inconsistent transaction prefix, unprunable and blob sizes");
-    }
-
-    hashes[1] = cryptonote::get_blob_hash(blobdata_ref(blob.data() + prefix_size, unprunable_size - prefix_size));
-
-    // prunable rct
-    if (t.ringct_essential.type == rct::RCTTypeNull)
-    {
-      hashes[2] = crypto::null_hash;
-    }
-    else
-    {
-      cryptonote::blobdata_ref blobref(blob);
-      hashes [2] = calculate_transaction_prunable_hash(t, blobref);
-    }
-
-    // the tx hash is the hash of the 3 hashes
-    res = crypto::sha3(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
-
-    return res;
-  }
-  //---------------------------------------------------------------
   blobdata get_block_hashing_blob_tail(const block& b)
   {
     blobdata blob;
