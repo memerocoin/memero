@@ -57,4 +57,111 @@ namespace cryptonote
     return crypto::sha3(epee::string_tools::string_to_blob(s.str()));
   }
 
+  //---------------------------------------------------------------
+  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper
+  (
+   const account_keys& ack
+   , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
+   , const crypto::public_key& out_key
+   , const std::optional<crypto::public_key>& tx_public_key
+   , const std::vector<crypto::public_key>& additional_tx_public_keys
+   , const size_t real_output_index
+   )
+  {
+    const std::optional<crypto::tx_ecdh_shared_secret> recv_tx_shared_secret =
+      tx_public_key
+      ? crypto::derive_tx_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key)
+      : std::optional<crypto::tx_ecdh_shared_secret>();
+
+    // if (!recv_tx_shared_secret)
+    // {
+    //   LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
+    //   return false;
+    // }
+
+    std::vector<crypto::tx_ecdh_shared_secret> additional_recv_tx_shared_secrets;
+    for (size_t i = 0; i < additional_tx_public_keys.size(); ++i)
+    {
+      const std::optional<crypto::tx_ecdh_shared_secret> additional_recv_tx_shared_secret =
+        crypto::derive_tx_ecdh_shared_secret(additional_tx_public_keys[i], ack.m_view_secret_key);
+      if (!additional_recv_tx_shared_secret)
+      {
+        LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << additional_tx_public_keys[i] << ", " << ack.m_view_secret_key << ")");
+      }
+      else
+      {
+        additional_recv_tx_shared_secrets.push_back(*additional_recv_tx_shared_secret);
+      }
+    }
+
+    std::optional<subaddress_receive_info> subaddr_recv_info =
+      is_out_to_acc_precomp
+      (
+       subaddresses, out_key, recv_tx_shared_secret, additional_recv_tx_shared_secrets, real_output_index
+       );
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       subaddr_recv_info
+       , {}
+       , "key image helper: given output pubkey doesn't seem to belong to this address"
+       );
+
+    return derive_key_image_helper_precomp
+      (
+       ack
+       , out_key
+       , subaddr_recv_info->tx_shared_secret
+       , real_output_index
+       , subaddr_recv_info->index
+       );
+  }
+
+  //---------------------------------------------------------------
+  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper_precomp
+  (
+   const account_keys& ack
+   , const crypto::public_key& out_key
+   , const crypto::tx_ecdh_shared_secret& recv_tx_shared_secret
+   , const size_t real_output_index
+   , const subaddress_index& received_index
+   )
+  {
+    keypair in_ephemeral;
+    crypto::key_image ki;
+
+    if (ack.m_spend_secret_key == crypto::null_skey)
+    {
+      // for watch-only wallet, simply copy the known output pubkey
+      in_ephemeral.pub = out_key;
+      in_ephemeral.sec = crypto::null_skey;
+    }
+    else
+    {
+      // derive secret key with subaddress - step 1: original CN derivation
+      const auto spend_sk = ack.m_spend_secret_key;
+      if (is_not_reduced(spend_sk)) return {};
+
+        // computes Hs(a*R || idx) + b
+      const crypto::secret_key derived_tx_output_secret_key =
+        derive_tx_output_secret_key_from_spend_secret_key(recv_tx_shared_secret, real_output_index, spend_sk);
+
+      // add subaddress secret key: Hs(a || index_major || index_minor)
+      const crypto::secret_key key_offset =
+        received_index.is_zero()
+        ? crypto::s2sk(crypto::s_0)
+        : device::get_subaddress_secret_key(ack.m_view_secret_key, received_index)
+        ;
+
+      in_ephemeral.sec = crypto::s2sk(derived_tx_output_secret_key + key_offset);
+      in_ephemeral.pub = to_pk(in_ephemeral.sec);
+
+      LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
+           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
+    }
+
+    ki = crypto::derive_key_image(in_ephemeral.sec);
+    return {{in_ephemeral, ki}};
+  }
+
 }

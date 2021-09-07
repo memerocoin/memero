@@ -40,4 +40,24 @@
 namespace cryptonote
 {
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx);
+
+  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper
+  (
+   const account_keys& ack
+   , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
+   , const crypto::public_key& out_key
+   , const std::optional<crypto::public_key>& tx_public_key
+   , const std::vector<crypto::public_key>& additional_tx_public_keys
+   , const size_t real_output_index
+   );
+
+  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper_precomp
+  (
+   const account_keys& ack
+   , const crypto::public_key& out_key
+   , const crypto::tx_ecdh_shared_secret& recv_tx_shared_secret
+   , const size_t real_output_index
+   , const subaddress_index& received_index
+   );
+
 }
