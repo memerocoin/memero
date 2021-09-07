@@ -33,8 +33,13 @@
 
 #include <string>
 
+// #include "tools/epee/include/blob.hpp"
+
 namespace cryptonote
 {
-  typedef std::string blobdata;
-  typedef std::string_view blobdata_ref;
+  // using blobdata = std::basic_string<uint8_t>;
+  // using blobdata_ref = std::basic_string_view<uint8_t>;
+
+  using blobdata = std::string;
+  using blobdata_ref = std::string_view;
 }

@@ -102,7 +102,7 @@ namespace cryptonote
   crypto::hash calculate_transaction_prunable_hash
   (
    const transaction& t
-   , const cryptonote::blobdata_ref *blob
+   , const cryptonote::blobdata_ref blob
    );
 
 }

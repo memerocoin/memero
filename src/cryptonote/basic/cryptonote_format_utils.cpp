@@ -658,7 +658,7 @@ namespace cryptonote
     }
 
     ++tx_hashes_calculated_count;
-    res = calculate_transaction_prunable_hash(t, blobdata);
+    res = calculate_transaction_prunable_hash(t, *blobdata);
 
     t.set_prunable_hash(res);
     return res;
@@ -699,7 +699,7 @@ namespace cryptonote
     else
     {
       cryptonote::blobdata_ref blobref(blob);
-      hashes [2] = calculate_transaction_prunable_hash(t, &blobref);
+      hashes [2] = calculate_transaction_prunable_hash(t, blobref);
     }
 
     // the tx hash is the hash of the 3 hashes
