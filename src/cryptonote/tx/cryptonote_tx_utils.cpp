@@ -240,26 +240,26 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  bool construct_tx_with_tx_key
+  std::optional<transaction> construct_tx_with_tx_key
   (
    const account_keys& sender_account_keys
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-   , std::vector<tx_source_entry>& sources
-   , std::vector<tx_destination_entry>& destinations
+   , const std::vector<tx_source_entry>& sources
+   , const std::vector<tx_destination_entry>& destinations
    , const std::optional<cryptonote::account_public_address>& change_addr
    , const std::vector<uint8_t> &extra
-   , transaction& tx
-   , uint64_t unlock_time
+   , const uint64_t unlock_time
    , const crypto::secret_key &tx_key
    , const std::vector<crypto::secret_key> &additional_tx_keys
-   , bool shuffle_outs
    )
   {
     if (sources.empty())
     {
       LOG_ERROR("Empty sources");
-      return false;
+      return {};
     }
+
+    transaction tx;
 
     rct::rct_scalarV tx_shared_secret_indexed_hashes;
     tx.set_null();
@@ -285,7 +285,7 @@ namespace cryptonote
       if(src_entr.real_output >= src_entr.outputs.size())
       {
         LOG_ERROR("real_output index (" << src_entr.real_output << ")bigger than output_keys.size()=" << src_entr.outputs.size());
-        return false;
+        return {};
       }
       summary_inputs_money += src_entr.amount;
 
@@ -307,7 +307,7 @@ namespace cryptonote
          )
       {
         LOG_ERROR("Key image generation failed!");
-        return false;
+        return {};
       }
 
       //check that derivated key is equal with real output key (if non multisig)
@@ -319,7 +319,7 @@ namespace cryptonote
         LOG_ERROR("amount " << src_entr.amount << ", rct " << src_entr.rct);
         LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key);
         LOG_ERROR(", real_output_in_tx_index " << src_entr.real_output_in_tx_index);
-        return false;
+        return {};
       }
 
       //put key image into tx input
@@ -335,10 +335,10 @@ namespace cryptonote
       tx.vin.push_back(input_to_key);
     }
 
-    if (shuffle_outs)
-    {
-      std::shuffle(destinations.begin(), destinations.end(), crypto::random_device{});
-    }
+    // if (shuffle_outs)
+    // {
+    //   std::shuffle(destinations.begin(), destinations.end(), crypto::random_device{});
+    // }
 
     // sort ins by their key image
     std::vector<size_t> ins_order(sources.size());
@@ -348,11 +348,6 @@ namespace cryptonote
       const txin_to_key &tk0 = boost::get<txin_to_key>(tx.vin[i0]);
       const txin_to_key &tk1 = boost::get<txin_to_key>(tx.vin[i1]);
       return memcmp(&tk0.k_image, &tk1.k_image, sizeof(tk0.k_image)) > 0;
-    });
-    tools::apply_permutation(ins_order, [&] (size_t i0, size_t i1) {
-      std::swap(tx.vin[i0], tx.vin[i1]);
-      std::swap(in_contexts[i0], in_contexts[i1]);
-      std::swap(sources[i0], sources[i1]);
     });
 
     // figure out if we need to make additional tx pubkeys
@@ -379,14 +374,14 @@ namespace cryptonote
     //   - there's only one destination which is a subaddress
     bool need_additional_txkeys = num_subaddresses > 0 && (num_stdaddresses > 0 || num_subaddresses > 1);
     if (need_additional_txkeys)
-      LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == additional_tx_keys.size(), false, "Wrong amount of additional tx keys");
+      LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == additional_tx_keys.size(), {}, "Wrong amount of additional tx keys");
 
     uint64_t summary_outs_money = 0;
     //fill outputs
     size_t output_index = 0;
     for(const tx_destination_entry& dst_entr: destinations)
     {
-      LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, false, "Destination with wrong amount: " << dst_entr.amount);
+      LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, {}, "Destination with wrong amount: " << dst_entr.amount);
       crypto::public_key out_eph_public_key;
 
       generate_output_ephemeral_keys
@@ -411,7 +406,7 @@ namespace cryptonote
       output_index++;
       summary_outs_money += dst_entr.amount;
     }
-    LOG_ERROR_AND_RETURN_UNLESS(additional_tx_public_keys.size() == additional_tx_keys.size(), false, "Internal error creating additional public keys");
+    LOG_ERROR_AND_RETURN_UNLESS(additional_tx_public_keys.size() == additional_tx_keys.size(), {}, "Internal error creating additional public keys");
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_additional_pub_keys));
 
@@ -425,13 +420,13 @@ namespace cryptonote
     }
 
     if (!sort_tx_extra(tx.extra, tx.extra))
-      return false;
+      return {};
 
     //check money
     if(summary_outs_money > summary_inputs_money )
     {
       LOG_ERROR("Transaction inputs money ("<< summary_inputs_money << ") less than outputs money (" << summary_outs_money << ")");
-      return false;
+      return {};
     }
 
     // check for watch only wallet
@@ -516,26 +511,26 @@ namespace cryptonote
          , index
          );
 
-      LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), false, "outSk size does not match vout");
+      LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), {}, "outSk size does not match vout");
 
       LOG_CATEGORY_INFO("construct_tx", "transaction_created: " << get_transaction_hash(tx) << std::endl << obj_to_json_str(tx) << std::endl);
     }
 
     tx.invalidate_hashes();
 
-    return true;
+    return tx;
   }
   //---------------------------------------------------------------
   bool construct_tx_and_get_tx_key
   (
    const account_keys& sender_account_keys
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-   , std::vector<tx_source_entry>& sources
-   , std::vector<tx_destination_entry>& destinations
+   , const std::vector<tx_source_entry>& sources
+   , const std::vector<tx_destination_entry>& destinations
    , const std::optional<cryptonote::account_public_address>& change_addr
    , const std::vector<uint8_t> &extra
+   , const uint64_t unlock_time
    , transaction& tx
-   , uint64_t unlock_time
    , crypto::secret_key &tx_key
    , std::vector<crypto::secret_key> &additional_tx_keys
    )
@@ -558,8 +553,13 @@ namespace cryptonote
                       });
       }
 
-      bool r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, tx, unlock_time, tx_key, additional_tx_keys);
-      return r;
+      const auto& r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, unlock_time, tx_key, additional_tx_keys);
+      if (r) {
+        tx = *r;
+        return true;
+      }
+
+      return false;
     } catch(...) {
       throw;
     }

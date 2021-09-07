@@ -127,31 +127,29 @@ namespace cryptonote
   };
 
   //---------------------------------------------------------------
-  bool construct_tx_with_tx_key
+  std::optional<transaction> construct_tx_with_tx_key
     (
      const account_keys& sender_account_keys
      , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-     , std::vector<tx_source_entry>& sources
-     , std::vector<tx_destination_entry>& destinations
+     , const std::vector<tx_source_entry>& sources
+     , const std::vector<tx_destination_entry>& destinations
      , const std::optional<cryptonote::account_public_address>& change_addr
      , const std::vector<uint8_t> &extra
-     , transaction& tx
-     , uint64_t unlock_time
+     , const uint64_t unlock_time
      , const crypto::secret_key &tx_key
      , const std::vector<crypto::secret_key> &additional_tx_keys
-     , bool shuffle_outs = true
      );
 
   bool construct_tx_and_get_tx_key
     (
      const account_keys& sender_account_keys
      , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-     , std::vector<tx_source_entry>& sources
-     , std::vector<tx_destination_entry>& destinations
+     , const std::vector<tx_source_entry>& sources
+     , const std::vector<tx_destination_entry>& destinations
      , const std::optional<cryptonote::account_public_address>& change_addr
      , const std::vector<uint8_t> &extra
+     , const uint64_t unlock_time
      , transaction& tx
-     , uint64_t unlock_time
      , crypto::secret_key &tx_key
      , std::vector<crypto::secret_key> &additional_tx_keys
      );
