@@ -363,12 +363,10 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::hash calculate_transaction_hash(const transaction& t)
   {
-    crypto::hash res;
     // v1 transactions hash the entire blob
     if (t.version == 1)
     {
-      get_object_hash(t, res);
-      return res;
+      return get_object_hash(t);
     }
 
     // v2 transactions hash different parts together, than hash the set of those hashes
@@ -400,8 +398,6 @@ namespace cryptonote
     }
 
     // the tx hash is the hash of the 3 hashes
-    res = crypto::sha3(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
-
-    return res;
+    return crypto::sha3(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
   }
 }

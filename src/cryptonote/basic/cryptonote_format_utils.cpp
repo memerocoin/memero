@@ -669,7 +669,8 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool calculate_block_hash(const block& b, crypto::hash& res, const blobdata_ref *blob)
   {
-    return get_object_hash(get_block_hashing_blob(b), res);
+    res = get_object_hash(get_block_hashing_blob(b));
+    return true;
   }
   //---------------------------------------------------------------
   bool get_block_hash(const block& b, crypto::hash& res)

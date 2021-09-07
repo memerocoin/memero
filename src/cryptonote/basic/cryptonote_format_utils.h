@@ -142,10 +142,9 @@ namespace cryptonote
   }
   //---------------------------------------------------------------
   template<class t_object>
-  bool get_object_hash(const t_object& o, crypto::hash& res)
+  crypto::hash get_object_hash(const t_object& o)
   {
-    res = get_blob_hash(t_serializable_object_to_blob(o));
-    return true;
+    return get_blob_hash(t_serializable_object_to_blob(o));
   }
   //---------------------------------------------------------------
   template<class t_object>
