@@ -290,24 +290,28 @@ namespace cryptonote
 
       //tx_ecdh_shared_secret recv_tx_shared_secret;
       in_contexts.push_back(input_generation_context_data());
-      keypair& in_ephemeral = in_contexts.back().in_ephemeral;
-      crypto::key_image img;
       const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.dest);
-      if(!derive_key_image_helper
-         (
-          sender_account_keys
-          , subaddresses
-          , out_key
-          , crypto::maybeNotNull(src_entr.real_out_tx_key)
-          , src_entr.real_out_additional_tx_keys
-          , src_entr.real_output_in_tx_index
-          , in_ephemeral,img
-          )
+      const auto r = derive_key_image_helper
+        (
+         sender_account_keys
+         , subaddresses
+         , out_key
+         , crypto::maybeNotNull(src_entr.real_out_tx_key)
+         , src_entr.real_out_additional_tx_keys
+         , src_entr.real_output_in_tx_index
          )
+        ;
+
+      if (!r)
       {
         LOG_ERROR("Key image generation failed!");
         return {};
       }
+
+      keypair& in_ephemeral = in_contexts.back().in_ephemeral;
+      crypto::key_image img;
+
+      std::tie(in_ephemeral, img) = *r;
 
       //check that derivated key is equal with real output key (if non multisig)
       if(!(in_ephemeral.pub == src_entr.outputs[src_entr.real_output].second.dest) )

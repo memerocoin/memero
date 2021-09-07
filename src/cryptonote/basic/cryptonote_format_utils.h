@@ -67,6 +67,7 @@ namespace cryptonote
   }
 
   bool parse_tx_extra(const std::vector<uint8_t>& tx_extra, std::vector<tx_extra_field>& tx_extra_fields);
+  bool parse_tx_extra(const std::vector<uint8_t>& tx_extra, std::vector<tx_extra_field>& tx_extra_fields);
   bool sort_tx_extra(const std::vector<uint8_t>& tx_extra, std::vector<uint8_t> &sorted_tx_extra, bool allow_partial = false);
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const std::vector<uint8_t>& tx_extra, size_t pk_index = 0);
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction_prefix& tx, size_t pk_index = 0);
@@ -104,20 +105,24 @@ namespace cryptonote
 
   uint64_t get_tx_fee(const transaction& tx);
 
-  bool derive_key_image_helper
+  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper
   (
    const account_keys& ack
-   , const std::unordered_map<crypto::public_key
-   , subaddress_index>& subaddresses
+   , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key& out_key
    , const std::optional<crypto::public_key>& tx_public_key
    , const std::vector<crypto::public_key>& additional_tx_public_keys
-   , size_t real_output_index
-   , keypair& in_ephemeral
-   , crypto::key_image& ki
+   , const size_t real_output_index
    );
 
-  bool derive_key_image_helper_precomp(const account_keys& ack, const crypto::public_key& out_key, const crypto::tx_ecdh_shared_secret& recv_tx_shared_secret, size_t real_output_index, const subaddress_index& received_index, keypair& in_ephemeral, crypto::key_image& ki);
+  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper_precomp
+  (
+   const account_keys& ack
+   , const crypto::public_key& out_key
+   , const crypto::tx_ecdh_shared_secret& recv_tx_shared_secret
+   , const size_t real_output_index
+   , const subaddress_index& received_index
+   );
 
   crypto::hash get_blob_hash(const blobdata& blob);
   crypto::hash get_blob_hash(const blobdata_ref& blob);

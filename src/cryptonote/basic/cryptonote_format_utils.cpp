@@ -205,17 +205,14 @@ namespace cryptonote
     return is_v1_tx(blobdata_ref{tx_blob.data(), tx_blob.size()});
   }
   //---------------------------------------------------------------
-  bool derive_key_image_helper
+  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper
   (
    const account_keys& ack
-   , const std::unordered_map<crypto::public_key
-   , subaddress_index>& subaddresses
+   , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key& out_key
    , const std::optional<crypto::public_key>& tx_public_key
    , const std::vector<crypto::public_key>& additional_tx_public_keys
-   , size_t real_output_index
-   , keypair& in_ephemeral
-   , crypto::key_image& ki
+   , const size_t real_output_index
    )
   {
     const std::optional<crypto::tx_ecdh_shared_secret> recv_tx_shared_secret =
@@ -253,7 +250,7 @@ namespace cryptonote
     LOG_ERROR_AND_RETURN_UNLESS
       (
        subaddr_recv_info
-       , false
+       , {}
        , "key image helper: given output pubkey doesn't seem to belong to this address"
        );
 
@@ -264,14 +261,22 @@ namespace cryptonote
        , subaddr_recv_info->tx_shared_secret
        , real_output_index
        , subaddr_recv_info->index
-       , in_ephemeral
-       , ki
        );
   }
 
   //---------------------------------------------------------------
-  bool derive_key_image_helper_precomp(const account_keys& ack, const crypto::public_key& out_key, const crypto::tx_ecdh_shared_secret& recv_tx_shared_secret, size_t real_output_index, const subaddress_index& received_index, keypair& in_ephemeral, crypto::key_image& ki)
+  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper_precomp
+  (
+   const account_keys& ack
+   , const crypto::public_key& out_key
+   , const crypto::tx_ecdh_shared_secret& recv_tx_shared_secret
+   , const size_t real_output_index
+   , const subaddress_index& received_index
+   )
   {
+    keypair in_ephemeral;
+    crypto::key_image ki;
+
     if (ack.m_spend_secret_key == crypto::null_skey)
     {
       // for watch-only wallet, simply copy the known output pubkey
@@ -282,7 +287,7 @@ namespace cryptonote
     {
       // derive secret key with subaddress - step 1: original CN derivation
       const auto spend_sk = ack.m_spend_secret_key;
-      if (is_not_reduced(spend_sk)) return false;
+      if (is_not_reduced(spend_sk)) return {};
 
         // computes Hs(a*R || idx) + b
       const crypto::secret_key derived_tx_output_secret_key =
@@ -299,11 +304,11 @@ namespace cryptonote
       in_ephemeral.pub = to_pk(in_ephemeral.sec);
 
       LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
-           false, "key image helper precomp: given output pubkey doesn't match the derived one");
+           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
     }
 
     ki = crypto::derive_key_image(in_ephemeral.sec);
-    return true;
+    return {{in_ephemeral, ki}};
   }
 
   //---------------------------------------------------------------
