@@ -530,14 +530,9 @@ namespace cryptonote
   {
     if (b.is_hash_valid())
     {
-#ifdef ENABLE_HASH_CASH_INTEGRITY_CHECK
-      LOG_ERROR_AND_THROW_UNLESS(!calculate_block_hash(b, res) || b.hash == res, "block hash cash integrity failure");
-#endif
       res = b.hash;
-      ++block_hashes_cached_count;
       return true;
     }
-    ++block_hashes_calculated_count;
     bool ret = calculate_block_hash(b, res);
     if (!ret)
       return false;
