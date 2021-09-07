@@ -206,4 +206,27 @@ namespace cryptonote
     return tx_extra_fields;
   }
 
+  //---------------------------------------------------------------
+  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const std::vector<uint8_t>& tx_extra)
+  {
+    const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
+
+    if (!maybe_tx_extra_fields) return {};
+
+    tx_extra_pub_key pub_key_field;
+    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, pub_key_field))
+      return {};
+
+    return pub_key_field.pub_key;
+  }
+  //---------------------------------------------------------------
+  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction_prefix& tx_prefix)
+  {
+    return get_tx_pub_key_from_extra(tx_prefix.extra);
+  }
+  //---------------------------------------------------------------
+  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction& tx)
+  {
+    return get_tx_pub_key_from_extra(tx.extra);
+  }
 }
