@@ -161,4 +161,8 @@ namespace cryptonote
   crypto::hash get_tx_tree_hash(const std::vector<crypto::hash>& tx_hashes);
   crypto::hash get_tx_tree_hash(const block& b);
 
+  uint64_t get_tx_fee(const transaction& tx);
+  uint64_t get_transaction_weight(const transaction &tx);
+  uint64_t get_transaction_weight(const transaction &tx, const size_t blob_size);
+
 }

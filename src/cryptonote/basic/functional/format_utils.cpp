@@ -424,7 +424,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::hash get_tx_tree_hash(const block& b)
   {
-    cosnt crypto::hash h = fill_transaction_hash(b.miner_tx);
+    const crypto::hash h = fill_transaction_hash(b.miner_tx);
 
     std::vector<crypto::hash> txs = {h};
 
@@ -436,5 +436,38 @@ namespace cryptonote
        );
 
     return get_tx_tree_hash(txs);
+  }
+
+  //---------------------------------------------------------------
+  uint64_t get_transaction_weight(const transaction &tx, const size_t blob_size)
+  {
+    return blob_size;
+  }
+  //---------------------------------------------------------------
+  uint64_t get_transaction_weight(const transaction &tx)
+  {
+    size_t blob_size;
+    if (tx.is_blob_size_valid())
+      {
+        blob_size = tx.blob_size;
+      }
+    else
+      {
+        std::ostringstream s;
+        binary_archive<true> a(s);
+        ::serialization::serialize(a, const_cast<transaction&>(tx));
+        blob_size = s.str().size();
+      }
+    return get_transaction_weight(tx, blob_size);
+  }
+
+  //---------------------------------------------------------------
+  uint64_t get_tx_fee(const transaction& tx)
+  {
+    if (tx.version > 1)
+      {
+        return tx.ringct_essential.fee;
+      }
+    else return 0;
   }
 }
