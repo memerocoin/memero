@@ -107,4 +107,51 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   crypto::hash calculate_transaction_hash(const transaction& t);
+
+  //---------------------------------------------------------------
+  template<class t_object>
+  std::optional<blobdata> t_serializable_object_to_maybe_blob(const t_object& to)
+  {
+    std::stringstream ss;
+    binary_archive<true> ba(ss);
+    const bool r = ::serialization::serialize(ba, const_cast<t_object&>(to));
+    if (r) {
+      return ss.str();
+    } else {
+      return {};
+    }
+  }
+  //---------------------------------------------------------------
+  template<class t_object>
+  blobdata t_serializable_object_to_blob(const t_object& to)
+  {
+    const auto b = t_serializable_object_to_maybe_blob(to);
+    if (!b) {
+      throw std::runtime_error("failed to serialize object to blob");
+    }
+    return *b;
+  }
+  //---------------------------------------------------------------
+  template<class t_object>
+  crypto::hash get_object_hash(const t_object& o)
+  {
+    return get_blob_hash(t_serializable_object_to_blob(o));
+  }
+  //---------------------------------------------------------------
+  template<class t_object>
+  size_t get_object_blobsize(const t_object& o)
+  {
+    blobdata b = t_serializable_object_to_blob(o);
+    return b.size();
+  }
+  //---------------------------------------------------------------
+  template <typename T>
+  std::string obj_to_json_str(T& obj)
+  {
+    std::stringstream ss;
+    json_archive<true> ar(ss, true);
+    bool r = ::serialization::serialize(ar, obj);
+    LOG_ERROR_AND_RETURN_UNLESS(r, "", "obj_to_json_str failed: serialization::serialize returned false");
+    return ss.str();
+  }
 }
