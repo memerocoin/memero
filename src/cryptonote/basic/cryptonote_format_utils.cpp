@@ -525,36 +525,19 @@ namespace cryptonote
     str.erase ( str.find_last_not_of('.') + 1, std::string::npos );
     return str;
   }
-  //---------------------------------------------------------------
-  bool get_block_hash(const block& b, crypto::hash& res)
-  {
-    if (b.is_hash_valid())
-    {
-      res = b.hash;
-      return true;
-    }
-    res = calculate_block_hash(b);
-    b.set_hash(res);
-    return true;
-  }
-
   std::optional<crypto::hash> get_maybe_block_hash(const block& b) {
     crypto::hash h;
-    const auto r = get_block_hash(b, h);
-    if (r) {
-      return h;
-    } else {
-      return {};
+    try {
+      h = get_block_hash(b);
     }
+    catch (...) { return {}; }
+
+    return h;
   }
-
-
   //---------------------------------------------------------------
   crypto::hash get_block_hash(const block& b)
   {
-    crypto::hash p = null_hash;
-    get_block_hash(b, p);
-    return p;
+    return calculate_block_hash(b);
   }
   //---------------------------------------------------------------
   std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off)
