@@ -31,7 +31,6 @@
 #include "cryptonote_tx_utils.h"
 
 
-#include "tools/common/apply_permutation.h"
 #include "tools/epee/include/string_tools.h"
 
 #include "math/crypto/controller/random.hpp"
