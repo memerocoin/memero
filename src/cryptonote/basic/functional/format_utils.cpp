@@ -334,38 +334,26 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size)
+  bool get_transaction_hash(const transaction& t, crypto::hash& res)
   {
     if (t.is_hash_valid())
     {
       res = t.hash;
-      if (blob_size)
-      {
-        if (!t.is_blob_size_valid())
-          {
-            t.set_blob_size(get_object_blobsize(t));
-          }
-        *blob_size = t.blob_size;
-      }
       // ++tx_hashes_cached_count;
       return true;
     }
     // ++tx_hashes_calculated_count;
-    bool ret = calculate_transaction_hash(t, res, blob_size);
+    bool ret = calculate_transaction_hash(t, res);
     if (!ret)
       return false;
     t.set_hash(res);
-    if (blob_size)
-      {
-        t.set_blob_size(*blob_size);
-      }
     return true;
   }
 
   //---------------------------------------------------------------
-  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t& blob_size)
+  bool get_transaction_hash(const transaction& t, crypto::hash& res)
   {
-    return get_transaction_hash(t, res, &blob_size);
+    return get_transaction_hash(t, res);
   }
   //---------------------------------------------------------------
   bool get_transaction_hash(const transaction& t, crypto::hash& res)

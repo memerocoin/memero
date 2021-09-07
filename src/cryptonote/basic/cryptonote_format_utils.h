@@ -86,7 +86,7 @@ namespace cryptonote
 
   bool calculate_transaction_prunable_hash(const transaction& t, const cryptonote::blobdata_ref *blob, crypto::hash& res);
   crypto::hash get_transaction_prunable_hash(const transaction& t, const cryptonote::blobdata_ref *blob = NULL);
-  bool calculate_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size);
+  crypto::hash calculate_transaction_hash(const transaction& t);
 
   blobdata get_block_hashing_blob(const block& b);
   bool calculate_block_hash(const block& b, crypto::hash& res, const blobdata_ref *blob = NULL);
@@ -157,15 +157,6 @@ namespace cryptonote
   {
     blobdata b = t_serializable_object_to_blob(o);
     return b.size();
-  }
-  //---------------------------------------------------------------
-  template<class t_object>
-  bool get_object_hash(const t_object& o, crypto::hash& res, size_t& blob_size)
-  {
-    blobdata bl = t_serializable_object_to_blob(o);
-    blob_size = bl.size();
-    res = get_blob_hash(bl);
-    return true;
   }
   //---------------------------------------------------------------
   template <typename T>

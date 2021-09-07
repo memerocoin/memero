@@ -690,13 +690,14 @@ namespace cryptonote
     return res;
   }
   //---------------------------------------------------------------
-  bool calculate_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size)
+  crypto::hash calculate_transaction_hash(const transaction& t)
   {
+    crypto::hash res;
     // v1 transactions hash the entire blob
     if (t.version == 1)
     {
-      size_t ignored_blob_size, &blob_size_ref = blob_size ? *blob_size : ignored_blob_size;
-      return get_object_hash(t, res, blob_size_ref);
+      get_object_hash(t, res);
+      return res;
     }
 
     // v2 transactions hash different parts together, than hash the set of those hashes
@@ -727,17 +728,7 @@ namespace cryptonote
     // the tx hash is the hash of the 3 hashes
     res = crypto::sha3(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
 
-    // we still need the size
-    if (blob_size)
-    {
-      if (!t.is_blob_size_valid())
-      {
-        t.set_blob_size(blob.size());
-      }
-      *blob_size = t.blob_size;
-    }
-
-    return true;
+    return res;
   }
   //---------------------------------------------------------------
   blobdata get_block_hashing_blob_tail(const block& b)

@@ -99,8 +99,8 @@ namespace cryptonote
   std::string short_hash_str(const crypto::hash& h);
 
   bool get_transaction_hash(const transaction& t, crypto::hash& res);
-  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t& blob_size);
-  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size);
+  bool get_transaction_hash(const transaction& t, crypto::hash& res);
+  bool get_transaction_hash(const transaction& t, crypto::hash& res);
   crypto::hash get_transaction_hash(const transaction& t);
 
 }
