@@ -502,24 +502,13 @@ namespace cryptonote
         {
           try
           {
-            if(!get_transaction_hash(tx, tx_hash))
-            {
-              LOG_PRINT_CCONTEXT_L1
-              (
-                  "NOTIFY_NEW_FLUFFY_BLOCK: get_transaction_hash failed"
-                  << ", dropping connection"
-              );
-
-              drop_connection(context, false, false);
-              m_core.resume_mine();
-              return 1;
-            }
+            tx_hash = fill_transaction_hash(tx);
           }
           catch(...)
           {
             LOG_PRINT_CCONTEXT_L1
             (
-                "NOTIFY_NEW_FLUFFY_BLOCK: get_transaction_hash failed"
+                "NOTIFY_NEW_FLUFFY_BLOCK: fill_transaction_hash failed"
                 << ", exception thrown"
                 << ", dropping connection"
             );

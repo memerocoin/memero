@@ -596,33 +596,33 @@ namespace cryptonote
   {
     if(!tx.vin.size())
     {
-      LOG_ERROR_VER("tx with empty inputs, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("tx with empty inputs, rejected for tx id= " << fill_transaction_hash(tx));
       return false;
     }
 
     if(!check_inputs_types_supported(tx))
     {
-      LOG_ERROR_VER("unsupported input types for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("unsupported input types for tx id= " << fill_transaction_hash(tx));
       return false;
     }
 
     if(!check_outs_valid(tx))
     {
-      LOG_ERROR_VER("tx with invalid outputs, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("tx with invalid outputs, rejected for tx id= " << fill_transaction_hash(tx));
       return false;
     }
     if (tx.version > 1)
     {
       if (tx.ringct_essential.outPk.size() != tx.vout.size())
       {
-        LOG_ERROR_VER("tx with mismatched vout/outPk count, rejected for tx id= " << get_transaction_hash(tx));
+        LOG_ERROR_VER("tx with mismatched vout/outPk count, rejected for tx id= " << fill_transaction_hash(tx));
         return false;
       }
     }
 
     if(!check_money_overflow(tx))
     {
-      LOG_ERROR_VER("tx has money overflow, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("tx has money overflow, rejected for tx id= " << fill_transaction_hash(tx));
       return false;
     }
 
@@ -634,7 +634,7 @@ namespace cryptonote
 
       if(amount_in <= amount_out)
       {
-        LOG_ERROR_VER("tx with wrong amounts: ins " << amount_in << ", outs " << amount_out << ", rejected for tx id= " << get_transaction_hash(tx));
+        LOG_ERROR_VER("tx with wrong amounts: ins " << amount_in << ", outs " << amount_out << ", rejected for tx id= " << fill_transaction_hash(tx));
         return false;
       }
     }
@@ -759,7 +759,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::add_new_tx(transaction& tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
-    crypto::hash tx_hash = get_transaction_hash(tx);
+    crypto::hash tx_hash = fill_transaction_hash(tx);
     blobdata bl;
     t_serializable_object_to_blob(tx, bl);
     size_t tx_weight = get_transaction_weight(tx, bl.size());
@@ -1098,7 +1098,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::get_pool_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive_data) const
   {
-    m_mempool.get_transaction_hashes(txs, include_sensitive_data);
+    m_mempool.fill_transaction_hashes(txs, include_sensitive_data);
     return true;
   }
   //-----------------------------------------------------------------------------------------------

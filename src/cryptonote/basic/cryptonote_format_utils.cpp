@@ -71,7 +71,7 @@ namespace cryptonote
 
     if (rv.outPk.size() != tx.vout.size())
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad outPk size in tx " << get_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad outPk size in tx " << fill_transaction_hash(tx));
       return false;
     }
 
@@ -79,7 +79,7 @@ namespace cryptonote
     {
       if (tx.vout[n].target.type() != typeid(txout_to_key))
       {
-        LOG_PRINT_L1("Unsupported output type in tx " << get_transaction_hash(tx));
+        LOG_PRINT_L1("Unsupported output type in tx " << fill_transaction_hash(tx));
         return false;
       }
       rv.outPk[n].dest = rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[n].target).key);
@@ -89,20 +89,20 @@ namespace cryptonote
 
     if (rv.p.bulletproofs.size() != 1)
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs size in tx " << get_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs size in tx " << fill_transaction_hash(tx));
       return false;
     }
 
     if (rv.p.bulletproofs[0].L.size() < 6)
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs L size in tx " << get_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs L size in tx " << fill_transaction_hash(tx));
       return false;
     }
 
     const size_t max_outputs = 1 << (rv.p.bulletproofs[0].L.size() - 6);
     if (max_outputs < tx.vout.size())
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << get_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << fill_transaction_hash(tx));
       return false;
     }
 
@@ -169,7 +169,8 @@ namespace cryptonote
     tx.invalidate_hashes();
     //TODO: validate tx
 
-    return get_transaction_hash(tx, tx_hash);
+    tx_hash = fill_transaction_hash(tx);
+    return true;
   }
   //---------------------------------------------------------------
   bool parse_and_validate_tx_from_blob(const blobdata_ref& tx_blob, transaction& tx, crypto::hash& tx_hash, crypto::hash& tx_prefix_hash)
@@ -471,7 +472,7 @@ namespace cryptonote
     {
       LOG_ERROR_AND_RETURN_UNLESS(in.type() == typeid(txin_to_key), false, "wrong variant type: "
         << in.type().name() << ", expected " << typeid(txin_to_key).name()
-        << ", in transaction id=" << get_transaction_hash(tx));
+        << ", in transaction id=" << fill_transaction_hash(tx));
 
     }
     return true;
@@ -483,11 +484,11 @@ namespace cryptonote
     {
       LOG_ERROR_AND_RETURN_UNLESS(out.target.type() == typeid(txout_to_key), false, "wrong variant type: "
         << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
-        << ", in transaction id=" << get_transaction_hash(tx));
+        << ", in transaction id=" << fill_transaction_hash(tx));
 
       if (tx.version == 1)
       {
-        LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
+        LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << fill_transaction_hash(tx));
       }
 
       if(!is_safe_point(boost::get<txout_to_key>(out.target).key))
@@ -711,7 +712,10 @@ namespace cryptonote
     const unsigned int prefix_size = t.prefix_size;
 
     // base rct
-    LOG_ERROR_AND_RETURN_UNLESS(prefix_size <= unprunable_size && unprunable_size <= blob.size(), false, "Inconsistent transaction prefix, unprunable and blob sizes");
+    if (! (prefix_size <= unprunable_size && unprunable_size <= blob.size() )) {
+      LOG_FATAL("Inconsistent transaction prefix, unprunable and blob sizes");
+    }
+
     hashes[1] = cryptonote::get_blob_hash(blobdata_ref(blob.data() + prefix_size, unprunable_size - prefix_size));
 
     // prunable rct
@@ -722,7 +726,7 @@ namespace cryptonote
     else
     {
       cryptonote::blobdata_ref blobref(blob);
-      LOG_ERROR_AND_RETURN_UNLESS(calculate_transaction_prunable_hash(t, &blobref, hashes[2]), false, "Failed to get tx prunable hash");
+      calculate_transaction_prunable_hash(t, &blobref, hashes[2]);
     }
 
     // the tx hash is the hash of the 3 hashes
@@ -866,9 +870,7 @@ namespace cryptonote
   {
     std::vector<crypto::hash> txs_ids;
     txs_ids.reserve(1 + b.tx_hashes.size());
-    crypto::hash h = null_hash;
-    size_t bl_sz = 0;
-    LOG_ERROR_AND_THROW_UNLESS(get_transaction_hash(b.miner_tx, h, bl_sz), "Failed to calculate transaction hash");
+    crypto::hash h = fill_transaction_hash(b.miner_tx);
     txs_ids.push_back(h);
     for(auto& th: b.tx_hashes)
       txs_ids.push_back(th);
@@ -896,4 +898,15 @@ namespace cryptonote
     key = s2sk(key - hash);
     return key;
   }
+
+  //---------------------------------------------------------------
+  // const is a lie
+  crypto::hash fill_transaction_hash(const transaction& t)
+  {
+    const auto h = calculate_transaction_hash(t);
+
+    t.set_hash(h);
+    return h;
+  }
+
 }

@@ -288,7 +288,7 @@ TYPED_TEST(BlockchainDBTest, AddBlock)
     ASSERT_TRUE(this->m_db->tx_exists(h));
     ASSERT_NO_THROW(tx = this->m_db->get_tx(h));
 
-    ASSERT_HASH_EQ(h, get_transaction_hash(tx));
+    ASSERT_HASH_EQ(h, fill_transaction_hash(tx));
   }
 }
 

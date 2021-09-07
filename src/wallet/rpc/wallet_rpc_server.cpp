@@ -617,7 +617,7 @@ namespace tools
       // populate response with tx hashes
       for (auto & ptx : ptx_vector)
       {
-        bool r = fill(tx_hash, epee::string_tools::pod_to_hex(cryptonote::get_transaction_hash(ptx.tx)));
+        bool r = fill(tx_hash, epee::string_tools::pod_to_hex(cryptonote::fill_transaction_hash(ptx.tx)));
         r = r && (!get_tx_hex || fill(tx_blob, epee::string_tools::buff_to_hex_nodelimer(tx_to_blob(ptx.tx))));
         r = r && (!get_tx_metadata || fill(tx_metadata, ptx_to_string(ptx)));
         if (!r)
@@ -896,7 +896,7 @@ namespace tools
       return false;
     }
 
-    res.tx_hash = epee::string_tools::pod_to_hex(cryptonote::get_transaction_hash(ptx.tx));
+    res.tx_hash = epee::string_tools::pod_to_hex(cryptonote::fill_transaction_hash(ptx.tx));
 
     return true;
   }

@@ -187,4 +187,7 @@ namespace cryptonote
 
   blobdata get_block_hashing_blob_head(const block& b);
   blobdata get_block_hashing_blob_tail(const block& b);
+
+  // here const is a lie
+  crypto::hash fill_transaction_hash(const transaction& t);
 }

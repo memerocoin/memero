@@ -145,7 +145,7 @@ namespace cryptonote
     tx.invalidate_hashes();
 
     //LOG_PRINT("MINER_TX generated ok, block_reward=" << print_money(block_reward) << "("  << print_money(block_reward - fee) << "+" << print_money(fee)
-    //  << "), current_block_size=" << current_block_size << ", already_generated_coins=" << already_generated_coins << ", tx_id=" << get_transaction_hash(tx), LOG_LEVEL_2);
+    //  << "), current_block_size=" << current_block_size << ", already_generated_coins=" << already_generated_coins << ", tx_id=" << fill_transaction_hash(tx), LOG_LEVEL_2);
     return true;
   }
 
@@ -515,8 +515,8 @@ namespace cryptonote
          );
 
       LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), {}, "outSk size does not match vout");
-
-      LOG_CATEGORY_INFO("construct_tx", "transaction_created: " << get_transaction_hash(tx) << std::endl << obj_to_json_str(tx) << std::endl);
+      const auto tx_hash = fill_transaction_hash(tx);
+      LOG_CATEGORY_INFO("construct_tx", "transaction_created: " << tx_hash << std::endl << obj_to_json_str(tx) << std::endl);
     }
 
     tx.invalidate_hashes();

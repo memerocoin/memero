@@ -139,7 +139,7 @@ namespace cryptonote {
   }
   //--------------------------------------------------------------------------------
   bool operator ==(const cryptonote::transaction& a, const cryptonote::transaction& b) {
-    return cryptonote::get_transaction_hash(a) == cryptonote::get_transaction_hash(b);
+    return cryptonote::fill_transaction_hash(a) == cryptonote::fill_transaction_hash(b);
   }
 
   bool operator ==(const cryptonote::block& a, const cryptonote::block& b) {

@@ -24,9 +24,7 @@ namespace test
         if (!cryptonote::construct_miner_tx(0, 0, 500, to, tx))
             throw std::runtime_error{"transaction construction error"};
 
-        crypto::hash id{0};
-        if (!cryptonote::get_transaction_hash(tx, id))
-            throw std::runtime_error{"could not get transaction hash"};
+        cryptonote::fill_transaction_hash(tx);
 
         return tx;
     }
@@ -117,13 +115,11 @@ TEST(JsonSerialization, MinerTransaction)
     acct.generate();
     const auto miner_tx = test::make_miner_transaction(acct.get_keys().m_account_address);
 
-    crypto::hash tx_hash{};
-    ASSERT_TRUE(cryptonote::get_transaction_hash(miner_tx, tx_hash));
+    crypto::hash tx_hash = cryptonote::fill_transaction_hash(miner_tx);
 
     cryptonote::transaction miner_tx_copy = test_json(miner_tx);
 
-    crypto::hash tx_copy_hash{};
-    ASSERT_TRUE(cryptonote::get_transaction_hash(miner_tx_copy, tx_copy_hash));
+    crypto::hash tx_copy_hash = cryptonote::fill_transaction_hash(miner_tx_copy);
     EXPECT_EQ(tx_hash, tx_copy_hash);
 
     cryptonote::blobdata tx_bytes{};
@@ -148,13 +144,11 @@ TEST(JsonSerialization, BulletproofTransaction)
         acct1.get_keys(), {miner_tx}, {acct2.get_keys().m_account_address}
     );
 
-    crypto::hash tx_hash{};
-    ASSERT_TRUE(cryptonote::get_transaction_hash(tx, tx_hash));
+    crypto::hash tx_hash = cryptonote::fill_transaction_hash(tx);
 
     cryptonote::transaction tx_copy = test_json(tx);
 
-    crypto::hash tx_copy_hash{};
-    ASSERT_TRUE(cryptonote::get_transaction_hash(tx_copy, tx_copy_hash));
+    crypto::hash tx_copy_hash = cryptonote::fill_transaction_hash(tx_copy);
 
     // TODO fix test failure
     // EXPECT_EQ(tx_hash, tx_copy_hash);

@@ -160,7 +160,7 @@ namespace rpc
       // miner tx output indices
       {
         cryptonote::rpc::tx_output_indices tx_indices;
-        if (!m_core.get_tx_outputs_gindexs(get_transaction_hash(bwt.block.miner_tx), tx_indices))
+        if (!m_core.get_tx_outputs_gindexs(fill_transaction_hash(bwt.block.miner_tx), tx_indices))
         {
           res.status = Message::STATUS_FAILED;
           res.error_details = "core::get_tx_outputs_gindexs() returned false";
@@ -243,7 +243,7 @@ namespace rpc
 
     for (size_t i=0; i < num_found; i++)
     {
-      found_hashes[i] = get_transaction_hash(found_txs_vec[i]);
+      found_hashes[i] = fill_transaction_hash(found_txs_vec[i]);
       heights[i] = m_core.get_blockchain_storage().get_db().get_tx_block_height(found_hashes[i]);
     }
 
@@ -256,7 +256,7 @@ namespace rpc
 
       for (const auto& tx : pool_txs)
       {
-        crypto::hash h = get_transaction_hash(tx);
+        crypto::hash h = fill_transaction_hash(tx);
 
         auto itr = std::find(missed_vec.begin(), missed_vec.end(), h);
 

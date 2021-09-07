@@ -2659,12 +2659,12 @@ bool BlockchainLMDB::get_blocks_from(uint64_t start_height, size_t min_count, si
     cryptonote::block b;
     if (!parse_and_validate_block_from_blob(current_block.first.first, b))
       throw0(DB_ERROR("Invalid block"));
-    current_block.first.second = get_miner_tx_hash ? cryptonote::get_transaction_hash(b.miner_tx) : crypto::null_hash;
+    current_block.first.second = get_miner_tx_hash ? cryptonote::fill_transaction_hash(b.miner_tx) : crypto::null_hash;
 
     // get the tx_id for the first tx (the first block's coinbase tx)
     if (h == start_height)
     {
-      crypto::hash hash = cryptonote::get_transaction_hash(b.miner_tx);
+      crypto::hash hash = cryptonote::fill_transaction_hash(b.miner_tx);
       MDB_val_set(v, hash);
       result = mdb_cursor_get(m_cur_tx_indices, (MDB_val *)&zerokval, &v, MDB_GET_BOTH);
       if (result)

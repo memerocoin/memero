@@ -213,7 +213,7 @@ bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, c
   {
     LOG_ERROR_AND_RETURN_UNLESS(epee::string_tools::parse_hexstr_to_binbuff(entry.as_hex, bd), false, "Failed to parse tx data");
     LOG_ERROR_AND_RETURN_UNLESS(cryptonote::parse_and_validate_tx_from_blob(bd, tx), false, "Invalid tx data");
-    tx_hash = cryptonote::get_transaction_hash(tx);
+    tx_hash = cryptonote::fill_transaction_hash(tx);
     // if the hash was given, check it matches
     LOG_ERROR_AND_RETURN_UNLESS(entry.tx_hash.empty() || epee::string_tools::pod_to_hex(tx_hash) == entry.tx_hash, false,
         "Response claims a different hash than the data yields");
@@ -1212,7 +1212,7 @@ void wallet2::process_new_blockchain_entry(const cryptonote::block& b, const cry
   if (!should_skip_block(b, height))
   {
     TIME_MEASURE_START(miner_tx_handle_time);
-    process_new_transaction(get_transaction_hash(b.miner_tx), b.miner_tx, parsed_block.o_indices.indices[0].indices, height, b.major_version, b.timestamp, true, false, false, tx_cache_data[tx_cache_data_offset]);
+    process_new_transaction(fill_transaction_hash(b.miner_tx), b.miner_tx, parsed_block.o_indices.indices[0].indices, height, b.major_version, b.timestamp, true, false, false, tx_cache_data[tx_cache_data_offset]);
     ++tx_cache_data_offset;
     TIME_MEASURE_FINISH(miner_tx_handle_time);
 
@@ -1346,7 +1346,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       txidx += 1 + parsed_blocks[i].block.tx_hashes.size();
       continue;
     }
-    tpool.submit(&waiter, [&, i, txidx](){ cache_tx_data(parsed_blocks[i].block.miner_tx, get_transaction_hash(parsed_blocks[i].block.miner_tx), tx_cache_data[txidx]); });
+    tpool.submit(&waiter, [&, i, txidx](){ cache_tx_data(parsed_blocks[i].block.miner_tx, fill_transaction_hash(parsed_blocks[i].block.miner_tx), tx_cache_data[txidx]); });
     ++txidx;
     for (size_t idx = 0; idx < parsed_blocks[i].txes.size(); ++idx)
     {
@@ -3305,7 +3305,7 @@ uint64_t wallet2::select_transfers(uint64_t needed_money, std::vector<size_t> un
 //----------------------------------------------------------------------------------------------------
 void wallet2::add_unconfirmed_tx(const cryptonote::transaction& tx, uint64_t amount_in, const std::vector<cryptonote::tx_destination_entry> &dests, uint64_t change_amount, uint32_t subaddr_account, const std::set<uint32_t>& subaddr_indices)
 {
-  unconfirmed_transfer_details& utd = m_unconfirmed_txs[cryptonote::get_transaction_hash(tx)];
+  unconfirmed_transfer_details& utd = m_unconfirmed_txs[cryptonote::fill_transaction_hash(tx)];
   utd.m_amount_in = amount_in;
   utd.m_amount_out = 0;
   for (const auto &d: dests)
@@ -3356,7 +3356,7 @@ void wallet2::commit_tx(pending_tx& ptx)
   }
   crypto::hash txid;
 
-  txid = get_transaction_hash(ptx.tx);
+  txid = fill_transaction_hash(ptx.tx);
   std::vector<cryptonote::tx_destination_entry> dests;
   uint64_t amount_in = 0;
   if (store_tx_info())
@@ -4157,7 +4157,7 @@ skip_tx:
     for (size_t idx: tx.selected_transfers)
       tx_money += m_transfers[idx].amount();
     LOG_PRINT_L1("  Transaction " << i << "/" << txes.size() <<
-      " " << get_transaction_hash(tx.ptx.tx) << ": " << wallet::logic::functional::wallet::get_weight_string(tx.weight) << ", sending " << print_money(tx_money) << " in " << tx.selected_transfers.size() <<
+      " " << fill_transaction_hash(tx.ptx.tx) << ": " << wallet::logic::functional::wallet::get_weight_string(tx.weight) << ", sending " << print_money(tx_money) << " in " << tx.selected_transfers.size() <<
       " outputs to " << tx.dsts.size() << " destination(s), including " <<
       print_money(tx.ptx.fee) << " fee, " << print_money(tx.ptx.change_dts.amount) << " change");
     ptx_vector.push_back(tx.ptx);
@@ -4348,7 +4348,7 @@ void wallet2::verify_tx_key_helper
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
     THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx),
         error::wallet_internal_error, "Failed to validate transaction from daemon");
-    tx_hash = cryptonote::get_transaction_hash(tx);
+    tx_hash = cryptonote::fill_transaction_hash(tx);
   }
 
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error,
@@ -4401,7 +4401,7 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
       THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
       THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx),
           error::wallet_internal_error, "Failed to validate transaction from daemon");
-      tx_hash = cryptonote::get_transaction_hash(tx);
+      tx_hash = cryptonote::fill_transaction_hash(tx);
     }
 
     THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
@@ -4452,7 +4452,7 @@ bool wallet2::verify_tx_proof(const crypto::hash &txid, const cryptonote::accoun
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
     THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx),
         error::wallet_internal_error, "Failed to validate transaction from daemon");
-    tx_hash = cryptonote::get_transaction_hash(tx);
+    tx_hash = cryptonote::fill_transaction_hash(tx);
   }
 
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");

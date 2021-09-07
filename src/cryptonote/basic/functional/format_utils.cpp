@@ -332,40 +332,4 @@ namespace cryptonote
     res.insert(8, "....");
     return res;
   }
-
-  //---------------------------------------------------------------
-  bool get_transaction_hash(const transaction& t, crypto::hash& res)
-  {
-    if (t.is_hash_valid())
-    {
-      res = t.hash;
-      // ++tx_hashes_cached_count;
-      return true;
-    }
-    // ++tx_hashes_calculated_count;
-    bool ret = calculate_transaction_hash(t, res);
-    if (!ret)
-      return false;
-    t.set_hash(res);
-    return true;
-  }
-
-  //---------------------------------------------------------------
-  bool get_transaction_hash(const transaction& t, crypto::hash& res)
-  {
-    return get_transaction_hash(t, res);
-  }
-  //---------------------------------------------------------------
-  bool get_transaction_hash(const transaction& t, crypto::hash& res)
-  {
-    return get_transaction_hash(t, res, NULL);
-  }
-  //---------------------------------------------------------------
-  crypto::hash get_transaction_hash(const transaction& t)
-  {
-    crypto::hash h;
-    get_transaction_hash(t, h, NULL);
-    LOG_ERROR_AND_THROW_UNLESS(get_transaction_hash(t, h, NULL), "Failed to calculate transaction hash");
-    return h;
-  }
 }
