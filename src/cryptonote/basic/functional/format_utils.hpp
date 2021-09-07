@@ -154,4 +154,7 @@ namespace cryptonote
     LOG_ERROR_AND_RETURN_UNLESS(r, "", "obj_to_json_str failed: serialization::serialize returned false");
     return ss.str();
   }
+
+  crypto::secret_key encrypt_key(const crypto::secret_key key, const epee::wipeable_string &passphrase);
+  crypto::secret_key decrypt_key(const crypto::secret_key key, const epee::wipeable_string &passphrase);
 }

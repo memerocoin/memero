@@ -400,4 +400,20 @@ namespace cryptonote
     // the tx hash is the hash of the 3 hashes
     return crypto::sha3(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
   }
+
+  //---------------------------------------------------------------
+  crypto::secret_key encrypt_key(const crypto::secret_key key, const epee::wipeable_string &passphrase)
+  {
+    const crypto::ec_scalar offset =
+      crypto::hash_to_scalar(epee::string_tools::string_to_blob(passphrase));
+    return crypto::s2sk(key + offset);
+  }
+  //---------------------------------------------------------------
+  crypto::secret_key decrypt_key(const crypto::secret_key key, const epee::wipeable_string &passphrase)
+  {
+    const crypto::ec_scalar offset =
+      crypto::hash_to_scalar(epee::string_tools::string_to_blob(passphrase));
+    return crypto::s2sk(key - offset);
+  }
+
 }

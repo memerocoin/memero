@@ -811,21 +811,6 @@ namespace cryptonote
     block_hashes_cached = block_hashes_cached_count;
   }
   //---------------------------------------------------------------
-  crypto::secret_key encrypt_key(crypto::secret_key key, const epee::wipeable_string &passphrase)
-  {
-    crypto::ec_scalar hash = crypto::hash_to_scalar(epee::string_tools::string_to_blob(passphrase));
-    key = s2sk(key + hash);
-    return key;
-  }
-  //---------------------------------------------------------------
-  crypto::secret_key decrypt_key(crypto::secret_key key, const epee::wipeable_string &passphrase)
-  {
-    crypto::ec_scalar hash = crypto::hash_to_scalar(epee::string_tools::string_to_blob(passphrase));
-    key = s2sk(key - hash);
-    return key;
-  }
-
-  //---------------------------------------------------------------
   // const is a lie
   crypto::hash fill_transaction_hash(const transaction& t)
   {
