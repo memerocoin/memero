@@ -165,4 +165,7 @@ namespace cryptonote
   uint64_t get_transaction_weight(const transaction &tx);
   uint64_t get_transaction_weight(const transaction &tx, const size_t blob_size);
 
+  std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx);
+
+  uint64_t get_block_height(const block& b);
 }

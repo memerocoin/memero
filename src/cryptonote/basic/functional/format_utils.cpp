@@ -470,4 +470,25 @@ namespace cryptonote
       }
     else return 0;
   }
+
+  //---------------------------------------------------------------
+  std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx)
+  {
+    const auto x = get_tx_pub_key_from_extra(tx);
+    std::vector<crypto::public_key> xs = get_additional_tx_pub_keys_from_extra(tx);
+
+    if(x) {
+      xs.insert(xs.begin(), *x);
+    }
+
+    return xs;
+  }
+
+  //---------------------------------------------------------------
+  uint64_t get_block_height(const block& b)
+  {
+    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin.size() == 1, 0, "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1");
+    CHECKED_GET_SPECIFIC_VARIANT(b.miner_tx.vin[0], const txin_gen, coinbase_in, 0);
+    return coinbase_in.height;
+  }
 }

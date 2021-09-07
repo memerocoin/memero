@@ -360,19 +360,6 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx)
-  {
-    const auto x = get_tx_pub_key_from_extra(tx);
-    std::vector<crypto::public_key> xs = get_additional_tx_pub_keys_from_extra(tx);
-
-    if(x) {
-      xs.insert(xs.begin(), *x);
-    }
-
-    return xs;
-  }
-
-  //---------------------------------------------------------------
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type)
   {
     if (tx_extra.empty())
@@ -425,13 +412,6 @@ namespace cryptonote
       money += tokey_in.amount;
     }
     return true;
-  }
-  //---------------------------------------------------------------
-  uint64_t get_block_height(const block& b)
-  {
-    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin.size() == 1, 0, "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1");
-    CHECKED_GET_SPECIFIC_VARIANT(b.miner_tx.vin[0], const txin_gen, coinbase_in, 0);
-    return coinbase_in.height;
   }
   //---------------------------------------------------------------
   bool check_inputs_types_supported(const transaction& tx)

@@ -74,8 +74,6 @@ namespace cryptonote
   std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const std::vector<uint8_t>& tx_extra);
   std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const transaction_prefix& tx);
 
-  std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx);
-
   bool add_additional_tx_pub_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& additional_pub_keys);
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
 
@@ -100,7 +98,7 @@ namespace cryptonote
   bool check_money_overflow(const transaction& tx);
   bool check_outs_overflow(const transaction& tx);
   bool check_inputs_overflow(const transaction& tx);
-  uint64_t get_block_height(const block& b);
+
   std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off);
   std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off);
   void set_default_decimal_point(unsigned int decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT);
