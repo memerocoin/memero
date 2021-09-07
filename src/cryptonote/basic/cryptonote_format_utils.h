@@ -124,21 +124,26 @@ namespace cryptonote
   }
   //---------------------------------------------------------------
   template<class t_object>
-  bool t_serializable_object_to_blob(const t_object& to, blobdata& b_blob)
+  std::optional<blobdata> t_serializable_object_to_maybe_blob(const t_object& to)
   {
     std::stringstream ss;
     binary_archive<true> ba(ss);
-    bool r = ::serialization::serialize(ba, const_cast<t_object&>(to));
-    b_blob = ss.str();
-    return r;
+    const bool r = ::serialization::serialize(ba, const_cast<t_object&>(to));
+    if (r) {
+      return ss.str();
+    } else {
+      return {};
+    }
   }
   //---------------------------------------------------------------
   template<class t_object>
   blobdata t_serializable_object_to_blob(const t_object& to)
   {
-    blobdata b;
-    t_serializable_object_to_blob(to, b);
-    return b;
+    const auto b = t_serializable_object_to_maybe_blob(to);
+    if (!b) {
+      throw std::runtime_error("failed to serialize object to blob");
+    }
+    return *b;
   }
   //---------------------------------------------------------------
   template<class t_object>

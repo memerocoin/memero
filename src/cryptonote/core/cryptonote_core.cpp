@@ -760,8 +760,7 @@ namespace cryptonote
   bool core::add_new_tx(transaction& tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
     crypto::hash tx_hash = fill_transaction_hash(tx);
-    blobdata bl;
-    t_serializable_object_to_blob(tx, bl);
+    blobdata bl = t_serializable_object_to_blob(tx);
     size_t tx_weight = get_transaction_weight(tx, bl.size());
     return add_new_tx(tx, tx_hash, bl, tx_weight, tvc, tx_relay, relayed);
   }

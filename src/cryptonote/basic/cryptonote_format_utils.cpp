@@ -754,7 +754,13 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool block_to_blob(const block& b, blobdata& b_blob)
   {
-    return t_serializable_object_to_blob(b, b_blob);
+    const auto blob = t_serializable_object_to_maybe_blob(b);
+    if (blob) {
+      b_blob = *blob;
+      return true;
+    } else {
+      return false;
+    }
   }
   //---------------------------------------------------------------
   blobdata tx_to_blob(const transaction& tx)
@@ -764,7 +770,14 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool tx_to_blob(const transaction& tx, blobdata& b_blob)
   {
-    return t_serializable_object_to_blob(tx, b_blob);
+    const auto blob = t_serializable_object_to_maybe_blob(tx);
+
+    if (blob) {
+      b_blob = *blob;
+      return true;
+    } else {
+      return false;
+    }
   }
   //---------------------------------------------------------------
   void get_tx_tree_hash(const std::vector<crypto::hash>& tx_hashes, crypto::hash& h)
