@@ -66,4 +66,14 @@ namespace cryptonote
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const std::vector<uint8_t>& tx_extra);
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction_prefix& tx);
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction& tx);
+
+  bool is_out_to_acc
+  (
+   const account_keys& acc
+   , const txout_to_key& out_key
+   , const std::optional<crypto::public_key>& tx_pub_key
+   , const std::vector<crypto::public_key>& additional_tx_pub_keys
+   , const size_t output_index
+   );
+
 }
