@@ -647,23 +647,6 @@ namespace cryptonote
     return str;
   }
   //---------------------------------------------------------------
-  crypto::hash get_transaction_prunable_hash(const transaction& t, const cryptonote::blobdata_ref *blobdata)
-  {
-    crypto::hash res;
-    if (t.is_prunable_hash_valid())
-    {
-      res = t.prunable_hash;
-      ++tx_hashes_cached_count;
-      return res;
-    }
-
-    ++tx_hashes_calculated_count;
-    res = calculate_transaction_prunable_hash(t, *blobdata);
-
-    t.set_prunable_hash(res);
-    return res;
-  }
-  //---------------------------------------------------------------
   crypto::hash calculate_transaction_hash(const transaction& t)
   {
     crypto::hash res;
