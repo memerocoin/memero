@@ -62,8 +62,6 @@ namespace cryptonote
 
   struct txout_to_key
   {
-    txout_to_key() { }
-    txout_to_key(const crypto::public_key &_key) : key(_key) { }
     crypto::public_key key;
   };
 

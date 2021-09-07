@@ -115,17 +115,17 @@ namespace cryptonote
 #endif
     block_reward += fee;
 
-    std::optional<crypto::tx_ecdh_shared_secret> derivation = crypto::derive_tx_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
-    LOG_ERROR_AND_RETURN_UNLESS(derivation, false, "while creating outs: failed to derive_tx_ecdh_shared_secret(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");
+    std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
+    LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret, false, "while creating outs: failed to derive_tx_ecdh_shared_secret(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");
 
     const std::optional<crypto::public_key> out_eph_public_key =
-      crypto::derive_tx_output_public_key_from_spend_public_key(*derivation, 0, miner_address.m_spend_public_key);
+      crypto::derive_tx_output_public_key_from_spend_public_key(*tx_shared_secret, 0, miner_address.m_spend_public_key);
     LOG_ERROR_AND_RETURN_UNLESS
       (
        out_eph_public_key
        , false
        , "while creating outs: failed to derive_tx_output_public_key_from_spend_public_key("
-       << *derivation << ", " << 0 << ", "
+       << *tx_shared_secret << ", " << 0 << ", "
        << miner_address.m_spend_public_key << ")"
        );
 
@@ -166,26 +166,28 @@ namespace cryptonote
    , crypto::public_key &out_eph_public_key
    )
   {
-    std::optional<crypto::tx_ecdh_shared_secret> derivation;
+    std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
 
     // make additional tx pubkey if necessary
     cryptonote::keypair additional_txkey;
     if (need_additional_txkeys)
     {
       additional_txkey.sec = additional_tx_keys[output_index];
-      if (dst_entr.is_subaddress)
-        additional_txkey.pub = rct::rct_p2pk(rct::multP(rct::pk2rct_p(dst_entr.addr.m_spend_public_key), rct::sk2rct_s(additional_txkey.sec)));
-      else
-        additional_txkey.pub = rct::rct_p2pk(rct::G_(rct::rct_reduce(additional_txkey.sec)));
+      additional_txkey.pub = crypto::p2pk
+        (
+          dst_entr.is_subaddress
+          ? dst_entr.addr.m_spend_public_key ^ additional_txkey.sec
+          : crypto::multBase(additional_txkey.sec)
+          );
     }
 
     if (change_addr && dst_entr.addr == *change_addr)
     {
-    // sending change to yourself; derivation = a*R
-      derivation = crypto::derive_tx_ecdh_shared_secret(txkey_pub, sender_account_keys.m_view_secret_key);
+    // sending change to yourself; tx_shared_secret = a*R
+      tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(txkey_pub, sender_account_keys.m_view_secret_key);
       LOG_ERROR_AND_RETURN_UNLESS
         (
-         derivation
+         tx_shared_secret
          , false
          , "at creation outs: failed to derive_tx_ecdh_shared_secret("
          << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")"
@@ -193,11 +195,18 @@ namespace cryptonote
     }
     else
     {
-    // sending to the recipient; derivation = r*A (or s*C in the subaddress scheme)
-      derivation = derive_tx_ecdh_shared_secret(dst_entr.addr.m_view_public_key, dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key);
+    // sending to the recipient; tx_shared_secret = r*A (or s*C in the subaddress scheme)
+      tx_shared_secret = derive_tx_ecdh_shared_secret
+        (
+         dst_entr.addr.m_view_public_key
+         , dst_entr.is_subaddress && need_additional_txkeys
+         ? additional_txkey.sec
+         : tx_key
+         );
+
       LOG_ERROR_AND_RETURN_UNLESS
         (
-         derivation
+         tx_shared_secret
          , false
          , "at creation outs: failed to derive_tx_ecdh_shared_secret("
          << dst_entr.addr.m_view_public_key
@@ -210,21 +219,20 @@ namespace cryptonote
       additional_tx_public_keys.push_back(additional_txkey.pub);
     }
 
-    if (tx_version > 1)
-    {
-      const rct::rct_scalar scalar1 = rct::s2s(crypto::hash_tx_shared_secret_to_scalar(*derivation, output_index));
-      amount_keys.push_back(scalar1);
-    }
+    const rct::rct_scalar amount_key =
+      rct::s2s(crypto::hash_tx_shared_secret_to_scalar(*tx_shared_secret, output_index));
+
+    amount_keys.push_back(amount_key);
 
     const auto eph_pk = crypto::derive_tx_output_public_key_from_spend_public_key
-      (*derivation, output_index, dst_entr.addr.m_spend_public_key);
+      (*tx_shared_secret, output_index, dst_entr.addr.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
        eph_pk
        , false
        , "at creation outs: failed to derive_tx_output_public_key_from_spend_public_key("
-       << *derivation << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
+       << *tx_shared_secret << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
        );
 
     out_eph_public_key = *eph_pk;
@@ -355,15 +363,13 @@ namespace cryptonote
     classify_addresses(destinations, change_addr, num_stdaddresses, num_subaddresses, single_dest_subaddress);
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
-    if (num_stdaddresses == 0 && num_subaddresses == 1)
-    {
-      txkey_pub = rct::rct_p2pk
-        (rct::multP(rct::pk2rct_p(single_dest_subaddress.m_spend_public_key), rct::sk2rct_s(tx_key)));
-    }
-    else
-    {
-      txkey_pub = rct::rct_p2pk(rct::G_(rct::rct_reduce(tx_key)));
-    }
+    txkey_pub = crypto::p2pk
+      (
+       num_stdaddresses == 0 && num_subaddresses == 1
+       ? single_dest_subaddress.m_spend_public_key ^ tx_key
+       : crypto::multBase(tx_key)
+       );
+
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
     add_tx_pub_key_to_extra(tx, txkey_pub);
 
@@ -389,11 +395,9 @@ namespace cryptonote
                                            need_additional_txkeys, additional_tx_keys,
                                            additional_tx_public_keys, amount_keys, out_eph_public_key);
 
-      tx_out out;
-      out.amount = dst_entr.amount;
-      txout_to_key tk;
-      tk.key = out_eph_public_key;
-      out.target = tk;
+      const txout_to_key txout_key_type{out_eph_public_key};
+      const tx_out out{dst_entr.amount, txout_key_type};
+
       tx.vout.push_back(out);
       output_index++;
       summary_outs_money += dst_entr.amount;
