@@ -2991,10 +2991,10 @@ bool BlockchainLMDB::for_blocks_range(const uint64_t& h1, const uint64_t& h2, st
     block b;
     if (!parse_and_validate_block_from_blob(bd, b))
       throw0(DB_ERROR("Failed to parse block from blob retrieved from the db"));
-    crypto::hash hash;
-    if (!get_block_hash(b, hash))
+    const auto h = get_maybe_block_hash(b);
+    if (!h)
         throw0(DB_ERROR("Failed to get block hash from blob retrieved from the db"));
-    if (!f(height, hash, b)) {
+    if (!f(height, *h, b)) {
       fret = false;
       break;
     }

@@ -526,12 +526,6 @@ namespace cryptonote
     return str;
   }
   //---------------------------------------------------------------
-  bool calculate_block_hash(const block& b, crypto::hash& res, const blobdata_ref *blob)
-  {
-    res = get_object_hash(get_block_hashing_blob(b));
-    return true;
-  }
-  //---------------------------------------------------------------
   bool get_block_hash(const block& b, crypto::hash& res)
   {
     if (b.is_hash_valid())
@@ -548,6 +542,23 @@ namespace cryptonote
     if (!ret)
       return false;
     b.set_hash(res);
+    return true;
+  }
+
+  std::optional<crypto::hash> get_maybe_block_hash(const block& b) {
+    crypto::hash h;
+    const auto r = get_block_hash(b, h);
+    if (r) {
+      return h;
+    } else {
+      return {};
+    }
+  }
+
+  //---------------------------------------------------------------
+  bool calculate_block_hash(const block& b, crypto::hash& res, const blobdata_ref *blob)
+  {
+    res = get_object_hash(get_block_hashing_blob(b));
     return true;
   }
   //---------------------------------------------------------------
