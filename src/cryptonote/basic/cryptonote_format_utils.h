@@ -78,21 +78,6 @@ namespace cryptonote
   bool add_additional_tx_pub_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& additional_pub_keys);
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
 
-  struct subaddress_receive_info
-  {
-    subaddress_index index;
-    crypto::tx_ecdh_shared_secret tx_shared_secret;
-  };
-
-  std::optional<subaddress_receive_info> is_out_to_acc_precomp
-  (
-   const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-   , const crypto::public_key& tx_out_key
-   , const std::optional<crypto::tx_ecdh_shared_secret>& tx_shared_secret
-   , const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets
-   , size_t output_index
-   );
-
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, const std::optional<crypto::public_key>& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_public_keys, std::vector<size_t>& outs, uint64_t& money_transfered);
 
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered);

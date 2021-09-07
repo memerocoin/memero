@@ -543,42 +543,6 @@ namespace cryptonote
     return res;
   }
   //---------------------------------------------------------------
-  std::optional<subaddress_receive_info> is_out_to_acc_precomp
-  (
-   const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-   , const crypto::public_key& tx_out_key
-   , const std::optional<crypto::tx_ecdh_shared_secret>& tx_shared_secret
-   , const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets
-   , size_t output_index
-   )
-  {
-    // try the shared tx pubkey
-    if (tx_shared_secret) {
-      const std::optional<crypto::public_key> spend_pk =
-        crypto::derive_spend_public_key_from_tx_output_public_key(*tx_shared_secret, output_index, tx_out_key);
-
-      auto found = subaddresses.find(spend_pk.value_or(crypto::null_pkey));
-
-      if (found != subaddresses.end())
-        return subaddress_receive_info{ found->second, *tx_shared_secret};
-    }
-
-    // try additional tx pubkeys if available
-    if (!tx_shared_secrets.empty())
-    {
-      LOG_ERROR_AND_RETURN_UNLESS(output_index < tx_shared_secrets.size(), std::nullopt, "wrong number of additional derivations");
-      const auto spend_pk_1 = crypto::derive_spend_public_key_from_tx_output_public_key
-        (tx_shared_secrets[output_index], output_index, tx_out_key);
-
-      const auto found_1 = subaddresses.find(spend_pk_1.value_or(crypto::null_pkey));
-
-      if (found_1 != subaddresses.end())
-        return subaddress_receive_info{ found_1->second, tx_shared_secrets[output_index] };
-    }
-    return {};
-  }
-
-  //---------------------------------------------------------------
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered)
   {
     const auto tx_pub_key = get_tx_pub_key_from_extra(tx);

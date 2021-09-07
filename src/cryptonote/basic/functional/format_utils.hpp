@@ -40,6 +40,15 @@
 
 namespace cryptonote
 {
+
+  struct subaddress_receive_info
+  {
+    subaddress_index index;
+    crypto::tx_ecdh_shared_secret tx_shared_secret;
+  };
+
+
+
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx);
 
   std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper
@@ -73,6 +82,15 @@ namespace cryptonote
    , const txout_to_key& out_key
    , const std::optional<crypto::public_key>& tx_pub_key
    , const std::vector<crypto::public_key>& additional_tx_pub_keys
+   , const size_t output_index
+   );
+
+  std::optional<subaddress_receive_info> is_out_to_acc_precomp
+  (
+   const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
+   , const crypto::public_key& tx_out_key
+   , const std::optional<crypto::tx_ecdh_shared_secret>& tx_shared_secret
+   , const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets
    , const size_t output_index
    );
 
