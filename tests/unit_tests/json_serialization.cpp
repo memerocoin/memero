@@ -144,11 +144,11 @@ TEST(JsonSerialization, BulletproofTransaction)
         acct1.get_keys(), {miner_tx}, {acct2.get_keys().m_account_address}
     );
 
-    crypto::hash tx_hash = cryptonote::fill_transaction_hash(tx);
+    cryptonote::fill_transaction_hash(tx);
 
     cryptonote::transaction tx_copy = test_json(tx);
 
-    crypto::hash tx_copy_hash = cryptonote::fill_transaction_hash(tx_copy);
+    cryptonote::fill_transaction_hash(tx_copy);
 
     // TODO fix test failure
     // EXPECT_EQ(tx_hash, tx_copy_hash);

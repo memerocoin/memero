@@ -332,4 +332,31 @@ namespace cryptonote
     res.insert(8, "....");
     return res;
   }
+
+  //---------------------------------------------------------------
+  crypto::hash calculate_transaction_prunable_hash
+  (
+   const transaction& t
+   , const cryptonote::blobdata_ref *blob
+   )
+  {
+
+    LOG_ERROR_AND_THROW_IF
+      (
+       t.version == 1
+       , "error trying to calculate prunable_hash on v1 tx"
+       );
+
+    const unsigned int unprunable_size = t.unprunable_size;
+
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       unprunable_size <= blob->size()
+       , "Inconsistent transaction unprunable and blob sizes"
+       );
+
+    return cryptonote::get_blob_hash
+      (blobdata_ref(blob->data() + unprunable_size, blob->size() - unprunable_size)
+       );
+  }
 }
