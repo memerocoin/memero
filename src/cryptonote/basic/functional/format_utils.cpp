@@ -588,4 +588,10 @@ namespace cryptonote
   {
     return get_block_hashing_blob_head(b).append(get_block_hashing_blob_tail(b));
   }
+
+  //---------------------------------------------------------------
+  crypto::hash calculate_block_hash(const block& b)
+  {
+    return get_object_hash(get_block_hashing_blob(b));
+  }
 }

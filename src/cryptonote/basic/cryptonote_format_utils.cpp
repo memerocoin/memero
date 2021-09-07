@@ -533,9 +533,7 @@ namespace cryptonote
       res = b.hash;
       return true;
     }
-    bool ret = calculate_block_hash(b, res);
-    if (!ret)
-      return false;
+    res = calculate_block_hash(b);
     b.set_hash(res);
     return true;
   }
@@ -550,12 +548,7 @@ namespace cryptonote
     }
   }
 
-  //---------------------------------------------------------------
-  bool calculate_block_hash(const block& b, crypto::hash& res, const blobdata_ref *blob)
-  {
-    res = get_object_hash(get_block_hashing_blob(b));
-    return true;
-  }
+
   //---------------------------------------------------------------
   crypto::hash get_block_hash(const block& b)
   {
@@ -595,8 +588,7 @@ namespace cryptonote
     b.miner_tx.invalidate_hashes();
     if (block_hash)
     {
-      calculate_block_hash(b, *block_hash, &b_blob);
-      ++block_hashes_calculated_count;
+      *block_hash = calculate_block_hash(b);
       b.set_hash(*block_hash);
     }
     return true;

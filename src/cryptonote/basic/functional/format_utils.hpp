@@ -180,4 +180,5 @@ namespace cryptonote
   blobdata get_block_hashing_blob_head(const block& b);
   blobdata get_block_hashing_blob_tail(const block& b);
 
+  crypto::hash calculate_block_hash(const block& b);
 }
