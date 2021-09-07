@@ -54,29 +54,30 @@ namespace proof {
 
     for (size_t n = 0; n < tx.vout.size(); ++n)
     {
-      const cryptonote::txout_to_key* const out_key = boost::get<cryptonote::txout_to_key>(std::addressof(tx.vout[n].target));
-      if (!out_key)
+      const cryptonote::txout_to_key* const tx_output = boost::get<cryptonote::txout_to_key>(std::addressof(tx.vout[n].target));
+      if (!tx_output)
         continue;
 
       bool found = false;
       crypto::tx_ecdh_shared_secret found_shared_secret = {};
+
       if (tx_shared_secret) {
-        const std::optional<crypto::public_key> derived_out_key =
+        const std::optional<crypto::public_key> maybe_derived_tx_output_public_key =
           crypto::derive_tx_output_public_key_from_spend_public_key(*tx_shared_secret, n, address.m_spend_public_key);
 
+        THROW_WALLET_EXCEPTION_IF(!maybe_derived_tx_output_public_key, error::wallet_internal_error, "Failed to derive public key");
 
-        THROW_WALLET_EXCEPTION_IF(!derived_out_key, error::wallet_internal_error, "Failed to derive public key");
-
-        found = out_key->key == *derived_out_key;
+        found = tx_output->key == *maybe_derived_tx_output_public_key;
         found_shared_secret = *tx_shared_secret;
       }
 
       if (!found && !tx_shared_secrets.empty())
       {
-        const auto additional_derived_out = crypto::derive_tx_output_public_key_from_spend_public_key(tx_shared_secrets[n], n, address.m_spend_public_key);
-        THROW_WALLET_EXCEPTION_IF(!additional_derived_out, error::wallet_internal_error, "Failed to derive public key");
+        const auto maybe_derived_tx_output_public_key_1 =
+          crypto::derive_tx_output_public_key_from_spend_public_key(tx_shared_secrets[n], n, address.m_spend_public_key);
+        THROW_WALLET_EXCEPTION_IF(!maybe_derived_tx_output_public_key_1, error::wallet_internal_error, "Failed to derive public key");
 
-        found = out_key->key == *additional_derived_out;
+        found = tx_output->key == *maybe_derived_tx_output_public_key_1;
         found_shared_secret = tx_shared_secrets[n];
       }
 
