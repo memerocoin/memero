@@ -780,29 +780,6 @@ namespace cryptonote
     }
   }
   //---------------------------------------------------------------
-  void get_tx_tree_hash(const std::vector<crypto::hash>& tx_hashes, crypto::hash& h)
-  {
-    h = tree_hash(tx_hashes);
-  }
-  //---------------------------------------------------------------
-  crypto::hash get_tx_tree_hash(const std::vector<crypto::hash>& tx_hashes)
-  {
-    crypto::hash h = null_hash;
-    get_tx_tree_hash(tx_hashes, h);
-    return h;
-  }
-  //---------------------------------------------------------------
-  crypto::hash get_tx_tree_hash(const block& b)
-  {
-    std::vector<crypto::hash> txs_ids;
-    txs_ids.reserve(1 + b.tx_hashes.size());
-    crypto::hash h = fill_transaction_hash(b.miner_tx);
-    txs_ids.push_back(h);
-    for(auto& th: b.tx_hashes)
-      txs_ids.push_back(th);
-    return get_tx_tree_hash(txs_ids);
-  }
-  //---------------------------------------------------------------
   void get_hash_stats(uint64_t &tx_hashes_calculated, uint64_t &tx_hashes_cached, uint64_t &block_hashes_calculated, uint64_t & block_hashes_cached)
   {
     tx_hashes_calculated = tx_hashes_calculated_count;

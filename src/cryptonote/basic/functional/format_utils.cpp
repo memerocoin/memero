@@ -416,4 +416,25 @@ namespace cryptonote
     return crypto::s2sk(key - offset);
   }
 
+  //---------------------------------------------------------------
+  crypto::hash get_tx_tree_hash(const std::vector<crypto::hash>& tx_hashes)
+  {
+    return tree_hash(tx_hashes);
+  }
+  //---------------------------------------------------------------
+  crypto::hash get_tx_tree_hash(const block& b)
+  {
+    cosnt crypto::hash h = fill_transaction_hash(b.miner_tx);
+
+    std::vector<crypto::hash> txs = {h};
+
+    std::copy
+      (
+       b.tx_hashes.begin()
+       , b.tx_hashes.end()
+       , std::back_inserter(txs)
+       );
+
+    return get_tx_tree_hash(txs);
+  }
 }
