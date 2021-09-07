@@ -647,29 +647,32 @@ namespace cryptonote
     return str;
   }
   //---------------------------------------------------------------
-  bool calculate_transaction_prunable_hash(const transaction& t, const cryptonote::blobdata_ref *blob, crypto::hash& res)
+  crypto::hash calculate_transaction_prunable_hash
+  (
+   const transaction& t
+   , const cryptonote::blobdata_ref *blob
+   )
   {
-    if (t.version == 1)
-      return false;
+
+    LOG_ERROR_AND_THROW_IF
+      (
+       t.version == 1
+       , "error trying to calculate prunable_hash on v1 tx"
+       );
+
     const unsigned int unprunable_size = t.unprunable_size;
-    if (blob && unprunable_size)
-    {
-      LOG_ERROR_AND_RETURN_UNLESS(unprunable_size <= blob->size(), false, "Inconsistent transaction unprunable and blob sizes");
-      res = cryptonote::get_blob_hash(blobdata_ref(blob->data() + unprunable_size, blob->size() - unprunable_size));
-    }
-    else
-    {
-      transaction &tt = const_cast<transaction&>(t);
-      std::stringstream ss;
-      binary_archive<true> ba(ss);
-      const size_t inputs = t.vin.size();
-      const size_t outputs = t.vout.size();
-      const size_t mixin = t.vin.empty() ? 0 : t.vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(t.vin[0]).key_offsets.size() - 1 : 0;
-      bool r = tt.ringct_essential.p.serialize_ringct_prunable(ba, t.ringct_essential.type, inputs, outputs, mixin);
-      LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to serialize rct signatures prunable");
-      res = cryptonote::get_blob_hash(ss.str());
-    }
-    return true;
+
+    LOG_GLOBAL_INFO(">>> blob && unprunable_size branch");
+
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       unprunable_size <= blob->size()
+       , "Inconsistent transaction unprunable and blob sizes"
+       );
+
+    return cryptonote::get_blob_hash
+      (blobdata_ref(blob->data() + unprunable_size, blob->size() - unprunable_size)
+       );
   }
   //---------------------------------------------------------------
   crypto::hash get_transaction_prunable_hash(const transaction& t, const cryptonote::blobdata_ref *blobdata)
@@ -677,16 +680,14 @@ namespace cryptonote
     crypto::hash res;
     if (t.is_prunable_hash_valid())
     {
-#ifdef ENABLE_HASH_CASH_INTEGRITY_CHECK
-      LOG_ERROR_AND_THROW_UNLESS(!calculate_transaction_prunable_hash(t, blobdata, res) || t.hash == res, "tx hash cash integrity failure");
-#endif
       res = t.prunable_hash;
       ++tx_hashes_cached_count;
       return res;
     }
 
     ++tx_hashes_calculated_count;
-    LOG_ERROR_AND_THROW_UNLESS(calculate_transaction_prunable_hash(t, blobdata, res), "Failed to calculate tx prunable hash");
+    res = calculate_transaction_prunable_hash(t, blobdata);
+
     t.set_prunable_hash(res);
     return res;
   }
@@ -726,7 +727,7 @@ namespace cryptonote
     else
     {
       cryptonote::blobdata_ref blobref(blob);
-      calculate_transaction_prunable_hash(t, &blobref, hashes[2]);
+      hashes [2] = calculate_transaction_prunable_hash(t, &blobref);
     }
 
     // the tx hash is the hash of the 3 hashes
