@@ -94,10 +94,6 @@ namespace cryptonote
 
   bool parse_amount(uint64_t& amount, const std::string& str_amount);
 
-  bool check_money_overflow(const transaction& tx);
-  bool check_outs_overflow(const transaction& tx);
-  bool check_inputs_overflow(const transaction& tx);
-
   std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off);
   std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off);
   void set_default_decimal_point(unsigned int decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT);

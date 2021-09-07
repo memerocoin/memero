@@ -528,4 +528,43 @@ namespace cryptonote
     }
     return true;
   }
+
+  //-----------------------------------------------------------------------------------------------
+  bool check_money_overflow(const transaction& tx)
+  {
+    return check_inputs_overflow(tx) && check_outs_overflow(tx);
+  }
+  //---------------------------------------------------------------
+  bool check_inputs_overflow(const transaction& tx)
+  {
+    uint64_t money = 0;
+    for(const auto& in: tx.vin)
+    {
+      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
+      if(money > tokey_in.amount + money)
+        return false;
+      money += tokey_in.amount;
+    }
+    return true;
+  }
+  //---------------------------------------------------------------
+  bool check_outs_overflow(const transaction& tx)
+  {
+    uint64_t money = 0;
+    for(const auto& o: tx.vout)
+    {
+      if(money > o.amount + money)
+        return false;
+      money += o.amount;
+    }
+    return true;
+  }
+  //---------------------------------------------------------------
+  uint64_t get_outs_money_amount(const transaction& tx)
+  {
+    uint64_t outputs_amount = 0;
+    for(const auto& o: tx.vout)
+      outputs_amount += o.amount;
+    return outputs_amount;
+  }
 }
