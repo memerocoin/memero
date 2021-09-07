@@ -164,4 +164,46 @@ namespace cryptonote
     return {{in_ephemeral, ki}};
   }
 
+
+  //---------------------------------------------------------------
+  std::optional<std::vector<tx_extra_field>> parse_tx_extra(const epee::blob::span tx_extra)
+  {
+    std::vector<tx_extra_field> tx_extra_fields;
+
+    if(tx_extra.empty())
+      return tx_extra_fields;
+
+    std::string extra_str = epee::string_tools::blob_to_string(tx_extra);
+    std::istringstream iss(extra_str);
+    binary_archive<false> ar(iss);
+
+    bool eof = false;
+    while (!eof)
+    {
+      tx_extra_field field;
+      bool r = ::do_serialize(ar, field);
+      LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+        (
+         r
+         , {}
+         , "failed to deserialize extra field. extra = "
+         << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+         );
+      tx_extra_fields.push_back(field);
+
+      std::ios_base::iostate state = iss.rdstate();
+      eof = (EOF == iss.peek());
+      iss.clear(state);
+    }
+    LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+      (
+       ::serialization::check_stream_state(ar)
+       , {}
+       , "failed to deserialize extra field. extra = "
+       << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
+       );
+
+    return tx_extra_fields;
+  }
+
 }

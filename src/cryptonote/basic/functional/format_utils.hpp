@@ -36,6 +36,7 @@
 #include "../account.h"
 #include "../subaddress_index.h"
 
+#include "tools/epee/include/blob.hpp"
 
 namespace cryptonote
 {
@@ -60,4 +61,5 @@ namespace cryptonote
    , const subaddress_index& received_index
    );
 
+  std::optional<std::vector<tx_extra_field>> parse_tx_extra(const epee::blob::span tx_extra);
 }
