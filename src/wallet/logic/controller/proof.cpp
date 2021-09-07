@@ -73,7 +73,6 @@ namespace proof {
     {
       LOG_FATAL("get tx proof Out is unsupported");
 
-      /*
       const size_t num_sigs = 1 + additional_tx_keys.size();
       shared_secret.resize(num_sigs);
       sig.resize(num_sigs);
@@ -109,7 +108,6 @@ namespace proof {
         }
       }
       sig_str = std::string("OutProofV2");
-      */
     }
     else
     {

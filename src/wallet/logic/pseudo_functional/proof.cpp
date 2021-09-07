@@ -140,32 +140,56 @@ namespace proof {
     std::vector<int> good_signature(num_sigs, 0);
     if (is_out)
     {
-      LOG_FATAL("unsupported out signature");
-      return false;
-      /*
-      if (tx_pub_key) {
-        good_signature[0] =
-          is_subaddress ?
-          crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0]) :
-          crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
+      std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
 
-        for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
-        {
-          good_signature[i + 1] = is_subaddress ?
-            crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i + 1], sig[i + 1]) :
-            crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i + 1], sig[i + 1]);
+      if (tx_pub_key) {
+        const bool good_signature_for_tx_pub_key =
+          is_subaddress
+          ? crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0])
+          : crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
+
+        if (good_signature_for_tx_pub_key) {
+          tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
+        } else {
+          LOG_WARNING("bad signature for pub key");
+        }
+
+        shared_secret.erase(shared_secret.begin());
+        sig.erase(sig.begin());
+      }
+
+      std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
+      for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
+      {
+        const bool good_signature_for_additional_tx_pub_key = is_subaddress
+          ? crypto::verify_tx_proof
+          (prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i])
+          : crypto::verify_tx_proof
+          (prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
+
+        if (good_signature_for_additional_tx_pub_key) {
+          const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
+            crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
+
+          THROW_WALLET_EXCEPTION_IF
+            ( !additional_tx_shared_secret
+              , error::wallet_internal_error, "Failed to generate key derivation");
+
+          tx_shared_secrets[i] = *additional_tx_shared_secret;
+
+        } else {
+          LOG_WARNING("bad signature for additional pub key at index: " << i);
         }
       }
-      else {
-        for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
-        {
-          good_signature[i] = is_subaddress ?
-            crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i]) :
-            crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
-        }
-      }
-      */
+
+      received = wallet::logic::functional::proof::get_tx_key_received_helper
+        (tx, *tx_shared_secret, tx_shared_secrets, address);
+
+      return true;
     }
+
+
+
     else
     {
       std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
@@ -210,6 +234,7 @@ namespace proof {
           LOG_WARNING("bad signature for additional pub key at index: " << i);
         }
       }
+
       received = wallet::logic::functional::proof::get_tx_key_received_helper
         (tx, *tx_shared_secret, tx_shared_secrets, address);
 
