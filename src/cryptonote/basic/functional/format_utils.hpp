@@ -94,8 +94,8 @@ namespace cryptonote
    , const size_t output_index
    );
 
-  crypto::hash get_blob_hash(const blobdata& blob);
-  crypto::hash get_blob_hash(const blobdata_ref& blob);
+  crypto::hash get_blob_hash(const blobdata blob);
+  crypto::hash get_blob_hash(const blobdata_ref blob);
   std::string short_hash_str(const crypto::hash& h);
 
   //---------------------------------------------------------------

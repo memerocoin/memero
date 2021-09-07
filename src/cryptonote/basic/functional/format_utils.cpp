@@ -313,12 +313,12 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  crypto::hash get_blob_hash(const blobdata_ref& blob)
+  crypto::hash get_blob_hash(const blobdata_ref blob)
   {
     return crypto::sha3(epee::string_tools::string_view_to_blob_view(blob));
   }
   //---------------------------------------------------------------
-  crypto::hash get_blob_hash(const blobdata& blob)
+  crypto::hash get_blob_hash(const blobdata blob)
   {
     return crypto::sha3(epee::string_tools::string_to_blob(blob));
   }
