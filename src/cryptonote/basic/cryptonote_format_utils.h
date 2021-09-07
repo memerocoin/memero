@@ -84,14 +84,6 @@ namespace cryptonote
 
   uint64_t get_tx_fee(const transaction& tx);
 
-  crypto::hash get_blob_hash(const blobdata& blob);
-  crypto::hash get_blob_hash(const blobdata_ref& blob);
-  std::string short_hash_str(const crypto::hash& h);
-
-  crypto::hash get_transaction_hash(const transaction& t);
-  bool get_transaction_hash(const transaction& t, crypto::hash& res);
-  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t& blob_size);
-  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size);
   bool calculate_transaction_prunable_hash(const transaction& t, const cryptonote::blobdata_ref *blob, crypto::hash& res);
   crypto::hash get_transaction_prunable_hash(const transaction& t, const cryptonote::blobdata_ref *blob = NULL);
   bool calculate_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size);

@@ -312,4 +312,72 @@ namespace cryptonote
     return {};
   }
 
+  //---------------------------------------------------------------
+  crypto::hash get_blob_hash(const blobdata_ref& blob)
+  {
+    return crypto::sha3(epee::string_tools::string_view_to_blob_view(blob));
+  }
+  //---------------------------------------------------------------
+  crypto::hash get_blob_hash(const blobdata& blob)
+  {
+    return crypto::sha3(epee::string_tools::string_to_blob(blob));
+  }
+
+  //---------------------------------------------------------------
+  std::string short_hash_str(const crypto::hash& h)
+  {
+    std::string res = epee::string_tools::pod_to_hex(h);
+    LOG_ERROR_AND_RETURN_UNLESS(res.size() == 64, res, "wrong hash256 with epee::string_tools::pod_to_hex conversion");
+    auto erased_pos = res.erase(8, 48);
+    res.insert(8, "....");
+    return res;
+  }
+
+  //---------------------------------------------------------------
+  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size)
+  {
+    if (t.is_hash_valid())
+    {
+      res = t.hash;
+      if (blob_size)
+      {
+        if (!t.is_blob_size_valid())
+          {
+            t.set_blob_size(get_object_blobsize(t));
+          }
+        *blob_size = t.blob_size;
+      }
+      // ++tx_hashes_cached_count;
+      return true;
+    }
+    // ++tx_hashes_calculated_count;
+    bool ret = calculate_transaction_hash(t, res, blob_size);
+    if (!ret)
+      return false;
+    t.set_hash(res);
+    if (blob_size)
+      {
+        t.set_blob_size(*blob_size);
+      }
+    return true;
+  }
+
+  //---------------------------------------------------------------
+  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t& blob_size)
+  {
+    return get_transaction_hash(t, res, &blob_size);
+  }
+  //---------------------------------------------------------------
+  bool get_transaction_hash(const transaction& t, crypto::hash& res)
+  {
+    return get_transaction_hash(t, res, NULL);
+  }
+  //---------------------------------------------------------------
+  crypto::hash get_transaction_hash(const transaction& t)
+  {
+    crypto::hash h;
+    get_transaction_hash(t, h, NULL);
+    LOG_ERROR_AND_THROW_UNLESS(get_transaction_hash(t, h, NULL), "Failed to calculate transaction hash");
+    return h;
+  }
 }

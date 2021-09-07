@@ -534,15 +534,6 @@ namespace cryptonote
     return outputs_amount;
   }
   //---------------------------------------------------------------
-  std::string short_hash_str(const crypto::hash& h)
-  {
-    std::string res = epee::string_tools::pod_to_hex(h);
-    LOG_ERROR_AND_RETURN_UNLESS(res.size() == 64, res, "wrong hash256 with epee::string_tools::pod_to_hex conversion");
-    auto erased_pos = res.erase(8, 48);
-    res.insert(8, "....");
-    return res;
-  }
-  //---------------------------------------------------------------
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered)
   {
     const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
@@ -567,16 +558,6 @@ namespace cryptonote
       i++;
     }
     return true;
-  }
-  //---------------------------------------------------------------
-  crypto::hash get_blob_hash(const blobdata_ref& blob)
-  {
-    return sha3(epee::string_tools::string_view_to_blob_view(blob));
-  }
-  //---------------------------------------------------------------
-  crypto::hash get_blob_hash(const blobdata& blob)
-  {
-    return sha3(epee::string_tools::string_to_blob(blob));
   }
   //---------------------------------------------------------------
   void set_default_decimal_point(unsigned int decimal_point)
@@ -665,19 +646,6 @@ namespace cryptonote
     return str;
   }
   //---------------------------------------------------------------
-  crypto::hash get_transaction_hash(const transaction& t)
-  {
-    crypto::hash h = null_hash;
-    get_transaction_hash(t, h, NULL);
-    LOG_ERROR_AND_THROW_UNLESS(get_transaction_hash(t, h, NULL), "Failed to calculate transaction hash");
-    return h;
-  }
-  //---------------------------------------------------------------
-  bool get_transaction_hash(const transaction& t, crypto::hash& res)
-  {
-    return get_transaction_hash(t, res, NULL);
-  }
-  //---------------------------------------------------------------
   bool calculate_transaction_prunable_hash(const transaction& t, const cryptonote::blobdata_ref *blob, crypto::hash& res)
   {
     if (t.version == 1)
@@ -757,7 +725,7 @@ namespace cryptonote
     }
 
     // the tx hash is the hash of the 3 hashes
-    res = sha3(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
+    res = crypto::sha3(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
 
     // we still need the size
     if (blob_size)
@@ -770,42 +738,6 @@ namespace cryptonote
     }
 
     return true;
-  }
-  //---------------------------------------------------------------
-  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t* blob_size)
-  {
-    if (t.is_hash_valid())
-    {
-#ifdef ENABLE_HASH_CASH_INTEGRITY_CHECK
-      LOG_ERROR_AND_THROW_UNLESS(!calculate_transaction_hash(t, res, blob_size) || t.hash == res, "tx hash cash integrity failure");
-#endif
-      res = t.hash;
-      if (blob_size)
-      {
-        if (!t.is_blob_size_valid())
-        {
-          t.set_blob_size(get_object_blobsize(t));
-        }
-        *blob_size = t.blob_size;
-      }
-      ++tx_hashes_cached_count;
-      return true;
-    }
-    ++tx_hashes_calculated_count;
-    bool ret = calculate_transaction_hash(t, res, blob_size);
-    if (!ret)
-      return false;
-    t.set_hash(res);
-    if (blob_size)
-    {
-      t.set_blob_size(*blob_size);
-    }
-    return true;
-  }
-  //---------------------------------------------------------------
-  bool get_transaction_hash(const transaction& t, crypto::hash& res, size_t& blob_size)
-  {
-    return get_transaction_hash(t, res, &blob_size);
   }
   //---------------------------------------------------------------
   blobdata get_block_hashing_blob_tail(const block& b)
