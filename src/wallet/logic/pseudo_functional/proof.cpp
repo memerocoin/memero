@@ -186,7 +186,7 @@ namespace proof {
         sig.erase(sig.begin());
       }
 
-      std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets(additional_tx_pub_keys.size());
+      std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
 
       for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
       {

@@ -93,7 +93,7 @@ struct options {
   const command_line::arg_descriptor<std::string> password = {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
   const command_line::arg_descriptor<std::string> password_file = {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
   const command_line::arg_descriptor<bool> testnet = {"testnet", tools::wallet2::tr("For testnet. Daemon must also be launched with --testnet flag"), false};
-  const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key derivation function"), 1};
+  const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key tx_shared_secret function"), 1};
   const command_line::arg_descriptor<std::string> tx_notify =
     { "tx-notify"
     , "Run a program for each new incoming transaction, "
@@ -668,7 +668,7 @@ void wallet2::cache_tx_data(const cryptonote::transaction& tx, const crypto::has
       while (find_tx_extra_field_by_type(tx_cache_data.tx_extra_fields, pub_key_field, pk_index++))
         tx_cache_data.primary.push_back({pub_key_field.pub_key, {}, rec});
 
-      // additional tx pubkeys and derivations for multi-destination transfers involving one or more subaddresses
+      // additional tx pubkeys and tx_shared_secrets for multi-destination transfers involving one or more subaddresses
       tx_extra_additional_pub_keys additional_tx_pub_keys;
       if (find_tx_extra_field_by_type(tx_cache_data.tx_extra_fields, additional_tx_pub_keys))
       {
@@ -756,19 +756,19 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     const wallet::logic::type::wallet::is_out_data *is_out_data_ptr = NULL;
     if (tx_cache_data.primary.empty())
     {
-      const auto maybeDerivation = crypto::derive_tx_ecdh_shared_secret(tx_pub_key, keys.m_view_secret_key);
-      if (!maybeDerivation)
+      const auto maybeTx_Shared_Secret = crypto::derive_tx_ecdh_shared_secret(tx_pub_key, keys.m_view_secret_key);
+      if (!maybeTx_Shared_Secret)
       {
-        LOG_WARNING("Failed to generate key derivation from tx pubkey in " << txid << ", skipping");
+        LOG_WARNING("Failed to generate key tx_shared_secret from tx pubkey in " << txid << ", skipping");
         static_assert(sizeof(tx_shared_secret) == sizeof(rct::rct_point), "Mismatched sizes of tx_ecdh_shared_secret and rct::rct_point");
         tx_shared_secret = p2tx_shared_secret(rct::identity);
       } else {
-        tx_shared_secret = *maybeDerivation;
+        tx_shared_secret = *maybeTx_Shared_Secret;
       }
 
       if (pk_index == 1)
       {
-        // additional tx pubkeys and derivations for multi-destination transfers involving one or more subaddresses
+        // additional tx pubkeys and tx_shared_secrets for multi-destination transfers involving one or more subaddresses
         if (find_tx_extra_field_by_type(tx_extra_fields, additional_tx_pub_keys))
         {
           for (size_t i = 0; i < additional_tx_pub_keys.data.size(); ++i)
@@ -776,7 +776,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             const auto additional_tx_shared_secret =
               crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys.data[i], keys.m_view_secret_key);
             if (!additional_tx_shared_secret) {
-              LOG_WARNING("Failed to generate key derivation from additional tx pubkey in " << txid << ", skipping");
+              LOG_WARNING("Failed to generate key tx_shared_secret from additional tx pubkey in " << txid << ", skipping");
               tx_shared_secrets.push_back(p2tx_shared_secret(rct::identity));
             } else {
               tx_shared_secrets.push_back(*additional_tx_shared_secret);
@@ -1352,7 +1352,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       crypto::derive_tx_ecdh_shared_secret(iod.pkey, keys.m_view_secret_key);
     if (!d)
     {
-      LOG_WARNING("Failed to generate key derivation from tx pubkey, skipping");
+      LOG_WARNING("Failed to generate key tx_shared_secret from tx pubkey, skipping");
       static_assert(sizeof(iod.tx_shared_secret) == sizeof(rct::rct_point), "Mismatched sizes of tx_ecdh_shared_secret and rct::rct_point");
       iod.tx_shared_secret = p2tx_shared_secret(rct::identity);
     }
@@ -4286,28 +4286,42 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
   return false;
 }
 //----------------------------------------------------------------------------------------------------
-
-void wallet2::verify_tx_key(const crypto::hash &txid, const crypto::secret_key &tx_key, const std::vector<crypto::secret_key> &additional_tx_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
+  void wallet2::verify_tx_key(const crypto::hash &txid, const std::optional<crypto::secret_key> &tx_key, const std::vector<crypto::secret_key> &additional_tx_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
 {
-  std::optional<crypto::tx_ecdh_shared_secret> derivation =
-    crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, tx_key);
-  THROW_WALLET_EXCEPTION_IF(!derivation, error::wallet_internal_error,
-    "Failed to generate key derivation from supplied parameters");
+  std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
+  if (tx_key) {
+    tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, *tx_key);
 
-  std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets;
+    THROW_WALLET_EXCEPTION_IF
+      (!tx_shared_secret, error::wallet_internal_error,
+       "Failed to generate key tx_shared_secret from supplied parameters");
+  }
+
+  std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
   for (size_t i = 0; i < additional_tx_keys.size(); ++i) {
     const auto d = crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, additional_tx_keys[i]);
+
     THROW_WALLET_EXCEPTION_IF
       (!d
        , error::wallet_internal_error
-       , "Failed to generate key derivation from supplied parameters");
+       , "Failed to generate key tx_shared_secret from supplied parameters");
+
     tx_shared_secrets[i] = *d;
   }
 
-  verify_tx_key_helper(txid, *derivation, tx_shared_secrets, address, received, in_pool, confirmations);
+  verify_tx_key_helper(txid, tx_shared_secret, tx_shared_secrets, address, received, in_pool, confirmations);
 }
 
-void wallet2::verify_tx_key_helper(const crypto::hash &txid, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
+void wallet2::verify_tx_key_helper
+(
+ const crypto::hash &txid
+ , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+ , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+ , const cryptonote::account_public_address &address
+ , uint64_t &received
+ , bool &in_pool
+ , uint64_t &confirmations
+ )
 {
   COMMAND_RPC_GET_TRANSACTIONS::request req;
   COMMAND_RPC_GET_TRANSACTIONS::response res;
@@ -4343,7 +4357,7 @@ void wallet2::verify_tx_key_helper(const crypto::hash &txid, const crypto::tx_ec
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error,
     "Failed to get the right transaction from daemon");
   THROW_WALLET_EXCEPTION_IF(!tx_shared_secrets.empty() && tx_shared_secrets.size() != tx.vout.size(), error::wallet_internal_error,
-    "The size of additional derivations is wrong");
+    "The size of additional tx_shared_secrets is wrong");
 
   received = wallet::logic::functional::proof::get_tx_key_received_helper
     (tx, tx_shared_secret, tx_shared_secrets, address);
