@@ -491,4 +491,41 @@ namespace cryptonote
     CHECKED_GET_SPECIFIC_VARIANT(b.miner_tx.vin[0], const txin_gen, coinbase_in, 0);
     return coinbase_in.height;
   }
+
+  //---------------------------------------------------------------
+  bool check_inputs_types_supported(const transaction& tx)
+  {
+    for(const auto& in: tx.vin)
+    {
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         in.type() == typeid(txin_to_key)
+         , false
+         , "wrong variant type: "
+         << in.type().name() << ", expected " << typeid(txin_to_key).name()
+         << ", in transaction id=" << fill_transaction_hash(tx)
+         );
+
+    }
+    return true;
+  }
+  //-----------------------------------------------------------------------------------------------
+  bool check_outs_valid(const transaction& tx)
+  {
+    for(const tx_out& out: tx.vout)
+    {
+      LOG_ERROR_AND_RETURN_UNLESS(out.target.type() == typeid(txout_to_key), false, "wrong variant type: "
+        << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
+        << ", in transaction id=" << fill_transaction_hash(tx));
+
+      if (tx.version == 1)
+      {
+        LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << fill_transaction_hash(tx));
+      }
+
+      if(!is_safe_point(boost::get<txout_to_key>(out.target).key))
+        return false;
+    }
+    return true;
+  }
 }

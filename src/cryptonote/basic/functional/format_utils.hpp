@@ -168,4 +168,7 @@ namespace cryptonote
   std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx);
 
   uint64_t get_block_height(const block& b);
+
+  bool check_inputs_types_supported(const transaction& tx);
+  bool check_outs_valid(const transaction& tx);
 }
