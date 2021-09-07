@@ -140,6 +140,9 @@ namespace proof {
     std::vector<int> good_signature(num_sigs, 0);
     if (is_out)
     {
+      LOG_FATAL("unsupported out signature");
+      return false;
+      /*
       if (tx_pub_key) {
         good_signature[0] =
           is_subaddress ?
@@ -161,6 +164,7 @@ namespace proof {
             crypto::verify_tx_proof(prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
         }
       }
+      */
     }
     else
     {

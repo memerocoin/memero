@@ -71,6 +71,9 @@ namespace proof {
 
     if (!view_secret_key)
     {
+      LOG_FATAL("get tx proof Out is unsupported");
+
+      /*
       const size_t num_sigs = 1 + additional_tx_keys.size();
       shared_secret.resize(num_sigs);
       sig.resize(num_sigs);
@@ -106,6 +109,7 @@ namespace proof {
         }
       }
       sig_str = std::string("OutProofV2");
+      */
     }
     else
     {
@@ -138,10 +142,10 @@ namespace proof {
     const size_t num_sigs = shared_secret.size();
 
     // check if this address actually received any funds
-    const std::optional<crypto::tx_ecdh_shared_secret> derivation =
+    const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret =
       crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
-    THROW_WALLET_EXCEPTION_IF(!derivation
-       , tools::error::wallet_internal_error, "Failed to generate key derivation");
+    THROW_WALLET_EXCEPTION_IF(!tx_shared_secret
+       , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
 
     std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets(num_sigs - 1);
     for (size_t i = 1; i < num_sigs; ++i) {
@@ -150,12 +154,12 @@ namespace proof {
 
       THROW_WALLET_EXCEPTION_IF
         ( !additional_tx_shared_secret
-         , tools::error::wallet_internal_error, "Failed to generate key derivation");
+         , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
       tx_shared_secrets[i - 1] = *additional_tx_shared_secret;
     }
 
     uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
-      (tx, *derivation, tx_shared_secrets, address);
+      (tx, *tx_shared_secret, tx_shared_secrets, address);
     THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");
 
     // concatenate all signature strings
