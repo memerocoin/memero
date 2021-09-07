@@ -247,12 +247,12 @@ namespace cryptonote
     else return 0;
   }
   //---------------------------------------------------------------
-  bool parse_tx_extra(const std::vector<uint8_t>& tx_extra, std::vector<tx_extra_field>& tx_extra_fields)
+  std::optional<std::vector<tx_extra_field>> parse_tx_extra(const std::vector<uint8_t>& tx_extra)
   {
-    tx_extra_fields.clear();
+    std::vector<tx_extra_field> tx_extra_fields;
 
     if(tx_extra.empty())
-      return true;
+      return tx_extra_fields;
 
     std::string extra_str = epee::string_tools::blob_to_string(tx_extra);
     std::istringstream iss(extra_str);
@@ -266,7 +266,7 @@ namespace cryptonote
       LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
         (
          r
-         , false
+         , {}
          , "failed to deserialize extra field. extra = "
          << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
          );
@@ -279,11 +279,26 @@ namespace cryptonote
     LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
       (
        ::serialization::check_stream_state(ar)
-       , false
+       , {}
        , "failed to deserialize extra field. extra = "
        << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
        );
-    return true;
+
+    return tx_extra_fields;
+  }
+
+  //---------------------------------------------------------------
+  bool parse_tx_extra(const std::vector<uint8_t>& tx_extra, std::vector<tx_extra_field>& tx_extra_fields)
+  {
+    const auto r = parse_tx_extra(tx_extra);
+
+    if (r) {
+      tx_extra_fields = *r;
+      return true;
+    }
+    else {
+      return false;
+    }
   }
   //---------------------------------------------------------------
   template<typename T>
