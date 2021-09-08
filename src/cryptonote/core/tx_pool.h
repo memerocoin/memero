@@ -81,6 +81,7 @@ namespace cryptonote
    *   helping create a new block template by choosing transactions for it
    *
    */
+
   class tx_memory_pool: boost::noncopyable
   {
   public:
@@ -540,7 +541,6 @@ namespace cryptonote
 #if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
 public:
 #endif
-    mutable std::recursive_mutex m_transactions_lock;  //!< lock for the pool
 #if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
 private:
 #endif

@@ -76,6 +76,9 @@ namespace cryptonote
       return get_min_block_weight() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     }
   }
+
+  std::recursive_mutex m_transactions_lock;  //!< lock for the pool
+
   //---------------------------------------------------------------------------------
   //---------------------------------------------------------------------------------
   tx_memory_pool::tx_memory_pool(Blockchain& bchs): m_blockchain(bchs), m_txpool_max_weight(DEFAULT_TXPOOL_MAX_WEIGHT), m_txpool_weight(0), m_cookie(0)
