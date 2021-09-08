@@ -569,11 +569,5 @@ namespace cryptonote
     block_hashes_calculated = block_hashes_calculated_count;
     block_hashes_cached = block_hashes_cached_count;
   }
-  //---------------------------------------------------------------
-  // const is a lie
-  crypto::hash get_transaction_hash(const transaction& t)
-  {
-    return calculate_transaction_hash(t);
-  }
 
 }

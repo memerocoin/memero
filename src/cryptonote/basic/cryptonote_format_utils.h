@@ -118,6 +118,4 @@ namespace cryptonote
   specific_type& variable_name = boost::get<specific_type>(variant_var);
 
 
-  // here const is a lie
-  crypto::hash get_transaction_hash(const transaction& t);
 }

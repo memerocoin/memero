@@ -645,4 +645,10 @@ namespace cryptonote
 
     return res;
   }
+
+  //---------------------------------------------------------------
+  crypto::hash get_transaction_hash(const transaction& t)
+  {
+    return calculate_transaction_hash(t);
+  }
 }
