@@ -102,7 +102,6 @@ namespace cryptonote
 
   private:
     block_map blocks;
-    mutable std::recursive_mutex mutex;
     std::unordered_set<crypto::hash> requested_hashes;
     std::unordered_set<crypto::hash> have_blocks;
   };

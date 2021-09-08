@@ -50,6 +50,8 @@ namespace std {
 namespace cryptonote
 {
 
+  std::recursive_mutex mutex;
+
 void block_queue::add_blocks(uint64_t height, std::vector<cryptonote::block_complete_entry> bcel, const boost::uuids::uuid &connection_id, const epee::net_utils::network_address &addr, float rate, size_t size)
 {
   std::unique_lock<std::recursive_mutex> lock(mutex);
