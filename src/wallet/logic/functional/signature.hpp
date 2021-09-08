@@ -36,7 +36,7 @@
 
 #include "cryptonote/basic/cryptonote_basic.h" // account_public_address
 #include "cryptonote/basic/account.h"
-#include "cryptonote/basic/subaddress_index.h"
+#include "cryptonote/basic/type/subaddress_index.h"
 
 namespace wallet {
 namespace logic {

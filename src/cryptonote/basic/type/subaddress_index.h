@@ -26,13 +26,51 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#pragma once
 
-#include "subaddress_index.h"
+
+#include "tools/serialization/containers.h"
+#include "tools/epee/include/serialization/keyvalue_serialization.h"
+
+#include <boost/functional/hash.hpp>
 
 namespace cryptonote
 {
-  std::ostream& operator<<(std::ostream& out, const subaddress_index& subaddr_index)
+  struct subaddress_index
+  {
+    uint32_t major;
+    uint32_t minor;
+    bool operator==(const subaddress_index&) const = default;
+    constexpr bool is_zero() const { return major == 0 && minor == 0; }
+
+    BEGIN_SERIALIZE_OBJECT()
+      FIELD(major)
+      FIELD(minor)
+    END_SERIALIZE()
+
+    BEGIN_KV_SERIALIZE_MAP()
+      KV_SERIALIZE(major)
+      KV_SERIALIZE(minor)
+    END_KV_SERIALIZE_MAP()
+  };
+
+  inline std::ostream& operator<<(std::ostream& out, const subaddress_index& subaddr_index)
   {
     return out << subaddr_index.major << '/' << subaddr_index.minor;
   }
+}
+
+namespace std
+{
+  template <>
+  struct hash<cryptonote::subaddress_index>
+  {
+    size_t operator()(const cryptonote::subaddress_index& index ) const
+    {
+      std::size_t h = 0;
+      boost::hash_combine(h, index.major);
+      boost::hash_combine(h, index.minor);
+      return h;
+    }
+  };
 }

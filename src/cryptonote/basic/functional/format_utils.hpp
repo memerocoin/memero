@@ -34,7 +34,7 @@
 #include "../cryptonote_basic_impl.h"
 #include "../tx_extra.h"
 #include "../account.h"
-#include "../subaddress_index.h"
+#include "../type/subaddress_index.h"
 
 #include "tools/epee/include/blob.hpp"
 

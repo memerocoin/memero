@@ -31,7 +31,7 @@
 
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/account.h"
-#include "cryptonote/basic/subaddress_index.h"
+#include "cryptonote/basic/type/subaddress_index.h"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 
 namespace device {

@@ -32,7 +32,6 @@ set(cryptonote_basic_sources
   cryptonote_basic_impl.cpp
   cryptonote_format_utils.cpp
   miner.cpp
-  subaddress_index.cpp
   cryptonote_basic.cpp
   connection_context.cpp
 

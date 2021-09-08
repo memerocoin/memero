@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "cryptonote/basic/subaddress_index.h"
+#include "cryptonote/basic/type/subaddress_index.h"
 
 namespace wallet {
 namespace logic {
