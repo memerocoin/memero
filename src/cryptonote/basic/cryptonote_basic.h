@@ -176,10 +176,6 @@ namespace cryptonote
     void set_hash_valid(bool v) const {}
     void set_hash(const crypto::hash &h) const {}
 
-    bool is_blob_size_valid() const { return false; }
-    void set_blob_size_valid(bool v) const { }
-    void set_blob_size(size_t sz) const { }
-
     BEGIN_SERIALIZE_OBJECT()
       const unsigned int start_pos = getpos(ar);
 
