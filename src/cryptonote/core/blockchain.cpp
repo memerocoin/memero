@@ -617,8 +617,6 @@ crypto::hash Blockchain::get_block_id_by_height(uint64_t height) const
 //------------------------------------------------------------------
 crypto::hash Blockchain::get_pending_block_id_by_height(uint64_t height) const
 {
-  if (m_prepare_height && height >= m_prepare_height && height - m_prepare_height < m_prepare_nblocks)
-    return (*m_prepare_blocks)[height - m_prepare_height].hash;
   return get_block_id_by_height(height);
 }
 //------------------------------------------------------------------
