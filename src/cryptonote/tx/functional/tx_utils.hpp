@@ -73,10 +73,9 @@ namespace cryptonote
   struct tx_destination_entry
   {
     std::string original;
-    uint64_t amount = 0;                    //money
     account_public_address addr;        //destination address
+    uint64_t amount = 0;                    //money
     bool is_subaddress = false;
-    bool d_is_integrated = false;
 
     tx_destination_entry() : addr(AUTO_VAL_INIT(addr)) { }
 
@@ -86,14 +85,6 @@ namespace cryptonote
      , const account_public_address &ad
      , bool is_subaddress
      ) : amount(a), addr(ad), is_subaddress(is_subaddress) { }
-
-    tx_destination_entry
-    (
-     const std::string &o
-     , uint64_t a
-     , const account_public_address &ad
-     , bool is_subaddress
-     ) : original(o), amount(a), addr(ad), is_subaddress(is_subaddress) { }
 
 
     std::string address(network_type nettype) const
@@ -111,7 +102,6 @@ namespace cryptonote
       VARINT_FIELD(amount)
       FIELD(addr)
       FIELD(is_subaddress)
-      FIELD(d_is_integrated)
     END_SERIALIZE()
   };
 
