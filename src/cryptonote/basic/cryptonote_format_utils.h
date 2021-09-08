@@ -119,5 +119,5 @@ namespace cryptonote
 
 
   // here const is a lie
-  crypto::hash fill_transaction_hash(const transaction& t);
+  crypto::hash get_transaction_hash(const transaction& t);
 }

@@ -71,7 +71,7 @@ namespace cryptonote
 
     if (rv.outPk.size() != tx.vout.size())
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad outPk size in tx " << fill_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad outPk size in tx " << get_transaction_hash(tx));
       return false;
     }
 
@@ -79,7 +79,7 @@ namespace cryptonote
     {
       if (tx.vout[n].target.type() != typeid(txout_to_key))
       {
-        LOG_PRINT_L1("Unsupported output type in tx " << fill_transaction_hash(tx));
+        LOG_PRINT_L1("Unsupported output type in tx " << get_transaction_hash(tx));
         return false;
       }
       rv.outPk[n].dest = rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[n].target).key);
@@ -89,20 +89,20 @@ namespace cryptonote
 
     if (rv.p.bulletproofs.size() != 1)
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs size in tx " << fill_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs size in tx " << get_transaction_hash(tx));
       return false;
     }
 
     if (rv.p.bulletproofs[0].L.size() < 6)
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs L size in tx " << fill_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs L size in tx " << get_transaction_hash(tx));
       return false;
     }
 
     const size_t max_outputs = 1 << (rv.p.bulletproofs[0].L.size() - 6);
     if (max_outputs < tx.vout.size())
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << fill_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << get_transaction_hash(tx));
       return false;
     }
 
@@ -169,7 +169,7 @@ namespace cryptonote
     tx.invalidate_hashes();
     //TODO: validate tx
 
-    tx_hash = fill_transaction_hash(tx);
+    tx_hash = get_transaction_hash(tx);
     return true;
   }
   //---------------------------------------------------------------
@@ -577,7 +577,7 @@ namespace cryptonote
   }
   //---------------------------------------------------------------
   // const is a lie
-  crypto::hash fill_transaction_hash(const transaction& t)
+  crypto::hash get_transaction_hash(const transaction& t)
   {
     return calculate_transaction_hash(t);
   }

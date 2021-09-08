@@ -305,7 +305,7 @@ namespace cryptonote
     if (bl.size() == 0)
       return false;
 
-    h = fill_transaction_hash(tx);
+    h = get_transaction_hash(tx);
     return add_tx(tx, h, bl, get_transaction_weight(tx, bl.size()), tvc, tx_relay, relayed);
   }
   //---------------------------------------------------------------------------------
@@ -749,7 +749,7 @@ namespace cryptonote
     }, true, category);
   }
   //------------------------------------------------------------------
-  void tx_memory_pool::fill_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive) const
+  void tx_memory_pool::get_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive) const
   {
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
     LOCK_LOCKABLE_OBJECT(m_blockchain);

@@ -130,7 +130,7 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
   if (!tx_hash_ptr)
   {
     // should only need to compute hash for miner transactions
-    tx_hash = fill_transaction_hash(tx);
+    tx_hash = get_transaction_hash(tx);
     LOG_PRINT_L3("null tx_hash_ptr - needed to compute: " << tx_hash);
   }
   else
@@ -262,7 +262,7 @@ void BlockchainDB::pop_block(block& blk, std::vector<transaction>& txs)
     txs.push_back(std::move(tx));
     remove_transaction(h);
   }
-  remove_transaction(fill_transaction_hash(blk.miner_tx));
+  remove_transaction(get_transaction_hash(blk.miner_tx));
 }
 
 bool BlockchainDB::is_open() const

@@ -424,7 +424,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::hash get_tx_tree_hash(const block& b)
   {
-    const crypto::hash h = fill_transaction_hash(b.miner_tx);
+    const crypto::hash h = get_transaction_hash(b.miner_tx);
 
     std::vector<crypto::hash> txs = {h};
 
@@ -503,7 +503,7 @@ namespace cryptonote
          , false
          , "wrong variant type: "
          << in.type().name() << ", expected " << typeid(txin_to_key).name()
-         << ", in transaction id=" << fill_transaction_hash(tx)
+         << ", in transaction id=" << get_transaction_hash(tx)
          );
 
     }
@@ -516,11 +516,11 @@ namespace cryptonote
     {
       LOG_ERROR_AND_RETURN_UNLESS(out.target.type() == typeid(txout_to_key), false, "wrong variant type: "
         << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
-        << ", in transaction id=" << fill_transaction_hash(tx));
+        << ", in transaction id=" << get_transaction_hash(tx));
 
       if (tx.version == 1)
       {
-        LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << fill_transaction_hash(tx));
+        LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
       }
 
       if(!is_safe_point(boost::get<txout_to_key>(out.target).key))

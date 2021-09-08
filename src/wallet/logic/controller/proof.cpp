@@ -60,7 +60,7 @@ namespace proof {
 
     // const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
 
-    const crypto::hash txid = cryptonote::fill_transaction_hash(tx);
+    const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     epee::blob::data prefix_data(txid.data.data(), txid.data.size());
     prefix_data += epee::string_tools::string_to_blob(message);
     crypto::hash prefix_hash= crypto::sha3(prefix_data);

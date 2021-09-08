@@ -238,7 +238,7 @@ namespace cryptonote
      * @param include_sensitive return stempool, anonymity-pool, and unrelayed txes
      *
      */
-    void fill_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive = false) const;
+    void get_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive = false) const;
 
     /**
      * @brief get a summary statistics of all transaction hashes in the pool

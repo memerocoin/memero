@@ -1084,7 +1084,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
     LOG_WARNING("The miner transaction in block has invalid height: " << boost::get<txin_gen>(b.miner_tx.vin[0]).height << ", expected: " << height);
     return false;
   }
-  LOG_DEBUG("Miner tx hash: " << fill_transaction_hash(b.miner_tx));
+  LOG_DEBUG("Miner tx hash: " << get_transaction_hash(b.miner_tx));
   LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.unlock_time == height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW, false, "coinbase transaction transaction has the wrong unlock time=" << b.miner_tx.unlock_time << ", expected " << height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
 
   //check outs overflow
@@ -2432,7 +2432,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, uint64_t& max_used_block_heigh
   if(m_show_time_stats)
   {
     size_t ring_size = !tx.vin.empty() && tx.vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(tx.vin[0]).key_offsets.size() : 0;
-    LOG_INFO("HASH: " <<  fill_transaction_hash(tx) << " I/M/O: " << tx.vin.size() << "/" << ring_size << "/" << tx.vout.size() << " H: " << max_used_block_height << " ms: " << a + m_fake_scan_time << " B: " << get_object_blobsize(tx) << " W: " << get_transaction_weight(tx));
+    LOG_INFO("HASH: " <<  get_transaction_hash(tx) << " I/M/O: " << tx.vin.size() << "/" << ring_size << "/" << tx.vout.size() << " H: " << max_used_block_height << " ms: " << a + m_fake_scan_time << " B: " << get_object_blobsize(tx) << " W: " << get_transaction_weight(tx));
   }
   if (!res)
     return false;
@@ -2703,10 +2703,10 @@ void Blockchain::return_tx_to_pool(std::vector<std::pair<transaction, blobdata>>
     // these again might cause a spike of traffic as many nodes re-relay
     // all the transactions in a popped block when a reorg happens.
     const size_t weight = get_transaction_weight(tx.first, tx.second.size());
-    const crypto::hash tx_hash = fill_transaction_hash(tx.first);
+    const crypto::hash tx_hash = get_transaction_hash(tx.first);
     if (!m_tx_pool.add_tx(tx.first, tx_hash, tx.second, weight, tvc, relay_method::block, true))
     {
-      LOG_ERROR("Failed to return taken transaction with hash: " << fill_transaction_hash(tx.first) << " to tx_pool");
+      LOG_ERROR("Failed to return taken transaction with hash: " << get_transaction_hash(tx.first) << " to tx_pool");
     }
   }
 }
@@ -3770,7 +3770,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   if (tx.vout.size() < 2)
   {
-    LOG_ERROR_VER("Tx " << fill_transaction_hash(tx) << " has fewer than two outputs");
+    LOG_ERROR_VER("Tx " << get_transaction_hash(tx) << " has fewer than two outputs");
     tvc.m_too_few_outputs = true;
     return false;
   }
@@ -3817,7 +3817,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     {
       if (min_actual_mixin != max_actual_mixin)
       {
-        LOG_ERROR_VER("Tx " << fill_transaction_hash(tx) << " has varying ring size (" << (min_actual_mixin + 1) << "-" << (max_actual_mixin + 1) << "), it should be constant");
+        LOG_ERROR_VER("Tx " << get_transaction_hash(tx) << " has varying ring size (" << (min_actual_mixin + 1) << "-" << (max_actual_mixin + 1) << "), it should be constant");
         tvc.m_low_mixin = true;
         return false;
       }
@@ -3825,7 +3825,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
     if (min_actual_mixin != config::lol::mixin)
     {
-      LOG_ERROR_VER("Tx " << fill_transaction_hash(tx) << " has invalid ring size (" << (min_actual_mixin + 1) << "), it should be 32");
+      LOG_ERROR_VER("Tx " << get_transaction_hash(tx) << " has invalid ring size (" << (min_actual_mixin + 1) << "), it should be 32");
       tvc.m_low_mixin = true;
       return false;
     }
@@ -3885,7 +3885,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     const txin_to_key& in_to_key = boost::get<txin_to_key>(txin);
 
     // make sure tx output has key offset(s) (is signed to be used)
-    LOG_ERROR_AND_RETURN_UNLESS(in_to_key.key_offsets.size(), false, "empty in_to_key.key_offsets in transaction with id " << fill_transaction_hash(tx));
+    LOG_ERROR_AND_RETURN_UNLESS(in_to_key.key_offsets.size(), false, "empty in_to_key.key_offsets in transaction with id " << get_transaction_hash(tx));
 
     if(have_tx_keyimg_as_spent(in_to_key.k_image))
     {
@@ -3898,7 +3898,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     // signature spending it.
     if (!check_tx_input(tx.version, in_to_key, tx_prefix_hash, tx.ringct_essential, pubkeys[sig_index], pmax_used_block_height))
     {
-      LOG_ERROR_VER("Failed to check ring signature for tx " << fill_transaction_hash(tx) << "  vin key with k_image: " << in_to_key.k_image << "  sig_index: " << sig_index);
+      LOG_ERROR_VER("Failed to check ring signature for tx " << get_transaction_hash(tx) << "  vin key with k_image: " << in_to_key.k_image << "  sig_index: " << sig_index);
       if (pmax_used_block_height) // a default value of NULL is used when called from Blockchain::handle_block_to_main_chain()
       {
         LOG_ERROR_VER("  *pmax_used_block_height: " << *pmax_used_block_height);

@@ -1781,7 +1781,7 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
     const cryptonote::transaction& tx = ptx_vector[n].tx;
     const wallet::logic::type::tx::tx_construction_data& construction_data = ptx_vector[n].construction_data;
     if (verbose)
-      ostr << boost::format(tr("\nTransaction %llu/%llu: txid=%s")) % (n + 1) % ptx_vector.size() % cryptonote::fill_transaction_hash(tx);
+      ostr << boost::format(tr("\nTransaction %llu/%llu: txid=%s")) % (n + 1) % ptx_vector.size() % cryptonote::get_transaction_hash(tx);
     // for each input
     std::vector<uint64_t>     spent_key_height(tx.vin.size());
     std::vector<crypto::hash> spent_key_txid  (tx.vin.size());
@@ -3522,7 +3522,7 @@ void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_
   while (!ptx_vector.empty())
   {
     auto & ptx = ptx_vector.back();
-    const crypto::hash txid = fill_transaction_hash(ptx.tx);
+    const crypto::hash txid = get_transaction_hash(ptx.tx);
     if (do_not_relay)
     {
       cryptonote::blobdata blob;

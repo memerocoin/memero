@@ -1153,7 +1153,7 @@ namespace cryptonote
     response.num_txes = blk.tx_hashes.size();
     response.pow_hash = fill_pow_hash ? epee::string_tools::pod_to_hex(get_block_longhash(blk)) : "";
     response.long_term_weight = m_core.get_blockchain_storage().get_db().get_block_long_term_weight(height);
-    response.miner_tx_hash = epee::string_tools::pod_to_hex(cryptonote::fill_transaction_hash(blk.miner_tx));
+    response.miner_tx_hash = epee::string_tools::pod_to_hex(cryptonote::get_transaction_hash(blk.miner_tx));
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -1527,7 +1527,7 @@ namespace cryptonote
       }
       for (const auto &tx: pool_txs)
       {
-        txids.push_back(cryptonote::fill_transaction_hash(tx));
+        txids.push_back(cryptonote::get_transaction_hash(tx));
       }
     }
     else

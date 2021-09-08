@@ -24,7 +24,7 @@ namespace test
         if (!cryptonote::construct_miner_tx(0, 0, 500, to, tx))
             throw std::runtime_error{"transaction construction error"};
 
-        cryptonote::fill_transaction_hash(tx);
+        cryptonote::get_transaction_hash(tx);
 
         return tx;
     }
@@ -115,11 +115,11 @@ TEST(JsonSerialization, MinerTransaction)
     acct.generate();
     const auto miner_tx = test::make_miner_transaction(acct.get_keys().m_account_address);
 
-    crypto::hash tx_hash = cryptonote::fill_transaction_hash(miner_tx);
+    crypto::hash tx_hash = cryptonote::get_transaction_hash(miner_tx);
 
     cryptonote::transaction miner_tx_copy = test_json(miner_tx);
 
-    crypto::hash tx_copy_hash = cryptonote::fill_transaction_hash(miner_tx_copy);
+    crypto::hash tx_copy_hash = cryptonote::get_transaction_hash(miner_tx_copy);
     EXPECT_EQ(tx_hash, tx_copy_hash);
 
     const auto tx_bytes = cryptonote::t_serializable_object_to_maybe_blob(miner_tx);
@@ -144,12 +144,12 @@ TEST(JsonSerialization, BulletproofTransaction)
         acct1.get_keys(), {miner_tx}, {acct2.get_keys().m_account_address}
     );
 
-    cryptonote::fill_transaction_hash(tx);
+    cryptonote::get_transaction_hash(tx);
 
     cryptonote::transaction tx_copy = test_json(tx);
 
     // serialization will throw for some reason
-    // cryptonote::fill_transaction_hash(tx_copy);
+    // cryptonote::get_transaction_hash(tx_copy);
 
     // TODO fix test failure
     // EXPECT_EQ(tx_hash, tx_copy_hash);

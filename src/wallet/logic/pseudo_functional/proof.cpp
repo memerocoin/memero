@@ -131,7 +131,7 @@ namespace proof {
     const auto expected_sigs = tx_pub_key ? additional_tx_pub_keys.size() + 1 : additional_tx_pub_keys.size();
     THROW_WALLET_EXCEPTION_IF(expected_sigs != num_sigs, error::wallet_internal_error, "Signature size mismatch with additional tx pubkeys");
 
-    const crypto::hash txid = cryptonote::fill_transaction_hash(tx);
+    const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     epee::blob::data prefix_data(txid.data.data(), txid.data.size());
     prefix_data += epee::string_tools::string_to_blob(message);
     crypto::hash prefix_hash = crypto::sha3(prefix_data);
