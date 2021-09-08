@@ -63,12 +63,12 @@ TEST(parse_tx_extra, handles_pub_key_only)
 
 TEST(parse_and_validate_tx_extra, is_valid_tx_extra_parsed)
 {
-  cryptonote::transaction tx = AUTO_VAL_INIT(tx);
   cryptonote::account_base acc;
   acc.generate();
   cryptonote::blobdata b = "dsdsdfsdfsf";
-  ASSERT_TRUE(cryptonote::construct_miner_tx(0, 0, TEST_FEE, acc.get_keys().m_account_address, tx, b, 1));
-  const auto tx_pub_key = cryptonote::get_tx_pub_key_from_extra(tx);
+  const auto tx = cryptonote::construct_miner_tx(0, 0, TEST_FEE, acc.get_keys().m_account_address);
+  ASSERT_TRUE(tx);
+  const auto tx_pub_key = cryptonote::get_tx_pub_key_from_extra(*tx);
   ASSERT_TRUE(tx_pub_key);
 }
 

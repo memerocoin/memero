@@ -38,15 +38,12 @@
 
 namespace cryptonote
 {
-  bool construct_miner_tx
+  std::optional<transaction> construct_miner_tx
     (
-     size_t height
-     , size_t current_block_weight
-     , uint64_t fee
+     const size_t height
+     , const size_t current_block_weight
+     , const uint64_t fee
      , const account_public_address &miner_address
-     , transaction& tx
-     , const blobdata& extra_nonce = blobdata()
-     , size_t max_outs = 999
      );
 
   bool construct_tx_and_get_tx_key

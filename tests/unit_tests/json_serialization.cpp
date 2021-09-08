@@ -20,13 +20,14 @@ namespace test
     cryptonote::transaction
     make_miner_transaction(cryptonote::account_public_address const& to)
     {
-        cryptonote::transaction tx{};
-        if (!cryptonote::construct_miner_tx(0, 0, 500, to, tx))
+        const auto tx = cryptonote::construct_miner_tx(0, 0, 500, to);
+        if (!tx) {
             throw std::runtime_error{"transaction construction error"};
+        }
 
-        cryptonote::get_transaction_hash(tx);
+        // cryptonote::get_transaction_hash(*tx);
 
-        return tx;
+        return *tx;
     }
 
     cryptonote::transaction

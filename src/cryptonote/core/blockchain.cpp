@@ -1296,40 +1296,35 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
    */
   //make blocks coin-base tx looks close to real coinbase tx to get truthful blob weight
   // FIXME: max_outs of miner_tx for lol should be 32?
-  size_t max_outs = 11;
-  bool r = construct_miner_tx(height, txs_weight, fee, miner_address, b.miner_tx, ex_nonce, max_outs);
-  LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to construct miner tx, first chance");
+  const auto miner_tx_no_coinbase_weight =
+    construct_miner_tx(height, txs_weight, fee, miner_address);
+
+  LOG_ERROR_AND_RETURN_UNLESS(miner_tx_no_coinbase_weight, false, "Failed to construct miner tx, first chance");
+
+  b.miner_tx = *miner_tx_no_coinbase_weight;
+
   size_t cumulative_weight = txs_weight + get_transaction_weight(b.miner_tx);
-#if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
-  LOG_DEBUG("Creating block template: miner tx weight " << get_transaction_weight(b.miner_tx) <<
-      ", cumulative weight " << cumulative_weight);
-#endif
 
   // FIXME: why loop 10 times here?
   for (size_t try_count = 0; try_count != 10; ++try_count)
   {
-    r = construct_miner_tx(height, cumulative_weight, fee, miner_address, b.miner_tx, ex_nonce, max_outs);
+    const auto miner_tx =
+      construct_miner_tx(height, cumulative_weight, fee, miner_address);
 
-    LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to construct miner tx, second chance");
+    LOG_ERROR_AND_RETURN_UNLESS(miner_tx, false, "Failed to construct miner tx, second chance");
+
+    b.miner_tx = *miner_tx;
+
     size_t coinbase_weight = get_transaction_weight(b.miner_tx);
     if (coinbase_weight > cumulative_weight - txs_weight)
     {
       cumulative_weight = txs_weight + coinbase_weight;
-#if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
-      LOG_DEBUG("Creating block template: miner tx weight " << coinbase_weight <<
-          ", cumulative weight " << cumulative_weight << " is greater than before");
-#endif
       continue;
     }
 
     if (coinbase_weight < cumulative_weight - txs_weight)
     {
       size_t delta = cumulative_weight - txs_weight - coinbase_weight;
-#if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
-      LOG_DEBUG("Creating block template: miner tx weight " << coinbase_weight <<
-          ", cumulative weight " << txs_weight + coinbase_weight <<
-          " is less than before, adding " << delta << " zero bytes");
-#endif
       b.miner_tx.extra.insert(b.miner_tx.extra.end(), delta, 0);
       //here  could be 1 byte difference, because of extra field counter is varint, and it can become from 1-byte len to 2-bytes len.
       if (cumulative_weight != txs_weight + get_transaction_weight(b.miner_tx))
@@ -1347,10 +1342,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       }
     }
     LOG_ERROR_AND_RETURN_UNLESS(cumulative_weight == txs_weight + get_transaction_weight(b.miner_tx), false, "unexpected case: cumulative_weight=" << cumulative_weight << " is not equal txs_cumulative_weight=" << txs_weight << " + get_transaction_weight(b.miner_tx)=" << get_transaction_weight(b.miner_tx));
-#if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
-    LOG_DEBUG("Creating block template: miner tx weight " << coinbase_weight <<
-        ", cumulative weight " << cumulative_weight << " is now good");
-#endif
 
     if (!from_block)
       cache_block_template(b, miner_address, ex_nonce, diffic, height, expected_reward, pool_cookie);
