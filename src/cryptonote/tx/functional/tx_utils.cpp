@@ -231,7 +231,7 @@ namespace cryptonote
       //tx_ecdh_shared_secret recv_tx_shared_secret;
       in_contexts.push_back(input_generation_context_data());
       const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.dest);
-      const auto r = derive_key_image_helper
+      const auto r = derive_tx_output_key_fingerprint_helper
         (
          sender_account_keys
          , subaddresses
@@ -249,7 +249,7 @@ namespace cryptonote
       }
 
       keypair& in_ephemeral = in_contexts.back().in_ephemeral;
-      crypto::key_image img;
+      crypto::tx_output_key_fingerprint img;
 
       std::tie(in_ephemeral, img) = *r;
 

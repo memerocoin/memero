@@ -71,7 +71,7 @@ TEST(Crypto, Ostream)
   EXPECT_TRUE(is_formatted<crypto::secret_key>());
   EXPECT_TRUE(is_formatted<crypto::schnorr_signature>());
   EXPECT_TRUE(is_formatted<crypto::tx_ecdh_shared_secret>());
-  EXPECT_TRUE(is_formatted<crypto::key_image>());
+  EXPECT_TRUE(is_formatted<crypto::tx_output_key_fingerprint>());
 }
 
 TEST(Crypto, null_keys)

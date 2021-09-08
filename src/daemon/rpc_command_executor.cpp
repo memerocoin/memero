@@ -853,23 +853,23 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
   return true;
 }
 
-bool t_rpc_command_executor::is_key_image_spent(const crypto::key_image &ki) {
+bool t_rpc_command_executor::is_tx_output_key_fingerprint_spent(const crypto::tx_output_key_fingerprint &ki) {
   cryptonote::COMMAND_RPC_IS_KEY_IMAGE_SPENT::request req;
   cryptonote::COMMAND_RPC_IS_KEY_IMAGE_SPENT::response res;
 
   std::string fail_message = "Problem checking key image";
 
-  req.key_images.push_back(epee::string_tools::pod_to_hex(ki));
+  req.tx_output_key_fingerprints.push_back(epee::string_tools::pod_to_hex(ki));
   if (m_is_rpc)
   {
-    if (!m_rpc_client->rpc_request(req, res, "/is_key_image_spent", fail_message.c_str()))
+    if (!m_rpc_client->rpc_request(req, res, "/is_tx_output_key_fingerprint_spent", fail_message.c_str()))
     {
       return true;
     }
   }
   else
   {
-    if (!m_rpc_server->on_is_key_image_spent(req, res) || res.status != CORE_RPC_STATUS_OK)
+    if (!m_rpc_server->on_is_tx_output_key_fingerprint_spent(req, res) || res.status != CORE_RPC_STATUS_OK)
     {
       tools::fail_msg_writer() << make_error(fail_message, res.status);
       return true;
@@ -911,7 +911,7 @@ bool t_rpc_command_executor::print_transaction_pool_long() {
     }
   }
 
-  if (res.transactions.empty() && res.spent_key_images.empty())
+  if (res.transactions.empty() && res.spent_tx_output_key_fingerprints.empty())
   {
     tools::msg_writer() << "Pool is empty" << std::endl;
   }
@@ -937,16 +937,16 @@ bool t_rpc_command_executor::print_transaction_pool_long() {
                           << "last_failed_height: " << tx_info.last_failed_height << std::endl
                           << "last_failed_id: " << tx_info.last_failed_id_hash << std::endl;
     }
-    if (res.spent_key_images.empty())
+    if (res.spent_tx_output_key_fingerprints.empty())
     {
       tools::msg_writer() << "WARNING: Inconsistent pool state - no spent key images";
     }
   }
-  if (! res.spent_key_images.empty())
+  if (! res.spent_tx_output_key_fingerprints.empty())
   {
     tools::msg_writer() << ""; // one newline
     tools::msg_writer() << "Spent key images: ";
-    for (const cryptonote::spent_key_image_info& kinfo : res.spent_key_images)
+    for (const cryptonote::spent_tx_output_key_fingerprint_info& kinfo : res.spent_tx_output_key_fingerprints)
     {
       tools::msg_writer() << "key image: " << kinfo.id_hash;
       if (kinfo.txs_hashes.size() == 1)

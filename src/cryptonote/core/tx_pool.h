@@ -253,38 +253,38 @@ namespace cryptonote
     /**
      * @brief get information about all transactions and key images in the pool
      *
-     * see documentation on tx_info and spent_key_image_info for more details
+     * see documentation on tx_info and spent_tx_output_key_fingerprint_info for more details
      *
      * @param tx_infos return-by-reference the transactions' information
-     * @param key_image_infos return-by-reference the spent key images' information
+     * @param tx_output_key_fingerprint_infos return-by-reference the spent key images' information
      * @param include_sensitive_data return stempool, anonymity-pool, and unrelayed
      *    txes and fields that are sensitive to the node privacy
      *
      * @return true
      */
-    bool get_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_key_image_info>& key_image_infos, bool include_sensitive_data = false) const;
+    bool get_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_tx_output_key_fingerprint_info>& tx_output_key_fingerprint_infos, bool include_sensitive_data = false) const;
 
     /**
      * @brief get information about all transactions and key images in the pool
      *
-     * see documentation on tx_in_pool and key_images_with_tx_hashes for more details
+     * see documentation on tx_in_pool and tx_output_key_fingerprints_with_tx_hashes for more details
      *
      * @param tx_infos [out] the transactions' information
-     * @param key_image_infos [out] the spent key images' information
+     * @param tx_output_key_fingerprint_infos [out] the spent key images' information
      *
      * @return true
      */
-    bool get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::key_images_with_tx_hashes& key_image_infos) const;
+    bool get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::tx_output_key_fingerprints_with_tx_hashes& tx_output_key_fingerprint_infos) const;
 
     /**
      * @brief check for presence of key images in the pool
      *
-     * @param key_images [in] vector of key images to check
+     * @param tx_output_key_fingerprints [in] vector of key images to check
      * @param spent [out] vector of bool to return
      *
      * @return true
      */
-    bool check_for_key_images(const std::vector<crypto::key_image>& key_images, std::vector<bool>& spent) const;
+    bool check_for_tx_output_key_fingerprints(const std::vector<crypto::tx_output_key_fingerprint>& tx_output_key_fingerprints, std::vector<bool>& spent) const;
 
     /**
      * @brief get a specific transaction from the pool
@@ -427,11 +427,11 @@ namespace cryptonote
   private:
 
     /**
-     * @brief insert key images into m_spent_key_images
+     * @brief insert key images into m_spent_tx_output_key_fingerprints
      *
      * @return true on success, false on error
      */
-    bool insert_key_images(const transaction_prefix &tx, const crypto::hash &txid, relay_method tx_relay);
+    bool insert_tx_output_key_fingerprints(const transaction_prefix &tx, const crypto::hash &txid, relay_method tx_relay);
 
     /**
      * @brief remove old transactions from the pool
@@ -452,7 +452,7 @@ namespace cryptonote
      *
      * @return true if the spent key image is present, otherwise false
      */
-    bool have_tx_keyimg_as_spent(const crypto::key_image& key_im, const crypto::hash& txid) const;
+    bool have_tx_keyimg_as_spent(const crypto::tx_output_key_fingerprint& key_im, const crypto::hash& txid) const;
 
     /**
      * @brief check if any spent key image in a transaction is in the pool
@@ -491,7 +491,7 @@ namespace cryptonote
      *
      * @return true if any key images present in the set, otherwise false
      */
-    static bool have_key_images(const std::unordered_set<crypto::key_image>& kic, const transaction_prefix& tx);
+    static bool have_tx_output_key_fingerprints(const std::unordered_set<crypto::tx_output_key_fingerprint>& kic, const transaction_prefix& tx);
 
     /**
      * @brief append the key images from a transaction to the given set
@@ -501,7 +501,7 @@ namespace cryptonote
      *
      * @return false if any append fails, otherwise true
      */
-    static bool append_key_images(std::unordered_set<crypto::key_image>& kic, const transaction_prefix& tx);
+    static bool append_tx_output_key_fingerprints(std::unordered_set<crypto::tx_output_key_fingerprint>& kic, const transaction_prefix& tx);
 
     /**
      * @brief check if a transaction is a valid candidate for inclusion in a block
@@ -536,7 +536,7 @@ namespace cryptonote
      *  transaction on the assumption that the original will not be in a
      *  block again.
      */
-    typedef std::unordered_map<crypto::key_image, std::unordered_set<crypto::hash>> key_images_container;
+    typedef std::unordered_map<crypto::tx_output_key_fingerprint, std::unordered_set<crypto::hash>> tx_output_key_fingerprints_container;
 
 #if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
 public:
@@ -546,7 +546,7 @@ private:
 #endif
 
     //! container for spent key images from the transactions in the pool
-    key_images_container m_spent_key_images;
+    tx_output_key_fingerprints_container m_spent_tx_output_key_fingerprints;
 
     //TODO: this time should be a named constant somewhere, not hard-coded
     //! interval on which to check for stale/"stuck" transactions

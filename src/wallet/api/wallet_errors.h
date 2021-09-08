@@ -84,7 +84,7 @@ namespace tools
     //       wallet_rpc_error *
     //         daemon_busy
     //         no_connection_to_daemon
-    //         is_key_image_spent_error
+    //         is_tx_output_key_fingerprint_spent_error
     //         get_histogram_error
     //         get_output_distribution
     //       wallet_files_doesnt_correspond
@@ -667,10 +667,10 @@ namespace tools
       }
     };
     //----------------------------------------------------------------------------------------------------
-    struct is_key_image_spent_error : public wallet_rpc_error
+    struct is_tx_output_key_fingerprint_spent_error : public wallet_rpc_error
     {
-      explicit is_key_image_spent_error(std::string&& loc, const std::string& request)
-        : wallet_rpc_error(std::move(loc), "error from is_key_image_spent call", request)
+      explicit is_tx_output_key_fingerprint_spent_error(std::string&& loc, const std::string& request)
+        : wallet_rpc_error(std::move(loc), "error from is_tx_output_key_fingerprint_spent call", request)
       {
       }
     };

@@ -1143,7 +1143,7 @@ void BlockchainLMDB::remove_output(const uint64_t amount, const uint64_t& out_in
     throw0(DB_ERROR(lmdb_error(std::string("Error deleting amount for output index ").append(boost::lexical_cast<std::string>(out_index).append(": ")).c_str(), result).c_str()));
 }
 
-void BlockchainLMDB::add_spent_key(const crypto::key_image& k_image)
+void BlockchainLMDB::add_spent_key(const crypto::tx_output_key_fingerprint& k_image)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1160,7 +1160,7 @@ void BlockchainLMDB::add_spent_key(const crypto::key_image& k_image)
   }
 }
 
-void BlockchainLMDB::remove_spent_key(const crypto::key_image& k_image)
+void BlockchainLMDB::remove_spent_key(const crypto::tx_output_key_fingerprint& k_image)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2892,7 +2892,7 @@ std::vector<std::vector<uint64_t>> BlockchainLMDB::get_tx_amount_output_indices(
   return amount_output_indices_set;
 }
 
-bool BlockchainLMDB::has_key_image(const crypto::key_image& img) const
+bool BlockchainLMDB::has_tx_output_key_fingerprint(const crypto::tx_output_key_fingerprint& img) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2909,7 +2909,7 @@ bool BlockchainLMDB::has_key_image(const crypto::key_image& img) const
   return ret;
 }
 
-bool BlockchainLMDB::for_all_key_images(std::function<bool(const crypto::key_image&)> f) const
+bool BlockchainLMDB::for_all_tx_output_key_fingerprints(std::function<bool(const crypto::tx_output_key_fingerprint&)> f) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2930,7 +2930,7 @@ bool BlockchainLMDB::for_all_key_images(std::function<bool(const crypto::key_ima
       break;
     if (ret < 0)
       throw0(DB_ERROR("Failed to enumerate key images"));
-    const crypto::key_image k_image = *(const crypto::key_image*)v.mv_data;
+    const crypto::tx_output_key_fingerprint k_image = *(const crypto::tx_output_key_fingerprint*)v.mv_data;
     if (!f(k_image)) {
       fret = false;
       break;

@@ -88,7 +88,7 @@ namespace rpc
       {"get_transaction_pool", handle_message<GetTransactionPool>},
       {"get_transactions", handle_message<GetTransactions>},
       {"get_tx_global_output_indices", handle_message<GetTxGlobalOutputIndices>},
-      {"key_images_spent", handle_message<KeyImagesSpent>},
+      {"tx_output_key_fingerprints_spent", handle_message<KeyImagesSpent>},
       {"mining_status", handle_message<MiningStatus>},
       {"save_bc", handle_message<SaveBC>},
       {"send_raw_tx", handle_message<SendRawTx>},
@@ -287,22 +287,22 @@ namespace rpc
 
   void DaemonHandler::handle(const KeyImagesSpent::Request& req, KeyImagesSpent::Response& res)
   {
-    res.spent_status.resize(req.key_images.size(), KeyImagesSpent::STATUS::UNSPENT);
+    res.spent_status.resize(req.tx_output_key_fingerprints.size(), KeyImagesSpent::STATUS::UNSPENT);
 
     std::vector<bool> chain_spent_status;
     std::vector<bool> pool_spent_status;
 
-    m_core.are_key_images_spent(req.key_images, chain_spent_status);
-    m_core.are_key_images_spent_in_pool(req.key_images, pool_spent_status);
+    m_core.are_tx_output_key_fingerprints_spent(req.tx_output_key_fingerprints, chain_spent_status);
+    m_core.are_tx_output_key_fingerprints_spent_in_pool(req.tx_output_key_fingerprints, pool_spent_status);
 
-    if ((chain_spent_status.size() != req.key_images.size()) || (pool_spent_status.size() != req.key_images.size()))
+    if ((chain_spent_status.size() != req.tx_output_key_fingerprints.size()) || (pool_spent_status.size() != req.tx_output_key_fingerprints.size()))
     {
       res.status = Message::STATUS_FAILED;
-      res.error_details = "tx_pool::have_key_images_as_spent() gave vectors of wrong size(s).";
+      res.error_details = "tx_pool::have_tx_output_key_fingerprints_as_spent() gave vectors of wrong size(s).";
       return;
     }
 
-    for(size_t i=0; i < req.key_images.size(); i++)
+    for(size_t i=0; i < req.tx_output_key_fingerprints.size(); i++)
     {
       if ( chain_spent_status[i] )
       {
@@ -694,7 +694,7 @@ namespace rpc
 
   void DaemonHandler::handle(const GetTransactionPool::Request& req, GetTransactionPool::Response& res)
   {
-    bool r = m_core.get_pool_for_rpc(res.transactions, res.key_images);
+    bool r = m_core.get_pool_for_rpc(res.transactions, res.tx_output_key_fingerprints);
 
     if (!r) res.status = Message::STATUS_FAILED;
     else res.status = Message::STATUS_OK;

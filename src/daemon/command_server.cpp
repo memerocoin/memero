@@ -105,7 +105,7 @@ t_command_server::t_command_server(
     );
   m_command_lookup.set_handler(
       "is-spent"
-    , std::bind(&t_command_parser_executor::is_key_image_spent, &m_parser, p::_1)
+    , std::bind(&t_command_parser_executor::is_tx_output_key_fingerprint_spent, &m_parser, p::_1)
     , "is-spent <key image>"
     , "Print whether a given key image is in the spent key images set."
     );

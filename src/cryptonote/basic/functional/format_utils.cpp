@@ -58,7 +58,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper
+  std::optional<std::pair<keypair, crypto::tx_output_key_fingerprint>> derive_tx_output_key_fingerprint_helper
   (
    const account_keys& ack
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -107,7 +107,7 @@ namespace cryptonote
        , "key image helper: given output pubkey doesn't seem to belong to this address"
        );
 
-    return derive_key_image_helper_precomp
+    return derive_tx_output_key_fingerprint_helper_precomp
       (
        ack
        , out_key
@@ -118,7 +118,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::key_image>> derive_key_image_helper_precomp
+  std::optional<std::pair<keypair, crypto::tx_output_key_fingerprint>> derive_tx_output_key_fingerprint_helper_precomp
   (
    const account_keys& ack
    , const crypto::public_key& out_key
@@ -128,7 +128,7 @@ namespace cryptonote
    )
   {
     keypair in_ephemeral;
-    crypto::key_image ki;
+    crypto::tx_output_key_fingerprint ki;
 
     if (ack.m_spend_secret_key == crypto::null_skey)
     {
@@ -160,7 +160,7 @@ namespace cryptonote
            {}, "key image helper precomp: given output pubkey doesn't match the derived one");
     }
 
-    ki = crypto::derive_key_image(in_ephemeral.sec);
+    ki = crypto::derive_tx_output_key_fingerprint(in_ephemeral.sec);
     return {{in_ephemeral, ki}};
   }
 

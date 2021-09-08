@@ -272,7 +272,7 @@ bool t_command_parser_executor::print_transaction(const std::vector<std::string>
   return true;
 }
 
-bool t_command_parser_executor::is_key_image_spent(const std::vector<std::string>& args)
+bool t_command_parser_executor::is_tx_output_key_fingerprint_spent(const std::vector<std::string>& args)
 {
   if (args.empty())
   {
@@ -281,12 +281,12 @@ bool t_command_parser_executor::is_key_image_spent(const std::vector<std::string
   }
 
   const std::string& str = args.front();
-  crypto::key_image ki;
+  crypto::tx_output_key_fingerprint ki;
   crypto::hash hash;
   if (parse_hash256(str, hash))
   {
     memcpy(&ki, &hash, sizeof(ki));
-    m_executor.is_key_image_spent(ki);
+    m_executor.is_tx_output_key_fingerprint_spent(ki);
   }
 
   return true;

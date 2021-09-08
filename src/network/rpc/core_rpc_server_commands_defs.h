@@ -365,11 +365,11 @@ namespace cryptonote
 
     struct request_t: public rpc_access_request_base
     {
-      std::vector<std::string> key_images;
+      std::vector<std::string> tx_output_key_fingerprints;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_request_base)
-        KV_SERIALIZE(key_images)
+        KV_SERIALIZE(tx_output_key_fingerprints)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<request_t> request;
@@ -1117,7 +1117,7 @@ namespace cryptonote
     END_KV_SERIALIZE_MAP()
   };
 
-  struct spent_key_image_info
+  struct spent_tx_output_key_fingerprint_info
   {
     std::string id_hash;
     std::vector<std::string> txs_hashes;
@@ -1141,12 +1141,12 @@ namespace cryptonote
     struct response_t: public rpc_access_response_base
     {
       std::vector<tx_info> transactions;
-      std::vector<spent_key_image_info> spent_key_images;
+      std::vector<spent_tx_output_key_fingerprint_info> spent_tx_output_key_fingerprints;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
         KV_SERIALIZE(transactions)
-        KV_SERIALIZE(spent_key_images)
+        KV_SERIALIZE(spent_tx_output_key_fingerprints)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;

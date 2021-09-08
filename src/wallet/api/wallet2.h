@@ -231,7 +231,7 @@ namespace tools
     bool refresh(uint64_t & blocks_fetched, bool& received_money, bool& ok);
 
     cryptonote::network_type nettype() const { return m_nettype; }
-    bool has_unknown_key_images() const;
+    bool has_unknown_tx_output_key_fingerprints() const;
     bool key_on_device() const { return false; }
     bool reconnect_device();
 
@@ -284,7 +284,7 @@ namespace tools
       FIELD(m_blockchain)
       FIELD(m_transfers)
       FIELD(m_account_public_address)
-      FIELD(m_key_images)
+      FIELD(m_tx_output_key_fingerprints)
       FIELD(m_unconfirmed_txs)
       FIELD(m_payments)
       FIELD(m_tx_keys)
@@ -298,8 +298,8 @@ namespace tools
       FIELD(m_additional_tx_keys)
       FIELD(m_attributes)
       FIELD(m_account_tags)
-      FIELD(m_device_last_key_image_sync)
-      FIELD(m_cold_key_images)
+      FIELD(m_device_last_tx_output_key_fingerprint_sync)
+      FIELD(m_cold_tx_output_key_fingerprints)
     END_SERIALIZE()
 
     /*!
@@ -476,7 +476,7 @@ namespace tools
     void scan_output(const cryptonote::transaction &tx, bool miner_tx, const crypto::public_key &tx_pub_key, size_t i, tx_scan_info_t &tx_scan_info, int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs, std::vector<size_t> &outs, bool pool);
     void trim_hashchain();
     void setup_keys(const epee::wipeable_string &password);
-    size_t get_transfer_details(const crypto::key_image &ki) const;
+    size_t get_transfer_details(const crypto::tx_output_key_fingerprint &ki) const;
 
     void cache_tx_data(const cryptonote::transaction& tx, const crypto::hash &txid, tx_cache_data &tx_cache_data) const;
 
@@ -501,14 +501,14 @@ namespace tools
 
     wallet::logic::type::wallet::transfer_container m_transfers;
     payment_container m_payments;
-    serializable_unordered_map<crypto::key_image, size_t> m_key_images;
+    serializable_unordered_map<crypto::tx_output_key_fingerprint, size_t> m_tx_output_key_fingerprints;
     serializable_unordered_map<crypto::public_key, size_t> m_pub_keys;
     cryptonote::account_public_address m_account_public_address;
     serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index> m_subaddresses;
     std::vector<std::vector<std::string>> m_subaddress_labels;
     serializable_unordered_map<std::string, std::string> m_attributes;
     std::pair<serializable_map<std::string, std::string>, std::vector<std::string>> m_account_tags;
-    serializable_unordered_map<crypto::public_key, crypto::key_image> m_cold_key_images;
+    serializable_unordered_map<crypto::public_key, crypto::tx_output_key_fingerprint> m_cold_tx_output_key_fingerprints;
 
     std::atomic<bool> m_run;
 
@@ -537,7 +537,7 @@ namespace tools
     std::unordered_set<crypto::hash> m_scanned_pool_txs[2];
     size_t m_subaddress_lookahead_major, m_subaddress_lookahead_minor;
     std::string m_device_name;
-    uint64_t m_device_last_key_image_sync;
+    uint64_t m_device_last_tx_output_key_fingerprint_sync;
     bool m_offline;
     uint32_t m_rpc_version;
 

@@ -104,16 +104,16 @@ public:
   virtual void get_output_key(const std::span<const uint64_t> &amounts, const std::vector<uint64_t> &offsets, std::vector<cryptonote::output_data_t> &outputs, bool allow_partial = false) const override {}
   virtual bool can_thread_bulk_indices() const override { return false; }
   virtual std::vector<std::vector<uint64_t>> get_tx_amount_output_indices(const uint64_t tx_index, size_t n_txes) const override { return std::vector<std::vector<uint64_t>>(); }
-  virtual bool has_key_image(const crypto::key_image& img) const override { return false; }
+  virtual bool has_tx_output_key_fingerprint(const crypto::tx_output_key_fingerprint& img) const override { return false; }
   virtual void remove_block() override { }
   virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<cryptonote::transaction, cryptonote::blobdata_ref>& tx, const crypto::hash& tx_hash) override {return 0;}
   virtual void remove_transaction_data(const crypto::hash& tx_hash, const cryptonote::transaction& tx) override {}
   virtual uint64_t add_output(const crypto::hash& tx_hash, const cryptonote::tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_time, const rct::rct_point *commitment) override {return 0;}
   virtual void add_tx_amount_output_indices(const uint64_t tx_index, const std::vector<uint64_t>& amount_output_indices) override {}
-  virtual void add_spent_key(const crypto::key_image& k_image) override {}
-  virtual void remove_spent_key(const crypto::key_image& k_image) override {}
+  virtual void add_spent_key(const crypto::tx_output_key_fingerprint& k_image) override {}
+  virtual void remove_spent_key(const crypto::tx_output_key_fingerprint& k_image) override {}
 
-  virtual bool for_all_key_images(std::function<bool(const crypto::key_image&)>) const override { return true; }
+  virtual bool for_all_tx_output_key_fingerprints(std::function<bool(const crypto::tx_output_key_fingerprint&)>) const override { return true; }
   virtual bool for_blocks_range(const uint64_t&, const uint64_t&, std::function<bool(uint64_t, const crypto::hash&, const cryptonote::block&)>) const override { return true; }
   virtual bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>) const override { return true; }
   virtual bool for_all_outputs(std::function<bool(uint64_t amount, const crypto::hash &tx_hash, uint64_t height, size_t tx_idx)> f) const override { return true; }

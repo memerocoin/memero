@@ -1526,8 +1526,8 @@ bool simple_wallet::refresh(const std::vector<std::string>& args)
 bool simple_wallet::show_balance_unlocked(bool detailed)
 {
   std::string extra;
-  if (m_wallet->has_unknown_key_images())
-    extra += sw::tr(" (Some owned outputs have missing key images - import_key_images needed)");
+  if (m_wallet->has_unknown_tx_output_key_fingerprints())
+    extra += sw::tr(" (Some owned outputs have missing key images - import_tx_output_key_fingerprints needed)");
   success_msg_writer() << sw::tr("Currently selected account: [") << m_current_subaddress_account << sw::tr("] ") << m_wallet->get_subaddress_label({m_current_subaddress_account, 0});
   uint64_t blocks_to_unlock, time_to_unlock;
   uint64_t unlocked_balance = m_wallet->unlocked_balance(m_current_subaddress_account, false, &blocks_to_unlock, &time_to_unlock);
@@ -1643,7 +1643,7 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
       }
       std::string extra_string;
       if (verbose)
-        extra_string += (boost::format("%68s%68s") % td.get_public_key() % (td.m_key_image_known ? epee::string_tools::pod_to_hex(td.m_key_image) : td.m_key_image_partial ? (epee::string_tools::pod_to_hex(td.m_key_image) + "/p") : std::string(64, '?'))).str();
+        extra_string += (boost::format("%68s%68s") % td.get_public_key() % (td.m_tx_output_key_fingerprint_known ? epee::string_tools::pod_to_hex(td.m_tx_output_key_fingerprint) : td.m_tx_output_key_fingerprint_partial ? (epee::string_tools::pod_to_hex(td.m_tx_output_key_fingerprint) + "/p") : std::string(64, '?'))).str();
       message_writer(td.m_spent ? epee::console_color_magenta : epee::console_color_green, false) <<
         boost::format("%21s%8s%12s%8s%16u%68s%16u%s") %
         print_money(td.amount()) %
@@ -1707,7 +1707,7 @@ bool simple_wallet::rescan_spent(const std::vector<std::string> &args)
   {
     fail_msg_writer() << sw::tr("no connection to daemon. Please make sure daemon is running.");
   }
-  catch (const tools::error::is_key_image_spent_error&)
+  catch (const tools::error::is_tx_output_key_fingerprint_spent_error&)
   {
     fail_msg_writer() << sw::tr("failed to get spent status");
   }
