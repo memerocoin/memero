@@ -30,6 +30,8 @@
 add_library(cryptonote_tx
   cryptonote_tx_utils.cpp
   tx_sanity_check.cpp
+
+  functional/tx_utils.cpp
 )
 
 target_link_libraries(cryptonote_tx

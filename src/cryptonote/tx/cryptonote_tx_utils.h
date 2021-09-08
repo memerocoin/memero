@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "functional/tx_utils.hpp"
+
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
 #include "math/ringct/functional/rctOps.hpp"
@@ -45,99 +47,6 @@ namespace cryptonote
      , transaction& tx
      , const blobdata& extra_nonce = blobdata()
      , size_t max_outs = 999
-     );
-
-  struct tx_source_entry
-  {
-    typedef std::pair<uint64_t, rct::ct_public_key> output_entry;
-
-    std::vector<output_entry> outputs;  //index + key + optional ringct commitment
-    size_t real_output;                 //index in outputs vector of real output_entry
-    crypto::public_key real_out_tx_key; //incoming real tx public key
-    std::vector<crypto::public_key> real_out_additional_tx_keys; //incoming real tx additional public keys
-    size_t real_output_in_tx_index;     //index in transaction outputs vector
-    uint64_t amount;                    //money
-    bool rct;                           //true if the output is rct
-    rct::rct_scalar mask;                      //ringct amount mask
-
-    // needed for test
-    inline void push_output(uint64_t idx, const crypto::public_key &k, uint64_t amount) {
-      outputs.push_back(std::make_pair(idx, rct::ct_public_key({rct::pk2rct_p(k), rct::dummyCommit(amount)})));
-    }
-
-
-    BEGIN_SERIALIZE_OBJECT()
-      FIELD(outputs)
-      FIELD(real_output)
-      FIELD(real_out_tx_key)
-      FIELD(real_out_additional_tx_keys)
-      FIELD(real_output_in_tx_index)
-      FIELD(amount)
-      FIELD(rct)
-      FIELD(mask)
-
-      if (real_output >= outputs.size())
-        return false;
-    END_SERIALIZE()
-  };
-
-  struct tx_destination_entry
-  {
-    std::string original;
-    uint64_t amount = 0;                    //money
-    account_public_address addr;        //destination address
-    bool is_subaddress = false;
-    bool d_is_integrated = false;
-
-    tx_destination_entry() : addr(AUTO_VAL_INIT(addr)) { }
-
-    tx_destination_entry
-    (
-     uint64_t a
-     , const account_public_address &ad
-     , bool is_subaddress
-     ) : amount(a), addr(ad), is_subaddress(is_subaddress) { }
-
-    tx_destination_entry
-    (
-     const std::string &o
-     , uint64_t a
-     , const account_public_address &ad
-     , bool is_subaddress
-     ) : original(o), amount(a), addr(ad), is_subaddress(is_subaddress) { }
-
-
-    std::string address(network_type nettype) const
-    {
-      if (!original.empty())
-      {
-        return original;
-      }
-
-      return get_account_address_as_str(nettype, is_subaddress, addr);
-    }
-
-    BEGIN_SERIALIZE_OBJECT()
-      FIELD(original)
-      VARINT_FIELD(amount)
-      FIELD(addr)
-      FIELD(is_subaddress)
-      FIELD(d_is_integrated)
-    END_SERIALIZE()
-  };
-
-  //---------------------------------------------------------------
-  std::optional<transaction> construct_tx_with_tx_key
-    (
-     const account_keys& sender_account_keys
-     , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-     , const std::vector<tx_source_entry>& sources
-     , const std::vector<tx_destination_entry>& destinations
-     , const std::optional<cryptonote::account_public_address>& change_addr
-     , const std::vector<uint8_t> &extra
-     , const uint64_t unlock_time
-     , const crypto::secret_key &tx_key
-     , const std::vector<crypto::secret_key> &additional_tx_keys
      );
 
   bool construct_tx_and_get_tx_key
