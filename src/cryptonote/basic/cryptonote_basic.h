@@ -260,15 +260,9 @@ namespace cryptonote
 
   struct block: public block_header
   {
-  private:
-    // hash cash
-    mutable std::atomic<bool> hash_valid;
-
   public:
-    block(): block_header(), hash_valid(false) {}
-    block(const block &b): block_header(b), hash_valid(false), miner_tx(b.miner_tx), tx_hashes(b.tx_hashes)
-    {
-    }
+    block(): block_header() {}
+    block(const block &b): block_header(b), miner_tx(b.miner_tx), tx_hashes(b.tx_hashes) {}
 
     block &operator=(const block &b) {
       block_header::operator=(b);
