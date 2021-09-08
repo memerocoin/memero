@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/type/blobdatatype.h"
+#include "cryptonote/basic/type/blobdatatype.hpp"
 #include "cryptonote/basic/connection_context.h"
 
 

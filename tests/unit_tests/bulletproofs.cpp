@@ -39,7 +39,7 @@
 #include "math/ringct/controller/rctGen.hpp"
 #include "math/crypto/controller/random.hpp"
 
-#include "cryptonote/basic/type/blobdatatype.h"
+#include "cryptonote/basic/type/blobdatatype.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
 rct::Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)

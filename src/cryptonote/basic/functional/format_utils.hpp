@@ -30,11 +30,11 @@
 
 #pragma once
 
-#include "../type/blobdatatype.h"
+#include "../type/blobdatatype.hpp"
 #include "../cryptonote_basic_impl.h"
 #include "../tx_extra.h"
 #include "../account.h"
-#include "../type/subaddress_index.h"
+#include "../type/subaddress_index.hpp"
 
 #include "tools/epee/include/blob.hpp"
 

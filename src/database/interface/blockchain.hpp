@@ -31,7 +31,7 @@
 
 #include "cryptonote/protocol/enums.h"
 
-#include "cryptonote/basic/type/blobdatatype.h"
+#include "cryptonote/basic/type/blobdatatype.hpp"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/functional/difficulty.hpp"
 
