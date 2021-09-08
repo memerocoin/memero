@@ -160,6 +160,4 @@ namespace cryptonote
     , uint64_t nonce
     );
 
-  /* bool get_block_longhash(const block& b, crypto::hash& res); */
-  crypto::hash get_block_longhash(const block& b);
 }

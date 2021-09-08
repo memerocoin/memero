@@ -651,4 +651,11 @@ namespace cryptonote
   {
     return calculate_transaction_hash(t);
   }
+
+  //---------------------------------------------------------------
+  crypto::hash get_block_longhash(const block& b)
+  {
+    blobdata bd = get_block_hashing_blob(b);
+    return crypto::sha3(epee::string_tools::string_to_blob(bd));
+  }
 }

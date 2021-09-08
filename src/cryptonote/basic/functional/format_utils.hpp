@@ -191,4 +191,6 @@ namespace cryptonote
   std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off);
 
   crypto::hash get_transaction_hash(const transaction& t);
+
+  crypto::hash get_block_longhash(const block& b);
 }

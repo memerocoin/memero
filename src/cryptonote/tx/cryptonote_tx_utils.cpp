@@ -588,18 +588,4 @@ namespace cryptonote
     bl.nonce = nonce;
     return true;
   }
-  //---------------------------------------------------------------
-  bool get_block_longhash(const block& b, crypto::hash& res)
-  {
-    blobdata bd = get_block_hashing_blob(b);
-    res = crypto::sha3(epee::string_tools::string_to_blob(bd));
-    return true;
-  }
-
-  crypto::hash get_block_longhash(const block& b)
-  {
-    crypto::hash p = crypto::null_hash;
-    get_block_longhash(b, p);
-    return p;
-  }
 }
