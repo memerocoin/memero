@@ -128,7 +128,6 @@ namespace cryptonote
    )
   {
     keypair in_ephemeral;
-    crypto::tx_output_key_fingerprint ki;
 
     if (ack.m_spend_secret_key == crypto::null_skey)
     {
@@ -160,7 +159,7 @@ namespace cryptonote
            {}, "key image helper precomp: given output pubkey doesn't match the derived one");
     }
 
-    ki = crypto::derive_tx_output_key_fingerprint(in_ephemeral.sec);
+    const crypto::tx_output_key_fingerprint ki = crypto::derive_tx_output_key_fingerprint(in_ephemeral.sec);
     return {{in_ephemeral, ki}};
   }
 
