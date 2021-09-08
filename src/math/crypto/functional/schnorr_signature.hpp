@@ -38,8 +38,15 @@ namespace crypto {
     }
   };
 
-  inline schnorr_signature reduce_schnorr(const schnorr_signature_unnormalized x) {
-    return {reduce(x.s), reduce(x.scalar_hash)};
+  inline std::optional<schnorr_signature> maybe_valid_schnorr_signature
+  (const schnorr_signature_unnormalized x)
+  {
+    const schnorr_signature reduced = {reduce(x.s), reduce(x.scalar_hash)};
+    if (reduced != x) {
+      return {};
+    } else {
+      return reduced;
+    }
   }
 
   inline std::ostream &operator <<(std::ostream &o, const schnorr_signature &v) {

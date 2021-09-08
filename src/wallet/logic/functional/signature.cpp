@@ -84,21 +84,19 @@ namespace signature {
 
     memcpy(&sig_unsafe, decoded.data(), decoded.size());
 
-    const crypto::schnorr_signature sig = reduce_schnorr(sig_unsafe);
+    const auto sig = maybe_valid_schnorr_signature(sig_unsafe);
 
-    if (sig != sig_unsafe) {
-      return {};
-    }
+    if (!sig) return {};
 
 
 
     // Test each mode and return which mode, if either, succeeded
     const crypto::hash hash = get_message_hash(data);
     constexpr unsigned ver = config::MESSAGE_SIGNING_VERSION;
-    if (crypto::verify_schnorr_signature_with_pubkey_data(hash, address.m_spend_public_key, sig))
+    if (crypto::verify_schnorr_signature_with_pubkey_data(hash, address.m_spend_public_key, *sig))
       return {true, ver, wallet::logic::type::message_signature::sign_with_spend_key };
 
-    if (crypto::verify_schnorr_signature_with_pubkey_data(hash, address.m_view_public_key, sig))
+    if (crypto::verify_schnorr_signature_with_pubkey_data(hash, address.m_view_public_key, *sig))
       return {true, ver, wallet::logic::type::message_signature::sign_with_view_key };
 
     // Both modes failed

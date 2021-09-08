@@ -120,8 +120,17 @@ namespace proof {
       memcpy(&sig_unsafe_1, sig_decoded.data(), schnorr_size);
       memcpy(&sig_unsafe_2, sig_decoded.data() + schnorr_size, schnorr_size);
 
-      sig[i].first = reduce_schnorr(sig_unsafe_1);
-      sig[i].second = reduce_schnorr(sig_unsafe_2);
+
+      // reject invalid keys
+      const auto maybeSig1 = maybe_valid_schnorr_signature(sig_unsafe_1);
+      if (!maybeSig1) return false;
+
+      const auto maybeSig2 = maybe_valid_schnorr_signature(sig_unsafe_2);
+      if (!maybeSig2) return false;
+
+
+      sig[i].first = *maybeSig1;
+      sig[i].second = *maybeSig2;
     }
 
     const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
