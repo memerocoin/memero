@@ -151,19 +151,11 @@ namespace cryptonote
 
   class transaction: public transaction_prefix
   {
-  private:
-    // hash cash
-    mutable std::atomic<bool> prunable_hash_valid;
-    mutable std::atomic<bool> blob_size_valid;
-
   public:
     rct::rctData ringct_essential;
 
     // hash cash
     crypto::hash hash;
-    mutable crypto::hash prunable_hash;
-    mutable size_t blob_size;
-
     std::atomic<unsigned int> unprunable_size;
     std::atomic<unsigned int> prefix_size;
 
