@@ -34,7 +34,7 @@
 
 #include "tools/common/util.h"
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/tx_extra.h"
+#include "cryptonote/basic/type/tx_extra.hpp"
 #include "cryptonote/tx/cryptonote_tx_utils.h"
 
 namespace

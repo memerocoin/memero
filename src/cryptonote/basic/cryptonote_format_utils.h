@@ -32,7 +32,7 @@
 
 #include "type/blobdatatype.hpp"
 #include "cryptonote_basic_impl.h"
-#include "tx_extra.h"
+#include "type/tx_extra.hpp"
 #include "account.h"
 #include "type/subaddress_index.hpp"
 
