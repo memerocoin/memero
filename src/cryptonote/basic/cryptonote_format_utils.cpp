@@ -131,7 +131,7 @@ namespace cryptonote
     bool r = ::serialization::serialize(ba, tx);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
     LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
-    tx.invalidate_hashes();
+    
     tx.set_blob_size(tx_blob.size());
     return true;
   }
@@ -144,7 +144,7 @@ namespace cryptonote
     bool r = tx.serialize_base(ba);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
     LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, true), false, "Failed to expand transaction data");
-    tx.invalidate_hashes();
+    
     return true;
   }
   //---------------------------------------------------------------
@@ -166,7 +166,7 @@ namespace cryptonote
     bool r = ::serialization::serialize(ba, tx);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
     LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
-    tx.invalidate_hashes();
+    
     //TODO: validate tx
 
     tx_hash = get_transaction_hash(tx);
@@ -516,7 +516,7 @@ namespace cryptonote
     bool r = ::serialization::serialize(ba, b);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse block from blob");
     b.invalidate_hashes();
-    b.miner_tx.invalidate_hashes();
+    b.miner_
     if (block_hash)
     {
       *block_hash = calculate_block_hash(b);

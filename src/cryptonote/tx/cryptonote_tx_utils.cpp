@@ -142,7 +142,7 @@ namespace cryptonote
     tx.unlock_time = height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
     tx.vin.push_back(in);
 
-    tx.invalidate_hashes();
+    
 
     //LOG_PRINT("MINER_TX generated ok, block_reward=" << print_money(block_reward) << "("  << print_money(block_reward - fee) << "+" << print_money(fee)
     //  << "), current_block_size=" << current_block_size << ", already_generated_coins=" << already_generated_coins << ", tx_id=" << get_transaction_hash(tx), LOG_LEVEL_2);
@@ -519,7 +519,7 @@ namespace cryptonote
       LOG_CATEGORY_INFO("construct_tx", "transaction_created: " << tx_hash << std::endl << obj_to_json_str(tx) << std::endl);
     }
 
-    tx.invalidate_hashes();
+    
 
     return tx;
   }

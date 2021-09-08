@@ -172,7 +172,6 @@ namespace cryptonote
     transaction &operator=(const transaction &t);
     virtual ~transaction();
     void set_null();
-    void invalidate_hashes();
     bool is_hash_valid() const { return false; };
     void set_hash_valid(bool v) const {};
     bool is_prunable_hash_valid() const { return prunable_hash_valid.load(std::memory_order_acquire); }
