@@ -63,10 +63,10 @@ namespace cryptonote
      , std::vector<crypto::secret_key> &additional_tx_keys
      );
 
-  bool generate_genesis_block(
-      block& bl
-    , std::string_view const & genesis_tx
-    , uint64_t nonce
-    );
+  std::optional<block> generate_genesis_block
+    (
+     const std::string_view genesis_tx
+     , const uint64_t nonce
+     );
 
 }

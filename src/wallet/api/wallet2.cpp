@@ -4540,7 +4540,13 @@ bool wallet2::is_synced()
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::generate_genesis(cryptonote::block& b) const {
-  cryptonote::generate_genesis_block(b, get_config(m_nettype).GENESIS_TX, get_config(m_nettype).GENESIS_NONCE);
+  const auto bk = cryptonote::generate_genesis_block(get_config(m_nettype).GENESIS_TX, get_config(m_nettype).GENESIS_NONCE);
+
+  if (!bk) {
+    LOG_ERROR_AND_THROW("failed to generate genesis block");
+  }
+
+  b = *bk;
 }
 
 
