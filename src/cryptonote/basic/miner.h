@@ -32,7 +32,7 @@
 #pragma once
 
 #include "cryptonote_basic.h"
-#include "verification_context.h"
+#include "type/verification_context.hpp"
 #include "functional/difficulty.hpp"
 #include "type/blobdatatype.hpp"
 
