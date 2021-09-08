@@ -693,13 +693,6 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
   {
     LOG_DEBUG("No existing blocks to check for average block size");
   }
-  else if (m_cum_count >= num_prev_blocks)
-  {
-    avg_block_size = m_cum_size / m_cum_count;
-    LOG_DEBUG("average block size across recent " << m_cum_count << " blocks: " << avg_block_size);
-    m_cum_size = 0;
-    m_cum_count = 0;
-  }
   else
   {
     MDB_txn *rtxn;
@@ -806,8 +799,6 @@ void BlockchainLMDB::add_block(const block& blk, size_t block_weight, uint64_t l
 
   // we use weight as a proxy for size, since we don't have size but weight is >= size
   // and often actually equal
-  m_cum_size += block_weight;
-  m_cum_count++;
 }
 
 void BlockchainLMDB::remove_block()
@@ -1214,8 +1205,6 @@ BlockchainLMDB::BlockchainLMDB(bool batch_transactions): BlockchainDB()
   m_write_txn = nullptr;
   m_write_batch_txn = nullptr;
   m_batch_active = false;
-  m_cum_size = 0;
-  m_cum_count = 0;
 
   // reset may also need changing when initialize things here
 }
@@ -1538,8 +1527,6 @@ void BlockchainLMDB::reset()
     throw0(DB_ERROR(lmdb_error("Failed to write version to database: ", result).c_str()));
 
   txn.commit();
-  m_cum_size = 0;
-  m_cum_count = 0;
 }
 
 std::vector<std::string> BlockchainLMDB::get_filenames() const

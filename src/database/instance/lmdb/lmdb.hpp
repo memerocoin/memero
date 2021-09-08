@@ -426,8 +426,6 @@ private:
 
   MDB_dbi m_properties;
 
-  mutable uint64_t m_cum_size;	// used in batch size estimation
-  mutable unsigned int m_cum_count;
   std::string m_folder;
   mdb_txn_safe* m_write_txn; // may point to either a short-lived txn or a batch txn
   mdb_txn_safe* m_write_batch_txn; // persist batch txn outside of BlockchainLMDB
@@ -437,7 +435,6 @@ private:
   bool m_batch_active; // whether batch transaction is in progress
 
   mdb_txn_cursors m_wcursors;
-  // mutable boost::thread_specific_ptr<mdb_threadinfo> m_tinfo;
   static inline thread_local std::unique_ptr<mdb_threadinfo> m_tinfo;
 
 #if defined(__arm__)
