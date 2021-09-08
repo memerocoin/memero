@@ -78,7 +78,13 @@ namespace cryptonote
     return {num_stdaddresses, num_subaddresses, single_dest_subaddress};
   }
 
-  bool generate_output_ephemeral_keys
+  std::optional<
+    std::tuple<
+    std::vector<crypto::public_key>
+    , rct::rct_scalarV
+    , crypto::public_key
+    >>
+    generate_output_ephemeral_keys
   (
    const size_t tx_version
    , const cryptonote::account_keys &sender_account_keys
@@ -89,11 +95,13 @@ namespace cryptonote
    , const size_t output_index
    , const bool &need_additional_txkeys
    , const std::vector<crypto::secret_key> &additional_tx_keys
-   , std::vector<crypto::public_key> &additional_tx_public_keys
-   , rct::rct_scalarV &tx_shared_secret_indexed_hashes
-   , crypto::public_key &out_eph_public_key
+   , const std::vector<crypto::public_key> &additional_tx_public_keys_in
+   , const rct::rct_scalarV &tx_shared_secret_indexed_hashes_in
    )
   {
+    std::vector<crypto::public_key> additional_tx_public_keys = additional_tx_public_keys_in;
+    rct::rct_scalarV tx_shared_secret_indexed_hashes = tx_shared_secret_indexed_hashes_in;
+
     std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
 
     // make additional tx pubkey if necessary
@@ -116,7 +124,7 @@ namespace cryptonote
       LOG_ERROR_AND_RETURN_UNLESS
         (
          tx_shared_secret
-         , false
+         , {}
          , "at creation outs: failed to derive_tx_ecdh_shared_secret("
          << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")"
          );
@@ -135,7 +143,7 @@ namespace cryptonote
       LOG_ERROR_AND_RETURN_UNLESS
         (
          tx_shared_secret
-         , false
+         , {}
          , "at creation outs: failed to derive_tx_ecdh_shared_secret("
          << dst_entr.addr.m_view_public_key
          << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")"
@@ -158,13 +166,16 @@ namespace cryptonote
     LOG_ERROR_AND_RETURN_UNLESS
       (
        eph_pk
-       , false
+       , {}
        , "at creation outs: failed to derive_tx_output_public_key_from_spend_public_key("
        << *tx_shared_secret << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
        );
 
-    out_eph_public_key = *eph_pk;
-    return true;
+    return {{
+        additional_tx_public_keys
+        , tx_shared_secret_indexed_hashes
+        , *eph_pk
+      }};
   }
 
   //---------------------------------------------------------------
@@ -312,9 +323,8 @@ namespace cryptonote
     for(const tx_destination_entry& dst_entr: destinations)
     {
       LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, {}, "Destination with wrong amount: " << dst_entr.amount);
-      crypto::public_key out_eph_public_key;
 
-      generate_output_ephemeral_keys
+      const auto r = generate_output_ephemeral_keys
         (
          tx.version,sender_account_keys
          , txkey_pub
@@ -326,8 +336,17 @@ namespace cryptonote
          , additional_tx_keys
          , additional_tx_public_keys
          , tx_shared_secret_indexed_hashes
-         , out_eph_public_key
          );
+
+      if (!r) return {};
+
+      crypto::public_key out_eph_public_key;
+      std::tie
+        (
+         additional_tx_public_keys
+         , tx_shared_secret_indexed_hashes
+         , out_eph_public_key
+         ) = *r;
 
       const txout_to_key txout_key_type{out_eph_public_key};
       const tx_out out{dst_entr.amount, txout_key_type};
