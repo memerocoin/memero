@@ -131,4 +131,13 @@ namespace cryptonote
    , const uint64_t nonce
    );
 
+  std::optional<transaction> construct_miner_tx
+  (
+   const size_t height
+   , const size_t current_block_weight
+   , const uint64_t fee
+   , const account_public_address &miner_address
+   );
+
+
 }

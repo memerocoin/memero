@@ -492,4 +492,78 @@ namespace cryptonote
 
     return bl;
   }
+
+  //---------------------------------------------------------------
+  std::optional<transaction> construct_miner_tx
+  (
+   const size_t height
+   , const size_t current_block_weight
+   , const uint64_t fee
+   , const account_public_address &miner_address
+   )
+  {
+    transaction tx;
+
+    tx.vin.clear();
+    tx.vout.clear();
+    tx.extra.clear();
+
+    keypair txkey = keypair::generate();
+    add_tx_pub_key_to_extra(tx, txkey.pub);
+    if (!sort_tx_extra(tx.extra, tx.extra))
+      return {};
+
+    txin_gen in;
+    in.height = height;
+
+    if(!check_block_weight(static_cast<uint64_t>(height), current_block_weight))
+    {
+      LOG_PRINT_L0("Block is too big");
+      return {};
+    }
+    uint64_t block_reward = get_block_reward();
+
+    block_reward += fee;
+
+    std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret =
+      crypto::derive_tx_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       tx_shared_secret
+       , {}
+       , "while creating outs: failed to derive_tx_ecdh_shared_secret("
+       << miner_address.m_view_public_key << ", " << txkey.sec << ")"
+       );
+
+    const std::optional<crypto::public_key> out_eph_public_key =
+      crypto::derive_tx_output_public_key_from_spend_public_key(*tx_shared_secret, 0, miner_address.m_spend_public_key);
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       out_eph_public_key
+       , {}
+       , "while creating outs: failed to derive_tx_output_public_key_from_spend_public_key("
+       << *tx_shared_secret << ", " << 0 << ", "
+       << miner_address.m_spend_public_key << ")"
+       );
+
+    txout_to_key tk;
+    tk.key = *out_eph_public_key;
+
+    tx_out out;
+    out.amount = block_reward;
+    out.target = tk;
+    tx.vout.push_back(out);
+
+    tx.version = 2;
+
+    //lock
+    tx.unlock_time = height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
+    tx.vin.push_back(in);
+
+    //LOG_PRINT("MINER_TX generated ok, block_reward=" << print_money(block_reward) << "("  << print_money(block_reward - fee) << "+" << print_money(fee)
+    //  << "), current_block_size=" << current_block_size << ", already_generated_coins=" << already_generated_coins << ", tx_id=" << get_transaction_hash(tx), LOG_LEVEL_2);
+    return tx;
+  }
+
 }
