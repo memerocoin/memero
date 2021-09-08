@@ -271,7 +271,12 @@ namespace cryptonote
       if (b.is_hash_valid()) { hash = b.hash; set_hash_valid(true); }
     }
 
-    block &operator=(const block &b) { block_header::operator=(b); hash_valid = false; miner_tx = b.miner_tx; tx_hashes = b.tx_hashes; if (b.is_hash_valid()) { hash = b.hash; set_hash_valid(true); } return *this; }
+    block &operator=(const block &b) {
+      block_header::operator=(b);
+      miner_tx = b.miner_tx;
+      tx_hashes = b.tx_hashes;
+      return *this;
+    }
     void invalidate_hashes() { }
     bool is_hash_valid() const { return false; }
     void set_hash_valid(bool v) const { }
