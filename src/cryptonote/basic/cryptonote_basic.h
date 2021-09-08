@@ -155,7 +155,6 @@ namespace cryptonote
     rct::rctData ringct_essential;
 
     // hash cash
-    crypto::hash hash;
     std::atomic<unsigned int> unprunable_size;
     std::atomic<unsigned int> prefix_size;
 
