@@ -1498,7 +1498,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     LOG_ERROR_AND_RETURN_UNLESS(current_diff, false, "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!");
     crypto::hash proof_of_work = {{0xff}};
     {
-      get_block_longhash(bei.bl, proof_of_work);
+      proof_of_work = get_block_longhash(bei.bl);
     }
     if(!check_hash(proof_of_work, current_diff))
     {
