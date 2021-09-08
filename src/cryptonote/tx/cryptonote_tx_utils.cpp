@@ -586,7 +586,6 @@ namespace cryptonote
     bl.minor_version = config::lol::constant_hf_version;
     bl.timestamp = 0;
     bl.nonce = nonce;
-    bl.invalidate_hashes();
     return true;
   }
   //---------------------------------------------------------------

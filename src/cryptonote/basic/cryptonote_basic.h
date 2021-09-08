@@ -276,7 +276,6 @@ namespace cryptonote
       tx_hashes = b.tx_hashes;
       return *this;
     }
-    void invalidate_hashes() { }
 
     transaction miner_tx;
     std::vector<crypto::hash> tx_hashes;
