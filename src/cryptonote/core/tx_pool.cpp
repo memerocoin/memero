@@ -468,10 +468,6 @@ namespace cryptonote
         LOG_ERROR("Failed to parse tx from txpool");
         return false;
       }
-      else
-      {
-        tx.set_hash(id);
-      }
       tx_weight = meta.weight;
       fee = meta.fee;
       relayed = meta.relayed;
@@ -521,10 +517,6 @@ namespace cryptonote
       {
         LOG_ERROR("Failed to parse tx from txpool");
         return false;
-      }
-      else
-      {
-        td.tx.set_hash(txid);
       }
       td.blob_size = txblob.size();
       td.weight = meta.weight;
@@ -743,7 +735,6 @@ namespace cryptonote
         // continue
         return true;
       }
-      tx.set_hash(txid);
       txs.push_back(std::move(tx));
       return true;
     }, true, category);
@@ -867,7 +858,6 @@ namespace cryptonote
         // continue
         return true;
       }
-      tx.set_hash(txid);
       txi.tx_json = obj_to_json_str(tx);
       txi.blob_size = bd->size();
       txi.weight = meta.weight;
@@ -921,7 +911,6 @@ namespace cryptonote
         // continue
         return true;
       }
-      txi.tx.set_hash(txid);
       txi.blob_size = bd->size();
       txi.weight = meta.weight;
       txi.fee = meta.fee;
@@ -1081,7 +1070,6 @@ namespace cryptonote
         {
           if (!parse_and_validate_tx_from_blob(txblob, tx))
             throw std::runtime_error("failed to parse transaction blob");
-          tx.set_hash(txid);
           parsed = true;
         }
         return tx;

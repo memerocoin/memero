@@ -164,9 +164,6 @@ namespace cryptonote
     transaction &operator=(const transaction &t);
     virtual ~transaction();
     void set_null();
-    bool is_hash_valid() const { return false; }
-    void set_hash_valid(bool v) const {}
-    void set_hash(const crypto::hash &h) const {}
 
     BEGIN_SERIALIZE_OBJECT()
       const unsigned int start_pos = getpos(ar);
