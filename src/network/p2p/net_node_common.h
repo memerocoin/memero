@@ -31,7 +31,7 @@
 #pragma once
 
 #include "cryptonote/protocol/enums.h"
-#include "cryptonote/core/i_core_events.h"
+#include "cryptonote/core/i_core_type/events.hpp"
 #include "p2p_protocol_defs.h"
 
 namespace nodetool

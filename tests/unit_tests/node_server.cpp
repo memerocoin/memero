@@ -32,7 +32,7 @@
 #include "cryptonote/core/cryptonote_core.h"
 #include "network/p2p/net_node.h"
 #include "network/p2p/net_node.inl"
-#include "cryptonote/core/i_core_events.h"
+#include "cryptonote/core/i_core_type/events.hpp"
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
 #define MAKE_IPV4_ADDRESS(a,b,c,d) epee::net_utils::ipv4_network_address{MAKE_IP(a,b,c,d),0}

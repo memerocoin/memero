@@ -37,7 +37,7 @@
 
 #include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
 
-#include "cryptonote/basic/events.h"
+#include "cryptonote/basic/type/events.hpp"
 #include "cryptonote/basic/miner.h"
 
 
