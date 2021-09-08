@@ -268,7 +268,7 @@ namespace cryptonote
       //put key image into tx input
       txin_to_key input_to_key;
       input_to_key.amount = src_entr.amount;
-      input_to_key.k_image = img;
+      input_to_key.tx_output_key_fingerprint = img;
 
       //fill outputs array and use relative offsets
       for(const tx_source_entry::output_entry& out_entry: src_entr.outputs)
@@ -290,7 +290,7 @@ namespace cryptonote
     std::sort(ins_order.begin(), ins_order.end(), [&](const size_t i0, const size_t i1) {
       const txin_to_key &tk0 = boost::get<txin_to_key>(tx.vin[i0]);
       const txin_to_key &tk1 = boost::get<txin_to_key>(tx.vin[i1]);
-      return memcmp(&tk0.k_image, &tk1.k_image, sizeof(tk0.k_image)) > 0;
+      return memcmp(&tk0.tx_output_key_fingerprint, &tk1.tx_output_key_fingerprint, sizeof(tk0.tx_output_key_fingerprint)) > 0;
     });
 
     // figure out if we need to make additional tx pubkeys

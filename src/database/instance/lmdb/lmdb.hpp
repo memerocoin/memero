@@ -368,9 +368,9 @@ private:
 
   void remove_output(const uint64_t amount, const uint64_t& out_index);
 
-  virtual void add_spent_key(const crypto::tx_output_key_fingerprint& k_image);
+  virtual void add_spent_key(const crypto::tx_output_key_fingerprint& tx_output_key_fingerprint);
 
-  virtual void remove_spent_key(const crypto::tx_output_key_fingerprint& k_image);
+  virtual void remove_spent_key(const crypto::tx_output_key_fingerprint& tx_output_key_fingerprint);
 
   uint64_t num_outputs() const;
 

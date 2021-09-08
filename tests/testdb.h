@@ -110,8 +110,8 @@ public:
   virtual void remove_transaction_data(const crypto::hash& tx_hash, const cryptonote::transaction& tx) override {}
   virtual uint64_t add_output(const crypto::hash& tx_hash, const cryptonote::tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_time, const rct::rct_point *commitment) override {return 0;}
   virtual void add_tx_amount_output_indices(const uint64_t tx_index, const std::vector<uint64_t>& amount_output_indices) override {}
-  virtual void add_spent_key(const crypto::tx_output_key_fingerprint& k_image) override {}
-  virtual void remove_spent_key(const crypto::tx_output_key_fingerprint& k_image) override {}
+  virtual void add_spent_key(const crypto::tx_output_key_fingerprint& tx_output_key_fingerprint) override {}
+  virtual void remove_spent_key(const crypto::tx_output_key_fingerprint& tx_output_key_fingerprint) override {}
 
   virtual bool for_all_tx_output_key_fingerprints(std::function<bool(const crypto::tx_output_key_fingerprint&)>) const override { return true; }
   virtual bool for_blocks_range(const uint64_t&, const uint64_t&, std::function<bool(uint64_t, const crypto::hash&, const cryptonote::block&)>) const override { return true; }

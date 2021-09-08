@@ -726,7 +726,7 @@ namespace cryptonote
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if(!ki.insert(tokey_in.k_image).second)
+      if(!ki.insert(tokey_in.tx_output_key_fingerprint).second)
         return false;
     }
     return true;
@@ -752,7 +752,7 @@ namespace cryptonote
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if(!crypto::is_safe_point(rct::ki2rct_p(tokey_in.k_image)))
+      if(!crypto::is_safe_point(rct::ki2rct_p(tokey_in.tx_output_key_fingerprint)))
         return false;
     }
     return true;

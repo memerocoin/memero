@@ -119,7 +119,7 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_to_ke
   auto it = m_scan_table.find(tx_prefix_hash);
   if (it != m_scan_table.end())
   {
-    auto its = it->second.find(tx_in_to_key.k_image);
+    auto its = it->second.find(tx_in_to_key.tx_output_key_fingerprint);
     if (its != it->second.end())
     {
       outputs = its->second;
@@ -2322,7 +2322,7 @@ bool Blockchain::check_for_double_spend(const transaction& tx, tx_output_key_fin
     }
     bool operator()(const txin_to_key& in) const
     {
-      const crypto::tx_output_key_fingerprint& ki = in.k_image;
+      const crypto::tx_output_key_fingerprint& ki = in.tx_output_key_fingerprint;
 
       // attempt to insert the newly-spent key into the container of
       // keys spent this block.  If this fails, the key was spent already
@@ -2478,7 +2478,7 @@ bool Blockchain::have_tx_keyimges_as_spent(const transaction &tx) const
   for (const txin_v& in: tx.vin)
   {
     CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, in_to_key, true);
-    if(have_tx_keyimg_as_spent(in_to_key.k_image))
+    if(have_tx_keyimg_as_spent(in_to_key.tx_output_key_fingerprint))
       return true;
   }
   return false;
@@ -2517,7 +2517,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
       LOG_ERROR_AND_RETURN_UNLESS(rv.p.CLSAGs.size() == tx.vin.size(), false, "Bad CLSAGs size");
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
-        rv.p.CLSAGs[n].I = rct::ki2rct_p(boost::get<txin_to_key>(tx.vin[n]).k_image);
+        rv.p.CLSAGs[n].I = rct::ki2rct_p(boost::get<txin_to_key>(tx.vin[n]).tx_output_key_fingerprint);
       }
   }
   else
@@ -2891,7 +2891,7 @@ leave:
     //        Validation is the purview of the Blockchain class
     //        - TW
     //
-    // ND: this is not needed, db->add_block() checks for duplicate k_images and fails accordingly.
+    // ND: this is not needed, db->add_block() checks for duplicate tx_output_key_fingerprints and fails accordingly.
     // if (!check_for_double_spend(tx, keys))
     // {
     //     LOG_PRINT_L0("Double spend detected in transaction (id: " << tx_id);
@@ -3229,7 +3229,7 @@ bool Blockchain::has_block_weights(uint64_t height, uint64_t nblocks) const
 // ND: Speedups:
 // 1. Thread long_hash computations if possible
 // 2. Group all amounts (from txs) and related absolute offsets and form a table of tx_prefix_hash
-//    vs [k_image, output_keys] (m_scan_table). This is faster because it takes advantage of bulk queries
+//    vs [tx_output_key_fingerprint, output_keys] (m_scan_table). This is faster because it takes advantage of bulk queries
 //    and is threaded if possible. The table (m_scan_table) will be used later when querying output
 //    keys.
 bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete_entry> &blocks_entry, std::vector<block> &blocks)
@@ -3411,7 +3411,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete
         const txin_to_key &in_to_key = boost::get < txin_to_key > (txin);
 
         // check for duplicate
-        auto it = its->second.find(in_to_key.k_image);
+        auto it = its->second.find(in_to_key.tx_output_key_fingerprint);
         if (it != its->second.end())
           SCAN_TABLE_QUIT("Duplicate tx_output_key_fingerprint found from incoming blocks.");
 
@@ -3481,7 +3481,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete
     }
   }
 
-  // now generate a table for each tx_prefix and k_image hashes
+  // now generate a table for each tx_prefix and tx_output_key_fingerprint hashes
   tx_index = 0;
   for (const auto &entry : blocks_entry)
   {
@@ -3529,7 +3529,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete
             break;
         }
 
-        its->second.emplace(in_to_key.k_image, outputs);
+        its->second.emplace(in_to_key.tx_output_key_fingerprint, outputs);
       }
     }
   }
@@ -3847,13 +3847,13 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       if (txin.type() == typeid(txin_to_key))
       {
         const txin_to_key& in_to_key = boost::get<txin_to_key>(txin);
-        if (last_tx_output_key_fingerprint && memcmp(&in_to_key.k_image, last_tx_output_key_fingerprint, sizeof(*last_tx_output_key_fingerprint)) >= 0)
+        if (last_tx_output_key_fingerprint && memcmp(&in_to_key.tx_output_key_fingerprint, last_tx_output_key_fingerprint, sizeof(*last_tx_output_key_fingerprint)) >= 0)
         {
           LOG_ERROR_VER("transaction has unsorted inputs");
           tvc.m_verifivation_failed = true;
           return false;
         }
-        last_tx_output_key_fingerprint = &in_to_key.k_image;
+        last_tx_output_key_fingerprint = &in_to_key.tx_output_key_fingerprint;
       }
     }
   }
@@ -3878,9 +3878,9 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     // make sure tx output has key offset(s) (is signed to be used)
     LOG_ERROR_AND_RETURN_UNLESS(in_to_key.key_offsets.size(), false, "empty in_to_key.key_offsets in transaction with id " << get_transaction_hash(tx));
 
-    if(have_tx_keyimg_as_spent(in_to_key.k_image))
+    if(have_tx_keyimg_as_spent(in_to_key.tx_output_key_fingerprint))
     {
-      LOG_ERROR_VER("Key image already spent in blockchain: " << epee::string_tools::pod_to_hex(in_to_key.k_image));
+      LOG_ERROR_VER("Key image already spent in blockchain: " << epee::string_tools::pod_to_hex(in_to_key.tx_output_key_fingerprint));
       tvc.m_double_spend = true;
       return false;
     }
@@ -3889,7 +3889,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     // signature spending it.
     if (!check_tx_input(tx.version, in_to_key, tx_prefix_hash, tx.ringct_essential, pubkeys[sig_index], pmax_used_block_height))
     {
-      LOG_ERROR_VER("Failed to check ring signature for tx " << get_transaction_hash(tx) << "  vin key with k_image: " << in_to_key.k_image << "  sig_index: " << sig_index);
+      LOG_ERROR_VER("Failed to check ring signature for tx " << get_transaction_hash(tx) << "  vin key with tx_output_key_fingerprint: " << in_to_key.tx_output_key_fingerprint << "  sig_index: " << sig_index);
       if (pmax_used_block_height) // a default value of NULL is used when called from Blockchain::handle_block_to_main_chain()
       {
         LOG_ERROR_VER("  *pmax_used_block_height: " << *pmax_used_block_height);
@@ -3969,7 +3969,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
         bool error;
-        error = memcmp(&boost::get<txin_to_key>(tx.vin[n]).k_image, &rv.p.CLSAGs[n].I, 32);
+        error = memcmp(&boost::get<txin_to_key>(tx.vin[n]).tx_output_key_fingerprint, &rv.p.CLSAGs[n].I, 32);
         if (error)
         {
           LOG_ERROR_VER("Failed to check ringct signatures: mismatched key image");

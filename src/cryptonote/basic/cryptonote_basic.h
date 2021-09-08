@@ -89,12 +89,12 @@ namespace cryptonote
   {
     uint64_t amount;
     std::vector<uint64_t> key_offsets;
-    crypto::tx_output_key_fingerprint k_image;      // double spending protection
+    crypto::tx_output_key_fingerprint tx_output_key_fingerprint;      // double spending protection
 
     BEGIN_SERIALIZE_OBJECT()
       VARINT_FIELD(amount)
       FIELD(key_offsets)
-      FIELD(k_image)
+      FIELD(tx_output_key_fingerprint)
     END_SERIALIZE()
   };
 

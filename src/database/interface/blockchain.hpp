@@ -494,9 +494,9 @@ private:
    * If any of this cannot be done, the subclass should throw the corresponding
    * subclass of DB_EXCEPTION
    *
-   * @param k_image the spent key image to store
+   * @param tx_output_key_fingerprint the spent key image to store
    */
-  virtual void add_spent_key(const crypto::tx_output_key_fingerprint& k_image) = 0;
+  virtual void add_spent_key(const crypto::tx_output_key_fingerprint& tx_output_key_fingerprint) = 0;
 
   /**
    * @brief remove a spent key
@@ -506,9 +506,9 @@ private:
    * If any of this cannot be done, the subclass should throw the corresponding
    * subclass of DB_EXCEPTION
    *
-   * @param k_image the spent key image to remove
+   * @param tx_output_key_fingerprint the spent key image to remove
    */
-  virtual void remove_spent_key(const crypto::tx_output_key_fingerprint& k_image) = 0;
+  virtual void remove_spent_key(const crypto::tx_output_key_fingerprint& tx_output_key_fingerprint) = 0;
 
 
   /*********************************************************************

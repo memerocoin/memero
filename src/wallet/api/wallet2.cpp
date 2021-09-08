@@ -700,7 +700,7 @@ bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(in);
-    auto it = m_tx_output_key_fingerprints.find(in_to_key.k_image);
+    auto it = m_tx_output_key_fingerprints.find(in_to_key.tx_output_key_fingerprint);
     if (it != m_tx_output_key_fingerprints.end())
       return true;
   }
@@ -1019,7 +1019,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     if(in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(in);
-    auto it = m_tx_output_key_fingerprints.find(in_to_key.k_image);
+    auto it = m_tx_output_key_fingerprints.find(in_to_key.tx_output_key_fingerprint);
     if(it != m_tx_output_key_fingerprints.end())
     {
       transfer_details& td = m_transfers[it->second];
@@ -1187,7 +1187,7 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    entry.first->second.m_rings.push_back(std::make_pair(txin.k_image, txin.key_offsets));
+    entry.first->second.m_rings.push_back(std::make_pair(txin.tx_output_key_fingerprint, txin.key_offsets));
   }
   entry.first->second.m_block_height = height;
   entry.first->second.m_timestamp = ts;
@@ -1636,7 +1636,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
             for (size_t i = 0; i < m_transfers.size(); ++i)
             {
               const transfer_details &td = m_transfers[i];
-              if (td.m_tx_output_key_fingerprint == tx_in_to_key.k_image)
+              if (td.m_tx_output_key_fingerprint == tx_in_to_key.tx_output_key_fingerprint)
               {
                  LOG_PRINT_L1("Resetting spent status for output " << vini << ": " << td.m_tx_output_key_fingerprint);
                  set_unspent(i);
@@ -3324,7 +3324,7 @@ void wallet2::add_unconfirmed_tx(const cryptonote::transaction& tx, uint64_t amo
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    utd.m_rings.push_back(std::make_pair(txin.k_image, txin.key_offsets));
+    utd.m_rings.push_back(std::make_pair(txin.tx_output_key_fingerprint, txin.key_offsets));
   }
 }
 
@@ -3571,7 +3571,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   bool all_are_txin_to_key = std::all_of(tx.vin.begin(), tx.vin.end(), [&](const txin_v& s_e) -> bool
   {
     CHECKED_GET_SPECIFIC_VARIANT(s_e, const txin_to_key, in, false);
-    tx_output_key_fingerprints += boost::to_string(in.k_image) + " ";
+    tx_output_key_fingerprints += boost::to_string(in.tx_output_key_fingerprint) + " ";
     return true;
   });
   THROW_WALLET_EXCEPTION_IF(!all_are_txin_to_key, error::unexpected_txin_type, tx);
