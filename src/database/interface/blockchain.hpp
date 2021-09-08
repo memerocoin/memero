@@ -33,7 +33,7 @@
 
 #include "cryptonote/basic/blobdatatype.h"
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/difficulty.h"
+#include "cryptonote/basic/functional/difficulty.hpp"
 
 #include "tools/common/command_line.h"
 

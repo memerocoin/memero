@@ -14,7 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 */
 
-#include "difficulty.h"
+#include "difficulty.hpp"
 
 #include "tools/epee/include/logging.hpp"
 

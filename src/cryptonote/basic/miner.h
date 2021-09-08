@@ -33,7 +33,7 @@
 
 #include "cryptonote_basic.h"
 #include "verification_context.h"
-#include "difficulty.h"
+#include "functional/difficulty.hpp"
 #include "blobdatatype.h"
 
 #include "tools/epee/include/math_helper.h"

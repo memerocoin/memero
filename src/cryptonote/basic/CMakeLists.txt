@@ -31,12 +31,12 @@ set(cryptonote_basic_sources
   account.cpp
   cryptonote_basic_impl.cpp
   cryptonote_format_utils.cpp
-  difficulty.cpp
   miner.cpp
   subaddress_index.cpp
   cryptonote_basic.cpp
   connection_context.cpp
 
+  functional/difficulty.cpp
   functional/format_utils.cpp
   )
 

@@ -28,7 +28,7 @@
 
 #include "gtest/gtest.h"
 #include "tools/epee/include/int-util.h"
-#include "cryptonote/basic/difficulty.h"
+#include "cryptonote/basic/functional/difficulty.hpp"
 
 static cryptonote::diff_t MKDIFF(uint64_t high, uint64_t low)
 {
