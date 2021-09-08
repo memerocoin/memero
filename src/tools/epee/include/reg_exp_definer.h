@@ -34,10 +34,11 @@
 
 namespace epee
 {
+  static std::recursive_mutex regexp_lock;
+
   class global_regexp_mutex
   {
   private:
-    mutable std::recursive_mutex regexp_lock;
   public:
     global_regexp_mutex(){}
     std::recursive_mutex& get_lock()const {return regexp_lock;}
