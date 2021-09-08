@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "blobdatatype.h"
+#include "type/blobdatatype.h"
 #include "cryptonote_basic_impl.h"
 #include "tx_extra.h"
 #include "account.h"
