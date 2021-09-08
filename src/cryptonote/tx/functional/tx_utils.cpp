@@ -44,17 +44,16 @@
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  void classify_addresses
+  std::tuple<size_t, size_t, account_public_address> classify_addresses
   (
    const std::vector<tx_destination_entry> &destinations
    , const std::optional<cryptonote::account_public_address>& change_addr
-   , size_t &num_stdaddresses
-   , size_t &num_subaddresses
-   , account_public_address &single_dest_subaddress
    )
   {
-    num_stdaddresses = 0;
-    num_subaddresses = 0;
+    size_t num_stdaddresses = 0;
+    size_t num_subaddresses = 0;
+    account_public_address single_dest_subaddress;
+
     std::unordered_set<cryptonote::account_public_address> unique_dst_addresses;
     for(const tx_destination_entry& dst_entr: destinations)
     {
@@ -75,6 +74,8 @@ namespace cryptonote
       }
     }
     LOG_PRINT_L2("destinations include " << num_stdaddresses << " standard addresses and " << num_subaddresses << " subaddresses");
+
+    return {num_stdaddresses, num_subaddresses, single_dest_subaddress};
   }
 
   bool generate_output_ephemeral_keys
@@ -282,10 +283,8 @@ namespace cryptonote
     });
 
     // figure out if we need to make additional tx pubkeys
-    size_t num_stdaddresses = 0;
-    size_t num_subaddresses = 0;
-    account_public_address single_dest_subaddress;
-    classify_addresses(destinations, change_addr, num_stdaddresses, num_subaddresses, single_dest_subaddress);
+    const auto[num_stdaddresses, num_subaddresses, single_dest_subaddress] =
+      classify_addresses(destinations, change_addr);
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
     txkey_pub = crypto::p2pk

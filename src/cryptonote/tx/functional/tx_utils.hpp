@@ -129,12 +129,9 @@ namespace cryptonote
      , const std::vector<crypto::secret_key> &additional_tx_keys
      );
 
-  void classify_addresses
+  std::tuple<size_t, size_t, account_public_address> classify_addresses
   (
    const std::vector<tx_destination_entry> &destinations
    , const std::optional<cryptonote::account_public_address>& change_addr
-   , size_t &num_stdaddresses
-   , size_t &num_subaddresses
-   , account_public_address &single_dest_subaddress
    );
 }

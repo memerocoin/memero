@@ -132,10 +132,9 @@ namespace cryptonote
     tx_key = cryptonote::keypair::generate().sec;
     try {
       // figure out if we need to make additional tx pubkeys
-      size_t num_stdaddresses = 0;
-      size_t num_subaddresses = 0;
-      account_public_address single_dest_subaddress;
-      classify_addresses(destinations, change_addr, num_stdaddresses, num_subaddresses, single_dest_subaddress);
+      const auto[num_stdaddresses, num_subaddresses, single_dest_subaddress] =
+        classify_addresses(destinations, change_addr);
+
       bool need_additional_txkeys = num_subaddresses > 0 && (num_stdaddresses > 0 || num_subaddresses > 1);
       if (need_additional_txkeys)
       {
