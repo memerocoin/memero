@@ -43,53 +43,16 @@ namespace cryptonote
 
   transaction::transaction(const transaction &t):
     transaction_prefix(t),
-    hash_valid(false),
-    prunable_hash_valid(false),
-    blob_size_valid(false),
     ringct_essential(t.ringct_essential),
     unprunable_size(t.unprunable_size.load()),
     prefix_size(t.prefix_size.load())
   {
-    if (t.is_hash_valid())
-    {
-      hash = t.hash;
-      set_hash_valid(true);
-    }
-    if (t.is_blob_size_valid())
-    {
-      blob_size = t.blob_size;
-      set_blob_size_valid(true);
-    }
-    if (t.is_prunable_hash_valid())
-    {
-      prunable_hash = t.prunable_hash;
-      set_prunable_hash_valid(true);
-    }
   }
 
   transaction &transaction::operator=(const transaction &t)
   {
     transaction_prefix::operator=(t);
-
-    set_hash_valid(false);
-    set_prunable_hash_valid(false);
-    set_blob_size_valid(false);
     ringct_essential = t.ringct_essential;
-    if (t.is_hash_valid())
-    {
-      hash = t.hash;
-      set_hash_valid(true);
-    }
-    if (t.is_prunable_hash_valid())
-    {
-      prunable_hash = t.prunable_hash;
-      set_prunable_hash_valid(true);
-    }
-    if (t.is_blob_size_valid())
-    {
-      blob_size = t.blob_size;
-      set_blob_size_valid(true);
-    }
     unprunable_size = t.unprunable_size.load();
     prefix_size = t.prefix_size.load();
     return *this;
@@ -108,18 +71,12 @@ namespace cryptonote
   {
     transaction_prefix::set_null();
     ringct_essential.type = rct::RCTTypeNull;
-    set_hash_valid(false);
-    set_prunable_hash_valid(false);
-    set_blob_size_valid(false);
     unprunable_size = 0;
     prefix_size = 0;
   }
 
   void transaction::invalidate_hashes()
   {
-    set_hash_valid(false);
-    set_prunable_hash_valid(false);
-    set_blob_size_valid(false);
   }
 
   size_t transaction::get_signature_size(const txin_v& tx_in)

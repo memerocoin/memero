@@ -153,7 +153,6 @@ namespace cryptonote
   {
   private:
     // hash cash
-    mutable std::atomic<bool> hash_valid;
     mutable std::atomic<bool> prunable_hash_valid;
     mutable std::atomic<bool> blob_size_valid;
 
@@ -175,7 +174,7 @@ namespace cryptonote
     void set_null();
     void invalidate_hashes();
     bool is_hash_valid() const { return false; };
-    void set_hash_valid(bool v) const { hash_valid.store(v,std::memory_order_release); }
+    void set_hash_valid(bool v) const {};
     bool is_prunable_hash_valid() const { return prunable_hash_valid.load(std::memory_order_acquire); }
     void set_prunable_hash_valid(bool v) const { prunable_hash_valid.store(v,std::memory_order_release); }
     bool is_blob_size_valid() const { return blob_size_valid.load(std::memory_order_acquire); }
