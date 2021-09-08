@@ -161,7 +161,7 @@ namespace cryptonote
     rct::rctData ringct_essential;
 
     // hash cash
-    mutable crypto::hash hash;
+    crypto::hash hash;
     mutable crypto::hash prunable_hash;
     mutable size_t blob_size;
 
@@ -174,13 +174,13 @@ namespace cryptonote
     virtual ~transaction();
     void set_null();
     void invalidate_hashes();
-    bool is_hash_valid() const { return hash_valid.load(std::memory_order_acquire); }
+    bool is_hash_valid() const { return false; };
     void set_hash_valid(bool v) const { hash_valid.store(v,std::memory_order_release); }
     bool is_prunable_hash_valid() const { return prunable_hash_valid.load(std::memory_order_acquire); }
     void set_prunable_hash_valid(bool v) const { prunable_hash_valid.store(v,std::memory_order_release); }
     bool is_blob_size_valid() const { return blob_size_valid.load(std::memory_order_acquire); }
     void set_blob_size_valid(bool v) const { blob_size_valid.store(v,std::memory_order_release); }
-    void set_hash(const crypto::hash &h) const { hash = h; set_hash_valid(true); }
+    void set_hash(const crypto::hash &h) const {};
     void set_prunable_hash(const crypto::hash &h) const { prunable_hash = h; set_prunable_hash_valid(true); }
     void set_blob_size(size_t sz) const { blob_size = sz; set_blob_size_valid(true); }
 

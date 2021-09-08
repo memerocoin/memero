@@ -579,10 +579,7 @@ namespace cryptonote
   // const is a lie
   crypto::hash fill_transaction_hash(const transaction& t)
   {
-    const auto h = calculate_transaction_hash(t);
-
-    t.set_hash(h);
-    return h;
+    return calculate_transaction_hash(t);
   }
 
 }
