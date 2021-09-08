@@ -515,7 +515,6 @@ namespace cryptonote
     if (block_hash)
     {
       *block_hash = calculate_block_hash(b);
-      b.set_hash(*block_hash);
     }
     return true;
   }
