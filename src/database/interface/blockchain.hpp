@@ -552,7 +552,6 @@ protected:
    */
   void add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash* tx_hash_ptr = NULL);
 
-  mutable uint64_t time_tx_exists = 0;  //!< a performance metric
   uint64_t time_commit1 = 0;  //!< a performance metric
   bool m_auto_remove_logs = true;  //!< whether or not to automatically remove old logs
 

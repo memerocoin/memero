@@ -329,7 +329,6 @@ void BlockchainDB::reset_stats()
 {
   num_calls = 0;
   time_blk_hash = 0;
-  time_tx_exists = 0;
   time_add_block1 = 0;
   time_add_transaction = 0;
   time_commit1 = 0;
@@ -343,8 +342,6 @@ void BlockchainDB::show_stats()
     << "num_calls: " << num_calls
     << std::endl
     << "time_blk_hash: " << time_blk_hash << "ms"
-    << std::endl
-    << "time_tx_exists: " << time_tx_exists << "ms"
     << std::endl
     << "time_add_block1: " << time_add_block1 << "ms"
     << std::endl

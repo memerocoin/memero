@@ -2505,7 +2505,6 @@ bool BlockchainLMDB::tx_exists(const crypto::hash& h) const
     throw0(DB_ERROR(lmdb_error(std::string("DB error attempting to fetch transaction index from hash ") + epee::string_tools::pod_to_hex(h) + ": ", get_result).c_str()));
 
   TIME_MEASURE_FINISH(time1);
-  time_tx_exists += time1;
 
   TXN_POSTFIX_RDONLY();
 
@@ -2531,7 +2530,6 @@ bool BlockchainLMDB::tx_exists(const crypto::hash& h, uint64_t& tx_id) const
   TIME_MEASURE_START(time1);
   auto get_result = mdb_cursor_get(m_cur_tx_indices, (MDB_val *)&zerokval, &v, MDB_GET_BOTH);
   TIME_MEASURE_FINISH(time1);
-  time_tx_exists += time1;
   if (!get_result) {
     txindex *tip = (txindex *)v.mv_data;
     tx_id = tip->data.tx_id;
