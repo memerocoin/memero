@@ -52,6 +52,8 @@ using namespace cryptonote;
 
 #define LOG_ERROR_VER(x) LOG_CATEGORY_ERROR("verify", x)
 
+std::recursive_mutex m_blockchain_lock; // TODO: add here reader/writer lock
+
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
   m_db(), m_tx_pool(tx_pool), m_timestamps_and_difficulties_height(0), m_reset_timestamps_and_difficulties_height(true),

@@ -818,8 +818,6 @@ namespace cryptonote
 
     tx_memory_pool& m_tx_pool;
 
-    mutable std::recursive_mutex m_blockchain_lock; // TODO: add here reader/writer lock
-
     // metadata containers
     std::unordered_map<crypto::hash, std::unordered_map<crypto::key_image, std::vector<output_data_t>>> m_scan_table;
     std::unordered_map<crypto::hash, crypto::hash> m_blocks_longhash_table;
