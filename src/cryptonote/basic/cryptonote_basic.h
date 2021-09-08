@@ -174,22 +174,13 @@ namespace cryptonote
     void set_null();
     bool is_hash_valid() const { return false; }
     void set_hash_valid(bool v) const {}
-    bool is_prunable_hash_valid() const { return false; }
-    void set_prunable_hash_valid(bool v) const { }
+    void set_hash(const crypto::hash &h) const {}
+
     bool is_blob_size_valid() const { return false; }
     void set_blob_size_valid(bool v) const { }
-    void set_hash(const crypto::hash &h) const {}
-    void set_prunable_hash(const crypto::hash &h) const { }
     void set_blob_size(size_t sz) const { }
 
     BEGIN_SERIALIZE_OBJECT()
-      if (!typename Archive<W>::is_saving())
-      {
-        set_hash_valid(false);
-        set_prunable_hash_valid(false);
-        set_blob_size_valid(false);
-      }
-
       const unsigned int start_pos = getpos(ar);
 
       FIELDS(*static_cast<transaction_prefix *>(this))
