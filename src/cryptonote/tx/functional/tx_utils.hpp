@@ -134,4 +134,11 @@ namespace cryptonote
    const std::vector<tx_destination_entry> &destinations
    , const std::optional<cryptonote::account_public_address>& change_addr
    );
+
+  std::optional<block> generate_genesis_block
+  (
+   const std::string_view genesis_tx
+   , const uint64_t nonce
+   );
+
 }

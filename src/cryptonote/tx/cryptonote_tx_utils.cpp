@@ -157,28 +157,4 @@ namespace cryptonote
       throw;
     }
   }
-  //---------------------------------------------------------------
-  std::optional<block> generate_genesis_block
-  (
-   const std::string_view genesis_tx
-   , const uint64_t nonce
-   )
-  {
-    //genesis block
-    block bl = {};
-
-    blobdata tx_bl;
-    bool r = epee::string_tools::parse_hexstr_to_binbuff(genesis_tx, tx_bl);
-    LOG_ERROR_AND_RETURN_UNLESS(r, {}, "failed to parse coinbase tx from hard coded blob");
-
-    r = parse_and_validate_tx_from_blob(tx_bl, bl.miner_tx);
-    LOG_ERROR_AND_RETURN_UNLESS(r, {}, "failed to parse coinbase tx from hard coded blob");
-
-    bl.major_version = config::lol::constant_hf_version;
-    bl.minor_version = config::lol::constant_hf_version;
-    bl.timestamp = 0;
-    bl.nonce = nonce;
-
-    return bl;
-  }
 }
