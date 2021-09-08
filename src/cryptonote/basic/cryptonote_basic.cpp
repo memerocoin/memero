@@ -75,10 +75,6 @@ namespace cryptonote
     prefix_size = 0;
   }
 
-  void transaction::invalidate_hashes()
-  {
-  }
-
   size_t transaction::get_signature_size(const txin_v& tx_in)
   {
     struct txin_signature_size_visitor : public boost::static_visitor<size_t>

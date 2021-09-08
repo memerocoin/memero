@@ -515,8 +515,6 @@ namespace cryptonote
     binary_archive<false> ba(ss);
     bool r = ::serialization::serialize(ba, b);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse block from blob");
-    b.invalidate_hashes();
-    b.miner_
     if (block_hash)
     {
       *block_hash = calculate_block_hash(b);
