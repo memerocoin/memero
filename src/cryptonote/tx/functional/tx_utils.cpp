@@ -90,8 +90,7 @@ namespace cryptonote
   (
    const size_t tx_version
    , const cryptonote::account_keys &sender_account_keys
-   , const crypto::public_key &txkey_pub
-   ,  const crypto::secret_key &tx_key
+   , const std::optional<const cryptonote::keypair> tx_key
    , const cryptonote::tx_destination_entry &dst_entr
    , const std::optional<cryptonote::account_public_address> &change_addr
    , const size_t output_index
@@ -110,11 +109,11 @@ namespace cryptonote
         ? dst_entr.addr.m_spend_public_key ^ additional_tx_keys[output_index]
         : to_pk(additional_tx_keys[output_index])
       }
-      : keypair { tx_key, txkey_pub };
+      : *tx_key;
 
     const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
       = change_addr && dst_entr.addr == *change_addr
-      ? crypto::derive_tx_ecdh_shared_secret(txkey_pub, sender_account_keys.m_view_secret_key)
+      ? crypto::derive_tx_ecdh_shared_secret(txkey.pub, sender_account_keys.m_view_secret_key)
       : crypto::derive_tx_ecdh_shared_secret(dst_entr.addr.m_view_public_key, txkey.sec);
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -273,21 +272,19 @@ namespace cryptonote
       classify_addresses(destinations, change_addr);
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
-    const std::optional<crypto::public_key> txkey_pub
-      = tx_key ?
-      crypto::p2pk
-      (
-       num_stdaddresses == 0 && num_subaddresses == 1
-       ? single_dest_subaddress.m_spend_public_key ^ *tx_key
-       : crypto::multBase(*tx_key)
-       )
-      : std::optional<crypto::public_key>{};
-
+    const std::optional<const cryptonote::keypair> txkey
+      = tx_key
+      ? std::optional<const cryptonote::keypair>
+      {{
+          *tx_key
+        , to_pk(*tx_key)
+      }}
+      : std::optional<const cryptonote::keypair>();
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
 
-    if (txkey_pub) {
-      add_tx_pub_key_to_extra(tx, *txkey_pub);
+    if (txkey) {
+      add_tx_pub_key_to_extra(tx, txkey->pub);
     }
 
     std::vector<crypto::public_key> additional_tx_public_keys;
@@ -309,8 +306,7 @@ namespace cryptonote
       const auto r = generate_output_ephemeral_keys
         (
          tx.version,sender_account_keys
-         , *txkey_pub
-         , *tx_key
+         , txkey
          , dst_entr
          , change_addr
          , output_index
@@ -341,8 +337,8 @@ namespace cryptonote
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_additional_pub_keys));
 
-    if (txkey_pub) {
-      LOG_PRINT_L2("tx pubkey: " << *txkey_pub);
+    if (txkey) {
+      LOG_PRINT_L2("tx pubkey: " << txkey->pub);
     }
 
     if (need_additional_txkeys)
