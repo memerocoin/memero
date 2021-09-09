@@ -164,7 +164,7 @@ namespace cryptonote
    , const std::optional<cryptonote::account_public_address>& change_addr
    , const std::vector<uint8_t> &extra
    , const uint64_t unlock_time
-   , const crypto::secret_key &tx_key
+   , const std::optional<const crypto::secret_key> tx_key
    , const std::vector<crypto::secret_key> &additional_tx_keys
    )
   {
@@ -183,7 +183,6 @@ namespace cryptonote
     tx.unlock_time = unlock_time;
 
     tx.extra = extra;
-    crypto::public_key txkey_pub;
 
     struct input_generation_context_data
     {
@@ -274,15 +273,22 @@ namespace cryptonote
       classify_addresses(destinations, change_addr);
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
-    txkey_pub = crypto::p2pk
+    const std::optional<crypto::public_key> txkey_pub
+      = tx_key ?
+      crypto::p2pk
       (
        num_stdaddresses == 0 && num_subaddresses == 1
-       ? single_dest_subaddress.m_spend_public_key ^ tx_key
-       : crypto::multBase(tx_key)
-       );
+       ? single_dest_subaddress.m_spend_public_key ^ *tx_key
+       : crypto::multBase(*tx_key)
+       )
+      : std::optional<crypto::public_key>{};
+
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
-    add_tx_pub_key_to_extra(tx, txkey_pub);
+
+    if (txkey_pub) {
+      add_tx_pub_key_to_extra(tx, *txkey_pub);
+    }
 
     std::vector<crypto::public_key> additional_tx_public_keys;
 
@@ -303,8 +309,8 @@ namespace cryptonote
       const auto r = generate_output_ephemeral_keys
         (
          tx.version,sender_account_keys
-         , txkey_pub
-         , tx_key
+         , *txkey_pub
+         , *tx_key
          , dst_entr
          , change_addr
          , output_index
@@ -335,7 +341,10 @@ namespace cryptonote
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_additional_pub_keys));
 
-    LOG_PRINT_L2("tx pubkey: " << txkey_pub);
+    if (txkey_pub) {
+      LOG_PRINT_L2("tx pubkey: " << *txkey_pub);
+    }
+
     if (need_additional_txkeys)
     {
       LOG_PRINT_L2("additional tx pubkeys: ");

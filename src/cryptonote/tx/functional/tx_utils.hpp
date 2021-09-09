@@ -115,7 +115,7 @@ namespace cryptonote
      , const std::optional<cryptonote::account_public_address>& change_addr
      , const std::vector<uint8_t> &extra
      , const uint64_t unlock_time
-     , const crypto::secret_key &tx_key
+     , const std::optional<const crypto::secret_key> tx_key
      , const std::vector<crypto::secret_key> &additional_tx_keys
      );
 
