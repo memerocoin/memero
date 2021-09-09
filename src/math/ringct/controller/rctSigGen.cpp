@@ -67,7 +67,7 @@ namespace rct {
         , sk.end()
         , std::back_inserter(blinding_factors)
         , [](const auto& x) {
-          return rct::get_blinding_factor_from_ecdh_shared_secret(x);
+          return rct::get_blinding_factor_from_shared_secret_hash(x);
         }
         );
 

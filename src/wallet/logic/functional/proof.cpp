@@ -90,11 +90,11 @@ namespace proof {
         }
         else
         {
-          const rct::rct_scalar ecdh_derived_secret =
+          const rct::rct_scalar shared_secret_hash =
             rct::s2s(crypto::hash_tx_shared_secret_to_scalar(found_shared_secret, n));
 
           const crypto::ec_scalar_unnormalized blinding_factor =
-            get_blinding_factor_from_ecdh_shared_secret(ecdh_derived_secret);
+            get_blinding_factor_from_shared_secret_hash(shared_secret_hash);
 
           THROW_WALLET_EXCEPTION_IF
             (
@@ -105,7 +105,7 @@ namespace proof {
 
           const crypto::ec_scalar_unnormalized masked_amount = tx.ringct_essential.ecdh[n].masked_amount;
           const crypto::ec_scalar_unnormalized amount_unnormalized =
-            crypto::d2s(rct::decode_by_ecdh_shared_secret(masked_amount, ecdh_derived_secret));
+            crypto::d2s(rct::decode_by_ecdh_shared_secret(masked_amount, shared_secret_hash));
 
           THROW_WALLET_EXCEPTION_IF
             (

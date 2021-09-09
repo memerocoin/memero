@@ -146,7 +146,7 @@ namespace rct {
   }
 
   constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
-  rct_scalar get_blinding_factor_from_ecdh_shared_secret(const rct_scalar x) {
+  rct_scalar get_blinding_factor_from_shared_secret_hash(const rct_scalar x) {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
       + x.blob();
