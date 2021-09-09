@@ -113,52 +113,17 @@ namespace cryptonote
       }
       : keypair { tx_key, txkey_pub };
 
-    std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
+    const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
+      = change_addr && dst_entr.addr == *change_addr
+      ? crypto::derive_tx_ecdh_shared_secret(txkey_pub, sender_account_keys.m_view_secret_key)
+      : crypto::derive_tx_ecdh_shared_secret(dst_entr.addr.m_view_public_key, txkey.sec);
 
-    // make additional tx pubkey if necessary
-    cryptonote::keypair additional_txkey;
-
-    if (need_additional_txkeys)
-      {
-        additional_txkey.sec = additional_tx_keys[output_index];
-      additional_txkey.pub = crypto::p2pk
-        (
-          dst_entr.is_subaddress
-          ? dst_entr.addr.m_spend_public_key ^ additional_txkey.sec
-          : crypto::multBase(additional_txkey.sec)
-          );
-    }
-
-    if (change_addr && dst_entr.addr == *change_addr)
-    {
-    // sending change to yourself; tx_shared_secret = a*R
-      tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(txkey_pub, sender_account_keys.m_view_secret_key);
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
-         tx_shared_secret
-         , {}
-         , "at creation outs: failed to derive_tx_ecdh_shared_secret("
-         << txkey_pub << ", " << sender_account_keys.m_view_secret_key << ")"
-         );
-    }
-    else
-    {
-    // sending to the recipient; tx_shared_secret = r*A (or s*C in the subaddress scheme)
-      tx_shared_secret = derive_tx_ecdh_shared_secret
-        (
-         dst_entr.addr.m_view_public_key
-         , txkey.sec
-         );
-
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
-         tx_shared_secret
-         , {}
-         , "at creation outs: failed to derive_tx_ecdh_shared_secret("
-         << dst_entr.addr.m_view_public_key
-         << ", " << txkey.sec << ")"
-         );
-    }
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       tx_shared_secret
+       , {}
+       , "at creation outs: failed to derive_tx_ecdh_shared_secret"
+       );
 
     if (need_additional_txkeys)
     {
