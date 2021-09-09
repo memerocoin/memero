@@ -102,13 +102,14 @@ namespace cryptonote
     std::vector<crypto::public_key> additional_tx_public_keys = additional_tx_public_keys_in;
     rct::rct_scalarV tx_shared_secret_indexed_hashes = tx_shared_secret_indexed_hashes_in;
 
-
     const keypair txkey
       = need_additional_txkeys
       ? keypair
       {
         additional_tx_keys[output_index]
-        , to_pk(additional_tx_keys[output_index])
+        , dst_entr.is_subaddress
+        ? dst_entr.addr.m_spend_public_key ^ additional_tx_keys[output_index]
+        : to_pk(additional_tx_keys[output_index])
       }
       : keypair { tx_key, txkey_pub };
 
@@ -118,8 +119,8 @@ namespace cryptonote
     cryptonote::keypair additional_txkey;
 
     if (need_additional_txkeys)
-    {
-      additional_txkey.sec = additional_tx_keys[output_index];
+      {
+        additional_txkey.sec = additional_tx_keys[output_index];
       additional_txkey.pub = crypto::p2pk
         (
           dst_entr.is_subaddress
