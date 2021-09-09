@@ -119,12 +119,6 @@ namespace cryptonote
      , const std::vector<crypto::secret_key> &additional_tx_keys
      );
 
-  std::tuple<size_t, size_t, account_public_address> classify_addresses
-  (
-   const std::vector<tx_destination_entry> &destinations
-   , const std::optional<cryptonote::account_public_address>& change_addr
-   );
-
   std::optional<block> generate_genesis_block
   (
    const std::string_view genesis_tx

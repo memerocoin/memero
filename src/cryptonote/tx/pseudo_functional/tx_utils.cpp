@@ -68,12 +68,6 @@ namespace cryptonote
 
     const crypto::secret_key tx_key = cryptonote::keypair::generate().sec;
 
-    // figure out if we need to make additional tx pubkeys
-    const auto[num_stdaddresses, num_subaddresses, single_dest_subaddress] =
-      classify_addresses(destinations, change_addr);
-
-    bool need_additional_txkeys = num_subaddresses > 0 && (num_stdaddresses > 0 || num_subaddresses > 1);
-    if (need_additional_txkeys)
     {
       additional_tx_keys.clear();
       additional_tx_keys.resize(destinations.size());

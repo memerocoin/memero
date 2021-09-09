@@ -43,41 +43,6 @@
 
 namespace cryptonote
 {
-  //---------------------------------------------------------------
-  std::tuple<size_t, size_t, account_public_address> classify_addresses
-  (
-   const std::vector<tx_destination_entry> &destinations
-   , const std::optional<cryptonote::account_public_address>& change_addr
-   )
-  {
-    size_t num_stdaddresses = 0;
-    size_t num_subaddresses = 0;
-    account_public_address single_dest_subaddress;
-
-    std::unordered_set<cryptonote::account_public_address> unique_dst_addresses;
-    for(const tx_destination_entry& dst_entr: destinations)
-    {
-      if (change_addr && dst_entr.addr == change_addr)
-        continue;
-      if (unique_dst_addresses.count(dst_entr.addr) == 0)
-      {
-        unique_dst_addresses.insert(dst_entr.addr);
-        if (dst_entr.is_subaddress)
-        {
-          ++num_subaddresses;
-          single_dest_subaddress = dst_entr.addr;
-        }
-        else
-        {
-          ++num_stdaddresses;
-        }
-      }
-    }
-    LOG_PRINT_L2("destinations include " << num_stdaddresses << " standard addresses and " << num_subaddresses << " subaddresses");
-
-    return {num_stdaddresses, num_subaddresses, single_dest_subaddress};
-  }
-
   std::optional<
     std::tuple<
     std::vector<crypto::public_key>
@@ -267,10 +232,6 @@ namespace cryptonote
       return memcmp(&tk0.shared_secret_derived_public_key_image, &tk1.shared_secret_derived_public_key_image, sizeof(tk0.shared_secret_derived_public_key_image)) > 0;
     });
 
-    // figure out if we need to make additional tx pubkeys
-    const auto[num_stdaddresses, num_subaddresses, single_dest_subaddress] =
-      classify_addresses(destinations, change_addr);
-
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
     const std::optional<const cryptonote::keypair> txkey
       = tx_key
@@ -292,7 +253,7 @@ namespace cryptonote
     // we don't need to include additional tx keys if:
     //   - all the destinations are standard addresses
     //   - there's only one destination which is a subaddress
-    bool need_additional_txkeys = num_subaddresses > 0 && (num_stdaddresses > 0 || num_subaddresses > 1);
+    const bool need_additional_txkeys = true;
     if (need_additional_txkeys)
       LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == additional_tx_keys.size(), {}, "Wrong amount of additional tx keys");
 
