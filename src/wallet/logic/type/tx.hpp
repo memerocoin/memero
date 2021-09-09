@@ -40,7 +40,7 @@ namespace tx {
 
   struct tx_scan_info_t
   {
-    cryptonote::keypair in_ephemeral;
+    cryptonote::keypair shared_secret_derived_key;
     crypto::shared_secret_derived_public_key_image ki;
     rct::rct_scalar mask;
     uint64_t amount;

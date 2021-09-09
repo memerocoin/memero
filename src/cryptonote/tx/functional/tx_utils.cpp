@@ -211,7 +211,7 @@ namespace cryptonote
 
     struct input_generation_context_data
     {
-      keypair in_ephemeral;
+      keypair shared_secret_derived_key;
     };
     std::vector<input_generation_context_data> in_contexts;
 
@@ -248,16 +248,16 @@ namespace cryptonote
         return {};
       }
 
-      keypair& in_ephemeral = in_contexts.back().in_ephemeral;
+      keypair& shared_secret_derived_key = in_contexts.back().shared_secret_derived_key;
       crypto::shared_secret_derived_public_key_image img;
 
-      std::tie(in_ephemeral, img) = *r;
+      std::tie(shared_secret_derived_key, img) = *r;
 
       //check that derivated key is equal with real output key (if non multisig)
-      if(!(in_ephemeral.pub == src_entr.outputs[src_entr.real_output].second.dest) )
+      if(!(shared_secret_derived_key.pub == src_entr.outputs[src_entr.real_output].second.dest) )
       {
         LOG_ERROR("derived public key mismatch with output public key at index " << idx << ", real out " << src_entr.real_output << "! "<< std::endl << "derived_key:"
-          << epee::string_tools::pod_to_hex(in_ephemeral.pub) << std::endl << "real output_public_key:"
+          << epee::string_tools::pod_to_hex(shared_secret_derived_key.pub) << std::endl << "real output_public_key:"
           << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.dest) );
         LOG_ERROR("amount " << src_entr.amount << ", rct " << src_entr.rct);
         LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key);
@@ -406,7 +406,7 @@ namespace cryptonote
         inamounts.push_back(sources[i].amount);
         index.push_back(sources[i].real_output);
         // inSk: (secret key, mask)
-        ct_public_key.addr = rct::sk2rct_s(in_contexts[i].in_ephemeral.sec);
+        ct_public_key.addr = rct::sk2rct_s(in_contexts[i].shared_secret_derived_key.sec);
         ct_public_key.blinding_factor = sources[i].mask;
         inSk.push_back(ct_public_key);
         // inPk: (public key, commitment)

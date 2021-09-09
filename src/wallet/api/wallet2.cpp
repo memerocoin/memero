@@ -628,11 +628,11 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
        );
 
     THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "Failed to generate key image");
-    std::tie(tx_scan_info.in_ephemeral, tx_scan_info.ki) = *r;
+    std::tie(tx_scan_info.shared_secret_derived_key, tx_scan_info.ki) = *r;
 
     THROW_WALLET_EXCEPTION_IF
       (
-       tx_scan_info.in_ephemeral.pub != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key
+       tx_scan_info.shared_secret_derived_key.pub != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key
        , error::wallet_internal_error
        , "shared_secret_derived_public_key_image generated ephemeral public key not matched with output_key"
        );
@@ -870,7 +870,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	THROW_WALLET_EXCEPTION_IF(tx.vout.size() <= o, error::wallet_internal_error, "wrong out in transaction: internal index=" +
 				  std::to_string(o) + ", total_outs=" + std::to_string(tx.vout.size()));
 
-        auto kit = m_pub_keys.find(tx_scan_info[o].in_ephemeral.pub);
+        auto kit = m_pub_keys.find(tx_scan_info[o].shared_secret_derived_key.pub);
 	THROW_WALLET_EXCEPTION_IF(kit != m_pub_keys.end() && kit->second >= m_transfers.size(),
             error::wallet_internal_error, std::string("Unexpected transfer index from public key: ")
             + "got " + (kit == m_pub_keys.end() ? "<none>" : boost::lexical_cast<std::string>(kit->second))
@@ -892,7 +892,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             if (!td.m_shared_secret_derived_public_key_image_known)
             {
               // we might have cold signed, and have a mapping to key images
-              std::unordered_map<crypto::public_key, crypto::shared_secret_derived_public_key_image>::const_iterator i = m_cold_shared_secret_derived_public_key_images.find(tx_scan_info[o].in_ephemeral.pub);
+              std::unordered_map<crypto::public_key, crypto::shared_secret_derived_public_key_image>::const_iterator i = m_cold_shared_secret_derived_public_key_images.find(tx_scan_info[o].shared_secret_derived_key.pub);
               if (i != m_cold_shared_secret_derived_public_key_images.end())
               {
                 td.m_shared_secret_derived_public_key_image = i->second;
@@ -926,7 +926,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	    set_unspent(m_transfers.size()-1);
             if (td.m_shared_secret_derived_public_key_image_known)
 	      m_shared_secret_derived_public_key_images[td.m_shared_secret_derived_public_key_image] = m_transfers.size()-1;
-	    m_pub_keys[tx_scan_info[o].in_ephemeral.pub] = m_transfers.size()-1;
+	    m_pub_keys[tx_scan_info[o].shared_secret_derived_key.pub] = m_transfers.size()-1;
 	    LOG_VERBOSE("Received money: " << print_money(td.amount()) << ", with tx: " << txid);
 	    if (0 != m_callback)
 	      m_callback->on_money_received(height, txid, tx, td.m_amount, td.m_subaddr_index, spends_one_of_ours(tx), td.m_tx.unlock_time);
@@ -992,7 +992,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
               td.m_mask = rct::s_one;
               td.m_rct = false;
             }
-            THROW_WALLET_EXCEPTION_IF(td.get_public_key() != tx_scan_info[o].in_ephemeral.pub, error::wallet_internal_error, "Inconsistent public keys");
+            THROW_WALLET_EXCEPTION_IF(td.get_public_key() != tx_scan_info[o].shared_secret_derived_key.pub, error::wallet_internal_error, "Inconsistent public keys");
 	    THROW_WALLET_EXCEPTION_IF(td.m_spent, error::wallet_internal_error, "Inconsistent spent status");
 
 	    LOG_PRINT_L0("Received money: " << print_money(td.amount()) << ", with tx: " << txid);

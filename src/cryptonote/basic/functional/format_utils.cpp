@@ -146,17 +146,17 @@ namespace cryptonote
       derive_shared_secret_derived_secret_key_from_spend_secret_key
       (recv_tx_shared_secret, real_output_index, spend_sk, key_offset);
 
-    const keypair in_ephemeral =
+    const keypair shared_secret_derived_key =
       {
         shared_secret_derived_secret_key
         , to_pk(shared_secret_derived_secret_key)
       };
 
-    LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
+    LOG_ERROR_AND_RETURN_UNLESS(shared_secret_derived_key.pub == out_key,
           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
 
-    const crypto::shared_secret_derived_public_key_image ki = crypto::derive_public_key_image(in_ephemeral.sec);
-    return {{in_ephemeral, ki}};
+    const crypto::shared_secret_derived_public_key_image ki = crypto::derive_public_key_image(shared_secret_derived_key.sec);
+    return {{shared_secret_derived_key, ki}};
   }
 
 
