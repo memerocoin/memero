@@ -125,6 +125,7 @@ namespace crypto {
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
    , const secret_key &base
+   , const ec_scalar offset
    ) noexcept;
 
   std::optional<public_key> derive_shared_secret_derived_public_key_from_spend_public_key
