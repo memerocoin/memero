@@ -246,7 +246,7 @@ namespace cryptonote
       LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret, false, "Failed to generate key derivation");
 
       const std::optional<crypto::public_key> pk =
-        crypto::derive_tx_output_public_key_from_spend_public_key
+        crypto::derive_shared_secret_derived_public_key_from_spend_public_key
         (*tx_shared_secret, output_index, acc.m_account_address.m_spend_public_key);
 
       LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
@@ -265,7 +265,7 @@ namespace cryptonote
         crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys[output_index], acc.m_view_secret_key);
       LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret_2, false, "Failed to generate key derivation");
 
-      const auto tx_out_pk = crypto::derive_tx_output_public_key_from_spend_public_key
+      const auto tx_out_pk = crypto::derive_shared_secret_derived_public_key_from_spend_public_key
         (*tx_shared_secret_2, output_index, acc.m_account_address.m_spend_public_key);
 
       LOG_ERROR_AND_RETURN_UNLESS(tx_out_pk, false, "Failed to derive public key");

@@ -139,7 +139,7 @@ namespace crypto {
     return s2sk(spend_sk + rct_scalar);
   }
 
-  std::optional<public_key> derive_tx_output_public_key_from_spend_public_key
+  std::optional<public_key> derive_shared_secret_derived_public_key_from_spend_public_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
