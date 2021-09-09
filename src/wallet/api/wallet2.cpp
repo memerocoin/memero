@@ -3557,13 +3557,16 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
     splitted_dsts.push_back(change_dts);
   }
 
-  crypto::secret_key tx_key;
-  std::vector<crypto::secret_key> additional_tx_keys;
   LOG_PRINT_L2("constructing tx");
   auto sources_copy = sources;
-  bool r = cryptonote::construct_tx_and_get_tx_key(m_account.get_keys(), m_subaddresses, sources, splitted_dsts, change_dts.addr, extra, unlock_time, tx, tx_key, additional_tx_keys);
-  LOG_PRINT_L2("constructed tx, r="<<r);
+  const auto r = cryptonote::construct_tx_and_get_tx_key(m_account.get_keys(), m_subaddresses, sources, splitted_dsts, change_dts.addr, extra, unlock_time);
   THROW_WALLET_EXCEPTION_IF(!r, error::tx_not_constructed, sources, dsts, unlock_time, m_nettype);
+
+  const auto [tx_out, tx_key, additional_tx_keys] = *r;
+  tx = tx_out;
+
+  LOG_PRINT_L2("constructed tx");
+
   THROW_WALLET_EXCEPTION_IF(upper_transaction_weight_limit <= get_transaction_weight(tx), error::tx_too_big, tx, upper_transaction_weight_limit);
 
   LOG_PRINT_L2("gathering key images");

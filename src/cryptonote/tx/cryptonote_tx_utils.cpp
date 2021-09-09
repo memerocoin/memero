@@ -45,7 +45,15 @@
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  bool construct_tx_and_get_tx_key
+  std::optional<
+    std::tuple<
+      transaction
+      , crypto::secret_key
+      , std::vector<crypto::secret_key>
+      >>
+
+  construct_tx_and_get_tx_key
+
   (
    const account_keys& sender_account_keys
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -54,38 +62,34 @@ namespace cryptonote
    , const std::optional<cryptonote::account_public_address>& change_addr
    , const std::vector<uint8_t> &extra
    , const uint64_t unlock_time
-   , transaction& tx
-   , crypto::secret_key &tx_key
-   , std::vector<crypto::secret_key> &additional_tx_keys
    )
   {
-    tx_key = cryptonote::keypair::generate().sec;
-    try {
-      // figure out if we need to make additional tx pubkeys
-      const auto[num_stdaddresses, num_subaddresses, single_dest_subaddress] =
-        classify_addresses(destinations, change_addr);
+    transaction tx;
+    std::vector<crypto::secret_key> additional_tx_keys;
 
-      bool need_additional_txkeys = num_subaddresses > 0 && (num_stdaddresses > 0 || num_subaddresses > 1);
-      if (need_additional_txkeys)
-      {
-        additional_tx_keys.clear();
-        additional_tx_keys.resize(destinations.size());
-        std::generate(additional_tx_keys.begin(), additional_tx_keys.end(),
-                      []() {
-                        return keypair::generate().sec;
-                      });
-      }
+    const crypto::secret_key tx_key = cryptonote::keypair::generate().sec;
 
-      const auto& r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, unlock_time, tx_key, additional_tx_keys);
-      if (r) {
-        tx = *r;
-        return true;
-      }
+    // figure out if we need to make additional tx pubkeys
+    const auto[num_stdaddresses, num_subaddresses, single_dest_subaddress] =
+      classify_addresses(destinations, change_addr);
 
-      return false;
-    } catch(...) {
-      throw;
+    bool need_additional_txkeys = num_subaddresses > 0 && (num_stdaddresses > 0 || num_subaddresses > 1);
+    if (need_additional_txkeys)
+    {
+      additional_tx_keys.clear();
+      additional_tx_keys.resize(destinations.size());
+      std::generate(additional_tx_keys.begin(), additional_tx_keys.end(),
+                    []() {
+                      return keypair::generate().sec;
+                    });
     }
-  }
 
+    const auto& r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, unlock_time, tx_key, additional_tx_keys);
+    if (r) {
+      tx = *r;
+      return {{tx, tx_key, additional_tx_keys}};
+    }
+
+    return {};
+  }
 }
