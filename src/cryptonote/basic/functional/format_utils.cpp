@@ -118,7 +118,8 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::shared_secret_derived_public_key_image>> derive_public_key_image_helper_precomp
+  std::optional<std::pair<keypair, crypto::shared_secret_derived_public_key_image>>
+  derive_public_key_image_helper_precomp
   (
    const account_keys& ack
    , const crypto::public_key& out_key
@@ -155,7 +156,9 @@ namespace cryptonote
     LOG_ERROR_AND_RETURN_UNLESS(shared_secret_derived_key.pub == out_key,
           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
 
-    const crypto::shared_secret_derived_public_key_image ki = crypto::derive_public_key_image(shared_secret_derived_key.sec);
+    const crypto::shared_secret_derived_public_key_image ki =
+      crypto::derive_public_key_image(shared_secret_derived_key.sec);
+
     return {{shared_secret_derived_key, ki}};
   }
 
