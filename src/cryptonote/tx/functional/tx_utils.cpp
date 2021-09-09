@@ -102,10 +102,21 @@ namespace cryptonote
     std::vector<crypto::public_key> additional_tx_public_keys = additional_tx_public_keys_in;
     rct::rct_scalarV tx_shared_secret_indexed_hashes = tx_shared_secret_indexed_hashes_in;
 
+
+    const keypair txkey
+      = need_additional_txkeys
+      ? keypair
+      {
+        additional_tx_keys[output_index]
+        , to_pk(additional_tx_keys[output_index])
+      }
+      : keypair { tx_key, txkey_pub };
+
     std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
 
     // make additional tx pubkey if necessary
     cryptonote::keypair additional_txkey;
+
     if (need_additional_txkeys)
     {
       additional_txkey.sec = additional_tx_keys[output_index];
@@ -132,12 +143,15 @@ namespace cryptonote
     else
     {
     // sending to the recipient; tx_shared_secret = r*A (or s*C in the subaddress scheme)
+      const auto tx_secret_key =
+        dst_entr.is_subaddress && need_additional_txkeys
+        ? additional_txkey.sec
+        : tx_key;
+
       tx_shared_secret = derive_tx_ecdh_shared_secret
         (
          dst_entr.addr.m_view_public_key
-         , dst_entr.is_subaddress && need_additional_txkeys
-         ? additional_txkey.sec
-         : tx_key
+         , txkey.sec
          );
 
       LOG_ERROR_AND_RETURN_UNLESS
@@ -146,7 +160,7 @@ namespace cryptonote
          , {}
          , "at creation outs: failed to derive_tx_ecdh_shared_secret("
          << dst_entr.addr.m_view_public_key
-         << ", " << (dst_entr.is_subaddress && need_additional_txkeys ? additional_txkey.sec : tx_key) << ")"
+         << ", " << txkey.sec << ")"
          );
     }
 
