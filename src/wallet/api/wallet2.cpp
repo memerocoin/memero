@@ -3587,7 +3587,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   ptx.tx = tx;
   ptx.change_dts = change_dts;
   ptx.selected_transfers = selected_transfers;
-  ptx.tx_key = tx_key;
+  ptx.tx_key = *tx_key;
   ptx.additional_tx_keys = additional_tx_keys;
   ptx.dests = dsts;
   ptx.construction_data.sources = sources_copy;

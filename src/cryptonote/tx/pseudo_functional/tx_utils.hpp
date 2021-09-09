@@ -41,7 +41,7 @@ namespace cryptonote
   std::optional<
     std::tuple<
     transaction
-    , crypto::secret_key
+    , std::optional<crypto::secret_key>
     , std::vector<crypto::secret_key>
     >>
 

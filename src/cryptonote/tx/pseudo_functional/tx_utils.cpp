@@ -47,7 +47,7 @@ namespace cryptonote
   std::optional<
     std::tuple<
       transaction
-      , crypto::secret_key
+      , std::optional<crypto::secret_key>
       , std::vector<crypto::secret_key>
       >>
 
@@ -86,7 +86,7 @@ namespace cryptonote
     const auto& r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, unlock_time, tx_key, additional_tx_keys);
     if (r) {
       tx = *r;
-      return {{tx, tx_key, additional_tx_keys}};
+      return {{tx, {tx_key}, additional_tx_keys}};
     }
 
     return {};
