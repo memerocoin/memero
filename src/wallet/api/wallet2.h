@@ -464,23 +464,12 @@ namespace tools
      , tx_scan_info_t &tx_scan_info
      ) const;
 
-    void check_acc_out_precomp
-    (
-     const cryptonote::tx_out &o
-     , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
-     , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
-     , size_t i
-     , const is_out_data *is_out_data
-     , tx_scan_info_t &tx_scan_info
-     ) const;
-
     void check_acc_out_precomp_once
     (
      const cryptonote::tx_out &o
      , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
      , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
      , size_t i
-     , const is_out_data *is_out_data
      , tx_scan_info_t &tx_scan_info
      , bool &already_seen
      ) const;
@@ -501,7 +490,7 @@ namespace tools
      ) const;
 
     std::vector<size_t> get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const;
-    void scan_output(const cryptonote::transaction &tx, bool miner_tx, const crypto::public_key &tx_pub_key, size_t i, tx_scan_info_t &tx_scan_info, int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs, std::vector<size_t> &outs, bool pool);
+    void scan_output(const cryptonote::transaction &tx, bool miner_tx, size_t i, tx_scan_info_t &tx_scan_info, int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs, std::vector<size_t> &outs, bool pool);
     void trim_hashchain();
     void setup_keys(const epee::wipeable_string &password);
     size_t get_transfer_details(const crypto::shared_secret_derived_public_key_image &ki) const;
