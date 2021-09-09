@@ -74,11 +74,6 @@ namespace cryptonote
   bool add_additional_tx_pub_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& additional_pub_keys);
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
 
-  bool lookup_acc_outs(const account_keys& acc, const transaction& tx, const std::optional<crypto::public_key>& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_public_keys, std::vector<size_t>& outs, uint64_t& money_transfered);
-
-  bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered);
-
-
 
   bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b, crypto::hash *block_hash);
   bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b);

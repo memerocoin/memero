@@ -392,32 +392,6 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------
-  bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<size_t>& outs, uint64_t& money_transfered)
-  {
-    const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
-    std::vector<crypto::public_key> additional_tx_pub_keys = get_additional_tx_pub_keys_from_extra(tx);
-    return lookup_acc_outs(acc, tx, tx_pub_key, additional_tx_pub_keys, outs, money_transfered);
-  }
-
-  //---------------------------------------------------------------
-  bool lookup_acc_outs(const account_keys& acc, const transaction& tx, const std::optional<crypto::public_key>& tx_pub_key, const std::vector<crypto::public_key>& additional_tx_pub_keys, std::vector<size_t>& outs, uint64_t& money_transfered)
-  {
-    LOG_ERROR_AND_RETURN_UNLESS(additional_tx_pub_keys.empty() || additional_tx_pub_keys.size() == tx.vout.size(), false, "wrong number of additional pubkeys" );
-    money_transfered = 0;
-    size_t i = 0;
-    for(const tx_out& o:  tx.vout)
-    {
-      LOG_ERROR_AND_RETURN_UNLESS(o.target.type() ==  typeid(txout_to_key), false, "wrong type id in transaction out" );
-      if(is_out_to_acc(acc, boost::get<txout_to_key>(o.target), tx_pub_key, additional_tx_pub_keys, i))
-      {
-        outs.push_back(i);
-        money_transfered += o.amount;
-      }
-      i++;
-    }
-    return true;
-  }
-  //---------------------------------------------------------------
   void set_default_decimal_point(unsigned int decimal_point)
   {
     switch (decimal_point)
