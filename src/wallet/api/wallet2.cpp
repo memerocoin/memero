@@ -618,7 +618,7 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
   THROW_WALLET_EXCEPTION_IF(i >= tx.vout.size(), error::wallet_internal_error, "Invalid vout index");
 
   {
-    const auto r = cryptonote::derive_tx_output_key_fingerprint_helper_precomp
+    const auto r = cryptonote::derive_public_key_image_helper_precomp
       (
        m_account.get_keys()
        , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key
