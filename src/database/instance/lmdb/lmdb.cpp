@@ -1143,7 +1143,7 @@ void BlockchainLMDB::remove_output(const uint64_t amount, const uint64_t& out_in
     throw0(DB_ERROR(lmdb_error(std::string("Error deleting amount for output index ").append(boost::lexical_cast<std::string>(out_index).append(": ")).c_str(), result).c_str()));
 }
 
-void BlockchainLMDB::add_spent_key(const crypto::tx_output_key_fingerprint& tx_output_key_fingerprint)
+void BlockchainLMDB::add_spent_key(const crypto::shared_secret_derived_public_key_image& shared_secret_derived_public_key_image)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1151,7 +1151,7 @@ void BlockchainLMDB::add_spent_key(const crypto::tx_output_key_fingerprint& tx_o
 
   CURSOR(spent_keys)
 
-  MDB_val k = {sizeof(tx_output_key_fingerprint), (void *)&tx_output_key_fingerprint};
+  MDB_val k = {sizeof(shared_secret_derived_public_key_image), (void *)&shared_secret_derived_public_key_image};
   if (auto result = mdb_cursor_put(m_cur_spent_keys, (MDB_val *)&zerokval, &k, MDB_NODUPDATA)) {
     if (result == MDB_KEYEXIST)
       throw1(KEY_IMAGE_EXISTS("Attempting to add spent key image that's already in the db"));
@@ -1160,7 +1160,7 @@ void BlockchainLMDB::add_spent_key(const crypto::tx_output_key_fingerprint& tx_o
   }
 }
 
-void BlockchainLMDB::remove_spent_key(const crypto::tx_output_key_fingerprint& tx_output_key_fingerprint)
+void BlockchainLMDB::remove_spent_key(const crypto::shared_secret_derived_public_key_image& shared_secret_derived_public_key_image)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1168,7 +1168,7 @@ void BlockchainLMDB::remove_spent_key(const crypto::tx_output_key_fingerprint& t
 
   CURSOR(spent_keys)
 
-  MDB_val k = {sizeof(tx_output_key_fingerprint), (void *)&tx_output_key_fingerprint};
+  MDB_val k = {sizeof(shared_secret_derived_public_key_image), (void *)&shared_secret_derived_public_key_image};
   auto result = mdb_cursor_get(m_cur_spent_keys, (MDB_val *)&zerokval, &k, MDB_GET_BOTH);
   if (result != 0 && result != MDB_NOTFOUND)
       throw1(DB_ERROR(lmdb_error("Error finding spent key to remove", result).c_str()));
@@ -2892,7 +2892,7 @@ std::vector<std::vector<uint64_t>> BlockchainLMDB::get_tx_amount_output_indices(
   return amount_output_indices_set;
 }
 
-bool BlockchainLMDB::has_tx_output_key_fingerprint(const crypto::tx_output_key_fingerprint& img) const
+bool BlockchainLMDB::has_shared_secret_derived_public_key_image(const crypto::shared_secret_derived_public_key_image& img) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2909,7 +2909,7 @@ bool BlockchainLMDB::has_tx_output_key_fingerprint(const crypto::tx_output_key_f
   return ret;
 }
 
-bool BlockchainLMDB::for_all_tx_output_key_fingerprints(std::function<bool(const crypto::tx_output_key_fingerprint&)> f) const
+bool BlockchainLMDB::for_all_shared_secret_derived_public_key_images(std::function<bool(const crypto::shared_secret_derived_public_key_image&)> f) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2930,8 +2930,8 @@ bool BlockchainLMDB::for_all_tx_output_key_fingerprints(std::function<bool(const
       break;
     if (ret < 0)
       throw0(DB_ERROR("Failed to enumerate key images"));
-    const crypto::tx_output_key_fingerprint tx_output_key_fingerprint = *(const crypto::tx_output_key_fingerprint*)v.mv_data;
-    if (!f(tx_output_key_fingerprint)) {
+    const crypto::shared_secret_derived_public_key_image shared_secret_derived_public_key_image = *(const crypto::shared_secret_derived_public_key_image*)v.mv_data;
+    if (!f(shared_secret_derived_public_key_image)) {
       fret = false;
       break;
     }

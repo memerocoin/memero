@@ -253,7 +253,7 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_account_public_address{crypto::null_pkey, crypto::null_pkey},
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
-  m_device_last_tx_output_key_fingerprint_sync(0),
+  m_device_last_shared_secret_derived_public_key_image_sync(0),
   m_offline(false),
   m_rpc_version(0)
 {
@@ -491,7 +491,7 @@ void wallet2::set_spent(size_t idx, uint64_t height)
 {
   LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
-  LOG_PRINT_L2("Setting SPENT at " << height << ": ki " << td.m_tx_output_key_fingerprint << ", amount " << print_money(td.m_amount));
+  LOG_PRINT_L2("Setting SPENT at " << height << ": ki " << td.m_shared_secret_derived_public_key_image << ", amount " << print_money(td.m_amount));
   td.m_spent = true;
   td.m_spent_height = height;
 }
@@ -500,7 +500,7 @@ void wallet2::set_unspent(size_t idx)
 {
   LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
-  LOG_PRINT_L2("Setting UNSPENT: ki " << td.m_tx_output_key_fingerprint << ", amount " << print_money(td.m_amount));
+  LOG_PRINT_L2("Setting UNSPENT: ki " << td.m_shared_secret_derived_public_key_image << ", amount " << print_money(td.m_amount));
   td.m_spent = false;
   td.m_spent_height = 0;
 }
@@ -524,12 +524,12 @@ bool wallet2::is_spent(size_t idx, bool strict) const
   return is_spent(td, strict);
 }
 //----------------------------------------------------------------------------------------------------
-size_t wallet2::get_transfer_details(const crypto::tx_output_key_fingerprint &ki) const
+size_t wallet2::get_transfer_details(const crypto::shared_secret_derived_public_key_image &ki) const
 {
   for (size_t idx = 0; idx < m_transfers.size(); ++idx)
   {
     const transfer_details &td = m_transfers[idx];
-    if (td.m_tx_output_key_fingerprint_known && td.m_tx_output_key_fingerprint == ki)
+    if (td.m_shared_secret_derived_public_key_image_known && td.m_shared_secret_derived_public_key_image == ki)
       return idx;
   }
   LOG_ERROR_AND_THROW_UNLESS(false, "Key image not found");
@@ -634,7 +634,7 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
       (
        tx_scan_info.in_ephemeral.pub != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key
        , error::wallet_internal_error
-       , "tx_output_key_fingerprint generated ephemeral public key not matched with output_key"
+       , "shared_secret_derived_public_key_image generated ephemeral public key not matched with output_key"
        );
   }
 
@@ -700,8 +700,8 @@ bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(in);
-    auto it = m_tx_output_key_fingerprints.find(in_to_key.tx_output_key_fingerprint);
-    if (it != m_tx_output_key_fingerprints.end())
+    auto it = m_shared_secret_derived_public_key_images.find(in_to_key.shared_secret_derived_public_key_image);
+    if (it != m_shared_secret_derived_public_key_images.end())
       return true;
   }
   return false;
@@ -887,20 +887,20 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	    td.m_global_output_index = o_indices[o];
 	    td.m_tx = (const cryptonote::transaction_prefix&)tx;
 	    td.m_txid = txid;
-            td.m_tx_output_key_fingerprint = tx_scan_info[o].ki;
-            td.m_tx_output_key_fingerprint_known = true;
-            if (!td.m_tx_output_key_fingerprint_known)
+            td.m_shared_secret_derived_public_key_image = tx_scan_info[o].ki;
+            td.m_shared_secret_derived_public_key_image_known = true;
+            if (!td.m_shared_secret_derived_public_key_image_known)
             {
               // we might have cold signed, and have a mapping to key images
-              std::unordered_map<crypto::public_key, crypto::tx_output_key_fingerprint>::const_iterator i = m_cold_tx_output_key_fingerprints.find(tx_scan_info[o].in_ephemeral.pub);
-              if (i != m_cold_tx_output_key_fingerprints.end())
+              std::unordered_map<crypto::public_key, crypto::shared_secret_derived_public_key_image>::const_iterator i = m_cold_shared_secret_derived_public_key_images.find(tx_scan_info[o].in_ephemeral.pub);
+              if (i != m_cold_shared_secret_derived_public_key_images.end())
               {
-                td.m_tx_output_key_fingerprint = i->second;
-                td.m_tx_output_key_fingerprint_known = true;
+                td.m_shared_secret_derived_public_key_image = i->second;
+                td.m_shared_secret_derived_public_key_image_known = true;
               }
             }
             {
-              td.m_tx_output_key_fingerprint_request = false;
+              td.m_shared_secret_derived_public_key_image_request = false;
             }
             td.m_amount = amount;
             td.m_pk_index = pk_index - 1;
@@ -924,8 +924,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             }
             td.m_frozen = false;
 	    set_unspent(m_transfers.size()-1);
-            if (td.m_tx_output_key_fingerprint_known)
-	      m_tx_output_key_fingerprints[td.m_tx_output_key_fingerprint] = m_transfers.size()-1;
+            if (td.m_shared_secret_derived_public_key_image_known)
+	      m_shared_secret_derived_public_key_images[td.m_shared_secret_derived_public_key_image] = m_transfers.size()-1;
 	    m_pub_keys[tx_scan_info[o].in_ephemeral.pub] = m_transfers.size()-1;
 	    LOG_VERBOSE("Received money: " << print_money(td.amount()) << ", with tx: " << txid);
 	    if (0 != m_callback)
@@ -1019,8 +1019,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     if(in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(in);
-    auto it = m_tx_output_key_fingerprints.find(in_to_key.tx_output_key_fingerprint);
-    if(it != m_tx_output_key_fingerprints.end())
+    auto it = m_shared_secret_derived_public_key_images.find(in_to_key.shared_secret_derived_public_key_image);
+    if(it != m_shared_secret_derived_public_key_images.end())
     {
       transfer_details& td = m_transfers[it->second];
       uint64_t amount = in_to_key.amount;
@@ -1187,7 +1187,7 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    entry.first->second.m_rings.push_back(std::make_pair(txin.tx_output_key_fingerprint, txin.key_offsets));
+    entry.first->second.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.key_offsets));
   }
   entry.first->second.m_block_height = height;
   entry.first->second.m_timestamp = ts;
@@ -1636,9 +1636,9 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
             for (size_t i = 0; i < m_transfers.size(); ++i)
             {
               const transfer_details &td = m_transfers[i];
-              if (td.m_tx_output_key_fingerprint == tx_in_to_key.tx_output_key_fingerprint)
+              if (td.m_shared_secret_derived_public_key_image == tx_in_to_key.shared_secret_derived_public_key_image)
               {
-                 LOG_PRINT_L1("Resetting spent status for output " << vini << ": " << td.m_tx_output_key_fingerprint);
+                 LOG_PRINT_L1("Resetting spent status for output " << vini << ": " << td.m_shared_secret_derived_public_key_image);
                  set_unspent(i);
                  break;
               }
@@ -2064,7 +2064,7 @@ void wallet2::detach_blockchain(uint64_t height)
     wallet::logic::type::transfer::transfer_details &td = m_transfers[i];
     if (td.m_spent && td.m_spent_height >= height)
     {
-      LOG_PRINT_L1("Resetting spent/frozen status for output " << i << ": " << td.m_tx_output_key_fingerprint);
+      LOG_PRINT_L1("Resetting spent/frozen status for output " << i << ": " << td.m_shared_secret_derived_public_key_image);
       set_unspent(i);
     }
   }
@@ -2080,11 +2080,11 @@ void wallet2::detach_blockchain(uint64_t height)
 
   for(size_t i = i_start; i!= m_transfers.size();i++)
   {
-    if (!m_transfers[i].m_tx_output_key_fingerprint_known || m_transfers[i].m_tx_output_key_fingerprint_partial)
+    if (!m_transfers[i].m_shared_secret_derived_public_key_image_known || m_transfers[i].m_shared_secret_derived_public_key_image_partial)
       continue;
-    auto it_ki = m_tx_output_key_fingerprints.find(m_transfers[i].m_tx_output_key_fingerprint);
-    THROW_WALLET_EXCEPTION_IF(it_ki == m_tx_output_key_fingerprints.end(), error::wallet_internal_error, "key image not found: index " + std::to_string(i) + ", ki " + epee::string_tools::pod_to_hex(m_transfers[i].m_tx_output_key_fingerprint) + ", " + std::to_string(m_tx_output_key_fingerprints.size()) + " key images known");
-    m_tx_output_key_fingerprints.erase(it_ki);
+    auto it_ki = m_shared_secret_derived_public_key_images.find(m_transfers[i].m_shared_secret_derived_public_key_image);
+    THROW_WALLET_EXCEPTION_IF(it_ki == m_shared_secret_derived_public_key_images.end(), error::wallet_internal_error, "key image not found: index " + std::to_string(i) + ", ki " + epee::string_tools::pod_to_hex(m_transfers[i].m_shared_secret_derived_public_key_image) + ", " + std::to_string(m_shared_secret_derived_public_key_images.size()) + " key images known");
+    m_shared_secret_derived_public_key_images.erase(it_ki);
   }
 
   for(size_t i = i_start; i!= m_transfers.size();i++)
@@ -2129,7 +2129,7 @@ bool wallet2::clear()
 {
   m_blockchain.clear();
   m_transfers.clear();
-  m_tx_output_key_fingerprints.clear();
+  m_shared_secret_derived_public_key_images.clear();
   m_pub_keys.clear();
   m_unconfirmed_txs.clear();
   m_payments.clear();
@@ -2148,7 +2148,7 @@ void wallet2::clear_soft()
 {
   m_blockchain.clear();
   m_transfers.clear();
-  m_tx_output_key_fingerprints.clear();
+  m_shared_secret_derived_public_key_images.clear();
   m_pub_keys.clear();
   m_unconfirmed_txs.clear();
   m_payments.clear();
@@ -2603,10 +2603,10 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
     store();
 }
 
-bool wallet2::has_unknown_tx_output_key_fingerprints() const
+bool wallet2::has_unknown_shared_secret_derived_public_key_images() const
 {
   for (const auto &td: m_transfers)
-    if (!td.m_tx_output_key_fingerprint_known)
+    if (!td.m_shared_secret_derived_public_key_image_known)
       return true;
   return false;
 }
@@ -3162,18 +3162,18 @@ void wallet2::rescan_spent()
   for (size_t start_offset = 0; start_offset < m_transfers.size(); start_offset += chunk_size)
   {
     const size_t n_outputs = std::min<size_t>(chunk_size, m_transfers.size() - start_offset);
-    LOG_DEBUG("Calling is_tx_output_key_fingerprint_spent on " << start_offset << " - " << (start_offset + n_outputs - 1) << ", out of " << m_transfers.size());
+    LOG_DEBUG("Calling is_shared_secret_derived_public_key_image_spent on " << start_offset << " - " << (start_offset + n_outputs - 1) << ", out of " << m_transfers.size());
     COMMAND_RPC_IS_KEY_IMAGE_SPENT::request req = AUTO_VAL_INIT(req);
     COMMAND_RPC_IS_KEY_IMAGE_SPENT::response daemon_resp = AUTO_VAL_INIT(daemon_resp);
     for (size_t n = start_offset; n < start_offset + n_outputs; ++n)
-      req.tx_output_key_fingerprints.push_back(epee::string_tools::pod_to_hex(m_transfers[n].m_tx_output_key_fingerprint));
+      req.shared_secret_derived_public_key_images.push_back(epee::string_tools::pod_to_hex(m_transfers[n].m_shared_secret_derived_public_key_image));
 
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = epee::net_utils::invoke_http_json("/is_tx_output_key_fingerprint_spent", req, daemon_resp, *m_http_client, rpc_timeout);
-      THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "is_tx_output_key_fingerprint_spent", error::is_tx_output_key_fingerprint_spent_error, (daemon_resp.status));
+      bool r = epee::net_utils::invoke_http_json("/is_shared_secret_derived_public_key_image_spent", req, daemon_resp, *m_http_client, rpc_timeout);
+      THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "is_shared_secret_derived_public_key_image_spent", error::is_shared_secret_derived_public_key_image_spent_error, (daemon_resp.status));
       THROW_WALLET_EXCEPTION_IF(daemon_resp.spent_status.size() != n_outputs, error::wallet_internal_error,
-        "daemon returned wrong response for is_tx_output_key_fingerprint_spent, wrong amounts count = " +
+        "daemon returned wrong response for is_shared_secret_derived_public_key_image_spent, wrong amounts count = " +
         std::to_string(daemon_resp.spent_status.size()) + ", expected " +  std::to_string(n_outputs));
     }
 
@@ -3185,19 +3185,19 @@ void wallet2::rescan_spent()
   {
     transfer_details& td = m_transfers[i];
     // a view wallet may not know about key images
-    if (!td.m_tx_output_key_fingerprint_known || td.m_tx_output_key_fingerprint_partial)
+    if (!td.m_shared_secret_derived_public_key_image_known || td.m_shared_secret_derived_public_key_image_partial)
       continue;
     if (td.m_spent != (spent_status[i] != COMMAND_RPC_IS_KEY_IMAGE_SPENT::UNSPENT))
     {
       if (td.m_spent)
       {
-        LOG_PRINT_L0("Marking output " << i << "(" << td.m_tx_output_key_fingerprint << ") as unspent, it was marked as spent");
+        LOG_PRINT_L0("Marking output " << i << "(" << td.m_shared_secret_derived_public_key_image << ") as unspent, it was marked as spent");
         set_unspent(i);
         td.m_spent_height = 0;
       }
       else
       {
-        LOG_PRINT_L0("Marking output " << i << "(" << td.m_tx_output_key_fingerprint << ") as spent, it was marked as unspent");
+        LOG_PRINT_L0("Marking output " << i << "(" << td.m_shared_secret_derived_public_key_image << ") as spent, it was marked as unspent");
         set_spent(i, td.m_spent_height);
         // unknown height, if this gets reorged, it might still be missed
       }
@@ -3324,7 +3324,7 @@ void wallet2::add_unconfirmed_tx(const cryptonote::transaction& tx, uint64_t amo
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    utd.m_rings.push_back(std::make_pair(txin.tx_output_key_fingerprint, txin.key_offsets));
+    utd.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.key_offsets));
   }
 }
 
@@ -3372,7 +3372,7 @@ void wallet2::commit_tx(pending_tx& ptx)
     m_additional_tx_keys[txid] = ptx.additional_tx_keys;
   }
 
-  LOG_PRINT_L2("transaction " << txid << " generated ok and sent to daemon, tx_output_key_fingerprints: [" << ptx.tx_output_key_fingerprints << "]");
+  LOG_PRINT_L2("transaction " << txid << " generated ok and sent to daemon, shared_secret_derived_public_key_images: [" << ptx.shared_secret_derived_public_key_images << "]");
 
   for(size_t idx: ptx.selected_transfers)
   {
@@ -3428,10 +3428,10 @@ void wallet2::get_outs
       return;
     }
 
-    std::vector<crypto::tx_output_key_fingerprint> tx_output_key_fingerprints;
-    tx_output_key_fingerprints.reserve(selected_transfers.size());
-    std::for_each(selected_transfers.begin(), selected_transfers.end(), [this, &tx_output_key_fingerprints](size_t index) {
-      tx_output_key_fingerprints.push_back(m_transfers[index].m_tx_output_key_fingerprint);
+    std::vector<crypto::shared_secret_derived_public_key_image> shared_secret_derived_public_key_images;
+    shared_secret_derived_public_key_images.reserve(selected_transfers.size());
+    std::for_each(selected_transfers.begin(), selected_transfers.end(), [this, &shared_secret_derived_public_key_images](size_t index) {
+      shared_secret_derived_public_key_images.push_back(m_transfers[index].m_shared_secret_derived_public_key_image);
     });
   }
 
@@ -3567,17 +3567,17 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   THROW_WALLET_EXCEPTION_IF(upper_transaction_weight_limit <= get_transaction_weight(tx), error::tx_too_big, tx, upper_transaction_weight_limit);
 
   LOG_PRINT_L2("gathering key images");
-  std::string tx_output_key_fingerprints;
+  std::string shared_secret_derived_public_key_images;
   bool all_are_txin_to_key = std::all_of(tx.vin.begin(), tx.vin.end(), [&](const txin_v& s_e) -> bool
   {
     CHECKED_GET_SPECIFIC_VARIANT(s_e, const txin_to_key, in, false);
-    tx_output_key_fingerprints += boost::to_string(in.tx_output_key_fingerprint) + " ";
+    shared_secret_derived_public_key_images += boost::to_string(in.shared_secret_derived_public_key_image) + " ";
     return true;
   });
   THROW_WALLET_EXCEPTION_IF(!all_are_txin_to_key, error::unexpected_txin_type, tx);
   LOG_PRINT_L2("gathered key images");
 
-  ptx.tx_output_key_fingerprints = tx_output_key_fingerprints;
+  ptx.shared_secret_derived_public_key_images = shared_secret_derived_public_key_images;
   ptx.fee = fee;
   ptx.dust = 0;
   ptx.dust_added_to_fee = false;
@@ -3629,13 +3629,13 @@ std::vector<size_t> wallet2::pick_preferred_rct_inputs(uint64_t needed_money, ui
   for (size_t i = 0; i < m_transfers.size(); ++i)
   {
     const transfer_details& td = m_transfers[i];
-    if (!is_spent(td, false) && !td.m_frozen && !td.m_tx_output_key_fingerprint_partial && td.is_rct() && is_transfer_unlocked(td) && td.m_subaddr_index.major == subaddr_account && subaddr_indices.count(td.m_subaddr_index.minor) == 1)
+    if (!is_spent(td, false) && !td.m_frozen && !td.m_shared_secret_derived_public_key_image_partial && td.is_rct() && is_transfer_unlocked(td) && td.m_subaddr_index.major == subaddr_account && subaddr_indices.count(td.m_subaddr_index.minor) == 1)
     {
       LOG_PRINT_L2("Considering input " << i << ", " << print_money(td.amount()));
       for (size_t j = i + 1; j < m_transfers.size(); ++j)
       {
         const transfer_details& td2 = m_transfers[j];
-        if (!is_spent(td2, false) && !td2.m_frozen && !td2.m_tx_output_key_fingerprint_partial && td2.is_rct() && td.amount() + td2.amount() >= needed_money && is_transfer_unlocked(td2) && td2.m_subaddr_index == td.m_subaddr_index)
+        if (!is_spent(td2, false) && !td2.m_frozen && !td2.m_shared_secret_derived_public_key_image_partial && td2.is_rct() && td.amount() + td2.amount() >= needed_money && is_transfer_unlocked(td2) && td2.m_subaddr_index == td.m_subaddr_index)
         {
           // update our picks if those outputs are less related than any we
           // already found. If the same, don't update, and oldest suitable outputs
@@ -3823,7 +3823,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
       LOG_DEBUG("Ignoring output " << i << " of amount " << print_money(td.amount()) << " which is below fractional threshold " << print_money(fractional_threshold));
       continue;
     }
-    if (!is_spent(td, false) && !td.m_frozen && !td.m_tx_output_key_fingerprint_partial && is_transfer_unlocked(td) && td.m_subaddr_index.major == subaddr_account && subaddr_indices.count(td.m_subaddr_index.minor) == 1)
+    if (!is_spent(td, false) && !td.m_frozen && !td.m_shared_secret_derived_public_key_image_partial && is_transfer_unlocked(td) && td.m_subaddr_index.major == subaddr_account && subaddr_indices.count(td.m_subaddr_index.minor) == 1)
     {
       const uint32_t index_minor = td.m_subaddr_index.minor;
       auto find_predicate = [&index_minor](const std::pair<uint32_t, std::vector<size_t>>& x) { return x.first == index_minor; };
@@ -3959,7 +3959,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
     }
 
     const transfer_details &td = m_transfers[idx];
-    LOG_PRINT_L2("Picking output " << idx << ", amount " << print_money(td.amount()) << ", ki " << td.m_tx_output_key_fingerprint);
+    LOG_PRINT_L2("Picking output " << idx << ", amount " << print_money(td.amount()) << ", ki " << td.m_shared_secret_derived_public_key_image);
 
     // add this output to the list to spend
     tx.selected_transfers.push_back(idx);

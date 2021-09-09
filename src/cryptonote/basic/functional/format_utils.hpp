@@ -51,7 +51,7 @@ namespace cryptonote
 
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx);
 
-  std::optional<std::pair<keypair, crypto::tx_output_key_fingerprint>> derive_public_key_image_helper
+  std::optional<std::pair<keypair, crypto::shared_secret_derived_public_key_image>> derive_public_key_image_helper
   (
    const account_keys& ack
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -61,7 +61,7 @@ namespace cryptonote
    , const size_t real_output_index
    );
 
-  std::optional<std::pair<keypair, crypto::tx_output_key_fingerprint>> derive_public_key_image_helper_precomp
+  std::optional<std::pair<keypair, crypto::shared_secret_derived_public_key_image>> derive_public_key_image_helper_precomp
   (
    const account_keys& ack
    , const crypto::public_key& out_key

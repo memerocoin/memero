@@ -249,7 +249,7 @@ namespace cryptonote
       }
 
       keypair& in_ephemeral = in_contexts.back().in_ephemeral;
-      crypto::tx_output_key_fingerprint img;
+      crypto::shared_secret_derived_public_key_image img;
 
       std::tie(in_ephemeral, img) = *r;
 
@@ -268,7 +268,7 @@ namespace cryptonote
       //put key image into tx input
       txin_to_key input_to_key;
       input_to_key.amount = src_entr.amount;
-      input_to_key.tx_output_key_fingerprint = img;
+      input_to_key.shared_secret_derived_public_key_image = img;
 
       //fill outputs array and use relative offsets
       for(const tx_source_entry::output_entry& out_entry: src_entr.outputs)
@@ -290,7 +290,7 @@ namespace cryptonote
     std::sort(ins_order.begin(), ins_order.end(), [&](const size_t i0, const size_t i1) {
       const txin_to_key &tk0 = boost::get<txin_to_key>(tx.vin[i0]);
       const txin_to_key &tk1 = boost::get<txin_to_key>(tx.vin[i1]);
-      return memcmp(&tk0.tx_output_key_fingerprint, &tk1.tx_output_key_fingerprint, sizeof(tk0.tx_output_key_fingerprint)) > 0;
+      return memcmp(&tk0.shared_secret_derived_public_key_image, &tk1.shared_secret_derived_public_key_image, sizeof(tk0.shared_secret_derived_public_key_image)) > 0;
     });
 
     // figure out if we need to make additional tx pubkeys

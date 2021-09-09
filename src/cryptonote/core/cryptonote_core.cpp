@@ -670,12 +670,12 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::is_tx_output_key_fingerprint_spent(const crypto::tx_output_key_fingerprint &tx_output_key_fingerprint) const
+  bool core::is_shared_secret_derived_public_key_image_spent(const crypto::shared_secret_derived_public_key_image &shared_secret_derived_public_key_image) const
   {
-    return m_blockchain_storage.have_tx_keyimg_as_spent(tx_output_key_fingerprint);
+    return m_blockchain_storage.have_tx_keyimg_as_spent(shared_secret_derived_public_key_image);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::are_tx_output_key_fingerprints_spent(const std::vector<crypto::tx_output_key_fingerprint>& key_im, std::vector<bool> &spent) const
+  bool core::are_shared_secret_derived_public_key_images_spent(const std::vector<crypto::shared_secret_derived_public_key_image>& key_im, std::vector<bool> &spent) const
   {
     spent.clear();
     for(auto& ki: key_im)
@@ -685,11 +685,11 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::are_tx_output_key_fingerprints_spent_in_pool(const std::vector<crypto::tx_output_key_fingerprint>& key_im, std::vector<bool> &spent) const
+  bool core::are_shared_secret_derived_public_key_images_spent_in_pool(const std::vector<crypto::shared_secret_derived_public_key_image>& key_im, std::vector<bool> &spent) const
   {
     spent.clear();
 
-    return m_mempool.check_for_tx_output_key_fingerprints(key_im, spent);
+    return m_mempool.check_for_shared_secret_derived_public_key_images(key_im, spent);
   }
   //-----------------------------------------------------------------------------------------------
   std::pair<boost::multiprecision::uint128_t, boost::multiprecision::uint128_t> core::get_coinbase_tx_sum(const uint64_t start_offset, const size_t count)
@@ -722,11 +722,11 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_keyimages_diff(const transaction& tx) const
   {
-    std::unordered_set<crypto::tx_output_key_fingerprint> ki;
+    std::unordered_set<crypto::shared_secret_derived_public_key_image> ki;
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if(!ki.insert(tokey_in.tx_output_key_fingerprint).second)
+      if(!ki.insert(tokey_in.shared_secret_derived_public_key_image).second)
         return false;
     }
     return true;
@@ -748,11 +748,11 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_keyimages_domain(const transaction& tx) const
   {
-    std::unordered_set<crypto::tx_output_key_fingerprint> ki;
+    std::unordered_set<crypto::shared_secret_derived_public_key_image> ki;
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if(!crypto::is_safe_point(rct::ki2rct_p(tokey_in.tx_output_key_fingerprint)))
+      if(!crypto::is_safe_point(rct::ki2rct_p(tokey_in.shared_secret_derived_public_key_image)))
         return false;
     }
     return true;
@@ -1118,14 +1118,14 @@ namespace cryptonote
     return m_mempool.have_tx(id, relay_category::legacy);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_pool_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_tx_output_key_fingerprint_info>& tx_output_key_fingerprint_infos, bool include_sensitive_data) const
+  bool core::get_pool_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_shared_secret_derived_public_key_image_info>& shared_secret_derived_public_key_image_infos, bool include_sensitive_data) const
   {
-    return m_mempool.get_transactions_and_spent_keys_info(tx_infos, tx_output_key_fingerprint_infos, include_sensitive_data);
+    return m_mempool.get_transactions_and_spent_keys_info(tx_infos, shared_secret_derived_public_key_image_infos, include_sensitive_data);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::tx_output_key_fingerprints_with_tx_hashes& tx_output_key_fingerprint_infos) const
+  bool core::get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::shared_secret_derived_public_key_images_with_tx_hashes& shared_secret_derived_public_key_image_infos) const
   {
-    return m_mempool.get_pool_for_rpc(tx_infos, tx_output_key_fingerprint_infos);
+    return m_mempool.get_pool_for_rpc(tx_infos, shared_secret_derived_public_key_image_infos);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::get_short_chain_history(std::list<crypto::hash>& ids) const

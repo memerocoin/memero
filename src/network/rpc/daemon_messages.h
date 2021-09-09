@@ -126,7 +126,7 @@ BEGIN_RPC_MESSAGE_CLASS(KeyImagesSpent);
     SPENT_IN_POOL = 2,
   };
   BEGIN_RPC_MESSAGE_REQUEST;
-    RPC_MESSAGE_MEMBER(std::vector<crypto::tx_output_key_fingerprint>, tx_output_key_fingerprints);
+    RPC_MESSAGE_MEMBER(std::vector<crypto::shared_secret_derived_public_key_image>, shared_secret_derived_public_key_images);
   END_RPC_MESSAGE_REQUEST;
   BEGIN_RPC_MESSAGE_RESPONSE;
     RPC_MESSAGE_MEMBER(std::vector<uint64_t>, spent_status);
@@ -308,7 +308,7 @@ BEGIN_RPC_MESSAGE_CLASS(GetTransactionPool);
     END_RPC_MESSAGE_REQUEST;
   BEGIN_RPC_MESSAGE_RESPONSE;
     RPC_MESSAGE_MEMBER(std::vector<cryptonote::rpc::tx_in_pool>, transactions);
-    RPC_MESSAGE_MEMBER(tx_output_key_fingerprints_with_tx_hashes, tx_output_key_fingerprints);
+    RPC_MESSAGE_MEMBER(shared_secret_derived_public_key_images_with_tx_hashes, shared_secret_derived_public_key_images);
   END_RPC_MESSAGE_RESPONSE;
 END_RPC_MESSAGE_CLASS;
 

@@ -41,7 +41,7 @@ namespace tx {
   struct tx_scan_info_t
   {
     cryptonote::keypair in_ephemeral;
-    crypto::tx_output_key_fingerprint ki;
+    crypto::shared_secret_derived_public_key_image ki;
     rct::rct_scalar mask;
     uint64_t amount;
     uint64_t money_transfered;
@@ -88,7 +88,7 @@ namespace tx {
     bool dust_added_to_fee;
     cryptonote::tx_destination_entry change_dts;
     std::vector<size_t> selected_transfers;
-    std::string tx_output_key_fingerprints;
+    std::string shared_secret_derived_public_key_images;
     crypto::secret_key tx_key;
     std::vector<crypto::secret_key> additional_tx_keys;
     std::vector<cryptonote::tx_destination_entry> dests;
@@ -102,7 +102,7 @@ namespace tx {
       FIELD(dust_added_to_fee)
       FIELD(change_dts)
       FIELD(selected_transfers)
-      FIELD(tx_output_key_fingerprints)
+      FIELD(shared_secret_derived_public_key_images)
       FIELD(tx_key)
       FIELD(additional_tx_keys)
       FIELD(dests)

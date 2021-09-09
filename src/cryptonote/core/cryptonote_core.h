@@ -424,14 +424,14 @@ namespace cryptonote
       *
       * @note see tx_memory_pool::get_pool_transactions_and_spent_keys_info
       */
-     bool get_pool_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_tx_output_key_fingerprint_info>& tx_output_key_fingerprint_infos, bool include_sensitive_txes = false) const;
+     bool get_pool_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_shared_secret_derived_public_key_image_info>& shared_secret_derived_public_key_image_infos, bool include_sensitive_txes = false) const;
 
      /**
       * @copydoc tx_memory_pool::get_pool_for_rpc
       *
       * @note see tx_memory_pool::get_pool_for_rpc
       */
-     bool get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::tx_output_key_fingerprints_with_tx_hashes& tx_output_key_fingerprint_infos) const;
+     bool get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::shared_secret_derived_public_key_images_with_tx_hashes& shared_secret_derived_public_key_image_infos) const;
 
      /**
       * @copydoc tx_memory_pool::get_transactions_count
@@ -602,19 +602,19 @@ namespace cryptonote
       *
       * @note see Blockchain::have_tx_keyimg_as_spent
       */
-     bool is_tx_output_key_fingerprint_spent(const crypto::tx_output_key_fingerprint& key_im) const;
+     bool is_shared_secret_derived_public_key_image_spent(const crypto::shared_secret_derived_public_key_image& key_im) const;
 
      /**
       * @brief check if multiple key images are spent
       *
-      * plural version of is_tx_output_key_fingerprint_spent()
+      * plural version of is_shared_secret_derived_public_key_image_spent()
       *
       * @param key_im list of key images to check
       * @param spent return-by-reference result for each image checked
       *
       * @return true
       */
-     bool are_tx_output_key_fingerprints_spent(const std::vector<crypto::tx_output_key_fingerprint>& key_im, std::vector<bool> &spent) const;
+     bool are_shared_secret_derived_public_key_images_spent(const std::vector<crypto::shared_secret_derived_public_key_image>& key_im, std::vector<bool> &spent) const;
 
      /**
       * @brief check if multiple key images are spent in the transaction pool
@@ -624,7 +624,7 @@ namespace cryptonote
       *
       * @return true
       */
-     bool are_tx_output_key_fingerprints_spent_in_pool(const std::vector<crypto::tx_output_key_fingerprint>& key_im, std::vector<bool> &spent) const;
+     bool are_shared_secret_derived_public_key_images_spent_in_pool(const std::vector<crypto::shared_secret_derived_public_key_image>& key_im, std::vector<bool> &spent) const;
 
      /**
       * @brief get the sum of coinbase tx amounts between blocks

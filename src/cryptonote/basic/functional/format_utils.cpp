@@ -58,7 +58,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::tx_output_key_fingerprint>> derive_public_key_image_helper
+  std::optional<std::pair<keypair, crypto::shared_secret_derived_public_key_image>> derive_public_key_image_helper
   (
    const account_keys& ack
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -118,7 +118,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::tx_output_key_fingerprint>> derive_public_key_image_helper_precomp
+  std::optional<std::pair<keypair, crypto::shared_secret_derived_public_key_image>> derive_public_key_image_helper_precomp
   (
    const account_keys& ack
    , const crypto::public_key& out_key
@@ -159,7 +159,7 @@ namespace cryptonote
            {}, "key image helper precomp: given output pubkey doesn't match the derived one");
     }
 
-    const crypto::tx_output_key_fingerprint ki = crypto::derive_public_key_image(in_ephemeral.sec);
+    const crypto::shared_secret_derived_public_key_image ki = crypto::derive_public_key_image(in_ephemeral.sec);
     return {{in_ephemeral, ki}};
   }
 

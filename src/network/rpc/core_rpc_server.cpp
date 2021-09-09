@@ -432,8 +432,8 @@ namespace cryptonote
     if (!missed_txs.empty())
     {
       std::vector<tx_info> pool_tx_info;
-      std::vector<spent_tx_output_key_fingerprint_info> pool_tx_output_key_fingerprint_info;
-      bool r = m_core.get_pool_transactions_and_spent_keys_info(pool_tx_info, pool_tx_output_key_fingerprint_info, true);
+      std::vector<spent_shared_secret_derived_public_key_image_info> pool_shared_secret_derived_public_key_image_info;
+      bool r = m_core.get_pool_transactions_and_spent_keys_info(pool_tx_info, pool_shared_secret_derived_public_key_image_info, true);
       if(r)
       {
         // sort to match original request
@@ -571,12 +571,12 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_is_tx_output_key_fingerprint_spent(const COMMAND_RPC_IS_KEY_IMAGE_SPENT::request& req, COMMAND_RPC_IS_KEY_IMAGE_SPENT::response& res, const connection_context *ctx)
+  bool core_rpc_server::on_is_shared_secret_derived_public_key_image_spent(const COMMAND_RPC_IS_KEY_IMAGE_SPENT::request& req, COMMAND_RPC_IS_KEY_IMAGE_SPENT::response& res, const connection_context *ctx)
   {
-    RPC_TRACKER(is_tx_output_key_fingerprint_spent);
+    RPC_TRACKER(is_shared_secret_derived_public_key_image_spent);
 
-    std::vector<crypto::tx_output_key_fingerprint> tx_output_key_fingerprints;
-    for(const auto& ki_hex_str: req.tx_output_key_fingerprints)
+    std::vector<crypto::shared_secret_derived_public_key_image> shared_secret_derived_public_key_images;
+    for(const auto& ki_hex_str: req.shared_secret_derived_public_key_images)
     {
       blobdata b;
       if(!string_tools::parse_hexstr_to_binbuff(ki_hex_str, b))
@@ -584,14 +584,14 @@ namespace cryptonote
         res.status = "Failed to parse hex representation of key image";
         return true;
       }
-      if(b.size() != sizeof(crypto::tx_output_key_fingerprint))
+      if(b.size() != sizeof(crypto::shared_secret_derived_public_key_image))
       {
         res.status = "Failed, size of data mismatch";
       }
-      tx_output_key_fingerprints.push_back(*reinterpret_cast<const crypto::tx_output_key_fingerprint*>(b.data()));
+      shared_secret_derived_public_key_images.push_back(*reinterpret_cast<const crypto::shared_secret_derived_public_key_image*>(b.data()));
     }
     std::vector<bool> spent_status;
-    bool r = m_core.are_tx_output_key_fingerprints_spent(tx_output_key_fingerprints, spent_status);
+    bool r = m_core.are_shared_secret_derived_public_key_images_spent(shared_secret_derived_public_key_images, spent_status);
     if(!r)
     {
       res.status = "Failed";
@@ -603,25 +603,25 @@ namespace cryptonote
 
     // check the pool too
     std::vector<cryptonote::tx_info> txs;
-    std::vector<cryptonote::spent_tx_output_key_fingerprint_info> ki;
+    std::vector<cryptonote::spent_shared_secret_derived_public_key_image_info> ki;
     r = m_core.get_pool_transactions_and_spent_keys_info(txs, ki, true);
     if(!r)
     {
       res.status = "Failed";
       return true;
     }
-    for (std::vector<cryptonote::spent_tx_output_key_fingerprint_info>::const_iterator i = ki.begin(); i != ki.end(); ++i)
+    for (std::vector<cryptonote::spent_shared_secret_derived_public_key_image_info>::const_iterator i = ki.begin(); i != ki.end(); ++i)
     {
       crypto::hash hash;
-      crypto::tx_output_key_fingerprint spent_tx_output_key_fingerprint;
+      crypto::shared_secret_derived_public_key_image spent_shared_secret_derived_public_key_image;
       if (parse_hash256(i->id_hash, hash))
       {
-        memcpy(&spent_tx_output_key_fingerprint, &hash, sizeof(hash)); // a bit dodgy, should be other parse functions somewhere
+        memcpy(&spent_shared_secret_derived_public_key_image, &hash, sizeof(hash)); // a bit dodgy, should be other parse functions somewhere
         for (size_t n = 0; n < res.spent_status.size(); ++n)
         {
           if (res.spent_status[n] == COMMAND_RPC_IS_KEY_IMAGE_SPENT::UNSPENT)
           {
-            if (tx_output_key_fingerprints[n] == spent_tx_output_key_fingerprint)
+            if (shared_secret_derived_public_key_images[n] == spent_shared_secret_derived_public_key_image)
             {
               res.spent_status[n] = COMMAND_RPC_IS_KEY_IMAGE_SPENT::SPENT_IN_POOL;
               break;
@@ -880,7 +880,7 @@ namespace cryptonote
     size_t n_txes = m_core.get_pool_transactions_count(allow_sensitive);
     if (n_txes > 0)
     {
-      m_core.get_pool_transactions_and_spent_keys_info(res.transactions, res.spent_tx_output_key_fingerprints, allow_sensitive);
+      m_core.get_pool_transactions_and_spent_keys_info(res.transactions, res.spent_shared_secret_derived_public_key_images, allow_sensitive);
       for (tx_info& txi : res.transactions)
         txi.tx_blob = epee::string_tools::buff_to_hex_nodelimer(txi.tx_blob);
     }

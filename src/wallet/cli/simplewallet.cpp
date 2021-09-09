@@ -1526,8 +1526,8 @@ bool simple_wallet::refresh(const std::vector<std::string>& args)
 bool simple_wallet::show_balance_unlocked(bool detailed)
 {
   std::string extra;
-  if (m_wallet->has_unknown_tx_output_key_fingerprints())
-    extra += sw::tr(" (Some owned outputs have missing key images - import_tx_output_key_fingerprints needed)");
+  if (m_wallet->has_unknown_shared_secret_derived_public_key_images())
+    extra += sw::tr(" (Some owned outputs have missing key images - import_shared_secret_derived_public_key_images needed)");
   success_msg_writer() << sw::tr("Currently selected account: [") << m_current_subaddress_account << sw::tr("] ") << m_wallet->get_subaddress_label({m_current_subaddress_account, 0});
   uint64_t blocks_to_unlock, time_to_unlock;
   uint64_t unlocked_balance = m_wallet->unlocked_balance(m_current_subaddress_account, false, &blocks_to_unlock, &time_to_unlock);
@@ -1643,7 +1643,7 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
       }
       std::string extra_string;
       if (verbose)
-        extra_string += (boost::format("%68s%68s") % td.get_public_key() % (td.m_tx_output_key_fingerprint_known ? epee::string_tools::pod_to_hex(td.m_tx_output_key_fingerprint) : td.m_tx_output_key_fingerprint_partial ? (epee::string_tools::pod_to_hex(td.m_tx_output_key_fingerprint) + "/p") : std::string(64, '?'))).str();
+        extra_string += (boost::format("%68s%68s") % td.get_public_key() % (td.m_shared_secret_derived_public_key_image_known ? epee::string_tools::pod_to_hex(td.m_shared_secret_derived_public_key_image) : td.m_shared_secret_derived_public_key_image_partial ? (epee::string_tools::pod_to_hex(td.m_shared_secret_derived_public_key_image) + "/p") : std::string(64, '?'))).str();
       message_writer(td.m_spent ? epee::console_color_magenta : epee::console_color_green, false) <<
         boost::format("%21s%8s%12s%8s%16u%68s%16u%s") %
         print_money(td.amount()) %
@@ -1707,7 +1707,7 @@ bool simple_wallet::rescan_spent(const std::vector<std::string> &args)
   {
     fail_msg_writer() << sw::tr("no connection to daemon. Please make sure daemon is running.");
   }
-  catch (const tools::error::is_tx_output_key_fingerprint_spent_error&)
+  catch (const tools::error::is_shared_secret_derived_public_key_image_spent_error&)
   {
     fail_msg_writer() << sw::tr("failed to get spent status");
   }
@@ -1803,7 +1803,7 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
       const cryptonote::tx_source_entry& source = *sptr;
 
       if (verbose)
-        ostr << boost::format(tr("\nInput %llu/%llu (%s): amount=%s")) % (i + 1) % tx.vin.size() % epee::string_tools::pod_to_hex(in_key.tx_output_key_fingerprint) % print_money(source.amount);
+        ostr << boost::format(tr("\nInput %llu/%llu (%s): amount=%s")) % (i + 1) % tx.vin.size() % epee::string_tools::pod_to_hex(in_key.shared_secret_derived_public_key_image) % print_money(source.amount);
       // convert relative offsets of ring member keys into absolute offsets (indices) associated with the amount
       std::vector<uint64_t> absolute_offsets = cryptonote::relative_output_offsets_to_absolute(in_key.key_offsets);
       // get block heights from which those ring member keys originated

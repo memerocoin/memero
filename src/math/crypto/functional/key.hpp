@@ -35,7 +35,7 @@ namespace crypto {
 
   struct tx_ecdh_shared_secret: ec_point {};
 
-  struct tx_output_key_fingerprint: ec_point {};
+  struct shared_secret_derived_public_key_image: ec_point {};
 
   constexpr crypto::public_key null_pkey = {};
   constexpr crypto::secret_key null_skey = {};
@@ -48,7 +48,7 @@ namespace crypto {
 
   inline const secret_key &s2sk(const ec_scalar &x)              noexcept { return (const secret_key&)x; }
   inline const public_key &p2pk(const ec_point &x)               noexcept { return (const public_key&)x; }
-  inline const tx_output_key_fingerprint &p2img(const ec_point &x)               noexcept { return (const tx_output_key_fingerprint&)x; }
+  inline const shared_secret_derived_public_key_image &p2img(const ec_point &x)               noexcept { return (const shared_secret_derived_public_key_image&)x; }
   inline const tx_ecdh_shared_secret &p2tx_shared_secret(const ec_point &x)   noexcept { return (const tx_ecdh_shared_secret&)x; }
 
   inline const ec_scalar_unnormalized &d2s(const crypto_data &x) noexcept { return (const ec_scalar_unnormalized&)x; }
@@ -93,7 +93,7 @@ namespace crypto {
     * * Then he selects a bunch of outputs, including the one he spends, and uses them to generate a ring signature.
     * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
     */
-  tx_output_key_fingerprint derive_public_key_image(const secret_key) noexcept;
+  shared_secret_derived_public_key_image derive_public_key_image(const secret_key) noexcept;
 
   uint64_t scalar_to_int(const ec_scalar &in) noexcept;
   ec_scalar int_to_scalar(const uint64_t in) noexcept;
@@ -156,9 +156,9 @@ namespace std
     }
   };
 
-  template<> struct hash<crypto::tx_output_key_fingerprint>
+  template<> struct hash<crypto::shared_secret_derived_public_key_image>
   {
-    std::size_t operator()(crypto::tx_output_key_fingerprint const& x) const noexcept
+    std::size_t operator()(crypto::shared_secret_derived_public_key_image const& x) const noexcept
     {
       boost::hash<std::array<uint8_t,32>> array_hash;
       return array_hash(x.data);
