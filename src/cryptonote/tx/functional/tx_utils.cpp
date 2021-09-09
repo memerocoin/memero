@@ -84,7 +84,9 @@ namespace cryptonote
     , rct::rct_scalarV
     , crypto::public_key
     >>
+
     generate_output_ephemeral_keys
+
   (
    const size_t tx_version
    , const cryptonote::account_keys &sender_account_keys
@@ -99,9 +101,6 @@ namespace cryptonote
    , const rct::rct_scalarV &tx_shared_secret_indexed_hashes_in
    )
   {
-    std::vector<crypto::public_key> additional_tx_public_keys = additional_tx_public_keys_in;
-    rct::rct_scalarV tx_shared_secret_indexed_hashes = tx_shared_secret_indexed_hashes_in;
-
     const keypair txkey
       = need_additional_txkeys
       ? keypair
@@ -125,15 +124,8 @@ namespace cryptonote
        , "at creation outs: failed to derive_tx_ecdh_shared_secret"
        );
 
-    if (need_additional_txkeys)
-    {
-      additional_tx_public_keys.push_back(txkey.pub);
-    }
-
     const rct::rct_scalar tx_shared_secret_indexed_hash =
       rct::s2s(crypto::hash_tx_shared_secret_to_scalar(*tx_shared_secret, output_index));
-
-    tx_shared_secret_indexed_hashes.push_back(tx_shared_secret_indexed_hash);
 
     const auto eph_pk = crypto::compute_shared_secret_derived_public_key_from_spend_public_key
       (*tx_shared_secret, output_index, dst_entr.addr.m_spend_public_key);
@@ -145,6 +137,15 @@ namespace cryptonote
        , "at creation outs: failed to compute_shared_secret_derived_public_key_from_spend_public_key("
        << *tx_shared_secret << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
        );
+
+    // carry
+    std::vector<crypto::public_key> additional_tx_public_keys = additional_tx_public_keys_in;
+    if (need_additional_txkeys)
+    {
+      additional_tx_public_keys.push_back(txkey.pub);
+    }
+    rct::rct_scalarV tx_shared_secret_indexed_hashes = tx_shared_secret_indexed_hashes_in;
+    tx_shared_secret_indexed_hashes.push_back(tx_shared_secret_indexed_hash);
 
     return {{
         additional_tx_public_keys
