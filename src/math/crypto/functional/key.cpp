@@ -128,7 +128,7 @@ namespace crypto {
     return hash_to_scalar(hashData);
   }
 
-  secret_key derive_tx_output_secret_key_from_spend_secret_key
+  secret_key derive_shared_secret_derived_secret_key_from_spend_secret_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
