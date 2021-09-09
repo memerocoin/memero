@@ -132,14 +132,14 @@ namespace crypto {
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
-   , const ec_point_unsafe &unsafe_base
+   , const ec_point_unsafe &unsafe_spend_public_key
    ) noexcept;
 
   std::optional<public_key> compute_spend_public_key_from_shared_secret_derived_public_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const std::size_t output_index
-   , const ec_point_unsafe &unsafe_out_key
+   , const ec_point_unsafe &unsafe_shared_secret_derived_pk
    ) noexcept;
 
   std::optional<crypto::public_key> maybeNotNull(const crypto::public_key);

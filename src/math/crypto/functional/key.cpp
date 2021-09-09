@@ -144,35 +144,31 @@ namespace crypto {
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
-   , const ec_point_unsafe &unsafe_base
+   , const ec_point_unsafe &unsafe_spend_public_key
    ) noexcept
   {
-    const auto base = maybeSafePoint(unsafe_base);
-    if (!base) return {};
+    const auto spend_public_key = maybeSafePoint(unsafe_spend_public_key);
+    if (!spend_public_key) return {};
 
     const ec_scalar shared_secret_hash = hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index);
-    const ec_point derived = multBase(shared_secret_hash);
-    const ec_point r = derived + *base;
-    return p2pk(r);
+    return p2pk(multBase(shared_secret_hash) + *spend_public_key);
   }
 
   std::optional<public_key> compute_spend_public_key_from_shared_secret_derived_public_key
   (
      const tx_ecdh_shared_secret &tx_shared_secret
    , const std::size_t output_index
-   , const ec_point_unsafe &unsafe_out_key
+   , const ec_point_unsafe &unsafe_shared_secret_derived_pk
    ) noexcept
   {
-    const auto out_key = maybeSafePoint(unsafe_out_key);
-    if (!out_key) return {};
+    const auto shared_secret_derived_pk = maybeSafePoint(unsafe_shared_secret_derived_pk);
+    if (!shared_secret_derived_pk) return {};
 
     const ec_scalar shared_secret_hash = hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index);
 
     if (shared_secret_hash == s_0) return {};
 
-    const ec_point p = multBase(shared_secret_hash);
-
-    return p2pk(*out_key - p);
+    return p2pk(*shared_secret_derived_pk - multBase(shared_secret_hash));
   }
 
   std::optional<crypto::public_key> maybeNotNull(const crypto::public_key x) {
