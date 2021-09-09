@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "functional/tx_utils.hpp"
+#include "cryptonote/tx/functional/tx_utils.hpp"
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 

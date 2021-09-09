@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "cryptonote/tx/cryptonote_tx_utils.h" // keypair
+#include "cryptonote/tx/pseudo_functional/tx_utils.hpp" // keypair
 
 namespace wallet {
 namespace logic {

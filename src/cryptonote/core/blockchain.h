@@ -33,7 +33,7 @@
 #include "database/interface/blockchain.hpp"
 
 #include "cryptonote/basic/type/verification_context.hpp"
-#include "cryptonote/tx/cryptonote_tx_utils.h"
+#include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 
 #include "network/rpc/core_rpc_server_commands_defs.h"
 

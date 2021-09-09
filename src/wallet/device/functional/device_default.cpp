@@ -32,7 +32,7 @@
 
 #include "device_default.hpp"
 
-#include "cryptonote/tx/cryptonote_tx_utils.h"
+#include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 
 #include "tools/epee/include/int-util.h"
 #include "tools/epee/include/string_tools.h"

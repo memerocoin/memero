@@ -33,7 +33,7 @@
 
 #include "wallet/logic/type/wallet.hpp"
 
-#include "cryptonote/tx/cryptonote_tx_utils.h"
+#include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 
 namespace {
 

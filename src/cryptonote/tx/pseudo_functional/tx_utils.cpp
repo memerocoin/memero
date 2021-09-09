@@ -28,8 +28,7 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "cryptonote_tx_utils.h"
-
+#include "tx_utils.hpp"
 
 #include "tools/epee/include/string_tools.h"
 

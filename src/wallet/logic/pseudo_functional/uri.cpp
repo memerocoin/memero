@@ -31,7 +31,7 @@
 
 
 
-#include "cryptonote/tx/cryptonote_tx_utils.h"
+#include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 #include "tools/epee/include/net/abstract_http_client.h"
 
 #include <boost/algorithm/string.hpp>

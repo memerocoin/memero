@@ -32,7 +32,7 @@
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/type/subaddress_index.hpp"
-#include "cryptonote/tx/cryptonote_tx_utils.h"
+#include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 
 namespace device {
   /* ======================================================================= */

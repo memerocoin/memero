@@ -34,7 +34,7 @@
 #include "tools/common/command_line.h"
 #include "math/crypto/controller/random.hpp"
 
-#include "cryptonote/tx/cryptonote_tx_utils.h"
+#include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 
 
 #include <openssl/evp.h>
