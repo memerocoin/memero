@@ -144,11 +144,6 @@ namespace cryptonote
     else
     {
     // sending to the recipient; tx_shared_secret = r*A (or s*C in the subaddress scheme)
-      const auto tx_secret_key =
-        dst_entr.is_subaddress && need_additional_txkeys
-        ? additional_txkey.sec
-        : tx_key;
-
       tx_shared_secret = derive_tx_ecdh_shared_secret
         (
          dst_entr.addr.m_view_public_key
@@ -167,7 +162,7 @@ namespace cryptonote
 
     if (need_additional_txkeys)
     {
-      additional_tx_public_keys.push_back(additional_txkey.pub);
+      additional_tx_public_keys.push_back(txkey.pub);
     }
 
     const rct::rct_scalar tx_shared_secret_indexed_hash =
