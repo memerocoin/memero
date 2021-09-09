@@ -129,35 +129,26 @@ namespace cryptonote
   {
     keypair in_ephemeral;
 
-    if (ack.m_spend_secret_key == crypto::null_skey)
-    {
-      // for watch-only wallet, simply copy the known output pubkey
-      in_ephemeral.pub = out_key;
-      in_ephemeral.sec = crypto::null_skey;
-    }
-    else
-    {
-      // derive secret key with subaddress - step 1: original CN derivation
-      const auto spend_sk = ack.m_spend_secret_key;
-      if (is_not_reduced(spend_sk)) return {};
+    // derive secret key with subaddress - step 1: original CN derivation
+    const auto spend_sk = ack.m_spend_secret_key;
+    if (is_not_reduced(spend_sk)) return {};
 
-        // computes Hs(a*R || idx) + b
-      const crypto::secret_key derived_tx_output_secret_key =
-        derive_shared_secret_derived_secret_key_from_spend_secret_key(recv_tx_shared_secret, real_output_index, spend_sk);
+      // computes Hs(a*R || idx) + b
+    const crypto::secret_key derived_tx_output_secret_key =
+      derive_shared_secret_derived_secret_key_from_spend_secret_key(recv_tx_shared_secret, real_output_index, spend_sk);
 
-      // add subaddress secret key: Hs(a || index_major || index_minor)
-      const crypto::secret_key key_offset =
-        received_index.is_zero()
-        ? crypto::s2sk(crypto::s_0)
-        : device::get_subaddress_secret_key(ack.m_view_secret_key, received_index)
-        ;
+    // add subaddress secret key: Hs(a || index_major || index_minor)
+    const crypto::secret_key key_offset =
+      received_index.is_zero()
+      ? crypto::s2sk(crypto::s_0)
+      : device::get_subaddress_secret_key(ack.m_view_secret_key, received_index)
+      ;
 
-      in_ephemeral.sec = crypto::s2sk(derived_tx_output_secret_key + key_offset);
-      in_ephemeral.pub = to_pk(in_ephemeral.sec);
+    in_ephemeral.sec = crypto::s2sk(derived_tx_output_secret_key + key_offset);
+    in_ephemeral.pub = to_pk(in_ephemeral.sec);
 
-      LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
-           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
-    }
+    LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
+          {}, "key image helper precomp: given output pubkey doesn't match the derived one");
 
     const crypto::shared_secret_derived_public_key_image ki = crypto::derive_public_key_image(in_ephemeral.sec);
     return {{in_ephemeral, ki}};
