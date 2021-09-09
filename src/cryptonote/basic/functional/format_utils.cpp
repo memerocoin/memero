@@ -127,10 +127,10 @@ namespace cryptonote
    , const subaddress_index& received_index
    )
   {
-    keypair in_ephemeral;
 
     // derive secret key with subaddress - step 1: original CN derivation
     const auto spend_sk = ack.m_spend_secret_key;
+
     if (is_not_reduced(spend_sk)) return {};
 
     // add subaddress secret key: Hs(a || index_major || index_minor)
@@ -142,12 +142,15 @@ namespace cryptonote
 
 
       // computes Hs(a*R || idx) + b
-    const crypto::secret_key derived_tx_output_secret_key =
+    const crypto::secret_key shared_secret_derived_secret_key =
       derive_shared_secret_derived_secret_key_from_spend_secret_key
       (recv_tx_shared_secret, real_output_index, spend_sk, key_offset);
 
-    in_ephemeral.sec = crypto::s2sk(derived_tx_output_secret_key);
-    in_ephemeral.pub = to_pk(in_ephemeral.sec);
+    const keypair in_ephemeral =
+      {
+        shared_secret_derived_secret_key
+        , to_pk(shared_secret_derived_secret_key)
+      };
 
     LOG_ERROR_AND_RETURN_UNLESS(in_ephemeral.pub == out_key,
           {}, "key image helper precomp: given output pubkey doesn't match the derived one");

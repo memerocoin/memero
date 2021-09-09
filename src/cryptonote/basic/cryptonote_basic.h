@@ -304,8 +304,8 @@ namespace cryptonote
 
   struct keypair
   {
-    crypto::public_key pub;
     crypto::secret_key sec;
+    crypto::public_key pub;
 
     static inline keypair generate()
     {
