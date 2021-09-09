@@ -48,7 +48,7 @@ namespace proof {
   const std::string get_tx_proof
   (
    const cryptonote::transaction &tx
-   , const crypto::secret_key &tx_key
+   , const std::optional<crypto::secret_key> &tx_key
    , const std::vector<crypto::secret_key> &additional_tx_keys
    , const cryptonote::account_public_address &address
    , const bool is_subaddress
@@ -71,6 +71,7 @@ namespace proof {
 
     if (!view_secret_key)
     {
+      /*
       LOG_FATAL("get tx proof Out is unsupported");
 
       const size_t num_sigs = 1 + additional_tx_keys.size();
@@ -108,6 +109,7 @@ namespace proof {
         }
       }
       sig_str = std::string("OutProofV2");
+      */
     }
     else
     {

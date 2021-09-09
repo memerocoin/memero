@@ -42,7 +42,7 @@ namespace proof {
   const std::string get_tx_proof
   (
    const cryptonote::transaction &tx
-   , const crypto::secret_key &tx_key
+   , const std::optional<crypto::secret_key> &tx_key
    , const std::vector<crypto::secret_key> &additional_tx_keys
    , const cryptonote::account_public_address &address
    , const bool is_subaddress

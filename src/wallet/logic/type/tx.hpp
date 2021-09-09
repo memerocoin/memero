@@ -89,7 +89,7 @@ namespace tx {
     cryptonote::tx_destination_entry change_dts;
     std::vector<size_t> selected_transfers;
     std::string shared_secret_derived_public_key_images;
-    crypto::secret_key tx_key;
+    std::optional<crypto::secret_key> tx_key;
     std::vector<crypto::secret_key> additional_tx_keys;
     std::vector<cryptonote::tx_destination_entry> dests;
 
@@ -103,7 +103,9 @@ namespace tx {
       FIELD(change_dts)
       FIELD(selected_transfers)
       FIELD(shared_secret_derived_public_key_images)
-      FIELD(tx_key)
+      if(tx_key) {
+        FIELD(*tx_key)
+      }
       FIELD(additional_tx_keys)
       FIELD(dests)
       FIELD(construction_data)
