@@ -444,7 +444,7 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
 
     const crypto::ec_scalar_unnormalized amount_unnormalized =
-      crypto::d2s(rct::decode_by_ecdh_shared_secret(rv.ecdh[i].masked_amount, ecdh_shared_secret));
+      crypto::d2s(rct::decode_by_ecdh_shared_secret_hash(rv.ecdh[i].masked_amount, ecdh_shared_secret));
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_unnormalized), "warning, bad ECDH amount");
 
     const rct_point C = rv.outPk[i].amount_commit;

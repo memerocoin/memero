@@ -78,6 +78,6 @@ namespace rct {
   rct_scalar get_blinding_factor_from_shared_secret_hash(const rct_scalar x);
   crypto::crypto_data hash_and_xor_first_8_bytes(const crypto::crypto_data x, const rct_scalar y);
 
-  inline const auto encode_by_ecdh_shared_secret = hash_and_xor_first_8_bytes;
-  inline const auto decode_by_ecdh_shared_secret = hash_and_xor_first_8_bytes;
+  inline const auto encode_by_ecdh_shared_secret_hash = hash_and_xor_first_8_bytes;
+  inline const auto decode_by_ecdh_shared_secret_hash = hash_and_xor_first_8_bytes;
 }

@@ -105,7 +105,7 @@ namespace proof {
 
           const crypto::ec_scalar_unnormalized masked_amount = tx.ringct_essential.ecdh[n].masked_amount;
           const crypto::ec_scalar_unnormalized amount_unnormalized =
-            crypto::d2s(rct::decode_by_ecdh_shared_secret(masked_amount, shared_secret_hash));
+            crypto::d2s(rct::decode_by_ecdh_shared_secret_hash(masked_amount, shared_secret_hash));
 
           THROW_WALLET_EXCEPTION_IF
             (
