@@ -454,9 +454,37 @@ namespace tools
     void check_genesis(const crypto::hash& genesis_hash) const; //throws
     bool generate_chacha_key_from_secret_keys(crypto::chacha_key &key) const;
     void generate_chacha_key_from_password(const epee::wipeable_string &pass, crypto::chacha_key &key) const;
-    void check_acc_out_precomp(const cryptonote::tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, tx_scan_info_t &tx_scan_info) const;
-    void check_acc_out_precomp(const cryptonote::tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info) const;
-    void check_acc_out_precomp_once(const cryptonote::tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info, bool &already_seen) const;
+
+    void check_acc_out_precomp
+    (
+     const cryptonote::tx_out &o
+     , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+     , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+     , size_t i
+     , tx_scan_info_t &tx_scan_info
+     ) const;
+
+    void check_acc_out_precomp
+    (
+     const cryptonote::tx_out &o
+     , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+     , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+     , size_t i
+     , const is_out_data *is_out_data
+     , tx_scan_info_t &tx_scan_info
+     ) const;
+
+    void check_acc_out_precomp_once
+    (
+     const cryptonote::tx_out &o
+     , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+     , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+     , size_t i
+     , const is_out_data *is_out_data
+     , tx_scan_info_t &tx_scan_info
+     , bool &already_seen
+     ) const;
+
     void parse_block_round(const cryptonote::blobdata &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const;
     uint64_t get_upper_transaction_weight_limit();
     std::vector<size_t> pick_preferred_rct_inputs(uint64_t needed_money, uint32_t subaddr_account, const std::set<uint32_t> &subaddr_indices);

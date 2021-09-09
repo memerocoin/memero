@@ -535,7 +535,14 @@ size_t wallet2::get_transfer_details(const crypto::shared_secret_derived_public_
   LOG_ERROR_AND_THROW_UNLESS(false, "Key image not found");
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, tx_scan_info_t &tx_scan_info) const
+void wallet2::check_acc_out_precomp
+(
+ const cryptonote::tx_out &o
+ , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+ , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+ , size_t i
+ , tx_scan_info_t &tx_scan_info
+ ) const
 {
   if (o.target.type() !=  typeid(txout_to_key))
   {
@@ -562,7 +569,15 @@ void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_share
   tx_scan_info.error = false;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info) const
+void wallet2::check_acc_out_precomp
+(
+ const cryptonote::tx_out &o
+ , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+ , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+ , size_t i
+ , const is_out_data *is_out_data
+ , tx_scan_info_t &tx_scan_info
+ ) const
 {
   if (!is_out_data || i >= is_out_data->received.size())
     return check_acc_out_precomp(o, tx_shared_secret, tx_shared_secrets, i, tx_scan_info);
@@ -579,7 +594,16 @@ void wallet2::check_acc_out_precomp(const tx_out &o, const crypto::tx_ecdh_share
   tx_scan_info.error = false;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::check_acc_out_precomp_once(const tx_out &o, const crypto::tx_ecdh_shared_secret &tx_shared_secret, const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets, size_t i, const is_out_data *is_out_data, tx_scan_info_t &tx_scan_info, bool &already_seen) const
+void wallet2::check_acc_out_precomp_once
+(
+ const cryptonote::tx_out &o
+ , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+ , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+ , size_t i
+ , const is_out_data *is_out_data
+ , tx_scan_info_t &tx_scan_info
+ , bool &already_seen
+ ) const
 {
   tx_scan_info.received = std::nullopt;
   if (already_seen)

@@ -55,7 +55,6 @@ namespace cryptonote
   (
    const size_t tx_version
    , const cryptonote::account_keys &sender_account_keys
-   , const std::optional<const cryptonote::keypair> tx_key
    , const cryptonote::tx_destination_entry &dst_entr
    , const std::optional<cryptonote::account_public_address> &change_addr
    , const size_t output_index
@@ -65,16 +64,14 @@ namespace cryptonote
    , const rct::rct_scalarV &tx_shared_secret_indexed_hashes_in
    )
   {
-    const keypair txkey
-      = need_additional_txkeys
-      ? keypair
+    const keypair txkey =
+      keypair
       {
         additional_tx_keys[output_index]
         , dst_entr.is_subaddress
         ? dst_entr.addr.m_spend_public_key ^ additional_tx_keys[output_index]
         : to_pk(additional_tx_keys[output_index])
-      }
-      : *tx_key;
+      };
 
     const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
       = change_addr && dst_entr.addr == *change_addr
@@ -267,7 +264,6 @@ namespace cryptonote
       const auto r = generate_output_ephemeral_keys
         (
          tx.version,sender_account_keys
-         , txkey
          , dst_entr
          , change_addr
          , output_index
