@@ -120,7 +120,7 @@ namespace crypto {
    , const size_t index
    ) noexcept;
 
-  secret_key derive_shared_secret_derived_secret_key_from_spend_secret_key
+  secret_key compute_shared_secret_derived_secret_key_from_spend_secret_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
@@ -128,14 +128,14 @@ namespace crypto {
    , const ec_scalar offset
    ) noexcept;
 
-  std::optional<public_key> derive_shared_secret_derived_public_key_from_spend_public_key
+  std::optional<public_key> compute_shared_secret_derived_public_key_from_spend_public_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
    , const ec_point_unsafe &unsafe_base
    ) noexcept;
 
-  std::optional<public_key> derive_spend_public_key_from_shared_secret_derived_public_key
+  std::optional<public_key> compute_spend_public_key_from_shared_secret_derived_public_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const std::size_t output_index

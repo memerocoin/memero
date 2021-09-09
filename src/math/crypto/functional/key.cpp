@@ -128,7 +128,7 @@ namespace crypto {
     return hash_to_scalar(hashData);
   }
 
-  secret_key derive_shared_secret_derived_secret_key_from_spend_secret_key
+  secret_key compute_shared_secret_derived_secret_key_from_spend_secret_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
@@ -140,7 +140,7 @@ namespace crypto {
     return s2sk(spend_sk + shared_secret_hash + offset);
   }
 
-  std::optional<public_key> derive_shared_secret_derived_public_key_from_spend_public_key
+  std::optional<public_key> compute_shared_secret_derived_public_key_from_spend_public_key
   (
    const tx_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
@@ -156,7 +156,7 @@ namespace crypto {
     return p2pk(r);
   }
 
-  std::optional<public_key> derive_spend_public_key_from_shared_secret_derived_public_key
+  std::optional<public_key> compute_spend_public_key_from_shared_secret_derived_public_key
   (
      const tx_ecdh_shared_secret &tx_shared_secret
    , const std::size_t output_index

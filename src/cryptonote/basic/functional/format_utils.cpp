@@ -144,7 +144,7 @@ namespace cryptonote
 
       // computes Hs(a*R || idx) + b
     const crypto::secret_key shared_secret_derived_secret_key =
-      derive_shared_secret_derived_secret_key_from_spend_secret_key
+      compute_shared_secret_derived_secret_key_from_spend_secret_key
       (recv_tx_shared_secret, real_output_index, spend_sk, key_offset);
 
     const keypair shared_secret_derived_key =
@@ -245,7 +245,7 @@ namespace cryptonote
       LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret, false, "Failed to generate key derivation");
 
       const std::optional<crypto::public_key> pk =
-        crypto::derive_shared_secret_derived_public_key_from_spend_public_key
+        crypto::compute_shared_secret_derived_public_key_from_spend_public_key
         (*tx_shared_secret, output_index, acc.m_account_address.m_spend_public_key);
 
       LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
@@ -264,7 +264,7 @@ namespace cryptonote
         crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys[output_index], acc.m_view_secret_key);
       LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret_2, false, "Failed to generate key derivation");
 
-      const auto tx_out_pk = crypto::derive_shared_secret_derived_public_key_from_spend_public_key
+      const auto tx_out_pk = crypto::compute_shared_secret_derived_public_key_from_spend_public_key
         (*tx_shared_secret_2, output_index, acc.m_account_address.m_spend_public_key);
 
       LOG_ERROR_AND_RETURN_UNLESS(tx_out_pk, false, "Failed to derive public key");
@@ -287,7 +287,7 @@ namespace cryptonote
     // try the shared tx pubkey
     if (tx_shared_secret) {
       const std::optional<crypto::public_key> spend_pk =
-        crypto::derive_spend_public_key_from_shared_secret_derived_public_key(*tx_shared_secret, output_index, tx_out_key);
+        crypto::compute_spend_public_key_from_shared_secret_derived_public_key(*tx_shared_secret, output_index, tx_out_key);
 
       auto found = subaddresses.find(spend_pk.value_or(crypto::null_pkey));
 
@@ -299,7 +299,7 @@ namespace cryptonote
     if (!tx_shared_secrets.empty())
     {
       LOG_ERROR_AND_RETURN_UNLESS(output_index < tx_shared_secrets.size(), std::nullopt, "wrong number of additional derivations");
-      const auto spend_pk_1 = crypto::derive_spend_public_key_from_shared_secret_derived_public_key
+      const auto spend_pk_1 = crypto::compute_spend_public_key_from_shared_secret_derived_public_key
         (tx_shared_secrets[output_index], output_index, tx_out_key);
 
       const auto found_1 = subaddresses.find(spend_pk_1.value_or(crypto::null_pkey));
