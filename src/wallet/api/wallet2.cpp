@@ -3359,9 +3359,8 @@ void wallet2::commit_tx(pending_tx& ptx)
       amount_in += m_transfers[idx].amount();
   }
   add_unconfirmed_tx(ptx.tx, amount_in, dests, ptx.change_dts.amount, ptx.construction_data.subaddr_account, ptx.construction_data.subaddr_indices);
-  if (store_tx_info() && ptx.tx_key)
+  if (store_tx_info())
   {
-    m_tx_keys[txid] = *ptx.tx_key;
     m_output_secret_keys[txid] = ptx.output_secret_keys;
   }
 
@@ -3580,7 +3579,6 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   ptx.tx = tx;
   ptx.change_dts = change_dts;
   ptx.selected_transfers = selected_transfers;
-  ptx.tx_key = {};
   ptx.output_secret_keys = output_secret_keys;
   ptx.dests = dsts;
   ptx.construction_data.sources = sources_copy;
@@ -4221,7 +4219,7 @@ bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx
         }
 
         std::string proof = wallet::logic::controller::proof::get_tx_proof
-          (ptx.tx, ptx.tx_key, ptx.output_secret_keys, address, r.second.second,
+          (ptx.tx, {}, ptx.output_secret_keys, address, r.second.second,
            "automatic-sanity-check", view_secret_key);
 
         wallet::logic::pseudo_functional::proof::verify_tx_proof

@@ -599,7 +599,7 @@ namespace tools
     {
       if (get_tx_key)
       {
-        epee::wipeable_string s = epee::string_tools::pod_to_hex(ptx.tx_key);
+        epee::wipeable_string s;
         for (const crypto::secret_key& tx_output_key : ptx.output_secret_keys)
           s += epee::string_tools::pod_to_hex(tx_output_key);
         fill(tx_key, std::string(s.data(), s.size()));
