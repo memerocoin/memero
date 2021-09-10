@@ -114,11 +114,11 @@ namespace wallet {
   struct tx_cache_data
   {
     std::vector<cryptonote::tx_extra_field> tx_extra_fields;
-    std::vector<is_out_data> primary;
+    std::optional<is_out_data> primary;
     std::vector<is_out_data> additional;
 
     bool empty() const {
-      return tx_extra_fields.empty() && primary.empty() && additional.empty();
+      return tx_extra_fields.empty() && primary && additional.empty();
     }
   };
 
