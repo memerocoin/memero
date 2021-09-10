@@ -135,10 +135,10 @@ namespace cryptonote
     if (is_not_reduced(spend_sk)) return {};
 
     // add subaddress secret key: Hs(a || index_major || index_minor)
-    const crypto::secret_key key_offset =
+    const crypto::ec_scalar key_offset =
       received_index.is_zero()
-      ? crypto::s2sk(crypto::s_0)
-      : device::get_subaddress_secret_key(ack.m_view_secret_key, received_index)
+      ? crypto::s_0
+      : device::hash_secret_key_with_subaddress_index(ack.m_view_secret_key, received_index)
       ;
 
 

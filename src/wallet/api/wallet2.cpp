@@ -4508,11 +4508,11 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
 std::string wallet2::sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const
 {
   const cryptonote::account_keys &keys = m_account.get_keys();
-  const crypto::secret_key subaddress_secret_view_key =
-    device::get_subaddress_secret_key(keys.m_view_secret_key, index);
+  const crypto::ec_scalar offset =
+    device::hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
 
   return wallet::logic::functional::signature::sign
-    (data, signature_type, index, keys, subaddress_secret_view_key);
+    (data, signature_type, index, keys, offset);
 }
 
 //----------------------------------------------------------------------------------------------------

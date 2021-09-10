@@ -56,7 +56,7 @@ namespace signature {
    , const wallet::logic::type::message_signature::message_signature_type_t signature_type
    , const cryptonote::subaddress_index index
    , const cryptonote::account_keys &keys
-   , const crypto::secret_key &subaddress_secret_view_key
+   , const crypto::ec_scalar spend_secret_key_offset
    );
 
 } // signature

@@ -73,13 +73,10 @@ namespace device {
       return keys.m_account_address.m_spend_public_key;
 
     // m = Hs(a || index_major || index_minor)
-    const crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
-
-    // M = m*G
-    const crypto::public_key M = crypto::p2pk(crypto::multBase(m));
+    const auto offset = hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
 
     // D = B + M
-    return crypto::p2pk(keys.m_account_address.m_spend_public_key + M);
+    return crypto::p2pk(keys.m_account_address.m_spend_public_key + crypto::multBase(offset));
   }
 
 
@@ -111,15 +108,7 @@ namespace device {
           pkeys.push_back(keys.m_account_address.m_spend_public_key);
           continue;
       }
-      crypto::secret_key m = get_subaddress_secret_key(keys.m_view_secret_key, index);
-
-      // M = m*G
-      const crypto::ec_point mG = crypto::multBase(m);
-
-      // D = B + M
-      const crypto::public_key D = crypto::p2pk(public_spend_key + mG);
-
-      pkeys.push_back(D);
+      pkeys.push_back(get_subaddress_spend_public_key(keys, index));
     }
     return pkeys;
   }
@@ -146,7 +135,7 @@ namespace device {
     return address;
   }
 
-  crypto::secret_key get_subaddress_secret_key
+  crypto::ec_scalar hash_secret_key_with_subaddress_index
   (
    const crypto::secret_key &sec
    , const cryptonote::subaddress_index &index
@@ -166,7 +155,7 @@ namespace device {
       + major
       + minor;
 
-    return s2sk(crypto::hash_to_scalar(hashData));
+    return crypto::hash_to_scalar(hashData);
   }
 
   /* ======================================================================= */

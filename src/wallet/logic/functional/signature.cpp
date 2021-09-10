@@ -112,7 +112,7 @@ namespace signature {
    , const wallet::logic::type::message_signature::message_signature_type_t signature_type
    , const cryptonote::subaddress_index index
    , const cryptonote::account_keys &keys
-   , const crypto::secret_key &subaddress_secret_view_key
+   , const crypto::ec_scalar spend_secret_key_offset
    )
   {
     const crypto::hash hash = get_message_hash(data);
@@ -138,10 +138,9 @@ namespace signature {
     {
       crypto::secret_key skey_spend, skey_view;
       skey_spend = keys.m_spend_secret_key;
-      // m = m_account.get_device().get_subaddress_secret_key(keys.m_view_secret_key, index);
+      // m = m_account.get_device().hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
 
-      const crypto::secret_key m = subaddress_secret_view_key;
-      skey_spend = s2sk(m + skey_spend);
+      skey_spend = s2sk(spend_secret_key_offset + skey_spend);
       skey_view = s2sk(keys.m_view_secret_key * skey_spend);
       switch (signature_type)
       {

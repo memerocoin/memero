@@ -65,7 +65,7 @@ namespace device {
    , const cryptonote::subaddress_index &index
    );
 
-  crypto::secret_key get_subaddress_secret_key
+  crypto::ec_scalar hash_secret_key_with_subaddress_index
   (
    const crypto::secret_key &sec
    , const cryptonote::subaddress_index &index
