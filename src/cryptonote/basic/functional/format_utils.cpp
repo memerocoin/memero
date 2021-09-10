@@ -234,7 +234,7 @@ namespace cryptonote
    const account_keys& acc
    , const txout_to_key& out_key
    , const std::optional<crypto::public_key>& tx_pub_key
-   , const std::vector<crypto::public_key>& additional_tx_pub_keys
+   , const std::vector<crypto::public_key>& tx_output_keys
    , const size_t output_index
    )
   {
@@ -255,13 +255,13 @@ namespace cryptonote
     }
 
     // try additional tx pubkeys if available
-    if (!additional_tx_pub_keys.empty())
+    if (!tx_output_keys.empty())
     {
       LOG_ERROR_AND_RETURN_UNLESS
-        (output_index < additional_tx_pub_keys.size(), false, "wrong number of additional tx pubkeys");
+        (output_index < tx_output_keys.size(), false, "wrong number of additional tx pubkeys");
 
       const auto tx_shared_secret_2 =
-        crypto::derive_tx_ecdh_shared_secret(additional_tx_pub_keys[output_index], acc.m_view_secret_key);
+        crypto::derive_tx_ecdh_shared_secret(tx_output_keys[output_index], acc.m_view_secret_key);
       LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret_2, false, "Failed to generate key derivation");
 
       const auto tx_out_pk = crypto::compute_shared_secret_derived_public_key_from_spend_public_key
@@ -471,7 +471,7 @@ namespace cryptonote
   std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx)
   {
     const auto x = get_tx_pub_key_from_extra(tx);
-    std::vector<crypto::public_key> xs = get_additional_tx_pub_keys_from_extra(tx);
+    std::vector<crypto::public_key> xs = get_tx_output_keys_from_extra(tx);
 
     if(x) {
       xs.insert(xs.begin(), *x);
@@ -607,7 +607,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const std::vector<uint8_t>& tx_extra)
+  std::vector<crypto::public_key> get_tx_output_keys_from_extra(const std::vector<uint8_t>& tx_extra)
   {
     const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
 
@@ -621,9 +621,9 @@ namespace cryptonote
     return additional_pub_keys.data;
   }
   //---------------------------------------------------------------
-  std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const transaction_prefix& tx)
+  std::vector<crypto::public_key> get_tx_output_keys_from_extra(const transaction_prefix& tx)
   {
-    return get_additional_tx_pub_keys_from_extra(tx.extra);
+    return get_tx_output_keys_from_extra(tx.extra);
   }
 
   //---------------------------------------------------------------

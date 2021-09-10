@@ -81,7 +81,7 @@ namespace cryptonote
    const account_keys& acc
    , const txout_to_key& out_key
    , const std::optional<crypto::public_key>& tx_pub_key
-   , const std::vector<crypto::public_key>& additional_tx_pub_keys
+   , const std::vector<crypto::public_key>& tx_output_keys
    , const size_t output_index
    );
 
@@ -184,8 +184,8 @@ namespace cryptonote
   std::optional<crypto::hash> get_maybe_block_hash(const block& b);
   crypto::hash get_block_hash(const block& b);
 
-  std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const std::vector<uint8_t>& tx_extra);
-  std::vector<crypto::public_key> get_additional_tx_pub_keys_from_extra(const transaction_prefix& tx);
+  std::vector<crypto::public_key> get_tx_output_keys_from_extra(const std::vector<uint8_t>& tx_extra);
+  std::vector<crypto::public_key> get_tx_output_keys_from_extra(const transaction_prefix& tx);
 
   std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off);
   std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off);

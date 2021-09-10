@@ -303,7 +303,7 @@ namespace cryptonote
       LOG_PRINT_L2("additional tx pubkeys: ");
       for (size_t i = 0; i < output_public_keys.size(); ++i)
         LOG_PRINT_L2(output_public_keys[i]);
-      add_additional_tx_pub_keys_to_extra(tx.extra, output_public_keys);
+      add_tx_output_keys_to_extra(tx.extra, output_public_keys);
     }
 
     if (!sort_tx_extra(tx.extra, tx.extra))

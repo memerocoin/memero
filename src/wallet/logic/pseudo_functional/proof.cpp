@@ -135,9 +135,9 @@ namespace proof {
 
     const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
 
-    std::vector<crypto::public_key> additional_tx_pub_keys = get_additional_tx_pub_keys_from_extra(tx);
+    std::vector<crypto::public_key> tx_output_keys = get_tx_output_keys_from_extra(tx);
 
-    const auto expected_sigs = tx_pub_key ? additional_tx_pub_keys.size() + 1 : additional_tx_pub_keys.size();
+    const auto expected_sigs = tx_pub_key ? tx_output_keys.size() + 1 : tx_output_keys.size();
     THROW_WALLET_EXCEPTION_IF(expected_sigs != num_sigs, error::wallet_internal_error, "Signature size mismatch with additional tx pubkeys");
 
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
@@ -168,13 +168,13 @@ namespace proof {
       }
 
       std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
-      for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
+      for (size_t i = 0; i < tx_output_keys.size(); ++i)
       {
         const bool good_signature_for_additional_tx_pub_key = is_subaddress
           ? crypto::verify_tx_proof
-          (prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i])
+          (prefix_hash, tx_output_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i])
           : crypto::verify_tx_proof
-          (prefix_hash, additional_tx_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
+          (prefix_hash, tx_output_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
 
         if (good_signature_for_additional_tx_pub_key) {
           const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
@@ -221,13 +221,13 @@ namespace proof {
 
       std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
 
-      for (size_t i = 0; i < additional_tx_pub_keys.size(); ++i)
+      for (size_t i = 0; i < tx_output_keys.size(); ++i)
       {
         const bool good_signature_for_additional_tx_pub_key = is_subaddress
           ? crypto::verify_tx_proof
-          (prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], address.m_spend_public_key, shared_secret[i], sig[i])
+          (prefix_hash, address.m_view_public_key, tx_output_keys[i], address.m_spend_public_key, shared_secret[i], sig[i])
           : crypto::verify_tx_proof
-            (prefix_hash, address.m_view_public_key, additional_tx_pub_keys[i], std::nullopt, shared_secret[i], sig[i]);
+            (prefix_hash, address.m_view_public_key, tx_output_keys[i], std::nullopt, shared_secret[i], sig[i]);
 
         if (good_signature_for_additional_tx_pub_key) {
           const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =

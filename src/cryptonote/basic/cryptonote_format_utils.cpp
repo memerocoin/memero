@@ -321,7 +321,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  bool add_additional_tx_pub_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& additional_pub_keys)
+  bool add_tx_output_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& additional_pub_keys)
   {
     // convert to variant
     tx_extra_field field = tx_extra_tx_output_public_keys{ additional_pub_keys };
