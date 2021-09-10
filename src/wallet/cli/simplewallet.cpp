@@ -1926,6 +1926,12 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
 
   std::vector<std::string> local_args = args_;
 
+  if(local_args.size() == 0)
+    {
+      fail_msg_writer() << sw::tr("wrong number of arguments");
+      return true;
+    }
+
   std::set<uint32_t> subaddr_indices;
   if (local_args.size() > 0 && local_args[0].substr(0, 6) == "index=")
   {
@@ -1941,22 +1947,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
   const uint32_t priority = m_wallet->adjust_priority(maybe_priority.value_or(0));
 
   size_t fake_outs_count = config::lol::mixin;
-  if(local_args.size() > 0) {
-    size_t ring_size;
-    if(!epee::string_tools::get_xtype_from_string(ring_size, local_args[0]))
-    {
-    }
-    else if (ring_size == 0)
-    {
-      fail_msg_writer() << sw::tr("Ring size must not be 0");
-      return true;
-    }
-    else
-    {
-      fake_outs_count = ring_size - 1;
-      local_args.erase(local_args.begin());
-    }
-  }
+
   uint64_t adjusted_fake_outs_count = m_wallet->adjust_mixin(fake_outs_count);
   if (adjusted_fake_outs_count > fake_outs_count)
   {
