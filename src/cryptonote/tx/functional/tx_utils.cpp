@@ -75,10 +75,8 @@ namespace cryptonote
         : to_pk(output_secret_keys[output_index])
       };
 
-    const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
-      = change_addr && dst_entr.addr == *change_addr
-      ? crypto::derive_tx_ecdh_shared_secret(txkey.pub, sender_account_keys.m_view_secret_key)
-      : crypto::derive_tx_ecdh_shared_secret(dst_entr.addr.m_view_public_key, txkey.sec);
+    const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret =
+      crypto::derive_tx_ecdh_shared_secret(dst_entr.addr.m_view_public_key, txkey.sec);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
