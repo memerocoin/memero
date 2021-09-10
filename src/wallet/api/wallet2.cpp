@@ -3543,7 +3543,15 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
 
   LOG_PRINT_L2("constructing tx");
   auto sources_copy = sources;
-  const auto r = cryptonote::construct_tx_and_get_tx_key(m_account.get_keys(), m_subaddresses, sources, splitted_dsts, change_dts.addr, extra, unlock_time);
+  const auto r = cryptonote::construct_tx_and_get_tx_key
+    (
+     m_account.get_keys()
+     , m_subaddresses
+     , sources
+     , splitted_dsts
+     , extra
+     , unlock_time
+     );
   THROW_WALLET_EXCEPTION_IF(!r, error::tx_not_constructed, sources, dsts, unlock_time, m_nettype);
 
   const auto [tx_out, output_secret_keys] = *r;

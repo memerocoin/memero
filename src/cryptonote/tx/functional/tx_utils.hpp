@@ -112,7 +112,6 @@ namespace cryptonote
      , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
      , const std::vector<tx_source_entry>& sources
      , const std::vector<tx_destination_entry>& destinations
-     , const std::optional<cryptonote::account_public_address>& change_addr
      , const std::vector<uint8_t> &extra
      , const uint64_t unlock_time
      , const std::vector<crypto::secret_key> &output_secret_keys

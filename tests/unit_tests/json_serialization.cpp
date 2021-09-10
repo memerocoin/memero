@@ -78,7 +78,7 @@ namespace test
         subaddresses[from.m_account_address.m_spend_public_key] = {0,0};
 
         const auto r = cryptonote::construct_tx_and_get_tx_key
-          (from, subaddresses, actual_sources, to, std::nullopt, {}, 0);
+          (from, subaddresses, actual_sources, to, {}, 0);
 
         if (!r) {
           throw std::runtime_error{"transaction construction error"};

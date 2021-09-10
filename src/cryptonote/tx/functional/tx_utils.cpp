@@ -56,7 +56,6 @@ namespace cryptonote
    const size_t tx_version
    , const cryptonote::account_keys &sender_account_keys
    , const cryptonote::tx_destination_entry &dst_entr
-   , const std::optional<cryptonote::account_public_address> &change_addr
    , const size_t output_index
    , const std::vector<crypto::secret_key> &output_secret_keys
    , const std::vector<crypto::public_key> &output_public_keys_in
@@ -120,7 +119,6 @@ namespace cryptonote
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const std::vector<tx_source_entry>& sources
    , const std::vector<tx_destination_entry>& destinations
-   , const std::optional<cryptonote::account_public_address>& change_addr
    , const std::vector<uint8_t> &extra
    , const uint64_t unlock_time
    , const std::vector<crypto::secret_key> &output_secret_keys
@@ -244,7 +242,6 @@ namespace cryptonote
         (
          tx.version,sender_account_keys
          , dst_entr
-         , change_addr
          , output_index
          , output_secret_keys
          , output_public_keys

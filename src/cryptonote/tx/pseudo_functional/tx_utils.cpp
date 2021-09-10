@@ -51,13 +51,11 @@ namespace cryptonote
       >>
 
   construct_tx_and_get_tx_key
-
   (
    const account_keys& sender_account_keys
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const std::vector<tx_source_entry>& sources
    , const std::vector<tx_destination_entry>& destinations
-   , const std::optional<cryptonote::account_public_address>& change_addr
    , const std::vector<uint8_t> &extra
    , const uint64_t unlock_time
    )
@@ -80,7 +78,6 @@ namespace cryptonote
        , subaddresses
        , sources
        , destinations
-       , change_addr
        , extra
        , unlock_time
        , output_secret_keys
