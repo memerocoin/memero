@@ -283,7 +283,7 @@ namespace cryptonote
     binary_archive<true> nar(oss);
 
     // sort by:
-    if (!pick<tx_extra_tx_public_key>(nar, tx_extra_fields, TX_EXTRA_TAG_PUBKEY)) return false;
+    if (!pick<tx_extra_tx_public_key>(nar, tx_extra_fields, TX_EXTRA_TAG_TX_PUBKEY)) return false;
     if (!pick<tx_extra_output_public_keys>(nar, tx_extra_fields, TX_EXTRA_TAG_ADDITIONAL_PUBKEYS)) return false;
 
     // if not empty, someone added a new type and did not add a case above
@@ -315,7 +315,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool add_tx_pub_key_to_extra(std::vector<uint8_t>& tx_extra, const crypto::public_key& tx_pub_key)
   {
-    tx_extra.push_back(TX_EXTRA_TAG_PUBKEY);
+    tx_extra.push_back(TX_EXTRA_TAG_TX_PUBKEY);
     tx_extra.insert(tx_extra.end(), tx_pub_key.data.begin(), tx_pub_key.data.end());
     return true;
   }
