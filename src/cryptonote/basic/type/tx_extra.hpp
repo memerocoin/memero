@@ -32,7 +32,7 @@
 
 
 #define TX_EXTRA_TAG_TX_PUBKEY                 0x01
-#define TX_EXTRA_TAG_ADDITIONAL_PUBKEYS     0x04
+#define TX_EXTRA_TAG_OUTPUT_PUBKEYS     0x04
 
 namespace cryptonote
 {
@@ -67,4 +67,4 @@ namespace cryptonote
 }
 
 VARIANT_TAG(binary_archive, cryptonote::tx_extra_tx_public_key, TX_EXTRA_TAG_TX_PUBKEY);
-VARIANT_TAG(binary_archive, cryptonote::tx_extra_output_public_keys, TX_EXTRA_TAG_ADDITIONAL_PUBKEYS);
+VARIANT_TAG(binary_archive, cryptonote::tx_extra_output_public_keys, TX_EXTRA_TAG_OUTPUT_PUBKEYS);
