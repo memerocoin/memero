@@ -59,7 +59,7 @@ namespace cryptonote
    , const std::optional<cryptonote::account_public_address> &change_addr
    , const size_t output_index
    , const bool &need_additional_txkeys
-   , const std::vector<crypto::secret_key> &additional_tx_keys
+   , const std::vector<crypto::secret_key> &output_secret_keys
    , const std::vector<crypto::public_key> &additional_tx_public_keys_in
    , const rct::rct_scalarV &tx_shared_secret_indexed_hashes_in
    )
@@ -67,10 +67,10 @@ namespace cryptonote
     const keypair txkey =
       keypair
       {
-        additional_tx_keys[output_index]
+        output_secret_keys[output_index]
         , dst_entr.is_subaddress
-        ? dst_entr.addr.m_spend_public_key ^ additional_tx_keys[output_index]
-        : to_pk(additional_tx_keys[output_index])
+        ? dst_entr.addr.m_spend_public_key ^ output_secret_keys[output_index]
+        : to_pk(output_secret_keys[output_index])
       };
 
     const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
@@ -126,7 +126,7 @@ namespace cryptonote
    , const std::vector<uint8_t> &extra
    , const uint64_t unlock_time
    , const std::optional<const crypto::secret_key> tx_key
-   , const std::vector<crypto::secret_key> &additional_tx_keys
+   , const std::vector<crypto::secret_key> &output_secret_keys
    )
   {
     if (sources.empty())
@@ -173,7 +173,7 @@ namespace cryptonote
          , subaddresses
          , out_key
          , crypto::maybeNotNull(src_entr.real_out_tx_key)
-         , src_entr.real_out_additional_tx_keys
+         , src_entr.real_out_output_secret_keys
          , src_entr.real_output_in_tx_index
          )
         ;
@@ -252,7 +252,7 @@ namespace cryptonote
     //   - there's only one destination which is a subaddress
     const bool need_additional_txkeys = true;
     if (need_additional_txkeys)
-      LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == additional_tx_keys.size(), {}, "Wrong amount of additional tx keys");
+      LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == output_secret_keys.size(), {}, "Wrong amount of additional tx keys");
 
     uint64_t summary_outs_money = 0;
     //fill outputs
@@ -268,7 +268,7 @@ namespace cryptonote
          , change_addr
          , output_index
          , need_additional_txkeys
-         , additional_tx_keys
+         , output_secret_keys
          , additional_tx_public_keys
          , tx_shared_secret_indexed_hashes
          );
@@ -290,7 +290,7 @@ namespace cryptonote
       output_index++;
       summary_outs_money += dst_entr.amount;
     }
-    LOG_ERROR_AND_RETURN_UNLESS(additional_tx_public_keys.size() == additional_tx_keys.size(), {}, "Internal error creating additional public keys");
+    LOG_ERROR_AND_RETURN_UNLESS(additional_tx_public_keys.size() == output_secret_keys.size(), {}, "Internal error creating additional public keys");
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_additional_pub_keys));
 

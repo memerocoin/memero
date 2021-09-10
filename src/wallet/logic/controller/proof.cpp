@@ -49,7 +49,7 @@ namespace proof {
   (
    const cryptonote::transaction &tx
    , const std::optional<crypto::secret_key> &tx_key
-   , const std::vector<crypto::secret_key> &additional_tx_keys
+   , const std::vector<crypto::secret_key> &output_secret_keys
    , const cryptonote::account_public_address &address
    , const bool is_subaddress
    , const std::string &message
@@ -74,7 +74,7 @@ namespace proof {
       /*
       LOG_FATAL("get tx proof Out is unsupported");
 
-      const size_t num_sigs = 1 + additional_tx_keys.size();
+      const size_t num_sigs = 1 + output_secret_keys.size();
       shared_secret.resize(num_sigs);
       sig.resize(num_sigs);
 
@@ -95,17 +95,17 @@ namespace proof {
       for (size_t i = 1; i < num_sigs; ++i)
       {
         shared_secret[i] = rct::rct_p2pk
-          (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(additional_tx_keys[i - 1])));
+          (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(output_secret_keys[i - 1])));
         if (is_subaddress)
         {
           tx_pub_key = rct_p2pk
-            (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(additional_tx_keys[i - 1])));
-          sig[i] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[i], additional_tx_keys[i - 1]);
+            (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(output_secret_keys[i - 1])));
+          sig[i] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[i], output_secret_keys[i - 1]);
         }
         else
         {
-          tx_pub_key = to_pk(additional_tx_keys[i - 1]);
-          sig[i] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[i], additional_tx_keys[i - 1]);
+          tx_pub_key = to_pk(output_secret_keys[i - 1]);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[i], output_secret_keys[i - 1]);
         }
       }
       sig_str = std::string("OutProofV2");

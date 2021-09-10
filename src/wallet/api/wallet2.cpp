@@ -2127,7 +2127,7 @@ bool wallet2::clear()
   m_unconfirmed_txs.clear();
   m_payments.clear();
   m_tx_keys.clear();
-  m_additional_tx_keys.clear();
+  m_output_secret_keys.clear();
   m_confirmed_txs.clear();
   m_unconfirmed_payments.clear();
   m_scanned_pool_txs[0].clear();
@@ -3362,7 +3362,7 @@ void wallet2::commit_tx(pending_tx& ptx)
   if (store_tx_info() && ptx.tx_key)
   {
     m_tx_keys[txid] = *ptx.tx_key;
-    m_additional_tx_keys[txid] = ptx.additional_tx_keys;
+    m_output_secret_keys[txid] = ptx.output_secret_keys;
   }
 
   LOG_PRINT_L2("transaction " << txid << " generated ok and sent to daemon, shared_secret_derived_public_key_images: [" << ptx.shared_secret_derived_public_key_images << "]");
@@ -3514,7 +3514,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
     real_oe.second.amount_commit = rct::commit(td.m_mask, td.amount());
     *it_to_replace = real_oe;
     src.real_out_tx_key = get_tx_pub_key_from_extra(td.m_tx).value_or(crypto::null_pkey);
-    src.real_out_additional_tx_keys = get_additional_tx_pub_keys_from_extra(td.m_tx);
+    src.real_out_output_secret_keys = get_additional_tx_pub_keys_from_extra(td.m_tx);
     src.real_output = it_to_replace - src.outputs.begin();
     src.real_output_in_tx_index = td.m_internal_output_index;
     src.mask = td.m_mask;
@@ -3555,7 +3555,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   const auto r = cryptonote::construct_tx_and_get_tx_key(m_account.get_keys(), m_subaddresses, sources, splitted_dsts, change_dts.addr, extra, unlock_time);
   THROW_WALLET_EXCEPTION_IF(!r, error::tx_not_constructed, sources, dsts, unlock_time, m_nettype);
 
-  const auto [tx_out, tx_key, additional_tx_keys] = *r;
+  const auto [tx_out, tx_key, output_secret_keys] = *r;
   tx = tx_out;
 
   LOG_PRINT_L2("constructed tx");
@@ -3581,7 +3581,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   ptx.change_dts = change_dts;
   ptx.selected_transfers = selected_transfers;
   ptx.tx_key = tx_key;
-  ptx.additional_tx_keys = additional_tx_keys;
+  ptx.output_secret_keys = output_secret_keys;
   ptx.dests = dsts;
   ptx.construction_data.sources = sources_copy;
   ptx.construction_data.change_dts = change_dts;
@@ -4221,7 +4221,7 @@ bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx
         }
 
         std::string proof = wallet::logic::controller::proof::get_tx_proof
-          (ptx.tx, ptx.tx_key, ptx.additional_tx_keys, address, r.second.second,
+          (ptx.tx, ptx.tx_key, ptx.output_secret_keys, address, r.second.second,
            "automatic-sanity-check", view_secret_key);
 
         wallet::logic::pseudo_functional::proof::verify_tx_proof
@@ -4252,24 +4252,24 @@ const wallet::logic::type::transfer::transfer_details &wallet2::get_transfer_det
   return m_transfers[idx];
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys) const
+bool wallet2::get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &output_secret_keys) const
 {
-  additional_tx_keys.clear();
+  output_secret_keys.clear();
   const std::unordered_map<crypto::hash, crypto::secret_key>::const_iterator i = m_tx_keys.find(txid);
   if (i == m_tx_keys.end())
     return false;
   tx_key = i->second;
   if (tx_key == crypto::null_skey)
     return false;
-  const auto j = m_additional_tx_keys.find(txid);
-  if (j != m_additional_tx_keys.end())
-    additional_tx_keys = j->second;
+  const auto j = m_output_secret_keys.find(txid);
+  if (j != m_output_secret_keys.end())
+    output_secret_keys = j->second;
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys)
+bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &output_secret_keys)
 {
-  bool r = get_tx_key_cached(txid, tx_key, additional_tx_keys);
+  bool r = get_tx_key_cached(txid, tx_key, output_secret_keys);
   if (r)
   {
     LOG_DEBUG("tx key cached for txid: " << txid);
@@ -4279,7 +4279,7 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
   return false;
 }
 //----------------------------------------------------------------------------------------------------
-  void wallet2::verify_tx_key(const crypto::hash &txid, const std::optional<crypto::secret_key> &tx_key, const std::vector<crypto::secret_key> &additional_tx_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
+  void wallet2::verify_tx_key(const crypto::hash &txid, const std::optional<crypto::secret_key> &tx_key, const std::vector<crypto::secret_key> &output_secret_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
 {
   std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
   if (tx_key) {
@@ -4291,8 +4291,8 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
   }
 
   std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
-  for (size_t i = 0; i < additional_tx_keys.size(); ++i) {
-    const auto d = crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, additional_tx_keys[i]);
+  for (size_t i = 0; i < output_secret_keys.size(); ++i) {
+    const auto d = crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, output_secret_keys[i]);
 
     THROW_WALLET_EXCEPTION_IF
       (!d
@@ -4404,17 +4404,17 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
 
     // determine if the address is found in the subaddress hash table (i.e. whether the proof is outbound or inbound)
     crypto::secret_key tx_key = crypto::null_skey;
-    std::vector<crypto::secret_key> additional_tx_keys;
+    std::vector<crypto::secret_key> output_secret_keys;
     const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
     if (is_out)
     {
-      THROW_WALLET_EXCEPTION_IF(!get_tx_key(txid, tx_key, additional_tx_keys), error::wallet_internal_error, "Tx secret key wasn't found in the wallet file.");
+      THROW_WALLET_EXCEPTION_IF(!get_tx_key(txid, tx_key, output_secret_keys), error::wallet_internal_error, "Tx secret key wasn't found in the wallet file.");
     }
 
     const std::optional<crypto::secret_key> view_secret_key = std::make_optional(m_account.get_keys().m_view_secret_key);
 
     return wallet::logic::controller::proof::get_tx_proof
-      (tx, tx_key, additional_tx_keys, address, is_subaddress, message, view_secret_key);
+      (tx, tx_key, output_secret_keys, address, is_subaddress, message, view_secret_key);
 }
 
 bool wallet2::verify_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message, const std::string &sig_str, uint64_t &received, bool &in_pool, uint64_t &confirmations)

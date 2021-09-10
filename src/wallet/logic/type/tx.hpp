@@ -90,7 +90,7 @@ namespace tx {
     std::vector<size_t> selected_transfers;
     std::string shared_secret_derived_public_key_images;
     std::optional<crypto::secret_key> tx_key;
-    std::vector<crypto::secret_key> additional_tx_keys;
+    std::vector<crypto::secret_key> output_secret_keys;
     std::vector<cryptonote::tx_destination_entry> dests;
 
     tx_construction_data construction_data;
@@ -106,7 +106,7 @@ namespace tx {
       if(tx_key) {
         FIELD(*tx_key)
       }
-      FIELD(additional_tx_keys)
+      FIELD(output_secret_keys)
       FIELD(dests)
       FIELD(construction_data)
     END_SERIALIZE()

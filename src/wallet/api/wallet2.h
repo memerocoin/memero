@@ -295,7 +295,7 @@ namespace tools
       FIELD(m_scanned_pool_txs[1])
       FIELD(m_subaddresses)
       FIELD(m_subaddress_labels)
-      FIELD(m_additional_tx_keys)
+      FIELD(m_output_secret_keys)
       FIELD(m_attributes)
       FIELD(m_account_tags)
       FIELD(m_device_last_shared_secret_derived_public_key_image_sync)
@@ -333,9 +333,9 @@ namespace tools
     const std::string & device_name() const { return m_device_name; }
     void device_name(const std::string & device_name) { m_device_name = device_name; }
 
-    bool get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys) const;
-    bool get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys);
-    void verify_tx_key(const crypto::hash &txid, const std::optional<crypto::secret_key> &tx_key, const std::vector<crypto::secret_key> &additional_tx_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations);
+    bool get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &output_secret_keys) const;
+    bool get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &output_secret_keys);
+    void verify_tx_key(const crypto::hash &txid, const std::optional<crypto::secret_key> &tx_key, const std::vector<crypto::secret_key> &output_secret_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations);
 
     void verify_tx_key_helper
     (
@@ -514,7 +514,7 @@ namespace tools
     serializable_unordered_map<crypto::hash, confirmed_transfer_details> m_confirmed_txs;
     serializable_unordered_multimap<crypto::hash, pool_payment_details> m_unconfirmed_payments;
     serializable_unordered_map<crypto::hash, crypto::secret_key> m_tx_keys;
-    serializable_unordered_map<crypto::hash, std::vector<crypto::secret_key>> m_additional_tx_keys;
+    serializable_unordered_map<crypto::hash, std::vector<crypto::secret_key>> m_output_secret_keys;
 
     wallet::logic::type::wallet::transfer_container m_transfers;
     payment_container m_payments;

@@ -64,21 +64,21 @@ namespace cryptonote
    )
   {
     transaction tx;
-    std::vector<crypto::secret_key> additional_tx_keys;
+    std::vector<crypto::secret_key> output_secret_keys;
 
     {
-      additional_tx_keys.clear();
-      additional_tx_keys.resize(destinations.size());
-      std::generate(additional_tx_keys.begin(), additional_tx_keys.end(),
+      output_secret_keys.clear();
+      output_secret_keys.resize(destinations.size());
+      std::generate(output_secret_keys.begin(), output_secret_keys.end(),
                     []() {
                       return keypair::generate().sec;
                     });
     }
 
-    const auto& r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, unlock_time, {}, additional_tx_keys);
+    const auto& r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, unlock_time, {}, output_secret_keys);
     if (r) {
       tx = *r;
-      return {{tx, {}, additional_tx_keys}};
+      return {{tx, {}, output_secret_keys}};
     }
 
     return {};

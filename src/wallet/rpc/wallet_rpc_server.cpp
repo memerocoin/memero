@@ -600,7 +600,7 @@ namespace tools
       if (get_tx_key)
       {
         epee::wipeable_string s = epee::string_tools::pod_to_hex(ptx.tx_key);
-        for (const crypto::secret_key& additional_tx_key : ptx.additional_tx_keys)
+        for (const crypto::secret_key& additional_tx_key : ptx.output_secret_keys)
           s += epee::string_tools::pod_to_hex(additional_tx_key);
         fill(tx_key, std::string(s.data(), s.size()));
       }
@@ -1105,8 +1105,8 @@ namespace tools
     }
 
     crypto::secret_key tx_key;
-    std::vector<crypto::secret_key> additional_tx_keys;
-    if (!m_wallet->get_tx_key(txid, tx_key, additional_tx_keys))
+    std::vector<crypto::secret_key> output_secret_keys;
+    if (!m_wallet->get_tx_key(txid, tx_key, output_secret_keys))
     {
       er.code = WALLET_RPC_ERROR_CODE_NO_TXKEY;
       er.message = "No tx secret key is stored for this tx";
@@ -1115,8 +1115,8 @@ namespace tools
 
     epee::wipeable_string s;
     s += epee::string_tools::pod_to_hex(tx_key);
-    for (size_t i = 0; i < additional_tx_keys.size(); ++i)
-      s += epee::string_tools::pod_to_hex(additional_tx_keys[i]);
+    for (size_t i = 0; i < output_secret_keys.size(); ++i)
+      s += epee::string_tools::pod_to_hex(output_secret_keys[i]);
     res.tx_key = std::string(s.data(), s.size());
     return true;
   }
@@ -1151,11 +1151,11 @@ namespace tools
     }
 
     size_t offset = 64;
-    std::vector<crypto::secret_key> additional_tx_keys;
+    std::vector<crypto::secret_key> output_secret_keys;
     while (offset < tx_key_str.size())
     {
-      additional_tx_keys.resize(additional_tx_keys.size() + 1);
-      if (!epee::string_tools::hex_to_pod(data.substr(offset, 64), additional_tx_keys.back()))
+      output_secret_keys.resize(output_secret_keys.size() + 1);
+      if (!epee::string_tools::hex_to_pod(data.substr(offset, 64), output_secret_keys.back()))
       {
         er.code = WALLET_RPC_ERROR_CODE_WRONG_KEY;
         er.message = "Tx key has invalid format";
@@ -1174,7 +1174,7 @@ namespace tools
 
     try
     {
-      m_wallet->verify_tx_key(txid, tx_key, additional_tx_keys, info.address, res.received, res.in_pool, res.confirmations);
+      m_wallet->verify_tx_key(txid, tx_key, output_secret_keys, info.address, res.received, res.in_pool, res.confirmations);
     }
     catch (const std::exception &e)
     {

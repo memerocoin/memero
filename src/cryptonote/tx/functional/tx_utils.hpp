@@ -43,7 +43,7 @@ namespace cryptonote
     std::vector<output_entry> outputs;  //index + key + optional ringct commitment
     size_t real_output;                 //index in outputs vector of real output_entry
     crypto::public_key real_out_tx_key; //incoming real tx public key
-    std::vector<crypto::public_key> real_out_additional_tx_keys; //incoming real tx additional public keys
+    std::vector<crypto::public_key> real_out_output_secret_keys; //incoming real tx additional public keys
     size_t real_output_in_tx_index;     //index in transaction outputs vector
     uint64_t amount;                    //money
     bool rct;                           //true if the output is rct
@@ -59,7 +59,7 @@ namespace cryptonote
       FIELD(outputs)
       FIELD(real_output)
       FIELD(real_out_tx_key)
-      FIELD(real_out_additional_tx_keys)
+      FIELD(real_out_output_secret_keys)
       FIELD(real_output_in_tx_index)
       FIELD(amount)
       FIELD(rct)
@@ -116,7 +116,7 @@ namespace cryptonote
      , const std::vector<uint8_t> &extra
      , const uint64_t unlock_time
      , const std::optional<const crypto::secret_key> tx_key
-     , const std::vector<crypto::secret_key> &additional_tx_keys
+     , const std::vector<crypto::secret_key> &output_secret_keys
      );
 
   std::optional<block> generate_genesis_block

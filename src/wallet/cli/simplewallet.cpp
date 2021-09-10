@@ -2200,15 +2200,15 @@ bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
   }
 
   crypto::secret_key tx_key;
-  std::vector<crypto::secret_key> additional_tx_keys;
+  std::vector<crypto::secret_key> output_secret_keys;
 
-  bool found_tx_key = m_wallet->get_tx_key(txid, tx_key, additional_tx_keys);
+  bool found_tx_key = m_wallet->get_tx_key(txid, tx_key, output_secret_keys);
   if (found_tx_key)
   {
     std::ostringstream oss;
     oss << epee::string_tools::pod_to_hex(tx_key);
-    for (size_t i = 0; i < additional_tx_keys.size(); ++i)
-      oss << epee::string_tools::pod_to_hex(additional_tx_keys[i]);
+    for (size_t i = 0; i < output_secret_keys.size(); ++i)
+      oss << epee::string_tools::pod_to_hex(output_secret_keys[i]);
     success_msg_writer() << sw::tr("Tx key: ") << oss.str();
     return true;
   }
@@ -2282,7 +2282,7 @@ bool simple_wallet::verify_tx_key(const std::vector<std::string> &args_)
   }
 
   crypto::secret_key tx_key;
-  std::vector<crypto::secret_key> additional_tx_keys;
+  std::vector<crypto::secret_key> output_secret_keys;
   if(!epee::string_tools::hex_to_pod(local_args[1].substr(0, 64), tx_key))
   {
     fail_msg_writer() << sw::tr("failed to parse tx key");
@@ -2291,8 +2291,8 @@ bool simple_wallet::verify_tx_key(const std::vector<std::string> &args_)
   local_args[1] = local_args[1].substr(64);
   while (!local_args[1].empty())
   {
-    additional_tx_keys.resize(additional_tx_keys.size() + 1);
-    if(!epee::string_tools::hex_to_pod(local_args[1].substr(0, 64), additional_tx_keys.back()))
+    output_secret_keys.resize(output_secret_keys.size() + 1);
+    if(!epee::string_tools::hex_to_pod(local_args[1].substr(0, 64), output_secret_keys.back()))
     {
       fail_msg_writer() << sw::tr("failed to parse tx key");
       return true;
@@ -2312,7 +2312,7 @@ bool simple_wallet::verify_tx_key(const std::vector<std::string> &args_)
     uint64_t received;
     bool in_pool;
     uint64_t confirmations;
-    m_wallet->verify_tx_key(txid, tx_key, additional_tx_keys, info.address, received, in_pool, confirmations);
+    m_wallet->verify_tx_key(txid, tx_key, output_secret_keys, info.address, received, in_pool, confirmations);
 
     if (received > 0)
     {
