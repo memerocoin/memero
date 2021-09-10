@@ -283,7 +283,7 @@ namespace cryptonote
     binary_archive<true> nar(oss);
 
     // sort by:
-    if (!pick<tx_extra_pub_key>(nar, tx_extra_fields, TX_EXTRA_TAG_PUBKEY)) return false;
+    if (!pick<tx_extra_tx_public_key>(nar, tx_extra_fields, TX_EXTRA_TAG_PUBKEY)) return false;
     if (!pick<tx_extra_output_public_keys>(nar, tx_extra_fields, TX_EXTRA_TAG_ADDITIONAL_PUBKEYS)) return false;
 
     // if not empty, someone added a new type and did not add a case above

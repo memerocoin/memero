@@ -58,7 +58,7 @@ TEST(parse_tx_extra, handles_pub_key_only)
   const auto tx_extra_fields = cryptonote::parse_tx_extra(extra);
   ASSERT_TRUE(tx_extra_fields);
   ASSERT_EQ(1, tx_extra_fields->size());
-  ASSERT_EQ(typeid(cryptonote::tx_extra_pub_key), (*tx_extra_fields)[0].type());
+  ASSERT_EQ(typeid(cryptonote::tx_extra_tx_public_key), (*tx_extra_fields)[0].type());
 }
 
 TEST(parse_and_validate_tx_extra, is_valid_tx_extra_parsed)

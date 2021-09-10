@@ -675,7 +675,7 @@ void wallet2::cache_tx_data(const cryptonote::transaction& tx, const crypto::has
       // if tx.vout is not empty, we loop through all tx pubkeys
       const std::vector<std::optional<cryptonote::subaddress_receive_info>> rec(rec_size, std::nullopt);
 
-      tx_extra_pub_key pub_key_field;
+      tx_extra_tx_public_key pub_key_field;
       size_t pk_index = 0;
       while (find_tx_extra_field_by_type(tx_cache_data.tx_extra_fields, pub_key_field, pk_index++))
         tx_cache_data.primary.push_back({pub_key_field.pub_key, {}, rec});
@@ -742,7 +742,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     std::vector<size_t> outs;
     // if tx.vout is not empty, we loop through all tx pubkeys
 
-    tx_extra_pub_key pub_key_field;
+    tx_extra_tx_public_key pub_key_field;
     if(!find_tx_extra_field_by_type(tx_extra_fields, pub_key_field, pk_index++))
     {
     }

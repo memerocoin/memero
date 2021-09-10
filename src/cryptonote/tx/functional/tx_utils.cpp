@@ -239,7 +239,7 @@ namespace cryptonote
       }}
       : std::optional<const cryptonote::keypair>();
 
-    remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
+    remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_public_key));
 
     if (txkey) {
       add_tx_pub_key_to_extra(tx, txkey->pub);

@@ -211,7 +211,7 @@ namespace cryptonote
 
     if (!maybe_tx_extra_fields) return {};
 
-    tx_extra_pub_key pub_key_field;
+    tx_extra_tx_public_key pub_key_field;
     if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, pub_key_field))
       return {};
 

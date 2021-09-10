@@ -45,7 +45,7 @@ namespace test
             if (!extra_fields)
                 throw std::runtime_error{"invalid transaction"};
 
-            cryptonote::tx_extra_pub_key key_field{};
+            cryptonote::tx_extra_tx_public_key key_field{};
             if (!cryptonote::find_tx_extra_field_by_type(*extra_fields, key_field))
                 throw std::runtime_error{"invalid transaction"};
 

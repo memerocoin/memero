@@ -36,7 +36,7 @@
 
 namespace cryptonote
 {
-  struct tx_extra_pub_key
+  struct tx_extra_tx_public_key
   {
     crypto::public_key pub_key;
 
@@ -55,16 +55,16 @@ namespace cryptonote
     END_SERIALIZE()
   };
 
-  // tx_extra_field format, except tx_extra_padding and tx_extra_pub_key:
+  // tx_extra_field format, except tx_extra_padding and tx_extra_tx_public_key:
   //   varint tag;
   //   varint size;
   //   varint data[];
   typedef boost::variant
   <
-      tx_extra_pub_key
+      tx_extra_tx_public_key
     , tx_extra_output_public_keys
     > tx_extra_field;
 }
 
-VARIANT_TAG(binary_archive, cryptonote::tx_extra_pub_key, TX_EXTRA_TAG_PUBKEY);
+VARIANT_TAG(binary_archive, cryptonote::tx_extra_tx_public_key, TX_EXTRA_TAG_PUBKEY);
 VARIANT_TAG(binary_archive, cryptonote::tx_extra_output_public_keys, TX_EXTRA_TAG_ADDITIONAL_PUBKEYS);
