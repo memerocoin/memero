@@ -614,7 +614,7 @@ namespace cryptonote
     if (!maybe_tx_extra_fields) return {};
 
     // find corresponding field
-    tx_extra_additional_pub_keys additional_pub_keys;
+    tx_extra_output_public_keys additional_pub_keys;
     if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, additional_pub_keys))
       return {};
 

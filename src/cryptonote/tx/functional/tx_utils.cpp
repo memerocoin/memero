@@ -292,7 +292,7 @@ namespace cryptonote
     }
     LOG_ERROR_AND_RETURN_UNLESS(output_public_keys.size() == output_secret_keys.size(), {}, "Internal error creating additional public keys");
 
-    remove_field_from_tx_extra(tx.extra, typeid(tx_extra_additional_pub_keys));
+    remove_field_from_tx_extra(tx.extra, typeid(tx_extra_output_public_keys));
 
     if (txkey) {
       LOG_PRINT_L2("tx pubkey: " << txkey->pub);
