@@ -164,14 +164,14 @@ namespace proof {
 
     std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
     for (size_t i = 0; i < shared_secret.size(); i++) {
-      const std::optional<crypto::tx_ecdh_shared_secret> additional_tx_shared_secret =
+      const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret =
         crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
 
       THROW_WALLET_EXCEPTION_IF
-        ( !additional_tx_shared_secret
+        ( !tx_output_shared_secret
           , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
 
-      tx_shared_secrets[i] = *additional_tx_shared_secret;
+      tx_shared_secrets[i] = *tx_output_shared_secret;
     };
 
     std::vector<std::string> sig_str_v;

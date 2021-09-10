@@ -600,8 +600,8 @@ namespace tools
       if (get_tx_key)
       {
         epee::wipeable_string s = epee::string_tools::pod_to_hex(ptx.tx_key);
-        for (const crypto::secret_key& additional_tx_key : ptx.output_secret_keys)
-          s += epee::string_tools::pod_to_hex(additional_tx_key);
+        for (const crypto::secret_key& tx_output_key : ptx.output_secret_keys)
+          s += epee::string_tools::pod_to_hex(tx_output_key);
         fill(tx_key, std::string(s.data(), s.size()));
       }
       // Compute amount leaving wallet in tx. By convention dests does not include change outputs
