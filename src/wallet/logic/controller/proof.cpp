@@ -74,16 +74,14 @@ namespace proof {
       LOG_FATAL("get tx proof Out is unsupported");
 
       if (tx_key) {
-        const auto ss = rct::rct_p2pk
-         (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(*tx_key)));
+        const auto ss = crypto::p2pk(address.m_view_public_key ^ (*tx_key));
 
         shared_secret.push_back(ss);
 
         crypto::public_key tx_pub_key;
         if (is_subaddress)
         {
-          tx_pub_key = rct_p2pk
-            (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(*tx_key)));
+          tx_pub_key = crypto::p2pk(address.m_spend_public_key ^ (*tx_key));
           sig.push_back
             (crypto::generate_tx_proof
              (prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, ss, *tx_key));
@@ -101,8 +99,8 @@ namespace proof {
 
       for (size_t i = 0; i < output_secret_keys.size(); ++i)
       {
-        auto const output_ss = rct::rct_p2pk
-         (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(output_secret_keys[i])));
+        auto const output_ss = crypto::p2pk
+         (address.m_view_public_key ^ output_secret_keys[i]);
 
         shared_secret.push_back(output_ss);
 
@@ -110,8 +108,7 @@ namespace proof {
 
         if (is_subaddress)
         {
-          tx_output_pub_key = rct_p2pk
-            (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(output_secret_keys[i])));
+          tx_output_pub_key = crypto::p2pk(address.m_spend_public_key ^ output_secret_keys[i]);
           sig.push_back
             (crypto::generate_tx_proof
              (prefix_hash, tx_output_pub_key, address.m_view_public_key
@@ -141,8 +138,7 @@ namespace proof {
 
       for (size_t i = 0; i < num_sigs; ++i)
       {
-        shared_secret[i] = rct_p2pk
-          (rct::multP(rct::pk2rct_p(tx_pub_keys[i]), rct::sk2rct_s(a)));
+        shared_secret[i] = crypto::p2pk(tx_pub_keys[i] ^ a);
         if (is_subaddress)
         {
           sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_keys[i], address.m_spend_public_key, shared_secret[i], a);
