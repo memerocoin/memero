@@ -75,7 +75,17 @@ namespace cryptonote
                     });
     }
 
-    const auto& r = construct_tx_with_tx_key(sender_account_keys, subaddresses, sources, destinations, change_addr, extra, unlock_time, {}, output_secret_keys);
+    const auto& r = construct_tx_with_tx_key
+      (
+       sender_account_keys
+       , subaddresses
+       , sources
+       , destinations
+       , change_addr
+       , extra
+       , unlock_time
+       , output_secret_keys
+       );
     if (r) {
       tx = *r;
       return {{tx, {}, output_secret_keys}};

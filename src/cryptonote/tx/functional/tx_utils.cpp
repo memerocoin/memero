@@ -58,7 +58,6 @@ namespace cryptonote
    , const cryptonote::tx_destination_entry &dst_entr
    , const std::optional<cryptonote::account_public_address> &change_addr
    , const size_t output_index
-   , const bool &need_tx_output_pub_keys
    , const std::vector<crypto::secret_key> &output_secret_keys
    , const std::vector<crypto::public_key> &output_public_keys_in
    , const rct::rct_scalarV &tx_shared_secret_indexed_hashes_in
@@ -101,10 +100,8 @@ namespace cryptonote
 
     // carry
     std::vector<crypto::public_key> output_public_keys = output_public_keys_in;
-    if (need_tx_output_pub_keys)
-    {
-      output_public_keys.push_back(txkey.pub);
-    }
+    output_public_keys.push_back(txkey.pub);
+
     rct::rct_scalarV tx_shared_secret_indexed_hashes = tx_shared_secret_indexed_hashes_in;
     tx_shared_secret_indexed_hashes.push_back(tx_shared_secret_indexed_hash);
 
@@ -125,7 +122,6 @@ namespace cryptonote
    , const std::optional<cryptonote::account_public_address>& change_addr
    , const std::vector<uint8_t> &extra
    , const uint64_t unlock_time
-   , const std::optional<const crypto::secret_key> tx_key
    , const std::vector<crypto::secret_key> &output_secret_keys
    )
   {
@@ -230,29 +226,11 @@ namespace cryptonote
     });
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
-    const std::optional<const cryptonote::keypair> txkey
-      = tx_key
-      ? std::optional<const cryptonote::keypair>
-      {{
-          *tx_key
-        , to_pk(*tx_key)
-      }}
-      : std::optional<const cryptonote::keypair>();
-
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_public_key));
-
-    if (txkey) {
-      add_tx_pub_key_to_extra(tx, txkey->pub);
-    }
 
     std::vector<crypto::public_key> output_public_keys;
 
-    // we don't need to include additional tx keys if:
-    //   - all the destinations are standard addresses
-    //   - there's only one destination which is a subaddress
-    const bool need_tx_output_pub_keys = true;
-    if (need_tx_output_pub_keys)
-      LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == output_secret_keys.size(), {}, "Wrong amount of additional tx keys");
+    LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == output_secret_keys.size(), {}, "Wrong amount of additional tx keys");
 
     uint64_t summary_outs_money = 0;
     //fill outputs
@@ -267,7 +245,6 @@ namespace cryptonote
          , dst_entr
          , change_addr
          , output_index
-         , need_tx_output_pub_keys
          , output_secret_keys
          , output_public_keys
          , tx_shared_secret_indexed_hashes
@@ -294,17 +271,10 @@ namespace cryptonote
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_output_public_keys));
 
-    if (txkey) {
-      LOG_PRINT_L2("tx pubkey: " << txkey->pub);
-    }
-
-    if (need_tx_output_pub_keys)
-    {
-      LOG_PRINT_L2("additional tx pubkeys: ");
-      for (size_t i = 0; i < output_public_keys.size(); ++i)
-        LOG_PRINT_L2(output_public_keys[i]);
-      add_tx_output_keys_to_extra(tx.extra, output_public_keys);
-    }
+    LOG_PRINT_L2("additional tx pubkeys: ");
+    for (size_t i = 0; i < output_public_keys.size(); ++i)
+      LOG_PRINT_L2(output_public_keys[i]);
+    add_tx_output_keys_to_extra(tx.extra, output_public_keys);
 
     if (!sort_tx_extra(tx.extra, tx.extra))
       return {};
