@@ -47,7 +47,6 @@ namespace cryptonote
   std::optional<
     std::tuple<
       transaction
-      , std::optional<crypto::secret_key>
       , std::vector<crypto::secret_key>
       >>
 
@@ -88,7 +87,7 @@ namespace cryptonote
        );
     if (r) {
       tx = *r;
-      return {{tx, {}, output_secret_keys}};
+      return {{tx, output_secret_keys}};
     }
 
     return {};
