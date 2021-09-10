@@ -64,7 +64,7 @@ namespace cryptonote
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key& out_key
    , const std::optional<crypto::public_key>& tx_public_key
-   , const std::vector<crypto::public_key>& additional_tx_public_keys
+   , const std::vector<crypto::public_key>& output_public_keys
    , const size_t real_output_index
    )
   {
@@ -80,13 +80,13 @@ namespace cryptonote
     // }
 
     std::vector<crypto::tx_ecdh_shared_secret> additional_recv_tx_shared_secrets;
-    for (size_t i = 0; i < additional_tx_public_keys.size(); ++i)
+    for (size_t i = 0; i < output_public_keys.size(); ++i)
     {
       const std::optional<crypto::tx_ecdh_shared_secret> additional_recv_tx_shared_secret =
-        crypto::derive_tx_ecdh_shared_secret(additional_tx_public_keys[i], ack.m_view_secret_key);
+        crypto::derive_tx_ecdh_shared_secret(output_public_keys[i], ack.m_view_secret_key);
       if (!additional_recv_tx_shared_secret)
       {
-        LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << additional_tx_public_keys[i] << ", " << ack.m_view_secret_key << ")");
+        LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << output_public_keys[i] << ", " << ack.m_view_secret_key << ")");
       }
       else
       {

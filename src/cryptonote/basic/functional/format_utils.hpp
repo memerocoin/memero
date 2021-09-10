@@ -57,7 +57,7 @@ namespace cryptonote
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key& out_key
    , const std::optional<crypto::public_key>& tx_public_key
-   , const std::vector<crypto::public_key>& additional_tx_public_keys
+   , const std::vector<crypto::public_key>& output_public_keys
    , const size_t real_output_index
    );
 

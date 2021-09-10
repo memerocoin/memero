@@ -60,7 +60,7 @@ namespace cryptonote
    , const size_t output_index
    , const bool &need_additional_txkeys
    , const std::vector<crypto::secret_key> &output_secret_keys
-   , const std::vector<crypto::public_key> &additional_tx_public_keys_in
+   , const std::vector<crypto::public_key> &output_public_keys_in
    , const rct::rct_scalarV &tx_shared_secret_indexed_hashes_in
    )
   {
@@ -100,16 +100,16 @@ namespace cryptonote
        );
 
     // carry
-    std::vector<crypto::public_key> additional_tx_public_keys = additional_tx_public_keys_in;
+    std::vector<crypto::public_key> output_public_keys = output_public_keys_in;
     if (need_additional_txkeys)
     {
-      additional_tx_public_keys.push_back(txkey.pub);
+      output_public_keys.push_back(txkey.pub);
     }
     rct::rct_scalarV tx_shared_secret_indexed_hashes = tx_shared_secret_indexed_hashes_in;
     tx_shared_secret_indexed_hashes.push_back(tx_shared_secret_indexed_hash);
 
     return {{
-        additional_tx_public_keys
+        output_public_keys
         , tx_shared_secret_indexed_hashes
         , *eph_pk
       }};
@@ -245,7 +245,7 @@ namespace cryptonote
       add_tx_pub_key_to_extra(tx, txkey->pub);
     }
 
-    std::vector<crypto::public_key> additional_tx_public_keys;
+    std::vector<crypto::public_key> output_public_keys;
 
     // we don't need to include additional tx keys if:
     //   - all the destinations are standard addresses
@@ -269,7 +269,7 @@ namespace cryptonote
          , output_index
          , need_additional_txkeys
          , output_secret_keys
-         , additional_tx_public_keys
+         , output_public_keys
          , tx_shared_secret_indexed_hashes
          );
 
@@ -278,7 +278,7 @@ namespace cryptonote
       crypto::public_key out_eph_public_key;
       std::tie
         (
-         additional_tx_public_keys
+         output_public_keys
          , tx_shared_secret_indexed_hashes
          , out_eph_public_key
          ) = *r;
@@ -290,7 +290,7 @@ namespace cryptonote
       output_index++;
       summary_outs_money += dst_entr.amount;
     }
-    LOG_ERROR_AND_RETURN_UNLESS(additional_tx_public_keys.size() == output_secret_keys.size(), {}, "Internal error creating additional public keys");
+    LOG_ERROR_AND_RETURN_UNLESS(output_public_keys.size() == output_secret_keys.size(), {}, "Internal error creating additional public keys");
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_additional_pub_keys));
 
@@ -301,9 +301,9 @@ namespace cryptonote
     if (need_additional_txkeys)
     {
       LOG_PRINT_L2("additional tx pubkeys: ");
-      for (size_t i = 0; i < additional_tx_public_keys.size(); ++i)
-        LOG_PRINT_L2(additional_tx_public_keys[i]);
-      add_additional_tx_pub_keys_to_extra(tx.extra, additional_tx_public_keys);
+      for (size_t i = 0; i < output_public_keys.size(); ++i)
+        LOG_PRINT_L2(output_public_keys[i]);
+      add_additional_tx_pub_keys_to_extra(tx.extra, output_public_keys);
     }
 
     if (!sort_tx_extra(tx.extra, tx.extra))
