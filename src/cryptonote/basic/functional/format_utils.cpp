@@ -232,9 +232,9 @@ namespace cryptonote
   bool is_out_to_acc
   (
    const account_keys& acc
-   , const txout_to_key& out_key
+   , const txout_to_key& tx_output_public_key
    , const std::optional<crypto::public_key>& tx_pub_key
-   , const std::vector<crypto::public_key>& tx_output_keys
+   , const std::vector<crypto::public_key>& tx_output_public_keys
    , const size_t output_index
    )
   {
@@ -249,27 +249,27 @@ namespace cryptonote
         (*tx_shared_secret, output_index, acc.m_account_address.m_spend_public_key);
 
       LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
-      if (*pk == out_key.key) {
+      if (*pk == tx_output_public_key.key) {
         return true;
       }
     }
 
     // try additional tx pubkeys if available
-    if (!tx_output_keys.empty())
+    if (!tx_output_public_keys.empty())
     {
       LOG_ERROR_AND_RETURN_UNLESS
-        (output_index < tx_output_keys.size(), false, "wrong number of additional tx pubkeys");
+        (output_index < tx_output_public_keys.size(), false, "wrong number of additional tx pubkeys");
 
       const auto tx_shared_secret_2 =
-        crypto::derive_tx_ecdh_shared_secret(tx_output_keys[output_index], acc.m_view_secret_key);
+        crypto::derive_tx_ecdh_shared_secret(tx_output_public_keys[output_index], acc.m_view_secret_key);
       LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret_2, false, "Failed to generate key derivation");
 
-      const auto tx_out_pk = crypto::compute_shared_secret_derived_public_key_from_spend_public_key
+      const auto tx_output_pk = crypto::compute_shared_secret_derived_public_key_from_spend_public_key
         (*tx_shared_secret_2, output_index, acc.m_account_address.m_spend_public_key);
 
-      LOG_ERROR_AND_RETURN_UNLESS(tx_out_pk, false, "Failed to derive public key");
+      LOG_ERROR_AND_RETURN_UNLESS(tx_output_pk, false, "Failed to derive public key");
 
-      return *tx_out_pk == out_key.key;
+      return *tx_output_pk == tx_output_public_key.key;
     }
     return false;
   }
@@ -278,7 +278,7 @@ namespace cryptonote
   std::optional<subaddress_receive_info> is_out_to_acc_precomp
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-   , const crypto::public_key& tx_out_key
+   , const crypto::public_key& tx_output_public_key
    , const std::optional<crypto::tx_ecdh_shared_secret>& tx_shared_secret
    , const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets
    , const size_t output_index
@@ -288,7 +288,7 @@ namespace cryptonote
     if (tx_shared_secret) {
       const std::optional<crypto::public_key> spend_pk =
         crypto::compute_spend_public_key_from_shared_secret_derived_public_key
-        (*tx_shared_secret, output_index, tx_out_key);
+        (*tx_shared_secret, output_index, tx_output_public_key);
 
       auto found = subaddresses.find(spend_pk.value_or(crypto::null_pkey));
 
@@ -303,7 +303,7 @@ namespace cryptonote
 
       const auto spend_pk_1 =
         crypto::compute_spend_public_key_from_shared_secret_derived_public_key
-        (tx_shared_secrets[output_index], output_index, tx_out_key);
+        (tx_shared_secrets[output_index], output_index, tx_output_public_key);
 
       const auto found_1 = subaddresses.find(spend_pk_1.value_or(crypto::null_pkey));
 
@@ -471,7 +471,7 @@ namespace cryptonote
   std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx)
   {
     const auto x = get_tx_pub_key_from_extra(tx);
-    std::vector<crypto::public_key> xs = get_tx_output_keys_from_extra(tx);
+    std::vector<crypto::public_key> xs = get_tx_output_public_keys_from_extra(tx);
 
     if(x) {
       xs.insert(xs.begin(), *x);
@@ -607,7 +607,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::vector<crypto::public_key> get_tx_output_keys_from_extra(const std::vector<uint8_t>& tx_extra)
+  std::vector<crypto::public_key> get_tx_output_public_keys_from_extra(const std::vector<uint8_t>& tx_extra)
   {
     const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
 
@@ -621,9 +621,9 @@ namespace cryptonote
     return output_pub_keys.data;
   }
   //---------------------------------------------------------------
-  std::vector<crypto::public_key> get_tx_output_keys_from_extra(const transaction_prefix& tx)
+  std::vector<crypto::public_key> get_tx_output_public_keys_from_extra(const transaction_prefix& tx)
   {
-    return get_tx_output_keys_from_extra(tx.extra);
+    return get_tx_output_public_keys_from_extra(tx.extra);
   }
 
   //---------------------------------------------------------------

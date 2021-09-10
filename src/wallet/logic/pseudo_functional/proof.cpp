@@ -135,7 +135,7 @@ namespace proof {
 
     const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
 
-    std::vector<crypto::public_key> tx_output_keys = get_tx_output_keys_from_extra(tx);
+    std::vector<crypto::public_key> tx_output_keys = get_tx_output_public_keys_from_extra(tx);
 
     const auto expected_sigs = tx_pub_key ? tx_output_keys.size() + 1 : tx_output_keys.size();
     THROW_WALLET_EXCEPTION_IF(expected_sigs != num_sigs, error::wallet_internal_error, "Signature size mismatch with additional tx pubkeys");
