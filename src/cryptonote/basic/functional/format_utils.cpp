@@ -614,11 +614,11 @@ namespace cryptonote
     if (!maybe_tx_extra_fields) return {};
 
     // find corresponding field
-    tx_extra_tx_output_public_keys additional_pub_keys;
-    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, additional_pub_keys))
+    tx_extra_tx_output_public_keys output_pub_keys;
+    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, output_pub_keys))
       return {};
 
-    return additional_pub_keys.data;
+    return output_pub_keys.data;
   }
   //---------------------------------------------------------------
   std::vector<crypto::public_key> get_tx_output_keys_from_extra(const transaction_prefix& tx)
