@@ -676,8 +676,7 @@ void wallet2::cache_tx_data(const cryptonote::transaction& tx, const crypto::has
       const std::vector<std::optional<cryptonote::subaddress_receive_info>> rec(rec_size, std::nullopt);
 
       tx_extra_tx_public_key pub_key_field;
-      size_t pk_index = 0;
-      while (find_tx_extra_field_by_type(tx_cache_data.tx_extra_fields, pub_key_field, pk_index++))
+      if (find_tx_extra_field_by_type(tx_cache_data.tx_extra_fields, pub_key_field))
         tx_cache_data.primary.push_back({pub_key_field.pub_key, {}, rec});
 
       // additional tx pubkeys and tx_shared_secrets for multi-destination transfers involving one or more subaddresses
@@ -731,7 +730,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   const std::vector<tx_extra_field> &tx_extra_fields = tx_cache_data.tx_extra_fields.empty() ? local_tx_extra_fields : tx_cache_data.tx_extra_fields;
 
   // Don't try to extract tx public key if tx has no ouputs
-  size_t pk_index = 0;
   std::vector<tx_scan_info_t> tx_scan_info(tx.vout.size());
   std::deque<bool> output_found(tx.vout.size(), false);
   uint64_t total_received_1 = 0;
@@ -743,14 +741,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     // if tx.vout is not empty, we loop through all tx pubkeys
 
     tx_extra_tx_public_key pub_key_field;
-    if(!find_tx_extra_field_by_type(tx_extra_fields, pub_key_field, pk_index++))
+    if(!find_tx_extra_field_by_type(tx_extra_fields, pub_key_field))
     {
-    }
-
-    if (!tx_cache_data.primary.empty())
-    {
-      THROW_WALLET_EXCEPTION_IF(tx_cache_data.primary.size() < pk_index || pub_key_field.pub_key != tx_cache_data.primary[pk_index - 1].pkey,
-          error::wallet_internal_error, "tx_cache_data is out of sync");
     }
 
     int num_vouts_received = 0;
@@ -774,7 +766,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         tx_shared_secret = *maybeTx_Shared_Secret;
       }
 
-      if (pk_index == 1)
       {
         // additional tx pubkeys and tx_shared_secrets for multi-destination transfers involving one or more subaddresses
         if (find_tx_extra_field_by_type(tx_extra_fields, tx_output_keys))
@@ -795,10 +786,10 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     }
     else
     {
-      THROW_WALLET_EXCEPTION_IF(pk_index - 1 >= tx_cache_data.primary.size(),
+      THROW_WALLET_EXCEPTION_IF(0 >= tx_cache_data.primary.size(),
           error::wallet_internal_error, "pk_index out of range of tx_cache_data");
-      tx_shared_secret = tx_cache_data.primary[pk_index - 1].tx_shared_secret;
-      if (pk_index == 1)
+
+      tx_shared_secret = tx_cache_data.primary[0].tx_shared_secret;
       {
         for (size_t n = 0; n < tx_cache_data.additional.size(); ++n)
         {
@@ -896,7 +887,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
               td.m_shared_secret_derived_public_key_image_request = false;
             }
             td.m_amount = amount;
-            td.m_pk_index = pk_index - 1;
+            td.m_pk_index = 0;
             td.m_subaddr_index = tx_scan_info[o].received->index;
             if (should_expand(tx_scan_info[o].received->index))
               expand_subaddresses(tx_scan_info[o].received->index);
@@ -966,7 +957,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	    td.m_tx = (const cryptonote::transaction_prefix&)tx;
 	    td.m_txid = txid;
             td.m_amount = amount;
-            td.m_pk_index = pk_index - 1;
+            td.m_pk_index = 0;
             td.m_subaddr_index = tx_scan_info[o].received->index;
             if (should_expand(tx_scan_info[o].received->index))
               expand_subaddresses(tx_scan_info[o].received->index);
