@@ -1039,7 +1039,7 @@ uint64_t BlockchainLMDB::add_output(const crypto::hash& tx_hash,
   else
     ok.amount_index = 0;
   ok.output_id = m_num_outputs;
-  ok.data.pubkey = boost::get < txout_to_key > (tx_output.target).key;
+  ok.data.pubkey = boost::get < txout_to_key > (tx_output.target).shared_secret_derived_public_key;
   ok.data.unlock_time = unlock_time;
   ok.data.height = m_height;
   if (tx_output.amount == 0)

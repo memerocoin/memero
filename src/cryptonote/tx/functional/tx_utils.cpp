@@ -322,7 +322,7 @@ namespace cryptonote
       }
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        destinations.push_back(rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[i].target).key));
+        destinations.push_back(rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key));
         outamounts.push_back(tx.vout[i].amount);
         amount_out += tx.vout[i].amount;
       }
@@ -456,7 +456,7 @@ namespace cryptonote
        );
 
     txout_to_key tk;
-    tk.key = *out_eph_public_key;
+    tk.shared_secret_derived_public_key = *out_eph_public_key;
 
     tx_out out;
     out.amount = block_reward;

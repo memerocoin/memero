@@ -2452,7 +2452,7 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
     for (const auto &o: tx.vout) {
       if (o.target.type() == typeid(txout_to_key)) {
         const txout_to_key& out_to_key = boost::get<txout_to_key>(o.target);
-        if (!crypto::is_safe_point(out_to_key.key)) {
+        if (!crypto::is_safe_point(out_to_key.shared_secret_derived_public_key)) {
           tvc.m_invalid_output = true;
           return false;
         }

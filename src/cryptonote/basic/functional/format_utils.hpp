@@ -79,7 +79,7 @@ namespace cryptonote
   bool is_out_to_acc
   (
    const account_keys& acc
-   , const txout_to_key& out_key
+   , const txout_to_key& tx_output
    , const std::optional<crypto::public_key>& tx_pub_key
    , const std::vector<crypto::public_key>& tx_output_public_keys
    , const size_t output_index

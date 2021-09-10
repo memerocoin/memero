@@ -553,7 +553,7 @@ void wallet2::check_acc_out_precomp
   tx_scan_info.received = is_out_to_acc_precomp
     (
      m_subaddresses
-     , boost::get<txout_to_key>(o.target).key
+     , boost::get<txout_to_key>(o.target).shared_secret_derived_public_key
      , tx_shared_secret
      , tx_shared_secrets
      , i
@@ -619,7 +619,7 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, size
     const auto r = cryptonote::derive_public_key_image_helper_precomp
       (
        m_account.get_keys()
-       , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key
+       , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key
        , tx_scan_info.received->tx_shared_secret
        , i
        , tx_scan_info.received->index
@@ -630,7 +630,8 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, size
 
     THROW_WALLET_EXCEPTION_IF
       (
-       tx_scan_info.shared_secret_derived_key.pub != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).key
+       tx_scan_info.shared_secret_derived_key.pub
+       != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key
        , error::wallet_internal_error
        , "shared_secret_derived_public_key_image generated ephemeral public key not matched with output_key"
        );
@@ -1378,7 +1379,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
         tx_shared_secrets.reserve(tx_cache_data[txidx].additional.size());
         for (const auto &iod: tx_cache_data[txidx].additional)
           tx_shared_secrets.push_back(iod.tx_shared_secret);
-        const auto &key = boost::get<txout_to_key>(o.target).key;
+        const auto &key = boost::get<txout_to_key>(o.target).shared_secret_derived_public_key;
 
         auto& maybe_tx_pub_key = tx_cache_data[txidx].primary;
         if (maybe_tx_pub_key)

@@ -62,7 +62,7 @@ namespace cryptonote
 
   struct txout_to_key
   {
-    crypto::public_key key;
+    crypto::public_key shared_secret_derived_public_key;
   };
 
 

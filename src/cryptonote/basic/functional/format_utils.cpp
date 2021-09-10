@@ -225,14 +225,13 @@ namespace cryptonote
   //---------------------------------------------------------------
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction& tx)
   {
-    return get_tx_pub_key_from_extra(tx.extra);
-  }
+    return get_tx_pub_key_from_extra(tx.extra);}
 
   //---------------------------------------------------------------
   bool is_out_to_acc
   (
    const account_keys& acc
-   , const txout_to_key& tx_output_public_key
+   , const txout_to_key& tx_output
    , const std::optional<crypto::public_key>& tx_pub_key
    , const std::vector<crypto::public_key>& tx_output_public_keys
    , const size_t output_index
@@ -249,7 +248,7 @@ namespace cryptonote
         (*tx_shared_secret, output_index, acc.m_account_address.m_spend_public_key);
 
       LOG_ERROR_AND_RETURN_UNLESS(pk, false, "Failed to derive public key");
-      if (*pk == tx_output_public_key.key) {
+      if (*pk == tx_output.shared_secret_derived_public_key) {
         return true;
       }
     }
@@ -264,12 +263,13 @@ namespace cryptonote
         crypto::derive_tx_ecdh_shared_secret(tx_output_public_keys[output_index], acc.m_view_secret_key);
       LOG_ERROR_AND_RETURN_UNLESS(tx_shared_secret_2, false, "Failed to generate key derivation");
 
-      const auto tx_output_pk = crypto::compute_shared_secret_derived_public_key_from_spend_public_key
+      const auto shared_secret_derived_public_key =
+        crypto::compute_shared_secret_derived_public_key_from_spend_public_key
         (*tx_shared_secret_2, output_index, acc.m_account_address.m_spend_public_key);
 
-      LOG_ERROR_AND_RETURN_UNLESS(tx_output_pk, false, "Failed to derive public key");
+      LOG_ERROR_AND_RETURN_UNLESS(shared_secret_derived_public_key, false, "Failed to derive public key");
 
-      return *tx_output_pk == tx_output_public_key.key;
+      return *shared_secret_derived_public_key == tx_output.shared_secret_derived_public_key;
     }
     return false;
   }
@@ -519,7 +519,7 @@ namespace cryptonote
         LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
       }
 
-      if(!is_safe_point(boost::get<txout_to_key>(out.target).key))
+      if(!is_safe_point(boost::get<txout_to_key>(out.target).shared_secret_derived_public_key))
         return false;
     }
     return true;

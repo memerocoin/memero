@@ -62,7 +62,7 @@ namespace test
                 );
 
                 for (unsigned ring = 0; ring < 31; ++ring)
-                    actual_sources.back().push_output(input.index(), key.key, input.value().amount);
+                  actual_sources.back().push_output(input.index(), key.shared_secret_derived_public_key, input.value().amount);
             }
         }
 

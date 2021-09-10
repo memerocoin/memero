@@ -379,7 +379,11 @@ void RPC_Client::get_outs
       {
         size_t i = base + n;
         if (req.outputs[i].index == td.m_global_output_index)
-          if (daemon_resp.outs[i].key == boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).key)
+          if
+            (
+             daemon_resp.outs[i].key
+             == boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).shared_secret_derived_public_key
+             )
             if (daemon_resp.outs[i].mask == mask)
               real_out_found = true;
       }
@@ -387,7 +391,10 @@ void RPC_Client::get_outs
           "Daemon response did not include the requested real output");
 
       // pick real out first (it will be sorted when done)
-      outs.back().push_back(std::make_tuple(td.m_global_output_index, boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).key, mask));
+      outs.back().push_back
+        (
+         std::make_tuple(td.m_global_output_index, boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).shared_secret_derived_public_key, mask)
+         );
 
       // then pick others in random order till we reach the required number
       // since we use an equiprobable pick here, we don't upset the triangular distribution

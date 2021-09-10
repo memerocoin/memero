@@ -67,7 +67,7 @@ namespace proof {
 
         THROW_WALLET_EXCEPTION_IF(!maybe_derived_tx_output_public_key, error::wallet_internal_error, "Failed to derive public key");
 
-        found = tx_output->key == *maybe_derived_tx_output_public_key;
+        found = tx_output->shared_secret_derived_public_key == *maybe_derived_tx_output_public_key;
         found_shared_secret = *tx_shared_secret;
       }
 
@@ -77,7 +77,7 @@ namespace proof {
           crypto::compute_shared_secret_derived_public_key_from_spend_public_key(tx_shared_secrets.at(n), n, address.m_spend_public_key);
         THROW_WALLET_EXCEPTION_IF(!maybe_derived_tx_output_public_key_1, error::wallet_internal_error, "Failed to derive public key");
 
-        found = tx_output->key == *maybe_derived_tx_output_public_key_1;
+        found = tx_output->shared_secret_derived_public_key == *maybe_derived_tx_output_public_key_1;
         found_shared_secret = tx_shared_secrets.at(n);
       }
 
