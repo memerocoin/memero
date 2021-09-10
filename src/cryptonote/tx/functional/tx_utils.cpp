@@ -68,6 +68,9 @@ namespace cryptonote
       {
         output_secret_keys[output_index]
         , dst_entr.is_subaddress
+        // This change of base is only to be used in later schnorr signature, as payment proof
+        // since the base point has to be part of the proof.
+        // It's otherwise useless.
         ? dst_entr.addr.m_spend_public_key ^ output_secret_keys[output_index]
         : to_pk(output_secret_keys[output_index])
       };
