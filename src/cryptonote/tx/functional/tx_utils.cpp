@@ -50,7 +50,7 @@ namespace cryptonote
     , crypto::public_key
     >>
 
-    generate_output_ephemeral_keys
+    generate_shared_secret_derived_keys
 
   (
    const size_t tx_version
@@ -242,7 +242,7 @@ namespace cryptonote
     {
       LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, {}, "Destination with wrong amount: " << dst_entr.amount);
 
-      const auto r = generate_output_ephemeral_keys
+      const auto r = generate_shared_secret_derived_keys
         (
          tx.version,sender_account_keys
          , dst_entr

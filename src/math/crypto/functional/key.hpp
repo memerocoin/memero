@@ -88,7 +88,7 @@ namespace crypto {
    ) noexcept;
 
   /* To send money to a key:
-    * * The sender generates an ephemeral key and includes it in transaction output.
+    * * The sender generates an shared secret derived key and includes it in transaction output.
     * * To spend the money, the receiver generates a key image from it.
     * * Then he selects a bunch of outputs, including the one he spends, and uses them to generate a ring signature.
     * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
@@ -101,10 +101,10 @@ namespace crypto {
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x) noexcept;
 
 
-  /* To generate an ephemeral key used to send money to:
+  /* To generate an shared secret derived key used to send money to:
    * * The sender generates a new key pair, which becomes the transaction key. The public transaction key is included in "extra" field.
    * * Both the sender and the receiver generate key derivation from the transaction key, the receivers' "view" key and the output index.
-   * * The sender uses key derivation and the receivers' "spend" key to derive an ephemeral public key.
+   * * The sender uses key derivation and the receivers' "spend" key to derive an shared secret derived public key.
    * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
    */
   std::optional<tx_ecdh_shared_secret> derive_tx_ecdh_shared_secret

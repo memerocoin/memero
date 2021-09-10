@@ -633,7 +633,7 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, size
        tx_scan_info.shared_secret_derived_key.pub
        != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key
        , error::wallet_internal_error
-       , "shared_secret_derived_public_key_image generated ephemeral public key not matched with output_key"
+       , "shared_secret_derived_public_key_image generated shared secret derived public key not matched with output_key"
        );
   }
 
