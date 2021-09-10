@@ -681,7 +681,7 @@ void wallet2::cache_tx_data(const cryptonote::transaction& tx, const crypto::has
         tx_cache_data.primary.push_back({pub_key_field.pub_key, {}, rec});
 
       // additional tx pubkeys and tx_shared_secrets for multi-destination transfers involving one or more subaddresses
-      tx_extra_output_public_keys additional_tx_pub_keys;
+      tx_extra_tx_output_public_keys additional_tx_pub_keys;
       if (find_tx_extra_field_by_type(tx_cache_data.tx_extra_fields, additional_tx_pub_keys))
       {
         for (size_t i = 0; i < additional_tx_pub_keys.data.size(); ++i)
@@ -761,7 +761,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     crypto::tx_ecdh_shared_secret tx_shared_secret;
 
     std::vector<crypto::tx_ecdh_shared_secret> tx_shared_secrets;
-    tx_extra_output_public_keys additional_tx_pub_keys;
+    tx_extra_tx_output_public_keys additional_tx_pub_keys;
     if (tx_cache_data.primary.empty())
     {
       const auto maybeTx_Shared_Secret = crypto::derive_tx_ecdh_shared_secret(tx_pub_key, keys.m_view_secret_key);

@@ -31,8 +31,8 @@
 #pragma once
 
 
-#define TX_EXTRA_TAG_TX_PUBKEY                 0x01
-#define TX_EXTRA_TAG_OUTPUT_PUBKEYS     0x04
+#define TX_EXTRA_TAG_TX_PUBKEY 0x01
+#define TX_EXTRA_TAG_TX_OUTPUT_PUBKEYS     0x04
 
 namespace cryptonote
 {
@@ -46,7 +46,7 @@ namespace cryptonote
   };
 
   // per-output additional tx pubkey for multi-destination transfers involving at least one subaddress
-  struct tx_extra_output_public_keys
+  struct tx_extra_tx_output_public_keys
   {
     std::vector<crypto::public_key> data;
 
@@ -62,9 +62,9 @@ namespace cryptonote
   typedef boost::variant
   <
       tx_extra_tx_public_key
-    , tx_extra_output_public_keys
+    , tx_extra_tx_output_public_keys
     > tx_extra_field;
 }
 
 VARIANT_TAG(binary_archive, cryptonote::tx_extra_tx_public_key, TX_EXTRA_TAG_TX_PUBKEY);
-VARIANT_TAG(binary_archive, cryptonote::tx_extra_output_public_keys, TX_EXTRA_TAG_OUTPUT_PUBKEYS);
+VARIANT_TAG(binary_archive, cryptonote::tx_extra_tx_output_public_keys, TX_EXTRA_TAG_TX_OUTPUT_PUBKEYS);

@@ -284,7 +284,7 @@ namespace cryptonote
 
     // sort by:
     if (!pick<tx_extra_tx_public_key>(nar, tx_extra_fields, TX_EXTRA_TAG_TX_PUBKEY)) return false;
-    if (!pick<tx_extra_output_public_keys>(nar, tx_extra_fields, TX_EXTRA_TAG_OUTPUT_PUBKEYS)) return false;
+    if (!pick<tx_extra_tx_output_public_keys>(nar, tx_extra_fields, TX_EXTRA_TAG_TX_OUTPUT_PUBKEYS)) return false;
 
     // if not empty, someone added a new type and did not add a case above
     if (!tx_extra_fields.empty())
@@ -324,7 +324,7 @@ namespace cryptonote
   bool add_additional_tx_pub_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& additional_pub_keys)
   {
     // convert to variant
-    tx_extra_field field = tx_extra_output_public_keys{ additional_pub_keys };
+    tx_extra_field field = tx_extra_tx_output_public_keys{ additional_pub_keys };
     // serialize
     std::ostringstream oss;
     binary_archive<true> ar(oss);
