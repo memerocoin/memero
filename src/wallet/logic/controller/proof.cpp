@@ -71,45 +71,61 @@ namespace proof {
 
     if (!view_secret_key)
     {
-      /*
       LOG_FATAL("get tx proof Out is unsupported");
 
-      const size_t num_sigs = 1 + output_secret_keys.size();
-      shared_secret.resize(num_sigs);
-      sig.resize(num_sigs);
+      if (tx_key) {
+        const auto ss = rct::rct_p2pk
+         (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(*tx_key)));
 
-      shared_secret[0] = rct::rct_p2pk
-        (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(tx_key)));
-      crypto::public_key tx_pub_key;
-      if (is_subaddress)
-      {
-        tx_pub_key = rct_p2pk
-          (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(tx_key)));
-        sig[0] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], tx_key);
-      }
-      else
-      {
-        tx_pub_key = to_pk(tx_key);
-        sig[0] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], tx_key);
-      }
-      for (size_t i = 1; i < num_sigs; ++i)
-      {
-        shared_secret[i] = rct::rct_p2pk
-          (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(output_secret_keys[i - 1])));
+        shared_secret.push_back(ss);
+
+        crypto::public_key tx_pub_key;
         if (is_subaddress)
         {
           tx_pub_key = rct_p2pk
-            (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(output_secret_keys[i - 1])));
-          sig[i] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[i], output_secret_keys[i - 1]);
+            (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(*tx_key)));
+          sig.push_back
+            (crypto::generate_tx_proof
+             (prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, ss, *tx_key));
+        }
+
+        else
+        {
+          tx_pub_key = to_pk(*tx_key);
+          sig.push_back
+            (
+             crypto::generate_tx_proof
+             (prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, ss, *tx_key));
+        }
+      }
+
+      for (size_t i = 0; i < output_secret_keys.size(); ++i)
+      {
+        auto const output_ss = rct::rct_p2pk
+         (rct::multP(rct::pk2rct_p(address.m_view_public_key), rct::sk2rct_s(output_secret_keys[i])));
+
+        shared_secret.push_back(output_ss);
+
+        crypto::public_key tx_output_pub_key;
+
+        if (is_subaddress)
+        {
+          tx_output_pub_key = rct_p2pk
+            (rct::multP(rct::pk2rct_p(address.m_spend_public_key), rct::sk2rct_s(output_secret_keys[i])));
+          sig.push_back
+            (crypto::generate_tx_proof
+             (prefix_hash, tx_output_pub_key, address.m_view_public_key
+              , address.m_spend_public_key, output_ss, output_secret_keys[i]));
         }
         else
         {
-          tx_pub_key = to_pk(output_secret_keys[i - 1]);
-          sig[i] = crypto::generate_tx_proof(prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[i], output_secret_keys[i - 1]);
+          tx_output_pub_key = to_pk(output_secret_keys[i]);
+          sig.push_back
+            (crypto::generate_tx_proof
+             (prefix_hash, tx_output_pub_key, address.m_view_public_key, std::nullopt, output_ss, output_secret_keys[i]));
         }
       }
       sig_str = std::string("OutProofV2");
-      */
     }
     else
     {
