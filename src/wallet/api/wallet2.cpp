@@ -589,7 +589,6 @@ void wallet2::scan_output
  , tx_scan_info_t &tx_scan_info
  , int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs
  , std::vector<size_t> &outs
- , bool pool
  )
 {
   THROW_WALLET_EXCEPTION_IF(i >= tx.vout.size(), error::wallet_internal_error, "Invalid vout index");
@@ -771,7 +770,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
         if (tx_scan_info[i].received)
         {
-          scan_output(tx, miner_tx, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs, pool);
+          scan_output(tx, miner_tx, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs);
 
           if (!tx_scan_info[i].error)
           {
@@ -796,7 +795,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
         if (tx_scan_info[i].received)
         {
-          scan_output(tx, miner_tx, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs, pool);
+          scan_output(tx, miner_tx, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs);
           if (!tx_scan_info[i].error)
           {
             tx_amounts_individual_outs[tx_scan_info[i].received->index].push_back(tx_scan_info[i].money_transfered);

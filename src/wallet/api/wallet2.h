@@ -500,7 +500,6 @@ namespace tools
      , tx_scan_info_t &tx_scan_info
      , int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs
      , std::vector<size_t> &outs
-     , bool pool
      );
 
     void trim_hashchain();
