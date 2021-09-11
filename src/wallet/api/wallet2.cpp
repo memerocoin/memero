@@ -548,8 +548,14 @@ void wallet2::check_acc_out_precomp_once
   tx_scan_info.received = std::nullopt;
   if (already_seen)
     return;
+
+  const auto secret
+    = tx_output_shared_secrets.contains(i)
+    ? tx_output_shared_secrets.at(i)
+    : std::optional<crypto::tx_ecdh_shared_secret>();
+
   tx_scan_info = wallet::logic::functional::wallet::check_acc_out_precomp
-    (o, tx_shared_secret, tx_output_shared_secrets, i, m_subaddresses);
+    (o, tx_shared_secret, secret, i, m_subaddresses);
   if (tx_scan_info.received)
     already_seen = true;
 }
