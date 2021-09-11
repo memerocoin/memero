@@ -157,7 +157,7 @@ namespace wallet {
   (
    const cryptonote::tx_out &o
    , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
-   , const std::vector<crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
+   , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
    , const size_t i
    , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
    )
@@ -171,17 +171,12 @@ namespace wallet {
         return tx_scan_info;
       }
 
-    std::map<size_t, crypto::tx_ecdh_shared_secret> output_secrets;
-    for (size_t i = 0; i < tx_output_shared_secrets.size(); i++) {
-      output_secrets[i] = tx_output_shared_secrets[i];
-    }
-
     tx_scan_info.received = is_out_to_acc_precomp
       (
        m_subaddresses
        , boost::get<cryptonote::txout_to_key>(o.target).shared_secret_derived_public_key
        , tx_shared_secret
-       , output_secrets
+       , tx_output_shared_secrets
        , i
        );
     if(tx_scan_info.received)

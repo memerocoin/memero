@@ -539,7 +539,7 @@ void wallet2::check_acc_out_precomp_once
 (
  const cryptonote::tx_out &o
  , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
- , const std::vector<crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
+ , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
  , size_t i
  , tx_scan_info_t &tx_scan_info
  , bool &already_seen
@@ -685,7 +685,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     const cryptonote::account_keys& keys = m_account.get_keys();
     crypto::tx_ecdh_shared_secret tx_shared_secret;
 
-    std::vector<crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+    std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
     tx_extra_tx_output_public_keys tx_output_keys;
     {
       const auto maybeTx_Shared_Secret = crypto::derive_tx_ecdh_shared_secret(tx_pub_key, keys.m_view_secret_key);
@@ -708,9 +708,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
               crypto::derive_tx_ecdh_shared_secret(tx_output_keys.data[i], keys.m_view_secret_key);
             if (!tx_output_shared_secret) {
               LOG_WARNING("Failed to generate key tx_shared_secret from additional tx pubkey in " << txid << ", skipping");
-              tx_output_shared_secrets.push_back(p2tx_shared_secret(rct::identity));
             } else {
-              tx_output_shared_secrets.push_back(*tx_output_shared_secret);
+              tx_output_shared_secrets[i] = (*tx_output_shared_secret);
             }
           }
         }

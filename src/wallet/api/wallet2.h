@@ -469,7 +469,7 @@ namespace tools
     (
      const cryptonote::tx_out &o
      , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
-     , const std::vector<crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
+     , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
      , size_t i
      ) const;
 
@@ -477,7 +477,7 @@ namespace tools
     (
      const cryptonote::tx_out &o
      , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
-     , const std::vector<crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
+     , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
      , size_t i
      , tx_scan_info_t &tx_scan_info
      , bool &already_seen
