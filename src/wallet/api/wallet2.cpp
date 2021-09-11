@@ -651,7 +651,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   std::unordered_map<cryptonote::subaddress_index, uint64_t> tx_money_got_in_outs;
   std::unordered_map<cryptonote::subaddress_index, amounts_container> tx_amounts_individual_outs;
 
-  crypto::public_key tx_pub_key = null_pkey;
   bool notify = false;
 
   std::vector<tx_extra_field> local_tx_extra_fields;
@@ -668,6 +667,12 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   std::vector<tx_scan_info_t> tx_scan_info(tx.vout.size());
   std::deque<bool> output_found(tx.vout.size(), false);
   uint64_t total_received_1 = 0;
+
+  std::optional<crypto::public_key> tx_pub_key;
+  std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
+
+  const cryptonote::account_keys& keys = m_account.get_keys();
+
   bool looped = false;
   while (!tx.vout.empty() && !looped)
   {
@@ -676,28 +681,27 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     // if tx.vout is not empty, we loop through all tx pubkeys
 
     tx_extra_tx_public_key pub_key_field;
-    if(!find_tx_extra_field_by_type(tx_extra_fields, pub_key_field))
+
+    if(find_tx_extra_field_by_type(tx_extra_fields, pub_key_field))
     {
+      tx_pub_key = pub_key_field.pub_key;
+      const auto maybeTx_Shared_Secret = crypto::derive_tx_ecdh_shared_secret(*tx_pub_key, keys.m_view_secret_key);
+      if (!maybeTx_Shared_Secret)
+        {
+          LOG_WARNING("Failed to generate key tx_shared_secret from tx pubkey in " << txid << ", skipping");
+        } else {
+        tx_shared_secret = maybeTx_Shared_Secret;
+      }
+
     }
 
     int num_vouts_received = 0;
-    tx_pub_key = pub_key_field.pub_key;
     tools::threadpool& tpool = tools::threadpool::getInstance();
     tools::threadpool::waiter waiter(tpool);
-    const cryptonote::account_keys& keys = m_account.get_keys();
-    std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
 
     std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
     tx_extra_tx_output_public_keys tx_output_keys;
     {
-      const auto maybeTx_Shared_Secret = crypto::derive_tx_ecdh_shared_secret(tx_pub_key, keys.m_view_secret_key);
-      if (!maybeTx_Shared_Secret)
-      {
-        LOG_WARNING("Failed to generate key tx_shared_secret from tx pubkey in " << txid << ", skipping");
-      } else {
-        tx_shared_secret = maybeTx_Shared_Secret;
-      }
-
       {
         // additional tx pubkeys and tx_output_shared_secrets for multi-destination transfers involving one or more subaddresses
         if (find_tx_extra_field_by_type(tx_extra_fields, tx_output_keys))
@@ -733,7 +737,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        THROW_WALLET_EXCEPTION_IF(tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key, m_account.get_keys());
+        THROW_WALLET_EXCEPTION_IF
+          (tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key.value_or(crypto::null_pkey), m_account.get_keys());
         if (tx_scan_info[i].received)
         {
           scan_output(tx, miner_tx, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs, pool);
@@ -755,7 +760,9 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
         check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, secret, i, tx_scan_info[i], output_found[i]);
 
-        THROW_WALLET_EXCEPTION_IF(tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key, m_account.get_keys());
+        THROW_WALLET_EXCEPTION_IF
+          (tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key.value_or(crypto::null_pkey), m_account.get_keys());
+
         if (tx_scan_info[i].received)
         {
           scan_output(tx, miner_tx, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs, pool);
