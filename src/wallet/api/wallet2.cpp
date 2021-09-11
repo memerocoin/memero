@@ -721,7 +721,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
     std::vector<crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
     tx_extra_tx_output_public_keys tx_output_keys;
-    if (!tx_cache_data.primary)
     {
       const auto maybeTx_Shared_Secret = crypto::derive_tx_ecdh_shared_secret(tx_pub_key, keys.m_view_secret_key);
       if (!maybeTx_Shared_Secret)
@@ -748,17 +747,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
               tx_output_shared_secrets.push_back(*tx_output_shared_secret);
             }
           }
-        }
-      }
-    }
-    else
-    {
-      tx_shared_secret = tx_cache_data.primary->tx_shared_secret;
-      {
-        for (size_t n = 0; n < tx_cache_data.additional.size(); ++n)
-        {
-          tx_output_keys.data.push_back(tx_cache_data.additional[n].pkey);
-          tx_output_shared_secrets.push_back(tx_cache_data.additional[n].tx_shared_secret);
         }
       }
     }
