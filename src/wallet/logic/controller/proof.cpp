@@ -174,7 +174,7 @@ namespace proof {
     }
 
 
-    std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
+    std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
     for (size_t i = 0; i < shared_secret.size(); i++) {
       const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret =
         crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
@@ -183,7 +183,7 @@ namespace proof {
         ( !tx_output_shared_secret
           , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
 
-      tx_shared_secrets[i] = *tx_output_shared_secret;
+      tx_output_shared_secrets[i] = *tx_output_shared_secret;
     };
 
     std::vector<std::string> sig_str_v;
@@ -208,7 +208,7 @@ namespace proof {
        );
 
     uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
-      (tx, tx_shared_secret, tx_shared_secrets, address);
+      (tx, tx_shared_secret, tx_output_shared_secrets, address);
 
     THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");
 

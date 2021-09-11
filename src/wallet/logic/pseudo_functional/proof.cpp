@@ -167,7 +167,7 @@ namespace proof {
         sig.erase(sig.begin());
       }
 
-      std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
+      std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
       for (size_t i = 0; i < tx_output_keys.size(); ++i)
       {
         const bool good_signature_for_tx_output_pub_key = is_subaddress
@@ -184,7 +184,7 @@ namespace proof {
             ( !tx_output_shared_secret
               , error::wallet_internal_error, "Failed to generate key derivation");
 
-          tx_shared_secrets[i] = *tx_output_shared_secret;
+          tx_output_shared_secrets[i] = *tx_output_shared_secret;
 
         } else {
           LOG_WARNING("bad signature for additional pub key at index: " << i);
@@ -192,7 +192,7 @@ namespace proof {
       }
 
       received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, *tx_shared_secret, tx_shared_secrets, address);
+        (tx, *tx_shared_secret, tx_output_shared_secrets, address);
 
       return true;
     }
@@ -219,7 +219,7 @@ namespace proof {
         sig.erase(sig.begin());
       }
 
-      std::map<size_t, crypto::tx_ecdh_shared_secret> tx_shared_secrets;
+      std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
 
       for (size_t i = 0; i < tx_output_keys.size(); ++i)
       {
@@ -237,7 +237,7 @@ namespace proof {
             ( !tx_output_shared_secret
               , error::wallet_internal_error, "Failed to generate key derivation");
 
-          tx_shared_secrets[i] = *tx_output_shared_secret;
+          tx_output_shared_secrets[i] = *tx_output_shared_secret;
 
         } else {
           LOG_WARNING("bad signature for additional pub key at index: " << i);
@@ -245,7 +245,7 @@ namespace proof {
       }
 
       received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, *tx_shared_secret, tx_shared_secrets, address);
+        (tx, *tx_shared_secret, tx_output_shared_secrets, address);
 
       return true;
     }

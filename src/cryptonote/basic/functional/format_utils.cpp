@@ -79,7 +79,7 @@ namespace cryptonote
     //   return false;
     // }
 
-    std::vector<crypto::tx_ecdh_shared_secret> additional_recv_tx_shared_secrets;
+    std::vector<crypto::tx_ecdh_shared_secret> additional_recv_tx_output_shared_secrets;
     for (size_t i = 0; i < output_public_keys.size(); ++i)
     {
       const std::optional<crypto::tx_ecdh_shared_secret> additional_recv_tx_shared_secret =
@@ -90,14 +90,14 @@ namespace cryptonote
       }
       else
       {
-        additional_recv_tx_shared_secrets.push_back(*additional_recv_tx_shared_secret);
+        additional_recv_tx_output_shared_secrets.push_back(*additional_recv_tx_shared_secret);
       }
     }
 
     std::optional<subaddress_receive_info> subaddr_recv_info =
       is_out_to_acc_precomp
       (
-       subaddresses, out_key, recv_tx_shared_secret, additional_recv_tx_shared_secrets, real_output_index
+       subaddresses, out_key, recv_tx_shared_secret, additional_recv_tx_output_shared_secrets, real_output_index
        );
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -233,7 +233,7 @@ namespace cryptonote
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key& tx_output_public_key
    , const std::optional<crypto::tx_ecdh_shared_secret>& tx_shared_secret
-   , const std::vector<crypto::tx_ecdh_shared_secret>& tx_shared_secrets
+   , const std::vector<crypto::tx_ecdh_shared_secret>& tx_output_shared_secrets
    , const size_t output_index
    )
   {
@@ -250,18 +250,18 @@ namespace cryptonote
     }
 
     // try additional tx pubkeys if available
-    if (!tx_shared_secrets.empty())
+    if (!tx_output_shared_secrets.empty())
     {
-      LOG_ERROR_AND_RETURN_UNLESS(output_index < tx_shared_secrets.size(), std::nullopt, "wrong number of additional derivations");
+      LOG_ERROR_AND_RETURN_UNLESS(output_index < tx_output_shared_secrets.size(), std::nullopt, "wrong number of additional derivations");
 
       const auto spend_pk_1 =
         crypto::compute_spend_public_key_from_shared_secret_derived_public_key
-        (tx_shared_secrets[output_index], output_index, tx_output_public_key);
+        (tx_output_shared_secrets[output_index], output_index, tx_output_public_key);
 
       const auto found_1 = subaddresses.find(spend_pk_1.value_or(crypto::null_pkey));
 
       if (found_1 != subaddresses.end())
-        return subaddress_receive_info{ found_1->second, tx_shared_secrets[output_index] };
+        return subaddress_receive_info{ found_1->second, tx_output_shared_secrets[output_index] };
     }
     return {};
   }

@@ -46,7 +46,7 @@ namespace proof {
   (
    const cryptonote::transaction &tx
    , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
-   , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+   , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
    , const cryptonote::account_public_address &address
    )
   {
@@ -71,14 +71,14 @@ namespace proof {
         found_shared_secret = *tx_shared_secret;
       }
 
-      if (!found && tx_shared_secrets.contains(n))
+      if (!found && tx_output_shared_secrets.contains(n))
       {
         const auto maybe_derived_tx_output_public_key_1 =
-          crypto::compute_shared_secret_derived_public_key_from_spend_public_key(tx_shared_secrets.at(n), n, address.m_spend_public_key);
+          crypto::compute_shared_secret_derived_public_key_from_spend_public_key(tx_output_shared_secrets.at(n), n, address.m_spend_public_key);
         THROW_WALLET_EXCEPTION_IF(!maybe_derived_tx_output_public_key_1, error::wallet_internal_error, "Failed to derive public key");
 
         found = tx_output->shared_secret_derived_public_key == *maybe_derived_tx_output_public_key_1;
-        found_shared_secret = tx_shared_secrets.at(n);
+        found_shared_secret = tx_output_shared_secrets.at(n);
       }
 
       if (found)
