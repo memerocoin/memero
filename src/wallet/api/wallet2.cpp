@@ -1308,11 +1308,9 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       txidx += 1 + parsed_blocks[i].block.tx_hashes.size();
       continue;
     }
-    tpool.submit(&waiter, [&, i, txidx](){ cache_tx_data(parsed_blocks[i].block.miner_tx, get_transaction_hash(parsed_blocks[i].block.miner_tx), tx_cache_data[txidx]); });
     ++txidx;
     for (size_t idx = 0; idx < parsed_blocks[i].txes.size(); ++idx)
     {
-      tpool.submit(&waiter, [&, i, idx, txidx](){ cache_tx_data(parsed_blocks[i].txes[idx], parsed_blocks[i].block.tx_hashes[idx], tx_cache_data[txidx]); });
       ++txidx;
     }
   }
@@ -1438,7 +1436,6 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       LOG_PRINT_L2("Block is already in blockchain: " << epee::string_tools::pod_to_hex(bl_id));
     }
     ++current_index;
-    tx_cache_data_offset += 1 + parsed_blocks[i].txes.size();
   }
 }
 //----------------------------------------------------------------------------------------------------
