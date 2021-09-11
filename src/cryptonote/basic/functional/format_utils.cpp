@@ -247,11 +247,13 @@ namespace cryptonote
         crypto::compute_spend_public_key_from_shared_secret_derived_public_key
         (*tx_shared_secret, output_index, tx_output_public_key);
 
-      auto found = subaddresses.find(spend_pk.value_or(crypto::null_pkey));
+      if (spend_pk) {
+        auto found = subaddresses.find(*spend_pk);
 
-      if (found != subaddresses.end()) {
-        // LOG_FATAL("FOUND for tx pub key at index: " << output_index);
-        return subaddress_receive_info{ found->second, *tx_shared_secret};
+        if (found != subaddresses.end()) {
+          // LOG_FATAL("FOUND for tx pub key at index: " << output_index);
+          return subaddress_receive_info{ found->second, *tx_shared_secret};
+        }
       }
     }
 
@@ -262,11 +264,13 @@ namespace cryptonote
         crypto::compute_spend_public_key_from_shared_secret_derived_public_key
         (*tx_output_shared_secret, output_index, tx_output_public_key);
 
-      const auto found_1 = subaddresses.find(spend_pk_1.value_or(crypto::null_pkey));
+      if (spend_pk_1) {
+        const auto found_1 = subaddresses.find(*spend_pk_1);
 
-      if (found_1 != subaddresses.end()) {
-        // LOG_FATAL("FOUND for out pub key at index: " << output_index);
-        return subaddress_receive_info{ found_1->second, *tx_output_shared_secret};
+        if (found_1 != subaddresses.end()) {
+          // LOG_FATAL("FOUND for out pub key at index: " << output_index);
+          return subaddress_receive_info{ found_1->second, *tx_output_shared_secret};
+        }
       }
     }
     return {};
