@@ -536,27 +536,6 @@ size_t wallet2::get_transfer_details(const crypto::shared_secret_derived_public_
   LOG_ERROR_AND_THROW_UNLESS(false, "Key image not found");
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::check_acc_out_precomp_once
-(
- const cryptonote::tx_out &o
- , const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
- , const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret
- , size_t i
- , tx_scan_info_t &tx_scan_info
- , bool &already_seen
- ) const
-{
-  tx_scan_info.received = std::nullopt;
-  if (already_seen)
-    return;
-
-  tx_scan_info = wallet::logic::functional::wallet::check_acc_out_precomp
-    (o, tx_shared_secret, tx_output_shared_secret, i, m_subaddresses);
-
-  if (tx_scan_info.received)
-    already_seen = true;
-}
-//----------------------------------------------------------------------------------------------------
 bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
 {
   for (const auto &in: tx.vin)
@@ -596,7 +575,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
   // Don't try to extract tx public key if tx has no ouputs
   std::vector<tx_scan_info_t> tx_scan_info(tx.vout.size());
-  std::deque<bool> output_found(tx.vout.size(), false);
   uint64_t total_received_1 = 0;
 
   std::optional<crypto::public_key> tx_pub_key;
@@ -655,7 +633,9 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         ? tx_output_shared_secrets.at(i)
         : std::optional<crypto::tx_ecdh_shared_secret>();
 
-      check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, secret, i, tx_scan_info[i], output_found[i]);
+      tx_scan_info[i] = wallet::logic::functional::wallet::check_acc_out_precomp
+        (tx.vout[i], tx_shared_secret, secret, i, m_subaddresses);
+
     }
 
     for (size_t i = 0; i < tx.vout.size(); ++i)
