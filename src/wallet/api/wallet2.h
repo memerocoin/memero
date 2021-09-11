@@ -498,7 +498,7 @@ namespace tools
      , const bool miner_tx
      , const size_t i
      , const tx_scan_info_t tx_scan_info_in
-     , int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs
+     , std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs
      , std::vector<size_t> &outs
      );
 
