@@ -13,6 +13,11 @@ https://twitter.com/101n3r0/status/1313197529027112960
 
 Updates:
 
+Sep 11th, 2021
+
+Tx extra has been reworked to only includes tx output public keys. It's probably how sub-address was intended to be used. More refactoring has been done that made further work on wallet code possible. This is actually huge.
+
+
 Sep 6th, 2021
 
 We changed our payment proof, which is what one uses to settle a dispute out of band, from 64 bytes to 128 bytes. Monero/wownero uses a single schnorr signature for two public keys, we use two.
