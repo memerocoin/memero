@@ -1281,45 +1281,9 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       ++txidx;
     }
   }
-  auto geniod = [&](const cryptonote::transaction &tx, size_t n_vouts, size_t txidx) {
-    for (size_t k = 0; k < n_vouts; ++k)
-    {
-      const auto &o = tx.vout[k];
-      if (o.target.type() == typeid(cryptonote::txout_to_key))
-      {
-        std::vector<crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
-        tx_output_shared_secrets.reserve(tx_cache_data[txidx].additional.size());
-        for (const auto &iod: tx_cache_data[txidx].additional)
-          tx_output_shared_secrets.push_back(iod.tx_shared_secret);
-        const auto &key = boost::get<txout_to_key>(o.target).shared_secret_derived_public_key;
-
-        auto& maybe_tx_pub_key = tx_cache_data[txidx].primary;
-        if (maybe_tx_pub_key)
-        {
-          THROW_WALLET_EXCEPTION_IF(maybe_tx_pub_key->received.size() != n_vouts,
-              error::wallet_internal_error, "Unexpected received array size");
-
-          std::map<size_t, crypto::tx_ecdh_shared_secret> output_secrets;
-          for (size_t i = 0; i < tx_output_shared_secrets.size(); i++) {
-            output_secrets[i] = tx_output_shared_secrets[i];
-          }
-
-          maybe_tx_pub_key->received[k] =
-            is_out_to_acc_precomp
-            (
-             m_subaddresses
-             , key
-             , maybe_tx_pub_key->tx_shared_secret
-             , {}
-             , k
-             );
-          tx_output_shared_secrets.clear();
-        }
-      }
-    }
-  };
 
   txidx = 0;
+
   for (size_t i = 0; i < blocks.size(); ++i)
   {
     if (should_skip_block(parsed_blocks[i].block, start_height + i))
@@ -1330,19 +1294,14 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
 
     {
       THROW_WALLET_EXCEPTION_IF(txidx >= tx_cache_data.size(), error::wallet_internal_error, "txidx out of range");
-      const size_t n_vouts = parsed_blocks[i].block.miner_tx.vout.size();
-      tpool.submit(&waiter, [&, i, n_vouts, txidx](){ geniod(parsed_blocks[i].block.miner_tx, n_vouts, txidx); }, true);
     }
     ++txidx;
     for (size_t j = 0; j < parsed_blocks[i].txes.size(); ++j)
     {
       THROW_WALLET_EXCEPTION_IF(txidx >= tx_cache_data.size(), error::wallet_internal_error, "txidx out of range");
-      tpool.submit(&waiter, [&, i, j, txidx](){ geniod(parsed_blocks[i].txes[j], parsed_blocks[i].txes[j].vout.size(), txidx); }, true);
       ++txidx;
     }
   }
-  THROW_WALLET_EXCEPTION_IF(txidx != tx_cache_data.size(), error::wallet_internal_error, "txidx did not reach expected value");
-  THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
 
   for (size_t i = 0; i < blocks.size(); ++i)
   {
