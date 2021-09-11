@@ -1256,53 +1256,6 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
   THROW_WALLET_EXCEPTION_IF(blocks.size() != parsed_blocks.size(), error::wallet_internal_error, "size mismatch");
   THROW_WALLET_EXCEPTION_IF(!m_blockchain.is_in_bounds(current_index), error::out_of_hashchain_bounds_error);
 
-  tools::threadpool& tpool = tools::threadpool::getInstance();
-  tools::threadpool::waiter waiter(tpool);
-
-  size_t num_txes = 0;
-
-  for (size_t i = 0; i < blocks.size(); ++i)
-    num_txes += 1 + parsed_blocks[i].txes.size();
-
-  std::vector<tx_cache_data> tx_cache_data;
-  tx_cache_data.resize(num_txes);
-
-  size_t txidx = 0;
-  for (size_t i = 0; i < blocks.size(); ++i)
-  {
-    if (should_skip_block(parsed_blocks[i].block, start_height + i))
-    {
-      txidx += 1 + parsed_blocks[i].block.tx_hashes.size();
-      continue;
-    }
-    ++txidx;
-    for (size_t idx = 0; idx < parsed_blocks[i].txes.size(); ++idx)
-    {
-      ++txidx;
-    }
-  }
-
-  txidx = 0;
-
-  for (size_t i = 0; i < blocks.size(); ++i)
-  {
-    if (should_skip_block(parsed_blocks[i].block, start_height + i))
-    {
-      txidx += 1 + parsed_blocks[i].block.tx_hashes.size();
-      continue;
-    }
-
-    {
-      THROW_WALLET_EXCEPTION_IF(txidx >= tx_cache_data.size(), error::wallet_internal_error, "txidx out of range");
-    }
-    ++txidx;
-    for (size_t j = 0; j < parsed_blocks[i].txes.size(); ++j)
-    {
-      THROW_WALLET_EXCEPTION_IF(txidx >= tx_cache_data.size(), error::wallet_internal_error, "txidx out of range");
-      ++txidx;
-    }
-  }
-
   for (size_t i = 0; i < blocks.size(); ++i)
   {
     const crypto::hash &bl_id = parsed_blocks[i].hash;
