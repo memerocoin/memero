@@ -581,11 +581,7 @@ static uint64_t decodeRct(const rct::rctData & rv, const crypto::tx_ecdh_shared_
   }
 }
 //----------------------------------------------------------------------------------------------------
-std::tuple
-<
-  tx_scan_info_t
-  >
-wallet2::scan_output
+tx_scan_info_t wallet2::scan_output
 (
  const cryptonote::transaction &tx
  , const bool miner_tx
@@ -637,11 +633,11 @@ wallet2::scan_output
   {
     LOG_ERROR("Invalid output amount, skipping");
     tx_scan_info.error = true;
-    return {tx_scan_info};
+    return tx_scan_info;
   }
   tx_scan_info.amount = tx_scan_info.money_transfered;
 
-  return {tx_scan_info};
+  return tx_scan_info;
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
@@ -792,8 +788,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
         if (tx_scan_info[i].received)
         {
-          std::tie(tx_scan_info[i]) =
-            scan_output(tx, miner_tx, i, tx_scan_info[i], outs);
+          tx_scan_info[i] = scan_output(tx, miner_tx, i, tx_scan_info[i], outs);
 
           if (!tx_scan_info[i].error)
           {
