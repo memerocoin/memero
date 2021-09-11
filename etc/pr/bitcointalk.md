@@ -15,7 +15,7 @@ Updates:
 
 Sep 11th, 2021
 
-Tx extra has been reworked to only includes tx output public keys. It's probably how sub-address was intended to be used. More refactoring has been done that made further work on wallet code possible. This is actually huge.
+Tx extra has been reworked to only include tx output public keys. It's probably how sub-address was intended to be used. More refactoring has been done that made further work on wallet code possible. This is actually huge.
 
 
 Sep 6th, 2021
