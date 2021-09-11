@@ -79,9 +79,9 @@ namespace cryptonote
   std::optional<subaddress_receive_info> is_out_to_acc_precomp
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-   , const crypto::public_key& tx_out_key
-   , const std::optional<crypto::tx_ecdh_shared_secret>& tx_shared_secret
-   , const std::optional<crypto::tx_ecdh_shared_secret>& tx_output_shared_secret
+   , const crypto::public_key tx_out_key
+   , const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
+   , const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret
    , const size_t output_index
    );
 
