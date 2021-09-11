@@ -245,8 +245,10 @@ namespace cryptonote
 
       auto found = subaddresses.find(spend_pk.value_or(crypto::null_pkey));
 
-      if (found != subaddresses.end())
+      if (found != subaddresses.end()) {
+        // LOG_FATAL("FOUND for tx pub key at index: " << output_index);
         return subaddress_receive_info{ found->second, *tx_shared_secret};
+      }
     }
 
     // try additional tx pubkeys if available
@@ -258,8 +260,10 @@ namespace cryptonote
 
       const auto found_1 = subaddresses.find(spend_pk_1.value_or(crypto::null_pkey));
 
-      if (found_1 != subaddresses.end())
+      if (found_1 != subaddresses.end()) {
+        // LOG_FATAL("FOUND for out pub key at index: " << output_index);
         return subaddress_receive_info{ found_1->second, tx_output_shared_secrets.at(output_index)};
+      }
     }
     return {};
   }

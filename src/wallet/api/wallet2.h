@@ -465,14 +465,6 @@ namespace tools
     bool generate_chacha_key_from_secret_keys(crypto::chacha_key &key) const;
     void generate_chacha_key_from_password(const epee::wipeable_string &pass, crypto::chacha_key &key) const;
 
-    tx_scan_info_t check_acc_out_precomp
-    (
-     const cryptonote::tx_out &o
-     , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
-     , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
-     , size_t i
-     ) const;
-
     void check_acc_out_precomp_once
     (
      const cryptonote::tx_out &o
