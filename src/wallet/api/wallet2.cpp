@@ -624,40 +624,6 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, size
   ++num_vouts_received;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::cache_tx_data(const cryptonote::transaction& tx, const crypto::hash &txid, tx_cache_data &tx_cache_data) const
-{
-  const auto maybe_tx_extra_fields = parse_tx_extra(tx.extra);
-  if(!maybe_tx_extra_fields)
-  {
-    tx_cache_data.tx_extra_fields.clear();
-    return;
-  }
-
-  tx_cache_data.tx_extra_fields = *maybe_tx_extra_fields;
-
-  // Don't try to extract tx public key if tx has no ouputs
-  {
-    const size_t rec_size = tx.vout.size();
-    if (!tx.vout.empty())
-    {
-      // if tx.vout is not empty, we loop through all tx pubkeys
-      const std::vector<std::optional<cryptonote::subaddress_receive_info>> rec(rec_size, std::nullopt);
-
-      tx_extra_tx_public_key pub_key_field;
-      if (find_tx_extra_field_by_type(tx_cache_data.tx_extra_fields, pub_key_field))
-        tx_cache_data.primary = {pub_key_field.pub_key, {}, rec};
-
-      // additional tx pubkeys and tx_output_shared_secrets for multi-destination transfers involving one or more subaddresses
-      tx_extra_tx_output_public_keys tx_output_keys;
-      if (find_tx_extra_field_by_type(tx_cache_data.tx_extra_fields, tx_output_keys))
-      {
-        for (size_t i = 0; i < tx_output_keys.data.size(); ++i)
-          tx_cache_data.additional.push_back({tx_output_keys.data[i], {}, {}});
-      }
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------
 bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
 {
   for (const auto &in: tx.vin)

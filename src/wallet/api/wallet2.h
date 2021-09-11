@@ -504,8 +504,6 @@ namespace tools
     void setup_keys(const epee::wipeable_string &password);
     size_t get_transfer_details(const crypto::shared_secret_derived_public_key_image &ki) const;
 
-    void cache_tx_data(const cryptonote::transaction& tx, const crypto::hash &txid, tx_cache_data &tx_cache_data) const;
-
     void init_type();
     void setup_new_blockchain();
     void create_keys_file(const std::string &wallet_, const epee::wipeable_string &password);
