@@ -538,8 +538,8 @@ size_t wallet2::get_transfer_details(const crypto::shared_secret_derived_public_
 void wallet2::check_acc_out_precomp_once
 (
  const cryptonote::tx_out &o
- , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
- , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
+ , const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
+ , const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret
  , size_t i
  , tx_scan_info_t &tx_scan_info
  , bool &already_seen
@@ -549,13 +549,9 @@ void wallet2::check_acc_out_precomp_once
   if (already_seen)
     return;
 
-  const auto secret
-    = tx_output_shared_secrets.contains(i)
-    ? tx_output_shared_secrets.at(i)
-    : std::optional<crypto::tx_ecdh_shared_secret>();
-
   tx_scan_info = wallet::logic::functional::wallet::check_acc_out_precomp
-    (o, tx_shared_secret, secret, i, m_subaddresses);
+    (o, tx_shared_secret, tx_output_shared_secret, i, m_subaddresses);
+
   if (tx_scan_info.received)
     already_seen = true;
 }
@@ -726,7 +722,13 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     {
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        tpool.submit(&waiter, std::bind(&wallet2::check_acc_out_precomp_once, this, std::cref(tx.vout[i]), std::cref(tx_shared_secret), std::cref(tx_output_shared_secrets), i,
+        const auto secret
+          = tx_output_shared_secrets.contains(i)
+          ? tx_output_shared_secrets.at(i)
+          : std::optional<crypto::tx_ecdh_shared_secret>();
+
+        tpool.submit(&waiter, std::bind(&wallet2::check_acc_out_precomp_once, this, std::cref(tx.vout[i]), tx_shared_secret
+                                        , secret, i,
             std::ref(tx_scan_info[i]), std::ref(output_found[i])), true);
       }
       THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
@@ -748,7 +750,13 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     {
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, tx_output_shared_secrets, i, tx_scan_info[i], output_found[i]);
+        const auto secret
+          = tx_output_shared_secrets.contains(i)
+          ? tx_output_shared_secrets.at(i)
+          : std::optional<crypto::tx_ecdh_shared_secret>();
+
+        check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, secret, i, tx_scan_info[i], output_found[i]);
+
         THROW_WALLET_EXCEPTION_IF(tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key, m_account.get_keys());
         if (tx_scan_info[i].received)
         {
