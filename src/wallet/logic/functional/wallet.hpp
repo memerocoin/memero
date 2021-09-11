@@ -33,6 +33,7 @@
 
 #include "wallet/logic/type/transfer.hpp" // tranfser_details
 #include "wallet/logic/type/typedef.hpp"
+#include "wallet/logic/type/tx.hpp"
 
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX, backlog_entry
 
@@ -111,6 +112,15 @@ namespace wallet {
   float get_output_relatedness(const transfer_details& td0, const transfer_details& td1);
 
   std::pair<std::set<uint64_t>, size_t> outs_unique(const std::vector<std::vector<::wallet::logic::type::get_outs_entry>> outs);
+
+  type::tx::tx_scan_info_t check_acc_out_precomp
+  (
+   const cryptonote::tx_out &o
+   , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+   , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+   , const size_t i
+   , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+   );
 
 } // wallet
 } // functional

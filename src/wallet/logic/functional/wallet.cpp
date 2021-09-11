@@ -152,6 +152,44 @@ namespace wallet {
     return std::make_pair(std::move(unique), total);
   }
 
+  //----------------------------------------------------------------------------------------------------
+  type::tx::tx_scan_info_t check_acc_out_precomp
+  (
+   const cryptonote::tx_out &o
+   , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
+   , const std::vector<crypto::tx_ecdh_shared_secret> &tx_shared_secrets
+   , const size_t i
+   , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+   )
+  {
+    type::tx::tx_scan_info_t tx_scan_info;
+
+    if (o.target.type() !=  typeid(cryptonote::txout_to_key))
+      {
+        tx_scan_info.error = true;
+        LOG_ERROR("wrong type id in transaction out");
+        return tx_scan_info;
+      }
+    tx_scan_info.received = is_out_to_acc_precomp
+      (
+       m_subaddresses
+       , boost::get<cryptonote::txout_to_key>(o.target).shared_secret_derived_public_key
+       , tx_shared_secret
+       , tx_shared_secrets
+       , i
+       );
+    if(tx_scan_info.received)
+      {
+        tx_scan_info.money_transfered = o.amount; // may be 0 for ringct outputs
+      }
+    else
+      {
+        tx_scan_info.money_transfered = 0;
+      }
+    tx_scan_info.error = false;
+
+    return tx_scan_info;
+  }
 
 } // wallet
 } // functional
