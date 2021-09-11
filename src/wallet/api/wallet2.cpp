@@ -1260,15 +1260,16 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
   tools::threadpool::waiter waiter(tpool);
 
   size_t num_txes = 0;
-  std::vector<tx_cache_data> tx_cache_data;
+
   for (size_t i = 0; i < blocks.size(); ++i)
     num_txes += 1 + parsed_blocks[i].txes.size();
+
+  std::vector<tx_cache_data> tx_cache_data;
   tx_cache_data.resize(num_txes);
+
   size_t txidx = 0;
   for (size_t i = 0; i < blocks.size(); ++i)
   {
-    THROW_WALLET_EXCEPTION_IF(parsed_blocks[i].txes.size() != parsed_blocks[i].block.tx_hashes.size(),
-        error::wallet_internal_error, "Mismatched parsed_blocks[i].txes.size() and parsed_blocks[i].block.tx_hashes.size()");
     if (should_skip_block(parsed_blocks[i].block, start_height + i))
     {
       txidx += 1 + parsed_blocks[i].block.tx_hashes.size();
@@ -1280,9 +1281,6 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       ++txidx;
     }
   }
-  THROW_WALLET_EXCEPTION_IF(txidx != num_txes, error::wallet_internal_error, "txidx does not match tx_cache_data size");
-  THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
-
   const cryptonote::account_keys &keys = m_account.get_keys();
 
   auto gender = [&](wallet::logic::type::wallet::is_out_data &iod) {
