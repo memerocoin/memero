@@ -37,6 +37,8 @@
 
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX, backlog_entry
 
+#include "cryptonote/basic/account.h"
+
 
 using namespace wallet::logic::type::transfer;
 
@@ -120,6 +122,16 @@ namespace wallet {
    , const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret
    , const size_t i
    , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+   );
+
+  type::tx::tx_scan_info_t scan_output
+  (
+   const cryptonote::transaction &tx
+   , const bool miner_tx
+   , const size_t i
+   , const type::tx::tx_scan_info_t tx_scan_info_in
+   , const std::span<size_t> &outs
+   , const cryptonote::account_keys keys
    );
 
 } // wallet

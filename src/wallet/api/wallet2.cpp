@@ -557,89 +557,6 @@ void wallet2::check_acc_out_precomp_once
     already_seen = true;
 }
 //----------------------------------------------------------------------------------------------------
-static uint64_t decodeRct(const rct::rctData & rv, const crypto::tx_ecdh_shared_secret &tx_shared_secret, unsigned int i, rct::rct_scalar & mask)
-{
-  const crypto::ec_scalar s_der = crypto::hash_tx_shared_secret_to_scalar(tx_shared_secret, i);
-  try
-  {
-    switch (rv.type)
-    {
-    case rct::RCTTypeCLSAG: {
-      const auto [amount, mask_] = rct::decode_ringct_commitment(rv, rct::s2s(s_der), i);
-      mask = mask_;
-      return amount;
-    }
-    default:
-      LOG_ERROR("Unsupported rct type: " << rv.type);
-      return 0;
-    }
-  }
-  catch (const std::exception &e)
-  {
-    LOG_ERROR("Failed to decode input " << i);
-    return 0;
-  }
-}
-//----------------------------------------------------------------------------------------------------
-tx_scan_info_t wallet2::scan_output
-(
- const cryptonote::transaction &tx
- , const bool miner_tx
- , const size_t i
- , const tx_scan_info_t tx_scan_info_in
- , const std::span<size_t> &outs
- )
-{
-  THROW_WALLET_EXCEPTION_IF(i >= tx.vout.size(), error::wallet_internal_error, "Invalid vout index");
-
-  tx_scan_info_t tx_scan_info = tx_scan_info_in;
-
-  {
-    const auto r = cryptonote::derive_public_key_image_helper_precomp
-      (
-       m_account.get_keys()
-       , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key
-       , tx_scan_info.received->tx_shared_secret
-       , i
-       , tx_scan_info.received->index
-       );
-
-    THROW_WALLET_EXCEPTION_IF(!r, error::wallet_internal_error, "Failed to generate key image");
-    std::tie(tx_scan_info.shared_secret_derived_key, tx_scan_info.ki) = *r;
-
-    THROW_WALLET_EXCEPTION_IF
-      (
-       tx_scan_info.shared_secret_derived_key.pub
-       != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key
-       , error::wallet_internal_error
-       , "shared_secret_derived_public_key_image generated shared secret derived public key not matched with output_key"
-       );
-  }
-
-  THROW_WALLET_EXCEPTION_IF
-    (
-     std::find(outs.begin(), outs.end(), i) != outs.end()
-     , error::wallet_internal_error
-     , "Same output cannot be added twice"
-     );
-
-  if (tx_scan_info.money_transfered == 0 && !miner_tx)
-  {
-    tx_scan_info.money_transfered =
-      tools::decodeRct(tx.ringct_essential, tx_scan_info.received->tx_shared_secret, i, tx_scan_info.mask);
-  }
-
-  if (tx_scan_info.money_transfered == 0)
-  {
-    LOG_ERROR("Invalid output amount, skipping");
-    tx_scan_info.error = true;
-    return tx_scan_info;
-  }
-  tx_scan_info.amount = tx_scan_info.money_transfered;
-
-  return tx_scan_info;
-}
-//----------------------------------------------------------------------------------------------------
 bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
 {
   for (const auto &in: tx.vin)
@@ -788,7 +705,15 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
         if (tx_scan_info[i].received)
         {
-          tx_scan_info[i] = scan_output(tx, miner_tx, i, tx_scan_info[i], outs);
+          tx_scan_info[i] = wallet::logic::functional::wallet::scan_output
+            (
+             tx
+             , miner_tx
+             , i
+             , tx_scan_info[i]
+             , outs
+             , m_account.get_keys()
+             );
 
           if (!tx_scan_info[i].error)
           {

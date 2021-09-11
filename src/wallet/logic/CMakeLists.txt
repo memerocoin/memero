@@ -45,5 +45,6 @@ add_library(wallet_logic
 
 target_link_libraries(wallet_logic
   math_crypto
+  math_ringct
   cryptonote_basic
 )

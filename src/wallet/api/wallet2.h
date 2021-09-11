@@ -492,15 +492,6 @@ namespace tools
 
     std::vector<size_t> get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const;
 
-    tx_scan_info_t scan_output
-    (
-     const cryptonote::transaction &tx
-     , const bool miner_tx
-     , const size_t i
-     , const tx_scan_info_t tx_scan_info_in
-     , const std::span<size_t> &outs
-     );
-
     void trim_hashchain();
     void setup_keys(const epee::wipeable_string &password);
     size_t get_transfer_details(const crypto::shared_secret_derived_public_key_image &ki) const;
