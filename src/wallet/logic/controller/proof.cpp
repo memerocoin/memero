@@ -71,8 +71,6 @@ namespace proof {
 
     if (!view_secret_key)
     {
-      LOG_FATAL("get tx proof Out is unsupported");
-
       if (tx_key) {
         const auto ss = crypto::p2pk(address.m_view_public_key ^ (*tx_key));
 
