@@ -492,12 +492,12 @@ namespace tools
 
     std::vector<size_t> get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const;
 
-    void scan_output
+    std::tuple<tx_scan_info_t> scan_output
     (
      const cryptonote::transaction &tx
-     , bool miner_tx
-     , size_t i
-     , tx_scan_info_t &tx_scan_info
+     , const bool miner_tx
+     , const size_t i
+     , const tx_scan_info_t tx_scan_info_in
      , int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs
      , std::vector<size_t> &outs
      );
