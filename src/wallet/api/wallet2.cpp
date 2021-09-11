@@ -1354,11 +1354,18 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
           THROW_WALLET_EXCEPTION_IF(maybe_tx_pub_key->received.size() != n_vouts,
               error::wallet_internal_error, "Unexpected received array size");
 
+          std::map<size_t, crypto::tx_ecdh_shared_secret> output_secrets;
+          for (size_t i = 0; i < tx_output_shared_secrets.size(); i++) {
+            output_secrets[i] = tx_output_shared_secrets[i];
+          }
+
           maybe_tx_pub_key->received[k] =
             is_out_to_acc_precomp
             (
-             m_subaddresses, key, maybe_tx_pub_key->tx_shared_secret
-             , tx_output_shared_secrets, k
+             m_subaddresses
+             , key
+             , maybe_tx_pub_key->tx_shared_secret
+             , output_secrets, k
              );
           tx_output_shared_secrets.clear();
         }
