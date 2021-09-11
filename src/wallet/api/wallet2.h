@@ -491,7 +491,18 @@ namespace tools
      ) const;
 
     std::vector<size_t> get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const;
-    void scan_output(const cryptonote::transaction &tx, bool miner_tx, size_t i, tx_scan_info_t &tx_scan_info, int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs, std::vector<size_t> &outs, bool pool);
+
+    void scan_output
+    (
+     const cryptonote::transaction &tx
+     , bool miner_tx
+     , size_t i
+     , tx_scan_info_t &tx_scan_info
+     , int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs
+     , std::vector<size_t> &outs
+     , bool pool
+     );
+
     void trim_hashchain();
     void setup_keys(const epee::wipeable_string &password);
     size_t get_transfer_details(const crypto::shared_secret_derived_public_key_image &ki) const;

@@ -581,7 +581,16 @@ static uint64_t decodeRct(const rct::rctData & rv, const crypto::tx_ecdh_shared_
   }
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, size_t i, tx_scan_info_t &tx_scan_info, int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs, std::vector<size_t> &outs, bool pool)
+void wallet2::scan_output
+(
+ const cryptonote::transaction &tx
+ , bool miner_tx
+ , size_t i
+ , tx_scan_info_t &tx_scan_info
+ , int &num_vouts_received, std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs
+ , std::vector<size_t> &outs
+ , bool pool
+ )
 {
   THROW_WALLET_EXCEPTION_IF(i >= tx.vout.size(), error::wallet_internal_error, "Invalid vout index");
 
@@ -607,7 +616,13 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, size
        );
   }
 
-  THROW_WALLET_EXCEPTION_IF(std::find(outs.begin(), outs.end(), i) != outs.end(), error::wallet_internal_error, "Same output cannot be added twice");
+  THROW_WALLET_EXCEPTION_IF
+    (
+     std::find(outs.begin(), outs.end(), i) != outs.end()
+     , error::wallet_internal_error
+     , "Same output cannot be added twice"
+     );
+
   if (tx_scan_info.money_transfered == 0 && !miner_tx)
   {
     tx_scan_info.money_transfered =
@@ -620,8 +635,15 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, size
     return;
   }
   outs.push_back(i);
-  THROW_WALLET_EXCEPTION_IF(tx_money_got_in_outs[tx_scan_info.received->index] >= std::numeric_limits<uint64_t>::max() - tx_scan_info.money_transfered,
-      error::wallet_internal_error, "Overflow in received amounts");
+
+  THROW_WALLET_EXCEPTION_IF
+    (
+     tx_money_got_in_outs[tx_scan_info.received->index]
+     >= std::numeric_limits<uint64_t>::max() - tx_scan_info.money_transfered
+    , error::wallet_internal_error
+     , "Overflow in received amounts"
+     );
+
   tx_money_got_in_outs[tx_scan_info.received->index] += tx_scan_info.money_transfered;
   tx_scan_info.amount = tx_scan_info.money_transfered;
   ++num_vouts_received;
