@@ -1281,36 +1281,6 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
       ++txidx;
     }
   }
-  const cryptonote::account_keys &keys = m_account.get_keys();
-
-  auto gender = [&](wallet::logic::type::wallet::is_out_data &iod) {
-    const auto d =
-      crypto::derive_tx_ecdh_shared_secret(iod.pkey, keys.m_view_secret_key);
-    if (!d)
-    {
-      LOG_WARNING("Failed to generate key tx_shared_secret from tx pubkey, skipping");
-      static_assert(sizeof(iod.tx_shared_secret) == sizeof(rct::rct_point), "Mismatched sizes of tx_ecdh_shared_secret and rct::rct_point");
-      iod.tx_shared_secret = p2tx_shared_secret(rct::identity);
-    }
-    else {
-      iod.tx_shared_secret = *d;
-    }
-  };
-
-  for (size_t i = 0; i < tx_cache_data.size(); ++i)
-  {
-    if (tx_cache_data[i].empty())
-      continue;
-    tpool.submit(&waiter, [&gender, &tx_cache_data, i]() {
-      auto &slot = tx_cache_data[i];
-      if (slot.primary)
-        gender(*slot.primary);
-      for (auto &iod: slot.additional)
-        gender(iod);
-    }, true);
-  }
-  THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
-
   auto geniod = [&](const cryptonote::transaction &tx, size_t n_vouts, size_t txidx) {
     for (size_t k = 0; k < n_vouts; ++k)
     {
