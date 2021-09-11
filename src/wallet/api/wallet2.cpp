@@ -574,7 +574,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   const std::vector<tx_extra_field> &tx_extra_fields = local_tx_extra_fields;
 
   // Don't try to extract tx public key if tx has no ouputs
-  std::vector<tx_scan_info_t> tx_scan_info(tx.vout.size());
   uint64_t total_received_1 = 0;
 
   std::optional<crypto::public_key> tx_pub_key;
@@ -602,30 +601,26 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     }
 
     int num_vouts_received = 0;
-    tools::threadpool& tpool = tools::threadpool::getInstance();
-    tools::threadpool::waiter waiter(tpool);
 
     std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
     tx_extra_tx_output_public_keys tx_output_keys;
+
+    // additional tx pubkeys and tx_output_shared_secrets for multi-destination transfers involving one or more subaddresses
+    if (find_tx_extra_field_by_type(tx_extra_fields, tx_output_keys))
     {
+      for (size_t i = 0; i < tx_output_keys.data.size(); ++i)
       {
-        // additional tx pubkeys and tx_output_shared_secrets for multi-destination transfers involving one or more subaddresses
-        if (find_tx_extra_field_by_type(tx_extra_fields, tx_output_keys))
-        {
-          for (size_t i = 0; i < tx_output_keys.data.size(); ++i)
-          {
-            const auto tx_output_shared_secret =
-              crypto::derive_tx_ecdh_shared_secret(tx_output_keys.data[i], keys.m_view_secret_key);
-            if (!tx_output_shared_secret) {
-              LOG_WARNING("Failed to generate key tx_shared_secret from additional tx pubkey in " << txid << ", skipping");
-            } else {
-              tx_output_shared_secrets[i] = (*tx_output_shared_secret);
-            }
-          }
+        const auto tx_output_shared_secret =
+          crypto::derive_tx_ecdh_shared_secret(tx_output_keys.data[i], keys.m_view_secret_key);
+        if (!tx_output_shared_secret) {
+          LOG_WARNING("Failed to generate key tx_shared_secret from additional tx pubkey in " << txid << ", skipping");
+        } else {
+          tx_output_shared_secrets[i] = (*tx_output_shared_secret);
         }
       }
     }
 
+    std::vector<tx_scan_info_t> tx_scan_info(tx.vout.size());
     for (size_t i = 0; i < tx.vout.size(); ++i)
     {
       const auto secret
@@ -635,13 +630,18 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
       tx_scan_info[i] = wallet::logic::functional::wallet::check_acc_out_precomp
         (tx.vout[i], tx_shared_secret, secret, i, m_subaddresses);
-
     }
 
     for (size_t i = 0; i < tx.vout.size(); ++i)
     {
       THROW_WALLET_EXCEPTION_IF
-        (tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key.value_or(crypto::null_pkey), m_account.get_keys());
+        (
+         tx_scan_info[i].error
+         , error::acc_outs_lookup_error
+         , tx
+         , tx_pub_key.value_or(crypto::null_pkey)
+         , m_account.get_keys()
+         );
 
       if (tx_scan_info[i].received)
       {
