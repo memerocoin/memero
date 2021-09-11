@@ -685,7 +685,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     tools::threadpool& tpool = tools::threadpool::getInstance();
     tools::threadpool::waiter waiter(tpool);
     const cryptonote::account_keys& keys = m_account.get_keys();
-    crypto::tx_ecdh_shared_secret tx_shared_secret;
+    std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
 
     std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
     tx_extra_tx_output_public_keys tx_output_keys;
@@ -694,10 +694,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       if (!maybeTx_Shared_Secret)
       {
         LOG_WARNING("Failed to generate key tx_shared_secret from tx pubkey in " << txid << ", skipping");
-        static_assert(sizeof(tx_shared_secret) == sizeof(rct::rct_point), "Mismatched sizes of tx_ecdh_shared_secret and rct::rct_point");
-        tx_shared_secret = p2tx_shared_secret(rct::identity);
       } else {
-        tx_shared_secret = *maybeTx_Shared_Secret;
+        tx_shared_secret = maybeTx_Shared_Secret;
       }
 
       {
