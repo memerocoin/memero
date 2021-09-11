@@ -218,10 +218,15 @@ namespace cryptonote
     std::vector<size_t> ins_order(sources.size());
     for (size_t n = 0; n < sources.size(); ++n)
       ins_order[n] = n;
+
     std::sort(ins_order.begin(), ins_order.end(), [&](const size_t i0, const size_t i1) {
       const txin_to_key &tk0 = boost::get<txin_to_key>(tx.vin[i0]);
       const txin_to_key &tk1 = boost::get<txin_to_key>(tx.vin[i1]);
-      return memcmp(&tk0.shared_secret_derived_public_key_image, &tk1.shared_secret_derived_public_key_image, sizeof(tk0.shared_secret_derived_public_key_image)) > 0;
+      return memcmp
+        (&tk0.shared_secret_derived_public_key_image
+         , &tk1.shared_secret_derived_public_key_image
+         , sizeof(tk0.shared_secret_derived_public_key_image)
+         ) > 0;
     });
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D

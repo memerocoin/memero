@@ -3847,7 +3847,12 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       if (txin.type() == typeid(txin_to_key))
       {
         const txin_to_key& in_to_key = boost::get<txin_to_key>(txin);
-        if (last_shared_secret_derived_public_key_image && memcmp(&in_to_key.shared_secret_derived_public_key_image, last_shared_secret_derived_public_key_image, sizeof(*last_shared_secret_derived_public_key_image)) >= 0)
+        if (last_shared_secret_derived_public_key_image &&
+            memcmp
+            (&in_to_key.shared_secret_derived_public_key_image
+             , last_shared_secret_derived_public_key_image
+             , sizeof(*last_shared_secret_derived_public_key_image)) >= 0
+            )
         {
           LOG_ERROR_VER("transaction has unsorted inputs");
           tvc.m_verifivation_failed = true;
