@@ -581,13 +581,17 @@ static uint64_t decodeRct(const rct::rctData & rv, const crypto::tx_ecdh_shared_
   }
 }
 //----------------------------------------------------------------------------------------------------
-std::tuple<tx_scan_info_t> wallet2::scan_output
+std::tuple
+<
+  tx_scan_info_t
+  >
+
+wallet2::scan_output
 (
  const cryptonote::transaction &tx
  , const bool miner_tx
  , const size_t i
  , const tx_scan_info_t tx_scan_info_in
- , std::unordered_map<cryptonote::subaddress_index, uint64_t> &tx_money_got_in_outs
  , std::vector<size_t> &outs
  )
 {
@@ -629,6 +633,7 @@ std::tuple<tx_scan_info_t> wallet2::scan_output
     tx_scan_info.money_transfered =
       tools::decodeRct(tx.ringct_essential, tx_scan_info.received->tx_shared_secret, i, tx_scan_info.mask);
   }
+
   if (tx_scan_info.money_transfered == 0)
   {
     LOG_ERROR("Invalid output amount, skipping");
@@ -637,15 +642,6 @@ std::tuple<tx_scan_info_t> wallet2::scan_output
   }
   outs.push_back(i);
 
-  THROW_WALLET_EXCEPTION_IF
-    (
-     tx_money_got_in_outs[tx_scan_info.received->index]
-     >= std::numeric_limits<uint64_t>::max() - tx_scan_info.money_transfered
-    , error::wallet_internal_error
-     , "Overflow in received amounts"
-     );
-
-  tx_money_got_in_outs[tx_scan_info.received->index] += tx_scan_info.money_transfered;
   tx_scan_info.amount = tx_scan_info.money_transfered;
 
   return {tx_scan_info};
@@ -800,11 +796,22 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         if (tx_scan_info[i].received)
         {
           std::tie(tx_scan_info[i]) =
-            scan_output(tx, miner_tx, i, tx_scan_info[i], tx_money_got_in_outs, outs);
+            scan_output(tx, miner_tx, i, tx_scan_info[i], outs);
 
           if (!tx_scan_info[i].error)
           {
             num_vouts_received++;
+
+            THROW_WALLET_EXCEPTION_IF
+              (
+               tx_money_got_in_outs[tx_scan_info[i].received->index]
+               >= std::numeric_limits<uint64_t>::max() - tx_scan_info[i].money_transfered
+               , error::wallet_internal_error
+               , "Overflow in received amounts"
+               );
+
+            tx_money_got_in_outs[tx_scan_info[i].received->index] += tx_scan_info[i].money_transfered;
+
             tx_amounts_individual_outs[tx_scan_info[i].received->index].push_back(tx_scan_info[i].money_transfered);
           }
         }
