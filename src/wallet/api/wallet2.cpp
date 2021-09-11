@@ -585,14 +585,13 @@ std::tuple
 <
   tx_scan_info_t
   >
-
 wallet2::scan_output
 (
  const cryptonote::transaction &tx
  , const bool miner_tx
  , const size_t i
  , const tx_scan_info_t tx_scan_info_in
- , std::vector<size_t> &outs
+ , const std::span<size_t> &outs
  )
 {
   THROW_WALLET_EXCEPTION_IF(i >= tx.vout.size(), error::wallet_internal_error, "Invalid vout index");
@@ -640,8 +639,6 @@ wallet2::scan_output
     tx_scan_info.error = true;
     return {tx_scan_info};
   }
-  outs.push_back(i);
-
   tx_scan_info.amount = tx_scan_info.money_transfered;
 
   return {tx_scan_info};
@@ -801,6 +798,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
           if (!tx_scan_info[i].error)
           {
             num_vouts_received++;
+            outs.push_back(i);
 
             THROW_WALLET_EXCEPTION_IF
               (
