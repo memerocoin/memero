@@ -52,6 +52,7 @@
 #include "cryptonote/tx/tx_sanity_check.h"
 
 
+#include "tools/common/apply_permutation.h"
 #include "tools/common/command_line.h"
 #include "tools/common/json_util.h"
 #include "tools/common/notify.h"
