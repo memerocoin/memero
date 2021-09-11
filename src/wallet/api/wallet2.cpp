@@ -687,7 +687,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   bool notify = false;
 
   std::vector<tx_extra_field> local_tx_extra_fields;
-  if (tx_cache_data.tx_extra_fields.empty())
   {
     const auto maybe_tx_extra_fields = parse_tx_extra(tx.extra);
     if(maybe_tx_extra_fields) {
@@ -695,7 +694,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     }
   }
 
-  const std::vector<tx_extra_field> &tx_extra_fields = tx_cache_data.tx_extra_fields.empty() ? local_tx_extra_fields : tx_cache_data.tx_extra_fields;
+  const std::vector<tx_extra_field> &tx_extra_fields = local_tx_extra_fields;
 
   // Don't try to extract tx public key if tx has no ouputs
   std::vector<tx_scan_info_t> tx_scan_info(tx.vout.size());
@@ -1365,7 +1364,8 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
              m_subaddresses
              , key
              , maybe_tx_pub_key->tx_shared_secret
-             , output_secrets, k
+             , {}
+             , k
              );
           tx_output_shared_secrets.clear();
         }
