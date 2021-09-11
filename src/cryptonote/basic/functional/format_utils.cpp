@@ -184,7 +184,7 @@ namespace cryptonote
     {
       tx_extra_field field;
       bool r = ::do_serialize(ar, field);
-      LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+      LOG_WITH_LEVEL_3_AND_RETURN_UNLESS
         (
          r
          , {}
@@ -197,7 +197,7 @@ namespace cryptonote
       eof = (EOF == iss.peek());
       iss.clear(state);
     }
-    LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
+    LOG_WITH_LEVEL_3_AND_RETURN_UNLESS
       (
        ::serialization::check_stream_state(ar)
        , {}

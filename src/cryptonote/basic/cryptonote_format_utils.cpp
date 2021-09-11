@@ -252,7 +252,7 @@ namespace cryptonote
       {
         LOG_DEBUG
           (
-           "failed to deserialize extra field. extra = "
+           "sort tx extra: failed to deserialize extra field. extra = "
            << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
            );
 
@@ -271,7 +271,7 @@ namespace cryptonote
     {
       LOG_DEBUG
         (
-         "failed to deserialize extra field. extra = "
+         "sort tx extra: failed to deserialize extra field. extra = "
          << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
          );
       if (!allow_partial)
