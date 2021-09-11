@@ -648,48 +648,31 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       }
     }
 
-    // if (tx.vout.size() > 1 && tools::threadpool::getInstance().get_max_concurrency() > 1)
-    // {
-    //   for (size_t i = 0; i < tx.vout.size(); ++i)
-    //   {
-    //     const auto secret
-    //       = tx_output_shared_secrets.contains(i)
-    //       ? tx_output_shared_secrets.at(i)
-    //       : std::optional<crypto::tx_ecdh_shared_secret>();
+    if (tx.vout.size() > 1 && tools::threadpool::getInstance().get_max_concurrency() > 1)
+    {
+      for (size_t i = 0; i < tx.vout.size(); ++i)
+      {
+        const auto secret
+          = tx_output_shared_secrets.contains(i)
+          ? tx_output_shared_secrets.at(i)
+          : std::optional<crypto::tx_ecdh_shared_secret>();
 
-    //     tpool.submit(&waiter, std::bind
-    //                  (
-    //                   &wallet2::check_acc_out_precomp_once
-    //                   , this
-    //                   , std::cref(tx.vout[i])
-    //                   , tx_shared_secret
-    //                  , secret
-    //                   , i
-    //                   , std::ref(tx_scan_info[i])
-    //                   , std::ref(output_found[i]))
-    //                  , true
-    //                  );
-    //   }
-    //   THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
-
-    //   for (size_t i = 0; i < tx.vout.size(); ++i)
-    //   {
-    //     THROW_WALLET_EXCEPTION_IF
-    //       (tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key.value_or(crypto::null_pkey), m_account.get_keys());
-
-    //     if (tx_scan_info[i].received)
-    //     {
-    //       std::tie(tx_scan_info[i]) =
-    //         scan_output(tx, miner_tx, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs);
-
-    //       if (!tx_scan_info[i].error)
-    //       {
-    //         tx_amounts_individual_outs[tx_scan_info[i].received->index].push_back(tx_scan_info[i].money_transfered);
-    //       }
-    //     }
-    //   }
-    // }
-    // else
+        tpool.submit(&waiter, std::bind
+                     (
+                      &wallet2::check_acc_out_precomp_once
+                      , this
+                      , std::cref(tx.vout[i])
+                      , tx_shared_secret
+                     , secret
+                      , i
+                      , std::ref(tx_scan_info[i])
+                      , std::ref(output_found[i]))
+                     , true
+                     );
+      }
+      THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
+    }
+    else
     {
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
@@ -699,39 +682,42 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
           : std::optional<crypto::tx_ecdh_shared_secret>();
 
         check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, secret, i, tx_scan_info[i], output_found[i]);
+      }
+    }
 
-        THROW_WALLET_EXCEPTION_IF
-          (tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key.value_or(crypto::null_pkey), m_account.get_keys());
+    for (size_t i = 0; i < tx.vout.size(); ++i)
+    {
+      THROW_WALLET_EXCEPTION_IF
+        (tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key.value_or(crypto::null_pkey), m_account.get_keys());
 
-        if (tx_scan_info[i].received)
+      if (tx_scan_info[i].received)
+      {
+        tx_scan_info[i] = wallet::logic::functional::wallet::scan_output
+          (
+            tx
+            , miner_tx
+            , i
+            , tx_scan_info[i]
+            , outs
+            , m_account.get_keys()
+            );
+
+        if (!tx_scan_info[i].error)
         {
-          tx_scan_info[i] = wallet::logic::functional::wallet::scan_output
+          num_vouts_received++;
+          outs.push_back(i);
+
+          THROW_WALLET_EXCEPTION_IF
             (
-             tx
-             , miner_tx
-             , i
-             , tx_scan_info[i]
-             , outs
-             , m_account.get_keys()
-             );
+              tx_money_got_in_outs[tx_scan_info[i].received->index]
+              >= std::numeric_limits<uint64_t>::max() - tx_scan_info[i].money_transfered
+              , error::wallet_internal_error
+              , "Overflow in received amounts"
+              );
 
-          if (!tx_scan_info[i].error)
-          {
-            num_vouts_received++;
-            outs.push_back(i);
+          tx_money_got_in_outs[tx_scan_info[i].received->index] += tx_scan_info[i].money_transfered;
 
-            THROW_WALLET_EXCEPTION_IF
-              (
-               tx_money_got_in_outs[tx_scan_info[i].received->index]
-               >= std::numeric_limits<uint64_t>::max() - tx_scan_info[i].money_transfered
-               , error::wallet_internal_error
-               , "Overflow in received amounts"
-               );
-
-            tx_money_got_in_outs[tx_scan_info[i].received->index] += tx_scan_info[i].money_transfered;
-
-            tx_amounts_individual_outs[tx_scan_info[i].received->index].push_back(tx_scan_info[i].money_transfered);
-          }
+          tx_amounts_individual_outs[tx_scan_info[i].received->index].push_back(tx_scan_info[i].money_transfered);
         }
       }
     }
