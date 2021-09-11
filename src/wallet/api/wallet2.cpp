@@ -673,10 +673,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
   const cryptonote::account_keys& keys = m_account.get_keys();
 
-  bool looped = false;
-  while (!tx.vout.empty() && !looped)
+  if (!tx.vout.empty())
   {
-    looped = true;
     std::vector<size_t> outs;
     // if tx.vout is not empty, we loop through all tx pubkeys
 
@@ -692,7 +690,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         } else {
         tx_shared_secret = maybeTx_Shared_Secret;
       }
-
     }
 
     int num_vouts_received = 0;
@@ -729,9 +726,18 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
           ? tx_output_shared_secrets.at(i)
           : std::optional<crypto::tx_ecdh_shared_secret>();
 
-        tpool.submit(&waiter, std::bind(&wallet2::check_acc_out_precomp_once, this, std::cref(tx.vout[i]), tx_shared_secret
-                                        , secret, i,
-            std::ref(tx_scan_info[i]), std::ref(output_found[i])), true);
+        tpool.submit(&waiter, std::bind
+                     (
+                      &wallet2::check_acc_out_precomp_once
+                      , this
+                      , std::cref(tx.vout[i])
+                      , tx_shared_secret
+                     , secret
+                      , i
+                      , std::ref(tx_scan_info[i])
+                      , std::ref(output_found[i]))
+                     , true
+                     );
       }
       THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
 
@@ -739,9 +745,11 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       {
         THROW_WALLET_EXCEPTION_IF
           (tx_scan_info[i].error, error::acc_outs_lookup_error, tx, tx_pub_key.value_or(crypto::null_pkey), m_account.get_keys());
+
         if (tx_scan_info[i].received)
         {
           scan_output(tx, miner_tx, i, tx_scan_info[i], num_vouts_received, tx_money_got_in_outs, outs, pool);
+
           if (!tx_scan_info[i].error)
           {
             tx_amounts_individual_outs[tx_scan_info[i].received->index].push_back(tx_scan_info[i].money_transfered);
