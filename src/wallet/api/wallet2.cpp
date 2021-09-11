@@ -1306,7 +1306,7 @@ void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cry
     }
     else
     {
-      LOG_PRINT_L2("Block is already in blockchain: " << epee::string_tools::pod_to_hex(bl_id));
+      LOG_DEBUG("Block is already in blockchain: " << epee::string_tools::pod_to_hex(bl_id));
     }
     ++current_index;
   }
