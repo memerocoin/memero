@@ -648,41 +648,14 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       }
     }
 
-    if (tx.vout.size() > 1 && tools::threadpool::getInstance().get_max_concurrency() > 1)
+    for (size_t i = 0; i < tx.vout.size(); ++i)
     {
-      for (size_t i = 0; i < tx.vout.size(); ++i)
-      {
-        const auto secret
-          = tx_output_shared_secrets.contains(i)
-          ? tx_output_shared_secrets.at(i)
-          : std::optional<crypto::tx_ecdh_shared_secret>();
+      const auto secret
+        = tx_output_shared_secrets.contains(i)
+        ? tx_output_shared_secrets.at(i)
+        : std::optional<crypto::tx_ecdh_shared_secret>();
 
-        tpool.submit(&waiter, std::bind
-                     (
-                      &wallet2::check_acc_out_precomp_once
-                      , this
-                      , std::cref(tx.vout[i])
-                      , tx_shared_secret
-                     , secret
-                      , i
-                      , std::ref(tx_scan_info[i])
-                      , std::ref(output_found[i]))
-                     , true
-                     );
-      }
-      THROW_WALLET_EXCEPTION_IF(!waiter.wait(), error::wallet_internal_error, "Exception in thread pool");
-    }
-    else
-    {
-      for (size_t i = 0; i < tx.vout.size(); ++i)
-      {
-        const auto secret
-          = tx_output_shared_secrets.contains(i)
-          ? tx_output_shared_secrets.at(i)
-          : std::optional<crypto::tx_ecdh_shared_secret>();
-
-        check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, secret, i, tx_scan_info[i], output_found[i]);
-      }
+      check_acc_out_precomp_once(tx.vout[i], tx_shared_secret, secret, i, tx_scan_info[i], output_found[i]);
     }
 
     for (size_t i = 0; i < tx.vout.size(); ++i)
