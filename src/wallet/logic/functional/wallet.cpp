@@ -171,12 +171,17 @@ namespace wallet {
         return tx_scan_info;
       }
 
+    const auto secret
+      = tx_output_shared_secrets.contains(i)
+      ? tx_output_shared_secrets.at(i)
+      : std::optional<crypto::tx_ecdh_shared_secret>();
+
     tx_scan_info.received = is_out_to_acc_precomp
       (
        m_subaddresses
        , boost::get<cryptonote::txout_to_key>(o.target).shared_secret_derived_public_key
        , tx_shared_secret
-       , tx_output_shared_secrets
+       , secret
        , i
        );
     if(tx_scan_info.received)
