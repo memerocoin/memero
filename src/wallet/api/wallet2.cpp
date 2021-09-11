@@ -3411,12 +3411,33 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
      );
   THROW_WALLET_EXCEPTION_IF(!r, error::tx_not_constructed, sources, dsts, unlock_time, m_nettype);
 
-  const auto [tx_out, output_secret_keys] = *r;
+  const auto [tx_out, sources_out, output_secret_keys] = *r;
+
   tx = tx_out;
 
   LOG_PRINT_L2("constructed tx");
 
   THROW_WALLET_EXCEPTION_IF(upper_transaction_weight_limit <= get_transaction_weight(tx), error::tx_too_big, tx, upper_transaction_weight_limit);
+
+  // work out the permutation done on sources
+  std::vector<size_t> ins_order;
+  for (size_t n = 0; n < sources_out.size(); ++n)
+  {
+    for (size_t idx = 0; idx < sources_copy.size(); ++idx)
+    {
+      THROW_WALLET_EXCEPTION_IF
+        (
+         (size_t)sources_copy[idx].real_output >= sources_copy[idx].outputs.size()
+         , error::wallet_internal_error
+         , "Invalid real_output"
+         );
+      if (sources_copy[idx].outputs[sources_copy[idx].real_output].second.dest == sources[n].outputs[sources[n].real_output].second.dest) {
+        ins_order.push_back(idx);
+      }
+    }
+  }
+
+  THROW_WALLET_EXCEPTION_IF(ins_order.size() != sources.size(), error::wallet_internal_error, "Failed to work out sources permutation");
 
   LOG_PRINT_L2("gathering key images");
   std::string shared_secret_derived_public_key_images;
@@ -3442,6 +3463,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   ptx.construction_data.change_dts = change_dts;
   ptx.construction_data.splitted_dsts = splitted_dsts;
   ptx.construction_data.selected_transfers = ptx.selected_transfers;
+  tools::apply_permutation(ins_order, ptx.selected_transfers);
   ptx.construction_data.extra = tx.extra;
   ptx.construction_data.unlock_time = unlock_time;
   ptx.construction_data.use_rct = true;

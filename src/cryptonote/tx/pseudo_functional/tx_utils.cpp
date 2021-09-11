@@ -47,6 +47,7 @@ namespace cryptonote
   std::optional<
     std::tuple<
       transaction
+      , std::vector<tx_source_entry>
       , std::vector<crypto::secret_key>
       >>
 
@@ -60,7 +61,6 @@ namespace cryptonote
    , const uint64_t unlock_time
    )
   {
-    transaction tx;
     std::vector<crypto::secret_key> output_secret_keys;
 
     {
@@ -83,8 +83,8 @@ namespace cryptonote
        , output_secret_keys
        );
     if (r) {
-      tx = *r;
-      return {{tx, output_secret_keys}};
+      const auto [tx, sources] = *r;
+      return {{tx, sources, output_secret_keys}};
     }
 
     return {};

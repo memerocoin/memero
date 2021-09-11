@@ -31,6 +31,7 @@
 #include "tx_utils.hpp"
 
 #include "tools/epee/include/string_tools.h"
+#include "tools/common/apply_permutation.h"
 
 #include "math/crypto/controller/random.hpp"
 
@@ -113,24 +114,26 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<transaction> construct_tx_with_tx_key
+  std::optional<std::pair<transaction, std::vector<tx_source_entry>>> construct_tx_with_tx_key
   (
    const account_keys& sender_account_keys
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-   , const std::vector<tx_source_entry>& sources
+   , const std::vector<tx_source_entry>& sources_in
    , const std::vector<tx_destination_entry>& destinations
    , const std::vector<uint8_t> &extra
    , const uint64_t unlock_time
    , const std::vector<crypto::secret_key> &output_secret_keys
    )
   {
+    transaction tx;
+    std::vector<tx_source_entry> sources = sources_in;
+
     if (sources.empty())
     {
       LOG_ERROR("Empty sources");
       return {};
     }
 
-    transaction tx;
 
     rct::rct_scalarV tx_shared_secret_indexed_hashes;
     tx.set_null();
@@ -227,6 +230,12 @@ namespace cryptonote
          , &tk1.shared_secret_derived_public_key_image
          , sizeof(tk0.shared_secret_derived_public_key_image)
          ) > 0;
+    });
+
+    tools::apply_permutation(ins_order, [&] (size_t i0, size_t i1) {
+      std::swap(tx.vin[i0], tx.vin[i1]);
+      std::swap(in_contexts[i0], in_contexts[i1]);
+      std::swap(sources[i0], sources[i1]);
     });
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
@@ -376,7 +385,7 @@ namespace cryptonote
       LOG_CATEGORY_INFO("construct_tx", "transaction_created: " << tx_hash << std::endl << obj_to_json_str(tx) << std::endl);
     }
 
-    return tx;
+    return {{tx, sources}};
   }
 
   //---------------------------------------------------------------
