@@ -1136,7 +1136,16 @@ bool wallet2::should_skip_block(const cryptonote::block &b, uint64_t height) con
   return !(b.timestamp + 60*60*24 > m_account.get_createtime() && height >= m_refresh_from_block_height);
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::process_new_blockchain_entry(const cryptonote::block& b, const cryptonote::block_complete_entry& bche, const parsed_block &parsed_block, const crypto::hash& bl_id, uint64_t height, const std::vector<tx_cache_data> &tx_cache_data, size_t tx_cache_data_offset)
+void wallet2::process_new_blockchain_entry
+(
+ const cryptonote::block& b
+ , const cryptonote::block_complete_entry& bche
+ , const parsed_block &parsed_block
+ , const crypto::hash& bl_id
+ , uint64_t height
+ , const std::vector<tx_cache_data> &tx_cache_data
+ , size_t tx_cache_data_offset
+ )
 {
   THROW_WALLET_EXCEPTION_IF(bche.txs.size() + 1 != parsed_block.o_indices.indices.size(), error::wallet_internal_error,
       "block transactions=" + std::to_string(bche.txs.size()) +
@@ -1147,25 +1156,48 @@ void wallet2::process_new_blockchain_entry(const cryptonote::block& b, const cry
   //optimization: seeking only for blocks that are not older then the wallet creation time plus 1 day. 1 day is for possible user incorrect time setup
   if (!should_skip_block(b, height))
   {
-    TIME_MEASURE_START(miner_tx_handle_time);
-    process_new_transaction(get_transaction_hash(b.miner_tx), b.miner_tx, parsed_block.o_indices.indices[0].indices, height, b.major_version, b.timestamp, true, false, false, tx_cache_data[tx_cache_data_offset]);
-    ++tx_cache_data_offset;
-    TIME_MEASURE_FINISH(miner_tx_handle_time);
+    process_new_transaction
+      (
+       get_transaction_hash(b.miner_tx)
+       , b.miner_tx
+       , parsed_block.o_indices.indices[0].indices
+       , height
+       , b.major_version
+       , b.timestamp
+       , true
+       , false
+       , false
+       , tx_cache_data[tx_cache_data_offset]
+       );
 
-    TIME_MEASURE_START(txs_handle_time);
+    ++tx_cache_data_offset;
+
     THROW_WALLET_EXCEPTION_IF(bche.txs.size() != b.tx_hashes.size(), error::wallet_internal_error, "Wrong amount of transactions for block");
     THROW_WALLET_EXCEPTION_IF(bche.txs.size() != parsed_block.txes.size(), error::wallet_internal_error, "Wrong amount of transactions for block");
+
     for (size_t idx = 0; idx < b.tx_hashes.size(); ++idx)
     {
-      process_new_transaction(b.tx_hashes[idx], parsed_block.txes[idx], parsed_block.o_indices.indices[idx+1].indices, height, b.major_version, b.timestamp, false, false, false, tx_cache_data[tx_cache_data_offset++]);
+      process_new_transaction
+        (
+         b.tx_hashes[idx]
+         , parsed_block.txes[idx]
+         , parsed_block.o_indices.indices[idx+1].indices
+         , height
+         , b.major_version
+         , b.timestamp
+         , false
+         , false
+         , false
+         , tx_cache_data[tx_cache_data_offset++]
+         );
     }
-    TIME_MEASURE_FINISH(txs_handle_time);
-    LOG_PRINT_L2("Processed block: " << bl_id << ", height " << height << ", " <<  miner_tx_handle_time + txs_handle_time << "(" << miner_tx_handle_time << "/" << txs_handle_time <<")ms");
-  }else
+  }
+  else
   {
     if (!(height % 128))
       LOG_PRINT_L2( "Skipped block by timestamp, height: " << height << ", block time " << b.timestamp << ", account time " << m_account.get_createtime());
   }
+
   m_blockchain.push_back(bl_id);
 
   if (0 != m_callback)
