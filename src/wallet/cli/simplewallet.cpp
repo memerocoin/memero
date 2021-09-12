@@ -3120,7 +3120,7 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
   uint32_t index = 0;
   if (local_args.empty())
   {
-    print_address_sub(1);
+    print_address_sub(0);
   }
   else if (local_args.size() == 1 && local_args[0] == "all")
   {
@@ -3134,8 +3134,6 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
     std::string label;
     if (local_args.size() > 0)
       label = boost::join(local_args, " ");
-    if (label.empty())
-      label = sw::tr("(Untitled address)");
     m_wallet->add_subaddress(m_current_subaddress_account, label);
     print_address_sub(m_wallet->get_num_subaddresses(m_current_subaddress_account) - 1);
   }
