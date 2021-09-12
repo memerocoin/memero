@@ -106,19 +106,21 @@ namespace cryptonote {
         return false;
       }
 
+      account_public_address_unsafe unsafe_address;
+      if (!::serialization::parse_binary(data, unsafe_address))
       {
-        if (!::serialization::parse_binary(data, info.address))
-        {
-          LOG_PRINT_L1("Account public address keys can't be parsed");
-          return false;
-        }
+        LOG_PRINT_L1("Account public address keys can't be parsed");
+        return false;
       }
 
-      if (!crypto::is_safe_point(info.address.m_spend_public_key) || !crypto::is_safe_point(info.address.m_view_public_key))
-      {
+      const auto maybe_safe_address = maybe_safe_account_public_address(unsafe_address);
+
+      if (!maybe_safe_address) {
         LOG_PRINT_L1("Failed to validate address keys");
         return false;
       }
+
+      info.address = *maybe_safe_address;
 
       return true;
     }

@@ -87,4 +87,17 @@ namespace cryptonote
 
     return boost::apply_visitor(txin_signature_size_visitor(), tx_in);
   }
+
+  std::optional<account_public_address> maybe_safe_account_public_address(const account_public_address_unsafe x)
+  {
+    const auto spend_pk = maybeSafePoint(x.m_spend_public_key);
+    const auto view_pk = maybeSafePoint(x.m_view_public_key);
+
+    if (spend_pk && view_pk) {
+      return {{*spend_pk, *view_pk}};
+    }
+    else {
+      return {};
+    }
+  }
 }

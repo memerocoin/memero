@@ -289,18 +289,31 @@ namespace cryptonote
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  struct account_public_address
+  struct account_public_address_unsafe
   {
     crypto::public_key m_spend_public_key;
     crypto::public_key m_view_public_key;
 
     BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
-      KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
     END_KV_SERIALIZE_MAP()
+  };
+
+  struct account_public_address
+  {
+    crypto::public_key m_spend_public_key;
+    crypto::public_key m_view_public_key;
 
     bool operator==(const account_public_address& rhs) const = default;
+
+    BEGIN_KV_SERIALIZE_MAP()
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
+    END_KV_SERIALIZE_MAP()
   };
+
+  std::optional<account_public_address> maybe_safe_account_public_address(const account_public_address_unsafe x);
 
   struct keypair
   {
@@ -337,6 +350,7 @@ BLOB_SERIALIZER(cryptonote::txout_to_key);
 BLOB_SERIALIZER(cryptonote::txout_to_script);
 BLOB_SERIALIZER(cryptonote::txout_to_scripthash);
 BLOB_SERIALIZER(cryptonote::account_public_address);
+BLOB_SERIALIZER(cryptonote::account_public_address_unsafe);
 
 VARIANT_TAG(binary_archive, cryptonote::txin_gen, 0xff);
 VARIANT_TAG(binary_archive, cryptonote::txin_to_script, 0x0);
