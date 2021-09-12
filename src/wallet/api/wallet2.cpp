@@ -119,7 +119,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   if (daemon_address.empty())
     daemon_address = std::string("http://") + daemon_host + ":" + std::to_string(daemon_port);
 
-  std::unique_ptr<tools::wallet2> wallet(new tools::wallet2(nettype, kdf_rounds, unattended));
+  std::unique_ptr<tools::wallet2> wallet = std::make_unique<tools::wallet2>(nettype, kdf_rounds, unattended);
   if (!wallet->init(std::move(daemon_address)))
   {
     THROW_WALLET_EXCEPTION(tools::error::wallet_internal_error, tools::wallet2::tr("failed to initialize the wallet"));
@@ -131,7 +131,8 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   try
   {
     if (!command_line::is_arg_defaulted(vm, opts.tx_notify))
-      wallet->set_tx_notify(std::shared_ptr<tools::Notify>(new tools::Notify(command_line::get_arg(vm, opts.tx_notify).c_str())));
+      wallet->set_tx_notify
+        (std::make_shared<tools::Notify>(tools::Notify(command_line::get_arg(vm, opts.tx_notify).c_str())));
   }
   catch (const std::exception &e)
   {
