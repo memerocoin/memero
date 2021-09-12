@@ -133,13 +133,6 @@ namespace proof {
       sig[i].second = *maybeSig2;
     }
 
-    const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
-
-    std::vector<crypto::public_key> tx_output_keys = get_tx_output_public_keys_from_extra(tx);
-
-    const auto expected_sigs = tx_pub_key ? tx_output_keys.size() + 1 : tx_output_keys.size();
-    THROW_WALLET_EXCEPTION_IF(expected_sigs != num_sigs, error::wallet_internal_error, "Signature size mismatch with additional tx pubkeys");
-
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     epee::blob::data prefix_data(txid.data.data(), txid.data.size());
     prefix_data += epee::string_tools::string_to_blob(message);
@@ -147,34 +140,21 @@ namespace proof {
 
     // check signature
     std::vector<int> good_signature(num_sigs, 0);
+
+    const auto maybe_tx_output_pub_keys = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
+    if (!maybe_tx_output_pub_keys) return false;
+    const auto tx_output_pub_keys = *maybe_tx_output_pub_keys;
+
     if (is_out)
     {
-      std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
-
-      if (tx_pub_key) {
-        const bool good_signature_for_tx_pub_key =
-          is_subaddress
-          ? crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, address.m_spend_public_key, shared_secret[0], sig[0])
-          : crypto::verify_tx_proof(prefix_hash, *tx_pub_key, address.m_view_public_key, std::nullopt, shared_secret[0], sig[0]);
-
-        if (good_signature_for_tx_pub_key) {
-          tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
-        } else {
-          LOG_WARNING("bad signature for pub key");
-        }
-
-        shared_secret.erase(shared_secret.begin());
-        sig.erase(sig.begin());
-      }
-
       std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
-      for (size_t i = 0; i < tx_output_keys.size(); ++i)
+      for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
       {
         const bool good_signature_for_tx_output_pub_key = is_subaddress
           ? crypto::verify_tx_proof
-          (prefix_hash, tx_output_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i])
+          (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i])
           : crypto::verify_tx_proof
-          (prefix_hash, tx_output_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
+          (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
 
         if (good_signature_for_tx_output_pub_key) {
           const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret =
@@ -192,7 +172,7 @@ namespace proof {
       }
 
       received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, *tx_shared_secret, tx_output_shared_secrets, address);
+        (tx, {}, tx_output_shared_secrets, address);
 
       return true;
     }
@@ -201,33 +181,15 @@ namespace proof {
 
     else
     {
-      std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
-
-      if (tx_pub_key) {
-        const bool good_signature_for_tx_pub_key =
-          is_subaddress
-          ? crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, *tx_pub_key, address.m_spend_public_key, shared_secret[0], sig[0])
-          : crypto::verify_tx_proof(prefix_hash, address.m_view_public_key, *tx_pub_key, std::nullopt, shared_secret[0], sig[0]);
-
-        if (good_signature_for_tx_pub_key) {
-          tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(shared_secret[0], crypto::s2sk(rct::s_one));
-        } else {
-          LOG_WARNING("bad signature for pub key");
-        }
-
-        shared_secret.erase(shared_secret.begin());
-        sig.erase(sig.begin());
-      }
-
       std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
 
-      for (size_t i = 0; i < tx_output_keys.size(); ++i)
+      for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
       {
         const bool good_signature_for_tx_output_pub_key = is_subaddress
           ? crypto::verify_tx_proof
-          (prefix_hash, address.m_view_public_key, tx_output_keys[i], address.m_spend_public_key, shared_secret[i], sig[i])
+          (prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], address.m_spend_public_key, shared_secret[i], sig[i])
           : crypto::verify_tx_proof
-            (prefix_hash, address.m_view_public_key, tx_output_keys[i], std::nullopt, shared_secret[i], sig[i]);
+            (prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], std::nullopt, shared_secret[i], sig[i]);
 
         if (good_signature_for_tx_output_pub_key) {
           const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret =
@@ -245,7 +207,7 @@ namespace proof {
       }
 
       received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, *tx_shared_secret, tx_output_shared_secrets, address);
+        (tx, {}, tx_output_shared_secrets, address);
 
       return true;
     }
