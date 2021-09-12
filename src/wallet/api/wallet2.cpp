@@ -585,14 +585,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     {
       for (size_t i = 0; i < tx_output_public_keys->size(); ++i)
       {
-        const auto tx_output_shared_secret =
+        tx_output_shared_secrets[i] =
           crypto::derive_tx_ecdh_shared_secret(tx_output_public_keys->at(i), keys.m_view_secret_key);
-
-        if (!tx_output_shared_secret) {
-          LOG_WARNING("Failed to generate key tx_shared_secret from additional tx pubkey in " << txid << ", skipping");
-        } else {
-          tx_output_shared_secrets[i] = (*tx_output_shared_secret);
-        }
       }
     }
 
@@ -4000,22 +3994,12 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
   std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
   if (tx_key) {
     tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, *tx_key);
-
-    THROW_WALLET_EXCEPTION_IF
-      (!tx_shared_secret, error::wallet_internal_error,
-       "Failed to generate key tx_shared_secret from supplied parameters");
   }
 
   std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
   for (size_t i = 0; i < output_secret_keys.size(); ++i) {
-    const auto d = crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, output_secret_keys[i]);
-
-    THROW_WALLET_EXCEPTION_IF
-      (!d
-       , error::wallet_internal_error
-       , "Failed to generate key tx_shared_secret from supplied parameters");
-
-    tx_output_shared_secrets[i] = *d;
+    tx_output_shared_secrets[i] =
+      crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, output_secret_keys[i]);
   }
 
   verify_tx_key_helper(txid, tx_shared_secret, tx_output_shared_secrets, address, received, in_pool, confirmations);

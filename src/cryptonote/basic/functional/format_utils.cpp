@@ -82,16 +82,9 @@ namespace cryptonote
     std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
     for (size_t i = 0; i < output_public_keys.size(); ++i)
     {
-      const std::optional<crypto::tx_ecdh_shared_secret> additional_recv_tx_shared_secret =
+      const auto additional_recv_tx_shared_secret =
         crypto::derive_tx_ecdh_shared_secret(output_public_keys[i], ack.m_view_secret_key);
-      if (!additional_recv_tx_shared_secret)
-      {
-        LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << output_public_keys[i] << ", " << ack.m_view_secret_key << ")");
-      }
-      else
-      {
-        tx_output_shared_secrets[i] = *additional_recv_tx_shared_secret;
-      }
+      tx_output_shared_secrets[i] = additional_recv_tx_shared_secret;
     }
     const auto secret
       = tx_output_shared_secrets.contains(real_output_index)

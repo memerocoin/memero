@@ -103,10 +103,10 @@ namespace crypto {
     return out;
   }
 
-  std::optional<tx_ecdh_shared_secret> derive_tx_ecdh_shared_secret
+  tx_ecdh_shared_secret derive_tx_ecdh_shared_secret
   (
-   const public_key &pk
-   , const secret_key &sk
+   const public_key pk
+   , const secret_key sk
    ) noexcept
   {
     return p2tx_shared_secret(mult8Safe(pk) ^ sk);

@@ -107,10 +107,10 @@ namespace crypto {
    * * The sender uses key derivation and the receivers' "spend" key to derive an shared secret derived public key.
    * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
    */
-  std::optional<tx_ecdh_shared_secret> derive_tx_ecdh_shared_secret
+  tx_ecdh_shared_secret derive_tx_ecdh_shared_secret
   (
-   const public_key &pk
-   , const secret_key &sk
+   const public_key pk
+   , const secret_key sk
    ) noexcept;
 
 

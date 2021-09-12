@@ -157,14 +157,10 @@ namespace proof {
           (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
 
         if (good_signature_for_tx_output_pub_key) {
-          const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret =
+          const auto tx_output_shared_secret =
             crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
 
-          THROW_WALLET_EXCEPTION_IF
-            ( !tx_output_shared_secret
-              , error::wallet_internal_error, "Failed to generate key derivation");
-
-          tx_output_shared_secrets[i] = *tx_output_shared_secret;
+          tx_output_shared_secrets[i] = tx_output_shared_secret;
 
         } else {
           LOG_WARNING("bad signature for additional pub key at index: " << i);
@@ -192,14 +188,10 @@ namespace proof {
             (prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], std::nullopt, shared_secret[i], sig[i]);
 
         if (good_signature_for_tx_output_pub_key) {
-          const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret =
+          const auto tx_output_shared_secret =
             crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
 
-          THROW_WALLET_EXCEPTION_IF
-            ( !tx_output_shared_secret
-              , error::wallet_internal_error, "Failed to generate key derivation");
-
-          tx_output_shared_secrets[i] = *tx_output_shared_secret;
+          tx_output_shared_secrets[i] = tx_output_shared_secret;
 
         } else {
           LOG_WARNING("bad signature for additional pub key at index: " << i);
