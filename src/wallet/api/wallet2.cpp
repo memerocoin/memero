@@ -3245,8 +3245,9 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   }
   else
   {
-    change_dts.addr = get_subaddress({subaddr_account, 0});
-    change_dts.is_subaddress = subaddr_account != 0;
+    const uint32_t change_subaddress_index = subaddr_account == 0 ? 1 : 0;
+    change_dts.addr = get_subaddress({subaddr_account, change_subaddress_index});
+    change_dts.is_subaddress = true;
     splitted_dsts.push_back(change_dts);
   }
 
