@@ -295,7 +295,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::string short_hash_str(const crypto::hash& h)
+  std::string short_hash_str(const crypto::hash h)
   {
     std::string res = epee::string_tools::pod_to_hex(h);
     LOG_ERROR_AND_RETURN_UNLESS(res.size() == 64, res, "wrong hash256 with epee::string_tools::pod_to_hex conversion");

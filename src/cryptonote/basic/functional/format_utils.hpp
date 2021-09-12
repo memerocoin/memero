@@ -88,7 +88,7 @@ namespace cryptonote
 
   crypto::hash get_blob_hash(const blobdata blob);
   crypto::hash get_blob_hash(const blobdata_ref blob);
-  std::string short_hash_str(const crypto::hash& h);
+  std::string short_hash_str(const crypto::hash h);
 
   //---------------------------------------------------------------
   crypto::hash calculate_transaction_prunable_hash
