@@ -105,14 +105,11 @@ namespace crypto {
 
   std::optional<tx_ecdh_shared_secret> derive_tx_ecdh_shared_secret
   (
-   const ec_point_unsafe &unsafe_point
+   const public_key &pk
    , const secret_key &sk
    ) noexcept
   {
-    const auto p = maybeSafePoint(unsafe_point);
-    if (!p) return {};
-
-    return p2tx_shared_secret(mult8Safe(*p ^ sk));
+    return p2tx_shared_secret(mult8Safe(pk) ^ sk);
   }
 
   ec_scalar hash_tx_shared_secret_to_scalar

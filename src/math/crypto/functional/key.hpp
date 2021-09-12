@@ -109,7 +109,7 @@ namespace crypto {
    */
   std::optional<tx_ecdh_shared_secret> derive_tx_ecdh_shared_secret
   (
-   const ec_point_unsafe &unsafe_point
+   const public_key &pk
    , const secret_key &sk
    ) noexcept;
 
