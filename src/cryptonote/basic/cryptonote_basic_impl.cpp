@@ -125,19 +125,6 @@ namespace cryptonote {
     return false;
   }
   //--------------------------------------------------------------------------------
-  bool get_account_address_from_str_or_url(
-      address_parse_info& info
-    , network_type nettype
-    , const std::string& str_or_url
-    )
-  {
-    if (get_account_address_from_str(info, nettype, str_or_url))
-      return true;
-    std::string address_str;
-    return !address_str.empty() &&
-      get_account_address_from_str(info, nettype, address_str);
-  }
-  //--------------------------------------------------------------------------------
   bool operator ==(const cryptonote::transaction& a, const cryptonote::transaction& b) {
     return cryptonote::get_transaction_hash(a) == cryptonote::get_transaction_hash(b);
   }

@@ -523,7 +523,7 @@ namespace tools
       cryptonote::address_parse_info info;
       cryptonote::tx_destination_entry de;
       er.message = "";
-      if(!get_account_address_from_str_or_url(info, m_wallet->nettype(), it->address))
+      if(!get_account_address_from_str(info, m_wallet->nettype(), it->address))
       {
         er.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
         if (er.message.empty())
@@ -1073,7 +1073,7 @@ namespace tools
 
     cryptonote::address_parse_info info;
     er.message = "";
-    if(!get_account_address_from_str_or_url(info, m_wallet->nettype(), req.address))
+    if(!get_account_address_from_str(info, m_wallet->nettype(), req.address))
     {
       er.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
       return false;
@@ -2018,7 +2018,7 @@ namespace tools
       if (req.allow_openalias)
       {
         std::string address;
-        res.valid = get_account_address_from_str_or_url(info, net_type.type, req.address);
+        res.valid = get_account_address_from_str(info, net_type.type, req.address);
         if (res.valid)
           res.openalias_address = address;
       }
