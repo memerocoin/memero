@@ -571,8 +571,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     }
   }
 
-  const std::vector<tx_extra_field> &tx_extra_fields = local_tx_extra_fields;
-
   // Don't try to extract tx public key if tx has no ouputs
   uint64_t total_received_1 = 0;
 
@@ -585,22 +583,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   {
     std::vector<size_t> outs;
     // if tx.vout is not empty, we loop through all tx pubkeys
-
-    tx_extra_tx_public_key pub_key_field;
-
-    if(find_tx_extra_field_by_type(tx_extra_fields, pub_key_field))
-    {
-      tx_pub_key = pub_key_field.pub_key;
-      const auto maybeTx_Shared_Secret = crypto::derive_tx_ecdh_shared_secret(*tx_pub_key, keys.m_view_secret_key);
-      if (!maybeTx_Shared_Secret)
-        {
-          LOG_WARNING("Failed to generate key tx_shared_secret from tx pubkey in " << txid << ", skipping");
-        } else {
-        tx_shared_secret = maybeTx_Shared_Secret;
-      }
-    }
-
-    int num_vouts_received = 0;
 
     // const size_t vout_size = tx.vout.size();
 
@@ -636,6 +618,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         (tx.vout[i], tx_shared_secret, secret, i, m_subaddresses);
     }
 
+    int num_vouts_received = 0;
     for (size_t i = 0; i < tx.vout.size(); ++i)
     {
       THROW_WALLET_EXCEPTION_IF
