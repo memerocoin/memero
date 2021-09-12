@@ -431,19 +431,6 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::vector<crypto::public_key> get_tx_pub_keys_from_extra(const transaction& tx)
-  {
-    const auto x = get_tx_pub_key_from_extra(tx);
-    std::vector<crypto::public_key> xs = get_tx_output_public_keys_from_extra(tx);
-
-    if(x) {
-      xs.insert(xs.begin(), *x);
-    }
-
-    return xs;
-  }
-
-  //---------------------------------------------------------------
   uint64_t get_block_height(const block& b)
   {
     LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin.size() == 1, 0, "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1");
