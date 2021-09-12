@@ -563,19 +563,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
   bool notify = false;
 
-  std::vector<tx_extra_field> local_tx_extra_fields;
-  {
-    const auto maybe_tx_extra_fields = parse_tx_extra(tx.extra);
-    if(maybe_tx_extra_fields) {
-      local_tx_extra_fields = *maybe_tx_extra_fields;
-    }
-  }
-
   // Don't try to extract tx public key if tx has no ouputs
   uint64_t total_received_1 = 0;
-
-  std::optional<crypto::public_key> tx_pub_key;
-  std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
 
   const cryptonote::account_keys& keys = m_account.get_keys();
 
@@ -615,7 +604,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         : std::optional<crypto::tx_ecdh_shared_secret>();
 
       tx_scan_info[i] = wallet::logic::functional::wallet::check_acc_out_precomp
-        (tx.vout[i], tx_shared_secret, secret, i, m_subaddresses);
+        (tx.vout[i], secret, i, m_subaddresses);
     }
 
     int num_vouts_received = 0;
@@ -626,7 +615,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
          tx_scan_info[i].error
          , error::acc_outs_lookup_error
          , tx
-         , tx_pub_key.value_or(crypto::null_pkey)
+         , crypto::null_pkey
          , m_account.get_keys()
          );
 
