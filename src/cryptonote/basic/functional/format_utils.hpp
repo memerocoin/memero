@@ -150,7 +150,7 @@ namespace cryptonote
   crypto::secret_key encrypt_key(const crypto::secret_key key, const epee::wipeable_string &passphrase);
   crypto::secret_key decrypt_key(const crypto::secret_key key, const epee::wipeable_string &passphrase);
 
-  crypto::hash get_tx_tree_hash(const std::vector<crypto::hash>& tx_hashes);
+  crypto::hash get_tx_tree_hash(const std::span<const crypto::hash> tx_hashes);
   crypto::hash get_tx_tree_hash(const block& b);
 
   uint64_t get_tx_fee(const transaction& tx);
