@@ -324,7 +324,17 @@ namespace cryptonote
   bool add_tx_output_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::vector<crypto::public_key>& output_pub_keys)
   {
     // convert to variant
-    tx_extra_field field = tx_extra_tx_output_public_keys{ output_pub_keys };
+    std::vector<crypto::ec_point_unsafe> output_pub_keys_unsafe;
+
+    std::transform
+      (
+       output_pub_keys.begin()
+       , output_pub_keys.end()
+       , std::back_inserter(output_pub_keys_unsafe)
+       , std::identity()
+       );
+
+    tx_extra_field field = tx_extra_tx_output_public_keys{ output_pub_keys_unsafe };
     // serialize
     std::ostringstream oss;
     binary_archive<true> ar(oss);

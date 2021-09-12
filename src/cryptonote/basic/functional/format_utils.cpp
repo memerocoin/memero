@@ -219,7 +219,14 @@ namespace cryptonote
     if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, pub_key_field))
       return {};
 
-    return pub_key_field.pub_key;
+    const auto maybe_safe_point = maybeSafePoint(pub_key_field.pub_key_unsafe);
+
+    if (maybe_safe_point) {
+      return crypto::p2pk(*maybe_safe_point);
+    } else {
+      return {};
+    }
+
   }
   //---------------------------------------------------------------
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction_prefix& tx_prefix)
@@ -564,11 +571,25 @@ namespace cryptonote
     if (!maybe_tx_extra_fields) return {};
 
     // find corresponding field
-    tx_extra_tx_output_public_keys output_pub_keys;
-    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, output_pub_keys))
+    tx_extra_tx_output_public_keys output_pub_keys_unsafe;
+    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, output_pub_keys_unsafe))
       return {};
 
-    return output_pub_keys.data;
+    std::vector<crypto::public_key> output_pub_keys;
+
+    std::for_each
+      (
+       output_pub_keys_unsafe.pub_keys_unsafe.begin()
+       , output_pub_keys_unsafe.pub_keys_unsafe.end()
+       , [&output_pub_keys](const auto& k) {
+         const auto maybe_safe_point = crypto::maybeSafePoint(k);
+         if (maybe_safe_point) {
+           output_pub_keys.push_back(crypto::p2pk(*maybe_safe_point));
+         }
+       }
+       );
+
+    return output_pub_keys;
   }
   //---------------------------------------------------------------
   std::vector<crypto::public_key> get_tx_output_public_keys_from_extra(const transaction_prefix& tx)

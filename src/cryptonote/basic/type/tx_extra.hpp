@@ -38,20 +38,20 @@ namespace cryptonote
 {
   struct tx_extra_tx_public_key
   {
-    crypto::public_key pub_key;
+    crypto::ec_point_unsafe pub_key_unsafe;
 
     BEGIN_SERIALIZE()
-      FIELD(pub_key)
+      FIELD(pub_key_unsafe)
     END_SERIALIZE()
   };
 
   // per-output additional tx pubkey for multi-destination transfers involving at least one subaddress
   struct tx_extra_tx_output_public_keys
   {
-    std::vector<crypto::public_key> data;
+    std::vector<crypto::ec_point_unsafe> pub_keys_unsafe;
 
     BEGIN_SERIALIZE()
-      FIELD(data)
+      FIELD(pub_keys_unsafe)
     END_SERIALIZE()
   };
 
