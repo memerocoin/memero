@@ -2202,7 +2202,7 @@ void wallet2::setup_new_blockchain()
   cryptonote::block b;
   generate_genesis(b);
   m_blockchain.push_back(get_block_hash(b));
-  add_subaddress_account(tr("Primary account"));
+  add_subaddress_account("");
 }
 
 void wallet2::create_keys_file(const std::string &wallet_, const epee::wipeable_string &password)
@@ -2513,9 +2513,6 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
   }
 
   trim_hashchain();
-
-  if (get_num_subaddress_accounts() == 0)
-    add_subaddress_account(tr("Primary account"));
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::trim_hashchain()
