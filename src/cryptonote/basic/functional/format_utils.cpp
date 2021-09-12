@@ -589,6 +589,48 @@ namespace cryptonote
     return get_tx_output_public_keys_from_extra(tx.extra);
   }
 
+  std::optional<std::vector<crypto::public_key>> get_all_tx_output_public_keys_from_extra
+  (
+   const transaction& tx
+   , const size_t outputs_count
+   ){
+    const std::vector<crypto::public_key> xs = get_tx_output_public_keys_from_extra(tx);
+
+    if (xs.size() == outputs_count) {
+      const bool all_good_keys =
+        std::transform_reduce
+        (
+         xs.begin()
+         , xs.end()
+         , true
+         , std::logical_and()
+         , crypto::is_safe_point
+         );
+
+      if (all_good_keys) {
+        return xs;
+      }
+      else {
+        return {};
+      }
+    }
+
+    const auto x = get_tx_pub_key_from_extra(tx);
+
+    if(x && crypto::is_safe_point(*x)) {
+      std::vector<crypto::public_key> dups(outputs_count);
+        std::fill
+          (
+           dups.begin()
+           , dups.end()
+           , *x
+           );
+        return dups;
+    }
+
+    return {};
+  }
+
   //---------------------------------------------------------------
   std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off)
   {

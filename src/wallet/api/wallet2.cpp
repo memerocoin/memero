@@ -607,14 +607,14 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
 
     const auto tx_output_public_keys
-      = get_tx_output_public_keys_from_extra(tx);
+      = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
 
-    if (tx_output_public_keys.size() == tx.vout.size())
+    if (tx_output_public_keys)
     {
-      for (size_t i = 0; i < tx_output_public_keys.size(); ++i)
+      for (size_t i = 0; i < tx_output_public_keys->size(); ++i)
       {
         const auto tx_output_shared_secret =
-          crypto::derive_tx_ecdh_shared_secret(tx_output_public_keys[i], keys.m_view_secret_key);
+          crypto::derive_tx_ecdh_shared_secret(tx_output_public_keys->at(i), keys.m_view_secret_key);
 
         if (!tx_output_shared_secret) {
           LOG_WARNING("Failed to generate key tx_shared_secret from additional tx pubkey in " << txid << ", skipping");
