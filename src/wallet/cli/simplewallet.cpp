@@ -3114,13 +3114,13 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
       [this, &index](const wallet::logic::type::transfer::transfer_details& td) {
         return td.m_subaddr_index == cryptonote::subaddress_index{ m_current_subaddress_account, index };
       }) != transfers.end();
-    success_msg_writer() << index << "  " << m_wallet->get_subaddress_as_str({m_current_subaddress_account, index}) << "  " << (index == 0 ? sw::tr("Primary address") : m_wallet->get_subaddress_label({m_current_subaddress_account, index})) << " " << (used ? sw::tr("(used)") : "");
+    success_msg_writer() << index << "  " << m_wallet->get_subaddress_as_str({m_current_subaddress_account, index}) << "  " << m_wallet->get_subaddress_label({m_current_subaddress_account, index}) << " " << (used ? sw::tr("(used)") : "");
   };
 
   uint32_t index = 0;
   if (local_args.empty())
   {
-    print_address_sub(index);
+    print_address_sub(1);
   }
   else if (local_args.size() == 1 && local_args[0] == "all")
   {
