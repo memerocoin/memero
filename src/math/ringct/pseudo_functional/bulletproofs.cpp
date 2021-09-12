@@ -576,6 +576,19 @@ bool bulletproof_VERIFY_1(const Bulletproof proof)
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
 
+  LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(proof.A), false, "Bad proof.A");
+  LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(proof.S), false, "Bad proof.S");
+
+  for (const auto& x: proof.V) {
+    LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(x), false, "Bad proof.V");
+  }
+  for (const auto& x: proof.L) {
+    LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(x), false, "Bad proof.L");
+  }
+  for (const auto& x: proof.R) {
+    LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(x), false, "Bad proof.R");
+  }
+
   // Reconstruct the challenges
   crypto::dataV hash_dataV(proof.V.size());
   std::copy(proof.V.begin(), proof.V.end(), hash_dataV.begin());

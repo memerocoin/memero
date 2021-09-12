@@ -117,8 +117,11 @@ namespace rct {
     // Check data
     LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
     LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature rct_scalar vector is the wrong size!");
-    for (const auto &s: sig.s)
+
+    for (const auto &s: sig.s) {
       LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(s), false, "Bad signature scalar!");
+    }
+
     LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(sig.c1), false, "Bad signature commitment!");
     LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad rct_point image!");
 
@@ -128,6 +131,8 @@ namespace rct {
     }
 
     // Prepare key images
+    LOG_ERROR_AND_RETURN_UNLESS(is_safe_point(sig.D), false, "Bad auxiliary rct_point image!");
+
     const rct_point D_8 = multP8(sig.D);
     LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary rct_point image!");
 
