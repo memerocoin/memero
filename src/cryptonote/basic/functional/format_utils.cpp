@@ -209,7 +209,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const std::vector<uint8_t>& tx_extra)
+  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const epee::blob::span tx_extra)
   {
     const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
 
@@ -565,7 +565,7 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   std::optional<std::vector<crypto::public_key>>
-  get_tx_output_public_keys_from_extra(const std::vector<uint8_t>& tx_extra)
+  get_tx_output_public_keys_from_extra(const epee::blob::span tx_extra)
   {
     const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
 
