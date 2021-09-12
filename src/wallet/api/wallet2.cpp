@@ -2616,7 +2616,6 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
   const std::string new_file = same_file ? m_wallet_file + ".new" : path;
   const std::string old_file = m_wallet_file;
   const std::string old_keys_file = m_keys_file;
-  const std::string old_address_file = m_wallet_file + ".address.txt";
 
   // save keys to the new file
   // if we here, main wallet file is saved and we only need to save keys and address files
@@ -2624,19 +2623,6 @@ void wallet2::store_to(const std::string &path, const epee::wipeable_string &pas
     prepare_file_names(path);
     bool r = store_keys(m_keys_file, password);
     THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, m_keys_file);
-    if (std::filesystem::exists(old_address_file))
-    {
-      // save address to the new file
-      const std::string address_file = m_wallet_file + ".address.txt";
-      r = wallet::logic::controller::wallet::save_to_file
-        (address_file, m_account.get_public_address_str(m_nettype));
-      THROW_WALLET_EXCEPTION_IF(!r, error::file_save_error, m_wallet_file);
-      // remove old address file
-      r = std::filesystem::remove(old_address_file);
-      if (!r) {
-        LOG_ERROR("error removing file: " << old_address_file);
-      }
-    }
     // remove old wallet file
     r = std::filesystem::remove(old_file);
     if (!r) {
