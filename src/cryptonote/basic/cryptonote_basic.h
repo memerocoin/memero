@@ -291,12 +291,12 @@ namespace cryptonote
   /************************************************************************/
   struct account_public_address_unsafe
   {
-    crypto::public_key m_spend_public_key;
-    crypto::public_key m_view_public_key;
+    crypto::ec_point_unsafe m_spend_public_key_unsafe;
+    crypto::ec_point_unsafe m_view_public_key_unsafe;
 
     BEGIN_KV_SERIALIZE_MAP()
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key_unsafe)
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key_unsafe)
     END_KV_SERIALIZE_MAP()
   };
 
