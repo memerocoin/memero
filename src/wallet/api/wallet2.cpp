@@ -602,16 +602,20 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
     int num_vouts_received = 0;
 
-    std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
-    tx_extra_tx_output_public_keys tx_output_keys;
+    // const size_t vout_size = tx.vout.size();
 
-    // additional tx pubkeys and tx_output_shared_secrets for multi-destination transfers involving one or more subaddresses
-    if (find_tx_extra_field_by_type(tx_extra_fields, tx_output_keys))
+    std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+
+    const auto tx_output_public_keys
+      = get_tx_output_public_keys_from_extra(tx);
+
+    if (tx_output_public_keys.size() == tx.vout.size())
     {
-      for (size_t i = 0; i < tx_output_keys.data.size(); ++i)
+      for (size_t i = 0; i < tx_output_public_keys.size(); ++i)
       {
         const auto tx_output_shared_secret =
-          crypto::derive_tx_ecdh_shared_secret(tx_output_keys.data[i], keys.m_view_secret_key);
+          crypto::derive_tx_ecdh_shared_secret(tx_output_public_keys[i], keys.m_view_secret_key);
+
         if (!tx_output_shared_secret) {
           LOG_WARNING("Failed to generate key tx_shared_secret from additional tx pubkey in " << txid << ", skipping");
         } else {
