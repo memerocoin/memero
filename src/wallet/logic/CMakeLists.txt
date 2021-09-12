@@ -31,10 +31,9 @@ add_library(wallet_logic_state
   state/gamma_picker.cpp
 )
 
-add_library(wallet_logic
+add_library(wallet_logic_basic
   functional/proof.cpp
   functional/signature.cpp
-  functional/wallet.cpp
   functional/helper.cpp
   functional/fee.cpp
   pseudo_functional/proof.cpp
@@ -43,8 +42,16 @@ add_library(wallet_logic
   controller/wallet.cpp
   )
 
-target_link_libraries(wallet_logic
+target_link_libraries(wallet_logic_basic
   math_crypto
-  math_ringct
   cryptonote_basic
-)
+  )
+
+add_library(wallet_logic
+  functional/wallet.cpp
+  )
+
+target_link_libraries(wallet_logic
+  wallet_logic_basic
+  math_ringct
+  )
