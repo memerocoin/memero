@@ -71,9 +71,9 @@ namespace proof {
 
     if (!view_secret_key)
     {
-      if (tx_key) {
+      if (output_secret_keys.empty()) {
+        THROW_WALLET_EXCEPTION_IF(!tx_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
         const auto ss = crypto::p2pk(address.m_view_public_key ^ (*tx_key));
-
         shared_secret.push_back(ss);
 
         crypto::public_key tx_pub_key;
@@ -94,40 +94,47 @@ namespace proof {
              (prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, ss, *tx_key));
         }
       }
-
-      for (size_t i = 0; i < output_secret_keys.size(); ++i)
-      {
-        auto const output_ss = crypto::p2pk
-         (address.m_view_public_key ^ output_secret_keys[i]);
-
-        shared_secret.push_back(output_ss);
-
-        crypto::public_key tx_output_pub_key;
-
-        if (is_subaddress)
+      else {
+        for (size_t i = 0; i < output_secret_keys.size(); ++i)
         {
-          tx_output_pub_key = crypto::p2pk(address.m_spend_public_key ^ output_secret_keys[i]);
-          sig.push_back
-            (crypto::generate_tx_proof
-             (prefix_hash, tx_output_pub_key, address.m_view_public_key
-              , address.m_spend_public_key, output_ss, output_secret_keys[i]));
+          auto const output_ss = crypto::p2pk
+          (address.m_view_public_key ^ output_secret_keys[i]);
+
+          shared_secret.push_back(output_ss);
+
+          crypto::public_key tx_output_pub_key;
+
+          if (is_subaddress)
+          {
+            tx_output_pub_key = crypto::p2pk(address.m_spend_public_key ^ output_secret_keys[i]);
+            sig.push_back
+              (crypto::generate_tx_proof
+              (prefix_hash, tx_output_pub_key, address.m_view_public_key
+                , address.m_spend_public_key, output_ss, output_secret_keys[i]));
+          }
+          else
+          {
+            tx_output_pub_key = to_pk(output_secret_keys[i]);
+            sig.push_back
+              (crypto::generate_tx_proof
+              (prefix_hash, tx_output_pub_key, address.m_view_public_key, std::nullopt, output_ss, output_secret_keys[i]));
+          }
         }
-        else
-        {
-          tx_output_pub_key = to_pk(output_secret_keys[i]);
-          sig.push_back
-            (crypto::generate_tx_proof
-             (prefix_hash, tx_output_pub_key, address.m_view_public_key, std::nullopt, output_ss, output_secret_keys[i]));
-        }
+        sig_str = std::string("OutProofV2");
       }
-      sig_str = std::string("OutProofV2");
     }
     else
     {
-      const auto tx_pub_keys = get_tx_pub_keys_from_extra(tx);
-      // THROW_WALLET_EXCEPTION_IF(!tx_pub_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
+      const auto maybe_tx_output_pub_keys = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
 
-      const auto num_sigs = tx_pub_keys.size();
+      THROW_WALLET_EXCEPTION_IF
+        (
+         !maybe_tx_output_pub_keys, tools::error::wallet_internal_error
+         , "Failed to parse tx output public keys."
+         );
+
+      const auto tx_output_pub_keys = *maybe_tx_output_pub_keys;
+      const auto num_sigs = tx_output_pub_keys.size();
 
       shared_secret.resize(num_sigs);
       sig.resize(num_sigs);
@@ -136,14 +143,14 @@ namespace proof {
 
       for (size_t i = 0; i < num_sigs; ++i)
       {
-        shared_secret[i] = crypto::p2pk(tx_pub_keys[i] ^ a);
+        shared_secret[i] = crypto::p2pk(tx_output_pub_keys[i] ^ a);
         if (is_subaddress)
         {
-          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_keys[i], address.m_spend_public_key, shared_secret[i], a);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], address.m_spend_public_key, shared_secret[i], a);
         }
         else
         {
-          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_pub_keys[i], std::nullopt, shared_secret[i], a);
+          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], std::nullopt, shared_secret[i], a);
         }
       }
       sig_str = std::string("InProofV2");
@@ -151,28 +158,8 @@ namespace proof {
 
     // check if this address actually received any funds
 
-    const auto tx_pub_key = get_tx_pub_key_from_extra(tx);
-
-    std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
-
-    if (tx_pub_key) {
-      tx_shared_secret =
-      crypto::derive_tx_ecdh_shared_secret(shared_secret.front(), crypto::s2sk(rct::s_one));
-
-      THROW_WALLET_EXCEPTION_IF
-      (!tx_shared_secret
-       , tools::error::wallet_internal_error, "Failed to generate key tx_shared_secret");
-
-      sig_str +=
-        tools::base58::encode(epee::string_tools::blob_to_string(shared_secret.front().data)) +
-        tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig.front())));
-
-      shared_secret.erase(shared_secret.begin());
-      sig.erase(sig.begin());
-    }
-
-
     std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+
     for (size_t i = 0; i < shared_secret.size(); i++) {
       const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret =
         crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
@@ -206,7 +193,7 @@ namespace proof {
        );
 
     uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
-      (tx, tx_shared_secret, tx_output_shared_secrets, address);
+      (tx, {}, tx_output_shared_secrets, address);
 
     THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");
 
