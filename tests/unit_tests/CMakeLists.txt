@@ -33,7 +33,7 @@ add_executable(unit_tests_tools
   # chacha.cpp
   command_line.cpp
   random.cpp
-  expect.cpp
+  # expect.cpp
   get_xtype_from_string.cpp
   notify.cpp
   varint.cpp
