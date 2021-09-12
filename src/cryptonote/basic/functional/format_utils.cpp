@@ -564,7 +564,8 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::vector<crypto::public_key> get_tx_output_public_keys_from_extra(const std::vector<uint8_t>& tx_extra)
+  std::optional<std::vector<crypto::public_key>>
+  get_tx_output_public_keys_from_extra(const std::vector<uint8_t>& tx_extra)
   {
     const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
 
@@ -589,10 +590,15 @@ namespace cryptonote
        }
        );
 
-    return output_pub_keys;
+    if (output_pub_keys.size() != output_pub_keys_unsafe.pub_keys_unsafe.size()) {
+      return {};
+    } else {
+      return output_pub_keys;
+    }
   }
   //---------------------------------------------------------------
-  std::vector<crypto::public_key> get_tx_output_public_keys_from_extra(const transaction_prefix& tx)
+  std::optional<std::vector<crypto::public_key>>
+  get_tx_output_public_keys_from_extra(const transaction_prefix& tx)
   {
     return get_tx_output_public_keys_from_extra(tx.extra);
   }
@@ -600,33 +606,18 @@ namespace cryptonote
   std::optional<std::vector<crypto::public_key>> get_all_tx_output_public_keys_from_extra
   (
    const transaction& tx
-   , const size_t outputs_count
+   , const size_t output_count
    ){
-    const std::vector<crypto::public_key> xs = get_tx_output_public_keys_from_extra(tx);
+    const auto maybe_pub_keys = get_tx_output_public_keys_from_extra(tx);
 
-    if (xs.size() == outputs_count) {
-      const bool all_good_keys =
-        std::transform_reduce
-        (
-         xs.begin()
-         , xs.end()
-         , true
-         , std::logical_and()
-         , crypto::is_safe_point
-         );
-
-      if (all_good_keys) {
-        return xs;
-      }
-      else {
-        return {};
-      }
+    if (maybe_pub_keys && maybe_pub_keys->size() == output_count) {
+      return *maybe_pub_keys;
     }
 
     const auto x = get_tx_pub_key_from_extra(tx);
 
-    if(x && crypto::is_safe_point(*x)) {
-      std::vector<crypto::public_key> dups(outputs_count);
+    if(x) {
+      std::vector<crypto::public_key> dups(output_count);
         std::fill
           (
            dups.begin()

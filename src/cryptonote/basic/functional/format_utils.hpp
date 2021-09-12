@@ -159,7 +159,7 @@ namespace cryptonote
   std::optional<std::vector<crypto::public_key>> get_all_tx_output_public_keys_from_extra
   (
    const transaction& tx
-   , const size_t outputs_count
+   , const size_t output_count
    );
 
   uint64_t get_block_height(const block& b);
@@ -179,8 +179,11 @@ namespace cryptonote
   std::optional<crypto::hash> get_maybe_block_hash(const block& b);
   crypto::hash get_block_hash(const block& b);
 
-  std::vector<crypto::public_key> get_tx_output_public_keys_from_extra(const std::vector<uint8_t>& tx_extra);
-  std::vector<crypto::public_key> get_tx_output_public_keys_from_extra(const transaction_prefix& tx);
+  std::optional<std::vector<crypto::public_key>>
+  get_tx_output_public_keys_from_extra(const std::vector<uint8_t>& tx_extra);
+
+  std::optional<std::vector<crypto::public_key>>
+  get_tx_output_public_keys_from_extra(const transaction_prefix& tx);
 
   std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off);
   std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off);

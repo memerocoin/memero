@@ -3214,7 +3214,9 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
     real_oe.second.amount_commit = rct::commit(td.m_mask, td.amount());
     *it_to_replace = real_oe;
     src.real_out_tx_key = get_tx_pub_key_from_extra(td.m_tx).value_or(crypto::null_pkey);
-    src.real_out_output_secret_keys = get_tx_output_public_keys_from_extra(td.m_tx);
+    const std::vector<crypto::public_key> no_keys;
+    src.real_out_output_secret_keys =
+      get_tx_output_public_keys_from_extra(td.m_tx).value_or(no_keys);
     src.real_output = it_to_replace - src.outputs.begin();
     src.real_output_in_tx_index = td.m_internal_output_index;
     src.mask = td.m_mask;
