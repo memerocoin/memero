@@ -55,10 +55,10 @@ namespace cryptonote
 
   (
    const size_t tx_version
-   , const cryptonote::account_keys &sender_account_keys
-   , const cryptonote::tx_destination_entry &dst_entr
+   , const cryptonote::account_keys sender_account_keys
+   , const cryptonote::tx_destination_entry dst_entr
    , const size_t output_index
-   , const std::vector<crypto::secret_key> &output_secret_keys
+   , const std::span<const crypto::secret_key> output_secret_keys
    , const std::vector<crypto::public_key> &output_public_keys_in
    , const rct::rct_scalarV &tx_shared_secret_indexed_hashes_in
    )
@@ -116,13 +116,13 @@ namespace cryptonote
   //---------------------------------------------------------------
   std::optional<std::pair<transaction, std::vector<tx_source_entry>>> construct_tx_with_tx_key
   (
-   const account_keys& sender_account_keys
+   const account_keys sender_account_keys
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-   , const std::vector<tx_source_entry>& sources_in
-   , const std::vector<tx_destination_entry>& destinations
-   , const std::vector<uint8_t> &extra
+   , const std::vector<tx_source_entry> sources_in
+   , const std::span<const tx_destination_entry> destinations
+   , const std::vector<uint8_t> extra
    , const uint64_t unlock_time
-   , const std::vector<crypto::secret_key> &output_secret_keys
+   , const std::span<const crypto::secret_key> output_secret_keys
    )
   {
     transaction tx;
@@ -419,7 +419,7 @@ namespace cryptonote
    const size_t height
    , const size_t current_block_weight
    , const uint64_t fee
-   , const account_public_address &miner_address
+   , const account_public_address miner_address
    )
   {
     transaction tx;

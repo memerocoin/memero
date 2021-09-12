@@ -108,13 +108,13 @@ namespace cryptonote
   //---------------------------------------------------------------
   std::optional<std::pair<transaction, std::vector<tx_source_entry>>> construct_tx_with_tx_key
     (
-     const account_keys& sender_account_keys
+     const account_keys sender_account_keys
      , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
-     , const std::vector<tx_source_entry>& sources
-     , const std::vector<tx_destination_entry>& destinations
-     , const std::vector<uint8_t> &extra
+     , const std::vector<tx_source_entry> sources_in
+     , const std::span<const tx_destination_entry> destinations
+     , const std::vector<uint8_t> extra
      , const uint64_t unlock_time
-     , const std::vector<crypto::secret_key> &output_secret_keys
+     , const std::span<const crypto::secret_key> output_secret_keys
      );
 
   std::optional<block> generate_genesis_block
@@ -128,7 +128,7 @@ namespace cryptonote
    const size_t height
    , const size_t current_block_weight
    , const uint64_t fee
-   , const account_public_address &miner_address
+   , const account_public_address miner_address
    );
 
 
