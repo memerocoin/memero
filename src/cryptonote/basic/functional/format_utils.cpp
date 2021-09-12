@@ -607,7 +607,8 @@ namespace cryptonote
   (
    const transaction& tx
    , const size_t output_count
-   ){
+   )
+  {
     const auto maybe_pub_keys = get_tx_output_public_keys_from_extra(tx);
 
     if (maybe_pub_keys && maybe_pub_keys->size() == output_count) {
@@ -618,13 +619,13 @@ namespace cryptonote
 
     if(x) {
       std::vector<crypto::public_key> dups(output_count);
-        std::fill
-          (
-           dups.begin()
-           , dups.end()
-           , *x
-           );
-        return dups;
+      std::fill
+        (
+         dups.begin()
+         , dups.end()
+         , *x
+         );
+      return dups;
     }
 
     return {};
