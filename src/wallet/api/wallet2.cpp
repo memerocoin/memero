@@ -3099,7 +3099,7 @@ void wallet2::get_outs
   THROW_WALLET_EXCEPTION(error::wallet_internal_error, tr("Transaction sanity check failed"));
 }
 
-void wallet2::transfer_selected_rct
+pending_tx wallet2::transfer_selected_rct
 (
  std::vector<cryptonote::tx_destination_entry> dsts
  , const std::vector<size_t>& selected_transfers
@@ -3108,10 +3108,12 @@ void wallet2::transfer_selected_rct
  , uint64_t unlock_time
  , uint64_t fee
  , const std::vector<uint8_t>& extra, cryptonote::transaction& tx
- , pending_tx &ptx
  ) const
 {
   using namespace cryptonote;
+
+  pending_tx ptx;
+
   // throw if attempting a transaction with no destinations
   THROW_WALLET_EXCEPTION_IF(dsts.empty(), error::zero_destination);
 
@@ -3289,6 +3291,8 @@ void wallet2::transfer_selected_rct
   for (size_t idx: selected_transfers)
     ptx.construction_data.subaddr_indices.insert(m_transfers[idx].m_subaddr_index.minor);
   LOG_PRINT_L2("transfer_selected_rct done");
+
+  return ptx;
 }
 
 
@@ -3685,8 +3689,8 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
 
       LOG_PRINT_L2("Trying to create a tx now, with " << tx.dsts.size() << " outputs and " <<
         tx.selected_transfers.size() << " inputs");
-      transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, outs, unlock_time, needed_fee, extra,
-        test_tx, test_ptx);
+      test_ptx = transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, outs, unlock_time, needed_fee, extra,
+        test_tx);
       auto txBlob = t_serializable_object_to_blob(test_ptx.tx);
       needed_fee = calculate_fee(test_ptx.tx, txBlob.size(), base_fee, fee_multiplier, fee_quantization_mask);
       available_for_fee = test_ptx.fee + test_ptx.change_dts.amount + (!test_ptx.dust_added_to_fee ? test_ptx.dust : 0);
@@ -3724,8 +3728,8 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
       {
         LOG_PRINT_L2("We made a tx, adjusting fee and saving it, we need " << print_money(needed_fee) << " and we have " << print_money(test_ptx.fee));
         while (needed_fee > test_ptx.fee) {
-          transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, outs, unlock_time, needed_fee, extra,
-            test_tx, test_ptx);
+          test_ptx = transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, outs, unlock_time, needed_fee, extra,
+            test_tx);
           txBlob = t_serializable_object_to_blob(test_ptx.tx);
           needed_fee = calculate_fee(test_ptx.tx, txBlob.size(), base_fee, fee_multiplier, fee_quantization_mask);
           LOG_PRINT_L2("Made an attempt at a  final " << wallet::logic::functional::wallet::get_weight_string(test_ptx.tx, txBlob.size()) << " tx, with " << print_money(test_ptx.fee) <<
@@ -3777,7 +3781,7 @@ skip_tx:
   for (auto& tx: txes)
   {
     cryptonote::transaction test_tx;
-    pending_tx test_ptx;
+    pending_tx test_ptx =
     transfer_selected_rct
       (
        tx.dsts,                    /* NOMOD std::vector<cryptonote::tx_destination_entry> dsts,*/
@@ -3787,8 +3791,7 @@ skip_tx:
        unlock_time,                /* CONST uint64_t unlock_time,  */
        tx.needed_fee,              /* CONST uint64_t fee, */
        extra,                      /* const std::vector<uint8_t>& extra, */
-       test_tx,                    /* OUT   cryptonote::transaction& tx, */
-       test_ptx                    /* OUT   cryptonote::transaction& tx, */
+       test_tx                     /* OUT   cryptonote::transaction& tx, */
        );
     auto txBlob = t_serializable_object_to_blob(test_ptx.tx);
     tx.tx = test_tx;

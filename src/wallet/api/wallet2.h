@@ -241,7 +241,7 @@ namespace tools
     // all locked & unlocked balances of all subaddress accounts
     uint64_t balance_all(bool strict) const;
     uint64_t unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock = NULL, uint64_t *time_to_unlock = NULL);
-    void transfer_selected_rct
+    pending_tx transfer_selected_rct
     (
      std::vector<cryptonote::tx_destination_entry> dsts
      , const std::vector<size_t>& selected_transfers
@@ -250,7 +250,6 @@ namespace tools
      , uint64_t unlock_time
      , uint64_t fee
      , const std::vector<uint8_t>& extra, cryptonote::transaction& tx
-     , pending_tx &ptx
      ) const;
 
     void commit_tx(pending_tx& ptx_vector);
