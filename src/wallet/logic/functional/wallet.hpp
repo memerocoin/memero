@@ -161,12 +161,12 @@ namespace wallet {
   std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   (
    const std::vector<cryptonote::tx_destination_entry> dsts
-   , const std::vector<size_t>& selected_transfers
+   , const std::vector<size_t> selected_transfers
    , const size_t fake_outputs_count
-   , const std::span<std::vector<type::get_outs_entry>> outs
+   , const std::span<const std::vector<type::get_outs_entry>> outs
    , const uint64_t unlock_time
    , const uint64_t fee
-   , const std::vector<uint8_t>& extra
+   , const std::vector<uint8_t> extra
    , const type::wallet::transfer_container_span m_transfers
    , const cryptonote::account_keys account_keys
    , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses

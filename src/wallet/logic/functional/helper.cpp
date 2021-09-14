@@ -39,7 +39,7 @@ namespace logic {
 namespace functional {
 namespace helper {
 
-  std::string strjoin(const std::vector<size_t> &V, const std::string sep)
+  std::string strjoin(const std::span<const size_t> V, const std::string sep)
   {
     std::stringstream ss;
     bool first = true;

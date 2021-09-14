@@ -31,15 +31,15 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <span>
 
 namespace wallet {
 namespace logic {
 namespace functional {
 namespace helper {
 
-  std::string strjoin(const std::vector<size_t> &V, const std::string);
+  std::string strjoin(const std::span<const size_t> V, const std::string);
 
 } // helper
 } // functional
