@@ -572,6 +572,10 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   const bool tx_locked_too_far_away =
     (tx.unlock_time >= height) && (tx.unlock_time - height) > config::lol::tx_locked_one_year_away_in_blocks;
 
+  if (tx_locked_too_far_away) {
+    LOG_DEBUG("Found a tx locked one year way, not considering its outputs as valid for now.");
+  }
+
   if (!tx.vout.empty() && !tx_locked_too_far_away)
   {
     std::vector<size_t> outs;
