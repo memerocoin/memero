@@ -1432,6 +1432,15 @@ bool t_rpc_command_executor::print_coinbase_tx_sum(uint64_t height, uint64_t cou
   cryptonote::COMMAND_RPC_GET_COINBASE_TX_SUM::response res;
   epee::json_rpc::error error_resp;
 
+  if (height == 0) {
+    tools::msg_writer()
+      << "Genesis tx contains 10.99511627775 coins but it's unspendable due "
+      << "to not being able to be included in a ring signature. "
+      << std::endl
+      << "The mimimum starting height is 1.";
+    return true;
+  }
+
   req.height = height;
   req.count = count;
 
@@ -1453,11 +1462,19 @@ bool t_rpc_command_executor::print_coinbase_tx_sum(uint64_t height, uint64_t cou
     }
   }
 
-  tools::msg_writer() << "Sum of coinbase transactions between block heights ["
-    << height << ", " << (height + count) << ") is "
-    << cryptonote::print_money(boost::multiprecision::uint128_t(res.wide_emission_amount) + boost::multiprecision::uint128_t(res.wide_fee_amount)) << " "
-    << "consisting of " << cryptonote::print_money(boost::multiprecision::uint128_t(res.wide_emission_amount))
-    << " in emissions, and " << cryptonote::print_money(boost::multiprecision::uint128_t(res.wide_fee_amount)) << " in fees";
+  const std::string end = count == 0 ? "∞" : std::to_string(height + count - 1);
+
+  tools::msg_writer()
+    << "["
+    << height
+    << ", "
+    << end
+    << "] -> "
+    << "(" << cryptonote::print_money(boost::multiprecision::uint128_t(res.wide_emission_amount))
+    << ", " << cryptonote::print_money(boost::multiprecision::uint128_t(res.wide_fee_amount))
+    << ")"
+    ;
+
   return true;
 }
 

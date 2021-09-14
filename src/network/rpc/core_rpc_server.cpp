@@ -1582,6 +1582,7 @@ namespace cryptonote
       res.status = "height or count is too large";
       return true;
     }
+
     std::pair<boost::multiprecision::uint128_t, boost::multiprecision::uint128_t> amounts = m_core.get_coinbase_tx_sum(req.height, req.count);
     store_128(amounts.first, res.emission_amount, res.wide_emission_amount, res.emission_amount_top64);
     store_128(amounts.second, res.fee_amount, res.wide_fee_amount, res.fee_amount_top64);

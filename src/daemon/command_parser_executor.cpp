@@ -529,15 +529,10 @@ bool t_command_parser_executor::flush_txpool(const std::vector<std::string>& arg
 
 bool t_command_parser_executor::print_coinbase_tx_sum(const std::vector<std::string>& args)
 {
-  if(!args.size())
-  {
-    std::cout << "Invalid syntax: At least one parameter expected. For more details, use the help command." << std::endl;
-    return true;
-  }
-
-  uint64_t height = 0;
+  uint64_t height = 1;
   uint64_t count = 0;
-  if(!epee::string_tools::get_xtype_from_string(height, args[0]))
+
+  if(args.size() > 0 && !epee::string_tools::get_xtype_from_string(height, args[0]))
   {
     std::cout << "Invalid syntax: Wrong starter block height parameter. For more details, use the help command." << std::endl;
     return true;

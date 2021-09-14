@@ -696,28 +696,35 @@ namespace cryptonote
   {
     boost::multiprecision::uint128_t emission_amount = 0;
     boost::multiprecision::uint128_t total_fee_amount = 0;
-    if (count)
-    {
-      const uint64_t end = start_offset + count - 1;
-      m_blockchain_storage.for_blocks_range(start_offset, end,
-        [this, &emission_amount, &total_fee_amount](uint64_t, const crypto::hash& hash, const block& b){
-      std::vector<transaction> txs;
-      std::vector<crypto::hash> missed_txs;
-      uint64_t coinbase_amount = get_outs_money_amount(b.miner_tx);
-      this->get_transactions(b.tx_hashes, txs, missed_txs);
-      uint64_t tx_fee_amount = 0;
-      for(const auto& tx: txs)
-      {
-        tx_fee_amount += get_tx_fee(tx);
-      }
 
-      emission_amount += coinbase_amount - tx_fee_amount;
-      total_fee_amount += tx_fee_amount;
-      return true;
-      });
-    }
+    const uint64_t end
+      = count == 0
+      ? get_current_blockchain_height()
+      : start_offset + count - 1;
 
-    return std::pair<boost::multiprecision::uint128_t, boost::multiprecision::uint128_t>(emission_amount, total_fee_amount);
+    m_blockchain_storage.for_blocks_range
+      (
+       start_offset
+       , end
+       , [this, &emission_amount, &total_fee_amount](uint64_t, const crypto::hash& hash, const block& b){
+
+         std::vector<transaction> txs;
+         std::vector<crypto::hash> missed_txs;
+         uint64_t coinbase_amount = get_outs_money_amount(b.miner_tx);
+         this->get_transactions(b.tx_hashes, txs, missed_txs);
+         uint64_t tx_fee_amount = 0;
+         for(const auto& tx: txs)
+           {
+             tx_fee_amount += get_tx_fee(tx);
+           }
+
+         emission_amount += coinbase_amount - tx_fee_amount;
+         total_fee_amount += tx_fee_amount;
+         return true;
+       });
+
+    return std::pair<boost::multiprecision::uint128_t, boost::multiprecision::uint128_t>
+      (emission_amount, total_fee_amount);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_keyimages_diff(const transaction& tx) const
