@@ -734,28 +734,65 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_ring_members_diff(const transaction& tx) const
   {
-    {
-      for(const auto& in: tx.vin)
-      {
-        CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-        for (size_t n = 1; n < tokey_in.key_offsets.size(); ++n)
-          if (tokey_in.key_offsets[n] == 0)
-            return false;
-      }
-    }
-    return true;
+    return std::transform_reduce
+      (
+       tx.vin.begin()
+       , tx.vin.end()
+       , true
+       , std::logical_and()
+       , [](const auto& x) {
+
+         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, false);
+         return std::transform_reduce
+           (
+
+            // Key offsets are relative increments of output indices in a blockchain
+            // sorted by block height.
+            // The first value can be 0. When it's 0, it references _the_ output of the coinbase
+            // tx of the first block after the genesis block.
+            //
+            // We can verify this by playing with the `get_outs` daemon rpc call:
+            //
+            // echo '{"get_txid": true, "outputs":[{"index":0}]}' | http :45679/get_outs
+            //
+            // "outs": [
+            //   {
+            //     "height": 1,
+            //     "key": "d2c5204259664c35c36c6d3743149359f494480ffb68b9c9885d9859201fecc5",
+            //     "mask": "87050dabf5b23e8b79813f4ed76aa4add225dd2a5089af067da77ccb6ec55946",
+            //     "txid": "370ae2825eb61aece7378f6a92fc22ebdc946cae751dabdf612524011a002340",
+            //     "unlocked": true
+            //   }
+            // ],
+            //
+            // In other words, the tx output in genesis block is probably un-spendable, due to the
+            // fact that it can not be included in a ring. :D
+
+            std::next(tokey_in.key_offsets.begin())
+            , tokey_in.key_offsets.end()
+            , true
+            , std::logical_and()
+            , [](const auto& y) {
+              return y != 0;
+              }
+            );
+       }
+       );
   }
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_keyimages_domain(const transaction& tx) const
   {
-    std::unordered_set<crypto::shared_secret_derived_public_key_image> ki;
-    for(const auto& in: tx.vin)
-    {
-      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if(!crypto::is_safe_point(rct::ki2rct_p(tokey_in.shared_secret_derived_public_key_image)))
-        return false;
-    }
-    return true;
+    return std::transform_reduce
+      (
+       tx.vin.begin()
+       , tx.vin.end()
+       , true
+       , std::logical_and()
+       , [](const auto& x) {
+         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, false);
+         return crypto::is_safe_point(tokey_in.shared_secret_derived_public_key_image);
+       }
+       );
   }
   //-----------------------------------------------------------------------------------------------
   bool core::add_new_tx(transaction& tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
