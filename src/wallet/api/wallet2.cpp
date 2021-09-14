@@ -255,7 +255,6 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_account_public_address{crypto::null_pkey, crypto::null_pkey},
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
-  m_device_last_shared_secret_derived_public_key_image_sync(0),
   m_offline(false),
   m_rpc_version(0)
 {
@@ -2151,9 +2150,6 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
 
   r = epee::serialization::load_t_from_binary(m_account, account_data);
   THROW_WALLET_EXCEPTION_IF(!r, error::invalid_password);
-  if (key_on_device()) {
-    THROW_WALLET_EXCEPTION(error::wallet_internal_error, "hardware device not supported");
-  }
 
   if (r)
   {

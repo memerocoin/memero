@@ -739,12 +739,6 @@ namespace tools
       er.message = "Command unavailable in restricted mode.";
       return false;
     }
-    if (m_wallet->key_on_device())
-    {
-      er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
-      er.message = "command not supported by HW wallet";
-      return false;
-    }
     if(req.unsigned_txset.empty())
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;

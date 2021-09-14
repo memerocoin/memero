@@ -118,11 +118,7 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
 {
   // don't log
   PAUSE_READLINE();
-  if (m_wallet->key_on_device()) {
-    std::cout << "secret: On device. Not available" << std::endl;
-  } else {
-    std::cout << "secret: " << m_wallet->get_account().get_keys().m_view_secret_key << std::endl;
-  }
+  std::cout << "secret: " << m_wallet->get_account().get_keys().m_view_secret_key << std::endl;
   std::cout << "public: " << m_wallet->get_account().get_keys().m_account_address.m_view_public_key << std::endl;
 
   return true;
@@ -132,11 +128,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
 {
   // don't log
   PAUSE_READLINE();
-  if (m_wallet->key_on_device()) {
-    std::cout << "secret: On device. Not available" << std::endl;
-  } else {
-    std::cout << "secret: " << m_wallet->get_account().get_keys().m_spend_secret_key << std::endl;
-  }
+  std::cout << "secret: " << m_wallet->get_account().get_keys().m_spend_secret_key << std::endl;
   std::cout << "public: " << m_wallet->get_account().get_keys().m_account_address.m_spend_public_key << std::endl;
 
   return true;
@@ -146,12 +138,6 @@ bool simple_wallet::print_seed()
 {
   bool success =  false;
   epee::wipeable_string seed;
-
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << sw::tr("command not supported by HW wallet");
-    return true;
-  }
 
   epee::wipeable_string seed_pass;
   success = m_wallet->get_seed(seed, seed_pass);
@@ -3270,11 +3256,6 @@ bool simple_wallet::wallet_info(const std::vector<std::string> &args)
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::sign(const std::vector<std::string> &args)
 {
-  if (m_wallet->key_on_device())
-  {
-    fail_msg_writer() << sw::tr("command not supported by HW wallet");
-    return true;
-  }
   if (args.size() != 1 && args.size() != 2 && args.size() != 3)
   {
     PRINT_USAGE(USAGE_SIGN);

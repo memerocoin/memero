@@ -95,7 +95,6 @@ namespace tools
     static const char* tr(const char* str);
 
     static bool has_testnet_option(const boost::program_options::variables_map& vm);
-    static std::string device_name_option(const boost::program_options::variables_map& vm);
     static void init_options(boost::program_options::options_description& desc_params);
 
     //! Uses stdin and stdout. Returns a wallet2 and password for `wallet_file` if no errors.
@@ -232,8 +231,6 @@ namespace tools
 
     cryptonote::network_type nettype() const { return m_nettype; }
     bool has_unknown_shared_secret_derived_public_key_images() const;
-    bool key_on_device() const { return false; }
-    bool reconnect_device();
 
     // locked & unlocked balance of given or current subaddress account
     uint64_t balance(uint32_t subaddr_index_major, bool strict) const;
@@ -263,7 +260,6 @@ namespace tools
      );
 
     bool sanity_check(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector, std::vector<cryptonote::tx_destination_entry> dsts) const;
-    void device_show_address(uint32_t account_index, uint32_t address_index);
     bool check_connection(uint32_t *version = NULL, uint32_t timeout = 200000);
     void get_transfers(wallet::logic::type::wallet::transfer_container& incoming) const;
     void get_payments(std::list<std::pair<crypto::hash,wallet::logic::type::payment::payment_details>>& payments, uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
@@ -298,7 +294,6 @@ namespace tools
       FIELD(m_output_secret_keys)
       FIELD(m_attributes)
       FIELD(m_account_tags)
-      FIELD(m_device_last_shared_secret_derived_public_key_image_sync)
       FIELD(m_cold_shared_secret_derived_public_key_images)
     END_SERIALIZE()
 
@@ -330,8 +325,6 @@ namespace tools
     void confirm_export_overwrite(bool always) { m_confirm_export_overwrite = always; }
     bool ignore_fractional_outputs() const { return m_ignore_fractional_outputs; }
     void ignore_fractional_outputs(bool value) { m_ignore_fractional_outputs = value; }
-    const std::string & device_name() const { return m_device_name; }
-    void device_name(const std::string & device_name) { m_device_name = device_name; }
 
     bool get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &output_secret_keys) const;
     bool get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &output_secret_keys);
@@ -542,8 +535,6 @@ namespace tools
     RPC_Client m_rpc_client;
     std::unordered_set<crypto::hash> m_scanned_pool_txs[2];
     size_t m_subaddress_lookahead_major, m_subaddress_lookahead_minor;
-    std::string m_device_name;
-    uint64_t m_device_last_shared_secret_derived_public_key_image_sync;
     bool m_offline;
     uint32_t m_rpc_version;
 
