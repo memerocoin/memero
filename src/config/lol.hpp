@@ -129,5 +129,7 @@ namespace config
 
     constexpr size_t reorg_buffer = 3;
     constexpr size_t get_out_retry = 3;
+
+    constexpr uint64_t tx_locked_one_year_away_in_blocks = 288 * 365;
   }
 }

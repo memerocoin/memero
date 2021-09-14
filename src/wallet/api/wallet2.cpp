@@ -569,7 +569,10 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
   const cryptonote::account_keys& keys = m_account.get_keys();
 
-  if (!tx.vout.empty())
+  const bool tx_locked_too_far_away =
+    (tx.unlock_time >= height) && (tx.unlock_time - height) > config::lol::tx_locked_one_year_away_in_blocks;
+
+  if (!tx.vout.empty() && !tx_locked_too_far_away)
   {
     std::vector<size_t> outs;
     // if tx.vout is not empty, we loop through all tx pubkeys
