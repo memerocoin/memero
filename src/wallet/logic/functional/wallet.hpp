@@ -39,6 +39,7 @@
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX, backlog_entry
 
 #include "cryptonote/basic/account.h"
+#include "cryptonote/functional/helper.hpp"
 
 
 using namespace wallet::logic::type::transfer;
@@ -152,6 +153,26 @@ namespace wallet {
    , const uint64_t current_height
    , const type::wallet::transfer_container_span m_transfers
    );
+
+  constexpr uint64_t get_upper_transaction_weight_limit() {
+    return cryptonote::get_max_tx_size() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+  }
+
+  std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
+  (
+   const std::vector<cryptonote::tx_destination_entry> dsts
+   , const std::vector<size_t>& selected_transfers
+   , const size_t fake_outputs_count
+   , const std::span<std::vector<type::get_outs_entry>> outs
+   , const uint64_t unlock_time
+   , const uint64_t fee
+   , const std::vector<uint8_t>& extra
+   , const type::wallet::transfer_container_span m_transfers
+   , const cryptonote::account_keys account_keys
+   , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+   , const cryptonote::network_type m_nettype
+   );
+
 } // wallet
 } // functional
 } // logic

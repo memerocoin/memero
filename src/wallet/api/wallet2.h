@@ -241,7 +241,7 @@ namespace tools
     // all locked & unlocked balances of all subaddress accounts
     uint64_t balance_all(bool strict) const;
     uint64_t unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock = NULL, uint64_t *time_to_unlock = NULL);
-    pending_tx transfer_selected_rct
+    std::pair<pending_tx, cryptonote::transaction> transfer_selected_rct
     (
      std::vector<cryptonote::tx_destination_entry> dsts
      , const std::vector<size_t>& selected_transfers
@@ -249,7 +249,7 @@ namespace tools
      , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
      , uint64_t unlock_time
      , uint64_t fee
-     , const std::vector<uint8_t>& extra, cryptonote::transaction& tx
+     , const std::vector<uint8_t>& extra
      ) const;
 
     void commit_tx(pending_tx& ptx_vector);
@@ -464,7 +464,6 @@ namespace tools
     void generate_chacha_key_from_password(const epee::wipeable_string &pass, crypto::chacha_key &key) const;
 
     void parse_block_round(const cryptonote::blobdata &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const;
-    uint64_t get_upper_transaction_weight_limit() const;
 
     void set_spent(size_t idx, uint64_t height);
     void set_unspent(size_t idx);
