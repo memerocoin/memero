@@ -34,6 +34,7 @@
 #include "wallet/logic/type/transfer.hpp" // tranfser_details
 #include "wallet/logic/type/typedef.hpp"
 #include "wallet/logic/type/tx.hpp"
+#include "wallet/logic/type/wallet.hpp"
 
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX, backlog_entry
 
@@ -133,6 +134,24 @@ namespace wallet {
    , const cryptonote::account_keys keys
    );
 
+  bool is_spent(const transfer_details &td, bool strict);
+  bool is_transfer_unlocked(const transfer_details& td, const uint64_t current_height);
+  bool is_transfer_unlocked
+  (
+   const uint64_t unlock_time
+   , const uint64_t block_height
+   , const uint64_t current_height
+   );
+  bool is_tx_spendtime_unlocked(const uint64_t unlock_time, const uint64_t current_height);
+
+  std::vector<size_t> pick_preferred_rct_inputs
+  (
+   const uint64_t needed_money
+   , const uint32_t subaddr_account
+   , const std::set<uint32_t> &subaddr_indices
+   , const uint64_t current_height
+   , const type::wallet::transfer_container_span m_transfers
+   );
 } // wallet
 } // functional
 } // logic

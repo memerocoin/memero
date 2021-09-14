@@ -36,6 +36,7 @@
 
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/signature.hpp"
+#include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
 
 #include "wallet/mnemonics/electrum-words.h"
@@ -182,7 +183,8 @@ namespace tools
     entry.amount = pd.m_amount;
     entry.amounts = pd.m_amounts;
     entry.unlock_time = pd.m_unlock_time;
-    entry.locked = !m_wallet->is_transfer_unlocked(pd.m_unlock_time, pd.m_block_height);
+    entry.locked = !wallet::logic::functional::wallet::is_transfer_unlocked
+      (pd.m_unlock_time, pd.m_block_height, m_wallet->get_blockchain_current_height());
     entry.fee = pd.m_fee;
     entry.type = pd.m_coinbase ? "block" : "in";
     entry.subaddr_index = pd.m_subaddr_index;
@@ -197,7 +199,8 @@ namespace tools
     entry.height = pd.m_block_height;
     entry.timestamp = pd.m_timestamp;
     entry.unlock_time = pd.m_unlock_time;
-    entry.locked = !m_wallet->is_transfer_unlocked(pd.m_unlock_time, pd.m_block_height);
+    entry.locked = !wallet::logic::functional::wallet::is_transfer_unlocked
+      (pd.m_unlock_time, pd.m_block_height, m_wallet->get_blockchain_current_height());
     entry.fee = pd.m_amount_in - pd.m_amount_out;
     uint64_t change = pd.m_change == (uint64_t)-1 ? 0 : pd.m_change; // change may not be known
     entry.amount = pd.m_amount_in - change - entry.fee;
@@ -958,7 +961,8 @@ namespace tools
         rpc_transfers.shared_secret_derived_public_key_image    = td.m_shared_secret_derived_public_key_image_known ? epee::string_tools::pod_to_hex(td.m_shared_secret_derived_public_key_image) : "";
         rpc_transfers.block_height = td.m_block_height;
         rpc_transfers.frozen       = td.m_frozen;
-        rpc_transfers.unlocked     = m_wallet->is_transfer_unlocked(td);
+        rpc_transfers.unlocked     = wallet::logic::functional::wallet::is_transfer_unlocked
+          (td, m_wallet->get_blockchain_current_height());
         res.transfers.push_back(rpc_transfers);
       }
     }

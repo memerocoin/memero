@@ -44,6 +44,7 @@ namespace type {
 namespace wallet {
 
   typedef std::vector<::wallet::logic::type::transfer::transfer_details> transfer_container;
+  typedef std::span<::wallet::logic::type::transfer::transfer_details> transfer_container_span;
 
   // The term "Unsigned tx" is not really a tx since it's not signed yet.
   // It doesnt have tx hash, key and the integrated address is not separated into addr + payment id.

@@ -34,6 +34,8 @@
 
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 
+#include "cryptonote/basic/cryptonote_format_utils.h"
+
 #include "wallet/api/wallet_errors.h"
 
 namespace wallet {
@@ -293,6 +295,153 @@ namespace wallet {
     return tx_scan_info;
   }
 
+//----------------------------------------------------------------------------------------------------
+bool is_spent(const transfer_details &td, bool strict)
+{
+  if (strict)
+  {
+    return td.m_spent && td.m_spent_height > 0;
+  }
+  else
+  {
+    return td.m_spent;
+  }
+}
+
+//----------------------------------------------------------------------------------------------------
+bool is_transfer_unlocked(const transfer_details& td, const uint64_t current_height)
+{
+  return is_transfer_unlocked(td.m_tx.unlock_time, td.m_block_height, current_height);
+}
+//----------------------------------------------------------------------------------------------------
+bool is_transfer_unlocked
+(
+ const uint64_t unlock_time
+ , const uint64_t block_height
+ , const uint64_t current_height
+ )
+{
+  if(!is_tx_spendtime_unlocked(unlock_time, current_height))
+    return false;
+
+  if(block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE > current_height)
+    return false;
+
+  return true;
+}
+//----------------------------------------------------------------------------------------------------
+bool is_tx_spendtime_unlocked(const uint64_t unlock_time, const uint64_t current_height)
+{
+  if (unlock_time == 0) return true;
+  return current_height + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time;
+}
+
+std::vector<size_t> pick_preferred_rct_inputs
+(
+ const uint64_t needed_money
+ , const uint32_t subaddr_account
+ , const std::set<uint32_t> &subaddr_indices
+ , const uint64_t current_height
+ , const type::wallet::transfer_container_span m_transfers
+ )
+{
+  std::vector<size_t> picks;
+  float current_output_relatdness = 1.0f;
+
+  using namespace cryptonote;
+
+  LOG_PRINT_L2("pick_preferred_rct_inputs: needed_money " << print_money(needed_money));
+
+  // try to find a rct input of enough size
+  for (size_t i = 0; i < m_transfers.size(); ++i)
+  {
+    const transfer_details& td = m_transfers[i];
+    if
+      (
+       !is_spent(td, false)
+       && !td.m_frozen
+       && td.is_rct()
+       && td.amount() >= needed_money
+       && is_transfer_unlocked(td, current_height)
+       && td.m_subaddr_index.major == subaddr_account
+       && subaddr_indices.count(td.m_subaddr_index.minor) == 1
+       )
+    {
+      LOG_PRINT_L2("We can use " << i << " alone: " << print_money(td.amount()));
+      picks.push_back(i);
+      return picks;
+    }
+  }
+
+  // then try to find two outputs
+  // this could be made better by picking one of the outputs to be a small one, since those
+  // are less useful since often below the needed money, so if one can be used in a pair,
+  // it gets rid of it for the future
+  for (size_t i = 0; i < m_transfers.size(); ++i)
+  {
+    const transfer_details& td = m_transfers[i];
+    if
+      (
+       !is_spent(td, false)
+       && !td.m_frozen
+       && !td.m_shared_secret_derived_public_key_image_partial
+       && td.is_rct()
+       && is_transfer_unlocked(td, current_height)
+       && td.m_subaddr_index.major == subaddr_account
+       && subaddr_indices.count(td.m_subaddr_index.minor) == 1
+       )
+    {
+      LOG_PRINT_L2("Considering input " << i << ", " << print_money(td.amount()));
+      for (size_t j = i + 1; j < m_transfers.size(); ++j)
+      {
+        const transfer_details& td2 = m_transfers[j];
+        if
+          (
+           !is_spent(td2, false)
+           && !td2.m_frozen
+           && !td2.m_shared_secret_derived_public_key_image_partial
+           && td2.is_rct()
+           && td.amount() + td2.amount() >= needed_money
+           && is_transfer_unlocked(td2, current_height)
+           && td2.m_subaddr_index == td.m_subaddr_index
+           )
+        {
+          // update our picks if those outputs are less related than any we
+          // already found. If the same, don't update, and oldest suitable outputs
+          // will be used in preference.
+          const float relatedness = get_output_relatedness(td, td2);
+
+          LOG_PRINT_L2
+            (
+             "  with input "
+             <<
+             j
+             << ", "
+             << print_money(td2.amount())
+             << ", relatedness "
+             << relatedness
+             );
+
+          if (relatedness < current_output_relatdness)
+          {
+            // reset the current picks with those, and return them directly
+            // if they're unrelated. If they are related, we'll end up returning
+            // them if we find nothing better
+            picks.clear();
+            picks.push_back(i);
+            picks.push_back(j);
+            LOG_PRINT_L0("we could use " << i << " and " << j);
+            if (relatedness == 0.0f)
+              return picks;
+            current_output_relatdness = relatedness;
+          }
+        }
+      }
+    }
+  }
+
+  return picks;
+}
 } // wallet
 } // functional
 } // logic

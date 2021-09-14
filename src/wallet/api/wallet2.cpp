@@ -506,23 +506,11 @@ void wallet2::set_unspent(size_t idx)
   td.m_spent_height = 0;
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::is_spent(const transfer_details &td, bool strict) const
-{
-  if (strict)
-  {
-    return td.m_spent && td.m_spent_height > 0;
-  }
-  else
-  {
-    return td.m_spent;
-  }
-}
-//----------------------------------------------------------------------------------------------------
 bool wallet2::is_spent(size_t idx, bool strict) const
 {
   LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   const transfer_details &td = m_transfers[idx];
-  return is_spent(td, strict);
+  return wallet::logic::functional::wallet::is_spent(td, strict);
 }
 //----------------------------------------------------------------------------------------------------
 size_t wallet2::get_transfer_details(const crypto::shared_secret_derived_public_key_image &ki) const
@@ -2699,7 +2687,12 @@ std::map<uint32_t, uint64_t> wallet2::balance_per_subaddress(uint32_t index_majo
   std::map<uint32_t, uint64_t> amount_per_subaddr;
   for (const auto& td: m_transfers)
   {
-    if (td.m_subaddr_index.major == index_major && !is_spent(td, strict) && !td.m_frozen)
+    if
+      (
+       td.m_subaddr_index.major == index_major
+       && !wallet::logic::functional::wallet::is_spent(td, strict)
+       && !td.m_frozen
+       )
     {
       auto found = amount_per_subaddr.find(td.m_subaddr_index.minor);
       if (found == amount_per_subaddr.end())
@@ -2732,10 +2725,10 @@ std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> wallet2::
   const uint64_t blockchain_height = get_blockchain_current_height();
   for(const transfer_details& td: m_transfers)
   {
-    if(td.m_subaddr_index.major == index_major && !is_spent(td, strict) && !td.m_frozen)
+    if(td.m_subaddr_index.major == index_major && !wallet::logic::functional::wallet::is_spent(td, strict) && !td.m_frozen)
     {
       uint64_t amount = 0, blocks_to_unlock = 0, time_to_unlock = 0;
-      if (is_transfer_unlocked(td))
+      if (wallet::logic::functional::wallet::is_transfer_unlocked(td, blockchain_height))
       {
         amount = td.amount();
         blocks_to_unlock = 0;
@@ -2910,28 +2903,6 @@ void wallet2::rescan_blockchain(bool hard, bool refresh)
 
   if (refresh)
     this->refresh();
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::is_transfer_unlocked(const transfer_details& td)
-{
-  return is_transfer_unlocked(td.m_tx.unlock_time, td.m_block_height);
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::is_transfer_unlocked(const uint64_t unlock_time, const uint64_t block_height)
-{
-  if(!is_tx_spendtime_unlocked(unlock_time))
-    return false;
-
-  if(block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE > get_blockchain_current_height())
-    return false;
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::is_tx_spendtime_unlocked(const uint64_t unlock_time)
-{
-  if (unlock_time == 0) return true;
-  return get_blockchain_current_height() + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time;
 }
 //----------------------------------------------------------------------------------------------------
 namespace
@@ -3312,65 +3283,6 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
   LOG_PRINT_L2("transfer_selected_rct done");
 }
 
-std::vector<size_t> wallet2::pick_preferred_rct_inputs(uint64_t needed_money, uint32_t subaddr_account, const std::set<uint32_t> &subaddr_indices)
-{
-  std::vector<size_t> picks;
-  float current_output_relatdness = 1.0f;
-
-  LOG_PRINT_L2("pick_preferred_rct_inputs: needed_money " << print_money(needed_money));
-
-  // try to find a rct input of enough size
-  for (size_t i = 0; i < m_transfers.size(); ++i)
-  {
-    const transfer_details& td = m_transfers[i];
-    if (!is_spent(td, false) && !td.m_frozen && td.is_rct() && td.amount() >= needed_money && is_transfer_unlocked(td) && td.m_subaddr_index.major == subaddr_account && subaddr_indices.count(td.m_subaddr_index.minor) == 1)
-    {
-      LOG_PRINT_L2("We can use " << i << " alone: " << print_money(td.amount()));
-      picks.push_back(i);
-      return picks;
-    }
-  }
-
-  // then try to find two outputs
-  // this could be made better by picking one of the outputs to be a small one, since those
-  // are less useful since often below the needed money, so if one can be used in a pair,
-  // it gets rid of it for the future
-  for (size_t i = 0; i < m_transfers.size(); ++i)
-  {
-    const transfer_details& td = m_transfers[i];
-    if (!is_spent(td, false) && !td.m_frozen && !td.m_shared_secret_derived_public_key_image_partial && td.is_rct() && is_transfer_unlocked(td) && td.m_subaddr_index.major == subaddr_account && subaddr_indices.count(td.m_subaddr_index.minor) == 1)
-    {
-      LOG_PRINT_L2("Considering input " << i << ", " << print_money(td.amount()));
-      for (size_t j = i + 1; j < m_transfers.size(); ++j)
-      {
-        const transfer_details& td2 = m_transfers[j];
-        if (!is_spent(td2, false) && !td2.m_frozen && !td2.m_shared_secret_derived_public_key_image_partial && td2.is_rct() && td.amount() + td2.amount() >= needed_money && is_transfer_unlocked(td2) && td2.m_subaddr_index == td.m_subaddr_index)
-        {
-          // update our picks if those outputs are less related than any we
-          // already found. If the same, don't update, and oldest suitable outputs
-          // will be used in preference.
-          float relatedness = wallet::logic::functional::wallet::get_output_relatedness(td, td2);
-          LOG_PRINT_L2("  with input " << j << ", " << print_money(td2.amount()) << ", relatedness " << relatedness);
-          if (relatedness < current_output_relatdness)
-          {
-            // reset the current picks with those, and return them directly
-            // if they're unrelated. If they are related, we'll end up returning
-            // them if we find nothing better
-            picks.clear();
-            picks.push_back(i);
-            picks.push_back(j);
-            LOG_PRINT_L0("we could use " << i << " and " << j);
-            if (relatedness == 0.0f)
-              return picks;
-            current_output_relatdness = relatedness;
-          }
-        }
-      }
-    }
-  }
-
-  return picks;
-}
 
 std::vector<size_t> wallet2::get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const
 {
@@ -3524,6 +3436,8 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
   // gather all dust and non-dust outputs belonging to specified subaddresses
   size_t num_nondust_outputs = 0;
   size_t num_dust_outputs = 0;
+
+  const uint64_t current_height = get_blockchain_current_height();
   for (size_t i = 0; i < m_transfers.size(); ++i)
   {
     const transfer_details& td = m_transfers[i];
@@ -3532,7 +3446,15 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
       LOG_DEBUG("Ignoring output " << i << " of amount " << print_money(td.amount()) << " which is below fractional threshold " << print_money(fractional_threshold));
       continue;
     }
-    if (!is_spent(td, false) && !td.m_frozen && !td.m_shared_secret_derived_public_key_image_partial && is_transfer_unlocked(td) && td.m_subaddr_index.major == subaddr_account && subaddr_indices.count(td.m_subaddr_index.minor) == 1)
+    if
+      (
+       !wallet::logic::functional::wallet::is_spent(td, false)
+       && !td.m_frozen
+       && !td.m_shared_secret_derived_public_key_image_partial
+       && wallet::logic::functional::wallet::is_transfer_unlocked(td, current_height)
+       && td.m_subaddr_index.major == subaddr_account
+       && subaddr_indices.count(td.m_subaddr_index.minor) == 1
+       )
     {
       const uint32_t index_minor = td.m_subaddr_index.minor;
       auto find_predicate = [&index_minor](const std::pair<uint32_t, std::vector<size_t>>& x) { return x.first == index_minor; };
@@ -3599,12 +3521,20 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
   // try to pick outputs not from the same block. We will get two outputs, one for
   // the destination, and one for change.
   LOG_PRINT_L2("checking preferred");
+
   std::vector<size_t> preferred_inputs;
   {
     // this is used to build a tx that's 1 or 2 inputs, and 2 outputs, which
     // will get us a known fee.
     uint64_t estimated_fee = estimate_fee(2, fake_outs_count, 2, extra.size(), base_fee, fee_multiplier, fee_quantization_mask);
-    preferred_inputs = pick_preferred_rct_inputs(needed_money + estimated_fee, subaddr_account, subaddr_indices);
+    preferred_inputs = wallet::logic::functional::wallet::pick_preferred_rct_inputs
+      (
+       needed_money + estimated_fee
+       , subaddr_account
+       , subaddr_indices
+       , current_height
+       , m_transfers
+       );
     if (!preferred_inputs.empty())
     {
       string s;

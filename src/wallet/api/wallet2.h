@@ -271,8 +271,6 @@ namespace tools
     uint64_t get_blockchain_current_height() const { return m_blockchain.size(); }
     void rescan_spent();
     void rescan_blockchain(bool hard, bool refresh = true);
-    bool is_transfer_unlocked(const transfer_details& td);
-    bool is_transfer_unlocked(const uint64_t unlock_time, const uint64_t block_height);
 
     BEGIN_SERIALIZE_OBJECT()
       MAGIC_FIELD("monero wallet cache")
@@ -460,10 +458,9 @@ namespace tools
 
     void parse_block_round(const cryptonote::blobdata &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const;
     uint64_t get_upper_transaction_weight_limit();
-    std::vector<size_t> pick_preferred_rct_inputs(uint64_t needed_money, uint32_t subaddr_account, const std::set<uint32_t> &subaddr_indices);
+
     void set_spent(size_t idx, uint64_t height);
     void set_unspent(size_t idx);
-    bool is_spent(const transfer_details &td, bool strict = true) const;
     bool is_spent(size_t idx, bool strict = true) const;
 
     void get_outs

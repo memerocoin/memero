@@ -42,6 +42,7 @@
 
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
+#include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/pseudo_functional/uri.hpp"
 #include "wallet/logic/controller/wallet.hpp"
 
@@ -1634,7 +1635,9 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
         boost::format("%21s%8s%12s%8s%16u%68s%16u%s") %
         print_money(td.amount()) %
         (td.m_spent ? sw::tr("T") : sw::tr("F")) %
-        (m_wallet->is_transfer_unlocked(td) ? sw::tr("unlocked") : sw::tr("locked")) %
+        (wallet::logic::functional::wallet::is_transfer_unlocked(td, m_wallet->get_blockchain_current_height())
+         ? sw::tr("unlocked")
+         : sw::tr("locked")) %
         (td.is_rct() ? sw::tr("RingCT") : sw::tr("-")) %
         td.m_global_output_index %
         td.m_txid %
@@ -2510,7 +2513,8 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
       std::string note;
       std::string destination = m_wallet->get_subaddress_as_str({m_current_subaddress_account, pd.m_subaddr_index.minor});
       const std::string type = pd.m_coinbase ? sw::tr("block") : sw::tr("in");
-      const bool unlocked = m_wallet->is_transfer_unlocked(pd.m_unlock_time, pd.m_block_height);
+      const bool unlocked = wallet::logic::functional::wallet::is_transfer_unlocked
+        (pd.m_unlock_time, pd.m_block_height, last_block_height);
       std::string locked_msg = "unlocked";
       if (!unlocked)
       {
