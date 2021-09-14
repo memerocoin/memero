@@ -234,16 +234,24 @@ namespace tools
 
     // locked & unlocked balance of given or current subaddress account
     uint64_t balance(uint32_t subaddr_index_major, bool strict) const;
-    uint64_t unlocked_balance(uint32_t subaddr_index_major, bool strict, uint64_t *blocks_to_unlock = NULL, uint64_t *time_to_unlock = NULL);
+    uint64_t unlocked_balance(uint32_t subaddr_index_major, bool strict, uint64_t *blocks_to_unlock = NULL, uint64_t *time_to_unlock = NULL) const;
     // locked & unlocked balance per subaddress of given or current subaddress account
     std::map<uint32_t, uint64_t> balance_per_subaddress(uint32_t subaddr_index_major, bool strict) const;
-    std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> unlocked_balance_per_subaddress(uint32_t subaddr_index_major, bool strict);
+    std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> unlocked_balance_per_subaddress(uint32_t subaddr_index_major, bool strict) const;
     // all locked & unlocked balances of all subaddress accounts
     uint64_t balance_all(bool strict) const;
     uint64_t unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock = NULL, uint64_t *time_to_unlock = NULL);
-    void transfer_selected_rct(std::vector<cryptonote::tx_destination_entry> dsts, const std::vector<size_t>& selected_transfers, size_t fake_outputs_count,
-      std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs,
-      uint64_t unlock_time, uint64_t fee, const std::vector<uint8_t>& extra, cryptonote::transaction& tx, pending_tx &ptx);
+    void transfer_selected_rct
+    (
+     std::vector<cryptonote::tx_destination_entry> dsts
+     , const std::vector<size_t>& selected_transfers
+     , size_t fake_outputs_count
+     , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+     , uint64_t unlock_time
+     , uint64_t fee
+     , const std::vector<uint8_t>& extra, cryptonote::transaction& tx
+     , pending_tx &ptx
+     ) const;
 
     void commit_tx(pending_tx& ptx_vector);
     void commit_tx(std::vector<pending_tx>& ptx_vector);
@@ -257,7 +265,7 @@ namespace tools
      , const std::vector<uint8_t> extra
      , const uint32_t subaddr_account
      , const std::set<uint32_t> subaddr_indices_
-     );
+     ) const;
 
     bool sanity_check(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector, std::vector<cryptonote::tx_destination_entry> dsts) const;
     bool check_connection(uint32_t *version = NULL, uint32_t timeout = 200000);
@@ -457,7 +465,7 @@ namespace tools
     void generate_chacha_key_from_password(const epee::wipeable_string &pass, crypto::chacha_key &key) const;
 
     void parse_block_round(const cryptonote::blobdata &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const;
-    uint64_t get_upper_transaction_weight_limit();
+    uint64_t get_upper_transaction_weight_limit() const;
 
     void set_spent(size_t idx, uint64_t height);
     void set_unspent(size_t idx);

@@ -2664,7 +2664,7 @@ uint64_t wallet2::balance(uint32_t index_major, bool strict) const
   return amount;
 }
 //----------------------------------------------------------------------------------------------------
-uint64_t wallet2::unlocked_balance(uint32_t index_major, bool strict, uint64_t *blocks_to_unlock, uint64_t *time_to_unlock)
+uint64_t wallet2::unlocked_balance(uint32_t index_major, bool strict, uint64_t *blocks_to_unlock, uint64_t *time_to_unlock) const
 {
   uint64_t amount = 0;
   if (blocks_to_unlock)
@@ -2719,7 +2719,7 @@ std::map<uint32_t, uint64_t> wallet2::balance_per_subaddress(uint32_t index_majo
   return amount_per_subaddr;
 }
 //----------------------------------------------------------------------------------------------------
-std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> wallet2::unlocked_balance_per_subaddress(uint32_t index_major, bool strict)
+std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> wallet2::unlocked_balance_per_subaddress(uint32_t index_major, bool strict) const
 {
   std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> amount_per_subaddr;
   const uint64_t blockchain_height = get_blockchain_current_height();
@@ -3099,9 +3099,17 @@ void wallet2::get_outs
   THROW_WALLET_EXCEPTION(error::wallet_internal_error, tr("Transaction sanity check failed"));
 }
 
-void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry> dsts, const std::vector<size_t>& selected_transfers, size_t fake_outputs_count,
-  std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs,
-  uint64_t unlock_time, uint64_t fee, const std::vector<uint8_t>& extra, cryptonote::transaction& tx, pending_tx &ptx)
+void wallet2::transfer_selected_rct
+(
+ std::vector<cryptonote::tx_destination_entry> dsts
+ , const std::vector<size_t>& selected_transfers
+ , size_t fake_outputs_count
+ , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+ , uint64_t unlock_time
+ , uint64_t fee
+ , const std::vector<uint8_t>& extra, cryptonote::transaction& tx
+ , pending_tx &ptx
+ ) const
 {
   using namespace cryptonote;
   // throw if attempting a transaction with no destinations
@@ -3320,7 +3328,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
  , const std::vector<uint8_t> extra
  , const uint32_t subaddr_account
  , const std::set<uint32_t> subaddr_indices_
- )
+ ) const
 {
   auto dsts = dsts_vec;
 
@@ -3884,7 +3892,7 @@ bool wallet2::sanity_check(const std::vector<wallet::logic::type::tx::pending_tx
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-uint64_t wallet2::get_upper_transaction_weight_limit()
+uint64_t wallet2::get_upper_transaction_weight_limit() const
 {
   return get_max_tx_size() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
 }
