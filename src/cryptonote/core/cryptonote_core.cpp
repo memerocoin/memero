@@ -631,7 +631,7 @@ namespace cryptonote
     {
       uint64_t amount_in = 0;
       get_inputs_money_amount(tx, amount_in);
-      uint64_t amount_out = get_outs_money_amount(tx);
+      uint64_t amount_out = get_tx_outputs_money_amount(tx);
 
       if(amount_in <= amount_out)
       {
@@ -710,7 +710,7 @@ namespace cryptonote
 
          std::vector<transaction> txs;
          std::vector<crypto::hash> missed_txs;
-         uint64_t coinbase_amount = get_outs_money_amount(b.miner_tx);
+         uint64_t coinbase_amount = get_tx_outputs_money_amount(b.miner_tx);
          this->get_transactions(b.tx_hashes, txs, missed_txs);
          uint64_t tx_fee_amount = 0;
          for(const auto& tx: txs)
@@ -758,9 +758,9 @@ namespace cryptonote
             // The first value can be 0. When it's 0, it references _the_ output of the coinbase
             // tx of the first block after the genesis block.
             //
-            // We can verify this by playing with the `get_outs` daemon rpc call:
+            // We can verify this by playing with the `get_tx_outputs` daemon rpc call:
             //
-            // echo '{"get_txid": true, "outputs":[{"index":0}]}' | http :45679/get_outs
+            // echo '{"get_txid": true, "outputs":[{"index":0}]}' | http :45679/get_tx_outputs
             //
             // "outs": [
             //   {
@@ -908,9 +908,9 @@ namespace cryptonote
     return m_blockchain_storage.find_blockchain_supplement(req_start_block, qblock_ids, blocks, total_height, start_height, get_miner_tx_hash, max_count);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_outs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res) const
+  bool core::get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res) const
   {
-    return m_blockchain_storage.get_outs(req, res);
+    return m_blockchain_storage.get_tx_outputs(req, res);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) const

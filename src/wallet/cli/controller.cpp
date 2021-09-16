@@ -188,7 +188,7 @@ namespace controller {
       LOG_ERROR("RPC error: " << e.to_string());
       fail_msg_writer() << ("RPC error: ") << e.what();
     }
-    catch (const tools::error::get_outs_error &e)
+    catch (const tools::error::get_tx_outputs_error &e)
     {
       fail_msg_writer() << ("failed to get random outputs to mix: ") << e.what();
     }

@@ -3071,17 +3071,17 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
 }
 
 
-void wallet2::get_outs
+void wallet2::get_tx_outputs
 (
  const std::vector<size_t> selected_transfers
  , const size_t fake_outputs_count
- , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+ , std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
  ) const
 {
   std::vector<uint64_t> rct_offsets;
   for (size_t attempts = config::lol::get_out_retry; attempts > 0; --attempts)
   {
-    m_rpc_client.get_outs(selected_transfers, m_transfers, fake_outputs_count, outs, rct_offsets);
+    m_rpc_client.get_tx_outputs(selected_transfers, m_transfers, fake_outputs_count, outs, rct_offsets);
 
     const auto unique = wallet::logic::functional::wallet::outs_unique(outs);
     if (tx_sanity_check(unique.first, unique.second, rct_offsets.empty() ? 0 : rct_offsets.back()))
@@ -3106,13 +3106,13 @@ std::pair<pending_tx, cryptonote::transaction> wallet2::transfer_selected_rct
  std::vector<cryptonote::tx_destination_entry> dsts
  , const std::vector<size_t>& selected_transfers
  , size_t fake_outputs_count
- , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+ , std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
  , uint64_t unlock_time
  , uint64_t fee
  , const std::vector<uint8_t>& extra
  ) const {
   if (outs.empty()) {
-    get_outs(selected_transfers, fake_outputs_count, outs); // may throw
+    get_tx_outputs(selected_transfers, fake_outputs_count, outs); // may throw
   }
 
   return wallet::logic::functional::wallet::transfer_selected_rct
@@ -3187,7 +3187,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
     pending_tx ptx;
     size_t weight;
     uint64_t needed_fee;
-    std::vector<std::vector<wallet::logic::type::get_outs_entry>> outs;
+    std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> outs;
 
     TX() : weight(0), needed_fee(0) {}
 
@@ -3361,7 +3361,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
 
   adding_fee = false;
   needed_fee = 0;
-  std::vector<std::vector<wallet::logic::type::get_outs_entry>> outs;
+  std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> outs;
 
   // for rct, since we don't see the amounts, we will try to make all transactions
   // look the same, with 1 or 2 inputs, and 2 outputs. One input is preferable, as
@@ -3624,7 +3624,7 @@ skip_tx:
        tx.dsts,                    /* NOMOD std::vector<cryptonote::tx_destination_entry> dsts,*/
        tx.selected_transfers,      /* const std::list<size_t> selected_transfers */
        fake_outs_count,            /* CONST size_t fake_outputs_count, */
-       tx.outs,                    /* MOD   std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs, */
+       tx.outs,                    /* MOD   std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs, */
        unlock_time,                /* CONST uint64_t unlock_time,  */
        tx.needed_fee,              /* CONST uint64_t fee, */
        extra                       /* const std::vector<uint8_t>& extra, */

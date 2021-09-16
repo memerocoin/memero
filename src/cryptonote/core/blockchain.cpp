@@ -1266,7 +1266,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       {
         LOG_ERROR("Creating block template: error: cannot get inputs amount");
       }
-      else if (cur_tx.fee != inputs_amount - get_outs_money_amount(cur_tx.tx))
+      else if (cur_tx.fee != inputs_amount - get_tx_outputs_money_amount(cur_tx.tx))
       {
         LOG_ERROR("Creating block template: error: invalid fee");
       }
@@ -1473,7 +1473,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     bei.bl = b;
     const uint64_t prev_height = alt_chain.size() ? prev_data.height : m_db->get_block_height(b.prev_id);
     bei.height = prev_height + 1;
-    uint64_t block_reward = get_outs_money_amount(b.miner_tx);
+    uint64_t block_reward = get_tx_outputs_money_amount(b.miner_tx);
     const uint64_t prev_generated_coins = alt_chain.size() ? prev_data.already_generated_coins : m_db->get_block_already_generated_coins(prev_height);
     bei.already_generated_coins = (block_reward < (MONEY_SUPPLY - prev_generated_coins)) ? prev_generated_coins + block_reward : MONEY_SUPPLY;
 
@@ -1795,7 +1795,7 @@ crypto::public_key Blockchain::get_output_key(uint64_t amount, uint64_t global_i
 }
 
 //------------------------------------------------------------------
-bool Blockchain::get_outs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res) const
+bool Blockchain::get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);

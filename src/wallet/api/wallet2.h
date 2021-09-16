@@ -246,7 +246,7 @@ namespace tools
      std::vector<cryptonote::tx_destination_entry> dsts
      , const std::vector<size_t>& selected_transfers
      , size_t fake_outputs_count
-     , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+     , std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
      , uint64_t unlock_time
      , uint64_t fee
      , const std::vector<uint8_t>& extra
@@ -469,11 +469,11 @@ namespace tools
     void set_unspent(size_t idx);
     bool is_spent(size_t idx, bool strict = true) const;
 
-    void get_outs
+    void get_tx_outputs
     (
      const std::vector<size_t> selected_transfers
      , const size_t fake_outputs_count
-     , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+     , std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
      ) const;
 
     std::vector<size_t> get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const;

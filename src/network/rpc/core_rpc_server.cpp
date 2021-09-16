@@ -333,13 +333,13 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_outs_bin(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res, const connection_context *ctx)
+  bool core_rpc_server::on_get_tx_outputs_bin(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res, const connection_context *ctx)
   {
-    RPC_TRACKER(get_outs_bin);
+    RPC_TRACKER(get_tx_outputs_bin);
 
     res.status = "Failed";
 
-    if(!m_core.get_outs(req, res))
+    if(!m_core.get_tx_outputs(req, res))
     {
       return true;
     }
@@ -348,9 +348,9 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_outs(const COMMAND_RPC_GET_OUTPUTS::request& req, COMMAND_RPC_GET_OUTPUTS::response& res, const connection_context *ctx)
+  bool core_rpc_server::on_get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS::request& req, COMMAND_RPC_GET_OUTPUTS::response& res, const connection_context *ctx)
   {
-    RPC_TRACKER(get_outs);
+    RPC_TRACKER(get_tx_outputs);
 
     res.status = "Failed";
 
@@ -358,7 +358,7 @@ namespace cryptonote
     req_bin.outputs = req.outputs;
     req_bin.get_txid = req.get_txid;
     cryptonote::COMMAND_RPC_GET_OUTPUTS_BIN::response res_bin;
-    if(!m_core.get_outs(req_bin, res_bin))
+    if(!m_core.get_tx_outputs(req_bin, res_bin))
     {
       return true;
     }

@@ -148,7 +148,7 @@ namespace wallet {
     return 0.0f;
   }
 
-  std::pair<std::set<uint64_t>, size_t> outs_unique(const std::vector<std::vector<::wallet::logic::type::get_outs_entry>> outs)
+  std::pair<std::set<uint64_t>, size_t> outs_unique(const std::vector<std::vector<::wallet::logic::type::get_tx_outputs_entry>> outs)
   {
     std::set<uint64_t> unique;
     size_t total = 0;
@@ -456,7 +456,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
  const std::vector<cryptonote::tx_destination_entry> dsts
  , const std::vector<size_t> selected_transfers
  , const size_t fake_outputs_count
- , const std::span<const std::vector<type::get_outs_entry>> outs
+ , const std::span<const std::vector<type::get_tx_outputs_entry>> outs
  , const uint64_t unlock_time
  , const uint64_t fee
  , const std::vector<uint8_t> extra

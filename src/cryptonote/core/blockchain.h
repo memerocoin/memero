@@ -462,7 +462,7 @@ namespace cryptonote
      *
      * @return true
      */
-    bool get_outs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res) const;
+    bool get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res) const;
 
     /**
      * @brief gets an output's key and unlocked state

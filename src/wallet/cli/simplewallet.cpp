@@ -1805,7 +1805,7 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
       }
       COMMAND_RPC_GET_OUTPUTS_BIN::response res = AUTO_VAL_INIT(res);
       req.get_txid = true;
-      bool r = m_wallet->invoke_http_bin("/get_outs.bin", req, res);
+      bool r = m_wallet->invoke_http_bin("/get_tx_outputs.bin", req, res);
       err = interpret_rpc_response(r, res.status);
       if (!err.empty())
       {

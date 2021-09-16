@@ -130,7 +130,7 @@ namespace cryptonote
         return false;
       }
 
-      uint64_t outputs_amount = get_outs_money_amount(tx);
+      uint64_t outputs_amount = get_tx_outputs_money_amount(tx);
       if(outputs_amount > inputs_amount)
       {
         LOG_PRINT_L1("transaction use more money than it has: use " << print_money(outputs_amount) << ", have " << print_money(inputs_amount));

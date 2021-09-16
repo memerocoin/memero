@@ -140,12 +140,12 @@ bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64
   return true;
 }
 
-void RPC_Client::get_outs
+void RPC_Client::get_tx_outputs
 (
    const std::vector<size_t> selected_transfers
  , const wallet::logic::type::wallet::transfer_container m_transfers
  , const size_t fake_outputs_count
- , std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+ , std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
  , std::vector<uint64_t> &rct_offsets
  ) const
 {
@@ -347,10 +347,10 @@ void RPC_Client::get_outs
 
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = epee::net_utils::invoke_http_bin("/get_outs.bin", req, daemon_resp, m_http_client, rpc_timeout);
-      THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "get_outs.bin", error::get_outs_error, (daemon_resp.status));
+      bool r = epee::net_utils::invoke_http_bin("/get_tx_outputs.bin", req, daemon_resp, m_http_client, rpc_timeout);
+      THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "get_tx_outputs.bin", error::get_tx_outputs_error, (daemon_resp.status));
       THROW_WALLET_EXCEPTION_IF(daemon_resp.outs.size() != req.outputs.size(), error::wallet_internal_error,
-        "daemon returned wrong response for get_outs.bin, wrong amounts count = " +
+        "daemon returned wrong response for get_tx_outputs.bin, wrong amounts count = " +
         std::to_string(daemon_resp.outs.size()) + ", expected " +  std::to_string(req.outputs.size()));
     }
 
@@ -361,7 +361,7 @@ void RPC_Client::get_outs
     {
       const transfer_details &td = m_transfers[idx];
       size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW - CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE : 0);
-      outs.push_back(std::vector<wallet::logic::type::get_outs_entry>());
+      outs.push_back(std::vector<wallet::logic::type::get_tx_outputs_entry>());
       outs.back().reserve(fake_outputs_count + 1);
 
       THROW_WALLET_EXCEPTION_IF(!td.is_rct(), error::wallet_internal_error,
@@ -418,7 +418,7 @@ void RPC_Client::get_outs
       else
       {
         // sort the subsection, so any spares are reset in order
-        std::sort(outs.back().begin(), outs.back().end(), [](const wallet::logic::type::get_outs_entry &a, const wallet::logic::type::get_outs_entry &b) { return std::get<0>(a) < std::get<0>(b); });
+        std::sort(outs.back().begin(), outs.back().end(), [](const wallet::logic::type::get_tx_outputs_entry &a, const wallet::logic::type::get_tx_outputs_entry &b) { return std::get<0>(a) < std::get<0>(b); });
       }
       base += requested_outputs_count;
     }
@@ -429,7 +429,7 @@ void RPC_Client::get_outs
     for (size_t idx: selected_transfers)
     {
       const transfer_details &td = m_transfers[idx];
-      std::vector<wallet::logic::type::get_outs_entry> v;
+      std::vector<wallet::logic::type::get_tx_outputs_entry> v;
 
       THROW_WALLET_EXCEPTION_IF(!td.is_rct(), error::wallet_internal_error,
                                 "td is not rct");
@@ -443,7 +443,7 @@ void RPC_Client::get_outs
 
 bool RPC_Client::tx_add_fake_output
 (
- std::vector<std::vector<wallet::logic::type::get_outs_entry>> &outs
+ std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
  , uint64_t global_index
  , const crypto::public_key& output_public_key
  , const rct::rct_point& mask
