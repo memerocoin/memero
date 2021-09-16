@@ -120,7 +120,7 @@ namespace wallet {
   type::tx::tx_scan_info_t check_acc_out_precomp
   (
    const cryptonote::tx_out o
-   , const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret
+   , const std::optional<crypto::tx_output_ecdh_shared_secret> tx_output_shared_secret
    , const size_t i
    , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
    );

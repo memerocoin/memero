@@ -147,7 +147,7 @@ namespace proof {
 
     if (is_out)
     {
-      std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+      std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
       for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
       {
         const bool good_signature_for_tx_output_pub_key = is_subaddress
@@ -158,7 +158,7 @@ namespace proof {
 
         if (good_signature_for_tx_output_pub_key) {
           const auto tx_output_shared_secret =
-            crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
+            crypto::derive_tx_output_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
 
           tx_output_shared_secrets[i] = tx_output_shared_secret;
 
@@ -177,7 +177,7 @@ namespace proof {
 
     else
     {
-      std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+      std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
 
       for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
       {
@@ -189,7 +189,7 @@ namespace proof {
 
         if (good_signature_for_tx_output_pub_key) {
           const auto tx_output_shared_secret =
-            crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
+            crypto::derive_tx_output_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
 
           tx_output_shared_secrets[i] = tx_output_shared_secret;
 

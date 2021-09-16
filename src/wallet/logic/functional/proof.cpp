@@ -45,8 +45,8 @@ namespace proof {
   const uint64_t get_tx_key_received_helper
   (
    const cryptonote::transaction &tx
-   , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
-   , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
+   , const std::optional<crypto::tx_output_ecdh_shared_secret> &tx_shared_secret
+   , const std::map<size_t, crypto::tx_output_ecdh_shared_secret> &tx_output_shared_secrets
    , const cryptonote::account_public_address &address
    )
   {
@@ -59,7 +59,7 @@ namespace proof {
         continue;
 
       bool found = false;
-      crypto::tx_ecdh_shared_secret found_shared_secret = {};
+      crypto::tx_output_ecdh_shared_secret found_shared_secret = {};
 
       if (tx_shared_secret) {
         const std::optional<crypto::public_key> maybe_derived_tx_output_public_key =

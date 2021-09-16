@@ -70,7 +70,7 @@ TEST(Crypto, Ostream)
   EXPECT_TRUE(is_formatted<crypto::public_key>());
   EXPECT_TRUE(is_formatted<crypto::secret_key>());
   EXPECT_TRUE(is_formatted<crypto::schnorr_signature>());
-  EXPECT_TRUE(is_formatted<crypto::tx_ecdh_shared_secret>());
+  EXPECT_TRUE(is_formatted<crypto::tx_output_ecdh_shared_secret>());
   EXPECT_TRUE(is_formatted<crypto::shared_secret_derived_public_key_image>());
 }
 

@@ -570,7 +570,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
     // const size_t vout_size = tx.vout.size();
 
-    std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+    std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
 
     const auto tx_output_public_keys
       = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
@@ -580,7 +580,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       for (size_t i = 0; i < tx_output_public_keys->size(); ++i)
       {
         tx_output_shared_secrets[i] =
-          crypto::derive_tx_ecdh_shared_secret(tx_output_public_keys->at(i), keys.m_view_secret_key);
+          crypto::derive_tx_output_ecdh_shared_secret(tx_output_public_keys->at(i), keys.m_view_secret_key);
       }
     }
 
@@ -590,7 +590,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       const auto secret
         = tx_output_shared_secrets.contains(i)
         ? tx_output_shared_secrets.at(i)
-        : std::optional<crypto::tx_ecdh_shared_secret>();
+        : std::optional<crypto::tx_output_ecdh_shared_secret>();
 
       tx_scan_info[i] = wallet::logic::functional::wallet::check_acc_out_precomp
         (tx.vout[i], secret, i, m_subaddresses);
@@ -3766,15 +3766,15 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
 //----------------------------------------------------------------------------------------------------
   void wallet2::verify_tx_key(const crypto::hash &txid, const std::optional<crypto::secret_key> &tx_key, const std::vector<crypto::secret_key> &output_secret_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
 {
-  std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret;
+  std::optional<crypto::tx_output_ecdh_shared_secret> tx_shared_secret;
   if (tx_key) {
-    tx_shared_secret = crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, *tx_key);
+    tx_shared_secret = crypto::derive_tx_output_ecdh_shared_secret(address.m_view_public_key, *tx_key);
   }
 
-  std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+  std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
   for (size_t i = 0; i < output_secret_keys.size(); ++i) {
     tx_output_shared_secrets[i] =
-      crypto::derive_tx_ecdh_shared_secret(address.m_view_public_key, output_secret_keys[i]);
+      crypto::derive_tx_output_ecdh_shared_secret(address.m_view_public_key, output_secret_keys[i]);
   }
 
   verify_tx_key_helper(txid, tx_shared_secret, tx_output_shared_secrets, address, received, in_pool, confirmations);
@@ -3783,8 +3783,8 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
 void wallet2::verify_tx_key_helper
 (
  const crypto::hash &txid
- , const std::optional<crypto::tx_ecdh_shared_secret> &tx_shared_secret
- , const std::map<size_t, crypto::tx_ecdh_shared_secret> &tx_output_shared_secrets
+ , const std::optional<crypto::tx_output_ecdh_shared_secret> &tx_shared_secret
+ , const std::map<size_t, crypto::tx_output_ecdh_shared_secret> &tx_output_shared_secrets
  , const cryptonote::account_public_address &address
  , uint64_t &received
  , bool &in_pool

@@ -33,7 +33,7 @@ namespace crypto {
   struct public_key: ec_point {
   };
 
-  struct tx_ecdh_shared_secret: ec_point {};
+  struct tx_output_ecdh_shared_secret: ec_point {};
 
   struct shared_secret_derived_public_key_image: ec_point {};
 
@@ -49,7 +49,7 @@ namespace crypto {
   inline const secret_key &s2sk(const ec_scalar &x)              noexcept { return (const secret_key&)x; }
   inline const public_key &p2pk(const ec_point &x)               noexcept { return (const public_key&)x; }
   inline const shared_secret_derived_public_key_image &p2img(const ec_point &x)               noexcept { return (const shared_secret_derived_public_key_image&)x; }
-  inline const tx_ecdh_shared_secret &p2tx_shared_secret(const ec_point &x)   noexcept { return (const tx_ecdh_shared_secret&)x; }
+  inline const tx_output_ecdh_shared_secret &p2tx_shared_secret(const ec_point &x)   noexcept { return (const tx_output_ecdh_shared_secret&)x; }
 
   inline const ec_scalar_unnormalized &d2s(const crypto_data &x) noexcept { return (const ec_scalar_unnormalized&)x; }
   inline const ec_point_unsafe &d2p(const crypto_data &x)        noexcept { return (const ec_point_unsafe&)x; }
@@ -107,7 +107,7 @@ namespace crypto {
    * * The sender uses key derivation and the receivers' "spend" key to derive an shared secret derived public key.
    * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
    */
-  tx_ecdh_shared_secret derive_tx_ecdh_shared_secret
+  tx_output_ecdh_shared_secret derive_tx_output_ecdh_shared_secret
   (
    const public_key pk
    , const secret_key sk
@@ -116,13 +116,13 @@ namespace crypto {
 
   ec_scalar hash_tx_shared_secret_to_scalar
   (
-   const tx_ecdh_shared_secret &tx_shared_secret
+   const tx_output_ecdh_shared_secret &tx_shared_secret
    , const size_t index
    ) noexcept;
 
   secret_key compute_shared_secret_derived_secret_key_from_spend_secret_key
   (
-   const tx_ecdh_shared_secret &tx_shared_secret
+   const tx_output_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
    , const secret_key &base
    , const ec_scalar offset
@@ -130,14 +130,14 @@ namespace crypto {
 
   std::optional<public_key> compute_shared_secret_derived_public_key_from_spend_public_key
   (
-   const tx_ecdh_shared_secret &tx_shared_secret
+   const tx_output_ecdh_shared_secret &tx_shared_secret
    , const size_t output_index
    , const ec_point_unsafe &unsafe_spend_public_key
    ) noexcept;
 
   std::optional<public_key> compute_spend_public_key_from_shared_secret_derived_public_key
   (
-   const tx_ecdh_shared_secret &tx_shared_secret
+   const tx_output_ecdh_shared_secret &tx_shared_secret
    , const std::size_t output_index
    , const ec_point_unsafe &unsafe_shared_secret_derived_pk
    ) noexcept;

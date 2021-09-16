@@ -68,28 +68,28 @@ namespace cryptonote
    , const size_t real_output_index
    )
   {
-    const std::optional<crypto::tx_ecdh_shared_secret> recv_tx_shared_secret =
+    const std::optional<crypto::tx_output_ecdh_shared_secret> recv_tx_shared_secret =
       tx_public_key
-      ? crypto::derive_tx_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key)
-      : std::optional<crypto::tx_ecdh_shared_secret>();
+      ? crypto::derive_tx_output_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key)
+      : std::optional<crypto::tx_output_ecdh_shared_secret>();
 
     // if (!recv_tx_shared_secret)
     // {
-    //   LOG_WARNING("key image helper: failed to derive_tx_ecdh_shared_secret(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
+    //   LOG_WARNING("key image helper: failed to derive_tx_output_ecdh_shared_secret(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
     //   return false;
     // }
 
-    std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+    std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
     for (size_t i = 0; i < output_public_keys.size(); ++i)
     {
       const auto additional_recv_tx_shared_secret =
-        crypto::derive_tx_ecdh_shared_secret(output_public_keys[i], ack.m_view_secret_key);
+        crypto::derive_tx_output_ecdh_shared_secret(output_public_keys[i], ack.m_view_secret_key);
       tx_output_shared_secrets[i] = additional_recv_tx_shared_secret;
     }
     const auto secret
       = tx_output_shared_secrets.contains(real_output_index)
       ? tx_output_shared_secrets[real_output_index]
-      : std::optional<crypto::tx_ecdh_shared_secret>();
+      : std::optional<crypto::tx_output_ecdh_shared_secret>();
 
     std::optional<subaddress_receive_info> subaddr_recv_info =
       is_out_to_acc_precomp
@@ -120,7 +120,7 @@ namespace cryptonote
   (
    const account_keys ack
    , const crypto::public_key out_key
-   , const crypto::tx_ecdh_shared_secret recv_tx_shared_secret
+   , const crypto::tx_output_ecdh_shared_secret recv_tx_shared_secret
    , const size_t real_output_index
    , const subaddress_index received_index
    )
@@ -236,8 +236,8 @@ namespace cryptonote
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key tx_output_public_key
-   , const std::optional<crypto::tx_ecdh_shared_secret> tx_shared_secret
-   , const std::optional<crypto::tx_ecdh_shared_secret> tx_output_shared_secret
+   , const std::optional<crypto::tx_output_ecdh_shared_secret> tx_shared_secret
+   , const std::optional<crypto::tx_output_ecdh_shared_secret> tx_output_shared_secret
    , const size_t output_index
    )
   {

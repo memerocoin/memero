@@ -76,7 +76,7 @@ namespace cryptonote
       };
 
     const auto tx_shared_secret =
-      crypto::derive_tx_ecdh_shared_secret(dst_entr.addr.m_view_public_key, txkey.sec);
+      crypto::derive_tx_output_ecdh_shared_secret(dst_entr.addr.m_view_public_key, txkey.sec);
 
     const rct::rct_scalar tx_shared_secret_indexed_hash =
       rct::s2s(crypto::hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index));
@@ -155,7 +155,7 @@ namespace cryptonote
       }
       summary_inputs_money += src_entr.amount;
 
-      //tx_ecdh_shared_secret recv_tx_shared_secret;
+      //tx_output_ecdh_shared_secret recv_tx_shared_secret;
       in_contexts.push_back(input_generation_context_data());
       const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.dest);
       const auto r = derive_public_key_image_helper
@@ -439,7 +439,7 @@ namespace cryptonote
     block_reward += fee;
 
     const auto tx_shared_secret =
-      crypto::derive_tx_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
+      crypto::derive_tx_output_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
 
     const std::optional<crypto::public_key> out_eph_public_key =
       crypto::compute_shared_secret_derived_public_key_from_spend_public_key(tx_shared_secret, 0, miner_address.m_spend_public_key);

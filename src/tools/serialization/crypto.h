@@ -42,5 +42,5 @@ BLOB_SERIALIZER(crypto::hash);
 BLOB_SERIALIZER(crypto::hash8);
 BLOB_SERIALIZER(crypto::public_key);
 BLOB_SERIALIZER(crypto::secret_key);
-BLOB_SERIALIZER(crypto::tx_ecdh_shared_secret);
+BLOB_SERIALIZER(crypto::tx_output_ecdh_shared_secret);
 BLOB_SERIALIZER(crypto::shared_secret_derived_public_key_image);

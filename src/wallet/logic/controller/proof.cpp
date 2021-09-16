@@ -158,11 +158,11 @@ namespace proof {
 
     // check if this address actually received any funds
 
-    std::map<size_t, crypto::tx_ecdh_shared_secret> tx_output_shared_secrets;
+    std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
 
     for (size_t i = 0; i < shared_secret.size(); i++) {
       const auto tx_output_shared_secret =
-        crypto::derive_tx_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
+        crypto::derive_tx_output_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
 
       tx_output_shared_secrets[i] = tx_output_shared_secret;
     };
