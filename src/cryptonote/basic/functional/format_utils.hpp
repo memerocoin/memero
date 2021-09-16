@@ -44,7 +44,7 @@ namespace cryptonote
   struct subaddress_receive_info
   {
     subaddress_index index;
-    crypto::tx_output_ecdh_shared_secret tx_shared_secret;
+    crypto::tx_output_ecdh_shared_secret tx_output_shared_secret;
   };
 
 
@@ -66,7 +66,7 @@ namespace cryptonote
   (
    const account_keys ack
    , const crypto::public_key out_key
-   , const crypto::tx_output_ecdh_shared_secret recv_tx_shared_secret
+   , const crypto::tx_output_ecdh_shared_secret recv_tx_output_shared_secret
    , const size_t real_output_index
    , const subaddress_index received_index
    );

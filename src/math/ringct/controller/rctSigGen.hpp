@@ -67,7 +67,7 @@ namespace rct {
    , const std::vector<amount_t> outamounts
    , const amount_t fee
    , const ct_public_keyM mixRing
-   , const rct_scalarV tx_shared_secret_indexed_hashes
+   , const rct_scalarV tx_output_shared_secret_indexed_hashes
    , const std::vector<size_t> index
    );
 }

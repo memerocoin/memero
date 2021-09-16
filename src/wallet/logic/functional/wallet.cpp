@@ -214,11 +214,11 @@ namespace wallet {
   std::optional<std::pair<uint64_t, rct::rct_scalar>> decodeRct
   (
    const rct::rctData rv
-   , const crypto::tx_output_ecdh_shared_secret tx_shared_secret
+   , const crypto::tx_output_ecdh_shared_secret tx_output_shared_secret
    , const unsigned int i
    )
   {
-    const crypto::ec_scalar s_der = crypto::hash_tx_shared_secret_to_scalar(tx_shared_secret, i);
+    const crypto::ec_scalar s_der = crypto::hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, i);
     try
     {
       switch (rv.type)
@@ -258,7 +258,7 @@ namespace wallet {
         (
          keys
         , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key
-        , tx_scan_info.received->tx_shared_secret
+        , tx_scan_info.received->tx_output_shared_secret
         , i
         , tx_scan_info.received->index
         );
@@ -284,7 +284,7 @@ namespace wallet {
 
     if (tx_scan_info.money_transfered == 0 && !miner_tx)
     {
-      const auto r = decodeRct(tx.ringct_essential, tx_scan_info.received->tx_shared_secret, i);
+      const auto r = decodeRct(tx.ringct_essential, tx_scan_info.received->tx_output_shared_secret, i);
       if (!r) {
         tx_scan_info.error = true;
         return tx_scan_info;

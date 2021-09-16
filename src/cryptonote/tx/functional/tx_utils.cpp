@@ -60,7 +60,7 @@ namespace cryptonote
    , const size_t output_index
    , const std::span<const crypto::secret_key> output_secret_keys
    , const std::vector<crypto::public_key> &output_public_keys_in
-   , const rct::rct_scalarV &tx_shared_secret_indexed_hashes_in
+   , const rct::rct_scalarV &tx_output_shared_secret_indexed_hashes_in
    )
   {
     const keypair txkey =
@@ -75,33 +75,33 @@ namespace cryptonote
         : to_pk(output_secret_keys[output_index])
       };
 
-    const auto tx_shared_secret =
+    const auto tx_output_shared_secret =
       crypto::derive_tx_output_ecdh_shared_secret(dst_entr.addr.m_view_public_key, txkey.sec);
 
-    const rct::rct_scalar tx_shared_secret_indexed_hash =
-      rct::s2s(crypto::hash_tx_shared_secret_to_scalar(tx_shared_secret, output_index));
+    const rct::rct_scalar tx_output_shared_secret_indexed_hash =
+      rct::s2s(crypto::hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, output_index));
 
     const auto eph_pk = crypto::compute_shared_secret_derived_public_key_from_spend_public_key
-      (tx_shared_secret, output_index, dst_entr.addr.m_spend_public_key);
+      (tx_output_shared_secret, output_index, dst_entr.addr.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
        eph_pk
        , {}
        , "at creation outs: failed to compute_shared_secret_derived_public_key_from_spend_public_key("
-       << tx_shared_secret << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
+       << tx_output_shared_secret << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
        );
 
     // carry
     std::vector<crypto::public_key> output_public_keys = output_public_keys_in;
     output_public_keys.push_back(txkey.pub);
 
-    rct::rct_scalarV tx_shared_secret_indexed_hashes = tx_shared_secret_indexed_hashes_in;
-    tx_shared_secret_indexed_hashes.push_back(tx_shared_secret_indexed_hash);
+    rct::rct_scalarV tx_output_shared_secret_indexed_hashes = tx_output_shared_secret_indexed_hashes_in;
+    tx_output_shared_secret_indexed_hashes.push_back(tx_output_shared_secret_indexed_hash);
 
     return {{
         output_public_keys
-        , tx_shared_secret_indexed_hashes
+        , tx_output_shared_secret_indexed_hashes
         , *eph_pk
       }};
   }
@@ -128,7 +128,7 @@ namespace cryptonote
     }
 
 
-    rct::rct_scalarV tx_shared_secret_indexed_hashes;
+    rct::rct_scalarV tx_output_shared_secret_indexed_hashes;
     tx.set_null();
 
     tx.version = 2;
@@ -155,7 +155,7 @@ namespace cryptonote
       }
       summary_inputs_money += src_entr.amount;
 
-      //tx_output_ecdh_shared_secret recv_tx_shared_secret;
+      //tx_output_ecdh_shared_secret recv_tx_output_shared_secret;
       in_contexts.push_back(input_generation_context_data());
       const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.dest);
       const auto r = derive_public_key_image_helper
@@ -252,7 +252,7 @@ namespace cryptonote
          , output_index
          , output_secret_keys
          , output_public_keys
-         , tx_shared_secret_indexed_hashes
+         , tx_output_shared_secret_indexed_hashes
          );
 
       if (!r) return {};
@@ -261,7 +261,7 @@ namespace cryptonote
       std::tie
         (
          output_public_keys
-         , tx_shared_secret_indexed_hashes
+         , tx_output_shared_secret_indexed_hashes
          , out_eph_public_key
          ) = *r;
 
@@ -369,7 +369,7 @@ namespace cryptonote
          , outamounts
          , amount_in - amount_out
          , mixRing
-         , tx_shared_secret_indexed_hashes
+         , tx_output_shared_secret_indexed_hashes
          , index
          );
 
@@ -438,18 +438,18 @@ namespace cryptonote
 
     block_reward += fee;
 
-    const auto tx_shared_secret =
+    const auto tx_output_shared_secret =
       crypto::derive_tx_output_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
 
     const std::optional<crypto::public_key> out_eph_public_key =
-      crypto::compute_shared_secret_derived_public_key_from_spend_public_key(tx_shared_secret, 0, miner_address.m_spend_public_key);
+      crypto::compute_shared_secret_derived_public_key_from_spend_public_key(tx_output_shared_secret, 0, miner_address.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
        out_eph_public_key
        , {}
        , "while creating outs: failed to compute_shared_secret_derived_public_key_from_spend_public_key("
-       << tx_shared_secret << ", " << 0 << ", "
+       << tx_output_shared_secret << ", " << 0 << ", "
        << miner_address.m_spend_public_key << ")"
        );
 

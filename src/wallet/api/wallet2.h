@@ -338,7 +338,7 @@ namespace tools
     void verify_tx_key_helper
     (
      const crypto::hash &txid
-     , const std::optional<crypto::tx_output_ecdh_shared_secret> &tx_shared_secret
+     , const std::optional<crypto::tx_output_ecdh_shared_secret> &tx_output_shared_secret
      , const std::map<size_t, crypto::tx_output_ecdh_shared_secret> &tx_output_shared_secrets
      , const cryptonote::account_public_address &address
      , uint64_t &received

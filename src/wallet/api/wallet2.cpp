@@ -93,7 +93,7 @@ struct options {
   const command_line::arg_descriptor<std::string> password = {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
   const command_line::arg_descriptor<std::string> password_file = {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
   const command_line::arg_descriptor<bool> testnet = {"testnet", tools::wallet2::tr("For testnet. Daemon must also be launched with --testnet flag"), false};
-  const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key tx_shared_secret function"), 1};
+  const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key tx_output_shared_secret function"), 1};
   const command_line::arg_descriptor<std::string> tx_notify =
     { "tx-notify"
     , "Run a program for each new incoming transaction, "
@@ -3766,9 +3766,9 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
 //----------------------------------------------------------------------------------------------------
   void wallet2::verify_tx_key(const crypto::hash &txid, const std::optional<crypto::secret_key> &tx_key, const std::vector<crypto::secret_key> &output_secret_keys, const cryptonote::account_public_address &address, uint64_t &received, bool &in_pool, uint64_t &confirmations)
 {
-  std::optional<crypto::tx_output_ecdh_shared_secret> tx_shared_secret;
+  std::optional<crypto::tx_output_ecdh_shared_secret> tx_output_shared_secret;
   if (tx_key) {
-    tx_shared_secret = crypto::derive_tx_output_ecdh_shared_secret(address.m_view_public_key, *tx_key);
+    tx_output_shared_secret = crypto::derive_tx_output_ecdh_shared_secret(address.m_view_public_key, *tx_key);
   }
 
   std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
@@ -3777,13 +3777,13 @@ bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, s
       crypto::derive_tx_output_ecdh_shared_secret(address.m_view_public_key, output_secret_keys[i]);
   }
 
-  verify_tx_key_helper(txid, tx_shared_secret, tx_output_shared_secrets, address, received, in_pool, confirmations);
+  verify_tx_key_helper(txid, tx_output_shared_secret, tx_output_shared_secrets, address, received, in_pool, confirmations);
 }
 
 void wallet2::verify_tx_key_helper
 (
  const crypto::hash &txid
- , const std::optional<crypto::tx_output_ecdh_shared_secret> &tx_shared_secret
+ , const std::optional<crypto::tx_output_ecdh_shared_secret> &tx_output_shared_secret
  , const std::map<size_t, crypto::tx_output_ecdh_shared_secret> &tx_output_shared_secrets
  , const cryptonote::account_public_address &address
  , uint64_t &received
@@ -3828,7 +3828,7 @@ void wallet2::verify_tx_key_helper
     "The size of additional tx_output_shared_secrets is wrong");
 
   received = wallet::logic::functional::proof::get_tx_key_received_helper
-    (tx, tx_shared_secret, tx_output_shared_secrets, address);
+    (tx, tx_output_shared_secret, tx_output_shared_secrets, address);
 
   in_pool = res.txs.front().in_pool;
   confirmations = 0;

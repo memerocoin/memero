@@ -279,14 +279,14 @@ namespace rct {
    , const vector<amount_t> outamounts
    , const amount_t fee
    , const ct_public_keyM mixRing
-   , const rct_scalarV tx_shared_secret_indexed_hashes
+   , const rct_scalarV tx_output_shared_secret_indexed_hashes
    , const std::vector<size_t> index
    )
   {
     LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
     LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
     LOG_ERROR_AND_THROW_UNLESS(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
-    LOG_ERROR_AND_THROW_UNLESS(tx_shared_secret_indexed_hashes.size() == destinations.size(), "Different number of tx_shared_secret_indexed_hashes/destinations");
+    LOG_ERROR_AND_THROW_UNLESS(tx_output_shared_secret_indexed_hashes.size() == destinations.size(), "Different number of tx_output_shared_secret_indexed_hashes/destinations");
     LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
     LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
     for (size_t n = 0; n < mixRing.size(); ++n) {
@@ -294,7 +294,7 @@ namespace rct {
     }
 
 
-    const auto [blinding_factors, proof] = generate_range_proof(outamounts, tx_shared_secret_indexed_hashes);
+    const auto [blinding_factors, proof] = generate_range_proof(outamounts, tx_output_shared_secret_indexed_hashes);
 
     ct_secret_keyV outSk;
     std::transform
@@ -326,7 +326,7 @@ namespace rct {
       (
        outamounts.begin(),
        outamounts.end(),
-       tx_shared_secret_indexed_hashes.begin(),
+       tx_output_shared_secret_indexed_hashes.begin(),
        std::back_inserter(ecdh),
        [](const auto& x, const auto& y) -> ecdh_encrypted_data {
          return {crypto::d2s(encode_by_ecdh_shared_secret_hash(int_to_scalar(x), y))};

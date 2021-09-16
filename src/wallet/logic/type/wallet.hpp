@@ -64,13 +64,13 @@ namespace wallet {
   {
     std::vector<::wallet::logic::type::tx::pending_tx> ptx;
     std::vector<crypto::shared_secret_derived_public_key_image> shared_secret_derived_public_key_images;
-    serializable_unordered_map<crypto::public_key, crypto::shared_secret_derived_public_key_image> tx_shared_secret_derived_public_key_images;
+    serializable_unordered_map<crypto::public_key, crypto::shared_secret_derived_public_key_image> tx_output_shared_secret_derived_public_key_images;
 
     BEGIN_SERIALIZE_OBJECT()
     VERSION_FIELD(0)
     FIELD(ptx)
     FIELD(shared_secret_derived_public_key_images)
-    FIELD(tx_shared_secret_derived_public_key_images)
+    FIELD(tx_output_shared_secret_derived_public_key_images)
     END_SERIALIZE()
   };
 

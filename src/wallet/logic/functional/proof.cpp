@@ -45,7 +45,7 @@ namespace proof {
   const uint64_t get_tx_key_received_helper
   (
    const cryptonote::transaction &tx
-   , const std::optional<crypto::tx_output_ecdh_shared_secret> &tx_shared_secret
+   , const std::optional<crypto::tx_output_ecdh_shared_secret> &tx_output_shared_secret
    , const std::map<size_t, crypto::tx_output_ecdh_shared_secret> &tx_output_shared_secrets
    , const cryptonote::account_public_address &address
    )
@@ -61,14 +61,14 @@ namespace proof {
       bool found = false;
       crypto::tx_output_ecdh_shared_secret found_shared_secret = {};
 
-      if (tx_shared_secret) {
+      if (tx_output_shared_secret) {
         const std::optional<crypto::public_key> maybe_derived_tx_output_public_key =
-          crypto::compute_shared_secret_derived_public_key_from_spend_public_key(*tx_shared_secret, n, address.m_spend_public_key);
+          crypto::compute_shared_secret_derived_public_key_from_spend_public_key(*tx_output_shared_secret, n, address.m_spend_public_key);
 
         THROW_WALLET_EXCEPTION_IF(!maybe_derived_tx_output_public_key, error::wallet_internal_error, "Failed to derive public key");
 
         found = tx_output->shared_secret_derived_public_key == *maybe_derived_tx_output_public_key;
-        found_shared_secret = *tx_shared_secret;
+        found_shared_secret = *tx_output_shared_secret;
       }
 
       if (!found && tx_output_shared_secrets.contains(n))
@@ -91,7 +91,7 @@ namespace proof {
         else
         {
           const rct::rct_scalar shared_secret_hash =
-            rct::s2s(crypto::hash_tx_shared_secret_to_scalar(found_shared_secret, n));
+            rct::s2s(crypto::hash_tx_output_shared_secret_to_scalar(found_shared_secret, n));
 
           const crypto::ec_scalar_unnormalized blinding_factor =
             get_blinding_factor_from_shared_secret_hash(shared_secret_hash);
