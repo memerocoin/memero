@@ -331,7 +331,7 @@ namespace cryptonote
        output_pub_keys.begin()
        , output_pub_keys.end()
        , std::back_inserter(output_pub_keys_unsafe)
-       , std::identity()
+       , [](const auto&x) { return x; }
        );
 
     tx_extra_field field = tx_extra_tx_output_public_keys{ output_pub_keys_unsafe };
