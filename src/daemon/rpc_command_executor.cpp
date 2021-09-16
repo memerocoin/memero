@@ -1435,9 +1435,9 @@ bool t_rpc_command_executor::print_coinbase_tx_sum(uint64_t height, uint64_t cou
   if (height == 0) {
     tools::msg_writer()
       << "Genesis tx contains 10.99511627775 coins but it's unspendable due "
-      << "to not being able to be included in a ring signature. "
+      << "to not being able to be included in a ring signature."
       << std::endl
-      << "The mimimum starting height is 1.";
+      << "The minimum starting height is 1.";
     return true;
   }
 
