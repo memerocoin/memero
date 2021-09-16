@@ -88,12 +88,12 @@ namespace cryptonote
   struct txin_to_key
   {
     uint64_t amount;
-    std::vector<uint64_t> key_offsets;
+    std::vector<uint64_t> output_relative_offsets;
     crypto::shared_secret_derived_public_key_image shared_secret_derived_public_key_image;      // double spending protection
 
     BEGIN_SERIALIZE_OBJECT()
       VARINT_FIELD(amount)
-      FIELD(key_offsets)
+      FIELD(output_relative_offsets)
       FIELD(shared_secret_derived_public_key_image)
     END_SERIALIZE()
   };
@@ -203,7 +203,7 @@ namespace cryptonote
               , vin.size()
               , vout.size()
               , vin.size() > 0 && vin[0].type() == typeid(txin_to_key) ?
-              boost::get<txin_to_key>(vin[0]).key_offsets.size() - 1
+              boost::get<txin_to_key>(vin[0]).output_relative_offsets.size() - 1
               : 0
              );
           if (!r || !ar.stream().good()) return false;

@@ -62,10 +62,10 @@ bool tx_sanity_check(const cryptonote::blobdata &tx_blob, uint64_t rct_outs_avai
     const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(txin);
     if (in_to_key.amount != 0)
       continue;
-    const std::vector<uint64_t> absolute = cryptonote::relative_output_offsets_to_absolute(in_to_key.key_offsets);
+    const std::vector<uint64_t> absolute = cryptonote::relative_output_offsets_to_absolute(in_to_key.output_relative_offsets);
     for (uint64_t offset: absolute)
       rct_indices.insert(offset);
-    n_indices += in_to_key.key_offsets.size();
+    n_indices += in_to_key.output_relative_offsets.size();
   }
 
   return tx_sanity_check(rct_indices, n_indices, rct_outs_available);

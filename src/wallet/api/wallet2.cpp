@@ -973,7 +973,7 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    entry.first->second.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.key_offsets));
+    entry.first->second.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.output_relative_offsets));
   }
   entry.first->second.m_block_height = height;
   entry.first->second.m_timestamp = ts;
@@ -2986,7 +2986,7 @@ void wallet2::add_unconfirmed_tx(const cryptonote::transaction& tx, uint64_t amo
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    utd.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.key_offsets));
+    utd.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.output_relative_offsets));
   }
 }
 

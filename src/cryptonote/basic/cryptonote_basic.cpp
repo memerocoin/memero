@@ -82,7 +82,7 @@ namespace cryptonote
       size_t operator()(const txin_gen& txin) const{return 0;}
       size_t operator()(const txin_to_script& txin) const{return 0;}
       size_t operator()(const txin_to_scripthash& txin) const{return 0;}
-      size_t operator()(const txin_to_key& txin) const {return txin.key_offsets.size();}
+      size_t operator()(const txin_to_key& txin) const {return txin.output_relative_offsets.size();}
     };
 
     return boost::apply_visitor(txin_signature_size_visitor(), tx_in);

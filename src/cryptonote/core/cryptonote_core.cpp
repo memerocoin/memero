@@ -775,8 +775,8 @@ namespace cryptonote
             // In other words, the tx output in genesis block is probably un-spendable, due to the
             // fact that it can not be included in a ring. :D
 
-            std::next(tokey_in.key_offsets.begin())
-            , tokey_in.key_offsets.end()
+            std::next(tokey_in.output_relative_offsets.begin())
+            , tokey_in.output_relative_offsets.end()
             , true
             , std::logical_and()
             , [](const auto& y) {

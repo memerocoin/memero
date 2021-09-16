@@ -105,14 +105,14 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_to_ke
   //LOCK_RECURSIVE_MUTEX(m_blockchain_lock);
 
   // verify that the input has key offsets (that it exists properly, really)
-  if(!tx_in_to_key.key_offsets.size())
+  if(!tx_in_to_key.output_relative_offsets.size())
     return false;
 
   // cryptonote_format_utils uses relative offsets for indexing to the global
   // outputs list.  that is to say that absolute offset #2 is absolute offset
   // #1 plus relative offset #2.
   // TODO: Investigate if this is necessary / why this is done.
-  std::vector<uint64_t> absolute_offsets = relative_output_offsets_to_absolute(tx_in_to_key.key_offsets);
+  std::vector<uint64_t> absolute_offsets = relative_output_offsets_to_absolute(tx_in_to_key.output_relative_offsets);
   std::vector<output_data_t> outputs;
 
   bool found = false;
@@ -2422,7 +2422,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, uint64_t& max_used_block_heigh
   TIME_MEASURE_FINISH(a);
   if(m_show_time_stats)
   {
-    size_t ring_size = !tx.vin.empty() && tx.vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(tx.vin[0]).key_offsets.size() : 0;
+    size_t ring_size = !tx.vin.empty() && tx.vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(tx.vin[0]).output_relative_offsets.size() : 0;
     LOG_INFO("HASH: " <<  get_transaction_hash(tx) << " I/M/O: " << tx.vin.size() << "/" << ring_size << "/" << tx.vout.size() << " H: " << max_used_block_height << " ms: " << a + m_fake_scan_time << " B: " << get_object_blobsize(tx) << " W: " << get_transaction_weight(tx));
   }
   if (!res)
@@ -2614,13 +2614,13 @@ bool Blockchain::check_tx_input
   outputs_visitor vi(output_keys, *this);
   if (!scan_outputkeys_for_indexes(tx_version, txin, vi, tx_prefix_hash, pmax_related_block_height))
   {
-    LOG_ERROR_VER("Failed to get output keys for tx with amount = " << print_money(txin.amount) << " and count indexes " << txin.key_offsets.size());
+    LOG_ERROR_VER("Failed to get output keys for tx with amount = " << print_money(txin.amount) << " and count indexes " << txin.output_relative_offsets.size());
     return false;
   }
 
-  if(txin.key_offsets.size() != output_keys.size())
+  if(txin.output_relative_offsets.size() != output_keys.size())
   {
-    LOG_ERROR_VER("Output keys for tx with amount = " << txin.amount << " and count indexes " << txin.key_offsets.size() << " returned wrong keys count " << output_keys.size());
+    LOG_ERROR_VER("Output keys for tx with amount = " << txin.amount << " and count indexes " << txin.output_relative_offsets.size() << " returned wrong keys count " << output_keys.size());
     return false;
   }
   // ringct_essential will be expanded after this
@@ -3438,7 +3438,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete
       {
         const txin_to_key &in_to_key = boost::get < txin_to_key > (txin);
         // no need to check for duplicate here.
-        auto absolute_offsets = relative_output_offsets_to_absolute(in_to_key.key_offsets);
+        auto absolute_offsets = relative_output_offsets_to_absolute(in_to_key.output_relative_offsets);
         for (const auto & offset : absolute_offsets)
           offset_map[in_to_key.amount].push_back(offset);
 
@@ -3504,7 +3504,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete
       for (const auto &txin : tx.vin)
       {
         const txin_to_key &in_to_key = boost::get < txin_to_key > (txin);
-        auto needed_offsets = relative_output_offsets_to_absolute(in_to_key.key_offsets);
+        auto needed_offsets = relative_output_offsets_to_absolute(in_to_key.output_relative_offsets);
 
         std::vector<output_data_t> outputs;
         for (const uint64_t & offset_needed : needed_offsets)
@@ -3796,7 +3796,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
           else
             ++n_mixable;
         }
-        size_t ring_mixin = in_to_key.key_offsets.size() - 1;
+        size_t ring_mixin = in_to_key.output_relative_offsets.size() - 1;
         if (ring_mixin < min_actual_mixin)
           min_actual_mixin = ring_mixin;
         if (ring_mixin > max_actual_mixin)
@@ -3881,7 +3881,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     const txin_to_key& in_to_key = boost::get<txin_to_key>(txin);
 
     // make sure tx output has key offset(s) (is signed to be used)
-    LOG_ERROR_AND_RETURN_UNLESS(in_to_key.key_offsets.size(), false, "empty in_to_key.key_offsets in transaction with id " << get_transaction_hash(tx));
+    LOG_ERROR_AND_RETURN_UNLESS(in_to_key.output_relative_offsets.size(), false, "empty in_to_key.output_relative_offsets in transaction with id " << get_transaction_hash(tx));
 
     if(have_tx_keyimg_as_spent(in_to_key.shared_secret_derived_public_key_image))
     {
