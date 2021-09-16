@@ -67,6 +67,11 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 endif()
 
+if (ANDROID)
+  add_compile_options(-Wno-tautological-constant-out-of-range-compare)
+  add_compile_options(-Wno-ambiguous-reversed-operator)
+endif()
+
 
 
 
