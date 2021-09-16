@@ -97,7 +97,7 @@ local.properties
 .buildpath
 
 # Netbeans-specific
-nbproject
+number_of_range_proofsroject
 
 # sbteclipse plugin
 .target

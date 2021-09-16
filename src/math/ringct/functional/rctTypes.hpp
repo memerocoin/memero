@@ -253,17 +253,17 @@ namespace rct {
           if (type != RCTTypeCLSAG)
             return false;
           {
-            uint32_t nbp = bulletproofs.size();
-            VARINT_FIELD(nbp)
+            uint32_t number_of_range_proofs = bulletproofs.size();
+            VARINT_FIELD(number_of_range_proofs)
             ar.tag("range_proofs");
             ar.begin_array();
-            if (nbp > outputs)
+            if (number_of_range_proofs > outputs)
               return false;
-            PREPARE_CUSTOM_VECTOR_SERIALIZATION(nbp, bulletproofs);
-            for (size_t i = 0; i < nbp; ++i)
+            PREPARE_CUSTOM_VECTOR_SERIALIZATION(number_of_range_proofs, bulletproofs);
+            for (size_t i = 0; i < number_of_range_proofs; ++i)
             {
               FIELDS(bulletproofs[i])
-              if (nbp - i > 1)
+              if (number_of_range_proofs - i > 1)
                 ar.delimit_array();
             }
             if (n_bulletproof_max_amounts(bulletproofs) < outputs)
