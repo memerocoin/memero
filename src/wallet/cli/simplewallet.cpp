@@ -489,9 +489,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_daemon, std::placeholders::_1),
                            sw::tr(USAGE_SET_DAEMON),
                            sw::tr("Set another daemon to connect to."));
-  m_cmd_binder.set_handler("save-bc",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::save_bc, std::placeholders::_1),
-                           sw::tr("Save the current blockchain data."));
   m_cmd_binder.set_handler("refresh",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::refresh, std::placeholders::_1),
                            sw::tr("Synchronize the transactions and balance."));
@@ -1318,27 +1315,6 @@ bool simple_wallet::set_daemon(const std::vector<std::string>& args)
   } else {
     fail_msg_writer() << sw::tr("This does not seem to be a valid daemon URL.");
   }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::save_bc(const std::vector<std::string>& args)
-{
-  if (!try_connect_to_daemon())
-    return true;
-
-  if (!m_wallet)
-  {
-    fail_msg_writer() << sw::tr("wallet is null");
-    return true;
-  }
-  COMMAND_RPC_SAVE_BC::request req;
-  COMMAND_RPC_SAVE_BC::response res;
-  bool r = m_wallet->invoke_http_json("/save_bc", req, res);
-  std::string err = interpret_rpc_response(r, res.status);
-  if (err.empty())
-    success_msg_writer() << sw::tr("Blockchain saved");
-  else
-    fail_msg_writer() << sw::tr("blockchain can't be saved: ") << err;
   return true;
 }
 //----------------------------------------------------------------------------------------------------
