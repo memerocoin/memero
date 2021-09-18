@@ -557,10 +557,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show, std::placeholders::_1),
                            sw::tr(USAGE_SHOW),
                            std::string(wallet::help::show));
-  m_cmd_binder.set_handler("export",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::export_transfers, std::placeholders::_1),
-                           sw::tr(USAGE_EXPORT),
-                           sw::tr("Export to CSV the incoming/outgoing transfers within an optional height range."));
   m_cmd_binder.set_handler("unspent-outputs",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::unspent_outputs, std::placeholders::_1),
                            sw::tr(USAGE_UNSPENT_OUTPUTS),
@@ -2701,92 +2697,6 @@ bool simple_wallet::show(const std::vector<std::string> &args_)
       % boost::algorithm::join(transfer.index | boost::adaptors::transformed([](uint32_t i) { return std::to_string(i); }), ", ")
       % transfer.note;
   }
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::export_transfers(const std::vector<std::string>& args_)
-{
-  std::vector<std::string> local_args = args_;
-
-  if(local_args.size() > 5) {
-    fail_msg_writer() << USAGE_EXPORT;
-    return true;
-  }
-
-  std::vector<transfer_view> all_transfers;
-
-  // might consumes arguments in local_args
-  if (!get_transfers(local_args, all_transfers))
-    return true;
-
-  // output filename
-  std::string filename = (boost::format("output%u.csv") % m_current_subaddress_account).str();
-  if (local_args.size() > 0 && local_args[0].substr(0, 7) == "output=")
-  {
-    filename = local_args[0].substr(7, -1);
-    local_args.erase(local_args.begin());
-  }
-
-  std::ofstream file(filename);
-
-  // header
-  file <<
-      boost::format("%8.8s,%9.9s,%8.8s,%25.25s,%20.20s,%20.20s,%64.64s,%16.16s,%14.14s,%100.100s,%20.20s,%s,%s") %
-      sw::tr("block") % sw::tr("direction") % sw::tr("unlocked") % sw::tr("timestamp") % sw::tr("amount") % sw::tr("running balance") % sw::tr("hash") % sw::tr("payment ID") % sw::tr("fee") % sw::tr("destination") % sw::tr("amount") % sw::tr("index") % sw::tr("note")
-      << std::endl;
-
-  uint64_t running_balance = 0;
-  auto formatter = boost::format("%8.8llu,%9.9s,%8.8s,%25.25s,%20.20s,%20.20s,%64.64s,%14.14s,%100.100s,%20.20s,\"%s\",%s");
-
-  for (const auto& transfer : all_transfers)
-  {
-    // ignore unconfirmed transfers in running balance
-    if (transfer.confirmed)
-    {
-      if (transfer.direction == "in" || transfer.direction == "block")
-        running_balance += transfer.amount;
-      else
-        running_balance -= transfer.amount + transfer.fee;
-    }
-
-    file << formatter
-      % transfer.block
-      % transfer.direction
-      % transfer.unlocked
-      % tools::get_human_readable_timestamp(transfer.timestamp)
-      % print_money(transfer.amount)
-      % print_money(running_balance)
-      % epee::string_tools::pod_to_hex(transfer.hash)
-      % print_money(transfer.fee)
-      % (transfer.outputs.size() ? transfer.outputs[0].first : "-")
-      % (transfer.outputs.size() ? print_money(transfer.outputs[0].second) : "")
-      % boost::algorithm::join(transfer.index | boost::adaptors::transformed([](uint32_t i) { return std::to_string(i); }), ", ")
-      % transfer.note
-      << std::endl;
-
-    for (size_t i = 1; i < transfer.outputs.size(); ++i)
-    {
-      file << formatter
-        % ""
-        % ""
-        % ""
-        % ""
-        % ""
-        % ""
-        % ""
-        % ""
-        % ""
-        % transfer.outputs[i].first
-        % print_money(transfer.outputs[i].second)
-        % ""
-        % ""
-        << std::endl;
-    }
-  }
-  file.close();
-
-  success_msg_writer() << sw::tr("CSV exported to ") << filename;
 
   return true;
 }
