@@ -276,7 +276,6 @@ namespace tools
     void get_unconfirmed_payments(std::list<std::pair<crypto::hash,wallet::logic::type::payment::pool_payment_details>>& unconfirmed_payments, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
 
     uint64_t get_blockchain_current_height() const { return m_blockchain.size(); }
-    void rescan_spent();
     void rescan_blockchain(bool hard, bool refresh = true);
 
     BEGIN_SERIALIZE_OBJECT()

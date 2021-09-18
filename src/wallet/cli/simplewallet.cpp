@@ -528,9 +528,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_variable, std::placeholders::_1),
                            sw::tr(USAGE_SET_VARIABLE),
                            std::string(wallet::help::set_variable));
-  m_cmd_binder.set_handler("rescan-spent",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_spent, std::placeholders::_1),
-                           sw::tr("Rescan the blockchain for spent outputs."));
   m_cmd_binder.set_handler("get-tx-key",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_key, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_KEY),
@@ -1631,46 +1628,6 @@ uint64_t simple_wallet::get_daemon_blockchain_height(std::string& err)
     throw std::runtime_error("simple_wallet null wallet");
   }
   return m_wallet->get_daemon_blockchain_height(err);
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::rescan_spent(const std::vector<std::string> &args)
-{
-  if (!try_connect_to_daemon())
-    return true;
-
-  try
-  {
-    m_wallet->rescan_spent();
-  }
-  catch (const tools::error::daemon_busy&)
-  {
-    fail_msg_writer() << sw::tr("daemon is busy. Please try again later.");
-  }
-  catch (const tools::error::no_connection_to_daemon&)
-  {
-    fail_msg_writer() << sw::tr("no connection to daemon. Please make sure daemon is running.");
-  }
-  catch (const tools::error::is_shared_secret_derived_public_key_image_spent_error&)
-  {
-    fail_msg_writer() << sw::tr("failed to get spent status");
-  }
-  catch (const tools::error::wallet_rpc_error& e)
-  {
-    LOG_ERROR("RPC error: " << e.to_string());
-    fail_msg_writer() << sw::tr("RPC error: ") << e.what();
-  }
-  catch (const std::exception& e)
-  {
-    LOG_ERROR("unexpected error: " << e.what());
-    fail_msg_writer() << sw::tr("unexpected error: ") << e.what();
-  }
-  catch (...)
-  {
-    LOG_ERROR("unknown error");
-    fail_msg_writer() << sw::tr("unknown error");
-  }
-
-  return true;
 }
 //----------------------------------------------------------------------------------------------------
 std::pair<std::string, std::string> simple_wallet::show_outputs_line(const std::vector<uint64_t> &heights, uint64_t blockchain_height, uint64_t highlight_idx) const

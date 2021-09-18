@@ -2836,59 +2836,6 @@ void wallet2::get_unconfirmed_payments(std::list<std::pair<crypto::hash,wallet::
   }
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::rescan_spent()
-{
-  // This is RPC call that can take a long time if there are many outputs,
-  // so we call it several times, in stripes, so we don't time out spuriously
-  std::vector<int> spent_status;
-  spent_status.reserve(m_transfers.size());
-  const size_t chunk_size = 1000;
-  for (size_t start_offset = 0; start_offset < m_transfers.size(); start_offset += chunk_size)
-  {
-    const size_t n_outputs = std::min<size_t>(chunk_size, m_transfers.size() - start_offset);
-    LOG_DEBUG("Calling is_shared_secret_derived_public_key_image_spent on " << start_offset << " - " << (start_offset + n_outputs - 1) << ", out of " << m_transfers.size());
-    COMMAND_RPC_IS_KEY_IMAGE_SPENT::request req = AUTO_VAL_INIT(req);
-    COMMAND_RPC_IS_KEY_IMAGE_SPENT::response daemon_resp = AUTO_VAL_INIT(daemon_resp);
-    for (size_t n = start_offset; n < start_offset + n_outputs; ++n)
-      req.shared_secret_derived_public_key_images.push_back(epee::string_tools::pod_to_hex(m_transfers[n].m_shared_secret_derived_public_key_image));
-
-    {
-      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = epee::net_utils::invoke_http_json("/is_shared_secret_derived_public_key_image_spent", req, daemon_resp, *m_http_client, rpc_timeout);
-      THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "is_shared_secret_derived_public_key_image_spent", error::is_shared_secret_derived_public_key_image_spent_error, (daemon_resp.status));
-      THROW_WALLET_EXCEPTION_IF(daemon_resp.spent_status.size() != n_outputs, error::wallet_internal_error,
-        "daemon returned wrong response for is_shared_secret_derived_public_key_image_spent, wrong amounts count = " +
-        std::to_string(daemon_resp.spent_status.size()) + ", expected " +  std::to_string(n_outputs));
-    }
-
-    std::copy(daemon_resp.spent_status.begin(), daemon_resp.spent_status.end(), std::back_inserter(spent_status));
-  }
-
-  // update spent status
-  for (size_t i = 0; i < m_transfers.size(); ++i)
-  {
-    transfer_details& td = m_transfers[i];
-    // a view wallet may not know about key images
-    if (!td.m_shared_secret_derived_public_key_image_known || td.m_shared_secret_derived_public_key_image_partial)
-      continue;
-    if (td.m_spent != (spent_status[i] != COMMAND_RPC_IS_KEY_IMAGE_SPENT::UNSPENT))
-    {
-      if (td.m_spent)
-      {
-        LOG_PRINT_L0("Marking output " << i << "(" << td.m_shared_secret_derived_public_key_image << ") as unspent, it was marked as spent");
-        set_unspent(i);
-        td.m_spent_height = 0;
-      }
-      else
-      {
-        LOG_PRINT_L0("Marking output " << i << "(" << td.m_shared_secret_derived_public_key_image << ") as spent, it was marked as unspent");
-        set_spent(i, td.m_spent_height);
-        // unknown height, if this gets reorged, it might still be missed
-      }
-    }
-  }
-}
-//----------------------------------------------------------------------------------------------------
 void wallet2::rescan_blockchain(bool hard, bool refresh)
 {
   if(hard)

@@ -130,7 +130,6 @@ namespace cryptonote
     void print_accounts();
     bool print_address(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_variable(const std::vector<std::string> &args);
-    bool rescan_spent(const std::vector<std::string> &args);
     bool set_log(const std::vector<std::string> &args);
     bool get_tx_key(const std::vector<std::string> &args);
     bool verify_tx_key(const std::vector<std::string> &args);
