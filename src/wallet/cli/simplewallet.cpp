@@ -515,9 +515,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::print_address, std::placeholders::_1),
                            sw::tr(USAGE_ADDRESS),
                            std::string(wallet::help::address));
-  m_cmd_binder.set_handler("save",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::save, std::placeholders::_1),
-                           sw::tr("Save the wallet data."));
   m_cmd_binder.set_handler("viewkey",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::viewkey, std::placeholders::_1),
                            sw::tr("Display the private view key."));
@@ -1188,21 +1185,6 @@ bool simple_wallet::close_wallet()
   {
     fail_msg_writer() << e.what();
     return false;
-  }
-
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::save(const std::vector<std::string> &args)
-{
-  try
-  {
-    m_wallet->store();
-    success_msg_writer() << sw::tr("Wallet data saved");
-  }
-  catch (const std::exception& e)
-  {
-    fail_msg_writer() << e.what();
   }
 
   return true;
