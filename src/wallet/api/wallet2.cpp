@@ -2151,8 +2151,8 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     }
   }
   const cryptonote::account_keys& keys = m_account.get_keys();
-  r = r && device::verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
-  r = r && device::verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
+  r = r && crypto::verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
+  r = r && crypto::verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
   THROW_WALLET_EXCEPTION_IF(!r, error::wallet_files_doesnt_correspond, m_keys_file, m_wallet_file);
 
   if (r)
@@ -2402,7 +2402,7 @@ void wallet2::set_offline(bool offline)
 //----------------------------------------------------------------------------------------------------
 bool wallet2::generate_chacha_key_from_secret_keys(crypto::chacha_key &key) const
 {
-  key = device::generate_chacha_key(m_account.get_keys(), m_kdf_rounds);
+  key = wallet::logic::functional::helper::generate_chacha_key(m_account.get_keys(), m_kdf_rounds);
   return true;
 }
 //----------------------------------------------------------------------------------------------------

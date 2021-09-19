@@ -57,11 +57,6 @@ namespace crypto {
   inline const hash &d2h(const crypto_data &x)                   noexcept { return (const hash&)x; }
 
 
-
-
-  /* Checks a private key and computes the corresponding public key.
-   */
-  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) noexcept;
   public_key to_pk(const secret_key& sk) noexcept;
 
 
@@ -144,6 +139,7 @@ namespace crypto {
 
   std::optional<crypto::public_key> maybeNotNull(const crypto::public_key);
 
+  bool verify_keys(const crypto::ec_scalar_unnormalized secret_key, const crypto::public_key public_key);
 }
 
 namespace std

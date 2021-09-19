@@ -46,18 +46,6 @@ namespace device {
   /*                             WALLET & ADDRESS                            */
   /* ======================================================================= */
 
-  crypto::chacha_key generate_chacha_key(const cryptonote::account_keys &keys, const uint64_t kdf_rounds) {
-    crypto::chacha_key key;
-    const crypto::secret_key &view_key = keys.m_view_secret_key;
-    const crypto::secret_key &spend_key = keys.m_spend_secret_key;
-    std::array<char, sizeof(view_key) + sizeof(spend_key) + 1> data;
-    memcpy(data.data(), &view_key, sizeof(view_key));
-    memcpy(data.data() + sizeof(view_key), &spend_key, sizeof(spend_key));
-    data[sizeof(data) - 1] = config::HASH_KEY_WALLET;
-    crypto::generate_chacha_key(data.data(), sizeof(data), key, kdf_rounds);
-    return key;
-  }
-
 
   /* ======================================================================= */
   /*                               SUB ADDRESS                               */
@@ -161,10 +149,5 @@ namespace device {
   /* ======================================================================= */
   /*                            DERIVATION & KEY                             */
   /* ======================================================================= */
-
-  bool verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key) {
-    const auto calculated_pub = crypto::to_maybe_pk(secret_key);
-    return public_key == calculated_pub;
-  }
 
 }

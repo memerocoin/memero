@@ -31,6 +31,9 @@
 
 #pragma once
 
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/account.h"
+
 #include <string>
 #include <span>
 
@@ -40,6 +43,8 @@ namespace functional {
 namespace helper {
 
   std::string strjoin(const std::span<const size_t> V, const std::string);
+
+  crypto::chacha_key generate_chacha_key(const cryptonote::account_keys &keys, const uint64_t kdf_rounds);
 
 } // helper
 } // functional

@@ -39,7 +39,6 @@ namespace device {
   /*                             WALLET & ADDRESS                            */
   /* ======================================================================= */
 
-  crypto::chacha_key generate_chacha_key(const cryptonote::account_keys &keys, const uint64_t kdf_rounds);
 
   /* ======================================================================= */
   /*                               SUB ADDRESS                               */
@@ -75,5 +74,4 @@ namespace device {
   /*                            DERIVATION & KEY                             */
   /* ======================================================================= */
 
-  bool verify_keys(const crypto::secret_key &secret_key, const crypto::public_key &public_key);
 }

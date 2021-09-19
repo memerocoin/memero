@@ -53,6 +53,19 @@ namespace helper {
     return ss.str();
  }
 
+crypto::chacha_key generate_chacha_key(const cryptonote::account_keys &keys, const uint64_t kdf_rounds) {
+  crypto::chacha_key key;
+  const crypto::secret_key &view_key = keys.m_view_secret_key;
+  const crypto::secret_key &spend_key = keys.m_spend_secret_key;
+  std::array<char, sizeof(view_key) + sizeof(spend_key) + 1> data;
+  memcpy(data.data(), &view_key, sizeof(view_key));
+  memcpy(data.data() + sizeof(view_key), &spend_key, sizeof(spend_key));
+  data[sizeof(data) - 1] = config::HASH_KEY_WALLET;
+  crypto::generate_chacha_key(data.data(), sizeof(data), key, kdf_rounds);
+  return key;
+}
+
+
 } // helper
 } // functional
 } // logic

@@ -31,16 +31,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace crypto {
 
-  std::optional<public_key> to_maybe_pk(const ec_scalar_unnormalized& sk) noexcept {
-    public_key pub;
-    const bool r = crypto_scalarmult_ed25519_base_noclamp(pub.data.data(), sk.data.data());
-    if (0 == r) {
-      return pub;
-    } else {
-      return {};
-    }
-  }
-
   public_key to_pk(const secret_key& sk) noexcept {
     return p2pk(multBase(sk));
   }
@@ -174,6 +164,11 @@ namespace crypto {
     } else {
       return x;
     }
+  }
+
+  bool verify_keys(const crypto::ec_scalar_unnormalized secret_key, const crypto::public_key public_key) {
+    if (is_not_reduced(secret_key)) return false;
+    return public_key == crypto::to_pk(crypto::s2sk(reduce(secret_key)));
   }
 
 }

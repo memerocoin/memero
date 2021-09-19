@@ -35,6 +35,7 @@
 #include "wallet/logic/type/wallet.hpp"
 #include "wallet/logic/type/transfer.hpp"
 #include "wallet/logic/functional/wallet.hpp"
+#include "wallet/logic/functional/helper.hpp"
 
 #include "wallet/device/functional/device_default.hpp"
 
@@ -162,9 +163,9 @@ namespace wallet {
       account_data_check.decrypt_keys(key);
 
     const cryptonote::account_keys& keys = account_data_check.get_keys();
-    r = r && device::verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
+    r = r && crypto::verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
     if(!no_spend_key)
-      r = r && device::verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
+      r = r && crypto::verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
     return r;
   }
 
