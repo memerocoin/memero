@@ -37,6 +37,7 @@ set(cryptonote_basic_sources
 
   functional/difficulty.cpp
   functional/format_utils.cpp
+  functional/subaddress.cpp
   )
 
 add_library(cryptonote_basic
@@ -46,5 +47,4 @@ add_library(cryptonote_basic
 target_link_libraries(cryptonote_basic
     tools_common
     math_crypto
-    wallet_device
  )

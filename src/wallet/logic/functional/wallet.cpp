@@ -35,7 +35,7 @@
 #include "wallet/logic/functional/helper.hpp"
 #include "wallet/logic/controller/wallet.hpp" // for print_source_entry
 
-#include "wallet/device/functional/device_default.hpp"
+#include "cryptonote/basic/functional/subaddress.hpp"
 
 #include "tools/common/apply_permutation.h"
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
@@ -568,7 +568,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   {
     const uint32_t change_subaddress_index = subaddr_account == 0 ? 1 : 0;
     change_dts.addr =
-      device::get_subaddress(account_keys, {subaddr_account, change_subaddress_index});
+      cryptonote::get_subaddress(account_keys, {subaddr_account, change_subaddress_index});
     change_dts.is_subaddress = true;
     splitted_dsts.push_back(change_dts);
   }

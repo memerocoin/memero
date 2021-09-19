@@ -35,7 +35,7 @@
 
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 
-#include "wallet/device/functional/device_default.hpp"
+#include "cryptonote/basic/functional/subaddress.hpp"
 
 #include <boost/algorithm/string.hpp>
 
@@ -135,7 +135,7 @@ namespace cryptonote
     const crypto::ec_scalar key_offset =
       received_index.is_zero()
       ? crypto::s_0
-      : device::hash_secret_key_with_subaddress_index(ack.m_view_secret_key, received_index)
+      : cryptonote::hash_secret_key_with_subaddress_index(ack.m_view_secret_key, received_index)
       ;
 
 

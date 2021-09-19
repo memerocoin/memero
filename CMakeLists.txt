@@ -161,7 +161,6 @@ add_subdirectory(src/network/p2p)
 
 ## wallet
 add_subdirectory(src/wallet/mnemonics)
-add_subdirectory(src/wallet/device/functional)
 add_subdirectory(src/wallet/logic)
 add_subdirectory(src/wallet/api)
 add_subdirectory(src/wallet/common)

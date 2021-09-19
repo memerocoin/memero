@@ -37,7 +37,7 @@
 #include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/functional/helper.hpp"
 
-#include "wallet/device/functional/device_default.hpp"
+#include "cryptonote/basic/functional/subaddress.hpp"
 
 #include "wallet/api/wallet_errors.h"
 

@@ -37,7 +37,7 @@
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 #include "math/ringct/controller/rctSigGen.hpp"
 
-#include "wallet/device/functional/device_default.hpp"
+#include "cryptonote/basic/functional/subaddress.hpp"
 
 
 

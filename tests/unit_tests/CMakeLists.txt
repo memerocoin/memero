@@ -83,6 +83,7 @@ target_link_libraries(unit_tests_basic
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main
+  math_ringct
 )
 
 gtest_discover_tests(
