@@ -2784,41 +2784,7 @@ void wallet2::rescan_blockchain(bool hard, bool refresh)
   if (refresh)
     this->refresh();
 }
-//----------------------------------------------------------------------------------------------------
-namespace
-{
-  template<typename T>
-  T pop_random_value(std::vector<T>& vec)
-  {
-    LOG_ERROR_AND_RETURN_UNLESS(!vec.empty(), T(), "Vector must be non-empty");
 
-    size_t idx = crypto::rand_idx(vec.size());
-    return pop_index (vec, idx);
-  }
-
-  template<typename T>
-  T pop_back(std::vector<T>& vec)
-  {
-    LOG_ERROR_AND_RETURN_UNLESS(!vec.empty(), T(), "Vector must be non-empty");
-
-    T res = vec.back();
-    vec.pop_back();
-    return res;
-  }
-
-  template<typename T>
-  void pop_if_present(std::vector<T>& vec, T e)
-  {
-    for (size_t i = 0; i < vec.size(); ++i)
-    {
-      if (e == vec[i])
-      {
-        pop_index (vec, i);
-        return;
-      }
-    }
-  }
-}
 //----------------------------------------------------------------------------------------------------
 // Select random input sources for transaction.
 // returns:
