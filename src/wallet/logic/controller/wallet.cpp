@@ -424,6 +424,21 @@ namespace wallet {
     return true;
   }
 
+  // Another implementation of transaction creation that is hopefully better
+  // While there is anything left to pay, it goes through random outputs and tries
+  // to fill the next destination/amount. If it fully fills it, it will use the
+  // remainder to try to fill the next one as well.
+  // The tx size if roughly estimated as a linear function of only inputs, and a
+  // new tx will be created when that size goes above a given fraction of the
+  // max tx size. At that point, more outputs may be added if the fee cannot be
+  // satisfied.
+  // If the next output in the next tx would go to the same destination (ie, we
+  // cut off at a tx boundary in the middle of paying a given destination), the
+  // fee will be carved out of the current input if possible, to avoid having to
+  // add another output just for the fee and getting change.
+  // This system allows for sending (almost) the entire balance, since it does
+  // not generate spurious change in all txes, thus decreasing the instantaneous
+  // usable balance.
   std::vector<type::tx::pending_tx> create_transactions
   (
   const std::vector<cryptonote::tx_destination_entry> dsts_vec
