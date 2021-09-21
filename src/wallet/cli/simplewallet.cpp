@@ -514,10 +514,10 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show, std::placeholders::_1),
                            sw::tr(USAGE_SHOW),
                            std::string(wallet::help::show));
-  m_cmd_binder.set_handler("unspent-outputs",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::unspent_outputs, std::placeholders::_1),
-                           sw::tr(USAGE_UNSPENT_OUTPUTS),
-                           sw::tr("Show the unspent outputs of a specified address within an optional amount range."));
+  m_cmd_binder.set_handler("utxos",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::utxos, std::placeholders::_1),
+                           sw::tr(USAGE_UTXOS),
+                           sw::tr("Show the unspent transaction outputs of a specified address within an optional amount range."));
   m_cmd_binder.set_handler("rescan-bc",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_blockchain, std::placeholders::_1),
                            sw::tr(USAGE_RESCAN_BC),
@@ -2465,11 +2465,11 @@ bool simple_wallet::show(const std::vector<std::string> &args_)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::unspent_outputs(const std::vector<std::string> &args_)
+bool simple_wallet::utxos(const std::vector<std::string> &args_)
 {
   if(args_.size() > 3)
   {
-    PRINT_USAGE(USAGE_UNSPENT_OUTPUTS);
+    PRINT_USAGE(USAGE_UTXOS);
     return true;
   }
   auto local_args = args_;

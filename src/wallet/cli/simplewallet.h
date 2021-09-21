@@ -135,7 +135,7 @@ namespace cryptonote
     bool get_tx_proof(const std::vector<std::string> &args);
     bool verify_tx_proof(const std::vector<std::string> &args);
     bool show(const std::vector<std::string> &args);
-    bool unspent_outputs(const std::vector<std::string> &args);
+    bool utxos(const std::vector<std::string> &args);
     bool rescan_blockchain(const std::vector<std::string> &args);
     bool refresh_main(uint64_t start_height, ResetType reset, bool is_init = false);
     bool status(const std::vector<std::string> &args);
