@@ -288,7 +288,6 @@ namespace epee
 
     std::string get_usage();
     std::pair<std::string, std::string> get_documentation(const std::vector<std::string>& cmd);
-    std::vector<std::string> get_command_list(const std::vector<std::string>& keywords = std::vector<std::string>());
     void set_handler(const std::string& cmd, const callback& hndlr, const std::string& usage = "", const std::string& description = "");
     void set_unknown_command_handler(const callback& hndlr);
     void set_empty_command_handler(const empty_callback& hndlr);

@@ -59,12 +59,6 @@ t_command_server::t_command_server(
     , "Show the help section or the documentation about a <command>."
     );
   m_command_lookup.set_handler(
-      "apropos"
-    , std::bind(&t_command_server::apropos, this, p::_1)
-    , "apropos <keyword> [<keyword> ...]"
-    , "Search all command descriptions for keyword(s)."
-    );
-  m_command_lookup.set_handler(
       "height"
     , std::bind(&t_command_parser_executor::print_height, &m_parser, p::_1)
     , "Print the local blockchain height."
@@ -296,33 +290,6 @@ bool t_command_server::help(const std::vector<std::string>& args)
   {
     std::cout << get_command_usage(args) << std::endl;
   }
-  return true;
-}
-
-bool t_command_server::apropos(const std::vector<std::string>& args)
-{
-  if (args.empty())
-  {
-    std::cout << "Missing keyword" << std::endl;
-    return true;
-  }
-  const std::vector<std::string>& command_list = m_command_lookup.get_command_list(args);
-  if (command_list.empty())
-  {
-    std::cout << "Nothing found" << std::endl;
-    return true;
-  }
-
-  std::cout << std::endl;
-  for(auto const& command:command_list)
-  {
-    std::vector<std::string> cmd;
-    cmd.push_back(command);
-    std::pair<std::string, std::string> documentation = m_command_lookup.get_documentation(cmd);
-    std::cout << "  " << documentation.first << std::endl;
-  }
-  std::cout << std::endl;
-
   return true;
 }
 
