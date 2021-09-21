@@ -64,7 +64,7 @@ namespace usage
   constexpr char USAGE_RESCAN_BC[] = "rescan-bc [hard]";
   constexpr char USAGE_SIGN[] = "sign [<account index>,<address index>] [--spend|--view] <filename>";
   constexpr char USAGE_VERIFY[] = "verify <filename> <address> <signature>";
-  constexpr char USAGE_SHOW_TRANSFER[] = "show-transfer <txid>";
+  constexpr char USAGE_SHOW_TX[] = "tx <txid>";
   constexpr char USAGE_WELCOME[] = "welcome";
   constexpr char USAGE_VERSION[] = "version";
   constexpr char USAGE_HELP[] = "help [<command> | all]";

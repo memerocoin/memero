@@ -536,10 +536,10 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::verify, std::placeholders::_1),
                            sw::tr(USAGE_VERIFY),
                            sw::tr("Verify a signature on the contents of a file."));
-  m_cmd_binder.set_handler("show-transfer",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::show_transfer, std::placeholders::_1),
-                           sw::tr(USAGE_SHOW_TRANSFER),
-                           sw::tr("Show information about a transfer to/from this address."));
+  m_cmd_binder.set_handler("tx",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::show_tx, std::placeholders::_1),
+                           sw::tr(USAGE_SHOW_TX),
+                           sw::tr("Show information about a transactionto/from this address."));
   m_cmd_binder.set_handler("password",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::change_password, std::placeholders::_1),
                            sw::tr("Change the wallet's password."));
@@ -3024,11 +3024,11 @@ bool simple_wallet::verify(const std::vector<std::string> &args)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::show_transfer(const std::vector<std::string> &args)
+bool simple_wallet::show_tx(const std::vector<std::string> &args)
 {
   if (args.size() != 1)
   {
-    PRINT_USAGE(USAGE_SHOW_TRANSFER);
+    PRINT_USAGE(USAGE_SHOW_TX);
     return true;
   }
 
