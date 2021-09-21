@@ -348,8 +348,6 @@ namespace tools
     uint64_t get_daemon_blockchain_height(std::string& err);
     uint64_t get_daemon_blockchain_target_height(std::string& err);
 
-    size_t pop_best_value(std::vector<size_t> &unused_dust_indices, const std::vector<size_t>& selected_transfers, bool smallest = false) const;
-
     std::string sign(const std::string &data,
                      wallet::logic::type::message_signature::message_signature_type_t signature_type,
                      cryptonote::subaddress_index index) const;

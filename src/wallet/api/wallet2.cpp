@@ -2820,11 +2820,6 @@ namespace
   }
 }
 //----------------------------------------------------------------------------------------------------
-size_t wallet2::pop_best_value(std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest) const
-{
-  return wallet::logic::controller::wallet::pop_best_value_from(m_transfers, unused_indices, selected_transfers, smallest);
-}
-//----------------------------------------------------------------------------------------------------
 // Select random input sources for transaction.
 // returns:
 //    direct return: amount of money found
@@ -2835,7 +2830,7 @@ uint64_t wallet2::select_transfers(uint64_t needed_money, std::vector<size_t> un
   selected_transfers.reserve(unused_transfers_indices.size());
   while (found_money < needed_money && !unused_transfers_indices.empty())
   {
-    size_t idx = pop_best_value(unused_transfers_indices, selected_transfers);
+    size_t idx = wallet::logic::controller::wallet::pop_best_value_from(m_transfers, unused_transfers_indices, selected_transfers);
 
     const auto it = std::next(m_transfers.begin(), idx);
     selected_transfers.push_back(idx);
