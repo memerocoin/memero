@@ -34,6 +34,7 @@
 
 #include "wallet/logic/functional/helper.hpp"
 #include "wallet/logic/functional/fee.hpp"
+#include "wallet/logic/controller/wallet.hpp"
 
 #include "cryptonote/basic/functional/subaddress.hpp"
 
@@ -45,53 +46,6 @@
 
 
 #include <boost/exception/to_string.hpp>
-
-//----------------------------------------------------------------------------------------------------
-namespace
-{
-  template<typename T>
-  T pop_back(std::vector<T>& vec)
-  {
-    LOG_ERROR_AND_RETURN_UNLESS(!vec.empty(), T(), "Vector must be non-empty");
-
-    T res = vec.back();
-    vec.pop_back();
-    return res;
-  }
-
-  template<typename T>
-  void pop_if_present(std::vector<T>& vec, T e)
-  {
-    for (size_t i = 0; i < vec.size(); ++i)
-      {
-        if (e == vec[i])
-          {
-            pop_index (vec, i);
-            return;
-          }
-      }
-  }
-
-  constexpr uint64_t TX_WEIGHT_TARGET(const uint64_t bytes) {
-    return bytes * 2 / 3;
-  }
-
-  void print_source_entry(const cryptonote::tx_source_entry& src)
-  {
-    std::string indexes;
-    std::for_each
-      (src.outputs.begin(), src.outputs.end(),
-       [&](const cryptonote::tx_source_entry::output_entry& s_e) {
-         indexes += std::to_string(s_e.first) + " ";
-       }
-       );
-    LOG_PRINT_L0("amount=" << cryptonote::print_money(src.amount)
-                 << ", real_output=" <<src.real_output
-                 << ", real_output_in_tx_index=" << src.real_output_in_tx_index
-                 << ", indexes: " << indexes);
-  }
-
-}
 
 namespace wallet {
 namespace logic {
@@ -601,7 +555,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
     src.real_output = it_to_replace - src.outputs.begin();
     src.real_output_in_tx_index = td.m_internal_output_index;
     src.mask = td.m_mask;
-    print_source_entry(src);
+    controller::wallet::print_source_entry(src);
     ++out_index;
   }
   LOG_PRINT_L2("outputs prepared");
