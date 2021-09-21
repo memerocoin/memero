@@ -69,7 +69,6 @@ namespace usage
   constexpr char USAGE_WELCOME[] = "welcome";
   constexpr char USAGE_VERSION[] = "version";
   constexpr char USAGE_HELP[] = "help [<command> | all]";
-  constexpr char USAGE_APROPOS[] = "apropos <keyword> [<keyword> ...]";
   constexpr char USAGE_EXPORT[] = "export [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
                             "       [<min height> [<max height>]] [output=<filepath>]\n";
 } // usage

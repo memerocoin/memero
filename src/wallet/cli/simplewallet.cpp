@@ -441,33 +441,6 @@ bool simple_wallet::help(const std::vector<std::string> &args/* = std::vector<st
   return true;
 }
 
-bool simple_wallet::apropos(const std::vector<std::string> &args)
-{
-  if (args.empty())
-  {
-    PRINT_USAGE(USAGE_APROPOS);
-    return true;
-  }
-  const std::vector<std::string>& command_list = m_cmd_binder.get_command_list(args);
-  if (command_list.empty())
-  {
-    fail_msg_writer() << sw::tr("No commands found mentioning keyword(s)");
-    return true;
-  }
-
-  success_msg_writer() << "";
-  for(auto const& command:command_list)
-  {
-    std::vector<std::string> cmd;
-    cmd.push_back(command);
-    std::pair<std::string, std::string> documentation = m_cmd_binder.get_documentation(cmd);
-    success_msg_writer() << "  " << documentation.first;
-  }
-  success_msg_writer() << "";
-
-  return true;
-}
-
 simple_wallet::simple_wallet()
   : m_refresh_progress_reporter(*this)
   , m_in_manual_refresh(false)
@@ -582,10 +555,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::help, std::placeholders::_1),
                            sw::tr(USAGE_HELP),
                            sw::tr("Show the help section or the documentation about a <command>."));
- m_cmd_binder.set_handler("apropos",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::apropos, std::placeholders::_1),
-                           sw::tr(USAGE_APROPOS),
-                           sw::tr("Search all command descriptions for keyword(s)"));
   m_cmd_binder.set_unknown_command_handler(std::bind(&simple_wallet::on_command, this, &simple_wallet::on_unknown_command, std::placeholders::_1));
   m_cmd_binder.set_empty_command_handler(std::bind(&simple_wallet::on_empty_command, this));
   m_cmd_binder.set_cancel_handler(std::bind(&simple_wallet::on_cancelled_command, this));
