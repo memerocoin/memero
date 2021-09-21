@@ -80,9 +80,6 @@ enum TransferType {
   TransferLocked,
 };
 
-static std::string get_human_readable_timespan(std::chrono::seconds seconds);
-static std::string get_human_readable_timespan(uint64_t seconds);
-
 std::string simple_wallet::get_commands_str()
 {
   std::stringstream ss;
@@ -1467,13 +1464,11 @@ bool simple_wallet::show_balance_unlocked(bool detailed)
   if (m_wallet->has_unknown_shared_secret_derived_public_key_images())
     extra += sw::tr(" (Some owned outputs have missing key images - import_shared_secret_derived_public_key_images needed)");
   success_msg_writer() << sw::tr("Currently selected account: [") << m_current_subaddress_account << sw::tr("] ") << m_wallet->get_subaddress_label({m_current_subaddress_account, 0});
-  uint64_t blocks_to_unlock;
-  uint64_t unlocked_balance = m_wallet->unlocked_balance(m_current_subaddress_account, false, &blocks_to_unlock);
-  std::string unlock_time_message;
-  if (blocks_to_unlock > 0)
-    unlock_time_message = (boost::format(" (%lu block(s) to unlock)") % blocks_to_unlock).str();
+  uint64_t unlocked_balance = m_wallet->unlocked_balance(m_current_subaddress_account, false);
+
   success_msg_writer() << sw::tr("Balance: ") << print_money(m_wallet->balance(m_current_subaddress_account, false)) << ", "
-    << sw::tr("unlocked balance: ") << print_money(unlocked_balance) << unlock_time_message << extra;
+    << sw::tr("unlocked balance: ") << print_money(unlocked_balance) << extra;
+
   std::map<uint32_t, uint64_t> balance_per_subaddress = m_wallet->balance_per_subaddress(m_current_subaddress_account, false);
   std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> unlocked_balance_per_subaddress = m_wallet->unlocked_balance_per_subaddress(m_current_subaddress_account, false);
   if (!detailed || balance_per_subaddress.empty())
@@ -2308,27 +2303,6 @@ bool simple_wallet::verify_tx_proof(const std::vector<std::string> &args)
     fail_msg_writer() << sw::tr("error: ") << e.what();
   }
   return true;
-}
-//----------------------------------------------------------------------------------------------------
-static std::string get_human_readable_timespan(std::chrono::seconds seconds)
-{
-  uint64_t ts = seconds.count();
-  if (ts < 60)
-    return std::to_string(ts) + sw::tr(" seconds");
-  if (ts < 3600)
-    return std::to_string((uint64_t)(ts / 60)) + sw::tr(" minutes");
-  if (ts < 3600 * 24)
-    return std::to_string((uint64_t)(ts / 3600)) + sw::tr(" hours");
-  if (ts < 3600 * 24 * 30.5)
-    return std::to_string((uint64_t)(ts / (3600 * 24))) + sw::tr(" days");
-  if (ts < 3600 * 24 * 365.25)
-    return std::to_string((uint64_t)(ts / (3600 * 24 * 30.5))) + sw::tr(" months");
-  return sw::tr("a long time");
-}
-//----------------------------------------------------------------------------------------------------
-static std::string get_human_readable_timespan(uint64_t seconds)
-{
-  return get_human_readable_timespan(std::chrono::seconds(seconds));
 }
 //----------------------------------------------------------------------------------------------------
 // mutates local_args as it parses and consumes arguments

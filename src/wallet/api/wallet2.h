@@ -234,7 +234,7 @@ namespace tools
 
     // locked & unlocked balance of given or current subaddress account
     uint64_t balance(uint32_t subaddr_index_major, bool strict) const;
-    uint64_t unlocked_balance(uint32_t subaddr_index_major, bool strict, uint64_t *blocks_to_unlock = NULL) const;
+    uint64_t unlocked_balance(uint32_t subaddr_index_major, bool strict) const;
 
     // locked & unlocked balance per subaddress of given or current subaddress account
     std::map<uint32_t, uint64_t> balance_per_subaddress(uint32_t subaddr_index_major, bool strict) const;
@@ -242,7 +242,7 @@ namespace tools
 
     // all locked & unlocked balances of all subaddress accounts
     uint64_t balance_all(bool strict) const;
-    uint64_t unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock = NULL);
+    uint64_t unlocked_balance_all(bool strict);
 
     void commit_tx(pending_tx& ptx_vector);
     void commit_tx(std::vector<pending_tx>& ptx_vector);
