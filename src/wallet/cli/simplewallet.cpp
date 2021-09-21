@@ -525,7 +525,7 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("status",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::status, std::placeholders::_1),
                            sw::tr("Show the wallet's status."));
-  m_cmd_binder.set_handler("wallet-info",
+  m_cmd_binder.set_handler("info",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::wallet_info, std::placeholders::_1),
                            sw::tr("Show the wallet's information."));
   m_cmd_binder.set_handler("sign",
@@ -2922,9 +2922,6 @@ bool simple_wallet::wallet_info(const std::vector<std::string> &args)
 {
   message_writer() << sw::tr("Filename: ") << m_wallet->get_wallet_file();
   message_writer() << sw::tr("Address: ") << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
-  std::string type;
-  type = sw::tr("Normal");
-  message_writer() << sw::tr("Type: ") << type;
   message_writer() << sw::tr("Network type: ") << (
     m_wallet->nettype() == cryptonote::TESTNET ? sw::tr("Testnet") : sw::tr("Mainnet"));
   return true;
