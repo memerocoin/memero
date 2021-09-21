@@ -32,6 +32,9 @@
 #pragma once
 
 #include "wallet/logic/type/wallet.hpp"
+#include "wallet/logic/type/typedef.hpp"
+
+#include "wallet/api/rpc_client.h"
 
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 
@@ -81,7 +84,62 @@ namespace wallet {
 
   bool verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, uint64_t kdf_rounds);
 
-  size_t pop_best_value_from(const ::wallet::logic::type::wallet::transfer_container &transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest = false);
+  size_t pop_best_value_from(const ::wallet::logic::type::wallet::transfer_container_span transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest = false);
+
+  std::vector<std::vector<type::get_tx_outputs_entry>> get_tx_outputs
+  (
+   const std::vector<size_t> selected_transfers
+   , const size_t fake_outputs_count
+   , const tools::RPC_Client m_rpc_client
+   , const type::wallet::transfer_container_span m_transfers
+   );
+
+  std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
+  (
+   std::vector<std::vector<type::get_tx_outputs_entry>> &outs
+   , const tools::RPC_Client m_rpc_client
+   , const std::vector<cryptonote::tx_destination_entry> dsts
+   , const std::vector<size_t> selected_transfers
+   , const size_t fake_outputs_count
+   , const uint64_t unlock_time
+   , const uint64_t fee
+   , const std::vector<uint8_t> extra
+   , const type::wallet::transfer_container_span m_transfers
+   , const cryptonote::account_keys account_keys
+   , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+   , const cryptonote::network_type m_nettype
+   );
+
+
+  bool sanity_check
+  (
+   const std::span<type::tx::pending_tx> ptx_vector
+   , const std::span<cryptonote::tx_destination_entry> dsts
+   , const type::wallet::transfer_container_span m_transfers
+   , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+   , const crypto::secret_key m_view_secret_key
+   , const cryptonote::network_type m_nettype
+   );
+
+  std::vector<type::tx::pending_tx> create_transactions_2
+  (
+   const std::vector<cryptonote::tx_destination_entry> dsts_vec
+   , const size_t fake_outs_count
+   , const uint64_t unlock_time
+   , const uint32_t priority
+   , const std::vector<uint8_t> extra
+   , const uint32_t subaddr_account
+   , const std::set<uint32_t> subaddr_indices_
+   , const cryptonote::network_type m_nettype
+   , const type::wallet::transfer_container_span m_transfers
+   , const serializable_unordered_map<crypto::hash, type::transfer::unconfirmed_transfer_details> m_unconfirmed_txs
+   , const uint64_t blockchain_height
+   , const bool m_ignore_fractional_outputs
+   , const bool m_merge_destinations
+   , const tools::RPC_Client m_rpc_client
+   , const cryptonote::account_keys account_keys
+   , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+   );
 
 } // wallet
 } // controller

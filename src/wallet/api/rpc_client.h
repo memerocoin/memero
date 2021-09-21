@@ -52,7 +52,7 @@ public:
   void get_tx_outputs
   (
      const std::vector<size_t> selected_transfers
-   , const wallet::logic::type::wallet::transfer_container m_transfers
+   , const wallet::logic::type::wallet::transfer_container_span m_transfers
    , const size_t fake_outputs_count
    , std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
    , std::vector<uint64_t> &rct_offsets

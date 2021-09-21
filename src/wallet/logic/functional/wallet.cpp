@@ -33,7 +33,7 @@
 #include "wallet.hpp"
 
 #include "wallet/logic/functional/helper.hpp"
-#include "wallet/logic/controller/wallet.hpp" // for print_source_entry
+#include "wallet/logic/functional/fee.hpp"
 
 #include "cryptonote/basic/functional/subaddress.hpp"
 
@@ -46,6 +46,53 @@
 
 #include <boost/exception/to_string.hpp>
 
+//----------------------------------------------------------------------------------------------------
+namespace
+{
+  template<typename T>
+  T pop_back(std::vector<T>& vec)
+  {
+    LOG_ERROR_AND_RETURN_UNLESS(!vec.empty(), T(), "Vector must be non-empty");
+
+    T res = vec.back();
+    vec.pop_back();
+    return res;
+  }
+
+  template<typename T>
+  void pop_if_present(std::vector<T>& vec, T e)
+  {
+    for (size_t i = 0; i < vec.size(); ++i)
+      {
+        if (e == vec[i])
+          {
+            pop_index (vec, i);
+            return;
+          }
+      }
+  }
+
+  constexpr uint64_t TX_WEIGHT_TARGET(const uint64_t bytes) {
+    return bytes * 2 / 3;
+  }
+
+  void print_source_entry(const cryptonote::tx_source_entry& src)
+  {
+    std::string indexes;
+    std::for_each
+      (src.outputs.begin(), src.outputs.end(),
+       [&](const cryptonote::tx_source_entry::output_entry& s_e) {
+         indexes += std::to_string(s_e.first) + " ";
+       }
+       );
+    LOG_PRINT_L0("amount=" << cryptonote::print_money(src.amount)
+                 << ", real_output=" <<src.real_output
+                 << ", real_output_in_tx_index=" << src.real_output_in_tx_index
+                 << ", indexes: " << indexes);
+  }
+
+}
+
 namespace wallet {
 namespace logic {
 namespace functional {
@@ -54,7 +101,7 @@ namespace wallet {
   size_t get_num_outputs
   (
    const std::vector<cryptonote::tx_destination_entry> &dsts
-   , const std::vector<::wallet::logic::type::transfer::transfer_details> &transfers
+   , const type::wallet::transfer_container_span transfers
    , const std::vector<size_t> &selected_transfers
    )
   {
@@ -554,7 +601,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
     src.real_output = it_to_replace - src.outputs.begin();
     src.real_output_in_tx_index = td.m_internal_output_index;
     src.mask = td.m_mask;
-    controller::wallet::print_source_entry(src);
+    print_source_entry(src);
     ++out_index;
   }
   LOG_PRINT_L2("outputs prepared");
@@ -738,6 +785,12 @@ std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> unlocked_
     }
   }
   return amount_per_subaddr;
+}
+
+uint64_t calculate_fee(const cryptonote::transaction &tx, size_t blob_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask)
+{
+  return fee::calculate_fee_from_weight
+    (base_fee, cryptonote::get_transaction_weight(tx, blob_size), fee_multiplier, fee_quantization_mask);
 }
 
 

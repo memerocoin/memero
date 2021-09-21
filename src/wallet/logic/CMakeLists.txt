@@ -45,6 +45,7 @@ add_library(wallet_logic_basic
 target_link_libraries(wallet_logic_basic
   math_crypto
   cryptonote_basic
+  wallet_rpc_client
   )
 
 add_library(wallet_logic

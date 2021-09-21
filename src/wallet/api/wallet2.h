@@ -243,16 +243,6 @@ namespace tools
     // all locked & unlocked balances of all subaddress accounts
     uint64_t balance_all(bool strict) const;
     uint64_t unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock = NULL, uint64_t *time_to_unlock = NULL);
-    std::pair<pending_tx, cryptonote::transaction> transfer_selected_rct
-    (
-     std::vector<cryptonote::tx_destination_entry> dsts
-     , const std::vector<size_t>& selected_transfers
-     , size_t fake_outputs_count
-     , std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
-     , uint64_t unlock_time
-     , uint64_t fee
-     , const std::vector<uint8_t>& extra
-     ) const;
 
     void commit_tx(pending_tx& ptx_vector);
     void commit_tx(std::vector<pending_tx>& ptx_vector);
@@ -268,7 +258,6 @@ namespace tools
      , const std::set<uint32_t> subaddr_indices_
      ) const;
 
-    bool sanity_check(const std::vector<wallet::logic::type::tx::pending_tx> &ptx_vector, std::vector<cryptonote::tx_destination_entry> dsts) const;
     bool check_connection(uint32_t *version = NULL, uint32_t timeout = 200000);
     void get_transfers(wallet::logic::type::wallet::transfer_container& incoming) const;
     void get_payments(std::list<std::pair<crypto::hash,wallet::logic::type::payment::payment_details>>& payments, uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
@@ -464,13 +453,6 @@ namespace tools
     void set_spent(size_t idx, uint64_t height);
     void set_unspent(size_t idx);
     bool is_spent(size_t idx, bool strict = true) const;
-
-    void get_tx_outputs
-    (
-     const std::vector<size_t> selected_transfers
-     , const size_t fake_outputs_count
-     , std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
-     ) const;
 
     std::vector<size_t> get_only_rct(const std::vector<size_t> &unused_dust_indices, const std::vector<size_t> &unused_transfers_indices) const;
 

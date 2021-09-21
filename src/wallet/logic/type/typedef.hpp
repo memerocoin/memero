@@ -37,7 +37,7 @@ namespace wallet {
 namespace logic {
 namespace type {
 
-  typedef std::tuple<uint64_t, crypto::public_key, rct::rct_point> get_tx_outputs_entry;
+  using get_tx_outputs_entry = std::tuple<uint64_t, crypto::public_key, rct::rct_point>;
 
 
 } // type

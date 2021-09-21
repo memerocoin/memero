@@ -95,7 +95,7 @@ namespace wallet {
   size_t get_num_outputs
   (
    const std::vector<cryptonote::tx_destination_entry> &dsts
-   , const std::vector<::wallet::logic::type::transfer::transfer_details> &transfers
+   , const type::wallet::transfer_container_span transfers
    , const std::vector<size_t> &selected_transfers
    );
 
@@ -188,6 +188,8 @@ namespace wallet {
    , const type::wallet::transfer_container_span m_transfers
    , const uint64_t blockchain_height
    );
+
+  uint64_t calculate_fee(const cryptonote::transaction &tx, size_t blob_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
 
 } // wallet
 } // functional
