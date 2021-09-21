@@ -2953,6 +2953,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions
      , m_rpc_client
      , m_account.get_keys()
      , m_subaddresses
+     , unlocked_balance(subaddr_account, false)
      );
 }
 

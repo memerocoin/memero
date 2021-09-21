@@ -457,6 +457,7 @@ namespace wallet {
   , const tools::RPC_Client m_rpc_client
   , const cryptonote::account_keys account_keys
   , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+  , const uint64_t unlocked_balance
   )
   {
     using namespace tools;
@@ -747,7 +748,14 @@ namespace wallet {
 
       // if we need to spend money and don't have any left, we fail
       if (unused_transfers_indices.empty()) {
-        THROW_WALLET_EXCEPTION(error::wallet_internal_error, "No more outputs to choose from");
+        LOG_PRINT_L2("No more outputs to choose from");
+        THROW_WALLET_EXCEPTION
+          (
+           error::tx_not_possible
+           , unlocked_balance
+           , needed_money
+           , accumulated_fee + needed_fee
+           );
       }
 
       // get a random unspent output and use it to pay part (or all) of the current destination (and maybe next one, etc)
@@ -954,8 +962,15 @@ namespace wallet {
 
     if (adding_fee)
       {
-        THROW_WALLET_EXCEPTION(error::wallet_internal_error, "We ran out of outputs while trying to gather final fee");
-        // THROW_WALLET_EXCEPTION_IF(1, error::tx_not_possible, unlocked_balance(subaddr_account, false), needed_money, accumulated_fee + needed_fee);
+        LOG_PRINT_L1("We ran out of outputs while trying to gather final fee");
+        THROW_WALLET_EXCEPTION
+          (
+           error::tx_not_possible
+           , unlocked_balance
+           , needed_money
+           , accumulated_fee + needed_fee
+           );
+
       }
 
     LOG_PRINT_L1("Done creating " << txes.size() << " transactions, " << print_money(accumulated_fee) <<

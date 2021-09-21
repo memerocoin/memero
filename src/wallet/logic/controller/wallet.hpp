@@ -145,6 +145,7 @@ namespace wallet {
    , const tools::RPC_Client m_rpc_client
    , const cryptonote::account_keys account_keys
    , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
+   , const uint64_t unlocked_balance
    );
 
 } // wallet
