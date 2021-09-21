@@ -518,9 +518,9 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::utxos, std::placeholders::_1),
                            sw::tr(USAGE_UTXOS),
                            sw::tr("Show the unspent transaction outputs of a specified address within an optional amount range."));
-  m_cmd_binder.set_handler("rescan-bc",
+  m_cmd_binder.set_handler("rescan",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::rescan_blockchain, std::placeholders::_1),
-                           sw::tr(USAGE_RESCAN_BC),
+                           sw::tr(USAGE_RESCAN),
                            sw::tr("Rescan the blockchain from scratch. If \"hard\" is specified, you will lose any information which can not be recovered from the blockchain itself."));
   m_cmd_binder.set_handler("status",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::status, std::placeholders::_1),
@@ -2612,7 +2612,7 @@ bool simple_wallet::rescan_blockchain(const std::vector<std::string> &args_)
       reset_type = ResetHard;
     }
     else {
-      PRINT_USAGE(USAGE_RESCAN_BC);
+      PRINT_USAGE(USAGE_RESCAN);
       return true;
     }
   }

@@ -61,7 +61,7 @@ namespace usage
   constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
                           "     [<min height> [<max height>]]\n";
   constexpr char USAGE_UTXOS[] = "utxos [index=<N1>[,<N2>,...]] [<min amount> [<max amount>]]";
-  constexpr char USAGE_RESCAN_BC[] = "rescan-bc [hard]";
+  constexpr char USAGE_RESCAN[] = "rescan [hard]";
   constexpr char USAGE_SIGN[] = "sign [<account index>,<address index>] [--spend|--view] <filename>";
   constexpr char USAGE_VERIFY[] = "verify <filename> <address> <signature>";
   constexpr char USAGE_SHOW_TX[] = "tx <txid>";
