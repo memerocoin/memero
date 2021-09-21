@@ -2684,40 +2684,9 @@ uint64_t wallet2::unlocked_balance(uint32_t index_major, bool strict, uint64_t *
 //----------------------------------------------------------------------------------------------------
 std::map<uint32_t, uint64_t> wallet2::balance_per_subaddress(uint32_t index_major, bool strict) const
 {
-  std::map<uint32_t, uint64_t> amount_per_subaddr;
-  for (const auto& td: m_transfers)
-  {
-    if
-      (
-       td.m_subaddr_index.major == index_major
-       && !wallet::logic::functional::wallet::is_spent(td, strict)
-       && !td.m_frozen
-       )
-    {
-      auto found = amount_per_subaddr.find(td.m_subaddr_index.minor);
-      if (found == amount_per_subaddr.end())
-        amount_per_subaddr[td.m_subaddr_index.minor] = td.amount();
-      else
-        found->second += td.amount();
-    }
-  }
-  if (!strict)
-  {
-   for (const auto& utx: m_unconfirmed_txs)
-   {
-    if (utx.second.m_subaddr_account == index_major && utx.second.m_state != wallet::logic::type::transfer::unconfirmed_transfer_details::failed)
-    {
-      // all changes go to 0-th subaddress (in the current subaddress account)
-      auto found = amount_per_subaddr.find(0);
-      if (found == amount_per_subaddr.end())
-        amount_per_subaddr[0] = utx.second.m_change;
-      else
-        found->second += utx.second.m_change;
-    }
-   }
-  }
-  return amount_per_subaddr;
+  return wallet::logic::functional::wallet::balance_per_subaddress(index_major, strict, m_transfers, m_unconfirmed_txs);
 }
+
 //----------------------------------------------------------------------------------------------------
 std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> wallet2::unlocked_balance_per_subaddress(uint32_t index_major, bool strict) const
 {

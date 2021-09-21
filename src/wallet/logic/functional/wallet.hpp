@@ -173,6 +173,14 @@ namespace wallet {
    , const cryptonote::network_type m_nettype
    );
 
+  std::map<uint32_t, uint64_t> balance_per_subaddress
+  (
+   const uint32_t subaddr_index_major
+   , const bool only_confirmed
+   , const type::wallet::transfer_container_span m_transfers
+   , const serializable_unordered_map<crypto::hash, type::transfer::unconfirmed_transfer_details> m_unconfirmed_txs
+   );
+
 } // wallet
 } // functional
 } // logic

@@ -653,6 +653,49 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   return {ptx, tx};
 }
 
+std::map<uint32_t, uint64_t> balance_per_subaddress
+(
+ const uint32_t subaddr_index_major
+ , const bool only_confirmed
+ , const type::wallet::transfer_container_span m_transfers
+ , const serializable_unordered_map<crypto::hash, type::transfer::unconfirmed_transfer_details> m_unconfirmed_txs
+ )
+{
+  std::map<uint32_t, uint64_t> amount_per_subaddr;
+  for (const auto& td: m_transfers)
+  {
+    if
+      (
+       td.m_subaddr_index.major == subaddr_index_major
+       && !is_spent(td, only_confirmed)
+       && !td.m_frozen
+       )
+    {
+      auto found = amount_per_subaddr.find(td.m_subaddr_index.minor);
+      if (found == amount_per_subaddr.end())
+        amount_per_subaddr[td.m_subaddr_index.minor] = td.amount();
+      else
+        found->second += td.amount();
+    }
+  }
+  if (!only_confirmed)
+  {
+   for (const auto& utx: m_unconfirmed_txs)
+   {
+    if (utx.second.m_subaddr_account == subaddr_index_major && utx.second.m_state != type::transfer::unconfirmed_transfer_details::failed)
+    {
+      // all changes go to 0-th subaddress (in the current subaddress account)
+      auto found = amount_per_subaddr.find(0);
+      if (found == amount_per_subaddr.end())
+        amount_per_subaddr[0] = utx.second.m_change;
+      else
+        found->second += utx.second.m_change;
+    }
+   }
+  }
+  return amount_per_subaddr;
+}
+
 
 } // wallet
 } // functional
