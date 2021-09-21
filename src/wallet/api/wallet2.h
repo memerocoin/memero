@@ -247,7 +247,7 @@ namespace tools
     void commit_tx(pending_tx& ptx_vector);
     void commit_tx(std::vector<pending_tx>& ptx_vector);
     // load unsigned_tx_set from file.
-    std::vector<wallet::logic::type::tx::pending_tx> create_transactions_2
+    std::vector<wallet::logic::type::tx::pending_tx> create_transactions
     (
      const std::vector<cryptonote::tx_destination_entry> dsts_vec
      , const size_t fake_outs_count

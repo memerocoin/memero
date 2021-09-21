@@ -418,7 +418,7 @@ namespace wallet {
     return true;
   }
 
-  std::vector<type::tx::pending_tx> create_transactions_2
+  std::vector<type::tx::pending_tx> create_transactions
   (
   const std::vector<cryptonote::tx_destination_entry> dsts_vec
   , const size_t fake_outs_count

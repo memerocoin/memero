@@ -2939,7 +2939,7 @@ std::vector<size_t> wallet2::get_only_rct(const std::vector<size_t> &unused_dust
 // This system allows for sending (almost) the entire balance, since it does
 // not generate spurious change in all txes, thus decreasing the instantaneous
 // usable balance.
-std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
+std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions
 (
  const std::vector<cryptonote::tx_destination_entry> dsts_vec
  , const size_t fake_outs_count
@@ -2950,7 +2950,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions_2
  , const std::set<uint32_t> subaddr_indices_
  ) const
 {
-  return wallet::logic::controller::wallet::create_transactions_2
+  return wallet::logic::controller::wallet::create_transactions
     (
      dsts_vec
      , fake_outs_count
