@@ -2937,11 +2937,9 @@ bool wallet2::get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx
 {
   output_secret_keys.clear();
   const std::unordered_map<crypto::hash, crypto::secret_key>::const_iterator i = m_tx_keys.find(txid);
-  if (i == m_tx_keys.end())
-    return false;
-  tx_key = i->second;
-  if (tx_key == crypto::null_skey)
-    return false;
+  if (i != m_tx_keys.end())
+    tx_key = i->second;
+
   const auto j = m_output_secret_keys.find(txid);
   if (j != m_output_secret_keys.end())
     output_secret_keys = j->second;

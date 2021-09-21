@@ -2086,10 +2086,21 @@ bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
   if (found_tx_key)
   {
     std::ostringstream oss;
-    oss << epee::string_tools::pod_to_hex(tx_key);
-    for (size_t i = 0; i < output_secret_keys.size(); ++i)
-      oss << epee::string_tools::pod_to_hex(output_secret_keys[i]);
-    success_msg_writer() << sw::tr("Tx key: ") << oss.str();
+    oss
+      << "Tx key:"
+      << std::endl
+      << tx_key
+      << std::endl
+      << std::endl
+      << "Tx output keys:"
+      << std::endl
+      ;
+
+    for (const auto& k: output_secret_keys) {
+      oss << k << std::endl;
+    }
+
+    success_msg_writer() << oss.str();
     return true;
   }
   else
