@@ -1475,8 +1475,7 @@ bool simple_wallet::show_balance_unlocked(bool detailed)
     return true;
   success_msg_writer() << sw::tr("Balance per address:");
   success_msg_writer() << boost::format("%15s %21s %21s %7s %21s") % sw::tr("Address") % sw::tr("Balance") % sw::tr("Unlocked balance") % sw::tr("Outputs") % sw::tr("Label");
-  std::vector<wallet::logic::type::transfer::transfer_details> transfers;
-  m_wallet->get_transfers(transfers);
+  const std::vector<wallet::logic::type::transfer::transfer_details> transfers = m_wallet->get_transfers();
   for (const auto& i : balance_per_subaddress)
   {
     cryptonote::subaddress_index subaddr_index = {m_current_subaddress_account, i.first};
@@ -1553,8 +1552,7 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
     return true;
   }
 
-  wallet::logic::type::wallet::transfer_container transfers;
-  m_wallet->get_transfers(transfers);
+  const wallet::logic::type::wallet::transfer_container transfers = m_wallet->get_transfers();
 
   size_t transfers_found = 0;
   for (const auto& td : transfers)
@@ -2628,8 +2626,7 @@ bool simple_wallet::unspent_outputs(const std::vector<std::string> &args_)
       return true;
     }
   }
-  wallet::logic::type::wallet::transfer_container transfers;
-  m_wallet->get_transfers(transfers);
+  const wallet::logic::type::wallet::transfer_container transfers = m_wallet->get_transfers();
   std::map<uint64_t, wallet::logic::type::wallet::transfer_container> amount_to_tds;
   uint64_t min_height = std::numeric_limits<uint64_t>::max();
   uint64_t max_height = 0;
@@ -2889,8 +2886,7 @@ bool simple_wallet::print_address(const std::vector<std::string> &args/* = std::
   //  address device [<index>]
 
   std::vector<std::string> local_args = args;
-  wallet::logic::type::wallet::transfer_container transfers;
-  m_wallet->get_transfers(transfers);
+  const wallet::logic::type::wallet::transfer_container transfers = m_wallet->get_transfers();
 
   auto print_address_sub = [this, &transfers](uint32_t index)
   {

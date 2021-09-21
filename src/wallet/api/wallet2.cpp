@@ -2700,9 +2700,9 @@ uint64_t wallet2::unlocked_balance_all(bool strict)
   return r;
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::get_transfers(wallet::logic::type::wallet::transfer_container& incoming) const
+wallet::logic::type::wallet::transfer_container wallet2::get_transfers() const
 {
-  incoming = m_transfers;
+  return m_transfers;
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::get_payments(std::list<std::pair<crypto::hash,wallet::logic::type::payment::payment_details>>& payments, uint64_t min_height, uint64_t max_height, const std::optional<uint32_t>& subaddr_account, const std::set<uint32_t>& subaddr_indices) const

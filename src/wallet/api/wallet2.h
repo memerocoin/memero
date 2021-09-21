@@ -259,7 +259,9 @@ namespace tools
      ) const;
 
     bool check_connection(uint32_t *version = NULL, uint32_t timeout = 200000);
-    void get_transfers(wallet::logic::type::wallet::transfer_container& incoming) const;
+
+    wallet::logic::type::wallet::transfer_container get_transfers() const;
+
     void get_payments(std::list<std::pair<crypto::hash,wallet::logic::type::payment::payment_details>>& payments, uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
     void get_payments_out(std::list<std::pair<crypto::hash,wallet::logic::type::transfer::confirmed_transfer_details>>& confirmed_payments,
       uint64_t min_height, uint64_t max_height = (uint64_t)-1, const std::optional<uint32_t>& subaddr_account = std::nullopt, const std::set<uint32_t>& subaddr_indices = {}) const;
