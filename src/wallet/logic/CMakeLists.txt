@@ -39,7 +39,6 @@ add_library(wallet_logic_basic
   pseudo_functional/proof.cpp
   pseudo_functional/uri.cpp
   controller/proof.cpp
-  controller/wallet.cpp
   )
 
 target_link_libraries(wallet_logic_basic
@@ -50,6 +49,7 @@ target_link_libraries(wallet_logic_basic
 
 add_library(wallet_logic
   functional/wallet.cpp
+  controller/wallet.cpp
   )
 
 target_link_libraries(wallet_logic

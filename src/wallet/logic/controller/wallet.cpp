@@ -292,6 +292,8 @@ namespace wallet {
     }
 
     THROW_WALLET_EXCEPTION(tools::error::wallet_internal_error, "Transaction sanity check failed");
+
+    return {};
   }
 
    std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
