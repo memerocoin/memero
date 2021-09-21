@@ -501,7 +501,7 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("get-tx-output-keys",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_output_keys, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_OUTPUT_KEYS),
-                           sw::tr("Get the transaction output keys for a given <txid>."));
+                           sw::tr("Get the transaction output private keys for a given <txid>."));
   m_cmd_binder.set_handler("get-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_PROOF),
