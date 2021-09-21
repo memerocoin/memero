@@ -79,7 +79,6 @@ namespace wallet_rpc
       std::string label;
       uint64_t num_unspent_outputs;
       uint64_t blocks_to_unlock;
-      uint64_t time_to_unlock;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(account_index)
@@ -90,7 +89,6 @@ namespace wallet_rpc
         KV_SERIALIZE(label)
         KV_SERIALIZE(num_unspent_outputs)
         KV_SERIALIZE(blocks_to_unlock)
-        KV_SERIALIZE(time_to_unlock)
       END_KV_SERIALIZE_MAP()
     };
 
@@ -100,14 +98,12 @@ namespace wallet_rpc
       uint64_t 	 unlocked_balance;
       std::vector<per_subaddress_info> per_subaddress;
       uint64_t   blocks_to_unlock;
-      uint64_t   time_to_unlock;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(balance)
         KV_SERIALIZE(unlocked_balance)
         KV_SERIALIZE(per_subaddress)
         KV_SERIALIZE(blocks_to_unlock)
-        KV_SERIALIZE(time_to_unlock)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;

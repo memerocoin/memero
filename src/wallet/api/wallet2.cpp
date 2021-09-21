@@ -2659,20 +2659,16 @@ uint64_t wallet2::balance(uint32_t index_major, bool strict) const
   return amount;
 }
 //----------------------------------------------------------------------------------------------------
-uint64_t wallet2::unlocked_balance(uint32_t index_major, bool strict, uint64_t *blocks_to_unlock, uint64_t *time_to_unlock) const
+uint64_t wallet2::unlocked_balance(uint32_t index_major, bool strict, uint64_t *blocks_to_unlock) const
 {
   uint64_t amount = 0;
   if (blocks_to_unlock)
     *blocks_to_unlock = 0;
-  if (time_to_unlock)
-    *time_to_unlock = 0;
   for (const auto& i : unlocked_balance_per_subaddress(index_major, strict))
   {
     amount += i.second.first;
     if (blocks_to_unlock && i.second.second.first > *blocks_to_unlock)
       *blocks_to_unlock = i.second.second.first;
-    if (time_to_unlock && i.second.second.second > *time_to_unlock)
-      *time_to_unlock = i.second.second.second;
   }
   return amount;
 }
@@ -2698,21 +2694,17 @@ uint64_t wallet2::balance_all(bool strict) const
   return r;
 }
 //----------------------------------------------------------------------------------------------------
-uint64_t wallet2::unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock, uint64_t *time_to_unlock)
+uint64_t wallet2::unlocked_balance_all(bool strict, uint64_t *blocks_to_unlock)
 {
   uint64_t r = 0;
   if (blocks_to_unlock)
     *blocks_to_unlock = 0;
-  if (time_to_unlock)
-    *time_to_unlock = 0;
   for (uint32_t index_major = 0; index_major < get_num_subaddress_accounts(); ++index_major)
   {
-    uint64_t local_blocks_to_unlock, local_time_to_unlock;
-    r += unlocked_balance(index_major, strict, blocks_to_unlock ? &local_blocks_to_unlock : NULL, time_to_unlock ? &local_time_to_unlock : NULL);
+    uint64_t local_blocks_to_unlock;
+    r += unlocked_balance(index_major, strict, blocks_to_unlock ? &local_blocks_to_unlock : NULL);
     if (blocks_to_unlock)
       *blocks_to_unlock = std::max(*blocks_to_unlock, local_blocks_to_unlock);
-    if (time_to_unlock)
-      *time_to_unlock = std::max(*time_to_unlock, local_time_to_unlock);
   }
   return r;
 }
