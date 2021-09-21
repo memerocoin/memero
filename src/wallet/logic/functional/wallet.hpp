@@ -189,7 +189,14 @@ namespace wallet {
    , const uint64_t blockchain_height
    );
 
-  uint64_t calculate_fee(const cryptonote::transaction &tx, size_t blob_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask);
+  uint64_t calculate_fee
+  (
+   const cryptonote::transaction tx
+   , const size_t blob_size
+   , const uint64_t base_fee
+   , const uint64_t fee_multiplier
+   , const uint64_t fee_quantization_mask
+   );
 
 } // wallet
 } // functional

@@ -741,7 +741,14 @@ std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> unlocked_
   return amount_per_subaddr;
 }
 
-uint64_t calculate_fee(const cryptonote::transaction &tx, size_t blob_size, uint64_t base_fee, uint64_t fee_multiplier, uint64_t fee_quantization_mask)
+uint64_t calculate_fee
+(
+ const cryptonote::transaction tx
+ , const size_t blob_size
+ , const uint64_t base_fee
+ , const uint64_t fee_multiplier
+ , const uint64_t fee_quantization_mask
+ )
 {
   return fee::calculate_fee_from_weight
     (base_fee, cryptonote::get_transaction_weight(tx, blob_size), fee_multiplier, fee_quantization_mask);
