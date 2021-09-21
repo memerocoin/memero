@@ -529,10 +529,6 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_key, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_KEY),
                            sw::tr("Get the transaction key (r) for a given <txid>."));
-  m_cmd_binder.set_handler("verify-tx-key",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_key, std::placeholders::_1),
-                           sw::tr(USAGE_VERIFY_TX_KEY),
-                           sw::tr("Check the amount going to <address> in <txid>."));
   m_cmd_binder.set_handler("get-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_PROOF),
@@ -2140,94 +2136,6 @@ bool simple_wallet::get_tx_proof(const std::vector<std::string> &args)
       success_msg_writer() << sw::tr("signature file saved to: ") << filename;
     else
       fail_msg_writer() << sw::tr("failed to save signature file");
-  }
-  catch (const std::exception &e)
-  {
-    fail_msg_writer() << sw::tr("error: ") << e.what();
-  }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::verify_tx_key(const std::vector<std::string> &args_)
-{
-  std::vector<std::string> local_args = args_;
-
-  if(local_args.size() != 3) {
-    PRINT_USAGE(USAGE_VERIFY_TX_KEY);
-    return true;
-  }
-
-  if (!try_connect_to_daemon())
-    return true;
-
-  if (!m_wallet)
-  {
-    fail_msg_writer() << sw::tr("wallet is null");
-    return true;
-  }
-  crypto::hash txid;
-  if(!epee::string_tools::hex_to_pod(local_args[0], txid))
-  {
-    fail_msg_writer() << sw::tr("failed to parse txid");
-    return true;
-  }
-
-  crypto::secret_key tx_key;
-  std::vector<crypto::secret_key> output_secret_keys;
-  if(!epee::string_tools::hex_to_pod(local_args[1].substr(0, 64), tx_key))
-  {
-    fail_msg_writer() << sw::tr("failed to parse tx key");
-    return true;
-  }
-  local_args[1] = local_args[1].substr(64);
-  while (!local_args[1].empty())
-  {
-    output_secret_keys.resize(output_secret_keys.size() + 1);
-    if(!epee::string_tools::hex_to_pod(local_args[1].substr(0, 64), output_secret_keys.back()))
-    {
-      fail_msg_writer() << sw::tr("failed to parse tx key");
-      return true;
-    }
-    local_args[1] = local_args[1].substr(64);
-  }
-
-  cryptonote::address_parse_info info;
-  if(!cryptonote::get_account_address_from_str(info, m_wallet->nettype(), local_args[2]))
-  {
-    fail_msg_writer() << sw::tr("failed to parse address");
-    return true;
-  }
-
-  try
-  {
-    uint64_t received;
-    bool in_pool;
-    uint64_t confirmations;
-    m_wallet->verify_tx_key(txid, tx_key, output_secret_keys, info.address, received, in_pool, confirmations);
-
-    if (received > 0)
-    {
-      success_msg_writer() << get_account_address_as_str(m_wallet->nettype(), info.is_subaddress, info.address) << " " << sw::tr("received") << " " << print_money(received) << " " << sw::tr("in txid") << " " << txid;
-      if (in_pool)
-      {
-        success_msg_writer() << sw::tr("WARNING: this transaction is not yet included in the blockchain!");
-      }
-      else
-      {
-        if (confirmations != (uint64_t)-1)
-        {
-          success_msg_writer() << boost::format(tr("This transaction has %u confirmations")) % confirmations;
-        }
-        else
-        {
-          success_msg_writer() << sw::tr("WARNING: failed to determine number of confirmations!");
-        }
-      }
-    }
-    else
-    {
-      fail_msg_writer() << get_account_address_as_str(m_wallet->nettype(), info.is_subaddress, info.address) << " " << sw::tr("received nothing in txid") << " " << txid;
-    }
   }
   catch (const std::exception &e)
   {

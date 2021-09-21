@@ -85,8 +85,6 @@ namespace tools
         MAP_JON_RPC_WE("incoming_transfers", on_incoming, wallet_rpc::COMMAND_RPC_INCOMING)
         MAP_JON_RPC_WE("query_key",         on_query_key,         wallet_rpc::COMMAND_RPC_QUERY_KEY)
         MAP_JON_RPC_WE("rescan_blockchain",  on_rescan_blockchain,  wallet_rpc::COMMAND_RPC_RESCAN_BLOCKCHAIN)
-        MAP_JON_RPC_WE("get_tx_key",         on_get_tx_key,         wallet_rpc::COMMAND_RPC_GET_TX_KEY)
-        MAP_JON_RPC_WE("verify_tx_key",       on_verify_tx_key,       wallet_rpc::COMMAND_RPC_VERIFY_TX_KEY)
         MAP_JON_RPC_WE("get_tx_proof",       on_get_tx_proof,       wallet_rpc::COMMAND_RPC_GET_TX_PROOF)
         MAP_JON_RPC_WE("verify_tx_proof",     on_verify_tx_proof,     wallet_rpc::COMMAND_RPC_VERIFY_TX_PROOF)
         MAP_JON_RPC_WE("get_transfers",      on_get_transfers,      wallet_rpc::COMMAND_RPC_GET_TRANSFERS)
@@ -129,8 +127,6 @@ namespace tools
       bool on_store(const wallet_rpc::COMMAND_RPC_STORE::request& req, wallet_rpc::COMMAND_RPC_STORE::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);
       bool on_incoming(const wallet_rpc::COMMAND_RPC_INCOMING::request& req, wallet_rpc::COMMAND_RPC_INCOMING::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);
       bool on_rescan_blockchain(const wallet_rpc::COMMAND_RPC_RESCAN_BLOCKCHAIN::request& req, wallet_rpc::COMMAND_RPC_RESCAN_BLOCKCHAIN::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);
-      bool on_get_tx_key(const wallet_rpc::COMMAND_RPC_GET_TX_KEY::request& req, wallet_rpc::COMMAND_RPC_GET_TX_KEY::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);
-      bool on_verify_tx_key(const wallet_rpc::COMMAND_RPC_VERIFY_TX_KEY::request& req, wallet_rpc::COMMAND_RPC_VERIFY_TX_KEY::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);
       bool on_get_tx_proof(const wallet_rpc::COMMAND_RPC_GET_TX_PROOF::request& req, wallet_rpc::COMMAND_RPC_GET_TX_PROOF::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);
       bool on_verify_tx_proof(const wallet_rpc::COMMAND_RPC_VERIFY_TX_PROOF::request& req, wallet_rpc::COMMAND_RPC_VERIFY_TX_PROOF::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);
       bool on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);

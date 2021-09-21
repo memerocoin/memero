@@ -700,37 +700,6 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_VERIFY_TX_KEY
-  {
-    struct request_t
-    {
-      std::string txid;
-      std::string tx_key;
-      std::string address;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(txid)
-        KV_SERIALIZE(tx_key)
-        KV_SERIALIZE(address)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t
-    {
-      uint64_t received;
-      bool in_pool;
-      uint64_t confirmations;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(received)
-        KV_SERIALIZE(in_pool)
-        KV_SERIALIZE(confirmations)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct COMMAND_RPC_GET_TX_PROOF
   {
     struct request_t
