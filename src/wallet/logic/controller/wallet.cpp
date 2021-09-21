@@ -208,7 +208,13 @@ namespace wallet {
   }
 
   //----------------------------------------------------------------------------------------------------
-  size_t pop_best_value_from(const ::wallet::logic::type::wallet::transfer_container_span transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest)
+  size_t pop_best_value_from
+  (
+    const ::wallet::logic::type::wallet::transfer_container_span transfers
+    , std::vector<size_t> &unused_indices
+    , const std::span<size_t> selected_transfers
+    , bool smallest
+    )
   {
     std::vector<size_t> candidates;
     float best_relatedness = 1.0f;

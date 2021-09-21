@@ -84,7 +84,13 @@ namespace wallet {
 
   bool verify_password(const std::string& keys_file_name, const epee::wipeable_string& password, bool no_spend_key, uint64_t kdf_rounds);
 
-  size_t pop_best_value_from(const ::wallet::logic::type::wallet::transfer_container_span transfers, std::vector<size_t> &unused_indices, const std::vector<size_t>& selected_transfers, bool smallest = false);
+  size_t pop_best_value_from
+  (
+   const ::wallet::logic::type::wallet::transfer_container_span transfers
+   , std::vector<size_t> &unused_indices
+   , const std::span<size_t> selected_transfers
+   , bool smallest = false
+   );
 
   std::vector<std::vector<type::get_tx_outputs_entry>> get_tx_outputs
   (
