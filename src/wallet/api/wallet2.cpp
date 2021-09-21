@@ -2805,31 +2805,6 @@ uint64_t wallet2::select_transfers(uint64_t needed_money, std::vector<size_t> un
 
   return found_money;
 }
-//----------------------------------------------------------------------------------------------------
-void wallet2::add_unconfirmed_tx(const cryptonote::transaction& tx, uint64_t amount_in, const std::vector<cryptonote::tx_destination_entry> &dests, uint64_t change_amount, uint32_t subaddr_account, const std::set<uint32_t>& subaddr_indices)
-{
-  unconfirmed_transfer_details& utd = m_unconfirmed_txs[cryptonote::get_transaction_hash(tx)];
-  utd.m_amount_in = amount_in;
-  utd.m_amount_out = 0;
-  for (const auto &d: dests)
-    utd.m_amount_out += d.amount;
-  utd.m_amount_out += change_amount; // dests does not contain change
-  utd.m_change = change_amount;
-  utd.m_sent_time = time(NULL);
-  utd.m_tx = (const cryptonote::transaction_prefix&)tx;
-  utd.m_dests = dests;
-  utd.m_state = wallet::logic::type::transfer::unconfirmed_transfer_details::pending;
-  utd.m_timestamp = time(NULL);
-  utd.m_subaddr_account = subaddr_account;
-  utd.m_subaddr_indices = subaddr_indices;
-  for (const auto &in: tx.vin)
-  {
-    if (in.type() != typeid(cryptonote::txin_to_key))
-      continue;
-    const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    utd.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.output_relative_offsets));
-  }
-}
 
 //----------------------------------------------------------------------------------------------------
 // take a pending tx and actually send it to the daemon
@@ -2868,7 +2843,18 @@ void wallet2::commit_tx(pending_tx& ptx)
     for(size_t idx: ptx.selected_transfers)
       amount_in += m_transfers[idx].amount();
   }
-  add_unconfirmed_tx(ptx.tx, amount_in, dests, ptx.change_dts.amount, ptx.construction_data.subaddr_account, ptx.construction_data.subaddr_indices);
+  const auto utd = wallet::logic::functional::wallet::get_unconfirmed_transfer_details
+    (
+     ptx.tx
+     , amount_in
+     , dests
+     , ptx.change_dts.amount
+     , ptx.construction_data.subaddr_account
+     , ptx.construction_data.subaddr_indices
+     );
+
+  m_unconfirmed_txs[cryptonote::get_transaction_hash(ptx.tx)] = utd;
+
   if (store_tx_info())
   {
     m_output_secret_keys[txid] = ptx.output_secret_keys;

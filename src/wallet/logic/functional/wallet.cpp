@@ -755,6 +755,41 @@ uint64_t calculate_fee
 }
 
 
+unconfirmed_transfer_details get_unconfirmed_transfer_details
+(
+ const cryptonote::transaction& tx
+ , const uint64_t amount_in
+ , const std::vector<cryptonote::tx_destination_entry> &dests
+ , const uint64_t change_amount
+ , const uint32_t subaddr_account
+ , const std::set<uint32_t>& subaddr_indices
+ )
+{
+  unconfirmed_transfer_details utd;
+  utd.m_amount_in = amount_in;
+  utd.m_amount_out = 0;
+  for (const auto &d: dests)
+    utd.m_amount_out += d.amount;
+  utd.m_amount_out += change_amount; // dests does not contain change
+  utd.m_change = change_amount;
+  utd.m_sent_time = time(NULL);
+  utd.m_tx = (const cryptonote::transaction_prefix&)tx;
+  utd.m_dests = dests;
+  utd.m_state = type::transfer::unconfirmed_transfer_details::pending;
+  utd.m_timestamp = time(NULL);
+  utd.m_subaddr_account = subaddr_account;
+  utd.m_subaddr_indices = subaddr_indices;
+  for (const auto &in: tx.vin)
+  {
+    if (in.type() != typeid(cryptonote::txin_to_key))
+      continue;
+    const auto &txin = boost::get<cryptonote::txin_to_key>(in);
+    utd.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.output_relative_offsets));
+  }
+
+  return utd;
+}
+
 } // wallet
 } // functional
 } // logic

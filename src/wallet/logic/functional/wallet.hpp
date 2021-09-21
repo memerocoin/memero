@@ -198,6 +198,16 @@ namespace wallet {
    , const uint64_t fee_quantization_mask
    );
 
+  unconfirmed_transfer_details get_unconfirmed_transfer_details
+  (
+   const cryptonote::transaction& tx
+   , const uint64_t amount_in
+   , const std::vector<cryptonote::tx_destination_entry> &dests
+   , const uint64_t change_amount
+   , const uint32_t subaddr_account
+   , const std::set<uint32_t>& subaddr_indices
+   );
+
 } // wallet
 } // functional
 } // logic
