@@ -2933,29 +2933,15 @@ const wallet::logic::type::transfer::transfer_details &wallet2::get_transfer_det
   return m_transfers[idx];
 }
 //----------------------------------------------------------------------------------------------------
-bool wallet2::get_tx_key_cached(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &output_secret_keys) const
+std::optional<std::vector<crypto::secret_key>> wallet2::get_tx_key(const crypto::hash txid) const
 {
-  output_secret_keys.clear();
-  const std::unordered_map<crypto::hash, crypto::secret_key>::const_iterator i = m_tx_keys.find(txid);
-  if (i != m_tx_keys.end())
-    tx_key = i->second;
-
   const auto j = m_output_secret_keys.find(txid);
-  if (j != m_output_secret_keys.end())
-    output_secret_keys = j->second;
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool wallet2::get_tx_key(const crypto::hash &txid, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &output_secret_keys)
-{
-  bool r = get_tx_key_cached(txid, tx_key, output_secret_keys);
-  if (r)
-  {
+  if (j != m_output_secret_keys.end()) {
     LOG_DEBUG("tx key cached for txid: " << txid);
-    return true;
+    return j->second;
+  } else {
+    return {};
   }
-
-  return false;
 }
 
 std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message)
@@ -2995,18 +2981,25 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
     THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
 
     // determine if the address is found in the subaddress hash table (i.e. whether the proof is outbound or inbound)
-    crypto::secret_key tx_key = crypto::null_skey;
     std::vector<crypto::secret_key> output_secret_keys;
     const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
     if (is_out)
     {
-      THROW_WALLET_EXCEPTION_IF(!get_tx_key(txid, tx_key, output_secret_keys), error::wallet_internal_error, "Tx secret key wasn't found in the wallet file.");
+      const auto maybe_output_secret_keys = get_tx_key(txid);
+      THROW_WALLET_EXCEPTION_IF
+        (
+         !maybe_output_secret_keys
+         , error::wallet_internal_error
+         , "Tx secret key wasn't found in the wallet file."
+         );
+
+      output_secret_keys = *maybe_output_secret_keys;
     }
 
     const std::optional<crypto::secret_key> view_secret_key = std::make_optional(m_account.get_keys().m_view_secret_key);
 
     return wallet::logic::controller::proof::get_tx_proof
-      (tx, tx_key, output_secret_keys, address, is_subaddress, message, view_secret_key);
+      (tx, {}, output_secret_keys, address, is_subaddress, message, view_secret_key);
 }
 
 bool wallet2::verify_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message, const std::string &sig_str, uint64_t &received, bool &in_pool, uint64_t &confirmations)

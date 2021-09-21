@@ -2075,24 +2075,17 @@ bool simple_wallet::get_tx_key(const std::vector<std::string> &args_)
     return true;
   }
 
-  crypto::secret_key tx_key;
-  std::vector<crypto::secret_key> output_secret_keys;
+  const auto maybe_tx_output_keys = m_wallet->get_tx_key(txid);
 
-  bool found_tx_key = m_wallet->get_tx_key(txid, tx_key, output_secret_keys);
-  if (found_tx_key)
+  if (maybe_tx_output_keys)
   {
     std::ostringstream oss;
     oss
-      << "Tx key:"
-      << std::endl
-      << tx_key
-      << std::endl
-      << std::endl
       << "Tx output keys:"
       << std::endl
       ;
 
-    for (const auto& k: output_secret_keys) {
+    for (const auto& k: *maybe_tx_output_keys) {
       oss << k << std::endl;
     }
 
