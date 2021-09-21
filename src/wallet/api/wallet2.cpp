@@ -2688,42 +2688,11 @@ std::map<uint32_t, uint64_t> wallet2::balance_per_subaddress(uint32_t index_majo
 }
 
 //----------------------------------------------------------------------------------------------------
-std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> wallet2::unlocked_balance_per_subaddress(uint32_t index_major, bool strict) const
+std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>>
+wallet2::unlocked_balance_per_subaddress(uint32_t index_major, bool strict) const
 {
-  std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> amount_per_subaddr;
-  const uint64_t blockchain_height = get_blockchain_current_height();
-  for(const transfer_details& td: m_transfers)
-  {
-    if(td.m_subaddr_index.major == index_major && !wallet::logic::functional::wallet::is_spent(td, strict) && !td.m_frozen)
-    {
-      uint64_t amount = 0, blocks_to_unlock = 0, time_to_unlock = 0;
-      if (wallet::logic::functional::wallet::is_transfer_unlocked(td, blockchain_height))
-      {
-        amount = td.amount();
-        blocks_to_unlock = 0;
-        time_to_unlock = 0;
-      }
-      else
-      {
-        uint64_t unlock_height = td.m_block_height + std::max<uint64_t>(CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE, CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS);
-        if (td.m_tx.unlock_time > unlock_height)
-          unlock_height = td.m_tx.unlock_time;
-        blocks_to_unlock = unlock_height > blockchain_height ? unlock_height - blockchain_height : 0;
-        time_to_unlock = 0;
-        amount = 0;
-      }
-      auto found = amount_per_subaddr.find(td.m_subaddr_index.minor);
-      if (found == amount_per_subaddr.end())
-        amount_per_subaddr[td.m_subaddr_index.minor] = std::make_pair(amount, std::make_pair(blocks_to_unlock, time_to_unlock));
-      else
-      {
-        found->second.first += amount;
-        found->second.second.first = std::max(found->second.second.first, blocks_to_unlock);
-        found->second.second.second = std::max(found->second.second.second, time_to_unlock);
-      }
-    }
-  }
-  return amount_per_subaddr;
+  return wallet::logic::functional::wallet::unlocked_balance_per_subaddress
+    (index_major, strict, m_transfers, get_blockchain_current_height());
 }
 //----------------------------------------------------------------------------------------------------
 uint64_t wallet2::balance_all(bool strict) const

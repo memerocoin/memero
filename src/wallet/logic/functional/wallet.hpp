@@ -181,6 +181,14 @@ namespace wallet {
    , const serializable_unordered_map<crypto::hash, type::transfer::unconfirmed_transfer_details> m_unconfirmed_txs
    );
 
+  std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> unlocked_balance_per_subaddress
+  (
+   const uint32_t subaddr_index_major
+   , const bool only_confirmed
+   , const type::wallet::transfer_container_span m_transfers
+   , const uint64_t blockchain_height
+   );
+
 } // wallet
 } // functional
 } // logic
