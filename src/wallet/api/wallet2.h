@@ -404,11 +404,6 @@ namespace tools
     bool is_tx_spendtime_unlocked(const uint64_t unlock_time);
     void set_offline(bool offline = true);
 
-    static std::string get_default_daemon_address() {
-      std::unique_lock<std::mutex> lock(default_daemon_address_lock);
-      return default_daemon_address;
-    };
-
   private:
     /*!
      * \brief  Stores wallet information to wallet file.
@@ -543,8 +538,5 @@ namespace tools
     crypto::chacha_key m_cache_key;
 
     std::shared_ptr<tools::Notify> m_tx_notify;
-
-    static std::mutex default_daemon_address_lock;
-    static std::string default_daemon_address;
   };
 }
