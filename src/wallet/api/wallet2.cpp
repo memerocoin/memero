@@ -2933,7 +2933,7 @@ const wallet::logic::type::transfer::transfer_details &wallet2::get_transfer_det
   return m_transfers[idx];
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<std::vector<crypto::secret_key>> wallet2::get_tx_key(const crypto::hash txid) const
+std::optional<std::vector<crypto::secret_key>> wallet2::get_tx_output_sec_keys(const crypto::hash txid) const
 {
   const auto j = m_output_secret_keys.find(txid);
   if (j != m_output_secret_keys.end()) {
@@ -2985,7 +2985,7 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
     const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
     if (is_out)
     {
-      const auto maybe_output_secret_keys = get_tx_key(txid);
+      const auto maybe_output_secret_keys = get_tx_output_sec_keys(txid);
       THROW_WALLET_EXCEPTION_IF
         (
          !maybe_output_secret_keys

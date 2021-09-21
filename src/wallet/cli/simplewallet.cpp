@@ -2044,7 +2044,7 @@ bool simple_wallet::get_tx_output_keys(const std::vector<std::string> &args_)
     return true;
   }
 
-  const auto maybe_tx_output_keys = m_wallet->get_tx_key(txid);
+  const auto maybe_tx_output_keys = m_wallet->get_tx_output_sec_keys(txid);
 
   if (maybe_tx_output_keys)
   {
