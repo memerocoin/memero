@@ -379,8 +379,12 @@ namespace wallet {
     {
       if (ptx.change_dts.amount == 0)
         continue;
-      THROW_WALLET_EXCEPTION_IF(m_subaddresses.find(ptx.change_dts.addr.m_spend_public_key) == m_subaddresses.end(),
-          tools::error::wallet_internal_error, "Change address is not ours");
+      THROW_WALLET_EXCEPTION_IF
+        (
+         m_subaddresses.find(ptx.change_dts.addr.m_spend_public_key) == m_subaddresses.end()
+         , tools::error::wallet_internal_error
+         , "Change address is not ours"
+         );
       required[ptx.change_dts.addr].first += ptx.change_dts.amount;
       required[ptx.change_dts.addr].second = ptx.change_dts.is_subaddress;
     }
@@ -389,28 +393,28 @@ namespace wallet {
     {
       const account_public_address &address = r.first;
 
-      uint64_t total_received = 0;
       for (const auto &ptx: ptx_vector)
       {
-        uint64_t received = 0;
-        try
-        {
-          std::string proof = controller::proof::get_tx_proof
-            (ptx.tx, {}, ptx.output_secret_keys, address, r.second.second,
-            "automatic-sanity-check");
+        std::string proof = controller::proof::get_tx_proof
+          (
+           ptx.tx
+           , {}
+           , ptx.output_secret_keys
+           , address
+           , r.second.second
+           , "automatic-sanity-check"
+           );
 
-          pseudo_functional::proof::verify_tx_proof
-            (ptx.tx, address, r.second.second, "automatic-sanity-check", proof, received);
-        }
-        catch (const std::exception &e) { received = 0; }
-        total_received += received;
+        const auto found_indices = pseudo_functional::proof::verify_tx_proof
+          (ptx.tx, address, r.second.second, "automatic-sanity-check", proof);
+
+        THROW_WALLET_EXCEPTION_IF
+          (
+           !found_indices
+           , tools::error::wallet_internal_error
+           , "invalid tx proof in auto sanity check"
+           );
       }
-
-      std::stringstream ss;
-      ss << "Total received by " << cryptonote::get_account_address_as_str(m_nettype, r.second.second, address) << ": "
-          << cryptonote::print_money(total_received) << ", expected " << cryptonote::print_money(r.second.first);
-      LOG_DEBUG(ss.str());
-      THROW_WALLET_EXCEPTION_IF(total_received < r.second.first, tools::error::wallet_internal_error, ss.str());
     }
 
     return true;

@@ -3037,7 +3037,7 @@ bool wallet2::verify_tx_proof(const crypto::hash &txid, const cryptonote::accoun
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
 
   if (!wallet::logic::pseudo_functional::proof::verify_tx_proof
-      (tx, address, is_subaddress, message, sig_str, received))
+      (tx, address, is_subaddress, message, sig_str))
     return false;
 
   in_pool = res.txs.front().in_pool;

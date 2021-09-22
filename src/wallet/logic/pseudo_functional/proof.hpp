@@ -39,14 +39,13 @@ namespace logic {
 namespace pseudo_functional {
 namespace proof {
 
-  const bool verify_tx_proof
+  const std::optional<std::vector<size_t>> verify_tx_proof
   (
    const cryptonote::transaction &tx
    , const cryptonote::account_public_address &address
    , const bool is_subaddress
    , const std::string &message
    , const std::string &sig_str
-   , uint64_t &received
    );
 
 } // proof

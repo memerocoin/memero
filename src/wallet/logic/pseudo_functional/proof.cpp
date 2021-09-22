@@ -46,14 +46,13 @@ namespace logic {
 namespace pseudo_functional {
 namespace proof {
 
-  const bool verify_tx_proof
+  const std::optional<std::vector<size_t>> verify_tx_proof
   (
    const cryptonote::transaction &tx
    , const cryptonote::account_public_address &address
    , const bool is_subaddress
    , const std::string &message
    , const std::string &sig_str
-   , uint64_t &received
    ) {
 
     const std::string header = std::string(config::HASH_KEY_TX_PROOF_V4);
@@ -67,52 +66,38 @@ namespace proof {
        );
 
     // decode base58
-    std::vector<crypto::public_key> shared_secret(1);
     std::vector<crypto::schnorr_signature> sig(1);
-
-    const size_t pk_len = tools::base58::encode(epee::string_tools::blob_to_string(shared_secret[0].data)).size();
     const size_t sig_len = tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig[0]))).size();
 
-    const size_t num_sigs = (sig_str.size() - header_len) / (pk_len + sig_len);
+    const size_t num_sigs = (sig_str.size() - header_len) / sig_len;
 
     THROW_WALLET_EXCEPTION_IF
       (
-       sig_str.size() != header_len + num_sigs * (pk_len + sig_len)
+       sig_str.size() != header_len + num_sigs * sig_len
        , error::wallet_internal_error
        , "Wrong signature size"
        );
 
-    shared_secret.resize(num_sigs);
     sig.resize(num_sigs);
 
     for (size_t i = 0; i < num_sigs; ++i)
     {
-      std::string pk_decoded;
       std::string sig_decoded;
-      const size_t offset = header_len + i * (pk_len + sig_len);
+      const size_t offset = header_len + i * sig_len;
 
       THROW_WALLET_EXCEPTION_IF
         (
-         !tools::base58::decode(sig_str.substr(offset, pk_len), pk_decoded)
+         !tools::base58::decode(sig_str.substr(offset, sig_len), sig_decoded)
          , error::wallet_internal_error
          , "Signature decoding error"
          );
 
       THROW_WALLET_EXCEPTION_IF
         (
-         !tools::base58::decode(sig_str.substr(offset + pk_len, sig_len), sig_decoded)
+         sizeof(crypto::schnorr_signature) != sig_decoded.size()
          , error::wallet_internal_error
          , "Signature decoding error"
          );
-
-      THROW_WALLET_EXCEPTION_IF
-        (
-         sizeof(crypto::public_key) != pk_decoded.size() || sizeof(crypto::schnorr_signature) != sig_decoded.size()
-         , error::wallet_internal_error
-         , "Signature decoding error"
-         );
-
-      memcpy(&shared_secret[i], pk_decoded.data(), sizeof(crypto::public_key));
 
       constexpr size_t schnorr_size = sizeof(crypto::schnorr_signature);
 
@@ -123,8 +108,7 @@ namespace proof {
 
       // reject invalid keys
       const auto maybeSig = maybe_valid_schnorr_signature(sig_unsafe);
-      if (!maybeSig) return false;
-
+      if (!maybeSig) return {};
 
       sig[i] = *maybeSig;
     }
@@ -138,10 +122,10 @@ namespace proof {
     std::vector<int> good_signature(num_sigs, 0);
 
     const auto maybe_tx_output_pub_keys = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
-    if (!maybe_tx_output_pub_keys) return false;
+    if (!maybe_tx_output_pub_keys) return {};
     const auto tx_output_pub_keys = *maybe_tx_output_pub_keys;
 
-    std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
+    std::vector<size_t> found_indices;
     for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
     {
       const bool good_signature_for_tx_output_pub_key = is_subaddress
@@ -151,20 +135,21 @@ namespace proof {
         (prefix_hash, tx_output_pub_keys[i], std::nullopt, sig[i]);
 
       if (good_signature_for_tx_output_pub_key) {
-        const auto tx_output_shared_secret =
-          crypto::derive_tx_output_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
-
-        tx_output_shared_secrets[i] = tx_output_shared_secret;
-
-      } else {
-        LOG_WARNING("bad signature for additional pub key at index: " << i);
+        found_indices.push_back(i);
+      }
+      else {
+        LOG_WARNING("bad signature for tx output pub key at index: " << i);
       }
     }
 
-    received = wallet::logic::functional::proof::get_tx_key_received_helper
-      (tx, {}, tx_output_shared_secrets, address);
+    // received = wallet::logic::functional::proof::get_tx_key_received_helper
+    //   (tx, {}, tx_output_shared_secrets, address);
 
-    return true;
+    if (found_indices.empty()) {
+      return {};
+    } else {
+      return found_indices;
+    }
   }
 
 

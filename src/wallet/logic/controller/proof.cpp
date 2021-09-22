@@ -128,13 +128,11 @@ namespace proof {
     std::vector<std::string> sig_str_v;
     std::transform
       (
-       shared_secret.begin()
-       , shared_secret.end()
-       , sig.begin()
+       sig.begin()
+       , sig.end()
        , std::back_inserter(sig_str_v)
-       , [](const auto& secret, const auto& s) {
-         return tools::base58::encode(epee::string_tools::blob_to_string(secret.data))
-           + tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(s)));
+       , [](const auto& s) {
+         return tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(s)));
        }
        );
 
