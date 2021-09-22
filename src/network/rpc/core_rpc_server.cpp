@@ -820,12 +820,10 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_transaction_pool(const COMMAND_RPC_GET_TRANSACTION_POOL::request& req, COMMAND_RPC_GET_TRANSACTION_POOL::response& res)
   {
-    const bool allow_sensitive = true;
-
-    size_t n_txes = m_core.get_pool_transactions_count(allow_sensitive);
+    size_t n_txes = m_core.get_pool_transactions_count();
     if (n_txes > 0)
     {
-      m_core.get_pool_transactions_and_spent_keys_info(res.transactions, res.spent_shared_secret_derived_public_key_images, allow_sensitive);
+      m_core.get_pool_transactions_and_spent_keys_info(res.transactions, res.spent_shared_secret_derived_public_key_images);
       for (tx_info& txi : res.transactions)
         txi.tx_blob = epee::string_tools::buff_to_hex_nodelimer(txi.tx_blob);
     }
@@ -836,13 +834,11 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_transaction_pool_hashes(const COMMAND_RPC_GET_TRANSACTION_POOL_HASHES::request& req, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES::response& res)
   {
-    const bool allow_sensitive = true;
-
-    size_t n_txes = m_core.get_pool_transactions_count(allow_sensitive);
+    size_t n_txes = m_core.get_pool_transactions_count();
     if (n_txes > 0)
     {
       std::vector<crypto::hash> tx_hashes;
-      m_core.get_pool_transaction_hashes(tx_hashes, allow_sensitive);
+      m_core.get_pool_transaction_hashes(tx_hashes);
       res.tx_hashes.reserve(tx_hashes.size());
       for (const crypto::hash &tx_hash: tx_hashes)
         res.tx_hashes.push_back(epee::string_tools::pod_to_hex(tx_hash));
@@ -854,8 +850,7 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_transaction_pool_stats(const COMMAND_RPC_GET_TRANSACTION_POOL_STATS::request& req, COMMAND_RPC_GET_TRANSACTION_POOL_STATS::response& res)
   {
-    const bool allow_sensitive = true;
-    m_core.get_pool_transaction_stats(res.pool_stats, allow_sensitive);
+    m_core.get_pool_transaction_stats(res.pool_stats);
 
     res.status = CORE_RPC_STATUS_OK;
     return true;
