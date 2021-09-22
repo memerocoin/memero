@@ -185,8 +185,8 @@ void RPC_Client::get_tx_outputs
     LOG_PRINT_L2("base_requested_outputs_count: " << base_requested_outputs_count);
 
     // generate output indices to request
-    cryptonote::COMMAND_RPC_GET_OUTPUTS_BIN::request req = AUTO_VAL_INIT(req);
-    cryptonote::COMMAND_RPC_GET_OUTPUTS_BIN::response daemon_resp = AUTO_VAL_INIT(daemon_resp);
+    cryptonote::COMMAND_RPC_GET_OUTPUTS::request req = AUTO_VAL_INIT(req);
+    cryptonote::COMMAND_RPC_GET_OUTPUTS::response daemon_resp = AUTO_VAL_INIT(daemon_resp);
 
     std::unique_ptr<wallet::logic::state::gamma_picker> gamma;
     if (has_rct_distribution)
@@ -347,8 +347,9 @@ void RPC_Client::get_tx_outputs
 
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-      bool r = epee::net_utils::invoke_http_bin("/get_tx_outputs.bin", req, daemon_resp, m_http_client, rpc_timeout);
-      THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "get_tx_outputs.bin", error::get_tx_outputs_error, (daemon_resp.status));
+
+      bool r = epee::net_utils::invoke_http_json("/get_tx_outputs", req, daemon_resp, m_http_client, rpc_timeout);
+      THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "get_tx_outputs", error::get_tx_outputs_error, (daemon_resp.status));
       THROW_WALLET_EXCEPTION_IF(daemon_resp.outs.size() != req.outputs.size(), error::wallet_internal_error,
         "daemon returned wrong response for get_tx_outputs.bin, wrong amounts count = " +
         std::to_string(daemon_resp.outs.size()) + ", expected " +  std::to_string(req.outputs.size()));
@@ -375,16 +376,26 @@ void RPC_Client::get_tx_outputs
       // the real one, which the node can then tell from the fake outputs,
       // as it has different data than the dummy data it had sent earlier
       bool real_out_found = false;
+
+      std::vector<COMMAND_RPC_GET_OUTPUTS_BIN::outkey> resp_outputs;
+      std::transform
+        (
+         daemon_resp.outs.begin()
+         , daemon_resp.outs.end()
+         , std::back_inserter(resp_outputs)
+         , rpc::parse_tx_output_result
+         );
+      
       for (size_t n = 0; n < requested_outputs_count; ++n)
       {
         size_t i = base + n;
         if (req.outputs[i].index == td.m_global_output_index)
           if
             (
-             daemon_resp.outs[i].key
+             resp_outputs[i].key
              == boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).shared_secret_derived_public_key
              )
-            if (daemon_resp.outs[i].mask == mask)
+            if (resp_outputs[i].mask == mask)
               real_out_found = true;
       }
       THROW_WALLET_EXCEPTION_IF(!real_out_found, error::wallet_internal_error,
@@ -408,8 +419,8 @@ void RPC_Client::get_tx_outputs
       for (size_t o = 0; o < requested_outputs_count && outs.back().size() < fake_outputs_count + 1; ++o)
       {
         size_t i = base + order[o];
-        LOG_PRINT_L2("Index " << i << "/" << requested_outputs_count << ": idx " << req.outputs[i].index << " (real " << td.m_global_output_index << "), unlocked " << daemon_resp.outs[i].unlocked << ", key " << daemon_resp.outs[i].key);
-        tx_add_fake_output(outs, req.outputs[i].index, daemon_resp.outs[i].key, daemon_resp.outs[i].mask, td.m_global_output_index, daemon_resp.outs[i].unlocked);
+        LOG_PRINT_L2("Index " << i << "/" << requested_outputs_count << ": idx " << req.outputs[i].index << " (real " << td.m_global_output_index << "), unlocked " << resp_outputs[i].unlocked << ", key " << resp_outputs[i].key);
+        tx_add_fake_output(outs, req.outputs[i].index, resp_outputs[i].key, resp_outputs[i].mask, td.m_global_output_index, resp_outputs[i].unlocked);
       }
       if (outs.back().size() < fake_outputs_count + 1)
       {
@@ -474,5 +485,38 @@ bool RPC_Client::tx_add_fake_output
   return true;
 }
 
+namespace rpc {
+  using namespace cryptonote;
+
+  COMMAND_RPC_GET_OUTPUTS_BIN::outkey parse_tx_output_result(COMMAND_RPC_GET_OUTPUTS::outkey x) {
+    crypto::public_key key;
+    const auto key_data = parse_crypto_data(x.key);
+    if (key_data) {
+      const auto maybe_key = crypto::maybeSafePoint(crypto::d2p(*key_data));
+      if (maybe_key) {
+        key = crypto::p2pk(*maybe_key);
+      }
+    }
+
+    rct::rct_point mask;
+    const auto mask_data = parse_crypto_data(x.mask);
+    if (mask_data) {
+      const auto maybe_mask = crypto::maybeSafePoint(crypto::d2p(*mask_data));
+      if (maybe_mask) {
+        mask = rct::p2rct_p(*maybe_mask);
+      }
+    }
+
+
+    return COMMAND_RPC_GET_OUTPUTS_BIN::outkey
+      {
+        key
+        , mask
+        , x.unlocked
+        , x.height
+        , {}
+      };
+  }
+}
 
 }

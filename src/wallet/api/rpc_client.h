@@ -39,6 +39,12 @@
 namespace tools
 {
 
+namespace rpc {
+  using namespace cryptonote;
+  COMMAND_RPC_GET_OUTPUTS_BIN::outkey parse_tx_output_result(COMMAND_RPC_GET_OUTPUTS::outkey x);
+}
+
+
 class RPC_Client
 {
 public:
