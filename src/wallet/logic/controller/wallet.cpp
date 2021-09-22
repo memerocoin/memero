@@ -395,6 +395,8 @@ namespace wallet {
       const account_public_address address = r.first;
       const bool is_subaddress = r.second.second;
 
+      bool found_in_some_tx = false;
+
       for (const auto &ptx: ptx_vector)
       {
         std::string proof = controller::proof::get_tx_proof
@@ -410,13 +412,17 @@ namespace wallet {
         const auto found_indices = pseudo_functional::proof::verify_tx_proof
           (ptx.tx, address, r.second.second, "automatic-sanity-check", proof);
 
-        THROW_WALLET_EXCEPTION_IF
-          (
-           !found_indices
-           , tools::error::wallet_internal_error
-           , "invalid tx proof in auto sanity check"
-           );
+        if (found_indices) {
+          found_in_some_tx = true;
+          break;
+        }
       }
+      THROW_WALLET_EXCEPTION_IF
+        (
+         !found_in_some_tx
+         , tools::error::wallet_internal_error
+         , "invalid tx proof in auto sanity check"
+         );
     }
 
     return true;
