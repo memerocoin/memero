@@ -123,8 +123,6 @@
       LOG_DEBUG( s_pattern << "() processed with " << ticks1-ticks << "/"<< ticks2-ticks1 << "/" << ticks3-ticks2 << "ms"); \
     }
 
-#define CHAIN_URI_MAP2(callback) else {callback(query_info, response_info, m_conn_context);handled = true;}
-
 #define END_URI_MAP2() return handled;}
 
 
@@ -208,26 +206,6 @@
 }
 
 #define MAP_JON_RPC_WE(method_name, callback_f, command_type) MAP_JON_RPC_WE_IF(method_name, callback_f, command_type, true)
-
-#define MAP_JON_RPC_WERI(method_name, callback_f, command_type) \
-    else if(callback_name == method_name) \
-{ \
-  PREPARE_OBJECTS_FROM_JSON(command_type) \
-  epee::json_rpc::error_response fail_resp = AUTO_VAL_INIT(fail_resp); \
-  fail_resp.jsonrpc = "2.0"; \
-  fail_resp.id = req.id; \
-  LOG_VERBOSE(m_conn_context << "calling RPC method " << method_name); \
-  bool res = false; \
-  try { res = callback_f(req.params, resp.result, fail_resp.error, response_info, &m_conn_context); } \
-  catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
-  if (!res) \
-  { \
-    epee::serialization::store_t_to_json(static_cast<epee::json_rpc::error_response&>(fail_resp), response_info.m_body); \
-    return true; \
-  } \
-  FINALIZE_OBJECTS_TO_JSON(method_name) \
-  return true;\
-}
 
 #define MAP_JON_RPC(method_name, callback_f, command_type) \
     else if(callback_name == method_name) \
