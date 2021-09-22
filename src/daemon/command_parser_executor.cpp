@@ -34,6 +34,8 @@
 
 namespace daemonize {
 
+using namespace cryptonote;
+
 t_command_parser_executor::t_command_parser_executor(
     uint32_t ip
   , uint16_t port
@@ -226,10 +228,10 @@ bool t_command_parser_executor::print_block(const std::vector<std::string>& args
   }
   catch (const boost::bad_lexical_cast&)
   {
-    crypto::hash block_hash;
-    if (parse_hash256(arg, block_hash))
+    const auto maybe_hash = parse_hash256(arg);
+    if (maybe_hash)
     {
-      return m_executor.print_block_by_hash(block_hash, include_hex);
+      return m_executor.print_block_by_hash(*maybe_hash, include_hex);
     }
   }
 
@@ -263,10 +265,10 @@ bool t_command_parser_executor::print_transaction(const std::vector<std::string>
   }
 
   const std::string& str_hash = args.front();
-  crypto::hash tx_hash;
-  if (parse_hash256(str_hash, tx_hash))
+  const auto maybe_hash = parse_hash256(str_hash);
+  if (maybe_hash)
   {
-    m_executor.print_transaction(tx_hash, include_metadata, include_hex, include_json);
+    m_executor.print_transaction(*maybe_hash, include_metadata, include_hex, include_json);
   }
 
   return true;
@@ -282,9 +284,10 @@ bool t_command_parser_executor::is_shared_secret_derived_public_key_image_spent(
 
   const std::string& str = args.front();
   crypto::shared_secret_derived_public_key_image ki;
-  crypto::hash hash;
-  if (parse_hash256(str, hash))
+  const auto maybe_hash = parse_hash256(str);
+  if (maybe_hash)
   {
+    const auto hash = *maybe_hash;
     memcpy(&ki, &hash, sizeof(ki));
     m_executor.is_shared_secret_derived_public_key_image_spent(ki);
   }
@@ -516,8 +519,8 @@ bool t_command_parser_executor::flush_txpool(const std::vector<std::string>& arg
   std::string txid;
   if (args.size() == 1)
   {
-    crypto::hash hash;
-    if (!parse_hash256(args[0], hash))
+    const auto maybe_hash = parse_hash256(args[0]);
+    if (maybe_hash)
     {
       std::cout << "Invalid syntax: Failed to parse tx id. For more details, use the help command." << std::endl;
       return true;
@@ -611,8 +614,8 @@ bool t_command_parser_executor::relay_tx(const std::vector<std::string>& args)
   }
 
   std::string txid;
-  crypto::hash hash;
-  if (!parse_hash256(args[0], hash))
+  const auto maybe_hash = parse_hash256(args[0]);
+  if (maybe_hash)
   {
     std::cout << "Invalid syntax: Failed to parse tx id. For more details, use the help command." << std::endl;
     return true;

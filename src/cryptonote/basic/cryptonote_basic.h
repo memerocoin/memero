@@ -331,6 +331,7 @@ namespace cryptonote
 
 }
 
+
 namespace std {
   template <>
   struct hash<cryptonote::account_public_address>

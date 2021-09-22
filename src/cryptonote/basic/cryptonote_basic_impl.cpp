@@ -134,21 +134,42 @@ namespace cryptonote {
   bool operator ==(const cryptonote::block& a, const cryptonote::block& b) {
     return cryptonote::get_block_hash(a) == cryptonote::get_block_hash(b);
   }
-}
 
-//--------------------------------------------------------------------------------
-bool parse_hash256(const std::string &str_hash, crypto::hash& hash)
-{
-  std::string buf;
-  bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
-  if (!res || buf.size() != hash.data.size())
+  //--------------------------------------------------------------------------------
+  std::optional<crypto::hash> parse_hash256(const std::string &str_hash)
   {
-    LOG_ERROR("invalid hash format: " << str_hash);
-    return false;
+    std::string buf;
+    crypto::hash hash;
+    bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
+    if (!res || buf.size() != hash.data.size())
+    {
+      LOG_ERROR("invalid hash format: " << str_hash);
+      return {};
+    }
+    else
+    {
+      std::copy(buf.begin(), buf.end(), hash.data.begin());
+      return hash;
+    }
   }
-  else
+
+
+  //--------------------------------------------------------------------------------
+  std::optional<crypto::crypto_data> parse_crypto_data(const std::string str_hash)
   {
-    std::copy(buf.begin(), buf.end(), hash.data.begin());
-    return true;
+    std::string buf;
+    crypto::crypto_data out;
+    bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
+    if (!res || buf.size() != out.data.size())
+    {
+      LOG_ERROR("invalid hash format: " << str_hash);
+      return {};
+    }
+    else
+    {
+      std::copy(buf.begin(), buf.end(), out.data.begin());
+      return out;
+    }
   }
+
 }

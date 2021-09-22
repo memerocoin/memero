@@ -46,6 +46,7 @@ namespace string_tools
   std::string blob_to_string(const epee::blob::span s);
   std::string buff_to_hex_nodelimer(const std::string& src);
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res);
+
   //----------------------------------------------------------------------------
   template<class XType>
   inline bool get_xtype_from_string(XType& val, const std::string& str_id)
@@ -132,5 +133,6 @@ namespace string_tools
   bool validate_hex(uint64_t length, const std::string& str);
 
   std::vector<uint8_t> hex_to_vector_filtered(const std::string_view src);
+
 } // stringtools
 } // epee

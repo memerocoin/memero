@@ -81,7 +81,7 @@ namespace cryptonote {
 
   bool operator ==(const cryptonote::transaction& a, const cryptonote::transaction& b);
   bool operator ==(const cryptonote::block& a, const cryptonote::block& b);
+
+  std::optional<crypto::hash> parse_hash256(const std::string &str_hash);
+  std::optional<crypto::crypto_data> parse_crypto_data(const std::string str_hash);
 }
-
-bool parse_hash256(const std::string &str_hash, crypto::hash& hash);
-

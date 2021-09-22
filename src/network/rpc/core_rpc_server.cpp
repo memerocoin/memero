@@ -612,10 +612,11 @@ namespace cryptonote
     }
     for (std::vector<cryptonote::spent_shared_secret_derived_public_key_image_info>::const_iterator i = ki.begin(); i != ki.end(); ++i)
     {
-      crypto::hash hash;
+      const auto maybe_hash = parse_hash256(i->id_hash);
       crypto::shared_secret_derived_public_key_image spent_shared_secret_derived_public_key_image;
-      if (parse_hash256(i->id_hash, hash))
+      if (maybe_hash)
       {
+        const auto hash = *maybe_hash;
         memcpy(&spent_shared_secret_derived_public_key_image, &hash, sizeof(hash)); // a bit dodgy, should be other parse functions somewhere
         for (size_t n = 0; n < res.spent_status.size(); ++n)
         {
@@ -1190,8 +1191,8 @@ namespace cryptonote
 
     auto get = [this](const std::string &hash, bool fill_pow_hash, block_header_response &block_header, epee::json_rpc::error& error_resp) -> bool {
       crypto::hash block_hash;
-      bool hash_parsed = parse_hash256(hash, block_hash);
-      if(!hash_parsed)
+      const auto maybe_hash = parse_hash256(hash);
+      if(!maybe_hash)
       {
         error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
         error_resp.message = "Failed to parse hex representation of block hash. Hex = " + hash + '.';
@@ -1326,13 +1327,14 @@ namespace cryptonote
     crypto::hash block_hash;
     if (!req.hash.empty())
     {
-      bool hash_parsed = parse_hash256(req.hash, block_hash);
-      if(!hash_parsed)
+      const auto maybe_hash = parse_hash256(req.hash);
+      if(!maybe_hash)
       {
         error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
         error_resp.message = "Failed to parse hex representation of block hash. Hex = " + req.hash + '.';
         return false;
       }
+      block_hash = *maybe_hash;
     }
     else
     {
