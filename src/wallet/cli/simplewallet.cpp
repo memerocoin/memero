@@ -1661,24 +1661,35 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
       // convert relative offsets of ring member keys into absolute offsets (indices) associated with the amount
       std::vector<uint64_t> absolute_offsets = cryptonote::relative_output_offsets_to_absolute(in_key.output_relative_offsets);
       // get block heights from which those ring member keys originated
-      COMMAND_RPC_GET_OUTPUTS_BIN::request req = AUTO_VAL_INIT(req);
+      COMMAND_RPC_GET_OUTPUTS::request req = AUTO_VAL_INIT(req);
       req.outputs.resize(absolute_offsets.size());
       for (size_t j = 0; j < absolute_offsets.size(); ++j)
       {
         req.outputs[j].amount = in_key.amount;
         req.outputs[j].index = absolute_offsets[j];
       }
-      COMMAND_RPC_GET_OUTPUTS_BIN::response res = AUTO_VAL_INIT(res);
+      COMMAND_RPC_GET_OUTPUTS::response res = AUTO_VAL_INIT(res);
       req.get_txid = true;
-      bool r = m_wallet->invoke_http_bin("/get_tx_outputs.bin", req, res);
+
+      bool r = m_wallet->invoke_http_json("/get_tx_outputs", req, res);
       err = interpret_rpc_response(r, res.status);
       if (!err.empty())
       {
         fail_msg_writer() << sw::tr("failed to get output: ") << err;
         return false;
       }
+
+      std::vector<COMMAND_RPC_GET_OUTPUTS_BIN::outkey> res_outputs;
+      std::transform
+        (
+         res.outs.begin()
+         , res.outs.end()
+         , std::back_inserter(res_outputs)
+         , tools::rpc::parse_tx_output_result
+         );
+
       // make sure that returned block heights are less than blockchain height
-      for (auto& res_out : res.outs)
+      for (const auto& res_out : res_outputs)
       {
         if (res_out.height >= blockchain_height)
         {
@@ -1688,12 +1699,12 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
       }
       if (verbose)
         ostr << sw::tr("\nOriginating block heights: ");
-      spent_key_height[i] = res.outs[source.real_output].height;
-      spent_key_txid  [i] = res.outs[source.real_output].txid;
+      spent_key_height[i] = res_outputs[source.real_output].height;
+      spent_key_txid  [i] = res_outputs[source.real_output].txid;
       std::vector<uint64_t> heights(absolute_offsets.size(), 0);
       for (size_t j = 0; j < absolute_offsets.size(); ++j)
       {
-        heights[j] = res.outs[j].height;
+        heights[j] = res_outputs[j].height;
       }
       std::pair<std::string, std::string> ring_str = show_outputs_line(heights, blockchain_height, source.real_output);
       if (verbose)
