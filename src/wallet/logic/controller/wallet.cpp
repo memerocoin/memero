@@ -340,8 +340,8 @@ namespace wallet {
 
   bool sanity_check
   (
-  const std::span<type::tx::pending_tx> ptx_vector
-  , const std::span<cryptonote::tx_destination_entry> dsts
+  const std::span<const type::tx::pending_tx> ptx_vector
+  , const std::span<const cryptonote::tx_destination_entry> dsts
   , const type::wallet::transfer_container_span m_transfers
   , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
   , const crypto::secret_key m_view_secret_key
@@ -372,6 +372,7 @@ namespace wallet {
     }
     for (const auto &r: required)
       change -= r.second.first;
+
     LOG_DEBUG("Adding " << cryptonote::print_money(change) << " expected change");
 
     // for all txes that have actual change, check change is coming back to the sending wallet
@@ -391,7 +392,8 @@ namespace wallet {
 
     for (const auto &r: required)
     {
-      const account_public_address &address = r.first;
+      const account_public_address address = r.first;
+      const bool is_subaddress = r.second.second;
 
       for (const auto &ptx: ptx_vector)
       {
@@ -401,7 +403,7 @@ namespace wallet {
            , {}
            , ptx.output_secret_keys
            , address
-           , r.second.second
+           , is_subaddress
            , "automatic-sanity-check"
            );
 
@@ -527,7 +529,7 @@ namespace wallet {
 
     //ensure device is let in NONE mode in any case
 
-    auto original_dsts = dsts;
+    const auto original_dsts = dsts;
 
     std::vector<std::pair<uint32_t, std::vector<size_t>>> unused_transfers_indices_per_subaddr;
     std::vector<std::pair<uint32_t, std::vector<size_t>>> unused_dust_indices_per_subaddr;
@@ -1181,9 +1183,7 @@ namespace wallet {
       ptx_vector.push_back(tx.ptx);
     }
 
-    THROW_WALLET_EXCEPTION_IF
-      (
-      !sanity_check
+    const bool valid_tx = sanity_check
       (
        ptx_vector
        , original_dsts
@@ -1191,7 +1191,11 @@ namespace wallet {
        , m_subaddresses
        , account_keys.m_view_secret_key
        , m_nettype
-       )
+       );
+
+    THROW_WALLET_EXCEPTION_IF
+      (
+       !valid_tx
       , error::wallet_internal_error
       , "Created transaction(s) failed sanity check"
       );

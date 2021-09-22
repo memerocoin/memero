@@ -119,8 +119,8 @@ namespace wallet {
 
   bool sanity_check
   (
-   const std::span<type::tx::pending_tx> ptx_vector
-   , const std::span<cryptonote::tx_destination_entry> dsts
+   const std::span<const type::tx::pending_tx> ptx_vector
+   , const std::span<const cryptonote::tx_destination_entry> dsts
    , const type::wallet::transfer_container_span m_transfers
    , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
    , const crypto::secret_key m_view_secret_key
