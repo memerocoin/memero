@@ -1277,15 +1277,26 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
   LOG_TRACE("update_pool_state start");
 
   // get the pool state
-  cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN::request req;
-  cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN::response res;
+  cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_HASHES::request req;
+  cryptonote::COMMAND_RPC_GET_TRANSACTION_POOL_HASHES::response res;
 
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = epee::net_utils::invoke_http_json("/get_transaction_pool_hashes.bin", req, res, *m_http_client, rpc_timeout);
-    THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_transaction_pool_hashes.bin", error::get_tx_pool_error);
+    bool r = epee::net_utils::invoke_http_json("/get_transaction_pool_hashes", req, res, *m_http_client, rpc_timeout);
+    THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_transaction_pool_hashes", error::get_tx_pool_error);
   }
   LOG_TRACE("update_pool_state got pool");
+
+  std::vector<crypto::hash> tx_hashes;
+  std::transform
+    (
+     res.tx_hashes.begin()
+     , res.tx_hashes.end()
+     , std::back_inserter(tx_hashes)
+     , [](const auto& x) {
+       return parse_hash256(x).value_or(crypto::null_hash);
+     }
+     );
 
   // remove any pending tx that's not in the pool
   std::unordered_map<crypto::hash, wallet::logic::type::transfer::unconfirmed_transfer_details>::iterator it = m_unconfirmed_txs.begin();
@@ -1293,7 +1304,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
   {
     const crypto::hash &txid = it->first;
     bool found = false;
-    for (const auto &it2: res.tx_hashes)
+    for (const auto &it2: tx_hashes)
     {
       if (it2 == txid)
       {
@@ -1348,13 +1359,13 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
   // the in transfers list instead (or nowhere if it just
   // disappeared without being mined)
   if (refreshed)
-    remove_obsolete_pool_txs(res.tx_hashes);
+    remove_obsolete_pool_txs(tx_hashes);
 
   LOG_TRACE("update_pool_state done second loop");
 
   // gather txids of new pool txes to us
   std::vector<std::pair<crypto::hash, bool>> txids;
-  for (const auto &txid: res.tx_hashes)
+  for (const auto &txid: tx_hashes)
   {
     bool txid_found_in_up = false;
     for (const auto &up: m_unconfirmed_payments)

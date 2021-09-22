@@ -867,22 +867,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_transaction_pool_hashes_bin(const COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN::request& req, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES_BIN::response& res)
-  {
-    RPC_TRACKER(get_transaction_pool_hashes);
-
-    const bool allow_sensitive = true;
-
-    size_t n_txes = m_core.get_pool_transactions_count(allow_sensitive);
-    if (n_txes > 0)
-    {
-      m_core.get_pool_transaction_hashes(res.tx_hashes, allow_sensitive);
-    }
-
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_transaction_pool_hashes(const COMMAND_RPC_GET_TRANSACTION_POOL_HASHES::request& req, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES::response& res)
   {
     RPC_TRACKER(get_transaction_pool_hashes);
