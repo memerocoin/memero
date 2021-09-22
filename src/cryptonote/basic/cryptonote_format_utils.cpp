@@ -339,7 +339,7 @@ namespace cryptonote
     std::ostringstream oss;
     binary_archive<true> ar(oss);
     bool r = ::do_serialize(ar, field);
-    LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(r, false, "failed to serialize tx extra additional tx pub keys");
+    LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(r, false, "failed to serialize tx extra tx output pub keys");
 
     // append
     std::string tx_extra_str = oss.str();

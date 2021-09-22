@@ -236,7 +236,7 @@ namespace cryptonote
 
     std::vector<crypto::public_key> output_public_keys;
 
-    LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == output_secret_keys.size(), {}, "Wrong amount of additional tx keys");
+    LOG_ERROR_AND_RETURN_UNLESS(destinations.size() == output_secret_keys.size(), {}, "Wrong amount of tx output public keys");
 
     uint64_t summary_outs_money = 0;
     //fill outputs
@@ -272,11 +272,11 @@ namespace cryptonote
       output_index++;
       summary_outs_money += dst_entr.amount;
     }
-    LOG_ERROR_AND_RETURN_UNLESS(output_public_keys.size() == output_secret_keys.size(), {}, "Internal error creating additional public keys");
+    LOG_ERROR_AND_RETURN_UNLESS(output_public_keys.size() == output_secret_keys.size(), {}, "Internal error creating tx output public keys");
 
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_output_public_keys));
 
-    LOG_PRINT_L2("additional tx pubkeys: ");
+    LOG_PRINT_L2("tx output pubkeys: ");
     for (size_t i = 0; i < output_public_keys.size(); ++i)
       LOG_PRINT_L2(output_public_keys[i]);
     add_tx_output_keys_to_extra(tx.extra, output_public_keys);
