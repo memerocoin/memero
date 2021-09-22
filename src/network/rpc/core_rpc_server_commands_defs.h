@@ -430,12 +430,6 @@ namespace cryptonote
     {
       std::vector<get_outputs_out> outputs;
       bool get_txid;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_access_request_base)
-        KV_SERIALIZE(outputs)
-        KV_SERIALIZE_OPT(get_txid, true)
-      END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<request_t> request;
 
@@ -446,24 +440,11 @@ namespace cryptonote
       bool unlocked;
       uint64_t height;
       crypto::hash txid;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_VAL_POD_AS_BLOB(key)
-        KV_SERIALIZE_VAL_POD_AS_BLOB(mask)
-        KV_SERIALIZE(unlocked)
-        KV_SERIALIZE(height)
-        KV_SERIALIZE_VAL_POD_AS_BLOB(txid)
-      END_KV_SERIALIZE_MAP()
     };
 
     struct response_t: public rpc_access_response_base
     {
       std::vector<outkey> outs;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_access_response_base)
-        KV_SERIALIZE(outs)
-      END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;
   };

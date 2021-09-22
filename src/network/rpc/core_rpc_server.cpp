@@ -333,21 +333,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_tx_outputs_bin(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req, COMMAND_RPC_GET_OUTPUTS_BIN::response& res, const connection_context *ctx)
-  {
-    RPC_TRACKER(get_tx_outputs_bin);
-
-    res.status = "Failed";
-
-    if(!m_core.get_tx_outputs(req, res))
-    {
-      return true;
-    }
-
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS::request& req, COMMAND_RPC_GET_OUTPUTS::response& res, const connection_context *ctx)
   {
     RPC_TRACKER(get_tx_outputs);
