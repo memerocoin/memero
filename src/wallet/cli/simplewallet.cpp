@@ -2142,15 +2142,47 @@ bool simple_wallet::verify_tx_proof(const std::vector<std::string> &args)
 
   try
   {
-    uint64_t received;
     bool in_pool;
     uint64_t confirmations;
-    if (m_wallet->verify_tx_proof(txid, info.address, info.is_subaddress, args.size() == 4 ? args[3] : "", sig_str, received, in_pool, confirmations))
+    std::vector<size_t> received_indices;
+    if (m_wallet->verify_tx_proof
+        (
+         txid
+         , info.address
+         , info.is_subaddress
+         , args.size() == 4 ? args[3] : ""
+         , sig_str
+         , received_indices
+         , in_pool
+         , confirmations
+         )
+        )
     {
       success_msg_writer() << sw::tr("Good signature");
-      if (received > 0)
+      if (!received_indices.empty())
       {
-        success_msg_writer() << get_account_address_as_str(m_wallet->nettype(), info.is_subaddress, info.address) << " " << sw::tr("received") << " " << print_money(received) << " " << sw::tr("in txid") << " " << txid;
+        success_msg_writer()
+          << get_account_address_as_str(m_wallet->nettype(), info.is_subaddress, info.address)
+          ;
+
+        std::for_each
+          (
+           received_indices.begin()
+           , received_indices.end()
+           , [](const auto& i) {
+             success_msg_writer()
+               << "received output index: "
+               << i
+               ;
+           }
+           );
+
+        success_msg_writer()
+          << sw::tr("in txid")
+          << " "
+          << txid
+          ;
+
         if (in_pool)
         {
           success_msg_writer() << sw::tr("WARNING: this transaction is not yet included in the blockchain!");

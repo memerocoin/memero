@@ -748,13 +748,13 @@ namespace wallet_rpc
     struct response_t
     {
       bool good;
-      uint64_t received;
+      std::vector<size_t> received_indices;
       bool in_pool;
       uint64_t confirmations;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(good)
-        KV_SERIALIZE(received)
+        KV_SERIALIZE(received_indices)
         KV_SERIALIZE(in_pool)
         KV_SERIALIZE(confirmations)
       END_KV_SERIALIZE_MAP()

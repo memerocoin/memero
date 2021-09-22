@@ -326,7 +326,18 @@ namespace tools
     std::optional<std::vector<crypto::secret_key>> get_tx_output_sec_keys(const crypto::hash txid) const;
 
     std::string get_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message);
-    bool verify_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message, const std::string &sig_str, uint64_t &received, bool &in_pool, uint64_t &confirmations);
+
+    bool verify_tx_proof
+    (
+     const crypto::hash &txid
+     , const cryptonote::account_public_address &address
+     , bool is_subaddress
+     , const std::string &message
+     , const std::string &sig_str
+     , std::vector<size_t> &received_indices
+     , bool &in_pool
+     , uint64_t &confirmations
+     );
 
     size_t get_num_transfer_details() const { return m_transfers.size(); }
     const transfer_details &get_transfer_details(size_t idx) const;

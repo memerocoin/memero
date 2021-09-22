@@ -1140,7 +1140,17 @@ namespace tools
 
     try
     {
-      res.good = m_wallet->verify_tx_proof(txid, info.address, info.is_subaddress, req.message, req.signature, res.received, res.in_pool, res.confirmations);
+      res.good = m_wallet->verify_tx_proof
+        (
+         txid
+         , info.address
+         , info.is_subaddress
+         , req.message
+         , req.signature
+         , res.received_indices
+         , res.in_pool
+         , res.confirmations
+         );
     }
     catch (const std::exception &e)
     {

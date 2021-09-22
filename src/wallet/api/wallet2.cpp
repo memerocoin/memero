@@ -3000,7 +3000,17 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
       (tx, {}, output_secret_keys, address, is_subaddress, message);
 }
 
-bool wallet2::verify_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message, const std::string &sig_str, uint64_t &received, bool &in_pool, uint64_t &confirmations)
+bool wallet2::verify_tx_proof
+(
+ const crypto::hash &txid
+ , const cryptonote::account_public_address &address
+ , bool is_subaddress
+ , const std::string &message
+ , const std::string &sig_str
+ , std::vector<size_t> &received_indices
+ , bool &in_pool
+ , uint64_t &confirmations
+ )
 {
   // fetch tx pubkey from the daemon
   COMMAND_RPC_GET_TRANSACTIONS::request req;
@@ -3036,9 +3046,12 @@ bool wallet2::verify_tx_proof(const crypto::hash &txid, const cryptonote::accoun
 
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
 
-  if (!wallet::logic::pseudo_functional::proof::verify_tx_proof
-      (tx, address, is_subaddress, message, sig_str))
-    return false;
+  const auto maybe_found = wallet::logic::pseudo_functional::proof::verify_tx_proof
+    (tx, address, is_subaddress, message, sig_str);
+
+  if (!maybe_found) return false;
+
+  received_indices = *maybe_found;
 
   in_pool = res.txs.front().in_pool;
   confirmations = 0;
