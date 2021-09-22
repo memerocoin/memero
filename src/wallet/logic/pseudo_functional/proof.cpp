@@ -56,13 +56,15 @@ namespace proof {
    , uint64_t &received
    ) {
 
-    // InProofV1, InProofV2, OutProofV1, OutProofV2
-    const bool is_out = sig_str.substr(0, 3) == "Out";
-    const std::string header = is_out ? sig_str.substr(0,10) : sig_str.substr(0,9);
+    const std::string header = std::string(config::HASH_KEY_TX_PROOF_V4);
 
     const size_t header_len = header.size();
-    THROW_WALLET_EXCEPTION_IF(sig_str.size() < header_len || sig_str.substr(0, header_len) != header, error::wallet_internal_error,
-      "Signature header check error");
+    THROW_WALLET_EXCEPTION_IF
+      (
+       sig_str.size() < header_len || sig_str.substr(0, header_len) != header
+       , error::wallet_internal_error
+       , "Signature header check error"
+       );
 
     // decode base58
     std::vector<crypto::public_key> shared_secret(1);
@@ -145,66 +147,30 @@ namespace proof {
     if (!maybe_tx_output_pub_keys) return false;
     const auto tx_output_pub_keys = *maybe_tx_output_pub_keys;
 
-    if (is_out)
+    std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
+    for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
     {
-      std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
-      for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
-      {
-        const bool good_signature_for_tx_output_pub_key = is_subaddress
-          ? crypto::verify_tx_proof
-          (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i])
-          : crypto::verify_tx_proof
-          (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
+      const bool good_signature_for_tx_output_pub_key = is_subaddress
+        ? crypto::verify_tx_proof
+        (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i])
+        : crypto::verify_tx_proof
+        (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
 
-        if (good_signature_for_tx_output_pub_key) {
-          const auto tx_output_shared_secret =
-            crypto::derive_tx_output_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
+      if (good_signature_for_tx_output_pub_key) {
+        const auto tx_output_shared_secret =
+          crypto::derive_tx_output_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
 
-          tx_output_shared_secrets[i] = tx_output_shared_secret;
+        tx_output_shared_secrets[i] = tx_output_shared_secret;
 
-        } else {
-          LOG_WARNING("bad signature for additional pub key at index: " << i);
-        }
+      } else {
+        LOG_WARNING("bad signature for additional pub key at index: " << i);
       }
-
-      received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, {}, tx_output_shared_secrets, address);
-
-      return true;
     }
 
+    received = wallet::logic::functional::proof::get_tx_key_received_helper
+      (tx, {}, tx_output_shared_secrets, address);
 
-
-    else
-    {
-      std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
-
-      for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
-      {
-        const bool good_signature_for_tx_output_pub_key = is_subaddress
-          ? crypto::verify_tx_proof
-          (prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], address.m_spend_public_key, shared_secret[i], sig[i])
-          : crypto::verify_tx_proof
-            (prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], std::nullopt, shared_secret[i], sig[i]);
-
-        if (good_signature_for_tx_output_pub_key) {
-          const auto tx_output_shared_secret =
-            crypto::derive_tx_output_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
-
-          tx_output_shared_secrets[i] = tx_output_shared_secret;
-
-        } else {
-          LOG_WARNING("bad signature for additional pub key at index: " << i);
-        }
-      }
-
-      received = wallet::logic::functional::proof::get_tx_key_received_helper
-        (tx, {}, tx_output_shared_secrets, address);
-
-      return true;
-    }
-
-    return false;
+    return true;
   }
 
 

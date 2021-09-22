@@ -95,7 +95,7 @@ namespace crypto {
 
     const epee::blob::data B_blob = maybeCustomBase ? maybeCustomBase->blob() : epee::blob::data();
 
-    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V3);
+    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TX_PROOF_V4);
     const auto schnorr_1 = generate_schnorr_signature(hash_key + h.blob() + B_blob + maybeR->blob(), sk, maybeCustomBase);
     const auto schnorr_2 = generate_schnorr_signature(hash_key + h.blob() + maybeA->blob() + maybeD->blob(), sk, {*maybeA});
 

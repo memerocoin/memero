@@ -55,12 +55,6 @@ namespace proof {
    , const std::string &message
    )
   {
-    // determine if the address is found in the subaddress hash table (i.e. whether the proof is outbound or inbound)
-
-    // const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
-
-    const std::optional<crypto::secret_key> view_secret_key = {};
-
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     epee::blob::data prefix_data(txid.data.data(), txid.data.size());
     prefix_data += epee::string_tools::string_to_blob(message);
@@ -68,93 +62,57 @@ namespace proof {
 
     std::vector<crypto::public_key> shared_secret;
     std::vector<crypto::double_schnorr_signature> sig;
-    std::string sig_str;
+    std::string sig_str = std::string(config::HASH_KEY_TX_PROOF_V4);
 
-    if (!view_secret_key)
-    {
-      if (output_secret_keys.empty()) {
-        THROW_WALLET_EXCEPTION_IF(!tx_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
-        const auto ss = crypto::p2pk(address.m_view_public_key ^ (*tx_key));
-        shared_secret.push_back(ss);
+    if (output_secret_keys.empty()) {
+      THROW_WALLET_EXCEPTION_IF(!tx_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
+      const auto ss = crypto::p2pk(address.m_view_public_key ^ (*tx_key));
+      shared_secret.push_back(ss);
 
-        crypto::public_key tx_pub_key;
-        if (is_subaddress)
-        {
-          tx_pub_key = crypto::p2pk(address.m_spend_public_key ^ (*tx_key));
-          sig.push_back
-            (crypto::generate_tx_proof
-             (prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, ss, *tx_key));
-        }
-
-        else
-        {
-          tx_pub_key = to_pk(*tx_key);
-          sig.push_back
-            (
-             crypto::generate_tx_proof
-             (prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, ss, *tx_key));
-        }
+      crypto::public_key tx_pub_key;
+      if (is_subaddress)
+      {
+        tx_pub_key = crypto::p2pk(address.m_spend_public_key ^ (*tx_key));
+        sig.push_back
+          (crypto::generate_tx_proof
+            (prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, ss, *tx_key));
       }
-      else {
-        for (size_t i = 0; i < output_secret_keys.size(); ++i)
-        {
-          auto const output_ss = crypto::p2pk
-          (address.m_view_public_key ^ output_secret_keys[i]);
 
-          shared_secret.push_back(output_ss);
-
-          crypto::public_key tx_output_pub_key;
-
-          if (is_subaddress)
-          {
-            tx_output_pub_key = crypto::p2pk(address.m_spend_public_key ^ output_secret_keys[i]);
-            sig.push_back
-              (crypto::generate_tx_proof
-              (prefix_hash, tx_output_pub_key, address.m_view_public_key
-                , address.m_spend_public_key, output_ss, output_secret_keys[i]));
-          }
-          else
-          {
-            tx_output_pub_key = to_pk(output_secret_keys[i]);
-            sig.push_back
-              (crypto::generate_tx_proof
-              (prefix_hash, tx_output_pub_key, address.m_view_public_key, std::nullopt, output_ss, output_secret_keys[i]));
-          }
-        }
-        sig_str = std::string("OutProofV2");
+      else
+      {
+        tx_pub_key = to_pk(*tx_key);
+        sig.push_back
+          (
+            crypto::generate_tx_proof
+            (prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, ss, *tx_key));
       }
     }
-    else
-    {
-      const auto maybe_tx_output_pub_keys = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
-
-      THROW_WALLET_EXCEPTION_IF
-        (
-         !maybe_tx_output_pub_keys, tools::error::wallet_internal_error
-         , "Failed to parse tx output public keys."
-         );
-
-      const auto tx_output_pub_keys = *maybe_tx_output_pub_keys;
-      const auto num_sigs = tx_output_pub_keys.size();
-
-      shared_secret.resize(num_sigs);
-      sig.resize(num_sigs);
-
-      const crypto::secret_key& a = view_secret_key.value();
-
-      for (size_t i = 0; i < num_sigs; ++i)
+    else {
+      for (size_t i = 0; i < output_secret_keys.size(); ++i)
       {
-        shared_secret[i] = crypto::p2pk(tx_output_pub_keys[i] ^ a);
+        auto const output_ss = crypto::p2pk
+        (address.m_view_public_key ^ output_secret_keys[i]);
+
+        shared_secret.push_back(output_ss);
+
+        crypto::public_key tx_output_pub_key;
+
         if (is_subaddress)
         {
-          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], address.m_spend_public_key, shared_secret[i], a);
+          tx_output_pub_key = crypto::p2pk(address.m_spend_public_key ^ output_secret_keys[i]);
+          sig.push_back
+            (crypto::generate_tx_proof
+            (prefix_hash, tx_output_pub_key, address.m_view_public_key
+              , address.m_spend_public_key, output_ss, output_secret_keys[i]));
         }
         else
         {
-          sig[i] = crypto::generate_tx_proof(prefix_hash, address.m_view_public_key, tx_output_pub_keys[i], std::nullopt, shared_secret[i], a);
+          tx_output_pub_key = to_pk(output_secret_keys[i]);
+          sig.push_back
+            (crypto::generate_tx_proof
+            (prefix_hash, tx_output_pub_key, address.m_view_public_key, std::nullopt, output_ss, output_secret_keys[i]));
         }
       }
-      sig_str = std::string("InProofV2");
     }
 
     // check if this address actually received any funds

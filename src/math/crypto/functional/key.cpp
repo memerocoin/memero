@@ -56,7 +56,7 @@ namespace crypto {
 
     const epee::blob::data B_blob = B ? B->blob() : epee::blob::data();
 
-    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TXPROOF_V3);
+    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TX_PROOF_V4);
 
     return
       verify_schnorr_signature(hash_key + h.blob() + B_blob + R.blob(), R, double_sig.first, B)
