@@ -65,13 +65,6 @@ namespace crypto {
 
   using double_schnorr_signature = std::pair<schnorr_signature, schnorr_signature>;
 
-  bool verify_schnorr_signature_with_pubkey_data
-  (
-   const hash h
-   , const ec_point_unsafe pub
-   , const schnorr_signature sig
-   ) noexcept;
-
   bool verify_tx_proof
   (
    const hash h

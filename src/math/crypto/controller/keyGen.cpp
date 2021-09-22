@@ -61,18 +61,6 @@ namespace crypto {
     return {s, to_pk(s)};
   }
 
-  schnorr_signature generate_schnorr_signature_with_pubkey_data
-  (
-   const hash h
-   , const ec_scalar_unnormalized sec
-   )
-  {
-    if (is_not_reduced(sec)) throw std::runtime_error("invalid secrect key");
-
-    const auto sk = s2sk(reduce(sec));
-    return generate_schnorr_signature(h.blob() + to_pk(sk).blob(), sk);
-  }
-
   double_schnorr_signature generate_tx_proof
   (
    const hash &h

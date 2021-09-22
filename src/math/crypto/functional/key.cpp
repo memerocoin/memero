@@ -42,16 +42,6 @@ namespace crypto {
   }
 
 
-  bool verify_schnorr_signature_with_pubkey_data
-  (
-   const hash h
-   , const ec_point_unsafe pub
-   , const schnorr_signature sig
-   ) noexcept {
-    return verify_schnorr_signature(h.blob() + pub.blob(), pub, sig);
-  }
-
-
   bool verify_tx_proof
   (
    const hash h

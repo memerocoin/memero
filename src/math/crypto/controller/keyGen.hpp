@@ -33,14 +33,6 @@ namespace crypto {
    const std::optional<secret_key> recovery_key
    );
 
-  /* Generation and checking of a standard signature.
-    */
-  schnorr_signature generate_schnorr_signature_with_pubkey_data
-  (
-   const hash h
-   , const ec_scalar_unnormalized sec
-   );
-
   /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
     * derivation D, the schnorr_signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
     * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
