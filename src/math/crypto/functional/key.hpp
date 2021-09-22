@@ -60,19 +60,13 @@ namespace crypto {
   public_key to_pk(const secret_key& sk) noexcept;
 
 
-  /* Generation and checking of a standard signature.
-    */
-
-  using double_schnorr_signature = std::pair<schnorr_signature, schnorr_signature>;
-
+  // sender holds the private key of the tx output public key
   bool verify_tx_proof
   (
-   const hash h
-   , const public_key R
-   , const public_key A
-   , const std::optional<public_key> B
-   , const public_key D
-   , const double_schnorr_signature sig
+   const hash message_hash
+   , const public_key tx_output_public_key
+   , const std::optional<public_key> view_key_base // spend public key
+   , const schnorr_signature sig
    ) noexcept;
 
   /* To send money to a key:

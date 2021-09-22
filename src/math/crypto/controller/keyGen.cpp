@@ -61,45 +61,29 @@ namespace crypto {
     return {s, to_pk(s)};
   }
 
-  double_schnorr_signature generate_tx_proof
+  // sender holds the private key of the tx output public key
+  schnorr_signature generate_tx_proof
   (
-   const hash &h
-   , const ec_point_unsafe &R
-   , const ec_point_unsafe &A
-   , const std::optional<ec_point_unsafe> &base
-   , const ec_point_unsafe &D
-   , const ec_scalar_unnormalized &r
+   const hash message_hash
+   , const ec_point_unsafe view_public_key
+   , const std::optional<ec_point_unsafe> view_key_base // spend public key
+   , const ec_scalar_unnormalized tx_output_secret_key
    )
   {
-    // sanity check
+    const auto maybe_view_public_key = maybeSafePoint(view_public_key);
+    if (!maybe_view_public_key) throw std::runtime_error("recipient view pubkey is invalid");
 
-    const auto maybeR = maybeSafePoint(R);
-    if (!maybeR) throw std::runtime_error("tx pubkey is invalid");
-
-    const auto maybeA = maybeSafePoint(A);
-    if (!maybeA) throw std::runtime_error("recipient view pubkey is invalid");
-
-    const auto maybeD = maybeSafePoint(D);
-    if (!maybeD) throw std::runtime_error("key derivation is invalid");
-
-    if (base && (!is_safe_point(*base))) {
+    if (view_key_base && (!is_safe_point(*view_key_base))) {
       throw std::runtime_error("recipient spend pubkey is invalid");
     }
-    const auto maybeCustomBase = base ? maybeSafePoint(*base) : std::optional<ec_point>();
+    const auto maybe_custom_view_key_base = view_key_base ? maybeSafePoint(*view_key_base) : std::optional<ec_point>();
 
-    if (is_not_reduced(r)) throw std::runtime_error("invalid secrect key");
+    if (is_not_reduced(tx_output_secret_key)) throw std::runtime_error("invalid secrect key");
 
-    const auto sk = s2sk(reduce(r));
-
-    // keypair (r R) (r D)@A
-
-    const epee::blob::data B_blob = maybeCustomBase ? maybeCustomBase->blob() : epee::blob::data();
+    const auto sk = s2sk(reduce(tx_output_secret_key));
 
     const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TX_PROOF_V4);
-    const auto schnorr_1 = generate_schnorr_signature(hash_key + h.blob() + B_blob + maybeR->blob(), sk, maybeCustomBase);
-    const auto schnorr_2 = generate_schnorr_signature(hash_key + h.blob() + maybeA->blob() + maybeD->blob(), sk, {*maybeA});
-
-    return {schnorr_1, schnorr_2};
+    return generate_schnorr_signature(hash_key + message_hash.blob(), sk, maybe_custom_view_key_base);
   }
 
 

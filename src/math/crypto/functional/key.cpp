@@ -42,25 +42,17 @@ namespace crypto {
   }
 
 
+  // sender holds the private key of the tx output public key
   bool verify_tx_proof
   (
-   const hash h
-   , const public_key R
-   , const public_key A
-   , const std::optional<public_key> B
-   , const public_key D
-   , const double_schnorr_signature double_sig
+   const hash message_hash
+   , const public_key tx_output_public_key
+   , const std::optional<public_key> view_key_base // spend public key
+   , const schnorr_signature sig
    ) noexcept
   {
-    // keypair (r R) (r D)@A
-
-    const epee::blob::data B_blob = B ? B->blob() : epee::blob::data();
-
     const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TX_PROOF_V4);
-
-    return
-      verify_schnorr_signature(hash_key + h.blob() + B_blob + R.blob(), R, double_sig.first, B)
-      && verify_schnorr_signature(hash_key + h.blob() + A.blob() + D.blob(), D, double_sig.second, {A});
+    return verify_schnorr_signature(hash_key + message_hash.blob(), tx_output_public_key, sig, view_key_base);
   }
 
   shared_secret_derived_public_key_image derive_public_key_image(const secret_key sec) noexcept {

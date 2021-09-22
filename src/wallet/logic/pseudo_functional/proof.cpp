@@ -68,7 +68,7 @@ namespace proof {
 
     // decode base58
     std::vector<crypto::public_key> shared_secret(1);
-    std::vector<crypto::double_schnorr_signature> sig(1);
+    std::vector<crypto::schnorr_signature> sig(1);
 
     const size_t pk_len = tools::base58::encode(epee::string_tools::blob_to_string(shared_secret[0].data)).size();
     const size_t sig_len = tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig[0]))).size();
@@ -107,7 +107,7 @@ namespace proof {
 
       THROW_WALLET_EXCEPTION_IF
         (
-         sizeof(crypto::public_key) != pk_decoded.size() || sizeof(crypto::double_schnorr_signature) != sig_decoded.size()
+         sizeof(crypto::public_key) != pk_decoded.size() || sizeof(crypto::schnorr_signature) != sig_decoded.size()
          , error::wallet_internal_error
          , "Signature decoding error"
          );
@@ -116,23 +116,17 @@ namespace proof {
 
       constexpr size_t schnorr_size = sizeof(crypto::schnorr_signature);
 
-      crypto::schnorr_signature_unnormalized sig_unsafe_1;
-      crypto::schnorr_signature_unnormalized sig_unsafe_2;
+      crypto::schnorr_signature_unnormalized sig_unsafe;
 
-      memcpy(&sig_unsafe_1, sig_decoded.data(), schnorr_size);
-      memcpy(&sig_unsafe_2, sig_decoded.data() + schnorr_size, schnorr_size);
+      memcpy(&sig_unsafe, sig_decoded.data(), schnorr_size);
 
 
       // reject invalid keys
-      const auto maybeSig1 = maybe_valid_schnorr_signature(sig_unsafe_1);
-      if (!maybeSig1) return false;
-
-      const auto maybeSig2 = maybe_valid_schnorr_signature(sig_unsafe_2);
-      if (!maybeSig2) return false;
+      const auto maybeSig = maybe_valid_schnorr_signature(sig_unsafe);
+      if (!maybeSig) return false;
 
 
-      sig[i].first = *maybeSig1;
-      sig[i].second = *maybeSig2;
+      sig[i] = *maybeSig;
     }
 
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
@@ -152,9 +146,9 @@ namespace proof {
     {
       const bool good_signature_for_tx_output_pub_key = is_subaddress
         ? crypto::verify_tx_proof
-        (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, address.m_spend_public_key, shared_secret[i], sig[i])
+        (prefix_hash, tx_output_pub_keys[i], address.m_spend_public_key, sig[i])
         : crypto::verify_tx_proof
-        (prefix_hash, tx_output_pub_keys[i], address.m_view_public_key, std::nullopt, shared_secret[i], sig[i]);
+        (prefix_hash, tx_output_pub_keys[i], std::nullopt, sig[i]);
 
       if (good_signature_for_tx_output_pub_key) {
         const auto tx_output_shared_secret =

@@ -33,19 +33,13 @@ namespace crypto {
    const std::optional<secret_key> recovery_key
    );
 
-  /* Generation and checking of a tx proof; given a tx pubkey R, the recipient's view pubkey A, and the key
-    * derivation D, the schnorr_signature proves the knowledge of the tx secret key r such that R=r*G and D=r*A
-    * When the recipient's address is a subaddress, the tx pubkey R is defined as R=r*B where B is the recipient's spend pubkey
-    */
-
-  double_schnorr_signature generate_tx_proof
+  // sender holds the private key of the tx output public key
+  schnorr_signature generate_tx_proof
   (
-   const hash &h
-   , const ec_point_unsafe &R
-   , const ec_point_unsafe &A
-   , const std::optional<ec_point_unsafe> &base
-   , const ec_point_unsafe &D
-   , const ec_scalar_unnormalized &r
+   const hash message_hash
+   , const ec_point_unsafe view_public_key
+   , const std::optional<ec_point_unsafe> view_key_base // spend public key
+   , const ec_scalar_unnormalized tx_output_secret_key
    );
 
 }

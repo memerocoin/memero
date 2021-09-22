@@ -61,7 +61,7 @@ namespace proof {
     crypto::hash prefix_hash= crypto::sha3(prefix_data);
 
     std::vector<crypto::public_key> shared_secret;
-    std::vector<crypto::double_schnorr_signature> sig;
+    std::vector<crypto::schnorr_signature> sig;
     std::string sig_str = std::string(config::HASH_KEY_TX_PROOF_V4);
 
     if (output_secret_keys.empty()) {
@@ -75,7 +75,7 @@ namespace proof {
         tx_pub_key = crypto::p2pk(address.m_spend_public_key ^ (*tx_key));
         sig.push_back
           (crypto::generate_tx_proof
-            (prefix_hash, tx_pub_key, address.m_view_public_key, address.m_spend_public_key, ss, *tx_key));
+            (prefix_hash, tx_pub_key, address.m_spend_public_key, *tx_key));
       }
 
       else
@@ -84,7 +84,7 @@ namespace proof {
         sig.push_back
           (
             crypto::generate_tx_proof
-            (prefix_hash, tx_pub_key, address.m_view_public_key, std::nullopt, ss, *tx_key));
+            (prefix_hash, tx_pub_key, std::nullopt, *tx_key));
       }
     }
     else {
@@ -102,15 +102,14 @@ namespace proof {
           tx_output_pub_key = crypto::p2pk(address.m_spend_public_key ^ output_secret_keys[i]);
           sig.push_back
             (crypto::generate_tx_proof
-            (prefix_hash, tx_output_pub_key, address.m_view_public_key
-              , address.m_spend_public_key, output_ss, output_secret_keys[i]));
+            (prefix_hash, tx_output_pub_key, address.m_spend_public_key, output_secret_keys[i]));
         }
         else
         {
           tx_output_pub_key = to_pk(output_secret_keys[i]);
           sig.push_back
             (crypto::generate_tx_proof
-            (prefix_hash, tx_output_pub_key, address.m_view_public_key, std::nullopt, output_ss, output_secret_keys[i]));
+            (prefix_hash, tx_output_pub_key, std::nullopt, output_secret_keys[i]));
         }
       }
     }
