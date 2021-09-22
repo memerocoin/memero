@@ -393,7 +393,7 @@ namespace cryptonote
       *
       * @note see tx_memory_pool::get_transactions
       */
-     bool get_pool_transactions(std::vector<transaction>& txs, bool include_sensitive_txes = false) const;
+     bool get_pool_transactions(std::vector<transaction>& txs, bool include_sensitive_txes = true) const;
 
      /**
       * @copydoc tx_memory_pool::get_transactions
@@ -401,7 +401,7 @@ namespace cryptonote
       *
       * @note see tx_memory_pool::get_transactions
       */
-     bool get_pool_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive_txes = false) const;
+     bool get_pool_transaction_hashes(std::vector<crypto::hash>& txs, bool include_sensitive_txes = true) const;
 
      /**
       * @copydoc tx_memory_pool::get_transactions
@@ -409,7 +409,7 @@ namespace cryptonote
       *
       * @note see tx_memory_pool::get_transactions
       */
-     bool get_pool_transaction_stats(struct txpool_stats& stats, bool include_sensitive_txes = false) const;
+     bool get_pool_transaction_stats(struct txpool_stats& stats, bool include_sensitive_txes = true) const;
 
      /**
       * @copydoc tx_memory_pool::get_transaction
@@ -424,7 +424,7 @@ namespace cryptonote
       *
       * @note see tx_memory_pool::get_pool_transactions_and_spent_keys_info
       */
-     bool get_pool_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_shared_secret_derived_public_key_image_info>& shared_secret_derived_public_key_image_infos, bool include_sensitive_txes = false) const;
+     bool get_pool_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_shared_secret_derived_public_key_image_info>& shared_secret_derived_public_key_image_infos, bool include_sensitive_txes = true) const;
 
      /**
       * @copydoc tx_memory_pool::get_pool_for_rpc
@@ -439,7 +439,7 @@ namespace cryptonote
       *
       * @note see tx_memory_pool::get_transactions_count
       */
-     size_t get_pool_transactions_count(bool include_sensitive_txes = false) const;
+     size_t get_pool_transactions_count(bool include_sensitive_txes = true) const;
 
      /**
       * @copydoc Blockchain::get_total_transactions

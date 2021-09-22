@@ -65,8 +65,6 @@
 
 #define MAP_URI2(pattern, callback)  else if(std::string::npos != query_info.m_URI.find(pattern)) return callback(query_info, response_info, &m_conn_context);
 
-#define MAP_URI_AUTO_XML2(s_pattern, callback_f, command_type) //TODO: don't think i ever again will use xml - ambiguous and "overtagged" format
-
 #define MAP_URI_AUTO_JON2_IF(s_pattern, callback_f, command_type, cond) \
     else if((query_info.m_URI == s_pattern) && (cond)) \
     { \
@@ -79,7 +77,7 @@
       boost::value_initialized<command_type::response> resp;\
       LOG_VERBOSE(m_conn_context << "calling " << s_pattern); \
       bool res = false; \
-      try { res = callback_f(static_cast<command_type::request&>(req), static_cast<command_type::response&>(resp), &m_conn_context); } \
+      try { res = callback_f(static_cast<command_type::request&>(req), static_cast<command_type::response&>(resp)); } \
       catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
       if (!res) \
       { \
@@ -109,7 +107,7 @@
       boost::value_initialized<command_type::response> resp;\
       LOG_VERBOSE(m_conn_context << "calling " << s_pattern); \
       bool res = false; \
-      try { res = callback_f(static_cast<command_type::request&>(req), static_cast<command_type::response&>(resp), &m_conn_context); } \
+      try { res = callback_f(static_cast<command_type::request&>(req), static_cast<command_type::response&>(resp)); } \
       catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "()"); } \
       if (!res) \
       { \
@@ -198,7 +196,7 @@
   fail_resp.id = req.id; \
   LOG_VERBOSE(m_conn_context << "Calling RPC method " << method_name); \
   bool res = false; \
-  try { res = callback_f(req.params, resp.result, fail_resp.error, &m_conn_context); } \
+  try { res = callback_f(req.params, resp.result, fail_resp.error); } \
   catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
   if (!res) \
   { \
@@ -237,7 +235,7 @@
   PREPARE_OBJECTS_FROM_JSON(command_type) \
   LOG_VERBOSE(m_conn_context << "calling RPC method " << method_name); \
   bool res = false; \
-  try { res = callback_f(req.params, resp.result, &m_conn_context); } \
+  try { res = callback_f(req.params, resp.result); } \
   catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "(): " << e.what()); } \
   if (!res) \
   { \
