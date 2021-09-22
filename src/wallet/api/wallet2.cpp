@@ -2981,8 +2981,6 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
 
     // determine if the address is found in the subaddress hash table (i.e. whether the proof is outbound or inbound)
     std::vector<crypto::secret_key> output_secret_keys;
-    const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
-    if (is_out)
     {
       const auto maybe_output_secret_keys = get_tx_output_sec_keys(txid);
       THROW_WALLET_EXCEPTION_IF
