@@ -53,12 +53,13 @@ namespace proof {
    , const cryptonote::account_public_address &address
    , const bool is_subaddress
    , const std::string &message
-   , const std::optional<crypto::secret_key> view_secret_key
    )
   {
     // determine if the address is found in the subaddress hash table (i.e. whether the proof is outbound or inbound)
 
     // const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
+
+    const std::optional<crypto::secret_key> view_secret_key = {};
 
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     epee::blob::data prefix_data(txid.data.data(), txid.data.size());

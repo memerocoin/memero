@@ -2996,10 +2996,8 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
       output_secret_keys = *maybe_output_secret_keys;
     }
 
-    const std::optional<crypto::secret_key> view_secret_key = std::make_optional(m_account.get_keys().m_view_secret_key);
-
     return wallet::logic::controller::proof::get_tx_proof
-      (tx, {}, output_secret_keys, address, is_subaddress, message, view_secret_key);
+      (tx, {}, output_secret_keys, address, is_subaddress, message);
 }
 
 bool wallet2::verify_tx_proof(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message, const std::string &sig_str, uint64_t &received, bool &in_pool, uint64_t &confirmations)

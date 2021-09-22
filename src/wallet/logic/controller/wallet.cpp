@@ -395,17 +395,9 @@ namespace wallet {
         uint64_t received = 0;
         try
         {
-          const bool is_out = m_subaddresses.count(address.m_spend_public_key) == 0;
-          std::optional<crypto::secret_key> view_secret_key;
-          if (is_out) {
-            view_secret_key = std::nullopt;
-          } else {
-            view_secret_key = std::make_optional(m_view_secret_key);
-          }
-
           std::string proof = controller::proof::get_tx_proof
             (ptx.tx, {}, ptx.output_secret_keys, address, r.second.second,
-            "automatic-sanity-check", view_secret_key);
+            "automatic-sanity-check");
 
           pseudo_functional::proof::verify_tx_proof
             (ptx.tx, address, r.second.second, "automatic-sanity-check", proof, received);

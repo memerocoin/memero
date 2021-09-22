@@ -47,7 +47,6 @@ namespace proof {
    , const cryptonote::account_public_address &address
    , const bool is_subaddress
    , const std::string &message
-   , const std::optional<crypto::secret_key> view_secret_key
    );
 
 } // proof
