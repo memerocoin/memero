@@ -32,7 +32,6 @@
 #include "wallet2.h"
 
 #include "wallet/logic/functional/fee.hpp"
-#include "wallet/logic/functional/proof.hpp"
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/functional/helper.hpp"

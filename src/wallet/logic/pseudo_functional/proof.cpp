@@ -33,7 +33,6 @@
 
 
 #include "wallet/api/wallet_errors.h"
-#include "wallet/logic/functional/proof.hpp"
 
 #include "tools/common/base58.h"
 #include "tools/epee/include/string_tools.h"
@@ -141,9 +140,6 @@ namespace proof {
         LOG_WARNING("bad signature for tx output pub key at index: " << i);
       }
     }
-
-    // received = wallet::logic::functional::proof::get_tx_key_received_helper
-    //   (tx, {}, tx_output_shared_secrets, address);
 
     if (found_indices.empty()) {
       return {};

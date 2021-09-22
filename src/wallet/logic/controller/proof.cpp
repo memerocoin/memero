@@ -33,7 +33,6 @@
 
 
 #include "wallet/api/wallet_errors.h"
-#include "wallet/logic/functional/proof.hpp"
 
 #include "tools/common/base58.h"
 
@@ -143,11 +142,6 @@ namespace proof {
        , sig_str_v.end()
        , sig_str
        );
-
-    uint64_t received = wallet::logic::functional::proof::get_tx_key_received_helper
-      (tx, {}, tx_output_shared_secrets, address);
-
-    THROW_WALLET_EXCEPTION_IF(!received, tools::error::wallet_internal_error, "No funds received in this tx.");
 
     return sig_str_final;
   }

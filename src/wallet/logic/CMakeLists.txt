@@ -32,7 +32,6 @@ add_library(wallet_logic_state
 )
 
 add_library(wallet_logic_basic
-  functional/proof.cpp
   functional/signature.cpp
   functional/helper.cpp
   functional/fee.cpp
