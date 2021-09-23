@@ -68,22 +68,18 @@ namespace proof {
       const auto ss = crypto::p2pk(address.m_view_public_key ^ (*tx_key));
       shared_secret.push_back(ss);
 
-      crypto::public_key tx_pub_key;
       if (is_subaddress)
       {
-        tx_pub_key = crypto::p2pk(address.m_spend_public_key ^ (*tx_key));
         sig.push_back
           (crypto::generate_tx_proof
-            (prefix_hash, tx_pub_key, address.m_spend_public_key, *tx_key));
+            (prefix_hash, address.m_spend_public_key, *tx_key));
       }
-
       else
       {
-        tx_pub_key = to_pk(*tx_key);
         sig.push_back
           (
             crypto::generate_tx_proof
-            (prefix_hash, tx_pub_key, std::nullopt, *tx_key));
+            (prefix_hash, std::nullopt, *tx_key));
       }
     }
     else {
@@ -94,21 +90,17 @@ namespace proof {
 
         shared_secret.push_back(output_ss);
 
-        crypto::public_key tx_output_pub_key;
-
         if (is_subaddress)
         {
-          tx_output_pub_key = crypto::p2pk(address.m_spend_public_key ^ output_secret_keys[i]);
           sig.push_back
             (crypto::generate_tx_proof
-            (prefix_hash, tx_output_pub_key, address.m_spend_public_key, output_secret_keys[i]));
+            (prefix_hash, address.m_spend_public_key, output_secret_keys[i]));
         }
         else
         {
-          tx_output_pub_key = to_pk(output_secret_keys[i]);
           sig.push_back
             (crypto::generate_tx_proof
-            (prefix_hash, tx_output_pub_key, std::nullopt, output_secret_keys[i]));
+            (prefix_hash, std::nullopt, output_secret_keys[i]));
         }
       }
     }

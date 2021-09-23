@@ -65,14 +65,10 @@ namespace crypto {
   schnorr_signature generate_tx_proof
   (
    const hash message_hash
-   , const ec_point_unsafe view_public_key
    , const std::optional<ec_point_unsafe> view_key_base // spend public key
    , const ec_scalar_unnormalized tx_output_secret_key
    )
   {
-    const auto maybe_view_public_key = maybeSafePoint(view_public_key);
-    if (!maybe_view_public_key) throw std::runtime_error("recipient view pubkey is invalid");
-
     if (view_key_base && (!is_safe_point(*view_key_base))) {
       throw std::runtime_error("recipient spend pubkey is invalid");
     }

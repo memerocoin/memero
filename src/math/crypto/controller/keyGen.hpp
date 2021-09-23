@@ -37,7 +37,6 @@ namespace crypto {
   schnorr_signature generate_tx_proof
   (
    const hash message_hash
-   , const ec_point_unsafe view_public_key
    , const std::optional<ec_point_unsafe> view_key_base // spend public key
    , const ec_scalar_unnormalized tx_output_secret_key
    );
