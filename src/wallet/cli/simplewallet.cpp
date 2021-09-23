@@ -502,10 +502,10 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_output_secret_keys, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_OUTPUT_SECRET_KEYS),
                            sw::tr("Get the transaction output secret keys for a given <txid>."));
-  m_cmd_binder.set_handler("get-tx-proof",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_proof, std::placeholders::_1),
-                           sw::tr(USAGE_GET_TX_PROOF),
-                           sw::tr("Generate a signature proving funds sent to <address> in <txid>, optionally with a challenge string <message>, using either the transaction secret key (when <address> is not your wallet's address) or the view secret key (otherwise), which does not disclose the secret key."));
+  m_cmd_binder.set_handler("get-tx-sender-signature",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_sender_signature, std::placeholders::_1),
+                           sw::tr(USAGE_GET_TX_SENDER_SIGNATURE),
+                           "Generate a signature to the receiver proving funds sent to <address> in <txid>, optionally with a challenge string <message>.");
   m_cmd_binder.set_handler("verify-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_VERIFY_TX_PROOF),
@@ -2075,11 +2075,11 @@ bool simple_wallet::get_tx_output_secret_keys(const std::vector<std::string> &ar
   }
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_tx_proof(const std::vector<std::string> &args)
+bool simple_wallet::get_tx_sender_signature(const std::vector<std::string> &args)
 {
   if (args.size() != 2 && args.size() != 3)
   {
-    PRINT_USAGE(USAGE_GET_TX_PROOF);
+    PRINT_USAGE(USAGE_GET_TX_SENDER_SIGNATURE);
     return true;
   }
 
@@ -2099,7 +2099,7 @@ bool simple_wallet::get_tx_proof(const std::vector<std::string> &args)
 
   try
   {
-    std::string sig_str = m_wallet->get_tx_proof(txid, info.address, info.is_subaddress, args.size() == 3 ? args[2] : "");
+    std::string sig_str = m_wallet->get_tx_sender_signature(txid, info.address, info.is_subaddress, args.size() == 3 ? args[2] : "");
     const std::string filename = "lolnero_tx_proof";
     if (wallet::logic::controller::wallet::save_to_file(filename, sig_str))
       success_msg_writer() << sw::tr("signature file saved to: ") << filename;
