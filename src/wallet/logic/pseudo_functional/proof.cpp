@@ -65,8 +65,8 @@ namespace proof {
        );
 
     // decode base58
-    std::vector<crypto::schnorr_signature> sig(1);
-    const size_t sig_len = tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig[0]))).size();
+    std::vector<crypto::schnorr_signature> sigs(1);
+    const size_t sig_len = tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sigs[0]))).size();
 
     const size_t num_sigs = (sig_str.size() - header_len) / sig_len;
 
@@ -77,7 +77,7 @@ namespace proof {
        , "Wrong signature size"
        );
 
-    sig.resize(num_sigs);
+    sigs.resize(num_sigs);
 
     for (size_t i = 0; i < num_sigs; ++i)
     {
@@ -109,7 +109,7 @@ namespace proof {
       const auto maybeSig = maybe_valid_schnorr_signature(sig_unsafe);
       if (!maybeSig) return {};
 
-      sig[i] = *maybeSig;
+      sigs[i] = *maybeSig;
     }
 
     const epee::blob::data message_data = epee::string_tools::string_to_blob(message);
@@ -125,15 +125,19 @@ namespace proof {
     std::vector<size_t> found_indices;
     for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
     {
-      const bool good_signature_for_tx_output_pub_key = is_subaddress
-        ? crypto::verify_tx_output_signatures(message_hash, tx_output_pub_keys[i], address.m_spend_public_key, sig[i])
-        : crypto::verify_tx_output_signatures(message_hash, tx_output_pub_keys[i], std::nullopt, sig[i]);
+      const std::optional<crypto::public_key> base =
+        is_subaddress
+        ? std::optional<crypto::public_key>(address.m_spend_public_key)
+        : std::nullopt
+        ;
 
-      if (good_signature_for_tx_output_pub_key) {
+      const bool good_signature = crypto::verify_tx_output_signatures(message_hash, tx_output_pub_keys[i], base, sigs[i]);
+
+      if (good_signature) {
         found_indices.push_back(i);
       }
       else {
-        LOG_WARNING("bad signature for tx output pub key at index: " << i);
+        LOG_DEBUG("bad signature for tx output pub key at index: " << i);
       }
     }
 
