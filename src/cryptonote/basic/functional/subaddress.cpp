@@ -74,12 +74,7 @@ namespace cryptonote {
    , const cryptonote::subaddress_index &index
    )
   {
-    if (index.is_zero())
-      return keys.m_account_address.m_spend_public_key;
-
-    const auto offset = hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
-
-    return crypto::p2pk(keys.m_account_address.m_spend_public_key + crypto::multBase(offset));
+    return crypto::to_pk(get_subaddress_spend_secret_key(keys, index));
   }
 
 
@@ -93,25 +88,16 @@ namespace cryptonote {
   {
     LOG_ERROR_AND_THROW_UNLESS(begin <= end, "begin > end");
 
-    std::vector<crypto::public_key> pkeys;
-    pkeys.reserve(end - begin);
-    cryptonote::subaddress_index index = {account, begin};
-
     const auto public_spend_key = keys.m_account_address.m_spend_public_key;
     if (!is_safe_point(public_spend_key)) {
       LOG_FATAL("public spend key is not on the main group");
     }
 
+    std::vector<crypto::public_key> pkeys;
 
     for (uint32_t idx = begin; idx < end; ++idx)
     {
-      index.minor = idx;
-      if (index.is_zero())
-      {
-          pkeys.push_back(keys.m_account_address.m_spend_public_key);
-          continue;
-      }
-      pkeys.push_back(get_subaddress_spend_public_key(keys, index));
+      pkeys.push_back(get_subaddress_spend_public_key(keys, {account, idx}));
     }
     return pkeys;
   }
@@ -125,17 +111,13 @@ namespace cryptonote {
     if (index.is_zero())
       return keys.m_account_address;
 
-    crypto::public_key D = ::cryptonote::get_subaddress_spend_public_key(keys, index);
+    crypto::public_key spend_pk = ::cryptonote::get_subaddress_spend_public_key(keys, index);
 
-    // C = a*D
-    crypto::public_key C = rct::rct_p2pk
-      (rct::multP(rct::pk2rct_p(D), rct::sk2rct_s(keys.m_view_secret_key)));
-
-    // result: (C, D)
-    cryptonote::account_public_address address;
-    address.m_view_public_key  = C;
-    address.m_spend_public_key = D;
-    return address;
+    return
+      {
+        spend_pk
+        , crypto::p2pk(spend_pk ^ keys.m_view_secret_key)
+      };
   }
 
   crypto::ec_scalar hash_secret_key_with_subaddress_index
