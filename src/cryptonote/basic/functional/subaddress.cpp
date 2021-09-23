@@ -77,6 +77,15 @@ namespace cryptonote {
     return crypto::to_pk(get_subaddress_spend_secret_key(keys, index));
   }
 
+  crypto::public_key get_subaddress_view_public_key
+  (
+   const cryptonote::account_keys& keys
+   , const cryptonote::subaddress_index &index
+   )
+  {
+    return crypto::to_pk(get_subaddress_view_secret_key_base_G(keys, index));
+  }
+
 
   std::vector<crypto::public_key> get_subaddress_spend_public_keys
   (
@@ -102,21 +111,17 @@ namespace cryptonote {
     return pkeys;
   }
 
+
   cryptonote::account_public_address get_subaddress
   (
    const cryptonote::account_keys& keys
    , const cryptonote::subaddress_index &index
    )
   {
-    if (index.is_zero())
-      return keys.m_account_address;
-
-    crypto::public_key spend_pk = ::cryptonote::get_subaddress_spend_public_key(keys, index);
-
     return
       {
-        spend_pk
-        , crypto::p2pk(spend_pk ^ keys.m_view_secret_key)
+        cryptonote::get_subaddress_spend_public_key(keys, index)
+        , cryptonote::get_subaddress_view_public_key(keys, index)
       };
   }
 
