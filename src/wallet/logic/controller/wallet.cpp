@@ -203,7 +203,7 @@ namespace wallet {
     const cryptonote::account_keys& keys = account_data_check.get_keys();
     r = r && crypto::verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
     if(!no_spend_key)
-      r = r && crypto::verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
+      r = r && crypto::verify_keys(keys.m_spend_secret_key_base, keys.m_account_address.m_spend_public_key);
     return r;
   }
 

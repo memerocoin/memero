@@ -39,13 +39,13 @@ namespace cryptonote
   struct account_keys
   {
     account_public_address m_account_address;
-    crypto::secret_key   m_spend_secret_key;
+    crypto::secret_key   m_spend_secret_key_base;
     crypto::secret_key   m_view_secret_key;
     crypto::chacha_iv m_encryption_iv;
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(m_account_address)
-      KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_secret_key)
+      KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_secret_key_base)
       KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_secret_key)
       const crypto::chacha_iv default_iv{{0, 0, 0, 0, 0, 0, 0, 0}};
       KV_SERIALIZE_VAL_POD_AS_BLOB_OPT(m_encryption_iv, default_iv)

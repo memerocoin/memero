@@ -125,7 +125,7 @@ namespace signature {
       switch (signature_type)
       {
         case wallet::logic::type::message_signature::sign_with_spend_key:
-          skey = keys.m_spend_secret_key;
+          skey = keys.m_spend_secret_key_base;
           break;
         case wallet::logic::type::message_signature::sign_with_view_key:
           skey = keys.m_view_secret_key;
@@ -137,7 +137,7 @@ namespace signature {
     else
     {
       crypto::secret_key skey_spend, skey_view;
-      skey_spend = keys.m_spend_secret_key;
+      skey_spend = keys.m_spend_secret_key_base;
       // m = m_account.get_device().hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
 
       skey_spend = s2sk(spend_secret_key_offset + skey_spend);

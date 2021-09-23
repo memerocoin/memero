@@ -74,7 +74,7 @@ namespace cryptonote
     epee::wipeable_string key_stream = get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * 2);
     const char *ptr = key_stream.data();
     for (size_t i = 0; i < sizeof(crypto::secret_key); ++i)
-      m_spend_secret_key.data[i] ^= *ptr++;
+      m_spend_secret_key_base.data[i] ^= *ptr++;
     for (size_t i = 0; i < sizeof(crypto::secret_key); ++i)
       m_view_secret_key.data[i] ^= *ptr++;
   }
@@ -122,16 +122,16 @@ namespace cryptonote
   //-----------------------------------------------------------------
   void account_base::forget_spend_key()
   {
-    m_keys.m_spend_secret_key = crypto::secret_key();
+    m_keys.m_spend_secret_key_base = crypto::secret_key();
   }
   //-----------------------------------------------------------------
   crypto::secret_key account_base::generate(const std::optional<crypto::secret_key> recovery_key)
   {
-    std::tie(m_keys.m_spend_secret_key, m_keys.m_account_address.m_spend_public_key) =
+    std::tie(m_keys.m_spend_secret_key_base, m_keys.m_account_address.m_spend_public_key) =
       generate_keys(recovery_key);
 
     // rng for generating second set of keys is hash of first rng.  means only one set of electrum-style words needed for recovery
-    const crypto::ec_scalar h = crypto::hash_to_scalar(m_keys.m_spend_secret_key.data);
+    const crypto::ec_scalar h = crypto::hash_to_scalar(m_keys.m_spend_secret_key_base.data);
 
     std::tie(m_keys.m_view_secret_key, m_keys.m_account_address.m_view_public_key) =
       generate_keys(crypto::s2sk(h));
@@ -155,13 +155,13 @@ namespace cryptonote
         m_creation_timestamp = time(NULL);
       }
 
-    return m_keys.m_spend_secret_key;
+    return m_keys.m_spend_secret_key_base;
   }
   //-----------------------------------------------------------------
   void account_base::create_from_keys(const cryptonote::account_public_address& address, const crypto::secret_key& spendkey, const crypto::secret_key& viewkey)
   {
     m_keys.m_account_address = address;
-    m_keys.m_spend_secret_key = spendkey;
+    m_keys.m_spend_secret_key_base = spendkey;
     m_keys.m_view_secret_key = viewkey;
 
     struct tm timestamp = {0};

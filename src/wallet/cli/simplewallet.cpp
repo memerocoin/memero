@@ -126,7 +126,7 @@ bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vecto
 {
   // don't log
   PAUSE_READLINE();
-  std::cout << "secret: " << m_wallet->get_account().get_keys().m_spend_secret_key << std::endl;
+  std::cout << "secret: " << m_wallet->get_account().get_keys().m_spend_secret_key_base << std::endl;
   std::cout << "public: " << m_wallet->get_account().get_keys().m_account_address.m_spend_public_key << std::endl;
 
   return true;
