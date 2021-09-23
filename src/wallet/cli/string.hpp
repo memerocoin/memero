@@ -55,7 +55,7 @@ namespace usage
                             "  address one-off <account> <subaddress>\n"
                             ;
   constexpr char USAGE_SET_VARIABLE[] = "set <option> [<value>]";
-  constexpr char USAGE_GET_TX_OUTPUT_KEYS[] = "get-tx-output-keys <txid>";
+  constexpr char USAGE_GET_TX_OUTPUT_SECRET_KEYS[] = "get-tx-output-secret-keys <txid>";
   constexpr char USAGE_GET_TX_PROOF[] = "get-tx-proof <txid> <address> [<message>]";
   constexpr char USAGE_VERIFY_TX_PROOF[] = "verify-tx-proof <txid> <address> <signature file> [<message>]";
   constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"

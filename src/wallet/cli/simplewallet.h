@@ -130,7 +130,7 @@ namespace cryptonote
     bool print_address(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_variable(const std::vector<std::string> &args);
     bool set_log(const std::vector<std::string> &args);
-    bool get_tx_output_keys(const std::vector<std::string> &args);
+    bool get_tx_output_secret_keys(const std::vector<std::string> &args);
     bool verify_tx_key(const std::vector<std::string> &args);
     bool get_tx_proof(const std::vector<std::string> &args);
     bool verify_tx_proof(const std::vector<std::string> &args);

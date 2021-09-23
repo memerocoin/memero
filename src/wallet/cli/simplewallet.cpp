@@ -498,10 +498,10 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_variable, std::placeholders::_1),
                            sw::tr(USAGE_SET_VARIABLE),
                            std::string(wallet::help::set_variable));
-  m_cmd_binder.set_handler("get-tx-output-keys",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_output_keys, std::placeholders::_1),
-                           sw::tr(USAGE_GET_TX_OUTPUT_KEYS),
-                           sw::tr("Get the transaction output private keys for a given <txid>."));
+  m_cmd_binder.set_handler("get-tx-output-secret-keys",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_output_secret_keys, std::placeholders::_1),
+                           sw::tr(USAGE_GET_TX_OUTPUT_SECRET_KEYS),
+                           sw::tr("Get the transaction output secret keys for a given <txid>."));
   m_cmd_binder.set_handler("get-tx-proof",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_proof, std::placeholders::_1),
                            sw::tr(USAGE_GET_TX_PROOF),
@@ -2039,12 +2039,12 @@ bool simple_wallet::transfer(const std::vector<std::string> &args_)
   return transfer_main(Transfer, args_);
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_tx_output_keys(const std::vector<std::string> &args_)
+bool simple_wallet::get_tx_output_secret_keys(const std::vector<std::string> &args_)
 {
   std::vector<std::string> local_args = args_;
 
   if(local_args.size() != 1) {
-    PRINT_USAGE(USAGE_GET_TX_OUTPUT_KEYS);
+    PRINT_USAGE(USAGE_GET_TX_OUTPUT_SECRET_KEYS);
     return true;
   }
 
