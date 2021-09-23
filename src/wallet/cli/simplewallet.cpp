@@ -485,10 +485,10 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::print_address, std::placeholders::_1),
                            sw::tr(USAGE_ADDRESS),
                            std::string(wallet::help::address));
-  m_cmd_binder.set_handler("viewkey",
+  m_cmd_binder.set_handler("view-key",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::viewkey, std::placeholders::_1),
                            sw::tr("Display the private view key."));
-  m_cmd_binder.set_handler("spendkey",
+  m_cmd_binder.set_handler("spend-key",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::spendkey, std::placeholders::_1),
                            sw::tr("Display the private spend key."));
   m_cmd_binder.set_handler("seed",
