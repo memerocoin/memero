@@ -55,27 +55,21 @@ namespace proof {
    )
   {
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
-    epee::blob::data prefix_data(txid.data.data(), txid.data.size());
-    prefix_data += epee::string_tools::string_to_blob(message);
-
-    const crypto::hash prefix_hash = crypto::sha3(prefix_data);
-
-    std::vector<crypto::schnorr_signature> sig;
-    std::string sig_str = std::string(config::HASH_KEY_TX_PROOF_V4);
+    const epee::blob::data prefix_data(txid.data.data(), txid.data.size());
+    const epee::blob::data message_data = epee::string_tools::string_to_blob(message);
+    const crypto::hash prefix_hash = crypto::sha3(prefix_data + message_data);
 
     return std::transform_reduce
       (
        output_secret_keys.begin()
        , output_secret_keys.end()
-       , sig_str
+       , std::string(config::HASH_KEY_TX_PROOF_V4)
        , std::plus()
        , [is_subaddress, prefix_hash, address](const auto& x) {
          const crypto::schnorr_signature sig =
            is_subaddress
-           ? crypto::generate_tx_proof
-           (prefix_hash, address.m_spend_public_key, x)
-           : crypto::generate_tx_proof
-           (prefix_hash, std::nullopt, x)
+           ? crypto::generate_tx_proof(prefix_hash, address.m_spend_public_key, x)
+           : crypto::generate_tx_proof(prefix_hash, std::nullopt, x)
            ;
 
          return tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig)));
