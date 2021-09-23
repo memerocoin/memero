@@ -3004,8 +3004,7 @@ std::string wallet2::get_tx_proof(const crypto::hash &txid, const cryptonote::ac
       output_secret_keys = *maybe_output_secret_keys;
     }
 
-    return wallet::logic::controller::proof::get_tx_proof
-      (tx, {}, output_secret_keys, address, is_subaddress, message);
+    return wallet::logic::controller::proof::get_tx_proof(output_secret_keys, address, is_subaddress, message);
 }
 
 bool wallet2::verify_tx_proof

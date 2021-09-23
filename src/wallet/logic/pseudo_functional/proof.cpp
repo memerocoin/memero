@@ -112,10 +112,8 @@ namespace proof {
       sig[i] = *maybeSig;
     }
 
-    const crypto::hash txid = cryptonote::get_transaction_hash(tx);
-    epee::blob::data prefix_data(txid.data.data(), txid.data.size());
-    prefix_data += epee::string_tools::string_to_blob(message);
-    crypto::hash prefix_hash = crypto::sha3(prefix_data);
+    const epee::blob::data message_data = epee::string_tools::string_to_blob(message);
+    const crypto::hash message_hash = crypto::sha3(message_data);
 
     // check signature
     std::vector<int> good_signature(num_sigs, 0);
@@ -128,10 +126,8 @@ namespace proof {
     for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
     {
       const bool good_signature_for_tx_output_pub_key = is_subaddress
-        ? crypto::verify_tx_proof
-        (prefix_hash, tx_output_pub_keys[i], address.m_spend_public_key, sig[i])
-        : crypto::verify_tx_proof
-        (prefix_hash, tx_output_pub_keys[i], std::nullopt, sig[i]);
+        ? crypto::verify_tx_proof(message_hash, tx_output_pub_keys[i], address.m_spend_public_key, sig[i])
+        : crypto::verify_tx_proof(message_hash, tx_output_pub_keys[i], std::nullopt, sig[i]);
 
       if (good_signature_for_tx_output_pub_key) {
         found_indices.push_back(i);

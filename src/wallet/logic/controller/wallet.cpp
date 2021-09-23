@@ -401,9 +401,7 @@ namespace wallet {
       {
         std::string proof = controller::proof::get_tx_proof
           (
-           ptx.tx
-           , {}
-           , ptx.output_secret_keys
+           ptx.output_secret_keys
            , address
            , is_subaddress
            , "automatic-sanity-check"

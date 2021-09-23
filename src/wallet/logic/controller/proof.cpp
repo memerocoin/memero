@@ -46,18 +46,14 @@ namespace proof {
 
   const std::string get_tx_proof
   (
-   const cryptonote::transaction &tx
-   , const std::optional<crypto::secret_key> &tx_key
-   , const std::vector<crypto::secret_key> &output_secret_keys
+   const std::vector<crypto::secret_key> &output_secret_keys
    , const cryptonote::account_public_address &address
    , const bool is_subaddress
    , const std::string &message
    )
   {
-    const crypto::hash txid = cryptonote::get_transaction_hash(tx);
-    const epee::blob::data prefix_data(txid.data.data(), txid.data.size());
     const epee::blob::data message_data = epee::string_tools::string_to_blob(message);
-    const crypto::hash prefix_hash = crypto::sha3(prefix_data + message_data);
+    const crypto::hash prefix_hash = crypto::sha3(message_data);
 
     return std::transform_reduce
       (
