@@ -42,7 +42,7 @@ namespace cryptonote {
    , const cryptonote::subaddress_index &index
    );
 
-  crypto::secret_key get_subaddress_view_secret_key
+  crypto::secret_key get_subaddress_view_secret_key_base_G
   (
    const cryptonote::account_keys& keys
    , const cryptonote::subaddress_index &index

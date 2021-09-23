@@ -121,7 +121,7 @@ namespace signature {
     const crypto::secret_key skey
       = signature_type == wallet::logic::type::message_signature::sign_with_spend_key
       ? cryptonote::get_subaddress_spend_secret_key(keys, index)
-      : cryptonote::get_subaddress_view_secret_key(keys, index)
+      : cryptonote::get_subaddress_view_secret_key_base_G(keys, index)
       ;
 
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(skey), "Invalid signing key");
