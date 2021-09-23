@@ -274,7 +274,7 @@ bool t_command_parser_executor::print_transaction(const std::vector<std::string>
   return true;
 }
 
-bool t_command_parser_executor::is_shared_secret_derived_public_key_image_spent(const std::vector<std::string>& args)
+bool t_command_parser_executor::is_output_spend_public_key_image_spent(const std::vector<std::string>& args)
 {
   if (args.empty())
   {
@@ -283,13 +283,13 @@ bool t_command_parser_executor::is_shared_secret_derived_public_key_image_spent(
   }
 
   const std::string& str = args.front();
-  crypto::shared_secret_derived_public_key_image ki;
+  crypto::output_spend_public_key_image ki;
   const auto maybe_hash = parse_hash256(str);
   if (maybe_hash)
   {
     const auto hash = *maybe_hash;
     memcpy(&ki, &hash, sizeof(ki));
-    m_executor.is_shared_secret_derived_public_key_image_spent(ki);
+    m_executor.is_output_spend_public_key_image_spent(ki);
   }
 
   return true;

@@ -253,38 +253,38 @@ namespace cryptonote
     /**
      * @brief get information about all transactions and key images in the pool
      *
-     * see documentation on tx_info and spent_shared_secret_derived_public_key_image_info for more details
+     * see documentation on tx_info and spent_output_spend_public_key_image_info for more details
      *
      * @param tx_infos return-by-reference the transactions' information
-     * @param shared_secret_derived_public_key_image_infos return-by-reference the spent key images' information
+     * @param output_spend_public_key_image_infos return-by-reference the spent key images' information
      * @param include_sensitive_data return stempool, anonymity-pool, and unrelayed
      *    txes and fields that are sensitive to the node privacy
      *
      * @return true
      */
-    bool get_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_shared_secret_derived_public_key_image_info>& shared_secret_derived_public_key_image_infos, bool include_sensitive_data = false) const;
+    bool get_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_output_spend_public_key_image_info>& output_spend_public_key_image_infos, bool include_sensitive_data = false) const;
 
     /**
      * @brief get information about all transactions and key images in the pool
      *
-     * see documentation on tx_in_pool and shared_secret_derived_public_key_images_with_tx_hashes for more details
+     * see documentation on tx_in_pool and output_spend_public_key_images_with_tx_hashes for more details
      *
      * @param tx_infos [out] the transactions' information
-     * @param shared_secret_derived_public_key_image_infos [out] the spent key images' information
+     * @param output_spend_public_key_image_infos [out] the spent key images' information
      *
      * @return true
      */
-    bool get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::shared_secret_derived_public_key_images_with_tx_hashes& shared_secret_derived_public_key_image_infos) const;
+    bool get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::output_spend_public_key_images_with_tx_hashes& output_spend_public_key_image_infos) const;
 
     /**
      * @brief check for presence of key images in the pool
      *
-     * @param shared_secret_derived_public_key_images [in] vector of key images to check
+     * @param output_spend_public_key_images [in] vector of key images to check
      * @param spent [out] vector of bool to return
      *
      * @return true
      */
-    bool check_for_shared_secret_derived_public_key_images(const std::vector<crypto::shared_secret_derived_public_key_image>& shared_secret_derived_public_key_images, std::vector<bool>& spent) const;
+    bool check_for_output_spend_public_key_images(const std::vector<crypto::output_spend_public_key_image>& output_spend_public_key_images, std::vector<bool>& spent) const;
 
     /**
      * @brief get a specific transaction from the pool
@@ -427,11 +427,11 @@ namespace cryptonote
   private:
 
     /**
-     * @brief insert key images into m_spent_shared_secret_derived_public_key_images
+     * @brief insert key images into m_spent_output_spend_public_key_images
      *
      * @return true on success, false on error
      */
-    bool insert_shared_secret_derived_public_key_images(const transaction_prefix &tx, const crypto::hash &txid, relay_method tx_relay);
+    bool insert_output_spend_public_key_images(const transaction_prefix &tx, const crypto::hash &txid, relay_method tx_relay);
 
     /**
      * @brief remove old transactions from the pool
@@ -452,7 +452,7 @@ namespace cryptonote
      *
      * @return true if the spent key image is present, otherwise false
      */
-    bool have_tx_keyimg_as_spent(const crypto::shared_secret_derived_public_key_image& key_im, const crypto::hash& txid) const;
+    bool have_tx_keyimg_as_spent(const crypto::output_spend_public_key_image& key_im, const crypto::hash& txid) const;
 
     /**
      * @brief check if any spent key image in a transaction is in the pool
@@ -491,7 +491,7 @@ namespace cryptonote
      *
      * @return true if any key images present in the set, otherwise false
      */
-    static bool have_shared_secret_derived_public_key_images(const std::unordered_set<crypto::shared_secret_derived_public_key_image>& kic, const transaction_prefix& tx);
+    static bool have_output_spend_public_key_images(const std::unordered_set<crypto::output_spend_public_key_image>& kic, const transaction_prefix& tx);
 
     /**
      * @brief append the key images from a transaction to the given set
@@ -501,7 +501,7 @@ namespace cryptonote
      *
      * @return false if any append fails, otherwise true
      */
-    static bool append_shared_secret_derived_public_key_images(std::unordered_set<crypto::shared_secret_derived_public_key_image>& kic, const transaction_prefix& tx);
+    static bool append_output_spend_public_key_images(std::unordered_set<crypto::output_spend_public_key_image>& kic, const transaction_prefix& tx);
 
     /**
      * @brief check if a transaction is a valid candidate for inclusion in a block
@@ -536,7 +536,7 @@ namespace cryptonote
      *  transaction on the assumption that the original will not be in a
      *  block again.
      */
-    typedef std::unordered_map<crypto::shared_secret_derived_public_key_image, std::unordered_set<crypto::hash>> shared_secret_derived_public_key_images_container;
+    typedef std::unordered_map<crypto::output_spend_public_key_image, std::unordered_set<crypto::hash>> output_spend_public_key_images_container;
 
 #if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
 public:
@@ -546,7 +546,7 @@ private:
 #endif
 
     //! container for spent key images from the transactions in the pool
-    shared_secret_derived_public_key_images_container m_spent_shared_secret_derived_public_key_images;
+    output_spend_public_key_images_container m_spent_output_spend_public_key_images;
 
     //TODO: this time should be a named constant somewhere, not hard-coded
     //! interval on which to check for stale/"stuck" transactions

@@ -494,9 +494,9 @@ private:
    * If any of this cannot be done, the subclass should throw the corresponding
    * subclass of DB_EXCEPTION
    *
-   * @param shared_secret_derived_public_key_image the spent key image to store
+   * @param output_spend_public_key_image the spent key image to store
    */
-  virtual void add_spent_key(const crypto::shared_secret_derived_public_key_image& shared_secret_derived_public_key_image) = 0;
+  virtual void add_spent_key(const crypto::output_spend_public_key_image& output_spend_public_key_image) = 0;
 
   /**
    * @brief remove a spent key
@@ -506,9 +506,9 @@ private:
    * If any of this cannot be done, the subclass should throw the corresponding
    * subclass of DB_EXCEPTION
    *
-   * @param shared_secret_derived_public_key_image the spent key image to remove
+   * @param output_spend_public_key_image the spent key image to remove
    */
-  virtual void remove_spent_key(const crypto::shared_secret_derived_public_key_image& shared_secret_derived_public_key_image) = 0;
+  virtual void remove_spent_key(const crypto::output_spend_public_key_image& output_spend_public_key_image) = 0;
 
 
   /*********************************************************************
@@ -1404,7 +1404,7 @@ public:
    *
    * @return true if the image is present, otherwise false
    */
-  virtual bool has_shared_secret_derived_public_key_image(const crypto::shared_secret_derived_public_key_image& img) const = 0;
+  virtual bool has_output_spend_public_key_image(const crypto::output_spend_public_key_image& img) const = 0;
 
   /**
    * @brief add a txpool transaction
@@ -1557,7 +1557,7 @@ public:
    *
    * @return false if the function returns false for any key image, otherwise true
    */
-  virtual bool for_all_shared_secret_derived_public_key_images(std::function<bool(const crypto::shared_secret_derived_public_key_image&)>) const = 0;
+  virtual bool for_all_output_spend_public_key_images(std::function<bool(const crypto::output_spend_public_key_image&)>) const = 0;
 
   /**
    * @brief runs a function over a range of blocks

@@ -82,7 +82,7 @@ namespace cryptonote
         LOG_PRINT_L1("Unsupported output type in tx " << get_transaction_hash(tx));
         return false;
       }
-      rv.outPk[n].dest = rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[n].target).shared_secret_derived_public_key);
+      rv.outPk[n].dest = rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[n].target).output_spend_public_key);
     }
 
     if (base_only) return true;

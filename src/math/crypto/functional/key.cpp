@@ -55,7 +55,7 @@ namespace crypto {
     return verify_schnorr_signature(hash_key + message_hash.blob(), tx_output_public_key, sig, view_key_base);
   }
 
-  shared_secret_derived_public_key_image derive_public_key_image(const secret_key sec) noexcept {
+  output_spend_public_key_image derive_public_key_image(const secret_key sec) noexcept {
     const ec_point h8 = viaFieldMult8(h2p(sha3(to_pk(sec).data)));
     const ec_point p = h8 ^ sec;
     return p2img(p);
@@ -97,7 +97,7 @@ namespace crypto {
     return hash_to_scalar(hashData);
   }
 
-  secret_key compute_shared_secret_derived_secret_key_from_spend_secret_key
+  secret_key compute_output_spend_secret_key_from_spend_secret_key
   (
    const tx_output_ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
@@ -109,7 +109,7 @@ namespace crypto {
     return s2sk(spend_sk + shared_secret_hash + offset);
   }
 
-  std::optional<public_key> compute_shared_secret_derived_public_key_from_spend_public_key
+  std::optional<public_key> compute_output_spend_public_key_from_spend_public_key
   (
    const tx_output_ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
@@ -123,21 +123,21 @@ namespace crypto {
     return p2pk(multBase(shared_secret_hash) + *spend_public_key);
   }
 
-  std::optional<public_key> compute_spend_public_key_from_shared_secret_derived_public_key
+  std::optional<public_key> compute_spend_public_key_from_output_spend_public_key
   (
      const tx_output_ecdh_shared_secret &tx_output_shared_secret
    , const std::size_t output_index
-   , const ec_point_unsafe &unsafe_shared_secret_derived_pk
+   , const ec_point_unsafe &unsafe_output_spend_pk
    ) noexcept
   {
-    const auto shared_secret_derived_pk = maybeSafePoint(unsafe_shared_secret_derived_pk);
-    if (!shared_secret_derived_pk) return {};
+    const auto output_spend_pk = maybeSafePoint(unsafe_output_spend_pk);
+    if (!output_spend_pk) return {};
 
     const ec_scalar shared_secret_hash = hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, output_index);
 
     if (shared_secret_hash == s_0) return {};
 
-    return p2pk(*shared_secret_derived_pk - multBase(shared_secret_hash));
+    return p2pk(*output_spend_pk - multBase(shared_secret_hash));
   }
 
   std::optional<crypto::public_key> maybeNotNull(const crypto::public_key x) {

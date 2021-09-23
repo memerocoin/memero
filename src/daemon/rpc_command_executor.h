@@ -88,7 +88,7 @@ public:
 
   bool print_transaction(crypto::hash transaction_hash, bool include_metadata, bool include_hex, bool include_json);
 
-  bool is_shared_secret_derived_public_key_image_spent(const crypto::shared_secret_derived_public_key_image &ki);
+  bool is_output_spend_public_key_image_spent(const crypto::output_spend_public_key_image &ki);
 
   bool print_transaction_pool_long();
 

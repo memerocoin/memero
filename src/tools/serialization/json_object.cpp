@@ -412,7 +412,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 
   WRITE_JSON_FIELD_FROM(dest, amount, txin.amount);
   WRITE_JSON_FIELD_FROM(dest, output_relative_offsets, txin.output_relative_offsets);
-  WRITE_JSON_FIELD_FROM(dest, shared_secret_derived_public_key_image, txin.shared_secret_derived_public_key_image);
+  WRITE_JSON_FIELD_FROM(dest, output_spend_public_key_image, txin.output_spend_public_key_image);
 
   dest.EndObject();
 }
@@ -426,7 +426,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin)
 
   READ_JSON_VALUE_BY_KEY(val, txin.amount, amount);
   READ_JSON_VALUE_BY_KEY(val, txin.output_relative_offsets, output_relative_offsets);
-  READ_JSON_VALUE_BY_KEY(val, txin.shared_secret_derived_public_key_image, shared_secret_derived_public_key_image);
+  READ_JSON_VALUE_BY_KEY(val, txin.output_spend_public_key_image, output_spend_public_key_image);
 }
 
 
@@ -452,7 +452,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  WRITE_JSON_FIELD_FROM(dest, shared_secret_derived_public_key, txout.shared_secret_derived_public_key);
+  WRITE_JSON_FIELD_FROM(dest, output_spend_public_key, txout.output_spend_public_key);
 
   dest.EndObject();
 }
@@ -464,7 +464,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_key& txout)
     throw WRONG_TYPE("json object");
   }
 
-  READ_JSON_VALUE_BY_KEY(val, txout.shared_secret_derived_public_key, shared_secret_derived_public_key);
+  READ_JSON_VALUE_BY_KEY(val, txout.output_spend_public_key, output_spend_public_key);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::tx_out txout)

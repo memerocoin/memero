@@ -193,7 +193,7 @@ namespace wallet {
     tx_scan_info.received = is_out_to_acc_precomp
       (
        m_subaddresses
-       , boost::get<cryptonote::txout_to_key>(o.target).shared_secret_derived_public_key
+       , boost::get<cryptonote::txout_to_key>(o.target).output_spend_public_key
        , {}
        , tx_output_shared_secret
        , i
@@ -258,21 +258,21 @@ namespace wallet {
       const auto r = cryptonote::derive_public_key_image_helper_precomp
         (
          keys
-        , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key
+        , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_spend_public_key
         , tx_scan_info.received->tx_output_shared_secret
         , i
         , tx_scan_info.received->index
         );
 
       THROW_WALLET_EXCEPTION_IF(!r, tools::error::wallet_internal_error, "Failed to generate key image");
-      std::tie(tx_scan_info.shared_secret_derived_key, tx_scan_info.ki) = *r;
+      std::tie(tx_scan_info.output_spend_key, tx_scan_info.ki) = *r;
 
       THROW_WALLET_EXCEPTION_IF
         (
-        tx_scan_info.shared_secret_derived_key.pub
-        != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).shared_secret_derived_public_key
+        tx_scan_info.output_spend_key.pub
+        != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_spend_public_key
         , tools::error::wallet_internal_error
-        , "shared_secret_derived_public_key_image generated shared secret derived public key not matched with output_key"
+        , "output_spend_public_key_image generated shared secret derived public key not matched with output_key"
         );
     }
 
@@ -393,7 +393,7 @@ std::vector<size_t> pick_preferred_rct_inputs
       (
        !is_spent(td, false)
        && !td.m_frozen
-       && !td.m_shared_secret_derived_public_key_image_partial
+       && !td.m_output_spend_public_key_image_partial
        && td.is_rct()
        && is_transfer_unlocked(td, current_height)
        && td.m_subaddr_index.major == subaddr_account
@@ -408,7 +408,7 @@ std::vector<size_t> pick_preferred_rct_inputs
           (
            !is_spent(td2, false)
            && !td2.m_frozen
-           && !td2.m_shared_secret_derived_public_key_image_partial
+           && !td2.m_output_spend_public_key_image_partial
            && td2.is_rct()
            && td.amount() + td2.amount() >= needed_money
            && is_transfer_unlocked(td2, current_height)
@@ -616,17 +616,17 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   THROW_WALLET_EXCEPTION_IF(ins_order.size() != sources.size(), tools::error::wallet_internal_error, "Failed to work out sources permutation");
 
   LOG_PRINT_L2("gathering key images");
-  std::string shared_secret_derived_public_key_images;
+  std::string output_spend_public_key_images;
   bool all_are_txin_to_key = std::all_of(tx.vin.begin(), tx.vin.end(), [&](const txin_v& s_e) -> bool
   {
     CHECKED_GET_SPECIFIC_VARIANT(s_e, const txin_to_key, in, false);
-    shared_secret_derived_public_key_images += boost::to_string(in.shared_secret_derived_public_key_image) + " ";
+    output_spend_public_key_images += boost::to_string(in.output_spend_public_key_image) + " ";
     return true;
   });
   THROW_WALLET_EXCEPTION_IF(!all_are_txin_to_key, tools::error::unexpected_txin_type, tx);
   LOG_PRINT_L2("gathered key images");
 
-  ptx.shared_secret_derived_public_key_images = shared_secret_derived_public_key_images;
+  ptx.output_spend_public_key_images = output_spend_public_key_images;
   ptx.fee = fee;
   ptx.dust = 0;
   ptx.dust_added_to_fee = false;
@@ -784,7 +784,7 @@ unconfirmed_transfer_details get_unconfirmed_transfer_details
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    utd.m_rings.push_back(std::make_pair(txin.shared_secret_derived_public_key_image, txin.output_relative_offsets));
+    utd.m_rings.push_back(std::make_pair(txin.output_spend_public_key_image, txin.output_relative_offsets));
   }
 
   return utd;

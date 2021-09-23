@@ -62,7 +62,7 @@ namespace cryptonote
 
   struct txout_to_key
   {
-    crypto::public_key shared_secret_derived_public_key;
+    crypto::public_key output_spend_public_key;
   };
 
 
@@ -89,12 +89,12 @@ namespace cryptonote
   {
     uint64_t amount;
     std::vector<uint64_t> output_relative_offsets;
-    crypto::shared_secret_derived_public_key_image shared_secret_derived_public_key_image;      // double spending protection
+    crypto::output_spend_public_key_image output_spend_public_key_image;      // double spending protection
 
     BEGIN_SERIALIZE_OBJECT()
       VARINT_FIELD(amount)
       FIELD(output_relative_offsets)
-      FIELD(shared_secret_derived_public_key_image)
+      FIELD(output_spend_public_key_image)
     END_SERIALIZE()
   };
 

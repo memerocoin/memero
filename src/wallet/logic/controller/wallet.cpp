@@ -285,14 +285,14 @@ namespace wallet {
         return outs;
       }
 
-      std::vector<crypto::shared_secret_derived_public_key_image> shared_secret_derived_public_key_images;
-      shared_secret_derived_public_key_images.reserve(selected_transfers.size());
+      std::vector<crypto::output_spend_public_key_image> output_spend_public_key_images;
+      output_spend_public_key_images.reserve(selected_transfers.size());
       std::for_each
         (
          selected_transfers.begin()
          , selected_transfers.end()
-         , [m_transfers, &shared_secret_derived_public_key_images](size_t index) {
-           shared_secret_derived_public_key_images.push_back(m_transfers[index].m_shared_secret_derived_public_key_image);
+         , [m_transfers, &output_spend_public_key_images](size_t index) {
+           output_spend_public_key_images.push_back(m_transfers[index].m_output_spend_public_key_image);
          }
          );
     }
@@ -654,7 +654,7 @@ namespace wallet {
         (
          !functional::wallet::is_spent(td, false)
          && !td.m_frozen
-         && !td.m_shared_secret_derived_public_key_image_partial
+         && !td.m_output_spend_public_key_image_partial
          && functional::wallet::is_transfer_unlocked(td, current_height)
          && td.m_subaddr_index.major == subaddr_account
          && subaddr_indices.count(td.m_subaddr_index.minor) == 1
@@ -826,7 +826,7 @@ namespace wallet {
          << ", amount "
          << print_money(td.amount())
          << ", ki "
-         << td.m_shared_secret_derived_public_key_image
+         << td.m_output_spend_public_key_image
          );
 
       // add this output to the list to spend

@@ -35,7 +35,7 @@ namespace crypto {
 
   struct tx_output_ecdh_shared_secret: ec_point {};
 
-  struct shared_secret_derived_public_key_image: ec_point {};
+  struct output_spend_public_key_image: ec_point {};
 
   constexpr crypto::public_key null_pkey = {};
   constexpr crypto::secret_key null_skey = {};
@@ -48,7 +48,7 @@ namespace crypto {
 
   inline const secret_key &s2sk(const ec_scalar &x)              noexcept { return (const secret_key&)x; }
   inline const public_key &p2pk(const ec_point &x)               noexcept { return (const public_key&)x; }
-  inline const shared_secret_derived_public_key_image &p2img(const ec_point &x)               noexcept { return (const shared_secret_derived_public_key_image&)x; }
+  inline const output_spend_public_key_image &p2img(const ec_point &x)               noexcept { return (const output_spend_public_key_image&)x; }
   inline const tx_output_ecdh_shared_secret &p2tx_output_shared_secret(const ec_point &x)   noexcept { return (const tx_output_ecdh_shared_secret&)x; }
 
   inline const ec_scalar_unnormalized &d2s(const crypto_data &x) noexcept { return (const ec_scalar_unnormalized&)x; }
@@ -75,7 +75,7 @@ namespace crypto {
     * * Then he selects a bunch of outputs, including the one he spends, and uses them to generate a ring signature.
     * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
     */
-  shared_secret_derived_public_key_image derive_public_key_image(const secret_key) noexcept;
+  output_spend_public_key_image derive_public_key_image(const secret_key) noexcept;
 
   uint64_t scalar_to_int(const ec_scalar &in) noexcept;
   ec_scalar int_to_scalar(const uint64_t in) noexcept;
@@ -102,7 +102,7 @@ namespace crypto {
    , const size_t index
    ) noexcept;
 
-  secret_key compute_shared_secret_derived_secret_key_from_spend_secret_key
+  secret_key compute_output_spend_secret_key_from_spend_secret_key
   (
    const tx_output_ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
@@ -110,18 +110,18 @@ namespace crypto {
    , const ec_scalar offset
    ) noexcept;
 
-  std::optional<public_key> compute_shared_secret_derived_public_key_from_spend_public_key
+  std::optional<public_key> compute_output_spend_public_key_from_spend_public_key
   (
    const tx_output_ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
    , const ec_point_unsafe &unsafe_spend_public_key
    ) noexcept;
 
-  std::optional<public_key> compute_spend_public_key_from_shared_secret_derived_public_key
+  std::optional<public_key> compute_spend_public_key_from_output_spend_public_key
   (
    const tx_output_ecdh_shared_secret &tx_output_shared_secret
    , const std::size_t output_index
-   , const ec_point_unsafe &unsafe_shared_secret_derived_pk
+   , const ec_point_unsafe &unsafe_output_spend_pk
    ) noexcept;
 
   std::optional<crypto::public_key> maybeNotNull(const crypto::public_key);
@@ -140,9 +140,9 @@ namespace std
     }
   };
 
-  template<> struct hash<crypto::shared_secret_derived_public_key_image>
+  template<> struct hash<crypto::output_spend_public_key_image>
   {
-    std::size_t operator()(crypto::shared_secret_derived_public_key_image const& x) const noexcept
+    std::size_t operator()(crypto::output_spend_public_key_image const& x) const noexcept
     {
       boost::hash<std::array<uint8_t,32>> array_hash;
       return array_hash(x.data);

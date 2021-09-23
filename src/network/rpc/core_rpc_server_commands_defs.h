@@ -365,11 +365,11 @@ namespace cryptonote
 
     struct request_t: public rpc_access_request_base
     {
-      std::vector<std::string> shared_secret_derived_public_key_images;
+      std::vector<std::string> output_spend_public_key_images;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_request_base)
-        KV_SERIALIZE(shared_secret_derived_public_key_images)
+        KV_SERIALIZE(output_spend_public_key_images)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<request_t> request;
@@ -1098,7 +1098,7 @@ namespace cryptonote
     END_KV_SERIALIZE_MAP()
   };
 
-  struct spent_shared_secret_derived_public_key_image_info
+  struct spent_output_spend_public_key_image_info
   {
     std::string id_hash;
     std::vector<std::string> txs_hashes;
@@ -1122,12 +1122,12 @@ namespace cryptonote
     struct response_t: public rpc_access_response_base
     {
       std::vector<tx_info> transactions;
-      std::vector<spent_shared_secret_derived_public_key_image_info> spent_shared_secret_derived_public_key_images;
+      std::vector<spent_output_spend_public_key_image_info> spent_output_spend_public_key_images;
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
         KV_SERIALIZE(transactions)
-        KV_SERIALIZE(spent_shared_secret_derived_public_key_images)
+        KV_SERIALIZE(spent_output_spend_public_key_images)
       END_KV_SERIALIZE_MAP()
     };
     typedef epee::misc_utils::struct_init<response_t> response;

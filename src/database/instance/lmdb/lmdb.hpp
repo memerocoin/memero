@@ -271,7 +271,7 @@ public:
 
   virtual std::vector<std::vector<uint64_t>> get_tx_amount_output_indices(const uint64_t tx_id, size_t n_txes) const;
 
-  virtual bool has_shared_secret_derived_public_key_image(const crypto::shared_secret_derived_public_key_image& img) const;
+  virtual bool has_output_spend_public_key_image(const crypto::output_spend_public_key_image& img) const;
 
   virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata_ref &blob, const txpool_tx_meta_t& meta);
   virtual void update_txpool_tx(const crypto::hash &txid, const txpool_tx_meta_t& meta);
@@ -290,7 +290,7 @@ public:
 
   virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref*)> f, bool include_blob = false, relay_category category = relay_category::broadcasted) const;
 
-  virtual bool for_all_shared_secret_derived_public_key_images(std::function<bool(const crypto::shared_secret_derived_public_key_image&)>) const;
+  virtual bool for_all_output_spend_public_key_images(std::function<bool(const crypto::output_spend_public_key_image&)>) const;
   virtual bool for_blocks_range(const uint64_t& h1, const uint64_t& h2, std::function<bool(uint64_t, const crypto::hash&, const cryptonote::block&)>) const;
   virtual bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>) const;
   virtual bool for_all_outputs(std::function<bool(uint64_t amount, const crypto::hash &tx_hash, uint64_t height, size_t tx_idx)> f) const;
@@ -368,9 +368,9 @@ private:
 
   void remove_output(const uint64_t amount, const uint64_t& out_index);
 
-  virtual void add_spent_key(const crypto::shared_secret_derived_public_key_image& shared_secret_derived_public_key_image);
+  virtual void add_spent_key(const crypto::output_spend_public_key_image& output_spend_public_key_image);
 
-  virtual void remove_spent_key(const crypto::shared_secret_derived_public_key_image& shared_secret_derived_public_key_image);
+  virtual void remove_spent_key(const crypto::output_spend_public_key_image& output_spend_public_key_image);
 
   uint64_t num_outputs() const;
 

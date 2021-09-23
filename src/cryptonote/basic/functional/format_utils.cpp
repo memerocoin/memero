@@ -58,7 +58,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::shared_secret_derived_public_key_image>> derive_public_key_image_helper
+  std::optional<std::pair<keypair, crypto::output_spend_public_key_image>> derive_public_key_image_helper
   (
    const account_keys ack
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -115,7 +115,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::shared_secret_derived_public_key_image>>
+  std::optional<std::pair<keypair, crypto::output_spend_public_key_image>>
   derive_public_key_image_helper_precomp
   (
    const account_keys ack
@@ -140,23 +140,23 @@ namespace cryptonote
 
 
       // computes Hs(a*R || idx) + b
-    const crypto::secret_key shared_secret_derived_secret_key =
-      compute_shared_secret_derived_secret_key_from_spend_secret_key
+    const crypto::secret_key output_spend_secret_key =
+      compute_output_spend_secret_key_from_spend_secret_key
       (recv_tx_output_shared_secret, real_output_index, spend_sk, key_offset);
 
-    const keypair shared_secret_derived_key =
+    const keypair output_spend_key =
       {
-        shared_secret_derived_secret_key
-        , to_pk(shared_secret_derived_secret_key)
+        output_spend_secret_key
+        , to_pk(output_spend_secret_key)
       };
 
-    LOG_ERROR_AND_RETURN_UNLESS(shared_secret_derived_key.pub == out_key,
+    LOG_ERROR_AND_RETURN_UNLESS(output_spend_key.pub == out_key,
           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
 
-    const crypto::shared_secret_derived_public_key_image ki =
-      crypto::derive_public_key_image(shared_secret_derived_key.sec);
+    const crypto::output_spend_public_key_image ki =
+      crypto::derive_public_key_image(output_spend_key.sec);
 
-    return {{shared_secret_derived_key, ki}};
+    return {{output_spend_key, ki}};
   }
 
 
@@ -244,7 +244,7 @@ namespace cryptonote
     // try the shared tx pubkey
     if (tx_shared_secret) {
       const std::optional<crypto::public_key> spend_pk =
-        crypto::compute_spend_public_key_from_shared_secret_derived_public_key
+        crypto::compute_spend_public_key_from_output_spend_public_key
         (*tx_shared_secret, output_index, tx_output_public_key);
 
       if (spend_pk) {
@@ -261,7 +261,7 @@ namespace cryptonote
     if (tx_output_shared_secret)
     {
       const auto spend_pk_1 =
-        crypto::compute_spend_public_key_from_shared_secret_derived_public_key
+        crypto::compute_spend_public_key_from_output_spend_public_key
         (*tx_output_shared_secret, output_index, tx_output_public_key);
 
       if (spend_pk_1) {
@@ -469,7 +469,7 @@ namespace cryptonote
         LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
       }
 
-      if(!is_safe_point(boost::get<txout_to_key>(out.target).shared_secret_derived_public_key))
+      if(!is_safe_point(boost::get<txout_to_key>(out.target).output_spend_public_key))
         return false;
     }
     return true;
