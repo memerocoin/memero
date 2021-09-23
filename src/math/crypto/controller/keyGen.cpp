@@ -78,7 +78,7 @@ namespace crypto {
 
     const auto sk = s2sk(reduce(tx_output_secret_key));
 
-    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TX_PROOF_V4);
+    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TX_OUTPUT_SIGNATURES_V1);
     return generate_schnorr_signature(hash_key + message_hash.blob(), sk, maybe_custom_view_key_base);
   }
 

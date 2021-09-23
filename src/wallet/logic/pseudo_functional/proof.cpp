@@ -54,7 +54,7 @@ namespace proof {
    , const std::string &sig_str
    ) {
 
-    const std::string header = std::string(config::HASH_KEY_TX_PROOF_V4);
+    const std::string header = std::string(config::HASH_KEY_TX_OUTPUT_SIGNATURES_V1);
 
     const size_t header_len = header.size();
     THROW_WALLET_EXCEPTION_IF

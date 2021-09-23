@@ -59,7 +59,7 @@ namespace proof {
       (
        output_secret_keys.begin()
        , output_secret_keys.end()
-       , std::string(config::HASH_KEY_TX_PROOF_V4)
+       , std::string(config::HASH_KEY_TX_OUTPUT_SIGNATURES_V1)
        , std::plus()
        , [is_subaddress, prefix_hash, address](const auto& x) {
          const crypto::schnorr_signature sig =
