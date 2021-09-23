@@ -2100,7 +2100,7 @@ bool simple_wallet::get_tx_output_signatures(const std::vector<std::string> &arg
   try
   {
     std::string sig_str = m_wallet->get_tx_output_signatures(txid, info.address, info.is_subaddress, args.size() == 3 ? args[2] : "");
-    const std::string filename = "lolnero_tx_proof";
+    const std::string filename = "lolnero_tx_output_signatures";
     if (wallet::logic::controller::wallet::save_to_file(filename, sig_str))
       success_msg_writer() << ("signature file saved to: ") << filename;
     else
