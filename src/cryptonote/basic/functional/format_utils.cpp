@@ -127,7 +127,7 @@ namespace cryptonote
   {
     const crypto::secret_key spend_sk = get_subaddress_spend_secret_key(account_keys, received_index);
     const crypto::secret_key output_spend_secret_key =
-      compute_output_spend_secret_key_from_spend_secret_key
+      compute_output_spend_sk_from_subaddress_spend_sk
       (recv_tx_output_shared_secret, real_output_index, spend_sk);
 
     const keypair output_spend_key =
@@ -230,7 +230,7 @@ namespace cryptonote
     // try the shared tx pubkey
     if (tx_shared_secret) {
       const std::optional<crypto::public_key> spend_pk =
-        crypto::compute_spend_public_key_from_output_spend_public_key
+        crypto::compute_subaddress_spend_pk_from_output_spend_pk
         (*tx_shared_secret, output_index, tx_output_public_key);
 
       if (spend_pk) {
@@ -247,7 +247,7 @@ namespace cryptonote
     if (tx_output_shared_secret)
     {
       const auto spend_pk_1 =
-        crypto::compute_spend_public_key_from_output_spend_public_key
+        crypto::compute_subaddress_spend_pk_from_output_spend_pk
         (*tx_output_shared_secret, output_index, tx_output_public_key);
 
       if (spend_pk_1) {

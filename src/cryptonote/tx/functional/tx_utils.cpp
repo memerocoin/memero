@@ -81,14 +81,14 @@ namespace cryptonote
     const rct::rct_scalar tx_output_shared_secret_indexed_hash =
       rct::s2s(crypto::hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, output_index));
 
-    const auto eph_pk = crypto::compute_output_spend_public_key_from_spend_public_key
+    const auto eph_pk = crypto::compute_output_spend_pk_from_subaddress_spend_pk
       (tx_output_shared_secret, output_index, dst_entr.addr.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
        eph_pk
        , {}
-       , "at creation outs: failed to compute_output_spend_public_key_from_spend_public_key("
+       , "at creation outs: failed to compute_output_spend_pk_from_subaddress_spend_pk("
        << tx_output_shared_secret << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
        );
 
@@ -442,13 +442,13 @@ namespace cryptonote
       crypto::derive_tx_output_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
 
     const std::optional<crypto::public_key> out_eph_public_key =
-      crypto::compute_output_spend_public_key_from_spend_public_key(tx_output_shared_secret, 0, miner_address.m_spend_public_key);
+      crypto::compute_output_spend_pk_from_subaddress_spend_pk(tx_output_shared_secret, 0, miner_address.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
        out_eph_public_key
        , {}
-       , "while creating outs: failed to compute_output_spend_public_key_from_spend_public_key("
+       , "while creating outs: failed to compute_output_spend_pk_from_subaddress_spend_pk("
        << tx_output_shared_secret << ", " << 0 << ", "
        << miner_address.m_spend_public_key << ")"
        );
