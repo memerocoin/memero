@@ -700,7 +700,7 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_GET_TX_PROOF
+  struct COMMAND_RPC_GET_TX_OUTPUT_SIGNATURES
   {
     struct request_t
     {
@@ -727,7 +727,7 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_VERIFY_TX_PROOF
+  struct COMMAND_RPC_VERIFY_TX_OUTPUT_SIGNATURES
   {
     struct request_t
     {
