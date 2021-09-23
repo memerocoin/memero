@@ -399,7 +399,7 @@ namespace wallet {
 
       for (const auto &ptx: ptx_vector)
       {
-        std::string proof = controller::proof::get_tx_sender_signature
+        std::string proof = controller::proof::get_tx_output_signatures
           (
            ptx.output_secret_keys
            , address
@@ -407,7 +407,7 @@ namespace wallet {
            , "automatic-sanity-check"
            );
 
-        const auto found_indices = pseudo_functional::proof::verify_tx_sender_signature
+        const auto found_indices = pseudo_functional::proof::verify_tx_output_signatures
           (ptx.tx, address, r.second.second, "automatic-sanity-check", proof);
 
         if (found_indices) {

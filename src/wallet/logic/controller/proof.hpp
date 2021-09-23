@@ -39,7 +39,7 @@ namespace logic {
 namespace controller {
 namespace proof {
 
-  const std::string get_tx_sender_signature
+  const std::string get_tx_output_signatures
   (
    const std::vector<crypto::secret_key> &output_secret_keys
    , const cryptonote::account_public_address &address

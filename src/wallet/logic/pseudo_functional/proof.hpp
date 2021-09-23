@@ -39,7 +39,7 @@ namespace logic {
 namespace pseudo_functional {
 namespace proof {
 
-  const std::optional<std::vector<size_t>> verify_tx_sender_signature
+  const std::optional<std::vector<size_t>> verify_tx_output_signatures
   (
    const cryptonote::transaction &tx
    , const cryptonote::account_public_address &address

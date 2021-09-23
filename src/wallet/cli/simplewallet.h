@@ -132,8 +132,8 @@ namespace cryptonote
     bool set_log(const std::vector<std::string> &args);
     bool get_tx_output_secret_keys(const std::vector<std::string> &args);
     bool verify_tx_key(const std::vector<std::string> &args);
-    bool get_tx_sender_signature(const std::vector<std::string> &args);
-    bool verify_tx_sender_signature(const std::vector<std::string> &args);
+    bool get_tx_output_signatures(const std::vector<std::string> &args);
+    bool verify_tx_output_signatures(const std::vector<std::string> &args);
     bool show(const std::vector<std::string> &args);
     bool utxos(const std::vector<std::string> &args);
     bool rescan_blockchain(const std::vector<std::string> &args);

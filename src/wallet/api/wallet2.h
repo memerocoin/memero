@@ -325,9 +325,9 @@ namespace tools
 
     std::optional<std::vector<crypto::secret_key>> get_tx_output_sec_keys(const crypto::hash txid) const;
 
-    std::string get_tx_sender_signature(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message);
+    std::string get_tx_output_signatures(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message);
 
-    bool verify_tx_sender_signature
+    bool verify_tx_output_signatures
     (
      const crypto::hash &txid
      , const cryptonote::account_public_address &address
