@@ -38,7 +38,7 @@ TEST(account, encrypt_keys)
   const cryptonote::account_keys keys = account.get_keys();
 
   ASSERT_EQ(account.get_keys().m_account_address, keys.m_account_address);
-  ASSERT_EQ(account.get_keys().m_spend_secret_key_base, keys.m_spend_secret_key_base);
+  ASSERT_EQ(account.get_keys().m_spend_secret_key, keys.m_spend_secret_key);
   ASSERT_EQ(account.get_keys().m_view_secret_key, keys.m_view_secret_key);
 
   crypto::chacha_key chacha_key;
@@ -47,24 +47,24 @@ TEST(account, encrypt_keys)
   account.encrypt_keys(chacha_key);
 
   ASSERT_EQ(account.get_keys().m_account_address, keys.m_account_address);
-  ASSERT_NE(account.get_keys().m_spend_secret_key_base, keys.m_spend_secret_key_base);
+  ASSERT_NE(account.get_keys().m_spend_secret_key, keys.m_spend_secret_key);
   ASSERT_NE(account.get_keys().m_view_secret_key, keys.m_view_secret_key);
 
   account.decrypt_viewkey(chacha_key);
 
   ASSERT_EQ(account.get_keys().m_account_address, keys.m_account_address);
-  ASSERT_NE(account.get_keys().m_spend_secret_key_base, keys.m_spend_secret_key_base);
+  ASSERT_NE(account.get_keys().m_spend_secret_key, keys.m_spend_secret_key);
   ASSERT_EQ(account.get_keys().m_view_secret_key, keys.m_view_secret_key);
 
   account.encrypt_viewkey(chacha_key);
 
   ASSERT_EQ(account.get_keys().m_account_address, keys.m_account_address);
-  ASSERT_NE(account.get_keys().m_spend_secret_key_base, keys.m_spend_secret_key_base);
+  ASSERT_NE(account.get_keys().m_spend_secret_key, keys.m_spend_secret_key);
   ASSERT_NE(account.get_keys().m_view_secret_key, keys.m_view_secret_key);
 
   account.decrypt_keys(chacha_key);
 
   ASSERT_EQ(account.get_keys().m_account_address, keys.m_account_address);
-  ASSERT_EQ(account.get_keys().m_spend_secret_key_base, keys.m_spend_secret_key_base);
+  ASSERT_EQ(account.get_keys().m_spend_secret_key, keys.m_spend_secret_key);
   ASSERT_EQ(account.get_keys().m_view_secret_key, keys.m_view_secret_key);
 }

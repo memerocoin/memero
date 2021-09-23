@@ -996,7 +996,7 @@ namespace tools
       else if(req.key_type.compare("spend_key") == 0)
       {
           epee::wipeable_string key =
-            epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_spend_secret_key_base);
+            epee::string_tools::pod_to_hex(m_wallet->get_account().get_keys().m_spend_secret_key);
           res.key = std::string(key.data(), key.size());
       }
       else

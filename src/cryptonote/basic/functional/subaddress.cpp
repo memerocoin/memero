@@ -58,11 +58,11 @@ namespace cryptonote {
    )
   {
     if (index.is_zero())
-      return keys.m_spend_secret_key_base;
+      return keys.m_spend_secret_key;
 
     const auto offset = hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
 
-    return crypto::s2sk(keys.m_spend_secret_key_base + offset);
+    return crypto::s2sk(keys.m_spend_secret_key + offset);
   }
 
   crypto::secret_key get_subaddress_view_secret_key

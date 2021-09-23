@@ -56,7 +56,7 @@ namespace helper {
 crypto::chacha_key generate_chacha_key(const cryptonote::account_keys &keys, const uint64_t kdf_rounds) {
   crypto::chacha_key key;
   const crypto::secret_key &view_key = keys.m_view_secret_key;
-  const crypto::secret_key &spend_key_base = keys.m_spend_secret_key_base;
+  const crypto::secret_key &spend_key_base = keys.m_spend_secret_key;
   std::array<char, sizeof(view_key) + sizeof(spend_key_base) + 1> data;
   memcpy(data.data(), &view_key, sizeof(view_key));
   memcpy(data.data() + sizeof(view_key), &spend_key_base, sizeof(spend_key_base));

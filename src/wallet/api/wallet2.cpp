@@ -334,7 +334,7 @@ bool wallet2::get_seed(epee::wipeable_string& electrum_words, const epee::wipeab
     set_seed_language(language);
   }
 
-  crypto::secret_key key = get_account().get_keys().m_spend_secret_key_base;
+  crypto::secret_key key = get_account().get_keys().m_spend_secret_key;
   if (!passphrase.empty())
     key = cryptonote::encrypt_key(key, passphrase);
   if (!crypto::ElectrumWords::bytes_to_words(key, electrum_words, seed_language))
@@ -2157,7 +2157,7 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
   }
   const cryptonote::account_keys& keys = m_account.get_keys();
   r = r && crypto::verify_keys(keys.m_view_secret_key,  keys.m_account_address.m_view_public_key);
-  r = r && crypto::verify_keys(keys.m_spend_secret_key_base, keys.m_account_address.m_spend_public_key);
+  r = r && crypto::verify_keys(keys.m_spend_secret_key, keys.m_account_address.m_spend_public_key);
   THROW_WALLET_EXCEPTION_IF(!r, error::wallet_files_doesnt_correspond, m_keys_file, m_wallet_file);
 
   if (r)
