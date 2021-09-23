@@ -42,14 +42,6 @@
 
 
 namespace cryptonote {
-  /* ======================================================================= */
-  /*                             WALLET & ADDRESS                            */
-  /* ======================================================================= */
-
-
-  /* ======================================================================= */
-  /*                               SUB ADDRESS                               */
-  /* ======================================================================= */
 
   crypto::secret_key get_subaddress_spend_secret_key
   (
@@ -85,10 +77,8 @@ namespace cryptonote {
     if (index.is_zero())
       return keys.m_account_address.m_spend_public_key;
 
-    // m = Hs(a || index_major || index_minor)
     const auto offset = hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
 
-    // D = B + M
     return crypto::p2pk(keys.m_account_address.m_spend_public_key + crypto::multBase(offset));
   }
 
@@ -170,9 +160,5 @@ namespace cryptonote {
 
     return crypto::hash_to_scalar(hashData);
   }
-
-  /* ======================================================================= */
-  /*                            DERIVATION & KEY                             */
-  /* ======================================================================= */
 
 }
