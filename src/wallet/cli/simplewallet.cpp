@@ -466,7 +466,7 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_balance, std::placeholders::_1),
                            sw::tr(USAGE_SHOW_BALANCE),
                            sw::tr("Show the wallet's balance of the currently selected account."));
-  m_cmd_binder.set_handler("incoming",
+  m_cmd_binder.set_handler("in",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_incoming,std::placeholders::_1),
                            sw::tr(USAGE_INCOMING),
                            std::string(wallet::help::incoming));
