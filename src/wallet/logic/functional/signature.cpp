@@ -34,6 +34,8 @@
 
 #include "wallet/api/wallet_errors.h"
 
+#include "cryptonote/basic/functional/subaddress.hpp"
+
 #include "tools/common/base58.h"
 
 #include "math/crypto/controller/keyGen.hpp"
@@ -112,47 +114,20 @@ namespace signature {
    , const wallet::logic::type::message_signature::message_signature_type_t signature_type
    , const cryptonote::subaddress_index index
    , const cryptonote::account_keys &keys
-   , const crypto::ec_scalar spend_secret_key_offset
    )
   {
     const crypto::hash hash = get_message_hash(data);
-    // const cryptonote::account_keys &keys = m_account.get_keys();
-    crypto::secret_key skey;
+    const crypto::secret_key spend_sk = cryptonote::get_subaddress_spend_secret_key(keys, index);
 
-    // Use the base address
-    if (index.is_zero())
-    {
-      switch (signature_type)
-      {
-        case wallet::logic::type::message_signature::sign_with_spend_key:
-          skey = keys.m_spend_secret_key_base;
-          break;
-        case wallet::logic::type::message_signature::sign_with_view_key:
-          skey = keys.m_view_secret_key;
-          break;
-        default: LOG_ERROR_AND_THROW_UNLESS(false, "Invalid signature type requested");
-      }
-    }
-    // Use a subaddress
-    else
-    {
-      crypto::secret_key skey_spend, skey_view;
-      skey_spend = keys.m_spend_secret_key_base;
-      // m = m_account.get_device().hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
-
-      skey_spend = s2sk(spend_secret_key_offset + skey_spend);
-      skey_view = s2sk(keys.m_view_secret_key * skey_spend);
-      switch (signature_type)
-      {
-        case wallet::logic::type::message_signature::sign_with_spend_key:
-          skey = skey_spend;
-          break;
-        case wallet::logic::type::message_signature::sign_with_view_key:
-          skey = skey_view;
-          break;
-        default: LOG_ERROR_AND_THROW_UNLESS(false, "Invalid signature type requested");
-      }
-    }
+    const crypto::secret_key skey
+      = signature_type == wallet::logic::type::message_signature::sign_with_spend_key
+      ? spend_sk
+      :
+      (
+       index.is_zero()
+       ? keys.m_view_secret_key
+       : s2sk(keys.m_view_secret_key * spend_sk)
+       );
 
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(skey), "Invalid signing key");
 

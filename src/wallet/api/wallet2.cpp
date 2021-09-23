@@ -3121,11 +3121,8 @@ uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
 std::string wallet2::sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const
 {
   const cryptonote::account_keys &keys = m_account.get_keys();
-  const crypto::ec_scalar offset =
-    cryptonote::hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
-
   return wallet::logic::functional::signature::sign
-    (data, signature_type, index, keys, offset);
+    (data, signature_type, index, keys);
 }
 
 //----------------------------------------------------------------------------------------------------
