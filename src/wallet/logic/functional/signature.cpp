@@ -117,17 +117,12 @@ namespace signature {
    )
   {
     const crypto::hash hash = get_message_hash(data);
-    const crypto::secret_key spend_sk = cryptonote::get_subaddress_spend_secret_key(keys, index);
 
     const crypto::secret_key skey
       = signature_type == wallet::logic::type::message_signature::sign_with_spend_key
-      ? spend_sk
-      :
-      (
-       index.is_zero()
-       ? keys.m_view_secret_key
-       : s2sk(keys.m_view_secret_key * spend_sk)
-       );
+      ? cryptonote::get_subaddress_spend_secret_key(keys, index)
+      : cryptonote::get_subaddress_view_secret_key(keys, index)
+      ;
 
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(skey), "Invalid signing key");
 

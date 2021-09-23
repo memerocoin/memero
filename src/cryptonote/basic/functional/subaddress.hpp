@@ -42,6 +42,12 @@ namespace cryptonote {
    , const cryptonote::subaddress_index &index
    );
 
+  crypto::secret_key get_subaddress_view_secret_key
+  (
+   const cryptonote::account_keys& keys
+   , const cryptonote::subaddress_index &index
+   );
+
   crypto::public_key get_subaddress_spend_public_key
   (
    const cryptonote::account_keys& keys
