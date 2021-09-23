@@ -63,62 +63,24 @@ namespace proof {
     std::vector<crypto::schnorr_signature> sig;
     std::string sig_str = std::string(config::HASH_KEY_TX_PROOF_V4);
 
-    if (output_secret_keys.empty()) {
-      THROW_WALLET_EXCEPTION_IF(!tx_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
-      if (is_subaddress)
-      {
-        sig.push_back
-          (crypto::generate_tx_proof
-            (prefix_hash, address.m_spend_public_key, *tx_key));
-      }
-      else
-      {
-        sig.push_back
-          (
-            crypto::generate_tx_proof
-            (prefix_hash, std::nullopt, *tx_key));
-      }
-    }
-    else {
-      for (size_t i = 0; i < output_secret_keys.size(); ++i)
-      {
-        if (is_subaddress)
-        {
-          sig.push_back
-            (crypto::generate_tx_proof
-            (prefix_hash, address.m_spend_public_key, output_secret_keys[i]));
-        }
-        else
-        {
-          sig.push_back
-            (crypto::generate_tx_proof
-            (prefix_hash, std::nullopt, output_secret_keys[i]));
-        }
-      }
-    }
-
-    // check if this address actually received any funds
-
-    std::vector<std::string> sig_str_v;
-    std::transform
+    return std::transform_reduce
       (
-       sig.begin()
-       , sig.end()
-       , std::back_inserter(sig_str_v)
-       , [](const auto& s) {
-         return tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(s)));
+       output_secret_keys.begin()
+       , output_secret_keys.end()
+       , sig_str
+       , std::plus()
+       , [is_subaddress, prefix_hash, address](const auto& x) {
+         const crypto::schnorr_signature sig =
+           is_subaddress
+           ? crypto::generate_tx_proof
+           (prefix_hash, address.m_spend_public_key, x)
+           : crypto::generate_tx_proof
+           (prefix_hash, std::nullopt, x)
+           ;
+
+         return tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sig)));
        }
        );
-
-    // concatenate all signature strings
-    const std::string sig_str_final = std::reduce
-      (
-       sig_str_v.begin()
-       , sig_str_v.end()
-       , sig_str
-       );
-
-    return sig_str_final;
   }
 
 } // proof
