@@ -107,7 +107,6 @@ namespace crypto {
    const tx_output_ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
    , const secret_key &base
-   , const ec_scalar offset
    ) noexcept;
 
   std::optional<public_key> compute_output_spend_public_key_from_spend_public_key

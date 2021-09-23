@@ -51,6 +51,20 @@ namespace cryptonote {
   /*                               SUB ADDRESS                               */
   /* ======================================================================= */
 
+  crypto::secret_key get_subaddress_spend_secret_key
+  (
+   const cryptonote::account_keys& keys
+   , const cryptonote::subaddress_index &index
+   )
+  {
+    if (index.is_zero())
+      return keys.m_spend_secret_key;
+
+    const auto offset = hash_secret_key_with_subaddress_index(keys.m_view_secret_key, index);
+
+    return crypto::s2sk(keys.m_spend_secret_key + offset);
+  }
+
   crypto::public_key get_subaddress_spend_public_key
   (
    const cryptonote::account_keys& keys

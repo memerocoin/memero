@@ -118,31 +118,17 @@ namespace cryptonote
   std::optional<std::pair<keypair, crypto::output_spend_public_key_image>>
   derive_public_key_image_helper_precomp
   (
-   const account_keys ack
+   const account_keys account_keys
    , const crypto::public_key out_key
    , const crypto::tx_output_ecdh_shared_secret recv_tx_output_shared_secret
    , const size_t real_output_index
    , const subaddress_index received_index
    )
   {
-
-    // derive secret key with subaddress - step 1: original CN derivation
-    const auto spend_sk = ack.m_spend_secret_key;
-
-    if (is_not_reduced(spend_sk)) return {};
-
-    // add subaddress secret key: Hs(a || index_major || index_minor)
-    const crypto::ec_scalar key_offset =
-      received_index.is_zero()
-      ? crypto::s_0
-      : cryptonote::hash_secret_key_with_subaddress_index(ack.m_view_secret_key, received_index)
-      ;
-
-
-      // computes Hs(a*R || idx) + b
+    const crypto::secret_key spend_sk = get_subaddress_spend_secret_key(account_keys, received_index);
     const crypto::secret_key output_spend_secret_key =
       compute_output_spend_secret_key_from_spend_secret_key
-      (recv_tx_output_shared_secret, real_output_index, spend_sk, key_offset);
+      (recv_tx_output_shared_secret, real_output_index, spend_sk);
 
     const keypair output_spend_key =
       {
