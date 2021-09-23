@@ -43,7 +43,7 @@ namespace crypto {
 
 
   // sender holds the private key of the tx output public key
-  bool verify_tx_proof
+  bool verify_tx_sender_signature
   (
    const hash message_hash
    , const public_key tx_output_public_key

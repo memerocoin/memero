@@ -62,11 +62,11 @@ TEST(tx_proof, prove_verify_v2)
 
     // Generate/verify valid v2 proof with standard address
     sig = crypto::generate_tx_proof(prefix_hash, std::nullopt, r);
-    ASSERT_TRUE(crypto::verify_tx_proof(prefix_hash, R_G, std::nullopt, sig));
+    ASSERT_TRUE(crypto::verify_tx_sender_signature(prefix_hash, R_G, std::nullopt, sig));
 
     // Generate/verify valid v2 proof with subaddress
     sig = crypto::generate_tx_proof(prefix_hash, B, r);
-    ASSERT_TRUE(crypto::verify_tx_proof(prefix_hash, R_B, B, sig));
+    ASSERT_TRUE(crypto::verify_tx_sender_signature(prefix_hash, R_B, B, sig));
 
     // Randomly-distributed test points
     crypto::secret_key evil_a, evil_b, evil_d, evil_r;
@@ -78,6 +78,6 @@ TEST(tx_proof, prove_verify_v2)
 
     // Selectively choose bad point in v2 proof (bad)
     sig = crypto::generate_tx_proof(prefix_hash, B, r);
-    ASSERT_FALSE(crypto::verify_tx_proof(prefix_hash, evil_R, B, sig));
-    ASSERT_FALSE(crypto::verify_tx_proof(prefix_hash, R_B, evil_B, sig));
+    ASSERT_FALSE(crypto::verify_tx_sender_signature(prefix_hash, evil_R, B, sig));
+    ASSERT_FALSE(crypto::verify_tx_sender_signature(prefix_hash, R_B, evil_B, sig));
 }

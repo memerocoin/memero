@@ -45,7 +45,7 @@ namespace logic {
 namespace pseudo_functional {
 namespace proof {
 
-  const std::optional<std::vector<size_t>> verify_tx_proof
+  const std::optional<std::vector<size_t>> verify_tx_sender_signature
   (
    const cryptonote::transaction &tx
    , const cryptonote::account_public_address &address
@@ -126,8 +126,8 @@ namespace proof {
     for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
     {
       const bool good_signature_for_tx_output_pub_key = is_subaddress
-        ? crypto::verify_tx_proof(message_hash, tx_output_pub_keys[i], address.m_spend_public_key, sig[i])
-        : crypto::verify_tx_proof(message_hash, tx_output_pub_keys[i], std::nullopt, sig[i]);
+        ? crypto::verify_tx_sender_signature(message_hash, tx_output_pub_keys[i], address.m_spend_public_key, sig[i])
+        : crypto::verify_tx_sender_signature(message_hash, tx_output_pub_keys[i], std::nullopt, sig[i]);
 
       if (good_signature_for_tx_output_pub_key) {
         found_indices.push_back(i);

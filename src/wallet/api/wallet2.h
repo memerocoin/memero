@@ -327,7 +327,7 @@ namespace tools
 
     std::string get_tx_sender_signature(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message);
 
-    bool verify_tx_proof
+    bool verify_tx_sender_signature
     (
      const crypto::hash &txid
      , const cryptonote::account_public_address &address

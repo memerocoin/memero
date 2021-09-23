@@ -505,11 +505,11 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("get-tx-sender-signature",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_sender_signature, std::placeholders::_1),
                            (USAGE_GET_TX_SENDER_SIGNATURE),
-                           "Generate a signature to the receiver proving funds sent to <address> in <txid>, optionally with a challenge string <message>.");
-  m_cmd_binder.set_handler("verify-tx-proof",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_proof, std::placeholders::_1),
-                           (USAGE_VERIFY_TX_PROOF),
-                           ("Check the proof for funds going to <address> in <txid> with the challenge string <message> if any."));
+                           "Generate signatures of tx outputs to the receiver sent to <address> in <txid>, optionally with a challenge string <message>.");
+  m_cmd_binder.set_handler("verify-tx-sender-signature",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_sender_signature, std::placeholders::_1),
+                           (USAGE_VERIFY_TX_SENDER_SIGNATURE),
+                           ("Check the signatures for outputs going to <address> in <txid> with the challenge string <message> if any."));
   m_cmd_binder.set_handler("show",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show, std::placeholders::_1),
                            (USAGE_SHOW),
@@ -2113,10 +2113,10 @@ bool simple_wallet::get_tx_sender_signature(const std::vector<std::string> &args
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::verify_tx_proof(const std::vector<std::string> &args)
+bool simple_wallet::verify_tx_sender_signature(const std::vector<std::string> &args)
 {
   if(args.size() != 3 && args.size() != 4) {
-    PRINT_USAGE(USAGE_VERIFY_TX_PROOF);
+    PRINT_USAGE(USAGE_VERIFY_TX_SENDER_SIGNATURE);
     return true;
   }
 
@@ -2152,7 +2152,7 @@ bool simple_wallet::verify_tx_proof(const std::vector<std::string> &args)
     bool in_pool;
     uint64_t confirmations;
     std::vector<size_t> received_indices;
-    if (m_wallet->verify_tx_proof
+    if (m_wallet->verify_tx_sender_signature
         (
          txid
          , info.address

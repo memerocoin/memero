@@ -407,7 +407,7 @@ namespace wallet {
            , "automatic-sanity-check"
            );
 
-        const auto found_indices = pseudo_functional::proof::verify_tx_proof
+        const auto found_indices = pseudo_functional::proof::verify_tx_sender_signature
           (ptx.tx, address, r.second.second, "automatic-sanity-check", proof);
 
         if (found_indices) {

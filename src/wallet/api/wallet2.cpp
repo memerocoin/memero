@@ -3007,7 +3007,7 @@ std::string wallet2::get_tx_sender_signature(const crypto::hash &txid, const cry
     return wallet::logic::controller::proof::get_tx_sender_signature(output_secret_keys, address, is_subaddress, message);
 }
 
-bool wallet2::verify_tx_proof
+bool wallet2::verify_tx_sender_signature
 (
  const crypto::hash &txid
  , const cryptonote::account_public_address &address
@@ -3053,7 +3053,7 @@ bool wallet2::verify_tx_proof
 
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
 
-  const auto maybe_found = wallet::logic::pseudo_functional::proof::verify_tx_proof
+  const auto maybe_found = wallet::logic::pseudo_functional::proof::verify_tx_sender_signature
     (tx, address, is_subaddress, message, sig_str);
 
   if (!maybe_found) return false;

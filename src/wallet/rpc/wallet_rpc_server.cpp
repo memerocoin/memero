@@ -1118,7 +1118,7 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_verify_tx_proof(const wallet_rpc::COMMAND_RPC_VERIFY_TX_PROOF::request& req, wallet_rpc::COMMAND_RPC_VERIFY_TX_PROOF::response& res, epee::json_rpc::error& er)
+  bool wallet_rpc_server::on_verify_tx_sender_signature(const wallet_rpc::COMMAND_RPC_VERIFY_TX_PROOF::request& req, wallet_rpc::COMMAND_RPC_VERIFY_TX_PROOF::response& res, epee::json_rpc::error& er)
   {
     if (!m_wallet) return not_open(er);
 
@@ -1140,7 +1140,7 @@ namespace tools
 
     try
     {
-      res.good = m_wallet->verify_tx_proof
+      res.good = m_wallet->verify_tx_sender_signature
         (
          txid
          , info.address
