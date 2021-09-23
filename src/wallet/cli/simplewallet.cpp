@@ -2060,10 +2060,6 @@ bool simple_wallet::get_tx_output_keys(const std::vector<std::string> &args_)
   if (maybe_tx_output_keys)
   {
     std::ostringstream oss;
-    oss
-      << "Tx output keys:"
-      << std::endl
-      ;
 
     for (const auto& k: *maybe_tx_output_keys) {
       oss << k << std::endl;
