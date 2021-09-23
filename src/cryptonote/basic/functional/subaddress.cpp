@@ -97,11 +97,6 @@ namespace cryptonote {
   {
     LOG_ERROR_AND_THROW_UNLESS(begin <= end, "begin > end");
 
-    const auto public_spend_key = keys.m_account_address.m_spend_public_key;
-    if (!is_safe_point(public_spend_key)) {
-      LOG_FATAL("public spend key is not on the main group");
-    }
-
     std::vector<crypto::public_key> pkeys;
 
     for (uint32_t idx = begin; idx < end; ++idx)
