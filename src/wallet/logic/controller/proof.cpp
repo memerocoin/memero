@@ -57,17 +57,14 @@ namespace proof {
     const crypto::hash txid = cryptonote::get_transaction_hash(tx);
     epee::blob::data prefix_data(txid.data.data(), txid.data.size());
     prefix_data += epee::string_tools::string_to_blob(message);
-    crypto::hash prefix_hash= crypto::sha3(prefix_data);
 
-    std::vector<crypto::public_key> shared_secret;
+    const crypto::hash prefix_hash = crypto::sha3(prefix_data);
+
     std::vector<crypto::schnorr_signature> sig;
     std::string sig_str = std::string(config::HASH_KEY_TX_PROOF_V4);
 
     if (output_secret_keys.empty()) {
       THROW_WALLET_EXCEPTION_IF(!tx_key, tools::error::wallet_internal_error, "Tx pubkey was not found");
-      const auto ss = crypto::p2pk(address.m_view_public_key ^ (*tx_key));
-      shared_secret.push_back(ss);
-
       if (is_subaddress)
       {
         sig.push_back
@@ -85,11 +82,6 @@ namespace proof {
     else {
       for (size_t i = 0; i < output_secret_keys.size(); ++i)
       {
-        auto const output_ss = crypto::p2pk
-        (address.m_view_public_key ^ output_secret_keys[i]);
-
-        shared_secret.push_back(output_ss);
-
         if (is_subaddress)
         {
           sig.push_back
@@ -106,15 +98,6 @@ namespace proof {
     }
 
     // check if this address actually received any funds
-
-    std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
-
-    for (size_t i = 0; i < shared_secret.size(); i++) {
-      const auto tx_output_shared_secret =
-        crypto::derive_tx_output_ecdh_shared_secret(shared_secret[i], crypto::s2sk(rct::s_one));
-
-      tx_output_shared_secrets[i] = tx_output_shared_secret;
-    };
 
     std::vector<std::string> sig_str_v;
     std::transform
