@@ -33,6 +33,8 @@
 
 #include "tools/common/command_line.h"
 
+#include <numeric>
+
 namespace wallet {
 namespace functional {
 
