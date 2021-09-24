@@ -8,6 +8,7 @@
 #include <chrono>
 #include <string_view>
 #include <span>
+#include <numeric> // fix for debian
 
 namespace constant
 {
