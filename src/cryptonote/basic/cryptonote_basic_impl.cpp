@@ -35,6 +35,7 @@
 #include "tools/epee/include/string_tools.h"
 #include "tools/serialization/binary_utils.h"
 
+#include <numeric>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
