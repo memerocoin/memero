@@ -121,12 +121,6 @@ namespace cryptonote
     else
       m_pprotocol = &m_protocol_stub;
   }
-  //-----------------------------------------------------------------------------------
-  void core::set_txpool_listener(boost::function<void(std::vector<txpool_event>)> zmq_pub)
-  {
-    LOCK_RECURSIVE_MUTEX(m_incoming_tx_lock);
-    m_zmq_pub = std::move(zmq_pub);
-  }
 
   //-----------------------------------------------------------------------------------
   void core::stop()
@@ -547,7 +541,6 @@ namespace cryptonote
     if (!tx_info.empty())
       handle_incoming_tx_accumulated_batch(tx_info, tx_relay == relay_method::block);
 
-    bool valid_events = false;
     bool ok = true;
     it = tx_blobs.begin();
     for (size_t i = 0; i < tx_blobs.size(); i++, ++it) {
@@ -572,14 +565,10 @@ namespace cryptonote
       if(tvc[i].m_added_to_pool)
       {
         LOG_DEBUG("tx added: " << results[i].hash);
-        valid_events = true;
       }
       else
         results[i].res = false;
     }
-
-    if (valid_events && m_zmq_pub && matches_category(tx_relay, relay_category::legacy))
-      m_zmq_pub(std::move(results));
 
     return ok;
     CATCH_ENTRY_L0("core::handle_incoming_txs()", false);
