@@ -189,22 +189,11 @@ namespace nodetool
     std::optional<peerlist_storage> out = open(src_file);
     if (!out)
     {
-      // if failed, try reading in unportable mode
-      std::filesystem::copy_file(path, path + ".unmaintainable", std::filesystem::copy_options::overwrite_existing);
-      src_file.close();
-      src_file.open( path , std::ios_base::binary | std::ios_base::in);
-      if(src_file.fail())
-        return std::nullopt;
-
-      out = open(src_file);
-      if (!out)
-      {
-        // This is different from the `return std::nullopt` cases above. Those
-        // cases could fail due to bad file permissions, so a shutdown is
-        // likely more appropriate.
-        LOG_WARNING("Failed to load p2p config file, falling back to default config");
-        out.emplace();
-      }
+      // This is different from the `return std::nullopt` cases above. Those
+      // cases could fail due to bad file permissions, so a shutdown is
+      // likely more appropriate.
+      LOG_WARNING("Failed to load p2p config file, falling back to default config");
+      out.emplace();
     }
 
     return out;
