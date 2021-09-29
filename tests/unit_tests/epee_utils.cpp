@@ -42,8 +42,6 @@
 # include <arpa/inet.h>
 #endif
 
-#include "tools/boost/archive/portable_binary_iarchive.hpp"
-#include "tools/boost/archive/portable_binary_oarchive.hpp"
 #include "math/crypto/functional/key.hpp"
 #include "tools/epee/include/hex.h"
 #include "tools/epee/include/net/net_utils_base.h"
@@ -398,11 +396,11 @@ TEST(NetUtils, IPv4NetworkAddress)
   {
     std::stringstream stream;
     {
-      boost::archive::portable_binary_oarchive ostream{stream};
+      boost::archive::binary_oarchive ostream{stream};
       ostream << address1;
     }
     {
-      boost::archive::portable_binary_iarchive istream{stream};
+      boost::archive::binary_iarchive istream{stream};
       istream >> address2;
     }
   }
@@ -523,11 +521,11 @@ TEST(NetUtils, NetworkAddress)
   {
     std::stringstream stream;
     {
-      boost::archive::portable_binary_oarchive ostream{stream};
+      boost::archive::binary_oarchive ostream{stream};
       ostream << address2;
     }
     {
-      boost::archive::portable_binary_iarchive istream{stream};
+      boost::archive::binary_iarchive istream{stream};
       istream >> address1;
     }
   }

@@ -140,7 +140,6 @@ add_library(version src/version.cpp)
 add_subdirectory(src/tools/epee)
 add_subdirectory(src/tools/common)
 add_subdirectory(src/tools/serialization)
-add_subdirectory(src/tools/boost/archive)
 
 ## math
 add_subdirectory(vendor/curve25519/cryptonote)

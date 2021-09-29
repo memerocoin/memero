@@ -151,7 +151,6 @@ add_executable(unit_tests_wallet_basic
 
 target_link_libraries(unit_tests_wallet_basic
   wallet_logic
-  tools_boost_archive
   tools_serialization
   epee_storage
   ${Boost_PROGRAM_OPTIONS_LIBRARY}

@@ -32,6 +32,9 @@
 
 #include "p2p_protocol_defs.h"
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
 BOOST_CLASS_VERSION(nodetool::peerlist_entry, 3)
 
 namespace boost

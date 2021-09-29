@@ -28,8 +28,7 @@
 
 #include <algorithm>
 #include <atomic>
-#include "tools/boost/archive/portable_binary_oarchive.hpp"
-#include "tools/boost/archive/portable_binary_iarchive.hpp"
+
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -407,7 +406,7 @@ TEST(tor_address, boost_serialize_v2)
 
         std::ostringstream stream{};
         {
-            boost::archive::portable_binary_oarchive archive{stream};
+            boost::archive::binary_oarchive archive{stream};
             archive << tor;
         }
         buffer = stream.str();
@@ -421,7 +420,7 @@ TEST(tor_address, boost_serialize_v2)
         EXPECT_EQ(0u, tor.port());
 
         std::istringstream stream{buffer};
-        boost::archive::portable_binary_iarchive archive{stream};
+        boost::archive::binary_iarchive archive{stream};
         archive >> tor;
     }
     EXPECT_FALSE(tor.is_unknown());
@@ -442,7 +441,7 @@ TEST(tor_address, boost_serialize_v3)
 
         std::ostringstream stream{};
         {
-            boost::archive::portable_binary_oarchive archive{stream};
+            boost::archive::binary_oarchive archive{stream};
             archive << tor;
         }
         buffer = stream.str();
@@ -456,7 +455,7 @@ TEST(tor_address, boost_serialize_v3)
         EXPECT_EQ(0u, tor.port());
 
         std::istringstream stream{buffer};
-        boost::archive::portable_binary_iarchive archive{stream};
+        boost::archive::binary_iarchive archive{stream};
         archive >> tor;
     }
     EXPECT_FALSE(tor.is_unknown());
@@ -477,7 +476,7 @@ TEST(tor_address, boost_serialize_unknown)
 
         std::ostringstream stream{};
         {
-            boost::archive::portable_binary_oarchive archive{stream};
+            boost::archive::binary_oarchive archive{stream};
             archive << tor;
         }
         buffer = stream.str();
@@ -491,7 +490,7 @@ TEST(tor_address, boost_serialize_unknown)
         EXPECT_EQ(0u, tor.port());
 
         std::istringstream stream{buffer};
-        boost::archive::portable_binary_iarchive archive{stream};
+        boost::archive::binary_iarchive archive{stream};
         archive >> tor;
     }
     EXPECT_TRUE(tor.is_unknown());
@@ -811,7 +810,7 @@ TEST(i2p_address, boost_serialize_b32)
 
         std::ostringstream stream{};
         {
-            boost::archive::portable_binary_oarchive archive{stream};
+            boost::archive::binary_oarchive archive{stream};
             archive << i2p;
         }
         buffer = stream.str();
@@ -825,7 +824,7 @@ TEST(i2p_address, boost_serialize_b32)
         EXPECT_EQ(0u, i2p.port());
 
         std::istringstream stream{buffer};
-        boost::archive::portable_binary_iarchive archive{stream};
+        boost::archive::binary_iarchive archive{stream};
         archive >> i2p;
     }
     EXPECT_FALSE(i2p.is_unknown());
@@ -846,7 +845,7 @@ TEST(i2p_address, boost_serialize_unknown)
 
         std::ostringstream stream{};
         {
-            boost::archive::portable_binary_oarchive archive{stream};
+            boost::archive::binary_oarchive archive{stream};
             archive << i2p;
         }
         buffer = stream.str();
@@ -860,7 +859,7 @@ TEST(i2p_address, boost_serialize_unknown)
         EXPECT_EQ(0u, i2p.port());
 
         std::istringstream stream{buffer};
-        boost::archive::portable_binary_iarchive archive{stream};
+        boost::archive::binary_iarchive archive{stream};
         archive >> i2p;
     }
     EXPECT_TRUE(i2p.is_unknown());
