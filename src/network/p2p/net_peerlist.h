@@ -60,8 +60,7 @@ namespace nodetool
       : m_types{}
     {}
 
-    //! \return Peers stored in stream `src` in `new_format` (portable archive or older non-portable).
-    static std::optional<peerlist_storage> open(std::istream& src, const bool new_format);
+    static std::optional<peerlist_storage> open(std::istream& src);
 
     //! \return Peers stored in file at `path`
     static std::optional<peerlist_storage> open(const std::string& path);

@@ -155,17 +155,11 @@ namespace nodetool
     save_peers(a, boost::range::join(elem.ours.anchor, elem.other.anchor));
   }
 
-  std::optional<peerlist_storage> peerlist_storage::open(std::istream& src, const bool new_format)
+  std::optional<peerlist_storage> peerlist_storage::open(std::istream& src)
   {
     try
     {
       peerlist_storage out{};
-      // // if (new_format)
-      // {
-      //   boost::archive::portable_binary_iarchive a{src};
-      //   a >> out.m_types;
-      // }
-      // else
       {
         boost::archive::binary_iarchive a{src};
         a >> out.m_types;
@@ -192,17 +186,17 @@ namespace nodetool
     if(src_file.fail())
       return std::nullopt;
 
-    std::optional<peerlist_storage> out = open(src_file, true);
+    std::optional<peerlist_storage> out = open(src_file);
     if (!out)
     {
       // if failed, try reading in unportable mode
-      std::filesystem::copy_file(path, path + ".unportable", std::filesystem::copy_options::overwrite_existing);
+      std::filesystem::copy_file(path, path + ".unmaintainable", std::filesystem::copy_options::overwrite_existing);
       src_file.close();
       src_file.open( path , std::ios_base::binary | std::ios_base::in);
       if(src_file.fail())
         return std::nullopt;
 
-      out = open(src_file, false);
+      out = open(src_file);
       if (!out)
       {
         // This is different from the `return std::nullopt` cases above. Those

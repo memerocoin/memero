@@ -127,7 +127,7 @@ TEST(peerlist_storage, store)
   {
     std::istringstream stream{buffer};
     std::optional<nodetool::peerlist_storage> read_peers =
-      nodetool::peerlist_storage::open(stream, true);
+      nodetool::peerlist_storage::open(stream);
     ASSERT_TRUE(bool(read_peers));
     peers = std::move(*read_peers);
   }
@@ -195,7 +195,7 @@ TEST(peerlist_storage, store)
   {
     std::istringstream stream{buffer};
     std::optional<nodetool::peerlist_storage> read_peers =
-      nodetool::peerlist_storage::open(stream, true);
+      nodetool::peerlist_storage::open(stream);
     ASSERT_TRUE(bool(read_peers));
     peers = std::move(*read_peers);
   }
