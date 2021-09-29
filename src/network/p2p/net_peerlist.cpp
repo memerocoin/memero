@@ -30,11 +30,8 @@
 
 #include "net_peerlist_boost_serialization.h"
 
-#include "tools/boost/archive/portable_binary_iarchive.hpp"
-#include "tools/boost/archive/portable_binary_oarchive.hpp"
-
-
 #include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <boost/range/join.hpp>
 
 #include "math/crypto/controller/random.hpp"
@@ -163,12 +160,12 @@ namespace nodetool
     try
     {
       peerlist_storage out{};
-      if (new_format)
-      {
-        boost::archive::portable_binary_iarchive a{src};
-        a >> out.m_types;
-      }
-      else
+      // // if (new_format)
+      // {
+      //   boost::archive::portable_binary_iarchive a{src};
+      //   a >> out.m_types;
+      // }
+      // else
       {
         boost::archive::binary_iarchive a{src};
         a >> out.m_types;
@@ -226,7 +223,7 @@ namespace nodetool
   {
     try
     {
-      boost::archive::portable_binary_oarchive a{dest};
+      boost::archive::binary_oarchive a{dest};
       const peerlist_join pj{std::cref(m_types), std::cref(other)};
       a << pj;
       return dest.good();
