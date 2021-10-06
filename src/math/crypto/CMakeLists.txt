@@ -41,6 +41,7 @@ add_library(math_crypto
   pseudo_functional/tree-hash.cpp
 
   controller/chacha.cpp
+  controller/init.cpp
   controller/random.cpp
   controller/schnorr_signature_gen.cpp
   controller/keyGen.cpp

@@ -30,13 +30,17 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "random.hpp"
+#include "init.hpp"
 
 #include <sodium.h>
 
 
 namespace crypto {
+
   void generate_random_bytes(size_t N, uint8_t *bytes)
   {
+    init();
+
     randombytes_buf(bytes, N);
   }
 }
