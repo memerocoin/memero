@@ -497,7 +497,6 @@ namespace nodetool
       if (m_nettype == cryptonote::MAINNET)
       {
         return {
-          "lolpjcqr2woffv6h4mvw4ftq5yea4faiot4gfkzky63zuzvbwmglvuyd.onion:45678",
         };
       }
       return {};
