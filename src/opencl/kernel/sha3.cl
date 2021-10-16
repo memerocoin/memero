@@ -243,19 +243,29 @@ kernel void sha3
   size_t i = get_global_id(0);
   uint8_t nonceData[nonceSize] = {0};
 
-  const uint64_t local_nonce = mining_template->nonce + (uint64_t)i;
-  nonceToData(local_nonce, nonceData);
+  const size_t loop_size = 256;
+
+  uint64_t local_nonce = mining_template->nonce + (uint64_t)(i * loop_size);
 
   uint8_t hash[hashSize];
+  bool valid = false;
 
-  sha3_ctx_t sha3;
-  sha3_init(&sha3, hashSize);
-  sha3_update(&sha3, mining_template->header, templateHeaderSize);
-  sha3_update_private(&sha3, nonceData, nonceSize);
-  sha3_update(&sha3, mining_template->tail, (size_t)(mining_template->tailSize));
-  sha3_final(hash, &sha3);
+  for (size_t j = 0; j < loop_size; j++) {
+    nonceToData(local_nonce, nonceData);
 
-  bool valid = bounded(hash, mining_template->hashBound);
+    sha3_ctx_t sha3;
+    sha3_init(&sha3, hashSize);
+    sha3_update(&sha3, mining_template->header, templateHeaderSize);
+    sha3_update_private(&sha3, nonceData, nonceSize);
+    sha3_update(&sha3, mining_template->tail, (size_t)(mining_template->tailSize));
+    sha3_final(hash, &sha3);
+
+    valid = bounded(hash, mining_template->hashBound);
+
+    if (valid) break;
+
+    local_nonce++;
+  }
 
   /* uint8_t hashBound[hashSize]; */
   /* toLocal(mining_template->hashBound, hashBound, hashSize); */

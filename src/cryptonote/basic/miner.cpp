@@ -432,7 +432,8 @@ namespace cryptonote
     blobdata hashing_blob_tail;
     opencl::cl_mining_template mining_template;
     const size_t gpu_worker_scale = 1024;
-    const size_t worker_size = threads_total * gpu_worker_scale; 
+    const size_t gpu_loop_size = 256;
+    const size_t worker_size = threads_total * gpu_worker_scale;
 
     // constexpr uint16_t max16bit = (std::numeric_limits<uint16_t>::max());
     // constexpr uint16_t hash_count_buffer_window = 1;
@@ -547,8 +548,8 @@ namespace cryptonote
         {
         }
       }
-      nonce += worker_size;
-      m_hashes += worker_size;
+      nonce += worker_size * gpu_loop_size;
+      m_hashes += worker_size * gpu_loop_size;
 
     }
     LOG_GLOBAL_INFO("OpenCL Miner thread stopped");
