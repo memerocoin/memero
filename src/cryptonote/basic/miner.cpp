@@ -431,7 +431,7 @@ namespace cryptonote
     blobdata hashing_blob_head;
     blobdata hashing_blob_tail;
     opencl::cl_mining_template mining_template;
-    const size_t gpu_worker_scale = 1024;
+    const size_t gpu_worker_scale = 256;
     const size_t gpu_loop_size = 256;
     const size_t worker_size = threads_total * gpu_worker_scale;
 
