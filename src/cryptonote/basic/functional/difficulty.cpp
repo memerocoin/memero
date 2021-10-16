@@ -32,6 +32,16 @@ namespace cryptonote {
     return v;
   }
 
+  crypto::hash int_to_hash(const boost::multiprecision::uint512_t x) {
+    boost::multiprecision::uint512_t v = x;
+    crypto::hash h;
+    for (size_t i = 0; i < HASH_SIZE; i++) {
+      h.data[i] = (uint8_t)v;
+      v = v >> 8;
+    }
+    return h;
+  }
+
   bool check_hash(const crypto::hash &hash, const diff_t difficulty) {
     return check_hash_int(hash_to_int(hash), difficulty);
   }

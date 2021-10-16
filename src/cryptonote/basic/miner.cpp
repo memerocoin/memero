@@ -36,8 +36,12 @@
 
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 
+#include "opencl/sha3.hpp"
+
 
 #include <openssl/evp.h>
+
+#include <execution>
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -222,12 +226,24 @@ namespace cryptonote
 
     m_stop = false;
 
+
+    const auto maybeGpu = opencl::getGPU();
+
+    if (!maybeGpu) {
+      std::cerr << "No OpenCL capable GPUs" << std::endl;
+    } else {
+      const auto device = *maybeGpu;
+      m_threads.push_back(std::thread(&miner::opencl_miner, this, device));
+      return true;
+    }
+
+
     for(size_t i = 0; i != m_threads_total; i++)
     {
       m_threads.push_back(std::thread(&miner::worker_thread, this, i));
     }
 
-    LOG_INFO("Mining has started with " << threads_count << " threads, good luck!" );
+    LOG_INFO("CPU Mining has started with " << threads_count << " threads, good luck!" );
 
     return true;
   }
@@ -389,6 +405,155 @@ namespace cryptonote
     }
     LOG_GLOBAL_INFO("Miner thread stopped ["<< th_local_index << "]");
     --m_threads_active;
+    return true;
+  }
+
+  //-----------------------------------------------------------------------------------------------------
+  bool miner::opencl_miner(cl::Device device)
+  {
+    const cl::Context context(device);
+
+    const auto maybeProgram = opencl::getSha3Program(device, context);
+
+    if (!maybeProgram) {
+      std::cerr << "Failed to build sha3 OpenCL kernel" << std::endl;
+      return false;
+    }
+    const auto [program, queue] = *maybeProgram;
+
+    LOG_GLOBAL_INFO("OpenCL Miner was started");
+    uint64_t nonce = m_starter_nonce;
+    uint64_t height = 0;
+    uint32_t threads_total = m_threads_total;
+    diff_t local_diff = 0;
+    uint32_t local_template_ver = 0;
+    block b;
+    blobdata hashing_blob_head;
+    blobdata hashing_blob_tail;
+    opencl::cl_mining_template mining_template;
+    const size_t gpu_worker_scale = 1024;
+    const size_t worker_size = threads_total * gpu_worker_scale; 
+
+    // constexpr uint16_t max16bit = (std::numeric_limits<uint16_t>::max());
+    // constexpr uint16_t hash_count_buffer_window = 1;
+
+    ++m_threads_active;
+
+    boost::multiprecision::uint512_t max_int;
+
+    while(!m_stop)
+    {
+      if(m_pausers_count)
+      {
+        epee::misc_utils::sleep_no_w(100);
+        continue;
+      }
+
+      if(local_template_ver != m_template_no)
+      {
+        std::unique_lock<std::mutex> lock(m_template_lock);
+        b = m_template;
+        local_diff = m_diffic;
+        max_int = max_int_for_diff(local_diff);
+        height = m_height;
+        local_template_ver = m_template_no;
+        nonce = m_starter_nonce;
+        const blobdata head_full = get_block_hashing_blob_head(b);
+        hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
+        hashing_blob_tail = cryptonote::get_block_hashing_blob_tail(b);
+
+        // LOG_GLOBAL_INFO("head size: " << hashing_blob_head.size());
+        // LOG_GLOBAL_INFO("tail size: " << hashing_blob_tail.size());
+
+        std::copy
+          (
+             hashing_blob_head.begin()
+           , hashing_blob_head.end()
+           , mining_template.header.begin()
+           );
+
+        std::copy
+          (
+             hashing_blob_tail.begin()
+           , hashing_blob_tail.end()
+           , mining_template.tail.begin()
+           );
+
+        mining_template.tailSize = hashing_blob_tail.size();
+        mining_template.hashBound = int_to_hash(max_int).data;
+      }
+
+      if(!local_template_ver)//no any set_block_template call
+      {
+        LOG_PRINT_L2("Block template not set yet");
+        epee::misc_utils::sleep_no_w(1000);
+        continue;
+      }
+
+      using namespace opencl;
+
+      mining_template.nonce = nonce;
+
+      // LOG_GLOBAL_INFO("Mining opencl sha3 on nonce: " << nonce);
+
+      const auto hashes = opencl_sha3
+        (
+         mining_template
+         , worker_size
+         , context
+         , program
+         , queue
+         );
+
+      struct hashResult
+      {
+        bool valid_hash;
+        uint64_t nonce;
+        crypto::hash hash;
+      };
+
+      const hashResult r = std::transform_reduce
+        (
+         std::execution::par_unseq
+         , hashes.begin()
+         , hashes.end()
+         , hashResult{false, 0}
+         , [](const auto& x, const auto& y) {
+             if (y.valid_hash) {
+               return y;
+             }
+             return x;
+           }
+         , [max_int](const auto& x) -> hashResult {
+           crypto::hash h;
+           h.data = x.hash;
+           // const bool is_valid_hash = hash_to_int(h) <= max_int;
+           const bool gpu_valid = static_cast<bool>(x.valid);
+
+           // if (is_valid_hash != gpu_valid) {
+           //   LOG_FATAL("opencl error: gpu valid: " << gpu_valid << ", cpu valid: " << is_valid_hash);
+           // } 
+           return {gpu_valid, x.nonce, h};
+           }
+         );
+
+      if(r.valid_hash && check_hash(r.hash, local_diff))
+      {
+        b.nonce = r.nonce;
+        //we lucky!
+        LOG_GLOBAL_INFO_GREEN("Found block " << get_block_hash(b) << " at height " << height << " for difficulty: " << local_diff);
+        cryptonote::block_verification_context bvc;
+        if(!m_phandler->handle_block_found(b, bvc) || !bvc.m_added_to_main_chain)
+        {
+        }
+      }
+      nonce += worker_size;
+      m_hashes += worker_size;
+
+    }
+    LOG_GLOBAL_INFO("OpenCL Miner thread stopped");
+    --m_threads_active;
+
     return true;
   }
 }

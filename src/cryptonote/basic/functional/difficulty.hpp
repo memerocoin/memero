@@ -117,6 +117,7 @@ namespace cryptonote
 
   boost::multiprecision::uint512_t hash_to_int(const crypto::hash &hash);
   bool check_hash(const crypto::hash &hash, const diff_t difficulty);
+  crypto::hash int_to_hash(const boost::multiprecision::uint512_t x);
 
   diff_t next_difficulty
   (

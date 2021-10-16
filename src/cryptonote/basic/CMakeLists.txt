@@ -27,7 +27,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(cryptonote_basic_sources
+add_library(cryptonote_basic
   account.cpp
   cryptonote_basic_impl.cpp
   cryptonote_format_utils.cpp
@@ -40,11 +40,8 @@ set(cryptonote_basic_sources
   functional/subaddress.cpp
   )
 
-add_library(cryptonote_basic
-  ${cryptonote_basic_sources}
-  )
-
 target_link_libraries(cryptonote_basic
-    tools_common
-    math_crypto
- )
+  tools_common
+  math_crypto
+  opencl-sha3
+  )

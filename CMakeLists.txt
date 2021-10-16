@@ -118,7 +118,8 @@ find_library(SODIUM_LIBRARY sodium)
 ## rapidjson, only for android
 include_directories(vendor/rapidjson/include)
 
-
+## opencl
+find_package(OpenCL REQUIRED)
 
 
 # set include path
@@ -178,6 +179,8 @@ add_subdirectory(src/database)
 ## daemon
 add_subdirectory(src/daemon)
 
+## opencl miner
+add_subdirectory(src/opencl)
 
 
 

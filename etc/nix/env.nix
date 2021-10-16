@@ -42,6 +42,10 @@ in
 
       boost175 openssl readline libsodium rapidjson
       gmock
+
+      opencl-headers
+      opencl-icd
+      rocm-opencl-runtime
     ];
 
     inherit CMakeFlags_Lolnero;

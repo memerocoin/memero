@@ -58,6 +58,7 @@ target_link_libraries(unit_tests_tools
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main
+  OpenCL::OpenCL
 )
 
 gtest_discover_tests(

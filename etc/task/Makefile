@@ -79,6 +79,16 @@ main-sync-reuse:
 --rpc-bind-port 45000 \
 --add-exclusive-node 10.0.0.1 \
 
+mine:
+	../../build/bin/lolnerod \
+--hide-my-port \
+--data-dir ./mainnet/node_sync \
+--p2p-bind-port 41000 \
+--rpc-bind-port 45000 \
+--add-exclusive-node 10.0.0.1 \
+--start-mining hahaEwGNeu4AbYYrsrZmoVJUUpSWR3dQ3JuGyKJU8KKBXZVSND2duaiZUsWQcyrLEzSjH3Y4opmYJNHoBow6reYJ1iD6SQNjn4 \
+--mining-threads 4
+
 test-arg:
 	../../build/bin/lolnerod help \
 --rpc-bind-port 45000 \
