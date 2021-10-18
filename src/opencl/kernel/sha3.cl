@@ -232,6 +232,7 @@ bool is_hash_bounded(const uint8_t* hash, constant uint8_t* hashBound) {
       return true;
     }
   }
+  return true;
 }
 
 kernel void sha3
