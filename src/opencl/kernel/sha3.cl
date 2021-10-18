@@ -233,6 +233,12 @@ bool bounded(const uint8_t* hash, constant uint8_t* hashBound) {
   }
 }
 
+void memcpy(void *dst, void *src, size_t len) {
+  for (size_t i = 0; i < len; i++) {
+    ((uint8_t *)dst)[i] = ((uint8_t *)src)[i];
+  }
+}
+
 kernel void sha3
 (
  uint64_t n
@@ -250,12 +256,15 @@ kernel void sha3
   uint8_t hash[hashSize];
   bool valid = false;
 
-  for (size_t j = 0; j < loop_size; j++) {
+  sha3_ctx_t sha3_header;
+  sha3_init(&sha3_header, hashSize);
+  sha3_update(&sha3_header, mining_template->header, templateHeaderSize);
+
+  for (size_t j = 0; j < loop_size; j++, local_nonce++) {
     nonceToData(local_nonce, nonceData);
 
     sha3_ctx_t sha3;
-    sha3_init(&sha3, hashSize);
-    sha3_update(&sha3, mining_template->header, templateHeaderSize);
+    memcpy(&sha3, &sha3_header, sizeof(sha3_ctx_t));
     sha3_update_private(&sha3, nonceData, nonceSize);
     sha3_update(&sha3, mining_template->tail, (size_t)(mining_template->tailSize));
     sha3_final(hash, &sha3);
@@ -263,8 +272,6 @@ kernel void sha3
     valid = bounded(hash, mining_template->hashBound);
 
     if (valid) break;
-
-    local_nonce++;
   }
 
   /* uint8_t hashBound[hashSize]; */
