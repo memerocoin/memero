@@ -260,11 +260,12 @@ kernel void sha3
   sha3_init(&sha3_header, hashSize);
   sha3_update(&sha3_header, mining_template->header, templateHeaderSize);
 
+  sha3_ctx_t sha3;
+
   for (size_t j = 0; j < loop_size; j++, local_nonce++) {
+    memcpy(&sha3, &sha3_header, sizeof(sha3_ctx_t));
     nonceToData(local_nonce, nonceData);
 
-    sha3_ctx_t sha3;
-    memcpy(&sha3, &sha3_header, sizeof(sha3_ctx_t));
     sha3_update_private(&sha3, nonceData, nonceSize);
     sha3_update(&sha3, mining_template->tail, (size_t)(mining_template->tailSize));
     sha3_final(hash, &sha3);
