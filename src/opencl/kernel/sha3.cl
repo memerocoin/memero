@@ -175,7 +175,7 @@ int sha3_final(void *md, sha3_ctx_t *c) {
 
 
 // lolnero
-// License: MIT And BSD-3
+// License: MIT or BSD-3
 
 #define nonceSize 8
 
