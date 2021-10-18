@@ -123,7 +123,7 @@ std::vector<cl_mining_return> opencl_sha3
 	// std::vector<uint8_t> templateHead(templateHeadSize);
 
 	// Allocate device buffers and transfer input data to device.
-	cl::Buffer mining_template_array
+	cl::Buffer mining_template_in
     (
      context
      , CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR
@@ -131,7 +131,7 @@ std::vector<cl_mining_return> opencl_sha3
      , &mining_template
      );
 
-	cl::Buffer mining_return_array
+	cl::Buffer mining_result_array_out
     (
      context
      , CL_MEM_READ_WRITE
@@ -140,8 +140,8 @@ std::vector<cl_mining_return> opencl_sha3
 
 	// Set kernel parameters.
 	sha3_kernel.setArg(0, static_cast<uint64_t>(N));
-	sha3_kernel.setArg(1, mining_template_array);
-	sha3_kernel.setArg(2, mining_return_array);
+	sha3_kernel.setArg(1, mining_template_in);
+	sha3_kernel.setArg(2, mining_result_array_out);
 
 	// Launch kernel on the compute device.
 	queue.enqueueNDRangeKernel(sha3_kernel, cl::NullRange, N, cl::NullRange);
@@ -149,7 +149,7 @@ std::vector<cl_mining_return> opencl_sha3
 	// Get result back to host.
 	queue.enqueueReadBuffer
     (
-     mining_return_array
+     mining_result_array_out
      , CL_TRUE
      , 0
      , return_size
