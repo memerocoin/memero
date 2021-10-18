@@ -36,7 +36,8 @@ namespace opencl
     std::array<uint8_t, hashSize> hashBound;
     std::array<uint8_t, templateHeaderSize> header = {};
     std::array<uint8_t, templateTailSize> tail = {};
-    uint8_t tailSize = 0;
+    size_t tailSize = 0;
+    size_t loopSize = 0;
   };
 
 

@@ -488,6 +488,7 @@ namespace cryptonote
 
         mining_template.tailSize = hashing_blob_tail.size();
         mining_template.hashBound = int_to_hash(max_int).data;
+        mining_template.loopSize = gpu_loop_size;
       }
 
       if(!local_template_ver)//no any set_block_template call

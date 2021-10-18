@@ -197,7 +197,8 @@ typedef struct _cl_mining_template
   uint8_t hashBound[hashSize];
   uint8_t header[templateHeaderSize];
   uint8_t tail[templateTailSize];
-  uint8_t tailSize;
+  size_t tailSize;
+  size_t loopSize;
 } cl_mining_template;
 
 
@@ -244,7 +245,7 @@ kernel void sha3
   size_t i = get_global_id(0);
   uint8_t nonceData[nonceSize] = {0};
 
-  const size_t loop_size = 256;
+  const size_t loop_size = mining_template->loopSize;
 
   uint64_t local_nonce = mining_template->nonce + (uint64_t)(i * loop_size);
 
@@ -262,7 +263,7 @@ kernel void sha3
     nonceToData(local_nonce, nonceData);
 
     sha3_update_private(&sha3, nonceData, nonceSize);
-    sha3_update(&sha3, mining_template->tail, (size_t)(mining_template->tailSize));
+    sha3_update(&sha3, mining_template->tail, mining_template->tailSize);
     sha3_final(hash, &sha3);
 
     valid = is_hash_bounded(hash, mining_template->hashBound);

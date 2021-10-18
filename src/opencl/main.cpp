@@ -62,6 +62,8 @@ int main() {
      );
 
   mining_template.nonce = 0;
+  mining_template.loopSize = 1;
+
   std::fill
     (
      mining_template.hashBound.begin()

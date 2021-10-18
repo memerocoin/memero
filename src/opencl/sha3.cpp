@@ -142,7 +142,6 @@ std::vector<cl_mining_return> opencl_sha3
 	sha3_kernel.setArg(0, static_cast<uint64_t>(N));
 	sha3_kernel.setArg(1, mining_template_array);
 	sha3_kernel.setArg(2, mining_return_array);
-	sha3_kernel.setArg(3, mining_template.tailSize);
 
 	// Launch kernel on the compute device.
 	queue.enqueueNDRangeKernel(sha3_kernel, cl::NullRange, N, cl::NullRange);
