@@ -237,8 +237,7 @@ bool is_hash_bounded(const uint8_t* hash, constant uint8_t* hashBound) {
 
 kernel void sha3
 (
- uint64_t n
- , constant cl_mining_template* mining_template
+ constant cl_mining_template* mining_template
  , global cl_mining_return* mining_return
  )
 {

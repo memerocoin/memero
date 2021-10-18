@@ -139,9 +139,8 @@ std::vector<cl_mining_return> opencl_sha3
      );
 
 	// Set kernel parameters.
-	sha3_kernel.setArg(0, static_cast<uint64_t>(N));
-	sha3_kernel.setArg(1, mining_template_in);
-	sha3_kernel.setArg(2, mining_result_array_out);
+	sha3_kernel.setArg(0, mining_template_in);
+	sha3_kernel.setArg(1, mining_result_array_out);
 
 	// Launch kernel on the compute device.
 	queue.enqueueNDRangeKernel(sha3_kernel, cl::NullRange, N, cl::NullRange);
