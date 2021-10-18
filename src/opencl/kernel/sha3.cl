@@ -222,7 +222,7 @@ void toLocal(constant uint8_t* x, uint8_t* y, const size_t l) {
   }
 }
 
-bool bounded(const uint8_t* hash, constant uint8_t* hashBound) {
+bool is_hash_bounded(const uint8_t* hash, constant uint8_t* hashBound) {
   for (size_t i = 0; i < hashSize; i++) {
     size_t j = hashSize - i - 1;
     if (hash[j] > hashBound[j]) {
@@ -265,10 +265,12 @@ kernel void sha3
     sha3_update(&sha3, mining_template->tail, (size_t)(mining_template->tailSize));
     sha3_final(hash, &sha3);
 
-    valid = bounded(hash, mining_template->hashBound);
+    valid = is_hash_bounded(hash, mining_template->hashBound);
 
     if (valid) break;
   }
+
+  if (!valid) local_nonce--;
 
   /* uint8_t hashBound[hashSize]; */
   /* toLocal(mining_template->hashBound, hashBound, hashSize); */
