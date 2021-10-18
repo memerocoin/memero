@@ -41,8 +41,12 @@
 
 #include <boost/program_options.hpp>
 
+#ifdef OpenCL
+
 #define CL_TARGET_OPENCL_VERSION 120
 #include <CL/cl.hpp>
+
+#endif
 
 namespace cryptonote
 {
@@ -84,10 +88,14 @@ namespace cryptonote
 
   private:
     bool worker_thread(const size_t index);
+
+#ifdef OpenCL
     bool opencl_miner
     (
      const cl::Device device
      );
+#endif
+
     bool request_block_template();
     void  merge_hr();
 

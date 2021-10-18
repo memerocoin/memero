@@ -40,8 +40,16 @@ add_library(cryptonote_basic
   functional/subaddress.cpp
   )
 
+
+if(OpenCL_FOUND)
 target_link_libraries(cryptonote_basic
   tools_common
   math_crypto
   opencl-sha3
   )
+else()
+target_link_libraries(cryptonote_basic
+  tools_common
+  math_crypto
+  )
+endif()

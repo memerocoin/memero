@@ -119,7 +119,11 @@ find_library(SODIUM_LIBRARY sodium)
 include_directories(vendor/rapidjson/include)
 
 ## opencl
-find_package(OpenCL REQUIRED)
+find_package(OpenCL)
+
+if(OpenCL_FOUND)
+  add_definitions(-DOpenCL)
+endif()
 
 
 # set include path
@@ -180,12 +184,17 @@ add_subdirectory(src/database)
 add_subdirectory(src/daemon)
 
 ## opencl miner
-add_subdirectory(src/opencl)
+if(OpenCL_FOUND)
+  add_subdirectory(src/opencl)
+endif()
+
 
 
 
 # test
 if(BUILD_TESTING)
+  find_package(OpenCL REQUIRED)
+
   include(CTest)
 
   include_directories(tests)

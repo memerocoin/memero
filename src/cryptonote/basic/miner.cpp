@@ -36,7 +36,9 @@
 
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 
+#ifdef OpenCL
 #include "opencl/sha3.hpp"
+#endif
 
 
 #include <openssl/evp.h>
@@ -227,6 +229,8 @@ namespace cryptonote
     m_stop = false;
 
 
+
+#ifdef OpenCL
     const auto maybeGpu = opencl::getGPU();
 
     if (!maybeGpu) {
@@ -236,6 +240,7 @@ namespace cryptonote
       m_threads.push_back(std::thread(&miner::opencl_miner, this, device));
       return true;
     }
+#endif
 
 
     for(size_t i = 0; i != m_threads_total; i++)
@@ -408,6 +413,7 @@ namespace cryptonote
     return true;
   }
 
+#ifdef OpenCL
   //-----------------------------------------------------------------------------------------------------
   bool miner::opencl_miner(cl::Device device)
   {
@@ -557,4 +563,7 @@ namespace cryptonote
 
     return true;
   }
+
+#endif
+
 }
