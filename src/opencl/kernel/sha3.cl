@@ -224,12 +224,11 @@ void toLocal(constant uint8_t* x, uint8_t* y, const size_t l) {
 }
 
 bool is_hash_bounded(const uint8_t* hash, constant uint8_t* hashBound) {
-  for (size_t i = 0; i < hashSize; i++) {
-    size_t j = hashSize - i - 1;
-    if (hash[j] > hashBound[j]) {
+  for (size_t i = hashSize - 1; i >= 0; i--) {
+    if (hash[i] > hashBound[i]) {
       return false;
     }
-    else if (hash[j] < hashBound[j]) {
+    else if (hash[i] < hashBound[i]) {
       return true;
     }
   }
