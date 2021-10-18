@@ -175,6 +175,7 @@ int sha3_final(void *md, sha3_ctx_t *c) {
 
 
 // lolnero
+// License: MIT And BSD-3
 
 #define nonceSize 8
 
@@ -233,12 +234,6 @@ bool bounded(const uint8_t* hash, constant uint8_t* hashBound) {
   }
 }
 
-void memcpy(void *dst, void *src, size_t len) {
-  for (size_t i = 0; i < len; i++) {
-    ((uint8_t *)dst)[i] = ((uint8_t *)src)[i];
-  }
-}
-
 kernel void sha3
 (
  uint64_t n
@@ -263,7 +258,7 @@ kernel void sha3
   sha3_ctx_t sha3;
 
   for (size_t j = 0; j < loop_size; j++, local_nonce++) {
-    memcpy(&sha3, &sha3_header, sizeof(sha3_ctx_t));
+    sha3 = sha3_header;
     nonceToData(local_nonce, nonceData);
 
     sha3_update_private(&sha3, nonceData, nonceSize);
