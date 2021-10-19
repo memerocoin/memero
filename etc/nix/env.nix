@@ -4,6 +4,7 @@ with import <nixpkgs> {};
 let
   CMakeFlags_Lolnero = ''
     -DReadline_ROOT_DIR=${readline.dev}
+    -DUSE_OPENCL=ON
   '';
 
   CMakeDevFlags = ''
