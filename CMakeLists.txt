@@ -121,7 +121,7 @@ include_directories(vendor/rapidjson/include)
 ## opencl
 option(USE_OPENCL "Build with OpenCL support." OFF)
 if(USE_OPENCL)
-  find_package(OpenCL)
+  find_package(OpenCL REQUIRED)
 endif()
 
 if(OpenCL_FOUND)
