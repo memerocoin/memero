@@ -119,7 +119,7 @@ find_library(SODIUM_LIBRARY sodium)
 include_directories(vendor/rapidjson/include)
 
 ## opencl
-option(USE_OPENCL "Build with OpenCL support." ON)
+option(USE_OPENCL "Build with OpenCL support." OFF)
 if(USE_OPENCL)
   find_package(OpenCL)
 endif()
