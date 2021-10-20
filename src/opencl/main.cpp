@@ -98,12 +98,6 @@ int main() {
   }
   std::cout << std::endl;
 
-	std::cout << "nonceData: " << std::endl;
-  for (const uint8_t c: r.nonceData) {
-    std::cout << std::hex << (uint16_t)c;
-  }
-  std::cout << std::endl;
-
   const bool valid = r.valid;
   std::cout << "nonce: " << r.nonce << std::endl;
 	std::cout << "valid: " << valid << std::endl;

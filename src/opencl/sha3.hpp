@@ -46,7 +46,6 @@ namespace opencl
   struct cl_mining_return
   {
     std::array<uint8_t, hashSize> hash;
-    std::array<uint8_t, nonceSize> nonceData;
     uint64_t nonce;
     uint8_t valid;
   };

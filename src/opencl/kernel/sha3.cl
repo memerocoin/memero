@@ -178,15 +178,6 @@ int sha3_final(void *md, sha3_ctx_t *c) {
 // License: MIT or BSD-3
 
 #define nonceSize 8
-
-void nonceToData(const uint64_t x, uint8_t *s) {
-  uint64_t v = x;
-  for (size_t i = 0; i < nonceSize; i++) {
-    s[i] = (uint8_t)v;
-    v = v >> 8;
-  }
-}
-
 #define templateHeaderSize 39
 #define templateTailSize 36
 #define hashSize 32
@@ -201,23 +192,24 @@ typedef struct _cl_mining_template
   size_t loopSize;
 } cl_mining_template;
 
-
-typedef struct _cl_mining_return
+typedef struct _cl_mining_result_array
 {
   uint8_t hash[hashSize];
-  uint8_t nonceData[nonceSize];
   uint64_t nonce;
   uint8_t valid;
-} cl_mining_return;
+} cl_mining_result_array;
 
 
-void toGlobal(const uint8_t* x, global uint8_t* y, const size_t l) {
-  for (size_t i = 0; i < l; i++) {
-    y[i] = x[i];
+
+void nonceToData(const uint64_t x, uint8_t *s) {
+  uint64_t v = x;
+  for (size_t i = 0; i < nonceSize; i++) {
+    s[i] = (uint8_t)v;
+    v = v >> 8;
   }
 }
 
-void toLocal(constant uint8_t* x, uint8_t* y, const size_t l) {
+void toGlobal(const uint8_t* x, global uint8_t* y, const size_t l) {
   for (size_t i = 0; i < l; i++) {
     y[i] = x[i];
   }
@@ -238,14 +230,13 @@ bool is_hash_bounded(const uint8_t* hash, constant uint8_t* hashBound) {
 kernel void sha3
 (
  constant cl_mining_template* mining_template
- , global cl_mining_return* mining_return
+ , global cl_mining_result_array* mining_result_array
  )
 {
-  size_t i = get_global_id(0);
-  uint8_t nonceData[nonceSize] = {0};
-
+  const size_t i = get_global_id(0);
   const size_t loop_size = mining_template->loopSize;
 
+  uint8_t nonceData[nonceSize] = {0};
   uint64_t local_nonce = mining_template->nonce + (uint64_t)(i * loop_size);
 
   uint8_t hash[hashSize];
@@ -271,13 +262,8 @@ kernel void sha3
 
   if (!valid) local_nonce--;
 
-  /* uint8_t hashBound[hashSize]; */
-  /* toLocal(mining_template->hashBound, hashBound, hashSize); */
+  toGlobal(hash, mining_result_array[i].hash, hashSize);
 
-  nonceToData(local_nonce, nonceData);
-  toGlobal(hash, mining_return[i].hash, hashSize);
-
-  toGlobal(nonceData, mining_return[i].nonceData, nonceSize);
-  mining_return[i].nonce = local_nonce;
-  mining_return[i].valid = valid;
+  mining_result_array[i].nonce = local_nonce;
+  mining_result_array[i].valid = valid;
 };
