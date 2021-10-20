@@ -13,6 +13,11 @@ https://twitter.com/101n3r0/status/1313197529027112960
 
 Updates:
 
+Oct 21th, 2021
+
+Lolnero moved to GPU mining, since there's a built-in OpenCL miner now. What's interesting is the speed this miner got developed. It literally only took 4 days. Thanks to [cruzbit](https://github.com/cruzbit/cruzbit) which provided a solid opencl code base to work on.
+
+
 Sep 11th, 2021
 
 Tx extra has been reworked to only include tx output public keys. It's probably how sub-address was intended to be used. More refactoring has been done that made further work on wallet code possible. This is actually huge.
