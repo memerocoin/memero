@@ -27,7 +27,7 @@ namespace opencl
 {
 
   constexpr size_t templateHeaderSize = 39;
-  constexpr size_t templateTailSize = 36;
+  constexpr size_t templateTailMaxSize = 36;
   constexpr size_t hashSize = 32;
 
   struct cl_mining_template
@@ -35,7 +35,7 @@ namespace opencl
     uint64_t nonce = 0;
     std::array<uint8_t, hashSize> hashBound;
     std::array<uint8_t, templateHeaderSize> header = {};
-    std::array<uint8_t, templateTailSize> tail = {};
+    std::array<uint8_t, templateTailMaxSize> tail = {};
     size_t tailSize = 0;
     size_t loopSize = 0;
   };

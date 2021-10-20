@@ -179,7 +179,7 @@ int sha3_final(void *md, sha3_ctx_t *c) {
 
 #define nonceSize 8
 #define templateHeaderSize 39
-#define templateTailSize 36
+#define templateTailMaxSize 36
 #define hashSize 32
 
 typedef struct _cl_mining_template
@@ -187,7 +187,7 @@ typedef struct _cl_mining_template
   uint64_t nonce;
   uint8_t hashBound[hashSize];
   uint8_t header[templateHeaderSize];
-  uint8_t tail[templateTailSize];
+  uint8_t tail[templateTailMaxSize];
   size_t tailSize;
   size_t loopSize;
 } cl_mining_template;
