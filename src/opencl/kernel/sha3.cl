@@ -259,9 +259,8 @@ kernel void sha3
 
   for (size_t j = 0; j < loop_size; j++, local_nonce++) {
     sha3 = sha3_header;
-    nonceToData(local_nonce, nonceData);
 
-    sha3_update_private(&sha3, nonceData, nonceSize);
+    sha3_update_private(&sha3, &local_nonce, nonceSize);
     sha3_update(&sha3, mining_template->tail, mining_template->tailSize);
     sha3_final(hash, &sha3);
 
@@ -275,6 +274,7 @@ kernel void sha3
   /* uint8_t hashBound[hashSize]; */
   /* toLocal(mining_template->hashBound, hashBound, hashSize); */
 
+  nonceToData(local_nonce, nonceData);
   toGlobal(hash, mining_return[i].hash, hashSize);
 
   toGlobal(nonceData, mining_return[i].nonceData, nonceSize);
