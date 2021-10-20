@@ -171,7 +171,7 @@ typedef struct
 
 
 
-void toGlobal(const uint8_t* x, global uint8_t* y, const size_t l) {
+void to_global(const uint8_t* x, global uint8_t* y, const size_t l) {
   for (size_t i = 0; i < l; i++) {
     y[i] = x[i];
   }
@@ -223,7 +223,7 @@ kernel void sha3
 
   if (!valid) local_nonce--;
 
-  toGlobal(hash, mining_result_array[i].hash, hashSize);
+  to_global(hash, mining_result_array[i].hash, hashSize);
 
   mining_result_array[i].nonce = local_nonce;
   mining_result_array[i].valid = valid;
