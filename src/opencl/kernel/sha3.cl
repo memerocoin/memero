@@ -177,7 +177,6 @@ int sha3_final(void *md, sha3_ctx_t *c) {
 // lolnero
 // License: MIT or BSD-3
 
-#define nonceSize 8
 #define templateHeaderSize 39
 #define templateTailMaxSize 36
 #define hashSize 32
@@ -200,14 +199,6 @@ typedef struct _cl_mining_result_array
 } cl_mining_result_array;
 
 
-
-void nonceToData(const uint64_t x, uint8_t *s) {
-  uint64_t v = x;
-  for (size_t i = 0; i < nonceSize; i++) {
-    s[i] = (uint8_t)v;
-    v = v >> 8;
-  }
-}
 
 void toGlobal(const uint8_t* x, global uint8_t* y, const size_t l) {
   for (size_t i = 0; i < l; i++) {
@@ -236,7 +227,6 @@ kernel void sha3
   const size_t i = get_global_id(0);
   const size_t loop_size = mining_template->loopSize;
 
-  uint8_t nonceData[nonceSize] = {0};
   uint64_t local_nonce = mining_template->nonce + (uint64_t)(i * loop_size);
 
   uint8_t hash[hashSize];
@@ -251,7 +241,7 @@ kernel void sha3
   for (size_t j = 0; j < loop_size; j++, local_nonce++) {
     sha3 = sha3_header;
 
-    sha3_update_private(&sha3, &local_nonce, nonceSize);
+    sha3_update_private(&sha3, &local_nonce, sizeof(uint64_t));
     sha3_update(&sha3, mining_template->tail, mining_template->tailSize);
     sha3_final(hash, &sha3);
 
