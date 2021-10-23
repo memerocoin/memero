@@ -220,16 +220,16 @@ TEST(FromHex, ToBuffer)
 
   std::vector<std::uint8_t> out{};
   out.resize(sizeof(binary));
-  EXPECT_FALSE(epee::hex::to_span((out), hex));
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_span((out), hex));
 
   std::string_view portion{hex};
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::hex::to_span((out), portion));
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_span((out), portion));
 
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::hex::to_span({out.data(), out.size() - 1}, portion));
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_span({out.data(), out.size() - 1}, portion));
 
-  EXPECT_TRUE(epee::hex::to_span((out), portion));
+  EXPECT_TRUE(epee::hex::decode_from_hex_to_span((out), portion));
   const std::vector<std::uint8_t> expected{std::begin(binary), std::end(binary)};
   EXPECT_EQ(expected, out);
 }
