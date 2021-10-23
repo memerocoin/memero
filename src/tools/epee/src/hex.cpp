@@ -122,7 +122,7 @@ namespace hex
     }
   }
 
-  bool to_string(std::string& res, const std::string_view s)
+  bool decode_from_hex_to_string(std::string& res, const std::string_view s)
   {
     const auto r = decode_from_hex_to_blob(s);
     if (r) {

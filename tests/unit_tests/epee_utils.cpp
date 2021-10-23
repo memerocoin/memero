@@ -202,14 +202,14 @@ TEST(FromHex, ToString)
   };
 
   std::string out{};
-  EXPECT_FALSE(epee::hex::to_string(out, hex));
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_string(out, hex));
 
   std::string_view portion{hex};
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::hex::to_string(out, portion));
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_string(out, portion));
 
   portion.remove_suffix(1);
-  EXPECT_TRUE(epee::hex::to_string(out, portion));
+  EXPECT_TRUE(epee::hex::decode_from_hex_to_string(out, portion));
   EXPECT_EQ(std::string{binary}, out);
 }
 
