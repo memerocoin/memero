@@ -39,7 +39,7 @@ namespace epee
 {
 namespace hex
 {
-  std::string decode(const std::span<const std::uint8_t> src);
+  std::string encode_to_hex(const std::span<const std::uint8_t> src);
 
   //! Append `src` as hex to `out`.
   void append_decode(std::ostream& out, const std::span<const std::uint8_t> src);

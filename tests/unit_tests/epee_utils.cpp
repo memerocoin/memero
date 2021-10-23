@@ -127,12 +127,12 @@ TEST(ToHex, String)
 {
   EXPECT_EQ(
     std::string{"ffab0100"},
-    epee::hex::decode(epee::pod_to_span("\xff\xab\x01"))
+    epee::hex::encode_to_hex(epee::pod_to_span("\xff\xab\x01"))
   );
 
   const std::vector<unsigned char> all_bytes = get_all_bytes();
   EXPECT_EQ(
-    std_to_hex(all_bytes), epee::hex::decode(all_bytes)
+    std_to_hex(all_bytes), epee::hex::encode_to_hex(all_bytes)
   );
 
 }
@@ -143,7 +143,7 @@ TEST(HexLocale, String)
     std::vector<uint8_t> source{{ 0x00, 0xFF, 0x0F, 0xF0 }};
 
     // encode and decode the data
-    auto hex = epee::hex::decode(std::span{ source.data(), source.size() });
+    auto hex = epee::hex::encode_to_hex(std::span{ source.data(), source.size() });
     auto decoded = epee::string_tools::hex_to_vector_filtered(hex);
 
     // encoded should be twice the size and should decode to the exact same data

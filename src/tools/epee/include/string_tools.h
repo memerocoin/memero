@@ -120,7 +120,7 @@ namespace string_tools
   std::string pod_to_hex(const t_pod_type& s)
   {
     static_assert(std::is_standard_layout<t_pod_type>(), "expected standard layout type");
-    return hex::decode(pod_to_span(s));
+    return hex::encode_to_hex(pod_to_span(s));
   }
   //----------------------------------------------------------------------------
   template<class t_pod_type>

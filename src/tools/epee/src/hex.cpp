@@ -57,7 +57,7 @@ namespace epee
 namespace hex
 {
   template<typename T>
-  T convert(const std::span<const std::uint8_t> src)
+  T encode_to_hex_t(const std::span<const std::uint8_t> src)
   {
     if (std::numeric_limits<std::size_t>::max() / 2 < src.size())
       throw std::range_error("hex_view::to_string exceeded maximum size");
@@ -68,8 +68,8 @@ namespace hex
     return out;
   }
 
-  std::string decode(const std::span<const std::uint8_t> src) {
-    return convert<std::string>(src);
+  std::string encode_to_hex(const std::span<const std::uint8_t> src) {
+    return encode_to_hex_t<std::string>(src);
   }
 
   void append_decode(std::ostream& out, const std::span<const std::uint8_t> src)

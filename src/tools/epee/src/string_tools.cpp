@@ -48,7 +48,7 @@ namespace string_tools
   //----------------------------------------------------------------------------
   std::string buff_to_hex_nodelimer(const std::string& src)
   {
-    return hex::decode(string_to_blob(src));
+    return hex::encode_to_hex(string_to_blob(src));
   }
   //----------------------------------------------------------------------------
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)
