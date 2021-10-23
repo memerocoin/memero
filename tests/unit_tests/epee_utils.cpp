@@ -165,7 +165,7 @@ TEST(ToHex, Ostream)
 
   {
     const std::uint8_t source[] = {0xff, 0xab, 0x01, 0x00};
-    epee::hex::append_decode(out, source);
+    epee::hex::encode_to_hex_stream(out, source);
   }
 
   std::string expected{"ffab0100"};
@@ -174,7 +174,7 @@ TEST(ToHex, Ostream)
   const std::vector<unsigned char> all_bytes = get_all_bytes();
 
   expected.append(std_to_hex(all_bytes));
-  epee::hex::append_decode(out, (all_bytes));
+  epee::hex::encode_to_hex_stream(out, (all_bytes));
   EXPECT_EQ(expected, out.str());
 }
 
@@ -184,13 +184,13 @@ TEST(ToHex, Formatted)
   std::string expected{};
 
   expected.append("<ffab0100>");
-  epee::hex::append_decode_formatted(out, epee::pod_to_span("\xFF\xAB\x01"));
+  epee::hex::encode_to_hex_stream_formatted(out, epee::pod_to_span("\xFF\xAB\x01"));
   EXPECT_EQ(expected, out.str());
 
   const std::vector<unsigned char> all_bytes = get_all_bytes();
 
   expected.append("<").append(std_to_hex(all_bytes)).append(">");
-  epee::hex::append_decode_formatted(out, (all_bytes));
+  epee::hex::encode_to_hex_stream_formatted(out, (all_bytes));
   EXPECT_EQ(expected, out.str());
 }
 

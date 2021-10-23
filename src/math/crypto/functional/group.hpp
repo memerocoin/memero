@@ -34,7 +34,7 @@ namespace crypto {
 
   // not really functional but needed in other part of the code
   inline std::ostream &operator <<(std::ostream &o, const crypto::crypto_data &v) {
-    epee::hex::append_decode_formatted(o, v.data); return o;
+    epee::hex::encode_to_hex_stream_formatted(o, v.data); return o;
   }
 
   using dataV = std::vector<crypto_data>;

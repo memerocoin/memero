@@ -50,7 +50,7 @@ namespace crypto {
   }
 
   inline std::ostream &operator <<(std::ostream &o, const schnorr_signature &v) {
-    epee::hex::append_decode_formatted(o, epee::pod_to_span(v)); return o;
+    epee::hex::encode_to_hex_stream_formatted(o, epee::pod_to_span(v)); return o;
   }
 
   bool verify_schnorr_signature

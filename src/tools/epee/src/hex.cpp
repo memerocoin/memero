@@ -72,15 +72,15 @@ namespace hex
     return encode_to_hex_t<std::string>(src);
   }
 
-  void append_decode(std::ostream& out, const std::span<const std::uint8_t> src)
+  void encode_to_hex_stream(std::ostream& out, const std::span<const std::uint8_t> src)
   {
     encode_to_hex_iterator(std::ostreambuf_iterator<char>{out}, src);
   }
 
-  void append_decode_formatted(std::ostream& out, const std::span<const std::uint8_t> src)
+  void encode_to_hex_stream_formatted(std::ostream& out, const std::span<const std::uint8_t> src)
   {
     out.put('<');
-    append_decode(out, src);
+    encode_to_hex_stream(out, src);
     out.put('>');
   }
 

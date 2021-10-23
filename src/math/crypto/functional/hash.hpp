@@ -34,14 +34,14 @@ namespace crypto {
     }
   };
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash &v) {
-    epee::hex::append_decode_formatted(o, v.data); return o;
+    epee::hex::encode_to_hex_stream_formatted(o, v.data); return o;
   }
 
   struct hash8 {
     std::array<uint8_t, 8> data;
   };
   inline std::ostream &operator <<(std::ostream &o, const crypto::hash8 &v) {
-    epee::hex::append_decode_formatted(o, v.data); return o;
+    epee::hex::encode_to_hex_stream_formatted(o, v.data); return o;
   }
 
   constexpr crypto::hash null_hash = {};
