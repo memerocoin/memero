@@ -48,7 +48,7 @@ namespace hex
   void encode_to_hex_stream_formatted(std::ostream& out, const std::span<const std::uint8_t> src);
 
   // static bool to_string(std::string& out, std::string_view src);
-  std::optional<epee::blob::data> to_blob(const std::string_view src);
+  std::optional<epee::blob::data> decode_from_hex_to_blob(const std::string_view src);
   bool to_string(std::string& out, const std::string_view src);
   bool decode_from_hex_to_span(std::span<std::uint8_t> out, const std::string_view src) noexcept;
 };

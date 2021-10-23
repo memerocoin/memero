@@ -111,7 +111,7 @@ namespace hex
     return decode_from_hex_unchecked(out.data(), src);
   }
 
-  std::optional<epee::blob::data> to_blob(const std::string_view src) {
+  std::optional<epee::blob::data> decode_from_hex_to_blob(const std::string_view src) {
     epee::blob::data out;
     out.resize(src.size() / 2);
     const bool r = decode_from_hex_unchecked(out.data(), src);
@@ -124,7 +124,7 @@ namespace hex
 
   bool to_string(std::string& res, const std::string_view s)
   {
-    const auto r = to_blob(s);
+    const auto r = decode_from_hex_to_blob(s);
     if (r) {
       res = ::epee::string_tools::blob_to_string(*r);
       return true;

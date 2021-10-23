@@ -188,7 +188,7 @@ namespace string_tools
              ),
             s.end());
 
-    const std::optional<::epee::blob::data> r = hex::to_blob(s);
+    const std::optional<::epee::blob::data> r = hex::decode_from_hex_to_blob(s);
     std::vector<uint8_t> v;
     if (r) {
       const auto str = *r;
