@@ -39,7 +39,7 @@ namespace epee
   namespace
   {
     template<typename T>
-    void write_hex(T&& out, const std::span<const std::uint8_t> src)
+    void encode_to_hex_iterator(T&& out, const std::span<const std::uint8_t> src)
     {
       static constexpr const char hex[] = "0123456789abcdef";
       static_assert(sizeof(hex) == 17, "bad string size");
@@ -64,7 +64,7 @@ namespace hex
 
     T out{};
     out.resize(src.size() * 2);
-    write_hex(out.data(), src); // can't see the non const version in wipeable_string??
+    encode_to_hex_iterator(out.data(), src); // can't see the non const version in wipeable_string??
     return out;
   }
 
@@ -74,7 +74,7 @@ namespace hex
 
   void append_decode(std::ostream& out, const std::span<const std::uint8_t> src)
   {
-    write_hex(std::ostreambuf_iterator<char>{out}, src);
+    encode_to_hex_iterator(std::ostreambuf_iterator<char>{out}, src);
   }
 
   void append_decode_formatted(std::ostream& out, const std::span<const std::uint8_t> src)
