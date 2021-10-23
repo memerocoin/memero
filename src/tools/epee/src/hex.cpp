@@ -84,7 +84,7 @@ namespace hex
     out.put('>');
   }
 
-  bool to_buffer_unchecked(std::uint8_t* dst, const std::string_view s) noexcept
+  bool decode_from_hex_unchecked(std::uint8_t* dst, const std::string_view s) noexcept
   {
     if (s.size() % 2 != 0)
       return false;
@@ -108,13 +108,13 @@ namespace hex
   {
     if (src.size() / 2 != out.size())
       return false;
-    return to_buffer_unchecked(out.data(), src);
+    return decode_from_hex_unchecked(out.data(), src);
   }
 
   std::optional<epee::blob::data> to_blob(const std::string_view src) {
     epee::blob::data out;
     out.resize(src.size() / 2);
-    const bool r = to_buffer_unchecked(out.data(), src);
+    const bool r = decode_from_hex_unchecked(out.data(), src);
     if (r) {
       return out;
     } else {
