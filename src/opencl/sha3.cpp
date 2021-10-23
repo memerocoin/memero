@@ -60,10 +60,10 @@ std::optional
   >
 getSha3Program
 (
- const cl::Device device
- , const cl::Context context
- ) {
-
+  const cl::Device device
+  , const cl::Context context
+  )
+{
   const std::string src
     (
      (const char*)opencl_kernel_sha3_cl
@@ -78,7 +78,7 @@ getSha3Program
 
   cl::Program program(context, sources);
 
-	const auto err = program.build("-cl-std=CL1.2");
+  const auto err = program.build("-cl-std=CL1.2");
   if (err != CL_SUCCESS) {
     std::cerr
       << "OpenCL compilation error:" << std::endl
@@ -96,34 +96,34 @@ getSha3Program
                 << buildlog << std::endl;
     }
     return {};
-	}
+  }
 
-	const cl::CommandQueue queue(context, device);
+  const cl::CommandQueue queue(context, device);
   return {{program, queue}};
 }
 
 std::vector<cl_mining_return> opencl_sha3
 (
- const cl_mining_template x
- , const size_t worker_size
- , const cl::Context context
- , const cl::Program program
- , const cl::CommandQueue queue
-)
+  const cl_mining_template x
+  , const size_t worker_size
+  , const cl::Context context
+  , const cl::Program program
+  , const cl::CommandQueue queue
+  )
 {
-	cl::Kernel sha3_kernel(program, "sha3");
+  cl::Kernel sha3_kernel(program, "sha3");
   const size_t N = worker_size;
 
   cl_mining_template mining_template = x;
 
-	std::vector<cl_mining_return> mining_return(N);
+  std::vector<cl_mining_return> mining_return(N);
   const size_t return_size = mining_return.size() * sizeof(cl_mining_return);
 
 
-	// std::vector<uint8_t> templateHead(templateHeadSize);
+  // std::vector<uint8_t> templateHead(templateHeadSize);
 
-	// Allocate device buffers and transfer input data to device.
-	cl::Buffer mining_template_in
+  // Allocate device buffers and transfer input data to device.
+  cl::Buffer mining_template_in
     (
      context
      , CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR
@@ -131,22 +131,22 @@ std::vector<cl_mining_return> opencl_sha3
      , &mining_template
      );
 
-	cl::Buffer mining_result_array_out
+  cl::Buffer mining_result_array_out
     (
      context
      , CL_MEM_READ_WRITE
      , return_size
      );
 
-	// Set kernel parameters.
-	sha3_kernel.setArg(0, mining_template_in);
-	sha3_kernel.setArg(1, mining_result_array_out);
+  // Set kernel parameters.
+  sha3_kernel.setArg(0, mining_template_in);
+  sha3_kernel.setArg(1, mining_result_array_out);
 
-	// Launch kernel on the compute device.
-	queue.enqueueNDRangeKernel(sha3_kernel, cl::NullRange, N, cl::NullRange);
+  // Launch kernel on the compute device.
+  queue.enqueueNDRangeKernel(sha3_kernel, cl::NullRange, N, cl::NullRange);
 
-	// Get result back to host.
-	queue.enqueueReadBuffer
+  // Get result back to host.
+  queue.enqueueReadBuffer
     (
      mining_result_array_out
      , CL_TRUE
