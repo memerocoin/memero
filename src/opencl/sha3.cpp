@@ -134,7 +134,7 @@ std::vector<cl_mining_return> opencl_sha3
   cl::Buffer mining_result_array_out
     (
      context
-     , CL_MEM_READ_WRITE
+     , CL_MEM_WRITE_ONLY
      , return_size
      );
 
