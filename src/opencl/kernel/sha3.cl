@@ -9,11 +9,14 @@ typedef struct {
     uint8_t b[200]; // 8-bit bytes
     uint64_t q[25]; // 64-bit words
   } st;
-  int pt, rsiz, mdlen; // these don't overflow
+  int pt; // these don't overflow
 } sha3_ctx_t;
 
 #define KECCAKF_ROUNDS 24
 #define ROTL64(x, y) (((x) << (y)) | ((x) >> (64 - (y))))
+
+#define c_mdlen 32
+#define c_rsiz (200 - 2 * c_mdlen)
 
 // constants
 constant uint64_t keccakf_rndc[24] = {
@@ -26,15 +29,15 @@ constant uint64_t keccakf_rndc[24] = {
   0x000000000000800a, 0x800000008000000a, 0x8000000080008081,
   0x8000000000008080, 0x0000000080000001, 0x8000000080008008};
 
-constant int keccakf_rotc[24] = {1,  3,  6,  10, 15, 21, 28, 36, 45, 55, 2,  14,
+constant uint8_t keccakf_rotc[24] = {1,  3,  6,  10, 15, 21, 28, 36, 45, 55, 2,  14,
   27, 41, 56, 8,  25, 43, 62, 18, 39, 61, 20, 44};
 
-constant int keccakf_piln[24] = {10, 7,  11, 17, 18, 3, 5,  16, 8,  21, 24, 4,
+constant uint8_t keccakf_piln[24] = {10, 7,  11, 17, 18, 3, 5,  16, 8,  21, 24, 4,
   15, 23, 19, 13, 12, 2, 20, 14, 22, 9,  6,  1};
 
 void sha3_keccakf(uint64_t st[25]) {
   // variables
-  int i, j, r;
+  uint8_t i, j, r;
   uint64_t t, bc[5];
 
   // actual iteration
@@ -74,13 +77,11 @@ void sha3_keccakf(uint64_t st[25]) {
 
 // Initialize the context for SHA3
 
-int sha3_init(sha3_ctx_t *c, int mdlen) {
+int sha3_init(sha3_ctx_t *c) {
   int i;
 
   for (i = 0; i < 25; i++)
     c->st.q[i] = 0;
-  c->mdlen = mdlen;
-  c->rsiz = 200 - 2 * mdlen;
   c->pt = 0;
 
   return 1;
@@ -88,14 +89,14 @@ int sha3_init(sha3_ctx_t *c, int mdlen) {
 
 // update state with more data
 
-int sha3_update(sha3_ctx_t *c, __constant void *data, size_t len) {
+int sha3_update(sha3_ctx_t* restrict c, constant uint8_t* restrict data, size_t len) {
   size_t i;
   int j;
 
   j = c->pt;
   for (i = 0; i < len; i++) {
-    c->st.b[j++] ^= ((__constant uint8_t *)data)[i];
-    if (j >= c->rsiz) {
+    c->st.b[j++] ^= data[i];
+    if (j >= c_rsiz) {
       sha3_keccakf(c->st.q);
       j = 0;
     }
@@ -105,14 +106,14 @@ int sha3_update(sha3_ctx_t *c, __constant void *data, size_t len) {
   return 1;
 }
 
-int sha3_update_private(sha3_ctx_t *c, __private void *data, size_t len) {
+int sha3_update_nonce(sha3_ctx_t* restrict c, const void* restrict data) {
   size_t i;
   int j;
 
   j = c->pt;
-  for (i = 0; i < len; i++) {
-    c->st.b[j++] ^= ((__private uint8_t *)data)[i];
-    if (j >= c->rsiz) {
+  for (i = 0; i < sizeof(uint64_t); i++) {
+    c->st.b[j++] ^= ((uint8_t *)data)[i];
+    if (j >= c_rsiz) {
       sha3_keccakf(c->st.q);
       j = 0;
     }
@@ -124,15 +125,15 @@ int sha3_update_private(sha3_ctx_t *c, __private void *data, size_t len) {
 
 // finalize and output a hash
 
-int sha3_final(void *md, sha3_ctx_t *c) {
+int sha3_final(uint8_t* restrict md, sha3_ctx_t* restrict c) {
   int i;
 
   c->st.b[c->pt] ^= 0x06;
-  c->st.b[c->rsiz - 1] ^= 0x80;
+  c->st.b[c_rsiz - 1] ^= 0x80;
   sha3_keccakf(c->st.q);
 
-  for (i = 0; i < c->mdlen; i++) {
-    ((uint8_t *)md)[i] = c->st.b[i];
+  for (i = 0; i < c_mdlen; i++) {
+    md[i] = c->st.b[i];
   }
 
   return 1;
@@ -171,7 +172,7 @@ void to_global(const uint8_t* x, global uint8_t* y, const size_t l) {
   }
 }
 
-bool is_hash_bounded(const uint8_t* hash, constant uint8_t* hashBound) {
+bool is_hash_bounded(const uint8_t* restrict hash, constant uint8_t* restrict hashBound) {
   for (size_t i = hashSize - 1; i >= 0; i--) {
     if (hash[i] > hashBound[i]) {
       return false;
@@ -198,7 +199,7 @@ kernel void sha3
   bool valid = false;
 
   sha3_ctx_t sha3_header;
-  sha3_init(&sha3_header, hashSize);
+  sha3_init(&sha3_header);
   sha3_update(&sha3_header, mining_template->header, templateHeaderSize);
 
   sha3_ctx_t sha3;
@@ -206,7 +207,7 @@ kernel void sha3
   for (size_t j = 0; j < loop_size; j++, local_nonce++) {
     sha3 = sha3_header;
 
-    sha3_update_private(&sha3, &local_nonce, sizeof(uint64_t));
+    sha3_update_nonce(&sha3, &local_nonce);
     sha3_update(&sha3, mining_template->tail, mining_template->tailSize);
     sha3_final(hash, &sha3);
 
