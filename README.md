@@ -22,7 +22,7 @@ Specifications
 * Ring size: 32
 
 
-# [How to build](https://lolnero.org/build.html)
+# [How to build](BUILD.md)
 
 # [Seed nodes](https://gitlab.com/lolnero/lolnero/-/wikis/Seed-nodes)
 
