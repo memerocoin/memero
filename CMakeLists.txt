@@ -115,8 +115,10 @@ endif()
 ## sodium
 find_library(SODIUM_LIBRARY sodium REQUIRED)
 
-## rapidjson, only for android
-include_directories(vendor/rapidjson/include)
+## rapidjson
+if (ANDROID)
+  include_directories(vendor/rapidjson/include)
+endif()
 
 ## opencl
 option(USE_OPENCL "Build with OpenCL support." OFF)
