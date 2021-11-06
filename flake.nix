@@ -32,7 +32,12 @@
             buildInputs = [
               boost175 openssl readline libsodium rapidjson
             ]
-            ++ lib.optionals doCheck [gmock]
+            ++ lib.optionals doCheck
+              [
+                gmock
+                opencl-headers
+                opencl-icd
+              ]
             ;
 
             cmakeFlags = [
