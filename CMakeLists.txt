@@ -113,7 +113,7 @@ if(USE_READLINE)
 endif()
 
 ## sodium
-find_library(SODIUM_LIBRARY sodium)
+find_library(SODIUM_LIBRARY sodium REQUIRED)
 
 ## rapidjson, only for android
 include_directories(vendor/rapidjson/include)
