@@ -1,4 +1,4 @@
-Lolnero is a code fork of the [cryptocurreny][1] [Wownero][2], but with a linear emission and an ASIC friendly proof of work.
+Lolnero is a code fork of the cryptocurreny [Wownero][2], but with a linear emission and an ASIC friendly proof of work.
 
 There is no premine and no dev tax.
 
@@ -12,7 +12,7 @@ The goal of Lolnero is to replace `C/C++` with a safer language, and to not hard
 Specifications
 ==============
 
-* [Proof of Work][3]: [SHA-3-256][4]
+* Proof of Work: [SHA-3-256][4]
 * Max supply: ∞
 * Block reward: 300
 * Block time: 5 minutes
