@@ -1,4 +1,4 @@
-Lolnero is a code fork of the cryptocurreny Wownero with a linear emission and a SHA-3 PoW.
+Lolnero is a code fork of the [cryptocurreny][1] [Wownero][2], but with a linear emission and an ASIC friendly [proof of work][3].
 
 There is no premine and no dev tax.
 
@@ -12,13 +12,13 @@ The goal of Lolnero is to replace `C/C++` with a safer language, and to not hard
 Specifications
 ==============
 
-* Proof of Work: SHA-3
+* Proof of Work: [SHA-3-256][4]
 * Max supply: ∞
 * Block reward: 300
 * Block time: 5 minutes
 * Block size limit: max(128k, Block height) bytes
-* Confidential transaction: Bulletproofs
-* Ring signature: CLSAG
+* Range proof: [Bulletproofs][5]
+* Ring signature: [CLSAG (Concise Linkable Spontaneous Anonymous Group)][6]
 * Ring size: 32
 
 
@@ -31,4 +31,11 @@ Specifications
 ```
 lolnerod --seed-node SOME_SEED_NODE_IP
 ```
+
+[1]: https://en.wikipedia.org/wiki/Cryptocurrency
+[2]: https://wownero.org/
+[3]: https://en.wikipedia.org/wiki/Proof_of_work
+[4]: https://en.wikipedia.org/wiki/SHA-3
+[5]: https://eprint.iacr.org/2017/1066.pdf
+[6]: https://eprint.iacr.org/2019/654.pdf
 
