@@ -135,8 +135,6 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(maybe_sig_D, false, "Bad auxiliary rct_point image!");
     const rct_point sig_D = *maybe_sig_D;
 
-    const rct_point D_8 = multP8(sig_D);
-    LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary rct_point image!");
 
     // Aggregation hashes
     crypto::dataV mu_P_to_hash = {zero};
@@ -247,7 +245,7 @@ namespace rct {
           {
             k ^ rct_reduce(sig.s[i])
             , sig.I ^ c_p
-            , D_8 ^ c_c
+            , sig_D ^ (c_c * s_eight)
           }
           );
 

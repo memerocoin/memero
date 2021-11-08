@@ -646,8 +646,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   for (size_t i = 0; i < rounds; ++i)
   {
-    multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z, multP8(proof.L[i]));
-    multiexp_data.emplace_back(winv[i] * winv[i] * weight_z, multP8(proof.R[i]));
+    multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z * s_eight, proof.L[i]);
+    multiexp_data.emplace_back(winv[i] * winv[i] * weight_z * s_eight, proof.R[i]);
   }
 
   const size_t MN = M*N;
@@ -661,14 +661,14 @@ bool bulletproof_VERIFY(const Bulletproof proof)
       , std::next(std::next(zpow.begin()))
       , std::back_inserter(multiexp_data)
       , [weight_y](const auto& x, const auto& y) -> MultiexpData {
-        return {y * weight_y, multP8(x)};
+        return {y * weight_y * s_eight, x};
       }
       );
 
-  multiexp_data.emplace_back(pd.x * weight_y, multP8(proof.T1));
-  multiexp_data.emplace_back(pd.x * pd.x * weight_y, multP8(proof.T2));
-  multiexp_data.emplace_back(weight_z, multP8(proof.A));
-  multiexp_data.emplace_back(pd.x * weight_z, multP8(proof.S));
+  multiexp_data.emplace_back(pd.x * weight_y * s_eight, proof.T1);
+  multiexp_data.emplace_back(pd.x * pd.x * weight_y * s_eight, proof.T2);
+  multiexp_data.emplace_back(weight_z * s_eight, proof.A);
+  multiexp_data.emplace_back(pd.x * weight_z * s_eight, proof.S);
 
   // Compute the number of rounds for the inner product
   LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
