@@ -81,7 +81,7 @@ namespace crypto {
    , const secret_key sk
    ) noexcept
   {
-    return p2tx_output_shared_secret(mult8Safe(pk) ^ sk);
+    return p2tx_output_shared_secret(mult8(pk) ^ sk);
   }
 
   ec_scalar hash_tx_output_shared_secret_to_scalar

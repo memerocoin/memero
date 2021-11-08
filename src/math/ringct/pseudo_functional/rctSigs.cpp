@@ -131,9 +131,11 @@ namespace rct {
     }
 
     // Prepare key images
-    LOG_ERROR_AND_RETURN_UNLESS(is_safe_point(sig.D), false, "Bad auxiliary rct_point image!");
+    const auto maybe_sig_D = maybeSafeRctPoint(sig.D);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_sig_D, false, "Bad auxiliary rct_point image!");
+    const rct_point sig_D = *maybe_sig_D;
 
-    const rct_point D_8 = multP8(sig.D);
+    const rct_point D_8 = multP8(sig_D);
     LOG_ERROR_AND_RETURN_IF((D_8 == rct::identity), false, "Bad auxiliary rct_point image!");
 
     // Aggregation hashes

@@ -550,7 +550,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const Bulletproof proof)
+bool bulletproof_VERIFY(const Bulletproof proof_unsafe)
 {
   init_exponents();
 
@@ -564,6 +564,10 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   // STEP 1, fill proof_data
 
+  const auto maybeProof = maybeSafeBulletproof(proof_unsafe);
+  LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
+  const Bulletproof_safe proof = *maybeProof;
+
   // check rct_scalar range
   LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input rct_scalar not in range");
   LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), false, "Input rct_scalar not in range");
@@ -576,18 +580,6 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
 
-  LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(proof.A), false, "Bad proof.A");
-  LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(proof.S), false, "Bad proof.S");
-
-  for (const auto& x: proof.V) {
-    LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(x), false, "Bad proof.V");
-  }
-  for (const auto& x: proof.L) {
-    LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(x), false, "Bad proof.L");
-  }
-  for (const auto& x: proof.R) {
-    LOG_ERROR_AND_RETURN_UNLESS(crypto::is_safe_point(x), false, "Bad proof.R");
-  }
 
   // Reconstruct the challenges
   crypto::dataV hash_dataV(proof.V.size());

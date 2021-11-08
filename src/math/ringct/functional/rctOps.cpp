@@ -65,12 +65,8 @@ namespace rct {
     return P ^ rct_reduce(a);
   }
 
-  rct_point multP8(const crypto::ec_point_unsafe P) {
+  rct_point multP8(const rct_point P) {
     return p2rct_p(crypto::mult8(P));
-  }
-
-  rct_point multP8Safe(const rct_point P) {
-    return p2rct_p(crypto::mult8Safe(P));
   }
 
   rct::rct_point addPoints(const rct_pointS A) {

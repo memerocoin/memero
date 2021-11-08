@@ -100,7 +100,7 @@ namespace crypto {
   bool is_valid_group_element(const ec_point_unsafe x) noexcept;
 
   std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) noexcept;
-  ec_point mult8Safe(const ec_point X) noexcept;
+  ec_point mult8(const ec_point X) noexcept;
   ec_point multBase(const ec_scalar) noexcept;
 
   ec_scalar invert(const ec_scalar x) noexcept;

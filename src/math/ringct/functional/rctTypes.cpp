@@ -66,6 +66,17 @@ namespace rct {
       return std::strncmp((const char*)data.data(), (const char*)y.data.data(), data.size()) < 0;
     }
 
+    std::optional<rct_point> maybeSafeRctPoint(const crypto::ec_point_unsafe x) noexcept {
+      const auto p = crypto::maybeSafePoint(x);
+
+      if (p) {
+        return p2rct_p(*p);
+      } else {
+        return {};
+      }
+    };
+
+
     rct_scalar rct_scalar::operator+(const rct_scalar& y) const
     {
       return s2s(ec_scalar::operator+(y));
@@ -139,5 +150,90 @@ namespace rct {
         }
         return n;
     }
+
+   std::optional<Bulletproof_safe> maybeSafeBulletproof(const Bulletproof proof) {
+      const auto maybe_proof_A = maybeSafeRctPoint(proof.A);
+      LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
+      const rct::rct_point proof_A = *maybe_proof_A;
+
+      const auto maybe_proof_S = maybeSafeRctPoint(proof.S);
+      LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_S, {}, "Bad proof.S");
+      const rct::rct_point proof_S = *maybe_proof_S;
+
+      const auto maybe_proof_T1 = maybeSafeRctPoint(proof.T1);
+      LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T1, {}, "Bad proof.T1");
+      const rct::rct_point proof_T1 = *maybe_proof_T1;
+
+      const auto maybe_proof_T2 = maybeSafeRctPoint(proof.T2);
+      LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T2, {}, "Bad proof.T2");
+      const rct::rct_point proof_T2 = *maybe_proof_T2;
+
+      std::vector<rct::rct_point> proof_V;
+      for (const auto& x: proof.V) {
+        const auto y = maybeSafeRctPoint(x);
+        LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.V");
+        proof_V.push_back(*y);
+      }
+
+      std::vector<rct::rct_point> proof_L;
+      for (const auto& x: proof.L) {
+        const auto y = maybeSafeRctPoint(x);
+        LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.L");
+        proof_L.push_back(*y);
+      }
+
+      std::vector<rct::rct_point> proof_R;
+      for (const auto& x: proof.R) {
+        const auto y = maybeSafeRctPoint(x);
+        LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.R");
+        proof_R.push_back(*y);
+      }
+
+      return Bulletproof_safe {
+        // rct::inv8V V;
+        // rct::inv8 A, S;
+        // rct::inv8 T1, T2;
+        // rct::rct_scalar taux;
+        // rct::rct_scalar mu;
+        // rct::inv8V L, R;
+        // rct::rct_scalar a, b, t;
+        proof_V
+        , proof_A
+        , proof_S
+        , proof_T1
+        , proof_T2
+        , proof.taux
+        , proof.mu
+        , proof_L
+        , proof_R
+        , proof.a
+        , proof.b
+        , proof.t
+      };
+   }
+
+  Bulletproof toBulletproof(const Bulletproof_safe proof) {
+    return Bulletproof {
+      // rct::inv8V V;
+      // rct::inv8 A, S;
+      // rct::inv8 T1, T2;
+      // rct::rct_scalar taux;
+      // rct::rct_scalar mu;
+      // rct::inv8V L, R;
+      // rct::rct_scalar a, b, t;
+      to_inv8V(proof.V)
+      , proof.A
+      , proof.S
+      , proof.T1
+      , proof.T2
+      , proof.taux
+      , proof.mu
+      , to_inv8V(proof.L)
+      , to_inv8V(proof.R)
+      , proof.a
+      , proof.b
+      , proof.t
+    };
+  }
 
 }

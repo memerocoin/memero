@@ -53,10 +53,11 @@ namespace rct {
       bool operator<(const rct_point& y) const;
     };
 
+    std::optional<rct_point> maybeSafeRctPoint(const crypto::ec_point_unsafe x) noexcept;
+
 
     using inv8 = crypto::ec_point_unsafe;
     using reconstructed_point = rct::rct_point;
-
 
     struct rct_scalar : crypto::ec_scalar {
       rct_scalar operator+(const rct_scalar& y) const;
@@ -130,7 +131,7 @@ namespace rct {
     {
       rct::inv8V V;
       rct::inv8 A, S;
-      inv8 T1, T2;
+      rct::inv8 T1, T2;
       rct::rct_scalar taux;
       rct::rct_scalar mu;
       rct::inv8V L, R;
@@ -157,6 +158,21 @@ namespace rct {
           return false;
       END_SERIALIZE()
     };
+
+    struct Bulletproof_safe
+    {
+      rct::rct_pointV V;
+      rct::rct_point A, S;
+      rct::rct_point T1, T2;
+      rct::rct_scalar taux;
+      rct::rct_scalar mu;
+      rct::rct_pointV L, R;
+      rct::rct_scalar a, b, t;
+    };
+
+    std::optional<Bulletproof_safe> maybeSafeBulletproof(const Bulletproof proof);
+
+    Bulletproof toBulletproof(const Bulletproof_safe proof);
 
     size_t n_bulletproof_amounts(const Bulletproof &proof);
     size_t n_bulletproof_max_amounts(const Bulletproof &proof);

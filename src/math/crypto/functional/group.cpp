@@ -122,7 +122,7 @@ namespace crypto {
     return p;
   }
 
-  ec_point mult8Safe(const ec_point X) noexcept {
+  ec_point mult8(const ec_point X) noexcept {
     return mult(X, s_8);
   }
 

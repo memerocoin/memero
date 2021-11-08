@@ -21,20 +21,6 @@ extern "C" {
 }
 
 namespace crypto {
-  ec_point_unsafe viaField(const crypto_data x) noexcept {
-    ge_p2 p2_in;
-    ge_fromfe_frombytes_vartime(&p2_in, x.data.data());
-
-    ec_point out;
-    ge_tobytes(out.data.data(), &p2_in);
-    return out;
-  }
-
-
-  ec_point viaFieldMult8(const crypto_data x) noexcept {
-    return mult8(viaField(x));
-  }
-
   // needed because point can be out of main group
   ec_point mult8(const ec_point_unsafe X) noexcept {
     ge_p3 p3_in;
@@ -53,5 +39,20 @@ namespace crypto {
     ge_tobytes(res.data.data(), &p2_out);
     return res;
   }
+
+  ec_point_unsafe viaField(const crypto_data x) noexcept {
+    ge_p2 p2_in;
+    ge_fromfe_frombytes_vartime(&p2_in, x.data.data());
+
+    ec_point out;
+    ge_tobytes(out.data.data(), &p2_in);
+    return out;
+  }
+
+
+  ec_point viaFieldMult8(const crypto_data x) noexcept {
+    return mult8(viaField(x));
+  }
+
 
 }
