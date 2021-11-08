@@ -211,13 +211,13 @@ namespace rct {
         , proof_S
         , proof_T1
         , proof_T2
-        , proof.taux
-        , proof.mu
+        , crypto::reduce(proof.taux)
+        , crypto::reduce(proof.mu)
         , proof_L
         , proof_R
-        , proof.a
-        , proof.b
-        , proof.t
+        , crypto::reduce(proof.a)
+        , crypto::reduce(proof.b)
+        , crypto::reduce(proof.t)
       };
    }
 

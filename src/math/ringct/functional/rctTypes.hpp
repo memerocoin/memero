@@ -132,10 +132,9 @@ namespace rct {
       rct::inv8V V;
       rct::inv8 A, S;
       rct::inv8 T1, T2;
-      rct::rct_scalar taux;
-      rct::rct_scalar mu;
+      crypto::ec_scalar_unnormalized taux, mu;
       rct::inv8V L, R;
-      rct::rct_scalar a, b, t;
+      crypto::ec_scalar_unnormalized a, b, t;
 
       // bool operator==(const Bulletproof&) const = default;
 
@@ -164,8 +163,7 @@ namespace rct {
       rct::rct_pointV V;
       rct::rct_point A, S;
       rct::rct_point T1, T2;
-      rct::rct_scalar taux;
-      rct::rct_scalar mu;
+      rct::rct_scalar taux, mu;
       rct::rct_pointV L, R;
       rct::rct_scalar a, b, t;
     };
