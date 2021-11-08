@@ -34,7 +34,7 @@ rct::rct_point dummy(const std::span<rct::MultiexpData> data) noexcept
      , rct::identity
      , std::plus<rct_point>()
      , [](const auto& x) {
-       return x.point ^ x.scalar;
+       return x.second ^ x.first;
      }
      );
 }

@@ -25,26 +25,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace rct
 {
+  using MultiexpData = std::pair<rct_scalar, rct_point>;
 
-struct MultiexpData {
-  rct::rct_scalar scalar;
-  rct_point point;
-
-  MultiexpData() {}
-  MultiexpData(const rct::rct_scalar s, const rct_point p): scalar(s), point(p) {
-
-    // only check identity, since point can be the result of a scalar mult
-    // small order group element * 8 = identity in cryptonote mult8
-    if (p == rct::identity) {
-      const std::string err = "identity point being used in multi exp data";
-      LOG_FATAL(err);
-
-      // throw since we want to catch this
-      throw std::runtime_error(err);
-    }
-  }
-};
-
-rct::rct_point dummy(const std::span<MultiexpData> data) noexcept;
-
+  rct::rct_point dummy(const std::span<MultiexpData> data) noexcept;
 }
