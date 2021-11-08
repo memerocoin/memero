@@ -189,6 +189,15 @@ namespace rct {
         proof_R.push_back(*y);
       }
 
+      // check rct_scalar range
+      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), {}, "Input rct_scalar not in range");
+      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), {}, "Input rct_scalar not in range");
+
+      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), {}, "Input rct_scalar not in range");
+      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), {}, "Input rct_scalar not in range");
+      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), {}, "Input rct_scalar not in range");
+
+
       return Bulletproof_safe {
         // rct::inv8V V;
         // rct::inv8 A, S;

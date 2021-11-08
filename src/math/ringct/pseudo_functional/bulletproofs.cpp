@@ -568,17 +568,9 @@ bool bulletproof_VERIFY(const Bulletproof proof_unsafe)
   LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
   const Bulletproof_safe proof = *maybeProof;
 
-  // check rct_scalar range
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), false, "Input rct_scalar not in range");
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), false, "Input rct_scalar not in range");
-
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), false, "Input rct_scalar not in range");
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), false, "Input rct_scalar not in range");
-  LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), false, "Input rct_scalar not in range");
-
-  LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, false, "V does not have at least one element");
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, {}, "V does not have at least one element");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), {}, "Mismatched L and R sizes");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, {}, "Empty proof");
 
 
   // Reconstruct the challenges
