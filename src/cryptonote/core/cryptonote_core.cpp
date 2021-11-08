@@ -1351,7 +1351,7 @@ namespace cryptonote
   }
 
   //-----------------------------------------------------------------------------------------------
-  bool is_canonical_bulletproof_layout(const std::vector<rct::Bulletproof> &proofs)
+  bool is_canonical_bulletproof_layout(const std::vector<rct::Bulletproof_unsafe> &proofs)
   {
     if (proofs.size() != 1)
       return false;
@@ -1390,7 +1390,7 @@ namespace cryptonote
         case rct::RCTTypeCLSAG:
           if (!is_canonical_bulletproof_layout(rv.p.bulletproofs))
           {
-            LOG_ERROR_VER("Bulletproof does not have canonical form");
+            LOG_ERROR_VER("Bulletproof_unsafe does not have canonical form");
             set_semantics_failed(tx_info[n].tx_hash);
             tx_info[n].tvc.m_verifivation_failed = true;
             tx_info[n].result = false;

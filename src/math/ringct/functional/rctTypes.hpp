@@ -127,7 +127,7 @@ namespace rct {
         END_SERIALIZE()
     };
 
-    struct Bulletproof
+    struct Bulletproof_unsafe
     {
       rct::inv8V V;
       rct::inv8 A, S;
@@ -136,7 +136,7 @@ namespace rct {
       rct::inv8V L, R;
       crypto::ec_scalar_unnormalized a, b, t;
 
-      // bool operator==(const Bulletproof&) const = default;
+      // bool operator==(const Bulletproof_unsafe&) const = default;
 
       BEGIN_SERIALIZE_OBJECT()
         // Commitments aren't saved, they're restored via outPk
@@ -168,14 +168,14 @@ namespace rct {
       rct::rct_scalar a, b, t;
     };
 
-    std::optional<Bulletproof_safe> maybeSafeBulletproof(const Bulletproof proof);
+    std::optional<Bulletproof_safe> maybeSafeBulletproof(const Bulletproof_unsafe proof);
 
-    Bulletproof toBulletproof(const Bulletproof_safe proof);
+    Bulletproof_unsafe toBulletproof(const Bulletproof_safe proof);
 
-    size_t n_bulletproof_amounts(const Bulletproof &proof);
-    size_t n_bulletproof_max_amounts(const Bulletproof &proof);
-    size_t n_bulletproof_amounts(const std::vector<Bulletproof> &proofs);
-    size_t n_bulletproof_max_amounts(const std::vector<Bulletproof> &proofs);
+    size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);
+    size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);
+    size_t n_bulletproof_amounts(const std::vector<Bulletproof_unsafe> &proofs);
+    size_t n_bulletproof_max_amounts(const std::vector<Bulletproof_unsafe> &proofs);
 
     //A container to hold all signatures necessary for RingCT
     // rangeSigs holds all the rangeproof data of a transaction
@@ -248,7 +248,7 @@ namespace rct {
     };
 
     struct rctDataPrunable {
-        std::vector<Bulletproof> bulletproofs;
+        std::vector<Bulletproof_unsafe> bulletproofs;
         std::vector<clsag> CLSAGs;
         rct_pointV pseudo_amount_commits; //C - for simple rct
 

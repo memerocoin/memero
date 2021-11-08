@@ -100,7 +100,7 @@ namespace rct {
       return crypto::scalar_to_int(in);
     }
 
-    size_t n_bulletproof_amounts(const Bulletproof &proof)
+    size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof)
     {
         LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, 0, "Invalid bulletproof L size");
         LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), 0, "Mismatched bulletproof L/R size");
@@ -113,10 +113,10 @@ namespace rct {
         return proof.V.size();
     }
 
-    size_t n_bulletproof_amounts(const std::vector<Bulletproof> &proofs)
+    size_t n_bulletproof_amounts(const std::vector<Bulletproof_unsafe> &proofs)
     {
         size_t n = 0;
-        for (const Bulletproof &proof: proofs)
+        for (const Bulletproof_unsafe &proof: proofs)
         {
             size_t n2 = n_bulletproof_amounts(proof);
             LOG_ERROR_AND_RETURN_UNLESS(n2 < std::numeric_limits<uint32_t>::max() - n, 0, "Invalid number of bulletproofs");
@@ -127,7 +127,7 @@ namespace rct {
         return n;
     }
 
-    size_t n_bulletproof_max_amounts(const Bulletproof &proof)
+    size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof)
     {
         LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, 0, "Invalid bulletproof L size");
         LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), 0, "Mismatched bulletproof L/R size");
@@ -137,10 +137,10 @@ namespace rct {
         return 1 << (proof.L.size() - 6);
     }
 
-    size_t n_bulletproof_max_amounts(const std::vector<Bulletproof> &proofs)
+    size_t n_bulletproof_max_amounts(const std::vector<Bulletproof_unsafe> &proofs)
     {
         size_t n = 0;
-        for (const Bulletproof &proof: proofs)
+        for (const Bulletproof_unsafe &proof: proofs)
         {
             size_t n2 = n_bulletproof_max_amounts(proof);
             LOG_ERROR_AND_RETURN_UNLESS(n2 < std::numeric_limits<uint32_t>::max() - n, 0, "Invalid number of bulletproofs");
@@ -151,7 +151,7 @@ namespace rct {
         return n;
     }
 
-   std::optional<Bulletproof_safe> maybeSafeBulletproof(const Bulletproof proof) {
+   std::optional<Bulletproof_safe> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
       const auto maybe_proof_A = maybeSafeRctPoint(proof.A);
       LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
       const rct::rct_point proof_A = *maybe_proof_A;
@@ -221,8 +221,8 @@ namespace rct {
       };
    }
 
-  Bulletproof toBulletproof(const Bulletproof_safe proof) {
-    return Bulletproof {
+  Bulletproof_unsafe toBulletproof(const Bulletproof_safe proof) {
+    return Bulletproof_unsafe {
       // rct::inv8V V;
       // rct::inv8 A, S;
       // rct::inv8 T1, T2;

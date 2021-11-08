@@ -1010,7 +1010,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::ecdh_encrypted_data& tuple)
   READ_JSON_VALUE_BY_KEY(val, tuple.masked_amount, masked_amount);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof p)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bulletproof_unsafe p)
 {
   dest.StartObject();
 
@@ -1030,7 +1030,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bu
   dest.EndObject();
 }
 
-void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof& p)
+void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof_unsafe& p)
 {
   if (!val.IsObject())
   {
