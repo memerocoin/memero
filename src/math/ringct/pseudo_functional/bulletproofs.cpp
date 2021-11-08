@@ -246,7 +246,7 @@ rct_pointV hadamard_fold
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV gamma)
+Bulletproof_safe bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV gamma)
 {
   LOG_ERROR_AND_THROW_UNLESS(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
   LOG_ERROR_AND_THROW_UNLESS(!sv.empty(), "sv is empty");
@@ -514,14 +514,14 @@ try_again:
     ++round;
   }
 
-  return Bulletproof
+  return Bulletproof_safe
     {
-     to_inv8V(V), A, S, T1, T2, taux, mu, to_inv8V(L), to_inv8V(R)
+     V, A, S, T1, T2, taux, mu, L, R
      , aprime[0], bprime[0], t
      };
 }
 
-Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma)
+Bulletproof_safe bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma)
 {
   LOG_ERROR_AND_THROW_UNLESS(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
@@ -550,7 +550,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const Bulletproof proof_unsafe)
+bool bulletproof_VERIFY(const Bulletproof_safe proof)
 {
   init_exponents();
 
@@ -563,10 +563,6 @@ bool bulletproof_VERIFY(const Bulletproof proof_unsafe)
   to_invert.reserve(11);
 
   // STEP 1, fill proof_data
-
-  const auto maybeProof = maybeSafeBulletproof(proof_unsafe);
-  LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
-  const Bulletproof_safe proof = *maybeProof;
 
   LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, {}, "V does not have at least one element");
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), {}, "Mismatched L and R sizes");

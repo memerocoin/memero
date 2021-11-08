@@ -42,12 +42,12 @@
 #include "cryptonote/basic/type/blobdatatype.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
-rct::Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
+rct::Bulletproof_safe bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
 {
   return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::rct_scalarV{gamma});
 }
 
-rct::Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gamma)
+rct::Bulletproof_safe bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gamma)
 {
   return rct::bulletproof_MAKE(std::vector<rct::rct_scalar>{sv}, rct::rct_scalarV{gamma});
 }
@@ -55,13 +55,13 @@ rct::Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scala
 
 TEST(bulletproofs, valid_zero)
 {
-  rct::Bulletproof proof = bulletproof_MAKE(0, rct::skGen());
+  rct::Bulletproof_safe proof = bulletproof_MAKE(0, rct::skGen());
   ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
 }
 
 TEST(bulletproofs, valid_max)
 {
-  rct::Bulletproof proof = bulletproof_MAKE(0xffffffffffffffff, rct::skGen());
+  rct::Bulletproof_safe proof = bulletproof_MAKE(0xffffffffffffffff, rct::skGen());
   ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
 }
 
@@ -69,7 +69,7 @@ TEST(bulletproofs, valid_random)
 {
   for (int n = 0; n < 8; ++n)
   {
-    rct::Bulletproof proof = bulletproof_MAKE(crypto::rand<uint64_t>(), rct::skGen());
+    rct::Bulletproof_safe proof = bulletproof_MAKE(crypto::rand<uint64_t>(), rct::skGen());
     ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
   }
 }
@@ -86,7 +86,7 @@ TEST(bulletproofs, valid_multi_random)
       amounts.push_back(crypto::rand<uint64_t>());
       gamma.push_back(rct::skGen());
     }
-    rct::Bulletproof proof = bulletproof_MAKE(amounts, gamma);
+    rct::Bulletproof_safe proof = bulletproof_MAKE(amounts, gamma);
     ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
   }
 }
@@ -94,7 +94,7 @@ TEST(bulletproofs, valid_multi_random)
 TEST(bulletproofs, valid_aggregated)
 {
   const size_t N_PROOFS = 1;
-  std::vector<rct::Bulletproof> proofs(N_PROOFS);
+  std::vector<rct::Bulletproof_safe> proofs(N_PROOFS);
   for (size_t n = 0; n < N_PROOFS; ++n)
   {
     size_t outputs = 2 + n;
@@ -115,7 +115,7 @@ TEST(bulletproofs, invalid_8)
 {
   rct::rct_scalar invalid_amount = rct::s_zero;
   invalid_amount.data[8] = 1;
-  rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, rct::skGen());
+  rct::Bulletproof_safe proof = bulletproof_MAKE(invalid_amount, rct::skGen());
   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
 }
 
@@ -123,7 +123,7 @@ TEST(bulletproofs, invalid_31)
 {
   rct::rct_scalar invalid_amount = rct::s_zero;
   invalid_amount.data[31] = 1;
-  rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, rct::skGen());
+  rct::Bulletproof_safe proof = bulletproof_MAKE(invalid_amount, rct::skGen());
   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
 }
 
@@ -140,7 +140,7 @@ static const char * const torsion_elements[] =
 
 TEST(bulletproofs, invalid_torsion)
 {
-  rct::Bulletproof proof = bulletproof_MAKE(7329838943733, rct::skGen());
+  rct::Bulletproof_safe proof = bulletproof_MAKE(7329838943733, rct::skGen());
   ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
   for (const auto &xs: torsion_elements)
   {

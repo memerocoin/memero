@@ -342,7 +342,12 @@ namespace rct {
           }
 
           if (rv.p.bulletproofs.size() != 1) return false;
-          return bulletproof_VERIFY(rv.p.bulletproofs.front());
+
+          const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
+          LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
+          const Bulletproof_safe proof = *maybeProof;
+
+          return bulletproof_VERIFY(proof);
         }
         );
   }

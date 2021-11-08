@@ -71,14 +71,10 @@ namespace rct {
         }
         );
 
-    Bulletproof proof = bulletproof_MAKE(amounts, blinding_factors);
+    const Bulletproof_safe proof = bulletproof_MAKE(amounts, blinding_factors);
     LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
 
-    const auto p = maybeSafeBulletproof(proof);
-
-    LOG_ERROR_AND_THROW_UNLESS(p, "Failed to generate valid range proof");
-
-    return {blinding_factors, *p};
+    return {blinding_factors, proof};
   }
 
 
