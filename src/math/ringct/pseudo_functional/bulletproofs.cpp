@@ -246,7 +246,7 @@ rct_pointV hadamard_fold
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof_safe bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV gamma)
+Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV gamma)
 {
   LOG_ERROR_AND_THROW_UNLESS(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
   LOG_ERROR_AND_THROW_UNLESS(!sv.empty(), "sv is empty");
@@ -514,14 +514,14 @@ try_again:
     ++round;
   }
 
-  return Bulletproof_safe
+  return Bulletproof
     {
      V, A, S, T1, T2, taux, mu, L, R
      , aprime[0], bprime[0], t
      };
 }
 
-Bulletproof_safe bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma)
+Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma)
 {
   LOG_ERROR_AND_THROW_UNLESS(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
 
@@ -550,7 +550,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const Bulletproof_safe proof)
+bool bulletproof_VERIFY(const Bulletproof proof)
 {
   init_exponents();
 

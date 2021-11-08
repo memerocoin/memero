@@ -52,7 +52,7 @@ using namespace std;
 
 namespace rct {
 
-  std::tuple<rct_scalarV, Bulletproof_safe> generate_range_proof
+  std::tuple<rct_scalarV, Bulletproof> generate_range_proof
   (
    const std::vector<uint64_t> amounts
    , const std::span<const rct_scalar> sk
@@ -71,7 +71,7 @@ namespace rct {
         }
         );
 
-    const Bulletproof_safe proof = bulletproof_MAKE(amounts, blinding_factors);
+    const Bulletproof proof = bulletproof_MAKE(amounts, blinding_factors);
     LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
 
     return {blinding_factors, proof};

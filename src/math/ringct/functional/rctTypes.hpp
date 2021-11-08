@@ -158,7 +158,7 @@ namespace rct {
       END_SERIALIZE()
     };
 
-    struct Bulletproof_safe
+    struct Bulletproof
     {
       rct::rct_pointV V;
       rct::rct_point A, S;
@@ -168,9 +168,9 @@ namespace rct {
       rct::rct_scalar a, b, t;
     };
 
-    std::optional<Bulletproof_safe> maybeSafeBulletproof(const Bulletproof_unsafe proof);
+    std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
 
-    Bulletproof_unsafe toBulletproof(const Bulletproof_safe proof);
+    Bulletproof_unsafe toBulletproof(const Bulletproof proof);
 
     size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);
     size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);

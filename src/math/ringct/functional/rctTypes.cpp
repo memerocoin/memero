@@ -151,7 +151,7 @@ namespace rct {
         return n;
     }
 
-   std::optional<Bulletproof_safe> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
+   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
       const auto maybe_proof_A = maybeSafeRctPoint(proof.A);
       LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
       const rct::rct_point proof_A = *maybe_proof_A;
@@ -198,7 +198,7 @@ namespace rct {
       LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), {}, "Input rct_scalar not in range");
 
 
-      return Bulletproof_safe {
+      return Bulletproof {
         // rct::inv8V V;
         // rct::inv8 A, S;
         // rct::inv8 T1, T2;
@@ -221,7 +221,7 @@ namespace rct {
       };
    }
 
-  Bulletproof_unsafe toBulletproof(const Bulletproof_safe proof) {
+  Bulletproof_unsafe toBulletproof(const Bulletproof proof) {
     return Bulletproof_unsafe {
       // rct::inv8V V;
       // rct::inv8 A, S;
