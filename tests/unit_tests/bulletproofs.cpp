@@ -93,7 +93,7 @@ TEST(bulletproofs, valid_multi_random)
 
 TEST(bulletproofs, valid_aggregated)
 {
-  static const size_t N_PROOFS = 8;
+  const size_t N_PROOFS = 1;
   std::vector<rct::Bulletproof> proofs(N_PROOFS);
   for (size_t n = 0; n < N_PROOFS; ++n)
   {
@@ -107,7 +107,7 @@ TEST(bulletproofs, valid_aggregated)
     }
     proofs[n] = bulletproof_MAKE(amounts, gamma);
   }
-  ASSERT_TRUE(rct::bulletproof_VERIFY(proofs));
+  ASSERT_TRUE(rct::bulletproof_VERIFY(proofs.front()));
 }
 
 

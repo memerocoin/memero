@@ -339,7 +339,8 @@ namespace rct {
             return false;
           }
 
-          return bulletproof_VERIFY(rv.p.bulletproofs);
+          if (rv.p.bulletproofs.size() != 1) return false;
+          return bulletproof_VERIFY(rv.p.bulletproofs.front());
         }
         );
   }

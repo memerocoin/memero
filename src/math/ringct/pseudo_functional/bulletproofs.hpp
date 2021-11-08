@@ -41,6 +41,5 @@ namespace rct
 Bulletproof bulletproof_MAKE(const rct::rct_scalarV v, const rct::rct_scalarV gamma);
 Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma);
 bool bulletproof_VERIFY(const Bulletproof proof);
-bool bulletproof_VERIFY(const std::span<const Bulletproof> proofs);
 
 }
