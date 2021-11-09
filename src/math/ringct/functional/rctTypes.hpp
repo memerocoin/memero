@@ -127,6 +127,17 @@ namespace rct {
         END_SERIALIZE()
     };
 
+    struct clsag_safe {
+      rct_scalarV s; // scalars
+      rct_scalar c1;
+
+      rct_point I; // signing key image
+      rct_point D; // commitment key image
+    };
+
+    std::optional<clsag_safe> maybeSafeCLSAG(const clsag clsag);
+    clsag toCLSAG(const clsag_safe clsag);
+
     struct Bulletproof_unsafe
     {
       rct::inv8V V;
@@ -169,7 +180,6 @@ namespace rct {
     };
 
     std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
-
     Bulletproof_unsafe toBulletproof(const Bulletproof proof);
 
     size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);

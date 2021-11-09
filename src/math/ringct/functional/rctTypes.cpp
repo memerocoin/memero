@@ -245,4 +245,46 @@ namespace rct {
     };
   }
 
+  std::optional<clsag_safe> maybeSafeCLSAG(const clsag clsag) {
+
+    // rct_scalarV s; // scalars
+    // rct_scalar c1;
+
+    // rct_point I; // signing key image
+    // rct_point D; // commitment key image
+
+    rct_scalarV clsag_s;
+    for (const auto& x: clsag.s) {
+      LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(x), {}, "Bad clsag.s");
+      clsag_s.push_back(s2s(crypto::reduce(x)));
+    }
+
+    LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(clsag.c1), {}, "Bad clsag.c1");
+
+    const auto maybe_clsag_D = maybeSafeRctPoint(clsag.D);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_D, {}, "Bad clsag.D");
+    const rct::rct_point clsag_D = *maybe_clsag_D;
+
+    return clsag_safe {
+      clsag_s
+      , s2s(crypto::reduce(clsag.c1))
+      , clsag.I
+      , clsag_D
+    };
+  }
+
+  clsag toCLSAG(const clsag_safe clsag) {
+    std::vector<crypto::ec_scalar_unnormalized> s; // scalars
+    for (const auto& x: clsag.s) {
+      s.push_back(x);
+    }
+
+    return {
+      s
+      , clsag.c1
+      , clsag.I
+      , clsag.D
+    };
+  }
+
 }
