@@ -45,12 +45,6 @@ using namespace std;
 
 namespace rct {
 
-    //Various Conversions
-
-    std::optional<rct_point> maybeSafeRctPoint(const crypto::ec_point_unsafe x) noexcept {
-      return crypto::maybeSafePoint(x);
-    };
-
     size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof)
     {
         LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, 0, "Invalid bulletproof L size");
@@ -103,39 +97,39 @@ namespace rct {
     }
 
    std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
-      const auto maybe_proof_A = maybeSafeRctPoint(proof.A);
+      const auto maybe_proof_A = crypto::maybeSafePoint(proof.A);
       LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
       const rct::rct_point proof_A = *maybe_proof_A;
 
-      const auto maybe_proof_S = maybeSafeRctPoint(proof.S);
+      const auto maybe_proof_S = crypto::maybeSafePoint(proof.S);
       LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_S, {}, "Bad proof.S");
       const rct::rct_point proof_S = *maybe_proof_S;
 
-      const auto maybe_proof_T1 = maybeSafeRctPoint(proof.T1);
+      const auto maybe_proof_T1 = crypto::maybeSafePoint(proof.T1);
       LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T1, {}, "Bad proof.T1");
       const rct::rct_point proof_T1 = *maybe_proof_T1;
 
-      const auto maybe_proof_T2 = maybeSafeRctPoint(proof.T2);
+      const auto maybe_proof_T2 = crypto::maybeSafePoint(proof.T2);
       LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T2, {}, "Bad proof.T2");
       const rct::rct_point proof_T2 = *maybe_proof_T2;
 
       std::vector<rct::rct_point> proof_V;
       for (const auto& x: proof.V) {
-        const auto y = maybeSafeRctPoint(x);
+        const auto y = crypto::maybeSafePoint(x);
         LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.V");
         proof_V.push_back(*y);
       }
 
       std::vector<rct::rct_point> proof_L;
       for (const auto& x: proof.L) {
-        const auto y = maybeSafeRctPoint(x);
+        const auto y = crypto::maybeSafePoint(x);
         LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.L");
         proof_L.push_back(*y);
       }
 
       std::vector<rct::rct_point> proof_R;
       for (const auto& x: proof.R) {
-        const auto y = maybeSafeRctPoint(x);
+        const auto y = crypto::maybeSafePoint(x);
         LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.R");
         proof_R.push_back(*y);
       }
@@ -212,11 +206,11 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(clsag.c1), {}, "Bad clsag.c1");
 
-    const auto maybe_clsag_D = maybeSafeRctPoint(clsag.D);
+    const auto maybe_clsag_D = crypto::maybeSafePoint(clsag.D);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_D, {}, "Bad clsag.D");
     const rct::rct_point clsag_D = *maybe_clsag_D;
 
-    const auto maybe_clsag_I = maybeSafeRctPoint(clsag.I);
+    const auto maybe_clsag_I = crypto::maybeSafePoint(clsag.I);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_I, {}, "Bad clsag.I");
     const rct::rct_point clsag_I = *maybe_clsag_I;
 

@@ -46,14 +46,11 @@ namespace rct {
     //  but uses unsigned chars,
     //  also includes an operator for accessing the i'th byte.
     using rct_point = crypto::ec_point;
-
-    std::optional<rct_point> maybeSafeRctPoint(const crypto::ec_point_unsafe x) noexcept;
-
+    using rct_scalar = crypto::ec_scalar;
 
     using inv8 = crypto::ec_point_unsafe;
     using reconstructed_point = rct::rct_point;
 
-    using rct_scalar = crypto::ec_scalar;
 
     using rct_pointV = std::vector<rct_point>;
     using rct_pointM = std::vector<rct_pointV>;
