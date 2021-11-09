@@ -327,7 +327,7 @@ namespace cryptonote
       }
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        destinations.push_back(rct::pk2rct_p(boost::get<txout_to_key>(tx.vout[i].target).output_spend_public_key));
+        destinations.push_back(boost::get<txout_to_key>(tx.vout[i].target).output_spend_public_key);
         outamounts.push_back(tx.vout[i].amount);
         amount_out += tx.vout[i].amount;
       }

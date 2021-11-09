@@ -2603,7 +2603,7 @@ bool Blockchain::check_tx_input
       // but only txout_to_key outputs are stored in the DB in the first place, done in
       // Blockchain*::add_output
 
-      m_output_keys.push_back(rct::ct_public_key({rct::pk2rct_p(pubkey), commitment}));
+      m_output_keys.push_back(rct::ct_public_key({pubkey, commitment}));
       return true;
     }
   };

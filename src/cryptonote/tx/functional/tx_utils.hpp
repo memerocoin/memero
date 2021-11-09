@@ -51,7 +51,7 @@ namespace cryptonote
 
     // needed for test
     inline void push_output(uint64_t idx, const crypto::public_key &k, uint64_t amount) {
-      outputs.push_back(std::make_pair(idx, rct::ct_public_key({rct::pk2rct_p(k), rct::dummyCommit(amount)})));
+      outputs.push_back(std::make_pair(idx, rct::ct_public_key({k, rct::dummyCommit(amount)})));
     }
 
 
