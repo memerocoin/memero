@@ -351,8 +351,6 @@ namespace rct {
 
     inline const rct::rct_scalar &sk2rct_s(const crypto::secret_key &sk) { return (const rct::rct_scalar&)sk; }
 
-    inline const rct::rct_point &ki2rct_p(const crypto::output_spend_public_key_image &ki) { return (const rct::rct_point&)ki; }
-    inline const crypto::public_key &rct_p2pk(const rct::rct_point &k) { return (const crypto::public_key&)k; }
     inline const crypto::secret_key &unsafe_rct_p2sk(const rct::rct_point &k) { return (const crypto::secret_key&)k; }
     inline const crypto::output_spend_public_key_image &rct_p2ki(const rct::rct_point &k) { return (const crypto::output_spend_public_key_image&)k; }
     inline const crypto::hash &rct_p2hash(const rct::rct_point &k) { return (const crypto::hash&)k; }

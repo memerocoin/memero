@@ -3951,12 +3951,12 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
         {
           for (size_t m = 0; m < pubkeys[n].size(); ++m)
           {
-            if (pubkeys[n][m].dest != rct::rct_p2pk(rv.mixRing[n][m].dest))
+            if (pubkeys[n][m].dest != rv.mixRing[n][m].dest)
             {
               LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkey at vin " << n << ", index " << m);
               return false;
             }
-            if (pubkeys[n][m].amount_commit != rct::rct_p2pk(rv.mixRing[n][m].amount_commit))
+            if (pubkeys[n][m].amount_commit != rv.mixRing[n][m].amount_commit)
             {
               LOG_ERROR_VER("Failed to check ringct signatures: mismatched commitment at vin " << n << ", index " << m);
               return false;
