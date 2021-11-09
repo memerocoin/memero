@@ -54,6 +54,14 @@ Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gam
   return bulletproof_MAKE(std::vector<rct::rct_scalar>{sv}, rct::rct_scalarV{gamma});
 }
 
+namespace crypto {
+inline const secret_key &unsafe_h2sk(const hash &x)            noexcept { return (const secret_key&)x; }
+inline const public_key &unsafe_h2pk(const hash &x)            noexcept { return (const public_key&)x; }
+}
+
+namespace rct {
+inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
+}
 
 TEST(bulletproofs, valid_zero)
 {

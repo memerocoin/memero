@@ -43,8 +43,6 @@ namespace crypto {
 
   inline const ec_scalar_unnormalized &h2s(const hash &x)        noexcept { return (const ec_scalar&)x; }
   inline const ec_point_unsafe &h2p(const hash &x)               noexcept { return (const ec_point&)x; }
-  inline const secret_key &unsafe_h2sk(const hash &x)            noexcept { return (const secret_key&)x; }
-  inline const public_key &unsafe_h2pk(const hash &x)            noexcept { return (const public_key&)x; }
 
   inline const secret_key &s2sk(const ec_scalar &x)              noexcept { return (const secret_key&)x; }
   inline const public_key &p2pk(const ec_point &x)               noexcept { return (const public_key&)x; }

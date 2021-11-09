@@ -49,6 +49,10 @@
 using namespace std;
 using namespace rct;
 
+namespace rct {
+  inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
+}
+
 rct::rct_point pkGen() {
   return rct::skpkGen().second;
 }
