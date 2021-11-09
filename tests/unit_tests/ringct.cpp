@@ -58,7 +58,7 @@ std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount) {
   const auto [addr_sk, addr_pk] = skpkGen();
   const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
-  const rct_scalar am = int_to_scalar(amount);
+  const rct_scalar am = crypto::int_to_scalar(amount);
   const rct_point bH = H_(am);
 
   return
@@ -597,8 +597,8 @@ TEST(ringct, d2h)
   auto [s, P1] = skpkGen();
   k = s;
   for (auto amount: test_amounts) {
-    auto k = rct::int_to_scalar(amount);
-    ASSERT_TRUE(amount == rct::scalar_to_int(k));
+    auto k = crypto::int_to_scalar(amount);
+    ASSERT_TRUE(amount == crypto::scalar_to_int(k));
   }
 }
 
@@ -701,7 +701,7 @@ TEST(ringct, dummyCommit)
   static const uint64_t amount = crypto::rand<uint64_t>();
   const rct::rct_point z = rct::dummyCommit(amount);
   const rct::rct_point a = rct::G_(rct::s_one);
-  const rct::rct_point b = rct::H_(rct::int_to_scalar(amount));
+  const rct::rct_point b = rct::H_(crypto::int_to_scalar(amount));
   const rct::rct_point manual = a + b;
   ASSERT_EQ(z, manual);
 }

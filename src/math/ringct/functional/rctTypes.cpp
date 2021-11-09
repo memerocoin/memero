@@ -57,30 +57,6 @@ namespace rct {
       }
     };
 
-
-    rct_scalar rct_scalar::operator+(const rct_scalar& y) const
-    {
-      return s2s(ec_scalar::operator+(y));
-    }
-
-    rct_scalar rct_scalar::operator-(const rct_scalar& y) const
-    {
-      return s2s(ec_scalar::operator-(y));
-    }
-
-    rct_scalar rct_scalar::operator*(const rct_scalar& y) const
-    {
-      return s2s(ec_scalar::operator*(y));
-    }
-
-    rct_scalar int_to_scalar(const amount_t in) {
-      return s2s(crypto::int_to_scalar(in));
-    }
-
-    amount_t scalar_to_int(const rct_scalar & in) {
-      return crypto::scalar_to_int(in);
-    }
-
     size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof)
     {
         LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, 0, "Invalid bulletproof L size");

@@ -45,7 +45,6 @@ namespace rct {
     //  similar to secret_key / public_key of crypto-ops,
     //  but uses unsigned chars,
     //  also includes an operator for accessing the i'th byte.
-    struct rct_scalar;
     using rct_point = crypto::ec_point;
 
     std::optional<rct_point> maybeSafeRctPoint(const crypto::ec_point_unsafe x) noexcept;
@@ -54,11 +53,7 @@ namespace rct {
     using inv8 = crypto::ec_point_unsafe;
     using reconstructed_point = rct::rct_point;
 
-    struct rct_scalar : crypto::ec_scalar {
-      rct_scalar operator+(const rct_scalar& y) const;
-      rct_scalar operator-(const rct_scalar& y) const;
-      rct_scalar operator*(const rct_scalar& y) const;
-    };
+    using rct_scalar = crypto::ec_scalar;
 
     using rct_pointV = std::vector<rct_point>;
     using rct_pointM = std::vector<rct_pointV>;
@@ -353,14 +348,6 @@ namespace rct {
     };
 
     //various conversions
-
-    //32 byte rct_point to uint long long
-    // if the rct_point holds a value > 2^64
-    // then the value in the first 8 bytes is returned
-    amount_t scalar_to_int(const rct_scalar &in);
-
-    //uint long long to 32 byte key
-    rct_scalar int_to_scalar(const amount_t in);
 
     inline const rct::rct_scalar &sk2rct_s(const crypto::secret_key &sk) { return (const rct::rct_scalar&)sk; }
     inline const crypto::secret_key &rct_s2sk(const rct::rct_scalar&k) { return (const crypto::secret_key&)k; }

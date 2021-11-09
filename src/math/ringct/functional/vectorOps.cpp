@@ -161,12 +161,6 @@ namespace rct
     return res;
   }
 
-  /* Compute the inverse of a rct_scalar, the clever way */
-  rct::rct_scalar invert(const rct::rct_scalar x)
-  {
-    return s2s(crypto::invert(x));
-  }
-
   rct::rct_scalarV invertV(const rct::rct_scalarV v)
   {
     rct_scalarV r(v.size());

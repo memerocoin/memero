@@ -82,7 +82,7 @@ namespace rct {
 
   // ct
   rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount) {
-    return G_(rct_reduce(mask)) + H_(int_to_scalar(amount));
+    return G_(rct_reduce(mask)) + H_(crypto::int_to_scalar(amount));
   }
 
   rct_point dummyCommit(const amount_t amount) {

@@ -339,7 +339,7 @@ namespace rct {
             }
             );
 
-          const rct_point feeKey = H_(int_to_scalar(rv.fee));
+          const rct_point feeKey = H_(crypto::int_to_scalar(rv.fee));
           const rct_point sumCommits = addPoints(commits) + feeKey;
           const rct_point sumPseudoCommits = addPoints(pseudo_amount_commits);
 

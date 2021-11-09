@@ -61,8 +61,5 @@ namespace rct
   /* Multiply a rct_scalar and a vector */
   rct::rct_scalarV vector_mult(const rct_scalarS a, const rct::rct_scalar b);
 
-  /* Compute the inverse of a rct_scalar, the clever way */
-  rct::rct_scalar invert(const rct::rct_scalar x);
-
   rct::rct_scalarV invertV(const rct::rct_scalarV v);
 }

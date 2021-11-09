@@ -533,7 +533,7 @@ Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scala
      , v.end()
      , std::back_inserter(sv)
      , [](const auto& v) {
-       return int_to_scalar(v);
+       return crypto::int_to_scalar(v);
      }
      );
   return bulletproof_MAKE(sv, gamma);
