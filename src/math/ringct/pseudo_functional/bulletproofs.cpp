@@ -564,9 +564,9 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   // STEP 1, fill proof_data
 
-  LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, {}, "V does not have at least one element");
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), {}, "Mismatched L and R sizes");
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, {}, "Empty proof");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, false, "V does not have at least one element");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
 
 
   // Reconstruct the challenges
