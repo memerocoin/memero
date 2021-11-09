@@ -379,7 +379,7 @@ TEST(Serialization, serializes_ringct_types)
   rct::ct_public_keyV ct_public_keyv0, ct_public_keyv1;
   rct::ct_public_keyM ct_public_keym0, ct_public_keym1;
   rct::ecdh_encrypted_data ecdh0, ecdh1;
-  rct::clsag clsag0, clsag1;
+  rct::clsag_unsafe clsag0, clsag1;
   rct::rctData s0, s1;
   cryptonote::transaction tx0, tx1;
 

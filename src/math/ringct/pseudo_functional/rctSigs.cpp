@@ -262,10 +262,10 @@ namespace rct {
     catch (...) { return false; }
   }
 
-  bool verify_clsag_signature_unsafe
+  bool verify_unsafe_clsag_signature
   (
    const crypto::hash message
-   , const clsag sig
+   , const clsag_unsafe sig
    , const ct_public_keyS pubs
    , const rct_point C_offset
    )
@@ -415,7 +415,7 @@ namespace rct {
     results.resize(rv.mixRing.size());
     for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
       tpool.submit(&waiter, [&, i] {
-        results[i] = verify_clsag_signature_unsafe
+        results[i] = verify_unsafe_clsag_signature
           (message, rv.p.CLSAGs[i], rv.mixRing[i], pseudo_amount_commits[i]);
       });
     }

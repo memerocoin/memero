@@ -390,7 +390,7 @@ namespace rct {
       };
 
     const crypto::hash full_message = get_ring_signature_message(preRctSig);
-    std::vector<clsag> clsags(inamounts.size());
+    std::vector<clsag_unsafe> clsags(inamounts.size());
     std::generate
       (
        clsags.begin()
@@ -406,7 +406,7 @@ namespace rct {
             , index[i]
             );
          i++;
-         return toCLSAG(clsag_safe);
+         return toUnsafeCLSAG(clsag_safe);
        }
        );
 

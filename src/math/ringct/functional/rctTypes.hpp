@@ -112,7 +112,7 @@ namespace rct {
     using amount_t = uint64_t;
 
     // CLSAG signature
-    struct clsag {
+    struct clsag_unsafe {
         std::vector<crypto::ec_scalar_unnormalized> s; // scalars
         crypto::ec_scalar_unnormalized c1;
 
@@ -135,8 +135,8 @@ namespace rct {
       rct_point D; // commitment key image
     };
 
-    std::optional<clsag_safe> maybeSafeCLSAG(const clsag clsag);
-    clsag toCLSAG(const clsag_safe clsag);
+    std::optional<clsag_safe> maybeSafeCLSAG(const clsag_unsafe clsag);
+    clsag_unsafe toUnsafeCLSAG(const clsag_safe clsag);
 
     struct Bulletproof_unsafe
     {
@@ -259,7 +259,7 @@ namespace rct {
 
     struct rctDataPrunable {
         std::vector<Bulletproof_unsafe> bulletproofs;
-        std::vector<clsag> CLSAGs;
+        std::vector<clsag_unsafe> CLSAGs;
         rct_pointV pseudo_amount_commits; //C - for simple rct
 
         // when changing this function, update cryptonote::get_pruned_transaction_weight

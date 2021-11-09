@@ -245,7 +245,7 @@ namespace rct {
     };
   }
 
-  std::optional<clsag_safe> maybeSafeCLSAG(const clsag clsag) {
+  std::optional<clsag_safe> maybeSafeCLSAG(const clsag_unsafe clsag) {
 
     // rct_scalarV s; // scalars
     // rct_scalar c1;
@@ -277,7 +277,7 @@ namespace rct {
     };
   }
 
-  clsag toCLSAG(const clsag_safe clsag) {
+  clsag_unsafe toUnsafeCLSAG(const clsag_safe clsag) {
     std::vector<crypto::ec_scalar_unnormalized> s; // scalars
     for (const auto& x: clsag.s) {
       s.push_back(x);
