@@ -319,7 +319,7 @@ namespace cryptonote
         inamounts.push_back(sources[i].amount);
         index.push_back(sources[i].real_output);
         // inSk: (secret key, mask)
-        ct_public_key.addr = rct::sk2rct_s(in_contexts[i].output_spend_key.sec);
+        ct_public_key.addr = in_contexts[i].output_spend_key.sec;
         ct_public_key.blinding_factor = sources[i].mask;
         inSk.push_back(ct_public_key);
         // inPk: (public key, commitment)
