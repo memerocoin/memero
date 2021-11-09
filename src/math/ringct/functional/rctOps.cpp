@@ -54,7 +54,7 @@ namespace rct {
   }
 
   rct_point G_(const rct_scalar a) {
-    return p2rct_p(crypto::multBase(a));
+    return crypto::multBase(a);
   }
 
   rct_point H_(const rct_scalar a) {
@@ -66,7 +66,7 @@ namespace rct {
   }
 
   rct_point multP8(const rct_point P) {
-    return p2rct_p(crypto::mult8(P));
+    return crypto::mult8(P);
   }
 
   rct::rct_point addPoints(const rct_pointS A) {
@@ -114,7 +114,7 @@ namespace rct {
   rct_point hash_to_point_via_field(const crypto::crypto_data k) {
     const auto h = h2d(hash_data(k));
     const crypto::ec_point p = viaFieldMult8(h);
-    return p2rct_p(p);
+    return p;
   }
 
 

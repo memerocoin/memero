@@ -48,13 +48,7 @@ namespace rct {
     //Various Conversions
 
     std::optional<rct_point> maybeSafeRctPoint(const crypto::ec_point_unsafe x) noexcept {
-      const auto p = crypto::maybeSafePoint(x);
-
-      if (p) {
-        return p2rct_p(*p);
-      } else {
-        return {};
-      }
+      return crypto::maybeSafePoint(x);
     };
 
     size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof)

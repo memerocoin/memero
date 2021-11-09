@@ -503,7 +503,7 @@ namespace rpc {
     if (mask_data) {
       const auto maybe_mask = crypto::maybeSafePoint(crypto::d2p(*mask_data));
       if (maybe_mask) {
-        mask = rct::p2rct_p(*maybe_mask);
+        mask = *maybe_mask;
       }
     }
 
