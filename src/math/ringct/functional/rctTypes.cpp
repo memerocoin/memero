@@ -221,7 +221,7 @@ namespace rct {
       };
    }
 
-  Bulletproof_unsafe toBulletproof(const Bulletproof proof) {
+  Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof) {
     return Bulletproof_unsafe {
       // rct::inv8V V;
       // rct::inv8 A, S;

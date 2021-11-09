@@ -383,7 +383,7 @@ namespace rct {
         , outPk
         , fee
         , {
-          {toBulletproof(proof)}
+          {toUnsafeBulletproof(proof)}
           , {}
           , pseudo_amount_commits
         }

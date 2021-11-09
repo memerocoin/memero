@@ -180,7 +180,7 @@ namespace rct {
     };
 
     std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
-    Bulletproof_unsafe toBulletproof(const Bulletproof proof);
+    Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof);
 
     size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);
     size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);
