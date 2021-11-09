@@ -50,7 +50,7 @@
 namespace rct {
 
   rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a) {
-    return s2s(crypto::reduce(a));
+    return crypto::reduce(a);
   }
 
   rct_point G_(const rct_scalar a) {
@@ -97,7 +97,7 @@ namespace rct {
   }
 
   rct_scalar hash_to_scalar(const crypto::crypto_data in) {
-    return s2s(reduce(d2s(h2d(hash_data(in)))));
+    return reduce(d2s(h2d(hash_data(in))));
   }
 
   crypto::hash hash_dataV(const std::span<const crypto::crypto_data> keys) {
@@ -108,7 +108,7 @@ namespace rct {
   }
 
   rct_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys) {
-    return s2s(reduce(d2s(h2d(hash_dataV(keys)))));
+    return reduce(d2s(h2d(hash_dataV(keys))));
   }
 
   rct_point hash_to_point_via_field(const crypto::crypto_data k) {
@@ -147,6 +147,6 @@ namespace rct {
       epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
       + x.blob();
 
-    return s2s(crypto::hash_to_scalar(hashData));
+    return crypto::hash_to_scalar(hashData);
   }
 }

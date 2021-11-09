@@ -260,7 +260,7 @@ namespace rct {
         );
 
     return generate_clsag_signature_internal
-      (message, P, inSk.addr, C, s2s(inSk.blinding_factor - a), C_nonzero, Cout, index);
+      (message, P, inSk.addr, C, inSk.blinding_factor - a, C_nonzero, Cout, index);
   }
 
 
@@ -369,7 +369,7 @@ namespace rct {
        }
        );
 
-    const auto pseudo_sum_blinding_factor_difference = s2s(sum_blinding_factors - pseudo_sum_blinding_factors);
+    const auto pseudo_sum_blinding_factor_difference = sum_blinding_factors - pseudo_sum_blinding_factors;
     pseudo_blinding_factors.push_back(pseudo_sum_blinding_factor_difference);
 
     pseudo_amount_commits.push_back(commit(pseudo_sum_blinding_factor_difference, inamounts.back()));

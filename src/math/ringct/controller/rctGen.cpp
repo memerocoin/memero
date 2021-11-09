@@ -53,7 +53,7 @@
 namespace rct {
 
   rct_scalar skGen() {
-    return s2s(crypto::scalarGen());
+    return crypto::scalarGen();
   }
 
   rct_scalarV skvGen(size_t rows ) {

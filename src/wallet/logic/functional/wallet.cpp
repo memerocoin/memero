@@ -225,7 +225,7 @@ namespace wallet {
       switch (rv.type)
         {
         case rct::RCTTypeCLSAG: {
-          return {rct::decode_ringct_commitment(rv, rct::s2s(s_der), i)};
+          return {rct::decode_ringct_commitment(rv, s_der, i)};
         }
         default:
           LOG_ERROR("Unsupported rct type: " << rv.type);

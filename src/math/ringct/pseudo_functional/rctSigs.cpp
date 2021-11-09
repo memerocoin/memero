@@ -470,7 +470,7 @@ namespace rct {
 
     const rct_point C = rv.outPk[i].amount_commit;
 
-    const auto amount = scalar_to_int(rct::s2s(crypto::reduce(amount_unnormalized)));
+    const auto amount = scalar_to_int(crypto::reduce(amount_unnormalized));
 
     if (C != commit(blinding_factor, amount)) {
       LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");

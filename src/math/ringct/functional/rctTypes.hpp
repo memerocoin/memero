@@ -359,8 +359,6 @@ namespace rct {
     inline const crypto::output_spend_public_key_image &rct_p2ki(const rct::rct_point &k) { return (const crypto::output_spend_public_key_image&)k; }
     inline const crypto::hash &rct_p2hash(const rct::rct_point &k) { return (const crypto::hash&)k; }
 
-    inline const rct::rct_scalar &s2s(const crypto::ec_scalar &s) { return (const rct::rct_scalar&)s; }
-
     inline const rct::inv8V to_inv8V(const rct_pointS &xs) {
       inv8V ys;
       std::transform
