@@ -265,10 +265,14 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_D, {}, "Bad clsag.D");
     const rct::rct_point clsag_D = *maybe_clsag_D;
 
+    const auto maybe_clsag_I = maybeSafeRctPoint(clsag.I);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_I, {}, "Bad clsag.I");
+    const rct::rct_point clsag_I = *maybe_clsag_I;
+
     return clsag_safe {
       clsag_s
       , s2s(crypto::reduce(clsag.c1))
-      , clsag.I
+      , clsag_I
       , clsag_D
     };
   }

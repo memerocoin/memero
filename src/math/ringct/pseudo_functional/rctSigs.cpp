@@ -107,7 +107,7 @@ namespace rct {
   bool verify_clsag_signature_no_catch
   (
     const crypto::hash message
-    , const clsag sig
+    , const clsag_safe sig
     , const ct_public_keyS pubs
     , const rct_point C_offset
     )
@@ -118,23 +118,10 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
     LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature rct_scalar vector is the wrong size!");
 
-    for (const auto &s: sig.s) {
-      LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(s), false, "Bad signature scalar!");
-    }
-
-    LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(sig.c1), false, "Bad signature commitment!");
-    LOG_ERROR_AND_RETURN_IF((sig.I == rct::identity), false, "Bad rct_point image!");
-
     if (!is_safe_point(C_offset)) {
       LOG_ERROR("C_offset is not a valid point: " << C_offset);
       return false;
     }
-
-    // Prepare key images
-    const auto maybe_sig_D = maybeSafeRctPoint(sig.D);
-    LOG_ERROR_AND_RETURN_UNLESS(maybe_sig_D, false, "Bad auxiliary rct_point image!");
-    const rct_point sig_D = *maybe_sig_D;
-
 
     // Aggregation hashes
     crypto::dataV mu_P_to_hash = {zero};
@@ -245,7 +232,7 @@ namespace rct {
           {
             k ^ rct_reduce(sig.s[i])
             , sig.I ^ c_p
-            , sig_D ^ (c_c * s_eight)
+            , sig.D ^ (c_c * s_eight)
           }
           );
 
@@ -264,7 +251,7 @@ namespace rct {
   bool verify_clsag_signature
   (
     const crypto::hash message
-    , const clsag sig
+    , const clsag_safe sig
     , const ct_public_keyS pubs
     , const rct_point C_offset
     )
@@ -274,6 +261,29 @@ namespace rct {
     }
     catch (...) { return false; }
   }
+
+  bool verify_clsag_signature_unsafe
+  (
+   const crypto::hash message
+   , const clsag sig
+   , const ct_public_keyS pubs
+   , const rct_point C_offset
+   )
+  {
+    const auto maybeClsag = maybeSafeCLSAG(sig);
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       maybeClsag
+       , false
+       , "invalid clsag signature"
+       );
+
+    try {
+      return verify_clsag_signature_no_catch(message, *maybeClsag, pubs, C_offset);
+    }
+    catch (...) { return false; }
+  }
+
 
 
   bool verify_ringct_rangeproof_no_catch(const std::span<const rctData> rvv)
@@ -405,7 +415,7 @@ namespace rct {
     results.resize(rv.mixRing.size());
     for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
       tpool.submit(&waiter, [&, i] {
-        results[i] = verify_clsag_signature
+        results[i] = verify_clsag_signature_unsafe
           (message, rv.p.CLSAGs[i], rv.mixRing[i], pseudo_amount_commits[i]);
       });
     }

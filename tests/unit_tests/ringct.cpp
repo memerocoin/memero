@@ -114,7 +114,7 @@ TEST(ringct, CLSAG)
   rct_scalar p, t, t2, u;
   const crypto::hash message = crypto::d2h(rct::identity);
   ct_public_key backup;
-  clsag clsag;
+  clsag_safe clsag;
 
   for (size_t i = 0; i < N; ++i)
   {
@@ -230,10 +230,10 @@ TEST(ringct, CLSAG)
   clsag.s = sbackup;
 
   // too few s elements
-  crypto::ec_scalar_unnormalized backup_s;
-  crypto::ec_scalar_unnormalized backup_c1;
+  rct_scalar backup_s;
+  rct_scalar backup_c1;
   rct_point backup_key;
-  inv8 backup_key_inv8;
+  rct_point backup_key_inv8;
   backup_s = clsag.s.back();
   clsag.s.pop_back();
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
