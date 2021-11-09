@@ -2517,7 +2517,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
       LOG_ERROR_AND_RETURN_UNLESS(rv.p.CLSAGs.size() == tx.vin.size(), false, "Bad CLSAGs size");
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
-        rv.p.CLSAGs[n].I = rct::ki2rct_p(boost::get<txin_to_key>(tx.vin[n]).output_spend_public_key_image);
+        rv.p.CLSAGs[n].I = boost::get<txin_to_key>(tx.vin[n]).output_spend_public_key_image;
       }
   }
   else
