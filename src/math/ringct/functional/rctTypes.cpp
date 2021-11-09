@@ -236,4 +236,17 @@ namespace rct {
     };
   }
 
+  const rct::inv8V to_inv8V(const rct_pointS xs) {
+    inv8V ys;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(ys)
+       , [](const auto& x) { return x; }
+       );
+
+    return ys;
+  }
+
 }

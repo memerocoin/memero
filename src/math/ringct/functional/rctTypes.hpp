@@ -66,6 +66,8 @@ namespace rct {
     using inv8S = std::span<const inv8>;
     using inv8L = std::list<const inv8>;
 
+    const rct::inv8V to_inv8V(const rct_pointS xs);
+
 
     // containers For CT operations
     // "dest": addr * G
@@ -343,19 +345,6 @@ namespace rct {
     struct rctData: public rctDataEssential {
         rctDataPrunable p;
     };
-
-    inline const rct::inv8V to_inv8V(const rct_pointS &xs) {
-      inv8V ys;
-      std::transform
-        (
-        xs.begin()
-        , xs.end()
-        , std::back_inserter(ys)
-        , [](const auto& x) { return x; }
-        );
-
-      return ys;
-    }
 
 }
 
