@@ -29,6 +29,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rctTypes.hpp"
+#include "rctOps.hpp"
 
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/int-util.h"
@@ -256,7 +257,7 @@ namespace rct {
     rct_scalarV clsag_s;
     for (const auto& x: clsag.s) {
       LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(x), {}, "Bad clsag.s");
-      clsag_s.push_back(s2s(crypto::reduce(x)));
+      clsag_s.push_back(rct_reduce(x));
     }
 
     LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(clsag.c1), {}, "Bad clsag.c1");
@@ -271,7 +272,7 @@ namespace rct {
 
     return {{
       clsag_s
-      , s2s(crypto::reduce(clsag.c1))
+      , rct_reduce(clsag.c1)
       , clsag_I
       , clsag_D
     }};

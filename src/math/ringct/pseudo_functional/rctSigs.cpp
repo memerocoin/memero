@@ -195,7 +195,7 @@ namespace rct {
     c_to_hash.push_back({}); // reserve for R
 
 
-    const rct_scalar c1 = rct_reduce(sig.c1);
+    const rct_scalar c1 = sig.c1;
 
     rct_scalar c = c1;
     size_t i = 0;
@@ -217,7 +217,7 @@ namespace rct {
         (
           std::array
           {
-            G_(rct_reduce(sig.s[i]))
+            G_(sig.s[i])
             , pubs[i].dest ^ c_p
             , C ^ c_c
           }
@@ -230,7 +230,7 @@ namespace rct {
         (
           std::array
           {
-            k ^ rct_reduce(sig.s[i])
+            k ^ sig.s[i]
             , sig.I ^ c_p
             , sig.D ^ (c_c * s_eight)
           }
