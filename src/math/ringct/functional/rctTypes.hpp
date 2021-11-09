@@ -46,12 +46,7 @@ namespace rct {
     //  but uses unsigned chars,
     //  also includes an operator for accessing the i'th byte.
     struct rct_scalar;
-    struct rct_point : crypto::ec_point {
-      rct_point operator+(const rct_point& y) const;
-      rct_point operator-(const rct_point& y) const;
-      rct_point operator^(const rct_scalar& x) const;
-      bool operator<(const rct_point& y) const;
-    };
+    using rct_point = crypto::ec_point;
 
     std::optional<rct_point> maybeSafeRctPoint(const crypto::ec_point_unsafe x) noexcept;
 

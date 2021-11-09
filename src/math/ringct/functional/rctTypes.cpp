@@ -47,26 +47,6 @@ namespace rct {
 
     //Various Conversions
 
-    rct_point rct_point::operator+(const rct_point& y) const
-    {
-      return p2rct_p(ec_point::operator+(y));
-    }
-
-    rct_point rct_point::operator-(const rct_point& y) const
-    {
-      return p2rct_p(ec_point::operator-(y));
-    }
-
-    rct_point rct_point::operator^(const rct_scalar& y) const
-    {
-      return p2rct_p(ec_point::operator^(y));
-    }
-
-    bool rct_point::operator<(const rct_point& y) const
-    {
-      return std::strncmp((const char*)data.data(), (const char*)y.data.data(), data.size()) < 0;
-    }
-
     std::optional<rct_point> maybeSafeRctPoint(const crypto::ec_point_unsafe x) noexcept {
       const auto p = crypto::maybeSafePoint(x);
 
