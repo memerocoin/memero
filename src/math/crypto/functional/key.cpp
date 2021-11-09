@@ -75,18 +75,18 @@ namespace crypto {
     return out;
   }
 
-  tx_output_ecdh_shared_secret derive_tx_output_ecdh_shared_secret
+  ecdh_shared_secret derive_tx_output_ecdh_shared_secret
   (
    const public_key pk
    , const secret_key sk
    ) noexcept
   {
-    return p2tx_output_shared_secret(mult8(pk) ^ sk);
+    return p2ecdh_shared_secret(mult8(pk) ^ sk);
   }
 
   ec_scalar hash_tx_output_shared_secret_to_scalar
   (
-   const tx_output_ecdh_shared_secret &tx_output_shared_secret
+   const ecdh_shared_secret &tx_output_shared_secret
    , const size_t index
    ) noexcept
   {
@@ -99,7 +99,7 @@ namespace crypto {
 
   secret_key compute_output_spend_sk_from_subaddress_spend_sk
   (
-   const tx_output_ecdh_shared_secret &tx_output_shared_secret
+   const ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
    , const secret_key &spend_sk
    ) noexcept
@@ -110,7 +110,7 @@ namespace crypto {
 
   std::optional<public_key> compute_output_spend_pk_from_subaddress_spend_pk
   (
-   const tx_output_ecdh_shared_secret &tx_output_shared_secret
+   const ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
    , const ec_point_unsafe &unsafe_spend_public_key
    ) noexcept
@@ -124,7 +124,7 @@ namespace crypto {
 
   std::optional<public_key> compute_subaddress_spend_pk_from_output_spend_pk
   (
-     const tx_output_ecdh_shared_secret &tx_output_shared_secret
+     const ecdh_shared_secret &tx_output_shared_secret
    , const std::size_t output_index
    , const ec_point_unsafe &unsafe_output_spend_pk
    ) noexcept

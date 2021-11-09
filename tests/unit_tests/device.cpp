@@ -60,7 +60,7 @@ TEST(device, locking)
 TEST(device, ops)
 {
   hw::core::device_default dev;
-  std::optional<crypto::tx_output_ecdh_shared_secret> derd, maybeDer;
+  std::optional<crypto::ecdh_shared_secret> derd, maybeDer;
   rct::rct_scalar sk;
   rct::rct_point pk;
   crypto::secret_key sk0, sk1;

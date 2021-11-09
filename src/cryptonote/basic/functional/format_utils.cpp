@@ -68,10 +68,10 @@ namespace cryptonote
    , const size_t real_output_index
    )
   {
-    const std::optional<crypto::tx_output_ecdh_shared_secret> recv_tx_output_shared_secret =
+    const std::optional<crypto::ecdh_shared_secret> recv_tx_output_shared_secret =
       tx_public_key
       ? crypto::derive_tx_output_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key)
-      : std::optional<crypto::tx_output_ecdh_shared_secret>();
+      : std::optional<crypto::ecdh_shared_secret>();
 
     // if (!recv_tx_output_shared_secret)
     // {
@@ -79,7 +79,7 @@ namespace cryptonote
     //   return false;
     // }
 
-    std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
+    std::map<size_t, crypto::ecdh_shared_secret> tx_output_shared_secrets;
     for (size_t i = 0; i < output_public_keys.size(); ++i)
     {
       const auto additional_recv_tx_output_shared_secret =
@@ -89,7 +89,7 @@ namespace cryptonote
     const auto secret
       = tx_output_shared_secrets.contains(real_output_index)
       ? tx_output_shared_secrets[real_output_index]
-      : std::optional<crypto::tx_output_ecdh_shared_secret>();
+      : std::optional<crypto::ecdh_shared_secret>();
 
     std::optional<subaddress_receive_info> subaddr_recv_info =
       is_out_to_acc_precomp
@@ -120,7 +120,7 @@ namespace cryptonote
   (
    const account_keys account_keys
    , const crypto::public_key out_key
-   , const crypto::tx_output_ecdh_shared_secret recv_tx_output_shared_secret
+   , const crypto::ecdh_shared_secret recv_tx_output_shared_secret
    , const size_t real_output_index
    , const subaddress_index received_index
    )
@@ -222,8 +222,8 @@ namespace cryptonote
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key tx_output_public_key
-   , const std::optional<crypto::tx_output_ecdh_shared_secret> tx_shared_secret
-   , const std::optional<crypto::tx_output_ecdh_shared_secret> tx_output_shared_secret
+   , const std::optional<crypto::ecdh_shared_secret> tx_shared_secret
+   , const std::optional<crypto::ecdh_shared_secret> tx_output_shared_secret
    , const size_t output_index
    )
   {

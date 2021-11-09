@@ -33,7 +33,7 @@ namespace crypto {
   struct public_key: ec_point {
   };
 
-  struct tx_output_ecdh_shared_secret: ec_point {};
+  struct ecdh_shared_secret: ec_point {};
 
   struct output_spend_public_key_image: ec_point {};
 
@@ -41,18 +41,16 @@ namespace crypto {
   constexpr crypto::secret_key null_skey = {};
 
 
-  inline const ec_scalar_unnormalized &h2s(const hash &x)        noexcept { return (const ec_scalar&)x; }
-  inline const ec_point_unsafe &h2p(const hash &x)               noexcept { return (const ec_point&)x; }
-
-  inline const secret_key &s2sk(const ec_scalar &x)              noexcept { return (const secret_key&)x; }
-  inline const public_key &p2pk(const ec_point &x)               noexcept { return (const public_key&)x; }
-  inline const output_spend_public_key_image &p2img(const ec_point &x)               noexcept { return (const output_spend_public_key_image&)x; }
-  inline const tx_output_ecdh_shared_secret &p2tx_output_shared_secret(const ec_point &x)   noexcept { return (const tx_output_ecdh_shared_secret&)x; }
-
-  inline const ec_scalar_unnormalized &d2s(const crypto_data &x) noexcept { return (const ec_scalar_unnormalized&)x; }
-  inline const ec_point_unsafe &d2p(const crypto_data &x)        noexcept { return (const ec_point_unsafe&)x; }
-  inline const crypto_data &h2d(const hash &x)                   noexcept { return (const crypto_data&)x; }
-  inline const hash &d2h(const crypto_data &x)                   noexcept { return (const hash&)x; }
+  inline const crypto_data &h2d(const hash &x)                             noexcept { return (const crypto_data&)x; }
+  inline const ec_point_unsafe &d2p(const crypto_data &x)                  noexcept { return (const ec_point_unsafe&)x; }
+  inline const ec_point_unsafe &h2p(const hash &x)                         noexcept { return (const ec_point&)x; }
+  inline const ec_scalar_unnormalized &d2s(const crypto_data &x)           noexcept { return (const ec_scalar_unnormalized&)x; }
+  inline const ec_scalar_unnormalized &h2s(const hash &x)                  noexcept { return (const ec_scalar&)x; }
+  inline const ecdh_shared_secret &p2ecdh_shared_secret(const ec_point &x) noexcept { return (const ecdh_shared_secret&)x; }
+  inline const hash &d2h(const crypto_data &x)                             noexcept { return (const hash&)x; }
+  inline const output_spend_public_key_image &p2img(const ec_point &x)     noexcept { return (const output_spend_public_key_image&)x; }
+  inline const public_key &p2pk(const ec_point &x)                         noexcept { return (const public_key&)x; }
+  inline const secret_key &s2sk(const ec_scalar &x)                        noexcept { return (const secret_key&)x; }
 
 
   public_key to_pk(const secret_key& sk) noexcept;
@@ -87,7 +85,7 @@ namespace crypto {
    * * The sender uses key derivation and the receivers' "spend" key to derive an shared secret derived public key.
    * * The receiver can either derive the public key (to check that the transaction is addressed to him) or the private key (to spend the money).
    */
-  tx_output_ecdh_shared_secret derive_tx_output_ecdh_shared_secret
+  ecdh_shared_secret derive_tx_output_ecdh_shared_secret
   (
    const public_key pk
    , const secret_key sk
@@ -96,27 +94,27 @@ namespace crypto {
 
   ec_scalar hash_tx_output_shared_secret_to_scalar
   (
-   const tx_output_ecdh_shared_secret &tx_output_shared_secret
+   const ecdh_shared_secret &tx_output_shared_secret
    , const size_t index
    ) noexcept;
 
   secret_key compute_output_spend_sk_from_subaddress_spend_sk
   (
-   const tx_output_ecdh_shared_secret &tx_output_shared_secret
+   const ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
    , const secret_key &base
    ) noexcept;
 
   std::optional<public_key> compute_output_spend_pk_from_subaddress_spend_pk
   (
-   const tx_output_ecdh_shared_secret &tx_output_shared_secret
+   const ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
    , const ec_point_unsafe &unsafe_spend_public_key
    ) noexcept;
 
   std::optional<public_key> compute_subaddress_spend_pk_from_output_spend_pk
   (
-   const tx_output_ecdh_shared_secret &tx_output_shared_secret
+   const ecdh_shared_secret &tx_output_shared_secret
    , const std::size_t output_index
    , const ec_point_unsafe &unsafe_output_spend_pk
    ) noexcept;

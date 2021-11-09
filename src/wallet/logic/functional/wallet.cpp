@@ -171,7 +171,7 @@ namespace wallet {
   type::tx::tx_scan_info_t check_acc_out_precomp
   (
    const cryptonote::tx_out o
-   , const std::optional<crypto::tx_output_ecdh_shared_secret> tx_output_shared_secret
+   , const std::optional<crypto::ecdh_shared_secret> tx_output_shared_secret
    , const size_t i
    , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
    )
@@ -188,7 +188,7 @@ namespace wallet {
     // const auto secret
     //   = tx_output_shared_secrets.contains(i)
     //   ? tx_output_shared_secrets.at(i)
-    //   : std::optional<crypto::tx_output_ecdh_shared_secret>();
+    //   : std::optional<crypto::ecdh_shared_secret>();
 
     tx_scan_info.received = is_out_to_acc_precomp
       (
@@ -215,7 +215,7 @@ namespace wallet {
   std::optional<std::pair<uint64_t, rct::rct_scalar>> decodeRct
   (
    const rct::rctData rv
-   , const crypto::tx_output_ecdh_shared_secret tx_output_shared_secret
+   , const crypto::ecdh_shared_secret tx_output_shared_secret
    , const unsigned int i
    )
   {

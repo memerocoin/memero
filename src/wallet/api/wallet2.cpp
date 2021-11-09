@@ -564,7 +564,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
     // const size_t vout_size = tx.vout.size();
 
-    std::map<size_t, crypto::tx_output_ecdh_shared_secret> tx_output_shared_secrets;
+    std::map<size_t, crypto::ecdh_shared_secret> tx_output_shared_secrets;
 
     const auto tx_output_public_keys
       = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
@@ -584,7 +584,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       const auto secret
         = tx_output_shared_secrets.contains(i)
         ? tx_output_shared_secrets.at(i)
-        : std::optional<crypto::tx_output_ecdh_shared_secret>();
+        : std::optional<crypto::ecdh_shared_secret>();
 
       tx_scan_info[i] = wallet::logic::functional::wallet::check_acc_out_precomp
         (tx.vout[i], secret, i, m_subaddresses);
