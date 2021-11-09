@@ -114,7 +114,7 @@ TEST(ringct, CLSAG)
   rct_scalar p, t, t2, u;
   const crypto::hash message = crypto::d2h(rct::identity);
   ct_public_key backup;
-  clsag_safe clsag;
+  clsag clsag;
 
   for (size_t i = 0; i < N; ++i)
   {

@@ -245,7 +245,7 @@ namespace rct {
     };
   }
 
-  std::optional<clsag_safe> maybeSafeCLSAG(const clsag_unsafe clsag) {
+  std::optional<clsag> maybeSafeCLSAG(const clsag_unsafe clsag) {
 
     // rct_scalarV s; // scalars
     // rct_scalar c1;
@@ -269,15 +269,15 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_I, {}, "Bad clsag.I");
     const rct::rct_point clsag_I = *maybe_clsag_I;
 
-    return clsag_safe {
+    return {{
       clsag_s
       , s2s(crypto::reduce(clsag.c1))
       , clsag_I
       , clsag_D
-    };
+    }};
   }
 
-  clsag_unsafe toUnsafeCLSAG(const clsag_safe clsag) {
+  clsag_unsafe toUnsafeCLSAG(const clsag clsag) {
     std::vector<crypto::ec_scalar_unnormalized> s; // scalars
     for (const auto& x: clsag.s) {
       s.push_back(x);

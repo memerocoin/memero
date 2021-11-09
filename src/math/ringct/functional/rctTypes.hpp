@@ -127,7 +127,7 @@ namespace rct {
         END_SERIALIZE()
     };
 
-    struct clsag_safe {
+    struct clsag {
       rct_scalarV s; // scalars
       rct_scalar c1;
 
@@ -135,8 +135,8 @@ namespace rct {
       rct_point D; // commitment key image
     };
 
-    std::optional<clsag_safe> maybeSafeCLSAG(const clsag_unsafe clsag);
-    clsag_unsafe toUnsafeCLSAG(const clsag_safe clsag);
+    std::optional<clsag> maybeSafeCLSAG(const clsag_unsafe clsag);
+    clsag_unsafe toUnsafeCLSAG(const clsag clsag);
 
     struct Bulletproof_unsafe
     {

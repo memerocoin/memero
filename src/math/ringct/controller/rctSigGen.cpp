@@ -85,7 +85,7 @@ namespace rct {
   //   P[l] == p*G
   //   C[l] == z*G
   //   C[i] == C_nonzero[i] - C_offset (for hashing purposes) for all i
-  clsag_safe generate_clsag_signature_internal
+  clsag generate_clsag_signature_internal
   (
     const crypto::hash message
     , const rct_pointV P
@@ -97,7 +97,7 @@ namespace rct {
     , const size_t idx
     )
   {
-    clsag_safe sig;
+    clsag sig;
     size_t n = P.size(); // ring size
     LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment rct_point vector sizes must match!");
     LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment rct_point vector sizes must match!");
@@ -220,7 +220,7 @@ namespace rct {
   }
 
 
-  clsag_safe generate_clsag_signature
+  clsag generate_clsag_signature
   (
    const crypto::hash message
    , const ct_public_keyV pubs
@@ -396,7 +396,7 @@ namespace rct {
        clsags.begin()
        , clsags.end()
        , [full_message, mixRing, inSk, pseudo_blinding_factors, pseudo_amount_commits, index, i = 0]() mutable {
-         const auto clsag_safe = generate_clsag_signature
+         const auto clsag = generate_clsag_signature
            (
             full_message
             , mixRing[i]
@@ -406,7 +406,7 @@ namespace rct {
             , index[i]
             );
          i++;
-         return toUnsafeCLSAG(clsag_safe);
+         return toUnsafeCLSAG(clsag);
        }
        );
 

@@ -107,7 +107,7 @@ namespace rct {
   bool verify_clsag_signature_no_catch
   (
     const crypto::hash message
-    , const clsag_safe sig
+    , const clsag sig
     , const ct_public_keyS pubs
     , const rct_point C_offset
     )
@@ -251,7 +251,7 @@ namespace rct {
   bool verify_clsag_signature
   (
     const crypto::hash message
-    , const clsag_safe sig
+    , const clsag sig
     , const ct_public_keyS pubs
     , const rct_point C_offset
     )
