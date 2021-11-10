@@ -1351,7 +1351,7 @@ namespace cryptonote
   }
 
   //-----------------------------------------------------------------------------------------------
-  bool is_canonical_bulletproof_layout(const std::vector<rct::Bulletproof_unsafe> &proofs)
+  bool is_canonical_bulletproof_layout(const std::span<const rct::Bulletproof_unsafe> proofs)
   {
     if (proofs.size() != 1)
       return false;
