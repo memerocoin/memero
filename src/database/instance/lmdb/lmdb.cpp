@@ -2718,7 +2718,7 @@ uint64_t BlockchainLMDB::get_tx_count() const
   return db_stats.ms_entries;
 }
 
-std::vector<transaction> BlockchainLMDB::get_tx_list(const std::vector<crypto::hash>& hlist) const
+std::vector<transaction> BlockchainLMDB::get_tx_list(const std::span<const crypto::hash> hlist) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();

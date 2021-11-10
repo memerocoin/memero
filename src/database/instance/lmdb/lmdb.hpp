@@ -253,7 +253,7 @@ public:
 
   virtual uint64_t get_tx_count() const;
 
-  virtual std::vector<transaction> get_tx_list(const std::vector<crypto::hash>& hlist) const;
+  virtual std::vector<transaction> get_tx_list(const std::span<const crypto::hash> hlist) const;
 
   virtual uint64_t get_tx_block_height(const crypto::hash& h) const;
 

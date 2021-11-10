@@ -2020,7 +2020,7 @@ static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, tx_blob_entry &t
 //------------------------------------------------------------------
 //TODO: return type should be void, throw on exception
 //       alternatively, return true only if no transactions missed
-bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs) const
+bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
@@ -2044,7 +2044,7 @@ bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids
   return true;
 }
 //------------------------------------------------------------------
-bool Blockchain::get_transactions_blobs(const std::vector<crypto::hash>& txs_ids, std::vector<tx_blob_entry>& txs, std::vector<crypto::hash>& missed_txs) const
+bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<tx_blob_entry>& txs, std::vector<crypto::hash>& missed_txs) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
@@ -2080,7 +2080,7 @@ size_t get_transaction_version(const cryptonote::blobdata &bd)
 }
 //------------------------------------------------------------------
 template<class t_ids_container, class t_tx_container, class t_missed_container>
-bool Blockchain::get_split_transactions_blobs(const t_ids_container& txs_ids, t_tx_container& txs, t_missed_container& missed_txs) const
+bool Blockchain::get_split_transactions_blobs(const t_ids_container txs_ids, t_tx_container& txs, t_missed_container& missed_txs) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
@@ -2107,7 +2107,7 @@ bool Blockchain::get_split_transactions_blobs(const t_ids_container& txs_ids, t_
 }
 //------------------------------------------------------------------
 template<class t_ids_container, class t_tx_container, class t_missed_container>
-bool Blockchain::get_transactions(const t_ids_container& txs_ids, t_tx_container& txs, t_missed_container& missed_txs) const
+bool Blockchain::get_transactions(const t_ids_container txs_ids, t_tx_container& txs, t_missed_container& missed_txs) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
@@ -2702,7 +2702,7 @@ void Blockchain::return_tx_to_pool(std::vector<std::pair<transaction, blobdata>>
   }
 }
 //------------------------------------------------------------------
-bool Blockchain::flush_txes_from_pool(const std::vector<crypto::hash> &txids)
+bool Blockchain::flush_txes_from_pool(const std::span<const crypto::hash>txids)
 {
   LOCK_LOCKABLE_OBJECT(m_tx_pool);
 
@@ -3998,6 +3998,6 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 }
 
 namespace cryptonote {
-template bool Blockchain::get_transactions(const std::vector<crypto::hash>&, std::vector<transaction>&, std::vector<crypto::hash>&) const;
-template bool Blockchain::get_split_transactions_blobs(const std::vector<crypto::hash>&, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>&, std::vector<crypto::hash>&) const;
+template bool Blockchain::get_transactions(const std::span<const crypto::hash>, std::vector<transaction>&, std::vector<crypto::hash>&) const;
+template bool Blockchain::get_split_transactions_blobs(const std::span<const crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>&, std::vector<crypto::hash>&) const;
 }

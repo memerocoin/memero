@@ -1264,7 +1264,7 @@ public:
    *
    * @return the list of transactions
    */
-  virtual std::vector<transaction> get_tx_list(const std::vector<crypto::hash>& hlist) const = 0;
+  virtual std::vector<transaction> get_tx_list(const std::span<const crypto::hash> hlist) const = 0;
 
   // returns height of block that contains transaction with hash <h>
   /**
