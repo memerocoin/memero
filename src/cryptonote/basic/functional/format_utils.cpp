@@ -311,7 +311,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  crypto::hash calculate_transaction_hash(const transaction& t)
+  crypto::hash get_transaction_hash(const transaction& t)
   {
     // v1 transactions hash the entire blob
     if (t.version == 1)
@@ -624,12 +624,6 @@ namespace cryptonote
       res[i] -= res[i-1];
 
     return res;
-  }
-
-  //---------------------------------------------------------------
-  crypto::hash get_transaction_hash(const transaction& t)
-  {
-    return calculate_transaction_hash(t);
   }
 
   //---------------------------------------------------------------

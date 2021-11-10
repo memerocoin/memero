@@ -98,9 +98,6 @@ namespace cryptonote
    );
 
   //---------------------------------------------------------------
-  crypto::hash calculate_transaction_hash(const transaction& t);
-
-  //---------------------------------------------------------------
   template<class t_object>
   std::optional<blobdata> t_serializable_object_to_maybe_blob(const t_object& to)
   {
