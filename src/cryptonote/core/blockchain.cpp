@@ -1491,7 +1491,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     LOG_ERROR_AND_RETURN_UNLESS(current_diff, false, "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!");
     crypto::hash proof_of_work = {{0xff}};
     {
-      proof_of_work = get_block_longhash(bei.bl);
+      proof_of_work = get_mining_hash(bei.bl);
     }
     if(!check_hash(proof_of_work, current_diff))
     {
@@ -2797,7 +2797,7 @@ leave:
       proof_of_work = it->second;
     }
     else
-      proof_of_work = get_block_longhash(bl);
+      proof_of_work = get_mining_hash(bl);
 
     // validate proof_of_work versus difficulty target
     if(!check_hash(proof_of_work, current_diffic))
@@ -3114,7 +3114,7 @@ void Blockchain::block_longhash_worker(uint64_t height, const std::span<const bl
     if (m_cancel)
        break;
     crypto::hash id = get_block_hash(block);
-    crypto::hash pow = get_block_longhash(block);
+    crypto::hash pow = get_mining_hash(block);
     map.emplace(id, pow);
   }
 

@@ -191,7 +191,7 @@ namespace cryptonote
 
   crypto::hash get_transaction_hash(const transaction& t);
 
-  crypto::hash get_block_longhash(const block& b);
+  crypto::hash get_mining_hash(const block& b);
 
   uint64_t get_tx_outputs_money_amount(const transaction& tx);
 }

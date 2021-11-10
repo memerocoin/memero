@@ -104,7 +104,7 @@ namespace cryptonote
               m_mempool(m_blockchain_storage),
               m_blockchain_storage(m_mempool),
               m_miner(this, [](const cryptonote::block &b, crypto::hash &hash) {
-                hash = cryptonote::get_block_longhash(b);
+                hash = cryptonote::get_mining_hash(b);
                 return true;
               }),
               m_starter_message_showed(false),
