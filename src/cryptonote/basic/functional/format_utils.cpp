@@ -334,18 +334,13 @@ namespace cryptonote
       LOG_FATAL("Inconsistent transaction prefix, unprunable and blob sizes");
     }
 
-    hashes[1] = cryptonote::get_blob_hash(blobdata_ref(blob.data() + prefix_size, unprunable_size - prefix_size));
+    hashes[1] = cryptonote::get_blob_hash(blob.substr(prefix_size, unprunable_size - prefix_size));
 
     // prunable rct
-    if (t.ringct_essential.type == rct::RCTTypeNull)
-    {
-      hashes[2] = crypto::null_hash;
-    }
-    else
-    {
-      cryptonote::blobdata_ref blobref(blob);
-      hashes [2] = calculate_transaction_prunable_hash(t, blobref);
-    }
+    hashes[2]
+      = t.ringct_essential.type == rct::RCTTypeNull
+      ? crypto::null_hash
+      : calculate_transaction_prunable_hash(t, blob);
 
     // the tx hash is the hash of the 3 hashes
     return crypto::sha3(epee::blob::span((const uint8_t*)hashes, sizeof(hashes)));
