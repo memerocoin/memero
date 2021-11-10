@@ -176,7 +176,6 @@ namespace cryptonote
   blobdata get_mining_blob_head(const block& b);
   blobdata get_mining_blob_tail(const block& b);
 
-  crypto::hash calculate_block_hash(const block& b);
   std::optional<crypto::hash> get_maybe_block_hash(const block& b);
   crypto::hash get_block_hash(const block& b);
 

@@ -522,7 +522,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  crypto::hash calculate_block_hash(const block& b)
+  crypto::hash get_block_hash(const block& b)
   {
     return get_object_hash(get_mining_blob(b));
   }
@@ -535,11 +535,6 @@ namespace cryptonote
     catch (...) { return {}; }
 
     return h;
-  }
-  //---------------------------------------------------------------
-  crypto::hash get_block_hash(const block& b)
-  {
-    return calculate_block_hash(b);
   }
 
   //---------------------------------------------------------------
