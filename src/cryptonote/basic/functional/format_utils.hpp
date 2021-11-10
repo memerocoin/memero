@@ -101,7 +101,7 @@ namespace cryptonote
   template<class t_object>
   std::optional<blobdata> t_serializable_object_to_maybe_blob(const t_object& to)
   {
-    std::stringstream ss;
+    std::ostringstream ss;
     binary_archive<true> ba(ss);
     const bool r = ::serialization::serialize(ba, const_cast<t_object&>(to));
     if (r) {
@@ -135,11 +135,11 @@ namespace cryptonote
   }
   //---------------------------------------------------------------
   template <typename T>
-  std::string obj_to_json_str(T& obj)
+  std::string obj_to_json_str(const T& obj)
   {
-    std::stringstream ss;
+    std::ostringstream ss;
     json_archive<true> ar(ss, true);
-    bool r = ::serialization::serialize(ar, obj);
+    bool r = ::serialization::serialize(ar, const_cast<T&>(obj));
     LOG_ERROR_AND_RETURN_UNLESS(r, "", "obj_to_json_str failed: serialization::serialize returned false");
     return ss.str();
   }
