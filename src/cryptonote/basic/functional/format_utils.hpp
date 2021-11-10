@@ -152,7 +152,6 @@ namespace cryptonote
 
   uint64_t get_tx_fee(const transaction& tx);
   uint64_t get_transaction_weight(const transaction &tx);
-  uint64_t get_transaction_weight(const transaction &tx, const size_t blob_size);
 
   std::optional<std::vector<crypto::public_key>> get_all_tx_output_public_keys_from_extra
   (

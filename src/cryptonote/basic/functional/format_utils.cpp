@@ -384,31 +384,15 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  uint64_t get_transaction_weight(const transaction &tx, const size_t blob_size)
-  {
-    return blob_size;
-  }
-  //---------------------------------------------------------------
   uint64_t get_transaction_weight(const transaction &tx)
   {
-    size_t blob_size;
-
-    std::ostringstream s;
-    binary_archive<true> a(s);
-    ::serialization::serialize(a, const_cast<transaction&>(tx));
-    blob_size = s.str().size();
-
-    return get_transaction_weight(tx, blob_size);
+    return t_serializable_object_to_blob(tx).size();
   }
 
   //---------------------------------------------------------------
   uint64_t get_tx_fee(const transaction& tx)
   {
-    if (tx.version > 1)
-      {
-        return tx.ringct_essential.fee;
-      }
-    else return 0;
+    return tx.ringct_essential.fee;
   }
 
   //---------------------------------------------------------------

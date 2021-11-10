@@ -1092,7 +1092,7 @@ namespace wallet {
 
           tx.tx = test_tx;
           tx.ptx = test_ptx;
-          tx.weight = get_transaction_weight(test_tx, txBlob.size());
+          tx.weight = txBlob.size();
           tx.outs = outs;
           tx.needed_fee = test_ptx.fee;
           accumulated_fee += test_ptx.fee;
@@ -1165,7 +1165,7 @@ namespace wallet {
       auto txBlob = t_serializable_object_to_blob(test_ptx.tx);
       tx.tx = test_tx;
       tx.ptx = test_ptx;
-      tx.weight = get_transaction_weight(test_tx, txBlob.size());
+      tx.weight = txBlob.size();
     }
 
     std::vector<type::tx::pending_tx> ptx_vector;

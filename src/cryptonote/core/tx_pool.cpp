@@ -310,13 +310,12 @@ namespace cryptonote
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::add_tx(transaction &tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
-    crypto::hash h = null_hash;
-    cryptonote::blobdata bl = t_serializable_object_to_blob(tx);
-    if (bl.size() == 0)
+    const cryptonote::blobdata tx_blob = t_serializable_object_to_blob(tx);
+    if (tx_blob.size() == 0)
       return false;
 
-    h = get_transaction_hash(tx);
-    return add_tx(tx, h, bl, get_transaction_weight(tx, bl.size()), tvc, tx_relay, relayed);
+    const crypto::hash h = get_transaction_hash(tx);
+    return add_tx(tx, h, tx_blob, tx_blob.size(), tvc, tx_relay, relayed);
   }
   //---------------------------------------------------------------------------------
   size_t tx_memory_pool::get_txpool_weight() const
@@ -1374,7 +1373,7 @@ namespace cryptonote
           }
           // remove tx from db first
           m_blockchain.remove_txpool_tx(txid);
-          m_txpool_weight -= get_transaction_weight(tx, txblob.size());
+          m_txpool_weight -= txblob.size();
           remove_transaction_keyimages(tx, txid);
           auto sorted_it = find_tx_in_sorted_container(txid);
           if (sorted_it == m_txs_by_fee_and_receive_time.end())

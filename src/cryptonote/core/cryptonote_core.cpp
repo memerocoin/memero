@@ -554,7 +554,7 @@ namespace cryptonote
       if (already_have[i])
         continue;
 
-      const uint64_t weight = get_transaction_weight(results[i].tx, it->blob.size());
+      const uint64_t weight = it->blob.size();
       ok &= add_new_tx(results[i].tx, results[i].hash, tx_blobs[i].blob, weight, tvc[i], tx_relay, relayed);
 
       if(tvc[i].m_verifivation_failed)
@@ -793,10 +793,10 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::add_new_tx(transaction& tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
-    crypto::hash tx_hash = get_transaction_hash(tx);
-    blobdata bl = t_serializable_object_to_blob(tx);
-    size_t tx_weight = get_transaction_weight(tx, bl.size());
-    return add_new_tx(tx, tx_hash, bl, tx_weight, tvc, tx_relay, relayed);
+    const crypto::hash tx_hash = get_transaction_hash(tx);
+    const blobdata tx_blob = t_serializable_object_to_blob(tx);
+    const size_t tx_weight = tx_blob.size();
+    return add_new_tx(tx, tx_hash, tx_blob, tx_weight, tvc, tx_relay, relayed);
   }
   //-----------------------------------------------------------------------------------------------
   size_t core::get_blockchain_total_transactions() const

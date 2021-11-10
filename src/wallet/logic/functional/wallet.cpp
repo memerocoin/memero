@@ -113,7 +113,7 @@ namespace wallet {
 
   std::string get_weight_string(const cryptonote::transaction &tx, const size_t blob_size)
   {
-    return get_weight_string(get_transaction_weight(tx, blob_size));
+    return get_weight_string(blob_size);
   }
 
   //----------------------------------------------------------------------------------------------------
@@ -751,7 +751,7 @@ uint64_t calculate_fee
  )
 {
   return fee::calculate_fee_from_weight
-    (base_fee, cryptonote::get_transaction_weight(tx, blob_size), fee_multiplier, fee_quantization_mask);
+    (base_fee, blob_size, fee_multiplier, fee_quantization_mask);
 }
 
 
