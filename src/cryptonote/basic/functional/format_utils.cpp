@@ -50,11 +50,8 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx)
   {
-    std::ostringstream s;
-    binary_archive<true> a(s);
-    ::serialization::serialize(a, const_cast<transaction_prefix&>(tx));
-
-    return crypto::sha3(epee::string_tools::string_to_blob(s.str()));
+    const blobdata bd = t_serializable_object_to_blob(tx);
+    return crypto::sha3(epee::string_tools::string_to_blob(bd));
   }
 
   //---------------------------------------------------------------
