@@ -980,7 +980,7 @@ namespace cryptonote
     res.unlock_height = b.miner_tx.unlock_time;
     store_difficulty(wdiff, res.difficulty, res.wide_difficulty, res.difficulty_top64);
     blobdata block_blob = t_serializable_object_to_blob(b);
-    blobdata hashing_blob = get_block_hashing_blob(b);
+    blobdata hashing_blob = get_mining_blob(b);
     res.prev_hash = epee::string_tools::pod_to_hex(b.prev_id);
     res.blocktemplate_blob = epee::string_tools::buff_to_hex_nodelimer(block_blob);
     res.blockhashing_blob =  epee::string_tools::buff_to_hex_nodelimer(hashing_blob);

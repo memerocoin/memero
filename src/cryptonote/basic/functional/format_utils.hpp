@@ -172,9 +172,9 @@ namespace cryptonote
   bool check_outs_overflow(const transaction& tx);
   bool check_inputs_overflow(const transaction& tx);
 
-  blobdata get_block_hashing_blob(const block& b);
-  blobdata get_block_hashing_blob_head(const block& b);
-  blobdata get_block_hashing_blob_tail(const block& b);
+  blobdata get_mining_blob(const block& b);
+  blobdata get_mining_blob_head(const block& b);
+  blobdata get_mining_blob_tail(const block& b);
 
   crypto::hash calculate_block_hash(const block& b);
   std::optional<crypto::hash> get_maybe_block_hash(const block& b);

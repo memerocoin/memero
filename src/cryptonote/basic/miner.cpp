@@ -369,9 +369,9 @@ namespace cryptonote
         height = m_height;
         local_template_ver = m_template_no;
         nonce = m_starter_nonce + th_local_index;
-        const blobdata head_full = get_block_hashing_blob_head(b);
+        const blobdata head_full = get_mining_blob_head(b);
         hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
-        hashing_blob_tail = cryptonote::get_block_hashing_blob_tail(b);
+        hashing_blob_tail = cryptonote::get_mining_blob_tail(b);
       }
 
       if(!local_template_ver)//no any set_block_template call
@@ -465,9 +465,9 @@ namespace cryptonote
         height = m_height;
         local_template_ver = m_template_no;
         nonce = m_starter_nonce;
-        const blobdata head_full = get_block_hashing_blob_head(b);
+        const blobdata head_full = get_mining_blob_head(b);
         hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
-        hashing_blob_tail = cryptonote::get_block_hashing_blob_tail(b);
+        hashing_blob_tail = cryptonote::get_mining_blob_tail(b);
 
         // LOG_GLOBAL_INFO("head size: " << hashing_blob_head.size());
         // LOG_GLOBAL_INFO("tail size: " << hashing_blob_tail.size());

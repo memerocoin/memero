@@ -501,7 +501,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  blobdata get_block_hashing_blob_tail(const block& b)
+  blobdata get_mining_blob_tail(const block& b)
   {
     blobdata blob;
     crypto::hash tree_root_hash = get_tx_tree_hash(b);
@@ -510,21 +510,21 @@ namespace cryptonote
     return blob;
   }
   //---------------------------------------------------------------
-  blobdata get_block_hashing_blob_head(const block& b)
+  blobdata get_mining_blob_head(const block& b)
   {
     blobdata blob = t_serializable_object_to_blob(static_cast<block_header>(b));
     return blob;
   }
   //---------------------------------------------------------------
-  blobdata get_block_hashing_blob(const block& b)
+  blobdata get_mining_blob(const block& b)
   {
-    return get_block_hashing_blob_head(b).append(get_block_hashing_blob_tail(b));
+    return get_mining_blob_head(b).append(get_mining_blob_tail(b));
   }
 
   //---------------------------------------------------------------
   crypto::hash calculate_block_hash(const block& b)
   {
-    return get_object_hash(get_block_hashing_blob(b));
+    return get_object_hash(get_mining_blob(b));
   }
 
   std::optional<crypto::hash> get_maybe_block_hash(const block& b) {
@@ -640,7 +640,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::hash get_block_longhash(const block& b)
   {
-    blobdata bd = get_block_hashing_blob(b);
+    blobdata bd = get_mining_blob(b);
     return crypto::sha3(epee::string_tools::string_to_blob(bd));
   }
 }
