@@ -228,7 +228,7 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------
-  bool sort_tx_extra(const std::vector<uint8_t>& tx_extra, std::vector<uint8_t> &sorted_tx_extra, bool allow_partial)
+  bool sort_tx_extra(const std::span<uint8_t> tx_extra, std::vector<uint8_t> &sorted_tx_extra, bool allow_partial)
   {
     std::vector<tx_extra_field> tx_extra_fields;
 
