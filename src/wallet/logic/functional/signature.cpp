@@ -98,7 +98,7 @@ namespace signature {
     if (crypto::verify_schnorr_signature(hash.blob(), address.m_spend_public_key, *sig))
       return {true, ver, wallet::logic::type::message_signature::sign_with_spend_key };
 
-    if (crypto::verify_schnorr_signature(hash.blob(), address.m_view_public_key, *sig))
+    if (crypto::verify_schnorr_signature(hash.blob(), address.m_view_public_key, *sig, address.m_spend_public_key))
       return {true, ver, wallet::logic::type::message_signature::sign_with_view_key };
 
     // Both modes failed
@@ -121,12 +121,18 @@ namespace signature {
     const crypto::secret_key skey
       = signature_type == wallet::logic::type::message_signature::sign_with_spend_key
       ? cryptonote::get_subaddress_spend_secret_key(keys, index)
-      : cryptonote::get_subaddress_view_secret_key_base_G(keys, index)
+      : keys.m_view_secret_key
       ;
 
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(skey), "Invalid signing key");
 
-    const crypto::schnorr_signature signature = crypto::generate_schnorr_signature(hash.blob(), skey);
+    const std::optional<crypto::ec_point> base 
+      = signature_type == wallet::logic::type::message_signature::sign_with_spend_key
+      ? std::nullopt
+      : std::optional<crypto::ec_point>{cryptonote::get_subaddress_spend_public_key(keys, index)}
+      ;
+
+    const crypto::schnorr_signature signature = crypto::generate_schnorr_signature(hash.blob(), skey, base);
     return std::string(config::MESSAGE_SIGNING_HEADER) +
       tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(signature)));
   }
