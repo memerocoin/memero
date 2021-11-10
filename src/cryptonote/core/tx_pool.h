@@ -284,7 +284,7 @@ namespace cryptonote
      *
      * @return true
      */
-    bool check_for_output_spend_public_key_images(const std::vector<crypto::output_spend_public_key_image>& output_spend_public_key_images, std::vector<bool>& spent) const;
+    bool check_for_output_spend_public_key_images(const std::span<const crypto::output_spend_public_key_image> output_spend_public_key_images, std::vector<bool>& spent) const;
 
     /**
      * @brief get a specific transaction from the pool

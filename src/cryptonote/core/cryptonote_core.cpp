@@ -664,7 +664,7 @@ namespace cryptonote
     return m_blockchain_storage.have_tx_keyimg_as_spent(output_spend_public_key_image);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::are_output_spend_public_key_images_spent(const std::vector<crypto::output_spend_public_key_image>& key_im, std::vector<bool> &spent) const
+  bool core::are_output_spend_public_key_images_spent(const std::span<const crypto::output_spend_public_key_image> key_im, std::vector<bool> &spent) const
   {
     spent.clear();
     for(auto& ki: key_im)
@@ -674,7 +674,7 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::are_output_spend_public_key_images_spent_in_pool(const std::vector<crypto::output_spend_public_key_image>& key_im, std::vector<bool> &spent) const
+  bool core::are_output_spend_public_key_images_spent_in_pool(const std::span<const crypto::output_spend_public_key_image> key_im, std::vector<bool> &spent) const
   {
     spent.clear();
 

@@ -952,7 +952,7 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::check_for_output_spend_public_key_images(const std::vector<crypto::output_spend_public_key_image>& output_spend_public_key_images, std::vector<bool>& spent) const
+  bool tx_memory_pool::check_for_output_spend_public_key_images(const std::span<const crypto::output_spend_public_key_image> output_spend_public_key_images, std::vector<bool>& spent) const
   {
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
     LOCK_LOCKABLE_OBJECT(m_blockchain);
