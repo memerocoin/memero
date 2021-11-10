@@ -605,7 +605,6 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::hash get_mining_hash(const block& b)
   {
-    blobdata bd = get_mining_blob(b);
-    return crypto::sha3(epee::string_tools::string_to_blob(bd));
+    return crypto::sha3(epee::string_tools::string_to_blob(get_mining_blob(b)));
   }
 }
