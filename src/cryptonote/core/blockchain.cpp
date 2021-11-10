@@ -3232,7 +3232,7 @@ bool Blockchain::has_block_weights(uint64_t height, uint64_t nblocks) const
 //    vs [output_spend_public_key_image, output_keys] (m_scan_table). This is faster because it takes advantage of bulk queries
 //    and is threaded if possible. The table (m_scan_table) will be used later when querying output
 //    keys.
-bool Blockchain::prepare_handle_incoming_blocks(const std::vector<block_complete_entry> &blocks_entry, std::vector<block> &blocks)
+bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_complete_entry> blocks_entry, std::vector<block> &blocks)
 {
   LOG_TRACE("Blockchain::" << __func__);
   TIME_MEASURE_START(prepare);
