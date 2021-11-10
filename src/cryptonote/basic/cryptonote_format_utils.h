@@ -49,11 +49,11 @@ namespace cryptonote
 {
   //---------------------------------------------------------------
 
-  bool parse_and_validate_tx_prefix_from_blob(const blobdata_ref& tx_blob, transaction_prefix& tx);
-  bool parse_and_validate_tx_from_blob(const blobdata_ref& tx_blob, transaction& tx, crypto::hash& tx_hash, crypto::hash& tx_prefix_hash);
-  bool parse_and_validate_tx_from_blob(const blobdata_ref& tx_blob, transaction& tx, crypto::hash& tx_hash);
-  bool parse_and_validate_tx_from_blob(const blobdata_ref& tx_blob, transaction& tx);
-  bool parse_and_validate_tx_base_from_blob(const blobdata_ref& tx_blob, transaction& tx);
+  bool parse_and_validate_tx_prefix_from_blob(const blobdata_ref tx_blob, transaction_prefix& tx);
+  bool parse_and_validate_tx_from_blob(const blobdata_ref tx_blob, transaction& tx, crypto::hash& tx_hash, crypto::hash& tx_prefix_hash);
+  bool parse_and_validate_tx_from_blob(const blobdata_ref tx_blob, transaction& tx, crypto::hash& tx_hash);
+  bool parse_and_validate_tx_from_blob(const blobdata_ref tx_blob, transaction& tx);
+  bool parse_and_validate_tx_base_from_blob(const blobdata_ref tx_blob, transaction& tx);
 
   template<typename T>
   bool find_tx_extra_field_by_type(const std::vector<tx_extra_field>& tx_extra_fields, T& field, size_t index = 0)
@@ -75,9 +75,9 @@ namespace cryptonote
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
 
 
-  bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b, crypto::hash *block_hash);
-  bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b);
-  bool parse_and_validate_block_from_blob(const blobdata_ref& b_blob, block& b, crypto::hash &block_hash);
+  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash *block_hash);
+  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b);
+  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash);
   bool get_inputs_money_amount(const transaction& tx, uint64_t& money);
 
   bool parse_amount(uint64_t& amount, const std::string& str_amount);
