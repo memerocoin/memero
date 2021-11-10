@@ -661,7 +661,7 @@ public:
     if (LEVIN_OK != err_code)
     {
       // Never call callback inside critical section, that can cause deadlock
-      cb(err_code, std::span<uint8_t>(), m_connection_context);
+      cb(err_code, std::span<const uint8_t>(), m_connection_context);
       return false;
     }
 
