@@ -56,7 +56,7 @@ namespace cryptonote
   bool parse_and_validate_tx_base_from_blob(const blobdata_ref tx_blob, transaction& tx);
 
   template<typename T>
-  bool find_tx_extra_field_by_type(const std::vector<tx_extra_field>& tx_extra_fields, T& field, size_t index = 0)
+  bool find_tx_extra_field_by_type(const std::span<const tx_extra_field> tx_extra_fields, T& field, size_t index = 0)
   {
     auto it = std::find_if(tx_extra_fields.begin(), tx_extra_fields.end(), [&index](const tx_extra_field& f) { return typeid(T) == f.type() && !index--; });
     if(tx_extra_fields.end() == it)
