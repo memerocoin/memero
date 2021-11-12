@@ -276,13 +276,16 @@ TEST(ringct, CLSAG)
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.D = backup_key_inv8;
 
-  // D not in main subgroup in clsag at verification
-  // backup_key_inv8 = clsag.D;
-  // rct::rct_point x;
-  // ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
-  // clsag.D = rct::unsafe_d2rct_p(clsag.D) + x;
-  // ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
-  // clsag.D = backup_key_inv8;
+  // D not in main subgroup in clsag_unsafe
+  backup_key_inv8 = clsag.D;
+  auto clsag_unsafe = toUnsafeCLSAG(clsag);
+  ASSERT_TRUE(maybeSafeCLSAG(clsag_unsafe));
+
+  rct::rct_point x;
+  ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
+
+  clsag_unsafe.D = x;
+  ASSERT_FALSE(maybeSafeCLSAG(clsag_unsafe));
 
   // swapped I and D in clsag at verification
   backup_key_inv8 = clsag.D;
