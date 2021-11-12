@@ -283,6 +283,8 @@ namespace rct {
         }
         if (n_bulletproof_max_amounts(bulletproofs.front()) < outputs)
           return false;
+        if (!is_bulletproof_structure_valid(bulletproofs.front()))
+          return false;
         ar.end_array();
       }
 
