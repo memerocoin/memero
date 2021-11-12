@@ -104,12 +104,11 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(idx < n, "Signing index out of range!");
 
     // mages images
-    const rct_point H = hash_to_point_via_field(P[idx]);
+    const rct_point P_hash = hash_to_point_via_field(P[idx]);
 
-    const auto[a, aG] = rct::skpkGen();
-    const rct_point aH = H ^ a;
-    sig.I = H ^ p;
-    const rct_point D = H ^ z;
+    const rct_scalar a = crypto::scalarGen();
+    sig.I = P_hash ^ p;
+    const rct_point D = P_hash ^ z;
 
     // Offset key image
     sig.D = D ^ rct::s_inv_eight;
@@ -154,8 +153,8 @@ namespace rct {
     c_to_hash.insert(c_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
     c_to_hash.push_back(C_offset);
     c_to_hash.push_back(crypto::h2d(message));
-    c_to_hash.push_back(aG);
-    c_to_hash.push_back(aH);
+    c_to_hash.push_back(G_(a));
+    c_to_hash.push_back(P_hash ^ a);
 
 
     rct_scalar c = rct::hash_dataV_to_scalar(c_to_hash);
