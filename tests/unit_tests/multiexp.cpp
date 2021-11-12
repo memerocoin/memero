@@ -30,7 +30,7 @@
 
 #include "math/crypto/functional/key.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/multiexp.hpp"
+#include "math/ringct/multi_exponentiation.hpp"
 
 #define TESTSCALAR []{ static const rct::rct_scalar TESTSCALAR = crypto::scalarGen(); return TESTSCALAR; }()
 #define TESTPOW2SCALAR []{ static const rct::rct_scalar TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()

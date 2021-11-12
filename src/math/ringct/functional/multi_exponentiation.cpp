@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-#include "multiexp.hpp"
+#include "multi_exponentiation.hpp"
 
 #include "rctOps.hpp"
 
