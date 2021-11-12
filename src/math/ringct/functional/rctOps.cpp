@@ -92,7 +92,7 @@ namespace rct {
     if (keys.empty()) {
       return crypto::sha3({});
     }
-    return crypto::sha3(epee::blob::span((const uint8_t*)&keys[0], keys.size() * sizeof(keys[0])));
+    return crypto::sha3(epee::blob::span((const uint8_t*)keys.data(), keys.size_bytes()));
   }
 
   rct_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys) {
