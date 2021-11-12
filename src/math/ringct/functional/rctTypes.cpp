@@ -45,126 +45,126 @@ using namespace std;
 
 namespace rct {
 
-    size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof)
+  size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof)
+  {
+    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, 0, "Invalid bulletproof L size");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), 0, "Mismatched bulletproof L/R size");
+    static const size_t extra_bits = 4;
+    static_assert((1 << extra_bits) == constant::BULLETPROOF_MAX_OUTPUTS, "log2(constant::BULLETPROOF_MAX_OUTPUTS) is out of date");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() <= 6 + extra_bits, 0, "Invalid bulletproof L size");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() <= (1u<<(proof.L.size()-6)), 0, "Invalid bulletproof V/L");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() * 2 > (1u<<(proof.L.size()-6)), 0, "Invalid bulletproof V/L");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() > 0, 0, "Empty bulletproof");
+    return proof.V.size();
+  }
+
+  size_t n_bulletproof_amounts(const std::vector<Bulletproof_unsafe> &proofs)
+  {
+    size_t n = 0;
+    for (const Bulletproof_unsafe &proof: proofs)
     {
-        LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, 0, "Invalid bulletproof L size");
-        LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), 0, "Mismatched bulletproof L/R size");
-        static const size_t extra_bits = 4;
-        static_assert((1 << extra_bits) == constant::BULLETPROOF_MAX_OUTPUTS, "log2(constant::BULLETPROOF_MAX_OUTPUTS) is out of date");
-        LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() <= 6 + extra_bits, 0, "Invalid bulletproof L size");
-        LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() <= (1u<<(proof.L.size()-6)), 0, "Invalid bulletproof V/L");
-        LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() * 2 > (1u<<(proof.L.size()-6)), 0, "Invalid bulletproof V/L");
-        LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() > 0, 0, "Empty bulletproof");
-        return proof.V.size();
+        size_t n2 = n_bulletproof_amounts(proof);
+        LOG_ERROR_AND_RETURN_UNLESS(n2 < std::numeric_limits<uint32_t>::max() - n, 0, "Invalid number of bulletproofs");
+        if (n2 == 0)
+            return 0;
+        n += n2;
+    }
+    return n;
+  }
+
+  size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof)
+  {
+    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, 0, "Invalid bulletproof L size");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), 0, "Mismatched bulletproof L/R size");
+    static const size_t extra_bits = 4;
+    static_assert((1 << extra_bits) == constant::BULLETPROOF_MAX_OUTPUTS, "log2(constant::BULLETPROOF_MAX_OUTPUTS) is out of date");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() <= 6 + extra_bits, 0, "Invalid bulletproof L size");
+    return 1 << (proof.L.size() - 6);
+  }
+
+  size_t n_bulletproof_max_amounts(const std::vector<Bulletproof_unsafe> &proofs)
+  {
+    size_t n = 0;
+    for (const Bulletproof_unsafe &proof: proofs)
+    {
+      size_t n2 = n_bulletproof_max_amounts(proof);
+      LOG_ERROR_AND_RETURN_UNLESS(n2 < std::numeric_limits<uint32_t>::max() - n, 0, "Invalid number of bulletproofs");
+      if (n2 == 0)
+          return 0;
+      n += n2;
+    }
+    return n;
+  }
+
+  std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
+    const auto maybe_proof_A = crypto::maybeSafePoint(proof.A);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
+    const rct::rct_point proof_A = *maybe_proof_A;
+
+    const auto maybe_proof_S = crypto::maybeSafePoint(proof.S);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_S, {}, "Bad proof.S");
+    const rct::rct_point proof_S = *maybe_proof_S;
+
+    const auto maybe_proof_T1 = crypto::maybeSafePoint(proof.T1);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T1, {}, "Bad proof.T1");
+    const rct::rct_point proof_T1 = *maybe_proof_T1;
+
+    const auto maybe_proof_T2 = crypto::maybeSafePoint(proof.T2);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T2, {}, "Bad proof.T2");
+    const rct::rct_point proof_T2 = *maybe_proof_T2;
+
+    std::vector<rct::rct_point> proof_V;
+    for (const auto& x: proof.V) {
+      const auto y = crypto::maybeSafePoint(x);
+      LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.V");
+      proof_V.push_back(*y);
     }
 
-    size_t n_bulletproof_amounts(const std::vector<Bulletproof_unsafe> &proofs)
-    {
-        size_t n = 0;
-        for (const Bulletproof_unsafe &proof: proofs)
-        {
-            size_t n2 = n_bulletproof_amounts(proof);
-            LOG_ERROR_AND_RETURN_UNLESS(n2 < std::numeric_limits<uint32_t>::max() - n, 0, "Invalid number of bulletproofs");
-            if (n2 == 0)
-                return 0;
-            n += n2;
-        }
-        return n;
+    std::vector<rct::rct_point> proof_L;
+    for (const auto& x: proof.L) {
+      const auto y = crypto::maybeSafePoint(x);
+      LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.L");
+      proof_L.push_back(*y);
     }
 
-    size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof)
-    {
-        LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, 0, "Invalid bulletproof L size");
-        LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), 0, "Mismatched bulletproof L/R size");
-        static const size_t extra_bits = 4;
-        static_assert((1 << extra_bits) == constant::BULLETPROOF_MAX_OUTPUTS, "log2(constant::BULLETPROOF_MAX_OUTPUTS) is out of date");
-        LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() <= 6 + extra_bits, 0, "Invalid bulletproof L size");
-        return 1 << (proof.L.size() - 6);
+    std::vector<rct::rct_point> proof_R;
+    for (const auto& x: proof.R) {
+      const auto y = crypto::maybeSafePoint(x);
+      LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.R");
+      proof_R.push_back(*y);
     }
 
-    size_t n_bulletproof_max_amounts(const std::vector<Bulletproof_unsafe> &proofs)
-    {
-        size_t n = 0;
-        for (const Bulletproof_unsafe &proof: proofs)
-        {
-            size_t n2 = n_bulletproof_max_amounts(proof);
-            LOG_ERROR_AND_RETURN_UNLESS(n2 < std::numeric_limits<uint32_t>::max() - n, 0, "Invalid number of bulletproofs");
-            if (n2 == 0)
-                return 0;
-            n += n2;
-        }
-        return n;
-    }
+    // check rct_scalar range
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), {}, "Input rct_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), {}, "Input rct_scalar not in range");
 
-   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
-      const auto maybe_proof_A = crypto::maybeSafePoint(proof.A);
-      LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
-      const rct::rct_point proof_A = *maybe_proof_A;
-
-      const auto maybe_proof_S = crypto::maybeSafePoint(proof.S);
-      LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_S, {}, "Bad proof.S");
-      const rct::rct_point proof_S = *maybe_proof_S;
-
-      const auto maybe_proof_T1 = crypto::maybeSafePoint(proof.T1);
-      LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T1, {}, "Bad proof.T1");
-      const rct::rct_point proof_T1 = *maybe_proof_T1;
-
-      const auto maybe_proof_T2 = crypto::maybeSafePoint(proof.T2);
-      LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T2, {}, "Bad proof.T2");
-      const rct::rct_point proof_T2 = *maybe_proof_T2;
-
-      std::vector<rct::rct_point> proof_V;
-      for (const auto& x: proof.V) {
-        const auto y = crypto::maybeSafePoint(x);
-        LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.V");
-        proof_V.push_back(*y);
-      }
-
-      std::vector<rct::rct_point> proof_L;
-      for (const auto& x: proof.L) {
-        const auto y = crypto::maybeSafePoint(x);
-        LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.L");
-        proof_L.push_back(*y);
-      }
-
-      std::vector<rct::rct_point> proof_R;
-      for (const auto& x: proof.R) {
-        const auto y = crypto::maybeSafePoint(x);
-        LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.R");
-        proof_R.push_back(*y);
-      }
-
-      // check rct_scalar range
-      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), {}, "Input rct_scalar not in range");
-      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), {}, "Input rct_scalar not in range");
-
-      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), {}, "Input rct_scalar not in range");
-      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), {}, "Input rct_scalar not in range");
-      LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), {}, "Input rct_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), {}, "Input rct_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), {}, "Input rct_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), {}, "Input rct_scalar not in range");
 
 
-      return Bulletproof {
-        // rct::inv8V V;
-        // rct::inv8 A, S;
-        // rct::inv8 T1, T2;
-        // rct::rct_scalar taux;
-        // rct::rct_scalar mu;
-        // rct::inv8V L, R;
-        // rct::rct_scalar a, b, t;
-        proof_V
-        , proof_A
-        , proof_S
-        , proof_T1
-        , proof_T2
-        , crypto::reduce(proof.taux)
-        , crypto::reduce(proof.mu)
-        , proof_L
-        , proof_R
-        , crypto::reduce(proof.a)
-        , crypto::reduce(proof.b)
-        , crypto::reduce(proof.t)
-      };
-   }
+    return Bulletproof {
+      // rct::inv8V V;
+      // rct::inv8 A, S;
+      // rct::inv8 T1, T2;
+      // rct::rct_scalar taux;
+      // rct::rct_scalar mu;
+      // rct::inv8V L, R;
+      // rct::rct_scalar a, b, t;
+      proof_V
+      , proof_A
+      , proof_S
+      , proof_T1
+      , proof_T2
+      , crypto::reduce(proof.taux)
+      , crypto::reduce(proof.mu)
+      , proof_L
+      , proof_R
+      , crypto::reduce(proof.a)
+      , crypto::reduce(proof.b)
+      , crypto::reduce(proof.t)
+    };
+  }
 
   Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof) {
     return Bulletproof_unsafe {
