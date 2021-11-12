@@ -30,22 +30,10 @@
 
 #pragma once
 
-#include <cstring>
-
-static inline uint32_t rol32(uint32_t x, int r) {
-  return (x << (r & 31)) | (x >> (-r & 31));
-}
-
 #define IDENT16(x) ((uint16_t) (x))
 #define IDENT32(x) ((uint32_t) (x))
 #define IDENT64(x) ((uint64_t) (x))
 
-#define SWAP16(x) ((((uint16_t) (x) & 0x00ff) << 8) | \
-  (((uint16_t) (x) & 0xff00) >> 8))
-#define SWAP32(x) ((((uint32_t) (x) & 0x000000ff) << 24) | \
-  (((uint32_t) (x) & 0x0000ff00) <<  8) | \
-  (((uint32_t) (x) & 0x00ff0000) >>  8) | \
-  (((uint32_t) (x) & 0xff000000) >> 24))
 #define SWAP64(x) ((((uint64_t) (x) & 0x00000000000000ff) << 56) | \
   (((uint64_t) (x) & 0x000000000000ff00) << 40) | \
   (((uint64_t) (x) & 0x0000000000ff0000) << 24) | \
@@ -59,30 +47,10 @@ static inline uint16_t ident16(uint16_t x) { return x; }
 static inline uint32_t ident32(uint32_t x) { return x; }
 static inline uint64_t ident64(uint64_t x) { return x; }
 
-static inline uint16_t swap16(uint16_t x) {
-  return ((x & 0x00ff) << 8) | ((x & 0xff00) >> 8);
-}
-
-static inline uint32_t swap32(uint32_t x) {
-  x = ((x & 0x00ff00ff) << 8) | ((x & 0xff00ff00) >> 8);
-  return (x << 16) | (x >> 16);
-}
-
-static inline uint64_t swap64(uint64_t x) {
-  x = ((x & 0x00ff00ff00ff00ff) <<  8) | ((x & 0xff00ff00ff00ff00) >>  8);
-  x = ((x & 0x0000ffff0000ffff) << 16) | ((x & 0xffff0000ffff0000) >> 16);
-  return (x << 32) | (x >> 32);
-}
-
 #define SWAP16LE IDENT16
-#define SWAP16BE SWAP16
 #define swap16le ident16
-#define swap16be swap16
 #define SWAP32LE IDENT32
-#define SWAP32BE SWAP32
 #define swap32le ident32
-#define swap32be swap32
 #define SWAP64LE IDENT64
 #define SWAP64BE SWAP64
 #define swap64le ident64
-#define swap64be swap64
