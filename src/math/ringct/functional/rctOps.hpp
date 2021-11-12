@@ -36,7 +36,7 @@
 
 namespace rct {
 
-  // Can't us consteval here or android will panic
+  // Can't use consteval here or android will panic
 
   constexpr rct_scalar s_zero = crypto::s_0;
   constexpr rct_scalar s_one = crypto::s_1;

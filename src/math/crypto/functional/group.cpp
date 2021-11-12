@@ -111,7 +111,6 @@ namespace crypto {
   }
 
   bool is_valid_group_element(const ec_point_unsafe x) noexcept {
-    // here identity really means zero_small_order
     return x == identity || is_safe_point(x);
   }
 
