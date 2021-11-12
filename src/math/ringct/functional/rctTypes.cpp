@@ -71,14 +71,12 @@ namespace rct {
 
   size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof)
   {
-    LOG_ERROR_AND_RETURN_UNLESS(is_bulletproof_structure_valid(proof), 0, "Invalid proof structure");
     LOG_ERROR_AND_RETURN_UNLESS(is_bulletproof_structure_valid_extended(proof), 0, "Invalid proof structure");
     return proof.V.size();
   }
 
   size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof)
   {
-    LOG_ERROR_AND_RETURN_UNLESS(is_bulletproof_structure_valid(proof), 0, "Invalid proof structure");
     return 1 << (proof.L.size() - 6);
   }
 

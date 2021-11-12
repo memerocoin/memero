@@ -281,9 +281,10 @@ namespace rct {
           if (number_of_range_proofs - i > 1)
             ar.delimit_array();
         }
-        if (n_bulletproof_max_amounts(bulletproofs.front()) < outputs)
+        const auto proof = bulletproofs.front();
+        if (n_bulletproof_max_amounts(proof) < outputs)
           return false;
-        if (!is_bulletproof_structure_valid(bulletproofs.front()))
+        if (!is_bulletproof_structure_valid(proof))
           return false;
         ar.end_array();
       }
