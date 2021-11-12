@@ -55,11 +55,6 @@ namespace rct {
     return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::rct_scalarV{gamma});
   }
 
-  Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gamma)
-  {
-    return bulletproof_MAKE(std::vector<rct::rct_scalar>{sv}, rct::rct_scalarV{gamma});
-  }
-
 }
 
 namespace crypto {
@@ -129,21 +124,21 @@ TEST(bulletproofs, valid_aggregated)
 }
 
 
-TEST(bulletproofs, invalid_8)
-{
-  rct::rct_scalar invalid_amount = rct::s_zero;
-  invalid_amount.data[8] = 1;
-  rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, crypto::scalarGen());
-  ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
-}
+// TEST(bulletproofs, invalid_8)
+// {
+//   rct::rct_scalar invalid_amount = rct::s_zero;
+//   invalid_amount.data[8] = 1;
+//   rct::Bulletproof proof = bulletproof_MAKE(scalar_to_int(invalid_amount), crypto::scalarGen());
+//   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
+// }
 
-TEST(bulletproofs, invalid_31)
-{
-  rct::rct_scalar invalid_amount = rct::s_zero;
-  invalid_amount.data[31] = 1;
-  rct::Bulletproof proof = bulletproof_MAKE(invalid_amount, crypto::scalarGen());
-  ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
-}
+// TEST(bulletproofs, invalid_31)
+// {
+//   rct::rct_scalar invalid_amount = rct::s_zero;
+//   invalid_amount.data[31] = 1;
+//   rct::Bulletproof proof = bulletproof_MAKE(scalar_to_int(invalid_amount), crypto::scalarGen());
+//   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
+// }
 
 static const char * const torsion_elements[] =
 {
