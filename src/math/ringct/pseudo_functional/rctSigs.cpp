@@ -299,7 +299,14 @@ namespace rct {
 
       LOG_ERROR_AND_RETURN_UNLESS
         (
-          rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs)
+         rv.p.bulletproofs.size() == 1
+         , false
+         , "More than one proofs"
+         );
+
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+          rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs.front())
           , false
           , "Mismatched sizes of outPk and bulletproofs"
           );
@@ -349,7 +356,6 @@ namespace rct {
             return false;
           }
 
-          if (rv.p.bulletproofs.size() != 1) return false;
 
           const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
           LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");

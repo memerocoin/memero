@@ -174,7 +174,6 @@ namespace rct {
   bool is_bulletproof_structure_valid(const Bulletproof_unsafe &proof);
   size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);
   size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);
-  size_t n_bulletproof_amounts(const std::vector<Bulletproof_unsafe> &proofs);
   size_t n_bulletproof_max_amounts(const std::vector<Bulletproof_unsafe> &proofs);
 
   //A container to hold all signatures necessary for RingCT
@@ -273,6 +272,8 @@ namespace rct {
         ar.tag("range_proofs");
         ar.begin_array();
         if (number_of_range_proofs > outputs)
+          return false;
+        if (number_of_range_proofs != 1)
           return false;
         PREPARE_CUSTOM_VECTOR_SERIALIZATION(number_of_range_proofs, bulletproofs);
         for (size_t i = 0; i < number_of_range_proofs; ++i)

@@ -70,20 +70,6 @@ namespace rct {
     return proof.V.size();
   }
 
-  size_t n_bulletproof_amounts(const std::vector<Bulletproof_unsafe> &proofs)
-  {
-    size_t n = 0;
-    for (const Bulletproof_unsafe &proof: proofs)
-    {
-        size_t n2 = n_bulletproof_amounts(proof);
-        LOG_ERROR_AND_RETURN_UNLESS(n2 < std::numeric_limits<uint32_t>::max() - n, 0, "Invalid number of bulletproofs");
-        if (n2 == 0)
-            return 0;
-        n += n2;
-    }
-    return n;
-  }
-
   size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof)
   {
     LOG_ERROR_AND_RETURN_UNLESS(is_bulletproof_structure_valid(proof), 0, "Invalid proof structure");
