@@ -17,8 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <gtest/gtest.h>
 
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/crypto/controller/keyGen.hpp"
 #include "math/crypto/functional/group.hpp"
+#include "math/crypto/controller/keyGen.hpp"
 
 using namespace crypto;
 using namespace rct;

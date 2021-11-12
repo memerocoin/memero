@@ -38,7 +38,6 @@
 #include "tools/serialization/variant.h"
 #include "tools/serialization/containers.h"
 #include "tools/serialization/binary_utils.h"
-#include "math/ringct/controller/rctGen.hpp"
 
 #include "wallet/logic/type/wallet.hpp"
 
@@ -57,6 +56,15 @@
 using namespace std;
 using namespace crypto;
 using namespace wallet::logic::type::wallet;
+
+namespace rct {
+
+  std::pair<rct_scalar, rct_point> skpkGen() {
+    const rct_scalar sk = crypto::scalarGen();
+    return std::make_pair(sk, G_(sk));
+  }
+
+}
 
 struct Struct
 {

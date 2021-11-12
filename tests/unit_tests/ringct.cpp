@@ -36,7 +36,6 @@
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
-#include "math/ringct/controller/rctGen.hpp"
 #include "math/ringct/controller/rctSigGen.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 
@@ -52,6 +51,15 @@ using namespace rct;
 
 namespace rct {
   inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
+}
+
+namespace rct {
+
+  std::pair<rct_scalar, rct_point> skpkGen() {
+    const rct_scalar sk = crypto::scalarGen();
+    return std::make_pair(sk, G_(sk));
+  }
+
 }
 
 rct::rct_point pkGen() {

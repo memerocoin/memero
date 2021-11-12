@@ -43,7 +43,6 @@ add_executable(unit_tests_tools
   levin.cpp
   # epee_boosted_tcp_server.cpp
   epee_serialization.cpp
-  group.cpp
 )
 
 add_executable(test_notifier test_notifier.cpp)
@@ -66,13 +65,14 @@ gtest_discover_tests(
 )
 
 
-
 add_executable(unit_tests_basic
   # device.cpp
   account.cpp
   mnemonics.cpp
   bulletproofs.cpp
   # multiexp.cpp
+  lolnero/group.cpp
+  lolnero/rctOps.cpp
 )
 
 target_link_libraries(unit_tests_basic

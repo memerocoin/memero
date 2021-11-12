@@ -36,13 +36,21 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
-#include "math/ringct/controller/rctGen.hpp"
 #include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/basic/type/blobdatatype.hpp"
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
 using namespace rct;
+
+namespace rct {
+
+  std::pair<rct_scalar, rct_point> skpkGen() {
+    const rct_scalar sk = crypto::scalarGen();
+    return std::make_pair(sk, G_(sk));
+  }
+
+}
 
 Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
 {

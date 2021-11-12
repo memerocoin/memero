@@ -33,7 +33,6 @@ add_library(math_ringct_basic
   functional/vectorOps.cpp
   functional/multiexp.cpp
 
-  controller/rctGen.cpp
   pseudo_functional/bulletproofs.cpp
 )
 

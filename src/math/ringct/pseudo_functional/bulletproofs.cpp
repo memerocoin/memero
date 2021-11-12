@@ -36,7 +36,6 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/multiexp.hpp"
-#include "math/ringct/controller/rctGen.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 
 #include "tools/epee/include/logging.hpp"
