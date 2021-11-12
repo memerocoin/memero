@@ -17,14 +17,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "group.hpp"
 
 #include "tools/epee/include/logging.hpp"
-#include "tools/epee/include/int-util.h"
-
 
 #include <sodium.h>
 
 #include <cassert>
 #include <mutex>
 #include <memory>
+#include <cstring>
 
 
 extern "C" {
@@ -165,13 +164,13 @@ namespace crypto {
 
   ec_scalar int_to_scalar(const uint64_t in) noexcept {
     ec_scalar x = {};
-    memcpy_swap64le(x.data.data(), &in, 1);
+    std::memcpy(x.data.data(), &in, sizeof(uint64_t));
     return x;
   }
 
   uint64_t scalar_to_int(const ec_scalar & in) noexcept {
     uint64_t out = 0;
-    memcpy_swap64le(&out, in.data.data(), 1);
+    std::memcpy(&out, in.data.data(), sizeof(uint64_t));
     return out;
   }
 
