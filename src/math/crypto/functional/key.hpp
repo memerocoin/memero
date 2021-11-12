@@ -73,9 +73,6 @@ namespace crypto {
     */
   output_spend_public_key_image derive_public_key_image(const secret_key) noexcept;
 
-  uint64_t scalar_to_int(const ec_scalar &in) noexcept;
-  ec_scalar int_to_scalar(const uint64_t in) noexcept;
-
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x) noexcept;
 
 

@@ -54,6 +54,7 @@ namespace crypto {
     ec_point operator+(const ec_point& x) const noexcept;
     ec_point operator-(const ec_point& x) const noexcept;
     ec_point operator^(const ec_scalar& x) const noexcept;
+    ec_point operator^(const uint64_t x) const noexcept;
   };
 
   struct ec_scalar_unnormalized : crypto_data {
@@ -108,5 +109,8 @@ namespace crypto {
   ec_scalar reduce(const ec_scalar_unnormalized x) noexcept;
   bool is_reduced(const ec_scalar_unnormalized x) noexcept;
   bool is_not_reduced(const ec_scalar_unnormalized x) noexcept;
+
+  uint64_t scalar_to_int(const ec_scalar &in) noexcept;
+  ec_scalar int_to_scalar(const uint64_t in) noexcept;
 
 }

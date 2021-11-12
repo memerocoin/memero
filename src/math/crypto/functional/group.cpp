@@ -17,6 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "group.hpp"
 
 #include "tools/epee/include/logging.hpp"
+#include "tools/epee/include/int-util.h"
+
 
 #include <sodium.h>
 
@@ -83,7 +85,9 @@ namespace crypto {
     return mult(*this, x);
   }
 
-
+  ec_point ec_point::operator^(const uint64_t x) const noexcept {
+    return mult(*this, int_to_scalar(x));
+  }
 
   ec_scalar ec_scalar::operator+(const ec_scalar& x) const noexcept {
     ec_scalar s;
@@ -158,4 +162,17 @@ namespace crypto {
       return {};
     }
   }
+
+  ec_scalar int_to_scalar(const uint64_t in) noexcept {
+    ec_scalar x = {};
+    memcpy_swap64le(x.data.data(), &in, 1);
+    return x;
+  }
+
+  uint64_t scalar_to_int(const ec_scalar & in) noexcept {
+    uint64_t out = 0;
+    memcpy_swap64le(&out, in.data.data(), 1);
+    return out;
+  }
+
 }

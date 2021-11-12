@@ -62,19 +62,6 @@ namespace crypto {
   }
 
 
-  // only sizeof(uint64_t) bytes of the scalar are used
-  ec_scalar int_to_scalar(const uint64_t in) noexcept {
-    ec_scalar x = {};
-    memcpy_swap64le(x.data.data(), &in, 1);
-    return x;
-  }
-
-  uint64_t scalar_to_int(const ec_scalar & in) noexcept {
-    uint64_t out = 0;
-    memcpy_swap64le(&out, in.data.data(), 1);
-    return out;
-  }
-
   ecdh_shared_secret derive_tx_output_ecdh_shared_secret
   (
    const public_key pk

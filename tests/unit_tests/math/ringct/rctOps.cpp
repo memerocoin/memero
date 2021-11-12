@@ -25,7 +25,7 @@ using namespace rct;
 
 TEST(G_1,  g_1)
 {
-  EXPECT_EQ(G_(s_1), multBase(s_1));
+  EXPECT_EQ(G_(s_1), G);
 }
 
 TEST(G_8, g_8)
@@ -35,12 +35,12 @@ TEST(G_8, g_8)
 
 TEST(H_1,  H_1)
 {
-  EXPECT_EQ(H_(s_1), H ^ s_1);
+  EXPECT_EQ(H_(s_1), H);
 }
 
 TEST(H_8, h_8)
 {
-  EXPECT_EQ(H_(s_8), H ^ s_8);
+  EXPECT_EQ(H_(s_8), (H + H) ^ 4);
 }
 
 TEST(G_random, g_random)

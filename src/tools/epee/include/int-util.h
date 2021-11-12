@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include <cstring>
 
 static inline uint32_t rol32(uint32_t x, int r) {
   return (x << (r & 31)) | (x >> (-r & 31));
@@ -74,7 +75,7 @@ static inline uint64_t swap64(uint64_t x) {
 }
 
 static inline void memcpy_ident64(void *dst, const void *src, size_t n) {
-  memcpy(dst, src, 8 * n);
+  std::memcpy(dst, src, 8 * n);
 }
 
 static inline void memcpy_swap64(void *dst, const void *src, size_t n) {
