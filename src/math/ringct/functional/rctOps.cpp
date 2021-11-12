@@ -108,11 +108,10 @@ namespace rct {
 
 
   // ecdh
-  constexpr std::string_view ecdhHashPrefix = "amount";
   crypto::hash derive_secret_key_for_ecdh_amount(const rct_scalar x)
   {
     const epee::blob::data hashData =
-      epee::string_tools::string_to_blob(std::string(ecdhHashPrefix))
+      epee::string_tools::string_to_blob(std::string(config::ecdhHashPrefix))
       + x.blob();
 
     return crypto::sha3(hashData);
@@ -129,10 +128,9 @@ namespace rct {
     return crypto::scalar_to_int(r);
   }
 
-  constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
   rct_scalar get_blinding_factor_from_shared_secret_hash(const rct_scalar x) {
     const epee::blob::data hashData =
-      epee::string_tools::string_to_blob(std::string(commitmentMaskPrefix))
+      epee::string_tools::string_to_blob(std::string(config::commitmentMaskPrefix))
       + x.blob();
 
     return crypto::hash_to_scalar(hashData);

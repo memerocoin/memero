@@ -123,6 +123,9 @@ namespace config
 
   constexpr unsigned MESSAGE_SIGNING_VERSION = 1u;
 
+  constexpr std::string_view ecdhHashPrefix = "amount";
+  constexpr std::string_view commitmentMaskPrefix = "commitment_mask";
+
   namespace lol
   {
     constexpr std::string_view CRYPTONOTE_NAME = "lolnero";
@@ -160,5 +163,6 @@ namespace config
     constexpr size_t get_out_retry = 3;
 
     constexpr uint64_t tx_locked_one_year_away_in_blocks = 288 * 365;
+
   }
 }
