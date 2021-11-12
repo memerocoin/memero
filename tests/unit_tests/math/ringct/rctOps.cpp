@@ -58,3 +58,8 @@ TEST(H_random, h_random)
     EXPECT_EQ(H_(a), H ^ a);
   // }
 }
+
+TEST(s_minus_one, is_well_defined)
+{
+  EXPECT_EQ(s_minus_one, order_minus_1);
+}
