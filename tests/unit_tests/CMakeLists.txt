@@ -71,8 +71,8 @@ add_executable(unit_tests_basic
   mnemonics.cpp
   bulletproofs.cpp
   # multiexp.cpp
-  lolnero/group.cpp
-  lolnero/rctOps.cpp
+  math/crypto/group.cpp
+  math/ringct/rctOps.cpp
 )
 
 target_link_libraries(unit_tests_basic
