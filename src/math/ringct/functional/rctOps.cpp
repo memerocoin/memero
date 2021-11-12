@@ -74,7 +74,7 @@ namespace rct {
       (
        A.begin()
        , A.end()
-       , rct::identity
+       , crypto::identity
        );
   }
 

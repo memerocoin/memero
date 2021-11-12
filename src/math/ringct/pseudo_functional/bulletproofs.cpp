@@ -80,7 +80,7 @@ rct::rct_point get_exponent(const rct::rct_point base, size_t idx)
   rct::rct_point e = rct::hash_to_point_via_field
     ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
 
-  LOG_ERROR_AND_THROW_IF((e == rct::identity), "Exponent is point at infinity");
+  LOG_ERROR_AND_THROW_IF((e == crypto::identity), "Exponent is point at infinity");
   return e;
 }
 
@@ -761,7 +761,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
      , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
      );
 
-  if (multiexp(multiexp_data) != rct::identity)
+  if (multiexp(multiexp_data) != crypto::identity)
   {
     LOG_ERROR("Verification failure");
     return false;

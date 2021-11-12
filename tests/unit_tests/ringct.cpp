@@ -117,7 +117,7 @@ TEST(ringct, CLSAG)
   const size_t idx = 5;
   ct_public_keyV pubs;
   rct_scalar p, t, t2, u;
-  const crypto::hash message = crypto::d2h(rct::identity);
+  const crypto::hash message = crypto::d2h(crypto::identity);
   ct_public_key backup;
   clsag clsag;
 
@@ -717,9 +717,9 @@ TEST(ringct, dummyCommit)
 TEST(ringct, mul8)
 {
   rct::rct_point p;
-  // ASSERT_EQ(rct::multP8(rct::identity), rct::identity);
-  // p = rct::multP8(rct::identity);
-  // ASSERT_EQ(p, rct::identity);
+  // ASSERT_EQ(rct::multP8(crypto::identity), crypto::identity);
+  // p = rct::multP8(crypto::identity);
+  // ASSERT_EQ(p, crypto::identity);
   ASSERT_EQ(rct::multP8(rct::H), rct::multP(rct::H, rct::s_eight));
   p = rct::multP8(rct::H);
   ASSERT_EQ(p, rct::multP(rct::H, rct::s_eight));

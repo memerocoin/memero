@@ -42,7 +42,7 @@
 
 static rct::rct_point basic(const std::vector<rct::MultiexpData> &data)
 {
-  rct::rct_point res = rct::identity;
+  rct::rct_point res = crypto::identity;
   for (const auto &d: data)
   {
     rct::rct_point p3 = rct::multP(d.point, d.scalar);
@@ -60,7 +60,7 @@ static rct::rct_point get_p(const rct::rct_point &point)
 // TEST(multiexp, pippenger_empty)
 // {
 //   std::vector<rct::MultiexpData> data;
-//   data.push_back({rct::s_zero, rct::identity});
+//   data.push_back({rct::s_zero, crypto::identity});
 //   ASSERT_TRUE(basic(data) == pippenger(data));
 // }
 
@@ -92,7 +92,7 @@ TEST(multiexp, pippenger_only_zeroes)
 // {
 //   std::vector<rct::MultiexpData> data;
 //   for (int n = 0; n < 16; ++n)
-//     data.push_back({TESTSCALAR, get_p(rct::identity)});
+//     data.push_back({TESTSCALAR, get_p(crypto::identity)});
 //   ASSERT_TRUE(basic(data) == pippenger(data));
 // }
 
@@ -140,7 +140,7 @@ TEST(multiexp, scalarmult_triple)
     rct::s_inv_eight,
   };
   static const rct::rct_point points[] = {
-    rct::identity,
+    crypto::identity,
     rct::H,
     rct::G,
   };

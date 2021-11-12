@@ -31,7 +31,7 @@ rct::rct_point dummy(const std::span<rct::MultiexpData> data) noexcept
     (
      data.begin()
      , data.end()
-     , rct::identity
+     , crypto::identity
      , std::plus<rct_point>()
      , [](const auto& x) {
        return x.second ^ x.first;
