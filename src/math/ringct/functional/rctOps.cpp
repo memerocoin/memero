@@ -122,7 +122,7 @@ namespace rct {
     const crypto::hash h = derive_secret_key_for_ecdh_amount(y);
     crypto::ec_scalar r = crypto::int_to_scalar(x);
 
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < sizeof(uint64_t); ++i)
       r.data[i] ^= h.data[i];
 
     return crypto::scalar_to_int(r);
