@@ -171,6 +171,7 @@ namespace rct {
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
   Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof);
 
+  bool is_bulletproof_structure_valid(const Bulletproof_unsafe &proof);
   size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);
   size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);
   size_t n_bulletproof_amounts(const std::vector<Bulletproof_unsafe> &proofs);
