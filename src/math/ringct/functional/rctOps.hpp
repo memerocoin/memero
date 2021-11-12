@@ -38,11 +38,11 @@ namespace rct {
 
   // Can't us consteval here or android will panic
 
-  constexpr rct_scalar s_zero = ZERO;
-  constexpr rct_scalar s_one = ONE;
-  constexpr rct_scalar s_two = TWO;
+  constexpr rct_scalar s_zero = crypto::s_0;
+  constexpr rct_scalar s_one = crypto::s_1;
+  constexpr rct_scalar s_two = crypto::s_2;
   constexpr rct_scalar s_minus_one = MINUS_ONE;
-  constexpr rct_scalar s_eight = EIGHT;
+  constexpr rct_scalar s_eight = crypto::s_8;
   // inv is multiplicative inverse
   constexpr rct_scalar s_inv_eight = INV_EIGHT;
   constexpr rct_scalar s_minus_inv_eight = MINUS_INV_EIGHT;

@@ -740,7 +740,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
 
   // now check all proofs at once
-  multiexp_data.emplace_back(y0 - z1, rct::G);
+  multiexp_data.emplace_back(s_one, G_(y0 - z1));
   multiexp_data.emplace_back(z3 - y1, rct::H);
 
   std::transform

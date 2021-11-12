@@ -25,7 +25,7 @@ using namespace rct;
 
 TEST(G_1,  g_1)
 {
-  EXPECT_EQ(G_(s_1), G);
+  EXPECT_EQ(G_(s_1), crypto::generator);
 }
 
 TEST(G_8, g_8)
@@ -47,7 +47,7 @@ TEST(G_random, g_random)
 {
   // for (size_t i = 0; i < 100; i++) {
     const auto a = scalarGen();
-    EXPECT_EQ(G_(a), G ^ a);
+    EXPECT_EQ(G_(a), multBase(a));
   // }
 }
 
