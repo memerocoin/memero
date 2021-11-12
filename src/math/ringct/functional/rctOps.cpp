@@ -49,10 +49,6 @@
 
 namespace rct {
 
-  rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a) {
-    return crypto::reduce(a);
-  }
-
   rct_point G_(const rct_scalar a) {
     return crypto::multBase(a);
   }
@@ -62,7 +58,7 @@ namespace rct {
   }
 
   rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a) {
-    return P ^ rct_reduce(a);
+    return P ^ crypto::reduce(a);
   }
 
   rct::rct_point addPoints(const rct_pointS A) {
@@ -78,7 +74,7 @@ namespace rct {
 
   // ct
   rct_point commit(const crypto::ec_scalar_unnormalized mask, const amount_t amount) {
-    return G_(rct_reduce(mask)) + H_(crypto::int_to_scalar(amount));
+    return G_(crypto::reduce(mask)) + H_(crypto::int_to_scalar(amount));
   }
 
   rct_point dummyCommit(const amount_t amount) {

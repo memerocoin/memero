@@ -201,7 +201,7 @@ namespace rct {
     rct_scalarV clsag_s;
     for (const auto& x: clsag.s) {
       LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(x), {}, "Bad clsag.s");
-      clsag_s.push_back(rct_reduce(x));
+      clsag_s.push_back(crypto::reduce(x));
     }
 
     LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(clsag.c1), {}, "Bad clsag.c1");
@@ -216,7 +216,7 @@ namespace rct {
 
     return {{
       clsag_s
-      , rct_reduce(clsag.c1)
+      , crypto::reduce(clsag.c1)
       , clsag_I
       , clsag_D
     }};
