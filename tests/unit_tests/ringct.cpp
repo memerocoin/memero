@@ -726,5 +726,5 @@ TEST(ringct, aggregated)
     s[n] = make_sample_simple_rct_sig(NELTS(inputs), inputs, NELTS(outputs), outputs, 0);
   }
 
-  ASSERT_TRUE(verify_ringct_rangeproofs(s));
+  ASSERT_TRUE(verify_range_proofs(s));
 }

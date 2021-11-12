@@ -286,7 +286,7 @@ namespace rct {
 
 
 
-  bool verify_ringct_rangeproof_no_catch(const std::span<const rctData> rvv)
+  bool verify_range_proof_no_catch(const std::span<const rctData> rvv)
   {
     for (const rctData& rv: rvv)
     {
@@ -294,7 +294,7 @@ namespace rct {
         (
           rv.type == RCTTypeCLSAG
           , false
-          , "verify_ringct_rangeproof called on non simple rctData"
+          , "verify_range_proof called on non simple rctData"
           );
 
       LOG_ERROR_AND_RETURN_UNLESS
@@ -360,26 +360,26 @@ namespace rct {
         );
   }
 
-  bool verify_ringct_rangeproofs(const std::span<const rctData> rvv) {
+  bool verify_range_proofs(const std::span<const rctData> rvv) {
     try {
-      return verify_ringct_rangeproof_no_catch(rvv);
+      return verify_range_proof_no_catch(rvv);
     }
     // we can get deep throws from ge_frombytes_vartime if input isn't valid
     catch (const std::exception &e)
       {
-        LOG_PRINT_L1("Error in verify_ringct_rangeproof: " << e.what());
+        LOG_PRINT_L1("Error in verify_range_proof: " << e.what());
         return false;
       }
     catch (...)
       {
-        LOG_PRINT_L1("Error in verify_ringct_rangeproof, but not an actual exception");
+        LOG_PRINT_L1("Error in verify_range_proof, but not an actual exception");
         return false;
       }
   }
 
-  bool verify_ringct_rangeproof(const rctData rv)
+  bool verify_range_proof(const rctData rv)
   {
-    return verify_ringct_rangeproofs(std::vector<rctData>{rv});
+    return verify_range_proofs(std::vector<rctData>{rv});
   }
 
   //ver RingCT simple
