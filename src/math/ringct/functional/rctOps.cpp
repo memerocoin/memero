@@ -90,7 +90,8 @@ namespace rct {
 
   crypto::hash hash_dataV(const std::span<const crypto::crypto_data> keys) {
     if (keys.empty()) {
-      return crypto::sha3({});
+      LOG_ERROR("hashing empty vector");
+      return {};
     }
     return crypto::sha3(epee::blob::span((const uint8_t*)keys.data(), keys.size_bytes()));
   }
