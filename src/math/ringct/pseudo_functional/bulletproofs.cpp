@@ -318,8 +318,8 @@ try_again:
   const rct_point A = vector_exponent(aL8, aR8) + G_(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
-  const rct::rct_scalarV sL = rct::skvGen(MN);
-  const rct::rct_scalarV sR = rct::skvGen(MN);
+  const rct::rct_scalarV sL = crypto::scalarVGen(MN);
+  const rct::rct_scalarV sR = crypto::scalarVGen(MN);
   const rct::rct_scalar rho = crypto::scalarGen();
   const rct::rct_point S = (vector_exponent(sL, sR) + G_(rho)) ^ rct::s_inv_eight;
 

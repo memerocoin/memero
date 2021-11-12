@@ -45,6 +45,17 @@ namespace crypto {
     return s;
   }
 
+  std::vector<ec_scalar> scalarVGen(size_t n) {
+    std::vector<ec_scalar> xs;
+    std::generate_n
+      (
+       std::back_inserter(xs)
+       , n
+       , scalarGen
+       );
+    return xs;
+  }
+
   ec_point randomPoint() {
     ec_point x;
     crypto_core_ed25519_random(x.data.data());

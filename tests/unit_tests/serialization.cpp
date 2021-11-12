@@ -388,7 +388,7 @@ TEST(Serialization, serializes_ringct_types)
   ASSERT_TRUE(serialization::parse_binary(blob, key1));
   ASSERT_TRUE(key0 == key1);
 
-  keyv0 = rct::skvGen(30);
+  keyv0 = crypto::scalarVGen(30);
   for (size_t n = 0; n < keyv0.size(); ++n)
     keyv0[n] = crypto::scalarGen();
   ASSERT_TRUE(serialization::dump_binary(keyv0, blob));

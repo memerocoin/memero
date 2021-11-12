@@ -35,7 +35,6 @@
 
 namespace rct {
 
-  rct_scalarV skvGen(size_t rows);
   std::pair<rct_scalar, rct_point> skpkGen();
 
 }

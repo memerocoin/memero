@@ -52,16 +52,6 @@
 
 namespace rct {
 
-  rct_scalarV skvGen(size_t rows ) {
-    LOG_ERROR_AND_THROW_UNLESS(rows > 0, "0 keys requested");
-    rct_scalarV rv(rows);
-    size_t i = 0;
-    for (i = 0 ; i < rows ; i++) {
-      rv[i] = crypto::scalarGen();
-    }
-    return rv;
-  }
-
   std::pair<rct_scalar, rct_point> skpkGen() {
     const rct_scalar sk = crypto::scalarGen();
     return std::make_pair(sk, G_(sk));
