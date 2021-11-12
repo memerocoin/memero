@@ -69,6 +69,7 @@ namespace crypto {
     ec_scalar operator*(const ec_scalar& x) const noexcept;
   };
 
+  ec_point mult(const ec_scalar a, const ec_point X) noexcept;
 
   inline constexpr ec_scalar s_0 = {};
   inline constexpr ec_scalar s_1 =

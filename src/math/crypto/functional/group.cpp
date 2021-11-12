@@ -63,7 +63,7 @@ namespace crypto {
   }
 
 
-  ec_point mult(const ec_point X, const ec_scalar a) noexcept {
+  ec_point mult(const ec_scalar a, const ec_point X) noexcept {
     if (a == s_0) {
       return identity;
     }
@@ -82,11 +82,11 @@ namespace crypto {
   }
 
   ec_point ec_point::operator^(const ec_scalar& x) const noexcept {
-    return mult(*this, x);
+    return mult(x, *this);
   }
 
   ec_point ec_point::operator^(const uint64_t x) const noexcept {
-    return mult(*this, int_to_scalar(x));
+    return mult(int_to_scalar(x), *this);
   }
 
   ec_scalar ec_scalar::operator+(const ec_scalar& x) const noexcept {
@@ -127,7 +127,7 @@ namespace crypto {
   }
 
   ec_point mult8(const ec_point X) noexcept {
-    return mult(X, s_8);
+    return mult(s_8, X);
   }
 
   // multiplicative inverse

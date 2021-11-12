@@ -21,6 +21,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include <functional>
 #include <numeric>
+#include <tuple>
 
 namespace rct
 {
@@ -34,7 +35,7 @@ rct::rct_point dummy(const std::span<rct::MultiexpData> data) noexcept
      , crypto::identity
      , std::plus<rct_point>()
      , [](const auto& x) {
-       return x.second ^ x.first;
+       return std::apply(crypto::mult, x);
      }
      );
 }
