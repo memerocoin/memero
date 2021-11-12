@@ -50,16 +50,16 @@ namespace rct {
     return std::make_pair(sk, G_(sk));
   }
 
-}
+  Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
+  {
+    return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::rct_scalarV{gamma});
+  }
 
-Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
-{
-  return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::rct_scalarV{gamma});
-}
+  Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gamma)
+  {
+    return bulletproof_MAKE(std::vector<rct::rct_scalar>{sv}, rct::rct_scalarV{gamma});
+  }
 
-Bulletproof bulletproof_MAKE(const rct::rct_scalar sv, const rct::rct_scalar gamma)
-{
-  return bulletproof_MAKE(std::vector<rct::rct_scalar>{sv}, rct::rct_scalarV{gamma});
 }
 
 namespace crypto {
