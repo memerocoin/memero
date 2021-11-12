@@ -51,19 +51,11 @@ using namespace rct;
 
 namespace rct {
   inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
-}
-
-namespace rct {
 
   std::pair<rct_scalar, rct_point> skpkGen() {
     const rct_scalar sk = crypto::scalarGen();
     return std::make_pair(sk, G_(sk));
   }
-
-}
-
-rct::rct_point pkGen() {
-  return rct::skpkGen().second;
 }
 
 //generates a <secret , public> / Pedersen commitment to the amount
@@ -86,7 +78,7 @@ size_t populateRingsSimpleDummy(ct_public_keyV& mixRing, const ct_public_key inP
   size_t index = ((size_t)std::rand()) % (mixin + 1);
   for (size_t i = 0; i <= mixin; i++) {
     if (i != index) {
-      mixRing[i] = {pkGen(), pkGen()};
+      mixRing[i] = {G_(crypto::scalarGen()), G_(crypto::scalarGen())};
     } else {
       mixRing[i] = inPk;
     }
