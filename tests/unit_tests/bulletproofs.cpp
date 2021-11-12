@@ -52,7 +52,24 @@ namespace rct {
 
   Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
   {
-    return bulletproof_MAKE(std::vector<uint64_t>{v}, rct::rct_scalarV{gamma});
+    return bulletproof_MAKE(std::vector<std::pair<uint64_t, rct_scalar>>{{v, gamma}});
+  }
+
+  Bulletproof bulletproof_MAKE(const std::vector<uint64_t> amounts, const rct_scalarV blinding_factors)
+  {
+
+    std::vector<std::pair<uint64_t, rct_scalar>> xs;
+    std::transform
+      (
+       amounts.begin()
+       , amounts.end()
+       , blinding_factors.begin()
+       , std::back_inserter(xs)
+       , [](const auto& x, const auto& y) -> std::pair<uint64_t, rct_scalar> {
+         return {x, y};
+       }
+       );
+    return bulletproof_MAKE(xs);
   }
 
 }

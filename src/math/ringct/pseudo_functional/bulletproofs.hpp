@@ -38,7 +38,7 @@
 namespace rct
 {
 
-Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma);
+Bulletproof bulletproof_MAKE(const std::vector<std::pair<uint64_t, rct_scalar>> xs);
 bool bulletproof_VERIFY(const Bulletproof proof);
 
 }

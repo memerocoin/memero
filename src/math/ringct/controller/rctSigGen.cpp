@@ -59,19 +59,29 @@ namespace rct {
   {
     LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
 
+    std::vector<std::pair<uint64_t, rct_scalar>> xs;
+    std::transform
+      (
+       amounts.begin()
+       , amounts.end()
+       , sk.begin()
+       , std::back_inserter(xs)
+       , [](const auto& amount, const auto& x) -> std::pair<uint64_t, rct_scalar> {
+         return {amount, rct::get_blinding_factor_from_shared_secret_hash(x)};
+       }
+       );
+
+    const Bulletproof proof = bulletproof_MAKE(xs);
+    LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
+
     rct_scalarV blinding_factors;
     std::transform
       (
-        sk.begin()
-        , sk.end()
-        , std::back_inserter(blinding_factors)
-        , [](const auto& x) {
-          return rct::get_blinding_factor_from_shared_secret_hash(x);
-        }
-        );
-
-    const Bulletproof proof = bulletproof_MAKE(amounts, blinding_factors);
-    LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(blinding_factors)
+       , [](const auto& x) { return x.second; }
+       );
 
     return {blinding_factors, proof};
   }

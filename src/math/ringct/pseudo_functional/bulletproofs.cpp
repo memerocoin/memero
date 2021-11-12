@@ -244,14 +244,13 @@ rct_pointV hadamard_fold
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV gamma)
+Bulletproof bulletproof_MAKE(const std::vector<std::pair<rct_scalar, rct_scalar>> xs)
 {
-  LOG_ERROR_AND_THROW_UNLESS(sv.size() == gamma.size(), "Incompatible sizes of sv and gamma");
-  LOG_ERROR_AND_THROW_UNLESS(!sv.empty(), "sv is empty");
-  for (const auto& sve: sv)
-    LOG_ERROR_AND_THROW_UNLESS(is_reduced(sve), "Invalid sv input");
-  for (const auto& g: gamma)
+  LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
+
+  for (const auto& [x,g]: xs) {
     LOG_ERROR_AND_THROW_UNLESS(is_reduced(g), "Invalid gamma input");
+  }
 
   init_exponents();
 
@@ -261,7 +260,7 @@ Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV g
   size_t M = 1;
   size_t logM = 0;
 
-  while (M < std::min(maxM, sv.size())) {
+  while (M < std::min(maxM, xs.size())) {
     logM++;
     M = M << 1;
   }
@@ -272,18 +271,17 @@ Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV g
   const size_t logMN = logM + logN;
   const size_t MN = M * N;
 
-  rct::rct_pointV V(sv.size());
+  rct::rct_pointV V(xs.size());
   rct::rct_scalarV aL(MN), aR(MN);
   rct::rct_scalarV aL8(MN), aR8(MN);
 
   std::transform
     (
-     sv.begin()
-     , sv.end()
-     , gamma.begin()
+     xs.begin()
+     , xs.end()
      , V.begin()
-     , [](const auto& s, const auto& g) {
-       return rct::G_(g * s_inv_eight) + rct::H_(s * s_inv_eight);
+     , [](const auto& x) {
+       return rct::G_(x.second * s_inv_eight) + rct::H_(x.first * s_inv_eight);
      }
      );
 
@@ -292,7 +290,7 @@ Bulletproof bulletproof_MAKE(const rct::rct_scalarV sv, const rct::rct_scalarV g
   {
     for (size_t i = N; i-- > 0; )
     {
-      if (j < sv.size() && (sv[j].data[i/8] & (((uint64_t)1)<<(i%8))))
+      if (j < xs.size() && (xs[j].first.data[i/8] & (((uint64_t)1)<<(i%8))))
       {
         aL[j*N+i] = rct::s_one;
         aL8[j*N+i] = rct::s_inv_eight;
@@ -389,10 +387,10 @@ try_again:
   const rct::rct_scalar xsq = x * x;
 
   rct::rct_scalar taux = tau1 * x + tau2 * xsq;
-  for (size_t j = 1; j <= sv.size(); ++j)
+  for (size_t j = 1; j <= xs.size(); ++j)
   {
     LOG_ERROR_AND_THROW_UNLESS(j+1 < zpow.size(), "invalid zpow index");
-    taux = zpow[j+1] * gamma[j-1] + taux;
+    taux = zpow[j+1] * xs[j-1].second + taux;
   }
 
   const rct::rct_scalar mu = x * rho + alpha;
@@ -519,22 +517,19 @@ try_again:
      };
 }
 
-Bulletproof bulletproof_MAKE(const std::vector<uint64_t> v, const rct::rct_scalarV gamma)
-{
-  LOG_ERROR_AND_THROW_UNLESS(v.size() == gamma.size(), "Incompatible sizes of v and gamma");
-
+Bulletproof bulletproof_MAKE(const std::vector<std::pair<uint64_t, rct_scalar>> xs) {
   // vG + gammaH
-  rct::rct_scalarV sv;
+  std::vector<std::pair<rct_scalar, rct_scalar>> r;
   std::transform
     (
-     v.begin()
-     , v.end()
-     , std::back_inserter(sv)
-     , [](const auto& v) {
-       return crypto::int_to_scalar(v);
+     xs.begin()
+     , xs.end()
+     , std::back_inserter(r)
+     , [](const auto& x) -> std::pair<rct_scalar, rct_scalar> {
+       return {crypto::int_to_scalar(x.first), x.second};
      }
      );
-  return bulletproof_MAKE(sv, gamma);
+  return bulletproof_MAKE(r);
 }
 
 struct proof_data_t
