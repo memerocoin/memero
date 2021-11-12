@@ -383,14 +383,14 @@ TEST(Serialization, serializes_ringct_types)
   rct::rctData s0, s1;
   cryptonote::transaction tx0, tx1;
 
-  key0 = rct::skGen();
+  key0 = crypto::scalarGen();
   ASSERT_TRUE(serialization::dump_binary(key0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, key1));
   ASSERT_TRUE(key0 == key1);
 
   keyv0 = rct::skvGen(30);
   for (size_t n = 0; n < keyv0.size(); ++n)
-    keyv0[n] = rct::skGen();
+    keyv0[n] = crypto::scalarGen();
   ASSERT_TRUE(serialization::dump_binary(keyv0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, keyv1));
   ASSERT_TRUE(keyv0.size() == keyv1.size());
@@ -403,7 +403,7 @@ TEST(Serialization, serializes_ringct_types)
 
   for (size_t n = 0; n < keym0.size(); ++n)
     for (size_t i = 0; i < keym0[n].size(); ++i)
-      keym0[n][i] = rct::skGen();
+      keym0[n][i] = crypto::scalarGen();
 
   ASSERT_TRUE(serialization::dump_binary(keym0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, keym1));
@@ -460,7 +460,7 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  ecdh0.masked_amount = rct::skGen();
+  ecdh0.masked_amount = crypto::scalarGen();
   ASSERT_TRUE(serialization::dump_binary(ecdh0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, ecdh1));
   ASSERT_TRUE(!memcmp(&ecdh0.masked_amount, &ecdh1.masked_amount, sizeof(ecdh0.masked_amount)));

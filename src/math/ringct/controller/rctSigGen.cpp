@@ -173,7 +173,7 @@ namespace rct {
       const rct_scalar c_p = mu_P * c;
       const rct_scalar c_c = mu_C * c;
 
-      const auto sk = skGen();
+      const auto sk = crypto::scalarGen();
 
       // Compute L
       const rct_point L = addPoints
@@ -345,7 +345,7 @@ namespace rct {
       (
        pseudo_blinding_factors.begin()
        , pseudo_blinding_factors.end()
-       , []() { return skGen(); }
+       , []() { return crypto::scalarGen(); }
        );
 
     rct_scalar pseudo_sum_blinding_factors =

@@ -86,9 +86,9 @@ TEST(device, ecdh32)
 
   hw::core::device_default dev;
   rct::ecdh_encrypted_data tuple, tuple2;
-  rct::rct_point key = rct::skGen();
-  tuple.mask = rct::skGen();
-  tuple.amount = rct::skGen();
+  rct::rct_point key = crypto::scalarGen();
+  tuple.mask = crypto::scalarGen();
+  tuple.amount = crypto::scalarGen();
   tuple2 = tuple;
   dev.ecdhEncode(tuple, key);
   dev.ecdhDecode(tuple, key);

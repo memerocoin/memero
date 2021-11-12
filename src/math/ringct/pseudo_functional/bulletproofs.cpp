@@ -36,9 +36,8 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/multiexp.hpp"
-
 #include "math/ringct/controller/rctGen.hpp"
-
+#include "math/crypto/controller/keyGen.hpp"
 
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"
@@ -315,13 +314,13 @@ try_again:
   rct::rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   // PAPER LINES 43-44
-  const rct::rct_scalar alpha = rct::skGen();
+  const rct::rct_scalar alpha = crypto::scalarGen();
   const rct_point A = vector_exponent(aL8, aR8) + G_(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
   const rct::rct_scalarV sL = rct::skvGen(MN);
   const rct::rct_scalarV sR = rct::skvGen(MN);
-  const rct::rct_scalar rho = rct::skGen();
+  const rct::rct_scalar rho = crypto::scalarGen();
   const rct::rct_point S = (vector_exponent(sL, sR) + G_(rho)) ^ rct::s_inv_eight;
 
   // PAPER LINES 48-50
@@ -372,8 +371,8 @@ try_again:
   const rct::rct_scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
-  const rct::rct_scalar tau1 = rct::skGen();
-  const rct::rct_scalar tau2 = rct::skGen();
+  const rct::rct_scalar tau1 = crypto::scalarGen();
+  const rct::rct_scalar tau2 = crypto::scalarGen();
 
   const rct_point T1 = G_(tau1 * rct::s_inv_eight) + H_(t1 * rct::s_inv_eight);
   const rct_point T2 = G_(tau2 * rct::s_inv_eight) + H_(t2 * rct::s_inv_eight);
@@ -641,8 +640,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   const rct::rct_scalarS winv = std::span(inverses);
   const rct::rct_scalar yinv = inverses[rounds];
 
-  const rct::rct_scalar weight_y = rct::skGen();
-  const rct::rct_scalar weight_z = rct::skGen();
+  const rct::rct_scalar weight_y = crypto::scalarGen();
+  const rct::rct_scalar weight_z = crypto::scalarGen();
 
   for (size_t i = 0; i < rounds; ++i)
   {
