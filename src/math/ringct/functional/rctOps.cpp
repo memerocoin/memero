@@ -118,15 +118,15 @@ namespace rct {
     return crypto::sha3(hashData);
   }
 
-  crypto::crypto_data hash_and_xor_first_8_bytes(const crypto::crypto_data x, const rct_scalar y)
+  uint64_t hash_and_xor_int(const uint64_t x, const rct_scalar y)
   {
     const crypto::hash h = derive_secret_key_for_ecdh_amount(y);
-    crypto::crypto_data r = x;
+    crypto::ec_scalar r = crypto::int_to_scalar(x);
 
     for (int i = 0; i < 8; ++i)
       r.data[i] ^= h.data[i];
 
-    return r;
+    return crypto::scalar_to_int(r);
   }
 
   constexpr std::string_view commitmentMaskPrefix = "commitment_mask";

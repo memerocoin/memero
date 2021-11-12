@@ -94,7 +94,7 @@ namespace rct {
 
     //data for passing the amount to the receiver secretly
     struct ecdh_encrypted_data {
-        crypto::ec_scalar_unnormalized masked_amount;
+        uint64_t masked_amount;
     };
 
     //containers for representing amounts

@@ -464,13 +464,9 @@ namespace rct {
     const rct_scalar blinding_factor = rct::get_blinding_factor_from_shared_secret_hash(ecdh_shared_secret);
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
 
-    const crypto::ec_scalar_unnormalized amount_unnormalized =
-      crypto::d2s(rct::decode_by_ecdh_shared_secret_hash(rv.ecdh[i].masked_amount, ecdh_shared_secret));
-    LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(amount_unnormalized), "warning, bad ECDH amount");
+    const uint64_t amount = rct::decode_by_ecdh_shared_secret_hash(rv.ecdh[i].masked_amount, ecdh_shared_secret);
 
     const rct_point C = rv.outPk[i].amount_commit;
-
-    const auto amount = scalar_to_int(crypto::reduce(amount_unnormalized));
 
     if (C != commit(blinding_factor, amount)) {
       LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");

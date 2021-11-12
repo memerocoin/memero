@@ -331,7 +331,7 @@ namespace rct {
        tx_output_shared_secret_indexed_hashes.begin(),
        std::back_inserter(ecdh),
        [](const auto& x, const auto& y) -> ecdh_encrypted_data {
-         return {crypto::d2s(encode_by_ecdh_shared_secret_hash(crypto::int_to_scalar(x), y))};
+         return {encode_by_ecdh_shared_secret_hash(x, y)};
        }
        );
 

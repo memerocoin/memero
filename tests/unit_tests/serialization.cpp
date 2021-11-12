@@ -468,7 +468,7 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  ecdh0.masked_amount = crypto::scalarGen();
+  ecdh0.masked_amount = crypto::scalar_to_int(crypto::scalarGen());
   ASSERT_TRUE(serialization::dump_binary(ecdh0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, ecdh1));
   ASSERT_TRUE(!memcmp(&ecdh0.masked_amount, &ecdh1.masked_amount, sizeof(ecdh0.masked_amount)));
