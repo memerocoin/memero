@@ -174,7 +174,6 @@ namespace rct {
   bool is_bulletproof_structure_valid(const Bulletproof_unsafe &proof);
   size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);
   size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);
-  size_t n_bulletproof_max_amounts(const std::vector<Bulletproof_unsafe> &proofs);
 
   //A container to hold all signatures necessary for RingCT
   // rangeSigs holds all the rangeproof data of a transaction
@@ -282,7 +281,7 @@ namespace rct {
           if (number_of_range_proofs - i > 1)
             ar.delimit_array();
         }
-        if (n_bulletproof_max_amounts(bulletproofs) < outputs)
+        if (n_bulletproof_max_amounts(bulletproofs.front()) < outputs)
           return false;
         ar.end_array();
       }

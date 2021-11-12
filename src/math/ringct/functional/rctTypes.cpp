@@ -48,8 +48,14 @@ namespace rct {
   bool is_bulletproof_structure_valid(const Bulletproof_unsafe &proof) {
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, false, "Invalid bulletproof L size");
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched bulletproof L/R size");
-    static const size_t extra_bits = 4;
-    static_assert((1 << extra_bits) == constant::BULLETPROOF_MAX_OUTPUTS, "log2(constant::BULLETPROOF_MAX_OUTPUTS) is out of date");
+
+    constexpr size_t extra_bits = 4;
+    static_assert
+      (
+       (1 << extra_bits) == constant::BULLETPROOF_MAX_OUTPUTS
+       , "log2(constant::BULLETPROOF_MAX_OUTPUTS) is out of date"
+       );
+
     LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() <= 6 + extra_bits, false, "Invalid bulletproof L size");
 
     return true;
@@ -74,20 +80,6 @@ namespace rct {
   {
     LOG_ERROR_AND_RETURN_UNLESS(is_bulletproof_structure_valid(proof), 0, "Invalid proof structure");
     return 1 << (proof.L.size() - 6);
-  }
-
-  size_t n_bulletproof_max_amounts(const std::vector<Bulletproof_unsafe> &proofs)
-  {
-    size_t n = 0;
-    for (const Bulletproof_unsafe &proof: proofs)
-    {
-      size_t n2 = n_bulletproof_max_amounts(proof);
-      LOG_ERROR_AND_RETURN_UNLESS(n2 < std::numeric_limits<uint32_t>::max() - n, 0, "Invalid number of bulletproofs");
-      if (n2 == 0)
-          return 0;
-      n += n2;
-    }
-    return n;
   }
 
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
