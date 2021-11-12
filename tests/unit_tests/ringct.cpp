@@ -325,7 +325,7 @@ static rct::rctData make_sample_simple_rct_sig(int n_inputs, const uint64_t inpu
 
     for (int n = 0; n < n_outputs; ++n) {
         outamounts.push_back(output_amounts[n]);
-        tx_output_shared_secret_indexed_hashes.push_back(hash_to_scalar(zero));
+        tx_output_shared_secret_indexed_hashes.push_back(hash_to_scalar({}));
         std::tie(Sk, Pk) = skpkGen();
         destinations.push_back(Pk);
     }

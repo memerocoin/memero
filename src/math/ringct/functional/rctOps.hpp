@@ -47,7 +47,6 @@ namespace rct {
   constexpr rct_scalar s_inv_eight = INV_EIGHT;
   constexpr rct_scalar s_minus_inv_eight = MINUS_INV_EIGHT;
 
-  constexpr rct_point zero = Z;
   constexpr rct_point identity = I;
 
   rct_scalar rct_reduce(const crypto::ec_scalar_unnormalized a);

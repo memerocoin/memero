@@ -124,7 +124,7 @@ namespace rct {
     }
 
     // Aggregation hashes
-    crypto::dataV mu_P_to_hash = {zero};
+    crypto::dataV mu_P_to_hash = {{}};
     std::transform
       (
         pubs.begin()
@@ -165,7 +165,7 @@ namespace rct {
     const rct_scalar mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
     // Set up round hash
-    crypto::dataV c_to_hash = {zero}; // domain, P, C, C_offset, message, L, R
+    crypto::dataV c_to_hash = {{}}; // domain, P, C, C_offset, message, L, R
     std::copy_n
       (
         config::HASH_KEY_CLSAG_ROUND.data()

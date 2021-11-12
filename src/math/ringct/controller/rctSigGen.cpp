@@ -122,7 +122,7 @@ namespace rct {
     // Offset key image
     sig.D = D ^ rct::s_inv_eight;
 
-    crypto::dataV mu_P_to_hash = {zero};
+    crypto::dataV mu_P_to_hash = {{}};
     mu_P_to_hash.insert(mu_P_to_hash.end(), P.begin(), P.end());
     mu_P_to_hash.insert(mu_P_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
     mu_P_to_hash.push_back(sig.I);
@@ -150,7 +150,7 @@ namespace rct {
     const rct_scalar mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
     // Initial commitment
-    crypto::dataV c_to_hash = {zero};
+    crypto::dataV c_to_hash = {{}};
     std::copy_n
       (
         config::HASH_KEY_CLSAG_ROUND.data()
