@@ -53,7 +53,6 @@ namespace rct {
   rct_point H_(const rct_scalar a);
 
   rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a);
-  rct_point multP8(const rct_point P);
   rct::rct_point addPoints(const rct_pointS A);
 
 

@@ -318,7 +318,7 @@ namespace rct {
        , proof.V.begin()
        , std::back_inserter(outPk)
        , [](const auto& x, const auto& y) -> ct_public_key {
-         return {x, rct::multP8(y)};
+         return {x, crypto::mult8(y)};
        }
        );
 

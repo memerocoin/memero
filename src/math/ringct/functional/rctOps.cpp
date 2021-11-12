@@ -65,10 +65,6 @@ namespace rct {
     return P ^ rct_reduce(a);
   }
 
-  rct_point multP8(const rct_point P) {
-    return crypto::mult8(P);
-  }
-
   rct::rct_point addPoints(const rct_pointS A) {
     return std::reduce
       (
