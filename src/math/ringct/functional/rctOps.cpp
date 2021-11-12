@@ -57,10 +57,6 @@ namespace rct {
     return H ^ a;
   }
 
-  rct_point multP(const rct_point P, const crypto::ec_scalar_unnormalized a) {
-    return P ^ crypto::reduce(a);
-  }
-
   rct::rct_point addPoints(const rct_pointS A) {
     return std::reduce
       (
