@@ -184,7 +184,7 @@ namespace rct {
       const auto sk = crypto::scalarGen();
 
       // Compute L
-      const rct_point L = addPoints
+      const rct_point L = sum
         (
          std::array
          {
@@ -196,7 +196,7 @@ namespace rct {
 
       // Compute R
       const rct_point A = hash_to_point_via_field(P[i]);
-      const rct_point R = addPoints
+      const rct_point R = sum
         (
          std::array
          {

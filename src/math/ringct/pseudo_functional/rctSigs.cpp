@@ -213,7 +213,7 @@ namespace rct {
       const rct_point C = mask - C_offset;
 
       // Compute L
-      const rct_point L = addPoints
+      const rct_point L = sum
         (
           std::array
           {
@@ -226,7 +226,7 @@ namespace rct {
       // Compute R
       const rct_point k = hash_to_point_via_field(pubs[i].dest);
 
-      const rct_point R = addPoints
+      const rct_point R = sum
         (
           std::array
           {
@@ -340,8 +340,8 @@ namespace rct {
             );
 
           const rct_point feeKey = H_(crypto::int_to_scalar(rv.fee));
-          const rct_point sumCommits = addPoints(commits) + feeKey;
-          const rct_point sumPseudoCommits = addPoints(pseudo_amount_commits);
+          const rct_point sumCommits = sum(commits) + feeKey;
+          const rct_point sumPseudoCommits = sum(pseudo_amount_commits);
 
           //check pseudo_amount_commits vs Outs..
           if (sumPseudoCommits != sumCommits) {

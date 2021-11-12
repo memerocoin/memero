@@ -57,7 +57,7 @@ namespace rct {
     return H ^ a;
   }
 
-  rct::rct_point addPoints(const rct_pointS A) {
+  rct::rct_point sum(const rct_pointS A) {
     return std::reduce
       (
        A.begin()

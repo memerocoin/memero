@@ -593,7 +593,7 @@ TEST(ringct, HPow2)
 
   // for (int j = 0 ; j < ATOMS ; j++) {
   //   ASSERT_TRUE(equalKeys(H, H2[j]));
-  //   addPoints(H, H, H);
+  //   sum(H, H, H);
   // }
 }
 
