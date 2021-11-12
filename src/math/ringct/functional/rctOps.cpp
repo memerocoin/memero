@@ -108,18 +108,14 @@ namespace rct {
 
 
   // ecdh
-  crypto::hash derive_secret_key_for_ecdh_amount(const rct_scalar x)
+  uint64_t hash_and_xor_int(const uint64_t x, const rct_scalar y)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(config::ecdhHashPrefix))
-      + x.blob();
+      + y.blob();
 
-    return crypto::sha3(hashData);
-  }
+    const crypto::hash h = crypto::sha3(hashData);
 
-  uint64_t hash_and_xor_int(const uint64_t x, const rct_scalar y)
-  {
-    const crypto::hash h = derive_secret_key_for_ecdh_amount(y);
     crypto::ec_scalar r = crypto::int_to_scalar(x);
 
     for (int i = 0; i < sizeof(uint64_t); ++i)
