@@ -256,7 +256,7 @@ constexpr std::pair<size_t, size_t> log2bound(const size_t x) {
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const std::vector<std::pair<rct_scalar, rct_scalar>> xs)
+Bulletproof bulletproof_MAKE(const std::vector<std::pair<uint64_t, rct_scalar>> xs)
 {
   LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
 
@@ -285,7 +285,7 @@ Bulletproof bulletproof_MAKE(const std::vector<std::pair<rct_scalar, rct_scalar>
      , xs.end()
      , V.begin()
      , [](const auto& x) {
-       return rct::G_(x.second * s_inv_eight) + rct::H_(x.first * s_inv_eight);
+       return rct::G_(x.second * s_inv_eight) + rct::H_(crypto::int_to_scalar(x.first) * s_inv_eight);
      }
      );
 
@@ -294,7 +294,8 @@ Bulletproof bulletproof_MAKE(const std::vector<std::pair<rct_scalar, rct_scalar>
   {
     for (size_t i = N; i-- > 0; )
     {
-      if (j < xs.size() && (xs[j].first.data[i/8] & (((uint64_t)1)<<(i%8))))
+      const crypto::ec_scalar amount_scalar = crypto::int_to_scalar(xs[j].first);
+      if (j < xs.size() && (amount_scalar.data[i/8] & (((uint64_t)1)<<(i%8))))
       {
         aL[j*N+i] = rct::s_one;
         aL8[j*N+i] = rct::s_inv_eight;
@@ -519,21 +520,6 @@ try_again:
      V, A, S, T1, T2, taux, mu, zipLR(L, R)
      , aprime[0], bprime[0], t
      };
-}
-
-Bulletproof bulletproof_MAKE(const std::vector<std::pair<uint64_t, rct_scalar>> xs) {
-  // vG + gammaH
-  std::vector<std::pair<rct_scalar, rct_scalar>> r;
-  std::transform
-    (
-     xs.begin()
-     , xs.end()
-     , std::back_inserter(r)
-     , [](const auto& x) -> std::pair<rct_scalar, rct_scalar> {
-       return {crypto::int_to_scalar(x.first), x.second};
-     }
-     );
-  return bulletproof_MAKE(r);
 }
 
 struct proof_data_t
