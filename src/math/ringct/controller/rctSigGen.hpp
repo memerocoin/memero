@@ -46,6 +46,17 @@ namespace rct {
    , const size_t index
    );
 
+  clsag generate_clsag_signature
+  (
+   const crypto::hash message
+   , const ct_public_keyV pubs
+   , const rct_scalar input_spend_sk
+   , const rct_scalar input_blinding_factor
+   , const rct_scalar a
+   , const rct_point Cout
+   , const size_t index
+   );
+
 
   //RingCT protocol
   //genRct:
@@ -62,6 +73,19 @@ namespace rct {
   (
    const crypto::hash message
    , const ct_secret_keyV inSk
+   , const std::vector<amount_t> inamounts
+   , const std::vector<amount_t> outamounts
+   , const amount_t fee
+   , const ct_public_keyM mixRing
+   , const rct_scalarV tx_output_shared_secret_indexed_hashes
+   , const std::vector<size_t> index
+   );
+
+  std::pair<rctData, rct_scalarV> generate_ringct
+  (
+   const crypto::hash message
+   , const rct_scalarV input_spend_sks
+   , const rct_scalarV blinding_factors
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
    , const amount_t fee

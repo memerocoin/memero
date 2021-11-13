@@ -238,6 +238,29 @@ namespace rct {
    , const size_t index
    )
   {
+    return generate_clsag_signature
+      (
+       message
+       , pubs
+       , inSk.addr
+       , inSk.blinding_factor
+       , a
+       , Cout
+       , index
+       );
+  }
+
+  clsag generate_clsag_signature
+  (
+   const crypto::hash message
+   , const ct_public_keyV pubs
+   , const rct_scalar input_spend_sk
+   , const rct_scalar input_blinding_factor
+   , const rct_scalar a
+   , const rct_point Cout
+   , const size_t index
+   )
+  {
     LOG_ERROR_AND_THROW_IF(pubs.empty(), "Empty pubs");
 
     rct_pointV P;
@@ -268,16 +291,18 @@ namespace rct {
         );
 
     return generate_clsag_signature_internal
-      (message, P, inSk.addr, C, inSk.blinding_factor - a, C_nonzero, Cout, index);
+      (message, P, input_spend_sk, C, input_blinding_factor - a, C_nonzero, Cout, index);
   }
+
 
 
   std::pair<rctData, rct_scalarV> generate_ringct
   (
    const crypto::hash message
-   , const ct_secret_keyV inSk
-   , const vector<amount_t> inamounts
-   , const vector<amount_t> outamounts
+   , const rct_scalarV input_spend_sks
+   , const rct_scalarV input_blinding_factors
+   , const std::vector<amount_t> inamounts
+   , const std::vector<amount_t> outamounts
    , const amount_t fee
    , const ct_public_keyM mixRing
    , const rct_scalarV tx_output_shared_secret_indexed_hashes
@@ -285,10 +310,10 @@ namespace rct {
    )
   {
     LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
-    LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
+    // LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
     LOG_ERROR_AND_THROW_UNLESS(tx_output_shared_secret_indexed_hashes.size() == outamounts.size(), "Different number of tx_output_shared_secret_indexed_hashes/destinations");
-    LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
-    LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
+    // LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
+    // LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
     for (size_t n = 0; n < mixRing.size(); ++n) {
       LOG_ERROR_AND_THROW_UNLESS(index[n] < mixRing[n].size(), "Bad index into mixRing");
     }
@@ -387,12 +412,13 @@ namespace rct {
       (
        clsags.begin()
        , clsags.end()
-       , [full_message, mixRing, inSk, pseudo_blinding_factors, pseudo_amount_commits, index, i = 0]() mutable {
+       , [full_message, mixRing, input_spend_sks, input_blinding_factors, pseudo_blinding_factors, pseudo_amount_commits, index, i = 0]() mutable {
          const auto clsag = generate_clsag_signature
            (
             full_message
             , mixRing[i]
-            , inSk[i]
+            , input_spend_sks[i]
+            , input_blinding_factors[i]
             , pseudo_blinding_factors[i]
             , pseudo_amount_commits[i]
             , index[i]
@@ -408,4 +434,47 @@ namespace rct {
     return {rctData, blinding_factors};
   }
 
+  std::pair<rctData, rct_scalarV> generate_ringct
+  (
+   const crypto::hash message
+   , const ct_secret_keyV inSk
+   , const vector<amount_t> inamounts
+   , const vector<amount_t> outamounts
+   , const amount_t fee
+   , const ct_public_keyM mixRing
+   , const rct_scalarV tx_output_shared_secret_indexed_hashes
+   , const std::vector<size_t> index
+   )
+  {
+    rct_scalarV input_spend_sks;
+    std::transform
+      (
+       inSk.begin()
+       , inSk.end()
+       , std::back_inserter(input_spend_sks)
+       , [](const auto& x) { return x.addr; }
+       );
+
+    rct_scalarV input_blinding_factors;
+    std::transform
+      (
+       inSk.begin()
+       , inSk.end()
+       , std::back_inserter(input_blinding_factors)
+       , [](const auto& x) { return x.blinding_factor; }
+       );
+
+    return generate_ringct
+      (
+       message
+       , input_spend_sks
+       , input_blinding_factors
+       , inamounts
+       , outamounts
+       , fee
+       , mixRing
+       , tx_output_shared_secret_indexed_hashes
+       , index
+       );
+  }
 }

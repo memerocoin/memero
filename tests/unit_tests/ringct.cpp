@@ -149,16 +149,6 @@ TEST(ringct, CLSAG)
   insk.blinding_factor = t;
 
 
-  // clsag generate_clsag_signature
-  //   (
-  //    const rct_point &
-  //    , const ct_public_keyV &
-  //    , const ct_public_key &
-  //    , const rct_point &
-  //    , const rct_point &
-  //    , const unsigned int
-  //    );
-
   // bad message
   clsag = rct::generate_clsag_signature
     (
