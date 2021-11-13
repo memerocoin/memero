@@ -161,7 +161,7 @@ namespace rct {
       // rct::rct_scalar mu;
       // rct::inv8V L, R;
       // rct::rct_scalar a, b, t;
-      to_inv8V(proof.V)
+      proof.V
       , proof.A
       , proof.S
       , proof.T1
