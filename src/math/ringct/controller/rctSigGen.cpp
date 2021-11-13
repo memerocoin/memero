@@ -71,16 +71,16 @@ namespace rct {
 
     LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == outputs.size(), "V does not have the expected size");
 
-    rct_scalarV blinding_factors;
+    rct_scalarV output_blinding_factors;
     std::transform
       (
        xs.begin()
        , xs.end()
-       , std::back_inserter(blinding_factors)
+       , std::back_inserter(output_blinding_factors)
        , [](const auto& x) { return x.second; }
        );
 
-    return {blinding_factors, proof};
+    return {output_blinding_factors, proof};
   }
 
 
@@ -288,7 +288,7 @@ namespace rct {
       LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < inputs[n].mixRing.size(), "Bad index into mixRing");
     }
 
-    const auto [blinding_factors, proof] = generate_range_proof(outputs);
+    const auto [output_blinding_factors, proof] = generate_range_proof(outputs);
 
     std::vector<output_commit> outPk;
     std::transform
@@ -316,8 +316,8 @@ namespace rct {
 
     rct_scalar sum_blinding_factors = std::reduce
       (
-       blinding_factors.begin()
-       , blinding_factors.end()
+       output_blinding_factors.begin()
+       , output_blinding_factors.end()
        , s_zero
        );
 
@@ -410,7 +410,7 @@ namespace rct {
     rctData rctData = preRctSig;
     rctData.p.CLSAGs = clsags;
 
-    return {rctData, blinding_factors};
+    return {rctData, output_blinding_factors};
   }
 
 }
