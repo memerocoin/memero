@@ -310,7 +310,7 @@ namespace cryptonote
       std::vector<rct::rctOutputData> outputs;
 
       // mixRing indexing is done the other way round for simple
-      rct::ct_public_keyM mixRing(sources.size());
+      rct::output_public_dataM mixRing(sources.size());
       for (size_t i = 0; i < sources.size(); ++i)
       {
         amount_in += sources[i].amount;

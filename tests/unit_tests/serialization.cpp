@@ -161,7 +161,7 @@ rct::rct_point pkGen() {
 
 namespace rct {
 //generates a <secret , public> / Pedersen commitment to the amount
-std::pair<ct_secret_key, rct::ct_public_key> ctskpkGen(amount_t amount) {
+std::pair<ct_secret_key, rct::output_public_data> ctskpkGen(amount_t amount) {
   const auto [addr_sk, addr_pk] = skpkGen();
   const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
@@ -391,9 +391,9 @@ TEST(Serialization, serializes_ringct_types)
   rct::rct_scalar key0, key1;
   rct::rct_scalarV keyv0, keyv1;
   rct::rct_scalarM keym0, keym1;
-  rct::ct_public_key ct_public_key0, ct_public_key1;
-  rct::ct_public_keyV ct_public_keyv0, ct_public_keyv1;
-  rct::ct_public_keyM ct_public_keym0, ct_public_keym1;
+  rct::output_public_data output_public_data0, output_public_data1;
+  rct::output_public_dataV output_public_datav0, output_public_datav1;
+  rct::output_public_dataM output_public_datam0, output_public_datam1;
   rct::ecdh_encrypted_data ecdh0, ecdh1;
   rct::clsag_unsafe clsag0, clsag1;
   rct::rctData s0, s1;
@@ -434,45 +434,45 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  ct_public_key0.output_spend_pk = pkGen();
-  ct_public_key0.amount_commit = pkGen();
+  output_public_data0.output_spend_pk = pkGen();
+  output_public_data0.amount_commit = pkGen();
 
-  ASSERT_TRUE(serialization::dump_binary(ct_public_key0, blob));
-  ASSERT_TRUE(serialization::parse_binary(blob, ct_public_key1));
-  ASSERT_TRUE(!memcmp(&ct_public_key0, &ct_public_key1, sizeof(ct_public_key0)));
+  ASSERT_TRUE(serialization::dump_binary(output_public_data0, blob));
+  ASSERT_TRUE(serialization::parse_binary(blob, output_public_data1));
+  ASSERT_TRUE(!memcmp(&output_public_data0, &output_public_data1, sizeof(output_public_data0)));
 
-  ct_public_keyv0 = std::vector<rct::ct_public_key>(14);
-  for (size_t n = 0; n < ct_public_keyv0.size(); ++n) {
-    ct_public_keyv0[n].output_spend_pk = pkGen();
-    ct_public_keyv0[n].amount_commit = pkGen();
+  output_public_datav0 = std::vector<rct::output_public_data>(14);
+  for (size_t n = 0; n < output_public_datav0.size(); ++n) {
+    output_public_datav0[n].output_spend_pk = pkGen();
+    output_public_datav0[n].amount_commit = pkGen();
   }
 
-  ASSERT_TRUE(serialization::dump_binary(ct_public_keyv0, blob));
-  ASSERT_TRUE(serialization::parse_binary(blob, ct_public_keyv1));
-  ASSERT_TRUE(ct_public_keyv0.size() == ct_public_keyv1.size());
-  for (size_t n = 0; n < ct_public_keyv0.size(); ++n)
+  ASSERT_TRUE(serialization::dump_binary(output_public_datav0, blob));
+  ASSERT_TRUE(serialization::parse_binary(blob, output_public_datav1));
+  ASSERT_TRUE(output_public_datav0.size() == output_public_datav1.size());
+  for (size_t n = 0; n < output_public_datav0.size(); ++n)
   {
-    ASSERT_TRUE(!memcmp(&ct_public_keyv0[n], &ct_public_keyv1[n], sizeof(ct_public_keyv0[n])));
+    ASSERT_TRUE(!memcmp(&output_public_datav0[n], &output_public_datav1[n], sizeof(output_public_datav0[n])));
   }
 
-  ct_public_keym0 = std::vector<rct::ct_public_keyV>(9);
-  for (size_t n = 0; n < ct_public_keym0.size(); ++n)
+  output_public_datam0 = std::vector<rct::output_public_dataV>(9);
+  for (size_t n = 0; n < output_public_datam0.size(); ++n)
   {
-    ct_public_keym0[n] = std::vector<rct::ct_public_key>(11);
-    for (size_t i = 0; i < ct_public_keym0[n].size(); ++i) {
-      ct_public_keym0[n][i].output_spend_pk = pkGen();
-      ct_public_keym0[n][i].amount_commit = pkGen();
+    output_public_datam0[n] = std::vector<rct::output_public_data>(11);
+    for (size_t i = 0; i < output_public_datam0[n].size(); ++i) {
+      output_public_datam0[n][i].output_spend_pk = pkGen();
+      output_public_datam0[n][i].amount_commit = pkGen();
     }
   }
-  ASSERT_TRUE(serialization::dump_binary(ct_public_keym0, blob));
-  ASSERT_TRUE(serialization::parse_binary(blob, ct_public_keym1));
-  ASSERT_TRUE(ct_public_keym0.size() == ct_public_keym1.size());
-  for (size_t n = 0; n < ct_public_keym0.size(); ++n)
+  ASSERT_TRUE(serialization::dump_binary(output_public_datam0, blob));
+  ASSERT_TRUE(serialization::parse_binary(blob, output_public_datam1));
+  ASSERT_TRUE(output_public_datam0.size() == output_public_datam1.size());
+  for (size_t n = 0; n < output_public_datam0.size(); ++n)
   {
-    ASSERT_TRUE(ct_public_keym0[n].size() == ct_public_keym1[n].size());
-    for (size_t i = 0; i < ct_public_keym0.size(); ++i)
+    ASSERT_TRUE(output_public_datam0[n].size() == output_public_datam1[n].size());
+    for (size_t i = 0; i < output_public_datam0.size(); ++i)
     {
-      ASSERT_TRUE(!memcmp(&ct_public_keym0[n][i], &ct_public_keym1[n][i], sizeof(ct_public_keym0[n][i])));
+      ASSERT_TRUE(!memcmp(&output_public_datam0[n][i], &output_public_datam1[n][i], sizeof(output_public_datam0[n][i])));
     }
   }
 
@@ -484,9 +484,9 @@ TEST(Serialization, serializes_ringct_types)
   // create a full rct signature to use its innards
   vector<uint64_t> inamounts;
   rct::ct_secret_keyV sc;
-  rct::ct_public_keyV pc;
+  rct::output_public_dataV pc;
   rct::ct_secret_key sctmp;
-  rct::ct_public_key pctmp;
+  rct::output_public_data pctmp;
   inamounts.push_back(6000);
   tie(sctmp, pctmp) = rct::ctskpkGen(inamounts.back());
   sc.push_back(sctmp);

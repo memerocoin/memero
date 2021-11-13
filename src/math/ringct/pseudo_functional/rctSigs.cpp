@@ -109,7 +109,7 @@ namespace rct {
   (
     const crypto::hash message
     , const clsag sig
-    , const ct_public_keyS pubs
+    , const output_public_dataS pubs
     , const rct_point C_offset
     )
   {
@@ -253,7 +253,7 @@ namespace rct {
   (
    const crypto::hash message
    , const clsag_unsafe sig
-   , const ct_public_keyS pubs
+   , const output_public_dataS pubs
    , const rct_point C_offset
    )
   {

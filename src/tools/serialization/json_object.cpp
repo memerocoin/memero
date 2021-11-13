@@ -987,7 +987,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctData& sig)
   }
 }
 
-void fromJsonValue(const rapidjson::Value& val, rct::ct_public_key& key)
+void fromJsonValue(const rapidjson::Value& val, rct::output_public_data& key)
 {
   key.output_spend_pk = {};
   fromJsonValue(val, key.amount_commit);

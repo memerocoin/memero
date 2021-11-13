@@ -228,7 +228,7 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const ct_public_keyV pubs
+   , const output_public_dataV pubs
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
    , const rct_scalar a
@@ -354,14 +354,14 @@ namespace rct {
 
     pseudo_amount_commits.push_back(commit(inputs.back().amount, pseudo_sum_blinding_factor_difference));
 
-    ct_public_keyM mixRing;
+    output_public_dataM mixRing;
 
     std::transform
       (
        inputs.begin()
        , inputs.end()
        , std::back_inserter(mixRing)
-       , [](const auto x) -> ct_public_keyV { return x.mixRing; }
+       , [](const auto x) -> output_public_dataV { return x.mixRing; }
        );
 
     const rctData preRctSig =

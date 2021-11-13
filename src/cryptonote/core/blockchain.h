@@ -930,7 +930,7 @@ namespace cryptonote
      , const txin_to_key& txin
      , const crypto::hash& tx_prefix_hash
      , const rct::rctData &ringct_essential
-     , std::vector<rct::ct_public_key> &output_keys
+     , std::vector<rct::output_public_data> &output_keys
      , uint64_t* pmax_related_block_height
      ) const;
 
@@ -1202,7 +1202,7 @@ namespace cryptonote
      * can be reconstituted by the receiver. This function expands
      * that implicit data.
      */
-    bool expand_transaction_2(transaction &tx, const crypto::hash &tx_prefix_hash, const std::vector<std::vector<rct::ct_public_key>> &pubkeys) const;
+    bool expand_transaction_2(transaction &tx, const crypto::hash &tx_prefix_hash, const std::vector<std::vector<rct::output_public_data>> &pubkeys) const;
 
     /**
      * @brief invalidates any cached block template

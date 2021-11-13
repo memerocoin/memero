@@ -69,7 +69,7 @@ namespace rct {
   const rct::inv8V to_inv8V(const rct_pointS xs);
 
 
-  struct ct_public_key {
+  struct output_public_data {
     rct_point output_spend_pk;
     rct_point amount_commit;
   };
@@ -78,9 +78,9 @@ namespace rct {
     rct_point amount_commit;
   };
 
-  using ct_public_keyV = std::vector<ct_public_key>;
-  using ct_public_keyM = std::vector<ct_public_keyV>; //matrix of keys (indexed by column first)
-  using ct_public_keyS = std::span<const ct_public_key>;
+  using output_public_dataV = std::vector<output_public_data>;
+  using output_public_dataM = std::vector<output_public_dataV>; //matrix of keys (indexed by column first)
+  using output_public_dataS = std::span<const output_public_data>;
 
   //data for passing the amount to the receiver secretly
   struct ecdh_encrypted_data {
@@ -187,7 +187,7 @@ namespace rct {
   struct rctDataEssential {
     uint8_t type;
     crypto::hash message;
-    ct_public_keyM mixRing; //the set of all pubkeys / copy
+    output_public_dataM mixRing; //the set of all pubkeys / copy
     //pairs that you mix with
     // rct_pointV unusedPoints;
     std::vector<ecdh_encrypted_data> ecdh;
@@ -377,7 +377,7 @@ namespace std
 
 BLOB_SERIALIZER(rct::rct_point);
 BLOB_SERIALIZER(rct::inv8);
-BLOB_SERIALIZER(rct::ct_public_key);
+BLOB_SERIALIZER(rct::output_public_data);
 BLOB_SERIALIZER(rct::output_commit);
 BLOB_SERIALIZER(rct::rct_scalar);
 BLOB_SERIALIZER(rct::ecdh_encrypted_data);

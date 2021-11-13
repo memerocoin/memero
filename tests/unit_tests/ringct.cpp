@@ -69,7 +69,7 @@ namespace rct {
   clsag generate_clsag_signature_test
   (
    const crypto::hash message
-   , const ct_public_keyV pubs
+   , const output_public_dataV pubs
    , const ct_secret_key inSk
    , const rct_scalar a
    , const rct_point Cout
@@ -95,7 +95,7 @@ namespace rct {
    , const vector<amount_t> inamounts
    , const vector<amount_t> outamounts
    , const amount_t fee
-   , const ct_public_keyM mixRing
+   , const output_public_dataM mixRing
    , const rct_scalarV output_shared_secrets_hashed_by_index
    , const std::vector<size_t> index
    )
@@ -154,7 +154,7 @@ namespace rct {
 }
 
 //generates a <secret , public> / Pedersen commitment to the amount
-std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount) {
+std::pair<ct_secret_key, output_public_data> ctskpkGen(amount_t amount) {
   const auto [addr_sk, addr_pk] = skpkGen();
   const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
@@ -169,7 +169,7 @@ std::pair<ct_secret_key, ct_public_key> ctskpkGen(amount_t amount) {
 }
 
 
-size_t populateRingsSimpleDummy(ct_public_keyV& mixRing, const ct_public_key inPk, const size_t mixin) {
+size_t populateRingsSimpleDummy(output_public_dataV& mixRing, const output_public_data inPk, const size_t mixin) {
   size_t index = ((size_t)std::rand()) % (mixin + 1);
   for (size_t i = 0; i <= mixin; i++) {
     if (i != index) {
@@ -185,7 +185,7 @@ rctData generate_ringct
 (
   const crypto::hash message
   , const ct_secret_keyV inSk
-  , const ct_public_keyV inPk
+  , const output_public_dataV inPk
   , const std::vector<amount_t> inamounts
   , const std::vector<amount_t> outamounts
   , const rct_scalarV output_shared_secrets_hashed_by_index
@@ -194,7 +194,7 @@ rctData generate_ringct
   ) {
     std::vector<size_t> index;
     index.resize(inPk.size());
-    ct_public_keyM mixRing;
+    output_public_dataM mixRing;
     mixRing.resize(inPk.size());
     for (size_t i = 0; i < inPk.size(); ++i) {
       mixRing[i].resize(mixin+1);
@@ -209,16 +209,16 @@ TEST(ringct, CLSAG)
 {
   const size_t N = 11;
   const size_t idx = 5;
-  ct_public_keyV pubs;
+  output_public_dataV pubs;
   rct_scalar p, t, t2, u;
   const crypto::hash message = crypto::d2h(crypto::identity);
-  ct_public_key backup;
+  output_public_data backup;
   clsag clsag;
 
   for (size_t i = 0; i < N; ++i)
   {
     rct_scalar sk;
-    ct_public_key tmp;
+    output_public_data tmp;
 
     std::tie(sk, tmp.output_spend_pk) = skpkGen();
     std::tie(sk, tmp.amount_commit) = skpkGen();
@@ -391,9 +391,9 @@ TEST(ringct, CLSAG)
 static rct::rctData make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
 {
     ct_secret_keyV sc;
-    ct_public_keyV pc;
+    output_public_dataV pc;
     ct_secret_key sctmp;
-    ct_public_key pctmp;
+    output_public_data pctmp;
     vector<amount_t> inamounts, outamounts;
     rct_pointV destinations;
     rct_scalarV output_shared_secrets_hashed_by_index;

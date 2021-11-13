@@ -39,7 +39,7 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const ct_public_keyV pubs
+   , const output_public_dataV pubs
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
    , const rct_scalar a
@@ -65,7 +65,7 @@ namespace rct {
     rct_scalar input_blinding_factor;
     amount_t amount;
     size_t index;
-    ct_public_keyV mixRing;
+    output_public_dataV mixRing;
   };
 
   struct rctOutputData

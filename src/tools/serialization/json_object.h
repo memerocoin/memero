@@ -276,7 +276,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::BlockHeaderResp
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rctData i);
 void fromJsonValue(const rapidjson::Value& val, rct::rctData& sig);
 
-void fromJsonValue(const rapidjson::Value& val, rct::ct_public_key& key);
+void fromJsonValue(const rapidjson::Value& val, rct::output_public_data& key);
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdh_encrypted_data tuple);
 void fromJsonValue(const rapidjson::Value& val, rct::ecdh_encrypted_data& tuple);
 

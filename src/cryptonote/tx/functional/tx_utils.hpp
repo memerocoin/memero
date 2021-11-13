@@ -38,7 +38,7 @@ namespace cryptonote
 {
   struct tx_source_entry
   {
-    typedef std::pair<uint64_t, rct::ct_public_key> output_entry;
+    typedef std::pair<uint64_t, rct::output_public_data> output_entry;
 
     std::vector<output_entry> outputs;  //index + key + optional ringct commitment
     size_t real_output;                 //index in outputs vector of real output_entry
@@ -51,7 +51,7 @@ namespace cryptonote
 
     // needed for test
     inline void push_output(uint64_t idx, const crypto::public_key &k, uint64_t amount) {
-      outputs.push_back(std::make_pair(idx, rct::ct_public_key({k, rct::dummyCommit(amount)})));
+      outputs.push_back(std::make_pair(idx, rct::output_public_data({k, rct::dummyCommit(amount)})));
     }
 
 
