@@ -276,7 +276,6 @@ namespace rct {
   (
    const crypto::hash message
    , const ct_secret_keyV inSk
-   , const rct_pointV destinations
    , const vector<amount_t> inamounts
    , const vector<amount_t> outamounts
    , const amount_t fee
@@ -287,8 +286,7 @@ namespace rct {
   {
     LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
     LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
-    LOG_ERROR_AND_THROW_UNLESS(outamounts.size() == destinations.size(), "Different number of amounts/destinations");
-    LOG_ERROR_AND_THROW_UNLESS(tx_output_shared_secret_indexed_hashes.size() == destinations.size(), "Different number of tx_output_shared_secret_indexed_hashes/destinations");
+    LOG_ERROR_AND_THROW_UNLESS(tx_output_shared_secret_indexed_hashes.size() == outamounts.size(), "Different number of tx_output_shared_secret_indexed_hashes/destinations");
     LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
     LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
     for (size_t n = 0; n < mixRing.size(); ++n) {
@@ -310,15 +308,14 @@ namespace rct {
        );
 
 
-    ct_public_keyV outPk;
+    std::vector<output_commit> outPk;
     std::transform
       (
-       destinations.begin()
-       , destinations.end()
-       , proof.V.begin()
+       proof.V.begin()
+       , proof.V.end()
        , std::back_inserter(outPk)
-       , [](const auto& x, const auto& y) -> ct_public_key {
-         return {x, crypto::mult8(y)};
+       , [](const auto& x) -> output_commit {
+         return {crypto::mult8(x)};
        }
        );
 

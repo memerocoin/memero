@@ -91,7 +91,6 @@ rctData generate_ringct
   const crypto::hash message
   , const ct_secret_keyV inSk
   , const ct_public_keyV inPk
-  , const rct_pointV destinations
   , const std::vector<amount_t> inamounts
   , const std::vector<amount_t> outamounts
   , const rct_scalarV tx_output_shared_secret_indexed_hashes
@@ -107,7 +106,7 @@ rctData generate_ringct
       index[i] = populateRingsSimpleDummy(mixRing[i], inPk[i], mixin);
     }
     return generate_ringct
-      (message, inSk, destinations, inamounts, outamounts, fee, mixRing, tx_output_shared_secret_indexed_hashes, index).first;
+      (message, inSk, inamounts, outamounts, fee, mixRing, tx_output_shared_secret_indexed_hashes, index).first;
 }
 
 
@@ -330,7 +329,7 @@ static rct::rctData make_sample_simple_rct_sig(int n_inputs, const uint64_t inpu
         destinations.push_back(Pk);
     }
 
-    return generate_ringct({}, sc, pc, destinations, inamounts, outamounts, tx_output_shared_secret_indexed_hashes, fee, 3);
+    return generate_ringct({}, sc, pc, inamounts, outamounts, tx_output_shared_secret_indexed_hashes, fee, 3);
 }
 
 static bool range_proof_test(bool expected_valid,

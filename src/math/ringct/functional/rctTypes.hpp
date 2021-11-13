@@ -78,6 +78,10 @@ namespace rct {
     rct_point amount_commit;
   };
 
+  struct output_commit {
+    rct_point amount_commit;
+  };
+
   using ct_public_keyV = std::vector<ct_public_key>;
   using ct_public_keyM = std::vector<ct_public_keyV>; //matrix of keys (indexed by column first)
   using ct_public_keyS = std::span<const ct_public_key>;
@@ -201,7 +205,7 @@ namespace rct {
     //pairs that you mix with
     // rct_pointV unusedPoints;
     std::vector<ecdh_encrypted_data> ecdh;
-    ct_public_keyV outPk;
+    std::vector<output_commit> outPk;
     amount_t fee; // contains b
 
     template<bool W, template <bool> class Archive>
@@ -377,6 +381,7 @@ namespace std
 BLOB_SERIALIZER(rct::rct_point);
 BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::ct_public_key);
+BLOB_SERIALIZER(rct::output_commit);
 BLOB_SERIALIZER(rct::rct_scalar);
 BLOB_SERIALIZER(rct::ct_secret_key);
 BLOB_SERIALIZER(rct::ecdh_encrypted_data);

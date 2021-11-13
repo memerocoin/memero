@@ -364,7 +364,6 @@ namespace cryptonote
         (
          tx_prefix_hash
          , inSk
-         , destinations
          , inamounts
          , outamounts
          , amount_in - amount_out

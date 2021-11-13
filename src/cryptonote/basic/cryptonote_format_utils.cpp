@@ -75,15 +75,15 @@ namespace cryptonote
       return false;
     }
 
-    for (size_t n = 0; n < tx.ringct_essential.outPk.size(); ++n)
-    {
-      if (tx.vout[n].target.type() != typeid(txout_to_key))
-      {
-        LOG_PRINT_L1("Unsupported output type in tx " << get_transaction_hash(tx));
-        return false;
-      }
-      rv.outPk[n].dest = boost::get<txout_to_key>(tx.vout[n].target).output_spend_public_key;
-    }
+    // for (size_t n = 0; n < tx.ringct_essential.outPk.size(); ++n)
+    // {
+    //   if (tx.vout[n].target.type() != typeid(txout_to_key))
+    //   {
+    //     LOG_PRINT_L1("Unsupported output type in tx " << get_transaction_hash(tx));
+    //     return false;
+    //   }
+    //   rv.outPk[n].dest = boost::get<txout_to_key>(tx.vout[n].target).output_spend_public_key;
+    // }
 
     if (base_only) return true;
 
