@@ -728,10 +728,17 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   rct::rct_scalar k = s_zero - zpow[2] * ip1y;
   LOG_ERROR_AND_RETURN_UNLESS(M+2 < zpow.size(), false, "invalid zpow index");
 
-  for (size_t j = 1; j <= M; ++j)
-  {
-    k = k - zpow[j+2] * ip12;
-  }
+  const auto zpow_it = std::next(zpow.begin(), 3);
+  const rct_scalar k1 =
+    std::reduce
+    (
+     zpow_it
+     , std::next(zpow_it, M)
+     , s_zero
+     );
+
+  k = k - k1 * ip12;
+
 
   const rct_scalar y0 = s_zero - proof.taux * weight_y;
   const rct_scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
