@@ -56,28 +56,28 @@
 namespace rct
 {
 
-rct::rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b);
+rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b);
 
 constexpr size_t maxN = 64;
 constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 
-const rct::rct_scalarV oneN = vector_powers(rct::s_one, maxN);
-const rct::rct_scalarV twoN = vector_powers(rct::s_two, maxN);
+const rct_scalarV oneN = vector_powers(rct::s_one, maxN);
+const rct_scalarV twoN = vector_powers(rct::s_two, maxN);
 
-std::array<rct::rct_point, maxN*maxM> Hi;
-std::array<rct::rct_point, maxN*maxM> Gi;
+std::array<rct_point, maxN*maxM> Hi;
+std::array<rct_point, maxN*maxM> Gi;
 
-const static rct::rct_scalar ip12 = inner_product(oneN, twoN);
+const rct_scalar ip12 = inner_product(oneN, twoN);
 
 const auto multiexp = dummy;
 
-rct::rct_point get_exponent(const rct::rct_point base, size_t idx)
+rct_point get_exponent(const rct_point base, size_t idx)
 {
   constexpr std::string_view domain_separator = config::HASH_KEY_BULLETPROOF_EXPONENT;
   const std::string hashed =
     epee::string_tools::blob_to_string(base.data) + std::string(domain_separator) + tools::get_varint_data(idx);
 
-  rct::rct_point e = rct::hash_to_point_via_field
+  rct_point e = rct::hash_to_point_via_field
     ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
 
   LOG_ERROR_AND_THROW_IF((e == crypto::identity), "Exponent is point at infinity");
@@ -118,7 +118,7 @@ void init_exponents()
 }
 
 /* Given two rct_scalar arrays, construct a vector commitment */
-rct::rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
+rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
   LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
@@ -146,7 +146,7 @@ rct::rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
 }
 
 /* Compute a custom vector-scalar commitment */
-rct::rct_point cross_vector_exponent8
+rct_point cross_vector_exponent8
 (
  const size_t size
  , const std::span<rct_point> A
@@ -157,7 +157,7 @@ rct::rct_point cross_vector_exponent8
  , const size_t ao
  , const rct_scalarS b
  , const size_t bo
- , const std::optional<rct::rct_scalarS> scale
+ , const std::optional<rct_scalarS> scale
  )
 {
   LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
@@ -210,9 +210,9 @@ rct::rct_point cross_vector_exponent8
 rct_pointV hadamard_fold
 (
  const rct_pointS v
- , const std::optional<rct::rct_scalarS> scale
- , const rct::rct_scalar a
- , const rct::rct_scalar b
+ , const std::optional<rct_scalarS> scale
+ , const rct_scalar a
+ , const rct_scalar b
  )
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
@@ -275,9 +275,9 @@ Bulletproof bulletproof_MAKE(const std::vector<std::pair<uint64_t, rct_scalar>> 
   const size_t logMN = logM + logN;
   const size_t MN = M * N;
 
-  rct::rct_pointV V(xs.size());
-  rct::rct_scalarV aL(MN), aR(MN);
-  rct::rct_scalarV aL8(MN), aR8(MN);
+  rct_pointV V(xs.size());
+  rct_scalarV aL(MN), aR(MN);
+  rct_scalarV aL8(MN), aR8(MN);
 
   std::transform
     (
@@ -313,17 +313,17 @@ Bulletproof bulletproof_MAKE(const std::vector<std::pair<uint64_t, rct_scalar>> 
 try_again:
   crypto::dataV hash_dataV(V.size());
   std::copy(V.begin(), V.end(), hash_dataV.begin());
-  rct::rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
+  rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   // PAPER LINES 43-44
-  const rct::rct_scalar alpha = crypto::scalarGen();
+  const rct_scalar alpha = crypto::scalarGen();
   const rct_point A = vector_exponent(aL8, aR8) + G_(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
-  const rct::rct_scalarV sL = crypto::scalarVGen(MN);
-  const rct::rct_scalarV sR = crypto::scalarVGen(MN);
-  const rct::rct_scalar rho = crypto::scalarGen();
-  const rct::rct_point S = (vector_exponent(sL, sR) + G_(rho)) ^ rct::s_inv_eight;
+  const rct_scalarV sL = crypto::scalarVGen(MN);
+  const rct_scalarV sR = crypto::scalarVGen(MN);
+  const rct_scalar rho = crypto::scalarGen();
+  const rct_point S = (vector_exponent(sL, sR) + G_(rho)) ^ rct::s_inv_eight;
 
   // PAPER LINES 48-50
   const rct_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, A, S});
@@ -342,11 +342,11 @@ try_again:
 
   // Polynomial construction by coefficients
   // PAPER LINES 70-71
-  const rct::rct_scalarV l0 = vector_subtract(aL, z);
-  const rct::rct_scalarS l1 = sL;
+  const rct_scalarV l0 = vector_subtract(aL, z);
+  const rct_scalarS l1 = sL;
 
-  rct::rct_scalarV zero_twos(MN);
-  const rct::rct_scalarV zpow = vector_powers(z, M+2);
+  rct_scalarV zero_twos(MN);
+  const rct_scalarV zpow = vector_powers(z, M+2);
   for (size_t j = 0; j < M; ++j)
   {
       for (size_t i = 0; i < N; ++i)
@@ -358,29 +358,29 @@ try_again:
   }
 
   const auto yMN = vector_powers(y, MN);
-  const rct::rct_scalarV r0 = vector_addV
+  const rct_scalarV r0 = vector_addV
     (
      hadamard(vector_add(aR, z), yMN)
      , zero_twos
      );
 
-  const rct::rct_scalarV r1 = hadamard(yMN, sR);
+  const rct_scalarV r1 = hadamard(yMN, sR);
 
   // Polynomial construction before PAPER LINE 51
-  const rct::rct_scalar t1_1 = inner_product(l0, r1);
-  const rct::rct_scalar t1_2 = inner_product(l1, r0);
-  const rct::rct_scalar t1 = t1_1 + t1_2;
-  const rct::rct_scalar t2 = inner_product(l1, r1);
+  const rct_scalar t1_1 = inner_product(l0, r1);
+  const rct_scalar t1_2 = inner_product(l1, r0);
+  const rct_scalar t1 = t1_1 + t1_2;
+  const rct_scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
-  const rct::rct_scalar tau1 = crypto::scalarGen();
-  const rct::rct_scalar tau2 = crypto::scalarGen();
+  const rct_scalar tau1 = crypto::scalarGen();
+  const rct_scalar tau2 = crypto::scalarGen();
 
   const rct_point T1 = G_(tau1 * rct::s_inv_eight) + H_(t1 * rct::s_inv_eight);
   const rct_point T2 = G_(tau2 * rct::s_inv_eight) + H_(t2 * rct::s_inv_eight);
 
   // PAPER LINES 54-56
-  const rct::rct_scalar x = hash_carry = hash_dataV_to_scalar
+  const rct_scalar x = hash_carry = hash_dataV_to_scalar
     (crypto::dataV{hash_carry, z, T1, T2});
   if (x == rct::s_zero)
   {
@@ -389,25 +389,25 @@ try_again:
   }
 
   // PAPER LINES 61-63
-  const rct::rct_scalar xsq = x * x;
+  const rct_scalar xsq = x * x;
 
-  rct::rct_scalar taux = tau1 * x + tau2 * xsq;
+  rct_scalar taux = tau1 * x + tau2 * xsq;
   for (size_t j = 1; j <= xs.size(); ++j)
   {
     LOG_ERROR_AND_THROW_UNLESS(j+1 < zpow.size(), "invalid zpow index");
     taux = zpow[j+1] * xs[j-1].second + taux;
   }
 
-  const rct::rct_scalar mu = x * rho + alpha;
+  const rct_scalar mu = x * rho + alpha;
 
   // PAPER LINES 58-60
-  const rct::rct_scalarV l = vector_addV(l0, vector_mult(l1, x));
-  const rct::rct_scalarV r = vector_addV(r0, vector_mult(r1, x));
+  const rct_scalarV l = vector_addV(l0, vector_mult(l1, x));
+  const rct_scalarV r = vector_addV(r0, vector_mult(r1, x));
 
-  const rct::rct_scalar t = inner_product(l, r);
+  const rct_scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  const rct::rct_scalar x_ip = hash_carry =
+  const rct_scalar x_ip = hash_carry =
     hash_dataV_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
   if (x_ip == rct::s_zero)
   {
@@ -419,10 +419,10 @@ try_again:
   size_t nprime = MN;
   std::vector<rct_point> Gprime(MN);
   std::vector<rct_point> Hprime(MN);
-  rct::rct_scalarV aprime(MN);
-  rct::rct_scalarV bprime(MN);
-  const rct::rct_scalar yinv = invert(y);
-  rct::rct_scalarV yinvpow(MN);
+  rct_scalarV aprime(MN);
+  rct_scalarV bprime(MN);
+  const rct_scalar yinv = invert(y);
+  rct_scalarV yinvpow(MN);
   yinvpow[0] = rct::s_one;
   yinvpow[1] = yinv;
   for (size_t i = 0; i < MN; ++i)
@@ -434,25 +434,25 @@ try_again:
     aprime[i] = l[i];
     bprime[i] = r[i];
   }
-  rct::rct_pointV L(logMN);
-  rct::rct_pointV R(logMN);
+  rct_pointV L(logMN);
+  rct_pointV R(logMN);
   int round = 0;
-  rct::rct_scalarV w(logMN); // this is the challenge x in the inner product protocol
+  rct_scalarV w(logMN); // this is the challenge x in the inner product protocol
 
-  std::optional<rct::rct_scalarS> scale = yinvpow;
+  std::optional<rct_scalarS> scale = yinvpow;
   while (nprime > 1)
   {
     // PAPER LINE 20
     nprime /= 2;
 
     // PAPER LINES 21-22
-    rct::rct_scalar cL = inner_product
+    rct_scalar cL = inner_product
       (
        std::span(aprime).subspan(0, nprime)
        , std::span(bprime).subspan(nprime, bprime.size() - nprime)
        );
 
-    rct::rct_scalar cR = inner_product
+    rct_scalar cR = inner_product
       (
        std::span(aprime).subspan(nprime, aprime.size() - nprime)
        , std::span(bprime).subspan(0, nprime)
@@ -475,7 +475,7 @@ try_again:
     }
 
     // PAPER LINES 29-30
-    const rct::rct_scalar winv = invert(w[round]);
+    const rct_scalar winv = invert(w[round]);
     if (nprime > 1)
     {
       Gprime = hadamard_fold(Gprime, {}, winv, w[round]);
@@ -524,8 +524,8 @@ try_again:
 
 struct proof_data_t
 {
-  rct::rct_scalar x, y, z, x_ip;
-  std::vector<rct::rct_scalar> w;
+  rct_scalar x, y, z, x_ip;
+  std::vector<rct_scalar> w;
 };
 
 /* Given a range proof, determine if it is valid
@@ -537,7 +537,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   init_exponents();
 
   // sanity and figure out which proof is longest
-  std::vector<rct::rct_scalar> to_invert;
+  std::vector<rct_scalar> to_invert;
   to_invert.reserve(11);
 
   // STEP 1, fill proof_data
@@ -549,7 +549,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   // Reconstruct the challenges
   crypto::dataV hash_dataV(proof.V.size());
   std::copy(proof.V.begin(), proof.V.end(), hash_dataV.begin());
-  rct::rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
+  rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   proof_data_t pd;
   pd.y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, proof.A, proof.S});
@@ -616,11 +616,11 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   // setup weighted aggregates
 
-  const rct::rct_scalarV winv = invertV(pd.w);
-  const rct::rct_scalar yinv = invert(pd.y);
+  const rct_scalarV winv = invertV(pd.w);
+  const rct_scalar yinv = invert(pd.y);
 
-  const rct::rct_scalar weight_y = crypto::scalarGen();
-  const rct::rct_scalar weight_z = crypto::scalarGen();
+  const rct_scalar weight_y = crypto::scalarGen();
+  const rct_scalar weight_z = crypto::scalarGen();
 
   std::transform
     (
@@ -646,7 +646,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   const size_t MN = M*N;
 
-  const rct::rct_scalarV zpow = vector_powers(pd.z, M+3);
+  const rct_scalarV zpow = vector_powers(pd.z, M+3);
 
   std::transform
     (
@@ -667,7 +667,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   // Compute the number of rounds for the inner product
 
   // precalc
-  rct::rct_scalarV w_cache(1<<rounds);
+  rct_scalarV w_cache(1<<rounds);
   w_cache[0] = winv[0];
   w_cache[1] = pd.w[0];
   for (size_t j = 1; j < rounds; ++j)
@@ -681,7 +681,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   }
 
   // Compute the curvepoints from G[i] and H[i]
-  rct::rct_scalarV z5_v(MN);
+  rct_scalarV z5_v(MN);
   std::generate
     (
       z5_v.begin()
@@ -710,7 +710,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
       }
       );
 
-  rct::rct_scalarV z4_v(MN);
+  rct_scalarV z4_v(MN);
   std::transform
     (
       w_cache.begin()
@@ -724,7 +724,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
 
   // collect
-  const rct::rct_scalar ip1y = vector_power_sum(pd.y, MN);
+  const rct_scalar ip1y = vector_power_sum(pd.y, MN);
   LOG_ERROR_AND_RETURN_UNLESS(M+2 < zpow.size(), false, "invalid zpow index");
 
   const auto zpow_it = std::next(zpow.begin(), 3);
