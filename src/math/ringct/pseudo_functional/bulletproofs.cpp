@@ -391,12 +391,22 @@ try_again:
   // PAPER LINES 61-63
   const rct_scalar xsq = x * x;
 
-  rct_scalar taux = tau1 * x + tau2 * xsq;
-  for (size_t j = 1; j <= xs.size(); ++j)
-  {
-    LOG_ERROR_AND_THROW_UNLESS(j+1 < zpow.size(), "invalid zpow index");
-    taux = zpow[j+1] * xs[j-1].second + taux;
-  }
+  LOG_ERROR_AND_THROW_UNLESS(xs.size()+1 < zpow.size(), "invalid zpow index");
+
+  const rct_scalar taux1 =
+    std::transform_reduce
+    (
+     xs.begin()
+     , xs.end()
+     , std::next(zpow.begin(), 2)
+     , s_zero
+     , std::plus()
+     , [](const auto&x, const auto& z) {
+       return z * x.second;
+     }
+     );
+
+  const rct_scalar taux = tau1 * x + tau2 * xsq + taux1;
 
   const rct_scalar mu = x * rho + alpha;
 
