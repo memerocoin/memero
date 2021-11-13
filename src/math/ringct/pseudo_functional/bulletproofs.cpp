@@ -243,6 +243,18 @@ rct_pointV hadamard_fold
   return out;
 }
 
+constexpr std::pair<size_t, size_t> log2bound(const size_t x) {
+  size_t y = 1;
+  size_t _log = 0;
+
+  while (y < x) {
+    _log++;
+    y = y << 1;
+  }
+
+  return {y, _log};
+}
+
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
 Bulletproof bulletproof_MAKE(const std::vector<std::pair<rct_scalar, rct_scalar>> xs)
 {
@@ -254,16 +266,10 @@ Bulletproof bulletproof_MAKE(const std::vector<std::pair<rct_scalar, rct_scalar>
 
   init_exponents();
 
-  constexpr size_t logN = 6; // log2(64)
+  constexpr size_t logN = 6; // log2bound(64)
   constexpr size_t N = 1<<logN;
 
-  size_t M = 1;
-  size_t logM = 0;
-
-  while (M < std::min(maxM, xs.size())) {
-    logM++;
-    M = M << 1;
-  }
+  const auto [M, logM] = log2bound(std::min(maxM, xs.size()));
 
   LOG_ERROR_AND_THROW_UNLESS(M <= maxM, "sv/gamma are too large");
 
@@ -591,12 +597,9 @@ bool bulletproof_VERIFY(const Bulletproof proof)
       });
   LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
-  size_t M = 1;
-  pd.logM = 0;
-  while (M < std::min(maxM, proof.V.size())) {
-    pd.logM++;
-    M = M << 1;
-  }
+  const auto [M, logM] = log2bound(std::min(maxM, proof.V.size()));
+  pd.logM = logM;
+
   LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
 
   const size_t rounds = pd.logM + logN;
