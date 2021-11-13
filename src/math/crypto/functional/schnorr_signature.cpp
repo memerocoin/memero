@@ -23,6 +23,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace crypto {
 
+  std::optional<schnorr_signature> maybe_valid_schnorr_signature
+  (const schnorr_signature_unnormalized x)
+  {
+    const schnorr_signature reduced = {reduce(x.s), reduce(x.scalar_hash)};
+    if (reduced != x) {
+      return {};
+    } else {
+      return reduced;
+    }
+  }
+
   bool verify_schnorr_signature
   (
    const epee::blob::span message

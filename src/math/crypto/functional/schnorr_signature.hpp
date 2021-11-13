@@ -38,20 +38,12 @@ namespace crypto {
     }
   };
 
-  inline std::optional<schnorr_signature> maybe_valid_schnorr_signature
-  (const schnorr_signature_unnormalized x)
-  {
-    const schnorr_signature reduced = {reduce(x.s), reduce(x.scalar_hash)};
-    if (reduced != x) {
-      return {};
-    } else {
-      return reduced;
-    }
-  }
-
   inline std::ostream &operator <<(std::ostream &o, const schnorr_signature &v) {
     epee::hex::encode_to_hex_stream_formatted(o, epee::pod_to_span(v)); return o;
   }
+
+  std::optional<schnorr_signature> maybe_valid_schnorr_signature
+  (const schnorr_signature_unnormalized x);
 
   bool verify_schnorr_signature
   (
