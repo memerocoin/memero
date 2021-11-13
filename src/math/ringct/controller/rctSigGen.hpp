@@ -59,18 +59,6 @@ namespace rct {
   //   uses the attached ecdh info to find the amounts represented by each output commitment
   //   must know the destination private key to find the correct amount, else will return a random number
 
-  std::pair<rctData, rct_scalarV> generate_ringct
-  (
-   const crypto::hash message
-   , const ct_secret_keyV inSk
-   , const std::vector<amount_t> inamounts
-   , const std::vector<amount_t> outamounts
-   , const amount_t fee
-   , const ct_public_keyM mixRing
-   , const rct_scalarV tx_output_shared_secret_indexed_hashes
-   , const std::vector<size_t> index
-   );
-
   struct rctInputData
   {
     rct_scalar input_spend_sk;

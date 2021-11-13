@@ -417,49 +417,4 @@ namespace rct {
     return {rctData, blinding_factors};
   }
 
-  std::pair<rctData, rct_scalarV> generate_ringct
-  (
-   const crypto::hash message
-   , const ct_secret_keyV inSk
-   , const vector<amount_t> inamounts
-   , const vector<amount_t> outamounts
-   , const amount_t fee
-   , const ct_public_keyM mixRing
-   , const rct_scalarV tx_output_shared_secret_indexed_hashes
-   , const std::vector<size_t> index
-   )
-  {
-    std::vector<rctInputData> inputs;
-    std::transform
-      (
-       inSk.begin()
-       , inSk.end()
-       , inamounts.begin()
-       , std::back_inserter(inputs)
-       , [](const auto& x, const auto& amount) -> rctInputData {
-         return
-           {
-             x.addr
-             , x.blinding_factor
-             , amount
-             , 0
-             , {}
-           };
-         }
-       );
-
-    for (size_t i = 0; i < inputs.size(); i ++) {
-      inputs[i].index = index[i];
-      inputs[i].mixRing = mixRing[i];
-    }
-
-    return generate_ringct
-      (
-       message
-       , inputs
-       , outamounts
-       , fee
-       , tx_output_shared_secret_indexed_hashes
-       );
-  }
 }
