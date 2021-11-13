@@ -526,7 +526,6 @@ struct proof_data_t
 {
   rct::rct_scalar x, y, z, x_ip;
   std::vector<rct::rct_scalar> w;
-  size_t logM;
 };
 
 /* Given a range proof, determine if it is valid
@@ -579,10 +578,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   constexpr size_t N = log2bound(maxN).first;
   constexpr size_t logN = log2bound(maxN).second;
   const auto [M, logM] = log2bound(std::min(maxM, proof.V.size()));
-  pd.logM = logM;
 
-
-  const size_t rounds = pd.logM + logN;
+  const size_t rounds = logM + logN;
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() == rounds, false, "Proof is not the expected size");
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() < 32, false, "At least one proof is too large");
 
@@ -608,7 +605,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   // STEP 2, use proof_data
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(proof.V.size() + (2 * (pd.logM + logN) + 4) + 2 * maxMN);
+  multiexp_data.reserve(proof.V.size() + (2 * (logM + logN) + 4) + 2 * maxMN);
 
   // setup weighted aggregates
 
