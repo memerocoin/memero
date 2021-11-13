@@ -126,6 +126,8 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), {}, "Input rct_scalar not in range");
     LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), {}, "Input rct_scalar not in range");
 
+    const auto maybeLR = zipLR(proof_L, proof_R);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeLR, {}, "failed to construct LR from L and R");
 
     return Bulletproof {
       // rct::inv8V V;
@@ -142,7 +144,7 @@ namespace rct {
       , proof_T2
       , crypto::reduce(proof.taux)
       , crypto::reduce(proof.mu)
-      , zipLR(proof_L, proof_R)
+      , *maybeLR
       , crypto::reduce(proof.a)
       , crypto::reduce(proof.b)
       , crypto::reduce(proof.t)
@@ -234,7 +236,11 @@ namespace rct {
   }
 
 
-  LR_V zipLR(const rct_pointV L, const rct_pointV R) {
+  std::optional<LR_V> zipLR(const rct_pointV L, const rct_pointV R) {
+    if (L.size() != R.size()) {
+      return {};
+    }
+
     std::vector<std::pair<rct_point, rct_point>> LR;
 
     std::transform

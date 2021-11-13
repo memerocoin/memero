@@ -170,7 +170,7 @@ namespace rct {
     rct::rct_scalar a, b, t;
   };
 
-  LR_V zipLR(const rct_pointV L, const rct_pointV R);
+  std::optional<LR_V> zipLR(const rct_pointV L, const rct_pointV R);
 
   std::pair<rct_pointV, rct_pointV>
   splitLR(const std::span<const std::pair<rct_point, rct_point>> LR);
