@@ -266,9 +266,7 @@ Bulletproof bulletproof_MAKE(const std::vector<std::pair<rct_scalar, rct_scalar>
 
   init_exponents();
 
-  constexpr size_t logN = 6; // log2bound(64)
-  constexpr size_t N = 1<<logN;
-
+  const auto [N, logN] = log2bound(maxN);
   const auto [M, logM] = log2bound(std::min(maxM, xs.size()));
 
   LOG_ERROR_AND_THROW_UNLESS(M <= maxM, "sv/gamma are too large");
@@ -553,10 +551,6 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 {
   init_exponents();
 
-
-  const size_t logN = 6;
-  const size_t N = 1 << logN;
-
   // sanity and figure out which proof is longest
   std::vector<rct::rct_scalar> to_invert;
   to_invert.reserve(11);
@@ -597,6 +591,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
       });
   LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
+  constexpr size_t N = log2bound(maxN).first;
+  constexpr size_t logN = log2bound(maxN).second;
   const auto [M, logM] = log2bound(std::min(maxM, proof.V.size()));
   pd.logM = logM;
 
