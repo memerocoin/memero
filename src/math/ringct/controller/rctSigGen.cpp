@@ -300,7 +300,6 @@ namespace rct {
   (
    const crypto::hash message
    , const std::vector<rctInputData> inputs
-   , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
    , const amount_t fee
    , const ct_public_keyM mixRing
@@ -308,8 +307,7 @@ namespace rct {
    , const std::vector<size_t> index
    )
   {
-    LOG_ERROR_AND_THROW_UNLESS(inamounts.size() > 0, "Empty inamounts");
-    // LOG_ERROR_AND_THROW_UNLESS(inamounts.size() == inSk.size(), "Different number of inamounts/inSk");
+    LOG_ERROR_AND_THROW_UNLESS(inputs.size() > 0, "Empty inamounts");
     LOG_ERROR_AND_THROW_UNLESS(tx_output_shared_secret_indexed_hashes.size() == outamounts.size(), "Different number of tx_output_shared_secret_indexed_hashes/destinations");
     // LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
     // LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
@@ -353,7 +351,7 @@ namespace rct {
 
 
     // reserve the last one for generating a balanced pseudo sum
-    rct_scalarV pseudo_blinding_factors(inamounts.size() - 1);
+    rct_scalarV pseudo_blinding_factors(inputs.size() - 1);
     std::generate
       (
        pseudo_blinding_factors.begin()
@@ -375,17 +373,17 @@ namespace rct {
       (
        pseudo_blinding_factors.begin()
        , pseudo_blinding_factors.end()
-       , inamounts.begin()
+       , inputs.begin()
        , std::back_inserter(pseudo_amount_commits)
        , [](const auto& x, const auto& y) -> rct_point {
-         return commit(y, x);
+         return commit(y.amount, x);
        }
        );
 
     const auto pseudo_sum_blinding_factor_difference = sum_blinding_factors - pseudo_sum_blinding_factors;
     pseudo_blinding_factors.push_back(pseudo_sum_blinding_factor_difference);
 
-    pseudo_amount_commits.push_back(commit(inamounts.back(), pseudo_sum_blinding_factor_difference));
+    pseudo_amount_commits.push_back(commit(inputs.back().amount, pseudo_sum_blinding_factor_difference));
 
     const rctData preRctSig =
       {
@@ -406,7 +404,7 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(maybeMessage, "failed to generate rct message");
 
     const crypto::hash full_message = *maybeMessage;
-    std::vector<clsag_unsafe> clsags(inamounts.size());
+    std::vector<clsag_unsafe> clsags(inputs.size());
     std::generate
       (
        clsags.begin()
@@ -450,12 +448,14 @@ namespace rct {
       (
        inSk.begin()
        , inSk.end()
+       , inamounts.begin()
        , std::back_inserter(inputs)
-       , [](const auto& x) -> rctInputData {
+       , [](const auto& x, const auto& amount) -> rctInputData {
          return
            {
              x.addr
              , x.blinding_factor
+             , amount
            };
          }
        );
@@ -464,7 +464,6 @@ namespace rct {
       (
        message
        , inputs
-       , inamounts
        , outamounts
        , fee
        , mixRing

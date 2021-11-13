@@ -85,13 +85,13 @@ namespace rct {
   {
     rct_scalar input_spend_sk;
     rct_scalar input_blinding_factor;
+    amount_t amount;
   };
 
   std::pair<rctData, rct_scalarV> generate_ringct
   (
    const crypto::hash message
    , const std::vector<rctInputData> inputs
-   , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
    , const amount_t fee
    , const ct_public_keyM mixRing
