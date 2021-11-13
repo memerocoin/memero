@@ -87,6 +87,7 @@ namespace rct {
     rct_scalar input_blinding_factor;
     amount_t amount;
     size_t index;
+    ct_public_keyV mixRing;
   };
 
   std::pair<rctData, rct_scalarV> generate_ringct
@@ -95,7 +96,6 @@ namespace rct {
    , const std::vector<rctInputData> inputs
    , const std::vector<amount_t> outamounts
    , const amount_t fee
-   , const ct_public_keyM mixRing
    , const rct_scalarV tx_output_shared_secret_indexed_hashes
    );
 }

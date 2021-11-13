@@ -318,23 +318,26 @@ namespace cryptonote
       {
         amount_in += sources[i].amount;
         // inSk: (secret key, mask)
+
+        mixRing[i].resize(sources[i].outputs.size());
+        for (size_t n = 0; n < sources[i].outputs.size(); ++n)
+        {
+          mixRing[i][n] = sources[i].outputs[n].second;
+        }
+
         const rct::rctInputData input =
           {
             in_contexts[i].output_spend_key.sec
             , sources[i].mask
             , sources[i].amount
             , sources[i].real_output
+            , mixRing[i]
           };
 
         inputs.push_back(input);
 
         // inPk: (public key, commitment)
         // will be done when filling in mixRing
-        mixRing[i].resize(sources[i].outputs.size());
-        for (size_t n = 0; n < sources[i].outputs.size(); ++n)
-        {
-          mixRing[i][n] = sources[i].outputs[n].second;
-        }
       }
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
@@ -364,7 +367,6 @@ namespace cryptonote
          , inputs
          , outamounts
          , amount_in - amount_out
-         , mixRing
          , tx_output_shared_secret_indexed_hashes
          );
 

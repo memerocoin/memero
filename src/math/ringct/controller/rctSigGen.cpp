@@ -302,7 +302,6 @@ namespace rct {
    , const std::vector<rctInputData> inputs
    , const std::vector<amount_t> outamounts
    , const amount_t fee
-   , const ct_public_keyM mixRing
    , const rct_scalarV tx_output_shared_secret_indexed_hashes
    )
   {
@@ -310,8 +309,8 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(tx_output_shared_secret_indexed_hashes.size() == outamounts.size(), "Different number of tx_output_shared_secret_indexed_hashes/destinations");
     // LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
     // LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
-    for (size_t n = 0; n < mixRing.size(); ++n) {
-      LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < mixRing[n].size(), "Bad index into mixRing");
+    for (size_t n = 0; n < inputs.size(); ++n) {
+      LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < inputs[n].mixRing.size(), "Bad index into mixRing");
     }
 
     const auto [blinding_factors, proof] = generate_range_proof(outamounts, tx_output_shared_secret_indexed_hashes);
@@ -383,6 +382,16 @@ namespace rct {
     pseudo_blinding_factors.push_back(pseudo_sum_blinding_factor_difference);
 
     pseudo_amount_commits.push_back(commit(inputs.back().amount, pseudo_sum_blinding_factor_difference));
+
+    ct_public_keyM mixRing;
+
+    std::transform
+      (
+       inputs.begin()
+       , inputs.end()
+       , std::back_inserter(mixRing)
+       , [](const auto x) -> ct_public_keyV { return x.mixRing; }
+       );
 
     const rctData preRctSig =
       {
@@ -456,12 +465,14 @@ namespace rct {
              , x.blinding_factor
              , amount
              , 0
+             , {}
            };
          }
        );
 
     for (size_t i = 0; i < inputs.size(); i ++) {
       inputs[i].index = index[i];
+      inputs[i].mixRing = mixRing[i];
     }
 
     return generate_ringct
@@ -470,7 +481,6 @@ namespace rct {
        , inputs
        , outamounts
        , fee
-       , mixRing
        , tx_output_shared_secret_indexed_hashes
        );
   }
