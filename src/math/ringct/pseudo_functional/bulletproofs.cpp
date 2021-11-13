@@ -285,7 +285,7 @@ Bulletproof bulletproof_MAKE(const std::vector<std::pair<uint64_t, rct_scalar>> 
      , xs.end()
      , V.begin()
      , [](const auto& x) {
-       return rct::G_(x.second * s_inv_eight) + rct::H_(crypto::int_to_scalar(x.first) * s_inv_eight);
+       return commit(x.second, x.first) ^ s_inv_eight;
      }
      );
 
