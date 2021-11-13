@@ -311,8 +311,7 @@ namespace cryptonote
 
       // mixRing indexing is done the other way round for simple
       rct::ct_public_keyM mixRing(sources.size());
-      std::vector<uint64_t> inamounts, outamounts;
-      std::vector<size_t> index;
+      std::vector<uint64_t> outamounts;
       for (size_t i = 0; i < sources.size(); ++i)
       {
         amount_in += sources[i].amount;
@@ -375,7 +374,6 @@ namespace cryptonote
 
     return {{tx, sources}};
   }
-
   //---------------------------------------------------------------
   std::optional<block> generate_genesis_block
   (
