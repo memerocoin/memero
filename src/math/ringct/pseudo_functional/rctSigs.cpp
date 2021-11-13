@@ -269,6 +269,13 @@ namespace rct {
   }
 
   bool verify_tx_balance(const rctData rv) {
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       rv.type == RCTTypeCLSAG
+       , false
+       , "verify_tx_balance called on non rct tx"
+       );
+
     rct::rct_pointV outputCommits;
 
     std::transform
@@ -295,7 +302,7 @@ namespace rct {
       (
         rv.type == RCTTypeCLSAG
         , false
-        , "verify_range_proof called on non simple rctData"
+        , "verify_range_proof called on non rct tx"
         );
 
     LOG_ERROR_AND_RETURN_UNLESS
