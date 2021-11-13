@@ -248,6 +248,7 @@ namespace rct {
       for (size_t i = 0; i < outputs; ++i)
       {
         FIELDS(outPk[i].amount_commit)
+        if (!is_safe_point(outPk[i].amount_commit)) return false;
         if (outputs - i > 1)
           ar.delimit_array();
       }
