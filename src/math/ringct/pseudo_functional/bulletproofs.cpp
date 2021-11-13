@@ -600,8 +600,6 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   const size_t rounds = pd.logM + logN;
 
-  LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
-
   // The inner product challenges are computed per round
   for (size_t i = 0; i < rounds; ++i)
   {
@@ -626,9 +624,6 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   const rct_scalarV inverses = invertV(to_invert);
 
   // setup weighted aggregates
-
-
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
 
   const rct::rct_scalarS winv = std::span(inverses);
   const rct::rct_scalar yinv = inverses[rounds];
@@ -663,8 +658,6 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   multiexp_data.emplace_back(pd.x * weight_z * s_eight, proof.S);
 
   // Compute the number of rounds for the inner product
-  LOG_ERROR_AND_RETURN_UNLESS(rounds > 0, false, "Zero rounds");
-
 
   // precalc
   rct::rct_scalarV w_cache(1<<rounds);
