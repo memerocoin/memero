@@ -24,12 +24,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace crypto {
 
   struct schnorr_signature_unnormalized {
-    ec_scalar_unnormalized s;
-    ec_scalar_unnormalized scalar_hash;
+    const ec_scalar_unnormalized s;
+    const ec_scalar_unnormalized scalar_hash;
   };
 
   struct schnorr_signature {
-    ec_scalar s, scalar_hash;
+    const ec_scalar s, scalar_hash;
 
     bool operator==(const schnorr_signature&) const = default;
 

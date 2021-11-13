@@ -65,8 +65,9 @@ namespace proof {
        );
 
     // decode base58
-    std::vector<crypto::schnorr_signature> sigs(1);
-    const size_t sig_len = tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(sigs[0]))).size();
+    std::vector<crypto::schnorr_signature> sigs;
+    const crypto::schnorr_signature dummySig{};
+    const size_t sig_len = tools::base58::encode(epee::string_tools::blob_to_string(epee::pod_to_span(dummySig))).size();
 
     const size_t num_sigs = (sig_str.size() - header_len) / sig_len;
 
@@ -76,8 +77,6 @@ namespace proof {
        , error::wallet_internal_error
        , "Wrong signature size"
        );
-
-    sigs.resize(num_sigs);
 
     for (size_t i = 0; i < num_sigs; ++i)
     {
@@ -100,7 +99,7 @@ namespace proof {
 
       constexpr size_t schnorr_size = sizeof(crypto::schnorr_signature);
 
-      crypto::schnorr_signature_unnormalized sig_unsafe;
+      crypto::schnorr_signature_unnormalized sig_unsafe{};
 
       memcpy(&sig_unsafe, sig_decoded.data(), schnorr_size);
 
@@ -109,7 +108,7 @@ namespace proof {
       const auto maybeSig = maybe_valid_schnorr_signature(sig_unsafe);
       if (!maybeSig) return {};
 
-      sigs[i] = *maybeSig;
+      sigs.push_back(*maybeSig);
     }
 
     const epee::blob::data message_data = epee::string_tools::string_to_blob(message);

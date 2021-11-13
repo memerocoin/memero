@@ -78,7 +78,7 @@ namespace signature {
       LOG_PRINT_L0("Signature decoding error");
       return {};
     }
-    crypto::schnorr_signature_unnormalized sig_unsafe;
+    crypto::schnorr_signature_unnormalized sig_unsafe{};
     if (sizeof(sig_unsafe) != decoded.size()) {
       LOG_PRINT_L0("Signature decoding error");
       return {};
