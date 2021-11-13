@@ -251,7 +251,9 @@ namespace rct {
       for (size_t i = 0; i < outputs; ++i)
       {
         FIELDS(outPk[i].amount_commit)
-        if (!is_safe_point(outPk[i].amount_commit)) return false;
+        if (!typename Archive<W>::is_saving()) {
+          if (!is_safe_point(outPk[i].amount_commit)) return false;
+        }
         if (outputs - i > 1)
           ar.delimit_array();
       }
@@ -355,7 +357,9 @@ namespace rct {
         for (size_t i = 0; i < inputs; ++i)
         {
           FIELDS(pseudo_amount_commits[i])
-          if (!is_safe_point(pseudo_amount_commits[i])) return false;
+          if (!typename Archive<W>::is_saving()) {
+            if (!is_safe_point(pseudo_amount_commits[i])) return false;
+          }
           if (inputs - i > 1)
             ar.delimit_array();
         }
