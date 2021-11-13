@@ -38,7 +38,6 @@ namespace rct {
   bool verify_clsag_signatures(const rctData rv);
 
   bool verify_range_proof(const rctData rv);
-  bool verify_range_proofs(const std::span<const rctData> rv);
 
   inline bool verify_ringct(const rctData rv) {
     return verify_range_proof(rv) && verify_clsag_signatures(rv);

@@ -285,90 +285,76 @@ namespace rct {
   }
 
 
-
-  bool verify_range_proof_no_catch(const std::span<const rctData> rvv)
+  bool verify_range_proof_no_catch(const rctData rv)
   {
-    for (const rctData& rv: rvv)
-    {
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
-          rv.type == RCTTypeCLSAG
-          , false
-          , "verify_range_proof called on non simple rctData"
-          );
-
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
-         rv.p.bulletproofs.size() == 1
-         , false
-         , "More than one proofs"
-         );
-
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
-          rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs.front())
-          , false
-          , "Mismatched sizes of outPk and bulletproofs"
-          );
-
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
-          rv.p.pseudo_amount_commits.size() == rv.p.CLSAGs.size()
-          , false
-          , "Mismatched sizes of rv.p.pseudo_amount_commits and rv.p.CLSAGs"
-          );
-
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
-          rv.outPk.size() == rv.ecdh.size()
-          , false
-          , "Mismatched sizes of outPk and rv.ecdh"
-          );
-    }
-
-    return std::transform_reduce
+    LOG_ERROR_AND_RETURN_UNLESS
       (
-        rvv.begin()
-        , rvv.end()
-        , true
-        , std::logical_and<>()
-        , [](const rctData& rv) {
-          const rct_pointV &pseudo_amount_commits = rv.p.pseudo_amount_commits;
+        rv.type == RCTTypeCLSAG
+        , false
+        , "verify_range_proof called on non simple rctData"
+        );
 
-          rct::rct_pointV commits;
-          std::transform
-            (
-            rv.outPk.begin()
-            , rv.outPk.end()
-            , std::back_inserter(commits)
-            , [](const auto& x) {
-              return x.amount_commit;
-            }
-            );
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+        rv.p.bulletproofs.size() == 1
+        , false
+        , "More than one proofs"
+        );
 
-          const rct_point feeKey = H_(crypto::int_to_scalar(rv.fee));
-          const rct_point sumCommits = sum(commits) + feeKey;
-          const rct_point sumPseudoCommits = sum(pseudo_amount_commits);
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+        rv.outPk.size() == n_bulletproof_amounts(rv.p.bulletproofs.front())
+        , false
+        , "Mismatched sizes of outPk and bulletproofs"
+        );
 
-          //check pseudo_amount_commits vs Outs..
-          if (sumPseudoCommits != sumCommits) {
-            LOG_PRINT_L1("Sum check failed");
-            return false;
-          }
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+        rv.p.pseudo_amount_commits.size() == rv.p.CLSAGs.size()
+        , false
+        , "Mismatched sizes of rv.p.pseudo_amount_commits and rv.p.CLSAGs"
+        );
 
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+        rv.outPk.size() == rv.ecdh.size()
+        , false
+        , "Mismatched sizes of outPk and rv.ecdh"
+        );
 
-          const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
-          LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
-          const Bulletproof proof = *maybeProof;
+    rct::rct_pointV outputCommits;
 
-          return bulletproof_VERIFY(proof);
+    std::transform
+      (
+        rv.outPk.begin()
+        , rv.outPk.end()
+        , std::back_inserter(outputCommits)
+        , [](const auto& x) {
+          return x.amount_commit;
         }
         );
+
+    const rct_point feeKey = H_(crypto::int_to_scalar(rv.fee));
+    const rct_point sumOutputCommits = sum(outputCommits) + feeKey;
+    const rct_point sumInputCommits = sum(rv.p.pseudo_amount_commits);
+
+    //check pseudo_amount_commits vs Outs..
+    if (sumInputCommits != sumOutputCommits) {
+      LOG_PRINT_L1("Commit balance check failed");
+      return false;
+    }
+
+
+    const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
+    LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
+    const Bulletproof proof = *maybeProof;
+
+    return bulletproof_VERIFY(proof);
   }
 
-  bool verify_range_proofs(const std::span<const rctData> rvv) {
+  bool verify_range_proof(const rctData rv) {
     try {
-      return verify_range_proof_no_catch(rvv);
+      return verify_range_proof_no_catch(rv);
     }
     // we can get deep throws from ge_frombytes_vartime if input isn't valid
     catch (const std::exception &e)
@@ -381,11 +367,6 @@ namespace rct {
         LOG_PRINT_L1("Error in verify_range_proof, but not an actual exception");
         return false;
       }
-  }
-
-  bool verify_range_proof(const rctData rv)
-  {
-    return verify_range_proofs(std::vector<rctData>{rv});
   }
 
   //ver RingCT simple

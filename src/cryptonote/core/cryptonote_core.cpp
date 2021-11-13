@@ -1406,22 +1406,20 @@ namespace cryptonote
           break;
       }
     }
-    if (!rvv.empty() && !rct::verify_range_proofs(rvv))
+    if (!rvv.empty())
     {
-      LOG_PRINT_L1("One transaction among this group has bad semantics, verifying one at a time");
-      ret = false;
-      const bool assumed_bad = rvv.size() == 1; // if there's only one tx, it must be the bad one
       for (size_t n = 0; n < tx_info.size(); ++n)
       {
         if (!tx_info[n].result)
           continue;
         if (tx_info[n].tx->ringct_essential.type != rct::RCTTypeCLSAG)
           continue;
-        if (assumed_bad || !rct::verify_range_proof(tx_info[n].tx->ringct_essential))
+        if (!rct::verify_range_proof(tx_info[n].tx->ringct_essential))
         {
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;
+          ret = false;
         }
       }
     }
