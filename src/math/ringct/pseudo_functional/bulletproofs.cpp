@@ -537,9 +537,6 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   init_exponents();
 
   // sanity and figure out which proof is longest
-  std::vector<rct_scalar> to_invert;
-  to_invert.reserve(11);
-
   // STEP 1, fill proof_data
 
   LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, false, "V does not have at least one element");
