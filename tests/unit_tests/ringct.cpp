@@ -56,6 +56,29 @@ namespace rct {
     const rct_scalar sk = crypto::scalarGen();
     return std::make_pair(sk, G_(sk));
   }
+
+  clsag generate_clsag_signature_test
+  (
+   const crypto::hash message
+   , const ct_public_keyV pubs
+   , const ct_secret_key inSk
+   , const rct_scalar a
+   , const rct_point Cout
+   , const size_t index
+   )
+  {
+    return generate_clsag_signature_new
+      (
+       message
+       , pubs
+       , inSk.addr
+       , inSk.blinding_factor
+       , a
+       , Cout
+       , index
+       );
+  }
+
 }
 
 //generates a <secret , public> / Pedersen commitment to the amount
@@ -150,7 +173,7 @@ TEST(ringct, CLSAG)
 
 
   // bad message
-  clsag = rct::generate_clsag_signature
+  clsag = rct::generate_clsag_signature_test
     (
      {},
      pubs,
@@ -164,7 +187,7 @@ TEST(ringct, CLSAG)
   // bad index at creation
   try
   {
-    clsag = rct::generate_clsag_signature(message,pubs,insk,t2,Cout,(idx + 1) % N);
+    clsag = rct::generate_clsag_signature_test(message,pubs,insk,t2,Cout,(idx + 1) % N);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -175,7 +198,7 @@ TEST(ringct, CLSAG)
     ct_secret_key insk2;
     insk2.addr = insk.addr;
     insk2.blinding_factor = crypto::scalarGen();
-    clsag = rct::generate_clsag_signature(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::generate_clsag_signature_test(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -185,7 +208,7 @@ TEST(ringct, CLSAG)
   pubs[idx].amount_commit = G_(crypto::scalarGen());
   try
   {
-    clsag = rct::generate_clsag_signature(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::generate_clsag_signature_test(message,pubs,insk,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -197,7 +220,7 @@ TEST(ringct, CLSAG)
     ct_secret_key insk2;
     insk2.addr = crypto::scalarGen();
     insk2.blinding_factor = insk.blinding_factor;
-    clsag = rct::generate_clsag_signature(message,pubs,insk2,t2,Cout,idx);
+    clsag = rct::generate_clsag_signature_test(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
@@ -207,14 +230,14 @@ TEST(ringct, CLSAG)
   pubs[idx].dest = G_(crypto::scalarGen());
   try
   {
-    clsag = rct::generate_clsag_signature(message,pubs,insk,t2,Cout,idx);
+    clsag = rct::generate_clsag_signature_test(message,pubs,insk,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
   catch (...) { /* either exception, or failure to verify above */ }
   pubs[idx] = backup;
 
   // Test correct signature
-  clsag = rct::generate_clsag_signature(message,pubs,insk,t2,Cout,idx);
+  clsag = rct::generate_clsag_signature_test(message,pubs,insk,t2,Cout,idx);
   ASSERT_TRUE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 
   // empty s

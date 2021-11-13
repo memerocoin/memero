@@ -228,28 +228,6 @@ namespace rct {
   }
 
 
-  clsag generate_clsag_signature
-  (
-   const crypto::hash message
-   , const ct_public_keyV pubs
-   , const ct_secret_key inSk
-   , const rct_scalar a
-   , const rct_point Cout
-   , const size_t index
-   )
-  {
-    return generate_clsag_signature_new
-      (
-       message
-       , pubs
-       , inSk.addr
-       , inSk.blinding_factor
-       , a
-       , Cout
-       , index
-       );
-  }
-
   clsag generate_clsag_signature_new
   (
    const crypto::hash message
