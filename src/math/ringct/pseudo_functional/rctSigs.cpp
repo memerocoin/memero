@@ -104,7 +104,7 @@ namespace rct {
   }
 
 
-  bool verify_clsag_signature_no_catch
+  bool verify_clsag_signature
   (
     const crypto::hash message
     , const clsag sig
@@ -248,20 +248,6 @@ namespace rct {
     return c == c1;
   }
 
-  bool verify_clsag_signature
-  (
-    const crypto::hash message
-    , const clsag sig
-    , const ct_public_keyS pubs
-    , const rct_point C_offset
-    )
-  {
-    try {
-      return verify_clsag_signature_no_catch(message, sig, pubs, C_offset);
-    }
-    catch (...) { return false; }
-  }
-
   bool verify_unsafe_clsag_signature
   (
    const crypto::hash message
@@ -278,10 +264,7 @@ namespace rct {
        , "invalid clsag signature"
        );
 
-    try {
-      return verify_clsag_signature_no_catch(message, *maybeClsag, pubs, C_offset);
-    }
-    catch (...) { return false; }
+    return verify_clsag_signature(message, *maybeClsag, pubs, C_offset);
   }
 
   bool verify_tx_balance(const rctData rv) {
@@ -305,7 +288,7 @@ namespace rct {
     return sumInputCommits == sumOutputCommits;
   }
 
-  bool verify_range_proof_no_catch(const rctData rv)
+  bool verify_range_proof(const rctData rv)
   {
     LOG_ERROR_AND_RETURN_UNLESS
       (
@@ -354,26 +337,9 @@ namespace rct {
     return bulletproof_VERIFY(proof);
   }
 
-  bool verify_range_proof(const rctData rv) {
-    try {
-      return verify_range_proof_no_catch(rv);
-    }
-    // we can get deep throws from ge_frombytes_vartime if input isn't valid
-    catch (const std::exception &e)
-      {
-        LOG_PRINT_L1("Error in verify_range_proof: " << e.what());
-        return false;
-      }
-    catch (...)
-      {
-        LOG_PRINT_L1("Error in verify_range_proof, but not an actual exception");
-        return false;
-      }
-  }
-
   //ver RingCT simple
   //assumes only post-rct style inputs (at least for max anonymity)
-  bool verify_clsag_signatures_no_catch(const rctData rv)
+  bool verify_clsag_signatures(const rctData rv)
   {
     LOG_ERROR_AND_RETURN_UNLESS
       (
@@ -419,24 +385,6 @@ namespace rct {
     }
 
     return true;
-  }
-
-  bool verify_clsag_signatures(const rctData rv) {
-    try {
-      return verify_clsag_signatures_no_catch(rv);
-    }
-
-    // we can get deep throws from ge_frombytes_vartime if input isn't valid
-    catch (const std::exception &e)
-    {
-      LOG_PRINT_L1("Error in verify_clsag_signatures: " << e.what());
-      return false;
-    }
-    catch (...)
-    {
-      LOG_PRINT_L1("Error in verify_clsag_signatures, but not an actual exception");
-      return false;
-    }
   }
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
