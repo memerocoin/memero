@@ -394,7 +394,10 @@ namespace rct {
         }
       };
 
-    const crypto::hash full_message = get_ring_signature_message(preRctSig);
+    const auto maybeMessage = get_ring_signature_message(preRctSig);
+    LOG_ERROR_AND_THROW_UNLESS(maybeMessage, "failed to generate rct message");
+
+    const crypto::hash full_message = *maybeMessage;
     std::vector<clsag_unsafe> clsags(inamounts.size());
     std::generate
       (

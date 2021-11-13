@@ -50,9 +50,9 @@ using namespace std;
 
 namespace rct {
 
-  crypto::hash get_ring_signature_message(const rctData rv)
+  std::optional<crypto::hash> get_ring_signature_message(const rctData rv)
   {
-    LOG_ERROR_AND_THROW_UNLESS(!rv.mixRing.empty(), "Empty mixRing");
+    LOG_ERROR_AND_RETURN_UNLESS(!rv.mixRing.empty(), {}, "Empty mixRing");
 
     crypto::dataV hashes;
     hashes.push_back(crypto::h2d(rv.message));
@@ -65,9 +65,10 @@ namespace rct {
     const size_t outputs = rv.ecdh.size();
 
 
-    LOG_ERROR_AND_THROW_UNLESS
+    LOG_ERROR_AND_RETURN_UNLESS
       (
         const_cast<rctData&>(rv).serialize_rctsig_base(ba, inputs, outputs)
+        , {}
         , "Failed to serialize rctDataEssential"
         );
 
@@ -359,7 +360,10 @@ namespace rct {
 
     const rct_pointV &pseudo_amount_commits = rv.p.pseudo_amount_commits;
 
-    const crypto::hash message = get_ring_signature_message(rv);
+    const auto maybeMessage = get_ring_signature_message(rv);
+    if (!maybeMessage) return false;
+
+    const crypto::hash message = *maybeMessage;
 
     results.clear();
     results.resize(rv.mixRing.size());

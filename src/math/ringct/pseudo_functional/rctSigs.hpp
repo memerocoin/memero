@@ -52,6 +52,6 @@ namespace rct {
    , const size_t i
    );
 
-  crypto::hash get_ring_signature_message(const rctData rv);
+  std::optional<crypto::hash> get_ring_signature_message(const rctData rv);
 }
 
