@@ -404,7 +404,7 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdh.size(), "Bad index");
     LOG_ERROR_AND_THROW_UNLESS(rv.outPk.size() == rv.ecdh.size(), "Mismatched sizes of rv.outPk and rv.ecdh");
 
-    const rct_scalar blinding_factor = rct::get_blinding_factor_from_shared_secret_hash(ecdh_shared_secret);
+    const rct_scalar blinding_factor = rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret);
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
 
     const uint64_t amount = rct::decode_amount_by_ecdh_shared_secret(rv.ecdh[i].masked_amount, ecdh_shared_secret);

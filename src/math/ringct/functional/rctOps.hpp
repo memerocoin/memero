@@ -67,7 +67,7 @@ namespace rct {
 
 
   // ecdh
-  rct_scalar get_blinding_factor_from_shared_secret_hash(const rct_scalar x);
+  rct_scalar get_blinding_factor_from_hashed_shared_secret(const rct_scalar x);
   uint64_t hash_and_xor_int(const uint64_t, const rct_scalar y);
 
   inline const auto encode_amount_by_ecdh_shared_secret = hash_and_xor_int;

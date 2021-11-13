@@ -125,7 +125,7 @@ namespace rct {
     return crypto::scalar_to_int(r);
   }
 
-  rct_scalar get_blinding_factor_from_shared_secret_hash(const rct_scalar x) {
+  rct_scalar get_blinding_factor_from_hashed_shared_secret(const rct_scalar x) {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(config::commitmentMaskPrefix))
       + x.blob();
