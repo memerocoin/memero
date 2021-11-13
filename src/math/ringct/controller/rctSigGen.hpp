@@ -68,13 +68,18 @@ namespace rct {
     ct_public_keyV mixRing;
   };
 
+  struct rctOutputData
+  {
+    amount_t amount;
+    rct_scalar ecdh_shared_secret;
+  };
+
   std::pair<rctData, rct_scalarV> generate_ringct
   (
    const crypto::hash message
    , const std::vector<rctInputData> inputs
-   , const std::vector<amount_t> outamounts
+   , const std::vector<rctOutputData> outputs
    , const amount_t fee
-   , const rct_scalarV tx_output_shared_secret_indexed_hashes
    );
 }
 

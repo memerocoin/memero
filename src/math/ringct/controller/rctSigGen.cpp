@@ -53,26 +53,23 @@ namespace rct {
 
   std::tuple<rct_scalarV, Bulletproof> generate_range_proof
   (
-   const std::vector<uint64_t> amounts
-   , const std::span<const rct_scalar> sk
+   const std::span<const rctOutputData> outputs
    )
   {
-    LOG_ERROR_AND_THROW_UNLESS(amounts.size() == sk.size(), "Invalid amounts/sk sizes");
-
     std::vector<std::pair<uint64_t, rct_scalar>> xs;
     std::transform
       (
-       amounts.begin()
-       , amounts.end()
-       , sk.begin()
+       outputs.begin()
+       , outputs.end()
        , std::back_inserter(xs)
-       , [](const auto& amount, const auto& x) -> std::pair<uint64_t, rct_scalar> {
-         return {amount, rct::get_blinding_factor_from_shared_secret_hash(x)};
+       , [](const auto& x) -> std::pair<uint64_t, rct_scalar> {
+         return {x.amount, rct::get_blinding_factor_from_shared_secret_hash(x.ecdh_shared_secret)};
        }
        );
 
     const Bulletproof proof = bulletproof_MAKE(xs);
-    LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == amounts.size(), "V does not have the expected size");
+
+    LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == outputs.size(), "V does not have the expected size");
 
     rct_scalarV blinding_factors;
     std::transform
@@ -278,19 +275,17 @@ namespace rct {
   (
    const crypto::hash message
    , const std::vector<rctInputData> inputs
-   , const std::vector<amount_t> outamounts
+   , const std::vector<rctOutputData> outputs
    , const amount_t fee
-   , const rct_scalarV tx_output_shared_secret_indexed_hashes
    )
   {
     LOG_ERROR_AND_THROW_UNLESS(inputs.size() > 0, "Empty inamounts");
-    LOG_ERROR_AND_THROW_UNLESS(tx_output_shared_secret_indexed_hashes.size() == outamounts.size(), "Different number of tx_output_shared_secret_indexed_hashes/destinations");
 
     for (size_t n = 0; n < inputs.size(); ++n) {
       LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < inputs[n].mixRing.size(), "Bad index into mixRing");
     }
 
-    const auto [blinding_factors, proof] = generate_range_proof(outamounts, tx_output_shared_secret_indexed_hashes);
+    const auto [blinding_factors, proof] = generate_range_proof(outputs);
 
     std::vector<output_commit> outPk;
     std::transform
@@ -307,12 +302,11 @@ namespace rct {
     std::vector<ecdh_encrypted_data> ecdh;
     std::transform
       (
-       outamounts.begin(),
-       outamounts.end(),
-       tx_output_shared_secret_indexed_hashes.begin(),
+       outputs.begin(),
+       outputs.end(),
        std::back_inserter(ecdh),
-       [](const auto& x, const auto& y) -> ecdh_encrypted_data {
-         return {encode_amount_by_ecdh_shared_secret(x, y)};
+       [](const auto& x) -> ecdh_encrypted_data {
+         return {encode_amount_by_ecdh_shared_secret(x.amount, x.ecdh_shared_secret)};
        }
        );
 

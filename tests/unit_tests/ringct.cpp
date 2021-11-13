@@ -124,13 +124,29 @@ namespace rct {
       inputs[i].mixRing = mixRing[i];
     }
 
+    std::vector<rctOutputData> outputs;
+    std::transform
+      (
+       outamounts.begin()
+       , outamounts.end()
+       , tx_output_shared_secret_indexed_hashes.begin()
+       , std::back_inserter(outputs)
+       , [](const auto& amount, const auto& ss) -> rctOutputData {
+         return
+           {
+             amount
+             , ss
+           };
+       }
+       );
+
+
     return generate_ringct
       (
        message
        , inputs
-       , outamounts
+       , outputs
        , fee
-       , tx_output_shared_secret_indexed_hashes
        );
   }
 

@@ -302,16 +302,15 @@ namespace cryptonote
 
       // the non-simple version is slightly smaller, but assumes all real inputs
       // are on the same index, so can only be used if there just one ring.
-      bool use_simple_rct = true;
 
       uint64_t amount_in = 0, amount_out = 0;
       // rct::ct_secret_keyV inSk;
       // inSk.reserve(sources.size());
       std::vector<rct::rctInputData> inputs;
+      std::vector<rct::rctOutputData> outputs;
 
       // mixRing indexing is done the other way round for simple
       rct::ct_public_keyM mixRing(sources.size());
-      std::vector<uint64_t> outamounts;
       for (size_t i = 0; i < sources.size(); ++i)
       {
         amount_in += sources[i].amount;
@@ -337,15 +336,19 @@ namespace cryptonote
         // inPk: (public key, commitment)
         // will be done when filling in mixRing
       }
+
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         tx.vout.size() == tx_output_shared_secret_indexed_hashes.size()
+         , {}
+         , "wrong number of outptu secrets"
+         );
+
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        outamounts.push_back(tx.vout[i].amount);
+        outputs.push_back({tx.vout[i].amount, tx_output_shared_secret_indexed_hashes[i]});
         amount_out += tx.vout[i].amount;
       }
-
-      // fee
-      if (!use_simple_rct && amount_in > amount_out)
-        outamounts.push_back(amount_in - amount_out);
 
       // zero out all amounts to mask rct outputs, real amounts are now encrypted
       for (size_t i = 0; i < tx.vin.size(); ++i)
@@ -362,9 +365,8 @@ namespace cryptonote
         (
          tx_prefix_hash
          , inputs
-         , outamounts
+         , outputs
          , amount_in - amount_out
-         , tx_output_shared_secret_indexed_hashes
          );
 
       LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), {}, "outSk size does not match vout");
