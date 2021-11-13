@@ -205,7 +205,7 @@ namespace rct {
     //pairs that you mix with
     // rct_pointV unusedPoints;
     std::vector<ecdh_encrypted_data> ecdh;
-    std::vector<output_commit> outPk;
+    std::vector<output_commit> outPk; // WARNING, needs checking when parsing
     amount_t fee; // contains b
 
     template<bool W, template <bool> class Archive>
