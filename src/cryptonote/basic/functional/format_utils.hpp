@@ -43,8 +43,8 @@ namespace cryptonote
 
   struct subaddress_receive_info
   {
-    subaddress_index index;
-    crypto::ecdh_shared_secret tx_output_shared_secret;
+    const subaddress_index index;
+    const crypto::ecdh_shared_secret tx_output_shared_secret;
   };
 
 

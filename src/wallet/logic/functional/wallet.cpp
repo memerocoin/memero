@@ -176,13 +176,11 @@ namespace wallet {
    , const serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index>& m_subaddresses
    )
   {
-    type::tx::tx_scan_info_t tx_scan_info;
 
     if (o.target.type() !=  typeid(cryptonote::txout_to_key))
     {
-      tx_scan_info.error = true;
       LOG_ERROR("wrong type id in transaction out");
-      return tx_scan_info;
+      return type::tx::tx_scan_info_t();
     }
 
     // const auto secret
@@ -190,7 +188,7 @@ namespace wallet {
     //   ? tx_output_shared_secrets.at(i)
     //   : std::optional<crypto::ecdh_shared_secret>();
 
-    tx_scan_info.received = is_out_to_acc_precomp
+    const auto received = is_out_to_acc_precomp
       (
        m_subaddresses
        , boost::get<cryptonote::txout_to_key>(o.target).output_spend_public_key
@@ -198,17 +196,13 @@ namespace wallet {
        , tx_output_shared_secret
        , i
        );
-    if(tx_scan_info.received)
-      {
-        tx_scan_info.money_transfered = o.amount; // may be 0 for ringct outputs
-      }
-    else
-      {
-        tx_scan_info.money_transfered = 0;
-      }
-    tx_scan_info.error = false;
 
-    return tx_scan_info;
+    const auto money_transfered
+      = received
+      ? o.amount
+      : 0;
+
+    return type::tx::tx_scan_info_t(money_transfered, received);
   }
 
   //----------------------------------------------------------------------------------------------------

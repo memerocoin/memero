@@ -49,6 +49,13 @@ namespace tx {
     std::optional<cryptonote::subaddress_receive_info> received;
 
     tx_scan_info_t(): amount(0), money_transfered(0), error(true) {}
+
+    tx_scan_info_t
+    (
+     uint64_t money_transfered
+     , std::optional<cryptonote::subaddress_receive_info> received
+     )
+      : amount(0), money_transfered(money_transfered), error(false), received(received) {}
   };
 
   struct tx_construction_data
