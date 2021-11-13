@@ -284,6 +284,26 @@ namespace rct {
     catch (...) { return false; }
   }
 
+  bool verify_tx_balance(const rctData rv) {
+    rct::rct_pointV outputCommits;
+
+    std::transform
+      (
+       rv.outPk.begin()
+       , rv.outPk.end()
+       , std::back_inserter(outputCommits)
+       , [](const auto& x) {
+         return x.amount_commit;
+       }
+       );
+
+    const rct_point feeCommit = H_(crypto::int_to_scalar(rv.fee));
+    const rct_point sumOutputCommits = sum(outputCommits) + feeCommit;
+    const rct_point sumInputCommits = sum(rv.p.pseudo_amount_commits);
+
+    //check pseudo_amount_commits vs Outs..
+    return sumInputCommits == sumOutputCommits;
+  }
 
   bool verify_range_proof_no_catch(const rctData rv)
   {
@@ -322,28 +342,10 @@ namespace rct {
         , "Mismatched sizes of outPk and rv.ecdh"
         );
 
-    rct::rct_pointV outputCommits;
-
-    std::transform
-      (
-        rv.outPk.begin()
-        , rv.outPk.end()
-        , std::back_inserter(outputCommits)
-        , [](const auto& x) {
-          return x.amount_commit;
-        }
-        );
-
-    const rct_point feeKey = H_(crypto::int_to_scalar(rv.fee));
-    const rct_point sumOutputCommits = sum(outputCommits) + feeKey;
-    const rct_point sumInputCommits = sum(rv.p.pseudo_amount_commits);
-
-    //check pseudo_amount_commits vs Outs..
-    if (sumInputCommits != sumOutputCommits) {
+    if (!verify_tx_balance(rv)) {
       LOG_PRINT_L1("Commit balance check failed");
       return false;
     }
-
 
     const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
     LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
