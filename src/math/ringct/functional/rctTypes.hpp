@@ -109,7 +109,6 @@ namespace rct {
   struct clsag {
     rct_scalarV s; // scalars
     rct_scalar c1;
-
     rct_point I; // signing key image
     rct_point D; // commitment key image
   };

@@ -103,7 +103,6 @@ namespace rct {
     , const size_t idx
     )
   {
-    clsag sig;
     size_t n = P.size(); // ring size
     LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment rct_point vector sizes must match!");
     LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment rct_point vector sizes must match!");
@@ -113,17 +112,17 @@ namespace rct {
     const rct_point P_hash = hash_to_point_via_field(P[idx]);
 
     const rct_scalar a = crypto::scalarGen();
-    sig.I = P_hash ^ p;
+    const rct_point sig_I = P_hash ^ p;
     const rct_point D = P_hash ^ z;
 
     // Offset key image
-    sig.D = D ^ rct::s_inv_eight;
+    const rct_point sig_D = D ^ rct::s_inv_eight;
 
     crypto::dataV mu_P_to_hash = {{}};
     mu_P_to_hash.insert(mu_P_to_hash.end(), P.begin(), P.end());
     mu_P_to_hash.insert(mu_P_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
-    mu_P_to_hash.push_back(sig.I);
-    mu_P_to_hash.push_back(sig.D);
+    mu_P_to_hash.push_back(sig_I);
+    mu_P_to_hash.push_back(sig_D);
     mu_P_to_hash.push_back(C_offset);
 
     crypto::dataV mu_C_to_hash = mu_P_to_hash;
@@ -166,8 +165,9 @@ namespace rct {
     rct_scalar c = rct::hash_dataV_to_scalar(c_to_hash);
 
     size_t i = (idx + 1) % n;
+    rct_scalar sig_c1;
     if (i == 0) {
-      sig.c1 = c;
+      sig_c1 = c;
     }
 
     // Decoy indices
@@ -198,7 +198,7 @@ namespace rct {
          std::array
          {
            A ^ sk
-           , sig.I ^ c_p
+           , sig_I ^ c_p
            , D ^ c_c
          }
          );
@@ -212,16 +212,19 @@ namespace rct {
 
       i = (i + 1) % n;
       if (i == 0) {
-        sig.c1 = c;
+        sig_c1 = c;
       }
     }
 
     // Compute final scalar
     s[idx] = a - c * (mu_C * z + mu_P * p);
 
-    sig.s = s;
-
-    return sig;
+    return {
+      s
+      , sig_c1
+      , sig_I
+      , sig_D
+      };
   }
 
 
