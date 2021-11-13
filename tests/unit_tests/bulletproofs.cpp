@@ -52,13 +52,13 @@ namespace rct {
 
   Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
   {
-    return bulletproof_MAKE(std::vector<std::pair<uint64_t, rct_scalar>>{{v, gamma}});
+    return bulletproof_MAKE(std::vector<std::pair<const uint64_t, const rct_scalar>>{{v, gamma}});
   }
 
   Bulletproof bulletproof_MAKE(const std::vector<uint64_t> amounts, const rct_scalarV blinding_factors)
   {
 
-    std::vector<std::pair<uint64_t, rct_scalar>> xs;
+    std::vector<std::pair<const uint64_t, const rct_scalar>> xs;
     std::transform
       (
        amounts.begin()

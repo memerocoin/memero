@@ -256,7 +256,7 @@ constexpr std::pair<size_t, size_t> log2bound(const size_t x) {
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const std::vector<std::pair<uint64_t, rct_scalar>> xs)
+Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, const rct_scalar>> xs)
 {
   LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
 

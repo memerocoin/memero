@@ -56,7 +56,7 @@ namespace rct {
    const std::span<const rctOutputData> outputs
    )
   {
-    std::vector<std::pair<uint64_t, rct_scalar>> xs;
+    std::vector<std::pair<const uint64_t, const rct_scalar>> xs;
     std::transform
       (
        outputs.begin()
