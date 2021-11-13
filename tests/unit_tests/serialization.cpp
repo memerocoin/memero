@@ -59,6 +59,14 @@ using namespace wallet::logic::type::wallet;
 
 namespace rct {
 
+  struct ct_secret_key {
+    rct_scalar addr;
+    rct_scalar blinding_factor;
+  };
+
+  using ct_secret_keyV = std::vector<ct_secret_key>;
+  using ct_secret_keyS = std::span<const ct_secret_key>;
+
   std::pair<rct_scalar, rct_point> skpkGen() {
     const rct_scalar sk = crypto::scalarGen();
     return std::make_pair(sk, G_(sk));
@@ -515,3 +523,5 @@ TEST(Serialization, serializes_ringct_types)
   // I is not serialized, they are meant to be reconstructed
   ASSERT_TRUE(clsag0.D == clsag1.D);
 }
+
+BLOB_SERIALIZER(rct::ct_secret_key);

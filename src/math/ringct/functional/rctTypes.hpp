@@ -86,16 +86,6 @@ namespace rct {
   using ct_public_keyM = std::vector<ct_public_keyV>; //matrix of keys (indexed by column first)
   using ct_public_keyS = std::span<const ct_public_key>;
 
-  // addr is the secret key
-  // blinding_factor is for committed value
-  struct ct_secret_key {
-    rct_scalar addr;
-    rct_scalar blinding_factor;
-  };
-
-  using ct_secret_keyV = std::vector<ct_secret_key>;
-  using ct_secret_keyS = std::span<const ct_secret_key>;
-
   //data for passing the amount to the receiver secretly
   struct ecdh_encrypted_data {
     uint64_t masked_amount;
@@ -394,6 +384,5 @@ BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::ct_public_key);
 BLOB_SERIALIZER(rct::output_commit);
 BLOB_SERIALIZER(rct::rct_scalar);
-BLOB_SERIALIZER(rct::ct_secret_key);
 BLOB_SERIALIZER(rct::ecdh_encrypted_data);
 BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);

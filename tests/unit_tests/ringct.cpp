@@ -50,6 +50,15 @@ using namespace std;
 using namespace rct;
 
 namespace rct {
+
+  struct ct_secret_key {
+    rct_scalar addr;
+    rct_scalar blinding_factor;
+  };
+
+  using ct_secret_keyV = std::vector<ct_secret_key>;
+  using ct_secret_keyS = std::span<const ct_secret_key>;
+
   inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
 
   std::pair<rct_scalar, rct_point> skpkGen() {
@@ -124,6 +133,7 @@ namespace rct {
        , tx_output_shared_secret_indexed_hashes
        );
   }
+
 
 }
 
@@ -786,3 +796,4 @@ TEST(ringct, aggregated)
 
   ASSERT_TRUE(verify_range_proof(s.front()));
 }
+
