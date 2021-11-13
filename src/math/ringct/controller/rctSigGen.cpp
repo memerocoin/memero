@@ -238,7 +238,7 @@ namespace rct {
    , const size_t index
    )
   {
-    return generate_clsag_signature
+    return generate_clsag_signature_new
       (
        message
        , pubs
@@ -250,7 +250,7 @@ namespace rct {
        );
   }
 
-  clsag generate_clsag_signature
+  clsag generate_clsag_signature_new
   (
    const crypto::hash message
    , const ct_public_keyV pubs
@@ -299,8 +299,7 @@ namespace rct {
   std::pair<rctData, rct_scalarV> generate_ringct
   (
    const crypto::hash message
-   , const rct_scalarV input_spend_sks
-   , const rct_scalarV input_blinding_factors
+   , const std::vector<rctInputData> inputs
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
    , const amount_t fee
@@ -412,13 +411,13 @@ namespace rct {
       (
        clsags.begin()
        , clsags.end()
-       , [full_message, mixRing, input_spend_sks, input_blinding_factors, pseudo_blinding_factors, pseudo_amount_commits, index, i = 0]() mutable {
-         const auto clsag = generate_clsag_signature
+       , [full_message, mixRing, inputs, pseudo_blinding_factors, pseudo_amount_commits, index, i = 0]() mutable {
+         const auto clsag = generate_clsag_signature_new
            (
             full_message
             , mixRing[i]
-            , input_spend_sks[i]
-            , input_blinding_factors[i]
+            , inputs[i].input_spend_sk
+            , inputs[i].input_blinding_factor
             , pseudo_blinding_factors[i]
             , pseudo_amount_commits[i]
             , index[i]
@@ -446,29 +445,25 @@ namespace rct {
    , const std::vector<size_t> index
    )
   {
-    rct_scalarV input_spend_sks;
+    std::vector<rctInputData> inputs;
     std::transform
       (
        inSk.begin()
        , inSk.end()
-       , std::back_inserter(input_spend_sks)
-       , [](const auto& x) { return x.addr; }
-       );
-
-    rct_scalarV input_blinding_factors;
-    std::transform
-      (
-       inSk.begin()
-       , inSk.end()
-       , std::back_inserter(input_blinding_factors)
-       , [](const auto& x) { return x.blinding_factor; }
+       , std::back_inserter(inputs)
+       , [](const auto& x) -> rctInputData {
+         return
+           {
+             x.addr
+             , x.blinding_factor
+           };
+         }
        );
 
     return generate_ringct
       (
        message
-       , input_spend_sks
-       , input_blinding_factors
+       , inputs
        , inamounts
        , outamounts
        , fee

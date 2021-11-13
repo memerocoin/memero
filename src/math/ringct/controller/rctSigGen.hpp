@@ -46,7 +46,7 @@ namespace rct {
    , const size_t index
    );
 
-  clsag generate_clsag_signature
+  clsag generate_clsag_signature_new
   (
    const crypto::hash message
    , const ct_public_keyV pubs
@@ -81,11 +81,16 @@ namespace rct {
    , const std::vector<size_t> index
    );
 
+  struct rctInputData
+  {
+    rct_scalar input_spend_sk;
+    rct_scalar input_blinding_factor;
+  };
+
   std::pair<rctData, rct_scalarV> generate_ringct
   (
    const crypto::hash message
-   , const rct_scalarV input_spend_sks
-   , const rct_scalarV blinding_factors
+   , const std::vector<rctInputData> inputs
    , const std::vector<amount_t> inamounts
    , const std::vector<amount_t> outamounts
    , const amount_t fee

@@ -307,8 +307,7 @@ namespace cryptonote
       uint64_t amount_in = 0, amount_out = 0;
       // rct::ct_secret_keyV inSk;
       // inSk.reserve(sources.size());
-      rct::rct_scalarV input_spend_sks;
-      rct::rct_scalarV input_blinding_factors;
+      std::vector<rct::rctInputData> inputs;
 
       // mixRing indexing is done the other way round for simple
       rct::ct_public_keyM mixRing(sources.size());
@@ -321,8 +320,13 @@ namespace cryptonote
         inamounts.push_back(sources[i].amount);
         index.push_back(sources[i].real_output);
         // inSk: (secret key, mask)
-        input_spend_sks.push_back(in_contexts[i].output_spend_key.sec);
-        input_blinding_factors.push_back(sources[i].mask);
+        const rct::rctInputData input =
+          {
+            in_contexts[i].output_spend_key.sec
+            , sources[i].mask
+          };
+
+        inputs.push_back(input);
 
         // inPk: (public key, commitment)
         // will be done when filling in mixRing
@@ -357,8 +361,7 @@ namespace cryptonote
       std::tie(tx.ringct_essential, outSk) = rct::generate_ringct
         (
          tx_prefix_hash
-         , input_spend_sks
-         , input_blinding_factors
+         , inputs
          , inamounts
          , outamounts
          , amount_in - amount_out
