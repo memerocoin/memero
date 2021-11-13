@@ -164,10 +164,16 @@ namespace rct {
     rct::rct_point A, S;
     rct::rct_point T1, T2;
     rct::rct_scalar taux, mu;
-    rct::rct_pointV L, R;
+    std::vector<std::pair<rct_point, rct_point>> LR;
     rct::rct_scalar a, b, t;
   };
 
+  std::vector<std::pair<rct_point, rct_point>>
+  zipLR(const rct_pointV L, const rct_pointV R);
+
+  std::pair<rct_pointV, rct_pointV>
+  splitLR(const std::span<const std::pair<rct_point, rct_point>> LR);
+  
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
   Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof);
 

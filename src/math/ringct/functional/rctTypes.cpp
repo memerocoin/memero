@@ -142,8 +142,7 @@ namespace rct {
       , proof_T2
       , crypto::reduce(proof.taux)
       , crypto::reduce(proof.mu)
-      , proof_L
-      , proof_R
+      , zipLR(proof_L, proof_R)
       , crypto::reduce(proof.a)
       , crypto::reduce(proof.b)
       , crypto::reduce(proof.t)
@@ -151,6 +150,7 @@ namespace rct {
   }
 
   Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof) {
+    const auto& [L, R] = splitLR(proof.LR);
     return Bulletproof_unsafe {
       // rct::inv8V V;
       // rct::inv8 A, S;
@@ -166,8 +166,8 @@ namespace rct {
       , proof.T2
       , proof.taux
       , proof.mu
-      , to_inv8V(proof.L)
-      , to_inv8V(proof.R)
+      , to_inv8V(L)
+      , to_inv8V(R)
       , proof.a
       , proof.b
       , proof.t
@@ -231,6 +231,47 @@ namespace rct {
        );
 
     return ys;
+  }
+
+
+  std::vector<std::pair<rct_point, rct_point>>
+  zipLR(const rct_pointV L, const rct_pointV R) {
+    std::vector<std::pair<rct_point, rct_point>> LR;
+
+    std::transform
+      (
+       L.begin()
+       , L.end()
+       , R.begin()
+       , std::back_inserter(LR)
+       , [](const auto& x, const auto& y) { return std::make_pair(x, y); }
+       );
+
+    return LR;
+  }
+
+  std::pair<rct_pointV, rct_pointV>
+  splitLR(const std::span<const std::pair<rct_point, rct_point>> LR) {
+    rct_pointV L;
+    rct_pointV R;
+
+    std::transform
+      (
+       LR.begin()
+       , LR.end()
+       , std::back_inserter(L)
+       , [](const auto& x) { return x.first; }
+       );
+
+    std::transform
+      (
+       LR.begin()
+       , LR.end()
+       , std::back_inserter(R)
+       , [](const auto& x) { return x.second; }
+       );
+
+    return {L, R};
   }
 
 }

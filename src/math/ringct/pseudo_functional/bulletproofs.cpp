@@ -516,7 +516,7 @@ try_again:
 
   return Bulletproof
     {
-     V, A, S, T1, T2, taux, mu, L, R
+     V, A, S, T1, T2, taux, mu, zipLR(L, R)
      , aprime[0], bprime[0], t
      };
 }
@@ -558,8 +558,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   // STEP 1, fill proof_data
 
   LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, false, "V does not have at least one element");
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched L and R sizes");
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() > 0, false, "Empty proof");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() > 0, false, "Empty proof");
 
 
   // Reconstruct the challenges
@@ -596,7 +595,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   const auto [M, logM] = log2bound(std::min(maxM, proof.V.size()));
   pd.logM = logM;
 
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == 6+pd.logM, false, "Proof is not the expected size");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() == 6+pd.logM, false, "Proof is not the expected size");
 
   const size_t rounds = pd.logM + logN;
 
@@ -604,38 +603,49 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   for (size_t i = 0; i < rounds; ++i)
   {
     const auto pd_w = hash_carry =
-      hash_dataV_to_scalar(crypto::dataV{hash_carry, proof.L[i], proof.R[i]});
+      hash_dataV_to_scalar(crypto::dataV{hash_carry, proof.LR[i].first, proof.LR[i].second});
     LOG_ERROR_AND_RETURN_IF((pd_w == rct::s_zero), false, "pd_w[i] == 0");
     pd.w.push_back(pd_w);
 
     to_invert.push_back(pd_w);
   }
 
-  to_invert.push_back(pd.y);
-
-
-  LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() < 32, false, "At least one proof is too large");
-  const size_t maxMN = 1u << proof.L.size();
+  LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() < 32, false, "At least one proof is too large");
+  const size_t maxMN = 1u << proof.LR.size();
 
   // STEP 2, use proof_data
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(proof.V.size() + (2 * (pd.logM + logN) + 4) + 2 * maxMN);
 
-  const rct_scalarV inverses = invertV(to_invert);
-
   // setup weighted aggregates
 
-  const rct::rct_scalarS winv = std::span(inverses);
-  const rct::rct_scalar yinv = inverses[rounds];
+  const rct::rct_scalarV winv = invertV(to_invert);
+  const rct::rct_scalar yinv = invert(pd.y);
 
   const rct::rct_scalar weight_y = crypto::scalarGen();
   const rct::rct_scalar weight_z = crypto::scalarGen();
 
-  for (size_t i = 0; i < rounds; ++i)
-  {
-    multiexp_data.emplace_back(pd.w[i] * pd.w[i] * weight_z * s_eight, proof.L[i]);
-    multiexp_data.emplace_back(winv[i] * winv[i] * weight_z * s_eight, proof.R[i]);
-  }
+  std::transform
+    (
+     pd.w.begin()
+     , pd.w.end()
+     , proof.LR.begin()
+     , std::back_inserter(multiexp_data)
+     , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
+       return {w * w * weight_z * s_eight, lr.first};
+     }
+     );
+
+  std::transform
+    (
+     winv.begin()
+     , winv.end()
+     , proof.LR.begin()
+     , std::back_inserter(multiexp_data)
+     , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
+       return {w * w * weight_z * s_eight, lr.second};
+     }
+     );
 
   const size_t MN = M*N;
 

@@ -184,17 +184,19 @@ TEST(bulletproofs, invalid_torsion)
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
-    for (auto &k: proof.L)
+    for (auto &k: proof.LR)
     {
       const auto org_k = k;
-      k = rct::unsafe_d2rct_p(k) + x;
+      auto& l = k.first;
+      l = rct::unsafe_d2rct_p(l) + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
-    for (auto &k: proof.R)
+    for (auto &k: proof.LR)
     {
       const auto org_k = k;
-      k = rct::unsafe_d2rct_p(k) + x;
+      auto& r = k.second;
+      r = rct::unsafe_d2rct_p(r) + x;
       ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
       k = org_k;
     }
