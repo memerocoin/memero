@@ -581,22 +581,29 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   const auto [M, logM] = log2bound(std::min(maxM, proof.V.size()));
   pd.logM = logM;
 
-  LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() == 6+pd.logM, false, "Proof is not the expected size");
 
   const size_t rounds = pd.logM + logN;
+  LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() == rounds, false, "Proof is not the expected size");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() < 32, false, "At least one proof is too large");
 
   // The inner product challenges are computed per round
-  for (size_t i = 0; i < rounds; ++i)
-  {
-    const auto pd_w = hash_carry =
-      hash_dataV_to_scalar(crypto::dataV{hash_carry, proof.LR[i].first, proof.LR[i].second});
-    LOG_ERROR_AND_RETURN_IF((pd_w == rct::s_zero), false, "pd_w[i] == 0");
-    pd.w.push_back(pd_w);
+  bool validLR = true;
+  std::transform
+    (
+     proof.LR.begin()
+     , proof.LR.end()
+     , std::back_inserter(pd.w)
+     , [validLR, hash_carry](const auto& lr) mutable {
+       const auto pd_w =
+         hash_dataV_to_scalar(crypto::dataV{hash_carry, lr.first, lr.second});
+       hash_carry = pd_w;
+       if (pd_w == rct::s_zero) validLR = false;
+       return pd_w;
+     }
+     );
 
-    to_invert.push_back(pd_w);
-  }
+  LOG_ERROR_AND_RETURN_UNLESS(validLR, false, "some pd_w[i] == 0");
 
-  LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() < 32, false, "At least one proof is too large");
   const size_t maxMN = 1u << proof.LR.size();
 
   // STEP 2, use proof_data
@@ -605,7 +612,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   // setup weighted aggregates
 
-  const rct::rct_scalarV winv = invertV(to_invert);
+  const rct::rct_scalarV winv = invertV(pd.w);
   const rct::rct_scalar yinv = invert(pd.y);
 
   const rct::rct_scalar weight_y = crypto::scalarGen();
