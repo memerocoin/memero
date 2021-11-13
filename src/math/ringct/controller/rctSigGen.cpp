@@ -63,7 +63,7 @@ namespace rct {
        , outputs.end()
        , std::back_inserter(xs)
        , [](const auto& x) -> std::pair<uint64_t, rct_scalar> {
-         return {x.amount, rct::get_blinding_factor_from_shared_secret_hash(x.ecdh_shared_secret)};
+         return {x.amount, rct::get_blinding_factor_from_shared_secret_hash(x.ecdh_shared_secret_hashed_by_index)};
        }
        );
 
@@ -306,7 +306,7 @@ namespace rct {
        outputs.end(),
        std::back_inserter(ecdh),
        [](const auto& x) -> ecdh_encrypted_data {
-         return {encode_amount_by_ecdh_shared_secret(x.amount, x.ecdh_shared_secret)};
+         return {encode_amount_by_ecdh_shared_secret(x.amount, x.ecdh_shared_secret_hashed_by_index)};
        }
        );
 

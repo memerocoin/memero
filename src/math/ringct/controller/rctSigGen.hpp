@@ -71,7 +71,7 @@ namespace rct {
   struct rctOutputData
   {
     amount_t amount;
-    rct_scalar ecdh_shared_secret;
+    rct_scalar ecdh_shared_secret_hashed_by_index;
   };
 
   std::pair<rctData, rct_scalarV> generate_ringct
