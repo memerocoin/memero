@@ -101,27 +101,17 @@ namespace rct {
    )
   {
     std::vector<rctInputData> inputs;
-    std::transform
-      (
-       inSk.begin()
-       , inSk.end()
-       , inamounts.begin()
-       , std::back_inserter(inputs)
-       , [](const auto& x, const auto& amount) -> rctInputData {
-         return
-           {
-             x.addr
-             , x.blinding_factor
-             , amount
-             , 0
-             , {}
-           };
+    for (size_t i = 0; i < inSk.size(); i ++) {
+      inputs.push_back
+        (
+         {
+           inSk[i].addr
+           , inSk[i].blinding_factor
+           , inamounts[i]
+           , index[i]
+           , mixRing[i]
          }
-       );
-
-    for (size_t i = 0; i < inputs.size(); i ++) {
-      inputs[i].index = index[i];
-      inputs[i].mixRing = mixRing[i];
+         );
     }
 
     std::vector<rctOutputData> outputs;

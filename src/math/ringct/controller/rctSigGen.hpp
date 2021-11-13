@@ -61,17 +61,17 @@ namespace rct {
 
   struct rctInputData
   {
-    rct_scalar input_spend_sk;
-    rct_scalar input_blinding_factor;
-    amount_t amount;
-    size_t index;
-    output_public_dataV mixRing;
+    const rct_scalar input_spend_sk;
+    const rct_scalar input_blinding_factor;
+    const amount_t amount;
+    const size_t index;
+    const output_public_dataV mixRing;
   };
 
   struct rctOutputData
   {
-    amount_t amount;
-    rct_scalar ecdh_shared_secret_hashed_by_index;
+    const amount_t amount;
+    const rct_scalar ecdh_shared_secret_hashed_by_index;
   };
 
   std::pair<rctData, rct_scalarV> generate_ringct
