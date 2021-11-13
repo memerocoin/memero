@@ -304,7 +304,6 @@ namespace rct {
    , const amount_t fee
    , const ct_public_keyM mixRing
    , const rct_scalarV tx_output_shared_secret_indexed_hashes
-   , const std::vector<size_t> index
    )
   {
     LOG_ERROR_AND_THROW_UNLESS(inputs.size() > 0, "Empty inamounts");
@@ -312,7 +311,7 @@ namespace rct {
     // LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
     // LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
     for (size_t n = 0; n < mixRing.size(); ++n) {
-      LOG_ERROR_AND_THROW_UNLESS(index[n] < mixRing[n].size(), "Bad index into mixRing");
+      LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < mixRing[n].size(), "Bad index into mixRing");
     }
 
     const auto [blinding_factors, proof] = generate_range_proof(outamounts, tx_output_shared_secret_indexed_hashes);
@@ -409,7 +408,7 @@ namespace rct {
       (
        clsags.begin()
        , clsags.end()
-       , [full_message, mixRing, inputs, pseudo_blinding_factors, pseudo_amount_commits, index, i = 0]() mutable {
+       , [full_message, mixRing, inputs, pseudo_blinding_factors, pseudo_amount_commits, i = 0]() mutable {
          const auto clsag = generate_clsag_signature_new
            (
             full_message
@@ -418,7 +417,7 @@ namespace rct {
             , inputs[i].input_blinding_factor
             , pseudo_blinding_factors[i]
             , pseudo_amount_commits[i]
-            , index[i]
+            , inputs[i].index
             );
          i++;
          return toUnsafeCLSAG(clsag);
@@ -456,9 +455,14 @@ namespace rct {
              x.addr
              , x.blinding_factor
              , amount
+             , 0
            };
          }
        );
+
+    for (size_t i = 0; i < inputs.size(); i ++) {
+      inputs[i].index = index[i];
+    }
 
     return generate_ringct
       (
@@ -468,7 +472,6 @@ namespace rct {
        , fee
        , mixRing
        , tx_output_shared_secret_indexed_hashes
-       , index
        );
   }
 }

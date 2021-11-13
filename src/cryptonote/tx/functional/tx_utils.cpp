@@ -317,13 +317,13 @@ namespace cryptonote
       for (size_t i = 0; i < sources.size(); ++i)
       {
         amount_in += sources[i].amount;
-        index.push_back(sources[i].real_output);
         // inSk: (secret key, mask)
         const rct::rctInputData input =
           {
             in_contexts[i].output_spend_key.sec
             , sources[i].mask
             , sources[i].amount
+            , sources[i].real_output
           };
 
         inputs.push_back(input);
@@ -366,7 +366,6 @@ namespace cryptonote
          , amount_in - amount_out
          , mixRing
          , tx_output_shared_secret_indexed_hashes
-         , index
          );
 
       LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), {}, "outSk size does not match vout");
