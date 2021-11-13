@@ -726,9 +726,10 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   // collect
   const rct::rct_scalar ip1y = vector_power_sum(pd.y, MN);
   rct::rct_scalar k = s_zero - zpow[2] * ip1y;
+  LOG_ERROR_AND_RETURN_UNLESS(M+2 < zpow.size(), false, "invalid zpow index");
+
   for (size_t j = 1; j <= M; ++j)
   {
-    LOG_ERROR_AND_RETURN_UNLESS(j+2 < zpow.size(), false, "invalid zpow index");
     k = k - zpow[j+2] * ip12;
   }
 
