@@ -225,7 +225,7 @@ namespace rct {
   }
 
 
-  clsag generate_clsag_signature_new
+  clsag generate_clsag_signature
   (
    const crypto::hash message
    , const ct_public_keyV pubs
@@ -389,7 +389,7 @@ namespace rct {
        clsags.begin()
        , clsags.end()
        , [full_message, mixRing, inputs, pseudo_blinding_factors, pseudo_amount_commits, i = 0]() mutable {
-         const auto clsag = generate_clsag_signature_new
+         const auto clsag = generate_clsag_signature
            (
             full_message
             , mixRing[i]

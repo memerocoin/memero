@@ -36,7 +36,7 @@
 
 namespace rct {
 
-  clsag generate_clsag_signature_new
+  clsag generate_clsag_signature
   (
    const crypto::hash message
    , const ct_public_keyV pubs

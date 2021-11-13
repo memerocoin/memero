@@ -76,7 +76,7 @@ namespace rct {
    , const size_t index
    )
   {
-    return generate_clsag_signature_new
+    return generate_clsag_signature
       (
        message
        , pubs
