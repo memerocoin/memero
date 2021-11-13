@@ -97,13 +97,6 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T2, {}, "Bad proof.T2");
     const rct::rct_point proof_T2 = *maybe_proof_T2;
 
-    std::vector<rct::rct_point> proof_V;
-    for (const auto& x: proof.V) {
-      const auto y = crypto::maybeSafePoint(x);
-      LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.V");
-      proof_V.push_back(*y);
-    }
-
     std::vector<rct::rct_point> proof_L;
     for (const auto& x: proof.L) {
       const auto y = crypto::maybeSafePoint(x);
@@ -137,7 +130,7 @@ namespace rct {
       // rct::rct_scalar mu;
       // rct::inv8V L, R;
       // rct::rct_scalar a, b, t;
-      proof_V
+      proof.V
       , proof_A
       , proof_S
       , proof_T1
