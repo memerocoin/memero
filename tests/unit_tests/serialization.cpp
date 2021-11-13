@@ -434,7 +434,7 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  ct_public_key0.dest = pkGen();
+  ct_public_key0.output_spend_pk = pkGen();
   ct_public_key0.amount_commit = pkGen();
 
   ASSERT_TRUE(serialization::dump_binary(ct_public_key0, blob));
@@ -443,7 +443,7 @@ TEST(Serialization, serializes_ringct_types)
 
   ct_public_keyv0 = std::vector<rct::ct_public_key>(14);
   for (size_t n = 0; n < ct_public_keyv0.size(); ++n) {
-    ct_public_keyv0[n].dest = pkGen();
+    ct_public_keyv0[n].output_spend_pk = pkGen();
     ct_public_keyv0[n].amount_commit = pkGen();
   }
 
@@ -460,7 +460,7 @@ TEST(Serialization, serializes_ringct_types)
   {
     ct_public_keym0[n] = std::vector<rct::ct_public_key>(11);
     for (size_t i = 0; i < ct_public_keym0[n].size(); ++i) {
-      ct_public_keym0[n][i].dest = pkGen();
+      ct_public_keym0[n][i].output_spend_pk = pkGen();
       ct_public_keym0[n][i].amount_commit = pkGen();
     }
   }

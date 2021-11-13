@@ -3951,7 +3951,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
         {
           for (size_t m = 0; m < pubkeys[n].size(); ++m)
           {
-            if (pubkeys[n][m].dest != rv.mixRing[n][m].dest)
+            if (pubkeys[n][m].output_spend_pk != rv.mixRing[n][m].output_spend_pk)
             {
               LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkey at vin " << n << ", index " << m);
               return false;

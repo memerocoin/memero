@@ -529,7 +529,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
     {
       tx_output_entry oe;
       oe.first = std::get<0>(outs[out_index][n]);
-      oe.second.dest = std::get<1>(outs[out_index][n]);
+      oe.second.output_spend_pk = std::get<1>(outs[out_index][n]);
       oe.second.amount_commit = std::get<2>(outs[out_index][n]);
       src.outputs.push_back(oe);
     }
@@ -545,7 +545,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
 
     tx_output_entry real_oe;
     real_oe.first = td.m_global_output_index;
-    real_oe.second.dest = td.get_public_key();
+    real_oe.second.output_spend_pk = td.get_public_key();
     real_oe.second.amount_commit = rct::commit(td.amount(), td.m_mask);
     *it_to_replace = real_oe;
     src.real_out_tx_key = get_tx_pub_key_from_extra(td.m_tx).value_or(crypto::null_pkey);
@@ -607,7 +607,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
          , tools::error::wallet_internal_error
          , "Invalid real_output"
          );
-      if (sources_copy[idx].outputs[sources_copy[idx].real_output].second.dest == sources[n].outputs[sources[n].real_output].second.dest) {
+      if (sources_copy[idx].outputs[sources_copy[idx].real_output].second.output_spend_pk == sources[n].outputs[sources[n].real_output].second.output_spend_pk) {
         ins_order.push_back(idx);
       }
     }

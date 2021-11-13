@@ -1649,7 +1649,7 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
       const wallet::logic::type::transfer::transfer_details &td = m_wallet->get_transfer_details(construction_data.selected_transfers[i]);
       const cryptonote::tx_source_entry *sptr = NULL;
       for (const auto &src: construction_data.sources)
-        if (src.outputs[src.real_output].second.dest == td.get_public_key())
+        if (src.outputs[src.real_output].second.output_spend_pk == td.get_public_key())
           sptr = &src;
       if (!sptr)
       {

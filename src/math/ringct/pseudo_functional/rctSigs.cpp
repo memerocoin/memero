@@ -131,7 +131,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(mu_P_to_hash)
-        , [](const auto& x) { return x.dest; }
+        , [](const auto& x) { return x.output_spend_pk; }
         );
 
     std::transform
@@ -179,7 +179,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(c_to_hash)
-        , [](const auto& x) { return x.dest; }
+        , [](const auto& x) { return x.output_spend_pk; }
         );
 
     std::transform
@@ -219,13 +219,13 @@ namespace rct {
           std::array
           {
             G_(sig.s[i])
-            , pubs[i].dest ^ c_p
+            , pubs[i].output_spend_pk ^ c_p
             , C ^ c_c
           }
           );
 
       // Compute R
-      const rct_point k = hash_to_point_via_field(pubs[i].dest);
+      const rct_point k = hash_to_point_via_field(pubs[i].output_spend_pk);
 
       const rct_point R = sum
         (

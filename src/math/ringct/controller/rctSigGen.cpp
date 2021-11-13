@@ -244,7 +244,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(P)
-        , [](const auto& x) { return x.dest; }
+        , [](const auto& x) { return x.output_spend_pk; }
         );
 
     rct_pointV C_nonzero;

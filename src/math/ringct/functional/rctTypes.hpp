@@ -69,12 +69,8 @@ namespace rct {
   const rct::inv8V to_inv8V(const rct_pointS xs);
 
 
-  // containers For CT operations
-  // "dest": addr * G
-  // "amount_commit": bliding_factor * G + amount * H
-  // f : (ct_secret_key, uint64_t) -> ct_public_key
   struct ct_public_key {
-    rct_point dest;
+    rct_point output_spend_pk;
     rct_point amount_commit;
   };
 

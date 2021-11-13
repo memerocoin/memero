@@ -157,7 +157,7 @@ namespace cryptonote
 
       //tx_output_ecdh_shared_secret recv_tx_output_shared_secret;
       in_contexts.push_back(input_generation_context_data());
-      const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.dest);
+      const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.output_spend_pk);
       const auto r = derive_public_key_image_helper
         (
          sender_account_keys
@@ -181,11 +181,11 @@ namespace cryptonote
       std::tie(output_spend_key, img) = *r;
 
       //check that derivated key is equal with real output key (if non multisig)
-      if(!(output_spend_key.pub == src_entr.outputs[src_entr.real_output].second.dest) )
+      if(!(output_spend_key.pub == src_entr.outputs[src_entr.real_output].second.output_spend_pk) )
       {
         LOG_ERROR("derived public key mismatch with output public key at index " << idx << ", real out " << src_entr.real_output << "! "<< std::endl << "derived_key:"
           << epee::string_tools::pod_to_hex(output_spend_key.pub) << std::endl << "real output_public_key:"
-          << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.dest) );
+          << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.output_spend_pk) );
         LOG_ERROR("amount " << src_entr.amount << ", rct " << src_entr.rct);
         LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key);
         LOG_ERROR(", real_output_in_tx_index " << src_entr.real_output_in_tx_index);
