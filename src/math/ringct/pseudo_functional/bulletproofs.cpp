@@ -584,22 +584,29 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() < 32, false, "At least one proof is too large");
 
   // The inner product challenges are computed per round
-  bool validLR = true;
   std::transform
     (
      proof.LR.begin()
      , proof.LR.end()
      , std::back_inserter(pd.w)
-     , [validLR, hash_carry](const auto& lr) mutable {
+     , [hash_carry](const auto& lr) mutable {
        const auto pd_w =
          hash_dataV_to_scalar(crypto::dataV{hash_carry, lr.first, lr.second});
        hash_carry = pd_w;
-       if (pd_w == rct::s_zero) validLR = false;
        return pd_w;
      }
      );
 
-  LOG_ERROR_AND_RETURN_UNLESS(validLR, false, "some pd_w[i] == 0");
+  const bool valid_pd_w = std::transform_reduce
+    (
+     pd.w.begin()
+     , pd.w.end()
+     , true
+     , std::logical_and()
+     , [](const auto& x) { return x != rct::s_zero; }
+     );
+
+  LOG_ERROR_AND_RETURN_UNLESS(valid_pd_w, false, "some pd_w[i] == 0");
 
   const size_t maxMN = 1u << proof.LR.size();
 
