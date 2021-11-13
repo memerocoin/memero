@@ -444,8 +444,7 @@ try_again:
     aprime[i] = l[i];
     bprime[i] = r[i];
   }
-  rct_pointV L(logMN);
-  rct_pointV R(logMN);
+  LR_V LR(logMN);
   int round = 0;
   rct_scalarV w(logMN); // this is the challenge x in the inner product protocol
 
@@ -469,15 +468,17 @@ try_again:
        );
 
     // PAPER LINES 23-24
-    L[round] = cross_vector_exponent8
+    const auto L = cross_vector_exponent8
       (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
       + H_(cL * x_ip * s_inv_eight);
-    R[round] = cross_vector_exponent8
+    const auto R = cross_vector_exponent8
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
       + H_(cR * x_ip * s_inv_eight);
 
+    LR[round] = {L, R};
+
     // PAPER LINES 25-27
-    w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, L[round], R[round]});
+    w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, L, R});
     if (w[round] == rct::s_zero)
     {
       LOG_INFO("w[round] is 0, trying again");
@@ -527,7 +528,7 @@ try_again:
 
   return Bulletproof
     {
-     V, A, S, T1, T2, taux, mu, zipLR(L, R)
+     V, A, S, T1, T2, taux, mu, LR
      , aprime[0], bprime[0], t
      };
 }
