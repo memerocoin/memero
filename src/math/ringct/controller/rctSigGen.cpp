@@ -285,8 +285,7 @@ namespace rct {
   {
     LOG_ERROR_AND_THROW_UNLESS(inputs.size() > 0, "Empty inamounts");
     LOG_ERROR_AND_THROW_UNLESS(tx_output_shared_secret_indexed_hashes.size() == outamounts.size(), "Different number of tx_output_shared_secret_indexed_hashes/destinations");
-    // LOG_ERROR_AND_THROW_UNLESS(index.size() == inSk.size(), "Different number of index/inSk");
-    // LOG_ERROR_AND_THROW_UNLESS(mixRing.size() == inSk.size(), "Different number of mixRing/inSk");
+
     for (size_t n = 0; n < inputs.size(); ++n) {
       LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < inputs[n].mixRing.size(), "Bad index into mixRing");
     }
