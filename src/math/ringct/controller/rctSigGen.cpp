@@ -272,7 +272,7 @@ namespace rct {
   }
 
 
-  std::pair<rctData, ct_secret_keyV> generate_ringct
+  std::pair<rctData, rct_scalarV> generate_ringct
   (
    const crypto::hash message
    , const ct_secret_keyV inSk
@@ -293,20 +293,7 @@ namespace rct {
       LOG_ERROR_AND_THROW_UNLESS(index[n] < mixRing[n].size(), "Bad index into mixRing");
     }
 
-
     const auto [blinding_factors, proof] = generate_range_proof(outamounts, tx_output_shared_secret_indexed_hashes);
-
-    ct_secret_keyV outSk;
-    std::transform
-      (
-       blinding_factors.begin()
-       , blinding_factors.end()
-       , std::back_inserter(outSk)
-       , [](const auto& x) -> ct_secret_key {
-         return {{}, x};
-       }
-       );
-
 
     std::vector<output_commit> outPk;
     std::transform
@@ -333,14 +320,11 @@ namespace rct {
        );
 
 
-    rct_scalar sum_blinding_factors = std::accumulate
+    rct_scalar sum_blinding_factors = std::reduce
       (
-       outSk.begin()
-       , outSk.end()
+       blinding_factors.begin()
+       , blinding_factors.end()
        , s_zero
-       , [](const auto& x, const auto& y) {
-         return x + y.blinding_factor;
-       }
        );
 
 
@@ -421,7 +405,7 @@ namespace rct {
     rctData rctData = preRctSig;
     rctData.p.CLSAGs = clsags;
 
-    return {rctData, outSk};
+    return {rctData, blinding_factors};
   }
 
 }

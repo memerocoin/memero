@@ -359,7 +359,7 @@ namespace cryptonote
         tx.vout[i].amount = 0;
 
       const crypto::hash tx_prefix_hash = get_transaction_prefix_hash(tx);
-      rct::ct_secret_keyV outSk;
+      rct::rct_scalarV outSk;
       std::tie(tx.ringct_essential, outSk) = rct::generate_ringct
         (
          tx_prefix_hash
