@@ -368,7 +368,7 @@ void RPC_Client::get_tx_outputs
       THROW_WALLET_EXCEPTION_IF(!td.is_rct(), error::wallet_internal_error,
                                 "td is not rct");
 
-      const rct::rct_point mask = rct::commit(td.m_mask, td.amount());
+      const rct::rct_point mask = rct::commit(td.amount(), td.m_mask);
 
       // make sure the real outputs we asked for are really included, along
       // with the correct key and mask: this guards against an active attack
@@ -445,7 +445,7 @@ void RPC_Client::get_tx_outputs
       THROW_WALLET_EXCEPTION_IF(!td.is_rct(), error::wallet_internal_error,
                                 "td is not rct");
 
-      const rct::rct_point mask = rct::commit(td.m_mask, td.amount());
+      const rct::rct_point mask = rct::commit(td.amount(), td.m_mask);
       v.push_back(std::make_tuple(td.m_global_output_index, td.get_public_key(), mask));
       outs.push_back(v);
     }

@@ -474,7 +474,7 @@ namespace rct {
 
     const rct_point C = rv.outPk[i].amount_commit;
 
-    if (C != commit(blinding_factor, amount)) {
+    if (C != commit(amount, blinding_factor)) {
       LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");
     }
 

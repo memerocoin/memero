@@ -370,14 +370,14 @@ namespace rct {
        , inamounts.begin()
        , std::back_inserter(pseudo_amount_commits)
        , [](const auto& x, const auto& y) -> rct_point {
-         return commit(x, y);
+         return commit(y, x);
        }
        );
 
     const auto pseudo_sum_blinding_factor_difference = sum_blinding_factors - pseudo_sum_blinding_factors;
     pseudo_blinding_factors.push_back(pseudo_sum_blinding_factor_difference);
 
-    pseudo_amount_commits.push_back(commit(pseudo_sum_blinding_factor_difference, inamounts.back()));
+    pseudo_amount_commits.push_back(commit(inamounts.back(), pseudo_sum_blinding_factor_difference));
 
     const rctData preRctSig =
       {
