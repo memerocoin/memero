@@ -314,7 +314,7 @@ namespace rct {
        );
 
 
-    rct_scalar sum_blinding_factors = std::reduce
+    rct_scalar output_blinding_factors_sum = std::reduce
       (
        output_blinding_factors.begin()
        , output_blinding_factors.end()
@@ -331,7 +331,7 @@ namespace rct {
        , []() { return crypto::scalarGen(); }
        );
 
-    rct_scalar pseudo_sum_blinding_factors =
+    rct_scalar pseudo_blinding_factors_sum =
       std::accumulate
       (
        pseudo_blinding_factors.begin()
@@ -352,10 +352,10 @@ namespace rct {
        }
        );
 
-    const auto pseudo_sum_blinding_factor_difference = sum_blinding_factors - pseudo_sum_blinding_factors;
-    pseudo_blinding_factors.push_back(pseudo_sum_blinding_factor_difference);
+    const auto pseudo_blinding_factor_difference = output_blinding_factors_sum - pseudo_blinding_factors_sum;
+    pseudo_blinding_factors.push_back(pseudo_blinding_factor_difference);
 
-    pseudo_amount_commits.push_back(commit(inputs.back().amount, pseudo_sum_blinding_factor_difference));
+    pseudo_amount_commits.push_back(commit(inputs.back().amount, pseudo_blinding_factor_difference));
 
     output_public_dataM mixRing;
 
