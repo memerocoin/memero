@@ -325,11 +325,6 @@ namespace rct {
         , "Mismatched sizes of outPk and rv.ecdh"
         );
 
-    if (!verify_tx_balance(rv)) {
-      LOG_PRINT_L1("Commit balance check failed");
-      return false;
-    }
-
     const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
     LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
     const Bulletproof proof = *maybeProof;

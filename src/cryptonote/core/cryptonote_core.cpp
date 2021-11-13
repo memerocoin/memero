@@ -1412,9 +1412,17 @@ namespace cryptonote
       {
         if (!tx_info[n].result)
           continue;
-        if (tx_info[n].tx->ringct_essential.type != rct::RCTTypeCLSAG)
-          continue;
-        if (!rct::verify_range_proof(tx_info[n].tx->ringct_essential))
+
+        const rct::rctData rctData = tx_info[n].tx->ringct_essential;
+
+        if (rctData.type != rct::RCTTypeCLSAG)
+            continue;
+
+        // const bool valid_tx = rct::verify_ringct(rctData);
+        // can't call the above since one needs to call expand_transaction_2 first lol
+        const bool valid_tx_balance = verify_tx_balance(rctData) && verify_range_proof(rctData);
+
+        if (!valid_tx_balance)
         {
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
