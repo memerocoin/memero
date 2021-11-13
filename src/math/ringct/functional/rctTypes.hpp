@@ -205,7 +205,10 @@ namespace rct {
     //pairs that you mix with
     // rct_pointV unusedPoints;
     std::vector<ecdh_encrypted_data> ecdh;
-    std::vector<output_commit> outPk; // WARNING, needs checking when parsing
+
+    // WARNING, needs checking when parsing
+    std::vector<output_commit> outPk;
+
     amount_t fee; // contains b
 
     template<bool W, template <bool> class Archive>
@@ -260,6 +263,8 @@ namespace rct {
   struct rctDataPrunable {
     std::vector<Bulletproof_unsafe> bulletproofs;
     std::vector<clsag_unsafe> CLSAGs;
+
+    // WARNING, needs checking when parsing
     rct_pointV pseudo_amount_commits; //C - for simple rct
 
     // when changing this function, update cryptonote::get_pruned_transaction_weight
@@ -350,6 +355,7 @@ namespace rct {
         for (size_t i = 0; i < inputs; ++i)
         {
           FIELDS(pseudo_amount_commits[i])
+          if (!is_safe_point(pseudo_amount_commits[i])) return false;
           if (inputs - i > 1)
             ar.delimit_array();
         }
