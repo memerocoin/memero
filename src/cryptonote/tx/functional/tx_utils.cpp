@@ -60,7 +60,7 @@ namespace cryptonote
    , const size_t output_index
    , const std::span<const crypto::secret_key> output_secret_keys
    , const std::vector<crypto::public_key> &output_public_keys_in
-   , const rct::rct_scalarV &tx_output_shared_secret_indexed_hashes_in
+   , const rct::rct_scalarV &output_shared_secrets_hashed_by_index_in
    )
   {
     const keypair txkey =
@@ -96,12 +96,12 @@ namespace cryptonote
     std::vector<crypto::public_key> output_public_keys = output_public_keys_in;
     output_public_keys.push_back(txkey.pub);
 
-    rct::rct_scalarV tx_output_shared_secret_indexed_hashes = tx_output_shared_secret_indexed_hashes_in;
-    tx_output_shared_secret_indexed_hashes.push_back(tx_output_shared_secret_indexed_hash);
+    rct::rct_scalarV output_shared_secrets_hashed_by_index = output_shared_secrets_hashed_by_index_in;
+    output_shared_secrets_hashed_by_index.push_back(tx_output_shared_secret_indexed_hash);
 
     return {{
         output_public_keys
-        , tx_output_shared_secret_indexed_hashes
+        , output_shared_secrets_hashed_by_index
         , *eph_pk
       }};
   }
@@ -128,7 +128,7 @@ namespace cryptonote
     }
 
 
-    rct::rct_scalarV tx_output_shared_secret_indexed_hashes;
+    rct::rct_scalarV output_shared_secrets_hashed_by_index;
     tx.set_null();
 
     tx.version = 2;
@@ -252,7 +252,7 @@ namespace cryptonote
          , output_index
          , output_secret_keys
          , output_public_keys
-         , tx_output_shared_secret_indexed_hashes
+         , output_shared_secrets_hashed_by_index
          );
 
       if (!r) return {};
@@ -261,7 +261,7 @@ namespace cryptonote
       std::tie
         (
          output_public_keys
-         , tx_output_shared_secret_indexed_hashes
+         , output_shared_secrets_hashed_by_index
          , out_eph_public_key
          ) = *r;
 
@@ -339,14 +339,14 @@ namespace cryptonote
 
       LOG_ERROR_AND_RETURN_UNLESS
         (
-         tx.vout.size() == tx_output_shared_secret_indexed_hashes.size()
+         tx.vout.size() == output_shared_secrets_hashed_by_index.size()
          , {}
          , "wrong number of outptu secrets"
          );
 
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
-        outputs.push_back({tx.vout[i].amount, tx_output_shared_secret_indexed_hashes[i]});
+        outputs.push_back({tx.vout[i].amount, output_shared_secrets_hashed_by_index[i]});
         amount_out += tx.vout[i].amount;
       }
 

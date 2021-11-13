@@ -496,10 +496,10 @@ TEST(Serialization, serializes_ringct_types)
   sc.push_back(sctmp);
   pc.push_back(pctmp);
   vector<uint64_t> amounts;
-  rct::rct_scalarV tx_output_shared_secret_indexed_hashes;
+  rct::rct_scalarV output_shared_secrets_hashed_by_index;
   //add output 500
   amounts.push_back(500);
-  tx_output_shared_secret_indexed_hashes.push_back(rct::hash_to_scalar({}));
+  output_shared_secrets_hashed_by_index.push_back(rct::hash_to_scalar({}));
   rct::rct_pointV destinations;
   rct::rct_scalar Sk;
   rct::rct_point Pk;
@@ -507,7 +507,7 @@ TEST(Serialization, serializes_ringct_types)
   destinations.push_back(Pk);
   //add output for 12500
   amounts.push_back(12500);
-  tx_output_shared_secret_indexed_hashes.push_back(rct::hash_to_scalar({}));
+  output_shared_secrets_hashed_by_index.push_back(rct::hash_to_scalar({}));
   std::tie(Sk, Pk) = rct::skpkGen();
   destinations.push_back(Pk);
 
