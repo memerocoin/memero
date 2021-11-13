@@ -305,8 +305,11 @@ namespace cryptonote
       bool use_simple_rct = true;
 
       uint64_t amount_in = 0, amount_out = 0;
-      rct::ct_secret_keyV inSk;
-      inSk.reserve(sources.size());
+      // rct::ct_secret_keyV inSk;
+      // inSk.reserve(sources.size());
+      rct::rct_scalarV input_spend_sks;
+      rct::rct_scalarV input_blinding_factors;
+
       // mixRing indexing is done the other way round for simple
       rct::ct_public_keyM mixRing(sources.size());
       rct::rct_pointV destinations;
@@ -314,35 +317,26 @@ namespace cryptonote
       std::vector<size_t> index;
       for (size_t i = 0; i < sources.size(); ++i)
       {
-        rct::ct_secret_key ct_public_key;
         amount_in += sources[i].amount;
         inamounts.push_back(sources[i].amount);
         index.push_back(sources[i].real_output);
         // inSk: (secret key, mask)
-        ct_public_key.addr = in_contexts[i].output_spend_key.sec;
-        ct_public_key.blinding_factor = sources[i].mask;
-        inSk.push_back(ct_public_key);
+        input_spend_sks.push_back(in_contexts[i].output_spend_key.sec);
+        input_blinding_factors.push_back(sources[i].mask);
+
         // inPk: (public key, commitment)
         // will be done when filling in mixRing
+        mixRing[i].resize(sources[i].outputs.size());
+        for (size_t n = 0; n < sources[i].outputs.size(); ++n)
+        {
+          mixRing[i][n] = sources[i].outputs[n].second;
+        }
       }
       for (size_t i = 0; i < tx.vout.size(); ++i)
       {
         destinations.push_back(boost::get<txout_to_key>(tx.vout[i].target).output_spend_public_key);
         outamounts.push_back(tx.vout[i].amount);
         amount_out += tx.vout[i].amount;
-      }
-
-      if (use_simple_rct)
-      {
-        // mixRing indexing is done the other way round for simple
-        for (size_t i = 0; i < sources.size(); ++i)
-        {
-          mixRing[i].resize(sources[i].outputs.size());
-          for (size_t n = 0; n < sources[i].outputs.size(); ++n)
-          {
-            mixRing[i][n] = sources[i].outputs[n].second;
-          }
-        }
       }
 
       // fee
@@ -363,7 +357,8 @@ namespace cryptonote
       std::tie(tx.ringct_essential, outSk) = rct::generate_ringct
         (
          tx_prefix_hash
-         , inSk
+         , input_spend_sks
+         , input_blinding_factors
          , inamounts
          , outamounts
          , amount_in - amount_out
