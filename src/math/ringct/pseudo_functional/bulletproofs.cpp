@@ -134,7 +134,7 @@ rct::rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
      , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
      );
 
-    std::transform
+  std::transform
     (
      b.begin()
      , b.end()
