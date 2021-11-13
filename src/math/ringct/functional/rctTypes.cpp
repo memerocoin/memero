@@ -234,8 +234,7 @@ namespace rct {
   }
 
 
-  std::vector<std::pair<rct_point, rct_point>>
-  zipLR(const rct_pointV L, const rct_pointV R) {
+  LR_V zipLR(const rct_pointV L, const rct_pointV R) {
     std::vector<std::pair<rct_point, rct_point>> LR;
 
     std::transform

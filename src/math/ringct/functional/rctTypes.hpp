@@ -158,18 +158,19 @@ namespace rct {
     END_SERIALIZE()
   };
 
+  using LR_V = std::vector<std::pair<rct_point, rct_point>>;
+
   struct Bulletproof
   {
     rct::rct_pointV V;
     rct::rct_point A, S;
     rct::rct_point T1, T2;
     rct::rct_scalar taux, mu;
-    std::vector<std::pair<rct_point, rct_point>> LR;
+    LR_V LR;
     rct::rct_scalar a, b, t;
   };
 
-  std::vector<std::pair<rct_point, rct_point>>
-  zipLR(const rct_pointV L, const rct_pointV R);
+  LR_V zipLR(const rct_pointV L, const rct_pointV R);
 
   std::pair<rct_pointV, rct_pointV>
   splitLR(const std::span<const std::pair<rct_point, rct_point>> LR);
