@@ -183,7 +183,7 @@ namespace rct {
     RCTTypeCLSAG = 5,
   };
 
-  struct rctDataEssential {
+  struct rctDataBasic {
     uint8_t type;
     crypto::hash message;
     output_public_dataM decoys; //the set of all pubkeys / copy
@@ -355,7 +355,7 @@ namespace rct {
     }
   };
 
-  struct rctData: public rctDataEssential {
+  struct rctData: public rctDataBasic {
     rctDataPrunable p;
   };
 

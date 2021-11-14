@@ -66,7 +66,7 @@ namespace rct {
       (
         const_cast<rctData&>(rv).serialize_rctsig_base(ba, inputs, outputs)
         , {}
-        , "Failed to serialize rctDataEssential"
+        , "Failed to serialize rctDataBasic"
         );
 
     const crypto::hash h = cryptonote::get_blob_hash(ss.str());
@@ -79,7 +79,7 @@ namespace rct {
       for (const auto &p: rv.p.bulletproofs)
       {
         // V are not hashed as they're expanded from output_commits.mask
-        // (and thus hashed as part of rctDataEssential above)
+        // (and thus hashed as part of rctDataBasic above)
         kv.push_back(p.A);
         kv.push_back(p.S);
         kv.push_back(p.T1);
