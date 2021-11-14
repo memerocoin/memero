@@ -99,7 +99,7 @@ namespace rct {
     , const rct_pointV decoy_commit_differences
     , const rct_scalar blinding_factor_difference
     , const rct_pointV decoy_amount_commits
-    , const rct_point C_offset
+    , const rct_point pseudo_amount_commit
     , const size_t index_in_decoys
     )
   {
@@ -133,7 +133,7 @@ namespace rct {
     mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_amount_commits.begin(), decoy_amount_commits.end());
     mu_P_to_hash.push_back(sig_I);
     mu_P_to_hash.push_back(sig_D);
-    mu_P_to_hash.push_back(C_offset);
+    mu_P_to_hash.push_back(pseudo_amount_commit);
 
     crypto::dataV mu_C_to_hash = mu_P_to_hash;
 
@@ -166,7 +166,7 @@ namespace rct {
 
     c_to_hash.insert(c_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
     c_to_hash.insert(c_to_hash.end(), decoy_amount_commits.begin(), decoy_amount_commits.end());
-    c_to_hash.push_back(C_offset);
+    c_to_hash.push_back(pseudo_amount_commit);
     c_to_hash.push_back(crypto::h2d(message));
     c_to_hash.push_back(G_(a));
     c_to_hash.push_back(P_hash ^ a);
