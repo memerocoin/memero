@@ -69,7 +69,6 @@
 #include <rapidjson/writer.h>
 
 
-using namespace crypto;
 using namespace cryptonote;
 using namespace wallet::logic::functional::fee;
 using namespace wallet::logic::type::message_signature;
@@ -1574,7 +1573,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
   blocks_fetched = 0;
   uint64_t added_blocks = 0;
   size_t try_count = 0;
-  crypto::hash last_tx_hash_id = m_transfers.size() ? m_transfers.back().m_txid : null_hash;
+  crypto::hash last_tx_hash_id = m_transfers.size() ? m_transfers.back().m_txid : crypto::null_hash;
   std::list<crypto::hash> short_chain_history;
   tools::threadpool& tpool = tools::threadpool::getInstance();
   tools::threadpool::waiter waiter(tpool);
@@ -1722,7 +1721,7 @@ void wallet2::refresh(uint64_t start_height, uint64_t & blocks_fetched, bool& re
       }
     }
   }
-  if(last_tx_hash_id != (m_transfers.size() ? m_transfers.back().m_txid : null_hash))
+  if(last_tx_hash_id != (m_transfers.size() ? m_transfers.back().m_txid : crypto::null_hash))
     received_money = true;
 
   try
@@ -1997,7 +1996,7 @@ void wallet2::setup_keys(const epee::wipeable_string &password)
   std::array<uint8_t, HASH_SIZE+1> cache_key_data;
   memcpy(cache_key_data.data(), &key, HASH_SIZE);
   cache_key_data[HASH_SIZE] = config::HASH_KEY_WALLET_CACHE;
-  auto h = sha3(cache_key_data);
+  auto h = crypto::sha3(cache_key_data);
   std::copy(std::begin(h.data), std::end(h.data), m_cache_key.begin());
 }
 //----------------------------------------------------------------------------------------------------

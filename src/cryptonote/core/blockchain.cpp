@@ -47,7 +47,6 @@
 
 #define FIND_BLOCKCHAIN_SUPPLEMENT_MAX_SIZE (100*1024*1024) // 100 MB
 
-using namespace crypto;
 using namespace cryptonote;
 
 #define LOG_ERROR_VER(x) LOG_CATEGORY_ERROR("verify", x)
@@ -614,7 +613,7 @@ crypto::hash Blockchain::get_block_id_by_height(uint64_t height) const
     LOG_ERROR(std::string("Something went wrong fetching block hash by height"));
     throw;
   }
-  return null_hash;
+  return crypto::null_hash;
 }
 //------------------------------------------------------------------
 crypto::hash Blockchain::get_pending_block_id_by_height(uint64_t height) const

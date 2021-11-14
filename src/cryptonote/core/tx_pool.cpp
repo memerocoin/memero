@@ -29,20 +29,13 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "tx_pool.h"
-
 #include "blockchain.h"
-
 
 #include "database/interface/locked_txn.h"
 
 
-
-
-
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "txpool"
-
-using namespace crypto;
 
 namespace cryptonote
 {
@@ -197,7 +190,7 @@ namespace cryptonote
 
     time_t receive_time = time(nullptr);
 
-    crypto::hash max_used_block_id = null_hash;
+    crypto::hash max_used_block_id = crypto::null_hash;
     uint64_t max_used_block_height = 0;
     cryptonote::txpool_tx_meta_t meta{};
     bool ch_inp_res =
@@ -216,10 +209,10 @@ namespace cryptonote
       {
         meta.weight = tx_weight;
         meta.fee = fee;
-        meta.max_used_block_id = null_hash;
+        meta.max_used_block_id = crypto::null_hash;
         meta.max_used_block_height = 0;
         meta.last_failed_height = 0;
-        meta.last_failed_id = null_hash;
+        meta.last_failed_id = crypto::null_hash;
         meta.receive_time = receive_time;
         meta.last_relayed_time = time(NULL);
         meta.relayed = relayed;
@@ -262,7 +255,7 @@ namespace cryptonote
       meta.max_used_block_id = max_used_block_id;
       meta.max_used_block_height = max_used_block_height;
       meta.last_failed_height = 0;
-      meta.last_failed_id = null_hash;
+      meta.last_failed_id = crypto::null_hash;
       meta.receive_time = receive_time;
       meta.last_relayed_time = time(NULL);
       meta.relayed = relayed;
@@ -1070,10 +1063,10 @@ namespace cryptonote
 
     //not the best implementation at this time, sorry :(
     //check is ring_signature already checked ?
-    if(txd.max_used_block_id == null_hash)
+    if(txd.max_used_block_id == crypto::null_hash)
     {//not checked, lets try to check
 
-      if(txd.last_failed_id != null_hash && m_blockchain.get_current_blockchain_height() > txd.last_failed_height && txd.last_failed_id == m_blockchain.get_block_id_by_height(txd.last_failed_height))
+      if(txd.last_failed_id != crypto::null_hash && m_blockchain.get_current_blockchain_height() > txd.last_failed_height && txd.last_failed_id == m_blockchain.get_block_id_by_height(txd.last_failed_height))
         return false;//we already sure that this tx is broken for this height
 
       tx_verification_context tvc;

@@ -39,15 +39,11 @@
 
 #include <boost/algorithm/string.hpp>
 
-
 using namespace epee;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
 
-// #define ENABLE_HASH_CASH_INTEGRITY_CHECK
-
-using namespace crypto;
 using namespace constant;
 
 static std::atomic<unsigned int> default_decimal_point(CRYPTONOTE_DISPLAY_DECIMAL_POINT);

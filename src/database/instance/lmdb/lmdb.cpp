@@ -50,7 +50,6 @@
 #endif
 
 using epee::string_tools::pod_to_hex;
-using namespace crypto;
 using namespace constant;
 
 // Increase when the DB structure changes
@@ -2432,7 +2431,7 @@ crypto::hash BlockchainLMDB::top_block_hash(uint64_t *block_height) const
     return get_block_hash_from_height(m_height - 1);
   }
 
-  return null_hash;
+  return crypto::null_hash;
 }
 
 block BlockchainLMDB::get_top_block() const
