@@ -83,7 +83,7 @@ namespace fee {
     // decoys - not serialized, can be reconstructed
     /* size += 2 * 32 * (mixin+1) * n_inputs; */
 
-    // pseudo_amount_commits
+    // pseudo_commits
     size += 32 * n_inputs;
     // ecdh
     size += 8 * n_outputs;

@@ -139,7 +139,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(mu_P_to_hash)
-        , [](const auto& x) { return x.amount_commit; }
+        , [](const auto& x) { return x.commit; }
         );
 
     mu_P_to_hash.push_back(sig.I);
@@ -187,7 +187,7 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(c_to_hash)
-        , [](const auto& x) { return x.amount_commit; }
+        , [](const auto& x) { return x.commit; }
         );
 
     c_to_hash.push_back(C_offset);
@@ -205,9 +205,9 @@ namespace rct {
       const rct_scalar c_p = mu_P * c;
       const rct_scalar c_c = mu_C * c;
 
-      const rct_point mask = pubs[i].amount_commit;
+      const rct_point mask = pubs[i].commit;
       if (!is_safe_point(mask)) {
-        LOG_ERROR("pubs[" << i << "].amount_commit.data is not a valid point: " << mask);
+        LOG_ERROR("pubs[" << i << "].commit.data is not a valid point: " << mask);
         return false;
       }
 
@@ -284,15 +284,15 @@ namespace rct {
        , rv.outPk.end()
        , std::back_inserter(outputCommits)
        , [](const auto& x) {
-         return x.amount_commit;
+         return x.commit;
        }
        );
 
     const rct_point feeCommit = H_(crypto::int_to_scalar(rv.fee));
     const rct_point sumOutputCommits = sum(outputCommits) + feeCommit;
-    const rct_point sumInputCommits = sum(rv.p.pseudo_amount_commits);
+    const rct_point sumInputCommits = sum(rv.p.pseudo_commits);
 
-    //check pseudo_amount_commits vs Outs..
+    //check pseudo_commits vs Outs..
     return sumInputCommits == sumOutputCommits;
   }
 
@@ -321,9 +321,9 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.p.pseudo_amount_commits.size() == rv.p.CLSAGs.size()
+        rv.p.pseudo_commits.size() == rv.p.CLSAGs.size()
         , false
-        , "Mismatched sizes of rv.p.pseudo_amount_commits and rv.p.CLSAGs"
+        , "Mismatched sizes of rv.p.pseudo_commits and rv.p.CLSAGs"
         );
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -354,9 +354,9 @@ namespace rct {
     // semantics check is early, and decoys/MGs aren't resolved yet
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.p.pseudo_amount_commits.size() == rv.decoys.size()
+        rv.p.pseudo_commits.size() == rv.decoys.size()
         , false
-        , "Mismatched sizes of rv.p.pseudo_amount_commits and decoys"
+        , "Mismatched sizes of rv.p.pseudo_commits and decoys"
         );
 
     const size_t threads = std::max(rv.outPk.size(), rv.decoys.size());
@@ -365,7 +365,7 @@ namespace rct {
     tools::threadpool& tpool = tools::threadpool::getInstance();
     tools::threadpool::waiter waiter(tpool);
 
-    const rct_pointV &pseudo_amount_commits = rv.p.pseudo_amount_commits;
+    const rct_pointV &pseudo_commits = rv.p.pseudo_commits;
 
     const auto maybeMessage = get_ring_signature_message(rv);
     if (!maybeMessage) return false;
@@ -377,7 +377,7 @@ namespace rct {
     for (size_t i = 0 ; i < rv.decoys.size() ; i++) {
       tpool.submit(&waiter, [&, i] {
         results[i] = verify_unsafe_clsag_signature
-          (message, rv.p.CLSAGs[i], rv.decoys[i], pseudo_amount_commits[i]);
+          (message, rv.p.CLSAGs[i], rv.decoys[i], pseudo_commits[i]);
       });
     }
     if (!waiter.wait())
@@ -409,7 +409,7 @@ namespace rct {
 
     const uint64_t amount = rct::decode_amount_by_ecdh_shared_secret(rv.ecdh[i].masked_amount, ecdh_shared_secret);
 
-    const rct_point C = rv.outPk[i].amount_commit;
+    const rct_point C = rv.outPk[i].commit;
 
     if (C != commit(amount, blinding_factor)) {
       LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");

@@ -211,7 +211,7 @@ TEST(ringct, CLSAG)
     output_public_data tmp;
 
     std::tie(sk, tmp.output_spend_pk) = skpkGen();
-    std::tie(sk, tmp.amount_commit) = skpkGen();
+    std::tie(sk, tmp.commit) = skpkGen();
 
     pubs.push_back(tmp);
   }
@@ -222,7 +222,7 @@ TEST(ringct, CLSAG)
   // Set C[idx]
   t = crypto::scalarGen();
   u = crypto::scalarGen();
-  pubs[idx].amount_commit = G_(t) + H_(u);
+  pubs[idx].commit = G_(t) + H_(u);
 
   // Set commitment offset
   t2 = crypto::scalarGen();
@@ -267,7 +267,7 @@ TEST(ringct, CLSAG)
 
   // bad C at creation
   backup = pubs[idx];
-  pubs[idx].amount_commit = G_(crypto::scalarGen());
+  pubs[idx].commit = G_(crypto::scalarGen());
   try
   {
     clsag = rct::generate_clsag_signature_test(message,pubs,insk,t2,Cout,idx);
@@ -758,9 +758,9 @@ TEST_rctData_elements_simple(decoys_too_few, sig.decoys.pop_back());
 TEST_rctData_elements_simple(decoys0_empty, sig.decoys[0].resize(0));
 TEST_rctData_elements_simple(decoys0_too_many, sig.decoys[0].push_back(sig.decoys[0].back()));
 TEST_rctData_elements_simple(decoys0_too_few, sig.decoys[0].pop_back());
-// TEST_rctData_elements_simple(pseudo_amount_commits_empty, sig.pseudo_amount_commits.resize(0));
-// TEST_rctData_elements_simple(pseudo_amount_commits_too_many, sig.pseudo_amount_commits.push_back(sig.pseudo_amount_commits.back()));
-// TEST_rctData_elements_simple(pseudo_amount_commits_too_few, sig.pseudo_amount_commits.pop_back());
+// TEST_rctData_elements_simple(pseudo_commits_empty, sig.pseudo_commits.resize(0));
+// TEST_rctData_elements_simple(pseudo_commits_too_many, sig.pseudo_commits.push_back(sig.pseudo_commits.back()));
+// TEST_rctData_elements_simple(pseudo_commits_too_few, sig.pseudo_commits.pop_back());
 TEST_rctData_elements_simple(ecdh_empty, sig.ecdh.resize(0));
 TEST_rctData_elements_simple(ecdh_too_many, sig.ecdh.push_back(sig.ecdh.back()));
 TEST_rctData_elements_simple(ecdh_too_few, sig.ecdh.pop_back());

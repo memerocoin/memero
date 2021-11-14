@@ -435,7 +435,7 @@ TEST(Serialization, serializes_ringct_types)
   }
 
   output_public_data0.output_spend_pk = pkGen();
-  output_public_data0.amount_commit = pkGen();
+  output_public_data0.commit = pkGen();
 
   ASSERT_TRUE(serialization::dump_binary(output_public_data0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, output_public_data1));
@@ -444,7 +444,7 @@ TEST(Serialization, serializes_ringct_types)
   output_public_datav0 = std::vector<rct::output_public_data>(14);
   for (size_t n = 0; n < output_public_datav0.size(); ++n) {
     output_public_datav0[n].output_spend_pk = pkGen();
-    output_public_datav0[n].amount_commit = pkGen();
+    output_public_datav0[n].commit = pkGen();
   }
 
   ASSERT_TRUE(serialization::dump_binary(output_public_datav0, blob));
@@ -461,7 +461,7 @@ TEST(Serialization, serializes_ringct_types)
     output_public_datam0[n] = std::vector<rct::output_public_data>(11);
     for (size_t i = 0; i < output_public_datam0[n].size(); ++i) {
       output_public_datam0[n][i].output_spend_pk = pkGen();
-      output_public_datam0[n][i].amount_commit = pkGen();
+      output_public_datam0[n][i].commit = pkGen();
     }
   }
   ASSERT_TRUE(serialization::dump_binary(output_public_datam0, blob));

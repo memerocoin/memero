@@ -940,7 +940,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
   std::vector<rct::rct_point> masks;
   masks.reserve(sig.outPk.size());
   std::transform(sig.outPk.begin(), sig.outPk.end(), std::back_inserter(masks),
-                [] (const auto & key) { return key.amount_commit; } );
+                [] (const auto & key) { return key.commit; } );
 
   WRITE_JSON_FIELD_FROM(dest, type, sig.type);
   if (sig.type != rct::RCTTypeNull) {
@@ -956,7 +956,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
     dest.StartObject();
 
     WRITE_JSON_FIELD_FROM(dest, bulletproofs, sig.p.bulletproofs);
-    WRITE_JSON_FIELD_FROM(dest, pseudo_amount_commits, sig.p.pseudo_amount_commits);
+    WRITE_JSON_FIELD_FROM(dest, pseudo_commits, sig.p.pseudo_commits);
 
     dest.EndObject();
   }
@@ -983,14 +983,14 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctData& sig)
 
   if (prunable != val.MemberEnd()) {
     READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.bulletproofs, bulletproofs);
-    READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.pseudo_amount_commits, pseudo_amount_commits);
+    READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.pseudo_commits, pseudo_commits);
   }
 }
 
 void fromJsonValue(const rapidjson::Value& val, rct::output_public_data& key)
 {
   key.output_spend_pk = {};
-  fromJsonValue(val, key.amount_commit);
+  fromJsonValue(val, key.commit);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::ecdh_encrypted_data tuple)

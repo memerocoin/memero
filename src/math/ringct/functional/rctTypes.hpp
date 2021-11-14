@@ -71,11 +71,11 @@ namespace rct {
 
   struct output_public_data {
     rct_point output_spend_pk;
-    rct_point amount_commit;
+    rct_point commit;
   };
 
   struct output_commit {
-    rct_point amount_commit;
+    rct_point commit;
   };
 
   using output_public_dataV = std::vector<output_public_data>;
@@ -228,16 +228,16 @@ namespace rct {
       }
       ar.end_array();
 
-      ar.tag("amount_commits");
+      ar.tag("commits");
       ar.begin_array();
       PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, outPk);
       if (outPk.size() != outputs)
         return false;
       for (size_t i = 0; i < outputs; ++i)
       {
-        FIELDS(outPk[i].amount_commit)
+        FIELDS(outPk[i].commit)
         if (!typename Archive<W>::is_saving()) {
-          if (!is_safe_point(outPk[i].amount_commit)) return false;
+          if (!is_safe_point(outPk[i].commit)) return false;
         }
         if (outputs - i > 1)
           ar.delimit_array();
@@ -252,7 +252,7 @@ namespace rct {
     std::vector<clsag_unsafe> CLSAGs;
 
     // WARNING, needs checking when parsing
-    rct_pointV pseudo_amount_commits; //C - for simple rct
+    rct_pointV pseudo_commits; //C - for simple rct
 
     // when changing this function, update cryptonote::get_pruned_transaction_weight
     template<bool W, template <bool> class Archive>
@@ -334,16 +334,16 @@ namespace rct {
       }
 
       {
-        ar.tag("pseudo_amount_commits");
+        ar.tag("pseudo_commits");
         ar.begin_array();
-        PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, pseudo_amount_commits);
-        if (pseudo_amount_commits.size() != inputs)
+        PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, pseudo_commits);
+        if (pseudo_commits.size() != inputs)
           return false;
         for (size_t i = 0; i < inputs; ++i)
         {
-          FIELDS(pseudo_amount_commits[i])
+          FIELDS(pseudo_commits[i])
           if (!typename Archive<W>::is_saving()) {
-            if (!is_safe_point(pseudo_amount_commits[i])) return false;
+            if (!is_safe_point(pseudo_commits[i])) return false;
           }
           if (inputs - i > 1)
             ar.delimit_array();
