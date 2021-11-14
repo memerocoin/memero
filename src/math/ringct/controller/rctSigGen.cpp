@@ -31,20 +31,17 @@
 
 #include "rctSigGen.hpp"
 
+#include "tools/common/threadpool.h"
+#include "tools/epee/include/logging.hpp"
+
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
-
-#include "tools/common/threadpool.h"
-#include "tools/epee/include/logging.hpp"
-
 #include "cryptonote/basic/functional/subaddress.hpp"
-
 
 #include "config/cryptonote.hpp"
 
-using namespace std;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
@@ -127,7 +124,7 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(index_in_decoys < n, "Signing index out of range!");
 
     // mages images
-    const rct_point signer_pk_hash = hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
+    const rct_point signer_pk_hash = crypto::hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
 
     const rct_point sig_signer_pk_image = signer_pk_hash ^ signer_sk;
     const rct_point D = signer_pk_hash ^ signer_blinding_factor_surplus;
@@ -211,7 +208,7 @@ namespace rct {
          );
 
       // Compute R
-      const rct_point A = hash_to_point_via_field(decoy_spend_pks[i]);
+      const rct_point A = crypto::hash_to_point_via_field(decoy_spend_pks[i]);
       const rct_point R = sum
         (
          std::array

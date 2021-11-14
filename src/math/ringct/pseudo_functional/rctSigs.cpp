@@ -228,7 +228,7 @@ namespace rct {
           );
 
       // Compute R
-      const rct_point k = hash_to_point_via_field(decoys[i].output_spend_pk);
+      const rct_point k = crypto::hash_to_point_via_field(decoys[i].output_spend_pk);
 
       const rct_point R = sum
         (
