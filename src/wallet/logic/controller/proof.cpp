@@ -36,9 +36,6 @@
 
 #include "tools/common/base58.h"
 
-
-using namespace tools;
-
 namespace wallet {
 namespace logic {
 namespace controller {

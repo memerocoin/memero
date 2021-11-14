@@ -37,9 +37,6 @@
 #include "tools/common/base58.h"
 #include "tools/epee/include/string_tools.h"
 
-
-using namespace tools;
-
 namespace wallet {
 namespace logic {
 namespace pseudo_functional {
@@ -60,7 +57,7 @@ namespace proof {
     THROW_WALLET_EXCEPTION_IF
       (
        sig_str.size() < header_len || sig_str.substr(0, header_len) != header
-       , error::wallet_internal_error
+       , tools::error::wallet_internal_error
        , "Signature header check error"
        );
 
@@ -74,7 +71,7 @@ namespace proof {
     THROW_WALLET_EXCEPTION_IF
       (
        sig_str.size() != header_len + num_sigs * sig_len
-       , error::wallet_internal_error
+       , tools::error::wallet_internal_error
        , "Wrong signature size"
        );
 
@@ -86,14 +83,14 @@ namespace proof {
       THROW_WALLET_EXCEPTION_IF
         (
          !tools::base58::decode(sig_str.substr(offset, sig_len), sig_decoded)
-         , error::wallet_internal_error
+         , tools::error::wallet_internal_error
          , "Signature decoding error"
          );
 
       THROW_WALLET_EXCEPTION_IF
         (
          sizeof(crypto::schnorr_signature) != sig_decoded.size()
-         , error::wallet_internal_error
+         , tools::error::wallet_internal_error
          , "Signature decoding error"
          );
 

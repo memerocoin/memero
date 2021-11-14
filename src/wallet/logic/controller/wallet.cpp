@@ -522,7 +522,6 @@ namespace wallet {
   , const uint64_t unlocked_balance
   )
   {
-    using namespace tools;
     using namespace type::tx;
     using namespace functional::fee;
     using namespace cryptonote;
@@ -549,7 +548,7 @@ namespace wallet {
     const uint64_t fee_quantization_mask = constant::fee_quantization_mask;
 
     // throw if attempting a transaction with no destinations
-    THROW_WALLET_EXCEPTION_IF(dsts.empty(), error::zero_destination);
+    THROW_WALLET_EXCEPTION_IF(dsts.empty(), tools::error::zero_destination);
 
     // calculate total amount being sent to all destinations
     // throw if total amount overflows uint64_t
@@ -557,14 +556,14 @@ namespace wallet {
 
     for(auto& dt: dsts)
     {
-      THROW_WALLET_EXCEPTION_IF(0 == dt.amount, error::zero_destination);
+      THROW_WALLET_EXCEPTION_IF(0 == dt.amount, tools::error::zero_destination);
       needed_money += dt.amount;
       LOG_PRINT_L2("transfer: adding " << print_money(dt.amount) << ", for a total of " << print_money (needed_money));
-      THROW_WALLET_EXCEPTION_IF(needed_money < dt.amount, error::tx_sum_overflow, dsts, 0, m_nettype);
+      THROW_WALLET_EXCEPTION_IF(needed_money < dt.amount, tools::error::tx_sum_overflow, dsts, 0, m_nettype);
     }
 
     // throw if attempting a transaction with no money
-    THROW_WALLET_EXCEPTION_IF(needed_money == 0, error::zero_destination);
+    THROW_WALLET_EXCEPTION_IF(needed_money == 0, tools::error::zero_destination);
 
     std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> unlocked_balance_per_subaddr =
       functional::wallet::unlocked_balance_per_subaddress(subaddr_account, false, m_transfers, blockchain_height);
@@ -594,7 +593,7 @@ namespace wallet {
     THROW_WALLET_EXCEPTION_IF
       (
        needed_money + min_fee > balance_subtotal
-       , error::not_enough_money
+       , tools::error::not_enough_money
        , balance_subtotal
        , needed_money
        , 0
@@ -604,7 +603,7 @@ namespace wallet {
     THROW_WALLET_EXCEPTION_IF
       (
        needed_money + min_fee > unlocked_balance_subtotal
-       , error::not_enough_unlocked_money
+       , tools::error::not_enough_unlocked_money
        , unlocked_balance_subtotal
        , needed_money
        , 0
@@ -620,7 +619,7 @@ namespace wallet {
     THROW_WALLET_EXCEPTION_IF
       (
        tx_weight_one_ring > tx_weight_two_rings
-       , error::wallet_internal_error
+       , tools::error::wallet_internal_error
        , "Estimated tx weight with 1 input is larger than with 2 inputs!"
        );
 
@@ -801,7 +800,7 @@ namespace wallet {
         LOG_PRINT_L2("No more outputs to choose from");
         THROW_WALLET_EXCEPTION
           (
-           error::tx_not_possible
+           tools::error::tx_not_possible
            , unlocked_balance
            , needed_money
            , accumulated_fee + needed_fee
@@ -932,7 +931,7 @@ namespace wallet {
           THROW_WALLET_EXCEPTION_IF
             (
              try_tx && tx.dsts.empty()
-             , error::tx_too_big
+             , tools::error::tx_too_big
              , estimated_rct_tx_weight
              , upper_transaction_weight_limit
              );
@@ -1007,7 +1006,7 @@ namespace wallet {
              }
              );
 
-          THROW_WALLET_EXCEPTION_IF(i == tx.dsts.end(), error::wallet_internal_error, "paid address not found in outputs");
+          THROW_WALLET_EXCEPTION_IF(i == tx.dsts.end(), tools::error::wallet_internal_error, "paid address not found in outputs");
 
           if (i->amount > needed_fee)
           {
@@ -1125,7 +1124,7 @@ namespace wallet {
       LOG_PRINT_L1("We ran out of outputs while trying to gather final fee");
       THROW_WALLET_EXCEPTION
         (
-          error::tx_not_possible
+          tools::error::tx_not_possible
           , unlocked_balance
           , needed_money
           , accumulated_fee + needed_fee
@@ -1200,7 +1199,7 @@ namespace wallet {
     THROW_WALLET_EXCEPTION_IF
       (
        !valid_tx
-      , error::wallet_internal_error
+      , tools::error::wallet_internal_error
       , "Created transaction(s) failed sanity check"
       );
 
