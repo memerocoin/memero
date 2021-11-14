@@ -62,8 +62,20 @@ namespace rct {
   }
 
   bool is_bulletproof_structure_valid_extended(const Bulletproof_unsafe &proof) {
-    LOG_ERROR_AND_RETURN_UNLESS(proof.commits.size() <= (1u<<(proof.L.size()-6)), false, "Invalid bulletproof V/L");
-    LOG_ERROR_AND_RETURN_UNLESS(proof.commits.size() * 2 > (1u<<(proof.L.size()-6)), false, "Invalid bulletproof V/L");
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       proof.commits.size() <= (1u<<(proof.L.size()-6))
+       , false
+       , "Invalid bulletproof V/L"
+       );
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       proof.commits.size() * 2 > (1u<<(proof.L.size()-6))
+       , false
+       , "Invalid bulletproof V/L"
+       );
+
     LOG_ERROR_AND_RETURN_UNLESS(proof.commits.size() > 0, false, "Empty bulletproof");
 
     return true;
@@ -185,9 +197,18 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(clsag.c1), {}, "Bad clsag.c1");
 
-    const auto maybe_clsag_signer_pk_image_from_blinding_surplus = crypto::maybeSafePoint(clsag.signer_pk_image_from_blinding_surplus);
-    LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_signer_pk_image_from_blinding_surplus, {}, "Bad clsag.signer_pk_image_from_blinding_surplus");
-    const rct::rct_point clsag_signer_pk_image_from_blinding_surplus = *maybe_clsag_signer_pk_image_from_blinding_surplus;
+    const auto maybe_clsag_signer_pk_image_from_blinding_surplus =
+      crypto::maybeSafePoint(clsag.signer_pk_image_from_blinding_surplus);
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       maybe_clsag_signer_pk_image_from_blinding_surplus
+       , {}
+       , "Bad clsag.signer_pk_image_from_blinding_surplus"
+       );
+
+    const rct::rct_point clsag_signer_pk_image_from_blinding_surplus =
+      *maybe_clsag_signer_pk_image_from_blinding_surplus;
 
     const auto maybe_clsag_signer_pk_image = crypto::maybeSafePoint(clsag.signer_pk_image);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_signer_pk_image, {}, "Bad clsag.signer_pk_image");

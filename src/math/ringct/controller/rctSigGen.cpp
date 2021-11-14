@@ -73,7 +73,11 @@ namespace rct {
 
     const Bulletproof proof = bulletproof_MAKE(xs);
 
-    LOG_ERROR_AND_THROW_UNLESS(proof.commits.size() == outputs.size(), "V does not have the expected size");
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       proof.commits.size() == outputs.size()
+       , "V does not have the expected size"
+       );
 
     rct_scalarV output_blinding_factors;
     std::transform
@@ -310,7 +314,11 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(inputs.size() > 0, "Empty inamounts");
 
     for (size_t n = 0; n < inputs.size(); ++n) {
-      LOG_ERROR_AND_THROW_UNLESS(inputs[n].index_in_decoys < inputs[n].decoys.size(), "Bad index into decoys");
+      LOG_ERROR_AND_THROW_UNLESS
+        (
+         inputs[n].index_in_decoys < inputs[n].decoys.size()
+         , "Bad index into decoys"
+         );
     }
 
     const auto [output_blinding_factors, proof] = generate_range_proof(outputs);
@@ -334,7 +342,9 @@ namespace rct {
        outputs.end(),
        std::back_inserter(ecdh),
        [](const auto& x) -> ecdh_encrypted_data {
-         return {encode_amount_by_ecdh_shared_secret(x.amount, x.ecdh_shared_secret_hashed_by_index)};
+         return {
+           encode_amount_by_ecdh_shared_secret(x.amount, x.ecdh_shared_secret_hashed_by_index)
+         };
        }
        );
 
@@ -376,7 +386,9 @@ namespace rct {
        }
        );
 
-    const auto output_blinding_factor_surplus = output_blinding_factors_sum - pseudo_input_blinding_factors_sum;
+    const auto output_blinding_factor_surplus =
+      output_blinding_factors_sum - pseudo_input_blinding_factors_sum;
+
     pseudo_input_blinding_factors.push_back(output_blinding_factor_surplus);
 
     pseudo_input_commits.push_back(commit(inputs.back().amount, output_blinding_factor_surplus));
@@ -415,7 +427,14 @@ namespace rct {
       (
        clsags.begin()
        , clsags.end()
-       , [full_message, decoys, inputs, pseudo_input_blinding_factors, pseudo_input_commits, i = 0]() mutable {
+       , [
+          full_message
+          , decoys
+          , inputs
+          , pseudo_input_blinding_factors
+          , pseudo_input_commits
+          , i = 0
+          ]() mutable {
          const auto clsag = generate_clsag_signature
            (
             full_message

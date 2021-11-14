@@ -117,7 +117,7 @@ namespace rct {
 
     // Check data
     LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty decoys");
-    LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature rct_scalar vector is the wrong size!");
+    LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "sig.s vector is the wrong size!");
 
     // we assume all points are valid at this point
     // if (!is_safe_point(pseudo_input_commit)) {
@@ -405,9 +405,15 @@ namespace rct {
   {
     LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctData");
     LOG_ERROR_AND_THROW_UNLESS(output_index < rv.ecdh.size(), "Bad index");
-    LOG_ERROR_AND_THROW_UNLESS(rv.output_commits.size() == rv.ecdh.size(), "Mismatched sizes of rv.output_commits and rv.ecdh");
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       rv.output_commits.size() == rv.ecdh.size()
+       , "Mismatched sizes of rv.output_commits and rv.ecdh"
+       );
 
-    const rct_scalar blinding_factor = rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret_hashed_by_index);
+    const rct_scalar blinding_factor =
+      rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret_hashed_by_index);
+
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
 
     const uint64_t amount = rct::decode_amount_by_ecdh_shared_secret
