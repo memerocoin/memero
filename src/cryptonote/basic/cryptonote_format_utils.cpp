@@ -69,21 +69,11 @@ namespace cryptonote
     if (rv.type == rct::RCTTypeNull)
       return true;
 
-    if (rv.outPk.size() != tx.vout.size())
+    if (rv.outputCommits.size() != tx.vout.size())
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad outPk size in tx " << get_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad outputCommits size in tx " << get_transaction_hash(tx));
       return false;
     }
-
-    // for (size_t n = 0; n < tx.ringct_essential.outPk.size(); ++n)
-    // {
-    //   if (tx.vout[n].target.type() != typeid(txout_to_key))
-    //   {
-    //     LOG_PRINT_L1("Unsupported output type in tx " << get_transaction_hash(tx));
-    //     return false;
-    //   }
-    //   rv.outPk[n].output_spend_pk = boost::get<txout_to_key>(tx.vout[n].target).output_spend_public_key;
-    // }
 
     if (base_only) return true;
 
@@ -107,12 +97,12 @@ namespace cryptonote
     }
 
     const size_t n_amounts = tx.vout.size();
-    LOG_ERROR_AND_RETURN_UNLESS(n_amounts == rv.outPk.size(), false, "Internal error filling out V");
+    LOG_ERROR_AND_RETURN_UNLESS(n_amounts == rv.outputCommits.size(), false, "Internal error filling out V");
 
     std::transform
       (
-       rv.outPk.begin()
-       , rv.outPk.end()
+       rv.outputCommits.begin()
+       , rv.outputCommits.end()
        , std::back_inserter(rv.p.bulletproofs[0].V)
        , [](const auto& x) {
          return x.commit ^ rct::s_inv_eight;

@@ -603,9 +603,9 @@ namespace cryptonote
     }
     if (tx.version > 1)
     {
-      if (tx.ringct_essential.outPk.size() != tx.vout.size())
+      if (tx.ringct_essential.outputCommits.size() != tx.vout.size())
       {
-        LOG_ERROR_VER("tx with mismatched vout/outPk count, rejected for tx id= " << get_transaction_hash(tx));
+        LOG_ERROR_VER("tx with mismatched vout/outputCommits count, rejected for tx id= " << get_transaction_hash(tx));
         return false;
       }
     }

@@ -128,7 +128,7 @@ namespace rct {
     // bool operator==(const Bulletproof_unsafe&) const = default;
 
     BEGIN_SERIALIZE_OBJECT()
-      // Commitments aren't saved, they're restored via outPk
+      // Commitments aren't saved, they're restored via outputCommits
       // FIELD(V)
       FIELD(A)
       FIELD(S)
@@ -176,7 +176,7 @@ namespace rct {
   // MG holds the MLSAG signature of a transaction
   // decoys holds all the public keypairs (P, C) for a transaction
   // ecdh holds an encoded blinding_factor / amount to be passed to each receiver
-  // outPk contains public keypairs which are destinations (P, C),
+  // outputCommits contains public keypairs which are destinations (P, C),
   //  P = address, C = commitment to amount
   enum {
     RCTTypeNull = 0,
@@ -192,7 +192,7 @@ namespace rct {
     std::vector<ecdh_encrypted_data> ecdh;
 
     // WARNING, needs checking when parsing
-    std::vector<output_commit> outPk;
+    std::vector<output_commit> outputCommits;
 
     amount_t fee; // contains b
 
@@ -230,14 +230,14 @@ namespace rct {
 
       ar.tag("commits");
       ar.begin_array();
-      PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, outPk);
-      if (outPk.size() != outputs)
+      PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, outputCommits);
+      if (outputCommits.size() != outputs)
         return false;
       for (size_t i = 0; i < outputs; ++i)
       {
-        FIELDS(outPk[i].commit)
+        FIELDS(outputCommits[i].commit)
         if (!typename Archive<W>::is_saving()) {
-          if (!is_safe_point(outPk[i].commit)) return false;
+          if (!is_safe_point(outputCommits[i].commit)) return false;
         }
         if (outputs - i > 1)
           ar.delimit_array();
