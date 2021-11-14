@@ -95,7 +95,7 @@ namespace rct {
     std::vector<crypto::ec_scalar_unnormalized> s; // scalars
     crypto::ec_scalar_unnormalized c1;
 
-    reconstructed_point I; // signing key image
+    reconstructed_point signer_pk_image; // signing key image
     inv8 D; // commitment key image
 
     BEGIN_SERIALIZE_OBJECT()
@@ -109,7 +109,7 @@ namespace rct {
   struct clsag {
     rct_scalarV s; // scalars
     rct_scalar c1;
-    rct_point I; // signing key image
+    rct_point signer_pk_image; // signing key image
     rct_point D; // commitment key image
   };
 

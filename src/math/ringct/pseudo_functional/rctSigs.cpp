@@ -142,7 +142,7 @@ namespace rct {
         , [](const auto& x) { return x.commit; }
         );
 
-    mu_P_to_hash.push_back(sig.I);
+    mu_P_to_hash.push_back(sig.signer_pk_image);
     mu_P_to_hash.push_back(sig.D);
     mu_P_to_hash.push_back(pseudo_commit);
 
@@ -232,7 +232,7 @@ namespace rct {
           std::array
           {
             k ^ sig.s[i]
-            , sig.I ^ c_p
+            , sig.signer_pk_image ^ c_p
             , sig.D ^ (c_c * s_eight)
           }
           );

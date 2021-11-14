@@ -2517,7 +2517,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
       LOG_ERROR_AND_RETURN_UNLESS(rv.p.CLSAGs.size() == tx.vin.size(), false, "Bad CLSAGs size");
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
-        rv.p.CLSAGs[n].I = boost::get<txin_to_key>(tx.vin[n]).output_spend_public_key_image;
+        rv.p.CLSAGs[n].signer_pk_image = boost::get<txin_to_key>(tx.vin[n]).output_spend_public_key_image;
       }
   }
   else
@@ -3974,7 +3974,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
         bool error;
-        error = memcmp(&boost::get<txin_to_key>(tx.vin[n]).output_spend_public_key_image, &rv.p.CLSAGs[n].I, 32);
+        error = memcmp(&boost::get<txin_to_key>(tx.vin[n]).output_spend_public_key_image, &rv.p.CLSAGs[n].signer_pk_image, 32);
         if (error)
         {
           LOG_ERROR_VER("Failed to check ringct signatures: mismatched key image");

@@ -339,10 +339,10 @@ TEST(ringct, CLSAG)
   clsag.c1 = backup_c1;
 
   // bad I in clsag at verification
-  backup_key = clsag.I;
-  clsag.I = G_(crypto::scalarGen());
+  backup_key = clsag.signer_pk_image;
+  clsag.signer_pk_image = G_(crypto::scalarGen());
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
-  clsag.I = backup_key;
+  clsag.signer_pk_image = backup_key;
 
   // bad D in clsag at verification
   backup_key_inv8 = clsag.D;
@@ -363,14 +363,14 @@ TEST(ringct, CLSAG)
 
   // swapped I and D in clsag at verification
   backup_key_inv8 = clsag.D;
-  backup_key = clsag.I;
+  backup_key = clsag.signer_pk_image;
 
-  clsag.I = rct::unsafe_d2rct_p(backup_key_inv8);
-  clsag.D = clsag.I;
+  clsag.signer_pk_image = rct::unsafe_d2rct_p(backup_key_inv8);
+  clsag.D = clsag.signer_pk_image;
 
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 
-  clsag.I = backup_key;
+  clsag.signer_pk_image = backup_key;
   clsag.D = backup_key_inv8;
 
   // check it's still good, in case we failed to restore

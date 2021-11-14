@@ -189,14 +189,14 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_D, {}, "Bad clsag.D");
     const rct::rct_point clsag_D = *maybe_clsag_D;
 
-    const auto maybe_clsag_I = crypto::maybeSafePoint(clsag.I);
-    LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_I, {}, "Bad clsag.I");
-    const rct::rct_point clsag_I = *maybe_clsag_I;
+    const auto maybe_clsag_signer_pk_image = crypto::maybeSafePoint(clsag.signer_pk_image);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_signer_pk_image, {}, "Bad clsag.signer_pk_image");
+    const rct::rct_point clsag_signer_pk_image = *maybe_clsag_signer_pk_image;
 
     return {{
       clsag_s
       , crypto::reduce(clsag.c1)
-      , clsag_I
+      , clsag_signer_pk_image
       , clsag_D
     }};
   }
@@ -210,7 +210,7 @@ namespace rct {
     return {
       s
       , clsag.c1
-      , clsag.I
+      , clsag.signer_pk_image
       , clsag.D
     };
   }
