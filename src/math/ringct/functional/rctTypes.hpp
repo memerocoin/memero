@@ -151,7 +151,7 @@ namespace rct {
 
   struct Bulletproof
   {
-    rct::rct_pointV V;
+    rct::rct_pointV commits;
     rct::rct_point A, S;
     rct::rct_point T1, T2;
     rct::rct_scalar taux, mu;

@@ -73,7 +73,7 @@ namespace rct {
 
     const Bulletproof proof = bulletproof_MAKE(xs);
 
-    LOG_ERROR_AND_THROW_UNLESS(proof.V.size() == outputs.size(), "V does not have the expected size");
+    LOG_ERROR_AND_THROW_UNLESS(proof.commits.size() == outputs.size(), "V does not have the expected size");
 
     rct_scalarV output_blinding_factors;
     std::transform
@@ -317,8 +317,8 @@ namespace rct {
     std::vector<output_commit> outputCommits;
     std::transform
       (
-       proof.V.begin()
-       , proof.V.end()
+       proof.commits.begin()
+       , proof.commits.end()
        , std::back_inserter(outputCommits)
        , [](const auto& x) -> output_commit {
          return {crypto::mult8(x)};

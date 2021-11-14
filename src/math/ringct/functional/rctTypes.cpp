@@ -154,7 +154,7 @@ namespace rct {
       // rct::rct_scalar mu;
       // rct::inv8V L, R;
       // rct::rct_scalar a, b, t;
-      proof.V
+      proof.commits
       , proof.A
       , proof.S
       , proof.T1

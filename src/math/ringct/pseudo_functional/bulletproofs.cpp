@@ -550,13 +550,13 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   // sanity and figure out which proof is longest
   // STEP 1, fill proof_data
 
-  LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() >= 1, false, "V does not have at least one element");
+  LOG_ERROR_AND_RETURN_UNLESS(proof.commits.size() >= 1, false, "commits V does not have at least one element");
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() > 0, false, "Empty proof");
 
 
   // Reconstruct the challenges
-  crypto::dataV hash_dataV(proof.V.size());
-  std::copy(proof.V.begin(), proof.V.end(), hash_dataV.begin());
+  crypto::dataV hash_dataV(proof.commits.size());
+  std::copy(proof.commits.begin(), proof.commits.end(), hash_dataV.begin());
   rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   proof_data_t pd;
@@ -585,7 +585,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   constexpr size_t N = log2bound(maxN).first;
   constexpr size_t logN = log2bound(maxN).second;
-  const auto [M, logM] = log2bound(std::min(maxM, proof.V.size()));
+  const auto [M, logM] = log2bound(std::min(maxM, proof.commits.size()));
 
   const size_t rounds = logM + logN;
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() == rounds, false, "Proof is not the expected size");
@@ -620,7 +620,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   // STEP 2, use proof_data
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(proof.V.size() + (2 * (logM + logN) + 4) + 2 * maxMN);
+  multiexp_data.reserve(proof.commits.size() + (2 * (logM + logN) + 4) + 2 * maxMN);
 
   // setup weighted aggregates
 
@@ -658,8 +658,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   std::transform
     (
-      proof.V.begin()
-      , proof.V.end()
+      proof.commits.begin()
+      , proof.commits.end()
       , std::next(std::next(zpow.begin()))
       , std::back_inserter(multiexp_data)
       , [weight_y](const auto& x, const auto& y) -> MultiexpData {

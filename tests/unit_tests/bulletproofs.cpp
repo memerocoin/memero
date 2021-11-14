@@ -177,7 +177,7 @@ TEST(bulletproofs, invalid_torsion)
     rct::rct_point x;
     ASSERT_TRUE(epee::string_tools::hex_to_pod(xs, x));
     ASSERT_FALSE(crypto::is_safe_point(x));
-    for (auto &k: proof.V)
+    for (auto &k: proof.commits)
     {
       const auto org_k = k;
       k = rct::unsafe_d2rct_p(k) + x;
