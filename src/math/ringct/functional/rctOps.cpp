@@ -100,13 +100,6 @@ namespace rct {
     return reduce(d2s(h2d(hash_dataV(keys))));
   }
 
-  rct_point hash_to_point_via_field(const crypto::crypto_data k) {
-    const auto h = h2d(hash_data(k));
-    const crypto::ec_point p = viaFieldMult8(h);
-    return p;
-  }
-
-
 
   // ecdh
   uint64_t hash_and_xor_int(const uint64_t x, const rct_scalar y)

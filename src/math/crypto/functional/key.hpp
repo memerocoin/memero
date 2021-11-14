@@ -71,6 +71,8 @@ namespace crypto {
     * * Then he selects a bunch of outputs, including the one he spends, and uses them to generate a ring signature.
     * To check the signature, it is necessary to collect all the keys that were used to generate it. To detect double spends, it is necessary to check that each key image is used at most once.
     */
+
+  ec_point hash_to_point_via_field(const crypto::crypto_data k);
   output_spend_public_key_image derive_public_key_image(const secret_key) noexcept;
 
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x) noexcept;

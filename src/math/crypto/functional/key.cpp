@@ -55,12 +55,13 @@ namespace crypto {
     return verify_schnorr_signature(hash_key + message_hash.blob(), tx_output_public_key, sig, view_key_base);
   }
 
-  output_spend_public_key_image derive_public_key_image(const secret_key sec) noexcept {
-    const ec_point h8 = viaFieldMult8(h2p(sha3(to_pk(sec).data)));
-    const ec_point p = h8 ^ sec;
-    return p2img(p);
+  ec_point hash_to_point_via_field(const crypto::crypto_data k) {
+    return viaFieldMult8(h2p(sha3(k.data)));
   }
 
+  output_spend_public_key_image derive_public_key_image(const secret_key sec) noexcept {
+    return p2img(hash_to_point_via_field(to_pk(sec)) ^ sec);
+  }
 
   ecdh_shared_secret derive_tx_output_ecdh_shared_secret
   (
