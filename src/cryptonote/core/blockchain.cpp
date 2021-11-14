@@ -2437,38 +2437,55 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
-  // in a v2 tx, all outputs must have 0 amount
-    if (tx.version >= 2) {
-      for (auto &o: tx.vout) {
-        if (o.amount != 0) {
-          tvc.m_invalid_output = true;
-          return false;
-        }
-      }
+  for (auto &o: tx.vout) {
+    if (o.amount != 0) {
+      tvc.m_invalid_output = true;
+      return false;
     }
+  }
 
-  // from v4, forbid invalid pubkeys
-    for (const auto &o: tx.vout) {
-      if (o.target.type() == typeid(txout_to_key)) {
-        const txout_to_key& out_to_key = boost::get<txout_to_key>(o.target);
-        if (!crypto::is_safe_point(out_to_key.output_spend_public_key)) {
-          tvc.m_invalid_output = true;
-          return false;
-        }
-      }
-    }
-
-  // from v14, allow only CLSAGs
-    if (tx.version >= 2) {
-      if (tx.ringct_essential.type != rct::RCTTypeCLSAG)
-      {
-        LOG_ERROR_VER("Ringct type " << (unsigned)tx.ringct_essential.type << " is not allowed");
+  for (const auto &o: tx.vout) {
+    if (o.target.type() == typeid(txout_to_key)) {
+      const txout_to_key& out_to_key = boost::get<txout_to_key>(o.target);
+      if (!crypto::is_safe_point(out_to_key.output_spend_public_key)) {
         tvc.m_invalid_output = true;
         return false;
       }
     }
+  }
 
-  return true;
+  if (tx.ringct_essential.type != rct::RCTTypeCLSAG)
+  {
+    LOG_ERROR_VER("Ringct type " << (unsigned)tx.ringct_essential.type << " is not allowed");
+    tvc.m_invalid_output = true;
+    return false;
+  }
+
+  // double check points in ringct
+  const bool valid_output_commits =
+    std::transform_reduce
+    (
+     tx.ringct_essential.output_commits.begin()
+     , tx.ringct_essential.output_commits.end()
+     , true
+     , std::logical_and()
+     , [](const auto&x) {
+       return crypto::is_safe_point(x.commit);
+     }
+     );
+
+  const bool valid_pseudo_input_commits =
+    std::transform_reduce
+    (
+     tx.ringct_essential.p.pseudo_input_commits.begin()
+     , tx.ringct_essential.p.pseudo_input_commits.end()
+     , true
+     , std::logical_and()
+     , crypto::is_safe_point
+     );
+
+
+  return valid_output_commits && valid_pseudo_input_commits;
 }
 //------------------------------------------------------------------
 bool Blockchain::have_tx_keyimges_as_spent(const transaction &tx) const
