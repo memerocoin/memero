@@ -119,10 +119,11 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty decoys");
     LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature rct_scalar vector is the wrong size!");
 
-    if (!is_safe_point(pseudo_commit)) {
-      LOG_ERROR("pseudo_commit is not a valid point: " << pseudo_commit);
-      return false;
-    }
+    // we assume all points are valid at this point
+    // if (!is_safe_point(pseudo_commit)) {
+    //   LOG_ERROR("pseudo_commit is not a valid point: " << pseudo_commit);
+    //   return false;
+    // }
 
     // Aggregation hashes
     crypto::dataV mu_P_to_hash = {{}};
@@ -205,13 +206,15 @@ namespace rct {
       const rct_scalar c_p = mu_P * c;
       const rct_scalar c_c = mu_C * c;
 
-      const rct_point mask = decoys[i].commit;
-      if (!is_safe_point(mask)) {
-        LOG_ERROR("decoys[" << i << "].commit.data is not a valid point: " << mask);
-        return false;
-      }
+      const rct_point decoy_commit = decoys[i].commit;
 
-      const rct_point C = mask - pseudo_commit;
+      // we assume all points are valid at this point
+      // if (!is_safe_point(mask)) {
+      //   LOG_ERROR("decoys[" << i << "].commit.data is not a valid point: " << mask);
+      //   return false;
+      // }
+
+      const rct_point decoy_commit_surplus = decoy_commit - pseudo_commit;
 
       // Compute L
       const rct_point L = sum
@@ -220,7 +223,7 @@ namespace rct {
           {
             G_(sig.s[i])
             , decoys[i].output_spend_pk ^ c_p
-            , C ^ c_c
+            , decoy_commit_surplus ^ c_c
           }
           );
 
