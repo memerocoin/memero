@@ -79,12 +79,12 @@ namespace rct {
     return generate_clsag_signature
       (
        message
-       , pubs
        , inSk.addr
        , inSk.blinding_factor
+       , index
        , a
        , Cout
-       , index
+       , pubs
        );
   }
 

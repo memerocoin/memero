@@ -39,12 +39,12 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const output_public_dataV decoys
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
+   , const size_t index_in_decoys
    , const rct_scalar pseudo_input_blinding_factor
    , const rct_point pseudo_input_commit
-   , const size_t index_in_decoys
+   , const output_public_dataV decoys
    );
 
   struct rctInputData

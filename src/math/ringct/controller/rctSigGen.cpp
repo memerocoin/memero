@@ -98,13 +98,13 @@ namespace rct {
   clsag generate_clsag_signature_internal
   (
     const crypto::hash message
-    , const rct_pointV decoy_spend_pks
     , const rct_scalar input_spend_sk
-    , const rct_pointV decoy_commit_surplus
     , const rct_scalar input_blinding_factor_surplus
-    , const rct_pointV decoy_commits
-    , const rct_point pseudo_input_commit
     , const size_t index_in_decoys
+    , const rct_point pseudo_input_commit
+    , const rct_pointV decoy_spend_pks
+    , const rct_pointV decoy_commit_surplus
+    , const rct_pointV decoy_commits
     )
   {
     size_t n = decoy_spend_pks.size(); // ring size
@@ -245,12 +245,12 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const output_public_dataV decoys
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
+   , const size_t index_in_decoys
    , const rct_scalar pseudo_input_blinding_factor
    , const rct_point pseudo_input_commit
-   , const size_t index_in_decoys
+   , const output_public_dataV decoys
    )
   {
     LOG_ERROR_AND_THROW_IF(decoys.empty(), "Empty decoys");
@@ -286,13 +286,13 @@ namespace rct {
     return generate_clsag_signature_internal
       (
        message
-       , decoy_spend_pks
        , input_spend_sk
-       , decoy_commit_surplus
        , input_blinding_factor_surplus
-       , decoy_commits
-       , pseudo_input_commit
        , index_in_decoys
+       , pseudo_input_commit
+       , decoy_spend_pks
+       , decoy_commit_surplus
+       , decoy_commits
        );
   }
 
@@ -418,12 +418,12 @@ namespace rct {
          const auto clsag = generate_clsag_signature
            (
             full_message
-            , decoys[i]
             , inputs[i].input_spend_sk
             , inputs[i].input_blinding_factor
+            , inputs[i].index_in_decoys
             , pseudo_input_blinding_factors[i]
             , pseudo_input_commits[i]
-            , inputs[i].index_in_decoys
+            , decoys[i]
             );
          i++;
          return toUnsafeCLSAG(clsag);
