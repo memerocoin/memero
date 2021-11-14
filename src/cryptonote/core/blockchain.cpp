@@ -1075,7 +1075,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
   // for v2 txes (ringct), we only accept empty rct signatures for miner transactions,
   if (b.miner_tx.version >= 2)
   {
-    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.ringct_essential.type == rct::RCTTypeNull, false, "RingCT signatures not allowed in coinbase transactions");
+    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.ringct.type == rct::RCTTypeNull, false, "RingCT signatures not allowed in coinbase transactions");
   }
 
   if(boost::get<txin_gen>(b.miner_tx.vin[0]).height != height)
@@ -1272,7 +1272,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     }
     else
     {
-      if (cur_tx.fee != cur_tx.tx.ringct_essential.fee)
+      if (cur_tx.fee != cur_tx.tx.ringct.fee)
       {
         LOG_ERROR("Creating block template: error: invalid fee");
       }
@@ -2454,9 +2454,9 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
     }
   }
 
-  if (tx.ringct_essential.type != rct::RCTTypeCLSAG)
+  if (tx.ringct.type != rct::RCTTypeCLSAG)
   {
-    LOG_ERROR_VER("Ringct type " << (unsigned)tx.ringct_essential.type << " is not allowed");
+    LOG_ERROR_VER("Ringct type " << (unsigned)tx.ringct.type << " is not allowed");
     tvc.m_invalid_output = true;
     return false;
   }
@@ -2465,8 +2465,8 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   const bool valid_output_commits =
     std::transform_reduce
     (
-     tx.ringct_essential.output_commits.begin()
-     , tx.ringct_essential.output_commits.end()
+     tx.ringct.output_commits.begin()
+     , tx.ringct.output_commits.end()
      , true
      , std::logical_and()
      , [](const auto&x) {
@@ -2477,8 +2477,8 @@ bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context
   const bool valid_pseudo_input_commits =
     std::transform_reduce
     (
-     tx.ringct_essential.p.pseudo_input_commits.begin()
-     , tx.ringct_essential.p.pseudo_input_commits.end()
+     tx.ringct.p.pseudo_input_commits.begin()
+     , tx.ringct.p.pseudo_input_commits.end()
      , true
      , std::logical_and()
      , crypto::is_safe_point
@@ -2503,7 +2503,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
 {
   LOG_ERROR_AND_RETURN_UNLESS(tx.version == 2, false, "Transaction version is not 2");
 
-  rct::rctData &rv = tx.ringct_essential;
+  rct::rctData &rv = tx.ringct;
 
   // message - hash of the transaction prefix
   rv.message = tx_prefix_hash;
@@ -2586,7 +2586,7 @@ bool Blockchain::check_tx_input
   size_t tx_version
   , const txin_to_key& txin
   , const crypto::hash& tx_prefix_hash
-  , const rct::rctData &ringct_essential
+  , const rct::rctData &ringct
   , std::vector<rct::output_public_data> &output_keys
   , uint64_t* pmax_related_block_height
   ) const
@@ -2639,7 +2639,7 @@ bool Blockchain::check_tx_input
     LOG_ERROR_VER("Output keys for tx with amount = " << txin.amount << " and count indexes " << txin.output_relative_offsets.size() << " returned wrong keys count " << output_keys.size());
     return false;
   }
-  // ringct_essential will be expanded after this
+  // ringct will be expanded after this
   return true;
 }
 //------------------------------------------------------------------
@@ -3908,7 +3908,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
     // make sure that output being spent matches up correctly with the
     // signature spending it.
-    if (!check_tx_input(tx.version, in_to_key, tx_prefix_hash, tx.ringct_essential, pubkeys[sig_index], pmax_used_block_height))
+    if (!check_tx_input(tx.version, in_to_key, tx_prefix_hash, tx.ringct, pubkeys[sig_index], pmax_used_block_height))
     {
       LOG_ERROR_VER("Failed to check ring signature for tx " << get_transaction_hash(tx) << "  vin key with output_spend_public_key_image: " << in_to_key.output_spend_public_key_image << "  sig_index: " << sig_index);
       if (pmax_used_block_height) // a default value of NULL is used when called from Blockchain::handle_block_to_main_chain()
@@ -3937,7 +3937,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     // from version 2, check ringct signatures
     // obviously, the original and simple rct APIs use decoys that's indexes
     // in opposite orders, because it'd be too simple otherwise...
-    const rct::rctData &rv = tx.ringct_essential;
+    const rct::rctData &rv = tx.ringct;
     switch (rv.type)
     {
     case rct::RCTTypeNull: {

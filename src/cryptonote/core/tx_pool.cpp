@@ -143,7 +143,7 @@ namespace cryptonote
     }
     else
     {
-      fee = tx.ringct_essential.fee;
+      fee = tx.ringct.fee;
     }
 
     if (!kept_by_block && !m_blockchain.check_fee(tx_weight, fee))

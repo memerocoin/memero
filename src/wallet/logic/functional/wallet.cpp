@@ -279,7 +279,7 @@ namespace wallet {
 
     if (tx_scan_info.money_transfered == 0 && !miner_tx)
     {
-      const auto r = decodeRct(tx.ringct_essential, tx_scan_info.received->tx_output_shared_secret, i);
+      const auto r = decodeRct(tx.ringct, tx_scan_info.received->tx_output_shared_secret, i);
       if (!r) {
         tx_scan_info.error = true;
         return tx_scan_info;

@@ -837,7 +837,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     }
   }
 
-  uint64_t fee = miner_tx ? 0 : tx.ringct_essential.fee;
+  uint64_t fee = miner_tx ? 0 : tx.ringct.fee;
 
   if (tx_money_spent_in_ins > 0 && !pool)
   {
@@ -955,7 +955,7 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
     // wallet (eg, we're a cold wallet and the hot wallet sent it). For RCT transactions,
     // we only see 0 input amounts, so have to deduce amount out from other parameters.
     entry.first->second.m_amount_in = spent;
-    entry.first->second.m_amount_out = spent - tx.ringct_essential.fee;
+    entry.first->second.m_amount_out = spent - tx.ringct.fee;
     entry.first->second.m_change = received;
 
     entry.first->second.m_subaddr_account = subaddr_account;

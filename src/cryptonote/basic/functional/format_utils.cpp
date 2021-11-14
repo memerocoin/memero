@@ -333,7 +333,7 @@ namespace cryptonote
 
     // prunable rct
     hashes[2]
-      = t.ringct_essential.type == rct::RCTTypeNull
+      = t.ringct.type == rct::RCTTypeNull
       ? crypto::null_hash
       : calculate_transaction_prunable_hash(t, blob);
 
@@ -387,7 +387,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   uint64_t get_tx_fee(const transaction& tx)
   {
-    return tx.ringct_essential.fee;
+    return tx.ringct.fee;
   }
 
   //---------------------------------------------------------------

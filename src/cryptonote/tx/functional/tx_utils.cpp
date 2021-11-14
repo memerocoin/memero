@@ -361,7 +361,7 @@ namespace cryptonote
 
       const crypto::hash tx_prefix_hash = get_transaction_prefix_hash(tx);
 
-      tx.ringct_essential = rct::generate_ringct
+      tx.ringct = rct::generate_ringct
         (
          tx_prefix_hash
          , inputs
@@ -371,7 +371,7 @@ namespace cryptonote
 
       // LOG_ERROR_AND_RETURN_UNLESS
       //   (
-      //    tx.vout.size() == tx.ringct_essential.size()
+      //    tx.vout.size() == tx.ringct.size()
       //    , {}
       //    , "outSk size does not match vout"
       //    );

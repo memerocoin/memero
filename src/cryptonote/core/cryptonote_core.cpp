@@ -603,7 +603,7 @@ namespace cryptonote
     }
     if (tx.version > 1)
     {
-      if (tx.ringct_essential.output_commits.size() != tx.vout.size())
+      if (tx.ringct.output_commits.size() != tx.vout.size())
       {
         LOG_ERROR_VER("tx with mismatched vout/output_commits count, rejected for tx id= " << get_transaction_hash(tx));
         return false;
@@ -1378,7 +1378,7 @@ namespace cryptonote
 
       if (tx_info[n].tx->version < 2)
         continue;
-      const rct::rctData &rv = tx_info[n].tx->ringct_essential;
+      const rct::rctData &rv = tx_info[n].tx->ringct;
       switch (rv.type) {
         case rct::RCTTypeNull:
           // coinbase should not come here, so we reject for all other types
@@ -1413,7 +1413,7 @@ namespace cryptonote
         if (!tx_info[n].result)
           continue;
 
-        const rct::rctData rctData = tx_info[n].tx->ringct_essential;
+        const rct::rctData rctData = tx_info[n].tx->ringct;
 
         if (rctData.type != rct::RCTTypeCLSAG)
             continue;

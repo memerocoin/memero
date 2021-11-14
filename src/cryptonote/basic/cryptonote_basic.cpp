@@ -43,7 +43,7 @@ namespace cryptonote
 
   transaction::transaction(const transaction &t):
     transaction_prefix(t),
-    ringct_essential(t.ringct_essential),
+    ringct(t.ringct),
     unprunable_size(t.unprunable_size.load()),
     prefix_size(t.prefix_size.load())
   {
@@ -52,7 +52,7 @@ namespace cryptonote
   transaction &transaction::operator=(const transaction &t)
   {
     transaction_prefix::operator=(t);
-    ringct_essential = t.ringct_essential;
+    ringct = t.ringct;
     unprunable_size = t.unprunable_size.load();
     prefix_size = t.prefix_size.load();
     return *this;
@@ -70,7 +70,7 @@ namespace cryptonote
   void transaction::set_null()
   {
     transaction_prefix::set_null();
-    ringct_essential.type = rct::RCTTypeNull;
+    ringct.type = rct::RCTTypeNull;
     unprunable_size = 0;
     prefix_size = 0;
   }
