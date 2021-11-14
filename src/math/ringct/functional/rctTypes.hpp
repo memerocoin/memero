@@ -208,7 +208,7 @@ namespace rct {
       // inputs/outputs not saved, only here for serialization help
       // FIELD(message) - not serialized, it can be reconstructed
       // FIELD(decoys) - not serialized, it can be reconstructed
-      ar.tag("ecdh");
+      ar.tag("ecdh_encrypted_data");
       ar.begin_array();
       PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, ecdh);
       if (ecdh.size() != outputs)
@@ -228,7 +228,7 @@ namespace rct {
       }
       ar.end_array();
 
-      ar.tag("commits");
+      ar.tag("output_commits");
       ar.begin_array();
       PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, outputCommits);
       if (outputCommits.size() != outputs)
