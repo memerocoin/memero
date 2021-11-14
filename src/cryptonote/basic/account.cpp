@@ -35,13 +35,8 @@
 #include "math/crypto/controller/keyGen.hpp"
 
 
-
-
-
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "account"
-
-using namespace std;
 
 namespace cryptonote
 {

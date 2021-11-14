@@ -69,7 +69,6 @@
 #include <rapidjson/writer.h>
 
 
-using namespace std;
 using namespace crypto;
 using namespace cryptonote;
 using namespace wallet::logic::functional::fee;
@@ -2247,13 +2246,13 @@ crypto::secret_key wallet2::generate
     const uint64_t _target_height = get_daemon_blockchain_target_height(err);
     std::optional<uint64_t> target_height =
       err.empty()
-      ? make_optional(_target_height)
+      ? std::make_optional(_target_height)
       : std::nullopt;
 
     const uint64_t _local_height = get_daemon_blockchain_height(err);
     std::optional<uint64_t> local_height =
       err.empty()
-      ? make_optional(_local_height)
+      ? std::make_optional(_local_height)
       : std::nullopt;
 
     const uint64_t approximate_height = 0;
@@ -3091,7 +3090,7 @@ std::string wallet2::get_daemon_address() const
   return m_daemon_address;
 }
 
-uint64_t wallet2::get_daemon_blockchain_height(string &err)
+uint64_t wallet2::get_daemon_blockchain_height(std::string &err)
 {
   uint64_t height;
 
@@ -3106,7 +3105,7 @@ uint64_t wallet2::get_daemon_blockchain_height(string &err)
   return height;
 }
 
-uint64_t wallet2::get_daemon_blockchain_target_height(string &err)
+uint64_t wallet2::get_daemon_blockchain_target_height(std::string &err)
 {
   err = "";
   uint64_t target_height = 0;

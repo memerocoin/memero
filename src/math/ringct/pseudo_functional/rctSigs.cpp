@@ -31,19 +31,16 @@
 
 #include "rctSigs.hpp"
 
-#include "math/ringct/functional/curveConstants.hpp"
+#include "tools/common/threadpool.h"
+#include "tools/epee/include/logging.hpp"
 
+#include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
 
 #include "cryptonote/basic/cryptonote_format_utils.h"
 
-#include "tools/common/threadpool.h"
-#include "tools/epee/include/logging.hpp"
-
-
 #include "config/cryptonote.hpp"
 
-using namespace std;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
