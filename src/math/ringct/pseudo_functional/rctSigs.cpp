@@ -290,10 +290,10 @@ namespace rct {
 
     const rct_point feeCommit = H_(crypto::int_to_scalar(rv.fee));
     const rct_point sumOutputCommits = sum(outputCommits) + feeCommit;
-    const rct_point sumInputCommits = sum(rv.p.pseudo_input_commits);
+    const rct_point sumPseudoInputCommits = sum(rv.p.pseudo_input_commits);
 
     //check pseudo_input_commits vs Outs..
-    return sumInputCommits == sumOutputCommits;
+    return sumPseudoInputCommits == sumOutputCommits;
   }
 
   bool verify_range_proof(const rctData rv)
