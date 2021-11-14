@@ -46,8 +46,6 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "util"
 
-using namespace epee;
-
 namespace tools
 {
   std::function<void(int)> signal_handler::m_handler;

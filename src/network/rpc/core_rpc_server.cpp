@@ -361,7 +361,7 @@ namespace cryptonote
     for(const auto& tx_hex_str: req.txs_hashes)
     {
       blobdata b;
-      if(!string_tools::parse_hexstr_to_binbuff(tx_hex_str, b))
+      if(!epee::string_tools::parse_hexstr_to_binbuff(tx_hex_str, b))
       {
         res.status = "Failed to parse hex representation of transaction hash";
         return true;
@@ -535,7 +535,7 @@ namespace cryptonote
     for(const auto& ki_hex_str: req.output_spend_public_key_images)
     {
       blobdata b;
-      if(!string_tools::parse_hexstr_to_binbuff(ki_hex_str, b))
+      if(!epee::string_tools::parse_hexstr_to_binbuff(ki_hex_str, b))
       {
         res.status = "Failed to parse hex representation of key image";
         return true;
@@ -597,7 +597,7 @@ namespace cryptonote
     CHECK_CORE_READY();
 
     std::string tx_blob;
-    if(!string_tools::parse_hexstr_to_binbuff(req.tx_as_hex, tx_blob))
+    if(!epee::string_tools::parse_hexstr_to_binbuff(req.tx_as_hex, tx_blob))
     {
       LOG_PRINT_L0("[on_send_raw_tx]: Failed to parse tx from hexbuff: " << req.tx_as_hex);
       res.status = "Failed";
@@ -998,7 +998,7 @@ namespace cryptonote
       return false;
     }
     blobdata blockblob;
-    if(!string_tools::parse_hexstr_to_binbuff(req[0], blockblob))
+    if(!epee::string_tools::parse_hexstr_to_binbuff(req[0], blockblob))
     {
       error_resp.code = CORE_RPC_ERROR_CODE_WRONG_BLOCKBLOB;
       error_resp.message = "Wrong block blob";

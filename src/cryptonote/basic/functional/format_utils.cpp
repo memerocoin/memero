@@ -40,8 +40,6 @@
 #include <boost/algorithm/string.hpp>
 
 
-using namespace epee;
-
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
 

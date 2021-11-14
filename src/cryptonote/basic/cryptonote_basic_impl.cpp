@@ -40,7 +40,6 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
 
-using namespace epee;
 using namespace constant;
 
 namespace cryptonote {

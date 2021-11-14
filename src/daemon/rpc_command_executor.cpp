@@ -30,12 +30,7 @@
 
 #include "rpc_command_executor.h"
 
-
 #include "network/rpc/rpc_version_str.h"
-
-
-
-
 
 #include <boost/format.hpp>
 
@@ -826,7 +821,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
       cryptonote::transaction tx;
       cryptonote::blobdata blob;
       std::string source = as_hex;
-      if (!string_tools::parse_hexstr_to_binbuff(source, blob))
+      if (!epee::string_tools::parse_hexstr_to_binbuff(source, blob))
       {
         tools::fail_msg_writer() << "Failed to parse tx to get json format";
       }

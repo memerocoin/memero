@@ -36,15 +36,6 @@
 #include "daemon/command_server.h"
 
 
-
-
-
-
-
-
-using namespace epee;
-
-
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon"
 

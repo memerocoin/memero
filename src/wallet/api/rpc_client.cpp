@@ -52,7 +52,6 @@
     LOG_ERROR_AND_RETURN_UNLESS(res.status == CORE_RPC_STATUS_OK, res.status, "Error calling " + std::string(method) + " daemon RPC"); \
   } while(0)
 
-using namespace epee;
 using namespace cryptonote;
 using namespace wallet::logic::type::transfer;
 
