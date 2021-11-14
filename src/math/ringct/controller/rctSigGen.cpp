@@ -96,7 +96,7 @@ namespace rct {
     const crypto::hash message
     , const rct_pointV P
     , const rct_scalar p
-    , const rct_pointV C
+    , const rct_pointV decoy_commit_differences
     , const rct_scalar z
     , const rct_pointV C_nonzero
     , const rct_point C_offset
@@ -104,8 +104,18 @@ namespace rct {
     )
   {
     size_t n = P.size(); // ring size
-    LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment rct_point vector sizes must match!");
-    LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment rct_point vector sizes must match!");
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       n == decoy_commit_differences.size()
+       , "Signing and commitment rct_point vector sizes must match!"
+       );
+
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       n == C_nonzero.size()
+       , "Signing and commitment rct_point vector sizes must match!"
+       );
+
     LOG_ERROR_AND_THROW_UNLESS(index_in_decoys < n, "Signing index out of range!");
 
     // mages images
@@ -187,7 +197,7 @@ namespace rct {
          {
            G_(sk)
            , P[i] ^ c_p
-           , C[i] ^ c_c
+           , decoy_commit_differences[i] ^ c_c
          }
          );
 
@@ -259,12 +269,12 @@ namespace rct {
         , [](const auto& x) { return x.amount_commit; }
         );
 
-    rct_pointV C;
+    rct_pointV decoy_commit_differences;
     std::transform
       (
         pubs.begin()
         , pubs.end()
-        , std::back_inserter(C)
+        , std::back_inserter(decoy_commit_differences)
         , [pseudo_amount_commit](const auto& x) { return x.amount_commit - pseudo_amount_commit; }
         );
 
@@ -273,7 +283,7 @@ namespace rct {
        message
        , P
        , input_spend_sk
-       , C
+       , decoy_commit_differences
        , input_blinding_factor - pseudo_blinding_factor
        , C_nonzero
        , pseudo_amount_commit
