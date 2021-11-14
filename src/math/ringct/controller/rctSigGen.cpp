@@ -234,7 +234,7 @@ namespace rct {
    , const output_public_dataV pubs
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
-   , const rct_scalar a
+   , const rct_scalar pseudo_blinding_factor
    , const rct_point pseudo_amount_commit
    , const size_t index_in_decoys
    )
@@ -269,7 +269,16 @@ namespace rct {
         );
 
     return generate_clsag_signature_internal
-      (message, P, input_spend_sk, C, input_blinding_factor - a, C_nonzero, pseudo_amount_commit, index_in_decoys);
+      (
+       message
+       , P
+       , input_spend_sk
+       , C
+       , input_blinding_factor - pseudo_blinding_factor
+       , C_nonzero
+       , pseudo_amount_commit
+       , index_in_decoys
+       );
   }
 
 
