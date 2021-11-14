@@ -61,9 +61,9 @@ namespace rct {
 
   struct rctInputData
   {
-    const rct_scalar input_spend_sk;
-    const rct_scalar input_blinding_factor;
     const amount_t amount;
+    const rct_scalar input_blinding_factor;
+    const rct_scalar input_spend_sk;
     const size_t index;
     const output_public_dataV decoys;
   };

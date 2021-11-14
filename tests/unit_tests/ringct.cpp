@@ -105,9 +105,9 @@ namespace rct {
       inputs.push_back
         (
          {
-           inSk[i].addr
+           inamounts[i]
            , inSk[i].blinding_factor
-           , inamounts[i]
+           , inSk[i].addr
            , index[i]
            , decoys[i]
          }
