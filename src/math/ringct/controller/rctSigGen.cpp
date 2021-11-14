@@ -103,7 +103,7 @@ namespace rct {
     , const rct_pointV decoy_commit_surplus
     , const rct_scalar input_blinding_factor_surplus
     , const rct_pointV decoy_commits
-    , const rct_point pseudo_commit
+    , const rct_point pseudo_input_commit
     , const size_t index_in_decoys
     )
   {
@@ -137,7 +137,7 @@ namespace rct {
     mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_commits.begin(), decoy_commits.end());
     mu_P_to_hash.push_back(sig_I);
     mu_P_to_hash.push_back(sig_D);
-    mu_P_to_hash.push_back(pseudo_commit);
+    mu_P_to_hash.push_back(pseudo_input_commit);
 
     crypto::dataV mu_C_to_hash = mu_P_to_hash;
 
@@ -170,7 +170,7 @@ namespace rct {
 
     c_to_hash.insert(c_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
     c_to_hash.insert(c_to_hash.end(), decoy_commits.begin(), decoy_commits.end());
-    c_to_hash.push_back(pseudo_commit);
+    c_to_hash.push_back(pseudo_input_commit);
     c_to_hash.push_back(crypto::h2d(message));
     c_to_hash.push_back(G_(a));
     c_to_hash.push_back(P_hash ^ a);
@@ -249,7 +249,7 @@ namespace rct {
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
    , const rct_scalar pseudo_input_blinding_factor
-   , const rct_point pseudo_commit
+   , const rct_point pseudo_input_commit
    , const size_t index_in_decoys
    )
   {
@@ -279,7 +279,7 @@ namespace rct {
         decoys.begin()
         , decoys.end()
         , std::back_inserter(decoy_commit_surplus)
-        , [pseudo_commit](const auto& x) { return x.commit - pseudo_commit; }
+        , [pseudo_input_commit](const auto& x) { return x.commit - pseudo_input_commit; }
         );
 
     const rct_scalar input_blinding_factor_surplus = input_blinding_factor - pseudo_input_blinding_factor;
@@ -291,7 +291,7 @@ namespace rct {
        , decoy_commit_surplus
        , input_blinding_factor_surplus
        , decoy_commits
-       , pseudo_commit
+       , pseudo_input_commit
        , index_in_decoys
        );
   }

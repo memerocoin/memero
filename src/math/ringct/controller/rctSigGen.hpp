@@ -43,7 +43,7 @@ namespace rct {
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
    , const rct_scalar pseudo_input_blinding_factor
-   , const rct_point pseudo_commit
+   , const rct_point pseudo_input_commit
    , const size_t index_in_decoys
    );
 
