@@ -992,11 +992,14 @@ void BlockchainLMDB::remove_transaction_data(const crypto::hash& tx_hash, const 
       throw1(DB_ERROR("Failed to add removal of tx index to db transaction"));
 }
 
-uint64_t BlockchainLMDB::add_output(const crypto::hash& tx_hash,
-    const tx_out& tx_output,
-    const uint64_t& local_index,
-    const uint64_t unlock_time,
-    const rct::rct_point *commitment)
+uint64_t BlockchainLMDB::add_output
+(
+ const crypto::hash& tx_hash,
+ const tx_out& tx_output,
+ const uint64_t& local_index,
+ const uint64_t unlock_time,
+ const std::optional<rct::rct_point> commitment
+ )
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1013,6 +1016,7 @@ uint64_t BlockchainLMDB::add_output(const crypto::hash& tx_hash,
     throw0(DB_ERROR("Wrong output type: expected txout_to_key"));
   if (tx_output.amount == 0 && !commitment)
     throw0(DB_ERROR("RCT output without commitment"));
+
 
   outtx ot = {m_num_outputs, tx_hash, local_index};
   MDB_val_set(vot, ot);

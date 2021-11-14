@@ -469,7 +469,7 @@ private:
    * @param commitment the rct commitment to the output amount
    * @return amount output index
    */
-  virtual uint64_t add_output(const crypto::hash& tx_hash, const tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_time, const rct::rct_point *commitment) = 0;
+  virtual uint64_t add_output(const crypto::hash& tx_hash, const tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_time, const std::optional<rct::rct_point> commitment) = 0;
 
   /**
    * @brief store amount output indices for a tx's outputs
