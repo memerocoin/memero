@@ -94,7 +94,7 @@ namespace rct {
   clsag generate_clsag_signature_internal
   (
     const crypto::hash message
-    , const rct_pointV P
+    , const rct_pointV decoy_spend_pks
     , const rct_scalar input_spend_sk
     , const rct_pointV decoy_commit_differences
     , const rct_scalar z
@@ -103,7 +103,7 @@ namespace rct {
     , const size_t index_in_decoys
     )
   {
-    size_t n = P.size(); // ring size
+    size_t n = decoy_spend_pks.size(); // ring size
     LOG_ERROR_AND_THROW_UNLESS
       (
        n == decoy_commit_differences.size()
@@ -119,7 +119,7 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(index_in_decoys < n, "Signing index out of range!");
 
     // mages images
-    const rct_point P_hash = hash_to_point_via_field(P[index_in_decoys]);
+    const rct_point P_hash = hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
 
     const rct_scalar a = crypto::scalarGen();
     const rct_point sig_I = P_hash ^ input_spend_sk;
@@ -129,7 +129,7 @@ namespace rct {
     const rct_point sig_D = D ^ rct::s_inv_eight;
 
     crypto::dataV mu_P_to_hash = {{}};
-    mu_P_to_hash.insert(mu_P_to_hash.end(), P.begin(), P.end());
+    mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
     mu_P_to_hash.insert(mu_P_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
     mu_P_to_hash.push_back(sig_I);
     mu_P_to_hash.push_back(sig_D);
@@ -164,7 +164,7 @@ namespace rct {
         , c_to_hash[0].data.begin()
         );
 
-    c_to_hash.insert(c_to_hash.end(), P.begin(), P.end());
+    c_to_hash.insert(c_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
     c_to_hash.insert(c_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
     c_to_hash.push_back(C_offset);
     c_to_hash.push_back(crypto::h2d(message));
@@ -196,13 +196,13 @@ namespace rct {
          std::array
          {
            G_(sk)
-           , P[i] ^ c_p
+           , decoy_spend_pks[i] ^ c_p
            , decoy_commit_differences[i] ^ c_c
          }
          );
 
       // Compute R
-      const rct_point A = hash_to_point_via_field(P[i]);
+      const rct_point A = hash_to_point_via_field(decoy_spend_pks[i]);
       const rct_point R = sum
         (
          std::array
@@ -251,12 +251,12 @@ namespace rct {
   {
     LOG_ERROR_AND_THROW_IF(pubs.empty(), "Empty pubs");
 
-    rct_pointV P;
+    rct_pointV decoy_spend_pks;
     std::transform
       (
         pubs.begin()
         , pubs.end()
-        , std::back_inserter(P)
+        , std::back_inserter(decoy_spend_pks)
         , [](const auto& x) { return x.output_spend_pk; }
         );
 
@@ -281,7 +281,7 @@ namespace rct {
     return generate_clsag_signature_internal
       (
        message
-       , P
+       , decoy_spend_pks
        , input_spend_sk
        , decoy_commit_differences
        , input_blinding_factor - pseudo_blinding_factor
