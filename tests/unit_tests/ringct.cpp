@@ -345,33 +345,33 @@ TEST(ringct, CLSAG)
   clsag.signer_pk_image = backup_key;
 
   // bad D in clsag at verification
-  backup_key_inv8 = clsag.D;
-  clsag.D = G_(crypto::scalarGen());
+  backup_key_inv8 = clsag.signer_pk_image_from_blinding_surplus;
+  clsag.signer_pk_image_from_blinding_surplus = G_(crypto::scalarGen());
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
-  clsag.D = backup_key_inv8;
+  clsag.signer_pk_image_from_blinding_surplus = backup_key_inv8;
 
   // D not in main subgroup in clsag_unsafe
-  backup_key_inv8 = clsag.D;
+  backup_key_inv8 = clsag.signer_pk_image_from_blinding_surplus;
   auto clsag_unsafe = toUnsafeCLSAG(clsag);
   ASSERT_TRUE(maybeSafeCLSAG(clsag_unsafe));
 
   rct::rct_point x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
 
-  clsag_unsafe.D = x;
+  clsag_unsafe.signer_pk_image_from_blinding_surplus = x;
   ASSERT_FALSE(maybeSafeCLSAG(clsag_unsafe));
 
   // swapped I and D in clsag at verification
-  backup_key_inv8 = clsag.D;
+  backup_key_inv8 = clsag.signer_pk_image_from_blinding_surplus;
   backup_key = clsag.signer_pk_image;
 
   clsag.signer_pk_image = rct::unsafe_d2rct_p(backup_key_inv8);
-  clsag.D = clsag.signer_pk_image;
+  clsag.signer_pk_image_from_blinding_surplus = clsag.signer_pk_image;
 
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 
   clsag.signer_pk_image = backup_key;
-  clsag.D = backup_key_inv8;
+  clsag.signer_pk_image_from_blinding_surplus = backup_key_inv8;
 
   // check it's still good, in case we failed to restore
   ASSERT_TRUE(rct::verify_clsag_signature(message,clsag,pubs,Cout));

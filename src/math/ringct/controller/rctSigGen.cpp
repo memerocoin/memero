@@ -123,19 +123,19 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(index_in_decoys < n, "Signing index out of range!");
 
     // mages images
-    const rct_point input_spend_pk_hash = hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
+    const rct_point signer_pk_hash = hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
 
-    const rct_point sig_signer_pk_image = input_spend_pk_hash ^ signer_sk;
-    const rct_point D = input_spend_pk_hash ^ signer_blinding_factor_surplus;
+    const rct_point sig_signer_pk_image = signer_pk_hash ^ signer_sk;
+    const rct_point D = signer_pk_hash ^ signer_blinding_factor_surplus;
 
     // Offset key image
-    const rct_point sig_D = D ^ rct::s_inv_eight;
+    const rct_point sig_signer_pk_image_from_blinding_surplus = D ^ rct::s_inv_eight;
 
     crypto::dataV mu_P_to_hash = {{}};
     mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
     mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_commits.begin(), decoy_commits.end());
     mu_P_to_hash.push_back(sig_signer_pk_image);
-    mu_P_to_hash.push_back(sig_D);
+    mu_P_to_hash.push_back(sig_signer_pk_image_from_blinding_surplus);
     mu_P_to_hash.push_back(pseudo_input_commit);
 
     crypto::dataV mu_C_to_hash = mu_P_to_hash;
@@ -174,7 +174,7 @@ namespace rct {
 
     const rct_scalar a = crypto::scalarGen();
     c_to_hash.push_back(G_(a));
-    c_to_hash.push_back(input_spend_pk_hash ^ a);
+    c_to_hash.push_back(signer_pk_hash ^ a);
 
 
     rct_scalar c = rct::hash_dataV_to_scalar(c_to_hash);
@@ -238,7 +238,7 @@ namespace rct {
       s
       , sig_c1
       , sig_signer_pk_image
-      , sig_D
+      , sig_signer_pk_image_from_blinding_surplus
       };
   }
 
