@@ -47,18 +47,6 @@ namespace rct {
    , const size_t index_in_decoys
    );
 
-
-  //RingCT protocol
-  //genRct:
-  //   creates an rctData with all data necessary to verify the rangeProofs and that the signer owns one of the
-  //   columns that are claimed as inputs, and that the sum of inputs  = sum of outputs.
-  //   Also contains masked "amount" and "mask" so the receiver can see how much they received
-  //verRct:
-  //   verifies that all signatures (rangeProogs, MG sig, sum inputs = outputs) are correct
-  //decodeRct: (c.f. https://eprint.iacr.org/2015/1098 section 5.1.1)
-  //   uses the attached ecdh info to find the amounts represented by each output commitment
-  //   must know the destination private key to find the correct amount, else will return a random number
-
   struct rctInputData
   {
     const amount_t amount;
