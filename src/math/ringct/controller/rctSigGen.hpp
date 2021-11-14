@@ -65,7 +65,7 @@ namespace rct {
     const rct_scalar input_blinding_factor;
     const amount_t amount;
     const size_t index;
-    const output_public_dataV mixRing;
+    const output_public_dataV decoys;
   };
 
   struct rctOutputData

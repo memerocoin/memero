@@ -2492,17 +2492,17 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
   // message - hash of the transaction prefix
   rv.message = tx_prefix_hash;
 
-  // mixRing - full and simple store it in opposite ways
+  // decoys - full and simple store it in opposite ways
   if (rv.type == rct::RCTTypeCLSAG)
   {
     LOG_ERROR_AND_RETURN_UNLESS(!pubkeys.empty() && !pubkeys[0].empty(), false, "empty pubkeys");
-    rv.mixRing.resize(pubkeys.size());
+    rv.decoys.resize(pubkeys.size());
     for (size_t n = 0; n < pubkeys.size(); ++n)
     {
-      rv.mixRing[n].clear();
+      rv.decoys[n].clear();
       for (size_t m = 0; m < pubkeys[n].size(); ++m)
       {
-        rv.mixRing[n].push_back(pubkeys[n][m]);
+        rv.decoys[n].push_back(pubkeys[n][m]);
       }
     }
   }
@@ -3919,7 +3919,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     }
 
     // from version 2, check ringct signatures
-    // obviously, the original and simple rct APIs use a mixRing that's indexes
+    // obviously, the original and simple rct APIs use decoys that's indexes
     // in opposite orders, because it'd be too simple otherwise...
     const rct::rctData &rv = tx.ringct_essential;
     switch (rv.type)
@@ -3933,16 +3933,16 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     {
       // check all this, either reconstructed (so should really pass), or not
       {
-        if (pubkeys.size() != rv.mixRing.size())
+        if (pubkeys.size() != rv.decoys.size())
         {
-          LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkeys/mixRing size");
+          LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkeys/decoys size");
           return false;
         }
         for (size_t i = 0; i < pubkeys.size(); ++i)
         {
-          if (pubkeys[i].size() != rv.mixRing[i].size())
+          if (pubkeys[i].size() != rv.decoys[i].size())
           {
-            LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkeys/mixRing size");
+            LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkeys/decoys size");
             return false;
           }
         }
@@ -3951,12 +3951,12 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
         {
           for (size_t m = 0; m < pubkeys[n].size(); ++m)
           {
-            if (pubkeys[n][m].output_spend_pk != rv.mixRing[n][m].output_spend_pk)
+            if (pubkeys[n][m].output_spend_pk != rv.decoys[n][m].output_spend_pk)
             {
               LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkey at vin " << n << ", index " << m);
               return false;
             }
-            if (pubkeys[n][m].amount_commit != rv.mixRing[n][m].amount_commit)
+            if (pubkeys[n][m].amount_commit != rv.decoys[n][m].amount_commit)
             {
               LOG_ERROR_VER("Failed to check ringct signatures: mismatched commitment at vin " << n << ", index " << m);
               return false;

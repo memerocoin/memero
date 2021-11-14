@@ -285,7 +285,7 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(inputs.size() > 0, "Empty inamounts");
 
     for (size_t n = 0; n < inputs.size(); ++n) {
-      LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < inputs[n].mixRing.size(), "Bad index into mixRing");
+      LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < inputs[n].decoys.size(), "Bad index into decoys");
     }
 
     const auto [output_blinding_factors, proof] = generate_range_proof(outputs);
@@ -357,21 +357,21 @@ namespace rct {
 
     pseudo_amount_commits.push_back(commit(inputs.back().amount, pseudo_blinding_factor_difference));
 
-    output_public_dataM mixRing;
+    output_public_dataM decoys;
 
     std::transform
       (
        inputs.begin()
        , inputs.end()
-       , std::back_inserter(mixRing)
-       , [](const auto x) -> output_public_dataV { return x.mixRing; }
+       , std::back_inserter(decoys)
+       , [](const auto x) -> output_public_dataV { return x.decoys; }
        );
 
     const rctData preRctSig =
       {
         RCTTypeCLSAG
         , message
-        , mixRing
+        , decoys
         , ecdh
         , outPk
         , fee
@@ -391,11 +391,11 @@ namespace rct {
       (
        clsags.begin()
        , clsags.end()
-       , [full_message, mixRing, inputs, pseudo_blinding_factors, pseudo_amount_commits, i = 0]() mutable {
+       , [full_message, decoys, inputs, pseudo_blinding_factors, pseudo_amount_commits, i = 0]() mutable {
          const auto clsag = generate_clsag_signature
            (
             full_message
-            , mixRing[i]
+            , decoys[i]
             , inputs[i].input_spend_sk
             , inputs[i].input_blinding_factor
             , pseudo_blinding_factors[i]

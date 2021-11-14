@@ -309,17 +309,17 @@ namespace cryptonote
       std::vector<rct::rctInputData> inputs;
       std::vector<rct::rctOutputData> outputs;
 
-      // mixRing indexing is done the other way round for simple
-      rct::output_public_dataM mixRing(sources.size());
+      // decoys indexing is done the other way round for simple
+      rct::output_public_dataM decoys(sources.size());
       for (size_t i = 0; i < sources.size(); ++i)
       {
         amount_in += sources[i].amount;
         // inSk: (secret key, mask)
 
-        mixRing[i].resize(sources[i].outputs.size());
+        decoys[i].resize(sources[i].outputs.size());
         for (size_t n = 0; n < sources[i].outputs.size(); ++n)
         {
-          mixRing[i][n] = sources[i].outputs[n].second;
+          decoys[i][n] = sources[i].outputs[n].second;
         }
 
         const rct::rctInputData input =
@@ -328,13 +328,13 @@ namespace cryptonote
             , sources[i].mask
             , sources[i].amount
             , sources[i].real_output
-            , mixRing[i]
+            , decoys[i]
           };
 
         inputs.push_back(input);
 
         // inPk: (public key, commitment)
-        // will be done when filling in mixRing
+        // will be done when filling in decoys
       }
 
       LOG_ERROR_AND_RETURN_UNLESS

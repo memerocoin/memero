@@ -174,7 +174,7 @@ namespace rct {
   //A container to hold all signatures necessary for RingCT
   // rangeSigs holds all the rangeproof data of a transaction
   // MG holds the MLSAG signature of a transaction
-  // mixRing holds all the public keypairs (P, C) for a transaction
+  // decoys holds all the public keypairs (P, C) for a transaction
   // ecdh holds an encoded blinding_factor / amount to be passed to each receiver
   // outPk contains public keypairs which are destinations (P, C),
   //  P = address, C = commitment to amount
@@ -186,7 +186,7 @@ namespace rct {
   struct rctDataEssential {
     uint8_t type;
     crypto::hash message;
-    output_public_dataM mixRing; //the set of all pubkeys / copy
+    output_public_dataM decoys; //the set of all pubkeys / copy
     //pairs that you mix with
     // rct_pointV unusedPoints;
     std::vector<ecdh_encrypted_data> ecdh;
@@ -207,7 +207,7 @@ namespace rct {
       VARINT_FIELD(fee)
       // inputs/outputs not saved, only here for serialization help
       // FIELD(message) - not serialized, it can be reconstructed
-      // FIELD(mixRing) - not serialized, it can be reconstructed
+      // FIELD(decoys) - not serialized, it can be reconstructed
       ar.tag("ecdh");
       ar.begin_array();
       PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, ecdh);

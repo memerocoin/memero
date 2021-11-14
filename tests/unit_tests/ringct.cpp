@@ -95,7 +95,7 @@ namespace rct {
    , const vector<amount_t> inamounts
    , const vector<amount_t> outamounts
    , const amount_t fee
-   , const output_public_dataM mixRing
+   , const output_public_dataM decoys
    , const rct_scalarV output_shared_secrets_hashed_by_index
    , const std::vector<size_t> index
    )
@@ -109,7 +109,7 @@ namespace rct {
            , inSk[i].blinding_factor
            , inamounts[i]
            , index[i]
-           , mixRing[i]
+           , decoys[i]
          }
          );
     }
@@ -159,13 +159,13 @@ std::pair<ct_secret_key, output_public_data> ctskpkGen(amount_t amount) {
 }
 
 
-size_t populateRingsSimpleDummy(output_public_dataV& mixRing, const output_public_data inPk, const size_t mixin) {
+size_t populateRingsSimpleDummy(output_public_dataV& decoys, const output_public_data inPk, const size_t mixin) {
   size_t index = ((size_t)std::rand()) % (mixin + 1);
   for (size_t i = 0; i <= mixin; i++) {
     if (i != index) {
-      mixRing[i] = {G_(crypto::scalarGen()), G_(crypto::scalarGen())};
+      decoys[i] = {G_(crypto::scalarGen()), G_(crypto::scalarGen())};
     } else {
-      mixRing[i] = inPk;
+      decoys[i] = inPk;
     }
   }
   return index;
@@ -184,14 +184,14 @@ rctData generate_ringct
   ) {
     std::vector<size_t> index;
     index.resize(inPk.size());
-    output_public_dataM mixRing;
-    mixRing.resize(inPk.size());
+    output_public_dataM decoys;
+    decoys.resize(inPk.size());
     for (size_t i = 0; i < inPk.size(); ++i) {
-      mixRing[i].resize(mixin+1);
-      index[i] = populateRingsSimpleDummy(mixRing[i], inPk[i], mixin);
+      decoys[i].resize(mixin+1);
+      index[i] = populateRingsSimpleDummy(decoys[i], inPk[i], mixin);
     }
     return generate_ringct
-      (message, inSk, inamounts, outamounts, fee, mixRing, output_shared_secrets_hashed_by_index, index).first;
+      (message, inSk, inamounts, outamounts, fee, decoys, output_shared_secrets_hashed_by_index, index).first;
 }
 
 
@@ -752,12 +752,12 @@ TEST(ringct, rctData_##name##_simple) \
   ASSERT_FALSE(rct::verify_ringct(sig)); \
 }
 
-TEST_rctData_elements_simple(mixRing_empty, sig.mixRing.resize(0));
-TEST_rctData_elements_simple(mixRing_too_many, sig.mixRing.push_back(sig.mixRing.back()));
-TEST_rctData_elements_simple(mixRing_too_few, sig.mixRing.pop_back());
-TEST_rctData_elements_simple(mixRing0_empty, sig.mixRing[0].resize(0));
-TEST_rctData_elements_simple(mixRing0_too_many, sig.mixRing[0].push_back(sig.mixRing[0].back()));
-TEST_rctData_elements_simple(mixRing0_too_few, sig.mixRing[0].pop_back());
+TEST_rctData_elements_simple(decoys_empty, sig.decoys.resize(0));
+TEST_rctData_elements_simple(decoys_too_many, sig.decoys.push_back(sig.decoys.back()));
+TEST_rctData_elements_simple(decoys_too_few, sig.decoys.pop_back());
+TEST_rctData_elements_simple(decoys0_empty, sig.decoys[0].resize(0));
+TEST_rctData_elements_simple(decoys0_too_many, sig.decoys[0].push_back(sig.decoys[0].back()));
+TEST_rctData_elements_simple(decoys0_too_few, sig.decoys[0].pop_back());
 // TEST_rctData_elements_simple(pseudo_amount_commits_empty, sig.pseudo_amount_commits.resize(0));
 // TEST_rctData_elements_simple(pseudo_amount_commits_too_many, sig.pseudo_amount_commits.push_back(sig.pseudo_amount_commits.back()));
 // TEST_rctData_elements_simple(pseudo_amount_commits_too_few, sig.pseudo_amount_commits.pop_back());

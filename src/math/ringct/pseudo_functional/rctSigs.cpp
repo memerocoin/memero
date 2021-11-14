@@ -52,7 +52,7 @@ namespace rct {
 
   std::optional<crypto::hash> get_ring_signature_message(const rctData rv)
   {
-    LOG_ERROR_AND_RETURN_UNLESS(!rv.mixRing.empty(), {}, "Empty mixRing");
+    LOG_ERROR_AND_RETURN_UNLESS(!rv.decoys.empty(), {}, "Empty decoys");
 
     crypto::dataV hashes;
     hashes.push_back(crypto::h2d(rv.message));
@@ -61,7 +61,7 @@ namespace rct {
     std::stringstream ss;
     binary_archive<true> ba(ss);
 
-    const size_t inputs = rv.mixRing.size();
+    const size_t inputs = rv.decoys.size();
     const size_t outputs = rv.ecdh.size();
 
 
@@ -351,15 +351,15 @@ namespace rct {
         , "verify_clsag_signatures called on non simple rctData"
         );
 
-    // semantics check is early, and mixRing/MGs aren't resolved yet
+    // semantics check is early, and decoys/MGs aren't resolved yet
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.p.pseudo_amount_commits.size() == rv.mixRing.size()
+        rv.p.pseudo_amount_commits.size() == rv.decoys.size()
         , false
-        , "Mismatched sizes of rv.p.pseudo_amount_commits and mixRing"
+        , "Mismatched sizes of rv.p.pseudo_amount_commits and decoys"
         );
 
-    const size_t threads = std::max(rv.outPk.size(), rv.mixRing.size());
+    const size_t threads = std::max(rv.outPk.size(), rv.decoys.size());
 
     std::deque<bool> results(threads);
     tools::threadpool& tpool = tools::threadpool::getInstance();
@@ -373,11 +373,11 @@ namespace rct {
     const crypto::hash message = *maybeMessage;
 
     results.clear();
-    results.resize(rv.mixRing.size());
-    for (size_t i = 0 ; i < rv.mixRing.size() ; i++) {
+    results.resize(rv.decoys.size());
+    for (size_t i = 0 ; i < rv.decoys.size() ; i++) {
       tpool.submit(&waiter, [&, i] {
         results[i] = verify_unsafe_clsag_signature
-          (message, rv.p.CLSAGs[i], rv.mixRing[i], pseudo_amount_commits[i]);
+          (message, rv.p.CLSAGs[i], rv.decoys[i], pseudo_amount_commits[i]);
       });
     }
     if (!waiter.wait())
