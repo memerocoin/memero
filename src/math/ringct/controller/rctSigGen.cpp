@@ -96,8 +96,8 @@ namespace rct {
     const crypto::hash message
     , const rct_pointV decoy_spend_pks
     , const rct_scalar input_spend_sk
-    , const rct_pointV decoy_commit_differences
-    , const rct_scalar blinding_factor_difference
+    , const rct_pointV decoy_commit_surplus
+    , const rct_scalar blinding_factor_surplus
     , const rct_pointV decoy_commits
     , const rct_point pseudo_commit
     , const size_t index_in_decoys
@@ -106,7 +106,7 @@ namespace rct {
     size_t n = decoy_spend_pks.size(); // ring size
     LOG_ERROR_AND_THROW_UNLESS
       (
-       n == decoy_commit_differences.size()
+       n == decoy_commit_surplus.size()
        , "Signing and commitment rct_point vector sizes must match!"
        );
 
@@ -123,7 +123,7 @@ namespace rct {
 
     const rct_scalar a = crypto::scalarGen();
     const rct_point sig_I = P_hash ^ input_spend_sk;
-    const rct_point D = P_hash ^ blinding_factor_difference;
+    const rct_point D = P_hash ^ blinding_factor_surplus;
 
     // Offset key image
     const rct_point sig_D = D ^ rct::s_inv_eight;
@@ -197,7 +197,7 @@ namespace rct {
          {
            G_(sk)
            , decoy_spend_pks[i] ^ c_p
-           , decoy_commit_differences[i] ^ c_c
+           , decoy_commit_surplus[i] ^ c_c
          }
          );
 
@@ -227,7 +227,7 @@ namespace rct {
     }
 
     // Compute final scalar
-    s[index_in_decoys] = a - c * (mu_C * blinding_factor_difference + mu_P * input_spend_sk);
+    s[index_in_decoys] = a - c * (mu_C * blinding_factor_surplus + mu_P * input_spend_sk);
 
     return {
       s
@@ -269,22 +269,23 @@ namespace rct {
         , [](const auto& x) { return x.commit; }
         );
 
-    rct_pointV decoy_commit_differences;
+    rct_pointV decoy_commit_surplus;
     std::transform
       (
         decoys.begin()
         , decoys.end()
-        , std::back_inserter(decoy_commit_differences)
+        , std::back_inserter(decoy_commit_surplus)
         , [pseudo_commit](const auto& x) { return x.commit - pseudo_commit; }
         );
 
+    const rct_scalar blinding_factor_surplus = input_blinding_factor - pseudo_blinding_factor;
     return generate_clsag_signature_internal
       (
        message
        , decoy_spend_pks
        , input_spend_sk
-       , decoy_commit_differences
-       , input_blinding_factor - pseudo_blinding_factor
+       , decoy_commit_surplus
+       , blinding_factor_surplus
        , decoy_commits
        , pseudo_commit
        , index_in_decoys
@@ -371,10 +372,10 @@ namespace rct {
        }
        );
 
-    const auto pseudo_blinding_factor_difference = output_blinding_factors_sum - pseudo_blinding_factors_sum;
-    pseudo_blinding_factors.push_back(pseudo_blinding_factor_difference);
+    const auto output_blinding_factor_surplus = output_blinding_factors_sum - pseudo_blinding_factors_sum;
+    pseudo_blinding_factors.push_back(output_blinding_factor_surplus);
 
-    pseudo_commits.push_back(commit(inputs.back().amount, pseudo_blinding_factor_difference));
+    pseudo_commits.push_back(commit(inputs.back().amount, output_blinding_factor_surplus));
 
     output_public_dataM decoys;
 
