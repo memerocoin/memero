@@ -62,9 +62,9 @@ namespace rct {
   }
 
   bool is_bulletproof_structure_valid_extended(const Bulletproof_unsafe &proof) {
-    LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() <= (1u<<(proof.L.size()-6)), false, "Invalid bulletproof V/L");
-    LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() * 2 > (1u<<(proof.L.size()-6)), false, "Invalid bulletproof V/L");
-    LOG_ERROR_AND_RETURN_UNLESS(proof.V.size() > 0, false, "Empty bulletproof");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.commits.size() <= (1u<<(proof.L.size()-6)), false, "Invalid bulletproof V/L");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.commits.size() * 2 > (1u<<(proof.L.size()-6)), false, "Invalid bulletproof V/L");
+    LOG_ERROR_AND_RETURN_UNLESS(proof.commits.size() > 0, false, "Empty bulletproof");
 
     return true;
   }
@@ -72,7 +72,7 @@ namespace rct {
   size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof)
   {
     LOG_ERROR_AND_RETURN_UNLESS(is_bulletproof_structure_valid_extended(proof), 0, "Invalid proof structure");
-    return proof.V.size();
+    return proof.commits.size();
   }
 
   size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof)
@@ -130,7 +130,7 @@ namespace rct {
       // rct::rct_scalar mu;
       // rct::inv8V L, R;
       // rct::rct_scalar a, b, t;
-      proof.V
+      proof.commits
       , proof_A
       , proof_S
       , proof_T1

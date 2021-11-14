@@ -103,7 +103,7 @@ namespace cryptonote
       (
        rv.outputCommits.begin()
        , rv.outputCommits.end()
-       , std::back_inserter(rv.p.bulletproofs[0].V)
+       , std::back_inserter(rv.p.bulletproofs[0].commits)
        , [](const auto& x) {
          return x.commit ^ rct::s_inv_eight;
        }

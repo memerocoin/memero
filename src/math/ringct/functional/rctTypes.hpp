@@ -118,7 +118,7 @@ namespace rct {
 
   struct Bulletproof_unsafe
   {
-    std::vector<reconstructed_point> V;
+    std::vector<reconstructed_point> commits;
     rct::inv8 A, S;
     rct::inv8 T1, T2;
     crypto::ec_scalar_unnormalized taux, mu;
