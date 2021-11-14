@@ -355,11 +355,11 @@ namespace rct {
 
 
     // reserve the last one for generating a balanced pseudo sum
-    rct_scalarV pseudo_input_blinding_factors(inputs.size() - 1);
-    std::generate
+    rct_scalarV pseudo_input_blinding_factors;
+    std::generate_n
       (
-       pseudo_input_blinding_factors.begin()
-       , pseudo_input_blinding_factors.end()
+       std::back_inserter(pseudo_input_blinding_factors)
+       , inputs.size() - 1
        , []() { return crypto::scalarGen(); }
        );
 
