@@ -100,16 +100,16 @@ namespace rct {
     , const rct_scalar z
     , const rct_pointV C_nonzero
     , const rct_point C_offset
-    , const size_t idx
+    , const size_t index_in_decoys
     )
   {
     size_t n = P.size(); // ring size
     LOG_ERROR_AND_THROW_UNLESS(n == C.size(), "Signing and commitment rct_point vector sizes must match!");
     LOG_ERROR_AND_THROW_UNLESS(n == C_nonzero.size(), "Signing and commitment rct_point vector sizes must match!");
-    LOG_ERROR_AND_THROW_UNLESS(idx < n, "Signing index out of range!");
+    LOG_ERROR_AND_THROW_UNLESS(index_in_decoys < n, "Signing index out of range!");
 
     // mages images
-    const rct_point P_hash = hash_to_point_via_field(P[idx]);
+    const rct_point P_hash = hash_to_point_via_field(P[index_in_decoys]);
 
     const rct_scalar a = crypto::scalarGen();
     const rct_point sig_I = P_hash ^ p;
@@ -164,7 +164,7 @@ namespace rct {
 
     rct_scalar c = rct::hash_dataV_to_scalar(c_to_hash);
 
-    size_t i = (idx + 1) % n;
+    size_t i = (index_in_decoys + 1) % n;
     rct_scalar sig_c1;
     if (i == 0) {
       sig_c1 = c;
@@ -173,7 +173,7 @@ namespace rct {
     // Decoy indices
     rct_scalarV s(n);
 
-    while (i != idx) {
+    while (i != index_in_decoys) {
       // carried from last round
       const rct_scalar c_p = mu_P * c;
       const rct_scalar c_c = mu_C * c;
@@ -217,7 +217,7 @@ namespace rct {
     }
 
     // Compute final scalar
-    s[idx] = a - c * (mu_C * z + mu_P * p);
+    s[index_in_decoys] = a - c * (mu_C * z + mu_P * p);
 
     return {
       s
@@ -236,7 +236,7 @@ namespace rct {
    , const rct_scalar input_blinding_factor
    , const rct_scalar a
    , const rct_point Cout
-   , const size_t index
+   , const size_t index_in_decoys
    )
   {
     LOG_ERROR_AND_THROW_IF(pubs.empty(), "Empty pubs");
@@ -269,7 +269,7 @@ namespace rct {
         );
 
     return generate_clsag_signature_internal
-      (message, P, input_spend_sk, C, input_blinding_factor - a, C_nonzero, Cout, index);
+      (message, P, input_spend_sk, C, input_blinding_factor - a, C_nonzero, Cout, index_in_decoys);
   }
 
 
@@ -285,7 +285,7 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(inputs.size() > 0, "Empty inamounts");
 
     for (size_t n = 0; n < inputs.size(); ++n) {
-      LOG_ERROR_AND_THROW_UNLESS(inputs[n].index < inputs[n].decoys.size(), "Bad index into decoys");
+      LOG_ERROR_AND_THROW_UNLESS(inputs[n].index_in_decoys < inputs[n].decoys.size(), "Bad index into decoys");
     }
 
     const auto [output_blinding_factors, proof] = generate_range_proof(outputs);
@@ -400,7 +400,7 @@ namespace rct {
             , inputs[i].input_blinding_factor
             , pseudo_blinding_factors[i]
             , pseudo_amount_commits[i]
-            , inputs[i].index
+            , inputs[i].index_in_decoys
             );
          i++;
          return toUnsafeCLSAG(clsag);

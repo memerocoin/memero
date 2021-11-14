@@ -44,7 +44,7 @@ namespace rct {
    , const rct_scalar input_blinding_factor
    , const rct_scalar a
    , const rct_point Cout
-   , const size_t index
+   , const size_t index_in_decoys
    );
 
 
@@ -64,7 +64,7 @@ namespace rct {
     const amount_t amount;
     const rct_scalar input_blinding_factor;
     const rct_scalar input_spend_sk;
-    const size_t index;
+    const size_t index_in_decoys;
     const output_public_dataV decoys;
   };
 
