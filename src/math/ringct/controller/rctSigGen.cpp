@@ -235,7 +235,7 @@ namespace rct {
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
    , const rct_scalar a
-   , const rct_point Cout
+   , const rct_point pseudo_amount_commit
    , const size_t index_in_decoys
    )
   {
@@ -265,11 +265,11 @@ namespace rct {
         pubs.begin()
         , pubs.end()
         , std::back_inserter(C)
-        , [Cout](const auto& x) { return x.amount_commit - Cout; }
+        , [pseudo_amount_commit](const auto& x) { return x.amount_commit - pseudo_amount_commit; }
         );
 
     return generate_clsag_signature_internal
-      (message, P, input_spend_sk, C, input_blinding_factor - a, C_nonzero, Cout, index_in_decoys);
+      (message, P, input_spend_sk, C, input_blinding_factor - a, C_nonzero, pseudo_amount_commit, index_in_decoys);
   }
 
 
