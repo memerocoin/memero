@@ -956,7 +956,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
     dest.StartObject();
 
     WRITE_JSON_FIELD_FROM(dest, bulletproofs, sig.p.bulletproofs);
-    WRITE_JSON_FIELD_FROM(dest, pseudo_commits, sig.p.pseudo_commits);
+    WRITE_JSON_FIELD_FROM(dest, pseudo_input_commits, sig.p.pseudo_input_commits);
 
     dest.EndObject();
   }
@@ -983,7 +983,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::rctData& sig)
 
   if (prunable != val.MemberEnd()) {
     READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.bulletproofs, bulletproofs);
-    READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.pseudo_commits, pseudo_commits);
+    READ_JSON_VALUE_BY_KEY(prunable->value, sig.p.pseudo_input_commits, pseudo_input_commits);
   }
 }
 

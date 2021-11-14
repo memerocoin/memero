@@ -252,7 +252,7 @@ namespace rct {
     std::vector<clsag_unsafe> CLSAGs;
 
     // WARNING, needs checking when parsing
-    rct_pointV pseudo_commits; //C - for simple rct
+    rct_pointV pseudo_input_commits; //C - for simple rct
 
     // when changing this function, update cryptonote::get_pruned_transaction_weight
     template<bool W, template <bool> class Archive>
@@ -334,16 +334,16 @@ namespace rct {
       }
 
       {
-        ar.tag("pseudo_commits");
+        ar.tag("pseudo_input_commits");
         ar.begin_array();
-        PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, pseudo_commits);
-        if (pseudo_commits.size() != inputs)
+        PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, pseudo_input_commits);
+        if (pseudo_input_commits.size() != inputs)
           return false;
         for (size_t i = 0; i < inputs; ++i)
         {
-          FIELDS(pseudo_commits[i])
+          FIELDS(pseudo_input_commits[i])
           if (!typename Archive<W>::is_saving()) {
-            if (!is_safe_point(pseudo_commits[i])) return false;
+            if (!is_safe_point(pseudo_input_commits[i])) return false;
           }
           if (inputs - i > 1)
             ar.delimit_array();

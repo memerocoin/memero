@@ -290,9 +290,9 @@ namespace rct {
 
     const rct_point feeCommit = H_(crypto::int_to_scalar(rv.fee));
     const rct_point sumOutputCommits = sum(outputCommits) + feeCommit;
-    const rct_point sumInputCommits = sum(rv.p.pseudo_commits);
+    const rct_point sumInputCommits = sum(rv.p.pseudo_input_commits);
 
-    //check pseudo_commits vs Outs..
+    //check pseudo_input_commits vs Outs..
     return sumInputCommits == sumOutputCommits;
   }
 
@@ -321,9 +321,9 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.p.pseudo_commits.size() == rv.p.CLSAGs.size()
+        rv.p.pseudo_input_commits.size() == rv.p.CLSAGs.size()
         , false
-        , "Mismatched sizes of rv.p.pseudo_commits and rv.p.CLSAGs"
+        , "Mismatched sizes of rv.p.pseudo_input_commits and rv.p.CLSAGs"
         );
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -354,9 +354,9 @@ namespace rct {
     // semantics check is early, and decoys/MGs aren't resolved yet
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.p.pseudo_commits.size() == rv.decoys.size()
+        rv.p.pseudo_input_commits.size() == rv.decoys.size()
         , false
-        , "Mismatched sizes of rv.p.pseudo_commits and decoys"
+        , "Mismatched sizes of rv.p.pseudo_input_commits and decoys"
         );
 
     const size_t threads = std::max(rv.outPk.size(), rv.decoys.size());
@@ -365,7 +365,7 @@ namespace rct {
     tools::threadpool& tpool = tools::threadpool::getInstance();
     tools::threadpool::waiter waiter(tpool);
 
-    const rct_pointV &pseudo_commits = rv.p.pseudo_commits;
+    const rct_pointV &pseudo_input_commits = rv.p.pseudo_input_commits;
 
     const auto maybeMessage = get_ring_signature_message(rv);
     if (!maybeMessage) return false;
@@ -377,7 +377,7 @@ namespace rct {
     for (size_t i = 0 ; i < rv.decoys.size() ; i++) {
       tpool.submit(&waiter, [&, i] {
         results[i] = verify_unsafe_clsag_signature
-          (message, rv.p.CLSAGs[i], rv.decoys[i], pseudo_commits[i]);
+          (message, rv.p.CLSAGs[i], rv.decoys[i], pseudo_input_commits[i]);
       });
     }
     if (!waiter.wait())
