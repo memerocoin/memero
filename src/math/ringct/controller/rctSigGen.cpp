@@ -241,7 +241,7 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const output_public_dataV pubs
+   , const output_public_dataV decoys
    , const rct_scalar input_spend_sk
    , const rct_scalar input_blinding_factor
    , const rct_scalar pseudo_blinding_factor
@@ -249,13 +249,13 @@ namespace rct {
    , const size_t index_in_decoys
    )
   {
-    LOG_ERROR_AND_THROW_IF(pubs.empty(), "Empty pubs");
+    LOG_ERROR_AND_THROW_IF(decoys.empty(), "Empty decoys");
 
     rct_pointV decoy_spend_pks;
     std::transform
       (
-        pubs.begin()
-        , pubs.end()
+        decoys.begin()
+        , decoys.end()
         , std::back_inserter(decoy_spend_pks)
         , [](const auto& x) { return x.output_spend_pk; }
         );
@@ -263,8 +263,8 @@ namespace rct {
     rct_pointV decoy_commits;
     std::transform
       (
-        pubs.begin()
-        , pubs.end()
+        decoys.begin()
+        , decoys.end()
         , std::back_inserter(decoy_commits)
         , [](const auto& x) { return x.commit; }
         );
@@ -272,8 +272,8 @@ namespace rct {
     rct_pointV decoy_commit_differences;
     std::transform
       (
-        pubs.begin()
-        , pubs.end()
+        decoys.begin()
+        , decoys.end()
         , std::back_inserter(decoy_commit_differences)
         , [pseudo_commit](const auto& x) { return x.commit - pseudo_commit; }
         );
