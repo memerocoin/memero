@@ -39,7 +39,7 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const rct_scalar input_spend_sk
+   , const rct_scalar signer_sk
    , const rct_scalar input_blinding_factor
    , const size_t index_in_decoys
    , const rct_scalar pseudo_input_blinding_factor
@@ -51,7 +51,7 @@ namespace rct {
   {
     const amount_t amount;
     const rct_scalar input_blinding_factor;
-    const rct_scalar input_spend_sk;
+    const rct_scalar signer_sk;
     const size_t index_in_decoys;
     const output_public_dataV decoys;
   };

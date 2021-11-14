@@ -98,7 +98,7 @@ namespace rct {
   clsag generate_clsag_signature_internal
   (
     const crypto::hash message
-    , const rct_scalar input_spend_sk
+    , const rct_scalar signer_sk
     , const rct_scalar input_blinding_factor_surplus
     , const size_t index_in_decoys
     , const rct_point pseudo_input_commit
@@ -125,7 +125,7 @@ namespace rct {
     // mages images
     const rct_point input_spend_pk_hash = hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
 
-    const rct_point sig_I = input_spend_pk_hash ^ input_spend_sk;
+    const rct_point sig_I = input_spend_pk_hash ^ signer_sk;
     const rct_point D = input_spend_pk_hash ^ input_blinding_factor_surplus;
 
     // Offset key image
@@ -232,7 +232,7 @@ namespace rct {
     }
 
     // Compute final scalar
-    s[index_in_decoys] = a - c * (mu_C * input_blinding_factor_surplus + mu_P * input_spend_sk);
+    s[index_in_decoys] = a - c * (mu_C * input_blinding_factor_surplus + mu_P * signer_sk);
 
     return {
       s
@@ -246,7 +246,7 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const rct_scalar input_spend_sk
+   , const rct_scalar signer_sk
    , const rct_scalar input_blinding_factor
    , const size_t index_in_decoys
    , const rct_scalar pseudo_input_blinding_factor
@@ -287,7 +287,7 @@ namespace rct {
     return generate_clsag_signature_internal
       (
        message
-       , input_spend_sk
+       , signer_sk
        , input_blinding_factor_surplus
        , index_in_decoys
        , pseudo_input_commit
@@ -419,7 +419,7 @@ namespace rct {
          const auto clsag = generate_clsag_signature
            (
             full_message
-            , inputs[i].input_spend_sk
+            , inputs[i].signer_sk
             , inputs[i].input_blinding_factor
             , inputs[i].index_in_decoys
             , pseudo_input_blinding_factors[i]
