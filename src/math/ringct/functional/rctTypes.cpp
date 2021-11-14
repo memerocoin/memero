@@ -208,14 +208,10 @@ namespace rct {
     const rct::rct_point clsag_signer_pk_image_from_blinding_surplus =
       *maybe_clsag_signer_pk_image_from_blinding_surplus;
 
-    const auto maybe_clsag_signer_pk_image = crypto::maybeSafePoint(clsag.signer_pk_image);
-    LOG_ERROR_AND_RETURN_UNLESS(maybe_clsag_signer_pk_image, {}, "Bad clsag.signer_pk_image");
-    const rct::rct_point clsag_signer_pk_image = *maybe_clsag_signer_pk_image;
-
     return {{
       clsag_s
       , crypto::reduce(clsag.c1)
-      , clsag_signer_pk_image
+      , clsag.signer_pk_image
       , clsag_signer_pk_image_from_blinding_surplus
     }};
   }
