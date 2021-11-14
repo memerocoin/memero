@@ -34,7 +34,14 @@
 #include "math/ringct/functional/rctOps.hpp"
 
 namespace rct {
-  bool verify_clsag_signature(const crypto::hash, const clsag, const output_public_dataS, const rct_point);
+  bool verify_clsag_signature
+  (
+   const crypto::hash message
+   , const clsag sig
+   , const output_public_dataS decoys
+   , const rct_point pseudo_amount_commit
+   );
+
   bool verify_clsag_signatures(const rctData rv);
 
   bool verify_tx_balance(const rctData rv);

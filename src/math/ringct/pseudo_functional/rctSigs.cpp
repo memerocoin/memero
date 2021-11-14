@@ -109,18 +109,18 @@ namespace rct {
   (
     const crypto::hash message
     , const clsag sig
-    , const output_public_dataS pubs
-    , const rct_point C_offset
+    , const output_public_dataS decoys
+    , const rct_point pseudo_amount_commit
     )
   {
-    const size_t n = pubs.size();
+    const size_t n = decoys.size();
 
     // Check data
-    LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty pubs");
+    LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty decoys");
     LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "Signature rct_scalar vector is the wrong size!");
 
-    if (!is_safe_point(C_offset)) {
-      LOG_ERROR("C_offset is not a valid point: " << C_offset);
+    if (!is_safe_point(pseudo_amount_commit)) {
+      LOG_ERROR("pseudo_amount_commit is not a valid point: " << pseudo_amount_commit);
       return false;
     }
 
@@ -128,23 +128,23 @@ namespace rct {
     crypto::dataV mu_P_to_hash = {{}};
     std::transform
       (
-        pubs.begin()
-        , pubs.end()
+        decoys.begin()
+        , decoys.end()
         , std::back_inserter(mu_P_to_hash)
         , [](const auto& x) { return x.output_spend_pk; }
         );
 
     std::transform
       (
-        pubs.begin()
-        , pubs.end()
+        decoys.begin()
+        , decoys.end()
         , std::back_inserter(mu_P_to_hash)
         , [](const auto& x) { return x.commit; }
         );
 
     mu_P_to_hash.push_back(sig.I);
     mu_P_to_hash.push_back(sig.D);
-    mu_P_to_hash.push_back(C_offset);
+    mu_P_to_hash.push_back(pseudo_amount_commit);
 
     crypto::dataV mu_C_to_hash = mu_P_to_hash;
 
@@ -166,7 +166,7 @@ namespace rct {
     const rct_scalar mu_C = hash_dataV_to_scalar(mu_C_to_hash);
 
     // Set up round hash
-    crypto::dataV c_to_hash = {{}}; // domain, P, C, C_offset, message, L, R
+    crypto::dataV c_to_hash = {{}}; // domain, P, C, pseudo_amount_commit, message, L, R
     std::copy_n
       (
         config::HASH_KEY_CLSAG_ROUND.data()
@@ -176,21 +176,21 @@ namespace rct {
 
     std::transform
       (
-        pubs.begin()
-        , pubs.end()
+        decoys.begin()
+        , decoys.end()
         , std::back_inserter(c_to_hash)
         , [](const auto& x) { return x.output_spend_pk; }
         );
 
     std::transform
       (
-        pubs.begin()
-        , pubs.end()
+        decoys.begin()
+        , decoys.end()
         , std::back_inserter(c_to_hash)
         , [](const auto& x) { return x.commit; }
         );
 
-    c_to_hash.push_back(C_offset);
+    c_to_hash.push_back(pseudo_amount_commit);
     c_to_hash.push_back(crypto::h2d(message));
     c_to_hash.push_back({}); // reserve for L
     c_to_hash.push_back({}); // reserve for R
@@ -205,13 +205,13 @@ namespace rct {
       const rct_scalar c_p = mu_P * c;
       const rct_scalar c_c = mu_C * c;
 
-      const rct_point mask = pubs[i].commit;
+      const rct_point mask = decoys[i].commit;
       if (!is_safe_point(mask)) {
-        LOG_ERROR("pubs[" << i << "].commit.data is not a valid point: " << mask);
+        LOG_ERROR("decoys[" << i << "].commit.data is not a valid point: " << mask);
         return false;
       }
 
-      const rct_point C = mask - C_offset;
+      const rct_point C = mask - pseudo_amount_commit;
 
       // Compute L
       const rct_point L = sum
@@ -219,13 +219,13 @@ namespace rct {
           std::array
           {
             G_(sig.s[i])
-            , pubs[i].output_spend_pk ^ c_p
+            , decoys[i].output_spend_pk ^ c_p
             , C ^ c_c
           }
           );
 
       // Compute R
-      const rct_point k = hash_to_point_via_field(pubs[i].output_spend_pk);
+      const rct_point k = hash_to_point_via_field(decoys[i].output_spend_pk);
 
       const rct_point R = sum
         (
@@ -253,8 +253,8 @@ namespace rct {
   (
    const crypto::hash message
    , const clsag_unsafe sig
-   , const output_public_dataS pubs
-   , const rct_point C_offset
+   , const output_public_dataS decoys
+   , const rct_point pseudo_amount_commit
    )
   {
     const auto maybeClsag = maybeSafeCLSAG(sig);
@@ -265,7 +265,7 @@ namespace rct {
        , "invalid clsag signature"
        );
 
-    return verify_clsag_signature(message, *maybeClsag, pubs, C_offset);
+    return verify_clsag_signature(message, *maybeClsag, decoys, pseudo_amount_commit);
   }
 
   bool verify_tx_balance(const rctData rv) {
