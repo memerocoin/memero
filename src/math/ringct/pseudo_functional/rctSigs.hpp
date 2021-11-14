@@ -39,7 +39,7 @@ namespace rct {
    const crypto::hash message
    , const clsag sig
    , const output_public_dataS decoys
-   , const rct_point pseudo_commit
+   , const rct_point pseudo_input_commit
    );
 
   bool verify_clsag_signatures(const rctData rv);
