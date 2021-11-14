@@ -63,7 +63,11 @@ namespace rct {
        , outputs.end()
        , std::back_inserter(xs)
        , [](const auto& x) -> std::pair<uint64_t, rct_scalar> {
-         return {x.amount, rct::get_blinding_factor_from_hashed_shared_secret(x.ecdh_shared_secret_hashed_by_index)};
+         return
+           {
+             x.amount
+             , rct::get_blinding_factor_from_hashed_shared_secret(x.ecdh_shared_secret_hashed_by_index)
+           };
        }
        );
 
@@ -352,12 +356,11 @@ namespace rct {
        );
 
     rct_scalar pseudo_blinding_factors_sum =
-      std::accumulate
+      std::reduce
       (
        pseudo_blinding_factors.begin()
        , pseudo_blinding_factors.end()
        , s_zero
-       , std::plus<>()
        );
 
     rct_pointV pseudo_commits;
