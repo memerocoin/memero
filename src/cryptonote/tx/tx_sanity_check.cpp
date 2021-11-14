@@ -99,4 +99,50 @@ bool tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices, ui
   return true;
 }
 
+bool check_tx_output_points(const transaction& tx) {
+  const bool valid_output_spend_public_keys =
+    std::transform_reduce
+    (
+     tx.vout.begin()
+     , tx.vout.end()
+     , true
+     , std::logical_and()
+     , [](const auto&o) {
+       if (o.target.type() == typeid(txout_to_key)) {
+         const txout_to_key& out_to_key = boost::get<txout_to_key>(o.target);
+         if (!crypto::is_safe_point(out_to_key.output_spend_public_key)) {
+           return false;
+         }
+       }
+       return true;
+     }
+     );
+
+  // double check points in ringct
+  const bool valid_output_commits =
+    std::transform_reduce
+    (
+     tx.ringct.output_commits.begin()
+     , tx.ringct.output_commits.end()
+     , true
+     , std::logical_and()
+     , [](const auto&x) {
+       return crypto::is_safe_point(x.commit);
+     }
+     );
+
+  const bool valid_pseudo_input_commits =
+    std::transform_reduce
+    (
+     tx.ringct.p.pseudo_input_commits.begin()
+     , tx.ringct.p.pseudo_input_commits.end()
+     , true
+     , std::logical_and()
+     , crypto::is_safe_point
+     );
+
+
+  return valid_output_spend_public_keys && valid_output_commits && valid_pseudo_input_commits;
+}
+
 }
