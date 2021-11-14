@@ -55,8 +55,8 @@ namespace rct {
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
   (
    const rctData rv
-   , const rct_scalar ecdh_shared_secret
-   , const size_t i
+   , const rct_scalar ecdh_shared_secret_hashed_by_index
+   , const size_t output_index
    );
 
   std::optional<crypto::hash> get_ring_signature_message(const rctData rv);

@@ -213,13 +213,13 @@ namespace wallet {
    , const unsigned int i
    )
   {
-    const crypto::ec_scalar s_der = crypto::hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, i);
+    const crypto::ec_scalar hashed_secret = crypto::hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, i);
     try
     {
       switch (rv.type)
         {
         case rct::RCTTypeCLSAG: {
-          return {rct::decode_ringct_commitment(rv, s_der, i)};
+          return {rct::decode_ringct_commitment(rv, hashed_secret, i)};
         }
         default:
           LOG_ERROR("Unsupported rct type: " << rv.type);

@@ -396,20 +396,21 @@ namespace rct {
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
   (
     const rctData rv
-    , const rct_scalar ecdh_shared_secret
-    , const size_t i
+    , const rct_scalar ecdh_shared_secret_hashed_by_index
+    , const size_t output_index
     )
   {
     LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctData");
-    LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdh.size(), "Bad index");
+    LOG_ERROR_AND_THROW_UNLESS(output_index < rv.ecdh.size(), "Bad index");
     LOG_ERROR_AND_THROW_UNLESS(rv.output_commits.size() == rv.ecdh.size(), "Mismatched sizes of rv.output_commits and rv.ecdh");
 
-    const rct_scalar blinding_factor = rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret);
+    const rct_scalar blinding_factor = rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret_hashed_by_index);
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
 
-    const uint64_t amount = rct::decode_amount_by_ecdh_shared_secret(rv.ecdh[i].masked_amount, ecdh_shared_secret);
+    const uint64_t amount = rct::decode_amount_by_ecdh_shared_secret
+      (rv.ecdh[output_index].masked_amount, ecdh_shared_secret_hashed_by_index);
 
-    const rct_point C = rv.output_commits[i].commit;
+    const rct_point C = rv.output_commits[output_index].commit;
 
     if (C != commit(amount, blinding_factor)) {
       LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");
