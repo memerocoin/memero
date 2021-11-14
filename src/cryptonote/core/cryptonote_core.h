@@ -811,16 +811,6 @@ namespace cryptonote
      bool check_tx_inputs_ring_members_diff(const transaction& tx) const;
 
      /**
-      * @brief verify that each input key image in a transaction is in
-      * the valid domain
-      *
-      * @param tx the transaction to check
-      *
-      * @return false if any key image is not in the valid domain, otherwise true
-      */
-     bool check_tx_inputs_keyimages_domain(const transaction& tx) const;
-
-     /**
       * @brief attempts to relay any transactions in the mempool which need it
       *
       * @return true

@@ -29,6 +29,9 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "cryptonote_core.h"
+
+#include "cryptonote/tx/tx_sanity_check.h"
+
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 
 #include "tools/common/notify.h"
@@ -650,7 +653,7 @@ namespace cryptonote
       return false;
     }
 
-    if (!check_tx_inputs_keyimages_domain(tx))
+    if (!check_tx_input_points(tx))
     {
       LOG_ERROR_VER("tx uses key image not in the valid domain");
       return false;
@@ -772,21 +775,6 @@ namespace cryptonote
               return y != 0;
               }
             );
-       }
-       );
-  }
-  //-----------------------------------------------------------------------------------------------
-  bool core::check_tx_inputs_keyimages_domain(const transaction& tx) const
-  {
-    return std::transform_reduce
-      (
-       tx.vin.begin()
-       , tx.vin.end()
-       , true
-       , std::logical_and()
-       , [](const auto& x) {
-         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, false);
-         return crypto::is_safe_point(tokey_in.output_spend_public_key_image);
        }
        );
   }

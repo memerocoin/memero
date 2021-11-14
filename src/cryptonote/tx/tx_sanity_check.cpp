@@ -145,4 +145,19 @@ bool check_tx_output_points(const transaction& tx) {
   return valid_output_spend_public_keys && valid_output_commits && valid_pseudo_input_commits;
 }
 
+
+bool check_tx_input_points(const transaction& tx)
+{
+  return std::transform_reduce
+    (
+      tx.vin.begin()
+      , tx.vin.end()
+      , true
+      , std::logical_and()
+      , [](const auto& x) {
+        CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, false);
+        return crypto::is_safe_point(tokey_in.output_spend_public_key_image);
+      }
+      );
+}
 }
