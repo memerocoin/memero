@@ -294,7 +294,7 @@ namespace rct {
 
 
 
-  std::pair<rctData, rct_scalarV> generate_ringct
+  rctData generate_ringct
   (
    const crypto::hash message
    , const std::vector<rctInputData> inputs
@@ -430,7 +430,7 @@ namespace rct {
     rctData rctData = preRctSig;
     rctData.p.CLSAGs = clsags;
 
-    return {rctData, output_blinding_factors};
+    return rctData;
   }
 
 }

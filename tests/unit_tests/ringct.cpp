@@ -88,7 +88,7 @@ namespace rct {
        );
   }
 
-  std::pair<rctData, rct_scalarV> generate_ringct
+  rctData generate_ringct
   (
    const crypto::hash message
    , const ct_secret_keyV inSk
@@ -191,7 +191,7 @@ rctData generate_ringct
       index[i] = populateRingsSimpleDummy(decoys[i], inPk[i], mixin);
     }
     return generate_ringct
-      (message, inSk, inamounts, outamounts, fee, decoys, output_shared_secrets_hashed_by_index, index).first;
+      (message, inSk, inamounts, outamounts, fee, decoys, output_shared_secrets_hashed_by_index, index);
 }
 
 

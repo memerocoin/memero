@@ -360,8 +360,8 @@ namespace cryptonote
         tx.vout[i].amount = 0;
 
       const crypto::hash tx_prefix_hash = get_transaction_prefix_hash(tx);
-      rct::rct_scalarV outSk;
-      std::tie(tx.ringct_essential, outSk) = rct::generate_ringct
+
+      tx.ringct_essential = rct::generate_ringct
         (
          tx_prefix_hash
          , inputs
@@ -369,7 +369,12 @@ namespace cryptonote
          , amount_in - amount_out
          );
 
-      LOG_ERROR_AND_RETURN_UNLESS(tx.vout.size() == outSk.size(), {}, "outSk size does not match vout");
+      // LOG_ERROR_AND_RETURN_UNLESS
+      //   (
+      //    tx.vout.size() == tx.ringct_essential.size()
+      //    , {}
+      //    , "outSk size does not match vout"
+      //    );
       const auto tx_hash = get_transaction_hash(tx);
       LOG_CATEGORY_INFO("construct_tx", "transaction_created: " << tx_hash << std::endl << obj_to_json_str(tx) << std::endl);
     }
