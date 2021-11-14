@@ -116,12 +116,6 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(n >= 1, false, "Empty decoys");
     LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "sig.s vector is the wrong size!");
 
-    // we assume all points are valid at this point
-    // if (!is_safe_point(pseudo_input_commit)) {
-    //   LOG_ERROR("pseudo_input_commit is not a valid point: " << pseudo_input_commit);
-    //   return false;
-    // }
-
     // Aggregation hashes
     crypto::dataV mu_P_to_hash = {{}};
     std::transform
@@ -204,12 +198,6 @@ namespace rct {
       const rct_scalar c_c = mu_C * c;
 
       const rct_point decoy_commit = decoys[i].commit;
-
-      // we assume all points are valid at this point
-      // if (!is_safe_point(mask)) {
-      //   LOG_ERROR("decoys[" << i << "].commit.data is not a valid point: " << mask);
-      //   return false;
-      // }
 
       const rct_point decoy_commit_surplus = decoy_commit - pseudo_input_commit;
 
