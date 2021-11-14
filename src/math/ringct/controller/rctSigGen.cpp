@@ -97,7 +97,7 @@ namespace rct {
     , const rct_pointV decoy_spend_pks
     , const rct_scalar input_spend_sk
     , const rct_pointV decoy_commit_differences
-    , const rct_scalar z
+    , const rct_scalar blinding_factor_difference
     , const rct_pointV decoy_amount_commits
     , const rct_point C_offset
     , const size_t index_in_decoys
@@ -123,7 +123,7 @@ namespace rct {
 
     const rct_scalar a = crypto::scalarGen();
     const rct_point sig_I = P_hash ^ input_spend_sk;
-    const rct_point D = P_hash ^ z;
+    const rct_point D = P_hash ^ blinding_factor_difference;
 
     // Offset key image
     const rct_point sig_D = D ^ rct::s_inv_eight;
@@ -227,7 +227,7 @@ namespace rct {
     }
 
     // Compute final scalar
-    s[index_in_decoys] = a - c * (mu_C * z + mu_P * input_spend_sk);
+    s[index_in_decoys] = a - c * (mu_C * blinding_factor_difference + mu_P * input_spend_sk);
 
     return {
       s
