@@ -98,7 +98,7 @@ namespace rct {
     , const rct_scalar input_spend_sk
     , const rct_pointV decoy_commit_differences
     , const rct_scalar z
-    , const rct_pointV C_nonzero
+    , const rct_pointV decoy_amount_commits
     , const rct_point C_offset
     , const size_t index_in_decoys
     )
@@ -112,7 +112,7 @@ namespace rct {
 
     LOG_ERROR_AND_THROW_UNLESS
       (
-       n == C_nonzero.size()
+       n == decoy_amount_commits.size()
        , "Signing and commitment rct_point vector sizes must match!"
        );
 
@@ -130,7 +130,7 @@ namespace rct {
 
     crypto::dataV mu_P_to_hash = {{}};
     mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
-    mu_P_to_hash.insert(mu_P_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
+    mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_amount_commits.begin(), decoy_amount_commits.end());
     mu_P_to_hash.push_back(sig_I);
     mu_P_to_hash.push_back(sig_D);
     mu_P_to_hash.push_back(C_offset);
@@ -165,7 +165,7 @@ namespace rct {
         );
 
     c_to_hash.insert(c_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
-    c_to_hash.insert(c_to_hash.end(), C_nonzero.begin(), C_nonzero.end());
+    c_to_hash.insert(c_to_hash.end(), decoy_amount_commits.begin(), decoy_amount_commits.end());
     c_to_hash.push_back(C_offset);
     c_to_hash.push_back(crypto::h2d(message));
     c_to_hash.push_back(G_(a));
@@ -260,12 +260,12 @@ namespace rct {
         , [](const auto& x) { return x.output_spend_pk; }
         );
 
-    rct_pointV C_nonzero;
+    rct_pointV decoy_amount_commits;
     std::transform
       (
         pubs.begin()
         , pubs.end()
-        , std::back_inserter(C_nonzero)
+        , std::back_inserter(decoy_amount_commits)
         , [](const auto& x) { return x.amount_commit; }
         );
 
@@ -285,7 +285,7 @@ namespace rct {
        , input_spend_sk
        , decoy_commit_differences
        , input_blinding_factor - pseudo_blinding_factor
-       , C_nonzero
+       , decoy_amount_commits
        , pseudo_amount_commit
        , index_in_decoys
        );
