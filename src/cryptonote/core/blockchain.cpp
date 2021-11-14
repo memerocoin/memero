@@ -1098,7 +1098,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
     return false;
   }
 
-  return true;
+  return check_tx_output_points(b.miner_tx);
 }
 //------------------------------------------------------------------
 // This function validates the miner transaction reward
