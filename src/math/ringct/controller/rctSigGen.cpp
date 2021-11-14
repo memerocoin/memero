@@ -346,7 +346,7 @@ namespace rct {
        );
 
 
-    rct_scalar output_blinding_factors_sum = std::reduce
+    const rct_scalar output_blinding_factors_sum = std::reduce
       (
        output_blinding_factors.begin()
        , output_blinding_factors.end()
@@ -363,7 +363,7 @@ namespace rct {
        , []() { return crypto::scalarGen(); }
        );
 
-    rct_scalar pseudo_input_blinding_factors_sum =
+    const rct_scalar pseudo_input_blinding_factors_sum =
       std::reduce
       (
        pseudo_input_blinding_factors.begin()
