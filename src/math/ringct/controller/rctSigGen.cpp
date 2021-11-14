@@ -314,12 +314,12 @@ namespace rct {
 
     const auto [output_blinding_factors, proof] = generate_range_proof(outputs);
 
-    std::vector<output_commit> outputCommits;
+    std::vector<output_commit> output_commits;
     std::transform
       (
        proof.commits.begin()
        , proof.commits.end()
-       , std::back_inserter(outputCommits)
+       , std::back_inserter(output_commits)
        , [](const auto& x) -> output_commit {
          return {crypto::mult8(x)};
        }
@@ -396,7 +396,7 @@ namespace rct {
         , message
         , decoys
         , ecdh
-        , outputCommits
+        , output_commits
         , fee
         , {
           {toUnsafeBulletproof(proof)}

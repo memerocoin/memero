@@ -87,7 +87,7 @@ namespace fee {
     size += 32 * n_inputs;
     // ecdh
     size += 8 * n_outputs;
-    // outputCommits - only commitment is saved
+    // output_commits - only commitment is saved
     size += 32 * n_outputs;
     // fee
     size += 4;

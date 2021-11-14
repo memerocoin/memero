@@ -81,7 +81,7 @@ namespace rct {
       kv.reserve((6*2+9) * rv.p.bulletproofs.size());
       for (const auto &p: rv.p.bulletproofs)
       {
-        // V are not hashed as they're expanded from outputCommits.mask
+        // V are not hashed as they're expanded from output_commits.mask
         // (and thus hashed as part of rctDataEssential above)
         kv.push_back(p.A);
         kv.push_back(p.S);
@@ -276,20 +276,20 @@ namespace rct {
        , "verify_tx_balance called on non rct tx"
        );
 
-    rct::rct_pointV outputCommits;
+    rct::rct_pointV output_commits;
 
     std::transform
       (
-       rv.outputCommits.begin()
-       , rv.outputCommits.end()
-       , std::back_inserter(outputCommits)
+       rv.output_commits.begin()
+       , rv.output_commits.end()
+       , std::back_inserter(output_commits)
        , [](const auto& x) {
          return x.commit;
        }
        );
 
     const rct_point feeCommit = H_(crypto::int_to_scalar(rv.fee));
-    const rct_point sumOutputCommits = sum(outputCommits) + feeCommit;
+    const rct_point sumOutputCommits = sum(output_commits) + feeCommit;
     const rct_point sumPseudoInputCommits = sum(rv.p.pseudo_input_commits);
 
     //check pseudo_input_commits vs Outs..
@@ -314,9 +314,9 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.outputCommits.size() == n_bulletproof_amounts(rv.p.bulletproofs.front())
+        rv.output_commits.size() == n_bulletproof_amounts(rv.p.bulletproofs.front())
         , false
-        , "Mismatched sizes of outputCommits and bulletproofs"
+        , "Mismatched sizes of output_commits and bulletproofs"
         );
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -328,9 +328,9 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.outputCommits.size() == rv.ecdh.size()
+        rv.output_commits.size() == rv.ecdh.size()
         , false
-        , "Mismatched sizes of outputCommits and rv.ecdh"
+        , "Mismatched sizes of output_commits and rv.ecdh"
         );
 
     const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
@@ -359,7 +359,7 @@ namespace rct {
         , "Mismatched sizes of rv.p.pseudo_input_commits and decoys"
         );
 
-    const size_t threads = std::max(rv.outputCommits.size(), rv.decoys.size());
+    const size_t threads = std::max(rv.output_commits.size(), rv.decoys.size());
 
     std::deque<bool> results(threads);
     tools::threadpool& tpool = tools::threadpool::getInstance();
@@ -402,14 +402,14 @@ namespace rct {
   {
     LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctData");
     LOG_ERROR_AND_THROW_UNLESS(i < rv.ecdh.size(), "Bad index");
-    LOG_ERROR_AND_THROW_UNLESS(rv.outputCommits.size() == rv.ecdh.size(), "Mismatched sizes of rv.outputCommits and rv.ecdh");
+    LOG_ERROR_AND_THROW_UNLESS(rv.output_commits.size() == rv.ecdh.size(), "Mismatched sizes of rv.output_commits and rv.ecdh");
 
     const rct_scalar blinding_factor = rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret);
     LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
 
     const uint64_t amount = rct::decode_amount_by_ecdh_shared_secret(rv.ecdh[i].masked_amount, ecdh_shared_secret);
 
-    const rct_point C = rv.outputCommits[i].commit;
+    const rct_point C = rv.output_commits[i].commit;
 
     if (C != commit(amount, blinding_factor)) {
       LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");

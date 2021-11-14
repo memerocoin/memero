@@ -69,9 +69,9 @@ namespace cryptonote
     if (rv.type == rct::RCTTypeNull)
       return true;
 
-    if (rv.outputCommits.size() != tx.vout.size())
+    if (rv.output_commits.size() != tx.vout.size())
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad outputCommits size in tx " << get_transaction_hash(tx));
+      LOG_PRINT_L1("Failed to parse transaction from blob, bad output_commits size in tx " << get_transaction_hash(tx));
       return false;
     }
 
@@ -97,12 +97,12 @@ namespace cryptonote
     }
 
     const size_t n_amounts = tx.vout.size();
-    LOG_ERROR_AND_RETURN_UNLESS(n_amounts == rv.outputCommits.size(), false, "Internal error filling out V");
+    LOG_ERROR_AND_RETURN_UNLESS(n_amounts == rv.output_commits.size(), false, "Internal error filling out V");
 
     std::transform
       (
-       rv.outputCommits.begin()
-       , rv.outputCommits.end()
+       rv.output_commits.begin()
+       , rv.output_commits.end()
        , std::back_inserter(rv.p.bulletproofs[0].commits)
        , [](const auto& x) {
          return x.commit ^ rct::s_inv_eight;

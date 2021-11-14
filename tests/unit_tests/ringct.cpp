@@ -764,9 +764,9 @@ TEST_rctData_elements_simple(decoys0_too_few, sig.decoys[0].pop_back());
 TEST_rctData_elements_simple(ecdh_empty, sig.ecdh.resize(0));
 TEST_rctData_elements_simple(ecdh_too_many, sig.ecdh.push_back(sig.ecdh.back()));
 TEST_rctData_elements_simple(ecdh_too_few, sig.ecdh.pop_back());
-TEST_rctData_elements_simple(outputCommits_empty, sig.outputCommits.resize(0));
-TEST_rctData_elements_simple(outputCommits_too_many, sig.outputCommits.push_back(sig.outputCommits.back()));
-TEST_rctData_elements_simple(outputCommits_too_few, sig.outputCommits.pop_back());
+TEST_rctData_elements_simple(output_commits_empty, sig.output_commits.resize(0));
+TEST_rctData_elements_simple(output_commits_too_many, sig.output_commits.push_back(sig.output_commits.back()));
+TEST_rctData_elements_simple(output_commits_too_few, sig.output_commits.pop_back());
 
 TEST(ringct, key_ostream)
 {
