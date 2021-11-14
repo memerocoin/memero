@@ -99,7 +99,7 @@ namespace rct {
   (
     const crypto::hash message
     , const rct_scalar signer_sk
-    , const rct_scalar input_blinding_factor_surplus
+    , const rct_scalar signer_blinding_factor_surplus
     , const size_t index_in_decoys
     , const rct_point pseudo_input_commit
     , const rct_pointV decoy_spend_pks
@@ -126,7 +126,7 @@ namespace rct {
     const rct_point input_spend_pk_hash = hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
 
     const rct_point sig_I = input_spend_pk_hash ^ signer_sk;
-    const rct_point D = input_spend_pk_hash ^ input_blinding_factor_surplus;
+    const rct_point D = input_spend_pk_hash ^ signer_blinding_factor_surplus;
 
     // Offset key image
     const rct_point sig_D = D ^ rct::s_inv_eight;
@@ -232,7 +232,7 @@ namespace rct {
     }
 
     // Compute final scalar
-    s[index_in_decoys] = a - c * (mu_C * input_blinding_factor_surplus + mu_P * signer_sk);
+    s[index_in_decoys] = a - c * (mu_C * signer_blinding_factor_surplus + mu_P * signer_sk);
 
     return {
       s
@@ -247,9 +247,9 @@ namespace rct {
   (
    const crypto::hash message
    , const rct_scalar signer_sk
-   , const rct_scalar input_blinding_factor
+   , const rct_scalar signer_blinding_factor
    , const size_t index_in_decoys
-   , const rct_scalar pseudo_input_blinding_factor
+   , const rct_scalar pseudo_signer_blinding_factor
    , const rct_point pseudo_input_commit
    , const output_public_dataV decoys
    )
@@ -283,12 +283,12 @@ namespace rct {
         , [pseudo_input_commit](const auto& x) { return x.commit - pseudo_input_commit; }
         );
 
-    const rct_scalar input_blinding_factor_surplus = input_blinding_factor - pseudo_input_blinding_factor;
+    const rct_scalar signer_blinding_factor_surplus = signer_blinding_factor - pseudo_signer_blinding_factor;
     return generate_clsag_signature_internal
       (
        message
        , signer_sk
-       , input_blinding_factor_surplus
+       , signer_blinding_factor_surplus
        , index_in_decoys
        , pseudo_input_commit
        , decoy_spend_pks
@@ -348,27 +348,27 @@ namespace rct {
 
 
     // reserve the last one for generating a balanced pseudo sum
-    rct_scalarV pseudo_input_blinding_factors(inputs.size() - 1);
+    rct_scalarV pseudo_signer_blinding_factors(inputs.size() - 1);
     std::generate
       (
-       pseudo_input_blinding_factors.begin()
-       , pseudo_input_blinding_factors.end()
+       pseudo_signer_blinding_factors.begin()
+       , pseudo_signer_blinding_factors.end()
        , []() { return crypto::scalarGen(); }
        );
 
-    rct_scalar pseudo_input_blinding_factors_sum =
+    rct_scalar pseudo_signer_blinding_factors_sum =
       std::reduce
       (
-       pseudo_input_blinding_factors.begin()
-       , pseudo_input_blinding_factors.end()
+       pseudo_signer_blinding_factors.begin()
+       , pseudo_signer_blinding_factors.end()
        , s_zero
        );
 
     rct_pointV pseudo_input_commits;
     std::transform
       (
-       pseudo_input_blinding_factors.begin()
-       , pseudo_input_blinding_factors.end()
+       pseudo_signer_blinding_factors.begin()
+       , pseudo_signer_blinding_factors.end()
        , inputs.begin()
        , std::back_inserter(pseudo_input_commits)
        , [](const auto& x, const auto& y) -> rct_point {
@@ -376,8 +376,8 @@ namespace rct {
        }
        );
 
-    const auto output_blinding_factor_surplus = output_blinding_factors_sum - pseudo_input_blinding_factors_sum;
-    pseudo_input_blinding_factors.push_back(output_blinding_factor_surplus);
+    const auto output_blinding_factor_surplus = output_blinding_factors_sum - pseudo_signer_blinding_factors_sum;
+    pseudo_signer_blinding_factors.push_back(output_blinding_factor_surplus);
 
     pseudo_input_commits.push_back(commit(inputs.back().amount, output_blinding_factor_surplus));
 
@@ -415,14 +415,14 @@ namespace rct {
       (
        clsags.begin()
        , clsags.end()
-       , [full_message, decoys, inputs, pseudo_input_blinding_factors, pseudo_input_commits, i = 0]() mutable {
+       , [full_message, decoys, inputs, pseudo_signer_blinding_factors, pseudo_input_commits, i = 0]() mutable {
          const auto clsag = generate_clsag_signature
            (
             full_message
             , inputs[i].signer_sk
-            , inputs[i].input_blinding_factor
+            , inputs[i].signer_blinding_factor
             , inputs[i].index_in_decoys
-            , pseudo_input_blinding_factors[i]
+            , pseudo_signer_blinding_factors[i]
             , pseudo_input_commits[i]
             , decoys[i]
             );
