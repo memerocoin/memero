@@ -50,8 +50,8 @@ namespace rct {
   struct rctInputData
   {
     const amount_t amount;
-    const rct_scalar signer_blinding_factor;
     const rct_scalar signer_sk;
+    const rct_scalar signer_blinding_factor;
     const size_t index_in_decoys;
     const output_public_dataV decoys;
   };

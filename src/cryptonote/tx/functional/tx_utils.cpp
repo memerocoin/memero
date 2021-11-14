@@ -325,8 +325,8 @@ namespace cryptonote
         const rct::rctInputData input =
           {
             sources[i].amount
-            , sources[i].mask
             , in_contexts[i].output_spend_key.sec
+            , sources[i].mask
             , sources[i].real_output
             , decoys[i]
           };

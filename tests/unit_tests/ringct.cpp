@@ -106,8 +106,8 @@ namespace rct {
         (
          {
            inamounts[i]
-           , inSk[i].blinding_factor
            , inSk[i].addr
+           , inSk[i].blinding_factor
            , index[i]
            , decoys[i]
          }
