@@ -59,7 +59,7 @@ namespace rct {
     binary_archive<true> ba(ss);
 
     const size_t inputs = rv.decoys.size();
-    const size_t outputs = rv.ecdh.size();
+    const size_t outputs = rv.ecdh_encrypted_data.size();
 
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -316,9 +316,9 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.output_commits.size() == rv.ecdh.size()
+        rv.output_commits.size() == rv.ecdh_encrypted_data.size()
         , false
-        , "Mismatched sizes of output_commits and rv.ecdh"
+        , "Mismatched sizes of output_commits and rv.ecdh_encrypted_data"
         );
 
     const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
@@ -388,18 +388,18 @@ namespace rct {
     )
   {
     LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctData");
-    LOG_ERROR_AND_THROW_UNLESS(output_index < rv.ecdh.size(), "Bad index");
+    LOG_ERROR_AND_THROW_UNLESS(output_index < rv.ecdh_encrypted_data.size(), "Bad index");
     LOG_ERROR_AND_THROW_UNLESS
       (
-       rv.output_commits.size() == rv.ecdh.size()
-       , "Mismatched sizes of rv.output_commits and rv.ecdh"
+       rv.output_commits.size() == rv.ecdh_encrypted_data.size()
+       , "Mismatched sizes of rv.output_commits and rv.ecdh_encrypted_data"
        );
 
     const rct_scalar blinding_factor =
       rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret_hashed_by_index);
 
     const uint64_t amount = rct::decode_amount_by_hashed_ecdh_shared_secret
-      (rv.ecdh[output_index].masked_amount, ecdh_shared_secret_hashed_by_index);
+      (rv.ecdh_encrypted_data[output_index].masked_amount, ecdh_shared_secret_hashed_by_index);
 
     const rct_point C = rv.output_commits[output_index].commit;
 

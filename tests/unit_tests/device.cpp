@@ -90,8 +90,8 @@ TEST(device, ecdh32)
   tuple.mask = crypto::scalarGen();
   tuple.amount = crypto::scalarGen();
   tuple2 = tuple;
-  dev.ecdhEncode(tuple, key);
-  dev.ecdhDecode(tuple, key);
+  dev.ecdh_encrypted_dataEncode(tuple, key);
+  dev.ecdh_encrypted_dataDecode(tuple, key);
   ASSERT_EQ(tuple2.mask, tuple.mask);
   ASSERT_EQ(tuple2.amount, tuple.amount);
 }

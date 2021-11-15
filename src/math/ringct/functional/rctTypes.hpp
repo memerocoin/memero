@@ -189,7 +189,7 @@ namespace rct {
     output_public_dataM decoys; //the set of all pubkeys / copy
     //pairs that you mix with
     // rct_pointV unusedPoints;
-    std::vector<ecdh_encrypted_data> ecdh;
+    std::vector<ecdh_encrypted_data> ecdh_encrypted_data;
 
     // WARNING, needs checking when parsing
     std::vector<output_commit> output_commits;
@@ -210,16 +210,16 @@ namespace rct {
       // FIELD(decoys) - not serialized, it can be reconstructed
       ar.tag("ecdh_encrypted_data");
       ar.begin_array();
-      PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, ecdh);
-      if (ecdh.size() != outputs)
+      PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, ecdh_encrypted_data);
+      if (ecdh_encrypted_data.size() != outputs)
         return false;
       for (size_t i = 0; i < outputs; ++i)
       {
         {
           ar.begin_object();
           if (!typename Archive<W>::is_saving())
-            ecdh[i].masked_amount = {};
-          crypto::hash8 &masked_amount = (crypto::hash8&)ecdh[i].masked_amount;
+            ecdh_encrypted_data[i].masked_amount = {};
+          crypto::hash8 &masked_amount = (crypto::hash8&)ecdh_encrypted_data[i].masked_amount;
           FIELD(masked_amount);
           ar.end_object();
         }
