@@ -340,7 +340,7 @@ namespace rct {
        std::back_inserter(ecdh),
        [](const auto& x) -> ecdh_encrypted_data {
          return {
-           encode_amount_by_ecdh_shared_secret(x.amount, x.ecdh_shared_secret_hashed_by_index)
+           encode_amount_by_hashed_ecdh_shared_secret(x.amount, x.ecdh_shared_secret_hashed_by_index)
          };
        }
        );
