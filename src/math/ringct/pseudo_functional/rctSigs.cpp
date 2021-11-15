@@ -323,9 +323,8 @@ namespace rct {
 
     const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
     LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
-    const Bulletproof proof = *maybeProof;
 
-    return bulletproof_VERIFY(proof);
+    return bulletproof_VERIFY(*maybeProof);
   }
 
   //ver RingCT simple
