@@ -135,7 +135,7 @@ namespace rct {
         );
 
     mu_P_to_hash.push_back(sig.signer_pk_image);
-    mu_P_to_hash.push_back(sig.signer_pk_image_from_blinding_surplus);
+    mu_P_to_hash.push_back(sig.signer_pk_image_from_blinding_factor_surplus);
     mu_P_to_hash.push_back(pseudo_input_commit);
 
     crypto::dataV mu_C_to_hash = mu_P_to_hash;
@@ -221,7 +221,7 @@ namespace rct {
           {
             k ^ sig.s[i]
             , sig.signer_pk_image ^ c_p
-            , sig.signer_pk_image_from_blinding_surplus ^ (c_c * s_eight)
+            , sig.signer_pk_image_from_blinding_factor_surplus ^ (c_c * s_eight)
           }
           );
 
