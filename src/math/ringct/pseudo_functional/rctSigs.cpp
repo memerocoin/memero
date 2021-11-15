@@ -399,8 +399,6 @@ namespace rct {
     const rct_scalar blinding_factor =
       rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret_hashed_by_index);
 
-    LOG_ERROR_AND_THROW_UNLESS(crypto::is_reduced(blinding_factor), "warning, bad ECDH blinding_factor");
-
     const uint64_t amount = rct::decode_amount_by_ecdh_shared_secret
       (rv.ecdh[output_index].masked_amount, ecdh_shared_secret_hashed_by_index);
 
