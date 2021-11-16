@@ -32,7 +32,6 @@ add_library(cryptonote_basic
   cryptonote_basic_impl.cpp
   miner.cpp
   cryptonote_basic.cpp
-  connection_context.cpp
 
   functional/difficulty.cpp
   functional/format_utils.cpp

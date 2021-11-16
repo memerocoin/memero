@@ -31,4 +31,5 @@ add_library(cryptonote_protocol
   block_queue.cpp
   levin_notify.cpp
   cryptonote_protocol_handler.cpp
+  connection_context.cpp
 )

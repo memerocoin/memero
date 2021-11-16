@@ -29,7 +29,7 @@
 #pragma once
 
 #include "cryptonote/basic/type/blobdatatype.hpp"
-#include "cryptonote/basic/connection_context.h"
+#include "cryptonote/protocol/connection_context.h"
 
 
 

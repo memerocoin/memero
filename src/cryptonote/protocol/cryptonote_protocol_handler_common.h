@@ -31,7 +31,7 @@
 #pragma once
 
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
-#include "cryptonote/basic/connection_context.h"
+#include "cryptonote/protocol/connection_context.h"
 
 #include "network/p2p/net_node_common.h"
 
