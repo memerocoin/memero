@@ -31,7 +31,7 @@
 #pragma once
 
 #include "cryptonote/basic/cryptonote_basic_impl.h"
-#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/controller/account.h"
 
 #include "cryptonote/basic/type/blobdatatype.hpp"
 #include "cryptonote/basic/type/tx_extra.hpp"

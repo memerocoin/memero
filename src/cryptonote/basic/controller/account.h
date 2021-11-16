@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "cryptonote_basic.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 
 namespace cryptonote
 {

@@ -38,7 +38,7 @@
 
 #include "network/rpc/core_rpc_server_commands_defs.h" // COMMAND_RPC_SEND_RAW_TX, backlog_entry
 
-#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/controller/account.h"
 #include "cryptonote/functional/helper.hpp"
 
 

@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/controller/account.h"
 #include "cryptonote/basic/type/subaddress_index.hpp"
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 

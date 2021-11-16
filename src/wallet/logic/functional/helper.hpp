@@ -32,7 +32,7 @@
 #pragma once
 
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/controller/account.h"
 
 #include <string>
 #include <span>

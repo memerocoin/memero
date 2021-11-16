@@ -28,7 +28,6 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(cryptonote_basic
-  account.cpp
   cryptonote_basic_impl.cpp
   cryptonote_basic.cpp
 
@@ -39,6 +38,7 @@ add_library(cryptonote_basic
 
   controller/tx_extra.cpp
   controller/format_utils.cpp
+  controller/account.cpp
   )
 
 

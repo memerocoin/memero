@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "math/crypto/functional/hash.hpp"
-#include "cryptonote/basic/account.h"
+#include "cryptonote/basic/controller/account.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/controller/format_utils.hpp"
 #include "cryptonote/basic/functional/tx_extra.hpp"
