@@ -24,8 +24,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace crypto {
 
   struct schnorr_signature_unnormalized {
-    const ec_scalar_unnormalized s;
-    const ec_scalar_unnormalized scalar_hash;
+    ec_scalar_unnormalized s;
+    ec_scalar_unnormalized scalar_hash;
   };
 
   struct schnorr_signature {
