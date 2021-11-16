@@ -564,7 +564,11 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   {
     const uint32_t change_subaddress_index = subaddr_account == 0 ? 1 : 0;
     change_dts.addr =
-      cryptonote::get_subaddress(account_keys, {subaddr_account, change_subaddress_index});
+      cryptonote::get_subaddress
+      (
+       account_keys.get_spend_view_secret_keys()
+       , {subaddr_account, change_subaddress_index}
+       );
     change_dts.is_subaddress = true;
     splitted_dsts.push_back(change_dts);
   }

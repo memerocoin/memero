@@ -32,9 +32,13 @@
 
 #include "cryptonote_basic.h"
 
-
 namespace cryptonote
 {
+  struct spend_view_secret_keys
+  {
+    crypto::secret_key   m_spend_secret_key;
+    crypto::secret_key   m_view_secret_key;
+  };
 
   struct account_keys
   {
@@ -58,6 +62,10 @@ namespace cryptonote
     void encrypt_viewkey(const crypto::chacha_key &key);
     void decrypt_viewkey(const crypto::chacha_key &key);
 
+    spend_view_secret_keys get_spend_view_secret_keys() const {
+      return {m_spend_secret_key, m_view_secret_key};
+    }
+
   private:
     void xor_with_key_stream(const crypto::chacha_key &key);
   };
@@ -73,6 +81,11 @@ namespace cryptonote
     void create_from_keys(const cryptonote::account_public_address& address, const crypto::secret_key& spendkey, const crypto::secret_key& viewkey);
     void create_from_viewkey(const cryptonote::account_public_address& address, const crypto::secret_key& viewkey);
     const account_keys& get_keys() const;
+
+    spend_view_secret_keys get_spend_view_secret_keys() const {
+      return get_keys().get_spend_view_secret_keys();
+    }
+
     std::string get_public_address_str(network_type nettype) const;
 
     void deinit();

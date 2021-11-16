@@ -120,7 +120,7 @@ namespace signature {
 
     const crypto::secret_key skey
       = signature_type == wallet::logic::type::message_signature::sign_with_spend_key
-      ? cryptonote::get_subaddress_spend_secret_key(keys, index)
+      ? cryptonote::get_subaddress_spend_secret_key(keys.get_spend_view_secret_keys(), index)
       : keys.m_view_secret_key
       ;
 
@@ -129,7 +129,10 @@ namespace signature {
     const std::optional<crypto::ec_point> base 
       = signature_type == wallet::logic::type::message_signature::sign_with_spend_key
       ? std::nullopt
-      : std::optional<crypto::ec_point>{cryptonote::get_subaddress_spend_public_key(keys, index)}
+      : std::optional<crypto::ec_point>
+      {
+        cryptonote::get_subaddress_spend_public_key(keys.get_spend_view_secret_keys(), index)
+      }
       ;
 
     const crypto::schnorr_signature signature = crypto::generate_schnorr_signature(hash.blob(), skey, base);

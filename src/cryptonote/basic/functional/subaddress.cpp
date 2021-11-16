@@ -44,8 +44,8 @@ namespace cryptonote {
 
   crypto::secret_key get_subaddress_spend_secret_key
   (
-   const cryptonote::account_keys& keys
-   , const cryptonote::subaddress_index &index
+   const cryptonote::spend_view_secret_keys keys
+   , const cryptonote::subaddress_index index
    )
   {
     if (index.is_zero())
@@ -58,8 +58,8 @@ namespace cryptonote {
 
   crypto::secret_key get_subaddress_view_secret_key_base_G
   (
-   const cryptonote::account_keys& keys
-   , const cryptonote::subaddress_index &index
+   const cryptonote::spend_view_secret_keys keys
+   , const cryptonote::subaddress_index index
    )
   {
     return index.is_zero()
@@ -69,8 +69,8 @@ namespace cryptonote {
 
   crypto::public_key get_subaddress_spend_public_key
   (
-   const cryptonote::account_keys& keys
-   , const cryptonote::subaddress_index &index
+   const cryptonote::spend_view_secret_keys keys
+   , const cryptonote::subaddress_index index
    )
   {
     return crypto::to_pk(get_subaddress_spend_secret_key(keys, index));
@@ -78,8 +78,8 @@ namespace cryptonote {
 
   crypto::public_key get_subaddress_view_public_key
   (
-   const cryptonote::account_keys& keys
-   , const cryptonote::subaddress_index &index
+   const cryptonote::spend_view_secret_keys keys
+   , const cryptonote::subaddress_index index
    )
   {
     return crypto::to_pk(get_subaddress_view_secret_key_base_G(keys, index));
@@ -88,7 +88,7 @@ namespace cryptonote {
 
   std::vector<crypto::public_key> get_subaddress_spend_public_keys
   (
-    const cryptonote::account_keys &keys
+    const cryptonote::spend_view_secret_keys keys
     , const uint32_t account
     , const uint32_t begin
     , const uint32_t end
@@ -108,8 +108,8 @@ namespace cryptonote {
 
   cryptonote::account_public_address get_subaddress
   (
-   const cryptonote::account_keys& keys
-   , const cryptonote::subaddress_index &index
+   const cryptonote::spend_view_secret_keys keys
+   , const cryptonote::subaddress_index index
    )
   {
     return
@@ -121,8 +121,8 @@ namespace cryptonote {
 
   crypto::ec_scalar hash_secret_key_with_subaddress_index
   (
-   const crypto::secret_key &sec
-   , const cryptonote::subaddress_index &index
+   const crypto::secret_key sec
+   , const cryptonote::subaddress_index index
    )
   {
     const uint32_t major_i = SWAP32LE(index.major);

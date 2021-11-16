@@ -363,7 +363,7 @@ void wallet2::set_seed_language(const std::string &language)
 //----------------------------------------------------------------------------------------------------
 cryptonote::account_public_address wallet2::get_subaddress(const cryptonote::subaddress_index& index) const
 {
-  return cryptonote::get_subaddress(m_account.get_keys(), index);
+  return cryptonote::get_subaddress(m_account.get_spend_view_secret_keys(), index);
 }
 //----------------------------------------------------------------------------------------------------
 std::optional<cryptonote::subaddress_index> wallet2::get_subaddress_index(const cryptonote::account_public_address& address) const
@@ -376,7 +376,7 @@ std::optional<cryptonote::subaddress_index> wallet2::get_subaddress_index(const 
 //----------------------------------------------------------------------------------------------------
 crypto::public_key wallet2::get_subaddress_spend_public_key(const cryptonote::subaddress_index& index) const
 {
-  return cryptonote::get_subaddress_spend_public_key(m_account.get_keys(), index);
+  return cryptonote::get_subaddress_spend_public_key(m_account.get_spend_view_secret_keys(), index);
 }
 //----------------------------------------------------------------------------------------------------
 std::string wallet2::get_subaddress_as_str(const cryptonote::subaddress_index& index) const
@@ -418,11 +418,16 @@ void wallet2::expand_subaddresses(const cryptonote::subaddress_index& index)
   {
     // add new accounts
     cryptonote::subaddress_index index2;
-    const uint32_t major_end = wallet::logic::functional::wallet::get_subaddress_clamped_sum(index.major, m_subaddress_lookahead_major);
+    const uint32_t major_end = wallet::logic::functional::wallet::get_subaddress_clamped_sum
+      (index.major, m_subaddress_lookahead_major);
     for (index2.major = m_subaddress_labels.size(); index2.major < major_end; ++index2.major)
     {
-      const uint32_t end = wallet::logic::functional::wallet::get_subaddress_clamped_sum((index2.major == index.major ? index.minor : 0), m_subaddress_lookahead_minor);
-      const std::vector<crypto::public_key> pkeys = cryptonote::get_subaddress_spend_public_keys(m_account.get_keys(), index2.major, 0, end);
+      const uint32_t end = wallet::logic::functional::wallet::get_subaddress_clamped_sum
+        ((index2.major == index.major ? index.minor : 0), m_subaddress_lookahead_minor);
+      const std::vector<crypto::public_key> pkeys =
+        cryptonote::get_subaddress_spend_public_keys
+        (m_account.get_spend_view_secret_keys(), index2.major, 0, end);
+
       for (index2.minor = 0; index2.minor < end; ++index2.minor)
       {
          const crypto::public_key &D = pkeys[index2.minor];
@@ -435,10 +440,13 @@ void wallet2::expand_subaddresses(const cryptonote::subaddress_index& index)
   else if (m_subaddress_labels[index.major].size() <= index.minor)
   {
     // add new subaddresses
-    const uint32_t end = wallet::logic::functional::wallet::get_subaddress_clamped_sum(index.minor, m_subaddress_lookahead_minor);
+    const uint32_t end = wallet::logic::functional::wallet::get_subaddress_clamped_sum
+      (index.minor, m_subaddress_lookahead_minor);
     const uint32_t begin = m_subaddress_labels[index.major].size();
     cryptonote::subaddress_index index2 = {index.major, begin};
-    const std::vector<crypto::public_key> pkeys = cryptonote::get_subaddress_spend_public_keys(m_account.get_keys(), index2.major, index2.minor, end);
+    const std::vector<crypto::public_key> pkeys =
+      cryptonote::get_subaddress_spend_public_keys
+      (m_account.get_spend_view_secret_keys(), index2.major, index2.minor, end);
     for (; index2.minor < end; ++index2.minor)
     {
        const crypto::public_key &D = pkeys[index2.minor - begin];
