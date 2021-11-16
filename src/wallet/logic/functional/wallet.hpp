@@ -117,7 +117,7 @@ namespace wallet {
 
   std::pair<std::set<uint64_t>, size_t> outs_unique(const std::vector<std::vector<::wallet::logic::type::get_tx_outputs_entry>> outs);
 
-  type::tx::tx_scan_info_t check_acc_out_precomp
+  type::tx::tx_scan_info_t scan_output_for_subaddresses
   (
    const cryptonote::tx_out o
    , const std::optional<crypto::ecdh_shared_secret> tx_output_shared_secret

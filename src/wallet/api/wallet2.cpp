@@ -585,7 +585,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         ? tx_output_shared_secrets.at(i)
         : std::optional<crypto::ecdh_shared_secret>();
 
-      const tx_scan_info_t check_info = wallet::logic::functional::wallet::check_acc_out_precomp
+      const tx_scan_info_t check_info = wallet::logic::functional::wallet::scan_output_for_subaddresses
         (tx.vout[i], secret, i, m_subaddresses);
 
       THROW_WALLET_EXCEPTION_IF
