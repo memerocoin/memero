@@ -35,6 +35,7 @@
 #include "network/type/parse.h"
 
 #include "cryptonote/tx/tx_sanity_check.h"
+#include "cryptonote/basic/functional/tx_extra.hpp"
 
 #include "config/version.hpp"
 

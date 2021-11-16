@@ -49,6 +49,7 @@
 #include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/tx/tx_sanity_check.h"
+#include "cryptonote/basic/functional/tx_extra.hpp"
 
 
 #include "tools/common/apply_permutation.h"

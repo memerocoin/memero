@@ -11,6 +11,8 @@
 #include "cryptonote/basic/account.h"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/functional/tx_extra.hpp"
+#include "cryptonote/basic/controller/tx_extra.hpp"
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
 #include "tools/serialization/json_object.h"
 

@@ -37,6 +37,7 @@
 #include "wallet/logic/controller/wallet.hpp"
 
 #include "cryptonote/basic/functional/subaddress.hpp"
+#include "cryptonote/basic/functional/tx_extra.hpp"
 
 #include "tools/common/apply_permutation.h"
 #include "math/ringct/pseudo_functional/rctSigs.hpp"

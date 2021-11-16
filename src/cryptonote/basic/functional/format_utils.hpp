@@ -71,12 +71,6 @@ namespace cryptonote
    , const subaddress_index received_index
    );
 
-  std::optional<std::vector<tx_extra_field>> parse_tx_extra(const epee::blob::span tx_extra);
-
-  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const epee::blob::span tx_extra);
-  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction_prefix& tx);
-  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction& tx);
-
   std::optional<subaddress_receive_info> check_output_for_subaddresses
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -153,12 +147,6 @@ namespace cryptonote
   uint64_t get_tx_fee(const transaction& tx);
   uint64_t get_transaction_weight(const transaction &tx);
 
-  std::optional<std::vector<crypto::public_key>> get_all_tx_output_public_keys_from_extra
-  (
-   const transaction& tx
-   , const size_t output_count
-   );
-
   uint64_t get_block_height(const block& b);
 
   bool check_inputs_types_supported(const transaction& tx);
@@ -174,12 +162,6 @@ namespace cryptonote
 
   std::optional<crypto::hash> get_maybe_block_hash(const block& b);
   crypto::hash get_block_hash(const block& b);
-
-  std::optional<std::vector<crypto::public_key>>
-  get_tx_output_public_keys_from_extra(const epee::blob::span tx_extra);
-
-  std::optional<std::vector<crypto::public_key>>
-  get_tx_output_public_keys_from_extra(const transaction_prefix& tx);
 
   std::vector<uint64_t> relative_output_offsets_to_absolute(const std::vector<uint64_t>& off);
   std::vector<uint64_t> absolute_output_offsets_to_relative(const std::vector<uint64_t>& off);
