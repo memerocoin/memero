@@ -87,7 +87,7 @@ namespace cryptonote
       : std::optional<crypto::ecdh_shared_secret>();
 
     std::optional<subaddress_receive_info> subaddr_recv_info =
-      is_out_to_acc_precomp
+      check_output_for_subaddresses
       (
        subaddresses, out_key, recv_tx_output_shared_secret, secret, real_output_index
        );
@@ -213,7 +213,7 @@ namespace cryptonote
     return get_tx_pub_key_from_extra(tx.extra);}
 
   //---------------------------------------------------------------
-  std::optional<subaddress_receive_info> is_out_to_acc_precomp
+  std::optional<subaddress_receive_info> check_output_for_subaddresses
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key tx_output_public_key

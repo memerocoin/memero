@@ -188,7 +188,7 @@ namespace wallet {
     //   ? tx_output_shared_secrets.at(i)
     //   : std::optional<crypto::ecdh_shared_secret>();
 
-    const auto received = is_out_to_acc_precomp
+    const auto received = check_output_for_subaddresses
       (
        m_subaddresses
        , boost::get<cryptonote::txout_to_key>(o.target).output_spend_public_key
