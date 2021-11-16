@@ -52,3 +52,9 @@ target_link_libraries(math_crypto
     curve25519_cryptonote
     ${SODIUM_LIBRARY}
   )
+
+set_source_files_properties(
+  "pseudo_functional/tree-hash.cpp"
+  PROPERTIES COMPILE_FLAGS
+  "-Wno-stringop-overflow -Wno-array-bounds"
+  )

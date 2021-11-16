@@ -34,6 +34,12 @@ add_library(network_rpc_base
   core_rpc_server_error_codes.cpp
   )
 
+if(OpenCL_FOUND)
+target_link_libraries(network_rpc_base
+   OpenCL::OpenCL
+  )
+endif()
+
 add_library(network_rpc
   core_rpc_server.cpp
   rpc_version_str.cpp
@@ -43,13 +49,6 @@ target_link_libraries(network_rpc
   network_rpc_base
   cryptonote_tx
 )
-
-# test specific added dependency for static build ...
-if(BUILD_TESTING)
-  target_link_libraries(network_rpc
-    cryptonote_core
-  )
-endif()
 
 
 add_library(daemon_messages

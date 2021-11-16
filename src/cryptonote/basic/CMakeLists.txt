@@ -30,7 +30,6 @@
 add_library(cryptonote_basic
   account.cpp
   cryptonote_basic_impl.cpp
-  miner.cpp
   cryptonote_basic.cpp
 
   functional/difficulty.cpp
@@ -43,15 +42,6 @@ add_library(cryptonote_basic
   )
 
 
-if(OpenCL_FOUND)
 target_link_libraries(cryptonote_basic
   tools_common
-  math_crypto
-  opencl-sha3
-  )
-else()
-target_link_libraries(cryptonote_basic
-  tools_common
-  math_crypto
-  )
-endif()
+)

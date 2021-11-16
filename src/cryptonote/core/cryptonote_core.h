@@ -38,7 +38,7 @@
 #include "cryptonote/protocol/cryptonote_protocol_handler_common.h"
 
 #include "cryptonote/basic/type/events.hpp"
-#include "cryptonote/basic/miner.h"
+#include "cryptonote/miner/miner.h"
 
 
 namespace cryptonote

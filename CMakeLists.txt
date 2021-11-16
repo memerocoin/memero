@@ -158,6 +158,7 @@ add_subdirectory(src/cryptonote/basic)
 add_subdirectory(src/cryptonote/tx)
 add_subdirectory(src/cryptonote/core)
 add_subdirectory(src/cryptonote/protocol)
+add_subdirectory(src/cryptonote/miner)
 
 ## network
 add_subdirectory(src/network/type)

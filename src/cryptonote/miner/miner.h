@@ -31,13 +31,12 @@
 
 #pragma once
 
-#include "cryptonote_basic.h"
-#include "type/verification_context.hpp"
-#include "functional/difficulty.hpp"
-#include "type/blobdatatype.hpp"
+#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/type/verification_context.hpp"
+#include "cryptonote/basic/functional/difficulty.hpp"
+#include "cryptonote/basic/type/blobdatatype.hpp"
 
 #include "tools/epee/include/math_helper.h"
-
 
 #include <boost/program_options.hpp>
 

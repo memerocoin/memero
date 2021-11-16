@@ -27,13 +27,20 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(cryptonote_core
-  tx_pool.cpp
-  cryptonote_core.cpp
-  blockchain.cpp
-)
+add_library(cryptonote_miner
+  miner.cpp
+  )
 
-target_link_libraries(cryptonote_core
-  math_ringct
-  cryptonote_miner
-)
+
+if(OpenCL_FOUND)
+target_link_libraries(cryptonote_miner
+  tools_common
+  math_crypto
+  opencl-sha3
+  )
+else()
+target_link_libraries(cryptonote_miner
+  tools_common
+  math_crypto
+  )
+endif()
