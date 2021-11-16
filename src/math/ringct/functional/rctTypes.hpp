@@ -83,7 +83,7 @@ namespace rct {
   using output_public_dataS = std::span<const output_public_data>;
 
   //data for passing the amount to the receiver secretly
-  struct ecdh_encrypted_data {
+  struct ecdh_encrypted_data_t {
     uint64_t masked_amount;
   };
 
@@ -189,7 +189,7 @@ namespace rct {
     output_public_dataM decoys; //the set of all pubkeys / copy
     //pairs that you mix with
     // rct_pointV unusedPoints;
-    std::vector<ecdh_encrypted_data> ecdh_encrypted_data;
+    std::vector<ecdh_encrypted_data_t> ecdh_encrypted_data;
 
     // WARNING, needs checking when parsing
     std::vector<output_commit> output_commits;
@@ -373,5 +373,5 @@ BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::output_public_data);
 BLOB_SERIALIZER(rct::output_commit);
 BLOB_SERIALIZER(rct::rct_scalar);
-BLOB_SERIALIZER(rct::ecdh_encrypted_data);
+BLOB_SERIALIZER(rct::ecdh_encrypted_data_t);
 BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);

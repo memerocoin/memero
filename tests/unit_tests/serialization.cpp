@@ -394,7 +394,7 @@ TEST(Serialization, serializes_ringct_types)
   rct::output_public_data output_public_data0, output_public_data1;
   rct::output_public_dataV output_public_datav0, output_public_datav1;
   rct::output_public_dataM output_public_datam0, output_public_datam1;
-  rct::ecdh_encrypted_data ecdh0, ecdh1;
+  rct::ecdh_encrypted_data_t ecdh0, ecdh1;
   rct::clsag_unsafe clsag0, clsag1;
   rct::rctData s0, s1;
   cryptonote::transaction tx0, tx1;

@@ -332,13 +332,13 @@ namespace rct {
        );
 
 
-    std::vector<ecdh_encrypted_data> ecdh;
+    std::vector<ecdh_encrypted_data_t> ecdh;
     std::transform
       (
        outputs.begin(),
        outputs.end(),
        std::back_inserter(ecdh),
-       [](const auto& x) -> ecdh_encrypted_data {
+       [](const auto& x) -> ecdh_encrypted_data_t {
          return {
            encode_amount_by_hashed_ecdh_shared_secret(x.amount, x.ecdh_shared_secret_hashed_by_index)
          };
