@@ -38,6 +38,8 @@ add_library(cryptonote_basic
   functional/difficulty.cpp
   functional/format_utils.cpp
   functional/subaddress.cpp
+
+  controller/tx_extra.cpp
   )
 
 

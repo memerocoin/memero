@@ -39,6 +39,7 @@
 #include "math/ringct/controller/rctSigGen.hpp"
 
 #include "cryptonote/basic/functional/subaddress.hpp"
+#include "cryptonote/basic/controller/tx_extra.hpp"
 
 
 
