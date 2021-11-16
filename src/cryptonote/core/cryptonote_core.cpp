@@ -30,7 +30,7 @@
 
 #include "cryptonote_core.h"
 
-#include "cryptonote/tx/tx_sanity_check.h"
+#include "cryptonote/tx/functional/tx_check.h"
 
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 

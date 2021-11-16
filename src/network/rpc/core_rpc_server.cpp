@@ -34,7 +34,7 @@
 #include "network/rpc/rpc_args.h"
 #include "network/type/parse.h"
 
-#include "cryptonote/tx/tx_sanity_check.h"
+#include "cryptonote/tx/functional/tx_check.h"
 #include "cryptonote/basic/functional/tx_extra.hpp"
 
 #include "config/version.hpp"

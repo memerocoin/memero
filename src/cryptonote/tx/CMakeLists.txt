@@ -28,9 +28,9 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(cryptonote_tx
-  tx_sanity_check.cpp
 
   functional/tx_utils.cpp
+  functional/tx_check.cpp
   pseudo_functional/tx_utils.cpp
 )
 
