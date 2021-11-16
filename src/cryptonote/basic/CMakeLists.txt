@@ -30,7 +30,6 @@
 add_library(cryptonote_basic
   account.cpp
   cryptonote_basic_impl.cpp
-  cryptonote_format_utils.cpp
   miner.cpp
   cryptonote_basic.cpp
   connection_context.cpp
@@ -41,6 +40,7 @@ add_library(cryptonote_basic
   functional/tx_extra.cpp
 
   controller/tx_extra.cpp
+  controller/format_utils.cpp
   )
 
 

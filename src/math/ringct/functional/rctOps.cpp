@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rctOps.hpp"
 
-#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/controller/format_utils.hpp"
 
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"

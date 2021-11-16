@@ -38,7 +38,7 @@
 #include "tools/epee/include/string_tools.h"
 #include "database/interface/blockchain.hpp"
 #include "database/instance/lmdb/lmdb.hpp"
-#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/controller/format_utils.hpp"
 
 using namespace cryptonote;
 using epee::string_tools::pod_to_hex;

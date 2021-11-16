@@ -28,7 +28,7 @@
 
 #include "tx_sanity_check.h"
 
-#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/controller/format_utils.hpp"
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

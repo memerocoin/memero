@@ -28,7 +28,7 @@
 
 #include "../instance/lmdb/lmdb.hpp"
 
-#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/controller/format_utils.hpp"
 
 #include "math/ringct/functional/rctOps.hpp"
 

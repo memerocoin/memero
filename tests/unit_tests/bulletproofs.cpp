@@ -39,7 +39,7 @@
 #include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/basic/type/blobdatatype.hpp"
-#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/controller/format_utils.hpp"
 
 using namespace rct;
 

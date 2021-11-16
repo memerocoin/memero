@@ -28,7 +28,7 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "cryptonote_format_utils.h"
+#include "../controller/format_utils.hpp"
 
 #include "tools/epee/include/string_tools.h"
 #include "tools/serialization/string.h" // don't remove, or face core dump

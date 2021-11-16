@@ -30,16 +30,14 @@
 
 #pragma once
 
-#include "type/blobdatatype.hpp"
-#include "cryptonote_basic_impl.h"
-#include "type/tx_extra.hpp"
-#include "account.h"
-#include "type/subaddress_index.hpp"
+#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/account.h"
 
-#include "functional/format_utils.hpp"
+#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/tx_extra.hpp"
+#include "cryptonote/basic/type/subaddress_index.hpp"
 
-
-
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 #include <boost/multiprecision/cpp_int.hpp>
 

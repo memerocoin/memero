@@ -41,7 +41,7 @@
 
 #include "tools/common/apply_permutation.h"
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
-#include "cryptonote/basic/cryptonote_format_utils.h"
+#include "cryptonote/basic/controller/format_utils.hpp"
 
 #include "wallet/api/wallet_errors.h"
 
