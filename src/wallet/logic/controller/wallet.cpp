@@ -280,7 +280,7 @@ namespace wallet {
       m_rpc_client.get_tx_outputs(selected_transfers, m_transfers, fake_outputs_count, outs, rct_offsets);
 
       const auto unique = functional::wallet::outs_unique(outs);
-      if (cryptonote::tx_sanity_check(unique.first, unique.second, rct_offsets.empty() ? 0 : rct_offsets.back()))
+      if (cryptonote::rct_tx_sanity_check(unique.first, unique.second, rct_offsets.empty() ? 0 : rct_offsets.back()))
       {
         return outs;
       }

@@ -37,7 +37,7 @@
 namespace cryptonote
 {
 
-bool tx_sanity_check(const cryptonote::blobdata &tx_blob, uint64_t rct_outs_available)
+bool rct_tx_sanity_check(const cryptonote::blobdata &tx_blob, uint64_t rct_outs_available)
 {
   cryptonote::transaction tx;
 
@@ -68,10 +68,10 @@ bool tx_sanity_check(const cryptonote::blobdata &tx_blob, uint64_t rct_outs_avai
     n_indices += in_to_key.output_relative_offsets.size();
   }
 
-  return tx_sanity_check(rct_indices, n_indices, rct_outs_available);
+  return rct_tx_sanity_check(rct_indices, n_indices, rct_outs_available);
 }
 
-bool tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices, uint64_t rct_outs_available)
+bool rct_tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices, uint64_t rct_outs_available)
 {
   if (n_indices <= 10)
   {
