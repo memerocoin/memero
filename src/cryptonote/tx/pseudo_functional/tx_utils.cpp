@@ -47,10 +47,9 @@ namespace cryptonote
   std::optional<
     std::tuple<
       transaction
-      , std::vector<tx_source_entry>
+      , std::vector<size_t>
       , std::vector<crypto::secret_key>
       >>
-
   construct_tx_and_get_tx_key
   (
    const account_keys sender_account_keys
@@ -83,8 +82,8 @@ namespace cryptonote
        , output_secret_keys
        );
     if (r) {
-      const auto [tx, sources] = *r;
-      return {{tx, sources, output_secret_keys}};
+      const auto [tx, permutation] = *r;
+      return {{tx, permutation, output_secret_keys}};
     }
 
     return {};

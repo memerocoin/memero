@@ -35,7 +35,11 @@ namespace crypto {
 
   struct ecdh_shared_secret: ec_point {};
 
-  struct output_spend_public_key_image: ec_point {};
+  struct output_spend_public_key_image: ec_point {
+    bool operator < (const output_spend_public_key_image &x) const noexcept {
+      return data < x.data;
+    }
+  };
 
   constexpr crypto::public_key null_pkey = {};
   constexpr crypto::secret_key null_skey = {};

@@ -69,7 +69,18 @@ main-sync:
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
+--add-exclusive-node 10.0.0.1
+
+main-sync-debug:
+	@rm -rf mainnet/node_sync
+
+	../../build/bin/lolnerod \
+--hide-my-port \
+--data-dir ./mainnet/node_sync \
+--p2p-bind-port 41000 \
+--rpc-bind-port 45000 \
 --add-exclusive-node 10.0.0.1 \
+--log-level 1
 
 main-sync-reuse:
 	../../build/bin/lolnerod \

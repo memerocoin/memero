@@ -108,7 +108,14 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<transaction, std::vector<tx_source_entry>>> construct_tx_with_tx_key
+  std::optional
+  <
+    std::tuple
+    <
+      transaction
+      , std::vector<size_t>
+      >
+    > construct_tx_with_tx_key
   (
    const account_keys sender_account_keys
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -212,25 +219,22 @@ namespace cryptonote
     // }
 
     // sort ins by their key image
-    std::vector<size_t> ins_order(sources.size());
-    for (size_t n = 0; n < sources.size(); ++n)
-      ins_order[n] = n;
+    std::vector<crypto::output_spend_public_key_image> output_spend_pk_images;
+    std::transform
+      (
+       tx.vin.begin()
+       , tx.vin.end()
+       , std::back_inserter(output_spend_pk_images)
+       , [](const auto& x) {
+         const txin_to_key &tk = boost::get<txin_to_key>(x);
+         return tk.output_spend_public_key_image;
+         }
+       );
 
-    std::sort(ins_order.begin(), ins_order.end(), [&](const size_t i0, const size_t i1) {
-      const txin_to_key &tk0 = boost::get<txin_to_key>(tx.vin[i0]);
-      const txin_to_key &tk1 = boost::get<txin_to_key>(tx.vin[i1]);
-      return memcmp
-        (&tk0.output_spend_public_key_image
-         , &tk1.output_spend_public_key_image
-         , sizeof(tk0.output_spend_public_key_image)
-         ) > 0;
-    });
-
-    tools::apply_permutation(ins_order, [&] (size_t i0, size_t i1) {
-      std::swap(tx.vin[i0], tx.vin[i1]);
-      std::swap(in_contexts[i0], in_contexts[i1]);
-      std::swap(sources[i0], sources[i1]);
-    });
+    const std::vector<size_t> permutation = tools::get_sorted_permutation(output_spend_pk_images);
+    tx.vin = tools::apply_permutation(permutation, tx.vin);
+    in_contexts = tools::apply_permutation(permutation, in_contexts);
+    sources = tools::apply_permutation(permutation, sources);
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_public_key));
@@ -380,7 +384,7 @@ namespace cryptonote
       LOG_CATEGORY_INFO("construct_tx", "transaction_created: " << tx_hash << std::endl << obj_to_json_str(tx) << std::endl);
     }
 
-    return {{tx, sources}};
+    return {{tx, permutation}};
   }
   //---------------------------------------------------------------
   std::optional<block> generate_genesis_block

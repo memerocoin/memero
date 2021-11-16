@@ -586,33 +586,13 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
      );
   THROW_WALLET_EXCEPTION_IF(!r, tools::error::tx_not_constructed, sources, dsts, unlock_time, m_nettype);
 
-  const auto [tx_out, sources_out, output_secret_keys] = *r;
+  const auto [tx_out, permutation, output_secret_keys] = *r;
 
   tx = tx_out;
 
   LOG_PRINT_L2("constructed tx");
 
   THROW_WALLET_EXCEPTION_IF(upper_transaction_weight_limit <= get_transaction_weight(tx), tools::error::tx_too_big, tx, upper_transaction_weight_limit);
-
-  // work out the permutation done on sources
-  std::vector<size_t> ins_order;
-  for (size_t n = 0; n < sources_out.size(); ++n)
-  {
-    for (size_t idx = 0; idx < sources_copy.size(); ++idx)
-    {
-      THROW_WALLET_EXCEPTION_IF
-        (
-         (size_t)sources_copy[idx].real_output >= sources_copy[idx].outputs.size()
-         , tools::error::wallet_internal_error
-         , "Invalid real_output"
-         );
-      if (sources_copy[idx].outputs[sources_copy[idx].real_output].second.output_spend_pk == sources[n].outputs[sources[n].real_output].second.output_spend_pk) {
-        ins_order.push_back(idx);
-      }
-    }
-  }
-
-  THROW_WALLET_EXCEPTION_IF(ins_order.size() != sources.size(), tools::error::wallet_internal_error, "Failed to work out sources permutation");
 
   LOG_PRINT_L2("gathering key images");
   std::string output_spend_public_key_images;
@@ -638,7 +618,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   ptx.construction_data.change_dts = change_dts;
   ptx.construction_data.splitted_dsts = splitted_dsts;
   ptx.construction_data.selected_transfers = ptx.selected_transfers;
-  tools::apply_permutation(ins_order, ptx.selected_transfers);
+  ptx.selected_transfers = tools::apply_permutation(permutation, ptx.selected_transfers);
   ptx.construction_data.extra = tx.extra;
   ptx.construction_data.unlock_time = unlock_time;
   ptx.construction_data.use_rct = true;

@@ -106,7 +106,13 @@ namespace cryptonote
   };
 
   //---------------------------------------------------------------
-  std::optional<std::pair<transaction, std::vector<tx_source_entry>>> construct_tx_with_tx_key
+  std::optional<
+    std::tuple
+    <
+      transaction
+      , std::vector<size_t>
+      >
+    > construct_tx_with_tx_key
     (
      const account_keys sender_account_keys
      , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses

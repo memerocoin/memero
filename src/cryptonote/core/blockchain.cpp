@@ -3828,28 +3828,22 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
   }
 
   // from v7, sorted ins
-  {
-    const crypto::output_spend_public_key_image *last_output_spend_public_key_image = NULL;
-    for (size_t n = 0; n < tx.vin.size(); ++n)
-    {
-      const txin_v &txin = tx.vin[n];
-      if (txin.type() == typeid(txin_to_key))
-      {
-        const txin_to_key& in_to_key = boost::get<txin_to_key>(txin);
-        if (last_output_spend_public_key_image &&
-            memcmp
-            (&in_to_key.output_spend_public_key_image
-             , last_output_spend_public_key_image
-             , sizeof(*last_output_spend_public_key_image)) >= 0
-            )
-        {
-          LOG_ERROR_VER("transaction has unsorted inputs");
-          tvc.m_verifivation_failed = true;
-          return false;
-        }
-        last_output_spend_public_key_image = &in_to_key.output_spend_public_key_image;
-      }
-    }
+  const bool sorted_output_spend_public_key_images =
+    std::is_sorted
+    (
+     tx.vin.begin()
+     , tx.vin.end()
+     , [](const auto& x, const auto& y) {
+       const txin_to_key x1 = boost::get<txin_to_key>(x);
+       const txin_to_key y1 = boost::get<txin_to_key>(x);
+       return x1.output_spend_public_key_image < y1.output_spend_public_key_image;
+     }
+     );
+
+  if (!sorted_output_spend_public_key_images) {
+    LOG_ERROR_VER("transaction has unsorted inputs");
+    tvc.m_verifivation_failed = true;
+    return false;
   }
 
   std::vector<std::vector<rct::output_public_data>> pubkeys(tx.vin.size());

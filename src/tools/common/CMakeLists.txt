@@ -37,6 +37,7 @@ add_library(tools_common
   password.cpp
   spawn.cpp
   threadpool.cpp
+  apply_permutation.cpp
   )
 
 target_link_libraries(tools_common

@@ -28,34 +28,30 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
-#pragma once
 
-#include "math/crypto/functional/key.hpp"
-
-#include <vector>
-#include <algorithm>
+#include "apply_permutation.h"
+#include <cstring>
 
 namespace tools
 {
 
-template<typename T>
-std::vector<T> apply_permutation(const std::vector<size_t> indices, const std::vector<T> xs)
-{
-  std::vector<T> result;
-
-  std::transform
+std::vector<size_t> get_sorted_permutation(const std::vector<crypto::output_spend_public_key_image> xs) {
+  std::vector<size_t> indices(xs.size());
+  std::generate
     (
      indices.begin()
      , indices.end()
-     , std::back_inserter(result)
-     , [xs](const auto& i) {
-       return xs[i];
+     , [i = 0]() mutable {
+       return i++;
      }
      );
 
-  return result;
-}
+  std::sort(indices.begin(), indices.end(), [xs](const size_t i, const size_t j) {
+    // want reverse??
+    return !(xs[i] < xs[j]);
+  });
 
-std::vector<size_t> get_sorted_permutation(const std::vector<crypto::output_spend_public_key_image> xs);
+  return indices;
+}
 
 }
