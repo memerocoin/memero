@@ -429,25 +429,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin)
   READ_JSON_VALUE_BY_KEY(val, txin.output_spend_public_key_image, output_spend_public_key_image);
 }
 
-
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_script txout)
-{
-}
-
-void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_script& txout)
-{
-}
-
-
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_scripthash txout)
-{
-}
-
-void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_scripthash& txout)
-{
-}
-
-
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_key txout)
 {
   dest.StartObject();
@@ -481,14 +462,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
     void operator()(cryptonote::txout_to_key const& output) const
     {
       WRITE_JSON_FIELD_FROM(dest, to_key, output);
-    }
-    void operator()(cryptonote::txout_to_script const& output) const
-    {
-      WRITE_JSON_FIELD_FROM(dest, to_script, output);
-    }
-    void operator()(cryptonote::txout_to_scripthash const& output) const
-    {
-      WRITE_JSON_FIELD_FROM(dest, to_scripthash, output);
     }
   };
   boost::apply_visitor(add_output{dest}, txout.target);
