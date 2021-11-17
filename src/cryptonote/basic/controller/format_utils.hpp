@@ -77,7 +77,7 @@ namespace cryptonote
   blobdata block_to_blob(const block& b);
   std::optional<blobdata> maybe_block_to_blob(const block& b);
   blobdata tx_to_blob(const transaction& b);
-  bool tx_to_blob(const transaction& b, blobdata& b_blob);
+  std::optional<blobdata> maybe_tx_to_blob(const transaction& tx);
 
   void get_hash_stats(uint64_t &tx_hashes_calculated, uint64_t &tx_hashes_cached, uint64_t &block_hashes_calculated, uint64_t & block_hashes_cached);
 

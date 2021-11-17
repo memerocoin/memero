@@ -321,16 +321,9 @@ namespace cryptonote
     return t_serializable_object_to_blob(tx);
   }
   //---------------------------------------------------------------
-  bool tx_to_blob(const transaction& tx, blobdata& b_blob)
+  std::optional<blobdata> maybe_tx_to_blob(const transaction& tx)
   {
-    const auto blob = maybe_to_blob(tx);
-
-    if (blob) {
-      b_blob = *blob;
-      return true;
-    } else {
-      return false;
-    }
+    return maybe_to_blob(tx);
   }
   //---------------------------------------------------------------
   void get_hash_stats(uint64_t &tx_hashes_calculated, uint64_t &tx_hashes_cached, uint64_t &block_hashes_calculated, uint64_t & block_hashes_cached)

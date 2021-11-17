@@ -3209,8 +3209,7 @@ void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_
     const crypto::hash txid = get_transaction_hash(ptx.tx);
     if (do_not_relay)
     {
-      cryptonote::blobdata blob;
-      tx_to_blob(ptx.tx, blob);
+      cryptonote::blobdata blob = tx_to_blob(ptx.tx);
       const std::string blob_hex = epee::string_tools::buff_to_hex_nodelimer(blob);
       const std::string filename = "raw_lolnero_tx" + (ptx_vector.size() == 1 ? "" : ("_" + std::to_string(i++)));
       if (wallet::logic::controller::wallet::save_to_file(filename, blob_hex))
