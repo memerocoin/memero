@@ -293,9 +293,6 @@ namespace cryptonote
       LOG_PRINT_L2(output_public_keys[i]);
     add_tx_output_keys_to_extra(tx.extra, output_public_keys);
 
-    if (!sort_tx_extra(tx.extra, tx.extra))
-      return {};
-
     //check money
     if(summary_outs_money > summary_inputs_money )
     {
@@ -436,8 +433,6 @@ namespace cryptonote
 
     keypair txkey = keypair::generate();
     add_tx_pub_key_to_extra(tx, txkey.pub);
-    if (!sort_tx_extra(tx.extra, tx.extra))
-      return {};
 
     txin_gen in;
     in.height = height;

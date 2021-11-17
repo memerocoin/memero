@@ -41,8 +41,6 @@
 
 namespace cryptonote
 {
-
-  bool sort_tx_extra(const std::span<const uint8_t> tx_extra, std::vector<uint8_t> &sorted_tx_extra, bool allow_partial = false);
   bool add_tx_pub_key_to_extra(transaction& tx, const crypto::public_key& tx_pub_key);
   bool add_tx_pub_key_to_extra(std::vector<uint8_t>& tx_extra, const crypto::public_key& tx_pub_key);
 

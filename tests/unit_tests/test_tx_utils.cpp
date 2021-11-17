@@ -121,36 +121,6 @@ TEST(validate_parse_amount_case, validate_parse_amount)
 }
 */
 
-TEST(sort_tx_extra, empty)
-{
-  std::vector<uint8_t> extra, sorted;
-  ASSERT_TRUE(cryptonote::sort_tx_extra(extra, sorted));
-  ASSERT_EQ(extra, sorted);
-}
-
-TEST(sort_tx_extra, pubkey)
-{
-  std::vector<uint8_t> sorted;
-  const uint8_t extra_arr[] = {1, 30, 208, 98, 162, 133, 64, 85, 83, 112, 91, 188, 89, 211, 24, 131, 39, 154, 22, 228,
-    80, 63, 198, 141, 173, 111, 244, 183, 4, 149, 186, 140, 230};
-  std::vector<uint8_t> extra(&extra_arr[0], &extra_arr[0] + sizeof(extra_arr));
-  ASSERT_TRUE(cryptonote::sort_tx_extra(extra, sorted));
-  ASSERT_EQ(extra, sorted);
-}
-
-TEST(sort_tx_extra, two_pubkeys)
-{
-  std::vector<uint8_t> sorted;
-  const uint8_t extra_arr[] = {1, 30, 208, 98, 162, 133, 64, 85, 83, 112, 91, 188, 89, 211, 24, 131, 39, 154, 22, 228,
-    80, 63, 198, 141, 173, 111, 244, 183, 4, 149, 186, 140, 230,
-    1, 30, 208, 98, 162, 133, 64, 85, 83, 112, 91, 188, 89, 211, 24, 131, 39, 154, 22, 228,
-    80, 63, 198, 141, 173, 111, 244, 183, 4, 149, 186, 140, 230};
-  std::vector<uint8_t> extra(&extra_arr[0], &extra_arr[0] + sizeof(extra_arr));
-  ASSERT_TRUE(cryptonote::sort_tx_extra(extra, sorted));
-  ASSERT_EQ(extra, sorted);
-}
-
-
 // TODO fix test
 /*
 TEST(sort_tx_extra, keep_order)
@@ -179,30 +149,3 @@ TEST(sort_tx_extra, switch_order)
   ASSERT_EQ(expected, sorted);
 }
 */
-
-TEST(sort_tx_extra, invalid)
-{
-  std::vector<uint8_t> sorted;
-  const uint8_t extra_arr[] = {1};
-  std::vector<uint8_t> extra(&extra_arr[0], &extra_arr[0] + sizeof(extra_arr));
-  ASSERT_FALSE(cryptonote::sort_tx_extra(extra, sorted));
-}
-
-TEST(sort_tx_extra, invalid_suffix_strict)
-{
-  std::vector<uint8_t> sorted;
-  const uint8_t extra_arr[] = {2, 9, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-  std::vector<uint8_t> extra(&extra_arr[0], &extra_arr[0] + sizeof(extra_arr));
-  ASSERT_FALSE(cryptonote::sort_tx_extra(extra, sorted));
-}
-
-TEST(sort_tx_extra, invalid_suffix_partial)
-{
-  std::vector<uint8_t> sorted;
-  const uint8_t extra_arr[] = {2, 9, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-  const uint8_t expected_arr[] = {2, 9, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-  std::vector<uint8_t> extra(&extra_arr[0], &extra_arr[0] + sizeof(extra_arr));
-  ASSERT_TRUE(cryptonote::sort_tx_extra(extra, sorted, true));
-  std::vector<uint8_t> expected(&expected_arr[0], &expected_arr[0] + sizeof(expected_arr));
-  ASSERT_EQ(sorted, expected);
-}
