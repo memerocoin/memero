@@ -314,7 +314,7 @@ VARIANT_TAG(binary_archive, cryptonote::txin_to_key, 0x2);
 VARIANT_TAG(binary_archive, cryptonote::txout_to_key, 0x2);
 
 VARIANT_TAG(json_archive, cryptonote::txin_gen, "gen");
-VARIANT_TAG(json_archive, cryptonote::txin_to_key, "key");
-VARIANT_TAG(json_archive, cryptonote::txout_to_key, "key");
+VARIANT_TAG(json_archive, cryptonote::txin_to_key, "ring");
+VARIANT_TAG(json_archive, cryptonote::txout_to_key, "output_spend_public_key");
 VARIANT_TAG(json_archive, cryptonote::transaction, "tx");
 
