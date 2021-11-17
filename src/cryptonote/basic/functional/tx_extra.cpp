@@ -282,7 +282,8 @@ namespace cryptonote
     binary_archive<true> ar(oss);
     bool r = ::do_serialize(ar, field);
 
-    LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(r, tx_extra_in, "failed to serialize tx extra tx output pub keys");
+    LOG_WITH_LEVEL_1_AND_RETURN_UNLESS
+      (r, tx_extra_in, "failed to serialize tx extra tx output pub keys");
 
     // append
     std::string tx_extra_str = oss.str();
