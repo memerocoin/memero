@@ -105,10 +105,8 @@ namespace cryptonote
   template<> inline unsigned int getpos(binary_archive<true> &ar) { return ar.stream().tellp(); }
   template<> inline unsigned int getpos(binary_archive<false> &ar) { return ar.stream().tellg(); }
 
-  class transaction_prefix
+  struct transaction_prefix
   {
-
-  public:
     // tx information
     size_t   version = 1;
     uint64_t unlock_time = 0;  //number of block (or time), used as a limitation like: spend this tx not early then block/time
@@ -127,24 +125,16 @@ namespace cryptonote
       FIELD(vout)
       FIELD(extra)
     END_SERIALIZE()
-
-  public:
-    transaction_prefix(){}
   };
 
-  class transaction: public transaction_prefix
+  struct transaction: public transaction_prefix
   {
   public:
     rct::rctData ringct;
 
     // hash cash
-    std::atomic<unsigned int> unprunable_size = 0;
-    std::atomic<unsigned int> prefix_size = 0;
-
-    transaction();
-    transaction(const transaction &t);
-    transaction &operator=(const transaction &t);
-    virtual ~transaction();
+    unsigned int unprunable_size = 0;
+    unsigned int prefix_size = 0;
 
     BEGIN_SERIALIZE_OBJECT()
       const unsigned int start_pos = getpos(ar);

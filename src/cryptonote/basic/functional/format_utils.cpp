@@ -532,7 +532,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   std::optional<transaction> maybe_tx_from_blob(const string_blob_view tx_blob)
   {
-    const transaction dummyTx;
+    const transaction dummyTx{};
     const auto maybeTx = maybe_from_blob(tx_blob, dummyTx);
     LOG_ERROR_AND_RETURN_UNLESS(maybeTx, {}, "Failed to parse transaction from blob");
     const auto maybeExpandedTx = expand_transaction(*maybeTx);

@@ -32,31 +32,6 @@
 
 namespace cryptonote
 {
-  transaction::transaction(const transaction &t):
-    transaction_prefix(t),
-    ringct(t.ringct),
-    unprunable_size(t.unprunable_size.load()),
-    prefix_size(t.prefix_size.load())
-  {
-  }
-
-  transaction &transaction::operator=(const transaction &t)
-  {
-    transaction_prefix::operator=(t);
-    ringct = t.ringct;
-    unprunable_size = t.unprunable_size.load();
-    prefix_size = t.prefix_size.load();
-    return *this;
-  }
-
-  transaction::transaction()
-  {
-  }
-
-  transaction::~transaction()
-  {
-  }
-
   size_t transaction::get_signature_size(const txin_v& tx_in)
   {
     struct txin_signature_size_visitor : public boost::static_visitor<size_t>
