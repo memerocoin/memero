@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "cryptonote/basic/functional/subaddress.hpp"
+
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
 #include "tools/epee/include/string_tools.h"
@@ -289,29 +291,6 @@ namespace cryptonote
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  struct account_public_address_unsafe
-  {
-    crypto::ec_point_unsafe m_spend_public_key_unsafe;
-    crypto::ec_point_unsafe m_view_public_key_unsafe;
-
-    BEGIN_KV_SERIALIZE_MAP()
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key_unsafe)
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key_unsafe)
-    END_KV_SERIALIZE_MAP()
-  };
-
-  struct account_public_address
-  {
-    crypto::public_key m_spend_public_key;
-    crypto::public_key m_view_public_key;
-
-    bool operator==(const account_public_address& rhs) const = default;
-
-    BEGIN_KV_SERIALIZE_MAP()
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
-    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
-    END_KV_SERIALIZE_MAP()
-  };
 
   std::optional<account_public_address> maybe_safe_account_public_address(const account_public_address_unsafe x);
 

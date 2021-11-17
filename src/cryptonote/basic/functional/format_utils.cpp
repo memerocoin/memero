@@ -36,6 +36,7 @@
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 
 #include "cryptonote/basic/functional/subaddress.hpp"
+#include "cryptonote/basic/controller/format_utils.hpp"
 #include "cryptonote/basic/controller/tx_extra.hpp"
 
 #include <boost/algorithm/string.hpp>

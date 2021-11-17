@@ -31,12 +31,43 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/controller/account.h"
 #include "cryptonote/basic/type/subaddress_index.hpp"
-#include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
+
+#include "math/crypto/functional/key.hpp"
+
+#include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
 
 namespace cryptonote {
+
+  struct spend_view_secret_keys
+  {
+    crypto::secret_key   m_spend_secret_key;
+    crypto::secret_key   m_view_secret_key;
+  };
+
+  struct account_public_address_unsafe
+  {
+    crypto::ec_point_unsafe m_spend_public_key_unsafe;
+    crypto::ec_point_unsafe m_view_public_key_unsafe;
+
+    BEGIN_KV_SERIALIZE_MAP()
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key_unsafe)
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key_unsafe)
+    END_KV_SERIALIZE_MAP()
+  };
+
+  struct account_public_address
+  {
+    crypto::public_key m_spend_public_key;
+    crypto::public_key m_view_public_key;
+
+    bool operator==(const account_public_address& rhs) const = default;
+
+    BEGIN_KV_SERIALIZE_MAP()
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
+    KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
+    END_KV_SERIALIZE_MAP()
+  };
 
   crypto::secret_key get_subaddress_spend_secret_key
   (

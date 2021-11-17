@@ -31,15 +31,10 @@
 #pragma once
 
 #include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/functional/subaddress.hpp"
 
 namespace cryptonote
 {
-  struct spend_view_secret_keys
-  {
-    crypto::secret_key   m_spend_secret_key;
-    crypto::secret_key   m_view_secret_key;
-  };
-
   struct account_keys
   {
     account_public_address m_account_address;
