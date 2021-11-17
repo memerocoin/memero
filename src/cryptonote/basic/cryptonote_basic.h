@@ -271,6 +271,13 @@ namespace cryptonote
 
   std::optional<crypto::hash> parse_hash256(const std::string &str_hash);
   std::optional<crypto::crypto_data> parse_crypto_data(const std::string str_hash);
+
+  std::string get_account_address_as_str
+  (
+   const network_type nettype
+   , const bool subaddress
+   , const spend_view_public_keys& adr
+   );
 }
 
 

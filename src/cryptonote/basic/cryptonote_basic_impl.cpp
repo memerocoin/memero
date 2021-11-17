@@ -28,7 +28,7 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "controller/format_utils.hpp"
+#include "functional/format_utils.hpp"
 
 #include "tools/common/base58.h"
 #include "tools/epee/include/string_tools.h"
@@ -48,23 +48,13 @@ namespace cryptonote {
 
     return std::reduce(buf_data.begin(), buf_data.end());
   }
-  //------------------------------------------------------------------------------------
-  std::string get_account_address_as_str(
-      const network_type nettype
-    , const bool subaddress
-    , const spend_view_public_keys & adr
-    )
-  {
-    uint64_t address_prefix = subaddress ? get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX : get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
-
-    return tools::base58::encode_addr(address_prefix, t_serializable_object_to_blob(adr));
-  }
   //-----------------------------------------------------------------------
-  bool get_account_address_from_str(
-      address_parse_info& info
-    , network_type nettype
-    , std::string const & str
-    )
+  bool get_account_address_from_str
+  (
+   address_parse_info& info
+   , network_type nettype
+   , std::string const & str
+   )
   {
     uint64_t address_prefix = get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
     uint64_t subaddress_prefix = get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX;

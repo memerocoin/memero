@@ -40,15 +40,6 @@ namespace cryptonote {
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  template<class t_array>
-  struct array_hasher: std::unary_function<t_array&, std::size_t>
-  {
-    std::size_t operator()(const t_array& val) const
-    {
-      return boost::hash_range(&val.data[0], &val.data[sizeof(val.data)]);
-    }
-  };
-
 
   struct public_address_outer_blob
   {
@@ -65,16 +56,12 @@ namespace cryptonote {
 
   uint8_t get_account_address_checksum(const public_address_outer_blob& bl);
 
-  std::string get_account_address_as_str(
-      const network_type nettype
-    , const bool subaddress
-    , const spend_view_public_keys& adr
-    );
 
-  bool get_account_address_from_str(
-      address_parse_info& info
-    , network_type nettype
-    , const std::string& str
-    );
+  bool get_account_address_from_str
+  (
+   address_parse_info& info
+   , network_type nettype
+   , const std::string& str
+   );
 
 }

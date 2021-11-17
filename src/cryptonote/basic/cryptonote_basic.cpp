@@ -32,6 +32,8 @@
 
 #include "functional/format_utils.hpp"
 
+#include "tools/common/base58.h"
+
 namespace cryptonote
 {
   std::optional<spend_view_public_keys> maybe_safe_spend_view_public_keys(const spend_view_public_keys_unsafe x)
@@ -103,5 +105,18 @@ namespace cryptonote
       std::copy(buf.begin(), buf.end(), out.data.begin());
       return out;
     }
+  }
+
+  //------------------------------------------------------------------------------------
+  std::string get_account_address_as_str
+  (
+   const network_type nettype
+   , const bool subaddress
+   , const spend_view_public_keys & adr
+   )
+  {
+    uint64_t address_prefix = subaddress ? get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX : get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
+
+    return tools::base58::encode_addr(address_prefix, t_serializable_object_to_blob(adr));
   }
 }
