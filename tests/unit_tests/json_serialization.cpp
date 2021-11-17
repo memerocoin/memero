@@ -12,8 +12,9 @@
 #include "cryptonote/basic/functional/base.hpp"
 #include "cryptonote/basic/controller/format_utils.hpp"
 #include "cryptonote/basic/functional/tx_extra.hpp"
-#include "cryptonote/basic/controller/tx_extra.hpp"
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
+#include "cryptonote/basic/functional/format_utils.hpp"
+
 #include "tools/serialization/json_object.h"
 
 

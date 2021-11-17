@@ -30,10 +30,10 @@
 
 #pragma once
 
-#include "../type/string_blob_type.hpp"
-#include "../functional/base.hpp"
-#include "../type/tx_extra.hpp"
-#include "../type/subaddress_index.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
+#include "cryptonote/basic/functional/base.hpp"
+#include "cryptonote/basic/type/tx_extra.hpp"
+#include "cryptonote/basic/type/subaddress_index.hpp"
 
 #include "tools/epee/include/blob.hpp"
 
