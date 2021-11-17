@@ -129,7 +129,6 @@ namespace cryptonote
 
   struct transaction: public transaction_prefix
   {
-  public:
     rct::rctData ringct;
 
     // hash cash
@@ -204,9 +203,6 @@ namespace cryptonote
       }
       return ar.stream().good();
     }
-
-  private:
-    static size_t get_signature_size(const txin_v& tx_in);
   };
 
 
