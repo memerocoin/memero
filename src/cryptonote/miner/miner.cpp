@@ -35,6 +35,7 @@
 #include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 #ifdef OpenCL
 #include "opencl/sha3.hpp"

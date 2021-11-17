@@ -30,7 +30,7 @@
 
 #include "math/ringct/functional/rctOps.hpp"
 
-#include "cryptonote/basic/controller/format_utils.hpp"
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 #include "tools/common/util.h"
 

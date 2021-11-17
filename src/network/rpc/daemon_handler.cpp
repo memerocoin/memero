@@ -28,12 +28,9 @@
 
 #include "daemon_handler.h"
 
-// likely included by daemon_handler.h's includes,
-// but including here for clarity
-
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 #include "config/version.hpp"
-
 
 
 namespace cryptonote

@@ -35,6 +35,7 @@
 #include "network/rpc/core_rpc_server_commands_defs.h"
 
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 namespace tools
 {

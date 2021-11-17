@@ -33,7 +33,7 @@
 
 #include "database/interface/locked_txn.h"
 #include "cryptonote/functional/helper.hpp"
-
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "txpool"

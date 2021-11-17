@@ -35,6 +35,7 @@
 #include <map>
 
 #include "database/interface/blockchain.hpp"
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 namespace cryptonote
 {

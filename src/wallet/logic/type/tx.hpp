@@ -31,7 +31,7 @@
 
 #pragma once
 
-
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 namespace wallet {
 namespace logic {

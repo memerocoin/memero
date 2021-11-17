@@ -30,6 +30,8 @@
 
 #include "rpc_command_executor.h"
 
+#include "cryptonote/basic/functional/format_utils.hpp"
+
 #include "network/rpc/rpc_version_str.h"
 
 #include <boost/format.hpp>

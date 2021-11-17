@@ -36,6 +36,7 @@
 
 #include "cryptonote/tx/functional/tx_check.h"
 #include "cryptonote/basic/functional/tx_extra.hpp"
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 #include "config/version.hpp"
 

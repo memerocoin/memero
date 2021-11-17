@@ -31,6 +31,7 @@
 #pragma once
 
 #include "cryptonote/basic/controller/format_utils.hpp"
+#include "cryptonote/basic/controller/account.h"
 
 #include "math/ringct/functional/rctOps.hpp"
 
