@@ -67,9 +67,4 @@ namespace cryptonote
   std::string print_money(uint64_t amount, unsigned int decimal_point = -1);
   std::string print_money_128(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point = -1);
   std::string print_money(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point = -1);
-
-  //---------------------------------------------------------------
-
-  void get_hash_stats(uint64_t &tx_hashes_calculated, uint64_t &tx_hashes_cached, uint64_t &block_hashes_calculated, uint64_t & block_hashes_cached);
-
 }
