@@ -155,7 +155,7 @@ namespace cryptonote
       * @return false if loading new checkpoints fails, or the block is not
       * added, otherwise true
       */
-     bool handle_incoming_block(const blobdata& block_blob, const block *b, block_verification_context& bvc, bool update_miner_blocktemplate = true);
+     bool handle_incoming_block(const string_blob& block_blob, const block *b, block_verification_context& bvc, bool update_miner_blocktemplate = true);
 
      /**
       * @copydoc Blockchain::prepare_handle_incoming_blocks
@@ -178,7 +178,7 @@ namespace cryptonote
       *
       * @return whether or not the block is too big
       */
-     bool check_incoming_block_size(const blobdata& block_blob) const;
+     bool check_incoming_block_size(const string_blob& block_blob) const;
 
      /**
       * @brief get the cryptonote protocol instance
@@ -208,14 +208,14 @@ namespace cryptonote
       *
       * @note see Blockchain::create_block_template
       */
-     virtual bool get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce) override;
-     virtual bool get_block_template(block& b, const crypto::hash *prev_block, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
+     virtual bool get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce) override;
+     virtual bool get_block_template(block& b, const crypto::hash *prev_block, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce);
 
      /**
       * @brief called when a transaction is relayed.
       * @note Should only be invoked from `levin_notify`.
       */
-     virtual void on_transactions_relayed(const std::vector<cryptonote::blobdata> tx_blobs, relay_method tx_relay) final;
+     virtual void on_transactions_relayed(const std::vector<cryptonote::string_blob> tx_blobs, relay_method tx_relay) final;
 
 
      /**
@@ -286,23 +286,23 @@ namespace cryptonote
      void get_blockchain_top(uint64_t& height, crypto::hash& top_id) const;
 
      /**
-      * @copydoc Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::blobdata,block>>&, std::vector<transaction>&) const
+      * @copydoc Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::string_blob,block>>&, std::vector<transaction>&) const
       *
-      * @note see Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::blobdata,block>>&, std::vector<transaction>&) const
+      * @note see Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::string_blob,block>>&, std::vector<transaction>&) const
       */
-     bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata,block>>& blocks, std::vector<cryptonote::blobdata>& txs) const;
+     bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks, std::vector<cryptonote::string_blob>& txs) const;
 
      /**
-      * @copydoc Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::blobdata,block>>&) const
+      * @copydoc Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::string_blob,block>>&) const
       *
-      * @note see Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::blobdata,block>>&) const
+      * @note see Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::string_blob,block>>&) const
       */
-     bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata,block>>& blocks) const;
+     bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks) const;
 
      /**
-      * @copydoc Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::blobdata,block>>&) const
+      * @copydoc Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::string_blob,block>>&) const
       *
-      * @note see Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::blobdata,block>>&) const
+      * @note see Blockchain::get_blocks(uint64_t, size_t, std::vector<std::pair<cryptonote::string_blob,block>>&) const
       */
      bool get_blocks(uint64_t start_offset, size_t count, std::vector<block>& blocks) const;
 
@@ -329,14 +329,14 @@ namespace cryptonote
       *
       * @note see Blockchain::get_transactions
       */
-     bool get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs) const;
+     bool get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::string_blob>& txs, std::vector<crypto::hash>& missed_txs) const;
 
      /**
       * @copydoc Blockchain::get_transactions
       *
       * @note see Blockchain::get_transactions
       */
-     bool get_split_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>& txs, std::vector<crypto::hash>& missed_txs) const;
+     bool get_split_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<std::pair<crypto::hash, cryptonote::string_blob>>& txs, std::vector<crypto::hash>& missed_txs) const;
 
      /**
       * @copydoc Blockchain::get_transactions
@@ -416,7 +416,7 @@ namespace cryptonote
       *
       * @note see tx_memory_pool::get_transaction
       */
-     bool get_pool_transaction(const crypto::hash& id, cryptonote::blobdata& tx, relay_category tx_category) const;
+     bool get_pool_transaction(const crypto::hash& id, cryptonote::string_blob& tx, relay_category tx_category) const;
 
      /**
       * @copydoc tx_memory_pool::get_pool_transactions_and_spent_keys_info
@@ -471,11 +471,11 @@ namespace cryptonote
      bool find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const;
 
      /**
-      * @copydoc Blockchain::find_blockchain_supplement(const uint64_t, const std::list<crypto::hash>&, std::vector<std::pair<cryptonote::blobdata, std::vector<cryptonote::blobdata> > >&, uint64_t&, uint64_t&, size_t) const
+      * @copydoc Blockchain::find_blockchain_supplement(const uint64_t, const std::list<crypto::hash>&, std::vector<std::pair<cryptonote::string_blob, std::vector<cryptonote::string_blob> > >&, uint64_t&, uint64_t&, size_t) const
       *
-      * @note see Blockchain::find_blockchain_supplement(const uint64_t, const std::list<crypto::hash>&, std::vector<std::pair<cryptonote::blobdata, std::vector<transaction> > >&, uint64_t&, uint64_t&, size_t) const
+      * @note see Blockchain::find_blockchain_supplement(const uint64_t, const std::list<crypto::hash>&, std::vector<std::pair<cryptonote::string_blob, std::vector<transaction> > >&, uint64_t&, uint64_t&, size_t) const
       */
-     bool find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const;
+     bool find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const;
 
      /**
       * @copydoc Blockchain::get_tx_outputs_gindexs
@@ -683,7 +683,7 @@ namespace cryptonote
       *
       * @return true iff success, false otherwise
       */
-     bool get_txpool_complement(const std::span<const crypto::hash>hashes, std::vector<cryptonote::blobdata> &txes);
+     bool get_txpool_complement(const std::span<const crypto::hash>hashes, std::vector<cryptonote::string_blob> &txes);
 
    private:
 
@@ -697,7 +697,7 @@ namespace cryptonote
       * @param relayed whether or not the transaction was relayed to us
       *
       */
-     bool add_new_tx(transaction& tx, const crypto::hash& tx_hash, const cryptonote::blobdata &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed);
+     bool add_new_tx(transaction& tx, const crypto::hash& tx_hash, const cryptonote::string_blob &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed);
 
      /**
       * @brief add a new transaction to the transaction pool
@@ -732,11 +732,11 @@ namespace cryptonote
      bool load_state_data();
 
      /**
-      * @copydoc parse_tx_from_blob(transaction&, crypto::hash&, crypto::hash&, const blobdata&) const
+      * @copydoc parse_tx_from_blob(transaction&, crypto::hash&, crypto::hash&, const string_blob&) const
       *
-      * @note see parse_tx_from_blob(transaction&, crypto::hash&, crypto::hash&, const blobdata&) const
+      * @note see parse_tx_from_blob(transaction&, crypto::hash&, crypto::hash&, const string_blob&) const
       */
-     bool parse_tx_from_blob(transaction& tx, crypto::hash& tx_hash, const blobdata& blob) const;
+     bool parse_tx_from_blob(transaction& tx, crypto::hash& tx_hash, const string_blob& blob) const;
 
      /**
       * @brief check a transaction's syntax

@@ -775,8 +775,8 @@ namespace cryptonote
       uint64_t height;
       uint64_t expected_reward;
       std::string prev_hash;
-      blobdata blocktemplate_blob;
-      blobdata blockhashing_blob;
+      string_blob blocktemplate_blob;
+      string_blob blockhashing_blob;
       uint64_t unlock_height;
 
       BEGIN_KV_SERIALIZE_MAP()

@@ -1147,7 +1147,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
 // in a lot of places.  That flag is not referenced in any of the code
 // nor any of the makefiles, howeve.  Need to look into whether or not it's
 // necessary at all.
-bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   uint64_t pool_cookie;
@@ -1356,7 +1356,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
   return false;
 }
 //------------------------------------------------------------------
-bool Blockchain::create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+bool Blockchain::create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce)
 {
   return create_block_template(b, NULL, miner_address, diffic, height, expected_reward, ex_nonce);
 }
@@ -1537,7 +1537,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     for (const crypto::hash &txid: b.tx_hashes)
     {
       cryptonote::tx_memory_pool::tx_details td;
-      cryptonote::blobdata blob;
+      cryptonote::string_blob blob;
       if (m_tx_pool.have_tx(txid, relay_category::legacy))
       {
         if (m_tx_pool.get_transaction_info(txid, td))
@@ -1657,7 +1657,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
   return true;
 }
 //------------------------------------------------------------------
-bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata,block>>& blocks, std::vector<cryptonote::blobdata>& txs) const
+bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks, std::vector<cryptonote::string_blob>& txs) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
@@ -1679,7 +1679,7 @@ bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std
   return true;
 }
 //------------------------------------------------------------------
-bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata,block>>& blocks) const
+bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
@@ -1715,7 +1715,7 @@ bool Blockchain::handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NO
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
   db_rtxn_guard rtxn_guard (m_db);
   rsp.current_blockchain_height = get_current_blockchain_height();
-  std::vector<std::pair<cryptonote::blobdata,block>> blocks;
+  std::vector<std::pair<cryptonote::string_blob,block>> blocks;
   get_blocks(arg.blocks, blocks, rsp.missed_ids);
 
   for (size_t i = 0; i < blocks.size(); ++i)
@@ -1759,7 +1759,7 @@ bool Blockchain::get_alternative_blocks(std::vector<block>& blocks) const
     ([&blocks]
      (const crypto::hash &blkid
       , const cryptonote::alt_block_data_t &data
-      , const cryptonote::blobdata_ref blob
+      , const cryptonote::string_blob_view blob
       ) {
     const auto maybeBlock = maybe_block_from_blob(blob);
     if (maybeBlock) {
@@ -2013,7 +2013,7 @@ bool Blockchain::get_blocks(const t_ids_container& block_ids, t_blocks_container
   return true;
 }
 //------------------------------------------------------------------
-static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, cryptonote::blobdata &tx)
+static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, cryptonote::string_blob &tx)
 {
   {
     if (!db->get_tx_blob(tx_hash, tx))
@@ -2034,7 +2034,7 @@ static bool fill(BlockchainDB *db, const crypto::hash &tx_hash, tx_blob_entry &t
 //------------------------------------------------------------------
 //TODO: return type should be void, throw on exception
 //       alternatively, return true only if no transactions missed
-bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs) const
+bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::string_blob>& txs, std::vector<crypto::hash>& missed_txs) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
@@ -2044,7 +2044,7 @@ bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_
   {
     try
     {
-      cryptonote::blobdata tx;
+      cryptonote::string_blob tx;
       if (fill(m_db, tx_hash, tx))
         txs.push_back(std::move(tx));
       else
@@ -2082,7 +2082,7 @@ bool Blockchain::get_transactions_blobs(const std::span<const crypto::hash> txs_
   return true;
 }
 //------------------------------------------------------------------
-size_t get_transaction_version(const cryptonote::blobdata &bd)
+size_t get_transaction_version(const cryptonote::string_blob &bd)
 {
   size_t version;
   const char* begin = static_cast<const char*>(bd.data());
@@ -2104,7 +2104,7 @@ bool Blockchain::get_split_transactions_blobs(const t_ids_container txs_ids, t_t
   {
     try
     {
-      cryptonote::blobdata tx;
+      cryptonote::string_blob tx;
       if (m_db->get_tx_blob(tx_hash, tx))
       {
         txs.push_back(std::make_pair(tx_hash, tx));
@@ -2131,7 +2131,7 @@ bool Blockchain::get_transactions(const t_ids_container txs_ids, t_tx_container&
   {
     try
     {
-      cryptonote::blobdata tx_blob;
+      cryptonote::string_blob tx_blob;
       if (m_db->get_tx_blob(tx_hash, tx_blob))
       {
         txs.push_back(transaction());
@@ -2206,7 +2206,7 @@ bool Blockchain::find_blockchain_supplement(const std::list<crypto::hash>& qbloc
 // find split point between ours and foreign blockchain (or start at
 // blockchain height <req_start_block>), and return up to max_count FULL
 // blocks by reference.
-bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const
+bool Blockchain::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
@@ -2687,7 +2687,7 @@ bool Blockchain::check_block_timestamp(const block& b, uint64_t& median_ts) cons
   return check_block_timestamp(timestamps, b, median_ts);
 }
 //------------------------------------------------------------------
-void Blockchain::return_tx_to_pool(std::vector<std::pair<transaction, blobdata>> &txs)
+void Blockchain::return_tx_to_pool(std::vector<std::pair<transaction, string_blob>> &txs)
 {
   for (auto& tx : txs)
   {
@@ -2714,7 +2714,7 @@ bool Blockchain::flush_txes_from_pool(const std::span<const crypto::hash>txids)
   for (const auto &txid: txids)
   {
     cryptonote::transaction tx;
-    cryptonote::blobdata txblob;
+    cryptonote::string_blob txblob;
     size_t tx_weight;
     uint64_t fee;
     bool relayed, do_not_relay, double_spend_seen, pruned;
@@ -2830,7 +2830,7 @@ leave:
   size_t coinbase_weight = get_transaction_weight(bl.miner_tx);
   size_t cumulative_block_weight = coinbase_weight;
 
-  std::vector<std::pair<transaction, blobdata>> txs;
+  std::vector<std::pair<transaction, string_blob>> txs;
   output_spend_public_key_images_container keys;
 
   uint64_t fee_summary = 0;
@@ -2851,7 +2851,7 @@ leave:
   for (const crypto::hash& tx_id : bl.tx_hashes)
   {
     transaction tx_tmp;
-    blobdata txblob;
+    string_blob txblob;
     size_t tx_weight = 0;
     uint64_t fee = 0;
     bool relayed = false, do_not_relay = false, double_spend_seen = false, pruned = false;
@@ -2981,7 +2981,7 @@ leave:
     try
     {
       uint64_t long_term_block_weight = get_max_block_weight(cryptonote::get_block_height(bl));
-      cryptonote::blobdata bd = cryptonote::block_to_blob(bl);
+      cryptonote::string_blob bd = cryptonote::block_to_blob(bl);
       new_height = m_db->add_block(std::make_pair(std::move(bl), std::move(bd)), block_weight, long_term_block_weight, cumulative_difficulty, already_generated_coins, txs);
     }
     catch (const KEY_IMAGE_EXISTS& e)
@@ -3553,7 +3553,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
   return true;
 }
 
-void Blockchain::add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata &blob, const txpool_tx_meta_t &meta)
+void Blockchain::add_txpool_tx(const crypto::hash &txid, const cryptonote::string_blob &blob, const txpool_tx_meta_t &meta)
 {
   m_db->add_txpool_tx(txid, blob, meta);
 }
@@ -3578,17 +3578,17 @@ bool Blockchain::get_txpool_tx_meta(const crypto::hash& txid, txpool_tx_meta_t &
   return m_db->get_txpool_tx_meta(txid, meta);
 }
 
-bool Blockchain::get_txpool_tx_blob(const crypto::hash& txid, cryptonote::blobdata &bd, relay_category tx_category) const
+bool Blockchain::get_txpool_tx_blob(const crypto::hash& txid, cryptonote::string_blob &bd, relay_category tx_category) const
 {
   return m_db->get_txpool_tx_blob(txid, bd, tx_category);
 }
 
-cryptonote::blobdata Blockchain::get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const
+cryptonote::string_blob Blockchain::get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const
 {
   return m_db->get_txpool_tx_blob(txid, tx_category);
 }
 
-bool Blockchain::for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref)> f, bool include_blob, relay_category tx_category) const
+bool Blockchain::for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::string_blob_view)> f, bool include_blob, relay_category tx_category) const
 {
   return m_db->for_all_txpool_txes(f, include_blob, tx_category);
 }
@@ -3642,7 +3642,7 @@ std::vector<std::pair<Blockchain::block_extended_info,std::vector<crypto::hash>>
 
   blocks_ext_by_hash alt_blocks;
   alt_blocks.reserve(m_db->get_alt_block_count());
-  m_db->for_all_alt_blocks([&alt_blocks](const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref blob) {
+  m_db->for_all_alt_blocks([&alt_blocks](const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view blob) {
     cryptonote::block bl;
     block_extended_info bei;
     const auto maybeBlock = maybe_block_from_blob(blob);
@@ -3736,7 +3736,7 @@ void Blockchain::invalidate_block_template_cache()
   m_btc_valid = false;
 }
 
-void Blockchain::cache_block_template(const block &b, const cryptonote::spend_view_public_keys &address, const blobdata &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie)
+void Blockchain::cache_block_template(const block &b, const cryptonote::spend_view_public_keys &address, const string_blob &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie)
 {
   LOG_DEBUG("Setting block template cache");
   m_btc = b;
@@ -3998,5 +3998,5 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
 namespace cryptonote {
 template bool Blockchain::get_transactions(const std::span<const crypto::hash>, std::vector<transaction>&, std::vector<crypto::hash>&) const;
-template bool Blockchain::get_split_transactions_blobs(const std::span<const crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>&, std::vector<crypto::hash>&) const;
+template bool Blockchain::get_split_transactions_blobs(const std::span<const crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob>>&, std::vector<crypto::hash>&) const;
 }

@@ -37,9 +37,9 @@
 
 namespace cryptonote
 {
-  // using blobdata = std::basic_string<uint8_t>;
-  // using blobdata_ref = std::basic_string_view<uint8_t>;
+  // using string_blob = std::basic_string<uint8_t>;
+  // using string_blob_view = std::basic_string_view<uint8_t>;
 
-  using blobdata = std::string;
-  using blobdata_ref = std::string_view;
+  using string_blob = std::string;
+  using string_blob_view = std::string_view;
 }

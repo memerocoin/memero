@@ -122,7 +122,7 @@ namespace nodetool
 
     static constexpr int handshake_command() noexcept { return 1001; }
 
-    std::vector<cryptonote::blobdata> fluff_txs;
+    std::vector<cryptonote::string_blob> fluff_txs;
     std::chrono::steady_clock::time_point flush_time;
     peerid_type peer_id;
     uint32_t support_flags;
@@ -332,7 +332,7 @@ namespace nodetool
     virtual void callback(p2p_connection_context& context);
     //----------------- i_p2p_endpoint -------------------------------------------------------------
     virtual bool relay_notify_to_list(int command, const std::span<const uint8_t> data_buff, std::vector<std::pair<epee::net_utils::zone, boost::uuids::uuid>> connections);
-    virtual epee::net_utils::zone send_txs(std::vector<cryptonote::blobdata> txs, const epee::net_utils::zone origin, const boost::uuids::uuid& source, cryptonote::i_core_events& core);
+    virtual epee::net_utils::zone send_txs(std::vector<cryptonote::string_blob> txs, const epee::net_utils::zone origin, const boost::uuids::uuid& source, cryptonote::i_core_events& core);
     virtual bool invoke_command_to_peer(int command, const std::span<const uint8_t> req_buff, std::string& resp_buff, const epee::net_utils::connection_context_base& context);
     virtual bool invoke_notify_to_peer(int command, const std::span<const uint8_t> req_buff, const epee::net_utils::connection_context_base& context);
     virtual bool drop_connection(const epee::net_utils::connection_context_base& context);

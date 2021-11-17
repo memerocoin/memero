@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
 #include "cryptonote/protocol/connection_context.h"
 
 
@@ -110,7 +110,7 @@ namespace levin
           particular stem.
 
       \return True iff the notification is queued for sending. */
-    bool send_txs(std::vector<blobdata> txs, const boost::uuids::uuid& source);
+    bool send_txs(std::vector<string_blob> txs, const boost::uuids::uuid& source);
   };
 } // levin
 } // net

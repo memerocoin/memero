@@ -100,7 +100,7 @@ namespace cryptonote
      * @tx_relay how the transaction was received
      * @param tx_weight the transaction's weight
      */
-    bool add_tx(transaction &tx, const crypto::hash &id, const cryptonote::blobdata &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed);
+    bool add_tx(transaction &tx, const crypto::hash &id, const cryptonote::string_blob &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed);
 
     /**
      * @brief add a transaction to the transaction pool
@@ -135,7 +135,7 @@ namespace cryptonote
      *
      * @return true unless the transaction cannot be found in the pool
      */
-    bool take_tx(const crypto::hash &id, transaction &tx, cryptonote::blobdata &txblob, size_t& tx_weight, uint64_t& fee, bool &relayed, bool &do_not_relay, bool &double_spend_seen, bool &pruned);
+    bool take_tx(const crypto::hash &id, transaction &tx, cryptonote::string_blob &txblob, size_t& tx_weight, uint64_t& fee, bool &relayed, bool &do_not_relay, bool &double_spend_seen, bool &pruned);
 
     /**
      * @brief checks if the pool has a transaction with the given hash
@@ -295,7 +295,7 @@ namespace cryptonote
      *
      * @return true if the transaction is found, otherwise false
      */
-    bool get_transaction(const crypto::hash& h, cryptonote::blobdata& txblob, relay_category tx_category) const;
+    bool get_transaction(const crypto::hash& h, cryptonote::string_blob& txblob, relay_category tx_category) const;
 
     /**
      * @brief get a list of all relayable transactions and their hashes
@@ -310,7 +310,7 @@ namespace cryptonote
      *
      * @return true
      */
-    bool get_relayable_transactions(std::vector<std::tuple<crypto::hash, cryptonote::blobdata, relay_method>>& txs) const;
+    bool get_relayable_transactions(std::vector<std::tuple<crypto::hash, cryptonote::string_blob, relay_method>>& txs) const;
 
     /**
      * @brief tell the pool that certain transactions were just relayed
@@ -422,7 +422,7 @@ namespace cryptonote
     /**
      * @brief get transactions not in the passed set
      */
-    bool get_complement(const std::span<const crypto::hash>hashes, std::vector<cryptonote::blobdata> &txes) const;
+    bool get_complement(const std::span<const crypto::hash>hashes, std::vector<cryptonote::string_blob> &txes) const;
 
   private:
 
@@ -513,7 +513,7 @@ namespace cryptonote
      *
      * @return true if the transaction is good to go, otherwise false
      */
-    bool is_transaction_ready_to_go(txpool_tx_meta_t& txd, const crypto::hash &txid, const cryptonote::blobdata &txblob, transaction&tx) const;
+    bool is_transaction_ready_to_go(txpool_tx_meta_t& txd, const crypto::hash &txid, const cryptonote::string_blob &txblob, transaction&tx) const;
 
     /**
      * @brief mark all transactions double spending the one passed

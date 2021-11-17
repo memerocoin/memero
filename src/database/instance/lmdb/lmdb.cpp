@@ -100,9 +100,9 @@ private:
 };
 
 template<>
-struct MDB_val_copy<cryptonote::blobdata>: public MDB_val
+struct MDB_val_copy<cryptonote::string_blob>: public MDB_val
 {
-  MDB_val_copy(const cryptonote::blobdata &bd) :
+  MDB_val_copy(const cryptonote::string_blob &bd) :
     data(new char[bd.size()])
   {
     memcpy(data.get(), bd.data(), bd.size());
@@ -761,7 +761,7 @@ void BlockchainLMDB::add_block(const block& blk, size_t block_weight, uint64_t l
   CURSOR(block_info)
 
   // this call to mdb_cursor_put will change height()
-  cryptonote::blobdata block_blob(block_to_blob(blk));
+  cryptonote::string_blob block_blob(block_to_blob(blk));
   MDB_val_sized(blob, block_blob);
   result = mdb_cursor_put(m_cur_blocks, &key, &blob, MDB_APPEND);
   if (result)
@@ -837,7 +837,7 @@ void BlockchainLMDB::remove_block()
       throw1(DB_ERROR(lmdb_error("Failed to add removal of block info to db transaction: ", result).c_str()));
 }
 
-uint64_t BlockchainLMDB::add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& txp, const crypto::hash& tx_hash)
+uint64_t BlockchainLMDB::add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, string_blob_view>& txp, const crypto::hash& tx_hash)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -877,7 +877,7 @@ uint64_t BlockchainLMDB::add_transaction_data(const crypto::hash& blk_hash, cons
   if (result)
     throw0(DB_ERROR(lmdb_error("Failed to add tx data to db transaction: ", result).c_str()));
 
-  const cryptonote::blobdata_ref blob = txp.second;
+  const cryptonote::string_blob_view blob = txp.second;
 
   unsigned int unprunable_size = tx.unprunable_size;
   if (unprunable_size == 0)
@@ -1637,7 +1637,7 @@ void BlockchainLMDB::unlock()
       auto_txn.commit(); \
   } while(0)
 
-void BlockchainLMDB::add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata_ref blob, const txpool_tx_meta_t &meta)
+void BlockchainLMDB::add_txpool_tx(const crypto::hash &txid, const cryptonote::string_blob_view blob, const txpool_tx_meta_t &meta)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1811,7 +1811,7 @@ bool BlockchainLMDB::get_txpool_tx_meta(const crypto::hash& txid, txpool_tx_meta
   return true;
 }
 
-bool BlockchainLMDB::get_txpool_tx_blob(const crypto::hash& txid, cryptonote::blobdata &bd, relay_category tx_category) const
+bool BlockchainLMDB::get_txpool_tx_blob(const crypto::hash& txid, cryptonote::string_blob &bd, relay_category tx_category) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1848,9 +1848,9 @@ bool BlockchainLMDB::get_txpool_tx_blob(const crypto::hash& txid, cryptonote::bl
   return true;
 }
 
-cryptonote::blobdata BlockchainLMDB::get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const
+cryptonote::string_blob BlockchainLMDB::get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const
 {
-  cryptonote::blobdata bd;
+  cryptonote::string_blob bd;
   if (!get_txpool_tx_blob(txid, bd, tx_category))
     throw1(DB_ERROR("Tx not found in txpool: "));
   return bd;
@@ -1859,7 +1859,7 @@ cryptonote::blobdata BlockchainLMDB::get_txpool_tx_blob(const crypto::hash& txid
 enum { prune_mode_prune, prune_mode_update, prune_mode_check };
 
 
-bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref)> f, bool include_blob, relay_category category) const
+bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::string_blob_view)> f, bool include_blob, relay_category category) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1885,7 +1885,7 @@ bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&,
     const txpool_tx_meta_t &meta = *(const txpool_tx_meta_t*)v.mv_data;
     if (!meta.matches(category))
       continue;
-    cryptonote::blobdata bd;
+    cryptonote::string_blob bd;
     if (include_blob)
     {
       MDB_val b;
@@ -1908,7 +1908,7 @@ bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&,
   return ret;
 }
 
-bool BlockchainLMDB::for_all_alt_blocks(std::function<bool(const crypto::hash&, const alt_block_data_t&, const cryptonote::blobdata_ref)> f) const
+bool BlockchainLMDB::for_all_alt_blocks(std::function<bool(const crypto::hash&, const alt_block_data_t&, const cryptonote::string_blob_view)> f) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1933,7 +1933,7 @@ bool BlockchainLMDB::for_all_alt_blocks(std::function<bool(const crypto::hash&, 
     if (v.mv_size < sizeof(alt_block_data_t))
       throw0(DB_ERROR("alt_blocks record is too small"));
     const alt_block_data_t* data = (const alt_block_data_t*)v.mv_data;
-    const cryptonote::blobdata bd =
+    const cryptonote::string_blob bd =
       {reinterpret_cast<const char*>(v.mv_data) + sizeof(alt_block_data_t), v.mv_size - sizeof(alt_block_data_t)};
 
     if (!f(blkid, *data, bd)) {
@@ -1978,7 +1978,7 @@ bool BlockchainLMDB::block_exists(const crypto::hash& h, uint64_t *height) const
   return ret;
 }
 
-cryptonote::blobdata BlockchainLMDB::get_block_blob(const crypto::hash& h) const
+cryptonote::string_blob BlockchainLMDB::get_block_blob(const crypto::hash& h) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2016,7 +2016,7 @@ block_header BlockchainLMDB::get_block_header(const crypto::hash& h) const
   return get_block(h);
 }
 
-cryptonote::blobdata BlockchainLMDB::get_block_blob_from_height(const uint64_t& height) const
+cryptonote::string_blob BlockchainLMDB::get_block_blob_from_height(const uint64_t& height) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2034,7 +2034,7 @@ cryptonote::blobdata BlockchainLMDB::get_block_blob_from_height(const uint64_t& 
   else if (get_result)
     throw0(DB_ERROR("Error attempting to retrieve a block from the db"));
 
-  blobdata bd;
+  string_blob bd;
   bd.assign(reinterpret_cast<char*>(result.mv_data), result.mv_size);
 
   TXN_POSTFIX_RDONLY();
@@ -2571,7 +2571,7 @@ uint64_t BlockchainLMDB::get_tx_unlock_time(const crypto::hash& h) const
   return ret;
 }
 
-bool BlockchainLMDB::get_tx_blob(const crypto::hash& h, cryptonote::blobdata &bd) const
+bool BlockchainLMDB::get_tx_blob(const crypto::hash& h, cryptonote::string_blob &bd) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2607,7 +2607,7 @@ bool BlockchainLMDB::get_tx_blob(const crypto::hash& h, cryptonote::blobdata &bd
   return true;
 }
 
-bool BlockchainLMDB::get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const
+bool BlockchainLMDB::get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2681,7 +2681,7 @@ bool BlockchainLMDB::get_blocks_from(uint64_t start_height, size_t min_count, si
     for (const auto &tx_hash: b.tx_hashes)
     {
       // get pruned data
-      cryptonote::blobdata tx_blob;
+      cryptonote::string_blob tx_blob;
       result = mdb_cursor_get(m_cur_txs_pruned, &val_tx_id, &v, op);
       if (result)
         throw0(DB_ERROR(lmdb_error("Error attempting to retrieve transaction data from the db: ", result).c_str()));
@@ -2974,7 +2974,7 @@ bool BlockchainLMDB::for_blocks_range(const uint64_t& h1, const uint64_t& h2, st
     if (ret)
       throw0(DB_ERROR("Failed to enumerate blocks"));
     uint64_t height = *(const uint64_t*)k.mv_data;
-    const blobdata bd{reinterpret_cast<char*>(v.mv_data), v.mv_size};
+    const string_blob bd{reinterpret_cast<char*>(v.mv_data), v.mv_size};
 
     const auto maybeBlock = maybe_block_from_blob(bd);
     if (!maybeBlock) {
@@ -3034,7 +3034,7 @@ bool BlockchainLMDB::for_all_transactions(std::function<bool(const crypto::hash&
       throw0(DB_ERROR(lmdb_error("Failed to enumerate transactions: ", ret).c_str()));
     transaction tx;
     {
-      blobdata bd;
+      string_blob bd;
       bd.assign(reinterpret_cast<char*>(v.mv_data), v.mv_size);
       ret = mdb_cursor_get(m_cur_txs_prunable, &k, &v, MDB_SET);
       if (ret)
@@ -3407,8 +3407,8 @@ void BlockchainLMDB::block_rtxn_abort() const
   memset(&m_tinfo->m_ti_rflags, 0, sizeof(m_tinfo->m_ti_rflags));
 }
 
-uint64_t BlockchainLMDB::add_block(const std::pair<block, blobdata>& blk, size_t block_weight, uint64_t long_term_block_weight, const diff_t& cumulative_difficulty, const uint64_t& coins_generated,
-    const std::vector<std::pair<transaction, blobdata>>& txs)
+uint64_t BlockchainLMDB::add_block(const std::pair<block, string_blob>& blk, size_t block_weight, uint64_t long_term_block_weight, const diff_t& cumulative_difficulty, const uint64_t& coins_generated,
+    const std::vector<std::pair<transaction, string_blob>>& txs)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -3639,7 +3639,7 @@ void BlockchainLMDB::set_hard_fork_version(uint64_t height, uint8_t version)
   TXN_BLOCK_POSTFIX_SUCCESS();
 }
 
-void BlockchainLMDB::add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref blob)
+void BlockchainLMDB::add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view blob)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -3661,7 +3661,7 @@ void BlockchainLMDB::add_alt_block(const crypto::hash &blkid, const cryptonote::
   }
 }
 
-std::optional<std::pair <alt_block_data_t, cryptonote::blobdata>> BlockchainLMDB::get_alt_block(const crypto::hash &blkid)
+std::optional<std::pair <alt_block_data_t, cryptonote::string_blob>> BlockchainLMDB::get_alt_block(const crypto::hash &blkid)
 {
   LOG_PRINT_L3("BlockchainLMDB:: " << __func__);
   check_open();
@@ -3682,7 +3682,7 @@ std::optional<std::pair <alt_block_data_t, cryptonote::blobdata>> BlockchainLMDB
 
   const alt_block_data_t *ptr = (const alt_block_data_t*)v.mv_data;
   const alt_block_data_t alt_block_data = *ptr;
-  const blobdata blob((const char*)(ptr + 1), v.mv_size - sizeof(alt_block_data_t));
+  const string_blob blob((const char*)(ptr + 1), v.mv_size - sizeof(alt_block_data_t));
 
   TXN_POSTFIX_RDONLY();
   return {{alt_block_data, blob}};

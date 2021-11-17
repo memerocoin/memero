@@ -34,7 +34,7 @@
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/type/verification_context.hpp"
 #include "cryptonote/basic/functional/difficulty.hpp"
-#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
 
 #include "tools/epee/include/math_helper.h"
 
@@ -53,7 +53,7 @@ namespace cryptonote
   struct i_miner_handler
   {
     virtual bool handle_block_found(block& b, block_verification_context &bvc) = 0;
-    virtual bool get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce) = 0;
+    virtual bool get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce) = 0;
   protected:
     ~i_miner_handler(){};
   };

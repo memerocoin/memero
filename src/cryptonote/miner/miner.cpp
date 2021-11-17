@@ -112,7 +112,7 @@ namespace cryptonote
     uint64_t height = AUTO_VAL_INIT(height);
     uint64_t expected_reward; //only used for RPC calls - could possibly be useful here too?
 
-    cryptonote::blobdata extra_nonce;
+    cryptonote::string_blob extra_nonce;
 
     if(!m_phandler->get_block_template(bl, m_mine_address, di, height, expected_reward, extra_nonce))
     {
@@ -341,8 +341,8 @@ namespace cryptonote
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
     block b;
-    blobdata hashing_blob_head;
-    blobdata hashing_blob_tail;
+    string_blob hashing_blob_head;
+    string_blob hashing_blob_tail;
     crypto::hash h = crypto::null_hash;
 
     uint16_t hashe_count_buffer = 0;
@@ -369,7 +369,7 @@ namespace cryptonote
         height = m_height;
         local_template_ver = m_template_no;
         nonce = m_starter_nonce + th_local_index;
-        const blobdata head_full = get_mining_blob_head(b);
+        const string_blob head_full = get_mining_blob_head(b);
         hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
         hashing_blob_tail = cryptonote::get_mining_blob_tail(b);
       }
@@ -434,8 +434,8 @@ namespace cryptonote
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
     block b;
-    blobdata hashing_blob_head;
-    blobdata hashing_blob_tail;
+    string_blob hashing_blob_head;
+    string_blob hashing_blob_tail;
     opencl::cl_mining_template mining_template;
     const size_t gpu_worker_scale = 256;
     const size_t gpu_loop_size = 256;
@@ -465,7 +465,7 @@ namespace cryptonote
         height = m_height;
         local_template_ver = m_template_no;
         nonce = m_starter_nonce;
-        const blobdata head_full = get_mining_blob_head(b);
+        const string_blob head_full = get_mining_blob_head(b);
         hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
         hashing_blob_tail = cryptonote::get_mining_blob_tail(b);
 

@@ -362,7 +362,7 @@ namespace cryptonote
   }
   //------------------------------------------------------------------------------------------------------------------------
 
-    bool t_cryptonote_protocol_handler::get_payload_sync_data(blobdata& data)
+    bool t_cryptonote_protocol_handler::get_payload_sync_data(string_blob& data)
   {
     CORE_SYNC_DATA hsd = {};
     get_payload_sync_data(hsd);
@@ -616,7 +616,7 @@ namespace cryptonote
       size_t tx_idx = 0;
       for(auto& tx_hash: new_block.tx_hashes)
       {
-        cryptonote::blobdata txblob;
+        cryptonote::string_blob txblob;
         if(m_core.get_pool_transaction(tx_hash, txblob, relay_category::broadcasted))
         {
           have_tx.push_back({txblob, crypto::null_hash});
@@ -751,8 +751,8 @@ namespace cryptonote
       return 1;
     }
 
-    std::vector<std::pair<cryptonote::blobdata, block>> local_blocks;
-    std::vector<cryptonote::blobdata> local_txs;
+    std::vector<std::pair<cryptonote::string_blob, block>> local_blocks;
+    std::vector<cryptonote::string_blob> local_txs;
 
     block b;
     if (!m_core.get_block_by_hash(arg.block_hash, b))
@@ -845,10 +845,10 @@ namespace cryptonote
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
 
-    std::vector<std::pair<cryptonote::blobdata, block>> local_blocks;
-    std::vector<cryptonote::blobdata> local_txs;
+    std::vector<std::pair<cryptonote::string_blob, block>> local_blocks;
+    std::vector<cryptonote::string_blob> local_txs;
 
-    std::vector<cryptonote::blobdata> txes;
+    std::vector<cryptonote::string_blob> txes;
     if (!m_core.get_txpool_complement(arg.hashes, txes))
     {
       LOG_ERROR_CCONTEXT("failed to get txpool complement");
@@ -891,7 +891,7 @@ namespace cryptonote
       return 1;
     }
 
-    std::vector<cryptonote::blobdata> newtxs;
+    std::vector<cryptonote::string_blob> newtxs;
     newtxs.reserve(arg.txs.size());
     for (size_t i = 0; i < arg.txs.size(); ++i)
     {

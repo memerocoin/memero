@@ -177,7 +177,7 @@ namespace cryptonote
   }
   
   //---------------------------------------------------------------
-  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash)
+  bool parse_and_validate_block_from_blob(const string_blob_view b_blob, block& b, crypto::hash &block_hash)
   {
     const auto maybeBlock = maybe_block_from_blob(b_blob);
     if (maybeBlock) {

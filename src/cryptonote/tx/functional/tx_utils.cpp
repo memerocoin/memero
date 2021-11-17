@@ -396,7 +396,7 @@ namespace cryptonote
     //genesis block
     block bl = {};
 
-    blobdata tx_bl;
+    string_blob tx_bl;
     bool r = epee::string_tools::parse_hexstr_to_binbuff(genesis_tx, tx_bl);
     LOG_ERROR_AND_RETURN_UNLESS(r, {}, "failed to parse coinbase tx from hard coded blob");
 

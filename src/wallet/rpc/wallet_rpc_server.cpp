@@ -853,7 +853,7 @@ namespace tools
   {
     if (!m_wallet) return not_open(er);
 
-    cryptonote::blobdata blob;
+    cryptonote::string_blob blob;
     if (!epee::string_tools::parse_hexstr_to_binbuff(req.hex, blob))
     {
       er.code = WALLET_RPC_ERROR_CODE_BAD_HEX;
@@ -1252,7 +1252,7 @@ namespace tools
     }
 
     crypto::hash txid;
-    cryptonote::blobdata txid_blob;
+    cryptonote::string_blob txid_blob;
     if(!epee::string_tools::parse_hexstr_to_binbuff(req.txid, txid_blob))
     {
       er.code = WALLET_RPC_ERROR_CODE_WRONG_TXID;

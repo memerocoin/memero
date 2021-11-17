@@ -791,7 +791,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
       {
         tools::msg_writer() << "Block timestamp: " << res.txs.front().block_timestamp << " (" << tools::get_human_readable_timestamp(res.txs.front().block_timestamp) << ")";
       }
-      cryptonote::blobdata blob;
+      cryptonote::string_blob blob;
       if (epee::string_tools::parse_hexstr_to_binbuff(as_hex, blob))
       {
         cryptonote::transaction tx;
@@ -820,7 +820,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
     if (include_json)
     {
       cryptonote::transaction tx;
-      cryptonote::blobdata blob;
+      cryptonote::string_blob blob;
       std::string source = as_hex;
       if (!epee::string_tools::parse_hexstr_to_binbuff(source, blob))
       {

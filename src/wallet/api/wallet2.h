@@ -445,7 +445,7 @@ namespace tools
     bool generate_chacha_key_from_secret_keys(crypto::chacha_key &key) const;
     void generate_chacha_key_from_password(const epee::wipeable_string &pass, crypto::chacha_key &key) const;
 
-    void parse_block_round(const cryptonote::blobdata &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const;
+    void parse_block_round(const cryptonote::string_blob &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const;
 
     void set_spent(size_t idx, uint64_t height);
     void set_unspent(size_t idx);

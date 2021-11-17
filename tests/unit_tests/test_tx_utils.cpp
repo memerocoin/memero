@@ -67,7 +67,7 @@ TEST(parse_and_validate_tx_extra, is_valid_tx_extra_parsed)
 {
   cryptonote::account_base acc;
   acc.generate();
-  cryptonote::blobdata b = "dsdsdfsdfsf";
+  cryptonote::string_blob b = "dsdsdfsdfsf";
   const auto tx = cryptonote::construct_miner_tx(0, 0, TEST_FEE, acc.get_keys().m_account_address);
   ASSERT_TRUE(tx);
   const auto tx_pub_key = cryptonote::get_tx_pub_key_from_extra(*tx);

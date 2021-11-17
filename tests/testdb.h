@@ -64,10 +64,10 @@ public:
   virtual void block_rtxn_abort() const override {}
 
   virtual bool block_exists(const crypto::hash& h, uint64_t *height) const override { return false; }
-  virtual cryptonote::blobdata get_block_blob_from_height(const uint64_t& height) const override { return cryptonote::t_serializable_object_to_blob(get_block_from_height(height)); }
-  virtual cryptonote::blobdata get_block_blob(const crypto::hash& h) const override { return cryptonote::blobdata(); }
-  virtual bool get_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const override { return false; }
-  virtual bool get_blocks_from(uint64_t start_height, size_t min_block_count, size_t max_block_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const override { return false; }
+  virtual cryptonote::string_blob get_block_blob_from_height(const uint64_t& height) const override { return cryptonote::t_serializable_object_to_blob(get_block_from_height(height)); }
+  virtual cryptonote::string_blob get_block_blob(const crypto::hash& h) const override { return cryptonote::string_blob(); }
+  virtual bool get_tx_blob(const crypto::hash& h, cryptonote::string_blob &tx) const override { return false; }
+  virtual bool get_blocks_from(uint64_t start_height, size_t min_block_count, size_t max_block_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const override { return false; }
   virtual uint64_t get_block_height(const crypto::hash& h) const override { return 0; }
   virtual cryptonote::block_header get_block_header(const crypto::hash& h) const override { return cryptonote::block_header(); }
   virtual uint64_t get_block_timestamp(const uint64_t& height) const override { return 0; }
@@ -106,7 +106,7 @@ public:
   virtual std::vector<std::vector<uint64_t>> get_tx_amount_output_indices(const uint64_t tx_index, size_t n_txes) const override { return std::vector<std::vector<uint64_t>>(); }
   virtual bool has_output_spend_public_key_image(const crypto::output_spend_public_key_image& img) const override { return false; }
   virtual void remove_block() override { }
-  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<cryptonote::transaction, cryptonote::blobdata_ref>& tx, const crypto::hash& tx_hash) override {return 0;}
+  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<cryptonote::transaction, cryptonote::string_blob_view>& tx, const crypto::hash& tx_hash) override {return 0;}
   virtual void remove_transaction_data(const crypto::hash& tx_hash, const cryptonote::transaction& tx) override {}
   virtual uint64_t add_output(const crypto::hash& tx_hash, const cryptonote::tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_time, const std::optional<rct::rct_point> commitment) override {return 0;}
   virtual void add_tx_amount_output_indices(const uint64_t tx_index, const std::vector<uint64_t>& amount_output_indices) override {}
@@ -121,16 +121,16 @@ public:
   virtual bool is_read_only() const override { return false; }
   virtual bool get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, std::vector<uint64_t> &distribution, uint64_t &base) const override { return false; }
 
-  virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata_ref blob, const cryptonote::txpool_tx_meta_t& details) override {}
+  virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::string_blob_view blob, const cryptonote::txpool_tx_meta_t& details) override {}
   virtual void update_txpool_tx(const crypto::hash &txid, const cryptonote::txpool_tx_meta_t& details) override {}
   virtual uint64_t get_txpool_tx_count(relay_category tx_relay = relay_category::broadcasted) const override { return 0; }
   virtual bool txpool_has_tx(const crypto::hash &txid, relay_category tx_category) const override { return  false; }
   virtual void remove_txpool_tx(const crypto::hash& txid) override {}
   virtual bool get_txpool_tx_meta(const crypto::hash& txid, cryptonote::txpool_tx_meta_t &meta) const override { return false; }
-  virtual bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::blobdata &bd, relay_category tx_category) const override { return false; }
+  virtual bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::string_blob &bd, relay_category tx_category) const override { return false; }
   virtual uint64_t get_database_size() const override { return 0; }
-  virtual cryptonote::blobdata get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const override { return ""; }
-  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const cryptonote::txpool_tx_meta_t&, const cryptonote::blobdata_ref)>, bool include_blob = false, relay_category category = relay_category::broadcasted) const override { return false; }
+  virtual cryptonote::string_blob get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const override { return ""; }
+  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const cryptonote::txpool_tx_meta_t&, const cryptonote::string_blob_view)>, bool include_blob = false, relay_category category = relay_category::broadcasted) const override { return false; }
 
   virtual void add_block( const cryptonote::block& blk
                         , size_t block_weight
@@ -145,12 +145,12 @@ public:
   virtual uint64_t get_max_block_size() override { return 100000000; }
   virtual void add_max_block_size(uint64_t sz) override { }
 
-  virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref blob) override {}
-  virtual std::optional<std::pair <cryptonote::alt_block_data_t, cryptonote::blobdata>> get_alt_block(const crypto::hash &blkid) override { return {}; }
+  virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view blob) override {}
+  virtual std::optional<std::pair <cryptonote::alt_block_data_t, cryptonote::string_blob>> get_alt_block(const crypto::hash &blkid) override { return {}; }
   virtual void remove_alt_block(const crypto::hash &blkid) override {}
   virtual uint64_t get_alt_block_count() override { return 0; }
   virtual void drop_alt_blocks() override {}
-  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::blobdata_ref blob)> f) const override { return true; }
+  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::string_blob_view blob)> f) const override { return true; }
 };
 
 }

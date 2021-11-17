@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/type/tx_extra.hpp"
 #include "cryptonote/basic/type/subaddress_index.hpp"

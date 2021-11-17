@@ -31,7 +31,7 @@
 
 #include "cryptonote/protocol/enums.h"
 
-#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
 #include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/functional/difficulty.hpp"
 
@@ -423,7 +423,7 @@ private:
    * @param tx_prunable_hash the hash of the prunable part of the transaction
    * @return the transaction ID
    */
-  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash& tx_hash) = 0;
+  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, string_blob_view>& tx, const crypto::hash& tx_hash) = 0;
 
   /**
    * @brief remove data about a transaction
@@ -550,7 +550,7 @@ protected:
    * @param tx_hash_ptr the hash of the transaction, if already calculated
    * @param tx_prunable_hash_ptr the hash of the prunable part of the transaction, if already calculated
    */
-  void add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash* tx_hash_ptr = NULL);
+  void add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, string_blob_view>& tx, const crypto::hash* tx_hash_ptr = NULL);
 
   uint64_t time_commit1 = 0;  //!< a performance metric
   bool m_auto_remove_logs = true;  //!< whether or not to automatically remove old logs
@@ -829,12 +829,12 @@ public:
    *
    * @return the height of the chain post-addition
    */
-  virtual uint64_t add_block( const std::pair<block, blobdata>& blk
+  virtual uint64_t add_block( const std::pair<block, string_blob>& blk
                             , size_t block_weight
                             , uint64_t long_term_block_weight
                             , const diff_t& cumulative_difficulty
                             , const uint64_t& coins_generated
-                            , const std::vector<std::pair<transaction, blobdata>>& txs
+                            , const std::vector<std::pair<transaction, string_blob>>& txs
                             );
 
   /**
@@ -858,7 +858,7 @@ public:
    *
    * @return the block requested
    */
-  virtual cryptonote::blobdata get_block_blob(const crypto::hash& h) const = 0;
+  virtual cryptonote::string_blob get_block_blob(const crypto::hash& h) const = 0;
 
   /**
    * @brief fetches the block with the given hash
@@ -912,7 +912,7 @@ public:
    *
    * @return the block blob
    */
-  virtual cryptonote::blobdata get_block_blob_from_height(const uint64_t& height) const = 0;
+  virtual cryptonote::string_blob get_block_blob_from_height(const uint64_t& height) const = 0;
 
   /**
    * @brief fetch a block by height
@@ -1218,7 +1218,7 @@ public:
    *
    * @return true iff the transaction was found
    */
-  virtual bool get_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const = 0;
+  virtual bool get_tx_blob(const crypto::hash& h, cryptonote::string_blob &tx) const = 0;
 
   /**
    * @brief fetches a variable number of blocks and transactions from the given height, in canonical blockchain order
@@ -1237,7 +1237,7 @@ public:
    *
    * @return true iff the blocks and transactions were found
    */
-  virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const = 0;
+  virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const = 0;
 
   /**
    * @brief fetches the total number of transactions ever
@@ -1411,7 +1411,7 @@ public:
    *
    * @param details the details of the transaction to add
    */
-  virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata_ref blob, const txpool_tx_meta_t& details) = 0;
+  virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::string_blob_view blob, const txpool_tx_meta_t& details) = 0;
 
   /**
    * @brief update a txpool transaction's metadata
@@ -1457,7 +1457,7 @@ public:
    *
    * @return True iff `txid` is in the pool and meets `tx_category` requirements
    */
-  virtual bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::blobdata &bd, relay_category tx_category) const = 0;
+  virtual bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::string_blob &bd, relay_category tx_category) const = 0;
 
   /**
    * @brief get a txpool transaction's blob
@@ -1466,7 +1466,7 @@ public:
    *
    * @return the blob for that transaction
    */
-  virtual cryptonote::blobdata get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const = 0;
+  virtual cryptonote::string_blob get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const = 0;
 
   /**
    * @brief Check if `tx_hash` relay status is in `category`.
@@ -1499,7 +1499,7 @@ public:
    * @param: data: the metadata for the block
    * @param: blob: the block's blob
    */
-  virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref blob) = 0;
+  virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view blob) = 0;
 
   /**
    * @brief get an alternative block by hash
@@ -1510,7 +1510,7 @@ public:
    *
    * @return true if the block was found in the alternative blocks list, false otherwise
    */
-  virtual std::optional<std::pair <cryptonote::alt_block_data_t, cryptonote::blobdata>> get_alt_block(const crypto::hash &blkid) = 0;
+  virtual std::optional<std::pair <cryptonote::alt_block_data_t, cryptonote::string_blob>> get_alt_block(const crypto::hash &blkid) = 0;
 
   /**
    * @brief remove an alternative block
@@ -1542,7 +1542,7 @@ public:
    *
    * @return false if the function returns false for any transaction, otherwise true
    */
-  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref)>, bool include_blob = false, relay_category category = relay_category::broadcasted) const = 0;
+  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::string_blob_view)>, bool include_blob = false, relay_category category = relay_category::broadcasted) const = 0;
 
   /**
    * @brief runs a function over all key images stored
@@ -1634,7 +1634,7 @@ public:
    *
    * @return false if the function returns false for any output, otherwise true
    */
-  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::blobdata_ref blob)> f) const = 0;
+  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::string_blob_view blob)> f) const = 0;
 
 
   //

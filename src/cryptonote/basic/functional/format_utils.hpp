@@ -32,7 +32,7 @@
 
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 
-#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
 #include "cryptonote/basic/type/tx_extra.hpp"
 #include "cryptonote/basic/type/subaddress_index.hpp"
 #include "cryptonote/basic/controller/account.h"
@@ -81,20 +81,20 @@ namespace cryptonote
    , const size_t output_index
    );
 
-  crypto::hash get_blob_hash(const blobdata blob);
-  crypto::hash get_blob_hash(const blobdata_ref blob);
+  crypto::hash get_blob_hash(const string_blob blob);
+  crypto::hash get_blob_hash(const string_blob_view blob);
   std::string short_hash_str(const crypto::hash h);
 
   //---------------------------------------------------------------
   crypto::hash calculate_transaction_prunable_hash
   (
    const transaction& t
-   , const cryptonote::blobdata_ref blob
+   , const cryptonote::string_blob_view blob
    );
 
   //---------------------------------------------------------------
   template<class t_object>
-  std::optional<blobdata> maybe_to_blob(const t_object& to)
+  std::optional<string_blob> maybe_to_blob(const t_object& to)
   {
     std::ostringstream ss;
     binary_archive<true> ba(ss);
@@ -107,7 +107,7 @@ namespace cryptonote
   }
   //---------------------------------------------------------------
   template<class t_object>
-  blobdata t_serializable_object_to_blob(const t_object& to)
+  string_blob t_serializable_object_to_blob(const t_object& to)
   {
     const auto b = maybe_to_blob(to);
     if (!b) {
@@ -118,7 +118,7 @@ namespace cryptonote
 
 
   template<class t_object>
-  std::optional<t_object> maybe_from_blob(const blobdata_ref b_blob, const t_object& dummy)
+  std::optional<t_object> maybe_from_blob(const string_blob_view b_blob, const t_object& dummy)
   {
     t_object x;
     std::stringstream ss;
@@ -141,7 +141,7 @@ namespace cryptonote
   template<class t_object>
   size_t get_object_blobsize(const t_object& o)
   {
-    blobdata b = t_serializable_object_to_blob(o);
+    string_blob b = t_serializable_object_to_blob(o);
     return b.size();
   }
   //---------------------------------------------------------------
@@ -173,9 +173,9 @@ namespace cryptonote
   bool check_outs_overflow(const transaction& tx);
   bool check_inputs_overflow(const transaction& tx);
 
-  blobdata get_mining_blob(const block& b);
-  blobdata get_mining_blob_head(const block& b);
-  blobdata get_mining_blob_tail(const block& b);
+  string_blob get_mining_blob(const block& b);
+  string_blob get_mining_blob_head(const block& b);
+  string_blob get_mining_blob_tail(const block& b);
 
   std::optional<crypto::hash> get_maybe_block_hash(const block& b);
   crypto::hash get_block_hash(const block& b);
@@ -189,18 +189,18 @@ namespace cryptonote
 
   uint64_t get_tx_outputs_money_amount(const transaction& tx);
 
-  std::optional<transaction> maybe_tx_from_blob(const blobdata_ref tx_blob);
-  std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const blobdata_ref tx_blob);
-  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const blobdata_ref tx_blob);
+  std::optional<transaction> maybe_tx_from_blob(const string_blob_view tx_blob);
+  std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const string_blob_view tx_blob);
+  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const string_blob_view tx_blob);
 
-  blobdata block_to_blob(const block& b);
-  std::optional<blobdata> maybe_block_to_blob(const block& b);
-  blobdata tx_to_blob(const transaction& b);
-  std::optional<blobdata> maybe_tx_to_blob(const transaction& tx);
+  string_blob block_to_blob(const block& b);
+  std::optional<string_blob> maybe_block_to_blob(const block& b);
+  string_blob tx_to_blob(const transaction& b);
+  std::optional<string_blob> maybe_tx_to_blob(const transaction& tx);
 
   uint64_t get_inputs_money_amount(const transaction& tx);
 
-  std::optional<block> maybe_block_from_blob(const blobdata_ref b_blob);
+  std::optional<block> maybe_block_from_blob(const string_blob_view b_blob);
 
 }
 

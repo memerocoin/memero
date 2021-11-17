@@ -84,7 +84,7 @@ namespace levin
       return std::chrono::steady_clock::duration{crypto::rand_range(rep(0), range.count())};
     }
 
-    std::string make_tx_payload(std::vector<blobdata>&& txs)
+    std::string make_tx_payload(std::vector<string_blob>&& txs)
     {
       NOTIFY_NEW_TRANSACTIONS::request request{};
       request.txs = std::move(txs);
@@ -96,9 +96,9 @@ namespace levin
       return fullBlob;
     }
 
-    bool make_payload_send_txs(connections& p2p, std::vector<blobdata>&& txs, const boost::uuids::uuid& destination)
+    bool make_payload_send_txs(connections& p2p, std::vector<string_blob>&& txs, const boost::uuids::uuid& destination)
     {
-      const cryptonote::blobdata blob = make_tx_payload(std::move(txs));
+      const cryptonote::string_blob blob = make_tx_payload(std::move(txs));
       p2p.for_connection(destination, [&blob](detail::p2p_context& context) {
         on_levin_traffic(context, true, true, false, blob.size(), NOTIFY_NEW_TRANSACTIONS::ID);
         return true;
@@ -198,7 +198,7 @@ namespace levin
 
         const auto now = std::chrono::steady_clock::now();
         auto next_flush = std::chrono::steady_clock::time_point::max();
-        std::vector<std::pair<std::vector<blobdata>, boost::uuids::uuid>> connections{};
+        std::vector<std::pair<std::vector<string_blob>, boost::uuids::uuid>> connections{};
         zone_->p2p->foreach_connection([timer_error, now, &next_flush, &connections] (detail::p2p_context& context)
         {
           if (!context.fluff_txs.empty())
@@ -237,7 +237,7 @@ namespace levin
     struct fluff_notify
     {
       std::shared_ptr<detail::zone> zone_;
-      std::vector<blobdata> txs_;
+      std::vector<string_blob> txs_;
       boost::uuids::uuid source_;
 
       void operator()()
@@ -264,7 +264,7 @@ namespace levin
 
             next_flush = std::min(next_flush, context.flush_time);
             context.fluff_txs.reserve(context.fluff_txs.size() + this->txs_.size());
-            for (const blobdata& tx : this->txs_)
+            for (const string_blob& tx : this->txs_)
               context.fluff_txs.push_back(tx); // must copy instead of move (multiple conns)
           }
           return true;
@@ -337,7 +337,7 @@ namespace levin
     zone_->flush_txs.cancel();
   }
 
-  bool notify::send_txs(std::vector<blobdata> txs, const boost::uuids::uuid& source)
+  bool notify::send_txs(std::vector<string_blob> txs, const boost::uuids::uuid& source)
   {
     if (txs.empty())
       return true;

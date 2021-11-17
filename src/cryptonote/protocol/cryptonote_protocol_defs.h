@@ -31,7 +31,7 @@
 #pragma once
 
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
 
 
 
@@ -115,19 +115,19 @@ namespace cryptonote
   /************************************************************************/
   struct tx_blob_entry
   {
-    blobdata blob;
+    string_blob blob;
     crypto::hash prunable_hash;
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(blob)
       KV_SERIALIZE_VAL_POD_AS_BLOB(prunable_hash)
     END_KV_SERIALIZE_MAP()
 
-    tx_blob_entry(const blobdata &bd = {}, const crypto::hash &h = crypto::null_hash): blob(bd), prunable_hash(h) {}
+    tx_blob_entry(const string_blob &bd = {}, const crypto::hash &h = crypto::null_hash): blob(bd), prunable_hash(h) {}
   };
   struct block_complete_entry
   {
     bool pruned;
-    blobdata block;
+    string_blob block;
     uint64_t block_weight;
     std::vector<tx_blob_entry> txs;
     BEGIN_KV_SERIALIZE_MAP()
@@ -140,7 +140,7 @@ namespace cryptonote
       }
       else
       {
-        std::vector<blobdata> txs;
+        std::vector<string_blob> txs;
         if (is_store)
         {
           txs.reserve(this->txs.size());
@@ -190,7 +190,7 @@ namespace cryptonote
 
     struct request_t
     {
-      std::vector<blobdata>   txs;
+      std::vector<string_blob>   txs;
       std::string _; // padding
 
       BEGIN_KV_SERIALIZE_MAP()

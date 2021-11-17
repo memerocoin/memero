@@ -174,19 +174,19 @@ namespace cryptonote
     top_id = m_blockchain_storage.get_tail_id(height);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata,block>>& blocks, std::vector<cryptonote::blobdata>& txs) const
+  bool core::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks, std::vector<cryptonote::string_blob>& txs) const
   {
     return m_blockchain_storage.get_blocks(start_offset, count, blocks, txs);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata,block>>& blocks) const
+  bool core::get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks) const
   {
     return m_blockchain_storage.get_blocks(start_offset, count, blocks);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::get_blocks(uint64_t start_offset, size_t count, std::vector<block>& blocks) const
   {
-    std::vector<std::pair<cryptonote::blobdata, cryptonote::block>> bs;
+    std::vector<std::pair<cryptonote::string_blob, cryptonote::block>> bs;
     if (!m_blockchain_storage.get_blocks(start_offset, count, bs))
       return false;
     for (const auto &b: bs)
@@ -194,12 +194,12 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs) const
+  bool core::get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::string_blob>& txs, std::vector<crypto::hash>& missed_txs) const
   {
     return m_blockchain_storage.get_transactions_blobs(txs_ids, txs, missed_txs);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_split_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>& txs, std::vector<crypto::hash>& missed_txs) const
+  bool core::get_split_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<std::pair<crypto::hash, cryptonote::string_blob>>& txs, std::vector<crypto::hash>& missed_txs) const
   {
     return m_blockchain_storage.get_split_transactions_blobs(txs_ids, txs, missed_txs);
   }
@@ -774,7 +774,7 @@ namespace cryptonote
   bool core::add_new_tx(transaction& tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
     const crypto::hash tx_hash = get_transaction_hash(tx);
-    const blobdata tx_blob = t_serializable_object_to_blob(tx);
+    const string_blob tx_blob = t_serializable_object_to_blob(tx);
     const size_t tx_weight = tx_blob.size();
     return add_new_tx(tx, tx_hash, tx_blob, tx_weight, tvc, tx_relay, relayed);
   }
@@ -784,7 +784,7 @@ namespace cryptonote
     return m_blockchain_storage.get_total_transactions();
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::add_new_tx(transaction& tx, const crypto::hash& tx_hash, const cryptonote::blobdata &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
+  bool core::add_new_tx(transaction& tx, const crypto::hash& tx_hash, const cryptonote::string_blob &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
     if(m_mempool.have_tx(tx_hash, relay_category::legacy))
     {
@@ -804,7 +804,7 @@ namespace cryptonote
   bool core::relay_txpool_transactions()
   {
     // we attempt to relay txes that should be relayed, but were not
-    std::vector<std::tuple<crypto::hash, cryptonote::blobdata, relay_method>> txs;
+    std::vector<std::tuple<crypto::hash, cryptonote::string_blob, relay_method>> txs;
     if (m_mempool.get_relayable_transactions(txs) && !txs.empty())
     {
       NOTIFY_NEW_TRANSACTIONS::request public_req{};
@@ -840,7 +840,7 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  void core::on_transactions_relayed(const std::vector<cryptonote::blobdata> tx_blobs, const relay_method tx_relay)
+  void core::on_transactions_relayed(const std::vector<cryptonote::string_blob> tx_blobs, const relay_method tx_relay)
   {
     std::vector<crypto::hash> tx_hashes{};
     tx_hashes.resize(tx_blobs.size());
@@ -860,12 +860,12 @@ namespace cryptonote
     m_mempool.set_relayed(tx_hashes, tx_relay);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+  bool core::get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce)
   {
     return m_blockchain_storage.create_block_template(b, adr, diffic, height, expected_reward, ex_nonce);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_block_template(block& b, const crypto::hash *prev_block, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+  bool core::get_block_template(block& b, const crypto::hash *prev_block, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce)
   {
     return m_blockchain_storage.create_block_template(b, prev_block, adr, diffic, height, expected_reward, ex_nonce);
   }
@@ -875,7 +875,7 @@ namespace cryptonote
     return m_blockchain_storage.find_blockchain_supplement(qblock_ids, resp);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const
+  bool core::find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const
   {
     return m_blockchain_storage.find_blockchain_supplement(req_start_block, qblock_ids, blocks, total_height, start_height, get_miner_tx_hash, max_count);
   }
@@ -917,7 +917,7 @@ namespace cryptonote
     bce.block_weight = 0; // we can leave it to 0, those txes aren't pruned
     for (const auto &tx_hash: b.tx_hashes)
     {
-      cryptonote::blobdata txblob;
+      cryptonote::string_blob txblob;
       LOG_ERROR_AND_THROW_UNLESS(pool.get_transaction(tx_hash, txblob, relay_category::all), "Transaction not found in pool");
       bce.txs.push_back({txblob, crypto::null_hash});
     }
@@ -959,7 +959,7 @@ namespace cryptonote
       NOTIFY_NEW_BLOCK::request arg = AUTO_VAL_INIT(arg);
       arg.current_blockchain_height = m_blockchain_storage.get_current_blockchain_height();
       std::vector<crypto::hash> missed_txs;
-      std::vector<cryptonote::blobdata> txs;
+      std::vector<cryptonote::string_blob> txs;
       m_blockchain_storage.get_transactions_blobs(b.tx_hashes, txs, missed_txs);
       if(missed_txs.size() &&  m_blockchain_storage.get_block_id_by_height(get_block_height(b)) != get_block_hash(b))
       {
@@ -1027,7 +1027,7 @@ namespace cryptonote
   }
 
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_block(const blobdata& block_blob, const block *b, block_verification_context& bvc, bool update_miner_blocktemplate)
+  bool core::handle_incoming_block(const string_blob& block_blob, const block *b, block_verification_context& bvc, bool update_miner_blocktemplate)
   {
     TRY_ENTRY();
 
@@ -1064,7 +1064,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   // Used by the RPC server to check the size of an incoming
   // block_blob
-  bool core::check_incoming_block_size(const blobdata& block_blob) const
+  bool core::check_incoming_block_size(const string_blob& block_blob) const
   {
     // note: we assume block weight is always >= block blob size, so we check incoming
     // blob size against the block weight limit, which acts as a sanity check without
@@ -1104,7 +1104,7 @@ namespace cryptonote
     return m_blockchain_storage.have_block(id, where);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::parse_tx_from_blob(transaction& tx, crypto::hash& tx_hash, const blobdata& blob) const
+  bool core::parse_tx_from_blob(transaction& tx, crypto::hash& tx_hash, const string_blob& blob) const
   {
     const auto r = cryptonote::maybe_tx_and_hash_from_blob(blob);
     if (r) {
@@ -1138,7 +1138,7 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_pool_transaction(const crypto::hash &id, cryptonote::blobdata& tx, relay_category tx_category) const
+  bool core::get_pool_transaction(const crypto::hash &id, cryptonote::string_blob& tx, relay_category tx_category) const
   {
     return m_mempool.get_transaction(id, tx, tx_category);
   }
@@ -1310,7 +1310,7 @@ namespace cryptonote
     m_blockchain_storage.flush_invalid_blocks();
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_txpool_complement(const std::span<const crypto::hash>hashes, std::vector<cryptonote::blobdata> &txes)
+  bool core::get_txpool_complement(const std::span<const crypto::hash>hashes, std::vector<cryptonote::string_blob> &txes)
   {
     return m_mempool.get_complement(hashes, txes);
   }

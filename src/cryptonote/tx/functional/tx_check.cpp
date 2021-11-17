@@ -37,7 +37,7 @@
 namespace cryptonote
 {
 
-bool rct_tx_sanity_check(const cryptonote::blobdata &tx_blob, uint64_t rct_outs_available)
+bool rct_tx_sanity_check(const cryptonote::string_blob &tx_blob, uint64_t rct_outs_available)
 {
   cryptonote::transaction tx;
 

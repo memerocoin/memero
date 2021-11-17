@@ -1755,7 +1755,7 @@ namespace nodetool
   }
   //-----------------------------------------------------------------------------------
 
-  epee::net_utils::zone node_server::send_txs(std::vector<cryptonote::blobdata> txs, const epee::net_utils::zone origin, const boost::uuids::uuid& source, cryptonote::i_core_events& core)
+  epee::net_utils::zone node_server::send_txs(std::vector<cryptonote::string_blob> txs, const epee::net_utils::zone origin, const boost::uuids::uuid& source, cryptonote::i_core_events& core)
   {
     namespace enet = epee::net_utils;
 

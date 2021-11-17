@@ -80,7 +80,7 @@ const std::vector<std::vector<std::string>> t_transactions =
     }
   };
 
-// if the return type (blobdata for now) of block_to_blob ever changes
+// if the return type (string_blob for now) of block_to_blob ever changes
 // from std::string, this might break.
 bool compare_blocks(const block& a, const block& b)
 {
@@ -100,7 +100,7 @@ void print_block(const block& blk, const std::string& prefix = "")
   ;
 }
 
-// if the return type (blobdata for now) of tx_to_blob ever changes
+// if the return type (string_blob for now) of tx_to_blob ever changes
 // from std::string, this might break.
 bool compare_txs(const transaction& a, const transaction& b)
 {
@@ -158,17 +158,17 @@ protected:
     for (auto& i : t_blocks)
     {
       block bl;
-      blobdata bd = h2b(i);
+      string_blob bd = h2b(i);
       LOG_ERROR_AND_THROW_UNLESS(parse_and_validate_block_from_blob(bd, bl), "Invalid block");
       m_blocks.push_back(std::make_pair(bl, bd));
     }
     for (auto& i : t_transactions)
     {
-      std::vector<std::pair<transaction, blobdata>> txs;
+      std::vector<std::pair<transaction, string_blob>> txs;
       for (auto& j : i)
       {
         transaction tx;
-        blobdata bd = h2b(j);
+        string_blob bd = h2b(j);
         LOG_ERROR_AND_THROW_UNLESS(parse_and_validate_tx_from_blob(bd, tx), "Invalid transaction");
         txs.push_back(std::make_pair(tx, bd));
       }
@@ -183,8 +183,8 @@ protected:
 
   BlockchainDB* m_db;
   std::string m_prefix;
-  std::vector<std::pair<block, blobdata>> m_blocks;
-  std::vector<std::vector<std::pair<transaction, blobdata>>> m_txs;
+  std::vector<std::pair<block, string_blob>> m_blocks;
+  std::vector<std::vector<std::pair<transaction, string_blob>>> m_txs;
   std::vector<std::string> m_filenames;
 
   void get_filenames()

@@ -33,7 +33,7 @@
 #include "cryptonote/basic/cryptonote_basic_impl.h"
 #include "cryptonote/basic/controller/account.h"
 
-#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
 #include "cryptonote/basic/type/tx_extra.hpp"
 #include "cryptonote/basic/type/subaddress_index.hpp"
 
@@ -55,7 +55,7 @@ namespace cryptonote
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
 
 
-  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash);
+  bool parse_and_validate_block_from_blob(const string_blob_view b_blob, block& b, crypto::hash &block_hash);
 
   std::optional<uint64_t> parse_amount(const std::string& str_amount);
 

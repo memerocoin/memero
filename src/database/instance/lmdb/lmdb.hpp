@@ -207,9 +207,9 @@ public:
 
   virtual block_header get_block_header(const crypto::hash& h) const;
 
-  virtual cryptonote::blobdata get_block_blob(const crypto::hash& h) const;
+  virtual cryptonote::string_blob get_block_blob(const crypto::hash& h) const;
 
-  virtual cryptonote::blobdata get_block_blob_from_height(const uint64_t& height) const;
+  virtual cryptonote::string_blob get_block_blob_from_height(const uint64_t& height) const;
 
   virtual std::vector<uint64_t> get_block_cumulative_rct_outputs(const std::vector<uint64_t> &heights) const;
 
@@ -248,8 +248,8 @@ public:
 
   virtual uint64_t get_tx_unlock_time(const crypto::hash& h) const;
 
-  virtual bool get_tx_blob(const crypto::hash& h, cryptonote::blobdata &tx) const;
-  virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const;
+  virtual bool get_tx_blob(const crypto::hash& h, cryptonote::string_blob &tx) const;
+  virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const;
 
   virtual uint64_t get_tx_count() const;
 
@@ -273,36 +273,36 @@ public:
 
   virtual bool has_output_spend_public_key_image(const crypto::output_spend_public_key_image& img) const;
 
-  virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata_ref blob, const txpool_tx_meta_t& meta);
+  virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::string_blob_view blob, const txpool_tx_meta_t& meta);
   virtual void update_txpool_tx(const crypto::hash &txid, const txpool_tx_meta_t& meta);
   virtual uint64_t get_txpool_tx_count(relay_category category = relay_category::broadcasted) const;
   virtual bool txpool_has_tx(const crypto::hash &txid, relay_category tx_category) const;
   virtual void remove_txpool_tx(const crypto::hash& txid);
   virtual bool get_txpool_tx_meta(const crypto::hash& txid, txpool_tx_meta_t &meta) const;
-  virtual bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::blobdata& bd, relay_category tx_category) const;
-  virtual cryptonote::blobdata get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const;
+  virtual bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::string_blob& bd, relay_category tx_category) const;
+  virtual cryptonote::string_blob get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const;
 
-  virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref blob);
-  virtual std::optional<std::pair <alt_block_data_t, cryptonote::blobdata>> get_alt_block(const crypto::hash &blkid);
+  virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view blob);
+  virtual std::optional<std::pair <alt_block_data_t, cryptonote::string_blob>> get_alt_block(const crypto::hash &blkid);
   virtual void remove_alt_block(const crypto::hash &blkid);
   virtual uint64_t get_alt_block_count();
   virtual void drop_alt_blocks();
 
-  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref)> f, bool include_blob = false, relay_category category = relay_category::broadcasted) const;
+  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::string_blob_view)> f, bool include_blob = false, relay_category category = relay_category::broadcasted) const;
 
   virtual bool for_all_output_spend_public_key_images(std::function<bool(const crypto::output_spend_public_key_image&)>) const;
   virtual bool for_blocks_range(const uint64_t& h1, const uint64_t& h2, std::function<bool(uint64_t, const crypto::hash&, const cryptonote::block&)>) const;
   virtual bool for_all_transactions(std::function<bool(const crypto::hash&, const cryptonote::transaction&)>) const;
   virtual bool for_all_outputs(std::function<bool(uint64_t amount, const crypto::hash &tx_hash, uint64_t height, size_t tx_idx)> f) const;
   virtual bool for_all_outputs(uint64_t amount, const std::function<bool(uint64_t height)> &f) const;
-  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::blobdata_ref blob)> f) const;
+  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::string_blob_view blob)> f) const;
 
-  virtual uint64_t add_block( const std::pair<block, blobdata>& blk
+  virtual uint64_t add_block( const std::pair<block, string_blob>& blk
                             , size_t block_weight
                             , uint64_t long_term_block_weight
                             , const diff_t& cumulative_difficulty
                             , const uint64_t& coins_generated
-                            , const std::vector<std::pair<transaction, blobdata>>& txs
+                            , const std::vector<std::pair<transaction, string_blob>>& txs
                             );
 
   virtual void set_batch_transactions(bool batch_transactions);
@@ -349,7 +349,7 @@ private:
 
   virtual void remove_block();
 
-  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash& tx_hash);
+  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, string_blob_view>& tx, const crypto::hash& tx_hash);
 
   virtual void remove_transaction_data(const crypto::hash& tx_hash, const transaction& tx);
 

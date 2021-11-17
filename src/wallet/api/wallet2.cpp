@@ -201,7 +201,7 @@ void drop_from_short_history(std::list<crypto::hash> &short_chain_history, size_
 
 bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, cryptonote::transaction &tx, crypto::hash &tx_hash)
 {
-  cryptonote::blobdata bd;
+  cryptonote::string_blob bd;
 
   // easy case if we have the whole tx
   if (!entry.as_hex.empty())
@@ -1087,7 +1087,7 @@ void wallet2::get_short_chain_history(std::list<crypto::hash>& ids) const
     ids.push_back(m_blockchain.genesis());
 }
 //----------------------------------------------------------------------------------------------------
-void wallet2::parse_block_round(const cryptonote::blobdata &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const
+void wallet2::parse_block_round(const cryptonote::string_blob &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const
 {
   error = !cryptonote::parse_and_validate_block_from_blob(blob, bl, bl_id);
 }
@@ -1463,7 +1463,7 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
           if (tx_entry.in_pool)
           {
             cryptonote::transaction tx;
-            cryptonote::blobdata bd;
+            cryptonote::string_blob bd;
             crypto::hash tx_hash;
 
             if (get_full_tx(tx_entry, tx, tx_hash))
@@ -2995,7 +2995,7 @@ std::string wallet2::get_tx_output_signatures(const crypto::hash &txid, const cr
     }
     else
     {
-      cryptonote::blobdata tx_data;
+      cryptonote::string_blob tx_data;
       ok = epee::string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
       THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
       const auto maybeTx = maybe_tx_from_blob(tx_data);
@@ -3061,7 +3061,7 @@ bool wallet2::verify_tx_output_signatures
   }
   else
   {
-    cryptonote::blobdata tx_data;
+    cryptonote::string_blob tx_data;
     ok = epee::string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
 

@@ -116,7 +116,7 @@ namespace rpc
 
   void DaemonHandler::handle(const GetBlocksFast::Request& req, GetBlocksFast::Response& res)
   {
-    std::vector<std::pair<std::pair<blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, blobdata> > > > blocks;
+    std::vector<std::pair<std::pair<string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, string_blob> > > > blocks;
 
     constexpr size_t max_blocks = constant::COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT;
 

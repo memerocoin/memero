@@ -159,8 +159,8 @@ TEST(JsonSerialization, BulletproofTransaction)
     // TODO fix test failure
     // EXPECT_EQ(tx_hash, tx_copy_hash);
 
-    // cryptonote::blobdata tx_bytes{};
-    // cryptonote::blobdata tx_copy_bytes{};
+    // cryptonote::string_blob tx_bytes{};
+    // cryptonote::string_blob tx_copy_bytes{};
 
     const auto tx_bytes = cryptonote::maybe_to_blob(tx);
     ASSERT_TRUE(tx_bytes);

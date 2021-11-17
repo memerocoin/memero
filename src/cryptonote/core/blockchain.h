@@ -131,7 +131,7 @@ namespace cryptonote
      *
      * @return false if start_offset > blockchain height, else true
      */
-    bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata,block>>& blocks, std::vector<cryptonote::blobdata>& txs) const;
+    bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks, std::vector<cryptonote::string_blob>& txs) const;
 
     /**
      * @brief get blocks from blocks based on start height and count
@@ -142,7 +142,7 @@ namespace cryptonote
      *
      * @return false if start_offset > blockchain height, else true
      */
-    bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::blobdata,block>>& blocks) const;
+    bool get_blocks(uint64_t start_offset, size_t count, std::vector<std::pair<cryptonote::string_blob,block>>& blocks) const;
 
     /**
      * @brief compiles a list of all blocks stored as alternative chains
@@ -310,8 +310,8 @@ namespace cryptonote
      *
      * @return true if block template filled in successfully, else false
      */
-    bool create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
-    bool create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
+    bool create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce);
+    bool create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce);
 
     /**
      * @brief checks if a block is known about with a given hash
@@ -414,7 +414,7 @@ namespace cryptonote
      *
      * @return true if a block found in common or req_start_block specified, else false
      */
-    bool find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::blobdata, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::blobdata> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const;
+    bool find_blockchain_supplement(const uint64_t req_start_block, const std::list<crypto::hash>& qblock_ids, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob> > > >& blocks, uint64_t& total_height, uint64_t& start_height, bool get_miner_tx_hash, size_t max_count) const;
 
     /**
      * @brief retrieves a set of blocks and their transactions, and possibly other transactions
@@ -595,7 +595,7 @@ namespace cryptonote
      *
      * @return false if an unexpected exception occurs, else true
      */
-    bool get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::blobdata>& txs, std::vector<crypto::hash>& missed_txs) const;
+    bool get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<cryptonote::string_blob>& txs, std::vector<crypto::hash>& missed_txs) const;
     bool get_transactions_blobs(const std::span<const crypto::hash> txs_ids, std::vector<tx_blob_entry>& txs, std::vector<crypto::hash>& missed_txs) const;
     template<class t_ids_container, class t_tx_container, class t_missed_container>
     bool get_split_transactions_blobs(const t_ids_container txs_ids, t_tx_container& txs, t_missed_container& missed_txs) const;
@@ -755,14 +755,14 @@ namespace cryptonote
      */
     std::vector<std::pair<block_extended_info,std::vector<crypto::hash>>> get_alternative_chains() const;
 
-    void add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata &blob, const txpool_tx_meta_t &meta);
+    void add_txpool_tx(const crypto::hash &txid, const cryptonote::string_blob &blob, const txpool_tx_meta_t &meta);
     void update_txpool_tx(const crypto::hash &txid, const txpool_tx_meta_t &meta);
     void remove_txpool_tx(const crypto::hash &txid);
     uint64_t get_txpool_tx_count(bool include_sensitive = false) const;
     bool get_txpool_tx_meta(const crypto::hash& txid, txpool_tx_meta_t &meta) const;
-    bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::blobdata &bd, relay_category tx_category) const;
-    cryptonote::blobdata get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const;
-    bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref)>, bool include_blob = false, relay_category tx_category = relay_category::broadcasted) const;
+    bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::string_blob &bd, relay_category tx_category) const;
+    cryptonote::string_blob get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const;
+    bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::string_blob_view)>, bool include_blob = false, relay_category tx_category = relay_category::broadcasted) const;
     bool txpool_tx_matches_category(const crypto::hash& tx_hash, relay_category category);
 
     void lock();
@@ -860,7 +860,7 @@ namespace cryptonote
     // block template cache
     block m_btc;
     spend_view_public_keys m_btc_address;
-    blobdata m_btc_nonce;
+    string_blob m_btc_nonce;
     diff_t m_btc_difficulty;
     uint64_t m_btc_height;
     uint64_t m_btc_pool_cookie;
@@ -1183,7 +1183,7 @@ namespace cryptonote
      * @return true
      */
     bool update_next_cumulative_weight_limit();
-    void return_tx_to_pool(std::vector<std::pair<transaction, blobdata>> &txs);
+    void return_tx_to_pool(std::vector<std::pair<transaction, string_blob>> &txs);
 
     /**
      * @brief make sure a transaction isn't attempting a double-spend
@@ -1214,6 +1214,6 @@ namespace cryptonote
      *
      * At some point, may be used to push an update to miners
      */
-    void cache_block_template(const block &b, const cryptonote::spend_view_public_keys &address, const blobdata &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie);
+    void cache_block_template(const block &b, const cryptonote::spend_view_public_keys &address, const string_blob &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie);
   };
 }  // namespace cryptonote

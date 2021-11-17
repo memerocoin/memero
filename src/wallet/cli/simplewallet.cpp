@@ -3079,7 +3079,7 @@ bool simple_wallet::show_tx(const std::vector<std::string> &args)
     return true;
   }
 
-  cryptonote::blobdata txid_data;
+  cryptonote::string_blob txid_data;
   if(!epee::string_tools::parse_hexstr_to_binbuff(args.front(), txid_data) || txid_data.size() != sizeof(crypto::hash))
   {
     fail_msg_writer() << ("failed to parse txid");
@@ -3218,7 +3218,7 @@ void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_
     const crypto::hash txid = get_transaction_hash(ptx.tx);
     if (do_not_relay)
     {
-      cryptonote::blobdata blob = tx_to_blob(ptx.tx);
+      cryptonote::string_blob blob = tx_to_blob(ptx.tx);
       const std::string blob_hex = epee::string_tools::buff_to_hex_nodelimer(blob);
       const std::string filename = "raw_lolnero_tx" + (ptx_vector.size() == 1 ? "" : ("_" + std::to_string(i++)));
       if (wallet::logic::controller::wallet::save_to_file(filename, blob_hex))

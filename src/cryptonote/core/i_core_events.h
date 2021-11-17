@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/type/blobdatatype.hpp"
+#include "cryptonote/basic/type/string_blob_type.hpp"
 
 namespace cryptonote
 {
@@ -37,6 +37,6 @@ namespace cryptonote
     virtual ~i_core_events() noexcept
     {}
 
-    virtual void on_transactions_relayed(const std::vector<cryptonote::blobdata> tx_blobs, relay_method tx_relay) = 0;
+    virtual void on_transactions_relayed(const std::vector<cryptonote::string_blob> tx_blobs, relay_method tx_relay) = 0;
   };
 }

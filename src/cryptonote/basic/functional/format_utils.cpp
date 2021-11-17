@@ -49,7 +49,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx)
   {
-    const blobdata bd = t_serializable_object_to_blob(tx);
+    const string_blob bd = t_serializable_object_to_blob(tx);
     return crypto::sha3(epee::string_tools::string_to_blob(bd));
   }
 
@@ -188,12 +188,12 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  crypto::hash get_blob_hash(const blobdata_ref blob)
+  crypto::hash get_blob_hash(const string_blob_view blob)
   {
     return crypto::sha3(epee::string_tools::string_view_to_blob_view(blob));
   }
   //---------------------------------------------------------------
-  crypto::hash get_blob_hash(const blobdata blob)
+  crypto::hash get_blob_hash(const string_blob blob)
   {
     return crypto::sha3(epee::string_tools::string_to_blob(blob));
   }
@@ -212,7 +212,7 @@ namespace cryptonote
   crypto::hash calculate_transaction_prunable_hash
   (
    const transaction& t
-   , const cryptonote::blobdata_ref blob
+   , const cryptonote::string_blob_view blob
    )
   {
 
@@ -231,7 +231,7 @@ namespace cryptonote
        );
 
     return cryptonote::get_blob_hash
-      (blobdata_ref(blob.data() + unprunable_size, blob.size() - unprunable_size)
+      (string_blob_view(blob.data() + unprunable_size, blob.size() - unprunable_size)
        );
   }
 
@@ -250,7 +250,7 @@ namespace cryptonote
     // prefix
     hashes[0] = get_transaction_prefix_hash(t);
 
-    const blobdata blob = tx_to_blob(t);
+    const string_blob blob = tx_to_blob(t);
     const unsigned int unprunable_size = t.unprunable_size;
     const unsigned int prefix_size = t.prefix_size;
 
@@ -405,22 +405,22 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  blobdata get_mining_blob_tail(const block& b)
+  string_blob get_mining_blob_tail(const block& b)
   {
-    blobdata blob;
+    string_blob blob;
     crypto::hash tree_root_hash = get_tx_tree_hash(b);
     blob.append(epee::string_tools::blob_to_string(tree_root_hash.data));
     blob.append(tools::get_varint_data(b.tx_hashes.size()+1));
     return blob;
   }
   //---------------------------------------------------------------
-  blobdata get_mining_blob_head(const block& b)
+  string_blob get_mining_blob_head(const block& b)
   {
-    blobdata blob = t_serializable_object_to_blob(static_cast<block_header>(b));
+    string_blob blob = t_serializable_object_to_blob(static_cast<block_header>(b));
     return blob;
   }
   //---------------------------------------------------------------
-  blobdata get_mining_blob(const block& b)
+  string_blob get_mining_blob(const block& b)
   {
     return get_mining_blob_head(b).append(get_mining_blob_tail(b));
   }
@@ -530,7 +530,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<transaction> maybe_tx_from_blob(const blobdata_ref tx_blob)
+  std::optional<transaction> maybe_tx_from_blob(const string_blob_view tx_blob)
   {
     const transaction dummyTx;
     const auto maybeTx = maybe_from_blob(tx_blob, dummyTx);
@@ -541,7 +541,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const blobdata_ref tx_blob)
+  std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const string_blob_view tx_blob)
   {
     transaction_prefix tx_prefix;
     std::stringstream ss;
@@ -552,7 +552,7 @@ namespace cryptonote
     return tx_prefix;
   }
   //---------------------------------------------------------------
-  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const blobdata_ref tx_blob)
+  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const string_blob_view tx_blob)
   {
     const auto maybeTx = maybe_tx_from_blob(tx_blob);
     if (maybeTx) {
@@ -564,30 +564,30 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<block> maybe_block_from_blob(const blobdata_ref b_blob)
+  std::optional<block> maybe_block_from_blob(const string_blob_view b_blob)
   {
     const block dummyBlock;
     return maybe_from_blob(b_blob, dummyBlock);
   }
 
   //---------------------------------------------------------------
-  blobdata block_to_blob(const block& b)
+  string_blob block_to_blob(const block& b)
   {
     return t_serializable_object_to_blob(b);
   }
   //---------------------------------------------------------------
-  std::optional<blobdata> maybe_block_to_blob(const block& b)
+  std::optional<string_blob> maybe_block_to_blob(const block& b)
   {
     return maybe_to_blob(b);
   }
   //---------------------------------------------------------------
-  blobdata tx_to_blob(const transaction& tx)
+  string_blob tx_to_blob(const transaction& tx)
   {
     return t_serializable_object_to_blob(tx);
   }
 
   //---------------------------------------------------------------
-  std::optional<blobdata> maybe_tx_to_blob(const transaction& tx)
+  std::optional<string_blob> maybe_tx_to_blob(const transaction& tx)
   {
     return maybe_to_blob(tx);
   }
