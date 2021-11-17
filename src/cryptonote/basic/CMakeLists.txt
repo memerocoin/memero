@@ -35,7 +35,6 @@ add_library(cryptonote_basic
   functional/tx_extra.cpp
   functional/base.cpp
 
-  controller/tx_extra.cpp
   controller/format_utils.cpp
   controller/account.cpp
   )
