@@ -977,7 +977,15 @@ namespace cryptonote
       LOG_ERROR_AND_RETURN_UNLESS(txs.size() == b.tx_hashes.size() && !missed_txs.size(), false, "can't find some transactions in found block:" << get_block_hash(b) << " txs.size()=" << txs.size()
         << ", b.tx_hashes.size()=" << b.tx_hashes.size() << ", missed_txs.size()" << missed_txs.size());
 
-      block_to_blob(b, arg.b.block);
+      const auto maybe_block_blob = maybe_block_to_blob(b);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         maybe_block_blob
+         , false
+         , "can't save block"
+         );
+
+      arg.b.block = *maybe_block_blob;
       //pack transactions
       for(auto& tx:  txs)
         arg.b.txs.push_back({tx, crypto::null_hash});

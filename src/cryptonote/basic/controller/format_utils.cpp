@@ -311,15 +311,9 @@ namespace cryptonote
     return t_serializable_object_to_blob(b);
   }
   //---------------------------------------------------------------
-  bool block_to_blob(const block& b, blobdata& b_blob)
+  std::optional<blobdata> maybe_block_to_blob(const block& b)
   {
-    const auto blob = maybe_to_blob(b);
-    if (blob) {
-      b_blob = *blob;
-      return true;
-    } else {
-      return false;
-    }
+    return maybe_to_blob(b);
   }
   //---------------------------------------------------------------
   blobdata tx_to_blob(const transaction& tx)

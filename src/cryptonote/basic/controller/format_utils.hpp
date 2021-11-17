@@ -75,7 +75,7 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   blobdata block_to_blob(const block& b);
-  bool block_to_blob(const block& b, blobdata& b_blob);
+  std::optional<blobdata> maybe_block_to_blob(const block& b);
   blobdata tx_to_blob(const transaction& b);
   bool tx_to_blob(const transaction& b, blobdata& b_blob);
 
