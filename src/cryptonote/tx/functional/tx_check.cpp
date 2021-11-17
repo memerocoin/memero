@@ -41,11 +41,14 @@ bool rct_tx_sanity_check(const cryptonote::blobdata &tx_blob, uint64_t rct_outs_
 {
   cryptonote::transaction tx;
 
-  if (!cryptonote::parse_and_validate_tx_from_blob(tx_blob, tx))
+  const auto maybeTx = maybe_tx_from_blob(tx_blob);
+  if (!maybeTx)
   {
     LOG_ERROR("Failed to parse transaction");
     return false;
   }
+
+  tx = *maybeTx;
 
   if (cryptonote::is_coinbase(tx))
   {

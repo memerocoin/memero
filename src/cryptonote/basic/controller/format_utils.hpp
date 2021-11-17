@@ -46,12 +46,13 @@
 namespace cryptonote
 {
   //---------------------------------------------------------------
+  std::optional<transaction> maybe_tx_from_blob(const blobdata_ref tx_blob);
 
   bool parse_and_validate_tx_prefix_from_blob(const blobdata_ref tx_blob, transaction_prefix& tx);
   bool parse_and_validate_tx_from_blob(const blobdata_ref tx_blob, transaction& tx, crypto::hash& tx_hash, crypto::hash& tx_prefix_hash);
   bool parse_and_validate_tx_from_blob(const blobdata_ref tx_blob, transaction& tx, crypto::hash& tx_hash);
-  bool parse_and_validate_tx_from_blob(const blobdata_ref tx_blob, transaction& tx);
-  bool parse_and_validate_tx_base_from_blob(const blobdata_ref tx_blob, transaction& tx);
+
+  bool parse_and_validate_tx_base_from_blob(const blobdata_ref tx_blob, transaction& tx); // un needed
 
   bool add_tx_pub_key_to_extra(transaction& tx, const crypto::public_key& tx_pub_key);
   bool add_tx_pub_key_to_extra(transaction_prefix& tx, const crypto::public_key& tx_pub_key);

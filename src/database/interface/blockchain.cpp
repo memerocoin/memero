@@ -317,8 +317,12 @@ bool BlockchainDB::get_tx(const crypto::hash& h, cryptonote::transaction &tx) co
   blobdata bd;
   if (!get_tx_blob(h, bd))
     return false;
-  if (!parse_and_validate_tx_from_blob(bd, tx))
+  const auto maybeTx = maybe_tx_from_blob(bd);
+  if (!maybeTx) {
     throw DB_ERROR("Failed to parse transaction from blob retrieved from the db");
+  }
+
+  tx = *maybeTx;
 
   return true;
 }

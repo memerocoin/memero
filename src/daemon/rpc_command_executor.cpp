@@ -795,10 +795,11 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
       if (epee::string_tools::parse_hexstr_to_binbuff(as_hex, blob))
       {
         cryptonote::transaction tx;
-        if (cryptonote::parse_and_validate_tx_from_blob(blob, tx))
+        const auto maybeTx = cryptonote::maybe_tx_from_blob(blob);
+        if (maybeTx)
         {
           tools::msg_writer() << "Size: " << blob.size();
-          tools::msg_writer() << "Weight: " << cryptonote::get_transaction_weight(tx);
+          tools::msg_writer() << "Weight: " << cryptonote::get_transaction_weight(*maybeTx);
         }
         else
           tools::fail_msg_writer() << "Error parsing transaction blob";
@@ -827,15 +828,14 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
       }
       else
       {
-        bool ret;
-        ret = cryptonote::parse_and_validate_tx_from_blob(blob, tx);
-        if (!ret)
+        const auto maybeTx = cryptonote::maybe_tx_from_blob(blob);
+        if (!maybeTx)
         {
           tools::fail_msg_writer() << "Failed to parse tx blob to get json format";
         }
         else
         {
-          tools::success_msg_writer() << cryptonote::obj_to_json_str(tx) << std::endl;
+          tools::success_msg_writer() << cryptonote::obj_to_json_str(*maybeTx) << std::endl;
         }
       }
     }

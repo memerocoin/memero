@@ -207,7 +207,10 @@ bool get_full_tx(const cryptonote::COMMAND_RPC_GET_TRANSACTIONS::entry &entry, c
   if (!entry.as_hex.empty())
   {
     LOG_ERROR_AND_RETURN_UNLESS(epee::string_tools::parse_hexstr_to_binbuff(entry.as_hex, bd), false, "Failed to parse tx data");
-    LOG_ERROR_AND_RETURN_UNLESS(cryptonote::parse_and_validate_tx_from_blob(bd, tx), false, "Invalid tx data");
+    const auto maybeTx = maybe_tx_from_blob(bd);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, false, "Invalid tx data");
+    tx = *maybeTx;
+
     tx_hash = cryptonote::get_transaction_hash(tx);
     // if the hash was given, check it matches
     LOG_ERROR_AND_RETURN_UNLESS(entry.tx_hash.empty() || epee::string_tools::pod_to_hex(tx_hash) == entry.tx_hash, false,
@@ -2993,8 +2996,11 @@ std::string wallet2::get_tx_output_signatures(const crypto::hash &txid, const cr
       cryptonote::blobdata tx_data;
       ok = epee::string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
       THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
-      THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx),
+      const auto maybeTx = maybe_tx_from_blob(tx_data);
+      THROW_WALLET_EXCEPTION_IF(!maybeTx,
           error::wallet_internal_error, "Failed to validate transaction from daemon");
+
+      tx = *maybeTx;
       tx_hash = cryptonote::get_transaction_hash(tx);
     }
 
@@ -3056,8 +3062,11 @@ bool wallet2::verify_tx_output_signatures
     cryptonote::blobdata tx_data;
     ok = epee::string_tools::parse_hexstr_to_binbuff(res.txs_as_hex.front(), tx_data);
     THROW_WALLET_EXCEPTION_IF(!ok, error::wallet_internal_error, "Failed to parse transaction from daemon");
-    THROW_WALLET_EXCEPTION_IF(!cryptonote::parse_and_validate_tx_from_blob(tx_data, tx),
-        error::wallet_internal_error, "Failed to validate transaction from daemon");
+
+    const auto maybeTx = maybe_tx_from_blob(tx_data);
+    THROW_WALLET_EXCEPTION_IF(!maybeTx, error::wallet_internal_error, "Failed to validate transaction from daemon");
+    tx = *maybeTx;
+
     tx_hash = cryptonote::get_transaction_hash(tx);
   }
 

@@ -498,8 +498,10 @@ namespace cryptonote
 
       for(auto& tx_blob: arg.b.txs)
       {
-        if(parse_and_validate_tx_from_blob(tx_blob.blob, tx))
+        const auto maybeTx = maybe_tx_from_blob(tx_blob.blob);
+        if (maybeTx)
         {
+          tx = *maybeTx;
           try
           {
             tx_hash = get_transaction_hash(tx);

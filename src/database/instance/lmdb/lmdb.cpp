@@ -3037,8 +3037,12 @@ bool BlockchainLMDB::for_all_transactions(std::function<bool(const crypto::hash&
       if (ret)
         throw0(DB_ERROR(lmdb_error("Failed to get prunable tx data the db: ", ret).c_str()));
       bd.append(reinterpret_cast<char*>(v.mv_data), v.mv_size);
-      if (!parse_and_validate_tx_from_blob(bd, tx))
+      const auto maybeTx = maybe_tx_from_blob(bd);
+      if (!maybeTx) {
         throw0(DB_ERROR("Failed to parse tx from blob retrieved from the db"));
+      }
+
+      tx = *maybeTx;
     }
     if (!f(hash, tx)) {
       fret = false;

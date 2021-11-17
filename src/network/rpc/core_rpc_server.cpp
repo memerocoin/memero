@@ -419,12 +419,13 @@ namespace cryptonote
           }
           else if ((i = std::find_if(pool_tx_info.begin(), pool_tx_info.end(), [h](const tx_info &txi) { return epee::string_tools::pod_to_hex(h) == txi.id_hash; })) != pool_tx_info.end())
           {
-            cryptonote::transaction tx;
-            if (!cryptonote::parse_and_validate_tx_from_blob(i->tx_blob, tx))
+            const auto maybeTx = maybe_tx_from_blob(i->tx_blob);
+            if (!maybeTx)
             {
               res.status = "Failed to parse and validate tx from blob";
               return true;
             }
+            const cryptonote::transaction tx = *maybeTx;
             std::stringstream ss;
             binary_archive<true> ba(ss);
             bool r = const_cast<cryptonote::transaction&>(tx).serialize_base(ba);
@@ -469,9 +470,11 @@ namespace cryptonote
         if (req.decode_as_json)
         {
           cryptonote::transaction t;
-          if (cryptonote::parse_and_validate_tx_from_blob(tx_data, t))
+
+          const auto maybeTx = maybe_tx_from_blob(tx_data);
+          if (maybeTx)
           {
-            e.as_json = obj_to_json_str(t);
+            e.as_json = obj_to_json_str(*maybeTx);
           }
           else
           {

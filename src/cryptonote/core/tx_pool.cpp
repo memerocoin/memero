@@ -465,10 +465,14 @@ namespace cryptonote
       {
         tx = ci->second;
       }
-      else if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(txblob, tx) : parse_and_validate_tx_from_blob(txblob, tx)))
-      {
-        LOG_ERROR("Failed to parse tx from txpool");
-        return false;
+      else {
+        const auto maybeTx = maybe_tx_from_blob(txblob);
+        if (!maybeTx)
+        {
+          LOG_ERROR("Failed to parse tx from txpool");
+          return false;
+        }
+        tx = *maybeTx;
       }
       tx_weight = meta.weight;
       fee = meta.fee;
@@ -515,10 +519,14 @@ namespace cryptonote
       {
         td.tx = ci->second;
       }
-      else if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(txblob, td.tx) : parse_and_validate_tx_from_blob(txblob, td.tx)))
-      {
-        LOG_ERROR("Failed to parse tx from txpool");
-        return false;
+      else {
+        const auto maybeTx = maybe_tx_from_blob(txblob);
+        if (!maybeTx)
+        {
+          LOG_ERROR("Failed to parse tx from txpool");
+          return false;
+        }
+        td.tx = *maybeTx;
       }
       td.blob_size = txblob.size();
       td.weight = meta.weight;
@@ -730,14 +738,16 @@ namespace cryptonote
     const relay_category category = include_sensitive ? relay_category::all : relay_category::broadcasted;
     txs.reserve(m_blockchain.get_txpool_tx_count(include_sensitive));
     m_blockchain.for_all_txpool_txes([&txs](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *bd){
-      transaction tx;
-      if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(*bd, tx) : parse_and_validate_tx_from_blob(*bd, tx)))
+
+      const auto maybeTx = maybe_tx_from_blob(*bd);
+      if (!maybeTx)
       {
         LOG_ERROR("Failed to parse tx from txpool");
         // continue
         return true;
       }
-      txs.push_back(std::move(tx));
+
+      txs.push_back(*maybeTx);
       return true;
     }, true, category);
   }
@@ -853,13 +863,14 @@ namespace cryptonote
       tx_info txi;
       txi.id_hash = epee::string_tools::pod_to_hex(txid);
       txi.tx_blob = blobdata(bd->data(), bd->size());
-      transaction tx;
-      if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(*bd, tx) : parse_and_validate_tx_from_blob(*bd, tx)))
+      const auto maybeTx = maybe_tx_from_blob(*bd);
+      if (!maybeTx)
       {
         LOG_ERROR("Failed to parse tx from txpool");
         // continue
         return true;
       }
+      const transaction tx = *maybeTx;
       txi.tx_json = obj_to_json_str(tx);
       txi.blob_size = bd->size();
       txi.weight = meta.weight;
@@ -907,12 +918,15 @@ namespace cryptonote
     m_blockchain.for_all_txpool_txes([&tx_infos, output_spend_public_key_image_infos](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *bd){
       cryptonote::rpc::tx_in_pool txi;
       txi.tx_hash = txid;
-      if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(*bd, txi.tx) : parse_and_validate_tx_from_blob(*bd, txi.tx)))
+
+      const auto maybeTx = maybe_tx_from_blob(*bd);
+      if (!maybeTx)
       {
         LOG_ERROR("Failed to parse tx from txpool");
         // continue
         return true;
       }
+      txi.tx = *maybeTx;
       txi.blob_size = bd->size();
       txi.weight = meta.weight;
       txi.fee = meta.fee;
@@ -1049,8 +1063,12 @@ namespace cryptonote
       {
         if (!parsed)
         {
-          if (!parse_and_validate_tx_from_blob(txblob, tx))
+
+          const auto maybeTx = maybe_tx_from_blob(txblob);
+          if (!maybeTx) {
             throw std::runtime_error("failed to parse transaction blob");
+          }
+          tx = *maybeTx;
           parsed = true;
         }
         return tx;
@@ -1180,12 +1198,14 @@ namespace cryptonote
     m_blockchain.for_all_txpool_txes([&ss, short_format](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *txblob) {
       ss << "id: " << txid << std::endl;
       if (!short_format) {
-        cryptonote::transaction tx;
-        if (!(meta.pruned ? parse_and_validate_tx_base_from_blob(*txblob, tx) : parse_and_validate_tx_from_blob(*txblob, tx)))
+
+        const auto maybeTx = maybe_tx_from_blob(*txblob);
+        if (!maybeTx)
         {
           LOG_ERROR("Failed to parse tx from txpool");
           return true; // continue
         }
+        const cryptonote::transaction tx = *maybeTx;
         ss << obj_to_json_str(tx) << std::endl;
       }
       ss << "blob_size: " << (short_format ? "-" : std::to_string(txblob->size())) << std::endl
@@ -1357,13 +1377,13 @@ namespace cryptonote
       {
         try
         {
-          cryptonote::blobdata txblob = m_blockchain.get_txpool_tx_blob(txid, relay_category::all);
-          cryptonote::transaction tx;
-          if (!parse_and_validate_tx_from_blob(txblob, tx)) // remove pruned ones on startup, they're meant to be temporary
-          {
+          const cryptonote::blobdata txblob = m_blockchain.get_txpool_tx_blob(txid, relay_category::all);
+          const auto maybeTx = maybe_tx_from_blob(txblob);
+          if (!maybeTx) {
             LOG_ERROR("Failed to parse tx from txpool");
             continue;
           }
+          const cryptonote::transaction tx = *maybeTx;
           // remove tx from db first
           m_blockchain.remove_txpool_tx(txid);
           m_txpool_weight -= txblob.size();

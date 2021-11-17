@@ -2118,15 +2118,17 @@ bool Blockchain::get_transactions(const t_ids_container txs_ids, t_tx_container&
   {
     try
     {
-      cryptonote::blobdata tx;
-      if (m_db->get_tx_blob(tx_hash, tx))
+      cryptonote::blobdata tx_blob;
+      if (m_db->get_tx_blob(tx_hash, tx_blob))
       {
         txs.push_back(transaction());
-        if (!parse_and_validate_tx_from_blob(tx, txs.back()))
+        const auto maybeTx = maybe_tx_from_blob(tx_blob);
+        if (!maybeTx)
         {
           LOG_ERROR("Invalid transaction");
           return false;
         }
+        txs.back() = *maybeTx;
       }
       else
         missed_txs.push_back(tx_hash);

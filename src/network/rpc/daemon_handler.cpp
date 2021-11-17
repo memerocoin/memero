@@ -175,8 +175,9 @@ namespace rpc
       {
         bwt.transactions.emplace_back();
 
-        const bool parsed = parse_and_validate_tx_from_blob(blob.second, bwt.transactions.back());
-        if (!parsed)
+
+        const auto maybeTx = maybe_tx_from_blob(blob.second);
+        if (!maybeTx)
         {
           res.blocks.clear();
           res.output_indices.clear();
@@ -184,6 +185,7 @@ namespace rpc
           res.error_details = "failed retrieving a requested transaction";
           return;
         }
+        bwt.transactions.back() = *maybeTx;
 
         cryptonote::rpc::tx_output_indices tx_indices;
         if (!m_core.get_tx_outputs_gindexs(*hash_it, tx_indices))
