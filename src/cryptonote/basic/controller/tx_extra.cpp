@@ -48,8 +48,10 @@ using namespace constant;
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  bool add_tx_output_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::span<const crypto::public_key> output_pub_keys)
+  std::vector<uint8_t> add_tx_output_keys_to_extra
+  (const std::vector<uint8_t>& tx_extra_in, const std::span<const crypto::public_key> output_pub_keys)
   {
+    std::vector<uint8_t> tx_extra = tx_extra_in;
     // convert to variant
     std::vector<crypto::ec_point_unsafe> output_pub_keys_unsafe;
 
@@ -66,12 +68,13 @@ namespace cryptonote
     std::ostringstream oss;
     binary_archive<true> ar(oss);
     bool r = ::do_serialize(ar, field);
-    LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(r, false, "failed to serialize tx extra tx output pub keys");
+
+    LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(r, tx_extra_in, "failed to serialize tx extra tx output pub keys");
 
     // append
     std::string tx_extra_str = oss.str();
     std::copy(tx_extra_str.begin(), tx_extra_str.end(), std::back_inserter(tx_extra));
-    return true;
+    return tx_extra;
   }
 
 }
