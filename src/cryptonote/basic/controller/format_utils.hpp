@@ -74,16 +74,4 @@ namespace cryptonote
 
   void get_hash_stats(uint64_t &tx_hashes_calculated, uint64_t &tx_hashes_cached, uint64_t &block_hashes_calculated, uint64_t & block_hashes_cached);
 
-#define CHECKED_GET_SPECIFIC_VARIANT(variant_var, specific_type, variable_name, fail_return_val) \
-  LOG_ERROR_AND_RETURN_UNLESS                                           \
-  (                                                                     \
-   variant_var.type() == typeid(specific_type)                          \
-   , fail_return_val                                                    \
-   , "wrong variant type: "                                             \
-   << variant_var.type().name()                                         \
-   << ", expected "                                                     \
-   << typeid(specific_type).name());                                    \
-  specific_type& variable_name = boost::get<specific_type>(variant_var);
-
-
 }

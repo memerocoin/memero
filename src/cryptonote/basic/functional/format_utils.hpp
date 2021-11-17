@@ -199,4 +199,16 @@ namespace cryptonote
   std::optional<blobdata> maybe_tx_to_blob(const transaction& tx);
 
   uint64_t get_inputs_money_amount(const transaction& tx);
+
+#define CHECKED_GET_SPECIFIC_VARIANT(variant_var, specific_type, variable_name, fail_return_val) \
+  LOG_ERROR_AND_RETURN_UNLESS                                           \
+  (                                                                     \
+   variant_var.type() == typeid(specific_type)                          \
+   , fail_return_val                                                    \
+   , "wrong variant type: "                                             \
+   << variant_var.type().name()                                         \
+   << ", expected "                                                     \
+   << typeid(specific_type).name());                                    \
+  specific_type& variable_name = boost::get<specific_type>(variant_var);
+
 }
