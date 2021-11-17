@@ -28,7 +28,6 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(cryptonote_basic
-  cryptonote_basic_impl.cpp
   cryptonote_basic.cpp
 
   functional/difficulty.cpp

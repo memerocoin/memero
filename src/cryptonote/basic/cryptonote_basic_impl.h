@@ -41,11 +41,4 @@ namespace cryptonote {
   /************************************************************************/
 
 
-  bool get_account_address_from_str
-  (
-   address_parse_info& info
-   , const network_type nettype
-   , const std::string& str
-   );
-
 }

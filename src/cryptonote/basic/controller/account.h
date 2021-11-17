@@ -115,4 +115,12 @@ namespace cryptonote
     account_keys m_keys;
     uint64_t m_creation_timestamp;
   };
+
+
+  bool get_account_address_from_str
+  (
+   address_parse_info& info
+   , const network_type nettype
+   , const std::string& str
+   );
 }

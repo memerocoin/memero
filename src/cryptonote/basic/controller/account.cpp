@@ -34,6 +34,10 @@
 #include "math/crypto/controller/random.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 
+#include "cryptonote/functional/helper.hpp"
+#include "tools/common/base58.h"
+#include "tools/serialization/binary_utils.h"
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "account"
@@ -190,4 +194,60 @@ namespace cryptonote
     //TODO: change this code into base 58
     return get_account_address_as_str(nettype, false, m_keys.m_account_address);
   }
+
+  //-----------------------------------------------------------------------
+  bool get_account_address_from_str
+  (
+   address_parse_info& info
+   , const network_type nettype
+   , std::string const & str
+   )
+  {
+    uint64_t address_prefix = get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
+    uint64_t subaddress_prefix = get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX;
+
+    if (2 * sizeof(public_address_outer_blob) != str.size())
+    {
+      string_blob data;
+      uint64_t prefix;
+      if (!tools::base58::decode_addr(str, prefix, data))
+      {
+        LOG_PRINT_L2("Invalid address format");
+        return false;
+      }
+      else if (address_prefix == prefix)
+      {
+        info.is_subaddress = false;
+      }
+      else if (subaddress_prefix == prefix)
+      {
+        info.is_subaddress = true;
+      }
+      else {
+        LOG_PRINT_L1("Wrong address prefix: " << prefix << ", expected " << address_prefix
+          << " or " << subaddress_prefix);
+        return false;
+      }
+
+      spend_view_public_keys_unsafe unsafe_address;
+      if (!::serialization::parse_binary(data, unsafe_address))
+      {
+        LOG_PRINT_L1("Account public address keys can't be parsed");
+        return false;
+      }
+
+      const auto maybe_safe_address = maybe_safe_spend_view_public_keys(unsafe_address);
+
+      if (!maybe_safe_address) {
+        LOG_PRINT_L1("Failed to validate address keys");
+        return false;
+      }
+
+      info.address = *maybe_safe_address;
+
+      return true;
+    }
+    return false;
+  }
+
 }
