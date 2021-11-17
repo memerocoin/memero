@@ -261,4 +261,33 @@ namespace cryptonote
     return tx_extra;
   }
 
+  //---------------------------------------------------------------
+  std::vector<uint8_t> add_tx_output_keys_to_extra
+  (const std::vector<uint8_t>& tx_extra_in, const std::span<const crypto::public_key> output_pub_keys)
+  {
+    std::vector<uint8_t> tx_extra = tx_extra_in;
+    // convert to variant
+    std::vector<crypto::ec_point_unsafe> output_pub_keys_unsafe;
+
+    std::transform
+      (
+       output_pub_keys.begin()
+       , output_pub_keys.end()
+       , std::back_inserter(output_pub_keys_unsafe)
+       , [](const auto&x) { return x; }
+       );
+
+    tx_extra_field field = tx_extra_tx_output_public_keys{ output_pub_keys_unsafe };
+    // serialize
+    std::ostringstream oss;
+    binary_archive<true> ar(oss);
+    bool r = ::do_serialize(ar, field);
+
+    LOG_WITH_LEVEL_1_AND_RETURN_UNLESS(r, tx_extra_in, "failed to serialize tx extra tx output pub keys");
+
+    // append
+    std::string tx_extra_str = oss.str();
+    std::copy(tx_extra_str.begin(), tx_extra_str.end(), std::back_inserter(tx_extra));
+    return tx_extra;
+  }
 }

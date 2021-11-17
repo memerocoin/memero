@@ -83,4 +83,6 @@ namespace cryptonote
   std::vector<uint8_t> add_tx_pub_key_to_extra
   (const std::vector<uint8_t>& tx_extra_in, const crypto::public_key tx_pub_key);
 
+  std::vector<uint8_t> add_tx_output_keys_to_extra
+  (const std::vector<uint8_t>& tx_extra_in, const std::span<const crypto::public_key> output_pub_keys);
 }
