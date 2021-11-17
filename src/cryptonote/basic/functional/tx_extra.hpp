@@ -39,6 +39,25 @@
 
 namespace cryptonote
 {
+  //---------------------------------------------------------------
+  template<typename T>
+  std::optional<T> find_tx_extra_field_by_type(const std::span<const tx_extra_field> tx_extra_fields, const T&)
+  {
+    const auto it = std::find_if
+      (
+       tx_extra_fields.begin()
+       , tx_extra_fields.end()
+       , [](const tx_extra_field& f) {
+         return typeid(T) == f.type();
+       }
+       );
+
+    if(tx_extra_fields.end() == it)
+      return {};
+
+    return boost::get<T>(*it);
+  }
+
   std::optional<std::vector<tx_extra_field>> parse_tx_extra(const epee::blob::span tx_extra);
 
   std::optional<crypto::public_key> get_tx_pub_key_from_extra(const epee::blob::span tx_extra);

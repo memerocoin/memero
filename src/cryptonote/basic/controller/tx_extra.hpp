@@ -41,24 +41,6 @@
 
 namespace cryptonote
 {
-  //---------------------------------------------------------------
-  template<typename T>
-  std::optional<T> find_tx_extra_field_by_type(const std::span<const tx_extra_field> tx_extra_fields, const T&)
-  {
-    const auto it = std::find_if
-      (
-       tx_extra_fields.begin()
-       , tx_extra_fields.end()
-       , [](const tx_extra_field& f) {
-         return typeid(T) == f.type();
-       }
-       );
-
-    if(tx_extra_fields.end() == it)
-      return {};
-
-    return boost::get<T>(*it);
-  }
 
   bool sort_tx_extra(const std::span<const uint8_t> tx_extra, std::vector<uint8_t> &sorted_tx_extra, bool allow_partial = false);
   bool add_tx_pub_key_to_extra(transaction& tx, const crypto::public_key& tx_pub_key);
