@@ -245,16 +245,6 @@ namespace cryptonote
   struct block: public block_header
   {
   public:
-    block(): block_header() {}
-    block(const block &b): block_header(b), miner_tx(b.miner_tx), tx_hashes(b.tx_hashes) {}
-
-    block &operator=(const block &b) {
-      block_header::operator=(b);
-      miner_tx = b.miner_tx;
-      tx_hashes = b.tx_hashes;
-      return *this;
-    }
-
     transaction miner_tx;
     std::vector<crypto::hash> tx_hashes;
 

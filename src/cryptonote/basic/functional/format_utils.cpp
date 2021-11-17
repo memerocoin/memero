@@ -566,7 +566,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   std::optional<block> maybe_block_from_blob(const string_blob_view b_blob)
   {
-    const block dummyBlock;
+    const block dummyBlock{};
     return maybe_from_blob(b_blob, dummyBlock);
   }
 
