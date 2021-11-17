@@ -278,6 +278,23 @@ namespace cryptonote
    , const bool subaddress
    , const spend_view_public_keys& adr
    );
+
+
+  struct public_address_outer_blob
+  {
+    uint8_t m_ver;
+    spend_view_public_keys m_address;
+    uint8_t check_sum;
+  };
+
+  struct address_parse_info
+  {
+    spend_view_public_keys address;
+    bool is_subaddress;
+  };
+
+  uint8_t get_account_address_checksum(const public_address_outer_blob& bl);
+
 }
 
 

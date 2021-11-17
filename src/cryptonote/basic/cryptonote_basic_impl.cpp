@@ -30,6 +30,8 @@
 
 #include "functional/format_utils.hpp"
 
+#include "cryptonote/functional/helper.hpp"
+
 #include "tools/common/base58.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/serialization/binary_utils.h"
@@ -40,19 +42,11 @@
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
 
 namespace cryptonote {
-  //------------------------------------------------------------------------------------
-  uint8_t get_account_address_checksum(const public_address_outer_blob& bl)
-  {
-    const auto buf = epee::pod_to_span(bl);
-    const auto buf_data = buf.subspan(0, buf.size() - 1);
-
-    return std::reduce(buf_data.begin(), buf_data.end());
-  }
   //-----------------------------------------------------------------------
   bool get_account_address_from_str
   (
    address_parse_info& info
-   , network_type nettype
+   , const network_type nettype
    , std::string const & str
    )
   {

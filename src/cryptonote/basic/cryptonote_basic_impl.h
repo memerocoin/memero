@@ -31,7 +31,6 @@
 #pragma once
 
 #include "cryptonote_basic.h"
-
 #include "cryptonote/functional/helper.hpp"
 
 
@@ -41,26 +40,11 @@ namespace cryptonote {
   /*                                                                      */
   /************************************************************************/
 
-  struct public_address_outer_blob
-  {
-    uint8_t m_ver;
-    spend_view_public_keys m_address;
-    uint8_t check_sum;
-  };
-
-  struct address_parse_info
-  {
-    spend_view_public_keys address;
-    bool is_subaddress;
-  };
-
-  uint8_t get_account_address_checksum(const public_address_outer_blob& bl);
-
 
   bool get_account_address_from_str
   (
    address_parse_info& info
-   , network_type nettype
+   , const network_type nettype
    , const std::string& str
    );
 

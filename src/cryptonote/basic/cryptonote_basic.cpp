@@ -119,4 +119,13 @@ namespace cryptonote
 
     return tools::base58::encode_addr(address_prefix, t_serializable_object_to_blob(adr));
   }
+
+  //------------------------------------------------------------------------------------
+  uint8_t get_account_address_checksum(const public_address_outer_blob& bl)
+  {
+    const auto buf = epee::pod_to_span(bl);
+    const auto buf_data = buf.subspan(0, buf.size() - 1);
+
+    return std::reduce(buf_data.begin(), buf_data.end());
+  }
 }
