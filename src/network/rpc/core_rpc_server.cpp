@@ -745,7 +745,7 @@ namespace cryptonote
       res.threads_count = lMiner.get_threads_count();
       res.block_reward = lMiner.get_block_reward();
     }
-    const account_public_address& lMiningAdr = lMiner.get_mining_address();
+    const spend_view_public_keys& lMiningAdr = lMiner.get_mining_address();
     if (lMiner.is_mining())
       res.address = get_account_address_as_str(nettype(), false, lMiningAdr);
 
@@ -908,7 +908,7 @@ namespace cryptonote
     return 0;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::get_block_template(const account_public_address &address, const crypto::hash *prev_block, cryptonote::diff_t  &difficulty, uint64_t &height, uint64_t &expected_reward, block &b, epee::json_rpc::error &error_resp)
+  bool core_rpc_server::get_block_template(const spend_view_public_keys &address, const crypto::hash *prev_block, cryptonote::diff_t  &difficulty, uint64_t &height, uint64_t &expected_reward, block &b, epee::json_rpc::error &error_resp)
   {
     b = boost::value_initialized<cryptonote::block>();
     cryptonote::blobdata extra_nonce;

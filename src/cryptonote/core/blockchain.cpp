@@ -1145,7 +1145,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
 // in a lot of places.  That flag is not referenced in any of the code
 // nor any of the makefiles, howeve.  Need to look into whether or not it's
 // necessary at all.
-bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const account_public_address& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   uint64_t pool_cookie;
@@ -1158,7 +1158,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     // just as we compare it, we'll just use a slightly old template, but
     // this would be the case anyway if we'd lock, and the change happened
     // just after the block template was created
-    if (!memcmp(&miner_address, &m_btc_address, sizeof(cryptonote::account_public_address)) && m_btc_nonce == ex_nonce
+    if (!memcmp(&miner_address, &m_btc_address, sizeof(cryptonote::spend_view_public_keys)) && m_btc_nonce == ex_nonce
       && m_btc_pool_cookie == m_tx_pool.cookie() && m_btc.prev_id == get_tail_id()) {
       LOG_DEBUG("Using cached template");
       const uint64_t now = time(NULL);
@@ -1170,7 +1170,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       expected_reward = m_btc_expected_reward;
       return true;
     }
-    LOG_DEBUG("Not using cached template: address " << (!memcmp(&miner_address, &m_btc_address, sizeof(cryptonote::account_public_address))) << ", nonce " << (m_btc_nonce == ex_nonce) << ", cookie " << (m_btc_pool_cookie == m_tx_pool.cookie()) << ", from_block " << (!!from_block));
+    LOG_DEBUG("Not using cached template: address " << (!memcmp(&miner_address, &m_btc_address, sizeof(cryptonote::spend_view_public_keys))) << ", nonce " << (m_btc_nonce == ex_nonce) << ", cookie " << (m_btc_pool_cookie == m_tx_pool.cookie()) << ", from_block " << (!!from_block));
     invalidate_block_template_cache();
   }
 
@@ -1354,7 +1354,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
   return false;
 }
 //------------------------------------------------------------------
-bool Blockchain::create_block_template(block& b, const account_public_address& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
+bool Blockchain::create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce)
 {
   return create_block_template(b, NULL, miner_address, diffic, height, expected_reward, ex_nonce);
 }
@@ -3720,7 +3720,7 @@ void Blockchain::invalidate_block_template_cache()
   m_btc_valid = false;
 }
 
-void Blockchain::cache_block_template(const block &b, const cryptonote::account_public_address &address, const blobdata &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie)
+void Blockchain::cache_block_template(const block &b, const cryptonote::spend_view_public_keys &address, const blobdata &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie)
 {
   LOG_DEBUG("Setting block template cache");
   m_btc = b;

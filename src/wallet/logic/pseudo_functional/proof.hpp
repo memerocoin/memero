@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "cryptonote/basic/cryptonote_basic.h" // account_public_address
+#include "cryptonote/basic/cryptonote_basic.h" // spend_view_public_keys
 
 namespace wallet {
 namespace logic {
@@ -42,7 +42,7 @@ namespace proof {
   const std::optional<std::vector<size_t>> verify_tx_output_signatures
   (
    const cryptonote::transaction &tx
-   , const cryptonote::account_public_address &address
+   , const cryptonote::spend_view_public_keys &address
    , const bool is_subaddress
    , const std::string &message
    , const std::string &sig_str

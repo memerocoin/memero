@@ -73,7 +73,7 @@ namespace cryptonote
   struct tx_destination_entry
   {
     std::string original;
-    account_public_address addr;        //destination address
+    spend_view_public_keys addr;        //destination address
     uint64_t amount = 0;                    //money
     bool is_subaddress = false;
 
@@ -82,7 +82,7 @@ namespace cryptonote
     tx_destination_entry
     (
      uint64_t a
-     , const account_public_address &ad
+     , const spend_view_public_keys &ad
      , bool is_subaddress
      ) : amount(a), addr(ad), is_subaddress(is_subaddress) { }
 
@@ -134,7 +134,7 @@ namespace cryptonote
    const size_t height
    , const size_t current_block_weight
    , const uint64_t fee
-   , const account_public_address miner_address
+   , const spend_view_public_keys miner_address
    );
 
 

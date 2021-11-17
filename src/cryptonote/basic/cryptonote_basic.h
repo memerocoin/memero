@@ -292,7 +292,7 @@ namespace cryptonote
   /*                                                                      */
   /************************************************************************/
 
-  std::optional<account_public_address> maybe_safe_account_public_address(const account_public_address_unsafe x);
+  std::optional<spend_view_public_keys> maybe_safe_spend_view_public_keys(const spend_view_public_keys_unsafe x);
 
   struct keypair
   {
@@ -313,9 +313,9 @@ namespace cryptonote
 
 namespace std {
   template <>
-  struct hash<cryptonote::account_public_address>
+  struct hash<cryptonote::spend_view_public_keys>
   {
-    std::size_t operator()(const cryptonote::account_public_address& addr) const
+    std::size_t operator()(const cryptonote::spend_view_public_keys& addr) const
     {
       const epee::blob::data x = addr.m_spend_public_key.blob() + addr.m_view_public_key.blob();
       return std::hash<std::string>{}(epee::string_tools::blob_to_string(x));
@@ -329,8 +329,8 @@ BLOB_SERIALIZER(cryptonote::txin_to_scripthash);
 BLOB_SERIALIZER(cryptonote::txout_to_key);
 BLOB_SERIALIZER(cryptonote::txout_to_script);
 BLOB_SERIALIZER(cryptonote::txout_to_scripthash);
-BLOB_SERIALIZER(cryptonote::account_public_address);
-BLOB_SERIALIZER(cryptonote::account_public_address_unsafe);
+BLOB_SERIALIZER(cryptonote::spend_view_public_keys);
+BLOB_SERIALIZER(cryptonote::spend_view_public_keys_unsafe);
 
 VARIANT_TAG(binary_archive, cryptonote::txin_gen, 0xff);
 VARIANT_TAG(binary_archive, cryptonote::txin_to_script, 0x0);

@@ -153,7 +153,7 @@ namespace cryptonote
     return m_keys.m_spend_secret_key;
   }
   //-----------------------------------------------------------------
-  void account_base::create_from_keys(const cryptonote::account_public_address& address, const crypto::secret_key& spendkey, const crypto::secret_key& viewkey)
+  void account_base::create_from_keys(const cryptonote::spend_view_public_keys& address, const crypto::secret_key& spendkey, const crypto::secret_key& viewkey)
   {
     m_keys.m_account_address = address;
     m_keys.m_spend_secret_key = spendkey;
@@ -173,7 +173,7 @@ namespace cryptonote
   }
 
   //-----------------------------------------------------------------
-  void account_base::create_from_viewkey(const cryptonote::account_public_address& address, const crypto::secret_key& viewkey)
+  void account_base::create_from_viewkey(const cryptonote::spend_view_public_keys& address, const crypto::secret_key& viewkey)
   {
     crypto::secret_key fake;
     memset(&(fake), 0, sizeof(fake));

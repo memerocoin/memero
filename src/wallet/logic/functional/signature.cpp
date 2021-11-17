@@ -61,7 +61,7 @@ namespace signature {
   wallet::logic::type::message_signature::message_signature_result_t verify
   (
    const std::string &data
-   , const cryptonote::account_public_address &address
+   , const cryptonote::spend_view_public_keys &address
    , const std::string &signature
    )
   {

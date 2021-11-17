@@ -245,7 +245,7 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_is_initialized(false),
   m_kdf_rounds(kdf_rounds),
   m_rpc_client(*m_http_client, m_daemon_rpc_mutex),
-  m_account_public_address{crypto::null_pkey, crypto::null_pkey},
+  m_spend_view_public_keys{crypto::null_pkey, crypto::null_pkey},
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
   m_offline(false),
@@ -361,12 +361,12 @@ void wallet2::set_seed_language(const std::string &language)
   seed_language = language;
 }
 //----------------------------------------------------------------------------------------------------
-cryptonote::account_public_address wallet2::get_subaddress(const cryptonote::subaddress_index& index) const
+cryptonote::spend_view_public_keys wallet2::get_subaddress(const cryptonote::subaddress_index& index) const
 {
   return cryptonote::get_subaddress(m_account.get_spend_view_secret_keys(), index);
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<cryptonote::subaddress_index> wallet2::get_subaddress_index(const cryptonote::account_public_address& address) const
+std::optional<cryptonote::subaddress_index> wallet2::get_subaddress_index(const cryptonote::spend_view_public_keys& address) const
 {
   auto index = m_subaddresses.find(address.m_spend_public_key);
   if (index == m_subaddresses.end())
@@ -381,7 +381,7 @@ crypto::public_key wallet2::get_subaddress_spend_public_key(const cryptonote::su
 //----------------------------------------------------------------------------------------------------
 std::string wallet2::get_subaddress_as_str(const cryptonote::subaddress_index& index) const
 {
-  cryptonote::account_public_address address = get_subaddress(index);
+  cryptonote::spend_view_public_keys address = get_subaddress(index);
   return cryptonote::get_account_address_as_str(m_nettype, !index.is_zero(), address);
 }
 //----------------------------------------------------------------------------------------------------
@@ -2216,7 +2216,7 @@ void wallet2::create_keys_file(const std::string &wallet_, const epee::wipeable_
 
 void wallet2::init_type()
 {
-  m_account_public_address = m_account.get_keys().m_account_address;
+  m_spend_view_public_keys = m_account.get_keys().m_account_address;
 }
 
 /*!
@@ -2283,12 +2283,12 @@ crypto::secret_key wallet2::generate
 * \brief Creates a wallet from a public address and a spend/view secret key pair.
 * \param  wallet_                 Name of wallet file
 * \param  password                Password of wallet file
-* \param  account_public_address  The account's public address
+* \param  spend_view_public_keys  The account's public address
 * \param  spendkey                spend secret key
 * \param  viewkey                 view secret key
 */
 void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& password,
-  const cryptonote::account_public_address &account_public_address,
+  const cryptonote::spend_view_public_keys &spend_view_public_keys,
   const crypto::secret_key& spendkey, const crypto::secret_key& viewkey)
 {
   clear();
@@ -2301,9 +2301,9 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
     THROW_WALLET_EXCEPTION_IF(std::filesystem::exists(m_keys_file,   ignored_ec), error::file_exists, m_keys_file);
   }
 
-  m_account.create_from_keys(account_public_address, spendkey, viewkey);
+  m_account.create_from_keys(spend_view_public_keys, spendkey, viewkey);
   init_type();
-  m_account_public_address = account_public_address;
+  m_spend_view_public_keys = spend_view_public_keys;
   setup_keys(password);
 
   create_keys_file(wallet_, password);
@@ -2458,7 +2458,7 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
   if (use_fs && (!std::filesystem::exists(m_wallet_file, e) || e))
   {
     LOG_PRINT_L0("file not found: " << m_wallet_file << ", starting with empty blockchain");
-    m_account_public_address = m_account.get_keys().m_account_address;
+    m_spend_view_public_keys = m_account.get_keys().m_account_address;
   }
   else if (use_fs || !cache_buf.empty())
   {
@@ -2494,8 +2494,8 @@ void wallet2::load(const std::string& wallet_, const epee::wipeable_string& pass
     {
     }
     THROW_WALLET_EXCEPTION_IF(
-      m_account_public_address.m_spend_public_key != m_account.get_keys().m_account_address.m_spend_public_key ||
-      m_account_public_address.m_view_public_key  != m_account.get_keys().m_account_address.m_view_public_key,
+      m_spend_view_public_keys.m_spend_public_key != m_account.get_keys().m_account_address.m_spend_public_key ||
+      m_spend_view_public_keys.m_view_public_key  != m_account.get_keys().m_account_address.m_view_public_key,
       error::wallet_files_doesnt_correspond, m_keys_file, m_wallet_file);
   }
 
@@ -2964,7 +2964,7 @@ std::optional<std::vector<crypto::secret_key>> wallet2::get_tx_output_sec_keys(c
   }
 }
 
-std::string wallet2::get_tx_output_signatures(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message)
+std::string wallet2::get_tx_output_signatures(const crypto::hash &txid, const cryptonote::spend_view_public_keys &address, bool is_subaddress, const std::string &message)
 {
     // fetch tx pubkey from the daemon
     COMMAND_RPC_GET_TRANSACTIONS::request req;
@@ -3020,7 +3020,7 @@ std::string wallet2::get_tx_output_signatures(const crypto::hash &txid, const cr
 bool wallet2::verify_tx_output_signatures
 (
  const crypto::hash &txid
- , const cryptonote::account_public_address &address
+ , const cryptonote::spend_view_public_keys &address
  , bool is_subaddress
  , const std::string &message
  , const std::string &sig_str

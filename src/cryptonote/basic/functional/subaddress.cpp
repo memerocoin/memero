@@ -107,7 +107,7 @@ namespace cryptonote {
   }
 
 
-  cryptonote::account_public_address get_subaddress
+  cryptonote::spend_view_public_keys get_subaddress
   (
    const cryptonote::spend_view_secret_keys keys
    , const cryptonote::subaddress_index index

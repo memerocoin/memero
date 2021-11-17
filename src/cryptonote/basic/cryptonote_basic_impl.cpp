@@ -55,7 +55,7 @@ namespace cryptonote {
   std::string get_account_address_as_str(
       const network_type nettype
     , const bool subaddress
-    , const account_public_address & adr
+    , const spend_view_public_keys & adr
     )
   {
     uint64_t address_prefix = subaddress ? get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX : get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
@@ -106,14 +106,14 @@ namespace cryptonote {
         return false;
       }
 
-      account_public_address_unsafe unsafe_address;
+      spend_view_public_keys_unsafe unsafe_address;
       if (!::serialization::parse_binary(data, unsafe_address))
       {
         LOG_PRINT_L1("Account public address keys can't be parsed");
         return false;
       }
 
-      const auto maybe_safe_address = maybe_safe_account_public_address(unsafe_address);
+      const auto maybe_safe_address = maybe_safe_spend_view_public_keys(unsafe_address);
 
       if (!maybe_safe_address) {
         LOG_PRINT_L1("Failed to validate address keys");

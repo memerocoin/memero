@@ -53,13 +53,13 @@ namespace cryptonote {
   struct public_address_outer_blob
   {
     uint8_t m_ver;
-    account_public_address m_address;
+    spend_view_public_keys m_address;
     uint8_t check_sum;
   };
 
   struct address_parse_info
   {
-    account_public_address address;
+    spend_view_public_keys address;
     bool is_subaddress;
   };
 
@@ -68,7 +68,7 @@ namespace cryptonote {
   std::string get_account_address_as_str(
       const network_type nettype
     , const bool subaddress
-    , const account_public_address& adr
+    , const spend_view_public_keys& adr
     );
 
   bool get_account_address_from_str(

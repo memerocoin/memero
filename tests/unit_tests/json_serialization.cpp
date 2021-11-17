@@ -20,7 +20,7 @@
 namespace test
 {
     cryptonote::transaction
-    make_miner_transaction(cryptonote::account_public_address const& to)
+    make_miner_transaction(cryptonote::spend_view_public_keys const& to)
     {
         const auto tx = cryptonote::construct_miner_tx(0, 0, 500, to);
         if (!tx) {
@@ -36,7 +36,7 @@ namespace test
     make_transaction(
         cryptonote::account_keys const& from,
         std::vector<cryptonote::transaction> const& sources,
-        std::vector<cryptonote::account_public_address> const& destinations
+        std::vector<cryptonote::spend_view_public_keys> const& destinations
     )
     {
         std::uint64_t source_amount = 0;

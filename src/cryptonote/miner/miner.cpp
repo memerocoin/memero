@@ -195,7 +195,7 @@ namespace cryptonote
     return !m_stop;
   }
   //-----------------------------------------------------------------------------------------------------
-  const account_public_address& miner::get_mining_address() const
+  const spend_view_public_keys& miner::get_mining_address() const
   {
     return m_mine_address;
   }
@@ -204,7 +204,7 @@ namespace cryptonote
     return m_threads_total;
   }
   //-----------------------------------------------------------------------------------------------------
-  bool miner::start(const account_public_address& adr, size_t threads_count)
+  bool miner::start(const spend_view_public_keys& adr, size_t threads_count)
   {
     m_block_reward = 0;
     m_mine_address = adr;

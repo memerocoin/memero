@@ -133,12 +133,12 @@ namespace tools
      * \brief Creates a wallet from a public address and a spend/view secret key pair.
      * \param  wallet_                 Name of wallet file
      * \param  password                Password of wallet file
-     * \param  account_public_address  The account's public address
+     * \param  spend_view_public_keys  The account's public address
      * \param  spendkey                spend secret key
      * \param  viewkey                 view secret key
      */
     void generate(const std::string& wallet, const epee::wipeable_string& password,
-      const cryptonote::account_public_address &account_public_address,
+      const cryptonote::spend_view_public_keys &spend_view_public_keys,
       const crypto::secret_key& spendkey, const crypto::secret_key& viewkey);
     /*!
      * \brief Rewrites to the wallet file for wallet upgrade (doesn't generate key, assumes it's already there)
@@ -206,9 +206,9 @@ namespace tools
     void set_seed_language(const std::string &language);
 
     // Subaddress scheme
-    cryptonote::account_public_address get_subaddress(const cryptonote::subaddress_index& index) const;
-    cryptonote::account_public_address get_address() const { return get_subaddress({0,0}); }
-    std::optional<cryptonote::subaddress_index> get_subaddress_index(const cryptonote::account_public_address& address) const;
+    cryptonote::spend_view_public_keys get_subaddress(const cryptonote::subaddress_index& index) const;
+    cryptonote::spend_view_public_keys get_address() const { return get_subaddress({0,0}); }
+    std::optional<cryptonote::subaddress_index> get_subaddress_index(const cryptonote::spend_view_public_keys& address) const;
     crypto::public_key get_subaddress_spend_public_key(const cryptonote::subaddress_index& index) const;
     std::vector<crypto::public_key> get_subaddress_spend_public_keys(uint32_t account, uint32_t begin, uint32_t end) const;
     std::string get_subaddress_as_str(const cryptonote::subaddress_index& index) const;
@@ -276,7 +276,7 @@ namespace tools
       VERSION_FIELD(0)
       FIELD(m_blockchain)
       FIELD(m_transfers)
-      FIELD(m_account_public_address)
+      FIELD(m_spend_view_public_keys)
       FIELD(m_output_spend_public_key_images)
       FIELD(m_unconfirmed_txs)
       FIELD(m_payments)
@@ -325,12 +325,12 @@ namespace tools
 
     std::optional<std::vector<crypto::secret_key>> get_tx_output_sec_keys(const crypto::hash txid) const;
 
-    std::string get_tx_output_signatures(const crypto::hash &txid, const cryptonote::account_public_address &address, bool is_subaddress, const std::string &message);
+    std::string get_tx_output_signatures(const crypto::hash &txid, const cryptonote::spend_view_public_keys &address, bool is_subaddress, const std::string &message);
 
     bool verify_tx_output_signatures
     (
      const crypto::hash &txid
-     , const cryptonote::account_public_address &address
+     , const cryptonote::spend_view_public_keys &address
      , bool is_subaddress
      , const std::string &message
      , const std::string &sig_str
@@ -480,7 +480,7 @@ namespace tools
     payment_container m_payments;
     serializable_unordered_map<crypto::output_spend_public_key_image, size_t> m_output_spend_public_key_images;
     serializable_unordered_map<crypto::public_key, size_t> m_pub_keys;
-    cryptonote::account_public_address m_account_public_address;
+    cryptonote::spend_view_public_keys m_spend_view_public_keys;
     serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index> m_subaddresses;
     std::vector<std::vector<std::string>> m_subaddress_labels;
     serializable_unordered_map<std::string, std::string> m_attributes;

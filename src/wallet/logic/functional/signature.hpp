@@ -34,7 +34,7 @@
 
 #include "wallet/logic/type/message_signature.hpp" // message_signature_ressult_t
 
-#include "cryptonote/basic/cryptonote_basic.h" // account_public_address
+#include "cryptonote/basic/cryptonote_basic.h" // spend_view_public_keys
 #include "cryptonote/basic/controller/account.h"
 #include "cryptonote/basic/type/subaddress_index.hpp"
 
@@ -46,7 +46,7 @@ namespace signature {
   wallet::logic::type::message_signature::message_signature_result_t verify
   (
    const std::string &data
-   , const cryptonote::account_public_address &address
+   , const cryptonote::spend_view_public_keys &address
    , const std::string &signature
    );
 

@@ -757,7 +757,7 @@ namespace tools
     try
     {
       // gather info to ask the user
-      std::unordered_map<cryptonote::account_public_address, std::pair<std::string, uint64_t>> dests;
+      std::unordered_map<cryptonote::spend_view_public_keys, std::pair<std::string, uint64_t>> dests;
       int first_known_non_zero_change_index = -1;
       for (size_t n = 0; n < tx_constructions.size(); ++n)
       {

@@ -45,7 +45,7 @@ namespace cryptonote {
     crypto::secret_key   m_view_secret_key;
   };
 
-  struct account_public_address_unsafe
+  struct spend_view_public_keys_unsafe
   {
     crypto::ec_point_unsafe m_spend_public_key_unsafe;
     crypto::ec_point_unsafe m_view_public_key_unsafe;
@@ -56,12 +56,12 @@ namespace cryptonote {
     END_KV_SERIALIZE_MAP()
   };
 
-  struct account_public_address
+  struct spend_view_public_keys
   {
     crypto::public_key m_spend_public_key;
     crypto::public_key m_view_public_key;
 
-    bool operator==(const account_public_address& rhs) const = default;
+    bool operator==(const spend_view_public_keys& rhs) const = default;
 
     BEGIN_KV_SERIALIZE_MAP()
     KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
@@ -101,7 +101,7 @@ namespace cryptonote {
    , const uint32_t end
    );
 
-  cryptonote::account_public_address get_subaddress
+  cryptonote::spend_view_public_keys get_subaddress
   (
    const cryptonote::spend_view_secret_keys keys
    , const cryptonote::subaddress_index index

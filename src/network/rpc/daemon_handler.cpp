@@ -553,7 +553,7 @@ namespace rpc
     if ( lMiner.is_mining() ) {
       res.speed = lMiner.get_speed();
       res.threads_count = lMiner.get_threads_count();
-      const account_public_address& lMiningAdr = lMiner.get_mining_address();
+      const spend_view_public_keys& lMiningAdr = lMiner.get_mining_address();
       res.address = get_account_address_as_str(m_core.get_nettype(), false, lMiningAdr);
     }
 

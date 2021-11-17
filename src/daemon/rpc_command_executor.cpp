@@ -1106,7 +1106,7 @@ bool t_rpc_command_executor::print_transaction_pool_stats() {
   return true;
 }
 
-bool t_rpc_command_executor::start_mining(cryptonote::account_public_address address, uint64_t num_threads, cryptonote::network_type nettype) {
+bool t_rpc_command_executor::start_mining(cryptonote::spend_view_public_keys address, uint64_t num_threads, cryptonote::network_type nettype) {
   cryptonote::COMMAND_RPC_START_MINING::request req;
   cryptonote::COMMAND_RPC_START_MINING::response res;
   req.miner_address = cryptonote::get_account_address_as_str(nettype, false, address);

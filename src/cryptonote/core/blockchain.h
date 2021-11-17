@@ -310,8 +310,8 @@ namespace cryptonote
      *
      * @return true if block template filled in successfully, else false
      */
-    bool create_block_template(block& b, const account_public_address& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
-    bool create_block_template(block& b, const crypto::hash *from_block, const account_public_address& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
+    bool create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
+    bool create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const blobdata& ex_nonce);
 
     /**
      * @brief checks if a block is known about with a given hash
@@ -859,7 +859,7 @@ namespace cryptonote
 
     // block template cache
     block m_btc;
-    account_public_address m_btc_address;
+    spend_view_public_keys m_btc_address;
     blobdata m_btc_nonce;
     diff_t m_btc_difficulty;
     uint64_t m_btc_height;
@@ -1214,6 +1214,6 @@ namespace cryptonote
      *
      * At some point, may be used to push an update to miners
      */
-    void cache_block_template(const block &b, const cryptonote::account_public_address &address, const blobdata &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie);
+    void cache_block_template(const block &b, const cryptonote::spend_view_public_keys &address, const blobdata &nonce, const diff_t &diff, uint64_t height, uint64_t expected_reward, uint64_t pool_cookie);
   };
 }  // namespace cryptonote

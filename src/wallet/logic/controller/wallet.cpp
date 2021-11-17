@@ -355,7 +355,7 @@ namespace wallet {
     THROW_WALLET_EXCEPTION_IF(ptx_vector.empty(), tools::error::wallet_internal_error, "No transactions");
 
     // check every party in there does receive at least the required amount
-    std::unordered_map<account_public_address, std::pair<uint64_t, bool>> required;
+    std::unordered_map<spend_view_public_keys, std::pair<uint64_t, bool>> required;
     for (const auto &d: dsts)
     {
       required[d.addr].first += d.amount;
@@ -392,7 +392,7 @@ namespace wallet {
 
     for (const auto &r: required)
     {
-      const account_public_address address = r.first;
+      const spend_view_public_keys address = r.first;
       const bool is_subaddress = r.second.second;
 
       bool found_in_some_tx = false;

@@ -30,13 +30,13 @@
 
 namespace test
 {
-  cryptonote::transaction make_miner_transaction(cryptonote::account_public_address const& to);
+  cryptonote::transaction make_miner_transaction(cryptonote::spend_view_public_keys const& to);
 
   cryptonote::transaction
   make_transaction
     (
      cryptonote::account_keys const& from,
      std::vector<cryptonote::transaction> const& sources,
-     std::vector<cryptonote::account_public_address> const& destinations,
+     std::vector<cryptonote::spend_view_public_keys> const& destinations,
      );
 }

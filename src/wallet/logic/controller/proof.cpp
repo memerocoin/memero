@@ -44,7 +44,7 @@ namespace proof {
   const std::string get_tx_output_signatures
   (
    const std::vector<crypto::secret_key> &output_secret_keys
-   , const cryptonote::account_public_address &address
+   , const cryptonote::spend_view_public_keys &address
    , const bool is_subaddress
    , const std::string &message
    )
