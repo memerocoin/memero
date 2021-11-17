@@ -862,9 +862,13 @@ namespace cryptonote
   int t_cryptonote_protocol_handler::handle_notify_new_transactions(int command, NOTIFY_NEW_TRANSACTIONS::request& arg, cryptonote_connection_context& context)
   {
     LOG_P2P_MESSAGE("Received NOTIFY_NEW_TRANSACTIONS (" << arg.txs.size() << " txes)");
-    for (const auto &blob: arg.txs)
-      LOG_P2P_MESSAGE_IF(cryptonote::transaction tx; crypto::hash hash; bool ret = cryptonote::parse_and_validate_tx_from_blob(blob, tx, hash);, ret, "Including transaction " << hash);
-
+    for (const auto &blob: arg.txs) {
+      const auto r = cryptonote::maybe_tx_and_hash_from_blob(blob);
+      if (r) {
+        const auto& [tx, hash] = *r;
+        LOG_P2P_MESSAGE("Including transaction " << hash);
+      }
+    }
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
 
@@ -1283,11 +1287,12 @@ namespace cryptonote
               {
                 drop_connections(span_origin);
                 if (!m_p2p->for_connection(span_connection_id, [&](cryptonote_connection_context& context, nodetool::peerid_type peer_id, uint32_t f)->bool{
-                  cryptonote::transaction tx;
-                  crypto::hash txid;
-                  parse_and_validate_tx_from_blob(it->blob, tx, txid); // must succeed if we got here
-                  LOG_ERROR_CCONTEXT("transaction verification failed on NOTIFY_RESPONSE_GET_OBJECTS, tx_id = "
-                      << epee::string_tools::pod_to_hex(txid) << ", dropping connection");
+                  const auto r = cryptonote::maybe_tx_and_hash_from_blob(it->blob);
+                  if (r) {
+                    const auto& [tx, txid] = *r;
+                    LOG_ERROR_CCONTEXT("transaction verification failed on NOTIFY_RESPONSE_GET_OBJECTS, tx_id = "
+                                       << epee::string_tools::pod_to_hex(txid) << ", dropping connection");
+                  }
                   drop_connection(context, false, true);
                   return 1;
                 }))

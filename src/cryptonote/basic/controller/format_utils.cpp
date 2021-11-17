@@ -137,30 +137,15 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------
-  bool parse_and_validate_tx_from_blob(const blobdata_ref tx_blob, transaction& tx, crypto::hash& tx_hash)
+  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const blobdata_ref tx_blob)
   {
-    std::stringstream ss;
-    ss << tx_blob;
-    binary_archive<false> ba(ss);
-    bool r = ::serialization::serialize(ba, tx);
-    LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
-
-    const auto maybeTx = expand_transaction(tx);
-    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, false, "Failed to expand transaction data");
-    tx = *maybeTx;
-    
-    //TODO: validate tx
-
-    tx_hash = get_transaction_hash(tx);
-    return true;
-  }
-  //---------------------------------------------------------------
-  bool parse_and_validate_tx_from_blob(const blobdata_ref tx_blob, transaction& tx, crypto::hash& tx_hash, crypto::hash& tx_prefix_hash)
-  {
-    if (!parse_and_validate_tx_from_blob(tx_blob, tx, tx_hash))
-      return false;
-    tx_prefix_hash = get_transaction_prefix_hash(tx);
-    return true;
+    const auto maybeTx = maybe_tx_from_blob(tx_blob);
+    if (maybeTx) {
+      return {{*maybeTx, get_transaction_hash(*maybeTx)}};
+    }
+    else {
+      return {};
+    }
   }
   //---------------------------------------------------------------
   bool parse_amount(uint64_t& amount, const std::string& str_amount_)

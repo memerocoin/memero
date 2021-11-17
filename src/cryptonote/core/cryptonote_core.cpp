@@ -856,10 +856,13 @@ namespace cryptonote
     for (std::size_t i = 0; i < tx_blobs.size(); ++i)
     {
       cryptonote::transaction tx{};
-      if (!parse_and_validate_tx_from_blob(tx_blobs[i], tx, tx_hashes[i]))
-      {
+
+      const auto r = cryptonote::maybe_tx_and_hash_from_blob(tx_blobs[i]);
+      if (!r) {
         LOG_ERROR("Failed to parse relayed transaction");
         return;
+      } else {
+        std::tie(tx, tx_hashes[i]) = *r;
       }
     }
     m_mempool.set_relayed(tx_hashes, tx_relay);
@@ -1103,7 +1106,13 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::parse_tx_from_blob(transaction& tx, crypto::hash& tx_hash, const blobdata& blob) const
   {
-    return parse_and_validate_tx_from_blob(blob, tx, tx_hash);
+    const auto r = cryptonote::maybe_tx_and_hash_from_blob(blob);
+    if (r) {
+      std::tie(tx, tx_hash) = *r;
+      return true;
+    } else {
+      return false;
+    }
   }
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_syntax(const transaction& tx) const
