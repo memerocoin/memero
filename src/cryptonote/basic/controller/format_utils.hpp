@@ -46,9 +46,6 @@
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  std::optional<transaction> maybe_tx_from_blob(const blobdata_ref tx_blob);
-  std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const blobdata_ref tx_blob);
-  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const blobdata_ref tx_blob);
 
   bool add_tx_pub_key_to_extra(transaction& tx, const crypto::public_key& tx_pub_key);
   bool add_tx_pub_key_to_extra(transaction_prefix& tx, const crypto::public_key& tx_pub_key);
@@ -74,10 +71,6 @@ namespace cryptonote
   std::string print_money(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point = -1);
 
   //---------------------------------------------------------------
-  blobdata block_to_blob(const block& b);
-  std::optional<blobdata> maybe_block_to_blob(const block& b);
-  blobdata tx_to_blob(const transaction& b);
-  std::optional<blobdata> maybe_tx_to_blob(const transaction& tx);
 
   void get_hash_stats(uint64_t &tx_hashes_calculated, uint64_t &tx_hashes_cached, uint64_t &block_hashes_calculated, uint64_t & block_hashes_cached);
 

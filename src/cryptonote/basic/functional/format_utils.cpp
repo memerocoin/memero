@@ -468,4 +468,120 @@ namespace cryptonote
   {
     return crypto::sha3(epee::string_tools::string_to_blob(get_mining_blob(b)));
   }
+
+  //---------------------------------------------------------------
+  std::optional<transaction> expand_transaction(const transaction &tx_in)
+  {
+    transaction tx = tx_in;
+    if (tx.version < 2) return tx;
+    if (is_coinbase(tx)) return tx;
+
+    rct::rctData &rv = tx.ringct;
+    if (rv.type == rct::RCTTypeNull)
+      return tx;
+
+    if (rv.output_commits.size() != tx.vout.size())
+    {
+      LOG_PRINT_L1
+        ("Failed to parse transaction from blob, bad output_commits size in tx " << get_transaction_hash(tx));
+      return {};
+    }
+
+    if (rv.p.bulletproofs.size() != 1)
+    {
+      LOG_PRINT_L1
+        ("Failed to parse transaction from blob, bad bulletproofs size in tx " << get_transaction_hash(tx));
+      return {};
+    }
+
+    if (rv.p.bulletproofs[0].L.size() < 6)
+    {
+      LOG_PRINT_L1
+        ("Failed to parse transaction from blob, bad bulletproofs L size in tx " << get_transaction_hash(tx));
+      return {};
+    }
+
+    const size_t max_outputs = 1 << (rv.p.bulletproofs[0].L.size() - 6);
+    if (max_outputs < tx.vout.size())
+    {
+      LOG_PRINT_L1
+        ("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << get_transaction_hash(tx));
+      return {};
+    }
+
+    const size_t n_amounts = tx.vout.size();
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       n_amounts == rv.output_commits.size()
+       , {}
+       , "Internal error filling out V"
+       );
+
+    std::transform
+      (
+       rv.output_commits.begin()
+       , rv.output_commits.end()
+       , std::back_inserter(rv.p.bulletproofs[0].commits)
+       , [](const auto& x) {
+         return x.commit ^ rct::s_inv_eight;
+       }
+       );
+
+    return tx;
+  }
+
+  //---------------------------------------------------------------
+  std::optional<transaction> maybe_tx_from_blob(const blobdata_ref tx_blob)
+  {
+    const transaction dummyTx;
+    const auto maybeTx = maybe_from_blob(tx_blob, dummyTx);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, {}, "Failed to parse transaction from blob");
+    const auto maybeExpandedTx = expand_transaction(*maybeTx);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeExpandedTx, {}, "Failed to expand transaction data");
+    return *maybeExpandedTx;
+  }
+
+  //---------------------------------------------------------------
+  std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const blobdata_ref tx_blob)
+  {
+    transaction_prefix tx_prefix;
+    std::stringstream ss;
+    ss << tx_blob;
+    binary_archive<false> ba(ss);
+    const bool r = ::serialization::serialize_noeof(ba, tx_prefix);
+    LOG_ERROR_AND_RETURN_UNLESS(r, {}, "Failed to parse transaction prefix from blob");
+    return tx_prefix;
+  }
+  //---------------------------------------------------------------
+  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const blobdata_ref tx_blob)
+  {
+    const auto maybeTx = maybe_tx_from_blob(tx_blob);
+    if (maybeTx) {
+      return {{*maybeTx, get_transaction_hash(*maybeTx)}};
+    }
+    else {
+      return {};
+    }
+  }
+
+  //---------------------------------------------------------------
+  blobdata block_to_blob(const block& b)
+  {
+    return t_serializable_object_to_blob(b);
+  }
+  //---------------------------------------------------------------
+  std::optional<blobdata> maybe_block_to_blob(const block& b)
+  {
+    return maybe_to_blob(b);
+  }
+  //---------------------------------------------------------------
+  blobdata tx_to_blob(const transaction& tx)
+  {
+    return t_serializable_object_to_blob(tx);
+  }
+  //---------------------------------------------------------------
+  std::optional<blobdata> maybe_tx_to_blob(const transaction& tx)
+  {
+    return maybe_to_blob(tx);
+  }
 }

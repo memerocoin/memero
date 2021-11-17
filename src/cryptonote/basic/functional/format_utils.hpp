@@ -188,4 +188,13 @@ namespace cryptonote
   crypto::hash get_mining_hash(const block& b);
 
   uint64_t get_tx_outputs_money_amount(const transaction& tx);
+
+  std::optional<transaction> maybe_tx_from_blob(const blobdata_ref tx_blob);
+  std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const blobdata_ref tx_blob);
+  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const blobdata_ref tx_blob);
+
+  blobdata block_to_blob(const block& b);
+  std::optional<blobdata> maybe_block_to_blob(const block& b);
+  blobdata tx_to_blob(const transaction& b);
+  std::optional<blobdata> maybe_tx_to_blob(const transaction& tx);
 }
