@@ -60,5 +60,4 @@ namespace cryptonote
 
   bool add_tx_output_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::span<const crypto::public_key> output_pub_keys);
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
-
 }

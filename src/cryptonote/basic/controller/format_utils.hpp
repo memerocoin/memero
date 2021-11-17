@@ -46,15 +46,6 @@
 namespace cryptonote
 {
   //---------------------------------------------------------------
-
-  bool add_tx_pub_key_to_extra(transaction& tx, const crypto::public_key& tx_pub_key);
-  bool add_tx_pub_key_to_extra(transaction_prefix& tx, const crypto::public_key& tx_pub_key);
-  bool add_tx_pub_key_to_extra(std::vector<uint8_t>& tx_extra, const crypto::public_key& tx_pub_key);
-
-  bool add_tx_output_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::span<const crypto::public_key> output_pub_keys);
-  bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
-
-
   bool parse_and_validate_block_from_blob(const string_blob_view b_blob, block& b, crypto::hash &block_hash);
 
   std::optional<uint64_t> parse_amount(const std::string& str_amount);
