@@ -432,7 +432,7 @@ namespace cryptonote
     tx.extra.clear();
 
     keypair txkey = keypair::generate();
-    add_tx_pub_key_to_extra(tx, txkey.pub);
+    tx = add_tx_pub_key_to_extra(tx, txkey.pub);
 
     txin_gen in;
     in.height = height;
