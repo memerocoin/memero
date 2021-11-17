@@ -30,6 +30,10 @@
 
 #pragma once
 
+#include "config/lol.hpp"
+
+#include <cstdint>
+
 
 namespace cryptonote {
   /************************************************************************/

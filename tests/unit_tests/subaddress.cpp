@@ -34,7 +34,7 @@
 #include "wallet/api/wallet2.h"
 #include "math/crypto/functional/key.hpp"
 #include "cryptonote/basic/controller/account.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/type/subaddress_index.hpp"
 
 class WalletSubaddress : public ::testing::Test

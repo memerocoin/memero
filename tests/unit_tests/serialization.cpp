@@ -31,7 +31,7 @@
 #include "unit_tests_utils.h"
 
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 
 #include "tools/serialization/binary_archive.h"
 #include "tools/serialization/json_archive.h"

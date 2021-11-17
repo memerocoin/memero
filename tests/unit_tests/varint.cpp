@@ -35,7 +35,7 @@
 #include <vector>
 #include <boost/foreach.hpp>
 #include "cryptonote/basic/cryptonote_basic.h"
-#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 #include "tools/serialization/binary_archive.h"
 #include "tools/serialization/json_archive.h"
 #include "tools/serialization/variant.h"

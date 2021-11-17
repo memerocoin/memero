@@ -38,6 +38,7 @@
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 #include "math/ringct/controller/rctSigGen.hpp"
 
+#include "cryptonote/functional/helper.hpp"
 #include "cryptonote/basic/functional/subaddress.hpp"
 #include "cryptonote/basic/controller/tx_extra.hpp"
 

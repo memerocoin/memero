@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/cryptonote_basic_impl.h"
+#include "cryptonote/basic/cryptonote_basic.h"
 #include "cryptonote/basic/controller/account.h"
 
 #include "cryptonote/basic/type/string_blob_type.hpp"

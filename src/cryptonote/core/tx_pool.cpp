@@ -32,6 +32,7 @@
 #include "blockchain.h"
 
 #include "database/interface/locked_txn.h"
+#include "cryptonote/functional/helper.hpp"
 
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include "cryptonote/functional/helper.hpp"
+
 #include "network/rpc/core_rpc_server.h"
 
 #include "tools/common/rpc_client.h"

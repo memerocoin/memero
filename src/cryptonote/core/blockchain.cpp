@@ -33,6 +33,7 @@
 #include "core_type.h"
 
 #include "cryptonote/tx/functional/tx_check.h"
+#include "cryptonote/functional/helper.hpp"
 
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
 
