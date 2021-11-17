@@ -116,12 +116,12 @@ namespace cryptonote
 
     if (tx.version == 1)
     {
-      uint64_t inputs_amount = 0;
-      if(!get_inputs_money_amount(tx, inputs_amount))
-      {
-        tvc.m_verifivation_failed = true;
-        return false;
-      }
+      const uint64_t inputs_amount = get_inputs_money_amount(tx);
+
+      // {
+      //   tvc.m_verifivation_failed = true;
+      //   return false;
+      // }
 
       uint64_t outputs_amount = get_tx_outputs_money_amount(tx);
       if(outputs_amount > inputs_amount)

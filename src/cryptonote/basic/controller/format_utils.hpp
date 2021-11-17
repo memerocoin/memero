@@ -58,7 +58,7 @@ namespace cryptonote
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash *block_hash);
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b);
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash);
-  bool get_inputs_money_amount(const transaction& tx, uint64_t& money);
+  uint64_t get_inputs_money_amount(const transaction& tx);
 
   bool parse_amount(uint64_t& amount, const std::string& str_amount);
 
@@ -75,7 +75,14 @@ namespace cryptonote
   void get_hash_stats(uint64_t &tx_hashes_calculated, uint64_t &tx_hashes_cached, uint64_t &block_hashes_calculated, uint64_t & block_hashes_cached);
 
 #define CHECKED_GET_SPECIFIC_VARIANT(variant_var, specific_type, variable_name, fail_return_val) \
-  LOG_ERROR_AND_RETURN_UNLESS(variant_var.type() == typeid(specific_type), fail_return_val, "wrong variant type: " << variant_var.type().name() << ", expected " << typeid(specific_type).name()); \
+  LOG_ERROR_AND_RETURN_UNLESS                                           \
+  (                                                                     \
+   variant_var.type() == typeid(specific_type)                          \
+   , fail_return_val                                                    \
+   , "wrong variant type: "                                             \
+   << variant_var.type().name()                                         \
+   << ", expected "                                                     \
+   << typeid(specific_type).name());                                    \
   specific_type& variable_name = boost::get<specific_type>(variant_var);
 
 
