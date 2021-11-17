@@ -132,7 +132,7 @@ namespace cryptonote
     rct::rctData ringct;
 
     // hash cash
-    unsigned int unprunable_size = 0;
+    unsigned int prefix_and_ringct_basic_size = 0;
     unsigned int prefix_size = 0;
 
     BEGIN_SERIALIZE_OBJECT()
@@ -146,7 +146,7 @@ namespace cryptonote
     if (version == 1)
     {
       if (std::is_same<Archive<W>, binary_archive<W>>())
-        unprunable_size = getpos(ar) - start_pos;
+        prefix_and_ringct_basic_size = getpos(ar) - start_pos;
 
       ar.tag("signatures");
       ar.begin_array();
@@ -162,7 +162,7 @@ namespace cryptonote
         if (!r || !ar.stream().good()) return false;
         ar.end_object();
         if (std::is_same<Archive<W>, binary_archive<W>>())
-          unprunable_size = getpos(ar) - start_pos;
+          prefix_and_ringct_basic_size = getpos(ar) - start_pos;
         if (ringct.type != rct::RCTTypeNull)
         {
           ar.tag("ringct_prunable");

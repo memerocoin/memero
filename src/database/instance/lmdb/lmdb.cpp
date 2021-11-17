@@ -879,26 +879,26 @@ uint64_t BlockchainLMDB::add_transaction_data(const crypto::hash& blk_hash, cons
 
   const cryptonote::string_blob_view blob = txp.second;
 
-  unsigned int unprunable_size = tx.unprunable_size;
-  if (unprunable_size == 0)
+  unsigned int prefix_and_ringct_basic_size = tx.prefix_and_ringct_basic_size;
+  if (prefix_and_ringct_basic_size == 0)
   {
     std::stringstream ss;
     binary_archive<true> ba(ss);
     bool r = const_cast<cryptonote::transaction&>(tx).serialize_base(ba);
     if (!r)
       throw0(DB_ERROR("Failed to serialize pruned tx"));
-    unprunable_size = ss.str().size();
+    prefix_and_ringct_basic_size = ss.str().size();
   }
 
-  if (unprunable_size > blob.size())
+  if (prefix_and_ringct_basic_size > blob.size())
     throw0(DB_ERROR("pruned tx size is larger than tx size"));
 
-  MDB_val pruned_blob = {unprunable_size, (void*)blob.data()};
+  MDB_val pruned_blob = {prefix_and_ringct_basic_size, (void*)blob.data()};
   result = mdb_cursor_put(m_cur_txs_pruned, &val_tx_id, &pruned_blob, MDB_APPEND);
   if (result)
     throw0(DB_ERROR(lmdb_error("Failed to add pruned tx blob to db transaction: ", result).c_str()));
 
-  MDB_val prunable_blob = {blob.size() - unprunable_size, (void*)(blob.data() + unprunable_size)};
+  MDB_val prunable_blob = {blob.size() - prefix_and_ringct_basic_size, (void*)(blob.data() + prefix_and_ringct_basic_size)};
   result = mdb_cursor_put(m_cur_txs_prunable, &val_tx_id, &prunable_blob, MDB_APPEND);
   if (result)
     throw0(DB_ERROR(lmdb_error("Failed to add prunable tx blob to db transaction: ", result).c_str()));

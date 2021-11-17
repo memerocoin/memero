@@ -222,16 +222,16 @@ namespace cryptonote
        , "error trying to calculate prunable_hash on v1 tx"
        );
 
-    const unsigned int unprunable_size = t.unprunable_size;
+    const unsigned int prefix_and_ringct_basic_size = t.prefix_and_ringct_basic_size;
 
     LOG_ERROR_AND_THROW_UNLESS
       (
-       unprunable_size <= blob.size()
+       prefix_and_ringct_basic_size <= blob.size()
        , "Inconsistent transaction unprunable and blob sizes"
        );
 
     return cryptonote::get_blob_hash
-      (string_blob_view(blob.data() + unprunable_size, blob.size() - unprunable_size)
+      (string_blob_view(blob.data() + prefix_and_ringct_basic_size, blob.size() - prefix_and_ringct_basic_size)
        );
   }
 
@@ -251,15 +251,15 @@ namespace cryptonote
     hashes[0] = get_transaction_prefix_hash(t);
 
     const string_blob blob = tx_to_blob(t);
-    const unsigned int unprunable_size = t.unprunable_size;
+    const unsigned int prefix_and_ringct_basic_size = t.prefix_and_ringct_basic_size;
     const unsigned int prefix_size = t.prefix_size;
 
     // base rct
-    if (! (prefix_size <= unprunable_size && unprunable_size <= blob.size() )) {
+    if (! (prefix_size <= prefix_and_ringct_basic_size && prefix_and_ringct_basic_size <= blob.size() )) {
       LOG_FATAL("Inconsistent transaction prefix, unprunable and blob sizes");
     }
 
-    hashes[1] = cryptonote::get_blob_hash(blob.substr(prefix_size, unprunable_size - prefix_size));
+    hashes[1] = cryptonote::get_blob_hash(blob.substr(prefix_size, prefix_and_ringct_basic_size - prefix_size));
 
     // prunable rct
     hashes[2]
