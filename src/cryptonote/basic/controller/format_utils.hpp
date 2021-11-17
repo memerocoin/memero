@@ -77,7 +77,7 @@ namespace cryptonote
   std::string print_money(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point = -1);
   //---------------------------------------------------------------
   template<class t_object>
-  bool t_serializable_object_from_blob(t_object& to, const blobdata& b_blob)
+  bool serialize_from_blob(t_object& to, const blobdata& b_blob)
   {
     std::stringstream ss;
     ss << b_blob;
@@ -85,6 +85,7 @@ namespace cryptonote
     bool r = ::serialization::serialize(ba, to);
     return r;
   }
+
   //---------------------------------------------------------------
   blobdata block_to_blob(const block& b);
   bool block_to_blob(const block& b, blobdata& b_blob);
