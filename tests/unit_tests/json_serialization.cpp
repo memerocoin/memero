@@ -127,8 +127,8 @@ TEST(JsonSerialization, MinerTransaction)
     crypto::hash tx_copy_hash = cryptonote::get_transaction_hash(miner_tx_copy);
     EXPECT_EQ(tx_hash, tx_copy_hash);
 
-    const auto tx_bytes = cryptonote::t_serializable_object_to_maybe_blob(miner_tx);
-    const auto tx_copy_bytes = cryptonote::t_serializable_object_to_maybe_blob(miner_tx_copy);
+    const auto tx_bytes = cryptonote::maybe_to_blob(miner_tx);
+    const auto tx_copy_bytes = cryptonote::maybe_to_blob(miner_tx_copy);
 
     ASSERT_TRUE(tx_bytes);
     ASSERT_TRUE(tx_copy_bytes);
@@ -162,7 +162,7 @@ TEST(JsonSerialization, BulletproofTransaction)
     // cryptonote::blobdata tx_bytes{};
     // cryptonote::blobdata tx_copy_bytes{};
 
-    const auto tx_bytes = cryptonote::t_serializable_object_to_maybe_blob(tx);
+    const auto tx_bytes = cryptonote::maybe_to_blob(tx);
     ASSERT_TRUE(tx_bytes);
 
 

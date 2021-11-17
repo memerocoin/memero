@@ -327,7 +327,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool block_to_blob(const block& b, blobdata& b_blob)
   {
-    const auto blob = t_serializable_object_to_maybe_blob(b);
+    const auto blob = maybe_to_blob(b);
     if (blob) {
       b_blob = *blob;
       return true;
@@ -343,7 +343,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool tx_to_blob(const transaction& tx, blobdata& b_blob)
   {
-    const auto blob = t_serializable_object_to_maybe_blob(tx);
+    const auto blob = maybe_to_blob(tx);
 
     if (blob) {
       b_blob = *blob;

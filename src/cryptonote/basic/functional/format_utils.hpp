@@ -94,7 +94,7 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   template<class t_object>
-  std::optional<blobdata> t_serializable_object_to_maybe_blob(const t_object& to)
+  std::optional<blobdata> maybe_to_blob(const t_object& to)
   {
     std::ostringstream ss;
     binary_archive<true> ba(ss);
@@ -109,7 +109,7 @@ namespace cryptonote
   template<class t_object>
   blobdata t_serializable_object_to_blob(const t_object& to)
   {
-    const auto b = t_serializable_object_to_maybe_blob(to);
+    const auto b = maybe_to_blob(to);
     if (!b) {
       throw std::runtime_error("failed to serialize object to blob");
     }
