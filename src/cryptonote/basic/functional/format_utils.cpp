@@ -564,6 +564,13 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
+  std::optional<block> maybe_block_from_blob(const blobdata_ref b_blob)
+  {
+    const block dummyBlock;
+    return maybe_from_blob(b_blob, dummyBlock);
+  }
+
+  //---------------------------------------------------------------
   blobdata block_to_blob(const block& b)
   {
     return t_serializable_object_to_blob(b);
@@ -578,6 +585,7 @@ namespace cryptonote
   {
     return t_serializable_object_to_blob(tx);
   }
+
   //---------------------------------------------------------------
   std::optional<blobdata> maybe_tx_to_blob(const transaction& tx)
   {

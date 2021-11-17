@@ -182,12 +182,6 @@ namespace cryptonote
   }
   
   //---------------------------------------------------------------
-  std::optional<block> maybe_block_from_blob(const blobdata_ref b_blob)
-  {
-    const block dummyBlock;
-    return maybe_from_blob(b_blob, dummyBlock);
-  }
-  //---------------------------------------------------------------
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash)
   {
     const auto maybeBlock = maybe_block_from_blob(b_blob);

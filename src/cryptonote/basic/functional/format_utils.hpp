@@ -200,6 +200,11 @@ namespace cryptonote
 
   uint64_t get_inputs_money_amount(const transaction& tx);
 
+  std::optional<block> maybe_block_from_blob(const blobdata_ref b_blob);
+
+}
+
+
 #define CHECKED_GET_SPECIFIC_VARIANT(variant_var, specific_type, variable_name, fail_return_val) \
   LOG_ERROR_AND_RETURN_UNLESS                                           \
   (                                                                     \
@@ -210,5 +215,3 @@ namespace cryptonote
    << ", expected "                                                     \
    << typeid(specific_type).name());                                    \
   specific_type& variable_name = boost::get<specific_type>(variant_var);
-
-}
