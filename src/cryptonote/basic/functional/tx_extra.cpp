@@ -242,4 +242,23 @@ namespace cryptonote
     std::copy(s.begin(), s.end(), std::back_inserter(tx_extra));
     return tx_extra;
   }
+
+  //---------------------------------------------------------------
+  transaction add_tx_pub_key_to_extra(const transaction& tx_in, const crypto::public_key tx_pub_key)
+  {
+    transaction tx = tx_in;
+    tx.extra = add_tx_pub_key_to_extra(tx_in.extra, tx_pub_key);
+
+    return tx;
+  }
+  //---------------------------------------------------------------
+  std::vector<uint8_t> add_tx_pub_key_to_extra
+  (const std::vector<uint8_t>& tx_extra_in, const crypto::public_key tx_pub_key)
+  {
+    std::vector<uint8_t> tx_extra = tx_extra_in;
+    tx_extra.push_back(TX_EXTRA_TAG_TX_PUBKEY);
+    tx_extra.insert(tx_extra.end(), tx_pub_key.data.begin(), tx_pub_key.data.end());
+    return tx_extra;
+  }
+
 }

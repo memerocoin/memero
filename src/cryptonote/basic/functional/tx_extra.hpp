@@ -78,4 +78,9 @@ namespace cryptonote
 
   std::optional<std::vector<uint8_t>> remove_field_from_tx_extra
   (const std::vector<uint8_t> tx_extra, const std::type_info& type);
+
+  transaction add_tx_pub_key_to_extra(const transaction& tx_in, const crypto::public_key tx_pub_key);
+  std::vector<uint8_t> add_tx_pub_key_to_extra
+  (const std::vector<uint8_t>& tx_extra_in, const crypto::public_key tx_pub_key);
+
 }
