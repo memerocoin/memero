@@ -94,9 +94,13 @@ namespace cryptonote
 
     if (!maybe_tx_extra_fields) return {};
 
-    tx_extra_tx_public_key pub_key_field;
-    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, pub_key_field))
+    const tx_extra_tx_public_key pub_key_field_dummy{};
+    const auto r = find_tx_extra_field_by_type(*maybe_tx_extra_fields, pub_key_field_dummy);
+    if(!r) {
       return {};
+    }
+
+    const tx_extra_tx_public_key pub_key_field = *r;
 
     const auto maybe_safe_point = maybeSafePoint(pub_key_field.pub_key_unsafe);
 
@@ -127,9 +131,12 @@ namespace cryptonote
     if (!maybe_tx_extra_fields) return {};
 
     // find corresponding field
-    tx_extra_tx_output_public_keys output_pub_keys_unsafe;
-    if(!find_tx_extra_field_by_type(*maybe_tx_extra_fields, output_pub_keys_unsafe))
+    const tx_extra_tx_output_public_keys output_pub_keys_unsafe_dummy{};
+    const auto r = find_tx_extra_field_by_type(*maybe_tx_extra_fields, output_pub_keys_unsafe_dummy);
+    if(!r) {
       return {};
+    }
+    const tx_extra_tx_output_public_keys output_pub_keys_unsafe = *r; 
 
     std::vector<crypto::public_key> output_pub_keys;
 

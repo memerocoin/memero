@@ -47,9 +47,12 @@ namespace test
             if (!extra_fields)
                 throw std::runtime_error{"invalid transaction"};
 
-            cryptonote::tx_extra_tx_public_key key_field{};
-            if (!cryptonote::find_tx_extra_field_by_type(*extra_fields, key_field))
-                throw std::runtime_error{"invalid transaction"};
+            const cryptonote::tx_extra_tx_public_key key_field_dummy{};
+            const auto r = cryptonote::find_tx_extra_field_by_type(*extra_fields, key_field_dummy);
+            if (!r) {
+              throw std::runtime_error{"invalid transaction"};
+            }
+            const cryptonote::tx_extra_tx_public_key key_field = *r;
 
             for (auto const& input : boost::adaptors::index(source.vout))
             {
