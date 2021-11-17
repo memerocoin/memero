@@ -118,6 +118,18 @@ namespace cryptonote
     LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
     return true;
   }
+
+  //---------------------------------------------------------------
+  std::optional<transaction> maybe_tx_from_blob(const blobdata_ref tx_blob)
+  {
+    const transaction dummyTx;
+    const auto maybeTx = maybe_from_blob(tx_blob, dummyTx);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, {}, "Failed to parse transaction from blob");
+    transaction tx = *maybeTx;
+    LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, false), {}, "Failed to expand transaction data");
+    return tx;
+  }
+
   //---------------------------------------------------------------
   bool parse_and_validate_tx_base_from_blob(const blobdata_ref tx_blob, transaction& tx)
   {

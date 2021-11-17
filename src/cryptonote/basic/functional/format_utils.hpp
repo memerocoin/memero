@@ -118,7 +118,7 @@ namespace cryptonote
 
 
   template<class t_object>
-  std::optional<t_object> maybe_from_blob(const blobdata_ref b_blob)
+  std::optional<t_object> maybe_from_blob(const blobdata_ref b_blob, const t_object& dummy)
   {
     t_object x;
     std::stringstream ss;
