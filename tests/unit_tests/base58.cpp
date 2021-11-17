@@ -33,7 +33,7 @@
 #include <cstdint>
 
 #include "tools/common/base58.cpp"
-#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/functional/base.hpp"
 #include "tools/serialization/binary_utils.h"
 #include "config/network.hpp"
 

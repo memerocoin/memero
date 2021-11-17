@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "cryptonote/basic/cryptonote_basic.h" // spend_view_public_keys
+#include "cryptonote/basic/functional/base.hpp" // spend_view_public_keys
 
 namespace wallet {
 namespace logic {

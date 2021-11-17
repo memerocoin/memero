@@ -32,7 +32,7 @@
 #include "cryptonote/protocol/enums.h"
 
 #include "cryptonote/basic/type/string_blob_type.hpp"
-#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/functional/base.hpp"
 #include "cryptonote/basic/functional/difficulty.hpp"
 
 #include "tools/common/command_line.h"

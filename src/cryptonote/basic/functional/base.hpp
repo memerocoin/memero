@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "subaddress.hpp"
 
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization

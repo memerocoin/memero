@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/functional/base.hpp"
 #include "cryptonote/basic/type/verification_context.hpp"
 #include "cryptonote/basic/functional/difficulty.hpp"
 #include "cryptonote/basic/type/string_blob_type.hpp"

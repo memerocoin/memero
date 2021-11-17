@@ -28,12 +28,12 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(cryptonote_basic
-  cryptonote_basic.cpp
 
   functional/difficulty.cpp
   functional/format_utils.cpp
   functional/subaddress.cpp
   functional/tx_extra.cpp
+  functional/base.cpp
 
   controller/tx_extra.cpp
   controller/format_utils.cpp

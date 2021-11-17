@@ -28,7 +28,7 @@
 
 #include "json_object.h"
 
-#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/functional/base.hpp"
 
 #include <limits>
 #include <type_traits>

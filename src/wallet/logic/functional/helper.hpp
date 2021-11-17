@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/functional/base.hpp"
 #include "cryptonote/basic/controller/account.h"
 
 #include <string>

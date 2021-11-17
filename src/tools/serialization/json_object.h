@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "cryptonote/basic/cryptonote_basic.h"
+#include "cryptonote/basic/functional/base.hpp"
 #include "cryptonote/protocol/cryptonote_protocol_defs.h"
 
 #include "network/rpc/message_data_structs.h"

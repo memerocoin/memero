@@ -28,9 +28,9 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "cryptonote_basic.h"
+#include "base.hpp"
 
-#include "functional/format_utils.hpp"
+#include "cryptonote/basic/functional/format_utils.hpp"
 
 #include "tools/common/base58.h"
 
