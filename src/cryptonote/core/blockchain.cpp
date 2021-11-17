@@ -1463,7 +1463,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
 
   //block is not related with head of main chain
   //first of all - look in alternative chains container
-  alt_block_data_t prev_data;
+  alt_block_data_t prev_data{};
   const auto maybe_parent_in_alt = m_db->get_alt_block(b.prev_id);
   if (maybe_parent_in_alt) {
     prev_data = maybe_parent_in_alt->first;
