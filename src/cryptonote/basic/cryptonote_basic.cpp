@@ -32,15 +32,6 @@
 
 namespace cryptonote
 {
-  void transaction_prefix::set_null()
-  {
-    version = 1;
-    unlock_time = 0;
-    vin.clear();
-    vout.clear();
-    extra.clear();
-  }
-
   transaction::transaction(const transaction &t):
     transaction_prefix(t),
     ringct(t.ringct),
@@ -60,19 +51,10 @@ namespace cryptonote
 
   transaction::transaction()
   {
-    set_null();
   }
 
   transaction::~transaction()
   {
-  }
-
-  void transaction::set_null()
-  {
-    transaction_prefix::set_null();
-    ringct.type = rct::RCTTypeNull;
-    unprunable_size = 0;
-    prefix_size = 0;
   }
 
   size_t transaction::get_signature_size(const txin_v& tx_in)

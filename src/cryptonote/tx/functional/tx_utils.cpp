@@ -137,7 +137,6 @@ namespace cryptonote
 
 
     rct::rct_scalarV output_shared_secrets_hashed_by_index;
-    tx.set_null();
 
     tx.version = 2;
     tx.unlock_time = unlock_time;

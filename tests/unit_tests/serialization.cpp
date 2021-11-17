@@ -368,7 +368,6 @@ TEST(Serialization, serializes_transacion_signatures_correctly)
   string blob;
 
   // Empty tx
-  tx.set_null();
   ASSERT_TRUE(serialization::dump_binary(tx, blob));
   ASSERT_EQ(5, blob.size()); // 5 bytes + 0 bytes extra + 0 bytes signatures
   ASSERT_TRUE(serialization::parse_binary(blob, tx1));
@@ -377,7 +376,7 @@ TEST(Serialization, serializes_transacion_signatures_correctly)
   // Miner tx without signatures
   txin_gen txin_gen1;
   txin_gen1.height = 0;
-  tx.set_null();
+  tx = {};
   tx.vin.push_back(txin_gen1);
   ASSERT_TRUE(serialization::dump_binary(tx, blob));
   ASSERT_EQ(7, blob.size()); // 5 bytes + 2 bytes vin[0] + 0 bytes extra + 0 bytes signatures

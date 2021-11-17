@@ -184,7 +184,7 @@ namespace rct {
   };
 
   struct rctDataBasic {
-    uint8_t type;
+    uint8_t type = RCTTypeNull;
     crypto::hash message;
     output_public_dataM decoys; //the set of all pubkeys / copy
     //pairs that you mix with

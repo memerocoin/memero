@@ -110,8 +110,8 @@ namespace cryptonote
 
   public:
     // tx information
-    size_t   version;
-    uint64_t unlock_time;  //number of block (or time), used as a limitation like: spend this tx not early then block/time
+    size_t   version = 1;
+    uint64_t unlock_time = 0;  //number of block (or time), used as a limitation like: spend this tx not early then block/time
 
     std::vector<txin_v> vin;
     std::vector<tx_out> vout;
@@ -129,8 +129,7 @@ namespace cryptonote
     END_SERIALIZE()
 
   public:
-    transaction_prefix(){ set_null(); }
-    void set_null();
+    transaction_prefix(){}
   };
 
   class transaction: public transaction_prefix
@@ -139,14 +138,13 @@ namespace cryptonote
     rct::rctData ringct;
 
     // hash cash
-    std::atomic<unsigned int> unprunable_size;
-    std::atomic<unsigned int> prefix_size;
+    std::atomic<unsigned int> unprunable_size = 0;
+    std::atomic<unsigned int> prefix_size = 0;
 
     transaction();
     transaction(const transaction &t);
     transaction &operator=(const transaction &t);
     virtual ~transaction();
-    void set_null();
 
     BEGIN_SERIALIZE_OBJECT()
       const unsigned int start_pos = getpos(ar);
