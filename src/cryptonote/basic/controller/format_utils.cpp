@@ -55,7 +55,7 @@ static std::atomic<uint64_t> block_hashes_cached_count(0);
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  std::optional<transaction> expand_transaction(const transaction &tx_in, bool base_only)
+  std::optional<transaction> expand_transaction(const transaction &tx_in)
   {
     transaction tx = tx_in;
     if (tx.version < 2) return tx;
@@ -71,8 +71,6 @@ namespace cryptonote
         ("Failed to parse transaction from blob, bad output_commits size in tx " << get_transaction_hash(tx));
       return {};
     }
-
-    if (base_only) return tx;
 
     if (rv.p.bulletproofs.size() != 1)
     {
@@ -123,7 +121,7 @@ namespace cryptonote
     const transaction dummyTx;
     const auto maybeTx = maybe_from_blob(tx_blob, dummyTx);
     LOG_ERROR_AND_RETURN_UNLESS(maybeTx, {}, "Failed to parse transaction from blob");
-    const auto maybeExpandedTx = expand_transaction(*maybeTx, false);
+    const auto maybeExpandedTx = expand_transaction(*maybeTx);
     LOG_ERROR_AND_RETURN_UNLESS(maybeExpandedTx, {}, "Failed to expand transaction data");
     return *maybeExpandedTx;
   }
@@ -147,7 +145,7 @@ namespace cryptonote
     bool r = ::serialization::serialize(ba, tx);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
 
-    const auto maybeTx = expand_transaction(tx, false);
+    const auto maybeTx = expand_transaction(tx);
     LOG_ERROR_AND_RETURN_UNLESS(maybeTx, false, "Failed to expand transaction data");
     tx = *maybeTx;
     
