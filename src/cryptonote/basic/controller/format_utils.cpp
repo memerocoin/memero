@@ -124,23 +124,10 @@ namespace cryptonote
     const auto maybeTx = maybe_from_blob(tx_blob, dummyTx);
     LOG_ERROR_AND_RETURN_UNLESS(maybeTx, {}, "Failed to parse transaction from blob");
     const auto maybeExpandedTx = expand_transaction(*maybeTx, false);
-    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, {}, "Failed to expand transaction data");
+    LOG_ERROR_AND_RETURN_UNLESS(maybeExpandedTx, {}, "Failed to expand transaction data");
     return *maybeExpandedTx;
   }
 
-  //---------------------------------------------------------------
-  bool parse_and_validate_tx_base_from_blob(const blobdata_ref tx_blob, transaction& tx)
-  {
-    std::stringstream ss;
-    ss << tx_blob;
-    binary_archive<false> ba(ss);
-    bool r = tx.serialize_base(ba);
-    LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
-    const auto maybeTx = expand_transaction(tx, false);
-    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, false, "Failed to expand transaction data");
-    tx = *maybeTx;
-    return true;
-  }
   //---------------------------------------------------------------
   bool parse_and_validate_tx_prefix_from_blob(const blobdata_ref tx_blob, transaction_prefix& tx)
   {

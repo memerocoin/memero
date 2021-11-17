@@ -1547,14 +1547,14 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
       }
       else if (m_db->get_tx_blob(txid, blob))
       {
-        cryptonote::transaction tx;
-        if (!cryptonote::parse_and_validate_tx_base_from_blob(blob, tx))
+        const auto maybeTx = cryptonote::maybe_tx_from_blob(blob);
+        if (!maybeTx)
         {
           LOG_ERROR_VER("Block with id: " << epee::string_tools::pod_to_hex(id) << " (as alternative) refers to unparsable transaction hash " << txid << ".");
           bvc.m_verifivation_failed = true;
           return false;
         }
-        bei.block_cumulative_weight += cryptonote::get_transaction_weight(tx);
+        bei.block_cumulative_weight += cryptonote::get_transaction_weight(*maybeTx);
       }
       else
       {
@@ -3383,8 +3383,12 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
       crypto::hash &tx_prefix_hash = txes[tx_index].second;
       ++tx_index;
 
-      if (!parse_and_validate_tx_base_from_blob(tx_blob.blob, tx))
+      const auto maybeTx = cryptonote::maybe_tx_from_blob(tx_blob.blob);
+      if (!maybeTx) {
         SCAN_TABLE_QUIT("Could not parse tx from incoming blocks.");
+      }
+
+      tx = *maybeTx;
 
       tx_prefix_hash = cryptonote::get_transaction_prefix_hash(tx);
 

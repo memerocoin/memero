@@ -1239,11 +1239,13 @@ void wallet2::pull_and_parse_next_blocks(uint64_t start_height, uint64_t &blocks
       for (size_t j = 0; j < blocks[i].txs.size(); ++j)
       {
         tpool.submit(&waiter, [&, i, j](){
-          if (!parse_and_validate_tx_base_from_blob(blocks[i].txs[j].blob, parsed_blocks[i].txes[j]))
+          const auto maybeTx = maybe_tx_from_blob(blocks[i].txs[j].blob);
+          if (!maybeTx)
           {
             std::unique_lock<std::mutex> lock(error_lock);
             error = true;
           }
+          parsed_blocks[i].txes[j] = *maybeTx;
         }, true);
       }
     }
