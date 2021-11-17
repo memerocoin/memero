@@ -30,6 +30,8 @@
 
 #include "cryptonote_basic.h"
 
+#include "functional/format_utils.hpp"
+
 namespace cryptonote
 {
   std::optional<spend_view_public_keys> maybe_safe_spend_view_public_keys(const spend_view_public_keys_unsafe x)
@@ -42,6 +44,64 @@ namespace cryptonote
     }
     else {
       return {};
+    }
+  }
+
+  //-----------------------------------------------------------------------
+  bool is_coinbase(const transaction& tx)
+  {
+    if(tx.vin.size() != 1)
+      return false;
+
+    if(tx.vin[0].type() != typeid(txin_gen))
+      return false;
+
+    return true;
+  }
+
+  //--------------------------------------------------------------------------------
+  bool operator ==(const cryptonote::transaction& a, const cryptonote::transaction& b) {
+    return cryptonote::get_transaction_hash(a) == cryptonote::get_transaction_hash(b);
+  }
+
+  bool operator ==(const cryptonote::block& a, const cryptonote::block& b) {
+    return cryptonote::get_block_hash(a) == cryptonote::get_block_hash(b);
+  }
+
+  //--------------------------------------------------------------------------------
+  std::optional<crypto::hash> parse_hash256(const std::string &str_hash)
+  {
+    std::string buf;
+    crypto::hash hash;
+    bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
+    if (!res || buf.size() != hash.data.size())
+    {
+      LOG_ERROR("invalid hash format: " << str_hash);
+      return {};
+    }
+    else
+    {
+      std::copy(buf.begin(), buf.end(), hash.data.begin());
+      return hash;
+    }
+  }
+
+
+  //--------------------------------------------------------------------------------
+  std::optional<crypto::crypto_data> parse_crypto_data(const std::string str_hash)
+  {
+    std::string buf;
+    crypto::crypto_data out;
+    bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
+    if (!res || buf.size() != out.data.size())
+    {
+      LOG_ERROR("invalid hash format: " << str_hash);
+      return {};
+    }
+    else
+    {
+      std::copy(buf.begin(), buf.end(), out.data.begin());
+      return out;
     }
   }
 }

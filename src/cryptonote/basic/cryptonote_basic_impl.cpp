@@ -30,7 +30,6 @@
 
 #include "controller/format_utils.hpp"
 
-
 #include "tools/common/base58.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/serialization/binary_utils.h"
@@ -39,8 +38,6 @@
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
-
-using namespace constant;
 
 namespace cryptonote {
   //------------------------------------------------------------------------------------
@@ -61,17 +58,6 @@ namespace cryptonote {
     uint64_t address_prefix = subaddress ? get_config(nettype).CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX : get_config(nettype).CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
 
     return tools::base58::encode_addr(address_prefix, t_serializable_object_to_blob(adr));
-  }
-  //-----------------------------------------------------------------------
-  bool is_coinbase(const transaction& tx)
-  {
-    if(tx.vin.size() != 1)
-      return false;
-
-    if(tx.vin[0].type() != typeid(txin_gen))
-      return false;
-
-    return true;
   }
   //-----------------------------------------------------------------------
   bool get_account_address_from_str(
@@ -125,51 +111,6 @@ namespace cryptonote {
       return true;
     }
     return false;
-  }
-  //--------------------------------------------------------------------------------
-  bool operator ==(const cryptonote::transaction& a, const cryptonote::transaction& b) {
-    return cryptonote::get_transaction_hash(a) == cryptonote::get_transaction_hash(b);
-  }
-
-  bool operator ==(const cryptonote::block& a, const cryptonote::block& b) {
-    return cryptonote::get_block_hash(a) == cryptonote::get_block_hash(b);
-  }
-
-  //--------------------------------------------------------------------------------
-  std::optional<crypto::hash> parse_hash256(const std::string &str_hash)
-  {
-    std::string buf;
-    crypto::hash hash;
-    bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
-    if (!res || buf.size() != hash.data.size())
-    {
-      LOG_ERROR("invalid hash format: " << str_hash);
-      return {};
-    }
-    else
-    {
-      std::copy(buf.begin(), buf.end(), hash.data.begin());
-      return hash;
-    }
-  }
-
-
-  //--------------------------------------------------------------------------------
-  std::optional<crypto::crypto_data> parse_crypto_data(const std::string str_hash)
-  {
-    std::string buf;
-    crypto::crypto_data out;
-    bool res = epee::string_tools::parse_hexstr_to_binbuff(str_hash, buf);
-    if (!res || buf.size() != out.data.size())
-    {
-      LOG_ERROR("invalid hash format: " << str_hash);
-      return {};
-    }
-    else
-    {
-      std::copy(buf.begin(), buf.end(), out.data.begin());
-      return out;
-    }
   }
 
 }
