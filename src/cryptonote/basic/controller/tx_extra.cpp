@@ -180,10 +180,17 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type)
+  std::optional<std::vector<uint8_t>> remove_field_from_tx_extra
+  (
+   const std::vector<uint8_t> tx_extra_in
+   , const std::type_info& type
+   )
   {
+    std::vector<uint8_t> tx_extra = tx_extra_in;
+
     if (tx_extra.empty())
-      return true;
+      return tx_extra;
+
     std::string extra_str = epee::string_tools::blob_to_string(tx_extra);
     std::istringstream iss(extra_str);
     binary_archive<false> ar(iss);
@@ -198,7 +205,7 @@ namespace cryptonote
       LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
         (
          r
-         , false
+         , {}
          , "failed to deserialize extra field. extra = "
          << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
          );
@@ -212,14 +219,13 @@ namespace cryptonote
     LOG_WITH_LEVEL_2_AND_RETURN_UNLESS
       (
        ::serialization::check_stream_state(ar)
-       , false
+       , {}
        , "failed to deserialize extra field. extra = "
        << epee::string_tools::buff_to_hex_nodelimer(epee::string_tools::blob_to_string(tx_extra))
        );
-    tx_extra.clear();
     std::string s = oss.str();
     tx_extra.reserve(s.size());
     std::copy(s.begin(), s.end(), std::back_inserter(tx_extra));
-    return true;
+    return tx_extra;
   }
 }

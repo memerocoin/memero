@@ -47,5 +47,5 @@ namespace cryptonote
   bool add_tx_pub_key_to_extra(std::vector<uint8_t>& tx_extra, const crypto::public_key& tx_pub_key);
 
   bool add_tx_output_keys_to_extra(std::vector<uint8_t>& tx_extra, const std::span<const crypto::public_key> output_pub_keys);
-  bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
+  std::optional<std::vector<uint8_t>> remove_field_from_tx_extra(const std::vector<uint8_t> tx_extra, const std::type_info& type);
 }

@@ -237,7 +237,10 @@ namespace cryptonote
     sources = tools::apply_permutation(permutation, sources);
 
     // if this is a single-destination transfer to a subaddress, we set the tx pubkey to R=s*D
-    remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_public_key));
+    const auto maybe_new_extra = remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_public_key));
+    if (maybe_new_extra) {
+      tx.extra = *maybe_new_extra;
+    }
 
     std::vector<crypto::public_key> output_public_keys;
 
@@ -279,7 +282,10 @@ namespace cryptonote
     }
     LOG_ERROR_AND_RETURN_UNLESS(output_public_keys.size() == output_secret_keys.size(), {}, "Internal error creating tx output public keys");
 
-    remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_output_public_keys));
+    const auto maybe_new_extra_2 = remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_output_public_keys));
+    if (maybe_new_extra) {
+      tx.extra = *maybe_new_extra_2;
+    }
 
     LOG_PRINT_L2("tx output pubkeys: ");
     for (size_t i = 0; i < output_public_keys.size(); ++i)
