@@ -70,14 +70,6 @@ namespace cryptonote
     END_SERIALIZE()
   };
 
-  struct txin_to_script
-  {
-  };
-
-  struct txin_to_scripthash
-  {
-  };
-
   struct txin_to_key
   {
     uint64_t amount;
@@ -92,8 +84,7 @@ namespace cryptonote
   };
 
 
-  typedef boost::variant<txin_gen, txin_to_script, txin_to_scripthash, txin_to_key> txin_v;
-
+  typedef boost::variant<txin_gen, txin_to_key> txin_v;
   typedef boost::variant<txout_to_key> txout_target_v;
 
   //typedef std::pair<uint64_t, txout> out_t;
@@ -314,22 +305,15 @@ namespace std {
   };
 }
 
-BLOB_SERIALIZER(cryptonote::txin_to_script);
-BLOB_SERIALIZER(cryptonote::txin_to_scripthash);
-
 BLOB_SERIALIZER(cryptonote::txout_to_key);
 BLOB_SERIALIZER(cryptonote::spend_view_public_keys);
 BLOB_SERIALIZER(cryptonote::spend_view_public_keys_unsafe);
 
 VARIANT_TAG(binary_archive, cryptonote::txin_gen, 0xff);
-VARIANT_TAG(binary_archive, cryptonote::txin_to_script, 0x0);
-VARIANT_TAG(binary_archive, cryptonote::txin_to_scripthash, 0x1);
 VARIANT_TAG(binary_archive, cryptonote::txin_to_key, 0x2);
 VARIANT_TAG(binary_archive, cryptonote::txout_to_key, 0x2);
 
 VARIANT_TAG(json_archive, cryptonote::txin_gen, "gen");
-VARIANT_TAG(json_archive, cryptonote::txin_to_script, "script");
-VARIANT_TAG(json_archive, cryptonote::txin_to_scripthash, "scripthash");
 VARIANT_TAG(json_archive, cryptonote::txin_to_key, "key");
 VARIANT_TAG(json_archive, cryptonote::txout_to_key, "key");
 VARIANT_TAG(json_archive, cryptonote::transaction, "tx");

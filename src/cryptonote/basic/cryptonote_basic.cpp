@@ -80,8 +80,6 @@ namespace cryptonote
     struct txin_signature_size_visitor : public boost::static_visitor<size_t>
     {
       size_t operator()(const txin_gen& txin) const{return 0;}
-      size_t operator()(const txin_to_script& txin) const{return 0;}
-      size_t operator()(const txin_to_scripthash& txin) const{return 0;}
       size_t operator()(const txin_to_key& txin) const {return txin.output_relative_offsets.size();}
     };
 

@@ -327,12 +327,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
     {
       WRITE_JSON_FIELD_FROM(dest, gen, input);
     }
-    void operator()(cryptonote::txin_to_script const& input) const
-    {
-    }
-    void operator()(cryptonote::txin_to_scripthash const& input) const
-    {
-    }
   };
   boost::apply_visitor(add_input{dest}, txin);
   dest.EndObject();
@@ -385,25 +379,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_gen& txin)
   }
 
   READ_JSON_VALUE_BY_KEY(val, txin.height, height);
-}
-
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_script txin)
-{
-}
-
-
-void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_script& txin)
-{
-}
-
-
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_scripthash txin)
-{
-}
-
-
-void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_scripthash& txin)
-{
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key txin)

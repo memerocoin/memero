@@ -2362,14 +2362,6 @@ bool Blockchain::check_for_double_spend(const transaction& tx, output_spend_publ
     {
       return true;
     }
-    bool operator()(const txin_to_script& tx) const
-    {
-      return false;
-    }
-    bool operator()(const txin_to_scripthash& tx) const
-    {
-      return false;
-    }
   };
 
   for (const txin_v& in : tx.vin)

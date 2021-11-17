@@ -207,12 +207,6 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_v& txin);
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_gen txin);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_gen& txin);
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_script txin);
-void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_script& txin);
-
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_scripthash txin);
-void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_scripthash& txin);
-
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key txin);
 void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin);
 
