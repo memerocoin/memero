@@ -1011,13 +1011,14 @@ namespace cryptonote
 
     // Fixing of high orphan issue for most pools
     // Thanks Boolberry!
-    block b;
-    if(!parse_and_validate_block_from_blob(blockblob, b))
+    const auto maybeBlock = maybe_block_from_blob(blockblob);
+    if(!maybeBlock)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_WRONG_BLOCKBLOB;
       error_resp.message = "Wrong block blob";
       return false;
     }
+    block b = *maybeBlock;
 
     // Fix from Boolberry neglects to check block
     // size, do that with the function below

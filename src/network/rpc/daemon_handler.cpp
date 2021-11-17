@@ -137,7 +137,8 @@ namespace rpc
     {
       cryptonote::rpc::block_with_transactions& bwt = res.blocks[block_count];
 
-      if (!parse_and_validate_block_from_blob(it->first.first, bwt.block))
+      const auto maybeBlock = maybe_block_from_blob(it->first.first);
+      if (!maybeBlock)
       {
         res.blocks.clear();
         res.output_indices.clear();
@@ -145,6 +146,8 @@ namespace rpc
         res.error_details = "failed retrieving a requested block";
         return;
       }
+
+      bwt.block = *maybeBlock;
 
       if (it->second.size() != bwt.block.tx_hashes.size())
       {

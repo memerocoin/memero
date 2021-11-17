@@ -294,22 +294,24 @@ void BlockchainDB::remove_transaction(const crypto::hash& tx_hash)
 
 block BlockchainDB::get_block_from_height(const uint64_t& height) const
 {
-  blobdata bd = get_block_blob_from_height(height);
-  block b;
-  if (!parse_and_validate_block_from_blob(bd, b))
+  const blobdata bd = get_block_blob_from_height(height);
+  const auto maybeBlock = maybe_block_from_blob(bd);
+  if (!maybeBlock) {
     throw DB_ERROR("Failed to parse block from blob retrieved from the db");
+  }
 
-  return b;
+  return *maybeBlock;
 }
 
 block BlockchainDB::get_block(const crypto::hash& h) const
 {
   blobdata bd = get_block_blob(h);
-  block b;
-  if (!parse_and_validate_block_from_blob(bd, b))
+  const auto maybeBlock = maybe_block_from_blob(bd);
+  if (!maybeBlock) {
     throw DB_ERROR("Failed to parse block from blob retrieved from the db");
+  }
 
-  return b;
+  return *maybeBlock;
 }
 
 bool BlockchainDB::get_tx(const crypto::hash& h, cryptonote::transaction &tx) const

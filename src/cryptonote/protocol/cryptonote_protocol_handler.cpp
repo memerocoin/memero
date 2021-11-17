@@ -373,7 +373,11 @@ namespace cryptonote
 
     int t_cryptonote_protocol_handler::handle_notify_new_block(int command, NOTIFY_NEW_BLOCK::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE_IF(crypto::hash hash; cryptonote::block b; bool ret = cryptonote::parse_and_validate_block_from_blob(arg.b.block, b, &hash);, ret, context << "Received NOTIFY_NEW_BLOCK " << hash << " (height " << arg.current_blockchain_height << ", " << arg.b.txs.size() << " txes)");
+    LOG_P2P_MESSAGE_IF
+      (
+       crypto::hash hash; cryptonote::block b; bool ret = cryptonote::parse_and_validate_block_from_blob(arg.b.block, b, hash);
+       , ret, context << "Received NOTIFY_NEW_BLOCK " << hash << " (height " << arg.current_blockchain_height << ", " << arg.b.txs.size() << " txes)"
+       );
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
     if(!is_synchronized()) // can happen if a peer connection goes to normal but another thread still hasn't finished adding queued blocks
@@ -445,7 +449,11 @@ namespace cryptonote
 
   int t_cryptonote_protocol_handler::handle_notify_new_fluffy_block(int command, NOTIFY_NEW_FLUFFY_BLOCK::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE_IF(crypto::hash hash; cryptonote::block b; bool ret = cryptonote::parse_and_validate_block_from_blob(arg.b.block, b, &hash);, ret, context << "Received NOTIFY_NEW_FLUFFY_BLOCK " << hash << " (height " << arg.current_blockchain_height << ", " << arg.b.txs.size() << " txes)");
+    LOG_P2P_MESSAGE_IF
+      (crypto::hash hash; cryptonote::block b; bool ret = cryptonote::parse_and_validate_block_from_blob(arg.b.block, b, hash);
+       , ret
+       , context << "Received NOTIFY_NEW_FLUFFY_BLOCK " << hash << " (height " << arg.current_blockchain_height << ", " << arg.b.txs.size() << " txes)"
+       );
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
     if(!is_synchronized()) // can happen if a peer connection goes to normal but another thread still hasn't finished adding queued blocks
@@ -456,10 +464,12 @@ namespace cryptonote
 
     m_core.pause_mine();
 
-    block new_block;
     transaction miner_tx;
-    if(parse_and_validate_block_from_blob(arg.b.block, new_block))
+
+    const auto maybeBlock = maybe_block_from_blob(arg.b.block);
+    if(maybeBlock)
     {
+      const block new_block = *maybeBlock;
       // This is a second notification, we must have asked for some missing tx
       if(!context.m_requested_objects.empty())
       {
@@ -1197,12 +1207,15 @@ namespace cryptonote
             ++m_sync_old_spans_downloaded;
             continue;
           }
-          if (!parse_and_validate_block_from_blob(blocks.front().block, new_block))
+
+          const auto maybeBlock = maybe_block_from_blob(blocks.front().block);
+          if (!maybeBlock)
           {
             LOG_ERROR(context << "Failed to parse block, but it should already have been parsed");
             m_block_queue.remove_spans(span_connection_id, start_height);
             continue;
           }
+          new_block = *maybeBlock;
           bool parent_known = m_core.have_block(new_block.prev_id);
           if (!parent_known)
           {

@@ -182,28 +182,22 @@ namespace cryptonote
   }
   
   //---------------------------------------------------------------
-  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash *block_hash)
+  std::optional<block> maybe_block_from_blob(const blobdata_ref b_blob)
   {
-    std::stringstream ss;
-    ss << b_blob;
-    binary_archive<false> ba(ss);
-    bool r = ::serialization::serialize(ba, b);
-    LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse block from blob");
-    if (block_hash)
-    {
-      *block_hash = get_block_hash(b);
-    }
-    return true;
-  }
-  //---------------------------------------------------------------
-  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b)
-  {
-    return parse_and_validate_block_from_blob(b_blob, b, NULL);
+    const block dummyBlock;
+    return maybe_from_blob(b_blob, dummyBlock);
   }
   //---------------------------------------------------------------
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash)
   {
-    return parse_and_validate_block_from_blob(b_blob, b, &block_hash);
+    const auto maybeBlock = maybe_block_from_blob(b_blob);
+    if (maybeBlock) {
+      b = *maybeBlock;
+      block_hash = get_block_hash(b);
+      return true;
+    } else {
+      return false;
+    }
   }
   //---------------------------------------------------------------
   void get_hash_stats(uint64_t &tx_hashes_calculated, uint64_t &tx_hashes_cached, uint64_t &block_hashes_calculated, uint64_t & block_hashes_cached)

@@ -2641,9 +2641,11 @@ bool BlockchainLMDB::get_blocks_from(uint64_t start_height, size_t min_count, si
     current_block.first.first.assign(reinterpret_cast<char*>(v.mv_data), v.mv_size);
     size += v.mv_size;
 
-    cryptonote::block b;
-    if (!parse_and_validate_block_from_blob(current_block.first.first, b))
+    const auto maybeBlock = maybe_block_from_blob(current_block.first.first);
+    if (!maybeBlock) {
       throw0(DB_ERROR("Invalid block"));
+    }
+    const cryptonote::block b = *maybeBlock;
     current_block.first.second = get_miner_tx_hash ? cryptonote::get_transaction_hash(b.miner_tx) : crypto::null_hash;
 
     // get the tx_id for the first tx (the first block's coinbase tx)
@@ -2972,10 +2974,14 @@ bool BlockchainLMDB::for_blocks_range(const uint64_t& h1, const uint64_t& h2, st
     if (ret)
       throw0(DB_ERROR("Failed to enumerate blocks"));
     uint64_t height = *(const uint64_t*)k.mv_data;
-    blobdata bd{reinterpret_cast<char*>(v.mv_data), v.mv_size};
-    block b;
-    if (!parse_and_validate_block_from_blob(bd, b))
+    const blobdata bd{reinterpret_cast<char*>(v.mv_data), v.mv_size};
+
+    const auto maybeBlock = maybe_block_from_blob(bd);
+    if (!maybeBlock) {
       throw0(DB_ERROR("Failed to parse block from blob retrieved from the db"));
+    }
+
+    const block b = *maybeBlock;
     const auto h = get_maybe_block_hash(b);
     if (!h)
         throw0(DB_ERROR("Failed to get block hash from blob retrieved from the db"));

@@ -55,8 +55,7 @@ namespace cryptonote
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
 
 
-  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash *block_hash);
-  bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b);
+  std::optional<block> maybe_block_from_blob(const blobdata_ref b_blob);
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash);
 
   std::optional<uint64_t> parse_amount(const std::string& str_amount);

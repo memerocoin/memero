@@ -642,11 +642,13 @@ bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orph
     if (r)
     {
       const auto& [data, blob] = *r;
-      if (!cryptonote::parse_and_validate_block_from_blob(blob, blk))
+      const auto maybeBlock = maybe_block_from_blob(blob);
+      if (!maybeBlock)
       {
         LOG_ERROR("Found block " << h << " in alt chain, but failed to parse it");
         throw std::runtime_error("Found block in alt chain, but failed to parse it");
       }
+      blk = *maybeBlock;
       if (orphan)
         *orphan = true;
       return true;
@@ -1390,7 +1392,9 @@ bool Blockchain::build_alt_chain(const crypto::hash &prev_id, std::list<block_ex
     {
       const auto& [data, blob] = *maybeAlt;
       block_extended_info bei;
-      LOG_ERROR_AND_RETURN_UNLESS(cryptonote::parse_and_validate_block_from_blob(blob, bei.bl), false, "Failed to parse alt block");
+      const auto maybeBlock = maybe_block_from_blob(blob);
+      LOG_ERROR_AND_RETURN_UNLESS(maybeBlock, false, "Failed to parse alt block");
+      bei.bl = *maybeBlock;
       bei.height = data.height;
       bei.block_cumulative_weight = data.cumulative_weight;
       bei.cumulative_difficulty = data.cumulative_difficulty_high;
@@ -1687,11 +1691,13 @@ bool Blockchain::get_blocks(uint64_t start_offset, size_t count, std::vector<std
   for(size_t i = start_offset; i < start_offset + count && i < height;i++)
   {
     blocks.push_back(std::make_pair(m_db->get_block_blob_from_height(i), block()));
-    if (!parse_and_validate_block_from_blob(blocks.back().first, blocks.back().second))
+    const auto maybeBlock = maybe_block_from_blob(blocks.back().first);
+    if (!maybeBlock)
     {
       LOG_ERROR("Invalid block");
       return false;
     }
+    blocks.back().second = *maybeBlock;
   }
   return true;
 }
@@ -1755,11 +1761,13 @@ bool Blockchain::get_alternative_blocks(std::vector<block>& blocks) const
       , const cryptonote::alt_block_data_t &data
       , const cryptonote::blobdata_ref blob
       ) {
-    cryptonote::block bl;
-    if (cryptonote::parse_and_validate_block_from_blob(blob, bl))
-      blocks.push_back(std::move(bl));
-    else
+    const auto maybeBlock = maybe_block_from_blob(blob);
+    if (maybeBlock) {
+      blocks.push_back(*maybeBlock);
+    }
+    else {
       LOG_ERROR("Failed to parse block from blob");
+    }
     return true;
   });
   return true;
@@ -1985,12 +1993,14 @@ bool Blockchain::get_blocks(const t_ids_container& block_ids, t_blocks_container
       if (m_db->block_exists(block_hash, &height))
       {
         blocks.push_back(std::make_pair(m_db->get_block_blob_from_height(height), block()));
-        if (!parse_and_validate_block_from_blob(blocks.back().first, blocks.back().second))
+        const auto maybeBlock = maybe_block_from_blob(blocks.back().first);
+        if (!maybeBlock)
         {
           LOG_ERROR("Invalid block: " << block_hash);
           blocks.pop_back();
           missed_bs.push_back(block_hash);
         }
+        blocks.back().second = *maybeBlock;
       }
       else
         missed_bs.push_back(block_hash);
@@ -3635,8 +3645,10 @@ std::vector<std::pair<Blockchain::block_extended_info,std::vector<crypto::hash>>
   m_db->for_all_alt_blocks([&alt_blocks](const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref blob) {
     cryptonote::block bl;
     block_extended_info bei;
-    if (cryptonote::parse_and_validate_block_from_blob(blob, bei.bl))
+    const auto maybeBlock = maybe_block_from_blob(blob);
+    if (maybeBlock)
     {
+      bei.bl = *maybeBlock;
       bei.height = data.height;
       bei.block_cumulative_weight = data.cumulative_weight;
       bei.cumulative_difficulty = data.cumulative_difficulty_high;
