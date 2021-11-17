@@ -1859,7 +1859,7 @@ cryptonote::blobdata BlockchainLMDB::get_txpool_tx_blob(const crypto::hash& txid
 enum { prune_mode_prune, prune_mode_update, prune_mode_check };
 
 
-bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref*)> f, bool include_blob, relay_category category) const
+bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref)> f, bool include_blob, relay_category category) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1885,7 +1885,7 @@ bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&,
     const txpool_tx_meta_t &meta = *(const txpool_tx_meta_t*)v.mv_data;
     if (!meta.matches(category))
       continue;
-    cryptonote::blobdata_ref bd;
+    cryptonote::blobdata bd;
     if (include_blob)
     {
       MDB_val b;
@@ -1897,7 +1897,7 @@ bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&,
       bd = {reinterpret_cast<const char*>(b.mv_data), b.mv_size};
     }
 
-    if (!f(txid, meta, &bd)) {
+    if (!f(txid, meta, bd)) {
       ret = false;
       break;
     }

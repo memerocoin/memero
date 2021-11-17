@@ -130,7 +130,7 @@ public:
   virtual bool get_txpool_tx_blob(const crypto::hash& txid, cryptonote::blobdata &bd, relay_category tx_category) const override { return false; }
   virtual uint64_t get_database_size() const override { return 0; }
   virtual cryptonote::blobdata get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const override { return ""; }
-  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const cryptonote::txpool_tx_meta_t&, const cryptonote::blobdata_ref*)>, bool include_blob = false, relay_category category = relay_category::broadcasted) const override { return false; }
+  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const cryptonote::txpool_tx_meta_t&, const cryptonote::blobdata_ref)>, bool include_blob = false, relay_category category = relay_category::broadcasted) const override { return false; }
 
   virtual void add_block( const cryptonote::block& blk
                         , size_t block_weight

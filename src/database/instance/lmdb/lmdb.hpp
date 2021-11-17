@@ -288,7 +288,7 @@ public:
   virtual uint64_t get_alt_block_count();
   virtual void drop_alt_blocks();
 
-  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref*)> f, bool include_blob = false, relay_category category = relay_category::broadcasted) const;
+  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref)> f, bool include_blob = false, relay_category category = relay_category::broadcasted) const;
 
   virtual bool for_all_output_spend_public_key_images(std::function<bool(const crypto::output_spend_public_key_image&)>) const;
   virtual bool for_blocks_range(const uint64_t& h1, const uint64_t& h2, std::function<bool(uint64_t, const crypto::hash&, const cryptonote::block&)>) const;
