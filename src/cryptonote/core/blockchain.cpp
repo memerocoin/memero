@@ -1749,19 +1749,19 @@ bool Blockchain::get_alternative_blocks(std::vector<block>& blocks) const
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   blocks.reserve(m_db->get_alt_block_count());
-  m_db->for_all_alt_blocks([&blocks](const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref *blob) {
-    if (!blob)
-    {
-      LOG_ERROR("No blob, but blobs were requested");
-      return false;
-    }
+  m_db->for_all_alt_blocks
+    ([&blocks]
+     (const crypto::hash &blkid
+      , const cryptonote::alt_block_data_t &data
+      , const cryptonote::blobdata_ref blob
+      ) {
     cryptonote::block bl;
-    if (cryptonote::parse_and_validate_block_from_blob(*blob, bl))
+    if (cryptonote::parse_and_validate_block_from_blob(blob, bl))
       blocks.push_back(std::move(bl));
     else
       LOG_ERROR("Failed to parse block from blob");
     return true;
-  }, true);
+  });
   return true;
 }
 //------------------------------------------------------------------
@@ -3632,15 +3632,10 @@ std::vector<std::pair<Blockchain::block_extended_info,std::vector<crypto::hash>>
 
   blocks_ext_by_hash alt_blocks;
   alt_blocks.reserve(m_db->get_alt_block_count());
-  m_db->for_all_alt_blocks([&alt_blocks](const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref *blob) {
-    if (!blob)
-    {
-      LOG_ERROR("No blob, but blobs were requested");
-      return false;
-    }
+  m_db->for_all_alt_blocks([&alt_blocks](const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref blob) {
     cryptonote::block bl;
     block_extended_info bei;
-    if (cryptonote::parse_and_validate_block_from_blob(*blob, bei.bl))
+    if (cryptonote::parse_and_validate_block_from_blob(blob, bei.bl))
     {
       bei.height = data.height;
       bei.block_cumulative_weight = data.cumulative_weight;
@@ -3652,7 +3647,7 @@ std::vector<std::pair<Blockchain::block_extended_info,std::vector<crypto::hash>>
     else
       LOG_ERROR("Failed to parse block from blob");
     return true;
-  }, true);
+  });
 
   for (const auto &i: alt_blocks)
   {

@@ -1908,7 +1908,7 @@ bool BlockchainLMDB::for_all_txpool_txes(std::function<bool(const crypto::hash&,
   return ret;
 }
 
-bool BlockchainLMDB::for_all_alt_blocks(std::function<bool(const crypto::hash&, const alt_block_data_t&, const cryptonote::blobdata_ref*)> f, bool include_blob) const
+bool BlockchainLMDB::for_all_alt_blocks(std::function<bool(const crypto::hash&, const alt_block_data_t&, const cryptonote::blobdata_ref)> f) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1932,14 +1932,11 @@ bool BlockchainLMDB::for_all_alt_blocks(std::function<bool(const crypto::hash&, 
     const crypto::hash &blkid = *(const crypto::hash*)k.mv_data;
     if (v.mv_size < sizeof(alt_block_data_t))
       throw0(DB_ERROR("alt_blocks record is too small"));
-    const alt_block_data_t *data = (const alt_block_data_t*)v.mv_data;
-    cryptonote::blobdata_ref bd;
-    if (include_blob)
-    {
-      bd = {reinterpret_cast<const char*>(v.mv_data) + sizeof(alt_block_data_t), v.mv_size - sizeof(alt_block_data_t)};
-    }
+    const alt_block_data_t* data = (const alt_block_data_t*)v.mv_data;
+    const cryptonote::blobdata_ref bd =
+      {reinterpret_cast<const char*>(v.mv_data) + sizeof(alt_block_data_t), v.mv_size - sizeof(alt_block_data_t)};
 
-    if (!f(blkid, *data, &bd)) {
+    if (!f(blkid, *data, bd)) {
       ret = false;
       break;
     }
