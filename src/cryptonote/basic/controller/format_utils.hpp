@@ -58,7 +58,6 @@ namespace cryptonote
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash *block_hash);
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b);
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash);
-  uint64_t get_inputs_money_amount(const transaction& tx);
 
   bool parse_amount(uint64_t& amount, const std::string& str_amount);
 

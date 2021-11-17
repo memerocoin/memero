@@ -197,4 +197,6 @@ namespace cryptonote
   std::optional<blobdata> maybe_block_to_blob(const block& b);
   blobdata tx_to_blob(const transaction& b);
   std::optional<blobdata> maybe_tx_to_blob(const transaction& tx);
+
+  uint64_t get_inputs_money_amount(const transaction& tx);
 }

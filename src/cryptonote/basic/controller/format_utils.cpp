@@ -90,21 +90,6 @@ namespace cryptonote
     return epee::string_tools::get_xtype_from_string(amount, str_amount);
   }
   //---------------------------------------------------------------
-  uint64_t get_inputs_money_amount(const transaction& tx)
-  {
-    return std::transform_reduce
-      (
-       tx.vin.begin()
-       , tx.vin.end()
-       , 0
-       , std::plus()
-       , [](const auto& x) -> uint64_t {
-         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, 0);
-         return tokey_in.amount;
-         }
-       );
-  }
-  //---------------------------------------------------------------
   void set_default_decimal_point(unsigned int decimal_point)
   {
     switch (decimal_point)
