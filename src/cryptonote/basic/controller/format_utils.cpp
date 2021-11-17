@@ -55,44 +55,54 @@ static std::atomic<uint64_t> block_hashes_cached_count(0);
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  bool expand_transaction_1(transaction &tx, bool base_only)
+  std::optional<transaction> expand_transaction(const transaction &tx_in, bool base_only)
   {
-    if (tx.version < 2) return true;
-    if (is_coinbase(tx)) return true;
+    transaction tx = tx_in;
+    if (tx.version < 2) return tx;
+    if (is_coinbase(tx)) return tx;
 
     rct::rctData &rv = tx.ringct;
     if (rv.type == rct::RCTTypeNull)
-      return true;
+      return tx;
 
     if (rv.output_commits.size() != tx.vout.size())
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad output_commits size in tx " << get_transaction_hash(tx));
-      return false;
+      LOG_PRINT_L1
+        ("Failed to parse transaction from blob, bad output_commits size in tx " << get_transaction_hash(tx));
+      return {};
     }
 
-    if (base_only) return true;
+    if (base_only) return tx;
 
     if (rv.p.bulletproofs.size() != 1)
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs size in tx " << get_transaction_hash(tx));
-      return false;
+      LOG_PRINT_L1
+        ("Failed to parse transaction from blob, bad bulletproofs size in tx " << get_transaction_hash(tx));
+      return {};
     }
 
     if (rv.p.bulletproofs[0].L.size() < 6)
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs L size in tx " << get_transaction_hash(tx));
-      return false;
+      LOG_PRINT_L1
+        ("Failed to parse transaction from blob, bad bulletproofs L size in tx " << get_transaction_hash(tx));
+      return {};
     }
 
     const size_t max_outputs = 1 << (rv.p.bulletproofs[0].L.size() - 6);
     if (max_outputs < tx.vout.size())
     {
-      LOG_PRINT_L1("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << get_transaction_hash(tx));
-      return false;
+      LOG_PRINT_L1
+        ("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << get_transaction_hash(tx));
+      return {};
     }
 
     const size_t n_amounts = tx.vout.size();
-    LOG_ERROR_AND_RETURN_UNLESS(n_amounts == rv.output_commits.size(), false, "Internal error filling out V");
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       n_amounts == rv.output_commits.size()
+       , {}
+       , "Internal error filling out V"
+       );
 
     std::transform
       (
@@ -104,7 +114,7 @@ namespace cryptonote
        }
        );
 
-    return true;
+    return tx;
   }
 
   //---------------------------------------------------------------
@@ -115,7 +125,9 @@ namespace cryptonote
     binary_archive<false> ba(ss);
     bool r = ::serialization::serialize(ba, tx);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
-    LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
+    const auto maybeTx = expand_transaction(tx, false);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, false, "Failed to expand transaction data");
+    tx = *maybeTx;
     return true;
   }
 
@@ -125,9 +137,9 @@ namespace cryptonote
     const transaction dummyTx;
     const auto maybeTx = maybe_from_blob(tx_blob, dummyTx);
     LOG_ERROR_AND_RETURN_UNLESS(maybeTx, {}, "Failed to parse transaction from blob");
-    transaction tx = *maybeTx;
-    LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, false), {}, "Failed to expand transaction data");
-    return tx;
+    const auto maybeExpandedTx = expand_transaction(*maybeTx, false);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, {}, "Failed to expand transaction data");
+    return *maybeExpandedTx;
   }
 
   //---------------------------------------------------------------
@@ -138,7 +150,9 @@ namespace cryptonote
     binary_archive<false> ba(ss);
     bool r = tx.serialize_base(ba);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
-    LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, true), false, "Failed to expand transaction data");
+    const auto maybeTx = expand_transaction(tx, false);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, false, "Failed to expand transaction data");
+    tx = *maybeTx;
     return true;
   }
   //---------------------------------------------------------------
@@ -159,7 +173,10 @@ namespace cryptonote
     binary_archive<false> ba(ss);
     bool r = ::serialization::serialize(ba, tx);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction from blob");
-    LOG_ERROR_AND_RETURN_UNLESS(expand_transaction_1(tx, false), false, "Failed to expand transaction data");
+
+    const auto maybeTx = expand_transaction(tx, false);
+    LOG_ERROR_AND_RETURN_UNLESS(maybeTx, false, "Failed to expand transaction data");
+    tx = *maybeTx;
     
     //TODO: validate tx
 
