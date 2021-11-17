@@ -127,14 +127,15 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  bool parse_and_validate_tx_prefix_from_blob(const blobdata_ref tx_blob, transaction_prefix& tx)
+  std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const blobdata_ref tx_blob)
   {
+    transaction_prefix tx_prefix;
     std::stringstream ss;
     ss << tx_blob;
     binary_archive<false> ba(ss);
-    bool r = ::serialization::serialize_noeof(ba, tx);
-    LOG_ERROR_AND_RETURN_UNLESS(r, false, "Failed to parse transaction prefix from blob");
-    return true;
+    const bool r = ::serialization::serialize_noeof(ba, tx_prefix);
+    LOG_ERROR_AND_RETURN_UNLESS(r, {}, "Failed to parse transaction prefix from blob");
+    return tx_prefix;
   }
   //---------------------------------------------------------------
   std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const blobdata_ref tx_blob)

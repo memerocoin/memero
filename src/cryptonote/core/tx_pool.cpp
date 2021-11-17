@@ -353,13 +353,14 @@ namespace cryptonote
           --it;
           continue;
         }
-        cryptonote::blobdata txblob = m_blockchain.get_txpool_tx_blob(txid, relay_category::all);
-        cryptonote::transaction_prefix tx;
-        if (!parse_and_validate_tx_prefix_from_blob(txblob, tx))
+        const cryptonote::blobdata txblob = m_blockchain.get_txpool_tx_blob(txid, relay_category::all);
+        const auto maybeTxPrefix = maybe_tx_prefix_from_blob(txblob);
+        if (!maybeTxPrefix)
         {
           LOG_ERROR("Failed to parse tx from txpool");
           return;
         }
+        const cryptonote::transaction_prefix tx = *maybeTxPrefix;
         // remove first, in case this throws, so key images aren't removed
         LOG_INFO("Pruning tx " << txid << " from txpool: weight: " << meta.weight << ", fee/byte: " << it->first.first);
         m_blockchain.remove_txpool_tx(txid);
@@ -634,15 +635,15 @@ namespace cryptonote
         const crypto::hash &txid = entry.first;
         try
         {
-          cryptonote::blobdata bd = m_blockchain.get_txpool_tx_blob(txid, relay_category::all);
-          cryptonote::transaction_prefix tx;
-          if (!parse_and_validate_tx_prefix_from_blob(bd, tx))
+          const cryptonote::blobdata bd = m_blockchain.get_txpool_tx_blob(txid, relay_category::all);
+          const auto maybeTxPrefix = maybe_tx_prefix_from_blob(bd);
+          if (!maybeTxPrefix)
           {
             LOG_ERROR("Failed to parse tx from txpool");
-            // continue
           }
           else
           {
+            const cryptonote::transaction_prefix tx = *maybeTxPrefix;
             // remove first, so we only remove key images if the tx removal succeeds
             m_blockchain.remove_txpool_tx(txid);
             m_txpool_weight -= entry.second;
@@ -1431,13 +1432,14 @@ namespace cryptonote
       bool r = m_blockchain.for_all_txpool_txes([this, &remove, kept](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::blobdata_ref *bd) {
         if (!!kept != !!meta.kept_by_block)
           return true;
-        cryptonote::transaction_prefix tx;
-        if (!parse_and_validate_tx_prefix_from_blob(*bd, tx))
+        const auto maybeTxPrefix = maybe_tx_prefix_from_blob(*bd);
+        if (!maybeTxPrefix)
         {
           LOG_WARNING("Failed to parse tx from txpool, removing");
           remove.push_back(txid);
           return true;
         }
+        const cryptonote::transaction_prefix tx = *maybeTxPrefix;
         if (!insert_output_spend_public_key_images(tx, txid, meta.get_relay_method()))
         {
           LOG_FATAL("Failed to insert key images from txpool tx");
