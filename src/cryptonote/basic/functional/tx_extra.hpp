@@ -75,4 +75,7 @@ namespace cryptonote
 
   std::optional<std::vector<crypto::public_key>>
   get_tx_output_public_keys_from_extra(const transaction_prefix& tx);
+
+  std::optional<std::vector<uint8_t>> remove_field_from_tx_extra
+  (const std::vector<uint8_t> tx_extra, const std::type_info& type);
 }
