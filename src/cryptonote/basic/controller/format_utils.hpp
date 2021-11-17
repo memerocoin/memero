@@ -86,6 +86,18 @@ namespace cryptonote
     return r;
   }
 
+  template<class t_object>
+  std::optional<t_object> maybe_from_blob(const blobdata_ref b_blob)
+  {
+    t_object x;
+    const bool r = serialization_from_blob(x);
+    if (r) {
+      return x;
+    } else {
+      return {};
+    }
+  }
+
   //---------------------------------------------------------------
   blobdata block_to_blob(const block& b);
   bool block_to_blob(const block& b, blobdata& b_blob);
