@@ -115,6 +115,22 @@ namespace cryptonote
     }
     return *b;
   }
+
+
+  template<class t_object>
+  std::optional<t_object> maybe_from_blob(const blobdata_ref b_blob)
+  {
+    t_object x;
+    std::stringstream ss;
+    ss << b_blob;
+    binary_archive<false> ba(ss);
+    const bool r = ::serialization::serialize(ba, x);
+    if (r) {
+      return x;
+    } else {
+      return {};
+    }
+  }
   //---------------------------------------------------------------
   template<class t_object>
   crypto::hash get_object_hash(const t_object& o)

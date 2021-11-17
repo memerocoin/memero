@@ -75,28 +75,6 @@ namespace cryptonote
   std::string print_money(uint64_t amount, unsigned int decimal_point = -1);
   std::string print_money_128(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point = -1);
   std::string print_money(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point = -1);
-  //---------------------------------------------------------------
-  template<class t_object>
-  bool serialize_from_blob(t_object& to, const blobdata& b_blob)
-  {
-    std::stringstream ss;
-    ss << b_blob;
-    binary_archive<false> ba(ss);
-    bool r = ::serialization::serialize(ba, to);
-    return r;
-  }
-
-  template<class t_object>
-  std::optional<t_object> maybe_from_blob(const blobdata_ref b_blob)
-  {
-    t_object x;
-    const bool r = serialization_from_blob(x);
-    if (r) {
-      return x;
-    } else {
-      return {};
-    }
-  }
 
   //---------------------------------------------------------------
   blobdata block_to_blob(const block& b);
