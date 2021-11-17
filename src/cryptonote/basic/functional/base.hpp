@@ -232,6 +232,8 @@ namespace cryptonote
     transaction miner_tx;
     std::vector<crypto::hash> tx_hashes;
 
+    block() = default;
+
     // hash cash
 
     BEGIN_SERIALIZE_OBJECT()
