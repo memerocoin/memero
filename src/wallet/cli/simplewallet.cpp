@@ -1882,8 +1882,13 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     else if (i + 1 < local_args.size())
     {
       r = cryptonote::get_account_address_from_str(info, m_wallet->nettype(), local_args[i]);
-      bool ok = cryptonote::parse_amount(de.amount, local_args[i + 1]);
-      if(!ok || 0 == de.amount)
+      const auto maybe_amount = cryptonote::parse_amount(local_args[i + 1]);
+      if(!maybe_amount) {
+        fail_msg_writer() << ("failed to parse amount: ") << local_args[i] << ' ' << local_args[i + 1];
+      }
+      de.amount = *maybe_amount;
+
+      if(0 == de.amount)
       {
         fail_msg_writer() << ("amount is wrong: ") << local_args[i] << ' ' << local_args[i + 1] <<
           ", " << ("expected number from 0 to ") << print_money(std::numeric_limits<uint64_t>::max());
@@ -2527,19 +2532,23 @@ bool simple_wallet::utxos(const std::vector<std::string> &args_)
   uint64_t max_amount = std::numeric_limits<uint64_t>::max();
   if (local_args.size() > 0)
   {
-    if (!cryptonote::parse_amount(min_amount, local_args[0]))
+    const auto maybe_min_amount = cryptonote::parse_amount(local_args[0]);
+    if (!maybe_min_amount)
     {
       fail_msg_writer() << ("amount is wrong: ") << local_args[0];
       return true;
     }
+    min_amount = *maybe_min_amount;
     local_args.erase(local_args.begin());
     if (local_args.size() > 0)
     {
-      if (!cryptonote::parse_amount(max_amount, local_args[0]))
+      const auto maybe_max_amount = cryptonote::parse_amount(local_args[0]);
+      if (!maybe_max_amount)
       {
         fail_msg_writer() << ("amount is wrong: ") << local_args[0];
         return true;
       }
+      max_amount = *maybe_max_amount;
       local_args.erase(local_args.begin());
     }
     if (min_amount > max_amount)

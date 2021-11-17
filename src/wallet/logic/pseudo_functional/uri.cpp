@@ -138,12 +138,13 @@ namespace uri {
 
         if (kv[0] == "tx_amount")
           {
-            amount = 0;
-            if (!cryptonote::parse_amount(amount, kv[1]))
-              {
-                error = std::string("URI has invalid amount: ") + kv[1];
-                return false;
-              }
+            const auto maybe_amount = cryptonote::parse_amount(kv[1]);
+            if (!maybe_amount)
+            {
+              error = std::string("URI has invalid amount: ") + kv[1];
+              return false;
+            }
+            amount = *maybe_amount;
           }
         else if (kv[0] == "recipient_name")
           {

@@ -54,9 +54,9 @@ static std::atomic<uint64_t> block_hashes_cached_count(0);
 
 namespace cryptonote
 {
-  //---------------------------------------------------------------
-  bool parse_amount(uint64_t& amount, const std::string& str_amount_)
+  std::optional<uint64_t> parse_amount(const std::string& str_amount_)
   {
+    uint64_t amount;
     std::string str_amount = str_amount_;
     boost::algorithm::trim(str_amount);
 
@@ -71,7 +71,7 @@ namespace cryptonote
         --fraction_size;
       }
       if (default_decimal_point < fraction_size)
-        return false;
+        return {};
       str_amount.erase(point_index, 1);
     }
     else
@@ -80,14 +80,19 @@ namespace cryptonote
     }
 
     if (str_amount.empty())
-      return false;
+      return {};
 
     if (fraction_size < default_decimal_point)
     {
       str_amount.append(default_decimal_point - fraction_size, '0');
     }
 
-    return epee::string_tools::get_xtype_from_string(amount, str_amount);
+    const auto r = epee::string_tools::get_xtype_from_string(amount, str_amount);
+    if (r) {
+      return amount;
+    } else {
+      return {};
+    }
   }
   //---------------------------------------------------------------
   void set_default_decimal_point(unsigned int decimal_point)

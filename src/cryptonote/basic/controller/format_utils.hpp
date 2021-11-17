@@ -59,10 +59,11 @@ namespace cryptonote
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b);
   bool parse_and_validate_block_from_blob(const blobdata_ref b_blob, block& b, crypto::hash &block_hash);
 
-  bool parse_amount(uint64_t& amount, const std::string& str_amount);
+  std::optional<uint64_t> parse_amount(const std::string& str_amount);
 
   void set_default_decimal_point(unsigned int decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT);
   unsigned int get_default_decimal_point();
+
   std::string get_unit(unsigned int decimal_point = -1);
   std::string print_money_64(uint64_t amount, unsigned int decimal_point = -1);
   std::string print_money(uint64_t amount, unsigned int decimal_point = -1);
