@@ -91,7 +91,8 @@ namespace rct {
   using amount_t = uint64_t;
 
   // CLSAG signature
-  struct clsag_unsafe {
+  struct clsag_unsafe
+  {
     std::vector<crypto::ec_scalar_unnormalized> s; // scalars
     crypto::ec_scalar_unnormalized c1;
 
@@ -106,7 +107,8 @@ namespace rct {
     END_SERIALIZE()
   };
 
-  struct clsag {
+  struct clsag
+  {
     rct_scalarV s; // scalars
     rct_scalar c1;
     rct_point signer_pk_image; // signing key image
@@ -183,7 +185,8 @@ namespace rct {
     RCTTypeCLSAG = 5,
   };
 
-  struct rctDataBasic {
+  struct rctDataBasic
+  {
     uint8_t type = RCTTypeNull;
     crypto::hash message;
     output_public_dataM decoys; //the set of all pubkeys / copy
@@ -244,7 +247,8 @@ namespace rct {
     }
   };
 
-  struct rctDataPrunable {
+  struct rctDataPrunable
+  {
     std::vector<Bulletproof_unsafe> bulletproofs;
     std::vector<clsag_unsafe> CLSAGs;
 
@@ -349,7 +353,8 @@ namespace rct {
     }
   };
 
-  struct rctData: public rctDataBasic {
+  struct rctData: public rctDataBasic
+  {
     rctDataPrunable p;
   };
 
