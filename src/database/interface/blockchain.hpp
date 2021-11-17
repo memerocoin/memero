@@ -1510,7 +1510,7 @@ public:
    *
    * @return true if the block was found in the alternative blocks list, false otherwise
    */
-  virtual bool get_alt_block(const crypto::hash &blkid, alt_block_data_t *data, cryptonote::blobdata *blob) = 0;
+  virtual std::optional<std::pair <cryptonote::alt_block_data_t, cryptonote::blobdata>> get_alt_block(const crypto::hash &blkid) = 0;
 
   /**
    * @brief remove an alternative block
