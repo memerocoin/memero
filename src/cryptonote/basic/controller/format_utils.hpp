@@ -38,10 +38,6 @@
 
 namespace cryptonote
 {
-  //---------------------------------------------------------------
-  std::optional<std::pair<block, crypto::hash>>
-  maybe_block_and_hash_from_blob(const string_blob_view b_blob);
-
   std::optional<uint64_t> parse_amount(const std::string& str_amount);
 
   void set_default_decimal_point(unsigned int decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT);

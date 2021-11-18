@@ -183,17 +183,4 @@ namespace cryptonote
     return str;
   }
   
-  //---------------------------------------------------------------
-  std::optional<std::pair<block, crypto::hash>>
-  maybe_block_and_hash_from_blob(const string_blob_view b_blob)
-  {
-    const auto maybeBlock = maybe_block_from_blob(b_blob);
-    if (maybeBlock) {
-      const auto& b = *maybeBlock;
-      const auto block_hash = get_block_hash(b);
-      return {{b, block_hash}};
-    } else {
-      return {};
-    }
-  }
 }
