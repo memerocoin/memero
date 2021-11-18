@@ -167,7 +167,7 @@ namespace cryptonote
       //tx_output_ecdh_shared_secret recv_tx_output_shared_secret;
       in_contexts.push_back(input_generation_context_data());
       const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.output_spend_pk);
-      const auto r = derive_with_internal_checking_public_key_image_helper
+      const auto r = derive_with_internal_checking_output_spend_key_pair_and_key_image
         (
          sender_account_keys
          , subaddresses

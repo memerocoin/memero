@@ -249,7 +249,7 @@ namespace wallet {
     type::tx::tx_scan_info_t tx_scan_info = tx_scan_info_in;
 
     {
-      const auto r = cryptonote::derive_public_key_image_helper
+      const auto r = cryptonote::derive_output_spend_key_pair_and_key_image
         (
          keys
         , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_spend_public_key
