@@ -77,7 +77,7 @@ namespace cryptonote
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key tx_out_key
-   , const std::optional<crypto::ecdh_shared_secret> tx_output_shared_secret
+   , const crypto::ecdh_shared_secret tx_output_shared_secret
    , const size_t output_index
    );
 

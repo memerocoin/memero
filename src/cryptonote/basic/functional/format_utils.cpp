@@ -79,10 +79,17 @@ namespace cryptonote
       : std::nullopt
       ;
 
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       output_shared_secret
+       , {}
+       , "failed to generate a valid output shared secret"
+       );
+
     std::optional<subaddress_receive_info> subaddr_recv_info =
       check_output_for_subaddresses
       (
-       subaddresses, out_key, output_shared_secret, real_output_index
+       subaddresses, out_key, *output_shared_secret, real_output_index
        );
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -139,24 +146,21 @@ namespace cryptonote
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key tx_output_public_key
-   , const std::optional<crypto::ecdh_shared_secret> tx_output_shared_secret
+   , const crypto::ecdh_shared_secret tx_output_shared_secret
    , const size_t output_index
    )
   {
     // try additional tx pubkeys if available
-    if (tx_output_shared_secret)
-    {
-      const auto spend_pk_1 =
-        crypto::compute_subaddress_spend_pk_from_output_spend_pk
-        (*tx_output_shared_secret, output_index, tx_output_public_key);
+    const auto spend_pk_1 =
+      crypto::compute_subaddress_spend_pk_from_output_spend_pk
+      (tx_output_shared_secret, output_index, tx_output_public_key);
 
-      if (spend_pk_1) {
-        const auto found_1 = subaddresses.find(*spend_pk_1);
+    if (spend_pk_1) {
+      const auto found_1 = subaddresses.find(*spend_pk_1);
 
-        if (found_1 != subaddresses.end()) {
-          // LOG_FATAL("FOUND for out pub key at index: " << output_index);
-          return subaddress_receive_info{ found_1->second, *tx_output_shared_secret};
-        }
+      if (found_1 != subaddresses.end()) {
+        // LOG_FATAL("FOUND for out pub key at index: " << output_index);
+        return subaddress_receive_info{ found_1->second, tx_output_shared_secret};
       }
     }
     return {};
