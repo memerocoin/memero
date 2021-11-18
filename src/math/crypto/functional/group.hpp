@@ -58,7 +58,7 @@ namespace crypto {
 
   struct ec_point_unsafe : crypto_data {
     bool operator==(const ec_point_unsafe &x) const noexcept {
-      return 0 == crypto_verify_32(data.data(), x.data.data());
+      return data == x.data;
     }
   };
 
