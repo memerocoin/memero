@@ -173,13 +173,6 @@ namespace rct {
   size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);
   size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);
 
-  //A container to hold all signatures necessary for RingCT
-  // rangeSigs holds all the rangeproof data of a transaction
-  // MG holds the MLSAG signature of a transaction
-  // decoys holds all the public keypairs (P, C) for a transaction
-  // ecdh holds an encoded blinding_factor / amount to be passed to each receiver
-  // output_commits contains public keypairs which are destinations (P, C),
-  //  P = address, C = commitment to amount
   enum {
     RCTTypeNull = 0,
     RCTTypeCLSAG = 5,
@@ -189,15 +182,13 @@ namespace rct {
   {
     uint8_t type = RCTTypeNull;
     crypto::hash message;
-    output_public_dataM decoys; //the set of all pubkeys / copy
-    //pairs that you mix with
-    // rct_pointV unusedPoints;
+    output_public_dataM decoys;
     std::vector<ecdh_encrypted_data_t> ecdh_encrypted_data;
 
     // WARNING, needs checking when parsing
     std::vector<output_commit> output_commits;
 
-    amount_t fee; // contains b
+    amount_t fee;
 
     template<bool W, template <bool> class Archive>
     bool serialize_rctsig_base(Archive<W> &ar, size_t inputs, size_t outputs)

@@ -400,19 +400,26 @@ namespace rct {
        , [](const auto x) -> output_public_dataV { return x.decoys; }
        );
 
-    const rctData preRctSig =
-      {
-        RCTTypeCLSAG
+    const rctDataBasic preRctSigBasic = 
+      { RCTTypeCLSAG
         , message
         , decoys
         , ecdh
         , output_commits
         , fee
-        , {
-          {toUnsafeBulletproof(proof)}
-          , {}
-          , pseudo_input_commits
-        }
+      };
+
+    const rctDataPrunable preRctSigPrunable =
+      {
+        { toUnsafeBulletproof(proof) }
+        , {}
+        , pseudo_input_commits
+      };
+
+    const rctData preRctSig =
+      {
+        preRctSigBasic
+        , preRctSigPrunable
       };
 
     const auto maybeMessage = get_ring_signature_message(preRctSig);

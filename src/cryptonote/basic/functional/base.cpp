@@ -42,7 +42,7 @@ namespace cryptonote
     const auto view_pk = maybeSafePoint(x.m_view_public_key_unsafe);
 
     if (spend_pk && view_pk) {
-      return {{*spend_pk, *view_pk}};
+      return {{{*spend_pk}, {*view_pk}}};
     }
     else {
       return {};

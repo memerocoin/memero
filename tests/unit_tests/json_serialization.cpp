@@ -62,7 +62,7 @@ namespace test
 
                 actual_sources.push_back(
                     {
-                      {}, 0, key_field.pub_key_unsafe, {}
+                      {}, 0, {key_field.pub_key_unsafe}, {}
                      , std::size_t(input.index()), input.value().amount, true, rct::s_one
                     }
                 );
