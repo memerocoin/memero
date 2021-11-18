@@ -133,8 +133,11 @@ namespace cryptonote
     }
   }
   //---------------------------------------------------------------
-  static void insert_money_decimal_point(std::string &s, unsigned int decimal_point)
+  std::string insert_money_decimal_point(const std::string x, const unsigned int decimal_point_in)
   {
+    std::string s = x;
+    unsigned int decimal_point = decimal_point_in;
+
     if (decimal_point == (unsigned int)-1)
       decimal_point = default_decimal_point;
     if(s.size() < decimal_point+1)
@@ -143,13 +146,14 @@ namespace cryptonote
     }
     if (decimal_point > 0)
       s.insert(s.size() - decimal_point, ".");
+
+    return s;
   }
   //---------------------------------------------------------------
   std::string print_money_64(uint64_t amount, unsigned int decimal_point)
   {
     std::string s = std::to_string(amount);
-    insert_money_decimal_point(s, decimal_point);
-    return s;
+    return insert_money_decimal_point(s, decimal_point);
   }
   //---------------------------------------------------------------
   std::string print_money(uint64_t amount, unsigned int decimal_point)
@@ -165,8 +169,7 @@ namespace cryptonote
     std::stringstream ss;
     ss << amount;
     std::string s = ss.str();
-    insert_money_decimal_point(s, decimal_point);
-    return s;
+    return insert_money_decimal_point(s, decimal_point);
   }
   //---------------------------------------------------------------
   std::string print_money(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point)
