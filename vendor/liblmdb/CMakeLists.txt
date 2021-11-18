@@ -35,10 +35,23 @@ add_library(lmdb
   midl.c
   )
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
-set_source_files_properties("mdb.c" PROPERTIES COMPILE_FLAGS
-"-Wno-unused-but-set-variable -Wno-stringop-overflow")
+  set_source_files_properties(
+    "mdb.c"
+    PROPERTIES
+    COMPILE_FLAGS
+    "-Wno-unused-but-set-variable"
+    )
+
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+
+  set_source_files_properties(
+    "mdb.c"
+    PROPERTIES
+    COMPILE_FLAGS
+    "-Wno-unused-but-set-variable -Wno-stringop-overflow"
+    )
 
 endif()
 
