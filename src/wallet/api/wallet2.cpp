@@ -1089,7 +1089,11 @@ void wallet2::get_short_chain_history(std::list<crypto::hash>& ids) const
 //----------------------------------------------------------------------------------------------------
 void wallet2::parse_block_round(const cryptonote::string_blob &blob, cryptonote::block &bl, crypto::hash &bl_id, bool &error) const
 {
-  error = !cryptonote::parse_and_validate_block_from_blob(blob, bl, bl_id);
+  const auto r = maybe_block_and_hash_from_blob(blob);
+  if (r) {
+    std::tie(bl, bl_id) = *r;
+  }
+  error = !r;
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, const std::list<crypto::hash> &short_chain_history, std::vector<cryptonote::block_complete_entry> &blocks, std::vector<cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::block_output_indices> &o_indices, uint64_t &current_height)

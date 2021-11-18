@@ -3296,8 +3296,12 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
       block &block = blocks[blockidx];
       crypto::hash block_hash;
 
-      if (!parse_and_validate_block_from_blob(entry.block, block, block_hash))
+      const auto r = maybe_block_and_hash_from_blob(entry.block);
+      if (!r) {
         return false;
+      }
+
+      std::tie(block, block_hash) = *r;
 
       // check first block and skip all blocks if its not chained properly
       if (blockidx == 0)

@@ -1044,19 +1044,20 @@ namespace cryptonote
     if (((size_t)-1) <= 0xffffffff && block_blob.size() >= 0x3fffffff)
       LOG_WARNING("This block's size is " << block_blob.size() << ", closing on the 32 bit limit");
 
-    block lb;
     if (!b)
     {
-      crypto::hash block_hash;
-      if(!parse_and_validate_block_from_blob(block_blob, lb, block_hash))
+      const auto r = maybe_block_from_blob(block_blob);
+      if(!r)
       {
         LOG_PRINT_L1("Failed to parse and validate new block");
         bvc.m_verifivation_failed = true;
         return false;
       }
-      b = &lb;
+      add_new_block(*r, bvc);
+    } else {
+      add_new_block(*b, bvc);
     }
-    add_new_block(*b, bvc);
+
     if(update_miner_blocktemplate && bvc.m_added_to_main_chain)
        update_miner_block_template();
     return true;

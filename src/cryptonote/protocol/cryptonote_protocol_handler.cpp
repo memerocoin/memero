@@ -375,11 +375,21 @@ namespace cryptonote
 
     int t_cryptonote_protocol_handler::handle_notify_new_block(int command, NOTIFY_NEW_BLOCK::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE_IF
-      (
-       crypto::hash hash; cryptonote::block b; bool ret = cryptonote::parse_and_validate_block_from_blob(arg.b.block, b, hash);
-       , ret, context << "Received NOTIFY_NEW_BLOCK " << hash << " (height " << arg.current_blockchain_height << ", " << arg.b.txs.size() << " txes)"
-       );
+    const auto r = maybe_block_and_hash_from_blob(arg.b.block);
+    if (r) {
+      const auto& [block, hash] = *r;
+      LOG_P2P_MESSAGE
+        (
+         context
+         << "Received NOTIFY_NEW_BLOCK "
+         << hash
+         << " (height "
+         << arg.current_blockchain_height
+         << ", "
+         << arg.b.txs.size()
+         << " txes)"
+         );
+    }
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
     if(!is_synchronized()) // can happen if a peer connection goes to normal but another thread still hasn't finished adding queued blocks
@@ -451,11 +461,22 @@ namespace cryptonote
 
   int t_cryptonote_protocol_handler::handle_notify_new_fluffy_block(int command, NOTIFY_NEW_FLUFFY_BLOCK::request& arg, cryptonote_connection_context& context)
   {
-    LOG_P2P_MESSAGE_IF
-      (crypto::hash hash; cryptonote::block b; bool ret = cryptonote::parse_and_validate_block_from_blob(arg.b.block, b, hash);
-       , ret
-       , context << "Received NOTIFY_NEW_FLUFFY_BLOCK " << hash << " (height " << arg.current_blockchain_height << ", " << arg.b.txs.size() << " txes)"
-       );
+    const auto r = maybe_block_and_hash_from_blob(arg.b.block);
+    if (r) {
+      const auto& [block, hash] = *r;
+      LOG_P2P_MESSAGE
+        (
+         context
+         << "Received NOTIFY_NEW_FLUFFY_BLOCK "
+         << hash
+         << " (height "
+         << arg.current_blockchain_height
+         << ", "
+         << arg.b.txs.size()
+         << " txes)"
+         );
+    }
+
     if(context.m_state != cryptonote_connection_context::state_normal)
       return 1;
     if(!is_synchronized()) // can happen if a peer connection goes to normal but another thread still hasn't finished adding queued blocks
@@ -1033,15 +1054,16 @@ namespace cryptonote
         return 1;
       }
 
-      crypto::hash block_hash;
-      if(!parse_and_validate_block_from_blob(block_entry.block, b, block_hash))
+      const auto r = maybe_block_and_hash_from_blob(block_entry.block);
+      if(!r)
       {
         LOG_ERROR_CCONTEXT("sent wrong block: failed to parse and validate block: "
-          << epee::string_tools::buff_to_hex_nodelimer(block_entry.block) << ", dropping connection");
+                            << epee::string_tools::buff_to_hex_nodelimer(block_entry.block) << ", dropping connection");
         drop_connection(context, false, false);
         ++m_sync_bad_spans_downloaded;
         return 1;
       }
+      const auto& [b, block_hash] = *r;
       if (b.miner_tx.vin.size() != 1 || b.miner_tx.vin.front().type() != typeid(txin_gen))
       {
         LOG_ERROR_CCONTEXT("sent wrong block: block: miner tx does not have exactly one txin_gen input"
@@ -1193,14 +1215,15 @@ namespace cryptonote
           LOG_DEBUG(context << " next span in the queue has blocks " << start_height << "-" << (start_height + blocks.size() - 1)
               << ", we need " << previous_height);
 
-          block new_block;
-          crypto::hash last_block_hash;
-          if (!parse_and_validate_block_from_blob(blocks.back().block, new_block, last_block_hash))
+          const auto r = maybe_block_and_hash_from_blob(blocks.back().block);
+          if (!r)
           {
             LOG_ERROR(context << "Failed to parse block, but it should already have been parsed");
             m_block_queue.remove_spans(span_connection_id, start_height);
             continue;
           }
+          const auto last_block_hash = r->second;
+
           if (m_core.have_block(last_block_hash))
           {
             const uint64_t subchain_height = start_height + blocks.size();
@@ -1217,7 +1240,7 @@ namespace cryptonote
             m_block_queue.remove_spans(span_connection_id, start_height);
             continue;
           }
-          new_block = *maybeBlock;
+          const auto& new_block = *maybeBlock;
           bool parent_known = m_core.have_block(new_block.prev_id);
           if (!parent_known)
           {

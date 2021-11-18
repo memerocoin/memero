@@ -39,7 +39,8 @@
 namespace cryptonote
 {
   //---------------------------------------------------------------
-  bool parse_and_validate_block_from_blob(const string_blob_view b_blob, block& b, crypto::hash &block_hash);
+  std::optional<std::pair<block, crypto::hash>>
+  maybe_block_and_hash_from_blob(const string_blob_view b_blob);
 
   std::optional<uint64_t> parse_amount(const std::string& str_amount);
 
