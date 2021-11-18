@@ -54,7 +54,7 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   std::optional<std::pair<keypair, crypto::output_spend_public_key_image>>
-  derive_public_key_image_helper
+  derive_with_internal_checking_public_key_image_helper
   (
    const account_keys ack
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
