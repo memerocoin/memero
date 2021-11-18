@@ -99,7 +99,7 @@ namespace cryptonote
        , "key image helper: given output pubkey doesn't seem to belong to this address"
        );
 
-    return derive_public_key_image_helper_precomp
+    return derive_public_key_image_helper
       (
        ack
        , out_key
@@ -111,7 +111,7 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   std::optional<std::pair<keypair, crypto::output_spend_public_key_image>>
-  derive_public_key_image_helper_precomp
+  derive_public_key_image_helper
   (
    const account_keys account_keys
    , const crypto::public_key out_key
