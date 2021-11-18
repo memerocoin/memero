@@ -52,7 +52,8 @@ namespace cryptonote
 
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx);
 
-  std::optional<std::pair<keypair, crypto::output_spend_public_key_image>> derive_public_key_image_helper
+  std::optional<std::pair<keypair, crypto::output_spend_public_key_image>>
+  derive_public_key_image_helper
   (
    const account_keys ack
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -151,7 +152,8 @@ namespace cryptonote
     std::ostringstream ss;
     json_archive<true> ar(ss, true);
     bool r = ::serialization::serialize(ar, const_cast<T&>(obj));
-    LOG_ERROR_AND_RETURN_UNLESS(r, "", "obj_to_json_str failed: serialization::serialize returned false");
+    LOG_ERROR_AND_RETURN_UNLESS
+      (r, "", "obj_to_json_str failed: serialization::serialize returned false");
     return ss.str();
   }
 
@@ -191,7 +193,9 @@ namespace cryptonote
 
   std::optional<transaction> maybe_tx_from_blob(const string_blob_view tx_blob);
   std::optional<transaction_prefix> maybe_tx_prefix_from_blob(const string_blob_view tx_blob);
-  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const string_blob_view tx_blob);
+
+  std::optional<std::pair<transaction, crypto::hash>>
+  maybe_tx_and_hash_from_blob(const string_blob_view tx_blob);
 
   string_blob block_to_blob(const block& b);
   std::optional<string_blob> maybe_block_to_blob(const block& b);

@@ -53,7 +53,8 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::output_spend_public_key_image>> derive_public_key_image_helper
+  std::optional<std::pair<keypair, crypto::output_spend_public_key_image>>
+  derive_public_key_image_helper
   (
    const account_keys ack
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -67,12 +68,6 @@ namespace cryptonote
       tx_public_key
       ? crypto::derive_tx_output_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key)
       : std::optional<crypto::ecdh_shared_secret>();
-
-    // if (!recv_tx_output_shared_secret)
-    // {
-    //   LOG_WARNING("key image helper: failed to derive_tx_output_ecdh_shared_secret(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
-    //   return false;
-    // }
 
     std::map<size_t, crypto::ecdh_shared_secret> tx_output_shared_secrets;
     for (size_t i = 0; i < output_public_keys.size(); ++i)
@@ -201,7 +196,8 @@ namespace cryptonote
   std::string short_hash_str(const crypto::hash h)
   {
     std::string res = epee::string_tools::pod_to_hex(h);
-    LOG_ERROR_AND_RETURN_UNLESS(res.size() == 64, res, "wrong hash256 with epee::string_tools::pod_to_hex conversion");
+    LOG_ERROR_AND_RETURN_UNLESS
+      (res.size() == 64, res, "wrong hash256 with epee::string_tools::pod_to_hex conversion");
     auto erased_pos = res.erase(8, 48);
     res.insert(8, "....");
     return res;
@@ -230,7 +226,12 @@ namespace cryptonote
        );
 
     return cryptonote::get_blob_hash
-      (string_blob_view(blob.data() + prefix_and_ringct_basic_size, blob.size() - prefix_and_ringct_basic_size)
+      (
+       string_blob_view
+       (
+        blob.data() + prefix_and_ringct_basic_size
+        , blob.size() - prefix_and_ringct_basic_size
+        )
        );
   }
 
@@ -254,11 +255,16 @@ namespace cryptonote
     const unsigned int prefix_size = t.prefix_size;
 
     // base rct
-    if (! (prefix_size <= prefix_and_ringct_basic_size && prefix_and_ringct_basic_size <= blob.size() )) {
+    if (!
+        (
+         prefix_size <= prefix_and_ringct_basic_size
+           && prefix_and_ringct_basic_size <= blob.size()
+         )) {
       LOG_FATAL("Inconsistent transaction prefix, unprunable and blob sizes");
     }
 
-    hashes[1] = cryptonote::get_blob_hash(blob.substr(prefix_size, prefix_and_ringct_basic_size - prefix_size));
+    hashes[1] = cryptonote::get_blob_hash
+      (blob.substr(prefix_size, prefix_and_ringct_basic_size - prefix_size));
 
     // prunable rct
     hashes[2]
@@ -322,7 +328,13 @@ namespace cryptonote
   //---------------------------------------------------------------
   uint64_t get_block_height(const block& b)
   {
-    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin.size() == 1, 0, "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1");
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       b.miner_tx.vin.size() == 1
+       , 0
+       , "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1"
+       );
+
     CHECKED_GET_SPECIFIC_VARIANT(b.miner_tx.vin[0], const txin_gen, coinbase_in, 0);
     return coinbase_in.height;
   }
@@ -349,9 +361,14 @@ namespace cryptonote
   {
     for(const tx_out& out: tx.vout)
     {
-      LOG_ERROR_AND_RETURN_UNLESS(out.target.type() == typeid(txout_to_key), false, "wrong variant type: "
-        << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
-        << ", in transaction id=" << get_transaction_hash(tx));
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         out.target.type() == typeid(txout_to_key)
+         , false
+         , "wrong variant type: "
+         << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
+         << ", in transaction id=" << get_transaction_hash(tx)
+         );
 
       if (tx.version == 1)
       {
@@ -481,21 +498,30 @@ namespace cryptonote
     if (rv.output_commits.size() != tx.vout.size())
     {
       LOG_PRINT_L1
-        ("Failed to parse transaction from blob, bad output_commits size in tx " << get_transaction_hash(tx));
+        (
+         "Failed to parse transaction from blob, bad output_commits size in tx "
+         << get_transaction_hash(tx)
+         );
       return {};
     }
 
     if (rv.p.bulletproofs.size() != 1)
     {
       LOG_PRINT_L1
-        ("Failed to parse transaction from blob, bad bulletproofs size in tx " << get_transaction_hash(tx));
+        (
+         "Failed to parse transaction from blob, bad bulletproofs size in tx "
+         << get_transaction_hash(tx)
+         );
       return {};
     }
 
     if (rv.p.bulletproofs[0].L.size() < 6)
     {
       LOG_PRINT_L1
-        ("Failed to parse transaction from blob, bad bulletproofs L size in tx " << get_transaction_hash(tx));
+        (
+         "Failed to parse transaction from blob, bad bulletproofs L size in tx "
+         << get_transaction_hash(tx)
+         );
       return {};
     }
 
@@ -503,7 +529,10 @@ namespace cryptonote
     if (max_outputs < tx.vout.size())
     {
       LOG_PRINT_L1
-        ("Failed to parse transaction from blob, bad bulletproofs max outputs in tx " << get_transaction_hash(tx));
+        (
+         "Failed to parse transaction from blob, bad bulletproofs max outputs in tx "
+         << get_transaction_hash(tx)
+         );
       return {};
     }
 
@@ -551,7 +580,8 @@ namespace cryptonote
     return tx_prefix;
   }
   //---------------------------------------------------------------
-  std::optional<std::pair<transaction, crypto::hash>> maybe_tx_and_hash_from_blob(const string_blob_view tx_blob)
+  std::optional<std::pair<transaction, crypto::hash>>
+  maybe_tx_and_hash_from_blob(const string_blob_view tx_blob)
   {
     const auto maybeTx = maybe_tx_from_blob(tx_blob);
     if (maybeTx) {
