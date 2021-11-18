@@ -64,14 +64,9 @@ namespace cryptonote
    , const size_t real_output_index
    )
   {
-    const std::optional<crypto::ecdh_shared_secret> recv_tx_output_shared_secret =
-      tx_public_key
-      ? crypto::derive_tx_output_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key)
-      : std::optional<crypto::ecdh_shared_secret>();
-
     const std::optional<crypto::ecdh_shared_secret> output_shared_secret = 
       (real_output_index >= 0 && real_output_index < output_public_keys.size())
-      ? std::optional
+      ? std::make_optional
       (
        crypto::derive_tx_output_ecdh_shared_secret
        (
@@ -79,12 +74,15 @@ namespace cryptonote
         , ack.m_view_secret_key
         )
        )
-      : std::nullopt;
+      : tx_public_key
+      ? std::make_optional(crypto::derive_tx_output_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key))
+      : std::nullopt
+      ;
 
     std::optional<subaddress_receive_info> subaddr_recv_info =
       check_output_for_subaddresses
       (
-       subaddresses, out_key, recv_tx_output_shared_secret, output_shared_secret, real_output_index
+       subaddresses, out_key, output_shared_secret, real_output_index
        );
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -141,27 +139,10 @@ namespace cryptonote
   (
    const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
    , const crypto::public_key tx_output_public_key
-   , const std::optional<crypto::ecdh_shared_secret> tx_shared_secret
    , const std::optional<crypto::ecdh_shared_secret> tx_output_shared_secret
    , const size_t output_index
    )
   {
-    // try the shared tx pubkey
-    if (tx_shared_secret) {
-      const std::optional<crypto::public_key> spend_pk =
-        crypto::compute_subaddress_spend_pk_from_output_spend_pk
-        (*tx_shared_secret, output_index, tx_output_public_key);
-
-      if (spend_pk) {
-        auto found = subaddresses.find(*spend_pk);
-
-        if (found != subaddresses.end()) {
-          // LOG_FATAL("FOUND for tx pub key at index: " << output_index);
-          return subaddress_receive_info{ found->second, *tx_shared_secret};
-        }
-      }
-    }
-
     // try additional tx pubkeys if available
     if (tx_output_shared_secret)
     {

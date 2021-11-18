@@ -193,7 +193,6 @@ namespace wallet {
       (
        m_subaddresses
        , boost::get<cryptonote::txout_to_key>(o.target).output_spend_public_key
-       , {}
        , tx_output_shared_secret
        , i
        );
