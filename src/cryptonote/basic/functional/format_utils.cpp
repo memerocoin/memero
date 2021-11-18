@@ -69,22 +69,22 @@ namespace cryptonote
       ? crypto::derive_tx_output_ecdh_shared_secret(*tx_public_key, ack.m_view_secret_key)
       : std::optional<crypto::ecdh_shared_secret>();
 
-    std::map<size_t, crypto::ecdh_shared_secret> tx_output_shared_secrets;
-    for (size_t i = 0; i < output_public_keys.size(); ++i)
-    {
-      const auto additional_recv_tx_output_shared_secret =
-        crypto::derive_tx_output_ecdh_shared_secret(output_public_keys[i], ack.m_view_secret_key);
-      tx_output_shared_secrets[i] = additional_recv_tx_output_shared_secret;
-    }
-    const auto secret
-      = tx_output_shared_secrets.contains(real_output_index)
-      ? tx_output_shared_secrets[real_output_index]
-      : std::optional<crypto::ecdh_shared_secret>();
+    const std::optional<crypto::ecdh_shared_secret> output_shared_secret = 
+      (real_output_index >= 0 && real_output_index < output_public_keys.size())
+      ? std::optional
+      (
+       crypto::derive_tx_output_ecdh_shared_secret
+       (
+        output_public_keys[real_output_index]
+        , ack.m_view_secret_key
+        )
+       )
+      : std::nullopt;
 
     std::optional<subaddress_receive_info> subaddr_recv_info =
       check_output_for_subaddresses
       (
-       subaddresses, out_key, recv_tx_output_shared_secret, secret, real_output_index
+       subaddresses, out_key, recv_tx_output_shared_secret, output_shared_secret, real_output_index
        );
 
     LOG_ERROR_AND_RETURN_UNLESS
