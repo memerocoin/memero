@@ -112,19 +112,16 @@ namespace crypto {
 
   std::optional<public_key> compute_subaddress_spend_pk_from_output_spend_pk
   (
-     const ecdh_shared_secret &tx_output_shared_secret
+     const ecdh_shared_secret tx_output_shared_secret
    , const std::size_t output_index
-   , const ec_point_unsafe &unsafe_output_spend_pk
+   , const ec_point output_spend_pk
    ) noexcept
   {
-    const auto output_spend_pk = maybeSafePoint(unsafe_output_spend_pk);
-    if (!output_spend_pk) return {};
-
     const ec_scalar shared_secret_hash = hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, output_index);
 
     if (shared_secret_hash == s_0) return {};
 
-    return p2pk(*output_spend_pk - multBase(shared_secret_hash));
+    return p2pk(output_spend_pk - multBase(shared_secret_hash));
   }
 
   std::optional<crypto::public_key> maybeNotNull(const crypto::public_key x) {
