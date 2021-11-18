@@ -457,7 +457,14 @@ block Blockchain::pop_block_from_blockchain()
 
   try
   {
-    m_db->pop_block(popped_block, popped_txs);
+    const auto r = m_db->pop_block();
+    if (r) {
+      std::tie(popped_block, popped_txs) = *r;
+    }
+    else {
+      LOG_ERROR("Failed to pop from blockchain");
+      throw;
+    }
   }
   // anything that could cause this to throw is likely catastrophic,
   // so we re-throw

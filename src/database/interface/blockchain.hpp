@@ -514,13 +514,6 @@ private:
   /*********************************************************************
    * private concrete members
    *********************************************************************/
-  /**
-   * @brief private version of pop_block, for undoing if an add_block fails
-   *
-   * This function simply calls pop_block(block& blk, std::vector<transaction>& txs)
-   * with dummy parameters, as the returns-by-reference can be discarded.
-   */
-  void pop_block();
 
   // helper function to remove transaction from blockchain
   /**
@@ -1118,7 +1111,7 @@ public:
    *
    * @return the top block
    */
-  virtual block get_top_block() const = 0;
+  virtual std::optional<block> get_top_block() const = 0;
 
   /**
    * @brief fetch the current blockchain height
@@ -1150,7 +1143,7 @@ public:
    * @param blk return-by-reference the block which was popped
    * @param txs return-by-reference the transactions from the popped block
    */
-  virtual void pop_block(block& blk, std::vector<transaction>& txs);
+  std::optional<std::pair<block, std::vector<transaction>>> pop_block();
 
 
   /**

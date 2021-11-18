@@ -239,7 +239,7 @@ public:
 
   virtual crypto::hash top_block_hash(uint64_t *block_height = NULL) const;
 
-  virtual block get_top_block() const;
+  virtual std::optional<block> get_top_block() const;
 
   virtual uint64_t height() const;
 
@@ -320,7 +320,7 @@ public:
 
   bool block_rtxn_start(MDB_txn **mtxn, mdb_txn_cursors **mcur) const;
 
-  virtual void pop_block(block& blk, std::vector<transaction>& txs);
+  virtual std::optional<std::pair<block, std::vector<transaction>>> pop_block();
 
   virtual bool can_thread_bulk_indices() const { return true; }
 

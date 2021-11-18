@@ -2435,7 +2435,7 @@ crypto::hash BlockchainLMDB::top_block_hash(uint64_t *block_height) const
   return crypto::null_hash;
 }
 
-block BlockchainLMDB::get_top_block() const
+std::optional<block> BlockchainLMDB::get_top_block() const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2446,8 +2446,7 @@ block BlockchainLMDB::get_top_block() const
     return get_block_from_height(m_height - 1);
   }
 
-  block b;
-  return b;
+  return {};
 }
 
 uint64_t BlockchainLMDB::height() const
@@ -3436,7 +3435,7 @@ uint64_t BlockchainLMDB::add_block(const std::pair<block, string_blob>& blk, siz
   return ++m_height;
 }
 
-void BlockchainLMDB::pop_block(block& blk, std::vector<transaction>& txs)
+std::optional<std::pair<block, std::vector<transaction>>> BlockchainLMDB::pop_block()
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -3445,7 +3444,7 @@ void BlockchainLMDB::pop_block(block& blk, std::vector<transaction>& txs)
 
   try
   {
-    BlockchainDB::pop_block(blk, txs);
+    return BlockchainDB::pop_block();
     block_wtxn_stop();
   }
   catch (...)

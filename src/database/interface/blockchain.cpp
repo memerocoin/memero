@@ -114,13 +114,6 @@ void BlockchainDB::init_options(boost::program_options::options_description& des
 {
 }
 
-void BlockchainDB::pop_block()
-{
-  block blk;
-  std::vector<transaction> txs;
-  pop_block(blk, txs);
-}
-
 void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, string_blob_view>& txp, const crypto::hash* tx_hash_ptr)
 {
   const transaction &tx = txp.first;
@@ -254,13 +247,18 @@ uint64_t BlockchainDB::add_block( const std::pair<block, string_blob>& blck
   return prev_height;
 }
 
-void BlockchainDB::pop_block(block& blk, std::vector<transaction>& txs)
+std::optional<std::pair<block, std::vector<transaction>>> BlockchainDB::pop_block()
 {
-  blk = get_top_block();
+  std::vector<transaction> txs;
+  const auto blk = get_top_block();
+
+  if (!blk) {
+    {};
+  }
 
   remove_block();
 
-  for (const auto& h : boost::adaptors::reverse(blk.tx_hashes))
+  for (const auto& h : boost::adaptors::reverse(blk->tx_hashes))
   {
     cryptonote::transaction tx;
     if (!get_tx(h, tx))
@@ -268,7 +266,9 @@ void BlockchainDB::pop_block(block& blk, std::vector<transaction>& txs)
     txs.push_back(std::move(tx));
     remove_transaction(h);
   }
-  remove_transaction(get_transaction_hash(blk.miner_tx));
+  remove_transaction(get_transaction_hash(blk->miner_tx));
+
+  return {{*blk, txs}};
 }
 
 bool BlockchainDB::is_open() const
