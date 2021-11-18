@@ -91,7 +91,7 @@ namespace cryptonote
     }
   }
   //---------------------------------------------------------------
-  void set_default_decimal_point(unsigned int decimal_point)
+  void set_default_decimal_point(const unsigned int decimal_point)
   {
     switch (decimal_point)
     {
@@ -112,8 +112,9 @@ namespace cryptonote
     return default_decimal_point;
   }
   //---------------------------------------------------------------
-  std::string get_unit(unsigned int decimal_point)
+  std::string get_unit(const unsigned int decimal_point_in)
   {
+    unsigned int decimal_point = decimal_point_in;
     if (decimal_point == (unsigned int)-1)
       decimal_point = default_decimal_point;
     switch (decimal_point)
@@ -150,13 +151,13 @@ namespace cryptonote
     return s;
   }
   //---------------------------------------------------------------
-  std::string print_money_64(uint64_t amount, unsigned int decimal_point)
+  std::string print_money_64(const uint64_t amount, const unsigned int decimal_point)
   {
     std::string s = std::to_string(amount);
     return insert_money_decimal_point(s, decimal_point);
   }
   //---------------------------------------------------------------
-  std::string print_money(uint64_t amount, unsigned int decimal_point)
+  std::string print_money(const uint64_t amount, const unsigned int decimal_point)
   {
     std::string str = print_money_64(amount, decimal_point);
     str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
@@ -164,7 +165,8 @@ namespace cryptonote
     return str;
   }
   //---------------------------------------------------------------
-  std::string print_money_128(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point)
+  std::string print_money_128
+  (const boost::multiprecision::uint128_t &amount, const unsigned int decimal_point)
   {
     std::stringstream ss;
     ss << amount;
@@ -172,7 +174,8 @@ namespace cryptonote
     return insert_money_decimal_point(s, decimal_point);
   }
   //---------------------------------------------------------------
-  std::string print_money(const boost::multiprecision::uint128_t &amount, unsigned int decimal_point)
+  std::string print_money
+  (const boost::multiprecision::uint128_t &amount, const unsigned int decimal_point)
   {
     std::string str = print_money_128(amount, decimal_point);
     str.erase ( str.find_last_not_of('0') + 1, std::string::npos );
