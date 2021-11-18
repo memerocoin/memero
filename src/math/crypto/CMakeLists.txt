@@ -53,8 +53,13 @@ target_link_libraries(math_crypto
     ${SODIUM_LIBRARY}
   )
 
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+
 set_source_files_properties(
   "pseudo_functional/tree-hash.cpp"
   PROPERTIES COMPILE_FLAGS
   "-Wno-stringop-overflow -Wno-array-bounds"
   )
+
+endif()

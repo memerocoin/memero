@@ -82,10 +82,15 @@ namespace cryptonote
 
     tx_destination_entry
     (
-     uint64_t a
+     uint64_t amount
      , const spend_view_public_keys &ad
      , bool is_subaddress
-     ) : amount(a), addr(ad), is_subaddress(is_subaddress) { }
+     )
+      :
+        addr(ad)
+      , amount(amount)
+      , is_subaddress(is_subaddress)
+    {}
 
 
     std::string address(network_type nettype) const

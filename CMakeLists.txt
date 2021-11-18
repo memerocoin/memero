@@ -53,7 +53,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options(-Wall)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wno-unknown-warning-option)
   add_compile_options(-Wno-reorder-ctor)
 
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")

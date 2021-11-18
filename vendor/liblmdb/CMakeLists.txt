@@ -35,8 +35,12 @@ add_library(lmdb
   midl.c
   )
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+
 set_source_files_properties("mdb.c" PROPERTIES COMPILE_FLAGS
 "-Wno-unused-but-set-variable -Wno-stringop-overflow")
+
+endif()
 
 target_link_libraries(lmdb
     ${CMAKE_THREAD_LIBS_INIT}
