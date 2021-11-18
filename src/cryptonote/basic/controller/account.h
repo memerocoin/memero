@@ -73,8 +73,14 @@ namespace cryptonote
   public:
     account_base();
     crypto::secret_key generate(const std::optional<crypto::secret_key> = {});
-    void create_from_keys(const cryptonote::spend_view_public_keys& address, const crypto::secret_key& spendkey, const crypto::secret_key& viewkey);
-    void create_from_viewkey(const cryptonote::spend_view_public_keys& address, const crypto::secret_key& viewkey);
+
+    void create_from_keys
+    (
+     const cryptonote::spend_view_public_keys& address
+     , const crypto::secret_key& spendkey
+     , const crypto::secret_key& viewkey
+     );
+
     const account_keys& get_keys() const;
 
     spend_view_secret_keys get_spend_view_secret_keys() const {

@@ -48,14 +48,20 @@ namespace cryptonote
   //-----------------------------------------------------------------
   static void derive_key(const crypto::chacha_key &base_key, crypto::chacha_key &key)
   {
-    static_assert(sizeof(base_key) == sizeof(crypto::hash), "chacha key and hash should be the same size");
+    static_assert
+      (sizeof(base_key) == sizeof(crypto::hash), "chacha key and hash should be the same size");
     std::array<char, sizeof(base_key)+1> data;
     memcpy(data.data(), &base_key, sizeof(base_key));
     data[sizeof(base_key)] = config::HASH_KEY_MEMORY;
     crypto::generate_chacha_key(data.data(), sizeof(data), key, 1);
   }
   //-----------------------------------------------------------------
-  static epee::wipeable_string get_key_stream(const crypto::chacha_key &base_key, const crypto::chacha_iv &iv, size_t bytes)
+  static epee::wipeable_string get_key_stream
+  (
+   const crypto::chacha_key &base_key
+   , const crypto::chacha_iv &iv
+   , size_t bytes
+   )
   {
     // derive a new key
     crypto::chacha_key key;
@@ -71,7 +77,9 @@ namespace cryptonote
   void account_keys::xor_with_key_stream(const crypto::chacha_key &key)
   {
     // encrypt a large enough byte stream with chacha20
-    epee::wipeable_string key_stream = get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * 2);
+    epee::wipeable_string key_stream =
+      get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * 2);
+
     const char *ptr = key_stream.data();
     for (size_t i = 0; i < sizeof(crypto::secret_key); ++i)
       m_spend_secret_key.data[i] ^= *ptr++;
@@ -93,7 +101,9 @@ namespace cryptonote
   void account_keys::encrypt_viewkey(const crypto::chacha_key &key)
   {
     // encrypt a large enough byte stream with chacha20
-    epee::wipeable_string key_stream = get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * 2);
+    epee::wipeable_string key_stream =
+      get_key_stream(key, m_encryption_iv, sizeof(crypto::secret_key) * 2);
+
     const char *ptr = key_stream.data();
     ptr += sizeof(crypto::secret_key);
     for (size_t i = 0; i < sizeof(crypto::secret_key); ++i)
@@ -158,7 +168,12 @@ namespace cryptonote
     return m_keys.m_spend_secret_key;
   }
   //-----------------------------------------------------------------
-  void account_base::create_from_keys(const cryptonote::spend_view_public_keys& address, const crypto::secret_key& spendkey, const crypto::secret_key& viewkey)
+  void account_base::create_from_keys
+  (
+   const cryptonote::spend_view_public_keys& address
+   , const crypto::secret_key& spendkey
+   , const crypto::secret_key& viewkey
+   )
   {
     m_keys.m_account_address = address;
     m_keys.m_spend_secret_key = spendkey;
@@ -177,13 +192,6 @@ namespace cryptonote
       m_creation_timestamp = 0; // lowest value
   }
 
-  //-----------------------------------------------------------------
-  void account_base::create_from_viewkey(const cryptonote::spend_view_public_keys& address, const crypto::secret_key& viewkey)
-  {
-    crypto::secret_key fake;
-    memset(&(fake), 0, sizeof(fake));
-    create_from_keys(address, fake, viewkey);
-  }
   //-----------------------------------------------------------------
   const account_keys& account_base::get_keys() const
   {
