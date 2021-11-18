@@ -266,7 +266,7 @@ namespace wallet {
         tx_scan_info.output_spend_key.pub
         != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_spend_public_key
         , tools::error::wallet_internal_error
-        , "output_spend_public_key_image generated shared secret derived public key not matched with output_key"
+        , "shared secret derived spend public key does not matched with output spend public key"
         );
     }
 
