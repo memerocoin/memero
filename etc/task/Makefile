@@ -90,6 +90,16 @@ main-sync-reuse:
 --rpc-bind-port 45000 \
 --add-exclusive-node 10.0.0.1 \
 
+main-sync-flake:
+	@rm -rf mainnet/node_sync_flake
+
+	../../result/bin/lolnerod \
+--hide-my-port \
+--data-dir ./mainnet/node_sync_flake \
+--p2p-bind-port 41000 \
+--rpc-bind-port 45000 \
+--add-exclusive-node 10.0.0.1
+
 mine:
 	../../build/bin/lolnerod \
 --hide-my-port \
