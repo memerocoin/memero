@@ -28,9 +28,9 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "tree-hash.hpp"
+#include "tree-hash-raw.hpp"
 
-#include "sha3.hpp"
+#include "math/crypto/pseudo_functional/sha3.hpp"
 
 #include <assert.h>
 #include <stdlib.h>

@@ -31,7 +31,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <gtest/gtest.h>
 
-#include "math/crypto/functional/hash.hpp"
+#include "tree-hash-raw.hpp"
+
+#include "math/crypto/functional/tree-hash.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 
 #include <algorithm>
@@ -43,9 +45,15 @@ hash hashGen() {
   return d2h(x);
 }
 
+std::optional<hash> tree_hash_raw(const std::span<const hash> hashes) noexcept {
+  hash root_hash;
+  tree_hash(reinterpret_cast<const uint8_t (*)[HASH_SIZE]>(hashes.data()), hashes.size(), root_hash.data.data());
+  return root_hash;
+}
+
 TEST(tree_hash,  random_1) {
   const std::vector<hash> xs = {hashGen()};
-  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
 
 TEST(tree_hash, random_2) {
@@ -58,7 +66,7 @@ TEST(tree_hash, random_2) {
      , hashGen
      );
 
-  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
 
 TEST(tree_hash, random_3) {
@@ -71,7 +79,7 @@ TEST(tree_hash, random_3) {
      , hashGen
      );
 
-  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
 
 TEST(tree_hash, random_4) {
@@ -84,7 +92,7 @@ TEST(tree_hash, random_4) {
      , hashGen
      );
 
-  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
 
 TEST(tree_hash, random_10) {
@@ -97,7 +105,7 @@ TEST(tree_hash, random_10) {
      , hashGen
      );
 
-  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
 
 TEST(tree_hash, random_100) {
@@ -110,7 +118,7 @@ TEST(tree_hash, random_100) {
      , hashGen
      );
 
-  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
 
 TEST(tree_hash, random_10000) {
@@ -123,5 +131,5 @@ TEST(tree_hash, random_10000) {
        , hashGen
      );
 
-  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
