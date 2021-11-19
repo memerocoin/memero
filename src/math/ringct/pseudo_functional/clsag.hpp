@@ -34,23 +34,11 @@
 #include "math/ringct/functional/rctOps.hpp"
 
 namespace rct {
-  bool verify_clsag_signatures(const rctData rv);
-
-  bool verify_tx_balance(const rctData rv);
-
-  bool verify_range_proof(const rctData rv);
-
-  inline bool verify_ringct(const rctData rv) {
-    return verify_tx_balance(rv) && verify_range_proof(rv) && verify_clsag_signatures(rv);
-  }
-
-  std::pair<amount_t, rct_scalar> decode_ringct_commitment
+  bool verify_clsag_signature
   (
-   const rctData rv
-   , const rct_scalar ecdh_shared_secret_hashed_by_index
-   , const size_t output_index
+   const crypto::hash message
+   , const clsag sig
+   , const output_public_dataS decoys
+   , const rct_point pseudo_input_commit
    );
-
-  std::optional<crypto::hash> get_ring_signature_message(const rctData rv);
 }
-
