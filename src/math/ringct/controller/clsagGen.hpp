@@ -36,27 +36,15 @@
 
 namespace rct {
 
-  struct rctInputData
-  {
-    const amount_t amount;
-    const rct_scalar signer_sk;
-    const rct_scalar signer_blinding_factor;
-    const size_t index_in_decoys;
-    const output_public_dataV decoys;
-  };
-
-  struct rctOutputData
-  {
-    const amount_t amount;
-    const rct_scalar ecdh_shared_secret_hashed_by_index;
-  };
-
-  rctData generate_ringct
+  clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const std::vector<rctInputData> inputs
-   , const std::vector<rctOutputData> outputs
-   , const amount_t fee
+   , const rct_scalar signer_sk
+   , const rct_scalar signer_blinding_factor
+   , const size_t index_in_decoys
+   , const rct_scalar pseudo_input_blinding_factor
+   , const rct_point pseudo_input_commit
+   , const output_public_dataV decoys
    );
-}
 
+}

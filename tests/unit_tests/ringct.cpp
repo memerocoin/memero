@@ -37,6 +37,8 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/controller/rctSigGen.hpp"
+#include "math/ringct/controller/clsagGen.hpp"
+
 #include "math/crypto/controller/keyGen.hpp"
 
 #include "math/crypto/controller/random.hpp"
