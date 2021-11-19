@@ -33,7 +33,7 @@
 #include "tools/epee/include/string_tools.h"
 
 #include "math/ringct/functional/rctTypes.hpp"
-#include "math/ringct/pseudo_functional/rctSigs.hpp"
+#include "math/ringct/pseudo_functional/ringCT.hpp"
 #include "math/ringct/pseudo_functional/clsag.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/curveConstants.hpp"

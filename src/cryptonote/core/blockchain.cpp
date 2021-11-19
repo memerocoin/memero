@@ -36,7 +36,7 @@
 #include "cryptonote/functional/helper.hpp"
 #include "cryptonote/basic/functional/format_utils.hpp"
 
-#include "math/ringct/pseudo_functional/rctSigs.hpp"
+#include "math/ringct/pseudo_functional/ringCT.hpp"
 
 #include "tools/common/threadpool.h"
 #include "tools/common/notify.h"

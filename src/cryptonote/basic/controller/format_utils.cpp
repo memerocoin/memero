@@ -36,7 +36,7 @@
 #include "tools/epee/include/string_tools.h"
 #include "tools/serialization/string.h" // don't remove, or face core dump
 
-#include "math/ringct/pseudo_functional/rctSigs.hpp"
+#include "math/ringct/pseudo_functional/ringCT.hpp"
 
 #include <boost/algorithm/string.hpp>
 
