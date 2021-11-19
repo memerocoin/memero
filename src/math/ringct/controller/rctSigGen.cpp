@@ -299,6 +299,27 @@ namespace rct {
   }
 
 
+  std::vector<rct_scalar> generate_matching_blinding_factors(const rct_scalar match, const size_t n) {
+    rct_scalarV xs;
+    std::generate_n
+      (
+       std::back_inserter(xs)
+       , n - 1
+       , []() { return crypto::scalarGen(); }
+       );
+
+    const rct_scalar last = match -
+      std::reduce
+      (
+       xs.begin()
+       , xs.end()
+       , s_zero
+       );
+
+    xs.push_back(last);
+
+    return xs;
+  }
 
   rctData generate_ringct
   (
@@ -353,23 +374,8 @@ namespace rct {
        , s_zero
        );
 
-
-    // reserve the last one for generating a balanced pseudo sum
-    rct_scalarV pseudo_input_blinding_factors;
-    std::generate_n
-      (
-       std::back_inserter(pseudo_input_blinding_factors)
-       , inputs.size() - 1
-       , []() { return crypto::scalarGen(); }
-       );
-
-    const rct_scalar pseudo_input_blinding_factors_sum =
-      std::reduce
-      (
-       pseudo_input_blinding_factors.begin()
-       , pseudo_input_blinding_factors.end()
-       , s_zero
-       );
+    const rct_scalarV pseudo_input_blinding_factors =
+      generate_matching_blinding_factors(output_blinding_factors_sum, inputs.size());
 
     rct_pointV pseudo_input_commits;
     std::transform
@@ -382,13 +388,6 @@ namespace rct {
          return commit(y.amount, x);
        }
        );
-
-    const auto output_blinding_factor_surplus =
-      output_blinding_factors_sum - pseudo_input_blinding_factors_sum;
-
-    pseudo_input_blinding_factors.push_back(output_blinding_factor_surplus);
-
-    pseudo_input_commits.push_back(commit(inputs.back().amount, output_blinding_factor_surplus));
 
     output_public_dataM decoys;
 
