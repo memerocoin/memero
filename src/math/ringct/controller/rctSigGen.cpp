@@ -300,26 +300,40 @@ namespace rct {
   }
 
 
-  std::vector<rct_scalar> generate_matching_blinding_factors(const rct_scalar match, const size_t n) {
-    rct_scalarV xs;
+  std::vector<std::pair<rct_scalar, rct_point>>
+  generate_matching_input_commits(const rct_scalar match, const std::span<const amount_t> xs) {
+    rct_scalarV bs;
     std::generate_n
       (
-       std::back_inserter(xs)
-       , n - 1
+       std::back_inserter(bs)
+       , xs.size() - 1
        , []() { return crypto::scalarGen(); }
        );
 
     const rct_scalar last = match -
       std::reduce
       (
-       xs.begin()
-       , xs.end()
+       bs.begin()
+       , bs.end()
        , s_zero
        );
 
-    xs.push_back(last);
+    bs.push_back(last);
 
-    return xs;
+
+    std::vector<std::pair<rct_scalar, rct_point>> r;
+    std::transform
+      (
+       bs.begin()
+       , bs.end()
+       , xs.begin()
+       , std::back_inserter(r)
+       , [](const auto& b, const auto& x) -> std::pair<rct_scalar, rct_point> {
+         return {b, commit(x, b)};
+       }
+       );
+
+    return r;
   }
 
   rctData generate_ringct
@@ -367,21 +381,17 @@ namespace rct {
        }
        );
 
-
-    const rct_scalarV pseudo_input_blinding_factors =
-      generate_matching_blinding_factors(output_blinding_factors_sum, inputs.size());
-
-    rct_pointV pseudo_input_commits;
+    std::vector<amount_t> input_amounts;
     std::transform
       (
-       pseudo_input_blinding_factors.begin()
-       , pseudo_input_blinding_factors.end()
-       , inputs.begin()
-       , std::back_inserter(pseudo_input_commits)
-       , [](const auto& x, const auto& y) -> rct_point {
-         return commit(y.amount, x);
-       }
+       inputs.begin()
+       , inputs.end()
+       , std::back_inserter(input_amounts)
+       , [](const auto& x) { return x.amount; }
        );
+
+    const std::vector<std::pair<rct_scalar, rct_point>> pseudo_inputs =
+      generate_matching_input_commits(output_blinding_factors_sum, input_amounts);
 
     output_public_dataM decoys;
 
@@ -402,6 +412,15 @@ namespace rct {
         , fee
       };
 
+    rct_pointV pseudo_input_commits;
+    std::transform
+      (
+       pseudo_inputs.begin()
+       , pseudo_inputs.end()
+       , std::back_inserter(pseudo_input_commits)
+       , [](const auto x) { return x.second; }
+       );
+
     const rctDataPrunable preRctSigPrunable =
       {
         { toUnsafeBulletproof(proof) }
@@ -419,30 +438,24 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(maybeMessage, "failed to generate rct message");
 
     const crypto::hash full_message = *maybeMessage;
-    std::vector<clsag_unsafe> clsags(inputs.size());
-    std::generate
+    std::vector<clsag_unsafe> clsags;
+    std::transform
       (
-       clsags.begin()
-       , clsags.end()
-       , [
-          full_message
-          , decoys
-          , inputs
-          , pseudo_input_blinding_factors
-          , pseudo_input_commits
-          , i = 0
-          ]() mutable {
+       inputs.begin()
+       , inputs.end()
+       , pseudo_inputs.begin()
+       , std::back_inserter(clsags)
+       , [ full_message ] (const auto& i, const auto& p) {
          const auto clsag = generate_clsag_signature
            (
             full_message
-            , inputs[i].signer_sk
-            , inputs[i].signer_blinding_factor
-            , inputs[i].index_in_decoys
-            , pseudo_input_blinding_factors[i]
-            , pseudo_input_commits[i]
-            , decoys[i]
+            , i.signer_sk
+            , i.signer_blinding_factor
+            , i.index_in_decoys
+            , p.first
+            , p.second
+            , i.decoys
             );
-         i++;
          return toUnsafeCLSAG(clsag);
        }
        );
