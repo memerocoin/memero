@@ -48,6 +48,71 @@ TEST(tree_hash,  random_1) {
   EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
 }
 
+TEST(tree_hash, random_2) {
+  std::vector<hash> xs;
+
+  std::generate_n
+    (
+     std::back_inserter(xs)
+     , 2
+     , hashGen
+     );
+
+  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+}
+
+TEST(tree_hash, random_3) {
+  std::vector<hash> xs;
+
+  std::generate_n
+    (
+     std::back_inserter(xs)
+     , 3
+     , hashGen
+     );
+
+  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+}
+
+TEST(tree_hash, random_4) {
+  std::vector<hash> xs;
+
+  std::generate_n
+    (
+     std::back_inserter(xs)
+     , 4
+     , hashGen
+     );
+
+  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+}
+
+TEST(tree_hash, random_10) {
+  std::vector<hash> xs;
+
+  std::generate_n
+    (
+     std::back_inserter(xs)
+     , 10
+     , hashGen
+     );
+
+  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+}
+
+TEST(tree_hash, random_100) {
+  std::vector<hash> xs;
+
+  std::generate_n
+    (
+     std::back_inserter(xs)
+     , 100
+     , hashGen
+     );
+
+  EXPECT_EQ(tree_hash(xs), tree_hash_2(xs));
+}
+
 TEST(tree_hash, random_10000) {
   std::vector<hash> xs;
 

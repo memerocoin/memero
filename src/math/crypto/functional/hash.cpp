@@ -30,9 +30,79 @@ hash tree_hash(const std::span<const hash> hashes) noexcept {
   return root_hash;
 }
 
+size_t largest_power_of_two(const size_t x) {
+  size_t i = 2;
+  while(i < x) {
+    i <<= 1;
+  }
+  return i >> 1;
+}
+
+// 5.1 Merkle Root Hash Calculation
+
+// Merkle root hash is computed from the list of transactions as follows: let
+// tx[i] be the i-th transaction in the block, where 0 <= i <= n-1 (n is the
+// number of transactions) and tx[0] is the base transaction. Let m be the
+// largest power of two, less than or equal to n. Define the array h as follows:
+
+// h[i] = H(h[2*i] || h[2*i+1]) where 1 <= i <= m-1 or 3*m-n <= i <= 2*m-1. h[i]
+// = H(tx[i-m]) where m <= i <= 3*m-n-1 h[i] = H(tx[i-4*m+n]) where 6*m-2*n <= i
+// <= 4*m-1. Where H is the Keccak function that is used throughout CryptoNote,
+// and || denotes concatenation. Then, h[1] is the root hash.
+
+// The figure below illustrates the calculation of Merkle root hash in a block
+// with 9 transactions. Each arrow represents a computation of H.
+
+
+hash hash_pair(const hash x, const hash y) {
+  return sha3(x.blob() + y.blob());
+}
+
+hash hash_at(const std::span<const hash> hashes, const size_t i) {
+  const size_t n = hashes.size();
+  const size_t m = largest_power_of_two(n);
+
+  // h[i] = H(h[2*i] || h[2*i+1])
+  //   where 1 <= i <= m-1 or 3*m-n <= i <= 2*m-1.
+  //   h[i] = H(tx[i-m])
+  //   where m <= i <= 3*m-n-1
+  //   h[i] = H(tx[i-4*m+n])
+  //   where 6*m-2*n <= i <= 4*m-1.
+
+  if ( (i > 0 && i < m) || ((i >= 3 * m - n) && (i < 2 * m)) ) {
+    return hash_pair(hash_at(hashes, 2 * i), hash_at(hashes, 2 * i + 1));
+  } else if ( i >= m && i < 3 * m - n ) {
+    return hashes[ i - m ];
+  } else if ( (i >= 6 * m - 2 * n) && (i < 4 * m) ) {
+    return hashes[ i - 4 * m + n ];
+  } else {
+    // throw std::runtime_error("invalid case happened in hash-at");
+    return null_hash;
+  }
+}
+
+std::optional<hash> tree_hash_safe(const std::span<const hash> hashes) {
+  const size_t n = hashes.size();
+
+  switch (n) {
+  case 0: return {};
+  case 1: return hashes.front();
+  case 2: return hash_pair(hashes.front(), hashes.back());
+
+  default: {
+    return hash_at(hashes, 1);
+  }
+
+  }
+}
 
 hash tree_hash_2(const std::span<const hash> hashes) noexcept {
-  return tree_hash(hashes);
+  const auto r = tree_hash_safe(hashes);
+  if (r) {
+    return *r;
+  } else {
+    return null_hash;
+  }
 }
 
 }
