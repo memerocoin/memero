@@ -35,6 +35,7 @@
 
 #include "math/crypto/functional/tree-hash.hpp"
 #include "math/ringct/pseudo_functional/rctSigs.hpp"
+#include "math/ringct/functional/rctOps.hpp"
 
 #include "cryptonote/basic/functional/subaddress.hpp"
 

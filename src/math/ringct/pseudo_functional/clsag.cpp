@@ -31,13 +31,12 @@
 
 #include "clsag.hpp"
 
-#include "tools/common/threadpool.h"
 #include "tools/epee/include/logging.hpp"
 
 #include "math/ringct/functional/curveConstants.hpp"
-#include "math/ringct/pseudo_functional/bulletproofs.hpp"
+#include "math/ringct/functional/rctOps.hpp"
 
-#include "cryptonote/basic/functional/format_utils.hpp"
+#include "math/crypto/controller/keyGen.hpp"
 
 #include "config/cryptonote.hpp"
 

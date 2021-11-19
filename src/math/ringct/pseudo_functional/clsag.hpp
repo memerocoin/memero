@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "math/ringct/functional/rctOps.hpp"
+#include "math/ringct/functional/rctTypes.hpp"
 
 namespace rct {
   bool verify_clsag_signature
