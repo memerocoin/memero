@@ -48,7 +48,7 @@
 
 namespace rct {
 
-  std::tuple<rct_scalarV, Bulletproof> generate_range_proof
+  std::tuple<rct_scalar, Bulletproof> generate_range_proof
   (
    const std::span<const rctOutputData> outputs
    )
@@ -76,16 +76,17 @@ namespace rct {
        , "V does not have the expected size"
        );
 
-    rct_scalarV output_blinding_factors;
-    std::transform
+    const rct_scalar output_blinding_factors_sum =
+      std::transform_reduce
       (
        xs.begin()
        , xs.end()
-       , std::back_inserter(output_blinding_factors)
+       , s_zero
+       , std::plus()
        , [](const auto& x) { return x.second; }
        );
 
-    return {output_blinding_factors, proof};
+    return {output_blinding_factors_sum, proof};
   }
 
 
@@ -339,7 +340,7 @@ namespace rct {
          );
     }
 
-    const auto [output_blinding_factors, proof] = generate_range_proof(outputs);
+    const auto [output_blinding_factors_sum, proof] = generate_range_proof(outputs);
 
     std::vector<output_commit> output_commits;
     std::transform
@@ -366,13 +367,6 @@ namespace rct {
        }
        );
 
-
-    const rct_scalar output_blinding_factors_sum = std::reduce
-      (
-       output_blinding_factors.begin()
-       , output_blinding_factors.end()
-       , s_zero
-       );
 
     const rct_scalarV pseudo_input_blinding_factors =
       generate_matching_blinding_factors(output_blinding_factors_sum, inputs.size());
