@@ -309,7 +309,7 @@ namespace rct {
       (
        std::back_inserter(bs)
        , xs.size() - 1
-       , []() { return crypto::scalarGen(); }
+       , crypto::scalarGen
        );
 
     const rct_scalar last = match -
