@@ -133,3 +133,17 @@ TEST(tree_hash, random_10000) {
 
   EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
+
+// TEST(tree_hash, random_1_m) {
+//   std::vector<hash> xs;
+
+//   std::generate_n
+//     (
+//      std::back_inserter(xs)
+//      , 1000000
+//      , hashGen
+//      );
+
+//   EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
+// }
+
