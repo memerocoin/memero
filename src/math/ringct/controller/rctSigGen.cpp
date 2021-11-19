@@ -185,7 +185,7 @@ namespace rct {
        }
        );
 
-    const rctDataBasic rctSigBasic = 
+    const rctDataBasic rct_data_basic =
       { RCTTypeCLSAG
         , message
         , decoys
@@ -219,20 +219,21 @@ namespace rct {
        , [](const auto x) { return x.second; }
        );
 
-    const rctDataPrunable preRctSigPrunable =
+    const auto unsafe_proof = toUnsafeBulletproof(proof);
+    const rctDataPrunable dummy_rct_data_prunable_for_clsag_message_hash =
       {
-        { toUnsafeBulletproof(proof) }
+        { unsafe_proof }
         , {}
         , pseudo_input_commits
       };
 
-    const rctData preRctSig =
+    const rctData dummy_rct_data_for_clsag_message_hash =
       {
-        rctSigBasic
-        , preRctSigPrunable
+        rct_data_basic
+        , dummy_rct_data_prunable_for_clsag_message_hash
       };
 
-    const auto maybeMessage = get_ring_signature_message(preRctSig);
+    const auto maybeMessage = get_ring_signature_message(dummy_rct_data_for_clsag_message_hash);
     LOG_ERROR_AND_THROW_UNLESS(maybeMessage, "failed to generate rct message");
 
     const crypto::hash full_message = *maybeMessage;
@@ -258,10 +259,14 @@ namespace rct {
        }
        );
 
-    rctData rctData = preRctSig;
-    rctData.p.CLSAGs = clsags;
-
-    return rctData;
+    return rctData {
+      rct_data_basic
+      , {
+        { unsafe_proof }
+        , clsags
+        , pseudo_input_commits
+      }
+    };
   }
 
 }
