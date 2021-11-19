@@ -356,6 +356,9 @@ namespace rct {
          );
     }
 
+
+    // 1. basic
+
     const auto [output_blinding_factors_sum, proof] = generate_range_proof(outputs);
 
     std::vector<output_commit> output_commits;
@@ -369,6 +372,14 @@ namespace rct {
        }
        );
 
+    output_public_dataM decoys;
+    std::transform
+      (
+       inputs.begin()
+       , inputs.end()
+       , std::back_inserter(decoys)
+       , [](const auto x) -> output_public_dataV { return x.decoys; }
+       );
 
     std::vector<ecdh_encrypted_data_t> ecdh;
     std::transform
@@ -383,6 +394,18 @@ namespace rct {
        }
        );
 
+    const rctDataBasic rctSigBasic = 
+      { RCTTypeCLSAG
+        , message
+        , decoys
+        , ecdh
+        , output_commits
+        , fee
+      };
+
+
+    // 2. prunable
+
     std::vector<amount_t> input_amounts;
     std::transform
       (
@@ -395,24 +418,6 @@ namespace rct {
     const std::vector<std::pair<rct_scalar, rct_point>> pseudo_inputs =
       generate_matching_input_commits(output_blinding_factors_sum, input_amounts);
 
-    output_public_dataM decoys;
-
-    std::transform
-      (
-       inputs.begin()
-       , inputs.end()
-       , std::back_inserter(decoys)
-       , [](const auto x) -> output_public_dataV { return x.decoys; }
-       );
-
-    const rctDataBasic preRctSigBasic = 
-      { RCTTypeCLSAG
-        , message
-        , decoys
-        , ecdh
-        , output_commits
-        , fee
-      };
 
     rct_pointV pseudo_input_commits;
     std::transform
@@ -432,7 +437,7 @@ namespace rct {
 
     const rctData preRctSig =
       {
-        preRctSigBasic
+        rctSigBasic
         , preRctSigPrunable
       };
 
