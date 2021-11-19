@@ -26,8 +26,13 @@ hash sha3(const epee::blob::span x) noexcept {
 
 hash tree_hash(const std::span<const hash> hashes) noexcept {
   hash root_hash;
-  ::tree_hash(reinterpret_cast<const uint8_t (*)[HASH_SIZE]>(hashes.data()), hashes.size(), root_hash.data.data());
+  tree_hash(reinterpret_cast<const uint8_t (*)[HASH_SIZE]>(hashes.data()), hashes.size(), root_hash.data.data());
   return root_hash;
+}
+
+
+hash tree_hash_2(const std::span<const hash> hashes) noexcept {
+  return tree_hash(hashes);
 }
 
 }

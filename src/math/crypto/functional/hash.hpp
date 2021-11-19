@@ -53,6 +53,7 @@ namespace crypto {
     Cryptonight hash functions
   */
   hash tree_hash(const std::span<const hash> hashes) noexcept;
+  hash tree_hash_2(const std::span<const hash> hashes) noexcept;
 }
 
 namespace std

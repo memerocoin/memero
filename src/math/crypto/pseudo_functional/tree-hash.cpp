@@ -36,6 +36,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace crypto
+{
+
 /***
 * Round to power of two, for count>=3 and for count being not too large (as reasonable for tree hash calculations)
 */
@@ -104,4 +107,6 @@ void tree_hash(const uint8_t (*hashes)[HASH_SIZE], size_t count, uint8_t *root_h
     sha3_raw(ints, 64, root_hash);
     free(ints);
   }
+}
+
 }
