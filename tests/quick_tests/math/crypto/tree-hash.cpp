@@ -40,8 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace crypto;
 
-hash hashGen() {
-  const auto x = randomScalar();
+hash randomHash() {
+  const auto x = randomCryptoData();
   return d2h(x);
 }
 
@@ -59,7 +59,7 @@ TEST(quick_tree_hash, random_1_to_1000) {
       (
        std::back_inserter(xs)
        , i
-       , hashGen
+       , randomHash
        );
 
     EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
@@ -73,7 +73,7 @@ TEST(quick_tree_hash, random_10000) {
     (
      std::back_inserter(xs)
        , 10000
-       , hashGen
+       , randomHash
      );
 
   EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
@@ -87,7 +87,7 @@ TEST(quick_tree_hash, random_10000) {
 //     (
 //      std::back_inserter(xs)
 //      , 1000000
-//      , hashGen
+//      , randomHash
 //      );
 
 //   EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));

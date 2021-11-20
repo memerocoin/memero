@@ -70,6 +70,12 @@ namespace crypto {
     return x;
   }
 
+  crypto_data randomCryptoData() {
+    crypto_data x;
+    generate_random_bytes(x.data.size(), x.data.data());
+    return x;
+  }
+
   /*
    * generate public and secret keys from a random 256-bit integer
    * TODO: allow specifying random value (for wallet recovery)

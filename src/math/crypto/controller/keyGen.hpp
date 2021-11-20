@@ -29,6 +29,8 @@ namespace crypto {
 
   uint64_t randomAmount();
 
+  crypto_data randomCryptoData();
+
   /* Generate a new key pair
    */
   std::pair<secret_key, public_key> generate_keys
