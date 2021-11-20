@@ -109,3 +109,187 @@ TEST(quick_clsag, random_input)
 
   EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
 }
+
+
+TEST(quick_clsag, wrong_message)
+{
+  const auto i = randomClsagInput();
+  const auto sig = generate_clsag_signature
+    (
+     i.message
+     , i.signer_sk
+     , i.signer_blinding_factor
+     , i.index_in_decoys
+     , i.pseudo_input_blinding_factor
+     , i.pseudo_input_commit
+     , i.decoys
+     );
+
+  const crypto::hash message = d2h(randomCryptoData());
+  EXPECT_FALSE(verify_clsag_signature(message, sig, i.decoys, i.pseudo_input_commit));
+}
+
+
+TEST(quick_clsag, wrong_decoys_1)
+{
+  const auto i = randomClsagInput();
+  const auto sig = generate_clsag_signature
+    (
+     i.message
+     , i.signer_sk
+     , i.signer_blinding_factor
+     , i.index_in_decoys
+     , i.pseudo_input_blinding_factor
+     , i.pseudo_input_commit
+     , i.decoys
+     );
+
+  auto decoys = i.decoys;
+  const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
+  const auto decoy = decoys[index_in_decoys];
+
+  const output_public_data wrong_decoy_1 = {randomPoint(), decoy.commit};
+  decoys[index_in_decoys] = wrong_decoy_1;
+
+  EXPECT_FALSE(verify_clsag_signature(i.message, sig, decoys, i.pseudo_input_commit));
+}
+
+TEST(quick_clsag, wrong_decoys_2)
+{
+  const auto i = randomClsagInput();
+  const auto sig = generate_clsag_signature
+    (
+     i.message
+     , i.signer_sk
+     , i.signer_blinding_factor
+     , i.index_in_decoys
+     , i.pseudo_input_blinding_factor
+     , i.pseudo_input_commit
+     , i.decoys
+     );
+
+  auto decoys = i.decoys;
+  const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
+  const auto decoy = decoys[index_in_decoys];
+
+  const output_public_data wrong_decoy_2 = {decoy.output_spend_pk, randomPoint()};
+  decoys[index_in_decoys] = wrong_decoy_2;
+
+  EXPECT_FALSE(verify_clsag_signature(i.message, sig, decoys, i.pseudo_input_commit));
+}
+
+
+TEST(quick_clsag, wrong_pseudo_input_commit)
+{
+  const auto i = randomClsagInput();
+  const auto sig = generate_clsag_signature
+    (
+     i.message
+     , i.signer_sk
+     , i.signer_blinding_factor
+     , i.index_in_decoys
+     , i.pseudo_input_blinding_factor
+     , i.pseudo_input_commit
+     , i.decoys
+     );
+
+  const auto pseudo_input_commit = randomPoint();
+
+  EXPECT_FALSE(verify_clsag_signature(i.message, sig, i.decoys, pseudo_input_commit));
+}
+
+
+// struct clsag
+// {
+//   rct_scalarV s; // scalars
+//   rct_scalar c1;
+//   rct_point signer_pk_image; // signing key image
+//   rct_point signer_pk_image_from_blinding_factor_surplus; // commitment key image
+// };
+
+TEST(quick_clsag, wrong_sig_c1)
+{
+  const auto i = randomClsagInput();
+  const auto sig = generate_clsag_signature
+    (
+     i.message
+     , i.signer_sk
+     , i.signer_blinding_factor
+     , i.index_in_decoys
+     , i.pseudo_input_blinding_factor
+     , i.pseudo_input_commit
+     , i.decoys
+     );
+
+  clsag sig1 = sig;
+
+  sig1.c1 = randomScalar();
+
+  EXPECT_FALSE(verify_clsag_signature(i.message, sig1, i.decoys, i.pseudo_input_commit));
+}
+
+
+TEST(quick_clsag, wrong_sig_signer_pk_image)
+{
+  const auto i = randomClsagInput();
+  const auto sig = generate_clsag_signature
+    (
+     i.message
+     , i.signer_sk
+     , i.signer_blinding_factor
+     , i.index_in_decoys
+     , i.pseudo_input_blinding_factor
+     , i.pseudo_input_commit
+     , i.decoys
+     );
+
+  clsag sig1 = sig;
+
+  sig1.signer_pk_image = randomPoint();
+
+  EXPECT_FALSE(verify_clsag_signature(i.message, sig1, i.decoys, i.pseudo_input_commit));
+}
+
+TEST(quick_clsag, wrong_sig_signer_pk_image_from_blinding_factor_surplus)
+{
+  const auto i = randomClsagInput();
+  const auto sig = generate_clsag_signature
+    (
+     i.message
+     , i.signer_sk
+     , i.signer_blinding_factor
+     , i.index_in_decoys
+     , i.pseudo_input_blinding_factor
+     , i.pseudo_input_commit
+     , i.decoys
+     );
+
+  clsag sig1 = sig;
+
+  sig1.signer_pk_image_from_blinding_factor_surplus = randomPoint();
+
+  EXPECT_FALSE(verify_clsag_signature(i.message, sig1, i.decoys, i.pseudo_input_commit));
+}
+
+
+TEST(quick_clsag, wrong_sig_s)
+{
+  const auto i = randomClsagInput();
+  const auto sig = generate_clsag_signature
+    (
+     i.message
+     , i.signer_sk
+     , i.signer_blinding_factor
+     , i.index_in_decoys
+     , i.pseudo_input_blinding_factor
+     , i.pseudo_input_commit
+     , i.decoys
+     );
+
+  clsag sig1 = sig;
+
+  const auto index_to_change = rand_idx<size_t>(sig1.s.size());
+  sig1.s[index_to_change] = randomScalar();
+
+  EXPECT_FALSE(verify_clsag_signature(i.message, sig1, i.decoys, i.pseudo_input_commit));
+}
