@@ -647,10 +647,10 @@ bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orph
   // try to find block in alternative chain
   catch (const BLOCK_DNE& e)
   {
-    const auto r = m_db->get_alt_block(h);
-    if (r)
+    alt_block_data_t data;
+    cryptonote::string_blob blob;
+    if (m_db->get_alt_block(h, &data, &blob))
     {
-      const auto& [data, blob] = *r;
       const auto maybeBlock = maybe_block_from_blob(blob);
       if (!maybeBlock)
       {
@@ -1190,14 +1190,14 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     //build alternative subchain, front -> mainchain, back -> alternative head
     //block is not related with head of main chain
     //first of all - look in alternative chains container
-    const auto maybe_parent_in_alt = m_db->get_alt_block(*from_block);
+    alt_block_data_t prev_data;
+    bool parent_in_alt = m_db->get_alt_block(*from_block, &prev_data, NULL);
     bool parent_in_main = m_db->block_exists(*from_block);
-    if (!maybe_parent_in_alt && !parent_in_main)
+    if (!parent_in_alt && !parent_in_main)
     {
       LOG_ERROR("Unknown from block");
       return false;
     }
-    const alt_block_data_t prev_data = maybe_parent_in_alt->first;
 
     //we have new block in alternative chain
     std::list<block_extended_info> alt_chain;
@@ -1395,11 +1395,12 @@ bool Blockchain::complete_timestamps_vector(uint64_t start_top_height, std::vect
 bool Blockchain::build_alt_chain(const crypto::hash &prev_id, std::list<block_extended_info>& alt_chain, std::vector<uint64_t> &timestamps, block_verification_context& bvc) const
 {
     //build alternative subchain, front -> mainchain, back -> alternative head
+    cryptonote::alt_block_data_t data;
+    cryptonote::string_blob blob;
+    bool found = m_db->get_alt_block(prev_id, &data, &blob);
     timestamps.clear();
-    auto maybeAlt = m_db->get_alt_block(prev_id);
-    while(maybeAlt)
+    while(found)
     {
-      const auto& [data, blob] = *maybeAlt;
       block_extended_info bei;
       const auto maybeBlock = maybe_block_from_blob(blob);
       LOG_ERROR_AND_RETURN_UNLESS(maybeBlock, false, "Failed to parse alt block");
@@ -1411,7 +1412,7 @@ bool Blockchain::build_alt_chain(const crypto::hash &prev_id, std::list<block_ex
       bei.already_generated_coins = data.already_generated_coins;
       timestamps.push_back(bei.bl.timestamp);
       alt_chain.push_front(std::move(bei));
-      maybeAlt = m_db->get_alt_block(bei.bl.prev_id);
+      found = m_db->get_alt_block(bei.bl.prev_id, &data, &blob);
     }
 
     // if block to be added connects to known blocks that aren't part of the
@@ -1470,13 +1471,10 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
 
   //block is not related with head of main chain
   //first of all - look in alternative chains container
-  alt_block_data_t prev_data{};
-  const auto maybe_parent_in_alt = m_db->get_alt_block(b.prev_id);
-  if (maybe_parent_in_alt) {
-    prev_data = maybe_parent_in_alt->first;
-  }
+  alt_block_data_t prev_data;
+  bool parent_in_alt = m_db->get_alt_block(b.prev_id, &prev_data, NULL);
   bool parent_in_main = m_db->block_exists(b.prev_id);
-  if (maybe_parent_in_alt || parent_in_main)
+  if (parent_in_alt || parent_in_main)
   {
     //we have new block in alternative chain
     std::list<block_extended_info> alt_chain;
@@ -1581,8 +1579,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
 
     // add block to alternate blocks storage,
     // as well as the current "alt chain" container
-    const auto maybeAlt = m_db->get_alt_block(b.prev_id);
-    LOG_ERROR_AND_RETURN_UNLESS(!maybeAlt, false, "insertion of new alternative block returned as it already exists");
+    LOG_ERROR_AND_RETURN_UNLESS(!m_db->get_alt_block(id, NULL, NULL), false, "insertion of new alternative block returned as it already exists");
     cryptonote::alt_block_data_t data;
     data.height = bei.height;
     data.cumulative_weight = bei.block_cumulative_weight;
@@ -1658,7 +1655,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
        << config::lol::tab_sep << "height:         " << block_height << std::endl
        << config::lol::tab_sep << "id:             " << id << std::endl
        << config::lol::tab_sep << "parent:         " << b.prev_id << std::endl
-       << config::lol::tab_sep << "parent in alt:  " << (bool)maybe_parent_in_alt << std::endl
+       << config::lol::tab_sep << "parent in alt:  " << parent_in_alt << std::endl
        << config::lol::tab_sep << "parent in main: " << parent_in_main << std::endl
        );
   }
@@ -2292,7 +2289,7 @@ bool Blockchain::have_block_unlocked(const crypto::hash& id, int *where) const
     return true;
   }
 
-  if(m_db->get_alt_block(id))
+  if(m_db->get_alt_block(id, NULL, NULL))
   {
     LOG_PRINT_L2("block " << id << " found in alternative chains");
     if (where) *where = HAVE_BLOCK_ALT_CHAIN;
