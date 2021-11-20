@@ -38,14 +38,14 @@
 
 namespace crypto {
 
-  void generate_random_bytes(size_t N, uint8_t *bytes);
+  void generate_random_bytes(uint8_t *bytes, const size_t N);
 
   /* Generate a value filled with random bytes.
    */
   template<typename T>
   typename std::enable_if<std::is_trivial<T>::value, T>::type rand() {
     typename std::remove_cv<T>::type res;
-    generate_random_bytes(sizeof(T), (uint8_t*)&res);
+    generate_random_bytes((uint8_t*)&res, sizeof(T));
     return res;
   }
 

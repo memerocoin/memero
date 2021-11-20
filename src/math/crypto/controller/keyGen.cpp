@@ -70,7 +70,7 @@ namespace crypto {
 
   crypto_data randomCryptoData() {
     crypto_data x;
-    generate_random_bytes(x.data.size(), x.data.data());
+    generate_random_bytes(x.data.data(), x.data.size());
     return x;
   }
 

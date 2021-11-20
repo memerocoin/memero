@@ -37,7 +37,7 @@
 
 namespace crypto {
 
-  void generate_random_bytes(size_t N, uint8_t *bytes)
+  void generate_random_bytes(uint8_t *bytes, const size_t N)
   {
     init();
 
