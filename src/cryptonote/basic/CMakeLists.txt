@@ -42,4 +42,6 @@ add_library(cryptonote_basic
 
 target_link_libraries(cryptonote_basic
   tools_common
+  epee_storage_basic
+  math_crypto
 )

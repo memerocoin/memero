@@ -33,7 +33,10 @@ add_library(math_ringct_basic
   functional/vectorOps.cpp
   functional/multi_exponentiation.cpp
 
+  pseudo_functional/clsag.cpp
   pseudo_functional/bulletproofs.cpp
+
+  controller/clsagGen.cpp
 )
 
 target_link_libraries(math_ringct_basic
@@ -42,13 +45,10 @@ target_link_libraries(math_ringct_basic
 
 add_library(math_ringct
   pseudo_functional/ringCT.cpp
-  pseudo_functional/clsag.cpp
   controller/ringCT_Gen.cpp
-  controller/clsagGen.cpp
 )
 
 target_link_libraries(math_ringct
   math_ringct_basic
   cryptonote_basic
-  tools_common
 )
