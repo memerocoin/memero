@@ -51,90 +51,7 @@ std::optional<hash> tree_hash_raw(const std::span<const hash> hashes) noexcept {
   return root_hash;
 }
 
-TEST(tree_hash,  random_1) {
-  const std::vector<hash> xs = {hashGen()};
-  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
-}
-
-TEST(tree_hash, random_2) {
-  std::vector<hash> xs;
-
-  std::generate_n
-    (
-     std::back_inserter(xs)
-     , 2
-     , hashGen
-     );
-
-  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
-}
-
-TEST(tree_hash, random_3) {
-  std::vector<hash> xs;
-
-  std::generate_n
-    (
-     std::back_inserter(xs)
-     , 3
-     , hashGen
-     );
-
-  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
-}
-
-TEST(tree_hash, random_4) {
-  std::vector<hash> xs;
-
-  std::generate_n
-    (
-     std::back_inserter(xs)
-     , 4
-     , hashGen
-     );
-
-  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
-}
-
-TEST(tree_hash, random_10) {
-  std::vector<hash> xs;
-
-  std::generate_n
-    (
-     std::back_inserter(xs)
-     , 10
-     , hashGen
-     );
-
-  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
-}
-
-TEST(tree_hash, random_100) {
-  std::vector<hash> xs;
-
-  std::generate_n
-    (
-     std::back_inserter(xs)
-     , 100
-     , hashGen
-     );
-
-  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
-}
-
-TEST(tree_hash, random_10000) {
-  std::vector<hash> xs;
-
-  std::generate_n
-    (
-     std::back_inserter(xs)
-       , 10000
-       , hashGen
-     );
-
-  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
-}
-
-TEST(tree_hash, random_1_to_1000) {
+TEST(quick_tree_hash, random_1_to_1000) {
   for (size_t i = 1; i <= 1000; i++) {
     std::vector<hash> xs;
 
@@ -148,6 +65,20 @@ TEST(tree_hash, random_1_to_1000) {
     EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
   }
 }
+
+TEST(quick_tree_hash, random_10000) {
+  std::vector<hash> xs;
+
+  std::generate_n
+    (
+     std::back_inserter(xs)
+       , 10000
+       , hashGen
+     );
+
+  EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
+}
+
 
 // TEST(tree_hash, random_1_m) {
 //   std::vector<hash> xs;

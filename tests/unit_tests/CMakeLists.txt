@@ -72,8 +72,6 @@ add_executable(unit_tests_basic
   bulletproofs.cpp
   # multiexp.cpp
   math/crypto/group.cpp
-  math/crypto/tree-hash.cpp
-  math/crypto/tree-hash-raw.cpp
   math/ringct/rctOps.cpp
 )
 

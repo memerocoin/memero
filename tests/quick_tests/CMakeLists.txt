@@ -28,6 +28,9 @@
 
 
 add_executable(quick_tests
+  math/crypto/tree-hash.cpp
+  math/crypto/tree-hash-raw.cpp
+
   math/ringct/bulletproofs.cpp
 )
 
