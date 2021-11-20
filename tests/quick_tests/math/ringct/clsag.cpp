@@ -125,6 +125,8 @@ TEST(quick_clsag, wrong_message)
      , i.decoys
      );
 
+  EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
+
   const crypto::hash message = d2h(randomCryptoData());
   EXPECT_FALSE(verify_clsag_signature(message, sig, i.decoys, i.pseudo_input_commit));
 }
@@ -143,6 +145,8 @@ TEST(quick_clsag, wrong_decoys_1)
      , i.pseudo_input_commit
      , i.decoys
      );
+
+  EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
 
   auto decoys = i.decoys;
   const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
@@ -168,6 +172,8 @@ TEST(quick_clsag, wrong_decoys_2)
      , i.decoys
      );
 
+  EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
+
   auto decoys = i.decoys;
   const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
   const auto decoy = decoys[index_in_decoys];
@@ -192,6 +198,8 @@ TEST(quick_clsag, wrong_pseudo_input_commit)
      , i.pseudo_input_commit
      , i.decoys
      );
+
+  EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
 
   const auto pseudo_input_commit = randomPoint();
 
@@ -221,6 +229,8 @@ TEST(quick_clsag, wrong_sig_c1)
      , i.decoys
      );
 
+  EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
+
   clsag sig1 = sig;
 
   sig1.c1 = randomScalar();
@@ -243,6 +253,8 @@ TEST(quick_clsag, wrong_sig_signer_pk_image)
      , i.decoys
      );
 
+  EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
+
   clsag sig1 = sig;
 
   sig1.signer_pk_image = randomPoint();
@@ -263,6 +275,8 @@ TEST(quick_clsag, wrong_sig_signer_pk_image_from_blinding_factor_surplus)
      , i.pseudo_input_commit
      , i.decoys
      );
+
+  EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
 
   clsag sig1 = sig;
 
@@ -285,6 +299,8 @@ TEST(quick_clsag, wrong_sig_s)
      , i.pseudo_input_commit
      , i.decoys
      );
+
+  EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
 
   clsag sig1 = sig;
 
