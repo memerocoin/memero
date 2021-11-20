@@ -65,9 +65,7 @@ namespace crypto {
   }
 
   uint64_t randomAmount() {
-    uint64_t x;
-    generate_random_bytes(sizeof(uint64_t), (uint8_t*)&x);
-    return x;
+    return crypto::rand<uint64_t>();
   }
 
   crypto_data randomCryptoData() {
