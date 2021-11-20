@@ -65,6 +65,22 @@ std::vector<hash> random_hashes(const size_t i) {
   return xs;
 }
 
+// class on_input: public testing::TestWithParam<size_t> {};
+
+// TEST_P(on_input, size) {
+//   const auto xs = random_hashes(GetParam());
+
+//   EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
+// }
+
+// INSTANTIATE_TEST_SUITE_P
+// (
+//  SUITE_tree_hash
+//  , on_input
+//  , testing::Range<size_t>(1, 100)
+//  );
+
+
 TEST(quick_tree_hash, enum_input_size_1_to_1000) {
   for (size_t i = 1; i <= 1000; i++) {
     const auto xs = random_hashes(i);
