@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace crypto;
 
 hash hashGen() {
-  const auto x = scalarGen();
+  const auto x = randomScalar();
   return d2h(x);
 }
 

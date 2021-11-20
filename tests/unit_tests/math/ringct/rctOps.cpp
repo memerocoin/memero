@@ -46,7 +46,7 @@ TEST(H_8, h_8)
 TEST(G_random, g_random)
 {
   // for (size_t i = 0; i < 100; i++) {
-    const auto a = scalarGen();
+    const auto a = randomScalar();
     EXPECT_EQ(G_(a), multBase(a));
   // }
 }
@@ -54,7 +54,7 @@ TEST(G_random, g_random)
 TEST(H_random, h_random)
 {
   // for (size_t i = 0; i < 100; i++) {
-    const auto a = scalarGen();
+    const auto a = randomScalar();
     EXPECT_EQ(H_(a), H ^ a);
   // }
 }

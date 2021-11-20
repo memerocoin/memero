@@ -38,7 +38,7 @@
 
 TEST(tx_proof, prove_verify_v2)
 {
-    crypto::secret_key r = s2sk(crypto::scalarGen());
+    crypto::secret_key r = s2sk(crypto::randomScalar());
 
     // A = aG
     // B = bG

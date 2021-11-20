@@ -100,7 +100,7 @@ namespace rct {
       (
        std::back_inserter(bs)
        , xs.size() - 1
-       , crypto::scalarGen
+       , crypto::randomScalar
        );
 
     const rct_scalar last = match -

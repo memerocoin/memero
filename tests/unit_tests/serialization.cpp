@@ -68,7 +68,7 @@ namespace rct {
   using ct_secret_keyS = std::span<const ct_secret_key>;
 
   std::pair<rct_scalar, rct_point> skpkGen() {
-    const rct_scalar sk = crypto::scalarGen();
+    const rct_scalar sk = crypto::randomScalar();
     return std::make_pair(sk, G_(sk));
   }
 
@@ -398,14 +398,14 @@ TEST(Serialization, serializes_ringct_types)
   rct::rctData s0, s1;
   cryptonote::transaction tx0, tx1;
 
-  key0 = crypto::scalarGen();
+  key0 = crypto::randomScalar();
   ASSERT_TRUE(serialization::dump_binary(key0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, key1));
   ASSERT_TRUE(key0 == key1);
 
   keyv0 = crypto::scalarVGen(30);
   for (size_t n = 0; n < keyv0.size(); ++n)
-    keyv0[n] = crypto::scalarGen();
+    keyv0[n] = crypto::randomScalar();
   ASSERT_TRUE(serialization::dump_binary(keyv0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, keyv1));
   ASSERT_TRUE(keyv0.size() == keyv1.size());
@@ -418,7 +418,7 @@ TEST(Serialization, serializes_ringct_types)
 
   for (size_t n = 0; n < keym0.size(); ++n)
     for (size_t i = 0; i < keym0[n].size(); ++i)
-      keym0[n][i] = crypto::scalarGen();
+      keym0[n][i] = crypto::randomScalar();
 
   ASSERT_TRUE(serialization::dump_binary(keym0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, keym1));
@@ -475,7 +475,7 @@ TEST(Serialization, serializes_ringct_types)
     }
   }
 
-  ecdh0.masked_amount = crypto::scalar_to_int(crypto::scalarGen());
+  ecdh0.masked_amount = crypto::scalar_to_int(crypto::randomScalar());
   ASSERT_TRUE(serialization::dump_binary(ecdh0, blob));
   ASSERT_TRUE(serialization::parse_binary(blob, ecdh1));
   ASSERT_TRUE(!memcmp(&ecdh0.masked_amount, &ecdh1.masked_amount, sizeof(ecdh0.masked_amount)));

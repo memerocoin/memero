@@ -67,8 +67,8 @@ TEST(device, ops)
   crypto::public_key pk0, pk1;
 
   std::tie(sk, pk) = rct::skpkGen();
-  sk0 = crypto::s2sk(crypto::scalarGen());
-  sk1 = crypto::s2sk(crypto::scalarGen());
+  sk0 = crypto::s2sk(crypto::randomScalar());
+  sk1 = crypto::s2sk(crypto::randomScalar());
   pk0 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk0));
   pk1 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk1));
 
@@ -86,9 +86,9 @@ TEST(device, ecdh32)
 
   hw::core::device_default dev;
   rct::ecdh_encrypted_data tuple, tuple2;
-  rct::rct_point key = crypto::scalarGen();
-  tuple.mask = crypto::scalarGen();
-  tuple.amount = crypto::scalarGen();
+  rct::rct_point key = crypto::randomScalar();
+  tuple.mask = crypto::randomScalar();
+  tuple.amount = crypto::randomScalar();
   tuple2 = tuple;
   dev.ecdh_encrypted_dataEncode(tuple, key);
   dev.ecdh_encrypted_dataDecode(tuple, key);

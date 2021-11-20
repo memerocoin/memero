@@ -32,11 +32,11 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/multi_exponentiation.hpp"
 
-#define TESTSCALAR []{ static const rct::rct_scalar TESTSCALAR = crypto::scalarGen(); return TESTSCALAR; }()
+#define TESTSCALAR []{ static const rct::rct_scalar TESTSCALAR = crypto::randomScalar(); return TESTSCALAR; }()
 #define TESTPOW2SCALAR []{ static const rct::rct_scalar TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()
 #define TESTSMALLSCALAR []{ static const rct::rct_scalar TESTSMALLSCALAR = {{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTSMALLSCALAR; }()
 #define TESTPOINT []{ \
-    static const rct::rct_point TESTPOINT = rct::multG(crypto::scalarGen()); \
+    static const rct::rct_point TESTPOINT = rct::multG(crypto::randomScalar()); \
  return TESTPOINT;                                                   \
 }()
 
@@ -101,7 +101,7 @@ TEST(multiexp, pippenger_random)
   std::vector<rct::MultiexpData> data;
   for (int n = 0; n < 32; ++n)
   {
-    data.push_back({crypto::scalarGen(), get_p(rct::multG(crypto::scalarGen()))});
+    data.push_back({crypto::randomScalar(), get_p(rct::multG(crypto::randomScalar()))});
     ASSERT_TRUE(basic(data) == pippenger(data));
   }
 }
@@ -113,7 +113,7 @@ TEST(multiexp, pippenger_cached)
   for (size_t n = 0; n < N; ++n)
   {
     P[n].scalar = rct::s_zero;
-    P[n].point = rct::multG(crypto::scalarGen());
+    P[n].point = rct::multG(crypto::randomScalar());
   }
   for (size_t n = 0; n < N/16; ++n)
   {
@@ -121,7 +121,7 @@ TEST(multiexp, pippenger_cached)
     size_t sz = 1 + crypto::rand<size_t>() % (N-1);
     for (size_t s = 0; s < sz; ++s)
     {
-      data.push_back({crypto::scalarGen(), P[s].point});
+      data.push_back({crypto::randomScalar(), P[s].point});
     }
     ASSERT_TRUE(basic(data) == pippenger(data));
   }

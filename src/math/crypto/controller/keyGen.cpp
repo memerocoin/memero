@@ -39,7 +39,7 @@ namespace crypto {
 
 
   //generates a random rct_scalar which can be used as a secret key or mask
-  ec_scalar scalarGen() {
+  ec_scalar randomScalar() {
     ec_scalar s;
     crypto_core_ed25519_scalar_random(s.data.data());
     return s;
@@ -51,7 +51,7 @@ namespace crypto {
       (
        std::back_inserter(xs)
        , n
-       , scalarGen
+       , randomScalar
        );
     return xs;
   }
@@ -68,7 +68,7 @@ namespace crypto {
    *
    */
   std::pair<secret_key, public_key> generate_keys(std::optional<secret_key> recovery_key) {
-    const secret_key s = recovery_key ? s2sk(reduce(*recovery_key)) : s2sk(scalarGen());
+    const secret_key s = recovery_key ? s2sk(reduce(*recovery_key)) : s2sk(randomScalar());
     return {s, to_pk(s)};
   }
 

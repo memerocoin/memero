@@ -30,7 +30,7 @@ namespace crypto {
    )
   {
     while (true) {
-      const ec_scalar k = scalarGen();
+      const ec_scalar k = randomScalar();
       if (k == s_0) continue;
 
       const epee::blob::data message_data(message.begin(), message.end());

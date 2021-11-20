@@ -318,13 +318,13 @@ try_again:
   rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   // PAPER LINES 43-44
-  const rct_scalar alpha = crypto::scalarGen();
+  const rct_scalar alpha = crypto::randomScalar();
   const rct_point A = vector_exponent(aL8, aR8) + G_(alpha * rct::s_inv_eight);
 
   // PAPER LINES 45-47
   const rct_scalarV sL = crypto::scalarVGen(MN);
   const rct_scalarV sR = crypto::scalarVGen(MN);
-  const rct_scalar rho = crypto::scalarGen();
+  const rct_scalar rho = crypto::randomScalar();
   const rct_point S = (vector_exponent(sL, sR) + G_(rho)) ^ rct::s_inv_eight;
 
   // PAPER LINES 48-50
@@ -375,8 +375,8 @@ try_again:
   const rct_scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
-  const rct_scalar tau1 = crypto::scalarGen();
-  const rct_scalar tau2 = crypto::scalarGen();
+  const rct_scalar tau1 = crypto::randomScalar();
+  const rct_scalar tau2 = crypto::randomScalar();
 
   const rct_point T1 = G_(tau1 * rct::s_inv_eight) + H_(t1 * rct::s_inv_eight);
   const rct_point T2 = G_(tau2 * rct::s_inv_eight) + H_(t2 * rct::s_inv_eight);
@@ -635,8 +635,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   const rct_scalarV winv = invertV(pd.w);
   const rct_scalar yinv = invert(pd.y);
 
-  const rct_scalar weight_y = crypto::scalarGen();
-  const rct_scalar weight_z = crypto::scalarGen();
+  const rct_scalar weight_y = crypto::randomScalar();
+  const rct_scalar weight_z = crypto::randomScalar();
 
   std::transform
     (

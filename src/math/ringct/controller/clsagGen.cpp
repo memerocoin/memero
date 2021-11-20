@@ -131,7 +131,7 @@ namespace rct {
     c_to_hash.push_back(pseudo_input_commit);
     c_to_hash.push_back(crypto::h2d(message));
 
-    const rct_scalar a = crypto::scalarGen();
+    const rct_scalar a = crypto::randomScalar();
     c_to_hash.push_back(G_(a));
     c_to_hash.push_back(signer_pk_hash ^ a);
 
@@ -152,7 +152,7 @@ namespace rct {
       const rct_scalar c_p = mu_P * c;
       const rct_scalar c_c = mu_C * c;
 
-      const auto sk = crypto::scalarGen();
+      const auto sk = crypto::randomScalar();
 
       // Compute L
       const rct_point L = sum

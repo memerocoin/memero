@@ -65,7 +65,7 @@ namespace rct {
   inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
 
   std::pair<rct_scalar, rct_point> skpkGen() {
-    const rct_scalar sk = crypto::scalarGen();
+    const rct_scalar sk = crypto::randomScalar();
     return std::make_pair(sk, G_(sk));
   }
 
@@ -166,7 +166,7 @@ size_t populateRingsSimpleDummy(output_public_dataV& decoys, const output_public
   size_t index = ((size_t)std::rand()) % (mixin + 1);
   for (size_t i = 0; i <= mixin; i++) {
     if (i != index) {
-      decoys[i] = {G_(crypto::scalarGen()), G_(crypto::scalarGen())};
+      decoys[i] = {G_(crypto::randomScalar()), G_(crypto::randomScalar())};
     } else {
       decoys[i] = inPk;
     }
@@ -223,12 +223,12 @@ TEST(ringct, CLSAG)
   std::tie(p, pubs[idx].output_spend_pk) = skpkGen();
 
   // Set C[idx]
-  t = crypto::scalarGen();
-  u = crypto::scalarGen();
+  t = crypto::randomScalar();
+  u = crypto::randomScalar();
   pubs[idx].commit = G_(t) + H_(u);
 
   // Set commitment offset
-  t2 = crypto::scalarGen();
+  t2 = crypto::randomScalar();
   rct_point Cout = G_(t2) + H_(u);
 
   // Prepare generation inputs
@@ -262,7 +262,7 @@ TEST(ringct, CLSAG)
   {
     ct_secret_key insk2;
     insk2.addr = insk.addr;
-    insk2.blinding_factor = crypto::scalarGen();
+    insk2.blinding_factor = crypto::randomScalar();
     clsag = rct::generate_clsag_signature_test(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   }
@@ -270,7 +270,7 @@ TEST(ringct, CLSAG)
 
   // bad C at creation
   backup = pubs[idx];
-  pubs[idx].commit = G_(crypto::scalarGen());
+  pubs[idx].commit = G_(crypto::randomScalar());
   try
   {
     clsag = rct::generate_clsag_signature_test(message,pubs,insk,t2,Cout,idx);
@@ -283,7 +283,7 @@ TEST(ringct, CLSAG)
   try
   {
     ct_secret_key insk2;
-    insk2.addr = crypto::scalarGen();
+    insk2.addr = crypto::randomScalar();
     insk2.blinding_factor = insk.blinding_factor;
     clsag = rct::generate_clsag_signature_test(message,pubs,insk2,t2,Cout,idx);
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
@@ -292,7 +292,7 @@ TEST(ringct, CLSAG)
 
   // bad P at creation
   backup = pubs[idx];
-  pubs[idx].output_spend_pk = G_(crypto::scalarGen());
+  pubs[idx].output_spend_pk = G_(crypto::randomScalar());
   try
   {
     clsag = rct::generate_clsag_signature_test(message,pubs,insk,t2,Cout,idx);
@@ -322,7 +322,7 @@ TEST(ringct, CLSAG)
   clsag.s.push_back(backup_s);
 
   // too many s elements
-  clsag.s.push_back(crypto::scalarGen());
+  clsag.s.push_back(crypto::randomScalar());
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.s.pop_back();
 
@@ -330,26 +330,26 @@ TEST(ringct, CLSAG)
   for (auto &s: clsag.s)
   {
     backup_s = s;
-    s = crypto::scalarGen();
+    s = crypto::randomScalar();
     ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
     s = backup_s;
   }
 
   // bad c1 in clsag at verification
   backup_c1 = clsag.c1;
-  clsag.c1 = crypto::scalarGen();
+  clsag.c1 = crypto::randomScalar();
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.c1 = backup_c1;
 
   // bad I in clsag at verification
   backup_key = clsag.signer_pk_image;
-  clsag.signer_pk_image = G_(crypto::scalarGen());
+  clsag.signer_pk_image = G_(crypto::randomScalar());
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.signer_pk_image = backup_key;
 
   // bad D in clsag at verification
   backup_key_inv8 = clsag.signer_pk_image_from_blinding_factor_surplus;
-  clsag.signer_pk_image_from_blinding_factor_surplus = G_(crypto::scalarGen());
+  clsag.signer_pk_image_from_blinding_factor_surplus = G_(crypto::randomScalar());
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
   clsag.signer_pk_image_from_blinding_factor_surplus = backup_key_inv8;
 
