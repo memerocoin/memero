@@ -38,43 +38,64 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace crypto;
 using namespace rct;
 
-TEST(G_1,  g_1)
+
+TEST(base_scalar_mult,  1)
 {
   EXPECT_EQ(G_(s_1), crypto::generator);
 }
 
-TEST(G_8, g_8)
-{
-  EXPECT_EQ(G_(s_8), multBase(s_8));
-}
-
-TEST(H_1,  H_1)
+TEST(H_scalar_mult,  H_1)
 {
   EXPECT_EQ(H_(s_1), H);
 }
 
-TEST(H_8, h_8)
+TEST(rctOps_G_random, g_random)
 {
-  EXPECT_EQ(H_(s_8), (H + H) ^ 4);
+  const auto a = randomScalar();
+  EXPECT_EQ(G_(a), multBase(a));
 }
 
-TEST(G_random, g_random)
+TEST(rctOps_H_random, h_random)
 {
-  // for (size_t i = 0; i < 100; i++) {
-    const auto a = randomScalar();
-    EXPECT_EQ(G_(a), multBase(a));
-  // }
-}
-
-TEST(H_random, h_random)
-{
-  // for (size_t i = 0; i < 100; i++) {
     const auto a = randomScalar();
     EXPECT_EQ(H_(a), H ^ a);
-  // }
 }
 
 TEST(s_minus_one, is_well_defined)
 {
   EXPECT_EQ(s_minus_one, order_minus_1);
 }
+
+
+// test suites
+
+class scalar_mult_G : public testing::TestWithParam<uint64_t> {};
+
+TEST_P(scalar_mult_G, by) {
+  const auto a = int_to_scalar(GetParam());
+
+  EXPECT_EQ(G_(a), multBase(a));
+}
+
+INSTANTIATE_TEST_SUITE_P
+(
+ SUITE_rctOps
+ , scalar_mult_G
+ , testing::Range<uint64_t>(1, 9)
+ );
+
+class scalar_mult_H : public testing::TestWithParam<uint64_t> {};
+
+TEST_P(scalar_mult_H, by) {
+  const auto a = int_to_scalar(GetParam());
+
+  EXPECT_EQ(H_(a), H ^ a);
+}
+
+INSTANTIATE_TEST_SUITE_P
+(
+ SUITE_rctOps
+ , scalar_mult_H
+ , testing::Range<uint64_t>(1, 9)
+ );
+

@@ -32,6 +32,7 @@ add_executable(quick_tests
   math/crypto/tree-hash-raw.cpp
 
   math/ringct/bulletproofs.cpp
+  math/ringct/rctOps.cpp
 )
 
 target_link_libraries(quick_tests
