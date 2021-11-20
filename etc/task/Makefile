@@ -23,9 +23,38 @@ test-2:
 --add-exclusive-node 127.0.0.1:40000 \
 --fixed-difficulty 1000 \
 
+test-1-mining:
+	../../build/bin/lolnerod \
+--testnet \
+--hide-my-port \
+--data-dir ./testnet/node_01 \
+--p2p-bind-ip 127.0.0.1 \
+--p2p-bind-port 40000 \
+--rpc-bind-port 44000 \
+--add-exclusive-node 127.0.0.1:40001 \
+--fixed-difficulty 1000 \
+--start-mining hpAhTqFSj91LL7FHxT6yUScBDBfA5bfiMAmC6A3KHBZc1jGv5t5LJMELYoFNjeNPoMJNeSnBiK9WmKNqxXsj9rWn1iNFeiTna
+
+test-2-mining:
+	../../build/bin/lolnerod \
+--testnet \
+--hide-my-port \
+--data-dir ./testnet/node_02 \
+--p2p-bind-ip 127.0.0.1 \
+--p2p-bind-port 40001 \
+--rpc-bind-port 44001 \
+--add-exclusive-node 127.0.0.1:40000 \
+--fixed-difficulty 1000 \
+--start-mining hp9PEj54frgDUiAkSTsnmJXxoN2gengwfdg2RGThzUEo2ycy1bVvVMXf1nY2KMiGwzVkSGBR8KRd8LbSRYb6eny62DwZFVeyP
+
 make-test-wallet:
 	../../build/bin/lolnero --new testnet/test1 --testnet \
 --daemon-address 127.0.0.1:44000 \
+--password ''
+
+make-test-wallet-2:
+	../../build/bin/lolnero --new testnet/test2 --testnet \
+--daemon-address 127.0.0.1:44001 \
 --password ''
 
 test-wallet:
@@ -34,7 +63,7 @@ test-wallet:
 --password ''
 
 test-wallet-2:
-	../../build/bin/lolnero --testnet --open testnet/test1 \
+	../../build/bin/lolnero --testnet --open testnet/test2 \
 --daemon-address 127.0.0.1:44001 --log-level 1 \
 --password ''
 
