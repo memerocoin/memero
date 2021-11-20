@@ -1627,8 +1627,7 @@ public:
    *
    * @return false if the function returns false for any output, otherwise true
    */
-  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::string_blob_view blob)> f) const = 0;
-
+  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::string_blob_view *blob)> f, bool include_blob = false) const = 0;
 
   //
   // Hard fork related storage
