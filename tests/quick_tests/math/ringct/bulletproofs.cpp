@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <gtest/gtest.h>
 
 #include "math/crypto/controller/keyGen.hpp"
+#include "math/crypto/controller/random.hpp"
 #include "math/ringct/functional/rctTypes.hpp"
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
 
@@ -55,12 +56,9 @@ random_bp_inputs_for_size(const size_t i) {
   return xs;
 }
   
-TEST(quick_bulletproofs, 16)
+TEST(quick_bulletproofs, pick_amount_size_1_to_16)
 {
-  constexpr size_t starting_index = 16;
-
-  for (size_t i = starting_index; i <= 16; i++) {
-    const auto proof = bulletproof_MAKE(random_bp_inputs_for_size(i));
-    EXPECT_TRUE(bulletproof_VERIFY(proof));
-  }
+  const size_t i = rand_range(1, 16);
+  const auto proof = bulletproof_MAKE(random_bp_inputs_for_size(i));
+  EXPECT_TRUE(bulletproof_VERIFY(proof));
 }

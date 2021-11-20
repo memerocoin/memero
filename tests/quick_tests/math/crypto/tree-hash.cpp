@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "math/crypto/functional/tree-hash.hpp"
 #include "math/crypto/controller/keyGen.hpp"
+#include "math/crypto/controller/random.hpp"
 
 #include <algorithm>
 
@@ -51,30 +52,29 @@ std::optional<hash> tree_hash_raw(const std::span<const hash> hashes) noexcept {
   return root_hash;
 }
 
-TEST(quick_tree_hash, random_1_to_1000) {
-  for (size_t i = 1; i <= 1000; i++) {
-    std::vector<hash> xs;
 
-    std::generate_n
-      (
-       std::back_inserter(xs)
-       , i
-       , randomHash
-       );
+std::vector<hash> random_hashes(const size_t i) {
+  std::vector<hash> xs;
+  std::generate_n
+    (
+     std::back_inserter(xs)
+     , i
+     , randomHash
+     );
+
+  return xs;
+}
+
+TEST(quick_tree_hash, enum_input_size_1_to_1000) {
+  for (size_t i = 1; i <= 1000; i++) {
+    const auto xs = random_hashes(i);
 
     EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
   }
 }
 
-TEST(quick_tree_hash, random_10000) {
-  std::vector<hash> xs;
-
-  std::generate_n
-    (
-     std::back_inserter(xs)
-       , 10000
-       , randomHash
-     );
+TEST(quick_tree_hash, pick_input_size_1_to_10000) {
+  const auto xs = random_hashes(rand_range(1, 10000));
 
   EXPECT_EQ(tree_hash(xs), tree_hash_raw(xs));
 }
