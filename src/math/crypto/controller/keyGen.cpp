@@ -45,7 +45,7 @@ namespace crypto {
     return s;
   }
 
-  std::vector<ec_scalar> scalarVGen(size_t n) {
+  std::vector<ec_scalar> randomScalars(size_t n) {
     std::vector<ec_scalar> xs;
     std::generate_n
       (
