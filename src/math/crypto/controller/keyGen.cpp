@@ -17,6 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "keyGen.hpp"
 
+#include "random.hpp"
+
 #include "tools/common/varint.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/logging.hpp"
@@ -59,6 +61,12 @@ namespace crypto {
   ec_point randomPoint() {
     ec_point x;
     crypto_core_ed25519_random(x.data.data());
+    return x;
+  }
+
+  uint64_t randomAmount() {
+    uint64_t x;
+    generate_random_bytes(sizeof(uint64_t), (uint8_t*)&x);
     return x;
   }
 

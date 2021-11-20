@@ -27,6 +27,8 @@ namespace crypto {
 
   ec_point randomPoint();
 
+  uint64_t randomAmount();
+
   /* Generate a new key pair
    */
   std::pair<secret_key, public_key> generate_keys
