@@ -75,6 +75,7 @@ add_executable(unit_tests_basic
   math/crypto/tree-hash.cpp
   math/crypto/tree-hash-raw.cpp
   math/ringct/rctOps.cpp
+  math/ringct/bulletproofs.cpp
 )
 
 target_link_libraries(unit_tests_basic

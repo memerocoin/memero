@@ -38,7 +38,9 @@
 namespace rct
 {
 
-Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, const rct_scalar>> xs);
-bool bulletproof_VERIFY(const Bulletproof proof);
+  using bp_input_t = std::pair<const uint64_t, const rct_scalar>;
+
+  Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs);
+  bool bulletproof_VERIFY(const Bulletproof proof);
 
 }

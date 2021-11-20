@@ -31,50 +31,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <gtest/gtest.h>
 
-#include "math/ringct/functional/rctOps.hpp"
-#include "math/crypto/functional/group.hpp"
 #include "math/crypto/controller/keyGen.hpp"
+#include "math/ringct/functional/rctTypes.hpp"
+#include "math/ringct/pseudo_functional/bulletproofs.hpp"
 
-using namespace crypto;
 using namespace rct;
+using namespace crypto;
 
-TEST(G_1,  g_1)
-{
-  EXPECT_EQ(G_(s_1), crypto::generator);
+std::vector<bp_input_t>
+random_bp_inputs_for_size(const size_t i) {
+  if (i < 1) return {};
+
+  std::vector<bp_input_t> xs;
+  std::generate_n
+    (
+     std::back_inserter(xs)
+     , i
+     , []() -> bp_input_t {
+       return { randomAmount(), randomScalar() };
+     }
+     );
+
+  return xs;
 }
-
-TEST(G_8, g_8)
+  
+TEST(quick_bulletproofs, 16)
 {
-  EXPECT_EQ(G_(s_8), multBase(s_8));
-}
+  constexpr size_t starting_index = 16;
 
-TEST(H_1,  H_1)
-{
-  EXPECT_EQ(H_(s_1), H);
-}
-
-TEST(H_8, h_8)
-{
-  EXPECT_EQ(H_(s_8), (H + H) ^ 4);
-}
-
-TEST(G_random, g_random)
-{
-  // for (size_t i = 0; i < 100; i++) {
-    const auto a = randomScalar();
-    EXPECT_EQ(G_(a), multBase(a));
-  // }
-}
-
-TEST(H_random, h_random)
-{
-  // for (size_t i = 0; i < 100; i++) {
-    const auto a = randomScalar();
-    EXPECT_EQ(H_(a), H ^ a);
-  // }
-}
-
-TEST(s_minus_one, is_well_defined)
-{
-  EXPECT_EQ(s_minus_one, order_minus_1);
+  for (size_t i = starting_index; i <= 16; i++) {
+    const auto proof = bulletproof_MAKE(random_bp_inputs_for_size(i));
+    EXPECT_TRUE(bulletproof_VERIFY(proof));
+  }
 }
