@@ -78,7 +78,7 @@ namespace crypto {
     */
 
   ec_point hash_to_point_via_field(const crypto::crypto_data k);
-  key_image derive_public_key_image(const secret_key) noexcept;
+  key_image derive_key_image(const secret_key) noexcept;
 
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x) noexcept;
 

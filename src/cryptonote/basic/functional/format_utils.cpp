@@ -138,7 +138,7 @@ namespace cryptonote
           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
 
     const crypto::key_image ki =
-      crypto::derive_public_key_image(output_spend_key.sec);
+      crypto::derive_key_image(output_spend_key.sec);
 
     return {{output_spend_key, ki}};
   }
