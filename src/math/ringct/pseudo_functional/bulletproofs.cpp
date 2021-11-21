@@ -279,7 +279,6 @@ Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, con
 
   rct_pointV V(xs.size());
   rct_scalarV aL(MN), aR(MN);
-  rct_scalarV aL8(MN), aR8(MN);
 
   std::transform
     (
@@ -300,14 +299,12 @@ Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, con
       if (j < xs.size() && (amount_scalar.data[i/8] & (((uint64_t)1)<<(i%8))))
       {
         aL[j*N+i] = rct::s_one;
-        aL8[j*N+i] = rct::s_inv_eight;
-        aR[j*N+i] = aR8[j*N+i] = rct::s_zero;
+        aR[j*N+i] = rct::s_zero;
       }
       else
       {
-        aL[j*N+i] = aL8[j*N+i] = rct::s_zero;
+        aL[j*N+i] = rct::s_zero;
         aR[j*N+i] = rct::s_minus_one;
-        aR8[j*N+i] = rct::s_minus_inv_eight;
       }
     }
   }
@@ -319,7 +316,7 @@ try_again:
 
   // PAPER LINES 43-44
   const rct_scalar alpha = crypto::randomScalar();
-  const rct_point A = vector_exponent(aL8, aR8) + G_(alpha * rct::s_inv_eight);
+  const rct_point A = vector_exponent(aL, aR) + G_(alpha);
 
   // PAPER LINES 45-47
   const rct_scalarV sL = crypto::randomScalars(MN);
@@ -328,7 +325,7 @@ try_again:
   const rct_point S = (vector_exponent(sL, sR) + G_(rho)) ^ rct::s_inv_eight;
 
   // PAPER LINES 48-50
-  const rct_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, A, S});
+  const rct_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(A), S});
   if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
@@ -568,7 +565,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   proof_data_t pd;
-  pd.y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, proof.A, proof.S});
+  pd.y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(proof.A), proof.S});
   LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
 
   pd.z = hash_carry = rct::hash_to_scalar(pd.y);
@@ -677,7 +674,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   multiexp_data.emplace_back(pd.x * weight_y * s_eight, proof.T1);
   multiexp_data.emplace_back(pd.x * pd.x * weight_y * s_eight, proof.T2);
-  multiexp_data.emplace_back(weight_z * s_eight, proof.A);
+  multiexp_data.emplace_back(weight_z, proof.A);
   multiexp_data.emplace_back(pd.x * weight_z * s_eight, proof.S);
 
   // Compute the number of rounds for the inner product

@@ -91,7 +91,7 @@ namespace rct {
   }
 
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
-    const auto maybe_proof_A = crypto::maybeSafePoint(proof.A);
+    const auto maybe_proof_A = maybe_from_inv8(proof.A);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
     const rct::rct_point proof_A = *maybe_proof_A;
 
@@ -165,7 +165,7 @@ namespace rct {
       // rct::inv8V L, R;
       // rct::rct_scalar a, b, t;
       proof.commits
-      , proof.A
+      , to_inv8(proof.A)
       , proof.S
       , proof.T1
       , proof.T2
