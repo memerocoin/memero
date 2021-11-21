@@ -32,12 +32,34 @@
 #pragma once
 
 #include "math/ringct/functional/rctTypes.hpp"
+#include "config/lol.hpp"
 
 #include <span>
 
 namespace rct
 {
+  constexpr size_t maxN = 64;
+  constexpr size_t maxM = constant::BULLETPROOF_MAX_OUTPUTS;
 
-  bool bulletproof_VERIFY(const Bulletproof proof);
+  extern std::array<rct_point, maxN*maxM> Hi;
+  extern std::array<rct_point, maxN*maxM> Gi;
 
+  constexpr std::pair<size_t, size_t> log2bound(const size_t x) {
+    size_t y = 1;
+    size_t _log = 0;
+
+    while (y < x) {
+      _log++;
+      y = y << 1;
+    }
+
+    return {y, _log};
+  }
+
+
+  void init_exponents();
+
+  using bp_input_t = std::pair<const uint64_t, const rct_scalar>;
+
+  Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs);
 }

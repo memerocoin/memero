@@ -33,8 +33,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "math/crypto/controller/keyGen.hpp"
 #include "math/crypto/controller/random.hpp"
+
 #include "math/ringct/functional/rctTypes.hpp"
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
+#include "math/ringct/controller/bulletproofs_gen.hpp"
 
 using namespace rct;
 using namespace crypto;

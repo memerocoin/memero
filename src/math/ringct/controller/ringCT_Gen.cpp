@@ -32,6 +32,7 @@
 #include "ringCT_Gen.hpp"
 
 #include "clsagGen.hpp"
+#include "bulletproofs_gen.hpp"
 
 #include "tools/epee/include/logging.hpp"
 

@@ -37,6 +37,7 @@ add_library(math_ringct_basic
   pseudo_functional/bulletproofs.cpp
 
   controller/clsagGen.cpp
+  controller/bulletproofs_gen.cpp
 )
 
 target_link_libraries(math_ringct_basic
