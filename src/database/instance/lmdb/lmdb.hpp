@@ -283,7 +283,7 @@ public:
   virtual cryptonote::string_blob get_txpool_tx_blob(const crypto::hash& txid, relay_category tx_category) const;
 
   virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view blob);
-  virtual bool get_alt_block(const crypto::hash &blkid, alt_block_data_t *data, cryptonote::string_blob *blob);
+  virtual std::optional<std::pair <alt_block_data_t, cryptonote::string_blob>> get_alt_block(const crypto::hash &blkid);
   virtual void remove_alt_block(const crypto::hash &blkid);
   virtual uint64_t get_alt_block_count();
   virtual void drop_alt_blocks();

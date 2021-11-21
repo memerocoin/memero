@@ -147,7 +147,7 @@ public:
   virtual void add_max_block_size(uint64_t sz) override { }
 
   virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view blob) override {}
-  virtual bool get_alt_block(const crypto::hash &blkid, alt_block_data_t *data, cryptonote::string_blob *blob) override { return false; }
+  virtual std::optional<std::pair <cryptonote::alt_block_data_t, cryptonote::string_blob>> get_alt_block(const crypto::hash &blkid) override { return {}; }
   virtual void remove_alt_block(const crypto::hash &blkid) override {}
   virtual uint64_t get_alt_block_count() override { return 0; }
   virtual void drop_alt_blocks() override {}

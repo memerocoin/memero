@@ -3663,7 +3663,7 @@ void BlockchainLMDB::add_alt_block(const crypto::hash &blkid, const cryptonote::
   }
 }
 
-bool BlockchainLMDB::get_alt_block(const crypto::hash &blkid, alt_block_data_t *data, cryptonote::string_blob *blob)
+std::optional<std::pair <alt_block_data_t, cryptonote::string_blob>> BlockchainLMDB::get_alt_block(const crypto::hash &blkid)
 {
   LOG_PRINT_L3("BlockchainLMDB:: " << __func__);
   check_open();
@@ -3675,7 +3675,7 @@ bool BlockchainLMDB::get_alt_block(const crypto::hash &blkid, alt_block_data_t *
   MDB_val v;
   int result = mdb_cursor_get(m_cur_alt_blocks, &k, &v, MDB_SET);
   if (result == MDB_NOTFOUND)
-    return false;
+    return {};
 
   if (result)
     throw0(DB_ERROR(lmdb_error("Error attempting to retrieve alternate block " + epee::string_tools::pod_to_hex(blkid) + " from the db: ", result).c_str()));
@@ -3683,13 +3683,11 @@ bool BlockchainLMDB::get_alt_block(const crypto::hash &blkid, alt_block_data_t *
     throw0(DB_ERROR("Record size is less than expected"));
 
   const alt_block_data_t *ptr = (const alt_block_data_t*)v.mv_data;
-  if (data)
-    *data = *ptr;
-  if (blob)
-    blob->assign((const char*)(ptr + 1), v.mv_size - sizeof(alt_block_data_t));
+  const alt_block_data_t alt_block_data = *ptr;
+  const string_blob blob((const char*)(ptr + 1), v.mv_size - sizeof(alt_block_data_t));
 
   TXN_POSTFIX_RDONLY();
-  return true;
+  return {{alt_block_data, blob}};
 }
 
 void BlockchainLMDB::remove_alt_block(const crypto::hash &blkid)
