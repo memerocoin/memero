@@ -109,14 +109,14 @@ namespace rct {
 
     std::vector<rct::rct_point> proof_L;
     for (const auto& x: proof.L) {
-      const auto y = crypto::maybeSafePoint(x);
+      const auto y = maybe_from_inv8(x);
       LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.L");
       proof_L.push_back(*y);
     }
 
     std::vector<rct::rct_point> proof_R;
     for (const auto& x: proof.R) {
-      const auto y = crypto::maybeSafePoint(x);
+      const auto y = maybe_from_inv8(x);
       LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.R");
       proof_R.push_back(*y);
     }
@@ -237,7 +237,7 @@ namespace rct {
        xs.begin()
        , xs.end()
        , std::back_inserter(ys)
-       , [](const auto& x) { return x; }
+       , [](const auto& x) { return to_inv8(x); }
        );
 
     return ys;

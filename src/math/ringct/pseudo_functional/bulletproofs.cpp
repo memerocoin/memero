@@ -178,7 +178,7 @@ rct_point cross_vector_exponent8
      , std::next(a.begin(), ao + size)
      , std::next(A.begin(), Ao)
      , std::back_inserter(multiexp_data)
-     , [](const auto& s, const auto& p) -> MultiexpData { return {s * s_inv_eight, p}; }
+     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
      );
 
   rct_scalarV b_scalars(size);
@@ -200,7 +200,7 @@ rct_point cross_vector_exponent8
      , b_scalars.end()
      , std::next(B.begin(), Bo)
      , std::back_inserter(multiexp_data)
-     , [](const auto& s, const auto& p) -> MultiexpData { return {s * s_inv_eight, p}; }
+     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
      );
 
   return multiexp(multiexp_data);
@@ -476,15 +476,15 @@ try_again:
     // PAPER LINES 23-24
     const auto L = cross_vector_exponent8
       (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
-      + H_(cL * x_ip * s_inv_eight);
+      + H_(cL * x_ip);
     const auto R = cross_vector_exponent8
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
-      + H_(cR * x_ip * s_inv_eight);
+      + H_(cR * x_ip);
 
     LR[round] = {L, R};
 
     // PAPER LINES 25-27
-    w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, L, R});
+    w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(L), to_inv8(R)});
     if (w[round] == rct::s_zero)
     {
       LOG_INFO("w[round] is 0, trying again");
@@ -619,7 +619,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
      , std::back_inserter(pd.w)
      , [hash_carry](const auto& lr) mutable {
        const auto pd_w =
-         hash_dataV_to_scalar(crypto::dataV{hash_carry, lr.first, lr.second});
+         hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(lr.first), to_inv8(lr.second)});
        hash_carry = pd_w;
        return pd_w;
      }
@@ -657,7 +657,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
      , proof.LR.begin()
      , std::back_inserter(multiexp_data)
      , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
-       return {w * w * weight_z * s_eight, lr.first};
+       return {w * w * weight_z, lr.first};
      }
      );
 
@@ -668,7 +668,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
      , proof.LR.begin()
      , std::back_inserter(multiexp_data)
      , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
-       return {w * w * weight_z * s_eight, lr.second};
+       return {w * w * weight_z, lr.second};
      }
      );
 
