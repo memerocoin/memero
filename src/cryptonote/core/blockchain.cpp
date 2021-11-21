@@ -86,7 +86,7 @@ bool Blockchain::have_tx(const crypto::hash &id) const
   return m_db->tx_exists(id);
 }
 //------------------------------------------------------------------
-bool Blockchain::have_tx_keyimg_as_spent(const crypto::output_spend_key_image &key_im) const
+bool Blockchain::have_tx_keyimg_as_spent(const crypto::key_image &key_im) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   // WARNING: this function does not take m_blockchain_lock, and thus should only call read only
@@ -2351,7 +2351,7 @@ bool Blockchain::check_for_double_spend(const transaction& tx, output_spend_key_
     }
     bool operator()(const txin_to_key& in) const
     {
-      const crypto::output_spend_key_image& ki = in.output_spend_key_image;
+      const crypto::key_image& ki = in.output_spend_key_image;
 
       // attempt to insert the newly-spent key into the container of
       // keys spent this block.  If this fails, the key was spent already
@@ -3418,7 +3418,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
       if (its != m_scan_table.end())
         SCAN_TABLE_QUIT("Duplicate tx found from incoming blocks.");
 
-      m_scan_table.emplace(tx_prefix_hash, std::unordered_map<crypto::output_spend_key_image, std::vector<output_data_t>>());
+      m_scan_table.emplace(tx_prefix_hash, std::unordered_map<crypto::key_image, std::vector<output_data_t>>());
       its = m_scan_table.find(tx_prefix_hash);
       assert(its != m_scan_table.end());
 
@@ -3714,7 +3714,7 @@ void Blockchain::unlock()
   m_blockchain_lock.unlock();
 }
 
-bool Blockchain::for_all_output_spend_key_images(std::function<bool(const crypto::output_spend_key_image&)> f) const
+bool Blockchain::for_all_output_spend_key_images(std::function<bool(const crypto::key_image&)> f) const
 {
   return m_db->for_all_output_spend_key_images(f);
 }

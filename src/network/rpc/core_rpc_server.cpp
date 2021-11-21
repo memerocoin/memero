@@ -536,7 +536,7 @@ namespace cryptonote
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_is_output_spend_key_image_spent(const COMMAND_RPC_IS_KEY_IMAGE_SPENT::request& req, COMMAND_RPC_IS_KEY_IMAGE_SPENT::response& res)
   {
-    std::vector<crypto::output_spend_key_image> output_spend_key_images;
+    std::vector<crypto::key_image> output_spend_key_images;
     for(const auto& ki_hex_str: req.output_spend_key_images)
     {
       string_blob b;
@@ -545,11 +545,11 @@ namespace cryptonote
         res.status = "Failed to parse hex representation of key image";
         return true;
       }
-      if(b.size() != sizeof(crypto::output_spend_key_image))
+      if(b.size() != sizeof(crypto::key_image))
       {
         res.status = "Failed, size of data mismatch";
       }
-      output_spend_key_images.push_back(*reinterpret_cast<const crypto::output_spend_key_image*>(b.data()));
+      output_spend_key_images.push_back(*reinterpret_cast<const crypto::key_image*>(b.data()));
     }
     std::vector<bool> spent_status;
     bool r = m_core.are_output_spend_key_images_spent(output_spend_key_images, spent_status);
@@ -574,7 +574,7 @@ namespace cryptonote
     for (std::vector<cryptonote::spent_output_spend_key_image_info>::const_iterator i = ki.begin(); i != ki.end(); ++i)
     {
       const auto maybe_hash = parse_hash256(i->id_hash);
-      crypto::output_spend_key_image spent_output_spend_key_image;
+      crypto::key_image spent_output_spend_key_image;
       if (maybe_hash)
       {
         const auto hash = *maybe_hash;

@@ -52,7 +52,7 @@ namespace cryptonote
 
   crypto::hash get_transaction_prefix_hash(const transaction_prefix& tx);
 
-  std::optional<std::pair<keypair, crypto::output_spend_key_image>>
+  std::optional<std::pair<keypair, crypto::key_image>>
   derive_with_internal_checking_output_spend_key_pair_and_key_image
   (
    const account_keys ack
@@ -63,7 +63,7 @@ namespace cryptonote
    , const size_t real_output_index
    );
 
-  std::optional<std::pair<keypair, crypto::output_spend_key_image>>
+  std::optional<std::pair<keypair, crypto::key_image>>
   derive_output_spend_key_pair_and_key_image
   (
    const account_keys ack

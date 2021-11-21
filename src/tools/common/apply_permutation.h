@@ -56,6 +56,6 @@ std::vector<T> apply_permutation(const std::vector<size_t> indices, const std::v
   return result;
 }
 
-std::vector<size_t> get_sorted_permutation(const std::vector<crypto::output_spend_key_image> xs);
+std::vector<size_t> get_sorted_permutation(const std::vector<crypto::key_image> xs);
 
 }

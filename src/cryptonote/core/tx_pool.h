@@ -284,7 +284,7 @@ namespace cryptonote
      *
      * @return true
      */
-    bool check_for_output_spend_key_images(const std::span<const crypto::output_spend_key_image> output_spend_key_images, std::vector<bool>& spent) const;
+    bool check_for_output_spend_key_images(const std::span<const crypto::key_image> output_spend_key_images, std::vector<bool>& spent) const;
 
     /**
      * @brief get a specific transaction from the pool
@@ -452,7 +452,7 @@ namespace cryptonote
      *
      * @return true if the spent key image is present, otherwise false
      */
-    bool have_tx_keyimg_as_spent(const crypto::output_spend_key_image& key_im, const crypto::hash& txid) const;
+    bool have_tx_keyimg_as_spent(const crypto::key_image& key_im, const crypto::hash& txid) const;
 
     /**
      * @brief check if any spent key image in a transaction is in the pool
@@ -491,7 +491,7 @@ namespace cryptonote
      *
      * @return true if any key images present in the set, otherwise false
      */
-    static bool have_output_spend_key_images(const std::unordered_set<crypto::output_spend_key_image>& kic, const transaction_prefix& tx);
+    static bool have_output_spend_key_images(const std::unordered_set<crypto::key_image>& kic, const transaction_prefix& tx);
 
     /**
      * @brief append the key images from a transaction to the given set
@@ -501,7 +501,7 @@ namespace cryptonote
      *
      * @return false if any append fails, otherwise true
      */
-    static bool append_output_spend_key_images(std::unordered_set<crypto::output_spend_key_image>& kic, const transaction_prefix& tx);
+    static bool append_output_spend_key_images(std::unordered_set<crypto::key_image>& kic, const transaction_prefix& tx);
 
     /**
      * @brief check if a transaction is a valid candidate for inclusion in a block
@@ -536,7 +536,7 @@ namespace cryptonote
      *  transaction on the assumption that the original will not be in a
      *  block again.
      */
-    typedef std::unordered_map<crypto::output_spend_key_image, std::unordered_set<crypto::hash>> output_spend_key_images_container;
+    typedef std::unordered_map<crypto::key_image, std::unordered_set<crypto::hash>> output_spend_key_images_container;
 
 #if defined(DEBUG_CREATE_BLOCK_TEMPLATE)
 public:

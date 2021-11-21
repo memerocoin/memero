@@ -656,12 +656,12 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::is_output_spend_key_image_spent(const crypto::output_spend_key_image &output_spend_key_image) const
+  bool core::is_output_spend_key_image_spent(const crypto::key_image &output_spend_key_image) const
   {
     return m_blockchain_storage.have_tx_keyimg_as_spent(output_spend_key_image);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::are_output_spend_key_images_spent(const std::span<const crypto::output_spend_key_image> key_im, std::vector<bool> &spent) const
+  bool core::are_output_spend_key_images_spent(const std::span<const crypto::key_image> key_im, std::vector<bool> &spent) const
   {
     spent.clear();
     for(auto& ki: key_im)
@@ -671,7 +671,7 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::are_output_spend_key_images_spent_in_pool(const std::span<const crypto::output_spend_key_image> key_im, std::vector<bool> &spent) const
+  bool core::are_output_spend_key_images_spent_in_pool(const std::span<const crypto::key_image> key_im, std::vector<bool> &spent) const
   {
     spent.clear();
 
@@ -715,7 +715,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_keyimages_diff(const transaction& tx) const
   {
-    std::unordered_set<crypto::output_spend_key_image> ki;
+    std::unordered_set<crypto::key_image> ki;
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);

@@ -517,7 +517,7 @@ bool wallet2::is_spent(size_t idx, bool strict) const
   return wallet::logic::functional::wallet::is_spent(td, strict);
 }
 //----------------------------------------------------------------------------------------------------
-size_t wallet2::get_transfer_details(const crypto::output_spend_key_image &ki) const
+size_t wallet2::get_transfer_details(const crypto::key_image &ki) const
 {
   for (size_t idx = 0; idx < m_transfers.size(); ++idx)
   {
@@ -687,7 +687,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             if (!td.m_output_spend_key_image_known)
             {
               // we might have cold signed, and have a mapping to key images
-              std::unordered_map<crypto::public_key, crypto::output_spend_key_image>::const_iterator i = m_cold_output_spend_key_images.find(tx_scan_info[o].output_spend_key.pub);
+              std::unordered_map<crypto::public_key, crypto::key_image>::const_iterator i = m_cold_output_spend_key_images.find(tx_scan_info[o].output_spend_key.pub);
               if (i != m_cold_output_spend_key_images.end())
               {
                 td.m_output_spend_key_image = i->second;

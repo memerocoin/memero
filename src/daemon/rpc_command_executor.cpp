@@ -850,7 +850,7 @@ bool t_rpc_command_executor::print_transaction(crypto::hash transaction_hash,
   return true;
 }
 
-bool t_rpc_command_executor::is_output_spend_key_image_spent(const crypto::output_spend_key_image &ki) {
+bool t_rpc_command_executor::is_output_spend_key_image_spent(const crypto::key_image &ki) {
   cryptonote::COMMAND_RPC_IS_KEY_IMAGE_SPENT::request req;
   cryptonote::COMMAND_RPC_IS_KEY_IMAGE_SPENT::response res;
 

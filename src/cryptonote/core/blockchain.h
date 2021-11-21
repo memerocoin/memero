@@ -241,7 +241,7 @@ namespace cryptonote
      *
      * @return true if the key image is already spent in the blockchain, else false
      */
-    bool have_tx_keyimg_as_spent(const crypto::output_spend_key_image &key_im) const;
+    bool have_tx_keyimg_as_spent(const crypto::key_image &key_im) const;
 
     /**
      * @brief get the current height of the blockchain
@@ -666,7 +666,7 @@ namespace cryptonote
      *
      * @return false if any key image fails the check, otherwise true
      */
-    bool for_all_output_spend_key_images(std::function<bool(const crypto::output_spend_key_image&)>) const;
+    bool for_all_output_spend_key_images(std::function<bool(const crypto::key_image&)>) const;
 
     /**
      * @brief perform a check on all blocks in the blockchain in the given range
@@ -807,7 +807,7 @@ namespace cryptonote
 #endif
 
     // TODO: evaluate whether or not each of these typedefs are left over from blockchain_storage
-    typedef std::unordered_set<crypto::output_spend_key_image> output_spend_key_images_container;
+    typedef std::unordered_set<crypto::key_image> output_spend_key_images_container;
 
     typedef std::vector<block_extended_info> blocks_container;
 
@@ -819,7 +819,7 @@ namespace cryptonote
     tx_memory_pool& m_tx_pool;
 
     // metadata containers
-    std::unordered_map<crypto::hash, std::unordered_map<crypto::output_spend_key_image, std::vector<output_data_t>>> m_scan_table;
+    std::unordered_map<crypto::hash, std::unordered_map<crypto::key_image, std::vector<output_data_t>>> m_scan_table;
     std::unordered_map<crypto::hash, crypto::hash> m_blocks_longhash_table;
 
     // Keccak hashes for each block and for fast pow checking

@@ -35,8 +35,9 @@ namespace crypto {
 
   struct ecdh_shared_secret: ec_point {};
 
-  struct output_spend_key_image: ec_point {
-    bool operator < (const output_spend_key_image &x) const noexcept {
+  // public key with another base P, where P is hash_to_point(public key)
+  struct key_image: ec_point {
+    bool operator < (const key_image &x) const noexcept {
       return data < x.data;
     }
   };
@@ -52,7 +53,7 @@ namespace crypto {
   inline const ec_scalar_unnormalized &h2s(const hash &x)                  noexcept { return (const ec_scalar&)x; }
   inline const ecdh_shared_secret &p2ecdh_shared_secret(const ec_point &x) noexcept { return (const ecdh_shared_secret&)x; }
   inline const hash &d2h(const crypto_data &x)                             noexcept { return (const hash&)x; }
-  inline const output_spend_key_image &p2img(const ec_point &x)     noexcept { return (const output_spend_key_image&)x; }
+  inline const key_image &p2img(const ec_point &x)                         noexcept { return (const key_image&)x; }
   inline const public_key &p2pk(const ec_point &x)                         noexcept { return (const public_key&)x; }
   inline const secret_key &s2sk(const ec_scalar &x)                        noexcept { return (const secret_key&)x; }
 
@@ -77,7 +78,7 @@ namespace crypto {
     */
 
   ec_point hash_to_point_via_field(const crypto::crypto_data k);
-  output_spend_key_image derive_public_key_image(const secret_key) noexcept;
+  key_image derive_public_key_image(const secret_key) noexcept;
 
   ec_scalar hash_to_scalar(const std::span<const uint8_t>x) noexcept;
 
@@ -138,9 +139,9 @@ namespace std
     }
   };
 
-  template<> struct hash<crypto::output_spend_key_image>
+  template<> struct hash<crypto::key_image>
   {
-    std::size_t operator()(crypto::output_spend_key_image const& x) const noexcept
+    std::size_t operator()(crypto::key_image const& x) const noexcept
     {
       boost::hash<std::array<uint8_t,32>> array_hash;
       return array_hash(x.data);

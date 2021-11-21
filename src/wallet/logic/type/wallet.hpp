@@ -63,8 +63,8 @@ namespace wallet {
   struct signed_tx_set
   {
     std::vector<::wallet::logic::type::tx::pending_tx> ptx;
-    std::vector<crypto::output_spend_key_image> output_spend_key_images;
-    serializable_unordered_map<crypto::public_key, crypto::output_spend_key_image> tx_output_output_spend_key_images;
+    std::vector<crypto::key_image> output_spend_key_images;
+    serializable_unordered_map<crypto::public_key, crypto::key_image> tx_output_output_spend_key_images;
 
     BEGIN_SERIALIZE_OBJECT()
     VERSION_FIELD(0)

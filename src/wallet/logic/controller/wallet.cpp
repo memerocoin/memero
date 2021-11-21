@@ -285,7 +285,7 @@ namespace wallet {
         return outs;
       }
 
-      std::vector<crypto::output_spend_key_image> output_spend_key_images;
+      std::vector<crypto::key_image> output_spend_key_images;
       output_spend_key_images.reserve(selected_transfers.size());
       std::for_each
         (

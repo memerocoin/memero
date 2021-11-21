@@ -602,7 +602,7 @@ namespace cryptonote
       *
       * @note see Blockchain::have_tx_keyimg_as_spent
       */
-     bool is_output_spend_key_image_spent(const crypto::output_spend_key_image& key_im) const;
+     bool is_output_spend_key_image_spent(const crypto::key_image& key_im) const;
 
      /**
       * @brief check if multiple key images are spent
@@ -614,7 +614,7 @@ namespace cryptonote
       *
       * @return true
       */
-     bool are_output_spend_key_images_spent(const std::span<const crypto::output_spend_key_image> key_im, std::vector<bool> &spent) const;
+     bool are_output_spend_key_images_spent(const std::span<const crypto::key_image> key_im, std::vector<bool> &spent) const;
 
      /**
       * @brief check if multiple key images are spent in the transaction pool
@@ -624,7 +624,7 @@ namespace cryptonote
       *
       * @return true
       */
-     bool are_output_spend_key_images_spent_in_pool(const std::span<const crypto::output_spend_key_image> key_im, std::vector<bool> &spent) const;
+     bool are_output_spend_key_images_spent_in_pool(const std::span<const crypto::key_image> key_im, std::vector<bool> &spent) const;
 
      /**
       * @brief get the sum of coinbase tx amounts between blocks

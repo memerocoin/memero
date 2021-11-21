@@ -283,7 +283,7 @@ bool t_command_parser_executor::is_output_spend_key_image_spent(const std::vecto
   }
 
   const std::string& str = args.front();
-  crypto::output_spend_key_image ki;
+  crypto::key_image ki;
   const auto maybe_hash = parse_hash256(str);
   if (maybe_hash)
   {

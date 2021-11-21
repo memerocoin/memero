@@ -59,7 +59,7 @@ namespace crypto {
     return viaFieldMult8(h2p(sha3(k.data)));
   }
 
-  output_spend_key_image derive_public_key_image(const secret_key sec) noexcept {
+  key_image derive_public_key_image(const secret_key sec) noexcept {
     return p2img(hash_to_point_via_field(to_pk(sec)) ^ sec);
   }
 

@@ -894,7 +894,7 @@ namespace cryptonote
     }, true, category);
 
     for (const output_spend_key_images_container::value_type& kee : m_spent_output_spend_key_images) {
-      const crypto::output_spend_key_image& output_spend_key_image = kee.first;
+      const crypto::key_image& output_spend_key_image = kee.first;
       const std::unordered_set<crypto::hash>& kei_image_set = kee.second;
       spent_output_spend_key_image_info ki;
       ki.id_hash = epee::string_tools::pod_to_hex(output_spend_key_image);
@@ -961,7 +961,7 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::check_for_output_spend_key_images(const std::span<const crypto::output_spend_key_image> output_spend_key_images, std::vector<bool>& spent) const
+  bool tx_memory_pool::check_for_output_spend_key_images(const std::span<const crypto::key_image> output_spend_key_images, std::vector<bool>& spent) const
   {
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
     LOCK_LOCKABLE_OBJECT(m_blockchain);
@@ -1031,7 +1031,7 @@ namespace cryptonote
     return false;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::have_tx_keyimg_as_spent(const crypto::output_spend_key_image& key_im, const crypto::hash& txid) const
+  bool tx_memory_pool::have_tx_keyimg_as_spent(const crypto::key_image& key_im, const crypto::hash& txid) const
   {
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
     const auto found = m_spent_output_spend_key_images.find(key_im);
@@ -1126,7 +1126,7 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::have_output_spend_key_images(const std::unordered_set<crypto::output_spend_key_image>& output_spend_key_images, const transaction_prefix& tx)
+  bool tx_memory_pool::have_output_spend_key_images(const std::unordered_set<crypto::key_image>& output_spend_key_images, const transaction_prefix& tx)
   {
     for(size_t i = 0; i!= tx.vin.size(); i++)
     {
@@ -1137,7 +1137,7 @@ namespace cryptonote
     return false;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::append_output_spend_key_images(std::unordered_set<crypto::output_spend_key_image>& output_spend_key_images, const transaction_prefix& tx)
+  bool tx_memory_pool::append_output_spend_key_images(std::unordered_set<crypto::key_image>& output_spend_key_images, const transaction_prefix& tx)
   {
     for(size_t i = 0; i!= tx.vin.size(); i++)
     {
@@ -1246,7 +1246,7 @@ namespace cryptonote
     uint64_t best_coinbase = get_block_reward();
 
     uint64_t max_total_weight = get_max_block_weight(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
-    std::unordered_set<crypto::output_spend_key_image> output_spend_key_images;
+    std::unordered_set<crypto::key_image> output_spend_key_images;
     LOG_PRINT_L2("Filling block template, max weight " << max_total_weight << ", " << m_txs_by_fee_and_receive_time.size() << " txes in the pool");
 
     LockedTXN lock(m_blockchain.get_db());

@@ -187,7 +187,7 @@ namespace cryptonote
       }
 
       keypair& output_spend_key = in_contexts.back().output_spend_key;
-      crypto::output_spend_key_image img;
+      crypto::key_image img;
 
       std::tie(output_spend_key, img) = *r;
 
@@ -222,7 +222,7 @@ namespace cryptonote
     // }
 
     // sort ins by their key image
-    std::vector<crypto::output_spend_key_image> output_spend_pk_images;
+    std::vector<crypto::key_image> output_spend_pk_images;
     std::transform
       (
        tx.vin.begin()
