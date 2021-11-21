@@ -95,7 +95,7 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
     const rct::rct_point proof_A = *maybe_proof_A;
 
-    const auto maybe_proof_S = crypto::maybeSafePoint(proof.S);
+    const auto maybe_proof_S = maybe_from_inv8(proof.S);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_S, {}, "Bad proof.S");
     const rct::rct_point proof_S = *maybe_proof_S;
 
@@ -166,7 +166,7 @@ namespace rct {
       // rct::rct_scalar a, b, t;
       proof.commits
       , to_inv8(proof.A)
-      , proof.S
+      , to_inv8(proof.S)
       , proof.T1
       , proof.T2
       , proof.taux
