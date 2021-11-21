@@ -103,7 +103,7 @@ bool rct_tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices
 }
 
 bool check_tx_output_points(const transaction& tx) {
-  const bool valid_output_spend_public_keys =
+  const bool valid_output_public_keys =
     std::transform_reduce
     (
      tx.vout.begin()
@@ -113,7 +113,7 @@ bool check_tx_output_points(const transaction& tx) {
      , [](const auto&o) {
        if (o.target.type() == typeid(txout_to_key)) {
          const txout_to_key& out_to_key = boost::get<txout_to_key>(o.target);
-         if (!crypto::is_safe_point(out_to_key.output_spend_public_key)) {
+         if (!crypto::is_safe_point(out_to_key.output_public_key)) {
            return false;
          }
        }
@@ -145,7 +145,7 @@ bool check_tx_output_points(const transaction& tx) {
      );
 
 
-  return valid_output_spend_public_keys && valid_output_commits && valid_pseudo_input_commits;
+  return valid_output_public_keys && valid_output_commits && valid_pseudo_input_commits;
 }
 
 

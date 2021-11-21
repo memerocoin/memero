@@ -392,7 +392,7 @@ void RPC_Client::get_tx_outputs
           if
             (
              resp_outputs[i].key
-             == boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).output_spend_public_key
+             == boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).output_public_key
              )
             if (resp_outputs[i].mask == mask)
               real_out_found = true;
@@ -403,7 +403,7 @@ void RPC_Client::get_tx_outputs
       // pick real out first (it will be sorted when done)
       outs.back().push_back
         (
-         std::make_tuple(td.m_global_output_index, boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).output_spend_public_key, mask)
+         std::make_tuple(td.m_global_output_index, boost::get<txout_to_key>(td.m_tx.vout[td.m_internal_output_index].target).output_public_key, mask)
          );
 
       // then pick others in random order till we reach the required number

@@ -1042,7 +1042,7 @@ uint64_t BlockchainLMDB::add_output
   else
     ok.amount_index = 0;
   ok.output_id = m_num_outputs;
-  ok.data.pubkey = boost::get < txout_to_key > (tx_output.target).output_spend_public_key;
+  ok.data.pubkey = boost::get < txout_to_key > (tx_output.target).output_public_key;
   ok.data.unlock_time = unlock_time;
   ok.data.height = m_height;
   if (tx_output.amount == 0)

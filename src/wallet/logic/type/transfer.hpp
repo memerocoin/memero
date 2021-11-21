@@ -67,7 +67,7 @@ namespace transfer {
     const crypto::public_key &get_public_key() const
     {
       return boost::get<const cryptonote::txout_to_key>
-        (m_tx.vout[m_internal_output_index].target).output_spend_public_key;
+        (m_tx.vout[m_internal_output_index].target).output_public_key;
     }
 
     BEGIN_SERIALIZE_OBJECT()

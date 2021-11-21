@@ -408,7 +408,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 {
   dest.StartObject();
 
-  WRITE_JSON_FIELD_FROM(dest, output_spend_public_key, txout.output_spend_public_key);
+  WRITE_JSON_FIELD_FROM(dest, output_public_key, txout.output_public_key);
 
   dest.EndObject();
 }
@@ -420,7 +420,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txout_to_key& txout)
     throw WRONG_TYPE("json object");
   }
 
-  READ_JSON_VALUE_BY_KEY(val, txout.output_spend_public_key, output_spend_public_key);
+  READ_JSON_VALUE_BY_KEY(val, txout.output_public_key, output_public_key);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::tx_out txout)

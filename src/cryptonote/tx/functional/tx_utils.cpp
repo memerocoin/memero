@@ -465,7 +465,7 @@ namespace cryptonote
        );
 
     txout_to_key tk;
-    tk.output_spend_public_key = *out_eph_public_key;
+    tk.output_public_key = *out_eph_public_key;
 
     tx_out out;
     out.amount = block_reward;

@@ -192,7 +192,7 @@ namespace wallet {
     const auto received = check_output_for_subaddresses
       (
        m_subaddresses
-       , boost::get<cryptonote::txout_to_key>(o.target).output_spend_public_key
+       , boost::get<cryptonote::txout_to_key>(o.target).output_public_key
        , tx_output_shared_secret
        , i
        );
@@ -252,7 +252,7 @@ namespace wallet {
       const auto r = cryptonote::derive_output_spend_key_pair_and_key_image
         (
          keys
-        , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_spend_public_key
+        , boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_public_key
         , tx_scan_info.received->tx_output_shared_secret
         , i
         , tx_scan_info.received->index
@@ -264,7 +264,7 @@ namespace wallet {
       THROW_WALLET_EXCEPTION_IF
         (
         tx_scan_info.output_spend_key.pub
-        != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_spend_public_key
+        != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_public_key
         , tools::error::wallet_internal_error
         , "shared secret derived spend public key does not matched with output spend public key"
         );
