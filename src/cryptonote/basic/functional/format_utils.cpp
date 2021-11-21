@@ -125,7 +125,7 @@ namespace cryptonote
     const crypto::secret_key spend_sk = get_subaddress_spend_secret_key
       (account_keys.get_spend_view_secret_keys(), received_index);
     const crypto::secret_key output_spend_secret_key =
-      compute_output_spend_sk_from_subaddress_spend_sk
+      compute_output_secret_key_from_subaddress_spend_sk
       (recv_tx_output_shared_secret, real_output_index, spend_sk);
 
     const keypair output_spend_key =

@@ -102,7 +102,7 @@ namespace crypto {
    , const size_t index
    ) noexcept;
 
-  secret_key compute_output_spend_sk_from_subaddress_spend_sk
+  secret_key compute_output_secret_key_from_subaddress_spend_sk
   (
    const ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
