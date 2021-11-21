@@ -133,7 +133,7 @@ rctDataInput randomRctDataInput() {
   std::generate_n
     (
      std::back_inserter(outputs)
-     , rand_range<size_t>(1, max_output_size - 1)
+     , rand_range<size_t>(1, max_output_size)
      , randomRctOutputData
      );
 
@@ -185,4 +185,96 @@ TEST(quick_ringct, random_input)
      );
 
   EXPECT_TRUE(verify_ringct(x));
+}
+
+// uint8_t type = RCTTypeNull;
+// crypto::hash message;
+// output_public_dataM decoys;
+// std::vector<ecdh_encrypted_data_t> ecdh_encrypted_data;
+// std::vector<output_commit> output_commits;
+// amount_t fee;
+
+TEST(quick_ringct, wrong_balance)
+{
+  const auto i = randomRctDataInput();
+
+  const auto x = generate_ringct
+    (
+     i.message
+     , i.inputs
+     , i.outputs
+     , i.fee
+     );
+
+  EXPECT_TRUE(verify_ringct(x));
+
+  auto altered_data = x;
+  altered_data.fee = randomAmount();
+
+  EXPECT_FALSE(verify_ringct(altered_data));
+}
+
+
+TEST(quick_ringct, wrong_message)
+{
+  const auto i = randomRctDataInput();
+
+  const auto x = generate_ringct
+    (
+     i.message
+     , i.inputs
+     , i.outputs
+     , i.fee
+     );
+
+  EXPECT_TRUE(verify_ringct(x));
+
+  auto altered_data = x;
+  altered_data.message = d2h(randomCryptoData());
+
+  EXPECT_FALSE(verify_ringct(altered_data));
+}
+
+
+TEST(quick_ringct, wrong_type)
+{
+  const auto i = randomRctDataInput();
+
+  const auto x = generate_ringct
+    (
+     i.message
+     , i.inputs
+     , i.outputs
+     , i.fee
+     );
+
+  EXPECT_TRUE(verify_ringct(x));
+
+  auto altered_data = x;
+  altered_data.type = RCTTypeNull;
+
+  EXPECT_FALSE(verify_ringct(altered_data));
+}
+
+
+TEST(quick_ringct, wrong_ecdh_encrypted_data)
+{
+  const auto i = randomRctDataInput();
+
+  const auto x = generate_ringct
+    (
+     i.message
+     , i.inputs
+     , i.outputs
+     , i.fee
+     );
+
+  EXPECT_TRUE(verify_ringct(x));
+
+  auto altered_data = x;
+
+  const auto index_to_change = rand_idx<size_t>(x.ecdh_encrypted_data.size());
+  altered_data.ecdh_encrypted_data[index_to_change].masked_amount = randomAmount();
+
+  EXPECT_FALSE(verify_ringct(altered_data));
 }
