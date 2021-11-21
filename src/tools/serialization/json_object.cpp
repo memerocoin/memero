@@ -387,7 +387,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 
   WRITE_JSON_FIELD_FROM(dest, amount, txin.amount);
   WRITE_JSON_FIELD_FROM(dest, output_relative_offsets, txin.output_relative_offsets);
-  WRITE_JSON_FIELD_FROM(dest, output_spend_public_key_image, txin.output_spend_public_key_image);
+  WRITE_JSON_FIELD_FROM(dest, output_spend_key_image, txin.output_spend_key_image);
 
   dest.EndObject();
 }
@@ -401,7 +401,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin)
 
   READ_JSON_VALUE_BY_KEY(val, txin.amount, amount);
   READ_JSON_VALUE_BY_KEY(val, txin.output_relative_offsets, output_relative_offsets);
-  READ_JSON_VALUE_BY_KEY(val, txin.output_spend_public_key_image, output_spend_public_key_image);
+  READ_JSON_VALUE_BY_KEY(val, txin.output_spend_key_image, output_spend_key_image);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txout_to_key txout)

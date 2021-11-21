@@ -76,7 +76,7 @@ public:
 
   bool print_transaction(const std::vector<std::string>& args);
 
-  bool is_output_spend_public_key_image_spent(const std::vector<std::string>& args);
+  bool is_output_spend_key_image_spent(const std::vector<std::string>& args);
 
   bool print_transaction_pool_long(const std::vector<std::string>& args);
 

@@ -49,15 +49,15 @@ namespace transfer {
     bool m_spent;
     bool m_frozen;
     uint64_t m_spent_height;
-    crypto::output_spend_public_key_image m_output_spend_public_key_image; //TODO: output_spend_public_key_image stored twice :(
+    crypto::output_spend_key_image m_output_spend_key_image; //TODO: output_spend_key_image stored twice :(
     rct::rct_scalar m_mask;
     uint64_t m_amount;
     bool m_rct;
-    bool m_output_spend_public_key_image_known;
-    bool m_output_spend_public_key_image_request; // view wallets: we want to request it; cold wallets: it was requested
+    bool m_output_spend_key_image_known;
+    bool m_output_spend_key_image_request; // view wallets: we want to request it; cold wallets: it was requested
     size_t m_pk_index;
     cryptonote::subaddress_index m_subaddr_index;
-    bool m_output_spend_public_key_image_partial;
+    bool m_output_spend_key_image_partial;
     std::vector<rct::rct_point> m_multisig_k;
     std::vector<rct::rct_point> m_fake_multisig_info; // one per other participant
     std::vector<std::pair<uint64_t, crypto::hash>> m_uses;
@@ -79,15 +79,15 @@ namespace transfer {
       FIELD(m_spent)
       FIELD(m_frozen)
       FIELD(m_spent_height)
-      FIELD(m_output_spend_public_key_image)
+      FIELD(m_output_spend_key_image)
       FIELD(m_mask)
       FIELD(m_amount)
       FIELD(m_rct)
-      FIELD(m_output_spend_public_key_image_known)
-      FIELD(m_output_spend_public_key_image_request)
+      FIELD(m_output_spend_key_image_known)
+      FIELD(m_output_spend_key_image_request)
       FIELD(m_pk_index)
       FIELD(m_subaddr_index)
-      FIELD(m_output_spend_public_key_image_partial)
+      FIELD(m_output_spend_key_image_partial)
       FIELD(m_multisig_k)
       FIELD(m_fake_multisig_info)
       FIELD(m_uses)
@@ -107,7 +107,7 @@ namespace transfer {
     uint64_t m_timestamp;
     uint32_t m_subaddr_account;   // subaddress account of your wallet to be used in this transfer
     std::set<uint32_t> m_subaddr_indices;  // set of address indices used as inputs in this transfer
-    std::vector<std::pair<crypto::output_spend_public_key_image, std::vector<uint64_t>>> m_rings; // relative
+    std::vector<std::pair<crypto::output_spend_key_image, std::vector<uint64_t>>> m_rings; // relative
 
     BEGIN_SERIALIZE_OBJECT()
       VERSION_FIELD(1)
@@ -139,7 +139,7 @@ namespace transfer {
     uint64_t m_unlock_time;
     uint32_t m_subaddr_account;   // subaddress account of your wallet to be used in this transfer
     std::set<uint32_t> m_subaddr_indices;  // set of address indices used as inputs in this transfer
-    std::vector<std::pair<crypto::output_spend_public_key_image, std::vector<uint64_t>>> m_rings; // relative
+    std::vector<std::pair<crypto::output_spend_key_image, std::vector<uint64_t>>> m_rings; // relative
 
     confirmed_transfer_details(): m_amount_in(0), m_amount_out(0), m_change((uint64_t)-1), m_block_height(0), d_payment_id(crypto::null_hash), m_timestamp(0), m_unlock_time(0), m_subaddr_account((uint32_t)-1) {}
     confirmed_transfer_details(const unconfirmed_transfer_details &utd, uint64_t height):

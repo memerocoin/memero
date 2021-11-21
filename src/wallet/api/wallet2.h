@@ -230,7 +230,7 @@ namespace tools
     bool refresh(uint64_t & blocks_fetched, bool& received_money, bool& ok);
 
     cryptonote::network_type nettype() const { return m_nettype; }
-    bool has_unknown_output_spend_public_key_images() const;
+    bool has_unknown_output_spend_key_images() const;
 
     // locked & unlocked balance of given or current subaddress account
     uint64_t balance(uint32_t subaddr_index_major, bool strict) const;
@@ -277,7 +277,7 @@ namespace tools
       FIELD(m_blockchain)
       FIELD(m_transfers)
       FIELD(m_spend_view_public_keys)
-      FIELD(m_output_spend_public_key_images)
+      FIELD(m_output_spend_key_images)
       FIELD(m_unconfirmed_txs)
       FIELD(m_payments)
       FIELD(m_tx_keys)
@@ -291,7 +291,7 @@ namespace tools
       FIELD(m_output_secret_keys)
       FIELD(m_attributes)
       FIELD(m_account_tags)
-      FIELD(m_cold_output_spend_public_key_images)
+      FIELD(m_cold_output_spend_key_images)
     END_SERIALIZE()
 
     /*!
@@ -455,7 +455,7 @@ namespace tools
 
     void trim_hashchain();
     void setup_keys(const epee::wipeable_string &password);
-    size_t get_transfer_details(const crypto::output_spend_public_key_image &ki) const;
+    size_t get_transfer_details(const crypto::output_spend_key_image &ki) const;
 
     void init_type();
     void setup_new_blockchain();
@@ -478,14 +478,14 @@ namespace tools
 
     wallet::logic::type::wallet::transfer_container m_transfers;
     payment_container m_payments;
-    serializable_unordered_map<crypto::output_spend_public_key_image, size_t> m_output_spend_public_key_images;
+    serializable_unordered_map<crypto::output_spend_key_image, size_t> m_output_spend_key_images;
     serializable_unordered_map<crypto::public_key, size_t> m_pub_keys;
     cryptonote::spend_view_public_keys m_spend_view_public_keys;
     serializable_unordered_map<crypto::public_key, cryptonote::subaddress_index> m_subaddresses;
     std::vector<std::vector<std::string>> m_subaddress_labels;
     serializable_unordered_map<std::string, std::string> m_attributes;
     std::pair<serializable_map<std::string, std::string>, std::vector<std::string>> m_account_tags;
-    serializable_unordered_map<crypto::public_key, crypto::output_spend_public_key_image> m_cold_output_spend_public_key_images;
+    serializable_unordered_map<crypto::public_key, crypto::output_spend_key_image> m_cold_output_spend_key_images;
 
     std::atomic<bool> m_run;
 

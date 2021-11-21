@@ -74,12 +74,12 @@ namespace cryptonote
   {
     uint64_t amount;
     std::vector<uint64_t> output_relative_offsets;
-    crypto::output_spend_public_key_image output_spend_public_key_image;      // double spending protection
+    crypto::output_spend_key_image output_spend_key_image;      // double spending protection
 
     BEGIN_SERIALIZE_OBJECT()
       VARINT_FIELD(amount)
       FIELD(output_relative_offsets)
-      FIELD(output_spend_public_key_image)
+      FIELD(output_spend_key_image)
     END_SERIALIZE()
   };
 

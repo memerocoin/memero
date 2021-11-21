@@ -85,7 +85,7 @@ namespace rpc
       {"get_transaction_pool", handle_message<GetTransactionPool>},
       {"get_transactions", handle_message<GetTransactions>},
       {"get_tx_global_output_indices", handle_message<GetTxGlobalOutputIndices>},
-      {"output_spend_public_key_images_spent", handle_message<KeyImagesSpent>},
+      {"output_spend_key_images_spent", handle_message<KeyImagesSpent>},
       {"mining_status", handle_message<MiningStatus>},
       {"save_bc", handle_message<SaveBC>},
       {"send_raw_tx", handle_message<SendRawTx>},
@@ -289,22 +289,22 @@ namespace rpc
 
   void DaemonHandler::handle(const KeyImagesSpent::Request& req, KeyImagesSpent::Response& res)
   {
-    res.spent_status.resize(req.output_spend_public_key_images.size(), KeyImagesSpent::STATUS::UNSPENT);
+    res.spent_status.resize(req.output_spend_key_images.size(), KeyImagesSpent::STATUS::UNSPENT);
 
     std::vector<bool> chain_spent_status;
     std::vector<bool> pool_spent_status;
 
-    m_core.are_output_spend_public_key_images_spent(req.output_spend_public_key_images, chain_spent_status);
-    m_core.are_output_spend_public_key_images_spent_in_pool(req.output_spend_public_key_images, pool_spent_status);
+    m_core.are_output_spend_key_images_spent(req.output_spend_key_images, chain_spent_status);
+    m_core.are_output_spend_key_images_spent_in_pool(req.output_spend_key_images, pool_spent_status);
 
-    if ((chain_spent_status.size() != req.output_spend_public_key_images.size()) || (pool_spent_status.size() != req.output_spend_public_key_images.size()))
+    if ((chain_spent_status.size() != req.output_spend_key_images.size()) || (pool_spent_status.size() != req.output_spend_key_images.size()))
     {
       res.status = Message::STATUS_FAILED;
-      res.error_details = "tx_pool::have_output_spend_public_key_images_as_spent() gave vectors of wrong size(s).";
+      res.error_details = "tx_pool::have_output_spend_key_images_as_spent() gave vectors of wrong size(s).";
       return;
     }
 
-    for(size_t i=0; i < req.output_spend_public_key_images.size(); i++)
+    for(size_t i=0; i < req.output_spend_key_images.size(); i++)
     {
       if ( chain_spent_status[i] )
       {
@@ -696,7 +696,7 @@ namespace rpc
 
   void DaemonHandler::handle(const GetTransactionPool::Request& req, GetTransactionPool::Response& res)
   {
-    bool r = m_core.get_pool_for_rpc(res.transactions, res.output_spend_public_key_images);
+    bool r = m_core.get_pool_for_rpc(res.transactions, res.output_spend_key_images);
 
     if (!r) res.status = Message::STATUS_FAILED;
     else res.status = Message::STATUS_OK;

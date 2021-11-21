@@ -387,7 +387,7 @@ std::vector<size_t> pick_preferred_rct_inputs
       (
        !is_spent(td, false)
        && !td.m_frozen
-       && !td.m_output_spend_public_key_image_partial
+       && !td.m_output_spend_key_image_partial
        && td.is_rct()
        && is_transfer_unlocked(td, current_height)
        && td.m_subaddr_index.major == subaddr_account
@@ -402,7 +402,7 @@ std::vector<size_t> pick_preferred_rct_inputs
           (
            !is_spent(td2, false)
            && !td2.m_frozen
-           && !td2.m_output_spend_public_key_image_partial
+           && !td2.m_output_spend_key_image_partial
            && td2.is_rct()
            && td.amount() + td2.amount() >= needed_money
            && is_transfer_unlocked(td2, current_height)
@@ -594,17 +594,17 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   THROW_WALLET_EXCEPTION_IF(upper_transaction_weight_limit <= get_transaction_weight(tx), tools::error::tx_too_big, tx, upper_transaction_weight_limit);
 
   LOG_PRINT_L2("gathering key images");
-  std::string output_spend_public_key_images;
+  std::string output_spend_key_images;
   bool all_are_txin_to_key = std::all_of(tx.vin.begin(), tx.vin.end(), [&](const txin_v& s_e) -> bool
   {
     CHECKED_GET_SPECIFIC_VARIANT(s_e, const txin_to_key, in, false);
-    output_spend_public_key_images += boost::to_string(in.output_spend_public_key_image) + " ";
+    output_spend_key_images += boost::to_string(in.output_spend_key_image) + " ";
     return true;
   });
   THROW_WALLET_EXCEPTION_IF(!all_are_txin_to_key, tools::error::unexpected_txin_type, tx);
   LOG_PRINT_L2("gathered key images");
 
-  ptx.output_spend_public_key_images = output_spend_public_key_images;
+  ptx.output_spend_key_images = output_spend_key_images;
   ptx.fee = fee;
   ptx.dust = 0;
   ptx.dust_added_to_fee = false;
@@ -762,7 +762,7 @@ unconfirmed_transfer_details get_unconfirmed_transfer_details
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    utd.m_rings.push_back(std::make_pair(txin.output_spend_public_key_image, txin.output_relative_offsets));
+    utd.m_rings.push_back(std::make_pair(txin.output_spend_key_image, txin.output_relative_offsets));
   }
 
   return utd;

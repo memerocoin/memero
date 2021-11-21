@@ -55,7 +55,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::output_spend_public_key_image>>
+  std::optional<std::pair<keypair, crypto::output_spend_key_image>>
   derive_with_internal_checking_output_spend_key_pair_and_key_image
   (
    const account_keys ack
@@ -112,7 +112,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<std::pair<keypair, crypto::output_spend_public_key_image>>
+  std::optional<std::pair<keypair, crypto::output_spend_key_image>>
   derive_output_spend_key_pair_and_key_image
   (
    const account_keys account_keys
@@ -137,7 +137,7 @@ namespace cryptonote
     LOG_ERROR_AND_RETURN_UNLESS(output_spend_key.pub == out_key,
           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
 
-    const crypto::output_spend_public_key_image ki =
+    const crypto::output_spend_key_image ki =
       crypto::derive_public_key_image(output_spend_key.sec);
 
     return {{output_spend_key, ki}};

@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace tools
 {
 
-std::vector<size_t> get_sorted_permutation(const std::vector<crypto::output_spend_public_key_image> xs) {
+std::vector<size_t> get_sorted_permutation(const std::vector<crypto::output_spend_key_image> xs) {
   std::vector<size_t> indices(xs.size());
   std::generate
     (
