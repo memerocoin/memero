@@ -109,18 +109,18 @@ namespace crypto {
    , const secret_key &base
    ) noexcept;
 
-  std::optional<public_key> compute_output_spend_pk_from_subaddress_spend_pk
+  std::optional<public_key> compute_output_public_key_from_subaddress_spend_pk
   (
    const ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
    , const ec_point_unsafe &unsafe_spend_public_key
    ) noexcept;
 
-  std::optional<public_key> compute_subaddress_spend_pk_from_output_spend_pk
+  std::optional<public_key> compute_subaddress_spend_pk_from_output_public_key
   (
    const ecdh_shared_secret tx_output_shared_secret
    , const std::size_t output_index
-   , const ec_point output_spend_pk
+   , const ec_point output_public_key
    ) noexcept;
 
   std::optional<crypto::public_key> maybeNotNull(const crypto::public_key);

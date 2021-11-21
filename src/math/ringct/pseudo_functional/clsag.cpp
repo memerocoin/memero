@@ -66,7 +66,7 @@ namespace rct {
         decoys.begin()
         , decoys.end()
         , std::back_inserter(mu_P_to_hash)
-        , [](const auto& x) { return x.output_spend_pk; }
+        , [](const auto& x) { return x.output_public_key; }
         );
 
     std::transform
@@ -114,7 +114,7 @@ namespace rct {
         decoys.begin()
         , decoys.end()
         , std::back_inserter(c_to_hash)
-        , [](const auto& x) { return x.output_spend_pk; }
+        , [](const auto& x) { return x.output_public_key; }
         );
 
     std::transform
@@ -150,13 +150,13 @@ namespace rct {
           std::array
           {
             G_(sig.s[i])
-            , decoys[i].output_spend_pk ^ c_p
+            , decoys[i].output_public_key ^ c_p
             , decoy_commit_surplus ^ c_c
           }
           );
 
       // Compute R
-      const rct_point k = crypto::hash_to_point_via_field(decoys[i].output_spend_pk);
+      const rct_point k = crypto::hash_to_point_via_field(decoys[i].output_public_key);
 
       const rct_point R = sum
         (

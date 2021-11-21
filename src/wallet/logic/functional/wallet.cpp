@@ -523,7 +523,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
     {
       tx_output_entry oe;
       oe.first = std::get<0>(outs[out_index][n]);
-      oe.second.output_spend_pk = std::get<1>(outs[out_index][n]);
+      oe.second.output_public_key = std::get<1>(outs[out_index][n]);
       oe.second.commit = std::get<2>(outs[out_index][n]);
       src.outputs.push_back(oe);
     }
@@ -539,7 +539,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
 
     tx_output_entry real_oe;
     real_oe.first = td.m_global_output_index;
-    real_oe.second.output_spend_pk = td.get_public_key();
+    real_oe.second.output_public_key = td.get_public_key();
     real_oe.second.commit = rct::commit(td.amount(), td.m_mask);
     *it_to_replace = real_oe;
     src.real_out_tx_key = get_tx_pub_key_from_extra(td.m_tx).value_or(crypto::null_pkey);

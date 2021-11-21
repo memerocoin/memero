@@ -86,14 +86,14 @@ namespace cryptonote
     const rct::rct_scalar tx_output_shared_secret_indexed_hash =
       crypto::hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, output_index);
 
-    const auto eph_pk = crypto::compute_output_spend_pk_from_subaddress_spend_pk
+    const auto eph_pk = crypto::compute_output_public_key_from_subaddress_spend_pk
       (tx_output_shared_secret, output_index, dst_entr.addr.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
        eph_pk
        , {}
-       , "at creation outs: failed to compute_output_spend_pk_from_subaddress_spend_pk("
+       , "at creation outs: failed to compute_output_public_key_from_subaddress_spend_pk("
        << tx_output_shared_secret << ", " << output_index << ", "<< dst_entr.addr.m_spend_public_key << ")"
        );
 
@@ -168,7 +168,7 @@ namespace cryptonote
 
       //tx_output_ecdh_shared_secret recv_tx_output_shared_secret;
       in_contexts.push_back(input_generation_context_data());
-      const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.output_spend_pk);
+      const crypto::public_key out_key = crypto::p2pk(src_entr.outputs[src_entr.real_output].second.output_public_key);
       const auto r = derive_with_internal_checking_output_spend_key_pair_and_key_image
         (
          sender_account_keys
@@ -192,11 +192,11 @@ namespace cryptonote
       std::tie(output_spend_key, img) = *r;
 
       //check that derivated key is equal with real output key (if non multisig)
-      if(!(output_spend_key.pub == src_entr.outputs[src_entr.real_output].second.output_spend_pk) )
+      if(!(output_spend_key.pub == src_entr.outputs[src_entr.real_output].second.output_public_key) )
       {
         LOG_ERROR("derived public key mismatch with output public key at index " << idx << ", real out " << src_entr.real_output << "! "<< std::endl << "derived_key:"
           << epee::string_tools::pod_to_hex(output_spend_key.pub) << std::endl << "real output_public_key:"
-          << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.output_spend_pk) );
+          << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.output_public_key) );
         LOG_ERROR("amount " << src_entr.amount << ", rct " << src_entr.rct);
         LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key);
         LOG_ERROR(", real_output_in_tx_index " << src_entr.real_output_in_tx_index);
@@ -222,19 +222,19 @@ namespace cryptonote
     // }
 
     // sort ins by their key image
-    std::vector<crypto::key_image> output_spend_pk_images;
+    std::vector<crypto::key_image> output_public_key_images;
     std::transform
       (
        tx.vin.begin()
        , tx.vin.end()
-       , std::back_inserter(output_spend_pk_images)
+       , std::back_inserter(output_public_key_images)
        , [](const auto& x) {
          const txin_to_key &tk = boost::get<txin_to_key>(x);
          return tk.output_key_image;
          }
        );
 
-    const std::vector<size_t> permutation = tools::get_sorted_permutation(output_spend_pk_images);
+    const std::vector<size_t> permutation = tools::get_sorted_permutation(output_public_key_images);
     tx.vin = tools::apply_permutation(permutation, tx.vin);
     in_contexts = tools::apply_permutation(permutation, in_contexts);
     sources = tools::apply_permutation(permutation, sources);
@@ -453,13 +453,13 @@ namespace cryptonote
       crypto::derive_tx_output_ecdh_shared_secret(miner_address.m_view_public_key, txkey.sec);
 
     const std::optional<crypto::public_key> out_eph_public_key =
-      crypto::compute_output_spend_pk_from_subaddress_spend_pk(tx_output_shared_secret, 0, miner_address.m_spend_public_key);
+      crypto::compute_output_public_key_from_subaddress_spend_pk(tx_output_shared_secret, 0, miner_address.m_spend_public_key);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
        out_eph_public_key
        , {}
-       , "while creating outs: failed to compute_output_spend_pk_from_subaddress_spend_pk("
+       , "while creating outs: failed to compute_output_public_key_from_subaddress_spend_pk("
        << tx_output_shared_secret << ", " << 0 << ", "
        << miner_address.m_spend_public_key << ")"
        );

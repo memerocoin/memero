@@ -3959,7 +3959,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
         {
           for (size_t m = 0; m < pubkeys[n].size(); ++m)
           {
-            if (pubkeys[n][m].output_spend_pk != rv.decoys[n][m].output_spend_pk)
+            if (pubkeys[n][m].output_public_key != rv.decoys[n][m].output_public_key)
             {
               LOG_ERROR_VER("Failed to check ringct signatures: mismatched pubkey at vin " << n << ", index " << m);
               return false;

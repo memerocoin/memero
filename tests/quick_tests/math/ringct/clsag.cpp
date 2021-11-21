@@ -178,7 +178,7 @@ TEST(quick_clsag, wrong_decoys_2)
   const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
   const auto decoy = decoys[index_in_decoys];
 
-  const output_public_data wrong_decoy_2 = {decoy.output_spend_pk, randomPoint()};
+  const output_public_data wrong_decoy_2 = {decoy.output_public_key, randomPoint()};
   decoys[index_in_decoys] = wrong_decoy_2;
 
   EXPECT_FALSE(verify_clsag_signature(i.message, sig, decoys, i.pseudo_input_commit));

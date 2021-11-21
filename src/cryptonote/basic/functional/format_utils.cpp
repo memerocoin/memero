@@ -154,7 +154,7 @@ namespace cryptonote
   {
     // try additional tx pubkeys if available
     const auto spend_pk_1 =
-      crypto::compute_subaddress_spend_pk_from_output_spend_pk
+      crypto::compute_subaddress_spend_pk_from_output_public_key
       (tx_output_shared_secret, output_index, tx_output_public_key);
 
     if (spend_pk_1) {

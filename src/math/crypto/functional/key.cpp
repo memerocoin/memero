@@ -96,7 +96,7 @@ namespace crypto {
     return s2sk(spend_sk + shared_secret_hash);
   }
 
-  std::optional<public_key> compute_output_spend_pk_from_subaddress_spend_pk
+  std::optional<public_key> compute_output_public_key_from_subaddress_spend_pk
   (
    const ecdh_shared_secret &tx_output_shared_secret
    , const size_t output_index
@@ -110,18 +110,18 @@ namespace crypto {
     return p2pk(multBase(shared_secret_hash) + *spend_public_key);
   }
 
-  std::optional<public_key> compute_subaddress_spend_pk_from_output_spend_pk
+  std::optional<public_key> compute_subaddress_spend_pk_from_output_public_key
   (
      const ecdh_shared_secret tx_output_shared_secret
    , const std::size_t output_index
-   , const ec_point output_spend_pk
+   , const ec_point output_public_key
    ) noexcept
   {
     const ec_scalar shared_secret_hash = hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, output_index);
 
     if (shared_secret_hash == s_0) return {};
 
-    return p2pk(output_spend_pk - multBase(shared_secret_hash));
+    return p2pk(output_public_key - multBase(shared_secret_hash));
   }
 
   std::optional<crypto::public_key> maybeNotNull(const crypto::public_key x) {

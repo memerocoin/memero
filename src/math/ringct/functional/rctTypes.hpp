@@ -70,7 +70,7 @@ namespace rct {
 
 
   struct output_public_data {
-    rct_point output_spend_pk;
+    rct_point output_public_key;
     rct_point commit;
   };
 

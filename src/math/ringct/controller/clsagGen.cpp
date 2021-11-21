@@ -221,7 +221,7 @@ namespace rct {
         decoys.begin()
         , decoys.end()
         , std::back_inserter(decoy_spend_pks)
-        , [](const auto& x) { return x.output_spend_pk; }
+        , [](const auto& x) { return x.output_public_key; }
         );
 
     rct_pointV decoy_commits;

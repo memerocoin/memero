@@ -213,14 +213,14 @@ TEST(ringct, CLSAG)
     rct_scalar sk;
     output_public_data tmp;
 
-    std::tie(sk, tmp.output_spend_pk) = skpkGen();
+    std::tie(sk, tmp.output_public_key) = skpkGen();
     std::tie(sk, tmp.commit) = skpkGen();
 
     pubs.push_back(tmp);
   }
 
   // Set P[idx]
-  std::tie(p, pubs[idx].output_spend_pk) = skpkGen();
+  std::tie(p, pubs[idx].output_public_key) = skpkGen();
 
   // Set C[idx]
   t = crypto::randomScalar();
@@ -292,7 +292,7 @@ TEST(ringct, CLSAG)
 
   // bad P at creation
   backup = pubs[idx];
-  pubs[idx].output_spend_pk = G_(crypto::randomScalar());
+  pubs[idx].output_public_key = G_(crypto::randomScalar());
   try
   {
     clsag = rct::generate_clsag_signature_test(message,pubs,insk,t2,Cout,idx);
