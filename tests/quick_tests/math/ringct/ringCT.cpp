@@ -58,7 +58,7 @@ using namespace crypto;
 
 constexpr uint64_t max_input_size = 16;
 constexpr uint64_t max_output_size = 16;
-constexpr uint64_t input_base = ((uint64_t)1) << 40;
+constexpr uint64_t input_base = 1ull << 40;
 
 rctInputData randomRctInputData() {
   const amount_t amount = rand_range<uint64_t>(0, input_base) + input_base;
@@ -100,7 +100,7 @@ rctInputData randomRctInputData() {
 // };
 
 rctOutputData randomRctOutputData() {
-  return { rand_range<uint64_t>(1, (uint64_t)1 << 30), randomScalar() };
+  return { rand_range<uint64_t>(1, 1ull << 30), randomScalar() };
 }
 
 // rctData generate_ringct
@@ -141,8 +141,8 @@ rctDataInput randomRctDataInput() {
     (
      inputs.begin()
      , inputs.end()
-     , (uint64_t)0
-     , std::plus<uint64_t>()
+     , 0ull
+     , std::plus()
      , [](const auto& x) -> amount_t {
        return x.amount;
        }
@@ -152,8 +152,8 @@ rctDataInput randomRctDataInput() {
     (
      outputs.begin()
      , outputs.end()
-     , (uint64_t)0
-     , std::plus<uint64_t>()
+     , 0ull
+     , std::plus()
      , [](const auto& x) -> amount_t {
        return x.amount;
      }

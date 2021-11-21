@@ -630,7 +630,7 @@ namespace cryptonote
       (
        tx.vin.begin()
        , tx.vin.end()
-       , 0
+       , 0ull
        , std::plus()
        , [](const auto& x) -> uint64_t {
          CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, 0);
