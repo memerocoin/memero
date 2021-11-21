@@ -56,7 +56,7 @@ using namespace crypto;
 //   const output_public_dataV decoys;
 // };
 
-constexpr uint64_t max_input_size = 16;
+constexpr uint64_t max_input_size = 32;
 constexpr uint64_t max_output_size = 16;
 constexpr uint64_t input_base = 1ull << 40;
 
