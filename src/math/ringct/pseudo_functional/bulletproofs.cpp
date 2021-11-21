@@ -286,7 +286,7 @@ Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, con
      , xs.end()
      , V.begin()
      , [](const auto& x) {
-       return std::apply(commit, x) ^ s_inv_eight;
+       return std::apply(commit, x);
      }
      );
 
@@ -310,8 +310,15 @@ Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, con
   }
 
 try_again:
-  crypto::dataV hash_dataV(V.size());
-  std::copy(V.begin(), V.end(), hash_dataV.begin());
+  crypto::dataV hash_dataV;
+  std::transform
+    (
+     V.begin()
+     , V.end()
+     , std::back_inserter(hash_dataV)
+     , to_inv8
+     );
+
   rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   // PAPER LINES 43-44
@@ -560,8 +567,14 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
 
   // Reconstruct the challenges
-  crypto::dataV hash_dataV(proof.commits.size());
-  std::copy(proof.commits.begin(), proof.commits.end(), hash_dataV.begin());
+  crypto::dataV hash_dataV;
+  std::transform
+    (
+     proof.commits.begin()
+     , proof.commits.end()
+     , std::back_inserter(hash_dataV)
+     , to_inv8
+     );
   rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   proof_data_t pd;
@@ -670,7 +683,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
       , std::next(std::next(zpow.begin()))
       , std::back_inserter(multiexp_data)
       , [weight_y](const auto& x, const auto& y) -> MultiexpData {
-        return {y * weight_y * s_eight, x};
+        return {y * weight_y, x};
       }
       );
 

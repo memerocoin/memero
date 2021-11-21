@@ -159,7 +159,7 @@ namespace rct {
        , proof.commits.end()
        , std::back_inserter(output_commits)
        , [](const auto& x) -> output_commit {
-         return {crypto::mult8(x)};
+         return {x};
        }
        );
 
