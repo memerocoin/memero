@@ -181,7 +181,7 @@ TEST(quick_bulletproofs, wrong_LR_first)
 
   auto altered_proof = proof;
 
-  const auto index_to_change = rand_idx<size_t>(proof.LR.size());
+  const auto index_to_change = rand_idx(proof.LR.size());
   auto lr = proof.LR[index_to_change];
   lr.first = randomPoint();
 
@@ -197,7 +197,7 @@ TEST(quick_bulletproofs, wrong_LR_second)
 
   auto altered_proof = proof;
 
-  const auto index_to_change = rand_idx<size_t>(proof.LR.size());
+  const auto index_to_change = rand_idx(proof.LR.size());
   auto lr = proof.LR[index_to_change];
   lr.second = randomPoint();
 
@@ -213,7 +213,7 @@ TEST(quick_bulletproofs, wrong_commits)
 
   auto altered_proof = proof;
 
-  const auto index_to_change = rand_idx<size_t>(proof.commits.size());
+  const auto index_to_change = rand_idx(proof.commits.size());
   altered_proof.commits[index_to_change] = randomPoint();
   EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
 }

@@ -43,4 +43,8 @@ namespace crypto {
 
     randombytes_buf(bytes, N);
   }
+
+  size_t rand_idx(size_t sz) {
+    return crypto::rand_range<size_t>(0, sz-1);
+  }
 }

@@ -70,9 +70,6 @@ namespace crypto {
 
   /* Generate a random index between 0 and sz-1
    */
-  template<typename T>
-  typename std::enable_if<std::is_unsigned<T>::value, T>::type rand_idx(T sz) {
-    return crypto::rand_range<T>(0, sz-1);
-  }
+  size_t rand_idx(size_t sz);
 
 }

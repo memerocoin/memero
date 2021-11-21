@@ -65,7 +65,7 @@ rctInputData randomRctInputData() {
 
   const rct_scalar signer_sk = randomScalar();
   const rct_scalar signer_blinding_factor = randomScalar();
-  const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
+  const size_t index_in_decoys = rand_idx(config::lol::ring_size);
 
 
   output_public_dataV decoys;
@@ -282,7 +282,7 @@ TEST(quick_ringct, wrong_ecdh_encrypted_data)
 
   auto altered_data = x;
 
-  const auto index_to_change = rand_idx<size_t>(x.ecdh_encrypted_data.size());
+  const auto index_to_change = rand_idx(x.ecdh_encrypted_data.size());
   const auto masked_amount = x.ecdh_encrypted_data[index_to_change].masked_amount;
   altered_data.ecdh_encrypted_data[index_to_change].masked_amount =
     randomAmountBut(masked_amount);

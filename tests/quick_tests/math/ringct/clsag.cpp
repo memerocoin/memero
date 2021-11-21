@@ -60,7 +60,7 @@ clsagInput randomClsagInput() {
   const crypto::hash message = d2h(randomCryptoData());
   const rct_scalar signer_sk = randomScalar();
   const rct_scalar signer_blinding_factor = randomScalar();
-  const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
+  const size_t index_in_decoys = rand_idx(config::lol::ring_size);
   const rct_scalar pseudo_input_blinding_factor = randomScalar();
 
   const amount_t some_amount = randomAmount();
@@ -149,7 +149,7 @@ TEST(quick_clsag, wrong_decoys_1)
   EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
 
   auto decoys = i.decoys;
-  const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
+  const size_t index_in_decoys = rand_idx(config::lol::ring_size);
   const auto decoy = decoys[index_in_decoys];
 
   const output_public_data wrong_decoy_1 = {randomPoint(), decoy.commit};
@@ -175,7 +175,7 @@ TEST(quick_clsag, wrong_decoys_2)
   EXPECT_TRUE(verify_clsag_signature(i.message, sig, i.decoys, i.pseudo_input_commit));
 
   auto decoys = i.decoys;
-  const size_t index_in_decoys = rand_idx<size_t>(config::lol::ring_size);
+  const size_t index_in_decoys = rand_idx(config::lol::ring_size);
   const auto decoy = decoys[index_in_decoys];
 
   const output_public_data wrong_decoy_2 = {decoy.output_public_key, randomPoint()};
@@ -304,7 +304,7 @@ TEST(quick_clsag, wrong_sig_s)
 
   clsag sig1 = sig;
 
-  const auto index_to_change = rand_idx<size_t>(sig1.s.size());
+  const auto index_to_change = rand_idx(sig1.s.size());
   sig1.s[index_to_change] = randomScalar();
 
   EXPECT_FALSE(verify_clsag_signature(i.message, sig1, i.decoys, i.pseudo_input_commit));
