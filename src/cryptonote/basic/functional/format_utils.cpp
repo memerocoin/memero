@@ -128,19 +128,19 @@ namespace cryptonote
       compute_output_secret_key_from_subaddress_spend_sk
       (recv_tx_output_shared_secret, real_output_index, spend_sk);
 
-    const keypair output_spend_key =
+    const keypair output_key_pair =
       {
         output_secret_key
         , to_pk(output_secret_key)
       };
 
-    LOG_ERROR_AND_RETURN_UNLESS(output_spend_key.pub == out_key,
+    LOG_ERROR_AND_RETURN_UNLESS(output_key_pair.pub == out_key,
           {}, "key image helper precomp: given output pubkey doesn't match the derived one");
 
     const crypto::key_image ki =
-      crypto::derive_key_image(output_spend_key.sec);
+      crypto::derive_key_image(output_key_pair.sec);
 
-    return {{output_spend_key, ki}};
+    return {{output_key_pair, ki}};
   }
 
   //---------------------------------------------------------------

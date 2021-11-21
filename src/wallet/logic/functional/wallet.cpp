@@ -259,11 +259,11 @@ namespace wallet {
         );
 
       THROW_WALLET_EXCEPTION_IF(!r, tools::error::wallet_internal_error, "Failed to generate key image");
-      std::tie(tx_scan_info.output_spend_key, tx_scan_info.ki) = *r;
+      std::tie(tx_scan_info.output_key_pair, tx_scan_info.ki) = *r;
 
       THROW_WALLET_EXCEPTION_IF
         (
-        tx_scan_info.output_spend_key.pub
+        tx_scan_info.output_key_pair.pub
         != boost::get<cryptonote::txout_to_key>(tx.vout[i].target).output_public_key
         , tools::error::wallet_internal_error
         , "shared secret derived spend public key does not matched with output spend public key"

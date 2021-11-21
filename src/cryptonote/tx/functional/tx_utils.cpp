@@ -54,7 +54,7 @@ namespace cryptonote
     , crypto::public_key
     >>
 
-    generate_output_spend_keys
+    generate_output_key_pairs
 
   (
    const size_t tx_version
@@ -149,7 +149,7 @@ namespace cryptonote
 
     struct input_generation_context_data
     {
-      keypair output_spend_key;
+      keypair output_key_pair;
     };
     std::vector<input_generation_context_data> in_contexts;
 
@@ -186,16 +186,16 @@ namespace cryptonote
         return {};
       }
 
-      keypair& output_spend_key = in_contexts.back().output_spend_key;
+      keypair& output_key_pair = in_contexts.back().output_key_pair;
       crypto::key_image img;
 
-      std::tie(output_spend_key, img) = *r;
+      std::tie(output_key_pair, img) = *r;
 
       //check that derivated key is equal with real output key (if non multisig)
-      if(!(output_spend_key.pub == src_entr.outputs[src_entr.real_output].second.output_public_key) )
+      if(!(output_key_pair.pub == src_entr.outputs[src_entr.real_output].second.output_public_key) )
       {
         LOG_ERROR("derived public key mismatch with output public key at index " << idx << ", real out " << src_entr.real_output << "! "<< std::endl << "derived_key:"
-          << epee::string_tools::pod_to_hex(output_spend_key.pub) << std::endl << "real output_public_key:"
+          << epee::string_tools::pod_to_hex(output_key_pair.pub) << std::endl << "real output_public_key:"
           << epee::string_tools::pod_to_hex(src_entr.outputs[src_entr.real_output].second.output_public_key) );
         LOG_ERROR("amount " << src_entr.amount << ", rct " << src_entr.rct);
         LOG_ERROR("tx pubkey " << src_entr.real_out_tx_key);
@@ -256,7 +256,7 @@ namespace cryptonote
     {
       LOG_ERROR_AND_RETURN_UNLESS(dst_entr.amount > 0 || tx.version > 1, {}, "Destination with wrong amount: " << dst_entr.amount);
 
-      const auto r = generate_output_spend_keys
+      const auto r = generate_output_key_pairs
         (
          tx.version,sender_account_keys
          , dst_entr
@@ -337,7 +337,7 @@ namespace cryptonote
         const rct::rctInputData input =
           {
             sources[i].amount
-            , in_contexts[i].output_spend_key.sec
+            , in_contexts[i].output_key_pair.sec
             , sources[i].mask
             , sources[i].real_output
             , decoys[i]
