@@ -84,7 +84,7 @@ namespace rct {
     // mages images
     const rct_point signer_pk_hash = crypto::hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
 
-    const rct_point sig_signer_pk_image = signer_pk_hash ^ signer_sk;
+    const rct_point sig_signer_key_image = signer_pk_hash ^ signer_sk;
     const rct_point D = signer_pk_hash ^ signer_blinding_factor_surplus;
 
     // Offset key image
@@ -93,7 +93,7 @@ namespace rct {
     crypto::dataV mu_P_to_hash = {{}};
     mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
     mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_commits.begin(), decoy_commits.end());
-    mu_P_to_hash.push_back(sig_signer_pk_image);
+    mu_P_to_hash.push_back(sig_signer_key_image);
     mu_P_to_hash.push_back(sig_blinding_factor_surplus_pk_base_hashed_signer_pk);
     mu_P_to_hash.push_back(pseudo_input_commit);
 
@@ -172,7 +172,7 @@ namespace rct {
          std::array
          {
            A ^ sk
-           , sig_signer_pk_image ^ c_p
+           , sig_signer_key_image ^ c_p
            , D ^ c_c
          }
          );
@@ -196,7 +196,7 @@ namespace rct {
     return {
       s
       , sig_c1
-      , sig_signer_pk_image
+      , sig_signer_key_image
       , sig_blinding_factor_surplus_pk_base_hashed_signer_pk
       };
   }

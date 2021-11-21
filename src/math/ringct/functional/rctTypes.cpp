@@ -211,7 +211,7 @@ namespace rct {
     return {{
       clsag_s
       , crypto::reduce(clsag.c1)
-      , clsag.signer_pk_image
+      , clsag.signer_key_image
       , clsag_blinding_factor_surplus_pk_base_hashed_signer_pk
     }};
   }
@@ -225,7 +225,7 @@ namespace rct {
     return {
       s
       , clsag.c1
-      , clsag.signer_pk_image
+      , clsag.signer_key_image
       , clsag.blinding_factor_surplus_pk_base_hashed_signer_pk
     };
   }
