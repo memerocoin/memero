@@ -196,7 +196,7 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(clsag.c1), {}, "Bad clsag.c1");
 
     const auto maybe_clsag_blinding_factor_surplus_pk_base_hashed_signer_pk =
-      crypto::maybeSafePoint(clsag.blinding_factor_surplus_pk_base_hashed_signer_pk);
+      maybe_from_inv8(clsag.blinding_factor_surplus_pk_base_hashed_signer_pk);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
@@ -226,7 +226,7 @@ namespace rct {
       s
       , clsag.c1
       , clsag.signer_key_image
-      , clsag.blinding_factor_surplus_pk_base_hashed_signer_pk
+      , to_inv8(clsag.blinding_factor_surplus_pk_base_hashed_signer_pk)
     };
   }
 

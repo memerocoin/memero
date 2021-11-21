@@ -66,7 +66,17 @@ namespace rct {
        );
   }
 
+  inv8 to_inv8(const rct_point x) {
+    return x ^ s_inv_eight;
+  }
 
+  std::optional<rct_point> maybe_from_inv8(const inv8 x) {
+    const auto maybeSafeInv8 = maybeSafePoint(x);
+    return
+      maybeSafeInv8
+      ? std::make_optional<rct_point>(mult8(*maybeSafeInv8))
+      : std::nullopt;
+  }
 
   // ct
   rct_point commit(const amount_t amount, const crypto::ec_scalar mask) {

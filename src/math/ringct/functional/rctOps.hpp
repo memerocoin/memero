@@ -57,6 +57,9 @@ namespace rct {
   rct_point commit(const amount_t amount, const crypto::ec_scalar mask);
   rct_point dummyCommit(const amount_t amount);
 
+  inv8 to_inv8(const rct_point x);
+  std::optional<rct_point> maybe_from_inv8(const inv8 x);
+
 
   // hash
   crypto::hash hash_data(const crypto::crypto_data in);

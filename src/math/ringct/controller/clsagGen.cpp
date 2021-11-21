@@ -197,7 +197,7 @@ namespace rct {
       s
       , sig_c1
       , sig_signer_key_image
-      , sig_blinding_factor_surplus_pk_base_hashed_signer_pk
+      , mult8(sig_blinding_factor_surplus_pk_base_hashed_signer_pk)
       };
   }
 

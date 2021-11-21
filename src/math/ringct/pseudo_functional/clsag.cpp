@@ -45,6 +45,48 @@
 #define MONERO_DEFAULT_LOG_CATEGORY "ringct"
 
 namespace rct {
+
+  crypto::ec_scalar hash_clsag_data_with_key
+  (
+   const rct_point signer_key_image
+   , const rct_point blinding_factor_surplus_pk_base_hashed_signer_pk
+   , const rct_point pseudo_input_commit
+   , const output_public_dataS decoys
+   , const std::string_view hash_key
+   )
+  {
+    // Aggregation hashes
+    crypto::dataV hash_inputs = {{}};
+    std::transform
+      (
+       decoys.begin()
+       , decoys.end()
+       , std::back_inserter(hash_inputs)
+       , [](const auto& x) { return x.output_public_key; }
+       );
+
+    std::transform
+      (
+       decoys.begin()
+       , decoys.end()
+       , std::back_inserter(hash_inputs)
+       , [](const auto& x) { return x.commit; }
+       );
+
+    hash_inputs.push_back(signer_key_image);
+    hash_inputs.push_back(to_inv8(blinding_factor_surplus_pk_base_hashed_signer_pk));
+    hash_inputs.push_back(pseudo_input_commit);
+
+    std::copy_n
+      (
+       hash_key.data()
+       , hash_key.size()
+       , hash_inputs[0].data.begin()
+       );
+
+    return hash_dataV_to_scalar(hash_inputs);
+  }
+
   bool verify_clsag_signature
   (
     const crypto::hash message
@@ -60,45 +102,23 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "sig.s vector is the wrong size!");
 
     // Aggregation hashes
-    crypto::dataV mu_P_to_hash = {{}};
-    std::transform
+    const rct_scalar mu_P = hash_clsag_data_with_key
       (
-        decoys.begin()
-        , decoys.end()
-        , std::back_inserter(mu_P_to_hash)
-        , [](const auto& x) { return x.output_public_key; }
-        );
+       sig.signer_key_image
+       , sig.blinding_factor_surplus_pk_base_hashed_signer_pk
+       , pseudo_input_commit
+       , decoys
+       , config::HASH_KEY_CLSAG_AGG_0
+       );
 
-    std::transform
+    const rct_scalar mu_C = hash_clsag_data_with_key
       (
-        decoys.begin()
-        , decoys.end()
-        , std::back_inserter(mu_P_to_hash)
-        , [](const auto& x) { return x.commit; }
-        );
-
-    mu_P_to_hash.push_back(sig.signer_key_image);
-    mu_P_to_hash.push_back(sig.blinding_factor_surplus_pk_base_hashed_signer_pk);
-    mu_P_to_hash.push_back(pseudo_input_commit);
-
-    crypto::dataV mu_C_to_hash = mu_P_to_hash;
-
-    std::copy_n
-      (
-        config::HASH_KEY_CLSAG_AGG_0.data()
-        , config::HASH_KEY_CLSAG_AGG_0.size()
-        , mu_P_to_hash[0].data.begin()
-        );
-
-    std::copy_n
-      (
-        config::HASH_KEY_CLSAG_AGG_1.data()
-        , config::HASH_KEY_CLSAG_AGG_1.size()
-        , mu_C_to_hash[0].data.begin()
-        );
-
-    const rct_scalar mu_P = hash_dataV_to_scalar(mu_P_to_hash);
-    const rct_scalar mu_C = hash_dataV_to_scalar(mu_C_to_hash);
+       sig.signer_key_image
+       , sig.blinding_factor_surplus_pk_base_hashed_signer_pk
+       , pseudo_input_commit
+       , decoys
+       , config::HASH_KEY_CLSAG_AGG_1
+       );
 
     // Set up round hash
     crypto::dataV c_to_hash = {{}}; // domain, P, C, pseudo_input_commit, message, L, R
@@ -164,7 +184,7 @@ namespace rct {
           {
             k ^ sig.s[i]
             , sig.signer_key_image ^ c_p
-            , sig.blinding_factor_surplus_pk_base_hashed_signer_pk ^ (c_c * s_eight)
+            , sig.blinding_factor_surplus_pk_base_hashed_signer_pk ^ c_c
           }
           );
 
