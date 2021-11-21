@@ -56,7 +56,7 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   std::optional<std::pair<keypair, crypto::key_image>>
-  derive_with_internal_checking_output_spend_key_pair_and_key_image
+  derive_with_internal_checking_output_key_pair_and_key_image
   (
    const account_keys ack
    , const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses
@@ -101,7 +101,7 @@ namespace cryptonote
        , "key image helper: given output pubkey doesn't seem to belong to this address"
        );
 
-    return derive_output_spend_key_pair_and_key_image
+    return derive_output_key_pair_and_key_image
       (
        ack
        , out_key
@@ -113,7 +113,7 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   std::optional<std::pair<keypair, crypto::key_image>>
-  derive_output_spend_key_pair_and_key_image
+  derive_output_key_pair_and_key_image
   (
    const account_keys account_keys
    , const crypto::public_key out_key
