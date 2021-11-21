@@ -71,7 +71,6 @@ add_executable(unit_tests_basic
   mnemonics.cpp
   bulletproofs.cpp
   # multiexp.cpp
-  math/crypto/group.cpp
 )
 
 target_link_libraries(unit_tests_basic
