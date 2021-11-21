@@ -31,14 +31,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <gtest/gtest.h>
 
-#include "math/crypto/functional/key.hpp"
-#include "math/crypto/controller/keyGen.hpp"
-#include "math/crypto/controller/random.hpp"
 #include "math/ringct/functional/rctTypes.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/pseudo_functional/ringCT.hpp"
 #include "math/ringct/controller/ringCT_Gen.hpp"
 
+#include "math/crypto/functional/key.hpp"
+#include "math/crypto/controller/keyGen.hpp"
+#include "math/crypto/controller/random.hpp"
 
 #include "tools/epee/include/logging.hpp"
 
