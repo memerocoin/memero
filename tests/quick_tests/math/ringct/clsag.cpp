@@ -212,7 +212,7 @@ TEST(quick_clsag, wrong_pseudo_input_commit)
 //   rct_scalarV s; // scalars
 //   rct_scalar c1;
 //   rct_point signer_pk_image; // signing key image
-//   rct_point signer_pk_image_from_blinding_factor_surplus; // commitment key image
+//   rct_point blinding_factor_surplus_pk_base_hashed_signer_pk; // commitment key image
 // };
 
 TEST(quick_clsag, wrong_sig_c1)
@@ -262,7 +262,7 @@ TEST(quick_clsag, wrong_sig_signer_pk_image)
   EXPECT_FALSE(verify_clsag_signature(i.message, sig1, i.decoys, i.pseudo_input_commit));
 }
 
-TEST(quick_clsag, wrong_sig_signer_pk_image_from_blinding_factor_surplus)
+TEST(quick_clsag, wrong_sig_blinding_factor_surplus_pk_base_hashed_signer_pk)
 {
   const auto i = randomClsagInput();
   const auto sig = generate_clsag_signature
@@ -280,7 +280,7 @@ TEST(quick_clsag, wrong_sig_signer_pk_image_from_blinding_factor_surplus)
 
   clsag sig1 = sig;
 
-  sig1.signer_pk_image_from_blinding_factor_surplus = randomPoint();
+  sig1.blinding_factor_surplus_pk_base_hashed_signer_pk = randomPoint();
 
   EXPECT_FALSE(verify_clsag_signature(i.message, sig1, i.decoys, i.pseudo_input_commit));
 }
