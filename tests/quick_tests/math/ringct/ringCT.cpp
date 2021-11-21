@@ -194,6 +194,16 @@ TEST(quick_ringct, random_input)
 // std::vector<output_commit> output_commits;
 // amount_t fee;
 
+amount_t randomAmountBut(const amount_t x) {
+  const amount_t r = randomAmount();
+  return
+    r == x
+    ? randomAmountBut(x)
+    : r
+    ;
+}
+
+
 TEST(quick_ringct, wrong_balance)
 {
   const auto i = randomRctDataInput();
@@ -209,7 +219,7 @@ TEST(quick_ringct, wrong_balance)
   EXPECT_TRUE(verify_ringct(x));
 
   auto altered_data = x;
-  altered_data.fee = randomAmount();
+  altered_data.fee = randomAmountBut(x.fee);
 
   EXPECT_FALSE(verify_ringct(altered_data));
 }
@@ -256,7 +266,6 @@ TEST(quick_ringct, wrong_type)
   EXPECT_FALSE(verify_ringct(altered_data));
 }
 
-
 TEST(quick_ringct, wrong_ecdh_encrypted_data)
 {
   const auto i = randomRctDataInput();
@@ -274,7 +283,9 @@ TEST(quick_ringct, wrong_ecdh_encrypted_data)
   auto altered_data = x;
 
   const auto index_to_change = rand_idx<size_t>(x.ecdh_encrypted_data.size());
-  altered_data.ecdh_encrypted_data[index_to_change].masked_amount = randomAmount();
+  const auto masked_amount = x.ecdh_encrypted_data[index_to_change].masked_amount;
+  altered_data.ecdh_encrypted_data[index_to_change].masked_amount =
+    randomAmountBut(masked_amount);
 
   EXPECT_FALSE(verify_ringct(altered_data));
 }
