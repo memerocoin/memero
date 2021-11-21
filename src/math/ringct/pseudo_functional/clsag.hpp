@@ -34,6 +34,16 @@
 #include "math/ringct/functional/rctTypes.hpp"
 
 namespace rct {
+
+  crypto::ec_scalar hash_clsag_data_with_key
+  (
+   const rct_point signer_key_image
+   , const rct_point blinding_factor_surplus_pk_base_hashed_signer_pk
+   , const rct_point pseudo_input_commit
+   , const output_public_dataS decoys
+   , const std::string_view hash_key
+   );
+
   bool verify_clsag_signature
   (
    const crypto::hash message
