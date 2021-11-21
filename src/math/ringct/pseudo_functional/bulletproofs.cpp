@@ -375,12 +375,12 @@ try_again:
   const rct_scalar tau1 = crypto::randomScalar();
   const rct_scalar tau2 = crypto::randomScalar();
 
-  const rct_point T1 = G_(tau1 * rct::s_inv_eight) + H_(t1 * rct::s_inv_eight);
-  const rct_point T2 = G_(tau2 * rct::s_inv_eight) + H_(t2 * rct::s_inv_eight);
+  const rct_point T1 = G_(tau1) + H_(t1);
+  const rct_point T2 = G_(tau2) + H_(t2);
 
   // PAPER LINES 54-56
   const rct_scalar x = hash_carry = hash_dataV_to_scalar
-    (crypto::dataV{hash_carry, z, T1, T2});
+    (crypto::dataV{hash_carry, z, to_inv8(T1), to_inv8(T2)});
   if (x == rct::s_zero)
   {
     LOG_INFO("x is 0, trying again");
@@ -573,7 +573,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
 
   pd.x = hash_carry =
-    hash_dataV_to_scalar(crypto::dataV{hash_carry, pd.z, proof.T1, proof.T2});
+    hash_dataV_to_scalar
+    (crypto::dataV{hash_carry, pd.z, to_inv8(proof.T1), to_inv8(proof.T2)});
   LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
 
   pd.x_ip = hash_carry =
@@ -673,8 +674,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
       }
       );
 
-  multiexp_data.emplace_back(pd.x * weight_y * s_eight, proof.T1);
-  multiexp_data.emplace_back(pd.x * pd.x * weight_y * s_eight, proof.T2);
+  multiexp_data.emplace_back(pd.x * weight_y, proof.T1);
+  multiexp_data.emplace_back(pd.x * pd.x * weight_y, proof.T2);
   multiexp_data.emplace_back(weight_z, proof.A);
   multiexp_data.emplace_back(pd.x * weight_z, proof.S);
 

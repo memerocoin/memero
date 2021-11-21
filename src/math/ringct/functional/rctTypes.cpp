@@ -99,11 +99,11 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_S, {}, "Bad proof.S");
     const rct::rct_point proof_S = *maybe_proof_S;
 
-    const auto maybe_proof_T1 = crypto::maybeSafePoint(proof.T1);
+    const auto maybe_proof_T1 = maybe_from_inv8(proof.T1);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T1, {}, "Bad proof.T1");
     const rct::rct_point proof_T1 = *maybe_proof_T1;
 
-    const auto maybe_proof_T2 = crypto::maybeSafePoint(proof.T2);
+    const auto maybe_proof_T2 = maybe_from_inv8(proof.T2);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T2, {}, "Bad proof.T2");
     const rct::rct_point proof_T2 = *maybe_proof_T2;
 
@@ -167,8 +167,8 @@ namespace rct {
       proof.commits
       , to_inv8(proof.A)
       , to_inv8(proof.S)
-      , proof.T1
-      , proof.T2
+      , to_inv8(proof.T1)
+      , to_inv8(proof.T2)
       , proof.taux
       , proof.mu
       , to_inv8V(L)
