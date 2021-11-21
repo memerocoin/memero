@@ -61,12 +61,12 @@ namespace rct {
     , const rct_scalar signer_blinding_factor_surplus
     , const size_t index_in_decoys
     , const rct_point pseudo_input_commit
-    , const rct_pointV decoy_spend_pks
+    , const rct_pointV decoy_public_keys
     , const rct_pointV decoy_commit_surplus
     , const rct_pointV decoy_commits
     )
   {
-    size_t n = decoy_spend_pks.size(); // ring size
+    size_t n = decoy_public_keys.size(); // ring size
     LOG_ERROR_AND_THROW_UNLESS
       (
        n == decoy_commit_surplus.size()
@@ -82,7 +82,7 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS(index_in_decoys < n, "Signing index out of range!");
 
     // mages images
-    const rct_point signer_pk_hash = crypto::hash_to_point_via_field(decoy_spend_pks[index_in_decoys]);
+    const rct_point signer_pk_hash = crypto::hash_to_point_via_field(decoy_public_keys[index_in_decoys]);
 
     const rct_point sig_signer_key_image = signer_pk_hash ^ signer_sk;
     const rct_point D = signer_pk_hash ^ signer_blinding_factor_surplus;
@@ -91,7 +91,7 @@ namespace rct {
     const rct_point sig_blinding_factor_surplus_pk_base_hashed_signer_pk = D ^ rct::s_inv_eight;
 
     crypto::dataV mu_P_to_hash = {{}};
-    mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
+    mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_public_keys.begin(), decoy_public_keys.end());
     mu_P_to_hash.insert(mu_P_to_hash.end(), decoy_commits.begin(), decoy_commits.end());
     mu_P_to_hash.push_back(sig_signer_key_image);
     mu_P_to_hash.push_back(sig_blinding_factor_surplus_pk_base_hashed_signer_pk);
@@ -126,7 +126,7 @@ namespace rct {
         , c_to_hash[0].data.begin()
         );
 
-    c_to_hash.insert(c_to_hash.end(), decoy_spend_pks.begin(), decoy_spend_pks.end());
+    c_to_hash.insert(c_to_hash.end(), decoy_public_keys.begin(), decoy_public_keys.end());
     c_to_hash.insert(c_to_hash.end(), decoy_commits.begin(), decoy_commits.end());
     c_to_hash.push_back(pseudo_input_commit);
     c_to_hash.push_back(crypto::h2d(message));
@@ -160,13 +160,13 @@ namespace rct {
          std::array
          {
            G_(sk)
-           , decoy_spend_pks[i] ^ c_p
+           , decoy_public_keys[i] ^ c_p
            , decoy_commit_surplus[i] ^ c_c
          }
          );
 
       // Compute R
-      const rct_point A = crypto::hash_to_point_via_field(decoy_spend_pks[i]);
+      const rct_point A = crypto::hash_to_point_via_field(decoy_public_keys[i]);
       const rct_point R = sum
         (
          std::array
@@ -215,12 +215,12 @@ namespace rct {
   {
     LOG_ERROR_AND_THROW_IF(decoys.empty(), "Empty decoys");
 
-    rct_pointV decoy_spend_pks;
+    rct_pointV decoy_public_keys;
     std::transform
       (
         decoys.begin()
         , decoys.end()
-        , std::back_inserter(decoy_spend_pks)
+        , std::back_inserter(decoy_public_keys)
         , [](const auto& x) { return x.output_public_key; }
         );
 
@@ -250,7 +250,7 @@ namespace rct {
        , signer_blinding_factor_surplus
        , index_in_decoys
        , pseudo_input_commit
-       , decoy_spend_pks
+       , decoy_public_keys
        , decoy_commit_surplus
        , decoy_commits
        );
