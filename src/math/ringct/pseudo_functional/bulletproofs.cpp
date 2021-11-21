@@ -148,7 +148,7 @@ rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
 }
 
 /* Compute a custom vector-scalar commitment */
-rct_point cross_vector_exponent8
+rct_point cross_vector_exponent
 (
  const size_t size
  , const std::span<rct_point> A
@@ -474,10 +474,10 @@ try_again:
        );
 
     // PAPER LINES 23-24
-    const auto L = cross_vector_exponent8
+    const auto L = cross_vector_exponent
       (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
       + H_(cL * x_ip);
-    const auto R = cross_vector_exponent8
+    const auto R = cross_vector_exponent
       (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
       + H_(cR * x_ip);
 
