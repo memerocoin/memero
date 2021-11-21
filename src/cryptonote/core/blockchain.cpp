@@ -1772,14 +1772,9 @@ bool Blockchain::get_alternative_blocks(std::vector<block>& blocks) const
     ([&blocks]
      (const crypto::hash &blkid
       , const cryptonote::alt_block_data_t &data
-      , const cryptonote::string_blob_view* blob
+      , const cryptonote::string_blob_view blob
       ) {
-      if (!blob)
-        {
-          LOG_ERROR("No blob, but blobs were requested");
-          return false;
-        }
-    const auto maybeBlock = maybe_block_from_blob(*blob);
+    const auto maybeBlock = maybe_block_from_blob(blob);
     if (maybeBlock) {
       blocks.push_back(*maybeBlock);
     }
@@ -1787,7 +1782,7 @@ bool Blockchain::get_alternative_blocks(std::vector<block>& blocks) const
       LOG_ERROR("Failed to parse block from blob");
     }
     return true;
-  }, true);
+  });
   return true;
 }
 //------------------------------------------------------------------
@@ -3656,15 +3651,10 @@ std::vector<std::pair<Blockchain::block_extended_info,std::vector<crypto::hash>>
 
   blocks_ext_by_hash alt_blocks;
   alt_blocks.reserve(m_db->get_alt_block_count());
-  m_db->for_all_alt_blocks([&alt_blocks](const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view* blob) {
-    if (!blob)
-      {
-        LOG_ERROR("No blob, but blobs were requested");
-        return false;
-      }
+  m_db->for_all_alt_blocks([&alt_blocks](const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::string_blob_view blob) {
     cryptonote::block bl;
     block_extended_info bei;
-    const auto maybeBlock = maybe_block_from_blob(*blob);
+    const auto maybeBlock = maybe_block_from_blob(blob);
     if (maybeBlock)
     {
       bei.bl = *maybeBlock;
@@ -3678,7 +3668,7 @@ std::vector<std::pair<Blockchain::block_extended_info,std::vector<crypto::hash>>
     else
       LOG_ERROR("Failed to parse block from blob");
     return true;
-  }, true);
+  });
 
   for (const auto &i: alt_blocks)
   {
