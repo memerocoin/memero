@@ -496,7 +496,7 @@ void wallet2::set_spent(size_t idx, uint64_t height)
 {
   LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
-  LOG_PRINT_L3("Setting SPENT at " << height << ": ki " << td.m_output_spend_key_image << ", amount " << print_money(td.m_amount));
+  LOG_PRINT_L3("Setting SPENT at " << height << ": ki " << td.m_output_key_image << ", amount " << print_money(td.m_amount));
   td.m_spent = true;
   td.m_spent_height = height;
 }
@@ -505,7 +505,7 @@ void wallet2::set_unspent(size_t idx)
 {
   LOG_ERROR_AND_THROW_UNLESS(idx < m_transfers.size(), "Invalid index");
   transfer_details &td = m_transfers[idx];
-  LOG_PRINT_L3("Setting UNSPENT: ki " << td.m_output_spend_key_image << ", amount " << print_money(td.m_amount));
+  LOG_PRINT_L3("Setting UNSPENT: ki " << td.m_output_key_image << ", amount " << print_money(td.m_amount));
   td.m_spent = false;
   td.m_spent_height = 0;
 }
@@ -522,7 +522,7 @@ size_t wallet2::get_transfer_details(const crypto::key_image &ki) const
   for (size_t idx = 0; idx < m_transfers.size(); ++idx)
   {
     const transfer_details &td = m_transfers[idx];
-    if (td.m_output_spend_key_image_known && td.m_output_spend_key_image == ki)
+    if (td.m_output_key_image_known && td.m_output_key_image == ki)
       return idx;
   }
   LOG_ERROR_AND_THROW_UNLESS(false, "Key image not found");
@@ -535,8 +535,8 @@ bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(in);
-    auto it = m_output_spend_key_images.find(in_to_key.output_spend_key_image);
-    if (it != m_output_spend_key_images.end())
+    auto it = m_output_key_images.find(in_to_key.output_key_image);
+    if (it != m_output_key_images.end())
       return true;
   }
   return false;
@@ -682,20 +682,20 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	    td.m_global_output_index = o_indices[o];
 	    td.m_tx = (const cryptonote::transaction_prefix&)tx;
 	    td.m_txid = txid;
-            td.m_output_spend_key_image = tx_scan_info[o].ki;
-            td.m_output_spend_key_image_known = true;
-            if (!td.m_output_spend_key_image_known)
+            td.m_output_key_image = tx_scan_info[o].ki;
+            td.m_output_key_image_known = true;
+            if (!td.m_output_key_image_known)
             {
               // we might have cold signed, and have a mapping to key images
-              std::unordered_map<crypto::public_key, crypto::key_image>::const_iterator i = m_cold_output_spend_key_images.find(tx_scan_info[o].output_spend_key.pub);
-              if (i != m_cold_output_spend_key_images.end())
+              std::unordered_map<crypto::public_key, crypto::key_image>::const_iterator i = m_cold_output_key_images.find(tx_scan_info[o].output_spend_key.pub);
+              if (i != m_cold_output_key_images.end())
               {
-                td.m_output_spend_key_image = i->second;
-                td.m_output_spend_key_image_known = true;
+                td.m_output_key_image = i->second;
+                td.m_output_key_image_known = true;
               }
             }
             {
-              td.m_output_spend_key_image_request = false;
+              td.m_output_key_image_request = false;
             }
             td.m_amount = amount;
             td.m_pk_index = 0;
@@ -719,8 +719,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
             }
             td.m_frozen = false;
 	    set_unspent(m_transfers.size()-1);
-            if (td.m_output_spend_key_image_known)
-	      m_output_spend_key_images[td.m_output_spend_key_image] = m_transfers.size()-1;
+            if (td.m_output_key_image_known)
+	      m_output_key_images[td.m_output_key_image] = m_transfers.size()-1;
 	    m_pub_keys[tx_scan_info[o].output_spend_key.pub] = m_transfers.size()-1;
 	    LOG_VERBOSE("Received money: " << print_money(td.amount()) << ", with tx: " << txid);
 	    if (0 != m_callback)
@@ -814,8 +814,8 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     if(in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(in);
-    auto it = m_output_spend_key_images.find(in_to_key.output_spend_key_image);
-    if(it != m_output_spend_key_images.end())
+    auto it = m_output_key_images.find(in_to_key.output_key_image);
+    if(it != m_output_key_images.end())
     {
       transfer_details& td = m_transfers[it->second];
       uint64_t amount = in_to_key.amount;
@@ -982,7 +982,7 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
     if (in.type() != typeid(cryptonote::txin_to_key))
       continue;
     const auto &txin = boost::get<cryptonote::txin_to_key>(in);
-    entry.first->second.m_rings.push_back(std::make_pair(txin.output_spend_key_image, txin.output_relative_offsets));
+    entry.first->second.m_rings.push_back(std::make_pair(txin.output_key_image, txin.output_relative_offsets));
   }
   entry.first->second.m_block_height = height;
   entry.first->second.m_timestamp = ts;
@@ -1361,9 +1361,9 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
             for (size_t i = 0; i < m_transfers.size(); ++i)
             {
               const transfer_details &td = m_transfers[i];
-              if (td.m_output_spend_key_image == tx_in_to_key.output_spend_key_image)
+              if (td.m_output_key_image == tx_in_to_key.output_key_image)
               {
-                 LOG_PRINT_L1("Resetting spent status for output " << vini << ": " << td.m_output_spend_key_image);
+                 LOG_PRINT_L1("Resetting spent status for output " << vini << ": " << td.m_output_key_image);
                  set_unspent(i);
                  break;
               }
@@ -1789,7 +1789,7 @@ void wallet2::detach_blockchain(uint64_t height)
     wallet::logic::type::transfer::transfer_details &td = m_transfers[i];
     if (td.m_spent && td.m_spent_height >= height)
     {
-      LOG_PRINT_L1("Resetting spent/frozen status for output " << i << ": " << td.m_output_spend_key_image);
+      LOG_PRINT_L1("Resetting spent/frozen status for output " << i << ": " << td.m_output_key_image);
       set_unspent(i);
     }
   }
@@ -1805,11 +1805,11 @@ void wallet2::detach_blockchain(uint64_t height)
 
   for(size_t i = i_start; i!= m_transfers.size();i++)
   {
-    if (!m_transfers[i].m_output_spend_key_image_known || m_transfers[i].m_output_spend_key_image_partial)
+    if (!m_transfers[i].m_output_key_image_known || m_transfers[i].m_output_key_image_partial)
       continue;
-    auto it_ki = m_output_spend_key_images.find(m_transfers[i].m_output_spend_key_image);
-    THROW_WALLET_EXCEPTION_IF(it_ki == m_output_spend_key_images.end(), error::wallet_internal_error, "key image not found: index " + std::to_string(i) + ", ki " + epee::string_tools::pod_to_hex(m_transfers[i].m_output_spend_key_image) + ", " + std::to_string(m_output_spend_key_images.size()) + " key images known");
-    m_output_spend_key_images.erase(it_ki);
+    auto it_ki = m_output_key_images.find(m_transfers[i].m_output_key_image);
+    THROW_WALLET_EXCEPTION_IF(it_ki == m_output_key_images.end(), error::wallet_internal_error, "key image not found: index " + std::to_string(i) + ", ki " + epee::string_tools::pod_to_hex(m_transfers[i].m_output_key_image) + ", " + std::to_string(m_output_key_images.size()) + " key images known");
+    m_output_key_images.erase(it_ki);
   }
 
   for(size_t i = i_start; i!= m_transfers.size();i++)
@@ -1854,7 +1854,7 @@ bool wallet2::clear()
 {
   m_blockchain.clear();
   m_transfers.clear();
-  m_output_spend_key_images.clear();
+  m_output_key_images.clear();
   m_pub_keys.clear();
   m_unconfirmed_txs.clear();
   m_payments.clear();
@@ -1873,7 +1873,7 @@ void wallet2::clear_soft()
 {
   m_blockchain.clear();
   m_transfers.clear();
-  m_output_spend_key_images.clear();
+  m_output_key_images.clear();
   m_pub_keys.clear();
   m_unconfirmed_txs.clear();
   m_payments.clear();
@@ -2325,10 +2325,10 @@ void wallet2::generate(const std::string& wallet_, const epee::wipeable_string& 
     store();
 }
 
-bool wallet2::has_unknown_output_spend_key_images() const
+bool wallet2::has_unknown_output_key_images() const
 {
   for (const auto &td: m_transfers)
-    if (!td.m_output_spend_key_image_known)
+    if (!td.m_output_key_image_known)
       return true;
   return false;
 }
@@ -2874,7 +2874,7 @@ void wallet2::commit_tx(pending_tx& ptx)
     m_output_secret_keys[txid] = ptx.output_secret_keys;
   }
 
-  LOG_PRINT_L2("transaction " << txid << " generated ok and sent to daemon, output_spend_key_images: [" << ptx.output_spend_key_images << "]");
+  LOG_PRINT_L2("transaction " << txid << " generated ok and sent to daemon, output_key_images: [" << ptx.output_key_images << "]");
 
   for(size_t idx: ptx.selected_transfers)
   {

@@ -159,7 +159,7 @@ bool check_tx_input_points(const transaction& tx)
       , std::logical_and()
       , [](const auto& x) {
         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, false);
-        return crypto::is_safe_point(tokey_in.output_spend_key_image);
+        return crypto::is_safe_point(tokey_in.output_key_image);
       }
       );
 }

@@ -1146,7 +1146,7 @@ void BlockchainLMDB::remove_output(const uint64_t amount, const uint64_t& out_in
     throw0(DB_ERROR(lmdb_error(std::string("Error deleting amount for output index ").append(boost::lexical_cast<std::string>(out_index).append(": ")).c_str(), result).c_str()));
 }
 
-void BlockchainLMDB::add_spent_key(const crypto::key_image& output_spend_key_image)
+void BlockchainLMDB::add_spent_key(const crypto::key_image& output_key_image)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1154,7 +1154,7 @@ void BlockchainLMDB::add_spent_key(const crypto::key_image& output_spend_key_ima
 
   CURSOR(spent_keys)
 
-  MDB_val k = {sizeof(output_spend_key_image), (void *)&output_spend_key_image};
+  MDB_val k = {sizeof(output_key_image), (void *)&output_key_image};
   if (auto result = mdb_cursor_put(m_cur_spent_keys, (MDB_val *)&zerokval, &k, MDB_NODUPDATA)) {
     if (result == MDB_KEYEXIST)
       throw1(KEY_IMAGE_EXISTS("Attempting to add spent key image that's already in the db"));
@@ -1163,7 +1163,7 @@ void BlockchainLMDB::add_spent_key(const crypto::key_image& output_spend_key_ima
   }
 }
 
-void BlockchainLMDB::remove_spent_key(const crypto::key_image& output_spend_key_image)
+void BlockchainLMDB::remove_spent_key(const crypto::key_image& output_key_image)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -1171,7 +1171,7 @@ void BlockchainLMDB::remove_spent_key(const crypto::key_image& output_spend_key_
 
   CURSOR(spent_keys)
 
-  MDB_val k = {sizeof(output_spend_key_image), (void *)&output_spend_key_image};
+  MDB_val k = {sizeof(output_key_image), (void *)&output_key_image};
   auto result = mdb_cursor_get(m_cur_spent_keys, (MDB_val *)&zerokval, &k, MDB_GET_BOTH);
   if (result != 0 && result != MDB_NOTFOUND)
       throw1(DB_ERROR(lmdb_error("Error finding spent key to remove", result).c_str()));
@@ -2893,7 +2893,7 @@ std::vector<std::vector<uint64_t>> BlockchainLMDB::get_tx_amount_output_indices(
   return amount_output_indices_set;
 }
 
-bool BlockchainLMDB::has_output_spend_key_image(const crypto::key_image& img) const
+bool BlockchainLMDB::has_output_key_image(const crypto::key_image& img) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2910,7 +2910,7 @@ bool BlockchainLMDB::has_output_spend_key_image(const crypto::key_image& img) co
   return ret;
 }
 
-bool BlockchainLMDB::for_all_output_spend_key_images(std::function<bool(const crypto::key_image&)> f) const
+bool BlockchainLMDB::for_all_output_key_images(std::function<bool(const crypto::key_image&)> f) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2931,8 +2931,8 @@ bool BlockchainLMDB::for_all_output_spend_key_images(std::function<bool(const cr
       break;
     if (ret < 0)
       throw0(DB_ERROR("Failed to enumerate key images"));
-    const crypto::key_image output_spend_key_image = *(const crypto::key_image*)v.mv_data;
-    if (!f(output_spend_key_image)) {
+    const crypto::key_image output_key_image = *(const crypto::key_image*)v.mv_data;
+    if (!f(output_key_image)) {
       fret = false;
       break;
     }

@@ -588,7 +588,7 @@ namespace wallet_rpc
     uint64_t global_index;
     std::string tx_hash;
     cryptonote::subaddress_index subaddr_index;
-    std::string output_spend_key_image;
+    std::string output_key_image;
     uint64_t block_height;
     bool frozen;
     bool unlocked;
@@ -599,7 +599,7 @@ namespace wallet_rpc
       KV_SERIALIZE(global_index)
       KV_SERIALIZE(tx_hash)
       KV_SERIALIZE(subaddr_index)
-      KV_SERIALIZE(output_spend_key_image)
+      KV_SERIALIZE(output_key_image)
       KV_SERIALIZE(block_height)
       KV_SERIALIZE(frozen)
       KV_SERIALIZE(unlocked)

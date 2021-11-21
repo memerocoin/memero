@@ -392,8 +392,8 @@ namespace cryptonote
     if (!missed_txs.empty())
     {
       std::vector<tx_info> pool_tx_info;
-      std::vector<spent_output_spend_key_image_info> pool_output_spend_key_image_info;
-      bool r = m_core.get_pool_transactions_and_spent_keys_info(pool_tx_info, pool_output_spend_key_image_info, true);
+      std::vector<spent_output_key_image_info> pool_output_key_image_info;
+      bool r = m_core.get_pool_transactions_and_spent_keys_info(pool_tx_info, pool_output_key_image_info, true);
       if(r)
       {
         // sort to match original request
@@ -534,10 +534,10 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_is_output_spend_key_image_spent(const COMMAND_RPC_IS_KEY_IMAGE_SPENT::request& req, COMMAND_RPC_IS_KEY_IMAGE_SPENT::response& res)
+  bool core_rpc_server::on_is_output_key_image_spent(const COMMAND_RPC_IS_KEY_IMAGE_SPENT::request& req, COMMAND_RPC_IS_KEY_IMAGE_SPENT::response& res)
   {
-    std::vector<crypto::key_image> output_spend_key_images;
-    for(const auto& ki_hex_str: req.output_spend_key_images)
+    std::vector<crypto::key_image> output_key_images;
+    for(const auto& ki_hex_str: req.output_key_images)
     {
       string_blob b;
       if(!epee::string_tools::parse_hexstr_to_binbuff(ki_hex_str, b))
@@ -549,10 +549,10 @@ namespace cryptonote
       {
         res.status = "Failed, size of data mismatch";
       }
-      output_spend_key_images.push_back(*reinterpret_cast<const crypto::key_image*>(b.data()));
+      output_key_images.push_back(*reinterpret_cast<const crypto::key_image*>(b.data()));
     }
     std::vector<bool> spent_status;
-    bool r = m_core.are_output_spend_key_images_spent(output_spend_key_images, spent_status);
+    bool r = m_core.are_output_key_images_spent(output_key_images, spent_status);
     if(!r)
     {
       res.status = "Failed";
@@ -564,26 +564,26 @@ namespace cryptonote
 
     // check the pool too
     std::vector<cryptonote::tx_info> txs;
-    std::vector<cryptonote::spent_output_spend_key_image_info> ki;
+    std::vector<cryptonote::spent_output_key_image_info> ki;
     r = m_core.get_pool_transactions_and_spent_keys_info(txs, ki, true);
     if(!r)
     {
       res.status = "Failed";
       return true;
     }
-    for (std::vector<cryptonote::spent_output_spend_key_image_info>::const_iterator i = ki.begin(); i != ki.end(); ++i)
+    for (std::vector<cryptonote::spent_output_key_image_info>::const_iterator i = ki.begin(); i != ki.end(); ++i)
     {
       const auto maybe_hash = parse_hash256(i->id_hash);
-      crypto::key_image spent_output_spend_key_image;
+      crypto::key_image spent_output_key_image;
       if (maybe_hash)
       {
         const auto hash = *maybe_hash;
-        memcpy(&spent_output_spend_key_image, &hash, sizeof(hash)); // a bit dodgy, should be other parse functions somewhere
+        memcpy(&spent_output_key_image, &hash, sizeof(hash)); // a bit dodgy, should be other parse functions somewhere
         for (size_t n = 0; n < res.spent_status.size(); ++n)
         {
           if (res.spent_status[n] == COMMAND_RPC_IS_KEY_IMAGE_SPENT::UNSPENT)
           {
-            if (output_spend_key_images[n] == spent_output_spend_key_image)
+            if (output_key_images[n] == spent_output_key_image)
             {
               res.spent_status[n] = COMMAND_RPC_IS_KEY_IMAGE_SPENT::SPENT_IN_POOL;
               break;
@@ -828,7 +828,7 @@ namespace cryptonote
     size_t n_txes = m_core.get_pool_transactions_count();
     if (n_txes > 0)
     {
-      m_core.get_pool_transactions_and_spent_keys_info(res.transactions, res.spent_output_spend_key_images);
+      m_core.get_pool_transactions_and_spent_keys_info(res.transactions, res.spent_output_key_images);
       for (tx_info& txi : res.transactions)
         txi.tx_blob = epee::string_tools::buff_to_hex_nodelimer(txi.tx_blob);
     }

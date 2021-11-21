@@ -136,12 +136,12 @@ void GetTransactions::Response::fromJson(const rapidjson::Value& val)
 
 void KeyImagesSpent::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
-  WRITE_JSON_FIELD_FROM(dest, output_spend_key_images, output_spend_key_images);
+  WRITE_JSON_FIELD_FROM(dest, output_key_images, output_key_images);
 }
 
 void KeyImagesSpent::Request::fromJson(const rapidjson::Value& val)
 {
-  READ_JSON_VALUE_BY_KEY(val, output_spend_key_images, output_spend_key_images);
+  READ_JSON_VALUE_BY_KEY(val, output_key_images, output_key_images);
 }
 
 void KeyImagesSpent::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
@@ -452,13 +452,13 @@ void GetTransactionPool::Request::fromJson(const rapidjson::Value& val)
 void GetTransactionPool::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   WRITE_JSON_FIELD_FROM(dest, transactions, transactions);
-  WRITE_JSON_FIELD_FROM(dest, output_spend_key_images, output_spend_key_images);
+  WRITE_JSON_FIELD_FROM(dest, output_key_images, output_key_images);
 }
 
 void GetTransactionPool::Response::fromJson(const rapidjson::Value& val)
 {
   READ_JSON_VALUE_BY_KEY(val, transactions, transactions);
-  READ_JSON_VALUE_BY_KEY(val, output_spend_key_images, output_spend_key_images);
+  READ_JSON_VALUE_BY_KEY(val, output_key_images, output_key_images);
 }
 
 void GetOutputHistogram::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const

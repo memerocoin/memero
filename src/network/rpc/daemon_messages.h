@@ -126,7 +126,7 @@ BEGIN_RPC_MESSAGE_CLASS(KeyImagesSpent);
     SPENT_IN_POOL = 2,
   };
   BEGIN_RPC_MESSAGE_REQUEST;
-    RPC_MESSAGE_MEMBER(std::vector<crypto::key_image>, output_spend_key_images);
+    RPC_MESSAGE_MEMBER(std::vector<crypto::key_image>, output_key_images);
   END_RPC_MESSAGE_REQUEST;
   BEGIN_RPC_MESSAGE_RESPONSE;
     RPC_MESSAGE_MEMBER(std::vector<uint64_t>, spent_status);
@@ -308,7 +308,7 @@ BEGIN_RPC_MESSAGE_CLASS(GetTransactionPool);
     END_RPC_MESSAGE_REQUEST;
   BEGIN_RPC_MESSAGE_RESPONSE;
     RPC_MESSAGE_MEMBER(std::vector<cryptonote::rpc::tx_in_pool>, transactions);
-    RPC_MESSAGE_MEMBER(output_spend_key_images_with_tx_hashes, output_spend_key_images);
+    RPC_MESSAGE_MEMBER(output_key_images_with_tx_hashes, output_key_images);
   END_RPC_MESSAGE_RESPONSE;
 END_RPC_MESSAGE_CLASS;
 

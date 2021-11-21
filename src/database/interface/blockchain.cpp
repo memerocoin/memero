@@ -134,7 +134,7 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
   {
     if (tx_input.type() == typeid(txin_to_key))
     {
-      add_spent_key(boost::get<txin_to_key>(tx_input).output_spend_key_image);
+      add_spent_key(boost::get<txin_to_key>(tx_input).output_key_image);
     }
     else if (tx_input.type() == typeid(txin_gen))
     {
@@ -148,7 +148,7 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
       {
         if (tx_input.type() == typeid(txin_to_key))
         {
-          remove_spent_key(boost::get<txin_to_key>(tx_input).output_spend_key_image);
+          remove_spent_key(boost::get<txin_to_key>(tx_input).output_key_image);
         }
       }
       return;
@@ -284,7 +284,7 @@ void BlockchainDB::remove_transaction(const crypto::hash& tx_hash)
   {
     if (tx_input.type() == typeid(txin_to_key))
     {
-      remove_spent_key(boost::get<txin_to_key>(tx_input).output_spend_key_image);
+      remove_spent_key(boost::get<txin_to_key>(tx_input).output_key_image);
     }
   }
 

@@ -274,7 +274,7 @@ bool t_command_parser_executor::print_transaction(const std::vector<std::string>
   return true;
 }
 
-bool t_command_parser_executor::is_output_spend_key_image_spent(const std::vector<std::string>& args)
+bool t_command_parser_executor::is_output_key_image_spent(const std::vector<std::string>& args)
 {
   if (args.empty())
   {
@@ -289,7 +289,7 @@ bool t_command_parser_executor::is_output_spend_key_image_spent(const std::vecto
   {
     const auto hash = *maybe_hash;
     memcpy(&ki, &hash, sizeof(ki));
-    m_executor.is_output_spend_key_image_spent(ki);
+    m_executor.is_output_key_image_spent(ki);
   }
 
   return true;

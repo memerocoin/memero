@@ -95,7 +95,7 @@ namespace tx {
     bool dust_added_to_fee;
     cryptonote::tx_destination_entry change_dts;
     std::vector<size_t> selected_transfers;
-    std::string output_spend_key_images;
+    std::string output_key_images;
     std::vector<crypto::secret_key> output_secret_keys;
     std::vector<cryptonote::tx_destination_entry> dests;
 
@@ -108,7 +108,7 @@ namespace tx {
       FIELD(dust_added_to_fee)
       FIELD(change_dts)
       FIELD(selected_transfers)
-      FIELD(output_spend_key_images)
+      FIELD(output_key_images)
       FIELD(output_secret_keys)
       FIELD(dests)
       FIELD(construction_data)

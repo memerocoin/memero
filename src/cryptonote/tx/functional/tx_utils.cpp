@@ -206,7 +206,7 @@ namespace cryptonote
       //put key image into tx input
       txin_to_key input_to_key;
       input_to_key.amount = src_entr.amount;
-      input_to_key.output_spend_key_image = img;
+      input_to_key.output_key_image = img;
 
       //fill outputs array and use relative offsets
       for(const tx_source_entry::output_entry& out_entry: src_entr.outputs)
@@ -230,7 +230,7 @@ namespace cryptonote
        , std::back_inserter(output_spend_pk_images)
        , [](const auto& x) {
          const txin_to_key &tk = boost::get<txin_to_key>(x);
-         return tk.output_spend_key_image;
+         return tk.output_key_image;
          }
        );
 

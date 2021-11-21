@@ -666,7 +666,7 @@ namespace cryptonote
      *
      * @return false if any key image fails the check, otherwise true
      */
-    bool for_all_output_spend_key_images(std::function<bool(const crypto::key_image&)>) const;
+    bool for_all_output_key_images(std::function<bool(const crypto::key_image&)>) const;
 
     /**
      * @brief perform a check on all blocks in the blockchain in the given range
@@ -807,7 +807,7 @@ namespace cryptonote
 #endif
 
     // TODO: evaluate whether or not each of these typedefs are left over from blockchain_storage
-    typedef std::unordered_set<crypto::key_image> output_spend_key_images_container;
+    typedef std::unordered_set<crypto::key_image> output_key_images_container;
 
     typedef std::vector<block_extended_info> blocks_container;
 
@@ -1193,7 +1193,7 @@ namespace cryptonote
      *
      * @return false if a double spend was detected, otherwise true
      */
-    bool check_for_double_spend(const transaction& tx, output_spend_key_images_container& keys_this_block) const;
+    bool check_for_double_spend(const transaction& tx, output_key_images_container& keys_this_block) const;
 
     /**
      * @brief expands v2 transaction data from blockchain

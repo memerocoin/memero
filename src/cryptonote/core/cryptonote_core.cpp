@@ -656,12 +656,12 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::is_output_spend_key_image_spent(const crypto::key_image &output_spend_key_image) const
+  bool core::is_output_key_image_spent(const crypto::key_image &output_key_image) const
   {
-    return m_blockchain_storage.have_tx_keyimg_as_spent(output_spend_key_image);
+    return m_blockchain_storage.have_tx_keyimg_as_spent(output_key_image);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::are_output_spend_key_images_spent(const std::span<const crypto::key_image> key_im, std::vector<bool> &spent) const
+  bool core::are_output_key_images_spent(const std::span<const crypto::key_image> key_im, std::vector<bool> &spent) const
   {
     spent.clear();
     for(auto& ki: key_im)
@@ -671,11 +671,11 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::are_output_spend_key_images_spent_in_pool(const std::span<const crypto::key_image> key_im, std::vector<bool> &spent) const
+  bool core::are_output_key_images_spent_in_pool(const std::span<const crypto::key_image> key_im, std::vector<bool> &spent) const
   {
     spent.clear();
 
-    return m_mempool.check_for_output_spend_key_images(key_im, spent);
+    return m_mempool.check_for_output_key_images(key_im, spent);
   }
   //-----------------------------------------------------------------------------------------------
   std::pair<boost::multiprecision::uint128_t, boost::multiprecision::uint128_t> core::get_coinbase_tx_sum(const uint64_t start_offset, const size_t count)
@@ -719,7 +719,7 @@ namespace cryptonote
     for(const auto& in: tx.vin)
     {
       CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if(!ki.insert(tokey_in.output_spend_key_image).second)
+      if(!ki.insert(tokey_in.output_key_image).second)
         return false;
     }
     return true;
@@ -1151,14 +1151,14 @@ namespace cryptonote
     return m_mempool.have_tx(id, relay_category::legacy);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_pool_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_output_spend_key_image_info>& output_spend_key_image_infos, bool include_sensitive_data) const
+  bool core::get_pool_transactions_and_spent_keys_info(std::vector<tx_info>& tx_infos, std::vector<spent_output_key_image_info>& output_key_image_infos, bool include_sensitive_data) const
   {
-    return m_mempool.get_transactions_and_spent_keys_info(tx_infos, output_spend_key_image_infos, include_sensitive_data);
+    return m_mempool.get_transactions_and_spent_keys_info(tx_infos, output_key_image_infos, include_sensitive_data);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::output_spend_key_images_with_tx_hashes& output_spend_key_image_infos) const
+  bool core::get_pool_for_rpc(std::vector<cryptonote::rpc::tx_in_pool>& tx_infos, cryptonote::rpc::output_key_images_with_tx_hashes& output_key_image_infos) const
   {
-    return m_mempool.get_pool_for_rpc(tx_infos, output_spend_key_image_infos);
+    return m_mempool.get_pool_for_rpc(tx_infos, output_key_image_infos);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::get_short_chain_history(std::list<crypto::hash>& ids) const
