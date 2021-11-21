@@ -35,6 +35,7 @@ add_executable(quick_tests
   math/ringct/bulletproofs.cpp
   math/ringct/rctOps.cpp
   math/ringct/clsag.cpp
+  math/ringct/ringCT.cpp
 )
 
 target_link_libraries(quick_tests
