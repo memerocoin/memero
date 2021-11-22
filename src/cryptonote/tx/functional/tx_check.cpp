@@ -116,8 +116,8 @@ bool check_tx_output_points(const transaction& tx) {
      );
 
   if (!consensus::are_tx_output_targets_valid(output_targets)) {
-    return false;
     LOG_ERROR("wrong variant type in output targets");
+    return false;
   }
 
   std::vector<crypto::ec_point_unsafe> output_public_keys;

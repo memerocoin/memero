@@ -348,17 +348,25 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool check_outs_valid(const transaction& tx)
   {
+
+    std::vector<cryptonote::txout_target_v> output_targets;
+    std::transform
+      (
+       tx.vout.begin()
+       , tx.vout.end()
+       , std::back_inserter(output_targets)
+       , [](const auto& x) {
+         return x.target;
+       }
+       );
+
+    if (!consensus::are_tx_output_targets_valid(output_targets)) {
+      LOG_ERROR("wrong variant type in output targets");
+      return false;
+    }
+
     for(const tx_out& out: tx.vout)
     {
-      LOG_ERROR_AND_RETURN_UNLESS
-        (
-         out.target.type() == typeid(txout_to_key)
-         , false
-         , "wrong variant type: "
-         << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
-         << ", in transaction id=" << get_transaction_hash(tx)
-         );
-
       if (tx.version == 1)
       {
         LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
