@@ -184,9 +184,9 @@ TEST(quick_ringct, random_input)
      , i.fee
      );
 
+  EXPECT_TRUE(verify_range_proof(x));
   EXPECT_TRUE(verify_tx_balance(x));
   EXPECT_TRUE(verify_clsag_signatures(x));
-  EXPECT_TRUE(verify_range_proof(x));
   EXPECT_TRUE(verify_ringct(x));
 }
 

@@ -34,14 +34,14 @@
 #include "math/ringct/functional/rctTypes.hpp"
 
 namespace rct {
-  bool verify_clsag_signatures(const rctData rv);
-
-  bool verify_tx_balance(const rctData rv);
 
   bool verify_range_proof(const rctData rv);
+  bool verify_tx_balance(const rctData rv);
+  bool verify_clsag_signatures(const rctData rv);
+
 
   inline bool verify_ringct(const rctData rv) {
-    return verify_tx_balance(rv) && verify_range_proof(rv) && verify_clsag_signatures(rv);
+    return verify_range_proof(rv) && verify_tx_balance(rv) && verify_clsag_signatures(rv);
   }
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
