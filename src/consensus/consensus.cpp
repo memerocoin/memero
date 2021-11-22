@@ -68,4 +68,12 @@ namespace consensus {
     return maybeSafeBulletproof(x);
   }
 
+  std::optional<clsag> rule_10_ring_signature_should_not_contain_invalid_data
+  (
+   const clsag_unsafe x
+   )
+  {
+    return maybeSafeCLSAG(x);
+  }
+
 }

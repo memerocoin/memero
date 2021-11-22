@@ -114,7 +114,7 @@ namespace rct {
    , const rct_point pseudo_input_commit
    )
   {
-    const auto maybeClsag = maybeSafeCLSAG(sig);
+    const auto maybeClsag = consensus::rule_10_ring_signature_should_not_contain_invalid_data(sig);
     LOG_ERROR_AND_RETURN_UNLESS
       (
        maybeClsag
