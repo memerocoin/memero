@@ -151,15 +151,19 @@ bool check_tx_output_points(const transaction& tx) {
   const bool valid_output_commits =
     consensus::rule_13_tx_output_commits_should_be_safe_points(output_commits);
 
-  const bool valid_pseudo_input_commits =
-    std::transform_reduce
+  std::vector<crypto::ec_point_unsafe> pseudo_input_commits;
+  std::transform
     (
      tx.ringct.p.pseudo_input_commits.begin()
      , tx.ringct.p.pseudo_input_commits.end()
-     , true
-     , std::logical_and()
-     , crypto::is_safe_point
+     , std::back_inserter(pseudo_input_commits)
+     , [](const auto& x) {
+       return x;
+     }
      );
+
+  const bool valid_pseudo_input_commits =
+    consensus::rule_14_tx_pseudo_input_commits_should_be_safe_points(pseudo_input_commits);
 
 
   return valid_output_public_keys && valid_output_commits && valid_pseudo_input_commits;
