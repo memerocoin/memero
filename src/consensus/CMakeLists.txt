@@ -31,5 +31,6 @@ add_library(consensus
 
 target_link_libraries(consensus
   math_ringct_basic
+  math_blockchain
   )
 

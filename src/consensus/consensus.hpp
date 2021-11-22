@@ -22,8 +22,8 @@
 #include "constant.hpp"
 
 #include "math/ringct/functional/rctTypes.hpp"
-
 #include "math/crypto/functional/key.hpp"
+#include "math/blockchain/functional/difficulty.hpp"
 
 #include "cryptonote/basic/functional/base.hpp"
 
@@ -169,5 +169,9 @@ namespace consensus {
   bool rule_15_ringct_input_type_should_be_ring(const cryptonote::txin_v x);
 
   bool are_ringct_input_types_valid(std::span<const cryptonote::txin_v> xs);
+
+  constexpr auto
+  rule_16_next_difficult_target_over_average_difficulty_should_be_the_inverse_of_the_lwma_of_block_time_over_target_time
+  = cryptonote::next_difficulty;
 
 }

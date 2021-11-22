@@ -801,7 +801,8 @@ start:
   }
 
   const diff_t diff =
-    next_difficulty
+    consensus::
+    rule_16_next_difficult_target_over_average_difficulty_should_be_the_inverse_of_the_lwma_of_block_time_over_target_time
     (
      timestamps
      , difficulties
@@ -1065,7 +1066,9 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
     }
   }
 
-  return next_difficulty
+  return
+    consensus::
+    rule_16_next_difficult_target_over_average_difficulty_should_be_the_inverse_of_the_lwma_of_block_time_over_target_time
     (
      timestamps
      , cumulative_difficulties
