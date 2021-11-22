@@ -762,17 +762,17 @@ namespace cryptonote
       *                   each input has a different key image.
       *
       * @param tx the transaction to check
-      * @param keeped_by_block if the transaction has been in a block
+      * @param kept_by_block if the transaction has been in a block
       *
       * @return true if all the checks pass, otherwise false
       */
-     bool check_tx_semantic(const transaction& tx, bool keeped_by_block) const;
+     bool check_tx_semantic(const transaction& tx, bool kept_by_block) const;
      void set_semantics_failed(const crypto::hash &tx_hash);
 
      bool handle_incoming_tx_pre(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);
      bool handle_incoming_tx_post(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);
      struct tx_verification_batch_info { const cryptonote::transaction *tx; crypto::hash tx_hash; tx_verification_context &tvc; bool &result; };
-     bool handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool keeped_by_block);
+     bool handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool kept_by_block);
 
      /**
       * @copydoc miner::on_block_chain_update
