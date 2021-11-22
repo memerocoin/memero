@@ -21,7 +21,10 @@
 
 #include "math/ringct/functional/rctTypes.hpp"
 
+#include "math/crypto/functional/key.hpp"
+
 #include <numeric>
+#include <set>
 
 using namespace rct;
 
@@ -133,5 +136,7 @@ namespace consensus {
        }
        );
   }
+
+  bool tx_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs);
 
 }

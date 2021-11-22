@@ -53,4 +53,9 @@ namespace consensus {
     return verify_clsag_signature(message, sig, decoys, pseudo_input_commit);
   }
 
+  bool tx_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs)
+  {
+    std::set<crypto::key_image> s(xs.begin(), xs.end());
+    return s.size() == xs.size();
+  }
 }

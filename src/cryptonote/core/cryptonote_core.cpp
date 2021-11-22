@@ -715,14 +715,24 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_keyimages_diff(const transaction& tx) const
   {
-    std::unordered_set<crypto::key_image> ki;
-    for(const auto& in: tx.vin)
-    {
-      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
-      if(!ki.insert(tokey_in.output_key_image).second)
-        return false;
+    std::vector<std::optional<crypto::key_image>> xs;
+    std::transform
+      (
+       tx.vin.begin()
+       , tx.vin.end()
+       , std::back_inserter(xs)
+       , [](const auto& in) -> std::optional<crypto::key_image> {
+         CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, std::nullopt);
+         return tokey_in.output_key_image;
+       }
+       );
+
+    std::vector<crypto::key_image> ks;
+    for (const auto& x: xs) {
+      if (x) ks.push_back(*x);
     }
-    return true;
+
+    return consensus::tx_input_key_images_should_be_unique(ks);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_ring_members_diff(const transaction& tx) const
@@ -740,6 +750,7 @@ namespace cryptonote
            (
             tokey_in.output_relative_offsets
             );
+       }
        );
   }
   //-----------------------------------------------------------------------------------------------
