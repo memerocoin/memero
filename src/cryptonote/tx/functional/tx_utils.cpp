@@ -43,6 +43,8 @@
 #include "cryptonote/basic/functional/tx_extra.hpp"
 #include "cryptonote/basic/functional/format_utils.hpp"
 
+#include "consensus/consensus.hpp"
+
 
 
 namespace cryptonote
@@ -445,7 +447,7 @@ namespace cryptonote
       LOG_PRINT_L0("Block is too big");
       return {};
     }
-    uint64_t block_reward = get_block_reward();
+    uint64_t block_reward = consensus::get_block_reward();
 
     block_reward += fee;
 

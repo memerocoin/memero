@@ -56,6 +56,8 @@
 
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
+#include "consensus/consensus.hpp"
+
 #include "config/version.hpp"
 
 
@@ -3101,7 +3103,7 @@ bool simple_wallet::show_tx(const std::vector<std::string> &args)
       success_msg_writer() << "Timestamp: " << tools::get_human_readable_timestamp(pd.m_timestamp);
       success_msg_writer() << "Amount: " << print_money(pd.m_amount);
       uint64_t bh = std::max(pd.m_unlock_time, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
-      uint64_t suggested_threshold = pd.m_amount + cryptonote::get_block_reward() - 1;
+      uint64_t suggested_threshold = pd.m_amount + consensus::get_block_reward() - 1;
       if (bh >= last_block_height)
         success_msg_writer() << "Locked: " << (bh - last_block_height) << " blocks to unlock";
       else if (suggested_threshold > 0)

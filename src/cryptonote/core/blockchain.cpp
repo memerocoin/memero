@@ -43,6 +43,8 @@
 #include "tools/epee/include/profile_tools.h"
 #include "tools/epee/include/time_helper.h"
 
+#include "consensus/consensus.hpp"
+
 #include <boost/range/adaptor/reversed.hpp>
 
 
@@ -1130,7 +1132,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
     LOG_ERROR_VER("block weight " << cumulative_block_weight << " is bigger than allowed for this blockchain");
     return false;
   }
-  base_reward = get_block_reward();
+  base_reward = consensus::get_block_reward();
   if(base_reward + fee < money_in_use)
   {
     LOG_ERROR_VER("coinbase transaction spend too much money (" << print_money(money_in_use) << "). Block reward is " << print_money(base_reward + fee) << "(" << print_money(base_reward) << "+" << print_money(fee) << "), cumulative_block_weight " << cumulative_block_weight);
@@ -2966,10 +2968,7 @@ leave:
   // populate various metadata about the block to be stored alongside it.
   block_weight = cumulative_block_weight;
   cumulative_difficulty = current_diffic;
-  // In the "tail" state when the minimum subsidy (implemented in get_block_reward) is in effect, the number of
-  // coins will eventually exceed MONEY_SUPPLY and overflow a uint64. To prevent overflow, cap already_generated_coins
-  // at MONEY_SUPPLY. already_generated_coins is only used to compute the block subsidy and MONEY_SUPPLY yields a
-  // subsidy of 0 under the base formula and therefore the minimum subsidy >0 in the tail state.
+
   already_generated_coins = base_reward < (MONEY_SUPPLY-already_generated_coins) ? already_generated_coins + base_reward : MONEY_SUPPLY;
   if(blockchain_height)
     cumulative_difficulty += m_db->get_block_cumulative_difficulty(blockchain_height - 1);

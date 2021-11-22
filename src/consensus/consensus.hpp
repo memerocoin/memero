@@ -20,6 +20,7 @@
 #pragma once
 
 #include "math/ringct/functional/rctTypes.hpp"
+#include "config/lol.hpp"
 
 using namespace rct;
 
@@ -37,5 +38,13 @@ namespace consensus {
    , const rct_pointS outputs
    , const amount_t fee
    );
+
+  //-----------------------------------------------------------------------------------------------
+  consteval uint64_t get_block_reward() {
+    return constant::COIN * 300;
+  }
+
+  static_assert(get_block_reward() == constant::COIN * 300);
+
 
 }

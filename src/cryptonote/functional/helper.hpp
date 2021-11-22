@@ -61,8 +61,4 @@ namespace cryptonote {
     uint64_t max_weight = get_max_block_weight(height);
     return current_block_weight <= max_weight;
   }
-  //-----------------------------------------------------------------------------------------------
-  consteval uint64_t get_block_reward() {
-    return constant::COIN * 300;
-  }
 }

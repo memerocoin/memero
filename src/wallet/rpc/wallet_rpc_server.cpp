@@ -48,6 +48,8 @@
 
 #include "math/crypto/controller/init.hpp"
 
+#include "consensus/consensus.hpp"
+
 #include <boost/format.hpp>
 
 
@@ -69,7 +71,7 @@ namespace
     else
       entry.confirmations = blockchain_height - entry.height;
 
-    constexpr auto block_reward = cryptonote::get_block_reward();
+    constexpr auto block_reward = consensus::get_block_reward();
     entry.suggested_confirmations_threshold = (entry.amount + block_reward - 1) / block_reward;
 
     if (unlock_time > blockchain_height)

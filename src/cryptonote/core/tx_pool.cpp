@@ -35,6 +35,8 @@
 #include "cryptonote/functional/helper.hpp"
 #include "cryptonote/basic/functional/format_utils.hpp"
 
+#include "consensus/consensus.hpp"
+
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "txpool"
 
@@ -1243,7 +1245,7 @@ namespace cryptonote
       return false;
     }
 
-    uint64_t best_coinbase = get_block_reward();
+    uint64_t best_coinbase = consensus::get_block_reward();
 
     uint64_t max_total_weight = get_max_block_weight(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> output_key_images;
@@ -1284,7 +1286,7 @@ namespace cryptonote
           LOG_PRINT_L2("  would exceed maximum block weight");
           continue;
         }
-        coinbase = get_block_reward() + fee + meta.fee;
+        coinbase = consensus::get_block_reward() + fee + meta.fee;
         if (coinbase < template_accept_threshold(best_coinbase))
         {
           LOG_PRINT_L2("  would decrease coinbase to " << print_money(coinbase));
