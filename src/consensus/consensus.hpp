@@ -162,4 +162,6 @@ namespace consensus {
 
   bool are_tx_output_targets_valid(std::span<const cryptonote::txout_target_v> xs);
 
+  constexpr auto rule_13_tx_output_commits_should_be_safe_points = are_points_safe;
+
 }
