@@ -93,7 +93,7 @@ namespace consensus {
        );
   }
 
-  bool rule_12_tx_output_target_should_be_output_public_key(cryptonote::txout_target_v x) {
+  bool rule_12_tx_output_target_should_be_output_public_key(const cryptonote::txout_target_v x) {
     return x.type() == typeid(cryptonote::txout_to_key);
   }
 
@@ -106,6 +106,23 @@ namespace consensus {
        , std::logical_and()
        , [](const auto& x) {
          return rule_12_tx_output_target_should_be_output_public_key(x);
+       }
+       );
+  }
+
+  bool rule_15_ringct_input_type_should_be_ring(const cryptonote::txin_v x) {
+    return x.type() == typeid(cryptonote::txin_to_key);
+  }
+
+  bool are_ringct_input_types_valid(std::span<const cryptonote::txin_v> xs) {
+    return std::transform_reduce
+      (
+       xs.begin()
+       , xs.end()
+       , true
+       , std::logical_and()
+       , [](const auto& x) {
+         return rule_15_ringct_input_type_should_be_ring(x);
        }
        );
   }

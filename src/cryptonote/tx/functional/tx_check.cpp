@@ -41,8 +41,6 @@ namespace cryptonote
 
 bool rct_tx_sanity_check(const cryptonote::string_blob &tx_blob, uint64_t rct_outs_available)
 {
-  cryptonote::transaction tx;
-
   const auto maybeTx = maybe_tx_from_blob(tx_blob);
   if (!maybeTx)
   {
@@ -50,7 +48,7 @@ bool rct_tx_sanity_check(const cryptonote::string_blob &tx_blob, uint64_t rct_ou
     return false;
   }
 
-  tx = *maybeTx;
+  const auto tx = *maybeTx;
 
   if (cryptonote::is_coinbase(tx))
   {
@@ -172,16 +170,8 @@ bool check_tx_output_points(const transaction& tx) {
 
 bool check_tx_input_points(const transaction& tx)
 {
-  return std::transform_reduce
-    (
-      tx.vin.begin()
-      , tx.vin.end()
-      , true
-      , std::logical_and()
-      , [](const auto& x) {
-        CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, false);
-        return crypto::is_safe_point(tokey_in.output_key_image);
-      }
-      );
+  return consensus::are_ringct_input_types_valid(tx.vin);
+
 }
+
 }
