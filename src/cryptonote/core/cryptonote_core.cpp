@@ -1420,7 +1420,7 @@ namespace cryptonote
 
         // const bool valid_tx = rct::verify_ringct(rctData);
         // can't call the above since one needs to call expand_transaction_2 first lol
-        const bool valid_tx_balance = verify_tx_balance(rctData) && verify_range_proof(rctData);
+        const bool valid_tx_balance = verify_range_proof(rctData) && verify_tx_balance(rctData);
 
         if (!valid_tx_balance)
         {
