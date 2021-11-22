@@ -17,11 +17,9 @@
 
 */
 
-#pragma once
+#include "consensus.hpp"
 
-#include "math/ringct/functional/rctTypes.hpp"
-
-using namespace rct;
+#include "math/ringct/pseudo_functional/bulletproofs.hpp"
 
 namespace consensus {
 
@@ -29,6 +27,8 @@ namespace consensus {
   (
    const rct_pointS outputs
    , const Bulletproof proof
-   );
+   ) {
+    return bulletproof_VERIFY(outputs, proof);
+  }
 
 }

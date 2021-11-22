@@ -42,6 +42,8 @@
 
 #include "cryptonote/basic/functional/format_utils.hpp"
 
+#include "consensus/consensus.hpp"
+
 #include "config/cryptonote.hpp"
 
 
@@ -191,7 +193,19 @@ namespace rct {
     const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
     LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
 
-    return bulletproof_VERIFY(*maybeProof);
+    rct::rct_pointV output_commits;
+
+    std::transform
+      (
+       rv.output_commits.begin()
+       , rv.output_commits.end()
+       , std::back_inserter(output_commits)
+       , [](const auto& x) {
+         return x.commit;
+       }
+       );
+
+    return consensus::tx_output_amounts_should_not_overflow_amount_type(output_commits, *maybeProof);
   }
 
   //ver RingCT simple

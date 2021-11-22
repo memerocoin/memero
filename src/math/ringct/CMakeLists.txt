@@ -52,4 +52,5 @@ add_library(math_ringct
 target_link_libraries(math_ringct
   math_ringct_basic
   cryptonote_basic
+  consensus
 )

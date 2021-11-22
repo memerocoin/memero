@@ -35,8 +35,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "math/crypto/controller/random.hpp"
 
 #include "math/ringct/functional/rctTypes.hpp"
+#include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
 #include "math/ringct/controller/bulletproofs_gen.hpp"
+
+#include <tuple>
 
 using namespace rct;
 using namespace crypto;
@@ -45,7 +48,7 @@ bp_input_t random_bp_input() {
   return { randomAmount(), randomScalar() };
 }
 
-std::vector<bp_input_t>
+std::pair<rct_pointV, std::vector<bp_input_t>>
 random_bp_inputs_for_size(const size_t i) {
   if (i < 1) return {};
 
@@ -57,15 +60,25 @@ random_bp_inputs_for_size(const size_t i) {
      , random_bp_input
      );
 
-  return xs;
+  rct_pointV commits;
+  std::transform
+    (
+     xs.begin()
+     , xs.end()
+     , std::back_inserter(commits)
+     , [](const auto& x) { return std::apply(commit, x); }
+     );
+
+  return {commits, xs};
 }
 
   
 TEST(quick_bulletproofs, pick_amount_size_1_to_16)
 {
   const size_t i = rand_range(1, 16);
-  const auto proof = bulletproof_MAKE(random_bp_inputs_for_size(i));
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto x = random_bp_inputs_for_size(i);
+  const auto proof = bulletproof_MAKE(x.second);
+  EXPECT_TRUE(bulletproof_VERIFY(x.first, proof));
 }
 
 // struct Bulletproof
@@ -78,108 +91,120 @@ TEST(quick_bulletproofs, pick_amount_size_1_to_16)
 //   rct::rct_scalar a, b, t;
 // };
 
-Bulletproof randomProof() {
+std::pair<rct_pointV, Bulletproof> randomProof() {
   const size_t i = rand_range(1, 16);
-  return bulletproof_MAKE(random_bp_inputs_for_size(i));
+  const auto x = random_bp_inputs_for_size(i);
+  const auto proof = bulletproof_MAKE(x.second);
+  return {x.first, proof};
 }
 
 TEST(quick_bulletproofs, wrong_A)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.A = randomPoint();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first,altered_proof));
 }
 
 
 TEST(quick_bulletproofs, wrong_S)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.S = randomPoint();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 
 TEST(quick_bulletproofs, wrong_T1)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.T1 = randomPoint();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 TEST(quick_bulletproofs, wrong_T2)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.T2 = randomPoint();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 TEST(quick_bulletproofs, wrong_taux)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.taux = randomScalar();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 
 TEST(quick_bulletproofs, wrong_mu)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.mu = randomScalar();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 TEST(quick_bulletproofs, wrong_a)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.a = randomScalar();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 TEST(quick_bulletproofs, wrong_b)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.b = randomScalar();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 TEST(quick_bulletproofs, wrong_t)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
   altered_proof.t = randomScalar();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 TEST(quick_bulletproofs, wrong_LR_first)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
 
@@ -188,14 +213,15 @@ TEST(quick_bulletproofs, wrong_LR_first)
   lr.first = randomPoint();
 
   altered_proof.LR[index_to_change] = lr;
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 
 TEST(quick_bulletproofs, wrong_LR_second)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
 
@@ -204,18 +230,19 @@ TEST(quick_bulletproofs, wrong_LR_second)
   lr.second = randomPoint();
 
   altered_proof.LR[index_to_change] = lr;
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
 
 TEST(quick_bulletproofs, wrong_commits)
 {
-  const auto proof = randomProof();
-  EXPECT_TRUE(bulletproof_VERIFY(proof));
+  const auto input = randomProof();
+  const auto proof = input.second;
+  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
 
   const auto index_to_change = rand_idx(proof.commits.size());
   altered_proof.commits[index_to_change] = randomPoint();
-  EXPECT_FALSE(bulletproof_VERIFY(altered_proof));
+  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }

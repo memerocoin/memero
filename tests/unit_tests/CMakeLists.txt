@@ -69,7 +69,7 @@ add_executable(unit_tests_basic
   # device.cpp
   account.cpp
   mnemonics.cpp
-  bulletproofs.cpp
+  # bulletproofs.cpp
   # multiexp.cpp
 )
 

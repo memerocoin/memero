@@ -75,7 +75,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const Bulletproof proof)
+bool bulletproof_VERIFY(const rct_pointS commits, const Bulletproof proof)
 {
   init_exponents();
 
@@ -84,7 +84,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   LOG_ERROR_AND_RETURN_UNLESS
     (
-     proof.commits.size() >= 1
+     commits.size() >= 1
      , false
      , "commits V does not have at least one element"
      );
@@ -96,8 +96,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
   crypto::dataV hash_dataV;
   std::transform
     (
-     proof.commits.begin()
-     , proof.commits.end()
+     commits.begin()
+     , commits.end()
      , std::back_inserter(hash_dataV)
      , to_inv8
      );
@@ -131,7 +131,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   constexpr size_t N = log2bound(maxN).first;
   constexpr size_t logN = log2bound(maxN).second;
-  const auto [M, logM] = log2bound(std::min(maxM, proof.commits.size()));
+  const auto [M, logM] = log2bound(std::min(maxM, commits.size()));
 
   const size_t rounds = logM + logN;
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() == rounds, false, "Proof is not the expected size");
@@ -166,7 +166,7 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   // STEP 2, use proof_data
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(proof.commits.size() + (2 * (logM + logN) + 4) + 2 * maxMN);
+  multiexp_data.reserve(commits.size() + (2 * (logM + logN) + 4) + 2 * maxMN);
 
   // setup weighted aggregates
 
@@ -204,8 +204,8 @@ bool bulletproof_VERIFY(const Bulletproof proof)
 
   std::transform
     (
-      proof.commits.begin()
-      , proof.commits.end()
+      commits.begin()
+      , commits.end()
       , std::next(std::next(zpow.begin()))
       , std::back_inserter(multiexp_data)
       , [weight_y](const auto& x, const auto& y) -> MultiexpData {
