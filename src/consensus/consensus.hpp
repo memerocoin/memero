@@ -21,6 +21,8 @@
 
 #include "math/ringct/functional/rctTypes.hpp"
 
+#include <numeric>
+
 using namespace rct;
 
 namespace consensus {
@@ -76,7 +78,8 @@ namespace consensus {
   (
    const uint64_t height
    , const size_t block_size
-   ) {
+   )
+  {
     return block_size <= consensus::get_block_size_bound(height);
   }
 
@@ -84,8 +87,51 @@ namespace consensus {
   (
    const uint64_t height
    , const size_t block_size
-   ) {
+   )
+  {
     return block_size_should_be_bounded_by_height(height, block_size);
+  }
+
+
+  constexpr bool tx_input_decoys_offsets_should_not_be_zero_except_the_first_one
+  (
+   const std::span<const uint64_t> offsets
+   )
+  {
+    if (offsets.empty()) return true;
+
+    // Key offsets are relative increments of output indices in a blockchain
+    // sorted by block height.
+    // The first value can be 0. When it's 0, it references _the_ output of the coinbase
+    // tx of the first block after the genesis block.
+    //
+    // We can verify this by playing with the `get_tx_outputs` daemon rpc call:
+    //
+    // echo '{"get_txid": true, "outputs":[{"index":0}]}' | http :45679/get_tx_outputs
+    //
+    // "outs": [
+    //   {
+    //     "height": 1,
+    //     "key": "d2c5204259664c35c36c6d3743149359f494480ffb68b9c9885d9859201fecc5",
+    //     "mask": "87050dabf5b23e8b79813f4ed76aa4add225dd2a5089af067da77ccb6ec55946",
+    //     "txid": "370ae2825eb61aece7378f6a92fc22ebdc946cae751dabdf612524011a002340",
+    //     "unlocked": true
+    //   }
+    // ],
+    //
+    // In other words, the tx output in genesis block is probably un-spendable, due to the
+    // fact that it can not be included in a ring. :D
+
+    return std::transform_reduce
+      (
+       std::next(offsets.begin())
+       , offsets.end()
+       , true
+       , std::logical_and()
+       , [](const auto& x) {
+         return x != 0;
+       }
+       );
   }
 
 }
