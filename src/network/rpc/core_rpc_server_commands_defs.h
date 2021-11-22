@@ -1068,7 +1068,7 @@ namespace cryptonote
     uint64_t fee;
     std::string max_used_block_id_hash;
     uint64_t max_used_block_height;
-    bool kept_by_block;
+    bool tx_from_block;
     uint64_t last_failed_height;
     std::string last_failed_id_hash;
     uint64_t receive_time;
@@ -1086,7 +1086,7 @@ namespace cryptonote
       KV_SERIALIZE(fee)
       KV_SERIALIZE(max_used_block_id_hash)
       KV_SERIALIZE(max_used_block_height)
-      KV_SERIALIZE(kept_by_block)
+      KV_SERIALIZE(tx_from_block)
       KV_SERIALIZE(last_failed_height)
       KV_SERIALIZE(last_failed_id_hash)
       KV_SERIALIZE(receive_time)

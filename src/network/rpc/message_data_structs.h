@@ -89,7 +89,7 @@ namespace rpc
     uint64_t fee;
     crypto::hash max_used_block_hash;
     uint64_t max_used_block_height;
-    bool kept_by_block;
+    bool tx_from_block;
     crypto::hash last_failed_block_hash;
     uint64_t last_failed_block_height;
     uint64_t receive_time;

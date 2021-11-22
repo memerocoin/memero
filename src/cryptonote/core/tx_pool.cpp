@@ -82,7 +82,7 @@ namespace cryptonote
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::add_tx(transaction &tx, /*const crypto::hash& tx_prefix_hash,*/ const crypto::hash &id, const cryptonote::string_blob &blob, size_t tx_weight, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
-    const bool kept_by_block = (tx_relay == relay_method::block);
+    const bool tx_from_block = (tx_relay == relay_method::block);
 
     // this should already be called with that lock, but let's make it explicit for clarity
     LOCK_RECURSIVE_MUTEX(m_transactions_lock);
@@ -96,8 +96,8 @@ namespace cryptonote
     }
 
     // we do not accept transactions that timed out before, unless they're
-    // kept_by_block
-    if (!kept_by_block && m_timed_out_transactions.find(id) != m_timed_out_transactions.end())
+    // tx_from_block
+    if (!tx_from_block && m_timed_out_transactions.find(id) != m_timed_out_transactions.end())
     {
       // not clear if we should set that, since verifivation (sic) did not fail before, since
       // the tx was accepted before timing out.
@@ -147,7 +147,7 @@ namespace cryptonote
       fee = tx.ringct.fee;
     }
 
-    if (!kept_by_block && !m_blockchain.check_fee(tx_weight, fee))
+    if (!tx_from_block && !m_blockchain.check_fee(tx_weight, fee))
     {
       tvc.m_verifivation_failed = true;
       tvc.m_fee_too_low = true;
@@ -166,7 +166,7 @@ namespace cryptonote
     // if the transaction came from a block popped from the chain,
     // don't check if we have its key images as spent.
     // TODO: Investigate why not?
-    if(!kept_by_block)
+    if(!tx_from_block)
     {
       if(have_tx_keyimges_as_spent(tx, id))
       {
@@ -200,13 +200,13 @@ namespace cryptonote
        tx
        , max_used_block_height
        , max_used_block_id, tvc
-       , kept_by_block
+       , tx_from_block
        );
     if(!ch_inp_res)
     {
-      // if the transaction was valid before (kept_by_block), then it
+      // if the transaction was valid before (tx_from_block), then it
       // may become valid again, so ignore the failed inputs check.
-      if(kept_by_block)
+      if(tx_from_block)
       {
         meta.weight = tx_weight;
         meta.fee = fee;
@@ -223,7 +223,7 @@ namespace cryptonote
         memset(meta.padding, 0, sizeof(meta.padding));
         try
         {
-          if (kept_by_block)
+          if (tx_from_block)
             m_parsed_tx_cache.insert(std::make_pair(id, tx));
           LOCK_LOCKABLE_OBJECT(m_blockchain);
           LockedTXN lock(m_blockchain.get_db());
@@ -267,7 +267,7 @@ namespace cryptonote
 
       try
       {
-        if (kept_by_block)
+        if (tx_from_block)
           m_parsed_tx_cache.insert(std::make_pair(id, tx));
         LOCK_LOCKABLE_OBJECT(m_blockchain);
         LockedTXN lock(m_blockchain.get_db());
@@ -348,8 +348,8 @@ namespace cryptonote
           LOG_ERROR("Failed to find tx_meta in txpool");
           return;
         }
-        // don't prune the kept_by_block ones, they're likely added because we're adding a block with those
-        if (meta.kept_by_block)
+        // don't prune the tx_from_block ones, they're likely added because we're adding a block with those
+        if (meta.tx_from_block)
         {
           --it;
           continue;
@@ -535,7 +535,7 @@ namespace cryptonote
       td.fee = meta.fee;
       td.max_used_block_id = meta.max_used_block_id;
       td.max_used_block_height = meta.max_used_block_height;
-      td.kept_by_block = meta.kept_by_block;
+      td.tx_from_block = meta.tx_from_block;
       td.last_failed_height = meta.last_failed_height;
       td.last_failed_id = meta.last_failed_id;
       td.receive_time = meta.receive_time;
@@ -609,8 +609,8 @@ namespace cryptonote
     m_blockchain.for_all_txpool_txes([this, &remove](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::string_blob_view) {
       uint64_t tx_age = time(nullptr) - meta.receive_time;
 
-      if((tx_age > constant::CRYPTONOTE_MEMPOOL_TX_LIVETIME && !meta.kept_by_block) ||
-         (tx_age > constant::CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME && meta.kept_by_block) )
+      if((tx_age > constant::CRYPTONOTE_MEMPOOL_TX_LIVETIME && !meta.tx_from_block) ||
+         (tx_age > constant::CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME && meta.tx_from_block) )
       {
         LOG_PRINT_L1("Tx " << txid << " removed from tx pool due to outdated, age: " << tx_age );
         auto sorted_it = find_tx_in_sorted_container(txid);
@@ -677,7 +677,7 @@ namespace cryptonote
         // if the tx is older than half the max lifetime, we don't re-relay it, to avoid a problem
         // mentioned by smooth where nodes would flush txes at slightly different times, causing
         // flushed txes to be re-added when received from a node which was just about to flush it
-        uint64_t max_age = meta.kept_by_block ?
+        uint64_t max_age = meta.tx_from_block ?
           constant::CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME
           : constant::CRYPTONOTE_MEMPOOL_TX_LIVETIME;
         if (now - meta.receive_time <= max_age / 2)
@@ -877,7 +877,7 @@ namespace cryptonote
       txi.blob_size = bd.size();
       txi.weight = meta.weight;
       txi.fee = meta.fee;
-      txi.kept_by_block = meta.kept_by_block;
+      txi.tx_from_block = meta.tx_from_block;
       txi.max_used_block_height = meta.max_used_block_height;
       txi.max_used_block_id_hash = epee::string_tools::pod_to_hex(meta.max_used_block_id);
       txi.last_failed_height = meta.last_failed_height;
@@ -932,7 +932,7 @@ namespace cryptonote
       txi.blob_size = bd.size();
       txi.weight = meta.weight;
       txi.fee = meta.fee;
-      txi.kept_by_block = meta.kept_by_block;
+      txi.tx_from_block = meta.tx_from_block;
       txi.max_used_block_height = meta.max_used_block_height;
       txi.max_used_block_hash = meta.max_used_block_id;
       txi.last_failed_block_height = meta.last_failed_height;
@@ -1213,7 +1213,7 @@ namespace cryptonote
       ss << "blob_size: " << (short_format ? "-" : std::to_string(txblob.size())) << std::endl
         << "weight: " << meta.weight << std::endl
         << "fee: " << print_money(meta.fee) << std::endl
-        << "kept_by_block: " << (meta.kept_by_block ? 'T' : 'F') << std::endl
+        << "tx_from_block: " << (meta.tx_from_block ? 'T' : 'F') << std::endl
         << "is_local" << (meta.is_local ? 'T' : 'F') << std::endl
         << "double_spend_seen: " << (meta.double_spend_seen ? 'T' : 'F') << std::endl
         << "max_used_block_height: " << meta.max_used_block_height << std::endl
@@ -1431,7 +1431,7 @@ namespace cryptonote
     {
       const bool kept = pass == 1;
       bool r = m_blockchain.for_all_txpool_txes([this, &remove, kept](const crypto::hash &txid, const txpool_tx_meta_t &meta, const cryptonote::string_blob_view bd) {
-        if (!!kept != !!meta.kept_by_block)
+        if (!!kept != !!meta.tx_from_block)
           return true;
         const auto maybeTxPrefix = maybe_tx_prefix_from_blob(bd);
         if (!maybeTxPrefix)

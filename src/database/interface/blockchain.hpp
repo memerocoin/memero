@@ -150,7 +150,7 @@ struct txpool_tx_meta_t
   uint64_t receive_time;
   uint64_t last_relayed_time;
   // 112 bytes
-  uint8_t kept_by_block;
+  uint8_t tx_from_block;
   uint8_t relayed;
   uint8_t do_not_relay;
   uint8_t double_spend_seen: 1;

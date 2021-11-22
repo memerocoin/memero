@@ -587,7 +587,7 @@ namespace cryptonote
     return r;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::check_tx_semantic(const transaction& tx, bool kept_by_block) const
+  bool core::check_tx_semantic(const transaction& tx, bool tx_from_block) const
   {
     if(!tx.vin.size())
     {
@@ -628,7 +628,7 @@ namespace cryptonote
     // for version > 1, ringct signatures check verifies amounts match
 
     uint64_t tx_weight_limit = get_max_tx_size() - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
-    if(!kept_by_block && get_transaction_weight(tx) >= tx_weight_limit)
+    if(!tx_from_block && get_transaction_weight(tx) >= tx_weight_limit)
     {
       LOG_ERROR_VER("tx is too large " << get_transaction_weight(tx) << ", expected not bigger than " << tx_weight_limit);
       return false;
@@ -1362,13 +1362,13 @@ namespace cryptonote
   }
 
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool kept_by_block)
+  bool core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block)
   {
     bool ret = true;
     std::vector<rct::rctData> rvv;
     for (size_t n = 0; n < tx_info.size(); ++n)
     {
-      if (!check_tx_semantic(*tx_info[n].tx, kept_by_block))
+      if (!check_tx_semantic(*tx_info[n].tx, tx_from_block))
       {
         set_semantics_failed(tx_info[n].tx_hash);
         tx_info[n].tvc.m_verifivation_failed = true;

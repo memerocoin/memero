@@ -713,7 +713,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
   WRITE_JSON_FIELD_FROM(dest, fee, tx.fee);
   WRITE_JSON_FIELD_FROM(dest, max_used_block_hash, tx.max_used_block_hash);
   WRITE_JSON_FIELD_FROM(dest, max_used_block_height, tx.max_used_block_height);
-  WRITE_JSON_FIELD_FROM(dest, kept_by_block, tx.kept_by_block);
+  WRITE_JSON_FIELD_FROM(dest, tx_from_block, tx.tx_from_block);
   WRITE_JSON_FIELD_FROM(dest, last_failed_block_hash, tx.last_failed_block_hash);
   WRITE_JSON_FIELD_FROM(dest, last_failed_block_height, tx.last_failed_block_height);
   WRITE_JSON_FIELD_FROM(dest, receive_time, tx.receive_time);
@@ -739,7 +739,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::rpc::tx_in_pool& tx)
   READ_JSON_VALUE_BY_KEY(val, tx.fee, fee);
   READ_JSON_VALUE_BY_KEY(val, tx.max_used_block_hash, max_used_block_hash);
   READ_JSON_VALUE_BY_KEY(val, tx.max_used_block_height, max_used_block_height);
-  READ_JSON_VALUE_BY_KEY(val, tx.kept_by_block, kept_by_block);
+  READ_JSON_VALUE_BY_KEY(val, tx.tx_from_block, tx_from_block);
   READ_JSON_VALUE_BY_KEY(val, tx.last_failed_block_hash, last_failed_block_hash);
   READ_JSON_VALUE_BY_KEY(val, tx.last_failed_block_height, last_failed_block_height);
   READ_JSON_VALUE_BY_KEY(val, tx.receive_time, receive_time);

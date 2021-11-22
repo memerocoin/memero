@@ -78,7 +78,7 @@ bool matches_category(relay_method method, relay_category category) noexcept
 
 void txpool_tx_meta_t::set_relay_method(relay_method method) noexcept
 {
-  kept_by_block = 0;
+  tx_from_block = 0;
   do_not_relay = 0;
   is_local = 0;
 
@@ -94,14 +94,14 @@ void txpool_tx_meta_t::set_relay_method(relay_method method) noexcept
     case relay_method::fluff:
       break;
     case relay_method::block:
-      kept_by_block = 1;
+      tx_from_block = 1;
       break;
   }
 }
 
 relay_method txpool_tx_meta_t::get_relay_method() const noexcept
 {
-  if (kept_by_block)
+  if (tx_from_block)
     return relay_method::block;
   if (do_not_relay)
     return relay_method::none;
