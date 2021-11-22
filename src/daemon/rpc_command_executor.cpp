@@ -1062,7 +1062,7 @@ bool t_rpc_command_executor::print_transaction_pool_stats() {
   size_t avg_bytes = n_transactions ? res.pool_stats.bytes_total / n_transactions : 0;
 
   std::string backlog_message;
-  const uint64_t full_reward_zone = cryptonote::get_max_block_weight(ires.height) / 2;
+  const uint64_t full_reward_zone = consensus::get_max_block_size(ires.height) / 2;
   if (res.pool_stats.bytes_total <= full_reward_zone)
   {
     backlog_message = "no backlog";

@@ -32,6 +32,8 @@
 
 #include "config/lol.hpp"
 
+#include "consensus/consensus.hpp"
+
 #include <cstdint>
 
 
@@ -40,25 +42,13 @@ namespace cryptonote {
   /* Cryptonote helper functions                                          */
   /************************************************************************/
   //-----------------------------------------------------------------------------------------------
-  consteval uint64_t get_min_block_weight()
-  {
-    return config::lol::min_block_weight;
-  }
-  //-----------------------------------------------------------------------------------------------
   consteval uint64_t get_max_tx_size()
   {
-    return config::lol::min_block_weight;
-  }
-  //-----------------------------------------------------------------------------------------------
-  constexpr uint64_t get_max_block_weight(const uint64_t height)
-  {
-    const uint64_t max_weight = std::max(config::lol::min_block_weight, height);
-    // LOG_GLOBAL_INFO("get max block weight: " << max_weight);
-    return max_weight;
+    return consensus::get_min_block_size();
   }
   //-----------------------------------------------------------------------------------------------
   constexpr bool check_block_weight(const uint64_t height, const size_t current_block_weight) {
-    uint64_t max_weight = get_max_block_weight(height);
-    return current_block_weight <= max_weight;
+    const uint64_t max_size = consensus::get_max_block_size(height);
+    return current_block_weight <= max_size;
   }
 }

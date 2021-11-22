@@ -1073,7 +1073,7 @@ namespace cryptonote
     // blob size against the block weight limit, which acts as a sanity check without
     // having to parse/weigh first; in fact, since the block blob is the block header
     // plus the tx hashes, the weight will typically be much larger than the blob size
-    const auto max_weight = get_max_block_weight(get_current_blockchain_height());
+    const auto max_weight = consensus::get_max_block_size(get_current_blockchain_height());
     if(block_blob.size() > max_weight + BLOCK_SIZE_SANITY_LEEWAY)
     {
       LOG_PRINT_L1("WRONG BLOCK BLOB, sanity check failed on size " << block_blob.size() << ", rejected");

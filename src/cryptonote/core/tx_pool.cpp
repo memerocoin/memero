@@ -69,7 +69,7 @@ namespace cryptonote
 
     uint64_t get_transaction_weight_limit()
     {
-      return get_min_block_weight() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+      return consensus::get_min_block_size() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     }
   }
 
@@ -119,7 +119,7 @@ namespace cryptonote
 
     if (tx.version == 1)
     {
-      const uint64_t inputs_amount = get_inputs_money_amount(tx);
+      const uint64_t inputs_amount = cryptonote::get_inputs_money_amount(tx);
 
       // {
       //   tvc.m_verifivation_failed = true;
@@ -1247,7 +1247,7 @@ namespace cryptonote
 
     uint64_t best_coinbase = consensus::get_block_reward();
 
-    uint64_t max_total_weight = get_max_block_weight(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+    uint64_t max_total_weight = consensus::get_max_block_size(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> output_key_images;
     LOG_PRINT_L2("Filling block template, max weight " << max_total_weight << ", " << m_txs_by_fee_and_receive_time.size() << " txes in the pool");
 

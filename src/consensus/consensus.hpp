@@ -20,7 +20,6 @@
 #pragma once
 
 #include "math/ringct/functional/rctTypes.hpp"
-#include "config/lol.hpp"
 
 using namespace rct;
 
@@ -47,16 +46,31 @@ namespace consensus {
    , const rct_point pseudo_input_commit
    );
 
-  //-----------------------------------------------------------------------------------------------
+
+  consteval uint64_t get_coin_amount() {
+    constexpr uint64_t COIN = 100000000000u; // pow(10, 11)
+    return COIN;
+  }
+
   consteval uint64_t get_block_reward() {
-    return constant::COIN * 300;
+    return get_coin_amount() * 300;
   }
 
   consteval bool block_reward_is_constant_300() {
-    return get_block_reward() == constant::COIN * 300;
+    return get_block_reward() == get_coin_amount() * 300;
   }
 
   static_assert(block_reward_is_constant_300());
+
+  consteval uint64_t get_min_block_size() {
+    constexpr uint64_t min_block_size = 128 * 1024; // 128 kB
+    return min_block_size;
+  }
+
+  constexpr uint64_t get_max_block_size(const uint64_t height)
+  {
+    return std::max<uint64_t>(get_min_block_size(), height);
+  }
 
 
 }

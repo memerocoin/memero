@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "tools/common/powerof.h"
+#include "consensus/consensus.hpp"
 
 #include <chrono>
 #include <string_view>
@@ -44,8 +45,6 @@ namespace constant
   constexpr uint64_t MONEY_SUPPLY = (uint64_t)(-1);
 
   // COIN - number of smallest units in one coin
-  constexpr uint64_t COIN = 100000000000u; // pow(10, 11)
-
 
   constexpr uint64_t DIFFICULTY_TARGET_IN_SECONDS = 300;
   constexpr uint64_t DIFFICULTY_WINDOW_IN_BLOCKS = 144;
@@ -65,6 +64,7 @@ namespace constant
     DIFFICULTY_TARGET_IN_SECONDS * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS;
 
 
+  constexpr uint64_t COIN = consensus::get_coin_amount();
 
   constexpr uint32_t DEFAULT_MIN_OUTPUT_COUNT = 256;
   constexpr uint64_t DEFAULT_MIN_OUTPUT_VALUE = 2 * COIN;
@@ -141,7 +141,6 @@ namespace config
     constexpr size_t constant_transaction_version = 2;
     constexpr time_t constant_hf_time = 1600576524;
     constexpr size_t max_connections_per_address = 2;
-    constexpr uint64_t min_block_weight = 128 * 1024; // 128 kB
     constexpr uint64_t max_tx_weight = 128 * 1024; // 128 kB
     constexpr size_t genesis_tx_version = 1;
     constexpr size_t tx_version = 2;
