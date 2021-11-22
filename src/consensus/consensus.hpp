@@ -52,7 +52,11 @@ namespace consensus {
     return constant::COIN * 300;
   }
 
-  static_assert(get_block_reward() == constant::COIN * 300);
+  consteval bool block_reward_is_constant_300() {
+    return get_block_reward() == constant::COIN * 300;
+  }
+
+  static_assert(block_reward_is_constant_300());
 
 
 }
