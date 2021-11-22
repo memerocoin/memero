@@ -93,4 +93,8 @@ namespace consensus {
        );
   }
 
+  bool rule_12_tx_output_target_should_be_output_public_key(cryptonote::txout_target_v x) {
+    return x.type() == typeid(cryptonote::txout_to_key);
+  }
+
 }

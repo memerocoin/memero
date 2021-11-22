@@ -30,6 +30,8 @@
 
 #include "cryptonote/basic/functional/format_utils.hpp"
 
+#include "consensus/consensus.hpp"
+
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "verify"

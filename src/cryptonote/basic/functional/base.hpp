@@ -84,8 +84,8 @@ namespace cryptonote
   };
 
 
-  typedef boost::variant<txin_gen, txin_to_key> txin_v;
-  typedef boost::variant<txout_to_key> txout_target_v;
+  using txin_v = boost::variant<txin_gen, txin_to_key>;
+  using txout_target_v = boost::variant<txout_to_key>;
 
   //typedef std::pair<uint64_t, txout> out_t;
   struct tx_out

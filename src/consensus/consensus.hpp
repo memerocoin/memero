@@ -19,9 +19,13 @@
 
 #pragma once
 
+#include "constant.hpp"
+
 #include "math/ringct/functional/rctTypes.hpp"
 
 #include "math/crypto/functional/key.hpp"
+
+#include "cryptonote/basic/functional/base.hpp"
 
 #include <numeric>
 #include <set>
@@ -54,11 +58,6 @@ namespace consensus {
    , const rct_point pseudo_input_commit
    );
 
-
-  consteval uint64_t get_coin_amount() {
-    constexpr uint64_t COIN = 100000000000ull; // pow(10, 11)
-    return COIN;
-  }
 
   consteval uint64_t get_block_reward() {
     return get_coin_amount() * 300ull;
@@ -158,5 +157,7 @@ namespace consensus {
    );
 
   constexpr auto rule_11_tx_output_public_keys_should_be_safe_points = are_points_safe;
+
+  bool rule_12_tx_output_target_should_be_output_public_key(cryptonote::txout_target_v);
 
 }

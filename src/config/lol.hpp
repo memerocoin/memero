@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "tools/common/powerof.h"
-#include "consensus/consensus.hpp"
+#include "consensus/constant.hpp"
 
 #include <chrono>
 #include <string_view>
