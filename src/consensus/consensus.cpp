@@ -20,6 +20,8 @@
 #include "consensus.hpp"
 
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
+#include "math/ringct/functional/rctOps.hpp"
+#include "math/crypto/functional/group.hpp"
 
 namespace consensus {
 
@@ -30,5 +32,15 @@ namespace consensus {
    ) {
     return bulletproof_VERIFY(outputs, proof);
   }
+
+  bool tx_should_be_balanced
+  (
+   const rct_pointS inputs
+   , const rct_pointS outputs
+   , const amount_t fee
+   ) {
+    return sum(inputs) == sum(outputs) + H_(crypto::int_to_scalar(fee));
+  }
+
 
 }

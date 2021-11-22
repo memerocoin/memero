@@ -31,4 +31,11 @@ namespace consensus {
    , const Bulletproof proof
    );
 
+  bool tx_should_be_balanced
+  (
+   const rct_pointS inputs
+   , const rct_pointS outputs
+   , const amount_t fee
+   );
+
 }

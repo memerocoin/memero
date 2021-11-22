@@ -145,12 +145,7 @@ namespace rct {
        }
        );
 
-    const rct_point feeCommit = H_(crypto::int_to_scalar(rv.fee));
-    const rct_point sumOutputCommits = sum(output_commits) + feeCommit;
-    const rct_point sumPseudoInputCommits = sum(rv.p.pseudo_input_commits);
-
-    //check pseudo_input_commits vs Outs..
-    return sumPseudoInputCommits == sumOutputCommits;
+    return consensus::tx_should_be_balanced(rv.p.pseudo_input_commits, output_commits, rv.fee);
   }
 
   bool verify_range_proof(const rctData rv)
