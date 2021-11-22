@@ -1247,7 +1247,7 @@ namespace cryptonote
 
     uint64_t best_coinbase = consensus::get_block_reward();
 
-    uint64_t max_total_weight = consensus::get_max_block_size(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+    uint64_t max_total_weight = consensus::get_block_size_bound(height) - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     std::unordered_set<crypto::key_image> output_key_images;
     LOG_PRINT_L2("Filling block template, max weight " << max_total_weight << ", " << m_txs_by_fee_and_receive_time.size() << " txes in the pool");
 

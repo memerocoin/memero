@@ -1474,7 +1474,7 @@ public:
   /**
    * @brief get the max block size
    */
-  virtual uint64_t get_max_block_size() = 0;
+  virtual uint64_t get_block_size_bound() = 0;
 
   /**
    * @brief add a new max block size

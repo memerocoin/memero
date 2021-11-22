@@ -67,7 +67,7 @@ namespace consensus {
     return min_block_size;
   }
 
-  constexpr uint64_t get_max_block_size(const uint64_t height)
+  constexpr uint64_t get_block_size_bound(const uint64_t height)
   {
     return std::max<uint64_t>(get_min_block_size(), height);
   }

@@ -48,7 +48,7 @@ namespace cryptonote {
   }
   //-----------------------------------------------------------------------------------------------
   constexpr bool check_block_weight(const uint64_t height, const size_t current_block_weight) {
-    const uint64_t max_size = consensus::get_max_block_size(height);
+    const uint64_t max_size = consensus::get_block_size_bound(height);
     return current_block_weight <= max_size;
   }
 }

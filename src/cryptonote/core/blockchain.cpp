@@ -2984,7 +2984,7 @@ leave:
   {
     try
     {
-      uint64_t long_term_block_weight = consensus::get_max_block_size(cryptonote::get_block_height(bl));
+      uint64_t long_term_block_weight = consensus::get_block_size_bound(cryptonote::get_block_height(bl));
       cryptonote::string_blob bd = cryptonote::block_to_blob(bl);
       new_height = m_db->add_block(std::make_pair(std::move(bl), std::move(bd)), block_weight, long_term_block_weight, cumulative_difficulty, already_generated_coins, txs);
     }
@@ -3065,7 +3065,7 @@ bool Blockchain::update_next_cumulative_weight_limit()
   LOG_PRINT_L3("Blockchain::" << __func__);
 
   if (!m_db->is_read_only())
-    m_db->add_max_block_size(consensus::get_max_block_size(get_current_blockchain_height()));
+    m_db->add_max_block_size(consensus::get_block_size_bound(get_current_blockchain_height()));
 
   return true;
 }

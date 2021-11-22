@@ -2219,7 +2219,7 @@ std::vector<uint64_t> BlockchainLMDB::get_block_info_64bit_fields(uint64_t start
   return ret;
 }
 
-uint64_t BlockchainLMDB::get_max_block_size()
+uint64_t BlockchainLMDB::get_block_size_bound()
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
