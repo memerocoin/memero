@@ -29,21 +29,24 @@
 using namespace rct;
 
 namespace consensus {
+  constexpr bool rule_1_you_don_t_talk_about_lolnero() {
+    return true;
+  }
 
-  bool tx_output_amounts_should_not_overflow_amount_type
+  bool rule_2_tx_output_amounts_should_not_overflow_amount_type
   (
    const rct_pointS outputs
    , const Bulletproof proof
    );
 
-  bool tx_should_be_balanced
+  bool rule_3_tx_should_be_balanced
   (
    const rct_pointS inputs
    , const rct_pointS outputs
    , const amount_t fee
    );
 
-  bool tx_input_should_be_from_a_ring
+  bool rule_4_tx_input_should_be_from_a_ring
   (
    const crypto::hash message
    , const clsag sig
@@ -61,11 +64,11 @@ namespace consensus {
     return get_coin_amount() * 300ull;
   }
 
-  consteval bool block_reward_is_constant_300() {
+  consteval bool rule_5_block_reward_is_constant_300() {
     return get_block_reward() == get_coin_amount() * 300ull;
   }
 
-  static_assert(block_reward_is_constant_300());
+  static_assert(rule_5_block_reward_is_constant_300());
 
   consteval uint64_t get_minimum_block_size_bound() {
     constexpr uint64_t min_block_size = 128ull * 1024ull; // 128 kB
@@ -77,7 +80,7 @@ namespace consensus {
     return std::max<uint64_t>(get_minimum_block_size_bound(), height);
   }
 
-  constexpr bool block_size_should_be_bounded_by_height
+  constexpr bool rule_6_block_size_should_be_bounded_by_height
   (
    const uint64_t height
    , const size_t block_size
@@ -92,11 +95,11 @@ namespace consensus {
    , const size_t block_size
    )
   {
-    return block_size_should_be_bounded_by_height(height, block_size);
+    return rule_6_block_size_should_be_bounded_by_height(height, block_size);
   }
 
 
-  constexpr bool tx_input_decoys_offsets_should_not_be_zero_except_the_first_one
+  constexpr bool rule_7_tx_input_decoys_offsets_should_not_be_zero_except_the_first_one
   (
    const std::span<const uint64_t> offsets
    )
@@ -137,6 +140,6 @@ namespace consensus {
        );
   }
 
-  bool tx_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs);
+  bool rule_8_tx_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs);
 
 }
