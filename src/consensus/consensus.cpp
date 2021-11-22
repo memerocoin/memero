@@ -58,4 +58,14 @@ namespace consensus {
     std::set<crypto::key_image> s(xs.begin(), xs.end());
     return s.size() == xs.size();
   }
+
+
+  std::optional<Bulletproof> rule_9_range_proof_should_not_contain_invalid_data
+  (
+   const Bulletproof_unsafe x
+   )
+  {
+    return maybeSafeBulletproof(x);
+  }
+
 }

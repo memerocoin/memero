@@ -185,7 +185,9 @@ namespace rct {
         , "Mismatched sizes of output_commits and rv.ecdh_encrypted_data"
         );
 
-    const auto maybeProof = rct::maybeSafeBulletproof(rv.p.bulletproofs.front());
+    const auto maybeProof =
+      consensus::rule_9_range_proof_should_not_contain_invalid_data(rv.p.bulletproofs.front());
+
     LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
 
     rct::rct_pointV output_commits;

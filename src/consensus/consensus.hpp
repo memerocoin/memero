@@ -142,4 +142,9 @@ namespace consensus {
 
   bool rule_8_tx_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs);
 
+  std::optional<Bulletproof> rule_9_range_proof_should_not_contain_invalid_data
+  (
+   const Bulletproof_unsafe x
+   );
+
 }
