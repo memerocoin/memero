@@ -62,14 +62,14 @@ namespace consensus {
 
   static_assert(block_reward_is_constant_300());
 
-  consteval uint64_t get_min_block_size() {
+  consteval uint64_t get_minimum_block_size_bound() {
     constexpr uint64_t min_block_size = 128 * 1024; // 128 kB
     return min_block_size;
   }
 
   constexpr uint64_t get_block_size_bound(const uint64_t height)
   {
-    return std::max<uint64_t>(get_min_block_size(), height);
+    return std::max<uint64_t>(get_minimum_block_size_bound(), height);
   }
 
 

@@ -69,7 +69,7 @@ namespace cryptonote
 
     uint64_t get_transaction_weight_limit()
     {
-      return consensus::get_min_block_size() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
+      return consensus::get_minimum_block_size_bound() / 2 - constant::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
     }
   }
 

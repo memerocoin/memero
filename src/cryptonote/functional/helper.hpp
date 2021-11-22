@@ -44,7 +44,7 @@ namespace cryptonote {
   //-----------------------------------------------------------------------------------------------
   consteval uint64_t get_max_tx_size()
   {
-    return consensus::get_min_block_size();
+    return consensus::get_minimum_block_size_bound();
   }
   //-----------------------------------------------------------------------------------------------
   constexpr bool check_block_weight(const uint64_t height, const size_t current_block_weight) {
