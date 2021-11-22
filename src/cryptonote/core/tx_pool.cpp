@@ -1239,7 +1239,7 @@ namespace cryptonote
     fee = 0;
 
     //baseline empty block
-    if (!check_block_weight(height, total_weight))
+    if (!consensus::is_block_size_valid(height, total_weight))
     {
       LOG_ERROR("Failed to get block reward for empty block");
       return false;
@@ -1281,7 +1281,7 @@ namespace cryptonote
       {
         // If we're getting lower coinbase tx,
         // stop including more tx
-        if(!check_block_weight(height, total_weight + meta.weight))
+        if(!consensus::is_block_size_valid(height, total_weight + meta.weight))
         {
           LOG_PRINT_L2("  would exceed maximum block weight");
           continue;

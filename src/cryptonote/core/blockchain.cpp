@@ -1127,7 +1127,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
     money_in_use += o.amount;
   partial_block_reward = false;
 
-  if (!check_block_weight(height, cumulative_block_weight))
+  if (!consensus::is_block_size_valid(height, cumulative_block_weight))
   {
     LOG_ERROR_VER("block weight " << cumulative_block_weight << " is bigger than allowed for this blockchain");
     return false;

@@ -72,5 +72,20 @@ namespace consensus {
     return std::max<uint64_t>(get_minimum_block_size_bound(), height);
   }
 
+  constexpr bool block_size_should_be_bounded_by_height
+  (
+   const uint64_t height
+   , const size_t block_size
+   ) {
+    return block_size <= consensus::get_block_size_bound(height);
+  }
+
+  constexpr bool is_block_size_valid
+  (
+   const uint64_t height
+   , const size_t block_size
+   ) {
+    return block_size_should_be_bounded_by_height(height, block_size);
+  }
 
 }

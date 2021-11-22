@@ -442,7 +442,7 @@ namespace cryptonote
     txin_gen in;
     in.height = height;
 
-    if(!check_block_weight(static_cast<uint64_t>(height), current_block_weight))
+    if(!consensus::is_block_size_valid(static_cast<uint64_t>(height), current_block_weight))
     {
       LOG_PRINT_L0("Block is too big");
       return {};
