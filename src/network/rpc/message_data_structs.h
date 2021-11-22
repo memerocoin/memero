@@ -31,7 +31,7 @@
 #include "network/rpc/rpc_handler.h"
 
 #include "cryptonote/basic/functional/base.hpp"
-#include "cryptonote/basic/functional/difficulty.hpp"
+#include "math/blockchain/functional/difficulty.hpp"
 
 
 namespace cryptonote

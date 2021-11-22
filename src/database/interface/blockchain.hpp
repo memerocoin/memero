@@ -33,7 +33,7 @@
 
 #include "cryptonote/basic/type/string_blob_type.hpp"
 #include "cryptonote/basic/functional/base.hpp"
-#include "cryptonote/basic/functional/difficulty.hpp"
+#include "math/blockchain/functional/difficulty.hpp"
 
 #include "tools/common/command_line.h"
 

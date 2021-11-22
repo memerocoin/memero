@@ -28,6 +28,7 @@
 
 add_library(math_blockchain
   functional/subaddress.cpp
+  functional/difficulty.cpp
   )
 
 target_link_libraries(math_blockchain

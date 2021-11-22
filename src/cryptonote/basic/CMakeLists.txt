@@ -29,7 +29,6 @@
 
 add_library(cryptonote_basic
 
-  functional/difficulty.cpp
   functional/format_utils.cpp
   functional/tx_extra.cpp
   functional/base.cpp
