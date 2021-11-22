@@ -97,7 +97,7 @@ namespace consensus {
     return x.type() == typeid(cryptonote::txout_to_key);
   }
 
-  bool are_tx_output_targets_valid(std::span<const cryptonote::txout_target_v> xs) {
+  bool are_tx_output_targets_valid(const std::span<const cryptonote::txout_target_v> xs) {
     return std::transform_reduce
       (
        xs.begin()
@@ -114,7 +114,7 @@ namespace consensus {
     return x.type() == typeid(cryptonote::txin_to_key);
   }
 
-  bool are_ringct_input_types_valid(std::span<const cryptonote::txin_v> xs) {
+  bool are_ringct_input_types_valid(const std::span<const cryptonote::txin_v> xs) {
     return std::transform_reduce
       (
        xs.begin()

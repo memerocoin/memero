@@ -160,7 +160,7 @@ namespace consensus {
 
   bool rule_12_tx_output_target_should_be_output_public_key(const cryptonote::txout_target_v x);
 
-  bool are_tx_output_targets_valid(std::span<const cryptonote::txout_target_v> xs);
+  bool are_tx_output_targets_valid(const std::span<const cryptonote::txout_target_v> xs);
 
   constexpr auto rule_13_tx_output_commits_should_be_safe_points = are_points_safe;
 
@@ -168,7 +168,7 @@ namespace consensus {
 
   bool rule_15_ringct_input_type_should_be_ring(const cryptonote::txin_v x);
 
-  bool are_ringct_input_types_valid(std::span<const cryptonote::txin_v> xs);
+  bool are_ringct_input_types_valid(const std::span<const cryptonote::txin_v> xs);
 
   constexpr auto
   rule_16_next_difficult_target_over_average_difficulty_should_be_the_inverse_of_the_lwma_of_block_time_over_target_time
