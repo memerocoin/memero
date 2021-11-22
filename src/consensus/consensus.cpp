@@ -76,4 +76,21 @@ namespace consensus {
     return maybeSafeCLSAG(x);
   }
 
+  bool are_points_safe
+  (
+   const std::span<const crypto::ec_point_unsafe> xs
+   )
+  {
+    return std::transform_reduce
+      (
+       xs.begin()
+       , xs.end()
+       , true
+       , std::logical_and()
+       , [](const auto& x) {
+         return crypto::is_safe_point(x);
+       }
+       );
+  }
+
 }

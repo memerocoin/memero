@@ -361,11 +361,21 @@ namespace cryptonote
       {
         LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
       }
-
-      if(!is_safe_point(boost::get<txout_to_key>(out.target).output_public_key))
-        return false;
     }
-    return true;
+
+    std::vector<crypto::ec_point_unsafe> xs;
+    std::transform
+      (
+       tx.vout.begin()
+       , tx.vout.end()
+       , std::back_inserter(xs)
+       , [](const auto& x) {
+         return boost::get<txout_to_key>(x.target).output_public_key;
+       }
+       );
+
+
+    return consensus::rule_11_tx_output_public_keys_should_be_safe_points(xs);
   }
 
   //-----------------------------------------------------------------------------------------------

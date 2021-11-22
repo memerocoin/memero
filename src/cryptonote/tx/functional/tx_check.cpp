@@ -103,23 +103,32 @@ bool rct_tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices
 }
 
 bool check_tx_output_points(const transaction& tx) {
-  const bool valid_output_public_keys =
-    std::transform_reduce
+
+  for(const tx_out& out: tx.vout)
+  {
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+        out.target.type() == typeid(txout_to_key)
+        , false
+        , "wrong variant type: "
+        << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
+        << ", in transaction id=" << get_transaction_hash(tx)
+        );
+  }
+
+  std::vector<crypto::ec_point_unsafe> output_public_keys;
+  std::transform
     (
      tx.vout.begin()
      , tx.vout.end()
-     , true
-     , std::logical_and()
-     , [](const auto&o) {
-       if (o.target.type() == typeid(txout_to_key)) {
-         const txout_to_key& out_to_key = boost::get<txout_to_key>(o.target);
-         if (!crypto::is_safe_point(out_to_key.output_public_key)) {
-           return false;
-         }
-       }
-       return true;
+     , std::back_inserter(output_public_keys)
+     , [](const auto& x) {
+       return boost::get<txout_to_key>(x.target).output_public_key;
      }
      );
+
+  const bool valid_output_public_keys =
+    consensus::rule_11_tx_output_public_keys_should_be_safe_points(output_public_keys);
 
   // double check points in ringct
   const bool valid_output_commits =

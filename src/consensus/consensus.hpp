@@ -152,4 +152,11 @@ namespace consensus {
    const clsag_unsafe x
    );
 
+  bool are_points_safe
+  (
+   const std::span<const crypto::ec_point_unsafe> xs
+   );
+
+  constexpr auto rule_11_tx_output_public_keys_should_be_safe_points = are_points_safe;
+
 }
