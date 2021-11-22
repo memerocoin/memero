@@ -31,7 +31,6 @@ add_library(cryptonote_basic
 
   functional/difficulty.cpp
   functional/format_utils.cpp
-  functional/subaddress.cpp
   functional/tx_extra.cpp
   functional/base.cpp
 
@@ -44,5 +43,6 @@ target_link_libraries(cryptonote_basic
   tools_common
   epee_storage_basic
   math_crypto
+  math_blockchain
   consensus
 )

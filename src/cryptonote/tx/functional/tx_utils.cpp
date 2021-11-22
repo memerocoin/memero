@@ -39,7 +39,7 @@
 #include "math/ringct/controller/ringCT_Gen.hpp"
 
 #include "cryptonote/functional/helper.hpp"
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 #include "cryptonote/basic/functional/tx_extra.hpp"
 #include "cryptonote/basic/functional/format_utils.hpp"
 

@@ -39,7 +39,7 @@
 #include "wallet/logic/controller/proof.hpp"
 #include "wallet/logic/controller/wallet.hpp"
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 
 #include "wallet/mnemonics/electrum-words.h"
 

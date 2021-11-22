@@ -37,7 +37,7 @@
 #include "math/ringct/pseudo_functional/ringCT.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 
 #include "consensus/consensus.hpp"
 

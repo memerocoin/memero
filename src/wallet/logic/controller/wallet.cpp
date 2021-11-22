@@ -42,7 +42,7 @@
 
 #include "wallet/api/wallet_errors.h"
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 #include "cryptonote/tx/functional/tx_check.h"
 
 #include "wallet/api/wallet_errors.h"

@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include "subaddress.hpp"
 
 #include "tools/epee/include/misc_language.h"
 #include "tools/epee/include/serialization/keyvalue_serialization.h" // eepe named serialization
@@ -43,6 +42,7 @@
 
 #include "math/crypto/controller/keyGen.hpp"
 #include "math/ringct/functional/rctTypes.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 
 #include "config/cryptonote.hpp"
 

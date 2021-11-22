@@ -35,7 +35,7 @@
 
 #include "math/ringct/pseudo_functional/ringCT.hpp"
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 
 #include <boost/algorithm/string.hpp>
 

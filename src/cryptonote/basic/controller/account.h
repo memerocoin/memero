@@ -31,7 +31,7 @@
 #pragma once
 
 #include "cryptonote/basic/functional/base.hpp"
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 
 namespace cryptonote
 {

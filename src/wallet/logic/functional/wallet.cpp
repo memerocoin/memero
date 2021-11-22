@@ -36,7 +36,7 @@
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/controller/wallet.hpp"
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 #include "cryptonote/basic/functional/tx_extra.hpp"
 
 #include "tools/common/apply_permutation.h"

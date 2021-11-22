@@ -34,7 +34,7 @@
 
 #include "wallet/api/wallet_errors.h"
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 
 #include "tools/common/base58.h"
 

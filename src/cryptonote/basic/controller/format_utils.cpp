@@ -30,7 +30,7 @@
 
 #include "format_utils.hpp"
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 #include "cryptonote/basic/functional/format_utils.hpp"
 
 #include "tools/epee/include/string_tools.h"

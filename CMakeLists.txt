@@ -149,6 +149,7 @@ add_subdirectory(src/tools/serialization)
 add_subdirectory(vendor/curve25519/cryptonote)
 add_subdirectory(src/math/crypto)
 add_subdirectory(src/math/ringct)
+add_subdirectory(src/math/blockchain)
 
 ## cryptonote
 add_subdirectory(src/cryptonote/basic)

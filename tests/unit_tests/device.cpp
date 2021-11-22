@@ -32,7 +32,7 @@
 #include "math/ringct/controller/rctGen.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 
-#include "cryptonote/basic/functional/subaddress.hpp"
+#include "math/blockchain/functional/subaddress.hpp"
 
 TEST(device, name)
 {
