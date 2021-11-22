@@ -48,22 +48,22 @@ namespace consensus {
 
 
   consteval uint64_t get_coin_amount() {
-    constexpr uint64_t COIN = 100000000000u; // pow(10, 11)
+    constexpr uint64_t COIN = 100000000000ull; // pow(10, 11)
     return COIN;
   }
 
   consteval uint64_t get_block_reward() {
-    return get_coin_amount() * 300;
+    return get_coin_amount() * 300ull;
   }
 
   consteval bool block_reward_is_constant_300() {
-    return get_block_reward() == get_coin_amount() * 300;
+    return get_block_reward() == get_coin_amount() * 300ull;
   }
 
   static_assert(block_reward_is_constant_300());
 
   consteval uint64_t get_minimum_block_size_bound() {
-    constexpr uint64_t min_block_size = 128 * 1024; // 128 kB
+    constexpr uint64_t min_block_size = 128ull * 1024ull; // 128 kB
     return min_block_size;
   }
 
