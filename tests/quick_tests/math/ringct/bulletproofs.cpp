@@ -232,17 +232,3 @@ TEST(quick_bulletproofs, wrong_LR_second)
   altered_proof.LR[index_to_change] = lr;
   EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
-
-
-TEST(quick_bulletproofs, wrong_commits)
-{
-  const auto input = randomProof();
-  const auto proof = input.second;
-  EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
-
-  auto altered_proof = proof;
-
-  const auto index_to_change = rand_idx(proof.commits.size());
-  altered_proof.commits[index_to_change] = randomPoint();
-  EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
-}

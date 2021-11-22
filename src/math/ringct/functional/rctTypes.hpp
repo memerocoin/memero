@@ -120,7 +120,6 @@ namespace rct {
 
   struct Bulletproof_unsafe
   {
-    std::vector<reconstructed_point> commits;
     rct::inv8 A, S;
     rct::inv8 T1, T2;
     crypto::ec_scalar_unnormalized taux, mu;
@@ -153,7 +152,6 @@ namespace rct {
 
   struct Bulletproof
   {
-    rct::rct_pointV commits;
     rct::rct_point A, S;
     rct::rct_point T1, T2;
     rct::rct_scalar taux, mu;
@@ -169,8 +167,12 @@ namespace rct {
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
   Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof);
 
-  bool is_bulletproof_structure_valid(const Bulletproof_unsafe &proof);
-  size_t n_bulletproof_amounts(const Bulletproof_unsafe &proof);
+  bool is_bulletproof_structure_valid
+  (
+   const size_t output_size
+   , const Bulletproof_unsafe &proof
+   );
+
   size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);
 
   enum {
@@ -280,7 +282,7 @@ namespace rct {
         const auto proof = bulletproofs.front();
         if (n_bulletproof_max_amounts(proof) < outputs)
           return false;
-        if (!is_bulletproof_structure_valid(proof))
+        if (!is_bulletproof_structure_valid(outputs, proof))
           return false;
         ar.end_array();
       }

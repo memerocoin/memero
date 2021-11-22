@@ -962,7 +962,6 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bu
 {
   dest.StartObject();
 
-  WRITE_JSON_FIELD_FROM(dest, commits, p.commits);
   WRITE_JSON_FIELD_FROM(dest, A, p.A);
   WRITE_JSON_FIELD_FROM(dest, S, p.S);
   WRITE_JSON_FIELD_FROM(dest, T1, p.T1);
@@ -985,7 +984,6 @@ void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof_unsafe& p)
     throw WRONG_TYPE("json object");
   }
 
-  READ_JSON_VALUE_BY_KEY(val, p.commits, commits);
   READ_JSON_VALUE_BY_KEY(val, p.A, A);
   READ_JSON_VALUE_BY_KEY(val, p.S, S);
   READ_JSON_VALUE_BY_KEY(val, p.T1, T1);

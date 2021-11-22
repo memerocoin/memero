@@ -518,7 +518,7 @@ try_again:
 
   return Bulletproof
     {
-     V, A, S, T1, T2, taux, mu, LR
+     A, S, T1, T2, taux, mu, LR
      , aprime[0], bprime[0], t
      };
 }

@@ -531,16 +531,6 @@ namespace cryptonote
        , "Internal error filling out V"
        );
 
-    std::transform
-      (
-       rv.output_commits.begin()
-       , rv.output_commits.end()
-       , std::back_inserter(rv.p.bulletproofs[0].commits)
-       , [](const auto& x) {
-         return x.commit;
-       }
-       );
-
     return tx;
   }
 

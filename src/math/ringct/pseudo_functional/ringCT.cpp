@@ -166,7 +166,7 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.output_commits.size() == n_bulletproof_amounts(rv.p.bulletproofs.front())
+       is_bulletproof_structure_valid(rv.output_commits.size(), rv.p.bulletproofs.front())
         , false
         , "Mismatched sizes of output_commits and bulletproofs"
         );

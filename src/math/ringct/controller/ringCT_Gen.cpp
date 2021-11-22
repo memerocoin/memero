@@ -51,7 +51,7 @@
 
 namespace rct {
 
-  std::tuple<rct_scalar, Bulletproof> generate_range_proof
+  std::tuple<rct_scalar, rct_pointV, Bulletproof> generate_range_proof
   (
    const std::span<const rctOutputData> outputs
    )
@@ -73,12 +73,6 @@ namespace rct {
 
     const Bulletproof proof = bulletproof_MAKE(xs);
 
-    LOG_ERROR_AND_THROW_UNLESS
-      (
-       proof.commits.size() == outputs.size()
-       , "V does not have the expected size"
-       );
-
     const rct_scalar output_blinding_factors_sum =
       std::transform_reduce
       (
@@ -89,7 +83,18 @@ namespace rct {
        , [](const auto& x) { return x.second; }
        );
 
-    return {output_blinding_factors_sum, proof};
+    rct_pointV output_commits;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(output_commits)
+       , [](const auto& x) {
+         return std::apply(commit, x);
+       }
+       );
+
+    return {output_blinding_factors_sum, output_commits, proof};
   }
 
   std::vector<std::pair<rct_scalar, rct_point>>
@@ -151,18 +156,7 @@ namespace rct {
 
     // 1. basic
 
-    const auto [output_blinding_factors_sum, proof] = generate_range_proof(outputs);
-
-    std::vector<output_commit> output_commits;
-    std::transform
-      (
-       proof.commits.begin()
-       , proof.commits.end()
-       , std::back_inserter(output_commits)
-       , [](const auto& x) -> output_commit {
-         return {x};
-       }
-       );
+    const auto [output_blinding_factors_sum, output_commits, proof] = generate_range_proof(outputs);
 
     output_public_dataM decoys;
     std::transform
@@ -186,12 +180,23 @@ namespace rct {
        }
        );
 
+    std::vector<output_commit> rct_output_commits;
+    std::transform
+      (
+       output_commits.begin()
+       , output_commits.end()
+       , std::back_inserter(rct_output_commits)
+       , [](const auto& x) -> output_commit {
+         return {x};
+       }
+       );
+
     const rctDataBasic rct_data_basic =
       { RCTTypeCLSAG
         , message
         , decoys
         , ecdh
-        , output_commits
+        , rct_output_commits
         , fee
       };
 

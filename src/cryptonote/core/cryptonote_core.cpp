@@ -1355,9 +1355,6 @@ namespace cryptonote
   {
     if (proofs.size() != 1)
       return false;
-    const size_t sz = proofs[0].commits.size();
-    if (sz == 0 || sz > BULLETPROOF_MAX_OUTPUTS)
-      return false;
     return true;
   }
 
