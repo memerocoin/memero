@@ -97,4 +97,17 @@ namespace consensus {
     return x.type() == typeid(cryptonote::txout_to_key);
   }
 
+  bool are_tx_output_targets_valid(std::span<const cryptonote::txout_target_v> xs) {
+    return std::transform_reduce
+      (
+       xs.begin()
+       , xs.end()
+       , true
+       , std::logical_and()
+       , [](const auto& x) {
+         return rule_12_tx_output_target_should_be_output_public_key(x);
+       }
+       );
+  }
+
 }

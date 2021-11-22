@@ -106,16 +106,20 @@ bool rct_tx_sanity_check(const std::set<uint64_t> &rct_indices, size_t n_indices
 
 bool check_tx_output_points(const transaction& tx) {
 
-  for(const tx_out& out: tx.vout)
-  {
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-        out.target.type() == typeid(txout_to_key)
-        , false
-        , "wrong variant type: "
-        << out.target.type().name() << ", expected " << typeid(txout_to_key).name()
-        << ", in transaction id=" << get_transaction_hash(tx)
-        );
+  std::vector<cryptonote::txout_target_v> output_targets;
+  std::transform
+    (
+     tx.vout.begin()
+     , tx.vout.end()
+     , std::back_inserter(output_targets)
+     , [](const auto& x) {
+       return x.target;
+     }
+     );
+
+  if (!consensus::are_tx_output_targets_valid(output_targets)) {
+    return false;
+    LOG_ERROR("wrong variant type in output targets");
   }
 
   std::vector<crypto::ec_point_unsafe> output_public_keys;

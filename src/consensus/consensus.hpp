@@ -160,4 +160,6 @@ namespace consensus {
 
   bool rule_12_tx_output_target_should_be_output_public_key(cryptonote::txout_target_v);
 
+  bool are_tx_output_targets_valid(std::span<const cryptonote::txout_target_v> xs);
+
 }
