@@ -39,6 +39,14 @@ namespace consensus {
    , const amount_t fee
    );
 
+  bool tx_input_should_be_from_a_ring
+  (
+   const crypto::hash message
+   , const clsag sig
+   , const output_public_dataS decoys
+   , const rct_point pseudo_input_commit
+   );
+
   //-----------------------------------------------------------------------------------------------
   consteval uint64_t get_block_reward() {
     return constant::COIN * 300;

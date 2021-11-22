@@ -20,6 +20,7 @@
 #include "consensus.hpp"
 
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
+#include "math/ringct/pseudo_functional/clsag.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/crypto/functional/group.hpp"
 
@@ -42,5 +43,14 @@ namespace consensus {
     return sum(inputs) == sum(outputs) + H_(crypto::int_to_scalar(fee));
   }
 
+  bool tx_input_should_be_from_a_ring
+  (
+   const crypto::hash message
+   , const clsag sig
+   , const output_public_dataS decoys
+   , const rct_point pseudo_input_commit
+   ) {
+    return verify_clsag_signature(message, sig, decoys, pseudo_input_commit);
+  }
 
 }
