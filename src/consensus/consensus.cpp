@@ -135,12 +135,16 @@ namespace consensus {
     return xs.size() >= 2;
   }
 
-  bool rule_22_coinbase_tx_should_have_only_one_input
+  std::optional<cryptonote::txin_v> rule_22_coinbase_tx_should_have_only_one_input
   (
    const std::span<const cryptonote::txin_v> xs
    )
   {
-    return xs.size() == 1;
+    if (xs.size() == 1) {
+      return xs.front();
+    } else {
+      return {};
+    };
   }
 
   bool rule_23_coinbase_tx_input_type_should_be_gen

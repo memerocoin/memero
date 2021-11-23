@@ -40,14 +40,14 @@ namespace cryptonote {
        , "Wrong rct type in miner tx"
        );
 
+    const auto maybe_vin = consensus::rule_22_coinbase_tx_should_have_only_one_input(tx.vin);
     LOG_ERROR_AND_RETURN_UNLESS
-      (
-       consensus::rule_22_coinbase_tx_should_have_only_one_input(tx.vin)
+      ( maybe_vin
        , {}
        , "Wrong number of inputs"
        );
 
-    const auto input_v = tx.vin.front();
+    const auto input_v = *maybe_vin;
 
     LOG_ERROR_AND_RETURN_UNLESS
       (

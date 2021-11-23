@@ -54,11 +54,12 @@ namespace cryptonote
   //-----------------------------------------------------------------------
   bool is_coinbase(const transaction& tx)
   {
-    if(!(consensus::rule_22_coinbase_tx_should_have_only_one_input(tx.vin))) {
+    const auto maybe_vin = consensus::rule_22_coinbase_tx_should_have_only_one_input(tx.vin);
+    if(!maybe_vin) {
       return false;
     }
 
-    if(!(consensus::rule_23_coinbase_tx_input_type_should_be_gen(tx.vin[0]))) {
+    if(!(consensus::rule_23_coinbase_tx_input_type_should_be_gen(*maybe_vin))) {
       return false;
     }
 
