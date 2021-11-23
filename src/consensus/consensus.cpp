@@ -143,4 +143,12 @@ namespace consensus {
     return xs.size() == 1;
   }
 
+  bool rule_23_coinbase_tx_input_type_should_be_gen
+  (
+   const cryptonote::txin_v x
+   )
+  {
+    return x.type() == typeid(cryptonote::txin_gen);
+  }
+
 }

@@ -227,4 +227,9 @@ namespace consensus {
    const std::span<const cryptonote::txin_v> xs
    );
 
+  bool rule_23_coinbase_tx_input_type_should_be_gen
+  (
+   const cryptonote::txin_v x
+   );
+
 }

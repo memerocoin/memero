@@ -47,7 +47,16 @@ namespace cryptonote {
        , "Wrong number of inputs"
        );
 
-    const auto input = boost::get<txin_gen>(tx.vin.front());
+    const auto input_v = tx.vin.front();
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       consensus::rule_23_coinbase_tx_input_type_should_be_gen(input_v)
+       , {}
+       , "input has the wrong type"
+       );
+
+    const auto input = boost::get<txin_gen>(input_v);
 
     std::vector<cryptonote::txout_target_v> output_targets;
     std::transform
