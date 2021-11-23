@@ -119,7 +119,7 @@ namespace rct {
        , "invalid clsag signature"
        );
 
-    return consensus::rule_4_tx_input_should_be_from_a_ring(message, *maybeClsag, decoys, pseudo_input_commit);
+    return consensus::rule_4_ringct_input_should_be_from_a_ring(message, *maybeClsag, decoys, pseudo_input_commit);
   }
 
   bool verify_tx_balance(const rctDataSizeChecked rv) {
@@ -135,7 +135,7 @@ namespace rct {
        }
        );
 
-    return consensus::rule_3_tx_should_be_balanced(rv.pseudo_input_commits, output_commits, rv.fee);
+    return consensus::rule_3_ringct_should_be_balanced(rv.pseudo_input_commits, output_commits, rv.fee);
   }
 
   bool verify_range_proof(const rctDataSizeChecked rv)
@@ -162,7 +162,7 @@ namespace rct {
        }
        );
 
-    return consensus::rule_2_tx_output_amounts_should_not_overflow_amount_type(output_commits, *maybeProof);
+    return consensus::rule_2_ringct_output_amounts_should_not_overflow_amount_type(output_commits, *maybeProof);
   }
 
   //ver RingCT simple

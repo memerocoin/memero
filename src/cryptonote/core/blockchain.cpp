@@ -3877,7 +3877,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
      }
      );
 
-  if (!consensus::rule_18_ringct_output_key_images_should_be_sorted(output_key_images)) {
+  if (!consensus::rule_18_ringct_input_key_images_should_be_sorted(output_key_images)) {
     LOG_ERROR_VER("transaction has unsorted inputs");
     tvc.m_verifivation_failed = true;
     return false;

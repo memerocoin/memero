@@ -26,7 +26,7 @@
 
 namespace consensus {
 
-  bool rule_2_tx_output_amounts_should_not_overflow_amount_type
+  bool rule_2_ringct_output_amounts_should_not_overflow_amount_type
   (
    const rct_pointS outputs
    , const Bulletproof proof
@@ -34,7 +34,7 @@ namespace consensus {
     return bulletproof_VERIFY(outputs, proof);
   }
 
-  bool rule_3_tx_should_be_balanced
+  bool rule_3_ringct_should_be_balanced
   (
    const rct_pointS inputs
    , const rct_pointS outputs
@@ -43,7 +43,7 @@ namespace consensus {
     return sum(inputs) == sum(outputs) + H_(crypto::int_to_scalar(fee));
   }
 
-  bool rule_4_tx_input_should_be_from_a_ring
+  bool rule_4_ringct_input_should_be_from_a_ring
   (
    const crypto::hash message
    , const clsag sig
@@ -53,7 +53,7 @@ namespace consensus {
     return verify_clsag_signature(message, sig, decoys, pseudo_input_commit);
   }
 
-  bool rule_8_tx_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs)
+  bool rule_8_ringct_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs)
   {
     std::set<crypto::key_image> s(xs.begin(), xs.end());
     return s.size() == xs.size();

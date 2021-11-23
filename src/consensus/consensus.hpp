@@ -37,20 +37,20 @@ namespace consensus {
     return true;
   }
 
-  bool rule_2_tx_output_amounts_should_not_overflow_amount_type
+  bool rule_2_ringct_output_amounts_should_not_overflow_amount_type
   (
    const rct_pointS outputs
    , const Bulletproof proof
    );
 
-  bool rule_3_tx_should_be_balanced
+  bool rule_3_ringct_should_be_balanced
   (
    const rct_pointS inputs
    , const rct_pointS outputs
    , const amount_t fee
    );
 
-  bool rule_4_tx_input_should_be_from_a_ring
+  bool rule_4_ringct_input_should_be_from_a_ring
   (
    const crypto::hash message
    , const clsag sig
@@ -98,7 +98,7 @@ namespace consensus {
   }
 
 
-  constexpr bool rule_7_tx_input_decoys_offsets_should_not_be_zero_except_the_first_one
+  constexpr bool rule_7_ringct_input_decoys_offsets_should_not_be_zero_except_the_first_one
   (
    const std::span<const uint64_t> offsets
    )
@@ -139,7 +139,7 @@ namespace consensus {
        );
   }
 
-  bool rule_8_tx_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs);
+  bool rule_8_ringct_input_key_images_should_be_unique(const std::span<const crypto::key_image> xs);
 
   std::optional<Bulletproof> rule_9_range_proof_should_not_contain_invalid_data
   (
@@ -176,7 +176,7 @@ namespace consensus {
 
   bool rule_17_ringct_should_contain_only_one_range_proof(const std::span<const rct::Bulletproof_unsafe> proofs);
 
-  constexpr bool rule_18_ringct_output_key_images_should_be_sorted
+  constexpr bool rule_18_ringct_input_key_images_should_be_sorted
   (
    const std::span<const crypto::key_image> xs
    )

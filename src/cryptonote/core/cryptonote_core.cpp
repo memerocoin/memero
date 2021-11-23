@@ -732,7 +732,7 @@ namespace cryptonote
       if (x) ks.push_back(*x);
     }
 
-    return consensus::rule_8_tx_input_key_images_should_be_unique(ks);
+    return consensus::rule_8_ringct_input_key_images_should_be_unique(ks);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::check_tx_inputs_ring_members_diff(const transaction& tx) const
@@ -746,7 +746,7 @@ namespace cryptonote
        , [](const auto& x) {
          CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, false);
 
-         return consensus::rule_7_tx_input_decoys_offsets_should_not_be_zero_except_the_first_one
+         return consensus::rule_7_ringct_input_decoys_offsets_should_not_be_zero_except_the_first_one
            (
             tokey_in.output_relative_offsets
             );
