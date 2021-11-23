@@ -176,13 +176,11 @@ namespace consensus {
   rule_16_next_difficult_target_over_average_difficulty_should_be_the_inverse_of_the_lwma_of_block_time_over_target_time
   = cryptonote::next_difficulty;
 
-  constexpr bool rule_17_ringct_should_contain_only_one_range_proof
+  std::optional<rct::Bulletproof_unsafe>
+  rule_17_ringct_should_contain_only_one_range_proof
   (
    const std::span<const rct::Bulletproof_unsafe> proofs
-   )
-  {
-    return proofs.size() == 1;
-  }
+   );
 
   constexpr bool rule_18_ringct_input_key_images_should_be_sorted
   (

@@ -137,6 +137,19 @@ namespace consensus {
        );
   }
 
+  std::optional<rct::Bulletproof_unsafe>
+  rule_17_ringct_should_contain_only_one_range_proof
+  (
+   const std::span<const rct::Bulletproof_unsafe> proofs
+   )
+  {
+    if (proofs.size() == 1) {
+      return proofs.front();
+    } else {
+      return {};
+    }
+  }
+
   bool rule_21_ringct_should_have_at_least_two_outputs
   (
    const std::span<const cryptonote::tx_out> xs

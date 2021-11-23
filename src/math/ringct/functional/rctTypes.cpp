@@ -254,12 +254,17 @@ namespace rct {
        , "Checking rct data on non ringct"
        );
 
+    const std::optional<Bulletproof_unsafe> maybe_proof =
+      consensus::rule_17_ringct_should_contain_only_one_range_proof(x.p.bulletproofs);
+
     LOG_ERROR_AND_RETURN_UNLESS
       (
-       consensus::rule_17_ringct_should_contain_only_one_range_proof(x.p.bulletproofs)
+       maybe_proof
        , {}
        , "More than one proofs"
        );
+
+    const auto proof = *maybe_proof;
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
@@ -277,7 +282,7 @@ namespace rct {
 
     const rctDataSizeChecked r = {
       x
-      , x.p.bulletproofs.front()
+      , proof
       , x.p.CLSAGs
       , x.p.pseudo_input_commits
     };
