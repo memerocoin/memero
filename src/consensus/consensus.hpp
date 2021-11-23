@@ -193,7 +193,7 @@ namespace consensus {
     return get_block_reward() + fee == std::reduce(xs.begin(), xs.end());
   }
 
-  constexpr uint64_t get_coinbase_unlock_height(uint64_t height) {
+  constexpr uint64_t get_coinbase_unlock_height(const uint64_t height) {
     return height + get_coinbase_unlock_time();
   }
 
