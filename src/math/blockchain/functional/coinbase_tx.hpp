@@ -22,6 +22,12 @@
 #include "cryptonote/basic/functional/base.hpp"
 
 namespace cryptonote {
+  struct tx_common
+  {
+    uint64_t unlock_height;
+    std::vector<uint8_t> extra;
+  };
+
 
   struct coinbase_output
   {
@@ -29,7 +35,7 @@ namespace cryptonote {
     crypto::public_key output_public_key;
   };
      
-  struct coinbase_tx
+  struct coinbase_tx: tx_common
   {
     uint64_t height;
     std::vector<coinbase_output> outputs;

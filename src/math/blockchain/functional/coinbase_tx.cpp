@@ -91,10 +91,18 @@ namespace cryptonote {
        );
 
 
-    return {{
-      input.height
+    const tx_common common = {
+      tx.unlock_height
+      , tx.extra
+    };
+
+    const coinbase_tx x = {
+      { common }
+      , input.height
       , outputs
-    }};
+    };
+
+    return x;
   }
 
 }
