@@ -119,7 +119,7 @@ namespace rct {
        , "invalid clsag signature"
        );
 
-    return consensus::rule_4_ringct_input_should_be_from_a_ring(message, *maybeClsag, decoys, pseudo_input_commit);
+    return consensus::rule_4_ringct_input_should_be_from_a_key(message, *maybeClsag, decoys, pseudo_input_commit);
   }
 
   bool verify_tx_balance(const rctDataSizeChecked rv) {

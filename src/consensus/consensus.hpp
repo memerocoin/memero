@@ -50,7 +50,7 @@ namespace consensus {
    , const amount_t fee
    );
 
-  bool rule_4_ringct_input_should_be_from_a_ring
+  bool rule_4_ringct_input_should_be_from_a_key
   (
    const crypto::hash message
    , const clsag sig
@@ -166,7 +166,7 @@ namespace consensus {
 
   constexpr auto rule_14_tx_pseudo_input_commits_should_be_safe_points = are_points_safe;
 
-  bool rule_15_ringct_input_type_should_be_ring(const cryptonote::txin_v x);
+  bool rule_15_ringct_input_type_should_be_from_key(const cryptonote::txin_v x);
 
   bool are_ringct_input_types_valid(const std::span<const cryptonote::txin_v> xs);
 

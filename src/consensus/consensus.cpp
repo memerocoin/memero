@@ -43,7 +43,7 @@ namespace consensus {
     return sum(inputs) == sum(outputs) + H_(crypto::int_to_scalar(fee));
   }
 
-  bool rule_4_ringct_input_should_be_from_a_ring
+  bool rule_4_ringct_input_should_be_from_a_key
   (
    const crypto::hash message
    , const clsag sig
@@ -110,7 +110,7 @@ namespace consensus {
        );
   }
 
-  bool rule_15_ringct_input_type_should_be_ring(const cryptonote::txin_v x) {
+  bool rule_15_ringct_input_type_should_be_from_key(const cryptonote::txin_v x) {
     return x.type() == typeid(cryptonote::txin_to_key);
   }
 
@@ -122,7 +122,7 @@ namespace consensus {
        , true
        , std::logical_and()
        , [](const auto& x) {
-         return rule_15_ringct_input_type_should_be_ring(x);
+         return rule_15_ringct_input_type_should_be_from_key(x);
        }
        );
   }
