@@ -1088,35 +1088,40 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
   LOG_PRINT_L3("Blockchain::" << __func__);
   if (height == 0) return true;
 
-  const auto maybe_tx = maybe_coinbase_tx(b.miner_tx);
+  const auto maybe_coinbase = maybe_coinbase_tx(b.miner_tx);
 
   LOG_ERROR_AND_RETURN_UNLESS
     (
-     maybe_tx
+     maybe_coinbase
      , false
      , "Failed to validate miner_tx"
      );
 
-  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin[0].type() == typeid(txin_gen), false, "coinbase transaction in the block has the wrong type");
+  const auto coinbase_tx = *maybe_coinbase;
 
-  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.version == 2, false, "Invalid coinbase transaction version");
-
-  if(boost::get<txin_gen>(b.miner_tx.vin[0]).height != height)
+  if(coinbase_tx.height != height)
   {
-    LOG_WARNING("The miner transaction in block has invalid height: " << boost::get<txin_gen>(b.miner_tx.vin[0]).height << ", expected: " << height);
+    LOG_WARNING
+      (
+       "The miner transaction in block has invalid height: "
+       << coinbase_tx.height
+       << ", expected: "
+       << height
+       );
+
     return false;
   }
-  LOG_DEBUG("Miner tx hash: " << get_transaction_hash(b.miner_tx));
+
   LOG_ERROR_AND_RETURN_UNLESS
     (
      consensus::rule_20_coinbase_outputs_are_locked_for_60_blocks
      (
       height
-      , b.miner_tx.unlock_height
+      , coinbase_tx.unlock_height
       )
      , false
      , "coinbase transaction transaction has the wrong unlock time="
-     << b.miner_tx.unlock_height
+     << coinbase_tx.unlock_height
      << ", expected "
      << consensus::get_coinbase_unlock_height(height)
      );
