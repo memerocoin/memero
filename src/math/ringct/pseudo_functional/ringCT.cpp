@@ -145,16 +145,9 @@ namespace rct {
   {
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.p.bulletproofs.size() == 1
+        consensus::rule_17_ringct_should_contain_only_one_range_proof(rv.p.bulletproofs)
         , false
         , "More than one proofs"
-        );
-
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       is_bulletproof_structure_valid(rv.output_commits.size(), rv.p.bulletproofs.front())
-        , false
-        , "Mismatched sizes of output_commits and bulletproofs"
         );
 
     LOG_ERROR_AND_RETURN_UNLESS
@@ -238,13 +231,6 @@ namespace rct {
   }
 
   bool verify_ringct(const rctData rv) {
-    // LOG_ERROR_AND_RETURN_UNLESS
-    //   (
-    //    rv.type == RCTTypeCLSAG
-    //    , false
-    //    , "verify ringct called on non rct tx"
-    //    );
-
     return verify_range_proof(rv) && verify_tx_balance(rv) && verify_clsag_signatures(rv);
   }
 

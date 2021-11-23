@@ -167,13 +167,7 @@ namespace rct {
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
   Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof);
 
-  bool is_bulletproof_structure_valid
-  (
-   const size_t output_size
-   , const Bulletproof_unsafe &proof
-   );
-
-  size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof);
+  size_t n_bulletproof_max_commit_size(const Bulletproof_unsafe &proof);
 
   enum {
     RCTTypeNull = 0,
@@ -280,9 +274,7 @@ namespace rct {
             ar.delimit_array();
         }
         const auto proof = bulletproofs.front();
-        if (n_bulletproof_max_amounts(proof) < outputs)
-          return false;
-        if (!is_bulletproof_structure_valid(outputs, proof))
+        if (outputs > n_bulletproof_max_commit_size(proof))
           return false;
         ar.end_array();
       }

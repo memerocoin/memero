@@ -43,47 +43,7 @@
 
 namespace rct {
 
-  bool is_bulletproof_structure_valid(const Bulletproof_unsafe &proof) {
-    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() >= 6, false, "Invalid bulletproof L size");
-    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() == proof.R.size(), false, "Mismatched bulletproof L/R size");
-
-    constexpr size_t extra_bits = 4;
-    static_assert
-      (
-       (1 << extra_bits) == constant::BULLETPROOF_MAX_OUTPUTS
-       , "log2(constant::BULLETPROOF_MAX_OUTPUTS) is out of date"
-       );
-
-    LOG_ERROR_AND_RETURN_UNLESS(proof.L.size() <= 6 + extra_bits, false, "Invalid bulletproof L size");
-
-    return true;
-  }
-
-  bool is_bulletproof_structure_valid
-  (
-   const size_t output_size
-   , const Bulletproof_unsafe &proof
-   ) {
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       output_size <= (1u<<(proof.L.size()-6))
-       , false
-       , "Invalid bulletproof V/L"
-       );
-
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       output_size * 2 > (1u<<(proof.L.size()-6))
-       , false
-       , "Invalid bulletproof V/L"
-       );
-
-    LOG_ERROR_AND_RETURN_UNLESS(output_size > 0, false, "Empty bulletproof");
-
-    return true;
-  }
-
-  size_t n_bulletproof_max_amounts(const Bulletproof_unsafe &proof)
+  size_t n_bulletproof_max_commit_size(const Bulletproof_unsafe &proof)
   {
     return 1 << (proof.L.size() - 6);
   }

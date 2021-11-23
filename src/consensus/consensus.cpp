@@ -127,5 +127,10 @@ namespace consensus {
        );
   }
 
+  bool rule_17_ringct_should_contain_only_one_range_proof(const std::span<const rct::Bulletproof_unsafe> proofs)
+  {
+    return proofs.size() == 1;
+  }
+
 
 }
