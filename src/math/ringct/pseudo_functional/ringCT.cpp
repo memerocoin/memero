@@ -217,18 +217,12 @@ namespace rct {
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
   (
-    const rctData rv
+    const rctDataSizeChecked rv
     , const rct_scalar ecdh_shared_secret_hashed_by_index
     , const size_t output_index
     )
   {
-    LOG_ERROR_AND_THROW_UNLESS(rv.type == RCTTypeCLSAG, "decodeRct called on non simple rctData");
     LOG_ERROR_AND_THROW_UNLESS(output_index < rv.ecdh_encrypted_data.size(), "Bad index");
-    LOG_ERROR_AND_THROW_UNLESS
-      (
-       rv.output_commits.size() == rv.ecdh_encrypted_data.size()
-       , "Mismatched sizes of rv.output_commits and rv.ecdh_encrypted_data"
-       );
 
     const rct_scalar blinding_factor =
       rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret_hashed_by_index);

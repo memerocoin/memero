@@ -219,7 +219,11 @@ namespace wallet {
       switch (rv.type)
         {
         case rct::RCTTypeCLSAG: {
-          return {rct::decode_ringct_commitment(rv, hashed_secret, i)};
+          const auto maybe_checked = maybeSizeCheckedRctData(rv);
+          if (!maybe_checked) {
+            return {};
+          }
+          return {rct::decode_ringct_commitment(*maybe_checked, hashed_secret, i)};
         }
         default:
           LOG_ERROR("Unsupported rct type: " << rv.type);

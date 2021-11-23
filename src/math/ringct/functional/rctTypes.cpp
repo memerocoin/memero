@@ -246,6 +246,14 @@ namespace rct {
   }
 
   std::optional<rctDataSizeChecked> maybeSizeCheckedRctData(const rctData& x) {
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       x.type == RCTTypeCLSAG
+       , {}
+       , "Checking rct data on non ringct"
+       );
+
     LOG_ERROR_AND_RETURN_UNLESS
       (
        consensus::rule_17_ringct_should_contain_only_one_range_proof(x.p.bulletproofs)

@@ -43,7 +43,7 @@ namespace rct {
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
   (
-   const rctData rv
+   const rctDataSizeChecked rv
    , const rct_scalar ecdh_shared_secret_hashed_by_index
    , const size_t output_index
    );
