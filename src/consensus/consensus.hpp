@@ -158,7 +158,8 @@ namespace consensus {
 
   constexpr auto rule_11_tx_output_public_keys_should_be_safe_points = are_points_safe;
 
-  bool rule_12_tx_output_target_should_be_output_public_key(const cryptonote::txout_target_v x);
+  std::optional<cryptonote::txout_to_key>
+  rule_12_tx_output_target_should_be_output_public_key(const cryptonote::txout_target_v x);
 
   bool are_tx_output_targets_valid(const std::span<const cryptonote::txout_target_v> xs);
 
@@ -166,7 +167,8 @@ namespace consensus {
 
   constexpr auto rule_14_tx_pseudo_input_commits_should_be_safe_points = are_points_safe;
 
-  bool rule_15_ringct_input_type_should_be_from_key(const cryptonote::txin_v x);
+  std::optional<cryptonote::txin_from_key>
+  rule_15_ringct_input_type_should_be_from_key(const cryptonote::txin_v x);
 
   bool are_ringct_input_types_valid(const std::span<const cryptonote::txin_v> xs);
 
