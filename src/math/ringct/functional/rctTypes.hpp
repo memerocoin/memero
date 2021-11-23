@@ -343,6 +343,10 @@ namespace rct {
     rctDataPrunable p;
   };
 
+  struct rctDataSizeChecked: rctData {};
+
+  std::optional<rctDataSizeChecked> maybeSizeCheckedRctData(const rctData& x);
+
 }
 
 

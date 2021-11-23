@@ -184,7 +184,12 @@ TEST(quick_ringct, random_input)
      , i.fee
      );
 
-  EXPECT_TRUE(verify_range_proof(x));
+  const auto maybe_size_checked_rct_data = maybeSizeCheckedRctData(x);
+  EXPECT_TRUE(maybe_size_checked_rct_data);
+  const auto checked = *maybe_size_checked_rct_data;
+
+
+  EXPECT_TRUE(verify_range_proof(checked));
   EXPECT_TRUE(verify_tx_balance(x));
   EXPECT_TRUE(verify_clsag_signatures(x));
   EXPECT_TRUE(verify_ringct(x));
@@ -289,6 +294,29 @@ TEST(quick_ringct, wrong_ecdh_encrypted_data)
   const auto masked_amount = x.ecdh_encrypted_data[index_to_change].masked_amount;
   altered_data.ecdh_encrypted_data[index_to_change].masked_amount =
     randomAmountBut(masked_amount);
+
+  EXPECT_FALSE(verify_ringct(altered_data));
+}
+
+TEST(quick_ringct, wrong_output_commit_size)
+{
+  const auto i = randomRctDataInput();
+
+  const auto x = generate_ringct
+    (
+     i.message
+     , i.inputs
+     , i.outputs
+     , i.fee
+     );
+
+  EXPECT_TRUE(verify_ringct(x));
+
+  auto altered_data = x;
+
+  auto commits = x.output_commits;
+  commits.pop_back();
+  altered_data.output_commits = commits;
 
   EXPECT_FALSE(verify_ringct(altered_data));
 }

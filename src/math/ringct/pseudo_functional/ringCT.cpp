@@ -141,28 +141,12 @@ namespace rct {
     return consensus::rule_3_tx_should_be_balanced(rv.p.pseudo_input_commits, output_commits, rv.fee);
   }
 
-  bool verify_range_proof(const rctData rv)
+  bool verify_range_proof(const rctDataSizeChecked rv)
   {
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-        consensus::rule_17_ringct_should_contain_only_one_range_proof(rv.p.bulletproofs)
-        , false
-        , "More than one proofs"
-        );
+    // const auto maybe_size_checked_rct_data = maybeSizeCheckedRctData(rct_data_unchecked);
+    // LOG_ERROR_AND_RETURN_UNLESS(maybe_size_checked_rct_data, false, "Invalid rct data layout");
 
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-        rv.p.pseudo_input_commits.size() == rv.p.CLSAGs.size()
-        , false
-        , "Mismatched sizes of rv.p.pseudo_input_commits and rv.p.CLSAGs"
-        );
-
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-        rv.output_commits.size() == rv.ecdh_encrypted_data.size()
-        , false
-        , "Mismatched sizes of output_commits and rv.ecdh_encrypted_data"
-        );
+    // const auto rv = *maybe_size_checked_rct_data;
 
     const auto maybeProof =
       consensus::rule_9_range_proof_should_not_contain_invalid_data(rv.p.bulletproofs.front());
@@ -230,7 +214,12 @@ namespace rct {
     return true;
   }
 
-  bool verify_ringct(const rctData rv) {
+  bool verify_ringct(const rctData rv_unchecked) {
+    const auto maybe_size_checked_rct_data = maybeSizeCheckedRctData(rv_unchecked);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_size_checked_rct_data, false, "Invalid rct data layout");
+
+    const auto rv = *maybe_size_checked_rct_data;
+
     return verify_range_proof(rv) && verify_tx_balance(rv) && verify_clsag_signatures(rv);
   }
 

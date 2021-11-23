@@ -36,6 +36,8 @@
 
 #include "config/cryptonote.hpp"
 
+#include "consensus/consensus.hpp"
+
 #include <cstring>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -241,6 +243,33 @@ namespace rct {
        );
 
     return {L, R};
+  }
+
+  std::optional<rctDataSizeChecked> maybeSizeCheckedRctData(const rctData& x) {
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       consensus::rule_17_ringct_should_contain_only_one_range_proof(x.p.bulletproofs)
+       , {}
+       , "More than one proofs"
+       );
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       x.p.pseudo_input_commits.size() == x.p.CLSAGs.size()
+       , {}
+       , "Mismatched sizes of rv.p.pseudo_input_commits and rv.p.CLSAGs"
+       );
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       x.output_commits.size() == x.ecdh_encrypted_data.size()
+       , {}
+       , "Mismatched sizes of output_commits and rv.ecdh_encrypted_data"
+       );
+
+    const rctDataSizeChecked r = { x };
+
+    return r;
   }
 
 }

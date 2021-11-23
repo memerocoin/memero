@@ -802,7 +802,9 @@ TEST(ringct, aggregated)
     static const uint64_t outputs[] = {500, 1500};
     s[n] = make_sample_simple_rct_sig(NELTS(inputs), inputs, NELTS(outputs), outputs, 0);
   }
+  const auto maybe_checked = maybeSizeCheckedRctData(s.front());
 
-  ASSERT_TRUE(verify_range_proof(s.front()));
+  ASSERT_TRUE(maybe_checked);
+  ASSERT_TRUE(verify_range_proof(*maybe_checked));
 }
 

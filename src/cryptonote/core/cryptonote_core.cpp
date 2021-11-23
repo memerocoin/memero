@@ -1332,14 +1332,6 @@ namespace cryptonote
   }
 
   //-----------------------------------------------------------------------------------------------
-  bool is_valid_bulletproof_layout(const std::span<const rct::Bulletproof_unsafe> proofs)
-  {
-    if (proofs.size() != 1)
-      return false;
-    return true;
-  }
-
-  //-----------------------------------------------------------------------------------------------
   void core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block)
   {
     std::vector<rct::rctData> rvv;
@@ -1357,16 +1349,20 @@ namespace cryptonote
         continue;
       const rct::rctData &rv = tx_info[n].tx->ringct;
       switch (rv.type) {
-        case rct::RCTTypeNull:
+        case rct::RCTTypeNull: {
           // coinbase should not come here, so we reject for all other types
           LOG_ERROR_VER("Unexpected Null rctData type");
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;
           break;
-        case rct::RCTTypeCLSAG:
-          if (is_valid_bulletproof_layout(rv.p.bulletproofs)) {
-            const bool valid_tx_balance = verify_range_proof(rv) && verify_tx_balance(rv);
+        }
+
+        case rct::RCTTypeCLSAG: {
+          const auto maybe_size_checked_rct_data = maybeSizeCheckedRctData(rv);
+          if (maybe_size_checked_rct_data) {
+            const auto checked = *maybe_size_checked_rct_data;
+            const bool valid_tx_balance = verify_range_proof(checked) && verify_tx_balance(rv);
             if (valid_tx_balance) {
               continue;
             }
@@ -1376,17 +1372,21 @@ namespace cryptonote
           } else {
             LOG_ERROR_VER("Bulletproof_unsafe does not have valid layout");
           }
+
           // bp failed
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;
           break;
-        default:
+        }
+
+        default: {
           LOG_ERROR_VER("Unknown rct type: " << rv.type);
           set_semantics_failed(tx_info[n].tx_hash);
           tx_info[n].tvc.m_verifivation_failed = true;
           tx_info[n].result = false;
           break;
+        }
       }
     }
   }
