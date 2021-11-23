@@ -354,6 +354,8 @@ namespace rct {
 
   std::optional<rctDataSizeChecked> maybeSizeCheckedRctData(const rctData& x);
 
+  rctData toRctData(const rctDataSizeChecked& x);
+
 }
 
 

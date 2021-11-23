@@ -277,4 +277,15 @@ namespace rct {
     return r;
   }
 
+  rctData toRctData(const rctDataSizeChecked& x) {
+    return {
+      x
+      , {
+        { x.bulletproof }
+        , x.CLSAGs
+        , x.pseudo_input_commits
+      }
+    };
+  }
+
 }
