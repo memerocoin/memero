@@ -50,7 +50,7 @@ namespace rct {
     const rct_scalar ecdh_shared_secret_hashed_by_index;
   };
 
-  rctData generate_ringct
+  rctDataSizeChecked generate_ringct
   (
    const crypto::hash message
    , const std::vector<rctInputData> inputs

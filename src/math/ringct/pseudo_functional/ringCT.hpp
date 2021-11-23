@@ -39,7 +39,7 @@ namespace rct {
   bool verify_tx_balance(const rctDataSizeChecked rv);
   bool verify_clsag_signatures(const rctDataSizeChecked rv);
 
-  bool verify_ringct(const rctData rv);
+  bool verify_ringct(const rctDataSizeChecked rv);
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
   (

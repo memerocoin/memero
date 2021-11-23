@@ -135,7 +135,7 @@ namespace rct {
     return r;
   }
 
-  rctData generate_ringct
+  rctDataSizeChecked generate_ringct
   (
    const crypto::hash message
    , const std::vector<rctInputData> inputs
@@ -261,13 +261,12 @@ namespace rct {
        }
        );
 
-    return rctData {
+    return rctDataSizeChecked {
       rct_data_basic
-      , {
-        { unsafe_proof }
-        , clsags
-        , pseudo_input_commits
-      }
+      ,
+      unsafe_proof
+      , clsags
+      , pseudo_input_commits
     };
   }
 

@@ -91,7 +91,7 @@ namespace rct {
        );
   }
 
-  rctData generate_ringct
+  rctDataSizeChecked generate_ringct
   (
    const crypto::hash message
    , const ct_secret_keyV inSk
@@ -174,7 +174,7 @@ size_t populateRingsSimpleDummy(output_public_dataV& decoys, const output_public
   return index;
 }
 
-rctData generate_ringct
+rctDataSizeChecked generate_ringct
 (
   const crypto::hash message
   , const ct_secret_keyV inSk
@@ -381,7 +381,7 @@ TEST(ringct, CLSAG)
 }
 
 
-static rct::rctData make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
+static rct::rctDataSizeChecked make_sample_simple_rct_sig(int n_inputs, const uint64_t input_amounts[], int n_outputs, const uint64_t output_amounts[], uint64_t fee)
 {
     ct_secret_keyV sc;
     output_public_dataV pc;
@@ -416,7 +416,7 @@ static bool range_proof_test(bool expected_valid,
     //compute rct data
     bool valid;
     try {
-        rctData s;
+        rctDataSizeChecked s;
         // simple takes fee as a parameter, non-simple takes it as an extra element to output amounts
         s = make_sample_simple_rct_sig(n_inputs, input_amounts, last_is_fee ? n_outputs - 1 : n_outputs, output_amounts, last_is_fee ? output_amounts[n_outputs - 1] : 0);
         valid = verify_ringct(s);
@@ -738,18 +738,18 @@ TEST(ringct, fee_burn_valid_one_out_simple)
 // }
 
 
-static rct::rctData make_sig_simple()
+static rct::rctDataSizeChecked make_sig_simple()
 {
   static const uint64_t inputs[] = {1000, 1000};
   static const uint64_t outputs[] = {1000};
-  static rct::rctData sig = make_sample_simple_rct_sig(NELTS(inputs), inputs, NELTS(outputs), outputs, 1000);
+  static rct::rctDataSizeChecked sig = make_sample_simple_rct_sig(NELTS(inputs), inputs, NELTS(outputs), outputs, 1000);
   return sig;
 }
 
 #define TEST_rctData_elements_simple(name, op) \
 TEST(ringct, rctData_##name##_simple) \
 { \
-  rct::rctData sig = make_sig_simple(); \
+  rct::rctDataSizeChecked sig = make_sig_simple(); \
   ASSERT_TRUE(rct::verify_ringct(sig)); \
   op; \
   ASSERT_FALSE(rct::verify_ringct(sig)); \
@@ -794,7 +794,7 @@ TEST(ringct, dummyCommit)
 TEST(ringct, aggregated)
 {
   static const size_t N_PROOFS = 1;
-  std::vector<rctData> s(N_PROOFS);
+  std::vector<rctDataSizeChecked> s(N_PROOFS);
 
   for (size_t n = 0; n < N_PROOFS; ++n)
   {
@@ -802,9 +802,6 @@ TEST(ringct, aggregated)
     static const uint64_t outputs[] = {500, 1500};
     s[n] = make_sample_simple_rct_sig(NELTS(inputs), inputs, NELTS(outputs), outputs, 0);
   }
-  const auto maybe_checked = maybeSizeCheckedRctData(s.front());
-
-  ASSERT_TRUE(maybe_checked);
-  ASSERT_TRUE(verify_range_proof(*maybe_checked));
+  ASSERT_TRUE(verify_range_proof(s.front()));
 }
 

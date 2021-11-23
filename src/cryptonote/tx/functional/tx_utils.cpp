@@ -375,12 +375,15 @@ namespace cryptonote
 
       const crypto::hash tx_prefix_hash = get_transaction_prefix_hash(tx);
 
-      tx.ringct = rct::generate_ringct
+      tx.ringct = rct::toRctData
         (
-         tx_prefix_hash
-         , inputs
-         , outputs
-         , amount_in - amount_out
+         rct::generate_ringct
+         (
+          tx_prefix_hash
+          , inputs
+          , outputs
+          , amount_in - amount_out
+          )
          );
 
       // LOG_ERROR_AND_RETURN_UNLESS

@@ -211,12 +211,7 @@ namespace rct {
     return true;
   }
 
-  bool verify_ringct(const rctData rv_unchecked) {
-    const auto maybe_size_checked_rct_data = maybeSizeCheckedRctData(rv_unchecked);
-    LOG_ERROR_AND_RETURN_UNLESS(maybe_size_checked_rct_data, false, "Invalid rct data layout");
-
-    const auto rv = *maybe_size_checked_rct_data;
-
+  bool verify_ringct(const rctDataSizeChecked rv) {
     return verify_range_proof(rv) && verify_tx_balance(rv) && verify_clsag_signatures(rv);
   }
 

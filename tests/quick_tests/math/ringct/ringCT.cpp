@@ -184,14 +184,9 @@ TEST(quick_ringct, random_input)
      , i.fee
      );
 
-  const auto maybe_size_checked_rct_data = maybeSizeCheckedRctData(x);
-  EXPECT_TRUE(maybe_size_checked_rct_data);
-  const auto checked = *maybe_size_checked_rct_data;
-
-
-  EXPECT_TRUE(verify_range_proof(checked));
-  EXPECT_TRUE(verify_tx_balance(checked));
-  EXPECT_TRUE(verify_clsag_signatures(checked));
+  EXPECT_TRUE(verify_range_proof(x));
+  EXPECT_TRUE(verify_tx_balance(x));
+  EXPECT_TRUE(verify_clsag_signatures(x));
   EXPECT_TRUE(verify_ringct(x));
 }
 
