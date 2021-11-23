@@ -145,13 +145,6 @@ namespace rct {
   {
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.type == RCTTypeCLSAG
-        , false
-        , "verify_range_proof called on non rct tx"
-        );
-
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
         rv.p.bulletproofs.size() == 1
         , false
         , "More than one proofs"
@@ -202,13 +195,6 @@ namespace rct {
   //assumes only post-rct style inputs (at least for max anonymity)
   bool verify_clsag_signatures(const rctData rv)
   {
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-        rv.type == RCTTypeCLSAG
-        , false
-        , "verify_clsag_signatures called on non simple rctData"
-        );
-
     // semantics check is early, and decoys/MGs aren't resolved yet
     LOG_ERROR_AND_RETURN_UNLESS
       (
@@ -249,6 +235,17 @@ namespace rct {
     }
 
     return true;
+  }
+
+  bool verify_ringct(const rctData rv) {
+    // LOG_ERROR_AND_RETURN_UNLESS
+    //   (
+    //    rv.type == RCTTypeCLSAG
+    //    , false
+    //    , "verify ringct called on non rct tx"
+    //    );
+
+    return verify_range_proof(rv) && verify_tx_balance(rv) && verify_clsag_signatures(rv);
   }
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
