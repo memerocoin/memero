@@ -189,4 +189,9 @@ namespace consensus {
        );
   }
 
+  constexpr bool rule_19_coinbase_tx_should_be_balanced(const std::span<const amount_t> xs, const amount_t fee) {
+    return get_block_reward() + fee == std::reduce(xs.begin(), xs.end());
+  }
+
+
 }

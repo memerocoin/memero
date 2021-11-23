@@ -1125,26 +1125,25 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
 
   LOG_PRINT_L3("Blockchain::" << __func__);
   //validate reward
-  uint64_t money_in_use = 0;
-  for (auto& o: b.miner_tx.vout)
-    money_in_use += o.amount;
-  partial_block_reward = false;
 
   if (!consensus::is_block_size_valid(height, cumulative_block_weight))
   {
     LOG_ERROR_VER("block weight " << cumulative_block_weight << " is bigger than allowed for this blockchain");
     return false;
   }
-  base_reward = consensus::get_block_reward();
-  if(base_reward + fee < money_in_use)
+
+  std::vector<rct::amount_t> output_amount;
+  std::transform
+    (
+     b.miner_tx.vout.begin()
+     , b.miner_tx.vout.end()
+     , std::back_inserter(output_amount)
+     , [](const auto& x) { return x.amount; }
+     );
+
+  if(!consensus::rule_19_coinbase_tx_should_be_balanced(output_amount, fee))
   {
-    LOG_ERROR_VER("coinbase transaction spend too much money (" << print_money(money_in_use) << "). Block reward is " << print_money(base_reward + fee) << "(" << print_money(base_reward) << "+" << print_money(fee) << "), cumulative_block_weight " << cumulative_block_weight);
-    return false;
-  }
-  // From hard fork 2 till 12, we allow a miner to claim less block reward than is allowed, in case a miner wants less dust
-  if(base_reward + fee != money_in_use)
-  {
-    LOG_DEBUG("coinbase transaction doesn't use full amount of block reward:  spent: " << money_in_use << ",  block reward " << base_reward + fee << "(" << base_reward << "+" << fee << ")");
+    LOG_ERROR_VER("coinbase transaction is not balanced.");
     return false;
   }
   return true;
