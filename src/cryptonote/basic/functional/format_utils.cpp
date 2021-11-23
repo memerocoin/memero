@@ -512,44 +512,16 @@ namespace cryptonote
       return {};
     }
 
-    if (rv.p.bulletproofs.size() != 1)
-    {
+
+    const auto maybe_size_checked_rct_data = rct::maybeSizeCheckedRctData(rv);
+    if (!maybe_size_checked_rct_data) {
       LOG_PRINT_L1
         (
-         "Failed to parse transaction from blob, bad bulletproofs size in tx "
+         "Failed to parse transaction from blob, bad rct data size in tx "
          << get_transaction_hash(tx)
          );
       return {};
     }
-
-    if (rv.p.bulletproofs[0].L.size() < 6)
-    {
-      LOG_PRINT_L1
-        (
-         "Failed to parse transaction from blob, bad bulletproofs L size in tx "
-         << get_transaction_hash(tx)
-         );
-      return {};
-    }
-
-    const size_t max_outputs = 1 << (rv.p.bulletproofs[0].L.size() - 6);
-    if (max_outputs < tx.vout.size())
-    {
-      LOG_PRINT_L1
-        (
-         "Failed to parse transaction from blob, bad bulletproofs max outputs in tx "
-         << get_transaction_hash(tx)
-         );
-      return {};
-    }
-
-    const size_t n_amounts = tx.vout.size();
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       n_amounts == rv.output_commits.size()
-       , {}
-       , "Internal error filling out V"
-       );
 
     return tx;
   }
