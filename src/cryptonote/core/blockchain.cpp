@@ -1088,7 +1088,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
   LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin[0].type() == typeid(txin_gen), false, "coinbase transaction in the block has the wrong type");
 
   if (height == 0) return true;
-  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.version > 1, false, "Invalid coinbase transaction version");
+  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.version == 2, false, "Invalid coinbase transaction version");
 
   // for v2 txes (ringct), we only accept empty rct signatures for miner transactions,
   if (b.miner_tx.version >= 2)

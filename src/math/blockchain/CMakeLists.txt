@@ -29,6 +29,7 @@
 add_library(math_blockchain
   functional/subaddress.cpp
   functional/difficulty.cpp
+  functional/coinbase_tx.cpp
   )
 
 target_link_libraries(math_blockchain
