@@ -3992,7 +3992,15 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
         }
       }
 
-      if (!rct::verify_clsag_signatures(rv))
+      const auto maybe_size_checked_rct_data = rct::maybeSizeCheckedRctData(rv);
+      LOG_ERROR_AND_RETURN_UNLESS
+        (
+         maybe_size_checked_rct_data
+         , false
+         , "Failed to check rct data size"
+         );
+
+      if (!rct::verify_clsag_signatures(*maybe_size_checked_rct_data))
       {
         LOG_ERROR_VER("Failed to check ringct signatures!");
         return false;

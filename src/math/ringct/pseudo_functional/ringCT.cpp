@@ -170,7 +170,7 @@ namespace rct {
 
   //ver RingCT simple
   //assumes only post-rct style inputs (at least for max anonymity)
-  bool verify_clsag_signatures(const rctData rv)
+  bool verify_clsag_signatures(const rctDataSizeChecked rv)
   {
     // semantics check is early, and decoys/MGs aren't resolved yet
     LOG_ERROR_AND_RETURN_UNLESS
