@@ -157,12 +157,16 @@ namespace consensus {
     };
   }
 
-  bool rule_23_coinbase_tx_input_type_should_be_gen
+  std::optional<cryptonote::txin_gen> rule_23_coinbase_tx_input_type_should_be_gen
   (
    const cryptonote::txin_v x
    )
   {
-    return x.type() == typeid(cryptonote::txin_gen);
+    if (x.type() == typeid(cryptonote::txin_gen)) {
+      return boost::get<cryptonote::txin_gen>(x);
+    } else {
+      return {};
+    };
   }
 
 }
