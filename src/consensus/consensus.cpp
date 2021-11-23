@@ -132,13 +132,4 @@ namespace consensus {
     return proofs.size() == 1;
   }
 
-  bool rule_18_ringct_output_key_images_should_be_sorted(const std::span<const crypto::key_image> xs) {
-    return std::is_sorted
-      (
-       xs.begin()
-       , xs.end()
-       , std::greater_equal<crypto::key_image>()
-       );
-  }
-
 }

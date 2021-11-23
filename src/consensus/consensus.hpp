@@ -176,6 +176,17 @@ namespace consensus {
 
   bool rule_17_ringct_should_contain_only_one_range_proof(const std::span<const rct::Bulletproof_unsafe> proofs);
 
-  bool rule_18_ringct_output_key_images_should_be_sorted(const std::span<const crypto::key_image> xs);
+  constexpr bool rule_18_ringct_output_key_images_should_be_sorted
+  (
+   const std::span<const crypto::key_image> xs
+   )
+  {
+    return std::is_sorted
+      (
+       xs.begin()
+       , xs.end()
+       , std::greater_equal<crypto::key_image>()
+       );
+  }
 
 }
