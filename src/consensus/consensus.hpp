@@ -174,7 +174,13 @@ namespace consensus {
   rule_16_next_difficult_target_over_average_difficulty_should_be_the_inverse_of_the_lwma_of_block_time_over_target_time
   = cryptonote::next_difficulty;
 
-  bool rule_17_ringct_should_contain_only_one_range_proof(const std::span<const rct::Bulletproof_unsafe> proofs);
+  constexpr bool rule_17_ringct_should_contain_only_one_range_proof
+  (
+   const std::span<const rct::Bulletproof_unsafe> proofs
+   )
+  {
+    return proofs.size() == 1;
+  }
 
   constexpr bool rule_18_ringct_input_key_images_should_be_sorted
   (
@@ -189,7 +195,12 @@ namespace consensus {
        );
   }
 
-  constexpr bool rule_19_coinbase_tx_should_be_balanced(const std::span<const amount_t> xs, const amount_t fee) {
+  constexpr bool rule_19_coinbase_tx_should_be_balanced
+  (
+   const std::span<const amount_t> xs
+   , const amount_t fee
+   )
+  {
     return get_block_reward() + fee == std::reduce(xs.begin(), xs.end());
   }
 
@@ -201,7 +212,8 @@ namespace consensus {
   (
    const uint64_t height
    , const uint64_t unlock_height
-   ) {
+   )
+  {
     return height + get_coinbase_unlock_time() == unlock_height;
   }
 
