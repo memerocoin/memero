@@ -49,6 +49,24 @@ namespace cryptonote {
 
     const auto input = boost::get<txin_gen>(tx.vin.front());
 
+    std::vector<cryptonote::txout_target_v> output_targets;
+    std::transform
+      (
+       tx.vout.begin()
+       , tx.vout.end()
+       , std::back_inserter(output_targets)
+       , [](const auto& x) {
+         return x.target;
+       }
+       );
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       consensus::are_tx_output_targets_valid(output_targets)
+       , {}
+       , "Wrong output types"
+       );
+
     std::vector<coinbase_output> outputs;
     std::transform
       (

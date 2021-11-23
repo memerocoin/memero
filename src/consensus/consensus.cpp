@@ -143,5 +143,4 @@ namespace consensus {
     return xs.size() == 1;
   }
 
-
 }
