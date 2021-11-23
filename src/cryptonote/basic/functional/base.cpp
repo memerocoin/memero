@@ -34,6 +34,8 @@
 
 #include "tools/common/base58.h"
 
+#include "consensus/consensus.hpp"
+
 namespace cryptonote
 {
   std::optional<spend_view_public_keys> maybe_safe_spend_view_public_keys(const spend_view_public_keys_unsafe x)
@@ -52,11 +54,13 @@ namespace cryptonote
   //-----------------------------------------------------------------------
   bool is_coinbase(const transaction& tx)
   {
-    if(tx.vin.size() != 1)
+    if(!(consensus::rule_22_coinbase_tx_should_have_only_one_input(tx.vin))) {
       return false;
+    }
 
-    if(tx.vin[0].type() != typeid(txin_gen))
+    if(!(consensus::rule_23_coinbase_tx_input_type_should_be_gen(tx.vin[0]))) {
       return false;
+    }
 
     return true;
   }

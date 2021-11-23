@@ -319,7 +319,7 @@ namespace cryptonote
   {
     LOG_ERROR_AND_RETURN_UNLESS
       (
-       b.miner_tx.vin.size() == 1
+       consensus::rule_22_coinbase_tx_should_have_only_one_input(b.miner_tx.vin)
        , 0
        , "wrong miner tx in block: " << get_block_hash(b) << ", b.miner_tx.vin.size() != 1"
        );

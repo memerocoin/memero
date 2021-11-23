@@ -1064,7 +1064,7 @@ namespace cryptonote
         return 1;
       }
       const auto& [b, block_hash] = *r;
-      if (b.miner_tx.vin.size() != 1 || b.miner_tx.vin.front().type() != typeid(txin_gen))
+      if (!(is_coinbase(b.miner_tx)))
       {
         LOG_ERROR_CCONTEXT("sent wrong block: block: miner tx does not have exactly one txin_gen input"
           << epee::string_tools::buff_to_hex_nodelimer(block_entry.block) << ", dropping connection");
