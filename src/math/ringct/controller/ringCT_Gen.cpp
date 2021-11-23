@@ -226,17 +226,13 @@ namespace rct {
        );
 
     const auto unsafe_proof = toUnsafeBulletproof(proof);
-    const rctDataPrunable dummy_rct_data_prunable_for_clsag_message_hash =
-      {
-        { unsafe_proof }
-        , {}
-        , pseudo_input_commits
-      };
 
-    const rctData dummy_rct_data_for_clsag_message_hash =
+    const rctDataSizeChecked dummy_rct_data_for_clsag_message_hash =
       {
         rct_data_basic
-        , dummy_rct_data_prunable_for_clsag_message_hash
+        , unsafe_proof
+        , {}
+        , pseudo_input_commits
       };
 
     const auto maybeMessage = get_ring_signature_message(dummy_rct_data_for_clsag_message_hash);

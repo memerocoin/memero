@@ -343,7 +343,14 @@ namespace rct {
     rctDataPrunable p;
   };
 
-  struct rctDataSizeChecked: rctData {};
+  struct rctDataSizeChecked: rctDataBasic
+  {
+    Bulletproof_unsafe bulletproof;
+    std::vector<clsag_unsafe> CLSAGs;
+
+    // WARNING, needs checking when parsing
+    rct_pointV pseudo_input_commits; //C - for simple rct
+  };
 
   std::optional<rctDataSizeChecked> maybeSizeCheckedRctData(const rctData& x);
 

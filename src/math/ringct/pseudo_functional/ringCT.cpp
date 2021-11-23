@@ -52,7 +52,7 @@
 
 namespace rct {
 
-  std::optional<crypto::hash> get_ring_signature_message(const rctData rv)
+  std::optional<crypto::hash> get_ring_signature_message(const rctDataSizeChecked rv)
   {
     LOG_ERROR_AND_RETURN_UNLESS(!rv.decoys.empty(), {}, "Empty decoys");
 
@@ -69,7 +69,7 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        const_cast<rctData&>(rv).serialize_rctsig_base(ba, inputs, outputs)
+        const_cast<rctDataSizeChecked&>(rv).serialize_rctsig_base(ba, inputs, outputs)
         , {}
         , "Failed to serialize rctDataBasic"
         );
@@ -78,28 +78,25 @@ namespace rct {
 
     hashes.push_back(h2d(h));
 
+    const auto& p = rv.bulletproof;
+
     crypto::dataV kv;
-    {
-      kv.reserve((6*2+9) * rv.p.bulletproofs.size());
-      for (const auto &p: rv.p.bulletproofs)
-      {
-        // V are not hashed as they're expanded from output_commits.mask
-        // (and thus hashed as part of rctDataBasic above)
-        kv.push_back(p.A);
-        kv.push_back(p.S);
-        kv.push_back(p.T1);
-        kv.push_back(p.T2);
-        kv.push_back(p.taux);
-        kv.push_back(p.mu);
-        for (const auto &l: p.L)
-          kv.push_back(l);
-        for (const auto &r: p.R)
-          kv.push_back(r);
-        kv.push_back(p.a);
-        kv.push_back(p.b);
-        kv.push_back(p.t);
-      }
-    }
+
+    // V are not hashed as they're expanded from output_commits.mask
+    // (and thus hashed as part of rctDataBasic above)
+    kv.push_back(p.A);
+    kv.push_back(p.S);
+    kv.push_back(p.T1);
+    kv.push_back(p.T2);
+    kv.push_back(p.taux);
+    kv.push_back(p.mu);
+    for (const auto &l: p.L)
+      kv.push_back(l);
+    for (const auto &r: p.R)
+      kv.push_back(r);
+    kv.push_back(p.a);
+    kv.push_back(p.b);
+    kv.push_back(p.t);
 
     hashes.push_back(h2d(hash_dataV(kv)));
 
@@ -125,7 +122,7 @@ namespace rct {
     return consensus::rule_4_tx_input_should_be_from_a_ring(message, *maybeClsag, decoys, pseudo_input_commit);
   }
 
-  bool verify_tx_balance(const rctData rv) {
+  bool verify_tx_balance(const rctDataSizeChecked rv) {
     rct::rct_pointV output_commits;
 
     std::transform
@@ -138,7 +135,7 @@ namespace rct {
        }
        );
 
-    return consensus::rule_3_tx_should_be_balanced(rv.p.pseudo_input_commits, output_commits, rv.fee);
+    return consensus::rule_3_tx_should_be_balanced(rv.pseudo_input_commits, output_commits, rv.fee);
   }
 
   bool verify_range_proof(const rctDataSizeChecked rv)
@@ -149,7 +146,7 @@ namespace rct {
     // const auto rv = *maybe_size_checked_rct_data;
 
     const auto maybeProof =
-      consensus::rule_9_range_proof_should_not_contain_invalid_data(rv.p.bulletproofs.front());
+      consensus::rule_9_range_proof_should_not_contain_invalid_data(rv.bulletproof);
 
     LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
 
@@ -175,7 +172,7 @@ namespace rct {
     // semantics check is early, and decoys/MGs aren't resolved yet
     LOG_ERROR_AND_RETURN_UNLESS
       (
-        rv.p.pseudo_input_commits.size() == rv.decoys.size()
+        rv.pseudo_input_commits.size() == rv.decoys.size()
         , false
         , "Mismatched sizes of rv.p.pseudo_input_commits and decoys"
         );
@@ -186,7 +183,7 @@ namespace rct {
     tools::threadpool& tpool = tools::threadpool::getInstance();
     tools::threadpool::waiter waiter(tpool);
 
-    const rct_pointV &pseudo_input_commits = rv.p.pseudo_input_commits;
+    const rct_pointV &pseudo_input_commits = rv.pseudo_input_commits;
 
     const auto maybeMessage = get_ring_signature_message(rv);
     if (!maybeMessage) return false;
@@ -198,7 +195,7 @@ namespace rct {
     for (size_t i = 0 ; i < rv.decoys.size() ; i++) {
       tpool.submit(&waiter, [&, i] {
         results[i] = verify_unsafe_clsag_signature
-          (message, rv.p.CLSAGs[i], rv.decoys[i], pseudo_input_commits[i]);
+          (message, rv.CLSAGs[i], rv.decoys[i], pseudo_input_commits[i]);
       });
     }
     if (!waiter.wait())

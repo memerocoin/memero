@@ -1362,7 +1362,7 @@ namespace cryptonote
           const auto maybe_size_checked_rct_data = maybeSizeCheckedRctData(rv);
           if (maybe_size_checked_rct_data) {
             const auto checked = *maybe_size_checked_rct_data;
-            const bool valid_tx_balance = verify_range_proof(checked) && verify_tx_balance(rv);
+            const bool valid_tx_balance = verify_range_proof(checked) && verify_tx_balance(checked);
             if (valid_tx_balance) {
               continue;
             }

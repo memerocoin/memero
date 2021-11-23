@@ -267,7 +267,12 @@ namespace rct {
        , "Mismatched sizes of output_commits and rv.ecdh_encrypted_data"
        );
 
-    const rctDataSizeChecked r = { x };
+    const rctDataSizeChecked r = {
+      x
+      , x.p.bulletproofs.front()
+      , x.p.CLSAGs
+      , x.p.pseudo_input_commits
+    };
 
     return r;
   }

@@ -36,7 +36,7 @@
 namespace rct {
 
   bool verify_range_proof(const rctDataSizeChecked rv);
-  bool verify_tx_balance(const rctData rv);
+  bool verify_tx_balance(const rctDataSizeChecked rv);
   bool verify_clsag_signatures(const rctDataSizeChecked rv);
 
   bool verify_ringct(const rctData rv);
@@ -48,6 +48,6 @@ namespace rct {
    , const size_t output_index
    );
 
-  std::optional<crypto::hash> get_ring_signature_message(const rctData rv);
+  std::optional<crypto::hash> get_ring_signature_message(const rctDataSizeChecked rv);
 }
 
