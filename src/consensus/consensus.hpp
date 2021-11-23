@@ -222,4 +222,9 @@ namespace consensus {
    const std::span<const cryptonote::tx_out> xs
    );
 
+  bool rule_22_coinbase_tx_should_have_only_one_input
+  (
+   const std::span<const cryptonote::txin_v> xs
+   );
+
 }

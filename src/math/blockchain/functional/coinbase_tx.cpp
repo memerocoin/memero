@@ -21,6 +21,7 @@
 #include "coinbase_tx.hpp"
 
 #include "tools/epee/include/logging.hpp"
+#include "consensus/consensus.hpp"
 
 namespace cryptonote {
 
@@ -39,7 +40,34 @@ namespace cryptonote {
        , "Wrong rct type in miner tx"
        );
 
-    return {};
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       consensus::rule_22_coinbase_tx_should_have_only_one_input(tx.vin)
+       , {}
+       , "Wrong number of inputs"
+       );
+
+    const auto input = boost::get<txin_gen>(tx.vin.front());
+
+    std::vector<coinbase_output> outputs;
+    std::transform
+      (
+       tx.vout.begin()
+       , tx.vout.end()
+       , std::back_inserter(outputs)
+       , [](const auto& x) -> coinbase_output {
+         return {
+           x.amount
+           , boost::get<txout_to_key>(x.target).output_public_key
+         };
+       }
+       );
+
+
+    return {{
+      input.height
+      , outputs
+    }};
   }
 
 }

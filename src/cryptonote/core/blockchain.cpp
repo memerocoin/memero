@@ -43,6 +43,8 @@
 #include "tools/epee/include/profile_tools.h"
 #include "tools/epee/include/time_helper.h"
 
+#include "math/blockchain/functional/coinbase_tx.hpp"
+
 #include "consensus/consensus.hpp"
 
 #include <boost/range/adaptor/reversed.hpp>
@@ -1084,17 +1086,20 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
 bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin.size() == 1, false, "coinbase transaction in the block has no inputs");
+  if (height == 0) return true;
+
+  const auto maybe_tx = maybe_coinbase_tx(b.miner_tx);
+
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+     maybe_tx
+     , false
+     , "Failed to validate miner_tx"
+     );
+
   LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.vin[0].type() == typeid(txin_gen), false, "coinbase transaction in the block has the wrong type");
 
-  if (height == 0) return true;
   LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.version == 2, false, "Invalid coinbase transaction version");
-
-  // for v2 txes (ringct), we only accept empty rct signatures for miner transactions,
-  if (b.miner_tx.version >= 2)
-  {
-    LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.ringct.type == rct::RCTTypeNull, false, "RingCT signatures not allowed in coinbase transactions");
-  }
 
   if(boost::get<txin_gen>(b.miner_tx.vin[0]).height != height)
   {
