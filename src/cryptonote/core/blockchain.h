@@ -1094,14 +1094,14 @@ namespace cryptonote
      * @brief checks if a transaction is unlocked (its outputs spendable)
      *
      * This function checks to see if a transaction is unlocked.
-     * unlock_time is either a block index or a unix time.
+     * unlock_height is either a block index or a unix time.
      *
-     * @param unlock_time the unlock parameter (height or time)
+     * @param unlock_height the unlock parameter (height or time)
      * @param hf_version the consensus rules version to use
      *
      * @return true if spendable, otherwise false
      */
-    bool is_tx_spendtime_unlocked(const uint64_t unlock_time) const;
+    bool is_tx_spendtime_unlocked(const uint64_t unlock_height) const;
 
     /**
      * @brief stores an invalid block in a separate container

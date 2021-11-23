@@ -65,7 +65,7 @@ namespace tx {
     std::vector<cryptonote::tx_destination_entry> splitted_dsts; // split, includes change
     std::vector<size_t> selected_transfers;
     std::vector<uint8_t> extra;
-    uint64_t unlock_time;
+    uint64_t unlock_height;
     bool use_rct;
     std::vector<cryptonote::tx_destination_entry> dests; // original setup, does not include change
     uint32_t subaddr_account;   // subaddress account of your wallet to be used in this transfer
@@ -77,7 +77,7 @@ namespace tx {
       FIELD(splitted_dsts)
       FIELD(selected_transfers)
       FIELD(extra)
-      FIELD(unlock_time)
+      FIELD(unlock_height)
       FIELD(use_rct)
       FIELD(dests)
       FIELD(subaddr_account)

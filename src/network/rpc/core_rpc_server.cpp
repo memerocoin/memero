@@ -982,7 +982,7 @@ namespace cryptonote
     if (!get_block_template(info.address, req.prev_block.empty() ? NULL : &prev_block, wdiff, res.height, res.expected_reward, b, error_resp))
       return false;
 
-    res.unlock_height = b.miner_tx.unlock_time;
+    res.unlock_height = b.miner_tx.unlock_height;
     store_difficulty(wdiff, res.difficulty, res.wide_difficulty, res.difficulty_top64);
     string_blob block_blob = t_serializable_object_to_blob(b);
     string_blob hashing_blob = get_mining_blob(b);

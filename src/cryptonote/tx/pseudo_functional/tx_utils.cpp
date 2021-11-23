@@ -57,7 +57,7 @@ namespace cryptonote
    , const std::vector<tx_source_entry> sources
    , const std::span<tx_destination_entry> destinations
    , const std::vector<uint8_t> extra
-   , const uint64_t unlock_time
+   , const uint64_t unlock_height
    )
   {
     std::vector<crypto::secret_key> output_secret_keys;
@@ -78,7 +78,7 @@ namespace cryptonote
        , sources
        , destinations
        , extra
-       , unlock_time
+       , unlock_height
        , output_secret_keys
        );
     if (r) {

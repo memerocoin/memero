@@ -71,7 +71,7 @@ namespace tools
   public:
     // Full wallet callbacks
     virtual void on_new_block(uint64_t height, const cryptonote::block& block) {}
-    virtual void on_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index, bool is_change, uint64_t unlock_time) {}
+    virtual void on_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index, bool is_change, uint64_t unlock_height) {}
     virtual void on_unconfirmed_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index) {}
     virtual void on_money_spent(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& in_tx, uint64_t amount, const cryptonote::transaction& spend_tx, const cryptonote::subaddress_index& subaddr_index) {}
     virtual void on_skip_transaction(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx) {}
@@ -251,7 +251,7 @@ namespace tools
     (
      const std::vector<cryptonote::tx_destination_entry> dsts_vec
      , const size_t fake_outs_count
-     , const uint64_t unlock_time
+     , const uint64_t unlock_height
      , const uint32_t priority
      , const std::vector<uint8_t> extra
      , const uint32_t subaddr_account
@@ -390,7 +390,7 @@ namespace tools
 
     void set_tx_notify(const std::shared_ptr<tools::Notify> &notify) { m_tx_notify = notify; }
 
-    bool is_tx_spendtime_unlocked(const uint64_t unlock_time);
+    bool is_tx_spendtime_unlocked(const uint64_t unlock_height);
     void set_offline(bool offline = true);
 
   private:

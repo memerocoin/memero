@@ -107,7 +107,7 @@ namespace wallet {
    , const std::vector<cryptonote::tx_destination_entry> dsts
    , const std::vector<size_t> selected_transfers
    , const size_t fake_outputs_count
-   , const uint64_t unlock_time
+   , const uint64_t unlock_height
    , const uint64_t fee
    , const std::vector<uint8_t> extra
    , const type::wallet::transfer_container_span m_transfers
@@ -131,7 +131,7 @@ namespace wallet {
   (
    const std::vector<cryptonote::tx_destination_entry> dsts_vec
    , const size_t fake_outs_count
-   , const uint64_t unlock_time
+   , const uint64_t unlock_height
    , const uint32_t priority
    , const std::vector<uint8_t> extra
    , const uint32_t subaddr_account

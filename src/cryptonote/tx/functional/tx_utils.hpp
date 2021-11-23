@@ -125,7 +125,7 @@ namespace cryptonote
      , const std::vector<tx_source_entry> sources_in
      , const std::span<const tx_destination_entry> destinations
      , const std::vector<uint8_t> extra
-     , const uint64_t unlock_time
+     , const uint64_t unlock_height
      , const std::span<const crypto::secret_key> output_secret_keys
      );
 

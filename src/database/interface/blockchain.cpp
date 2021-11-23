@@ -171,18 +171,18 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
       rct::rct_point commitment = rct::dummyCommit(vout.amount);
       vout.amount = 0;
       amount_output_indices[i] =
-        add_output(tx_hash, vout, i, tx.unlock_time, commitment);
+        add_output(tx_hash, vout, i, tx.unlock_height, commitment);
     }
     else if (miner_tx && tx.version == 1)
     {
 
       amount_output_indices[i] =
-        add_output(tx_hash, tx.vout[i], i, tx.unlock_time, {});
+        add_output(tx_hash, tx.vout[i], i, tx.unlock_height, {});
     }
     else
     {
       amount_output_indices[i] =
-        add_output(tx_hash, tx.vout[i], i, tx.unlock_time, tx.ringct.output_commits[i].commit);
+        add_output(tx_hash, tx.vout[i], i, tx.unlock_height, tx.ringct.output_commits[i].commit);
     }
   }
   add_tx_amount_output_indices(tx_id, amount_output_indices);

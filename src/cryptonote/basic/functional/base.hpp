@@ -109,7 +109,7 @@ namespace cryptonote
   {
     // tx information
     size_t   version = 1;
-    uint64_t unlock_time = 0;  //number of block (or time), used as a limitation like: spend this tx not early then block/time
+    uint64_t unlock_height = 0;  //number of block (or time), used as a limitation like: spend this tx not early then block/time
 
     std::vector<txin_v> vin;
     std::vector<tx_out> vout;
@@ -120,7 +120,7 @@ namespace cryptonote
       VARINT_FIELD(version)
       if(version == 0) return false;
 
-      VARINT_FIELD(unlock_time)
+      VARINT_FIELD(unlock_height)
       FIELD(vin)
       FIELD(vout)
       FIELD(extra)

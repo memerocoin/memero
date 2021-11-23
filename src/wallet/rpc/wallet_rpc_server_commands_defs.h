@@ -349,7 +349,7 @@ namespace wallet_rpc
       std::set<uint32_t> subaddr_indices;
       uint32_t priority;
       uint64_t ring_size;
-      uint64_t unlock_time;
+      uint64_t unlock_height;
       bool get_tx_key;
       bool do_not_relay;
       bool get_tx_hex;
@@ -361,7 +361,7 @@ namespace wallet_rpc
         KV_SERIALIZE(subaddr_indices)
         KV_SERIALIZE(priority)
         KV_SERIALIZE_OPT(ring_size, (uint64_t)0)
-        KV_SERIALIZE(unlock_time)
+        KV_SERIALIZE(unlock_height)
         KV_SERIALIZE(get_tx_key)
         KV_SERIALIZE_OPT(do_not_relay, false)
         KV_SERIALIZE_OPT(get_tx_hex, false)
@@ -404,7 +404,7 @@ namespace wallet_rpc
       std::set<uint32_t> subaddr_indices;
       uint32_t priority;
       uint64_t ring_size;
-      uint64_t unlock_time;
+      uint64_t unlock_height;
       bool get_tx_keys;
       bool do_not_relay;
       bool get_tx_hex;
@@ -416,7 +416,7 @@ namespace wallet_rpc
         KV_SERIALIZE(subaddr_indices)
         KV_SERIALIZE(priority)
         KV_SERIALIZE_OPT(ring_size, (uint64_t)0)
-        KV_SERIALIZE(unlock_time)
+        KV_SERIALIZE(unlock_height)
         KV_SERIALIZE(get_tx_keys)
         KV_SERIALIZE_OPT(do_not_relay, false)
         KV_SERIALIZE_OPT(get_tx_hex, false)
@@ -477,7 +477,7 @@ namespace wallet_rpc
       uint64_t amount_in;
       uint64_t amount_out;
       uint32_t ring_size;
-      uint64_t unlock_time;
+      uint64_t unlock_height;
       std::list<recipient> recipients;
       uint64_t change_amount;
       std::string change_address;
@@ -489,7 +489,7 @@ namespace wallet_rpc
         KV_SERIALIZE(amount_in)
         KV_SERIALIZE(amount_out)
         KV_SERIALIZE(ring_size)
-        KV_SERIALIZE(unlock_time)
+        KV_SERIALIZE(unlock_height)
         KV_SERIALIZE(recipients)
         KV_SERIALIZE(change_amount)
         KV_SERIALIZE(change_address)
@@ -565,7 +565,7 @@ namespace wallet_rpc
     std::string tx_hash;
     uint64_t amount;
     uint64_t block_height;
-    uint64_t unlock_time;
+    uint64_t unlock_height;
     bool locked;
     cryptonote::subaddress_index subaddr_index;
     std::string address;
@@ -574,7 +574,7 @@ namespace wallet_rpc
       KV_SERIALIZE(tx_hash)
       KV_SERIALIZE(amount)
       KV_SERIALIZE(block_height)
-      KV_SERIALIZE(unlock_time)
+      KV_SERIALIZE(unlock_height)
       KV_SERIALIZE(locked)
       KV_SERIALIZE(subaddr_index)
       KV_SERIALIZE(address)
@@ -774,7 +774,7 @@ namespace wallet_rpc
     std::string note;
     std::list<transfer_destination> destinations;
     std::string type;
-    uint64_t unlock_time;
+    uint64_t unlock_height;
     bool locked;
     cryptonote::subaddress_index subaddr_index;
     std::vector<cryptonote::subaddress_index> subaddr_indices;
@@ -793,7 +793,7 @@ namespace wallet_rpc
       KV_SERIALIZE(note);
       KV_SERIALIZE(destinations);
       KV_SERIALIZE(type);
-      KV_SERIALIZE(unlock_time)
+      KV_SERIALIZE(unlock_height)
       KV_SERIALIZE(locked)
       KV_SERIALIZE(subaddr_index);
       KV_SERIALIZE(subaddr_indices);

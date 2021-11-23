@@ -121,7 +121,7 @@ namespace error
           cryptonote::print_money(dst.amount);
       }
 
-    ss << "\nunlock_time: " << m_unlock_time;
+    ss << "\nunlock_height: " << m_unlock_height;
 
     return ss.str();
   }

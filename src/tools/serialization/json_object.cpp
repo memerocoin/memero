@@ -253,7 +253,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
   dest.StartObject();
 
   WRITE_JSON_FIELD_FROM(dest, version, tx.version);
-  WRITE_JSON_FIELD_FROM(dest, unlock_time, tx.unlock_time);
+  WRITE_JSON_FIELD_FROM(dest, unlock_height, tx.unlock_height);
   WRITE_JSON_FIELD_FROM(dest, inputs, tx.vin);
   WRITE_JSON_FIELD_FROM(dest, outputs, tx.vout);
   WRITE_JSON_FIELD_FROM(dest, extra, tx.extra);
@@ -271,7 +271,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
   }
 
   READ_JSON_VALUE_BY_KEY(val, tx.version, version);
-  READ_JSON_VALUE_BY_KEY(val, tx.unlock_time, unlock_time);
+  READ_JSON_VALUE_BY_KEY(val, tx.unlock_height, unlock_height);
   READ_JSON_VALUE_BY_KEY(val, tx.vin, inputs);
   READ_JSON_VALUE_BY_KEY(val, tx.vout, outputs);
   READ_JSON_VALUE_BY_KEY(val, tx.extra, extra);

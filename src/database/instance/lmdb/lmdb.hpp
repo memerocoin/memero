@@ -246,7 +246,7 @@ public:
   virtual bool tx_exists(const crypto::hash& h) const;
   virtual bool tx_exists(const crypto::hash& h, uint64_t& tx_index) const;
 
-  virtual uint64_t get_tx_unlock_time(const crypto::hash& h) const;
+  virtual uint64_t get_tx_unlock_height(const crypto::hash& h) const;
 
   virtual bool get_tx_blob(const crypto::hash& h, cryptonote::string_blob &tx) const;
   virtual bool get_blocks_from(uint64_t start_height, size_t min_count, size_t max_count, size_t max_size, std::vector<std::pair<std::pair<cryptonote::string_blob, crypto::hash>, std::vector<std::pair<crypto::hash, cryptonote::string_blob>>>>& blocks, bool skip_coinbase, bool get_miner_tx_hash) const;
@@ -356,7 +356,7 @@ private:
   virtual uint64_t add_output(const crypto::hash& tx_hash,
       const tx_out& tx_output,
       const uint64_t& local_index,
-      const uint64_t unlock_time,
+      const uint64_t unlock_height,
       const std::optional<rct::rct_point> commitment
       );
 

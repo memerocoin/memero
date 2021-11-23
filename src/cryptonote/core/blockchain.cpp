@@ -193,7 +193,7 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_to_ke
           output_index = m_db->get_output_key(tx_in_to_key.amount, i);
 
         // call to the passed boost visitor to grab the public key for the output
-        if (!vis.handle_output(output_index.unlock_time, output_index.pubkey, output_index.commitment))
+        if (!vis.handle_output(output_index.unlock_height, output_index.pubkey, output_index.commitment))
         {
           LOG_ERROR_VER("Failed to handle_output for output no = " << count << ", with absolute offset " << i);
           return false;
@@ -1102,7 +1102,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
     return false;
   }
   LOG_DEBUG("Miner tx hash: " << get_transaction_hash(b.miner_tx));
-  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.unlock_time == height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW, false, "coinbase transaction transaction has the wrong unlock time=" << b.miner_tx.unlock_time << ", expected " << height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
+  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.unlock_height == height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW, false, "coinbase transaction transaction has the wrong unlock time=" << b.miner_tx.unlock_height << ", expected " << height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
 
   //check outs overflow
   //NOTE: not entirely sure this is necessary, given that this function is
@@ -1850,7 +1850,7 @@ bool Blockchain::get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req,
       return false;
     }
     for (const auto &t: data)
-      res.outs.push_back({t.pubkey, t.commitment, is_tx_spendtime_unlocked(t.unlock_time), t.height, crypto::null_hash});
+      res.outs.push_back({t.pubkey, t.commitment, is_tx_spendtime_unlocked(t.unlock_height), t.height, crypto::null_hash});
 
     if (req.get_txid)
     {
@@ -1874,7 +1874,7 @@ void Blockchain::get_output_key_mask_unlocked(const uint64_t& amount, const uint
   key = o_data.pubkey;
   mask = o_data.commitment;
   tx_out_index toi = m_db->get_output_tx_and_index(amount, index);
-  unlocked = is_tx_spendtime_unlocked(m_db->get_tx_unlock_time(toi.first));
+  unlocked = is_tx_spendtime_unlocked(m_db->get_tx_unlock_height(toi.first));
 }
 //------------------------------------------------------------------
 bool Blockchain::get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) const
@@ -2564,15 +2564,15 @@ bool Blockchain::check_fee(size_t tx_weight, uint64_t fee) const
 }
 
 //------------------------------------------------------------------
-// This function checks to see if a tx is unlocked.  unlock_time is either
+// This function checks to see if a tx is unlocked.  unlock_height is either
 // a block index or a unix time.
-bool Blockchain::is_tx_spendtime_unlocked(const uint64_t unlock_time) const
+bool Blockchain::is_tx_spendtime_unlocked(const uint64_t unlock_height) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   // ND: Instead of calling get_current_blockchain_height(), call m_db->height()
   //    directly as get_current_blockchain_height() locks the recursive mutex.
-  if (unlock_time == 0) return true;
-  return m_db->height() + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time;
+  if (unlock_height == 0) return true;
+  return m_db->height() + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_height;
 }
 //------------------------------------------------------------------
 // This function locates all outputs associated with a given input (mixins)
@@ -2602,12 +2602,12 @@ bool Blockchain::check_tx_input
       m_output_keys(output_keys), m_bch(bch)
     {
     }
-    bool handle_output(uint64_t unlock_time, const crypto::public_key &pubkey, const rct::rct_point &commitment)
+    bool handle_output(uint64_t unlock_height, const crypto::public_key &pubkey, const rct::rct_point &commitment)
     {
       //check tx unlock time
-      if (!m_bch.is_tx_spendtime_unlocked(unlock_time))
+      if (!m_bch.is_tx_spendtime_unlocked(unlock_height))
       {
-        LOG_ERROR_VER("One of outputs for one of inputs has wrong tx.unlock_time = " << unlock_time);
+        LOG_ERROR_VER("One of outputs for one of inputs has wrong tx.unlock_height = " << unlock_height);
         return false;
       }
 

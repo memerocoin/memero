@@ -128,7 +128,7 @@ namespace cryptonote
    , const std::vector<tx_source_entry> sources_in
    , const std::span<const tx_destination_entry> destinations
    , const std::vector<uint8_t> extra
-   , const uint64_t unlock_time
+   , const uint64_t unlock_height
    , const std::span<const crypto::secret_key> output_secret_keys
    )
   {
@@ -145,7 +145,7 @@ namespace cryptonote
     rct::rct_scalarV output_shared_secrets_hashed_by_index;
 
     tx.version = 2;
-    tx.unlock_time = unlock_time;
+    tx.unlock_height = unlock_height;
 
     tx.extra = extra;
 
@@ -480,7 +480,7 @@ namespace cryptonote
     tx.version = 2;
 
     //lock
-    tx.unlock_time = height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
+    tx.unlock_height = height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
     tx.vin.push_back(in);
 
     //LOG_PRINT("MINER_TX generated ok, block_reward=" << print_money(block_reward) << "("  << print_money(block_reward - fee) << "+" << print_money(fee)

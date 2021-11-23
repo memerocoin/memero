@@ -89,7 +89,7 @@ public:
   virtual uint64_t height() const override { return 1; }
   virtual bool tx_exists(const crypto::hash& h) const override { return false; }
   virtual bool tx_exists(const crypto::hash& h, uint64_t& tx_index) const override { return false; }
-  virtual uint64_t get_tx_unlock_time(const crypto::hash& h) const override { return 0; }
+  virtual uint64_t get_tx_unlock_height(const crypto::hash& h) const override { return 0; }
   virtual cryptonote::transaction get_tx(const crypto::hash& h) const override { return cryptonote::transaction(); }
   virtual bool get_tx(const crypto::hash& h, cryptonote::transaction &tx) const override { return false; }
   virtual uint64_t get_tx_count() const override { return 0; }
@@ -109,7 +109,7 @@ public:
   virtual void remove_block() override { }
   virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<cryptonote::transaction, cryptonote::string_blob_view>& tx, const crypto::hash& tx_hash) override {return 0;}
   virtual void remove_transaction_data(const crypto::hash& tx_hash, const cryptonote::transaction& tx) override {}
-  virtual uint64_t add_output(const crypto::hash& tx_hash, const cryptonote::tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_time, const std::optional<rct::rct_point> commitment) override {return 0;}
+  virtual uint64_t add_output(const crypto::hash& tx_hash, const cryptonote::tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_height, const std::optional<rct::rct_point> commitment) override {return 0;}
   virtual void add_tx_amount_output_indices(const uint64_t tx_index, const std::vector<uint64_t>& amount_output_indices) override {}
   virtual void add_spent_key(const crypto::key_image& output_key_image) override {}
   virtual void remove_spent_key(const crypto::key_image& output_key_image) override {}

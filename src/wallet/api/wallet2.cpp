@@ -561,7 +561,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   const cryptonote::account_keys& keys = m_account.get_keys();
 
   const bool tx_locked_too_far_away =
-    (tx.unlock_time >= height) && (tx.unlock_time - height) > config::lol::tx_locked_one_year_away_in_blocks;
+    (tx.unlock_height >= height) && (tx.unlock_height - height) > config::lol::tx_locked_one_year_away_in_blocks;
 
   if (tx_locked_too_far_away) {
     LOG_DEBUG("Found a tx locked one year way, not considering its outputs as valid for now.");
@@ -724,7 +724,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	    m_pub_keys[tx_scan_info[o].output_key_pair.pub] = m_transfers.size()-1;
 	    LOG_VERBOSE("Received money: " << print_money(td.amount()) << ", with tx: " << txid);
 	    if (0 != m_callback)
-	      m_callback->on_money_received(height, txid, tx, td.m_amount, td.m_subaddr_index, spends_one_of_ours(tx), td.m_tx.unlock_time);
+	      m_callback->on_money_received(height, txid, tx, td.m_amount, td.m_subaddr_index, spends_one_of_ours(tx), td.m_tx.unlock_height);
           }
           total_received_1 += amount;
           notify = true;
@@ -792,7 +792,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
 	    LOG_PRINT_L0("Received money: " << print_money(td.amount()) << ", with tx: " << txid);
 	    if (0 != m_callback)
-	      m_callback->on_money_received(height, txid, tx, td.m_amount, td.m_subaddr_index, spends_one_of_ours(tx), td.m_tx.unlock_time);
+	      m_callback->on_money_received(height, txid, tx, td.m_amount, td.m_subaddr_index, spends_one_of_ours(tx), td.m_tx.unlock_height);
           }
           total_received_1 += extra_amount;
           notify = true;
@@ -911,7 +911,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       payment.m_amount       = i.second;
       payment.m_amounts      = tx_amounts_individual_outs[i.first];
       payment.m_block_height = height;
-      payment.m_unlock_time  = tx.unlock_time;
+      payment.m_unlock_height  = tx.unlock_height;
       payment.m_timestamp    = ts;
       payment.m_coinbase     = miner_tx;
       payment.m_subaddr_index = i.first;
@@ -986,7 +986,7 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
   }
   entry.first->second.m_block_height = height;
   entry.first->second.m_timestamp = ts;
-  entry.first->second.m_unlock_time = tx.unlock_time;
+  entry.first->second.m_unlock_height = tx.unlock_height;
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::should_skip_block(const cryptonote::block &b, uint64_t height) const
@@ -2928,7 +2928,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions
 (
  const std::vector<cryptonote::tx_destination_entry> dsts_vec
  , const size_t fake_outs_count
- , const uint64_t unlock_time
+ , const uint64_t unlock_height
  , const uint32_t priority
  , const std::vector<uint8_t> extra
  , const uint32_t subaddr_account
@@ -2939,7 +2939,7 @@ std::vector<wallet::logic::type::tx::pending_tx> wallet2::create_transactions
     (
      dsts_vec
      , fake_outs_count
-     , unlock_time
+     , unlock_height
      , priority
      , extra
      , subaddr_account

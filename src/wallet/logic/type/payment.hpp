@@ -48,7 +48,7 @@ namespace payment {
     amounts_container m_amounts;
     uint64_t m_fee;
     uint64_t m_block_height;
-    uint64_t m_unlock_time;
+    uint64_t m_unlock_height;
     uint64_t m_timestamp;
     bool m_coinbase;
     cryptonote::subaddress_index m_subaddr_index;
@@ -60,7 +60,7 @@ namespace payment {
       FIELD(m_amounts)
       VARINT_FIELD(m_fee)
       VARINT_FIELD(m_block_height)
-      VARINT_FIELD(m_unlock_time)
+      VARINT_FIELD(m_unlock_height)
       VARINT_FIELD(m_timestamp)
       FIELD(m_coinbase)
       FIELD(m_subaddr_index)

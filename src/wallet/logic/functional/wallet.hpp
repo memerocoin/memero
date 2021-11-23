@@ -139,11 +139,11 @@ namespace wallet {
   bool is_transfer_unlocked(const transfer_details& td, const uint64_t current_height);
   bool is_transfer_unlocked
   (
-   const uint64_t unlock_time
+   const uint64_t unlock_height
    , const uint64_t block_height
    , const uint64_t current_height
    );
-  bool is_tx_spendtime_unlocked(const uint64_t unlock_time, const uint64_t current_height);
+  bool is_tx_spendtime_unlocked(const uint64_t unlock_height, const uint64_t current_height);
 
   std::vector<size_t> pick_preferred_rct_inputs
   (
@@ -164,7 +164,7 @@ namespace wallet {
    , const std::vector<size_t> selected_transfers
    , const size_t fake_outputs_count
    , const std::span<const std::vector<type::get_tx_outputs_entry>> outs
-   , const uint64_t unlock_time
+   , const uint64_t unlock_height
    , const uint64_t fee
    , const std::vector<uint8_t> extra
    , const type::wallet::transfer_container_span m_transfers

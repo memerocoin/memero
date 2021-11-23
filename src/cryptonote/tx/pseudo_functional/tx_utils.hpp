@@ -53,7 +53,7 @@ namespace cryptonote
    , const std::vector<tx_source_entry> sources
    , const std::span<tx_destination_entry> destinations
      , const std::vector<uint8_t> extra
-     , const uint64_t unlock_time
+     , const uint64_t unlock_height
      );
 
 }

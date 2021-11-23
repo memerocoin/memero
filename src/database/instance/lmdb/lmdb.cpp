@@ -62,7 +62,7 @@ namespace
 struct pre_rct_output_data_t
 {
   crypto::public_key pubkey;       //!< the output's public key (for spend verification)
-  uint64_t           unlock_time;  //!< the output's unlock time (or height)
+  uint64_t           unlock_height;  //!< the output's unlock time (or height)
   uint64_t           height;       //!< the height of the block which created the output
 };
 
@@ -867,7 +867,7 @@ uint64_t BlockchainLMDB::add_transaction_data(const crypto::hash& blk_hash, cons
   txindex ti;
   ti.key = tx_hash;
   ti.data.tx_id = tx_id;
-  ti.data.unlock_time = tx.unlock_time;
+  ti.data.unlock_height = tx.unlock_height;
   ti.data.block_id = m_height;  // we don't need blk_hash since we know m_height
 
   val_h.mv_size = sizeof(ti);
@@ -997,7 +997,7 @@ uint64_t BlockchainLMDB::add_output
  const crypto::hash& tx_hash,
  const tx_out& tx_output,
  const uint64_t& local_index,
- const uint64_t unlock_time,
+ const uint64_t unlock_height,
  const std::optional<rct::rct_point> commitment
  )
 {
@@ -1043,7 +1043,7 @@ uint64_t BlockchainLMDB::add_output
     ok.amount_index = 0;
   ok.output_id = m_num_outputs;
   ok.data.pubkey = boost::get < txout_to_key > (tx_output.target).output_public_key;
-  ok.data.unlock_time = unlock_time;
+  ok.data.unlock_height = unlock_height;
   ok.data.height = m_height;
   if (tx_output.amount == 0)
   {
@@ -2549,7 +2549,7 @@ bool BlockchainLMDB::tx_exists(const crypto::hash& h, uint64_t& tx_id) const
   return ret;
 }
 
-uint64_t BlockchainLMDB::get_tx_unlock_time(const crypto::hash& h) const
+uint64_t BlockchainLMDB::get_tx_unlock_height(const crypto::hash& h) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -2565,7 +2565,7 @@ uint64_t BlockchainLMDB::get_tx_unlock_time(const crypto::hash& h) const
     throw0(DB_ERROR(lmdb_error("DB error attempting to fetch tx data from hash: ", get_result).c_str()));
 
   txindex *tip = (txindex *)v.mv_data;
-  uint64_t ret = tip->data.unlock_time;
+  uint64_t ret = tip->data.unlock_height;
   TXN_POSTFIX_RDONLY();
   return ret;
 }

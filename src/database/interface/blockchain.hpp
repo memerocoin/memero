@@ -115,7 +115,7 @@ bool matches_category(relay_method method, relay_category category) noexcept;
 struct output_data_t
 {
   crypto::public_key pubkey;       //!< the output's public key (for spend verification)
-  uint64_t           unlock_time;  //!< the output's unlock time (or height)
+  uint64_t           unlock_height;  //!< the output's unlock time (or height)
   uint64_t           height;       //!< the height of the block which created the output
   rct::rct_point           commitment;   //!< the output's amount commitment (for spend verification)
 };
@@ -123,7 +123,7 @@ struct output_data_t
 struct tx_data_t
 {
   uint64_t tx_id;
-  uint64_t unlock_time;
+  uint64_t unlock_height;
   uint64_t block_id;
 };
 
@@ -465,11 +465,11 @@ private:
    * @param tx_hash hash of the transaction the output was created by
    * @param tx_output the output
    * @param local_index index of the output in its transaction
-   * @param unlock_time unlock time/height of the output
+   * @param unlock_height unlock time/height of the output
    * @param commitment the rct commitment to the output amount
    * @return amount output index
    */
-  virtual uint64_t add_output(const crypto::hash& tx_hash, const tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_time, const std::optional<rct::rct_point> commitment) = 0;
+  virtual uint64_t add_output(const crypto::hash& tx_hash, const tx_out& tx_output, const uint64_t& local_index, const uint64_t unlock_height, const std::optional<rct::rct_point> commitment) = 0;
 
   /**
    * @brief store amount output indices for a tx's outputs
@@ -1173,7 +1173,7 @@ public:
    *
    * @return the unlock time/height
    */
-  virtual uint64_t get_tx_unlock_time(const crypto::hash& h) const = 0;
+  virtual uint64_t get_tx_unlock_height(const crypto::hash& h) const = 0;
 
   // return tx with hash <h>
   // throw if no such tx exists

@@ -64,7 +64,7 @@ namespace
   const command_line::arg_descriptor<bool> arg_prompt_for_password = {"prompt-for-password", "Prompts for password when not provided", false};
 
   //------------------------------------------------------------------------------------------------------------------------------
-  void set_confirmations(tools::wallet_rpc::transfer_entry &entry, uint64_t blockchain_height, uint64_t unlock_time)
+  void set_confirmations(tools::wallet_rpc::transfer_entry &entry, uint64_t blockchain_height, uint64_t unlock_height)
   {
     if (entry.height >= blockchain_height || (entry.height == 0 && (!strcmp(entry.type.c_str(), "pending") || !strcmp(entry.type.c_str(), "pool"))))
       entry.confirmations = 0;
@@ -74,8 +74,8 @@ namespace
     constexpr auto block_reward = consensus::get_block_reward();
     entry.suggested_confirmations_threshold = (entry.amount + block_reward - 1) / block_reward;
 
-    if (unlock_time > blockchain_height)
-      entry.suggested_confirmations_threshold = std::max(entry.suggested_confirmations_threshold, unlock_time - blockchain_height);
+    if (unlock_height > blockchain_height)
+      entry.suggested_confirmations_threshold = std::max(entry.suggested_confirmations_threshold, unlock_height - blockchain_height);
   }
 }
 
@@ -186,15 +186,15 @@ namespace tools
     entry.timestamp = pd.m_timestamp;
     entry.amount = pd.m_amount;
     entry.amounts = pd.m_amounts;
-    entry.unlock_time = pd.m_unlock_time;
+    entry.unlock_height = pd.m_unlock_height;
     entry.locked = !wallet::logic::functional::wallet::is_transfer_unlocked
-      (pd.m_unlock_time, pd.m_block_height, m_wallet->get_blockchain_current_height());
+      (pd.m_unlock_height, pd.m_block_height, m_wallet->get_blockchain_current_height());
     entry.fee = pd.m_fee;
     entry.type = pd.m_coinbase ? "block" : "in";
     entry.subaddr_index = pd.m_subaddr_index;
     entry.subaddr_indices.push_back(pd.m_subaddr_index);
     entry.address = m_wallet->get_subaddress_as_str(pd.m_subaddr_index);
-    set_confirmations(entry, m_wallet->get_blockchain_current_height(), pd.m_unlock_time);
+    set_confirmations(entry, m_wallet->get_blockchain_current_height(), pd.m_unlock_height);
   }
   //------------------------------------------------------------------------------------------------------------------------------
   void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const wallet::logic::type::transfer::confirmed_transfer_details &pd)
@@ -202,9 +202,9 @@ namespace tools
     entry.txid = epee::string_tools::pod_to_hex(txid);
     entry.height = pd.m_block_height;
     entry.timestamp = pd.m_timestamp;
-    entry.unlock_time = pd.m_unlock_time;
+    entry.unlock_height = pd.m_unlock_height;
     entry.locked = !wallet::logic::functional::wallet::is_transfer_unlocked
-      (pd.m_unlock_time, pd.m_block_height, m_wallet->get_blockchain_current_height());
+      (pd.m_unlock_height, pd.m_block_height, m_wallet->get_blockchain_current_height());
     entry.fee = pd.m_amount_in - pd.m_amount_out;
     uint64_t change = pd.m_change == (uint64_t)-1 ? 0 : pd.m_change; // change may not be known
     entry.amount = pd.m_amount_in - change - entry.fee;
@@ -221,7 +221,7 @@ namespace tools
     for (uint32_t i: pd.m_subaddr_indices)
       entry.subaddr_indices.push_back({pd.m_subaddr_account, i});
     entry.address = m_wallet->get_subaddress_as_str({pd.m_subaddr_account, 0});
-    set_confirmations(entry, m_wallet->get_blockchain_current_height(), pd.m_unlock_time);
+    set_confirmations(entry, m_wallet->get_blockchain_current_height(), pd.m_unlock_height);
   }
   //------------------------------------------------------------------------------------------------------------------------------
   void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const crypto::hash &txid, const wallet::logic::type::transfer::unconfirmed_transfer_details &pd)
@@ -232,7 +232,7 @@ namespace tools
     entry.timestamp = pd.m_timestamp;
     entry.fee = pd.m_amount_in - pd.m_amount_out;
     entry.amount = pd.m_amount_in - pd.m_change - entry.fee;
-    entry.unlock_time = pd.m_tx.unlock_time;
+    entry.unlock_height = pd.m_tx.unlock_height;
     entry.locked = true;
 
     for (const auto &d: pd.m_dests) {
@@ -247,7 +247,7 @@ namespace tools
     for (uint32_t i: pd.m_subaddr_indices)
       entry.subaddr_indices.push_back({pd.m_subaddr_account, i});
     entry.address = m_wallet->get_subaddress_as_str({pd.m_subaddr_account, 0});
-    set_confirmations(entry, m_wallet->get_blockchain_current_height(), pd.m_tx.unlock_time);
+    set_confirmations(entry, m_wallet->get_blockchain_current_height(), pd.m_tx.unlock_height);
   }
   //------------------------------------------------------------------------------------------------------------------------------
   void wallet_rpc_server::fill_transfer_entry(tools::wallet_rpc::transfer_entry &entry, const wallet::logic::type::payment::pool_payment_details &ppd)
@@ -258,7 +258,7 @@ namespace tools
     entry.timestamp = pd.m_timestamp;
     entry.amount = pd.m_amount;
     entry.amounts = pd.m_amounts;
-    entry.unlock_time = pd.m_unlock_time;
+    entry.unlock_height = pd.m_unlock_height;
     entry.locked = true;
     entry.fee = pd.m_fee;
     entry.double_spend_seen = ppd.m_double_spend_seen;
@@ -266,7 +266,7 @@ namespace tools
     entry.subaddr_index = pd.m_subaddr_index;
     entry.subaddr_indices.push_back(pd.m_subaddr_index);
     entry.address = m_wallet->get_subaddress_as_str(pd.m_subaddr_index);
-    set_confirmations(entry, m_wallet->get_blockchain_current_height(), pd.m_unlock_time);
+    set_confirmations(entry, m_wallet->get_blockchain_current_height(), pd.m_unlock_height);
   }
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_getbalance(const wallet_rpc::COMMAND_RPC_GET_BALANCE::request& req, wallet_rpc::COMMAND_RPC_GET_BALANCE::response& res, epee::json_rpc::error& er)
@@ -659,7 +659,7 @@ namespace tools
     {
       uint64_t mixin = m_wallet->adjust_mixin(req.ring_size ? req.ring_size - 1 : 0);
       uint32_t priority = m_wallet->adjust_priority(req.priority);
-      std::vector<wallet::logic::type::tx::pending_tx> ptx_vector = m_wallet->create_transactions(dsts, mixin, req.unlock_time, priority, extra, req.account_index, req.subaddr_indices);
+      std::vector<wallet::logic::type::tx::pending_tx> ptx_vector = m_wallet->create_transactions(dsts, mixin, req.unlock_height, priority, extra, req.account_index, req.subaddr_indices);
 
       if (ptx_vector.empty())
       {
@@ -712,7 +712,7 @@ namespace tools
       uint64_t mixin = m_wallet->adjust_mixin(req.ring_size ? req.ring_size - 1 : 0);
       uint32_t priority = m_wallet->adjust_priority(req.priority);
       LOG_PRINT_L2("on_transfer_split calling create_transactions");
-      std::vector<wallet::logic::type::tx::pending_tx> ptx_vector = m_wallet->create_transactions(dsts, mixin, req.unlock_time, priority, extra, req.account_index, req.subaddr_indices);
+      std::vector<wallet::logic::type::tx::pending_tx> ptx_vector = m_wallet->create_transactions(dsts, mixin, req.unlock_height, priority, extra, req.account_index, req.subaddr_indices);
       LOG_PRINT_L2("on_transfer_split called create_transactions");
 
       if (ptx_vector.empty())
@@ -836,7 +836,7 @@ namespace tools
         }
 
         desc.fee = desc.amount_in - desc.amount_out;
-        desc.unlock_time = cd.unlock_time;
+        desc.unlock_height = cd.unlock_height;
         desc.extra = epee::string_tools::blob_to_string
           (epee::blob::data(cd.extra.data(), cd.extra.size()));
       }

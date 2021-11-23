@@ -1268,7 +1268,7 @@ void simple_wallet::on_new_block(uint64_t height, const cryptonote::block& block
   m_refresh_progress_reporter.update(height, false);
 }
 //----------------------------------------------------------------------------------------------------
-void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index, bool is_change, uint64_t unlock_time)
+void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid, const cryptonote::transaction& tx, uint64_t amount, const cryptonote::subaddress_index& subaddr_index, bool is_change, uint64_t unlock_height)
 {
   message_writer(epee::console_color_green, false) << "\r" <<
     ("Height ") << height << ", " <<
@@ -1276,7 +1276,7 @@ void simple_wallet::on_money_received(uint64_t height, const crypto::hash &txid,
     print_money(amount) << ", " <<
     ("idx ") << subaddr_index;
 
-  if (unlock_time && !cryptonote::is_coinbase(tx))
+  if (unlock_height && !cryptonote::is_coinbase(tx))
     message_writer() << ("NOTE: This transaction is locked, see details with: show_transfer ") + epee::string_tools::pod_to_hex(txid);
   m_refresh_progress_reporter.update(height, true);
 }
@@ -1935,13 +1935,13 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
           return true;
         }
         unlock_block = bc_height + locked_blocks;
-        ptx_vector = m_wallet->create_transactions(dsts, fake_outs_count, unlock_block /* unlock_time */, priority, extra, m_current_subaddress_account, subaddr_indices);
+        ptx_vector = m_wallet->create_transactions(dsts, fake_outs_count, unlock_block /* unlock_height */, priority, extra, m_current_subaddress_account, subaddr_indices);
       break;
       default:
         LOG_ERROR("Unknown transfer method, using default");
         /* FALLTHRU */
       case Transfer:
-        ptx_vector = m_wallet->create_transactions(dsts, fake_outs_count, 0 /* unlock_time */, priority, extra, m_current_subaddress_account, subaddr_indices);
+        ptx_vector = m_wallet->create_transactions(dsts, fake_outs_count, 0 /* unlock_height */, priority, extra, m_current_subaddress_account, subaddr_indices);
       break;
     }
 
@@ -2322,12 +2322,12 @@ bool simple_wallet::get_transfers(std::vector<std::string>& local_args, std::vec
       std::string destination = m_wallet->get_subaddress_as_str({m_current_subaddress_account, pd.m_subaddr_index.minor});
       const std::string type = pd.m_coinbase ? ("block") : ("in");
       const bool unlocked = wallet::logic::functional::wallet::is_transfer_unlocked
-        (pd.m_unlock_time, pd.m_block_height, last_block_height);
+        (pd.m_unlock_height, pd.m_block_height, last_block_height);
       std::string locked_msg = "unlocked";
       if (!unlocked)
       {
         locked_msg = "locked";
-        uint64_t bh = std::max(pd.m_unlock_time, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
+        uint64_t bh = std::max(pd.m_unlock_height, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
         if (bh >= last_block_height)
           locked_msg = std::to_string(bh - last_block_height) + " blks";
       }
@@ -3102,7 +3102,7 @@ bool simple_wallet::show_tx(const std::vector<std::string> &args)
       success_msg_writer() << "Height: " << pd.m_block_height;
       success_msg_writer() << "Timestamp: " << tools::get_human_readable_timestamp(pd.m_timestamp);
       success_msg_writer() << "Amount: " << print_money(pd.m_amount);
-      uint64_t bh = std::max(pd.m_unlock_time, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
+      uint64_t bh = std::max(pd.m_unlock_height, pd.m_block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE);
       uint64_t suggested_threshold = pd.m_amount + consensus::get_block_reward() - 1;
       if (bh >= last_block_height)
         success_msg_writer() << "Locked: " << (bh - last_block_height) << " blocks to unlock";

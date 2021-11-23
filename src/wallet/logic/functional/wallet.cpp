@@ -318,17 +318,17 @@ bool is_spent(const transfer_details &td, bool strict)
 //----------------------------------------------------------------------------------------------------
 bool is_transfer_unlocked(const transfer_details& td, const uint64_t current_height)
 {
-  return is_transfer_unlocked(td.m_tx.unlock_time, td.m_block_height, current_height);
+  return is_transfer_unlocked(td.m_tx.unlock_height, td.m_block_height, current_height);
 }
 //----------------------------------------------------------------------------------------------------
 bool is_transfer_unlocked
 (
- const uint64_t unlock_time
+ const uint64_t unlock_height
  , const uint64_t block_height
  , const uint64_t current_height
  )
 {
-  if(!is_tx_spendtime_unlocked(unlock_time, current_height))
+  if(!is_tx_spendtime_unlocked(unlock_height, current_height))
     return false;
 
   if(block_height + CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE > current_height)
@@ -337,10 +337,10 @@ bool is_transfer_unlocked
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool is_tx_spendtime_unlocked(const uint64_t unlock_time, const uint64_t current_height)
+bool is_tx_spendtime_unlocked(const uint64_t unlock_height, const uint64_t current_height)
 {
-  if (unlock_time == 0) return true;
-  return current_height + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_time;
+  if (unlock_height == 0) return true;
+  return current_height + CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS > unlock_height;
 }
 
 std::vector<size_t> pick_preferred_rct_inputs
@@ -456,7 +456,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
  , const std::vector<size_t> selected_transfers
  , const size_t fake_outputs_count
  , const std::span<const std::vector<type::get_tx_outputs_entry>> outs
- , const uint64_t unlock_time
+ , const uint64_t unlock_height
  , const uint64_t fee
  , const std::vector<uint8_t> extra
  , const type::wallet::transfer_container_span m_transfers
@@ -585,9 +585,9 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
      , sources
      , splitted_dsts
      , extra
-     , unlock_time
+     , unlock_height
      );
-  THROW_WALLET_EXCEPTION_IF(!r, tools::error::tx_not_constructed, sources, dsts, unlock_time, m_nettype);
+  THROW_WALLET_EXCEPTION_IF(!r, tools::error::tx_not_constructed, sources, dsts, unlock_height, m_nettype);
 
   const auto [tx_out, permutation, output_secret_keys] = *r;
 
@@ -623,7 +623,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   ptx.construction_data.selected_transfers = ptx.selected_transfers;
   ptx.selected_transfers = tools::apply_permutation(permutation, ptx.selected_transfers);
   ptx.construction_data.extra = tx.extra;
-  ptx.construction_data.unlock_time = unlock_time;
+  ptx.construction_data.unlock_height = unlock_height;
   ptx.construction_data.use_rct = true;
   ptx.construction_data.dests = dsts;
   // record which subaddress indices are being used as inputs
@@ -703,8 +703,8 @@ std::map<uint32_t, std::pair<uint64_t, std::pair<uint64_t, uint64_t>>> unlocked_
       else
       {
         uint64_t unlock_height = td.m_block_height + std::max<uint64_t>(CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE, CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS);
-        if (td.m_tx.unlock_time > unlock_height)
-          unlock_height = td.m_tx.unlock_time;
+        if (td.m_tx.unlock_height > unlock_height)
+          unlock_height = td.m_tx.unlock_height;
         blocks_to_unlock = unlock_height > blockchain_height ? unlock_height - blockchain_height : 0;
         time_to_unlock = 0;
         amount = 0;
