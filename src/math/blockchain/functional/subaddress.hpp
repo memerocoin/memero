@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "cryptonote/basic/type/subaddress_index.hpp"
+#include "subaddress_index.hpp"
 
 #include "math/crypto/functional/key.hpp"
 

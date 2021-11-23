@@ -36,7 +36,7 @@
 
 #include "cryptonote/basic/functional/base.hpp" // spend_view_public_keys
 #include "cryptonote/basic/controller/account.h"
-#include "cryptonote/basic/type/subaddress_index.hpp"
+#include "math/blockchain/functional/subaddress_index.hpp"
 
 namespace wallet {
 namespace logic {
