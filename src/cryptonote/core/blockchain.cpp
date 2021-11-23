@@ -3786,7 +3786,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
 
   crypto::hash tx_prefix_hash = get_transaction_prefix_hash(tx);
 
-  if (tx.vout.size() < 2)
+  if (!consensus::rule_21_ringct_should_have_at_least_two_outputs(tx.vout))
   {
     LOG_ERROR_VER("Tx " << get_transaction_hash(tx) << " has fewer than two outputs");
     tvc.m_too_few_outputs = true;
