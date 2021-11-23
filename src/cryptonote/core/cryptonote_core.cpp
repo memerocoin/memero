@@ -1340,9 +1340,8 @@ namespace cryptonote
   }
 
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block)
+  void core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block)
   {
-    bool ret = true;
     std::vector<rct::rctData> rvv;
     for (size_t n = 0; n < tx_info.size(); ++n)
     {
@@ -1366,15 +1365,21 @@ namespace cryptonote
           tx_info[n].result = false;
           break;
         case rct::RCTTypeCLSAG:
-          if (!is_valid_bulletproof_layout(rv.p.bulletproofs))
-          {
-            LOG_ERROR_VER("Bulletproof_unsafe does not have canonical form");
-            set_semantics_failed(tx_info[n].tx_hash);
-            tx_info[n].tvc.m_verifivation_failed = true;
-            tx_info[n].result = false;
-            break;
+          if (is_valid_bulletproof_layout(rv.p.bulletproofs)) {
+            const bool valid_tx_balance = verify_range_proof(rv) && verify_tx_balance(rv);
+            if (valid_tx_balance) {
+              continue;
+            }
+            else {
+              LOG_ERROR_VER("Bulletproof verification failed");
+            }
+          } else {
+            LOG_ERROR_VER("Bulletproof_unsafe does not have valid layout");
           }
-          rvv.push_back(rv); // delayed batch verification
+          // bp failed
+          set_semantics_failed(tx_info[n].tx_hash);
+          tx_info[n].tvc.m_verifivation_failed = true;
+          tx_info[n].result = false;
           break;
         default:
           LOG_ERROR_VER("Unknown rct type: " << rv.type);
@@ -1384,32 +1389,5 @@ namespace cryptonote
           break;
       }
     }
-    if (!rvv.empty())
-    {
-      for (size_t n = 0; n < tx_info.size(); ++n)
-      {
-        if (!tx_info[n].result)
-          continue;
-
-        const rct::rctData rctData = tx_info[n].tx->ringct;
-
-        if (rctData.type != rct::RCTTypeCLSAG)
-            continue;
-
-        // const bool valid_tx = rct::verify_ringct(rctData);
-        // can't call the above since one needs to call expand_transaction_2 first lol
-        const bool valid_tx_balance = verify_range_proof(rctData) && verify_tx_balance(rctData);
-
-        if (!valid_tx_balance)
-        {
-          set_semantics_failed(tx_info[n].tx_hash);
-          tx_info[n].tvc.m_verifivation_failed = true;
-          tx_info[n].result = false;
-          ret = false;
-        }
-      }
-    }
-
-    return ret;
   }
 }

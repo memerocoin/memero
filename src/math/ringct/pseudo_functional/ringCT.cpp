@@ -126,13 +126,6 @@ namespace rct {
   }
 
   bool verify_tx_balance(const rctData rv) {
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       rv.type == RCTTypeCLSAG
-       , false
-       , "verify_tx_balance called on non rct tx"
-       );
-
     rct::rct_pointV output_commits;
 
     std::transform

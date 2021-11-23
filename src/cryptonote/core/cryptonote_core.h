@@ -771,8 +771,16 @@ namespace cryptonote
 
      bool handle_incoming_tx_pre(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);
      bool handle_incoming_tx_post(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);
-     struct tx_verification_batch_info { const cryptonote::transaction *tx; crypto::hash tx_hash; tx_verification_context &tvc; bool &result; };
-     bool handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block);
+
+     struct tx_verification_batch_info
+     {
+       const cryptonote::transaction *tx;
+       crypto::hash tx_hash;
+       tx_verification_context &tvc;
+       bool &result;
+     };
+
+     void handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block);
 
      /**
       * @copydoc miner::on_block_chain_update
