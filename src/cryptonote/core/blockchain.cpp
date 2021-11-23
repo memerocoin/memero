@@ -3855,19 +3855,18 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
   }
 
   // from v7, sorted ins
-  const bool sorted_output_key_images =
-    std::is_sorted
+  std::vector<crypto::key_image> output_key_images;
+  std::transform
     (
      tx.vin.begin()
      , tx.vin.end()
-     , [](const auto& x, const auto& y) {
-       const txin_to_key x1 = boost::get<txin_to_key>(x);
-       const txin_to_key y1 = boost::get<txin_to_key>(x);
-       return x1.output_key_image < y1.output_key_image;
+     , std::back_inserter(output_key_images)
+     , [](const auto& x) {
+       return boost::get<txin_to_key>(x).output_key_image;
      }
      );
 
-  if (!sorted_output_key_images) {
+  if (!consensus::rule_18_ringct_output_key_images_should_be_sorted(output_key_images)) {
     LOG_ERROR_VER("transaction has unsorted inputs");
     tvc.m_verifivation_failed = true;
     return false;

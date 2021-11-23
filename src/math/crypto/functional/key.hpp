@@ -37,8 +37,8 @@ namespace crypto {
 
   // public key with another base P, where P is hash_to_point(public key)
   struct key_image: ec_point {
-    bool operator < (const key_image &x) const noexcept {
-      return data < x.data;
+    auto operator <=> (const key_image &x) const noexcept {
+      return data <=> x.data;
     }
   };
 
