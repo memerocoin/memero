@@ -722,7 +722,7 @@ namespace cryptonote
        , tx.vin.end()
        , std::back_inserter(xs)
        , [](const auto& in) -> std::optional<crypto::key_image> {
-         CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, std::nullopt);
+         CHECKED_GET_SPECIFIC_VARIANT(in, const txin_from_key, tokey_in, std::nullopt);
          return tokey_in.output_key_image;
        }
        );
@@ -744,7 +744,7 @@ namespace cryptonote
        , true
        , std::logical_and()
        , [](const auto& x) {
-         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, false);
+         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_from_key, tokey_in, false);
 
          return consensus::rule_7_ringct_input_decoys_offsets_should_not_be_zero_except_the_first_one
            (

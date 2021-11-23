@@ -111,7 +111,7 @@ namespace consensus {
   }
 
   bool rule_15_ringct_input_type_should_be_from_key(const cryptonote::txin_v x) {
-    return x.type() == typeid(cryptonote::txin_to_key);
+    return x.type() == typeid(cryptonote::txin_from_key);
   }
 
   bool are_ringct_input_types_valid(const std::span<const cryptonote::txin_v> xs) {

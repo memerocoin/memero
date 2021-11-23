@@ -599,13 +599,13 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
 
   LOG_PRINT_L2("gathering key images");
   std::string output_key_images;
-  bool all_are_txin_to_key = std::all_of(tx.vin.begin(), tx.vin.end(), [&](const txin_v& s_e) -> bool
+  bool all_are_txin_from_key = std::all_of(tx.vin.begin(), tx.vin.end(), [&](const txin_v& s_e) -> bool
   {
-    CHECKED_GET_SPECIFIC_VARIANT(s_e, const txin_to_key, in, false);
+    CHECKED_GET_SPECIFIC_VARIANT(s_e, const txin_from_key, in, false);
     output_key_images += boost::to_string(in.output_key_image) + " ";
     return true;
   });
-  THROW_WALLET_EXCEPTION_IF(!all_are_txin_to_key, tools::error::unexpected_txin_type, tx);
+  THROW_WALLET_EXCEPTION_IF(!all_are_txin_from_key, tools::error::unexpected_txin_type, tx);
   LOG_PRINT_L2("gathered key images");
 
   ptx.output_key_images = output_key_images;
@@ -763,9 +763,9 @@ unconfirmed_transfer_details get_unconfirmed_transfer_details
   utd.m_subaddr_indices = subaddr_indices;
   for (const auto &in: tx.vin)
   {
-    if (in.type() != typeid(cryptonote::txin_to_key))
+    if (in.type() != typeid(cryptonote::txin_from_key))
       continue;
-    const auto &txin = boost::get<cryptonote::txin_to_key>(in);
+    const auto &txin = boost::get<cryptonote::txin_from_key>(in);
     utd.m_rings.push_back(std::make_pair(txin.output_key_image, txin.output_relative_offsets));
   }
 

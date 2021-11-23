@@ -532,9 +532,9 @@ bool wallet2::spends_one_of_ours(const cryptonote::transaction &tx) const
 {
   for (const auto &in: tx.vin)
   {
-    if (in.type() != typeid(cryptonote::txin_to_key))
+    if (in.type() != typeid(cryptonote::txin_from_key))
       continue;
-    const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(in);
+    const cryptonote::txin_from_key &in_to_key = boost::get<cryptonote::txin_from_key>(in);
     auto it = m_output_key_images.find(in_to_key.output_key_image);
     if (it != m_output_key_images.end())
       return true;
@@ -811,9 +811,9 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   // check all outputs for spending (compare key images)
   for(auto& in: tx.vin)
   {
-    if(in.type() != typeid(cryptonote::txin_to_key))
+    if(in.type() != typeid(cryptonote::txin_from_key))
       continue;
-    const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(in);
+    const cryptonote::txin_from_key &in_to_key = boost::get<cryptonote::txin_from_key>(in);
     auto it = m_output_key_images.find(in_to_key.output_key_image);
     if(it != m_output_key_images.end())
     {
@@ -979,9 +979,9 @@ void wallet2::process_outgoing(const crypto::hash &txid, const cryptonote::trans
   entry.first->second.m_rings.clear();
   for (const auto &in: tx.vin)
   {
-    if (in.type() != typeid(cryptonote::txin_to_key))
+    if (in.type() != typeid(cryptonote::txin_from_key))
       continue;
-    const auto &txin = boost::get<cryptonote::txin_to_key>(in);
+    const auto &txin = boost::get<cryptonote::txin_from_key>(in);
     entry.first->second.m_rings.push_back(std::make_pair(txin.output_key_image, txin.output_relative_offsets));
   }
   entry.first->second.m_block_height = height;
@@ -1355,9 +1355,9 @@ void wallet2::update_pool_state(std::vector<std::tuple<cryptonote::transaction, 
         // the inputs aren't spent anymore, since the tx failed
         for (size_t vini = 0; vini < pit->second.m_tx.vin.size(); ++vini)
         {
-          if (pit->second.m_tx.vin[vini].type() == typeid(txin_to_key))
+          if (pit->second.m_tx.vin[vini].type() == typeid(txin_from_key))
           {
-            txin_to_key &tx_in_to_key = boost::get<txin_to_key>(pit->second.m_tx.vin[vini]);
+            txin_from_key &tx_in_to_key = boost::get<txin_from_key>(pit->second.m_tx.vin[vini]);
             for (size_t i = 0; i < m_transfers.size(); ++i)
             {
               const transfer_details &td = m_transfers[i];

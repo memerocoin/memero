@@ -1645,9 +1645,9 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
     std::vector<crypto::hash> spent_key_txid  (tx.vin.size());
     for (size_t i = 0; i < tx.vin.size(); ++i)
     {
-      if (tx.vin[i].type() != typeid(cryptonote::txin_to_key))
+      if (tx.vin[i].type() != typeid(cryptonote::txin_from_key))
         continue;
-      const cryptonote::txin_to_key& in_key = boost::get<cryptonote::txin_to_key>(tx.vin[i]);
+      const cryptonote::txin_from_key& in_key = boost::get<cryptonote::txin_from_key>(tx.vin[i]);
       const wallet::logic::type::transfer::transfer_details &td = m_wallet->get_transfer_details(construction_data.selected_transfers[i]);
       const cryptonote::tx_source_entry *sptr = NULL;
       for (const auto &src: construction_data.sources)

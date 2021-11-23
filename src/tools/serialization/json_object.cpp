@@ -319,7 +319,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
 
     rapidjson::Writer<rapidjson::StringBuffer>& dest;
 
-    void operator()(cryptonote::txin_to_key const& input) const
+    void operator()(cryptonote::txin_from_key const& input) const
     {
       WRITE_JSON_FIELD_FROM(dest, to_key, input);
     }
@@ -349,7 +349,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_v& txin)
   {
     if (elem.name == "to_key")
     {
-      cryptonote::txin_to_key tmpVal;
+      cryptonote::txin_from_key tmpVal;
       fromJsonValue(elem.value, tmpVal);
       txin = std::move(tmpVal);
     }
@@ -381,7 +381,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_gen& txin)
   READ_JSON_VALUE_BY_KEY(val, txin.height, height);
 }
 
-void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_to_key txin)
+void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const cryptonote::txin_from_key txin)
 {
   dest.StartObject();
 
@@ -392,7 +392,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const crypton
   dest.EndObject();
 }
 
-void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_to_key& txin)
+void fromJsonValue(const rapidjson::Value& val, cryptonote::txin_from_key& txin)
 {
   if (!val.IsObject())
   {

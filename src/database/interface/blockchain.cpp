@@ -132,9 +132,9 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
   }
   for (const txin_v& tx_input : tx.vin)
   {
-    if (tx_input.type() == typeid(txin_to_key))
+    if (tx_input.type() == typeid(txin_from_key))
     {
-      add_spent_key(boost::get<txin_to_key>(tx_input).output_key_image);
+      add_spent_key(boost::get<txin_from_key>(tx_input).output_key_image);
     }
     else if (tx_input.type() == typeid(txin_gen))
     {
@@ -146,9 +146,9 @@ void BlockchainDB::add_transaction(const crypto::hash& blk_hash, const std::pair
       LOG_PRINT_L1("Unsupported input type, removing key images and aborting transaction addition");
       for (const txin_v& tx_input : tx.vin)
       {
-        if (tx_input.type() == typeid(txin_to_key))
+        if (tx_input.type() == typeid(txin_from_key))
         {
-          remove_spent_key(boost::get<txin_to_key>(tx_input).output_key_image);
+          remove_spent_key(boost::get<txin_from_key>(tx_input).output_key_image);
         }
       }
       return;
@@ -282,9 +282,9 @@ void BlockchainDB::remove_transaction(const crypto::hash& tx_hash)
 
   for (const txin_v& tx_input : tx.vin)
   {
-    if (tx_input.type() == typeid(txin_to_key))
+    if (tx_input.type() == typeid(txin_from_key))
     {
-      remove_spent_key(boost::get<txin_to_key>(tx_input).output_key_image);
+      remove_spent_key(boost::get<txin_from_key>(tx_input).output_key_image);
     }
   }
 

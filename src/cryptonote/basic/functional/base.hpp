@@ -70,7 +70,7 @@ namespace cryptonote
     END_SERIALIZE()
   };
 
-  struct txin_to_key
+  struct txin_from_key
   {
     uint64_t amount;
     std::vector<uint64_t> output_relative_offsets;
@@ -84,7 +84,7 @@ namespace cryptonote
   };
 
 
-  using txin_v = boost::variant<txin_gen, txin_to_key>;
+  using txin_v = boost::variant<txin_gen, txin_from_key>;
   using txout_target_v = boost::variant<txout_to_key>;
 
   //typedef std::pair<uint64_t, txout> out_t;
@@ -173,8 +173,8 @@ namespace cryptonote
               , ringct.type
               , vin.size()
               , vout.size()
-              , vin.size() > 0 && vin[0].type() == typeid(txin_to_key) ?
-              boost::get<txin_to_key>(vin[0]).output_relative_offsets.size() - 1
+              , vin.size() > 0 && vin[0].type() == typeid(txin_from_key) ?
+              boost::get<txin_from_key>(vin[0]).output_relative_offsets.size() - 1
               : 0
              );
           if (!r || !ar.stream().good()) return false;
@@ -315,11 +315,11 @@ BLOB_SERIALIZER(cryptonote::spend_view_public_keys);
 BLOB_SERIALIZER(cryptonote::spend_view_public_keys_unsafe);
 
 VARIANT_TAG(binary_archive, cryptonote::txin_gen, 0xff);
-VARIANT_TAG(binary_archive, cryptonote::txin_to_key, 0x2);
+VARIANT_TAG(binary_archive, cryptonote::txin_from_key, 0x2);
 VARIANT_TAG(binary_archive, cryptonote::txout_to_key, 0x2);
 
 VARIANT_TAG(json_archive, cryptonote::txin_gen, "gen");
-VARIANT_TAG(json_archive, cryptonote::txin_to_key, "ring");
+VARIANT_TAG(json_archive, cryptonote::txin_from_key, "ring");
 VARIANT_TAG(json_archive, cryptonote::txout_to_key, "output_public_key");
 VARIANT_TAG(json_archive, cryptonote::transaction, "tx");
 

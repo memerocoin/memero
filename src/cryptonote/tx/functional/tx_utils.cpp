@@ -206,7 +206,7 @@ namespace cryptonote
       }
 
       //put key image into tx input
-      txin_to_key input_to_key;
+      txin_from_key input_to_key;
       input_to_key.amount = src_entr.amount;
       input_to_key.output_key_image = img;
 
@@ -231,7 +231,7 @@ namespace cryptonote
        , tx.vin.end()
        , std::back_inserter(output_public_key_images)
        , [](const auto& x) {
-         const txin_to_key &tk = boost::get<txin_to_key>(x);
+         const txin_from_key &tk = boost::get<txin_from_key>(x);
          return tk.output_key_image;
          }
        );
@@ -368,7 +368,7 @@ namespace cryptonote
       for (size_t i = 0; i < tx.vin.size(); ++i)
       {
         if (sources[i].rct)
-          boost::get<txin_to_key>(tx.vin[i]).amount = 0;
+          boost::get<txin_from_key>(tx.vin[i]).amount = 0;
       }
       for (size_t i = 0; i < tx.vout.size(); ++i)
         tx.vout[i].amount = 0;

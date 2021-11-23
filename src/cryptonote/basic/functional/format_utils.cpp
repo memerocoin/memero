@@ -335,10 +335,10 @@ namespace cryptonote
     {
       LOG_ERROR_AND_RETURN_UNLESS
         (
-         in.type() == typeid(txin_to_key)
+         in.type() == typeid(txin_from_key)
          , false
          , "wrong variant type: "
-         << in.type().name() << ", expected " << typeid(txin_to_key).name()
+         << in.type().name() << ", expected " << typeid(txin_from_key).name()
          << ", in transaction id=" << get_transaction_hash(tx)
          );
 
@@ -399,7 +399,7 @@ namespace cryptonote
     uint64_t money = 0;
     for(const auto& in: tx.vin)
     {
-      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, false);
+      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_from_key, tokey_in, false);
       if(money > tokey_in.amount + money)
         return false;
       money += tokey_in.amount;
@@ -615,7 +615,7 @@ namespace cryptonote
        , 0ull
        , std::plus()
        , [](const auto& x) -> uint64_t {
-         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_to_key, tokey_in, 0);
+         CHECKED_GET_SPECIFIC_VARIANT(x, const txin_from_key, tokey_in, 0);
          return tokey_in.amount;
        }
        );

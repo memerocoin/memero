@@ -102,7 +102,7 @@ bool Blockchain::have_tx_keyimg_as_spent(const crypto::key_image &key_im) const
 // and collects the public key for each from the transaction it was included in
 // via the visitor passed to it.
 template <class visitor_t>
-bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_to_key& tx_in_to_key, visitor_t &vis, const crypto::hash &tx_prefix_hash, uint64_t* pmax_related_block_height) const
+bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_from_key& tx_in_to_key, visitor_t &vis, const crypto::hash &tx_prefix_hash, uint64_t* pmax_related_block_height) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
 
@@ -2365,7 +2365,7 @@ bool Blockchain::check_for_double_spend(const transaction& tx, output_key_images
       m_spent_keys(spent_keys), m_db(db)
     {
     }
-    bool operator()(const txin_to_key& in) const
+    bool operator()(const txin_from_key& in) const
     {
       const crypto::key_image& ki = in.output_key_image;
 
@@ -2459,7 +2459,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, uint64_t& max_used_block_heigh
   TIME_MEASURE_FINISH(a);
   if(m_show_time_stats)
   {
-    size_t ring_size = !tx.vin.empty() && tx.vin[0].type() == typeid(txin_to_key) ? boost::get<txin_to_key>(tx.vin[0]).output_relative_offsets.size() : 0;
+    size_t ring_size = !tx.vin.empty() && tx.vin[0].type() == typeid(txin_from_key) ? boost::get<txin_from_key>(tx.vin[0]).output_relative_offsets.size() : 0;
     LOG_INFO("HASH: " <<  get_transaction_hash(tx) << " I/M/O: " << tx.vin.size() << "/" << ring_size << "/" << tx.vout.size() << " H: " << max_used_block_height << " ms: " << a + m_fake_scan_time << " B: " << get_object_blobsize(tx) << " W: " << get_transaction_weight(tx));
   }
   if (!res)
@@ -2502,7 +2502,7 @@ bool Blockchain::have_tx_keyimges_as_spent(const transaction &tx) const
   LOG_PRINT_L3("Blockchain::" << __func__);
   for (const txin_v& in: tx.vin)
   {
-    CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, in_to_key, true);
+    CHECKED_GET_SPECIFIC_VARIANT(in, const txin_from_key, in_to_key, true);
     if(have_tx_keyimg_as_spent(in_to_key.output_key_image))
       return true;
   }
@@ -2542,7 +2542,7 @@ bool Blockchain::expand_transaction_2(transaction &tx, const crypto::hash &tx_pr
       LOG_ERROR_AND_RETURN_UNLESS(rv.p.CLSAGs.size() == tx.vin.size(), false, "Bad CLSAGs size");
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
-        rv.p.CLSAGs[n].signer_key_image = boost::get<txin_to_key>(tx.vin[n]).output_key_image;
+        rv.p.CLSAGs[n].signer_key_image = boost::get<txin_from_key>(tx.vin[n]).output_key_image;
       }
   }
   else
@@ -2593,7 +2593,7 @@ bool Blockchain::is_tx_spendtime_unlocked(const uint64_t unlock_height) const
 bool Blockchain::check_tx_input
 (
   size_t tx_version
-  , const txin_to_key& txin
+  , const txin_from_key& txin
   , const crypto::hash& tx_prefix_hash
   , const rct::rctData &ringct
   , std::vector<rct::output_public_data> &output_keys
@@ -3438,7 +3438,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
       // get all amounts from tx.vin(s)
       for (const auto &txin : tx.vin)
       {
-        const txin_to_key &in_to_key = boost::get < txin_to_key > (txin);
+        const txin_from_key &in_to_key = boost::get < txin_from_key > (txin);
 
         // check for duplicate
         auto it = its->second.find(in_to_key.output_key_image);
@@ -3466,7 +3466,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
       // add new absolute_offsets to offset_map
       for (const auto &txin : tx.vin)
       {
-        const txin_to_key &in_to_key = boost::get < txin_to_key > (txin);
+        const txin_from_key &in_to_key = boost::get < txin_from_key > (txin);
         // no need to check for duplicate here.
         auto absolute_offsets = relative_output_offsets_to_absolute(in_to_key.output_relative_offsets);
         for (const auto & offset : absolute_offsets)
@@ -3533,7 +3533,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
 
       for (const auto &txin : tx.vin)
       {
-        const txin_to_key &in_to_key = boost::get < txin_to_key > (txin);
+        const txin_from_key &in_to_key = boost::get < txin_from_key > (txin);
         auto needed_offsets = relative_output_offsets_to_absolute(in_to_key.output_relative_offsets);
 
         std::vector<output_data_t> outputs;
@@ -3802,10 +3802,10 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     const size_t min_mixin = config::lol::mixin;
     for (const auto& txin : tx.vin)
     {
-      // non txin_to_key inputs will be rejected below
-      if (txin.type() == typeid(txin_to_key))
+      // non txin_from_key inputs will be rejected below
+      if (txin.type() == typeid(txin_from_key))
       {
-        const txin_to_key& in_to_key = boost::get<txin_to_key>(txin);
+        const txin_from_key& in_to_key = boost::get<txin_from_key>(txin);
         if (in_to_key.amount == 0)
         {
           // always consider rct inputs mixable. Even if there's not enough rct
@@ -3873,7 +3873,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
      , tx.vin.end()
      , std::back_inserter(output_key_images)
      , [](const auto& x) {
-       return boost::get<txin_to_key>(x).output_key_image;
+       return boost::get<txin_from_key>(x).output_key_image;
      }
      );
 
@@ -3895,10 +3895,10 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
     pmax_used_block_height = &max_used_block_height;
   for (const auto& txin : tx.vin)
   {
-    // make sure output being spent is of type txin_to_key, rather than
+    // make sure output being spent is of type txin_from_key, rather than
     // e.g. txin_gen, which is only used for miner transactions
-    LOG_ERROR_AND_RETURN_UNLESS(txin.type() == typeid(txin_to_key), false, "wrong type id in tx input at Blockchain::check_tx_inputs");
-    const txin_to_key& in_to_key = boost::get<txin_to_key>(txin);
+    LOG_ERROR_AND_RETURN_UNLESS(txin.type() == typeid(txin_from_key), false, "wrong type id in tx input at Blockchain::check_tx_inputs");
+    const txin_from_key& in_to_key = boost::get<txin_from_key>(txin);
 
     // make sure tx output has key offset(s) (is signed to be used)
     LOG_ERROR_AND_RETURN_UNLESS(in_to_key.output_relative_offsets.size(), false, "empty in_to_key.output_relative_offsets in transaction with id " << get_transaction_hash(tx));
@@ -3994,7 +3994,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
       for (size_t n = 0; n < tx.vin.size(); ++n)
       {
         bool error;
-        error = memcmp(&boost::get<txin_to_key>(tx.vin[n]).output_key_image, &rv.p.CLSAGs[n].signer_key_image, 32);
+        error = memcmp(&boost::get<txin_from_key>(tx.vin[n]).output_key_image, &rv.p.CLSAGs[n].signer_key_image, 32);
         if (error)
         {
           LOG_ERROR_VER("Failed to check ringct signatures: mismatched key image");

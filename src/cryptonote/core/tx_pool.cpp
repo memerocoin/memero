@@ -390,7 +390,7 @@ namespace cryptonote
   {
     for(const auto& in: tx.vin)
     {
-      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, txin, false);
+      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_from_key, txin, false);
       std::unordered_set<crypto::hash>& kei_image_set = m_spent_output_key_images[txin.output_key_image];
 
       // Only allow multiple txes per key-image if kept-by-block. Only allow
@@ -424,7 +424,7 @@ namespace cryptonote
     // ND: Speedup
     for(const txin_v& vi: tx.vin)
     {
-      CHECKED_GET_SPECIFIC_VARIANT(vi, const txin_to_key, txin, false);
+      CHECKED_GET_SPECIFIC_VARIANT(vi, const txin_from_key, txin, false);
       auto it = m_spent_output_key_images.find(txin.output_key_image);
       LOG_ERROR_AND_RETURN_UNLESS(it != m_spent_output_key_images.end(), false, "failed to find transaction input in key images. img=" << txin.output_key_image << std::endl
                                     << "transaction id = " << actual_hash);
@@ -1026,7 +1026,7 @@ namespace cryptonote
     LOCK_LOCKABLE_OBJECT(m_blockchain);
     for(const auto& in: tx.vin)
     {
-      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_to_key, tokey_in, true);//should never fail
+      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_from_key, tokey_in, true);//should never fail
       if(have_tx_keyimg_as_spent(tokey_in.output_key_image, txid))
          return true;
     }
@@ -1132,7 +1132,7 @@ namespace cryptonote
   {
     for(size_t i = 0; i!= tx.vin.size(); i++)
     {
-      CHECKED_GET_SPECIFIC_VARIANT(tx.vin[i], const txin_to_key, itk, false);
+      CHECKED_GET_SPECIFIC_VARIANT(tx.vin[i], const txin_from_key, itk, false);
       if(output_key_images.count(itk.output_key_image))
         return true;
     }
@@ -1143,7 +1143,7 @@ namespace cryptonote
   {
     for(size_t i = 0; i!= tx.vin.size(); i++)
     {
-      CHECKED_GET_SPECIFIC_VARIANT(tx.vin[i], const txin_to_key, itk, false);
+      CHECKED_GET_SPECIFIC_VARIANT(tx.vin[i], const txin_from_key, itk, false);
       auto i_res = output_key_images.insert(itk.output_key_image);
       LOG_ERROR_AND_RETURN_UNLESS(i_res.second, false, "internal error: key images pool cache - inserted duplicate image in set: " << itk.output_key_image);
     }
@@ -1158,7 +1158,7 @@ namespace cryptonote
     LockedTXN lock(m_blockchain.get_db());
     for(size_t i = 0; i!= tx.vin.size(); i++)
     {
-      CHECKED_GET_SPECIFIC_VARIANT(tx.vin[i], const txin_to_key, itk, void());
+      CHECKED_GET_SPECIFIC_VARIANT(tx.vin[i], const txin_from_key, itk, void());
       const output_key_images_container::const_iterator it = m_spent_output_key_images.find(itk.output_key_image);
       if (it != m_spent_output_key_images.end())
       {

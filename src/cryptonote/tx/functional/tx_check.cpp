@@ -60,9 +60,9 @@ bool rct_tx_sanity_check(const cryptonote::string_blob &tx_blob, uint64_t rct_ou
 
   for (const auto &txin : tx.vin)
   {
-    if (txin.type() != typeid(cryptonote::txin_to_key))
+    if (txin.type() != typeid(cryptonote::txin_from_key))
       continue;
-    const cryptonote::txin_to_key &in_to_key = boost::get<cryptonote::txin_to_key>(txin);
+    const cryptonote::txin_from_key &in_to_key = boost::get<cryptonote::txin_from_key>(txin);
     if (in_to_key.amount != 0)
       continue;
     const std::vector<uint64_t> absolute = cryptonote::relative_output_offsets_to_absolute(in_to_key.output_relative_offsets);
