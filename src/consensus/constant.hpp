@@ -26,4 +26,8 @@ namespace consensus {
     constexpr uint64_t COIN = 100000000000ull; // pow(10, 11)
     return COIN;
   }
+
+  consteval uint64_t get_coinbase_unlock_time() {
+    return 60ull;
+  }
 }

@@ -104,6 +104,9 @@ namespace constant
   constexpr uint64_t fee_quantization_mask =
     tools::powerof(10, CRYPTONOTE_DISPLAY_DECIMAL_POINT_COPY - PER_KB_FEE_QUANTIZATION_DECIMALS);
 
+  constexpr uint64_t CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW =
+    consensus::get_coinbase_unlock_time();
+
 }
 
 namespace config

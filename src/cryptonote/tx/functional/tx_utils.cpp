@@ -480,7 +480,7 @@ namespace cryptonote
     tx.version = 2;
 
     //lock
-    tx.unlock_height = height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
+    tx.unlock_height = consensus::get_coinbase_unlock_height(height);
     tx.vin.push_back(in);
 
     //LOG_PRINT("MINER_TX generated ok, block_reward=" << print_money(block_reward) << "("  << print_money(block_reward - fee) << "+" << print_money(fee)

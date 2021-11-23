@@ -1102,7 +1102,19 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
     return false;
   }
   LOG_DEBUG("Miner tx hash: " << get_transaction_hash(b.miner_tx));
-  LOG_ERROR_AND_RETURN_UNLESS(b.miner_tx.unlock_height == height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW, false, "coinbase transaction transaction has the wrong unlock time=" << b.miner_tx.unlock_height << ", expected " << height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+     consensus::rule_20_coinbase_outputs_are_locked_for_60_blocks
+     (
+      height
+      , b.miner_tx.unlock_height
+      )
+     , false
+     , "coinbase transaction transaction has the wrong unlock time="
+     << b.miner_tx.unlock_height
+     << ", expected "
+     << consensus::get_coinbase_unlock_height(height)
+     );
 
   //check outs overflow
   //NOTE: not entirely sure this is necessary, given that this function is
