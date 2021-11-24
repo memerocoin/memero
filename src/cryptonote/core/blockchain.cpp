@@ -2917,7 +2917,7 @@ leave:
     {
       // validate that transaction inputs and the keys spending them are correct.
       tx_verification_context tvc;
-      if(!check_ringct_inputs(tx, tvc))
+      if(!(check_ringct_inputs(tx, tvc) && check_ringct_outputs(tx, tvc)))
       {
         LOG_ERROR_VER("Block with id: " << id  << " has at least one transaction (id: " << tx_id << ") with wrong inputs.");
 
