@@ -36,7 +36,7 @@
 namespace rct {
 
   bool verify_range_proof(const rctDataSizeChecked rv);
-  bool verify_tx_balance(const rctDataSizeChecked rv);
+  bool verify_ringct_balance(const rctDataSizeChecked rv);
   bool verify_clsag_signatures(const rctDataSizeChecked rv);
 
   bool verify_ringct(const rctDataSizeChecked rv);

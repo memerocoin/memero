@@ -122,7 +122,7 @@ namespace rct {
     return consensus::rule_4_ringct_input_should_be_from_a_key(message, *maybeClsag, decoys, pseudo_input_commit);
   }
 
-  bool verify_tx_balance(const rctDataSizeChecked rv) {
+  bool verify_ringct_balance(const rctDataSizeChecked rv) {
     rct::rct_pointV output_commits;
 
     std::transform
@@ -212,7 +212,7 @@ namespace rct {
   }
 
   bool verify_ringct(const rctDataSizeChecked rv) {
-    return verify_range_proof(rv) && verify_tx_balance(rv) && verify_clsag_signatures(rv);
+    return verify_range_proof(rv) && verify_ringct_balance(rv) && verify_clsag_signatures(rv);
   }
 
   std::pair<amount_t, rct_scalar> decode_ringct_commitment
