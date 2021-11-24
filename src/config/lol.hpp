@@ -41,9 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace constant
 {
-  // MONEY_SUPPLY - total number coins to be generated
-  constexpr uint64_t MONEY_SUPPLY = (uint64_t)(-1);
-
   // COIN - number of smallest units in one coin
 
   constexpr uint64_t DIFFICULTY_TARGET_IN_SECONDS = 300;

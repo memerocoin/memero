@@ -243,7 +243,7 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_merge_destinations(false),
   m_confirm_export_overwrite(true),
   m_ignore_fractional_outputs(true),
-  m_ignore_outputs_above(MONEY_SUPPLY),
+  m_ignore_outputs_above(std::numeric_limits<uint64_t>::max()),
   m_ignore_outputs_below(0),
   m_is_initialized(false),
   m_kdf_rounds(kdf_rounds),
@@ -2142,7 +2142,8 @@ bool wallet2::load_keys_buf(const std::string& keys_buf, const epee::wipeable_st
     % (m_nettype == MAINNET ? "mainnet" : "testnet")).str());
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, ignore_fractional_outputs, int, Int, false, true);
     m_ignore_fractional_outputs = field_ignore_fractional_outputs;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, ignore_outputs_above, uint64_t, Uint64, false, MONEY_SUPPLY);
+    GET_FIELD_FROM_JSON_RETURN_ON_ERROR
+      (json, ignore_outputs_above, uint64_t, Uint64, false, std::numeric_limits<uint64_t>::max());
     m_ignore_outputs_above = field_ignore_outputs_above;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, ignore_outputs_below, uint64_t, Uint64, false, 0);
     m_ignore_outputs_below = field_ignore_outputs_below;
