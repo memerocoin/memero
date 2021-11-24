@@ -170,9 +170,7 @@ namespace cryptonote
   bool check_inputs_types_supported(const transaction& tx);
   bool check_outs_valid(const transaction& tx);
 
-  bool check_money_overflow(const transaction& tx);
-  bool check_outs_overflow(const transaction& tx);
-  bool check_inputs_overflow(const transaction& tx);
+  bool check_output_amount_sum_overflow(const transaction& tx);
 
   string_blob get_mining_blob(const block& b);
   string_blob get_mining_blob_head(const block& b);

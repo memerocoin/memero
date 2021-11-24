@@ -396,27 +396,8 @@ namespace cryptonote
 
     return consensus::rule_11_tx_output_public_keys_should_be_safe_points(xs).has_value();
   }
-
-  //-----------------------------------------------------------------------------------------------
-  bool check_money_overflow(const transaction& tx)
-  {
-    return check_inputs_overflow(tx) && check_outs_overflow(tx);
-  }
   //---------------------------------------------------------------
-  bool check_inputs_overflow(const transaction& tx)
-  {
-    uint64_t money = 0;
-    for(const auto& in: tx.vin)
-    {
-      CHECKED_GET_SPECIFIC_VARIANT(in, const txin_from_key, tokey_in, false);
-      if(money > tokey_in.amount + money)
-        return false;
-      money += tokey_in.amount;
-    }
-    return true;
-  }
-  //---------------------------------------------------------------
-  bool check_outs_overflow(const transaction& tx)
+  bool check_output_amount_sum_overflow(const transaction& tx)
   {
     std::vector<uint64_t> output_amount;
     std::transform

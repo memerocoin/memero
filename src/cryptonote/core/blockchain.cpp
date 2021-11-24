@@ -1126,17 +1126,13 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
      << consensus::get_coinbase_unlock_height(height)
      );
 
-  //check outs overflow
-  //NOTE: not entirely sure this is necessary, given that this function is
-  //      designed simply to make sure the total amount for a transaction
-  //      does not overflow a uint64_t, and this transaction *is* a uint64_t...
-  if(!check_outs_overflow(b.miner_tx))
+  if(!check_output_amount_sum_overflow(b.miner_tx))
   {
     LOG_ERROR("miner transaction has money overflow in block " << get_block_hash(b));
     return false;
   }
 
-  return check_tx_output_points(b.miner_tx).has_value();
+  return true;
 }
 //------------------------------------------------------------------
 // This function validates the miner transaction reward

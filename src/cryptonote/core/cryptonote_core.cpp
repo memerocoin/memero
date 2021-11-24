@@ -615,7 +615,7 @@ namespace cryptonote
       }
     }
 
-    if(!check_money_overflow(tx))
+    if(!check_output_amount_sum_overflow(tx))
     {
       LOG_ERROR_VER("tx has money overflow, rejected for tx id= " << get_transaction_hash(tx));
       return false;
