@@ -24,6 +24,9 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/crypto/functional/group.hpp"
 
+#undef MONERO_DEFAULT_LOG_CATEGORY
+#define MONERO_DEFAULT_LOG_CATEGORY "consensus"
+
 namespace consensus {
 
   bool rule_2_ringct_output_amounts_should_not_overflow_amount_type
@@ -117,6 +120,29 @@ namespace consensus {
 
     return safe_points;
   }
+
+  std::optional<std::vector<crypto::public_key>>
+  rule_11_tx_output_public_keys_should_be_safe_points
+  (
+   const std::span<const crypto::ec_point_unsafe> xs
+   ) {
+    const auto maybe_safe_points = are_points_safe(xs);
+    if (!maybe_safe_points) {
+      return {};
+    } else {
+      std::vector<crypto::public_key> keys;
+      std::transform
+        (
+         maybe_safe_points->begin()
+         , maybe_safe_points->end()
+         , std::back_inserter(keys)
+         , crypto::p2pk
+         );
+
+      return keys;
+    }
+  }
+
 
   std::optional<cryptonote::txout_to_key>
   rule_12_tx_output_target_should_be_output_public_key(const cryptonote::txout_target_v x) {

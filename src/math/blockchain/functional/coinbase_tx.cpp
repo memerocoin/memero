@@ -23,6 +23,9 @@
 #include "tools/epee/include/logging.hpp"
 #include "consensus/consensus.hpp"
 
+#undef MONERO_DEFAULT_LOG_CATEGORY
+#define MONERO_DEFAULT_LOG_CATEGORY "math/blockchain/coinbase_tx"
+
 namespace cryptonote {
 
 std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx) {
@@ -57,38 +60,27 @@ std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx) {
 
   const auto input = *maybe_input;
 
-  std::vector<cryptonote::txout_target_v> output_targets;
-  std::transform
-    (
-      tx.vout.begin()
-      , tx.vout.end()
-      , std::back_inserter(output_targets)
-      , [](const auto& x) {
-        return x.target;
-      }
-      );
-
-  const auto maybe_targets = consensus::are_tx_output_targets_valid(output_targets);
+  const auto maybe_outputs = check_tx_output_points(tx);
   LOG_ERROR_AND_RETURN_UNLESS
     (
-      maybe_targets
-      , {}
-      , "Wrong output types"
-      );
+     maybe_outputs
+     , {}
+     , "invalid outputs"
+     );
 
-  const auto targets = *maybe_targets;
+  const std::vector<crypto::public_key> output_public_keys = *maybe_outputs;
 
   std::vector<coinbase_output> outputs;
   std::transform
     (
       tx.vout.begin()
       , tx.vout.end()
-      , targets.begin()
+      , output_public_keys.begin()
       , std::back_inserter(outputs)
       , [](const auto& x, const auto& y) -> coinbase_output {
         return {
           x.amount
-          , y.output_public_key
+          , y
         };
       }
       );

@@ -156,7 +156,11 @@ namespace consensus {
    const std::span<const crypto::ec_point_unsafe> xs
    );
 
-  constexpr auto rule_11_tx_output_public_keys_should_be_safe_points = are_points_safe;
+  std::optional<std::vector<crypto::public_key>>
+  rule_11_tx_output_public_keys_should_be_safe_points
+  (
+   const std::span<const crypto::ec_point_unsafe> xs
+   );
 
   std::optional<cryptonote::txout_to_key>
   rule_12_tx_output_target_should_be_output_public_key(const cryptonote::txout_target_v x);

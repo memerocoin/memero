@@ -23,9 +23,12 @@
 #include "tools/epee/include/logging.hpp"
 #include "consensus/consensus.hpp"
 
+#undef MONERO_DEFAULT_LOG_CATEGORY
+#define MONERO_DEFAULT_LOG_CATEGORY "math/blockchain/tx_common"
+
 namespace cryptonote {
 
-std::optional<std::vector<crypto::ec_point>>
+std::optional<std::vector<crypto::public_key>>
 check_tx_output_points(const transaction& tx) {
 
   std::vector<cryptonote::txout_target_v> output_targets;
