@@ -238,4 +238,9 @@ namespace consensus {
    const cryptonote::txin_v x
    );
 
+  std::optional<uint64_t> rule_24_coinbase_output_amount_sum_should_not_overflow_amount_t
+  (
+   const std::span<const uint64_t> xs
+   );
+
 }

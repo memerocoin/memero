@@ -24,6 +24,8 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/crypto/functional/group.hpp"
 
+#include <boost/multiprecision/cpp_int.hpp>
+
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "consensus"
 
@@ -281,6 +283,30 @@ namespace consensus {
   {
     if (x.type() == typeid(cryptonote::txin_gen)) {
       return boost::get<cryptonote::txin_gen>(x);
+    } else {
+      return {};
+    };
+  }
+
+  std::optional<uint64_t> rule_24_coinbase_output_amount_sum_should_not_overflow_amount_t
+  (
+   const std::span<const uint64_t> xs
+   )
+  {
+    using namespace boost::multiprecision;
+    constexpr uint128_t max64bit = std::numeric_limits<uint64_t>::max();
+
+    const uint128_t sum = std::transform_reduce
+      (
+       xs.begin()
+       , xs.end()
+       , uint128_t(0)
+       , std::plus<uint128_t>() 
+       , [](const uint64_t x) -> uint128_t { return uint128_t(x); }
+       );
+
+    if (sum <= max64bit) {
+      return uint64_t(sum);
     } else {
       return {};
     };

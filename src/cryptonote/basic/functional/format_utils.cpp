@@ -418,14 +418,16 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool check_outs_overflow(const transaction& tx)
   {
-    uint64_t money = 0;
-    for(const auto& o: tx.vout)
-    {
-      if(money > o.amount + money)
-        return false;
-      money += o.amount;
-    }
-    return true;
+    std::vector<uint64_t> output_amount;
+    std::transform
+      (
+       tx.vout.begin()
+       , tx.vout.end()
+       , std::back_inserter(output_amount)
+       , [](const auto&x ) { return x.amount; }
+       );
+
+    return consensus::rule_24_coinbase_output_amount_sum_should_not_overflow_amount_t(output_amount).has_value();
   }
   //---------------------------------------------------------------
   uint64_t get_tx_outputs_money_amount(const transaction& tx)
