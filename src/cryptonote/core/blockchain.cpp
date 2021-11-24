@@ -1083,17 +1083,17 @@ diff_t Blockchain::get_next_difficulty_for_alternative_chain(const std::list<blo
 //   one input, of type txin_gen, with height set to the block's height
 //   correct miner tx unlock time
 //   a non-overflowing tx amount (dubious necessity on this check)
-bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
+std::optional<coinbase_tx> Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-  if (height == 0) return true;
+  if (height == 0) return {};
 
   const auto maybe_coinbase = maybe_coinbase_tx(b.miner_tx);
 
   LOG_ERROR_AND_RETURN_UNLESS
     (
      maybe_coinbase
-     , false
+     , {}
      , "Failed to validate miner_tx"
      );
 
@@ -1109,32 +1109,37 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
        << height
        );
 
-    return false;
+    return {};
   }
 
-  return true;
+  return maybe_coinbase;
 }
 //------------------------------------------------------------------
 // This function validates the miner transaction reward
-bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_block_weight, uint64_t fee, uint64_t& base_reward, bool &partial_block_reward)
+std::optional<coinbase_tx> Blockchain::validate_miner_transaction
+(
+ const uint64_t height
+ , const coinbase_tx tx
+ , const size_t cumulative_block_weight
+ , const uint64_t fee
+ ) const
 {
-  uint64_t height = cryptonote::get_block_height(b);
-  if (height == 0) return true;
-
   LOG_PRINT_L3("Blockchain::" << __func__);
-  //validate reward
 
+  if (height == 0) return {};
+
+  //validate reward
   if (!consensus::is_block_size_valid(height, cumulative_block_weight))
   {
     LOG_ERROR_VER("block weight " << cumulative_block_weight << " is bigger than allowed for this blockchain");
-    return false;
+    return {};
   }
 
   std::vector<rct::amount_t> output_amount;
   std::transform
     (
-     b.miner_tx.vout.begin()
-     , b.miner_tx.vout.end()
+     tx.outputs.begin()
+     , tx.outputs.end()
      , std::back_inserter(output_amount)
      , [](const auto& x) { return x.amount; }
      );
@@ -1142,9 +1147,9 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
   if(!consensus::rule_19_coinbase_tx_should_be_balanced(output_amount, fee))
   {
     LOG_ERROR_VER("coinbase transaction is not balanced.");
-    return false;
+    return {};
   }
-  return true;
+  return tx;
 }
 //------------------------------------------------------------------
 //TODO: This function only needed minor modification to work with BlockchainDB,
@@ -2827,12 +2832,17 @@ leave:
   TIME_MEASURE_START(t3);
 
   // sanity check basic miner tx properties;
-  if(!prevalidate_miner_transaction(bl, blockchain_height))
-  {
-    LOG_ERROR_VER("Block with id: " << id << " failed to pass prevalidation");
-    bvc.m_verifivation_failed = true;
-    goto leave;
+  const auto maybe_coinbase_tx = prevalidate_miner_transaction(bl, blockchain_height);
+  if (blockchain_height != 0) {
+    if(!maybe_coinbase_tx)
+    {
+      LOG_ERROR_VER("Block with id: " << id << " failed to pass prevalidation");
+      bvc.m_verifivation_failed = true;
+      goto leave;
+    }
   }
+
+  const auto coinbase_tx = *maybe_coinbase_tx;
 
   size_t coinbase_weight = get_transaction_weight(bl.miner_tx);
   size_t cumulative_block_weight = coinbase_weight;
@@ -2953,12 +2963,24 @@ leave:
   TIME_MEASURE_START(vmt);
   uint64_t base_reward = 0;
   uint64_t already_generated_coins = blockchain_height ? m_db->get_block_already_generated_coins(blockchain_height - 1) : 0;
-  if(!validate_miner_transaction(bl, cumulative_block_weight, fee_summary, base_reward, bvc.m_partial_block_reward))
-  {
-    LOG_ERROR_VER("Block with id: " << id << " has incorrect miner transaction");
-    bvc.m_verifivation_failed = true;
-    return_tx_to_pool(txs);
-    goto leave;
+
+  const uint64_t block_height = cryptonote::get_block_height(bl);
+  const auto maybe_validated_coinbase_tx = validate_miner_transaction
+    (
+     block_height
+     , coinbase_tx
+     , cumulative_block_weight
+     , fee_summary
+     );
+
+  if (block_height != 0) {
+    if(!maybe_validated_coinbase_tx)
+      {
+        LOG_ERROR_VER("Block with id: " << id << " has incorrect miner transaction");
+        bvc.m_verifivation_failed = true;
+        return_tx_to_pool(txs);
+        goto leave;
+      }
   }
 
   TIME_MEASURE_FINISH(vmt);

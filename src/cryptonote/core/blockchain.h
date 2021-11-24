@@ -39,6 +39,8 @@
 
 #include "tools/common/util.h"
 
+#include "math/blockchain/functional/coinbase_tx.hpp"
+
 #include <boost/asio/io_service.hpp>
 
 namespace tools { class Notify; }
@@ -1057,7 +1059,7 @@ namespace cryptonote
      *
      * @return false if anything is found wrong with the miner transaction, otherwise true
      */
-    bool prevalidate_miner_transaction(const block& b, uint64_t height);
+    std::optional<coinbase_tx> prevalidate_miner_transaction(const block& b, uint64_t height) const;
 
     /**
      * @brief validates a miner (coinbase) transaction
@@ -1068,13 +1070,16 @@ namespace cryptonote
      * @param b the block containing the miner transaction to be validated
      * @param cumulative_block_weight the block's weight
      * @param fee the total fees collected in the block
-     * @param base_reward return-by-reference the new block's generated coins
-     * @param partial_block_reward return-by-reference true if miner accepted only partial reward
-     * @param version hard fork version for that transaction
      *
      * @return false if anything is found wrong with the miner transaction, otherwise true
      */
-    bool validate_miner_transaction(const block& b, size_t cumulative_block_weight, uint64_t fee, uint64_t& base_reward, bool &partial_block_reward);
+    std::optional<coinbase_tx> validate_miner_transaction
+    (
+     const uint64_t height
+     , const coinbase_tx tx
+     , const size_t cumulative_block_weight
+     , const uint64_t fee
+     ) const;
 
     /**
      * @brief reverts the blockchain to its previous state following a failed switch
