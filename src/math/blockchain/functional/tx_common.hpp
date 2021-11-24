@@ -19,22 +19,14 @@
 
 #pragma once
 
-#include "tx_common.hpp"
+#include "cryptonote/basic/functional/base.hpp"
 
 namespace cryptonote {
-
-  struct coinbase_output
+  struct tx_common
   {
-    uint64_t amount;
-    crypto::public_key output_public_key;
-  };
-     
-  struct coinbase_tx: tx_common
-  {
-    uint64_t height;
-    std::vector<coinbase_output> outputs;
+    uint64_t unlock_height;
+    std::vector<uint8_t> extra;
   };
 
-  std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx);
-
+  bool check_tx_output_points(const transaction& tx);
 }

@@ -25,88 +25,88 @@
 
 namespace cryptonote {
 
-  std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx) {
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       tx.version == 2
-       , {}
-       , "Invalid coinbase transaction version"
-       );
+std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx) {
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+      tx.version == 2
+      , {}
+      , "Invalid coinbase transaction version"
+      );
 
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       tx.ringct.type == rct::RCTTypeNull
-       , {}
-       , "Wrong rct type in miner tx"
-       );
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+      tx.ringct.type == rct::RCTTypeNull
+      , {}
+      , "Wrong rct type in miner tx"
+      );
 
-    const auto maybe_vin = consensus::rule_22_coinbase_tx_should_have_only_one_input(tx.vin);
-    LOG_ERROR_AND_RETURN_UNLESS
-      ( maybe_vin
-       , {}
-       , "Wrong number of inputs"
-       );
+  const auto maybe_vin = consensus::rule_22_coinbase_tx_should_have_only_one_input(tx.vin);
+  LOG_ERROR_AND_RETURN_UNLESS
+    ( maybe_vin
+      , {}
+      , "Wrong number of inputs"
+      );
 
-    const auto maybe_input = consensus::rule_23_coinbase_tx_input_type_should_be_gen(*maybe_vin);
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       maybe_input
-       , {}
-       , "input has the wrong type"
-       );
+  const auto maybe_input = consensus::rule_23_coinbase_tx_input_type_should_be_gen(*maybe_vin);
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+      maybe_input
+      , {}
+      , "input has the wrong type"
+      );
 
-    const auto input = *maybe_input;
+  const auto input = *maybe_input;
 
-    std::vector<cryptonote::txout_target_v> output_targets;
-    std::transform
-      (
-       tx.vout.begin()
-       , tx.vout.end()
-       , std::back_inserter(output_targets)
-       , [](const auto& x) {
-         return x.target;
-       }
-       );
+  std::vector<cryptonote::txout_target_v> output_targets;
+  std::transform
+    (
+      tx.vout.begin()
+      , tx.vout.end()
+      , std::back_inserter(output_targets)
+      , [](const auto& x) {
+        return x.target;
+      }
+      );
 
-    const auto maybe_targets = consensus::are_tx_output_targets_valid(output_targets);
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       maybe_targets
-       , {}
-       , "Wrong output types"
-       );
+  const auto maybe_targets = consensus::are_tx_output_targets_valid(output_targets);
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+      maybe_targets
+      , {}
+      , "Wrong output types"
+      );
 
-    const auto targets = *maybe_targets;
+  const auto targets = *maybe_targets;
 
-    std::vector<coinbase_output> outputs;
-    std::transform
-      (
-       tx.vout.begin()
-       , tx.vout.end()
-       , targets.begin()
-       , std::back_inserter(outputs)
-       , [](const auto& x, const auto& y) -> coinbase_output {
-         return {
-           x.amount
-           , y.output_public_key
-         };
-       }
-       );
+  std::vector<coinbase_output> outputs;
+  std::transform
+    (
+      tx.vout.begin()
+      , tx.vout.end()
+      , targets.begin()
+      , std::back_inserter(outputs)
+      , [](const auto& x, const auto& y) -> coinbase_output {
+        return {
+          x.amount
+          , y.output_public_key
+        };
+      }
+      );
 
 
-    const tx_common common = {
-      tx.unlock_height
-      , tx.extra
-    };
+  const tx_common common = {
+    tx.unlock_height
+    , tx.extra
+  };
 
-    const coinbase_tx x = {
-      { common }
-      , input.height
-      , outputs
-    };
+  const coinbase_tx x = {
+    { common }
+    , input.height
+    , outputs
+  };
 
-    return x;
-  }
+  return x;
+}
 
 }
 
