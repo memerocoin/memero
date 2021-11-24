@@ -766,7 +766,7 @@ namespace cryptonote
       *
       * @return true if all the checks pass, otherwise false
       */
-     bool check_tx_semantic(const transaction& tx, bool tx_from_block) const;
+     bool check_ringct_semantic(const transaction& tx, bool tx_from_block) const;
      void set_semantics_failed(const crypto::hash &tx_hash);
 
      bool handle_incoming_tx_pre(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);

@@ -587,7 +587,7 @@ namespace cryptonote
     return r;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::check_tx_semantic(const transaction& tx, bool tx_from_block) const
+  bool core::check_ringct_semantic(const transaction& tx, bool tx_from_block) const
   {
     if(!tx.vin.size())
     {
@@ -1337,7 +1337,7 @@ namespace cryptonote
     std::vector<rct::rctData> rvv;
     for (size_t n = 0; n < tx_info.size(); ++n)
     {
-      if (!check_tx_semantic(*tx_info[n].tx, tx_from_block))
+      if (!check_ringct_semantic(*tx_info[n].tx, tx_from_block))
       {
         set_semantics_failed(tx_info[n].tx_hash);
         tx_info[n].tvc.m_verifivation_failed = true;
