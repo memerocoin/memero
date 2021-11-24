@@ -180,7 +180,7 @@ namespace cryptonote
       }
     }
 
-    if (!m_blockchain.check_tx_outputs(tx, tvc))
+    if (!m_blockchain.check_ringct_outputs(tx, tvc))
     {
       LOG_PRINT_L1("Transaction with id= "<< id << " has at least one invalid output");
       tvc.m_verifivation_failed = true;

@@ -2480,7 +2480,7 @@ bool Blockchain::check_ringct_inputs(transaction& tx, uint64_t& max_used_block_h
   return true;
 }
 //------------------------------------------------------------------
-bool Blockchain::check_tx_outputs(const transaction& tx, tx_verification_context &tvc) const
+bool Blockchain::check_ringct_outputs(const transaction& tx, tx_verification_context &tvc) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);

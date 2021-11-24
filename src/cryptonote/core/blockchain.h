@@ -556,7 +556,7 @@ namespace cryptonote
      *
      * @return false if any outputs do not conform, otherwise true
      */
-    bool check_tx_outputs(const transaction& tx, tx_verification_context &tvc) const;
+    bool check_ringct_outputs(const transaction& tx, tx_verification_context &tvc) const;
 
     /**
      * @brief gets the difficulty of the block with a given height
