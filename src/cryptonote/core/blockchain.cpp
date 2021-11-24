@@ -2600,7 +2600,7 @@ bool Blockchain::is_tx_spendtime_unlocked(const uint64_t unlock_height) const
 // This function locates all outputs associated with a given input (mixins)
 // and validates that they exist and are usable.  It also checks the ring
 // signature for each input.
-bool Blockchain::check_tx_input
+bool Blockchain::check_ringct_input
 (
   size_t tx_version
   , const txin_from_key& txin
@@ -3784,7 +3784,7 @@ void Blockchain::cache_block_template(const block &b, const cryptonote::spend_vi
 //------------------------------------------------------------------
 // This function validates transaction inputs and their keys.
 // FIXME: consider moving functionality specific to one input into
-//        check_tx_input() rather than here, and use this function simply
+//        check_ringct_input() rather than here, and use this function simply
 //        to iterate the inputs as necessary (splitting the task
 //        using threads, etc.)
 bool Blockchain::check_ringct_inputs(transaction& tx, tx_verification_context &tvc, uint64_t* pmax_used_block_height) const
@@ -3922,7 +3922,7 @@ bool Blockchain::check_ringct_inputs(transaction& tx, tx_verification_context &t
 
     // make sure that output being spent matches up correctly with the
     // signature spending it.
-    if (!check_tx_input(tx.version, in_to_key, tx_prefix_hash, tx.ringct, pubkeys[sig_index], pmax_used_block_height))
+    if (!check_ringct_input(tx.version, in_to_key, tx_prefix_hash, tx.ringct, pubkeys[sig_index], pmax_used_block_height))
     {
       LOG_ERROR_VER("Failed to check ring signature for tx " << get_transaction_hash(tx) << "  vin key with output_key_image: " << in_to_key.output_key_image << "  sig_index: " << sig_index);
       if (pmax_used_block_height) // a default value of NULL is used when called from Blockchain::handle_block_to_main_chain()

@@ -924,7 +924,7 @@ namespace cryptonote
      *
      * @return false if any output is not yet unlocked, or is missing, otherwise true
      */
-    bool check_tx_input
+    bool check_ringct_input
     (
      size_t tx_version
      , const txin_from_key& txin
