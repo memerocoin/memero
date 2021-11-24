@@ -28,7 +28,8 @@ namespace cryptonote {
     std::vector<uint8_t> extra;
   };
 
-  bool check_tx_output_points(const transaction& tx);
+  std::optional<std::vector<crypto::ec_point>>
+  check_tx_output_points(const transaction& tx);
 
   bool check_ringct_points(const transaction& tx);
 }

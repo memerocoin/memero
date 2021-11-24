@@ -25,7 +25,8 @@
 
 namespace cryptonote {
 
-bool check_tx_output_points(const transaction& tx) {
+std::optional<std::vector<crypto::ec_point>>
+check_tx_output_points(const transaction& tx) {
 
   std::vector<cryptonote::txout_target_v> output_targets;
   std::transform
@@ -42,7 +43,7 @@ bool check_tx_output_points(const transaction& tx) {
 
   if (!maybe_targets) {
     LOG_ERROR("wrong variant type in output targets");
-    return false;
+    return {};
   }
 
   const auto targets = *maybe_targets;
@@ -58,10 +59,7 @@ bool check_tx_output_points(const transaction& tx) {
      }
      );
 
-  const bool valid_output_public_keys =
-    consensus::rule_11_tx_output_public_keys_should_be_safe_points(output_public_keys).has_value();
-
-  return valid_output_public_keys;
+  return consensus::rule_11_tx_output_public_keys_should_be_safe_points(output_public_keys);
 }
 
 bool check_ringct_points(const transaction& tx) {
