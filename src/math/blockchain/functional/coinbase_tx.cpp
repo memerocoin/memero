@@ -89,17 +89,6 @@ std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx) {
      , "coinbase transaction has money overflow in block"
      );
 
-  std::vector<coinbase_output> outputs;
-  std::transform
-    (
-      amount.begin()
-      , amount.end()
-      , output_public_keys.begin()
-      , std::back_inserter(outputs)
-      , [](const auto&x, const auto& y) -> coinbase_output { return {x, y}; }
-      );
-
-
   LOG_ERROR_AND_RETURN_UNLESS
     (
      consensus::rule_20_coinbase_outputs_are_locked_for_60_blocks
@@ -118,6 +107,16 @@ std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx) {
     tx.unlock_height
     , tx.extra
   };
+
+  std::vector<coinbase_output> outputs;
+  std::transform
+    (
+     amount.begin()
+     , amount.end()
+     , output_public_keys.begin()
+     , std::back_inserter(outputs)
+     , [](const auto&x, const auto& y) -> coinbase_output { return {x, y}; }
+     );
 
   const coinbase_tx x = {
     { common }
