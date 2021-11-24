@@ -807,7 +807,7 @@ namespace cryptonote
       *
       * @return false if any key image is repeated, otherwise true
       */
-     bool check_tx_inputs_keyimages_diff(const transaction& tx) const;
+     bool check_ringct_inputs_keyimages_diff(const transaction& tx) const;
 
      /**
       * @brief verify that each ring uses distinct members
@@ -816,7 +816,7 @@ namespace cryptonote
       *
       * @return false if any ring uses duplicate members, true otherwise
       */
-     bool check_tx_inputs_ring_members_diff(const transaction& tx) const;
+     bool check_ringct_inputs_ring_members_diff(const transaction& tx) const;
 
      /**
       * @brief attempts to relay any transactions in the mempool which need it

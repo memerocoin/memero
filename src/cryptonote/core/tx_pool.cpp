@@ -197,7 +197,7 @@ namespace cryptonote
     uint64_t max_used_block_height = 0;
     cryptonote::txpool_tx_meta_t meta{};
     bool ch_inp_res =
-      m_blockchain.check_tx_inputs
+      m_blockchain.check_ringct_inputs
       (
        tx
        , max_used_block_height
@@ -1092,7 +1092,7 @@ namespace cryptonote
         return false;//we already sure that this tx is broken for this height
 
       tx_verification_context tvc;
-      if(!m_blockchain.check_tx_inputs(lazy_tx(), txd.max_used_block_height, txd.max_used_block_id, tvc))
+      if(!m_blockchain.check_ringct_inputs(lazy_tx(), txd.max_used_block_height, txd.max_used_block_id, tvc))
       {
         txd.last_failed_height = m_blockchain.get_current_blockchain_height()-1;
         txd.last_failed_id = m_blockchain.get_block_id_by_height(txd.last_failed_height);
@@ -1109,7 +1109,7 @@ namespace cryptonote
           return false;
         //check ring signature again, it is possible (with very small chance) that this transaction become again valid
         tx_verification_context tvc;
-        if(!m_blockchain.check_tx_inputs(lazy_tx(), txd.max_used_block_height, txd.max_used_block_id, tvc))
+        if(!m_blockchain.check_ringct_inputs(lazy_tx(), txd.max_used_block_height, txd.max_used_block_id, tvc))
         {
           txd.last_failed_height = m_blockchain.get_current_blockchain_height()-1;
           txd.last_failed_id = m_blockchain.get_block_id_by_height(txd.last_failed_height);

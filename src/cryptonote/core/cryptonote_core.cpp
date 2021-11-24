@@ -635,13 +635,13 @@ namespace cryptonote
     }
 
     //check if tx use different key images
-    if(!check_tx_inputs_keyimages_diff(tx))
+    if(!check_ringct_inputs_keyimages_diff(tx))
     {
       LOG_ERROR_VER("tx uses a single key image more than once");
       return false;
     }
 
-    if (!check_tx_inputs_ring_members_diff(tx))
+    if (!check_ringct_inputs_ring_members_diff(tx))
     {
       LOG_ERROR_VER("tx uses duplicate ring members");
       return false;
@@ -713,7 +713,7 @@ namespace cryptonote
       (emission_amount, total_fee_amount);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::check_tx_inputs_keyimages_diff(const transaction& tx) const
+  bool core::check_ringct_inputs_keyimages_diff(const transaction& tx) const
   {
     std::vector<std::optional<crypto::key_image>> xs;
     std::transform
@@ -735,7 +735,7 @@ namespace cryptonote
     return consensus::rule_8_ringct_input_key_images_should_be_unique(ks);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::check_tx_inputs_ring_members_diff(const transaction& tx) const
+  bool core::check_ringct_inputs_ring_members_diff(const transaction& tx) const
   {
     return std::transform_reduce
       (

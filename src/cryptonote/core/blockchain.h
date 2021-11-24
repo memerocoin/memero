@@ -528,7 +528,7 @@ namespace cryptonote
      *
      * @return false if any input is invalid, otherwise true
      */
-    bool check_tx_inputs(transaction& tx, uint64_t& pmax_used_block_height, crypto::hash& max_used_block_id, tx_verification_context &tvc, bool tx_from_block = false) const;
+    bool check_ringct_inputs(transaction& tx, uint64_t& pmax_used_block_height, crypto::hash& max_used_block_id, tx_verification_context &tvc, bool tx_from_block = false) const;
 
     /**
      * @brief validate a transaction's fee
@@ -954,7 +954,7 @@ namespace cryptonote
      *
      * @return false if any validation step fails, otherwise true
      */
-    bool check_tx_inputs(transaction& tx, tx_verification_context &tvc, uint64_t* pmax_used_block_height = NULL) const;
+    bool check_ringct_inputs(transaction& tx, tx_verification_context &tvc, uint64_t* pmax_used_block_height = NULL) const;
 
     /**
      * @brief performs a blockchain reorganization according to the longest chain rule

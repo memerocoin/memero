@@ -2459,13 +2459,13 @@ void Blockchain::on_new_tx_from_block(const cryptonote::transaction &tx)
 // This function overloads its sister function with
 // an extra value (hash of highest block that holds an output used as input)
 // as a return-by-reference.
-bool Blockchain::check_tx_inputs(transaction& tx, uint64_t& max_used_block_height, crypto::hash& max_used_block_id, tx_verification_context &tvc, bool tx_from_block) const
+bool Blockchain::check_ringct_inputs(transaction& tx, uint64_t& max_used_block_height, crypto::hash& max_used_block_id, tx_verification_context &tvc, bool tx_from_block) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
   TIME_MEASURE_START(a);
-  bool res = check_tx_inputs(tx, tvc, &max_used_block_height);
+  bool res = check_ringct_inputs(tx, tvc, &max_used_block_height);
   TIME_MEASURE_FINISH(a);
   if(m_show_time_stats)
   {
@@ -2941,7 +2941,7 @@ leave:
     {
       // validate that transaction inputs and the keys spending them are correct.
       tx_verification_context tvc;
-      if(!check_tx_inputs(tx, tvc))
+      if(!check_ringct_inputs(tx, tvc))
       {
         LOG_ERROR_VER("Block with id: " << id  << " has at least one transaction (id: " << tx_id << ") with wrong inputs.");
 
@@ -3787,7 +3787,7 @@ void Blockchain::cache_block_template(const block &b, const cryptonote::spend_vi
 //        check_tx_input() rather than here, and use this function simply
 //        to iterate the inputs as necessary (splitting the task
 //        using threads, etc.)
-bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, uint64_t* pmax_used_block_height) const
+bool Blockchain::check_ringct_inputs(transaction& tx, tx_verification_context &tvc, uint64_t* pmax_used_block_height) const
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   size_t sig_index = 0;
@@ -3907,7 +3907,7 @@ bool Blockchain::check_tx_inputs(transaction& tx, tx_verification_context &tvc, 
   {
     // make sure output being spent is of type txin_from_key, rather than
     // e.g. txin_gen, which is only used for miner transactions
-    LOG_ERROR_AND_RETURN_UNLESS(txin.type() == typeid(txin_from_key), false, "wrong type id in tx input at Blockchain::check_tx_inputs");
+    LOG_ERROR_AND_RETURN_UNLESS(txin.type() == typeid(txin_from_key), false, "wrong type id in tx input at Blockchain::check_ringct_inputs");
     const txin_from_key& in_to_key = boost::get<txin_from_key>(txin);
 
     // make sure tx output has key offset(s) (is signed to be used)
