@@ -70,21 +70,49 @@ std::optional<coinbase_tx> maybe_coinbase_tx(const transaction& tx) {
 
   const std::vector<crypto::public_key> output_public_keys = *maybe_outputs;
 
+
+  std::vector<amount_t> amount;
+  std::transform
+    (
+     tx.vout.begin()
+     , tx.vout.end()
+     , std::back_inserter(amount)
+     , [](const auto& x) {
+       return x.amount;
+     }
+     );
+
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+     consensus::rule_24_coinbase_output_amount_sum_should_not_overflow_amount_t(amount)
+     , {}
+     , "coinbase transaction has money overflow in block"
+     );
+
   std::vector<coinbase_output> outputs;
   std::transform
     (
-      tx.vout.begin()
-      , tx.vout.end()
+      amount.begin()
+      , amount.end()
       , output_public_keys.begin()
       , std::back_inserter(outputs)
-      , [](const auto& x, const auto& y) -> coinbase_output {
-        return {
-          x.amount
-          , y
-        };
-      }
+      , [](const auto&x, const auto& y) -> coinbase_output { return {x, y}; }
       );
 
+
+  LOG_ERROR_AND_RETURN_UNLESS
+    (
+     consensus::rule_20_coinbase_outputs_are_locked_for_60_blocks
+     (
+      input.height 
+      , tx.unlock_height
+      )
+     , {}
+     , "coinbase transaction transaction has the wrong unlock time="
+     << tx.unlock_height
+     << ", expected "
+     << consensus::get_coinbase_unlock_height(input.height)
+     );
 
   const tx_common common = {
     tx.unlock_height

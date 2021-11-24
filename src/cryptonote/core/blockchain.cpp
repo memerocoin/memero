@@ -1112,26 +1112,6 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
     return false;
   }
 
-  LOG_ERROR_AND_RETURN_UNLESS
-    (
-     consensus::rule_20_coinbase_outputs_are_locked_for_60_blocks
-     (
-      height
-      , coinbase_tx.unlock_height
-      )
-     , false
-     , "coinbase transaction transaction has the wrong unlock time="
-     << coinbase_tx.unlock_height
-     << ", expected "
-     << consensus::get_coinbase_unlock_height(height)
-     );
-
-  if(!check_output_amount_sum_overflow(b.miner_tx))
-  {
-    LOG_ERROR("miner transaction has money overflow in block " << get_block_hash(b));
-    return false;
-  }
-
   return true;
 }
 //------------------------------------------------------------------
