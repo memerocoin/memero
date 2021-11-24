@@ -76,21 +76,46 @@ namespace consensus {
     return maybeSafeCLSAG(x);
   }
 
-  bool are_points_safe
+  std::optional<std::vector<crypto::ec_point>> are_points_safe
   (
    const std::span<const crypto::ec_point_unsafe> xs
    )
   {
-    return std::transform_reduce
+    std::vector<std::optional<crypto::ec_point>> maybe_safe_points;
+
+    std::transform
       (
        xs.begin()
        , xs.end()
+       , std::back_inserter(maybe_safe_points)
+       , crypto::maybeSafePoint
+       );
+
+    const bool all_safe_points =
+      std::transform_reduce
+      (
+       maybe_safe_points.begin()
+       , maybe_safe_points.end()
        , true
        , std::logical_and()
-       , [](const auto& x) {
-         return crypto::is_safe_point(x);
+       , [](const std::optional<crypto::ec_point>& x) -> bool {
+         return x.has_value();
        }
        );
+
+    if (!all_safe_points) return {};
+
+    std::vector<crypto::ec_point> safe_points;
+
+    std::transform
+      (
+       maybe_safe_points.begin()
+       , maybe_safe_points.end()
+       , std::back_inserter(safe_points)
+       , [](const auto&x) { return *x; }
+       );
+
+    return safe_points;
   }
 
   std::optional<cryptonote::txout_to_key>

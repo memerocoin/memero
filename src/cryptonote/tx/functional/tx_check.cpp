@@ -132,7 +132,7 @@ bool check_tx_output_points(const transaction& tx) {
      );
 
   const bool valid_output_public_keys =
-    consensus::rule_11_tx_output_public_keys_should_be_safe_points(output_public_keys);
+    consensus::rule_11_tx_output_public_keys_should_be_safe_points(output_public_keys).has_value();
 
   // double check points in ringct
   std::vector<crypto::ec_point_unsafe> output_commits;
@@ -147,7 +147,7 @@ bool check_tx_output_points(const transaction& tx) {
      );
 
   const bool valid_output_commits =
-    consensus::rule_13_tx_output_commits_should_be_safe_points(output_commits);
+    consensus::rule_13_tx_output_commits_should_be_safe_points(output_commits).has_value();
 
   std::vector<crypto::ec_point_unsafe> pseudo_input_commits;
   std::transform
@@ -161,7 +161,7 @@ bool check_tx_output_points(const transaction& tx) {
      );
 
   const bool valid_pseudo_input_commits =
-    consensus::rule_14_tx_pseudo_input_commits_should_be_safe_points(pseudo_input_commits);
+    consensus::rule_14_tx_pseudo_input_commits_should_be_safe_points(pseudo_input_commits).has_value();
 
 
   return valid_output_public_keys && valid_output_commits && valid_pseudo_input_commits;

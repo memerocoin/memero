@@ -151,7 +151,7 @@ namespace consensus {
    const clsag_unsafe x
    );
 
-  bool are_points_safe
+  std::optional<std::vector<crypto::ec_point>> are_points_safe
   (
    const std::span<const crypto::ec_point_unsafe> xs
    );

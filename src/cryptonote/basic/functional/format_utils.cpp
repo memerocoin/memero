@@ -385,7 +385,7 @@ namespace cryptonote
        );
 
 
-    return consensus::rule_11_tx_output_public_keys_should_be_safe_points(xs);
+    return consensus::rule_11_tx_output_public_keys_should_be_safe_points(xs).has_value();
   }
 
   //-----------------------------------------------------------------------------------------------
