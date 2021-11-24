@@ -411,7 +411,7 @@ namespace cryptonote
     for(auto tx_blob_it = arg.b.txs.begin(); tx_blob_it!=arg.b.txs.end();tx_blob_it++)
     {
       cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
-      m_core.handle_incoming_tx(*tx_blob_it, tvc, relay_method::block, true);
+      m_core.handle_incoming_ringct(*tx_blob_it, tvc, relay_method::block, true);
       if(tvc.m_verifivation_failed)
       {
         LOG_PRINT_CCONTEXT_L1("Block verification failed: transaction verification failed, dropping connection");
@@ -586,7 +586,7 @@ namespace cryptonote
           {
             LOG_DEBUG("Incoming tx " << tx_hash << " not in pool, adding");
             cryptonote::tx_verification_context tvc = AUTO_VAL_INIT(tvc);
-            if(!m_core.handle_incoming_tx(tx_blob, tvc, relay_method::block, true) || tvc.m_verifivation_failed)
+            if(!m_core.handle_incoming_ringct(tx_blob, tvc, relay_method::block, true) || tvc.m_verifivation_failed)
             {
               LOG_PRINT_CCONTEXT_L1("Block verification failed: transaction verification failed, dropping connection");
               drop_connection(context, false, false);
@@ -919,7 +919,7 @@ namespace cryptonote
     for (size_t i = 0; i < arg.txs.size(); ++i)
     {
       cryptonote::tx_verification_context tvc{};
-      m_core.handle_incoming_tx({arg.txs[i], crypto::null_hash}, tvc, relay_method::fluff, true);
+      m_core.handle_incoming_ringct({arg.txs[i], crypto::null_hash}, tvc, relay_method::fluff, true);
       if(tvc.m_verifivation_failed)
       {
         LOG_PRINT_CCONTEXT_L1("Tx verification failed, dropping connection");
@@ -1307,7 +1307,7 @@ namespace cryptonote
             TIME_MEASURE_START(transactions_process_time);
             num_txs += block_entry.txs.size();
             std::vector<tx_verification_context> tvc;
-            m_core.handle_incoming_txs(block_entry.txs, tvc, relay_method::block, true);
+            m_core.handle_incoming_ringcts(block_entry.txs, tvc, relay_method::block, true);
             if (tvc.size() != block_entry.txs.size())
             {
               LOG_ERROR_CCONTEXT("Internal error: tvc.size() != block_entry.txs.size()");

@@ -102,7 +102,7 @@ namespace cryptonote
       *
       * @return true if the transaction was accepted, false otherwise
       */
-     bool handle_incoming_tx(const tx_blob_entry tx_blob, tx_verification_context& tvc, relay_method tx_relay, bool relayed);
+     bool handle_incoming_ringct(const tx_blob_entry tx_blob, tx_verification_context& tvc, relay_method tx_relay, bool relayed);
 
      /**
       * @brief handles a list of incoming transactions
@@ -119,7 +119,7 @@ namespace cryptonote
       *
       * @return true if the transactions were accepted, false otherwise
       */
-     bool handle_incoming_txs_span(const std::vector<tx_blob_entry> tx_blobs, std::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed);
+     bool handle_incoming_ringcts_span(const std::vector<tx_blob_entry> tx_blobs, std::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed);
 
      /**
       * @brief handles a list of incoming transactions
@@ -134,10 +134,10 @@ namespace cryptonote
       *
       * @return true if the transactions were accepted, false otherwise
       */
-     bool handle_incoming_txs(const std::vector<tx_blob_entry> tx_blobs, std::vector<tx_verification_context>& tvc, relay_method tx_relay, bool relayed)
+     bool handle_incoming_ringcts(const std::vector<tx_blob_entry> tx_blobs, std::vector<tx_verification_context>& tvc, relay_method tx_relay, bool relayed)
      {
        tvc.resize(tx_blobs.size());
-       return handle_incoming_txs_span(tx_blobs, tvc, tx_relay, relayed);
+       return handle_incoming_ringcts_span(tx_blobs, tvc, tx_relay, relayed);
      }
 
      /**
@@ -769,8 +769,8 @@ namespace cryptonote
      bool check_ringct_semantic(const transaction& tx, bool tx_from_block) const;
      void set_semantics_failed(const crypto::hash &tx_hash);
 
-     bool handle_incoming_tx_pre(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);
-     bool handle_incoming_tx_post(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);
+     bool handle_incoming_ringct_pre(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);
+     bool handle_incoming_ringct_post(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash);
 
      struct tx_verification_batch_info
      {
@@ -780,7 +780,7 @@ namespace cryptonote
        bool &result;
      };
 
-     void handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block);
+     void handle_incoming_ringct_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block);
 
      /**
       * @copydoc miner::on_block_chain_update

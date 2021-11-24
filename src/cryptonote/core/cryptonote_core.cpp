@@ -391,7 +391,7 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_tx_pre(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash)
+  bool core::handle_incoming_ringct_pre(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash)
   {
     tvc = {};
 
@@ -444,7 +444,7 @@ namespace cryptonote
     return true;
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_tx_post(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash)
+  bool core::handle_incoming_ringct_post(const tx_blob_entry& tx_blob, tx_verification_context& tvc, cryptonote::transaction &tx, crypto::hash &tx_hash)
   {
     if(!check_tx_syntax(tx))
     {
@@ -469,7 +469,7 @@ namespace cryptonote
     bad_semantics_txes_lock.unlock();
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_txs_span(const std::vector<tx_blob_entry> tx_blobs, std::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed)
+  bool core::handle_incoming_ringcts_span(const std::vector<tx_blob_entry> tx_blobs, std::span<tx_verification_context> tvc, relay_method tx_relay, bool relayed)
   {
     TRY_ENTRY();
 
@@ -490,11 +490,11 @@ namespace cryptonote
       tpool.submit(&waiter, [&, i, it] {
         try
         {
-          results[i].res = handle_incoming_tx_pre(*it, tvc[i], results[i].tx, results[i].hash);
+          results[i].res = handle_incoming_ringct_pre(*it, tvc[i], results[i].tx, results[i].hash);
         }
         catch (const std::exception &e)
         {
-          LOG_ERROR_VER("Exception in handle_incoming_tx_pre: " << e.what());
+          LOG_ERROR_VER("Exception in handle_incoming_ringct_pre: " << e.what());
           tvc[i].m_verifivation_failed = true;
           results[i].res = false;
         }
@@ -522,11 +522,11 @@ namespace cryptonote
         tpool.submit(&waiter, [&, i, it] {
           try
           {
-            results[i].res = handle_incoming_tx_post(*it, tvc[i], results[i].tx, results[i].hash);
+            results[i].res = handle_incoming_ringct_post(*it, tvc[i], results[i].tx, results[i].hash);
           }
           catch (const std::exception &e)
           {
-            LOG_ERROR_VER("Exception in handle_incoming_tx_post: " << e.what());
+            LOG_ERROR_VER("Exception in handle_incoming_ringct_post: " << e.what());
             tvc[i].m_verifivation_failed = true;
             results[i].res = false;
           }
@@ -544,7 +544,7 @@ namespace cryptonote
       tx_info.push_back({&results[i].tx, results[i].hash, tvc[i], results[i].res});
     }
     if (!tx_info.empty())
-      handle_incoming_tx_accumulated_batch(tx_info, tx_relay == relay_method::block);
+      handle_incoming_ringct_accumulated_batch(tx_info, tx_relay == relay_method::block);
 
     bool ok = true;
     it = tx_blobs.begin();
@@ -576,13 +576,13 @@ namespace cryptonote
     }
 
     return ok;
-    CATCH_ENTRY_L0("core::handle_incoming_txs()", false);
+    CATCH_ENTRY_L0("core::handle_incoming_ringcts()", false);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_incoming_tx(const tx_blob_entry tx_blob, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
+  bool core::handle_incoming_ringct(const tx_blob_entry tx_blob, tx_verification_context& tvc, relay_method tx_relay, bool relayed)
   {
     std::vector<tx_verification_context> tvcV{tvc};
-    const bool r = handle_incoming_txs(std::vector{tx_blob}, tvcV, tx_relay, relayed);
+    const bool r = handle_incoming_ringcts(std::vector{tx_blob}, tvcV, tx_relay, relayed);
     tvc = tvcV[0];
     return r;
   }
@@ -1332,7 +1332,7 @@ namespace cryptonote
   }
 
   //-----------------------------------------------------------------------------------------------
-  void core::handle_incoming_tx_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block)
+  void core::handle_incoming_ringct_accumulated_batch(std::vector<tx_verification_batch_info> &tx_info, bool tx_from_block)
   {
     std::vector<rct::rctData> rvv;
     for (size_t n = 0; n < tx_info.size(); ++n)
