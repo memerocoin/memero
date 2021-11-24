@@ -29,4 +29,6 @@ namespace cryptonote {
   };
 
   bool check_tx_output_points(const transaction& tx);
+
+  bool check_ringct_points(const transaction& tx);
 }

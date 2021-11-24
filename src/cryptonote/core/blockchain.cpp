@@ -2499,7 +2499,7 @@ bool Blockchain::check_ringct_outputs(const transaction& tx, tx_verification_con
     return false;
   }
 
-  if (!check_tx_output_points(tx)) {
+  if (!(check_tx_output_points(tx) && check_ringct_points(tx))) {
     tvc.m_invalid_output = true;
     return false;
   };
