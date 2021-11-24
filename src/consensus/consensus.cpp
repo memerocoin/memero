@@ -127,17 +127,43 @@ namespace consensus {
     }
   }
 
-  bool are_tx_output_targets_valid(const std::span<const cryptonote::txout_target_v> xs) {
-    return std::transform_reduce
+  std::optional<std::vector<cryptonote::txout_to_key>>
+  are_tx_output_targets_valid(const std::span<const cryptonote::txout_target_v> xs) {
+
+    std::vector<std::optional<cryptonote::txout_to_key>> maybe_valid;
+
+    std::transform
       (
        xs.begin()
        , xs.end()
+       , std::back_inserter(maybe_valid)
+       , rule_12_tx_output_target_should_be_output_public_key
+       );
+
+    const bool all_valid =
+      std::transform_reduce
+      (
+       maybe_valid.begin()
+       , maybe_valid.end()
        , true
        , std::logical_and()
-       , [](const auto& x) {
-         return rule_12_tx_output_target_should_be_output_public_key(x);
+       , [](const auto& x) -> bool {
+         return x.has_value();
        }
        );
+
+    if (!all_valid) return {};
+
+    std::vector<cryptonote::txout_to_key> valid_targets;
+    std::transform
+      (
+       maybe_valid.begin()
+       , maybe_valid.end()
+       , std::back_inserter(valid_targets)
+       , [](const auto& x) { return *x; }
+       );
+
+    return valid_targets;
   }
 
   std::optional<cryptonote::txin_from_key>

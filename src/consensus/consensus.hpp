@@ -161,7 +161,8 @@ namespace consensus {
   std::optional<cryptonote::txout_to_key>
   rule_12_tx_output_target_should_be_output_public_key(const cryptonote::txout_target_v x);
 
-  bool are_tx_output_targets_valid(const std::span<const cryptonote::txout_target_v> xs);
+  std::optional<std::vector<cryptonote::txout_to_key>>
+  are_tx_output_targets_valid(const std::span<const cryptonote::txout_target_v> xs);
 
   constexpr auto rule_13_tx_output_commits_should_be_safe_points = are_points_safe;
 
