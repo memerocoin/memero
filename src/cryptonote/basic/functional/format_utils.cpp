@@ -360,27 +360,36 @@ namespace cryptonote
        }
        );
 
-    if (!consensus::are_tx_output_targets_valid(output_targets)) {
+    const auto maybe_targets =consensus::are_tx_output_targets_valid(output_targets);
+
+    if (!maybe_targets) {
       LOG_ERROR("wrong variant type in output targets");
       return false;
     }
+
+    const auto targets = *maybe_targets;
 
     for(const tx_out& out: tx.vout)
     {
       if (tx.version == 1)
       {
-        LOG_WITH_LEVEL_0_AND_RETURN_UNLESS(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
+        LOG_WITH_LEVEL_0_AND_RETURN_UNLESS
+          (
+           0 < out.amount
+           , false
+           , "zero amount output in transaction id=" << get_transaction_hash(tx)
+           );
       }
     }
 
     std::vector<crypto::ec_point_unsafe> xs;
     std::transform
       (
-       tx.vout.begin()
-       , tx.vout.end()
+       targets.begin()
+       , targets.end()
        , std::back_inserter(xs)
        , [](const auto& x) {
-         return boost::get<txout_to_key>(x.target).output_public_key;
+         return x.output_public_key;
        }
        );
 

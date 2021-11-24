@@ -115,19 +115,23 @@ bool check_tx_output_points(const transaction& tx) {
      }
      );
 
-  if (!consensus::are_tx_output_targets_valid(output_targets)) {
+  const auto maybe_targets = consensus::are_tx_output_targets_valid(output_targets);
+
+  if (maybe_targets) {
     LOG_ERROR("wrong variant type in output targets");
     return false;
   }
 
+  const auto targets = *maybe_targets;
+
   std::vector<crypto::ec_point_unsafe> output_public_keys;
   std::transform
     (
-     tx.vout.begin()
-     , tx.vout.end()
+     targets.begin()
+     , targets.end()
      , std::back_inserter(output_public_keys)
      , [](const auto& x) {
-       return boost::get<txout_to_key>(x.target).output_public_key;
+       return x.output_public_key;
      }
      );
 

@@ -68,23 +68,27 @@ namespace cryptonote {
        }
        );
 
+    const auto maybe_targets = consensus::are_tx_output_targets_valid(output_targets);
     LOG_ERROR_AND_RETURN_UNLESS
       (
-       consensus::are_tx_output_targets_valid(output_targets)
+       maybe_targets
        , {}
        , "Wrong output types"
        );
+
+    const auto targets = *maybe_targets;
 
     std::vector<coinbase_output> outputs;
     std::transform
       (
        tx.vout.begin()
        , tx.vout.end()
+       , targets.begin()
        , std::back_inserter(outputs)
-       , [](const auto& x) -> coinbase_output {
+       , [](const auto& x, const auto& y) -> coinbase_output {
          return {
            x.amount
-           , boost::get<txout_to_key>(x.target).output_public_key
+           , y.output_public_key
          };
        }
        );
