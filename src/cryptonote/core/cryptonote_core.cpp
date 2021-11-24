@@ -647,7 +647,7 @@ namespace cryptonote
       return false;
     }
 
-    if (!check_tx_input_points(tx))
+    if (!consensus::are_ringct_input_types_valid(tx.vin))
     {
       LOG_ERROR_VER("tx uses key image not in the valid domain");
       return false;

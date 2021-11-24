@@ -171,11 +171,4 @@ bool check_tx_output_points(const transaction& tx) {
   return valid_output_public_keys && valid_output_commits && valid_pseudo_input_commits;
 }
 
-
-bool check_tx_input_points(const transaction& tx)
-{
-  return consensus::are_ringct_input_types_valid(tx.vin);
-
-}
-
 }
