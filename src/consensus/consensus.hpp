@@ -243,4 +243,9 @@ namespace consensus {
    const std::span<const uint64_t> xs
    );
 
+  std::optional<cryptonote::txin_v> rule_25_ringct_should_have_at_least_one_input
+  (
+   const std::span<const cryptonote::txin_v> xs
+   );
+
 }

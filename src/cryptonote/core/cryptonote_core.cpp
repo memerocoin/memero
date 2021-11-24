@@ -589,7 +589,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_ringct_semantic(const transaction& tx, bool tx_from_block) const
   {
-    if(!tx.vin.size())
+    if(!consensus::rule_25_ringct_should_have_at_least_one_input(tx.vin))
     {
       LOG_ERROR_VER("tx with empty inputs, rejected for tx id= " << get_transaction_hash(tx));
       return false;
