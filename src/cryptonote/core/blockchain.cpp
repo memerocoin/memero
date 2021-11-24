@@ -347,7 +347,6 @@ bool Blockchain::store_blockchain()
   // lock because the rpc_thread command handler also calls this
   std::unique_lock<std::mutex> lock(m_db->m_synchronization_lock);
 
-  TIME_MEASURE_START(save);
   // TODO: make sure sync(if this throws that it is not simply ignored higher
   // up the call stack
   try
@@ -365,9 +364,6 @@ bool Blockchain::store_blockchain()
     throw;
   }
 
-  TIME_MEASURE_FINISH(save);
-  if(m_show_time_stats)
-    LOG_INFO("Blockchain stored OK, took: " << save << " ms");
   return true;
 }
 //------------------------------------------------------------------
@@ -2445,14 +2441,7 @@ bool Blockchain::check_ringct_inputs(transaction& tx, uint64_t& max_used_block_h
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
 
-  TIME_MEASURE_START(a);
   bool res = check_ringct_inputs(tx, tvc, &max_used_block_height);
-  TIME_MEASURE_FINISH(a);
-  if(m_show_time_stats)
-  {
-    size_t ring_size = !tx.vin.empty() && tx.vin[0].type() == typeid(txin_from_key) ? boost::get<txin_from_key>(tx.vin[0]).output_relative_offsets.size() : 0;
-    LOG_INFO("HASH: " <<  get_transaction_hash(tx) << " I/M/O: " << tx.vin.size() << "/" << ring_size << "/" << tx.vout.size() << " H: " << max_used_block_height << " ms: " << a + m_fake_scan_time << " B: " << get_object_blobsize(tx) << " W: " << get_transaction_weight(tx));
-  }
   if (!res)
     return false;
 
@@ -2747,9 +2736,7 @@ bool Blockchain::handle_block_to_main_chain(const block& bl, const crypto::hash&
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
 
-  TIME_MEASURE_START(block_processing_time);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
-  TIME_MEASURE_START(t1);
 
   db_rtxn_guard rtxn_guard(m_db);
   uint64_t blockchain_height;
@@ -2763,9 +2750,6 @@ leave:
     return false;
   }
 
-  TIME_MEASURE_FINISH(t1);
-  TIME_MEASURE_START(t2);
-
   // make sure block timestamp is not less than the median timestamp
   // of a set number of the most recent blocks.
   if(!check_block_timestamp(bl))
@@ -2775,9 +2759,7 @@ leave:
     goto leave;
   }
 
-  TIME_MEASURE_FINISH(t2);
   //check proof of work
-  TIME_MEASURE_START(target_calculating_time);
 
   // get the target difficulty for the block.
   // the calculation can overflow, among other failure cases,
@@ -2786,10 +2768,6 @@ leave:
   // changing this to throwing exceptions instead so we can clean up.
   diff_t current_diffic = get_difficulty_for_next_block();
   LOG_ERROR_AND_RETURN_UNLESS(current_diffic, false, "!!!!!!!!! difficulty overhead !!!!!!!!!");
-
-  TIME_MEASURE_FINISH(target_calculating_time);
-
-  TIME_MEASURE_START(longhash_calculating_time);
 
   crypto::hash proof_of_work = {{0xff}};
 
@@ -2802,14 +2780,12 @@ leave:
   // FIXME: height parameter is not used...should it be used or should it not
   // be a parameter?
   // validate proof_of_work versus difficulty target
-  bool precomputed = false;
   bool fast_check = false;
   if (!fast_check)
   {
     auto it = m_blocks_longhash_table.find(id);
     if (it != m_blocks_longhash_table.end())
     {
-      precomputed = true;
       proof_of_work = it->second;
     }
     else
@@ -2824,12 +2800,6 @@ leave:
       goto leave;
     }
   }
-
-  TIME_MEASURE_FINISH(longhash_calculating_time);
-  if (precomputed)
-    longhash_calculating_time += m_fake_pow_calc_time;
-
-  TIME_MEASURE_START(t3);
 
   // sanity check basic miner tx properties;
   const auto maybe_coinbase_tx = prevalidate_miner_transaction(bl, blockchain_height);
@@ -2851,12 +2821,7 @@ leave:
   output_key_images_container keys;
 
   uint64_t fee_summary = 0;
-  uint64_t t_checktx = 0;
-  uint64_t t_exists = 0;
-  uint64_t t_pool = 0;
-  uint64_t t_dblspnd = 0;
   uint64_t n_pruned = 0;
-  TIME_MEASURE_FINISH(t3);
 
 // XXX old code adds miner tx here
 
@@ -2872,7 +2837,6 @@ leave:
     size_t tx_weight = 0;
     uint64_t fee = 0;
     bool relayed = false, do_not_relay = false, double_spend_seen = false, pruned = false;
-    TIME_MEASURE_START(aa);
 
 // XXX old code does not check whether tx exists
     if (m_db->tx_exists(tx_id))
@@ -2882,10 +2846,6 @@ leave:
       return_tx_to_pool(txs);
       goto leave;
     }
-
-    TIME_MEASURE_FINISH(aa);
-    t_exists += aa;
-    TIME_MEASURE_START(bb);
 
     // get transaction with hash <tx_id> from tx_pool
     if(!m_tx_pool.take_tx(tx_id, tx_tmp, txblob, tx_weight, fee, relayed, do_not_relay, double_spend_seen, pruned))
@@ -2898,14 +2858,11 @@ leave:
     if (pruned)
       ++n_pruned;
 
-    TIME_MEASURE_FINISH(bb);
-    t_pool += bb;
     // add the transaction to the temp list of transactions, so we can either
     // store the list of transactions all at once or return the ones we've
     // taken from the tx_pool back to it if the block fails verification.
     txs.push_back(std::make_pair(std::move(tx_tmp), std::move(txblob)));
     transaction &tx = txs.back().first;
-    TIME_MEASURE_START(dd);
 
     // FIXME: the storage should not be responsible for validation.
     //        If it does any, it is merely a sanity check.
@@ -2919,10 +2876,6 @@ leave:
     //     bvc.m_verifivation_failed = true;
     //     break;
     // }
-
-    TIME_MEASURE_FINISH(dd);
-    t_dblspnd += dd;
-    TIME_MEASURE_START(cc);
 
     {
       // validate that transaction inputs and the keys spending them are correct.
@@ -2941,8 +2894,6 @@ leave:
         goto leave;
       }
     }
-    TIME_MEASURE_FINISH(cc);
-    t_checktx += cc;
     fee_summary += fee;
     cumulative_block_weight += tx_weight;
   }
@@ -2960,7 +2911,6 @@ leave:
 
   m_blocks_txs_check.clear();
 
-  TIME_MEASURE_START(vmt);
   uint64_t base_reward = 0;
   uint64_t already_generated_coins = blockchain_height ? m_db->get_block_already_generated_coins(blockchain_height - 1) : 0;
 
@@ -2983,7 +2933,6 @@ leave:
       }
   }
 
-  TIME_MEASURE_FINISH(vmt);
   size_t block_weight;
   diff_t cumulative_difficulty;
 
@@ -2995,12 +2944,7 @@ leave:
   if(blockchain_height)
     cumulative_difficulty += m_db->get_block_cumulative_difficulty(blockchain_height - 1);
 
-  TIME_MEASURE_FINISH(block_processing_time);
-  if(precomputed)
-    block_processing_time += m_fake_pow_calc_time;
-
   rtxn_guard.stop();
-  TIME_MEASURE_START(addblock);
   uint64_t new_height = 0;
   if (!bvc.m_verifivation_failed)
   {
@@ -3008,7 +2952,15 @@ leave:
     {
       uint64_t long_term_block_weight = consensus::get_block_size_bound(cryptonote::get_block_height(bl));
       cryptonote::string_blob bd = cryptonote::block_to_blob(bl);
-      new_height = m_db->add_block(std::make_pair(std::move(bl), std::move(bd)), block_weight, long_term_block_weight, cumulative_difficulty, already_generated_coins, txs);
+      new_height = m_db->add_block
+        (
+         std::make_pair(std::move(bl), std::move(bd))
+         , block_weight
+         , long_term_block_weight
+         , cumulative_difficulty
+         , already_generated_coins
+         , txs
+         );
     }
     catch (const KEY_IMAGE_EXISTS& e)
     {
@@ -3033,8 +2985,6 @@ leave:
       LOG_ERROR("Blocks that failed verification should not reach here");
     }
 
-  TIME_MEASURE_FINISH(addblock);
-
   // do this after updating the hard fork state since the weight limit may change due to fork
   if (!update_next_cumulative_weight_limit())
     {
@@ -3058,14 +3008,6 @@ leave:
      << config::lol::money_symbol << " )" << std::endl
      << "size:           " << cumulative_block_weight << " bytes" << std::endl
     );
-  if(m_show_time_stats)
-  {
-    LOG_INFO("Height: " << new_height << " coinbase weight: " << coinbase_weight << " cumm: "
-        << cumulative_block_weight << " p/t: " << block_processing_time << " ("
-        << target_calculating_time << "/" << longhash_calculating_time << "/"
-        << t1 << "/" << t2 << "/" << t3 << "/" << t_exists << "/" << t_pool
-        << "/" << t_checktx << "/" << t_dblspnd << "/" << vmt << "/" << addblock << ")ms");
-  }
 
   bvc.m_added_to_main_chain = true;
   ++m_sync_counter;
@@ -3137,8 +3079,6 @@ bool Blockchain::add_new_block(const block& bl, block_verification_context& bvc)
 //------------------------------------------------------------------
 void Blockchain::block_longhash_worker(uint64_t height, const std::span<const block> blocks, std::unordered_map<crypto::hash, crypto::hash> &map) const
 {
-  TIME_MEASURE_START(t);
-
   for (const auto & block : blocks)
   {
     if (m_cancel)
@@ -3147,8 +3087,6 @@ void Blockchain::block_longhash_worker(uint64_t height, const std::span<const bl
     crypto::hash pow = get_mining_hash(block);
     map.emplace(id, pow);
   }
-
-  TIME_MEASURE_FINISH(t);
 }
 
 //------------------------------------------------------------------
@@ -3158,7 +3096,6 @@ bool Blockchain::cleanup_handle_incoming_blocks(bool force_sync)
 
   LOG_TRACE("Blockchain::" << __func__);
   std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
-  TIME_MEASURE_START(t1);
 
   try
   {
@@ -3208,7 +3145,6 @@ bool Blockchain::cleanup_handle_incoming_blocks(bool force_sync)
     }
   }
 
-  TIME_MEASURE_FINISH(t1);
   m_blocks_longhash_table.clear();
   m_scan_table.clear();
   m_blocks_txs_check.clear();
@@ -3265,7 +3201,6 @@ bool Blockchain::has_block_weights(uint64_t height, uint64_t nblocks) const
 bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_complete_entry> blocks_entry, std::vector<block> &blocks)
 {
   LOG_TRACE("Blockchain::" << __func__);
-  TIME_MEASURE_START(prepare);
   bool stop_batch;
   uint64_t bytes = 0;
   size_t total_txs = 0;
@@ -3383,18 +3318,7 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
     return true;
   }
 
-  m_fake_scan_time = 0;
-  m_fake_pow_calc_time = 0;
-
   m_scan_table.clear();
-
-  TIME_MEASURE_FINISH(prepare);
-  m_fake_pow_calc_time = prepare / blocks_entry.size();
-
-  if (blocks_entry.size() > 1 && threads > 1 && m_show_time_stats)
-    LOG_DEBUG("Prepare blocks took: " << prepare << " ms");
-
-  TIME_MEASURE_START(scantable);
 
   // [input] stores all unique amounts found
   std::vector < uint64_t > amounts;
@@ -3570,14 +3494,6 @@ bool Blockchain::prepare_handle_incoming_blocks(const std::span<const block_comp
         its->second.emplace(in_to_key.output_key_image, outputs);
       }
     }
-  }
-
-  TIME_MEASURE_FINISH(scantable);
-  if (total_txs > 0)
-  {
-    m_fake_scan_time = scantable / total_txs;
-    if(m_show_time_stats)
-      LOG_DEBUG("Prepare scantable took: " << scantable << " ms");
   }
 
   return true;

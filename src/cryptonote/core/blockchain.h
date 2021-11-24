@@ -834,8 +834,6 @@ namespace cryptonote
     bool m_db_default_sync;
     bool m_db_sync_on_blocks;
     uint64_t m_db_sync_threshold;
-    uint64_t m_fake_pow_calc_time;
-    uint64_t m_fake_scan_time;
     uint64_t m_sync_counter;
     uint64_t m_bytes_to_sync;
     std::vector<uint64_t> m_timestamps;
