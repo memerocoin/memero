@@ -589,6 +589,11 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_ringct_semantic(const transaction& tx, bool tx_from_block) const
   {
+    if (tx.version != 2)
+    {
+      LOG_ERROR_VER("pre rct txs should not exist");
+    }
+
     if(!consensus::rule_25_ringct_should_have_at_least_one_input(tx.vin))
     {
       LOG_ERROR_VER("tx with empty inputs, rejected for tx id= " << get_transaction_hash(tx));
@@ -606,25 +611,12 @@ namespace cryptonote
       LOG_ERROR_VER("tx with invalid outputs, rejected for tx id= " << get_transaction_hash(tx));
       return false;
     }
-    if (tx.version > 1)
+    if (tx.ringct.output_commits.size() != tx.vout.size())
     {
-      if (tx.ringct.output_commits.size() != tx.vout.size())
-      {
-        LOG_ERROR_VER("tx with mismatched vout/output_commits count, rejected for tx id= " << get_transaction_hash(tx));
-        return false;
-      }
-    }
-
-    if(!check_output_amount_sum_overflow(tx))
-    {
-      LOG_ERROR_VER("tx has money overflow, rejected for tx id= " << get_transaction_hash(tx));
+      LOG_ERROR_VER("tx with mismatched vout/output_commits count, rejected for tx id= " << get_transaction_hash(tx));
       return false;
     }
 
-    if (tx.version == 1)
-    {
-      LOG_ERROR_VER("pre rct txs should not exist");
-    }
     // for version > 1, ringct signatures check verifies amounts match
 
     uint64_t tx_weight_limit = get_max_tx_size() - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
