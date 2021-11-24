@@ -175,17 +175,44 @@ namespace consensus {
     }
   }
 
-  bool are_ringct_input_types_valid(const std::span<const cryptonote::txin_v> xs) {
-    return std::transform_reduce
+  std::optional<std::vector<cryptonote::txin_from_key>>
+  are_ringct_input_types_valid(const std::span<const cryptonote::txin_v> xs) {
+
+    std::vector<std::optional<cryptonote::txin_from_key>> maybe_from_keys;
+
+    std::transform
       (
        xs.begin()
        , xs.end()
+       , std::back_inserter(maybe_from_keys)
+       , rule_15_ringct_input_type_should_be_from_key
+       );
+
+    const bool all_from_keys =
+      std::transform_reduce
+      (
+       maybe_from_keys.begin()
+       , maybe_from_keys.end()
        , true
        , std::logical_and()
-       , [](const auto& x) {
-         return rule_15_ringct_input_type_should_be_from_key(x);
+       , [](const auto& x) -> bool {
+         return x.has_value();
        }
        );
+
+    if (!all_from_keys) return {};
+
+    std::vector<cryptonote::txin_from_key> from_keys;
+
+    std::transform
+      (
+       maybe_from_keys.begin()
+       , maybe_from_keys.end()
+       , std::back_inserter(from_keys)
+       , [](const auto& x) { return *x; }
+       );
+
+    return from_keys;
   }
 
   std::optional<rct::Bulletproof_unsafe>
