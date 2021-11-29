@@ -42,6 +42,7 @@ add_library(tools_common
 
 target_link_libraries(tools_common
   epee
+  math_crypto
 )
 
 

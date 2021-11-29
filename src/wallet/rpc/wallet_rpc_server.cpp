@@ -46,8 +46,6 @@
 
 #include "tools/common/scoped_message_writer.h"
 
-#include "math/crypto/controller/init.hpp"
-
 #include "consensus/consensus.hpp"
 
 #include <boost/format.hpp>
@@ -2144,8 +2142,6 @@ public:
 std::string const t_executor::NAME = "Wallet RPC Daemon";
 
 int main(int argc, char** argv) {
-  crypto::init();
-
   TRY_ENTRY();
 
   namespace po = boost::program_options;

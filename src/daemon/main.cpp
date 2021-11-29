@@ -34,8 +34,6 @@
 
 #include "network/rpc/rpc_args.h"
 
-#include "math/crypto/controller/init.hpp"
-
 #include "config/version.hpp"
 
 
@@ -46,8 +44,6 @@ namespace fs = std::filesystem;
 
 int main(int argc, char const * argv[])
 {
-  crypto::init();
-
   try {
 
     // TODO parse the debug options like set log level right here at start

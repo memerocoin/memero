@@ -39,14 +39,6 @@
 
 
 
-
-// workaround for a suspected bug in pthread/kernel on MacOS X
-#ifdef __APPLE__
-#define DEFAULT_MAX_CONCURRENCY 1
-#else
-#define DEFAULT_MAX_CONCURRENCY 0
-#endif
-
 namespace
 {
   class Print
@@ -89,7 +81,7 @@ namespace wallet_args
     namespace po = boost::program_options;
 
     const command_line::arg_descriptor<std::string> arg_log_level = {"log-level", "0-4", ""};
-    const command_line::arg_descriptor<uint32_t> arg_max_concurrency = {"max-concurrency", wallet_args::tr("Max number of threads to use for a parallel job"), DEFAULT_MAX_CONCURRENCY};
+    const command_line::arg_descriptor<uint32_t> arg_max_concurrency = {"max-concurrency", wallet_args::tr("Max number of threads to use for a parallel job"), 0};
     const command_line::arg_descriptor<std::string> arg_config_file = {
       "config-file"
       , "Config file"

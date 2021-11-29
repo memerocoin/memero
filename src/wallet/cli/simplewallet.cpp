@@ -52,8 +52,6 @@
 
 #include "tools/common/scoped_message_writer.h"
 
-#include "math/crypto/controller/init.hpp"
-
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
 #include "consensus/consensus.hpp"
@@ -3241,8 +3239,6 @@ void simple_wallet::commit_or_save(std::vector<wallet::logic::type::tx::pending_
 //----------------------------------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-  crypto::init();
-
   TRY_ENTRY();
 
   setlocale(LC_CTYPE, "");

@@ -35,6 +35,8 @@
 
 #include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...
 
+#include "math/crypto/controller/init.hpp"
+
 #include "config/cryptonote.hpp"
 
 #include <boost/format.hpp>
@@ -95,6 +97,7 @@ namespace tools
   bool on_startup()
   {
     OPENSSL_init_ssl(0, NULL);
+    crypto::init();
 
     return true;
   }
