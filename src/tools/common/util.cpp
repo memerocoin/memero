@@ -274,23 +274,39 @@ namespace tools
     return "a long time";
   }
 
-  std::string get_human_readable_bytes(uint64_t bytes)
+  using namespace boost::multiprecision;
+
+  std::string get_human_readable_bytes(cpp_int bytes) {
+    return get_human_readable_unit(bytes, "B", 1024);
+  }
+
+  std::string get_human_readable_number(cpp_int bytes) {
+    return get_human_readable_unit(bytes, "", 1000);
+  }
+
+  std::string get_human_readable_unit
+  (
+   cpp_int bytes
+   , const std::string unit
+   , const cpp_int k
+   )
   {
+
     // Use 1024 for "kilo", 1024*1024 for "mega" and so on instead of the more modern and standard-conforming
     // 1000, 1000*1000 and so on, to be consistent with other Monero code that also uses base 2 units
     struct byte_map
     {
         const char* const format;
-        const std::uint64_t bytes;
+        const cpp_int bytes;
     };
 
-    static constexpr const byte_map sizes[] =
+    const byte_map sizes[] =
     {
-        {"%.0f B", 1024},
-        {"%.2f kB", 1024 * 1024},
-        {"%.2f MB", std::uint64_t(1024) * 1024 * 1024},
-        {"%.2f GB", std::uint64_t(1024) * 1024 * 1024 * 1024},
-        {"%.2f TB", std::uint64_t(1024) * 1024 * 1024 * 1024 * 1024}
+        {"%.0f ", k},
+        {"%.2f K", k * k},
+        {"%.2f M", cpp_int(k) * k * k},
+        {"%.2f G", cpp_int(k) * k * k * k},
+        {"%.2f T", cpp_int(k) * k * k * k * k}
     };
 
     struct bytes_less
@@ -304,7 +320,9 @@ namespace tools
     const auto size = std::upper_bound(
         std::begin(sizes), std::end(sizes) - 1, byte_map{"", bytes}, bytes_less{}
     );
-    const std::uint64_t divisor = size->bytes / 1024;
-    return (boost::format(size->format) % (double(bytes) / divisor)).str();
+    const cpp_int divisor = size->bytes / k;
+    const std::string format = std::string(size->format) + unit;
+    const double num = (bytes * 100 / divisor).convert_to<double>() / 100.;
+    return (boost::format(format) % num).str();
   }
 }

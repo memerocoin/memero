@@ -40,6 +40,7 @@
 
 #include "tools/common/threadpool.h"
 #include "tools/common/notify.h"
+#include "tools/common/util.h"
 #include "tools/epee/include/profile_tools.h"
 #include "tools/epee/include/time_helper.h"
 
@@ -1609,11 +1610,13 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
          << std::endl
          << "OLD" << std::endl
          << config::lol::tab_sep << "height:         " << current_height << std::endl
-         << config::lol::tab_sep << "∑ difficulty:   " << main_chain_cumulative_difficulty << std::endl
+         << config::lol::tab_sep << "∑ difficulty:   "
+         << tools::get_human_readable_number(main_chain_cumulative_difficulty) << std::endl
          << std::endl
          << "NEW" << std::endl
          << config::lol::tab_sep << "height:         " << bei.height << std::endl
-         << config::lol::tab_sep << "∑ difficulty:   " << bei.cumulative_difficulty << std::endl
+         << config::lol::tab_sep << "∑ difficulty:   "
+         << tools::get_human_readable_number(bei.cumulative_difficulty) << std::endl
          << config::lol::tab_sep << "id:             " << id << std::endl
          << config::lol::tab_sep << "PoW:            " << proof_of_work << std::endl
          << config::lol::tab_sep << "difficulty:     " << current_diff << std::endl
@@ -3006,7 +3009,7 @@ leave:
      << "id:             " << id << std::endl
      << "PoW:            " << proof_of_work << std::endl
      << "height:         " << new_height - 1 << std::endl
-     << "difficulty:     " << current_diffic << std::endl
+     << "difficulty:     " << tools::get_human_readable_number(current_diffic) << std::endl
      << "block reward:   " << print_money(fee_summary + base_reward)
      << config::lol::money_symbol << " ( " << print_money(base_reward)
      << config::lol::money_symbol << " + " << print_money(fee_summary)
