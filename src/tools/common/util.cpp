@@ -48,21 +48,6 @@ namespace tools
 {
   std::function<void(int)> signal_handler::m_handler;
 
-  std::string get_default_data_dir()
-  {
-    std::string config_folder;
-
-    std::string pathRet;
-    char* pszHome = getenv("HOME");
-    if (pszHome == NULL || strlen(pszHome) == 0)
-      pathRet = "/";
-    else
-      pathRet = pszHome;
-    config_folder = (pathRet + "/." + std::string(config::lol::CRYPTONOTE_NAME));
-
-    return config_folder;
-  }
-
   bool create_directories_if_necessary(const std::string& path)
   {
     namespace fs = std::filesystem;

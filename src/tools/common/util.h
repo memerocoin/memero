@@ -41,8 +41,6 @@
 
 namespace tools
 {
-  std::string get_default_data_dir();
-
   /*! \brief creates directories for a path
    *
    *  wrapper around boost::filesyste::create_directories.
