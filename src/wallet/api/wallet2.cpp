@@ -576,15 +576,15 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 
     std::map<size_t, crypto::ecdh_shared_secret> tx_output_shared_secrets;
 
-    const auto tx_output_public_keys
-      = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
+    const auto output_ecdh_public_keys
+      = get_all_output_ecdh_public_keys_from_extra(tx, tx.vout.size());
 
-    if (tx_output_public_keys)
+    if (output_ecdh_public_keys)
     {
-      for (size_t i = 0; i < tx_output_public_keys->size(); ++i)
+      for (size_t i = 0; i < output_ecdh_public_keys->size(); ++i)
       {
         tx_output_shared_secrets[i] =
-          crypto::derive_tx_output_ecdh_shared_secret(tx_output_public_keys->at(i), keys.m_view_secret_key);
+          crypto::derive_tx_output_ecdh_shared_secret(output_ecdh_public_keys->at(i), keys.m_view_secret_key);
       }
     }
 

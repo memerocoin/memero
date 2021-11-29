@@ -115,12 +115,14 @@ namespace proof {
     // check signature
     std::vector<int> good_signature(num_sigs, 0);
 
-    const auto maybe_tx_output_pub_keys = get_all_tx_output_public_keys_from_extra(tx, tx.vout.size());
-    if (!maybe_tx_output_pub_keys) return {};
-    const auto tx_output_pub_keys = *maybe_tx_output_pub_keys;
+    const auto maybe_output_ecdh_public_keys =
+      get_all_output_ecdh_public_keys_from_extra(tx, tx.vout.size());
+
+    if (!maybe_output_ecdh_public_keys) return {};
+    const auto output_ecdh_public_keys = *maybe_output_ecdh_public_keys;
 
     std::vector<size_t> found_indices;
-    for (size_t i = 0; i < tx_output_pub_keys.size(); ++i)
+    for (size_t i = 0; i < output_ecdh_public_keys.size(); ++i)
     {
       const std::optional<crypto::public_key> base =
         is_subaddress
@@ -128,7 +130,8 @@ namespace proof {
         : std::nullopt
         ;
 
-      const bool good_signature = crypto::verify_tx_output_signatures(message_hash, tx_output_pub_keys[i], base, sigs[i]);
+      const bool good_signature = crypto::verify_tx_output_signatures
+        (message_hash, output_ecdh_public_keys[i], base, sigs[i]);
 
       if (good_signature) {
         found_indices.push_back(i);

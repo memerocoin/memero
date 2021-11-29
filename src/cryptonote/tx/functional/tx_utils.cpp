@@ -287,7 +287,7 @@ namespace cryptonote
     }
     LOG_ERROR_AND_RETURN_UNLESS(output_public_keys.size() == output_secret_keys.size(), {}, "Internal error creating tx output public keys");
 
-    const auto maybe_new_extra_2 = remove_field_from_tx_extra(tx.extra, typeid(tx_extra_tx_output_public_keys));
+    const auto maybe_new_extra_2 = remove_field_from_tx_extra(tx.extra, typeid(tx_extra_output_ecdh_public_keys));
     if (maybe_new_extra) {
       tx.extra = *maybe_new_extra_2;
     }
@@ -296,7 +296,7 @@ namespace cryptonote
     for (size_t i = 0; i < output_public_keys.size(); ++i)
       LOG_PRINT_L2(output_public_keys[i]);
 
-    tx.extra = add_tx_output_keys_to_extra(tx.extra, output_public_keys);
+    tx.extra = add_output_ecdh_public_keys_to_extra(tx.extra, output_public_keys);
 
     //check money
     if(summary_outs_money > summary_inputs_money )
@@ -440,7 +440,7 @@ namespace cryptonote
     tx.extra.clear();
 
     keypair txkey = keypair::generate();
-    tx = add_tx_pub_key_to_extra(tx, txkey.pub);
+    tx = add_tx_ecdh_public_key_to_extra(tx, txkey.pub);
 
     txin_gen in;
     in.height = height;

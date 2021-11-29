@@ -87,7 +87,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const epee::blob::span tx_extra)
+  std::optional<crypto::public_key> get_tx_ecdh_public_key_from_extra(const epee::blob::span tx_extra)
   {
     const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
 
@@ -111,31 +111,31 @@ namespace cryptonote
 
   }
   //---------------------------------------------------------------
-  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction_prefix& tx_prefix)
+  std::optional<crypto::public_key> get_tx_ecdh_public_key_from_extra(const transaction_prefix& tx_prefix)
   {
-    return get_tx_pub_key_from_extra(tx_prefix.extra);
+    return get_tx_ecdh_public_key_from_extra(tx_prefix.extra);
   }
   //---------------------------------------------------------------
-  std::optional<crypto::public_key> get_tx_pub_key_from_extra(const transaction& tx)
+  std::optional<crypto::public_key> get_tx_ecdh_public_key_from_extra(const transaction& tx)
   {
-    return get_tx_pub_key_from_extra(tx.extra);
+    return get_tx_ecdh_public_key_from_extra(tx.extra);
   }
 
   //---------------------------------------------------------------
   std::optional<std::vector<crypto::public_key>>
-  get_tx_output_public_keys_from_extra(const epee::blob::span tx_extra)
+  get_output_ecdh_public_keys_from_extra(const epee::blob::span tx_extra)
   {
     const auto maybe_tx_extra_fields = parse_tx_extra(tx_extra);
 
     if (!maybe_tx_extra_fields) return {};
 
     // find corresponding field
-    const tx_extra_tx_output_public_keys output_pub_keys_unsafe_dummy{};
+    const tx_extra_output_ecdh_public_keys output_pub_keys_unsafe_dummy{};
     const auto r = find_tx_extra_field_by_type(*maybe_tx_extra_fields, output_pub_keys_unsafe_dummy);
     if(!r) {
       return {};
     }
-    const tx_extra_tx_output_public_keys output_pub_keys_unsafe = *r; 
+    const tx_extra_output_ecdh_public_keys output_pub_keys_unsafe = *r; 
 
     std::vector<crypto::public_key> output_pub_keys;
 
@@ -159,24 +159,24 @@ namespace cryptonote
   }
   //---------------------------------------------------------------
   std::optional<std::vector<crypto::public_key>>
-  get_tx_output_public_keys_from_extra(const transaction_prefix& tx)
+  get_output_ecdh_public_keys_from_extra(const transaction_prefix& tx)
   {
-    return get_tx_output_public_keys_from_extra(tx.extra);
+    return get_output_ecdh_public_keys_from_extra(tx.extra);
   }
 
-  std::optional<std::vector<crypto::public_key>> get_all_tx_output_public_keys_from_extra
+  std::optional<std::vector<crypto::public_key>> get_all_output_ecdh_public_keys_from_extra
   (
    const transaction& tx
    , const size_t output_count
    )
   {
-    const auto maybe_pub_keys = get_tx_output_public_keys_from_extra(tx);
+    const auto maybe_pub_keys = get_output_ecdh_public_keys_from_extra(tx);
 
     if (maybe_pub_keys && maybe_pub_keys->size() == output_count) {
       return *maybe_pub_keys;
     }
 
-    const auto x = get_tx_pub_key_from_extra(tx);
+    const auto x = get_tx_ecdh_public_key_from_extra(tx);
 
     if(x) {
       std::vector<crypto::public_key> dups(output_count);
@@ -243,15 +243,15 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  transaction add_tx_pub_key_to_extra(const transaction& tx_in, const crypto::public_key tx_pub_key)
+  transaction add_tx_ecdh_public_key_to_extra(const transaction& tx_in, const crypto::public_key tx_pub_key)
   {
     transaction tx = tx_in;
-    tx.extra = add_tx_pub_key_to_extra(tx_in.extra, tx_pub_key);
+    tx.extra = add_tx_ecdh_public_key_to_extra(tx_in.extra, tx_pub_key);
 
     return tx;
   }
   //---------------------------------------------------------------
-  std::vector<uint8_t> add_tx_pub_key_to_extra
+  std::vector<uint8_t> add_tx_ecdh_public_key_to_extra
   (const std::vector<uint8_t>& tx_extra_in, const crypto::public_key tx_pub_key)
   {
     std::vector<uint8_t> tx_extra = tx_extra_in;
@@ -261,7 +261,7 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  std::vector<uint8_t> add_tx_output_keys_to_extra
+  std::vector<uint8_t> add_output_ecdh_public_keys_to_extra
   (const std::vector<uint8_t>& tx_extra_in, const std::span<const crypto::public_key> output_pub_keys)
   {
     std::vector<uint8_t> tx_extra = tx_extra_in;
@@ -276,7 +276,7 @@ namespace cryptonote
        , [](const auto&x) { return x; }
        );
 
-    tx_extra_field field = tx_extra_tx_output_public_keys{ output_pub_keys_unsafe };
+    tx_extra_field field = tx_extra_output_ecdh_public_keys{ output_pub_keys_unsafe };
     // serialize
     std::ostringstream oss;
     binary_archive<true> ar(oss);
