@@ -229,8 +229,13 @@ void log_level_map(const el::Level level, const std::string cat, const std::stri
   auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
   std::lock_guard<std::mutex> guard(g_log_mutex);
-  std::cout << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %X")
-            << " " << log_header << " " << cat_str << x << std::endl;
+  constexpr bool log_time = false;
+  if (log_time) {
+    std::cout << std::put_time(std::gmtime(&in_time_t), "%Y-%m-%d %X")
+              << " " << log_header << " " << cat_str << x << std::endl;
+  } else {
+    std::cout << log_header << " " << cat_str << x << std::endl;
+  }
 }
 
 void log_level(const el::Level level, const std::string cat, const std::string_view x) {
