@@ -126,11 +126,7 @@ namespace tools
     umask(mode);
   }
 
-  namespace
-  {
-    std::mutex max_concurrency_lock;
-    unsigned max_concurrency = std::thread::hardware_concurrency();
-  }
+  std::atomic<unsigned int> max_concurrency = std::thread::hardware_concurrency();
 
   void set_max_concurrency(unsigned n)
   {
@@ -139,13 +135,12 @@ namespace tools
     unsigned hwc = std::thread::hardware_concurrency();
     if (n > hwc)
       n = hwc;
-    std::lock_guard<std::mutex> lock(max_concurrency_lock);
+
     max_concurrency = n;
   }
 
   unsigned get_max_concurrency()
   {
-    std::lock_guard<std::mutex> lock(max_concurrency_lock);
     return max_concurrency;
   }
 
