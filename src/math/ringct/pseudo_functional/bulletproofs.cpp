@@ -52,8 +52,8 @@
 #include <numeric>
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "bulletproofs"
+
+
 
 namespace rct
 {
@@ -131,7 +131,7 @@ bool bulletproof_VERIFY(const rct_pointS commits, const Bulletproof proof)
 
   constexpr size_t N = log2bound(maxN).first;
   constexpr size_t logN = log2bound(maxN).second;
-  const auto [M, logM] = log2bound(std::min(maxM, commits.size()));
+  const auto [M, logM] = log2bound(std::min(max_outputs, commits.size()));
 
   const size_t rounds = logM + logN;
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() == rounds, false, "Proof is not the expected size");
@@ -162,11 +162,11 @@ bool bulletproof_VERIFY(const rct_pointS commits, const Bulletproof proof)
 
   LOG_ERROR_AND_RETURN_UNLESS(valid_pd_w, false, "some pd_w[i] == 0");
 
-  const size_t maxMN = 1u << proof.LR.size();
+  const size_t max_outputsN = 1u << proof.LR.size();
 
   // STEP 2, use proof_data
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(commits.size() + (2 * (logM + logN) + 4) + 2 * maxMN);
+  multiexp_data.reserve(commits.size() + (2 * (logM + logN) + 4) + 2 * max_outputsN);
 
   // setup weighted aggregates
 

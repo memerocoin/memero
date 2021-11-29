@@ -31,8 +31,8 @@
 #include <boost/algorithm/string/join.hpp>
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "spawn"
+
+
 
 namespace tools
 {

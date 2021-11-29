@@ -40,8 +40,8 @@
 #include "tools/serialization/binary_utils.h"
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "account"
+
+
 
 namespace cryptonote
 {

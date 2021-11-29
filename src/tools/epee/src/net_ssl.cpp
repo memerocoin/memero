@@ -31,8 +31,8 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lambda/lambda.hpp>
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "net.ssl"
+
+
 
 // openssl genrsa -out /tmp/KEY 4096
 // openssl req -new -key /tmp/KEY -out /tmp/REQ

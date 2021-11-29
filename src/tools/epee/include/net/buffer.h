@@ -34,8 +34,8 @@
 #include <cstdint>
 #include <string>
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "net.buffer"
+
+
 
 //#define NET_BUFFER_LOG(x) LOG_DEBUG(x)
 #define NET_BUFFER_LOG(x) ((void)0)

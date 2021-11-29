@@ -51,8 +51,8 @@
 #include <numeric>
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "bulletproofs"
+
+
 
 namespace rct
 {
@@ -61,8 +61,8 @@ rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b);
 
 const rct_scalarV twoN = vector_powers(rct::s_two, maxN);
 
-std::array<rct_point, maxN*maxM> Hi;
-std::array<rct_point, maxN*maxM> Gi;
+std::array<rct_point, maxN*max_outputs> Hi;
+std::array<rct_point, maxN*max_outputs> Gi;
 
 const auto multiexp = dummy;
 
@@ -119,7 +119,7 @@ void init_exponents()
 rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*maxM, "Incompatible sizes of a and maxN");
+  LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*max_outputs, "Incompatible sizes of a and maxN");
 
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(a.size()*2);
@@ -162,7 +162,7 @@ rct_point cross_vector_exponent
   LOG_ERROR_AND_THROW_UNLESS(size + Bo <= B.size(), "Incompatible size for B");
   LOG_ERROR_AND_THROW_UNLESS(size + ao <= a.size(), "Incompatible size for a");
   LOG_ERROR_AND_THROW_UNLESS(size + bo <= b.size(), "Incompatible size for b");
-  LOG_ERROR_AND_THROW_UNLESS(size <= maxN*maxM, "size is too large");
+  LOG_ERROR_AND_THROW_UNLESS(size <= maxN*max_outputs, "size is too large");
   LOG_ERROR_AND_THROW_UNLESS(!scale || size == scale->size() / 2, "Incompatible size for scale");
 
   std::vector<MultiexpData> multiexp_data;
@@ -253,9 +253,9 @@ Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, con
   init_exponents();
 
   const auto [N, logN] = log2bound(maxN);
-  const auto [M, logM] = log2bound(std::min(maxM, xs.size()));
+  const auto [M, logM] = log2bound(std::min(max_outputs, xs.size()));
 
-  LOG_ERROR_AND_THROW_UNLESS(M <= maxM, "sv/gamma are too large");
+  LOG_ERROR_AND_THROW_UNLESS(M <= max_outputs, "sv/gamma are too large");
 
 
   const size_t logMN = logM + logN;

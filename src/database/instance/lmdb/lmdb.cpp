@@ -41,8 +41,8 @@
 #include <boost/format.hpp>
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "blockchain.db.lmdb"
+
+
 
 
 #if defined(__i386) || defined(__x86_64)

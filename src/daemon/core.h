@@ -33,8 +33,8 @@
 
 #include "tools/epee/include/logging.hpp"
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "daemon"
+
+
 
 namespace daemonize
 {

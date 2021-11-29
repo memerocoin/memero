@@ -39,8 +39,8 @@
 #include <numeric>
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "vectorOps"
+
+
 
 namespace rct
 {

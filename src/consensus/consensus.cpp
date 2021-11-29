@@ -26,8 +26,8 @@
 
 #include <boost/multiprecision/cpp_int.hpp>
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "consensus"
+
+
 
 namespace consensus {
 

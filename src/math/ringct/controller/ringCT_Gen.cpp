@@ -46,8 +46,8 @@
 #include "config/cryptonote.hpp"
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "ringct"
+
+
 
 namespace rct {
 

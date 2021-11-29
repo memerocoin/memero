@@ -41,8 +41,8 @@
 #include "config/version.hpp"
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "daemon.rpc"
+
+
 
 using namespace constant;
 

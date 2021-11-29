@@ -47,8 +47,8 @@
 
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "net.cn"
+
+
 
 #define LOG_P2P_MESSAGE(x) LOG_CATEGORY_VERBOSE("net.p2p.msg", context << x)
 #define LOG_P2P_MESSAGE_IF(init, test, x) \
@@ -59,7 +59,11 @@
   } while(0)
 
 #define LOG_PEER_STATE(x) \
-  LOG_CATEGORY_INFO(MONERO_DEFAULT_LOG_CATEGORY, context << "state: " << x << " in state " << cryptonote::get_protocol_state_string(context.m_state))
+  LOG_INFO \
+  ( \
+   context << "state: " << x << " in state " << \
+   cryptonote::get_protocol_state_string(context.m_state) \
+    )
 
 #define BLOCK_QUEUE_NSPANS_THRESHOLD 10 // chunks of N blocks
 #define BLOCK_QUEUE_SIZE_THRESHOLD (100*1024*1024) // MB

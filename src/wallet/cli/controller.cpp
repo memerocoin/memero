@@ -41,8 +41,8 @@
 #include <boost/format.hpp>
 #include <boost/program_options.hpp>
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "wallet.cli.controller"
+
+
 
 namespace wallet {
 namespace cli {

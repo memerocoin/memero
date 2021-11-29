@@ -38,8 +38,8 @@
 
 #include "config/version.hpp"
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "daemon"
+
+
 
 namespace po = boost::program_options;
 namespace fs = std::filesystem;

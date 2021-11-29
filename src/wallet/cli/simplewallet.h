@@ -44,8 +44,8 @@
 #include "math/crypto/controller/random.hpp"
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "wallet.simplewallet"
+
+
 
 /*!
  * \namespace cryptonote

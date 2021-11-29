@@ -74,8 +74,8 @@ using namespace cryptonote;
 using namespace wallet::logic::functional::fee;
 using namespace wallet::logic::type::message_signature;
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "wallet.wallet2"
+
+
 
 
 // used to target a given block weight (additional outputs may be added on top to build fee)

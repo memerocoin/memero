@@ -23,8 +23,8 @@
 #include "tools/epee/include/logging.hpp"
 #include "consensus/consensus.hpp"
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "math/blockchain/coinbase_tx"
+
+
 
 namespace cryptonote {
 

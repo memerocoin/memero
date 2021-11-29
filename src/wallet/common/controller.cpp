@@ -33,8 +33,8 @@
 
 #include "tools/common/scoped_message_writer.h"
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "wallet.common.controller"
+
+
 
 namespace wallet {
 namespace common {

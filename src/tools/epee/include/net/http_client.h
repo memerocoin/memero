@@ -40,8 +40,8 @@
 
 //#pragma comment(lib, "shlwapi.lib")
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "net.http"
+
+
 
 extern std::recursive_mutex gregexp_lock;
 

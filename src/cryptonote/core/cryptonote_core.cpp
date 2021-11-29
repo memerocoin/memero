@@ -42,8 +42,8 @@
 #include <boost/uuid/nil_generator.hpp>
 
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "cn"
+
+
 
 #define LOG_ERROR_VER(x) LOG_CATEGORY_ERROR("verify", x)
 

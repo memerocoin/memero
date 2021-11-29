@@ -30,8 +30,8 @@
 #include "tools/epee/include/net/net_parse_helpers.h"
 #include "tools/epee/include/time_helper.h"
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "net.http"
+
+
 
 #define HTTP_MAX_URI_LEN		 9000
 #define HTTP_MAX_HEADER_LEN		 100000

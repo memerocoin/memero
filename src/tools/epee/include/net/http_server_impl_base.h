@@ -33,8 +33,8 @@
 #include "tools/epee/include/net/abstract_tcp_server2.h"
 #include "http_protocol_handler.h"
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "net.http"
+
+
 
 namespace epee
 {
