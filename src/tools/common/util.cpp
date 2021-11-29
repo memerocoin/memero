@@ -309,17 +309,16 @@ namespace tools
         {"%.2f T", cpp_int(k) * k * k * k * k}
     };
 
-    struct bytes_less
-    {
-        bool operator()(const byte_map& lhs, const byte_map& rhs) const noexcept
-        {
-            return lhs.bytes < rhs.bytes;
+    const auto size = std::upper_bound
+      (
+        sizes.begin()
+        , sizes.end()
+        , byte_map{"", bytes}
+        , [](const auto& x, const auto& y) {
+          return x.bytes < y.bytes;
         }
-    };
+       );
 
-    const auto size = std::upper_bound(
-        std::begin(sizes), std::end(sizes) - 1, byte_map{"", bytes}, bytes_less{}
-    );
     const cpp_int divisor = size->bytes / k;
     const std::string format = std::string(size->format) + unit;
     const double num = (bytes * 100 / divisor).convert_to<double>() / 100.;
