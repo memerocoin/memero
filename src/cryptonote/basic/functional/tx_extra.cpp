@@ -93,8 +93,7 @@ namespace cryptonote
 
     if (!maybe_tx_extra_fields) return {};
 
-    const tx_extra_tx_public_key pub_key_field_dummy{};
-    const auto r = find_tx_extra_field_by_type(*maybe_tx_extra_fields, pub_key_field_dummy);
+    const auto r = find_tx_extra_field_by_type<tx_extra_tx_public_key>(*maybe_tx_extra_fields);
     if(!r) {
       return {};
     }
@@ -120,8 +119,8 @@ namespace cryptonote
     if (!maybe_tx_extra_fields) return {};
 
     // find corresponding field
-    const tx_extra_output_ecdh_public_keys output_pub_keys_unsafe_dummy{};
-    const auto r = find_tx_extra_field_by_type(*maybe_tx_extra_fields, output_pub_keys_unsafe_dummy);
+    const auto r =
+      find_tx_extra_field_by_type<tx_extra_output_ecdh_public_keys>(*maybe_tx_extra_fields);
     if(!r) {
       return {};
     }

@@ -43,7 +43,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   template<typename T>
   std::optional<T> find_tx_extra_field_by_type
-  (const std::span<const tx_extra_field> tx_extra_fields, const T&)
+  (const std::span<const tx_extra_field> tx_extra_fields)
   {
     const auto it = std::find_if
       (
