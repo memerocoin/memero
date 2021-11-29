@@ -65,7 +65,7 @@ namespace cryptonote
 
   std::optional<std::vector<crypto::public_key>> get_all_output_ecdh_public_keys_from_extra
   (
-   const transaction& tx
+   const epee::blob::span tx_extra
    , const size_t output_count
    );
 

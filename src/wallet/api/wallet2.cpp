@@ -577,7 +577,7 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
     std::map<size_t, crypto::ecdh_shared_secret> tx_output_shared_secrets;
 
     const auto output_ecdh_public_keys
-      = get_all_output_ecdh_public_keys_from_extra(tx, tx.vout.size());
+      = get_all_output_ecdh_public_keys_from_extra(tx.extra, tx.vout.size());
 
     if (output_ecdh_public_keys)
     {

@@ -150,17 +150,17 @@ namespace cryptonote
 
   std::optional<std::vector<crypto::public_key>> get_all_output_ecdh_public_keys_from_extra
   (
-   const transaction& tx
+   const epee::blob::span tx_extra
    , const size_t output_count
    )
   {
-    const auto maybe_pub_keys = get_output_ecdh_public_keys_from_extra(tx.extra);
+    const auto maybe_pub_keys = get_output_ecdh_public_keys_from_extra(tx_extra);
 
     if (maybe_pub_keys && maybe_pub_keys->size() == output_count) {
       return *maybe_pub_keys;
     }
 
-    const auto x = get_tx_ecdh_public_key_from_extra(tx.extra);
+    const auto x = get_tx_ecdh_public_key_from_extra(tx_extra);
 
     if(x) {
       std::vector<crypto::public_key> dups(output_count);

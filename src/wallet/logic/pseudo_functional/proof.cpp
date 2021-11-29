@@ -116,7 +116,7 @@ namespace proof {
     std::vector<int> good_signature(num_sigs, 0);
 
     const auto maybe_output_ecdh_public_keys =
-      get_all_output_ecdh_public_keys_from_extra(tx, tx.vout.size());
+      cryptonote::get_all_output_ecdh_public_keys_from_extra(tx.extra, tx.vout.size());
 
     if (!maybe_output_ecdh_public_keys) return {};
     const auto output_ecdh_public_keys = *maybe_output_ecdh_public_keys;
