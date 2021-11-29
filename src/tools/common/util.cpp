@@ -296,7 +296,7 @@ namespace tools
     // 1000, 1000*1000 and so on, to be consistent with other Monero code that also uses base 2 units
     struct byte_map
     {
-        const char* const format;
+        const std::string_view format;
         const cpp_int bytes;
     };
 
