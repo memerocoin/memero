@@ -3296,7 +3296,7 @@ int main(int argc, char* argv[])
   }
   else
   {
-    tools::signal_handler::install([&w](int type) {
+    tools::signal_handler_install([&w](int type) {
       if (tools::password_container::is_prompting.load())
       {
         // must be prompting for password so return and let the signal stop prompt

@@ -53,45 +53,7 @@ namespace tools
 
   bool on_startup();
 
-  /*! \brief Defines a signal handler for win32 and *nix
-   */
-  class signal_handler
-  {
-  public:
-    /*! \brief installs a signal handler  */
-    template<typename T>
-    static bool install(T t)
-    {
-      static struct sigaction sa;
-      memset(&sa, 0, sizeof(struct sigaction));
-      sa.sa_handler = posix_handler;
-      sa.sa_flags = 0;
-      /* Only blocks SIGINT, SIGTERM and SIGPIPE */
-      sigaction(SIGINT, &sa, NULL);
-      signal(SIGTERM, posix_handler);
-      signal(SIGPIPE, SIG_IGN);
-      m_handler = t;
-      return true;
-    }
-
-  private:
-    /*! \brief handler for NIX */
-    static void posix_handler(int type)
-    {
-      handle_signal(type);
-    }
-
-    /*! \brief calles m_handler */
-    static void handle_signal(int type)
-    {
-      static std::mutex m_mutex;
-      std::unique_lock<std::mutex> lock(m_mutex);
-      m_handler(type);
-    }
-
-    /*! \brief where the installed handler is stored */
-    static std::function<void(int)> m_handler;
-  };
+  void signal_handler_install(std::function<void(int)> f);
 
   void set_strict_default_file_permissions(bool strict);
 

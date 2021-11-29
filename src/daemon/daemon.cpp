@@ -92,7 +92,7 @@ bool t_daemon::run(bool interactive)
     stop = true;
     stop_thread.join();
   });
-  tools::signal_handler::install([&stop, &shutdown](int){ stop = shutdown = true; });
+  tools::signal_handler_install([&stop, &shutdown](int){ stop = shutdown = true; });
 
   try
   {

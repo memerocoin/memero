@@ -46,7 +46,22 @@
 
 namespace tools
 {
-  std::function<void(int)> signal_handler::m_handler;
+
+  std::function<void(int)> my_signal_handler;
+  std::mutex m_signal_handler_mutex;
+
+  void signal_handler(int signal)
+  {
+    std::unique_lock<std::mutex> lock(m_signal_handler_mutex);
+    my_signal_handler(signal);
+  }
+
+  void signal_handler_install(std::function<void(int)> f)
+  {
+    my_signal_handler = f;
+    std::signal(SIGINT, signal_handler);
+    std::signal(SIGTERM, signal_handler);
+  };
 
   bool create_directories_if_necessary(const std::string& path)
   {

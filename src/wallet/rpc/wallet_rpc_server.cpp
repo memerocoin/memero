@@ -2051,7 +2051,7 @@ public:
       }
 
       bool quit = false;
-      tools::signal_handler::install([&wal, &quit](int) {
+      tools::signal_handler_install([&wal, &quit](int) {
         assert(wal);
         quit = true;
         wal->stop();
@@ -2077,7 +2077,7 @@ public:
     if (wal) wrpc->set_wallet(std::move(wal));
     bool r = wrpc->init(&vm);
     LOG_ERROR_AND_RETURN_UNLESS(r, false, tools::wallet_rpc_server::tr("Failed to initialize wallet RPC server"));
-    tools::signal_handler::install([this](int) {
+    tools::signal_handler_install([this](int) {
       wrpc->send_stop_signal();
     });
     LOG_PRINT_L0(tools::wallet_rpc_server::tr("Starting wallet RPC server"));
