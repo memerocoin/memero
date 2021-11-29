@@ -33,7 +33,14 @@
 #include <mutex>
 
 #undef DEFAULT_LOG_CATEGORY
+
+#ifdef __FILE_NAME__
 #define DEFAULT_LOG_CATEGORY __FILE_NAME__
+
+#else
+#define DEFAULT_LOG_CATEGORY __FILE__
+#endif
+
 
 namespace el {
 

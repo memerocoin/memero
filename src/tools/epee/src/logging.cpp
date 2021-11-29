@@ -33,6 +33,7 @@
 #include <iomanip>
 #include <set>
 #include <atomic>
+#include <filesystem>
 
 
 
@@ -171,7 +172,8 @@ const std::set<std::string> default_cat = {"global", "logging", "default"};
 std::mutex g_log_mutex;
 
 void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
-  const std::string cat_str = m_log_level == 0 ? "" : "[" + cat + "] ";
+  const std::filesystem::path p = cat;
+  const std::string cat_str = m_log_level == 0 ? "" : "[" + std::string(p.stem()) + "] ";
 
   std::string log_header;
   switch (level) {
