@@ -924,7 +924,7 @@ namespace cryptonote
       return false;
     }
     string_blob block_blob = t_serializable_object_to_blob(b);
-    const auto maybe_tx_pub_key = cryptonote::get_tx_ecdh_public_key_from_extra(b.miner_tx);
+    const auto maybe_tx_pub_key = cryptonote::get_tx_ecdh_public_key_from_extra(b.miner_tx.extra);
     if(!maybe_tx_pub_key)
     {
       error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;

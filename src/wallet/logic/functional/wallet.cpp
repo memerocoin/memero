@@ -546,7 +546,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
     real_oe.second.output_public_key = td.get_public_key();
     real_oe.second.commit = rct::commit(td.amount(), td.m_mask);
     *it_to_replace = real_oe;
-    src.real_out_tx_key = get_tx_ecdh_public_key_from_extra(td.m_tx).value_or(crypto::null_pkey);
+    src.real_out_tx_key = get_tx_ecdh_public_key_from_extra(td.m_tx.extra).value_or(crypto::null_pkey);
     const std::vector<crypto::public_key> no_keys;
     src.real_out_output_secret_keys =
       get_output_ecdh_public_keys_from_extra(td.m_tx).value_or(no_keys);

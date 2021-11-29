@@ -110,16 +110,6 @@ namespace cryptonote
     }
 
   }
-  //---------------------------------------------------------------
-  std::optional<crypto::public_key> get_tx_ecdh_public_key_from_extra(const transaction_prefix& tx_prefix)
-  {
-    return get_tx_ecdh_public_key_from_extra(tx_prefix.extra);
-  }
-  //---------------------------------------------------------------
-  std::optional<crypto::public_key> get_tx_ecdh_public_key_from_extra(const transaction& tx)
-  {
-    return get_tx_ecdh_public_key_from_extra(tx.extra);
-  }
 
   //---------------------------------------------------------------
   std::optional<std::vector<crypto::public_key>>
@@ -176,7 +166,7 @@ namespace cryptonote
       return *maybe_pub_keys;
     }
 
-    const auto x = get_tx_ecdh_public_key_from_extra(tx);
+    const auto x = get_tx_ecdh_public_key_from_extra(tx.extra);
 
     if(x) {
       std::vector<crypto::public_key> dups(output_count);

@@ -62,8 +62,6 @@ namespace cryptonote
   std::optional<std::vector<tx_extra_field>> parse_tx_extra(const epee::blob::span tx_extra);
 
   std::optional<crypto::public_key> get_tx_ecdh_public_key_from_extra(const epee::blob::span tx_extra);
-  std::optional<crypto::public_key> get_tx_ecdh_public_key_from_extra(const transaction_prefix& tx);
-  std::optional<crypto::public_key> get_tx_ecdh_public_key_from_extra(const transaction& tx);
 
   std::optional<std::vector<crypto::public_key>> get_all_output_ecdh_public_keys_from_extra
   (
