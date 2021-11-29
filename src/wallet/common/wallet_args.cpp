@@ -177,12 +177,8 @@ namespace wallet_args
 
     Print(print) << "Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")";
 
-    if (!command_line::is_arg_defaulted(vm, arg_log_level))
+    if (!command_line::is_arg_defaulted(vm, arg_log_level)) {
       LOG_INFO("Setting log level = " << command_line::get_arg(vm, arg_log_level));
-    else
-    {
-      const char *logs = getenv("MONERO_LOGS");
-      LOG_INFO("Setting log levels = " << (logs ? logs : "<default>"));
     }
 
     return {std::move(vm), should_terminate};
