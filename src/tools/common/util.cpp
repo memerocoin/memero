@@ -37,10 +37,6 @@
 
 #include "config/cryptonote.hpp"
 
-#ifdef __GLIBC__
-#include <sys/resource.h>
-#endif
-
 #include <boost/format.hpp>
 
 
@@ -96,30 +92,13 @@ namespace tools
     return std::error_code(code, std::system_category());
   }
 
-  static void setup_crash_dump() {}
-
-  bool disable_core_dumps()
-  {
-#ifdef __GLIBC__
-    // disable core dumps in release mode
-    struct rlimit rlimit;
-    rlimit.rlim_cur = rlimit.rlim_max = 0;
-    if (setrlimit(RLIMIT_CORE, &rlimit))
-    {
-      LOG_WARNING("Failed to disable core dumps");
-      return false;
-    }
-#endif
-    return true;
-  }
-
   bool on_startup()
   {
-    setup_crash_dump();
     OPENSSL_init_ssl(0, NULL);
 
     return true;
   }
+
   void set_strict_default_file_permissions(bool strict)
   {
     mode_t mode = strict ? 077 : 0;

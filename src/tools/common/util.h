@@ -53,8 +53,6 @@ namespace tools
    */
   std::error_code replace_file(const std::string& old_name, const std::string& new_name);
 
-  bool disable_core_dumps();
-
   bool on_startup();
 
   /*! \brief Defines a signal handler for win32 and *nix
