@@ -1655,7 +1655,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     LOG_VERBOSE
       (
        std::endl
-       << config::lol::x_sep << "Block recognized as orphaned and rejected" << std::endl
+       << config::lol::x_sep << "BLOCK ORPHANED" << std::endl
        << std::endl
        << "CURRENT" << std::endl
        << config::lol::tab_sep << "height:         " << get_current_blockchain_height() << std::endl
@@ -2911,8 +2911,14 @@ leave:
 
   m_blocks_txs_check.clear();
 
-  uint64_t base_reward = 0;
-  uint64_t already_generated_coins = blockchain_height ? m_db->get_block_already_generated_coins(blockchain_height - 1) : 0;
+  const uint64_t base_reward = consensus::get_block_reward();
+  const uint64_t already_generated_coins
+    = (
+       blockchain_height
+       ? m_db->get_block_already_generated_coins(blockchain_height - 1)
+       : 0
+       ) + base_reward
+    ;
 
   const uint64_t block_height = cryptonote::get_block_height(bl);
   const auto maybe_validated_coinbase_tx = validate_miner_transaction
@@ -2940,7 +2946,6 @@ leave:
   block_weight = cumulative_block_weight;
   cumulative_difficulty = current_diffic;
 
-  already_generated_coins = already_generated_coins + base_reward;
   if(blockchain_height)
     cumulative_difficulty += m_db->get_block_cumulative_difficulty(blockchain_height - 1);
 
@@ -2996,7 +3001,7 @@ leave:
   LOG_INFO
     (
      std::endl
-     << config::lol::plus_sep << "BLOCK SUCCESSFULLY ADDED" << std::endl
+     << config::lol::plus_sep << "BLOCK ADDED" << std::endl
      << std::endl
      << "id:             " << id << std::endl
      << "PoW:            " << proof_of_work << std::endl
