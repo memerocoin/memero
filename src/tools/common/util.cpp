@@ -311,7 +311,7 @@ namespace tools
         , {"%.2f E", cpp_int(k) * k * k * k * k * k * k}
       };
 
-    const auto size = std::upper_bound
+    const auto iter = std::upper_bound
       (
         sizes.begin()
         , sizes.end()
@@ -321,8 +321,13 @@ namespace tools
         }
        );
 
-    const cpp_int divisor = size->bytes / k;
-    const std::string format = std::string(size->format) + unit;
+    const byte_map size =
+      iter != sizes.end()
+      ? *iter
+      : sizes.back();
+
+    const cpp_int divisor = size.bytes / k;
+    const std::string format = std::string(size.format) + unit;
     const double num = (bytes * 100 / divisor).convert_to<double>() / 100.;
     return (boost::format(format) % num).str();
   }
