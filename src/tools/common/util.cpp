@@ -300,7 +300,7 @@ namespace tools
         const cpp_int bytes;
     };
 
-    const byte_map sizes[] =
+    const std::vector<byte_map> sizes =
     {
         {"%.0f ", k},
         {"%.2f K", k * k},
