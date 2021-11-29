@@ -184,25 +184,6 @@ namespace tools
     }
   }
 
-  std::string glob_to_regex(const std::string &val)
-  {
-    std::string newval;
-
-    bool escape = false;
-    for (char c: val)
-      {
-        if (c == '*')
-          newval += escape ? "*" : ".*", escape = false;
-        else if (c == '?')
-          newval += escape ? "?" : ".", escape = false;
-        else if (c == '\\')
-          newval += '\\', escape = !escape;
-        else
-          newval += c, escape = false;
-      }
-    return newval;
-  }
-
   std::string get_human_readable_timestamp(uint64_t ts)
   {
     char buffer[64];
