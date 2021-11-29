@@ -171,12 +171,18 @@ void reset_console_color() {
 const std::set<std::string> default_cat = {"global", "logging", "default"};
 std::mutex g_log_mutex;
 
+std::atomic<size_t> common_length = 1;
+
 void log_level_map(const el::Level level, const std::string cat, const std::string_view x) {
   const std::filesystem::path p = cat;
   const std::string base_name = std::string(p.stem());
 
-  constexpr size_t common_length = 24;
   const size_t base_name_length = base_name.size();
+
+  if (base_name_length > common_length) {
+    common_length = base_name_length;
+  }
+
   const size_t leading_spaces_length = (common_length - base_name_length) / 2;
   const size_t trailing_spaces_length = common_length - base_name_length - leading_spaces_length;
   const std::string leading_spaces(leading_spaces_length, ' ');
