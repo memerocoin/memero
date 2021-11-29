@@ -276,17 +276,17 @@ namespace tools
 
   using namespace boost::multiprecision;
 
-  std::string get_human_readable_bytes(cpp_int bytes) {
+  std::string get_human_readable_bytes(const cpp_int bytes) {
     return get_human_readable_unit(bytes, "B", 1024);
   }
 
-  std::string get_human_readable_number(cpp_int bytes) {
+  std::string get_human_readable_number(const cpp_int bytes) {
     return get_human_readable_unit(bytes, "", 1000);
   }
 
   std::string get_human_readable_unit
   (
-   cpp_int bytes
+   const cpp_int bytes
    , const std::string unit
    , const cpp_int k
    )

@@ -114,18 +114,18 @@ namespace tools
 
   std::string get_human_readable_unit
   (
-   boost::multiprecision::cpp_int bytes
+   const boost::multiprecision::cpp_int bytes
    , const std::string unit
-   , boost::multiprecision::cpp_int k
+   , const boost::multiprecision::cpp_int k
    );
 
   std::string get_human_readable_bytes
   (
-   boost::multiprecision::cpp_int bytes
+   const boost::multiprecision::cpp_int bytes
    );
 
   std::string get_human_readable_number
   (
-   boost::multiprecision::cpp_int bytes
+   const boost::multiprecision::cpp_int bytes
    );
 }
