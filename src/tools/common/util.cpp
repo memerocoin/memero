@@ -301,13 +301,15 @@ namespace tools
     };
 
     const std::vector<byte_map> sizes =
-    {
-        {"%.0f ", k},
-        {"%.2f K", k * k},
-        {"%.2f M", cpp_int(k) * k * k},
-        {"%.2f G", cpp_int(k) * k * k * k},
-        {"%.2f T", cpp_int(k) * k * k * k * k}
-    };
+      {
+        {"%.0f ", k}
+        , {"%.2f K", k * k}
+        , {"%.2f M", cpp_int(k) * k * k}
+        , {"%.2f G", cpp_int(k) * k * k * k}
+        , {"%.2f T", cpp_int(k) * k * k * k * k}
+        , {"%.2f P", cpp_int(k) * k * k * k * k * k}
+        , {"%.2f E", cpp_int(k) * k * k * k * k * k * k}
+      };
 
     const auto size = std::upper_bound
       (
