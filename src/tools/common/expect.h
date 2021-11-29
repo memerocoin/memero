@@ -33,7 +33,7 @@
 #include <cassert>
 
 //! If precondition fails, return `::error::kInvalidArgument` in current scope.
-#define MONERO_PRECOND(...)                            \
+#define TOOLS_EXPECT_PRECOND(...)                            \
     do                                                 \
     {                                                  \
         if (!( __VA_ARGS__ ))                          \
@@ -41,7 +41,7 @@
     } while (0)
 
 //! Check `expect<void>` and return errors in current scope.
-#define MONERO_CHECK(...)                           \
+#define TOOLS_EXPECT_CHECK(...)                           \
     do                                              \
     {                                               \
         const ::expect<void> result = __VA_ARGS__ ; \
@@ -54,13 +54,13 @@
 
     \throw std::system_error with `expect<T>::error()`, filename and line
         number when `expect<T>::has_error() == true`.*/
-#define MONERO_UNWRAP(...)                                        \
+#define TOOLS_EXPECT_UNWRAP(...)                                        \
     ::detail::expect::unwrap( __VA_ARGS__ , nullptr, __FILE__ , __LINE__ )
 
 /* \throw std::system_error with `code` and `msg` as part of the details. The
 filename and line number will automatically be injected into the explanation
 string. `code` can be any enum convertible to `std::error_code`. */
-#define MONERO_THROW(code, msg) \
+#define TOOLS_EXPECT_THROW(code, msg) \
     ::detail::expect::throw_( code , msg , __FILE__ , __LINE__ )
 
 

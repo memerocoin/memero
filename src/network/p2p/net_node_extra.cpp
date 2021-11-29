@@ -1322,7 +1322,7 @@ namespace nodetool
         {
           // seeds should have hostname converted to IP already
           LOG_DEBUG("Seed node: " << full_addr);
-          server.m_seed_nodes.push_back(MONERO_UNWRAP(net::get_network_address(full_addr, default_port)));
+          server.m_seed_nodes.push_back(TOOLS_EXPECT_UNWRAP(net::get_network_address(full_addr, default_port)));
         }
         LOG_DEBUG("Number of seed nodes: " << server.m_seed_nodes.size());
       }
