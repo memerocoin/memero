@@ -399,7 +399,7 @@ namespace wallet {
 
       for (const auto &ptx: ptx_vector)
       {
-        std::string proof = controller::proof::get_tx_output_signatures
+        std::string proof = controller::proof::get_output_ecdh_signatures
           (
            ptx.output_secret_keys
            , address

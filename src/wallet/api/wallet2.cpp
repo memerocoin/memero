@@ -2965,7 +2965,7 @@ const wallet::logic::type::transfer::transfer_details &wallet2::get_transfer_det
   return m_transfers[idx];
 }
 //----------------------------------------------------------------------------------------------------
-std::optional<std::vector<crypto::secret_key>> wallet2::get_tx_output_sec_keys(const crypto::hash txid) const
+std::optional<std::vector<crypto::secret_key>> wallet2::get_output_ecdh_sec_keys(const crypto::hash txid) const
 {
   const auto j = m_output_secret_keys.find(txid);
   if (j != m_output_secret_keys.end()) {
@@ -2976,7 +2976,7 @@ std::optional<std::vector<crypto::secret_key>> wallet2::get_tx_output_sec_keys(c
   }
 }
 
-std::string wallet2::get_tx_output_signatures(const crypto::hash &txid, const cryptonote::spend_view_public_keys &address, bool is_subaddress, const std::string &message)
+std::string wallet2::get_output_ecdh_signatures(const crypto::hash &txid, const cryptonote::spend_view_public_keys &address, bool is_subaddress, const std::string &message)
 {
     // fetch tx pubkey from the daemon
     COMMAND_RPC_GET_TRANSACTIONS::request req;
@@ -3018,7 +3018,7 @@ std::string wallet2::get_tx_output_signatures(const crypto::hash &txid, const cr
     // determine if the address is found in the subaddress hash table (i.e. whether the proof is outbound or inbound)
     std::vector<crypto::secret_key> output_secret_keys;
     {
-      const auto maybe_output_secret_keys = get_tx_output_sec_keys(txid);
+      const auto maybe_output_secret_keys = get_output_ecdh_sec_keys(txid);
       THROW_WALLET_EXCEPTION_IF
         (
          !maybe_output_secret_keys
@@ -3029,7 +3029,7 @@ std::string wallet2::get_tx_output_signatures(const crypto::hash &txid, const cr
       output_secret_keys = *maybe_output_secret_keys;
     }
 
-    return wallet::logic::controller::proof::get_tx_output_signatures(output_secret_keys, address, is_subaddress, message);
+    return wallet::logic::controller::proof::get_output_ecdh_signatures(output_secret_keys, address, is_subaddress, message);
 }
 
 bool wallet2::verify_tx_output_signatures

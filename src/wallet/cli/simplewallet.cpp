@@ -502,12 +502,12 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::set_variable, std::placeholders::_1),
                            (USAGE_SET_VARIABLE),
                            std::string(wallet::help::set_variable));
-  m_cmd_binder.set_handler("get-tx-output-secret-keys",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_output_secret_keys, std::placeholders::_1),
-                           (USAGE_GET_TX_OUTPUT_SECRET_KEYS),
+  m_cmd_binder.set_handler("get-output-ecdh-secret-keys",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_output_ecdh_secret_keys, std::placeholders::_1),
+                           (USAGE_GET_OUTPUT_ECDH_SECRET_KEYS),
                            ("Get the transaction output secret keys for a given <txid>."));
-  m_cmd_binder.set_handler("get-tx-output-signatures",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_tx_output_signatures, std::placeholders::_1),
+  m_cmd_binder.set_handler("get-output-ecdh-signatures",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::get_output_ecdh_signatures, std::placeholders::_1),
                            (USAGE_GET_TX_SENDER_SIGNATURE),
                            "Generate signatures of tx outputs sent to <address> in <txid>, optionally with a challenge string <message>.");
   m_cmd_binder.set_handler("verify-tx-output-signatures",
@@ -2048,12 +2048,12 @@ bool simple_wallet::transfer(const std::vector<std::string> &args_)
   return transfer_main(Transfer, args_);
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_tx_output_secret_keys(const std::vector<std::string> &args_)
+bool simple_wallet::get_output_ecdh_secret_keys(const std::vector<std::string> &args_)
 {
   std::vector<std::string> local_args = args_;
 
   if(local_args.size() != 1) {
-    PRINT_USAGE(USAGE_GET_TX_OUTPUT_SECRET_KEYS);
+    PRINT_USAGE(USAGE_GET_OUTPUT_ECDH_SECRET_KEYS);
     return true;
   }
 
@@ -2064,7 +2064,7 @@ bool simple_wallet::get_tx_output_secret_keys(const std::vector<std::string> &ar
     return true;
   }
 
-  const auto maybe_tx_output_keys = m_wallet->get_tx_output_sec_keys(txid);
+  const auto maybe_tx_output_keys = m_wallet->get_output_ecdh_sec_keys(txid);
 
   if (maybe_tx_output_keys)
   {
@@ -2084,7 +2084,7 @@ bool simple_wallet::get_tx_output_secret_keys(const std::vector<std::string> &ar
   }
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::get_tx_output_signatures(const std::vector<std::string> &args)
+bool simple_wallet::get_output_ecdh_signatures(const std::vector<std::string> &args)
 {
   if (args.size() != 2 && args.size() != 3)
   {
@@ -2108,7 +2108,7 @@ bool simple_wallet::get_tx_output_signatures(const std::vector<std::string> &arg
 
   try
   {
-    std::string sig_str = m_wallet->get_tx_output_signatures(txid, info.address, info.is_subaddress, args.size() == 3 ? args[2] : "");
+    std::string sig_str = m_wallet->get_output_ecdh_signatures(txid, info.address, info.is_subaddress, args.size() == 3 ? args[2] : "");
     const std::string filename = "lolnero_tx_output_signatures";
     if (wallet::logic::controller::wallet::save_to_file(filename, sig_str))
       success_msg_writer() << ("signature file saved to: ") << filename;

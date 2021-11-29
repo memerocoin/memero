@@ -1090,7 +1090,7 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_get_tx_output_signatures(const wallet_rpc::COMMAND_RPC_GET_TX_OUTPUT_SIGNATURES::request& req, wallet_rpc::COMMAND_RPC_GET_TX_OUTPUT_SIGNATURES::response& res, epee::json_rpc::error& er)
+  bool wallet_rpc_server::on_get_output_ecdh_signatures(const wallet_rpc::COMMAND_RPC_GET_OUTPUT_ECDH_SIGNATURES::request& req, wallet_rpc::COMMAND_RPC_GET_OUTPUT_ECDH_SIGNATURES::response& res, epee::json_rpc::error& er)
   {
     if (!m_wallet) return not_open(er);
 
@@ -1112,7 +1112,7 @@ namespace tools
 
     try
     {
-      res.signature = m_wallet->get_tx_output_signatures(txid, info.address, info.is_subaddress, req.message);
+      res.signature = m_wallet->get_output_ecdh_signatures(txid, info.address, info.is_subaddress, req.message);
     }
     catch (const std::exception &e)
     {
