@@ -440,7 +440,7 @@ namespace cryptonote
     tx.extra.clear();
 
     keypair txkey = keypair::generate();
-    tx = add_tx_ecdh_public_key_to_extra(tx, txkey.pub);
+    tx.extra = add_tx_ecdh_public_key_to_extra(tx.extra, txkey.pub);
 
     txin_gen in;
     in.height = height;

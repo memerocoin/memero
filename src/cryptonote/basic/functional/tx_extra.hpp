@@ -73,12 +73,20 @@ namespace cryptonote
   get_output_ecdh_public_keys_from_extra(const epee::blob::span tx_extra);
 
   std::optional<std::vector<uint8_t>> remove_field_from_tx_extra
-  (const std::vector<uint8_t> tx_extra, const std::type_info& type);
+  (
+   const std::vector<uint8_t> tx_extra
+   , const std::type_info& type // needed ref since it's a typeid
+   );
 
-  transaction add_tx_ecdh_public_key_to_extra(const transaction& tx_in, const crypto::public_key tx_pub_key);
   std::vector<uint8_t> add_tx_ecdh_public_key_to_extra
-  (const std::vector<uint8_t>& tx_extra_in, const crypto::public_key tx_pub_key);
+  (
+   const std::vector<uint8_t> tx_extra_in
+   , const crypto::public_key tx_pub_key
+   );
 
   std::vector<uint8_t> add_output_ecdh_public_keys_to_extra
-  (const std::vector<uint8_t>& tx_extra_in, const std::span<const crypto::public_key> output_pub_keys);
+  (
+   const std::vector<uint8_t> tx_extra_in
+   , const std::span<const crypto::public_key> output_pub_keys
+   );
 }

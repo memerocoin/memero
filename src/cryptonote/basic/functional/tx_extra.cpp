@@ -227,16 +227,11 @@ namespace cryptonote
   }
 
   //---------------------------------------------------------------
-  transaction add_tx_ecdh_public_key_to_extra(const transaction& tx_in, const crypto::public_key tx_pub_key)
-  {
-    transaction tx = tx_in;
-    tx.extra = add_tx_ecdh_public_key_to_extra(tx_in.extra, tx_pub_key);
-
-    return tx;
-  }
-  //---------------------------------------------------------------
   std::vector<uint8_t> add_tx_ecdh_public_key_to_extra
-  (const std::vector<uint8_t>& tx_extra_in, const crypto::public_key tx_pub_key)
+  (
+   const std::vector<uint8_t> tx_extra_in
+   , const crypto::public_key tx_pub_key
+   )
   {
     std::vector<uint8_t> tx_extra = tx_extra_in;
     tx_extra.push_back(TX_EXTRA_TAG_TX_PUBKEY);
@@ -246,7 +241,10 @@ namespace cryptonote
 
   //---------------------------------------------------------------
   std::vector<uint8_t> add_output_ecdh_public_keys_to_extra
-  (const std::vector<uint8_t>& tx_extra_in, const std::span<const crypto::public_key> output_pub_keys)
+  (
+   const std::vector<uint8_t> tx_extra_in
+   , const std::span<const crypto::public_key> output_pub_keys
+   )
   {
     std::vector<uint8_t> tx_extra = tx_extra_in;
     // convert to variant
