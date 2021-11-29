@@ -30,6 +30,15 @@
 
 #pragma once
 
+#include "math/crypto/functional/group.hpp"
+
+#include "tools/serialization/serialization.h"
+#include "tools/serialization/binary_archive.h"
+#include "tools/serialization/crypto.h"
+#include "tools/serialization/variant.h"
+#include "tools/serialization/containers.h"
+
+#include <boost/variant.hpp>
 
 #define TX_EXTRA_TAG_TX_PUBKEY 0x01
 #define TX_EXTRA_TAG_TX_OUTPUT_PUBKEYS     0x04
