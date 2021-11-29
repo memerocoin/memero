@@ -1123,7 +1123,7 @@ namespace tools
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool wallet_rpc_server::on_verify_tx_output_signatures(const wallet_rpc::COMMAND_RPC_VERIFY_TX_OUTPUT_SIGNATURES::request& req, wallet_rpc::COMMAND_RPC_VERIFY_TX_OUTPUT_SIGNATURES::response& res, epee::json_rpc::error& er)
+  bool wallet_rpc_server::on_verify_output_ecdh_signatures(const wallet_rpc::COMMAND_RPC_VERIFY_OUTPUT_ECDH_SIGNATURES::request& req, wallet_rpc::COMMAND_RPC_VERIFY_OUTPUT_ECDH_SIGNATURES::response& res, epee::json_rpc::error& er)
   {
     if (!m_wallet) return not_open(er);
 
@@ -1145,7 +1145,7 @@ namespace tools
 
     try
     {
-      res.good = m_wallet->verify_tx_output_signatures
+      res.good = m_wallet->verify_output_ecdh_signatures
         (
          txid
          , info.address

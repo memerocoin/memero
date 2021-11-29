@@ -3032,7 +3032,7 @@ std::string wallet2::get_output_ecdh_signatures(const crypto::hash &txid, const 
     return wallet::logic::controller::proof::get_output_ecdh_signatures(output_secret_keys, address, is_subaddress, message);
 }
 
-bool wallet2::verify_tx_output_signatures
+bool wallet2::verify_output_ecdh_signatures
 (
  const crypto::hash &txid
  , const cryptonote::spend_view_public_keys &address
@@ -3081,7 +3081,7 @@ bool wallet2::verify_tx_output_signatures
 
   THROW_WALLET_EXCEPTION_IF(tx_hash != txid, error::wallet_internal_error, "Failed to get the right transaction from daemon");
 
-  const auto maybe_found = wallet::logic::pseudo_functional::proof::verify_tx_output_signatures
+  const auto maybe_found = wallet::logic::pseudo_functional::proof::verify_output_ecdh_signatures
     (tx, address, is_subaddress, message, sig_str);
 
   if (!maybe_found) return false;

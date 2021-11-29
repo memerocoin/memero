@@ -727,7 +727,7 @@ namespace wallet_rpc
     typedef epee::misc_utils::struct_init<response_t> response;
   };
 
-  struct COMMAND_RPC_VERIFY_TX_OUTPUT_SIGNATURES
+  struct COMMAND_RPC_VERIFY_OUTPUT_ECDH_SIGNATURES
   {
     struct request_t
     {

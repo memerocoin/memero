@@ -60,11 +60,11 @@ TEST(tx_proof, prove_verify_v2)
 
     // Generate/verify valid v2 proof with standard address
     const auto sig1 = crypto::generate_tx_proof(prefix_hash, std::nullopt, r);
-    ASSERT_TRUE(crypto::verify_tx_output_signatures(prefix_hash, R_G, std::nullopt, sig1));
+    ASSERT_TRUE(crypto::verify_output_ecdh_signatures(prefix_hash, R_G, std::nullopt, sig1));
 
     // Generate/verify valid v2 proof with subaddress
     const auto sig2 = crypto::generate_tx_proof(prefix_hash, B, r);
-    ASSERT_TRUE(crypto::verify_tx_output_signatures(prefix_hash, R_B, B, sig2));
+    ASSERT_TRUE(crypto::verify_output_ecdh_signatures(prefix_hash, R_B, B, sig2));
 
     // Randomly-distributed test points
     crypto::secret_key evil_a, evil_b, evil_d, evil_r;
@@ -76,6 +76,6 @@ TEST(tx_proof, prove_verify_v2)
 
     // Selectively choose bad point in v2 proof (bad)
     const auto sig3 = crypto::generate_tx_proof(prefix_hash, B, r);
-    ASSERT_FALSE(crypto::verify_tx_output_signatures(prefix_hash, evil_R, B, sig3));
-    ASSERT_FALSE(crypto::verify_tx_output_signatures(prefix_hash, R_B, evil_B, sig3));
+    ASSERT_FALSE(crypto::verify_output_ecdh_signatures(prefix_hash, evil_R, B, sig3));
+    ASSERT_FALSE(crypto::verify_output_ecdh_signatures(prefix_hash, R_B, evil_B, sig3));
 }

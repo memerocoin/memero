@@ -510,8 +510,8 @@ simple_wallet::simple_wallet()
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::get_output_ecdh_signatures, std::placeholders::_1),
                            (USAGE_GET_TX_SENDER_SIGNATURE),
                            "Generate signatures of tx outputs sent to <address> in <txid>, optionally with a challenge string <message>.");
-  m_cmd_binder.set_handler("verify-tx-output-signatures",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_tx_output_signatures, std::placeholders::_1),
+  m_cmd_binder.set_handler("verify-output-ecdh-signatures",
+                           std::bind(&simple_wallet::on_command, this, &simple_wallet::verify_output_ecdh_signatures, std::placeholders::_1),
                            (USAGE_VERIFY_TX_SENDER_SIGNATURE),
                            ("Check the signatures of tx outputs going to <address> in <txid> with the challenge string <message> if any."));
   m_cmd_binder.set_handler("show",
@@ -2122,7 +2122,7 @@ bool simple_wallet::get_output_ecdh_signatures(const std::vector<std::string> &a
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool simple_wallet::verify_tx_output_signatures(const std::vector<std::string> &args)
+bool simple_wallet::verify_output_ecdh_signatures(const std::vector<std::string> &args)
 {
   if(args.size() != 3 && args.size() != 4) {
     PRINT_USAGE(USAGE_VERIFY_TX_SENDER_SIGNATURE);
@@ -2161,7 +2161,7 @@ bool simple_wallet::verify_tx_output_signatures(const std::vector<std::string> &
     bool in_pool;
     uint64_t confirmations;
     std::vector<size_t> received_indices;
-    if (m_wallet->verify_tx_output_signatures
+    if (m_wallet->verify_output_ecdh_signatures
         (
          txid
          , info.address

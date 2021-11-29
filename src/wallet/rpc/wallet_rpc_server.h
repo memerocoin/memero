@@ -86,7 +86,7 @@ namespace tools
         MAP_JON_RPC_WE("query_key",         on_query_key,         wallet_rpc::COMMAND_RPC_QUERY_KEY)
         MAP_JON_RPC_WE("rescan_blockchain",  on_rescan_blockchain,  wallet_rpc::COMMAND_RPC_RESCAN_BLOCKCHAIN)
         MAP_JON_RPC_WE("get_output_ecdh_signatures",       on_get_output_ecdh_signatures,       wallet_rpc::COMMAND_RPC_GET_OUTPUT_ECDH_SIGNATURES)
-        MAP_JON_RPC_WE("verify_tx_output_signatures",     on_verify_tx_output_signatures,     wallet_rpc::COMMAND_RPC_VERIFY_TX_OUTPUT_SIGNATURES)
+        MAP_JON_RPC_WE("verify_output_ecdh_signatures",     on_verify_output_ecdh_signatures,     wallet_rpc::COMMAND_RPC_VERIFY_OUTPUT_ECDH_SIGNATURES)
         MAP_JON_RPC_WE("get_transfers",      on_get_transfers,      wallet_rpc::COMMAND_RPC_GET_TRANSFERS)
         MAP_JON_RPC_WE("get_transfer_by_txid", on_get_transfer_by_txid, wallet_rpc::COMMAND_RPC_GET_TRANSFER_BY_TXID)
         MAP_JON_RPC_WE("sign",               on_sign,               wallet_rpc::COMMAND_RPC_SIGN)
@@ -128,7 +128,7 @@ namespace tools
       bool on_incoming(const wallet_rpc::COMMAND_RPC_INCOMING::request& req, wallet_rpc::COMMAND_RPC_INCOMING::response& res, epee::json_rpc::error& er);
       bool on_rescan_blockchain(const wallet_rpc::COMMAND_RPC_RESCAN_BLOCKCHAIN::request& req, wallet_rpc::COMMAND_RPC_RESCAN_BLOCKCHAIN::response& res, epee::json_rpc::error& er);
       bool on_get_output_ecdh_signatures(const wallet_rpc::COMMAND_RPC_GET_OUTPUT_ECDH_SIGNATURES::request& req, wallet_rpc::COMMAND_RPC_GET_OUTPUT_ECDH_SIGNATURES::response& res, epee::json_rpc::error& er);
-      bool on_verify_tx_output_signatures(const wallet_rpc::COMMAND_RPC_VERIFY_TX_OUTPUT_SIGNATURES::request& req, wallet_rpc::COMMAND_RPC_VERIFY_TX_OUTPUT_SIGNATURES::response& res, epee::json_rpc::error& er);
+      bool on_verify_output_ecdh_signatures(const wallet_rpc::COMMAND_RPC_VERIFY_OUTPUT_ECDH_SIGNATURES::request& req, wallet_rpc::COMMAND_RPC_VERIFY_OUTPUT_ECDH_SIGNATURES::response& res, epee::json_rpc::error& er);
       bool on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res, epee::json_rpc::error& er);
       bool on_get_transfer_by_txid(const wallet_rpc::COMMAND_RPC_GET_TRANSFER_BY_TXID::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFER_BY_TXID::response& res, epee::json_rpc::error& er);
       bool on_sign(const wallet_rpc::COMMAND_RPC_SIGN::request& req, wallet_rpc::COMMAND_RPC_SIGN::response& res, epee::json_rpc::error& er);

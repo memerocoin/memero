@@ -327,7 +327,7 @@ namespace tools
 
     std::string get_output_ecdh_signatures(const crypto::hash &txid, const cryptonote::spend_view_public_keys &address, bool is_subaddress, const std::string &message);
 
-    bool verify_tx_output_signatures
+    bool verify_output_ecdh_signatures
     (
      const crypto::hash &txid
      , const cryptonote::spend_view_public_keys &address

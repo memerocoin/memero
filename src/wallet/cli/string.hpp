@@ -57,7 +57,7 @@ namespace usage
   constexpr char USAGE_SET_VARIABLE[] = "set <option> [<value>]";
   constexpr char USAGE_GET_OUTPUT_ECDH_SECRET_KEYS[] = "get-output-ecdh-secret-keys <txid>";
   constexpr char USAGE_GET_TX_SENDER_SIGNATURE[] = "get-output-ecdh-signatures <txid> <address> [<message>]";
-  constexpr char USAGE_VERIFY_TX_SENDER_SIGNATURE[] = "verify-tx-output-signatures <txid> <address> <signature file> [<message>]";
+  constexpr char USAGE_VERIFY_TX_SENDER_SIGNATURE[] = "verify-output-ecdh-signatures <txid> <address> <signature file> [<message>]";
   constexpr char USAGE_SHOW[] = "show [in|out|all|pending|failed|pool|coinbase] [index=<N1>[,<N2>,...]]\n"
                           "     [<min height> [<max height>]]\n";
   constexpr char USAGE_UTXOS[] = "utxos [index=<N1>[,<N2>,...]] [<min amount> [<max amount>]]";
