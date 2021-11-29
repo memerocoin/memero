@@ -112,13 +112,11 @@ namespace tools
 
   void set_max_concurrency(unsigned n)
   {
-    if (n < 1)
-      n = std::thread::hardware_concurrency();
-    unsigned hwc = std::thread::hardware_concurrency();
-    if (n > hwc)
-      n = hwc;
-
-    max_concurrency = n;
+    const unsigned cores = std::thread::hardware_concurrency();
+    max_concurrency
+      = n == 0
+      ? cores
+      : std::min(n, cores);
   }
 
   unsigned get_max_concurrency()
