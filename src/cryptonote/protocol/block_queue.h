@@ -31,7 +31,7 @@
 #pragma once
 
 #include "tools/epee/include/net/net_utils_base.h"
-#include "math/crypto/functional/hash.hpp"
+#include "math/hash/functional/hash.hpp"
 
 #include <unordered_set>
 

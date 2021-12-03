@@ -19,8 +19,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "group.hpp"
 #include "curve25519_cryptonote_extension.hpp"
 
-#include "hash.hpp"
 #include "schnorr_signature.hpp"
+
+#include "math/hash/functional/hash.hpp"
 
 #include <sodium.h>
 

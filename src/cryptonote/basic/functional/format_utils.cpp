@@ -33,7 +33,7 @@
 #include "tools/epee/include/string_tools.h"
 #include "tools/serialization/string.h" // don't remove, or face core dump
 
-#include "math/crypto/functional/tree-hash.hpp"
+#include "math/hash/functional/tree-hash.hpp"
 #include "math/ringct/pseudo_functional/ringCT.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 

@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tree-hash-raw.hpp"
 
-#include "math/crypto/functional/tree-hash.hpp"
+#include "math/hash/functional/tree-hash.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 #include "math/crypto/controller/random.hpp"
 

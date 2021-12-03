@@ -7,7 +7,7 @@
 #include <rapidjson/writer.h>
 #include <vector>
 
-#include "math/crypto/functional/hash.hpp"
+#include "math/hash/functional/hash.hpp"
 #include "cryptonote/basic/controller/account.h"
 #include "cryptonote/basic/functional/base.hpp"
 #include "cryptonote/basic/controller/format_utils.hpp"

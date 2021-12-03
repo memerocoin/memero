@@ -1,7 +1,6 @@
 #pragma once
 
-#include "math/crypto/functional/hash-ops.hpp"
-#include "math/crypto/functional/hash.hpp"
+#include "math/hash/functional/hash.hpp"
 
 #include <cstdint>
 

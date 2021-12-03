@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #pragma once
 
 #include "group.hpp"
-#include "hash.hpp"
+#include "math/hash/functional/hash.hpp"
 
 #include <sodium.h>
 

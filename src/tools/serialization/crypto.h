@@ -35,7 +35,7 @@
 
 #include "math/crypto/controller/chacha.hpp"
 #include "math/crypto/functional/key.hpp"
-#include "math/crypto/functional/hash.hpp"
+#include "math/hash/functional/hash.hpp"
 
 BLOB_SERIALIZER(crypto::chacha_iv);
 BLOB_SERIALIZER(crypto::hash);

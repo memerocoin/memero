@@ -31,13 +31,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "hash-ops.hpp"
-
-#include "math/crypto/pseudo_functional/sha3.hpp"
+#include "math/hash/pseudo_functional/sha3.hpp"
 
 #include "tools/epee/include/hex.h"
 
 #include <boost/functional/hash.hpp>
+
+#include <cstddef>
+
+constexpr size_t HASH_SIZE = 32;
 
 namespace crypto {
 
