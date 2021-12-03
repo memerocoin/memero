@@ -128,6 +128,7 @@ add_subdirectory(src/tools/serialization)
 ## math
 add_subdirectory(vendor/curve25519/cryptonote)
 add_subdirectory(src/math/hash)
+add_subdirectory(src/math/group)
 add_subdirectory(src/math/crypto)
 add_subdirectory(src/math/ringct)
 add_subdirectory(src/math/blockchain)

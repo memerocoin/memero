@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include <gtest/gtest.h>
 
-#include "math/crypto/functional/group.hpp"
+#include "math/group/functional/group.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 
 using namespace crypto;

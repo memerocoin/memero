@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "math/ringct/functional/rctOps.hpp"
 
-#include "math/crypto/functional/group.hpp"
+#include "math/group/functional/group.hpp"
 #include "math/crypto/controller/keyGen.hpp"
 
 using namespace crypto;

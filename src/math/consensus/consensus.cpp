@@ -22,7 +22,7 @@
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
 #include "math/ringct/pseudo_functional/clsag.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/crypto/functional/group.hpp"
+#include "math/group/functional/group.hpp"
 
 #include <boost/multiprecision/cpp_int.hpp>
 

@@ -16,6 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "key.hpp"
 
+#include "math/group/functional/curve25519_cryptonote_extension.hpp"
+
 #include "tools/common/varint.h"
 #include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/logging.hpp"

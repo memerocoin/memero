@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "math/crypto/functional/group.hpp"
+#include "math/group/functional/group.hpp"
 
 #include "tools/serialization/serialization.h"
 #include "tools/serialization/binary_archive.h"

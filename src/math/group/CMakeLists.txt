@@ -29,21 +29,14 @@
 
 
 
-add_library(math_crypto
-
-  functional/schnorr_signature.cpp
-  functional/key.cpp
-
-  controller/chacha.cpp
-  controller/init.cpp
-  controller/random.cpp
-  controller/schnorr_signature_gen.cpp
-  controller/keyGen.cpp
+add_library(math_group
+  functional/group.cpp
+  functional/curve25519_cryptonote_extension.cpp
   )
 
-target_link_libraries(math_crypto
+target_link_libraries(math_group
     epee
-    math_hash
-    math_group
+    curve25519_cryptonote
+    ${SODIUM_LIBRARY}
   )
 
