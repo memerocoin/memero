@@ -3,7 +3,6 @@
 with import <nixpkgs> {};
 let
   CMakeFlags_Lolnero = ''
-    -DReadline_ROOT_DIR=${readline.dev}
     -DUSE_OPENCL=ON
   '';
 
@@ -41,7 +40,7 @@ in
 
       # ccache
 
-      boost175 openssl readline libsodium rapidjson
+      boost175 openssl libsodium rapidjson
       gmock
 
       opencl-headers
