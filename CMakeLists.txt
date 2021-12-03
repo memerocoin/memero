@@ -161,9 +161,9 @@ add_definitions("-DDEFAULT_DB_TYPE=\"lmdb\"")
 add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 
 add_subdirectory(vendor/liblmdb)
-add_subdirectory(src/database)
 
 ## daemon
+add_subdirectory(src/daemon/database)
 add_subdirectory(src/daemon/cli)
 
 ## opencl miner

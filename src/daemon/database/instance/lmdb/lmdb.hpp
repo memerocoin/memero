@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "database/interface/blockchain.hpp"
+#include "daemon/database/interface/blockchain.hpp"
 
 #include <lmdb.h>
 

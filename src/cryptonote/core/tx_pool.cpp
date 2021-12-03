@@ -31,7 +31,7 @@
 #include "tx_pool.h"
 #include "blockchain.h"
 
-#include "database/interface/locked_txn.h"
+#include "daemon/database/interface/locked_txn.h"
 #include "cryptonote/functional/helper.hpp"
 #include "cryptonote/basic/functional/format_utils.hpp"
 

@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "database/interface/blockchain.hpp"
+#include "daemon/database/interface/blockchain.hpp"
 
 #include "cryptonote/basic/type/verification_context.hpp"
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"

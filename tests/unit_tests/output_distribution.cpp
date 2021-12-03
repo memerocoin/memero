@@ -29,7 +29,7 @@
 #include "gtest/gtest.h"
 #include "tools/epee/include/logging.hpp"
 #include "network/rpc/rpc_handler.h"
-#include "database/interface/blockchain.hpp"
+#include "daemon/database/interface/blockchain.hpp"
 #include "cryptonote/core/cryptonote_core.h"
 #include "cryptonote/core/tx_pool.h"
 #include "cryptonote/core/blockchain.h"

@@ -36,8 +36,8 @@
 #include "gtest/gtest.h"
 
 #include "tools/epee/include/string_tools.h"
-#include "database/interface/blockchain.hpp"
-#include "database/instance/lmdb/lmdb.hpp"
+#include "daemon/database/interface/blockchain.hpp"
+#include "daemon/database/instance/lmdb/lmdb.hpp"
 #include "cryptonote/basic/controller/format_utils.hpp"
 
 using namespace cryptonote;

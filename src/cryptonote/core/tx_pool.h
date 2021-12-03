@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "database/interface/blockchain.hpp"
+#include "daemon/database/interface/blockchain.hpp"
 
 #include "network/rpc/core_rpc_server_commands_defs.h"
 #include "network/rpc/message_data_structs.h"
