@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "daemon/protocol.h"
+#include "daemon/cli/protocol.h"
 
 
 

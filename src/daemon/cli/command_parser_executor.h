@@ -37,7 +37,7 @@
 #pragma once
 
 
-#include "daemon/rpc_command_executor.h"
+#include "daemon/cli/rpc_command_executor.h"
 
 namespace daemonize {
 

@@ -39,7 +39,7 @@ Passing RPC commands:
 
 #pragma once
 
-#include "daemon/command_parser_executor.h"
+#include "daemon/cli/command_parser_executor.h"
 
 #include "tools/epee/include/console_handler.h"
 
