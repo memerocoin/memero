@@ -23,7 +23,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <optional>
 #include <span>
 
-#include "opencl/sha3.hpp"
+#include "sha3.hpp"
 
 
 std::string blob_to_string(const std::span<const uint8_t> x) {

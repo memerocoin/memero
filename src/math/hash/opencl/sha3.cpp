@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "sha3.hpp"
 
-#include "opencl/kernel_sha3.h"
+#include "kernel_sha3.h"
 
 #include "error.hpp"
 

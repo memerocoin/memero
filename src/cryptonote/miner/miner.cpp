@@ -38,7 +38,7 @@
 #include "cryptonote/basic/functional/format_utils.hpp"
 
 #ifdef OpenCL
-#include "opencl/sha3.hpp"
+#include "math/hash/opencl/sha3.hpp"
 #endif
 
 

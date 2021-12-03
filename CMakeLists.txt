@@ -173,7 +173,7 @@ add_subdirectory(src/daemon)
 
 ## opencl miner
 if(OpenCL_FOUND)
-  add_subdirectory(src/opencl)
+  add_subdirectory(src/math/hash/opencl)
 endif()
 
 
