@@ -193,7 +193,6 @@ int main(int argc, char const * argv[])
         }
         else
         {
-          PAUSE_READLINE();
           std::cerr << "Unknown command: " << command.front() << std::endl;
           return 1;
         }

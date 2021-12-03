@@ -50,7 +50,6 @@ namespace controller {
 
   std::string input_line(const std::string& prompt, bool yesno)
   {
-    PAUSE_READLINE();
     std::cout << prompt;
     if (yesno)
       std::cout << "  (y/n)";
@@ -66,7 +65,6 @@ namespace controller {
 
   epee::wipeable_string input_secure_line(const char *prompt)
   {
-    PAUSE_READLINE();
     auto pwd_container = tools::password_container::prompt(false, prompt, false);
     if (!pwd_container)
     {

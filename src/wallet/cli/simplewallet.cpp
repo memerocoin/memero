@@ -117,7 +117,6 @@ std::string simple_wallet::get_command_usage(const std::vector<std::string> &arg
 bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   // don't log
-  PAUSE_READLINE();
   std::cout << "secret: " << m_wallet->get_account().get_keys().m_view_secret_key << std::endl;
   std::cout << "public: " << m_wallet->get_account().get_keys().m_account_address.m_view_public_key << std::endl;
 
@@ -127,7 +126,6 @@ bool simple_wallet::viewkey(const std::vector<std::string> &args/* = std::vector
 bool simple_wallet::spendkey(const std::vector<std::string> &args/* = std::vector<std::string>()*/)
 {
   // don't log
-  PAUSE_READLINE();
   std::cout << "secret: " << m_wallet->get_account().get_keys().m_spend_secret_key << std::endl;
   std::cout << "public: " << m_wallet->get_account().get_keys().m_account_address.m_spend_public_key << std::endl;
 
@@ -1029,8 +1027,6 @@ std::optional<epee::wipeable_string> simple_wallet::new_wallet
 
   crypto::ElectrumWords::bytes_to_words(recovery_val, electrum_words, mnemonic_language);
 
-  PAUSE_READLINE();
-
   if (!recovery_key) {
     success_msg_writer(true) <<
       "\n" <<
@@ -1308,7 +1304,6 @@ std::optional<epee::wipeable_string> simple_wallet::on_get_password(const char *
     return std::nullopt;
   }
 
-  PAUSE_READLINE();
   std::string msg = ("Enter password");
   if (reason && *reason)
     msg += std::string(" (") + reason + ")";
@@ -1342,8 +1337,6 @@ bool simple_wallet::refresh_main(uint64_t start_height, enum ResetType reset, bo
   {
     m_wallet->rescan_blockchain(reset == ResetHard, false);
   }
-
-  PAUSE_READLINE();
 
   message_writer() << ("Starting refresh...");
 
@@ -1502,8 +1495,6 @@ bool simple_wallet::show_incoming(const std::vector<std::string>& args)
     }
     local_args.erase(local_args.begin());
   }
-
-  PAUSE_READLINE();
 
   std::set<uint32_t> subaddr_indices;
   if (local_args.size() > 0 && local_args[0].substr(0, 6) == "index=")
@@ -2474,8 +2465,6 @@ bool simple_wallet::show(const std::vector<std::string> &args_)
 
   if (!get_transfers(local_args, all_transfers))
     return true;
-
-  PAUSE_READLINE();
 
   for (const auto& transfer : all_transfers)
   {

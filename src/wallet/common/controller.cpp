@@ -42,7 +42,6 @@ namespace controller {
 
   std::optional<tools::password_container> password_prompter(const char *prompt, bool verify)
   {
-    PAUSE_READLINE();
     auto pwd_container = tools::password_container::prompt(verify, prompt);
     if (!pwd_container)
     {

@@ -32,8 +32,6 @@
 
 #include "tools/epee/include/logging.hpp"
 
-#define PAUSE_READLINE()
-
 namespace tools
 {
 
@@ -89,7 +87,6 @@ public:
     {
       m_flush = false;
 
-      PAUSE_READLINE();
       if (epee::console_color_default == m_color)
       {
         std::cout << m_oss.str();
