@@ -30,7 +30,7 @@
 
 
 
-#include "config/version.hpp"
+#include "config/version/version.hpp"
 
 #include <boost/algorithm/string.hpp>
 

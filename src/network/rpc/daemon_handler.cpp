@@ -30,7 +30,7 @@
 
 #include "cryptonote/basic/functional/format_utils.hpp"
 
-#include "config/version.hpp"
+#include "config/version/version.hpp"
 
 
 namespace cryptonote

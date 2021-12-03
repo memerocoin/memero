@@ -29,7 +29,7 @@
 #include "gtest/gtest.h"
 
 #include "network/rpc/rpc_version_str.h"
-#include "config/version.hpp"
+#include "config/version/version.hpp"
 
 TEST(rpc, is_version_string_valid)
 {

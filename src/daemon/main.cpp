@@ -34,7 +34,7 @@
 
 #include "network/rpc/rpc_args.h"
 
-#include "config/version.hpp"
+#include "config/version/version.hpp"
 
 
 

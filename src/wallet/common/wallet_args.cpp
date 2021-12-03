@@ -31,7 +31,7 @@
 
 #include "tools/common/util.h"
 
-#include "config/version.hpp"
+#include "config/version/version.hpp"
 
 #include <filesystem>
 #include <boost/format.hpp>

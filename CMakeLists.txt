@@ -35,12 +35,6 @@ project(lolnero)
 
 
 
-# tools
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/etc/cmake)
-
-
-
-
 # language
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
@@ -124,7 +118,7 @@ include_directories(
 # let's go
 
 ## version
-add_library(version src/version.cpp)
+add_subdirectory(src/config/version)
 
 ## tools
 add_subdirectory(src/tools/epee)
