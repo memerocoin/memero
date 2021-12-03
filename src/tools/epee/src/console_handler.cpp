@@ -32,13 +32,6 @@
 namespace epee
 {
 
-#ifdef HAVE_READLINE
-  rdln::readline_buffer& async_stdin_reader::get_readline_buffer()
-  {
-    return m_readline_buffer;
-  }
-#endif
-
   // Not thread safe. Only one thread can call this method at once.
   bool async_stdin_reader::get_line(std::string& line)
   {
@@ -75,9 +68,6 @@ namespace epee
 
       m_request_cv.notify_one();
       m_reader_thread.join();
-#ifdef HAVE_READLINE
-      m_readline_buffer.stop();
-#endif
     }
   }
 
@@ -152,24 +142,12 @@ namespace epee
 
       std::string line;
       bool read_ok = true;
-#ifdef HAVE_READLINE
-reread:
-#endif
       if (wait_stdin_data())
       {
         if (m_run)
         {
-#ifdef HAVE_READLINE
-          switch (m_readline_buffer.get_line(line))
-          {
-          case rdln::empty:   goto eof;
-          case rdln::partial: goto reread;
-          case rdln::full:    break;
-          }
-#else
           if (m_read_status != state_cancelled)
             std::getline(std::cin, line);
-#endif
           read_ok = !std::cin.eof() && !std::cin.fail();
         }
       }
@@ -178,9 +156,6 @@ reread:
         read_ok = false;
       }
       if (std::cin.eof()) {
-#ifdef HAVE_READLINE
-eof:
-#endif
         m_read_status = state_eos;
         m_response_cv.notify_one();
         break;
@@ -219,20 +194,12 @@ eof:
     std::string prompt = m_prompt();
     if (!prompt.empty())
     {
-#ifdef HAVE_READLINE
-      std::string color_prompt = "\001\033[1;33m\002" + prompt;
-      if (' ' != prompt.back())
-        color_prompt += " ";
-      color_prompt += "\001\033[0m\002";
-      m_stdin_reader.get_readline_buffer().set_prompt(color_prompt);
-#else
       epee::set_console_color(epee::console_color_yellow, true);
       std::cout << prompt;
       if (' ' != prompt.back())
         std::cout << ' ';
       epee::reset_console_color();
       std::cout.flush();
-#endif
     }
   }
 
@@ -263,9 +230,6 @@ eof:
     vt.first = hndlr;
     vt.second.first = description.empty() ? cmd : usage;
     vt.second.second = description.empty() ? usage : description;
-#ifdef HAVE_READLINE
-    rdln::readline_buffer::add_completion(cmd);
-#endif
   }
 
   void command_handler::set_unknown_command_handler(const callback& hndlr)

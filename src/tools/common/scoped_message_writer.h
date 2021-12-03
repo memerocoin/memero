@@ -29,15 +29,10 @@
 #pragma once
 
 
-#ifdef HAVE_READLINE
-  #include "tools/epee/include/readline_buffer.h"
-  #define PAUSE_READLINE() \
-    rdln::suspend_readline pause_readline;
-#else
-  #define PAUSE_READLINE()
-#endif
 
 #include "tools/epee/include/logging.hpp"
+
+#define PAUSE_READLINE()
 
 namespace tools
 {

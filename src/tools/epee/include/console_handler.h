@@ -29,10 +29,6 @@
 
 #include "tools/epee/include/string_tools.h"
 
-#ifdef HAVE_READLINE
-#include "tools/epee/include/readline_buffer.h"
-#endif
-
 #include "tools/epee/include/logging.hpp"
 
 #include <condition_variable>
@@ -58,9 +54,6 @@ namespace epee
       , m_has_read_request(false)
       , m_read_status(state_init)
     {
-#ifdef HAVE_READLINE
-      m_readline_buffer.start();
-#endif
       m_reader_thread = std::thread(&async_stdin_reader::reader_thread_func, this);
     }
 
@@ -69,10 +62,6 @@ namespace epee
       try { stop(); }
       catch (...) { /* ignore */ }
     }
-
-#ifdef HAVE_READLINE
-    rdln::readline_buffer& get_readline_buffer();
-#endif
 
     // Not thread safe. Only one thread can call this method at once.
     bool get_line(std::string& line);
@@ -99,9 +88,6 @@ namespace epee
   private:
     std::thread m_reader_thread;
     std::atomic<bool> m_run;
-#ifdef HAVE_READLINE
-    rdln::readline_buffer m_readline_buffer;
-#endif
 
     std::string m_line;
     bool m_has_read_request;
@@ -196,9 +182,6 @@ namespace epee
           }
           else
           {
-#ifdef HAVE_READLINE
-            rdln::suspend_readline pause_readline;
-#endif
             std::cout << "unknown command: " << command << std::endl;
             std::cout << usage;
           }

@@ -82,18 +82,3 @@ target_link_libraries( epee_storage
   epee
 )
 
-if (USE_READLINE AND (GNU_READLINE_FOUND))
-  add_library( epee_readline
-    src/readline_buffer.cpp
-  )
-
-  target_link_libraries( epee_readline
-    epee_log
-    ${GNU_READLINE_LIBRARY}
-  )
-
-  target_link_libraries( epee
-    epee_readline
-  )
-endif()
-

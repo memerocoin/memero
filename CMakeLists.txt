@@ -92,20 +92,6 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 find_package(Boost 1.74 REQUIRED COMPONENTS system serialization program_options)
 include_directories(${Boost_INCLUDE_DIRS})
 
-## readline
-option(USE_READLINE "Build with GNU readline support." ON)
-if(USE_READLINE)
-  find_package(Readline)
-  if(READLINE_FOUND AND GNU_READLINE_FOUND)
-    add_definitions(-DHAVE_READLINE)
-    include_directories(${Readline_INCLUDE_DIR})
-    message(STATUS "Found readline library at: ${Readline_ROOT_DIR}")
-    set(EPEE_READLINE epee_readline)
-  else()
-    message(STATUS "Could not find GNU readline library so building without readline support")
-  endif()
-endif()
-
 ## sodium
 find_library(SODIUM_LIBRARY sodium REQUIRED)
 

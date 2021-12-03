@@ -46,9 +46,7 @@ target_link_libraries(lolnero
   wallet_common
   version
 
-  ${EPEE_READLINE}
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${GNU_READLINE_LIBRARY}
   )
 
 set_property(TARGET lolnero
