@@ -39,7 +39,7 @@
 
 #include "math/blockchain/functional/subaddress.hpp"
 
-#include "consensus/consensus.hpp"
+#include "math/consensus/consensus.hpp"
 
 #include <boost/algorithm/string.hpp>
 

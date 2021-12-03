@@ -46,7 +46,7 @@
 
 #include "tools/common/scoped_message_writer.h"
 
-#include "consensus/consensus.hpp"
+#include "math/consensus/consensus.hpp"
 
 #include <boost/format.hpp>
 

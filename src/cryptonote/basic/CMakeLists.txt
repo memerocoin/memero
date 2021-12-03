@@ -43,5 +43,5 @@ target_link_libraries(cryptonote_basic
   epee_storage_basic
   math_crypto
   math_blockchain
-  consensus
+  math_consensus
 )

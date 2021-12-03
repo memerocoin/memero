@@ -54,7 +54,7 @@
 
 #include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
-#include "consensus/consensus.hpp"
+#include "math/consensus/consensus.hpp"
 
 #include "config/version.hpp"
 

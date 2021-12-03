@@ -46,7 +46,7 @@
 
 #include "math/blockchain/functional/coinbase_tx.hpp"
 
-#include "consensus/consensus.hpp"
+#include "math/consensus/consensus.hpp"
 
 #include <boost/range/adaptor/reversed.hpp>
 

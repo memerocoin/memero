@@ -34,7 +34,7 @@
 
 #include "tools/common/base58.h"
 
-#include "consensus/consensus.hpp"
+#include "math/consensus/consensus.hpp"
 
 namespace cryptonote
 {

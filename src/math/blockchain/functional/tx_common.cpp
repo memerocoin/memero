@@ -21,7 +21,7 @@
 #include "tx_common.hpp"
 
 #include "tools/epee/include/logging.hpp"
-#include "consensus/consensus.hpp"
+#include "math/consensus/consensus.hpp"
 
 
 

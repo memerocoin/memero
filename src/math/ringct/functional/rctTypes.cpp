@@ -36,7 +36,7 @@
 
 #include "config/cryptonote.hpp"
 
-#include "consensus/consensus.hpp"
+#include "math/consensus/consensus.hpp"
 
 #include <cstring>
 

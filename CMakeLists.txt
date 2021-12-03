@@ -136,6 +136,7 @@ add_subdirectory(vendor/curve25519/cryptonote)
 add_subdirectory(src/math/crypto)
 add_subdirectory(src/math/ringct)
 add_subdirectory(src/math/blockchain)
+add_subdirectory(src/math/consensus)
 
 ## cryptonote
 add_subdirectory(src/cryptonote/basic)
@@ -143,9 +144,6 @@ add_subdirectory(src/cryptonote/tx)
 add_subdirectory(src/cryptonote/core)
 add_subdirectory(src/cryptonote/protocol)
 add_subdirectory(src/cryptonote/miner)
-
-## consensus
-add_subdirectory(src/consensus)
 
 ## network
 add_subdirectory(src/network/type)

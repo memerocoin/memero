@@ -25,11 +25,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(consensus
+add_library(math_consensus
   consensus.cpp
   )
 
-target_link_libraries(consensus
+target_link_libraries(math_consensus
   math_ringct_basic
   math_blockchain
   )

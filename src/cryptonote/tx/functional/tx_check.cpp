@@ -30,7 +30,7 @@
 
 #include "cryptonote/basic/functional/format_utils.hpp"
 
-#include "consensus/consensus.hpp"
+#include "math/consensus/consensus.hpp"
 
 
 
