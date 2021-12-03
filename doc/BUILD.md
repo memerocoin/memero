@@ -2,7 +2,7 @@
 
 ```
 sudo apk add build-base cmake git
-sudo apk add boost-dev readline-dev libsodium-dev openssl-dev rapidjson-dev
+sudo apk add boost-dev libsodium-dev openssl-dev rapidjson-dev
 
 git clone https://gitlab.com/lolnero/lolnero.git
 
@@ -19,7 +19,7 @@ Generated binaries will be in `./bin/`.
 
 ```
 sudo pacman -S base-devel cmake git
-sudo pacman -S boost readline libsodium openssl rapidjson
+sudo pacman -S boost libsodium openssl rapidjson
 
 git clone https://gitlab.com/lolnero/lolnero.git
 
@@ -45,7 +45,6 @@ libboost-serialization-dev \
 libboost-system-dev
 
 sudo apt install \
-libreadline6-dev \
 libsodium-dev \
 libssl-dev \
 rapidjson-dev
@@ -70,7 +69,6 @@ dev-vcs/git
 
 sudo emerge \
 dev-libs/boost \
-sys-libs/ncurses \
 dev-libs/libsodium \
 dev-libs/openssl \
 dev-libs/rapidjson
