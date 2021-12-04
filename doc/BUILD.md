@@ -98,3 +98,7 @@ Generated binaries will be in `./bin/`.
 [2]: https://archlinux.org/packages/extra/x86_64/ocl-icd/
 [3]: https://aur.archlinux.org/packages/rocm-opencl-runtime/
 [4]: https://archlinux.org/packages/extra/x86_64/opencl-nvidia/
+
+### [Tutorial for Manjaro Linux][5]
+
+[5]: https://bitcointalk.org/index.php?topic=5280570.msg58294497#msg58294497
