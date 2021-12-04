@@ -30,7 +30,7 @@
             inherit doCheck;
 
             buildInputs = [
-              boost175 openssl readline libsodium rapidjson
+              boost175 openssl libsodium rapidjson
             ]
             ++ lib.optionals doCheck
               [
@@ -42,7 +42,6 @@
 
             cmakeFlags = [
               "--no-warn-unused-cli"
-              "-DReadline_ROOT_DIR=${readline.dev}"
               "-DVERSIONTAG=${version}"
             ]
             ++ lib.optionals doCheck ["-DBUILD_TESTING=ON"]
