@@ -1,4 +1,4 @@
-## Alpine 3.14
+## Alpine
 
 ```
 sudo apk add build-base cmake git
