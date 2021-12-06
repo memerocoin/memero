@@ -47,11 +47,42 @@
             ++ lib.optionals doCheck ["-DBUILD_TESTING=ON"]
             ;
           };
+
+          lolnero-opencl = stdenv.mkDerivation rec {
+            pname = "lolnero-opencl";
+            inherit version;
+            src = ./.;
+
+            nativeBuildInputs = [ cmake ];
+
+            inherit doCheck;
+
+            buildInputs = [
+              boost175 openssl libsodium rapidjson
+              opencl-headers
+              opencl-icd
+              rocm-opencl-runtime
+            ]
+            ++ lib.optionals doCheck
+              [
+                gmock
+              ]
+            ;
+
+            cmakeFlags = [
+              "--no-warn-unused-cli"
+              "-DVERSIONTAG=${version}"
+              "-DUSE_OPENCL=ON"
+            ]
+            ++ lib.optionals doCheck ["-DBUILD_TESTING=ON"]
+            ;
+          };
         };
 
       packages = forAllSystems (system:
         {
           inherit (nixpkgsFor.${system}) lolnero;
+          inherit (nixpkgsFor.${system}) lolnero-opencl;
         });
 
       defaultPackage = forAllSystems (system: self.packages.${system}.lolnero);
