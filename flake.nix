@@ -55,5 +55,66 @@
         });
 
       defaultPackage = forAllSystems (system: self.packages.${system}.lolnero);
+
+      devShell.x86_64-linux =
+        let
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
+          CMakeFlags_Lolnero = ''
+            -DUSE_OPENCL=ON
+          '';
+
+          CMakeDevFlags = ''
+            -DBUILD_SHARED_LIBS=ON
+            -DCMAKE_BUILD_TYPE=Debug
+          '';
+
+          CMakeCCacheFlags = "";
+
+          CMakeCCacheFlags1 = ''
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          '';
+
+          CMakeClangFlags = ''
+            -DCMAKE_CXX_COMPILER=clang++
+            -DCMAKE_C_COMPILER=clang
+          '';
+
+          CMakeTestFlags = ''
+            -DBUILD_TESTING=ON
+          '';
+
+          configure = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}";
+          configureRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
+        in
+          with pkgs;
+          stdenvNoCC.mkDerivation {
+            name = "lolnero-dev-shell";
+            buildInputs = [
+              gcc11
+              llvmPackages_13.clang
+              cmake git
+
+              boost175 openssl libsodium rapidjson
+              gmock
+
+              opencl-headers
+              opencl-icd
+              rocm-opencl-runtime
+            ];
+
+            inherit CMakeFlags_Lolnero;
+            inherit CMakeCCacheFlags;
+            inherit CMakeClangFlags;
+
+            inherit configure;
+            inherit configureRelease;
+
+            configureGCC = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeCCacheFlags}";
+            configureGCCRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}";
+            configureTest = configure + " " + CMakeTestFlags;
+            configureTestRelease = configureRelease + " " + CMakeTestFlags;
+          };
     };
 }
