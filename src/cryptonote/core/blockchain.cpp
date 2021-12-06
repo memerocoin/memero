@@ -1525,11 +1525,13 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
       return false;
     }
 
-    if(!prevalidate_miner_transaction(b, bei.height))
-    {
-      LOG_ERROR_VER("Block with id: " << epee::string_tools::pod_to_hex(id) << " (as alternative) has incorrect miner transaction.");
-      bvc.m_verifivation_failed = true;
-      return false;
+    if (bei.height != 0) {
+      if(!prevalidate_miner_transaction(b, bei.height))
+        {
+          LOG_ERROR_VER("Block with id: " << epee::string_tools::pod_to_hex(id) << " (as alternative) has incorrect miner transaction.");
+          bvc.m_verifivation_failed = true;
+          return false;
+        }
     }
 
     // FIXME:
@@ -2815,8 +2817,6 @@ leave:
     }
   }
 
-  const auto coinbase_tx = *maybe_coinbase_tx;
-
   size_t coinbase_weight = get_transaction_weight(bl.miner_tx);
   size_t cumulative_block_weight = coinbase_weight;
 
@@ -2924,15 +2924,15 @@ leave:
     ;
 
   const uint64_t block_height = cryptonote::get_block_height(bl);
-  const auto maybe_validated_coinbase_tx = validate_miner_transaction
-    (
-     block_height
-     , coinbase_tx
-     , cumulative_block_weight
-     , fee_summary
-     );
-
   if (block_height != 0) {
+    const auto maybe_validated_coinbase_tx = validate_miner_transaction
+      (
+       block_height
+       , *maybe_coinbase_tx
+       , cumulative_block_weight
+       , fee_summary
+       );
+
     if(!maybe_validated_coinbase_tx)
       {
         LOG_ERROR_VER("Block with id: " << id << " has incorrect miner transaction");
