@@ -135,10 +135,9 @@
             configureRelease = configureReleaseCommon + CMakeClangFlags;
 
           in
-            with pkgs;
-            stdenvNoCC.mkDerivation {
+            pkgs.stdenvNoCC.mkDerivation {
               name = "lolnero-dev-shell";
-              buildInputs = [
+              buildInputs = with pkgs; [
                 gcc11
                 llvmPackages_13.clang
                 cmake git
