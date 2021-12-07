@@ -135,6 +135,8 @@
                 opencl-headers
                 opencl-icd
                 rocm-opencl-runtime
+
+                gnumake
               ];
 
               inherit CMakeFlags_Lolnero;
