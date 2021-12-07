@@ -19,7 +19,7 @@
           ; version = builtins.substring 0 8 self.lastModifiedDate
           ; in
         {
-          lolnero = stdenv.mkDerivation rec {
+          lolnero = stdenv.mkDerivation {
             pname = "lolnero";
             inherit version;
             src = ./.;
@@ -38,7 +38,7 @@
             ;
           };
 
-          lolnero-opencl = stdenv.mkDerivation rec {
+          lolnero-opencl = stdenv.mkDerivation {
             pname = "lolnero-opencl";
             inherit version;
             src = ./.;
@@ -60,7 +60,43 @@
             ]
             ;
           };
+
+          lolnero-with-tests = stdenv.mkDerivation {
+            pname = "lolnero-with-tests";
+            inherit version;
+            src = ./.;
+
+            nativeBuildInputs = [ cmake ];
+
+            buildInputs = [
+              boost175 openssl libsodium rapidjson
+              opencl-headers
+              opencl-icd
+              opencl-clhpp
+              gmock
+            ]
+            ;
+
+            doCheck = true;
+
+            checkPhase = ''
+              ${cmake}/bin/ctest
+            '';
+
+            cmakeFlags = [
+              "--no-warn-unused-cli"
+              "-DVERSIONTAG=${version}"
+              "-DUSE_OPENCL=ON"
+              "-DBUILD_TESTING=ON"
+            ]
+            ;
+          };
         };
+
+      checks = forAllSystems (system:
+        {
+          inherit (nixpkgsFor.${system}) lolnero-with-tests;
+        });
 
       packages = forAllSystems (system:
         {
