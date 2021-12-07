@@ -77,19 +77,19 @@
             lolnerod =
               {
                 type = "app";
-                program = "${nixpkgsFor.${system}.lolnero}/bin/lolnerod";
+                program = "${self.defaultPackage.${system}}/bin/lolnerod";
               };
 
             lolnero =
               {
                 type = "app";
-                program = "${nixpkgsFor.${system}.lolnero}/bin/lolnero";
+                program = "${self.defaultPackage.${system}}/bin/lolnero";
               };
 
             lolnero-rpc =
               {
                 type = "app";
-                program = "${nixpkgsFor.${system}.lolnero}/bin/lolnero-rpc";
+                program = "${self.defaultPackage.${system}}/bin/lolnero-rpc";
               };
           }
         );
