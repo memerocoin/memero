@@ -101,13 +101,14 @@
               -DBUILD_TESTING=ON
             '';
 
-            configure = ''
-              cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}
+            configureReleaseCommon = ''
+              cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}
             '';
 
-            configureRelease = ''
-              cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}
-            '';
+            configureCommon = configureReleaseCommon + CMakeDevFlags;
+
+            configure = configureCommon + CMakeClangFlags;
+            configureRelease = configureReleaseCommon + CMakeClangFlags;
 
           in
             with pkgs;
@@ -129,14 +130,14 @@
               inherit CMakeFlags_Lolnero;
               inherit CMakeCCacheFlags;
               inherit CMakeClangFlags;
-
               inherit configure;
               inherit configureRelease;
 
-              configureGCC = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeCCacheFlags}";
-              configureGCCRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}";
-              configureTest = configure + " " + CMakeTestFlags;
-              configureTestRelease = configureRelease + " " + CMakeTestFlags;
+              configureGCC = configureCommon;
+              configureGCCRelease = configureReleaseCommon;
+
+              configureTest = configure + CMakeTestFlags;
+              configureTestRelease = configureRelease + CMakeTestFlags;
             }
         );
     };
