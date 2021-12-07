@@ -16,7 +16,6 @@
         let
           # stdenv = llvmPackages_12.stdenv
           stdenv = gcc11Stdenv
-          ; doCheck = false
           ; version = builtins.substring 0 8 self.lastModifiedDate
           ; in
         {
@@ -27,25 +26,15 @@
 
             nativeBuildInputs = [ cmake ];
 
-            inherit doCheck;
-
             buildInputs = [
               boost175 openssl libsodium rapidjson
             ]
-            ++ lib.optionals doCheck
-              [
-                gmock
-                opencl-headers
-                opencl-icd
-                opencl-clhpp
-              ]
             ;
 
             cmakeFlags = [
               "--no-warn-unused-cli"
               "-DVERSIONTAG=${version}"
             ]
-            ++ lib.optionals doCheck ["-DBUILD_TESTING=ON"]
             ;
           };
 
@@ -56,18 +45,12 @@
 
             nativeBuildInputs = [ cmake ];
 
-            inherit doCheck;
-
             buildInputs = [
               boost175 openssl libsodium rapidjson
               opencl-headers
               opencl-icd
               opencl-clhpp
             ]
-            ++ lib.optionals doCheck
-              [
-                gmock
-              ]
             ;
 
             cmakeFlags = [
@@ -75,7 +58,6 @@
               "-DVERSIONTAG=${version}"
               "-DUSE_OPENCL=ON"
             ]
-            ++ lib.optionals doCheck ["-DBUILD_TESTING=ON"]
             ;
           };
         };
