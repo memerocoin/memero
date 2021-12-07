@@ -49,7 +49,7 @@ namespace string_tools
 
   //----------------------------------------------------------------------------
   template<class XType>
-  inline bool get_xtype_from_string(XType& val, const std::string& str_id)
+  bool get_xtype_from_string(XType& val, const std::string& str_id)
   {
     if (std::is_integral<XType>::value && !std::numeric_limits<XType>::is_signed && !std::is_same<XType, bool>::value)
     {
@@ -79,7 +79,7 @@ namespace string_tools
   }
 	//----------------------------------------------------------------------------
 	template<class XType>
-	inline bool xtype_to_string(const XType& val, std::string& str)
+	bool xtype_to_string(const XType& val, std::string& str)
 	{
 		try
 		{
@@ -99,7 +99,7 @@ namespace string_tools
 	std::string num_to_string_fast(int64_t val);
 	//----------------------------------------------------------------------------
 	template<typename T>
-	inline std::string to_string_hex(const T &val)
+	std::string to_string_hex(const T &val)
 	{
 		static_assert(std::is_arithmetic<T>::value, "only arithmetic types");
 		std::stringstream ss;

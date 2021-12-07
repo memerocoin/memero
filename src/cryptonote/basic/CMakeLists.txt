@@ -44,4 +44,6 @@ target_link_libraries(cryptonote_basic
   math_crypto
   math_blockchain
   math_consensus
+
+  tools_serialization
 )
