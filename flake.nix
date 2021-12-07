@@ -109,11 +109,11 @@
               -DCMAKE_BUILD_TYPE=Debug
             '';
 
-            CMakeCCacheFlags = "";
+            # CMakeCCacheFlags = "";
 
-            CMakeCCacheFlags1 = ''
-              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-              -DCMAKE_C_COMPILER_LAUNCHER=ccache
+            CMakeCCacheFlags = ''
+              -DCMAKE_CXX_COMPILER_LAUNCHER=${pkgs.ccache}/bin/ccache
+              -DCMAKE_C_COMPILER_LAUNCHER=${pkgs.ccache}/bin/ccache
             '';
 
             CMakeClangFlags = ''
@@ -144,6 +144,7 @@
 
                 boost175 openssl libsodium rapidjson
                 gmock
+                ccache
 
                 opencl-headers
                 opencl-icd
