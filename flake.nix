@@ -70,6 +70,30 @@
 
       defaultPackage = forAllSystems (system: self.packages.${system}.lolnero);
 
+      apps = forAllSystems
+        (
+          system:
+          {
+            lolnerod =
+              {
+                type = "app";
+                program = "${nixpkgsFor.${system}.lolnero}/bin/lolnerod";
+              };
+
+            lolnero =
+              {
+                type = "app";
+                program = "${nixpkgsFor.${system}.lolnero}/bin/lolnero";
+              };
+
+            lolnero-rpc =
+              {
+                type = "app";
+                program = "${nixpkgsFor.${system}.lolnero}/bin/lolnero-rpc";
+              };
+          }
+        );
+
       devShell = forAllSystems
         (
           system:
