@@ -1,13 +1,14 @@
 {
   description = "A private ASIC friendly cryptocurrency";
 
-  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable-small";
 
   outputs = { self, nixpkgs }:
     let
       supportedSystems = [ "x86_64-linux" "aarch64-linux" ]
       ; forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system)
-      ; nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; })
+      ; nixpkgsFor = forAllSystems
+        (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; })
       ; in
     {
       # A Nixpkgs overlay.
