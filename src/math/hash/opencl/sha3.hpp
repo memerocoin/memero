@@ -20,8 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <array>
 #include <optional>
 
-#define CL_HPP_CL_1_2_DEFAULT_BUILD
-#include <CL/opencl.hpp>
+#include "cl_version.hpp"
 
 namespace opencl
 {

@@ -42,8 +42,7 @@
 
 #ifdef OpenCL
 
-#define CL_HPP_CL_1_2_DEFAULT_BUILD
-#include <CL/opencl.hpp>
+#include "math/hash/opencl/cl_version.hpp"
 
 #endif
 
