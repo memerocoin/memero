@@ -135,6 +135,8 @@
           system:
           let
             pkgs = nixpkgs.legacyPackages.${system};
+            gcc = pkgs.gcc11;
+            clang = pkgs.llvmPackages_13.clang;
 
             CMakeFlags_Lolnero = ''
               -DUSE_OPENCL=ON
@@ -153,8 +155,13 @@
             '';
 
             CMakeClangFlags = ''
-              -DCMAKE_CXX_COMPILER=clang++
-              -DCMAKE_C_COMPILER=clang
+              -DCMAKE_CXX_COMPILER=${clang}/bin/clang++
+              -DCMAKE_C_COMPILER=${clang}/bin/clang
+            '';
+
+            CMakeGCCFlags = ''
+              -DCMAKE_CXX_COMPILER=${gcc}/bin/g++
+              -DCMAKE_C_COMPILER=${gcc}/bin/gcc
             '';
 
             CMakeTestFlags = ''
@@ -162,39 +169,49 @@
             '';
 
             configureReleaseCommon = ''
-              cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}
+              ${pkgs.cmake}/bin/cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}
             '';
 
             configureCommon = configureReleaseCommon + CMakeDevFlags;
 
-            configure = configureCommon + CMakeClangFlags;
-            configureRelease = configureReleaseCommon + CMakeClangFlags;
+            configureGCC = configureCommon + CMakeGCCFlags;
+            configureGCCRelease = configureReleaseCommon + CMakeGCCFlags;
+
+            configureClang = configureCommon + CMakeClangFlags;
+            configureClangRelease = configureReleaseCommon + CMakeClangFlags;
+
+            configure = configureClang;
+            configureRelease = configureClangRelease;
 
           in
             pkgs.stdenvNoCC.mkDerivation {
               name = "lolnero-dev-shell";
-              buildInputs = with pkgs; [
-                gcc11
-                llvmPackages_13.clang
-                cmake git
+              buildInputs =
+                [gcc clang] ++
+                (
+                  with pkgs; [
+                    cmake git
 
-                boost175 openssl libsodium rapidjson
-                gmock
-                ccache
+                    boost175 openssl libsodium rapidjson
+                    gmock
+                    ccache
 
-                opencl-headers
-                opencl-icd
-                opencl-clhpp
-              ];
+                    opencl-headers
+                    opencl-icd
+                    opencl-clhpp
+                  ]
+                );
 
               inherit CMakeFlags_Lolnero;
               inherit CMakeCCacheFlags;
               inherit CMakeClangFlags;
+
+              inherit configureGCC;
+              inherit configureGCCRelease;
+              inherit configureClang;
+              inherit configureClangRelease;
               inherit configure;
               inherit configureRelease;
-
-              configureGCC = configureCommon;
-              configureGCCRelease = configureReleaseCommon;
 
               configureTest = configure + CMakeTestFlags;
               configureTestRelease = configureRelease + CMakeTestFlags;
