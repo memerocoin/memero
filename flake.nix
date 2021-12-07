@@ -95,32 +95,38 @@
             pkgs = nixpkgs.legacyPackages.${system};
 
             CMakeFlags_Lolnero = ''
-            -DUSE_OPENCL=ON
-          '';
+              -DUSE_OPENCL=ON
+            '';
 
             CMakeDevFlags = ''
-            -DBUILD_SHARED_LIBS=ON
-            -DCMAKE_BUILD_TYPE=Debug
-          '';
+              -DBUILD_SHARED_LIBS=ON
+              -DCMAKE_BUILD_TYPE=Debug
+            '';
 
             CMakeCCacheFlags = "";
 
             CMakeCCacheFlags1 = ''
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-            -DCMAKE_C_COMPILER_LAUNCHER=ccache
-          '';
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache
+            '';
 
             CMakeClangFlags = ''
-            -DCMAKE_CXX_COMPILER=clang++
-            -DCMAKE_C_COMPILER=clang
-          '';
+              -DCMAKE_CXX_COMPILER=clang++
+              -DCMAKE_C_COMPILER=clang
+            '';
 
             CMakeTestFlags = ''
-            -DBUILD_TESTING=ON
-          '';
+              -DBUILD_TESTING=ON
+            '';
 
-            configure = "cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}";
-            configureRelease = "cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}";
+            configure = ''
+              cmake ${CMakeFlags_Lolnero} ${CMakeDevFlags} ${CMakeClangFlags} ${CMakeCCacheFlags}
+            '';
+
+            configureRelease = ''
+              cmake ${CMakeFlags_Lolnero} ${CMakeClangFlags} ${CMakeCCacheFlags}
+            '';
+
           in
             with pkgs;
             stdenvNoCC.mkDerivation {
