@@ -124,8 +124,6 @@
                 opencl-headers
                 opencl-icd
                 opencl-clhpp
-
-                gnumake
               ];
 
               inherit CMakeFlags_Lolnero;
