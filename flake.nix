@@ -37,6 +37,7 @@
                 gmock
                 opencl-headers
                 opencl-icd
+                opencl-clhpp
               ]
             ;
 
@@ -61,7 +62,7 @@
               boost175 openssl libsodium rapidjson
               opencl-headers
               opencl-icd
-              rocm-opencl-runtime
+              opencl-clhpp
             ]
             ++ lib.optionals doCheck
               [
@@ -134,7 +135,7 @@
 
                 opencl-headers
                 opencl-icd
-                rocm-opencl-runtime
+                opencl-clhpp
 
                 gnumake
               ];

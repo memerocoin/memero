@@ -42,8 +42,8 @@
 
 #ifdef OpenCL
 
-#define CL_TARGET_OPENCL_VERSION 120
-#include <CL/cl.hpp>
+#define CL_HPP_CL_1_2_DEFAULT_BUILD
+#include <CL/opencl.hpp>
 
 #endif
 
