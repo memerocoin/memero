@@ -94,6 +94,12 @@
           };
         };
 
+      nixosModules.lolnero =
+        { pkgs, ... }:
+        {
+          nixpkgs.overlays = [ self.overlay ];
+        };
+
       checks = forAllSystems (system:
         {
           inherit (nixpkgsFor.${system}) lolnero-with-tests;
