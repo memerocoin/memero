@@ -87,18 +87,30 @@ namespace
 {
 // Create on-demand to prevent static initialization order fiasco issues.
 struct options {
-  const command_line::arg_descriptor<std::string> daemon_address = {"daemon-address", tools::wallet2::tr("Use daemon instance at <host>:<port>"), ""};
-  const command_line::arg_descriptor<std::string> password = {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
-  const command_line::arg_descriptor<std::string> password_file = {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
-  const command_line::arg_descriptor<bool> testnet = {"testnet", tools::wallet2::tr("For testnet. Daemon must also be launched with --testnet flag"), false};
-  const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key tx_output_shared_secret function"), 1};
+  const command_line::arg_descriptor<std::string> daemon_address =
+    {"daemon-address", tools::wallet2::tr("Use daemon instance at <host>:<port>"), ""};
+
+  const command_line::arg_descriptor<std::string> password =
+    {"password", tools::wallet2::tr("Wallet password (escape/quote as needed)"), "", true};
+
+  const command_line::arg_descriptor<std::string> password_file =
+    {"password-file", tools::wallet2::tr("Wallet password file"), "", true};
+
+  const command_line::arg_descriptor<bool> testnet =
+    {"testnet", tools::wallet2::tr("For testnet. Daemon must also be launched with --testnet flag"), false};
+
+  const command_line::arg_descriptor<uint64_t> kdf_rounds =
+    {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key derivation function"), 1};
+
   const command_line::arg_descriptor<std::string> tx_notify =
     { "tx-notify"
     , "Run a program for each new incoming transaction, "
       "%s = transaction hash"
     , ""
     };
-  const command_line::arg_descriptor<bool> offline = {"offline", tools::wallet2::tr("Do not connect to a daemon"), false};
+
+  const command_line::arg_descriptor<bool> offline =
+    {"offline", tools::wallet2::tr("Do not connect to a daemon"), false};
 };
 
 std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variables_map& vm, bool unattended, const options& opts, const std::function<std::optional<tools::password_container>(const char *, bool)> &password_prompter)
