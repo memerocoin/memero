@@ -15,12 +15,12 @@
       overlay = final: prev:
         with final;
         let
-          # stdenv = llvmPackages_12.stdenv
-          stdenv = gcc11Stdenv
+          # stdenvLatest = llvmPackages_12.stdenv
+          stdenvLatest = gcc11Stdenv
           ; version = builtins.substring 0 8 self.lastModifiedDate
           ; in
         {
-          lolnero = stdenv.mkDerivation {
+          lolnero = stdenvLatest.mkDerivation {
             pname = "lolnero";
             inherit version;
             src = ./.;
@@ -39,7 +39,7 @@
             ;
           };
 
-          lolnero-opencl = stdenv.mkDerivation {
+          lolnero-opencl = stdenvLatest.mkDerivation {
             pname = "lolnero-opencl";
             inherit version;
             src = ./.;
@@ -62,7 +62,7 @@
             ;
           };
 
-          lolnero-with-tests = stdenv.mkDerivation {
+          lolnero-with-tests = stdenvLatest.mkDerivation {
             pname = "lolnero-with-tests";
             inherit version;
             src = ./.;
@@ -142,8 +142,8 @@
           system:
           let
             pkgs = nixpkgs.legacyPackages.${system};
-            gcc = pkgs.gcc11;
-            clang = pkgs.llvmPackages_13.clang;
+            gccLatest = pkgs.gcc11;
+            clangLatest = pkgs.llvmPackages_13.clang;
 
             CMakeFlags_Lolnero = ''
               -DUSE_OPENCL=ON
@@ -162,13 +162,13 @@
             '';
 
             CMakeClangFlags = ''
-              -DCMAKE_CXX_COMPILER=${clang}/bin/clang++
-              -DCMAKE_C_COMPILER=${clang}/bin/clang
+              -DCMAKE_CXX_COMPILER=${clangLatest}/bin/clang++
+              -DCMAKE_C_COMPILER=${clangLatest}/bin/clang
             '';
 
             CMakeGCCFlags = ''
-              -DCMAKE_CXX_COMPILER=${gcc}/bin/g++
-              -DCMAKE_C_COMPILER=${gcc}/bin/gcc
+              -DCMAKE_CXX_COMPILER=${gccLatest}/bin/g++
+              -DCMAKE_C_COMPILER=${gccLatest}/bin/gcc
             '';
 
             CMakeTestFlags = ''
@@ -194,7 +194,7 @@
             pkgs.stdenvNoCC.mkDerivation {
               name = "lolnero-dev-shell";
               buildInputs =
-                [gcc clang] ++
+                [gccLatest clangLatest] ++
                 (
                   with pkgs; [
                     cmake git
