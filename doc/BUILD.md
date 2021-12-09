@@ -84,6 +84,15 @@ cmake .. && make
 Generated binaries will be in `./bin/`.
 
 
+## Nix flake
+
+```
+nix build gitlab:lolnero/lolnero
+```
+
+Generated binaries will be in `./result/bin/`.
+
+
 ## Build for the built-in OpenCL miner
 
 1. Install [`opencl-headers`][1]
