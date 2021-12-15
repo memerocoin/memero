@@ -81,6 +81,29 @@
             ;
           };
 
+          lolnero-clang-opencl = clangStdenvLatest.mkDerivation {
+            pname = "lolnero-clang-opencl";
+            inherit version;
+            src = ./.;
+
+            nativeBuildInputs = [ cmake ];
+
+            buildInputs = [
+              boost175 openssl libsodium rapidjson
+              opencl-headers
+              opencl-icd
+              opencl-clhpp
+            ]
+            ;
+
+            cmakeFlags = [
+              "--no-warn-unused-cli"
+              "-DVERSIONTAG=${version}"
+              "-DUSE_OPENCL=ON"
+            ]
+            ;
+          };
+
           lolnero-with-tests = stdenvLatest.mkDerivation {
             pname = "lolnero-with-tests";
             inherit version;
@@ -129,6 +152,7 @@
           inherit (nixpkgsFor.${system}) lolnero;
           inherit (nixpkgsFor.${system}) lolnero-opencl;
           inherit (nixpkgsFor.${system}) lolnero-clang;
+          inherit (nixpkgsFor.${system}) lolnero-clang-opencl;
         });
 
       defaultPackage = forAllSystems (system: self.packages.${system}.lolnero);
