@@ -15,8 +15,8 @@
       overlay = final: prev:
         with final;
         let
-          # stdenvLatest = llvmPackages_12.stdenv
           stdenvLatest = gcc11Stdenv
+          ; clangStdenvLatest = llvmPackages_13.stdenv
           ; version = builtins.substring 0 8 self.lastModifiedDate
           ; in
         {
@@ -58,6 +58,25 @@
               "--no-warn-unused-cli"
               "-DVERSIONTAG=${version}"
               "-DUSE_OPENCL=ON"
+            ]
+            ;
+          };
+
+          lolnero-clang = clangStdenvLatest.mkDerivation {
+            pname = "lolnero-clang";
+            inherit version;
+            src = ./.;
+
+            nativeBuildInputs = [ cmake ];
+
+            buildInputs = [
+              boost175 openssl libsodium rapidjson
+            ]
+            ;
+
+            cmakeFlags = [
+              "--no-warn-unused-cli"
+              "-DVERSIONTAG=${version}"
             ]
             ;
           };
@@ -109,6 +128,7 @@
         {
           inherit (nixpkgsFor.${system}) lolnero;
           inherit (nixpkgsFor.${system}) lolnero-opencl;
+          inherit (nixpkgsFor.${system}) lolnero-clang;
         });
 
       defaultPackage = forAllSystems (system: self.packages.${system}.lolnero);
