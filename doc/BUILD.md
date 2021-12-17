@@ -104,12 +104,11 @@ Generated binaries will be in `./result/bin/`.
         cmake -DUSE_OPENCL=ON .. && make
 
 
+### [Tutorial for Manjaro Linux][6]
+
 [1]: https://archlinux.org/packages/extra/any/opencl-headers/
 [2]: https://archlinux.org/packages/extra/x86_64/ocl-icd/
 [3]: https://aur.archlinux.org/packages/rocm-opencl-runtime/
 [4]: https://archlinux.org/packages/extra/x86_64/opencl-nvidia/
 [5]: https://archlinux.org/packages/extra/any/opencl-clhpp/
-
-### [Tutorial for Manjaro Linux][5]
-
-[5]: https://bitcointalk.org/index.php?topic=5280570.msg58294497#msg58294497
+[6]: https://bitcointalk.org/index.php?topic=5280570.msg58294497#msg58294497
