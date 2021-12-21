@@ -39,12 +39,7 @@
 #include <span>
 
 
-//Namespace specifically for ring ct code
 namespace rct {
-  // Can contain a secret or public key
-  //  similar to secret_key / public_key of crypto-ops,
-  //  but uses unsigned chars,
-  //  also includes an operator for accessing the i'th byte.
   using rct_point = crypto::ec_point;
   using rct_scalar = crypto::ec_scalar;
 
