@@ -49,7 +49,7 @@ namespace rct {
   crypto::ec_scalar hash_clsag_data_with_key
   (
    const rct_point signer_key_image
-   , const rct_point blinding_factor_surplus_pk_base_hashed_signer_pk
+   , const rct_point blinding_factor_surplus_key_image
    , const rct_point pseudo_input_commit
    , const output_public_dataS decoys
    , const std::string_view hash_key
@@ -74,7 +74,7 @@ namespace rct {
        );
 
     hash_inputs.push_back(signer_key_image);
-    hash_inputs.push_back(to_inv8(blinding_factor_surplus_pk_base_hashed_signer_pk));
+    hash_inputs.push_back(to_inv8(blinding_factor_surplus_key_image));
     hash_inputs.push_back(pseudo_input_commit);
 
     std::copy_n
@@ -105,7 +105,7 @@ namespace rct {
     const rct_scalar mu_P = hash_clsag_data_with_key
       (
        sig.signer_key_image
-       , sig.blinding_factor_surplus_pk_base_hashed_signer_pk
+       , sig.blinding_factor_surplus_key_image
        , pseudo_input_commit
        , decoys
        , config::HASH_KEY_CLSAG_AGG_0
@@ -114,7 +114,7 @@ namespace rct {
     const rct_scalar mu_C = hash_clsag_data_with_key
       (
        sig.signer_key_image
-       , sig.blinding_factor_surplus_pk_base_hashed_signer_pk
+       , sig.blinding_factor_surplus_key_image
        , pseudo_input_commit
        , decoys
        , config::HASH_KEY_CLSAG_AGG_1
@@ -184,7 +184,7 @@ namespace rct {
           {
             k ^ sig.s[i]
             , sig.signer_key_image ^ c_p
-            , sig.blinding_factor_surplus_pk_base_hashed_signer_pk ^ c_c
+            , sig.blinding_factor_surplus_key_image ^ c_c
           }
           );
 

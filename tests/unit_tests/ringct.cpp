@@ -348,33 +348,33 @@ TEST(ringct, CLSAG)
   clsag.signer_key_image = backup_key;
 
   // bad D in clsag at verification
-  backup_key_inv8 = clsag.blinding_factor_surplus_pk_base_hashed_signer_pk;
-  clsag.blinding_factor_surplus_pk_base_hashed_signer_pk = G_(crypto::randomScalar());
+  backup_key_inv8 = clsag.blinding_factor_surplus_key_image;
+  clsag.blinding_factor_surplus_key_image = G_(crypto::randomScalar());
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
-  clsag.blinding_factor_surplus_pk_base_hashed_signer_pk = backup_key_inv8;
+  clsag.blinding_factor_surplus_key_image = backup_key_inv8;
 
   // D not in main subgroup in clsag_unsafe
-  backup_key_inv8 = clsag.blinding_factor_surplus_pk_base_hashed_signer_pk;
+  backup_key_inv8 = clsag.blinding_factor_surplus_key_image;
   auto clsag_unsafe = toUnsafeCLSAG(clsag);
   ASSERT_TRUE(maybeSafeCLSAG(clsag_unsafe));
 
   rct::rct_point x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
 
-  clsag_unsafe.blinding_factor_surplus_pk_base_hashed_signer_pk = x;
+  clsag_unsafe.blinding_factor_surplus_key_image = x;
   ASSERT_FALSE(maybeSafeCLSAG(clsag_unsafe));
 
   // swapped I and D in clsag at verification
-  backup_key_inv8 = clsag.blinding_factor_surplus_pk_base_hashed_signer_pk;
+  backup_key_inv8 = clsag.blinding_factor_surplus_key_image;
   backup_key = clsag.signer_key_image;
 
   clsag.signer_key_image = rct::unsafe_d2rct_p(backup_key_inv8);
-  clsag.blinding_factor_surplus_pk_base_hashed_signer_pk = clsag.signer_key_image;
+  clsag.blinding_factor_surplus_key_image = clsag.signer_key_image;
 
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
 
   clsag.signer_key_image = backup_key;
-  clsag.blinding_factor_surplus_pk_base_hashed_signer_pk = backup_key_inv8;
+  clsag.blinding_factor_surplus_key_image = backup_key_inv8;
 
   // check it's still good, in case we failed to restore
   ASSERT_TRUE(rct::verify_clsag_signature(message,clsag,pubs,Cout));

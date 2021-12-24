@@ -520,7 +520,7 @@ TEST(Serialization, serializes_ringct_types)
   }
   ASSERT_TRUE(clsag0.c1 == clsag1.c1);
   // I is not serialized, they are meant to be reconstructed
-  ASSERT_TRUE(clsag0.blinding_factor_surplus_pk_base_hashed_signer_pk == clsag1.blinding_factor_surplus_pk_base_hashed_signer_pk);
+  ASSERT_TRUE(clsag0.blinding_factor_surplus_key_image == clsag1.blinding_factor_surplus_key_image);
 }
 
 BLOB_SERIALIZER(rct::ct_secret_key);

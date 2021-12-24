@@ -83,12 +83,12 @@ namespace rct {
     const rct_point D = signer_pk_hash ^ signer_blinding_factor_surplus;
 
     // Offset key image
-    const rct_point sig_blinding_factor_surplus_pk_base_hashed_signer_pk = D;
+    const rct_point sig_blinding_factor_surplus_key_image = D;
 
     const rct_scalar mu_P = hash_clsag_data_with_key
     (
       sig_signer_key_image
-      , sig_blinding_factor_surplus_pk_base_hashed_signer_pk
+      , sig_blinding_factor_surplus_key_image
       , pseudo_input_commit
       , decoys
       , config::HASH_KEY_CLSAG_AGG_0
@@ -97,7 +97,7 @@ namespace rct {
     const rct_scalar mu_C = hash_clsag_data_with_key
       (
        sig_signer_key_image
-       , sig_blinding_factor_surplus_pk_base_hashed_signer_pk
+       , sig_blinding_factor_surplus_key_image
        , pseudo_input_commit
        , decoys
        , config::HASH_KEY_CLSAG_AGG_1
@@ -197,7 +197,7 @@ namespace rct {
       s
       , sig_c1
       , sig_signer_key_image
-      , sig_blinding_factor_surplus_pk_base_hashed_signer_pk
+      , sig_blinding_factor_surplus_key_image
       };
   }
 

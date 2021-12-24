@@ -153,24 +153,24 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(clsag.c1), {}, "Bad clsag.c1");
 
-    const auto maybe_clsag_blinding_factor_surplus_pk_base_hashed_signer_pk =
-      maybe_from_inv8(clsag.blinding_factor_surplus_pk_base_hashed_signer_pk);
+    const auto maybe_clsag_blinding_factor_surplus_key_image =
+      maybe_from_inv8(clsag.blinding_factor_surplus_key_image);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
-       maybe_clsag_blinding_factor_surplus_pk_base_hashed_signer_pk
+       maybe_clsag_blinding_factor_surplus_key_image
        , {}
-       , "Bad clsag.blinding_factor_surplus_pk_base_hashed_signer_pk"
+       , "Bad clsag.blinding_factor_surplus_key_image"
        );
 
-    const rct::rct_point clsag_blinding_factor_surplus_pk_base_hashed_signer_pk =
-      *maybe_clsag_blinding_factor_surplus_pk_base_hashed_signer_pk;
+    const rct::rct_point clsag_blinding_factor_surplus_key_image =
+      *maybe_clsag_blinding_factor_surplus_key_image;
 
     return {{
       clsag_s
       , crypto::reduce(clsag.c1)
       , clsag.signer_key_image
-      , clsag_blinding_factor_surplus_pk_base_hashed_signer_pk
+      , clsag_blinding_factor_surplus_key_image
     }};
   }
 
@@ -184,7 +184,7 @@ namespace rct {
       s
       , clsag.c1
       , clsag.signer_key_image
-      , to_inv8(clsag.blinding_factor_surplus_pk_base_hashed_signer_pk)
+      , to_inv8(clsag.blinding_factor_surplus_key_image)
     };
   }
 

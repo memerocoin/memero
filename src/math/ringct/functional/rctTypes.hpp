@@ -92,12 +92,12 @@ namespace rct {
     crypto::ec_scalar_unnormalized c1;
 
     reconstructed_point signer_key_image; // signing key image
-    inv8 blinding_factor_surplus_pk_base_hashed_signer_pk; // commitment key image
+    inv8 blinding_factor_surplus_key_image; // commitment key image
 
     BEGIN_SERIALIZE_OBJECT()
       FIELD(s)
       FIELD(c1)
-      FIELD(blinding_factor_surplus_pk_base_hashed_signer_pk)
+      FIELD(blinding_factor_surplus_key_image)
     END_SERIALIZE()
   };
 
@@ -106,7 +106,7 @@ namespace rct {
     rct_scalarV s; // scalars
     rct_scalar c1;
     rct_point signer_key_image; // signing key image
-    rct_point blinding_factor_surplus_pk_base_hashed_signer_pk; // commitment key image
+    rct_point blinding_factor_surplus_key_image; // commitment key image
   };
 
   std::optional<clsag> maybeSafeCLSAG(const clsag_unsafe clsag);
@@ -299,7 +299,7 @@ namespace rct {
 
           // CLSAGs[i].I not saved, it can be reconstructed
           ar.tag("D");
-          FIELDS(CLSAGs[i].blinding_factor_surplus_pk_base_hashed_signer_pk)
+          FIELDS(CLSAGs[i].blinding_factor_surplus_key_image)
           ar.end_object();
 
           if (inputs - i > 1)
