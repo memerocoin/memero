@@ -97,7 +97,6 @@ namespace rct {
     BEGIN_SERIALIZE_OBJECT()
       FIELD(s)
       FIELD(c1)
-      // FIELD(I) - not serialized, it can be reconstructed
       FIELD(blinding_factor_surplus_pk_base_hashed_signer_pk)
     END_SERIALIZE()
   };
@@ -121,11 +120,7 @@ namespace rct {
     rct::inv8V L, R;
     crypto::ec_scalar_unnormalized a, b, t;
 
-    // bool operator==(const Bulletproof_unsafe&) const = default;
-
     BEGIN_SERIALIZE_OBJECT()
-      // Commitments aren't saved, they're restored via output_commits
-      // FIELD(V)
       FIELD(A)
       FIELD(S)
       FIELD(T1)
