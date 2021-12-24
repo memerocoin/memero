@@ -298,7 +298,7 @@ namespace rct {
           FIELDS(CLSAGs[i].c1)
 
           // CLSAGs[i].I not saved, it can be reconstructed
-          ar.tag("D");
+          ar.tag("blinding_factor_surplus_key_image");
           FIELDS(CLSAGs[i].blinding_factor_surplus_key_image)
           ar.end_object();
 
