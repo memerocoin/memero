@@ -256,6 +256,7 @@
               inherit CMakeFlags_Lolnero;
               inherit CMakeCCacheFlags;
               inherit CMakeClangFlags;
+              inherit CMakeTestFlags;
 
               inherit configureGCC;
               inherit configureGCCRelease;
