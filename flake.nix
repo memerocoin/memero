@@ -28,7 +28,7 @@
             nativeBuildInputs = [ cmake ];
 
             buildInputs = [
-              boost175 openssl libsodium rapidjson
+              boost openssl libsodium rapidjson
             ]
             ;
 
@@ -47,7 +47,7 @@
             nativeBuildInputs = [ cmake ];
 
             buildInputs = [
-              boost175 openssl libsodium rapidjson
+              boost openssl libsodium rapidjson
               opencl-headers
               opencl-icd
               opencl-clhpp
@@ -70,7 +70,7 @@
             nativeBuildInputs = [ cmake ];
 
             buildInputs = [
-              boost175 openssl libsodium rapidjson
+              boost openssl libsodium rapidjson
             ]
             ;
 
@@ -89,7 +89,7 @@
             nativeBuildInputs = [ cmake ];
 
             buildInputs = [
-              boost175 openssl libsodium rapidjson
+              boost openssl libsodium rapidjson
               opencl-headers
               opencl-icd
               opencl-clhpp
@@ -112,7 +112,7 @@
             nativeBuildInputs = [ cmake ];
 
             buildInputs = [
-              boost175 openssl libsodium rapidjson
+              boost openssl libsodium rapidjson
               opencl-headers
               opencl-icd
               opencl-clhpp
@@ -243,7 +243,7 @@
                   with pkgs; [
                     cmake git
 
-                    boost175 openssl libsodium rapidjson
+                    boost openssl libsodium rapidjson
                     gmock
                     ccache
 
