@@ -107,7 +107,7 @@ namespace net_utils
           break;
       }
 
-      m_ssl_socket = connection.get();
+      m_socket = connection.get();
       m_deadline.cancel();
       if (socket().is_open())
       {
@@ -132,7 +132,7 @@ namespace net_utils
 
       // Set SSL options
       // disable sslv2
-      m_ssl_socket = boost::asio::ip::tcp::socket(m_io_service);
+      m_socket = boost::asio::ip::tcp::socket(m_io_service);
 
       // Get a list of endpoints corresponding to the server name.
 
@@ -486,7 +486,7 @@ namespace net_utils
 
   boost::asio::ip::tcp::socket& blocked_mode_client::socket()
   {
-    return m_ssl_socket;
+    return m_socket;
   }
 
   uint64_t blocked_mode_client::get_bytes_sent() const
