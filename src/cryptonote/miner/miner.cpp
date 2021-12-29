@@ -32,6 +32,8 @@
 #include "miner.h"
 
 #include "tools/common/command_line.h"
+#include "tools/epee/include/string_tools.h"
+
 #include "math/crypto/controller/random.hpp"
 
 #include "cryptonote/tx/pseudo_functional/tx_utils.hpp"
@@ -42,11 +44,7 @@
 #endif
 
 
-#include <openssl/evp.h>
-
 #include <execution>
-
-
 
 
 
@@ -342,8 +340,8 @@ namespace cryptonote
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
     block b;
-    string_blob hashing_blob_head;
-    string_blob hashing_blob_tail;
+    epee::blob::data hashing_blob_head;
+    epee::blob::data hashing_blob_tail;
     crypto::hash h = crypto::null_hash;
 
     uint16_t hashe_count_buffer = 0;
@@ -370,9 +368,11 @@ namespace cryptonote
         height = m_height;
         local_template_ver = m_template_no;
         nonce = m_starter_nonce + th_local_index;
-        const string_blob head_full = get_mining_blob_head(b);
+        const epee::blob::data head_full = epee::string_tools::string_to_blob
+          (get_mining_blob_head(b));
         hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
-        hashing_blob_tail = cryptonote::get_mining_blob_tail(b);
+        hashing_blob_tail = epee::string_tools::string_to_blob
+          (cryptonote::get_mining_blob_tail(b));
       }
 
       if(!local_template_ver)//no any set_block_template call
@@ -382,13 +382,15 @@ namespace cryptonote
         continue;
       }
 
-      EVP_MD_CTX *ctx = EVP_MD_CTX_new();
-      EVP_DigestInit_ex(ctx, EVP_sha3_256(), NULL);
-      EVP_DigestUpdate(ctx, hashing_blob_head.data(), hashing_blob_head.length());
-      EVP_DigestUpdate(ctx, (const char*)&nonce, sizeof(nonce));
-      EVP_DigestUpdate(ctx, hashing_blob_tail.data(), hashing_blob_tail.length());
-      EVP_DigestFinal(ctx, (uint8_t*)&h, NULL);
-      EVP_MD_CTX_free(ctx);
+      const epee::blob::data nonceData =
+        epee::blob::data((const uint8_t*)(&nonce), sizeof(nonce));
+
+      h = crypto::sha3
+        (
+         hashing_blob_head
+         + nonceData
+         + hashing_blob_tail
+         );
 
       const bool valid_hash = hash_to_int(h) <= max_int;
 

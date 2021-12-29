@@ -38,6 +38,6 @@ add_library(math_hash
   )
 
 target_link_libraries(math_hash
-    ${OPENSSL_LIBRARIES}
+  sha3_iuf
   )
 

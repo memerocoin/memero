@@ -110,6 +110,7 @@ include_directories(
   src
   vendor/curve25519/cryptonote
   vendor/liblmdb
+  vendor/SHA3IUF
 )
 
 

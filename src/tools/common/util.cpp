@@ -96,7 +96,6 @@ namespace tools
 
   bool on_startup()
   {
-    OPENSSL_init_ssl(0, NULL);
     crypto::init();
 
     return true;

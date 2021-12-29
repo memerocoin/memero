@@ -54,6 +54,7 @@ target_link_libraries(lolnerod
   version
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  ${OPENSSL_LIBRARIES}
   )
 
 set_property(TARGET lolnerod
