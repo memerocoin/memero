@@ -35,70 +35,12 @@
 
 namespace cryptonote
 {
-  namespace
-  {
-    std::optional<epee::net_utils::ssl_options_t> do_process_ssl(const boost::program_options::variables_map& vm, const rpc_args::descriptors& arg, const bool any_cert_option)
-    {
-      if (any_cert_option) {
-        return epee::net_utils::ssl_support_t::e_ssl_support_disabled;
-      }
-      bool ssl_required = false;
-      epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_enabled;
-      {
-        std::string ssl_ca_file;
-        const std::vector<std::string> ssl_allowed_fingerprints = command_line::get_arg(vm, arg.rpc_ssl_allowed_fingerprints);
-
-        std::vector<std::vector<uint8_t>> allowed_fingerprints{ ssl_allowed_fingerprints.size() };
-        std::transform
-          (
-           ssl_allowed_fingerprints.begin()
-           , ssl_allowed_fingerprints.end()
-           , allowed_fingerprints.begin()
-           , epee::string_tools::hex_to_vector_filtered
-           );
-        for (const auto &fpr: allowed_fingerprints)
-        {
-          if (fpr.size() != SSL_FINGERPRINT_SIZE)
-          {
-            LOG_ERROR("SHA-256 fingerprint should be " BOOST_PP_STRINGIZE(SSL_FINGERPRINT_SIZE) " bytes long.");
-            return std::nullopt;
-          }
-        }
-
-        if (!allowed_fingerprints.empty() || !ssl_ca_file.empty())
-        {
-          ssl_required = true;
-          ssl_options = epee::net_utils::ssl_options_t{
-            std::move(allowed_fingerprints), std::move(ssl_ca_file)
-          };
-        }
-      }
-
-      // user specified CA file or fingeprints implies enabled SSL by default
-      if (!ssl_required && !epee::net_utils::ssl_support_from_string(ssl_options.support, command_line::get_arg(vm, arg.rpc_ssl)))
-      {
-        LOG_ERROR("Invalid argument for " << std::string(arg.rpc_ssl.name));
-        return std::nullopt;
-      }
-
-      ssl_options.auth = epee::net_utils::ssl_authentication_t{
-        command_line::get_arg(vm, arg.rpc_ssl_private_key), command_line::get_arg(vm, arg.rpc_ssl_certificate)
-      };
-
-      return {std::move(ssl_options)};
-    }
-  } // anonymous
-
   rpc_args::descriptors::descriptors()
      : rpc_bind_ip({"rpc-bind-ip", rpc_args::tr("Specify IP to bind RPC server"), "127.0.0.1"})
      , rpc_bind_ipv6_address({"rpc-bind-ipv6-address", rpc_args::tr("Specify IPv6 address to bind RPC server"), "::1"})
      , rpc_use_ipv6({"rpc-use-ipv6", rpc_args::tr("Allow IPv6 for RPC"), false})
      , rpc_ignore_ipv4({"rpc-ignore-ipv4", rpc_args::tr("Ignore unsuccessful IPv4 bind for RPC"), false})
      , rpc_access_control_origins({"rpc-access-control-origins", rpc_args::tr("Specify a comma separated list of origins to allow cross origin resource sharing"), ""})
-     , rpc_ssl({"rpc-ssl", rpc_args::tr("Enable SSL on RPC connections: enabled|disabled"), "disabled"})
-     , rpc_ssl_private_key({"rpc-ssl-private-key", rpc_args::tr("Path to a PEM format private key"), ""})
-     , rpc_ssl_certificate({"rpc-ssl-certificate", rpc_args::tr("Path to a PEM format certificate"), ""})
-     , rpc_ssl_allowed_fingerprints({"rpc-ssl-allowed-fingerprints", rpc_args::tr("List of certificate fingerprints to allow")})
   {}
 
   const char* rpc_args::tr(const char* str) { return str; }
@@ -111,13 +53,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg.rpc_use_ipv6);
     command_line::add_arg(desc, arg.rpc_ignore_ipv4);
     command_line::add_arg(desc, arg.rpc_access_control_origins);
-
-    if (!any_cert_option) {
-      command_line::add_arg(desc, arg.rpc_ssl);
-      command_line::add_arg(desc, arg.rpc_ssl_private_key);
-      command_line::add_arg(desc, arg.rpc_ssl_certificate);
-      command_line::add_arg(desc, arg.rpc_ssl_allowed_fingerprints);
-    }
   }
 
   std::optional<rpc_args> rpc_args::process(const boost::program_options::variables_map& vm, const bool any_cert_option)
@@ -166,17 +101,9 @@ namespace cryptonote
       config.access_control_origins = std::move(access_control_origins);
     }
 
-    auto ssl_options = do_process_ssl(vm, arg, any_cert_option);
-    if (!ssl_options)
-      return std::nullopt;
-    config.ssl_options = std::move(*ssl_options);
+    config.ssl_options = 
+        epee::net_utils::ssl_support_t::e_ssl_support_disabled;
 
     return {std::move(config)};
-  }
-
-  std::optional<epee::net_utils::ssl_options_t> rpc_args::process_ssl(const boost::program_options::variables_map& vm, const bool any_cert_option)
-  {
-    const descriptors arg{};
-    return do_process_ssl(vm, arg, any_cert_option);
   }
 }
