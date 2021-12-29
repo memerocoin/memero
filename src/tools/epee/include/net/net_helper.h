@@ -88,7 +88,7 @@ namespace net_utils
 			blocked_mode_client() :
 				m_io_service(),
 				m_ctx(boost::asio::ssl::context::tlsv12),
-				m_ssl_socket(std::make_shared<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>(m_io_service, m_ctx)),
+				m_ssl_socket(boost::asio::ip::tcp::socket(m_io_service)),
 				m_connector(direct_connect{}),
 				m_ssl_options(epee::net_utils::ssl_support_t::e_ssl_support_disabled),
 				m_initialized(true),
@@ -138,14 +138,13 @@ namespace net_utils
 		bool recv_n(std::string& buff, int64_t sz, std::chrono::milliseconds timeout);
 		bool shutdown();
 		boost::asio::io_service& get_io_service();
-		boost::asio::ip::tcp::socket& get_socket();
+		boost::asio::ip::tcp::socket& socket();
 		uint64_t get_bytes_sent() const;
 		uint64_t get_bytes_received() const;
 
 	private:
 
 		void check_deadline();
-		void shutdown_ssl();
 
 	protected:
 		bool write(const void* data, size_t sz, boost::system::error_code& ec);
@@ -155,7 +154,7 @@ namespace net_utils
 	protected:
 		boost::asio::io_service m_io_service;
 		boost::asio::ssl::context m_ctx;
-		std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> m_ssl_socket;
+		boost::asio::ip::tcp::socket m_ssl_socket;
 		std::function<connect_func> m_connector;
 		ssl_options_t m_ssl_options;
 		bool m_initialized;
@@ -264,7 +263,7 @@ namespace net_utils
 				// asynchronous operations are cancelled. This allows the blocked
 				// connect(), read_line() or write_line() functions to return.
 				LOG_PRINT_L3("Timed out socket");
-				m_ssl_socket->next_layer().close();
+			  socket().close();
 
 				// There is no longer an active deadline. The expiry is set to positive
 				// infinity so that the actor takes no action until a new deadline is set.
