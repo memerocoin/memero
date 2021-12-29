@@ -62,6 +62,12 @@ test-wallet:
 --daemon-address 127.0.0.1:44000 --log-level 1 \
 --password ''
 
+test-wallet-rpc:
+	../../build/bin/lolnero-rpc --testnet --open testnet/test1 \
+--daemon-address 127.0.0.1:44000 --log-level 1 \
+--rpc-bind-port 44056 \
+--password ''
+
 test-wallet-2:
 	../../build/bin/lolnero --testnet --open testnet/test2 \
 --daemon-address 127.0.0.1:44001 --log-level 1 \
