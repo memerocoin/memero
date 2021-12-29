@@ -49,8 +49,6 @@ target_link_libraries( epee
   epee_net_basic
   epee_log
   epee_storage_basic
-
-  ${OPENSSL_LIBRARIES}
 )
 
 add_library( epee_net_basic
