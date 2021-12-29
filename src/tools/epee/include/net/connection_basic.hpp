@@ -135,27 +135,18 @@ class connection_basic { // not-templated base class for rapid developmet of som
 		template<typename MutableBufferSequence, typename ReadHandler>
 		void async_read_some(const MutableBufferSequence &buffers, ReadHandler &&handler)
 		{
-			if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
-				socket_.async_read_some(buffers, std::forward<ReadHandler>(handler));
-			else
 				socket().async_read_some(buffers, std::forward<ReadHandler>(handler));
 		}
 
 		template<typename ConstBufferSequence, typename WriteHandler>
 		void async_write_some(const ConstBufferSequence &buffers, WriteHandler &&handler)
 		{
-			if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
-				socket_.async_write_some(buffers, std::forward<WriteHandler>(handler));
-			else
 				socket().async_write_some(buffers, std::forward<WriteHandler>(handler));
 		}
 
 		template<typename ConstBufferSequence, typename WriteHandler>
 		void async_write(const ConstBufferSequence &buffers, WriteHandler &&handler)
 		{
-			if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
-				boost::asio::async_write(socket_, buffers, std::forward<WriteHandler>(handler));
-			else
 				boost::asio::async_write(socket(), buffers, std::forward<WriteHandler>(handler));
 		}
 

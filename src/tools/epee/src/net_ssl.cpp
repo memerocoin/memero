@@ -272,7 +272,7 @@ ssl_options_t::ssl_options_t(std::vector<std::vector<std::uint8_t>> fingerprints
   : fingerprints_(std::move(fingerprints)),
     ca_path(std::move(ca_path)),
     auth(),
-    support(ssl_support_t::e_ssl_support_enabled),
+    support(ssl_support_t::e_ssl_support_disabled),
     verification(ssl_verification_t::user_certificates)
 {
   std::sort(fingerprints_.begin(), fingerprints_.end());
@@ -538,9 +538,7 @@ bool ssl_options_t::handshake(
 
 bool ssl_support_from_string(ssl_support_t &ssl, std::string_view s)
 {
-  if (s == "enabled")
-    ssl = epee::net_utils::ssl_support_t::e_ssl_support_enabled;
-  else if (s == "disabled")
+  if (s == "disabled")
     ssl = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
   else
     return false;

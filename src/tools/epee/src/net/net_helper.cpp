@@ -117,17 +117,6 @@ namespace net_utils
         m_connected = true;
         m_deadline.expires_at(std::chrono::steady_clock::time_point::max());
         // SSL Options
-        if (m_ssl_options.support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
-        {
-          if (!m_ssl_options.handshake(*m_ssl_socket, boost::asio::ssl::stream_base::client, {}, addr, timeout))
-          {
-            {
-              LOG_WARNING("Failed to establish SSL connection");
-              m_connected = false;
-              return CONNECT_FAILURE;
-            }
-          }
-        }
         return CONNECT_SUCCESS;
       }else
       {

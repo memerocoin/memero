@@ -159,7 +159,7 @@ namespace net_utils
     const boost::uuids::uuid random_uuid = boost::uuids::random_generator()();
 
     context = t_connection_context{};
-    bool ssl = m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled;
+    bool ssl = m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_disabled;
     context.set_details(random_uuid, std::move(real_remote), is_income, ssl);
 
     boost::system::error_code ec;
@@ -406,26 +406,6 @@ namespace net_utils
       return;
     }
 
-    if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
-    {
-      // Handshake
-      if (!handshake(boost::asio::ssl::stream_base::server, boost::asio::const_buffer(buffer_.data(), buffer_ssl_init_fill)))
-      {
-        LOG_ERROR("SSL handshake failed");
-        m_want_close_connection = true;
-        m_ready_to_close = true;
-        bool do_shutdown = false;
-        {
-          LOCK_RECURSIVE_MUTEX(m_send_que_lock);
-          if(!m_send_que.size())
-            do_shutdown = true;
-        }
-        if(do_shutdown)
-          shutdown();
-        return;
-      }
-    }
-    else
     {
       handle_read(e, buffer_ssl_init_fill);
       return;
@@ -621,12 +601,6 @@ namespace net_utils
       // Initiate graceful connection closure.
       m_timer.cancel();
       boost::system::error_code ignored_ec;
-      if (m_ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
-      {
-        const shared_state &state = static_cast<const shared_state&>(get_state());
-        if (!state.stop_signal_sent)
-          socket_.shutdown(ignored_ec);
-      }
       socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
       if (!m_host.empty())
       {
@@ -1109,7 +1083,6 @@ namespace net_utils
         switch ((*current_new_connection)->get_ssl_support())
         {
           case epee::net_utils::ssl_support_t::e_ssl_support_disabled: ssl_message = "disabled"; break;
-          case epee::net_utils::ssl_support_t::e_ssl_support_enabled: ssl_message = "enabled"; break;
         }
         LOG_DEBUG("New server for RPC connections, SSL " << ssl_message);
         (*current_new_connection)->setRpcStation(); // hopefully this is not needed actually
@@ -1246,20 +1219,6 @@ namespace net_utils
     }
 
     _dbg3("Connected success to " << adr << ':' << port);
-
-    const ssl_support_t ssl_support = new_connection_l->get_ssl_support();
-    if (ssl_support == epee::net_utils::ssl_support_t::e_ssl_support_enabled)
-    {
-      // Handshake
-      LOG_DEBUG("Handshaking SSL...");
-      if (!new_connection_l->handshake(boost::asio::ssl::stream_base::client))
-      {
-        LOG_ERROR("SSL handshake failed");
-        if (sock_.is_open())
-          sock_.close();
-        return CONNECT_FAILURE;
-      }
-    }
 
     return CONNECT_SUCCESS;
 
