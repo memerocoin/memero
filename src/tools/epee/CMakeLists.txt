@@ -40,7 +40,6 @@ add_library( epee
   src/connection_basic.cpp
   src/buffer.cpp
   src/file_io_utils.cpp
-  src/net_ssl.cpp
   src/console_handler.cpp
   src/time_helper.cpp
   src/misc_os_dependent.cpp

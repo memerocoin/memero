@@ -28,11 +28,9 @@
 #pragma once
 
 
-
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
 
-#define SSL_FINGERPRINT_SIZE 32
 
 namespace epee
 {
@@ -42,49 +40,17 @@ namespace net_utils
 		e_ssl_support_disabled,
 	};
 
-  enum class ssl_verification_t : uint8_t
-  {
-    none = 0,         //!< Do not verify peer.
-    system_ca,        //!< Verify peer via system ca only (do not inspect user certificates)
-    user_certificates,//!< Verify peer via specific (non-chain) certificate(s) only.
-    user_ca           //!< Verify peer via specific (possibly chain) certificate(s) only.
-  };
-
-  struct ssl_authentication_t
-  {
-    std::string private_key_path; //!< Private key used for authentication
-    std::string certificate_path; //!< Certificate used for authentication to peer.
-
-    //! Load `private_key_path` and `certificate_path` into `ssl_context`.
-    void use_ssl_certificate(boost::asio::ssl::context &ssl_context) const;
-  };
-
-  /*!
-    \note `verification != disabled && support == disabled` is currently
-      "allowed" via public interface but obviously invalid configuation.
-   */
   class ssl_options_t
   {
-    // force sorted behavior in private
-    std::vector<std::vector<std::uint8_t>> fingerprints_;
 
   public:
-    std::string ca_path;
-    ssl_authentication_t auth;
     ssl_support_t support;
-    ssl_verification_t verification;
 
     //! Verification is set to system ca unless SSL is disabled.
     ssl_options_t(ssl_support_t support)
-      : fingerprints_(),
-        ca_path(),
-        auth(),
-        support(support),
-        verification(support == ssl_support_t::e_ssl_support_disabled ? ssl_verification_t::none : ssl_verification_t::system_ca)
+      :
+        support(support)
     {}
-
-    //! Provide user fingerprints and/or ca path. Enables SSL and user_certificate verification
-    ssl_options_t(std::vector<std::vector<std::uint8_t>> fingerprints, std::string ca_path);
 
     ssl_options_t(const ssl_options_t&) = default;
     ssl_options_t(ssl_options_t&&) = default;
@@ -92,13 +58,10 @@ namespace net_utils
     ssl_options_t& operator=(const ssl_options_t&) = default;
     ssl_options_t& operator=(ssl_options_t&&) = default;
 
-    //! \return False iff ssl is disabled, otherwise true.
-    explicit operator bool() const noexcept { return support != ssl_support_t::e_ssl_support_disabled; }
+    explicit operator bool() const noexcept { return false; };
 
-    //! \retrurn True if `host` can be verified using `this` configuration WITHOUT system "root" CAs.
   };
 
-        // https://security.stackexchange.com/questions/34780/checking-client-hello-for-https-classification
 	constexpr size_t get_ssl_magic_size() { return 9; }
 }
 }
