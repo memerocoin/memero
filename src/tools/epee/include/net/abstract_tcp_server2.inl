@@ -392,22 +392,8 @@ namespace net_utils
       return;
     }
 
-    buffer_ssl_init_fill += bytes_transferred;
-    LOG_TRACE("we now have " << buffer_ssl_init_fill << "/" << get_ssl_magic_size() << " bytes needed to detect SSL");
-    if (buffer_ssl_init_fill < get_ssl_magic_size())
     {
-      epee::misc_utils::sleep_no_w(100);
-      socket().async_receive(boost::asio::buffer(buffer_.data() + buffer_ssl_init_fill, buffer_.size() - buffer_ssl_init_fill),
-                             strand_.wrap(
-                                          std::bind(&connection<t_protocol_handler>::handle_receive,
-                                                    connection<t_protocol_handler>::shared_from_this(),
-                                                    std::placeholders::_1,
-                                                    std::placeholders::_2)));
-      return;
-    }
-
-    {
-      handle_read(e, buffer_ssl_init_fill);
+      handle_read(e, bytes_transferred);
       return;
     }
 

@@ -62,6 +62,5 @@ namespace net_utils
 
   };
 
-	constexpr size_t get_ssl_magic_size() { return 9; }
 }
 }
