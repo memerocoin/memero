@@ -103,34 +103,9 @@ namespace net_utils
 
     boost::asio::ssl::context create_context() const;
 
-    /*!
-        \note It is strongly encouraged that clients using `system_ca`
-          verification provide a non-empty `host` for rfc2818 verification.
-
-        \param socket Used in SSL handshake and verification
-        \param type Client or server
-        \param host This parameter is only used when
-          `type == client && !host.empty()`. The value is sent to the server for
-          situations where multiple hostnames are being handled by a server. If
-          `verification == system_ca` the client also does a rfc2818 check to
-          ensure that the server certificate is to the provided hostname.
-
-        \return True if the SSL handshake completes with peer verification
-          settings. */
-    bool handshake(
-      boost::asio::ssl::stream<boost::asio::ip::tcp::socket> &socket,
-      boost::asio::ssl::stream_base::handshake_type type,
-      boost::asio::const_buffer buffer = {},
-      const std::string& host = {},
-      std::chrono::milliseconds timeout = std::chrono::seconds(15)) const;
   };
 
         // https://security.stackexchange.com/questions/34780/checking-client-hello-for-https-classification
 	constexpr size_t get_ssl_magic_size() { return 9; }
-	bool is_ssl(const unsigned char *data, size_t len);
-	bool ssl_support_from_string(ssl_support_t &ssl, std::string_view s);
-
-	bool create_ec_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert);
-	bool create_rsa_ssl_certificate(EVP_PKEY *&pkey, X509 *&cert);
 }
 }
