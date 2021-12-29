@@ -96,11 +96,6 @@ namespace net_utils
     explicit operator bool() const noexcept { return support != ssl_support_t::e_ssl_support_disabled; }
 
     //! \retrurn True if `host` can be verified using `this` configuration WITHOUT system "root" CAs.
-    bool has_strong_verification(std::string_view host) const noexcept;
-
-    //! Search against internal fingerprints. Always false if `behavior() != user_certificate_check`.
-    bool has_fingerprint(boost::asio::ssl::verify_context &ctx) const;
-
   };
 
         // https://security.stackexchange.com/questions/34780/checking-client-hello-for-https-classification

@@ -305,64 +305,6 @@ bool is_ssl(const unsigned char *data, size_t len)
   return false;
 }
 
-bool ssl_options_t::has_strong_verification(std::string_view host) const noexcept
-{
-  // onion and i2p addresses contain information about the server cert
-  // which both authenticates and encrypts
-  if (boost::algorithm::ends_with(host, ".onion") ||
-      boost::algorithm::ends_with(host, ".i2p"))
-    return true;
-  switch (verification)
-  {
-    default:
-    case ssl_verification_t::none:
-    case ssl_verification_t::system_ca:
-      return false;
-    case ssl_verification_t::user_certificates:
-    case ssl_verification_t::user_ca:
-      break;
-  }
-  return true;
-}
-
-bool ssl_options_t::has_fingerprint(boost::asio::ssl::verify_context &ctx) const
-{
-  // can we check the certificate against a list of fingerprints?
-  if (!fingerprints_.empty()) {
-    X509_STORE_CTX *sctx = ctx.native_handle();
-    if (!sctx)
-    {
-      LOG_ERROR("Error getting verify_context handle");
-      return false;
-    }
-
-    X509* cert = nullptr;
-    const STACK_OF(X509)* chain = X509_STORE_CTX_get_chain(sctx);
-    if (!chain || sk_X509_num(chain) < 1 || !(cert = sk_X509_value(chain, 0)))
-    {
-      LOG_ERROR("No certificate found in verify_context");
-      return false;
-    }
-
-    // buffer for the certificate digest and the size of the result
-    std::vector<uint8_t> digest(EVP_MAX_MD_SIZE);
-    unsigned int size{ 0 };
-
-    // create the digest from the certificate
-    if (!X509_digest(cert, EVP_sha256(), digest.data(), &size)) {
-      LOG_ERROR("Failed to create certificate fingerprint");
-      return false;
-    }
-
-    // strip unnecessary bytes from the digest
-    digest.resize(size);
-
-    return std::binary_search(fingerprints_.begin(), fingerprints_.end(), digest);
-  }
-
-  return false;
-}
-
 bool ssl_support_from_string(ssl_support_t &ssl, std::string_view s)
 {
   if (s == "disabled")
