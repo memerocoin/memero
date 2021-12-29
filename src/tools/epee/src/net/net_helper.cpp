@@ -166,8 +166,6 @@ namespace net_utils
       if(m_connected)
       {
         m_connected = false;
-        if(m_ssl_options)
-          shutdown_ssl();
         m_ssl_socket->next_layer().shutdown(boost::asio::ip::tcp::socket::shutdown_both);
       }
     }
@@ -467,8 +465,6 @@ namespace net_utils
   {
     m_deadline.cancel();
     boost::system::error_code ec;
-    if(m_ssl_options)
-      shutdown_ssl();
     m_ssl_socket->next_layer().cancel(ec);
     if(ec)
       LOG_DEBUG("Problems at cancel: " << ec.message());

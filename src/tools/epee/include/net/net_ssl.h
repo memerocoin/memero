@@ -58,8 +58,6 @@ namespace net_utils
     ssl_options_t& operator=(const ssl_options_t&) = default;
     ssl_options_t& operator=(ssl_options_t&&) = default;
 
-    explicit operator bool() const noexcept { return false; };
-
   };
 
 }
