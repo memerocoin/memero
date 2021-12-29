@@ -437,8 +437,8 @@ namespace cryptonote
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
     block b;
-    string_blob hashing_blob_head;
-    string_blob hashing_blob_tail;
+    epee::blob::data hashing_blob_head;
+    epee::blob::data hashing_blob_tail;
     opencl::cl_mining_template mining_template;
     const size_t gpu_worker_scale = 256;
     const size_t gpu_loop_size = 256;
@@ -468,12 +468,11 @@ namespace cryptonote
         height = m_height;
         local_template_ver = m_template_no;
         nonce = m_starter_nonce;
-        const string_blob head_full = get_mining_blob_head(b);
+        const epee::blob::data head_full = epee::string_tools::string_to_blob
+          (get_mining_blob_head(b));
         hashing_blob_head = head_full.substr(0, head_full.length() - sizeof(nonce));
-        hashing_blob_tail = cryptonote::get_mining_blob_tail(b);
-
-        // LOG_GLOBAL_INFO("head size: " << hashing_blob_head.size());
-        // LOG_GLOBAL_INFO("tail size: " << hashing_blob_tail.size());
+        hashing_blob_tail = epee::string_tools::string_to_blob
+          (cryptonote::get_mining_blob_tail(b));
 
         std::copy
           (
