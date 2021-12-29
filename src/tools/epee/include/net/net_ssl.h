@@ -101,8 +101,6 @@ namespace net_utils
     //! Search against internal fingerprints. Always false if `behavior() != user_certificate_check`.
     bool has_fingerprint(boost::asio::ssl::verify_context &ctx) const;
 
-    boost::asio::ssl::context create_context() const;
-
   };
 
         // https://security.stackexchange.com/questions/34780/checking-client-hello-for-https-classification

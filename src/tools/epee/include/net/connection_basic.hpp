@@ -71,7 +71,6 @@ namespace net_utils
 		void configure_ssl(ssl_options_t src)
 		{
 			ssl_options_ = std::move(src);
-			ssl_context = ssl_options_.create_context();
 		}
 
 		const ssl_options_t& ssl_options() const noexcept { return ssl_options_; }

@@ -85,10 +85,7 @@ namespace net_utils
 
   void blocked_mode_client::set_ssl(ssl_options_t ssl_options)
   {
-    if (ssl_options)
-      m_ctx = ssl_options.create_context();
-    else
-      m_ctx = boost::asio::ssl::context(boost::asio::ssl::context::tlsv12);
+    m_ctx = boost::asio::ssl::context(boost::asio::ssl::context::tlsv12);
     m_ssl_options = std::move(ssl_options);
   }
 

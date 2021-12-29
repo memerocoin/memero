@@ -783,9 +783,6 @@ namespace net_utils
     m_use_ipv6 = use_ipv6;
     m_require_ipv4 = require_ipv4;
 
-    if (ssl_options)
-      m_state->configure_ssl(std::move(ssl_options));
-
     std::string ipv4_failed = "";
     std::string ipv6_failed = "";
     try
