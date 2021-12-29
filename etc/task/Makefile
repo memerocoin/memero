@@ -183,15 +183,23 @@ tor-proxy-full:
 --proxy tor,127.0.0.1:9063 \
 
 make-main-wallet:
-	../../build/bin/lolnero-wallet-cli --generate-new-wallet mainnet/test1  \
+	../../build/bin/lolnero --new mainnet/test1  \
 --daemon-address 127.0.0.1:45000 \
 --password ''
 
 
 main-wallet:
-	../../build/bin/lolnero-wallet-cli --wallet-file mainnet/test1 \
---daemon-address 127.0.0.1:45000 --log-level 4 \
+	../../build/bin/lolnero --open mainnet/test1 \
+--daemon-address 127.0.0.1:45000 --log-level 1 \
 --password ''
+
+
+main-wallet-rpc:
+	../../build/bin/lolnero-rpc --open mainnet/test1 \
+--log-level 1 \
+--rpc-bind-port 44456 \
+--password ''
+
 
 clear-main:
 	@rm -rf mainnet/node_01
