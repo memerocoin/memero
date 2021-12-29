@@ -272,11 +272,6 @@ wallet2::~wallet2()
 {
 }
 
-bool wallet2::has_testnet_option(const boost::program_options::variables_map& vm)
-{
-  return command_line::get_arg(vm, options().testnet);
-}
-
 void wallet2::init_options(boost::program_options::options_description& desc_params)
 {
   const options opts{};

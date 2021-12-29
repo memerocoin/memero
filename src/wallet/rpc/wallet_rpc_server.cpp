@@ -2014,13 +2014,6 @@ public:
     std::unique_ptr<tools::wallet2> wal;
     try
     {
-      const bool testnet = tools::wallet2::has_testnet_option(vm);
-      if (testnet)
-      {
-        LOG_ERROR(tools::wallet_rpc_server::tr("Can't specify more than one of --testnet"));
-        return false;
-      }
-
       const auto arg_wallet_file = wallet_args::arg_wallet_file();
 
       const auto wallet_file = command_line::get_arg(vm, arg_wallet_file);

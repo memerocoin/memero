@@ -94,7 +94,6 @@ namespace tools
 
     static const char* tr(const char* str);
 
-    static bool has_testnet_option(const boost::program_options::variables_map& vm);
     static void init_options(boost::program_options::options_description& desc_params);
 
     //! Uses stdin and stdout. Returns a wallet2 and password for `wallet_file` if no errors.
