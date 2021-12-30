@@ -47,7 +47,6 @@ target_link_libraries(lolnero
   version
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${OPENSSL_LIBRARIES}
   )
 
 set_property(TARGET lolnero

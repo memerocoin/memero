@@ -29,7 +29,6 @@
 
 
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl.hpp>
 
 
 namespace epee

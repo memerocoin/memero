@@ -45,8 +45,6 @@ target_link_libraries(quick_tests
   tools_serialization
   math_ringct
   math_hash
-
-  ${OPENSSL_LIBRARIES}
 )
 
 gtest_discover_tests(

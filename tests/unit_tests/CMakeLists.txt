@@ -55,7 +55,6 @@ target_link_libraries(unit_tests_tools
   network_type 
   math_crypto
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${OPENSSL_LIBRARIES}
   GTest::gtest
   GTest::gtest_main
   OpenCL::OpenCL
@@ -83,7 +82,6 @@ target_link_libraries(unit_tests_basic
   epee_storage
   version
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${OPENSSL_LIBRARIES}
   GTest::gtest
   GTest::gtest_main
   math_ringct
@@ -138,7 +136,6 @@ target_link_libraries(unit_tests_core
   version
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${OPENSSL_LIBRARIES}
   GTest::gtest
   GTest::gtest_main
 )
@@ -158,7 +155,6 @@ target_link_libraries(unit_tests_wallet_basic
   tools_serialization
   epee_storage
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${OPENSSL_LIBRARIES}
   GTest::gtest
   GTest::gtest_main
 )
@@ -178,7 +174,6 @@ target_link_libraries(unit_tests_wallet
   wallet_api
   epee_net
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${OPENSSL_LIBRARIES}
   GTest::gtest
   GTest::gtest_main
 )

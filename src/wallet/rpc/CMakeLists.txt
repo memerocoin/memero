@@ -42,7 +42,6 @@ target_link_libraries(lolnero-rpc
   version
 
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${OPENSSL_LIBRARIES}
   )
 
 set_property(TARGET lolnero-rpc
