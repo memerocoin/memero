@@ -58,15 +58,6 @@ namespace epee
 namespace net_utils
 {
 
-namespace
-{
-	boost::asio::ssl::context& get_context(connection_basic_shared_state* state)
-	{
-		LOG_ERROR_AND_THROW_UNLESS(state != nullptr, "state shared_ptr cannot be null");
-		return state->ssl_context;
-	}
-}
-
   std::string to_string(t_connection_type type)
   {
 	  if (type == e_connection_type_NET)
@@ -123,7 +114,7 @@ connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::sha
 	m_state(std::move(state)),
 	mI( std::make_unique<connection_basic_pimpl>("peer") ),
 	strand_(GET_IO_SERVICE(sock)),
-	socket_(GET_IO_SERVICE(sock), get_context(m_state.get())),
+	socket_(GET_IO_SERVICE(sock)),
 	m_want_close_connection(false),
 	m_was_shutdown(false),
 	m_is_multithreaded(false),
@@ -132,32 +123,9 @@ connection_basic::connection_basic(boost::asio::ip::tcp::socket&& sock, std::sha
 	// add nullptr checks if removed
 	assert(m_state != nullptr); // release runtime check in get_context
 
-        socket_.next_layer() = std::move(sock);
+  socket_ = std::move(sock);
 
-	++(m_state->sock_count); // increase the global counter
-	mI->m_peer_number = m_state->sock_number.fetch_add(1); // use, and increase the generated number
-
-	std::string remote_addr_str = "?";
-	try { boost::system::error_code e; remote_addr_str = socket().remote_endpoint(e).address().to_string(); } catch(...){} ;
-
-	_note("Spawned connection #"<<mI->m_peer_number<<" to " << remote_addr_str << " currently we have sockets count:" << m_state->sock_count);
-}
-
-connection_basic::connection_basic(boost::asio::io_service &io_service, std::shared_ptr<connection_basic_shared_state> state, ssl_support_t ssl_support)
-	:
-	m_state(std::move(state)),
-	mI( std::make_unique<connection_basic_pimpl>("peer") ),
-	strand_(io_service),
-	socket_(io_service, get_context(m_state.get())),
-	m_want_close_connection(false),
-	m_was_shutdown(false),
-	m_is_multithreaded(false),
-	m_ssl_support(ssl_support)
-{
-	// add nullptr checks if removed
-	assert(m_state != nullptr); // release runtime check in get_context
-
-	++(m_state->sock_count); // increase the global counter
+  ++(m_state->sock_count); // increase the global counter
 	mI->m_peer_number = m_state->sock_number.fetch_add(1); // use, and increase the generated number
 
 	std::string remote_addr_str = "?";

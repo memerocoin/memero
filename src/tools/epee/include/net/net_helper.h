@@ -87,7 +87,6 @@ namespace net_utils
 	public:
 			blocked_mode_client() :
 				m_io_service(),
-				m_ctx(boost::asio::ssl::context::tlsv12),
 				m_socket(boost::asio::ip::tcp::socket(m_io_service)),
 				m_connector(direct_connect{}),
 				m_ssl_options(epee::net_utils::ssl_support_t::e_ssl_support_disabled),
@@ -153,7 +152,6 @@ namespace net_utils
 
 	protected:
 		boost::asio::io_service m_io_service;
-		boost::asio::ssl::context m_ctx;
 		boost::asio::ip::tcp::socket m_socket;
 		std::function<connect_func> m_connector;
 		ssl_options_t m_ssl_options;

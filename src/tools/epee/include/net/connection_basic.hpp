@@ -57,13 +57,11 @@ namespace net_utils
 	{
 		ssl_options_t ssl_options_;
 	public:
-		boost::asio::ssl::context ssl_context;
 		std::atomic<long> sock_count;
 		std::atomic<long> sock_number;
 
 		connection_basic_shared_state()
 		  : ssl_options_(ssl_support_t::e_ssl_support_disabled),
-		    ssl_context(boost::asio::ssl::context::tlsv12),
 		    sock_count(0),
 		    sock_number(0)
 		{}
@@ -107,7 +105,7 @@ class connection_basic { // not-templated base class for rapid developmet of som
     /// Strand to ensure the connection's handlers are not called concurrently.
     boost::asio::io_service::strand strand_;
     /// Socket for the connection.
-    boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket_;
+    boost::asio::ip::tcp::socket socket_;
     ssl_support_t m_ssl_support;
 
 	public:
@@ -121,7 +119,7 @@ class connection_basic { // not-templated base class for rapid developmet of som
 		connection_basic_shared_state& get_state() noexcept { return *m_state; /* verified in constructor */ }
 		connection_basic(boost::asio::io_service& io_service, std::atomic<long> &ref_sock_count, std::atomic<long> &sock_number, ssl_support_t ssl);
 
-		boost::asio::ip::tcp::socket& socket() { return socket_.next_layer(); }
+		boost::asio::ip::tcp::socket& socket() { return socket_; }
 		ssl_support_t get_ssl_support() const { return m_ssl_support; }
 		void disable_ssl() { m_ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_disabled; }
 
