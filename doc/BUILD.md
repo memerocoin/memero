@@ -46,7 +46,6 @@ libboost-system-dev
 
 sudo apt install \
 libsodium-dev \
-libssl-dev \
 rapidjson-dev
 
 git clone https://gitlab.com/lolnero/lolnero.git
