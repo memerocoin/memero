@@ -41,8 +41,8 @@ namespace rct
   constexpr size_t maxN = 64;
   constexpr size_t max_outputs = constant::BULLETPROOF_MAX_OUTPUTS;
 
-  extern std::array<rct_point, maxN*max_outputs> Hi;
-  extern std::array<rct_point, maxN*max_outputs> Gi;
+  extern std::array<crypto::ec_point, maxN*max_outputs> Hi;
+  extern std::array<crypto::ec_point, maxN*max_outputs> Gi;
 
   constexpr std::pair<size_t, size_t> log2bound(const size_t x) {
     size_t y = 1;

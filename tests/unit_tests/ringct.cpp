@@ -62,9 +62,9 @@ namespace rct {
   using ct_secret_keyV = std::vector<ct_secret_key>;
   using ct_secret_keyS = std::span<const ct_secret_key>;
 
-  inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
+  inline const crypto::ec_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const crypto::ec_point&)p; }
 
-  std::pair<rct_scalar, rct_point> skpkGen() {
+  std::pair<rct_scalar, crypto::ec_point> skpkGen() {
     const rct_scalar sk = crypto::randomScalar();
     return std::make_pair(sk, G_(sk));
   }
@@ -75,7 +75,7 @@ namespace rct {
    , const output_public_dataV pubs
    , const ct_secret_key inSk
    , const rct_scalar a
-   , const rct_point Cout
+   , const crypto::ec_point Cout
    , const size_t index
    )
   {
@@ -152,7 +152,7 @@ std::pair<ct_secret_key, output_public_data> ctskpkGen(amount_t amount) {
   const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
   const rct_scalar am = crypto::int_to_scalar(amount);
-  const rct_point bH = H_(am);
+  const crypto::ec_point bH = H_(am);
 
   return
     {
@@ -229,7 +229,7 @@ TEST(ringct, CLSAG)
 
   // Set commitment offset
   t2 = crypto::randomScalar();
-  rct_point Cout = G_(t2) + H_(u);
+  crypto::ec_point Cout = G_(t2) + H_(u);
 
   // Prepare generation inputs
   ct_secret_key insk;
@@ -314,8 +314,8 @@ TEST(ringct, CLSAG)
   // too few s elements
   rct_scalar backup_s;
   rct_scalar backup_c1;
-  rct_point backup_key;
-  rct_point backup_key_inv8;
+  crypto::ec_point backup_key;
+  crypto::ec_point backup_key_inv8;
   backup_s = clsag.s.back();
   clsag.s.pop_back();
   ASSERT_FALSE(rct::verify_clsag_signature(message,clsag,pubs,Cout));
@@ -358,7 +358,7 @@ TEST(ringct, CLSAG)
   auto clsag_unsafe = toUnsafeCLSAG(clsag);
   ASSERT_TRUE(maybeSafeCLSAG(clsag_unsafe));
 
-  rct::rct_point x;
+  crypto::ec_point x;
   ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
 
   clsag_unsafe.blinding_factor_surplus_key_image = x;
@@ -391,7 +391,7 @@ static rct::rctDataSizeChecked make_sample_simple_rct_sig(int n_inputs, const ui
     pointV destinations;
     rct_scalarV output_shared_secrets_hashed_by_index;
     rct_scalar Sk;
-    rct_point Pk;
+    crypto::ec_point Pk;
 
     for (int n = 0; n < n_inputs; ++n) {
         inamounts.push_back(input_amounts[n]);
@@ -650,14 +650,14 @@ TEST(ringct, range_proofs_accept_very_long_simple)
 
 TEST(ringct, HPow2)
 {
-  // rct_point G = G_(int_to_scalar(1));
+  // crypto::ec_point G = G_(int_to_scalar(1));
 
   // in lolnero, hashPoint uses sha3, but H is hashPoint with keccak256, so we use that H
-  rct_point H = rct::H;
+  crypto::ec_point H = rct::H;
   ASSERT_TRUE(crypto::is_safe_point(H)); // this is known to pass for the particular value G
 
-  // rct_point H_2;
-  // rct_point H_2_8 = mult8(H_2);
+  // crypto::ec_point H_2;
+  // crypto::ec_point H_2_8 = mult8(H_2);
   // ge_p2 H_p2;
   // ge_p3_to_p2(&H_p2, &H_p3);
   // ge_p1p1 H8_p1p1;
@@ -784,10 +784,10 @@ TEST(ringct, key_ostream)
 TEST(ringct, dummyCommit)
 {
   static const uint64_t amount = crypto::rand<uint64_t>();
-  const rct::rct_point z = rct::dummyCommit(amount);
-  const rct::rct_point a = rct::G_(rct::s_one);
-  const rct::rct_point b = rct::H_(crypto::int_to_scalar(amount));
-  const rct::rct_point manual = a + b;
+  const crypto::ec_point z = rct::dummyCommit(amount);
+  const crypto::ec_point a = rct::G_(rct::s_one);
+  const crypto::ec_point b = rct::H_(crypto::int_to_scalar(amount));
+  const crypto::ec_point manual = a + b;
   ASSERT_EQ(z, manual);
 }
 

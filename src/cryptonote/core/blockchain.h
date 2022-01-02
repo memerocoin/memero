@@ -475,7 +475,7 @@ namespace cryptonote
      * @param key out - the output's key
      * @param unlocked out - the output's unlocked state
      */
-    void get_output_key_mask_unlocked(const uint64_t& amount, const uint64_t& index, crypto::public_key& key, rct::rct_point& mask, bool& unlocked) const;
+    void get_output_key_mask_unlocked(const uint64_t& amount, const uint64_t& index, crypto::public_key& key, crypto::ec_point& mask, bool& unlocked) const;
 
     /**
      * @brief gets per block distribution of outputs of a given amount

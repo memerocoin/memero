@@ -108,7 +108,7 @@ namespace rct {
    const crypto::hash message
    , const clsag_unsafe sig
    , const output_public_dataS decoys
-   , const rct_point pseudo_input_commit
+   , const crypto::ec_point pseudo_input_commit
    )
   {
     const auto maybeClsag = consensus::rule_10_ring_signature_should_not_contain_invalid_data(sig);
@@ -230,7 +230,7 @@ namespace rct {
     const uint64_t amount = rct::decode_amount_by_hashed_ecdh_shared_secret
       (rv.ecdh_encrypted_data[output_index].masked_amount, ecdh_shared_secret_hashed_by_index);
 
-    const rct_point C = rv.output_commits[output_index].commit;
+    const crypto::ec_point C = rv.output_commits[output_index].commit;
 
     if (C != commit(amount, blinding_factor)) {
       LOG_ERROR_AND_THROW("warning, amount decoded incorrectly, will be unable to spend");

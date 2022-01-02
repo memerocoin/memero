@@ -84,8 +84,8 @@ TEST(quick_bulletproofs, pick_amount_size_1_to_16)
 // struct Bulletproof
 // {
 //   rct::pointV commits;
-//   rct::rct_point A, S;
-//   rct::rct_point T1, T2;
+//   crypto::ec_point A, S;
+//   crypto::ec_point T1, T2;
 //   rct::rct_scalar taux, mu;
 //   LR_V LR;
 //   rct::rct_scalar a, b, t;

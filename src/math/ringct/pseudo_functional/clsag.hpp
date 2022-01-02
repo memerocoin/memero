@@ -37,9 +37,9 @@ namespace rct {
 
   crypto::ec_scalar hash_clsag_data_with_key
   (
-   const rct_point signer_key_image
-   , const rct_point blinding_factor_surplus_key_image
-   , const rct_point pseudo_input_commit
+   const crypto::ec_point signer_key_image
+   , const crypto::ec_point blinding_factor_surplus_key_image
+   , const crypto::ec_point pseudo_input_commit
    , const output_public_dataS decoys
    , const std::string_view hash_key
    );
@@ -49,6 +49,6 @@ namespace rct {
    const crypto::hash message
    , const clsag sig
    , const output_public_dataS decoys
-   , const rct_point pseudo_input_commit
+   , const crypto::ec_point pseudo_input_commit
    );
 }

@@ -57,16 +57,16 @@
 namespace rct
 {
 
-rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b);
+crypto::ec_point vector_exponent(const rct_scalarS a, const rct_scalarS b);
 
 const rct_scalarV twoN = vector_powers(rct::s_two, maxN);
 
-std::array<rct_point, maxN*max_outputs> Hi;
-std::array<rct_point, maxN*max_outputs> Gi;
+std::array<crypto::ec_point, maxN*max_outputs> Hi;
+std::array<crypto::ec_point, maxN*max_outputs> Gi;
 
 const auto multiexp = dummy;
 
-rct_point get_exponent(const rct_point base, size_t idx)
+crypto::ec_point get_exponent(const crypto::ec_point base, size_t idx)
 {
   constexpr std::string_view domain_separator = config::HASH_KEY_BULLETPROOF_EXPONENT;
   const std::string hashed =
@@ -74,7 +74,7 @@ rct_point get_exponent(const rct_point base, size_t idx)
     + std::string(domain_separator)
     + tools::get_varint_data(idx);
 
-  rct_point e = crypto::hash_to_point_via_field
+  crypto::ec_point e = crypto::hash_to_point_via_field
     ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
 
   LOG_ERROR_AND_THROW_IF((e == crypto::identity), "Invalid exponent");
@@ -116,7 +116,7 @@ void init_exponents()
 
 
 /* Given two rct_scalar arrays, construct a vector commitment */
-rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
+crypto::ec_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
   LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*max_outputs, "Incompatible sizes of a and maxN");
@@ -144,12 +144,12 @@ rct_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
 }
 
 /* Compute a custom vector-scalar commitment */
-rct_point cross_vector_exponent
+crypto::ec_point cross_vector_exponent
 (
  const size_t size
- , const std::span<rct_point> A
+ , const std::span<crypto::ec_point> A
  , const size_t Ao
- , const std::span<rct_point> B
+ , const std::span<crypto::ec_point> B
  , const size_t Bo
  , const rct_scalarS a
  , const size_t ao
@@ -215,7 +215,7 @@ pointV hadamard_fold
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
   const size_t sz = v.size() / 2;
-  std::vector<rct_point> out(sz);
+  std::vector<crypto::ec_point> out(sz);
 
   std::generate
     (
@@ -307,13 +307,13 @@ try_again:
 
   // PAPER LINES 43-44
   const rct_scalar alpha = crypto::randomScalar();
-  const rct_point A = vector_exponent(aL, aR) + G_(alpha);
+  const crypto::ec_point A = vector_exponent(aL, aR) + G_(alpha);
 
   // PAPER LINES 45-47
   const rct_scalarV sL = crypto::randomScalars(MN);
   const rct_scalarV sR = crypto::randomScalars(MN);
   const rct_scalar rho = crypto::randomScalar();
-  const rct_point S = vector_exponent(sL, sR) + G_(rho);
+  const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
 
   // PAPER LINES 48-50
   const rct_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(A), to_inv8(S)});
@@ -366,8 +366,8 @@ try_again:
   const rct_scalar tau1 = crypto::randomScalar();
   const rct_scalar tau2 = crypto::randomScalar();
 
-  const rct_point T1 = G_(tau1) + H_(t1);
-  const rct_point T2 = G_(tau2) + H_(t2);
+  const crypto::ec_point T1 = G_(tau1) + H_(t1);
+  const crypto::ec_point T2 = G_(tau2) + H_(t2);
 
   // PAPER LINES 54-56
   const rct_scalar x = hash_carry = hash_dataV_to_scalar
@@ -417,8 +417,8 @@ try_again:
 
   // These are used in the inner product rounds
   size_t nprime = MN;
-  std::vector<rct_point> Gprime(MN);
-  std::vector<rct_point> Hprime(MN);
+  std::vector<crypto::ec_point> Gprime(MN);
+  std::vector<crypto::ec_point> Hprime(MN);
   rct_scalarV aprime(MN);
   rct_scalarV bprime(MN);
   const rct_scalar yinv = invert(y);

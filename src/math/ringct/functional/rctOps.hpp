@@ -47,18 +47,18 @@ namespace rct {
   constexpr rct_scalar s_inv_eight = INV_EIGHT;
   constexpr rct_scalar s_minus_inv_eight = MINUS_INV_EIGHT;
 
-  rct_point G_(const rct_scalar a);
-  rct_point H_(const rct_scalar a);
+  crypto::ec_point G_(const rct_scalar a);
+  crypto::ec_point H_(const rct_scalar a);
 
-  rct::rct_point sum(const pointS A);
+  crypto::ec_point sum(const pointS A);
 
 
   // ct
-  rct_point commit(const amount_t amount, const crypto::ec_scalar mask);
-  rct_point dummyCommit(const amount_t amount);
+  crypto::ec_point commit(const amount_t amount, const crypto::ec_scalar mask);
+  crypto::ec_point dummyCommit(const amount_t amount);
 
-  inv8 to_inv8(const rct_point x);
-  std::optional<rct_point> maybe_from_inv8(const inv8 x);
+  inv8 to_inv8(const crypto::ec_point x);
+  std::optional<crypto::ec_point> maybe_from_inv8(const inv8 x);
 
 
   // hash

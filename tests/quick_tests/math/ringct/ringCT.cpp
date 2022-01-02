@@ -81,7 +81,7 @@ rctInputData randomRctInputData() {
      }
      );
 
-  const rct_point real_input_commit = commit(amount, signer_blinding_factor);
+  const crypto::ec_point real_input_commit = commit(amount, signer_blinding_factor);
   decoys[index_in_decoys] = {to_pk(s2sk(signer_sk)), real_input_commit};
 
   return {

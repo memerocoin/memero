@@ -509,7 +509,7 @@ std::pair<type::tx::pending_tx, cryptonote::transaction> transfer_selected_rct
   LOG_PRINT_L2("preparing outputs");
   size_t i = 0, out_index = 0;
   std::vector<cryptonote::tx_source_entry> sources;
-  std::unordered_set<rct::rct_point> used_L;
+  std::unordered_set<crypto::ec_point> used_L;
   for(size_t idx: selected_transfers)
   {
     sources.resize(sources.size()+1);

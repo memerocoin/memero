@@ -1872,7 +1872,7 @@ bool Blockchain::get_tx_outputs(const COMMAND_RPC_GET_OUTPUTS_BIN::request& req,
   return true;
 }
 //------------------------------------------------------------------
-void Blockchain::get_output_key_mask_unlocked(const uint64_t& amount, const uint64_t& index, crypto::public_key& key, rct::rct_point& mask, bool& unlocked) const
+void Blockchain::get_output_key_mask_unlocked(const uint64_t& amount, const uint64_t& index, crypto::public_key& key, crypto::ec_point& mask, bool& unlocked) const
 {
   const auto o_data = m_db->get_output_key(amount, index);
   key = o_data.pubkey;
@@ -2599,7 +2599,7 @@ bool Blockchain::check_ringct_input
       m_output_keys(output_keys), m_bch(bch)
     {
     }
-    bool handle_output(uint64_t unlock_height, const crypto::public_key &pubkey, const rct::rct_point &commitment)
+    bool handle_output(uint64_t unlock_height, const crypto::public_key &pubkey, const crypto::ec_point &commitment)
     {
       //check tx unlock time
       if (!m_bch.is_tx_spendtime_unlocked(unlock_height))

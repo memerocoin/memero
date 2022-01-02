@@ -49,15 +49,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace rct {
 
-  rct_point G_(const rct_scalar a) {
+  crypto::ec_point G_(const rct_scalar a) {
     return crypto::multBase(a);
   }
 
-  rct_point H_(const rct_scalar a) {
+  crypto::ec_point H_(const rct_scalar a) {
     return H ^ a;
   }
 
-  rct::rct_point sum(const pointS A) {
+  crypto::ec_point sum(const pointS A) {
     return std::reduce
       (
        A.begin()
@@ -66,24 +66,24 @@ namespace rct {
        );
   }
 
-  inv8 to_inv8(const rct_point x) {
+  inv8 to_inv8(const crypto::ec_point x) {
     return x ^ s_inv_eight;
   }
 
-  std::optional<rct_point> maybe_from_inv8(const inv8 x) {
+  std::optional<crypto::ec_point> maybe_from_inv8(const inv8 x) {
     const auto maybeSafeInv8 = maybeSafePoint(x);
     return
       maybeSafeInv8
-      ? std::make_optional<rct_point>(mult8(*maybeSafeInv8))
+      ? std::make_optional<crypto::ec_point>(mult8(*maybeSafeInv8))
       : std::nullopt;
   }
 
   // ct
-  rct_point commit(const amount_t amount, const crypto::ec_scalar mask) {
+  crypto::ec_point commit(const amount_t amount, const crypto::ec_scalar mask) {
     return G_(mask) + H_(crypto::int_to_scalar(amount));
   }
 
-  rct_point dummyCommit(const amount_t amount) {
+  crypto::ec_point dummyCommit(const amount_t amount) {
     return commit(amount, s_one);
   }
 

@@ -67,7 +67,7 @@ namespace rct {
   using ct_secret_keyV = std::vector<ct_secret_key>;
   using ct_secret_keyS = std::span<const ct_secret_key>;
 
-  std::pair<rct_scalar, rct_point> skpkGen() {
+  std::pair<rct_scalar, crypto::ec_point> skpkGen() {
     const rct_scalar sk = crypto::randomScalar();
     return std::make_pair(sk, G_(sk));
   }
@@ -155,7 +155,7 @@ std::vector<rct::rct_scalarV> rct_scalarMInit(size_t rows, size_t cols) {
   return rv;
 }
 
-rct::rct_point pkGen() {
+crypto::ec_point pkGen() {
   return rct::skpkGen().second;
 }
 
@@ -166,7 +166,7 @@ std::pair<ct_secret_key, rct::output_public_data> ctskpkGen(amount_t amount) {
   const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
   const rct_scalar am = int_to_scalar(amount);
-  const rct_point bH = H_(am);
+  const crypto::ec_point bH = H_(am);
 
   return
     {
@@ -501,7 +501,7 @@ TEST(Serialization, serializes_ringct_types)
   output_shared_secrets_hashed_by_index.push_back(rct::hash_to_scalar({}));
   rct::pointV destinations;
   rct::rct_scalar Sk;
-  rct::rct_point Pk;
+  crypto::ec_point Pk;
   std::tie(Sk, Pk) = rct::skpkGen();
   destinations.push_back(Pk);
   //add output for 12500

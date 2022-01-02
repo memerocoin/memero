@@ -885,7 +885,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::rc
 {
   dest.StartObject();
 
-  std::vector<rct::rct_point> masks;
+  std::vector<crypto::ec_point> masks;
   masks.reserve(sig.output_commits.size());
   std::transform(sig.output_commits.begin(), sig.output_commits.end(), std::back_inserter(masks),
                 [] (const auto & key) { return key.commit; } );

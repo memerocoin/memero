@@ -97,7 +97,7 @@ namespace rct {
     return {output_blinding_factors_sum, output_commits, proof};
   }
 
-  std::vector<std::pair<rct_scalar, rct_point>>
+  std::vector<std::pair<rct_scalar, crypto::ec_point>>
   generate_matching_input_commits(const rct_scalar match, const std::span<const amount_t> xs) {
     if (xs.empty()) return {};
 
@@ -120,14 +120,14 @@ namespace rct {
     bs.push_back(last);
 
 
-    std::vector<std::pair<rct_scalar, rct_point>> r;
+    std::vector<std::pair<rct_scalar, crypto::ec_point>> r;
     std::transform
       (
        bs.begin()
        , bs.end()
        , xs.begin()
        , std::back_inserter(r)
-       , [](const auto& b, const auto& x) -> std::pair<rct_scalar, rct_point> {
+       , [](const auto& b, const auto& x) -> std::pair<rct_scalar, crypto::ec_point> {
          return {b, commit(x, b)};
        }
        );
@@ -212,7 +212,7 @@ namespace rct {
        , [](const auto& x) { return x.amount; }
        );
 
-    const std::vector<std::pair<rct_scalar, rct_point>> pseudo_inputs =
+    const std::vector<std::pair<rct_scalar, crypto::ec_point>> pseudo_inputs =
       generate_matching_input_commits(output_blinding_factors_sum, input_amounts);
 
 

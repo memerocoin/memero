@@ -74,7 +74,7 @@ private:
    std::vector<std::vector<wallet::logic::type::get_tx_outputs_entry>> &outs
    , uint64_t global_index
    , const crypto::public_key& tx_public_key
-   , const rct::rct_point& mask
+   , const crypto::ec_point& mask
    , uint64_t real_index
    , bool unlocked
    ) const;

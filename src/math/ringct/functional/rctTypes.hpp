@@ -40,11 +40,10 @@
 
 
 namespace rct {
-  using rct_point = crypto::ec_point;
   using rct_scalar = crypto::ec_scalar;
 
   using inv8 = crypto::ec_point_unsafe;
-  using reconstructed_point = rct::rct_point;
+  using reconstructed_point = crypto::ec_point;
 
 
   using pointV = std::vector<crypto::ec_point>;
@@ -59,12 +58,12 @@ namespace rct {
 
 
   struct output_public_data {
-    rct_point output_public_key;
-    rct_point commit;
+    crypto::ec_point output_public_key;
+    crypto::ec_point commit;
   };
 
   struct output_commit {
-    rct_point commit;
+    crypto::ec_point commit;
   };
 
   using output_public_dataV = std::vector<output_public_data>;
@@ -99,8 +98,8 @@ namespace rct {
   {
     rct_scalarV s; // scalars
     rct_scalar c1;
-    rct_point signer_key_image; // signing key image
-    rct_point blinding_factor_surplus_key_image; // commitment key image
+    crypto::ec_point signer_key_image; // signing key image
+    crypto::ec_point blinding_factor_surplus_key_image; // commitment key image
   };
 
   std::optional<clsag> maybeSafeCLSAG(const clsag_unsafe clsag);
@@ -132,12 +131,12 @@ namespace rct {
     END_SERIALIZE()
   };
 
-  using LR_V = std::vector<std::pair<rct_point, rct_point>>;
+  using LR_V = std::vector<std::pair<crypto::ec_point, crypto::ec_point>>;
 
   struct Bulletproof
   {
-    rct::rct_point A, S;
-    rct::rct_point T1, T2;
+    crypto::ec_point A, S;
+    crypto::ec_point T1, T2;
     rct::rct_scalar taux, mu;
     LR_V LR;
     rct::rct_scalar a, b, t;
@@ -146,7 +145,7 @@ namespace rct {
   std::optional<LR_V> zipLR(const pointV L, const pointV R);
 
   std::pair<pointV, pointV>
-  splitLR(const std::span<const std::pair<rct_point, rct_point>> LR);
+  splitLR(const std::span<const std::pair<crypto::ec_point, crypto::ec_point>> LR);
   
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
   Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof);
@@ -345,9 +344,9 @@ namespace rct {
 
 namespace std
 {
-  template<> struct hash<rct::rct_point>
+  template<> struct hash<crypto::ec_point>
   {
-    std::size_t operator()(const rct::rct_point& x) const noexcept
+    std::size_t operator()(const crypto::ec_point& x) const noexcept
     {
       boost::hash<std::array<uint8_t,32>> array_hash;
       return array_hash(x.data);
@@ -355,7 +354,7 @@ namespace std
   };
 }
 
-BLOB_SERIALIZER(rct::rct_point);
+BLOB_SERIALIZER(crypto::ec_point);
 BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::output_public_data);
 BLOB_SERIALIZER(rct::output_commit);

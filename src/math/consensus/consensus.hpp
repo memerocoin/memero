@@ -55,7 +55,7 @@ namespace consensus {
    const crypto::hash message
    , const clsag sig
    , const output_public_dataS decoys
-   , const rct_point pseudo_input_commit
+   , const crypto::ec_point pseudo_input_commit
    );
 
 

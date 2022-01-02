@@ -47,7 +47,7 @@ using namespace rct;
 
 namespace rct {
 
-  std::pair<rct_scalar, rct_point> skpkGen() {
+  std::pair<rct_scalar, crypto::ec_point> skpkGen() {
     const rct_scalar sk = crypto::randomScalar();
     return std::make_pair(sk, G_(sk));
   }
@@ -82,7 +82,7 @@ inline const public_key &unsafe_h2pk(const hash &x)            noexcept { return
 }
 
 namespace rct {
-inline const rct::rct_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const rct::rct_point&)p; }
+inline const crypto::ec_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const crypto::ec_point&)p; }
 }
 
 TEST(bulletproofs, valid_zero)
@@ -176,7 +176,7 @@ TEST(bulletproofs, invalid_torsion)
   ASSERT_TRUE(rct::bulletproof_VERIFY(proof));
   for (const auto &xs: torsion_elements)
   {
-    rct::rct_point x;
+    crypto::ec_point x;
     ASSERT_TRUE(epee::string_tools::hex_to_pod(xs, x));
     ASSERT_FALSE(crypto::is_safe_point(x));
     for (auto &k: proof.commits)

@@ -998,7 +998,7 @@ uint64_t BlockchainLMDB::add_output
  const tx_out& tx_output,
  const uint64_t& local_index,
  const uint64_t unlock_height,
- const std::optional<rct::rct_point> commitment
+ const std::optional<crypto::ec_point> commitment
  )
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);

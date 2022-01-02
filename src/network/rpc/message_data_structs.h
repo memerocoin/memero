@@ -118,7 +118,7 @@ namespace rpc
   struct output_key_mask_unlocked
   {
     crypto::public_key key;
-    rct::rct_point mask;
+    crypto::ec_point mask;
     bool unlocked;
   };
 

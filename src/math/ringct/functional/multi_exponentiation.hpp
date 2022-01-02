@@ -25,7 +25,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace rct
 {
-  using MultiexpData = std::pair<const rct_scalar, const rct_point>;
+  using MultiexpData = std::pair<const rct_scalar, const crypto::ec_point>;
 
-  rct::rct_point dummy(const std::span<const MultiexpData> data) noexcept;
+  crypto::ec_point dummy(const std::span<const MultiexpData> data) noexcept;
 }

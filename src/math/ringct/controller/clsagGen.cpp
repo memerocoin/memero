@@ -61,7 +61,7 @@ namespace rct {
     , const rct_scalar signer_sk
     , const rct_scalar signer_blinding_factor_surplus
     , const size_t index_in_decoys
-    , const rct_point pseudo_input_commit
+    , const crypto::ec_point pseudo_input_commit
     , const output_public_dataS decoys
     , const pointV decoy_commit_surplus
     )
@@ -70,20 +70,20 @@ namespace rct {
     LOG_ERROR_AND_THROW_UNLESS
       (
        n == decoy_commit_surplus.size()
-       , "Signing and commitment rct_point vector sizes must match!"
+       , "Signing and commitment crypto::ec_point vector sizes must match!"
        );
 
     LOG_ERROR_AND_THROW_UNLESS(index_in_decoys < n, "Signing index out of range!");
 
     // mages images
-    const rct_point signer_pk_hash =
+    const crypto::ec_point signer_pk_hash =
       crypto::hash_to_point_via_field(decoys[index_in_decoys].output_public_key);
 
-    const rct_point sig_signer_key_image = signer_pk_hash ^ signer_sk;
-    const rct_point D = signer_pk_hash ^ signer_blinding_factor_surplus;
+    const crypto::ec_point sig_signer_key_image = signer_pk_hash ^ signer_sk;
+    const crypto::ec_point D = signer_pk_hash ^ signer_blinding_factor_surplus;
 
     // Offset key image
-    const rct_point sig_blinding_factor_surplus_key_image = D;
+    const crypto::ec_point sig_blinding_factor_surplus_key_image = D;
 
     const rct_scalar mu_P = hash_clsag_data_with_key
     (
@@ -155,7 +155,7 @@ namespace rct {
       const auto sk = crypto::randomScalar();
 
       // Compute L
-      const rct_point L = sum
+      const crypto::ec_point L = sum
         (
          std::array
          {
@@ -166,8 +166,8 @@ namespace rct {
          );
 
       // Compute R
-      const rct_point A = crypto::hash_to_point_via_field(decoys[i].output_public_key);
-      const rct_point R = sum
+      const crypto::ec_point A = crypto::hash_to_point_via_field(decoys[i].output_public_key);
+      const crypto::ec_point R = sum
         (
          std::array
          {
@@ -209,7 +209,7 @@ namespace rct {
    , const rct_scalar signer_blinding_factor
    , const size_t index_in_decoys
    , const rct_scalar pseudo_input_blinding_factor
-   , const rct_point pseudo_input_commit
+   , const crypto::ec_point pseudo_input_commit
    , const output_public_dataV decoys
    )
   {

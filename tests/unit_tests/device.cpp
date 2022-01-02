@@ -62,7 +62,7 @@ TEST(device, ops)
   hw::core::device_default dev;
   std::optional<crypto::ecdh_shared_secret> derd, maybeDer;
   rct::rct_scalar sk;
-  rct::rct_point pk;
+  crypto::ec_point pk;
   crypto::secret_key sk0, sk1;
   crypto::public_key pk0, pk1;
 
@@ -86,7 +86,7 @@ TEST(device, ecdh32)
 
   hw::core::device_default dev;
   rct::ecdh_encrypted_data tuple, tuple2;
-  rct::rct_point key = crypto::randomScalar();
+  crypto::ec_point key = crypto::randomScalar();
   tuple.mask = crypto::randomScalar();
   tuple.amount = crypto::randomScalar();
   tuple2 = tuple;

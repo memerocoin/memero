@@ -53,28 +53,28 @@ namespace rct {
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof) {
     const auto maybe_proof_A = maybe_from_inv8(proof.A);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_A, {}, "Bad proof.A");
-    const rct::rct_point proof_A = *maybe_proof_A;
+    const crypto::ec_point proof_A = *maybe_proof_A;
 
     const auto maybe_proof_S = maybe_from_inv8(proof.S);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_S, {}, "Bad proof.S");
-    const rct::rct_point proof_S = *maybe_proof_S;
+    const crypto::ec_point proof_S = *maybe_proof_S;
 
     const auto maybe_proof_T1 = maybe_from_inv8(proof.T1);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T1, {}, "Bad proof.T1");
-    const rct::rct_point proof_T1 = *maybe_proof_T1;
+    const crypto::ec_point proof_T1 = *maybe_proof_T1;
 
     const auto maybe_proof_T2 = maybe_from_inv8(proof.T2);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_proof_T2, {}, "Bad proof.T2");
-    const rct::rct_point proof_T2 = *maybe_proof_T2;
+    const crypto::ec_point proof_T2 = *maybe_proof_T2;
 
-    std::vector<rct::rct_point> proof_L;
+    std::vector<crypto::ec_point> proof_L;
     for (const auto& x: proof.L) {
       const auto y = maybe_from_inv8(x);
       LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.L");
       proof_L.push_back(*y);
     }
 
-    std::vector<rct::rct_point> proof_R;
+    std::vector<crypto::ec_point> proof_R;
     for (const auto& x: proof.R) {
       const auto y = maybe_from_inv8(x);
       LOG_ERROR_AND_RETURN_UNLESS(y, {}, "Bad proof.R");
@@ -142,8 +142,8 @@ namespace rct {
     // rct_scalarV s; // scalars
     // rct_scalar c1;
 
-    // rct_point I; // signing key image
-    // rct_point D; // commitment key image
+    // crypto::ec_point I; // signing key image
+    // crypto::ec_point D; // commitment key image
 
     rct_scalarV clsag_s;
     for (const auto& x: clsag.s) {
@@ -163,7 +163,7 @@ namespace rct {
        , "Bad clsag.blinding_factor_surplus_key_image"
        );
 
-    const rct::rct_point clsag_blinding_factor_surplus_key_image =
+    const crypto::ec_point clsag_blinding_factor_surplus_key_image =
       *maybe_clsag_blinding_factor_surplus_key_image;
 
     return {{
@@ -207,7 +207,7 @@ namespace rct {
       return {};
     }
 
-    std::vector<std::pair<rct_point, rct_point>> LR;
+    std::vector<std::pair<crypto::ec_point, crypto::ec_point>> LR;
 
     std::transform
       (
@@ -222,7 +222,7 @@ namespace rct {
   }
 
   std::pair<pointV, pointV>
-  splitLR(const std::span<const std::pair<rct_point, rct_point>> LR) {
+  splitLR(const std::span<const std::pair<crypto::ec_point, crypto::ec_point>> LR) {
     pointV L;
     pointV R;
 

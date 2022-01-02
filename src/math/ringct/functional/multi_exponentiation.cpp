@@ -26,14 +26,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace rct
 {
 
-rct::rct_point dummy(const std::span<const MultiexpData> data) noexcept
+crypto::ec_point dummy(const std::span<const MultiexpData> data) noexcept
 {
   return std::transform_reduce
     (
      data.begin()
      , data.end()
      , crypto::identity
-     , std::plus<rct_point>()
+     , std::plus<crypto::ec_point>()
      , [](const auto& x) {
        return std::apply(crypto::mult, x);
      }

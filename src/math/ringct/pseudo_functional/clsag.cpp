@@ -48,9 +48,9 @@ namespace rct {
 
   crypto::ec_scalar hash_clsag_data_with_key
   (
-   const rct_point signer_key_image
-   , const rct_point blinding_factor_surplus_key_image
-   , const rct_point pseudo_input_commit
+   const crypto::ec_point signer_key_image
+   , const crypto::ec_point blinding_factor_surplus_key_image
+   , const crypto::ec_point pseudo_input_commit
    , const output_public_dataS decoys
    , const std::string_view hash_key
    )
@@ -92,7 +92,7 @@ namespace rct {
     const crypto::hash message
     , const clsag sig
     , const output_public_dataS decoys
-    , const rct_point pseudo_input_commit
+    , const crypto::ec_point pseudo_input_commit
     )
   {
     const size_t n = decoys.size();
@@ -160,12 +160,12 @@ namespace rct {
       const rct_scalar c_p = mu_P * c;
       const rct_scalar c_c = mu_C * c;
 
-      const rct_point decoy_commit = decoys[i].commit;
+      const crypto::ec_point decoy_commit = decoys[i].commit;
 
-      const rct_point decoy_commit_surplus = decoy_commit - pseudo_input_commit;
+      const crypto::ec_point decoy_commit_surplus = decoy_commit - pseudo_input_commit;
 
       // Compute L
-      const rct_point L = sum
+      const crypto::ec_point L = sum
         (
           std::array
           {
@@ -176,9 +176,9 @@ namespace rct {
           );
 
       // Compute R
-      const rct_point k = crypto::hash_to_point_via_field(decoys[i].output_public_key);
+      const crypto::ec_point k = crypto::hash_to_point_via_field(decoys[i].output_public_key);
 
-      const rct_point R = sum
+      const crypto::ec_point R = sum
         (
           std::array
           {

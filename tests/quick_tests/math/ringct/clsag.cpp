@@ -53,7 +53,7 @@ struct clsagInput
  rct_scalar signer_blinding_factor;
  size_t index_in_decoys;
  rct_scalar pseudo_input_blinding_factor;
- rct_point pseudo_input_commit;
+ crypto::ec_point pseudo_input_commit;
  output_public_dataV decoys;
 }; 
 
@@ -65,8 +65,8 @@ clsagInput randomClsagInput() {
   const rct_scalar pseudo_input_blinding_factor = randomScalar();
 
   const amount_t some_amount = randomAmount();
-  const rct_point pseudo_input_commit = commit(some_amount, pseudo_input_blinding_factor);
-  const rct_point real_input_commit = commit(some_amount, signer_blinding_factor);
+  const crypto::ec_point pseudo_input_commit = commit(some_amount, pseudo_input_blinding_factor);
+  const crypto::ec_point real_input_commit = commit(some_amount, signer_blinding_factor);
 
   output_public_dataV decoys;
   std::generate_n
@@ -212,8 +212,8 @@ TEST(quick_clsag, wrong_pseudo_input_commit)
 // {
 //   rct_scalarV s; // scalars
 //   rct_scalar c1;
-//   rct_point signer_key_image; // signing key image
-//   rct_point blinding_factor_surplus_key_image; // commitment key image
+//   crypto::ec_point signer_key_image; // signing key image
+//   crypto::ec_point blinding_factor_surplus_key_image; // commitment key image
 // };
 
 TEST(quick_clsag, wrong_sig_c1)
