@@ -210,7 +210,7 @@ TEST(quick_clsag, wrong_pseudo_input_commit)
 
 // struct clsag
 // {
-//   rct_scalarV s; // scalars
+//   scalarV s; // scalars
 //   rct_scalar c1;
 //   crypto::ec_point signer_key_image; // signing key image
 //   crypto::ec_point blinding_factor_surplus_key_image; // commitment key image

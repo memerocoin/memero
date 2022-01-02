@@ -46,7 +46,7 @@ namespace rct
 {
 
   /* Given two rct_scalar arrays, construct the inner product */
-  rct::rct_scalar inner_product(const rct_scalarS a, const rct_scalarS b)
+  rct::rct_scalar inner_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
     return std::transform_reduce
@@ -61,9 +61,9 @@ namespace rct
   }
 
   /* Given a rct_scalar, construct a vector of powers */
-  rct::rct_scalarV vector_powers(const rct::rct_scalar x, const size_t n)
+  rct::scalarV vector_powers(const rct::rct_scalar x, const size_t n)
   {
-    rct_scalarV res(n);
+    scalarV res(n);
 
     std::generate(res.begin(), res.end(), [accum = rct::s_one, x] () mutable {
       const auto current = accum;
@@ -83,10 +83,10 @@ namespace rct
   }
 
   /* Given two rct_scalar arrays, construct the Hadamard product */
-  rct::rct_scalarV hadamard(const rct_scalarS a, const rct_scalarS b)
+  rct::scalarV hadamard(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-    rct::rct_scalarV res(a.size());
+    rct::scalarV res(a.size());
     std::transform
       (
        a.begin()
@@ -100,10 +100,10 @@ namespace rct
   }
 
   /* Add two vectors */
-  rct::rct_scalarV vector_addV(const rct_scalarS a, const rct_scalarS b)
+  rct::scalarV vector_addV(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-    rct::rct_scalarV res(a.size());
+    rct::scalarV res(a.size());
     std::transform
       (
       a.begin()
@@ -117,9 +117,9 @@ namespace rct
   }
 
   /* Add a rct_scalar to all elements of a vector */
-  rct::rct_scalarV vector_add(const rct_scalarS a, const rct::rct_scalar b)
+  rct::scalarV vector_add(const scalarS a, const rct::rct_scalar b)
   {
-    rct::rct_scalarV res(a.size());
+    rct::scalarV res(a.size());
     std::transform
       (
       a.begin()
@@ -132,9 +132,9 @@ namespace rct
   }
 
   /* Subtract a rct_scalar from all elements of a vector */
-  rct::rct_scalarV vector_subtract(const rct_scalarS a, const rct::rct_scalar b)
+  rct::scalarV vector_subtract(const scalarS a, const rct::rct_scalar b)
   {
-    rct::rct_scalarV res(a.size());
+    rct::scalarV res(a.size());
     std::transform
       (
       a.begin()
@@ -147,9 +147,9 @@ namespace rct
   }
 
   /* Multiply a rct_scalar and a vector */
-  rct::rct_scalarV vector_mult(const rct_scalarS a, const rct::rct_scalar b)
+  rct::scalarV vector_mult(const scalarS a, const rct::rct_scalar b)
   {
-    rct::rct_scalarV res(a.size());
+    rct::scalarV res(a.size());
     std::transform
       (
       a.begin()
@@ -161,9 +161,9 @@ namespace rct
     return res;
   }
 
-  rct::rct_scalarV invertV(const rct::rct_scalarV v)
+  rct::scalarV invertV(const rct::scalarV v)
   {
-    rct_scalarV r(v.size());
+    scalarV r(v.size());
 
     std::transform
       (

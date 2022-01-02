@@ -101,7 +101,7 @@ namespace rct {
   generate_matching_input_commits(const rct_scalar match, const std::span<const amount_t> xs) {
     if (xs.empty()) return {};
 
-    rct_scalarV bs;
+    scalarV bs;
     std::generate_n
       (
        std::back_inserter(bs)

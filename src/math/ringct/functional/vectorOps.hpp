@@ -38,28 +38,28 @@
 namespace rct
 {
   /* Given two rct_scalar arrays, construct the inner product */
-  rct::rct_scalar inner_product(const rct_scalarS a, const rct_scalarS b);
+  rct::rct_scalar inner_product(const scalarS a, const scalarS b);
 
   /* Given a rct_scalar, construct a vector of powers */
-  rct::rct_scalarV vector_powers(const rct::rct_scalar x, const size_t n);
+  rct::scalarV vector_powers(const rct::rct_scalar x, const size_t n);
 
   /* Given a rct_scalar, return the sum of its powers from 0 to n-1 */
   rct::rct_scalar vector_power_sum(const rct::rct_scalar x, const size_t n);
 
   /* Given two rct_scalar arrays, construct the Hadamard product */
-  rct::rct_scalarV hadamard(const rct_scalarS a, const rct_scalarS b);
+  rct::scalarV hadamard(const scalarS a, const scalarS b);
 
   /* Add two vectors */
-  rct::rct_scalarV vector_addV(const rct_scalarS a, const rct_scalarS b);
+  rct::scalarV vector_addV(const scalarS a, const scalarS b);
 
   /* Add a rct_scalar to all elements of a vector */
-  rct::rct_scalarV vector_add(const rct_scalarS a, const rct::rct_scalar b);
+  rct::scalarV vector_add(const scalarS a, const rct::rct_scalar b);
 
   /* Subtract a rct_scalar from all elements of a vector */
-  rct::rct_scalarV vector_subtract(const rct_scalarS a, const rct::rct_scalar b);
+  rct::scalarV vector_subtract(const scalarS a, const rct::rct_scalar b);
 
   /* Multiply a rct_scalar and a vector */
-  rct::rct_scalarV vector_mult(const rct_scalarS a, const rct::rct_scalar b);
+  rct::scalarV vector_mult(const scalarS a, const rct::rct_scalar b);
 
-  rct::rct_scalarV invertV(const rct::rct_scalarV v);
+  rct::scalarV invertV(const rct::scalarV v);
 }

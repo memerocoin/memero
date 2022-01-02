@@ -49,8 +49,8 @@ namespace rct {
   using pointV = std::vector<crypto::ec_point>;
   using pointS = std::span<const crypto::ec_point>;
 
-  using rct_scalarV = std::vector<crypto::ec_scalar>;
-  using rct_scalarS = std::span<const crypto::ec_scalar>;
+  using scalarV = std::vector<crypto::ec_scalar>;
+  using scalarS = std::span<const crypto::ec_scalar>;
 
   using inv8V = std::vector<inv8>;
 
@@ -96,7 +96,7 @@ namespace rct {
 
   struct clsag
   {
-    rct_scalarV s; // scalars
+    scalarV s; // scalars
     rct_scalar c1;
     crypto::ec_point signer_key_image; // signing key image
     crypto::ec_point blinding_factor_surplus_key_image; // commitment key image

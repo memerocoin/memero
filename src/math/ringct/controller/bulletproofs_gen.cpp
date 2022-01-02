@@ -57,9 +57,9 @@
 namespace rct
 {
 
-crypto::ec_point vector_exponent(const rct_scalarS a, const rct_scalarS b);
+crypto::ec_point vector_exponent(const scalarS a, const scalarS b);
 
-const rct_scalarV twoN = vector_powers(rct::s_two, maxN);
+const scalarV twoN = vector_powers(rct::s_two, maxN);
 
 std::array<crypto::ec_point, maxN*max_outputs> Hi;
 std::array<crypto::ec_point, maxN*max_outputs> Gi;
@@ -116,7 +116,7 @@ void init_exponents()
 
 
 /* Given two rct_scalar arrays, construct a vector commitment */
-crypto::ec_point vector_exponent(const rct_scalarS a, const rct_scalarS b)
+crypto::ec_point vector_exponent(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
   LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*max_outputs, "Incompatible sizes of a and maxN");
@@ -151,11 +151,11 @@ crypto::ec_point cross_vector_exponent
  , const size_t Ao
  , const std::span<crypto::ec_point> B
  , const size_t Bo
- , const rct_scalarS a
+ , const scalarS a
  , const size_t ao
- , const rct_scalarS b
+ , const scalarS b
  , const size_t bo
- , const std::optional<rct_scalarS> scale
+ , const std::optional<scalarS> scale
  )
 {
   LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
@@ -177,7 +177,7 @@ crypto::ec_point cross_vector_exponent
      , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
      );
 
-  rct_scalarV b_scalars(size);
+  scalarV b_scalars(size);
   std::generate
     (
 
@@ -208,7 +208,7 @@ crypto::ec_point cross_vector_exponent
 pointV hadamard_fold
 (
  const pointS v
- , const std::optional<rct_scalarS> scale
+ , const std::optional<scalarS> scale
  , const rct_scalar a
  , const rct_scalar b
  )
@@ -262,7 +262,7 @@ Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, con
   const size_t MN = M * N;
 
   pointV V(xs.size());
-  rct_scalarV aL(MN), aR(MN);
+  scalarV aL(MN), aR(MN);
 
   std::transform
     (
@@ -310,8 +310,8 @@ try_again:
   const crypto::ec_point A = vector_exponent(aL, aR) + G_(alpha);
 
   // PAPER LINES 45-47
-  const rct_scalarV sL = crypto::randomScalars(MN);
-  const rct_scalarV sR = crypto::randomScalars(MN);
+  const scalarV sL = crypto::randomScalars(MN);
+  const scalarV sR = crypto::randomScalars(MN);
   const rct_scalar rho = crypto::randomScalar();
   const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
 
@@ -332,11 +332,11 @@ try_again:
 
   // Polynomial construction by coefficients
   // PAPER LINES 70-71
-  const rct_scalarV l0 = vector_subtract(aL, z);
-  const rct_scalarS l1 = sL;
+  const scalarV l0 = vector_subtract(aL, z);
+  const scalarS l1 = sL;
 
-  rct_scalarV zero_twos(MN);
-  const rct_scalarV zpow = vector_powers(z, M+2);
+  scalarV zero_twos(MN);
+  const scalarV zpow = vector_powers(z, M+2);
   for (size_t j = 0; j < M; ++j)
   {
       for (size_t i = 0; i < N; ++i)
@@ -348,13 +348,13 @@ try_again:
   }
 
   const auto yMN = vector_powers(y, MN);
-  const rct_scalarV r0 = vector_addV
+  const scalarV r0 = vector_addV
     (
      hadamard(vector_add(aR, z), yMN)
      , zero_twos
      );
 
-  const rct_scalarV r1 = hadamard(yMN, sR);
+  const scalarV r1 = hadamard(yMN, sR);
 
   // Polynomial construction before PAPER LINE 51
   const rct_scalar t1_1 = inner_product(l0, r1);
@@ -401,8 +401,8 @@ try_again:
   const rct_scalar mu = x * rho + alpha;
 
   // PAPER LINES 58-60
-  const rct_scalarV l = vector_addV(l0, vector_mult(l1, x));
-  const rct_scalarV r = vector_addV(r0, vector_mult(r1, x));
+  const scalarV l = vector_addV(l0, vector_mult(l1, x));
+  const scalarV r = vector_addV(r0, vector_mult(r1, x));
 
   const rct_scalar t = inner_product(l, r);
 
@@ -419,10 +419,10 @@ try_again:
   size_t nprime = MN;
   std::vector<crypto::ec_point> Gprime(MN);
   std::vector<crypto::ec_point> Hprime(MN);
-  rct_scalarV aprime(MN);
-  rct_scalarV bprime(MN);
+  scalarV aprime(MN);
+  scalarV bprime(MN);
   const rct_scalar yinv = invert(y);
-  rct_scalarV yinvpow(MN);
+  scalarV yinvpow(MN);
   yinvpow[0] = rct::s_one;
   yinvpow[1] = yinv;
   for (size_t i = 0; i < MN; ++i)
@@ -436,9 +436,9 @@ try_again:
   }
   LR_V LR(logMN);
   int round = 0;
-  rct_scalarV w(logMN); // this is the challenge x in the inner product protocol
+  scalarV w(logMN); // this is the challenge x in the inner product protocol
 
-  std::optional<rct_scalarS> scale = yinvpow;
+  std::optional<scalarS> scale = yinvpow;
   while (nprime > 1)
   {
     // PAPER LINE 20

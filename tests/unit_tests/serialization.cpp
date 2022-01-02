@@ -146,11 +146,11 @@ bool try_parse(const string &blob)
 //initializes a rct_scalar matrix;
 //first parameter is rows,
 //second is columns
-std::vector<rct::rct_scalarV> rct_scalarMInit(size_t rows, size_t cols) {
-  std::vector<rct::rct_scalarV> rv(cols);
+std::vector<rct::scalarV> rct_scalarMInit(size_t rows, size_t cols) {
+  std::vector<rct::scalarV> rv(cols);
   size_t i = 0;
   for (i = 0 ; i < cols ; i++) {
-    rv[i] = rct::rct_scalarV(rows);
+    rv[i] = rct::scalarV(rows);
   }
   return rv;
 }
@@ -388,8 +388,8 @@ TEST(Serialization, serializes_ringct_types)
 {
   string blob;
   rct::rct_scalar key0, key1;
-  rct::rct_scalarV keyv0, keyv1;
-  std::vector<rct::rct_scalarV> keym0, keym1;
+  rct::scalarV keyv0, keyv1;
+  std::vector<rct::scalarV> keym0, keym1;
   rct::output_public_data output_public_data0, output_public_data1;
   rct::output_public_dataV output_public_datav0, output_public_datav1;
   rct::output_public_dataM output_public_datam0, output_public_datam1;
@@ -495,7 +495,7 @@ TEST(Serialization, serializes_ringct_types)
   sc.push_back(sctmp);
   pc.push_back(pctmp);
   vector<uint64_t> amounts;
-  rct::rct_scalarV output_shared_secrets_hashed_by_index;
+  rct::scalarV output_shared_secrets_hashed_by_index;
   //add output 500
   amounts.push_back(500);
   output_shared_secrets_hashed_by_index.push_back(rct::hash_to_scalar({}));

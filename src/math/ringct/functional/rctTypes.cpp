@@ -139,13 +139,13 @@ namespace rct {
 
   std::optional<clsag> maybeSafeCLSAG(const clsag_unsafe clsag) {
 
-    // rct_scalarV s; // scalars
+    // scalarV s; // scalars
     // rct_scalar c1;
 
     // crypto::ec_point I; // signing key image
     // crypto::ec_point D; // commitment key image
 
-    rct_scalarV clsag_s;
+    scalarV clsag_s;
     for (const auto& x: clsag.s) {
       LOG_ERROR_AND_RETURN_UNLESS(crypto::is_reduced(x), {}, "Bad clsag.s");
       clsag_s.push_back(crypto::reduce(x));

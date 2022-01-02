@@ -99,7 +99,7 @@ namespace rct {
    , const vector<amount_t> outamounts
    , const amount_t fee
    , const output_public_dataM decoys
-   , const rct_scalarV output_shared_secrets_hashed_by_index
+   , const scalarV output_shared_secrets_hashed_by_index
    , const std::vector<size_t> index
    )
   {
@@ -181,7 +181,7 @@ rctDataSizeChecked generate_ringct
   , const output_public_dataV inPk
   , const std::vector<amount_t> inamounts
   , const std::vector<amount_t> outamounts
-  , const rct_scalarV output_shared_secrets_hashed_by_index
+  , const scalarV output_shared_secrets_hashed_by_index
   , const amount_t fee
   , const size_t mixin
   ) {
@@ -389,7 +389,7 @@ static rct::rctDataSizeChecked make_sample_simple_rct_sig(int n_inputs, const ui
     output_public_data pctmp;
     vector<amount_t> inamounts, outamounts;
     pointV destinations;
-    rct_scalarV output_shared_secrets_hashed_by_index;
+    scalarV output_shared_secrets_hashed_by_index;
     rct_scalar Sk;
     crypto::ec_point Pk;
 

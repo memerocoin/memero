@@ -52,7 +52,7 @@ namespace cryptonote
   std::optional<
     std::tuple<
     std::vector<crypto::public_key>
-    , rct::rct_scalarV
+    , rct::scalarV
     , crypto::public_key
     >>
 
@@ -65,7 +65,7 @@ namespace cryptonote
    , const size_t output_index
    , const std::span<const crypto::secret_key> output_secret_keys
    , const std::vector<crypto::public_key> &output_public_keys_in
-   , const rct::rct_scalarV &output_shared_secrets_hashed_by_index_in
+   , const rct::scalarV &output_shared_secrets_hashed_by_index_in
    )
   {
     const keypair txkey =
@@ -103,7 +103,7 @@ namespace cryptonote
     std::vector<crypto::public_key> output_public_keys = output_public_keys_in;
     output_public_keys.push_back(txkey.pub);
 
-    rct::rct_scalarV output_shared_secrets_hashed_by_index = output_shared_secrets_hashed_by_index_in;
+    rct::scalarV output_shared_secrets_hashed_by_index = output_shared_secrets_hashed_by_index_in;
     output_shared_secrets_hashed_by_index.push_back(tx_output_shared_secret_indexed_hash);
 
     return {{
@@ -142,7 +142,7 @@ namespace cryptonote
     }
 
 
-    rct::rct_scalarV output_shared_secrets_hashed_by_index;
+    rct::scalarV output_shared_secrets_hashed_by_index;
 
     tx.version = 2;
     tx.unlock_height = unlock_height;

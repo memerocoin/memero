@@ -145,7 +145,7 @@ namespace rct {
     }
 
     // Decoy indices
-    rct_scalarV s(n);
+    scalarV s(n);
 
     while (i != index_in_decoys) {
       // carried from last round

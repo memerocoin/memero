@@ -57,7 +57,7 @@ namespace rct {
     return bulletproof_MAKE(std::vector<std::pair<const uint64_t, const rct_scalar>>{{v, gamma}});
   }
 
-  Bulletproof bulletproof_MAKE(const std::vector<uint64_t> amounts, const rct_scalarV blinding_factors)
+  Bulletproof bulletproof_MAKE(const std::vector<uint64_t> amounts, const scalarV blinding_factors)
   {
 
     std::vector<std::pair<const uint64_t, const rct_scalar>> xs;
@@ -112,7 +112,7 @@ TEST(bulletproofs, valid_multi_random)
   {
     size_t outputs = 2 + n;
     std::vector<uint64_t> amounts;
-    rct::rct_scalarV gamma;
+    rct::scalarV gamma;
     for (size_t i = 0; i < outputs; ++i)
     {
       amounts.push_back(crypto::rand<uint64_t>());
@@ -131,7 +131,7 @@ TEST(bulletproofs, valid_aggregated)
   {
     size_t outputs = 2 + n;
     std::vector<uint64_t> amounts;
-    rct::rct_scalarV gamma;
+    rct::scalarV gamma;
     for (size_t i = 0; i < outputs; ++i)
     {
       amounts.push_back(crypto::rand<uint64_t>());

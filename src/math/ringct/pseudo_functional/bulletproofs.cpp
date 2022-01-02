@@ -58,8 +58,8 @@
 namespace rct
 {
 
-const rct_scalarV oneN = vector_powers(rct::s_one, maxN);
-const rct_scalarV twoN = vector_powers(rct::s_two, maxN);
+const scalarV oneN = vector_powers(rct::s_one, maxN);
+const scalarV twoN = vector_powers(rct::s_two, maxN);
 
 const rct_scalar ip12 = inner_product(oneN, twoN);
 
@@ -170,7 +170,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
 
   // setup weighted aggregates
 
-  const rct_scalarV winv = invertV(pd.w);
+  const scalarV winv = invertV(pd.w);
   const rct_scalar yinv = invert(pd.y);
 
   const rct_scalar weight_y = crypto::randomScalar();
@@ -200,7 +200,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
 
   const size_t MN = M*N;
 
-  const rct_scalarV zpow = vector_powers(pd.z, M+3);
+  const scalarV zpow = vector_powers(pd.z, M+3);
 
   std::transform
     (
@@ -221,7 +221,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
   // Compute the number of rounds for the inner product
 
   // precalc
-  rct_scalarV w_cache(1<<rounds);
+  scalarV w_cache(1<<rounds);
   w_cache[0] = winv[0];
   w_cache[1] = pd.w[0];
   for (size_t j = 1; j < rounds; ++j)
@@ -235,7 +235,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
   }
 
   // Compute the curvepoints from G[i] and H[i]
-  rct_scalarV z5_v(MN);
+  scalarV z5_v(MN);
   std::generate
     (
       z5_v.begin()
@@ -264,7 +264,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
       }
       );
 
-  rct_scalarV z4_v(MN);
+  scalarV z4_v(MN);
   std::transform
     (
       w_cache.begin()
