@@ -55,8 +55,8 @@ using namespace rct;
 namespace rct {
 
   struct ct_secret_key {
-    rct_scalar addr;
-    rct_scalar blinding_factor;
+    crypto::ec_scalar addr;
+    crypto::ec_scalar blinding_factor;
   };
 
   using ct_secret_keyV = std::vector<ct_secret_key>;
@@ -64,8 +64,8 @@ namespace rct {
 
   inline const crypto::ec_point &unsafe_d2rct_p(const crypto::crypto_data &p) { return (const crypto::ec_point&)p; }
 
-  std::pair<rct_scalar, crypto::ec_point> skpkGen() {
-    const rct_scalar sk = crypto::randomScalar();
+  std::pair<crypto::ec_scalar, crypto::ec_point> skpkGen() {
+    const crypto::ec_scalar sk = crypto::randomScalar();
     return std::make_pair(sk, G_(sk));
   }
 
@@ -74,7 +74,7 @@ namespace rct {
    const crypto::hash message
    , const output_public_dataV pubs
    , const ct_secret_key inSk
-   , const rct_scalar a
+   , const crypto::ec_scalar a
    , const crypto::ec_point Cout
    , const size_t index
    )
@@ -151,7 +151,7 @@ std::pair<ct_secret_key, output_public_data> ctskpkGen(amount_t amount) {
   const auto [addr_sk, addr_pk] = skpkGen();
   const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
-  const rct_scalar am = crypto::int_to_scalar(amount);
+  const crypto::ec_scalar am = crypto::int_to_scalar(amount);
   const crypto::ec_point bH = H_(am);
 
   return
@@ -203,14 +203,14 @@ TEST(ringct, CLSAG)
   const size_t N = 11;
   const size_t idx = 5;
   output_public_dataV pubs;
-  rct_scalar p, t, t2, u;
+  crypto::ec_scalar p, t, t2, u;
   const crypto::hash message = crypto::d2h(crypto::identity);
   output_public_data backup;
   clsag clsag;
 
   for (size_t i = 0; i < N; ++i)
   {
-    rct_scalar sk;
+    crypto::ec_scalar sk;
     output_public_data tmp;
 
     std::tie(sk, tmp.output_public_key) = skpkGen();
@@ -312,8 +312,8 @@ TEST(ringct, CLSAG)
   clsag.s = sbackup;
 
   // too few s elements
-  rct_scalar backup_s;
-  rct_scalar backup_c1;
+  crypto::ec_scalar backup_s;
+  crypto::ec_scalar backup_c1;
   crypto::ec_point backup_key;
   crypto::ec_point backup_key_inv8;
   backup_s = clsag.s.back();
@@ -390,7 +390,7 @@ static rct::rctDataSizeChecked make_sample_simple_rct_sig(int n_inputs, const ui
     vector<amount_t> inamounts, outamounts;
     pointV destinations;
     scalarV output_shared_secrets_hashed_by_index;
-    rct_scalar Sk;
+    crypto::ec_scalar Sk;
     crypto::ec_point Pk;
 
     for (int n = 0; n < n_inputs; ++n) {
@@ -605,7 +605,7 @@ TEST(ringct, range_proofs_reject_higher_list_simple)
 }
 
 
-// these require one of rct_scalar of H to be 0, why?
+// these require one of crypto::ec_scalar of H to be 0, why?
 TEST(ringct, range_proofs_accept_1_to_1_simple)
 {
   const uint64_t inputs[] = {5000};

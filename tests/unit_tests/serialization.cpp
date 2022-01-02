@@ -60,15 +60,15 @@ using namespace wallet::logic::type::wallet;
 namespace rct {
 
   struct ct_secret_key {
-    rct_scalar addr;
-    rct_scalar blinding_factor;
+    crypto::ec_scalar addr;
+    crypto::ec_scalar blinding_factor;
   };
 
   using ct_secret_keyV = std::vector<ct_secret_key>;
   using ct_secret_keyS = std::span<const ct_secret_key>;
 
-  std::pair<rct_scalar, crypto::ec_point> skpkGen() {
-    const rct_scalar sk = crypto::randomScalar();
+  std::pair<crypto::ec_scalar, crypto::ec_point> skpkGen() {
+    const crypto::ec_scalar sk = crypto::randomScalar();
     return std::make_pair(sk, G_(sk));
   }
 
@@ -143,10 +143,10 @@ bool try_parse(const string &blob)
 }
 
 
-//initializes a rct_scalar matrix;
+//initializes a crypto::ec_scalar matrix;
 //first parameter is rows,
 //second is columns
-std::vector<rct::scalarV> rct_scalarMInit(size_t rows, size_t cols) {
+std::vector<rct::scalarV> scalarMInit(size_t rows, size_t cols) {
   std::vector<rct::scalarV> rv(cols);
   size_t i = 0;
   for (i = 0 ; i < cols ; i++) {
@@ -165,7 +165,7 @@ std::pair<ct_secret_key, rct::output_public_data> ctskpkGen(amount_t amount) {
   const auto [addr_sk, addr_pk] = skpkGen();
   const auto [blinding_factor_sk, blinding_factor_pk] = skpkGen();
 
-  const rct_scalar am = int_to_scalar(amount);
+  const crypto::ec_scalar am = int_to_scalar(amount);
   const crypto::ec_point bH = H_(am);
 
   return
@@ -387,7 +387,7 @@ TEST(Serialization, serializes_transacion_signatures_correctly)
 TEST(Serialization, serializes_ringct_types)
 {
   string blob;
-  rct::rct_scalar key0, key1;
+  crypto::ec_scalar key0, key1;
   rct::scalarV keyv0, keyv1;
   std::vector<rct::scalarV> keym0, keym1;
   rct::output_public_data output_public_data0, output_public_data1;
@@ -414,7 +414,7 @@ TEST(Serialization, serializes_ringct_types)
     ASSERT_TRUE(keyv0[n] == keyv1[n]);
   }
 
-  keym0 = rct_scalarMInit(9, 12);
+  keym0 = scalarMInit(9, 12);
 
   for (size_t n = 0; n < keym0.size(); ++n)
     for (size_t i = 0; i < keym0[n].size(); ++i)
@@ -500,7 +500,7 @@ TEST(Serialization, serializes_ringct_types)
   amounts.push_back(500);
   output_shared_secrets_hashed_by_index.push_back(rct::hash_to_scalar({}));
   rct::pointV destinations;
-  rct::rct_scalar Sk;
+  crypto::ec_scalar Sk;
   crypto::ec_point Pk;
   std::tie(Sk, Pk) = rct::skpkGen();
   destinations.push_back(Pk);

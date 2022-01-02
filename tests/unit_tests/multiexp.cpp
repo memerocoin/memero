@@ -32,9 +32,9 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/multi_exponentiation.hpp"
 
-#define TESTSCALAR []{ static const rct::rct_scalar TESTSCALAR = crypto::randomScalar(); return TESTSCALAR; }()
-#define TESTPOW2SCALAR []{ static const rct::rct_scalar TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()
-#define TESTSMALLSCALAR []{ static const rct::rct_scalar TESTSMALLSCALAR = {{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTSMALLSCALAR; }()
+#define TESTSCALAR []{ static const crypto::ec_scalar TESTSCALAR = crypto::randomScalar(); return TESTSCALAR; }()
+#define TESTPOW2SCALAR []{ static const crypto::ec_scalar TESTPOW2SCALAR = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTPOW2SCALAR; }()
+#define TESTSMALLSCALAR []{ static const crypto::ec_scalar TESTSMALLSCALAR = {{5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}; return TESTSMALLSCALAR; }()
 #define TESTPOINT []{ \
     static const crypto::ec_point TESTPOINT = rct::multG(crypto::randomScalar()); \
  return TESTPOINT;                                                   \
@@ -132,7 +132,7 @@ TEST(multiexp, scalarmult_triple)
   std::vector<rct::MultiexpData> data;
   crypto::ec_point res;
 
-  static const rct::rct_scalar scalars[] = {
+  static const crypto::ec_scalar scalars[] = {
     rct::s_zero,
     rct::s_one,
     rct::L,
@@ -146,13 +146,13 @@ TEST(multiexp, scalarmult_triple)
   };
 
   data.resize(3);
-  for (const rct::rct_scalar &x: scalars)
+  for (const crypto::ec_scalar &x: scalars)
   {
     data[0].scalar = x;
-    for (const rct::rct_scalar &y: scalars)
+    for (const crypto::ec_scalar &y: scalars)
     {
       data[1].scalar = y;
-      for (const rct::rct_scalar &z: scalars)
+      for (const crypto::ec_scalar &z: scalars)
       {
         data[2].scalar = z;
         for (size_t i = 0; i < sizeof(points) / sizeof(points[0]); ++i)

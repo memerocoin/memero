@@ -41,10 +41,10 @@ namespace rct {
 
   bool verify_ringct(const rctDataSizeChecked rv);
 
-  std::pair<amount_t, rct_scalar> decode_ringct_commitment
+  std::pair<amount_t, crypto::ec_scalar> decode_ringct_commitment
   (
    const rctDataSizeChecked rv
-   , const rct_scalar ecdh_shared_secret_hashed_by_index
+   , const crypto::ec_scalar ecdh_shared_secret_hashed_by_index
    , const size_t output_index
    );
 

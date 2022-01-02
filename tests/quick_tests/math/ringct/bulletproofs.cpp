@@ -86,9 +86,9 @@ TEST(quick_bulletproofs, pick_amount_size_1_to_16)
 //   rct::pointV commits;
 //   crypto::ec_point A, S;
 //   crypto::ec_point T1, T2;
-//   rct::rct_scalar taux, mu;
+//   crypto::ec_scalar taux, mu;
 //   LR_V LR;
-//   rct::rct_scalar a, b, t;
+//   crypto::ec_scalar a, b, t;
 // };
 
 std::pair<pointV, Bulletproof> randomProof() {

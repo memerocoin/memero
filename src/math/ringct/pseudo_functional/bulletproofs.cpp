@@ -61,14 +61,14 @@ namespace rct
 const scalarV oneN = vector_powers(rct::s_one, maxN);
 const scalarV twoN = vector_powers(rct::s_two, maxN);
 
-const rct_scalar ip12 = inner_product(oneN, twoN);
+const crypto::ec_scalar ip12 = inner_product(oneN, twoN);
 
 const auto multiexp = dummy;
 
 struct proof_data_t
 {
-  rct_scalar x, y, z, x_ip;
-  std::vector<rct_scalar> w;
+  crypto::ec_scalar x, y, z, x_ip;
+  std::vector<crypto::ec_scalar> w;
 };
 
 /* Given a range proof, determine if it is valid
@@ -101,7 +101,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
      , std::back_inserter(hash_dataV)
      , to_inv8
      );
-  rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
+  crypto::ec_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   proof_data_t pd;
   pd.y = hash_carry = hash_dataV_to_scalar
@@ -171,10 +171,10 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
   // setup weighted aggregates
 
   const scalarV winv = invertV(pd.w);
-  const rct_scalar yinv = invert(pd.y);
+  const crypto::ec_scalar yinv = invert(pd.y);
 
-  const rct_scalar weight_y = crypto::randomScalar();
-  const rct_scalar weight_z = crypto::randomScalar();
+  const crypto::ec_scalar weight_y = crypto::randomScalar();
+  const crypto::ec_scalar weight_z = crypto::randomScalar();
 
   std::transform
     (
@@ -242,15 +242,15 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
       , z5_v.end()
       , [i = 0, yinvpow = s_one, ypow = s_one
         , zpow, yinv, pd, weight_z, proof, w_cache, MN
-        ] () mutable -> rct_scalar {
-        // Convert the index to binary IN REVERSE and construct the rct_scalar exponent
+        ] () mutable -> crypto::ec_scalar {
+        // Convert the index to binary IN REVERSE and construct the crypto::ec_scalar exponent
 
         LOG_ERROR_AND_THROW_UNLESS(2+i/N < zpow.size(), "invalid zpow index");
         LOG_ERROR_AND_THROW_UNLESS(i%N < twoN.size(), "invalid twoN index");
 
         const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
 
-        const rct_scalar h_scalar =
+        const crypto::ec_scalar h_scalar =
           proof.b * yinvpow * w_cache[(~i) & (MN-1)]
           - (pd.z * ypow + zpowTwoN) * yinvpow ;
 
@@ -258,7 +258,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
         yinvpow = yinvpow * yinv;
         ypow = ypow * pd.y;
 
-        const rct_scalar r = s_zero - h_scalar * weight_z;
+        const crypto::ec_scalar r = s_zero - h_scalar * weight_z;
         i++;
         return r;
       }
@@ -271,18 +271,18 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
       , std::next(w_cache.begin(), MN)
       , z4_v.begin()
       , [proof, pd, weight_z](const auto& cache) {
-        const rct_scalar g_scalar = proof.a * cache + pd.z;
+        const crypto::ec_scalar g_scalar = proof.a * cache + pd.z;
         return s_zero - g_scalar * weight_z;
       }
       );
 
 
   // collect
-  const rct_scalar ip1y = vector_power_sum(pd.y, MN);
+  const crypto::ec_scalar ip1y = vector_power_sum(pd.y, MN);
   LOG_ERROR_AND_RETURN_UNLESS(M+2 < zpow.size(), false, "invalid zpow index");
 
   const auto zpow_it = std::next(zpow.begin(), 3);
-  const rct_scalar k1 =
+  const crypto::ec_scalar k1 =
     std::reduce
     (
      zpow_it
@@ -290,12 +290,12 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
      , s_zero
      );
 
-  const rct_scalar k = s_zero - zpow[2] * ip1y - k1 * ip12;
+  const crypto::ec_scalar k = s_zero - zpow[2] * ip1y - k1 * ip12;
 
-  const rct_scalar y0 = s_zero - proof.taux * weight_y;
-  const rct_scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
-  const rct_scalar z1 = proof.mu * weight_z;
-  const rct_scalar z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
+  const crypto::ec_scalar y0 = s_zero - proof.taux * weight_y;
+  const crypto::ec_scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
+  const crypto::ec_scalar z1 = proof.mu * weight_z;
+  const crypto::ec_scalar z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
 
 
   // now check all proofs at once

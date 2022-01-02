@@ -38,17 +38,17 @@ namespace rct {
 
   // Can't use consteval here or android will panic
 
-  constexpr rct_scalar s_zero = crypto::s_0;
-  constexpr rct_scalar s_one = crypto::s_1;
-  constexpr rct_scalar s_two = crypto::s_2;
-  constexpr rct_scalar s_minus_one = MINUS_ONE;
-  constexpr rct_scalar s_eight = crypto::s_8;
+  constexpr crypto::ec_scalar s_zero = crypto::s_0;
+  constexpr crypto::ec_scalar s_one = crypto::s_1;
+  constexpr crypto::ec_scalar s_two = crypto::s_2;
+  constexpr crypto::ec_scalar s_minus_one = MINUS_ONE;
+  constexpr crypto::ec_scalar s_eight = crypto::s_8;
   // inv is multiplicative inverse
-  constexpr rct_scalar s_inv_eight = INV_EIGHT;
-  constexpr rct_scalar s_minus_inv_eight = MINUS_INV_EIGHT;
+  constexpr crypto::ec_scalar s_inv_eight = INV_EIGHT;
+  constexpr crypto::ec_scalar s_minus_inv_eight = MINUS_INV_EIGHT;
 
-  crypto::ec_point G_(const rct_scalar a);
-  crypto::ec_point H_(const rct_scalar a);
+  crypto::ec_point G_(const crypto::ec_scalar a);
+  crypto::ec_point H_(const crypto::ec_scalar a);
 
   crypto::ec_point sum(const pointS A);
 
@@ -63,14 +63,14 @@ namespace rct {
 
   // hash
   crypto::hash hash_data(const crypto::crypto_data in);
-  rct_scalar hash_to_scalar(const crypto::crypto_data in);
+  crypto::ec_scalar hash_to_scalar(const crypto::crypto_data in);
   crypto::hash hash_dataV(const std::span<const crypto::crypto_data> keys);
-  rct_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys);
+  crypto::ec_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys);
 
 
   // ecdh
-  rct_scalar get_blinding_factor_from_hashed_shared_secret(const rct_scalar x);
-  uint64_t hash_and_xor_int(const uint64_t, const rct_scalar y);
+  crypto::ec_scalar get_blinding_factor_from_hashed_shared_secret(const crypto::ec_scalar x);
+  uint64_t hash_and_xor_int(const uint64_t, const crypto::ec_scalar y);
 
   inline const auto encode_amount_by_hashed_ecdh_shared_secret = hash_and_xor_int;
   inline const auto decode_amount_by_hashed_ecdh_shared_secret = hash_and_xor_int;

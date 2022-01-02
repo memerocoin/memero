@@ -58,8 +58,8 @@ namespace rct {
   clsag generate_clsag_signature_internal
   (
     const crypto::hash message
-    , const rct_scalar signer_sk
-    , const rct_scalar signer_blinding_factor_surplus
+    , const crypto::ec_scalar signer_sk
+    , const crypto::ec_scalar signer_blinding_factor_surplus
     , const size_t index_in_decoys
     , const crypto::ec_point pseudo_input_commit
     , const output_public_dataS decoys
@@ -85,7 +85,7 @@ namespace rct {
     // Offset key image
     const crypto::ec_point sig_blinding_factor_surplus_key_image = D;
 
-    const rct_scalar mu_P = hash_clsag_data_with_key
+    const crypto::ec_scalar mu_P = hash_clsag_data_with_key
     (
       sig_signer_key_image
       , sig_blinding_factor_surplus_key_image
@@ -94,7 +94,7 @@ namespace rct {
       , config::HASH_KEY_CLSAG_AGG_0
       );
 
-    const rct_scalar mu_C = hash_clsag_data_with_key
+    const crypto::ec_scalar mu_C = hash_clsag_data_with_key
       (
        sig_signer_key_image
        , sig_blinding_factor_surplus_key_image
@@ -131,15 +131,15 @@ namespace rct {
     c_to_hash.push_back(pseudo_input_commit);
     c_to_hash.push_back(crypto::h2d(message));
 
-    const rct_scalar a = crypto::randomScalar();
+    const crypto::ec_scalar a = crypto::randomScalar();
     c_to_hash.push_back(G_(a));
     c_to_hash.push_back(signer_pk_hash ^ a);
 
 
-    rct_scalar c = rct::hash_dataV_to_scalar(c_to_hash);
+    crypto::ec_scalar c = rct::hash_dataV_to_scalar(c_to_hash);
 
     size_t i = (index_in_decoys + 1) % n;
-    rct_scalar sig_c1;
+    crypto::ec_scalar sig_c1;
     if (i == 0) {
       sig_c1 = c;
     }
@@ -149,8 +149,8 @@ namespace rct {
 
     while (i != index_in_decoys) {
       // carried from last round
-      const rct_scalar c_p = mu_P * c;
-      const rct_scalar c_c = mu_C * c;
+      const crypto::ec_scalar c_p = mu_P * c;
+      const crypto::ec_scalar c_c = mu_C * c;
 
       const auto sk = crypto::randomScalar();
 
@@ -205,10 +205,10 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const rct_scalar signer_sk
-   , const rct_scalar signer_blinding_factor
+   , const crypto::ec_scalar signer_sk
+   , const crypto::ec_scalar signer_blinding_factor
    , const size_t index_in_decoys
-   , const rct_scalar pseudo_input_blinding_factor
+   , const crypto::ec_scalar pseudo_input_blinding_factor
    , const crypto::ec_point pseudo_input_commit
    , const output_public_dataV decoys
    )
@@ -224,7 +224,7 @@ namespace rct {
         , [pseudo_input_commit](const auto& x) { return x.commit - pseudo_input_commit; }
         );
 
-    const rct_scalar signer_blinding_factor_surplus = signer_blinding_factor - pseudo_input_blinding_factor;
+    const crypto::ec_scalar signer_blinding_factor_surplus = signer_blinding_factor - pseudo_input_blinding_factor;
     return generate_clsag_signature_internal
       (
        message

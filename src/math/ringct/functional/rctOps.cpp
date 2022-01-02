@@ -49,11 +49,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace rct {
 
-  crypto::ec_point G_(const rct_scalar a) {
+  crypto::ec_point G_(const crypto::ec_scalar a) {
     return crypto::multBase(a);
   }
 
-  crypto::ec_point H_(const rct_scalar a) {
+  crypto::ec_point H_(const crypto::ec_scalar a) {
     return H ^ a;
   }
 
@@ -94,7 +94,7 @@ namespace rct {
     return crypto::sha3(in.data);
   }
 
-  rct_scalar hash_to_scalar(const crypto::crypto_data in) {
+  crypto::ec_scalar hash_to_scalar(const crypto::crypto_data in) {
     return reduce(d2s(h2d(hash_data(in))));
   }
 
@@ -106,13 +106,13 @@ namespace rct {
     return crypto::sha3(epee::blob::span((const uint8_t*)keys.data(), keys.size_bytes()));
   }
 
-  rct_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys) {
+  crypto::ec_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys) {
     return reduce(d2s(h2d(hash_dataV(keys))));
   }
 
 
   // ecdh
-  uint64_t hash_and_xor_int(const uint64_t x, const rct_scalar y)
+  uint64_t hash_and_xor_int(const uint64_t x, const crypto::ec_scalar y)
   {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(config::ecdhHashPrefix))
@@ -128,7 +128,7 @@ namespace rct {
     return crypto::scalar_to_int(r);
   }
 
-  rct_scalar get_blinding_factor_from_hashed_shared_secret(const rct_scalar x) {
+  crypto::ec_scalar get_blinding_factor_from_hashed_shared_secret(const crypto::ec_scalar x) {
     const epee::blob::data hashData =
       epee::string_tools::string_to_blob(std::string(config::commitmentMaskPrefix))
       + x.blob();

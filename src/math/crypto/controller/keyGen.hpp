@@ -21,7 +21,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../functional/key.hpp"
 
 namespace crypto {
-  //generates a random rct_scalar which can be used as a secret key or mask
+  //generates a random crypto::ec_scalar which can be used as a secret key or mask
   ec_scalar randomScalar();
   std::vector<ec_scalar> randomScalars(size_t n);
 

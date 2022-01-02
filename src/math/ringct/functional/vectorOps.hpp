@@ -37,29 +37,29 @@
 
 namespace rct
 {
-  /* Given two rct_scalar arrays, construct the inner product */
-  rct::rct_scalar inner_product(const scalarS a, const scalarS b);
+  /* Given two crypto::ec_scalar arrays, construct the inner product */
+  crypto::ec_scalar inner_product(const scalarS a, const scalarS b);
 
-  /* Given a rct_scalar, construct a vector of powers */
-  rct::scalarV vector_powers(const rct::rct_scalar x, const size_t n);
+  /* Given a crypto::ec_scalar, construct a vector of powers */
+  rct::scalarV vector_powers(const crypto::ec_scalar x, const size_t n);
 
-  /* Given a rct_scalar, return the sum of its powers from 0 to n-1 */
-  rct::rct_scalar vector_power_sum(const rct::rct_scalar x, const size_t n);
+  /* Given a crypto::ec_scalar, return the sum of its powers from 0 to n-1 */
+  crypto::ec_scalar vector_power_sum(const crypto::ec_scalar x, const size_t n);
 
-  /* Given two rct_scalar arrays, construct the Hadamard product */
+  /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
   rct::scalarV hadamard(const scalarS a, const scalarS b);
 
   /* Add two vectors */
   rct::scalarV vector_addV(const scalarS a, const scalarS b);
 
-  /* Add a rct_scalar to all elements of a vector */
-  rct::scalarV vector_add(const scalarS a, const rct::rct_scalar b);
+  /* Add a crypto::ec_scalar to all elements of a vector */
+  rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b);
 
-  /* Subtract a rct_scalar from all elements of a vector */
-  rct::scalarV vector_subtract(const scalarS a, const rct::rct_scalar b);
+  /* Subtract a crypto::ec_scalar from all elements of a vector */
+  rct::scalarV vector_subtract(const scalarS a, const crypto::ec_scalar b);
 
-  /* Multiply a rct_scalar and a vector */
-  rct::scalarV vector_mult(const scalarS a, const rct::rct_scalar b);
+  /* Multiply a crypto::ec_scalar and a vector */
+  rct::scalarV vector_mult(const scalarS a, const crypto::ec_scalar b);
 
   rct::scalarV invertV(const rct::scalarV v);
 }

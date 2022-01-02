@@ -50,8 +50,8 @@ using namespace crypto;
 // struct rctInputData
 // {
 //   const amount_t amount;
-//   const rct_scalar signer_sk;
-//   const rct_scalar signer_blinding_factor;
+//   const crypto::ec_scalar signer_sk;
+//   const crypto::ec_scalar signer_blinding_factor;
 //   const size_t index_in_decoys;
 //   const output_public_dataV decoys;
 // };
@@ -63,8 +63,8 @@ constexpr uint64_t input_base = 1ull << 40;
 rctInputData randomRctInputData() {
   const amount_t amount = rand_range<uint64_t>(0, input_base) + input_base;
 
-  const rct_scalar signer_sk = randomScalar();
-  const rct_scalar signer_blinding_factor = randomScalar();
+  const crypto::ec_scalar signer_sk = randomScalar();
+  const crypto::ec_scalar signer_blinding_factor = randomScalar();
   const size_t index_in_decoys = rand_idx(config::lol::ring_size);
 
 
@@ -96,7 +96,7 @@ rctInputData randomRctInputData() {
 // struct rctOutputData
 // {
 //   const amount_t amount;
-//   const rct_scalar ecdh_shared_secret_hashed_by_index;
+//   const crypto::ec_scalar ecdh_shared_secret_hashed_by_index;
 // };
 
 rctOutputData randomRctOutputData() {

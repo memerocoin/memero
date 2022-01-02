@@ -85,7 +85,7 @@ namespace cryptonote
     const auto tx_output_shared_secret =
       crypto::derive_tx_output_ecdh_shared_secret(dst_entr.addr.m_view_public_key, txkey.sec);
 
-    const rct::rct_scalar tx_output_shared_secret_indexed_hash =
+    const crypto::ec_scalar tx_output_shared_secret_indexed_hash =
       crypto::hash_tx_output_shared_secret_to_scalar(tx_output_shared_secret, output_index);
 
     const auto eph_pk = crypto::compute_output_public_key_from_subaddress_spend_pk

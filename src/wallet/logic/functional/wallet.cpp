@@ -206,7 +206,7 @@ namespace wallet {
   }
 
   //----------------------------------------------------------------------------------------------------
-  std::optional<std::pair<uint64_t, rct::rct_scalar>> decodeRct
+  std::optional<std::pair<uint64_t, crypto::ec_scalar>> decodeRct
   (
    const rct::rctData rv
    , const crypto::ecdh_shared_secret tx_output_shared_secret

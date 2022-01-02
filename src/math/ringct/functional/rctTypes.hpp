@@ -40,11 +40,6 @@
 
 
 namespace rct {
-  using rct_scalar = crypto::ec_scalar;
-
-  using inv8 = crypto::ec_point_unsafe;
-  using reconstructed_point = crypto::ec_point;
-
 
   using pointV = std::vector<crypto::ec_point>;
   using pointS = std::span<const crypto::ec_point>;
@@ -52,7 +47,10 @@ namespace rct {
   using scalarV = std::vector<crypto::ec_scalar>;
   using scalarS = std::span<const crypto::ec_scalar>;
 
+  using inv8 = crypto::ec_point_unsafe;
   using inv8V = std::vector<inv8>;
+
+  using reconstructed_point = crypto::ec_point;
 
   const rct::inv8V to_inv8V(const pointS xs);
 
@@ -97,7 +95,7 @@ namespace rct {
   struct clsag
   {
     scalarV s; // scalars
-    rct_scalar c1;
+    crypto::ec_scalar c1;
     crypto::ec_point signer_key_image; // signing key image
     crypto::ec_point blinding_factor_surplus_key_image; // commitment key image
   };
@@ -137,9 +135,9 @@ namespace rct {
   {
     crypto::ec_point A, S;
     crypto::ec_point T1, T2;
-    rct::rct_scalar taux, mu;
+    crypto::ec_scalar taux, mu;
     LR_V LR;
-    rct::rct_scalar a, b, t;
+    crypto::ec_scalar a, b, t;
   };
 
   std::optional<LR_V> zipLR(const pointV L, const pointV R);
@@ -358,6 +356,6 @@ BLOB_SERIALIZER(crypto::ec_point);
 BLOB_SERIALIZER(rct::inv8);
 BLOB_SERIALIZER(rct::output_public_data);
 BLOB_SERIALIZER(rct::output_commit);
-BLOB_SERIALIZER(rct::rct_scalar);
+BLOB_SERIALIZER(crypto::ec_scalar);
 BLOB_SERIALIZER(rct::ecdh_encrypted_data_t);
 BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);

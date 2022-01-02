@@ -51,18 +51,18 @@
 
 namespace rct {
 
-  std::tuple<rct_scalar, pointV, Bulletproof> generate_range_proof
+  std::tuple<crypto::ec_scalar, pointV, Bulletproof> generate_range_proof
   (
    const std::span<const rctOutputData> outputs
    )
   {
-    std::vector<std::pair<const uint64_t, const rct_scalar>> xs;
+    std::vector<std::pair<const uint64_t, const crypto::ec_scalar>> xs;
     std::transform
       (
        outputs.begin()
        , outputs.end()
        , std::back_inserter(xs)
-       , [](const auto& x) -> std::pair<uint64_t, rct_scalar> {
+       , [](const auto& x) -> std::pair<uint64_t, crypto::ec_scalar> {
          return
            {
              x.amount
@@ -73,7 +73,7 @@ namespace rct {
 
     const Bulletproof proof = bulletproof_MAKE(xs);
 
-    const rct_scalar output_blinding_factors_sum =
+    const crypto::ec_scalar output_blinding_factors_sum =
       std::transform_reduce
       (
        xs.begin()
@@ -97,8 +97,8 @@ namespace rct {
     return {output_blinding_factors_sum, output_commits, proof};
   }
 
-  std::vector<std::pair<rct_scalar, crypto::ec_point>>
-  generate_matching_input_commits(const rct_scalar match, const std::span<const amount_t> xs) {
+  std::vector<std::pair<crypto::ec_scalar, crypto::ec_point>>
+  generate_matching_input_commits(const crypto::ec_scalar match, const std::span<const amount_t> xs) {
     if (xs.empty()) return {};
 
     scalarV bs;
@@ -109,7 +109,7 @@ namespace rct {
        , crypto::randomScalar
        );
 
-    const rct_scalar last = match -
+    const crypto::ec_scalar last = match -
       std::reduce
       (
        bs.begin()
@@ -120,14 +120,14 @@ namespace rct {
     bs.push_back(last);
 
 
-    std::vector<std::pair<rct_scalar, crypto::ec_point>> r;
+    std::vector<std::pair<crypto::ec_scalar, crypto::ec_point>> r;
     std::transform
       (
        bs.begin()
        , bs.end()
        , xs.begin()
        , std::back_inserter(r)
-       , [](const auto& b, const auto& x) -> std::pair<rct_scalar, crypto::ec_point> {
+       , [](const auto& b, const auto& x) -> std::pair<crypto::ec_scalar, crypto::ec_point> {
          return {b, commit(x, b)};
        }
        );
@@ -212,7 +212,7 @@ namespace rct {
        , [](const auto& x) { return x.amount; }
        );
 
-    const std::vector<std::pair<rct_scalar, crypto::ec_point>> pseudo_inputs =
+    const std::vector<std::pair<crypto::ec_scalar, crypto::ec_point>> pseudo_inputs =
       generate_matching_input_commits(output_blinding_factors_sum, input_amounts);
 
 

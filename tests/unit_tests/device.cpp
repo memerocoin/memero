@@ -61,7 +61,7 @@ TEST(device, ops)
 {
   hw::core::device_default dev;
   std::optional<crypto::ecdh_shared_secret> derd, maybeDer;
-  rct::rct_scalar sk;
+  crypto::ec_scalar sk;
   crypto::ec_point pk;
   crypto::secret_key sk0, sk1;
   crypto::public_key pk0, pk1;
@@ -69,8 +69,8 @@ TEST(device, ops)
   std::tie(sk, pk) = rct::skpkGen();
   sk0 = crypto::s2sk(crypto::randomScalar());
   sk1 = crypto::s2sk(crypto::randomScalar());
-  pk0 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk0));
-  pk1 = rct::rct_p2pk(rct::multG((rct::rct_scalar&)sk1));
+  pk0 = rct::rct_p2pk(rct::multG((crypto::ec_scalar&)sk0));
+  pk1 = rct::rct_p2pk(rct::multG((crypto::ec_scalar&)sk1));
 
   ASSERT_TRUE(is_safe_point(pk0));
 

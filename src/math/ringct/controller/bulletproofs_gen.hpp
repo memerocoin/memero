@@ -59,7 +59,7 @@ namespace rct
 
   void init_exponents();
 
-  using bp_input_t = std::pair<const uint64_t, const rct_scalar>;
+  using bp_input_t = std::pair<const uint64_t, const crypto::ec_scalar>;
 
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs);
 }

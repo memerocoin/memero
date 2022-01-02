@@ -38,10 +38,10 @@ namespace rct {
   clsag generate_clsag_signature
   (
    const crypto::hash message
-   , const rct_scalar signer_sk
-   , const rct_scalar signer_blinding_factor
+   , const crypto::ec_scalar signer_sk
+   , const crypto::ec_scalar signer_blinding_factor
    , const size_t index_in_decoys
-   , const rct_scalar pseudo_input_blinding_factor
+   , const crypto::ec_scalar pseudo_input_blinding_factor
    , const crypto::ec_point pseudo_input_commit
    , const output_public_dataV decoys
    );

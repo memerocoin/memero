@@ -49,20 +49,20 @@ using namespace crypto;
 struct clsagInput
 {
  crypto::hash message;
- rct_scalar signer_sk;
- rct_scalar signer_blinding_factor;
+ crypto::ec_scalar signer_sk;
+ crypto::ec_scalar signer_blinding_factor;
  size_t index_in_decoys;
- rct_scalar pseudo_input_blinding_factor;
+ crypto::ec_scalar pseudo_input_blinding_factor;
  crypto::ec_point pseudo_input_commit;
  output_public_dataV decoys;
 }; 
 
 clsagInput randomClsagInput() {
   const crypto::hash message = d2h(randomCryptoData());
-  const rct_scalar signer_sk = randomScalar();
-  const rct_scalar signer_blinding_factor = randomScalar();
+  const crypto::ec_scalar signer_sk = randomScalar();
+  const crypto::ec_scalar signer_blinding_factor = randomScalar();
   const size_t index_in_decoys = rand_idx(config::lol::ring_size);
-  const rct_scalar pseudo_input_blinding_factor = randomScalar();
+  const crypto::ec_scalar pseudo_input_blinding_factor = randomScalar();
 
   const amount_t some_amount = randomAmount();
   const crypto::ec_point pseudo_input_commit = commit(some_amount, pseudo_input_blinding_factor);
@@ -211,7 +211,7 @@ TEST(quick_clsag, wrong_pseudo_input_commit)
 // struct clsag
 // {
 //   scalarV s; // scalars
-//   rct_scalar c1;
+//   crypto::ec_scalar c1;
 //   crypto::ec_point signer_key_image; // signing key image
 //   crypto::ec_point blinding_factor_surplus_key_image; // commitment key image
 // };

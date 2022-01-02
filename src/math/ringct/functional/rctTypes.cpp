@@ -81,13 +81,13 @@ namespace rct {
       proof_R.push_back(*y);
     }
 
-    // check rct_scalar range
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), {}, "Input rct_scalar not in range");
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), {}, "Input rct_scalar not in range");
+    // check crypto::ec_scalar range
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), {}, "Input crypto::ec_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), {}, "Input crypto::ec_scalar not in range");
 
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), {}, "Input rct_scalar not in range");
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), {}, "Input rct_scalar not in range");
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), {}, "Input rct_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), {}, "Input crypto::ec_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.b), {}, "Input crypto::ec_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.t), {}, "Input crypto::ec_scalar not in range");
 
     const auto maybeLR = zipLR(proof_L, proof_R);
     LOG_ERROR_AND_RETURN_UNLESS(maybeLR, {}, "failed to construct LR from L and R");
@@ -96,10 +96,10 @@ namespace rct {
       // rct::inv8V V;
       // rct::inv8 A, S;
       // rct::inv8 T1, T2;
-      // rct::rct_scalar taux;
-      // rct::rct_scalar mu;
+      // crypto::ec_scalar taux;
+      // crypto::ec_scalar mu;
       // rct::inv8V L, R;
-      // rct::rct_scalar a, b, t;
+      // crypto::ec_scalar a, b, t;
       proof_A
       , proof_S
       , proof_T1
@@ -119,10 +119,10 @@ namespace rct {
       // rct::inv8V V;
       // rct::inv8 A, S;
       // rct::inv8 T1, T2;
-      // rct::rct_scalar taux;
-      // rct::rct_scalar mu;
+      // crypto::ec_scalar taux;
+      // crypto::ec_scalar mu;
       // rct::inv8V L, R;
-      // rct::rct_scalar a, b, t;
+      // crypto::ec_scalar a, b, t;
       to_inv8(proof.A)
       , to_inv8(proof.S)
       , to_inv8(proof.T1)
@@ -140,7 +140,7 @@ namespace rct {
   std::optional<clsag> maybeSafeCLSAG(const clsag_unsafe clsag) {
 
     // scalarV s; // scalars
-    // rct_scalar c1;
+    // crypto::ec_scalar c1;
 
     // crypto::ec_point I; // signing key image
     // crypto::ec_point D; // commitment key image

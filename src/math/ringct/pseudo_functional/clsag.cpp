@@ -102,7 +102,7 @@ namespace rct {
     LOG_ERROR_AND_RETURN_UNLESS(n == sig.s.size(), false, "sig.s vector is the wrong size!");
 
     // Aggregation hashes
-    const rct_scalar mu_P = hash_clsag_data_with_key
+    const crypto::ec_scalar mu_P = hash_clsag_data_with_key
       (
        sig.signer_key_image
        , sig.blinding_factor_surplus_key_image
@@ -111,7 +111,7 @@ namespace rct {
        , config::HASH_KEY_CLSAG_AGG_0
        );
 
-    const rct_scalar mu_C = hash_clsag_data_with_key
+    const crypto::ec_scalar mu_C = hash_clsag_data_with_key
       (
        sig.signer_key_image
        , sig.blinding_factor_surplus_key_image
@@ -151,14 +151,14 @@ namespace rct {
     c_to_hash.push_back({}); // reserve for R
 
 
-    const rct_scalar c1 = sig.c1;
+    const crypto::ec_scalar c1 = sig.c1;
 
-    rct_scalar c = c1;
+    crypto::ec_scalar c = c1;
     size_t i = 0;
 
     while (i < n) {
-      const rct_scalar c_p = mu_P * c;
-      const rct_scalar c_c = mu_C * c;
+      const crypto::ec_scalar c_p = mu_P * c;
+      const crypto::ec_scalar c_c = mu_C * c;
 
       const crypto::ec_point decoy_commit = decoys[i].commit;
 

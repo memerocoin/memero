@@ -215,16 +215,16 @@ namespace rct {
     return verify_range_proof(rv) && verify_ringct_balance(rv) && verify_clsag_signatures(rv);
   }
 
-  std::pair<amount_t, rct_scalar> decode_ringct_commitment
+  std::pair<amount_t, crypto::ec_scalar> decode_ringct_commitment
   (
     const rctDataSizeChecked rv
-    , const rct_scalar ecdh_shared_secret_hashed_by_index
+    , const crypto::ec_scalar ecdh_shared_secret_hashed_by_index
     , const size_t output_index
     )
   {
     LOG_ERROR_AND_THROW_UNLESS(output_index < rv.ecdh_encrypted_data.size(), "Bad index");
 
-    const rct_scalar blinding_factor =
+    const crypto::ec_scalar blinding_factor =
       rct::get_blinding_factor_from_hashed_shared_secret(ecdh_shared_secret_hashed_by_index);
 
     const uint64_t amount = rct::decode_amount_by_hashed_ecdh_shared_secret

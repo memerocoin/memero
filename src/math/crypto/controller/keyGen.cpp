@@ -40,7 +40,7 @@ extern "C" {
 namespace crypto {
 
 
-  //generates a random rct_scalar which can be used as a secret key or mask
+  //generates a random crypto::ec_scalar which can be used as a secret key or mask
   ec_scalar randomScalar() {
     ec_scalar s;
     crypto_core_ed25519_scalar_random(s.data.data());

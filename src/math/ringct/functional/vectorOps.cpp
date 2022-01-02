@@ -45,8 +45,8 @@
 namespace rct
 {
 
-  /* Given two rct_scalar arrays, construct the inner product */
-  rct::rct_scalar inner_product(const scalarS a, const scalarS b)
+  /* Given two crypto::ec_scalar arrays, construct the inner product */
+  crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
     return std::transform_reduce
@@ -55,13 +55,13 @@ namespace rct
        , a.end()
        , b.begin()
        , rct::s_zero
-       , std::plus<rct_scalar>()
-       , std::multiplies<rct_scalar>()
+       , std::plus<crypto::ec_scalar>()
+       , std::multiplies<crypto::ec_scalar>()
        );
   }
 
-  /* Given a rct_scalar, construct a vector of powers */
-  rct::scalarV vector_powers(const rct::rct_scalar x, const size_t n)
+  /* Given a crypto::ec_scalar, construct a vector of powers */
+  rct::scalarV vector_powers(const crypto::ec_scalar x, const size_t n)
   {
     scalarV res(n);
 
@@ -74,15 +74,15 @@ namespace rct
     return res;
   }
 
-  /* Given a rct_scalar, return the sum of its powers from 0 to n-1 */
-  rct::rct_scalar vector_power_sum(const rct::rct_scalar x, const size_t n)
+  /* Given a crypto::ec_scalar, return the sum of its powers from 0 to n-1 */
+  crypto::ec_scalar vector_power_sum(const crypto::ec_scalar x, const size_t n)
   {
     const auto xs = vector_powers(x, n);
 
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
   }
 
-  /* Given two rct_scalar arrays, construct the Hadamard product */
+  /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
   rct::scalarV hadamard(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
@@ -93,7 +93,7 @@ namespace rct
        , a.end()
        , b.begin()
        , res.begin()
-       , std::multiplies<rct_scalar>()
+       , std::multiplies<crypto::ec_scalar>()
        );
 
     return res;
@@ -110,14 +110,14 @@ namespace rct
       , a.end()
       , b.begin()
       , res.begin()
-      , std::plus<rct_scalar>()
+      , std::plus<crypto::ec_scalar>()
       );
 
     return res;
   }
 
-  /* Add a rct_scalar to all elements of a vector */
-  rct::scalarV vector_add(const scalarS a, const rct::rct_scalar b)
+  /* Add a crypto::ec_scalar to all elements of a vector */
+  rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
     std::transform
@@ -131,8 +131,8 @@ namespace rct
     return res;
   }
 
-  /* Subtract a rct_scalar from all elements of a vector */
-  rct::scalarV vector_subtract(const scalarS a, const rct::rct_scalar b)
+  /* Subtract a crypto::ec_scalar from all elements of a vector */
+  rct::scalarV vector_subtract(const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
     std::transform
@@ -146,8 +146,8 @@ namespace rct
     return res;
   }
 
-  /* Multiply a rct_scalar and a vector */
-  rct::scalarV vector_mult(const scalarS a, const rct::rct_scalar b)
+  /* Multiply a crypto::ec_scalar and a vector */
+  rct::scalarV vector_mult(const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
     std::transform

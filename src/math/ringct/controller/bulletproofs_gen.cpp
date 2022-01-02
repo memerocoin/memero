@@ -115,7 +115,7 @@ void init_exponents()
 }
 
 
-/* Given two rct_scalar arrays, construct a vector commitment */
+/* Given two crypto::ec_scalar arrays, construct a vector commitment */
 crypto::ec_point vector_exponent(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
@@ -209,8 +209,8 @@ pointV hadamard_fold
 (
  const pointS v
  , const std::optional<scalarS> scale
- , const rct_scalar a
- , const rct_scalar b
+ , const crypto::ec_scalar a
+ , const crypto::ec_scalar b
  )
 {
   LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
@@ -222,13 +222,13 @@ pointV hadamard_fold
      out.begin()
      , out.end()
      , [n = 0, v, scale, a, b, sz] () mutable {
-       const rct_scalar x = scale
+       const crypto::ec_scalar x = scale
          ? a * (*scale)[n]
          : a;
 
        const size_t iy = sz + n;
 
-       const rct_scalar y = scale
+       const crypto::ec_scalar y = scale
          ? b * (*scale)[iy]
          : b;
 
@@ -242,7 +242,7 @@ pointV hadamard_fold
 }
 
 /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, const rct_scalar>> xs)
+Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, const crypto::ec_scalar>> xs)
 {
   LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
 
@@ -303,27 +303,27 @@ try_again:
      , to_inv8
      );
 
-  rct_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
+  crypto::ec_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
   // PAPER LINES 43-44
-  const rct_scalar alpha = crypto::randomScalar();
+  const crypto::ec_scalar alpha = crypto::randomScalar();
   const crypto::ec_point A = vector_exponent(aL, aR) + G_(alpha);
 
   // PAPER LINES 45-47
   const scalarV sL = crypto::randomScalars(MN);
   const scalarV sR = crypto::randomScalars(MN);
-  const rct_scalar rho = crypto::randomScalar();
+  const crypto::ec_scalar rho = crypto::randomScalar();
   const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
 
   // PAPER LINES 48-50
-  const rct_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(A), to_inv8(S)});
+  const crypto::ec_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(A), to_inv8(S)});
   if (y == rct::s_zero)
   {
     LOG_INFO("y is 0, trying again");
     goto try_again;
   }
 
-  const rct_scalar z = hash_carry = rct::hash_to_scalar(y);
+  const crypto::ec_scalar z = hash_carry = rct::hash_to_scalar(y);
   if (z == rct::s_zero)
   {
     LOG_INFO("z is 0, trying again");
@@ -357,20 +357,20 @@ try_again:
   const scalarV r1 = hadamard(yMN, sR);
 
   // Polynomial construction before PAPER LINE 51
-  const rct_scalar t1_1 = inner_product(l0, r1);
-  const rct_scalar t1_2 = inner_product(l1, r0);
-  const rct_scalar t1 = t1_1 + t1_2;
-  const rct_scalar t2 = inner_product(l1, r1);
+  const crypto::ec_scalar t1_1 = inner_product(l0, r1);
+  const crypto::ec_scalar t1_2 = inner_product(l1, r0);
+  const crypto::ec_scalar t1 = t1_1 + t1_2;
+  const crypto::ec_scalar t2 = inner_product(l1, r1);
 
   // PAPER LINES 52-53
-  const rct_scalar tau1 = crypto::randomScalar();
-  const rct_scalar tau2 = crypto::randomScalar();
+  const crypto::ec_scalar tau1 = crypto::randomScalar();
+  const crypto::ec_scalar tau2 = crypto::randomScalar();
 
   const crypto::ec_point T1 = G_(tau1) + H_(t1);
   const crypto::ec_point T2 = G_(tau2) + H_(t2);
 
   // PAPER LINES 54-56
-  const rct_scalar x = hash_carry = hash_dataV_to_scalar
+  const crypto::ec_scalar x = hash_carry = hash_dataV_to_scalar
     (crypto::dataV{hash_carry, z, to_inv8(T1), to_inv8(T2)});
   if (x == rct::s_zero)
   {
@@ -379,11 +379,11 @@ try_again:
   }
 
   // PAPER LINES 61-63
-  const rct_scalar xsq = x * x;
+  const crypto::ec_scalar xsq = x * x;
 
   LOG_ERROR_AND_THROW_UNLESS(xs.size()+1 < zpow.size(), "invalid zpow index");
 
-  const rct_scalar taux1 =
+  const crypto::ec_scalar taux1 =
     std::transform_reduce
     (
      xs.begin()
@@ -396,18 +396,18 @@ try_again:
      }
      );
 
-  const rct_scalar taux = tau1 * x + tau2 * xsq + taux1;
+  const crypto::ec_scalar taux = tau1 * x + tau2 * xsq + taux1;
 
-  const rct_scalar mu = x * rho + alpha;
+  const crypto::ec_scalar mu = x * rho + alpha;
 
   // PAPER LINES 58-60
   const scalarV l = vector_addV(l0, vector_mult(l1, x));
   const scalarV r = vector_addV(r0, vector_mult(r1, x));
 
-  const rct_scalar t = inner_product(l, r);
+  const crypto::ec_scalar t = inner_product(l, r);
 
   // PAPER LINE 6
-  const rct_scalar x_ip = hash_carry =
+  const crypto::ec_scalar x_ip = hash_carry =
     hash_dataV_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
   if (x_ip == rct::s_zero)
   {
@@ -421,7 +421,7 @@ try_again:
   std::vector<crypto::ec_point> Hprime(MN);
   scalarV aprime(MN);
   scalarV bprime(MN);
-  const rct_scalar yinv = invert(y);
+  const crypto::ec_scalar yinv = invert(y);
   scalarV yinvpow(MN);
   yinvpow[0] = rct::s_one;
   yinvpow[1] = yinv;
@@ -445,13 +445,13 @@ try_again:
     nprime /= 2;
 
     // PAPER LINES 21-22
-    rct_scalar cL = inner_product
+    crypto::ec_scalar cL = inner_product
       (
        std::span(aprime).subspan(0, nprime)
        , std::span(bprime).subspan(nprime, bprime.size() - nprime)
        );
 
-    rct_scalar cR = inner_product
+    crypto::ec_scalar cR = inner_product
       (
        std::span(aprime).subspan(nprime, aprime.size() - nprime)
        , std::span(bprime).subspan(0, nprime)
@@ -476,7 +476,7 @@ try_again:
     }
 
     // PAPER LINES 29-30
-    const rct_scalar winv = invert(w[round]);
+    const crypto::ec_scalar winv = invert(w[round]);
     if (nprime > 1)
     {
       Gprime = hadamard_fold(Gprime, {}, winv, w[round]);

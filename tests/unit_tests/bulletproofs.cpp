@@ -47,27 +47,27 @@ using namespace rct;
 
 namespace rct {
 
-  std::pair<rct_scalar, crypto::ec_point> skpkGen() {
-    const rct_scalar sk = crypto::randomScalar();
+  std::pair<crypto::ec_scalar, crypto::ec_point> skpkGen() {
+    const crypto::ec_scalar sk = crypto::randomScalar();
     return std::make_pair(sk, G_(sk));
   }
 
-  Bulletproof bulletproof_MAKE(const uint64_t v, const rct::rct_scalar gamma)
+  Bulletproof bulletproof_MAKE(const uint64_t v, const crypto::ec_scalar gamma)
   {
-    return bulletproof_MAKE(std::vector<std::pair<const uint64_t, const rct_scalar>>{{v, gamma}});
+    return bulletproof_MAKE(std::vector<std::pair<const uint64_t, const crypto::ec_scalar>>{{v, gamma}});
   }
 
   Bulletproof bulletproof_MAKE(const std::vector<uint64_t> amounts, const scalarV blinding_factors)
   {
 
-    std::vector<std::pair<const uint64_t, const rct_scalar>> xs;
+    std::vector<std::pair<const uint64_t, const crypto::ec_scalar>> xs;
     std::transform
       (
        amounts.begin()
        , amounts.end()
        , blinding_factors.begin()
        , std::back_inserter(xs)
-       , [](const auto& x, const auto& y) -> std::pair<uint64_t, rct_scalar> {
+       , [](const auto& x, const auto& y) -> std::pair<uint64_t, crypto::ec_scalar> {
          return {x, y};
        }
        );
@@ -145,7 +145,7 @@ TEST(bulletproofs, valid_aggregated)
 
 // TEST(bulletproofs, invalid_8)
 // {
-//   rct::rct_scalar invalid_amount = rct::s_zero;
+//   crypto::ec_scalar invalid_amount = rct::s_zero;
 //   invalid_amount.data[8] = 1;
 //   rct::Bulletproof proof = bulletproof_MAKE(scalar_to_int(invalid_amount), crypto::randomScalar());
 //   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));
@@ -153,7 +153,7 @@ TEST(bulletproofs, valid_aggregated)
 
 // TEST(bulletproofs, invalid_31)
 // {
-//   rct::rct_scalar invalid_amount = rct::s_zero;
+//   crypto::ec_scalar invalid_amount = rct::s_zero;
 //   invalid_amount.data[31] = 1;
 //   rct::Bulletproof proof = bulletproof_MAKE(scalar_to_int(invalid_amount), crypto::randomScalar());
 //   ASSERT_FALSE(rct::bulletproof_VERIFY(proof));

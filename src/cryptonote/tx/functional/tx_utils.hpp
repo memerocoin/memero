@@ -48,7 +48,7 @@ namespace cryptonote
     size_t real_output_in_tx_index;     //index in transaction outputs vector
     uint64_t amount;                    //money
     bool rct;                           //true if the output is rct
-    rct::rct_scalar mask;                      //ringct amount mask
+    crypto::ec_scalar mask;                      //ringct amount mask
 
     // needed for test
     inline void push_output(uint64_t idx, const crypto::public_key &k, uint64_t amount) {
