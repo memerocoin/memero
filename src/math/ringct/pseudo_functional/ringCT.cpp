@@ -123,7 +123,7 @@ namespace rct {
   }
 
   bool verify_ringct_balance(const rctDataSizeChecked rv) {
-    rct::rct_pointV output_commits;
+    rct::pointV output_commits;
 
     std::transform
       (
@@ -150,7 +150,7 @@ namespace rct {
 
     LOG_ERROR_AND_RETURN_UNLESS(maybeProof, false, "Bad proof");
 
-    rct::rct_pointV output_commits;
+    rct::pointV output_commits;
 
     std::transform
       (
@@ -183,7 +183,7 @@ namespace rct {
     tools::threadpool& tpool = tools::threadpool::getInstance();
     tools::threadpool::waiter waiter(tpool);
 
-    const rct_pointV &pseudo_input_commits = rv.pseudo_input_commits;
+    const pointV &pseudo_input_commits = rv.pseudo_input_commits;
 
     const auto maybeMessage = get_ring_signature_message(rv);
     if (!maybeMessage) return false;

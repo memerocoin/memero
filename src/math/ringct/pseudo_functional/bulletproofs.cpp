@@ -75,7 +75,7 @@ struct proof_data_t
  * This uses the method in PAPER LINES 95-105,
  *   weighted across multiple proofs in a batch
  */
-bool bulletproof_VERIFY(const rct_pointS commits, const Bulletproof proof)
+bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
 {
   init_exponents();
 

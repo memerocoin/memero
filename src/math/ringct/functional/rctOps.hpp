@@ -50,7 +50,7 @@ namespace rct {
   rct_point G_(const rct_scalar a);
   rct_point H_(const rct_scalar a);
 
-  rct::rct_point sum(const rct_pointS A);
+  rct::rct_point sum(const pointS A);
 
 
   // ct

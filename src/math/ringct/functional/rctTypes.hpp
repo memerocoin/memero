@@ -47,15 +47,15 @@ namespace rct {
   using reconstructed_point = rct::rct_point;
 
 
-  using rct_pointV = std::vector<crypto::ec_point>;
-  using rct_pointS = std::span<const crypto::ec_point>;
+  using pointV = std::vector<crypto::ec_point>;
+  using pointS = std::span<const crypto::ec_point>;
 
-  using rct_scalarV = std::vector<rct_scalar>;
-  using rct_scalarS = std::span<const rct_scalar>;
+  using rct_scalarV = std::vector<crypto::ec_scalar>;
+  using rct_scalarS = std::span<const crypto::ec_scalar>;
 
   using inv8V = std::vector<inv8>;
 
-  const rct::inv8V to_inv8V(const rct_pointS xs);
+  const rct::inv8V to_inv8V(const pointS xs);
 
 
   struct output_public_data {
@@ -143,9 +143,9 @@ namespace rct {
     rct::rct_scalar a, b, t;
   };
 
-  std::optional<LR_V> zipLR(const rct_pointV L, const rct_pointV R);
+  std::optional<LR_V> zipLR(const pointV L, const pointV R);
 
-  std::pair<rct_pointV, rct_pointV>
+  std::pair<pointV, pointV>
   splitLR(const std::span<const std::pair<rct_point, rct_point>> LR);
   
   std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
@@ -224,7 +224,7 @@ namespace rct {
     std::vector<clsag_unsafe> CLSAGs;
 
     // WARNING, needs checking when parsing
-    rct_pointV pseudo_input_commits; //C - for simple rct
+    pointV pseudo_input_commits; //C - for simple rct
 
     // when changing this function, update cryptonote::get_pruned_transaction_weight
     template<bool W, template <bool> class Archive>
@@ -333,7 +333,7 @@ namespace rct {
     std::vector<clsag_unsafe> CLSAGs;
 
     // WARNING, needs checking when parsing
-    rct_pointV pseudo_input_commits; //C - for simple rct
+    pointV pseudo_input_commits; //C - for simple rct
   };
 
   std::optional<rctDataSizeChecked> maybeSizeCheckedRctData(const rctData& x);

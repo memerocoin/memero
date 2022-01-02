@@ -63,7 +63,7 @@ namespace rct {
     , const size_t index_in_decoys
     , const rct_point pseudo_input_commit
     , const output_public_dataS decoys
-    , const rct_pointV decoy_commit_surplus
+    , const pointV decoy_commit_surplus
     )
   {
     size_t n = decoys.size(); // ring size
@@ -215,7 +215,7 @@ namespace rct {
   {
     LOG_ERROR_AND_THROW_IF(decoys.empty(), "Empty decoys");
 
-    rct_pointV decoy_commit_surplus;
+    pointV decoy_commit_surplus;
     std::transform
       (
         decoys.begin()

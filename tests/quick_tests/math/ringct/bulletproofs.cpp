@@ -48,7 +48,7 @@ bp_input_t random_bp_input() {
   return { randomAmount(), randomScalar() };
 }
 
-std::pair<rct_pointV, std::vector<bp_input_t>>
+std::pair<pointV, std::vector<bp_input_t>>
 random_bp_inputs_for_size(const size_t i) {
   if (i < 1) return {};
 
@@ -60,7 +60,7 @@ random_bp_inputs_for_size(const size_t i) {
      , random_bp_input
      );
 
-  rct_pointV commits;
+  pointV commits;
   std::transform
     (
      xs.begin()
@@ -83,7 +83,7 @@ TEST(quick_bulletproofs, pick_amount_size_1_to_16)
 
 // struct Bulletproof
 // {
-//   rct::rct_pointV commits;
+//   rct::pointV commits;
 //   rct::rct_point A, S;
 //   rct::rct_point T1, T2;
 //   rct::rct_scalar taux, mu;
@@ -91,7 +91,7 @@ TEST(quick_bulletproofs, pick_amount_size_1_to_16)
 //   rct::rct_scalar a, b, t;
 // };
 
-std::pair<rct_pointV, Bulletproof> randomProof() {
+std::pair<pointV, Bulletproof> randomProof() {
   const size_t i = rand_range(1, 16);
   const auto x = random_bp_inputs_for_size(i);
   const auto proof = bulletproof_MAKE(x.second);

@@ -51,7 +51,7 @@
 
 namespace rct {
 
-  std::tuple<rct_scalar, rct_pointV, Bulletproof> generate_range_proof
+  std::tuple<rct_scalar, pointV, Bulletproof> generate_range_proof
   (
    const std::span<const rctOutputData> outputs
    )
@@ -83,7 +83,7 @@ namespace rct {
        , [](const auto& x) { return x.second; }
        );
 
-    rct_pointV output_commits;
+    pointV output_commits;
     std::transform
       (
        xs.begin()
@@ -216,7 +216,7 @@ namespace rct {
       generate_matching_input_commits(output_blinding_factors_sum, input_amounts);
 
 
-    rct_pointV pseudo_input_commits;
+    pointV pseudo_input_commits;
     std::transform
       (
        pseudo_inputs.begin()

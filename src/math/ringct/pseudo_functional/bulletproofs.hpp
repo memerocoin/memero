@@ -38,6 +38,6 @@
 namespace rct
 {
 
-  bool bulletproof_VERIFY(const rct_pointS commits, const Bulletproof proof);
+  bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof);
 
 }

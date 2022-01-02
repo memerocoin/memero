@@ -188,7 +188,7 @@ namespace rct {
     };
   }
 
-  const rct::inv8V to_inv8V(const rct_pointS xs) {
+  const rct::inv8V to_inv8V(const pointS xs) {
     inv8V ys;
     std::transform
       (
@@ -202,7 +202,7 @@ namespace rct {
   }
 
 
-  std::optional<LR_V> zipLR(const rct_pointV L, const rct_pointV R) {
+  std::optional<LR_V> zipLR(const pointV L, const pointV R) {
     if (L.size() != R.size()) {
       return {};
     }
@@ -221,10 +221,10 @@ namespace rct {
     return LR;
   }
 
-  std::pair<rct_pointV, rct_pointV>
+  std::pair<pointV, pointV>
   splitLR(const std::span<const std::pair<rct_point, rct_point>> LR) {
-    rct_pointV L;
-    rct_pointV R;
+    pointV L;
+    pointV R;
 
     std::transform
       (

@@ -388,7 +388,7 @@ static rct::rctDataSizeChecked make_sample_simple_rct_sig(int n_inputs, const ui
     ct_secret_key sctmp;
     output_public_data pctmp;
     vector<amount_t> inamounts, outamounts;
-    rct_pointV destinations;
+    pointV destinations;
     rct_scalarV output_shared_secrets_hashed_by_index;
     rct_scalar Sk;
     rct_point Pk;

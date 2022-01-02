@@ -33,7 +33,7 @@ namespace consensus {
 
   bool rule_2_ringct_output_amounts_should_not_overflow_amount_type
   (
-   const rct_pointS outputs
+   const pointS outputs
    , const Bulletproof proof
    ) {
     return bulletproof_VERIFY(outputs, proof);
@@ -41,8 +41,8 @@ namespace consensus {
 
   bool rule_3_ringct_should_be_balanced
   (
-   const rct_pointS inputs
-   , const rct_pointS outputs
+   const pointS inputs
+   , const pointS outputs
    , const amount_t fee
    ) {
     return sum(inputs) == sum(outputs) + H_(crypto::int_to_scalar(fee));

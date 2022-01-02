@@ -205,9 +205,9 @@ rct_point cross_vector_exponent
 
 
 /* folds a curvepoint array using a two way scaled Hadamard product */
-rct_pointV hadamard_fold
+pointV hadamard_fold
 (
- const rct_pointS v
+ const pointS v
  , const std::optional<rct_scalarS> scale
  , const rct_scalar a
  , const rct_scalar b
@@ -261,7 +261,7 @@ Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, con
   const size_t logMN = logM + logN;
   const size_t MN = M * N;
 
-  rct_pointV V(xs.size());
+  pointV V(xs.size());
   rct_scalarV aL(MN), aR(MN);
 
   std::transform

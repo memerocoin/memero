@@ -499,7 +499,7 @@ TEST(Serialization, serializes_ringct_types)
   //add output 500
   amounts.push_back(500);
   output_shared_secrets_hashed_by_index.push_back(rct::hash_to_scalar({}));
-  rct::rct_pointV destinations;
+  rct::pointV destinations;
   rct::rct_scalar Sk;
   rct::rct_point Pk;
   std::tie(Sk, Pk) = rct::skpkGen();
