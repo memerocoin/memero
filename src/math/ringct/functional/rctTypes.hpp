@@ -47,19 +47,13 @@ namespace rct {
   using reconstructed_point = rct::rct_point;
 
 
-  using rct_pointV = std::vector<rct_point>;
-  using rct_pointM = std::vector<rct_pointV>;
-  using rct_pointS = std::span<const rct_point>;
-  using rct_pointL = std::list<const rct_point>;
+  using rct_pointV = std::vector<crypto::ec_point>;
+  using rct_pointS = std::span<const crypto::ec_point>;
 
   using rct_scalarV = std::vector<rct_scalar>;
-  using rct_scalarM = std::vector<rct_scalarV>;
   using rct_scalarS = std::span<const rct_scalar>;
-  using rct_scalarL = std::list<rct_scalar>;
 
   using inv8V = std::vector<inv8>;
-  using inv8S = std::span<const inv8>;
-  using inv8L = std::list<const inv8>;
 
   const rct::inv8V to_inv8V(const rct_pointS xs);
 

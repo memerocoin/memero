@@ -53,8 +53,6 @@ namespace crypto {
   }
 
   using dataV = std::vector<crypto_data>;
-  using dataS = std::span<crypto_data>;
-
 
   struct ec_point_unsafe : crypto_data {
     bool operator==(const ec_point_unsafe &x) const noexcept {
