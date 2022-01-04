@@ -173,11 +173,6 @@
                 program = "${self.defaultPackage.${system}}/bin/lolnero";
               };
 
-            lolnero-rpc =
-              {
-                type = "app";
-                program = "${self.defaultPackage.${system}}/bin/lolnero-rpc";
-              };
           }
         );
 
