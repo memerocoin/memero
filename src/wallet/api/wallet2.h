@@ -377,7 +377,8 @@ namespace tools
     {
       if (m_offline) return false;
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-      return epee::net_utils::invoke_http_bin(uri, req, res);
+      return epee::net_utils::invoke_http_bin
+        (m_daemon_host, m_daemon_port, uri, req, res);
     }
 
     template<class t_request, class t_response>
