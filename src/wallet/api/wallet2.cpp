@@ -65,6 +65,7 @@
 #include <boost/format.hpp>
 #include <boost/exception/to_string.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
@@ -127,7 +128,7 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
   const auto daemon_port = get_config(nettype).RPC_DEFAULT_PORT;
 
   if (daemon_address.empty())
-    daemon_address = std::string("http://") + daemon_host + ":" + std::to_string(daemon_port);
+    daemon_address = daemon_host + ":" + std::to_string(daemon_port);
 
   std::unique_ptr<tools::wallet2> wallet = std::make_unique<tools::wallet2>(nettype, kdf_rounds, unattended);
   if (!wallet->init(std::move(daemon_address)))
@@ -319,12 +320,27 @@ bool wallet2::set_daemon(std::string daemon_address)
 
   if(m_http_client->is_connected())
     m_http_client->disconnect();
-  m_daemon_address = daemon_address;
 
-  const std::string address = get_daemon_address();
-  LOG_INFO("setting daemon to " << address);
-  bool ret =  m_http_client->set_server(address);
-  return ret;
+  std::vector<std::string> tokens;
+  boost::split(tokens, daemon_address, boost::is_any_of(":"));
+
+
+  if (tokens.size() == 2) {
+    m_daemon_host = tokens.front();
+    m_daemon_port = tokens.back();
+
+    const std::string address = get_daemon_address();
+    LOG_INFO("setting daemon to " << address);
+    bool ret =  m_http_client->set_server(address);
+
+    return ret;
+  }
+
+  else {
+    LOG_FATAL("failed to set daemon address: " << daemon_address);
+    return false;
+  }
+
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::init(std::string daemon_address)
@@ -3120,7 +3136,7 @@ std::string wallet2::get_keys_file() const
 
 std::string wallet2::get_daemon_address() const
 {
-  return m_daemon_address;
+  return m_daemon_host + ":" + m_daemon_port;
 }
 
 uint64_t wallet2::get_daemon_blockchain_height(std::string &err)

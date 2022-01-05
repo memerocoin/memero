@@ -470,7 +470,6 @@ namespace tools
     bool spends_one_of_ours(const cryptonote::transaction &tx) const;
 
     cryptonote::account_base m_account;
-    std::string m_daemon_address;
     std::string m_daemon_host = "localhost";
     std::string m_daemon_port = "45679";
     std::string m_wallet_file;
