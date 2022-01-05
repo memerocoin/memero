@@ -36,6 +36,7 @@ namespace epee
      , const std::string port
      , const std::string uri
      , const std::string request_body
+     , const std::optional<std::string> content_type
      )
     {
       const int version = 11;
@@ -63,10 +64,10 @@ namespace epee
 
       req.set(http::field::host, host);
       req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
-      req.set(http::field::content_type,"application/json; charset=utf-8");
-      // req.set(http::field::content_length,req_param.length());
       req.set(http::field::content_length, std::to_string(request_body.size()));
-      // req.set("Content-Length", std::to_string(req_param.size()));
+      if (content_type) {
+        req.set(http::field::content_type, *content_type);
+      }
 
       LOG_VERBOSE("Beast REQ:");
       LOG_VERBOSE(req);
@@ -104,5 +105,41 @@ namespace epee
       return m_body;
     }
 
+    std::optional<std::string> beast_http_json
+    (
+     const std::string host
+     , const std::string port
+     , const std::string uri
+     , const std::string request_body
+     )
+    {
+      return beast_http
+        (
+         host
+         , port
+         , uri
+         , request_body
+         , "application/json; charset=utf-8"
+         );
+    }
+
+    std::optional<std::string> beast_http_bin
+    (
+     const std::string host
+     , const std::string port
+     , const std::string uri
+     , const std::string request_body
+     )
+    {
+
+      return beast_http
+        (
+         host
+         , port
+         , uri
+         , request_body
+         , {}
+         );
+    }
   }
 }
