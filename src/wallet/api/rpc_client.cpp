@@ -58,8 +58,6 @@ using namespace wallet::logic::type::transfer;
 namespace tools
 {
 
-std::mutex m_daemon_rpc_mutex;
-
 RPC_Client::RPC_Client()
   : m_offline(false)
 {
