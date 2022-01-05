@@ -40,9 +40,6 @@
 #include "tools/epee/include/net/http_server_handlers_map2.h"
 
 
-
-
-
 namespace cryptonote
 {
   /************************************************************************/
@@ -56,65 +53,70 @@ namespace cryptonote
 
     typedef epee::net_utils::connection_context_base connection_context;
 
-    core_rpc_server(
-        core& cr
-      , nodetool::node_server& p2p
-      );
+    core_rpc_server
+    (
+     core& cr
+     , nodetool::node_server& p2p
+     );
     ~core_rpc_server();
 
     static void init_options(boost::program_options::options_description& desc);
-    bool init(
-        const boost::program_options::variables_map& vm,
-        const std::string& port
-      );
+    bool init
+    (
+     const boost::program_options::variables_map& vm,
+     const std::string& port
+     );
     network_type nettype() const { return m_core.get_nettype(); }
 
     CHAIN_HTTP_TO_MAP2(connection_context); //forward http requests to uri map
 
     BEGIN_URI_MAP2()
 
-      MAP_URI_AUTO_BIN2("/get_blocks.bin", on_get_blocks, COMMAND_RPC_GET_BLOCKS_FAST)
-      MAP_URI_AUTO_BIN2("/get_hashes.bin", on_get_hashes, COMMAND_RPC_GET_HASHES_FAST)
+        MAP_URI_AUTO_BIN2("/get_blocks.bin", on_get_blocks, COMMAND_RPC_GET_BLOCKS_FAST)
+        MAP_URI_AUTO_BIN2("/get_hashes.bin", on_get_hashes, COMMAND_RPC_GET_HASHES_FAST)
 
-      MAP_URI_AUTO_JON2("/is_output_key_image_spent", on_is_output_key_image_spent, COMMAND_RPC_IS_KEY_IMAGE_SPENT)
-      MAP_URI_AUTO_JON2("/send_raw_transaction", on_send_raw_tx, COMMAND_RPC_SEND_RAW_TX)
-      MAP_URI_AUTO_JON2("/start_mining", on_start_mining, COMMAND_RPC_START_MINING)
-      MAP_URI_AUTO_JON2("/stop_mining", on_stop_mining, COMMAND_RPC_STOP_MINING)
-      MAP_URI_AUTO_JON2("/mining_status", on_mining_status, COMMAND_RPC_MINING_STATUS)
-      MAP_URI_AUTO_JON2("/save_bc", on_save_bc, COMMAND_RPC_SAVE_BC)
-      MAP_URI_AUTO_JON2("/get_peer_list", on_get_peer_list, COMMAND_RPC_GET_PEER_LIST)
-      MAP_URI_AUTO_JON2("/set_log_level", on_set_log_level, COMMAND_RPC_SET_LOG_LEVEL)
-      MAP_URI_AUTO_JON2("/get_transaction_pool", on_get_transaction_pool, COMMAND_RPC_GET_TRANSACTION_POOL)
-      MAP_URI_AUTO_JON2("/get_transaction_pool_hashes", on_get_transaction_pool_hashes, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES)
-      MAP_URI_AUTO_JON2("/get_transaction_pool_stats", on_get_transaction_pool_stats, COMMAND_RPC_GET_TRANSACTION_POOL_STATS)
-      MAP_URI_AUTO_JON2("/stop_daemon", on_stop_daemon, COMMAND_RPC_STOP_DAEMON)
-      MAP_URI_AUTO_JON2("/get_info", on_get_info, COMMAND_RPC_GET_INFO)
-      MAP_URI_AUTO_JON2("/out_peers", on_out_peers, COMMAND_RPC_OUT_PEERS)
-      MAP_URI_AUTO_JON2("/in_peers", on_in_peers, COMMAND_RPC_IN_PEERS)
-      MAP_URI_AUTO_JON2("/get_tx_outputs", on_get_tx_outputs, COMMAND_RPC_GET_OUTPUTS)
-      MAP_URI_AUTO_JON2("/pop_blocks", on_pop_blocks, COMMAND_RPC_POP_BLOCKS)
+        MAP_URI_AUTO_JON2("/is_output_key_image_spent", on_is_output_key_image_spent, COMMAND_RPC_IS_KEY_IMAGE_SPENT)
+        MAP_URI_AUTO_JON2("/send_raw_transaction", on_send_raw_tx, COMMAND_RPC_SEND_RAW_TX)
+        MAP_URI_AUTO_JON2("/start_mining", on_start_mining, COMMAND_RPC_START_MINING)
+        MAP_URI_AUTO_JON2("/stop_mining", on_stop_mining, COMMAND_RPC_STOP_MINING)
+        MAP_URI_AUTO_JON2("/mining_status", on_mining_status, COMMAND_RPC_MINING_STATUS)
+        MAP_URI_AUTO_JON2("/save_bc", on_save_bc, COMMAND_RPC_SAVE_BC)
+        MAP_URI_AUTO_JON2("/get_peer_list", on_get_peer_list, COMMAND_RPC_GET_PEER_LIST)
+        MAP_URI_AUTO_JON2("/set_log_level", on_set_log_level, COMMAND_RPC_SET_LOG_LEVEL)
+        MAP_URI_AUTO_JON2("/get_transaction_pool", on_get_transaction_pool, COMMAND_RPC_GET_TRANSACTION_POOL)
+        MAP_URI_AUTO_JON2("/get_transaction_pool_hashes", on_get_transaction_pool_hashes, COMMAND_RPC_GET_TRANSACTION_POOL_HASHES)
+        MAP_URI_AUTO_JON2("/get_transaction_pool_stats", on_get_transaction_pool_stats, COMMAND_RPC_GET_TRANSACTION_POOL_STATS)
+        MAP_URI_AUTO_JON2("/stop_daemon", on_stop_daemon, COMMAND_RPC_STOP_DAEMON)
+        MAP_URI_AUTO_JON2("/get_info", on_get_info, COMMAND_RPC_GET_INFO)
+        MAP_URI_AUTO_JON2("/out_peers", on_out_peers, COMMAND_RPC_OUT_PEERS)
+        MAP_URI_AUTO_JON2("/in_peers", on_in_peers, COMMAND_RPC_IN_PEERS)
+        MAP_URI_AUTO_JON2("/get_tx_outputs", on_get_tx_outputs, COMMAND_RPC_GET_OUTPUTS)
+        MAP_URI_AUTO_JON2("/pop_blocks", on_pop_blocks, COMMAND_RPC_POP_BLOCKS)
 
-      MAP_URI_AUTO_JON2("/get_transactions", on_get_transactions, COMMAND_RPC_GET_TRANSACTIONS)
+        MAP_URI_AUTO_JON2("/get_transactions", on_get_transactions, COMMAND_RPC_GET_TRANSACTIONS)
 
-      BEGIN_JSON_RPC_MAP("/json_rpc")
-        MAP_JON_RPC_WE("get_block_header_by_hash", on_get_block_header_by_hash,   COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH)
-        MAP_JON_RPC_WE("get_block_header_by_height", on_get_block_header_by_height, COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT)
-        MAP_JON_RPC_WE("get_block_headers_range", on_get_block_headers_range,    COMMAND_RPC_GET_BLOCK_HEADERS_RANGE)
-        MAP_JON_RPC_WE("get_block",              on_get_block,                 COMMAND_RPC_GET_BLOCK)
-        MAP_JON_RPC_WE("get_connections",     on_get_connections,            COMMAND_RPC_GET_CONNECTIONS)
-        MAP_JON_RPC_WE("get_info",               on_get_info_json,              COMMAND_RPC_GET_INFO)
-        MAP_JON_RPC_WE("set_bans",            on_set_bans,                   COMMAND_RPC_SETBANS)
-        MAP_JON_RPC_WE("get_bans",            on_get_bans,                   COMMAND_RPC_GETBANS)
-        MAP_JON_RPC_WE("banned",              on_banned,                     COMMAND_RPC_BANNED)
-        MAP_JON_RPC_WE("flush_txpool",        on_flush_txpool,               COMMAND_RPC_FLUSH_TRANSACTION_POOL)
-        MAP_JON_RPC_WE("get_version",            on_get_version,                COMMAND_RPC_GET_VERSION)
-        MAP_JON_RPC_WE("get_coinbase_tx_sum", on_get_coinbase_tx_sum,        COMMAND_RPC_GET_COINBASE_TX_SUM)
-        MAP_JON_RPC_WE("get_alternate_chains",on_get_alternate_chains,       COMMAND_RPC_GET_ALTERNATE_CHAINS)
-        MAP_JON_RPC_WE("relay_tx",            on_relay_tx,                   COMMAND_RPC_RELAY_TX)
-        MAP_JON_RPC_WE("sync_info",           on_sync_info,                  COMMAND_RPC_SYNC_INFO)
-        MAP_JON_RPC_WE("get_output_distribution", on_get_output_distribution, COMMAND_RPC_GET_OUTPUT_DISTRIBUTION)
-        MAP_JON_RPC_WE("flush_cache",         on_flush_cache,                COMMAND_RPC_FLUSH_CACHE)
-      END_JSON_RPC_MAP()
+        BEGIN_JSON_RPC_MAP("/json_rpc")
+
+            MAP_JON_RPC_WE("get_block_header_by_hash", on_get_block_header_by_hash, COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH)
+            MAP_JON_RPC_WE("get_block_header_by_height", on_get_block_header_by_height, COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT)
+            MAP_JON_RPC_WE("get_block_headers_range", on_get_block_headers_range, COMMAND_RPC_GET_BLOCK_HEADERS_RANGE)
+            MAP_JON_RPC_WE("get_block", on_get_block, COMMAND_RPC_GET_BLOCK)
+            MAP_JON_RPC_WE("get_connections",on_get_connections, COMMAND_RPC_GET_CONNECTIONS)
+            MAP_JON_RPC_WE("get_info", on_get_info_json, COMMAND_RPC_GET_INFO)
+            MAP_JON_RPC_WE("set_bans", on_set_bans, COMMAND_RPC_SETBANS)
+            MAP_JON_RPC_WE("get_bans", on_get_bans, COMMAND_RPC_GETBANS)
+            MAP_JON_RPC_WE("banned", on_banned, COMMAND_RPC_BANNED)
+            MAP_JON_RPC_WE("flush_txpool", on_flush_txpool, COMMAND_RPC_FLUSH_TRANSACTION_POOL)
+            MAP_JON_RPC_WE("get_version", on_get_version, COMMAND_RPC_GET_VERSION)
+            MAP_JON_RPC_WE("get_coinbase_tx_sum", on_get_coinbase_tx_sum, COMMAND_RPC_GET_COINBASE_TX_SUM)
+            MAP_JON_RPC_WE("get_alternate_chains",on_get_alternate_chains, COMMAND_RPC_GET_ALTERNATE_CHAINS)
+            MAP_JON_RPC_WE("relay_tx", on_relay_tx, COMMAND_RPC_RELAY_TX)
+            MAP_JON_RPC_WE("sync_info", on_sync_info, COMMAND_RPC_SYNC_INFO)
+            MAP_JON_RPC_WE("get_output_distribution", on_get_output_distribution, COMMAND_RPC_GET_OUTPUT_DISTRIBUTION)
+            MAP_JON_RPC_WE("flush_cache", on_flush_cache, COMMAND_RPC_FLUSH_CACHE)
+
+        END_JSON_RPC_MAP()
+
     END_URI_MAP2()
 
     bool on_get_height(const COMMAND_RPC_GET_HEIGHT::request& req, COMMAND_RPC_GET_HEIGHT::response& res);
@@ -159,7 +161,7 @@ namespace cryptonote
     bool on_flush_cache(const COMMAND_RPC_FLUSH_CACHE::request& req, COMMAND_RPC_FLUSH_CACHE::response& res, epee::json_rpc::error& error_resp);
     //-----------------------
 
-private:
+  private:
     bool check_core_busy();
     bool check_core_ready();
 
