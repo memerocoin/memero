@@ -1118,7 +1118,16 @@ void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, 
 {
   cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::request req = AUTO_VAL_INIT(req);
   cryptonote::COMMAND_RPC_GET_BLOCKS_FAST::response res = AUTO_VAL_INIT(res);
-  req.block_ids = short_chain_history;
+  std::list<std::string> block_ids;
+  std::transform
+    (
+     short_chain_history.begin()
+     , short_chain_history.end()
+     , std::back_inserter(block_ids)
+     , [](const auto& x) { return epee::string_tools::pod_to_hex(x); }
+     );
+
+  req.block_ids = block_ids;
 
   LOG_DEBUG("Pulling blocks: start_height " << start_height);
 
@@ -1127,8 +1136,8 @@ void wallet2::pull_blocks(uint64_t start_height, uint64_t &blocks_start_height, 
   req.no_miner_tx = false;
 
   {
-    bool r = m_rpc_client.invoke_http_bin("/get_blocks.bin", req, res);
-    THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_blocks.bin", error::get_blocks_error, (res.status));
+    bool r = m_rpc_client.invoke_http_json("/get_blocks", req, res);
+    THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_blocks", error::get_blocks_error, (res.status));
     THROW_WALLET_EXCEPTION_IF(res.blocks.size() != res.output_indices.size(), error::wallet_internal_error,
         "mismatched blocks (" + boost::lexical_cast<std::string>(res.blocks.size()) + ") and output_indices (" +
         boost::lexical_cast<std::string>(res.output_indices.size()) + ") sizes from daemon");
