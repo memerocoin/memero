@@ -51,23 +51,19 @@ namespace epee
      , const std::string request_body
      );
      
-    template<class t_request, class t_response, class t_transport>
+    template<class t_request, class t_response>
     bool invoke_http_json
     (
-     const std::string_view uri
+     const std::string host
+     , const std::string port 
+     , const std::string_view uri
      , const t_request& request_struct
      , t_response& result_struct
-     , t_transport& transport
-     , std::chrono::milliseconds timeout = std::chrono::seconds(15)
-     , const std::string_view method = "POST"
      )
     {
       std::string req_param;
       if(!serialization::store_t_to_json(request_struct, req_param))
         return false;
-
-      const std::string host = "localhost";
-      const std::string port = "45679";
 
       const std::optional<std::string> response =
         beast_http_json(host, port, std::string(uri), req_param);
@@ -79,10 +75,8 @@ namespace epee
       return serialization::load_t_from_json(result_struct, *response);
     }
 
-
-
     template<class t_request, class t_response, class t_transport>
-    bool invoke_http_bin
+    bool invoke_http_json
     (
      const std::string_view uri
      , const t_request& request_struct
@@ -92,12 +86,34 @@ namespace epee
      , const std::string_view method = "POST"
      )
     {
+      const std::string host = "localhost";
+      const std::string port = "45679";
+
+      return invoke_http_json
+        (
+         host
+         , port
+         , uri
+         , request_struct
+         , result_struct
+         );
+    }
+
+
+
+    template<class t_request, class t_response>
+    bool invoke_http_bin
+    (
+     const std::string host
+     , const std::string port 
+     , const std::string_view uri
+     , const t_request& request_struct
+     , t_response& result_struct
+     )
+    {
       std::string req_param;
       if(!serialization::store_t_to_binary(request_struct, req_param))
         return false;
-
-      const std::string host = "localhost";
-      const std::string port = "45679";
 
       const std::optional<std::string> response =
         beast_http_bin(host, port, std::string(uri), req_param);
@@ -110,26 +126,52 @@ namespace epee
     }
 
     template<class t_request, class t_response, class t_transport>
-    bool invoke_http_json_rpc
+    bool invoke_http_bin
     (
      const std::string_view uri
-     , std::string method_name
-     , const t_request& out_struct
+     , const t_request& request_struct
      , t_response& result_struct
      , t_transport& transport
      , std::chrono::milliseconds timeout = std::chrono::seconds(15)
-     , const std::string_view http_method = "POST"
-     , const std::string& req_id = "0"
+     , const std::string_view method = "POST"
      )
     {
+      const std::string host = "localhost";
+      const std::string port = "45679";
+
+      return invoke_http_bin
+        (
+         host
+         , port
+         , uri
+         , request_struct
+         , result_struct
+         );
+    }
+
+    template<class t_request, class t_response>
+    bool invoke_http_json_rpc
+    (
+     const std::string host
+     , const std::string port 
+     , const std::string_view uri
+     , std::string method_name
+     , const t_request& request_struct
+     , t_response& result_struct
+     )
+    {
+      const std::string req_id = "0";
       epee::json_rpc::error error_struct;
       epee::json_rpc::request<t_request> req_t = AUTO_VAL_INIT(req_t);
       req_t.jsonrpc = "2.0";
       req_t.id = req_id;
       req_t.method = std::move(method_name);
-      req_t.params = out_struct;
-      epee::json_rpc::response<t_response, epee::json_rpc::error> resp_t = AUTO_VAL_INIT(resp_t);
-      if(!epee::net_utils::invoke_http_json(uri, req_t, resp_t, transport, timeout, http_method))
+      req_t.params = request_struct;
+      epee::json_rpc::response<t_response, epee::json_rpc::error> resp_t =
+        AUTO_VAL_INIT(resp_t);
+
+      if(!epee::net_utils::invoke_http_json
+         (host, port, uri, req_t, resp_t))
         {
           error_struct = {};
           return false;
@@ -137,11 +179,46 @@ namespace epee
       if(resp_t.error.code || resp_t.error.message.size())
         {
           error_struct = resp_t.error;
-          LOG_ERROR("RPC call of \"" << req_t.method << "\" returned error: " << resp_t.error.code << ", message: " << resp_t.error.message);
+          LOG_ERROR
+            (
+             "RPC call of \""
+             << req_t.method
+             << "\" returned error: "
+             << resp_t.error.code
+             << ", message: "
+             << resp_t.error.message
+             );
           return false;
         }
       result_struct = resp_t.result;
       return true;
+    }
+
+    template<class t_request, class t_response, class t_transport>
+    bool invoke_http_json_rpc
+    (
+     const std::string_view uri
+     , std::string method_name
+     , const t_request& request_struct
+     , t_response& result_struct
+     , t_transport& transport
+     , std::chrono::milliseconds timeout = std::chrono::seconds(15)
+     , const std::string_view http_method = "POST"
+     , const std::string& req_id = "0"
+     )
+    {
+      const std::string host = "localhost";
+      const std::string port = "45679";
+
+      return invoke_http_json_rpc
+        (
+         host
+         , port
+         , uri
+         , method_name
+         , request_struct
+         , result_struct
+         );
     }
   }
 }

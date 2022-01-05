@@ -362,27 +362,32 @@ namespace tools
     uint32_t adjust_priority(uint32_t priority);
 
     template<class t_request, class t_response>
-    bool invoke_http_json(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")
+    bool invoke_http_json
+    (const std::string_view uri, const t_request& req, t_response& res)
     {
       if (m_offline) return false;
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-      return epee::net_utils::invoke_http_json(uri, req, res, *m_http_client, timeout, http_method);
+      return epee::net_utils::invoke_http_json
+        (m_daemon_host, m_daemon_port, uri, req, res);
     }
 
     template<class t_request, class t_response>
-    bool invoke_http_bin(const std::string_view uri, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST")
+    bool invoke_http_bin
+    (const std::string_view uri, const t_request& req, t_response& res)
     {
       if (m_offline) return false;
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-      return epee::net_utils::invoke_http_bin(uri, req, res, *m_http_client, timeout, http_method);
+      return epee::net_utils::invoke_http_bin(uri, req, res);
     }
 
     template<class t_request, class t_response>
-    bool invoke_http_json_rpc(const std::string_view uri, const std::string& method_name, const t_request& req, t_response& res, std::chrono::milliseconds timeout = std::chrono::seconds(15), const std::string_view http_method = "POST", const std::string& req_id = "0")
+    bool invoke_http_json_rpc
+    (const std::string_view uri, const std::string& method_name, const t_request& req, t_response& res)
     {
       if (m_offline) return false;
       std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-      return epee::net_utils::invoke_http_json_rpc(uri, method_name, req, res, *m_http_client, timeout, http_method, req_id);
+      return epee::net_utils::invoke_http_json_rpc
+        (m_daemon_host, m_daemon_port, uri, method_name, req, res);
     }
 
     void change_password(const std::string &filename, const epee::wipeable_string &original_password, const epee::wipeable_string &new_password);
@@ -465,6 +470,8 @@ namespace tools
 
     cryptonote::account_base m_account;
     std::string m_daemon_address;
+    std::string m_daemon_host = "localhost";
+    std::string m_daemon_port = "45679";
     std::string m_wallet_file;
     std::string m_keys_file;
     const std::unique_ptr<epee::net_utils::http::abstract_http_client> m_http_client;
