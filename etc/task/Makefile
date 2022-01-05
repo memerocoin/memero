@@ -194,6 +194,11 @@ make-main-wallet:
 --password ''
 
 
+main-wallet-default:
+	../../build/bin/lolnero --open mainnet/test1 \
+--log-level 1 \
+--password ''
+
 main-wallet:
 	../../build/bin/lolnero --open mainnet/test1 \
 --daemon-address 127.0.0.1:45000 --log-level 1 \
