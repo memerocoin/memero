@@ -96,7 +96,6 @@ namespace cryptonote
       MAP_URI_AUTO_JON2("/get_tx_outputs", on_get_tx_outputs, COMMAND_RPC_GET_OUTPUTS)
       MAP_URI_AUTO_JON2("/pop_blocks", on_pop_blocks, COMMAND_RPC_POP_BLOCKS)
       BEGIN_JSON_RPC_MAP("/json_rpc")
-        // MAP_JON_RPC_WE("on_get_block_hash",      on_get_block_hash,               COMMAND_RPC_GETBLOCKHASH)
         // MAP_JON_RPC_WE("get_block_template",     on_get_block_template,           COMMAND_RPC_GETBLOCKTEMPLATE)
         // MAP_JON_RPC_WE("submit_block",           on_submit_block,                COMMAND_RPC_SUBMITBLOCK)
         // MAP_JON_RPC_WE("get_last_block_header",  on_get_last_block_header,      COMMAND_RPC_GET_LAST_BLOCK_HEADER)
