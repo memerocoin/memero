@@ -260,7 +260,7 @@ wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std
   m_ignore_outputs_below(0),
   m_is_initialized(false),
   m_kdf_rounds(kdf_rounds),
-  m_rpc_client(*m_http_client, m_daemon_rpc_mutex),
+  m_rpc_client(m_daemon_rpc_mutex),
   m_spend_view_public_keys{crypto::null_pkey, crypto::null_pkey},
   m_subaddress_lookahead_major(config::lol::SUBADDRESS_LOOKAHEAD_MAJOR),
   m_subaddress_lookahead_minor(config::lol::SUBADDRESS_LOOKAHEAD_MINOR),
@@ -332,6 +332,8 @@ bool wallet2::set_daemon(std::string daemon_address)
     const std::string address = get_daemon_address();
     LOG_INFO("setting daemon to " << address);
     bool ret =  m_http_client->set_server(address);
+
+    m_rpc_client.set_daemon(m_daemon_host, m_daemon_port);
 
     return ret;
   }

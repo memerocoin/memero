@@ -60,11 +60,15 @@ namespace tools
 
 constexpr std::chrono::seconds rpc_timeout = config::lol::rpc_timeout;
 
-RPC_Client::RPC_Client(epee::net_utils::http::abstract_http_client &http_client, std::recursive_mutex &mutex)
-  : m_http_client(http_client)
-  , m_daemon_rpc_mutex(mutex)
+RPC_Client::RPC_Client(std::recursive_mutex &mutex)
+  : m_daemon_rpc_mutex(mutex)
   , m_offline(false)
 {
+}
+
+void RPC_Client::set_daemon(const std::string host, const std::string port) {
+  m_host = host;
+  m_port = port;
 }
 
 std::optional<std::string> RPC_Client::get_height(uint64_t &height) const
@@ -77,7 +81,7 @@ std::optional<std::string> RPC_Client::get_height(uint64_t &height) const
 
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t, m_http_client, rpc_timeout);
+    bool r = invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t);
     RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
   }
 
@@ -96,7 +100,7 @@ std::optional<std::string> RPC_Client::get_target_height(uint64_t &height) const
 
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t, m_http_client, rpc_timeout);
+    bool r = invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t);
     RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
   }
 
@@ -116,7 +120,7 @@ bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64
   try
   {
     const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-    bool r = epee::net_utils::invoke_http_json_rpc("/json_rpc", "get_output_distribution", req, res, m_http_client, rpc_timeout);
+    bool r = invoke_http_json_rpc("/json_rpc", "get_output_distribution", req, res);
     THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
   }
   catch(...)
@@ -347,7 +351,7 @@ void RPC_Client::get_tx_outputs
     {
       const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
 
-      bool r = epee::net_utils::invoke_http_json("/get_tx_outputs", req, daemon_resp, m_http_client, rpc_timeout);
+      bool r = invoke_http_json("/get_tx_outputs", req, daemon_resp);
       THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "get_tx_outputs", error::get_tx_outputs_error, (daemon_resp.status));
       THROW_WALLET_EXCEPTION_IF(daemon_resp.outs.size() != req.outputs.size(), error::wallet_internal_error,
         "daemon returned wrong response for get_tx_outputs.bin, wrong amounts count = " +
