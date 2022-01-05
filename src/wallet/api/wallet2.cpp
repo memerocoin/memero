@@ -241,8 +241,7 @@ namespace tools
 constexpr const std::chrono::seconds wallet2::rpc_timeout;
 const char* wallet2::tr(const char* str) { return str; }
 
-wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended, std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory):
-  m_http_client(http_client_factory->create()),
+wallet2::wallet2(network_type nettype, uint64_t kdf_rounds, bool unattended):
   m_run(true),
   m_callback(0),
   m_nettype(nettype),
@@ -318,9 +317,6 @@ bool wallet2::set_daemon(std::string daemon_address)
 {
   std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
 
-  if(m_http_client->is_connected())
-    m_http_client->disconnect();
-
   std::vector<std::string> tokens;
   boost::split(tokens, daemon_address, boost::is_any_of(":"));
 
@@ -331,11 +327,10 @@ bool wallet2::set_daemon(std::string daemon_address)
 
     const std::string address = get_daemon_address();
     LOG_INFO("setting daemon to " << address);
-    bool ret =  m_http_client->set_server(address);
 
     m_rpc_client.set_daemon(m_daemon_host, m_daemon_port);
 
-    return ret;
+    return true;
   }
 
   else {
@@ -2408,19 +2403,6 @@ bool wallet2::check_connection(uint32_t *version, uint32_t timeout)
     return false;
   }
 
-  // TODO: Add light wallet version check.
-  {
-    std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-    if(!m_http_client->is_connected())
-    {
-      m_rpc_version = 0;
-      if (!m_http_client->connect(std::chrono::milliseconds(timeout)))
-        return false;
-      if(!m_http_client->is_connected())
-        return false;
-    }
-  }
-
   if (!m_rpc_version)
   {
     cryptonote::COMMAND_RPC_GET_VERSION::request req_t = AUTO_VAL_INIT(req_t);
@@ -2443,13 +2425,6 @@ void wallet2::set_offline(bool offline)
 {
   m_offline = offline;
   m_rpc_client.set_offline(offline);
-  m_http_client->set_auto_connect(!offline);
-  if (offline)
-  {
-    std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-    if(m_http_client->is_connected())
-      m_http_client->disconnect();
-  }
 }
 //----------------------------------------------------------------------------------------------------
 bool wallet2::generate_chacha_key_from_secret_keys(crypto::chacha_key &key) const

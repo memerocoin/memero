@@ -33,7 +33,8 @@
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/misc_os_dependent.h"
 
-#include "tools/epee/include/net/http_client.h"                        // epee::net_utils::...
+#include "tools/epee/include/net/net_helper.h"
+#include "tools/epee/include/net/net_parse_helpers.h"
 
 #include "math/crypto/controller/init.hpp"
 

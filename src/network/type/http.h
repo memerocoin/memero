@@ -28,25 +28,26 @@
 
 #pragma once
 
-#include "tools/epee/include/net/http_client.h"
+#include "tools/epee/include/net/net_helper.h"
+#include "tools/epee/include/net/net_parse_helpers.h"
 
 namespace net
 {
 namespace http
 {
 
-class client : public epee::net_utils::http::http_simple_client
-{
-};
+// class client : public epee::net_utils::http::http_simple_client
+// {
+// };
 
-class client_factory : public epee::net_utils::http::http_client_factory
-{
-public:
-  std::unique_ptr<epee::net_utils::http::abstract_http_client> create()
-  {
-    return std::unique_ptr<epee::net_utils::http::abstract_http_client>(std::make_unique<client>());
-  }
-};
+// class client_factory : public epee::net_utils::http::http_client_factory
+// {
+// public:
+//   std::unique_ptr<epee::net_utils::http::abstract_http_client> create()
+//   {
+//     return std::unique_ptr<epee::net_utils::http::abstract_http_client>(std::make_unique<client>());
+//   }
+// };
 
 } // namespace http
 } // namespace net

@@ -108,8 +108,6 @@ namespace tools
      cryptonote::network_type nettype = cryptonote::MAINNET
      , uint64_t kdf_rounds = 1
      , bool unattended = false
-     , std::unique_ptr<epee::net_utils::http::http_client_factory> http_client_factory
-     = std::make_unique<net::http::client_factory>()
      );
     ~wallet2();
 
@@ -474,7 +472,6 @@ namespace tools
     std::string m_daemon_port = "45679";
     std::string m_wallet_file;
     std::string m_keys_file;
-    const std::unique_ptr<epee::net_utils::http::abstract_http_client> m_http_client;
     wallet::logic::type::hashchain m_blockchain;
     serializable_unordered_map<crypto::hash, unconfirmed_transfer_details> m_unconfirmed_txs;
     serializable_unordered_map<crypto::hash, confirmed_transfer_details> m_confirmed_txs;
