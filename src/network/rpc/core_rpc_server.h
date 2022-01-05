@@ -96,28 +96,27 @@ namespace cryptonote
       MAP_URI_AUTO_JON2("/get_tx_outputs", on_get_tx_outputs, COMMAND_RPC_GET_OUTPUTS)
       MAP_URI_AUTO_JON2("/pop_blocks", on_pop_blocks, COMMAND_RPC_POP_BLOCKS)
       BEGIN_JSON_RPC_MAP("/json_rpc")
-        MAP_JON_RPC("get_block_count",           on_get_block_count,              COMMAND_RPC_GETBLOCKCOUNT)
-        MAP_JON_RPC_WE("on_get_block_hash",      on_get_block_hash,               COMMAND_RPC_GETBLOCKHASH)
-        MAP_JON_RPC_WE("get_block_template",     on_get_block_template,           COMMAND_RPC_GETBLOCKTEMPLATE)
-        MAP_JON_RPC_WE("submit_block",           on_submit_block,                COMMAND_RPC_SUBMITBLOCK)
-        MAP_JON_RPC_WE("get_last_block_header",  on_get_last_block_header,      COMMAND_RPC_GET_LAST_BLOCK_HEADER)
-        MAP_JON_RPC_WE("get_block_header_by_hash", on_get_block_header_by_hash,   COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH)
+        // MAP_JON_RPC_WE("on_get_block_hash",      on_get_block_hash,               COMMAND_RPC_GETBLOCKHASH)
+        // MAP_JON_RPC_WE("get_block_template",     on_get_block_template,           COMMAND_RPC_GETBLOCKTEMPLATE)
+        // MAP_JON_RPC_WE("submit_block",           on_submit_block,                COMMAND_RPC_SUBMITBLOCK)
+        // MAP_JON_RPC_WE("get_last_block_header",  on_get_last_block_header,      COMMAND_RPC_GET_LAST_BLOCK_HEADER)
+        // MAP_JON_RPC_WE("get_block_header_by_hash", on_get_block_header_by_hash,   COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH)
         MAP_JON_RPC_WE("get_block_header_by_height", on_get_block_header_by_height, COMMAND_RPC_GET_BLOCK_HEADER_BY_HEIGHT)
-        MAP_JON_RPC_WE("get_block_headers_range", on_get_block_headers_range,    COMMAND_RPC_GET_BLOCK_HEADERS_RANGE)
-        MAP_JON_RPC_WE("get_block",              on_get_block,                 COMMAND_RPC_GET_BLOCK)
-        MAP_JON_RPC_WE("get_connections",     on_get_connections,            COMMAND_RPC_GET_CONNECTIONS)
+        // MAP_JON_RPC_WE("get_block_headers_range", on_get_block_headers_range,    COMMAND_RPC_GET_BLOCK_HEADERS_RANGE)
+        // MAP_JON_RPC_WE("get_block",              on_get_block,                 COMMAND_RPC_GET_BLOCK)
+        // MAP_JON_RPC_WE("get_connections",     on_get_connections,            COMMAND_RPC_GET_CONNECTIONS)
         MAP_JON_RPC_WE("get_info",               on_get_info_json,              COMMAND_RPC_GET_INFO)
-        MAP_JON_RPC_WE("set_bans",            on_set_bans,                   COMMAND_RPC_SETBANS)
-        MAP_JON_RPC_WE("get_bans",            on_get_bans,                   COMMAND_RPC_GETBANS)
-        MAP_JON_RPC_WE("banned",              on_banned,                     COMMAND_RPC_BANNED)
-        MAP_JON_RPC_WE("flush_txpool",        on_flush_txpool,               COMMAND_RPC_FLUSH_TRANSACTION_POOL)
+        // MAP_JON_RPC_WE("set_bans",            on_set_bans,                   COMMAND_RPC_SETBANS)
+        // MAP_JON_RPC_WE("get_bans",            on_get_bans,                   COMMAND_RPC_GETBANS)
+        // MAP_JON_RPC_WE("banned",              on_banned,                     COMMAND_RPC_BANNED)
+        // MAP_JON_RPC_WE("flush_txpool",        on_flush_txpool,               COMMAND_RPC_FLUSH_TRANSACTION_POOL)
         MAP_JON_RPC_WE("get_version",            on_get_version,                COMMAND_RPC_GET_VERSION)
-        MAP_JON_RPC_WE("get_coinbase_tx_sum", on_get_coinbase_tx_sum,        COMMAND_RPC_GET_COINBASE_TX_SUM)
-        MAP_JON_RPC_WE("get_alternate_chains",on_get_alternate_chains,       COMMAND_RPC_GET_ALTERNATE_CHAINS)
-        MAP_JON_RPC_WE("relay_tx",            on_relay_tx,                   COMMAND_RPC_RELAY_TX)
-        MAP_JON_RPC_WE("sync_info",           on_sync_info,                  COMMAND_RPC_SYNC_INFO)
+        // MAP_JON_RPC_WE("get_coinbase_tx_sum", on_get_coinbase_tx_sum,        COMMAND_RPC_GET_COINBASE_TX_SUM)
+        // MAP_JON_RPC_WE("get_alternate_chains",on_get_alternate_chains,       COMMAND_RPC_GET_ALTERNATE_CHAINS)
+        // MAP_JON_RPC_WE("relay_tx",            on_relay_tx,                   COMMAND_RPC_RELAY_TX)
+        // MAP_JON_RPC_WE("sync_info",           on_sync_info,                  COMMAND_RPC_SYNC_INFO)
         MAP_JON_RPC_WE("get_output_distribution", on_get_output_distribution, COMMAND_RPC_GET_OUTPUT_DISTRIBUTION)
-        MAP_JON_RPC_WE("flush_cache",         on_flush_cache,                COMMAND_RPC_FLUSH_CACHE)
+        // MAP_JON_RPC_WE("flush_cache",         on_flush_cache,                COMMAND_RPC_FLUSH_CACHE)
       END_JSON_RPC_MAP()
     END_URI_MAP2()
 
@@ -146,7 +145,6 @@ namespace cryptonote
 
     //json_rpc
     bool on_get_block_count(const COMMAND_RPC_GETBLOCKCOUNT::request& req, COMMAND_RPC_GETBLOCKCOUNT::response& res);
-    bool on_get_block_hash(const COMMAND_RPC_GETBLOCKHASH::request& req, COMMAND_RPC_GETBLOCKHASH::response& res, epee::json_rpc::error& error_resp);
     bool on_get_block_template(const COMMAND_RPC_GETBLOCKTEMPLATE::request& req, COMMAND_RPC_GETBLOCKTEMPLATE::response& res, epee::json_rpc::error& error_resp);
     bool on_submit_block(const COMMAND_RPC_SUBMITBLOCK::request& req, COMMAND_RPC_SUBMITBLOCK::response& res, epee::json_rpc::error& error_resp);
     bool on_get_last_block_header(const COMMAND_RPC_GET_LAST_BLOCK_HEADER::request& req, COMMAND_RPC_GET_LAST_BLOCK_HEADER::response& res, epee::json_rpc::error& error_resp);
