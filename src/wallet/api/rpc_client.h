@@ -86,11 +86,11 @@ namespace tools
 
     template<class t_request, class t_response>
     bool invoke_http_json_rpc
-    (const std::string_view uri, const std::string& method_name, const t_request& req, t_response& res) const
+    (const std::string& method_name, const t_request& req, t_response& res) const
     {
       if (m_offline) return false;
       return epee::net_utils::invoke_http_json_rpc
-        (m_host, m_port, uri, method_name, req, res);
+        (m_host, m_port, "/json_rpc", method_name, req, res);
     }
 
   private:

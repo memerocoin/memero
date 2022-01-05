@@ -77,7 +77,7 @@ std::optional<std::string> RPC_Client::get_height(uint64_t &height) const
   cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
 
   {
-    bool r = invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t);
+    bool r = invoke_http_json_rpc("get_info", req_t, resp_t);
     RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
   }
 
@@ -95,7 +95,7 @@ std::optional<std::string> RPC_Client::get_target_height(uint64_t &height) const
   cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
 
   {
-    bool r = invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t);
+    bool r = invoke_http_json_rpc("get_info", req_t, resp_t);
     RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
   }
 
@@ -114,7 +114,7 @@ bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64
 
   try
   {
-    bool r = invoke_http_json_rpc("/json_rpc", "get_output_distribution", req, res);
+    bool r = invoke_http_json_rpc("get_output_distribution", req, res);
     THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
   }
   catch(...)

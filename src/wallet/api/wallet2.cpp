@@ -2409,7 +2409,7 @@ bool wallet2::check_connection(uint32_t *version, uint32_t timeout)
   {
     cryptonote::COMMAND_RPC_GET_VERSION::request req_t = AUTO_VAL_INIT(req_t);
     cryptonote::COMMAND_RPC_GET_VERSION::response resp_t = AUTO_VAL_INIT(resp_t);
-    bool r = m_rpc_client.invoke_http_json_rpc("/json_rpc", "get_version", req_t, resp_t);
+    bool r = m_rpc_client.invoke_http_json_rpc("get_version", req_t, resp_t);
     if(!r || resp_t.status != CORE_RPC_STATUS_OK) {
       if(version)
         *version = 0;
@@ -2546,7 +2546,7 @@ void wallet2::trim_hashchain()
     bool r;
     {
       req.height = m_blockchain.size() - 1;
-      r = m_rpc_client.invoke_http_json_rpc("/json_rpc", "get_block_header_by_height", req, res);
+      r = m_rpc_client.invoke_http_json_rpc("get_block_header_by_height", req, res);
     }
 
     if (r && res.status == CORE_RPC_STATUS_OK)
