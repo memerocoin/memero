@@ -44,6 +44,14 @@ namespace epee
 {
   namespace net_utils
   {
+    std::optional<std::string> beast_http
+    (
+     const std::string host
+     , const std::string port
+     , const std::string uri
+     , const std::string request_body
+     );
+     
     template<class t_request, class t_response, class t_transport>
     bool invoke_http_json
     (
