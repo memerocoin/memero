@@ -127,17 +127,5 @@ namespace net_utils
     return result;
   }
 
-namespace http
-{
-  //----------------------------------------------------------------------------------------------------
-  bool epee::net_utils::http::abstract_http_client::set_server(const std::string& address)
-  {
-    http::url_content parsed{};
-    const bool r = parse_url(address, parsed);
-    LOG_ERROR_AND_RETURN_UNLESS(r, false, "failed to parse url: " << address);
-    set_server(std::move(parsed.host), std::to_string(parsed.port));
-    return true;
-  }
-}
 }
 }

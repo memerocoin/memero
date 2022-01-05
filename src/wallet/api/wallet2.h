@@ -41,7 +41,8 @@
 #include "wallet/logic/type/wallet.hpp"
 #include "wallet/logic/type/message_signature.hpp"
 
-#include "network/type/http.h"
+#include "tools/epee/include/net/net_helper.h"
+#include "tools/epee/include/net/net_parse_helpers.h"
 
 // remove the following 3, the wallet might become unusable (won't start)
 #include "tools/serialization/string.h"

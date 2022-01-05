@@ -53,32 +53,5 @@ namespace net_utils
   std::string convert_from_url_format(const std::string& uri);
   std::string convert_to_url_format_force_all(const std::string& uri);
 
-namespace http
-{
-  class abstract_http_client
-  {
-  public:
-    abstract_http_client() {}
-    virtual ~abstract_http_client() {}
-    bool set_server(const std::string& address);
-    virtual void set_server(std::string host, std::string port) = 0;
-    virtual void set_auto_connect(bool auto_connect) = 0;
-    virtual bool connect(std::chrono::milliseconds timeout) = 0;
-    virtual bool disconnect() = 0;
-    virtual bool is_connected() = 0;
-    virtual bool invoke(const std::string_view uri, const std::string_view method, const std::string& body, std::chrono::milliseconds timeout, const http_response_info** ppresponse_info = NULL, const fields_list& additional_params = fields_list()) = 0;
-    virtual bool invoke_get(const std::string_view uri, std::chrono::milliseconds timeout, const std::string& body = std::string(), const http_response_info** ppresponse_info = NULL, const fields_list& additional_params = fields_list()) = 0;
-    virtual bool invoke_post(const std::string_view uri, const std::string& body, std::chrono::milliseconds timeout, const http_response_info** ppresponse_info = NULL, const fields_list& additional_params = fields_list()) = 0;
-    virtual uint64_t get_bytes_sent() const = 0;
-    virtual uint64_t get_bytes_received() const = 0;
-  };
-
-  class http_client_factory
-  {
-  public:
-    virtual ~http_client_factory() {}
-    virtual std::unique_ptr<abstract_http_client> create() = 0;
-  };
-}
 }
 }
