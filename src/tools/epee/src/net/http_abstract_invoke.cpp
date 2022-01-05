@@ -122,24 +122,5 @@ namespace epee
          , "application/json; charset=utf-8"
          );
     }
-
-    std::optional<std::string> beast_http_bin
-    (
-     const std::string host
-     , const std::string port
-     , const std::string uri
-     , const std::string request_body
-     )
-    {
-
-      return beast_http
-        (
-         host
-         , port
-         , uri
-         , request_body
-         , {}
-         );
-    }
   }
 }
