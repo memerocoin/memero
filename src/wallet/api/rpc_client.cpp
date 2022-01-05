@@ -58,9 +58,10 @@ using namespace wallet::logic::type::transfer;
 namespace tools
 {
 
-RPC_Client::RPC_Client(std::recursive_mutex &mutex)
-  : m_daemon_rpc_mutex(mutex)
-  , m_offline(false)
+std::mutex m_daemon_rpc_mutex;
+
+RPC_Client::RPC_Client()
+  : m_offline(false)
 {
 }
 
@@ -78,7 +79,6 @@ std::optional<std::string> RPC_Client::get_height(uint64_t &height) const
   cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
 
   {
-    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
     bool r = invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t);
     RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
   }
@@ -97,7 +97,6 @@ std::optional<std::string> RPC_Client::get_target_height(uint64_t &height) const
   cryptonote::COMMAND_RPC_GET_INFO::response resp_t = AUTO_VAL_INIT(resp_t);
 
   {
-    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
     bool r = invoke_http_json_rpc("/json_rpc", "get_info", req_t, resp_t);
     RETURN_ON_RPC_RESPONSE_ERROR(r, epee::json_rpc::error{}, resp_t, "get_info");
   }
@@ -117,7 +116,6 @@ bool RPC_Client::get_rct_distribution(uint64_t &start_height, std::vector<uint64
 
   try
   {
-    const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
     bool r = invoke_http_json_rpc("/json_rpc", "get_output_distribution", req, res);
     THROW_ON_RPC_RESPONSE_ERROR_GENERIC(r, {}, res, "/get_output_distribution");
   }
@@ -347,8 +345,6 @@ void RPC_Client::get_tx_outputs
     req.get_txid = false;
 
     {
-      const std::lock_guard<std::recursive_mutex> lock{m_daemon_rpc_mutex};
-
       bool r = invoke_http_json("/get_tx_outputs", req, daemon_resp);
       THROW_ON_RPC_RESPONSE_ERROR(r, {}, daemon_resp, "get_tx_outputs", error::get_tx_outputs_error, (daemon_resp.status));
       THROW_WALLET_EXCEPTION_IF(daemon_resp.outs.size() != req.outputs.size(), error::wallet_internal_error,

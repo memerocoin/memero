@@ -1181,7 +1181,7 @@ bool simple_wallet::start_mining(const std::vector<std::string>& args)
   }
 
   COMMAND_RPC_START_MINING::response res;
-  bool r = m_wallet->invoke_http_json("/start_mining", req, res);
+  bool r = m_wallet->get_rpc_client().invoke_http_json("/start_mining", req, res);
   std::string err = interpret_rpc_response(r, res.status);
   if (err.empty())
     success_msg_writer() << ("Mining started in daemon");
@@ -1203,7 +1203,7 @@ bool simple_wallet::stop_mining(const std::vector<std::string>& args)
 
   COMMAND_RPC_STOP_MINING::request req;
   COMMAND_RPC_STOP_MINING::response res;
-  bool r = m_wallet->invoke_http_json("/stop_mining", req, res);
+  bool r = m_wallet->get_rpc_client().invoke_http_json("/stop_mining", req, res);
   std::string err = interpret_rpc_response(r, res.status);
   if (err.empty())
     success_msg_writer() << ("Mining stopped in daemon");
@@ -1664,7 +1664,7 @@ bool simple_wallet::process_ring_members(const std::vector<wallet::logic::type::
       COMMAND_RPC_GET_OUTPUTS::response res = AUTO_VAL_INIT(res);
       req.get_txid = true;
 
-      bool r = m_wallet->invoke_http_json("/get_tx_outputs", req, res);
+      bool r = m_wallet->get_rpc_client().invoke_http_json("/get_tx_outputs", req, res);
       err = interpret_rpc_response(r, res.status);
       if (!err.empty())
       {

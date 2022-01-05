@@ -45,10 +45,12 @@ namespace tools
   }
 
 
+  extern std::mutex m_daemon_rpc_mutex;
+
   class RPC_Client
   {
   public:
-    RPC_Client(std::recursive_mutex &mutex);
+    RPC_Client();
 
     void set_daemon(const std::string host, const std::string port);
 
@@ -71,7 +73,7 @@ namespace tools
     (const std::string_view uri, const t_request& req, t_response& res) const
     {
       if (m_offline) return false;
-      std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
+      std::unique_lock<std::mutex> lock(m_daemon_rpc_mutex);
       return epee::net_utils::invoke_http_json
         (m_host, m_port, uri, req, res);
     }
@@ -81,7 +83,7 @@ namespace tools
     (const std::string_view uri, const t_request& req, t_response& res) const
     {
       if (m_offline) return false;
-      std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
+      std::unique_lock<std::mutex> lock(m_daemon_rpc_mutex);
       return epee::net_utils::invoke_http_bin
         (m_host, m_port, uri, req, res);
     }
@@ -91,13 +93,12 @@ namespace tools
     (const std::string_view uri, const std::string& method_name, const t_request& req, t_response& res) const
     {
       if (m_offline) return false;
-      std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
+      std::unique_lock<std::mutex> lock(m_daemon_rpc_mutex);
       return epee::net_utils::invoke_http_json_rpc
         (m_host, m_port, uri, method_name, req, res);
     }
 
   private:
-    std::recursive_mutex &m_daemon_rpc_mutex;
     std::string m_host = "localhost";
     std::string m_port = "45679";
   

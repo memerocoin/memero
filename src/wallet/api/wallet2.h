@@ -360,42 +360,14 @@ namespace tools
 
     uint32_t adjust_priority(uint32_t priority);
 
-    template<class t_request, class t_response>
-    bool invoke_http_json
-    (const std::string_view uri, const t_request& req, t_response& res)
-    {
-      if (m_offline) return false;
-      std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-      return epee::net_utils::invoke_http_json
-        (m_daemon_host, m_daemon_port, uri, req, res);
-    }
-
-    template<class t_request, class t_response>
-    bool invoke_http_bin
-    (const std::string_view uri, const t_request& req, t_response& res)
-    {
-      if (m_offline) return false;
-      std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-      return epee::net_utils::invoke_http_bin
-        (m_daemon_host, m_daemon_port, uri, req, res);
-    }
-
-    template<class t_request, class t_response>
-    bool invoke_http_json_rpc
-    (const std::string_view uri, const std::string& method_name, const t_request& req, t_response& res)
-    {
-      if (m_offline) return false;
-      std::lock_guard<std::recursive_mutex> lock(m_daemon_rpc_mutex);
-      return epee::net_utils::invoke_http_json_rpc
-        (m_daemon_host, m_daemon_port, uri, method_name, req, res);
-    }
-
     void change_password(const std::string &filename, const epee::wipeable_string &original_password, const epee::wipeable_string &new_password);
 
     void set_tx_notify(const std::shared_ptr<tools::Notify> &notify) { m_tx_notify = notify; }
 
     bool is_tx_spendtime_unlocked(const uint64_t unlock_height);
     void set_offline(bool offline = true);
+
+    const RPC_Client& get_rpc_client() { return m_rpc_client; };
 
   private:
     /*!
@@ -492,8 +464,6 @@ namespace tools
     serializable_unordered_map<crypto::public_key, crypto::key_image> m_cold_output_key_images;
 
     std::atomic<bool> m_run;
-
-    std::recursive_mutex m_daemon_rpc_mutex;
 
     i_wallet2_callback* m_callback;
     cryptonote::network_type m_nettype;
