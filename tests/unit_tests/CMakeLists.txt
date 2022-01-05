@@ -154,6 +154,7 @@ target_link_libraries(unit_tests_wallet_basic
   wallet_logic
   tools_serialization
   epee_storage
+  epee_net
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   GTest::gtest
   GTest::gtest_main
