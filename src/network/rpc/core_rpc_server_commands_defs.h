@@ -178,7 +178,7 @@ namespace cryptonote
 
     struct request_t: public rpc_access_request_base
     {
-      std::list<crypto::hash> block_ids; //*first 10 blocks id goes sequential, next goes in pow(2,n) offset, like 2, 4, 8, 16, 32, 64 and so on, and the last one is always genesis block */
+      std::list<std::string> block_ids; //*first 10 blocks id goes sequential, next goes in pow(2,n) offset, like 2, 4, 8, 16, 32, 64 and so on, and the last one is always genesis block */
       uint64_t    start_height;
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_request_base)
@@ -190,7 +190,7 @@ namespace cryptonote
 
     struct response_t: public rpc_access_response_base
     {
-      std::vector<crypto::hash> m_block_ids;
+      std::list<std::string> m_block_ids;
       uint64_t    start_height;
       uint64_t    current_height;
 

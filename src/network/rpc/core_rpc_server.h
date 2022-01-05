@@ -73,7 +73,7 @@ namespace cryptonote
     BEGIN_URI_MAP2()
 
         MAP_URI_AUTO_JON2("/get_blocks", on_get_blocks, COMMAND_RPC_GET_BLOCKS_FAST)
-        MAP_URI_AUTO_BIN2("/get_hashes.bin", on_get_hashes, COMMAND_RPC_GET_HASHES_FAST)
+        MAP_URI_AUTO_JON2("/get_hashes", on_get_hashes, COMMAND_RPC_GET_HASHES_FAST)
 
         MAP_URI_AUTO_JON2("/is_output_key_image_spent", on_is_output_key_image_spent, COMMAND_RPC_IS_KEY_IMAGE_SPENT)
         MAP_URI_AUTO_JON2("/send_raw_transaction", on_send_raw_tx, COMMAND_RPC_SEND_RAW_TX)

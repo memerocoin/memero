@@ -257,8 +257,45 @@ namespace cryptonote
   bool core_rpc_server::on_get_hashes(const COMMAND_RPC_GET_HASHES_FAST::request& req, COMMAND_RPC_GET_HASHES_FAST::response& res)
   {
     res.start_height = req.start_height;
-    if(!m_core.get_blockchain_storage().find_blockchain_supplement(req.block_ids, res.m_block_ids, NULL, res.start_height, res.current_height))
+
+    std::list<crypto::hash> block_ids;
+    std::transform
+      (
+       req.block_ids.begin()
+       , req.block_ids.end()
+       , std::back_inserter(block_ids)
+       , [](const auto& x) {
+         crypto::hash txid;
+         epee::string_tools::hex_to_pod(x, txid);
+         return txid;
+       }
+       );
+
+    std::vector<crypto::hash> block_hashes;
+    
+    if
+      (
+       !m_core.get_blockchain_storage().find_blockchain_supplement
+       (
+        block_ids
+        , block_hashes
+        , NULL
+        , res.start_height
+        , res.current_height
+        )
+       )
     {
+
+    std::transform
+      (
+       block_hashes.begin()
+       , block_hashes.end()
+       , std::back_inserter(res.m_block_ids)
+       , [](const auto& x) {
+         return epee::string_tools::pod_to_hex(x);
+       }
+       );
+
       res.status = "Failed";
       return false;
     }
