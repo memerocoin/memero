@@ -683,65 +683,6 @@ namespace cryptonote
     typedef std::string response;
   };
 
-
-  struct COMMAND_RPC_GETBLOCKTEMPLATE
-  {
-    struct request_t: public rpc_request_base
-    {
-      uint64_t reserve_size;       //max 255 bytes
-      std::string wallet_address;
-      std::string prev_block;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_request_base)
-        KV_SERIALIZE(reserve_size)
-        KV_SERIALIZE(wallet_address)
-        KV_SERIALIZE(prev_block)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<request_t> request;
-
-    struct response_t: public rpc_response_base
-    {
-      uint64_t difficulty;
-      std::string wide_difficulty;
-      uint64_t difficulty_top64;
-      uint64_t height;
-      uint64_t expected_reward;
-      std::string prev_hash;
-      string_blob blocktemplate_blob;
-      string_blob blockhashing_blob;
-      uint64_t unlock_height;
-
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_response_base)
-        KV_SERIALIZE(difficulty)
-        KV_SERIALIZE(wide_difficulty)
-        KV_SERIALIZE(difficulty_top64)
-        KV_SERIALIZE(height)
-        KV_SERIALIZE(expected_reward)
-        KV_SERIALIZE(prev_hash)
-        KV_SERIALIZE(blocktemplate_blob)
-        KV_SERIALIZE(blockhashing_blob)
-        KV_SERIALIZE(unlock_height)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
-  struct COMMAND_RPC_SUBMITBLOCK
-  {
-    typedef std::vector<std::string> request;
-
-    struct response_t: public rpc_response_base
-    {
-      BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_PARENT(rpc_response_base)
-      END_KV_SERIALIZE_MAP()
-    };
-    typedef epee::misc_utils::struct_init<response_t> response;
-  };
-
   struct block_header_response
   {
       uint8_t major_version;
