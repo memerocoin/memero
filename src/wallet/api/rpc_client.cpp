@@ -58,8 +58,6 @@ using namespace wallet::logic::type::transfer;
 namespace tools
 {
 
-constexpr std::chrono::seconds rpc_timeout = config::lol::rpc_timeout;
-
 RPC_Client::RPC_Client(std::recursive_mutex &mutex)
   : m_daemon_rpc_mutex(mutex)
   , m_offline(false)
