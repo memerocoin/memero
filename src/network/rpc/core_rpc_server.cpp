@@ -879,31 +879,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_last_block_header(const COMMAND_RPC_GET_LAST_BLOCK_HEADER::request& req, COMMAND_RPC_GET_LAST_BLOCK_HEADER::response& res, epee::json_rpc::error& error_resp)
-  {
-    CHECK_CORE_READY();
-    uint64_t last_block_height;
-    crypto::hash last_block_hash;
-    m_core.get_blockchain_top(last_block_height, last_block_hash);
-    block last_block;
-    bool have_last_block = m_core.get_block_by_hash(last_block_hash, last_block);
-    if (!have_last_block)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-      error_resp.message = "Internal error: can't get last block.";
-      return false;
-    }
-    bool response_filled = fill_block_header_response(last_block, false, last_block_height, last_block_hash, res.block_header, req.fill_pow_hash);
-    if (!response_filled)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-      error_resp.message = "Internal error: can't produce valid response.";
-      return false;
-    }
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_block_header_by_hash(const COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH::request& req, COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH::response& res, epee::json_rpc::error& error_resp)
   {
     auto get = [this](const std::string &hash, bool fill_pow_hash, block_header_response &block_header, epee::json_rpc::error& error_resp) -> bool {

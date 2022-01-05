@@ -78,7 +78,6 @@ namespace rpc
       {"get_hashes_fast", handle_message<GetHashesFast>},
       {"get_height", handle_message<GetHeight>},
       {"get_info", handle_message<GetInfo>},
-      {"get_last_block_header", handle_message<GetLastBlockHeader>},
       {"get_output_distribution", handle_message<GetOutputDistribution>},
       {"get_output_keys", handle_message<GetOutputKeys>},
       {"get_peer_list", handle_message<GetPeerList>},
@@ -601,20 +600,6 @@ namespace rpc
   {
     res.status = Message::STATUS_FAILED;
     res.error_details = "RPC method not yet implemented.";
-  }
-
-  void DaemonHandler::handle(const GetLastBlockHeader::Request& req, GetLastBlockHeader::Response& res)
-  {
-    const crypto::hash block_hash = m_core.get_tail_id();
-
-    if (!getBlockHeaderByHash(block_hash, res.header))
-    {
-      res.status = Message::STATUS_FAILED;
-      res.error_details = "Requested block does not exist";
-      return;
-    }
-
-    res.status = Message::STATUS_OK;
   }
 
   void DaemonHandler::handle(const GetBlockHeaderByHash::Request& req, GetBlockHeaderByHash::Response& res)

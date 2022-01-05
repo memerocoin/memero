@@ -323,24 +323,6 @@ void GetBlockHash::Response::fromJson(const rapidjson::Value& val)
 }
 
 
-void GetLastBlockHeader::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{}
-
-void GetLastBlockHeader::Request::fromJson(const rapidjson::Value& val)
-{
-}
-
-void GetLastBlockHeader::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  WRITE_JSON_FIELD_FROM(dest, header, header);
-}
-
-void GetLastBlockHeader::Response::fromJson(const rapidjson::Value& val)
-{
-  READ_JSON_VALUE_BY_KEY(val, header, header);
-}
-
-
 void GetBlockHeaderByHash::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   WRITE_JSON_FIELD_FROM(dest, hash, hash);
