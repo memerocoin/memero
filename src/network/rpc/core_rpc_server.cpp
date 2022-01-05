@@ -167,16 +167,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  class pruned_transaction {
-    transaction& tx;
-  public:
-    pruned_transaction(transaction& tx) : tx(tx) {}
-    BEGIN_SERIALIZE_OBJECT()
-      bool r = tx.serialize_base(ar);
-      if (!r) return false;
-    END_SERIALIZE()
-  };
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_blocks(const COMMAND_RPC_GET_BLOCKS_FAST::request& req, COMMAND_RPC_GET_BLOCKS_FAST::response& res)
   {
     // quick check for noop
