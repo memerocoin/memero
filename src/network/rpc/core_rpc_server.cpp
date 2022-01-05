@@ -869,63 +869,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_get_block_template(const COMMAND_RPC_GETBLOCKTEMPLATE::request& req, COMMAND_RPC_GETBLOCKTEMPLATE::response& res, epee::json_rpc::error& error_resp)
-  {
-    if(!check_core_ready())
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
-      error_resp.message = "Core is busy";
-      return false;
-    }
-
-    if(req.reserve_size > 255)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_TOO_BIG_RESERVE_SIZE;
-      error_resp.message = "Too big reserved size, maximum 255";
-      return false;
-    }
-
-    cryptonote::address_parse_info info;
-
-    if(!req.wallet_address.size() || !cryptonote::get_account_address_from_str(info, nettype(), req.wallet_address))
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_WRONG_WALLET_ADDRESS;
-      error_resp.message = "Failed to parse wallet address";
-      return false;
-    }
-    if (info.is_subaddress)
-    {
-      error_resp.code = CORE_RPC_ERROR_CODE_MINING_TO_SUBADDRESS;
-      error_resp.message = "Mining to subaddress is not supported yet";
-      return false;
-    }
-
-    block b;
-    cryptonote::diff_t wdiff;
-    crypto::hash prev_block;
-    if (!req.prev_block.empty())
-    {
-      if (!epee::string_tools::hex_to_pod(req.prev_block, prev_block))
-      {
-        error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
-        error_resp.message = "Invalid prev_block";
-        return false;
-      }
-    }
-    if (!get_block_template(info.address, req.prev_block.empty() ? NULL : &prev_block, wdiff, res.height, res.expected_reward, b, error_resp))
-      return false;
-
-    res.unlock_height = b.miner_tx.unlock_height;
-    store_difficulty(wdiff, res.difficulty, res.wide_difficulty, res.difficulty_top64);
-    string_blob block_blob = t_serializable_object_to_blob(b);
-    string_blob hashing_blob = get_mining_blob(b);
-    res.prev_hash = epee::string_tools::pod_to_hex(b.prev_id);
-    res.blocktemplate_blob = epee::string_tools::buff_to_hex_nodelimer(block_blob);
-    res.blockhashing_blob =  epee::string_tools::buff_to_hex_nodelimer(hashing_blob);
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_submit_block(const COMMAND_RPC_SUBMITBLOCK::request& req, COMMAND_RPC_SUBMITBLOCK::response& res, epee::json_rpc::error& error_resp)
   {
     CHECK_CORE_READY();
