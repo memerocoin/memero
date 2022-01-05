@@ -41,9 +41,6 @@
 #include "wallet/logic/type/wallet.hpp"
 #include "wallet/logic/type/message_signature.hpp"
 
-#include "tools/epee/include/net/net_helper.h"
-#include "tools/epee/include/net/net_parse_helpers.h"
-
 // remove the following 3, the wallet might become unusable (won't start)
 #include "tools/serialization/string.h"
 #include "tools/serialization/pair.h"
@@ -51,8 +48,6 @@
 
 #include "tools/common/password.h"
 #include "tools/common/notify.h"
-
-#include "tools/epee/include/net/http_abstract_invoke.h"
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
