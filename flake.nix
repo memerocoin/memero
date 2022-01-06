@@ -24,7 +24,7 @@
 
               ; lolnero-template =
                   {
-                    static ? false
+                    archive ? false
                   , stdenv
                   , opencl ? false
                   , name ? "lolnero"
@@ -54,7 +54,7 @@
                         "-DVERSIONTAG=${version}"
                       ] ++
                       (
-                        nixpkgs.lib.optionals (!static)
+                        nixpkgs.lib.optionals (!archive)
                           [
                             "-DBUILD_SHARED_LIBS=ON"
                           ]
@@ -71,10 +71,10 @@
               ; in
               {
                 lolnero = lolnero-template { stdenv = stdenvLatest; }
-                ; lolnero-archive = lolnero-template { name = "lolnero-archive"; stdenv = stdenvLatest; static = true; }
+                ; lolnero-archive = lolnero-template { name = "lolnero-archive"; stdenv = stdenvLatest; archive = true; }
                 ; lolnero-opencl = lolnero-template { name = "lolnero-opencl"; stdenv = stdenvLatest; opencl = true; }
                 ; lolnero-clang = lolnero-template { name = "lolnero-clang"; stdenv = clangStdenvLatest; }
-                ; lolnero-clang-archive = lolnero-template { name = "lolnero-clang-archive"; stdenv = clangStdenvLatest; static = true; }
+                ; lolnero-clang-archive = lolnero-template { name = "lolnero-clang-archive"; stdenv = clangStdenvLatest; archive = true; }
                 ; lolnero-clang-opencl = lolnero-template { name = "lolnero-clang-opencl"; stdenv = clangStdenvLatest; opencl = true; }
                 ; lolnero-with-tests = stdenvLatest.mkDerivation {
                     pname = "lolnero-with-tests"
