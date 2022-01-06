@@ -71,10 +71,10 @@
               ; in
               {
                 lolnero = lolnero-template { stdenv = stdenvLatest; }
-                ; lolnero-static = lolnero-template { name = "lolnero-static"; stdenv = stdenvLatest; static = true; }
+                ; lolnero-archive = lolnero-template { name = "lolnero-archive"; stdenv = stdenvLatest; static = true; }
                 ; lolnero-opencl = lolnero-template { name = "lolnero-opencl"; stdenv = stdenvLatest; opencl = true; }
                 ; lolnero-clang = lolnero-template { name = "lolnero-clang"; stdenv = clangStdenvLatest; }
-                ; lolnero-clang-static = lolnero-template { name = "lolnero-clang-static"; stdenv = clangStdenvLatest; static = true; }
+                ; lolnero-clang-archive = lolnero-template { name = "lolnero-clang-archive"; stdenv = clangStdenvLatest; static = true; }
                 ; lolnero-clang-opencl = lolnero-template { name = "lolnero-clang-opencl"; stdenv = clangStdenvLatest; opencl = true; }
                 ; lolnero-with-tests = stdenvLatest.mkDerivation {
                     pname = "lolnero-with-tests"
@@ -125,10 +125,10 @@
           ; packages = forAllSystems (system:
               {
                 inherit (nixpkgsFor.${system}) lolnero
-                ; inherit (nixpkgsFor.${system}) lolnero-static
+                ; inherit (nixpkgsFor.${system}) lolnero-archive
                 ; inherit (nixpkgsFor.${system}) lolnero-opencl
                 ; inherit (nixpkgsFor.${system}) lolnero-clang
-                ; inherit (nixpkgsFor.${system}) lolnero-clang-static
+                ; inherit (nixpkgsFor.${system}) lolnero-clang-archive
                 ; inherit (nixpkgsFor.${system}) lolnero-clang-opencl
                 ;
               })
