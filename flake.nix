@@ -24,8 +24,9 @@
                 static ? false
               , stdenv
               , opencl ? false
+              , name ? "lolnero"
               }: stdenv.mkDerivation {
-                pname = "lolnero-opencl";
+                pname = name;
                 inherit version;
                 src = ./.;
 
@@ -68,11 +69,11 @@
           ; in
         {
           lolnero = lolnero-template { stdenv = stdenvLatest; }
-          ; lolnero-static = lolnero-template { stdenv = stdenvLatest; static = true; }
-          ; lolnero-opencl = lolnero-template { stdenv = stdenvLatest; opencl = true; }
-          ; lolnero-clang = lolnero-template { stdenv = clangStdenvLatest; }
-          ; lolnero-clang-static = lolnero-template { stdenv = clangStdenvLatest; static = true; }
-          ; lolnero-clang-opencl = lolnero-template { stdenv = clangStdenvLatest; opencl = true; }
+          ; lolnero-static = lolnero-template { name = "lolnero-static"; stdenv = stdenvLatest; static = true; }
+          ; lolnero-opencl = lolnero-template { name = "lolnero-opencl"; stdenv = stdenvLatest; opencl = true; }
+          ; lolnero-clang = lolnero-template { name = "lolnero-clang"; stdenv = clangStdenvLatest; }
+          ; lolnero-clang-static = lolnero-template { name = "lolnero-clang-static"; stdenv = clangStdenvLatest; static = true; }
+          ; lolnero-clang-opencl = lolnero-template { name = "lolnero-clang-opencl"; stdenv = clangStdenvLatest; opencl = true; }
         ; lolnero-with-tests = stdenvLatest.mkDerivation {
             pname = "lolnero-with-tests";
             inherit version;
