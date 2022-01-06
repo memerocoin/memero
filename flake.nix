@@ -21,7 +21,7 @@
 
           ; lolnero-template =
               {
-                static ? true
+                static ? false
               , stdenv
               , opencl ? false
               }: stdenv.mkDerivation {
@@ -68,10 +68,10 @@
           ; in
         {
           lolnero = lolnero-template { stdenv = stdenvLatest; }
-          ; lolnero-shared = lolnero-template { stdenv = stdenvLatest; static = false; }
+          ; lolnero-static = lolnero-template { stdenv = stdenvLatest; static = true; }
           ; lolnero-opencl = lolnero-template { stdenv = stdenvLatest; opencl = true; }
           ; lolnero-clang = lolnero-template { stdenv = clangStdenvLatest; }
-          ; lolnero-clang-shared = lolnero-template { stdenv = clangStdenvLatest; static = false; }
+          ; lolnero-clang-static = lolnero-template { stdenv = clangStdenvLatest; static = true; }
           ; lolnero-clang-opencl = lolnero-template { stdenv = clangStdenvLatest; opencl = true; }
         ; lolnero-with-tests = stdenvLatest.mkDerivation {
             pname = "lolnero-with-tests";
