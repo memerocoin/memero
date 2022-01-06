@@ -18,97 +18,62 @@
           stdenvLatest = gcc11Stdenv
           ; clangStdenvLatest = llvmPackages_13.stdenv
           ; version = builtins.substring 0 8 self.lastModifiedDate
+
+          ; lolnero-template =
+              {
+                static ? true
+              , stdenv
+              , opencl ? false
+              }: stdenv.mkDerivation {
+                pname = "lolnero-opencl";
+                inherit version;
+                src = ./.;
+
+                nativeBuildInputs = [ cmake ];
+
+                buildInputs = [
+                  boost libsodium rapidjson
+                ]
+                ++
+                (
+                  nixpkgs.lib.optionals opencl
+                  [
+                    
+                    opencl-headers
+                    opencl-icd
+                    opencl-clhpp
+                  ]
+                )
+                ;
+
+                cmakeFlags = [
+                  "--no-warn-unused-cli"
+                  "-DVERSIONTAG=${version}"
+                ] ++
+                (
+                  nixpkgs.lib.optionals (!static)
+                  [
+                    "-DBUILD_SHARED_LIBS=ON"
+                  ]
+                )
+                ++
+                (
+                  nixpkgs.lib.optionals opencl
+                  [
+                    "-DUSE_OPENCL=ON"
+                  ]
+                )
+                ;
+              }
           ; in
         {
-          lolnero = stdenvLatest.mkDerivation {
-            pname = "lolnero";
-            inherit version;
-            src = ./.;
-
-            nativeBuildInputs = [ cmake ];
-
-            buildInputs = [
-              boost libsodium rapidjson
-            ]
-            ;
-
-            cmakeFlags = [
-              "--no-warn-unused-cli"
-              "-DBUILD_SHARED_LIBS=ON"
-              "-DVERSIONTAG=${version}"
-            ]
-            ;
-          };
-
-          lolnero-opencl = stdenvLatest.mkDerivation {
-            pname = "lolnero-opencl";
-            inherit version;
-            src = ./.;
-
-            nativeBuildInputs = [ cmake ];
-
-            buildInputs = [
-              boost libsodium rapidjson
-              opencl-headers
-              opencl-icd
-              opencl-clhpp
-            ]
-            ;
-
-            cmakeFlags = [
-              "--no-warn-unused-cli"
-              "-DVERSIONTAG=${version}"
-              "-DBUILD_SHARED_LIBS=ON"
-              "-DUSE_OPENCL=ON"
-            ]
-            ;
-          };
-
-          lolnero-clang = clangStdenvLatest.mkDerivation {
-            pname = "lolnero-clang";
-            inherit version;
-            src = ./.;
-
-            nativeBuildInputs = [ cmake ];
-
-            buildInputs = [
-              boost libsodium rapidjson
-            ]
-            ;
-
-            cmakeFlags = [
-              "--no-warn-unused-cli"
-              "-DVERSIONTAG=${version}"
-              "-DBUILD_SHARED_LIBS=ON"
-            ]
-            ;
-          };
-
-          lolnero-clang-opencl = clangStdenvLatest.mkDerivation {
-            pname = "lolnero-clang-opencl";
-            inherit version;
-            src = ./.;
-
-            nativeBuildInputs = [ cmake ];
-
-            buildInputs = [
-              boost libsodium rapidjson
-              opencl-headers
-              opencl-icd
-              opencl-clhpp
-            ]
-            ;
-
-            cmakeFlags = [
-              "--no-warn-unused-cli"
-              "-DVERSIONTAG=${version}"
-              "-DBUILD_SHARED_LIBS=ON"
-              "-DUSE_OPENCL=ON"
-            ]
-            ;
-          };
-
-          lolnero-with-tests = stdenvLatest.mkDerivation {
+          lolnero = lolnero-template { stdenv = stdenvLatest; }
+          ; lolnero-shared = lolnero-template { stdenv = stdenvLatest; static = false; }
+          ; lolnero-opencl = lolnero-template { stdenv = stdenvLatest; opencl = true; }
+          ; lolnero-clang = lolnero-template { stdenv = clangStdenvLatest; }
+          ; lolnero-clang-shared = lolnero-template { stdenv = clangStdenvLatest; static = false; }
+          ; lolnero-clang-opencl = lolnero-template { stdenv = clangStdenvLatest; opencl = true; }
+        ; lolnero-with-tests = stdenvLatest.mkDerivation {
             pname = "lolnero-with-tests";
             inherit version;
             src = ./.;
@@ -154,8 +119,10 @@
       packages = forAllSystems (system:
         {
           inherit (nixpkgsFor.${system}) lolnero;
+          inherit (nixpkgsFor.${system}) lolnero-shared;
           inherit (nixpkgsFor.${system}) lolnero-opencl;
           inherit (nixpkgsFor.${system}) lolnero-clang;
+          inherit (nixpkgsFor.${system}) lolnero-clang-shared;
           inherit (nixpkgsFor.${system}) lolnero-clang-opencl;
         });
 
