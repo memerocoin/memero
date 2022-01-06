@@ -28,3 +28,5 @@
 add_library(sha3_iuf
   sha3.c
 )
+
+install(TARGETS sha3_iuf)

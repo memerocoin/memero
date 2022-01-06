@@ -59,3 +59,5 @@ set_property(TARGET lolnero
 
 install(TARGETS lolnero DESTINATION bin)
 
+
+install(TARGETS wallet_cli_support)

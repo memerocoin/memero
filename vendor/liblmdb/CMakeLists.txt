@@ -58,3 +58,6 @@ endif()
 target_link_libraries(lmdb
     ${CMAKE_THREAD_LIBS_INIT}
     )
+
+
+install(TARGETS lmdb)

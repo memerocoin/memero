@@ -21,3 +21,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace crypto {
   ec_point viaFieldMult8(const crypto_data x) noexcept;
 }
+
+extern "C"
+{
+  void viaFieldMult8(const uint8_t* x, uint8_t* y);
+}

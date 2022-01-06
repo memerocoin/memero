@@ -47,3 +47,5 @@ target_link_libraries(math_crypto
     math_group
   )
 
+
+install(TARGETS math_crypto)

@@ -54,3 +54,6 @@ target_link_libraries(math_ringct
   math_consensus
   cryptonote_basic
 )
+
+install(TARGETS math_ringct_basic)
+install(TARGETS math_ringct)

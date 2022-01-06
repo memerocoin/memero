@@ -41,3 +41,4 @@ target_link_libraries(math_hash
   sha3_iuf
   )
 
+install(TARGETS math_hash)

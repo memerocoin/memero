@@ -33,3 +33,5 @@ add_library(cryptonote_protocol
   cryptonote_protocol_handler.cpp
   connection_context.cpp
 )
+
+install(TARGETS cryptonote_protocol)

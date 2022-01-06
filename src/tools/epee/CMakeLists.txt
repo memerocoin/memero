@@ -80,3 +80,10 @@ target_link_libraries( epee_storage
   epee
 )
 
+
+install(TARGETS epee)
+install(TARGETS epee_net_basic)
+install(TARGETS epee_net)
+install(TARGETS epee_log)
+install(TARGETS epee_storage_basic)
+install(TARGETS epee_storage)

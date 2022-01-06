@@ -34,3 +34,5 @@ add_library(curve25519_cryptonote
 
 target_link_libraries(curve25519_cryptonote
 )
+
+install(TARGETS curve25519_cryptonote)

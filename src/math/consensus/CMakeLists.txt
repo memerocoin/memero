@@ -34,3 +34,5 @@ target_link_libraries(math_consensus
   math_blockchain
   )
 
+
+install(TARGETS math_consensus)

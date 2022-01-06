@@ -7,6 +7,8 @@ target_link_libraries(opencl-sha3
   OpenCL::OpenCL
   )
 
+install(TARGETS opencl-sha3)
+
 if(BUILD_TESTING)
   add_executable(opencl-sha3-test
     main.cpp
