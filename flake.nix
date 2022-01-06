@@ -71,11 +71,46 @@
               ; in
               {
                 lolnero = lolnero-template { stdenv = stdenvLatest; }
-                ; lolnero-archive = lolnero-template { name = "lolnero-archive"; stdenv = stdenvLatest; archive = true; }
-                ; lolnero-opencl = lolnero-template { name = "lolnero-opencl"; stdenv = stdenvLatest; opencl = true; }
-                ; lolnero-clang = lolnero-template { name = "lolnero-clang"; stdenv = clangStdenvLatest; }
-                ; lolnero-clang-archive = lolnero-template { name = "lolnero-clang-archive"; stdenv = clangStdenvLatest; archive = true; }
-                ; lolnero-clang-opencl = lolnero-template { name = "lolnero-clang-opencl"; stdenv = clangStdenvLatest; opencl = true; }
+
+                ; lolnero-archive = lolnero-template
+                  {
+                    name = "lolnero-archive"
+                    ; stdenv = stdenvLatest
+                    ; archive = true
+                    ;
+                  }
+
+                ; lolnero-opencl = lolnero-template
+                  {
+                    name = "lolnero-opencl"
+                    ; stdenv = stdenvLatest
+                    ; opencl = true
+                    ;
+                  }
+
+                ; lolnero-clang = lolnero-template
+                  {
+                    name = "lolnero-clang"
+                    ; stdenv = clangStdenvLatest
+                    ;
+                  }
+
+                ; lolnero-clang-archive = lolnero-template
+                  {
+                    name = "lolnero-clang-archive"
+                    ; stdenv = clangStdenvLatest
+                    ; archive = true
+                    ;
+                  }
+
+                ; lolnero-clang-opencl = lolnero-template
+                  {
+                    name = "lolnero-clang-opencl"
+                    ; stdenv = clangStdenvLatest
+                    ; opencl = true
+                    ;
+                  }
+
                 ; lolnero-with-tests = stdenvLatest.mkDerivation {
                     pname = "lolnero-with-tests"
                     ; inherit version
