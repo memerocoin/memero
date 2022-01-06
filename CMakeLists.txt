@@ -53,7 +53,12 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   add_compile_options(-Wno-sign-compare)
   add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-reorder>)
 
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64)")
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-mno-outline-atomics>)
+    message("Added GCC workaround flag -mno-outline-atomics")
+  endif ()
 endif()
+
 
 if (ANDROID)
   add_compile_options(-Wno-tautological-constant-out-of-range-compare)
