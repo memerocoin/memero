@@ -1,240 +1,262 @@
 {
-  description = "A private ASIC friendly cryptocurrency";
+  description = "A private ASIC friendly cryptocurrency"
 
-  inputs.nixpkgs.url = "nixpkgs/nixos-unstable-small";
+  ; inputs.nixpkgs.url = "nixpkgs/nixos-unstable-small"
 
-  outputs = { self, nixpkgs }:
-    let
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" ]
-      ; forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system)
-      ; nixpkgsFor = forAllSystems
-        (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; })
-      ; in
-    {
-      # A Nixpkgs overlay.
-      overlay = final: prev:
-        with final;
-        let
-          stdenvLatest = gcc11Stdenv
-          ; clangStdenvLatest = llvmPackages_13.stdenv
-          ; version = builtins.substring 0 8 self.lastModifiedDate
+  ; outputs = { self, nixpkgs }:
+      let
+        supportedSystems = [ "x86_64-linux" "aarch64-linux" ]
+        ; forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system)
+        ; nixpkgsFor = forAllSystems
+          (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; })
+        ;
+      in
+        {
+          # A Nixpkgs overlay.
+          overlay = final: prev:
+            with final
+            ;
 
-          ; lolnero-template =
+            let
+              stdenvLatest = gcc11Stdenv
+              ; clangStdenvLatest = llvmPackages_13.stdenv
+              ; version = builtins.substring 0 8 self.lastModifiedDate
+
+              ; lolnero-template =
+                  {
+                    static ? false
+                  , stdenv
+                  , opencl ? false
+                  , name ? "lolnero"
+                  }: stdenv.mkDerivation {
+                    pname = name
+                    ; inherit version
+                    ; src = ./.
+
+                    ; nativeBuildInputs = [ cmake ]
+
+                    ; buildInputs = [
+                        boost libsodium rapidjson
+                      ]
+                      ++
+                      (
+                        nixpkgs.lib.optionals opencl
+                          [
+                            
+                            opencl-headers
+                            opencl-icd
+                            opencl-clhpp
+                          ]
+                      )
+
+                    ; cmakeFlags = [
+                        "--no-warn-unused-cli"
+                        "-DVERSIONTAG=${version}"
+                      ] ++
+                      (
+                        nixpkgs.lib.optionals (!static)
+                          [
+                            "-DBUILD_SHARED_LIBS=ON"
+                          ]
+                      )
+                      ++
+                      (
+                        nixpkgs.lib.optionals opencl
+                          [
+                            "-DUSE_OPENCL=ON"
+                          ]
+                      )
+                    ;
+                  }
+              ; in
               {
-                static ? false
-              , stdenv
-              , opencl ? false
-              , name ? "lolnero"
-              }: stdenv.mkDerivation {
-                pname = name;
-                inherit version;
-                src = ./.;
+                lolnero = lolnero-template { stdenv = stdenvLatest; }
+                ; lolnero-static = lolnero-template { name = "lolnero-static"; stdenv = stdenvLatest; static = true; }
+                ; lolnero-opencl = lolnero-template { name = "lolnero-opencl"; stdenv = stdenvLatest; opencl = true; }
+                ; lolnero-clang = lolnero-template { name = "lolnero-clang"; stdenv = clangStdenvLatest; }
+                ; lolnero-clang-static = lolnero-template { name = "lolnero-clang-static"; stdenv = clangStdenvLatest; static = true; }
+                ; lolnero-clang-opencl = lolnero-template { name = "lolnero-clang-opencl"; stdenv = clangStdenvLatest; opencl = true; }
+                ; lolnero-with-tests = stdenvLatest.mkDerivation {
+                    pname = "lolnero-with-tests"
+                    ; inherit version
+                    ; src = ./.
 
-                nativeBuildInputs = [ cmake ];
+                    ; nativeBuildInputs = [ cmake ]
 
-                buildInputs = [
-                  boost libsodium rapidjson
-                ]
-                ++
-                (
-                  nixpkgs.lib.optionals opencl
-                  [
-                    
-                    opencl-headers
-                    opencl-icd
-                    opencl-clhpp
-                  ]
-                )
-                ;
+                    ; buildInputs = [
+                        boost libsodium rapidjson
+                        opencl-headers
+                        opencl-icd
+                        opencl-clhpp
+                        gmock
+                      ]
 
-                cmakeFlags = [
-                  "--no-warn-unused-cli"
-                  "-DVERSIONTAG=${version}"
-                ] ++
-                (
-                  nixpkgs.lib.optionals (!static)
-                  [
-                    "-DBUILD_SHARED_LIBS=ON"
-                  ]
-                )
-                ++
-                (
-                  nixpkgs.lib.optionals opencl
-                  [
-                    "-DUSE_OPENCL=ON"
-                  ]
-                )
+                    ; doCheck = true
+
+                    ; checkPhase =
+                        ''
+                            ${cmake}/bin/ctest
+                        ''
+                          
+                    ; cmakeFlags = [
+                        "--no-warn-unused-cli"
+                        "-DVERSIONTAG=${version}"
+                        "-DUSE_OPENCL=ON"
+                        "-DBUILD_TESTING=ON"
+                      ]
+                    ;
+                  }
                 ;
               }
-          ; in
-        {
-          lolnero = lolnero-template { stdenv = stdenvLatest; }
-          ; lolnero-static = lolnero-template { name = "lolnero-static"; stdenv = stdenvLatest; static = true; }
-          ; lolnero-opencl = lolnero-template { name = "lolnero-opencl"; stdenv = stdenvLatest; opencl = true; }
-          ; lolnero-clang = lolnero-template { name = "lolnero-clang"; stdenv = clangStdenvLatest; }
-          ; lolnero-clang-static = lolnero-template { name = "lolnero-clang-static"; stdenv = clangStdenvLatest; static = true; }
-          ; lolnero-clang-opencl = lolnero-template { name = "lolnero-clang-opencl"; stdenv = clangStdenvLatest; opencl = true; }
-        ; lolnero-with-tests = stdenvLatest.mkDerivation {
-            pname = "lolnero-with-tests";
-            inherit version;
-            src = ./.;
-
-            nativeBuildInputs = [ cmake ];
-
-            buildInputs = [
-              boost libsodium rapidjson
-              opencl-headers
-              opencl-icd
-              opencl-clhpp
-              gmock
-            ]
-            ;
-
-            doCheck = true;
-
-            checkPhase = ''
-              ${cmake}/bin/ctest
-            '';
-
-            cmakeFlags = [
-              "--no-warn-unused-cli"
-              "-DVERSIONTAG=${version}"
-              "-DUSE_OPENCL=ON"
-              "-DBUILD_TESTING=ON"
-            ]
-            ;
-          };
-        };
-
-      nixosModules.lolnero =
-        { pkgs, ... }:
-        {
-          nixpkgs.overlays = [ self.overlay ];
-        };
-
-      checks = forAllSystems (system:
-        {
-          inherit (nixpkgsFor.${system}) lolnero-with-tests;
-        });
-
-      packages = forAllSystems (system:
-        {
-          inherit (nixpkgsFor.${system}) lolnero;
-          inherit (nixpkgsFor.${system}) lolnero-shared;
-          inherit (nixpkgsFor.${system}) lolnero-opencl;
-          inherit (nixpkgsFor.${system}) lolnero-clang;
-          inherit (nixpkgsFor.${system}) lolnero-clang-shared;
-          inherit (nixpkgsFor.${system}) lolnero-clang-opencl;
-        });
-
-      defaultPackage = forAllSystems (system: self.packages.${system}.lolnero);
-
-      apps = forAllSystems
-        (
-          system:
-          {
-            lolnerod =
+                
+          ; nixosModules.lolnero =
+              { pkgs, ... }:
               {
-                type = "app";
-                program = "${self.defaultPackage.${system}}/bin/lolnerod";
-              };
-
-            lolnero =
+                nixpkgs.overlays = [ self.overlay ]
+                ;
+              }
+                
+          ; checks = forAllSystems (system:
               {
-                type = "app";
-                program = "${self.defaultPackage.${system}}/bin/lolnero";
-              };
+                inherit (nixpkgsFor.${system}) lolnero-with-tests
+                ;
+              })
+            
+          ; packages = forAllSystems (system:
+              {
+                inherit (nixpkgsFor.${system}) lolnero
+                ; inherit (nixpkgsFor.${system}) lolnero-shared
+                ; inherit (nixpkgsFor.${system}) lolnero-opencl
+                ; inherit (nixpkgsFor.${system}) lolnero-clang
+                ; inherit (nixpkgsFor.${system}) lolnero-clang-shared
+                ; inherit (nixpkgsFor.${system}) lolnero-clang-opencl
+                ;
+              })
+            
+          ; defaultPackage = forAllSystems (system: self.packages.${system}.lolnero)
+            
+          ; apps = forAllSystems
+            (
+              system:
+              {
+                lolnerod =
+                  {
+                    type = "app"
+                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod"
+                    ;
+                  }
+                    
+                ; lolnero =
+                    {
+                      type = "app"
+                      ; program = "${self.defaultPackage.${system}}/bin/lolnero"
+                      ;
+                    }
+                ;
+                
+              }
+            )
+            
+          ; devShell = forAllSystems
+            (
+              system:
+              let
+                pkgs = nixpkgs.legacyPackages.${system}
+                ; gccLatest = pkgs.gcc11
+                ; clangLatest = pkgs.llvmPackages_13.clang
 
-          }
-        );
+                ; CMakeFlags_Lolnero =
+                    ''
+                        -DUSE_OPENCL=ON
+                    ''
 
-      devShell = forAllSystems
-        (
-          system:
-          let
-            pkgs = nixpkgs.legacyPackages.${system};
-            gccLatest = pkgs.gcc11;
-            clangLatest = pkgs.llvmPackages_13.clang;
+                ; CMakeDevFlags =
+                    ''
+                        -DBUILD_SHARED_LIBS=ON
+                        -DCMAKE_BUILD_TYPE=Debug
+                    ''
 
-            CMakeFlags_Lolnero = ''
-              -DUSE_OPENCL=ON
-            '';
+                # CMakeCCacheFlags = "";
 
-            CMakeDevFlags = ''
-              -DBUILD_SHARED_LIBS=ON
-              -DCMAKE_BUILD_TYPE=Debug
-            '';
+                ; CMakeCCacheFlags =
+                    ''
+                        -DCMAKE_CXX_COMPILER_LAUNCHER=${pkgs.ccache}/bin/ccache
+                        -DCMAKE_C_COMPILER_LAUNCHER=${pkgs.ccache}/bin/ccache
+                    ''
 
-            # CMakeCCacheFlags = "";
+                ; CMakeClangFlags =
+                    ''
+                        -DCMAKE_CXX_COMPILER=${clangLatest}/bin/clang++
+                        -DCMAKE_C_COMPILER=${clangLatest}/bin/clang
+                    ''
 
-            CMakeCCacheFlags = ''
-              -DCMAKE_CXX_COMPILER_LAUNCHER=${pkgs.ccache}/bin/ccache
-              -DCMAKE_C_COMPILER_LAUNCHER=${pkgs.ccache}/bin/ccache
-            '';
+                ; CMakeGCCFlags =
+                    ''
+                        -DCMAKE_CXX_COMPILER=${gccLatest}/bin/g++
+                        -DCMAKE_C_COMPILER=${gccLatest}/bin/gcc
+                    ''
 
-            CMakeClangFlags = ''
-              -DCMAKE_CXX_COMPILER=${clangLatest}/bin/clang++
-              -DCMAKE_C_COMPILER=${clangLatest}/bin/clang
-            '';
+                ; CMakeTestFlags =
+                    ''
+                        -DBUILD_TESTING=ON
+                    ''
 
-            CMakeGCCFlags = ''
-              -DCMAKE_CXX_COMPILER=${gccLatest}/bin/g++
-              -DCMAKE_C_COMPILER=${gccLatest}/bin/gcc
-            '';
+                ; configureReleaseCommon =
+                    ''
+                        ${pkgs.cmake}/bin/cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}
+                    ''
 
-            CMakeTestFlags = ''
-              -DBUILD_TESTING=ON
-            '';
+                ; configureCommon = configureReleaseCommon + CMakeDevFlags
 
-            configureReleaseCommon = ''
-              ${pkgs.cmake}/bin/cmake ${CMakeFlags_Lolnero} ${CMakeCCacheFlags}
-            '';
+                ; configureGCC = configureCommon + CMakeGCCFlags
+                ; configureGCCRelease = configureReleaseCommon + CMakeGCCFlags
 
-            configureCommon = configureReleaseCommon + CMakeDevFlags;
+                ; configureClang = configureCommon + CMakeClangFlags
+                ; configureClangRelease = configureReleaseCommon + CMakeClangFlags
 
-            configureGCC = configureCommon + CMakeGCCFlags;
-            configureGCCRelease = configureReleaseCommon + CMakeGCCFlags;
+                ; configure = configureClang
+                ; configureRelease = configureClangRelease
 
-            configureClang = configureCommon + CMakeClangFlags;
-            configureClangRelease = configureReleaseCommon + CMakeClangFlags;
+                ;
+              in
+                pkgs.stdenvNoCC.mkDerivation {
+                  name = "lolnero-dev-shell"
+                  ; buildInputs =
+                      [gccLatest clangLatest] ++
+                      (
+                        with pkgs
+                        ;
+                        [
+                          cmake git
 
-            configure = configureClang;
-            configureRelease = configureClangRelease;
+                          boost libsodium rapidjson
+                          gmock
+                          ccache
 
-          in
-            pkgs.stdenvNoCC.mkDerivation {
-              name = "lolnero-dev-shell";
-              buildInputs =
-                [gccLatest clangLatest] ++
-                (
-                  with pkgs; [
-                    cmake git
+                          opencl-headers
+                          opencl-icd
+                          opencl-clhpp
+                        ]
+                      )
 
-                    boost libsodium rapidjson
-                    gmock
-                    ccache
+                  ; inherit CMakeFlags_Lolnero
+                  ; inherit CMakeCCacheFlags
+                  ; inherit CMakeClangFlags
+                  ; inherit CMakeTestFlags
 
-                    opencl-headers
-                    opencl-icd
-                    opencl-clhpp
-                  ]
-                );
+                  ; inherit configureGCC
+                  ; inherit configureGCCRelease
+                  ; inherit configureClang
+                  ; inherit configureClangRelease
+                  ; inherit configure
+                  ; inherit configureRelease
 
-              inherit CMakeFlags_Lolnero;
-              inherit CMakeCCacheFlags;
-              inherit CMakeClangFlags;
-              inherit CMakeTestFlags;
-
-              inherit configureGCC;
-              inherit configureGCCRelease;
-              inherit configureClang;
-              inherit configureClangRelease;
-              inherit configure;
-              inherit configureRelease;
-
-              configureTest = configure + CMakeTestFlags;
-              configureTestRelease = configureRelease + CMakeTestFlags;
-            }
-        );
-    };
+                  ; configureTest = configure + CMakeTestFlags
+                  ; configureTestRelease = configureRelease + CMakeTestFlags
+                  ;
+                }
+            )
+          ;
+        }
+  ;
 }
