@@ -77,6 +77,7 @@
             cmakeFlags = [
               "--no-warn-unused-cli"
               "-DVERSIONTAG=${version}"
+              "-DBUILD_SHARED_LIBS=ON"
             ]
             ;
           };
@@ -99,6 +100,7 @@
             cmakeFlags = [
               "--no-warn-unused-cli"
               "-DVERSIONTAG=${version}"
+              "-DBUILD_SHARED_LIBS=ON"
               "-DUSE_OPENCL=ON"
             ]
             ;
