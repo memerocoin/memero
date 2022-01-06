@@ -61,7 +61,7 @@ namespace crypto {
 
 extern "C" {
   void viaFieldMult8(const uint8_t* x, uint8_t* y) {
-    crypto::crypto_data in;
+    crypto::crypto_data in{};
     std::memcpy(in.data.data(), x, in.data.size());
     const auto out = viaFieldMult8(in);
     std::memcpy(y, out.data.data(), out.data.size());
