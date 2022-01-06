@@ -125,10 +125,10 @@
           ; packages = forAllSystems (system:
               {
                 inherit (nixpkgsFor.${system}) lolnero
-                ; inherit (nixpkgsFor.${system}) lolnero-shared
+                ; inherit (nixpkgsFor.${system}) lolnero-static
                 ; inherit (nixpkgsFor.${system}) lolnero-opencl
                 ; inherit (nixpkgsFor.${system}) lolnero-clang
-                ; inherit (nixpkgsFor.${system}) lolnero-clang-shared
+                ; inherit (nixpkgsFor.${system}) lolnero-clang-static
                 ; inherit (nixpkgsFor.${system}) lolnero-clang-opencl
                 ;
               })
