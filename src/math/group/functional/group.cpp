@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "group.hpp"
 
 #include "tools/epee/include/logging.hpp"
+#include "tools/epee/include/hex.h"
 
 #include <sodium.h>
 
@@ -185,6 +186,21 @@ namespace crypto {
   uint64_t scalar_to_int(const ec_scalar & in) noexcept {
     uint64_t out = 0;
     std::memcpy(&out, in.data.data(), sizeof(uint64_t));
+    return out;
+  }
+
+  std::optional<crypto_data> from_hex(const std::string_view src) {
+    const auto maybeBlob = epee::hex::decode_from_hex_to_blob(src);
+
+    if (!maybeBlob) return {};
+
+    const auto blobData = *maybeBlob;
+    crypto_data out{};
+
+    if (blobData.size() != out.data.size()) return {};
+
+    std::copy(blobData.begin(), blobData.end(), out.data.begin());
+
     return out;
   }
 

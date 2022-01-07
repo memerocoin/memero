@@ -52,11 +52,17 @@ namespace crypto {
     epee::hex::encode_to_hex_stream_formatted(o, v.data); return o;
   }
 
+  std::optional<crypto_data> from_hex(const std::string_view src);
+
   using dataV = std::vector<crypto_data>;
 
   struct ec_point_unsafe : crypto_data {
     bool operator==(const ec_point_unsafe &x) const noexcept {
       return data == x.data;
+    }
+
+    bool operator==(const crypto_data &x) const noexcept {
+      return 0 == crypto_verify_32(data.data(), x.data.data());
     }
   };
 
