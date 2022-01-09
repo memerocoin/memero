@@ -60,4 +60,4 @@ target_link_libraries(lmdb
     )
 
 
-install(TARGETS lmdb)
+# install(TARGETS lmdb)
