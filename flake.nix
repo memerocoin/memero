@@ -24,8 +24,7 @@
 
               ; lolnero-template =
                   {
-                    archive ? true
-                  , stdenv
+                    stdenv
                   , opencl ? false
                   , name ? "lolnero"
                   }: stdenv.mkDerivation {
