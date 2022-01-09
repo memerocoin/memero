@@ -29,7 +29,7 @@ Specifications
 # How to connect to the network
 
 ```
-lolnerod --seed-node SOME_SEED_NODE_IP
+lolnerod-cpp --seed-node SOME_SEED_NODE_IP
 ```
 
 [1]: https://en.wikipedia.org/wiki/Cryptocurrency
