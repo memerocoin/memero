@@ -42,7 +42,7 @@ add_library(math_crypto
   )
 
 target_link_libraries(math_crypto
-    epee
+    epee_basic
     math_hash
     math_group
   )

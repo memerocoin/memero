@@ -45,6 +45,10 @@ target_link_libraries(math_ringct_basic
   math_crypto
 )
 
+install(TARGETS math_ringct_basic)
+
+if(NOT ONLY_LIB)
+
 add_library(math_ringct
   pseudo_functional/ringCT.cpp
 )
@@ -55,5 +59,5 @@ target_link_libraries(math_ringct
   cryptonote_basic
 )
 
-install(TARGETS math_ringct_basic)
 # install(TARGETS math_ringct)
+endif()

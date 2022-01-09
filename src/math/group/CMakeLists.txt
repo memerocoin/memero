@@ -35,7 +35,7 @@ add_library(math_group
   )
 
 target_link_libraries(math_group
-  epee
+  epee_basic
   curve25519_cryptonote
   ${SODIUM_LIBRARY}
   )
