@@ -190,8 +190,10 @@ endif()
 
 
 # test
-include(CTest)
+
+option(BUILD_TESTING "Build tests." OFF)
 if(BUILD_TESTING)
+  include(CTest)
   find_package(OpenCL REQUIRED)
 
   include_directories(tests)
