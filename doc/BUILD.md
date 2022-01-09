@@ -1,6 +1,10 @@
 # Supported
 
-## [Nix flake](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html)
+## [Nix flakes](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html)
+
+### [Install nix flakes](https://nixos.wiki/wiki/Flakes#Installing_flakes)
+
+### Build lolnero
 
 ```
 nix build gitlab:lolnero/lolnero
