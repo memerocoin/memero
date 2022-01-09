@@ -42,4 +42,4 @@ target_link_libraries(network_type
   )
 
 
-install(TARGETS network_type)
+# install(TARGETS network_type)

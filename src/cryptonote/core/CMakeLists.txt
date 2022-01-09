@@ -39,4 +39,4 @@ target_link_libraries(cryptonote_core
 )
 
 
-install(TARGETS cryptonote_core)
+# install(TARGETS cryptonote_core)

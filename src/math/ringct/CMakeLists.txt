@@ -56,4 +56,4 @@ target_link_libraries(math_ringct
 )
 
 install(TARGETS math_ringct_basic)
-install(TARGETS math_ringct)
+# install(TARGETS math_ringct)

@@ -62,6 +62,6 @@ target_link_libraries(wallet_api
     wallet_mnemonics
 )
 
-install(TARGETS wallet_errors)
-install(TARGETS wallet_rpc_client)
-install(TARGETS wallet_api)
+# install(TARGETS wallet_errors)
+# install(TARGETS wallet_rpc_client)
+# install(TARGETS wallet_api)

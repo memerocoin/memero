@@ -37,4 +37,4 @@ target_link_libraries(database
   lmdb
 )
 
-install(TARGETS database)
+# install(TARGETS database)

@@ -31,4 +31,4 @@ add_library(version
   version.cpp
   )
 
-install(TARGETS version)
+# install(TARGETS version)

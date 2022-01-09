@@ -46,4 +46,4 @@ target_link_libraries(cryptonote_miner
 endif()
 
 
-install(TARGETS cryptonote_miner)
+# install(TARGETS cryptonote_miner)

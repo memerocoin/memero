@@ -32,4 +32,4 @@ add_library(wallet_common
   controller.cpp
 )
 
-install(TARGETS wallet_common)
+# install(TARGETS wallet_common)

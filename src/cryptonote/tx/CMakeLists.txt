@@ -39,4 +39,4 @@ target_link_libraries(cryptonote_tx
   math_ringct
 )
 
-install(TARGETS cryptonote_tx)
+# install(TARGETS cryptonote_tx)

@@ -31,4 +31,4 @@ add_library(wallet_mnemonics
   electrum-words.cpp
 )
 
-install(TARGETS wallet_mnemonics)
+# install(TARGETS wallet_mnemonics)

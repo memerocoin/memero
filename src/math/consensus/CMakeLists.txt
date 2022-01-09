@@ -35,4 +35,4 @@ target_link_libraries(math_consensus
   )
 
 
-install(TARGETS math_consensus)
+# install(TARGETS math_consensus)

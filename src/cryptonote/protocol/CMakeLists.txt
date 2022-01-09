@@ -34,4 +34,4 @@ add_library(cryptonote_protocol
   connection_context.cpp
 )
 
-install(TARGETS cryptonote_protocol)
+# install(TARGETS cryptonote_protocol)

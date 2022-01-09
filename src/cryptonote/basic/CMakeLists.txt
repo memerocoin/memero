@@ -48,4 +48,4 @@ target_link_libraries(cryptonote_basic
   tools_serialization
 )
 
-install(TARGETS cryptonote_basic)
+# install(TARGETS cryptonote_basic)

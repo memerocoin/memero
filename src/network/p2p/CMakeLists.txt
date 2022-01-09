@@ -39,4 +39,4 @@ target_link_libraries(network_p2p
   ${Boost_SERIALIZATION_LIBRARY}
 )
 
-install(TARGETS network_p2p)
+# install(TARGETS network_p2p)
