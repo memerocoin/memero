@@ -111,6 +111,26 @@
                     ;
                   }
 
+                ; lolnero-lib = stdenvLatest.mkDerivation {
+                    pname = "lolnero-lib"
+                    ; inherit version
+                    ; src = ./.
+
+                    ; nativeBuildInputs = [ cmake ]
+
+                    ; buildInputs = [
+                        boost libsodium rapidjson
+                      ]
+
+                    ; cmakeFlags = [
+                        "--no-warn-unused-cli"
+                        "-DVERSIONTAG=${version}"
+                        "-DONLY_LIB=ON"
+                        "-DBUILD_SHARED_LIBS=ON"
+                      ]
+                    ;
+                  }
+
                 ; lolnero-with-tests = stdenvLatest.mkDerivation {
                     pname = "lolnero-with-tests"
                     ; inherit version
@@ -165,6 +185,7 @@
                 ; inherit (nixpkgsFor.${system}) lolnero-clang
                 ; inherit (nixpkgsFor.${system}) lolnero-clang-archive
                 ; inherit (nixpkgsFor.${system}) lolnero-clang-opencl
+                ; inherit (nixpkgsFor.${system}) lolnero-lib
                 ;
               })
             
