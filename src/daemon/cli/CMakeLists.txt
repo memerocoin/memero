@@ -62,7 +62,7 @@ set_property(TARGET lolnerod
 
 set_property(TARGET lolnerod
   PROPERTY
-    OUTPUT_NAME "lolnerod")
+    OUTPUT_NAME "lolnerod-cpp")
 
 
 install(TARGETS lolnerod DESTINATION bin)
