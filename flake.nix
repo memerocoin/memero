@@ -24,7 +24,7 @@
 
               ; lolnero-template =
                   {
-                    archive ? false
+                    archive ? true
                   , stdenv
                   , opencl ? false
                   , name ? "lolnero"
@@ -52,13 +52,7 @@
                     ; cmakeFlags = [
                         "--no-warn-unused-cli"
                         "-DVERSIONTAG=${version}"
-                      ] ++
-                      (
-                        nixpkgs.lib.optionals (!archive)
-                          [
-                            "-DBUILD_SHARED_LIBS=ON"
-                          ]
-                      )
+                      ]
                       ++
                       (
                         nixpkgs.lib.optionals opencl
@@ -72,14 +66,6 @@
               {
                 lolnero = lolnero-template { stdenv = stdenvLatest; }
 
-                ; lolnero-archive = lolnero-template
-                  {
-                    name = "lolnero-archive"
-                    ; stdenv = stdenvLatest
-                    ; archive = true
-                    ;
-                  }
-
                 ; lolnero-opencl = lolnero-template
                   {
                     name = "lolnero-opencl"
@@ -92,14 +78,6 @@
                   {
                     name = "lolnero-clang"
                     ; stdenv = clangStdenvLatest
-                    ;
-                  }
-
-                ; lolnero-clang-archive = lolnero-template
-                  {
-                    name = "lolnero-clang-archive"
-                    ; stdenv = clangStdenvLatest
-                    ; archive = true
                     ;
                   }
 
@@ -180,10 +158,8 @@
           ; packages = forAllSystems (system:
               {
                 inherit (nixpkgsFor.${system}) lolnero
-                ; inherit (nixpkgsFor.${system}) lolnero-archive
                 ; inherit (nixpkgsFor.${system}) lolnero-opencl
                 ; inherit (nixpkgsFor.${system}) lolnero-clang
-                ; inherit (nixpkgsFor.${system}) lolnero-clang-archive
                 ; inherit (nixpkgsFor.${system}) lolnero-clang-opencl
                 ; inherit (nixpkgsFor.${system}) lolnero-lib
                 ;
