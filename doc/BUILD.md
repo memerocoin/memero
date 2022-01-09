@@ -1,88 +1,6 @@
-## Alpine
+# Supported
 
-```
-sudo apk add build-base cmake git
-sudo apk add boost-dev libsodium-dev rapidjson-dev
-
-git clone https://gitlab.com/lolnero/lolnero.git
-
-mkdir lolnero/build
-cd lolnero/build
-
-cmake .. && make
-```
-
-Generated binaries will be in `./bin/`.
-
-
-## Arch
-
-```
-sudo pacman -S base-devel cmake git
-sudo pacman -S boost libsodium rapidjson
-
-git clone https://gitlab.com/lolnero/lolnero.git
-
-mkdir lolnero/build
-cd lolnero/build
-
-cmake .. && make
-```
-
-Generated binaries will be in `./bin/`.
-
-
-## Debian 11 "Bullseye"
-
-```
-sudo apt install build-essential cmake git
-
-sudo apt install libboost-dev
-
-sudo apt install \
-libboost-program-options-dev \
-libboost-serialization-dev \
-libboost-system-dev
-
-sudo apt install \
-libsodium-dev \
-rapidjson-dev
-
-git clone https://gitlab.com/lolnero/lolnero.git
-
-mkdir lolnero/build
-cd lolnero/build
-
-cmake .. && make
-```
-
-Generated binaries will be in `./bin/`.
-
-
-## Gentoo
-
-```
-sudo emerge \
-dev-util/cmake \
-dev-vcs/git
-
-sudo emerge \
-dev-libs/boost \
-dev-libs/libsodium \
-dev-libs/rapidjson
-
-git clone https://gitlab.com/lolnero/lolnero.git
-
-mkdir lolnero/build
-cd lolnero/build
-
-cmake .. && make
-```
-
-Generated binaries will be in `./bin/`.
-
-
-## Nix flake
+## [Nix flake](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html)
 
 ```
 nix build gitlab:lolnero/lolnero
@@ -90,6 +8,7 @@ nix build gitlab:lolnero/lolnero
 
 Generated binaries will be in `./result/bin/`.
 
+# Unsupported
 
 ## Build for the built-in OpenCL miner
 
