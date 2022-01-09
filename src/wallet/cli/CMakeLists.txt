@@ -55,7 +55,7 @@ set_property(TARGET lolnero
 
 set_property(TARGET lolnero
   PROPERTY
-    OUTPUT_NAME lolnero)
+    OUTPUT_NAME lolnero-cpp)
 
 install(TARGETS lolnero DESTINATION bin)
 
