@@ -121,21 +121,30 @@ include_directories(
 
 
 
-# let's go
 
-## version
-add_subdirectory(src/config/version)
+# libs
 
 ## tools
 add_subdirectory(src/tools/epee)
-add_subdirectory(src/tools/common)
-add_subdirectory(src/tools/serialization)
 
 ## math
 add_subdirectory(vendor/curve25519/cryptonote)
 add_subdirectory(vendor/SHA3IUF)
 add_subdirectory(src/math/hash)
 add_subdirectory(src/math/group)
+
+# bins
+option(ONLY_LIB "Only build libraries" OFF)
+if(NOT ONLY_LIB)
+
+## version
+add_subdirectory(src/config/version)
+
+## tools
+add_subdirectory(src/tools/common)
+add_subdirectory(src/tools/serialization)
+
+## math
 add_subdirectory(src/math/crypto)
 add_subdirectory(src/math/ringct)
 add_subdirectory(src/math/blockchain)
@@ -181,10 +190,9 @@ endif()
 
 
 # test
+include(CTest)
 if(BUILD_TESTING)
   find_package(OpenCL REQUIRED)
-
-  include(CTest)
 
   include_directories(tests)
 
@@ -192,4 +200,7 @@ if(BUILD_TESTING)
   add_subdirectory(tests/unit_tests)
   add_subdirectory(tests/quick_tests)
   # add_subdirectory(tests/core_tests)
+endif()
+
+
 endif()
