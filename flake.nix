@@ -174,17 +174,17 @@
             (
               system:
               {
-                lolnerod =
+                lolnerod-cpp =
                   {
                     type = "app"
-                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod"
+                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod-cpp"
                     ;
                   }
                     
-                ; lolnero =
+                ; lolnero-cpp =
                     {
                       type = "app"
-                      ; program = "${self.defaultPackage.${system}}/bin/lolnero"
+                      ; program = "${self.defaultPackage.${system}}/bin/lolnero-cpp"
                       ;
                     }
                 ;
