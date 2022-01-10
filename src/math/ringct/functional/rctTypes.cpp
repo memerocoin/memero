@@ -31,17 +31,6 @@
 #include "rctTypes.hpp"
 #include "rctOps.hpp"
 
-#include "tools/epee/include/logging.hpp"
-#include "tools/epee/include/int-util.h"
-
-#include "config/cryptonote.hpp"
-
-#include "math/consensus/consensus.hpp"
-
-#include <cstring>
-
-
-
 
 namespace rct {
 
