@@ -41,6 +41,8 @@
 #include "math/ringct/pseudo_functional/bulletproofs.hpp"
 #include "math/ringct/pseudo_functional/ringCT.hpp"
 
+#include "math/ringct/functional/rctTypes.hpp"
+
 #include "math/crypto/controller/keyGen.hpp"
 
 #include "config/cryptonote.hpp"

@@ -27,25 +27,31 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(math_ringct_basic
+add_library(math_ringct_basic_safe
   functional/rctTypes.cpp
   functional/rctOps.cpp
   functional/vectorOps.cpp
   functional/multi_exponentiation.cpp
-
   pseudo_functional/clsag.cpp
   pseudo_functional/bulletproofs.cpp
-
   controller/clsagGen.cpp
   controller/bulletproofs_gen.cpp
+)
+
+target_link_libraries(math_ringct_basic_safe
+  math_crypto
+)
+
+add_library(math_ringct_basic
+  functional/rctTypesUnsafe.cpp
   controller/ringCT_Gen.cpp
 )
 
 target_link_libraries(math_ringct_basic
-  math_crypto
+  math_ringct_basic_safe
 )
 
-install(TARGETS math_ringct_basic)
+install(TARGETS math_ringct_basic_safe)
 
 if(NOT ONLY_LIB)
 

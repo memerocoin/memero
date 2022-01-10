@@ -38,18 +38,16 @@ add_library( epee_basic
 
 target_link_libraries( epee_basic
   epee_log
-  epee_storage_basic
-)
-
-add_library( epee_storage_basic
-  src/storages/parserse_base_utils.cpp
 )
 
 install(TARGETS epee_basic)
 install(TARGETS epee_log)
-install(TARGETS epee_storage_basic)
 
 if(NOT ONLY_LIB)
+
+add_library( epee_storage_basic
+  src/storages/parserse_base_utils.cpp
+)
 
 add_library( epee
   src/abstract_http_client.cpp
@@ -63,9 +61,11 @@ add_library( epee
   src/misc_os_dependent.cpp
 )
 
+
 target_link_libraries( epee
   epee_basic
   epee_net_basic
+  epee_storage_basic
 )
 
 add_library( epee_net_basic

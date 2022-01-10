@@ -41,7 +41,7 @@
 #include "tools/serialization/variant.h"
 
 #include "math/crypto/controller/keyGen.hpp"
-#include "math/ringct/functional/rctTypes.hpp"
+#include "math/ringct/functional/rctTypesUnsafe.hpp"
 #include "math/blockchain/functional/subaddress.hpp"
 
 #include "config/cryptonote.hpp"
