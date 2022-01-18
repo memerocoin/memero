@@ -35,7 +35,7 @@
                     ; nativeBuildInputs = [ cmake ]
 
                     ; buildInputs = [
-                        boost libsodium rapidjson
+                        boost17x libsodium rapidjson
                       ]
                       ++
                       (
@@ -96,7 +96,7 @@
                     ; nativeBuildInputs = [ cmake ]
 
                     ; buildInputs = [
-                        boost libsodium rapidjson
+                        boost17x libsodium rapidjson
                       ]
 
                     ; cmakeFlags = [
@@ -116,7 +116,7 @@
                     ; nativeBuildInputs = [ cmake ]
 
                     ; buildInputs = [
-                        boost libsodium rapidjson
+                        boost17x libsodium rapidjson
                         opencl-headers
                         opencl-icd
                         opencl-clhpp
@@ -260,7 +260,7 @@
                         [
                           cmake git
 
-                          boost libsodium rapidjson
+                          boost17x libsodium rapidjson
                           gmock
                           ccache
 
