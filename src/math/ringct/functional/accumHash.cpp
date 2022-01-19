@@ -31,19 +31,23 @@
 
 namespace rct
 {
+  using accumState =
+    std::optional
+    <
+    std::pair
+    <
+      std::optional<crypto::ec_scalar>
+      , std::vector<crypto::ec_scalar>
+      >>;
+
   std::optional<std::vector<crypto::ec_scalar>>
   accum_hash
   (
    std::optional<crypto::ec_scalar> init_hash
    , const std::vector<std::vector<crypto::crypto_data>> xss
    ) {
-    const std::optional<std::pair
-      <
-        std::optional<crypto::ec_scalar>
-      , std::vector<crypto::ec_scalar>
-      >>
-      accum_init = {{init_hash, {}}};
 
+    const accumState accum_init = {{init_hash, {}}};
     const auto hash_pair = std::accumulate
       (
        xss.begin()
@@ -53,14 +57,8 @@ namespace rct
        (
         const auto x
         , const std::vector<crypto::crypto_data> xs
-        ) -> std::optional
-       <
-       std::pair
-       <
-       std::optional<crypto::ec_scalar>
-       , std::vector<crypto::ec_scalar>
-       >
-       > {
+        ) -> accumState
+       {
 
          if (!x) {
            return {};
