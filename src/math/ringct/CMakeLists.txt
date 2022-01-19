@@ -31,6 +31,7 @@ add_library(math_ringct_basic
   functional/rctTypes.cpp
   functional/rctOps.cpp
   functional/vectorOps.cpp
+  functional/accumHash.cpp
   functional/multi_exponentiation.cpp
   pseudo_functional/clsag.cpp
   pseudo_functional/bulletproofs.cpp
