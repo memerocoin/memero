@@ -114,10 +114,6 @@ namespace rct
     LOG_ERROR_AND_RETURN_UNLESS
       (proof.LR.size() == rounds, false, "Proof is not the expected size");
 
-    LOG_ERROR_AND_RETURN_UNLESS
-      (proof.LR.size() < 32, false, "At least one proof is too large");
-
-
 
     // Reconstruct the challenges
 
