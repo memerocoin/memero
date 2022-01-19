@@ -31,17 +31,20 @@
 
 namespace rct
 {
-  std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>>
+  std::optional<std::vector<crypto::ec_scalar>>
   accum_hash
   (
    const crypto::ec_scalar init_hash
    , const std::vector<std::vector<crypto::crypto_data>> xss
    ) {
+    if (init_hash == rct::s_zero) {
+      return {};
+    }
 
-    const std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>>
+    const std::pair<std::optional<crypto::ec_scalar>, std::vector<crypto::ec_scalar>>
       accum_init = {init_hash, {}};
 
-    return std::accumulate
+    const auto hash_pair = std::accumulate
       (
        xss.begin()
        , xss.end()
@@ -50,13 +53,22 @@ namespace rct
        (
         const auto x
         , const std::vector<crypto::crypto_data> xs
-        ) -> std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>> {
-         std::vector<crypto::crypto_data> ys = xs;
-         const crypto::crypto_data last = x.first;
+        ) -> std::pair<std::optional<crypto::ec_scalar>, std::vector<crypto::ec_scalar>> {
+         const std::optional<crypto::crypto_data> last = x.first;
 
-         ys.insert(ys.begin(), last);
+         if (!last) {
+           return {{}, {}};
+         }
+
+         std::vector<crypto::crypto_data> ys = xs;
+
+         ys.insert(ys.begin(), *last);
 
          const auto h = hash_dataV_to_scalar(ys);
+
+         if (h == rct::s_zero) {
+           return {{}, {}};
+         }
 
          std::vector<crypto::ec_scalar> hs = x.second;
          hs.push_back(h);
@@ -64,5 +76,11 @@ namespace rct
          return {h, hs};
        }
        );
+
+    if (!hash_pair.first) {
+      return {};
+    } else {
+      return hash_pair.second;
+    }
   }
 }

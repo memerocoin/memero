@@ -26,10 +26,13 @@
 namespace rct
 {
 
-  std::optional<std::vector<crypto::ec_scalar>>
-  accum_hash
-  (
-   const crypto::ec_scalar init_hash
-   , const std::vector<std::vector<crypto::crypto_data>> xss
-   );
+  struct proof_data_t
+  {
+    crypto::ec_scalar x, y, z, x_ip;
+    std::vector<crypto::ec_scalar> w;
+  };
+
+  std::optional<proof_data_t> make_hash_challenges
+  (const pointS commits, const Bulletproof proof);
+
 }

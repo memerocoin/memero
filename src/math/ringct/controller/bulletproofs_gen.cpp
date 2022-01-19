@@ -55,6 +55,7 @@
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
+#include "math/ringct/functional/bulletproofs.hpp"
 #include "math/ringct/functional/multi_exponentiation.hpp"
 
 #include "math/crypto/controller/keyGen.hpp"

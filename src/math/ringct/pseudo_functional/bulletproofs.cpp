@@ -55,6 +55,7 @@
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/accumHash.hpp"
+#include "math/ringct/functional/bulletproofs.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/multi_exponentiation.hpp"
 #include "math/ringct/controller/bulletproofs_gen.hpp"
@@ -82,12 +83,6 @@ namespace rct
   const crypto::ec_scalar ip12 = inner_product(oneN, twoN);
 
   const auto multiexp = dummy;
-
-  struct proof_data_t
-  {
-    crypto::ec_scalar x, y, z, x_ip;
-    std::vector<crypto::ec_scalar> w;
-  };
 
   /* Given a range proof, determine if it is valid
    * This uses the method in PAPER LINES 95-105,
@@ -125,68 +120,13 @@ namespace rct
 
 
     // Reconstruct the challenges
-    crypto::dataV hash_dataV;
-    std::transform
-      (
-       commits.begin()
-       , commits.end()
-       , std::back_inserter(hash_dataV)
-       , to_inv8
-       );
-    crypto::ec_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
 
-    proof_data_t pd;
-    pd.y = hash_carry = hash_dataV_to_scalar
-      (crypto::dataV{hash_carry, to_inv8(proof.A), to_inv8(proof.S)});
-    LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), false, "y == 0");
+    const auto maybe_pd = make_hash_challenges(commits, proof);
 
-    pd.z = hash_carry = rct::hash_to_scalar(pd.y);
-    LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), false, "z == 0");
+    LOG_ERROR_AND_RETURN_UNLESS
+      (maybe_pd, false, "invalid hash challenges");
 
-    pd.x = hash_carry =
-      hash_dataV_to_scalar
-      (crypto::dataV{hash_carry, pd.z, to_inv8(proof.T1), to_inv8(proof.T2)});
-    LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), false, "x == 0");
-
-    pd.x_ip = hash_carry =
-      hash_dataV_to_scalar
-      (
-       crypto::dataV
-       {
-         hash_carry
-         , pd.x
-         , proof.taux
-         , proof.mu
-         , proof.t
-       });
-    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
-
-    std::vector<std::vector<crypto::crypto_data>> lr_data;
-    std::transform
-      (
-       proof.LR.begin()
-       , proof.LR.end()
-       , std::back_inserter(lr_data)
-       , []
-       (
-        const auto lr
-        ) -> std::vector<crypto::crypto_data> {
-         return {to_inv8(lr.first), to_inv8(lr.second)};
-       }
-       );
-
-    pd.w = accum_hash(hash_carry, {lr_data}).second;
-
-    const bool valid_pd_w = std::transform_reduce
-      (
-       pd.w.begin()
-       , pd.w.end()
-       , true
-       , std::logical_and()
-       , [](const auto& x) { return x != rct::s_zero; }
-       );
-
-    LOG_ERROR_AND_RETURN_UNLESS(valid_pd_w, false, "some pd_w[i] == 0");
+    const proof_data_t pd = *maybe_pd;
 
     // STEP 2, use proof_data
     std::vector<MultiexpData> multiexp_data;
