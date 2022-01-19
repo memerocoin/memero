@@ -78,8 +78,8 @@
 namespace rct
 {
 
-const scalarV oneN = vector_powers(rct::s_one, maxN);
-const scalarV twoN = vector_powers(rct::s_two, maxN);
+const scalarV oneN = vector_powers(rct::s_one, bit_width);
+const scalarV twoN = vector_powers(rct::s_two, bit_width);
 
 const crypto::ec_scalar ip12 = inner_product(oneN, twoN);
 
@@ -149,8 +149,8 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
       });
   LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
-  constexpr size_t N = log2bound(maxN).first;
-  constexpr size_t logN = log2bound(maxN).second;
+  constexpr size_t N = log2bound(bit_width).first;
+  constexpr size_t logN = log2bound(bit_width).second;
   const auto [M, logM] = log2bound(std::min(max_outputs, commits.size()));
 
   const size_t rounds = logM + logN;

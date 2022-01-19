@@ -79,10 +79,10 @@ namespace rct
 
 crypto::ec_point vector_exponent(const scalarS a, const scalarS b);
 
-const scalarV twoN = vector_powers(rct::s_two, maxN);
+const scalarV twoN = vector_powers(rct::s_two, bit_width);
 
-std::array<crypto::ec_point, maxN*max_outputs> Hi;
-std::array<crypto::ec_point, maxN*max_outputs> Gi;
+std::array<crypto::ec_point, bit_width * max_outputs> Hi;
+std::array<crypto::ec_point, bit_width * max_outputs> Gi;
 
 const auto multiexp = dummy;
 
@@ -139,7 +139,7 @@ void init_exponents()
 crypto::ec_point vector_exponent(const scalarS a, const scalarS b)
 {
   LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  LOG_ERROR_AND_THROW_UNLESS(a.size() <= maxN*max_outputs, "Incompatible sizes of a and maxN");
+  LOG_ERROR_AND_THROW_UNLESS(a.size() <= max_vector_length, "vector size too big");
 
   std::vector<MultiexpData> multiexp_data;
   multiexp_data.reserve(a.size()*2);
@@ -182,7 +182,7 @@ crypto::ec_point cross_vector_exponent
   LOG_ERROR_AND_THROW_UNLESS(size + Bo <= B.size(), "Incompatible size for B");
   LOG_ERROR_AND_THROW_UNLESS(size + ao <= a.size(), "Incompatible size for a");
   LOG_ERROR_AND_THROW_UNLESS(size + bo <= b.size(), "Incompatible size for b");
-  LOG_ERROR_AND_THROW_UNLESS(size <= maxN*max_outputs, "size is too large");
+  LOG_ERROR_AND_THROW_UNLESS(size <= max_vector_length, "size is too large");
   LOG_ERROR_AND_THROW_UNLESS(!scale || size == scale->size() / 2, "Incompatible size for scale");
 
   std::vector<MultiexpData> multiexp_data;
@@ -265,6 +265,7 @@ pointV hadamard_fold
 Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, const crypto::ec_scalar>> xs)
 {
   LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
+  LOG_ERROR_AND_THROW_UNLESS(xs.size() <= max_outputs, "too many amounts to proof");
 
   for (const auto& [x,g]: xs) {
     LOG_ERROR_AND_THROW_UNLESS(is_reduced(g), "Invalid gamma input");
@@ -272,10 +273,9 @@ Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, con
 
   init_exponents();
 
-  const auto [N, logN] = log2bound(maxN);
-  const auto [M, logM] = log2bound(std::min(max_outputs, xs.size()));
+  const auto [N, logN] = log2bound(bit_width);
+  const auto [M, logM] = log2bound(xs.size());
 
-  LOG_ERROR_AND_THROW_UNLESS(M <= max_outputs, "sv/gamma are too large");
 
 
   const size_t logMN = logM + logN;
