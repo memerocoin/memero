@@ -136,7 +136,7 @@ namespace rct
        }
        );
 
-    const auto maybe_pd_w = accum_hash(pd.x_ip, {lr_data});
+    const auto maybe_pd_w = accum_hash(pd.x_ip, lr_data);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_pd_w, {}, "some pd_w[i] == 0");
 
     pd.w = *maybe_pd_w;
