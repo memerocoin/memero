@@ -46,6 +46,9 @@ namespace rct
    std::optional<crypto::ec_scalar> init_hash
    , const std::vector<std::vector<crypto::crypto_data>> xss
    ) {
+    if (xss.empty()) {
+      return {};
+    }
 
     const accumState accum_init = {{init_hash, {}}};
     const auto hash_pair = std::accumulate
