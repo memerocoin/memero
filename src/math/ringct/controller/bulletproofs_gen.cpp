@@ -56,6 +56,7 @@
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/bulletproofs.hpp"
+#include "math/ringct/functional/accumHash.hpp"
 #include "math/ringct/functional/multi_exponentiation.hpp"
 
 #include "math/crypto/controller/keyGen.hpp"
@@ -323,26 +324,35 @@ namespace rct
     const crypto::ec_scalar rho = crypto::randomScalar();
     const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
 
-    crypto::dataV hash_dataV;
+    crypto::dataV commit_data_V;
     std::transform
       (
        V.begin()
        , V.end()
-       , std::back_inserter(hash_dataV)
+       , std::back_inserter(commit_data_V)
        , to_inv8
        );
 
-    crypto::ec_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
+    const auto maybe_pd_y = accum_hash
+      (
+       {}
+       , {
+         commit_data_V
+         , { to_inv8(A), to_inv8(S) }
+       }
+       );
 
     // PAPER LINES 48-50
-    const crypto::ec_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(A), to_inv8(S)});
-    if (y == rct::s_zero)
+    if (!maybe_pd_y)
       {
         LOG_INFO("y is 0, trying again");
         goto try_again;
       }
 
-    const crypto::ec_scalar z = hash_carry = rct::hash_to_scalar(y);
+    const auto pd_y_array = *maybe_pd_y;
+    const auto y = pd_y_array.back();
+
+    const crypto::ec_scalar z = rct::hash_to_scalar(y);
     if (z == rct::s_zero)
       {
         LOG_INFO("z is 0, trying again");
@@ -389,8 +399,8 @@ namespace rct
     const crypto::ec_point T2 = G_(tau2) + H_(t2);
 
     // PAPER LINES 54-56
-    const crypto::ec_scalar x = hash_carry = hash_dataV_to_scalar
-      (crypto::dataV{hash_carry, z, to_inv8(T1), to_inv8(T2)});
+    const crypto::ec_scalar x = hash_dataV_to_scalar
+      (crypto::dataV{z, z, to_inv8(T1), to_inv8(T2)});
     if (x == rct::s_zero)
       {
         LOG_INFO("x is 0, trying again");
@@ -426,8 +436,8 @@ namespace rct
     const crypto::ec_scalar t = inner_product(l, r);
 
     // PAPER LINE 6
-    const crypto::ec_scalar x_ip = hash_carry =
-      hash_dataV_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
+    const crypto::ec_scalar x_ip =
+      hash_dataV_to_scalar(crypto::dataV{x, x, taux, mu, t});
     if (x_ip == rct::s_zero)
       {
         LOG_INFO("x_ip is 0, trying again");
@@ -458,6 +468,9 @@ namespace rct
     scalarV w(logMN); // this is the challenge x in the inner product protocol
 
     std::optional<scalarS> scale = yinvpow;
+
+    crypto::ec_scalar last_hash = x_ip;
+
     while (nprime > 1)
       {
         // PAPER LINE 20
@@ -487,7 +500,11 @@ namespace rct
         LR[round] = {L, R};
 
         // PAPER LINES 25-27
-        w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(L), to_inv8(R)});
+        w[round] = hash_dataV_to_scalar
+          (crypto::dataV{last_hash, to_inv8(L), to_inv8(R)});
+
+        last_hash = w[round];
+
         if (w[round] == rct::s_zero)
           {
             LOG_INFO("w[round] is 0, trying again");
