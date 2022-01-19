@@ -313,6 +313,16 @@ namespace rct
       }
 
   try_again:
+    // PAPER LINES 43-44
+    const crypto::ec_scalar alpha = crypto::randomScalar();
+    const crypto::ec_point A = vector_exponent(aL, aR) + G_(alpha);
+
+    // PAPER LINES 45-47
+    const scalarV sL = crypto::randomScalars(MN);
+    const scalarV sR = crypto::randomScalars(MN);
+    const crypto::ec_scalar rho = crypto::randomScalar();
+    const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
+
     crypto::dataV hash_dataV;
     std::transform
       (
@@ -323,16 +333,6 @@ namespace rct
        );
 
     crypto::ec_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
-
-    // PAPER LINES 43-44
-    const crypto::ec_scalar alpha = crypto::randomScalar();
-    const crypto::ec_point A = vector_exponent(aL, aR) + G_(alpha);
-
-    // PAPER LINES 45-47
-    const scalarV sL = crypto::randomScalars(MN);
-    const scalarV sR = crypto::randomScalars(MN);
-    const crypto::ec_scalar rho = crypto::randomScalar();
-    const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
 
     // PAPER LINES 48-50
     const crypto::ec_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(A), to_inv8(S)});

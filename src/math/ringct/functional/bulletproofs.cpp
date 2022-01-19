@@ -38,50 +38,51 @@
 
 namespace rct
 {
-  struct hash_input_t
-  {
-    pointV commits;
-    crypto::ec_point A, S;
-    crypto::ec_point T1, T2;
-    crypto::ec_scalar taux, mu;
-    crypto::ec_scalar a, b, t;
-  };
-
   std::optional<proof_data_t> make_hash_challenges
   (const pointS commits, const Bulletproof proof) {
-    // hash_input_t hash_input;
-    // hash_input.commits = commits;
 
-    crypto::dataV hash_dataV;
+    crypto::dataV commit_data_V;
     std::transform
       (
        commits.begin()
        , commits.end()
-       , std::back_inserter(hash_dataV)
+       , std::back_inserter(commit_data_V)
        , to_inv8
        );
 
-    crypto::ec_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
-
     proof_data_t pd;
-    pd.y = hash_carry = hash_dataV_to_scalar
-      (crypto::dataV{hash_carry, to_inv8(proof.A), to_inv8(proof.S)});
-    LOG_ERROR_AND_RETURN_IF((pd.y == rct::s_zero), {}, "y == 0");
+    const auto maybe_pd_y = accum_hash
+      (
+       {}
+       , {
+         commit_data_V
+         , { to_inv8(proof.A), to_inv8(proof.S) }
+       }
+       );
 
-    pd.z = hash_carry = rct::hash_to_scalar(pd.y);
+    LOG_ERROR_AND_RETURN_UNLESS
+      (maybe_pd_y
+       , {}
+       , "failed to generate hash challenges"
+       );
+
+    const auto pd_y_array = *maybe_pd_y;
+    pd.y = pd_y_array.back();
+    pd.z = rct::hash_to_scalar(pd.y);
     LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), {}, "z == 0");
 
-    pd.x = hash_carry =
+    pd.x =
       hash_dataV_to_scalar
-      (crypto::dataV{hash_carry, pd.z, to_inv8(proof.T1), to_inv8(proof.T2)});
+      (crypto::dataV{pd.z, pd.z, to_inv8(proof.T1), to_inv8(proof.T2)});
+
     LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), {}, "x == 0");
 
-    pd.x_ip = hash_carry =
+    pd.x_ip =
       hash_dataV_to_scalar
       (
        crypto::dataV
        {
-         hash_carry
+         pd.x
          , pd.x
          , proof.taux
          , proof.mu
@@ -103,7 +104,7 @@ namespace rct
        }
        );
 
-    const auto maybe_pd_w = accum_hash(hash_carry, {lr_data});
+    const auto maybe_pd_w = accum_hash(pd.x_ip, {lr_data});
     LOG_ERROR_AND_RETURN_UNLESS(maybe_pd_w, {}, "some pd_w[i] == 0");
 
     pd.w = *maybe_pd_w;

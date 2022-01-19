@@ -34,15 +34,15 @@ namespace rct
   std::optional<std::vector<crypto::ec_scalar>>
   accum_hash
   (
-   const crypto::ec_scalar init_hash
+   std::optional<crypto::ec_scalar> init_hash
    , const std::vector<std::vector<crypto::crypto_data>> xss
    ) {
-    if (init_hash == rct::s_zero) {
-      return {};
-    }
-
-    const std::pair<std::optional<crypto::ec_scalar>, std::vector<crypto::ec_scalar>>
-      accum_init = {init_hash, {}};
+    const std::optional<std::pair
+      <
+        std::optional<crypto::ec_scalar>
+      , std::vector<crypto::ec_scalar>
+      >>
+      accum_init = {{init_hash, {}}};
 
     const auto hash_pair = std::accumulate
       (
@@ -53,11 +53,28 @@ namespace rct
        (
         const auto x
         , const std::vector<crypto::crypto_data> xs
-        ) -> std::pair<std::optional<crypto::ec_scalar>, std::vector<crypto::ec_scalar>> {
-         const std::optional<crypto::crypto_data> last = x.first;
+        ) -> std::optional
+       <
+       std::pair
+       <
+       std::optional<crypto::ec_scalar>
+       , std::vector<crypto::ec_scalar>
+       >
+       > {
+
+         if (!x) {
+           return {};
+         }
+
+         const std::optional<crypto::crypto_data> last = x->first;
 
          if (!last) {
-           return {{}, {}};
+           const auto h = hash_dataV_to_scalar(xs);
+           if (h == rct::s_zero) {
+             return {};
+           }
+
+           return {{h, {h}}};
          }
 
          std::vector<crypto::crypto_data> ys = xs;
@@ -67,20 +84,20 @@ namespace rct
          const auto h = hash_dataV_to_scalar(ys);
 
          if (h == rct::s_zero) {
-           return {{}, {}};
+           return {};
          }
 
-         std::vector<crypto::ec_scalar> hs = x.second;
+         std::vector<crypto::ec_scalar> hs = x->second;
          hs.push_back(h);
 
-         return {h, hs};
+         return {{h, hs}};
        }
        );
 
-    if (!hash_pair.first) {
+    if (!hash_pair) {
       return {};
     } else {
-      return hash_pair.second;
+      return hash_pair->second;
     }
   }
 }

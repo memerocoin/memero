@@ -29,7 +29,7 @@ namespace rct
   std::optional<std::vector<crypto::ec_scalar>>
   accum_hash
   (
-   const crypto::ec_scalar init_hash
+   std::optional<crypto::ec_scalar> init_hash
    , const std::vector<std::vector<crypto::crypto_data>> xss
    );
 }
