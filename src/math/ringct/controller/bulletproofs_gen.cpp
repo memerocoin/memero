@@ -72,475 +72,473 @@
 
 
 
-
-
 namespace rct
 {
 
-crypto::ec_point vector_exponent(const scalarS a, const scalarS b);
+  crypto::ec_point vector_exponent(const scalarS a, const scalarS b);
 
-const scalarV twoN = vector_powers(rct::s_two, bit_width);
+  const scalarV twoN = vector_powers(rct::s_two, bit_width);
 
-std::array<crypto::ec_point, bit_width * max_outputs> Hi;
-std::array<crypto::ec_point, bit_width * max_outputs> Gi;
+  std::array<crypto::ec_point, bit_width * max_outputs> Hi;
+  std::array<crypto::ec_point, bit_width * max_outputs> Gi;
 
-const auto multiexp = dummy;
+  const auto multiexp = dummy;
 
-crypto::ec_point get_exponent(const crypto::ec_point base, size_t idx)
-{
-  constexpr std::string_view domain_separator = config::HASH_KEY_BULLETPROOF_EXPONENT;
-  const std::string hashed =
-    epee::string_tools::blob_to_string(base.data)
-    + std::string(domain_separator)
-    + tools::get_varint_data(idx);
+  crypto::ec_point get_exponent(const crypto::ec_point base, size_t idx)
+  {
+    constexpr std::string_view domain_separator = config::HASH_KEY_BULLETPROOF_EXPONENT;
+    const std::string hashed =
+      epee::string_tools::blob_to_string(base.data)
+      + std::string(domain_separator)
+      + tools::get_varint_data(idx);
 
-  crypto::ec_point e = crypto::hash_to_point_via_field
-    ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
+    crypto::ec_point e = crypto::hash_to_point_via_field
+      ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
 
-  LOG_ERROR_AND_THROW_IF((e == crypto::identity), "Invalid exponent");
-  return e;
-}
+    LOG_ERROR_AND_THROW_IF((e == crypto::identity), "Invalid exponent");
+    return e;
+  }
 
-std::atomic<bool> init_done(false);
-std::mutex init_mutex;
+  std::atomic<bool> init_done(false);
+  std::mutex init_mutex;
 
-void init_exponents()
-{
-  if (!init_done) {
-    std::lock_guard<std::mutex> lock(init_mutex);
+  void init_exponents()
+  {
+    if (!init_done) {
+      std::lock_guard<std::mutex> lock(init_mutex);
+      std::generate
+        (
+         Hi.begin()
+         , Hi.end()
+         , [i = 0] () mutable {
+           const auto r = get_exponent(rct::H, i * 2);
+           i++;
+           return r;
+         }
+         );
+
+      std::generate
+        (
+         Gi.begin()
+         , Gi.end()
+         , [i = 0] () mutable {
+           const auto r = get_exponent(rct::H, i * 2 + 1);
+           i++;
+           return r;
+         }
+         );
+
+      init_done = true;
+    }
+  }
+
+
+  /* Given two crypto::ec_scalar arrays, construct a vector commitment */
+  crypto::ec_point vector_exponent(const scalarS a, const scalarS b)
+  {
+    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
+    LOG_ERROR_AND_THROW_UNLESS(a.size() <= max_vector_length, "vector size too big");
+
+    std::vector<MultiexpData> multiexp_data;
+    multiexp_data.reserve(a.size()*2);
+    std::transform
+      (
+       a.begin()
+       , a.end()
+       , Gi.begin()
+       , std::back_inserter(multiexp_data)
+       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+       );
+
+    std::transform
+      (
+       b.begin()
+       , b.end()
+       , Hi.begin()
+       , std::back_inserter(multiexp_data)
+       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+       );
+    return multiexp(multiexp_data);
+  }
+
+  /* Compute a custom vector-scalar commitment */
+  crypto::ec_point cross_vector_exponent
+  (
+   const size_t size
+   , const std::span<crypto::ec_point> A
+   , const size_t Ao
+   , const std::span<crypto::ec_point> B
+   , const size_t Bo
+   , const scalarS a
+   , const size_t ao
+   , const scalarS b
+   , const size_t bo
+   , const std::optional<scalarS> scale
+   )
+  {
+    LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
+    LOG_ERROR_AND_THROW_UNLESS(size + Bo <= B.size(), "Incompatible size for B");
+    LOG_ERROR_AND_THROW_UNLESS(size + ao <= a.size(), "Incompatible size for a");
+    LOG_ERROR_AND_THROW_UNLESS(size + bo <= b.size(), "Incompatible size for b");
+    LOG_ERROR_AND_THROW_UNLESS(size <= max_vector_length, "size is too large");
+    LOG_ERROR_AND_THROW_UNLESS(!scale || size == scale->size() / 2, "Incompatible size for scale");
+
+    std::vector<MultiexpData> multiexp_data;
+    multiexp_data.reserve(size*2);
+
+    std::transform
+      (
+       std::next(a.begin(), ao)
+       , std::next(a.begin(), ao + size)
+       , std::next(A.begin(), Ao)
+       , std::back_inserter(multiexp_data)
+       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+       );
+
+    scalarV b_scalars(size);
     std::generate
       (
-       Hi.begin()
-       , Hi.end()
-       , [i = 0] () mutable {
-         const auto r = get_exponent(rct::H, i * 2);
+
+       b_scalars.begin()
+       , b_scalars.end()
+       , [i = 0, b, bo, scale, Bo]() mutable {
+         const auto b_scaled = scale ? b[bo+i] * (*scale)[Bo+i] : b[bo+i];
          i++;
+         return b_scaled;
+       }
+       );
+
+    std::transform
+      (
+       b_scalars.begin()
+       , b_scalars.end()
+       , std::next(B.begin(), Bo)
+       , std::back_inserter(multiexp_data)
+       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+       );
+
+    return multiexp(multiexp_data);
+  }
+
+
+
+  /* folds a curvepoint array using a two way scaled Hadamard product */
+  pointV hadamard_fold
+  (
+   const pointS v
+   , const std::optional<scalarS> scale
+   , const crypto::ec_scalar a
+   , const crypto::ec_scalar b
+   )
+  {
+    LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
+    const size_t sz = v.size() / 2;
+    std::vector<crypto::ec_point> out(sz);
+
+    std::generate
+      (
+       out.begin()
+       , out.end()
+       , [n = 0, v, scale, a, b, sz] () mutable {
+         const crypto::ec_scalar x = scale
+           ? a * (*scale)[n]
+           : a;
+
+         const size_t iy = sz + n;
+
+         const crypto::ec_scalar y = scale
+           ? b * (*scale)[iy]
+           : b;
+
+         const auto r = (v[n] ^ x) + (v[iy] ^ y);
+         n++;
          return r;
        }
        );
 
-    std::generate
+    return out;
+  }
+
+  /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
+  Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, const crypto::ec_scalar>> xs)
+  {
+    LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
+    LOG_ERROR_AND_THROW_UNLESS(xs.size() <= max_outputs, "too many amounts to proof");
+
+    for (const auto& [x,g]: xs) {
+      LOG_ERROR_AND_THROW_UNLESS(is_reduced(g), "Invalid gamma input");
+    }
+
+    init_exponents();
+
+    const auto [N, logN] = log2bound(bit_width);
+    const auto [M, logM] = log2bound(xs.size());
+
+
+
+    const size_t logMN = logM + logN;
+    const size_t MN = M * N;
+
+    pointV V(xs.size());
+    scalarV aL(MN), aR(MN);
+
+    std::transform
       (
-       Gi.begin()
-       , Gi.end()
-       , [i = 0] () mutable {
-         const auto r = get_exponent(rct::H, i * 2 + 1);
-         i++;
-         return r;
+       xs.begin()
+       , xs.end()
+       , V.begin()
+       , [](const auto& x) {
+         return std::apply(commit, x);
        }
        );
 
-    init_done = true;
-  }
-}
-
-
-/* Given two crypto::ec_scalar arrays, construct a vector commitment */
-crypto::ec_point vector_exponent(const scalarS a, const scalarS b)
-{
-  LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-  LOG_ERROR_AND_THROW_UNLESS(a.size() <= max_vector_length, "vector size too big");
-
-  std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(a.size()*2);
-  std::transform
-    (
-     a.begin()
-     , a.end()
-     , Gi.begin()
-     , std::back_inserter(multiexp_data)
-     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
-     );
-
-  std::transform
-    (
-     b.begin()
-     , b.end()
-     , Hi.begin()
-     , std::back_inserter(multiexp_data)
-     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
-     );
-  return multiexp(multiexp_data);
-}
-
-/* Compute a custom vector-scalar commitment */
-crypto::ec_point cross_vector_exponent
-(
- const size_t size
- , const std::span<crypto::ec_point> A
- , const size_t Ao
- , const std::span<crypto::ec_point> B
- , const size_t Bo
- , const scalarS a
- , const size_t ao
- , const scalarS b
- , const size_t bo
- , const std::optional<scalarS> scale
- )
-{
-  LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
-  LOG_ERROR_AND_THROW_UNLESS(size + Bo <= B.size(), "Incompatible size for B");
-  LOG_ERROR_AND_THROW_UNLESS(size + ao <= a.size(), "Incompatible size for a");
-  LOG_ERROR_AND_THROW_UNLESS(size + bo <= b.size(), "Incompatible size for b");
-  LOG_ERROR_AND_THROW_UNLESS(size <= max_vector_length, "size is too large");
-  LOG_ERROR_AND_THROW_UNLESS(!scale || size == scale->size() / 2, "Incompatible size for scale");
-
-  std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(size*2);
-
-  std::transform
-    (
-     std::next(a.begin(), ao)
-     , std::next(a.begin(), ao + size)
-     , std::next(A.begin(), Ao)
-     , std::back_inserter(multiexp_data)
-     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
-     );
-
-  scalarV b_scalars(size);
-  std::generate
-    (
-
-     b_scalars.begin()
-     , b_scalars.end()
-     , [i = 0, b, bo, scale, Bo]() mutable {
-       const auto b_scaled = scale ? b[bo+i] * (*scale)[Bo+i] : b[bo+i];
-       i++;
-       return b_scaled;
-     }
-     );
-
-  std::transform
-    (
-     b_scalars.begin()
-     , b_scalars.end()
-     , std::next(B.begin(), Bo)
-     , std::back_inserter(multiexp_data)
-     , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
-     );
-
-  return multiexp(multiexp_data);
-}
-
-
-
-/* folds a curvepoint array using a two way scaled Hadamard product */
-pointV hadamard_fold
-(
- const pointS v
- , const std::optional<scalarS> scale
- , const crypto::ec_scalar a
- , const crypto::ec_scalar b
- )
-{
-  LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
-  const size_t sz = v.size() / 2;
-  std::vector<crypto::ec_point> out(sz);
-
-  std::generate
-    (
-     out.begin()
-     , out.end()
-     , [n = 0, v, scale, a, b, sz] () mutable {
-       const crypto::ec_scalar x = scale
-         ? a * (*scale)[n]
-         : a;
-
-       const size_t iy = sz + n;
-
-       const crypto::ec_scalar y = scale
-         ? b * (*scale)[iy]
-         : b;
-
-       const auto r = (v[n] ^ x) + (v[iy] ^ y);
-       n++;
-       return r;
-     }
-     );
-
-  return out;
-}
-
-/* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, const crypto::ec_scalar>> xs)
-{
-  LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
-  LOG_ERROR_AND_THROW_UNLESS(xs.size() <= max_outputs, "too many amounts to proof");
-
-  for (const auto& [x,g]: xs) {
-    LOG_ERROR_AND_THROW_UNLESS(is_reduced(g), "Invalid gamma input");
-  }
-
-  init_exponents();
-
-  const auto [N, logN] = log2bound(bit_width);
-  const auto [M, logM] = log2bound(xs.size());
-
-
-
-  const size_t logMN = logM + logN;
-  const size_t MN = M * N;
-
-  pointV V(xs.size());
-  scalarV aL(MN), aR(MN);
-
-  std::transform
-    (
-     xs.begin()
-     , xs.end()
-     , V.begin()
-     , [](const auto& x) {
-       return std::apply(commit, x);
-     }
-     );
-
-  // PAPER LINES 41-42
-  for (size_t j = 0; j < M; ++j)
-  {
-    for (size_t i = N; i-- > 0; )
-    {
-      const crypto::ec_scalar amount_scalar = crypto::int_to_scalar(xs[j].first);
-      if (j < xs.size() && (amount_scalar.data[i/8] & (((uint64_t)1)<<(i%8))))
+    // PAPER LINES 41-42
+    for (size_t j = 0; j < M; ++j)
       {
-        aL[j*N+i] = rct::s_one;
-        aR[j*N+i] = rct::s_zero;
+        for (size_t i = N; i-- > 0; )
+          {
+            const crypto::ec_scalar amount_scalar = crypto::int_to_scalar(xs[j].first);
+            if (j < xs.size() && (amount_scalar.data[i/8] & (((uint64_t)1)<<(i%8))))
+              {
+                aL[j*N+i] = rct::s_one;
+                aR[j*N+i] = rct::s_zero;
+              }
+            else
+              {
+                aL[j*N+i] = rct::s_zero;
+                aR[j*N+i] = rct::s_minus_one;
+              }
+          }
       }
-      else
+
+  try_again:
+    crypto::dataV hash_dataV;
+    std::transform
+      (
+       V.begin()
+       , V.end()
+       , std::back_inserter(hash_dataV)
+       , to_inv8
+       );
+
+    crypto::ec_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
+
+    // PAPER LINES 43-44
+    const crypto::ec_scalar alpha = crypto::randomScalar();
+    const crypto::ec_point A = vector_exponent(aL, aR) + G_(alpha);
+
+    // PAPER LINES 45-47
+    const scalarV sL = crypto::randomScalars(MN);
+    const scalarV sR = crypto::randomScalars(MN);
+    const crypto::ec_scalar rho = crypto::randomScalar();
+    const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
+
+    // PAPER LINES 48-50
+    const crypto::ec_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(A), to_inv8(S)});
+    if (y == rct::s_zero)
       {
-        aL[j*N+i] = rct::s_zero;
-        aR[j*N+i] = rct::s_minus_one;
+        LOG_INFO("y is 0, trying again");
+        goto try_again;
       }
-    }
-  }
 
-try_again:
-  crypto::dataV hash_dataV;
-  std::transform
-    (
-     V.begin()
-     , V.end()
-     , std::back_inserter(hash_dataV)
-     , to_inv8
-     );
-
-  crypto::ec_scalar hash_carry = rct::hash_dataV_to_scalar(hash_dataV);
-
-  // PAPER LINES 43-44
-  const crypto::ec_scalar alpha = crypto::randomScalar();
-  const crypto::ec_point A = vector_exponent(aL, aR) + G_(alpha);
-
-  // PAPER LINES 45-47
-  const scalarV sL = crypto::randomScalars(MN);
-  const scalarV sR = crypto::randomScalars(MN);
-  const crypto::ec_scalar rho = crypto::randomScalar();
-  const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
-
-  // PAPER LINES 48-50
-  const crypto::ec_scalar y = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(A), to_inv8(S)});
-  if (y == rct::s_zero)
-  {
-    LOG_INFO("y is 0, trying again");
-    goto try_again;
-  }
-
-  const crypto::ec_scalar z = hash_carry = rct::hash_to_scalar(y);
-  if (z == rct::s_zero)
-  {
-    LOG_INFO("z is 0, trying again");
-    goto try_again;
-  }
-
-  // Polynomial construction by coefficients
-  // PAPER LINES 70-71
-  const scalarV l0 = vector_subtract(aL, z);
-  const scalarS l1 = sL;
-
-  scalarV zero_twos(MN);
-  const scalarV zpow = vector_powers(z, M+2);
-  for (size_t j = 0; j < M; ++j)
-  {
-      for (size_t i = 0; i < N; ++i)
+    const crypto::ec_scalar z = hash_carry = rct::hash_to_scalar(y);
+    if (z == rct::s_zero)
       {
-          LOG_ERROR_AND_THROW_UNLESS(j+2 < zpow.size(), "invalid zpow index");
-          LOG_ERROR_AND_THROW_UNLESS(i < twoN.size(), "invalid twoN index");
-          zero_twos[j*N+i] = zpow[j+2] * twoN[i];
+        LOG_INFO("z is 0, trying again");
+        goto try_again;
       }
-  }
 
-  const auto yMN = vector_powers(y, MN);
-  const scalarV r0 = vector_addV
-    (
-     hadamard(vector_add(aR, z), yMN)
-     , zero_twos
-     );
+    // Polynomial construction by coefficients
+    // PAPER LINES 70-71
+    const scalarV l0 = vector_subtract(aL, z);
+    const scalarS l1 = sL;
 
-  const scalarV r1 = hadamard(yMN, sR);
+    scalarV zero_twos(MN);
+    const scalarV zpow = vector_powers(z, M+2);
+    for (size_t j = 0; j < M; ++j)
+      {
+        for (size_t i = 0; i < N; ++i)
+          {
+            LOG_ERROR_AND_THROW_UNLESS(j+2 < zpow.size(), "invalid zpow index");
+            LOG_ERROR_AND_THROW_UNLESS(i < twoN.size(), "invalid twoN index");
+            zero_twos[j*N+i] = zpow[j+2] * twoN[i];
+          }
+      }
 
-  // Polynomial construction before PAPER LINE 51
-  const crypto::ec_scalar t1_1 = inner_product(l0, r1);
-  const crypto::ec_scalar t1_2 = inner_product(l1, r0);
-  const crypto::ec_scalar t1 = t1_1 + t1_2;
-  const crypto::ec_scalar t2 = inner_product(l1, r1);
-
-  // PAPER LINES 52-53
-  const crypto::ec_scalar tau1 = crypto::randomScalar();
-  const crypto::ec_scalar tau2 = crypto::randomScalar();
-
-  const crypto::ec_point T1 = G_(tau1) + H_(t1);
-  const crypto::ec_point T2 = G_(tau2) + H_(t2);
-
-  // PAPER LINES 54-56
-  const crypto::ec_scalar x = hash_carry = hash_dataV_to_scalar
-    (crypto::dataV{hash_carry, z, to_inv8(T1), to_inv8(T2)});
-  if (x == rct::s_zero)
-  {
-    LOG_INFO("x is 0, trying again");
-    goto try_again;
-  }
-
-  // PAPER LINES 61-63
-  const crypto::ec_scalar xsq = x * x;
-
-  LOG_ERROR_AND_THROW_UNLESS(xs.size()+1 < zpow.size(), "invalid zpow index");
-
-  const crypto::ec_scalar taux1 =
-    std::transform_reduce
-    (
-     xs.begin()
-     , xs.end()
-     , std::next(zpow.begin(), 2)
-     , s_zero
-     , std::plus()
-     , [](const auto&x, const auto& z) {
-       return z * x.second;
-     }
-     );
-
-  const crypto::ec_scalar taux = tau1 * x + tau2 * xsq + taux1;
-
-  const crypto::ec_scalar mu = x * rho + alpha;
-
-  // PAPER LINES 58-60
-  const scalarV l = vector_addV(l0, vector_mult(l1, x));
-  const scalarV r = vector_addV(r0, vector_mult(r1, x));
-
-  const crypto::ec_scalar t = inner_product(l, r);
-
-  // PAPER LINE 6
-  const crypto::ec_scalar x_ip = hash_carry =
-    hash_dataV_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
-  if (x_ip == rct::s_zero)
-  {
-    LOG_INFO("x_ip is 0, trying again");
-    goto try_again;
-  }
-
-  // These are used in the inner product rounds
-  size_t nprime = MN;
-  std::vector<crypto::ec_point> Gprime(MN);
-  std::vector<crypto::ec_point> Hprime(MN);
-  scalarV aprime(MN);
-  scalarV bprime(MN);
-  const crypto::ec_scalar yinv = invert(y);
-  scalarV yinvpow(MN);
-  yinvpow[0] = rct::s_one;
-  yinvpow[1] = yinv;
-  for (size_t i = 0; i < MN; ++i)
-  {
-    Gprime[i] = Gi[i];
-    Hprime[i] = Hi[i];
-    if (i > 1)
-      yinvpow[i] = yinvpow[i-1] * yinv;
-    aprime[i] = l[i];
-    bprime[i] = r[i];
-  }
-  LR_V LR(logMN);
-  int round = 0;
-  scalarV w(logMN); // this is the challenge x in the inner product protocol
-
-  std::optional<scalarS> scale = yinvpow;
-  while (nprime > 1)
-  {
-    // PAPER LINE 20
-    nprime /= 2;
-
-    // PAPER LINES 21-22
-    crypto::ec_scalar cL = inner_product
+    const auto yMN = vector_powers(y, MN);
+    const scalarV r0 = vector_addV
       (
-       std::span(aprime).subspan(0, nprime)
-       , std::span(bprime).subspan(nprime, bprime.size() - nprime)
+       hadamard(vector_add(aR, z), yMN)
+       , zero_twos
        );
 
-    crypto::ec_scalar cR = inner_product
+    const scalarV r1 = hadamard(yMN, sR);
+
+    // Polynomial construction before PAPER LINE 51
+    const crypto::ec_scalar t1_1 = inner_product(l0, r1);
+    const crypto::ec_scalar t1_2 = inner_product(l1, r0);
+    const crypto::ec_scalar t1 = t1_1 + t1_2;
+    const crypto::ec_scalar t2 = inner_product(l1, r1);
+
+    // PAPER LINES 52-53
+    const crypto::ec_scalar tau1 = crypto::randomScalar();
+    const crypto::ec_scalar tau2 = crypto::randomScalar();
+
+    const crypto::ec_point T1 = G_(tau1) + H_(t1);
+    const crypto::ec_point T2 = G_(tau2) + H_(t2);
+
+    // PAPER LINES 54-56
+    const crypto::ec_scalar x = hash_carry = hash_dataV_to_scalar
+      (crypto::dataV{hash_carry, z, to_inv8(T1), to_inv8(T2)});
+    if (x == rct::s_zero)
+      {
+        LOG_INFO("x is 0, trying again");
+        goto try_again;
+      }
+
+    // PAPER LINES 61-63
+    const crypto::ec_scalar xsq = x * x;
+
+    LOG_ERROR_AND_THROW_UNLESS(xs.size()+1 < zpow.size(), "invalid zpow index");
+
+    const crypto::ec_scalar taux1 =
+      std::transform_reduce
       (
-       std::span(aprime).subspan(nprime, aprime.size() - nprime)
-       , std::span(bprime).subspan(0, nprime)
+       xs.begin()
+       , xs.end()
+       , std::next(zpow.begin(), 2)
+       , s_zero
+       , std::plus()
+       , [](const auto&x, const auto& z) {
+         return z * x.second;
+       }
        );
 
-    // PAPER LINES 23-24
-    const auto L = cross_vector_exponent
-      (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
-      + H_(cL * x_ip);
-    const auto R = cross_vector_exponent
-      (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
-      + H_(cR * x_ip);
+    const crypto::ec_scalar taux = tau1 * x + tau2 * xsq + taux1;
 
-    LR[round] = {L, R};
+    const crypto::ec_scalar mu = x * rho + alpha;
 
-    // PAPER LINES 25-27
-    w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(L), to_inv8(R)});
-    if (w[round] == rct::s_zero)
-    {
-      LOG_INFO("w[round] is 0, trying again");
-      goto try_again;
-    }
+    // PAPER LINES 58-60
+    const scalarV l = vector_addV(l0, vector_mult(l1, x));
+    const scalarV r = vector_addV(r0, vector_mult(r1, x));
 
-    // PAPER LINES 29-30
-    const crypto::ec_scalar winv = invert(w[round]);
-    if (nprime > 1)
-    {
-      Gprime = hadamard_fold(Gprime, {}, winv, w[round]);
-      Hprime = hadamard_fold(Hprime, scale, w[round], winv);
-    }
+    const crypto::ec_scalar t = inner_product(l, r);
 
-    // PAPER LINES 33-34
-    aprime = vector_addV
-      (
-       vector_mult
-       (
-        std::span(aprime).subspan(0, nprime)
-        , w[round]
-        )
-       , vector_mult
-       (
-        std::span(aprime).subspan(nprime, aprime.size() - nprime)
-        , winv
-        )
-       );
+    // PAPER LINE 6
+    const crypto::ec_scalar x_ip = hash_carry =
+      hash_dataV_to_scalar(crypto::dataV{hash_carry, x, taux, mu, t});
+    if (x_ip == rct::s_zero)
+      {
+        LOG_INFO("x_ip is 0, trying again");
+        goto try_again;
+      }
 
-    bprime = vector_addV
-      (
-       vector_mult
-       (
-        std::span(bprime).subspan(0, nprime)
-        , winv
-        )
-       , vector_mult
-       (
-        std::span(bprime).subspan(nprime, bprime.size() - nprime)
-        , w[round]
-        )
-       );
+    // These are used in the inner product rounds
+    size_t nprime = MN;
+    std::vector<crypto::ec_point> Gprime(MN);
+    std::vector<crypto::ec_point> Hprime(MN);
+    scalarV aprime(MN);
+    scalarV bprime(MN);
+    const crypto::ec_scalar yinv = invert(y);
+    scalarV yinvpow(MN);
+    yinvpow[0] = rct::s_one;
+    yinvpow[1] = yinv;
+    for (size_t i = 0; i < MN; ++i)
+      {
+        Gprime[i] = Gi[i];
+        Hprime[i] = Hi[i];
+        if (i > 1)
+          yinvpow[i] = yinvpow[i-1] * yinv;
+        aprime[i] = l[i];
+        bprime[i] = r[i];
+      }
+    LR_V LR(logMN);
+    int round = 0;
+    scalarV w(logMN); // this is the challenge x in the inner product protocol
 
-    scale = {};
-    ++round;
+    std::optional<scalarS> scale = yinvpow;
+    while (nprime > 1)
+      {
+        // PAPER LINE 20
+        nprime /= 2;
+
+        // PAPER LINES 21-22
+        crypto::ec_scalar cL = inner_product
+          (
+           std::span(aprime).subspan(0, nprime)
+           , std::span(bprime).subspan(nprime, bprime.size() - nprime)
+           );
+
+        crypto::ec_scalar cR = inner_product
+          (
+           std::span(aprime).subspan(nprime, aprime.size() - nprime)
+           , std::span(bprime).subspan(0, nprime)
+           );
+
+        // PAPER LINES 23-24
+        const auto L = cross_vector_exponent
+          (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
+          + H_(cL * x_ip);
+        const auto R = cross_vector_exponent
+          (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
+          + H_(cR * x_ip);
+
+        LR[round] = {L, R};
+
+        // PAPER LINES 25-27
+        w[round] = hash_carry = hash_dataV_to_scalar(crypto::dataV{hash_carry, to_inv8(L), to_inv8(R)});
+        if (w[round] == rct::s_zero)
+          {
+            LOG_INFO("w[round] is 0, trying again");
+            goto try_again;
+          }
+
+        // PAPER LINES 29-30
+        const crypto::ec_scalar winv = invert(w[round]);
+        if (nprime > 1)
+          {
+            Gprime = hadamard_fold(Gprime, {}, winv, w[round]);
+            Hprime = hadamard_fold(Hprime, scale, w[round], winv);
+          }
+
+        // PAPER LINES 33-34
+        aprime = vector_addV
+          (
+           vector_mult
+           (
+            std::span(aprime).subspan(0, nprime)
+            , w[round]
+            )
+           , vector_mult
+           (
+            std::span(aprime).subspan(nprime, aprime.size() - nprime)
+            , winv
+            )
+           );
+
+        bprime = vector_addV
+          (
+           vector_mult
+           (
+            std::span(bprime).subspan(0, nprime)
+            , winv
+            )
+           , vector_mult
+           (
+            std::span(bprime).subspan(nprime, bprime.size() - nprime)
+            , w[round]
+            )
+           );
+
+        scale = {};
+        ++round;
+      }
+
+    return Bulletproof
+      {
+        A, S, T1, T2, taux, mu, LR
+        , aprime[0], bprime[0], t
+      };
   }
-
-  return Bulletproof
-    {
-     A, S, T1, T2, taux, mu, LR
-     , aprime[0], bprime[0], t
-     };
-}
 
 }
