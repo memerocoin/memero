@@ -183,11 +183,8 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
 
   LOG_ERROR_AND_RETURN_UNLESS(valid_pd_w, false, "some pd_w[i] == 0");
 
-  const size_t max_outputsN = 1u << proof.LR.size();
-
   // STEP 2, use proof_data
   std::vector<MultiexpData> multiexp_data;
-  multiexp_data.reserve(commits.size() + (2 * (logM + logN) + 4) + 2 * max_outputsN);
 
   // setup weighted aggregates
 
