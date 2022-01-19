@@ -54,6 +54,7 @@
 
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
+#include "math/ringct/functional/accumHash.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/multi_exponentiation.hpp"
 #include "math/ringct/controller/bulletproofs_gen.hpp"
@@ -110,6 +111,18 @@ namespace rct
     LOG_ERROR_AND_RETURN_UNLESS
       (commits.size() <= max_outputs, false, "too many points for the proof");
 
+    constexpr size_t N = log2bound(bit_width).first;
+    constexpr size_t logN = log2bound(bit_width).second;
+    const auto [M, logM] = log2bound(commits.size());
+
+    const size_t rounds = logM + logN;
+    LOG_ERROR_AND_RETURN_UNLESS
+      (proof.LR.size() == rounds, false, "Proof is not the expected size");
+
+    LOG_ERROR_AND_RETURN_UNLESS
+      (proof.LR.size() < 32, false, "At least one proof is too large");
+
+
 
     // Reconstruct the challenges
     crypto::dataV hash_dataV;
@@ -148,57 +161,21 @@ namespace rct
        });
     LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), false, "x_ip == 0");
 
-    constexpr size_t N = log2bound(bit_width).first;
-    constexpr size_t logN = log2bound(bit_width).second;
-    const auto [M, logM] = log2bound(commits.size());
-
-    const size_t rounds = logM + logN;
-    LOG_ERROR_AND_RETURN_UNLESS
-      (proof.LR.size() == rounds, false, "Proof is not the expected size");
-
-    LOG_ERROR_AND_RETURN_UNLESS
-      (proof.LR.size() < 32, false, "At least one proof is too large");
-
-    // The inner product challenges are computed per round
-    // std::transform
-    //   (
-    //    proof.LR.begin()
-    //    , proof.LR.end()
-    //    , std::back_inserter(pd.w)
-    //    , [hash_carry](const auto& lr) mutable {
-    //      const auto pd_w =
-    //        hash_dataV_to_scalar
-    //        (crypto::dataV{hash_carry, to_inv8(lr.first), to_inv8(lr.second)});
-    //      hash_carry = pd_w;
-    //      return pd_w;
-    //    }
-    //    );
-
-    const std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>>
-      accum_init = {hash_carry, std::vector<crypto::ec_scalar>()};
-
-    const std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>>
-      pd_w_pair = std::accumulate
+    std::vector<std::vector<crypto::crypto_data>> lr_data;
+    std::transform
       (
        proof.LR.begin()
        , proof.LR.end()
-       , accum_init
+       , std::back_inserter(lr_data)
        , []
        (
-        const auto x
-        , const std::pair<crypto::ec_point, crypto::ec_point> lr
-        ) -> std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>> {
-         const auto h = hash_dataV_to_scalar
-           (crypto::dataV{x.first, to_inv8(lr.first), to_inv8(lr.second)});
-
-         std::vector<crypto::ec_scalar> hs = x.second;
-         hs.push_back(h);
-
-         return {h, hs};
+        const auto lr
+        ) -> std::vector<crypto::crypto_data> {
+         return {to_inv8(lr.first), to_inv8(lr.second)};
        }
        );
 
-    pd.w = pd_w_pair.second;
+    pd.w = accum_hash(hash_carry, {lr_data}).second;
 
     const bool valid_pd_w = std::transform_reduce
       (
