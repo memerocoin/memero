@@ -110,6 +110,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
      );
 
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() > 0, false, "Empty proof");
+  LOG_ERROR_AND_RETURN_UNLESS(commits.size() <= max_outputs, false, "too many points for the proof");
 
 
   // Reconstruct the challenges
@@ -151,7 +152,7 @@ bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
 
   constexpr size_t N = log2bound(bit_width).first;
   constexpr size_t logN = log2bound(bit_width).second;
-  const auto [M, logM] = log2bound(std::min(max_outputs, commits.size()));
+  const auto [M, logM] = log2bound(commits.size());
 
   const size_t rounds = logM + logN;
   LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() == rounds, false, "Proof is not the expected size");
