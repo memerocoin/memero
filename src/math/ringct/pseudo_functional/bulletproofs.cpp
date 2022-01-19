@@ -160,19 +160,45 @@ namespace rct
       (proof.LR.size() < 32, false, "At least one proof is too large");
 
     // The inner product challenges are computed per round
-    std::transform
+    // std::transform
+    //   (
+    //    proof.LR.begin()
+    //    , proof.LR.end()
+    //    , std::back_inserter(pd.w)
+    //    , [hash_carry](const auto& lr) mutable {
+    //      const auto pd_w =
+    //        hash_dataV_to_scalar
+    //        (crypto::dataV{hash_carry, to_inv8(lr.first), to_inv8(lr.second)});
+    //      hash_carry = pd_w;
+    //      return pd_w;
+    //    }
+    //    );
+
+    const std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>>
+      accum_init = {hash_carry, std::vector<crypto::ec_scalar>()};
+
+    const std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>>
+      pd_w_pair = std::accumulate
       (
        proof.LR.begin()
        , proof.LR.end()
-       , std::back_inserter(pd.w)
-       , [hash_carry](const auto& lr) mutable {
-         const auto pd_w =
-           hash_dataV_to_scalar
-           (crypto::dataV{hash_carry, to_inv8(lr.first), to_inv8(lr.second)});
-         hash_carry = pd_w;
-         return pd_w;
+       , accum_init
+       , []
+       (
+        const auto x
+        , const std::pair<crypto::ec_point, crypto::ec_point> lr
+        ) -> std::pair<crypto::ec_scalar, std::vector<crypto::ec_scalar>> {
+         const auto h = hash_dataV_to_scalar
+           (crypto::dataV{x.first, to_inv8(lr.first), to_inv8(lr.second)});
+
+         std::vector<crypto::ec_scalar> hs = x.second;
+         hs.push_back(h);
+
+         return {h, hs};
        }
        );
+
+    pd.w = pd_w_pair.second;
 
     const bool valid_pd_w = std::transform_reduce
       (
