@@ -203,7 +203,7 @@ namespace rct
     if (scale) {
       const auto s = *scale;
       LOG_ERROR_AND_THROW_UNLESS
-        ((s.size() & 1) == 0, "Scale vectgor size should be even");
+        ((s.size() & 1) == 0, "Scale vector size should be even");
 
       const auto [sl, sr] = split_vector(s);
       return vector_mult_both(vl, vr, sl, sr, aV, bV);
