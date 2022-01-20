@@ -148,7 +148,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (a.size() <= max_vector_length, "vector size too big");
 
-    return vector_commit_both(a, Gi, b, Hi);
+    return vector_commit(a, Gi) + vector_commit(b, Hi);
   }
 
   pointV vector_mult_both

@@ -53,12 +53,4 @@ namespace rct
 
   std::pair<pointV, pointV> split_vector(const pointS v);
   std::pair<scalarV, scalarV> split_vector(const scalarS v);
-
-  crypto::ec_point vector_commit_both
-  (
-   const scalarS a
-   , const pointS p
-   , const scalarS b
-   , const pointS q
-   );
 }

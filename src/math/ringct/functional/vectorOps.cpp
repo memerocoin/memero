@@ -199,16 +199,6 @@ namespace rct
     return std::reduce(xs.begin(), xs.end(), crypto::identity);
   }
 
-  crypto::ec_point vector_commit_both
-  (
-   const scalarS a
-   , const pointS p
-   , const scalarS b
-   , const pointS q
-   ) {
-    return vector_commit(a, p) + vector_commit(b, q);
-  }
-
   std::pair<pointV, pointV> split_vector(const pointS v) {
     LOG_ERROR_AND_THROW_IF(v.empty(), "Vector can't be empty");
     LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
