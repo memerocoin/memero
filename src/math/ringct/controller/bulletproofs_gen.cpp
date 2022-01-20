@@ -422,6 +422,7 @@ namespace rct
 
     // These are used in the inner product rounds
     const crypto::ec_scalar yinv = invert(y);
+    const scalarV yinvpow = vector_exponents(yinv, MN);
 
     size_t nprime = MN;
     scalarV aprime = l;
@@ -429,7 +430,6 @@ namespace rct
 
     std::vector<crypto::ec_point> Gprime(Gi.begin(), std::next(Gi.begin(), MN));
     std::vector<crypto::ec_point> Hprime(Hi.begin(), std::next(Hi.begin(), MN));
-    scalarV yinvpow = vector_exponents(yinv, MN);
 
     LR_V LR;
 
