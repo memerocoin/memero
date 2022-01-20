@@ -510,8 +510,7 @@ namespace rct
         // PAPER LINES 29-30
         const crypto::ec_scalar winv = invert(w[round]);
         if (nprime > 1)
-          
-{
+          {
             Gprime = split_vector_mult(Gprime, {}, winv, w[round]);
             Hprime = split_vector_mult(Hprime, scale, w[round], winv);
           }
