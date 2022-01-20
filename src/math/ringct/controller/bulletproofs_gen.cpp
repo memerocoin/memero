@@ -332,6 +332,7 @@ namespace rct
     // These are used in the inner product rounds
     const crypto::ec_scalar yinv = invert(y);
     const scalarV yinvpow = vector_exponents(yinv, MN);
+    const crypto::ec_point fixed_point_u = H_(x_ip);
 
     size_t nprime = MN;
     scalarV aprime = l;
@@ -377,7 +378,7 @@ namespace rct
            , std::span(Hprime).subspan(0, nprime)
            , std::span(aprime).subspan(0, nprime)
            , b_prime_L
-           , H_(x_ip)
+           , fixed_point_u
            , cL
            );
 
@@ -393,7 +394,7 @@ namespace rct
            , std::span(Hprime).subspan(nprime)
            , std::span(aprime).subspan(nprime)
            , b_prime_R
-           , H_(x_ip)
+           , fixed_point_u
            , cR
            );
 
