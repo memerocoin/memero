@@ -77,8 +77,8 @@
 namespace rct
 {
 
-  const scalarV oneN = vector_powers(rct::s_one, bit_width);
-  const scalarV twoN = vector_powers(rct::s_two, bit_width);
+  const scalarV oneN = vector_exponents(rct::s_one, bit_width);
+  const scalarV twoN = vector_exponents(rct::s_two, bit_width);
 
   const crypto::ec_scalar ip12 = inner_product(oneN, twoN);
 
@@ -159,7 +159,7 @@ namespace rct
 
     const size_t MN = M*N;
 
-    const scalarV zpow = vector_powers(pd.z, M+3);
+    const scalarV zpow = vector_exponents(pd.z, M+3);
 
     std::transform
       (

@@ -45,7 +45,7 @@ namespace rct
   }
 
   /* Given a crypto::ec_scalar, construct a vector of powers */
-  rct::scalarV vector_powers(const crypto::ec_scalar x, const size_t n)
+  rct::scalarV vector_exponents(const crypto::ec_scalar x, const size_t n)
   {
     scalarV res(n);
 
@@ -61,7 +61,7 @@ namespace rct
   /* Given a crypto::ec_scalar, return the sum of its powers from 0 to n-1 */
   crypto::ec_scalar vector_power_sum(const crypto::ec_scalar x, const size_t n)
   {
-    const auto xs = vector_powers(x, n);
+    const auto xs = vector_exponents(x, n);
 
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
   }

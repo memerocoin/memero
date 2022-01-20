@@ -79,7 +79,7 @@ namespace rct
 
   crypto::ec_point vector_exponent(const scalarS a, const scalarS b);
 
-  const scalarV twoN = vector_powers(rct::s_two, bit_width);
+  const scalarV twoN = vector_exponents(rct::s_two, bit_width);
 
   std::array<crypto::ec_point, bit_width * max_outputs> Hi;
   std::array<crypto::ec_point, bit_width * max_outputs> Gi;
@@ -365,7 +365,7 @@ namespace rct
     const scalarS l1 = sL;
 
     scalarV zero_twos(MN);
-    const scalarV zpow = vector_powers(z, M+2);
+    const scalarV zpow = vector_exponents(z, M+2);
     for (size_t j = 0; j < M; ++j)
       {
         for (size_t i = 0; i < N; ++i)
@@ -376,7 +376,7 @@ namespace rct
           }
       }
 
-    const auto yMN = vector_powers(y, MN);
+    const auto yMN = vector_exponents(y, MN);
     const scalarV r0 = vector_addV
       (
        hadamard(vector_add(aR, z), yMN)
