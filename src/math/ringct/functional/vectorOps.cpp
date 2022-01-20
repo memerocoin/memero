@@ -71,7 +71,7 @@ namespace rct
   }
 
   /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
-  rct::scalarV hadamard(const scalarS a, const scalarS b)
+  rct::scalarV hadamard_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
       (a.size() == b.size(), "Incompatible sizes of a and b");

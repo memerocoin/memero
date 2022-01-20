@@ -37,7 +37,7 @@ namespace rct
    );
 
   /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
-  rct::scalarV hadamard(const scalarS a, const scalarS b);
+  rct::scalarV hadamard_product(const scalarS a, const scalarS b);
 
   /* Add two vectors */
   rct::scalarV vector_addV(const scalarS a, const scalarS b);

@@ -374,11 +374,11 @@ namespace rct
     const auto yMN = vector_exponents(y, MN);
     const scalarV r0 = vector_addV
       (
-       hadamard(vector_add(aR, z), yMN)
+       hadamard_product(vector_add(aR, z), yMN)
        , zero_twos
        );
 
-    const scalarV r1 = hadamard(yMN, sR);
+    const scalarV r1 = hadamard_product(yMN, sR);
 
     // Polynomial construction before PAPER LINE 51
     const crypto::ec_scalar t1_1 = inner_product(l0, r1);
