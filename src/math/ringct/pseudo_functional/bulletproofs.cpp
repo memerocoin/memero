@@ -63,16 +63,8 @@
 #include "math/crypto/controller/keyGen.hpp"
 
 #include "tools/epee/include/logging.hpp"
-#include "tools/epee/include/string_tools.h"
-#include "tools/common/varint.h"
 
-#include "config/cryptonote.hpp"
-
-#include <mutex>
 #include <atomic>
-#include <list>
-#include <numeric>
-
 
 namespace rct
 {
