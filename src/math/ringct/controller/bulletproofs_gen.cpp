@@ -76,7 +76,7 @@ namespace rct
   std::array<crypto::ec_point, bit_width * max_outputs> H_V;
   std::array<crypto::ec_point, bit_width * max_outputs> G_V;
 
-  crypto::ec_point get_generator(const crypto::ec_point base, size_t idx)
+  crypto::ec_point get_bp_generator(const crypto::ec_point base, size_t idx)
   {
     constexpr std::string_view domain_separator =
       config::HASH_KEY_BULLETPROOF_EXPONENT;
@@ -93,12 +93,12 @@ namespace rct
     return e;
   }
 
-  crypto::ec_point get_generator_G(const size_t idx) {
-    return get_generator(H, idx * 2);
+  crypto::ec_point get_bp_generator_G(const size_t idx) {
+    return get_bp_generator(H, idx * 2);
   }
 
-  crypto::ec_point get_generator_H(const size_t idx) {
-    return get_generator(H, idx * 2 + 1);
+  crypto::ec_point get_bp_generator_H(const size_t idx) {
+    return get_bp_generator(H, idx * 2 + 1);
   }
 
   std::atomic<bool> init_done(false);
@@ -113,7 +113,7 @@ namespace rct
          H_V.begin()
          , H_V.end()
          , [i = 0] () mutable {
-           const auto r = get_generator_G(i);
+           const auto r = get_bp_generator_G(i);
            i++;
            return r;
          }
@@ -124,7 +124,7 @@ namespace rct
          G_V.begin()
          , G_V.end()
          , [i = 0] () mutable {
-           const auto r = get_generator_H(i);
+           const auto r = get_bp_generator_H(i);
            i++;
            return r;
          }
