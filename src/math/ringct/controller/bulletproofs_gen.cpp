@@ -423,24 +423,16 @@ namespace rct
       }
 
     // These are used in the inner product rounds
-    size_t nprime = MN;
-    std::vector<crypto::ec_point> Gprime(MN);
-    std::vector<crypto::ec_point> Hprime(MN);
-    scalarV aprime(MN);
-    scalarV bprime(MN);
     const crypto::ec_scalar yinv = invert(y);
-    scalarV yinvpow(MN);
-    yinvpow[0] = rct::s_one;
-    yinvpow[1] = yinv;
-    for (size_t i = 0; i < MN; ++i)
-      {
-        Gprime[i] = Gi[i];
-        Hprime[i] = Hi[i];
-        if (i > 1)
-          yinvpow[i] = yinvpow[i-1] * yinv;
-        aprime[i] = l[i];
-        bprime[i] = r[i];
-      }
+
+    size_t nprime = MN;
+    scalarV aprime = l;
+    scalarV bprime = r;
+
+    std::vector<crypto::ec_point> Gprime(Gi.begin(), std::next(Gi.begin(), MN));
+    std::vector<crypto::ec_point> Hprime(Hi.begin(), std::next(Hi.begin(), MN));
+    scalarV yinvpow = vector_exponents(yinv, MN);
+
     LR_V LR(logMN);
     int round = 0;
     scalarV w(logMN); // this is the challenge x in the inner product protocol
