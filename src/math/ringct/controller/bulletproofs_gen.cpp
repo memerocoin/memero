@@ -71,8 +71,6 @@
 namespace rct
 {
 
-  crypto::ec_point commit_vectors_with_generators_G_H(const scalarS a, const scalarS b);
-
   const scalarV twoN = vector_exponents(rct::s_two, bit_width);
 
   std::array<crypto::ec_point, bit_width * max_outputs> Hi;
@@ -80,7 +78,9 @@ namespace rct
 
   crypto::ec_point get_generator(const crypto::ec_point base, size_t idx)
   {
-    constexpr std::string_view domain_separator = config::HASH_KEY_BULLETPROOF_EXPONENT;
+    constexpr std::string_view domain_separator =
+      config::HASH_KEY_BULLETPROOF_EXPONENT;
+
     const std::string hashed =
       epee::string_tools::blob_to_string(base.data)
       + std::string(domain_separator)
@@ -136,11 +136,19 @@ namespace rct
 
 
   /* Given two crypto::ec_scalar arrays, construct a vector commitment */
-  crypto::ec_point commit_vectors_with_generators_G_H(const scalarS a, const scalarS b)
+  crypto::ec_point commit_vectors_with_generators_G_H
+  (
+   const scalarS a
+   , const scalarS b
+   )
   {
-    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-    LOG_ERROR_AND_THROW_UNLESS(a.size() <= max_vector_length, "vector size too big");
-    return vector_commit(a, Gi) + vector_commit(b, Hi);
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() == b.size(), "Incompatible sizes of a and b");
+
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() <= max_vector_length, "vector size too big");
+
+    return vector_commit_both(a, Gi, b, Hi);
   }
 
   /* Compute a custom vector-scalar commitment */
@@ -163,7 +171,8 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS(size + ao <= a.size(), "Incompatible size for a");
     LOG_ERROR_AND_THROW_UNLESS(size + bo <= b.size(), "Incompatible size for b");
     LOG_ERROR_AND_THROW_UNLESS(size <= max_vector_length, "size is too large");
-    LOG_ERROR_AND_THROW_UNLESS(!scale || size == scale->size() / 2, "Incompatible size for scale");
+    LOG_ERROR_AND_THROW_UNLESS
+      (!scale || size == scale->size() / 2, "Incompatible size for scale");
 
     const scalarS b0 = b.subspan(bo, size);
 
@@ -217,7 +226,7 @@ namespace rct
   }
 
   /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
-  Bulletproof bulletproof_MAKE(const std::span<const std::pair<const uint64_t, const crypto::ec_scalar>> xs)
+  Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs)
   {
     LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
     LOG_ERROR_AND_THROW_UNLESS(xs.size() <= max_outputs, "too many amounts to proof");
