@@ -335,7 +335,7 @@ namespace rct
     const crypto::ec_point fixed_point_u = H_(x_ip);
 
     size_t nprime = MN;
-    scalarV aprime = l;
+    scalarV a_prime = l;
     scalarV bprime = r;
 
     pointV Gprime(G_V.begin(), std::next(G_V.begin(), MN));
@@ -355,13 +355,13 @@ namespace rct
         // PAPER LINES 21-22
         const crypto::ec_scalar cL = inner_product
           (
-           std::span(aprime).subspan(0, nprime)
+           std::span(a_prime).subspan(0, nprime)
            , std::span(bprime).subspan(nprime, bprime.size() - nprime)
            );
 
         const crypto::ec_scalar cR = inner_product
           (
-           std::span(aprime).subspan(nprime, aprime.size() - nprime)
+           std::span(a_prime).subspan(nprime, a_prime.size() - nprime)
            , std::span(bprime).subspan(0, nprime)
            );
 
@@ -376,7 +376,7 @@ namespace rct
           (
            std::span(Gprime).subspan(nprime)
            , std::span(Hprime).subspan(0, nprime)
-           , std::span(aprime).subspan(0, nprime)
+           , std::span(a_prime).subspan(0, nprime)
            , b_prime_L
            , fixed_point_u
            , cL
@@ -392,7 +392,7 @@ namespace rct
           (
            std::span(Gprime).subspan(0, nprime)
            , std::span(Hprime).subspan(nprime)
-           , std::span(aprime).subspan(nprime)
+           , std::span(a_prime).subspan(nprime)
            , b_prime_R
            , fixed_point_u
            , cR
@@ -416,16 +416,16 @@ namespace rct
         const crypto::ec_scalar challengeInv = invert(challenge);
 
         // PAPER LINES 33-34
-        aprime = vector_addV
+        a_prime = vector_addV
           (
            vector_mult
            (
-            std::span(aprime).subspan(0, nprime)
+            std::span(a_prime).subspan(0, nprime)
             , challenge
             )
            , vector_mult
            (
-            std::span(aprime).subspan(nprime, aprime.size() - nprime)
+            std::span(a_prime).subspan(nprime, a_prime.size() - nprime)
             , challengeInv
             )
            );
@@ -485,7 +485,7 @@ namespace rct
     return Bulletproof
       {
         A, S, T1, T2, taux, mu, LR
-        , aprime[0], bprime[0], t
+        , a_prime[0], bprime[0], t
       };
   }
 
