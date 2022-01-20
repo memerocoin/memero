@@ -163,19 +163,40 @@ namespace rct
   }
 
 
-  crypto::ec_point vector_commit(const scalarS a, const pointS p) {
+  rct::pointV vector_multV(const scalarS a, const pointS p) {
     LOG_ERROR_AND_THROW_UNLESS
       (a.size() <= p.size(), "Incompatible sizes of a and b");
 
-    return std::transform_reduce
+    pointV r(a.size());
+
+    std::transform
       (
        a.begin()
        , a.end()
        , p.begin()
-       , crypto::identity
-       , std::plus<crypto::ec_point>()
+       , r.begin()
        , [](const auto& x, const auto& y) { return y ^ x; }
        );
+
+    return r;
+  }
+
+  crypto::ec_point vector_commit(const scalarS a, const pointS p) {
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() <= p.size(), "Incompatible sizes of a and b");
+
+    const auto xs = vector_multV(a, p);
+    return std::reduce(xs.begin(), xs.end(), crypto::identity);
+  }
+
+  crypto::ec_point vector_commit_both
+  (
+   const scalarS a
+   , const pointS p
+   , const scalarS b
+   , const pointS q
+   ) {
+    return vector_commit(a, p) + vector_commit(b, q);
   }
 
 } // rct
