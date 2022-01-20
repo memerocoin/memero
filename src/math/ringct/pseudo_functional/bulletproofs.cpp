@@ -90,7 +90,7 @@ namespace rct
    */
   bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
   {
-    init_exponents();
+    init_generators();
 
     // sanity and figure out which proof is longest
     // STEP 1, fill proof_data

@@ -46,7 +46,7 @@ namespace rct
   }
 
 
-  void init_exponents();
+  void init_generators();
 
   using bp_input_t = std::pair<const uint64_t, const crypto::ec_scalar>;
 

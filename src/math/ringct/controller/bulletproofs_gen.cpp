@@ -104,7 +104,7 @@ namespace rct
   std::atomic<bool> init_done(false);
   std::mutex init_mutex;
 
-  void init_exponents()
+  void init_generators()
   {
     if (!init_done) {
       std::lock_guard<std::mutex> lock(init_mutex);
@@ -271,7 +271,7 @@ namespace rct
       LOG_ERROR_AND_THROW_UNLESS(is_reduced(g), "Invalid gamma input");
     }
 
-    init_exponents();
+    init_generators();
 
     const auto [N, logN] = log2bound(bit_width);
     const auto [M, logM] = log2bound(xs.size());
