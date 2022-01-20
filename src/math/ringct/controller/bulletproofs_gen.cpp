@@ -151,72 +151,29 @@ namespace rct
     return vector_commit_both(a, Gi, b, Hi);
   }
 
-  /* Compute a custom vector-scalar commitment */
-  crypto::ec_point split_vector_commit
-  (
-   const size_t size
-   , const std::span<crypto::ec_point> A
-   , const size_t Ao
-   , const std::span<crypto::ec_point> B
-   , const size_t Bo
-   , const scalarS a
-   , const size_t ao
-   , const scalarS b
-   , const size_t bo
-   , const std::optional<scalarS> scale
-   )
-  {
-    LOG_ERROR_AND_THROW_UNLESS(size + Ao <= A.size(), "Incompatible size for A");
-    LOG_ERROR_AND_THROW_UNLESS(size + Bo <= B.size(), "Incompatible size for B");
-    LOG_ERROR_AND_THROW_UNLESS(size + ao <= a.size(), "Incompatible size for a");
-    LOG_ERROR_AND_THROW_UNLESS(size + bo <= b.size(), "Incompatible size for b");
-    LOG_ERROR_AND_THROW_UNLESS(size <= max_vector_length, "size is too large");
-    LOG_ERROR_AND_THROW_UNLESS
-      (!scale || size == scale->size() / 2, "Incompatible size for scale");
-
-    const scalarS b0 = b.subspan(bo, size);
-
-    const scalarV b_scalars =
-      scale ? hadamard_product(b0, scale->subspan(Bo, size)) :
-      scalarV(b0.begin(), b0.end()) ;
-
-    return
-      vector_commit_both
-      (
-       a.subspan(ao, size)
-       , A.subspan(Ao)
-       , b_scalars
-       , B.subspan(Bo)
-       );
-  }
-
-
   pointV vector_mult_both
   (
    const pointS vl
    , const pointS vr
-   , const std::optional<std::pair<scalarS, scalarS>> scale
-   , const crypto::ec_scalar a
-   , const crypto::ec_scalar b
+   , const std::optional<scalarS> scale_l
+   , const std::optional<scalarS> scale_r
+   , const scalarS a
+   , const scalarS b
    )
   {
     LOG_ERROR_AND_THROW_UNLESS(vl.size() == vr.size(), "Vector size should be even");
 
-    const size_t sz = vl.size();
+    const scalarV scaled_a =
+      scale_l
+      ? hadamard_product(*scale_l, a)
+      : scalarV(a.begin(), a.end())
+      ;
 
-    scalarV scaled_a;
-    if (scale) {
-      scaled_a = vector_mult(scale->first, a);
-    } else {
-      std::generate_n(std::back_inserter(scaled_a), sz, [a](){ return a; });
-    }
-
-    scalarV scaled_b;
-    if (scale) {
-      scaled_b = vector_mult(scale->second, b);
-    } else {
-      std::generate_n(std::back_inserter(scaled_b), sz, [b](){ return b; });
-    }
+    const scalarV scaled_b =
+      scale_r
+      ? hadamard_product(*scale_r, b)
+      : scalarV(b.begin(), b.end())
+      ;
 
     const pointV l = vector_multV(scaled_a, vl);
     const pointV r = vector_multV(scaled_b, vr);
@@ -233,9 +190,15 @@ namespace rct
    )
   {
     LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
-    const size_t sz = v.size() / 2;
 
     const auto [vl, vr] = split_vector(v);
+
+    const size_t sz = vl.size();
+    scalarV aV;
+    std::generate_n(std::back_inserter(aV), sz, [a](){ return a; });
+
+    scalarV bV;
+    std::generate_n(std::back_inserter(bV), sz, [b](){ return b; });
 
     if (scale) {
       const auto s = *scale;
@@ -243,10 +206,10 @@ namespace rct
         ((s.size() & 1) == 0, "Scale vectgor size should be even");
 
       const auto [sl, sr] = split_vector(s);
-      return vector_mult_both(vl, vr, {{sl, sr}}, a, b);
+      return vector_mult_both(vl, vr, sl, sr, aV, bV);
 
     } else {
-      return vector_mult_both(vl, vr, {}, a, b);
+      return vector_mult_both(vl, vr, {}, {}, aV, bV);
     }
   }
 
@@ -260,6 +223,19 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
     const auto xs = split_vector_mult(v, scale, a, b);
     
+    return std::reduce(xs.begin(), xs.end(), crypto::identity);
+  }
+
+  crypto::ec_point vector_commit_both
+  (
+   const pointS vl
+   , const pointS vr
+   , const std::optional<scalarS> scale_l
+   , const std::optional<scalarS> scale_r
+   , const scalarS a
+   , const scalarS b
+   ) {
+    const auto xs = vector_mult_both(vl, vr, scale_l, scale_r, a, b);
     return std::reduce(xs.begin(), xs.end(), crypto::identity);
   }
 
@@ -277,8 +253,6 @@ namespace rct
 
     const auto [N, logN] = log2bound(bit_width);
     const auto [M, logM] = log2bound(xs.size());
-
-
 
     const size_t logMN = logM + logN;
     const size_t MN = M * N;
@@ -471,6 +445,8 @@ namespace rct
     int round = 0;
     scalarV w(logMN); // this is the challenge x in the inner product protocol
 
+    std::optional<scalarV> scale_l = split_vector(yinvpow).first;
+    std::optional<scalarV> scale_r = split_vector(yinvpow).second;
     std::optional<scalarS> scale = yinvpow;
 
     crypto::ec_scalar last_hash = x_ip;
@@ -495,24 +471,26 @@ namespace rct
 
         // PAPER LINES 23-24
 
-  // crypto::ec_point split_vector_commit
-  // (
-  //  const size_t size
-  //  , const std::span<crypto::ec_point> A
-  //  , const size_t Ao
-  //  , const std::span<crypto::ec_point> B
-  //  , const size_t Bo
-  //  , const scalarS a
-  //  , const size_t ao
-  //  , const scalarS b
-  //  , const size_t bo
-  //  , const std::optional<scalarS> scale
-
-        const auto L = split_vector_commit
-          (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
+        const auto L = vector_commit_both
+          (
+           std::span(Gprime).subspan(nprime)
+           , std::span(Hprime).subspan(0, nprime)
+           , {}
+           , scale_l
+           , std::span(aprime).subspan(0, nprime)
+           , std::span(bprime).subspan(nprime)
+           )
           + H_(cL * x_ip);
-        const auto R = split_vector_commit
-          (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
+
+        const auto R = vector_commit_both
+          (
+           std::span(Gprime).subspan(0, nprime)
+           , std::span(Hprime).subspan(nprime)
+           , {}
+           , scale_r
+           , std::span(aprime).subspan(nprime)
+           , std::span(bprime).subspan(0, nprime)
+           )
           + H_(cR * x_ip);
 
         LR[round] = {L, R};
@@ -532,7 +510,8 @@ namespace rct
         // PAPER LINES 29-30
         const crypto::ec_scalar winv = invert(w[round]);
         if (nprime > 1)
-          {
+          
+{
             Gprime = split_vector_mult(Gprime, {}, winv, w[round]);
             Hprime = split_vector_mult(Hprime, scale, w[round], winv);
           }
@@ -567,6 +546,8 @@ namespace rct
            );
 
         scale = {};
+        scale_l = {};
+        scale_r = {};
         ++round;
       }
 
