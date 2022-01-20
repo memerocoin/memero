@@ -438,7 +438,7 @@ namespace rct
     std::optional<scalarV> scale_r = split_vector(yinvpow).second;
     std::optional<scalarS> scale = yinvpow;
 
-    crypto::ec_scalar last_hash = x_ip;
+    crypto::ec_scalar last_challenge = x_ip;
 
     while (nprime > 1)
       {
@@ -486,9 +486,9 @@ namespace rct
 
         // PAPER LINES 25-27
         const auto challenge = hash_dataV_to_scalar
-          (crypto::dataV{last_hash, to_inv8(L), to_inv8(R)});
+          (crypto::dataV{last_challenge, to_inv8(L), to_inv8(R)});
 
-        last_hash = challenge;
+        last_challenge = challenge;
 
         if (challenge == rct::s_zero)
           {
