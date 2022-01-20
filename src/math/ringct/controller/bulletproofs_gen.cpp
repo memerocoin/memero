@@ -389,18 +389,17 @@ namespace rct
 
     LOG_ERROR_AND_THROW_UNLESS(xs.size()+1 < zpow.size(), "invalid zpow index");
 
-    const crypto::ec_scalar taux1 =
-      std::transform_reduce
+    scalarV blinding_factors;
+    std::transform
       (
        xs.begin()
        , xs.end()
-       , std::next(zpow.begin(), 2)
-       , s_zero
-       , std::plus()
-       , [](const auto&x, const auto& z) {
-         return z * x.second;
-       }
+       , std::back_inserter(blinding_factors)
+       , [](const auto&x ) { return x.second; }
        );
+
+    const crypto::ec_scalar taux1 =
+      inner_product(blinding_factors, std::span(zpow).subspan(2));
 
     const crypto::ec_scalar taux = tau1 * x + tau2 * xsq + taux1;
 

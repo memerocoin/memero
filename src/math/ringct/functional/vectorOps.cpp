@@ -54,7 +54,7 @@ namespace rct
   rct::scalarV hadamard_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() == b.size(), "Incompatible sizes of a and b");
+      (a.size() <= b.size(), "Incompatible sizes of a and b");
 
     rct::scalarV res(a.size());
     std::transform
@@ -72,7 +72,7 @@ namespace rct
   crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() == b.size(), "Incompatible sizes of a and b");
+      (a.size() <= b.size(), "Incompatible sizes of a and b");
 
     const auto xs = hadamard_product(a, b);
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
@@ -82,7 +82,7 @@ namespace rct
   rct::scalarV vector_addV(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() == b.size(), "Incompatible sizes of a and b");
+      (a.size() <= b.size(), "Incompatible sizes of a and b");
 
     rct::scalarV res(a.size());
     std::transform
@@ -100,7 +100,7 @@ namespace rct
   rct::pointV vector_addV(const pointS a, const pointS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() == b.size(), "Incompatible sizes of a and b");
+      (a.size() <= b.size(), "Incompatible sizes of a and b");
 
     rct::pointV res(a.size());
     std::transform
