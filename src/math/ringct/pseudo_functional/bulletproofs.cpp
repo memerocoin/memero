@@ -76,7 +76,7 @@ namespace rct
 
   const auto multiexp = dummy;
 
-  /* Given a range proof, determine if it is valid
+  /* G_Vven a range proof, determine if it is valid
    * This uses the method in PAPER LINES 95-105,
    *   weighted across multiple proofs in a batch
    */
@@ -257,7 +257,7 @@ namespace rct
       (
        z4_v.begin()
        , z4_v.end()
-       , std::begin(Gi)
+       , std::begin(G_V)
        , std::back_inserter(multiexp_data)
        , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
        );
@@ -266,7 +266,7 @@ namespace rct
       (
        z5_v.begin()
        , z5_v.end()
-       , std::begin(Hi)
+       , std::begin(H_V)
        , std::back_inserter(multiexp_data)
        , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
        );

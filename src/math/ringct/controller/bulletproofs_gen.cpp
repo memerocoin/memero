@@ -73,8 +73,8 @@ namespace rct
 
   const scalarV twoN = vector_exponents(rct::s_two, bit_width);
 
-  std::array<crypto::ec_point, bit_width * max_outputs> Hi;
-  std::array<crypto::ec_point, bit_width * max_outputs> Gi;
+  std::array<crypto::ec_point, bit_width * max_outputs> H_V;
+  std::array<crypto::ec_point, bit_width * max_outputs> G_V;
 
   crypto::ec_point get_generator(const crypto::ec_point base, size_t idx)
   {
@@ -110,8 +110,8 @@ namespace rct
       std::lock_guard<std::mutex> lock(init_mutex);
       std::generate
         (
-         Hi.begin()
-         , Hi.end()
+         H_V.begin()
+         , H_V.end()
          , [i = 0] () mutable {
            const auto r = get_generator_G(i);
            i++;
@@ -121,8 +121,8 @@ namespace rct
 
       std::generate
         (
-         Gi.begin()
-         , Gi.end()
+         G_V.begin()
+         , G_V.end()
          , [i = 0] () mutable {
            const auto r = get_generator_H(i);
            i++;
@@ -135,7 +135,7 @@ namespace rct
   }
 
 
-  /* Given two crypto::ec_scalar arrays, construct a vector commitment */
+  /* G_Vven two crypto::ec_scalar arrays, construct a vector commitment */
   crypto::ec_point commit_vectors_with_generators_G_H
   (
    const scalarS a
@@ -148,7 +148,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (a.size() <= max_vector_length, "vector size too big");
 
-    return vector_commit(a, Gi) + vector_commit(b, Hi);
+    return vector_commit(a, G_V) + vector_commit(b, H_V);
   }
 
   pointV vector_mult_both
@@ -236,7 +236,7 @@ namespace rct
     return std::reduce(xs.begin(), xs.end(), crypto::identity);
   }
 
-  /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
+  /* G_Vven a set of values v (0..2^N-1) and masks gamma, construct a range proof */
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs)
   {
     LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
@@ -425,8 +425,8 @@ namespace rct
     scalarV aprime = l;
     scalarV bprime = r;
 
-    std::vector<crypto::ec_point> Gprime(Gi.begin(), std::next(Gi.begin(), MN));
-    std::vector<crypto::ec_point> Hprime(Hi.begin(), std::next(Hi.begin(), MN));
+    std::vector<crypto::ec_point> Gprime(G_V.begin(), std::next(G_V.begin(), MN));
+    std::vector<crypto::ec_point> Hprime(H_V.begin(), std::next(H_V.begin(), MN));
 
     LR_V LR;
 
