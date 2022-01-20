@@ -47,6 +47,8 @@ namespace rct
 
 
   void init_generators();
+  crypto::ec_point get_generator_G(const size_t idx);
+  crypto::ec_point get_generator_H(const size_t idx);
 
   using bp_input_t = std::pair<const uint64_t, const crypto::ec_scalar>;
 
