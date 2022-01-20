@@ -136,7 +136,7 @@ namespace rct
 
 
   /* G_Vven two crypto::ec_scalar arrays, construct a vector commitment */
-  crypto::ec_point commit_vectors_with_generators_G_H
+  crypto::ec_point commit_vectors_with_bp_generators_G_H
   (
    const scalarS a
    , const scalarS b
@@ -289,14 +289,14 @@ namespace rct
     // PAPER LINES 43-44
     const crypto::ec_scalar alpha = crypto::randomScalar();
     const crypto::ec_point A =
-      commit_vectors_with_generators_G_H(aL, aR) + G_(alpha);
+      commit_vectors_with_bp_generators_G_H(aL, aR) + G_(alpha);
 
     // PAPER LINES 45-47
     const scalarV sL = crypto::randomScalars(MN);
     const scalarV sR = crypto::randomScalars(MN);
     const crypto::ec_scalar rho = crypto::randomScalar();
     const crypto::ec_point S =
-      commit_vectors_with_generators_G_H(sL, sR) + G_(rho);
+      commit_vectors_with_bp_generators_G_H(sL, sR) + G_(rho);
 
     crypto::dataV commit_data_V;
     std::transform
