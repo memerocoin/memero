@@ -57,7 +57,6 @@
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/bulletproofs.hpp"
 #include "math/ringct/functional/accumHash.hpp"
-#include "math/ringct/functional/multi_exponentiation.hpp"
 
 #include "math/crypto/controller/keyGen.hpp"
 
@@ -78,8 +77,6 @@ namespace rct
 
   std::array<crypto::ec_point, bit_width * max_outputs> Hi;
   std::array<crypto::ec_point, bit_width * max_outputs> Gi;
-
-  const auto multiexp = dummy;
 
   crypto::ec_point get_generator(const crypto::ec_point base, size_t idx)
   {
@@ -175,9 +172,13 @@ namespace rct
       scalarV(b0.begin(), b0.end()) ;
 
     return
-      vector_commit(a.subspan(ao, size), A.subspan(Ao))
-      +
-      vector_commit(b_scalars, B.subspan(Bo));
+      vector_commit_both
+      (
+       a.subspan(ao, size)
+       , A.subspan(Ao)
+       , b_scalars
+       , B.subspan(Bo)
+       );
   }
 
 
@@ -195,28 +196,24 @@ namespace rct
     const size_t sz = v.size() / 2;
     std::vector<crypto::ec_point> out(sz);
 
-    std::generate
-      (
-       out.begin()
-       , out.end()
-       , [n = 0, v, scale, a, b, sz] () mutable {
-         const crypto::ec_scalar x = scale
-           ? a * (*scale)[n]
-           : a;
+    scalarV scaled_a;
+    if (scale) {
+      scaled_a = vector_mult(scale->subspan(0, sz), a);
+    } else {
+      std::generate_n(std::back_inserter(scaled_a), sz, [a](){ return a; });
+    }
 
-         const size_t iy = sz + n;
+    scalarV scaled_b;
+    if (scale) {
+      scaled_b = vector_mult(scale->subspan(sz), b);
+    } else {
+      std::generate_n(std::back_inserter(scaled_b), sz, [b](){ return b; });
+    }
 
-         const crypto::ec_scalar y = scale
-           ? b * (*scale)[iy]
-           : b;
+    const pointV l = vector_multV(scaled_a, v);
+    const pointV r = vector_multV(scaled_b, v.subspan(sz));
 
-         const auto r = (v[n] ^ x) + (v[iy] ^ y);
-         n++;
-         return r;
-       }
-       );
-
-    return out;
+    return vector_addV(l, r);
   }
 
   /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
