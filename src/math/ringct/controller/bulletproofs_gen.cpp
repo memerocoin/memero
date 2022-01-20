@@ -412,6 +412,36 @@ namespace rct
 
         // PAPER LINES 29-30
         const crypto::ec_scalar challengeInv = invert(challenge);
+
+        // PAPER LINES 33-34
+        aprime = vector_addV
+          (
+           vector_mult
+           (
+            std::span(aprime).subspan(0, nprime)
+            , challenge
+            )
+           , vector_mult
+           (
+            std::span(aprime).subspan(nprime, aprime.size() - nprime)
+            , challengeInv
+            )
+           );
+
+        bprime = vector_addV
+          (
+           vector_mult
+           (
+            std::span(bprime).subspan(0, nprime)
+            , challengeInv
+            )
+           , vector_mult
+           (
+            std::span(bprime).subspan(nprime, bprime.size() - nprime)
+            , challenge
+            )
+           );
+
         if (nprime > 1)
           {
             const auto [G_prime_L, G_prime_R] = split_vector(Gprime);
@@ -446,35 +476,6 @@ namespace rct
                , H_prime_R
                );
           }
-
-        // PAPER LINES 33-34
-        aprime = vector_addV
-          (
-           vector_mult
-           (
-            std::span(aprime).subspan(0, nprime)
-            , challenge
-            )
-           , vector_mult
-           (
-            std::span(aprime).subspan(nprime, aprime.size() - nprime)
-            , challengeInv
-            )
-           );
-
-        bprime = vector_addV
-          (
-           vector_mult
-           (
-            std::span(bprime).subspan(0, nprime)
-            , challengeInv
-            )
-           , vector_mult
-           (
-            std::span(bprime).subspan(nprime, bprime.size() - nprime)
-            , challenge
-            )
-           );
 
         scale = {};
       }
