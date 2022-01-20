@@ -334,7 +334,7 @@ namespace rct
     const scalarV yinvpow = vector_exponents(yinv, MN);
     const crypto::ec_point fixed_point_u = H_(x_ip);
 
-    size_t nprime = MN;
+    size_t n_prime = MN;
     scalarV a_prime = l;
     scalarV b_prime = r;
 
@@ -347,26 +347,26 @@ namespace rct
 
     crypto::ec_scalar last_challenge = x_ip;
 
-    while (nprime > 1)
+    while (n_prime > 1)
       {
         // PAPER LINE 20
-        nprime /= 2;
+        n_prime /= 2;
 
         // PAPER LINES 21-22
         const crypto::ec_scalar cL = inner_product
           (
-           std::span(a_prime).subspan(0, nprime)
-           , std::span(b_prime).subspan(nprime, b_prime.size() - nprime)
+           std::span(a_prime).subspan(0, n_prime)
+           , std::span(b_prime).subspan(n_prime, b_prime.size() - n_prime)
            );
 
         const crypto::ec_scalar cR = inner_product
           (
-           std::span(a_prime).subspan(nprime, a_prime.size() - nprime)
-           , std::span(b_prime).subspan(0, nprime)
+           std::span(a_prime).subspan(n_prime, a_prime.size() - n_prime)
+           , std::span(b_prime).subspan(0, n_prime)
            );
 
         // PAPER LINES 23-24
-        const scalarS b_prime_L_S = std::span(b_prime).subspan(nprime);
+        const scalarS b_prime_L_S = std::span(b_prime).subspan(n_prime);
         const scalarV b_prime_L =
           scale
           ? hadamard_product(scale->first, b_prime_L_S)
@@ -374,15 +374,15 @@ namespace rct
 
         const auto L = homomorphic_hash
           (
-           std::span(G_prime).subspan(nprime)
-           , std::span(H_prime).subspan(0, nprime)
-           , std::span(a_prime).subspan(0, nprime)
+           std::span(G_prime).subspan(n_prime)
+           , std::span(H_prime).subspan(0, n_prime)
+           , std::span(a_prime).subspan(0, n_prime)
            , b_prime_L
            , fixed_point_u
            , cL
            );
 
-        const scalarS b_prime_R_S = std::span(b_prime).subspan(0, nprime);
+        const scalarS b_prime_R_S = std::span(b_prime).subspan(0, n_prime);
         const scalarV b_prime_R =
           scale
           ? hadamard_product(scale->second, b_prime_R_S)
@@ -390,9 +390,9 @@ namespace rct
 
         const auto R = homomorphic_hash
           (
-           std::span(G_prime).subspan(0, nprime)
-           , std::span(H_prime).subspan(nprime)
-           , std::span(a_prime).subspan(nprime)
+           std::span(G_prime).subspan(0, n_prime)
+           , std::span(H_prime).subspan(n_prime)
+           , std::span(a_prime).subspan(n_prime)
            , b_prime_R
            , fixed_point_u
            , cR
@@ -420,12 +420,12 @@ namespace rct
           (
            vector_mult
            (
-            std::span(a_prime).subspan(0, nprime)
+            std::span(a_prime).subspan(0, n_prime)
             , challenge
             )
            , vector_mult
            (
-            std::span(a_prime).subspan(nprime, a_prime.size() - nprime)
+            std::span(a_prime).subspan(n_prime, a_prime.size() - n_prime)
             , challengeInv
             )
            );
@@ -434,17 +434,17 @@ namespace rct
           (
            vector_mult
            (
-            std::span(b_prime).subspan(0, nprime)
+            std::span(b_prime).subspan(0, n_prime)
             , challengeInv
             )
            , vector_mult
            (
-            std::span(b_prime).subspan(nprime, b_prime.size() - nprime)
+            std::span(b_prime).subspan(n_prime, b_prime.size() - n_prime)
             , challenge
             )
            );
 
-        if (nprime > 1)
+        if (n_prime > 1)
           {
             const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
             const size_t half = G_prime_L.size();
