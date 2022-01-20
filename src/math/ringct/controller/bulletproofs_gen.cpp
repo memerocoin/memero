@@ -254,7 +254,6 @@ namespace rct
     const auto [N, logN] = log2bound(bit_width);
     const auto [M, logM] = log2bound(xs.size());
 
-    const size_t logMN = logM + logN;
     const size_t MN = M * N;
 
     pointV V(xs.size());
@@ -433,9 +432,8 @@ namespace rct
     std::vector<crypto::ec_point> Hprime(Hi.begin(), std::next(Hi.begin(), MN));
     scalarV yinvpow = vector_exponents(yinv, MN);
 
-    LR_V LR(logMN);
-    int round = 0;
-    scalarV w(logMN); // this is the challenge x in the inner product protocol
+    LR_V LR;
+    scalarV challenges; // this is the challenge x in the inner product protocol
 
     std::optional<scalarV> scale_l = split_vector(yinvpow).first;
     std::optional<scalarV> scale_r = split_vector(yinvpow).second;
@@ -485,26 +483,28 @@ namespace rct
            )
           + H_(cR * x_ip);
 
-        LR[round] = {L, R};
+        LR.emplace_back(L, R);
 
         // PAPER LINES 25-27
-        w[round] = hash_dataV_to_scalar
+        const auto challenge = hash_dataV_to_scalar
           (crypto::dataV{last_hash, to_inv8(L), to_inv8(R)});
 
-        last_hash = w[round];
+        challenges.push_back(challenge);
 
-        if (w[round] == rct::s_zero)
+        last_hash = challenge;
+
+        if (challenge == rct::s_zero)
           {
-            LOG_INFO("w[round] is 0, trying again");
+            LOG_INFO("challenge is 0, trying again");
             goto try_again;
           }
 
         // PAPER LINES 29-30
-        const crypto::ec_scalar winv = invert(w[round]);
+        const crypto::ec_scalar winv = invert(challenge);
         if (nprime > 1)
           {
-            Gprime = split_vector_mult(Gprime, {}, winv, w[round]);
-            Hprime = split_vector_mult(Hprime, scale, w[round], winv);
+            Gprime = split_vector_mult(Gprime, {}, winv, challenge);
+            Hprime = split_vector_mult(Hprime, scale, challenge, winv);
           }
 
         // PAPER LINES 33-34
@@ -513,7 +513,7 @@ namespace rct
            vector_mult
            (
             std::span(aprime).subspan(0, nprime)
-            , w[round]
+            , challenge
             )
            , vector_mult
            (
@@ -532,14 +532,13 @@ namespace rct
            , vector_mult
            (
             std::span(bprime).subspan(nprime, bprime.size() - nprime)
-            , w[round]
+            , challenge
             )
            );
 
         scale = {};
         scale_l = {};
         scale_r = {};
-        ++round;
       }
 
     return Bulletproof
