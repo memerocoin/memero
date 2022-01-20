@@ -147,7 +147,7 @@ namespace rct
   }
 
   /* Compute a custom vector-scalar commitment */
-  crypto::ec_point cross_vector_exponent
+  crypto::ec_point split_vector_commit
   (
    const size_t size
    , const std::span<crypto::ec_point> A
@@ -450,10 +450,10 @@ namespace rct
            );
 
         // PAPER LINES 23-24
-        const auto L = cross_vector_exponent
+        const auto L = split_vector_commit
           (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
           + H_(cL * x_ip);
-        const auto R = cross_vector_exponent
+        const auto R = split_vector_commit
           (nprime, Gprime, 0, Hprime, nprime, aprime, nprime, bprime, 0, scale)
           + H_(cR * x_ip);
 
