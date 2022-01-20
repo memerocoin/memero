@@ -237,7 +237,7 @@ namespace rct
 
 
     // collect
-    const crypto::ec_scalar ip1y = vector_power_sum(pd.y, MN);
+    const crypto::ec_scalar ip1y = sum_of_vector_exponents(pd.y, MN);
     LOG_ERROR_AND_RETURN_UNLESS(M+2 < zpow.size(), false, "invalid zpow index");
 
     const auto zpow_it = std::next(zpow.begin(), 3);

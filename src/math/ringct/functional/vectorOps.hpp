@@ -30,7 +30,7 @@ namespace rct
   rct::scalarV vector_exponents(const crypto::ec_scalar x, const size_t n);
 
   /* Given a crypto::ec_scalar, return the sum of its powers from 0 to n-1 */
-  crypto::ec_scalar vector_power_sum(const crypto::ec_scalar x, const size_t n);
+  crypto::ec_scalar sum_of_vector_exponents(const crypto::ec_scalar x, const size_t n);
 
   /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
   rct::scalarV hadamard(const scalarS a, const scalarS b);
