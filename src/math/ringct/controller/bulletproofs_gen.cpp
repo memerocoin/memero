@@ -166,19 +166,18 @@ namespace rct
 
     const size_t MN = M * N;
 
-    pointV V(xs.size());
-    scalarV aL(MN), aR(MN);
-
+    pointV V;
     std::transform
       (
        xs.begin()
        , xs.end()
-       , V.begin()
+       , std::back_inserter(V)
        , [](const auto& x) {
          return std::apply(commit, x);
        }
        );
 
+    scalarV aL(MN), aR(MN);
     // PAPER LINES 41-42
     for (size_t j = 0; j < M; ++j)
       {
