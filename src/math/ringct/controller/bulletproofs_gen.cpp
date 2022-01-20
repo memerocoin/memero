@@ -353,13 +353,13 @@ namespace rct
         nprime /= 2;
 
         // PAPER LINES 21-22
-        crypto::ec_scalar cL = inner_product
+        const crypto::ec_scalar cL = inner_product
           (
            std::span(aprime).subspan(0, nprime)
            , std::span(bprime).subspan(nprime, bprime.size() - nprime)
            );
 
-        crypto::ec_scalar cR = inner_product
+        const crypto::ec_scalar cR = inner_product
           (
            std::span(aprime).subspan(nprime, aprime.size() - nprime)
            , std::span(bprime).subspan(0, nprime)
