@@ -72,7 +72,7 @@
 namespace rct
 {
 
-  crypto::ec_point vector_exponent(const scalarS a, const scalarS b);
+  crypto::ec_point commit_vectors_with_generators_G_H(const scalarS a, const scalarS b);
 
   const scalarV twoN = vector_exponents(rct::s_two, bit_width);
 
@@ -139,31 +139,11 @@ namespace rct
 
 
   /* Given two crypto::ec_scalar arrays, construct a vector commitment */
-  crypto::ec_point vector_exponent(const scalarS a, const scalarS b)
+  crypto::ec_point commit_vectors_with_generators_G_H(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
     LOG_ERROR_AND_THROW_UNLESS(a.size() <= max_vector_length, "vector size too big");
-
-    std::vector<MultiexpData> multiexp_data;
-    multiexp_data.reserve(a.size()*2);
-    std::transform
-      (
-       a.begin()
-       , a.end()
-       , Gi.begin()
-       , std::back_inserter(multiexp_data)
-       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
-       );
-
-    std::transform
-      (
-       b.begin()
-       , b.end()
-       , Hi.begin()
-       , std::back_inserter(multiexp_data)
-       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
-       );
-    return multiexp(multiexp_data);
+    return vector_commit(a, Gi) + vector_commit(b, Hi);
   }
 
   /* Compute a custom vector-scalar commitment */
@@ -319,13 +299,15 @@ namespace rct
   try_again:
     // PAPER LINES 43-44
     const crypto::ec_scalar alpha = crypto::randomScalar();
-    const crypto::ec_point A = vector_exponent(aL, aR) + G_(alpha);
+    const crypto::ec_point A =
+      commit_vectors_with_generators_G_H(aL, aR) + G_(alpha);
 
     // PAPER LINES 45-47
     const scalarV sL = crypto::randomScalars(MN);
     const scalarV sR = crypto::randomScalars(MN);
     const crypto::ec_scalar rho = crypto::randomScalar();
-    const crypto::ec_point S = vector_exponent(sL, sR) + G_(rho);
+    const crypto::ec_point S =
+      commit_vectors_with_generators_G_H(sL, sR) + G_(rho);
 
     crypto::dataV commit_data_V;
     std::transform

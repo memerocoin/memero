@@ -162,4 +162,20 @@ namespace rct
     return r;
   }
 
+
+  crypto::ec_point vector_commit(const scalarS a, const pointS p) {
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() <= p.size(), "Incompatible sizes of a and b");
+
+    return std::transform_reduce
+      (
+       a.begin()
+       , a.end()
+       , p.begin()
+       , crypto::identity
+       , std::plus<crypto::ec_point>()
+       , [](const auto& x, const auto& y) { return y ^ x; }
+       );
+  }
+
 } // rct

@@ -52,4 +52,6 @@ namespace rct
   rct::scalarV vector_mult(const scalarS a, const crypto::ec_scalar b);
 
   rct::scalarV invertV(const rct::scalarV v);
+
+  crypto::ec_point vector_commit(const scalarS a, const pointS p);
 }
