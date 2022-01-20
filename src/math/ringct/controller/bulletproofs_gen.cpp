@@ -370,9 +370,7 @@ namespace rct
 
     LR_V LR;
 
-    std::optional<scalarV> scale_l = split_vector(yinvpow).first;
-    std::optional<scalarV> scale_r = split_vector(yinvpow).second;
-    std::optional<scalarS> scale = yinvpow;
+    std::optional<std::pair<scalarV, scalarV>> scale = split_vector(yinvpow);
 
     crypto::ec_scalar last_challenge = x_ip;
 
@@ -398,7 +396,7 @@ namespace rct
         const scalarS lbS = std::span(bprime).subspan(nprime);
         const scalarV lbV =
           scale
-          ? hadamard_product(*scale_l, lbS)
+          ? hadamard_product(scale->first, lbS)
           : scalarV(lbS.begin(), lbS.end());
 
         const auto L = vector_commit_both
@@ -413,7 +411,7 @@ namespace rct
         const scalarS rbS = std::span(bprime).subspan(0, nprime);
         const scalarV rbV =
           scale
-          ? hadamard_product(*scale_r, rbS)
+          ? hadamard_product(scale->second, rbS)
           : scalarV(rbS.begin(), rbS.end());
 
         const auto R = vector_commit_both
@@ -459,8 +457,8 @@ namespace rct
                 (
                  hl
                  , hr
-                 , vector_mult(*scale_l, challenge)
-                 , vector_mult(*scale_r, winv)
+                 , vector_mult(scale->first, challenge)
+                 , vector_mult(scale->second, winv)
                  )
               : vector_mult_both
                 (
@@ -501,8 +499,6 @@ namespace rct
            );
 
         scale = {};
-        scale_l = {};
-        scale_r = {};
       }
 
     return Bulletproof
