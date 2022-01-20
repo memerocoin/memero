@@ -336,7 +336,7 @@ namespace rct
 
     size_t nprime = MN;
     scalarV a_prime = l;
-    scalarV bprime = r;
+    scalarV b_prime = r;
 
     pointV Gprime(G_V.begin(), std::next(G_V.begin(), MN));
     pointV Hprime(H_V.begin(), std::next(H_V.begin(), MN));
@@ -356,17 +356,17 @@ namespace rct
         const crypto::ec_scalar cL = inner_product
           (
            std::span(a_prime).subspan(0, nprime)
-           , std::span(bprime).subspan(nprime, bprime.size() - nprime)
+           , std::span(b_prime).subspan(nprime, b_prime.size() - nprime)
            );
 
         const crypto::ec_scalar cR = inner_product
           (
            std::span(a_prime).subspan(nprime, a_prime.size() - nprime)
-           , std::span(bprime).subspan(0, nprime)
+           , std::span(b_prime).subspan(0, nprime)
            );
 
         // PAPER LINES 23-24
-        const scalarS b_prime_L_S = std::span(bprime).subspan(nprime);
+        const scalarS b_prime_L_S = std::span(b_prime).subspan(nprime);
         const scalarV b_prime_L =
           scale
           ? hadamard_product(scale->first, b_prime_L_S)
@@ -382,7 +382,7 @@ namespace rct
            , cL
            );
 
-        const scalarS b_prime_R_S = std::span(bprime).subspan(0, nprime);
+        const scalarS b_prime_R_S = std::span(b_prime).subspan(0, nprime);
         const scalarV b_prime_R =
           scale
           ? hadamard_product(scale->second, b_prime_R_S)
@@ -430,16 +430,16 @@ namespace rct
             )
            );
 
-        bprime = vector_addV
+        b_prime = vector_addV
           (
            vector_mult
            (
-            std::span(bprime).subspan(0, nprime)
+            std::span(b_prime).subspan(0, nprime)
             , challengeInv
             )
            , vector_mult
            (
-            std::span(bprime).subspan(nprime, bprime.size() - nprime)
+            std::span(b_prime).subspan(nprime, b_prime.size() - nprime)
             , challenge
             )
            );
@@ -485,7 +485,7 @@ namespace rct
     return Bulletproof
       {
         A, S, T1, T2, taux, mu, LR
-        , a_prime[0], bprime[0], t
+        , a_prime[0], b_prime[0], t
       };
   }
 
