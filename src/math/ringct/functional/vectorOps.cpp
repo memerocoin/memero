@@ -225,4 +225,16 @@ namespace rct
     return vector_mult(vector_exponents(crypto::s_1, n), x);
   }
 
+  crypto::ec_point homomorphic_hash
+  (
+   const pointS vl
+   , const pointS vr
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_scalar c
+   ) {
+    return vector_commit(a, vl) + vector_commit(b, vr) + H_(c);
+  }
+
+
 } // rct

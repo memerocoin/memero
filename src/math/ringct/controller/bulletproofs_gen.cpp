@@ -166,17 +166,6 @@ namespace rct
     return vector_addV(l, r);
   }
 
-  crypto::ec_point vector_commit_both
-  (
-   const pointS vl
-   , const pointS vr
-   , const scalarS a
-   , const scalarS b
-   ) {
-    const auto xs = vector_mult_both(vl, vr, a, b);
-    return std::reduce(xs.begin(), xs.end(), crypto::identity);
-  }
-
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs)
   {
     LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
@@ -399,14 +388,14 @@ namespace rct
           ? hadamard_product(scale->first, lbS)
           : scalarV(lbS.begin(), lbS.end());
 
-        const auto L = vector_commit_both
+        const auto L = homomorphic_hash
           (
            std::span(Gprime).subspan(nprime)
            , std::span(Hprime).subspan(0, nprime)
            , std::span(aprime).subspan(0, nprime)
            , lbV
-           )
-          + H_(cL * x_ip);
+           , cL * x_ip
+           );
 
         const scalarS rbS = std::span(bprime).subspan(0, nprime);
         const scalarV rbV =
@@ -414,14 +403,14 @@ namespace rct
           ? hadamard_product(scale->second, rbS)
           : scalarV(rbS.begin(), rbS.end());
 
-        const auto R = vector_commit_both
+        const auto R = homomorphic_hash
           (
            std::span(Gprime).subspan(0, nprime)
            , std::span(Hprime).subspan(nprime)
            , std::span(aprime).subspan(nprime)
            , rbV
-           )
-          + H_(cR * x_ip);
+           , cR * x_ip
+           );
 
         LR.emplace_back(L, R);
 

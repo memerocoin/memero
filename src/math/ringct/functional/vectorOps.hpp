@@ -55,4 +55,14 @@ namespace rct
   std::pair<scalarV, scalarV> split_vector(const scalarS v);
 
   rct::scalarV vector_repeat(const crypto::ec_scalar x, const size_t n);
+
+  crypto::ec_point homomorphic_hash
+  (
+   const pointS vl
+   , const pointS vr
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_scalar c
+   );
+
 }
