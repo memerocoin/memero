@@ -339,7 +339,7 @@ namespace rct
     scalarV b_prime = r;
 
     pointV G_prime(G_V.begin(), std::next(G_V.begin(), MN));
-    pointV Hprime(H_V.begin(), std::next(H_V.begin(), MN));
+    pointV H_prime(H_V.begin(), std::next(H_V.begin(), MN));
 
     LR_V LR;
 
@@ -375,7 +375,7 @@ namespace rct
         const auto L = homomorphic_hash
           (
            std::span(G_prime).subspan(nprime)
-           , std::span(Hprime).subspan(0, nprime)
+           , std::span(H_prime).subspan(0, nprime)
            , std::span(a_prime).subspan(0, nprime)
            , b_prime_L
            , fixed_point_u
@@ -391,7 +391,7 @@ namespace rct
         const auto R = homomorphic_hash
           (
            std::span(G_prime).subspan(0, nprime)
-           , std::span(Hprime).subspan(nprime)
+           , std::span(H_prime).subspan(nprime)
            , std::span(a_prime).subspan(nprime)
            , b_prime_R
            , fixed_point_u
@@ -456,7 +456,7 @@ namespace rct
                , G_prime_R
                );
 
-            const auto [H_prime_L, H_prime_R] = split_vector(Hprime);
+            const auto [H_prime_L, H_prime_R] = split_vector(H_prime);
             const auto challengeV =
               scale
               ? vector_mult(scale->first, challenge)
@@ -469,7 +469,7 @@ namespace rct
               : vector_repeat(challengeInv, half)
               ;
 
-            Hprime =
+            H_prime =
               vector_mult_add
               (
                challengeV
