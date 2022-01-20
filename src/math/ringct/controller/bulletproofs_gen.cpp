@@ -135,7 +135,6 @@ namespace rct
   }
 
 
-  /* G_Vven two crypto::ec_scalar arrays, construct a vector commitment */
   crypto::ec_point commit_vectors_with_bp_generators_G_H
   (
    const scalarS a
@@ -194,8 +193,8 @@ namespace rct
     const auto [vl, vr] = split_vector(v);
 
     const size_t sz = vl.size();
-    scalarV aV = vector_mult(vector_exponents(crypto::s_1, sz), a);
-    scalarV bV = vector_mult(vector_exponents(crypto::s_1, sz), b);
+    const scalarV aV = vector_repeat(a, sz);
+    const scalarV bV = vector_repeat(b, sz);
 
     if (scale) {
       const auto s = *scale;
@@ -236,7 +235,6 @@ namespace rct
     return std::reduce(xs.begin(), xs.end(), crypto::identity);
   }
 
-  /* G_Vven a set of values v (0..2^N-1) and masks gamma, construct a range proof */
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs)
   {
     LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
@@ -455,26 +453,37 @@ namespace rct
            );
 
         // PAPER LINES 23-24
+        const scalarS lbS = std::span(bprime).subspan(nprime);
+        const scalarV lbV =
+          scale
+          ? hadamard_product(*scale_l, lbS)
+          : scalarV(lbS.begin(), lbS.end());
 
         const auto L = vector_commit_both
           (
            std::span(Gprime).subspan(nprime)
            , std::span(Hprime).subspan(0, nprime)
            , {}
-           , scale_l
+           , {}
            , std::span(aprime).subspan(0, nprime)
-           , std::span(bprime).subspan(nprime)
+           , lbV
            )
           + H_(cL * x_ip);
+
+        const scalarS rbS = std::span(bprime).subspan(0, nprime);
+        const scalarV rbV =
+          scale
+          ? hadamard_product(*scale_r, rbS)
+          : scalarV(rbS.begin(), rbS.end());
 
         const auto R = vector_commit_both
           (
            std::span(Gprime).subspan(0, nprime)
            , std::span(Hprime).subspan(nprime)
            , {}
-           , scale_r
+           , {}
            , std::span(aprime).subspan(nprime)
-           , std::span(bprime).subspan(0, nprime)
+           , rbV
            )
           + H_(cR * x_ip);
 
@@ -497,7 +506,27 @@ namespace rct
         if (nprime > 1)
           {
             Gprime = split_vector_mult(Gprime, {}, winv, challenge);
-            Hprime = split_vector_mult(Hprime, scale, challenge, winv);
+            const auto [hl, hr] = split_vector(Hprime);
+            Hprime =
+              scale
+              ? vector_mult_both
+                (
+                 hl
+                 , hr
+                 , {}
+                 , {}
+                 , vector_mult(*scale_l, challenge)
+                 , vector_mult(*scale_r, winv)
+                 )
+              : vector_mult_both
+                (
+                 hl
+                 , hr
+                 , {}
+                 , {}
+                 , vector_repeat(challenge, hl.size())
+                 , vector_repeat(winv, hl.size())
+                 );
           }
 
         // PAPER LINES 33-34

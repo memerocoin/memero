@@ -221,4 +221,8 @@ namespace rct
       };
   }
 
+  rct::scalarV vector_repeat(const crypto::ec_scalar x, const size_t n) {
+    return vector_mult(vector_exponents(crypto::s_1, n), x);
+  }
+
 } // rct

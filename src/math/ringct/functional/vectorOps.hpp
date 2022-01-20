@@ -53,4 +53,6 @@ namespace rct
 
   std::pair<pointV, pointV> split_vector(const pointS v);
   std::pair<scalarV, scalarV> split_vector(const scalarS v);
+
+  rct::scalarV vector_repeat(const crypto::ec_scalar x, const size_t n);
 }
