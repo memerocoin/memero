@@ -154,84 +154,26 @@ namespace rct
   (
    const pointS vl
    , const pointS vr
-   , const std::optional<scalarS> scale_l
-   , const std::optional<scalarS> scale_r
    , const scalarS a
    , const scalarS b
    )
   {
     LOG_ERROR_AND_THROW_UNLESS(vl.size() == vr.size(), "Vector size should be even");
 
-    const scalarV scaled_a =
-      scale_l
-      ? hadamard_product(*scale_l, a)
-      : scalarV(a.begin(), a.end())
-      ;
-
-    const scalarV scaled_b =
-      scale_r
-      ? hadamard_product(*scale_r, b)
-      : scalarV(b.begin(), b.end())
-      ;
-
-    const pointV l = vector_multV(scaled_a, vl);
-    const pointV r = vector_multV(scaled_b, vr);
+    const pointV l = vector_multV(a, vl);
+    const pointV r = vector_multV(b, vr);
 
     return vector_addV(l, r);
-  }
-
-  pointV split_vector_mult
-  (
-   const pointS v
-   , const std::optional<scalarS> scale
-   , const crypto::ec_scalar a
-   , const crypto::ec_scalar b
-   )
-  {
-    LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
-
-    const auto [vl, vr] = split_vector(v);
-
-    const size_t sz = vl.size();
-    const scalarV aV = vector_repeat(a, sz);
-    const scalarV bV = vector_repeat(b, sz);
-
-    if (scale) {
-      const auto s = *scale;
-      LOG_ERROR_AND_THROW_UNLESS
-        ((s.size() & 1) == 0, "Scale vector size should be even");
-
-      const auto [sl, sr] = split_vector(s);
-      return vector_mult_both(vl, vr, sl, sr, aV, bV);
-
-    } else {
-      return vector_mult_both(vl, vr, {}, {}, aV, bV);
-    }
-  }
-
-  crypto::ec_point split_vector_commit
-  (
-   const pointS v
-   , const std::optional<scalarS> scale
-   , const crypto::ec_scalar a
-   , const crypto::ec_scalar b
-   ) {
-    LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
-    const auto xs = split_vector_mult(v, scale, a, b);
-    
-    return std::reduce(xs.begin(), xs.end(), crypto::identity);
   }
 
   crypto::ec_point vector_commit_both
   (
    const pointS vl
    , const pointS vr
-   , const std::optional<scalarS> scale_l
-   , const std::optional<scalarS> scale_r
    , const scalarS a
    , const scalarS b
    ) {
-    const auto xs = vector_mult_both(vl, vr, scale_l, scale_r, a, b);
+    const auto xs = vector_mult_both(vl, vr, a, b);
     return std::reduce(xs.begin(), xs.end(), crypto::identity);
   }
 
@@ -463,8 +405,6 @@ namespace rct
           (
            std::span(Gprime).subspan(nprime)
            , std::span(Hprime).subspan(0, nprime)
-           , {}
-           , {}
            , std::span(aprime).subspan(0, nprime)
            , lbV
            )
@@ -480,8 +420,6 @@ namespace rct
           (
            std::span(Gprime).subspan(0, nprime)
            , std::span(Hprime).subspan(nprime)
-           , {}
-           , {}
            , std::span(aprime).subspan(nprime)
            , rbV
            )
@@ -505,7 +443,15 @@ namespace rct
         const crypto::ec_scalar winv = invert(challenge);
         if (nprime > 1)
           {
-            Gprime = split_vector_mult(Gprime, {}, winv, challenge);
+            const auto [gl, gr] = split_vector(Gprime);
+            Gprime = vector_mult_both
+              (
+               gl
+               , gr
+               , vector_repeat(winv, gl.size())
+               , vector_repeat(challenge, gl.size())
+               );
+
             const auto [hl, hr] = split_vector(Hprime);
             Hprime =
               scale
@@ -513,8 +459,6 @@ namespace rct
                 (
                  hl
                  , hr
-                 , {}
-                 , {}
                  , vector_mult(*scale_l, challenge)
                  , vector_mult(*scale_r, winv)
                  )
@@ -522,8 +466,6 @@ namespace rct
                 (
                  hl
                  , hr
-                 , {}
-                 , {}
                  , vector_repeat(challenge, hl.size())
                  , vector_repeat(winv, hl.size())
                  );
