@@ -433,7 +433,6 @@ namespace rct
     scalarV yinvpow = vector_exponents(yinv, MN);
 
     LR_V LR;
-    scalarV challenges; // this is the challenge x in the inner product protocol
 
     std::optional<scalarV> scale_l = split_vector(yinvpow).first;
     std::optional<scalarV> scale_r = split_vector(yinvpow).second;
@@ -488,8 +487,6 @@ namespace rct
         // PAPER LINES 25-27
         const auto challenge = hash_dataV_to_scalar
           (crypto::dataV{last_hash, to_inv8(L), to_inv8(R)});
-
-        challenges.push_back(challenge);
 
         last_hash = challenge;
 
