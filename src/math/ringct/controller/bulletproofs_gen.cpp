@@ -168,41 +168,16 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS(size <= max_vector_length, "size is too large");
     LOG_ERROR_AND_THROW_UNLESS(!scale || size == scale->size() / 2, "Incompatible size for scale");
 
-    std::vector<MultiexpData> multiexp_data;
-    multiexp_data.reserve(size*2);
+    const scalarS b0 = b.subspan(bo, size);
 
-    std::transform
-      (
-       std::next(a.begin(), ao)
-       , std::next(a.begin(), ao + size)
-       , std::next(A.begin(), Ao)
-       , std::back_inserter(multiexp_data)
-       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
-       );
+    const scalarV b_scalars =
+      scale ? hadamard_product(b0, scale->subspan(Bo, size)) :
+      scalarV(b0.begin(), b0.end()) ;
 
-    scalarV b_scalars(size);
-    std::generate
-      (
-
-       b_scalars.begin()
-       , b_scalars.end()
-       , [i = 0, b, bo, scale, Bo]() mutable {
-         const auto b_scaled = scale ? b[bo+i] * (*scale)[Bo+i] : b[bo+i];
-         i++;
-         return b_scaled;
-       }
-       );
-
-    std::transform
-      (
-       b_scalars.begin()
-       , b_scalars.end()
-       , std::next(B.begin(), Bo)
-       , std::back_inserter(multiexp_data)
-       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
-       );
-
-    return multiexp(multiexp_data);
+    return
+      vector_commit(a.subspan(ao, size), A.subspan(Ao))
+      +
+      vector_commit(b_scalars, B.subspan(Bo));
   }
 
 
