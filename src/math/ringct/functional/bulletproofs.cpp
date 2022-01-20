@@ -17,56 +17,14 @@
 
 */
 
-// Copyright (c) 2021, The Lolnero Project
-// Copyright (c) 2017-2020, The Monero Project
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without modification, are
-// permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this list of
-//    conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice, this list
-//    of conditions and the following disclaimer in the documentation and/or other
-//    materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its contributors may be
-//    used to endorse or promote products derived from this software without specific
-//    prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// Adapted from Java code by Sarang Noether
-// Paper references are to https://eprint.iacr.org/2017/1066 (revision 1 July 2018)
-
 #include "bulletproofs.hpp"
 
-#include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/accumHash.hpp"
-#include "math/ringct/functional/curveConstants.hpp"
-#include "math/ringct/functional/multi_exponentiation.hpp"
 
 #include "tools/epee/include/logging.hpp"
-#include "tools/epee/include/string_tools.h"
 
-#include "config/cryptonote.hpp"
-
-#include <mutex>
-#include <atomic>
-#include <list>
 #include <numeric>
-
 
 namespace rct
 {
@@ -82,8 +40,7 @@ namespace rct
        , to_inv8
        );
 
-    proof_data_t pd;
-    const auto maybe_pd_y = accum_hash
+    const auto maybe_y = accum_hash
       (
        {}
        , {
@@ -93,34 +50,34 @@ namespace rct
        );
 
     LOG_ERROR_AND_RETURN_UNLESS
-      (maybe_pd_y
+      (maybe_y
        , {}
        , "failed to generate hash challenges"
        );
 
-    const auto pd_y_array = *maybe_pd_y;
-    pd.y = pd_y_array.back();
-    pd.z = rct::hash_to_scalar(pd.y);
-    LOG_ERROR_AND_RETURN_IF((pd.z == rct::s_zero), {}, "z == 0");
+    const auto y_array = *maybe_y;
+    const auto y = y_array.back();
+    const auto z = rct::hash_to_scalar(y);
+    LOG_ERROR_AND_RETURN_IF((z == rct::s_zero), {}, "z == 0");
 
-    pd.x =
+    const auto x =
       hash_dataV_to_scalar
-      (crypto::dataV{pd.z, pd.z, to_inv8(proof.T1), to_inv8(proof.T2)});
+      (crypto::dataV{z, z, to_inv8(proof.T1), to_inv8(proof.T2)});
 
-    LOG_ERROR_AND_RETURN_IF((pd.x == rct::s_zero), {}, "x == 0");
+    LOG_ERROR_AND_RETURN_IF((x == rct::s_zero), {}, "x == 0");
 
-    pd.x_ip =
+    const auto x_ip =
       hash_dataV_to_scalar
       (
        crypto::dataV
        {
-         pd.x
-         , pd.x
+         x
+         , x
          , proof.taux
          , proof.mu
          , proof.t
        });
-    LOG_ERROR_AND_RETURN_IF((pd.x_ip == rct::s_zero), {}, "x_ip == 0");
+    LOG_ERROR_AND_RETURN_IF((x_ip == rct::s_zero), {}, "x_ip == 0");
 
     std::vector<std::vector<crypto::crypto_data>> lr_data;
     std::transform
@@ -136,12 +93,18 @@ namespace rct
        }
        );
 
-    const auto maybe_pd_w = accum_hash(pd.x_ip, lr_data);
-    LOG_ERROR_AND_RETURN_UNLESS(maybe_pd_w, {}, "some pd_w[i] == 0");
+    const auto maybe_w = accum_hash(x_ip, lr_data);
+    LOG_ERROR_AND_RETURN_UNLESS(maybe_w, {}, "some w[i] == 0");
 
-    pd.w = *maybe_pd_w;
+    const auto w = *maybe_w;
 
-    return pd;
+    return {{
+        x
+        , y
+        , z
+        , x_ip
+        , w
+      }};
   }
 
 }
