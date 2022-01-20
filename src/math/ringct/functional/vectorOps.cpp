@@ -231,9 +231,10 @@ namespace rct
    , const pointS vr
    , const scalarS a
    , const scalarS b
+   , const crypto::ec_point u
    , const crypto::ec_scalar c
    ) {
-    return vector_commit(a, vl) + vector_commit(b, vr) + H_(c);
+    return vector_commit(a, vl) + vector_commit(b, vr) + (u ^ c);
   }
 
   pointV vector_mult_add

@@ -62,6 +62,7 @@ namespace rct
    , const pointS vr
    , const scalarS a
    , const scalarS b
+   , const crypto::ec_point u
    , const crypto::ec_scalar c
    );
 

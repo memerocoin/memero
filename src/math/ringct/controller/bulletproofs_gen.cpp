@@ -378,7 +378,8 @@ namespace rct
            , std::span(Hprime).subspan(0, nprime)
            , std::span(aprime).subspan(0, nprime)
            , b_prime_L
-           , cL * x_ip
+           , H_(x_ip)
+           , cL
            );
 
         const scalarS b_prime_R_S = std::span(bprime).subspan(0, nprime);
@@ -393,7 +394,8 @@ namespace rct
            , std::span(Hprime).subspan(nprime)
            , std::span(aprime).subspan(nprime)
            , b_prime_R
-           , cR * x_ip
+           , H_(x_ip)
+           , cR
            );
 
         LR.emplace_back(L, R);
