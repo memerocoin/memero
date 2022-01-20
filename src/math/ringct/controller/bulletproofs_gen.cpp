@@ -194,11 +194,8 @@ namespace rct
     const auto [vl, vr] = split_vector(v);
 
     const size_t sz = vl.size();
-    scalarV aV;
-    std::generate_n(std::back_inserter(aV), sz, [a](){ return a; });
-
-    scalarV bV;
-    std::generate_n(std::back_inserter(bV), sz, [b](){ return b; });
+    scalarV aV = vector_mult(vector_exponents(crypto::s_1, sz), a);
+    scalarV bV = vector_mult(vector_exponents(crypto::s_1, sz), b);
 
     if (scale) {
       const auto s = *scale;
