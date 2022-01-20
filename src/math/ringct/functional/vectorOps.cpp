@@ -209,4 +209,26 @@ namespace rct
     return vector_commit(a, p) + vector_commit(b, q);
   }
 
+  std::pair<pointV, pointV> split_vector(const pointS v) {
+    LOG_ERROR_AND_THROW_IF(v.empty(), "Vector can't be empty");
+    LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
+    const size_t middle = v.size() / 2;
+    return
+      {
+        pointV(v.begin(), std::next(v.begin(), middle))
+        , pointV(std::next(v.begin(), middle), v.end())
+      };
+  }
+
+  std::pair<scalarV, scalarV> split_vector(const scalarS v) {
+    LOG_ERROR_AND_THROW_IF(v.empty(), "Vector can't be empty");
+    LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
+    const size_t middle = v.size() / 2;
+    return
+      {
+        scalarV(v.begin(), std::next(v.begin(), middle))
+        , scalarV(std::next(v.begin(), middle), v.end())
+      };
+  }
+
 } // rct

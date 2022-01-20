@@ -191,9 +191,40 @@ namespace rct
   }
 
 
+  pointV vector_mult_both
+  (
+   const pointS vl
+   , const pointS vr
+   , const std::optional<std::pair<scalarS, scalarS>> scale
+   , const crypto::ec_scalar a
+   , const crypto::ec_scalar b
+   )
+  {
+    LOG_ERROR_AND_THROW_UNLESS(vl.size() == vr.size(), "Vector size should be even");
 
-  /* folds a curvepoint array using a two way scaled Hadamard product */
-  pointV hadamard_fold
+    const size_t sz = vl.size();
+
+    scalarV scaled_a;
+    if (scale) {
+      scaled_a = vector_mult(scale->first, a);
+    } else {
+      std::generate_n(std::back_inserter(scaled_a), sz, [a](){ return a; });
+    }
+
+    scalarV scaled_b;
+    if (scale) {
+      scaled_b = vector_mult(scale->second, b);
+    } else {
+      std::generate_n(std::back_inserter(scaled_b), sz, [b](){ return b; });
+    }
+
+    const pointV l = vector_multV(scaled_a, vl);
+    const pointV r = vector_multV(scaled_b, vr);
+
+    return vector_addV(l, r);
+  }
+
+  pointV split_vector_mult
   (
    const pointS v
    , const std::optional<scalarS> scale
@@ -203,26 +234,33 @@ namespace rct
   {
     LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
     const size_t sz = v.size() / 2;
-    std::vector<crypto::ec_point> out(sz);
 
-    scalarV scaled_a;
+    const auto [vl, vr] = split_vector(v);
+
     if (scale) {
-      scaled_a = vector_mult(scale->subspan(0, sz), a);
+      const auto s = *scale;
+      LOG_ERROR_AND_THROW_UNLESS
+        ((s.size() & 1) == 0, "Scale vectgor size should be even");
+
+      const auto [sl, sr] = split_vector(s);
+      return vector_mult_both(vl, vr, {{sl, sr}}, a, b);
+
     } else {
-      std::generate_n(std::back_inserter(scaled_a), sz, [a](){ return a; });
+      return vector_mult_both(vl, vr, {}, a, b);
     }
+  }
 
-    scalarV scaled_b;
-    if (scale) {
-      scaled_b = vector_mult(scale->subspan(sz), b);
-    } else {
-      std::generate_n(std::back_inserter(scaled_b), sz, [b](){ return b; });
-    }
-
-    const pointV l = vector_multV(scaled_a, v);
-    const pointV r = vector_multV(scaled_b, v.subspan(sz));
-
-    return vector_addV(l, r);
+  crypto::ec_point split_vector_commit
+  (
+   const pointS v
+   , const std::optional<scalarS> scale
+   , const crypto::ec_scalar a
+   , const crypto::ec_scalar b
+   ) {
+    LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
+    const auto xs = split_vector_mult(v, scale, a, b);
+    
+    return std::reduce(xs.begin(), xs.end(), crypto::identity);
   }
 
   /* Given a set of values v (0..2^N-1) and masks gamma, construct a range proof */
@@ -456,6 +494,20 @@ namespace rct
            );
 
         // PAPER LINES 23-24
+
+  // crypto::ec_point split_vector_commit
+  // (
+  //  const size_t size
+  //  , const std::span<crypto::ec_point> A
+  //  , const size_t Ao
+  //  , const std::span<crypto::ec_point> B
+  //  , const size_t Bo
+  //  , const scalarS a
+  //  , const size_t ao
+  //  , const scalarS b
+  //  , const size_t bo
+  //  , const std::optional<scalarS> scale
+
         const auto L = split_vector_commit
           (nprime, Gprime, nprime, Hprime, 0, aprime, 0, bprime, nprime, scale)
           + H_(cL * x_ip);
@@ -481,8 +533,8 @@ namespace rct
         const crypto::ec_scalar winv = invert(w[round]);
         if (nprime > 1)
           {
-            Gprime = hadamard_fold(Gprime, {}, winv, w[round]);
-            Hprime = hadamard_fold(Hprime, scale, w[round], winv);
+            Gprime = split_vector_mult(Gprime, {}, winv, w[round]);
+            Hprime = split_vector_mult(Hprime, scale, w[round], winv);
           }
 
         // PAPER LINES 33-34
