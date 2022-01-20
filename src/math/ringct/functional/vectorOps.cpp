@@ -22,9 +22,7 @@
 
 #include "tools/epee/include/logging.hpp"
 
-#include <list>
 #include <numeric>
-
 
 namespace rct
 {
@@ -32,7 +30,9 @@ namespace rct
   /* Given two crypto::ec_scalar arrays, construct the inner product */
   crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
   {
-    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() == b.size(), "Incompatible sizes of a and b");
+
     return std::transform_reduce
       (
        a.begin()
@@ -59,7 +59,11 @@ namespace rct
   }
 
   /* Given a crypto::ec_scalar, return the sum of its powers from 0 to n-1 */
-  crypto::ec_scalar sum_of_vector_exponents(const crypto::ec_scalar x, const size_t n)
+  crypto::ec_scalar sum_of_vector_exponents
+  (
+   const crypto::ec_scalar x
+   , const size_t n
+   )
   {
     const auto xs = vector_exponents(x, n);
 
@@ -69,7 +73,9 @@ namespace rct
   /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
   rct::scalarV hadamard(const scalarS a, const scalarS b)
   {
-    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() == b.size(), "Incompatible sizes of a and b");
+
     rct::scalarV res(a.size());
     std::transform
       (
@@ -86,16 +92,18 @@ namespace rct
   /* Add two vectors */
   rct::scalarV vector_addV(const scalarS a, const scalarS b)
   {
-    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() == b.size(), "Incompatible sizes of a and b");
+
     rct::scalarV res(a.size());
     std::transform
       (
-      a.begin()
-      , a.end()
-      , b.begin()
-      , res.begin()
-      , std::plus<crypto::ec_scalar>()
-      );
+       a.begin()
+       , a.end()
+       , b.begin()
+       , res.begin()
+       , std::plus<crypto::ec_scalar>()
+       );
 
     return res;
   }
@@ -106,11 +114,11 @@ namespace rct
     rct::scalarV res(a.size());
     std::transform
       (
-      a.begin()
-      , a.end()
-      , res.begin()
-      , [b](const auto& x) { return x + b; }
-      );
+       a.begin()
+       , a.end()
+       , res.begin()
+       , [b](const auto& x) { return x + b; }
+       );
 
     return res;
   }
@@ -121,11 +129,11 @@ namespace rct
     rct::scalarV res(a.size());
     std::transform
       (
-      a.begin()
-      , a.end()
-      , res.begin()
-      , [b](const auto& x) { return x - b; }
-      );
+       a.begin()
+       , a.end()
+       , res.begin()
+       , [b](const auto& x) { return x - b; }
+       );
 
     return res;
   }
@@ -136,11 +144,11 @@ namespace rct
     rct::scalarV res(a.size());
     std::transform
       (
-      a.begin()
-      , a.end()
-      , res.begin()
-      , [b](const auto& x) { return x * b; }
-      );
+       a.begin()
+       , a.end()
+       , res.begin()
+       , [b](const auto& x) { return x * b; }
+       );
 
     return res;
   }
@@ -151,11 +159,11 @@ namespace rct
 
     std::transform
       (
-      v.begin()
-      , v.end()
-      , r.begin()
-      , [](const auto& x) { return invert(x); }
-      );
+       v.begin()
+       , v.end()
+       , r.begin()
+       , [](const auto& x) { return invert(x); }
+       );
 
     return r;
   }
