@@ -338,8 +338,8 @@ namespace rct
     scalarV aprime = l;
     scalarV bprime = r;
 
-    std::vector<crypto::ec_point> Gprime(G_V.begin(), std::next(G_V.begin(), MN));
-    std::vector<crypto::ec_point> Hprime(H_V.begin(), std::next(H_V.begin(), MN));
+    pointV Gprime(G_V.begin(), std::next(G_V.begin(), MN));
+    pointV Hprime(H_V.begin(), std::next(H_V.begin(), MN));
 
     LR_V LR;
 
