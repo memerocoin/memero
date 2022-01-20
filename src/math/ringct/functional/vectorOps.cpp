@@ -27,23 +27,6 @@
 namespace rct
 {
 
-  /* Given two crypto::ec_scalar arrays, construct the inner product */
-  crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
-  {
-    LOG_ERROR_AND_THROW_UNLESS
-      (a.size() == b.size(), "Incompatible sizes of a and b");
-
-    return std::transform_reduce
-      (
-       a.begin()
-       , a.end()
-       , b.begin()
-       , rct::s_zero
-       , std::plus<crypto::ec_scalar>()
-       , std::multiplies<crypto::ec_scalar>()
-       );
-  }
-
   /* Given a crypto::ec_scalar, construct a vector of powers */
   rct::scalarV vector_exponents(const crypto::ec_scalar x, const size_t n)
   {
@@ -88,6 +71,17 @@ namespace rct
 
     return res;
   }
+
+  /* Given two crypto::ec_scalar arrays, construct the inner product */
+  crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
+  {
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() == b.size(), "Incompatible sizes of a and b");
+
+    const auto xs = hadamard_product(a, b);
+    return std::reduce(xs.begin(), xs.end(), rct::s_zero);
+  }
+
 
   /* Add two vectors */
   rct::scalarV vector_addV(const scalarS a, const scalarS b)
