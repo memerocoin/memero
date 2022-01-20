@@ -366,33 +366,33 @@ namespace rct
            );
 
         // PAPER LINES 23-24
-        const scalarS lbS = std::span(bprime).subspan(nprime);
-        const scalarV lbV =
+        const scalarS b_prime_L_S = std::span(bprime).subspan(nprime);
+        const scalarV b_prime_L =
           scale
-          ? hadamard_product(scale->first, lbS)
-          : scalarV(lbS.begin(), lbS.end());
+          ? hadamard_product(scale->first, b_prime_L_S)
+          : scalarV(b_prime_L_S.begin(), b_prime_L_S.end());
 
         const auto L = homomorphic_hash
           (
            std::span(Gprime).subspan(nprime)
            , std::span(Hprime).subspan(0, nprime)
            , std::span(aprime).subspan(0, nprime)
-           , lbV
+           , b_prime_L
            , cL * x_ip
            );
 
-        const scalarS rbS = std::span(bprime).subspan(0, nprime);
-        const scalarV rbV =
+        const scalarS b_prime_R_S = std::span(bprime).subspan(0, nprime);
+        const scalarV b_prime_R =
           scale
-          ? hadamard_product(scale->second, rbS)
-          : scalarV(rbS.begin(), rbS.end());
+          ? hadamard_product(scale->second, b_prime_R_S)
+          : scalarV(b_prime_R_S.begin(), b_prime_R_S.end());
 
         const auto R = homomorphic_hash
           (
            std::span(Gprime).subspan(0, nprime)
            , std::span(Hprime).subspan(nprime)
            , std::span(aprime).subspan(nprime)
-           , rbV
+           , b_prime_R
            , cR * x_ip
            );
 
@@ -411,34 +411,39 @@ namespace rct
           }
 
         // PAPER LINES 29-30
-        const crypto::ec_scalar winv = invert(challenge);
+        const crypto::ec_scalar challengeInv = invert(challenge);
         if (nprime > 1)
           {
-            const auto [gl, gr] = split_vector(Gprime);
+            const auto [G_prime_L, G_prime_R] = split_vector(Gprime);
+            const size_t half = G_prime_L.size();
             Gprime = vector_mult_add
               (
-               vector_repeat(winv, gl.size())
-               , vector_repeat(challenge, gl.size())
-               , gl
-               , gr
+               vector_repeat(challengeInv, half)
+               , vector_repeat(challenge, half)
+               , G_prime_L
+               , G_prime_R
                );
 
-            const auto [hl, hr] = split_vector(Hprime);
-            Hprime =
+            const auto [H_prime_L, H_prime_R] = split_vector(Hprime);
+            const auto challengeV =
               scale
-              ? vector_mult_add
+              ? vector_mult(scale->first, challenge)
+              : vector_repeat(challenge, half)
+              ;
+
+            const auto challengeInvV =
+              scale
+              ? vector_mult(scale->second, challengeInv)
+              : vector_repeat(challengeInv, half)
+              ;
+
+            Hprime =
+              vector_mult_add
               (
-               vector_mult(scale->first, challenge)
-               , vector_mult(scale->second, winv)
-               , hl
-               , hr
-               )
-              : vector_mult_add
-              (
-               vector_repeat(challenge, hl.size())
-               , vector_repeat(winv, hl.size())
-               , hl
-               , hr
+               challengeV
+               , challengeInvV
+               , H_prime_L
+               , H_prime_R
                );
           }
 
@@ -453,7 +458,7 @@ namespace rct
            , vector_mult
            (
             std::span(aprime).subspan(nprime, aprime.size() - nprime)
-            , winv
+            , challengeInv
             )
            );
 
@@ -462,7 +467,7 @@ namespace rct
            vector_mult
            (
             std::span(bprime).subspan(0, nprime)
-            , winv
+            , challengeInv
             )
            , vector_mult
            (
