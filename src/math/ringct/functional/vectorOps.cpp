@@ -27,7 +27,6 @@
 namespace rct
 {
 
-  /* Given a crypto::ec_scalar, construct a vector of powers */
   rct::scalarV vector_exponents(const crypto::ec_scalar x, const size_t n)
   {
     scalarV res(n);
@@ -41,7 +40,6 @@ namespace rct
     return res;
   }
 
-  /* Given a crypto::ec_scalar, return the sum of its powers from 0 to n-1 */
   crypto::ec_scalar sum_of_vector_exponents
   (
    const crypto::ec_scalar x
@@ -53,7 +51,6 @@ namespace rct
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
   }
 
-  /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
   rct::scalarV hadamard_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
@@ -72,7 +69,6 @@ namespace rct
     return res;
   }
 
-  /* Given two crypto::ec_scalar arrays, construct the inner product */
   crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
@@ -83,7 +79,6 @@ namespace rct
   }
 
 
-  /* Add two vectors */
   rct::scalarV vector_addV(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
@@ -102,7 +97,24 @@ namespace rct
     return res;
   }
 
-  /* Add a crypto::ec_scalar to all elements of a vector */
+  rct::pointV vector_addV(const pointS a, const pointS b)
+  {
+    LOG_ERROR_AND_THROW_UNLESS
+      (a.size() == b.size(), "Incompatible sizes of a and b");
+
+    rct::pointV res(a.size());
+    std::transform
+      (
+       a.begin()
+       , a.end()
+       , b.begin()
+       , res.begin()
+       , std::plus<crypto::ec_point>()
+       );
+
+    return res;
+  }
+
   rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
@@ -117,7 +129,6 @@ namespace rct
     return res;
   }
 
-  /* Subtract a crypto::ec_scalar from all elements of a vector */
   rct::scalarV vector_subtract(const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
@@ -132,7 +143,6 @@ namespace rct
     return res;
   }
 
-  /* Multiply a crypto::ec_scalar and a vector */
   rct::scalarV vector_mult(const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
