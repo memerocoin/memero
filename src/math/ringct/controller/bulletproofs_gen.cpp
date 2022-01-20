@@ -150,22 +150,6 @@ namespace rct
     return vector_commit(a, G_V) + vector_commit(b, H_V);
   }
 
-  pointV vector_mult_both
-  (
-   const pointS vl
-   , const pointS vr
-   , const scalarS a
-   , const scalarS b
-   )
-  {
-    LOG_ERROR_AND_THROW_UNLESS(vl.size() == vr.size(), "Vector size should be even");
-
-    const pointV l = vector_multV(a, vl);
-    const pointV r = vector_multV(b, vr);
-
-    return vector_addV(l, r);
-  }
-
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs)
   {
     LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
@@ -431,31 +415,31 @@ namespace rct
         if (nprime > 1)
           {
             const auto [gl, gr] = split_vector(Gprime);
-            Gprime = vector_mult_both
+            Gprime = vector_mult_add
               (
-               gl
-               , gr
-               , vector_repeat(winv, gl.size())
+               vector_repeat(winv, gl.size())
                , vector_repeat(challenge, gl.size())
+               , gl
+               , gr
                );
 
             const auto [hl, hr] = split_vector(Hprime);
             Hprime =
               scale
-              ? vector_mult_both
-                (
-                 hl
-                 , hr
-                 , vector_mult(scale->first, challenge)
-                 , vector_mult(scale->second, winv)
-                 )
-              : vector_mult_both
-                (
-                 hl
-                 , hr
-                 , vector_repeat(challenge, hl.size())
-                 , vector_repeat(winv, hl.size())
-                 );
+              ? vector_mult_add
+              (
+               vector_mult(scale->first, challenge)
+               , vector_mult(scale->second, winv)
+               , hl
+               , hr
+               )
+              : vector_mult_add
+              (
+               vector_repeat(challenge, hl.size())
+               , vector_repeat(winv, hl.size())
+               , hl
+               , hr
+               );
           }
 
         // PAPER LINES 33-34

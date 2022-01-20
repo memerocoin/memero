@@ -65,4 +65,12 @@ namespace rct
    , const crypto::ec_scalar c
    );
 
+  pointV vector_mult_add
+  (
+    const scalarS a
+   , const scalarS b
+   , const pointS vl
+   , const pointS vr
+   );
+
 }
