@@ -483,7 +483,7 @@ namespace rct
     return Bulletproof
       {
         A, S, T1, T2, taux, mu, LR
-        , a_prime[0], b_prime[0], t
+        , a_prime.front(), b_prime.front(), t
       };
   }
 
