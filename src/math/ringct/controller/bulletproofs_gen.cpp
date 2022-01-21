@@ -354,7 +354,6 @@ namespace rct
 
     const crypto::ec_point fixed_point_u = H_(x_ip);
 
-    size_t n_prime = total_bit_width;
     scalarV a_prime = l;
     scalarV b_prime = r;
 
@@ -371,27 +370,26 @@ namespace rct
 
     crypto::ec_scalar last_challenge = x_ip;
 
-    while (n_prime > 1)
-      {
-        // PAPER LINE 20
-        n_prime /= 2;
+    size_t half = total_bit_width / 2;
 
+    while (half > 0)
+      {
         // PAPER LINES 21-22
         const crypto::ec_scalar cL = inner_product
           (
-           std::span(a_prime).subspan(0, n_prime)
-           , std::span(b_prime).subspan(n_prime)
+           std::span(a_prime).subspan(0, half)
+           , std::span(b_prime).subspan(half)
            );
 
         const crypto::ec_scalar cR = inner_product
           (
-           std::span(a_prime).subspan(n_prime)
-           , std::span(b_prime).subspan(0, n_prime)
+           std::span(a_prime).subspan(half)
+           , std::span(b_prime).subspan(0, half)
            );
 
         // PAPER LINES 23-24
         const scalarS b_prime_L_S =
-          std::span(b_prime).subspan(n_prime);
+          std::span(b_prime).subspan(half);
 
         const scalarV b_prime_L =
           scale
@@ -400,16 +398,16 @@ namespace rct
 
         const auto L = homomorphic_hash
           (
-           std::span(G_prime).subspan(n_prime)
-           , std::span(H_prime).subspan(0, n_prime)
-           , std::span(a_prime).subspan(0, n_prime)
+           std::span(G_prime).subspan(half)
+           , std::span(H_prime).subspan(0, half)
+           , std::span(a_prime).subspan(0, half)
            , b_prime_L
            , fixed_point_u
            , cL
            );
 
         const scalarS b_prime_R_S =
-          std::span(b_prime).subspan(0, n_prime);
+          std::span(b_prime).subspan(0, half);
 
         const scalarV b_prime_R =
           scale
@@ -418,9 +416,9 @@ namespace rct
 
         const auto R = homomorphic_hash
           (
-           std::span(G_prime).subspan(0, n_prime)
-           , std::span(H_prime).subspan(n_prime)
-           , std::span(a_prime).subspan(n_prime)
+           std::span(G_prime).subspan(0, half)
+           , std::span(H_prime).subspan(half)
+           , std::span(a_prime).subspan(half)
            , b_prime_R
            , fixed_point_u
            , cR
@@ -448,12 +446,12 @@ namespace rct
           (
            vector_mult
            (
-            std::span(a_prime).subspan(0, n_prime)
+            std::span(a_prime).subspan(0, half)
             , challenge
             )
            , vector_mult
            (
-            std::span(a_prime).subspan(n_prime)
+            std::span(a_prime).subspan(half)
             , challenge_inv
             )
            );
@@ -462,20 +460,19 @@ namespace rct
           (
            vector_mult
            (
-            std::span(b_prime).subspan(0, n_prime)
+            std::span(b_prime).subspan(0, half)
             , challenge_inv
             )
            , vector_mult
            (
-            std::span(b_prime).subspan(n_prime)
+            std::span(b_prime).subspan(half)
             , challenge
             )
            );
 
-        if (n_prime > 1)
+        if (half > 1)
           {
             const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
-            const size_t half = G_prime_L.size();
             G_prime = vector_mult_add
               (
                vector_repeat(challenge_inv, half)
@@ -508,6 +505,7 @@ namespace rct
           }
 
         scale = {};
+        half /= 2;
       }
 
     return Bulletproof
