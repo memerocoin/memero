@@ -43,9 +43,6 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 namespace rct
 {
-
-  const scalarV twoN = scalar_exponents(rct::s_two, bit_width);
-
   std::array<crypto::ec_point, bit_width * max_outputs> H_V;
   std::array<crypto::ec_point, bit_width * max_outputs> G_V;
 
@@ -243,13 +240,14 @@ namespace rct
     const scalarS z_exponents_skip_2 =
       std::span(z_exponents).subspan(2);
 
+    const scalarV twoN = scalar_exponents(rct::s_two, bit_width);
     std::vector<scalarV> zero_twos;
     std::transform
       (
        z_exponents_skip_2.begin()
        , z_exponents_skip_2.end()
        , std::back_inserter(zero_twos)
-       , [](const auto& x) -> scalarV {
+       , [twoN](const auto& x) -> scalarV {
          return vector_mult(twoN, x);
        }
        );
