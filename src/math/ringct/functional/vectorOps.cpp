@@ -27,15 +27,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 namespace rct
 {
 
-  rct::scalarV scalar_exponents(const crypto::ec_scalar x, const size_t n)
+  rct::scalarV scalar_exponents
+  (const crypto::ec_scalar x, const size_t n)
   {
     scalarV res(n);
 
-    std::generate(res.begin(), res.end(), [accum = rct::s_one, x] () mutable {
-      const auto current = accum;
-      accum = accum * x;
-      return current;
-    });
+    std::generate
+      (
+       res.begin()
+       , res.end()
+       , [accum = rct::s_one, x] () mutable
+       {
+         const auto current = accum;
+         accum = accum * x;
+         return current;
+       });
 
     return res;
   }
@@ -129,7 +135,8 @@ namespace rct
     return res;
   }
 
-  rct::scalarV vector_subtract(const scalarS a, const crypto::ec_scalar b)
+  rct::scalarV vector_subtract
+  (const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
     std::transform
@@ -201,7 +208,9 @@ namespace rct
 
   std::pair<pointV, pointV> split_vector(const pointS v) {
     LOG_ERROR_AND_THROW_IF(v.empty(), "Vector can't be empty");
-    LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
+    LOG_ERROR_AND_THROW_UNLESS
+      ((v.size() & 1) == 0, "Vector size should be even");
+
     const size_t middle = v.size() / 2;
     return
       {
@@ -212,7 +221,9 @@ namespace rct
 
   std::pair<scalarV, scalarV> split_vector(const scalarS v) {
     LOG_ERROR_AND_THROW_IF(v.empty(), "Vector can't be empty");
-    LOG_ERROR_AND_THROW_UNLESS((v.size() & 1) == 0, "Vector size should be even");
+    LOG_ERROR_AND_THROW_UNLESS
+      ((v.size() & 1) == 0, "Vector size should be even");
+
     const size_t middle = v.size() / 2;
     return
       {
@@ -221,7 +232,8 @@ namespace rct
       };
   }
 
-  rct::scalarV vector_repeat(const crypto::ec_scalar x, const size_t n) {
+  rct::scalarV vector_repeat
+  (const crypto::ec_scalar x, const size_t n) {
     return vector_mult(scalar_exponents(crypto::s_1, n), x);
   }
 
@@ -239,13 +251,14 @@ namespace rct
 
   pointV vector_multP_add
   (
-    const scalarS a
+   const scalarS a
    , const scalarS b
    , const pointS vl
    , const pointS vr
    )
   {
-    LOG_ERROR_AND_THROW_UNLESS(vl.size() == vr.size(), "Vector size should be even");
+    LOG_ERROR_AND_THROW_UNLESS
+      (vl.size() == vr.size(), "Vector size should be even");
 
     const pointV l = vector_multP_V(a, vl);
     const pointV r = vector_multP_V(b, vr);
@@ -253,10 +266,7 @@ namespace rct
     return vector_addV(l, r);
   }
 
-  scalarV vector_concat
-  (
-   const std::span<scalarV> xs
-   ) {
+  scalarV vector_concat(const std::span<scalarV> xs) {
     return std::reduce
       (
        xs.begin()
