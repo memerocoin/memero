@@ -173,7 +173,7 @@ namespace rct
   }
 
 
-  rct::pointV vector_multV(const scalarS a, const pointS p) {
+  rct::pointV vector_multP_V(const scalarS a, const pointS p) {
     LOG_ERROR_AND_THROW_UNLESS
       (a.size() <= p.size(), "Incompatible sizes of a and b");
 
@@ -195,7 +195,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (a.size() <= p.size(), "Incompatible sizes of a and b");
 
-    const auto xs = vector_multV(a, p);
+    const auto xs = vector_multP_V(a, p);
     return std::reduce(xs.begin(), xs.end(), crypto::identity);
   }
 
@@ -247,8 +247,8 @@ namespace rct
   {
     LOG_ERROR_AND_THROW_UNLESS(vl.size() == vr.size(), "Vector size should be even");
 
-    const pointV l = vector_multV(a, vl);
-    const pointV r = vector_multV(b, vr);
+    const pointV l = vector_multP_V(a, vl);
+    const pointV r = vector_multP_V(b, vr);
 
     return vector_addV(l, r);
   }
