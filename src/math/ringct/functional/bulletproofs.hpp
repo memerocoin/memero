@@ -67,4 +67,6 @@ namespace rct
   std::optional<proof_data_t> make_hash_challenges
   (const pointS commits, const Bulletproof proof);
 
+  scalarV int_to_bits(const uint64_t x);
+
 }

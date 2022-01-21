@@ -113,31 +113,6 @@ namespace rct
     }
   }
 
-  scalarV int_to_bits(const uint64_t x) {
-    static_assert(sizeof(uint64_t) * 8 == bit_width);
-
-    scalarV xs;
-
-    std::generate_n
-      (
-       std::back_inserter(xs)
-       , bit_width
-       , [x, i = 1ull] () mutable {
-         const auto bit =
-           (x & i) > 0
-           ? crypto::s_1
-           : crypto::s_0
-           ;
-
-         i = i << 1;
-
-         return bit;
-       }
-       );
-    return xs;
-  }
-
-
   crypto::ec_point commit_vectors_with_bp_generators_G_H
   (
    const scalarS a

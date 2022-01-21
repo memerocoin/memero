@@ -107,4 +107,28 @@ namespace rct
       }};
   }
 
+  scalarV int_to_bits(const uint64_t x) {
+    constexpr size_t bit_length = sizeof(uint64_t) * 8;
+    scalarV xs;
+
+    std::generate_n
+      (
+       std::back_inserter(xs)
+       , bit_length
+       , [x, i = 1ull] () mutable {
+         const auto bit =
+           (x & i) > 0
+           ? crypto::s_1
+           : crypto::s_0
+           ;
+
+         i = i << 1;
+
+         return bit;
+       }
+       );
+
+    return xs;
+  }
+
 }
