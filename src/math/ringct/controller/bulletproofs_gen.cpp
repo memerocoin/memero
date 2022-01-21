@@ -63,7 +63,7 @@ namespace rct
       + std::string(domain_separator)
       + tools::get_varint_data(idx);
 
-    crypto::ec_point e = crypto::hash_to_point_via_field
+    const crypto::ec_point e = crypto::hash_to_point_via_field
       (
        crypto::h2d
        (
