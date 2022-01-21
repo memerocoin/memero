@@ -410,7 +410,7 @@ namespace rct
           }
 
         // PAPER LINES 29-30
-        const crypto::ec_scalar challengeInv = invert(challenge);
+        const crypto::ec_scalar challenge_inv = invert(challenge);
 
         // PAPER LINES 33-34
         a_prime = vector_addV
@@ -423,7 +423,7 @@ namespace rct
            , vector_mult
            (
             std::span(a_prime).subspan(n_prime, a_prime.size() - n_prime)
-            , challengeInv
+            , challenge_inv
             )
            );
 
@@ -432,7 +432,7 @@ namespace rct
            vector_mult
            (
             std::span(b_prime).subspan(0, n_prime)
-            , challengeInv
+            , challenge_inv
             )
            , vector_mult
            (
@@ -447,7 +447,7 @@ namespace rct
             const size_t half = G_prime_L.size();
             G_prime = vector_mult_add
               (
-               vector_repeat(challengeInv, half)
+               vector_repeat(challenge_inv, half)
                , vector_repeat(challenge, half)
                , G_prime_L
                , G_prime_R
@@ -460,17 +460,17 @@ namespace rct
               : vector_repeat(challenge, half)
               ;
 
-            const auto challengeInvV =
+            const auto challenge_inv_V =
               scale
-              ? vector_mult(scale->second, challengeInv)
-              : vector_repeat(challengeInv, half)
+              ? vector_mult(scale->second, challenge_inv)
+              : vector_repeat(challenge_inv, half)
               ;
 
             H_prime =
               vector_mult_add
               (
                challengeV
-               , challengeInvV
+               , challenge_inv_V
                , H_prime_L
                , H_prime_R
                );
