@@ -37,14 +37,13 @@ namespace rct
     std::pair
     <
       std::optional<crypto::ec_scalar>
-      , std::vector<crypto::ec_scalar>
+      , rct::scalarV
       >>;
 
-  std::optional<std::vector<crypto::ec_scalar>>
-  accum_hash
+  std::optional<rct::scalarV> accum_hash
   (
-   std::optional<crypto::ec_scalar> init_hash
-   , const std::vector<std::vector<crypto::crypto_data>> xss
+   const std::optional<crypto::ec_scalar> init_hash
+   , const std::vector<crypto::dataV> xss
    ) {
     if (xss.empty()) {
       return {};
@@ -59,7 +58,7 @@ namespace rct
        , []
        (
         const auto x
-        , const std::vector<crypto::crypto_data> xs
+        , const crypto::dataV xs
         ) -> accumState
        {
 
@@ -78,7 +77,7 @@ namespace rct
            return {{h, {h}}};
          }
 
-         std::vector<crypto::crypto_data> ys = xs;
+         crypto::dataV ys = xs;
 
          ys.insert(ys.begin(), *last);
 
@@ -88,7 +87,7 @@ namespace rct
            return {};
          }
 
-         std::vector<crypto::ec_scalar> hs = x->second;
+         rct::scalarV hs = x->second;
          hs.push_back(h);
 
          return {{h, hs}};

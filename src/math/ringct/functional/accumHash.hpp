@@ -25,11 +25,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace rct
 {
-
-  std::optional<std::vector<crypto::ec_scalar>>
-  accum_hash
+  std::optional<rct::scalarV> accum_hash
   (
-   std::optional<crypto::ec_scalar> init_hash
-   , const std::vector<std::vector<crypto::crypto_data>> xss
+   const std::optional<crypto::ec_scalar> init_hash
+   , const std::vector<crypto::dataV> xss
    );
 }
