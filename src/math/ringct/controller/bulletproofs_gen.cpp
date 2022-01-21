@@ -1,19 +1,19 @@
 /*
 
-  Copyright 2021 fuwa
+Copyright 2021 fuwa
 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
@@ -44,7 +44,11 @@ namespace rct
   std::array<crypto::ec_point, bit_width * max_outputs> H_V;
   std::array<crypto::ec_point, bit_width * max_outputs> G_V;
 
-  crypto::ec_point get_bp_generator(const crypto::ec_point base, size_t idx)
+  crypto::ec_point get_bp_generator
+  (
+   const crypto::ec_point base
+   , const size_t idx
+   )
   {
     constexpr std::string_view domain_separator =
       config::HASH_KEY_BULLETPROOF_EXPONENT;
@@ -55,9 +59,16 @@ namespace rct
       + tools::get_varint_data(idx);
 
     crypto::ec_point e = crypto::hash_to_point_via_field
-      ( crypto::h2d(crypto::sha3(epee::string_tools::string_to_blob(hashed))) );
+      (
+       crypto::h2d
+       (
+        crypto::sha3(epee::string_tools::string_to_blob(hashed))
+        )
+       );
 
-    LOG_ERROR_AND_THROW_IF((e == crypto::identity), "Invalid exponent");
+    LOG_ERROR_AND_THROW_IF
+      ((e == crypto::identity), "Invalid exponent");
+
     return e;
   }
 
@@ -143,17 +154,20 @@ namespace rct
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs)
   {
     LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
-    LOG_ERROR_AND_THROW_UNLESS(xs.size() <= max_outputs, "too many amounts to proof");
+    LOG_ERROR_AND_THROW_UNLESS
+      (xs.size() <= max_outputs, "too many amounts to proof");
 
     for (const auto& [x,g]: xs) {
-      LOG_ERROR_AND_THROW_UNLESS(is_reduced(g), "Invalid gamma input");
+      LOG_ERROR_AND_THROW_UNLESS
+        (is_reduced(g), "Invalid blinding factor");
     }
 
     init_generators();
 
     const auto padded_number_of_inputs = log2bound(xs.size()).first;
 
-    const size_t total_bit_width = padded_number_of_inputs * bit_width;
+    const size_t total_bit_width =
+      padded_number_of_inputs * bit_width;
 
     pointV V;
     std::transform
@@ -244,8 +258,11 @@ namespace rct
     const scalarV l0 = vector_subtract(aL, z);
     const scalarS l1 = sL;
 
-    const scalarV z_exponents = vector_exponents(z, padded_number_of_inputs + 2);
-    const scalarS z_exponents_skip_2 = std::span(z_exponents).subspan(2);
+    const scalarV z_exponents =
+      vector_exponents(z, padded_number_of_inputs + 2);
+
+    const scalarS z_exponents_skip_2 =
+      std::span(z_exponents).subspan(2);
 
     std::vector<scalarV> zero_twos;
     std::transform
@@ -268,9 +285,9 @@ namespace rct
     const scalarV r1 = hadamard_product(y_exponents, sR);
 
     // Polynomial construction before PAPER LINE 51
-    const crypto::ec_scalar t1_1 = inner_product(l0, r1);
-    const crypto::ec_scalar t1_2 = inner_product(l1, r0);
-    const crypto::ec_scalar t1 = t1_1 + t1_2;
+    const crypto::ec_scalar t1 =
+      inner_product(l0, r1) + inner_product(l1, r0);
+
     const crypto::ec_scalar t2 = inner_product(l1, r1);
 
     // PAPER LINES 52-53
@@ -283,6 +300,7 @@ namespace rct
     // PAPER LINES 54-56
     const crypto::ec_scalar x = hash_dataV_to_scalar
       (crypto::dataV{z, z, to_inv8(T1), to_inv8(T2)});
+
     if (x == rct::s_zero)
       {
         LOG_INFO("x is 0, trying again");
@@ -293,7 +311,10 @@ namespace rct
     const crypto::ec_scalar xsq = x * x;
 
     LOG_ERROR_AND_THROW_UNLESS
-      (xs.size() <= z_exponents_skip_2.size(), "invalid z_exponents_skip_2 length");
+      (
+       xs.size() <= z_exponents_skip_2.size()
+       , "invalid z_exponents_skip_2 length"
+       );
 
     scalarV blinding_factors;
     std::transform
@@ -320,6 +341,7 @@ namespace rct
     // PAPER LINE 6
     const crypto::ec_scalar x_ip =
       hash_dataV_to_scalar(crypto::dataV{x, x, taux, mu, t});
+
     if (x_ip == rct::s_zero)
       {
         LOG_INFO("x_ip is 0, trying again");
@@ -328,19 +350,25 @@ namespace rct
 
     // These are used in the inner product rounds
     const crypto::ec_scalar yinv = invert(y);
-    const scalarV y_inv_exponents = vector_exponents(yinv, total_bit_width);
+    const scalarV y_inv_exponents =
+      vector_exponents(yinv, total_bit_width);
+
     const crypto::ec_point fixed_point_u = H_(x_ip);
 
     size_t n_prime = total_bit_width;
     scalarV a_prime = l;
     scalarV b_prime = r;
 
-    pointV G_prime(G_V.begin(), std::next(G_V.begin(), total_bit_width));
-    pointV H_prime(H_V.begin(), std::next(H_V.begin(), total_bit_width));
+    pointV G_prime
+      (G_V.begin(), std::next(G_V.begin(), total_bit_width));
+
+    pointV H_prime
+      (H_V.begin(), std::next(H_V.begin(), total_bit_width));
 
     LR_V LR;
 
-    std::optional<std::pair<scalarV, scalarV>> scale = split_vector(y_inv_exponents);
+    std::optional<std::pair<scalarV, scalarV>> scale =
+      split_vector(y_inv_exponents);
 
     crypto::ec_scalar last_challenge = x_ip;
 
@@ -353,17 +381,19 @@ namespace rct
         const crypto::ec_scalar cL = inner_product
           (
            std::span(a_prime).subspan(0, n_prime)
-           , std::span(b_prime).subspan(n_prime, b_prime.size() - n_prime)
+           , std::span(b_prime).subspan(n_prime)
            );
 
         const crypto::ec_scalar cR = inner_product
           (
-           std::span(a_prime).subspan(n_prime, a_prime.size() - n_prime)
+           std::span(a_prime).subspan(n_prime)
            , std::span(b_prime).subspan(0, n_prime)
            );
 
         // PAPER LINES 23-24
-        const scalarS b_prime_L_S = std::span(b_prime).subspan(n_prime);
+        const scalarS b_prime_L_S =
+          std::span(b_prime).subspan(n_prime);
+
         const scalarV b_prime_L =
           scale
           ? hadamard_product(scale->first, b_prime_L_S)
@@ -379,7 +409,9 @@ namespace rct
            , cL
            );
 
-        const scalarS b_prime_R_S = std::span(b_prime).subspan(0, n_prime);
+        const scalarS b_prime_R_S =
+          std::span(b_prime).subspan(0, n_prime);
+
         const scalarV b_prime_R =
           scale
           ? hadamard_product(scale->second, b_prime_R_S)
@@ -422,7 +454,7 @@ namespace rct
             )
            , vector_mult
            (
-            std::span(a_prime).subspan(n_prime, a_prime.size() - n_prime)
+            std::span(a_prime).subspan(n_prime)
             , challenge_inv
             )
            );
@@ -436,7 +468,7 @@ namespace rct
             )
            , vector_mult
            (
-            std::span(b_prime).subspan(n_prime, b_prime.size() - n_prime)
+            std::span(b_prime).subspan(n_prime)
             , challenge
             )
            );

@@ -50,7 +50,8 @@ namespace rct
   crypto::ec_point get_generator_G(const size_t idx);
   crypto::ec_point get_generator_H(const size_t idx);
 
-  using bp_input_t = std::pair<const uint64_t, const crypto::ec_scalar>;
+  using bp_input_t =
+    std::pair<const uint64_t, const crypto::ec_scalar>;
 
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs);
 }
