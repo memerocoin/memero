@@ -180,9 +180,6 @@ namespace rct
        }
        );
 
-    // scalarV aL3(total_bit_width);
-    // scalarV aR(total_bit_width);
-
     // PAPER LINES 41-42
     std::vector<scalarV> bits;
     std::transform
