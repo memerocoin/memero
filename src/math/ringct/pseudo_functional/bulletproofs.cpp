@@ -98,11 +98,11 @@ namespace rct
     LOG_ERROR_AND_RETURN_UNLESS
       (commits.size() <= max_outputs, false, "too many points for the proof");
 
-    constexpr size_t logN = log2bound(bit_width).second;
+    constexpr size_t log_bit_width = log2bound(bit_width).second;
     const auto [padded_number_of_inputs, log_padded_number_of_inputs] =
       log2bound(commits.size());
 
-    const size_t rounds = log_padded_number_of_inputs + logN;
+    const size_t rounds = log_padded_number_of_inputs + log_bit_width;
     LOG_ERROR_AND_RETURN_UNLESS
       (proof.LR.size() == rounds, false, "Proof is not the expected size");
 
