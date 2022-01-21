@@ -114,6 +114,8 @@ namespace rct
   }
 
   scalarV int_to_bits(const uint64_t x) {
+    static_assert(sizeof(uint64_t) * 8 == bit_width);
+
     scalarV xs;
 
     std::generate_n
