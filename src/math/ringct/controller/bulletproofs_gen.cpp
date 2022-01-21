@@ -328,7 +328,7 @@ namespace rct
 
     // These are used in the inner product rounds
     const crypto::ec_scalar yinv = invert(y);
-    const scalarV yinvpow = vector_exponents(yinv, total_bit_width);
+    const scalarV y_inv_exponents = vector_exponents(yinv, total_bit_width);
     const crypto::ec_point fixed_point_u = H_(x_ip);
 
     size_t n_prime = total_bit_width;
@@ -340,7 +340,7 @@ namespace rct
 
     LR_V LR;
 
-    std::optional<std::pair<scalarV, scalarV>> scale = split_vector(yinvpow);
+    std::optional<std::pair<scalarV, scalarV>> scale = split_vector(y_inv_exponents);
 
     crypto::ec_scalar last_challenge = x_ip;
 
