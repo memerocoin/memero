@@ -113,7 +113,8 @@ namespace rct
          const auto bit =
            (x & i) > 0
            ? crypto::s_1
-           : crypto::s_0;
+           : crypto::s_0
+           ;
 
          i = i << 1;
 
@@ -250,21 +251,21 @@ namespace rct
     std::transform
       (
        z_exponents_skip_2.begin()
-       , std::next(z_exponents_skip_2.begin(), padded_number_of_inputs)
+       , z_exponents_skip_2.end()
        , std::back_inserter(zero_twos)
        , [](const auto& x) -> scalarV {
          return vector_mult(twoN, x);
        }
        );
 
-    const auto ytotal_bit_width = vector_exponents(y, total_bit_width);
+    const auto y_exponents = vector_exponents(y, total_bit_width);
     const scalarV r0 = vector_addV
       (
-       hadamard_product(vector_add(aR, z), ytotal_bit_width)
+       hadamard_product(vector_add(aR, z), y_exponents)
        , vector_concat(zero_twos)
        );
 
-    const scalarV r1 = hadamard_product(ytotal_bit_width, sR);
+    const scalarV r1 = hadamard_product(y_exponents, sR);
 
     // Polynomial construction before PAPER LINE 51
     const crypto::ec_scalar t1_1 = inner_product(l0, r1);
@@ -300,7 +301,7 @@ namespace rct
        xs.begin()
        , xs.end()
        , std::back_inserter(blinding_factors)
-       , [](const auto&x ) { return x.second; }
+       , [](const auto& x ) { return x.second; }
        );
 
     const crypto::ec_scalar taux1 =
