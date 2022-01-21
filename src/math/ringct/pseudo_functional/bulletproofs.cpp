@@ -151,13 +151,14 @@ namespace rct
 
     const size_t total_bit_width = padded_number_of_inputs * bit_width;
 
-    const scalarV zpow = vector_exponents(pd.z, padded_number_of_inputs + 3);
+    const scalarV z_exponents = vector_exponents(pd.z, padded_number_of_inputs + 3);
+    const scalarS z_exponents_skip_2 = std::span(z_exponents).subspan(2);
 
     std::transform
       (
        commits.begin()
        , commits.end()
-       , std::next(std::next(zpow.begin()))
+       , z_exponents_skip_2.begin()
        , std::back_inserter(multiexp_data)
        , [weight_y](const auto& x, const auto& y) -> MultiexpData {
          return {y * weight_y, x};
@@ -192,17 +193,18 @@ namespace rct
        z5_v.begin()
        , z5_v.end()
        , [i = 0, yinvpow = s_one, ypow = s_one
-          , zpow, yinv, pd, weight_z, proof, w_cache, total_bit_width
+          , z_exponents_skip_2, yinv, pd, weight_z, proof, w_cache, total_bit_width
           ] () mutable -> crypto::ec_scalar {
          // Convert the index to binary IN REVERSE and construct the crypto::ec_scalar exponent
 
          LOG_ERROR_AND_THROW_UNLESS
-           (2 + i / bit_width < zpow.size(), "invalid zpow index");
+           (i / bit_width < z_exponents_skip_2.size(), "invalid z_exponents length ");
 
          LOG_ERROR_AND_THROW_UNLESS
            (i % bit_width < twoN.size(), "invalid twoN index");
 
-         const auto zpowTwoN = zpow[ 2 + i / bit_width] * twoN[ i % bit_width];
+         const auto zpowTwoN =
+           z_exponents_skip_2[ i / bit_width ] * twoN[ i % bit_width];
 
          const crypto::ec_scalar h_scalar =
            proof.b * yinvpow * w_cache[(~i) & (total_bit_width-1)]
@@ -234,18 +236,19 @@ namespace rct
     // collect
     const crypto::ec_scalar ip1y = sum_of_vector_exponents(pd.y, total_bit_width);
     LOG_ERROR_AND_RETURN_UNLESS
-      (padded_number_of_inputs + 2 < zpow.size(), false, "invalid zpow index");
+      (padded_number_of_inputs < z_exponents_skip_2.size(), false, "invalid zpow index");
 
-    const auto zpow_it = std::next(zpow.begin(), 3);
+    const auto z_exponents_skip_3 = z_exponents_skip_2.subspan(1);
     const crypto::ec_scalar k1 =
       std::reduce
       (
-       zpow_it
-       , std::next(zpow_it, padded_number_of_inputs)
+       z_exponents_skip_3.begin()
+       , z_exponents_skip_3.end()
        , s_zero
        );
 
-    const crypto::ec_scalar k = s_zero - zpow[2] * ip1y - k1 * ip12;
+    const crypto::ec_scalar k =
+      s_zero - z_exponents_skip_2.front() * ip1y - k1 * ip12;
 
     const crypto::ec_scalar y0 = s_zero - proof.taux * weight_y;
     const crypto::ec_scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;

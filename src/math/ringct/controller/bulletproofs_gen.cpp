@@ -252,16 +252,20 @@ namespace rct
     const scalarS l1 = sL;
 
     scalarV zero_twos(total_bit_width);
-    const scalarV zpow = vector_exponents(z, padded_number_of_inputs + 2);
+    const scalarV z_exponents = vector_exponents(z, padded_number_of_inputs + 2);
+    const scalarS z_exponents_skip_2 = std::span(z_exponents).subspan(2);
+
     for (size_t j = 0; j < padded_number_of_inputs; ++j)
       {
         for (size_t i = 0; i < bit_width; ++i)
           {
-            LOG_ERROR_AND_THROW_UNLESS(j+2 < zpow.size(), "invalid zpow index");
+            LOG_ERROR_AND_THROW_UNLESS
+              (j < z_exponents_skip_2.size(), "invalid z_exponents_skip_2 index");
+
             LOG_ERROR_AND_THROW_UNLESS(i < twoN.size(), "invalid twoN index");
 
             const size_t idx = j * bit_width + i;
-            zero_twos[idx] = zpow[j+2] * twoN[i];
+            zero_twos[idx] = z_exponents_skip_2[j] * twoN[i];
           }
       }
 
@@ -299,7 +303,8 @@ namespace rct
     // PAPER LINES 61-63
     const crypto::ec_scalar xsq = x * x;
 
-    LOG_ERROR_AND_THROW_UNLESS(xs.size()+1 < zpow.size(), "invalid zpow index");
+    LOG_ERROR_AND_THROW_UNLESS
+      (xs.size() <= z_exponents_skip_2.size(), "invalid z_exponents_skip_2 length");
 
     scalarV blinding_factors;
     std::transform
@@ -311,7 +316,7 @@ namespace rct
        );
 
     const crypto::ec_scalar taux1 =
-      inner_product(blinding_factors, std::span(zpow).subspan(2));
+      inner_product(blinding_factors, z_exponents_skip_2);
 
     const crypto::ec_scalar taux = tau1 * x + tau2 * xsq + taux1;
 
