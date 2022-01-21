@@ -38,19 +38,6 @@ namespace rct
   extern std::array<crypto::ec_point, max_vector_length> H_V;
   extern std::array<crypto::ec_point, max_vector_length> G_V;
 
-  constexpr std::pair<size_t, size_t> log2bound(const size_t x) {
-    size_t y = 1;
-    size_t _log = 0;
-
-    while (y < x) {
-      _log++;
-      y = y << 1;
-    }
-
-    return {y, _log};
-  }
-
-
   void init_generators();
   crypto::ec_point get_generator_G(const size_t idx);
   crypto::ec_point get_generator_H(const size_t idx);
