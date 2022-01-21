@@ -69,8 +69,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 namespace rct
 {
 
-  const scalarV oneN = vector_exponents(rct::s_one, bit_width);
-  const scalarV twoN = vector_exponents(rct::s_two, bit_width);
+  const scalarV oneN = scalar_exponents(rct::s_one, bit_width);
+  const scalarV twoN = scalar_exponents(rct::s_two, bit_width);
 
   const crypto::ec_scalar ip12 = inner_product(oneN, twoN);
 
@@ -151,7 +151,7 @@ namespace rct
 
     const size_t total_bit_width = padded_number_of_inputs * bit_width;
 
-    const scalarV z_exponents = vector_exponents(pd.z, padded_number_of_inputs + 3);
+    const scalarV z_exponents = scalar_exponents(pd.z, padded_number_of_inputs + 3);
     const scalarS z_exponents_skip_2 = std::span(z_exponents).subspan(2);
 
     std::transform
@@ -234,7 +234,7 @@ namespace rct
 
 
     // collect
-    const crypto::ec_scalar ip1y = sum_of_vector_exponents(pd.y, total_bit_width);
+    const crypto::ec_scalar ip1y = sum_of_scalar_exponents(pd.y, total_bit_width);
     LOG_ERROR_AND_RETURN_UNLESS
       (padded_number_of_inputs < z_exponents_skip_2.size(), false, "invalid zpow index");
 

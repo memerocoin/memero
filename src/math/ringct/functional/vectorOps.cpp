@@ -27,7 +27,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 namespace rct
 {
 
-  rct::scalarV vector_exponents(const crypto::ec_scalar x, const size_t n)
+  rct::scalarV scalar_exponents(const crypto::ec_scalar x, const size_t n)
   {
     scalarV res(n);
 
@@ -40,13 +40,13 @@ namespace rct
     return res;
   }
 
-  crypto::ec_scalar sum_of_vector_exponents
+  crypto::ec_scalar sum_of_scalar_exponents
   (
    const crypto::ec_scalar x
    , const size_t n
    )
   {
-    const auto xs = vector_exponents(x, n);
+    const auto xs = scalar_exponents(x, n);
 
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
   }
@@ -222,7 +222,7 @@ namespace rct
   }
 
   rct::scalarV vector_repeat(const crypto::ec_scalar x, const size_t n) {
-    return vector_mult(vector_exponents(crypto::s_1, n), x);
+    return vector_mult(scalar_exponents(crypto::s_1, n), x);
   }
 
   crypto::ec_point homomorphic_hash

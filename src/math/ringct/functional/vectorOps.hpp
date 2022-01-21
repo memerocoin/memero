@@ -25,9 +25,9 @@ namespace rct
 {
   crypto::ec_scalar inner_product(const scalarS a, const scalarS b);
 
-  rct::scalarV vector_exponents(const crypto::ec_scalar x, const size_t n);
+  rct::scalarV scalar_exponents(const crypto::ec_scalar x, const size_t n);
 
-  crypto::ec_scalar sum_of_vector_exponents
+  crypto::ec_scalar sum_of_scalar_exponents
   (
    const crypto::ec_scalar x
    , const size_t n

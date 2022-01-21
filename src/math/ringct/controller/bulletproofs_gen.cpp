@@ -44,7 +44,7 @@ Paper references are to https://eprint.iacr.org/2017/1066
 namespace rct
 {
 
-  const scalarV twoN = vector_exponents(rct::s_two, bit_width);
+  const scalarV twoN = scalar_exponents(rct::s_two, bit_width);
 
   std::array<crypto::ec_point, bit_width * max_outputs> H_V;
   std::array<crypto::ec_point, bit_width * max_outputs> G_V;
@@ -238,7 +238,7 @@ namespace rct
     const scalarS l1 = sL;
 
     const scalarV z_exponents =
-      vector_exponents(z, padded_number_of_inputs + 2);
+      scalar_exponents(z, padded_number_of_inputs + 2);
 
     const scalarS z_exponents_skip_2 =
       std::span(z_exponents).subspan(2);
@@ -254,7 +254,7 @@ namespace rct
        }
        );
 
-    const auto y_exponents = vector_exponents(y, total_bit_width);
+    const auto y_exponents = scalar_exponents(y, total_bit_width);
     const scalarV r0 = vector_addV
       (
        hadamard_product(vector_add(aR, z), y_exponents)
@@ -330,7 +330,7 @@ namespace rct
     // These are used in the inner product rounds
     const crypto::ec_scalar yinv = invert(y);
     const scalarV y_inv_exponents =
-      vector_exponents(yinv, total_bit_width);
+      scalar_exponents(yinv, total_bit_width);
 
     const crypto::ec_point fixed_point_u = H_(x_ip);
 
