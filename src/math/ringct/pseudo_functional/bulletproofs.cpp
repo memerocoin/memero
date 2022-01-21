@@ -68,12 +68,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace rct
 {
-
-  const scalarV oneN = scalar_exponents(rct::s_one, bit_width);
-  const scalarV twoN = scalar_exponents(rct::s_two, bit_width);
-
-  const crypto::ec_scalar ip12 = inner_product(oneN, twoN);
-
   const auto multiexp = dummy;
 
   /* G_Vven a range proof, determine if it is valid
@@ -187,6 +181,8 @@ namespace rct
       }
 
     // Compute the curvepoints from G[i] and H[i]
+
+    const scalarV two_exponents = scalar_exponents(rct::s_two, bit_width);
     scalarV z5_v(total_bit_width);
     std::generate
       (
@@ -194,6 +190,7 @@ namespace rct
        , z5_v.end()
        , [i = 0, yinvpow = s_one, ypow = s_one
           , z_exponents_skip_2, yinv, pd, weight_z, proof, w_cache, total_bit_width
+          , two_exponents
           ] () mutable -> crypto::ec_scalar {
          // Convert the index to binary IN REVERSE and construct the crypto::ec_scalar exponent
 
@@ -201,10 +198,10 @@ namespace rct
            (i / bit_width < z_exponents_skip_2.size(), "invalid z_exponents length ");
 
          LOG_ERROR_AND_THROW_UNLESS
-           (i % bit_width < twoN.size(), "invalid twoN index");
+           (i % bit_width < two_exponents.size(), "invalid two_exponents index");
 
          const auto zpowTwoN =
-           z_exponents_skip_2[ i / bit_width ] * twoN[ i % bit_width];
+           z_exponents_skip_2[ i / bit_width ] * two_exponents[ i % bit_width];
 
          const crypto::ec_scalar h_scalar =
            proof.b * yinvpow * w_cache[(~i) & (total_bit_width-1)]
@@ -245,6 +242,13 @@ namespace rct
        z_exponents_skip_3.begin()
        , z_exponents_skip_3.end()
        , s_zero
+       );
+
+    const crypto::ec_scalar ip12 =
+      inner_product
+      (
+       scalar_repeat(crypto::s_1, bit_width)
+       , two_exponents
        );
 
     const crypto::ec_scalar k =
