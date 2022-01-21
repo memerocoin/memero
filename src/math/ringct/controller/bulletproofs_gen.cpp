@@ -161,10 +161,10 @@ namespace rct
 
     init_generators();
 
-    const auto [N, logN] = log2bound(bit_width);
-    const auto [M, logM] = log2bound(xs.size());
+    constexpr auto logN = log2bound(bit_width).second;
+    const auto padded_number_of_inputs = log2bound(xs.size()).first;
 
-    const size_t MN = M * N;
+    const size_t MN = padded_number_of_inputs * bit_width;
 
     pointV V;
     std::transform
@@ -179,20 +179,21 @@ namespace rct
 
     scalarV aL(MN), aR(MN);
     // PAPER LINES 41-42
-    for (size_t j = 0; j < M; ++j)
+    for (size_t j = 0; j < padded_number_of_inputs; ++j)
       {
-        for (size_t i = N; i-- > 0; )
+        for (size_t i = bit_width; i-- > 0; )
           {
             const crypto::ec_scalar amount_scalar = crypto::int_to_scalar(xs[j].first);
+            const size_t idx = j * bit_width + i;
             if (j < xs.size() && (amount_scalar.data[i/8] & (((uint64_t)1)<<(i%8))))
               {
-                aL[j*N+i] = rct::s_one;
-                aR[j*N+i] = rct::s_zero;
+                aL[idx] = rct::s_one;
+                aR[idx] = rct::s_zero;
               }
             else
               {
-                aL[j*N+i] = rct::s_zero;
-                aR[j*N+i] = rct::s_minus_one;
+                aL[idx] = rct::s_zero;
+                aR[idx] = rct::s_minus_one;
               }
           }
       }
@@ -251,14 +252,16 @@ namespace rct
     const scalarS l1 = sL;
 
     scalarV zero_twos(MN);
-    const scalarV zpow = vector_exponents(z, M+2);
-    for (size_t j = 0; j < M; ++j)
+    const scalarV zpow = vector_exponents(z, padded_number_of_inputs + 2);
+    for (size_t j = 0; j < padded_number_of_inputs; ++j)
       {
-        for (size_t i = 0; i < N; ++i)
+        for (size_t i = 0; i < bit_width; ++i)
           {
             LOG_ERROR_AND_THROW_UNLESS(j+2 < zpow.size(), "invalid zpow index");
             LOG_ERROR_AND_THROW_UNLESS(i < twoN.size(), "invalid twoN index");
-            zero_twos[j*N+i] = zpow[j+2] * twoN[i];
+
+            const size_t idx = j * bit_width + i;
+            zero_twos[idx] = zpow[j+2] * twoN[i];
           }
       }
 

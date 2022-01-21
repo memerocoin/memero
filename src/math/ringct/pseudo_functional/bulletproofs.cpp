@@ -98,11 +98,11 @@ namespace rct
     LOG_ERROR_AND_RETURN_UNLESS
       (commits.size() <= max_outputs, false, "too many points for the proof");
 
-    constexpr size_t N = log2bound(bit_width).first;
     constexpr size_t logN = log2bound(bit_width).second;
-    const auto [M, logM] = log2bound(commits.size());
+    const auto [padded_number_of_inputs, log_padded_number_of_inputs] =
+      log2bound(commits.size());
 
-    const size_t rounds = logM + logN;
+    const size_t rounds = log_padded_number_of_inputs + logN;
     LOG_ERROR_AND_RETURN_UNLESS
       (proof.LR.size() == rounds, false, "Proof is not the expected size");
 
@@ -149,9 +149,9 @@ namespace rct
        }
        );
 
-    const size_t MN = M*N;
+    const size_t MN = padded_number_of_inputs * bit_width;
 
-    const scalarV zpow = vector_exponents(pd.z, M+3);
+    const scalarV zpow = vector_exponents(pd.z, padded_number_of_inputs + 3);
 
     std::transform
       (
@@ -196,10 +196,13 @@ namespace rct
           ] () mutable -> crypto::ec_scalar {
          // Convert the index to binary IN REVERSE and construct the crypto::ec_scalar exponent
 
-         LOG_ERROR_AND_THROW_UNLESS(2+i/N < zpow.size(), "invalid zpow index");
-         LOG_ERROR_AND_THROW_UNLESS(i%N < twoN.size(), "invalid twoN index");
+         LOG_ERROR_AND_THROW_UNLESS
+           (2 + i / bit_width < zpow.size(), "invalid zpow index");
 
-         const auto zpowTwoN = zpow[2+i/N] * twoN[i%N];
+         LOG_ERROR_AND_THROW_UNLESS
+           (i % bit_width < twoN.size(), "invalid twoN index");
+
+         const auto zpowTwoN = zpow[ 2 + i / bit_width] * twoN[ i % bit_width];
 
          const crypto::ec_scalar h_scalar =
            proof.b * yinvpow * w_cache[(~i) & (MN-1)]
@@ -230,14 +233,15 @@ namespace rct
 
     // collect
     const crypto::ec_scalar ip1y = sum_of_vector_exponents(pd.y, MN);
-    LOG_ERROR_AND_RETURN_UNLESS(M+2 < zpow.size(), false, "invalid zpow index");
+    LOG_ERROR_AND_RETURN_UNLESS
+      (padded_number_of_inputs + 2 < zpow.size(), false, "invalid zpow index");
 
     const auto zpow_it = std::next(zpow.begin(), 3);
     const crypto::ec_scalar k1 =
       std::reduce
       (
        zpow_it
-       , std::next(zpow_it, M)
+       , std::next(zpow_it, padded_number_of_inputs)
        , s_zero
        );
 
