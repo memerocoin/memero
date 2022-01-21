@@ -178,7 +178,7 @@ namespace rct
       (
        std::back_inserter(bits)
        , padded_number_of_inputs - xs.size()
-       , []() { return vector_repeat(crypto::s_0, bit_width); }
+       , []() { return scalar_repeat(crypto::s_0, bit_width); }
        );
 
     const scalarV aL = vector_concat(bits);
@@ -453,8 +453,8 @@ namespace rct
         const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
         G_prime = vector_multP_add
           (
-           vector_repeat(challenge_inv, half)
-           , vector_repeat(challenge, half)
+           scalar_repeat(challenge_inv, half)
+           , scalar_repeat(challenge, half)
            , G_prime_L
            , G_prime_R
            );
@@ -463,13 +463,13 @@ namespace rct
         const auto challengeV =
           scale
           ? vector_mult(scale->first, challenge)
-          : vector_repeat(challenge, half)
+          : scalar_repeat(challenge, half)
           ;
 
         const auto challenge_inv_V =
           scale
           ? vector_mult(scale->second, challenge_inv)
-          : vector_repeat(challenge_inv, half)
+          : scalar_repeat(challenge_inv, half)
           ;
 
         H_prime =
