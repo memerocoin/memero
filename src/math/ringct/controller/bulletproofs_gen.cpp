@@ -240,15 +240,15 @@ namespace rct
     const scalarS z_exponents_skip_2 =
       std::span(z_exponents).subspan(2);
 
-    const scalarV twoN = scalar_exponents(rct::s_two, bit_width);
+    const scalarV two_exponents = scalar_exponents(rct::s_two, bit_width);
     std::vector<scalarV> zero_twos;
     std::transform
       (
        z_exponents_skip_2.begin()
        , z_exponents_skip_2.end()
        , std::back_inserter(zero_twos)
-       , [twoN](const auto& x) -> scalarV {
-         return vector_mult(twoN, x);
+       , [two_exponents](const auto& x) -> scalarV {
+         return vector_mult(two_exponents, x);
        }
        );
 
