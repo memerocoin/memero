@@ -161,7 +161,6 @@ namespace rct
 
     init_generators();
 
-    constexpr auto logN = log2bound(bit_width).second;
     const auto padded_number_of_inputs = log2bound(xs.size()).first;
 
     const size_t total_bit_width = padded_number_of_inputs * bit_width;
@@ -251,29 +250,25 @@ namespace rct
     const scalarV l0 = vector_subtract(aL, z);
     const scalarS l1 = sL;
 
-    scalarV zero_twos(total_bit_width);
     const scalarV z_exponents = vector_exponents(z, padded_number_of_inputs + 2);
     const scalarS z_exponents_skip_2 = std::span(z_exponents).subspan(2);
 
-    for (size_t j = 0; j < padded_number_of_inputs; ++j)
-      {
-        for (size_t i = 0; i < bit_width; ++i)
-          {
-            LOG_ERROR_AND_THROW_UNLESS
-              (j < z_exponents_skip_2.size(), "invalid z_exponents_skip_2 index");
-
-            LOG_ERROR_AND_THROW_UNLESS(i < twoN.size(), "invalid twoN index");
-
-            const size_t idx = j * bit_width + i;
-            zero_twos[idx] = z_exponents_skip_2[j] * twoN[i];
-          }
-      }
+    std::vector<scalarV> zero_twos;
+    std::transform
+      (
+       z_exponents_skip_2.begin()
+       , std::next(z_exponents_skip_2.begin(), padded_number_of_inputs)
+       , std::back_inserter(zero_twos)
+       , [](const auto& x) -> scalarV {
+         return vector_mult(twoN, x);
+       }
+       );
 
     const auto ytotal_bit_width = vector_exponents(y, total_bit_width);
     const scalarV r0 = vector_addV
       (
        hadamard_product(vector_add(aR, z), ytotal_bit_width)
-       , zero_twos
+       , vector_concat(zero_twos)
        );
 
     const scalarV r1 = hadamard_product(ytotal_bit_width, sR);

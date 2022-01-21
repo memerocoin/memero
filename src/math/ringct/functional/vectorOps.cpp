@@ -253,4 +253,21 @@ namespace rct
     return vector_addV(l, r);
   }
 
+  scalarV vector_concat
+  (
+   const std::span<scalarV> xs
+   ) {
+    return std::reduce
+      (
+       xs.begin()
+       , xs.end()
+       , scalarV()
+       , [](const auto x, const auto y) -> scalarV {
+         scalarV z(x.begin(), x.end());
+         z.insert(z.end(), y.begin(), y.end());
+         return z;
+       }
+       );
+  }
+
 } // rct

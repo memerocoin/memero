@@ -74,4 +74,9 @@ namespace rct
    , const pointS vr
    );
 
+  scalarV vector_concat
+  (
+   const std::span<scalarV> xs
+   );
+
 }
