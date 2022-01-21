@@ -60,7 +60,10 @@ namespace rct
   rct::scalarV hadamard_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() <= b.size(), "Incompatible sizes of a and b");
+      (
+       a.size() <= b.size()
+       , "Size of the first vector is bigger than the second"
+       );
 
     rct::scalarV res(a.size());
     std::transform
@@ -78,7 +81,10 @@ namespace rct
   crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() <= b.size(), "Incompatible sizes of a and b");
+      (
+       a.size() <= b.size()
+       , "Size of the first vector is bigger than the second"
+       );
 
     const auto xs = hadamard_product(a, b);
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
@@ -88,7 +94,10 @@ namespace rct
   rct::scalarV vector_addV(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() <= b.size(), "Incompatible sizes of a and b");
+      (
+       a.size() <= b.size()
+       , "Size of the first vector is bigger than the second"
+       );
 
     rct::scalarV res(a.size());
     std::transform
@@ -106,7 +115,10 @@ namespace rct
   rct::pointV vector_addV(const pointS a, const pointS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() <= b.size(), "Incompatible sizes of a and b");
+      (
+       a.size() <= b.size()
+       , "Size of the first vector is bigger than the second"
+       );
 
     rct::pointV res(a.size());
     std::transform
@@ -182,7 +194,10 @@ namespace rct
 
   rct::pointV vector_multP_V(const scalarS a, const pointS p) {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() <= p.size(), "Incompatible sizes of a and b");
+      (
+       a.size() <= p.size()
+       , "Size of the first vector is bigger than the second"
+       );
 
     pointV r(a.size());
 
@@ -200,7 +215,10 @@ namespace rct
 
   crypto::ec_point vector_commit(const scalarS a, const pointS p) {
     LOG_ERROR_AND_THROW_UNLESS
-      (a.size() <= p.size(), "Incompatible sizes of a and b");
+      (
+       a.size() <= p.size()
+       , "Size of the first vector is bigger than the second"
+       );
 
     const auto xs = vector_multP_V(a, p);
     return std::reduce(xs.begin(), xs.end(), crypto::identity);
