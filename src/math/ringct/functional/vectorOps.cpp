@@ -62,7 +62,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (
        a.size() <= b.size()
-       , "Size of the first vector is bigger than the second"
+       , "Not enough elements in the second container"
        );
 
     rct::scalarV res(a.size());
@@ -83,7 +83,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (
        a.size() <= b.size()
-       , "Size of the first vector is bigger than the second"
+       , "Not enough elements in the second container"
        );
 
     const auto xs = hadamard_product(a, b);
@@ -96,7 +96,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (
        a.size() <= b.size()
-       , "Size of the first vector is bigger than the second"
+       , "Not enough elements in the second container"
        );
 
     rct::scalarV res(a.size());
@@ -117,7 +117,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (
        a.size() <= b.size()
-       , "Size of the first vector is bigger than the second"
+       , "Not enough elements in the second container"
        );
 
     rct::pointV res(a.size());
@@ -196,7 +196,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (
        a.size() <= p.size()
-       , "Size of the first vector is bigger than the second"
+       , "Not enough elements in the second container"
        );
 
     pointV r(a.size());
@@ -217,7 +217,7 @@ namespace rct
     LOG_ERROR_AND_THROW_UNLESS
       (
        a.size() <= p.size()
-       , "Size of the first vector is bigger than the second"
+       , "Not enough elements in the second container"
        );
 
     const auto xs = vector_multP_V(a, p);
