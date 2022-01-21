@@ -245,10 +245,11 @@ namespace rct
        );
 
     const crypto::ec_scalar ip12 =
-      inner_product
+      std::reduce
       (
-       scalar_repeat(crypto::s_1, bit_width)
-       , two_exponents
+       two_exponents.begin()
+       , two_exponents.end()
+       , crypto::s_0
        );
 
     const crypto::ec_scalar k =
