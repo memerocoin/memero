@@ -66,7 +66,7 @@ namespace rct
    , const crypto::ec_scalar c
    );
 
-  pointV vector_mult_add
+  pointV vector_multP_add
   (
     const scalarS a
    , const scalarS b

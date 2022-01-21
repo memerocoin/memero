@@ -237,7 +237,7 @@ namespace rct
     return vector_commit(a, vl) + vector_commit(b, vr) + (u ^ c);
   }
 
-  pointV vector_mult_add
+  pointV vector_multP_add
   (
     const scalarS a
    , const scalarS b

@@ -451,7 +451,7 @@ namespace rct
            );
 
         const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
-        G_prime = vector_mult_add
+        G_prime = vector_multP_add
           (
            vector_repeat(challenge_inv, half)
            , vector_repeat(challenge, half)
@@ -473,7 +473,7 @@ namespace rct
           ;
 
         H_prime =
-          vector_mult_add
+          vector_multP_add
           (
            challengeV
            , challenge_inv_V
