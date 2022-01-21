@@ -470,39 +470,36 @@ namespace rct
             )
            );
 
-        if (half > 1)
-          {
-            const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
-            G_prime = vector_mult_add
-              (
-               vector_repeat(challenge_inv, half)
-               , vector_repeat(challenge, half)
-               , G_prime_L
-               , G_prime_R
-               );
+        const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
+        G_prime = vector_mult_add
+          (
+           vector_repeat(challenge_inv, half)
+           , vector_repeat(challenge, half)
+           , G_prime_L
+           , G_prime_R
+           );
 
-            const auto [H_prime_L, H_prime_R] = split_vector(H_prime);
-            const auto challengeV =
-              scale
-              ? vector_mult(scale->first, challenge)
-              : vector_repeat(challenge, half)
-              ;
+        const auto [H_prime_L, H_prime_R] = split_vector(H_prime);
+        const auto challengeV =
+          scale
+          ? vector_mult(scale->first, challenge)
+          : vector_repeat(challenge, half)
+          ;
 
-            const auto challenge_inv_V =
-              scale
-              ? vector_mult(scale->second, challenge_inv)
-              : vector_repeat(challenge_inv, half)
-              ;
+        const auto challenge_inv_V =
+          scale
+          ? vector_mult(scale->second, challenge_inv)
+          : vector_repeat(challenge_inv, half)
+          ;
 
-            H_prime =
-              vector_mult_add
-              (
-               challengeV
-               , challenge_inv_V
-               , H_prime_L
-               , H_prime_R
-               );
-          }
+        H_prime =
+          vector_mult_add
+          (
+           challengeV
+           , challenge_inv_V
+           , H_prime_L
+           , H_prime_R
+           );
 
         scale = {};
         half /= 2;
