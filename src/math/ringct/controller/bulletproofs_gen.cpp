@@ -164,7 +164,7 @@ namespace rct
     constexpr auto logN = log2bound(bit_width).second;
     const auto padded_number_of_inputs = log2bound(xs.size()).first;
 
-    const size_t MN = padded_number_of_inputs * bit_width;
+    const size_t total_bit_width = padded_number_of_inputs * bit_width;
 
     pointV V;
     std::transform
@@ -177,7 +177,7 @@ namespace rct
        }
        );
 
-    scalarV aL(MN), aR(MN);
+    scalarV aL(total_bit_width), aR(total_bit_width);
     // PAPER LINES 41-42
     for (size_t j = 0; j < padded_number_of_inputs; ++j)
       {
@@ -205,8 +205,8 @@ namespace rct
       commit_vectors_with_bp_generators_G_H(aL, aR) + G_(alpha);
 
     // PAPER LINES 45-47
-    const scalarV sL = crypto::randomScalars(MN);
-    const scalarV sR = crypto::randomScalars(MN);
+    const scalarV sL = crypto::randomScalars(total_bit_width);
+    const scalarV sR = crypto::randomScalars(total_bit_width);
     const crypto::ec_scalar rho = crypto::randomScalar();
     const crypto::ec_point S =
       commit_vectors_with_bp_generators_G_H(sL, sR) + G_(rho);
@@ -251,7 +251,7 @@ namespace rct
     const scalarV l0 = vector_subtract(aL, z);
     const scalarS l1 = sL;
 
-    scalarV zero_twos(MN);
+    scalarV zero_twos(total_bit_width);
     const scalarV zpow = vector_exponents(z, padded_number_of_inputs + 2);
     for (size_t j = 0; j < padded_number_of_inputs; ++j)
       {
@@ -265,14 +265,14 @@ namespace rct
           }
       }
 
-    const auto yMN = vector_exponents(y, MN);
+    const auto ytotal_bit_width = vector_exponents(y, total_bit_width);
     const scalarV r0 = vector_addV
       (
-       hadamard_product(vector_add(aR, z), yMN)
+       hadamard_product(vector_add(aR, z), ytotal_bit_width)
        , zero_twos
        );
 
-    const scalarV r1 = hadamard_product(yMN, sR);
+    const scalarV r1 = hadamard_product(ytotal_bit_width, sR);
 
     // Polynomial construction before PAPER LINE 51
     const crypto::ec_scalar t1_1 = inner_product(l0, r1);
@@ -334,15 +334,15 @@ namespace rct
 
     // These are used in the inner product rounds
     const crypto::ec_scalar yinv = invert(y);
-    const scalarV yinvpow = vector_exponents(yinv, MN);
+    const scalarV yinvpow = vector_exponents(yinv, total_bit_width);
     const crypto::ec_point fixed_point_u = H_(x_ip);
 
-    size_t n_prime = MN;
+    size_t n_prime = total_bit_width;
     scalarV a_prime = l;
     scalarV b_prime = r;
 
-    pointV G_prime(G_V.begin(), std::next(G_V.begin(), MN));
-    pointV H_prime(H_V.begin(), std::next(H_V.begin(), MN));
+    pointV G_prime(G_V.begin(), std::next(G_V.begin(), total_bit_width));
+    pointV H_prime(H_V.begin(), std::next(H_V.begin(), total_bit_width));
 
     LR_V LR;
 

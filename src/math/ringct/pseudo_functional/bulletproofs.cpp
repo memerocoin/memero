@@ -149,7 +149,7 @@ namespace rct
        }
        );
 
-    const size_t MN = padded_number_of_inputs * bit_width;
+    const size_t total_bit_width = padded_number_of_inputs * bit_width;
 
     const scalarV zpow = vector_exponents(pd.z, padded_number_of_inputs + 3);
 
@@ -186,13 +186,13 @@ namespace rct
       }
 
     // Compute the curvepoints from G[i] and H[i]
-    scalarV z5_v(MN);
+    scalarV z5_v(total_bit_width);
     std::generate
       (
        z5_v.begin()
        , z5_v.end()
        , [i = 0, yinvpow = s_one, ypow = s_one
-          , zpow, yinv, pd, weight_z, proof, w_cache, MN
+          , zpow, yinv, pd, weight_z, proof, w_cache, total_bit_width
           ] () mutable -> crypto::ec_scalar {
          // Convert the index to binary IN REVERSE and construct the crypto::ec_scalar exponent
 
@@ -205,7 +205,7 @@ namespace rct
          const auto zpowTwoN = zpow[ 2 + i / bit_width] * twoN[ i % bit_width];
 
          const crypto::ec_scalar h_scalar =
-           proof.b * yinvpow * w_cache[(~i) & (MN-1)]
+           proof.b * yinvpow * w_cache[(~i) & (total_bit_width-1)]
            - (pd.z * ypow + zpowTwoN) * yinvpow ;
 
 
@@ -218,11 +218,11 @@ namespace rct
        }
        );
 
-    scalarV z4_v(MN);
+    scalarV z4_v(total_bit_width);
     std::transform
       (
        w_cache.begin()
-       , std::next(w_cache.begin(), MN)
+       , std::next(w_cache.begin(), total_bit_width)
        , z4_v.begin()
        , [proof, pd, weight_z](const auto& cache) {
          const crypto::ec_scalar g_scalar = proof.a * cache + pd.z;
@@ -232,7 +232,7 @@ namespace rct
 
 
     // collect
-    const crypto::ec_scalar ip1y = sum_of_vector_exponents(pd.y, MN);
+    const crypto::ec_scalar ip1y = sum_of_vector_exponents(pd.y, total_bit_width);
     LOG_ERROR_AND_RETURN_UNLESS
       (padded_number_of_inputs + 2 < zpow.size(), false, "invalid zpow index");
 
