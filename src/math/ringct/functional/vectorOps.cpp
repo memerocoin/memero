@@ -267,23 +267,6 @@ namespace rct
     return vector_commit(a, vl) + vector_commit(b, vr) + (u ^ c);
   }
 
-  pointV vector_multP_add
-  (
-   const scalarS a
-   , const scalarS b
-   , const pointS vl
-   , const pointS vr
-   )
-  {
-    LOG_ERROR_AND_THROW_UNLESS
-      (vl.size() == vr.size(), "Vector size should be even");
-
-    const pointV l = vector_multP_V(a, vl);
-    const pointV r = vector_multP_V(b, vr);
-
-    return vector_addV(l, r);
-  }
-
   scalarV vector_concat(const std::span<scalarV> xs) {
     return std::reduce
       (

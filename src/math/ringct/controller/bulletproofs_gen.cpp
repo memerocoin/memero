@@ -449,13 +449,12 @@ namespace rct
            );
 
         const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
-        G_prime = vector_multP_add
+        G_prime =
+          vector_addV
           (
-           scalar_repeat(challenge_inv, half)
-           , scalar_repeat(challenge, half)
-           , G_prime_L
-           , G_prime_R
-           );
+           vector_multP_V(scalar_repeat(challenge_inv, half), G_prime_L)
+           , vector_multP_V(scalar_repeat(challenge, half), G_prime_R)
+          );
 
         const auto [H_prime_L, H_prime_R] = split_vector(H_prime);
         const auto challengeV =
@@ -471,12 +470,10 @@ namespace rct
           ;
 
         H_prime =
-          vector_multP_add
+          vector_addV
           (
-           challengeV
-           , challenge_inv_V
-           , H_prime_L
-           , H_prime_R
+           vector_multP_V(challengeV, H_prime_L)
+           , vector_multP_V(challenge_inv_V, H_prime_R)
            );
 
         scale = {};
