@@ -54,7 +54,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/functional/accumHash.hpp"
 #include "math/ringct/functional/bulletproofs.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/multi_exponentiation.hpp"
