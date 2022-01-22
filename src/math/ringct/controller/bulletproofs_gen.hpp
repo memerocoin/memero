@@ -25,25 +25,19 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #pragma once
 
 #include "math/ringct/functional/rctTypes.hpp"
+#include "math/ringct/functional/bulletproofs.hpp"
 #include "config/lol.hpp"
 
 #include <span>
 
 namespace rct
 {
-  constexpr size_t bit_width = constant::AMOUNT_BIT_WIDTH;
-  constexpr size_t max_outputs = constant::BULLETPROOF_MAX_OUTPUTS;
-  constexpr size_t max_vector_length = bit_width * max_outputs;
-
   extern std::array<crypto::ec_point, max_vector_length> H_V;
   extern std::array<crypto::ec_point, max_vector_length> G_V;
 
   void init_generators();
   crypto::ec_point get_generator_G(const size_t idx);
   crypto::ec_point get_generator_H(const size_t idx);
-
-  using bp_input_t =
-    std::pair<const uint64_t, const crypto::ec_scalar>;
 
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs);
 }

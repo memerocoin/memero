@@ -214,24 +214,55 @@ namespace rct
      >>
   get_bp_vectors_for_inner_product_argument
   (
-    const pointS V
-    , const scalarS blinding_factors
-    , const size_t padded_number_of_inputs
-    , const size_t bit_width
-    , const size_t total_bit_width
-    , const scalarS aL
-    , const scalarS aR
-    , const crypto::ec_scalar alpha
-    , const scalarS sL
-    , const scalarS sR
-    , const crypto::ec_scalar rho
-    , const crypto::ec_scalar tau1
-    , const crypto::ec_scalar tau2
-    , const pointS G_V
-    , const pointS H_V
+   const std::span<const bp_input_t> xs
+   , const crypto::ec_scalar alpha
+   , const scalarS sL
+   , const scalarS sR
+   , const crypto::ec_scalar rho
+   , const crypto::ec_scalar tau1
+   , const crypto::ec_scalar tau2
+   , const pointS G_V
+   , const pointS H_V
    ) {
 
-   // PAPER LINES 43-44
+    // PAPER LINES 41-42
+    std::vector<scalarV> bits;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(bits)
+       , [](const auto& x) -> scalarV {
+         return int_to_bits(x.first);
+       }
+       );
+
+    const auto padded_number_of_inputs = log2bound(xs.size()).first;
+    const size_t total_bit_width =
+      padded_number_of_inputs * bit_width;
+
+    std::generate_n
+      (
+       std::back_inserter(bits)
+       , padded_number_of_inputs - xs.size()
+       , []() { return scalar_repeat(crypto::s_0, bit_width); }
+       );
+
+    const scalarV aL = vector_concat(bits);
+    const scalarV aR = vector_subtract(aL, crypto::s_1);
+
+    pointV V;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(V)
+       , [](const auto& x) {
+         return std::apply(commit, x);
+       }
+       );
+
+    // PAPER LINES 43-44
     const crypto::ec_point A =
       vector_commit(aL, G_V) + vector_commit(aR, H_V) + G_(alpha);
 
@@ -321,6 +352,16 @@ namespace rct
       (
        V.size() <= z_exponents_skip_2.size()
        , "invalid z_exponents_skip_2 length"
+       );
+
+
+    scalarV blinding_factors;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(blinding_factors)
+       , [](const auto& x ) { return x.second; }
        );
 
     const crypto::ec_scalar taux1 =

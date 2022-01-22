@@ -26,11 +26,15 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #pragma once
 
 #include "math/ringct/functional/rctTypes.hpp"
+#include "config/lol.hpp"
 
 #include <span>
 
 namespace rct
 {
+  constexpr size_t bit_width = constant::AMOUNT_BIT_WIDTH;
+  constexpr size_t max_outputs = constant::BULLETPROOF_MAX_OUTPUTS;
+  constexpr size_t max_vector_length = bit_width * max_outputs;
 
   struct proof_data_t
   {
@@ -73,6 +77,10 @@ namespace rct
    , const crypto::ec_point y
    );
 
+
+  using bp_input_t =
+    std::pair<const uint64_t, const crypto::ec_scalar>;
+
   std::optional
   <std::tuple
    <
@@ -89,21 +97,15 @@ namespace rct
      >>
   get_bp_vectors_for_inner_product_argument
   (
-    const pointS V
-    , const scalarS blinding_factors
-    , const size_t padded_number_of_inputs
-    , const size_t bit_width
-    , const size_t total_bit_width
-    , const scalarS aL
-    , const scalarS aR
-    , const crypto::ec_scalar alpha
-    , const scalarS sL
-    , const scalarS sR
-    , const crypto::ec_scalar rho
-    , const crypto::ec_scalar tau1
-    , const crypto::ec_scalar tau2
-    , const pointS G_V
-    , const pointS H_V
+   const std::span<const bp_input_t> xs
+   , const crypto::ec_scalar alpha
+   , const scalarS sL
+   , const scalarS sR
+   , const crypto::ec_scalar rho
+   , const crypto::ec_scalar tau1
+   , const crypto::ec_scalar tau2
+   , const pointS G_V
+   , const pointS H_V
    );
 
 
