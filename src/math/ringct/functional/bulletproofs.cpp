@@ -55,35 +55,32 @@ namespace rct
        , to_inv8
        );
 
-    const auto maybe_hash_data_V_A_S_array = accum_hash
+    const auto maybe_hash_data_commit =
+      maybe_hash_V_to_non_zero_scalar(commit_data_V);
+
+    if (!maybe_hash_data_commit) {
+      return {};
+    }
+
+    const auto maybe_hash_data_V_A_S =
+      maybe_hash_V_to_non_zero_scalar
       (
-       {}
-       , {
-         commit_data_V
-         , { to_inv8(x), to_inv8(y) }
-       }
+       crypto::dataV{ *maybe_hash_data_commit, to_inv8(x), to_inv8(y) }
        );
 
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       maybe_hash_data_V_A_S_array
-       , {}
-       , "invalid hash for V_A_S"
-       );
+    if (!maybe_hash_data_V_A_S) {
+      return {};
+    }
 
-    const auto hash_data_V_A_S_array = *maybe_hash_data_V_A_S_array;
-    const auto hash_data_V_A_S = hash_data_V_A_S_array.back();
-    const auto hash_data_V_A_S_rehash =
-      rct::hash_to_scalar(hash_data_V_A_S);
+    const auto hash_data_V_A_S = *maybe_hash_data_V_A_S;
+    const auto maybe_hash_data_V_A_S_rehash =
+      maybe_hash_V_to_non_zero_scalar(crypto::dataV{hash_data_V_A_S});
 
-    LOG_ERROR_AND_RETURN_IF
-      (
-       hash_data_V_A_S == rct::s_zero
-       , {}
-       , "invalid hash for V_A_S_rehash"
-       );
+    if (!maybe_hash_data_V_A_S_rehash) {
+      return {};
+    }
 
-    return {{hash_data_V_A_S, hash_data_V_A_S_rehash}};
+    return {{hash_data_V_A_S, *maybe_hash_data_V_A_S_rehash}};
   }
 
   std::optional<proof_data_t> make_hash_challenges

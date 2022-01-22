@@ -110,6 +110,17 @@ namespace rct {
     return reduce(d2s(h2d(hash_dataV(keys))));
   }
 
+  std::optional<crypto::ec_scalar>
+  maybe_hash_V_to_non_zero_scalar(const std::span<const crypto::crypto_data> keys) {
+    const auto h = reduce(d2s(h2d(hash_dataV(keys))));
+    if (h == crypto::s_0) {
+      LOG_ERROR("Unluckily hashed to scalar 0");
+      return {};
+    } else {
+      return h;
+    }
+  }
+
 
   // ecdh
   uint64_t hash_and_xor_int(const uint64_t x, const crypto::ec_scalar y)

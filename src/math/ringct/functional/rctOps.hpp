@@ -66,6 +66,8 @@ namespace rct {
   crypto::ec_scalar hash_to_scalar(const crypto::crypto_data in);
   crypto::hash hash_dataV(const std::span<const crypto::crypto_data> keys);
   crypto::ec_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys);
+  std::optional<crypto::ec_scalar>
+  maybe_hash_V_to_non_zero_scalar(const std::span<const crypto::crypto_data> keys);
 
 
   // ecdh
