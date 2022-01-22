@@ -159,8 +159,8 @@ namespace rct
 
     const auto
       [
-       l
-       , r
+       bp_vector_l
+       , bp_vector_r
        , inner_product_challenge
        , y_inv
        , A
@@ -179,8 +179,8 @@ namespace rct
       (
        std::span(G_V).subspan(0, total_bit_width)
        , vector_multP_V(y_inv_exponents, H_V)
-       , l
-       , r
+       , bp_vector_l
+       , bp_vector_r
        , H_(inner_product_challenge)
        , inner_product_challenge
        );
@@ -193,7 +193,8 @@ namespace rct
 
     return Bulletproof
       {
-        A, S, T1, T2, taux, mu, LR, a, b, inner_product(l, r)
+        A, S, T1, T2, taux, mu, LR, a, b
+        , inner_product(bp_vector_l, bp_vector_r)
       };
   }
 
