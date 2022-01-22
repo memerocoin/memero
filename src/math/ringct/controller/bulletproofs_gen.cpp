@@ -210,8 +210,8 @@ namespace rct
     const scalarV l0 = vector_subtract(aL, hash_data_V_A_S_rehash);
     const scalarS l1 = sL;
 
-    const scalarV z_exponents =
-      scalar_exponents(hash_data_V_A_S_rehash, padded_number_of_inputs + 2);
+    const scalarV z_exponents = scalar_exponents
+      (hash_data_V_A_S_rehash, padded_number_of_inputs + 2);
 
     const scalarS z_exponents_skip_2 =
       std::span(z_exponents).subspan(2);
@@ -230,10 +230,13 @@ namespace rct
        }
        );
 
-    const auto y_exponents = scalar_exponents(hash_data_V_A_S, total_bit_width);
+    const auto y_exponents =
+      scalar_exponents(hash_data_V_A_S, total_bit_width);
+
     const scalarV r0 = vector_add_V
       (
-       hadamard_product(vector_add(aR, hash_data_V_A_S_rehash), y_exponents)
+       hadamard_product
+       (vector_add(aR, hash_data_V_A_S_rehash), y_exponents)
        , vector_concat(zero_twos)
        );
 
@@ -253,7 +256,8 @@ namespace rct
     const crypto::ec_point T2 = G_(tau2) + H_(t2);
 
     // PAPER LINES 54-56
-    const crypto::ec_scalar hash_data_V_A_S_rehash_T1_T2 = hash_dataV_to_scalar
+    const crypto::ec_scalar hash_data_V_A_S_rehash_T1_T2 =
+      hash_dataV_to_scalar
       (
        crypto::dataV
        {
