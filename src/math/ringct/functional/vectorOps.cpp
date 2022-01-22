@@ -185,7 +185,7 @@ namespace rct
        v.begin()
        , v.end()
        , r.begin()
-       , [](const auto& x) { return invert(x); }
+       , [](const auto& x) { return crypto::invert(x); }
        );
 
     return r;

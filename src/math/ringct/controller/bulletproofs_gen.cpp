@@ -329,7 +329,7 @@ namespace rct
       }
 
     // These are used in the inner product rounds
-    const crypto::ec_scalar yinv = invert(y);
+    const crypto::ec_scalar yinv = crypto::invert(y);
     const scalarV y_inv_exponents =
       scalar_exponents(yinv, total_bit_width);
 
