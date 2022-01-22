@@ -86,4 +86,17 @@ namespace rct
     return {y, _log};
   }
 
+  std::optional
+  <std::tuple
+   <
+     crypto::ec_scalar
+     , crypto::ec_scalar
+     >>
+  hash_V_A_S
+  (
+   const pointS commits
+   , const crypto::ec_point x
+   , const crypto::ec_point y
+   );
+
 }

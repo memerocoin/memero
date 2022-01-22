@@ -28,8 +28,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace rct
 {
-  std::optional<proof_data_t> make_hash_challenges
-  (const pointS commits, const Bulletproof proof) {
+  std::optional
+  <std::tuple
+   <
+     crypto::ec_scalar
+     , crypto::ec_scalar
+     >>
+  hash_V_A_S
+  (
+   const pointS commits
+   , const crypto::ec_point x
+   , const crypto::ec_point y
+   )
+  {
 
     crypto::dataV commit_data_V;
     std::transform
@@ -45,14 +56,15 @@ namespace rct
        {}
        , {
          commit_data_V
-         , { to_inv8(proof.A), to_inv8(proof.S) }
+         , { to_inv8(x), to_inv8(y) }
        }
        );
 
     LOG_ERROR_AND_RETURN_UNLESS
-      (maybe_hash_data_V_A_S_array
+      (
+       maybe_hash_data_V_A_S_array
        , {}
-       , "failed to generate hash challenges"
+       , "invalid hash for V_A_S"
        );
 
     const auto hash_data_V_A_S_array = *maybe_hash_data_V_A_S_array;
@@ -60,7 +72,27 @@ namespace rct
     const auto hash_data_V_A_S_rehash =
       rct::hash_to_scalar(hash_data_V_A_S);
 
-    LOG_ERROR_AND_RETURN_IF((hash_data_V_A_S == rct::s_zero), {}, "z == 0");
+    LOG_ERROR_AND_RETURN_IF
+      (
+       hash_data_V_A_S == rct::s_zero
+       , {}
+       , "invalid hash for V_A_S_rehash"
+       );
+
+    return {{hash_data_V_A_S, hash_data_V_A_S_rehash}};
+  }
+
+  std::optional<proof_data_t> make_hash_challenges
+  (const pointS commits, const Bulletproof proof) {
+    const auto maybe_hash_data_V_A_S =
+      hash_V_A_S(commits, proof.A, proof.S);
+
+    if (!maybe_hash_data_V_A_S) {
+      return {};
+    }
+
+    const auto [hash_data_V_A_S, hash_data_V_A_S_rehash] =
+      *maybe_hash_data_V_A_S;
 
     const auto hash_data_V_A_S_rehash_T1_T2 =
       hash_dataV_to_scalar

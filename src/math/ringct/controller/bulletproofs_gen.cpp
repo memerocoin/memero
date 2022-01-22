@@ -196,42 +196,14 @@ namespace rct
     const crypto::ec_point S =
       commit_vectors_with_bp_generators_G_H(sL, sR) + G_(rho);
 
-    crypto::dataV commit_data_V;
-    std::transform
-      (
-       V.begin()
-       , V.end()
-       , std::back_inserter(commit_data_V)
-       , to_inv8
-       );
+    const auto maybe_hash_data_V_A_S = hash_V_A_S(V, A, S);
 
-    const auto maybe_hash_data_V_A_S = accum_hash
-      (
-       {}
-       , {
-         commit_data_V
-         , { to_inv8(A), to_inv8(S) }
-       }
-       );
+    if (!maybe_hash_data_V_A_S) {
+      goto try_again;
+    }
 
-    // PAPER LINES 48-50
-    if (!maybe_hash_data_V_A_S)
-      {
-        LOG_INFO("hash_data_V_A_S is 0, trying again");
-        goto try_again;
-      }
-
-    const auto hash_data_V_A_S_array = *maybe_hash_data_V_A_S;
-    const auto hash_data_V_A_S = hash_data_V_A_S_array.back();
-
-    const crypto::ec_scalar hash_data_V_A_S_rehash =
-      rct::hash_to_scalar(hash_data_V_A_S);
-
-    if (hash_data_V_A_S_rehash == rct::s_zero)
-      {
-        LOG_INFO("hash_data_V_A_S_rehash is 0, trying again");
-        goto try_again;
-      }
+    const auto [hash_data_V_A_S, hash_data_V_A_S_rehash] =
+      *maybe_hash_data_V_A_S;
 
     // Polynomial construction by coefficients
     // PAPER LINES 70-71
