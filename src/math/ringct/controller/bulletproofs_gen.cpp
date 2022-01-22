@@ -44,9 +44,6 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 namespace rct
 {
-  std::array<crypto::ec_point, bit_width * max_outputs> H_V;
-  std::array<crypto::ec_point, bit_width * max_outputs> G_V;
-
   crypto::ec_point get_bp_generator
   (
    const crypto::ec_point base
@@ -82,6 +79,9 @@ namespace rct
   crypto::ec_point get_bp_generator_H(const size_t idx) {
     return get_bp_generator(H, idx * 2 + 1);
   }
+
+  std::array<crypto::ec_point, bit_width * max_outputs> G_V;
+  std::array<crypto::ec_point, bit_width * max_outputs> H_V;
 
   std::atomic<bool> init_done(false);
   std::mutex init_mutex;
@@ -130,6 +130,7 @@ namespace rct
 
     return vector_commit(a, G_V) + vector_commit(b, H_V);
   }
+
 
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs)
   {
