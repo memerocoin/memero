@@ -111,7 +111,7 @@ namespace rct
       , crypto::ec_scalar
       >
     >
-  make_inner_product_argument
+  make_recursive_inner_product_argument
   (
    const pointS _G
    , const pointS _H

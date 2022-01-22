@@ -333,8 +333,8 @@ namespace rct
     const scalarV y_inv_exponents =
       scalar_exponents(yinv, total_bit_width);
 
-    const auto maybe_inner_product_argument =
-      make_inner_product_argument
+    const auto maybe_recursive_inner_product_argument =
+      make_recursive_inner_product_argument
       (
        std::span(G_V).subspan(0, total_bit_width)
        , vector_multP_V(y_inv_exponents, H_V)
@@ -344,16 +344,15 @@ namespace rct
        , x_ip
        );
 
-    if (!maybe_inner_product_argument) {
+    if (!maybe_recursive_inner_product_argument) {
       goto try_again;
     }
 
-    const auto [LR, a, b] = *maybe_inner_product_argument;
+    const auto [LR, a, b] = *maybe_recursive_inner_product_argument;
 
     return Bulletproof
       {
-        A, S, T1, T2, taux, mu, LR
-        , a, b, t
+        A, S, T1, T2, taux, mu, LR, a, b, t
       };
   }
 
