@@ -355,51 +355,50 @@ namespace rct
     while (half > 0)
       {
         // PAPER LINES 21-22
+        const auto [a_prime_L, a_prime_R] = split_vector(a_prime);
+        const auto [b_prime_L, b_prime_R] = split_vector(b_prime);
         const crypto::ec_scalar cL = inner_product
           (
-           std::span(a_prime).subspan(0, half)
-           , std::span(b_prime).subspan(half)
+           a_prime_L
+           , b_prime_R
            );
 
         const crypto::ec_scalar cR = inner_product
           (
-           std::span(a_prime).subspan(half)
-           , std::span(b_prime).subspan(0, half)
+           a_prime_R
+           , b_prime_L
            );
 
         // PAPER LINES 23-24
-        const scalarS b_prime_L_S =
-          std::span(b_prime).subspan(half);
-
-        const scalarV b_prime_L =
+        const scalarV b_prime_R_scaled =
           scale
-          ? hadamard_product(scale->first, b_prime_L_S)
-          : scalarV(b_prime_L_S.begin(), b_prime_L_S.end());
+          ? hadamard_product(scale->first, b_prime_R)
+          : b_prime_R
+          ;
 
         const auto L = homomorphic_hash
           (
            std::span(G_prime).subspan(half)
            , std::span(H_prime).subspan(0, half)
-           , std::span(a_prime).subspan(0, half)
-           , b_prime_L
+           , a_prime_L
+           , b_prime_R_scaled
            , fixed_point_u
            , cL
            );
 
-        const scalarS b_prime_R_S =
-          std::span(b_prime).subspan(0, half);
 
-        const scalarV b_prime_R =
+        const scalarV b_prime_L_scaled =
           scale
-          ? hadamard_product(scale->second, b_prime_R_S)
-          : scalarV(b_prime_R_S.begin(), b_prime_R_S.end());
+          ? hadamard_product(scale->second, b_prime_L)
+          : b_prime_L
+          ;
 
         const auto R = homomorphic_hash
           (
            std::span(G_prime).subspan(0, half)
            , std::span(H_prime).subspan(half)
-           , std::span(a_prime).subspan(half)
-           , b_prime_R
+           , a_prime_R
+           , b_prime_L_scaled
            , fixed_point_u
            , cR
            );
@@ -424,30 +423,14 @@ namespace rct
         // PAPER LINES 33-34
         a_prime = vector_addV
           (
-           vector_mult
-           (
-            std::span(a_prime).subspan(0, half)
-            , challenge
-            )
-           , vector_mult
-           (
-            std::span(a_prime).subspan(half)
-            , challenge_inv
-            )
+           vector_mult(a_prime_L, challenge)
+           , vector_mult(a_prime_R, challenge_inv)
            );
 
         b_prime = vector_addV
           (
-           vector_mult
-           (
-            std::span(b_prime).subspan(0, half)
-            , challenge_inv
-            )
-           , vector_mult
-           (
-            std::span(b_prime).subspan(half)
-            , challenge
-            )
+           vector_mult(b_prime_L, challenge_inv)
+           , vector_mult(b_prime_R, challenge)
            );
 
         const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
