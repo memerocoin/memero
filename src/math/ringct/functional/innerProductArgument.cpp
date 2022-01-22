@@ -121,6 +121,10 @@ namespace rct
    , const crypto::ec_scalar _challenge
    )
   {
+    if (_G.empty()) {
+      return {};
+    }
+
     pointV G = span_to_vector(_G);
     pointV H = span_to_vector(_H);
     scalarV a = span_to_vector(_a);
