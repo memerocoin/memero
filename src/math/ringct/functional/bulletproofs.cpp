@@ -61,11 +61,17 @@ namespace rct
     if (!maybe_hash_data_commit) {
       return {};
     }
+    const auto hash_data_commit = *maybe_hash_data_commit;
 
     const auto maybe_hash_data_V_A_S =
       maybe_hash_V_to_non_zero_scalar
       (
-       crypto::dataV{ *maybe_hash_data_commit, to_inv8(x), to_inv8(y) }
+       crypto::dataV
+       {
+         hash_data_commit
+         , to_inv8(x)
+         , to_inv8(y)
+       }
        );
 
     if (!maybe_hash_data_V_A_S) {
@@ -80,7 +86,10 @@ namespace rct
       return {};
     }
 
-    return {{hash_data_V_A_S, *maybe_hash_data_V_A_S_rehash}};
+    const auto hash_data_V_A_S_rehash =
+      *maybe_hash_data_V_A_S_rehash;
+
+    return {{hash_data_V_A_S, hash_data_V_A_S_rehash}};
   }
 
   std::optional<proof_data_t> make_hash_challenges
@@ -96,8 +105,8 @@ namespace rct
     const auto [hash_data_V_A_S, hash_data_V_A_S_rehash] =
       *maybe_hash_data_V_A_S;
 
-    const auto hash_data_V_A_S_rehash_T1_T2 =
-      hash_dataV_to_scalar
+    const auto maybe_hash_data_V_A_S_rehash_T1_T2 =
+      maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
        {
@@ -108,15 +117,15 @@ namespace rct
        }
        );
 
-    LOG_ERROR_AND_RETURN_IF
-      (
-       (hash_data_V_A_S_rehash_T1_T2 == rct::s_zero)
-       , {}
-       , "x == 0"
-       );
+    if (!maybe_hash_data_V_A_S_rehash_T1_T2) {
+      return {};
+    }
 
-    const auto inner_product_challenge =
-      hash_dataV_to_scalar
+    const auto hash_data_V_A_S_rehash_T1_T2 =
+      *maybe_hash_data_V_A_S_rehash_T1_T2;
+
+    const auto maybe_inner_product_challenge =
+      maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
        {
@@ -127,7 +136,13 @@ namespace rct
          , proof.t
        });
 
-    LOG_ERROR_AND_RETURN_IF((inner_product_challenge == rct::s_zero), {}, "inner_product_challenge == 0");
+    if (!maybe_inner_product_challenge) {
+      return {};
+    }
+
+    const auto inner_product_challenge =
+      *maybe_inner_product_challenge;
+
 
     std::vector<std::vector<crypto::crypto_data>> lr_data;
     std::transform
@@ -145,13 +160,6 @@ namespace rct
 
     const auto maybe_hash_data_inner_product_challenge_LR =
       accum_hash(inner_product_challenge, lr_data);
-
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       maybe_hash_data_inner_product_challenge_LR
-       , {}
-       , "some w[i] == 0"
-       );
 
     const auto hash_data_inner_product_challenge_LR =
       *maybe_hash_data_inner_product_challenge_LR;

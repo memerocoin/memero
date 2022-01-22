@@ -81,11 +81,11 @@ namespace rct
 
          ys.insert(ys.begin(), *last);
 
-         const auto h = hash_dataV_to_scalar(ys);
-
-         if (h == rct::s_zero) {
+         const auto maybe_h = maybe_hash_V_to_non_zero_scalar(ys);
+         if (!maybe_h) {
            return {};
          }
+         const auto h = *maybe_h;
 
          rct::scalarV hs = x->second;
          hs.push_back(h);

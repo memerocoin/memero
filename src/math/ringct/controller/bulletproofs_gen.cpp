@@ -256,8 +256,8 @@ namespace rct
     const crypto::ec_point T2 = G_(tau2) + H_(t2);
 
     // PAPER LINES 54-56
-    const crypto::ec_scalar hash_data_V_A_S_rehash_T1_T2 =
-      hash_dataV_to_scalar
+    const auto maybe_hash_data_V_A_S_rehash_T1_T2 =
+      maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
        {
@@ -268,11 +268,12 @@ namespace rct
        }
        );
 
-    if (hash_data_V_A_S_rehash_T1_T2 == rct::s_zero)
-      {
-        LOG_INFO("hash_data_V_A_S_rehash_T1_T2 is 0, trying again");
-        goto try_again;
-      }
+    if (!maybe_hash_data_V_A_S_rehash_T1_T2) {
+      goto try_again;
+    }
+
+    const auto hash_data_V_A_S_rehash_T1_T2 =
+      *maybe_hash_data_V_A_S_rehash_T1_T2;
 
     // PAPER LINES 61-63
     LOG_ERROR_AND_THROW_UNLESS
@@ -305,14 +306,25 @@ namespace rct
     const crypto::ec_scalar t = inner_product(l, r);
 
     // PAPER LINE 6
-    const crypto::ec_scalar inner_product_challenge =
-      hash_dataV_to_scalar(crypto::dataV{x, x, taux, mu, t});
+    const auto maybe_inner_product_challenge =
+      maybe_hash_V_to_non_zero_scalar
+      (
+       crypto::dataV
+       {
+         x
+         , x
+         , taux
+         , mu
+         , t
+       }
+       );
 
-    if (inner_product_challenge == rct::s_zero)
-      {
-        LOG_INFO("inner_product_challenge is 0, trying again");
-        goto try_again;
-      }
+    if (!maybe_inner_product_challenge) {
+      goto try_again;
+    }
+
+    const auto inner_product_challenge =
+      *maybe_inner_product_challenge;
 
     const crypto::ec_scalar y_inv =
       crypto::multiplicative_inverse(hash_data_V_A_S);
