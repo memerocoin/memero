@@ -36,13 +36,13 @@ namespace rct
     <
     std::pair
     <
-      std::optional<crypto::ec_scalar>
+      crypto::ec_scalar
       , rct::scalarV
       >>;
 
   std::optional<rct::scalarV> accum_hash
   (
-   const std::optional<crypto::ec_scalar> init_hash
+   const crypto::ec_scalar init_hash
    , const std::vector<crypto::dataV> xss
    ) {
     if (xss.empty()) {
@@ -66,20 +66,11 @@ namespace rct
            return {};
          }
 
-         const std::optional<crypto::crypto_data> last = x->first;
-
-         if (!last) {
-           const auto h = hash_dataV_to_scalar(xs);
-           if (h == rct::s_zero) {
-             return {};
-           }
-
-           return {{h, {h}}};
-         }
+         const crypto::crypto_data last = x->first;
 
          crypto::dataV ys = xs;
 
-         ys.insert(ys.begin(), *last);
+         ys.insert(ys.begin(), last);
 
          const auto maybe_h = maybe_hash_V_to_non_zero_scalar(ys);
          if (!maybe_h) {
