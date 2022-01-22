@@ -74,25 +74,25 @@ namespace rct
     const crypto::ec_scalar challenge_inv =
       crypto::multiplicative_inverse(challenge);
 
-    const auto new_a = vector_addV
+    const auto new_a = vector_add_V
       (
        vector_mult(a_L, challenge)
        , vector_mult(a_R, challenge_inv)
        );
 
-    const auto new_b = vector_addV
+    const auto new_b = vector_add_V
       (
        vector_mult(b_L, challenge_inv)
        , vector_mult(b_R, challenge)
        );
 
-    const auto new_G = vector_addV
+    const auto new_G = vector_add_V
       (
        scalar_multP_V(challenge_inv, G_L)
        , scalar_multP_V(challenge, G_R)
        );
 
-    const auto new_H = vector_addV
+    const auto new_H = vector_add_V
       (
        scalar_multP_V(challenge, H_L)
        , scalar_multP_V(challenge_inv, H_R)

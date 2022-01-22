@@ -256,7 +256,7 @@ namespace rct
        );
 
     const auto y_exponents = scalar_exponents(y, total_bit_width);
-    const scalarV r0 = vector_addV
+    const scalarV r0 = vector_add_V
       (
        hadamard_product(vector_add(aR, z), y_exponents)
        , vector_concat(zero_twos)
@@ -313,8 +313,8 @@ namespace rct
     const crypto::ec_scalar mu = x * rho + alpha;
 
     // PAPER LINES 58-60
-    const scalarV l = vector_addV(l0, vector_mult(l1, x));
-    const scalarV r = vector_addV(r0, vector_mult(r1, x));
+    const scalarV l = vector_add_V(l0, vector_mult(l1, x));
+    const scalarV r = vector_add_V(r0, vector_mult(r1, x));
 
     const crypto::ec_scalar t = inner_product(l, r);
 

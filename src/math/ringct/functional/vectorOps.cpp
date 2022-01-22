@@ -91,7 +91,7 @@ namespace rct
   }
 
 
-  rct::scalarV vector_addV(const scalarS a, const scalarS b)
+  rct::scalarV vector_add_V(const scalarS a, const scalarS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
       (
@@ -112,7 +112,7 @@ namespace rct
     return res;
   }
 
-  rct::pointV vector_addV(const pointS a, const pointS b)
+  rct::pointV vector_add_V(const pointS a, const pointS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
       (

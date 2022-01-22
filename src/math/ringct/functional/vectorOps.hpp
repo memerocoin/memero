@@ -36,9 +36,9 @@ namespace rct
 
   rct::scalarV hadamard_product(const scalarS a, const scalarS b);
 
-  rct::scalarV vector_addV(const scalarS a, const scalarS b);
+  rct::scalarV vector_add_V(const scalarS a, const scalarS b);
 
-  rct::pointV vector_addV(const pointS a, const pointS b);
+  rct::pointV vector_add_V(const pointS a, const pointS b);
 
   rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b);
 
