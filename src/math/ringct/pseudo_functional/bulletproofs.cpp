@@ -57,7 +57,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "math/ringct/functional/bulletproofs.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/multi_exponentiation.hpp"
-#include "math/ringct/controller/bulletproofs_gen.hpp"
 
 #include "math/crypto/controller/keyGen.hpp"
 
@@ -69,10 +68,37 @@ namespace rct
 {
   const auto multiexp = dummy;
 
-  /* G_Vven a range proof, determine if it is valid
-   * This uses the method in PAPER LINES 95-105,
-   *   weighted across multiple proofs in a batch
-   */
+  std::array<crypto::ec_point, max_vector_length> G_V;
+  std::array<crypto::ec_point, max_vector_length> H_V;
+
+  std::atomic<bool> init_done(false);
+  std::mutex init_mutex;
+
+  void init_generators()
+  {
+    if (!init_done) {
+      std::lock_guard<std::mutex> lock(init_mutex);
+
+      const auto Gs = get_bp_generator_G_V(G_V.size());
+      std::copy
+        (
+         Gs.begin()
+         , Gs.end()
+         , G_V.begin()
+         );
+
+      const auto Hs = get_bp_generator_H_V(H_V.size());
+      std::copy
+        (
+         Hs.begin()
+         , Hs.end()
+         , H_V.begin()
+         );
+
+      init_done = true;
+    }
+  }
+
   bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
   {
     init_generators();

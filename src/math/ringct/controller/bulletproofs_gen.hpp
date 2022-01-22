@@ -32,10 +32,5 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 namespace rct
 {
-  extern std::array<crypto::ec_point, max_vector_length> H_V;
-  extern std::array<crypto::ec_point, max_vector_length> G_V;
-
-  void init_generators();
-
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs);
 }

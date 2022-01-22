@@ -25,7 +25,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace rct
 {
+  void init_generators();
 
   bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof);
-
 }

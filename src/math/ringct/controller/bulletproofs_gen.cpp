@@ -41,37 +41,6 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 namespace rct
 {
-  std::array<crypto::ec_point, max_vector_length> G_V;
-  std::array<crypto::ec_point, max_vector_length> H_V;
-
-  std::atomic<bool> init_done(false);
-  std::mutex init_mutex;
-
-  void init_generators()
-  {
-    if (!init_done) {
-      std::lock_guard<std::mutex> lock(init_mutex);
-
-      const auto Gs = get_bp_generator_G_V(G_V.size());
-      std::copy
-        (
-         Gs.begin()
-         , Gs.end()
-         , G_V.begin()
-         );
-
-      const auto Hs = get_bp_generator_H_V(H_V.size());
-      std::copy
-        (
-         Hs.begin()
-         , Hs.end()
-         , H_V.begin()
-         );
-
-      init_done = true;
-    }
-  }
-
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs)
   {
     LOG_ERROR_AND_THROW_UNLESS(!xs.empty(), "Nothing to proof");
@@ -82,8 +51,6 @@ namespace rct
       LOG_ERROR_AND_THROW_UNLESS
         (is_reduced(g), "Invalid blinding factor");
     }
-
-    init_generators();
 
     const auto padded_number_of_inputs = log2bound(xs.size()).first;
     const size_t total_bit_width =
@@ -128,6 +95,9 @@ namespace rct
 
     const scalarV y_inv_exponents =
       scalar_exponents(y_inv, total_bit_width);
+
+    const auto G_V = get_bp_generator_G_V(total_bit_width);
+    const auto H_V = get_bp_generator_H_V(total_bit_width);
 
     const auto maybe_recursive_inner_product_argument =
       make_recursive_inner_product_argument
