@@ -118,14 +118,14 @@ namespace rct
    , const scalarS _a
    , const scalarS _b
    , const crypto::ec_point u
-   , const crypto::ec_scalar challenge
+   , const crypto::ec_scalar _challenge
    )
   {
     pointV G = span_to_vector(_G);
     pointV H = span_to_vector(_H);
     scalarV a = span_to_vector(_a);
     scalarV b = span_to_vector(_b);
-    crypto::ec_scalar last_challenge = challenge;
+    crypto::ec_scalar challenge = _challenge;
 
     LR_V LR;
   
@@ -140,16 +140,14 @@ namespace rct
            , u
            );
 
-        const auto challenge = hash_dataV_to_scalar
-          (crypto::dataV{last_challenge, to_inv8(L), to_inv8(R)});
+        const auto maybe_challenge = maybe_hash_V_to_non_zero_scalar
+          (crypto::dataV{challenge, to_inv8(L), to_inv8(R)});
 
-        if (challenge == rct::s_zero)
-          {
-            LOG_INFO("challenge is 0, aborting");
-            return {};
-          }
+        if (!maybe_challenge) {
+          return {};
+        }
 
-        last_challenge = challenge;
+        challenge = *maybe_challenge;
 
         LR.emplace_back(L, R);
 
