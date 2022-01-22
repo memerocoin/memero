@@ -144,8 +144,7 @@ namespace crypto {
     return mult(s_8, X);
   }
 
-  // multiplicative inverse
-  ec_scalar invert(const ec_scalar x) noexcept
+  ec_scalar multiplicative_inverse(const ec_scalar x) noexcept
   {
     ec_scalar r;
     crypto_core_ed25519_scalar_invert(r.data.data(), x.data.data());

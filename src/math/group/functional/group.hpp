@@ -126,7 +126,7 @@ namespace crypto {
   ec_point mult8(const ec_point X) noexcept;
   ec_point multBase(const ec_scalar) noexcept;
 
-  ec_scalar invert(const ec_scalar x) noexcept;
+  ec_scalar multiplicative_inverse(const ec_scalar x) noexcept;
 
   ec_scalar reduce(const ec_scalar_unnormalized x) noexcept;
   bool is_reduced(const ec_scalar_unnormalized x) noexcept;

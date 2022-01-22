@@ -71,7 +71,8 @@ namespace rct
     const auto [G_L, G_R] = split_vector(G);
     const auto [H_L, H_R] = split_vector(H);
 
-    const crypto::ec_scalar challenge_inv = crypto::invert(challenge);
+    const crypto::ec_scalar challenge_inv =
+      crypto::multiplicative_inverse(challenge);
 
     const auto new_a = vector_addV
       (
