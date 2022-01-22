@@ -46,7 +46,6 @@ namespace rct
    , const crypto::ec_point y
    )
   {
-
     crypto::dataV commit_data_V;
     std::transform
       (
@@ -88,7 +87,8 @@ namespace rct
   }
 
   std::optional<proof_data_t> make_hash_challenges
-  (const pointS commits, const Bulletproof proof) {
+  (const pointS commits, const Bulletproof proof)
+  {
     const auto maybe_hash_data_V_A_S =
       hash_V_A_S(commits, proof.A, proof.S);
 
