@@ -115,7 +115,7 @@ namespace rct
 
     // setup weighted aggregates
 
-    const scalarV winv = invertV(pd.w);
+    const scalarV winv = multiplicative_inverse_V(pd.w);
     const crypto::ec_scalar yinv = crypto::multiplicative_inverse(pd.y);
 
     const crypto::ec_scalar weight_y = crypto::randomScalar();

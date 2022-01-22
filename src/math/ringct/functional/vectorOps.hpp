@@ -48,7 +48,7 @@ namespace rct
   rct::scalarV vector_mult
   (const scalarS a, const crypto::ec_scalar b);
 
-  rct::scalarV invertV(const rct::scalarV v);
+  rct::scalarV multiplicative_inverse_V(const rct::scalarV v);
 
   std::vector<crypto::ec_point> vector_multP_V
   (const scalarS a, const pointS p);

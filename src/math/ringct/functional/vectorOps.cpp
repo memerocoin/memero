@@ -176,7 +176,7 @@ namespace rct
     return res;
   }
 
-  rct::scalarV invertV(const rct::scalarV v)
+  rct::scalarV multiplicative_inverse_V(const rct::scalarV v)
   {
     scalarV r(v.size());
 
