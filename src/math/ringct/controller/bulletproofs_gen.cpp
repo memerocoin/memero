@@ -340,13 +340,9 @@ namespace rct
     pointV G_prime
       (G_V.begin(), std::next(G_V.begin(), total_bit_width));
 
-    pointV H_prime
-      (H_V.begin(), std::next(H_V.begin(), total_bit_width));
+    pointV H_prime = vector_multP_V(y_inv_exponents, H_V);
 
     LR_V LR;
-
-    std::optional<std::pair<scalarV, scalarV>> scale =
-      split_vector(y_inv_exponents);
 
     crypto::ec_scalar last_challenge = x_ip;
 
@@ -372,34 +368,22 @@ namespace rct
         const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
         const auto [H_prime_L, H_prime_R] = split_vector(H_prime);
 
-        const scalarV b_prime_R_scaled =
-          scale
-          ? hadamard_product(scale->first, b_prime_R)
-          : b_prime_R
-          ;
-
         const auto L = homomorphic_hash
           (
            G_prime_R
            , H_prime_L
            , a_prime_L
-           , b_prime_R_scaled
+           , b_prime_R
            , fixed_point_u
            , cL
            );
-
-        const scalarV b_prime_L_scaled =
-          scale
-          ? hadamard_product(scale->second, b_prime_L)
-          : b_prime_L
-          ;
 
         const auto R = homomorphic_hash
           (
            G_prime_L
            , H_prime_R
            , a_prime_R
-           , b_prime_L_scaled
+           , b_prime_L
            , fixed_point_u
            , cR
            );
@@ -441,26 +425,13 @@ namespace rct
            , scalar_multP_V(challenge, G_prime_R)
           );
 
-        const auto challengeV =
-          scale
-          ? vector_mult(scale->first, challenge)
-          : scalar_repeat(challenge, H_prime_L.size())
-          ;
-
-        const auto challenge_inv_V =
-          scale
-          ? vector_mult(scale->second, challenge_inv)
-          : scalar_repeat(challenge_inv, H_prime_R.size())
-          ;
-
         H_prime =
           vector_addV
           (
-           vector_multP_V(challengeV, H_prime_L)
-           , vector_multP_V(challenge_inv_V, H_prime_R)
+           scalar_multP_V(challenge, H_prime_L)
+           , scalar_multP_V(challenge_inv, H_prime_R)
            );
 
-        scale = {};
       }
 
     return Bulletproof
