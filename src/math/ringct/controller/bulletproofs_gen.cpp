@@ -255,7 +255,7 @@ namespace rct
     const crypto::ec_point T2 = G_(tau2) + H_(t2);
 
     // PAPER LINES 54-56
-    const auto maybe_hash_data_V_A_S_rehash_T1_T2 =
+    const auto maybe_hash_data_V_A_S_T1_T2 =
       maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
@@ -267,12 +267,12 @@ namespace rct
        }
        );
 
-    if (!maybe_hash_data_V_A_S_rehash_T1_T2) {
+    if (!maybe_hash_data_V_A_S_T1_T2) {
       goto try_again;
     }
 
-    const auto hash_data_V_A_S_rehash_T1_T2 =
-      *maybe_hash_data_V_A_S_rehash_T1_T2;
+    const auto hash_data_V_A_S_T1_T2 =
+      *maybe_hash_data_V_A_S_T1_T2;
 
     // PAPER LINES 61-63
     LOG_ERROR_AND_THROW_UNLESS
@@ -293,7 +293,7 @@ namespace rct
     const crypto::ec_scalar taux1 =
       inner_product(blinding_factors, z_exponents_skip_2);
 
-    const auto x = hash_data_V_A_S_rehash_T1_T2;
+    const auto x = hash_data_V_A_S_T1_T2;
     const crypto::ec_scalar taux = tau1 * x + tau2 * x * x + taux1;
 
     const crypto::ec_scalar mu = x * rho + alpha;

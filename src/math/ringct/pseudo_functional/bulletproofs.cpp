@@ -162,7 +162,7 @@ namespace rct
        }
        );
 
-    const auto pd_x = pd.V_A_S_rehash_T1_T2;
+    const auto pd_x = pd.V_A_S_T1_T2;
     multiexp_data.emplace_back(pd_x * weight_y, proof.T1);
     multiexp_data.emplace_back(pd_x * pd_x * weight_y, proof.T2);
     multiexp_data.emplace_back(weight_z, proof.A);

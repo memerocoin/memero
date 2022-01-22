@@ -105,7 +105,7 @@ namespace rct
     const auto [hash_data_V_A_S, hash_data_V_A_S_rehash] =
       *maybe_hash_data_V_A_S;
 
-    const auto maybe_hash_data_V_A_S_rehash_T1_T2 =
+    const auto maybe_hash_data_V_A_S_T1_T2 =
       maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
@@ -117,20 +117,20 @@ namespace rct
        }
        );
 
-    if (!maybe_hash_data_V_A_S_rehash_T1_T2) {
+    if (!maybe_hash_data_V_A_S_T1_T2) {
       return {};
     }
 
-    const auto hash_data_V_A_S_rehash_T1_T2 =
-      *maybe_hash_data_V_A_S_rehash_T1_T2;
+    const auto hash_data_V_A_S_T1_T2 =
+      *maybe_hash_data_V_A_S_T1_T2;
 
     const auto maybe_inner_product_challenge =
       maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
        {
-         hash_data_V_A_S_rehash_T1_T2
-         , hash_data_V_A_S_rehash_T1_T2
+         hash_data_V_A_S_T1_T2
+         , hash_data_V_A_S_T1_T2
          , proof.taux
          , proof.mu
          , proof.t
@@ -165,7 +165,7 @@ namespace rct
       *maybe_hash_data_inner_product_challenge_LR;
 
     return {{
-        hash_data_V_A_S_rehash_T1_T2
+        hash_data_V_A_S_T1_T2
         , hash_data_V_A_S
         , hash_data_V_A_S_rehash
         , inner_product_challenge
