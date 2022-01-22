@@ -66,7 +66,7 @@ namespace rct
 
     LOG_ERROR_AND_RETURN_IF((x == rct::s_zero), {}, "x == 0");
 
-    const auto x_ip =
+    const auto inner_product_challenge =
       hash_dataV_to_scalar
       (
        crypto::dataV
@@ -77,7 +77,7 @@ namespace rct
          , proof.mu
          , proof.t
        });
-    LOG_ERROR_AND_RETURN_IF((x_ip == rct::s_zero), {}, "x_ip == 0");
+    LOG_ERROR_AND_RETURN_IF((inner_product_challenge == rct::s_zero), {}, "inner_product_challenge == 0");
 
     std::vector<std::vector<crypto::crypto_data>> lr_data;
     std::transform
@@ -93,7 +93,7 @@ namespace rct
        }
        );
 
-    const auto maybe_w = accum_hash(x_ip, lr_data);
+    const auto maybe_w = accum_hash(inner_product_challenge, lr_data);
     LOG_ERROR_AND_RETURN_UNLESS(maybe_w, {}, "some w[i] == 0");
 
     const auto w = *maybe_w;
@@ -102,7 +102,7 @@ namespace rct
         x
         , y
         , z
-        , x_ip
+        , inner_product_challenge
         , w
       }};
   }

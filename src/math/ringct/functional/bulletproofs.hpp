@@ -60,7 +60,7 @@ namespace rct
 
   struct proof_data_t
   {
-    crypto::ec_scalar x, y, z, x_ip;
+    crypto::ec_scalar x, y, z, inner_product_challenge;
     std::vector<crypto::ec_scalar> w;
   };
 

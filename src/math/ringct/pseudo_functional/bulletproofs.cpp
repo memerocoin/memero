@@ -258,7 +258,8 @@ namespace rct
     const crypto::ec_scalar y0 = s_zero - proof.taux * weight_y;
     const crypto::ec_scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
     const crypto::ec_scalar z1 = proof.mu * weight_z;
-    const crypto::ec_scalar z3 = (proof.t - proof.a * proof.b) * pd.x_ip * weight_z;
+    const crypto::ec_scalar z3 =
+      (proof.t - proof.a * proof.b) * pd.inner_product_challenge * weight_z;
 
 
     // now check all proofs at once

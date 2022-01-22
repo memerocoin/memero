@@ -289,8 +289,6 @@ namespace rct
       }
 
     // PAPER LINES 61-63
-    const crypto::ec_scalar xsq = x * x;
-
     LOG_ERROR_AND_THROW_UNLESS
       (
        xs.size() <= z_exponents_skip_2.size()
@@ -309,7 +307,7 @@ namespace rct
     const crypto::ec_scalar taux1 =
       inner_product(blinding_factors, z_exponents_skip_2);
 
-    const crypto::ec_scalar taux = tau1 * x + tau2 * xsq + taux1;
+    const crypto::ec_scalar taux = tau1 * x + tau2 * x * x + taux1;
 
     const crypto::ec_scalar mu = x * rho + alpha;
 
@@ -320,12 +318,12 @@ namespace rct
     const crypto::ec_scalar t = inner_product(l, r);
 
     // PAPER LINE 6
-    const crypto::ec_scalar x_ip =
+    const crypto::ec_scalar inner_product_challenge =
       hash_dataV_to_scalar(crypto::dataV{x, x, taux, mu, t});
 
-    if (x_ip == rct::s_zero)
+    if (inner_product_challenge == rct::s_zero)
       {
-        LOG_INFO("x_ip is 0, trying again");
+        LOG_INFO("inner_product_challenge is 0, trying again");
         goto try_again;
       }
 
@@ -340,8 +338,8 @@ namespace rct
        , vector_multP_V(y_inv_exponents, H_V)
        , l
        , r
-       , H_(x_ip)
-       , x_ip
+       , H_(inner_product_challenge)
+       , inner_product_challenge
        );
 
     if (!maybe_recursive_inner_product_argument) {
