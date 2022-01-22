@@ -73,4 +73,39 @@ namespace rct
    , const crypto::ec_point y
    );
 
+  std::optional
+  <std::tuple
+   <
+     scalarV
+     , scalarV
+     , crypto::ec_scalar
+     , crypto::ec_scalar
+     , crypto::ec_point
+     , crypto::ec_point
+     , crypto::ec_point
+     , crypto::ec_point
+     , crypto::ec_scalar
+     , crypto::ec_scalar
+     , crypto::ec_scalar
+     >>
+  get_bp_vectors_for_inner_product_argument
+  (
+    const pointS V
+    , const scalarS blinding_factors
+    , const size_t padded_number_of_inputs
+    , const size_t bit_width
+    , const size_t total_bit_width
+    , const scalarS aL
+    , const scalarS aR
+    , const crypto::ec_scalar alpha
+    , const scalarS sL
+    , const scalarS sR
+    , const crypto::ec_scalar rho
+    , const crypto::ec_scalar tau1
+    , const crypto::ec_scalar tau2
+    , const pointS G_V
+    , const pointS H_V
+   );
+
+
 }
