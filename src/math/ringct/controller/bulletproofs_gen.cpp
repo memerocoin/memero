@@ -27,17 +27,12 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/bulletproofs.hpp"
 #include "math/ringct/functional/innerProductArgument.hpp"
 
 #include "math/crypto/controller/keyGen.hpp"
 
 #include "tools/epee/include/logging.hpp"
-
-#include <atomic>
-#include <numeric>
-
 
 namespace rct
 {

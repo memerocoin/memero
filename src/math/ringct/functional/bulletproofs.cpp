@@ -238,7 +238,7 @@ namespace rct
       *maybe_hash_data_inner_product_challenge_LR;
 
     return {{
-          hash_data_V_A_S
+        hash_data_V_A_S
         , hash_data_V_A_S_rehash
         , hash_data_V_A_S_T1_T2
         , inner_product_challenge

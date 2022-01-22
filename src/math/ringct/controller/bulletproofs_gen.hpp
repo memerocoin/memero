@@ -26,7 +26,6 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 #include "math/ringct/functional/rctTypes.hpp"
 #include "math/ringct/functional/bulletproofs.hpp"
-#include "config/lol.hpp"
 
 #include <span>
 
