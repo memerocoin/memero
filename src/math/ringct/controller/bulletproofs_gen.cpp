@@ -329,64 +329,31 @@ namespace rct
         goto try_again;
       }
 
-    // These are used in the inner product rounds
     const crypto::ec_scalar yinv = crypto::multiplicative_inverse(y);
     const scalarV y_inv_exponents =
       scalar_exponents(yinv, total_bit_width);
 
-    const crypto::ec_point fixed_point_u = H_(x_ip);
+    const auto maybe_inner_product_argument =
+      make_inner_product_argument
+      (
+       std::span(G_V).subspan(0, total_bit_width)
+       , vector_multP_V(y_inv_exponents, H_V)
+       , l
+       , r
+       , H_(x_ip)
+       , x_ip
+       );
 
-    scalarV a_prime = l;
-    scalarV b_prime = r;
+    if (!maybe_inner_product_argument) {
+      goto try_again;
+    }
 
-    pointV G_prime
-      (G_V.begin(), std::next(G_V.begin(), total_bit_width));
-
-    pointV H_prime = vector_multP_V(y_inv_exponents, H_V);
-
-    LR_V LR;
-
-    crypto::ec_scalar last_challenge = x_ip;
-
-    while (G_prime.size() > 1)
-      {
-        const auto [L, R] = init_inner_product_argument
-          (
-           G_prime
-           , H_prime
-           , a_prime
-           , b_prime
-           , fixed_point_u
-           );
-
-        const auto challenge = hash_dataV_to_scalar
-          (crypto::dataV{last_challenge, to_inv8(L), to_inv8(R)});
-
-        if (challenge == rct::s_zero)
-          {
-            LOG_INFO("challenge is 0, trying again");
-            goto try_again;
-          }
-
-        last_challenge = challenge;
-
-        LR.emplace_back(L, R);
-
-        std::tie(G_prime, H_prime, a_prime, b_prime) =
-          reduce_inner_product_argument
-          (
-           G_prime
-           , H_prime
-           , a_prime
-           , b_prime
-           , challenge
-           );
-      }
+    const auto [LR, a, b] = *maybe_inner_product_argument;
 
     return Bulletproof
       {
         A, S, T1, T2, taux, mu, LR
-        , a_prime.front(), b_prime.front(), t
+        , a, b, t
       };
   }
 

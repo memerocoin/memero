@@ -21,6 +21,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "innerProductArgument.hpp"
 
 #include "math/ringct/functional/vectorOps.hpp"
+#include "math/ringct/functional/rctOps.hpp"
+
+#include "tools/epee/include/logging.hpp"
 
 namespace rct
 {
@@ -99,6 +102,69 @@ namespace rct
        );
 
     return {new_G, new_H, new_a, new_b};
+  }
+
+  std::optional<
+    std::tuple
+    < LR_V
+      , crypto::ec_scalar
+      , crypto::ec_scalar
+      >
+    >
+  make_inner_product_argument
+  (
+   const pointS _G
+   , const pointS _H
+   , const scalarS _a
+   , const scalarS _b
+   , const crypto::ec_point u
+   , const crypto::ec_scalar challenge
+   )
+  {
+    pointV G = span_to_vector(_G);
+    pointV H = span_to_vector(_H);
+    scalarV a = span_to_vector(_a);
+    scalarV b = span_to_vector(_b);
+    crypto::ec_scalar last_challenge = challenge;
+
+    LR_V LR;
+  
+    while (G.size() > 1)
+      {
+        const auto [L, R] = init_inner_product_argument
+          (
+           G
+           , H
+           , a
+           , b
+           , u
+           );
+
+        const auto challenge = hash_dataV_to_scalar
+          (crypto::dataV{last_challenge, to_inv8(L), to_inv8(R)});
+
+        if (challenge == rct::s_zero)
+          {
+            LOG_INFO("challenge is 0, aborting");
+            return {};
+          }
+
+        last_challenge = challenge;
+
+        LR.emplace_back(L, R);
+
+        std::tie(G, H, a, b) =
+          reduce_inner_product_argument
+          (
+           G
+           , H
+           , a
+           , b
+           , challenge
+           );
+      }
+
+    return {{ LR, a.front(), b.front() }};
   }
 
 }

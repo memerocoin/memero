@@ -286,4 +286,28 @@ namespace rct
        );
   }
 
+  scalarV span_to_vector(const scalarS xs) {
+    scalarV ys;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(ys)
+       , [](const auto& x) { return x; }
+       );
+    return ys;
+  }
+
+  pointV span_to_vector(const pointS xs) {
+    pointV ys;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(ys)
+       , [](const auto& x) { return x; }
+       );
+    return ys;
+  }
+
 } // rct

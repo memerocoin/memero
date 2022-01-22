@@ -66,10 +66,10 @@ namespace rct
 
   crypto::ec_point homomorphic_hash
   (
-   const pointS vl
-   , const pointS vr
-   , const scalarS a
-   , const scalarS b
+   const pointS _G
+   , const pointS _H
+   , const scalarS _a
+   , const scalarS _b
    , const crypto::ec_point u
    , const crypto::ec_scalar c
    );
@@ -78,5 +78,9 @@ namespace rct
   (
    const std::span<scalarV> xs
    );
+
+  scalarV span_to_vector(const scalarS xs);
+  pointV span_to_vector(const pointS xs);
+
 
 }

@@ -50,4 +50,21 @@ namespace rct
    , const crypto::ec_scalar challenge
    );
 
+  std::optional<
+    std::tuple
+    < LR_V
+      , crypto::ec_scalar
+      , crypto::ec_scalar
+      >
+    >
+  make_inner_product_argument
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_point u
+   , const crypto::ec_scalar challenge
+   );
+
 }
