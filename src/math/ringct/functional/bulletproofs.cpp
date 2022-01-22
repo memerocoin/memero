@@ -293,8 +293,6 @@ namespace rct
    , const crypto::ec_scalar rho
    , const crypto::ec_scalar tau1
    , const crypto::ec_scalar tau2
-   , const pointS G_V
-   , const pointS H_V
    ) {
 
     // PAPER LINES 41-42
@@ -333,6 +331,9 @@ namespace rct
          return std::apply(commit, x);
        }
        );
+
+    const auto G_V = get_bp_generator_G_V(total_bit_width);
+    const auto H_V = get_bp_generator_H_V(total_bit_width);
 
     // PAPER LINES 43-44
     const crypto::ec_point A =

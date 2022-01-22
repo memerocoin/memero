@@ -106,8 +106,6 @@ namespace rct
        , rho
        , tau1
        , tau2
-       , G_V
-       , H_V
        );
 
     if (!bp_vectors) {

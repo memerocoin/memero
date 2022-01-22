@@ -110,8 +110,6 @@ namespace rct
    , const crypto::ec_scalar rho
    , const crypto::ec_scalar tau1
    , const crypto::ec_scalar tau2
-   , const pointS G_V
-   , const pointS H_V
    );
 
 
