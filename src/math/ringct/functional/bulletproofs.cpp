@@ -211,7 +211,6 @@ namespace rct
      , crypto::ec_point
      , crypto::ec_scalar
      , crypto::ec_scalar
-     , crypto::ec_scalar
      >>
   get_bp_vectors_for_inner_product_argument
   (
@@ -373,7 +372,6 @@ namespace rct
         , T2
         , taux
         , mu
-        , t
       }};
   }
 

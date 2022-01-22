@@ -218,7 +218,6 @@ namespace rct
        , T2
        , taux
        , mu
-       , t
        ] = *bp_vectors;
 
     const scalarV y_inv_exponents =
@@ -243,7 +242,7 @@ namespace rct
 
     return Bulletproof
       {
-        A, S, T1, T2, taux, mu, LR, a, b, t
+        A, S, T1, T2, taux, mu, LR, a, b, inner_product(l, r)
       };
   }
 
