@@ -25,7 +25,8 @@ namespace rct
 {
   crypto::ec_scalar inner_product(const scalarS a, const scalarS b);
 
-  rct::scalarV scalar_exponents(const crypto::ec_scalar x, const size_t n);
+  rct::scalarV scalar_exponents
+  (const crypto::ec_scalar x, const size_t n);
 
   crypto::ec_scalar sum_of_scalar_exponents
   (
@@ -41,20 +42,27 @@ namespace rct
 
   rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b);
 
-  rct::scalarV vector_subtract(const scalarS a, const crypto::ec_scalar b);
+  rct::scalarV vector_subtract
+  (const scalarS a, const crypto::ec_scalar b);
 
-  rct::scalarV vector_mult(const scalarS a, const crypto::ec_scalar b);
+  rct::scalarV vector_mult
+  (const scalarS a, const crypto::ec_scalar b);
 
   rct::scalarV invertV(const rct::scalarV v);
 
-  std::vector<crypto::ec_point> vector_multP_V(const scalarS a, const pointS p);
+  std::vector<crypto::ec_point> vector_multP_V
+  (const scalarS a, const pointS p);
+
+  std::vector<crypto::ec_point> scalar_multP_V
+  (const crypto::ec_scalar a, const pointS p);
 
   crypto::ec_point vector_commit(const scalarS a, const pointS p);
 
   std::pair<pointV, pointV> split_vector(const pointS v);
   std::pair<scalarV, scalarV> split_vector(const scalarS v);
 
-  rct::scalarV scalar_repeat(const crypto::ec_scalar x, const size_t n);
+  rct::scalarV scalar_repeat
+  (const crypto::ec_scalar x, const size_t n);
 
   crypto::ec_point homomorphic_hash
   (

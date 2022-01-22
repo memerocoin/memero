@@ -240,7 +240,9 @@ namespace rct
     const scalarS z_exponents_skip_2 =
       std::span(z_exponents).subspan(2);
 
-    const scalarV two_exponents = scalar_exponents(rct::s_two, bit_width);
+    const scalarV two_exponents =
+      scalar_exponents(rct::s_two, bit_width);
+
     std::vector<scalarV> zero_twos;
     std::transform
       (
@@ -452,8 +454,8 @@ namespace rct
         G_prime =
           vector_addV
           (
-           vector_multP_V(scalar_repeat(challenge_inv, half), G_prime_L)
-           , vector_multP_V(scalar_repeat(challenge, half), G_prime_R)
+           scalar_multP_V(challenge_inv, G_prime_L)
+           , scalar_multP_V(challenge, G_prime_R)
           );
 
         const auto [H_prime_L, H_prime_R] = split_vector(H_prime);

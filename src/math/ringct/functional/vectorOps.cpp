@@ -213,6 +213,11 @@ namespace rct
     return r;
   }
 
+  std::vector<crypto::ec_point> scalar_multP_V
+  (const crypto::ec_scalar a, const pointS p) {
+    return vector_multP_V(scalar_repeat(a, p.size()), p);
+  }
+
   crypto::ec_point vector_commit(const scalarS a, const pointS p) {
     LOG_ERROR_AND_THROW_UNLESS
       (
