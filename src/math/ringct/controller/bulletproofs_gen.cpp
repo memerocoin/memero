@@ -350,13 +350,12 @@ namespace rct
 
     crypto::ec_scalar last_challenge = x_ip;
 
-    size_t half = total_bit_width / 2;
-
-    while (half > 0)
+    while (G_prime.size() > 1)
       {
         // PAPER LINES 21-22
         const auto [a_prime_L, a_prime_R] = split_vector(a_prime);
         const auto [b_prime_L, b_prime_R] = split_vector(b_prime);
+
         const crypto::ec_scalar cL = inner_product
           (
            a_prime_L
@@ -370,6 +369,9 @@ namespace rct
            );
 
         // PAPER LINES 23-24
+        const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
+        const auto [H_prime_L, H_prime_R] = split_vector(H_prime);
+
         const scalarV b_prime_R_scaled =
           scale
           ? hadamard_product(scale->first, b_prime_R)
@@ -378,14 +380,13 @@ namespace rct
 
         const auto L = homomorphic_hash
           (
-           std::span(G_prime).subspan(half)
-           , std::span(H_prime).subspan(0, half)
+           G_prime_R
+           , H_prime_L
            , a_prime_L
            , b_prime_R_scaled
            , fixed_point_u
            , cL
            );
-
 
         const scalarV b_prime_L_scaled =
           scale
@@ -395,8 +396,8 @@ namespace rct
 
         const auto R = homomorphic_hash
           (
-           std::span(G_prime).subspan(0, half)
-           , std::span(H_prime).subspan(half)
+           G_prime_L
+           , H_prime_R
            , a_prime_R
            , b_prime_L_scaled
            , fixed_point_u
@@ -433,7 +434,6 @@ namespace rct
            , vector_mult(b_prime_R, challenge)
            );
 
-        const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
         G_prime =
           vector_addV
           (
@@ -441,17 +441,16 @@ namespace rct
            , scalar_multP_V(challenge, G_prime_R)
           );
 
-        const auto [H_prime_L, H_prime_R] = split_vector(H_prime);
         const auto challengeV =
           scale
           ? vector_mult(scale->first, challenge)
-          : scalar_repeat(challenge, half)
+          : scalar_repeat(challenge, H_prime_L.size())
           ;
 
         const auto challenge_inv_V =
           scale
           ? vector_mult(scale->second, challenge_inv)
-          : scalar_repeat(challenge_inv, half)
+          : scalar_repeat(challenge_inv, H_prime_R.size())
           ;
 
         H_prime =
@@ -462,7 +461,6 @@ namespace rct
            );
 
         scale = {};
-        half /= 2;
       }
 
     return Bulletproof
