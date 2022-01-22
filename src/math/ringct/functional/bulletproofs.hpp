@@ -36,6 +36,12 @@ namespace rct
   constexpr size_t max_outputs = constant::BULLETPROOF_MAX_OUTPUTS;
   constexpr size_t max_vector_length = bit_width * max_outputs;
 
+  crypto::ec_point get_bp_generator_G(const size_t idx);
+  crypto::ec_point get_bp_generator_H(const size_t idx);
+
+  pointV get_bp_generator_G_V(const size_t idx);
+  pointV get_bp_generator_H_V(const size_t idx);
+
   struct hash_data_t
   {
     crypto::ec_scalar

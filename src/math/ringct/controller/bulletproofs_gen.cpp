@@ -34,8 +34,6 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #include "math/crypto/controller/keyGen.hpp"
 
 #include "tools/epee/include/logging.hpp"
-#include "tools/epee/include/string_tools.h"
-#include "tools/common/varint.h"
 
 #include <atomic>
 #include <numeric>
@@ -43,44 +41,8 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 namespace rct
 {
-  crypto::ec_point get_bp_generator
-  (
-   const crypto::ec_point base
-   , const size_t idx
-   )
-  {
-    constexpr std::string_view domain_separator =
-      config::HASH_KEY_BULLETPROOF_EXPONENT;
-
-    const std::string hashed =
-      epee::string_tools::blob_to_string(base.data)
-      + std::string(domain_separator)
-      + tools::get_varint_data(idx);
-
-    const crypto::ec_point e = crypto::hash_to_point_via_field
-      (
-       crypto::h2d
-       (
-        crypto::sha3(epee::string_tools::string_to_blob(hashed))
-        )
-       );
-
-    LOG_ERROR_AND_THROW_IF
-      ((e == crypto::identity), "Invalid exponent");
-
-    return e;
-  }
-
-  crypto::ec_point get_bp_generator_G(const size_t idx) {
-    return get_bp_generator(H, idx * 2);
-  }
-
-  crypto::ec_point get_bp_generator_H(const size_t idx) {
-    return get_bp_generator(H, idx * 2 + 1);
-  }
-
-  std::array<crypto::ec_point, bit_width * max_outputs> G_V;
-  std::array<crypto::ec_point, bit_width * max_outputs> H_V;
+  std::array<crypto::ec_point, max_vector_length> G_V;
+  std::array<crypto::ec_point, max_vector_length> H_V;
 
   std::atomic<bool> init_done(false);
   std::mutex init_mutex;
@@ -89,26 +51,21 @@ namespace rct
   {
     if (!init_done) {
       std::lock_guard<std::mutex> lock(init_mutex);
-      std::generate
+
+      const auto Gs = get_bp_generator_G_V(G_V.size());
+      std::copy
         (
-         H_V.begin()
-         , H_V.end()
-         , [i = 0] () mutable {
-           const auto r = get_bp_generator_G(i);
-           i++;
-           return r;
-         }
+         Gs.begin()
+         , Gs.end()
+         , G_V.begin()
          );
 
-      std::generate
+      const auto Hs = get_bp_generator_H_V(H_V.size());
+      std::copy
         (
-         G_V.begin()
-         , G_V.end()
-         , [i = 0] () mutable {
-           const auto r = get_bp_generator_H(i);
-           i++;
-           return r;
-         }
+         Hs.begin()
+         , Hs.end()
+         , H_V.begin()
          );
 
       init_done = true;

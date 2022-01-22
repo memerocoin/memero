@@ -36,8 +36,6 @@ namespace rct
   extern std::array<crypto::ec_point, max_vector_length> G_V;
 
   void init_generators();
-  crypto::ec_point get_generator_G(const size_t idx);
-  crypto::ec_point get_generator_H(const size_t idx);
 
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs);
 }

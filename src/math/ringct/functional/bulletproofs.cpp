@@ -28,12 +28,84 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/accumHash.hpp"
 
+#include "tools/common/varint.h"
+#include "tools/epee/include/string_tools.h"
 #include "tools/epee/include/logging.hpp"
 
 #include <numeric>
 
 namespace rct
 {
+
+  crypto::ec_point get_bp_generator
+  (
+   const crypto::ec_point base
+   , const size_t idx
+   )
+  {
+    constexpr std::string_view domain_separator =
+      config::HASH_KEY_BULLETPROOF_EXPONENT;
+
+    const std::string hashed =
+      epee::string_tools::blob_to_string(base.data)
+      + std::string(domain_separator)
+      + tools::get_varint_data(idx);
+
+    const crypto::ec_point e = crypto::hash_to_point_via_field
+      (
+       crypto::h2d
+       (
+        crypto::sha3(epee::string_tools::string_to_blob(hashed))
+        )
+       );
+
+    LOG_ERROR_AND_THROW_IF
+      ((e == crypto::identity), "Invalid exponent");
+
+    return e;
+  }
+
+  crypto::ec_point get_bp_generator_G(const size_t idx) {
+    return get_bp_generator(H, idx * 2 + 1);
+  }
+
+  crypto::ec_point get_bp_generator_H(const size_t idx) {
+    return get_bp_generator(H, idx * 2);
+  }
+
+  pointV get_bp_generator_G_V(const size_t idx) {
+    pointV xs(idx);
+    std::generate
+      (
+       xs.begin()
+       , xs.end()
+       , [i = 0] () mutable {
+         const auto r = get_bp_generator_G(i);
+         i++;
+         return r;
+       }
+       );
+
+    return xs;
+  }
+    
+  pointV get_bp_generator_H_V(const size_t idx) {
+    pointV xs(idx);
+    std::generate
+      (
+       xs.begin()
+       , xs.end()
+       , [i = 0] () mutable {
+         const auto r = get_bp_generator_H(i);
+         i++;
+         return r;
+       }
+       );
+
+    return xs;
+  }
+
+
   std::optional
   <std::tuple
    <
