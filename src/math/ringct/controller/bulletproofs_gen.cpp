@@ -97,7 +97,7 @@ namespace rct
     const auto maybe_recursive_inner_product_argument =
       make_recursive_inner_product_argument
       (
-       std::span(G_V).subspan(0, total_bit_width)
+       G_V
        , vector_multP_V(y_inv_exponents, H_V)
        , bp_vector_l
        , bp_vector_r
