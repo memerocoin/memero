@@ -418,15 +418,13 @@ namespace rct
            , vector_mult(b_prime_R, challenge)
            );
 
-        G_prime =
-          vector_addV
+        G_prime = vector_addV
           (
            scalar_multP_V(challenge_inv, G_prime_L)
            , scalar_multP_V(challenge, G_prime_R)
-          );
+           );
 
-        H_prime =
-          vector_addV
+        H_prime = vector_addV
           (
            scalar_multP_V(challenge, H_prime_L)
            , scalar_multP_V(challenge_inv, H_prime_R)
