@@ -36,18 +36,18 @@ namespace rct
   constexpr size_t max_outputs = constant::BULLETPROOF_MAX_OUTPUTS;
   constexpr size_t max_vector_length = bit_width * max_outputs;
 
-  struct proof_data_t
+  struct hash_data_t
   {
     crypto::ec_scalar
-        V_A_S_T1_T2
-        , V_A_S
-        , V_A_S_rehash
-        , inner_product_challenge
+    V_A_S
+      , V_A_S_rehash
+      , V_A_S_T1_T2
+      , inner_product_challenge
       ;
     std::vector<crypto::ec_scalar> inner_product_challenge_LR;
   };
 
-  std::optional<proof_data_t> make_hash_challenges
+  std::optional<hash_data_t> make_hash_challenges
   (const pointS commits, const Bulletproof proof);
 
   scalarV int_to_bits(const uint64_t x);

@@ -93,7 +93,7 @@ namespace rct
     return {{hash_data_V_A_S, hash_data_V_A_S_rehash}};
   }
 
-  std::optional<proof_data_t> make_hash_challenges
+  std::optional<hash_data_t> make_hash_challenges
   (const pointS commits, const Bulletproof proof)
   {
     const auto maybe_hash_data_V_A_S =
@@ -166,9 +166,9 @@ namespace rct
       *maybe_hash_data_inner_product_challenge_LR;
 
     return {{
-        hash_data_V_A_S_T1_T2
-        , hash_data_V_A_S
+          hash_data_V_A_S
         , hash_data_V_A_S_rehash
+        , hash_data_V_A_S_T1_T2
         , inner_product_challenge
         , hash_data_inner_product_challenge_LR
       }};
