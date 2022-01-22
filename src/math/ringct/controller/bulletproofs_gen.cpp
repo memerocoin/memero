@@ -205,7 +205,7 @@ namespace rct
        , to_inv8
        );
 
-    const auto maybe_pd_y = accum_hash
+    const auto maybe_hash_data_V_A_S = accum_hash
       (
        {}
        , {
@@ -215,29 +215,31 @@ namespace rct
        );
 
     // PAPER LINES 48-50
-    if (!maybe_pd_y)
+    if (!maybe_hash_data_V_A_S)
       {
-        LOG_INFO("y is 0, trying again");
+        LOG_INFO("hash_data_V_A_S is 0, trying again");
         goto try_again;
       }
 
-    const auto pd_y_array = *maybe_pd_y;
-    const auto y = pd_y_array.back();
+    const auto hash_data_V_A_S_array = *maybe_hash_data_V_A_S;
+    const auto hash_data_V_A_S = hash_data_V_A_S_array.back();
 
-    const crypto::ec_scalar z = rct::hash_to_scalar(y);
-    if (z == rct::s_zero)
+    const crypto::ec_scalar hash_data_V_A_S_rehash =
+      rct::hash_to_scalar(hash_data_V_A_S);
+
+    if (hash_data_V_A_S_rehash == rct::s_zero)
       {
-        LOG_INFO("z is 0, trying again");
+        LOG_INFO("hash_data_V_A_S_rehash is 0, trying again");
         goto try_again;
       }
 
     // Polynomial construction by coefficients
     // PAPER LINES 70-71
-    const scalarV l0 = vector_subtract(aL, z);
+    const scalarV l0 = vector_subtract(aL, hash_data_V_A_S_rehash);
     const scalarS l1 = sL;
 
     const scalarV z_exponents =
-      scalar_exponents(z, padded_number_of_inputs + 2);
+      scalar_exponents(hash_data_V_A_S_rehash, padded_number_of_inputs + 2);
 
     const scalarS z_exponents_skip_2 =
       std::span(z_exponents).subspan(2);
@@ -256,10 +258,10 @@ namespace rct
        }
        );
 
-    const auto y_exponents = scalar_exponents(y, total_bit_width);
+    const auto y_exponents = scalar_exponents(hash_data_V_A_S, total_bit_width);
     const scalarV r0 = vector_add_V
       (
-       hadamard_product(vector_add(aR, z), y_exponents)
+       hadamard_product(vector_add(aR, hash_data_V_A_S_rehash), y_exponents)
        , vector_concat(zero_twos)
        );
 
@@ -279,12 +281,20 @@ namespace rct
     const crypto::ec_point T2 = G_(tau2) + H_(t2);
 
     // PAPER LINES 54-56
-    const crypto::ec_scalar x = hash_dataV_to_scalar
-      (crypto::dataV{z, z, to_inv8(T1), to_inv8(T2)});
+    const crypto::ec_scalar hash_data_V_A_S_rehash_T1_T2 = hash_dataV_to_scalar
+      (
+       crypto::dataV
+       {
+         hash_data_V_A_S_rehash
+         , hash_data_V_A_S_rehash
+         , to_inv8(T1)
+         , to_inv8(T2)
+       }
+       );
 
-    if (x == rct::s_zero)
+    if (hash_data_V_A_S_rehash_T1_T2 == rct::s_zero)
       {
-        LOG_INFO("x is 0, trying again");
+        LOG_INFO("hash_data_V_A_S_rehash_T1_T2 is 0, trying again");
         goto try_again;
       }
 
@@ -307,6 +317,7 @@ namespace rct
     const crypto::ec_scalar taux1 =
       inner_product(blinding_factors, z_exponents_skip_2);
 
+    const auto x = hash_data_V_A_S_rehash_T1_T2;
     const crypto::ec_scalar taux = tau1 * x + tau2 * x * x + taux1;
 
     const crypto::ec_scalar mu = x * rho + alpha;
@@ -327,9 +338,11 @@ namespace rct
         goto try_again;
       }
 
-    const crypto::ec_scalar yinv = crypto::multiplicative_inverse(y);
+    const crypto::ec_scalar y_inv =
+      crypto::multiplicative_inverse(hash_data_V_A_S);
+
     const scalarV y_inv_exponents =
-      scalar_exponents(yinv, total_bit_width);
+      scalar_exponents(y_inv, total_bit_width);
 
     const auto maybe_recursive_inner_product_argument =
       make_recursive_inner_product_argument

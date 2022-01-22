@@ -60,8 +60,13 @@ namespace rct
 
   struct proof_data_t
   {
-    crypto::ec_scalar x, y, z, inner_product_challenge;
-    std::vector<crypto::ec_scalar> w;
+    crypto::ec_scalar
+        V_A_S_rehash_T1_T2
+        , V_A_S
+        , V_A_S_rehash
+        , inner_product_challenge
+      ;
+    std::vector<crypto::ec_scalar> inner_product_challenge_LR;
   };
 
   std::optional<proof_data_t> make_hash_challenges

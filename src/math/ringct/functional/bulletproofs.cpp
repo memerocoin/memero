@@ -40,7 +40,7 @@ namespace rct
        , to_inv8
        );
 
-    const auto maybe_y = accum_hash
+    const auto maybe_hash_data_V_A_S_array = accum_hash
       (
        {}
        , {
@@ -50,33 +50,49 @@ namespace rct
        );
 
     LOG_ERROR_AND_RETURN_UNLESS
-      (maybe_y
+      (maybe_hash_data_V_A_S_array
        , {}
        , "failed to generate hash challenges"
        );
 
-    const auto y_array = *maybe_y;
-    const auto y = y_array.back();
-    const auto z = rct::hash_to_scalar(y);
-    LOG_ERROR_AND_RETURN_IF((z == rct::s_zero), {}, "z == 0");
+    const auto hash_data_V_A_S_array = *maybe_hash_data_V_A_S_array;
+    const auto hash_data_V_A_S = hash_data_V_A_S_array.back();
+    const auto hash_data_V_A_S_rehash =
+      rct::hash_to_scalar(hash_data_V_A_S);
 
-    const auto x =
+    LOG_ERROR_AND_RETURN_IF((hash_data_V_A_S == rct::s_zero), {}, "z == 0");
+
+    const auto hash_data_V_A_S_rehash_T1_T2 =
       hash_dataV_to_scalar
-      (crypto::dataV{z, z, to_inv8(proof.T1), to_inv8(proof.T2)});
+      (
+       crypto::dataV
+       {
+         hash_data_V_A_S_rehash
+         , hash_data_V_A_S_rehash
+         , to_inv8(proof.T1)
+         , to_inv8(proof.T2)
+       }
+       );
 
-    LOG_ERROR_AND_RETURN_IF((x == rct::s_zero), {}, "x == 0");
+    LOG_ERROR_AND_RETURN_IF
+      (
+       (hash_data_V_A_S_rehash_T1_T2 == rct::s_zero)
+       , {}
+       , "x == 0"
+       );
 
     const auto inner_product_challenge =
       hash_dataV_to_scalar
       (
        crypto::dataV
        {
-         x
-         , x
+         hash_data_V_A_S_rehash_T1_T2
+         , hash_data_V_A_S_rehash_T1_T2
          , proof.taux
          , proof.mu
          , proof.t
        });
+
     LOG_ERROR_AND_RETURN_IF((inner_product_challenge == rct::s_zero), {}, "inner_product_challenge == 0");
 
     std::vector<std::vector<crypto::crypto_data>> lr_data;
@@ -93,17 +109,25 @@ namespace rct
        }
        );
 
-    const auto maybe_w = accum_hash(inner_product_challenge, lr_data);
-    LOG_ERROR_AND_RETURN_UNLESS(maybe_w, {}, "some w[i] == 0");
+    const auto maybe_hash_data_inner_product_challenge_LR =
+      accum_hash(inner_product_challenge, lr_data);
 
-    const auto w = *maybe_w;
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       maybe_hash_data_inner_product_challenge_LR
+       , {}
+       , "some w[i] == 0"
+       );
+
+    const auto hash_data_inner_product_challenge_LR =
+      *maybe_hash_data_inner_product_challenge_LR;
 
     return {{
-        x
-        , y
-        , z
+        hash_data_V_A_S_rehash_T1_T2
+        , hash_data_V_A_S
+        , hash_data_V_A_S_rehash
         , inner_product_challenge
-        , w
+        , hash_data_inner_product_challenge_LR
       }};
   }
 

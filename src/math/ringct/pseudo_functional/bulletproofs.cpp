@@ -115,16 +115,19 @@ namespace rct
 
     // setup weighted aggregates
 
-    const scalarV winv = multiplicative_inverse_V(pd.w);
-    const crypto::ec_scalar yinv = crypto::multiplicative_inverse(pd.y);
+    const scalarV winv = multiplicative_inverse_V
+      (pd.inner_product_challenge_LR);
+
+    const crypto::ec_scalar yinv =
+      crypto::multiplicative_inverse(pd.V_A_S);
 
     const crypto::ec_scalar weight_y = crypto::randomScalar();
     const crypto::ec_scalar weight_z = crypto::randomScalar();
 
     std::transform
       (
-       pd.w.begin()
-       , pd.w.end()
+       pd.inner_product_challenge_LR.begin()
+       , pd.inner_product_challenge_LR.end()
        , proof.LR.begin()
        , std::back_inserter(multiexp_data)
        , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
@@ -145,7 +148,8 @@ namespace rct
 
     const size_t total_bit_width = padded_number_of_inputs * bit_width;
 
-    const scalarV z_exponents = scalar_exponents(pd.z, padded_number_of_inputs + 3);
+    const scalarV z_exponents = scalar_exponents
+      (pd.V_A_S_rehash , padded_number_of_inputs + 3);
     const scalarS z_exponents_skip_2 = std::span(z_exponents).subspan(2);
 
     std::transform
@@ -159,23 +163,25 @@ namespace rct
        }
        );
 
-    multiexp_data.emplace_back(pd.x * weight_y, proof.T1);
-    multiexp_data.emplace_back(pd.x * pd.x * weight_y, proof.T2);
+    const auto pd_x = pd.V_A_S_rehash_T1_T2;
+    multiexp_data.emplace_back(pd_x * weight_y, proof.T1);
+    multiexp_data.emplace_back(pd_x * pd_x * weight_y, proof.T2);
     multiexp_data.emplace_back(weight_z, proof.A);
-    multiexp_data.emplace_back(pd.x * weight_z, proof.S);
+    multiexp_data.emplace_back(pd_x * weight_z, proof.S);
 
     // Compute the number of rounds for the inner product
 
     // precalc
     scalarV w_cache(1<<rounds);
     w_cache[0] = winv[0];
-    w_cache[1] = pd.w[0];
+    w_cache[1] = pd.inner_product_challenge_LR[0];
     for (size_t j = 1; j < rounds; ++j)
       {
         const size_t slots = 1<<(j+1);
         for (size_t s = slots; s-- > 0; --s)
           {
-            w_cache[s] = w_cache[s/2] * pd.w[j];
+            w_cache[s] =
+              w_cache[s/2] * pd.inner_product_challenge_LR[j];
             w_cache[s-1] = w_cache[s/2] * winv[j];
           }
       }
@@ -205,11 +211,11 @@ namespace rct
 
          const crypto::ec_scalar h_scalar =
            proof.b * yinvpow * w_cache[(~i) & (total_bit_width-1)]
-           - (pd.z * ypow + zpowTwoN) * yinvpow ;
+           - (pd.V_A_S_rehash * ypow + zpowTwoN) * yinvpow ;
 
 
          yinvpow = yinvpow * yinv;
-         ypow = ypow * pd.y;
+         ypow = ypow * pd.V_A_S;
 
          const crypto::ec_scalar r = s_zero - h_scalar * weight_z;
          i++;
@@ -224,16 +230,22 @@ namespace rct
        , std::next(w_cache.begin(), total_bit_width)
        , z4_v.begin()
        , [proof, pd, weight_z](const auto& cache) {
-         const crypto::ec_scalar g_scalar = proof.a * cache + pd.z;
+         const crypto::ec_scalar g_scalar =
+           proof.a * cache + pd.V_A_S_rehash;
          return s_zero - g_scalar * weight_z;
        }
        );
 
 
     // collect
-    const crypto::ec_scalar ip1y = sum_of_scalar_exponents(pd.y, total_bit_width);
+    const crypto::ec_scalar ip1y =
+      sum_of_scalar_exponents(pd.V_A_S, total_bit_width);
+
     LOG_ERROR_AND_RETURN_UNLESS
-      (padded_number_of_inputs < z_exponents_skip_2.size(), false, "invalid zpow index");
+      (
+       padded_number_of_inputs < z_exponents_skip_2.size()
+       , false, "invalid zpow index"
+       );
 
     const auto z_exponents_skip_3 = z_exponents_skip_2.subspan(1);
     const crypto::ec_scalar k1 =
@@ -256,7 +268,9 @@ namespace rct
       s_zero - z_exponents_skip_2.front() * ip1y - k1 * ip12;
 
     const crypto::ec_scalar y0 = s_zero - proof.taux * weight_y;
-    const crypto::ec_scalar y1 = (proof.t - (pd.z * ip1y + k)) * weight_y;
+    const crypto::ec_scalar y1 =
+      (proof.t - (pd.V_A_S_rehash * ip1y + k)) * weight_y;
+
     const crypto::ec_scalar z1 = proof.mu * weight_z;
     const crypto::ec_scalar z3 =
       (proof.t - proof.a * proof.b) * pd.inner_product_challenge * weight_z;
