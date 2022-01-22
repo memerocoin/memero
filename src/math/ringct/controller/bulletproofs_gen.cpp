@@ -29,6 +29,7 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/bulletproofs.hpp"
+#include "math/ringct/functional/innerProductArgument.hpp"
 #include "math/ringct/functional/accumHash.hpp"
 
 #include "math/crypto/controller/keyGen.hpp"
@@ -348,53 +349,17 @@ namespace rct
 
     while (G_prime.size() > 1)
       {
-        // PAPER LINES 21-22
-        const auto [a_prime_L, a_prime_R] = split_vector(a_prime);
-        const auto [b_prime_L, b_prime_R] = split_vector(b_prime);
-
-        const crypto::ec_scalar cL = inner_product
+        const auto [L, R] = init_inner_product_argument
           (
-           a_prime_L
-           , b_prime_R
-           );
-
-        const crypto::ec_scalar cR = inner_product
-          (
-           a_prime_R
-           , b_prime_L
-           );
-
-        // PAPER LINES 23-24
-        const auto [G_prime_L, G_prime_R] = split_vector(G_prime);
-        const auto [H_prime_L, H_prime_R] = split_vector(H_prime);
-
-        const auto L = homomorphic_hash
-          (
-           G_prime_R
-           , H_prime_L
-           , a_prime_L
-           , b_prime_R
+           G_prime
+           , H_prime
+           , a_prime
+           , b_prime
            , fixed_point_u
-           , cL
            );
 
-        const auto R = homomorphic_hash
-          (
-           G_prime_L
-           , H_prime_R
-           , a_prime_R
-           , b_prime_L
-           , fixed_point_u
-           , cR
-           );
-
-        LR.emplace_back(L, R);
-
-        // PAPER LINES 25-27
         const auto challenge = hash_dataV_to_scalar
           (crypto::dataV{last_challenge, to_inv8(L), to_inv8(R)});
-
-        last_challenge = challenge;
 
         if (challenge == rct::s_zero)
           {
@@ -402,34 +367,19 @@ namespace rct
             goto try_again;
           }
 
-        // PAPER LINES 29-30
-        const crypto::ec_scalar challenge_inv = invert(challenge);
+        last_challenge = challenge;
 
-        // PAPER LINES 33-34
-        a_prime = vector_addV
+        LR.emplace_back(L, R);
+
+        std::tie(G_prime, H_prime, a_prime, b_prime) =
+          reduce_inner_product_argument
           (
-           vector_mult(a_prime_L, challenge)
-           , vector_mult(a_prime_R, challenge_inv)
+           G_prime
+           , H_prime
+           , a_prime
+           , b_prime
+           , challenge
            );
-
-        b_prime = vector_addV
-          (
-           vector_mult(b_prime_L, challenge_inv)
-           , vector_mult(b_prime_R, challenge)
-           );
-
-        G_prime = vector_addV
-          (
-           scalar_multP_V(challenge_inv, G_prime_L)
-           , scalar_multP_V(challenge, G_prime_R)
-           );
-
-        H_prime = vector_addV
-          (
-           scalar_multP_V(challenge, H_prime_L)
-           , scalar_multP_V(challenge_inv, H_prime_R)
-           );
-
       }
 
     return Bulletproof

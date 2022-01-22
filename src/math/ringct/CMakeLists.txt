@@ -33,6 +33,7 @@ add_library(math_ringct_basic
   functional/vectorOps.cpp
   functional/accumHash.cpp
   functional/multi_exponentiation.cpp
+  functional/innerProductArgument.cpp
   functional/bulletproofs.cpp
   pseudo_functional/clsag.cpp
   pseudo_functional/bulletproofs.cpp
