@@ -66,10 +66,22 @@ namespace rct
 
   crypto::ec_point homomorphic_hash
   (
-   const pointS _G
-   , const pointS _H
-   , const scalarS _a
-   , const scalarS _b
+   const pointS G
+   , const pointS H
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_point u
+   , const crypto::ec_scalar c
+   );
+
+  crypto::ec_point homomorphic_hash_full
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a_1
+   , const scalarS a_2
+   , const scalarS b_1
+   , const scalarS b_2
    , const crypto::ec_point u
    , const crypto::ec_scalar c
    );

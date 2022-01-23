@@ -27,8 +27,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace rct
 {
-  std::pair<crypto::ec_point, crypto::ec_point>
-  init_inner_product_argument
+  InnerProductArgument init_inner_product_argument
   (
    const pointS G
    , const pointS H
@@ -48,8 +47,19 @@ namespace rct
 
     const auto L = homomorphic_hash(G_R, H_L, a_L, b_R, u, c_L);
     const auto R = homomorphic_hash(G_L, H_R, a_R, b_L, u, c_R);
+ 
+    const auto t = inner_product(a, b);
+    const auto P = homomorphic_hash(G, H, a, b, u, t);
 
-    return {L, R};
+    return
+      {
+      P
+      , span_to_vector(G)
+      , span_to_vector(H)
+      , L
+      , R
+      , u
+      };
   }
 
   std::tuple
@@ -144,7 +154,7 @@ namespace rct
       return {{ LR, a.front(), b.front() }};
     }
 
-    const auto [L, R] = init_inner_product_argument
+    const auto ipa = init_inner_product_argument
       (
        G
        , H
@@ -154,7 +164,7 @@ namespace rct
        );
 
     const auto maybe_new_challenge = maybe_hash_V_to_non_zero_scalar
-      (crypto::dataV{challenge, to_inv8(L), to_inv8(R)});
+      (crypto::dataV{challenge, to_inv8(ipa.L), to_inv8(ipa.R)});
 
     if (!maybe_new_challenge) {
       return {};
@@ -168,7 +178,7 @@ namespace rct
        );
 
     LR_V new_LR = LR;
-    new_LR.emplace_back(L, R);
+    new_LR.emplace_back(ipa.L, ipa.R);
 
     const auto [G_half, H_half] =
       split_generators_with_challenge
@@ -216,5 +226,37 @@ namespace rct
        , challenge
        , {}
        );
+  }
+
+  bool verify_inner_product_argument
+  (
+   const InnerProductArgument ipa
+   , const crypto::ec_scalar challenge
+   , const scalarS a_half
+   , const scalarS b_half
+   )
+  {
+    const auto x = challenge;
+    const auto x_inv = multiplicative_inverse(x);
+
+    const auto h = homomorphic_hash_full
+      (
+       ipa.G
+       , ipa.H
+       , vector_mult(a_half, x_inv)
+       , vector_mult(a_half, x)
+       , vector_mult(b_half, x)
+       , vector_mult(b_half, x_inv)
+       , ipa.u
+       , inner_product(a_half, b_half)
+       );
+
+    const auto p =
+      (ipa.L ^ (x * x))
+      + ipa.P
+      + (ipa.R ^ (x_inv * x_inv))
+      ;
+
+    return h == p;
   }
 }

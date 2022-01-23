@@ -24,8 +24,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 namespace rct
 {
 
-  std::pair<crypto::ec_point, crypto::ec_point>
-  init_inner_product_argument
+  struct InnerProductArgument {
+    crypto::ec_point P;
+    pointV G;
+    pointV H;
+    crypto::ec_point L;
+    crypto::ec_point R;
+    crypto::ec_point u;
+  };
+
+  InnerProductArgument init_inner_product_argument
   (
    const pointS G
    , const pointS H
@@ -61,6 +69,14 @@ namespace rct
    , const scalarS b
    , const crypto::ec_point u
    , const crypto::ec_scalar challenge
+   );
+
+  bool verify_inner_product_argument
+  (
+   const InnerProductArgument ipa
+   , const crypto::ec_scalar challenge
+   , const scalarS a
+   , const scalarS b
    );
 
 }

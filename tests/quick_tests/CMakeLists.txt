@@ -33,6 +33,7 @@ add_executable(quick_tests
   math/crypto/group.cpp
   math/crypto/to-point.cpp
 
+  math/ringct/innerProductArgument.cpp
   math/ringct/bulletproofs.cpp
   math/ringct/rctOps.cpp
   math/ringct/clsag.cpp

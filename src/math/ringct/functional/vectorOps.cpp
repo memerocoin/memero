@@ -262,14 +262,37 @@ namespace rct
 
   crypto::ec_point homomorphic_hash
   (
-   const pointS vl
-   , const pointS vr
+   const pointS G
+   , const pointS H
    , const scalarS a
    , const scalarS b
    , const crypto::ec_point u
    , const crypto::ec_scalar c
    ) {
-    return vector_commit(a, vl) + vector_commit(b, vr) + (u ^ c);
+    return vector_commit(a, G) + vector_commit(b, H) + (u ^ c);
+  }
+
+  crypto::ec_point homomorphic_hash_full
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a_1
+   , const scalarS a_2
+   , const scalarS b_1
+   , const scalarS b_2
+   , const crypto::ec_point u
+   , const crypto::ec_scalar c
+   ) {
+    const auto [G_L, G_R] = split_vector(G);
+    const auto [H_L, H_R] = split_vector(H);
+
+    return
+      vector_commit(a_1, G_L)
+      + vector_commit(a_2, G_R)
+      + vector_commit(b_1, H_L)
+      + vector_commit(b_2, H_R)
+      + (u ^ c)
+      ;
   }
 
   scalarV vector_concat(const std::span<scalarV> xs) {
