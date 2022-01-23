@@ -109,11 +109,11 @@ namespace rct
       goto try_again;
     }
 
-    const auto [LR, a, b] = *maybe_recursive_inner_product_argument;
+    const auto ipa = *maybe_recursive_inner_product_argument;
 
     return Bulletproof
       {
-        A, S, T1, T2, taux, mu, LR, a, b
+        A, S, T1, T2, taux, mu, ipa.LR, ipa.a, ipa.b
         , inner_product(bp_vector_l, bp_vector_r)
       };
   }

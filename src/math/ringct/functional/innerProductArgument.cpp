@@ -47,18 +47,18 @@ namespace rct
 
     const auto L = homomorphic_hash(G_R, H_L, a_L, b_R, u, c_L);
     const auto R = homomorphic_hash(G_L, H_R, a_R, b_L, u, c_R);
- 
+
     const auto t = inner_product(a, b);
     const auto P = homomorphic_hash(G, H, a, b, u, t);
-
+ 
     return
       {
-      P
-      , span_to_vector(G)
-      , span_to_vector(H)
-      , L
-      , R
-      , u
+        P
+        , span_to_vector(G)
+        , span_to_vector(H)
+        , L
+        , R
+        , u
       };
   }
 
@@ -128,16 +128,13 @@ namespace rct
     return {new_G, new_H};
   }
 
-  std::optional<
-    std::tuple
-    < LR_V
-      , crypto::ec_scalar
-      , crypto::ec_scalar
-      >
-    >
+  std::optional<RecursiveInnerProductArgument>
   make_recursive_inner_product_argument
   (
-   const pointS G
+   const crypto::ec_point P
+   , const pointS G_0
+   , const pointS H_0
+   , const pointS G
    , const pointS H
    , const scalarS a
    , const scalarS b
@@ -151,7 +148,15 @@ namespace rct
     }
 
     if (G.size() == 1) {
-      return {{ LR, a.front(), b.front() }};
+      return RecursiveInnerProductArgument
+        {
+          P
+          , span_to_vector(G_0)
+          , span_to_vector(H_0)
+          , LR
+          , a.front()
+          , b.front()
+        };
     }
 
     const auto ipa = init_inner_product_argument
@@ -190,7 +195,10 @@ namespace rct
   
     return make_recursive_inner_product_argument
       (
-       G_half
+       P
+       , G_0
+       , H_0
+       , G_half
        , H_half
        , a_half
        , b_half
@@ -200,13 +208,7 @@ namespace rct
        );
   }
 
-  std::optional<
-    std::tuple
-    < LR_V
-      , crypto::ec_scalar
-      , crypto::ec_scalar
-      >
-    >
+  std::optional<RecursiveInnerProductArgument>
   make_recursive_inner_product_argument
   (
    const pointS G
@@ -216,9 +218,16 @@ namespace rct
    , const crypto::ec_point u
    , const crypto::ec_scalar challenge
    ) {
+
+    const auto t = inner_product(a, b);
+    const auto P = homomorphic_hash(G, H, a, b, u, t);
+
     return make_recursive_inner_product_argument
       (
-       G
+       P
+       , G
+       , H
+       , G
        , H
        , a
        , b

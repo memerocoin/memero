@@ -33,6 +33,16 @@ namespace rct
     crypto::ec_point u;
   };
 
+  struct RecursiveInnerProductArgument {
+    crypto::ec_point P;
+    pointV G;
+    pointV H;
+    LR_V LR;
+    crypto::ec_scalar a;
+    crypto::ec_scalar b;
+    crypto::ec_point u;
+  };
+
   InnerProductArgument init_inner_product_argument
   (
    const pointS G
@@ -54,13 +64,7 @@ namespace rct
    , const crypto::ec_scalar challenge
    );
 
-  std::optional<
-    std::tuple
-    < LR_V
-      , crypto::ec_scalar
-      , crypto::ec_scalar
-      >
-    >
+  std::optional<RecursiveInnerProductArgument>
   make_recursive_inner_product_argument
   (
    const pointS G
