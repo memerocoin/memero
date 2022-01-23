@@ -113,60 +113,91 @@ namespace rct
     >
   make_recursive_inner_product_argument
   (
-   const pointS _G
-   , const pointS _H
-   , const scalarS _a
-   , const scalarS _b
+   const pointS G
+   , const pointS H
+   , const scalarS a
+   , const scalarS b
    , const crypto::ec_point u
-   , const crypto::ec_scalar _challenge
+   , const crypto::ec_scalar challenge
+   , const LR_V LR
    )
   {
-    if (_G.empty()) {
+    if (G.empty()) {
       return {};
     }
 
-    pointV G = span_to_vector(_G);
-    pointV H = span_to_vector(_H);
-    scalarV a = span_to_vector(_a);
-    scalarV b = span_to_vector(_b);
-    crypto::ec_scalar challenge = _challenge;
+    if (G.size() == 1) {
+      return {{ LR, a.front(), b.front() }};
+    }
 
-    LR_V LR;
+    const auto [L, R] = init_inner_product_argument
+      (
+       G
+       , H
+       , a
+       , b
+       , u
+       );
+
+    const auto maybe_new_challenge = maybe_hash_V_to_non_zero_scalar
+      (crypto::dataV{challenge, to_inv8(L), to_inv8(R)});
+
+    if (!maybe_new_challenge) {
+      return {};
+    }
+
+    const auto new_challenge = *maybe_new_challenge;
+
+    LR_V new_LR = LR;
+    new_LR.emplace_back(L, R);
+
+    const auto [G_half, H_half, a_half, b_half] =
+      reduce_inner_product_argument
+      (
+       G
+       , H
+       , a
+       , b
+       , new_challenge
+       );
   
-    while (G.size() > 1)
-      {
-        const auto [L, R] = init_inner_product_argument
-          (
-           G
-           , H
-           , a
-           , b
-           , u
-           );
-
-        const auto maybe_challenge = maybe_hash_V_to_non_zero_scalar
-          (crypto::dataV{challenge, to_inv8(L), to_inv8(R)});
-
-        if (!maybe_challenge) {
-          return {};
-        }
-
-        challenge = *maybe_challenge;
-
-        LR.emplace_back(L, R);
-
-        std::tie(G, H, a, b) =
-          reduce_inner_product_argument
-          (
-           G
-           , H
-           , a
-           , b
-           , challenge
-           );
-      }
-
-    return {{ LR, a.front(), b.front() }};
+    return make_recursive_inner_product_argument
+      (
+       G_half
+       , H_half
+       , a_half
+       , b_half
+       , u
+       , new_challenge
+       , new_LR
+       );
   }
 
+  std::optional<
+    std::tuple
+    < LR_V
+      , crypto::ec_scalar
+      , crypto::ec_scalar
+      >
+    >
+  make_recursive_inner_product_argument
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_point u
+   , const crypto::ec_scalar challenge
+   ) {
+    return make_recursive_inner_product_argument
+      (
+       G
+       , H
+       , a
+       , b
+       , u
+       , challenge
+       , {}
+       );
+  }
 }
