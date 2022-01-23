@@ -36,16 +36,12 @@ namespace rct
 
   std::tuple
   <
-    const pointV
-    , const pointV
-    , const scalarV
+    const scalarV
     , const scalarV
     >
-  reduce_inner_product_argument
+  finish_inner_product_argument
   (
-   const pointS G
-   , const pointS H
-   , const scalarS a
+   const scalarS a
    , const scalarS b
    , const crypto::ec_scalar challenge
    );
