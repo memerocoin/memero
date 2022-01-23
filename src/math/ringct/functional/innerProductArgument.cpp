@@ -54,25 +54,18 @@ namespace rct
 
   std::tuple
   <
-    const pointV
-    , const pointV
-    , const scalarV
+    const scalarV
     , const scalarV
     >
-  reduce_inner_product_argument
+  finish_inner_product_argument
   (
-   const pointS G
-   , const pointS H
-   , const scalarS a
+   const scalarS a
    , const scalarS b
    , const crypto::ec_scalar challenge
    )
   {
     const auto [a_L, a_R] = split_vector(a);
     const auto [b_L, b_R] = split_vector(b);
-
-    const auto [G_L, G_R] = split_vector(G);
-    const auto [H_L, H_R] = split_vector(H);
 
     const crypto::ec_scalar challenge_inv =
       crypto::multiplicative_inverse(challenge);
@@ -89,6 +82,27 @@ namespace rct
        , vector_mult(b_R, challenge)
        );
 
+    return {new_a, new_b};
+  }
+
+  std::tuple
+  <
+    const pointV
+    , const pointV
+    >
+  reduce_inner_product_argument
+  (
+   const pointS G
+   , const pointS H
+   , const crypto::ec_scalar challenge
+   )
+  {
+    const auto [G_L, G_R] = split_vector(G);
+    const auto [H_L, H_R] = split_vector(H);
+
+    const crypto::ec_scalar challenge_inv =
+      crypto::multiplicative_inverse(challenge);
+
     const auto new_G = vector_add_V
       (
        scalar_multP_V(challenge_inv, G_L)
@@ -101,7 +115,7 @@ namespace rct
        , scalar_multP_V(challenge_inv, H_R)
        );
 
-    return {new_G, new_H, new_a, new_b};
+    return {new_G, new_H};
   }
 
   std::optional<
@@ -148,16 +162,19 @@ namespace rct
 
     const auto new_challenge = *maybe_new_challenge;
 
+    const auto [a_half, b_half] = finish_inner_product_argument
+      (
+       a, b, new_challenge
+       );
+
     LR_V new_LR = LR;
     new_LR.emplace_back(L, R);
 
-    const auto [G_half, H_half, a_half, b_half] =
+    const auto [G_half, H_half] =
       reduce_inner_product_argument
       (
        G
        , H
-       , a
-       , b
        , new_challenge
        );
   
