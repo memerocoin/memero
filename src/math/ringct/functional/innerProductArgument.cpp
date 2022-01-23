@@ -90,7 +90,7 @@ namespace rct
     const pointV
     , const pointV
     >
-  reduce_inner_product_argument
+  split_generators_with_challenge
   (
    const pointS G
    , const pointS H
@@ -171,7 +171,7 @@ namespace rct
     new_LR.emplace_back(L, R);
 
     const auto [G_half, H_half] =
-      reduce_inner_product_argument
+      split_generators_with_challenge
       (
        G
        , H
