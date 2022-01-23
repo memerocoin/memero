@@ -144,6 +144,7 @@ namespace rct
    )
   {
     if (G.empty()) {
+      LOG_FATAL("Generator shouldn't be emtpy");
       return {};
     }
 
@@ -193,7 +194,7 @@ namespace rct
        , H
        , new_challenge
        );
-  
+
     return make_recursive_inner_product_argument
       (
        P
@@ -218,7 +219,8 @@ namespace rct
    , const scalarS b
    , const crypto::ec_point u
    , const crypto::ec_scalar challenge
-   ) {
+   )
+  {
 
     const auto t = inner_product(a, b);
     const auto P = homomorphic_hash(G, H, a, b, u, t);
@@ -236,6 +238,26 @@ namespace rct
        , challenge
        , {}
        );
+  }
+
+  crypto::ec_point verify_half
+  (
+   const crypto::ec_point P
+   , const crypto::ec_point L
+   , const crypto::ec_point R
+   , const crypto::ec_scalar challenge
+   )
+  {
+    const auto x = challenge;
+    const auto x_inv = multiplicative_inverse(x);
+
+    const auto p =
+      (L ^ (x * x))
+      + P
+      + (R ^ (x_inv * x_inv))
+      ;
+
+    return p;
   }
 
   bool verify_inner_product_argument
@@ -261,11 +283,7 @@ namespace rct
        , inner_product(a_half, b_half)
        );
 
-    const auto p =
-      (ipa.L ^ (x * x))
-      + ipa.P
-      + (ipa.R ^ (x_inv * x_inv))
-      ;
+    const auto p = verify_half(ipa.P, ipa.L, ipa.R, x);
 
     return h == p;
   }
@@ -277,6 +295,7 @@ namespace rct
    )
   {
     if (ipa.LR.empty()) {
+      LOG_FATAL("ipa.LR shouldn't be emtpy");
       return false;
     }
 
@@ -311,7 +330,32 @@ namespace rct
          );
     }
 
+    const auto [G_half, H_half] =
+      split_generators_with_challenge
+      (
+       ipa.G
+       , ipa.H
+       , new_challenge
+       );
 
-    return false;
+    const auto new_LV =
+      LR_V(std::next(ipa.LR.begin(), 1), ipa.LR.end());
+
+    const RecursiveInnerProductArgument new_ipa = 
+      {
+        verify_half(ipa.P, L, R, new_challenge)
+        , G_half
+        , H_half
+        , new_LV
+        , ipa.a
+        , ipa.b
+        , ipa.u
+      };
+
+    return verify_recursive_inner_product_argument
+      (
+       new_ipa
+       , new_challenge
+       );
   }
 }
