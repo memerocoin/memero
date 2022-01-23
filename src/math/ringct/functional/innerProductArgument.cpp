@@ -338,7 +338,7 @@ namespace rct
        , new_challenge
        );
 
-    const auto new_LV =
+    const auto new_LR =
       LR_V(std::next(ipa.LR.begin(), 1), ipa.LR.end());
 
     const RecursiveInnerProductArgument new_ipa = 
@@ -346,7 +346,7 @@ namespace rct
         verify_half(ipa.P, L, R, new_challenge)
         , G_half
         , H_half
-        , new_LV
+        , new_LR
         , ipa.a
         , ipa.b
         , ipa.u
