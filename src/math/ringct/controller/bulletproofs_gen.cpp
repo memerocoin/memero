@@ -51,71 +51,75 @@ namespace rct
     const size_t total_bit_width =
       padded_number_of_inputs * bit_width;
 
-  try_again:
-    const crypto::ec_scalar alpha = crypto::randomScalar();
-    const scalarV sL = crypto::randomScalars(total_bit_width);
-    const scalarV sR = crypto::randomScalars(total_bit_width);
-    const crypto::ec_scalar rho = crypto::randomScalar();
-    const crypto::ec_scalar tau1 = crypto::randomScalar();
-    const crypto::ec_scalar tau2 = crypto::randomScalar();
+    while (true) {
 
-    const auto bp_vectors = get_bp_vectors_for_inner_product_argument
-      (
-       xs
-       , alpha
-       , sL
-       , sR
-       , rho
-       , tau1
-       , tau2
-       );
+      const crypto::ec_scalar alpha = crypto::randomScalar();
+      const scalarV sL = crypto::randomScalars(total_bit_width);
+      const scalarV sR = crypto::randomScalars(total_bit_width);
+      const crypto::ec_scalar rho = crypto::randomScalar();
+      const crypto::ec_scalar tau1 = crypto::randomScalar();
+      const crypto::ec_scalar tau2 = crypto::randomScalar();
 
-    if (!bp_vectors) {
-      goto try_again;
+      const auto bp_vectors =
+        get_bp_vectors_for_inner_product_argument
+        (
+         xs
+         , alpha
+         , sL
+         , sR
+         , rho
+         , tau1
+         , tau2
+         );
+
+      if (!bp_vectors) {
+        continue;
+      }
+
+      const auto
+        [
+         bp_vector_l
+         , bp_vector_r
+         , inner_product_challenge
+         , y_inv
+         , A
+         , S
+         , T1
+         , T2
+         , taux
+         , mu
+         ] = *bp_vectors;
+
+      const scalarV y_inv_exponents =
+        scalar_exponents(y_inv, total_bit_width);
+
+      const auto G_V = get_bp_generator_G_V(total_bit_width);
+      const auto H_V = get_bp_generator_H_V(total_bit_width);
+
+      const auto maybe_recursive_inner_product_argument =
+        make_recursive_inner_product_argument
+        (
+         G_V
+         , vector_multP_V(y_inv_exponents, H_V)
+         , bp_vector_l
+         , bp_vector_r
+         , H_(inner_product_challenge)
+         , inner_product_challenge
+         );
+
+      if (!maybe_recursive_inner_product_argument) {
+        continue;
+      }
+
+      const auto ipa = *maybe_recursive_inner_product_argument;
+
+      return Bulletproof
+        {
+          A, S, T1, T2, taux, mu, ipa.LR, ipa.a, ipa.b
+          , inner_product(bp_vector_l, bp_vector_r)
+        };
+
     }
-
-    const auto
-      [
-       bp_vector_l
-       , bp_vector_r
-       , inner_product_challenge
-       , y_inv
-       , A
-       , S
-       , T1
-       , T2
-       , taux
-       , mu
-       ] = *bp_vectors;
-
-    const scalarV y_inv_exponents =
-      scalar_exponents(y_inv, total_bit_width);
-
-    const auto G_V = get_bp_generator_G_V(total_bit_width);
-    const auto H_V = get_bp_generator_H_V(total_bit_width);
-
-    const auto maybe_recursive_inner_product_argument =
-      make_recursive_inner_product_argument
-      (
-       G_V
-       , vector_multP_V(y_inv_exponents, H_V)
-       , bp_vector_l
-       , bp_vector_r
-       , H_(inner_product_challenge)
-       , inner_product_challenge
-       );
-
-    if (!maybe_recursive_inner_product_argument) {
-      goto try_again;
-    }
-
-    const auto ipa = *maybe_recursive_inner_product_argument;
-
-    return Bulletproof
-      {
-        A, S, T1, T2, taux, mu, ipa.LR, ipa.a, ipa.b
-        , inner_product(bp_vector_l, bp_vector_r)
-      };
   }
 
 }

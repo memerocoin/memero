@@ -71,6 +71,44 @@ randomIPA() {
   return {ipa, a, b};
 }
 
+std::tuple
+<
+  RecursiveInnerProductArgument
+  , scalarV
+  , scalarV
+  , crypto::ec_scalar
+  >
+random_recursive_IPA() {
+  // const size_t i_exp = crypto::rand_range(1, 8);
+  // const size_t i = 1 << i_exp;
+  const size_t i = 2;
+
+  const auto G = get_bp_generator_G_V(i);
+  const auto H = get_bp_generator_H_V(i);
+  const auto u = crypto::randomPoint();
+  const auto challenge = crypto::randomScalar();
+
+  const auto [a, b] = random_vector_pair(i);
+
+  std::optional<RecursiveInnerProductArgument> maybe_ipa = {};
+
+  while (!maybe_ipa) {
+    maybe_ipa = make_recursive_inner_product_argument
+      (
+       G
+       , H
+       , a
+       , b
+       , u
+       , challenge
+       );
+  }
+
+  const auto ipa = *maybe_ipa;
+
+  return {ipa, a, b, challenge};
+}
+
 TEST(quick_ipa, simple)
 {
   const auto [ipa, a, b] = randomIPA();
@@ -110,3 +148,17 @@ TEST(quick_homomorphic_hash_full, simple)
      );
 }
 
+
+TEST(quick_ipa_non_interactive, simple)
+{
+  const auto [ipa, a, b, challenge] = random_recursive_IPA();
+
+  // bool verify_recursive_inner_product_argument
+  // (
+  //  const RecursiveInnerProductArgument ipa
+  //  , const crypto::ec_scalar challenge
+  //  );
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+}

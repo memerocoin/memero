@@ -156,6 +156,7 @@ namespace rct
           , LR
           , a.front()
           , b.front()
+          , u
         };
     }
 
@@ -267,5 +268,50 @@ namespace rct
       ;
 
     return h == p;
+  }
+
+  bool verify_recursive_inner_product_argument
+  (
+   const RecursiveInnerProductArgument ipa
+   , const crypto::ec_scalar challenge
+   )
+  {
+    if (ipa.LR.empty()) {
+      return false;
+    }
+
+    const auto [L,R] = ipa.LR.front(); 
+    const auto maybe_new_challenge = maybe_hash_V_to_non_zero_scalar
+      (crypto::dataV{challenge, to_inv8(L), to_inv8(R)});
+
+    if (!maybe_new_challenge) {
+      return false;
+    }
+
+    const auto new_challenge = *maybe_new_challenge;
+
+    if (ipa.LR.size() == 1) {
+
+      const auto ipa_one = InnerProductArgument
+        {
+          ipa.P
+          , ipa.G
+          , ipa.H
+          , L
+          , R
+          , ipa.u
+        };
+
+      return verify_inner_product_argument
+        (
+         ipa_one
+         , new_challenge
+         , scalarV{ipa.a}
+         , scalarV{ipa.b}
+         );
+    }
+
+
+    return false;
   }
 }

@@ -83,4 +83,10 @@ namespace rct
    , const scalarS b
    );
 
+
+  bool verify_recursive_inner_product_argument
+  (
+   const RecursiveInnerProductArgument ipa
+   , const crypto::ec_scalar challenge
+   );
 }
