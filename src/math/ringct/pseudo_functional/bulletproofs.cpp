@@ -125,11 +125,11 @@ namespace rct
 
     // setup weighted aggregates
 
-    const scalarV winv = multiplicative_inverse_V
+    const scalarV w_inv_V = multiplicative_inverse_V
       (challenges.inner_product_challenge_LR);
 
     const auto challenge_y = challenges.V_A_S;
-    const crypto::ec_scalar yinv =
+    const crypto::ec_scalar y_inv =
       crypto::multiplicative_inverse(challenge_y);
 
     const crypto::ec_scalar weight_y = crypto::randomScalar();
@@ -148,8 +148,8 @@ namespace rct
 
     std::transform
       (
-       winv.begin()
-       , winv.end()
+       w_inv_V.begin()
+       , w_inv_V.end()
        , proof.LR.begin()
        , std::back_inserter(multiexp_data)
        , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
@@ -191,7 +191,7 @@ namespace rct
 
     // precalc
     scalarV w_cache(1<<rounds);
-    w_cache[0] = winv[0];
+    w_cache[0] = w_inv_V[0];
     w_cache[1] = challenges.inner_product_challenge_LR[0];
     for (size_t j = 1; j < rounds; ++j)
       {
@@ -200,7 +200,7 @@ namespace rct
           {
             w_cache[s] =
               w_cache[s/2] * challenges.inner_product_challenge_LR[j];
-            w_cache[s-1] = w_cache[s/2] * winv[j];
+            w_cache[s-1] = w_cache[s/2] * w_inv_V[j];
           }
       }
 
@@ -209,18 +209,22 @@ namespace rct
     const scalarV two_exponents =
       scalar_exponents(rct::s_two, bit_width);
 
-    scalarV z5_v(total_bit_width);
-    std::generate
+    const auto y_exponents =
+      scalar_exponents(challenge_y, total_bit_width);
+
+    const auto y_inv_exponents =
+      scalar_exponents(y_inv, total_bit_width);
+
+    scalarV z5_v;
+    std::generate_n
       (
-       z5_v.begin()
-       , z5_v.end()
+       std::back_inserter(z5_v)
+       , total_bit_width
        , [
           i = 0
-          , yinvpow = s_one
-          , ypow = s_one
+          , y_exponents
+          , y_inv_exponents
           , z_exponents_skip_2
-          , yinv
-          , challenge_y
           , challenge_z
           , weight_z
           , proof
@@ -248,12 +252,11 @@ namespace rct
            * two_exponents[ i % bit_width];
 
          const crypto::ec_scalar h_scalar =
-           proof.b * yinvpow * w_cache[(~i) & (total_bit_width-1)]
-           - (challenge_z * ypow + zpowTwoN) * yinvpow ;
+           proof.b * y_inv_exponents[i]
+           * w_cache[(~i) & (total_bit_width-1)]
+           - (challenge_z * y_exponents[i] + zpowTwoN)
+           * y_inv_exponents[i];
 
-
-         yinvpow = yinvpow * yinv;
-         ypow = ypow * challenge_y;
 
          const crypto::ec_scalar r = s_zero - h_scalar * weight_z;
          i++;
