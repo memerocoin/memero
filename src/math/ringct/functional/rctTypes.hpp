@@ -86,7 +86,7 @@ namespace rct {
   {
     crypto::ec_point A, S;
     crypto::ec_point T1, T2;
-    crypto::ec_scalar taux, mu;
+    crypto::ec_scalar tau, mu;
     LR_V LR;
     crypto::ec_scalar a, b, t;
   };

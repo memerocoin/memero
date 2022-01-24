@@ -86,7 +86,7 @@ TEST(quick_bulletproofs, pick_amount_size_1_to_16)
 //   rct::pointV commits;
 //   crypto::ec_point A, S;
 //   crypto::ec_point T1, T2;
-//   crypto::ec_scalar taux, mu;
+//   crypto::ec_scalar tau, mu;
 //   LR_V LR;
 //   crypto::ec_scalar a, b, t;
 // };
@@ -144,14 +144,14 @@ TEST(quick_bulletproofs, wrong_T2)
   EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 
-TEST(quick_bulletproofs, wrong_taux)
+TEST(quick_bulletproofs, wrong_tau)
 {
   const auto input = randomProof();
   const auto proof = input.second;
   EXPECT_TRUE(bulletproof_VERIFY(input.first, proof));
 
   auto altered_proof = proof;
-  altered_proof.taux = randomScalar();
+  altered_proof.tau = randomScalar();
   EXPECT_FALSE(bulletproof_VERIFY(input.first, altered_proof));
 }
 

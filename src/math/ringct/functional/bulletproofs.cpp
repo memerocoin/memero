@@ -204,7 +204,7 @@ namespace rct
        {
          hash_challenge_z_T1_T2
          , hash_challenge_z_T1_T2
-         , proof.taux
+         , proof.tau
          , proof.mu
          , proof.t
        });
@@ -440,12 +440,12 @@ namespace rct
        , [](const auto& x ) { return x.second; }
        );
 
-    const crypto::ec_scalar taux1 =
+    const crypto::ec_scalar tau0 =
       inner_product(blinding_factors, z_exponents_skip_2);
 
     const auto x = challenge_x;
-    const crypto::ec_scalar taux = substitute_polynomial
-      (scalarV{taux1, tau1, tau2}, x);
+    const crypto::ec_scalar tau = substitute_polynomial
+      (scalarV{tau0, tau1, tau2}, x);
 
     const crypto::ec_scalar mu = x * rho + alpha;
 
@@ -463,7 +463,7 @@ namespace rct
        {
          x
          , x
-         , taux
+         , tau
          , mu
          , t
        }
@@ -485,7 +485,7 @@ namespace rct
         , S
         , T1
         , T2
-        , taux
+        , tau
         , mu
       }};
   }

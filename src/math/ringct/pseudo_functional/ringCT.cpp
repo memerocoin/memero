@@ -88,7 +88,7 @@ namespace rct {
     kv.push_back(p.S);
     kv.push_back(p.T1);
     kv.push_back(p.T2);
-    kv.push_back(p.taux);
+    kv.push_back(p.tau);
     kv.push_back(p.mu);
     for (const auto &l: p.L)
       kv.push_back(l);

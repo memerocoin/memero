@@ -292,7 +292,7 @@ namespace rct
     const crypto::ec_scalar k =
       s_zero - z_exponents_skip_2.front() * ip1y - k1 * ip12;
 
-    const crypto::ec_scalar y0 = s_zero - proof.taux * weight_y;
+    const crypto::ec_scalar y0 = s_zero - proof.tau * weight_y;
     const crypto::ec_scalar y1 =
       (proof.t - (hash_data.V_A_S_rehash * ip1y + k)) * weight_y;
 

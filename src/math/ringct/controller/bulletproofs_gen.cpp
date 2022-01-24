@@ -86,7 +86,7 @@ namespace rct
          , S
          , T1
          , T2
-         , taux
+         , tau
          , mu
          ] = *bp_vectors;
 
@@ -118,7 +118,7 @@ namespace rct
 
       return Bulletproof
         {
-          A, S, T1, T2, taux, mu, ipa.LR, ipa.a, ipa.b
+          A, S, T1, T2, tau, mu, ipa.LR, ipa.a, ipa.b
           , inner_product(bp_vector_l, bp_vector_r)
         };
 

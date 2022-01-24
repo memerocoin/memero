@@ -65,7 +65,7 @@ namespace rct {
   {
     rct::inv8 A, S;
     rct::inv8 T1, T2;
-    crypto::ec_scalar_unnormalized taux, mu;
+    crypto::ec_scalar_unnormalized tau, mu;
     rct::inv8V L, R;
     crypto::ec_scalar_unnormalized a, b, t;
 
@@ -74,7 +74,7 @@ namespace rct {
     FIELD(S)
     FIELD(T1)
     FIELD(T2)
-    FIELD(taux)
+    FIELD(tau)
     FIELD(mu)
     FIELD(L)
     FIELD(R)

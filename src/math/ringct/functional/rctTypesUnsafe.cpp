@@ -82,7 +82,7 @@ namespace rct {
     }
 
     // check crypto::ec_scalar range
-    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.taux), {}, "Input crypto::ec_scalar not in range");
+    LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.tau), {}, "Input crypto::ec_scalar not in range");
     LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.mu), {}, "Input crypto::ec_scalar not in range");
 
     LOG_ERROR_AND_RETURN_UNLESS(is_reduced(proof.a), {}, "Input crypto::ec_scalar not in range");
@@ -96,7 +96,7 @@ namespace rct {
       // rct::inv8V V;
       // rct::inv8 A, S;
       // rct::inv8 T1, T2;
-      // crypto::ec_scalar taux;
+      // crypto::ec_scalar tau;
       // crypto::ec_scalar mu;
       // rct::inv8V L, R;
       // crypto::ec_scalar a, b, t;
@@ -104,7 +104,7 @@ namespace rct {
       , proof_S
       , proof_T1
       , proof_T2
-      , crypto::reduce(proof.taux)
+      , crypto::reduce(proof.tau)
       , crypto::reduce(proof.mu)
       , *maybeLR
       , crypto::reduce(proof.a)
@@ -119,7 +119,7 @@ namespace rct {
       // rct::inv8V V;
       // rct::inv8 A, S;
       // rct::inv8 T1, T2;
-      // crypto::ec_scalar taux;
+      // crypto::ec_scalar tau;
       // crypto::ec_scalar mu;
       // rct::inv8V L, R;
       // crypto::ec_scalar a, b, t;
@@ -127,7 +127,7 @@ namespace rct {
       , to_inv8(proof.S)
       , to_inv8(proof.T1)
       , to_inv8(proof.T2)
-      , proof.taux
+      , proof.tau
       , proof.mu
       , to_inv8V(L)
       , to_inv8V(R)
