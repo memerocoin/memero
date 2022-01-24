@@ -309,7 +309,7 @@ namespace rct
       ;
   }
 
-  scalarV vector_concat(const std::span<scalarV> xs) {
+  scalarV vector_concat(const std::span<const scalarV> xs) {
     return std::reduce
       (
        xs.begin()
@@ -331,4 +331,23 @@ namespace rct
     return pointV(xs.begin(), xs.end());
   }
 
+  std::vector<scalarV> vector_mult_V_monadic
+  (
+   scalarS xs
+   , scalarS ys
+   )
+  {
+    std::vector<scalarV> zs;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(zs)
+       , [ys](const auto& x) -> scalarV {
+         return vector_mult(ys, x);
+       }
+       );
+
+    return zs;
+  }
 } // rct

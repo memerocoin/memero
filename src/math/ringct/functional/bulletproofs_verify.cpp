@@ -179,8 +179,15 @@ namespace rct
     const auto y_inv_exponents =
       scalar_exponents(y_inv, total_bit_width);
 
+    const std::vector<scalarV> z_exp_mult_two_exp_monadic =
+      vector_mult_V_monadic(z_exponents_skip_2, two_exponents);
+
+    const scalarV z_exp_mult_two_exp_flatten =
+      vector_concat(z_exp_mult_two_exp_monadic);
+
     const auto proof_b = proof.b;
     scalarV z5_v;
+
     std::generate_n
       (
        std::back_inserter(z5_v)
@@ -189,7 +196,7 @@ namespace rct
           i = 0
           , y_exponents
           , y_inv_exponents
-          , z_exponents_skip_2
+          , z_exp_mult_two_exp_flatten
           , challenge_z
           , weight_z
           , proof_b
@@ -202,24 +209,14 @@ namespace rct
 
          LOG_ERROR_AND_THROW_UNLESS
            (
-            i / bit_width < z_exponents_skip_2.size()
-            , "invalid z_exponents length "
-            );
-
-         LOG_ERROR_AND_THROW_UNLESS
-           (
             i % bit_width < two_exponents.size()
             , "invalid two_exponents index"
             );
 
-         const auto zpowTwoN =
-           z_exponents_skip_2[ i / bit_width ]
-           * two_exponents[ i % bit_width];
-
          const crypto::ec_scalar h_scalar =
            proof_b * y_inv_exponents[i]
            * w_cache[(~i) & (total_bit_width-1)]
-           - (challenge_z * y_exponents[i] + zpowTwoN)
+           - (challenge_z * y_exponents[i] + z_exp_mult_two_exp_flatten[i])
            * y_inv_exponents[i];
 
 

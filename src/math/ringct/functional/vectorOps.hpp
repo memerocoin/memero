@@ -96,11 +96,15 @@ namespace rct
 
   scalarV vector_concat
   (
-   const std::span<scalarV> xs
+   const std::span<const scalarV> xs
    );
 
   scalarV span_to_vector(const scalarS xs);
   pointV span_to_vector(const pointS xs);
 
+  std::vector<scalarV> vector_mult_V_monadic (
+   scalarS xs
+   , scalarS ys
+   );
 
 }

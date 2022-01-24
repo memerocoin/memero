@@ -368,16 +368,11 @@ namespace rct
     const scalarV two_exponents =
       scalar_exponents(rct::s_two, bit_width);
 
-    std::vector<scalarV> zero_twos;
-    std::transform
-      (
-       z_exponents_skip_2.begin()
-       , z_exponents_skip_2.end()
-       , std::back_inserter(zero_twos)
-       , [two_exponents](const auto& x) -> scalarV {
-         return vector_mult(two_exponents, x);
-       }
-       );
+    const std::vector<scalarV> z_exp_mult_two_exp_monadic =
+      vector_mult_V_monadic(z_exponents_skip_2, two_exponents);
+
+    const scalarV z_exp_mult_two_exp_flatten =
+      vector_concat(z_exp_mult_two_exp_monadic);
 
     const scalarV r0 = vector_add_V
       (
@@ -386,7 +381,7 @@ namespace rct
         y_exponents
         , vector_add(aR, challenge_z)
         )
-       , vector_concat(zero_twos)
+       , z_exp_mult_two_exp_flatten
        );
 
     const scalarV r1 = hadamard_product(y_exponents, sR);
