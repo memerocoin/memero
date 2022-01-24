@@ -71,12 +71,13 @@ namespace rct
     }
   }
 
-  bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof)
+  bool bulletproof_VERIFY
+  (
+   const pointS commits
+   , const Bulletproof proof
+   )
   {
     init_generators();
-
-    // sanity and figure out which proof is longest
-    // STEP 1, fill proof_data
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
@@ -85,29 +86,41 @@ namespace rct
        , "commits V does not have at least one element"
        );
 
-    LOG_ERROR_AND_RETURN_UNLESS(proof.LR.size() > 0, false, "Empty proof");
     LOG_ERROR_AND_RETURN_UNLESS
-      (commits.size() <= max_outputs, false, "too many points for the proof");
+      (proof.LR.size() > 0, false, "Empty proof");
 
-    constexpr size_t log_bit_width = ceiling_log2_review(bit_width).second;
-    const auto [padded_number_of_inputs, log_padded_number_of_inputs] =
+    LOG_ERROR_AND_RETURN_UNLESS
+      (
+       commits.size() <= max_outputs
+       , false, "too many points for the proof"
+       );
+
+    constexpr size_t log_bit_width =
+      ceiling_log2_review(bit_width).second;
+
+    const auto
+      [
+       padded_number_of_inputs
+       , log_padded_number_of_inputs
+       ] =
       ceiling_log2_review(commits.size());
 
     const size_t rounds = log_padded_number_of_inputs + log_bit_width;
     LOG_ERROR_AND_RETURN_UNLESS
-      (proof.LR.size() == rounds, false, "Proof is not the expected size");
+      (
+       proof.LR.size() == rounds
+       , false, "Proof is not the expected size"
+       );
 
 
-    // Reconstruct the challenges
-
-    const auto maybe_challenges = make_hash_challenges(commits, proof);
+    const auto maybe_challenges =
+      make_hash_challenges(commits, proof);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (maybe_challenges, false, "invalid hash challenges");
 
     const auto challenges = *maybe_challenges;
 
-    // STEP 2, use proof_data
     std::vector<MultiexpData> multiexp_data;
 
     // setup weighted aggregates
@@ -143,11 +156,14 @@ namespace rct
        }
        );
 
-    const size_t total_bit_width = padded_number_of_inputs * bit_width;
+    const size_t total_bit_width =
+      padded_number_of_inputs * bit_width;
 
     const scalarV z_exponents = scalar_exponents
       (challenges.V_A_S_rehash , padded_number_of_inputs + 3);
-    const scalarS z_exponents_skip_2 = std::span(z_exponents).subspan(2);
+
+    const scalarS z_exponents_skip_2 =
+      std::span(z_exponents).subspan(2);
 
     std::transform
       (
@@ -161,8 +177,11 @@ namespace rct
        );
 
     const auto challenge_x = challenges.V_A_S_T1_T2;
+
     multiexp_data.emplace_back(challenge_x * weight_y, proof.T1);
-    multiexp_data.emplace_back(challenge_x * challenge_x * weight_y, proof.T2);
+    multiexp_data.emplace_back
+      (challenge_x * challenge_x * weight_y, proof.T2);
+
     multiexp_data.emplace_back(weight_z, proof.A);
     multiexp_data.emplace_back(challenge_x * weight_z, proof.S);
 
@@ -185,26 +204,45 @@ namespace rct
 
     // Compute the curvepoints from G[i] and H[i]
 
-    const scalarV two_exponents = scalar_exponents(rct::s_two, bit_width);
+    const scalarV two_exponents =
+      scalar_exponents(rct::s_two, bit_width);
+
     scalarV z5_v(total_bit_width);
     std::generate
       (
        z5_v.begin()
        , z5_v.end()
-       , [i = 0, yinvpow = s_one, ypow = s_one
-          , z_exponents_skip_2, yinv, challenges, weight_z, proof, w_cache, total_bit_width
+       , [
+          i = 0
+          , yinvpow = s_one
+          , ypow = s_one
+          , z_exponents_skip_2
+          , yinv
+          , challenges
+          , weight_z
+          , proof
+          , w_cache
+          , total_bit_width
           , two_exponents
           ] () mutable -> crypto::ec_scalar {
-         // Convert the index to binary IN REVERSE and construct the crypto::ec_scalar exponent
+         // Convert the index to binary IN REVERSE
+         // and construct the crypto::ec_scalar exponent
 
          LOG_ERROR_AND_THROW_UNLESS
-           (i / bit_width < z_exponents_skip_2.size(), "invalid z_exponents length ");
+           (
+            i / bit_width < z_exponents_skip_2.size()
+            , "invalid z_exponents length "
+            );
 
          LOG_ERROR_AND_THROW_UNLESS
-           (i % bit_width < two_exponents.size(), "invalid two_exponents index");
+           (
+            i % bit_width < two_exponents.size()
+            , "invalid two_exponents index"
+            );
 
          const auto zpowTwoN =
-           z_exponents_skip_2[ i / bit_width ] * two_exponents[ i % bit_width];
+           z_exponents_skip_2[ i / bit_width ]
+           * two_exponents[ i % bit_width];
 
          const crypto::ec_scalar h_scalar =
            proof.b * yinvpow * w_cache[(~i) & (total_bit_width-1)]
@@ -270,7 +308,10 @@ namespace rct
 
     const crypto::ec_scalar z1 = proof.mu * weight_z;
     const crypto::ec_scalar z3 =
-      (proof.t - proof.a * proof.b) * challenges.inner_product_challenge * weight_z;
+      (proof.t - proof.a * proof.b)
+      * challenges.inner_product_challenge
+      * weight_z
+      ;
 
 
     // now check all proofs at once
@@ -283,7 +324,8 @@ namespace rct
        , z4_v.end()
        , std::begin(G_V)
        , std::back_inserter(multiexp_data)
-       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+       , [](const auto& s, const auto& p) -> MultiexpData
+       { return {s, p}; }
        );
 
     std::transform
@@ -292,7 +334,8 @@ namespace rct
        , z5_v.end()
        , std::begin(H_V)
        , std::back_inserter(multiexp_data)
-       , [](const auto& s, const auto& p) -> MultiexpData { return {s, p}; }
+       , [](const auto& s, const auto& p) -> MultiexpData
+       { return {s, p}; }
        );
 
     if (multiexp(multiexp_data) != crypto::identity)
