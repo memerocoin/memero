@@ -188,11 +188,11 @@ namespace rct
        }
        );
 
-    const auto hash_datax = hash_data.V_A_S_T1_T2;
-    multiexp_data.emplace_back(hash_datax * weight_y, proof.T1);
-    multiexp_data.emplace_back(hash_datax * hash_datax * weight_y, proof.T2);
+    const auto challenge_x = hash_data.V_A_S_T1_T2;
+    multiexp_data.emplace_back(challenge_x * weight_y, proof.T1);
+    multiexp_data.emplace_back(challenge_x * challenge_x * weight_y, proof.T2);
     multiexp_data.emplace_back(weight_z, proof.A);
-    multiexp_data.emplace_back(hash_datax * weight_z, proof.S);
+    multiexp_data.emplace_back(challenge_x * weight_z, proof.S);
 
     // Compute the number of rounds for the inner product
 
