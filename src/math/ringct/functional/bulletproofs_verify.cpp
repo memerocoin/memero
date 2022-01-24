@@ -247,19 +247,13 @@ namespace rct
     const crypto::ec_scalar ip1y =
       sum_of_scalar_exponents(challenge_y, total_bit_width);
 
-    LOG_ERROR_AND_RETURN_UNLESS
-      (
-       padded_number_of_inputs < z_exponents_skip_2.size()
-       , false, "invalid zpow index"
-       );
-
     const crypto::ec_scalar k1 =
       vector_sum(std::span(z_exponents).subspan(3));
 
     const crypto::ec_scalar ip12 = vector_sum(two_exponents);
 
     const crypto::ec_scalar k =
-      s_zero - z_exponents_skip_2.front() * ip1y - k1 * ip12;
+      s_zero - challenge_z * challenge_z * ip1y - k1 * ip12;
 
     const crypto::ec_scalar y0 = s_zero - proof.tau * weight_y;
     const crypto::ec_scalar y1 =
