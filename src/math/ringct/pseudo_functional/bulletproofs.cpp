@@ -106,6 +106,7 @@ namespace rct
       ceiling_log2_review(commits.size());
 
     const size_t rounds = log_padded_number_of_inputs + log_bit_width;
+
     LOG_ERROR_AND_RETURN_UNLESS
       (
        proof.LR.size() == rounds
@@ -190,7 +191,7 @@ namespace rct
     // Compute the number of rounds for the inner product
 
     // precalc
-    scalarV w_cache(1<<rounds);
+    scalarV w_cache(total_bit_width);
     w_cache[0] = w_inv_V[0];
     w_cache[1] = challenges.inner_product_challenge_LR[0];
     for (size_t j = 1; j < rounds; ++j)
@@ -215,6 +216,7 @@ namespace rct
     const auto y_inv_exponents =
       scalar_exponents(y_inv, total_bit_width);
 
+    const auto proof_b = proof.b;
     scalarV z5_v;
     std::generate_n
       (
@@ -227,7 +229,7 @@ namespace rct
           , z_exponents_skip_2
           , challenge_z
           , weight_z
-          , proof
+          , proof_b
           , w_cache
           , total_bit_width
           , two_exponents
@@ -252,7 +254,7 @@ namespace rct
            * two_exponents[ i % bit_width];
 
          const crypto::ec_scalar h_scalar =
-           proof.b * y_inv_exponents[i]
+           proof_b * y_inv_exponents[i]
            * w_cache[(~i) & (total_bit_width-1)]
            - (challenge_z * y_exponents[i] + zpowTwoN)
            * y_inv_exponents[i];
