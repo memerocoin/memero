@@ -46,15 +46,20 @@ namespace rct
     return res;
   }
 
+  crypto::ec_scalar vector_sum
+  (
+   const scalarS xs
+   ) {
+    return std::reduce(xs.begin(), xs.end(), rct::s_zero);
+  }
+
   crypto::ec_scalar sum_of_scalar_exponents
   (
    const crypto::ec_scalar x
    , const size_t n
    )
   {
-    const auto xs = scalar_exponents(x, n);
-
-    return std::reduce(xs.begin(), xs.end(), rct::s_zero);
+    return vector_sum(scalar_exponents(x, n));
   }
 
   rct::scalarV hadamard_product(const scalarS a, const scalarS b)
@@ -86,8 +91,7 @@ namespace rct
        , "Not enough elements in the second container"
        );
 
-    const auto xs = hadamard_product(a, b);
-    return std::reduce(xs.begin(), xs.end(), rct::s_zero);
+    return vector_sum(hadamard_product(a, b));
   }
 
 

@@ -28,6 +28,11 @@ namespace rct
   rct::scalarV scalar_exponents
   (const crypto::ec_scalar x, const size_t n);
 
+  crypto::ec_scalar vector_sum
+  (
+   const scalarS xs
+   );
+
   crypto::ec_scalar sum_of_scalar_exponents
   (
    const crypto::ec_scalar x
