@@ -53,6 +53,13 @@ namespace rct
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
   }
 
+  crypto::ec_point vector_sum
+  (
+   const pointS xs
+   ) {
+    return std::reduce(xs.begin(), xs.end(), crypto::identity);
+  }
+
   crypto::ec_scalar sum_of_scalar_exponents
   (
    const crypto::ec_scalar x

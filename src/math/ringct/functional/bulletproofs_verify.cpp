@@ -27,14 +27,11 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/bulletproofs_gen.hpp"
-#include "math/ringct/functional/multi_exponentiation.hpp"
 
 #include "tools/epee/include/logging.hpp"
 
 namespace rct
 {
-  const auto multiexp = dummy;
-
   bool bulletproof_VERIFY
   (
    const pointS commits
@@ -88,8 +85,6 @@ namespace rct
 
     const auto challenges = *maybe_challenges;
 
-    std::vector<MultiexpData> multiexp_data;
-
     // setup weighted aggregates
 
     const scalarV w_inv_V = multiplicative_inverse_V
@@ -99,26 +94,59 @@ namespace rct
     const crypto::ec_scalar y_inv =
       crypto::multiplicative_inverse(challenge_y);
 
+
+    pointV L_V;
     std::transform
       (
-       challenges.inner_product_challenge_LR.begin()
-       , challenges.inner_product_challenge_LR.end()
-       , proof.LR.begin()
-       , std::back_inserter(multiexp_data)
-       , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
-         return {w * w * weight_z, lr.first};
-       }
+       proof.LR.begin()
+       , proof.LR.end()
+       , std::back_inserter(L_V)
+       , [](const auto& x) { return x.first; }
        );
 
+    pointV R_V;
     std::transform
       (
-       w_inv_V.begin()
-       , w_inv_V.end()
-       , proof.LR.begin()
-       , std::back_inserter(multiexp_data)
-       , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
-         return {w * w * weight_z, lr.second};
-       }
+       proof.LR.begin()
+       , proof.LR.end()
+       , std::back_inserter(R_V)
+       , [](const auto& x) { return x.second; }
+       );
+
+    const auto L_challenges =
+      hadamard_product
+      (
+       challenges.inner_product_challenge_LR
+       , challenges.inner_product_challenge_LR
+       );
+       
+    const auto L_commit =
+      vector_commit
+      (
+       vector_mult
+       (
+        L_challenges
+        , weight_z
+        )
+       , L_V
+       );
+
+    const auto R_challenges =
+      hadamard_product
+      (
+       w_inv_V
+       , w_inv_V
+       );
+
+    const auto R_commit =
+      vector_commit
+      (
+       vector_mult
+       (
+        R_challenges
+        , weight_z
+        )
+       , R_V
        );
 
     const size_t total_bit_width =
@@ -128,25 +156,18 @@ namespace rct
     const scalarV z_exponents = scalar_exponents
       (challenge_z, padded_number_of_inputs + 3);
 
-    std::transform
+    const auto z_commit =
+      vector_commit
       (
-       commits.begin()
-       , commits.end()
-       , std::span(z_exponents).subspan(2).begin()
-       , std::back_inserter(multiexp_data)
-       , [weight_y](const auto& x, const auto& y) -> MultiexpData {
-         return {y * weight_y, x};
-       }
+       vector_mult
+       (
+        std::span(z_exponents).subspan(2, commits.size())
+        , weight_y
+        )
+       , commits
        );
 
     const auto challenge_x = challenges.V_A_S_T1_T2;
-
-    multiexp_data.emplace_back(challenge_x * weight_y, proof.T1);
-    multiexp_data.emplace_back
-      (challenge_x * challenge_x * weight_y, proof.T2);
-
-    multiexp_data.emplace_back(weight_z, proof.A);
-    multiexp_data.emplace_back(challenge_x * weight_z, proof.S);
 
     // Compute the number of rounds for the inner product
 
@@ -167,8 +188,6 @@ namespace rct
             w_cache[s-1] = w_cache[s/2] * w_inv_V[j];
           }
       }
-
-    // Compute the curvepoints from G[i] and H[i]
 
     const scalarV two_exponents =
       scalar_exponents(rct::s_two, bit_width);
@@ -275,31 +294,28 @@ namespace rct
       ;
 
 
-    // now check all proofs at once
-    multiexp_data.emplace_back(s_one, G_(y0 - z1));
-    multiexp_data.emplace_back(z3 - y1, rct::H);
+    const auto z4 = vector_commit(z4_v, G_V);
+    const auto z5 = vector_commit(z5_v, H_V);
 
-    std::transform
-      (
-       z4_v.begin()
-       , z4_v.end()
-       , std::begin(G_V)
-       , std::back_inserter(multiexp_data)
-       , [](const auto& s, const auto& p) -> MultiexpData
-       { return {s, p}; }
-       );
+    const auto extra =
+      pointV
+      {
+        crypto::identity
+        , proof.T1 ^ (challenge_x * weight_y)
+        , proof.T2 ^ (challenge_x * challenge_x * weight_y)
+        , proof.A ^ weight_z
+        , proof.S ^ (challenge_x * weight_z)
+        , L_commit
+        , R_commit
+        , z_commit
+        , G_(y0 - z1)
+        , H_(z3 - y1)
+        , z4
+        , z5
+      }
+    ;
 
-    std::transform
-      (
-       z5_v.begin()
-       , z5_v.end()
-       , std::begin(H_V)
-       , std::back_inserter(multiexp_data)
-       , [](const auto& s, const auto& p) -> MultiexpData
-       { return {s, p}; }
-       );
-
-    if (multiexp(multiexp_data) != crypto::identity)
+    if (vector_sum(extra) != crypto::identity)
       {
         LOG_ERROR("Verification failure");
         return false;

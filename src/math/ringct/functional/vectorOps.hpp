@@ -33,6 +33,11 @@ namespace rct
    const scalarS xs
    );
 
+  crypto::ec_point vector_sum
+  (
+   const pointS xs
+   );
+
   crypto::ec_scalar sum_of_scalar_exponents
   (
    const crypto::ec_scalar x
