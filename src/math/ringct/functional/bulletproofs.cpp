@@ -136,7 +136,7 @@ namespace rct
     }
     const auto hash_data_commit = *maybe_hash_data_commit;
 
-    const auto maybe_hash_data_V_A_S =
+    const auto maybe_challenge_y =
       maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
@@ -147,63 +147,63 @@ namespace rct
        }
        );
 
-    if (!maybe_hash_data_V_A_S) {
+    if (!maybe_challenge_y) {
       return {};
     }
 
-    const auto hash_data_V_A_S = *maybe_hash_data_V_A_S;
-    const auto maybe_hash_data_V_A_S_rehash =
-      maybe_hash_V_to_non_zero_scalar(crypto::dataV{hash_data_V_A_S});
+    const auto challenge_y = *maybe_challenge_y;
+    const auto maybe_challenge_z =
+      maybe_hash_V_to_non_zero_scalar(crypto::dataV{challenge_y});
 
-    if (!maybe_hash_data_V_A_S_rehash) {
+    if (!maybe_challenge_z) {
       return {};
     }
 
-    const auto hash_data_V_A_S_rehash =
-      *maybe_hash_data_V_A_S_rehash;
+    const auto challenge_z =
+      *maybe_challenge_z;
 
-    return {{hash_data_V_A_S, hash_data_V_A_S_rehash}};
+    return {{challenge_y, challenge_z}};
   }
 
   std::optional<hash_data_t> make_hash_challenges
   (const pointS commits, const Bulletproof proof)
   {
-    const auto maybe_hash_data_V_A_S =
+    const auto maybe_hash_V_A_S =
       hash_V_A_S(commits, proof.A, proof.S);
 
-    if (!maybe_hash_data_V_A_S) {
+    if (!maybe_hash_V_A_S) {
       return {};
     }
 
-    const auto [hash_data_V_A_S, hash_data_V_A_S_rehash] =
-      *maybe_hash_data_V_A_S;
+    const auto [challenge_y, challenge_z] =
+      *maybe_hash_V_A_S;
 
-    const auto maybe_hash_data_V_A_S_T1_T2 =
+    const auto maybe_hash_challenge_z_T1_T2 =
       maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
        {
-         hash_data_V_A_S_rehash
-         , hash_data_V_A_S_rehash
+         challenge_z
+         , challenge_z
          , to_inv8(proof.T1)
          , to_inv8(proof.T2)
        }
        );
 
-    if (!maybe_hash_data_V_A_S_T1_T2) {
+    if (!maybe_hash_challenge_z_T1_T2) {
       return {};
     }
 
-    const auto hash_data_V_A_S_T1_T2 =
-      *maybe_hash_data_V_A_S_T1_T2;
+    const auto hash_challenge_z_T1_T2 =
+      *maybe_hash_challenge_z_T1_T2;
 
     const auto maybe_inner_product_challenge =
       maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
        {
-         hash_data_V_A_S_T1_T2
-         , hash_data_V_A_S_T1_T2
+         hash_challenge_z_T1_T2
+         , hash_challenge_z_T1_T2
          , proof.taux
          , proof.mu
          , proof.t
@@ -238,9 +238,9 @@ namespace rct
       *maybe_hash_data_inner_product_challenge_LR;
 
     return {{
-        hash_data_V_A_S
-        , hash_data_V_A_S_rehash
-        , hash_data_V_A_S_T1_T2
+        challenge_y
+        , challenge_z
+        , hash_challenge_z_T1_T2
         , inner_product_challenge
         , hash_data_inner_product_challenge_LR
       }};
@@ -342,23 +342,26 @@ namespace rct
     const crypto::ec_point S =
       vector_commit(sL, G_V) + vector_commit(sR, H_V) + G_(rho);
 
-    // PAPER LINES 45-47
-    const auto maybe_hash_data_V_A_S = hash_V_A_S(V, A, S);
 
-    if (!maybe_hash_data_V_A_S) {
+    // PAPER LINES 45-47
+    const auto maybe_challenge_y = hash_V_A_S(V, A, S);
+
+    if (!maybe_challenge_y) {
       return {};
     }
 
-    const auto [hash_data_V_A_S, hash_data_V_A_S_rehash] =
-      *maybe_hash_data_V_A_S;
+    const auto [challenge_y, challenge_z] =
+      *maybe_challenge_y;
 
-    // Polynomial construction by coefficients
-    // PAPER LINES 70-71
-    const scalarV l0 = vector_subtract(aL, hash_data_V_A_S_rehash);
+
+    const scalarV l0 = vector_subtract(aL, challenge_z);
     const scalarS l1 = sL;
 
+    const auto y_exponents =
+      scalar_exponents(challenge_y, total_bit_width);
+
     const scalarV z_exponents = scalar_exponents
-      (hash_data_V_A_S_rehash, padded_number_of_inputs + 2);
+      (challenge_z, padded_number_of_inputs + 2);
 
     const scalarS z_exponents_skip_2 =
       std::span(z_exponents).subspan(2);
@@ -377,13 +380,10 @@ namespace rct
        }
        );
 
-    const auto y_exponents =
-      scalar_exponents(hash_data_V_A_S, total_bit_width);
-
     const scalarV r0 = vector_add_V
       (
        hadamard_product
-       (vector_add(aR, hash_data_V_A_S_rehash), y_exponents)
+       (vector_add(aR, challenge_z), y_exponents)
        , vector_concat(zero_twos)
        );
 
@@ -401,24 +401,24 @@ namespace rct
     const crypto::ec_point T2 = G_(tau2) + H_(t2);
 
     // PAPER LINES 54-56
-    const auto maybe_hash_data_V_A_S_T1_T2 =
+    const auto maybe_hash_challenge_z_T1_T2 =
       maybe_hash_V_to_non_zero_scalar
       (
        crypto::dataV
        {
-         hash_data_V_A_S_rehash
-         , hash_data_V_A_S_rehash
+         challenge_z
+         , challenge_z
          , to_inv8(T1)
          , to_inv8(T2)
        }
        );
 
-    if (!maybe_hash_data_V_A_S_T1_T2) {
+    if (!maybe_hash_challenge_z_T1_T2) {
       return {};
     }
 
-    const auto hash_data_V_A_S_T1_T2 =
-      *maybe_hash_data_V_A_S_T1_T2;
+    const auto challenge_x =
+      *maybe_hash_challenge_z_T1_T2;
 
     // PAPER LINES 61-63
     LOG_ERROR_AND_THROW_UNLESS
@@ -440,7 +440,7 @@ namespace rct
     const crypto::ec_scalar taux1 =
       inner_product(blinding_factors, z_exponents_skip_2);
 
-    const auto x = hash_data_V_A_S_T1_T2;
+    const auto x = challenge_x;
     const crypto::ec_scalar taux = tau1 * x + tau2 * x * x + taux1;
 
     const crypto::ec_scalar mu = x * rho + alpha;
@@ -472,14 +472,14 @@ namespace rct
     const auto inner_product_challenge =
       *maybe_inner_product_challenge;
 
-    const crypto::ec_scalar y_inv =
-      crypto::multiplicative_inverse(hash_data_V_A_S);
+    const crypto::ec_scalar challenge_y_inv =
+      crypto::multiplicative_inverse(challenge_y);
 
     return {{
         l
         , r
         , inner_product_challenge
-        , y_inv
+        , challenge_y_inv
         , A
         , S
         , T1
