@@ -362,14 +362,15 @@ namespace rct
     const scalarV z_exponents = scalar_exponents
       (challenge_z, padded_number_of_inputs + 2);
 
-    const scalarS z_exponents_skip_2 =
-      std::span(z_exponents).subspan(2);
-
     const scalarV two_exponents =
       scalar_exponents(rct::s_two, bit_width);
 
     const std::vector<scalarV> z_exp_mult_two_exp_monadic =
-      vector_mult_V_monadic(z_exponents_skip_2, two_exponents);
+      vector_mult_V_monadic
+      (
+       std::span(z_exponents).subspan(2, padded_number_of_inputs)
+       , two_exponents
+       );
 
     const scalarV z_exp_mult_two_exp_flatten =
       vector_concat(z_exp_mult_two_exp_monadic);
@@ -414,13 +415,6 @@ namespace rct
     const auto challenge_x =
       *maybe_hash_challenge_z_T1_T2;
 
-    LOG_ERROR_AND_THROW_UNLESS
-      (
-       V.size() <= z_exponents_skip_2.size()
-       , "invalid z_exponents_skip_2 length"
-       );
-
-
     scalarV blinding_factors;
     std::transform
       (
@@ -431,7 +425,11 @@ namespace rct
        );
 
     const crypto::ec_scalar tau0 =
-      inner_product(blinding_factors, z_exponents_skip_2);
+      inner_product
+      (
+       blinding_factors
+       , std::span(z_exponents).subspan(2)
+       );
 
     const auto x = challenge_x;
     const crypto::ec_scalar tau = substitute_polynomial
