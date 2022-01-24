@@ -307,7 +307,7 @@ namespace rct
        }
        );
 
-    const auto padded_number_of_inputs = log2bound(xs.size()).first;
+    const auto padded_number_of_inputs = ceiling_log2_review(xs.size()).first;
     const size_t total_bit_width =
       padded_number_of_inputs * bit_width;
 

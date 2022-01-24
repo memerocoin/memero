@@ -58,7 +58,7 @@ namespace rct
 
   scalarV int_to_bits(const uint64_t x);
 
-  constexpr std::pair<size_t, size_t> log2bound(const size_t x) {
+  constexpr std::pair<size_t, size_t> ceiling_log2_review(const size_t x) {
     size_t y = 1;
     size_t _log = 0;
 

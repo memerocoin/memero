@@ -117,9 +117,9 @@ namespace rct
     LOG_ERROR_AND_RETURN_UNLESS
       (commits.size() <= max_outputs, false, "too many points for the proof");
 
-    constexpr size_t log_bit_width = log2bound(bit_width).second;
+    constexpr size_t log_bit_width = ceiling_log2_review(bit_width).second;
     const auto [padded_number_of_inputs, log_padded_number_of_inputs] =
-      log2bound(commits.size());
+      ceiling_log2_review(commits.size());
 
     const size_t rounds = log_padded_number_of_inputs + log_bit_width;
     LOG_ERROR_AND_RETURN_UNLESS
