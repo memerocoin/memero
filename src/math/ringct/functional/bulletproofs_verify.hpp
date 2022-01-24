@@ -25,8 +25,7 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #pragma once
 
 #include "math/ringct/functional/rctTypes.hpp"
-
-#include <span>
+#include "math/ringct/functional/bulletproofs_gen.hpp"
 
 namespace rct
 {
