@@ -100,12 +100,12 @@ namespace rct
 
     // Reconstruct the challenges
 
-    const auto maybe_hash_data = make_hash_challenges(commits, proof);
+    const auto maybe_challenges = make_hash_challenges(commits, proof);
 
     LOG_ERROR_AND_RETURN_UNLESS
-      (maybe_hash_data, false, "invalid hash challenges");
+      (maybe_challenges, false, "invalid hash challenges");
 
-    const hash_data_t hash_data = *maybe_hash_data;
+    const auto challenges = *maybe_challenges;
 
     // STEP 2, use proof_data
     std::vector<MultiexpData> multiexp_data;
@@ -113,18 +113,18 @@ namespace rct
     // setup weighted aggregates
 
     const scalarV winv = multiplicative_inverse_V
-      (hash_data.inner_product_challenge_LR);
+      (challenges.inner_product_challenge_LR);
 
     const crypto::ec_scalar yinv =
-      crypto::multiplicative_inverse(hash_data.V_A_S);
+      crypto::multiplicative_inverse(challenges.V_A_S);
 
     const crypto::ec_scalar weight_y = crypto::randomScalar();
     const crypto::ec_scalar weight_z = crypto::randomScalar();
 
     std::transform
       (
-       hash_data.inner_product_challenge_LR.begin()
-       , hash_data.inner_product_challenge_LR.end()
+       challenges.inner_product_challenge_LR.begin()
+       , challenges.inner_product_challenge_LR.end()
        , proof.LR.begin()
        , std::back_inserter(multiexp_data)
        , [weight_z](const auto& w, const auto& lr) -> MultiexpData {
@@ -146,7 +146,7 @@ namespace rct
     const size_t total_bit_width = padded_number_of_inputs * bit_width;
 
     const scalarV z_exponents = scalar_exponents
-      (hash_data.V_A_S_rehash , padded_number_of_inputs + 3);
+      (challenges.V_A_S_rehash , padded_number_of_inputs + 3);
     const scalarS z_exponents_skip_2 = std::span(z_exponents).subspan(2);
 
     std::transform
@@ -160,7 +160,7 @@ namespace rct
        }
        );
 
-    const auto challenge_x = hash_data.V_A_S_T1_T2;
+    const auto challenge_x = challenges.V_A_S_T1_T2;
     multiexp_data.emplace_back(challenge_x * weight_y, proof.T1);
     multiexp_data.emplace_back(challenge_x * challenge_x * weight_y, proof.T2);
     multiexp_data.emplace_back(weight_z, proof.A);
@@ -171,14 +171,14 @@ namespace rct
     // precalc
     scalarV w_cache(1<<rounds);
     w_cache[0] = winv[0];
-    w_cache[1] = hash_data.inner_product_challenge_LR[0];
+    w_cache[1] = challenges.inner_product_challenge_LR[0];
     for (size_t j = 1; j < rounds; ++j)
       {
         const size_t slots = 1<<(j+1);
         for (size_t s = slots; s-- > 0; --s)
           {
             w_cache[s] =
-              w_cache[s/2] * hash_data.inner_product_challenge_LR[j];
+              w_cache[s/2] * challenges.inner_product_challenge_LR[j];
             w_cache[s-1] = w_cache[s/2] * winv[j];
           }
       }
@@ -192,7 +192,7 @@ namespace rct
        z5_v.begin()
        , z5_v.end()
        , [i = 0, yinvpow = s_one, ypow = s_one
-          , z_exponents_skip_2, yinv, hash_data, weight_z, proof, w_cache, total_bit_width
+          , z_exponents_skip_2, yinv, challenges, weight_z, proof, w_cache, total_bit_width
           , two_exponents
           ] () mutable -> crypto::ec_scalar {
          // Convert the index to binary IN REVERSE and construct the crypto::ec_scalar exponent
@@ -208,11 +208,11 @@ namespace rct
 
          const crypto::ec_scalar h_scalar =
            proof.b * yinvpow * w_cache[(~i) & (total_bit_width-1)]
-           - (hash_data.V_A_S_rehash * ypow + zpowTwoN) * yinvpow ;
+           - (challenges.V_A_S_rehash * ypow + zpowTwoN) * yinvpow ;
 
 
          yinvpow = yinvpow * yinv;
-         ypow = ypow * hash_data.V_A_S;
+         ypow = ypow * challenges.V_A_S;
 
          const crypto::ec_scalar r = s_zero - h_scalar * weight_z;
          i++;
@@ -226,9 +226,9 @@ namespace rct
        w_cache.begin()
        , std::next(w_cache.begin(), total_bit_width)
        , z4_v.begin()
-       , [proof, hash_data, weight_z](const auto& cache) {
+       , [proof, challenges, weight_z](const auto& cache) {
          const crypto::ec_scalar g_scalar =
-           proof.a * cache + hash_data.V_A_S_rehash;
+           proof.a * cache + challenges.V_A_S_rehash;
          return s_zero - g_scalar * weight_z;
        }
        );
@@ -236,7 +236,7 @@ namespace rct
 
     // collect
     const crypto::ec_scalar ip1y =
-      sum_of_scalar_exponents(hash_data.V_A_S, total_bit_width);
+      sum_of_scalar_exponents(challenges.V_A_S, total_bit_width);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
@@ -266,11 +266,11 @@ namespace rct
 
     const crypto::ec_scalar y0 = s_zero - proof.tau * weight_y;
     const crypto::ec_scalar y1 =
-      (proof.t - (hash_data.V_A_S_rehash * ip1y + k)) * weight_y;
+      (proof.t - (challenges.V_A_S_rehash * ip1y + k)) * weight_y;
 
     const crypto::ec_scalar z1 = proof.mu * weight_z;
     const crypto::ec_scalar z3 =
-      (proof.t - proof.a * proof.b) * hash_data.inner_product_challenge * weight_z;
+      (proof.t - proof.a * proof.b) * challenges.inner_product_challenge * weight_z;
 
 
     // now check all proofs at once
