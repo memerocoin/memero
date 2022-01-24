@@ -383,7 +383,10 @@ namespace rct
     const scalarV r0 = vector_add_V
       (
        hadamard_product
-       (vector_add(aR, challenge_z), y_exponents)
+       (
+        y_exponents
+        , vector_add(aR, challenge_z)
+        )
        , vector_concat(zero_twos)
        );
 
@@ -441,7 +444,8 @@ namespace rct
       inner_product(blinding_factors, z_exponents_skip_2);
 
     const auto x = challenge_x;
-    const crypto::ec_scalar taux = tau1 * x + tau2 * x * x + taux1;
+    const crypto::ec_scalar taux = substitute_polynomial
+      (scalarV{taux1, tau1, tau2}, x);
 
     const crypto::ec_scalar mu = x * rho + alpha;
 

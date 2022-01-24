@@ -218,6 +218,16 @@ namespace rct
     return vector_multP_V(scalar_repeat(a, p.size()), p);
   }
 
+
+  crypto::ec_scalar substitute_polynomial
+  (const scalarS a, crypto::ec_scalar X) {
+    return inner_product
+      (
+       a
+       , scalar_exponents(X, a.size())
+       );
+  }
+
   crypto::ec_point vector_commit(const scalarS a, const pointS p) {
     LOG_ERROR_AND_THROW_UNLESS
       (
