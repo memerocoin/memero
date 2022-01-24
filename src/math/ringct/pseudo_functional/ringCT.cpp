@@ -38,7 +38,7 @@
 
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/pseudo_functional/bulletproofs.hpp"
+#include "math/ringct/pseudo_functional/bulletproofs_verify.hpp"
 
 #include "cryptonote/basic/functional/format_utils.hpp"
 

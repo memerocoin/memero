@@ -232,12 +232,12 @@ namespace rct
        }
        );
 
-    scalarV z4_v(total_bit_width);
+    scalarV z4_v;
     std::transform
       (
        w_cache.begin()
-       , std::next(w_cache.begin(), total_bit_width)
-       , z4_v.begin()
+       , w_cache.end()
+       , std::back_inserter(z4_v)
        , [proof, challenge_z, weight_z](const auto& cache) {
          const crypto::ec_scalar g_scalar =
            proof.a * cache + challenge_z;
@@ -256,22 +256,10 @@ namespace rct
        , false, "invalid zpow index"
        );
 
-    const auto z_exponents_skip_3 = z_exponents_skip_2.subspan(1);
     const crypto::ec_scalar k1 =
-      std::reduce
-      (
-       z_exponents_skip_3.begin()
-       , z_exponents_skip_3.end()
-       , s_zero
-       );
+      vector_sum(std::span(z_exponents).subspan(3));
 
-    const crypto::ec_scalar ip12 =
-      std::reduce
-      (
-       two_exponents.begin()
-       , two_exponents.end()
-       , crypto::s_0
-       );
+    const crypto::ec_scalar ip12 = vector_sum(two_exponents);
 
     const crypto::ec_scalar k =
       s_zero - z_exponents_skip_2.front() * ip1y - k1 * ip12;

@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "math/ringct/functional/rctTypes.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/pseudo_functional/bulletproofs.hpp"
+#include "math/ringct/pseudo_functional/bulletproofs_verify.hpp"
 #include "math/ringct/controller/bulletproofs_gen.hpp"
 
 #include <tuple>
