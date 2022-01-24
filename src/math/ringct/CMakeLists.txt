@@ -35,6 +35,7 @@ add_library(math_ringct_basic
   functional/multi_exponentiation.cpp
   functional/innerProductArgument.cpp
   functional/bulletproofs.cpp
+  functional/bulletproofs_verify.cpp
   pseudo_functional/clsag.cpp
   pseudo_functional/bulletproofs.cpp
   controller/clsagGen.cpp
