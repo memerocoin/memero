@@ -81,7 +81,7 @@ namespace rct
          bp_vector_l
          , bp_vector_r
          , inner_product_challenge
-         , y_inv
+         , challenge_y
          , A
          , S
          , T1
@@ -90,8 +90,11 @@ namespace rct
          , mu
          ] = *bp_vectors;
 
-      const scalarV y_inv_exponents =
-        scalar_exponents(y_inv, total_bit_width);
+    const crypto::ec_scalar challenge_y_inv =
+      crypto::multiplicative_inverse(challenge_y);
+
+      const scalarV challenge_y_inv_exponents =
+        scalar_exponents(challenge_y_inv, total_bit_width);
 
       const auto G_V = get_bp_generator_G_V(total_bit_width);
       const auto H_V = get_bp_generator_H_V(total_bit_width);
@@ -100,7 +103,7 @@ namespace rct
         make_recursive_inner_product_argument
         (
          G_V
-         , vector_multP_V(y_inv_exponents, H_V)
+         , vector_multP_V(challenge_y_inv_exponents, H_V)
          , bp_vector_l
          , bp_vector_r
          , H_(inner_product_challenge)

@@ -476,14 +476,11 @@ namespace rct
     const auto inner_product_challenge =
       *maybe_inner_product_challenge;
 
-    const crypto::ec_scalar challenge_y_inv =
-      crypto::multiplicative_inverse(challenge_y);
-
     return {{
         l
         , r
         , inner_product_challenge
-        , challenge_y_inv
+        , challenge_y
         , A
         , S
         , T1
