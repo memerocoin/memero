@@ -128,8 +128,9 @@ namespace rct
     const scalarV winv = multiplicative_inverse_V
       (challenges.inner_product_challenge_LR);
 
+    const auto challenge_y = challenges.V_A_S;
     const crypto::ec_scalar yinv =
-      crypto::multiplicative_inverse(challenges.V_A_S);
+      crypto::multiplicative_inverse(challenge_y);
 
     const crypto::ec_scalar weight_y = crypto::randomScalar();
     const crypto::ec_scalar weight_z = crypto::randomScalar();
@@ -159,8 +160,9 @@ namespace rct
     const size_t total_bit_width =
       padded_number_of_inputs * bit_width;
 
+    const auto challenge_z = challenges.V_A_S_rehash;
     const scalarV z_exponents = scalar_exponents
-      (challenges.V_A_S_rehash , padded_number_of_inputs + 3);
+      (challenge_z, padded_number_of_inputs + 3);
 
     const scalarS z_exponents_skip_2 =
       std::span(z_exponents).subspan(2);
@@ -218,7 +220,8 @@ namespace rct
           , ypow = s_one
           , z_exponents_skip_2
           , yinv
-          , challenges
+          , challenge_y
+          , challenge_z
           , weight_z
           , proof
           , w_cache
@@ -246,11 +249,11 @@ namespace rct
 
          const crypto::ec_scalar h_scalar =
            proof.b * yinvpow * w_cache[(~i) & (total_bit_width-1)]
-           - (challenges.V_A_S_rehash * ypow + zpowTwoN) * yinvpow ;
+           - (challenge_z * ypow + zpowTwoN) * yinvpow ;
 
 
          yinvpow = yinvpow * yinv;
-         ypow = ypow * challenges.V_A_S;
+         ypow = ypow * challenge_y;
 
          const crypto::ec_scalar r = s_zero - h_scalar * weight_z;
          i++;
@@ -264,9 +267,9 @@ namespace rct
        w_cache.begin()
        , std::next(w_cache.begin(), total_bit_width)
        , z4_v.begin()
-       , [proof, challenges, weight_z](const auto& cache) {
+       , [proof, challenge_z, weight_z](const auto& cache) {
          const crypto::ec_scalar g_scalar =
-           proof.a * cache + challenges.V_A_S_rehash;
+           proof.a * cache + challenge_z;
          return s_zero - g_scalar * weight_z;
        }
        );
@@ -274,7 +277,7 @@ namespace rct
 
     // collect
     const crypto::ec_scalar ip1y =
-      sum_of_scalar_exponents(challenges.V_A_S, total_bit_width);
+      sum_of_scalar_exponents(challenge_y, total_bit_width);
 
     LOG_ERROR_AND_RETURN_UNLESS
       (
@@ -304,7 +307,7 @@ namespace rct
 
     const crypto::ec_scalar y0 = s_zero - proof.tau * weight_y;
     const crypto::ec_scalar y1 =
-      (proof.t - (challenges.V_A_S_rehash * ip1y + k)) * weight_y;
+      (proof.t - (challenge_z * ip1y + k)) * weight_y;
 
     const crypto::ec_scalar z1 = proof.mu * weight_z;
     const crypto::ec_scalar z3 =
