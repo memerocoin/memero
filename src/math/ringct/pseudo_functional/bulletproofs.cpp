@@ -24,7 +24,7 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 #include "bulletproofs.hpp"
 
-#include "math/ringct/functional/bulletproofs.hpp"
+#include "math/ringct/functional/bulletproofs_gen.hpp"
 #include "math/ringct/functional/bulletproofs_verify.hpp"
 
 #include "math/crypto/controller/keyGen.hpp"

@@ -22,11 +22,11 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 */
 
-#include "bulletproofs.hpp"
+#include "bulletproofs_gen.hpp"
 
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/functional/bulletproofs.hpp"
+#include "math/ringct/functional/bulletproofs_gen.hpp"
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/multi_exponentiation.hpp"
 
