@@ -160,7 +160,10 @@ namespace rct
         for (size_t s = slots; s-- > 0; --s)
           {
             w_cache[s] =
-              w_cache[s/2] * challenges.inner_product_challenge_LR[j];
+              w_cache[s/2]
+              * challenges.inner_product_challenge_LR[j]
+              ;
+
             w_cache[s-1] = w_cache[s/2] * w_inv_V[j];
           }
       }
@@ -214,12 +217,19 @@ namespace rct
             , "invalid two_exponents index"
             );
 
-         const crypto::ec_scalar h_scalar =
-           proof_b * y_inv_exponents[i]
+         const auto h_1 = 
+           proof_b
+           * y_inv_exponents[i]
            * w_cache[(~i) & (total_bit_width-1)]
-           - (challenge_z * y_exponents[i] + z_exp_mult_two_exp_flatten[i])
-           * y_inv_exponents[i];
+           ;
 
+         const auto h_2 =
+           challenge_z * y_exponents[i]
+           + z_exp_mult_two_exp_flatten[i]
+           ;
+
+         const crypto::ec_scalar h_scalar =
+           h_1 - h_2 * y_inv_exponents[i];
 
          const crypto::ec_scalar r = s_zero - h_scalar * weight_z;
          i++;
