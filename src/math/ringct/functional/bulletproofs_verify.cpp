@@ -128,14 +128,11 @@ namespace rct
     const scalarV z_exponents = scalar_exponents
       (challenge_z, padded_number_of_inputs + 3);
 
-    const scalarS z_exponents_skip_2 =
-      std::span(z_exponents).subspan(2);
-
     std::transform
       (
        commits.begin()
        , commits.end()
-       , z_exponents_skip_2.begin()
+       , std::span(z_exponents).subspan(2).begin()
        , std::back_inserter(multiexp_data)
        , [weight_y](const auto& x, const auto& y) -> MultiexpData {
          return {y * weight_y, x};
@@ -180,7 +177,11 @@ namespace rct
       scalar_exponents(y_inv, total_bit_width);
 
     const std::vector<scalarV> z_exp_mult_two_exp_monadic =
-      vector_mult_V_monadic(z_exponents_skip_2, two_exponents);
+      vector_mult_V_monadic
+      (
+       std::span(z_exponents).subspan(2, padded_number_of_inputs)
+       , two_exponents
+       );
 
     const scalarV z_exp_mult_two_exp_flatten =
       vector_concat(z_exp_mult_two_exp_monadic);
