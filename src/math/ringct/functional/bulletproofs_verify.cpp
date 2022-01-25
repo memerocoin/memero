@@ -232,9 +232,6 @@ namespace rct
        , R_V
        );
 
-    const size_t total_bit_width =
-      padded_number_of_inputs * bit_width;
-
     const auto challenge_z = challenges.V_A_S_rehash;
     const scalarV z_exponents = scalar_exponents
       (challenge_z, padded_number_of_inputs + 3);
@@ -250,11 +247,9 @@ namespace rct
        , commits
        );
 
-    const auto challenge_x = challenges.V_A_S_T1_T2;
+    const size_t total_bit_width =
+      padded_number_of_inputs * bit_width;
 
-    // Compute the number of rounds for the inner product
-
-    // precalc
     scalarV w_cache(total_bit_width);
     w_cache[0] = w_inv_V[0];
     w_cache[1] = challenges.inner_product_challenge_LR[0];
@@ -292,8 +287,8 @@ namespace rct
       vector_concat(z_exp_mult_two_exp_monadic);
 
     const auto proof_b = proof.b;
-    scalarV z5_v;
 
+    scalarV z5_v;
     std::generate_n
       (
        std::back_inserter(z5_v)
@@ -380,7 +375,9 @@ namespace rct
     const auto z4 = vector_commit(z4_v, G_V);
     const auto z5 = vector_commit(z5_v, H_V);
 
-    const auto extra =
+    const auto challenge_x = challenges.V_A_S_T1_T2;
+
+    const auto points =
       pointV
       {
         crypto::identity
@@ -398,7 +395,7 @@ namespace rct
       }
     ;
 
-    if (vector_sum(extra) != crypto::identity)
+    if (vector_sum(points) != crypto::identity)
       {
         LOG_ERROR("Verification failure");
         return false;
