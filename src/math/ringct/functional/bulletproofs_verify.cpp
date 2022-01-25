@@ -167,10 +167,8 @@ namespace rct
 
     const auto challenges = *maybe_challenges;
 
-    // setup weighted aggregates
 
-    const scalarV w_inv_V = multiplicative_inverse_V
-      (challenges.inner_product_LR_challenges);
+    // setup weighted aggregates
 
     const auto challenge_y = challenges.V_A_S;
     const crypto::ec_scalar y_inv =
@@ -184,15 +182,6 @@ namespace rct
        , proof.LR.end()
        , std::back_inserter(L_V)
        , [](const auto& x) { return x.first; }
-       );
-
-    pointV R_V;
-    std::transform
-      (
-       proof.LR.begin()
-       , proof.LR.end()
-       , std::back_inserter(R_V)
-       , [](const auto& x) { return x.second; }
        );
 
     const auto L_challenges =
@@ -213,6 +202,18 @@ namespace rct
        , L_V
        );
 
+    pointV R_V;
+    std::transform
+      (
+       proof.LR.begin()
+       , proof.LR.end()
+       , std::back_inserter(R_V)
+       , [](const auto& x) { return x.second; }
+       );
+
+    const scalarV w_inv_V = multiplicative_inverse_V
+      (challenges.inner_product_LR_challenges);
+
     const auto R_challenges =
       hadamard_product
       (
@@ -231,6 +232,7 @@ namespace rct
        , R_V
        );
 
+
     const auto challenge_z = challenges.V_A_S_rehash;
     const scalarV z_exponents = scalar_exponents
       (challenge_z, padded_number_of_inputs + 3);
@@ -245,6 +247,7 @@ namespace rct
         )
        , commits
        );
+
 
     const size_t total_bit_width =
       padded_number_of_inputs * bit_width;
@@ -370,11 +373,11 @@ namespace rct
       * weight_z
       ;
 
-
     const auto z4 = vector_commit(z4_v, G_V);
     const auto z5 = vector_commit(z5_v, H_V);
 
     const auto challenge_x = challenges.V_A_S_T1_T2;
+
 
     const auto points =
       pointV
@@ -393,6 +396,7 @@ namespace rct
         , z5
       }
     ;
+
 
     if (vector_sum(points) != crypto::identity)
       {
