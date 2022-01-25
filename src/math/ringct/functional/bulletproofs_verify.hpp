@@ -35,7 +35,5 @@ namespace rct
    , const Bulletproof proof
    , const pointS G_V
    , const pointS H_V
-   , const crypto::ec_scalar weight_y
-   , const crypto::ec_scalar weight_z
    );
 }

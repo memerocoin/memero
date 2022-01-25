@@ -121,8 +121,6 @@ namespace rct
    , const Bulletproof proof
    , const pointS G_V
    , const pointS H_V
-   , const crypto::ec_scalar weight_y
-   , const crypto::ec_scalar weight_z
    )
   {
     LOG_ERROR_AND_RETURN_UNLESS
@@ -189,11 +187,7 @@ namespace rct
     const auto L_commit =
       vector_commit
       (
-       vector_mult
-       (
-        L_challenges
-        , weight_z
-        )
+       L_challenges
        , L_V
        );
 
@@ -219,11 +213,7 @@ namespace rct
     const auto R_commit =
       vector_commit
       (
-       vector_mult
-       (
-        R_challenges
-        , weight_z
-        )
+       R_challenges
        , R_V
        );
 
@@ -235,11 +225,7 @@ namespace rct
     const auto z_commit =
       vector_commit
       (
-       vector_mult
-       (
-        std::span(z_exponents).subspan(2, commits.size())
-        , weight_y
-        )
+       std::span(z_exponents).subspan(2, commits.size())
        , commits
        );
 
@@ -264,7 +250,7 @@ namespace rct
           }
       }
 
-    const auto z4_g =
+    const auto z4_V =
       vector_add
       (
        vector_mult
@@ -275,16 +261,6 @@ namespace rct
        , challenge_z
        );
          
-    const auto z4_V =
-      vector_negate
-      (
-       vector_mult
-       (
-        z4_g
-        , weight_z
-        )
-       );
-
     const auto z4_commit = vector_commit(z4_V, G_V);
 
 
@@ -337,7 +313,7 @@ namespace rct
         )
        );
 
-    const auto z5_h =
+    const auto z5_V =
       vector_subtract_V
       (
        z5_h1
@@ -345,16 +321,6 @@ namespace rct
        (
         z5_h2
         , y_inv_exponents
-        )
-       );
-
-    const auto z5_V =
-      vector_negate
-      (
-       vector_mult
-       (
-        z5_h
-        , weight_z
         )
        );
 
@@ -374,45 +340,67 @@ namespace rct
     const crypto::ec_scalar k =
       s_zero - challenge_z * challenge_z * ip1y - k1 * ip12;
 
-    const crypto::ec_scalar y0 = s_zero - proof.tau * weight_y;
+    const crypto::ec_scalar y0 = s_zero - proof.tau;
     const crypto::ec_scalar y1 =
-      (proof.t - (challenge_z * ip1y + k)) * weight_y;
+      (proof.t - (challenge_z * ip1y + k));
 
-    const crypto::ec_scalar z1 = proof.mu * weight_z;
+    const crypto::ec_scalar z1 = proof.mu;
     const crypto::ec_scalar z3 =
       (proof.t - proof.a * proof.b)
       * challenges.inner_product_challenge
-      * weight_z
       ;
 
     const auto challenge_x = challenges.V_A_S_T1_T2;
 
+    const auto T_commit = substitute_polynomial
+      (
+       pointV
+       {
+         z_commit
+         , proof.T1
+         , proof.T2
+       }
+       , challenge_x
+       )
+      ;
 
-    const auto points =
+    const auto points_Y =
       pointV
       {
-        crypto::identity
-        , proof.T1 ^ (challenge_x * weight_y)
-        , proof.T2 ^ (challenge_x * challenge_x * weight_y)
-        , proof.A ^ weight_z
-        , proof.S ^ (challenge_x * weight_z)
-        , L_commit
-        , R_commit
-        , z_commit
-        , G_(y0 - z1)
-        , H_(z3 - y1)
-        , z4_commit
-        , z5_commit
+        T_commit
+        , G_(y0)
+        , H_(s_zero - y1)
       }
     ;
 
+    const auto valid_Y = vector_sum(points_Y) == crypto::identity;
 
-    if (vector_sum(points) != crypto::identity)
+    const auto points_Z =
+      pointV
+      {
+        crypto::identity
+        , crypto::identity - L_commit
+        , crypto::identity - R_commit
+        , crypto::identity - proof.A
+        , crypto::identity - (proof.S ^ challenge_x)
+        , z4_commit
+        , z5_commit
+        , G_(z1)
+        , H_(s_zero - z3)
+      }
+    ;
+
+    const auto valid_Z = vector_sum(points_Z) == crypto::identity;
+
+    if (valid_Y && valid_Z)
+      {
+        return true;
+      }
+    else
       {
         LOG_ERROR("Verification failure");
         return false;
       }
-    return true;
   }
 
 }

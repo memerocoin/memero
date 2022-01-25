@@ -73,6 +73,9 @@ namespace rct
   crypto::ec_scalar substitute_polynomial
   (const scalarS a, crypto::ec_scalar X);
 
+  crypto::ec_point substitute_polynomial
+  (const pointS a, crypto::ec_scalar X);
+
   crypto::ec_point vector_commit(const scalarS a, const pointS p);
 
   std::pair<pointV, pointV> split_vector(const pointS v);

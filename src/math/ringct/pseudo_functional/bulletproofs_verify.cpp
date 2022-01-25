@@ -74,17 +74,12 @@ namespace rct
   {
     init_generators();
 
-    const crypto::ec_scalar weight_y = crypto::randomScalar();
-    const crypto::ec_scalar weight_z = crypto::randomScalar();
-
     return bulletproof_VERIFY
       (
        commits
        , proof
        , G_V
        , H_V
-       , weight_y
-       , weight_z
        );
   }
 }

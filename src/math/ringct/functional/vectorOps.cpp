@@ -269,6 +269,15 @@ namespace rct
        );
   }
 
+  crypto::ec_point substitute_polynomial
+  (const pointS a, crypto::ec_scalar X) {
+    return vector_commit
+      (
+       scalar_exponents(X, a.size())
+       , a
+       );
+  }
+
   crypto::ec_point vector_commit(const scalarS a, const pointS p) {
     LOG_ERROR_AND_THROW_UNLESS
       (
