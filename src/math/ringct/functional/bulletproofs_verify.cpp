@@ -290,17 +290,8 @@ namespace rct
           }
       }
 
-    const auto G_scalars =
-      vector_add
-      (
-       vector_mult
-       (
-        w_cache
-        , proof.a 
-        )
-       , challenge_z
-       );
-         
+    const auto G_scalars = vector_mult(w_cache, proof.a);
+
     const auto G_commit = vector_commit(G_scalars, G_V);
 
 
@@ -318,7 +309,7 @@ namespace rct
     const auto y_inv_exponents =
       scalar_exponents(y_inv, total_bit_width);
     
-    const auto H_scalars_1 =
+    const auto H_scalars =
       vector_mult
       (
        hadamard_product
@@ -328,6 +319,8 @@ namespace rct
         )
        , proof.b
        );
+
+    const auto H_commit = vector_commit(H_scalars, H_V);
 
     const scalarV two_exponents =
       scalar_exponents(rct::s_two, bit_width);
@@ -342,7 +335,14 @@ namespace rct
     const scalarV z_exp_mult_two_exp_flatten =
       vector_concat(z_exp_mult_two_exp_monadic);
 
-    const auto H_scalars_2 =
+    const auto P_G =
+      vector_commit
+      (
+       scalar_repeat(s_zero - challenge_z, total_bit_width)
+       , G_V
+       );
+
+    const auto P_H_scalars =
       vector_add
       (
        hadamard_product
@@ -353,16 +353,23 @@ namespace rct
        , challenge_z
        );
 
-    const auto H_scalars  =
-      vector_subtract_V
-      (
-       H_scalars_1
-       , H_scalars_2
-       );
-
-    const auto H_commit = vector_commit(H_scalars, H_V);
+    const auto P_H = vector_commit(P_H_scalars, H_V);
 
     const auto u = H_(challenges.inner_product_challenge);
+
+    const auto P =
+      vector_sum
+      (
+       pointV
+       {
+         proof.A
+         , (proof.S ^ challenge_x)
+         , P_G
+         , P_H
+         , (u ^ proof.t)
+         , G_(s_zero - proof.mu)
+       }
+       );
 
     const auto commit_L =
       vector_sum
@@ -372,21 +379,19 @@ namespace rct
          crypto::identity
          , G_commit
          , H_commit
-         , G_(proof.mu)
          , u ^ (proof.a * proof.b)
        }
        );
+
 
     const auto commit_R =
       vector_sum
       (
        pointV
        {
-         proof.A
-         , (proof.S ^ challenge_x)
-         , u ^ proof.t
-         , L_commit
+         L_commit
          , R_commit
+         , P
        }
        );
 
