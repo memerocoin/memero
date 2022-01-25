@@ -53,9 +53,6 @@ namespace rct
     std::vector<crypto::ec_scalar> inner_product_challenge_LR;
   };
 
-  std::optional<hash_data_t> make_hash_challenges
-  (const pointS commits, const Bulletproof proof);
-
   scalarV int_to_bits(const uint64_t x);
 
   constexpr std::pair<size_t, size_t> ceiling_log2_review(const size_t x) {

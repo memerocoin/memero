@@ -26,7 +26,6 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/vectorOps.hpp"
-#include "math/ringct/functional/accumHash.hpp"
 
 #include "tools/common/varint.h"
 #include "tools/epee/include/string_tools.h"
@@ -163,87 +162,6 @@ namespace rct
       *maybe_challenge_z;
 
     return {{challenge_y, challenge_z}};
-  }
-
-  std::optional<hash_data_t> make_hash_challenges
-  (const pointS commits, const Bulletproof proof)
-  {
-    const auto maybe_hash_V_A_S =
-      hash_V_A_S(commits, proof.A, proof.S);
-
-    if (!maybe_hash_V_A_S) {
-      return {};
-    }
-
-    const auto [challenge_y, challenge_z] =
-      *maybe_hash_V_A_S;
-
-    const auto maybe_hash_challenge_z_T1_T2 =
-      maybe_hash_V_to_non_zero_scalar
-      (
-       crypto::dataV
-       {
-         challenge_z
-         , challenge_z
-         , to_inv8(proof.T1)
-         , to_inv8(proof.T2)
-       }
-       );
-
-    if (!maybe_hash_challenge_z_T1_T2) {
-      return {};
-    }
-
-    const auto hash_challenge_z_T1_T2 =
-      *maybe_hash_challenge_z_T1_T2;
-
-    const auto maybe_inner_product_challenge =
-      maybe_hash_V_to_non_zero_scalar
-      (
-       crypto::dataV
-       {
-         hash_challenge_z_T1_T2
-         , hash_challenge_z_T1_T2
-         , proof.tau
-         , proof.mu
-         , proof.t
-       });
-
-    if (!maybe_inner_product_challenge) {
-      return {};
-    }
-
-    const auto inner_product_challenge =
-      *maybe_inner_product_challenge;
-
-
-    std::vector<std::vector<crypto::crypto_data>> lr_data;
-    std::transform
-      (
-       proof.LR.begin()
-       , proof.LR.end()
-       , std::back_inserter(lr_data)
-       , []
-       (
-        const auto lr
-        ) -> std::vector<crypto::crypto_data> {
-         return {to_inv8(lr.first), to_inv8(lr.second)};
-       }
-       );
-
-    const auto maybe_hash_data_inner_product_challenge_LR =
-      accum_hash(inner_product_challenge, lr_data);
-
-    const auto hash_data_inner_product_challenge_LR =
-      *maybe_hash_data_inner_product_challenge_LR;
-
-    return {{
-        challenge_y
-        , challenge_z
-        , hash_challenge_z_T1_T2
-        , inner_product_challenge
-        , hash_data_inner_product_challenge_LR
-      }};
   }
 
   scalarV int_to_bits(const uint64_t x) {
