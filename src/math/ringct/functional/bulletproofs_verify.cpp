@@ -247,6 +247,24 @@ namespace rct
     const size_t total_bit_width =
       padded_number_of_inputs * bit_width;
 
+    const auto challenge_y = challenges.V_A_S;
+
+    const auto y_exponents =
+      scalar_exponents(challenge_y, total_bit_width);
+
+    const scalarV two_exponents =
+      scalar_exponents(rct::s_two, bit_width);
+
+    const std::vector<scalarV> z_exp_mult_two_exp_monadic =
+      vector_mult_V_monadic
+      (
+       std::span(z_exponents).subspan(2, padded_number_of_inputs)
+       , two_exponents
+       );
+
+    const scalarV z_exp_mult_two_exp_flatten =
+      vector_concat(z_exp_mult_two_exp_monadic);
+
     scalarV w_cache(total_bit_width);
     w_cache[0] = w_inv_V[0];
     w_cache[1] = challenges.inner_product_LR_challenges[0];
@@ -264,32 +282,36 @@ namespace rct
           }
       }
 
-    const auto challenge_y = challenges.V_A_S;
+    const auto z4_g =
+      vector_add
+      (
+       vector_mult
+       (
+        w_cache
+        , proof.a 
+        )
+       , challenge_z
+       );
+         
+    const auto z4_V =
+      vector_negate
+      (
+       vector_mult
+       (
+        z4_g
+        , weight_z
+        )
+       );
 
-    const auto y_exponents =
-      scalar_exponents(challenge_y, total_bit_width);
+
+    auto w_cache_reverse = w_cache;
+    std::reverse(w_cache_reverse.begin(), w_cache_reverse.end());
 
     const crypto::ec_scalar y_inv =
       crypto::multiplicative_inverse(challenge_y);
 
     const auto y_inv_exponents =
       scalar_exponents(y_inv, total_bit_width);
-
-    const scalarV two_exponents =
-      scalar_exponents(rct::s_two, bit_width);
-
-    const std::vector<scalarV> z_exp_mult_two_exp_monadic =
-      vector_mult_V_monadic
-      (
-       std::span(z_exponents).subspan(2, padded_number_of_inputs)
-       , two_exponents
-       );
-
-    const scalarV z_exp_mult_two_exp_flatten =
-      vector_concat(z_exp_mult_two_exp_monadic);
-
-    auto w_cache_reverse = w_cache;
-    std::reverse(w_cache_reverse.begin(), w_cache_reverse.end());
     
     const auto z5_h1 =
       vector_mult
@@ -334,26 +356,6 @@ namespace rct
         )
        );
 
-    const auto z4_g =
-      vector_add
-      (
-       vector_mult
-       (
-        w_cache
-        , proof.a 
-        )
-       , challenge_z
-       );
-         
-    const auto z4_V =
-      vector_negate
-      (
-       vector_mult
-       (
-        z4_g
-        , weight_z
-        )
-       );
 
 
     // collect
