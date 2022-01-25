@@ -553,19 +553,6 @@ namespace rpc
     res.error_details = "";
   }
 
-  void DaemonHandler::handle(const SaveBC::Request& req, SaveBC::Response& res)
-  {
-    if (!m_core.get_blockchain_storage().store_blockchain())
-    {
-      res.status = Message::STATUS_FAILED;
-      res.error_details = "Error storing the blockchain";
-    }
-    else
-    {
-      res.status = Message::STATUS_OK;
-    }
-  }
-
   void DaemonHandler::handle(const GetBlockHash::Request& req, GetBlockHash::Response& res)
   {
     if (m_core.get_current_blockchain_height() <= req.height)
