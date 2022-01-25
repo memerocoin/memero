@@ -261,15 +261,13 @@ namespace rct
       vector_commit(sL, G_V) + vector_commit(sR, H_V) + G_(rho);
 
 
-    const auto maybe_challenge_y = hash_V_A_S(V, A, S);
+    const auto maybe_challenge_V_A_S = hash_V_A_S(V, A, S);
 
-    if (!maybe_challenge_y) {
+    if (!maybe_challenge_V_A_S) {
       return {};
     }
 
-    const auto [challenge_y, challenge_z] =
-      *maybe_challenge_y;
-
+    const auto [challenge_y, challenge_z] = *maybe_challenge_V_A_S;
 
     const scalarV l0 = vector_subtract(aL, challenge_z);
     const scalarS l1 = sL;
