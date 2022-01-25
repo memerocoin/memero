@@ -22,12 +22,11 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 */
 
-#include "bulletproofs_gen.hpp"
+#include "bulletproofs_verify.hpp"
 
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/accumHash.hpp"
-#include "math/ringct/functional/bulletproofs_gen.hpp"
 
 #include "tools/epee/include/logging.hpp"
 
