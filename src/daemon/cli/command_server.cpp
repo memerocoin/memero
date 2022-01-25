@@ -59,11 +59,6 @@ t_command_server::t_command_server(
     , "Show the help section or the documentation about a <command>."
     );
   m_command_lookup.set_handler(
-      "height"
-    , std::bind(&t_command_parser_executor::print_height, &m_parser, p::_1)
-    , "Print the local blockchain height."
-    );
-  m_command_lookup.set_handler(
       "peer-list"
     , std::bind(&t_command_parser_executor::print_peer_list, &m_parser, p::_1)
     , "peer-list [white] [gray] [<limit>]"

@@ -82,8 +82,6 @@ public:
 
   bool set_log_level(int8_t level);
 
-  bool print_height();
-
   bool print_block_by_hash(crypto::hash block_hash, bool include_hex);
 
   bool print_block_by_height(uint64_t height, bool include_hex);

@@ -35,24 +35,6 @@ namespace cryptonote
 
 namespace rpc
 {
-void GetHeight::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{}
-
-void GetHeight::Request::fromJson(const rapidjson::Value& val)
-{
-}
-
-void GetHeight::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  WRITE_JSON_FIELD_FROM(dest, height, height);
-}
-
-void GetHeight::Response::fromJson(const rapidjson::Value& val)
-{
-  READ_JSON_VALUE_BY_KEY(val, height, height);
-}
-
-
 void GetBlocksFast::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   WRITE_JSON_FIELD_FROM(dest, block_ids, block_ids);

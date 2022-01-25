@@ -76,7 +76,6 @@ namespace rpc
       {"get_block_headers_by_height", handle_message<GetBlockHeadersByHeight>},
       {"get_blocks_fast", handle_message<GetBlocksFast>},
       {"get_hashes_fast", handle_message<GetHashesFast>},
-      {"get_height", handle_message<GetHeight>},
       {"get_info", handle_message<GetInfo>},
       {"get_output_distribution", handle_message<GetOutputDistribution>},
       {"get_output_keys", handle_message<GetOutputKeys>},
@@ -101,13 +100,6 @@ namespace rpc
     const auto last_sorted = std::is_sorted_until(std::begin(handlers), std::end(handlers));
     if (last_sorted != std::end(handlers))
       throw std::logic_error{std::string{"ZMQ JSON-RPC handlers map is not properly sorted, see "} + last_sorted->method_name};
-  }
-
-  void DaemonHandler::handle(const GetHeight::Request& req, GetHeight::Response& res)
-  {
-    res.height = m_core.get_current_blockchain_height();
-
-    res.status = Message::STATUS_OK;
   }
 
   void DaemonHandler::handle(const GetBlocksFast::Request& req, GetBlocksFast::Response& res)
