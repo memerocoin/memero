@@ -64,6 +64,16 @@ namespace rct
    , const crypto::ec_scalar challenge
    );
 
+  bool verify_inner_product_argument
+  (
+   const InnerProductArgument ipa
+   , const crypto::ec_scalar challenge
+   , const scalarS a
+   , const scalarS b
+   );
+
+
+
   std::optional<RecursiveInnerProductArgument>
   make_recursive_inner_product_argument
   (
@@ -74,15 +84,6 @@ namespace rct
    , const crypto::ec_point u
    , const crypto::ec_scalar challenge
    );
-
-  bool verify_inner_product_argument
-  (
-   const InnerProductArgument ipa
-   , const crypto::ec_scalar challenge
-   , const scalarS a
-   , const scalarS b
-   );
-
 
   bool verify_recursive_inner_product_argument
   (

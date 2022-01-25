@@ -95,6 +95,55 @@ namespace rct
     return {new_a, new_b};
   }
 
+  crypto::ec_point verify_half
+  (
+   const crypto::ec_point P
+   , const crypto::ec_point L
+   , const crypto::ec_point R
+   , const crypto::ec_scalar challenge
+   )
+  {
+    const auto x = challenge;
+    const auto x_inv = multiplicative_inverse(x);
+
+    const auto p =
+      (L ^ (x * x))
+      + P
+      + (R ^ (x_inv * x_inv))
+      ;
+
+    return p;
+  }
+
+  bool verify_inner_product_argument
+  (
+   const InnerProductArgument ipa
+   , const crypto::ec_scalar challenge
+   , const scalarS a_half
+   , const scalarS b_half
+   )
+  {
+    const auto x = challenge;
+    const auto x_inv = multiplicative_inverse(x);
+
+    const auto h = homomorphic_hash_full
+      (
+       ipa.G
+       , ipa.H
+       , vector_mult(a_half, x_inv)
+       , vector_mult(a_half, x)
+       , vector_mult(b_half, x)
+       , vector_mult(b_half, x_inv)
+       , ipa.u
+       , inner_product(a_half, b_half)
+       );
+
+    const auto p = verify_half(ipa.P, ipa.L, ipa.R, x);
+
+    return h == p;
+  }
+
+
   std::tuple
   <
     const pointV
@@ -238,54 +287,6 @@ namespace rct
        , challenge
        , {}
        );
-  }
-
-  crypto::ec_point verify_half
-  (
-   const crypto::ec_point P
-   , const crypto::ec_point L
-   , const crypto::ec_point R
-   , const crypto::ec_scalar challenge
-   )
-  {
-    const auto x = challenge;
-    const auto x_inv = multiplicative_inverse(x);
-
-    const auto p =
-      (L ^ (x * x))
-      + P
-      + (R ^ (x_inv * x_inv))
-      ;
-
-    return p;
-  }
-
-  bool verify_inner_product_argument
-  (
-   const InnerProductArgument ipa
-   , const crypto::ec_scalar challenge
-   , const scalarS a_half
-   , const scalarS b_half
-   )
-  {
-    const auto x = challenge;
-    const auto x_inv = multiplicative_inverse(x);
-
-    const auto h = homomorphic_hash_full
-      (
-       ipa.G
-       , ipa.H
-       , vector_mult(a_half, x_inv)
-       , vector_mult(a_half, x)
-       , vector_mult(b_half, x)
-       , vector_mult(b_half, x_inv)
-       , ipa.u
-       , inner_product(a_half, b_half)
-       );
-
-    const auto p = verify_half(ipa.P, ipa.L, ipa.R, x);
-
-    return h == p;
   }
 
   bool verify_recursive_inner_product_argument
