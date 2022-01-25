@@ -76,8 +76,6 @@ class DaemonHandler : public RpcHandler
 
     void handle(const MiningStatus::Request& req, MiningStatus::Response& res);
 
-    void handle(const SaveBC::Request& req, SaveBC::Response& res);
-
     void handle(const GetBlockHash::Request& req, GetBlockHash::Response& res);
 
     void handle(const GetBlockTemplate::Request& req, GetBlockTemplate::Response& res);
@@ -103,8 +101,6 @@ class DaemonHandler : public RpcHandler
     void handle(const GetConnections::Request& req, GetConnections::Response& res);
 
     void handle(const GetBlockHeadersRange::Request& req, GetBlockHeadersRange::Response& res);
-
-    void handle(const StopDaemon::Request& req, StopDaemon::Response& res);
 
     void handle(const GetBans::Request& req, GetBans::Response& res);
 

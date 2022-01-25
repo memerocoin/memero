@@ -269,21 +269,6 @@ void GetInfo::Response::fromJson(const rapidjson::Value& val)
 }
 
 
-void SaveBC::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{}
-
-void SaveBC::Request::fromJson(const rapidjson::Value& val)
-{
-}
-
-void SaveBC::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{}
-
-void SaveBC::Response::fromJson(const rapidjson::Value& val)
-{
-}
-
-
 void GetBlockHash::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   WRITE_JSON_FIELD_FROM(dest, height, height);

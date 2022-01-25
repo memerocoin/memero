@@ -85,7 +85,6 @@ namespace rpc
       {"get_tx_global_output_indices", handle_message<GetTxGlobalOutputIndices>},
       {"output_key_images_spent", handle_message<KeyImagesSpent>},
       {"mining_status", handle_message<MiningStatus>},
-      {"save_bc", handle_message<SaveBC>},
       {"send_raw_tx", handle_message<SendRawTx>},
       {"send_raw_tx_hex", handle_message<SendRawTxHex>},
       {"set_log_level", handle_message<SetLogLevel>},
@@ -686,12 +685,6 @@ namespace rpc
   }
 
   void DaemonHandler::handle(const GetBlockHeadersRange::Request& req, GetBlockHeadersRange::Response& res)
-  {
-    res.status = Message::STATUS_FAILED;
-    res.error_details = "RPC method not yet implemented.";
-  }
-
-  void DaemonHandler::handle(const StopDaemon::Request& req, StopDaemon::Response& res)
   {
     res.status = Message::STATUS_FAILED;
     res.error_details = "RPC method not yet implemented.";
