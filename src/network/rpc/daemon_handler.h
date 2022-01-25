@@ -106,18 +106,11 @@ class DaemonHandler : public RpcHandler
 
     void handle(const StopDaemon::Request& req, StopDaemon::Response& res);
 
-    void handle(const StartSaveGraph::Request& req, StartSaveGraph::Response& res);
-
-    void handle(const StopSaveGraph::Request& req, StopSaveGraph::Response& res);
-
     void handle(const GetBans::Request& req, GetBans::Response& res);
 
     void handle(const SetBans::Request& req, SetBans::Response& res);
 
     void handle(const FlushTransactionPool::Request& req, FlushTransactionPool::Response& res);
-
-    void handle(const GetOutputHistogram::Request& req, GetOutputHistogram::Response& res);
-
     void handle(const GetOutputKeys::Request& req, GetOutputKeys::Response& res);
 
     void handle(const GetOutputDistribution::Request& req, GetOutputDistribution::Response& res);

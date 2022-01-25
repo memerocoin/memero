@@ -697,18 +697,6 @@ namespace rpc
     res.error_details = "RPC method not yet implemented.";
   }
 
-  void DaemonHandler::handle(const StartSaveGraph::Request& req, StartSaveGraph::Response& res)
-  {
-    res.status = Message::STATUS_FAILED;
-    res.error_details = "RPC method not yet implemented.";
-  }
-
-  void DaemonHandler::handle(const StopSaveGraph::Request& req, StopSaveGraph::Response& res)
-  {
-    res.status = Message::STATUS_FAILED;
-    res.error_details = "RPC method not yet implemented.";
-  }
-
   void DaemonHandler::handle(const GetBans::Request& req, GetBans::Response& res)
   {
     res.status = Message::STATUS_FAILED;
