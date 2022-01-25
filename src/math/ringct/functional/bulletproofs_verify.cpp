@@ -285,6 +285,8 @@ namespace rct
         )
        );
 
+    const auto z4_commit = vector_commit(z4_V, G_V);
+
 
     auto w_cache_reverse = w_cache;
     std::reverse(w_cache_reverse.begin(), w_cache_reverse.end());
@@ -356,6 +358,8 @@ namespace rct
         )
        );
 
+    const auto z5_commit = vector_commit(z5_V, H_V);
+
 
 
     // collect
@@ -381,9 +385,6 @@ namespace rct
       * weight_z
       ;
 
-    const auto z4 = vector_commit(z4_V, G_V);
-    const auto z5 = vector_commit(z5_V, H_V);
-
     const auto challenge_x = challenges.V_A_S_T1_T2;
 
 
@@ -400,8 +401,8 @@ namespace rct
         , z_commit
         , G_(y0 - z1)
         , H_(z3 - y1)
-        , z4
-        , z5
+        , z4_commit
+        , z5_commit
       }
     ;
 
