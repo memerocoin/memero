@@ -324,7 +324,7 @@ namespace rct
         )
        );
 
-    const auto z5_v =
+    const auto z5_V =
       vector_negate
       (
        vector_mult
@@ -345,7 +345,7 @@ namespace rct
        , challenge_z
        );
          
-    const auto z4_v =
+    const auto z4_V =
       vector_negate
       (
        vector_mult
@@ -379,8 +379,8 @@ namespace rct
       * weight_z
       ;
 
-    const auto z4 = vector_commit(z4_v, G_V);
-    const auto z5 = vector_commit(z5_v, H_V);
+    const auto z4 = vector_commit(z4_V, G_V);
+    const auto z5 = vector_commit(z5_V, H_V);
 
     const auto challenge_x = challenges.V_A_S_T1_T2;
 
