@@ -27,6 +27,7 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/accumHash.hpp"
+#include "math/ringct/functional/innerProductArgument_verify.hpp"
 
 #include "tools/epee/include/logging.hpp"
 
@@ -221,83 +222,7 @@ namespace rct
 
     // 2. check inner product argument
     
-    pointV L_V;
-    std::transform
-      (
-       proof.LR.begin()
-       , proof.LR.end()
-       , std::back_inserter(L_V)
-       , [](const auto& x) { return x.first; }
-       );
-
-    const auto L_challenges =
-      hadamard_product
-      (
-       challenges.inner_product_LR_challenges
-       , challenges.inner_product_LR_challenges
-       );
-       
-    const auto L_commit =
-      vector_commit
-      (
-       L_challenges
-       , L_V
-       );
-
-    pointV R_V;
-    std::transform
-      (
-       proof.LR.begin()
-       , proof.LR.end()
-       , std::back_inserter(R_V)
-       , [](const auto& x) { return x.second; }
-       );
-
-    const scalarV w_inv_V = multiplicative_inverse_V
-      (challenges.inner_product_LR_challenges);
-
-    const auto R_challenges =
-      hadamard_product
-      (
-       w_inv_V
-       , w_inv_V
-       );
-
-    const auto R_commit =
-      vector_commit
-      (
-       R_challenges
-       , R_V
-       );
-
-
     const auto challenge_z = challenges.V_A_S_rehash;
-
-    scalarV w_cache(total_bit_width);
-    w_cache[0] = w_inv_V[0];
-    w_cache[1] = challenges.inner_product_LR_challenges[0];
-    for (size_t j = 1; j < rounds; ++j)
-      {
-        const size_t slots = 1<<(j+1);
-        for (size_t s = slots; s-- > 0; --s)
-          {
-            w_cache[s] =
-              w_cache[s/2]
-              * challenges.inner_product_LR_challenges[j]
-              ;
-
-            w_cache[s-1] = w_cache[s/2] * w_inv_V[j];
-          }
-      }
-
-    const auto G_scalars = vector_mult(w_cache, proof.a);
-
-    const auto G_commit = vector_commit(G_scalars, G_V);
-
-
-    auto w_cache_reverse = w_cache;
-    std::reverse(w_cache_reverse.begin(), w_cache_reverse.end());
-
     const auto challenge_y = challenges.V_A_S;
 
     const auto y_exponents =
@@ -308,19 +233,6 @@ namespace rct
 
     const auto y_inv_exponents =
       scalar_exponents(y_inv, total_bit_width);
-    
-    const auto H_scalars =
-      vector_mult
-      (
-       hadamard_product
-       (
-        y_inv_exponents
-        , w_cache_reverse
-        )
-       , proof.b
-       );
-
-    const auto H_commit = vector_commit(H_scalars, H_V);
 
     const scalarV two_exponents =
       scalar_exponents(rct::s_two, bit_width);
@@ -371,31 +283,25 @@ namespace rct
        }
        );
 
-    const auto commit_L =
-      vector_sum
+    const RecursiveInnerProductArgument ipa =
+      {
+        P
+        , span_to_vector(G_V.subspan(0, total_bit_width))
+        , vector_multP_V(y_inv_exponents, H_V)
+        , proof.LR
+        , proof.a
+        , proof.b
+        , u
+      };
+
+    const auto is_valid_ipa =
+      verify_recursive_inner_product_argument
       (
-       pointV
-       {
-         crypto::identity
-         , G_commit
-         , H_commit
-         , u ^ (proof.a * proof.b)
-       }
+       ipa
+       , challenges.inner_product_challenge
        );
 
-
-    const auto commit_R =
-      vector_sum
-      (
-       pointV
-       {
-         L_commit
-         , R_commit
-         , P
-       }
-       );
-
-    if (commit_L == commit_R)
+    if (is_valid_ipa)
       {
         return true;
       }
