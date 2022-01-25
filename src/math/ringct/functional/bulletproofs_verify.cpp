@@ -290,7 +290,7 @@ namespace rct
           }
       }
 
-    const auto z4_V =
+    const auto G_scalars =
       vector_add
       (
        vector_mult
@@ -301,7 +301,7 @@ namespace rct
        , challenge_z
        );
          
-    const auto z4_commit = vector_commit(z4_V, G_V);
+    const auto G_commit = vector_commit(G_scalars, G_V);
 
 
     auto w_cache_reverse = w_cache;
@@ -318,7 +318,7 @@ namespace rct
     const auto y_inv_exponents =
       scalar_exponents(y_inv, total_bit_width);
     
-    const auto z5_h1 =
+    const auto H_scalars_1 =
       vector_mult
       (
        hadamard_product
@@ -342,29 +342,25 @@ namespace rct
     const scalarV z_exp_mult_two_exp_flatten =
       vector_concat(z_exp_mult_two_exp_monadic);
 
-    const auto z5_h2 =
-      vector_add_V
+    const auto H_scalars_2 =
+      vector_add
       (
-       z_exp_mult_two_exp_flatten
-       , vector_mult
+       hadamard_product
        (
-        y_exponents
-        , challenge_z
-        )
-       );
-
-    const auto z5_V =
-      vector_subtract_V
-      (
-       z5_h1
-       , hadamard_product
-       (
-        z5_h2
+        z_exp_mult_two_exp_flatten
         , y_inv_exponents
         )
+       , challenge_z
        );
 
-    const auto z5_commit = vector_commit(z5_V, H_V);
+    const auto H_scalars  =
+      vector_subtract_V
+      (
+       H_scalars_1
+       , H_scalars_2
+       );
+
+    const auto H_commit = vector_commit(H_scalars, H_V);
 
     const auto u = H_(challenges.inner_product_challenge);
 
@@ -373,26 +369,26 @@ namespace rct
       (
        pointV
        {
-         proof.A
-         , (proof.S ^ challenge_x)
-         , u ^ (proof.t - proof.a * proof.b)
-         , L_commit
-         , R_commit
+         crypto::identity
+         , G_commit
+         , H_commit
+         , G_(proof.mu)
+         , u ^ (proof.a * proof.b)
        }
        );
-      
+
     const auto commit_R =
       vector_sum
       (
        pointV
        {
-         crypto::identity
-         , z4_commit
-         , z5_commit
-         , G_(proof.mu)
+         proof.A
+         , (proof.S ^ challenge_x)
+         , u ^ proof.t
+         , L_commit
+         , R_commit
        }
-       )
-      ;
+       );
 
     if (commit_L == commit_R)
       {
