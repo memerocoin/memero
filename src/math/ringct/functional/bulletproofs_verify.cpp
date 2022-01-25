@@ -366,31 +366,35 @@ namespace rct
 
     const auto z5_commit = vector_commit(z5_V, H_V);
 
+    const auto u = H_(challenges.inner_product_challenge);
 
-
-    // collect
-    const crypto::ec_scalar z1 = proof.mu;
-    const crypto::ec_scalar z3 =
-      (proof.t - proof.a * proof.b)
-      * challenges.inner_product_challenge
+    const auto commit_L =
+      vector_sum
+      (
+       pointV
+       {
+         proof.A
+         , (proof.S ^ challenge_x)
+         , u ^ (proof.t - proof.a * proof.b)
+         , L_commit
+         , R_commit
+       }
+       );
+      
+    const auto commit_R =
+      vector_sum
+      (
+       pointV
+       {
+         crypto::identity
+         , z4_commit
+         , z5_commit
+         , G_(proof.mu)
+       }
+       )
       ;
 
-    const auto points =
-      pointV
-      {
-        crypto::identity
-        , crypto::identity - L_commit
-        , crypto::identity - R_commit
-        , crypto::identity - proof.A
-        , crypto::identity - (proof.S ^ challenge_x)
-        , z4_commit
-        , z5_commit
-        , G_(z1)
-        , H_(s_zero - z3)
-      }
-    ;
-
-    if (vector_sum(points) == crypto::identity)
+    if (commit_L == commit_R)
       {
         return true;
       }
