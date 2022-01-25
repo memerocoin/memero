@@ -290,43 +290,52 @@ namespace rct
 
     const auto proof_b = proof.b;
 
-    scalarV z5_v;
-    std::generate_n
+    
+    auto w_cache_reverse = w_cache;
+    std::reverse(w_cache_reverse.begin(), w_cache_reverse.end());
+    
+    const auto z5_h1 =
+      vector_mult
       (
-       std::back_inserter(z5_v)
-       , total_bit_width
-       , [
-          i = 0
-          , y_exponents
-          , y_inv_exponents
-          , z_exp_mult_two_exp_flatten
-          , challenge_z
-          , weight_z
-          , proof_b
-          , w_cache
-          , total_bit_width
-          ] () mutable -> crypto::ec_scalar {
-         // Convert the index to binary IN REVERSE
-         // and construct the crypto::ec_scalar exponent
+       hadamard_product
+       (
+        y_inv_exponents
+        , w_cache_reverse
+        )
+       , proof.b
+       );
 
-         const auto h_1 = 
-           proof_b
-           * y_inv_exponents[i]
-           * w_cache[total_bit_width - i - 1]
-           ;
+    const auto z5_h2 =
+      vector_add_V
+      (
+       z_exp_mult_two_exp_flatten
+       , vector_mult
+       (
+        y_exponents
+        , challenge_z
+        )
+       );
 
-         const auto h_2 =
-           challenge_z * y_exponents[i]
-           + z_exp_mult_two_exp_flatten[i]
-           ;
+    const auto z5_h =
+      vector_subtract_V
+      (
+       z5_h1
+       , hadamard_product
+       (
+        z5_h2
+        , y_inv_exponents
+        )
+       );
 
-         const crypto::ec_scalar h_scalar =
-           h_1 - h_2 * y_inv_exponents[i];
-
-         const crypto::ec_scalar r = s_zero - h_scalar * weight_z;
-         i++;
-         return r;
-       }
+    const auto z5_v =
+      vector_subtract_V
+      (
+       scalar_repeat(s_zero, total_bit_width)
+       , vector_mult
+       (
+        z5_h
+        , weight_z
+        )
        );
 
     scalarV z4_v;

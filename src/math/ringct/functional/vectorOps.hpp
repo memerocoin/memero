@@ -50,6 +50,8 @@ namespace rct
 
   rct::pointV vector_add_V(const pointS a, const pointS b);
 
+  rct::scalarV vector_subtract_V(const scalarS a, const scalarS b);
+
   rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b);
 
   rct::scalarV vector_subtract
