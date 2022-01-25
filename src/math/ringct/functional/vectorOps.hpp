@@ -52,6 +52,8 @@ namespace rct
 
   rct::scalarV vector_subtract_V(const scalarS a, const scalarS b);
 
+  rct::scalarV vector_negate(const scalarS a);
+
   rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b);
 
   rct::scalarV vector_subtract

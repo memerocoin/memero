@@ -288,9 +288,6 @@ namespace rct
     const scalarV z_exp_mult_two_exp_flatten =
       vector_concat(z_exp_mult_two_exp_monadic);
 
-    const auto proof_b = proof.b;
-
-    
     auto w_cache_reverse = w_cache;
     std::reverse(w_cache_reverse.begin(), w_cache_reverse.end());
     
@@ -328,27 +325,34 @@ namespace rct
        );
 
     const auto z5_v =
-      vector_subtract_V
+      vector_negate
       (
-       scalar_repeat(s_zero, total_bit_width)
-       , vector_mult
+       vector_mult
        (
         z5_h
         , weight_z
         )
        );
 
-    scalarV z4_v;
-    std::transform
+    const auto z4_g =
+      vector_add
       (
-       w_cache.begin()
-       , w_cache.end()
-       , std::back_inserter(z4_v)
-       , [proof, challenge_z, weight_z](const auto& cache) {
-         const crypto::ec_scalar g_scalar =
-           proof.a * cache + challenge_z;
-         return s_zero - g_scalar * weight_z;
-       }
+       vector_mult
+       (
+        w_cache
+        , proof.a 
+        )
+       , challenge_z
+       );
+         
+    const auto z4_v =
+      vector_negate
+      (
+       vector_mult
+       (
+        z4_g
+        , weight_z
+        )
        );
 
 

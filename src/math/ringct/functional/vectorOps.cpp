@@ -144,6 +144,15 @@ namespace rct
     return res;
   }
 
+  rct::scalarV vector_negate(const scalarS a)
+  {
+      return vector_subtract_V
+      (
+       scalar_repeat(s_zero, a.size())
+       , a
+       );
+  }
+
   rct::pointV vector_add_V(const pointS a, const pointS b)
   {
     LOG_ERROR_AND_THROW_UNLESS
