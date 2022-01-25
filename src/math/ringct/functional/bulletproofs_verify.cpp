@@ -166,8 +166,61 @@ namespace rct
     const auto challenges = *maybe_challenges;
 
 
-    // setup weighted aggregates
+    // 1. check blinding terms
 
+    const crypto::ec_point blinding_terms_commit_L =
+      H_(proof.t) + G_(proof.tau);
+
+    const size_t total_bit_width =
+      padded_number_of_inputs * bit_width;
+
+    const auto z = challenges.V_A_S_rehash;
+    const auto y = challenges.V_A_S;
+
+    const auto delta_1 = (z - (z * z)) *
+      sum_of_scalar_exponents(y, total_bit_width);
+
+    const scalarV z_exponents = scalar_exponents
+      (z, padded_number_of_inputs + 3);
+
+    const crypto::ec_scalar z_sum_skip_3 = vector_sum
+      (std::span(z_exponents).subspan(3, padded_number_of_inputs));
+
+    const crypto::ec_scalar delta_2 =
+      z_sum_skip_3 * sum_of_scalar_exponents(crypto::s_2, bit_width);
+
+    const auto delta = delta_1 - delta_2;
+
+    const auto coefficient_T_0 = H_(delta)
+      + vector_commit
+      (
+       std::span(z_exponents).subspan(2, commits.size())
+       , commits
+       );
+
+    const auto challenge_x = challenges.V_A_S_T1_T2;
+
+    const crypto::ec_point blinding_terms_commit_R =
+      substitute_polynomial
+      (
+       pointV
+       {
+         coefficient_T_0
+         , proof.T1
+         , proof.T2
+       }
+       , challenge_x
+       );
+
+       
+    if (blinding_terms_commit_L != blinding_terms_commit_R) {
+      LOG_ERROR("Invalid commits of blinding terms");
+      return false;
+    }
+
+
+    // 2. check inner product argument
+    
     pointV L_V;
     std::transform
       (
@@ -219,19 +272,6 @@ namespace rct
 
 
     const auto challenge_z = challenges.V_A_S_rehash;
-    const scalarV z_exponents = scalar_exponents
-      (challenge_z, padded_number_of_inputs + 3);
-
-    const auto z_commit =
-      vector_commit
-      (
-       std::span(z_exponents).subspan(2, commits.size())
-       , commits
-       );
-
-
-    const size_t total_bit_width =
-      padded_number_of_inputs * bit_width;
 
     scalarV w_cache(total_bit_width);
     w_cache[0] = w_inv_V[0];
@@ -329,53 +369,13 @@ namespace rct
 
 
     // collect
-    const crypto::ec_scalar ip1y =
-      sum_of_scalar_exponents(challenge_y, total_bit_width);
-
-    const crypto::ec_scalar k1 =
-      vector_sum(std::span(z_exponents).subspan(3));
-
-    const crypto::ec_scalar ip12 = vector_sum(two_exponents);
-
-    const crypto::ec_scalar k =
-      s_zero - challenge_z * challenge_z * ip1y - k1 * ip12;
-
-    const crypto::ec_scalar y0 = s_zero - proof.tau;
-    const crypto::ec_scalar y1 =
-      (proof.t - (challenge_z * ip1y + k));
-
     const crypto::ec_scalar z1 = proof.mu;
     const crypto::ec_scalar z3 =
       (proof.t - proof.a * proof.b)
       * challenges.inner_product_challenge
       ;
 
-    const auto challenge_x = challenges.V_A_S_T1_T2;
-
-    const auto T_commit = substitute_polynomial
-      (
-       pointV
-       {
-         z_commit
-         , proof.T1
-         , proof.T2
-       }
-       , challenge_x
-       )
-      ;
-
-    const auto points_Y =
-      pointV
-      {
-        T_commit
-        , G_(y0)
-        , H_(s_zero - y1)
-      }
-    ;
-
-    const auto valid_Y = vector_sum(points_Y) == crypto::identity;
-
-    const auto points_Z =
+    const auto points =
       pointV
       {
         crypto::identity
@@ -390,9 +390,7 @@ namespace rct
       }
     ;
 
-    const auto valid_Z = vector_sum(points_Z) == crypto::identity;
-
-    if (valid_Y && valid_Z)
+    if (vector_sum(points) == crypto::identity)
       {
         return true;
       }
