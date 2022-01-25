@@ -170,11 +170,6 @@ namespace rct
 
     // setup weighted aggregates
 
-    const auto challenge_y = challenges.V_A_S;
-    const crypto::ec_scalar y_inv =
-      crypto::multiplicative_inverse(challenge_y);
-
-
     pointV L_V;
     std::transform
       (
@@ -269,14 +264,19 @@ namespace rct
           }
       }
 
-    const scalarV two_exponents =
-      scalar_exponents(rct::s_two, bit_width);
+    const auto challenge_y = challenges.V_A_S;
 
     const auto y_exponents =
       scalar_exponents(challenge_y, total_bit_width);
 
+    const crypto::ec_scalar y_inv =
+      crypto::multiplicative_inverse(challenge_y);
+
     const auto y_inv_exponents =
       scalar_exponents(y_inv, total_bit_width);
+
+    const scalarV two_exponents =
+      scalar_exponents(rct::s_two, bit_width);
 
     const std::vector<scalarV> z_exp_mult_two_exp_monadic =
       vector_mult_V_monadic
@@ -305,21 +305,14 @@ namespace rct
           , proof_b
           , w_cache
           , total_bit_width
-          , two_exponents
           ] () mutable -> crypto::ec_scalar {
          // Convert the index to binary IN REVERSE
          // and construct the crypto::ec_scalar exponent
 
-         LOG_ERROR_AND_THROW_UNLESS
-           (
-            i % bit_width < two_exponents.size()
-            , "invalid two_exponents index"
-            );
-
          const auto h_1 = 
            proof_b
            * y_inv_exponents[i]
-           * w_cache[(~i) & (total_bit_width-1)]
+           * w_cache[total_bit_width - i - 1]
            ;
 
          const auto h_2 =
