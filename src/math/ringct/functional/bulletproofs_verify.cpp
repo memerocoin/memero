@@ -63,7 +63,7 @@ namespace rct
       return {};
     }
 
-    const auto hash_challenge_z_T1_T2 =
+    const auto challenge_x =
       *maybe_hash_challenge_z_T1_T2;
 
     const auto maybe_inner_product_challenge =
@@ -71,8 +71,8 @@ namespace rct
       (
        crypto::dataV
        {
-         hash_challenge_z_T1_T2
-         , hash_challenge_z_T1_T2
+         challenge_x
+         , challenge_x
          , proof.tau
          , proof.mu
          , proof.t
@@ -109,7 +109,7 @@ namespace rct
     return {{
         challenge_y
         , challenge_z
-        , hash_challenge_z_T1_T2
+        , challenge_x
         , inner_product_challenge
         , hash_data_inner_product_challenge_LR
       }};
