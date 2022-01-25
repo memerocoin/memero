@@ -227,9 +227,6 @@ namespace rct
     const auto padded_number_of_inputs =
       ceiling_log2_review(xs.size()).first;
 
-    const size_t total_bit_width =
-      padded_number_of_inputs * bit_width;
-
     std::generate_n
       (
        std::back_inserter(bits)
@@ -237,8 +234,6 @@ namespace rct
        , []() { return scalar_repeat(crypto::s_0, bit_width); }
        );
 
-    const scalarV aL = vector_concat(bits);
-    const scalarV aR = vector_subtract(aL, crypto::s_1);
 
     pointV V;
     std::transform
@@ -251,6 +246,12 @@ namespace rct
        }
        );
 
+    const scalarV aL = vector_concat(bits);
+    const scalarV aR = vector_subtract(aL, crypto::s_1);
+
+    const size_t total_bit_width =
+      padded_number_of_inputs * bit_width;
+
     const auto G_V = get_bp_generator_G_V(total_bit_width);
     const auto H_V = get_bp_generator_H_V(total_bit_width);
 
@@ -260,7 +261,6 @@ namespace rct
     const crypto::ec_point S =
       vector_commit(sL, G_V) + vector_commit(sR, H_V) + G_(rho);
 
-
     const auto maybe_challenge_V_A_S = hash_V_A_S(V, A, S);
 
     if (!maybe_challenge_V_A_S) {
@@ -268,6 +268,7 @@ namespace rct
     }
 
     const auto [challenge_y, challenge_z] = *maybe_challenge_V_A_S;
+
 
     const scalarV l0 = vector_subtract(aL, challenge_z);
     const scalarS l1 = sL;
@@ -331,6 +332,7 @@ namespace rct
     const auto challenge_x =
       *maybe_hash_challenge_z_T1_T2;
 
+
     scalarV blinding_factors;
     std::transform
       (
@@ -377,6 +379,7 @@ namespace rct
 
     const auto inner_product_challenge =
       *maybe_inner_product_challenge;
+
 
     return {{
         l
