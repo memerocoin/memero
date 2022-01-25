@@ -42,7 +42,7 @@ namespace rct
   pointV get_bp_generator_G_V(const size_t idx);
   pointV get_bp_generator_H_V(const size_t idx);
 
-  struct hash_data_t
+  struct HashChallenge
   {
     crypto::ec_scalar
     V_A_S
@@ -50,7 +50,7 @@ namespace rct
       , V_A_S_T1_T2
       , inner_product_challenge
       ;
-    std::vector<crypto::ec_scalar> inner_product_challenge_LR;
+    std::vector<crypto::ec_scalar> inner_product_LR_challenges;
   };
 
   scalarV int_to_bits(const uint64_t x);

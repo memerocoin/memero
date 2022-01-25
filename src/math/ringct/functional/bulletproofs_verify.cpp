@@ -33,7 +33,7 @@ Paper references are to https://eprint.iacr.org/2017/1066
 namespace rct
 {
 
-  std::optional<hash_data_t> get_hash_challenges
+  std::optional<HashChallenge> get_hash_challenges
   (const pointS commits, const Bulletproof proof)
   {
     const auto maybe_hash_V_A_S =
@@ -99,18 +99,18 @@ namespace rct
        }
        );
 
-    const auto maybe_hash_data_inner_product_challenge_LR =
+    const auto maybe_hash_data_inner_product_LR_challenges =
       accum_hash(inner_product_challenge, lr_data);
 
-    const auto hash_data_inner_product_challenge_LR =
-      *maybe_hash_data_inner_product_challenge_LR;
+    const auto hash_data_inner_product_LR_challenges =
+      *maybe_hash_data_inner_product_LR_challenges;
 
     return {{
         challenge_y
         , challenge_z
         , challenge_x
         , inner_product_challenge
-        , hash_data_inner_product_challenge_LR
+        , hash_data_inner_product_LR_challenges
       }};
   }
 
@@ -170,7 +170,7 @@ namespace rct
     // setup weighted aggregates
 
     const scalarV w_inv_V = multiplicative_inverse_V
-      (challenges.inner_product_challenge_LR);
+      (challenges.inner_product_LR_challenges);
 
     const auto challenge_y = challenges.V_A_S;
     const crypto::ec_scalar y_inv =
@@ -198,8 +198,8 @@ namespace rct
     const auto L_challenges =
       hadamard_product
       (
-       challenges.inner_product_challenge_LR
-       , challenges.inner_product_challenge_LR
+       challenges.inner_product_LR_challenges
+       , challenges.inner_product_LR_challenges
        );
        
     const auto L_commit =
@@ -251,7 +251,7 @@ namespace rct
 
     scalarV w_cache(total_bit_width);
     w_cache[0] = w_inv_V[0];
-    w_cache[1] = challenges.inner_product_challenge_LR[0];
+    w_cache[1] = challenges.inner_product_LR_challenges[0];
     for (size_t j = 1; j < rounds; ++j)
       {
         const size_t slots = 1<<(j+1);
@@ -259,7 +259,7 @@ namespace rct
           {
             w_cache[s] =
               w_cache[s/2]
-              * challenges.inner_product_challenge_LR[j]
+              * challenges.inner_product_LR_challenges[j]
               ;
 
             w_cache[s-1] = w_cache[s/2] * w_inv_V[j];

@@ -25,7 +25,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "math/ringct/functional/rctTypes.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/vectorOps.hpp"
-#include "math/ringct/functional/innerProductArgument.hpp"
+#include "math/ringct/functional/innerProductArgument_gen.hpp"
+#include "math/ringct/functional/innerProductArgument_verify.hpp"
 #include "math/ringct/functional/bulletproofs_gen.hpp"
 
 #include "tools/epee/include/logging.hpp"

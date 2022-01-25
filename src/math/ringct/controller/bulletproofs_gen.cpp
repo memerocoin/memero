@@ -28,7 +28,7 @@ Paper references are to https://eprint.iacr.org/2017/1066
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/ringct/functional/bulletproofs_gen.hpp"
-#include "math/ringct/functional/innerProductArgument.hpp"
+#include "math/ringct/functional/innerProductArgument_gen.hpp"
 
 #include "math/crypto/controller/keyGen.hpp"
 

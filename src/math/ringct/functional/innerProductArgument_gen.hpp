@@ -1,0 +1,90 @@
+/*
+
+Copyright 2021 fuwa
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
+
+#pragma once
+
+#include "rctTypes.hpp"
+
+namespace rct
+{
+
+  struct InnerProductArgument {
+    crypto::ec_point P;
+    pointV G;
+    pointV H;
+    crypto::ec_point L;
+    crypto::ec_point R;
+    crypto::ec_point u;
+  };
+
+  struct RecursiveInnerProductArgument {
+    crypto::ec_point P;
+    pointV G;
+    pointV H;
+    LR_V LR;
+    crypto::ec_scalar a;
+    crypto::ec_scalar b;
+    crypto::ec_point u;
+  };
+
+  InnerProductArgument init_inner_product_argument
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_point u
+   );
+
+  std::tuple
+  <
+    const scalarV
+    , const scalarV
+    >
+  finish_inner_product_argument
+  (
+   const scalarS a
+   , const scalarS b
+   , const crypto::ec_scalar challenge
+   );
+
+
+  std::tuple
+  <
+    const pointV
+    , const pointV
+    >
+  split_generators_with_challenge
+  (
+   const pointS G
+   , const pointS H
+   , const crypto::ec_scalar challenge
+   );
+
+  std::optional<RecursiveInnerProductArgument>
+  make_recursive_inner_product_argument
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_point u
+   , const crypto::ec_scalar challenge
+   );
+}

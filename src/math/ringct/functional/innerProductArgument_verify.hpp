@@ -20,69 +20,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #pragma once
 
 #include "rctTypes.hpp"
+#include "innerProductArgument_gen.hpp"
 
 namespace rct
 {
-
-  struct InnerProductArgument {
-    crypto::ec_point P;
-    pointV G;
-    pointV H;
-    crypto::ec_point L;
-    crypto::ec_point R;
-    crypto::ec_point u;
-  };
-
-  struct RecursiveInnerProductArgument {
-    crypto::ec_point P;
-    pointV G;
-    pointV H;
-    LR_V LR;
-    crypto::ec_scalar a;
-    crypto::ec_scalar b;
-    crypto::ec_point u;
-  };
-
-  InnerProductArgument init_inner_product_argument
-  (
-   const pointS G
-   , const pointS H
-   , const scalarS a
-   , const scalarS b
-   , const crypto::ec_point u
-   );
-
-  std::tuple
-  <
-    const scalarV
-    , const scalarV
-    >
-  finish_inner_product_argument
-  (
-   const scalarS a
-   , const scalarS b
-   , const crypto::ec_scalar challenge
-   );
-
   bool verify_inner_product_argument
   (
    const InnerProductArgument ipa
    , const crypto::ec_scalar challenge
    , const scalarS a
    , const scalarS b
-   );
-
-
-
-  std::optional<RecursiveInnerProductArgument>
-  make_recursive_inner_product_argument
-  (
-   const pointS G
-   , const pointS H
-   , const scalarS a
-   , const scalarS b
-   , const crypto::ec_point u
-   , const crypto::ec_scalar challenge
    );
 
   bool verify_recursive_inner_product_argument
