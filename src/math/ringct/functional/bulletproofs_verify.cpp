@@ -232,18 +232,20 @@ namespace rct
        , G_V
        );
 
-    const auto P_H_scalars =
-      vector_add
+    // I = H'
+    const auto I_V = vector_multP_V(y_inv_exponents, H_V);
+
+    const auto P_I_scalars =
+      vector_add_V
       (
-       hadamard_product
-       (
-        z_exp_mult_two_exp_flatten
-        , y_inv_exponents
-        )
-       , challenge_z
+       z_exp_mult_two_exp_flatten
+       , vector_mult
+       ( y_exponents
+         , challenge_z
+         )
        );
 
-    const auto P_H = vector_commit(P_H_scalars, H_V);
+    const auto P_I = vector_commit(P_I_scalars, I_V);
 
     const auto u = H_(challenges.inner_product_challenge);
 
@@ -255,7 +257,7 @@ namespace rct
          proof.A
          , (proof.S ^ challenge_x)
          , P_G
-         , P_H
+         , P_I
          , (u ^ proof.t)
          , G_(s_zero - proof.mu)
        }
@@ -265,7 +267,7 @@ namespace rct
       {
         P
         , span_to_vector(G_V.subspan(0, total_bit_width))
-        , vector_multP_V(y_inv_exponents, H_V)
+        , I_V
         , proof.LR
         , proof.a
         , proof.b
