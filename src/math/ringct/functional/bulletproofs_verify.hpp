@@ -29,6 +29,17 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 namespace rct
 {
+
+  struct HashChallenge
+  {
+    crypto::ec_scalar
+    V_A_S
+      , V_A_S_rehash
+      , V_A_S_T1_T2
+      , inner_product_challenge
+      ;
+  };
+
   bool bulletproof_VERIFY
   (
    const pointS commits

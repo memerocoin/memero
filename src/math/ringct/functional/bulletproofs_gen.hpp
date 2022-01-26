@@ -42,17 +42,6 @@ namespace rct
   pointV get_bp_generator_G_V(const size_t idx);
   pointV get_bp_generator_H_V(const size_t idx);
 
-  struct HashChallenge
-  {
-    crypto::ec_scalar
-    V_A_S
-      , V_A_S_rehash
-      , V_A_S_T1_T2
-      , inner_product_challenge
-      ;
-    std::vector<crypto::ec_scalar> inner_product_LR_challenges;
-  };
-
   scalarV int_to_bits(const uint64_t x);
 
   constexpr std::pair<size_t, size_t> ceiling_log2_review(const size_t x) {

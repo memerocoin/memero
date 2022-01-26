@@ -86,32 +86,11 @@ namespace rct
       *maybe_inner_product_challenge;
 
 
-    std::vector<std::vector<crypto::crypto_data>> lr_data;
-    std::transform
-      (
-       proof.LR.begin()
-       , proof.LR.end()
-       , std::back_inserter(lr_data)
-       , []
-       (
-        const auto lr
-        ) -> std::vector<crypto::crypto_data> {
-         return {to_inv8(lr.first), to_inv8(lr.second)};
-       }
-       );
-
-    const auto maybe_hash_data_inner_product_LR_challenges =
-      accum_hash(inner_product_challenge, lr_data);
-
-    const auto hash_data_inner_product_LR_challenges =
-      *maybe_hash_data_inner_product_LR_challenges;
-
     return {{
         challenge_y
         , challenge_z
         , challenge_x
         , inner_product_challenge
-        , hash_data_inner_product_LR_challenges
       }};
   }
 
