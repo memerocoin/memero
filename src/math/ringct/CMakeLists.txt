@@ -31,7 +31,6 @@ add_library(math_ringct_basic
   functional/rctTypes.cpp
   functional/rctOps.cpp
   functional/vectorOps.cpp
-  functional/accumHash.cpp
   functional/innerProductArgument_gen.cpp
   functional/innerProductArgument_verify.cpp
   functional/bulletproofs_gen.cpp

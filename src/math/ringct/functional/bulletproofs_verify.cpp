@@ -26,7 +26,6 @@ Paper references are to https://eprint.iacr.org/2017/1066
 
 #include "math/ringct/functional/vectorOps.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/functional/accumHash.hpp"
 #include "math/ringct/functional/innerProductArgument_verify.hpp"
 
 #include "tools/epee/include/logging.hpp"
