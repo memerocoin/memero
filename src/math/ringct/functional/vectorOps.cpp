@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "tools/epee/include/logging.hpp"
 
 #include <numeric>
+#include <execution>
 
 namespace rct
 {
@@ -57,7 +58,13 @@ namespace rct
   (
    const pointS xs
    ) {
-    return std::reduce(xs.begin(), xs.end(), crypto::identity);
+    return std::reduce
+      (
+       std::execution::par_unseq
+       , xs.begin()
+       , xs.end()
+       , crypto::identity
+       );
   }
 
   crypto::ec_scalar sum_of_scalar_exponents
@@ -164,7 +171,8 @@ namespace rct
     rct::pointV res(a.size());
     std::transform
       (
-       a.begin()
+       std::execution::par_unseq
+       , a.begin()
        , a.end()
        , b.begin()
        , res.begin()
@@ -244,7 +252,8 @@ namespace rct
 
     std::transform
       (
-       a.begin()
+       std::execution::par_unseq
+       , a.begin()
        , a.end()
        , p.begin()
        , r.begin()
@@ -286,7 +295,13 @@ namespace rct
        );
 
     const auto xs = vector_multP_V(a, p);
-    return std::reduce(xs.begin(), xs.end(), crypto::identity);
+    return std::reduce
+      (
+       std::execution::par_unseq
+       , xs.begin()
+       , xs.end()
+       , crypto::identity
+       );
   }
 
   std::pair<pointV, pointV> split_vector(const pointS v) {
