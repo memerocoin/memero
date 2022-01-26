@@ -156,3 +156,152 @@ TEST(quick_ipa_non_interactive, simple)
   EXPECT_TRUE
     (verify_recursive_inner_product_argument(ipa, challenge));
 }
+
+
+TEST(quick_ipa_non_interactive, wrong_challenge)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  const auto altered_challenge = crypto::randomScalar();
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(ipa, altered_challenge));
+}
+
+
+TEST(quick_ipa_non_interactive, wrong_P)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  auto altered_ipa = ipa;
+  altered_ipa.P = crypto::randomPoint();
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(altered_ipa, challenge));
+}
+
+
+TEST(quick_ipa_non_interactive, wrong_a)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  auto altered_ipa = ipa;
+  altered_ipa.a = crypto::randomScalar();
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(altered_ipa, challenge));
+}
+
+
+TEST(quick_ipa_non_interactive, wrong_b)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  auto altered_ipa = ipa;
+  altered_ipa.b = crypto::randomScalar();
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(altered_ipa, challenge));
+}
+
+
+TEST(quick_ipa_non_interactive, wrong_u)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  auto altered_ipa = ipa;
+  altered_ipa.u = crypto::randomPoint();
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(altered_ipa, challenge));
+}
+
+
+TEST(quick_ipa_non_interactive, wrong_G)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  auto altered_ipa = ipa;
+
+  const auto index_to_change = crypto::rand_idx(ipa.G.size());
+  altered_ipa.G[index_to_change] = crypto::randomPoint();
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(altered_ipa, challenge));
+}
+
+
+TEST(quick_ipa_non_interactive, wrong_H)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  auto altered_ipa = ipa;
+
+  const auto index_to_change = crypto::rand_idx(ipa.H.size());
+  altered_ipa.H[index_to_change] = crypto::randomPoint();
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(altered_ipa, challenge));
+}
+
+
+TEST(quick_ipa_non_interactive, wrong_LR_first)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  auto altered_ipa = ipa;
+
+  const auto index_to_change = crypto::rand_idx(ipa.LR.size());
+  auto lr = ipa.LR[index_to_change];
+  lr.first = crypto::randomPoint();
+
+  altered_ipa.LR[index_to_change] = lr;
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(altered_ipa, challenge));
+}
+
+
+TEST(quick_ipa_non_interactive, wrong_LR_second)
+{
+  const auto [ipa, challenge] = random_recursive_IPA();
+
+  EXPECT_TRUE
+    (verify_recursive_inner_product_argument(ipa, challenge));
+
+  auto altered_ipa = ipa;
+
+  const auto index_to_change = crypto::rand_idx(ipa.LR.size());
+  auto lr = ipa.LR[index_to_change];
+  lr.second = crypto::randomPoint();
+
+  altered_ipa.LR[index_to_change] = lr;
+
+  EXPECT_FALSE
+    (verify_recursive_inner_product_argument(altered_ipa, challenge));
+}
+
