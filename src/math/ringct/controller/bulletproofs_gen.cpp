@@ -91,8 +91,8 @@ namespace rct
          , mu
          ] = *bp_vectors;
 
-    const crypto::ec_scalar challenge_y_inv =
-      crypto::multiplicative_inverse(challenge_y);
+      const crypto::ec_scalar challenge_y_inv =
+        crypto::multiplicative_inverse(challenge_y);
 
       const scalarV challenge_y_inv_exponents =
         scalar_exponents(challenge_y_inv, total_bit_width);
