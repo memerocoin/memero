@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rctOps.hpp"
 
 #include "cryptonote/basic/controller/format_utils.hpp"
+#include "math/group/functional/curve25519_cryptonote_extension.hpp"
 
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"
@@ -74,7 +75,7 @@ namespace rct {
     const auto maybeSafeInv8 = maybeSafePoint(x);
     return
       maybeSafeInv8
-      ? std::make_optional<crypto::ec_point>(mult8(*maybeSafeInv8))
+      ? std::make_optional<crypto::ec_point>(mult8_fast(*maybeSafeInv8))
       : std::nullopt;
   }
 
