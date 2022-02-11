@@ -104,7 +104,7 @@ main-sync:
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
---add-exclusive-node 10.0.0.1
+--add-exclusive-node 10.0.0.10
 
 main-sync-debug:
 	@rm -rf mainnet/node_sync
@@ -114,7 +114,7 @@ main-sync-debug:
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
---add-exclusive-node 10.0.0.1 \
+--add-exclusive-node 10.0.0.10 \
 --log-level 1
 
 main-sync-reuse:
@@ -123,7 +123,7 @@ main-sync-reuse:
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
---add-exclusive-node 10.0.0.1 \
+--add-exclusive-node 10.0.0.10 \
 
 main-sync-reuse-debug:
 	../../build/bin/lolnerod-cpp \
@@ -131,7 +131,7 @@ main-sync-reuse-debug:
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
---add-exclusive-node 10.0.0.1 \
+--add-exclusive-node 10.0.0.10 \
 --log-level 1
 
 main-sync-flake:
@@ -142,7 +142,7 @@ main-sync-flake:
 --data-dir ./mainnet/node_sync_flake \
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
---add-exclusive-node 10.0.0.1
+--add-exclusive-node 10.0.0.10
 
 mine:
 	../../build/bin/lolnerod-cpp \
@@ -150,7 +150,7 @@ mine:
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
---add-exclusive-node 10.0.0.1 \
+--add-exclusive-node 10.0.0.10 \
 --start-mining hahaEwGNeu4AbYYrsrZmoVJUUpSWR3dQ3JuGyKJU8KKBXZVSND2duaiZUsWQcyrLEzSjH3Y4opmYJNHoBow6reYJ1iD6SQNjn4 \
 --mining-threads 4
 
