@@ -158,7 +158,7 @@ namespace cryptonote
       uint64_t    start_height;
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_request_base)
-        KV_SERIALIZE_CONTAINER_POD_AS_BLOB(block_ids)
+        KV_SERIALIZE(block_ids)
         KV_SERIALIZE(start_height)
       END_KV_SERIALIZE_MAP()
     };
@@ -172,7 +172,7 @@ namespace cryptonote
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_PARENT(rpc_access_response_base)
-        KV_SERIALIZE_CONTAINER_POD_AS_BLOB(m_block_ids)
+        KV_SERIALIZE(m_block_ids)
         KV_SERIALIZE(start_height)
         KV_SERIALIZE(current_height)
       END_KV_SERIALIZE_MAP()
