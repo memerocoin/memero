@@ -16,8 +16,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #pragma once
 
-#include "group.hpp"
+#include "rctTypes.hpp"
+#include "rctOps.hpp"
 
-namespace crypto {
-  ec_point viaFieldMult8(const crypto_data x) noexcept;
+#include "tools/epee/include/logging.hpp"
+
+#include <span>
+
+namespace rct
+{
+  using MultiexpData = std::pair<const crypto::ec_scalar, const crypto::ec_point>;
+
+  crypto::ec_point dummy(const std::span<const MultiexpData> data) noexcept;
 }

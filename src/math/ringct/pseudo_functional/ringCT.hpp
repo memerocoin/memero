@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "math/ringct/functional/rctTypesUnsafe.hpp"
+#include "math/ringct/functional/rctTypes.hpp"
 
 namespace rct {
 

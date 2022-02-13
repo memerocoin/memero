@@ -31,30 +31,11 @@ add_library( epee_log
   src/logging.cpp
 )
 
-add_library( epee_basic
-  src/hex.cpp
-  src/string_tools.cpp
-)
-
-add_library( epee_parse_base
-  src/storages/parserse_base_utils.cpp
-)
-
-
-target_link_libraries( epee_basic
-  epee_log
-  epee_parse_base
-)
-
-install(TARGETS epee_basic)
-install(TARGETS epee_log)
-install(TARGETS epee_parse_base)
-
-if(NOT ONLY_LIB)
-
 add_library( epee
+  src/hex.cpp
   src/abstract_http_client.cpp
   src/net_utils_base.cpp
+  src/string_tools.cpp
   src/levin_base.cpp
   src/connection_basic.cpp
   src/buffer.cpp
@@ -64,10 +45,10 @@ add_library( epee
   src/misc_os_dependent.cpp
 )
 
-
 target_link_libraries( epee
-  epee_basic
   epee_net_basic
+  epee_log
+  epee_storage_basic
 )
 
 add_library( epee_net_basic
@@ -84,6 +65,10 @@ target_link_libraries( epee_net
   epee_net_basic
 )
 
+add_library( epee_storage_basic
+  src/storages/parserse_base_utils.cpp
+)
+
 add_library( epee_storage
   src/storages/portable_storage.cpp
   src/storages/portable_storage_from_json.cpp
@@ -91,12 +76,7 @@ add_library( epee_storage
 )
 
 target_link_libraries( epee_storage
-  epee_parse_base
+  epee_storage_basic
   epee
 )
 
-# install(TARGETS epee_net_basic)
-# install(TARGETS epee_net)
-# install(TARGETS epee_storage)
-
-endif()

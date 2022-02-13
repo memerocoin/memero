@@ -38,5 +38,3 @@ target_link_libraries(network_p2p
   cryptonote_protocol
   ${Boost_SERIALIZATION_LIBRARY}
 )
-
-# install(TARGETS network_p2p)

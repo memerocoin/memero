@@ -190,6 +190,16 @@ bool t_command_parser_executor::set_log_level(const std::vector<std::string>& ar
   return true;
 }
 
+bool t_command_parser_executor::print_height(const std::vector<std::string>& args)
+{
+  if (!args.empty()) {
+    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
+    return true;
+  }
+
+  return m_executor.print_height();
+}
+
 bool t_command_parser_executor::print_block(const std::vector<std::string>& args)
 {
   bool include_hex = false;

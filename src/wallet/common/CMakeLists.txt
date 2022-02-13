@@ -31,5 +31,3 @@ add_library(wallet_common
   wallet_args.cpp
   controller.cpp
 )
-
-# install(TARGETS wallet_common)

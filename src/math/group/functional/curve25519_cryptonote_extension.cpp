@@ -16,15 +16,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "curve25519_cryptonote_extension.hpp"
 
-#include <cstring>
-
 extern "C" {
 #include "crypto-ops.h"
 }
 
 namespace crypto {
   // needed because point can be out of main group
-  ec_point mult8_fast(const ec_point_unsafe X) noexcept {
+  ec_point mult8(const ec_point_unsafe X) noexcept {
     ge_p3 p3_in;
     ge_frombytes_vartime(&p3_in, X.data.data());
 
@@ -53,17 +51,8 @@ namespace crypto {
 
 
   ec_point viaFieldMult8(const crypto_data x) noexcept {
-    return mult8_fast(viaField(x));
+    return mult8(viaField(x));
   }
 
 
-}
-
-extern "C" {
-  void viaFieldMult8(const uint8_t* x, uint8_t* y) {
-    crypto::crypto_data in{};
-    std::memcpy(in.data.data(), x, in.data.size());
-    const auto out = viaFieldMult8(in);
-    std::memcpy(y, out.data.data(), out.data.size());
-  }
 }

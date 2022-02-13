@@ -19,7 +19,7 @@
 
 #include "consensus.hpp"
 
-#include "math/ringct/pseudo_functional/bulletproofs_verify.hpp"
+#include "math/ringct/pseudo_functional/bulletproofs.hpp"
 #include "math/ringct/pseudo_functional/clsag.hpp"
 #include "math/ringct/functional/rctOps.hpp"
 #include "math/group/functional/group.hpp"

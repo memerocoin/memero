@@ -44,6 +44,3 @@ target_link_libraries(cryptonote_miner
   math_crypto
   )
 endif()
-
-
-# install(TARGETS cryptonote_miner)

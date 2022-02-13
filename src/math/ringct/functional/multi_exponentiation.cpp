@@ -14,10 +14,30 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 */
 
-#pragma once
 
-#include "group.hpp"
+#include "multi_exponentiation.hpp"
 
-namespace crypto {
-  ec_point viaFieldMult8(const crypto_data x) noexcept;
+#include "rctOps.hpp"
+
+#include <functional>
+#include <numeric>
+#include <tuple>
+
+namespace rct
+{
+
+crypto::ec_point dummy(const std::span<const MultiexpData> data) noexcept
+{
+  return std::transform_reduce
+    (
+     data.begin()
+     , data.end()
+     , crypto::identity
+     , std::plus<crypto::ec_point>()
+     , [](const auto& x) {
+       return std::apply(crypto::mult, x);
+     }
+     );
+}
+
 }

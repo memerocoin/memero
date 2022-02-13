@@ -40,12 +40,10 @@ add_library(cryptonote_basic
 
 target_link_libraries(cryptonote_basic
   tools_common
-  epee_parse_base
+  epee_storage_basic
   math_crypto
   math_blockchain
   math_consensus
 
   tools_serialization
 )
-
-# install(TARGETS cryptonote_basic)

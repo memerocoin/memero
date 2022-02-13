@@ -32,6 +32,10 @@
 
 #include "math/crypto/functional/key.hpp"
 
+#include "tools/serialization/containers.h"
+
+#include <sodium/crypto_verify_32.h>
+
 #include <span>
 
 
@@ -72,6 +76,22 @@ namespace rct {
   //containers for representing amounts
   using amount_t = uint64_t;
 
+  // CLSAG signature
+  struct clsag_unsafe
+  {
+    std::vector<crypto::ec_scalar_unnormalized> s; // scalars
+    crypto::ec_scalar_unnormalized c1;
+
+    reconstructed_point signer_key_image; // signing key image
+    inv8 blinding_factor_surplus_key_image; // commitment key image
+
+    BEGIN_SERIALIZE_OBJECT()
+      FIELD(s)
+      FIELD(c1)
+      FIELD(blinding_factor_surplus_key_image)
+    END_SERIALIZE()
+  };
+
   struct clsag
   {
     scalarV s; // scalars
@@ -80,13 +100,42 @@ namespace rct {
     crypto::ec_point blinding_factor_surplus_key_image; // commitment key image
   };
 
+  std::optional<clsag> maybeSafeCLSAG(const clsag_unsafe clsag);
+  clsag_unsafe toUnsafeCLSAG(const clsag clsag);
+
+  struct Bulletproof_unsafe
+  {
+    rct::inv8 A, S;
+    rct::inv8 T1, T2;
+    crypto::ec_scalar_unnormalized taux, mu;
+    rct::inv8V L, R;
+    crypto::ec_scalar_unnormalized a, b, t;
+
+    BEGIN_SERIALIZE_OBJECT()
+      FIELD(A)
+      FIELD(S)
+      FIELD(T1)
+      FIELD(T2)
+      FIELD(taux)
+      FIELD(mu)
+      FIELD(L)
+      FIELD(R)
+      FIELD(a)
+      FIELD(b)
+      FIELD(t)
+
+      if (L.empty() || L.size() != R.size())
+        return false;
+    END_SERIALIZE()
+  };
+
   using LR_V = std::vector<std::pair<crypto::ec_point, crypto::ec_point>>;
 
   struct Bulletproof
   {
     crypto::ec_point A, S;
     crypto::ec_point T1, T2;
-    crypto::ec_scalar tau, mu;
+    crypto::ec_scalar taux, mu;
     LR_V LR;
     crypto::ec_scalar a, b, t;
   };
@@ -96,6 +145,198 @@ namespace rct {
   std::pair<pointV, pointV>
   splitLR(const std::span<const std::pair<crypto::ec_point, crypto::ec_point>> LR);
   
+  std::optional<Bulletproof> maybeSafeBulletproof(const Bulletproof_unsafe proof);
+  Bulletproof_unsafe toUnsafeBulletproof(const Bulletproof proof);
+
+  size_t n_bulletproof_max_commit_size(const Bulletproof_unsafe &proof);
+
+  enum {
+    RCTTypeNull = 0,
+    RCTTypeCLSAG = 5,
+  };
+
+  struct rctDataBasic
+  {
+    uint8_t type = RCTTypeNull;
+    crypto::hash message;
+    output_public_dataM decoys;
+    std::vector<ecdh_encrypted_data_t> ecdh_encrypted_data;
+
+    // WARNING, needs checking when parsing
+    std::vector<output_commit> output_commits;
+
+    amount_t fee;
+
+    template<bool W, template <bool> class Archive>
+    bool serialize_rctsig_base(Archive<W> &ar, size_t inputs, size_t outputs)
+    {
+      FIELD(type)
+      if (type == RCTTypeNull)
+        return ar.stream().good();
+      if (type != RCTTypeCLSAG)
+        return false;
+      VARINT_FIELD(fee)
+      // inputs/outputs not saved, only here for serialization help
+      // FIELD(message) - not serialized, it can be reconstructed
+      // FIELD(decoys) - not serialized, it can be reconstructed
+      ar.tag("ecdh_encrypted_data");
+      ar.begin_array();
+      PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, ecdh_encrypted_data);
+      if (ecdh_encrypted_data.size() != outputs)
+        return false;
+      for (size_t i = 0; i < outputs; ++i)
+      {
+        {
+          ar.begin_object();
+          if (!typename Archive<W>::is_saving())
+            ecdh_encrypted_data[i].masked_amount = {};
+          crypto::hash8 &masked_amount = (crypto::hash8&)ecdh_encrypted_data[i].masked_amount;
+          FIELD(masked_amount);
+          ar.end_object();
+        }
+        if (outputs - i > 1)
+          ar.delimit_array();
+      }
+      ar.end_array();
+
+      ar.tag("output_commits");
+      ar.begin_array();
+      PREPARE_CUSTOM_VECTOR_SERIALIZATION(outputs, output_commits);
+      if (output_commits.size() != outputs)
+        return false;
+      for (size_t i = 0; i < outputs; ++i)
+      {
+        FIELDS(output_commits[i].commit)
+        if (outputs - i > 1)
+          ar.delimit_array();
+      }
+      ar.end_array();
+      return ar.stream().good();
+    }
+  };
+
+  struct rctDataPrunable
+  {
+    std::vector<Bulletproof_unsafe> bulletproofs;
+    std::vector<clsag_unsafe> CLSAGs;
+
+    // WARNING, needs checking when parsing
+    pointV pseudo_input_commits; //C - for simple rct
+
+    // when changing this function, update cryptonote::get_pruned_transaction_weight
+    template<bool W, template <bool> class Archive>
+    bool serialize_ringct_prunable
+    (Archive<W> &ar, uint8_t type, size_t inputs, size_t outputs, size_t mixin)
+    {
+      if (inputs >= 0xffffffff)
+        return false;
+      if (outputs >= 0xffffffff)
+        return false;
+      if (mixin >= 0xffffffff)
+        return false;
+      if (type == RCTTypeNull)
+        return ar.stream().good();
+      if (type != RCTTypeCLSAG)
+        return false;
+      {
+        uint32_t number_of_range_proofs = bulletproofs.size();
+        VARINT_FIELD(number_of_range_proofs)
+        ar.tag("range_proofs");
+        ar.begin_array();
+        if (number_of_range_proofs > outputs)
+          return false;
+        if (number_of_range_proofs != 1)
+          return false;
+        PREPARE_CUSTOM_VECTOR_SERIALIZATION(number_of_range_proofs, bulletproofs);
+        for (size_t i = 0; i < number_of_range_proofs; ++i)
+        {
+          FIELDS(bulletproofs[i])
+          if (number_of_range_proofs - i > 1)
+            ar.delimit_array();
+        }
+        const auto proof = bulletproofs.front();
+        if (outputs > n_bulletproof_max_commit_size(proof))
+          return false;
+        ar.end_array();
+      }
+
+      {
+        ar.tag("ring_signatures");
+        ar.begin_array();
+        PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, CLSAGs);
+        if (CLSAGs.size() != inputs)
+          return false;
+        for (size_t i = 0; i < inputs; ++i)
+        {
+          // we save the CLSAGs contents directly, because we want it to save its
+          // arrays without the size prefixes, and the load can't know what size
+          // to expect if it's not in the data
+          ar.begin_object();
+          ar.tag("s");
+          ar.begin_array();
+          PREPARE_CUSTOM_VECTOR_SERIALIZATION(mixin + 1, CLSAGs[i].s);
+          if (CLSAGs[i].s.size() != mixin + 1)
+            return false;
+          for (size_t j = 0; j <= mixin; ++j)
+          {
+            FIELDS(CLSAGs[i].s[j])
+            if (mixin + 1 - j > 1)
+              ar.delimit_array();
+          }
+          ar.end_array();
+
+          ar.tag("c1");
+          FIELDS(CLSAGs[i].c1)
+
+          // CLSAGs[i].I not saved, it can be reconstructed
+          ar.tag("blinding_factor_surplus_key_image");
+          FIELDS(CLSAGs[i].blinding_factor_surplus_key_image)
+          ar.end_object();
+
+          if (inputs - i > 1)
+              ar.delimit_array();
+        }
+
+        ar.end_array();
+      }
+
+      {
+        ar.tag("pseudo_input_commits");
+        ar.begin_array();
+        PREPARE_CUSTOM_VECTOR_SERIALIZATION(inputs, pseudo_input_commits);
+        if (pseudo_input_commits.size() != inputs)
+          return false;
+        for (size_t i = 0; i < inputs; ++i)
+        {
+          FIELDS(pseudo_input_commits[i])
+          if (inputs - i > 1)
+            ar.delimit_array();
+        }
+        ar.end_array();
+      }
+
+      return ar.stream().good();
+    }
+  };
+
+  struct rctData: public rctDataBasic
+  {
+    rctDataPrunable p;
+  };
+
+  struct rctDataSizeChecked: rctDataBasic
+  {
+    Bulletproof_unsafe bulletproof;
+    std::vector<clsag_unsafe> CLSAGs;
+
+    // WARNING, needs checking when parsing
+    pointV pseudo_input_commits; //C - for simple rct
+  };
+
+  std::optional<rctDataSizeChecked> maybeSizeCheckedRctData(const rctData& x);
+
+  rctData toRctData(const rctDataSizeChecked& x);
+
 }
 
 
@@ -111,3 +352,10 @@ namespace std
   };
 }
 
+BLOB_SERIALIZER(crypto::ec_point);
+BLOB_SERIALIZER(rct::inv8);
+BLOB_SERIALIZER(rct::output_public_data);
+BLOB_SERIALIZER(rct::output_commit);
+BLOB_SERIALIZER(crypto::ec_scalar);
+BLOB_SERIALIZER(rct::ecdh_encrypted_data_t);
+BLOB_SERIALIZER(crypto::ec_scalar_unnormalized);

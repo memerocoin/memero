@@ -30,9 +30,7 @@ add_library(math_consensus
   )
 
 target_link_libraries(math_consensus
-  math_ringct_basic_unsafe
+  math_ringct_basic
   math_blockchain
   )
 
-
-# install(TARGETS math_consensus)

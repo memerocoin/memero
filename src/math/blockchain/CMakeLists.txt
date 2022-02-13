@@ -37,4 +37,3 @@ target_link_libraries(math_blockchain
   math_crypto
   )
 
-# install(TARGETS math_blockchain)

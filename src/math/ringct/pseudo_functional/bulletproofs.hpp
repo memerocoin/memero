@@ -1,7 +1,5 @@
 // Copyright (c) 2021, The Lolnero Project
-// Copyright (c) 2016, Monero Research Labs
-//
-// Author: Shen Noether <shen.noether@gmx.com>
+// Copyright (c) 2017-2020, The Monero Project
 //
 // All rights reserved.
 //
@@ -28,34 +26,18 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// Adapted from Java code by Sarang Noether
 
 #pragma once
 
 #include "math/ringct/functional/rctTypes.hpp"
 
-namespace rct {
+#include <span>
 
-  struct rctInputData
-  {
-    const amount_t amount;
-    const crypto::ec_scalar signer_sk;
-    const crypto::ec_scalar signer_blinding_factor;
-    const size_t index_in_decoys;
-    const output_public_dataV decoys;
-  };
+namespace rct
+{
 
-  struct rctOutputData
-  {
-    const amount_t amount;
-    const crypto::ec_scalar ecdh_shared_secret_hashed_by_index;
-  };
+  bool bulletproof_VERIFY(const pointS commits, const Bulletproof proof);
 
-  rctDataSizeChecked generate_ringct
-  (
-   const crypto::hash message
-   , const std::vector<rctInputData> inputs
-   , const std::vector<rctOutputData> outputs
-   , const amount_t fee
-   );
 }
-

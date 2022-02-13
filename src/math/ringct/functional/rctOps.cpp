@@ -32,7 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rctOps.hpp"
 
 #include "cryptonote/basic/controller/format_utils.hpp"
-#include "math/group/functional/curve25519_cryptonote_extension.hpp"
 
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/string_tools.h"
@@ -75,7 +74,7 @@ namespace rct {
     const auto maybeSafeInv8 = maybeSafePoint(x);
     return
       maybeSafeInv8
-      ? std::make_optional<crypto::ec_point>(mult8_fast(*maybeSafeInv8))
+      ? std::make_optional<crypto::ec_point>(mult8(*maybeSafeInv8))
       : std::nullopt;
   }
 
@@ -109,17 +108,6 @@ namespace rct {
 
   crypto::ec_scalar hash_dataV_to_scalar(const std::span<const crypto::crypto_data> keys) {
     return reduce(d2s(h2d(hash_dataV(keys))));
-  }
-
-  std::optional<crypto::ec_scalar>
-  maybe_hash_V_to_non_zero_scalar(const std::span<const crypto::crypto_data> keys) {
-    const auto h = reduce(d2s(h2d(hash_dataV(keys))));
-    if (h == crypto::s_0) {
-      LOG_ERROR("Unluckily hashed to scalar 0");
-      return {};
-    } else {
-      return h;
-    }
   }
 
 

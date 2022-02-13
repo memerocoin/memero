@@ -73,7 +73,7 @@ namespace cryptonote
     BEGIN_URI_MAP2()
 
         MAP_URI_AUTO_JON2("/get_blocks", on_get_blocks, COMMAND_RPC_GET_BLOCKS_FAST)
-        MAP_URI_AUTO_JON2("/get_hashes", on_get_hashes, COMMAND_RPC_GET_HASHES_FAST)
+        MAP_URI_AUTO_BIN2("/get_hashes.bin", on_get_hashes, COMMAND_RPC_GET_HASHES_FAST)
 
         MAP_URI_AUTO_JON2("/is_output_key_image_spent", on_is_output_key_image_spent, COMMAND_RPC_IS_KEY_IMAGE_SPENT)
         MAP_URI_AUTO_JON2("/send_raw_transaction", on_send_raw_tx, COMMAND_RPC_SEND_RAW_TX)
@@ -119,6 +119,7 @@ namespace cryptonote
 
     END_URI_MAP2()
 
+    bool on_get_height(const COMMAND_RPC_GET_HEIGHT::request& req, COMMAND_RPC_GET_HEIGHT::response& res);
     bool on_get_blocks(const COMMAND_RPC_GET_BLOCKS_FAST::request& req, COMMAND_RPC_GET_BLOCKS_FAST::response& res);
     bool on_get_hashes(const COMMAND_RPC_GET_HASHES_FAST::request& req, COMMAND_RPC_GET_HASHES_FAST::response& res);
     bool on_get_transactions(const COMMAND_RPC_GET_TRANSACTIONS::request& req, COMMAND_RPC_GET_TRANSACTIONS::response& res);

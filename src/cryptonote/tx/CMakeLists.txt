@@ -38,5 +38,3 @@ target_link_libraries(cryptonote_tx
   tools_serialization
   math_ringct
 )
-
-# install(TARGETS cryptonote_tx)

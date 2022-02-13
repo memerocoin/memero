@@ -33,7 +33,6 @@
 
 
 #include "math/ringct/functional/rctTypes.hpp"
-#include "tools/serialization/containers.h"
 
 namespace wallet {
 namespace logic {

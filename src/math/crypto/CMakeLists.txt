@@ -42,10 +42,8 @@ add_library(math_crypto
   )
 
 target_link_libraries(math_crypto
-    epee_basic
+    epee
     math_hash
     math_group
   )
 
-
-install(TARGETS math_crypto)

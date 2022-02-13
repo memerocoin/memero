@@ -966,7 +966,7 @@ void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rct::Bu
   WRITE_JSON_FIELD_FROM(dest, S, p.S);
   WRITE_JSON_FIELD_FROM(dest, T1, p.T1);
   WRITE_JSON_FIELD_FROM(dest, T2, p.T2);
-  WRITE_JSON_FIELD_FROM(dest, tau, p.tau);
+  WRITE_JSON_FIELD_FROM(dest, taux, p.taux);
   WRITE_JSON_FIELD_FROM(dest, mu, p.mu);
   WRITE_JSON_FIELD_FROM(dest, L, p.L);
   WRITE_JSON_FIELD_FROM(dest, R, p.R);
@@ -988,7 +988,7 @@ void fromJsonValue(const rapidjson::Value& val, rct::Bulletproof_unsafe& p)
   READ_JSON_VALUE_BY_KEY(val, p.S, S);
   READ_JSON_VALUE_BY_KEY(val, p.T1, T1);
   READ_JSON_VALUE_BY_KEY(val, p.T2, T2);
-  READ_JSON_VALUE_BY_KEY(val, p.tau, tau);
+  READ_JSON_VALUE_BY_KEY(val, p.taux, taux);
   READ_JSON_VALUE_BY_KEY(val, p.mu, mu);
   READ_JSON_VALUE_BY_KEY(val, p.L, L);
   READ_JSON_VALUE_BY_KEY(val, p.R, R);

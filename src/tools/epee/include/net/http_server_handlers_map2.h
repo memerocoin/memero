@@ -95,6 +95,34 @@
 
 #define MAP_URI_AUTO_JON2(s_pattern, callback_f, command_type) MAP_URI_AUTO_JON2_IF(s_pattern, callback_f, command_type, true)
 
+#define MAP_URI_AUTO_BIN2(s_pattern, callback_f, command_type) \
+    else if(query_info.m_URI == s_pattern) \
+    { \
+      handled = true; \
+      uint64_t ticks = epee::misc_utils::get_tick_count(); \
+      boost::value_initialized<command_type::request> req; \
+      bool parse_res = epee::serialization::load_t_from_binary(static_cast<command_type::request&>(req), query_info.m_body); \
+      LOG_ERROR_AND_RETURN_UNLESS(parse_res, false, "Failed to parse bin body data, body size=" << query_info.m_body.size()); \
+      uint64_t ticks1 = epee::misc_utils::get_tick_count(); \
+      boost::value_initialized<command_type::response> resp;\
+      LOG_VERBOSE(m_conn_context << "calling " << s_pattern); \
+      bool res = false; \
+      try { res = callback_f(static_cast<command_type::request&>(req), static_cast<command_type::response&>(resp)); } \
+      catch (const std::exception &e) { LOG_ERROR(m_conn_context << "Failed to " << #callback_f << "()"); } \
+      if (!res) \
+      { \
+        response_info.m_response_code = 500; \
+        response_info.m_response_comment = "Internal Server Error"; \
+        return true; \
+      } \
+      uint64_t ticks2 = epee::misc_utils::get_tick_count(); \
+      epee::serialization::store_t_to_binary(static_cast<command_type::response&>(resp), response_info.m_body); \
+      uint64_t ticks3 = epee::misc_utils::get_tick_count(); \
+      response_info.m_mime_tipe = " application/octet-stream"; \
+      response_info.m_header_info.m_content_type = " application/octet-stream"; \
+      LOG_DEBUG( s_pattern << "() processed with " << ticks1-ticks << "/"<< ticks2-ticks1 << "/" << ticks3-ticks2 << "ms"); \
+    }
+
 #define END_URI_MAP2() return handled;}
 
 

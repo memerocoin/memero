@@ -647,6 +647,33 @@ bool t_rpc_command_executor::set_log_level(int8_t level) {
   return true;
 }
 
+bool t_rpc_command_executor::print_height() {
+  cryptonote::COMMAND_RPC_GET_HEIGHT::request req;
+  cryptonote::COMMAND_RPC_GET_HEIGHT::response res;
+
+  std::string fail_message = "Unsuccessful";
+
+  if (m_is_rpc)
+  {
+    if (!m_rpc_client->rpc_request(req, res, "/get_height", fail_message.c_str()))
+    {
+      return true;
+    }
+  }
+  else
+  {
+    if (!m_rpc_server->on_get_height(req, res) || res.status != CORE_RPC_STATUS_OK)
+    {
+      tools::fail_msg_writer() << make_error(fail_message, res.status);
+      return true;
+    }
+  }
+
+  tools::success_msg_writer() << boost::lexical_cast<std::string>(res.height);
+
+  return true;
+}
+
 bool t_rpc_command_executor::print_block_by_hash(crypto::hash block_hash, bool include_hex) {
   cryptonote::COMMAND_RPC_GET_BLOCK::request req;
   cryptonote::COMMAND_RPC_GET_BLOCK::response res;

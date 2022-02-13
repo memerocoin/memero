@@ -1156,38 +1156,17 @@ void wallet2::pull_hashes(uint64_t start_height, uint64_t &blocks_start_height, 
 {
   cryptonote::COMMAND_RPC_GET_HASHES_FAST::request req = AUTO_VAL_INIT(req);
   cryptonote::COMMAND_RPC_GET_HASHES_FAST::response res = AUTO_VAL_INIT(res);
-
-  std::list<std::string> block_ids;
-  std::transform
-    (
-     short_chain_history.begin()
-     , short_chain_history.end()
-     , std::back_inserter(block_ids)
-     , [](const auto& x) { return epee::string_tools::pod_to_hex(x); }
-     );
-
-  req.block_ids = block_ids;
+  req.block_ids = short_chain_history;
 
   req.start_height = start_height;
 
   {
-    bool r = m_rpc_client.invoke_http_json("/get_hashes", req, res);
-    THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "get_hashes", error::get_hashes_error, (res.status));
+    bool r = m_rpc_client.invoke_http_bin("/get_hashes.bin", req, res);
+    THROW_ON_RPC_RESPONSE_ERROR(r, {}, res, "gethashes.bin", error::get_hashes_error, (res.status));
   }
 
   blocks_start_height = res.start_height;
-  hashes.clear();
-  std::transform
-    (
-     res.m_block_ids.begin()
-     , res.m_block_ids.end()
-     , std::back_inserter(hashes)
-     , [](const auto& x) {
-       crypto::hash y;
-       epee::string_tools::hex_to_pod(x, y);
-       return y;
-     }
-     );
+  hashes = std::move(res.m_block_ids);
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::process_parsed_blocks(uint64_t start_height, const std::vector<cryptonote::block_complete_entry> &blocks, const std::vector<parsed_block> &parsed_blocks, uint64_t& blocks_added)
