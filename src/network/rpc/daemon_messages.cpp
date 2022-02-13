@@ -35,24 +35,6 @@ namespace cryptonote
 
 namespace rpc
 {
-void GetHeight::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{}
-
-void GetHeight::Request::fromJson(const rapidjson::Value& val)
-{
-}
-
-void GetHeight::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  WRITE_JSON_FIELD_FROM(dest, height, height);
-}
-
-void GetHeight::Response::fromJson(const rapidjson::Value& val)
-{
-  READ_JSON_VALUE_BY_KEY(val, height, height);
-}
-
-
 void GetBlocksFast::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   WRITE_JSON_FIELD_FROM(dest, block_ids, block_ids);
@@ -287,21 +269,6 @@ void GetInfo::Response::fromJson(const rapidjson::Value& val)
 }
 
 
-void SaveBC::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{}
-
-void SaveBC::Request::fromJson(const rapidjson::Value& val)
-{
-}
-
-void SaveBC::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{}
-
-void SaveBC::Response::fromJson(const rapidjson::Value& val)
-{
-}
-
-
 void GetBlockHash::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {
   WRITE_JSON_FIELD_FROM(dest, height, height);
@@ -442,35 +409,6 @@ void GetTransactionPool::Response::fromJson(const rapidjson::Value& val)
   READ_JSON_VALUE_BY_KEY(val, transactions, transactions);
   READ_JSON_VALUE_BY_KEY(val, output_key_images, output_key_images);
 }
-
-void GetOutputHistogram::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  WRITE_JSON_FIELD_FROM(dest, amounts, amounts);
-  WRITE_JSON_FIELD_FROM(dest, min_count, min_count);
-  WRITE_JSON_FIELD_FROM(dest, max_count, max_count);
-  WRITE_JSON_FIELD_FROM(dest, unlocked, unlocked);
-  WRITE_JSON_FIELD_FROM(dest, recent_cutoff, recent_cutoff);
-}
-
-void GetOutputHistogram::Request::fromJson(const rapidjson::Value& val)
-{
-  READ_JSON_VALUE_BY_KEY(val, amounts, amounts);
-  READ_JSON_VALUE_BY_KEY(val, min_count, min_count);
-  READ_JSON_VALUE_BY_KEY(val, max_count, max_count);
-  READ_JSON_VALUE_BY_KEY(val, unlocked, unlocked);
-  READ_JSON_VALUE_BY_KEY(val, recent_cutoff, recent_cutoff);
-}
-
-void GetOutputHistogram::Response::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
-{
-  WRITE_JSON_FIELD_FROM(dest, histogram, histogram);
-}
-
-void GetOutputHistogram::Response::fromJson(const rapidjson::Value& val)
-{
-  READ_JSON_VALUE_BY_KEY(val, histogram, histogram);
-}
-
 
 void GetOutputKeys::Request::doToJson(rapidjson::Writer<rapidjson::StringBuffer>& dest) const
 {

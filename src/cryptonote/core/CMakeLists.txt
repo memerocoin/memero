@@ -37,3 +37,6 @@ target_link_libraries(cryptonote_core
   math_ringct
   cryptonote_miner
 )
+
+
+# install(TARGETS cryptonote_core)

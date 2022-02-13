@@ -31,18 +31,31 @@ add_library(math_ringct_basic
   functional/rctTypes.cpp
   functional/rctOps.cpp
   functional/vectorOps.cpp
-  functional/multi_exponentiation.cpp
-
+  functional/innerProductArgument_gen.cpp
+  functional/innerProductArgument_verify.cpp
+  functional/bulletproofs_gen.cpp
+  functional/bulletproofs_verify.cpp
   pseudo_functional/clsag.cpp
-  pseudo_functional/bulletproofs.cpp
-
+  pseudo_functional/bulletproofs_verify.cpp
   controller/clsagGen.cpp
   controller/bulletproofs_gen.cpp
-  controller/ringCT_Gen.cpp
 )
+
+install(TARGETS math_ringct_basic)
+
+if(NOT ONLY_LIB)
 
 target_link_libraries(math_ringct_basic
   math_crypto
+)
+
+add_library(math_ringct_basic_unsafe
+  functional/rctTypesUnsafe.cpp
+  controller/ringCT_Gen.cpp
+)
+
+target_link_libraries(math_ringct_basic_unsafe
+  math_ringct_basic
 )
 
 add_library(math_ringct
@@ -54,3 +67,6 @@ target_link_libraries(math_ringct
   math_consensus
   cryptonote_basic
 )
+
+# install(TARGETS math_ringct)
+endif()

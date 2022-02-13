@@ -41,3 +41,5 @@ target_link_libraries(network_type
   epee_net
   )
 
+
+# install(TARGETS network_type)

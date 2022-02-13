@@ -54,8 +54,6 @@ class DaemonHandler : public RpcHandler
 
     ~DaemonHandler() { }
 
-    void handle(const GetHeight::Request& req, GetHeight::Response& res);
-
     void handle(const GetBlocksFast::Request& req, GetBlocksFast::Response& res);
 
     void handle(const GetHashesFast::Request& req, GetHashesFast::Response& res);
@@ -77,8 +75,6 @@ class DaemonHandler : public RpcHandler
     void handle(const StopMining::Request& req, StopMining::Response& res);
 
     void handle(const MiningStatus::Request& req, MiningStatus::Response& res);
-
-    void handle(const SaveBC::Request& req, SaveBC::Response& res);
 
     void handle(const GetBlockHash::Request& req, GetBlockHash::Response& res);
 
@@ -106,20 +102,11 @@ class DaemonHandler : public RpcHandler
 
     void handle(const GetBlockHeadersRange::Request& req, GetBlockHeadersRange::Response& res);
 
-    void handle(const StopDaemon::Request& req, StopDaemon::Response& res);
-
-    void handle(const StartSaveGraph::Request& req, StartSaveGraph::Response& res);
-
-    void handle(const StopSaveGraph::Request& req, StopSaveGraph::Response& res);
-
     void handle(const GetBans::Request& req, GetBans::Response& res);
 
     void handle(const SetBans::Request& req, SetBans::Response& res);
 
     void handle(const FlushTransactionPool::Request& req, FlushTransactionPool::Response& res);
-
-    void handle(const GetOutputHistogram::Request& req, GetOutputHistogram::Response& res);
-
     void handle(const GetOutputKeys::Request& req, GetOutputKeys::Response& res);
 
     void handle(const GetOutputDistribution::Request& req, GetOutputDistribution::Response& res);

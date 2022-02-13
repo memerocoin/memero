@@ -1,65 +1,35 @@
-// Copyright (c) 2021, The Lolnero Project
-// Copyright (c) 2017-2020, The Monero Project
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without modification, are
-// permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this list of
-//    conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice, this list
-//    of conditions and the following disclaimer in the documentation and/or other
-//    materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its contributors may be
-//    used to endorse or promote products derived from this software without specific
-//    prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// Adapted from Java code by Sarang Noether
+/*
+
+Copyright 2021 fuwa
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Adapted from C++ code from The Monero Project
+Adapted from Java code by Sarang Noether
+Paper references are to https://eprint.iacr.org/2017/1066
+(revision 1 July 2018)
+
+*/
 
 #pragma once
 
 #include "math/ringct/functional/rctTypes.hpp"
-#include "config/lol.hpp"
+#include "math/ringct/functional/bulletproofs_gen.hpp"
 
 #include <span>
 
 namespace rct
 {
-  constexpr size_t maxN = 64;
-  constexpr size_t max_outputs = constant::BULLETPROOF_MAX_OUTPUTS;
-
-  extern std::array<crypto::ec_point, maxN*max_outputs> Hi;
-  extern std::array<crypto::ec_point, maxN*max_outputs> Gi;
-
-  constexpr std::pair<size_t, size_t> log2bound(const size_t x) {
-    size_t y = 1;
-    size_t _log = 0;
-
-    while (y < x) {
-      _log++;
-      y = y << 1;
-    }
-
-    return {y, _log};
-  }
-
-
-  void init_exponents();
-
-  using bp_input_t = std::pair<const uint64_t, const crypto::ec_scalar>;
-
   Bulletproof bulletproof_MAKE(const std::span<const bp_input_t> xs);
 }

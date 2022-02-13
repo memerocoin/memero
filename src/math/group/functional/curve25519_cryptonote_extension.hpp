@@ -19,5 +19,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "group.hpp"
 
 namespace crypto {
+  ec_point mult8_fast(const ec_point_unsafe X) noexcept;
   ec_point viaFieldMult8(const crypto_data x) noexcept;
+}
+
+extern "C"
+{
+  void viaFieldMult8(const uint8_t* x, uint8_t* y);
 }

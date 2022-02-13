@@ -38,7 +38,7 @@
 
 #include "math/ringct/functional/curveConstants.hpp"
 #include "math/ringct/functional/rctOps.hpp"
-#include "math/ringct/pseudo_functional/bulletproofs.hpp"
+#include "math/ringct/pseudo_functional/bulletproofs_verify.hpp"
 
 #include "cryptonote/basic/functional/format_utils.hpp"
 
@@ -88,7 +88,7 @@ namespace rct {
     kv.push_back(p.S);
     kv.push_back(p.T1);
     kv.push_back(p.T2);
-    kv.push_back(p.taux);
+    kv.push_back(p.tau);
     kv.push_back(p.mu);
     for (const auto &l: p.L)
       kv.push_back(l);

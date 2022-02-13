@@ -43,14 +43,6 @@ namespace epee
      , const std::string request_body
      );
 
-    std::optional<std::string> beast_http_bin
-    (
-     const std::string host
-     , const std::string port
-     , const std::string uri
-     , const std::string request_body
-     );
-     
     template<class t_request, class t_response>
     bool invoke_http_json
     (
@@ -73,30 +65,6 @@ namespace epee
       }
 
       return serialization::load_t_from_json(result_struct, *response);
-    }
-
-    template<class t_request, class t_response>
-    bool invoke_http_bin
-    (
-     const std::string host
-     , const std::string port 
-     , const std::string_view uri
-     , const t_request& request_struct
-     , t_response& result_struct
-     )
-    {
-      std::string req_param;
-      if(!serialization::store_t_to_binary(request_struct, req_param))
-        return false;
-
-      const std::optional<std::string> response =
-        beast_http_bin(host, port, std::string(uri), req_param);
-
-      if (!response) {
-        return false;
-      }
-
-      return serialization::load_t_from_binary(result_struct, *response);
     }
 
     template<class t_request, class t_response>

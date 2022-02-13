@@ -58,3 +58,7 @@ target_link_libraries(wallet_logic
   wallet_errors
   math_ringct
   )
+
+# install(TARGETS wallet_logic_state)
+# install(TARGETS wallet_logic_basic)
+# install(TARGETS wallet_logic)

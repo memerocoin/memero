@@ -70,6 +70,7 @@ namespace constant
   constexpr uint64_t PER_KB_FEE_QUANTIZATION_DECIMALS = 8;
 
   constexpr size_t BULLETPROOF_MAX_OUTPUTS = 16;
+  constexpr size_t AMOUNT_BIT_WIDTH = 64;
 
 
 

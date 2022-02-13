@@ -1,35 +1,21 @@
-// Copyright (c) 2021, The Lolnero Project
-// Copyright (c) 2017-2020, The Monero Project
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without modification, are
-// permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this list of
-//    conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice, this list
-//    of conditions and the following disclaimer in the documentation and/or other
-//    materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its contributors may be
-//    used to endorse or promote products derived from this software without specific
-//    prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// Adapted from Java code by Sarang Noether
-// Paper references are to https://eprint.iacr.org/2017/1066 (revision 1 July 2018)
+/*
 
+Copyright 2021 fuwa
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 
 #pragma once
 
@@ -37,29 +23,100 @@
 
 namespace rct
 {
-  /* Given two crypto::ec_scalar arrays, construct the inner product */
   crypto::ec_scalar inner_product(const scalarS a, const scalarS b);
 
-  /* Given a crypto::ec_scalar, construct a vector of powers */
-  rct::scalarV vector_powers(const crypto::ec_scalar x, const size_t n);
+  rct::scalarV scalar_exponents
+  (const crypto::ec_scalar x, const size_t n);
 
-  /* Given a crypto::ec_scalar, return the sum of its powers from 0 to n-1 */
-  crypto::ec_scalar vector_power_sum(const crypto::ec_scalar x, const size_t n);
+  crypto::ec_scalar vector_sum
+  (
+   const scalarS xs
+   );
 
-  /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
-  rct::scalarV hadamard(const scalarS a, const scalarS b);
+  crypto::ec_point vector_sum
+  (
+   const pointS xs
+   );
 
-  /* Add two vectors */
-  rct::scalarV vector_addV(const scalarS a, const scalarS b);
+  crypto::ec_scalar sum_of_scalar_exponents
+  (
+   const crypto::ec_scalar x
+   , const size_t n
+   );
 
-  /* Add a crypto::ec_scalar to all elements of a vector */
+  rct::scalarV hadamard_product(const scalarS a, const scalarS b);
+
+  rct::scalarV vector_add_V(const scalarS a, const scalarS b);
+
+  rct::pointV vector_add_V(const pointS a, const pointS b);
+
+  rct::scalarV vector_subtract_V(const scalarS a, const scalarS b);
+
+  rct::scalarV vector_negate(const scalarS a);
+
   rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b);
 
-  /* Subtract a crypto::ec_scalar from all elements of a vector */
-  rct::scalarV vector_subtract(const scalarS a, const crypto::ec_scalar b);
+  rct::scalarV vector_subtract
+  (const scalarS a, const crypto::ec_scalar b);
 
-  /* Multiply a crypto::ec_scalar and a vector */
-  rct::scalarV vector_mult(const scalarS a, const crypto::ec_scalar b);
+  rct::scalarV vector_mult
+  (const scalarS a, const crypto::ec_scalar b);
 
-  rct::scalarV invertV(const rct::scalarV v);
+  rct::scalarV multiplicative_inverse_V(const rct::scalarV v);
+
+  std::vector<crypto::ec_point> vector_multP_V
+  (const scalarS a, const pointS p);
+
+  std::vector<crypto::ec_point> scalar_multP_V
+  (const crypto::ec_scalar a, const pointS p);
+
+  crypto::ec_scalar substitute_polynomial
+  (const scalarS a, crypto::ec_scalar X);
+
+  crypto::ec_point substitute_polynomial
+  (const pointS a, crypto::ec_scalar X);
+
+  crypto::ec_point vector_commit(const scalarS a, const pointS p);
+
+  std::pair<pointV, pointV> split_vector(const pointS v);
+  std::pair<scalarV, scalarV> split_vector(const scalarS v);
+
+  rct::scalarV scalar_repeat
+  (const crypto::ec_scalar x, const size_t n);
+
+  crypto::ec_point homomorphic_hash
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_point u
+   , const crypto::ec_scalar c
+   );
+
+  crypto::ec_point homomorphic_hash_full
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a_1
+   , const scalarS a_2
+   , const scalarS b_1
+   , const scalarS b_2
+   , const crypto::ec_point u
+   , const crypto::ec_scalar c
+   );
+
+  scalarV vector_concat
+  (
+   const std::span<const scalarV> xs
+   );
+
+  scalarV span_to_vector(const scalarS xs);
+  pointV span_to_vector(const pointS xs);
+
+  std::vector<scalarV> vector_mult_V_monadic (
+   scalarS xs
+   , scalarS ys
+   );
+
 }

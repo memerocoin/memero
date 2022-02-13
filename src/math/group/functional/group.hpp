@@ -52,11 +52,17 @@ namespace crypto {
     epee::hex::encode_to_hex_stream_formatted(o, v.data); return o;
   }
 
+  std::optional<crypto_data> from_hex(const std::string_view src);
+
   using dataV = std::vector<crypto_data>;
 
   struct ec_point_unsafe : crypto_data {
     bool operator==(const ec_point_unsafe &x) const noexcept {
       return data == x.data;
+    }
+
+    bool operator==(const crypto_data &x) const noexcept {
+      return 0 == crypto_verify_32(data.data(), x.data.data());
     }
   };
 
@@ -117,10 +123,10 @@ namespace crypto {
   bool is_valid_group_element(const ec_point_unsafe x) noexcept;
 
   std::optional<ec_point> maybeSafePoint(const ec_point_unsafe x) noexcept;
-  ec_point mult8(const ec_point X) noexcept;
+  // ec_point mult8(const ec_point X) noexcept;
   ec_point multBase(const ec_scalar) noexcept;
 
-  ec_scalar invert(const ec_scalar x) noexcept;
+  ec_scalar multiplicative_inverse(const ec_scalar x) noexcept;
 
   ec_scalar reduce(const ec_scalar_unnormalized x) noexcept;
   bool is_reduced(const ec_scalar_unnormalized x) noexcept;

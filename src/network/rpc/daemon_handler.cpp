@@ -76,7 +76,6 @@ namespace rpc
       {"get_block_headers_by_height", handle_message<GetBlockHeadersByHeight>},
       {"get_blocks_fast", handle_message<GetBlocksFast>},
       {"get_hashes_fast", handle_message<GetHashesFast>},
-      {"get_height", handle_message<GetHeight>},
       {"get_info", handle_message<GetInfo>},
       {"get_output_distribution", handle_message<GetOutputDistribution>},
       {"get_output_keys", handle_message<GetOutputKeys>},
@@ -86,7 +85,6 @@ namespace rpc
       {"get_tx_global_output_indices", handle_message<GetTxGlobalOutputIndices>},
       {"output_key_images_spent", handle_message<KeyImagesSpent>},
       {"mining_status", handle_message<MiningStatus>},
-      {"save_bc", handle_message<SaveBC>},
       {"send_raw_tx", handle_message<SendRawTx>},
       {"send_raw_tx_hex", handle_message<SendRawTxHex>},
       {"set_log_level", handle_message<SetLogLevel>},
@@ -101,13 +99,6 @@ namespace rpc
     const auto last_sorted = std::is_sorted_until(std::begin(handlers), std::end(handlers));
     if (last_sorted != std::end(handlers))
       throw std::logic_error{std::string{"ZMQ JSON-RPC handlers map is not properly sorted, see "} + last_sorted->method_name};
-  }
-
-  void DaemonHandler::handle(const GetHeight::Request& req, GetHeight::Response& res)
-  {
-    res.height = m_core.get_current_blockchain_height();
-
-    res.status = Message::STATUS_OK;
   }
 
   void DaemonHandler::handle(const GetBlocksFast::Request& req, GetBlocksFast::Response& res)
@@ -562,19 +553,6 @@ namespace rpc
     res.error_details = "";
   }
 
-  void DaemonHandler::handle(const SaveBC::Request& req, SaveBC::Response& res)
-  {
-    if (!m_core.get_blockchain_storage().store_blockchain())
-    {
-      res.status = Message::STATUS_FAILED;
-      res.error_details = "Error storing the blockchain";
-    }
-    else
-    {
-      res.status = Message::STATUS_OK;
-    }
-  }
-
   void DaemonHandler::handle(const GetBlockHash::Request& req, GetBlockHash::Response& res)
   {
     if (m_core.get_current_blockchain_height() <= req.height)
@@ -694,24 +672,6 @@ namespace rpc
   }
 
   void DaemonHandler::handle(const GetBlockHeadersRange::Request& req, GetBlockHeadersRange::Response& res)
-  {
-    res.status = Message::STATUS_FAILED;
-    res.error_details = "RPC method not yet implemented.";
-  }
-
-  void DaemonHandler::handle(const StopDaemon::Request& req, StopDaemon::Response& res)
-  {
-    res.status = Message::STATUS_FAILED;
-    res.error_details = "RPC method not yet implemented.";
-  }
-
-  void DaemonHandler::handle(const StartSaveGraph::Request& req, StartSaveGraph::Response& res)
-  {
-    res.status = Message::STATUS_FAILED;
-    res.error_details = "RPC method not yet implemented.";
-  }
-
-  void DaemonHandler::handle(const StopSaveGraph::Request& req, StopSaveGraph::Response& res)
   {
     res.status = Message::STATUS_FAILED;
     res.error_details = "RPC method not yet implemented.";

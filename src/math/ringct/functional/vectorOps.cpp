@@ -1,91 +1,89 @@
-// Copyright (c) 2021, The Lolnero Project
-// Copyright (c) 2017-2020, The Monero Project
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without modification, are
-// permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this list of
-//    conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice, this list
-//    of conditions and the following disclaimer in the documentation and/or other
-//    materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its contributors may be
-//    used to endorse or promote products derived from this software without specific
-//    prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// Adapted from Java code by Sarang Noether
-// Paper references are to https://eprint.iacr.org/2017/1066 (revision 1 July 2018)
+/*
+
+Copyright 2021 fuwa
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+*/
 
 #include "vectorOps.hpp"
 #include "rctOps.hpp"
 
 #include "tools/epee/include/logging.hpp"
 
-#include <list>
 #include <numeric>
-
-
-
-
+#include <execution>
 
 namespace rct
 {
 
-  /* Given two crypto::ec_scalar arrays, construct the inner product */
-  crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
-  {
-    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
-    return std::transform_reduce
-      (
-       a.begin()
-       , a.end()
-       , b.begin()
-       , rct::s_zero
-       , std::plus<crypto::ec_scalar>()
-       , std::multiplies<crypto::ec_scalar>()
-       );
-  }
-
-  /* Given a crypto::ec_scalar, construct a vector of powers */
-  rct::scalarV vector_powers(const crypto::ec_scalar x, const size_t n)
+  rct::scalarV scalar_exponents
+  (const crypto::ec_scalar x, const size_t n)
   {
     scalarV res(n);
 
-    std::generate(res.begin(), res.end(), [accum = rct::s_one, x] () mutable {
-      const auto current = accum;
-      accum = accum * x;
-      return current;
-    });
+    std::generate
+      (
+       res.begin()
+       , res.end()
+       , [accum = rct::s_one, x] () mutable
+       {
+         const auto current = accum;
+         accum = accum * x;
+         return current;
+       });
 
     return res;
   }
 
-  /* Given a crypto::ec_scalar, return the sum of its powers from 0 to n-1 */
-  crypto::ec_scalar vector_power_sum(const crypto::ec_scalar x, const size_t n)
-  {
-    const auto xs = vector_powers(x, n);
-
+  crypto::ec_scalar vector_sum
+  (
+   const scalarS xs
+   ) {
     return std::reduce(xs.begin(), xs.end(), rct::s_zero);
   }
 
-  /* Given two crypto::ec_scalar arrays, construct the Hadamard product */
-  rct::scalarV hadamard(const scalarS a, const scalarS b)
+  crypto::ec_point vector_sum
+  (
+   const pointS xs
+   ) {
+    return std::reduce
+      (
+       std::execution::par_unseq
+       , xs.begin()
+       , xs.end()
+       , crypto::identity
+       );
+  }
+
+  crypto::ec_scalar sum_of_scalar_exponents
+  (
+   const crypto::ec_scalar x
+   , const size_t n
+   )
   {
-    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
+    return vector_sum(scalar_exponents(x, n));
+  }
+
+  rct::scalarV hadamard_product(const scalarS a, const scalarS b)
+  {
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       a.size() <= b.size()
+       , "Not enough elements in the second container"
+       );
+
     rct::scalarV res(a.size());
     std::transform
       (
@@ -99,81 +97,318 @@ namespace rct
     return res;
   }
 
-  /* Add two vectors */
-  rct::scalarV vector_addV(const scalarS a, const scalarS b)
+  crypto::ec_scalar inner_product(const scalarS a, const scalarS b)
   {
-    LOG_ERROR_AND_THROW_UNLESS(a.size() == b.size(), "Incompatible sizes of a and b");
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       a.size() <= b.size()
+       , "Not enough elements in the second container"
+       );
+
+    return vector_sum(hadamard_product(a, b));
+  }
+
+
+  rct::scalarV vector_add_V(const scalarS a, const scalarS b)
+  {
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       a.size() <= b.size()
+       , "Not enough elements in the second container"
+       );
+
     rct::scalarV res(a.size());
     std::transform
       (
-      a.begin()
-      , a.end()
-      , b.begin()
-      , res.begin()
-      , std::plus<crypto::ec_scalar>()
-      );
+       a.begin()
+       , a.end()
+       , b.begin()
+       , res.begin()
+       , std::plus<crypto::ec_scalar>()
+       );
 
     return res;
   }
 
-  /* Add a crypto::ec_scalar to all elements of a vector */
+  rct::scalarV vector_subtract_V(const scalarS a, const scalarS b)
+  {
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       a.size() <= b.size()
+       , "Not enough elements in the second container"
+       );
+
+    rct::scalarV res(a.size());
+    std::transform
+      (
+       a.begin()
+       , a.end()
+       , b.begin()
+       , res.begin()
+       , [](const auto& x, const auto& y) { return x - y; }
+       );
+
+    return res;
+  }
+
+  rct::scalarV vector_negate(const scalarS a)
+  {
+      return vector_subtract_V
+      (
+       scalar_repeat(s_zero, a.size())
+       , a
+       );
+  }
+
+  rct::pointV vector_add_V(const pointS a, const pointS b)
+  {
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       a.size() <= b.size()
+       , "Not enough elements in the second container"
+       );
+
+    rct::pointV res(a.size());
+    std::transform
+      (
+       std::execution::par_unseq
+       , a.begin()
+       , a.end()
+       , b.begin()
+       , res.begin()
+       , std::plus<crypto::ec_point>()
+       );
+
+    return res;
+  }
+
   rct::scalarV vector_add(const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
     std::transform
       (
-      a.begin()
-      , a.end()
-      , res.begin()
-      , [b](const auto& x) { return x + b; }
-      );
+       a.begin()
+       , a.end()
+       , res.begin()
+       , [b](const auto& x) { return x + b; }
+       );
 
     return res;
   }
 
-  /* Subtract a crypto::ec_scalar from all elements of a vector */
-  rct::scalarV vector_subtract(const scalarS a, const crypto::ec_scalar b)
+  rct::scalarV vector_subtract
+  (const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
     std::transform
       (
-      a.begin()
-      , a.end()
-      , res.begin()
-      , [b](const auto& x) { return x - b; }
-      );
+       a.begin()
+       , a.end()
+       , res.begin()
+       , [b](const auto& x) { return x - b; }
+       );
 
     return res;
   }
 
-  /* Multiply a crypto::ec_scalar and a vector */
   rct::scalarV vector_mult(const scalarS a, const crypto::ec_scalar b)
   {
     rct::scalarV res(a.size());
     std::transform
       (
-      a.begin()
-      , a.end()
-      , res.begin()
-      , [b](const auto& x) { return x * b; }
-      );
+       a.begin()
+       , a.end()
+       , res.begin()
+       , [b](const auto& x) { return x * b; }
+       );
 
     return res;
   }
 
-  rct::scalarV invertV(const rct::scalarV v)
+  rct::scalarV multiplicative_inverse_V(const rct::scalarV v)
   {
     scalarV r(v.size());
 
     std::transform
       (
-      v.begin()
-      , v.end()
-      , r.begin()
-      , [](const auto& x) { return invert(x); }
-      );
+       v.begin()
+       , v.end()
+       , r.begin()
+       , [](const auto& x) { return crypto::multiplicative_inverse(x); }
+       );
 
     return r;
   }
 
+
+  rct::pointV vector_multP_V(const scalarS a, const pointS p) {
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       a.size() <= p.size()
+       , "Not enough elements in the second container"
+       );
+
+    pointV r(a.size());
+
+    std::transform
+      (
+       std::execution::par_unseq
+       , a.begin()
+       , a.end()
+       , p.begin()
+       , r.begin()
+       , [](const auto& x, const auto& y) { return y ^ x; }
+       );
+
+    return r;
+  }
+
+  std::vector<crypto::ec_point> scalar_multP_V
+  (const crypto::ec_scalar a, const pointS p) {
+    return vector_multP_V(scalar_repeat(a, p.size()), p);
+  }
+
+
+  crypto::ec_scalar substitute_polynomial
+  (const scalarS a, crypto::ec_scalar X) {
+    return inner_product
+      (
+       a
+       , scalar_exponents(X, a.size())
+       );
+  }
+
+  crypto::ec_point substitute_polynomial
+  (const pointS a, crypto::ec_scalar X) {
+    return vector_commit
+      (
+       scalar_exponents(X, a.size())
+       , a
+       );
+  }
+
+  crypto::ec_point vector_commit(const scalarS a, const pointS p) {
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       a.size() <= p.size()
+       , "Not enough elements in the second container"
+       );
+
+    const auto xs = vector_multP_V(a, p);
+    return std::reduce
+      (
+       std::execution::par_unseq
+       , xs.begin()
+       , xs.end()
+       , crypto::identity
+       );
+  }
+
+  std::pair<pointV, pointV> split_vector(const pointS v) {
+    LOG_ERROR_AND_THROW_IF(v.empty(), "Vector can't be empty");
+    LOG_ERROR_AND_THROW_UNLESS
+      ((v.size() & 1) == 0, "Vector size should be even");
+
+    const size_t middle = v.size() / 2;
+    return
+      {
+        pointV(v.begin(), std::next(v.begin(), middle))
+        , pointV(std::next(v.begin(), middle), v.end())
+      };
+  }
+
+  std::pair<scalarV, scalarV> split_vector(const scalarS v) {
+    LOG_ERROR_AND_THROW_IF(v.empty(), "Vector can't be empty");
+    LOG_ERROR_AND_THROW_UNLESS
+      ((v.size() & 1) == 0, "Vector size should be even");
+
+    const size_t middle = v.size() / 2;
+    return
+      {
+        scalarV(v.begin(), std::next(v.begin(), middle))
+        , scalarV(std::next(v.begin(), middle), v.end())
+      };
+  }
+
+  rct::scalarV scalar_repeat
+  (const crypto::ec_scalar x, const size_t n) {
+    return vector_mult(scalar_exponents(crypto::s_1, n), x);
+  }
+
+  crypto::ec_point homomorphic_hash
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a
+   , const scalarS b
+   , const crypto::ec_point u
+   , const crypto::ec_scalar c
+   ) {
+    return vector_commit(a, G) + vector_commit(b, H) + (u ^ c);
+  }
+
+  crypto::ec_point homomorphic_hash_full
+  (
+   const pointS G
+   , const pointS H
+   , const scalarS a_1
+   , const scalarS a_2
+   , const scalarS b_1
+   , const scalarS b_2
+   , const crypto::ec_point u
+   , const crypto::ec_scalar c
+   ) {
+    const auto [G_L, G_R] = split_vector(G);
+    const auto [H_L, H_R] = split_vector(H);
+
+    return
+      vector_commit(a_1, G_L)
+      + vector_commit(a_2, G_R)
+      + vector_commit(b_1, H_L)
+      + vector_commit(b_2, H_R)
+      + (u ^ c)
+      ;
+  }
+
+  scalarV vector_concat(const std::span<const scalarV> xs) {
+    return std::reduce
+      (
+       xs.begin()
+       , xs.end()
+       , scalarV()
+       , [](const auto x, const auto y) -> scalarV {
+         scalarV z(x.begin(), x.end());
+         z.insert(z.end(), y.begin(), y.end());
+         return z;
+       }
+       );
+  }
+
+  scalarV span_to_vector(const scalarS xs) {
+    return scalarV(xs.begin(), xs.end());
+  }
+
+  pointV span_to_vector(const pointS xs) {
+    return pointV(xs.begin(), xs.end());
+  }
+
+  std::vector<scalarV> vector_mult_V_monadic
+  (
+   scalarS xs
+   , scalarS ys
+   )
+  {
+    std::vector<scalarV> zs;
+    std::transform
+      (
+       xs.begin()
+       , xs.end()
+       , std::back_inserter(zs)
+       , [ys](const auto& x) -> scalarV {
+         return vector_mult(ys, x);
+       }
+       );
+
+    return zs;
+  }
 } // rct

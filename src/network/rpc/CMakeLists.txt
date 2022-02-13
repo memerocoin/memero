@@ -60,3 +60,8 @@ add_library(daemon_messages
 add_library(daemon_rpc_server
   daemon_handler.cpp
 )
+
+# install(TARGETS network_rpc_base)
+# install(TARGETS network_rpc)
+# install(TARGETS daemon_rpc_server)
+# install(TARGETS daemon_messages)

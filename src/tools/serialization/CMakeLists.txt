@@ -32,3 +32,5 @@ add_library(tools_serialization
   binary_archive.cpp
   json_archive.cpp
 )
+
+# install(TARGETS tools_serialization)
