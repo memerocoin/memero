@@ -88,7 +88,6 @@ namespace cryptonote
     (
      const block& bl
      , const diff_t& diffic
-     , uint64_t height
      , uint64_t block_reward
      );
 
@@ -128,8 +127,7 @@ namespace cryptonote
     block m_template;
     std::atomic<uint32_t> m_template_no;
     std::atomic<uint64_t> m_starter_nonce;
-    diff_t m_diffic;
-    uint64_t m_height;
+    diff_t m_diff;
     std::atomic<uint32_t> m_threads_total;
     std::atomic<bool> m_pauser;
 

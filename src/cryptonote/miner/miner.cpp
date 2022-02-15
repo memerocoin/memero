@@ -70,10 +70,9 @@ namespace cryptonote
     m_stop(true),
     m_template{},
     m_template_no(0),
-    m_diffic(0),
+    m_diff(0),
     m_phandler(phandler),
     m_gbh(gbh),
-    m_height(0),
     m_pauser(false),
     m_threads_total(0),
     m_starter_nonce(0),
@@ -95,14 +94,12 @@ namespace cryptonote
   (
    const block& bl
    , const diff_t& di
-   , uint64_t height
    , uint64_t block_reward
    )
   {
     std::unique_lock<std::mutex> lock(m_template_lock);
     m_template = bl;
-    m_diffic = di;
-    m_height = height;
+    m_diff = di;
     m_block_reward = block_reward;
     ++m_template_no;
     m_starter_nonce = crypto::rand<uint64_t>();
@@ -121,7 +118,7 @@ namespace cryptonote
   {
     block bl;
     diff_t di = AUTO_VAL_INIT(di);
-    uint64_t height = AUTO_VAL_INIT(height);
+    uint64_t height;
     uint64_t expected_reward;
     //only used for RPC calls - could possibly be useful here too?
 
@@ -144,7 +141,7 @@ namespace cryptonote
         return false;
       }
 
-    set_block_template(bl, di, height, expected_reward);
+    set_block_template(bl, di, expected_reward);
     return true;
   }
 
@@ -400,12 +397,10 @@ namespace cryptonote
           nonce = m_starter_nonce;
         }
 
-        const diff_t local_diff = m_diffic;
+        const diff_t local_diff = m_diff;
 
         const boost::multiprecision::uint512_t max_int =
             max_int_for_diff(local_diff);
-
-        const uint64_t height = m_height;
 
         const epee::blob::data head_full =
             epee::string_tools::string_to_blob
@@ -447,8 +442,6 @@ namespace cryptonote
               (
                "Found block "
                << get_block_hash(mined_block)
-               << " at height "
-               << height
                << " for difficulty: "
                << local_diff
                );
@@ -486,17 +479,18 @@ namespace cryptonote
 
     LOG_GLOBAL_INFO("OpenCL Miner was started");
     uint64_t nonce = m_starter_nonce;
-    uint64_t height = 0;
-    uint32_t threads_total = m_threads_total;
     diff_t local_diff = 0;
     uint32_t local_template_ver = 0;
+
     block b;
+
     epee::blob::data hashing_blob_head;
     epee::blob::data hashing_blob_tail;
     opencl::cl_mining_template mining_template;
+
     const size_t gpu_worker_scale = 256;
     const size_t gpu_loop_size = 256;
-    const size_t worker_size = threads_total * gpu_worker_scale;
+    const size_t worker_size = m_threads_total * gpu_worker_scale;
 
     boost::multiprecision::uint512_t max_int;
 
@@ -512,9 +506,8 @@ namespace cryptonote
           {
             std::unique_lock<std::mutex> lock(m_template_lock);
             b = m_template;
-            local_diff = m_diffic;
+            local_diff = m_diff;
             max_int = max_int_for_diff(local_diff);
-            height = m_height;
             local_template_ver = m_template_no;
             nonce = m_starter_nonce;
 
@@ -607,8 +600,6 @@ namespace cryptonote
               (
                "Found block "
                << get_block_hash(mined_block)
-               << " at height "
-               << height
                << " for difficulty: "
                << local_diff
                );
