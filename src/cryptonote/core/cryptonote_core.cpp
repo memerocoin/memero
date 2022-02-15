@@ -96,14 +96,6 @@ namespace cryptonote
     "%d = blocks discarded."
   , ""
   };
-  static const command_line::arg_descriptor<std::string> arg_block_rate_notify = {
-    "block-rate-notify"
-  , "Run a program when the block rate undergoes large fluctuations. "
-    "%t = minutes for the observation window, "
-    "%b = blocks observed, "
-    "%e = blocks expected."
-  , ""
-  };
   //-----------------------------------------------------------------------------------------------
   core::core(i_cryptonote_protocol* pprotocol):
               m_mempool(m_blockchain_storage),
@@ -143,7 +135,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_offline);
     command_line::add_arg(desc, arg_block_notify);
     command_line::add_arg(desc, arg_reorg_notify);
-    command_line::add_arg(desc, arg_block_rate_notify);
 
     miner::init_options(desc);
     BlockchainDB::init_options(desc);
@@ -336,16 +327,6 @@ namespace cryptonote
     catch (const std::exception &e)
     {
       LOG_ERROR("Failed to parse reorg notify spec: " << e.what());
-    }
-
-    try
-    {
-      if (!command_line::is_arg_defaulted(vm, arg_block_rate_notify))
-        m_block_rate_notify.reset(new tools::Notify(command_line::get_arg(vm, arg_block_rate_notify).c_str()));
-    }
-    catch (const std::exception &e)
-    {
-      LOG_ERROR("Failed to parse block rate notify spec: " << e.what());
     }
 
     const diff_t fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
@@ -1258,13 +1239,6 @@ namespace cryptonote
       if (p < threshold)
       {
         LOG_DEBUG("There were " << b << (b == max_blocks_checked ? " or more" : "") << " blocks in the last " << seconds[n] / 60 << " minutes, there might be large hash rate changes, or we might be partitioned, cut off from the Lolnero network or under attack, or your computer's time is off. Or it could be just sheer bad luck.");
-
-        std::shared_ptr<tools::Notify> block_rate_notify = m_block_rate_notify;
-        if (block_rate_notify)
-        {
-          auto expected = seconds[n] / DIFFICULTY_TARGET_IN_SECONDS;
-          block_rate_notify->notify("%t", std::to_string(seconds[n] / 60).c_str(), "%b", std::to_string(b).c_str(), "%e", std::to_string(expected).c_str(), NULL);
-        }
 
         break; // no need to look further
       }

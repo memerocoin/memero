@@ -876,8 +876,5 @@ namespace cryptonote
     /* `boost::function` is used because the implementation never allocates if
        the callable object has a single `std::shared_ptr` or `std::weap_ptr`
        internally. Whereas, the libstdc++ `std::function` will allocate. */
-
-     std::shared_ptr<tools::Notify> m_block_rate_notify;
-
    };
 }
