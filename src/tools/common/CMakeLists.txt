@@ -34,7 +34,6 @@ add_library(tools_common
   expect.cpp
   util.cpp
   password.cpp
-  spawn.cpp
   threadpool.cpp
   apply_permutation.cpp
   )
