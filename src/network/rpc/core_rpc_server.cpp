@@ -1442,15 +1442,9 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  const command_line::arg_descriptor<std::string, false, true, 1> core_rpc_server::arg_rpc_bind_port = {
+  const command_line::arg_descriptor<std::string> core_rpc_server::arg_rpc_bind_port = {
     "rpc-bind-port"
     , "Port for RPC server"
     , std::to_string(cryptonote::mainnet.RPC_DEFAULT_PORT)
-    , arg_testnet_on
-    , [](bool testnet, bool defaulted, std::string val)->std::string {
-      if (testnet && defaulted)
-        return std::to_string(cryptonote::testnet.RPC_DEFAULT_PORT);
-      return val;
-    }
   };
 }  // namespace cryptonote
