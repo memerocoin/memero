@@ -357,8 +357,6 @@ namespace tools
 
     void change_password(const std::string &filename, const epee::wipeable_string &original_password, const epee::wipeable_string &new_password);
 
-    void set_tx_notify(const std::shared_ptr<tools::Notify> &notify) { m_tx_notify = notify; }
-
     bool is_tx_spendtime_unlocked(const uint64_t unlock_height);
     void set_offline(bool offline = true);
 
@@ -486,7 +484,5 @@ namespace tools
     uint32_t m_rpc_version;
 
     crypto::chacha_key m_cache_key;
-
-    std::shared_ptr<tools::Notify> m_tx_notify;
   };
 }

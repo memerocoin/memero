@@ -103,13 +103,6 @@ struct options {
   const command_line::arg_descriptor<uint64_t> kdf_rounds =
     {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key derivation function"), 1};
 
-  const command_line::arg_descriptor<std::string> tx_notify =
-    { "tx-notify"
-    , "Run a program for each new incoming transaction, "
-      "%s = transaction hash"
-    , ""
-    };
-
   const command_line::arg_descriptor<bool> offline =
     {"offline", tools::wallet2::tr("Do not connect to a daemon"), false};
 };
@@ -136,17 +129,6 @@ std::unique_ptr<tools::wallet2> make_basic(const boost::program_options::variabl
 
   if (command_line::get_arg(vm, opts.offline))
     wallet->set_offline();
-
-  try
-  {
-    if (!command_line::is_arg_defaulted(vm, opts.tx_notify))
-      wallet->set_tx_notify
-        (std::make_shared<tools::Notify>(tools::Notify(command_line::get_arg(vm, opts.tx_notify).c_str())));
-  }
-  catch (const std::exception &e)
-  {
-    LOG_ERROR("Failed to parse tx notify spec: " << e.what());
-  }
 
   return wallet;
 }
@@ -278,7 +260,6 @@ void wallet2::init_options(boost::program_options::options_description& desc_par
   command_line::add_arg(desc_params, opts.password_file);
   command_line::add_arg(desc_params, opts.testnet);
   command_line::add_arg(desc_params, opts.kdf_rounds);
-  command_line::add_arg(desc_params, opts.tx_notify);
   command_line::add_arg(desc_params, opts.offline);
 }
 
@@ -569,8 +550,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
   std::unordered_map<cryptonote::subaddress_index, uint64_t> tx_money_got_in_outs;
   std::unordered_map<cryptonote::subaddress_index, amounts_container> tx_amounts_individual_outs;
 
-  bool notify = false;
-
   // Don't try to extract tx public key if tx has no ouputs
   uint64_t total_received_1 = 0;
 
@@ -743,7 +722,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	      m_callback->on_money_received(height, txid, tx, td.m_amount, td.m_subaddr_index, spends_one_of_ours(tx), td.m_tx.unlock_height);
           }
           total_received_1 += amount;
-          notify = true;
         }
 	else if (m_transfers[kit->second].m_spent || m_transfers[kit->second].amount() >= tx_scan_info[o].amount)
         {
@@ -811,7 +789,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
 	      m_callback->on_money_received(height, txid, tx, td.m_amount, td.m_subaddr_index, spends_one_of_ours(tx), td.m_tx.unlock_height);
           }
           total_received_1 += extra_amount;
-          notify = true;
         }
       }
     }
@@ -918,7 +895,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       return;
     }
 
-    bool all_same = true;
     for (const auto& i : tx_money_got_in_outs)
     {
       payment_details payment;
@@ -933,7 +909,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
       payment.m_subaddr_index = i.first;
       if (pool) {
         if (emplace_or_replace(m_unconfirmed_payments, pool_payment_details{payment, double_spend_seen}))
-          all_same = false;
         if (0 != m_callback)
           m_callback->on_unconfirmed_money_received(height, txid, tx, payment.m_amount, payment.m_subaddr_index);
       }
@@ -941,17 +916,6 @@ void wallet2::process_new_transaction(const crypto::hash &txid, const cryptonote
         m_payments.emplace(crypto::null_hash, payment);
       LOG_PRINT_L2("Payment found in " << (pool ? "pool" : "block") << " / " << payment.m_tx_hash << " / " << payment.m_amount);
     }
-
-    // if it's a pool tx and we already had it, don't notify again
-    if (pool && all_same)
-      notify = false;
-  }
-
-  if (notify)
-  {
-    std::shared_ptr<tools::Notify> tx_notify = m_tx_notify;
-    if (tx_notify)
-      tx_notify->notify("%s", epee::string_tools::pod_to_hex(txid).c_str(), NULL);
   }
 }
 //----------------------------------------------------------------------------------------------------
