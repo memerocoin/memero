@@ -57,22 +57,22 @@ namespace cryptonote
 {
   const command_line::arg_descriptor<bool, false> arg_testnet_on  = {
     "testnet"
-  , "Run on testnet. The wallet must be launched with --testnet flag."
+  , "Run on testnet. The wallet must be launched with --testnet flag"
   , false
   };
   const command_line::arg_descriptor<diff_t> arg_fixed_difficulty  = {
     "fixed-difficulty"
-  , "Fixed difficulty used for testing."
+  , "Fixed difficulty used for testing"
   , 0
   };
   const command_line::arg_descriptor<std::string> arg_data_dir = {
     "data-dir"
-  , "Specify data directory."
+  , "Specify data directory"
   , std::filesystem::current_path()
   };
   const command_line::arg_descriptor<bool> arg_offline = {
     "offline"
-  , "Do not connect to the network."
+  , "Do not connect to the network"
   };
   //-----------------------------------------------------------------------------------------------
   core::core(i_cryptonote_protocol* pprotocol):
