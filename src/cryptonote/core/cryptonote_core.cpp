@@ -81,12 +81,6 @@ namespace cryptonote
     "offline"
   , "Do not listen for peers, nor connect to any"
   };
-  static const command_line::arg_descriptor<std::string> arg_block_notify = {
-    "block-notify"
-  , "Run a program for each new block. "
-    "%s = block hash."
-  , ""
-  };
   static const command_line::arg_descriptor<std::string> arg_reorg_notify = {
     "reorg-notify"
   , "Run a program for each new reorg. "
@@ -133,7 +127,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_testnet_on);
     command_line::add_arg(desc, arg_fixed_difficulty);
     command_line::add_arg(desc, arg_offline);
-    command_line::add_arg(desc, arg_block_notify);
     command_line::add_arg(desc, arg_reorg_notify);
 
     miner::init_options(desc);
@@ -294,30 +287,6 @@ namespace cryptonote
     }
 
     m_blockchain_storage.set_user_options(sync_on_blocks, sync_threshold, sync_mode);
-
-    try
-    {
-      if (!command_line::is_arg_defaulted(vm, arg_block_notify))
-      {
-        struct hash_notify
-        {
-          tools::Notify cmdline;
-
-          void operator()(const uint64_t, const std::vector<block> blocks) const
-          {
-            std::for_each(blocks.begin(), blocks.end(), [this](const auto& bl) {
-              cmdline.notify("%s", epee::string_tools::pod_to_hex(get_block_hash(bl)).c_str(), NULL);
-            });
-          }
-        };
-
-        m_blockchain_storage.add_block_notify(hash_notify{{command_line::get_arg(vm, arg_block_notify).c_str()}});
-      }
-    }
-    catch (const std::exception &e)
-    {
-      LOG_ERROR("Failed to parse block notify spec: " << e.what());
-    }
 
     try
     {

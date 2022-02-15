@@ -986,16 +986,6 @@ bool Blockchain::switch_to_alternative_blockchain(std::list<block_extended_info>
     reorg_notify->notify("%s", std::to_string(split_height).c_str(), "%h", std::to_string(m_db->height()).c_str(),
         "%n", std::to_string(m_db->height() - split_height).c_str(), "%d", std::to_string(discarded_blocks).c_str(), NULL);
 
-  for (const auto& notifier : m_block_notifiers)
-  {
-    std::size_t notify_height = split_height;
-    for (const auto& bei: alt_chain)
-    {
-      notifier(notify_height, std::vector{bei.bl});
-      ++notify_height;
-    }
-  }
-
   LOG_GLOBAL_INFO_GREEN("REORGANIZE SUCCESS! on height: " << split_height << ", new blockchain size: " << m_db->height());
   return true;
 }
@@ -3025,10 +3015,6 @@ leave:
   get_difficulty_for_next_block(); // just to cache it
   invalidate_block_template_cache();
 
-
-  for (const auto& notifier: m_block_notifiers)
-    notifier(new_height - 1, std::vector{bl});
-
   return true;
 }
 //------------------------------------------------------------------
@@ -3562,15 +3548,6 @@ void Blockchain::set_user_options(bool sync_on_blocks, uint64_t sync_threshold, 
   m_db_sync_mode = sync_mode;
   m_db_sync_on_blocks = sync_on_blocks;
   m_db_sync_threshold = sync_threshold;
-}
-
-void Blockchain::add_block_notify(std::function<void(const uint64_t, const std::vector<block>)>&& notify)
-{
-  if (notify)
-  {
-    std::lock_guard<std::recursive_mutex> lock(m_blockchain_lock);
-    m_block_notifiers.push_back(std::move(notify));
-  }
 }
 
 void Blockchain::safesyncmode(const bool onoff)
