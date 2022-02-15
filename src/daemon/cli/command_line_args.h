@@ -51,7 +51,7 @@ namespace daemon_args
   const command_line::arg_descriptor<uint32_t> arg_max_concurrency =
     {
       "max-concurrency"
-      , "Max # threads for a parallel job"
+      , "Max # of threads for a parallel job"
       , 0
     };
 
