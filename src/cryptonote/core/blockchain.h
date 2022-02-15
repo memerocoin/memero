@@ -619,13 +619,6 @@ namespace cryptonote
         blockchain_db_sync_mode sync_mode);
 
     /**
-     * @brief sets a reorg notify object to call for every reorg
-     *
-     * @param notify the notify object to call at every reorg
-     */
-    void set_reorg_notify(const std::shared_ptr<tools::Notify> &notify) { m_reorg_notify = notify; }
-
-    /**
      * @brief Put DB in safe sync mode
      */
     void safesyncmode(const bool onoff);
@@ -862,8 +855,6 @@ namespace cryptonote
 
 
     bool m_batch_success;
-
-    std::shared_ptr<tools::Notify> m_reorg_notify;
 
     // for prepare_handle_incoming_blocks
     uint64_t m_prepare_height;

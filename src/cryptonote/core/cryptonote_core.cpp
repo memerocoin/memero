@@ -81,15 +81,6 @@ namespace cryptonote
     "offline"
   , "Do not listen for peers, nor connect to any"
   };
-  static const command_line::arg_descriptor<std::string> arg_reorg_notify = {
-    "reorg-notify"
-  , "Run a program for each new reorg. "
-    "%s = split height, "
-    "%h = blockchain height, "
-    "%n = new blocks, "
-    "%d = blocks discarded."
-  , ""
-  };
   //-----------------------------------------------------------------------------------------------
   core::core(i_cryptonote_protocol* pprotocol):
               m_mempool(m_blockchain_storage),
@@ -127,7 +118,6 @@ namespace cryptonote
     command_line::add_arg(desc, arg_testnet_on);
     command_line::add_arg(desc, arg_fixed_difficulty);
     command_line::add_arg(desc, arg_offline);
-    command_line::add_arg(desc, arg_reorg_notify);
 
     miner::init_options(desc);
     BlockchainDB::init_options(desc);
@@ -287,16 +277,6 @@ namespace cryptonote
     }
 
     m_blockchain_storage.set_user_options(sync_on_blocks, sync_threshold, sync_mode);
-
-    try
-    {
-      if (!command_line::is_arg_defaulted(vm, arg_reorg_notify))
-        m_blockchain_storage.set_reorg_notify(std::shared_ptr<tools::Notify>(new tools::Notify(command_line::get_arg(vm, arg_reorg_notify).c_str())));
-    }
-    catch (const std::exception &e)
-    {
-      LOG_ERROR("Failed to parse reorg notify spec: " << e.what());
-    }
 
     const diff_t fixed_difficulty = command_line::get_arg(vm, arg_fixed_difficulty);
     r = m_blockchain_storage.init(db.release(), m_nettype, m_offline, fixed_difficulty);
