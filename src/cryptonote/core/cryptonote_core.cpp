@@ -764,14 +764,14 @@ namespace cryptonote
     m_mempool.set_relayed(tx_hashes, tx_relay);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce)
+  bool core::get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& expected_reward, const string_blob& ex_nonce)
   {
-    return m_blockchain_storage.create_block_template(b, adr, diffic, height, expected_reward, ex_nonce);
+    return m_blockchain_storage.create_block_template(b, adr, diffic, expected_reward, ex_nonce);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::get_block_template(block& b, const crypto::hash *prev_block, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce)
+  bool core::get_block_template(block& b, const crypto::hash *prev_block, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& expected_reward, const string_blob& ex_nonce)
   {
-    return m_blockchain_storage.create_block_template(b, prev_block, adr, diffic, height, expected_reward, ex_nonce);
+    return m_blockchain_storage.create_block_template(b, prev_block, adr, diffic, expected_reward, ex_nonce);
   }
   //-----------------------------------------------------------------------------------------------
   bool core::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const

@@ -208,8 +208,8 @@ namespace cryptonote
       *
       * @note see Blockchain::create_block_template
       */
-     virtual bool get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce) override;
-     virtual bool get_block_template(block& b, const crypto::hash *prev_block, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce);
+     virtual bool get_block_template(block& b, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& expected_reward, const string_blob& ex_nonce) override;
+     virtual bool get_block_template(block& b, const crypto::hash *prev_block, const spend_view_public_keys& adr, diff_t& diffic, uint64_t& expected_reward, const string_blob& ex_nonce);
 
      /**
       * @brief called when a transaction is relayed.

@@ -57,7 +57,6 @@ namespace cryptonote
      block& b
      , const spend_view_public_keys& adr
      , diff_t& diffic
-     , uint64_t& height
      , uint64_t& expected_reward
      , const string_blob& ex_nonce
      ) = 0;

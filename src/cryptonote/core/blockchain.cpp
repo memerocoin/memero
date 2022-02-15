@@ -1143,7 +1143,7 @@ std::optional<coinbase_tx> Blockchain::validate_miner_transaction
 // in a lot of places.  That flag is not referenced in any of the code
 // nor any of the makefiles, howeve.  Need to look into whether or not it's
 // necessary at all.
-bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce)
+bool Blockchain::create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& expected_reward, const string_blob& ex_nonce)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   uint64_t pool_cookie;
@@ -1164,7 +1164,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
         m_btc.timestamp = now;
       b = m_btc;
       diffic = m_btc_difficulty;
-      height = m_btc_height;
       expected_reward = m_btc_expected_reward;
       return true;
     }
@@ -1172,6 +1171,7 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
     invalidate_block_template_cache();
   }
 
+  uint64_t height = 0;
   if (from_block)
   {
     //build alternative subchain, front -> mainchain, back -> alternative head
@@ -1356,9 +1356,9 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
   return false;
 }
 //------------------------------------------------------------------
-bool Blockchain::create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce)
+bool Blockchain::create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& diffic, uint64_t& expected_reward, const string_blob& ex_nonce)
 {
-  return create_block_template(b, NULL, miner_address, diffic, height, expected_reward, ex_nonce);
+  return create_block_template(b, NULL, miner_address, diffic, expected_reward, ex_nonce);
 }
 //------------------------------------------------------------------
 // for an alternate chain, get the timestamps from the main chain to complete

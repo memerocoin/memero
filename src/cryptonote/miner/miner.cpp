@@ -118,7 +118,6 @@ namespace cryptonote
   {
     block bl;
     diff_t di = AUTO_VAL_INIT(di);
-    uint64_t height;
     uint64_t expected_reward;
     //only used for RPC calls - could possibly be useful here too?
 
@@ -131,7 +130,6 @@ namespace cryptonote
         bl
         , m_mine_address
         , di
-        , height
         , expected_reward
         , extra_nonce
         )

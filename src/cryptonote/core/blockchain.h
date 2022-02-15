@@ -306,14 +306,13 @@ namespace cryptonote
      * @param from_block optional block hash to start mining from (main chain tip if NULL)
      * @param miner_address address new coins for the block will go to
      * @param di return-by-reference tells the miner what the difficulty target is
-     * @param height return-by-reference tells the miner what height it's mining against
      * @param expected_reward return-by-reference the total reward awarded to the miner finding this block, including transaction fees
      * @param ex_nonce extra data to be added to the miner transaction's extra
      *
      * @return true if block template filled in successfully, else false
      */
-    bool create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce);
-    bool create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& height, uint64_t& expected_reward, const string_blob& ex_nonce);
+    bool create_block_template(block& b, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& expected_reward, const string_blob& ex_nonce);
+    bool create_block_template(block& b, const crypto::hash *from_block, const spend_view_public_keys& miner_address, diff_t& di, uint64_t& expected_reward, const string_blob& ex_nonce);
 
     /**
      * @brief checks if a block is known about with a given hash
