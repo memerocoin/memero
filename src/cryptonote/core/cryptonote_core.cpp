@@ -67,12 +67,12 @@ namespace cryptonote
   };
   const command_line::arg_descriptor<std::string> arg_data_dir = {
     "data-dir"
-  , "Specify data directory"
+  , "Specify data directory."
   , std::filesystem::current_path()
   };
   const command_line::arg_descriptor<bool> arg_offline = {
     "offline"
-  , "Do not listen for peers, nor connect to any"
+  , "Do not connect to the network."
   };
   //-----------------------------------------------------------------------------------------------
   core::core(i_cryptonote_protocol* pprotocol):

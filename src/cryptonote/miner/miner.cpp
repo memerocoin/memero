@@ -49,17 +49,17 @@ copyright (c) 2012-2013 The Cryptonote developers
 namespace cryptonote
 {
 
-  const command_line::arg_descriptor<std::string> arg_start_mining =
+  const command_line::arg_descriptor<std::string> arg_mining_address =
     {
-      "start-mining"
-      , "Specify wallet address to mining for"
+      "mining-address"
+      , "Specify wallet mining address"
       , "", true
     };
 
   const command_line::arg_descriptor<uint32_t> arg_mining_threads =
     {
       "opencl-mining-threads"
-      , "Specify mining threads count"
+      , "Specify opencl mining threads count"
       , 0
       , true
     };
@@ -207,7 +207,7 @@ namespace cryptonote
   void miner::init_options
   (boost::program_options::options_description& desc)
   {
-    command_line::add_arg(desc, arg_start_mining);
+    command_line::add_arg(desc, arg_mining_address);
 
 #ifdef OpenCL
     command_line::add_arg(desc, arg_mining_threads);
@@ -220,7 +220,7 @@ namespace cryptonote
    , network_type nettype
    )
   {
-    if(command_line::has_arg(vm, arg_start_mining))
+    if(command_line::has_arg(vm, arg_mining_address))
       {
         address_parse_info info;
         if
@@ -228,7 +228,7 @@ namespace cryptonote
            !cryptonote::get_account_address_from_str
            (
             info, nettype
-            , command_line::get_arg(vm, arg_start_mining)
+            , command_line::get_arg(vm, arg_mining_address)
             )
            || info.is_subaddress
            )
@@ -236,7 +236,7 @@ namespace cryptonote
             LOG_ERROR
               (
                "Target account address "
-               << command_line::get_arg(vm, arg_start_mining)
+               << command_line::get_arg(vm, arg_mining_address)
                << " has wrong format, starting daemon canceled"
                );
             return false;
