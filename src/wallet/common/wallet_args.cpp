@@ -80,14 +80,23 @@ namespace wallet_args
     namespace bf = std::filesystem;
     namespace po = boost::program_options;
 
-    const command_line::arg_descriptor<std::string> arg_log_level = {"log-level", "0-4", ""};
-    const command_line::arg_descriptor<uint32_t> arg_max_concurrency = {"max-concurrency", wallet_args::tr("Max number of threads to use for a parallel job"), 0};
-    const command_line::arg_descriptor<std::string> arg_config_file = {
-      "config-file"
-      , "Config file"
-      , ""
-      , true
-    };
+    const command_line::arg_descriptor<std::string> arg_log_level =
+      {"log-level", "0-4", ""};
+
+    const command_line::arg_descriptor<uint32_t> arg_max_concurrency =
+      {
+        "max-concurrency"
+        , "Max # threads for a parallel job"
+        , 0
+      };
+
+    const command_line::arg_descriptor<std::string> arg_config_file =
+      {
+        "config-file"
+        , "Config file"
+        , ""
+        , true
+      };
 
 
     tools::on_startup();

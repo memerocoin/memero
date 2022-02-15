@@ -36,20 +36,25 @@ namespace daemon_args
     , "Config file"
     , std::string(std::string(config::lol::CRYPTONOTE_NAME) + std::string(".conf"))
   };
+
   const command_line::arg_descriptor<std::string> arg_log_level = {
     "log-level"
-  , ""
-  , ""
+    , ""
+    , ""
   };
+
   const command_line::arg_descriptor<std::vector<std::string>> arg_command = {
     "daemon_command"
-  , "Hidden"
+    , "Hidden"
   };
-  const command_line::arg_descriptor<unsigned> arg_max_concurrency = {
-    "max-concurrency"
-  , "Max number of threads to use for a parallel job"
-  , 0
-  };
+
+  const command_line::arg_descriptor<uint32_t> arg_max_concurrency =
+    {
+      "max-concurrency"
+      , "Max # threads for a parallel job"
+      , 0
+    };
+
   const command_line::arg_descriptor<bool> arg_non_interactive = {
     "non-interactive"
     , "Run non-interactive"
