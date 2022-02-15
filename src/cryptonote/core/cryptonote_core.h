@@ -43,7 +43,7 @@
 
 namespace cryptonote
 {
-  extern const command_line::arg_descriptor<std::string, false, true> arg_data_dir;
+  extern const command_line::arg_descriptor<std::string> arg_data_dir;
   extern const command_line::arg_descriptor<bool, false> arg_testnet_on;
   extern const command_line::arg_descriptor<diff_t> arg_fixed_difficulty;
   extern const command_line::arg_descriptor<bool> arg_offline;

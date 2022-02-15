@@ -65,16 +65,10 @@ namespace cryptonote
   , "Fixed difficulty used for testing."
   , 0
   };
-  const command_line::arg_descriptor<std::string, false, true> arg_data_dir = {
+  const command_line::arg_descriptor<std::string> arg_data_dir = {
     "data-dir"
   , "Specify data directory"
   , std::filesystem::current_path()
-  , arg_testnet_on
-  , [](bool testnet, bool defaulted, std::string val)->std::string {
-      if (testnet && defaulted)
-        return (std::filesystem::path(val) / "testnet").string();
-      return val;
-    }
   };
   const command_line::arg_descriptor<bool> arg_offline = {
     "offline"
