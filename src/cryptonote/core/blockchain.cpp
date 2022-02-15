@@ -39,7 +39,6 @@
 #include "math/ringct/pseudo_functional/ringCT.hpp"
 
 #include "tools/common/threadpool.h"
-#include "tools/common/notify.h"
 #include "tools/common/util.h"
 #include "tools/epee/include/profile_tools.h"
 #include "tools/epee/include/time_helper.h"

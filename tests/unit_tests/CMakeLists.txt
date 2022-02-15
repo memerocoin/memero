@@ -35,7 +35,6 @@ add_executable(unit_tests_tools
   random.cpp
   # expect.cpp
   get_xtype_from_string.cpp
-  notify.cpp
   varint.cpp
   threadpool.cpp
   crypto.cpp

@@ -47,7 +47,6 @@
 #include "tools/serialization/containers.h"
 
 #include "tools/common/password.h"
-#include "tools/common/notify.h"
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>

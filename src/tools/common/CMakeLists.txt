@@ -33,7 +33,6 @@ add_library(tools_common
   error.cpp
   expect.cpp
   util.cpp
-  notify.cpp
   password.cpp
   spawn.cpp
   threadpool.cpp

@@ -36,7 +36,6 @@
 
 #include "math/ringct/pseudo_functional/ringCT.hpp"
 
-#include "tools/common/notify.h"
 #include "tools/common/threadpool.h"
 
 #include <boost/uuid/nil_generator.hpp>

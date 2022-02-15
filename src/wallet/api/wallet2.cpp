@@ -55,7 +55,6 @@
 #include "tools/common/apply_permutation.h"
 #include "tools/common/command_line.h"
 #include "tools/common/json_util.h"
-#include "tools/common/notify.h"
 #include "tools/common/threadpool.h"
 #include "tools/common/util.h"
 #include "tools/epee/include/profile_tools.h"
