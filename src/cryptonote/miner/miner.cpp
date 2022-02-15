@@ -213,7 +213,10 @@ namespace cryptonote
   (boost::program_options::options_description& desc)
   {
     command_line::add_arg(desc, arg_start_mining);
+
+#ifdef OpenCL
     command_line::add_arg(desc, arg_mining_threads);
+#endif
   }
 
   bool miner::init
