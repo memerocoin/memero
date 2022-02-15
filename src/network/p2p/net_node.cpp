@@ -102,11 +102,11 @@ namespace nodetool
   }
 
 
-    const command_line::arg_descriptor<std::string> arg_p2p_bind_ip        = {"p2p-bind-ip", "Interface for p2p network protocol (IPv4)", "0.0.0.0"};
-    const command_line::arg_descriptor<std::string> arg_p2p_bind_ipv6_address        = {"p2p-bind-ipv6-address", "Interface for p2p network protocol (IPv6)", "::"};
+    const command_line::arg_descriptor<std::string> arg_p2p_bind_ip        = {"p2p-bind-ip", "Interface for p2p (IPv4)", "0.0.0.0"};
+    const command_line::arg_descriptor<std::string> arg_p2p_bind_ipv6_address        = {"p2p-bind-ipv6-address", "Interface for p2p (IPv6)", "::"};
     const command_line::arg_descriptor<std::string, false, true> arg_p2p_bind_port = {
         "p2p-bind-port"
-      , "Port for p2p network protocol (IPv4)"
+      , "Port for p2p (IPv4)"
       , std::to_string(cryptonote::mainnet.P2P_DEFAULT_PORT)
       , cryptonote::arg_testnet_on
       , [](bool testnet, bool defaulted, std::string val)->std::string {
@@ -117,7 +117,7 @@ namespace nodetool
     };
     const command_line::arg_descriptor<std::string, false, true> arg_p2p_bind_port_ipv6 = {
         "p2p-bind-port-ipv6"
-      , "Port for p2p network protocol (IPv6)"
+      , "Port for p2p (IPv6)"
       , std::to_string(cryptonote::mainnet.P2P_DEFAULT_PORT)
       , cryptonote::arg_testnet_on
       , [](bool testnet, bool defaulted, std::string val)->std::string {
