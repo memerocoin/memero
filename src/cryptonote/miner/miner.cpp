@@ -600,12 +600,13 @@ namespace cryptonote
 
         if(r.valid_hash && check_hash(r.hash, local_diff))
           {
-            b.nonce = r.nonce;
+            block mined_block = b;
+            mined_block.nonce = r.nonce;
             //we lucky!
             LOG_GLOBAL_INFO_GREEN
               (
                "Found block "
-               << get_block_hash(b)
+               << get_block_hash(mined_block)
                << " at height "
                << height
                << " for difficulty: "
@@ -615,7 +616,7 @@ namespace cryptonote
             cryptonote::block_verification_context bvc;
             if
               (
-               !m_phandler->handle_block_found(b, bvc)
+               !m_phandler->handle_block_found(mined_block, bvc)
                ||
                !bvc.m_added_to_main_chain
                )
