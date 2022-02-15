@@ -16,7 +16,7 @@ Specifications
 * Max supply: ∞
 * Block reward: 300
 * Block time: 5 minutes
-* Block size limit: max(128k, Block height) bytes
+* Block size limit: Block height bytes (linearly increasing)
 * Range proof: [Bulletproofs][5]
 * Ring signature: [CLSAG (Concise Linkable Spontaneous Anonymous Group)][6]
 * Ring size: 32
