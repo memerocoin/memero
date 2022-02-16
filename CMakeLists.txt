@@ -29,7 +29,7 @@
 
 
 # cmake
-cmake_minimum_required(VERSION 3.18.0)
+cmake_minimum_required(VERSION 3.20.0)
 project(lolnero)
 
 
@@ -82,10 +82,6 @@ endif()
 ## threads
 find_package(Threads REQUIRED)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-
-## openssl
-# find_package(OpenSSL REQUIRED)
-# include_directories(${OPENSSL_INCLUDE_DIR})
 
 ## boost
 find_package(Boost 1.74 REQUIRED COMPONENTS system serialization program_options)
