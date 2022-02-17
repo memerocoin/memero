@@ -60,8 +60,6 @@ namespace tools
   void set_max_concurrency(unsigned n);
   unsigned get_max_concurrency();
 
-  bool is_local_address(const std::string &address);
-
   std::optional<std::pair<uint32_t, uint32_t>> parse_subaddress_lookahead(const std::string& str);
 
   std::string get_human_readable_timestamp(uint64_t ts);
