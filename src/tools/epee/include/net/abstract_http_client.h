@@ -47,11 +47,9 @@ namespace net_utils
   bool is_unsafe(unsigned char compare_char);
   std::string dec_to_hex(char num, int radix);
   int get_index(const char *s, char c);
-  std::string hex_to_dec_2bytes(const char *s);
   std::string convert(char val);
   std::string conver_to_url_format(const std::string& uri);
   std::string convert_from_url_format(const std::string& uri);
-  std::string convert_to_url_format_force_all(const std::string& uri);
 
 }
 }

@@ -1859,18 +1859,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     // check for a URI
     std::string address_uri, tx_description, recipient_name, error;
     std::vector<std::string> unknown_parameters;
-    uint64_t amount = 0;
-    bool has_uri = wallet::logic::pseudo_functional::uri::parse_uri
-      (local_args[i], m_wallet->nettype(), address_uri, amount, tx_description,
-       recipient_name, unknown_parameters, error);
-    if (has_uri)
-    {
-      r = cryptonote::get_account_address_from_str(info, m_wallet->nettype(), address_uri);
-      de.amount = amount;
-      de.original = local_args[i];
-      ++i;
-    }
-    else if (i + 1 < local_args.size())
+    if (i + 1 < local_args.size())
     {
       r = cryptonote::get_account_address_from_str(info, m_wallet->nettype(), local_args[i]);
       const auto maybe_amount = cryptonote::parse_amount(local_args[i + 1]);
