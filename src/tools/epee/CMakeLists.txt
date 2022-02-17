@@ -53,7 +53,6 @@ install(TARGETS epee_parse_base)
 if(NOT ONLY_LIB)
 
 add_library( epee
-  src/abstract_http_client.cpp
   src/net_utils_base.cpp
   src/levin_base.cpp
   src/connection_basic.cpp
