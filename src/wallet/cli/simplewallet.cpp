@@ -43,7 +43,6 @@
 #include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/wallet.hpp"
-#include "wallet/logic/pseudo_functional/uri.hpp"
 #include "wallet/logic/controller/wallet.hpp"
 
 #include "wallet/common/wallet_args.h"

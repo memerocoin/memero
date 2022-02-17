@@ -36,7 +36,6 @@ add_library(wallet_logic_basic
   functional/helper.cpp
   functional/fee.cpp
   pseudo_functional/proof.cpp
-  pseudo_functional/uri.cpp
   controller/proof.cpp
   )
 
