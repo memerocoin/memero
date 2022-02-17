@@ -33,14 +33,16 @@
 #include "tools/epee/include/logging.hpp"
 #include "tools/epee/include/misc_os_dependent.h"
 
-#include "tools/epee/include/net/net_helper.h"
 #include "tools/epee/include/net/net_parse_helpers.h"
+#include "tools/epee/include/net/net_utils_base.h"
+#include "tools/epee/include/net/net_ssl.h"
 
 #include "math/crypto/controller/init.hpp"
 
 #include "config/cryptonote.hpp"
 
 #include <boost/format.hpp>
+#include <boost/asio.hpp>
 
 
 
