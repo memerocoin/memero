@@ -30,6 +30,8 @@
 
 
 #include "parserse_base_utils.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 namespace epee
 {
@@ -123,7 +125,7 @@ namespace epee
     template<class t_stream>
     void dump_as_json(t_stream& strm, const std::string& v, size_t indent, bool insert_newlines)
     {
-      strm << "\"" << epee::misc_utils::parse::transform_to_escape_sequence(v) << "\"";
+      strm << epee::misc_utils::parse::escape_json_string(v);
     }
 
     template<class t_stream>
@@ -167,7 +169,10 @@ namespace epee
         auto it_last = --sec.m_entries.end();
         for(auto it = sec.m_entries.begin(); it!= sec.m_entries.end();it++)
         {
-          strm << indent_str << "\"" << epee::misc_utils::parse::transform_to_escape_sequence(it->first) << "\"" << ": ";
+          strm
+            << indent_str
+            << epee::misc_utils::parse::escape_json_string(it->first)
+            << ": ";
           dump_as_json(strm, it->second, local_indent, insert_newlines);
           if(it_last != it)
             strm << ",";

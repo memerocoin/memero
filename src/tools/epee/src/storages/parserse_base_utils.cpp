@@ -29,8 +29,8 @@
 
 #include "tools/epee/include/logging.hpp"
 
-
-
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 
 namespace epee
@@ -49,45 +49,13 @@ namespace parse
     return lut[(uint8_t)c] & 1;
   }
 
-  std::string transform_to_escape_sequence(const std::string& src)
+  std::string escape_json_string(const std::string_view src)
   {
-    static const char escaped[] = "\b\f\n\r\t\v\"\\/";
-    std::string::const_iterator it = std::find_first_of(src.begin(), src.end(), escaped, escaped + sizeof(escaped));
-    if (it == src.end())
-      return src;
-
-    std::string res;
-    res.reserve(2 * src.size());
-    res.assign(src.begin(), it);
-    for(; it!=src.end(); ++it)
-    {
-      switch(*it)
-      {
-      case '\b':  //Backspace (ascii code 08)
-        res+="\\b"; break;
-      case '\f':  //Form feed (ascii code 0C)
-        res+="\\f"; break;
-      case '\n':  //New line
-        res+="\\n"; break;
-      case '\r':  //Carriage return
-        res+="\\r"; break;
-      case '\t':  //Tab
-        res+="\\t"; break;
-      case '\v':  //Vertical tab
-        res+="\\v"; break;
-      //case '\'':  //Apostrophe or single quote
-      //  res+="\\'"; break;
-      case '"':  //Double quote
-        res+="\\\""; break;
-      case '\\':  //Backslash caracter
-        res+="\\\\"; break;
-      case '/':  //Backslash caracter
-        res+="\\/"; break;
-      default:
-        res.push_back(*it);
-      }
-    }
-    return res;
+      using namespace rapidjson;
+      StringBuffer sb;
+      Writer<StringBuffer> writer(sb);
+      writer.String(src.data(), src.size());
+      return sb.GetString();
   }
   /*
 
@@ -290,45 +258,6 @@ namespace parse
     }
   }
 
-  bool match_word_with_extrasymb(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val)
-  {
-    val.clear();
-
-    for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
-    {
-      if(!isalnum(*it) && *it != '-' && *it != '_')
-      {
-        val.assign(star_end_string, it);
-        if(val.size())
-        {
-          star_end_string = --it;
-          return true;
-        }else
-          return false;
-      }
-    }
-    return false;
-  }
-
-  bool match_word_til_equal_mark(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string::const_iterator& word_end)
-  {
-    word_end = star_end_string;
-
-    for(std::string::const_iterator it = star_end_string;it != buf_end;it++)
-    {
-      if(isspace(*it))
-      {
-
-        continue;
-      }else if( *it == '=' )
-      {
-        star_end_string = it;
-        word_end = it;
-        return true;
-      }
-    }
-    return false;
-  }
 }
 }
 }

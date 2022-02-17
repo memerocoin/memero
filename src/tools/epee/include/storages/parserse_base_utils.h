@@ -87,7 +87,7 @@ namespace misc_utils
 
     bool isspace(char c);
     bool isdigit(char c);
-    std::string transform_to_escape_sequence(const std::string& src);
+    std::string escape_json_string(const std::string_view src);
     /*
 
       \b  Backspace (ascii code 08)
@@ -107,8 +107,6 @@ namespace misc_utils
     bool match_number(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val);
     void match_word2(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val);
     bool match_word(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string_view& val);
-    bool match_word_with_extrasymb(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string& val);
-    bool match_word_til_equal_mark(std::string::const_iterator& star_end_string, std::string::const_iterator buf_end, std::string::const_iterator& word_end);
   }
 }
 }
