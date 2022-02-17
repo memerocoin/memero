@@ -40,7 +40,5 @@ namespace net_utils
 {
   bool parse_uri_query(const std::string& query, std::list<std::pair<std::string, std::string> >& params);
   bool parse_uri(const std::string uri, http::uri_content& content);
-  bool parse_url_ipv6(const std::string url_str, http::url_content& content);
-  bool parse_url(const std::string url_str, http::url_content& content);
 }
 }
