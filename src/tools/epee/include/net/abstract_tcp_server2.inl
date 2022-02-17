@@ -984,7 +984,7 @@ namespace net_utils
   {
     TRY_ENTRY();
     LOCK_RECURSIVE_MUTEX(m_threads_lock);
-    BOOST_FOREACH(std::shared_ptr<std::thread>& thp,  m_threads)
+    for (const auto& thp:  m_threads)
     {
       if(thp->get_id() == std::this_thread::get_id())
         return true;

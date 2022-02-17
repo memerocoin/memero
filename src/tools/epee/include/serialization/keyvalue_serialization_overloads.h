@@ -35,10 +35,6 @@
 
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/contains_fwd.hpp>
-#include <boost/foreach.hpp>
-
-
-
 
 
 namespace epee
@@ -139,7 +135,7 @@ namespace epee
       std::string mb;
       mb.resize(sizeof(typename stl_container::value_type)*container.size());
       typename stl_container::value_type* p_elem = (typename stl_container::value_type*)mb.data();
-      BOOST_FOREACH(const typename stl_container::value_type& v, container)
+      for (const auto& v: container)
       {
         *p_elem = v;
         p_elem++;
