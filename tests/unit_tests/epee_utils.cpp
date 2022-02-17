@@ -202,16 +202,18 @@ TEST(FromHex, ToString)
     char(0xde), char(0xad), char(0xbe), char(0xef), 0x00
   };
 
-  std::string out{};
-  EXPECT_FALSE(epee::hex::decode_from_hex_to_string(out, hex));
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_string(hex));
 
   std::string_view portion{hex};
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::hex::decode_from_hex_to_string(out, portion));
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_string(portion));
 
   portion.remove_suffix(1);
-  EXPECT_TRUE(epee::hex::decode_from_hex_to_string(out, portion));
-  EXPECT_EQ(std::string{binary}, out);
+
+  const auto maybe_str = epee::hex::decode_from_hex_to_string(portion);
+  EXPECT_TRUE(maybe_str);
+
+  EXPECT_EQ(std::string{binary}, *maybe_str);
 }
 
 TEST(FromHex, ToBuffer)

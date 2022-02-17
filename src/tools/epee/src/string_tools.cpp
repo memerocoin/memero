@@ -53,7 +53,13 @@ namespace string_tools
   //----------------------------------------------------------------------------
   bool parse_hexstr_to_binbuff(const std::string_view s, std::string& res)
   {
-    return hex::decode_from_hex_to_string(res, s);
+    const auto maybe_str = hex::decode_from_hex_to_string(s);
+    if (!maybe_str) {
+      return false;
+    } else {
+      res = *maybe_str;
+      return true;
+    }
   }
   //----------------------------------------------------------------------------
   bool parse_peer_from_string(uint32_t& ip, uint16_t& port, const std::string& addres)

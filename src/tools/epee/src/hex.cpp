@@ -30,98 +30,86 @@ see: etc/other-licenses/monero/LICENSE
 #include <limits>
 #include <string>
 #include <iostream>
+#include <list>
 
 namespace epee
 {
-  namespace
+  namespace hex
   {
-    template<typename T>
-    void encode_to_hex_iterator(T&& out, const std::span<const std::uint8_t> src)
+    std::string encode_to_hex
+    (const std::span<const std::uint8_t> src)
     {
-      static constexpr const char hex[] = "0123456789abcdef";
-      static_assert(sizeof(hex) == 17, "bad string size");
+      constexpr std::string_view hex = "0123456789abcdef";
+
+      std::list<char> out;
+
       for (const std::uint8_t byte : src)
-      {
-        *out = hex[byte >> 4];
-        ++out;
-        *out = hex[byte & 0x0F];
-        ++out;
+        {
+          out.push_back(hex[byte >> 4]);
+          out.push_back(hex[byte & 0x0F]);
+        }
+
+      return {out.begin(), out.end()};
+    }
+
+    void encode_to_hex_stream
+    (std::ostream& out, const std::span<const std::uint8_t> src)
+    {
+      out << encode_to_hex(src);
+    }
+
+    void encode_to_hex_stream_formatted
+    (std::ostream& out, const std::span<const std::uint8_t> src)
+    {
+      out.put('<');
+      encode_to_hex_stream(out, src);
+      out.put('>');
+    }
+
+    bool decode_from_hex_unchecked
+    (std::uint8_t* dst, const std::string_view s) noexcept
+    {
+      if (s.size() % 2 != 0)
+        return false;
+
+      const unsigned char *src = (const unsigned char *)s.data();
+      for(size_t i = 0; i < s.size(); i += 2)
+        {
+          int tmp = *src++;
+          tmp = epee::misc_utils::parse::isx[tmp];
+          if (tmp == 0xff) return false;
+          int t2 = *src++;
+          t2 = epee::misc_utils::parse::isx[t2];
+          if (t2 == 0xff) return false;
+          *dst++ = (tmp << 4) | t2;
+        }
+
+      return true;
+    }
+
+    std::optional<epee::blob::data> decode_from_hex_to_blob
+    (const std::string_view src)
+    {
+      epee::blob::data out;
+      out.resize(src.size() / 2);
+      const bool r = decode_from_hex_unchecked(out.data(), src);
+      if (r) {
+        return out;
+      } else {
+        return {};
       }
     }
-  }
 
-
-namespace hex
-{
-  template<typename T>
-  T encode_to_hex_t(const std::span<const std::uint8_t> src)
-  {
-    if (std::numeric_limits<std::size_t>::max() / 2 < src.size())
-      throw std::range_error("hex_view::to_string exceeded maximum size");
-
-    T out{};
-    out.resize(src.size() * 2);
-    encode_to_hex_iterator(out.data(), src); // can't see the non const version in wipeable_string??
-    return out;
-  }
-
-  std::string encode_to_hex(const std::span<const std::uint8_t> src) {
-    return encode_to_hex_t<std::string>(src);
-  }
-
-  void encode_to_hex_stream(std::ostream& out, const std::span<const std::uint8_t> src)
-  {
-    encode_to_hex_iterator(std::ostreambuf_iterator<char>{out}, src);
-  }
-
-  void encode_to_hex_stream_formatted(std::ostream& out, const std::span<const std::uint8_t> src)
-  {
-    out.put('<');
-    encode_to_hex_stream(out, src);
-    out.put('>');
-  }
-
-  bool decode_from_hex_unchecked(std::uint8_t* dst, const std::string_view s) noexcept
-  {
-    if (s.size() % 2 != 0)
-      return false;
-
-    const unsigned char *src = (const unsigned char *)s.data();
-    for(size_t i = 0; i < s.size(); i += 2)
+    std::optional<std::string> decode_from_hex_to_string
+    (const std::string_view src)
     {
-      int tmp = *src++;
-      tmp = epee::misc_utils::parse::isx[tmp];
-      if (tmp == 0xff) return false;
-      int t2 = *src++;
-      t2 = epee::misc_utils::parse::isx[t2];
-      if (t2 == 0xff) return false;
-      *dst++ = (tmp << 4) | t2;
+      const auto r = decode_from_hex_to_blob(src);
+      if (!r) {
+        return {};
+      } else {
+        return ::epee::string_tools::blob_to_string(*r);
+      }
     }
 
-    return true;
-  }
-
-  std::optional<epee::blob::data> decode_from_hex_to_blob(const std::string_view src) {
-    epee::blob::data out;
-    out.resize(src.size() / 2);
-    const bool r = decode_from_hex_unchecked(out.data(), src);
-    if (r) {
-      return out;
-    } else {
-      return {};
-    }
-  }
-
-  bool decode_from_hex_to_string(std::string& res, const std::string_view s)
-  {
-    const auto r = decode_from_hex_to_blob(s);
-    if (r) {
-      res = ::epee::string_tools::blob_to_string(*r);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-} // hex
+  } // hex
 }
