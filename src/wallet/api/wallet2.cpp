@@ -1146,9 +1146,14 @@ void wallet2::pull_hashes(uint64_t start_height, uint64_t &blocks_start_height, 
      , res.m_block_ids.end()
      , std::back_inserter(hashes)
      , [](const auto& x) {
-       crypto::hash y;
-       epee::string_tools::hex_to_pod(x, y);
-       return y;
+       const auto maybe_hash =
+         epee::string_tools::hex_to_pod<crypto::hash>(x);
+
+      if (!maybe_hash) {
+        LOG_FATAL("invalid block id hash");
+      }
+
+       return maybe_hash.value_or(crypto::null_hash);
      }
      );
 }
@@ -2535,9 +2540,14 @@ void wallet2::trim_hashchain()
 
     if (r && res.status == CORE_RPC_STATUS_OK)
     {
-      crypto::hash hash;
-      epee::string_tools::hex_to_pod(res.block_header.hash, hash);
-      m_blockchain.refill(hash);
+      const auto maybe_hash =
+        epee::string_tools::hex_to_pod<crypto::hash>
+        (res.block_header.hash);
+
+      if (!maybe_hash) {
+        LOG_FATAL("invalid block header hash");
+      }
+      m_blockchain.refill(maybe_hash.value_or(crypto::null_hash));
     }
     else
     {

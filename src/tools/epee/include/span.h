@@ -29,6 +29,7 @@
 #pragma once
 
 #include <string>
+#include <cstring>
 #include <span>
 
 namespace epee
@@ -40,22 +41,29 @@ namespace epee
     return !std::is_standard_layout<T>() || alignof(T) != 1;
   }
 
-  //! \return `span<const std::uint8_t>` which represents the bytes at `&src`.
   template<typename T>
   constexpr std::span<const std::uint8_t> pod_to_span(const T& src) noexcept
   {
     static_assert(!std::is_empty<T>(), "empty types will not work -> sizeof == 1");
     static_assert(!has_padding<T>(), "source type may have padding");
-    return {reinterpret_cast<const std::uint8_t*>(std::addressof(src)), sizeof(T)};
+    return std::span<const std::uint8_t>((const uint8_t*)(&src), sizeof(T));
   }
 
-  //! \return `span<std::uint8_t>` which represents the bytes at `&src`.
   template<typename T>
-  constexpr std::span<std::uint8_t> pod_to_mutable_span(T& src) noexcept
+  constexpr T span_to_pod(const std::span<const std::uint8_t> src) noexcept
   {
     static_assert(!std::is_empty<T>(), "empty types will not work -> sizeof == 1");
     static_assert(!has_padding<T>(), "source type may have padding");
-    return {reinterpret_cast<std::uint8_t*>(std::addressof(src)), sizeof(T)};
-  }
 
+    T x;
+
+    std::memcpy
+      (
+       std::addressof(x)
+       , src.data()
+       , src.size()
+       );
+
+    return x;
+  }
 }

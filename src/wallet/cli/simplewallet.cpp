@@ -2034,14 +2034,17 @@ bool simple_wallet::get_output_ecdh_secret_keys(const std::vector<std::string> &
     return true;
   }
 
-  crypto::hash txid;
-  if (!epee::string_tools::hex_to_pod(local_args[0], txid))
+  const auto maybe_txid =
+    epee::string_tools::hex_to_pod<crypto::hash>(local_args[0]);
+
+  if (!maybe_txid)
   {
     fail_msg_writer() << ("failed to parse txid");
     return true;
   }
 
-  const auto maybe_tx_output_keys = m_wallet->get_output_ecdh_sec_keys(txid);
+  const auto maybe_tx_output_keys =
+    m_wallet->get_output_ecdh_sec_keys(*maybe_txid);
 
   if (maybe_tx_output_keys)
   {
@@ -2069,12 +2072,16 @@ bool simple_wallet::get_output_ecdh_signatures(const std::vector<std::string> &a
     return true;
   }
 
-  crypto::hash txid;
-  if(!epee::string_tools::hex_to_pod(args[0], txid))
+  const auto maybe_txid =
+    epee::string_tools::hex_to_pod<crypto::hash>(args[0]);
+
+  if (!maybe_txid)
   {
     fail_msg_writer() << ("failed to parse txid");
     return true;
   }
+
+  const auto txid = *maybe_txid;
 
   cryptonote::address_parse_info info;
   if(!cryptonote::get_account_address_from_str(info, m_wallet->nettype(), args[1]))
@@ -2110,12 +2117,16 @@ bool simple_wallet::verify_output_ecdh_signatures(const std::vector<std::string>
     return true;
 
   // parse txid
-  crypto::hash txid;
-  if(!epee::string_tools::hex_to_pod(args[0], txid))
+  const auto maybe_txid =
+    epee::string_tools::hex_to_pod<crypto::hash>(args[0]);
+
+  if (!maybe_txid)
   {
     fail_msg_writer() << ("failed to parse txid");
     return true;
   }
+
+  const auto txid = *maybe_txid;
 
   // parse address
   cryptonote::address_parse_info info;

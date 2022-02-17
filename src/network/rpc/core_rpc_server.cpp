@@ -175,9 +175,10 @@ namespace cryptonote
        , req.block_ids.end()
        , std::back_inserter(block_ids)
        , [](const auto& x) {
-         crypto::hash txid;
-         epee::string_tools::hex_to_pod(x, txid);
-         return txid;
+         const auto maybe_txid =
+           epee::string_tools::hex_to_pod<crypto::hash>(x);
+
+         return maybe_txid.value_or(crypto::hash{});
        }
        );
 
@@ -263,9 +264,10 @@ namespace cryptonote
        , req.block_ids.end()
        , std::back_inserter(block_ids)
        , [](const auto& x) {
-         crypto::hash txid;
-         epee::string_tools::hex_to_pod(x, txid);
-         return txid;
+         const auto maybe_txid =
+           epee::string_tools::hex_to_pod<crypto::hash>(x);
+
+         return maybe_txid.value_or(crypto::hash{});
        }
        );
 
@@ -1231,14 +1233,16 @@ namespace cryptonote
     {
       for (const auto &str: req.txids)
       {
-        crypto::hash txid;
-        if(!epee::string_tools::hex_to_pod(str, txid))
+        const auto maybe_txid =
+          epee::string_tools::hex_to_pod<crypto::hash>(str);
+
+        if(!maybe_txid)
         {
           failed = true;
         }
         else
         {
-          txids.push_back(txid);
+          txids.push_back(*maybe_txid);
         }
       }
     }
@@ -1350,14 +1354,17 @@ namespace cryptonote
     res.status = "";
     for (const auto &str: req.txids)
     {
-      crypto::hash txid;
-      if(!epee::string_tools::hex_to_pod(str, txid))
+      const auto maybe_txid =
+        epee::string_tools::hex_to_pod<crypto::hash>(str);
+      if(!maybe_txid)
       {
         if (!res.status.empty()) res.status += ", ";
         res.status += std::string("invalid transaction id: ") + str;
         failed = true;
         continue;
       }
+
+      const auto txid = *maybe_txid;
 
       cryptonote::string_blob txblob;
       if (m_core.get_pool_transaction(txid, txblob, relay_category::legacy))

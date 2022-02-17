@@ -27,6 +27,7 @@
 #pragma once
 
 #include "tools/epee/include/hex.h"
+#include "tools/epee/include/span.h"
 #include "tools/epee/include/blob.hpp"
 #include "tools/epee/include/storages/parserse_base_utils.h"
 
@@ -124,10 +125,14 @@ namespace string_tools
   }
   //----------------------------------------------------------------------------
   template<class t_pod_type>
-  bool hex_to_pod(const std::string_view hex_str, t_pod_type& s)
+  std::optional<t_pod_type> hex_to_pod
+  (const std::string_view hex_str)
   {
     static_assert(std::is_standard_layout<t_pod_type>(), "expected standard layout type");
-    return hex::decode_from_hex_to_span(pod_to_mutable_span(s), hex_str);
+    const auto maybe_blob = hex::decode_from_hex_to_blob(hex_str);
+    if (!maybe_blob) return {};
+
+    return epee::span_to_pod<t_pod_type>(*maybe_blob);
   }
   //----------------------------------------------------------------------------
   bool validate_hex(uint64_t length, const std::string& str);

@@ -127,7 +127,25 @@ constexpr bool is_to_hex()
   return std::is_standard_layout<Type>() && std::is_trivial<Type>() && !std::is_integral<Type>();
 }
 
-void read_hex(const rapidjson::Value& val, std::span<std::uint8_t> dest);
+template <class T>
+T read_hex(const rapidjson::Value& val)
+{
+  if (!val.IsString())
+  {
+    throw WRONG_TYPE("string");
+  }
+
+  const auto maybe_blob = epee::hex::decode_from_hex_to_blob
+    ({val.GetString(), val.GetStringLength()});
+
+  if (!maybe_blob)
+  {
+    throw BAD_INPUT();
+  }
+
+  return epee::span_to_pod<T>(*maybe_blob);
+}
+
 
 // POD to json key
 template <class Type>
@@ -149,7 +167,7 @@ template <class Type>
 typename std::enable_if<is_to_hex<Type>()>::type fromJsonValue(const rapidjson::Value& val, Type& t)
 {
   static_assert(std::is_standard_layout<Type>(), "expected standard layout type");
-  json::read_hex(val, epee::pod_to_mutable_span(t));
+  t = json::read_hex<Type>(val);
 }
 
 void toJsonValue(rapidjson::Writer<rapidjson::StringBuffer>& dest, const rapidjson::Value& src);

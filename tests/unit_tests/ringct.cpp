@@ -358,8 +358,11 @@ TEST(ringct, CLSAG)
   auto clsag_unsafe = toUnsafeCLSAG(clsag);
   ASSERT_TRUE(maybeSafeCLSAG(clsag_unsafe));
 
-  crypto::ec_point x;
-  ASSERT_TRUE(epee::string_tools::hex_to_pod("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa", x));
+  const auto maybe_x = epee::string_tools::hex_to_pod<crypto::ec_point>
+    ("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa");
+  ASSERT_TRUE(maybe_x);
+
+  const crypto::ec_point x = *maybe_x;
 
   clsag_unsafe.blinding_factor_surplus_key_image = x;
   ASSERT_FALSE(maybeSafeCLSAG(clsag_unsafe));

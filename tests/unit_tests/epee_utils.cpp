@@ -44,6 +44,7 @@
 
 #include "math/crypto/functional/key.hpp"
 #include "tools/epee/include/hex.h"
+#include "tools/epee/include/span.h"
 #include "tools/epee/include/net/net_utils_base.h"
 #include "tools/epee/include/net/local_ip.h"
 #include "tools/epee/include/net/buffer.h"
@@ -218,20 +219,20 @@ TEST(FromHex, ToBuffer)
   static constexpr const char hex[] = "deadbeeffY";
   static constexpr const std::uint8_t binary[] = {0xde, 0xad, 0xbe, 0xef};
 
-  std::vector<std::uint8_t> out{};
-  out.resize(sizeof(binary));
-  EXPECT_FALSE(epee::hex::decode_from_hex_to_span((out), hex));
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_blob(hex));
 
   std::string_view portion{hex};
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::hex::decode_from_hex_to_span((out), portion));
+
+  EXPECT_FALSE(epee::hex::decode_from_hex_to_blob(portion));
 
   portion.remove_suffix(1);
-  EXPECT_FALSE(epee::hex::decode_from_hex_to_span({out.data(), out.size() - 1}, portion));
 
-  EXPECT_TRUE(epee::hex::decode_from_hex_to_span((out), portion));
-  const std::vector<std::uint8_t> expected{std::begin(binary), std::end(binary)};
-  EXPECT_EQ(expected, out);
+  const auto maybe_decoded = epee::hex::decode_from_hex_to_blob(portion);
+  EXPECT_TRUE(maybe_decoded);
+
+  const epee::blob::data expected{std::begin(binary), std::end(binary)};
+  EXPECT_EQ(*maybe_decoded, expected);
 }
 
 TEST(StringTools, BuffToHex)
