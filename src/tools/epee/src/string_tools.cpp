@@ -135,39 +135,6 @@ namespace string_tools
 
     return true;
   }
-  //----------------------------------------------------------------------------
-  bool validate_hex(uint64_t length, const std::string& str)
-  {
-    if (str.size() != length)
-      return false;
-    for (char c: str)
-      if (!isxdigit(c))
-        return false;
-    return true;
-  }
 
-  std::vector<uint8_t> hex_to_vector_filtered(const std::string_view src)
-  {
-    std::string s(src);
-    constexpr std::string_view allowed = "0123456789abcdefABCDEF";
-
-    s.erase(std::remove_if
-            (
-             s.begin()
-             , s.end(),
-             [allowed](const char c) {
-               return allowed.find(c) == std::string::npos;
-             }
-             ),
-            s.end());
-
-    const std::optional<::epee::blob::data> r = hex::decode_from_hex_to_blob(s);
-    std::vector<uint8_t> v;
-    if (r) {
-      const auto str = *r;
-      std::copy( str.begin(), str.end(), std::back_inserter(v));
-    }
-    return v;
-  }
 } // string_tools
 } // epee

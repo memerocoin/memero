@@ -130,10 +130,6 @@ namespace string_tools
 
     return epee::span_to_pod<t_pod_type>(*maybe_blob);
   }
-  //----------------------------------------------------------------------------
-  bool validate_hex(uint64_t length, const std::string& str);
-
-  std::vector<uint8_t> hex_to_vector_filtered(const std::string_view src);
 
 } // stringtools
 } // epee
