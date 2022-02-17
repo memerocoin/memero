@@ -35,6 +35,7 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 #include <iostream>
 #include <map>
@@ -169,7 +170,7 @@ namespace epee
             LOG_ERROR("Failed to read line.");
           }
 
-          epee::string_tools::trim(command);
+          boost::trim(command);
 
           LOG_PRINT_L2("Read command: " << command);
           if(cmd_handler(command))

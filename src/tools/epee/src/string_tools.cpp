@@ -103,39 +103,6 @@ namespace string_tools
 	{
 		return !boost::iequals(str1, str2);
 	}
-	//----------------------------------------------------------------------------
-	bool trim_left(std::string& str)
-	{
-		for(std::string::iterator it = str.begin(); it!= str.end() && isspace(static_cast<unsigned char>(*it));)
-			str.erase(str.begin());
-
-		return true;
-	}
-	//----------------------------------------------------------------------------
-	bool trim_right(std::string& str)
-	{
-
-		for(std::string::reverse_iterator it = str.rbegin(); it!= str.rend() && isspace(static_cast<unsigned char>(*it));)
-			str.erase( --((it++).base()));
-
-		return true;
-	}
-	//----------------------------------------------------------------------------
-	std::string& trim(std::string& str)
-	{
-
-		trim_left(str);
-		trim_right(str);
-		return str;
-	}
-  //----------------------------------------------------------------------------
-  std::string trim(const std::string& str_)
-  {
-    std::string str = str_;
-    trim_left(str);
-    trim_right(str);
-    return str;
-  }
   //----------------------------------------------------------------------------
   std::string pad_string(std::string s, size_t n, char c, bool prepend)
   {

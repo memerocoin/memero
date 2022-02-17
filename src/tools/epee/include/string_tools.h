@@ -111,10 +111,6 @@ namespace string_tools
 	}
 	//----------------------------------------------------------------------------
 	bool compare_no_case(const std::string& str1, const std::string& str2);
-	bool trim_left(std::string& str);
-	bool trim_right(std::string& str);
-	std::string& trim(std::string& str);
-  std::string trim(const std::string& str_);
   std::string pad_string(std::string s, size_t n, char c = ' ', bool prepend = false);
   //----------------------------------------------------------------------------
   template<class t_pod_type>

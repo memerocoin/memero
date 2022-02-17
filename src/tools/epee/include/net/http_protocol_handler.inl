@@ -31,6 +31,7 @@
 #include "tools/epee/include/time_helper.h"
 
 
+#include <boost/algorithm/string/trim.hpp>
 
 
 #define HTTP_MAX_URI_LEN		 9000
@@ -475,7 +476,7 @@ namespace net_utils
 		buf += "Accept-Ranges: bytes\r\n";
 		//Wed, 01 Dec 2010 03:27:41 GMT"
 
-		string_tools::trim(m_query_info.m_header_info.m_connection);
+		boost::trim(m_query_info.m_header_info.m_connection);
 		if(m_query_info.m_header_info.m_connection.size())
 		{
 			if(!string_tools::compare_no_case("close", m_query_info.m_header_info.m_connection))
