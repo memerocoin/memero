@@ -71,6 +71,16 @@ namespace
 namespace cryptonote
 {
 
+#define CHECK_CORE_READY() do                   \
+    {                                           \
+      if (!check_core_ready())                  \
+        {                                       \
+          res.status = CORE_RPC_STATUS_BUSY;    \
+          return true;                          \
+        }                                       \
+    } while(0)
+
+
   //-----------------------------------------------------------------------------------
   void core_rpc_server::init_options(boost::program_options::options_description& desc)
   {
@@ -117,8 +127,6 @@ namespace cryptonote
     }
     return true;
   }
-#define CHECK_CORE_READY() do { if(!check_core_ready()){res.status =  CORE_RPC_STATUS_BUSY;return true;} } while(0)
-
   //------------------------------------------------------------------------------------------------------------------------------
   bool core_rpc_server::on_get_info(const COMMAND_RPC_GET_INFO::request& req, COMMAND_RPC_GET_INFO::response& res)
   {
