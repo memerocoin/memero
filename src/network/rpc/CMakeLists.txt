@@ -32,6 +32,7 @@ add_library(network_rpc_base
   rpc_args.cpp
   rpc_handler.cpp
   core_rpc_server_error_codes.cpp
+  rpc_version_str.cpp
   )
 
 if(OpenCL_FOUND)
@@ -42,7 +43,6 @@ endif()
 
 add_library(network_rpc
   core_rpc_server.cpp
-  rpc_version_str.cpp
   )
 
 target_link_libraries(network_rpc

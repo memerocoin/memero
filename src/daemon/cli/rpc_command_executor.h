@@ -40,12 +40,10 @@
 
 #include "cryptonote/functional/helper.hpp"
 
-#include "network/rpc/core_rpc_server.h"
-
 #include "tools/common/rpc_client.h"
+#include "tools/epee/include/net/net_ssl.h"
 
-
-
+#include "cryptonote/core/cryptonote_core.h"
 
 namespace daemonize {
 

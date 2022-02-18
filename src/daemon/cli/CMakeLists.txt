@@ -27,12 +27,13 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_library(lolnerod
-  daemon.cpp
+add_executable(lolnerod-rpc
+  rpc-main.cpp
   executor.cpp
+  daemon.cpp
   )
 
-target_link_libraries(lolnerod
+target_link_libraries(lolnerod-rpc
   cryptonote_core
   cryptonote_protocol
   cryptonote_tx
@@ -51,14 +52,6 @@ target_link_libraries(lolnerod
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 
-add_executable(lolnerod-rpc
-  rpc-main.cpp
-  )
-
-target_link_libraries(lolnerod-rpc
-  lolnerod
-  )
-
 
 set_property(TARGET lolnerod-rpc
   PROPERTY
@@ -71,6 +64,8 @@ set_property(TARGET lolnerod-rpc
 
 install(TARGETS lolnerod-rpc DESTINATION bin)
 
+
+
 add_executable(lolnerod-cli
   cli-main.cpp
   command_server.cpp
@@ -79,7 +74,15 @@ add_executable(lolnerod-cli
   )
 
 target_link_libraries(lolnerod-cli
-  lolnerod
+  cryptonote_tx
+  epee_storage
+  network_rpc_base
+  network_type
+  tools_common
+  tools_serialization
+  version
+
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 
 set_property(TARGET lolnerod-cli

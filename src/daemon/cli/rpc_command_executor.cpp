@@ -121,13 +121,6 @@ namespace {
     snprintf(buffer, sizeof(buffer), "%02u:%02u:%02u", hours, minutes, seconds);
     return std::string(buffer);
   }
-
-  std::string make_error(const std::string &base, const std::string &status)
-  {
-    if (status == CORE_RPC_STATUS_OK)
-      return base;
-    return base + " -- " + status;
-  }
 }
 
 t_rpc_command_executor::t_rpc_command_executor(
