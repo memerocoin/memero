@@ -27,15 +27,15 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-add_executable(lolnerod
+add_executable(lolnerod-rpc
   command_parser_executor.cpp
   daemon.cpp
   executor.cpp
-  main.cpp
+  rpc-main.cpp
   rpc_command_executor.cpp
   )
 
-target_link_libraries(lolnerod
+target_link_libraries(lolnerod-rpc
   cryptonote_core
   cryptonote_protocol
   cryptonote_tx
@@ -55,25 +55,25 @@ target_link_libraries(lolnerod
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 
-set_property(TARGET lolnerod
+set_property(TARGET lolnerod-rpc
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-set_property(TARGET lolnerod
+set_property(TARGET lolnerod-rpc
   PROPERTY
-    OUTPUT_NAME "lolnerod-cpp")
+    OUTPUT_NAME "lolnerod-rpc-cpp")
 
 
-install(TARGETS lolnerod DESTINATION bin)
+install(TARGETS lolnerod-rpc DESTINATION bin)
 
-add_executable(lolnerod-remote
+add_executable(lolnerod-cli
   command_parser_executor.cpp
   command_server.cpp
-  remote-main.cpp
+  cli-main.cpp
   rpc_command_executor.cpp
   )
 
-target_link_libraries(lolnerod-remote
+target_link_libraries(lolnerod-cli
   cryptonote_core
   cryptonote_protocol
   cryptonote_tx
@@ -92,13 +92,13 @@ target_link_libraries(lolnerod-remote
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   )
 
-set_property(TARGET lolnerod-remote
+set_property(TARGET lolnerod-cli
   PROPERTY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-set_property(TARGET lolnerod-remote
+set_property(TARGET lolnerod-cli
   PROPERTY
-    OUTPUT_NAME "lolnerod-remote-cpp")
+    OUTPUT_NAME "lolnerod-cli-cpp")
 
 
-install(TARGETS lolnerod-remote DESTINATION bin)
+install(TARGETS lolnerod-cli DESTINATION bin)
