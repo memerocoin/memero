@@ -3229,8 +3229,6 @@ int main(int argc, char* argv[])
 {
   TRY_ENTRY();
 
-  setlocale(LC_CTYPE, "");
-
   po::options_description desc_params(wallet_args::tr("Wallet options"));
   tools::wallet2::init_options(desc_params);
   command_line::add_arg(desc_params, wallet_args::arg_wallet_file());
