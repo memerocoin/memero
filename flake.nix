@@ -177,10 +177,10 @@
                     ;
                   }
 
-                ; lolnerod-cli =
+                ; lolnerod =
                   {
                     type = "app"
-                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod-cli"
+                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod"
                     ;
                   }
                     

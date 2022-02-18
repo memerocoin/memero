@@ -52,7 +52,7 @@ set_property(TARGET lolnerod-cli
 
 set_property(TARGET lolnerod-cli
   PROPERTY
-    OUTPUT_NAME "lolnerod-cli")
+    OUTPUT_NAME "lolnerod")
 
 
 install(TARGETS lolnerod-cli DESTINATION bin)
