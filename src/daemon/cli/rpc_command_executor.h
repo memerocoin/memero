@@ -52,16 +52,13 @@ namespace daemonize {
 class t_rpc_command_executor final {
 private:
   std::unique_ptr<tools::t_rpc_client> m_rpc_client;
-  cryptonote::core_rpc_server* m_rpc_server;
-  bool m_is_rpc;
+  bool m_is_rpc = true;
 
 public:
   t_rpc_command_executor(
       uint32_t ip
     , uint16_t port
     , const epee::net_utils::ssl_options_t& ssl_options
-    , bool is_rpc = true
-    , cryptonote::core_rpc_server* rpc_server = NULL
     );
 
   ~t_rpc_command_executor();

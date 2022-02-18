@@ -45,12 +45,9 @@ t_command_server::t_command_server(
     uint32_t ip
   , uint16_t port
   , const epee::net_utils::ssl_options_t& ssl_options
-  , bool is_rpc
-  , cryptonote::core_rpc_server* rpc_server
   )
-  : m_parser(ip, port, ssl_options, is_rpc, rpc_server)
+  : m_parser(ip, port, ssl_options)
   , m_command_lookup()
-  , m_is_rpc(is_rpc)
 {
   m_command_lookup.set_handler(
       "help"
@@ -257,22 +254,6 @@ bool t_command_server::process_command_vec(const std::vector<std::string>& cmd)
     help(std::vector<std::string>());
   }
   return result;
-}
-
-bool t_command_server::start_handling(std::function<void(void)> exit_handler)
-{
-  if (m_is_rpc) return false;
-
-  m_command_lookup.start_handling("", "Use \"help\" to list all commands and their usage\n", exit_handler);
-
-  return true;
-}
-
-void t_command_server::stop_handling()
-{
-  if (m_is_rpc) return;
-
-  m_command_lookup.stop_handling();
 }
 
 bool t_command_server::help(const std::vector<std::string>& args)

@@ -1,14 +1,3 @@
-/**
-@file
-@details
-
-
-Passing RPC commands:
-
-@image html images/other/runtime-commands.png
-
-*/
-
 // Copyright (c) 2014-2020, The Monero Project
 //
 // All rights reserved.
@@ -49,15 +38,12 @@ class t_command_server {
 private:
   t_command_parser_executor m_parser;
   epee::console_handlers_binder m_command_lookup;
-  bool m_is_rpc;
 
 public:
   t_command_server(
       uint32_t ip
     , uint16_t port
     , const epee::net_utils::ssl_options_t& ssl_options
-    , bool is_rpc = true
-    , cryptonote::core_rpc_server* rpc_server = NULL
     );
 
   bool process_command_str(const std::string& cmd);

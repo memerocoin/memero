@@ -37,10 +37,8 @@ t_command_parser_executor::t_command_parser_executor(
     uint32_t ip
   , uint16_t port
   , const epee::net_utils::ssl_options_t& ssl_options
-  , bool is_rpc
-  , cryptonote::core_rpc_server* rpc_server
   )
-  : m_executor(ip, port, ssl_options, is_rpc, rpc_server)
+  : m_executor(ip, port, ssl_options)
 {}
 
 bool t_command_parser_executor::print_peer_list(const std::vector<std::string>& args)

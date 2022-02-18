@@ -41,8 +41,6 @@ public:
       uint32_t ip
     , uint16_t port
     , const epee::net_utils::ssl_options_t& ssl_options
-    , bool is_rpc
-    , cryptonote::core_rpc_server* rpc_server = NULL
     );
 
   bool print_peer_list(const std::vector<std::string>& args);
