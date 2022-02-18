@@ -36,6 +36,7 @@ add_library(cryptonote_core
 target_link_libraries(cryptonote_core
   math_ringct
   cryptonote_miner
+  database
 )
 
 

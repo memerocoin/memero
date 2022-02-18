@@ -49,16 +49,13 @@ target_link_libraries(network_rpc
   network_rpc_base
   cryptonote_tx
   cryptonote_core
+  network_p2p
 )
 
 
 add_library(daemon_messages
   message.cpp
   daemon_messages.cpp
-)
-
-add_library(daemon_rpc_server
-  daemon_handler.cpp
 )
 
 # install(TARGETS network_rpc_base)
