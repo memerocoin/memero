@@ -1,5 +1,5 @@
 test-1:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --testnet \
 --hide-my-port \
 --data-dir ./testnet/node_01 \
@@ -12,7 +12,7 @@ test-1:
 # --add-exclusive-node 127.0.0.1:40002 \
 
 test-2:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --testnet \
 --hide-my-port \
 --data-dir ./testnet/node_02 \
@@ -24,7 +24,7 @@ test-2:
 --fixed-difficulty 1000 \
 
 test-1-mining:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --testnet \
 --hide-my-port \
 --data-dir ./testnet/node_01 \
@@ -36,7 +36,7 @@ test-1-mining:
 --start-mining hpAhTqFSj91LL7FHxT6yUScBDBfA5bfiMAmC6A3KHBZc1jGv5t5LJMELYoFNjeNPoMJNeSnBiK9WmKNqxXsj9rWn1iNFeiTna
 
 test-2-mining:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --testnet \
 --hide-my-port \
 --data-dir ./testnet/node_02 \
@@ -48,28 +48,28 @@ test-2-mining:
 --start-mining hp9PEj54frgDUiAkSTsnmJXxoN2gengwfdg2RGThzUEo2ycy1bVvVMXf1nY2KMiGwzVkSGBR8KRd8LbSRYb6eny62DwZFVeyP
 
 make-test-wallet:
-	../../build/bin/lolnero-cpp --new testnet/test1 --testnet \
+	../../build/bin/lolnero --new testnet/test1 --testnet \
 --daemon-address 127.0.0.1:44000 \
 --password ''
 
 make-test-wallet-2:
-	../../build/bin/lolnero-cpp --new testnet/test2 --testnet \
+	../../build/bin/lolnero --new testnet/test2 --testnet \
 --daemon-address 127.0.0.1:44001 \
 --password ''
 
 test-wallet:
-	../../build/bin/lolnero-cpp --testnet --open testnet/test1 \
+	../../build/bin/lolnero --testnet --open testnet/test1 \
 --daemon-address 127.0.0.1:44000 --log-level 1 \
 --password ''
 
 test-wallet-rpc:
-	../../build/bin/lolnero-rpc-cpp --testnet --open testnet/test1 \
+	../../build/bin/lolnero-rpc --testnet --open testnet/test1 \
 --daemon-address 127.0.0.1:44000 --log-level 1 \
 --rpc-bind-port 44056 \
 --password ''
 
 test-wallet-2:
-	../../build/bin/lolnero-cpp --testnet --open testnet/test2 \
+	../../build/bin/lolnero --testnet --open testnet/test2 \
 --daemon-address 127.0.0.1:44001 --log-level 1 \
 --password ''
 
@@ -80,7 +80,7 @@ clear-test:
 
 
 main-1:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/node_01 \
 --p2p-bind-port 41000 \
@@ -88,7 +88,7 @@ main-1:
 --add-exclusive-node 127.0.0.1:41001 \
 
 main-2:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/node_02 \
 --p2p-bind-port 41001 \
@@ -99,7 +99,7 @@ main-2:
 main-sync:
 	@rm -rf mainnet/node_sync
 
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
@@ -109,7 +109,7 @@ main-sync:
 main-sync-debug:
 	@rm -rf mainnet/node_sync
 
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
@@ -118,7 +118,7 @@ main-sync-debug:
 --log-level 1
 
 main-sync-reuse:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
@@ -126,7 +126,7 @@ main-sync-reuse:
 --add-exclusive-node 10.0.0.10 \
 
 main-sync-reuse-debug:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
@@ -137,7 +137,7 @@ main-sync-reuse-debug:
 main-sync-flake:
 	@rm -rf mainnet/node_sync_flake
 
-	../../result/bin/lolnerod-rpc-cpp \
+	../../result/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/node_sync_flake \
 --p2p-bind-port 41000 \
@@ -145,7 +145,7 @@ main-sync-flake:
 --add-exclusive-node 10.0.0.10
 
 mine:
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/node_sync \
 --p2p-bind-port 41000 \
@@ -155,13 +155,13 @@ mine:
 --mining-threads 4
 
 test-arg:
-	../../build/bin/lolnerod-rpc-cpp help \
+	../../build/bin/lolnerod-rpc help \
 --rpc-bind-port 45000 \
 
 tor-sync:
 	@rm -rf mainnet/tor_sync
 
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/tor_sync \
 --p2p-bind-port 41002 \
@@ -172,7 +172,7 @@ tor-sync:
 clearnet-proxy-sync:
 	rm -rf mainnet/clearnet_proxy_sync
 
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --hide-my-port \
 --data-dir ./mainnet/clearnet_proxy_sync \
 --p2p-bind-port 41002 \
@@ -182,31 +182,31 @@ clearnet-proxy-sync:
 tor-proxy-full:
 	rm -rf mainnet/tor_proxy_full
 
-	../../build/bin/lolnerod-rpc-cpp \
+	../../build/bin/lolnerod-rpc \
 --data-dir ./mainnet/tor_proxy_full \
 --rpc-bind-port 45002 \
 --proxy public,127.0.0.1:9063 \
 --proxy tor,127.0.0.1:9063 \
 
 make-main-wallet:
-	../../build/bin/lolnero-cpp --new mainnet/test1  \
+	../../build/bin/lolnero --new mainnet/test1  \
 --daemon-address 127.0.0.1:45000 \
 --password ''
 
 
 main-wallet-default:
-	../../build/bin/lolnero-cpp --open mainnet/test1 \
+	../../build/bin/lolnero --open mainnet/test1 \
 --log-level 1 \
 --password ''
 
 main-wallet:
-	../../build/bin/lolnero-cpp --open mainnet/test1 \
+	../../build/bin/lolnero --open mainnet/test1 \
 --daemon-address 127.0.0.1:45000 --log-level 1 \
 --password ''
 
 
 main-wallet-rpc:
-	../../build/bin/lolnero-rpc-cpp --open mainnet/test1 \
+	../../build/bin/lolnero-rpc --open mainnet/test1 \
 --log-level 1 \
 --rpc-bind-port 44456 \
 --password ''

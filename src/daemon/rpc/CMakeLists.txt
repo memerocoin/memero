@@ -59,7 +59,7 @@ set_property(TARGET lolnerod-rpc
 
 set_property(TARGET lolnerod-rpc
   PROPERTY
-    OUTPUT_NAME "lolnerod-rpc-cpp")
+    OUTPUT_NAME "lolnerod-rpc")
 
 
 install(TARGETS lolnerod-rpc DESTINATION bin)

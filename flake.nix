@@ -170,24 +170,24 @@
             (
               system:
               {
-                lolnerod-rpc-cpp =
+                lolnerod-rpc =
                   {
                     type = "app"
-                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod-rpc-cpp"
+                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod-rpc"
                     ;
                   }
 
-                ; lolnerod-cli-cpp =
+                ; lolnerod-cli =
                   {
                     type = "app"
-                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod-cli-cpp"
+                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod-cli"
                     ;
                   }
                     
-                ; lolnero-cpp =
+                ; lolnero =
                     {
                       type = "app"
-                      ; program = "${self.defaultPackage.${system}}/bin/lolnero-cpp"
+                      ; program = "${self.defaultPackage.${system}}/bin/lolnero"
                       ;
                     }
                 ;

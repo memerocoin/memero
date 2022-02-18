@@ -32,7 +32,7 @@ Specifications
 # How to connect to the network
 
 ```
-lolnerod-rpc-cpp --seed-node SOME_SEED_NODE_IP
+lolnerod-rpc --seed-node SOME_SEED_NODE_IP
 ```
 
 [1]: https://en.wikipedia.org/wiki/Cryptocurrency
