@@ -43,8 +43,6 @@
 #include "tools/common/rpc_client.h"
 #include "tools/epee/include/net/net_ssl.h"
 
-#include "cryptonote/core/cryptonote_core.h"
-
 namespace daemonize {
 
 class t_rpc_command_executor final {

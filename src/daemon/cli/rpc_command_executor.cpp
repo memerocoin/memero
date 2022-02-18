@@ -31,13 +31,14 @@
 #include "rpc_command_executor.h"
 
 #include "cryptonote/basic/functional/format_utils.hpp"
+#include "cryptonote/tx/functional/tx_utils.hpp"
 
+#include "network/p2p/p2p_protocol_defs.h"
 #include "network/rpc/rpc_version_str.h"
 
+#include "tools/common/util.h"
+
 #include <boost/format.hpp>
-
-
-
 
 using namespace constant;
 

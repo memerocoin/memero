@@ -28,6 +28,7 @@
 
 #include "command_parser_executor.h"
 
+#include "cryptonote/tx/functional/tx_utils.hpp"
 
 namespace daemonize {
 
