@@ -28,6 +28,9 @@
 
 #pragma once
 
+#include "tools/common/command_line.h"
+
+#include "config/lol.hpp"
 
 namespace daemon_args
 {
@@ -54,10 +57,5 @@ namespace daemon_args
       , "Max # of threads for a parallel job"
       , 0
     };
-
-  const command_line::arg_descriptor<bool> arg_non_interactive = {
-    "non-interactive"
-    , "Run non-interactive"
-  };
 
 }  // namespace daemon_args

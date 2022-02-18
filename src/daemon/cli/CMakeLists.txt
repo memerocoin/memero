@@ -29,7 +29,6 @@
 
 add_executable(lolnerod
   command_parser_executor.cpp
-  command_server.cpp
   daemon.cpp
   executor.cpp
   main.cpp

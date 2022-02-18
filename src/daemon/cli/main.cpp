@@ -28,11 +28,11 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "command_server.h"
 #include "executor.h"
 #include "command_line_args.h"
 
 #include "network/rpc/rpc_args.h"
+#include "daemon/cli/command_parser_executor.h"
 
 #include "config/version/version.hpp"
 
@@ -65,7 +65,6 @@ int main(int argc, char const * argv[])
       // Settings
       command_line::add_arg(core_settings, daemon_args::arg_log_level);
       command_line::add_arg(core_settings, daemon_args::arg_max_concurrency);
-      command_line::add_arg(core_settings, daemon_args::arg_non_interactive);
 
       daemonize::t_executor::init_options(core_settings);
 
@@ -158,15 +157,7 @@ int main(int argc, char const * argv[])
 
     LOG_INFO("Moving from main() into the daemonize now.");
 
-    if (command_line::has_arg(vm, daemon_args::arg_non_interactive))
-      {
-        return daemonize::t_executor{}.run_non_interactive(vm);
-      }
-    else
-      {
-        return daemonize::t_executor{}.run_interactive(vm);
-      }
-
+    return daemonize::t_executor{}.run_non_interactive(vm);
   }
   catch (std::exception const & ex)
   {

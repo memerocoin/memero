@@ -33,7 +33,6 @@
 #include "daemon/cli/core.h"
 #include "daemon/cli/p2p.h"
 #include "daemon/cli/rpc.h"
-#include "daemon/cli/command_server.h"
 
 #include "network/rpc/rpc_args.h"
 
@@ -100,19 +99,7 @@ bool t_daemon::run(bool interactive)
       return false;
 
     mp_internals->rpc.run();
-
-    std::unique_ptr<daemonize::t_command_server> rpc_commands;
-    if (interactive)
-    {
-      rpc_commands = std::make_unique<daemonize::t_command_server>
-        (0, 0, epee::net_utils::ssl_support_t::e_ssl_support_disabled, false, mp_internals->rpc.get_server());
-      rpc_commands->start_handling(std::bind(&daemonize::t_daemon::stop_p2p, this));
-    }
-
     mp_internals->p2p.run(); // blocks until p2p goes down
-
-    if (rpc_commands)
-      rpc_commands->stop_handling();
 
     mp_internals->rpc.stop();
     LOG_GLOBAL_INFO("Node stopped.");
