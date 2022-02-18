@@ -35,7 +35,7 @@
 #include "daemon/cli/rpc.h"
 #include "daemon/cli/command_server.h"
 
-
+#include "network/rpc/rpc_args.h"
 
 
 
@@ -55,7 +55,7 @@ public:
     : core{vm}
     , protocol{vm, core, command_line::get_arg(vm, cryptonote::arg_offline)}
     , p2p{vm, protocol}
-    , rpc{vm, core, p2p, command_line::get_arg(vm, cryptonote::core_rpc_server::arg_rpc_bind_port)}
+    , rpc{vm, core, p2p, command_line::get_arg(vm, cryptonote::rpc_server::arg_rpc_bind_port)}
     {
       // Handle circular dependencies
       protocol.set_p2p_endpoint(p2p.get());

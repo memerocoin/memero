@@ -66,3 +66,40 @@ set_property(TARGET lolnerod
 
 
 install(TARGETS lolnerod DESTINATION bin)
+
+add_executable(lolnerod-remote
+  command_parser_executor.cpp
+  command_server.cpp
+  remote-main.cpp
+  rpc_command_executor.cpp
+  )
+
+target_link_libraries(lolnerod-remote
+  cryptonote_core
+  cryptonote_protocol
+  cryptonote_tx
+  daemon_messages
+  database
+  epee_storage
+  math_crypto
+  math_ringct
+  network_p2p
+  network_rpc
+  network_type
+  tools_common
+  tools_serialization
+  version
+
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  )
+
+set_property(TARGET lolnerod-remote
+  PROPERTY
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+set_property(TARGET lolnerod-remote
+  PROPERTY
+    OUTPUT_NAME "lolnerod-remote-cpp")
+
+
+install(TARGETS lolnerod-remote DESTINATION bin)

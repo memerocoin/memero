@@ -84,7 +84,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------
   void core_rpc_server::init_options(boost::program_options::options_description& desc)
   {
-    command_line::add_arg(desc, arg_rpc_bind_port);
+    command_line::add_arg(desc, rpc_server::arg_rpc_bind_port);
     cryptonote::rpc_args::init_options(desc, true);
   }
   //------------------------------------------------------------------------------------------------------------------------------
@@ -1456,10 +1456,4 @@ namespace cryptonote
     res.status = CORE_RPC_STATUS_OK;
     return true;
   }
-  //------------------------------------------------------------------------------------------------------------------------------
-  const command_line::arg_descriptor<std::string> core_rpc_server::arg_rpc_bind_port = {
-    "rpc-bind-port"
-    , "Port for RPC server"
-    , std::to_string(cryptonote::mainnet.RPC_DEFAULT_PORT)
-  };
 }  // namespace cryptonote

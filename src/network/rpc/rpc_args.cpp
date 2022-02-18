@@ -106,4 +106,5 @@ namespace cryptonote
 
     return {std::move(config)};
   }
+
 }

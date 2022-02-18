@@ -176,6 +176,13 @@
                     ; program = "${self.defaultPackage.${system}}/bin/lolnerod-cpp"
                     ;
                   }
+
+                ; lolnerod-remote-cpp =
+                  {
+                    type = "app"
+                    ; program = "${self.defaultPackage.${system}}/bin/lolnerod-remote-cpp"
+                    ;
+                  }
                     
                 ; lolnero-cpp =
                     {

@@ -32,6 +32,8 @@
 #include "tools/common/command_line.h"
 #include "tools/epee/include/net/net_ssl.h"
 
+#include "config/network.hpp"
+
 #include <optional>
 
 namespace cryptonote
@@ -73,4 +75,12 @@ namespace cryptonote
     std::vector<std::string> access_control_origins;
     epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
   };
+
+  namespace rpc_server {
+    const command_line::arg_descriptor<std::string> arg_rpc_bind_port = {
+      "rpc-bind-port"
+      , "Port for RPC server"
+      , std::to_string(::cryptonote::mainnet.RPC_DEFAULT_PORT)
+    };
+  }
 }

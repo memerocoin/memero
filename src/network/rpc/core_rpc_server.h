@@ -49,8 +49,6 @@ namespace cryptonote
   {
   public:
 
-    static const command_line::arg_descriptor<std::string> arg_rpc_bind_port;
-
     typedef epee::net_utils::connection_context_base connection_context;
 
     core_rpc_server

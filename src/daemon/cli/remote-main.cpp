@@ -29,10 +29,10 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "command_server.h"
-#include "executor.h"
 #include "command_line_args.h"
 
 #include "network/rpc/rpc_args.h"
+#include "network/rpc/core_rpc_server.h"
 
 #include "config/version/version.hpp"
 
@@ -52,6 +52,7 @@ int main(int argc, char const * argv[])
 
     // Build argument description
     po::options_description all_options("All");
+    po::options_description hidden_options("Hidden");
     po::options_description visible_options("Options");
     po::options_description core_settings("Settings");
     po::positional_options_description positional_options;
@@ -60,17 +61,30 @@ int main(int argc, char const * argv[])
 
       command_line::add_arg(visible_options, command_line::arg_help);
       command_line::add_arg(visible_options, command_line::arg_version);
-      command_line::add_arg(visible_options, daemon_args::arg_config_file);
 
-      // Settings
-      command_line::add_arg(core_settings, daemon_args::arg_log_level);
-      command_line::add_arg(core_settings, daemon_args::arg_max_concurrency);
-      command_line::add_arg(core_settings, daemon_args::arg_non_interactive);
+      const cryptonote::rpc_args::descriptors arg{};
+      command_line::add_arg
+        (
+         visible_options
+           , arg.rpc_bind_ip
+         );
 
-      daemonize::t_executor::init_options(core_settings);
+      command_line::add_arg
+        (
+         visible_options
+         , cryptonote::rpc_server::arg_rpc_bind_port
+         );
 
-      visible_options.add(core_settings);
+
+      // Hidden options
+      command_line::add_arg(hidden_options, daemon_args::arg_command);
+      
+
       all_options.add(visible_options);
+      all_options.add(hidden_options);
+
+      // Positional
+      positional_options.add(daemon_args::arg_command.name, -1); // -1 for unlimited arguments
     }
 
     // Do command line parsing
@@ -90,7 +104,7 @@ int main(int argc, char const * argv[])
     if (command_line::get_arg(vm, command_line::arg_help))
     {
       std::cout << "Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")" << std::endl << std::endl;
-      std::cout << "Usage: " + std::string{argv[0]} + " [options|settings]" << std::endl << std::endl;
+      std::cout << "Usage: " + std::string{argv[0]} + " [daemon_command...]" << std::endl << std::endl;
       std::cout << visible_options << std::endl;
       return 0;
     }
@@ -102,71 +116,49 @@ int main(int argc, char const * argv[])
       return 0;
     }
 
-
-    std::string config = command_line::get_arg(vm, daemon_args::arg_config_file);
-    std::filesystem::path config_path(config);
-    std::error_code ec;
-    if (fs::exists(config_path, ec))
-    {
-      try
-      {
-        po::store(po::parse_config_file<char>(config_path.c_str(), core_settings), vm);
-      }
-      catch (const std::exception &e)
-      {
-        // log system isn't initialized yet
-        std::cerr << "Error parsing config file: " << e.what() << std::endl;
-        throw;
-      }
-    }
-    else if (!command_line::is_arg_defaulted(vm, daemon_args::arg_config_file))
-    {
-      std::cerr << "Can't find config file " << config << std::endl;
-      return 1;
-    }
-
-    // data_dir
-    //   default: e.g. ~/.bitmonero/ or ~/.bitmonero/testnet
-    //   if data-dir argument given:
-    //     absolute path
-    //     relative path: relative to cwd
-
-    // Create data dir if it doesn't exist
-    std::filesystem::path data_dir = std::filesystem::absolute(
-        command_line::get_arg(vm, cryptonote::arg_data_dir));
-
-    // FIXME: not sure on windows implementation default, needs further review
-    //bf::path relative_path_base = daemonizer::get_relative_path_base(vm);
-    fs::path relative_path_base = data_dir;
-
     po::notify(vm);
 
-    // Set log level
-    if (!command_line::is_arg_defaulted(vm, daemon_args::arg_log_level))
+    // If there are positional options, we're running a daemon command
     {
-      epee::mlog_set_log(command_line::get_arg(vm, daemon_args::arg_log_level));
+      auto command = command_line::get_arg(vm, daemon_args::arg_command);
+
+      if (command.size())
+      {
+        const cryptonote::rpc_args::descriptors arg{};
+        auto rpc_ip_str = command_line::get_arg(vm, arg.rpc_bind_ip);
+        auto rpc_port_str = command_line::get_arg
+          (
+           vm
+           , cryptonote::rpc_server::arg_rpc_bind_port
+           );
+
+        uint32_t rpc_ip;
+        uint16_t rpc_port;
+        if (!epee::string_tools::get_ip_int32_from_string(rpc_ip, rpc_ip_str))
+        {
+          std::cerr << "Invalid IP: " << rpc_ip_str << std::endl;
+          return 1;
+        }
+        if (!epee::string_tools::get_xtype_from_string(rpc_port, rpc_port_str))
+        {
+          std::cerr << "Invalid port: " << rpc_port_str << std::endl;
+          return 1;
+        }
+
+        epee::net_utils::ssl_options_t ssl_options = epee::net_utils::ssl_support_t::e_ssl_support_disabled;
+
+        daemonize::t_command_server rpc_commands{rpc_ip, rpc_port, std::move(ssl_options)};
+        if (rpc_commands.process_command_vec(command))
+        {
+          return 0;
+        }
+        else
+        {
+          std::cerr << "Unknown command: " << command.front() << std::endl;
+          return 1;
+        }
+      }
     }
-
-    // after logs initialized
-    tools::create_directories_if_necessary(data_dir.string());
-
-    if (!command_line::is_arg_defaulted(vm, daemon_args::arg_max_concurrency))
-      tools::set_max_concurrency(command_line::get_arg(vm, daemon_args::arg_max_concurrency));
-
-    // logging is now set up
-    LOG_GLOBAL_INFO("Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")");
-
-    LOG_INFO("Moving from main() into the daemonize now.");
-
-    if (command_line::has_arg(vm, daemon_args::arg_non_interactive))
-      {
-        return daemonize::t_executor{}.run_non_interactive(vm);
-      }
-    else
-      {
-        return daemonize::t_executor{}.run_interactive(vm);
-      }
-
   }
   catch (std::exception const & ex)
   {
