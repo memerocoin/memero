@@ -32,11 +32,9 @@
 #include "command_line_args.h"
 
 #include "network/rpc/rpc_args.h"
-#include "daemon/cli/command_parser_executor.h"
+#include "network/rpc/core_rpc_server.h"
 
 #include "config/version/version.hpp"
-
-
 
 
 namespace po = boost::program_options;

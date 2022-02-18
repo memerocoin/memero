@@ -29,9 +29,6 @@
 #include "command_parser_executor.h"
 
 
-
-
-
 namespace daemonize {
 
 using namespace cryptonote;

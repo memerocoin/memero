@@ -1,11 +1,3 @@
-/**
-@file
-@details
-
-@image html images/other/runtime-commands.png
-
-*/
-
 // Copyright (c) 2014-2020, The Monero Project
 //
 // All rights reserved.
@@ -35,7 +27,6 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-
 
 #include "daemon/cli/rpc_command_executor.h"
 

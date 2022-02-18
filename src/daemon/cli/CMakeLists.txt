@@ -28,10 +28,8 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library(lolnerod
-  command_parser_executor.cpp
   daemon.cpp
   executor.cpp
-  rpc_command_executor.cpp
   )
 
 target_link_libraries(lolnerod
@@ -76,6 +74,8 @@ install(TARGETS lolnerod-rpc DESTINATION bin)
 add_executable(lolnerod-cli
   cli-main.cpp
   command_server.cpp
+  command_parser_executor.cpp
+  rpc_command_executor.cpp
   )
 
 target_link_libraries(lolnerod-cli
