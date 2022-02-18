@@ -30,9 +30,9 @@
 
 #include "daemon.h"
 
-#include "daemon/cli/core.h"
-#include "daemon/cli/p2p.h"
-#include "daemon/cli/rpc.h"
+#include "daemon/rpc/core.h"
+#include "daemon/rpc/p2p.h"
+#include "daemon/rpc/rpc.h"
 
 #include "network/rpc/rpc_args.h"
 

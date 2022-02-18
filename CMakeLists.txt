@@ -175,6 +175,7 @@ add_subdirectory(vendor/liblmdb)
 
 ## daemon
 add_subdirectory(src/daemon/database)
+add_subdirectory(src/daemon/rpc)
 add_subdirectory(src/daemon/cli)
 
 ## opencl miner

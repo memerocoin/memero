@@ -29,7 +29,7 @@
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #include "command_server.h"
-#include "command_line_args.h"
+#include "daemon/rpc/command_line_args.h"
 
 #include "network/rpc/rpc_args.h"
 #include "network/rpc/core_rpc_server.h"
