@@ -145,8 +145,6 @@ namespace arg {
 
   const command_line::arg_descriptor<std::string> arg_subaddress_lookahead =
     {"subaddress-lookahead", ("Set subaddress lookahead sizes to <major>:<minor>"), ""};
-
-  const command_line::arg_descriptor< std::vector<std::string> > arg_command = {"command", ""};
 }
 
 } // wallet

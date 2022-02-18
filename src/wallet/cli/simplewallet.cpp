@@ -3236,7 +3236,6 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_params, wallet_args::arg_wallet_file());
   command_line::add_arg(desc_params, arg_generate_new_wallet);
   command_line::add_arg(desc_params, arg_generate_from_spend_key);
-  command_line::add_arg(desc_params, arg_command);
 
   command_line::add_arg(desc_params, arg_restore_deterministic_wallet );
   command_line::add_arg(desc_params, arg_electrum_seed );
@@ -3244,14 +3243,13 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_params, arg_subaddress_lookahead);
 
   po::positional_options_description positional_options;
-  positional_options.add(arg_command.name, -1);
-
   std::optional<po::variables_map> vm;
+
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main
     (
      argc, argv,
-     "lolnero [--open=<filename>|--new=<filename>] [<COMMAND>]",
+     "lolnero [--open=<filename>|--new=<filename>]",
      "",
      desc_params,
      positional_options,
@@ -3274,15 +3272,6 @@ int main(int argc, char* argv[])
   const bool r = w.init(*vm);
   LOG_ERROR_AND_RETURN_UNLESS(r, 1, ("Failed to initialize wallet"));
 
-  std::vector<std::string> command = command_line::get_arg(*vm, arg_command);
-  if (!command.empty())
-  {
-    if (!w.process_command(command))
-      fail_msg_writer() << ("Unknown command: ") << command.front();
-    w.stop();
-    w.deinit();
-  }
-  else
   {
     tools::signal_handler_install([&w](int type) {
       if (tools::password_container::is_prompting.load())
