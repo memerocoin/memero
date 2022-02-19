@@ -132,7 +132,7 @@ main-sync-reuse-debug:
 --p2p-bind-port 41000 \
 --rpc-bind-port 45000 \
 --add-exclusive-node 10.0.0.10 \
---log-level 1
+--log-level 3
 
 main-sync-flake:
 	@rm -rf mainnet/node_sync_flake

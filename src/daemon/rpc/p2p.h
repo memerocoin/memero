@@ -35,6 +35,8 @@
 namespace daemonize
 {
 
+using protocol_handler = cryptonote::t_cryptonote_protocol_handler;
+
 class t_p2p final
 {
 private:

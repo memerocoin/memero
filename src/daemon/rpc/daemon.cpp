@@ -1,131 +1,123 @@
-// Copyright (c) 2014-2020, The Monero Project
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without modification, are
-// permitted provided that the following conditions are met:
-//
-// 1. Redistributions of source code must retain the above copyright notice, this list of
-//    conditions and the following disclaimer.
-//
-// 2. Redistributions in binary form must reproduce the above copyright notice, this list
-//    of conditions and the following disclaimer in the documentation and/or other
-//    materials provided with the distribution.
-//
-// 3. Neither the name of the copyright holder nor the names of its contributors may be
-//    used to endorse or promote products derived from this software without specific
-//    prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
+/*
+
+Copyright 2021 fuwa
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+Parts of this file are originally 
+Copyright (c) 2014-2020, The Monero Project
+
+see: etc/other-licenses/monero/LICENSE
+
+
+Parts of this file are originally 
+copyright (c) 2012-2013 The Cryptonote developers
+
+*/
 
 #include "daemon.h"
 
-#include "daemon/rpc/core.h"
-#include "daemon/rpc/p2p.h"
-#include "daemon/rpc/rpc.h"
-
-#include "network/rpc/rpc_args.h"
-
-
-
 namespace daemonize {
 
-struct t_internals {
-private:
-  t_protocol protocol;
-public:
-  t_core core;
-  t_p2p p2p;
-  t_rpc rpc;
-
-  t_internals(
-      boost::program_options::variables_map const & vm
-    )
-    : core{vm}
-    , protocol{vm, core, command_line::get_arg(vm, cryptonote::arg_offline)}
-    , p2p{vm, protocol}
-    , rpc{vm, core, p2p, command_line::get_arg(vm, cryptonote::rpc_server::arg_rpc_bind_port)}
-    {
-      // Handle circular dependencies
-      protocol.set_p2p_endpoint(p2p.get());
-      core.set_protocol(protocol.get());
-  }
-};
-
-void t_daemon::init_options(boost::program_options::options_description & option_spec)
-{
-  t_core::init_options(option_spec);
-  t_p2p::init_options(option_spec);
-  t_rpc::init_options(option_spec);
-}
-
-t_daemon::t_daemon(
-    boost::program_options::variables_map const & vm
-  )
-  : mp_internals{std::make_unique<t_internals>(vm)}
-{
-}
-
-t_daemon::~t_daemon() = default;
-
-bool t_daemon::run(bool interactive)
-{
-  std::atomic<bool> stop(false), shutdown(false);
-  std::thread stop_thread = std::thread([&stop, &shutdown, this] {
-    while (!stop)
-      epee::misc_utils::sleep_no_w(100);
-    if (shutdown)
-      this->stop_p2p();
-  });
-  epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){
-    stop = true;
-    stop_thread.join();
-  });
-  tools::signal_handler_install([&stop, &shutdown](int){ stop = shutdown = true; });
-
-  try
+  void t_daemon::init_options
+  (boost::program_options::options_description & option_spec)
   {
-    if (!mp_internals->core.run())
-      return false;
+    t_core::init_options(option_spec);
+    t_p2p::init_options(option_spec);
+    t_rpc::init_options(option_spec);
+  }
 
-    mp_internals->rpc.run();
-    mp_internals->p2p.run(); // blocks until p2p goes down
+  t_daemon::t_daemon
+  (
+   boost::program_options::variables_map const & vm
+   )
+    : mp_internals{t_internals(vm)}
+  {
+  }
 
-    mp_internals->rpc.stop();
+  bool t_daemon::run(bool interactive)
+  {
+    std::atomic<bool> stop(false), shutdown(false);
+
+    std::thread stop_thread = std::thread([&stop, &shutdown, this] {
+      while (!stop)
+        epee::misc_utils::sleep_no_w(100);
+      if (shutdown)
+        this->stop_p2p();
+    });
+
+    epee::misc_utils::auto_scope_leave_caller scope_exit_handler =
+      epee::misc_utils::create_scope_leave_handler([&](){
+        stop = true;
+        stop_thread.join();
+      });
+
+    tools::signal_handler_install
+      ([&stop, &shutdown](int){ stop = shutdown = true; });
+
+    try
+      {
+        LOG_GLOBAL_INFO("Starting " << rpc_description << " RPC server...");
+        LOG_ERROR_AND_THROW_UNLESS
+          (
+           mp_internals.rpc.run(2, false)
+           , "Failed to start "
+           << rpc_description
+           << " RPC server."
+           );
+
+        LOG_GLOBAL_INFO(rpc_description << " RPC server started.");
+
+        // blocks until p2p goes down
+        LOG_GLOBAL_INFO("Starting p2p net loop...");
+        mp_internals.p2p.run();
+        LOG_GLOBAL_INFO("p2p net loop stopped");
+
+        stop_rpc();
+
+        return true;
+      }
+    catch (std::exception const & ex)
+      {
+        LOG_FATAL("Uncaught exception! " << ex.what());
+        return false;
+      }
+    catch (...)
+      {
+        LOG_FATAL("Uncaught exception!");
+        return false;
+      }
+  }
+
+  void t_daemon::stop_rpc() {
+    LOG_GLOBAL_INFO
+      ("Stopping " << rpc_description << " RPC server...");
+    mp_internals.rpc.send_stop_signal();
+    mp_internals.rpc.timed_wait_server_stop(5000);
     LOG_GLOBAL_INFO("Node stopped.");
-    return true;
   }
-  catch (std::exception const & ex)
-  {
-    LOG_FATAL("Uncaught exception! " << ex.what());
-    return false;
-  }
-  catch (...)
-  {
-    LOG_FATAL("Uncaught exception!");
-    return false;
-  }
-}
 
-void t_daemon::stop()
-{
-  stop_p2p();
-  mp_internals->rpc.stop();
-}
+  void t_daemon::stop()
+  {
+    stop_p2p();
+    stop_rpc();
+  }
 
-void t_daemon::stop_p2p()
-{
-  mp_internals->p2p.stop();
-}
+  void t_daemon::stop_p2p()
+  {
+    mp_internals.p2p.send_stop_signal();
+  }
 
 } // namespace daemonize
