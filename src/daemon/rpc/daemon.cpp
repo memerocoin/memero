@@ -40,6 +40,40 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 namespace daemonize {
 
+  t_daemon::~t_daemon()
+  {
+    LOG_GLOBAL_INFO("Deinitializing rpc ...");
+    try {
+      rpc.deinit();
+    } catch (...) {
+      LOG_ERROR("Failed to deinitialize rpc ...");
+    }
+
+    LOG_GLOBAL_INFO("Deinitializing p2p ...");
+    try {
+      p2p.deinit();
+    } catch (...) {
+      LOG_ERROR("Failed to deinitialize p2p ...");
+    }
+
+    LOG_GLOBAL_INFO("Deinitializing core...");
+    try {
+      core.deinit();
+      core.set_cryptonote_protocol(nullptr);
+    } catch (...) {
+      LOG_ERROR("Failed to deinitialize core...");
+    }
+
+    LOG_GLOBAL_INFO("Deinitializing protocol ...");
+    try {
+      protocol.deinit();
+      protocol.set_p2p_endpoint(nullptr);
+      LOG_GLOBAL_INFO("Cryptonote stopped successfully.");
+    } catch (...) {
+      LOG_ERROR("Failed to deinitialize protocol ...");
+    }
+  }
+
   t_daemon::t_daemon
   (
    boost::program_options::variables_map const & vm
@@ -56,8 +90,18 @@ namespace daemonize {
     protocol.set_p2p_endpoint(&p2p);
     core.set_cryptonote_protocol(&protocol);
 
-    LOG_GLOBAL_INFO("Initializing Core...");
+    LOG_GLOBAL_INFO("Initializing cryptonote protocol...");
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       protocol.init(vm)
+       , "Failed to initialize cryptonote protocol."
+       );
 
+    LOG_GLOBAL_INFO("Cryptonote protocol initialized.");
+
+
+
+    LOG_GLOBAL_INFO("Initializing Core...");
     LOG_ERROR_AND_THROW_UNLESS
       (
        core.init(vm)
@@ -66,15 +110,6 @@ namespace daemonize {
     LOG_GLOBAL_INFO("Core initialized.");
 
 
-    LOG_GLOBAL_INFO("Initializing cryptonote protocol...");
-
-    LOG_ERROR_AND_THROW_UNLESS
-      (
-       protocol.init(vm)
-       , "Failed to initialize cryptonote protocol."
-       );
-
-    LOG_GLOBAL_INFO("Cryptonote protocol initialized.");
 
     LOG_GLOBAL_INFO("Initializing p2p server...");
     LOG_ERROR_AND_THROW_UNLESS

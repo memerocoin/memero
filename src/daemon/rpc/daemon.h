@@ -66,6 +66,8 @@ namespace daemonize {
      boost::program_options::variables_map const & vm
      );
 
+    ~t_daemon();
+
     bool run(bool interactive = false);
     void stop();
   };
