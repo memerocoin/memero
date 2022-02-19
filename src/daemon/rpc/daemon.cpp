@@ -39,38 +39,43 @@ copyright (c) 2012-2013 The Cryptonote developers
 #include "tools/epee/include/logging.hpp"
 
 namespace daemonize {
+  constexpr std::string_view protocol_str = "protocol";
+  constexpr std::string_view core_str = "core";
+  constexpr std::string_view p2p_str = "P2P";
+  constexpr std::string_view rpc_str = "RPC";
+  constexpr std::string_view cryptonote_str = "CryptoNote";
 
   t_daemon::~t_daemon()
   {
-    LOG_GLOBAL_INFO("Deinitializing rpc ...");
+    LOG_GLOBAL_INFO("Deinitializing " << rpc_str << " ...");
     try {
       rpc.deinit();
     } catch (...) {
-      LOG_ERROR("Failed to deinitialize rpc ...");
+      LOG_ERROR("Failed to deinitialize " << rpc_str << " ...");
     }
 
-    LOG_GLOBAL_INFO("Deinitializing p2p ...");
+    LOG_GLOBAL_INFO("Deinitializing " << p2p_str << " ...");
     try {
       p2p.deinit();
     } catch (...) {
-      LOG_ERROR("Failed to deinitialize p2p ...");
+      LOG_ERROR("Failed to deinitialize " << p2p_str << " ...");
     }
 
-    LOG_GLOBAL_INFO("Deinitializing core...");
+    LOG_GLOBAL_INFO("Deinitializing " << core_str << " ...");
     try {
       core.deinit();
       core.set_cryptonote_protocol(nullptr);
     } catch (...) {
-      LOG_ERROR("Failed to deinitialize core...");
+      LOG_ERROR("Failed to deinitialize " << core_str << " ...");
     }
 
-    LOG_GLOBAL_INFO("Deinitializing protocol ...");
+    LOG_GLOBAL_INFO("Deinitializing " << protocol_str << " ...");
     try {
       protocol.deinit();
       protocol.set_p2p_endpoint(nullptr);
-      LOG_GLOBAL_INFO("Cryptonote stopped successfully.");
+      LOG_GLOBAL_INFO(cryptonote_str << " stopped successfully.");
     } catch (...) {
-      LOG_ERROR("Failed to deinitialize protocol ...");
+      LOG_ERROR("Failed to deinitialize " << protocol_str << " ...");
     }
   }
 
@@ -90,34 +95,33 @@ namespace daemonize {
     protocol.set_p2p_endpoint(&p2p);
     core.set_cryptonote_protocol(&protocol);
 
-    LOG_GLOBAL_INFO("Initializing cryptonote protocol...");
+    LOG_GLOBAL_INFO("Initializing " << protocol_str << " ...");
     LOG_ERROR_AND_THROW_UNLESS
       (
        protocol.init(vm)
-       , "Failed to initialize cryptonote protocol."
+       , "Failed to initialize " << protocol_str << "."
        );
 
-    LOG_GLOBAL_INFO("Cryptonote protocol initialized.");
+    LOG_GLOBAL_INFO(protocol_str << " initialized.");
 
 
 
-    LOG_GLOBAL_INFO("Initializing Core...");
+    LOG_GLOBAL_INFO("Initializing " << core_str << " ...");
     LOG_ERROR_AND_THROW_UNLESS
       (
        core.init(vm)
-       , "Failed to initialize Core"
+       , "Failed to initialize " << core_str
        );
-    LOG_GLOBAL_INFO("Core initialized.");
+    LOG_GLOBAL_INFO(core_str << " initialized.");
 
 
-
-    LOG_GLOBAL_INFO("Initializing p2p server...");
+    LOG_GLOBAL_INFO("Initializing " << p2p_str << " ...");
     LOG_ERROR_AND_THROW_UNLESS
       (
        p2p.init(vm)
-       , "Failed to initialize p2p server."
+       , "Failed to initialize " << p2p_str << "."
        );
-    LOG_GLOBAL_INFO("p2p server initialized.");
+    LOG_GLOBAL_INFO(p2p_str << " initialized.");
 
 
     const std::string rpc_port =
@@ -128,15 +132,19 @@ namespace daemonize {
        );
 
     LOG_GLOBAL_INFO
-      ("Initializing " << rpc_description << " RPC server...");
+      ("Initializing " << rpc_str << " ...");
 
     LOG_ERROR_AND_THROW_UNLESS
       (
        rpc.init(vm, rpc_port)
        , "Failed to initialize "
-       << rpc_description
-       << " RPC server."
+       << rpc_str
+       << "."
        );
+
+    LOG_GLOBAL_INFO(rpc_str << " initialized.");
+
+    LOG_GLOBAL_INFO(cryptonote_str << " initialized.");
   }
 
 
