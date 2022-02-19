@@ -55,7 +55,7 @@ namespace daemonize {
   }
 
   void deinit_done_msg(const std::string_view x) {
-    LOG_GLOBAL_INFO(x << " deinitialized");
+    LOG_INFO(x << " deinitialized");
   }
 
   void deinit_error_msg(const std::string_view x) {
@@ -104,7 +104,7 @@ namespace daemonize {
   }
 
   void init_done_msg(const std::string_view x) {
-    LOG_GLOBAL_INFO(x << " initialized");
+    LOG_INFO(x << " initialized");
   }
 
   void init_report(const bool r, const std::string_view x) {
