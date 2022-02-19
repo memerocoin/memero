@@ -29,23 +29,81 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 #include "daemon.h"
 
-namespace daemonize {
+#include "network/p2p/net_node.h"
+#include "network/rpc/core_rpc_server.h"
+#include "network/rpc/rpc_args.h"
 
-  void t_daemon::init_options
-  (boost::program_options::options_description & option_spec)
-  {
-    t_core::init_options(option_spec);
-    t_p2p::init_options(option_spec);
-    t_rpc::init_options(option_spec);
-  }
+#include "cryptonote/core/cryptonote_core.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
+
+#include "tools/epee/include/logging.hpp"
+
+namespace daemonize {
 
   t_daemon::t_daemon
   (
    boost::program_options::variables_map const & vm
    )
-    : mp_internals{t_internals(vm)}
+    : p2p{protocol}
+    , rpc{core, p2p}
+    , protocol
+    {
+      core
+      , nullptr
+      , command_line::get_arg(vm, cryptonote::arg_offline)
+    }
   {
+    protocol.set_p2p_endpoint(&p2p);
+    core.set_cryptonote_protocol(&protocol);
+
+    LOG_GLOBAL_INFO("Initializing Core...");
+
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       core.init(vm)
+       , "Failed to initialize Core"
+       );
+    LOG_GLOBAL_INFO("Core initialized.");
+
+
+    LOG_GLOBAL_INFO("Initializing cryptonote protocol...");
+
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       protocol.init(vm)
+       , "Failed to initialize cryptonote protocol."
+       );
+
+    LOG_GLOBAL_INFO("Cryptonote protocol initialized.");
+
+    LOG_GLOBAL_INFO("Initializing p2p server...");
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       p2p.init(vm)
+       , "Failed to initialize p2p server."
+       );
+    LOG_GLOBAL_INFO("p2p server initialized.");
+
+
+    const std::string rpc_port =
+      command_line::get_arg
+      (
+       vm
+       , cryptonote::rpc_server::arg_rpc_bind_port
+       );
+
+    LOG_GLOBAL_INFO
+      ("Initializing " << rpc_description << " RPC server...");
+
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       rpc.init(vm, rpc_port)
+       , "Failed to initialize "
+       << rpc_description
+       << " RPC server."
+       );
   }
+
 
   bool t_daemon::run(bool interactive)
   {
@@ -72,7 +130,7 @@ namespace daemonize {
         LOG_GLOBAL_INFO("Starting " << rpc_description << " RPC server...");
         LOG_ERROR_AND_THROW_UNLESS
           (
-           mp_internals.rpc.run(2, false)
+           rpc.run(2, false)
            , "Failed to start "
            << rpc_description
            << " RPC server."
@@ -82,7 +140,7 @@ namespace daemonize {
 
         // blocks until p2p goes down
         LOG_GLOBAL_INFO("Starting p2p net loop...");
-        mp_internals.p2p.run();
+        p2p.run();
         LOG_GLOBAL_INFO("p2p net loop stopped");
 
         stop_rpc();
@@ -104,8 +162,8 @@ namespace daemonize {
   void t_daemon::stop_rpc() {
     LOG_GLOBAL_INFO
       ("Stopping " << rpc_description << " RPC server...");
-    mp_internals.rpc.send_stop_signal();
-    mp_internals.rpc.timed_wait_server_stop(5000);
+    rpc.send_stop_signal();
+    rpc.timed_wait_server_stop(5000);
     LOG_GLOBAL_INFO("Node stopped.");
   }
 
@@ -117,7 +175,7 @@ namespace daemonize {
 
   void t_daemon::stop_p2p()
   {
-    mp_internals.p2p.send_stop_signal();
+    p2p.send_stop_signal();
   }
 
 } // namespace daemonize

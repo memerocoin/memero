@@ -29,11 +29,8 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
 
-#include "daemon/rpc/core.h"
-#include "daemon/rpc/p2p.h"
-#include "daemon/rpc/rpc.h"
-
-#include "network/rpc/rpc_args.h"
+#include "network/rpc/core_rpc_server.h"
+#include "cryptonote/protocol/cryptonote_protocol_handler.h"
 
 #include <boost/program_options.hpp>
 
@@ -44,94 +41,30 @@ namespace daemonize {
 
   constexpr std::string_view rpc_description = "lolnero daemon";
 
-  struct t_internals
-  {
+  class t_daemon {
+  public:
     cryptonote::core core = {nullptr};
     node_server p2p;
     cryptonote::core_rpc_server rpc;
     protocol_handler protocol;
 
-    t_internals
-    (
-     boost::program_options::variables_map const & vm
-     )
-      : p2p{protocol}
-      , rpc{core, p2p}
-      , protocol
-      {
-        core
-        , nullptr
-        , command_line::get_arg(vm, cryptonote::arg_offline)
-      }
-    {
-      protocol.set_p2p_endpoint(&p2p);
-      core.set_cryptonote_protocol(&protocol);
-
-      LOG_GLOBAL_INFO("Initializing Core...");
-
-      LOG_ERROR_AND_THROW_UNLESS
-      (
-       core.init(vm)
-       , "Failed to initialize Core"
-       );
-      LOG_GLOBAL_INFO("Core initialized.");
-
-
-      LOG_GLOBAL_INFO("Initializing cryptonote protocol...");
-
-      LOG_ERROR_AND_THROW_UNLESS
-      (
-       protocol.init(vm)
-       , "Failed to initialize cryptonote protocol."
-       );
-
-      LOG_GLOBAL_INFO("Cryptonote protocol initialized.");
-
-      LOG_GLOBAL_INFO("Initializing p2p server...");
-      LOG_ERROR_AND_THROW_UNLESS
-        (
-         p2p.init(vm)
-         , "Failed to initialize p2p server."
-         );
-      LOG_GLOBAL_INFO("p2p server initialized.");
-
-
-      const std::string rpc_port =
-        command_line::get_arg
-        (
-         vm
-         , cryptonote::rpc_server::arg_rpc_bind_port
-         );
-
-      LOG_GLOBAL_INFO
-        ("Initializing " << rpc_description << " RPC server...");
-
-      LOG_ERROR_AND_THROW_UNLESS
-        (
-         rpc.init(vm, rpc_port)
-         , "Failed to initialize "
-         << rpc_description
-         << " RPC server."
-         );
-
-    }
-  };
-
-
-  class t_daemon {
-  public:
     static void init_options
-    (boost::program_options::options_description & option_spec);
+    (boost::program_options::options_description & option_spec)
+    {
+      cryptonote::core::init_options(option_spec);
+      node_server::init_options(option_spec);
+      cryptonote::core_rpc_server::init_options(option_spec);
+    }
 
   private:
     void stop_p2p();
     void stop_rpc();
-  private:
-    t_internals mp_internals;
+
   public:
-    t_daemon(
-             boost::program_options::variables_map const & vm
-             );
+    t_daemon
+    (
+     boost::program_options::variables_map const & vm
+     );
 
     bool run(bool interactive = false);
     void stop();
