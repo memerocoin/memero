@@ -29,7 +29,6 @@
 
 add_executable(lolnerod-rpc
   rpc-main.cpp
-  executor.cpp
   daemon.cpp
   )
 

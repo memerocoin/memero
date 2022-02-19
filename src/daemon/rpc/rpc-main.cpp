@@ -28,8 +28,9 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "executor.h"
 #include "command_line_args.h"
+
+#include "daemon/rpc/daemon.h"
 
 #include "network/rpc/rpc_args.h"
 #include "network/rpc/core_rpc_server.h"
@@ -64,7 +65,7 @@ int main(int argc, char const * argv[])
       command_line::add_arg(core_settings, daemon_args::arg_log_level);
       command_line::add_arg(core_settings, daemon_args::arg_max_concurrency);
 
-      daemonize::t_executor::init_options(core_settings);
+      daemonize::t_daemon::init_options(core_settings);
 
       visible_options.add(core_settings);
       all_options.add(visible_options);
@@ -153,9 +154,7 @@ int main(int argc, char const * argv[])
     // logging is now set up
     LOG_GLOBAL_INFO("Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")");
 
-    LOG_INFO("Moving from main() into the daemonize now.");
-
-    return daemonize::t_executor{}.run(vm);
+    return daemonize::t_daemon{vm}.run();
   }
   catch (std::exception const & ex)
   {
