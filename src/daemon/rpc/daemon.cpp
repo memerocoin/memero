@@ -210,12 +210,6 @@ namespace daemonize {
     LOG_GLOBAL_INFO("Node stopped.");
   }
 
-  void t_daemon::stop()
-  {
-    stop_p2p();
-    stop_rpc();
-  }
-
   void t_daemon::stop_p2p()
   {
     p2p.send_stop_signal();

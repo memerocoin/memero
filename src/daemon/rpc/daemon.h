@@ -69,6 +69,5 @@ namespace daemonize {
     ~t_daemon();
 
     bool run(bool interactive = false);
-    void stop();
   };
 }
