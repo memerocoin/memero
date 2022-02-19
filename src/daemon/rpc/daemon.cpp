@@ -56,7 +56,7 @@ namespace daemonize {
   }
 
   void deinit_done_msg(const std::string_view x) {
-    LOG_GLOBAL_INFO(x << " deinitialize.");
+    LOG_GLOBAL_INFO(x << " deinitialized");
   }
 
   void deinit_error_msg(const std::string_view x) {
@@ -105,14 +105,14 @@ namespace daemonize {
   }
 
   void init_done_msg(const std::string_view x) {
-    LOG_GLOBAL_INFO(x << " initialized.");
+    LOG_GLOBAL_INFO(x << " initialized");
   }
 
   void init_report(const bool r, const std::string_view x) {
     LOG_ERROR_AND_THROW_UNLESS
       (
        r
-       , "Failed to initialize " << x << "."
+       , "Failed to initialize " << x
        );
 
     init_done_msg(x);
@@ -185,10 +185,9 @@ namespace daemonize {
            rpc.run(2, false)
            , "Failed to start "
            << rpc_description
-           << "."
            );
 
-        LOG_GLOBAL_INFO(rpc_description << " started.");
+        LOG_GLOBAL_INFO(rpc_description << " started");
 
         // blocks until p2p goes down
         LOG_GLOBAL_INFO("Starting " << p2p_description << " ...");
@@ -216,7 +215,7 @@ namespace daemonize {
       ("Stopping " << rpc_description << " ...");
     rpc.send_stop_signal();
     rpc.timed_wait_server_stop(5000);
-    LOG_GLOBAL_INFO(rpc_description << " stopped.");
+    LOG_GLOBAL_INFO(rpc_description << " stopped");
   }
 
   void t_daemon::stop_p2p()
