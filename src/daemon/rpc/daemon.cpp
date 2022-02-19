@@ -88,11 +88,10 @@ namespace daemonize {
     , protocol
     {
       core
-      , nullptr
+      , &p2p
       , command_line::get_arg(vm, cryptonote::arg_offline)
     }
   {
-    protocol.set_p2p_endpoint(&p2p);
     core.set_cryptonote_protocol(&protocol);
 
     LOG_GLOBAL_INFO("Initializing " << protocol_str << " ...");
