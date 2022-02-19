@@ -80,6 +80,15 @@ namespace daemonize {
       deinit_error_msg(p2p_str);
     }
 
+    deinit_msg(protocol_str);
+    try {
+      protocol.deinit();
+      protocol.set_p2p_endpoint(nullptr);
+      deinit_done_msg(protocol_str);
+    } catch (...) {
+      deinit_error_msg(protocol_str);
+    }
+
     deinit_msg(core_str);
     try {
       core.deinit();
@@ -89,14 +98,6 @@ namespace daemonize {
       deinit_error_msg(core_str);
     }
 
-    deinit_msg(protocol_str);
-    try {
-      protocol.deinit();
-      protocol.set_p2p_endpoint(nullptr);
-      deinit_done_msg(protocol_str);
-    } catch (...) {
-      deinit_error_msg(protocol_str);
-    }
   }
 
   void init_msg(const std::string_view x) {
@@ -132,11 +133,11 @@ namespace daemonize {
   {
     core.set_cryptonote_protocol(&protocol);
 
-    init_msg(protocol_str);
-    init_report(protocol.init(vm), protocol_str);
-
     init_msg(core_str);
     init_report(core.init(vm), core_str);
+
+    init_msg(protocol_str);
+    init_report(protocol.init(vm), protocol_str);
 
     init_msg(p2p_str);
     init_report(p2p.init(vm), p2p_str);
@@ -155,24 +156,6 @@ namespace daemonize {
 
   bool t_daemon::run()
   {
-    std::atomic<bool> stop(false), shutdown(false);
-
-    std::thread stop_thread = std::thread([&stop, &shutdown, this] {
-      while (!stop)
-        epee::misc_utils::sleep_no_w(100);
-      if (shutdown)
-        this->stop_p2p();
-    });
-
-    epee::misc_utils::auto_scope_leave_caller scope_exit_handler =
-      epee::misc_utils::create_scope_leave_handler([&](){
-        stop = true;
-        stop_thread.join();
-      });
-
-    tools::signal_handler_install
-      ([&stop, &shutdown](int){ stop = shutdown = true; });
-
     try
       {
         LOG_GLOBAL_INFO
@@ -186,11 +169,17 @@ namespace daemonize {
 
         LOG_INFO(rpc_description << " started");
 
+        tools::signal_handler_install([this](int type) {
+          LOG_INFO("Daemon interrupted with signal: " << type);
+
+          p2p.send_stop_signal();
+        });
+
         // blocks until p2p goes down
         LOG_GLOBAL_INFO("Starting " << p2p_description << " ...");
         p2p.run();
-        LOG_GLOBAL_INFO(p2p_description << " stopped");
 
+        LOG_GLOBAL_INFO(p2p_description << " stopped");
         stop_rpc();
 
         return true;
