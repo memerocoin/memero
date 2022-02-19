@@ -222,4 +222,12 @@ namespace daemonize {
     p2p.send_stop_signal();
   }
 
+  void t_daemon::init_options
+  (boost::program_options::options_description & option_spec)
+  {
+    cryptonote::core::init_options(option_spec);
+    nodetool::node_server::init_options(option_spec);
+    cryptonote::core_rpc_server::init_options(option_spec);
+  }
+
 } // namespace daemonize
