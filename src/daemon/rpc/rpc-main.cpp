@@ -155,7 +155,7 @@ int main(int argc, char const * argv[])
 
     LOG_INFO("Moving from main() into the daemonize now.");
 
-    return daemonize::t_executor{}.run_non_interactive(vm);
+    return daemonize::t_executor{}.run(vm);
   }
   catch (std::exception const & ex)
   {

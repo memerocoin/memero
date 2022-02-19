@@ -68,6 +68,6 @@ namespace daemonize {
 
     ~t_daemon();
 
-    bool run(bool interactive = false);
+    bool run();
   };
 }

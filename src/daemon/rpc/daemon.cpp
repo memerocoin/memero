@@ -148,7 +148,7 @@ namespace daemonize {
   }
 
 
-  bool t_daemon::run(bool interactive)
+  bool t_daemon::run()
   {
     std::atomic<bool> stop(false), shutdown(false);
 
@@ -170,7 +170,8 @@ namespace daemonize {
 
     try
       {
-        LOG_GLOBAL_INFO("Starting " << rpc_description << " RPC server...");
+        LOG_GLOBAL_INFO
+          ("Starting " << rpc_description << " RPC server...");
         LOG_ERROR_AND_THROW_UNLESS
           (
            rpc.run(2, false)
