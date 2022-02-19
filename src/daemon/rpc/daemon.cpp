@@ -51,40 +51,71 @@ namespace daemonize {
   constexpr std::string_view p2p_description =
     "Lolnero daemon P2P server";
 
+  void deinit_msg(const std::string_view x) {
+    LOG_GLOBAL_INFO("Deinitializing " << x << " ...");
+  }
+
+  void deinit_done_msg(const std::string_view x) {
+    LOG_GLOBAL_INFO(x << " deinitialize.");
+  }
+
+  void deinit_error_msg(const std::string_view x) {
+    LOG_ERROR("Failed to deinitialize " << x << " ...");
+  }
 
   t_daemon::~t_daemon()
   {
-    LOG_GLOBAL_INFO("Deinitializing " << rpc_str << " ...");
+    deinit_msg(rpc_str);
     try {
       rpc.deinit();
+      deinit_done_msg(rpc_str);
     } catch (...) {
-      LOG_ERROR("Failed to deinitialize " << rpc_str << " ...");
+      deinit_error_msg(rpc_str);
     }
 
-    LOG_GLOBAL_INFO("Deinitializing " << p2p_str << " ...");
+    deinit_msg(p2p_str);
     try {
       p2p.deinit();
+      deinit_done_msg(p2p_str);
     } catch (...) {
-      LOG_ERROR("Failed to deinitialize " << p2p_str << " ...");
+      deinit_error_msg(p2p_str);
     }
 
-    LOG_GLOBAL_INFO("Deinitializing " << core_str << " ...");
+    deinit_msg(core_str);
     try {
       core.deinit();
       core.set_cryptonote_protocol(nullptr);
+      deinit_done_msg(core_str);
     } catch (...) {
-      LOG_ERROR("Failed to deinitialize " << core_str << " ...");
+      deinit_error_msg(core_str);
     }
 
-    LOG_GLOBAL_INFO("Deinitializing " << protocol_str << " ...");
+    deinit_msg(protocol_str);
     try {
       protocol.deinit();
       protocol.set_p2p_endpoint(nullptr);
-      LOG_GLOBAL_INFO
-        (cryptonote_str << " deinitialize.");
+      deinit_done_msg(protocol_str);
     } catch (...) {
-      LOG_ERROR("Failed to deinitialize " << protocol_str << " ...");
+      deinit_error_msg(protocol_str);
     }
+  }
+
+  void init_msg(const std::string_view x) {
+    LOG_GLOBAL_INFO("Initializing " << x << " ...");
+  }
+
+  void init_done_msg(const std::string_view x) {
+    LOG_GLOBAL_INFO(x << " initialized.");
+  }
+
+  void init_report(const bool r, const std::string_view x) {
+    LOG_ERROR_AND_THROW_UNLESS
+      (
+       r
+       , "Failed to initialize " << x << "."
+       );
+
+    init_done_msg(x);
   }
 
   t_daemon::t_daemon
@@ -102,34 +133,14 @@ namespace daemonize {
   {
     core.set_cryptonote_protocol(&protocol);
 
-    LOG_GLOBAL_INFO("Initializing " << protocol_str << " ...");
-    LOG_ERROR_AND_THROW_UNLESS
-      (
-       protocol.init(vm)
-       , "Failed to initialize " << protocol_str << "."
-       );
+    init_msg(protocol_str);
+    init_report(protocol.init(vm), protocol_str);
 
-    LOG_GLOBAL_INFO(protocol_str << " initialized.");
+    init_msg(core_str);
+    init_report(core.init(vm), core_str);
 
-
-
-    LOG_GLOBAL_INFO("Initializing " << core_str << " ...");
-    LOG_ERROR_AND_THROW_UNLESS
-      (
-       core.init(vm)
-       , "Failed to initialize " << core_str
-       );
-    LOG_GLOBAL_INFO(core_str << " initialized.");
-
-
-    LOG_GLOBAL_INFO("Initializing " << p2p_str << " ...");
-    LOG_ERROR_AND_THROW_UNLESS
-      (
-       p2p.init(vm)
-       , "Failed to initialize " << p2p_str << "."
-       );
-    LOG_GLOBAL_INFO(p2p_str << " initialized.");
-
+    init_msg(p2p_str);
+    init_report(p2p.init(vm), p2p_str);
 
     const std::string rpc_port =
       command_line::get_arg
@@ -138,20 +149,10 @@ namespace daemonize {
        , cryptonote::rpc_server::arg_rpc_bind_port
        );
 
-    LOG_GLOBAL_INFO
-      ("Initializing " << rpc_str << " ...");
+    init_msg(rpc_str);
+    init_report(rpc.init(vm, rpc_port), rpc_str);
 
-    LOG_ERROR_AND_THROW_UNLESS
-      (
-       rpc.init(vm, rpc_port)
-       , "Failed to initialize "
-       << rpc_str
-       << "."
-       );
-
-    LOG_GLOBAL_INFO(rpc_str << " initialized.");
-
-    LOG_GLOBAL_INFO(cryptonote_str << " initialized.");
+    init_done_msg(cryptonote_str);
   }
 
 
@@ -184,10 +185,10 @@ namespace daemonize {
            rpc.run(2, false)
            , "Failed to start "
            << rpc_description
-           << " RPC server."
+           << "."
            );
 
-        // LOG_GLOBAL_INFO(rpc_description << " started.");
+        LOG_GLOBAL_INFO(rpc_description << " started.");
 
         // blocks until p2p goes down
         LOG_GLOBAL_INFO("Starting " << p2p_description << " ...");
