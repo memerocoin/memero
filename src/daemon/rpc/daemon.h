@@ -39,8 +39,6 @@ namespace daemonize {
   using protocol_handler = cryptonote::t_cryptonote_protocol_handler;
   using node_server = nodetool::node_server;
 
-  constexpr std::string_view rpc_description = "lolnero daemon";
-
   class t_daemon {
   public:
     cryptonote::core core = {nullptr};

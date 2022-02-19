@@ -45,6 +45,13 @@ namespace daemonize {
   constexpr std::string_view rpc_str = "RPC";
   constexpr std::string_view cryptonote_str = "CryptoNote";
 
+  constexpr std::string_view rpc_description =
+    "Lolnero daemon RPC server";
+
+  constexpr std::string_view p2p_description =
+    "Lolnero daemon P2P server";
+
+
   t_daemon::~t_daemon()
   {
     LOG_GLOBAL_INFO("Deinitializing " << rpc_str << " ...");
@@ -73,7 +80,8 @@ namespace daemonize {
     try {
       protocol.deinit();
       protocol.set_p2p_endpoint(nullptr);
-      LOG_GLOBAL_INFO(cryptonote_str << " stopped successfully.");
+      LOG_GLOBAL_INFO
+        (cryptonote_str << " deinitialize.");
     } catch (...) {
       LOG_ERROR("Failed to deinitialize " << protocol_str << " ...");
     }
@@ -170,7 +178,7 @@ namespace daemonize {
     try
       {
         LOG_GLOBAL_INFO
-          ("Starting " << rpc_description << " RPC server...");
+          ("Starting " << rpc_description << " ...");
         LOG_ERROR_AND_THROW_UNLESS
           (
            rpc.run(2, false)
@@ -179,12 +187,12 @@ namespace daemonize {
            << " RPC server."
            );
 
-        LOG_GLOBAL_INFO(rpc_description << " RPC server started.");
+        // LOG_GLOBAL_INFO(rpc_description << " started.");
 
         // blocks until p2p goes down
-        LOG_GLOBAL_INFO("Starting p2p net loop...");
+        LOG_GLOBAL_INFO("Starting " << p2p_description << " ...");
         p2p.run();
-        LOG_GLOBAL_INFO("p2p net loop stopped");
+        LOG_GLOBAL_INFO(p2p_description << " stopped");
 
         stop_rpc();
 
@@ -204,14 +212,16 @@ namespace daemonize {
 
   void t_daemon::stop_rpc() {
     LOG_GLOBAL_INFO
-      ("Stopping " << rpc_description << " RPC server...");
+      ("Stopping " << rpc_description << " ...");
     rpc.send_stop_signal();
     rpc.timed_wait_server_stop(5000);
-    LOG_GLOBAL_INFO("Node stopped.");
+    LOG_GLOBAL_INFO(rpc_description << " stopped.");
   }
 
   void t_daemon::stop_p2p()
   {
+    LOG_GLOBAL_INFO
+      ("Stopping " << p2p_description << " ...");
     p2p.send_stop_signal();
   }
 
