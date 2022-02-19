@@ -35,30 +35,16 @@ copyright (c) 2012-2013 The Cryptonote developers
 #include <boost/program_options.hpp>
 
 namespace daemonize {
-
-  using protocol_handler = cryptonote::t_cryptonote_protocol_handler;
-  using node_server = nodetool::node_server;
-
   class t_daemon {
   public:
-    cryptonote::core core = {nullptr};
-    node_server p2p;
-    cryptonote::core_rpc_server rpc;
-    protocol_handler protocol;
-
     static void init_options
     (boost::program_options::options_description & option_spec)
     {
       cryptonote::core::init_options(option_spec);
-      node_server::init_options(option_spec);
+      nodetool::node_server::init_options(option_spec);
       cryptonote::core_rpc_server::init_options(option_spec);
     }
 
-  private:
-    void stop_p2p();
-    void stop_rpc();
-
-  public:
     t_daemon
     (
      boost::program_options::variables_map const & vm
@@ -67,5 +53,14 @@ namespace daemonize {
     ~t_daemon();
 
     bool run();
+
+  private:
+    cryptonote::core core = {nullptr};
+    nodetool::node_server p2p;
+    cryptonote::core_rpc_server rpc;
+    cryptonote::t_cryptonote_protocol_handler protocol;
+
+    void stop_p2p();
+    void stop_rpc();
   };
 }
