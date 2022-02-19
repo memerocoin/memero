@@ -43,7 +43,6 @@ namespace daemonize {
   constexpr std::string_view core_str = "core";
   constexpr std::string_view p2p_str = "P2P";
   constexpr std::string_view rpc_str = "RPC";
-  constexpr std::string_view cryptonote_str = "CryptoNote";
 
   constexpr std::string_view rpc_description =
     "Lolnero daemon RPC server";
@@ -52,7 +51,7 @@ namespace daemonize {
     "Lolnero daemon P2P server";
 
   void deinit_msg(const std::string_view x) {
-    LOG_GLOBAL_INFO("Deinitializing " << x << " ...");
+    LOG_INFO("Deinitializing " << x << " ...");
   }
 
   void deinit_done_msg(const std::string_view x) {
@@ -101,7 +100,7 @@ namespace daemonize {
   }
 
   void init_msg(const std::string_view x) {
-    LOG_GLOBAL_INFO("Initializing " << x << " ...");
+    LOG_INFO("Initializing " << x << " ...");
   }
 
   void init_done_msg(const std::string_view x) {
@@ -151,8 +150,6 @@ namespace daemonize {
 
     init_msg(rpc_str);
     init_report(rpc.init(vm, rpc_port), rpc_str);
-
-    init_done_msg(cryptonote_str);
   }
 
 
@@ -187,7 +184,7 @@ namespace daemonize {
            << rpc_description
            );
 
-        LOG_GLOBAL_INFO(rpc_description << " started");
+        LOG_INFO(rpc_description << " started");
 
         // blocks until p2p goes down
         LOG_GLOBAL_INFO("Starting " << p2p_description << " ...");
@@ -211,7 +208,7 @@ namespace daemonize {
   }
 
   void t_daemon::stop_rpc() {
-    LOG_GLOBAL_INFO
+    LOG_INFO
       ("Stopping " << rpc_description << " ...");
     rpc.send_stop_signal();
     rpc.timed_wait_server_stop(5000);
@@ -220,7 +217,7 @@ namespace daemonize {
 
   void t_daemon::stop_p2p()
   {
-    LOG_GLOBAL_INFO
+    LOG_INFO
       ("Stopping " << p2p_description << " ...");
     p2p.send_stop_signal();
   }
