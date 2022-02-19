@@ -384,16 +384,6 @@ bool t_command_parser_executor::mining_status(const std::vector<std::string>& ar
   return m_executor.mining_status();
 }
 
-bool t_command_parser_executor::stop_daemon(const std::vector<std::string>& args)
-{
-  if (!args.empty()) {
-    std::cout << "Invalid syntax: No parameters expected. For more details, use the help command." << std::endl;
-    return true;
-  }
-
-  return m_executor.stop_daemon();
-}
-
 bool t_command_parser_executor::out_peers(const std::vector<std::string>& args)
 {
 	bool set = false;

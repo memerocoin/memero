@@ -95,8 +95,6 @@ public:
 
   bool mining_status();
 
-  bool stop_daemon();
-
   bool out_peers(bool set, uint32_t limit);
 
   bool in_peers(bool set, uint32_t limit);

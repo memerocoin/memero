@@ -930,27 +930,6 @@ bool t_rpc_command_executor::stop_mining() {
   return true;
 }
 
-bool t_rpc_command_executor::stop_daemon()
-{
-  cryptonote::COMMAND_RPC_STOP_DAEMON::request req;
-  cryptonote::COMMAND_RPC_STOP_DAEMON::response res;
-
-  // Stop via RPC
-  std::string fail_message = "Daemon did not stop";
-
-  if (m_is_rpc)
-  {
-    if(!m_rpc_client->rpc_request(req, res, "/stop_daemon", fail_message.c_str()))
-    {
-      return true;
-    }
-  }
-
-  tools::success_msg_writer() << "Stop signal sent";
-
-  return true;
-}
-
 bool t_rpc_command_executor::out_peers(bool set, uint32_t limit)
 {
 	cryptonote::COMMAND_RPC_OUT_PEERS::request req;

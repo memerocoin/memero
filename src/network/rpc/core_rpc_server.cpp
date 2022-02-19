@@ -838,15 +838,6 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
-  bool core_rpc_server::on_stop_daemon(const COMMAND_RPC_STOP_DAEMON::request& req, COMMAND_RPC_STOP_DAEMON::response& res)
-  {
-    // FIXME: replace back to original m_p2p.send_stop_signal() after
-    // investigating why that isn't working quite right.
-    m_p2p.send_stop_signal();
-    res.status = CORE_RPC_STATUS_OK;
-    return true;
-  }
-  //------------------------------------------------------------------------------------------------------------------------------
   // equivalent of strstr, but with arbitrary bytes (ie, NULs)
   // This does not differentiate between "not found" and "found at offset 0"
   size_t slow_memmem(const void* start_buff, size_t buflen,const void* pat,size_t patlen)

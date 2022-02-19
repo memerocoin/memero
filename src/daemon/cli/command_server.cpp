@@ -147,11 +147,6 @@ t_command_server::t_command_server(
     , std::bind(&t_command_parser_executor::show_status, &m_parser, p::_1)
     , "Show the current status."
     );
-  m_command_lookup.set_handler(
-      "exit"
-    , std::bind(&t_command_parser_executor::stop_daemon, &m_parser, p::_1)
-    , "Stop the daemon."
-    );
     m_command_lookup.set_handler(
       "set-out-peers"
     , std::bind(&t_command_parser_executor::out_peers, &m_parser, p::_1)
