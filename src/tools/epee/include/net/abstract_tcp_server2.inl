@@ -744,7 +744,7 @@ namespace net_utils
   boosted_tcp_server<t_protocol_handler>::~boosted_tcp_server()
   {
     this->send_stop_signal();
-    timed_wait_server_stop(10000);
+    wait_server_stop();
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
@@ -996,7 +996,7 @@ namespace net_utils
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  bool boosted_tcp_server<t_protocol_handler>::timed_wait_server_stop(uint64_t wait_mseconds)
+  bool boosted_tcp_server<t_protocol_handler>::wait_server_stop()
   {
     TRY_ENTRY();
 
@@ -1009,7 +1009,7 @@ namespace net_utils
     }
 
     return true;
-    CATCH_ENTRY_L0("boosted_tcp_server<t_protocol_handler>::timed_wait_server_stop", false);
+    CATCH_ENTRY_L0("boosted_tcp_server<t_protocol_handler>::wait_server_stop", false);
   }
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>

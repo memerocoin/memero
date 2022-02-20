@@ -200,7 +200,7 @@ namespace daemonize {
     LOG_INFO
       ("Stopping " << rpc_description << " ...");
     rpc.send_stop_signal();
-    rpc.timed_wait_server_stop(5000);
+    rpc.wait_server_stop();
     LOG_GLOBAL_INFO(rpc_description << " stopped");
   }
 

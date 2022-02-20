@@ -203,7 +203,7 @@ namespace net_utils
     bool run_server(size_t threads_count, bool wait = true);
 
     /// wait for service workers stop
-    bool timed_wait_server_stop(uint64_t wait_mseconds);
+    bool wait_server_stop();
 
     /// Stop the server.
     void send_stop_signal();
