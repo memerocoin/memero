@@ -141,7 +141,7 @@ int main(int argc, char const * argv[])
   }
 
   // logging is now set up
-  daemon_common::show_version();
+  LOG_GLOBAL_INFO(daemon_common::get_version_string());
 
   try {
     return daemonize::t_daemon{vm}.run();

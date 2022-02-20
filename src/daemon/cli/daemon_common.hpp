@@ -27,7 +27,9 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 */
 
+#include <string>
 
 namespace daemon_common {
+  std::string get_version_string();
   void show_version();
 }
