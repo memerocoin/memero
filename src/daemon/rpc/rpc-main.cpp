@@ -48,21 +48,20 @@ int main(int argc, char const * argv[])
   po::options_description visible_options("Options");
   po::options_description core_settings("Settings");
   po::positional_options_description positional_options;
-  {
-    command_line::add_arg(visible_options, command_line::arg_help);
-    command_line::add_arg(visible_options, command_line::arg_version);
 
-    command_line::add_arg
-      (core_settings, daemon_common::arg_log_level);
+  command_line::add_arg(visible_options, command_line::arg_help);
+  command_line::add_arg(visible_options, command_line::arg_version);
 
-    command_line::add_arg
-      (core_settings, daemon_common::arg_max_concurrency);
+  command_line::add_arg
+    (core_settings, daemon_common::arg_log_level);
 
-    daemonize::t_daemon::init_options(core_settings);
+  command_line::add_arg
+    (core_settings, daemon_common::arg_max_concurrency);
 
-    visible_options.add(core_settings);
-    all_options.add(visible_options);
-  }
+  daemonize::t_daemon::init_options(core_settings);
+
+  visible_options.add(core_settings);
+  all_options.add(visible_options);
 
   po::variables_map vm;
   const bool arg_parsed = command_line::handle_error_helper
