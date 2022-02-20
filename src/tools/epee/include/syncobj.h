@@ -33,15 +33,6 @@
 namespace epee
 {
 
-  namespace debug
-  {
-    inline unsigned int &g_test_dbg_lock_sleep()
-    {
-      static unsigned int value = 0;
-      return value;
-    }
-  }
-
   struct simple_event
   {
     simple_event() : m_rised(false)
