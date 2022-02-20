@@ -52,7 +52,9 @@ int main(int argc, char const * argv[])
     command_line::add_arg(visible_options, command_line::arg_help);
     command_line::add_arg(visible_options, command_line::arg_version);
 
-    command_line::add_arg(core_settings, daemon_args::arg_log_level);
+    command_line::add_arg
+      (core_settings, daemon_common::arg_log_level);
+
     command_line::add_arg
       (core_settings, daemon_args::arg_max_concurrency);
 
@@ -117,12 +119,12 @@ int main(int argc, char const * argv[])
      !command_line::is_arg_defaulted
      (
       vm
-      , daemon_args::arg_log_level
+      , daemon_common::arg_log_level
       )
      )
     {
       epee::mlog_set_log
-        (command_line::get_arg(vm, daemon_args::arg_log_level));
+        (command_line::get_arg(vm, daemon_common::arg_log_level));
     }
 
   // after logs initialized

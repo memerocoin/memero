@@ -27,9 +27,15 @@ copyright (c) 2012-2013 The Cryptonote developers
 
 */
 
+#include "tools/common/command_line.h"
+
 #include <string>
 
 namespace daemon_common {
   std::string get_version_string();
   void show_version();
+
+
+  const command_line::arg_descriptor<std::string> arg_log_level =
+    {"log-level", "0-4", ""};
 }
