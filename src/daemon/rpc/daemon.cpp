@@ -133,12 +133,6 @@ namespace daemonize {
   {
     core.set_cryptonote_protocol(&protocol);
 
-    init_msg(core_str);
-    init_report(core.init(vm), core_str);
-
-    init_msg(protocol_str);
-    init_report(protocol.init(vm), protocol_str);
-
     init_msg(p2p_str);
     init_report(p2p.init(vm), p2p_str);
 
@@ -151,6 +145,12 @@ namespace daemonize {
 
     init_msg(rpc_str);
     init_report(rpc.init(vm, rpc_port), rpc_str);
+
+    init_msg(protocol_str);
+    init_report(protocol.init(vm), protocol_str);
+
+    init_msg(core_str);
+    init_report(core.init(vm), core_str);
   }
 
 
