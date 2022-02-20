@@ -508,9 +508,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("status",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::status, std::placeholders::_1),
                            ("Show the wallet's status."));
-  m_cmd_binder.set_handler("info",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::wallet_info, std::placeholders::_1),
-                           ("Show the wallet's information."));
   m_cmd_binder.set_handler("tx",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_tx, std::placeholders::_1),
                            (USAGE_SHOW_TX),
@@ -2739,15 +2736,6 @@ bool simple_wallet::status(const std::vector<std::string> &args)
   {
     fail_msg_writer() << "Refreshed " << local_height << "/?, daemon connection error";
   }
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::wallet_info(const std::vector<std::string> &args)
-{
-  message_writer() << ("Filename: ") << m_wallet->get_wallet_file();
-  message_writer() << ("Address: ") << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
-  message_writer() << ("Network type: ") << (
-    m_wallet->nettype() == cryptonote::TESTNET ? ("Testnet") : ("Mainnet"));
   return true;
 }
 //----------------------------------------------------------------------------------------------------

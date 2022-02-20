@@ -137,7 +137,6 @@ namespace cryptonote
     bool rescan_blockchain(const std::vector<std::string> &args);
     bool refresh_main(uint64_t start_height, ResetType reset, bool is_init = false);
     bool status(const std::vector<std::string> &args);
-    bool wallet_info(const std::vector<std::string> &args);
     bool set_default_priority(const std::vector<std::string> &args);
     bool show_tx(const std::vector<std::string> &args);
     bool change_password(const std::vector<std::string>& args);
