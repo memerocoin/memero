@@ -2327,19 +2327,23 @@ skip:
         target = std::max(target, cntxt.m_remote_blockchain_height);
       return true;
     });
-    const uint64_t previous_target = m_core.get_target_blockchain_height();
-    if (target < previous_target)
-    {
-      LOG_INFO("Target height decreasing from " << previous_target << " to " << target);
-      m_core.set_target_blockchain_height(target);
-      if (target == 0 && context.m_state > cryptonote_connection_context::state_before_handshake && !m_stopping)
-      {
-        LOG_CATEGORY_WARNING("global", "lolnerod is now disconnected from the network");
-        m_ask_for_txpool_complement = true;
-      }
+
+    if (!m_stopping) {
+      const uint64_t previous_target = m_core.get_target_blockchain_height();
+      if (target < previous_target)
+        {
+          LOG_INFO("Target height decreasing from " << previous_target << " to " << target);
+          m_core.set_target_blockchain_height(target);
+          if (target == 0 && context.m_state > cryptonote_connection_context::state_before_handshake && !m_stopping)
+            {
+              LOG_CATEGORY_WARNING("global", "lolnerod is now disconnected from the network");
+              m_ask_for_txpool_complement = true;
+            }
+        }
+
+      m_block_queue.flush_spans(context.m_connection_id, false);
     }
 
-    m_block_queue.flush_spans(context.m_connection_id, false);
     LOG_PEER_STATE("closed");
   }
 
