@@ -16,9 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #pragma once
 
-
-#include "schnorr_signature.hpp"
-
 #include "math/hash/functional/hash.hpp"
 #include "math/group/functional/group.hpp"
 

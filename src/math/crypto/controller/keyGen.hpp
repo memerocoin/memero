@@ -16,8 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #pragma once
 
-#include "schnorr_signature_gen.hpp"
-
 #include "../functional/key.hpp"
 
 namespace crypto {
@@ -37,13 +35,4 @@ namespace crypto {
   (
    const std::optional<secret_key> recovery_key
    );
-
-  // sender holds the private key of the tx output public key
-  schnorr_signature generate_tx_proof
-  (
-   const hash message_hash
-   , const std::optional<ec_point_unsafe> view_key_base // spend public key
-   , const ec_scalar_unnormalized tx_output_secret_key
-   );
-
 }

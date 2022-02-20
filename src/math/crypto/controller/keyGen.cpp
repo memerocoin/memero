@@ -84,27 +84,5 @@ namespace crypto {
     return {s, to_pk(s)};
   }
 
-  // sender holds the private key of the tx output public key
-  schnorr_signature generate_tx_proof
-  (
-   const hash message_hash
-   , const std::optional<ec_point_unsafe> view_key_base // spend public key
-   , const ec_scalar_unnormalized tx_output_secret_key
-   )
-  {
-    if (view_key_base && (!is_safe_point(*view_key_base))) {
-      throw std::runtime_error("recipient spend pubkey is invalid");
-    }
-    const auto maybe_custom_view_key_base = view_key_base ? maybeSafePoint(*view_key_base) : std::optional<ec_point>();
-
-    if (is_not_reduced(tx_output_secret_key)) throw std::runtime_error("invalid secrect key");
-
-    const auto sk = s2sk(reduce(tx_output_secret_key));
-
-    const auto hash_key = epee::string_tools::string_to_blob(config::HASH_KEY_TX_OUTPUT_SIGNATURES_V1);
-    return generate_schnorr_signature(hash_key + message_hash.blob(), sk, maybe_custom_view_key_base);
-  }
-
-
 }
 
