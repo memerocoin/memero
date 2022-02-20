@@ -39,7 +39,6 @@
 #include "wallet/logic/type/transfer.hpp"
 #include "wallet/logic/type/tx.hpp"
 #include "wallet/logic/type/wallet.hpp"
-#include "wallet/logic/type/message_signature.hpp"
 
 // remove the following 3, the wallet might become unusable (won't start)
 #include "tools/serialization/string.h"
@@ -339,10 +338,6 @@ namespace tools
     std::string get_daemon_address() const;
     uint64_t get_daemon_blockchain_height(std::string& err);
     uint64_t get_daemon_blockchain_target_height(std::string& err);
-
-    std::string sign(const std::string &data,
-                     wallet::logic::type::message_signature::message_signature_type_t signature_type,
-                     cryptonote::subaddress_index index) const;
 
     void update_pool_state(std::vector<std::tuple<cryptonote::transaction, crypto::hash, bool>> &process_txs, bool refreshed = false);
     void process_pool_state(const std::vector<std::tuple<cryptonote::transaction, crypto::hash, bool>> &txs);

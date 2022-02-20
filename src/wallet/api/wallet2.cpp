@@ -32,7 +32,6 @@
 #include "wallet2.h"
 
 #include "wallet/logic/functional/fee.hpp"
-#include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/functional/helper.hpp"
 #include "wallet/logic/pseudo_functional/proof.hpp"
@@ -72,7 +71,6 @@
 
 using namespace cryptonote;
 using namespace wallet::logic::functional::fee;
-using namespace wallet::logic::type::message_signature;
 
 
 
@@ -3133,15 +3131,6 @@ uint64_t wallet2::get_daemon_blockchain_target_height(std::string &err)
     return 0;
   }
   return target_height;
-}
-
-// Sign a message with a private key from either the base address or a subaddress
-// The signature is also bound to both keys and the signature mode (spend, view) to prevent unintended reuse
-std::string wallet2::sign(const std::string &data, message_signature_type_t signature_type, cryptonote::subaddress_index index) const
-{
-  const cryptonote::account_keys &keys = m_account.get_keys();
-  return wallet::logic::functional::signature::sign
-    (data, signature_type, index, keys);
 }
 
 //----------------------------------------------------------------------------------------------------

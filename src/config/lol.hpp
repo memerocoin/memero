@@ -120,7 +120,6 @@ namespace config
   constexpr std::string_view HASH_KEY_CLSAG_AGG_1 = "CLSAG_agg_1";
 
   constexpr std::string_view HASH_KEY_TX_OUTPUT_SIGNATURES_V1 = "Lolnero_Tx_Output_Signatures_V1_";
-  constexpr std::string_view MESSAGE_SIGNING_HEADER = "Lolnero_Message_Signature_V2";
 
   constexpr unsigned MESSAGE_SIGNING_VERSION = 1u;
 

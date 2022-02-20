@@ -40,7 +40,6 @@
 #include "functional.hpp"
 #include "controller.hpp"
 
-#include "wallet/logic/functional/signature.hpp"
 #include "wallet/logic/functional/fee.hpp"
 #include "wallet/logic/functional/wallet.hpp"
 #include "wallet/logic/controller/wallet.hpp"
@@ -518,14 +517,6 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("info",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::wallet_info, std::placeholders::_1),
                            ("Show the wallet's information."));
-  m_cmd_binder.set_handler("sign",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::sign, std::placeholders::_1),
-                           (USAGE_SIGN),
-                           ("Sign the contents of a file with the given subaddress (or the main address if not specified)"));
-  m_cmd_binder.set_handler("verify",
-                           std::bind(&simple_wallet::on_command, this, &simple_wallet::verify, std::placeholders::_1),
-                           (USAGE_VERIFY),
-                           ("Verify a signature on the contents of a file."));
   m_cmd_binder.set_handler("tx",
                            std::bind(&simple_wallet::on_command, this, &simple_wallet::show_tx, std::placeholders::_1),
                            (USAGE_SHOW_TX),
@@ -2767,100 +2758,6 @@ bool simple_wallet::wallet_info(const std::vector<std::string> &args)
   message_writer() << ("Address: ") << m_wallet->get_account().get_public_address_str(m_wallet->nettype());
   message_writer() << ("Network type: ") << (
     m_wallet->nettype() == cryptonote::TESTNET ? ("Testnet") : ("Mainnet"));
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::sign(const std::vector<std::string> &args)
-{
-  if (args.size() != 1 && args.size() != 2 && args.size() != 3)
-  {
-    PRINT_USAGE(USAGE_SIGN);
-    return true;
-  }
-
-  wallet::logic::type::message_signature::message_signature_type_t message_signature_type = wallet::logic::type::message_signature::sign_with_spend_key;
-  subaddress_index index{0, 0};
-  for (unsigned int idx = 0; idx + 1 < args.size(); ++idx)
-  {
-    unsigned int a, b;
-    if (sscanf(args[idx].c_str(), "%u,%u", &a, &b) == 2)
-    {
-      index.major = a;
-      index.minor = b;
-    }
-    else if (args[idx] == "--spend")
-    {
-      message_signature_type = wallet::logic::type::message_signature::sign_with_spend_key;
-    }
-    else if (args[idx] == "--view")
-    {
-      message_signature_type = wallet::logic::type::message_signature::sign_with_view_key;
-    }
-    else
-    {
-      fail_msg_writer() << ("Invalid subaddress index format, and not a signature type: ") << args[idx];
-      return true;
-    }
-  }
-
-  const std::string &filename = args.back();
-  std::string data;
-  bool r = wallet::logic::controller::wallet::load_from_file(filename, data);
-  if (!r)
-  {
-    fail_msg_writer() << ("failed to read file ") << filename;
-    return true;
-  }
-
-  std::string signature = m_wallet->sign(data, message_signature_type, index);
-  success_msg_writer() << signature;
-  return true;
-}
-//----------------------------------------------------------------------------------------------------
-bool simple_wallet::verify(const std::vector<std::string> &args)
-{
-  if (args.size() != 3)
-  {
-    PRINT_USAGE(USAGE_VERIFY);
-    return true;
-  }
-  std::string filename = args[0];
-  std::string address_string = args[1];
-  std::string signature= args[2];
-
-  std::string data;
-  bool r = wallet::logic::controller::wallet::load_from_file(filename, data);
-  if (!r)
-  {
-    fail_msg_writer() << ("failed to read file ") << filename;
-    return true;
-  }
-
-  cryptonote::address_parse_info info;
-  if(!cryptonote::get_account_address_from_str(info, m_wallet->nettype(), address_string))
-  {
-    fail_msg_writer() << ("failed to parse address");
-    return true;
-  }
-
-  wallet::logic::type::message_signature::message_signature_result_t result = wallet::logic::functional::signature::verify
-    (data, info.address, signature);
-  if (!result.valid)
-  {
-    fail_msg_writer() << ("Bad signature from ") << address_string;
-  }
-  else
-  {
-    success_msg_writer()
-      << ("Good signature from ") << address_string << " with "
-      << (
-          result.type == wallet::logic::type::message_signature::sign_with_spend_key
-          ? "spend key"
-          : result.type == wallet::logic::type::message_signature::sign_with_view_key
-          ? "view key"
-          : "unknown key combination (suspicious)"
-          );
-  }
   return true;
 }
 //----------------------------------------------------------------------------------------------------
