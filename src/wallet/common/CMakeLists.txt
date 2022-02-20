@@ -32,4 +32,8 @@ add_library(wallet_common
   controller.cpp
 )
 
+target_link_libraries(wallet_common
+  daemon_common
+  )
+
 # install(TARGETS wallet_common)

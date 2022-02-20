@@ -31,6 +31,8 @@
 
 #include "tools/common/util.h"
 
+#include "daemon/cli/daemon_common.hpp"
+
 #include "config/version/version.hpp"
 
 #include <filesystem>
@@ -118,7 +120,7 @@ namespace wallet_args
       }
       else if (command_line::get_arg(vm, command_line::arg_version))
       {
-        Print(print) << "Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")";
+        daemon_common::show_version();
         should_terminate = true;
         return true;
       }
@@ -144,7 +146,7 @@ namespace wallet_args
     if (!command_line::is_arg_defaulted(vm, arg_max_concurrency))
       tools::set_max_concurrency(command_line::get_arg(vm, arg_max_concurrency));
 
-    Print(print) << "Lolnero '" << LOLNERO_RELEASE_NAME << "' (v" << LOLNERO_VERSION_FULL << ")";
+    daemon_common::show_version();
 
     if (!command_line::is_arg_defaulted(vm, arg_log_level)) {
       LOG_INFO("Setting log level = " << command_line::get_arg(vm, arg_log_level));
